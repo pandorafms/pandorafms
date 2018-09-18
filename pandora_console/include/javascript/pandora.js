@@ -1585,6 +1585,10 @@ function display_confirm_dialog (message, ok_text, cancel_text, ok_function) {
 		clean_function();
 	}
 
+	var buttons_obj = {};
+	buttons_obj[cancel_text] = clean_function;
+	buttons_obj[ok_text] = ok_function_clean;
+
 	// Display the dialog
 	$("body").append('<div id="pandora_confirm_dialog_text"><h3>' + message + '</h3></div>');
 	$("#pandora_confirm_dialog_text").dialog({
@@ -1598,10 +1602,7 @@ function display_confirm_dialog (message, ok_text, cancel_text, ok_function) {
 		},
 		closeOnEscape: true,
 		modal: true,
-		buttons: {
-			Cancel: clean_function,
-			"Confirm": ok_function_clean
-		}
+		buttons: buttons_obj
 	});
 }
 

@@ -43,6 +43,7 @@ if (is_ajax ()) {
 	require_once($config['homedir'] . "/include/class/TreeModule.class.php");
 	require_once($config['homedir'] . "/include/class/TreeTag.class.php");
 	require_once($config['homedir'] . "/include/class/TreeGroup.class.php");
+	require_once($config['homedir'] . "/include/class/TreeGroupEdition.class.php");
 	enterprise_include_once("include/class/TreePolicies.class.php");
 	enterprise_include_once("include/class/TreeGroupMeta.class.php");
 	require_once($config['homedir'] . "/include/functions_reporting.php");
@@ -103,6 +104,9 @@ if (is_ajax ()) {
 			case 'policies':
 				if (!class_exists('TreePolicies')) break;
 				$tree = new TreePolicies($type, $rootType, $id, $rootID, $serverID, $childrenMethod, $access);
+				break;
+			case 'group_edition':
+				$tree = new TreeGroupEdition($type, $rootType, $id, $rootID, $serverID, $childrenMethod, $access);
 				break;
 			default:
 				// FIXME. No error handler

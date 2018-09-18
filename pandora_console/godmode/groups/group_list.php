@@ -215,20 +215,57 @@ if (! check_acl($config['id_user'], 0, "PM")) {
 	return;
 }
 
+$sec = defined('METACONSOLE') ? 'advanced' : 'gagente';
+$url_tree  = "index.php?sec=$sec&sec2=godmode/groups/group_list&tab=tree";
+$url_groups = "index.php?sec=$sec&sec2=godmode/groups/group_list&tab=groups";
+$buttons['tree'] = array(
+	'active' => false,
+	'text' => "<a href='$url_tree'>" .
+		html_print_image(
+			"images/gm_massive_operations.png",
+			true,
+			array (
+				"title" => __('Tree Group view')
+			)
+		) . "</a>"
+);
+
+$buttons['groups'] = array(
+	'active' => false,
+	'text' => "<a href='$url_groups'>" .
+		html_print_image(
+			"images/group.png",
+			true,
+			array(
+				"title" => __('Group view')
+			)
+		) . "</a>"
+);
+
+$tab = (string)get_parameter('tab', 'groups');
+
+// Marks correct tab
+switch ($tab) {
+	case 'tree':
+		$buttons['tree']['active'] = true;
+		break;
+	case 'groups':
+	default:
+		$buttons['groups']['active'] = true;
+		break;
+}
+
 // Header
 if (defined('METACONSOLE')) {
 	agents_meta_print_header();
-	$sec = 'advanced';
 	echo '<div class="notify">';
 	echo __("Edit or delete groups can cause problems with synchronization");
 	echo '</div>';
-}
-else {
+} else {
 	ui_print_page_header (
 		__("Groups defined in %s", get_product_name()),
-		"images/group.png", false, "", true, ""
+		"images/group.png", false, "", true, $buttons
 	);
-	$sec = 'gagente';
 }
 
 $create_group = (bool) get_parameter ('create_group');
@@ -365,148 +402,158 @@ if (($delete_group) && (check_acl($config['id_user'], 0, "PM"))) {
 	}
 }
 
-$acl='';
-$search_name = '';
-$offset = (int)get_parameter('offset', 0);
-$search = (string)get_parameter('search', '');
-$block_size = $config['block_size'];
+if($tab == 'tree'){
+	echo html_print_image('images/spinner.gif', true,
+			array('class' => "loading_tree",
+				'style' => 'display: none;'));
+	echo "<div id='tree-controller-recipient'></div>";
 
-if(!empty($search)){
-	$search_name = "AND t.nombre LIKE '%$search%'";
 }
+else{
+	$acl='';
+	$search_name = '';
+	$offset = (int)get_parameter('offset', 0);
+	$search = (string)get_parameter('search', '');
+	$block_size = $config['block_size'];
 
-if (!users_can_manage_group_all("AR")){
-	$user_groups_acl = users_get_groups(false, "AR");
-	$groups_acl = implode(",", $user_groups_ACL);
-	if(empty($groups_acl)) return ui_print_info_message ( array('no_close'=>true, 'message'=>  __('There are no defined groups') ) );
+	if(!empty($search)){
+		$search_name = "AND t.nombre LIKE '%$search%'";
+	}
 
-	$acl = "AND t.id_grupo IN ($groups_acl)";
-}
+	if (!users_can_manage_group_all("AR")){
+		$user_groups_acl = users_get_groups(false, "AR");
+		$groups_acl = implode(",", $user_groups_ACL);
+		if(empty($groups_acl)) return ui_print_info_message ( array('no_close'=>true, 'message'=>  __('There are no defined groups') ) );
 
-$form = "<form method='post' action=''>";
-	$form .= "<table class='databox filters' width='100%' style='font-weight: bold;'>";
-		$form .= "<tr><td>" .  __('Search') . '&nbsp;';
-			$form .= html_print_input_text ("search", $search, '', 100, 100, true);
-		$form .= "</td><td>";
-			$form .= "<input name='find' type='submit' class='sub search' value='".__('Search')."'>";
-		$form .= "<td></tr>";
-	$form .= "</table>";
-$form .= "</form>";
+		$acl = "AND t.id_grupo IN ($groups_acl)";
+	}
 
-echo $form;
+	$form = "<form method='post' action=''>";
+		$form .= "<table class='databox filters' width='100%' style='font-weight: bold;'>";
+			$form .= "<tr><td>" .  __('Search') . '&nbsp;';
+				$form .= html_print_input_text ("search", $search, '', 100, 100, true);
+			$form .= "</td><td>";
+				$form .= "<input name='find' type='submit' class='sub search' value='".__('Search')."'>";
+			$form .= "<td></tr>";
+		$form .= "</table>";
+	$form .= "</form>";
 
-$groups_sql =
-	"SELECT t.*,
-		p.nombre  AS parent_name,
-		IF(t.parent=p.id_grupo, 1, 0) AS has_child
-	FROM tgrupo t
-	LEFT JOIN tgrupo p
-		ON t.parent=p.id_grupo
-	WHERE 1=1
-	$acl
-	$search_name
-	ORDER BY nombre
-	LIMIT $offset, $block_size
-";
+	echo $form;
 
-$groups = db_get_all_rows_sql($groups_sql);
-
-if (!empty($groups)) {
-	//Count all groups for pagination only saw user and filters
-	$groups_sql_count = "SELECT count(*)
+	$groups_sql =
+		"SELECT t.*,
+			p.nombre  AS parent_name,
+			IF(t.parent=p.id_grupo, 1, 0) AS has_child
 		FROM tgrupo t
+		LEFT JOIN tgrupo p
+			ON t.parent=p.id_grupo
 		WHERE 1=1
 		$acl
 		$search_name
+		ORDER BY nombre
+		LIMIT $offset, $block_size
 	";
-	$groups_count = db_get_value_sql($groups_sql_count);
 
-	$table = new StdClass();
-	$table->width = '100%';
-	$table->class = "databox data";
-	$table->head = array ();
-	$table->head[0] = __('ID');
-	$table->head[1] = __('Name');
-	$table->head[2] = __('Icon');
-	$table->head[3] = __('Alerts');
-	$table->head[4] = __('Parent');
-	$table->head[5] = __('Description');
-	$table->head[6] = __('Actions');
-	$table->align = array ();
-	$table->align[0] = 'right';
-	$table->align[2] = 'left';
-	$table->align[6] = 'left';
-	$table->size[5] = '30%';
-	$table->size[6] = '10%';
-	$table->data = array ();
+	$groups = db_get_all_rows_sql($groups_sql);
 
-	foreach ($groups as $key => $group) {
-		$url = "index.php?sec=gagente&sec2=godmode/groups/configure_group&id_group=".$group['id_grupo'];
-		$url_delete = "index.php?sec=gagente&sec2=godmode/groups/group_list&delete_group=1&id_group=" . $group['id_grupo'];
-		$table->data[$key][0] = $group['id_grupo'];
-		$table->data[$key][1] = "<a href='$url'>" . $group['nombre'] . "</a>";
-		$table->data[$key][2] =	html_print_image(
-			"images/groups_small/" . $group['icon'] . ".png",
-			true,
-			array(
-				"style" => '',
-				"class" => "bot",
-				"alt" => $group['nombre'],
-				"title" => $group['nombre'],
-				false, false, false, true
-			)
-		);
+	if (!empty($groups)) {
+		//Count all groups for pagination only saw user and filters
+		$groups_sql_count = "SELECT count(*)
+			FROM tgrupo t
+			WHERE 1=1
+			$acl
+			$search_name
+		";
+		$groups_count = db_get_value_sql($groups_sql_count);
 
-		//reporting_get_group_stats
-		$table->data[$key][3] = $group['disabled'] ? __('Disabled') : __('Enabled');
-		$table->data[$key][4] = $group['parent_name'];
-		$table->data[$key][5] = $group['description'];
-		$table->data[$key][6] = "<a href='$url'>" .
-			html_print_image(
-				"images/config.png",
+		$table = new StdClass();
+		$table->width = '100%';
+		$table->class = "databox data";
+		$table->head = array ();
+		$table->head[0] = __('ID');
+		$table->head[1] = __('Name');
+		$table->head[2] = __('Icon');
+		$table->head[3] = __('Alerts');
+		$table->head[4] = __('Parent');
+		$table->head[5] = __('Description');
+		$table->head[6] = __('Actions');
+		$table->align = array ();
+		$table->align[0] = 'left';
+		$table->align[2] = 'left';
+		$table->align[6] = 'left';
+		$table->size[0] = '3%';
+		$table->size[5] = '30%';
+		$table->size[6] = '5%';
+		$table->data = array ();
+
+		foreach ($groups as $key => $group) {
+			$url = "index.php?sec=gagente&sec2=godmode/groups/configure_group&id_group=".$group['id_grupo'];
+			$url_delete = "index.php?sec=gagente&sec2=godmode/groups/group_list&delete_group=1&id_group=" . $group['id_grupo'];
+			$table->data[$key][0] = $group['id_grupo'];
+			$table->data[$key][1] = "<a href='$url'>" . $group['nombre'] . "</a>";
+			$table->data[$key][2] =	html_print_image(
+				"images/groups_small/" . $group['icon'] . ".png",
 				true,
 				array(
-					"alt" => __('Edit'),
-					"title" => __('Edit'),
-					"border" => '0'
+					"style" => '',
+					"class" => "bot",
+					"alt" => $group['nombre'],
+					"title" => $group['nombre'],
+					false, false, false, true
 				)
-			) .
-			"</a>";
+			);
 
-		$confirm_message = __('Are you sure?');
-		if ($group['has_child']) {
-			$confirm_message = __('The child groups will be updated to use the parent id of the deleted group') . ". " . $confirm_message;
+			//reporting_get_group_stats
+			$table->data[$key][3] = $group['disabled'] ? __('Disabled') : __('Enabled');
+			$table->data[$key][4] = $group['parent_name'];
+			$table->data[$key][5] = $group['description'];
+			$table->data[$key][6] = "<a href='$url'>" .
+				html_print_image(
+					"images/config.png",
+					true,
+					array(
+						"alt" => __('Edit'),
+						"title" => __('Edit'),
+						"border" => '0'
+					)
+				) .
+				"</a>";
+
+			$confirm_message = __('Are you sure?');
+			if ($group['has_child']) {
+				$confirm_message = __('The child groups will be updated to use the parent id of the deleted group') . ". " . $confirm_message;
+			}
+
+			$table->data[$key][6] .= '&nbsp;&nbsp;' .
+				'<a href="'. $url_delete. '" onClick="if (!confirm(\' '.$confirm_message.'\')) return false;">' .
+				html_print_image(
+					"images/cross.png",
+					true,
+					array(
+						"alt" => __('Delete'),
+						"title" => __('Delete'),
+						"border" => '0'
+					)
+				) .
+				"</a>";
+
 		}
 
-		$table->data[$key][6] .= '&nbsp;&nbsp;' .
-			'<a href="'. $url_delete. '" onClick="if (!confirm(\' '.$confirm_message.'\')) return false;">' .
-			html_print_image(
-				"images/cross.png",
-				true,
-				array(
-					"alt" => __('Delete'),
-					"title" => __('Delete'),
-					"border" => '0'
-				)
-			) .
-			"</a>";
-
+		echo ui_pagination(
+			$groups_count, false,
+			$offset, $block_size,
+			true, 'offset', false
+		);
+		html_print_table ($table);
+		echo ui_pagination(
+			$groups_count, false,
+			$offset, $block_size,
+			true, 'offset', true
+		);
 	}
-
-	echo ui_pagination(
-		$groups_count, false,
-		$offset, $block_size,
-		true, 'offset', false
-	);
-	html_print_table ($table);
-	echo ui_pagination(
-		$groups_count, false,
-		$offset, $block_size,
-		true, 'offset', true
-	);
-}
-else {
-	ui_print_info_message ( array('no_close'=>true, 'message'=>  __('There are no defined groups') ) );
+	else {
+		ui_print_info_message ( array('no_close'=>true, 'message'=>  __('There are no defined groups') ) );
+	}
 }
 
 if (check_acl($config['id_user'], 0, "PM")) {
@@ -517,5 +564,101 @@ if (check_acl($config['id_user'], 0, "PM")) {
 	echo '</form>';
 }
 
+ui_require_javascript_file("TreeController", "include/javascript/tree/");
+
 enterprise_hook('close_meta_frame');
+$tab = "group_edition";
+
 ?>
+
+<?php if (!is_metaconsole()){ ?>
+	<script type="text/javascript" src="include/javascript/fixed-bottom-box.js"></script>
+<?php }else{ ?>
+	<script type="text/javascript" src="../../include/javascript/fixed-bottom-box.js"></script>
+<?php } ?>
+
+<script type="text/javascript">
+	var treeController = TreeController.getController();
+
+	if (typeof treeController.recipient != 'undefined' && treeController.recipient.length > 0)
+			treeController.recipient.empty();
+
+		$(".loading_tree").show();
+
+		var parameters = {};
+		parameters['page'] = "include/ajax/tree.ajax";
+		parameters['getChildren'] = 1;
+		parameters['type'] = "<?php echo $tab; ?>";
+		parameters['filter'] = {};
+		parameters['filter']['searchGroup'] = '';
+		parameters['filter']['searchAgent'] = '';
+		parameters['filter']['statusAgent'] = '';
+		parameters['filter']['searchModule'] = '';
+		parameters['filter']['statusModule'] = '';
+		parameters['filter']['groupID'] = '';
+		parameters['filter']['tagID'] = '';
+		parameters['filter']['searchHirearchy'] = 1;
+		parameters['filter']['show_not_init_agents'] = 1;
+		parameters['filter']['show_not_init_modules'] = 1;
+
+		$.ajax({
+			type: "POST",
+			url: "<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",
+			data: parameters,
+			success: function(data) {
+				if (data.success) {
+					$(".loading_tree").hide();
+
+					treeController.init({
+						recipient: $("div#tree-controller-recipient"),
+						//detailRecipient: $.fixedBottomBox({ width: 400, height: window.innerHeight * 0.9 }),
+						page: parameters['page'],
+						emptyMessage: "<?php echo __('No data found'); ?>",
+						foundMessage: "<?php echo __('Found groups'); ?>",
+						tree: data.tree,
+						baseURL: "<?php echo ui_get_full_url(false, false, false, is_metaconsole()); ?>",
+						ajaxURL: "<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",
+						filter: parameters['filter'],
+						counterTitles: {
+							total: {
+								agents: "<?php echo __('Total agents'); ?>",
+								modules: "<?php echo __('Total modules'); ?>",
+								none: "<?php echo __('Total'); ?>"
+							},
+							alerts: {
+								agents: "<?php echo __('Fired alerts'); ?>",
+								modules: "<?php echo __('Fired alerts'); ?>",
+								none: "<?php echo __('Fired alerts'); ?>"
+							},
+							critical: {
+								agents: "<?php echo __('Critical agents'); ?>",
+								modules: "<?php echo __('Critical modules'); ?>",
+								none: "<?php echo __('Critical'); ?>"
+							},
+							warning: {
+								agents: "<?php echo __('Warning agents'); ?>",
+								modules: "<?php echo __('Warning modules'); ?>",
+								none: "<?php echo __('Warning'); ?>"
+							},
+							unknown: {
+								agents: "<?php echo __('Unknown agents'); ?>",
+								modules: "<?php echo __('Unknown modules'); ?>",
+								none: "<?php echo __('Unknown'); ?>"
+							},
+							not_init: {
+								agents: "<?php echo __('Not init agents'); ?>",
+								modules: "<?php echo __('Not init modules'); ?>",
+								none: "<?php echo __('Not init'); ?>"
+							},
+							ok: {
+								agents: "<?php echo __('Normal agents'); ?>",
+								modules: "<?php echo __('Normal modules'); ?>",
+								none: "<?php echo __('Normal'); ?>"
+							}
+						}
+					});
+				}
+			},
+			dataType: "json"
+		});
+</script>

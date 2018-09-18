@@ -101,7 +101,7 @@ $height = get_parameter('height', null);
 $parent = get_parameter('parent', null);
 $map_linked = get_parameter('map_linked', null);
 $linked_map_node_id = get_parameter('linked_map_node_id', null);
-$linked_map_status_calculation_type = get_parameter('linked_map_status_calculation_type', 'default');
+$linked_map_status_calculation_type = get_parameter('linked_map_status_calculation_type', null);
 
 $map_linked_weight = get_parameter('map_linked_weight', null);
 if ($map_linked_weight !== null) {

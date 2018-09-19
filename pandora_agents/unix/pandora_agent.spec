@@ -88,7 +88,7 @@ if [ ! -e /etc/pandora/plugins ]; then
 fi
 
 if [ ! -e /etc/pandora/collections ]; then
-	ln -s /usr/share/pandora_agent/collections /etc/pandora
+	mkdir /etc/pandora/collections
 fi
 cp -aRf /usr/share/pandora_agent/pandora_agent_logrotate /etc/logrotate.d/pandora_agent
 

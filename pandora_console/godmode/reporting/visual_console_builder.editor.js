@@ -829,6 +829,7 @@ function readFields() {
 	values['bars_graph_type'] = $("select[name=bars_graph_type]").val();
 	values['parent'] = $("select[name=parent]").val();
 	values['map_linked'] = $("select[name=map_linked]").val();
+	values['linked_map_node_id'] = $("input[name=linked_map_node_id]").val();
 	values['linked_map_status_calculation_type'] = $("select[name=linked_map_status_calculation_type]").val();
 	values['map_linked_weight'] = $("input[name=map_linked_weight]").val();
 	values['linked_map_status_service_critical'] = $("input[name=linked_map_status_service_critical]").val();
@@ -1544,6 +1545,8 @@ function loadFieldsFromDB(item) {
 					$("select[name=linked_map_status_calculation_type]").val(val).change();
 				if (key == 'id_layout_linked')
 					$("select[name=map_linked]").val(val).change();
+				if (key == 'linked_layout_node_id')
+					$("input[name=linked_map_node_id]").val(val);
 				if (key == 'id_layout_linked_weight')
 					$("input[name=map_linked_weight]").val(val);
 				if (key == 'linked_layout_status_as_service_critical')
@@ -1958,6 +1961,7 @@ function cleanFields(item) {
 	$("select[name=parent]").val('');
 	$("select[name=linked_map_status_calculation_type]").val('default').change();
 	$("select[name=map_linked]").val('').change();
+	$("input[name=linked_map_node_id]").val(0);
 	$("input[name=map_linked_weight]").val('');
 	$("input[name=linked_map_status_service_critical]").val('');
 	$("input[name=linked_map_status_service_warning]").val('');

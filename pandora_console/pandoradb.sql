@@ -1242,6 +1242,7 @@ CREATE TABLE IF NOT EXISTS `treport` (
 	`id_group_edit` mediumint(8) unsigned NULL DEFAULT 0,
 	`metaconsole` tinyint(1) DEFAULT 0,
 	`non_interactive` tinyint(1) UNSIGNED NOT NULL default 0,
+	`hidden` tinyint(1) DEFAULT 0,
 	PRIMARY KEY(`id_report`)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
@@ -1381,6 +1382,7 @@ CREATE TABLE IF NOT EXISTS `tlayout_data` (
 	`border_color` varchar(200) DEFAULT "",
 	`fill_color` varchar(200) DEFAULT "",
 	`show_statistics` tinyint(2) NOT NULL default '0',
+	`linked_layout_node_id` INT(10) NOT NULL default 0,
 	`linked_layout_status_type` ENUM ('default', 'weight', 'service') DEFAULT 'default',
 	`id_layout_linked_weight` int(10) NOT NULL default '0',
 	`linked_layout_status_as_service_warning` FLOAT(20, 3) NOT NULL default 0,
@@ -3315,6 +3317,7 @@ CREATE TABLE IF NOT EXISTS `tlayout_template_data` (
 	`border_color` varchar(200) DEFAULT "",
 	`fill_color` varchar(200) DEFAULT "",
 	`show_statistics` tinyint(2) NOT NULL default '0',
+	`linked_layout_node_id` INT(10) NOT NULL default 0,
 	`linked_layout_status_type` ENUM ('default', 'weight', 'service') DEFAULT 'default',
 	`id_layout_linked_weight` int(10) NOT NULL default '0',
 	`linked_layout_status_as_service_warning` FLOAT(20, 3) NOT NULL default 0,

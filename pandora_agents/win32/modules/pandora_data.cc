@@ -32,7 +32,7 @@ using namespace Pandora;
  */
 Pandora_Data::Pandora_Data (string value) {
 	this->value = value;
-	GetSystemTime (&(this->timestamp));
+	GetLocalTime (&(this->timestamp));
 	this->data_origin = pandora_data_unknown_source;
 }
 
@@ -68,7 +68,7 @@ Pandora_Data::Pandora_Data (string value, SYSTEMTIME *system_time) {
  */
 Pandora_Data::Pandora_Data (string value, string data_origin) {
     this->value = value;
-	GetSystemTime (&(this->timestamp));
+	GetLocalTime (&(this->timestamp));
     this->data_origin = data_origin;
 }
 
@@ -99,7 +99,7 @@ Pandora_Data::Pandora_Data (string value, SYSTEMTIME *system_time, string data_o
  */
 Pandora_Data::Pandora_Data () {
 	this->value = "";
-	GetSystemTime (&(this->timestamp));
+	GetLocalTime (&(this->timestamp));
 	this->data_origin = "";
 }
 

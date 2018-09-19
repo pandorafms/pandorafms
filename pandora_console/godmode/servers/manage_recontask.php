@@ -97,7 +97,15 @@ if ((isset ($_GET["update"])) OR ((isset ($_GET["create"])))) {
 	$field2 = get_parameter ("_field2_", "");
 	$field3 = get_parameter ("_field3_", "");
 	$field4 = get_parameter ("_field4_", "");
-	
+	$snmp_version = get_parameter_post ("snmp_version");
+	$snmp3_auth_user = get_parameter_post ("snmp_auth_user");
+	$snmp3_auth_pass = get_parameter_post ("snmp_auth_pass");
+	$snmp3_privacy_method = get_parameter_post ("snmp_privacy_method");
+	$snmp3_privacy_pass = get_parameter_post ("snmp_privacy_pass");
+	$snmp3_auth_method = get_parameter_post ("snmp_auth_method");
+	$snmp3_security_level = get_parameter_post ("snmp_security_level");
+
+
 	if ($mode == "network_sweep")
 		$id_recon_script = 0;
 	else
@@ -154,8 +162,30 @@ if (isset($_GET["update"])) {
 		'macros' => $macros,
 		'alias_as_name' => $alias_as_name,
 		'snmp_enabled' => $snmp_enabled,
-		'vlan_enabled' => $vlan_enabled
+		'vlan_enabled' => $vlan_enabled,
+		'snmp_version' => $snmp_version
 		);
+
+		$values_v3 = array(
+			'snmp_auth_user' => $snmp3_auth_user,
+			'snmp_auth_pass' => $snmp3_auth_pass,
+			'snmp_privacy_method' => $snmp3_privacy_method,
+			'snmp_privacy_pass' => $snmp3_privacy_pass,
+			'snmp_auth_method' => $snmp3_auth_method,
+			'snmp_security_level' => $snmp3_security_level
+		);
+		if($values['snmp_version'] == '1' || $values['snmp_version'] == '2' || $values['snmp_version'] == '2c'){
+			$values_v3 = array(
+			'snmp_auth_user' => '',
+			'snmp_auth_pass' => '',
+			'snmp_privacy_method' => '',
+			'snmp_privacy_pass' => '',
+			'snmp_auth_method' => '',
+			'snmp_security_level' => ''
+			);
+		}
+
+	$values = array_merge($values, $values_v3);
 		
 	$where = array('id_rt' => $id);
 	
@@ -217,13 +247,37 @@ if (isset($_GET["create"])) {
 		'macros' => $macros,
 		'alias_as_name' => $alias_as_name,
 		'snmp_enabled' => $snmp_enabled,
-		'vlan_enabled' => $vlan_enabled
+		'vlan_enabled' => $vlan_enabled,
+		'snmp_version' => $snmp_version
 		);
+
+		$values_v3 = array(
+			'snmp_auth_user' => $snmp3_auth_user,
+			'snmp_auth_pass' => $snmp3_auth_pass,
+			'snmp_privacy_method' => $snmp3_privacy_method,
+			'snmp_privacy_pass' => $snmp3_privacy_pass,
+			'snmp_auth_method' => $snmp3_auth_method,
+			'snmp_security_level' => $snmp3_security_level
+		);
+		if($values['snmp_version'] == '1' || $values['snmp_version'] == '2' || $values['snmp_version'] == '2c'){
+			$values_v3 = array(
+			'snmp_auth_user' => '',
+			'snmp_auth_pass' => '',
+			'snmp_privacy_method' => '',
+			'snmp_privacy_pass' => '',
+			'snmp_auth_method' => '',
+			'snmp_security_level' => ''
+			);
+		}
+		if ($values['snmp_version'] == '3'){
+			$values['vlan_enabled'] = 0;
+		}
+
+	$values = array_merge($values, $values_v3);
 
 	$name = io_safe_output($name);
 	$name = trim($name, ' ');
 	$name = io_safe_input($name);
-	
 	$reason = "";
 
 	if ($name != "") {
@@ -293,7 +347,7 @@ else {
 $color=1;
 if ($result !== false) {
 	$table = new StdClass();
-	$table->head = array  (__('Name'), __('Network'), __('Mode'), __('Group'), __('Incident'), __('OS'), __('Interval'), __('Ports'), __('Action'));
+	$table->head = array  (__('Name'), __('Network'), __('Mode'), __('Group'), __('SNMP Version'), __('Incident'), __('OS'), __('Interval'), __('Ports'), __('Action'));
 	$table->align = array ("left","left","left","left","left","left","left","left");
 	$table->width = "100%";
 	$table->cellpadding = 4;
@@ -336,48 +390,64 @@ if ($result !== false) {
 				$data[3] = "-";
 			}
 			
+			//SNMP VERSION
+			if ($row["snmp_version"] == '1'){
+				$data[4] = "v. 1";
+			}
+			elseif($row["snmp_version"] == '2'){
+				$data[4] = "v. 2";
+			}
+			elseif($row["snmp_version"] == '2c'){
+				$data[4] = "v. 2c";
+			}
+			elseif($row["snmp_version"] == '3'){
+				$data[4] = "v. 3";
+			}
+			
+			
+
 			// INCIDENT
-			$data[4] = (($row["create_incident"] == 1) ? __('Yes') : __('No'));
+			$data[5] = (($row["create_incident"] == 1) ? __('Yes') : __('No'));
 			
 			// OS
 			if ($row["id_recon_script"] == 0) {
-				$data[5] =(($row["id_os"] > 0) ? ui_print_os_icon ($row["id_os"], false, true) : __('Any'));
+				$data[6] =(($row["id_os"] > 0) ? ui_print_os_icon ($row["id_os"], false, true) : __('Any'));
 			}
 			else {
-				$data[5] = "-";
+				$data[6] = "-";
 			}
 			// INTERVAL
 			if ($row["interval_sweep"]==0)
-				$data[6] = __("Manual");
+				$data[7] = __("Manual");
 			else
-				$data[6] =human_time_description_raw($row["interval_sweep"]);
+				$data[7] =human_time_description_raw($row["interval_sweep"]);
 			
 			// PORTS
 			if ($row["id_recon_script"] == 0) {
-				$data[7] = substr($row["recon_ports"],0,15);
+				$data[8] = substr($row["recon_ports"],0,15);
 			}
 			else {
-				$data[7] = "-";
+				$data[8] = "-";
 			}
 			
 			// ACTION
 			$task_group = $row["id_group"];
 
 			if (in_array($task_group, $user_groups_w)){
-				$data[8] = '<a href="index.php?sec=estado&sec2=operation/servers/recon_view">' . html_print_image("images/eye.png", true) . '</a>';
-				$data[8] .= '<a href="index.php?sec=gservers&sec2=godmode/servers/manage_recontask&delete='.$row["id_rt"].'">' . html_print_image("images/cross.png", true, array("border" => '0')) . '</a>';
+				$data[9] = '<a href="index.php?sec=estado&sec2=operation/servers/recon_view">' . html_print_image("images/eye.png", true) . '</a>';
+				$data[9] .= '<a href="index.php?sec=gservers&sec2=godmode/servers/manage_recontask&delete='.$row["id_rt"].'">' . html_print_image("images/cross.png", true, array("border" => '0')) . '</a>';
 				if($mode_name != 'IPAM Recon'){
-					$data[8] .= '<a href="index.php?sec=gservers&sec2=godmode/servers/manage_recontask_form&update='.$row["id_rt"].'">' .html_print_image("images/config.png", true) . '</a>';
+					$data[9] .= '<a href="index.php?sec=gservers&sec2=godmode/servers/manage_recontask_form&update='.$row["id_rt"].'">' .html_print_image("images/config.png", true) . '</a>';
 				} else {
 					$sql_ipam = 'select id from tipam_network where id_recon_task =' . $row["id_rt"];
 					$id_recon_ipam = db_get_sql($sql_ipam);
-					$data[8] .= '<a href="index.php?sec=godmode/extensions&sec2=enterprise/extensions/ipam&action=edit&id=' . $id_recon_ipam . '">' . html_print_image("images/config.png", true) . '</a>';
+					$data[9] .= '<a href="index.php?sec=godmode/extensions&sec2=enterprise/extensions/ipam&action=edit&id=' . $id_recon_ipam . '">' . html_print_image("images/config.png", true) . '</a>';
 				}
 				if($row["disabled"] == 0) {
-					$data[8] .= '<a href="index.php?sec=gservers&sec2=godmode/servers/manage_recontask&id='.$row["id_rt"].'&disabled=1">' .html_print_image("images/lightbulb.png", true) . '</a>';
+					$data[9] .= '<a href="index.php?sec=gservers&sec2=godmode/servers/manage_recontask&id='.$row["id_rt"].'&disabled=1">' .html_print_image("images/lightbulb.png", true) . '</a>';
 				}
 				else {
-					$data[8] .= '<a href="index.php?sec=gservers&sec2=godmode/servers/manage_recontask&id='.$row["id_rt"].'&disabled=0">' .html_print_image("images/lightbulb_off.png", true) . '</a>';
+					$data[9] .= '<a href="index.php?sec=gservers&sec2=godmode/servers/manage_recontask&id='.$row["id_rt"].'&disabled=0">' .html_print_image("images/lightbulb_off.png", true) . '</a>';
 				}
 			}
 			

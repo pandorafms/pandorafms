@@ -411,111 +411,37 @@ function groupview_monitor_fired_alerts ($group_array, $strict_user = false, $id
 			AND times_fired > 0");
 }
 
-function groupview_get_groups_list($id_user = false, $user_strict = false, $access = 'AR', $force_group_and_tag = true, $returnAllGroup = false) {
-	global $config;
-
-	if ($id_user == false) {
-		$id_user = $config['id_user'];
-	}
-
-	$acltags = users_get_groups($id_user, $access, true, true);
-	$result_list = groupview_get_data ($id_user, $user_strict, $acltags,
-		$returnAllGroup, array(), array(), $access);
-
-	return $result_list;
-}
-
-function groupview_get_data ($id_user = false, $user_strict = false, $acltags, $returnAllGroup = false, $agent_filter = array(), $module_filter = array(), $access = 'AR') {
+function groupview_get_groups_list($id_user = false, $access = 'AR') {
 	global $config;
 	if ($id_user == false) {
 		$id_user = $config['id_user'];
 	}
 
-	$user_groups = array();
-	$user_tags   = array();
+	$user_groups = users_get_groups($id_user, $access, true, false);
 
-	foreach ($acltags as $item) {
-		$user_groups[$item["id_grupo"]] = $item["nombre"];
-	
-		if ($item["tags"] != '') {
-			$tags_group = explode(',', $item["tags"]);
+	$groups_with_privileges = implode(',', array_keys($user_groups));
 
-			foreach ($tags_group as $tag) {
-				$user_tags[$tag] = tags_get_name($tag);
-			}
-		}
-	}
-	
-	$groups_with_privileges = implode(',', array_keys($acltags));
+	//change ALL for 0
+	$user_groups[0] = 0;
 
-	if (!$user_strict)
-		$acltags[0] = 0;
+	$user_groups_ids = implode(',', array_keys($user_groups));
 
-	$user_groups_ids = implode(',', array_keys($acltags));
-	
 	if (!empty($user_groups_ids)) {
-		if (is_metaconsole()) {
-			switch ($config["dbtype"]) {
-				case "mysql":
-					$list_groups = db_get_all_rows_sql("
-						SELECT *
-						FROM tgrupo
-						WHERE id_grupo IN (" . $user_groups_ids . ")
-						AND (
-							id_grupo IN (SELECT id_grupo FROM tmetaconsole_agent WHERE disabled = 0)
-							OR id_grupo IN (SELECT id_group FROM tmetaconsole_agent_secondary_group WHERE id_group IN (" . $user_groups_ids . "))
-						)
-						ORDER BY nombre COLLATE utf8_general_ci ASC");
-					break;
-				case "postgresql":
-					$list_groups = db_get_all_rows_sql("
-						SELECT *
-						FROM tgrupo
-						WHERE id_grupo IN (" . $user_groups_ids . ")
-						AND id_grupo IN (SELECT id_grupo FROM tmetaconsole_agent WHERE disabled = 0)
-						ORDER BY nombre ASC");
-					break;
-				case "oracle":
-					$list_groups = db_get_all_rows_sql("
-						SELECT *
-						FROM tgrupo
-						WHERE id_grupo IN (" . $user_groups_ids . ")
-						AND id_grupo IN (SELECT id_grupo FROM tmetaconsole_agent WHERE disabled = 0)
-						ORDER BY nombre ASC");
-					break;
-			}
-		}
-		else {
-			switch ($config["dbtype"]) {
-				case "mysql":
-					$list_groups = db_get_all_rows_sql("
-						SELECT *
-						FROM tgrupo
-						WHERE id_grupo IN (" . $user_groups_ids . ")
-						AND (
-							id_grupo IN (SELECT id_grupo FROM tagente WHERE disabled = 0)
-							OR id_grupo IN (SELECT id_group FROM tagent_secondary_group WHERE id_group IN (" . $user_groups_ids . "))
-						)
-						ORDER BY nombre COLLATE utf8_general_ci ASC");
-					break;
-				case "postgresql":
-					$list_groups = db_get_all_rows_sql("
-						SELECT *
-						FROM tgrupo
-						WHERE id_grupo IN (" . $user_groups_ids . ")
-						AND id_grupo IN (SELECT id_grupo FROM tagente WHERE disabled = 0)
-						ORDER BY nombre ASC");
-					break;
-				case "oracle":
-					$list_groups = db_get_all_rows_sql("
-						SELECT *
-						FROM tgrupo
-						WHERE id_grupo IN (" . $user_groups_ids . ")
-						AND id_grupo IN (SELECT id_grupo FROM tagente WHERE disabled = 0)
-						ORDER BY nombre ASC");
-					break;
-			}
-		}
+		$table = is_metaconsole() ? 'tmetaconsole_agent' : 'tagente';
+		$table_secondary = is_metaconsole()
+			? 'tmetaconsole_agent_secondary_group'
+			: 'tagent_secondary_group';
+
+		$list_groups = db_get_all_rows_sql("
+			SELECT *
+			FROM tgrupo
+			WHERE id_grupo IN ($user_groups_ids)
+			AND (
+				id_grupo IN (SELECT id_grupo FROM $table WHERE disabled = 0)
+				OR id_grupo IN (SELECT id_group FROM $table_secondary WHERE id_group IN ($user_groups_ids))
+			)
+			ORDER BY nombre COLLATE utf8_general_ci ASC"
+		);
 	}
 
 	//Add the group "All" at first
@@ -527,66 +453,64 @@ function groupview_get_data ($id_user = false, $user_strict = false, $acltags, $
 		$list_groups = array($group_all);
 	}
 
-	if (!$user_strict) {
-		//Takes the parents even without agents, first ids
-		$fathers_id = '';
-		$list_father_groups = array();
-		foreach ($list_groups as $group) {
-			if ($group['parent'] != '') {
-				$grup = $group['parent'];
-				while ($grup != 0) {
-					$recursive_fathers = db_get_row_sql ("SELECT parent FROM tgrupo
-															WHERE id_grupo = " . $grup);
-					$grup = $recursive_fathers['parent'];
-					if (!strpos($fathers_id, $grup)) {
-						$fathers_id .= ',' . $grup;
-					}
-				}
-				if (!strpos($fathers_id, $group['parent'])) {
-					$fathers_id .= ',' . $group['parent'];
+	//Takes the parents even without agents, first ids
+	$fathers_id = '';
+	$list_father_groups = array();
+	foreach ($list_groups as $group) {
+		if ($group['parent'] != '') {
+			$grup = $group['parent'];
+			while ($grup != 0) {
+				$recursive_fathers = db_get_row_sql ("SELECT parent FROM tgrupo
+														WHERE id_grupo = " . $grup);
+				$grup = $recursive_fathers['parent'];
+				if (!strpos($fathers_id, $grup)) {
+					$fathers_id .= ',' . $grup;
 				}
 			}
-		}
-		//Eliminate the first comma
-		$fathers_id = substr($fathers_id, 1);
-		while ($fathers_id{0} == ',') {
-			$fathers_id = substr($fathers_id, 1);
-		}
-		//Takes the parents even without agents, complete groups
-		if ($fathers_id) {
-			$list_father_groups = db_get_all_rows_sql("
-						SELECT *
-						FROM tgrupo
-						WHERE id_grupo IN (" . $fathers_id . ")
-						AND id_grupo IN (" . $groups_with_privileges . ")
-						ORDER BY nombre COLLATE utf8_general_ci ASC");
-			if (!empty($list_father_groups)) {
-				//Merges the arrays and eliminates the duplicates groups
-				$list_groups = array_merge($list_groups, $list_father_groups);
+			if (!strpos($fathers_id, $group['parent'])) {
+				$fathers_id .= ',' . $group['parent'];
 			}
 		}
-		$list_groups = groupview_array_unique_multidim($list_groups, 'id_grupo');
-		//Order groups (Father-children)
-		$ordered_groups = groupview_order_groups_for_parents($list_groups);
-		$ordered_ids = array();
-		$ordered_ids = groupview_order_group_ids($ordered_groups, $ordered_ids);
-		$final_list = array();
-		array_push($final_list, $group_all);
-
-		foreach ($ordered_ids as $key) {
-			if ($key == 'All') {
-				continue;
-			}
-			$complete_group = db_get_row_sql("
-						SELECT *
-						FROM tgrupo
-						WHERE nombre = '" . $key . "'");
-			array_push($final_list, $complete_group);
-		}
-
-		$list_groups = $final_list;
 	}
-	
+	//Eliminate the first comma
+	$fathers_id = substr($fathers_id, 1);
+	while ($fathers_id{0} == ',') {
+		$fathers_id = substr($fathers_id, 1);
+	}
+	//Takes the parents even without agents, complete groups
+	if ($fathers_id) {
+		$list_father_groups = db_get_all_rows_sql("
+					SELECT *
+					FROM tgrupo
+					WHERE id_grupo IN (" . $fathers_id . ")
+					AND id_grupo IN (" . $groups_with_privileges . ")
+					ORDER BY nombre COLLATE utf8_general_ci ASC");
+		if (!empty($list_father_groups)) {
+			//Merges the arrays and eliminates the duplicates groups
+			$list_groups = array_merge($list_groups, $list_father_groups);
+		}
+	}
+	$list_groups = groupview_array_unique_multidim($list_groups, 'id_grupo');
+	//Order groups (Father-children)
+	$ordered_groups = groupview_order_groups_for_parents($list_groups);
+	$ordered_ids = array();
+	$ordered_ids = groupview_order_group_ids($ordered_groups, $ordered_ids);
+	$final_list = array();
+	array_push($final_list, $group_all);
+
+	foreach ($ordered_ids as $key) {
+		if ($key == 'All') {
+			continue;
+		}
+		$complete_group = db_get_row_sql("
+					SELECT *
+					FROM tgrupo
+					WHERE nombre = '" . $key . "'");
+		array_push($final_list, $complete_group);
+	}
+
+	$list_groups = $final_list;
+
 	$list = array();
 	foreach ($list_groups as $group) {
 		$list[$group['id_grupo']]['_name_'] = $group['nombre'];

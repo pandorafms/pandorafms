@@ -1409,13 +1409,13 @@ table.databox {
     border-bottom-right-radius: 4px;
 }
 
-.databox.data>thead>tr>th:first-child {
+.databox.data>thead>tr:first-child>th:first-child {
     border-left: 1px solid #e2e2e2;
     border-top-left-radius: 4px;
     border-color: #373737;
 }
 
-.databox.data>thead>tr>th:last-child {
+.databox.data>thead>tr:first-child>th:last-child {
     border-right: 1px solid #e2e2e2;
     border-top-right-radius: 4px;
     border-color: #373737;

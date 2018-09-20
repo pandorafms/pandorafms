@@ -3726,10 +3726,9 @@ function graph_custom_sql_graph ($id, $width, $height,
 			}
 		}
 	}
-	
-	$flash_charts = $config['flash_charts'];
-		
-	if ($only_image) {
+
+	$flash_charts = true;
+	if ($ttl == 2) {
 		$flash_charts = false;
 	}
 	
@@ -3759,9 +3758,9 @@ function graph_custom_sql_graph ($id, $width, $height,
 				$ttl,
 				$homeurl,
 				"white",
+				true,
 				false,
-				false,
-				"c1c1c1"
+				"#c1c1c1"
 			);
 			break;
 		case 'sql_graph_hbar': // horizontal bar
@@ -3783,7 +3782,7 @@ function graph_custom_sql_graph ($id, $width, $height,
 				$ttl,
 				$homeurl,
 				'white',
-				'c1c1c1'
+				'#c1c1c1'
 			);
 			break;
 		case 'sql_graph_pie': // Pie

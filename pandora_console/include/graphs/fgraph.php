@@ -187,35 +187,27 @@ function vbar_graph(
 			$tick_color);
 	}
 	else {
-		$new_chart_data = array();
-		foreach ($chart_data as $key => $value) {
-			if(strlen($key) > 20 && strpos($key, ' - ') !== false){
-				$key_temp = explode(" - ",$key);
-				$key_temp[0] = $key_temp[0]."   \n";
-				$key_temp[1]= '...'.substr($key_temp[1],-15);
-				$key2 = $key_temp[0].$key_temp[1];
-				io_safe_output($key2);
-				$new_chart_data[$key2]['g'] = $chart_data[$key]['g'];
-			} else {
-				$new_chart_data[$key] = $value;
-			}
-		}
-
-		$graph = array();
-		$graph['data'] = $new_chart_data;
-		$graph['width'] = $width;
-		$graph['height'] = $height;
-		$graph['color'] = $color;
-		$graph['legend'] = $legend;
-		$graph['xaxisname'] = $xaxisname;
-		$graph['yaxisname'] = $yaxisname;
-		$graph['water_mark'] = $water_mark_file;
-		$graph['font'] = $font;
-		$graph['font_size'] = $font_size;
-
-		$id_graph = serialize_in_temp($graph, null, $ttl);
-
-		return "<img src='" . $homeurl . "include/graphs/functions_pchart.php?static_graph=1&graph_type=vbar&ttl=".$ttl."&id_graph=".$id_graph."'>";
+		$params['flash_chart'] = true; 
+		$params['chart_data'] = $chart_data;
+		$params['width'] = $width;
+		$params['height'] = $height;
+		$params['color'] = $color;
+		$params['legend'] = $legend;
+		$params['long_index'] = $long_index;
+		$params['no_data_image'] = $no_data_image;
+		$params['xaxisname'] = $xaxisname;
+		$params['yaxisname'] = $yaxisname;
+		$params['water_mark'] = $water_mark;
+		$params['font'] = $font;
+		$params['font_size'] = $font_size;
+		$params['unit'] = $unit;
+		$params['ttl'] = 2;
+		$params['homeurl'] = $homeurl;
+		$params['backgroundColor'] = $backgroundColor;
+		$params['from_ux'] = $from_ux;
+		$params['from_wux'] = $from_wux;
+		$params['tick_color'] = $tick_color;
+		return generator_chart_to_pdf('vbar', $params);
 	}
 }
 
@@ -312,37 +304,27 @@ function hbar_graph($flash_chart, $chart_data, $width, $height,
 			$chart_data, $width, $height, $water_mark_url, $font, $font_size, $backgroundColor, $tick_color, $val_min, $val_max);
 	}
 	else {
-		foreach ($chart_data as $key => $value) {
-			$str_key = io_safe_output($key);
-			if(strlen($str_key) > 40){
-					if(strpos($str_key, ' - ') != -1){
-						$key_temp = explode(" - ",$str_key);
-						$key_temp[0] = $key_temp[0]."   <br>";
-						$key_temp[1]= '...'.substr($key_temp[1],-20);
-						$key2 = $key_temp[0].$key_temp[1];
-					}
-				$chart_data[$key2]['g'] = $chart_data[$key]['g'];
-				unset($chart_data[$key]);
-			}
-		}
-
-		$graph = array();
-		$graph['data'] = $chart_data;
-		$graph['width'] = $width;
-		$graph['height'] = $height;
-		$graph['color'] = $color;
-		$graph['legend'] = $legend;
-		$graph['xaxisname'] = $xaxisname;
-		$graph['yaxisname'] = $yaxisname;
-		$graph['force_height'] = $force_height;
-		$graph['water_mark'] = $water_mark_file;
-		$graph['font'] = $font;
-		$graph['font_size'] = $font_size;
-		$graph['force_steps'] = $force_steps;
-
-		$id_graph = serialize_in_temp($graph, null, $ttl);
-
-		return "<img src='" . $homeurl . "include/graphs/functions_pchart.php?static_graph=1&graph_type=hbar&ttl=".$ttl."&id_graph=".$id_graph."'>";
+		$params['flash_chart'] = true; 
+		$params['chart_data'] = $chart_data;
+		$params['width'] = $width;
+		$params['height'] = $height;
+		$params['color'] = $color;
+		$params['legend'] = $legend;
+		$params['long_index'] = $long_index;
+		$params['no_data_image'] = $no_data_image;
+		$params['xaxisname'] = $xaxisname;
+		$params['yaxisname'] = $yaxisname;
+		$params['water_mark'] = $water_mark;
+		$params['font'] = $font;
+		$params['font_size'] = $font_size;
+		$params['unit'] = $unit;
+		$params['ttl'] = 2;
+		$params['homeurl'] = $homeurl;
+		$params['backgroundColor'] = $backgroundColor;
+		$params['tick_color'] = $tick_color;
+		$params['val_min'] = $val_min;
+		$params['val_max'] = $val_max;
+		return generator_chart_to_pdf('hbar', $params);
 	}
 }
 

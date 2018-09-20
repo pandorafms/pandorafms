@@ -3223,10 +3223,6 @@ function reporting_alert_report_module($report, $content) {
 	// Alerts over $id_agent_module
 	$alerts = alerts_get_effective_alert_actions($content['id_agent_module']);
 
-	if ($alerts === false){
-		return;
-	}
-
 	$ntemplates = 0;
 	
 	foreach ($alerts as $template => $actions) {

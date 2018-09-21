@@ -268,7 +268,7 @@ class Tree {
 
 	protected function getGroupSearchFilter() {
 		if (empty($this->filter['searchGroup'])) return "";
-		return " AND tg.nombre LIKE '%" . $this->filter['searchGroup'] . "%'";
+		return " AND tg.nombre LIKE '%%" . $this->filter['searchGroup'] . "%%'";
 	}
 
 	static function cmpSortNames($a, $b) {

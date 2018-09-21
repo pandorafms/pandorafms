@@ -478,20 +478,20 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 			$form_items['background_row_2']['items'] = array('background', 'datos');
 			$form_items['background_row_2']['html'] = '<td align="left">' .
 				__('Original Size') . '</td>
-				<td align="left">' . html_print_button(__('Apply'), 'original_false', false, "setAspectRatioBackground('original')", 'class="sub"', true) . '</td>';
+				<td align="left">' . html_print_button(__('Apply'), 'original_false', false, "setAspectRatioBackground('original')", 'class="sub vs_button_ghost"', true) . '</td>';
 			
 			
 			$form_items['background_row_3'] = array();
 			$form_items['background_row_3']['items'] = array('background', 'datos');
 			$form_items['background_row_3']['html'] = '<td align="left">' .
 				__('Aspect ratio') . '</td>
-				<td align="left">' . html_print_button(__('Width proportional'), 'original_false', false, "setAspectRatioBackground('width')", 'class="sub"', true) . '</td>';
+				<td align="left">' . html_print_button(__('Proportional Width'), 'original_false', false, "setAspectRatioBackground('width')", 'class="sub vs_button_ghost"', true) . '</td>';
 			
 			
 			$form_items['background_row_4'] = array();
 			$form_items['background_row_4']['items'] = array('background', 'datos');
 			$form_items['background_row_4']['html'] = '<td align="left"></td>
-				<td align="left">' . html_print_button(__('Height proportional'), 'original_false', false, "setAspectRatioBackground('height')", 'class="sub"', true) . '</td>';
+				<td align="left">' . html_print_button(__('Height proportional'), 'original_false', false, "setAspectRatioBackground('height')", 'class="sub vs_button_ghost"', true) . '</td>';
 			
 			
 			$form_items['percentile_bar_row_1'] = array();

@@ -2025,11 +2025,17 @@ function agents_get_agentmodule_group ($id_module) {
  * This function gets the group for a given agent
  *
  * @param int The agent id
+ * @param bool True to use the metaconsole tables
  *
  * @return int The group id
  */
-function agents_get_agent_group ($id_agent) {
-	return (int) db_get_value ('id_grupo', "tagente", 'id_agente', (int) $id_agent);
+function agents_get_agent_group ($id_agent, $force_meta = false) {
+	return (int) db_get_value (
+		'id_grupo',
+		$force_meta ? "tmetaconsole_agent" : "tagente",
+		'id_agente',
+		(int) $id_agent
+	);
 }
 
 /**
@@ -2680,20 +2686,21 @@ function agents_generate_name ($alias, $address = '') {
  *
  * @param int $id_agent
  * @param int $id_group. By default it will search for it in dtabase
+ * @param bool True to use the metaconsole tables
  *
  * @return Array with the main and secondary groups
  */
-function agents_get_all_groups_agent ($id_agent, $group = false) {
+function agents_get_all_groups_agent ($id_agent, $group = false, $force_meta = false) {
 	// Cache the agent id groups
 	static $cache = array();
 	if (isset($cache[$id_agent])) return $cache[$id_agent];
 	// Get the group if is not defined
-	if ($group === false) $group = agents_get_agent_group($id_agent);
+	if ($group === false) $group = agents_get_agent_group($id_agent, $force_meta);
 
 	// If cannot retrieve the group, it means that agent does not exist
 	if (!$group) return array();
 
-	$secondary_groups = enterprise_hook('agents_get_secondary_groups', array($id_agent));
+	$secondary_groups = enterprise_hook('agents_get_secondary_groups', array($id_agent, $force_meta));
 
 	// Return only an array with the group in open version
 	if ($secondary_groups == ENTERPRISE_NOT_HOOK) return array($group);

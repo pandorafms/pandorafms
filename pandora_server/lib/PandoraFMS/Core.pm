@@ -1914,7 +1914,7 @@ sub pandora_planned_downtime_unset_quiet_elements($$$) {
 ########################################################################
 =head2 C<< pandora_planned_downtime_quiet_once_stop (I<$pa_config>, I<$dbh>) >> 
 
-Start the planned downtime, the once type. 
+Stop the planned downtime, the once type. 
 
 =cut
 ########################################################################
@@ -1922,7 +1922,7 @@ sub pandora_planned_downtime_quiet_once_stop($$) {
 	my ($pa_config, $dbh) = @_;
 	my $utimestamp = time();
 	
-	# Stop pending downtimes
+	# Stop executed downtimes
 	my @downtimes = get_db_rows($dbh, 'SELECT *
 		FROM tplanned_downtime
 		WHERE type_downtime = ?
@@ -2023,8 +2023,8 @@ sub pandora_planned_downtime_monthly_start($$) {
 			AND type_execution <> ' . $RDBMS_QUOTE_STRING . 'once' . $RDBMS_QUOTE_STRING . '
 			AND ((periodically_day_from = ? AND periodically_time_from <= ?) OR (periodically_day_from < ?))
 			AND ((periodically_day_to = ? AND periodically_time_to >= ?) OR (periodically_day_to > ?))',
-			'monthly', 'number_day_month',
-			$time, $number_day_month,
+			'monthly',
+			$number_day_month, $time, $number_day_month,
 			$number_day_month, $time, $number_day_month);
 	
 	foreach my $downtime (@downtimes) {	
@@ -2061,7 +2061,7 @@ sub pandora_planned_downtime_monthly_start($$) {
 ########################################################################
 =head2 C<< pandora_planned_downtime_monthly_stop (I<$pa_config>, I<$dbh>) >> 
 
-Start the planned downtime, the montly type. 
+Stop the planned downtime, the monthly type. 
 
 =cut
 ########################################################################
@@ -2092,7 +2092,7 @@ sub pandora_planned_downtime_monthly_stop($$) {
 		$number_day_month = 31;
 	}
 	
-	# Start pending downtimes
+	# Stop executed downtimes
 	my @downtimes = get_db_rows($dbh, 'SELECT *
 		FROM tplanned_downtime
 		WHERE type_periodicity = ?
@@ -2138,7 +2138,7 @@ sub pandora_planned_downtime_monthly_stop($$) {
 ########################################################################
 =head2 C<< pandora_planned_downtime_weekly_start (I<$pa_config>, I<$dbh>) >> 
 
-Start the planned downtime, the montly type. 
+Start the planned downtime, the weekly type. 
 
 =cut
 ########################################################################
@@ -2247,7 +2247,7 @@ sub pandora_planned_downtime_weekly_start($$) {
 ########################################################################
 =head2 C<< pandora_planned_downtime_weekly_stop (I<$pa_config>, I<$dbh>) >> 
 
-Stop the planned downtime, the montly type. 
+Stop the planned downtime, the weekly type. 
 
 =cut
 ########################################################################
@@ -2263,7 +2263,7 @@ sub pandora_planned_downtime_weekly_stop($$) {
 	my $found = 0;
 	my $stop_downtime = 0;
 	
-	# Start pending downtimes
+	# Stop executed downtimes
 	my @downtimes = get_db_rows($dbh, 'SELECT *
 		FROM tplanned_downtime
 		WHERE type_periodicity = ?

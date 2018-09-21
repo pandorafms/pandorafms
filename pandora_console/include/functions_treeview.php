@@ -522,7 +522,7 @@ function treeview_printTable($id_agente, $server_data = array(), $no_head = fals
 		$hashdata = $user.$pwd_deserialiced['auth_token'];
 		
 		$hashdata = md5($hashdata);
-		$url = $server_data["server_url"] . "/index.php?" .
+		$url = "//" . $server_data["server_url"] . "index.php?" .
 				"sec=estado&" .
 				"sec2=operation/agentes/ver_agente&" .
 				"id_agente=" . $agent["id_agente"] . "&" .

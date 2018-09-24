@@ -1869,7 +1869,7 @@ Pandora_Windows_Service::pandora_run_broker (string config) {
 
 	server_addr = conf->getValue ("server_ip");
 
-	if (this->broker_modules != NULL) {
+	if (this->broker_modules != NULL && !(conf->getValue ("standby") == "1" && !getPandoraDebug())) {
 		this->broker_modules->goFirst ();
 	
 		while (! this->broker_modules->isLast ()) {
@@ -1937,7 +1937,7 @@ Pandora_Windows_Service::pandora_run_broker (string config) {
 		}
 	}
 
-	if (data_flag == 1 || this->timestamp + this->interval_sec <= this->run_time) {
+	if ((data_flag == 1 || this->timestamp + this->interval_sec <= this->run_time) && !(conf->getValue ("standby") == "1" && !getPandoraDebug())) {
 		
 		// Send the XML
 		if (!server_addr.empty ()) {
@@ -1997,7 +1997,7 @@ Pandora_Windows_Service::pandora_run (int forced_run) {
 
 	execution_number++;
 
-	if (this->modules != NULL) {
+	if (this->modules != NULL && !(conf->getValue ("standby") == "1" && !getPandoraDebug())) {
 		this->modules->goFirst ();
 	
 		while (! this->modules->isLast ()) {
@@ -2057,7 +2057,7 @@ Pandora_Windows_Service::pandora_run (int forced_run) {
 		}
 	}
 
-	if (forced_run == 1 || data_flag == 1 || this->timestamp + this->interval_sec <= this->run_time) {
+	if ((forced_run == 1 || data_flag == 1 || this->timestamp + this->interval_sec <= this->run_time) && !(conf->getValue ("standby") == "1" && !getPandoraDebug())) {
 				
 		// Send the XML
 		if (!server_addr.empty ()) {

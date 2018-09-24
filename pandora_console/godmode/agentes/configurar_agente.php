@@ -760,7 +760,7 @@ if ($update_agent) { // if modified some agent paramenter
 	$quiet = (int) get_parameter("quiet", 0);
 	$cps = (int) get_parameter("cps", 0);
 	
-	$old_interval = db_get_value('intervalo', 'tagente', 'id_agente', $id_agente);
+	$old_values = db_get_row('tagente', 'id_agente', $id_agente);
 	$fields = db_get_all_fields_in_table('tagent_custom_fields');
 	
 	if ($fields === false) $fields = array();
@@ -860,11 +860,21 @@ if ($update_agent) { // if modified some agent paramenter
 			// Update the agent from the metaconsole cache
 			enterprise_include_once('include/functions_agents.php');
 			enterprise_hook ('agent_update_from_cache', array($id_agente, $values,$server_name));
-			
-			if ($old_interval != $intervalo) {
-				enterprise_hook('config_agents_update_config_interval', array($id_agente, $intervalo));
+
+			# Update the configuration files
+			if ($old_values['intervalo'] != $intervalo) {
+				enterprise_hook(
+					'config_agents_update_config_token',
+					array($id_agente, 'interval', $intervalo)
+				);
 			}
-			
+			if ($old_values['disabled'] != $disabled) {
+				enterprise_hook(
+					'config_agents_update_config_token',
+					array($id_agente, 'standby', $disabled ? "1" : "0")
+				);
+			}
+
 			if($tpolicy_group_old){
 				foreach ($tpolicy_group_old as $key => $value) {
 					$tpolicy_agents_old= db_get_sql("SELECT * FROM tpolicy_agents 

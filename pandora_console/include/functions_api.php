@@ -1175,11 +1175,14 @@ function api_set_update_agent($id_agent, $thrash2, $other, $thrash3) {
 			return;
 		}
 	}
+	$values_old = db_get_row_filter('tagente',
+		array('id_agente' => $id_agent),
+		array('id_grupo', 'disabled')
+	);
+	$tpolicy_group_old = db_get_all_rows_sql("SELECT id_policy FROM tpolicy_groups
+			WHERE id_group = ".$values_old['id_grupo']);
 	
-	$group_old = db_get_sql("SELECT id_grupo FROM tagente WHERE id_agente =" .$id_agent);
-	$tpolicy_group_old = db_get_all_rows_sql("SELECT id_policy FROM tpolicy_groups 
-			WHERE id_group = ".$group_old);
-	
+
 	$return = db_process_sql_update('tagente', 
 		array('alias' => $alias,
 			'direccion' => $ip,
@@ -1200,8 +1203,16 @@ function api_set_update_agent($id_agent, $thrash2, $other, $thrash3) {
 		// register ip for this agent in 'taddress'
 		agents_add_address ($id_agent, $ip);
 	}
-	
+
 	if($return){
+		// Update config file
+		if (isset($disabled) && $values_old['disabled'] != $disabled) {
+			enterprise_hook(
+				'config_agents_update_config_token',
+				array($id_agent, 'standby', $disabled)
+			);
+		}
+
 		if($tpolicy_group_old){
 			foreach ($tpolicy_group_old as $key => $value) {
 				$tpolicy_agents_old= db_get_sql("SELECT * FROM tpolicy_agents 

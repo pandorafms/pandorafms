@@ -433,7 +433,7 @@ $table->data[1][1] .= __('Autodisable mode').' '.html_print_radio_button_extende
 $table->data[2][0] = __('Status');
 $table->data[2][1] = __('No change').' '.html_print_radio_button_extended ("disabled", -1, '', $disabled, false, '', 'style="margin-right: 40px;"', true);
 $table->data[2][1] .= __('Disabled') . ' ' .
-	ui_print_help_tip(__('If the agent has remote configuration activated, it will put it on standby mode too.'), true) . ' ' .
+	ui_print_help_tip(__('If the remote configuration is enabled, it will also go into standby mode when disabling it.'), true) . ' ' .
 	html_print_radio_button_extended ("disabled", 1, '', $disabled, false, '', 'style="margin-right: 40px;"', true);
 $table->data[2][1] .= __('Active').' '.html_print_radio_button_extended ("disabled", 0, '', $disabled, false, '', 'style="margin-right: 40px;"', true);
 

@@ -207,24 +207,27 @@ function groups_combine_acl($acl_group_a, $acl_group_b){
 		"vconsole_management" => 1,
 		"tags" => 1,
 	);
+	
+	if ($acl_group_a['tags']) users_get_explode_tags($acl_group_a);
+	if ($acl_group_b['tags']) users_get_explode_tags($acl_group_b);
+
+	if (is_array($acl_group_a['tags']) && is_array($acl_group_b['tags'])) {
+		foreach ($acl_group_a['tags'] as $key => $value) {
+			$acl_group_b['tags'][$key] = implode(
+				',',
+				array_merge(
+					$value,
+					$acl_group_b['tags'][$key]
+				)
+			);
+		}
+	} else if (is_array($acl_group_a['tags'])) {
+		$acl_group_b['tags'] = $acl_group_a['tags'];
+	}
 
 	foreach ($acl_list as $acl => $aux) {
 
-		if($acl == "tags") {
-			// Mix tags
-			
-			if (isset($acl_group_a[$acl]) && ($acl_group_a[$acl] != "")) {
-				if (isset($acl_group_b[$acl]) && ($acl_group_b[$acl] != "")) {
-					if ($acl_group_b[$acl] != ($acl_group_a[$acl])) {
-						$acl_group_b[$acl] = $acl_group_a[$acl] . "," . $acl_group_b[$acl];
-					}
-				}
-				else {
-					$acl_group_b[$acl] = $acl_group_a[$acl];
-				}
-			}
-			continue;
-		}
+		if($acl == "tags") continue;
 		// propagate ACL
 		$acl_group_b[$acl] = $acl_group_a[$acl] || $acl_group_b[$acl];
 	}
@@ -1067,6 +1070,19 @@ function users_get_strict_mode_groups($id_user, $return_group_all) {
 	}
 	
 	return $return_user_groups;
+}
+
+function users_get_explode_tags(&$group) {
+	if (is_array($group['tags'])) return;
+
+	$aux = explode(',', $group['tags']);
+	$group['tags'] = array();
+	$group['tags']['agent_view'] = ($group['agent_view']) ? $aux : array();
+	$group['tags']['agent_edit'] = ($group['agent_edit']) ? $aux : array();
+	$group['tags']['agent_disable'] = ($group['agent_disable']) ? $aux : array();
+	$group['tags']['event_view'] = ($group['event_view']) ? $aux : array();
+	$group['tags']['event_edit'] = ($group['event_edit']) ? $aux : array();
+	$group['tags']['event_management'] = ($group['event_management']) ? $aux : array();
 }
 
 ?>

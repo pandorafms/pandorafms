@@ -723,47 +723,26 @@ function tags_get_acl_tags_module_condition($acltags, $modules_table = '') {
 	$condition = '';
 	$group_conditions = array();
 
+	$has_secondary = enterprise_hook('agents_is_using_secondary_groups');
 	// The acltags array contains the groups with the acl propagation applied
 	// after the changes done into the 'tags_get_user_groups_and_tags' function.
 	foreach ($acltags as $group_id => $group_tags) {
 		$tag_join = '';
 		if (!empty($group_tags)) {
-			$tag_join = sprintf('INNER JOIN ttag_module ttmc
-									ON tamc.id_agente_modulo = ttmc.id_agente_modulo
-										AND ttmc.id_tag IN (%s)',
-								is_array($group_tags) ? implode(',', $group_tags) : $group_tags);
+			$tag_join = sprintf('AND ttag_module.id_tag IN (%s)',is_array($group_tags) ? implode(',', $group_tags) : $group_tags);
+			if($has_secondary){
+				$agent_condition = sprintf('((tagente.id_grupo = %d OR tasg.id_group = %d) %s)',$group_id,$group_id,$tag_join);
+			} else {
+				$agent_condition = sprintf('((tagente.id_grupo = %d %s)',$group_id,$tag_join);
+			}
+			$group_conditions[] = $agent_condition;
 		}
-		// FIXME: Not properly way to increse performance
-		if(enterprise_hook('agents_is_using_secondary_groups')){
-			$agent_condition = sprintf('SELECT tamc.id_agente_modulo
-									FROM tagente_modulo tamc
-									%s
-									INNER JOIN tagente tac
-										ON tamc.id_agente = tac.id_agente
-										LEFT JOIN tagent_secondary_group tasg
-											ON tasg.id_agent = tac.id_agente
-												WHERE (tac.id_grupo = %d OR tasg.id_group = %d)',
-									$tag_join, $group_id, $group_id);
-		}
-		else{
-			$agent_condition = sprintf('SELECT tamc.id_agente_modulo
-									FROM tagente_modulo tamc
-									%s
-									INNER JOIN tagente tac
-										ON tamc.id_agente = tac.id_agente
-										AND tac.id_grupo = %d',
-									$tag_join, $group_id);
-		}
-
-		$sql_condition = sprintf('(%sid_agente_modulo IN (%s))', $modules_table, $agent_condition);
-
-		$group_conditions[] = $sql_condition;
-
-		$i++;
+		
 	}
 
-	if (!empty($group_conditions))
+	if (!empty($group_conditions)) {
 		$condition = implode(' OR ', $group_conditions);
+	}
 	$condition = !empty($condition) ? "($condition)" : '';
 	
 	return $condition;
@@ -2446,7 +2425,7 @@ function tags_get_user_groups_and_tags ($id_user = false, $access = 'AR', $stric
 
 	$return = array();
 	foreach ($acls as $acl) {
-		$return[$acl["id_grupo"]] = $acl["tags"];
+		$return[$acl["id_grupo"]] = $acl["tags"][get_acl_column($access)];
 	}
 
 	return $return;

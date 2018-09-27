@@ -451,7 +451,7 @@ $where = sprintf("delete_pending = 0 AND id_agente = %s", $id_agente);
 $search_string_entities = io_safe_input($search_string);
 
 $basic_where = sprintf("(nombre LIKE '%%%s%%' OR nombre LIKE '%%%s%%' OR descripcion LIKE '%%%s%%' OR descripcion LIKE '%%%s%%') AND", $search_string, $search_string_entities, $search_string, $search_string_entities);
-
+// TODO revision tag
 $where_tags = tags_get_acl_tags($config['id_user'], 0, 'AR', 'module_condition', 'AND', 'tagente_modulo');
 
 $paginate_module = false;

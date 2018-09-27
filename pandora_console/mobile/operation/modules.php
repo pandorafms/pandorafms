@@ -302,6 +302,7 @@ class Modules {
 		
 		
 		// Part SQL for the Tag
+		// TODO revision tag
 		$sql_conditions_tags = tags_get_acl_tags($user->getIdUser(),
 			$user->getIdGroups($this->acl), $this->acl, 'module_condition', 'AND', 'tagente_modulo');
 		

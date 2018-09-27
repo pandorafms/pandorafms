@@ -30,7 +30,7 @@ if (is_ajax()) {
 		require_once ('include/functions_tags.php');
 
 		$limit = (int) get_parameter("limit", 5);
-
+		// TODO revision tag
 		$tags_condition = tags_get_acl_tags($config['id_user'], 0, 'ER', 'event_condition', 'AND');
 		$filter = "estado<>1 $tags_condition";
 

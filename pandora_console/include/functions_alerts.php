@@ -1814,6 +1814,7 @@ function get_group_alerts($id_group, $filter = '', $options = false,
 			$groups = users_get_groups($config["id_user"]);
 
 			if ($idGroup !== 0) {
+				// TODO revision tag
 				$where_tags = tags_get_acl_tags($config['id_user'], $idGroup, 'AR', 'module_condition', 'AND', 'tagente_modulo', true, array(), true); 
 			} else {
 				$where_tags = tags_get_acl_tags($config['id_user'], array_keys($groups), 'AR', 'module_condition', 'AND', 'tagente_modulo', true, array(), true); 

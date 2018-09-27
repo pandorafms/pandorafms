@@ -551,6 +551,7 @@ if ($list_modules) {
 	$groups = users_get_groups($config["id_user"], $access);
 
 	if($cluster_list != 1){
+		// TODO revision tag
 		$tags_sql = tags_get_acl_tags($config['id_user'],
 			array_keys($groups), $access, 'module_condition', 'AND',
 			'tagente_modulo', false, array(), true);

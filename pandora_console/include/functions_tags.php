@@ -690,7 +690,7 @@ function tags_get_acl_tags($id_user, $id_group, $access = 'AR',
 		case 'module_condition':
 			// Return the condition of the tags for tagente_modulo table
 			
-			$condition = tags_get_acl_tags_module_condition($acltags,
+			$condition = tags_get_acl_tags_module_condition_old($acltags,
 				$query_table);
 			if (!empty($condition)) {
 				return " $query_prefix " . $condition;
@@ -757,68 +757,54 @@ function tags_get_acl_tags_module_condition($acltags, $modules_table = '') {
  * @return string SQL condition for tagente_module
  */
 function tags_get_acl_tags_module_condition_old($acltags, $modules_table = '') {
-	if (!empty($modules_table)) {
+	if (!empty($modules_table))
 		$modules_table .= '.';
-	}
-	
+
 	$condition = '';
-	
-	// Fix: Wrap SQL expression with "()" to avoid bad SQL sintax that makes Pandora retrieve all modules without taking care of id_agent => id_agent = X AND (sql_tag_expression)   
-	$i = 0;
+	$group_conditions = array();
+
+	// The acltags array contains the groups with the acl propagation applied
+	// after the changes done into the 'tags_get_user_groups_and_tags' function.
 	foreach ($acltags as $group_id => $group_tags) {
-		if ($condition != '') {
-			$condition .= ' OR ';
+		$tag_join = '';
+		if (!empty($group_tags)) {
+			$tag_join = sprintf('INNER JOIN ttag_module ttmc
+									ON tamc.id_agente_modulo = ttmc.id_agente_modulo
+										AND ttmc.id_tag IN (%s)',
+								is_array($group_tags) ? implode(',', $group_tags) : $group_tags);
 		}
-		
-		// Fix: Wrap SQL expression with "()" to avoid bad SQL sintax that makes Pandora retrieve all modules without taking care of id_agent => id_agent = X AND (sql_tag_expression) 
-		if ($i == 0)
-			$condition .= ' ( ' . "\n";
-		
-		// Group condition (The module belongs to an agent of the group X)
-		// Juanma (08/05/2014) Fix: Now group and tag is checked at the same time, before only tag was checked due to a bad condition
-		if (!array_key_exists(0, $acltags)) {
-			// Juanma (08/05/2014) Fix: get all groups recursively (Acl proc func!)
-			$group_condition = sprintf('%sid_agente IN (SELECT id_agente FROM tagente WHERE id_grupo IN (%s))', $modules_table, implode(',', array_values(groups_get_id_recursive($group_id))));
+		// FIXME: Not properly way to increse performance
+		if(enterprise_hook('agents_is_using_secondary_groups')){
+			$agent_condition = sprintf('SELECT tamc.id_agente_modulo
+									FROM tagente_modulo tamc
+									%s
+									INNER JOIN tagente tac
+										ON tamc.id_agente = tac.id_agente
+										LEFT JOIN tagent_secondary_group tasg
+											ON tasg.id_agent = tac.id_agente
+												WHERE (tac.id_grupo = %d OR tasg.id_group = %d)',
+									$tag_join, $group_id, $group_id);
 		}
-		else {
-			//Avoid the user profiles with all group access.
-			$group_condition = " 1 = 1 ";
+		else{
+			$agent_condition = sprintf('SELECT tamc.id_agente_modulo
+									FROM tagente_modulo tamc
+									%s
+									INNER JOIN tagente tac
+										ON tamc.id_agente = tac.id_agente
+										AND tac.id_grupo = %d',
+									$tag_join, $group_id);
 		}
-		
-		//When the acl is only group without tags
-		if (empty($group_tags)) {
-			$condition .= "($group_condition)\n";
-		}
-		else {
-			if (is_array($group_tags)) {
-				$group_tags_query = implode(',',$group_tags);
-			} else {
-				$group_tags_query = $group_tags;
-			}
-			// Tags condition (The module has at least one of the restricted tags)
-			$tags_condition = sprintf('%sid_agente_modulo IN (SELECT id_agente_modulo FROM ttag_module WHERE id_tag IN (%s))', $modules_table, $group_tags_query);
-			
-			$condition .=
-				"	( \n" .
-				"		$group_condition \n" .
-				"			AND \n" .
-				"		$tags_condition \n" .
-				"	)\n";
-		}
-		
+
+		$sql_condition = sprintf('(%sid_agente_modulo IN (%s))', $modules_table, $agent_condition);
+
+		$group_conditions[] = $sql_condition;
+
 		$i++;
 	}
-	
-	// Fix: Wrap SQL expression with "()" to avoid bad SQL sintax that makes Pandora retrieve all modules without taking care of id_agent => id_agent = X AND (sql_tag_expression) 
-	if (!empty($acltags))
-		$condition .= ' ) ';
-	
-	//Avoid the user profiles with all group access.
-	//if (!empty($condition)) {
-	if (!empty($condition) &&
-		!array_key_exists(0, array_keys($acltags))) {
-		$condition = sprintf("\n((%s) OR %sid_agente NOT IN (SELECT id_agente FROM tagente WHERE id_grupo IN (%s)))", $condition, $modules_table, implode(',',array_keys($acltags)));
-	}
+
+	if (!empty($group_conditions))
+		$condition = implode(' OR ', $group_conditions);
+	$condition = !empty($condition) ? "($condition)" : '';
 	
 	return $condition;
 }
@@ -1042,6 +1028,7 @@ function tags_get_user_tags($id_user = false, $access = 'AR', $return_tag_any = 
 	}
 	
 	// Get the tags of the required access flag for each group
+	// TODO revision tag
 	$tags = tags_get_acl_tags($id_user, 0, $access, 'data');
 	// If there are wrong parameters or fail ACL check, return false
 	if ($tags_user === ERR_WRONG_PARAMETERS || $tags_user === ERR_ACL) {
@@ -1130,6 +1117,7 @@ function tags_get_tags_for_module_search($id_user = false, $access = 'AR') {
 		return false;
 	}
     // Get the tags of the required access flag for each group
+		// TODO revision tag
 	$tags = tags_get_acl_tags($id_user, 0, $access, 'data');
 	// If there are wrong parameters or fail ACL check, return false
 	if ($tags_user === ERR_WRONG_PARAMETERS || $tags_user === ERR_ACL) {
@@ -1213,7 +1201,7 @@ function tags_check_acl($id_user, $id_group, $access, $tags = array(), $flag_id_
 			$id_group[] = $parent['id_grupo'];
 		}
 	}
-	
+	// TODO revision tag
 	$acls = tags_get_acl_tags($id_user, $id_group, $access, 'data');
 	
 	// If there are wrong parameters or fail ACL check, return false
@@ -1319,7 +1307,7 @@ function tags_check_acl_event($id_user, $id_group, $access, $tags = array(),$p =
 	if($id_user === false) {
 		$id_user = $config['id_user'];
 	}
-	
+	// TODO revision tag
 	$acls = tags_get_acl_tags($id_user, $id_group, $access, 'data');
 	
 	// If there are wrong parameters or fail ACL check, return false
@@ -1424,7 +1412,7 @@ function tags_checks_event_acl($id_user, $id_group, $access, $tags = array(), $c
 	if (users_is_admin($id_user)) {
 		return true;
 	}
-	
+	// TODO revision tag
 	$tags_user = tags_get_acl_tags($id_user, $id_group, $access, 'data', '', '', true, $childrens_ids, true);
 	// If there are wrong parameters or fail ACL check, return false
 	if ($tags_user === ERR_WRONG_PARAMETERS || $tags_user === ERR_ACL) {

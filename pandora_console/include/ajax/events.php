@@ -555,7 +555,7 @@ if ($table_events) {
 	
 	// Fix: for tag functionality groups have to be all user_groups (propagate ACL funct!)
 	$groups = users_get_groups($config["id_user"]);
-	
+	// TODO revision tag
 	$tags_condition = tags_get_acl_tags($config['id_user'],
 		array_keys($groups), 'ER', 'event_condition', 'AND');
 	echo '<div id="div_all_events_24h">';

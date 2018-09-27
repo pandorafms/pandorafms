@@ -1240,6 +1240,7 @@ function agents_get_modules ($id_agent = null, $details = false,
 	//$where .= " AND id_policy_module = 0 ";
 	
 	if (tags_has_user_acl_tags($config['id_user'])){
+		// TODO revision tag
 		$where_tags = tags_get_acl_tags($config['id_user'], $id_groups, 'AR',
 			'module_condition', 'AND', 'tagente_modulo', false, array(),
 			true); 

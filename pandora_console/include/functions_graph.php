@@ -2471,6 +2471,7 @@ function graph_event_module ($width = 300, $height = 200, $id_agent) {
 
 	// Fix: tag filters implemented! for tag functionality groups have to be all user_groups (propagate ACL funct!)
 	$groups = users_get_groups($config["id_user"]);
+	// TODO revision tag
 	$tags_condition = tags_get_acl_tags($config['id_user'], array_keys($groups), 'ER', 'event_condition', 'AND');
 	
 	$data = array ();
@@ -3350,6 +3351,7 @@ function grafico_eventos_grupo ($width = 300, $height = 200, $url = "", $meta = 
 	}
 	
 	// Add tags condition to filter
+	// TODO revision tag
 	$tags_condition = tags_get_acl_tags($config['id_user'], 0, 'ER', 'event_condition', 'AND');
 	
 	//This will give the distinct id_agente, give the id_grupo that goes
@@ -3501,6 +3503,7 @@ function grafico_eventos_total($filter = "", $width = 320, $height = 200, $noWat
 	$filter = str_replace  ( "\\" , "", $filter);
 	
 	// Add tags condition to filter
+	// TODO revision tag
 	$tags_condition = tags_get_acl_tags($config['id_user'], 0, 'ER', 'event_condition', 'AND');
 	$filter .= $tags_condition;
 	

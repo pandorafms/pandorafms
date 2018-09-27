@@ -3554,7 +3554,7 @@ function events_sql_events_grouped_agents($id_agent, $server_id = -1,
 	else {
 		$group_array = array_keys($groups);
 	}
-
+  // TODO revision tag
 	$tags_acls_condition = tags_get_acl_tags($id_user, $group_array, 'ER',
 		'event_condition', 'AND', '', $meta, array(), true); //FORCE CHECK SQL "(TAG = tag1 AND id_grupo = 1)"
 

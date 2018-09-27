@@ -2263,17 +2263,25 @@ function pandoraFlotArea( graph_id, values, legend,
 	}
 
 	$('#overview_' + graph_id).css('display', 'none');
-
+	
 	if (menu) {
 		var parent_height;
 		$('#menu_overview_' + graph_id).click(function() {
 			$('#overview_' + graph_id).toggle();
 		});
 
-		$("#menu_export_csv_"+graph_id)
-			.click(function (event) {
-				event.preventDefault();
+		$("#menu_export_csv_"+graph_id).click(function (e) {
+				e.preventDefault();
 				plot.exportDataCSV();
+				var es_firefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
+					if(es_firefox){
+			   		 $("#dialog").css('visibility', 'visible').dialog();
+					}
+				delete data_base[0].threshold;
+				plot = $.plot($('#' + graph_id), data_base,
+				$.extend(true, {}, options, {
+					legend: { show: true }
+				}));
 		});
 
 		$('#menu_threshold_' + graph_id).click(function() {

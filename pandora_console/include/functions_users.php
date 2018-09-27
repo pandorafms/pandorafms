@@ -207,22 +207,9 @@ function groups_combine_acl($acl_group_a, $acl_group_b){
 		"vconsole_management" => 1,
 		"tags" => 1,
 	);
-	
-	if ($acl_group_a['tags']) users_get_explode_tags($acl_group_a);
-	if ($acl_group_b['tags']) users_get_explode_tags($acl_group_b);
 
-	if (is_array($acl_group_a['tags']) && is_array($acl_group_b['tags'])) {
-		foreach ($acl_group_a['tags'] as $key => $value) {
-			$acl_group_b['tags'][$key] = implode(
-				',',
-				array_merge(
-					$value,
-					$acl_group_b['tags'][$key]
-				)
-			);
-		}
-	} else if (is_array($acl_group_a['tags'])) {
-		$acl_group_b['tags'] = $acl_group_a['tags'];
+	foreach ($acl_group_a['tags'] as $key => $value) {
+		$acl_group_b['tags'][$key] = array_merge($value, $acl_group_b['tags'][$key]);
 	}
 
 	foreach ($acl_list as $acl => $aux) {
@@ -289,6 +276,8 @@ function users_get_groups ($id_user = false, $privilege = "AR", $returnAllGroup 
 
 			foreach ($raw_forest as $g) {
 				// XXX, following code must be remade (TAG)
+				users_get_explode_tags($g);
+				
 				if (!isset($forest_acl[$g["id_grupo"]] )) {
 					$forest_acl[$g["id_grupo"]] = $g;
 				}
@@ -1073,16 +1062,26 @@ function users_get_strict_mode_groups($id_user, $return_group_all) {
 }
 
 function users_get_explode_tags(&$group) {
-	if (is_array($group['tags'])) return;
-
-	$aux = explode(',', $group['tags']);
-	$group['tags'] = array();
-	$group['tags']['agent_view'] = ($group['agent_view']) ? $aux : array();
-	$group['tags']['agent_edit'] = ($group['agent_edit']) ? $aux : array();
-	$group['tags']['agent_disable'] = ($group['agent_disable']) ? $aux : array();
-	$group['tags']['event_view'] = ($group['event_view']) ? $aux : array();
-	$group['tags']['event_edit'] = ($group['event_edit']) ? $aux : array();
-	$group['tags']['event_management'] = ($group['event_management']) ? $aux : array();
+	
+	if (empty($group['tags'])) {
+		$group['tags'] = array();
+		$group['tags']['agent_view'] = array();
+		$group['tags']['agent_edit'] = array();
+		$group['tags']['agent_disable'] = array();
+		$group['tags']['event_view'] = array();
+		$group['tags']['event_edit'] = array();
+		$group['tags']['event_management'] = array();
+	} else {
+		$aux = explode(',', $group['tags']);
+		$group['tags'] = array();
+		$group['tags']['agent_view'] = ($group['agent_view']) ? $aux : array();
+		$group['tags']['agent_edit'] = ($group['agent_edit']) ? $aux : array();
+		$group['tags']['agent_disable'] = ($group['agent_disable']) ? $aux : array();
+		$group['tags']['event_view'] = ($group['event_view']) ? $aux : array();
+		$group['tags']['event_edit'] = ($group['event_edit']) ? $aux : array();
+		$group['tags']['event_management'] = ($group['event_management']) ? $aux : array();
+	}
+	
 }
 
 ?>

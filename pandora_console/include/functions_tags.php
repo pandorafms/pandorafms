@@ -698,6 +698,7 @@ function tags_get_acl_tags($id_user, $id_group, $access = 'AR',
 			break;
 		case 'event_condition':
 			// Return the condition of the tags for tevento table
+			// TODO event tag revision
 			$condition = tags_get_acl_tags_event_condition($acltags, $meta, $force_group_and_tag);
 
 			if (!empty($condition)) {

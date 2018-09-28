@@ -180,6 +180,7 @@ echo '<td style="vertical-align: top; width: 75%; padding-top: 0px;" id="rightco
 $acltags = tags_get_user_groups_and_tags ($config['id_user'], 'ER', $user_strict);
 
 if (!empty($acltags)) {
+	// TODO event tag revision
 	$tags_condition = tags_get_acl_tags_event_condition($acltags, false, $user_strict);
 	
 	if (!empty($tags_condition)) {

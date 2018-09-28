@@ -529,7 +529,7 @@ function module_changed_by_multiple_modules (event, id_module, selected) {
 			jQuery.each (data, function (i, val) {
 				s = js_html_entity_decode(val);
 				$('#agents')
-					.append ($('<option></option>').html (s).attr ("value", val));
+					.append ($('<option></option>').html (s).attr ("value", i));
 				$('#agents').fadeIn ('normal');
 			});
 			

@@ -28,6 +28,11 @@
 				return formattedTime;
 			}
 		},
+		yaxis: {
+			tickFormatter: function (value, axis) {
+				return shortNumber(value);
+			}
+		},
 		series: {
 			lines: {
 				lineWidth: 2,
@@ -156,6 +161,22 @@
 			width: 920,
 			height: 500
 		});
+	}
+
+	function shortNumber (number) {
+		if (Math.round(number) != number) return number;
+		number = Number.parseInt(number);
+		if (Number.isNaN(number)) return number;
+
+		var shorts = ["", "K", "M", "G", "T", "P", "E", "Z", "Y"];
+		var pos = 0;
+
+		while (number >= 1000 || number <= -1000) {
+			pos++;
+			number = number / 1000;
+		}
+
+		return number + " " + shorts[pos];
 	}
 
 	$('#graph').change(function() {

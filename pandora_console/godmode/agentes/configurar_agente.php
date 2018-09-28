@@ -1952,11 +1952,11 @@ switch ($tab) {
 					resizable: true,
 					draggable: true,
 					modal: true,
-					height: 220,
+					height: 240,
 					width: 600,
 					title: 'Changing the module name of a satellite agent',
 					open: function(){
-							$('#dialog').html('<br><img src="images/icono-warning-triangulo.png" style="float:left;margin-left:25px;"><p style="float:right;font-style:nunito;font-size:11pt;margin-right:50px;"><span style="font-weight:bold;font-size:12pt;">Warning</span> <br>The names of the modules of a satellite should not be <br> altered manually. Unless you are absolutely certain of <br> the process, do not alter these names.</p>');
+							$('#dialog').html('<br><table><tr><td><img src="images/icono-warning-triangulo.png" style="float:left;margin-left:25px;"></td><td><p style="float:right;font-style:nunito;font-size:11pt;margin-right:50px;margin-left:40px;"><span style="font-weight:bold;font-size:12pt;">Warning</span> <br>The names of the modules of a satellite should not be altered manually. Unless you are absolutely certain of the process, do not alter these names.</p></td></tr></table>');
 					},
 					buttons: [{
 							text: "Ok",
@@ -1986,11 +1986,11 @@ switch ($tab) {
 						resizable: true,
 						draggable: true,
 						modal: true,
-						height: 280,
-						width: 670,
+						height: 240,
+						width: 650,
 						title: 'Changing snmp module name',
 						open: function(){
-								$('#dialog').html('<br><img src="images/icono-warning-triangulo.png" style="float:left;margin-left:25px;margin-top:30px;"><p style="float:right;font-style:nunito;font-size:11pt;margin-right:50px;"><span style="font-weight:bold;font-size:12pt;">Warning</span> <br> 					If you change the name of this module, various features <br> associated with this module, such as network maps, <br> interface graphs or other network modules, may  no longer <br>  work. If you are not completely sure of the process, please <br> do not change the name of the module.					</p>');
+								$('#dialog').html('<br><table><tr><td><img src="images/icono-warning-triangulo.png" style="float:left;margin-left:25px;margin-top:30px;"></td><td><p style="float:right;font-style:nunito;font-size:11pt;margin-right:50px;margin-left:40px;"><span style="font-weight:bold;font-size:12pt;">Warning</span> <br> 					If you change the name of this module, various features associated with this module, such as network maps, interface graphs or other network modules, may  no longer work. If you are not completely sure of the process, please do not change the name of the module.					</p></td></tr></table>');
 						},
 						buttons: [{
 					      text: "Ok",

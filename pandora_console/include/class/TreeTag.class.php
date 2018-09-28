@@ -48,6 +48,10 @@ class TreeTag extends Tree {
 			$this->getThirdLevel();
 		}
 	}
+
+	protected function getTagJoin () {
+		return '';
+	}
 }
 
 ?>

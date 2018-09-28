@@ -909,9 +909,6 @@ class Tree {
 			tam.id_tipo_modulo, tam.id_modulo, tae.estado, tae.datos,
 			tam.parent_module_id AS parent, tatm.id AS alerts';
 
-		// has any of this tags.
-		$tag_join = '';
-
 		$sql = "SELECT $columns
 			FROM tagente_modulo tam
 			$tag_join

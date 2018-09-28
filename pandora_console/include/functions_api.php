@@ -1402,6 +1402,68 @@ function api_set_new_agent($thrash1, $thrash2, $other, $thrash3) {
 	}
 }
 
+
+function api_set_create_os($thrash1, $thrash2, $other, $thrash3) {
+	global $config;
+
+
+	if (!check_acl($config['id_user'], 0, "AW")) {
+		returnError('forbidden', 'string');
+		return;
+	}
+	
+	if (defined ('METACONSOLE')) {
+		return;
+	}
+
+	$values = array();
+	
+	$values['name'] = $other['data'][0];
+	$values['description'] = $other['data'][1];
+
+	if (($other['data'][2] !== 0) && ($other['data'][2] != '')) {
+		$values['icon_name'] = $other['data'][2];
+	}
+
+
+
+	$resultOrId = false;
+	if ($other['data'][0] != '') {
+		$resultOrId = db_process_sql_insert('tconfig_os', $values);
+	}
+
+}
+
+function api_set_update_os($id_os, $thrash2, $other, $thrash3) {
+	global $config;
+
+	if (defined ('METACONSOLE')) {
+		return;
+	}
+
+	if (!check_acl($config['id_user'], 0, "AW")) {
+		returnError('forbidden', 'string');
+		return;
+	}
+			
+	$values = array();
+	$values['name'] = $other['data'][0];
+	$values['description'] = $other['data'][1];
+		
+	if (($other['data'][2] !== 0) && ($other['data'][2] != '')) {
+		$values['icon_name'] = $other['data'][2];;
+	}
+	$result = false;
+
+
+	if ($other['data'][0] != '') {
+
+		$result = db_process_sql_update('tconfig_os', $values, array('id_os' => $id_os));
+	}
+
+}
+
+
 /**
  *
  * Creates a custom field

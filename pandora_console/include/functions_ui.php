@@ -823,10 +823,26 @@ function ui_format_alert_row ($alert, $agent = true, $url = '', $agent_style = f
 		else
 			return array ("", "", "", "", "", "", "");
 	}
-	
-	// Get agent id
-	$id_agent = modules_get_agentmodule_agent ($alert['id_agent_module']);
-	$agente = db_get_row ('tagente', 'id_agente', $id_agent);
+
+
+	if (defined('METACONSOLE')) {
+
+		$server = db_get_row ('tmetaconsole_setup', 'id', $alert['server_data']['id']);
+
+		if (metaconsole_connect($server) == NOERR) {
+
+			// Get agent data from node
+			$agente = db_get_row ('tagente', 'id_agente', $alert['id_agent']);
+
+			metaconsole_restore_db ();
+		}
+
+	} else {
+		// Get agent id
+		$id_agent = modules_get_agentmodule_agent ($alert['id_agent_module']);
+		$agente = db_get_row ('tagente', 'id_agente', $id_agent);
+	}
+
 	$template = alerts_get_alert_template ($alert['id_alert_template']);
 	$description = io_safe_output($template['name']);
 	

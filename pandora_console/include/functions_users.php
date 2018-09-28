@@ -306,6 +306,7 @@ function users_get_groups ($id_user = false, $privilege = "AR", $returnAllGroup 
 							}
 							else {
 								// add group to user ACL forest
+								users_get_explode_tags($group);
 								$tmp = groups_combine_acl($forest_acl[$parent], $group);
 							}
 							if ($tmp !== null) {

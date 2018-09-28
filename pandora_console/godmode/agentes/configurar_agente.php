@@ -1713,12 +1713,18 @@ if ($delete_module) { // DELETE agent module !
 		ui_print_error_message(__('There was a problem deleting the module'));
 	}
 	else {
-		ui_print_success_message(__('Module deleted succesfully'));
+
+		echo '<script type="text/javascript">
+		location="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=module&id_agente='.$id_agente.'";
+		alert("'.__('Module deleted succesfully').'");
+		</script>';
 		
 		$agent = db_get_row ('tagente', 'id_agente', $id_agente);
 		db_pandora_audit("Agent management",
 			"Deleted module '".$module_data["nombre"]."' for agent ".$agent["alias"]);
 	}
+
+
 }
 
 // MODULE DUPLICATION

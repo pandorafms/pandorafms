@@ -487,7 +487,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 						else {
 							$url = ui_meta_get_url_console_child(
 								$layoutData['id_metaconsole'],
-								"estado", "operation/agentes/ver_agente&amp;id_agente=" . $layoutData['id_agent']);
+								"estado", "operation/agentes/ver_agente&amp;id_agente=" . $layoutData['id_agent'], null, null, null, $isExternalLink);
 						}
 					}
 					else {
@@ -499,7 +499,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 						else {
 							$url = ui_meta_get_url_console_child(
 								$layoutData['id_metaconsole'],
-								"estado", "operation/agentes/ver_agente&amp;id_agente=" . $layoutData['id_agent']);
+								"estado", "operation/agentes/ver_agente&amp;id_agente=" . $layoutData['id_agent'], null, null, null, $isExternalLink);
 						}
 					}
 				}
@@ -662,7 +662,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 						else {
 							$url = ui_meta_get_url_console_child(
 								$layoutData['id_metaconsole'],
-								"estado", "operation/agentes/ver_agente&amp;id_agente=" . $layoutData['id_agent']);
+								"estado", "operation/agentes/ver_agente&amp;id_agente=" . $layoutData['id_agent'], null, null, null, $isExternalLink);
 						}
 					}
 				break;
@@ -724,7 +724,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 						else {
 							$url = ui_meta_get_url_console_child(
 								$layoutData['id_metaconsole'],
-								"estado", 'operation/agentes/ver_agente&amp;id_agente='.$layoutData['id_agent']);
+								"estado", 'operation/agentes/ver_agente&amp;id_agente='.$layoutData['id_agent'], null, null, null, $isExternalLink);
 						}
 					}
 				}
@@ -779,7 +779,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 							else {
 								$url = ui_meta_get_url_console_child(
 									$layoutData['id_metaconsole'],
-									"estado", 'operation/agentes/ver_agente&amp;id_agente='.$layoutData["id_agent"].'&amp;tab=data');
+									"estado", 'operation/agentes/ver_agente&amp;id_agente='.$layoutData["id_agent"].'&amp;tab=data', null, null, null, $isExternalLink);
 							}
 						}
 					}

@@ -2687,8 +2687,14 @@ function get_module_realtime_link_graph ($module) {
  * 			with some user action through the console
  * @param int New status
  * @param int Agent module to force new status
+ * @param int Agent id to force state recalculations
  */
-function force_set_module_status ($status, $id_agent_module) {
+function force_set_module_status ($status, $id_agent_module, $id_agent) {
+	// Force recalculate counters
+	db_process_sql_update('tagente',
+		array('update_module_count' => 1),
+		array('id_agente' => $id_agent)
+	);
 	return db_process_sql_update( 'tagente_estado',
 		array(
 			'estado' => $status,

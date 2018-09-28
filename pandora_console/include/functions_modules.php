@@ -443,7 +443,7 @@ function modules_update_agent_module ($id, $values,
 	$result = @db_process_sql_update ('tagente_modulo', $values, $where);
 	
 	if ($result == false) {
-		if ($result_disable == ERR_GENERIC ){
+		if ($result_disable === ERR_GENERIC ){
 			return ERR_DB;
 		}
 		else{

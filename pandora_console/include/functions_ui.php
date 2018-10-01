@@ -4068,7 +4068,7 @@ function ui_get_logo_to_center_networkmap () {
 	global $config;
 
 	if ((!enterprise_installed()) || empty($config['custom_network_center_logo'])) {
-		return DEFAULT_NETWORKMAP_CENTER_LOGO;
+		return 'images/networkmap/bola_pandora_network_maps.png';
 	}
 
 	return 'enterprise/images/custom_general_logos/' . $config['custom_support_logo'];

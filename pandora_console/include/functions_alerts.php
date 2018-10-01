@@ -1313,13 +1313,25 @@ function alerts_delete_alert_agent_module_action ($id_alert_agent_module_action)
  *
  * @return mixed Actions associated or false if something goes wrong.
  */
-function alerts_get_alert_agent_module_actions ($id_alert_agent_module, $fields = false) {
+function alerts_get_alert_agent_module_actions ($id_alert_agent_module, $fields = false, $server_id = -1) {
 	if (empty ($id_alert_agent_module))
 		return false;
-	
-	$actions = db_get_all_rows_filter ('talert_template_module_actions',
-		array ('id_alert_template_module' => $id_alert_agent_module),
-		$fields);
+
+	if (defined('METACONSOLE')) {
+		$server = db_get_row ('tmetaconsole_setup', 'id', $server_id);
+
+		if (metaconsole_connect($server) == NOERR) {
+			$actions = db_get_all_rows_filter ('talert_template_module_actions',
+				array ('id_alert_template_module' => $id_alert_agent_module),
+				$fields);
+
+			metaconsole_restore_db ();
+		}
+	} else {
+		$actions = db_get_all_rows_filter ('talert_template_module_actions',
+			array ('id_alert_template_module' => $id_alert_agent_module),
+			$fields);
+	}
 	
 	if ($actions === false)
 		return array ();

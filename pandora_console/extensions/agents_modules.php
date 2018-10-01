@@ -70,7 +70,7 @@ function mainAgentsModules() {
 	$hor_offset = (int)get_parameter('hor_offset', 0);
 	$block = $config['block_size'];
 	if(get_parameter('modulegroup') != null){
-		$agents_id = (array)get_parameter('id_agents2', -1);	
+		$agents_id = (array)get_parameter('id_agents2', -1);
 	}
 	$selection_a_m = (int)get_parameter('selection_agent_module');
 	$modules_selected = (array)get_parameter('module', 0);
@@ -100,6 +100,9 @@ function mainAgentsModules() {
 	if($agents_id[0] != -1 ){
 		serialize_in_temp($agents_id, $config['id_user']."_agents", 1);
 	}
+
+
+	//if($agents_id != -1) $agents_id = null;
 	
 	if ($config["pure"] == 0) {
 		if($modules_selected[0] && $agents_id[0]){
@@ -144,18 +147,7 @@ function mainAgentsModules() {
 	$filter_module_groups_label = '<b>'.__('Module group').'</b>';
 	$filter_module_groups = html_print_select_from_sql ("SELECT * FROM tmodule_group ORDER BY name",
 		'modulegroup', $modulegroup, '',__('All'), 0, true, false, true, false, 'width: auto;');
-			
-	$agents_select = array();
-	if (is_array($id_agents) || is_object($id_agents)){
-		foreach ($id_agents as $id) {
-			foreach ($agents as $key => $a) {
-				if ($key == (int)$id) {
-					$agents_select[$key] = $key;
-				}
-			}
-		}
-	}
-	
+
 	//agent
 	$agents = agents_get_group_agents($group_id);
 	if ((empty($agents)) || $agents == -1) $agents = array();
@@ -301,7 +293,6 @@ function mainAgentsModules() {
 		$count++;
 	}
 	$total_pagination = count($agents);
-
 	if($agents_id[0] != -1){
 		$all_modules = array();
 		foreach ($modules_selected as $key => $value) {
@@ -332,8 +323,7 @@ function mainAgentsModules() {
 					foreach ($result_sql as $key => $value) {
 						$all_modules[$value['id_agente_modulo']] = io_safe_output($name); 
 					}
-				} 
-				// $all_modules[$value] = modules_get_agentmodule_name($value);
+				}
 			}
 
 		} else {
@@ -346,7 +336,6 @@ function mainAgentsModules() {
 	$modules_by_name = array();
 	$name = '';
 	$cont = 0;
-	
 	foreach ($all_modules as $key => $module) {
 		if ($module == $name) {
 			$modules_by_name[$cont-1]['id'][] = $key;
@@ -358,7 +347,6 @@ function mainAgentsModules() {
 			$cont ++;
 		}
 	}
-	
 	if ($config["pure"] == 1) {
 		$block = count($modules_by_name);
 	}
@@ -502,7 +490,6 @@ function mainAgentsModules() {
 		$agent_modules = agents_get_modules($agent['id_agente'], false, $filter_module_group, true, true);
 		
 		$nmodules = 0;
-		
 		foreach ($modules_by_name as $module) {
 			$nmodules++;
 			

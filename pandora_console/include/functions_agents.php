@@ -818,8 +818,9 @@ function agents_get_group_agents (
 	$filter = array();
 	
 	if (!$noACL) {
-		$id_group = groups_safe_acl($config["id_user"], $id_group, "AR");
-		
+		$id_group = $id_group == 0
+			? array_keys(users_get_groups(false, "AR", false))
+			: groups_safe_acl($config["id_user"], $id_group, "AR");
 		if (empty ($id_group)) {
 			//An empty array means the user doesn't have access
 			return array ();
@@ -1054,7 +1055,8 @@ function agents_get_modules ($id_agent = null, $details = false,
 	if (empty($userGroups)) {
 		return array();
 	}
-	$id_userGroups = $id_groups = array_keys($userGroups);
+	$id_groups = array_keys($userGroups);
+	$id_groups_sql = implode(',', $id_groups);
 	
 	// =================================================================
 	// When there is not a agent id. Get a agents of groups that the
@@ -1084,49 +1086,25 @@ function agents_get_modules ($id_agent = null, $details = false,
 	if (!is_array($id_agent)) {
 		$id_agent = safe_int ($id_agent, 1);
 	}
-	
-	$where = "(
-			1 = (
-				SELECT is_admin
-				FROM tusuario
-				WHERE id_user = '" . $config['id_user'] . "'
-			)
-			OR
-			tagente_modulo.id_agente IN (
-				SELECT id_agente
-				FROM tagente tas LEFT JOIN tagent_secondary_group tasgs
-					ON tas.id_agente = tasgs.id_agent
-				WHERE (tas.id_grupo IN (
-						" . implode(',', $id_userGroups) . "
-					) OR
-					tasgs.id_group IN (
-						" . implode(',', $id_userGroups) . "
-					)
-				)
-			)
-			OR 0 IN (
-				SELECT id_grupo
-				FROM tusuario_perfil
-				WHERE id_usuario = '" . $config['id_user'] . "'
-					AND id_perfil IN (
-						SELECT id_perfil
-						FROM tperfil WHERE agent_view = 1
-					)
-				)
+
+	$where = "1 = 1 ";
+	// Groups ACL only when user is not empty
+	if (!users_can_manage_group_all("AR")) {
+		$where = "(
+			tagente.id_grupo IN ($id_groups_sql) OR tasg.id_group IN ($id_groups_sql)
 		)";
-	
-	if (! empty ($id_agent)) {
-		$where .= sprintf (' AND id_agente IN (%s)', implode (",", (array) $id_agent));
 	}
-	
-	$where .= ' AND delete_pending = 0 ';
-	
+
+	if (! empty ($id_agent)) {
+		$id_agent_sql = implode (",", (array)$id_agent);
+		$where .= " AND tagente.id_agente IN ($id_agent_sql) ";
+	}
+
 	if (! empty ($filter)) {
 		$where .= ' AND ';
 		if (is_array ($filter)) {
 			$fields = array ();
-			
-			
+
 			//----------------------------------------------------------
 			// Code for filters as array of arrays
 			//  for example:
@@ -1151,11 +1129,10 @@ function agents_get_modules ($id_agent = null, $details = false,
 				}
 			}
 			//----------------------------------------------------------
-			
 			foreach ($list_filter as $item) {
 				$field = $item['field'];
 				$value = $item['value'];
-				
+
 				//Check <> operator
 				$operatorDistin = false;
 				if (strlen($value) > 2) {
@@ -1163,111 +1140,77 @@ function agents_get_modules ($id_agent = null, $details = false,
 						$operatorDistin = true;
 					}
 				}
-				
+
 				if ($value[0] == '%') {
-					switch ($config['dbtype']) {
-						case "mysql":
-						case "postgresql":
-							array_push ($fields,
-								$field . ' LIKE "' . $value . '"');
-							break;
-						case "oracle":
-							array_push ($fields,
-								$field . ' LIKE \'' . $value . '\'');
-							break;
-					}
+					array_push ($fields,
+						$field . ' LIKE "' . $value . '"');
 				}
 				else if ($operatorDistin) {
 					array_push($fields, $field.' <> ' . substr($value, 2));
 				}
 				else if (substr($value, -1) == '%') {
-					switch ($config['dbtype']) {
-						case "mysql":
-						case "postgresql":
-							array_push ($fields, $field.' LIKE "'.$value.'"');
-							break;
-						case "oracle":
-							array_push ($fields, $field.' LIKE \''.$value.'\'');
-							break;
-					}
+					array_push ($fields, $field.' LIKE "'.$value.'"');
 				}
-				//else if (strstr($value, '666=666', true) == '') {
 				else if (strncmp($value, '666=666', 7) == 0) {
-					switch ($config['dbtype']) {
-						case "mysql":
-						case "postgresql":
-							array_push ($fields, ' '.$value);
-							break;
-						case "oracle":
-							array_push ($fields, ' '.$value);
-							break;
-					}
+					array_push ($fields, ' '.$value);
 				}
 				else if (preg_match('/\bin\b/i',$field)) {
 					array_push ($fields, $field.' '.$value);
 				}
 				else {
-					switch ($config["dbtype"]) {
-						case "mysql":
-							array_push ($fields, $field.' = "'.$value.'"');
-							break;
-						case "postgresql":
-							array_push ($fields, $field.' = \''.$value.'\'');
-							break;
-						case "oracle":
-							if (is_int ($value) || is_float ($value) || is_double ($value))
-								array_push ($fields, $field.' = '.$value.'');
-							else
-								array_push ($fields, $field.' = \''.$value.'\'');
-							break;
-					}
+					array_push ($fields, 'tagente_modulo.' . $field.' = "'.$value.'"');
 				}
 			}
-			$where .= implode (' AND ', $fields); 
+			$where .= implode (' AND ', $fields);
 		}
 		else {
 			$where .= $filter;
 		}
 	}
-	
+
 	if (empty ($details)) {
-		$details = "nombre";
+		$details = "tagente_modulo.nombre";
 	}
-	else { 
+	else {
+		$details = (array)$details;
 		$details = io_safe_input ($details);
+		$details = array_map(function ($a) { return 'tagente_modulo.' . $a;}, $details);
 	}
-	
-	//$where .= " AND id_policy_module = 0 ";
-	
+
+	$sql_tags_join = "";
 	if (tags_has_user_acl_tags($config['id_user'])){
-		// TODO revision tag
 		$where_tags = tags_get_acl_tags($config['id_user'], $id_groups, 'AR',
 			'module_condition', 'AND', 'tagente_modulo', false, array(),
-			true); 
-		
+			true);
 		$where .= "\n\n" . $where_tags;
+		$sql_tags_join = "INNER JOIN ttag_module
+			ON ttag_module.id_agente_modulo = tagente_modulo.id_agente_modulo";
 	}
-	
+
 	$sql = sprintf ('SELECT %s%s
 					FROM tagente_modulo
-					WHERE
-						%s
-					ORDER BY nombre',
-					($details != '*' && $indexed) ? 'id_agente_modulo,' : '',
+					%s
+					INNER JOIN tagente
+						ON tagente.id_agente = tagente_modulo.id_agente
+					LEFT JOIN tagent_secondary_group tasg
+						ON tagente.id_agente = tasg.id_agent
+					WHERE tagente_modulo.delete_pending = 0
+						AND %s
+					GROUP BY tagente_modulo.id_agente_modulo
+					ORDER BY tagente_modulo.nombre',
+					($details != 'tagente_modulo.*' && $indexed) ? 'tagente_modulo.id_agente_modulo,' : '',
 					io_safe_output(implode (",", (array) $details)),
+					$sql_tags_join,
 					$where);
-	
-	
 	$result = db_get_all_rows_sql ($sql);
-	
-	
+
 	if (empty ($result)) {
 		return array ();
 	}
-	
+
 	if (! $indexed)
 		return $result;
-	
+
 	$modules = array ();
 	foreach ($result as $module) {
 		if ($get_not_init_modules || modules_get_agentmodule_is_init($module['id_agente_modulo'])) {
@@ -2589,75 +2532,67 @@ function agents_get_agent_custom_field ($agent_id, $custom_field_name) {
 	return db_get_value_sql($sql);
 }
 
-function select_modules_for_agent_group($id_group, $id_agents, 
-	$selection, $return = true) {
-	
+function select_modules_for_agent_group(
+	$id_group, $id_agents, $selection, $return = true
+) {
+	global $config;
 	$agents = implode(",", $id_agents);
 
+	$filter_agent_group = "";
 	$filter_group = "";
 	$filter_agent = "";
+	$selection_filter = "";
+	$sql_conditions_tags = "";
+	$sql_tags_inner = "";
+
+	$groups = array_keys(users_get_groups(false, "AR", false));
 
 	if ($id_group != 0) {
-		$filter_group = " AND id_module_group = ". $id_group;
+		$filter_group = " AND tagente_modulo.id_module_group = ". $id_group;
 	}
 	if ($agents != null) {
-		$filter_agent = " AND id_agente IN (" . $agents . ")";
+		$filter_agent = " AND tagente.id_agente IN (" . $agents . ")";
+	}
+	if (!users_can_manage_group_all("AR")) {
+		$group_string = implode(',', $groups);
+		$filter_agent_group = " AND (
+			tagente.id_grupo IN ($group_string)
+			OR tasg.id_group IN ($group_string)
+		)";
+	}
+	if (!$selection && $agents != null) {
+		$number_agents = count($id_agents);
+		$selection_filter = "HAVING COUNT(tagente_modulo.id_agente_modulo) = $number_agents";
 	}
 
-	if ($selection == 1 || (count($id_agents) == 1)) {
-		$modules = db_get_all_rows_sql("SELECT DISTINCT nombre, id_agente_modulo 
-										FROM tagente_modulo 
-										WHERE 1 = 1" . $filter_agent . $filter_group);
-
-		if (empty($modules)) $modules = array();
-
-		$found = array();
-		foreach ($modules as $i=>$row) {
-		    $check = $row['nombre'];
-		    if (@$found[$check]++) {
-		        unset($modules[$i]);
-		    }
-		}
+	if (tags_has_user_acl_tags(false)){
+		$sql_conditions_tags = tags_get_acl_tags(
+			$config['id_user'], $groups, 'AR',
+			'module_condition', 'AND', 'tagente_modulo', true, array(),
+			false);
+		$sql_tags_inner = "INNER JOIN ttag_module
+			ON ttag_module.id_agente_modulo = tagente_modulo.id_agente_modulo";
 	}
-	else {
-		$modules = db_get_all_rows_sql("SELECT nombre, id_agente_modulo 
-										FROM tagente_modulo
-										WHERE 1 = 1" . $filter_agent . $filter_group);
 
-		if (empty($modules)) $modules = array();
+	$sql = "SELECT DISTINCT(tagente_modulo.id_agente_modulo), tagente_modulo.nombre
+		FROM tagente_modulo
+		$sql_tags_inner
+		INNER JOIN tagente
+			ON tagente.id_agente = tagente_modulo.id_agente
+		LEFT JOIN tagent_secondary_group tasg
+			ON tagente.id_agente = tasg.id_agent
+		WHERE tagente.disabled = 0
+			AND tagente_modulo.disabled = 0
+			$filter_agent_group
+			$filter_group
+			$filter_agent
+			$sql_conditions_tags
+		GROUP BY tagente_modulo.nombre
+		$selection_filter";
 
-		foreach ($modules as $m) {
-			$is_in_all_agents = true;
-			$module_name = $m['nombre'];
-			foreach ($id_agents as $a) {
-				$module_in_agent = db_get_value_filter('id_agente_modulo',
-					'tagente_modulo', array('id_agente' => $a, 'nombre' => $module_name));
-				if (!$module_in_agent) {
-					$is_in_all_agents = false;
-				}
-			}
-			if ($is_in_all_agents) {
-				$modules_to_report[] = $m;
-			}
-		}
-		$modules = $modules_to_report;
+	$modules = db_get_all_rows_sql($sql);
+	if ($modules === false) $modules = array();
 
-		$found = array();
-		if (is_array($modules) || is_object($modules)){
-			foreach ($modules as $i=>$row) {
-			    $check = $row['nombre'];
-			    if (@$found[$check]++) {
-			        unset($modules[$i]);
-			    }
-			}
-		}
-	}
-	if (is_array($modules) || is_object($modules)){
-		foreach ($modules as $k => $v) {
-			$modules[$k] = io_safe_output($v);
-		}
-	}
-	
 	if($return == false){
 		foreach ($modules as $value) {
 			$modules_array[$value['id_agente_modulo']] = $value['nombre'];

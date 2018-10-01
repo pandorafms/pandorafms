@@ -690,7 +690,7 @@ function tags_get_acl_tags($id_user, $id_group, $access = 'AR',
 		case 'module_condition':
 			// Return the condition of the tags for tagente_modulo table
 			
-			$condition = tags_get_acl_tags_module_condition_old($acltags,
+			$condition = tags_get_acl_tags_module_condition($acltags,
 				$query_table);
 			if (!empty($condition)) {
 				return " $query_prefix " . $condition;
@@ -698,7 +698,6 @@ function tags_get_acl_tags($id_user, $id_group, $access = 'AR',
 			break;
 		case 'event_condition':
 			// Return the condition of the tags for tevento table
-			// TODO event tag revision
 			$condition = tags_get_acl_tags_event_condition($acltags, $meta, $force_group_and_tag);
 
 			if (!empty($condition)) {
@@ -868,16 +867,20 @@ function tags_get_acl_tags_event_condition($acltags, $meta = false, $force_group
 		$tags_condition = $group_condition . " AND (" . implode(" OR ", $tags_condition_array) . ")";
 		$condition[] = "($tags_condition)\n";
 	}
-	if (empty($condition)) {
-		return " 1=1  ";
+	if (!empty($condition)) {
+		$condition = implode(' OR ', $condition);
 	}
-	$condition = implode(' OR ', $condition);
 
 	if (!empty($without_tags)) {
-		$condition .= ' OR  ';
+		if (!empty($condition)) {
+			$condition .= ' OR  ';
+		}
 		$in_group = implode(",",$without_tags);
 		$condition .= sprintf('(id_grupo IN (%s) OR id_group IN (%s))',$in_group,$in_group);
 	}
+
+	$condition = !empty($condition) ? "($condition)" : '';
+
 	return $condition;
 }
 
@@ -898,15 +901,14 @@ function tags_has_user_acl_tags($id_user = false) {
 	if(is_user_admin($id_user)) {
 		return false;
 	}
-	
-	$query = sprintf("SELECT count(*) 
-			FROM tusuario_perfil, tperfil
-			WHERE tperfil.id_perfil = tusuario_perfil.id_perfil AND
-			tusuario_perfil.id_usuario = '%s' AND tags != ''", 
-			$id_user);
-			
+
+	$query = "SELECT count(*)
+		FROM tusuario_perfil
+		WHERE tusuario_perfil.id_usuario = '$id_user'
+			AND tags != '' AND tags !='0'";
+
 	$user_tags = db_get_value_sql($query);
-	
+
 	return (bool)$user_tags;
 }
 

@@ -177,16 +177,15 @@ echo '<td style="vertical-align: top; width: 75%; padding-top: 0px;" id="rightco
 // Last events information
 // ---------------------------------------------------------------------
 
-$acltags = tags_get_user_groups_and_tags ($config['id_user'], 'ER', $user_strict);
-
-if (!empty($acltags)) {
+if (check_acl($config['id_user'],0,'ER')) {
 	// TODO event tag revision
-	$tags_condition = tags_get_acl_tags_event_condition($acltags, false, $user_strict);
-	
+	$tags_condition = tags_get_acl_tags(false,0,'ER','event_condition');
+	$event_filter = "estado<>1";
 	if (!empty($tags_condition)) {
-		$events = events_print_event_table ("estado<>1 AND ($tags_condition)", 10, "100%",true,false,true);
-		ui_toggle($events, __('Latest events'),false,false);
+		$event_filter .= " AND ($tags_condition)";
 	}
+	$events = events_print_event_table ($event_filter, 10, "100%",true,false,true);
+	ui_toggle($events, __('Latest events'),false,false);
 }
 
 // ---------------------------------------------------------------------

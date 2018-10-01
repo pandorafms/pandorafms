@@ -34,13 +34,13 @@ require_once('operation/agents.php');
 require_once('operation/modules.php');
 require_once('operation/module_graph.php');
 require_once('operation/agent.php');
-require_once('operation/networkmaps.php');
-require_once('operation/networkmap.php');
 require_once('operation/visualmaps.php');
 require_once('operation/visualmap.php');
 $enterpriseHook = enterprise_include('mobile/include/enterprise.class.php');
 $enterpriseHook = enterprise_include('mobile/operation/dashboard.php');
 $enterpriseHook = enterprise_include('mobile/operation/home.php');
+
+$is_mobile=true;
 
 if (!empty ($config["https"]) && empty ($_SERVER['HTTPS'])) {
 	$query = '';
@@ -116,6 +116,13 @@ if ($action != "ajax") {
 	}
 }
 
+if ($user->isLogged()) {
+
+	if (file_exists ("../enterprise/load_enterprise.php")) {
+		include_once ("../enterprise/load_enterprise.php");
+	}
+}
+
 switch ($action) {
 	case 'ajax':
 		$parameter1 = $system->getRequest('parameter1', false);
@@ -169,6 +176,11 @@ switch ($action) {
 		break;
 	case 'login':
 		if ($user->login() && $user->isLogged()) {
+
+			if (file_exists ("../enterprise/load_enterprise.php")) {
+				include_once ("../enterprise/load_enterprise.php");
+			}
+			
 			if ($user->isWaitingDoubleAuth()) {
 				if ($user->validateDoubleAuthCode()) {
 					// Logged. Refresh the page
@@ -192,6 +204,12 @@ switch ($action) {
 		break;
 	case 'double_auth':
 		if ($user->isLogged()) {
+
+			if (file_exists ("../enterprise/load_enterprise.php")) {
+				include_once ("../enterprise/load_enterprise.php");
+			}
+
+
 			if ($user->validateDoubleAuthCode()) {
 				$user_language = get_user_language ($system->getConfig('id_user'));
 				if (file_exists ('../include/languages/'.$user_language.'.mo')) {
@@ -313,14 +331,6 @@ switch ($action) {
 				$agent = new Agent();
 				$agent->show();
 				break;
-			case 'networkmaps':
-				$networkmaps = new Networkmaps();
-				$networkmaps->show();
-				break;
-			case 'networkmap':
-				$networkmap = new Networkmap();
-				$networkmap->show();
-				break;
 			case 'visualmaps':
 				$visualmaps = new Visualmaps();
 				$visualmaps->show();
@@ -358,4 +368,8 @@ switch ($action) {
 		}
 		break;
 }
+
+
+
+
 ?>

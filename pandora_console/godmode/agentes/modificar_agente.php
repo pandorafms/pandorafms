@@ -343,6 +343,7 @@ if($os != 0){
 	$search_sql .= " AND id_os = " . $os;
 }
 
+$user_groups_to_sql = "";
 // Show only selected groups
 if ($ag_group > 0) {
 	$ag_groups = array();
@@ -350,99 +351,38 @@ if ($ag_group > 0) {
 	if ($recursion) {
 		$ag_groups = groups_get_id_recursive($ag_group, true);
 	}
-	
-	switch ($config["dbtype"]) {
-		case "mysql":
-			$sql = sprintf ('SELECT *
-				FROM tagente
-				WHERE id_grupo IN (%s)
-					%s
-				ORDER BY %s %s, %s %s
-				LIMIT %d, %d',
-				implode (",", $ag_groups), $search_sql, $order['field'],$order['order'], $order['field2'], $order['order'], $offset, $config["block_size"]);
-			break;
-		case "postgresql":
-			$sql = sprintf ('SELECT *
-				FROM tagente
-				WHERE id_grupo IN (%s)
-					%s
-				ORDER BY %s %s, %s %s
-				LIMIT %d OFFSET %d',
-				implode (",", $ag_groups), $search_sql, $order['field'],$order['order'], $order['field2'], $order['order'], $config["block_size"], $offset);
-			break;
-		case "oracle":
-			$set = array ();
-			$set['limit'] = $config["block_size"];
-			$set['offset'] = $offset;
-			$sql = sprintf ('SELECT *
-				FROM tagente
-				WHERE id_grupo IN (%s)
-					%s
-				ORDER BY %s %s, %s %s',
-				implode (",", $ag_groups), $search_sql, $order['field'],$order['order'], $order['field2'], $order['order']);
-			$sql = oracle_recode_query ($sql, $set);
-			break;
-	}
-	
-	$sql_total = sprintf ('SELECT COUNT(*)
-		FROM tagente
-		WHERE id_grupo IN (%s)
-			%s',
-		implode (",", $ag_groups), $search_sql);
-	$total_agents = db_get_sql ($sql_total);
-}
-else {
+	$user_groups_to_sql = implode (",", $ag_groups);
+} else {
 	// Concatenate AW and AD permisions to get all the possible groups where the user can manage
 	$user_groupsAW = users_get_groups ($config['id_user'], 'AW');
 	$user_groupsAD = users_get_groups ($config['id_user'], 'AD');
-	
+
 	$user_groups = $user_groupsAW + $user_groupsAD;
-	
-	$sql = sprintf ('SELECT COUNT(*)
-		FROM tagente
-		WHERE id_grupo IN (%s)
-			%s',
-		implode (',', array_keys ($user_groups)),
-		$search_sql);
-	
-	$total_agents = db_get_sql ($sql);
-	
-	switch ($config["dbtype"]) {
-		case "mysql":
-			$sql = sprintf ('SELECT *
-				FROM tagente
-				WHERE id_grupo IN (%s)
-					%s
-				ORDER BY %s %s, %s %s
-				LIMIT %d, %d',
-				implode (',', array_keys ($user_groups)),
-				$search_sql, $order['field'],$order['order'], $order['field2'], $order['order'], $offset, $config["block_size"]);
-			break;
-		case "postgresql":
-			$sql = sprintf ('SELECT *
-				FROM tagente
-				WHERE id_grupo IN (%s)
-					%s
-				ORDER BY %s %s, %s %s
-				LIMIT %d OFFSET %d',
-				implode (',', array_keys ($user_groups)),
-				$search_sql, $order['field'],$order['order'], $order['field2'], $order['order'], $config["block_size"], $offset);
-			break;
-		case "oracle":
-			$set = array ();
-			$set['limit'] = $config["block_size"];
-			$set['offset'] = $offset;
-			$sql = sprintf ('SELECT *
-				FROM tagente
-				WHERE id_grupo IN (%s)
-					%s
-				ORDER BY %s %s, %s %s',
-				implode (',', array_keys ($user_groups)),
-				$search_sql, $order['field'],$order['order'], $order['field2'], $order['order']);
-			$sql = oracle_recode_query ($sql, $set);
-			break;
-	}
+	$user_groups_to_sql = implode (',', array_keys ($user_groups));
 }
+
+$sql = sprintf ('SELECT COUNT(DISTINCT(tagente.id_agente))
+	FROM tagente LEFT JOIN tagent_secondary_group tasg
+		ON tagente.id_agente = tasg.id_agent
+	WHERE (tagente.id_grupo IN (%s) OR tasg.id_group IN (%s))
+		%s',
+	$user_groups_to_sql, $user_groups_to_sql,
+	$search_sql);
+
+$total_agents = db_get_sql ($sql);
+
+$sql = sprintf ('SELECT *
+	FROM tagente LEFT JOIN tagent_secondary_group tasg
+		ON tagente.id_agente = tasg.id_agent
+	WHERE (tagente.id_grupo IN (%s) OR tasg.id_group IN (%s))
+		%s
+	GROUP BY tagente.id_agente
+	ORDER BY %s %s, %s %s
+	LIMIT %d, %d',
+	$user_groups_to_sql, $user_groups_to_sql,
+	$search_sql,
+	$order['field'], $order['order'], $order['field2'], $order['order'],
+	$offset, $config["block_size"]);
 
 $agents = db_get_all_rows_sql ($sql);
 
@@ -494,13 +434,15 @@ if ($agents !== false) {
 			}
 			
 			/* End Update tagente.remote 0/1 with remote agent function return */
-			
-		$id_grupo = $agent["id_grupo"];
-		
+
+		$all_groups = agents_get_all_groups_agent($agent["id_agente"], $agent["id_grupo"]);
+		$check_aw = check_acl_one_of_groups ($config["id_user"], $all_groups, "AW");
+		$check_ad = check_acl_one_of_groups ($config["id_user"], $all_groups, "AD");
+
 		$cluster = db_get_row_sql('select id from tcluster where id_agent = '.$agent['id_agente']);
-		
-		if (! check_acl ($config["id_user"], $id_grupo, "AW", $agent['id_agente']) && ! check_acl ($config["id_user"], $id_grupo, "AD", $agent['id_agente']))
-			continue;
+
+		// Do not show the agent if there is not enough permissions
+		if (!$check_aw  && !$check_ad) continue;
 		
 		if ($color == 1) {
 			$tdcolor = "datos";
@@ -526,7 +468,7 @@ if ($agents !== false) {
 		echo '<span class="left">';
 		echo "<strong>";
 		
-		if (check_acl ($config["id_user"], $agent["id_grupo"], "AW")) {
+		if ($check_aw) {
 			$main_tab = 'main';
 		}
 		else {
@@ -574,7 +516,7 @@ if ($agents !== false) {
 		}
 
 		echo '</span><div class="left actions" style="visibility: hidden; clear: left">';
-		if (check_acl ($config["id_user"], $agent["id_grupo"], "AW")) {
+		if ($check_aw) {
 			if($agent["id_os"] == 100){
 				$cluster = db_get_row_sql('select id from tcluster where id_agent = '.$agent['id_agente']);
 				echo '<a href="index.php?sec=reporting&sec2=enterprise/godmode/reporting/cluster_builder&id_cluster='.$cluster['id'].'&step=1&update=1">'.__('Edit').'</a>';
@@ -640,7 +582,7 @@ if ($agents !== false) {
 
 
 		// Group icon and name
-		echo "<td class='$tdcolor' align='left' valign='middle'>" . ui_print_group_icon ($id_grupo, true)."</td>";
+		echo "<td class='$tdcolor' align='left' valign='middle'>" . ui_print_group_icon ($agent["id_grupo"], true)."</td>";
 		// Description
 		echo "<td class='".$tdcolor."f9'>" .
 			ui_print_truncate_text($agent["comentarios"], 'description', true, true, true, '[&hellip;]', 'font-size: 6.5pt;')."</td>";
@@ -679,7 +621,7 @@ if ($agents !== false) {
 			echo html_print_image('images/lightbulb.png', true, array('alt' => __('Disable agent'), 'title' => __('Disable agent'))) ."</a>";
 		}
 		
-		if (check_acl ($config["id_user"], $agent["id_grupo"], "AW")) {
+		if ($check_aw) {
 			echo "&nbsp;&nbsp;<a href='index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&
 			borrar_agente=".$agent["id_agente"]."&group_id=$ag_group&recursion=$recursion&search=$search&offset=$offsetArg&sort_field=$sortField&sort=$sort&disabled=$disabled'";
 			

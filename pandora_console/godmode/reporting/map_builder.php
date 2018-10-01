@@ -22,6 +22,9 @@ $vconsoles_read = check_acl ($config['id_user'], 0, "VR");
 $vconsoles_write = check_acl ($config['id_user'], 0, "VW");
 $vconsoles_manage = check_acl ($config['id_user'], 0, "VM");
 
+$is_enterprise = enterprise_include_once('include/functions_policies.php');
+$is_metaconsole = is_metaconsole();
+
 if (!$vconsoles_read && !$vconsoles_write && !$vconsoles_manage) {
 	db_pandora_audit("ACL Violation",
 		"Trying to access map builder");
@@ -29,19 +32,64 @@ if (!$vconsoles_read && !$vconsoles_write && !$vconsoles_manage) {
 	exit;
 }
 
+if(!$is_metaconsole){
+    $url_visual_console                 = 'index.php?sec=network&sec2=godmode/reporting/map_builder';
+    $url_visual_console_favorite        = 'index.php?sec=network&sec2=godmode/reporting/visual_console_favorite';
+    $url_visual_console_template        = 'index.php?sec=network&sec2=enterprise/godmode/reporting/visual_console_template';
+    $url_visual_console_template_wizard = 'index.php?sec=network&sec2=enterprise/godmode/reporting/visual_console_template_wizard';
+}
+else{
+    $url_visual_console                 = 'index.php?sec=screen&sec2=screens/screens&action=visualmap';
+    $url_visual_console_favorite        = 'index.php?sec=screen&sec2=screens/screens&action=visualmap_favorite';
+    $url_visual_console_template        = 'index.php?sec=screen&sec2=screens/screens&action=visualmap_template';
+    $url_visual_console_template_wizard = 'index.php?sec=screen&sec2=screens/screens&action=visualmap_wizard';
+}
+
 $pure = (int)get_parameter('pure', 0);
 $hack_metaconsole = '';
 if (defined('METACONSOLE'))
 	$hack_metaconsole = '../../';
 
-$buttons['visual_console_favorite'] = array('active' => false,
-	'text' => '<a href="index.php?sec=network&sec2=godmode/reporting/visual_console_favorite">' .
-		html_print_image ("images/list.png", true, array ("title" => __('Visual Favourite Console'))) .'</a>');
+$buttons['visual_console'] = array(
+	'active' => true,
+	'text' => '<a href="'.$url_visual_console.'">' .
+				html_print_image ("images/visual_console.png", true, array ("title" => __('Visual Console List'))) .'</a>'
+);
 
-if (!defined('METACONSOLE')) {
+$buttons['visual_console_favorite'] = array(
+	'active' => false,
+	'text' => '<a href="'.$url_visual_console_favorite.'">' .
+				html_print_image ("images/list.png", true, array ("title" => __('Visual Favourite Console'))) .'</a>'
+);
+
+if($is_enterprise && $vconsoles_manage){
+	$buttons['visual_console_template'] = array(
+		'active' => false,
+		'text' => '<a href="'.$url_visual_console_template.'">' .
+					html_print_image ("images/templates.png", true, array ("title" => __('Visual Console Template'))) .'</a>'
+	);
+
+	$buttons['visual_console_template_wizard'] = array(
+		'active' => false,
+		'text' => '<a href="'.$url_visual_console_template_wizard.'">' .
+					html_print_image ("images/wand.png", true, array ("title" => __('Visual Console Template Wizard'))) .'</a>'
+	);
+}
+
+if (!$is_metaconsole) {
 	ui_print_page_header(
 		__('Reporting') .' &raquo; ' . __('Visual Console'),
-		"images/op_reporting.png", false, "map_builder", false, $buttons);
+		"images/op_reporting.png",
+		false,
+		"map_builder",
+		false,
+		$buttons
+	);
+}
+else{
+	ui_meta_print_header(
+		__('Visual console') . " &raquo; " . $visualConsoleName, "",
+		$buttons);
 }
 
 $id_layout = (int) get_parameter ('id_layout');
@@ -62,7 +110,7 @@ if ($delete_layout || $copy_layout) {
 		require ("general/noaccess.php");
 		exit;
 	}
-	
+
 	$group_id = db_get_value("id_group", "tlayout", "id", $id_layout);
 	if ($group_id === false) {
 		db_pandora_audit("ACL Violation",

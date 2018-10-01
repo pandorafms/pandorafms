@@ -30,6 +30,7 @@ require_once ($config['homedir'] . '/include/functions_custom_graphs.php');
 require_once ($config['homedir'] . '/include/functions_modules.php');
 require_once ($config['homedir'] . '/include/functions_agents.php');
 require_once ($config['homedir'] . '/include/functions_tags.php');
+enterprise_include_once('include/functions_agents.php');
 
 check_login();
 
@@ -108,28 +109,8 @@ $interface_traffic_modules = array(
 	<body bgcolor="#ffffff" style='background:#ffffff;'>
 <?php
 		// ACL
-		$permission = false;
-		$agent_group = (int) agents_get_agent_group($agent_id);
-		$strict_user = (bool) db_get_value("strict_acl", "tusuario", "id_user", $config['id_user']);
-
-		// The traffic modules should belong to the agent id
-		$in_agent_id = (int) db_get_value("id_agente", "tagente_modulo", "id_agente_modulo", $params['traffic_module_in']);
-		$out_agent_id = (int) db_get_value("id_agente", "tagente_modulo", "id_agente_modulo", $params['traffic_module_out']);
-		$traffic_modules_belong_to_agent = $agent_id == $in_agent_id && $agent_id == $out_agent_id;
-
-		if (!empty($agent_group) && !empty($params['traffic_module_in'])
-				&& !empty($params['traffic_module_out']) && $traffic_modules_belong_to_agent) {
-			if ($strict_user) {
-				if (tags_check_acl_by_module($params['traffic_module_in'], $config['id_user'], 'RR') === true
-						&& tags_check_acl_by_module($params['traffic_module_out'], $config['id_user'], 'RR') === true)
-					$permission = true;
-			}
-			else {
-				$permission = check_acl($config['id_user'], $agent_group, "RR");
-			}
-		}
-
-		if (!$permission) {
+		$all_groups = agents_get_all_groups_agent($agent_id);
+		if (!check_acl_one_of_groups ($config["id_user"], $all_groups, "AR")) {
 			require ($config['homedir'] . "/general/noaccess.php");
 			exit;
 		}
@@ -140,7 +121,7 @@ $interface_traffic_modules = array(
 		$height = (int) get_parameter("height", 245);
 		$start_date = (string) get_parameter("start_date", date("Y-m-d"));
 		$start_time = get_parameter ("start_time", date("H:i:s"));
-		$zoom = (int) get_parameter ("zoom", 1);
+		$zoom = (int) get_parameter ("zoom", $config['zoom_graph']);
 		$baseline = get_parameter ("baseline", 0);
 		$show_percentil = get_parameter ("show_percentil", 0);
 		$fullscale = get_parameter("fullscale");

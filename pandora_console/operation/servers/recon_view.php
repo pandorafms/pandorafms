@@ -85,6 +85,10 @@ else {
 			$table->head = array ();
 			$table->data = array ();
 			$table->align = array ();
+			$table->headstyle = array ();
+			for ($i=0; $i < 9; $i++) {
+				$table->headstyle[$i] = 'text-align: left;';
+			}
 			
 			$table->head[0] = __('Force');
 			$table->align[0] = "left";

@@ -65,13 +65,13 @@ if ($fields_selected[0]!='') {
 	foreach ($fields_selected as $field_selected) {
 		switch ($field_selected) {
 			case 'id_evento':
-				$result = __('Event id');
+				$result = __('Event Id');
 				break;
 			case 'evento':
-				$result = __('Event name');
+				$result = __('Event Name');
 				break;
 			case 'id_agente':
-				$result = __('Agent name');
+				$result = __('Agent Name');
 				break;
 			case 'id_usuario':
 				$result = __('User');
@@ -86,10 +86,10 @@ if ($fields_selected[0]!='') {
 				$result = __('Timestamp');
 				break;
 			case 'event_type':
-				$result = __('Event type');
+				$result = __('Event Type');
 				break;
 			case 'id_agentmodule':
-				$result = __('Agent module');
+				$result = __('Module Name');
 				break;
 			case 'id_alert_am':
 				$result = __('Alert');
@@ -107,7 +107,7 @@ if ($fields_selected[0]!='') {
 				$result = __('Source');
 				break;
 			case 'id_extra':
-				$result = __('Extra id');
+				$result = __('Extra Id');
 				break;
 			case 'owner_user':
 				$result = __('Owner');
@@ -119,8 +119,15 @@ if ($fields_selected[0]!='') {
 				$result = __('Instructions');
 				break;
 			case 'server_name':
-				$result = __('Server name');
+				$result = __('Server Name');
 				break;
+				case 'data':
+				$result = __('Data');
+				break;
+			case 'module_status':
+				$result = __('Module Status');
+				break;
+				
 		}
 		$result_selected[$field_selected] = $result;
 	}
@@ -149,25 +156,27 @@ $table->data = array();
 
 $fields_available = array();
 
-$fields_available['id_evento'] = __('Event id');
-$fields_available['evento'] = __('Event name');
-$fields_available['id_agente'] = __('Agent name');
+$fields_available['id_evento'] = __('Event Id');
+$fields_available['evento'] = __('Event Name');
+$fields_available['id_agente'] = __('Agent Name');
 $fields_available['id_usuario'] = __('User');
 $fields_available['id_grupo'] = __('Group');
 $fields_available['estado'] = __('Status');
 $fields_available['timestamp'] = __('Timestamp');
-$fields_available['event_type'] = __('Event type');
-$fields_available['id_agentmodule'] = __('Agent module');
+$fields_available['event_type'] = __('Event Type');
+$fields_available['id_agentmodule'] = __('Module Name');
 $fields_available['id_alert_am'] = __('Alert');
 $fields_available['criticity'] = __('Severity');
 $fields_available['user_comment'] = __('Comment');
 $fields_available['tags'] = __('Tags');
 $fields_available['source'] = __('Source');
-$fields_available['id_extra'] = __('Extra id');
+$fields_available['id_extra'] = __('Extra Id');
 $fields_available['owner_user'] = __('Owner');
 $fields_available['ack_utimestamp'] = __('ACK Timestamp');
 $fields_available['instructions'] = __('Instructions');
-$fields_available['server_name'] = __('Server name');
+$fields_available['server_name'] = __('Server Name');
+$fields_available['data'] = __('Data');
+$fields_available['module_status'] = __('Module Status');
 
 //remove fields already selected
 foreach ($fields_available as $key=>$available) {
@@ -179,7 +188,7 @@ foreach ($fields_available as $key=>$available) {
 }
 
 $table->data[0][0] =  '<b>' . __('Fields available').'</b>';
-$table->data[1][0] = html_print_select ($fields_available, 'fields_available[]', true, '', '', '', true, true, false, '', false, 'width: 300px');
+$table->data[1][0] = html_print_select ($fields_available, 'fields_available[]', true, '', '', 0, true, true, false, '', false, 'width: 300px');
 $table->data[1][1] =  '<a href="javascript:">' .
 	html_print_image('images/darrowright.png', true,
 	array('id' => 'right', 'title' => __('Add fields to select'))) .
@@ -192,7 +201,7 @@ $table->data[1][1] .= '<br><br><br><br><a href="javascript:">' .
 $table->data[0][1] = '';
 $table->data[0][2] = '<b>' . __('Fields selected') . '</b>';
 $table->data[1][2] =  html_print_select($result_selected,
-	'fields_selected[]', true, '', '', '', true, true, false, '', false, 'width: 300px');
+	'fields_selected[]', true, '', '', 0, true, true, false, '', false, 'width: 300px');
 
 echo '<form id="custom_events" method="post" action="index.php?sec=geventos&sec2=godmode/events/events&section=fields&amp;pure='.$config['pure'].'">';
 html_print_table($table);
@@ -214,6 +223,7 @@ $(document).ready (function () {
 				id_field = $(value).attr('value');
 				$("select[name='fields_selected[]']").append($("<option></option>").html(field_name).attr("value", id_field));
 				$("#fields_available").find("option[value='" + id_field + "']").remove();
+				$("#fields_selected").find("option[value='0']").remove();
 			}
 		});
 	});
@@ -225,11 +235,13 @@ $(document).ready (function () {
 					id_field = $(value).attr('value');
 					$("select[name='fields_available[]']").append($("<option></option>").val(id_field).html('<i>' + field_name + '</i>'));
 					$("#fields_selected").find("option[value='" + id_field + "']").remove();
+					$("#fields_available").find("option[value='0']").remove();
 				}
 		});
 	});
 	
 	$("#submit-upd_button").click(function () {
+		$("#fields_selected").find("option[value='0']").remove();
 		$('#fields_selected option').map(function() {
 			$(this).prop('selected', true);
 		});

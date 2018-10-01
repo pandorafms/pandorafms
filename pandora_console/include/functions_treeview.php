@@ -266,35 +266,19 @@ function treeview_printModuleTable($id_module, $server_data = false, $no_head = 
 
 		$last_data_str .= "&nbsp;";
 		$last_data_str .= html_print_image('images/clock2.png', true, array('title' => $last_data["timestamp"], 'width' => '18px'));
-		
-		$is_snapshot = is_snapshot_data ( $last_data["datos"] );
-			if (($config['command_snapshot']) && ($is_snapshot)) {
-				$link = ui_get_snapshot_link( array(
-					'id_module' => $module['id_agente_modulo'],
-					'last_data' => $last_data['datos'],
-					'timestamp' => $last_data['timestamp'],
-					'interval' => $module['current_interval'],
-					'module_name' => $module['module_name']
-				));
 
-				if(!is_image_data($last_data["datos"])){
-					$salida = '<a href="javascript:' . $link . '">' .
-						html_print_image('images/default_list.png', true,
-							array('border' => '0',
-							'alt' => '',
-							'title' => __('Snapshot view'))) . '</a> &nbsp;&nbsp;';
-				}
-				else {
-					$salida = '<a href="javascript:' . $link . '">' .
-						html_print_image('images/photo.png', true,
-							array('border' => '0',
-								'alt' => '',
-								'title' => __('Snapshot view'))) . '</a> &nbsp;&nbsp;';
-				}
-			}
-		
-		
-			$last_data_str .=  $salida;
+		$is_snapshot = is_snapshot_data ( $last_data["datos"] );
+		$is_large_image = is_text_to_black_string ($last_data["datos"]);
+		if (($config['command_snapshot']) && ($is_snapshot || $is_large_image)) {
+			$link = ui_get_snapshot_link( array(
+				'id_module' => $module['id_agente_modulo'],
+				'interval' => $module['current_interval'],
+				'module_name' => $module['module_name'],
+				'id_node' => empty($server_id) ? 0 : $server_id
+			));
+			$salida = ui_get_snapshot_image($link, $is_snapshot) . '&nbsp;&nbsp;';
+		}
+		$last_data_str .=  $salida;
 	}
 	else {
 		$last_data_str = '<i>' . __('No data') . '</i>';

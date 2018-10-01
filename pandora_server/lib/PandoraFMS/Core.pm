@@ -114,6 +114,7 @@ use Encode;
 use XML::Simple;
 use HTML::Entities;
 use Time::Local;
+use Time::HiRes qw(time);
 use POSIX qw(strftime);
 use threads;
 use threads::shared;
@@ -157,7 +158,7 @@ require Exporter;
 our @ISA = ("Exporter");
 our %EXPORT_TAGS = ( 'all' => [ qw( ) ] );
 our @EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
-our @EXPORT = qw( 	
+our @EXPORT = qw(
 	pandora_add_agent_address
 	pandora_audit
 	pandora_create_agent
@@ -233,6 +234,7 @@ our @EXPORT = qw(
 	pandora_self_monitoring
 	pandora_process_policy_queue
 	subst_alert_macros
+	locate_agent
 	get_agent
 	get_agent_from_alias
 	get_agent_from_addr
@@ -257,6 +259,32 @@ our $EventStormProtection :shared = 0;
 
 # Current master server
 my $Master :shared = 0;
+
+##########################################################################
+# Return the agent given the agent name or alias or address.
+##########################################################################
+sub locate_agent {
+	my ($pa_config, $dbh, $field) = @_;
+
+	if (is_metaconsole($pa_config)) {
+		# Locate agent first in tmetaconsole_agent
+		return undef if (! defined ($field) || $field eq '');
+
+		my $rs = enterprise_hook('get_metaconsole_agent_from_alias', [$dbh, $field]);
+		return $rs if defined($rs) && (ref($rs)); # defined and not a scalar
+
+		$rs = enterprise_hook('get_metaconsole_agent_from_addr', [$dbh, $field]);
+		return $rs if defined($rs) && (ref($rs)); # defined and not a scalar
+
+		$rs = enterprise_hook('get_metaconsole_agent_from_name', [$dbh, $field]);
+		return $rs if defined($rs) && (ref($rs)); # defined and not a scalar
+
+	} else {
+		return get_agent($dbh, $field);
+	}
+
+	return undef;
+}
 
 
 ##########################################################################
@@ -1623,16 +1651,19 @@ sub pandora_process_module ($$$$$$$$$;$) {
 
 	my $save = ($module->{'history_data'} == 1 && ($agent_status->{'datos'} ne $processed_data || $last_try < ($utimestamp - 86400))) ? 1 : 0;
 	
-	db_do ($dbh, 'UPDATE tagente_estado
-		SET datos = ?, estado = ?, known_status = ?, last_status = ?, last_known_status = ?,
-			status_changes = ?, utimestamp = ?, timestamp = ?,
-			id_agente = ?, current_interval = ?, running_by = ?,
-			last_execution_try = ?, last_try = ?, last_error = ?,
-			ff_start_utimestamp = ?
-		WHERE id_agente_modulo = ?', $processed_data, $status, $status, $new_status, $new_status, $status_changes,
-		$current_utimestamp, $timestamp, $module->{'id_agente'}, $current_interval, $server_id,
-		$utimestamp, ($save == 1) ? $timestamp : $agent_status->{'last_try'}, $last_error, $ff_start_utimestamp, $module->{'id_agente_modulo'});
-	
+	# Never update tagente_estado when processing out-of-order data.
+	if ($utimestamp >= $last_try) {
+		db_do ($dbh, 'UPDATE tagente_estado
+			SET datos = ?, estado = ?, known_status = ?, last_status = ?, last_known_status = ?,
+				status_changes = ?, utimestamp = ?, timestamp = ?,
+				id_agente = ?, current_interval = ?, running_by = ?,
+				last_execution_try = ?, last_try = ?, last_error = ?,
+				ff_start_utimestamp = ?
+			WHERE id_agente_modulo = ?', $processed_data, $status, $status, $new_status, $new_status, $status_changes,
+			$current_utimestamp, $timestamp, $module->{'id_agente'}, $current_interval, $server_id,
+			$utimestamp, ($save == 1) ? $timestamp : $agent_status->{'last_try'}, $last_error, $ff_start_utimestamp, $module->{'id_agente_modulo'});
+	}
+
 	# Save module data. Async and log4x modules are not compressed.
 	if ($module_type =~ m/(async)|(log4x)/ || $save == 1) {
 		save_module_data ($data_object, $module, $module_type, $utimestamp, $dbh);
@@ -1883,7 +1914,7 @@ sub pandora_planned_downtime_unset_quiet_elements($$$) {
 ########################################################################
 =head2 C<< pandora_planned_downtime_quiet_once_stop (I<$pa_config>, I<$dbh>) >> 
 
-Start the planned downtime, the once type. 
+Stop the planned downtime, the once type. 
 
 =cut
 ########################################################################
@@ -1891,7 +1922,7 @@ sub pandora_planned_downtime_quiet_once_stop($$) {
 	my ($pa_config, $dbh) = @_;
 	my $utimestamp = time();
 	
-	# Stop pending downtimes
+	# Stop executed downtimes
 	my @downtimes = get_db_rows($dbh, 'SELECT *
 		FROM tplanned_downtime
 		WHERE type_downtime = ?
@@ -1992,8 +2023,8 @@ sub pandora_planned_downtime_monthly_start($$) {
 			AND type_execution <> ' . $RDBMS_QUOTE_STRING . 'once' . $RDBMS_QUOTE_STRING . '
 			AND ((periodically_day_from = ? AND periodically_time_from <= ?) OR (periodically_day_from < ?))
 			AND ((periodically_day_to = ? AND periodically_time_to >= ?) OR (periodically_day_to > ?))',
-			'monthly', 'number_day_month',
-			$time, $number_day_month,
+			'monthly',
+			$number_day_month, $time, $number_day_month,
 			$number_day_month, $time, $number_day_month);
 	
 	foreach my $downtime (@downtimes) {	
@@ -2030,7 +2061,7 @@ sub pandora_planned_downtime_monthly_start($$) {
 ########################################################################
 =head2 C<< pandora_planned_downtime_monthly_stop (I<$pa_config>, I<$dbh>) >> 
 
-Start the planned downtime, the montly type. 
+Stop the planned downtime, the monthly type. 
 
 =cut
 ########################################################################
@@ -2061,7 +2092,7 @@ sub pandora_planned_downtime_monthly_stop($$) {
 		$number_day_month = 31;
 	}
 	
-	# Start pending downtimes
+	# Stop executed downtimes
 	my @downtimes = get_db_rows($dbh, 'SELECT *
 		FROM tplanned_downtime
 		WHERE type_periodicity = ?
@@ -2107,7 +2138,7 @@ sub pandora_planned_downtime_monthly_stop($$) {
 ########################################################################
 =head2 C<< pandora_planned_downtime_weekly_start (I<$pa_config>, I<$dbh>) >> 
 
-Start the planned downtime, the montly type. 
+Start the planned downtime, the weekly type. 
 
 =cut
 ########################################################################
@@ -2216,7 +2247,7 @@ sub pandora_planned_downtime_weekly_start($$) {
 ########################################################################
 =head2 C<< pandora_planned_downtime_weekly_stop (I<$pa_config>, I<$dbh>) >> 
 
-Stop the planned downtime, the montly type. 
+Stop the planned downtime, the weekly type. 
 
 =cut
 ########################################################################
@@ -2232,7 +2263,7 @@ sub pandora_planned_downtime_weekly_stop($$) {
 	my $found = 0;
 	my $stop_downtime = 0;
 	
-	# Start pending downtimes
+	# Stop executed downtimes
 	my @downtimes = get_db_rows($dbh, 'SELECT *
 		FROM tplanned_downtime
 		WHERE type_periodicity = ?
@@ -3116,11 +3147,12 @@ Generate an event.
 
 =cut
 ##########################################################################
-sub pandora_event ($$$$$$$$$$;$$$$$$$$$) {
+sub pandora_event ($$$$$$$$$$;$$$$$$$$$$$) {
 	my ($pa_config, $evento, $id_grupo, $id_agente, $severity,
 		$id_alert_am, $id_agentmodule, $event_type, $event_status, $dbh,
 		$source, $user_name, $comment, $id_extra, $tags,
-		$critical_instructions, $warning_instructions, $unknown_instructions, $custom_data) = @_;
+		$critical_instructions, $warning_instructions, $unknown_instructions, $custom_data,
+		$module_data, $module_status) = @_;
 	my $event_table = is_metaconsole($pa_config) ? 'tmetaconsole_event' : 'tevento';
 
 	my $agent = undef;
@@ -3134,7 +3166,10 @@ sub pandora_event ($$$$$$$$$$;$$$$$$$$$) {
 
 	my $module = undef;
 	if (defined($id_agentmodule) && $id_agentmodule != 0) {
-		$module = get_db_single_row ($dbh, 'SELECT * FROM tagente_modulo WHERE id_agente_modulo = ?', $id_agentmodule);
+		$module = get_db_single_row ($dbh, 'SELECT *, tagente_estado.datos, tagente_estado.estado
+		                                    FROM tagente_modulo, tagente_estado
+                                            WHERE tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
+											AND tagente_modulo.id_agente_modulo = ?', $id_agentmodule);
 		if (defined ($module) && $module->{'quiet'} == 1) {
 			logger($pa_config, "Generate Event. The module '" . $module->{'nombre'} . "' is in quiet mode.", 10);
 			return;
@@ -3162,6 +3197,8 @@ sub pandora_event ($$$$$$$$$$;$$$$$$$$$) {
 	$warning_instructions = '' unless defined ($warning_instructions);
 	$unknown_instructions = '' unless defined ($unknown_instructions);
 	$custom_data = '' unless defined ($custom_data);
+	$module_data = defined($module) ? $module->{'datos'} : '' unless defined ($module_data);
+	$module_status = defined($module) ? $module->{'estado'} : '' unless defined ($module_status);
 	
 	# If the event is created with validated status, assign ack_utimestamp
 	my $ack_utimestamp = $event_status == 1 ? time() : 0;
@@ -3183,8 +3220,8 @@ sub pandora_event ($$$$$$$$$$;$$$$$$$$$) {
 	
 	# Create the event
 	logger($pa_config, "Generating event '$evento' for agent ID $id_agente module ID $id_agentmodule.", 10);
-	db_do ($dbh, 'INSERT INTO ' . $event_table . ' (id_agente, id_grupo, evento, timestamp, estado, utimestamp, event_type, id_agentmodule, id_alert_am, criticity, user_comment, tags, source, id_extra, id_usuario, critical_instructions, warning_instructions, unknown_instructions, ack_utimestamp, custom_data)
-	              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', $id_agente, $id_grupo, safe_input ($evento), $timestamp, $event_status, $utimestamp, $event_type, $id_agentmodule, $id_alert_am, $severity, $comment, $module_tags, $source, $id_extra, $user_name, $critical_instructions, $warning_instructions, $unknown_instructions, $ack_utimestamp, $custom_data);
+	db_do ($dbh, 'INSERT INTO ' . $event_table . ' (id_agente, id_grupo, evento, timestamp, estado, utimestamp, event_type, id_agentmodule, id_alert_am, criticity, user_comment, tags, source, id_extra, id_usuario, critical_instructions, warning_instructions, unknown_instructions, ack_utimestamp, custom_data, data, module_status)
+	              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', $id_agente, $id_grupo, safe_input ($evento), $timestamp, $event_status, $utimestamp, $event_type, $id_agentmodule, $id_alert_am, $severity, $comment, $module_tags, $source, $id_extra, $user_name, $critical_instructions, $warning_instructions, $unknown_instructions, $ack_utimestamp, $custom_data, $module_data, $module_status);
 	
 	# Do not write to the event file
 	return if ($pa_config->{'event_file'} eq '');
@@ -4168,11 +4205,11 @@ sub generate_status_event ($$$$$$$$) {
 	# Generate the event
 	if ($status != 0){
 		pandora_event ($pa_config, $description, $agent->{'id_grupo'}, $module->{'id_agente'},
-			$severity, 0, $module->{'id_agente_modulo'}, $event_type, 0, $dbh, 'monitoring_server', '', '', '', '', $module->{'critical_instructions'}, $module->{'warning_instructions'}, $module->{'unknown_instructions'});
+			$severity, 0, $module->{'id_agente_modulo'}, $event_type, 0, $dbh, 'monitoring_server', '', '', '', '', $module->{'critical_instructions'}, $module->{'warning_instructions'}, $module->{'unknown_instructions'}, undef, $data, $status);
 	} else { 
 		# Self validate this event if has "normal" status
 		pandora_event ($pa_config, $description, $agent->{'id_grupo'}, $module->{'id_agente'},
-			$severity, 0, $module->{'id_agente_modulo'}, $event_type, 1, $dbh, 'monitoring_server', '', '', '', '', $module->{'critical_instructions'}, $module->{'warning_instructions'}, $module->{'unknown_instructions'});
+			$severity, 0, $module->{'id_agente_modulo'}, $event_type, 1, $dbh, 'monitoring_server', '', '', '', '', $module->{'critical_instructions'}, $module->{'warning_instructions'}, $module->{'unknown_instructions'}, undef, $data, $status);
 	}
 
 }
@@ -4551,7 +4588,7 @@ sub pandora_process_event_replication ($) {
 				
 	logger($pa_config, "Starting replication events process.", 1);
 
-	while(1) { 
+	while($THRRUN == 1) { 
 
 		# If we are not the master server sleep and check again.
 		if (pandora_is_master($pa_config) == 0) {
@@ -4563,6 +4600,8 @@ sub pandora_process_event_replication ($) {
 		sleep ($replication_interval);
 		enterprise_hook('pandora_replicate_copy_events',[$pa_config, $dbh, $dbh_metaconsole, $metaconsole_server_id, $replication_mode]);
 	}
+
+	db_disconnect($dbh);
 }
 
 ##########################################################################
@@ -4582,7 +4621,7 @@ sub pandora_process_policy_queue ($) {
 
 	logger($pa_config, "Starting policy queue patrol process.", 1);
 
-	while(1) {
+	while($THRRUN == 1) {
 
 		# If we are not the master server sleep and check again.
 		if (pandora_is_master($pa_config) == 0) {
@@ -4609,7 +4648,9 @@ sub pandora_process_policy_queue ($) {
 		}
 		
 		enterprise_hook('pandora_finish_queue_operation', [$dbh, $operation->{'id'}]);
-	}	
+	}
+
+	db_disconnect($dbh);
 }
 
 ##########################################################################
@@ -4621,75 +4662,93 @@ Process groups statistics for statistics table
 ##########################################################################
 sub pandora_group_statistics ($$) {
 	my ($pa_config, $dbh) = @_;
-	
-	# Variable init
-	my $modules = 0;
-	my $normal = 0;
-	my $critical = 0;
-	my $warning = 0;
-	my $unknown = 0;
-	my $non_init = 0;
-	my $alerts = 0;
-	my $alerts_fired = 0;
-	my $agents = 0;
-	my $agents_unknown = 0;
-	my $utimestamp = 0;
-	my $group = 0;
+	my $is_meta = is_metaconsole($pa_config);
 
-	# Get all groups
-	my @groups = get_db_rows ($dbh, 'SELECT id_grupo FROM tgrupo');
-	my $table = is_metaconsole($pa_config) ? 'tmetaconsole_agent' : 'tagente';
+	logger($pa_config, "Updating no realtime group stats.", 10);
 
-	# For each valid group get the stats: Simple uh?
-	foreach my $group_row (@groups) {
+	my $total_alerts_condition = $is_meta
+		? "0"
+		: "COUNT(tatm.id)";
+	my $joins_alerts = $is_meta
+		? ""
+		: "LEFT JOIN tagente_modulo tam
+					ON tam.id_agente = ta.id_agente
+				INNER JOIN talert_template_modules tatm
+					ON tatm.id_agent_module = tam.id_agente_modulo";
+	my $agent_table = $is_meta
+		? "tmetaconsole_agent"
+		: "tagente";
+	my $agent_seconsary_table = $is_meta
+		? "tmetaconsole_agent_secondary_group"
+		: "tagent_secondary_group";
 
-		$group = $group_row->{'id_grupo'};
+	# Update the record.
+	db_do ($dbh, "REPLACE INTO tgroup_stat(
+			`id_group`, `modules`, `normal`, `critical`, `warning`, `unknown`,
+			`non-init`, `alerts`, `alerts_fired`, `agents`,
+			`agents_unknown`, `utimestamp`
+		)
+		SELECT
+			tg.id_grupo AS id_group,
+			IF (SUM(modules_total) IS NULL,0,SUM(modules_total)) AS modules,
+			IF (SUM(modules_ok) IS NULL,0,SUM(modules_ok)) AS normal,
+			IF (SUM(modules_critical) IS NULL,0,SUM(modules_critical)) AS critical,
+			IF (SUM(modules_warning) IS NULL,0,SUM(modules_warning)) AS warning,
+			IF (SUM(modules_unknown) IS NULL,0,SUM(modules_unknown)) AS unknown,
+			IF (SUM(modules_not_init) IS NULL,0,SUM(modules_not_init)) AS `non-init`,
+			IF (SUM(alerts_total) IS NULL,0,SUM(alerts_total)) AS alerts,
+			IF (SUM(alerts_fired) IS NULL,0,SUM(alerts_fired)) AS alerts_fired,
+			IF (SUM(agents_total) IS NULL,0,SUM(agents_total)) AS agents,
+			IF (SUM(agents_unknown) IS NULL,0,SUM(agents_unknown)) AS agents_unknown,
+			UNIX_TIMESTAMP() AS utimestamp
+		FROM
+			(
+				SELECT SUM(ta.normal_count) AS modules_ok,
+					SUM(ta.critical_count) AS modules_critical,
+					SUM(ta.warning_count) AS modules_warning,
+					SUM(ta.unknown_count) AS modules_unknown,
+					SUM(ta.notinit_count) AS modules_not_init,
+					SUM(ta.total_count) AS modules_total,
+					SUM(ta.fired_count) AS alerts_fired,
+					$total_alerts_condition AS alerts_total,
+					SUM(IF(ta.critical_count > 0, 1, 0)) AS agents_critical,
+					SUM(IF(ta.critical_count = 0 AND ta.warning_count = 0 AND ta.unknown_count > 0, 1, 0)) AS agents_unknown,
+					SUM(IF(ta.total_count = ta.notinit_count, 1, 0)) AS agents_not_init,
+					COUNT(ta.id_agente) AS agents_total,
+					ta.id_grupo AS g
+				FROM $agent_table ta
+				$joins_alerts
+				WHERE ta.disabled = 0
+				GROUP BY g
 
-		# NOTICE - Calculations done here MUST BE the same than used in PHP code to have
-		# the same criteria. PLEASE, double check any changes here and in functions_groups.php
-		$agents_unknown = get_db_value ($dbh, "SELECT COUNT(*) FROM $table WHERE disabled=0 AND critical_count=0 AND warning_count=0 AND unknown_count>0 AND id_grupo=?", $group);
-		$agents_unknown = 0 unless defined ($agents_unknown);
+				UNION ALL
 
-		$agents = get_db_value ($dbh, "SELECT COUNT(*) FROM $table WHERE id_grupo = $group AND disabled=0");
-		$agents = 0 unless defined ($agents);
+				SELECT SUM(ta.normal_count) AS modules_ok,
+					SUM(ta.critical_count) AS modules_critical,
+					SUM(ta.warning_count) AS modules_warning,
+					SUM(ta.unknown_count) AS modules_unknown,
+					SUM(ta.notinit_count) AS modules_not_init,
+					SUM(ta.total_count) AS modules_total,
+					SUM(ta.fired_count) AS alerts_fired,
+					$total_alerts_condition AS alerts_total,
+					SUM(IF(ta.critical_count > 0, 1, 0)) AS agents_critical,
+					SUM(IF(ta.critical_count = 0 AND ta.warning_count = 0 AND ta.unknown_count > 0, 1, 0)) AS agents_unknown,
+					SUM(IF(ta.total_count = ta.notinit_count, 1, 0)) AS agents_not_init,
+					COUNT(ta.id_agente) AS agents_total,
+					tasg.id_group AS g
+				FROM $agent_table ta
+				LEFT JOIN $agent_seconsary_table tasg
+					ON ta.id_agente = tasg.id_agent
+				$joins_alerts
+				WHERE ta.disabled = 0
+				GROUP BY g
+			) counters
+		RIGHT JOIN tgrupo tg
+			ON counters.g = tg.id_grupo
+		GROUP BY tg.id_grupo"
+	);
 
-		$modules = get_db_value ($dbh, "SELECT SUM(total_count) FROM $table WHERE disabled=0 AND id_grupo=?", $group);
-		$modules = 0 unless defined ($modules);
-		
-		$normal = get_db_value ($dbh, "SELECT COUNT(*) FROM $table WHERE disabled=0 AND critical_count=0 AND warning_count=0 AND unknown_count=0 AND normal_count>0 AND id_grupo=?", $group);
-		$normal = 0 unless defined ($normal);
-		
-		$critical = get_db_value ($dbh, "SELECT COUNT(*) FROM $table WHERE disabled=0 AND critical_count>0 AND id_grupo=?", $group);
-		$critical = 0 unless defined ($critical);
-		
-		$warning = get_db_value ($dbh, "SELECT COUNT(*) FROM $table WHERE disabled=0 AND critical_count=0 AND warning_count>0 AND id_grupo=?", $group);
-		$warning = 0 unless defined ($warning);
-	
-		$unknown = get_db_value ($dbh, "SELECT COUNT(*) FROM $table WHERE disabled=0 AND critical_count=0 AND warning_count=0 AND unknown_count>0 AND id_grupo=?", $group);	
-		$unknown = 0 unless defined ($unknown);
-		
-		$non_init = get_db_value ($dbh, "SELECT COUNT(*) FROM $table WHERE disabled=0 AND total_count=notinit_count AND id_grupo=?", $group);
-		$non_init = 0 unless defined ($non_init);
-		
-		# Total alert count not available on the meta console.
-		if ($table eq 'tagente') {
-			$alerts = get_db_value ($dbh, "SELECT COUNT(talert_template_modules.id)
-					FROM talert_template_modules, tagente_modulo, tagente
-					WHERE tagente.id_grupo = $group AND tagente_modulo.id_agente = tagente.id_agente
-						AND tagente_modulo.disabled = 0 AND tagente.disabled = 0  			
-						AND	talert_template_modules.disabled = 0 
-						AND talert_template_modules.id_agent_module = tagente_modulo.id_agente_modulo");
-		}
-		$alerts = 0 unless defined ($alerts);
-		
-		$alerts_fired = get_db_value ($dbh, "SELECT SUM(fired_count) FROM $table WHERE disabled=0 AND id_grupo=?", $group);
-		$alerts_fired = 0 unless defined ($alerts_fired);
-		
-		# Update the record.
-		db_do ($dbh, "REPLACE INTO tgroup_stat (id_group, modules, normal, critical, warning, unknown, " . $PandoraFMS::DB::RDBMS_QUOTE . 'non-init' . $PandoraFMS::DB::RDBMS_QUOTE . ", alerts, alerts_fired, agents, agents_unknown, utimestamp) VALUES ($group, $modules, $normal, $critical, $warning, $unknown, $non_init, $alerts, $alerts_fired, $agents, $agents_unknown, UNIX_TIMESTAMP())");
-
-	}
-
+	logger($pa_config, "No realtime group stats updated.", 6);
 }
 
 
@@ -4764,6 +4823,10 @@ sub pandora_self_monitoring ($$) {
 			WHERE token = 'db_maintance' AND value > UNIX_TIMESTAMP() - 86400");
 	}
 
+	my $start_performance = time;
+	get_db_value($dbh, "SELECT COUNT(*) FROM tagente_datos");
+	my $read_speed = int((time - $start_performance) * 1e6);
+
 	$xml_output .= enterprise_hook("elasticsearch_performance", [$pa_config, $dbh]);
 	
 	$xml_output .=" <module>";
@@ -4807,9 +4870,16 @@ sub pandora_self_monitoring ($$) {
 		$xml_output .=" <data>$free_disk_spool</data>";
 		$xml_output .=" </module>";
 	}
-	
+
+	$xml_output .=" <module>";
+	$xml_output .=" <name>Execution_Time</name>";
+	$xml_output .=" <type>generic_data</type>";
+	$xml_output .=" <unit>us</unit>";
+	$xml_output .=" <data>$read_speed</data>";
+	$xml_output .=" </module>";
+
 	$xml_output .= "</agent_data>";
-	
+
 	my $filename = $pa_config->{"incomingdir"}."/".$pa_config->{'servername'}.".self.".$utimestamp.".data";
 	
 	open (XMLFILE, ">> $filename") or die "[FATAL] Could not open internal monitoring XML file for deploying monitorization at '$filename'";

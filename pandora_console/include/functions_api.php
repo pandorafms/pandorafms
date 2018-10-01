@@ -30,6 +30,7 @@ include_once($config['homedir'] . "/include/functions_network_components.php");
 include_once($config['homedir'] . "/include/functions_netflow.php");
 include_once($config['homedir'] . "/include/functions_servers.php");
 include_once($config['homedir'] . "/include/functions_planned_downtimes.php");
+include_once($config['homedir'] . "/include/functions_db.php");
 enterprise_include_once ('include/functions_local_components.php');
 enterprise_include_once ('include/functions_events.php');
 enterprise_include_once ('include/functions_agents.php');
@@ -99,78 +100,69 @@ function returnError($typeError, $returnType = 'string') {
 			break;
 		default:
 			returnData("string",
-				array('type' => 'string', 'data' => __($returnType)));
+				array('type' => 'string', 'data' => __($typeError)));
 			break;
 	}
 }
 
 /**
- * 
  * @param $returnType
  * @param $data
  * @param $separator
- * 
  * @return
  */
 function returnData($returnType, $data, $separator = ';') {
 	switch ($returnType) {
 		case 'string':
-			if ($data['type'] == 'string') {
-				echo $data['data'];
+			if( is_array($data['data']) ){
+				echo convert_array_multi($data['data'], $separator);
 			}
-			else {
-				//TODO
+			else{
+				echo $data['data'];
 			}
 			break;
 		case 'csv':
 		case 'csv_head':
-			switch ($data['type']) {
-				case 'array':
-					if (array_key_exists('list_index', $data))
-					{
-						if ($returnType == 'csv_head') {
-							foreach($data['list_index'] as $index) {
-								echo $index;
-								if (end($data['list_index']) == $index)
-									echo "\n";
-								else
-									echo $separator;
-							}
-						}
-						foreach($data['data'] as $dataContent) {
-							foreach($data['list_index'] as $index) {
-								if (array_key_exists($index, $dataContent))
-									echo str_replace("\n", " ", $dataContent[$index]);
-								if (end($data['list_index']) == $index)
-									echo "\n";
-								else
-									echo $separator;
-							}
+			if( is_array($data['data']) ){
+				if (array_key_exists('list_index', $data)) {
+					if ($returnType == 'csv_head') {
+						foreach($data['list_index'] as $index) {
+							echo $index;
+							if (end($data['list_index']) == $index)
+								echo "\n";
+							else
+								echo $separator;
 						}
 					}
-					else {
-						if (!empty($data['data'])) {
-							
-							foreach ($data['data'] as $dataContent) {
-								
-								$clean = array_map("array_apply_io_safe_output", $dataContent);
-								
-								foreach ($clean as $k => $v) {
-									$clean[$k] = str_replace("\r", "\n", $clean[$k]);
-									$clean[$k] = str_replace("\n", " ", $clean[$k]);
-									$clean[$k] = strip_tags($clean[$k]);
-									$clean[$k] = str_replace(';',' ',$clean[$k]);
-								}
-								$row = implode($separator, $clean);
-								
-								echo $row . "\n";
-							}
+					foreach($data['data'] as $dataContent) {
+						foreach($data['list_index'] as $index) {
+							if (array_key_exists($index, $dataContent))
+								echo str_replace("\n", " ", $dataContent[$index]);
+							if (end($data['list_index']) == $index)
+								echo "\n";
+							else
+								echo $separator;
 						}
 					}
-					break;
-				case 'string':
-					echo $data['data'];
-					break;
+				}
+				else {
+					if (!empty($data['data'])) {
+						foreach ($data['data'] as $dataContent) {
+							$clean = array_map("array_apply_io_safe_output", $dataContent);
+							foreach ($clean as $k => $v) {
+								$clean[$k] = str_replace("\r", "\n", $clean[$k]);
+								$clean[$k] = str_replace("\n", " ", $clean[$k]);
+								$clean[$k] = strip_tags($clean[$k]);
+								$clean[$k] = str_replace(';',' ',$clean[$k]);
+							}
+							$row = implode($separator, $clean);
+							echo $row . "\n";
+						}
+					}
+				}
+			}
+			else{
+				echo $data['data'];
 			}
 			break;
 		case 'json':
@@ -180,13 +172,13 @@ function returnData($returnType, $data, $separator = ';') {
 			if ($separator == ";") {
 				$separator = null;
 			}
-			
+
 			if(empty($separator)){
 				echo json_encode ($data);
 			} else {
 				echo json_encode ($data, $separator);
 			}
-			
+
 			break;
 	}
 }
@@ -1183,11 +1175,14 @@ function api_set_update_agent($id_agent, $thrash2, $other, $thrash3) {
 			return;
 		}
 	}
+	$values_old = db_get_row_filter('tagente',
+		array('id_agente' => $id_agent),
+		array('id_grupo', 'disabled')
+	);
+	$tpolicy_group_old = db_get_all_rows_sql("SELECT id_policy FROM tpolicy_groups
+			WHERE id_group = ".$values_old['id_grupo']);
 	
-	$group_old = db_get_sql("SELECT id_grupo FROM tagente WHERE id_agente =" .$id_agent);
-	$tpolicy_group_old = db_get_all_rows_sql("SELECT id_policy FROM tpolicy_groups 
-			WHERE id_group = ".$group_old);
-	
+
 	$return = db_process_sql_update('tagente', 
 		array('alias' => $alias,
 			'direccion' => $ip,
@@ -1208,8 +1203,16 @@ function api_set_update_agent($id_agent, $thrash2, $other, $thrash3) {
 		// register ip for this agent in 'taddress'
 		agents_add_address ($id_agent, $ip);
 	}
-	
+
 	if($return){
+		// Update config file
+		if (isset($disabled) && $values_old['disabled'] != $disabled) {
+			enterprise_hook(
+				'config_agents_update_config_token',
+				array($id_agent, 'standby', $disabled)
+			);
+		}
+
 		if($tpolicy_group_old){
 			foreach ($tpolicy_group_old as $key => $value) {
 				$tpolicy_agents_old= db_get_sql("SELECT * FROM tpolicy_agents 
@@ -1398,6 +1401,68 @@ function api_set_new_agent($thrash1, $thrash2, $other, $thrash3) {
 			array('type' => 'string', 'data' => $idAgente));
 	}
 }
+
+
+function api_set_create_os($thrash1, $thrash2, $other, $thrash3) {
+	global $config;
+
+
+	if (!check_acl($config['id_user'], 0, "AW")) {
+		returnError('forbidden', 'string');
+		return;
+	}
+	
+	if (defined ('METACONSOLE')) {
+		return;
+	}
+
+	$values = array();
+	
+	$values['name'] = $other['data'][0];
+	$values['description'] = $other['data'][1];
+
+	if (($other['data'][2] !== 0) && ($other['data'][2] != '')) {
+		$values['icon_name'] = $other['data'][2];
+	}
+
+
+
+	$resultOrId = false;
+	if ($other['data'][0] != '') {
+		$resultOrId = db_process_sql_insert('tconfig_os', $values);
+	}
+
+}
+
+function api_set_update_os($id_os, $thrash2, $other, $thrash3) {
+	global $config;
+
+	if (defined ('METACONSOLE')) {
+		return;
+	}
+
+	if (!check_acl($config['id_user'], 0, "AW")) {
+		returnError('forbidden', 'string');
+		return;
+	}
+			
+	$values = array();
+	$values['name'] = $other['data'][0];
+	$values['description'] = $other['data'][1];
+		
+	if (($other['data'][2] !== 0) && ($other['data'][2] != '')) {
+		$values['icon_name'] = $other['data'][2];;
+	}
+	$result = false;
+
+
+	if ($other['data'][0] != '') {
+
+		$result = db_process_sql_update('tconfig_os', $values, array('id_os' => $id_os));
+	}
+
+}
+
 
 /**
  *
@@ -5401,74 +5466,6 @@ function api_set_planned_downtimes_additem ($id, $thrash1, $other, $thrash3) {
 }
 
 /**
- * Add agent to a policy. And return a message with the result of the operation.
- * 
- * @param string $id Id of the target policy.
- * @param $thrash1 Don't use.
- * @param array $other it's array, $other as param is <id_agent> in this order
- *  and separator char (after text ; ) and separator (pass in param othermode as othermode=url_encode_separator_<separator>)
- *  example:
- * 
- *  example:
- * 
- * api.php?op=set&op2=add_agent_policy&id=1&other=167&other_mode=url_encode_separator_|  
- *    
- * @param $thrash3 Don't use
- */
-function api_set_add_agent_policy($id, $thrash1, $other, $thrash2) {
-	if (defined ('METACONSOLE')) {
-		return;
-	}
-	
-	if ($id == "") {
-		returnError('error_add_agent_policy', __('Error adding agent to policy. Id_policy cannot be left blank.'));
-		return;
-	}
-	
-	if ($other['data'][0] == "") {
-		returnError('error_add_agent_policy', __('Error adding agent to policy. Id_agent cannot be left blank.'));
-		return;
-	}
-	
-	// Check if the agent exists and permissions
-	if (!util_api_check_agent_and_print_error((int) $other['data'][0], 'string', "AW")) {
-		return;
-	}
-
-	// Check the policy permissions and existence
-	if (enterprise_hook('policies_check_user_policy', array($id)) === false) {
-		$result_agent = db_get_value ('id_agente', 'tagente', 'id_agente', (int) $other['data'][0]);
-		if ($result_agent) {
-			returnError('error_add_agent_policy', __('Error adding agent to policy. Id policy doesn\'t exist.'));
-			return;
-		}
-		returnError('forbidden', 'string');
-		return;
-	}
-	
-	// Check if the agent is already in the policy
-	$id_agent_policy = enterprise_hook('policies_get_agents', array($id, array('id_agent' => $other['data'][0]), 'id'));
-	
-	if ($id_agent_policy === ENTERPRISE_NOT_HOOK) {
-		returnError('error_add_agent_policy', __('Error adding agent to policy.'));
-		return;
-	}
-	
-	if ($id_agent_policy === false) {
-		$success = enterprise_hook('policies_create_agent', array($other['data'][0], $id, true));
-	}
-	else {
-		returnError('error_add_agent_policy', __('Error adding agent to policy. The agent is already in the policy.'));
-		return;
-	}
-	
-	if ($success)
-		returnData('string', array('type' => 'string', 'data' => $success));
-	else
-		returnError('error_add_agent_policy', 'Error adding agent to policy.');
-}
-
-/**
  * Add data module to policy. And return id from new module.
  * 
  * @param string $id Id of the target policy.
@@ -6427,153 +6424,6 @@ function api_set_update_snmp_module_policy($id, $thrash1, $other, $thrash3) {
 	else
 		returnData('string',
 			array('type' => 'string', 'data' => __('SNMP policy module updated.')));
-}
-
-
-/**
- * Apply policy. And return id from the applying operation.
- * 
- * @param string $id Id of the target policy.
- * @param $thrash1 Don't use.
- * @param array $other Don't use
- *  and separator char (after text ; ) and separator (pass in param othermode as othermode=url_encode_separator_<separator>)
- *  example:  
- * 
- *  api.php?op=set&op2=apply_policy&id=1
- * 
- * @param $thrash3 Don't use
- */
-function api_set_apply_policy($id, $thrash1, $other, $thrash3) {
-	if (defined ('METACONSOLE')) {
-		return;
-	}
-	
-	if ($id == "") {
-		returnError('error_apply_policy', __('Error applying policy. Id_policy cannot be left blank.'));
-		return;
-	}
-	
-	# Check if this operation is duplicated
-	$duplicated = enterprise_hook('policies_get_policy_queue_status', array($id));
-	
-	if ($duplicated === ENTERPRISE_NOT_HOOK) {
-		// We want to return a value
-		if ($other == "return") {
-			return -1;
-		}
-		else {
-			returnError('error_apply_policy', __('Error applying policy.'));
-			return;
-		}
-	}
-	
-	if ($duplicated == STATUS_IN_QUEUE_APPLYING or $duplicated == STATUS_IN_QUEUE_IN) {
-		// We want to return a value
-		if ($other == "return") {
-			return -1;
-		}
-		else {
-			returnError('error_apply_policy',
-				__('Error applying policy. This policy is already pending to apply.'));
-			return;
-		}
-	}
-
-	$check_acl = enterprise_hook('policies_check_user_policy', array($id));
-	if ($check_acl !== true) {
-		// We want to return a value
-		if ($other == "return") {
-			return -1;
-		}
-		else {
-			returnError('error_apply_policy', __('Error applying policy.'));
-			return;
-		}
-	}
-	
-	$id = enterprise_hook('add_policy_queue_operation', array($id, 0, 'apply'));
-	
-	if ($id === ENTERPRISE_NOT_HOOK) {
-		// We want to return a value
-		if ($other == "return") {
-			return -1;
-		}
-		else {
-			returnError('error_apply_policy', __('Error applying policy.'));
-			return;
-		}
-	}
-	
-	// We want to return a value
-	if ($other == "return") {
-		if ($id)
-			return $id;
-		else
-			return -1;
-	}
-	else {
-		if ($id)
-			returnData('string', array('type' => 'string', 'data' => $id));
-		else
-			returnError('error_apply_policy', 'Error applying policy.');
-	}
-}
-
-
-/**
- * Apply all policy in database. And return the number of policies applied.
- * 
- * @param string $id Don't use.
- * @param $thrash1 Don't use.
- * @param array $other Don't use
- *  and separator char (after text ; ) and separator (pass in param othermode as othermode=url_encode_separator_<separator>)
- *  example:  
- * 
- *  api.php?op=set&op2=apply_all_policies
- * 
- * @param $thrash3 Don't use
- */
-function api_set_apply_all_policies($thrash1, $thrash2, $other, $thrash3) {
-	global $config;
-	if (defined ('METACONSOLE')) {
-		return;
-	}
-	
-	if (!check_acl($config['id_user'], 0, "AW")) {
-		returnError('forbidden', 'string');
-		return;
-	}
-
-	$policies = array();
-	
-	# Get all policies
-	$policies = enterprise_hook('policies_get_policies', array(false, false, false));
-	
-	if ($policies === ENTERPRISE_NOT_HOOK) {
-		returnError('error_apply_all_policy', __('Error applying all policies.'));
-		return;
-	}
-	if ($policies === false) $policies = array();
-
-	$num_policies = count($policies);
-	$count_results = 0;
-	foreach ($policies as $policy) {
-		$return_value = enterprise_hook('add_policy_queue_operation',
-			array($policy['id'], 0, 'apply'));
-		
-		if ($return_value != -1) {
-			$count_results++;
-		}
-	}
-	
-	if ($num_policies > $count_results) {
-		$errors = $num_policies - $count_results;
-		
-		returnError('error_apply_policy', 'Error applying policy. ' . $errors . ' failed. ');	
-	}
-	else {
-		returnData('string', array('type' => 'string', 'data' => $count_results));		
-	}
 }
 
 /**
@@ -11621,8 +11471,282 @@ function util_api_check_agent_and_print_error($id_agent, $returnType, $access = 
 	return false;
 }
 
+function api_get_user_info($thrash1, $thrash2, $other, $returnType) {
+	if (defined ('METACONSOLE')) {
+		return;
+	}
+	
+	$separator = ';';
+	
+	$other = json_decode(base64_decode($other['data']),true);
+	
+	$sql = 'select * from tusuario where id_user = "'.$other[0]['id_user'].'" and password = "'.$other[0]['password'].'"';
+	
+	$user_info = db_get_all_rows_sql($sql);
+
+	if (count($user_info) > 0 and $user_info !== false) {
+		$data = array('type' => 'array', 'data' => $user_info);
+		returnData($returnType, $data, $separator);
+	}
+	else {
+		return 0;
+	}
+}
 
 
+/*
+
+This function receives different parameters to process one of these actions the logging process in our application from the records in the audit of pandora fms, to avoid concurrent access of administrator users, and optionally to prohibit access to non-administrator users:
+
+Parameter 0
+
+The User ID that attempts the action is used to check the status of the application for access.
+
+Parameter 1
+
+Login, logout, exclude, browse.
+
+These requests receive a response that we can treat as we consider, this function only sends answers, does not perform any action in your application, you must customize them.
+
+Login action: free (register our access), taken, denied (if you are not an administrator user and parameter four is set to 1, register the expulsion).
+
+Browse action: It has the same answers as login, but does not register anything in the audit.
+
+Logout action: It records the deslogeo but does not send a response.
+
+All other actions do not return a response,
+
+Parameter 2
+
+IP address of the application is also used to check the status of the application for access.
+
+Parameter 3
+
+Name of the application, it is also used to check the status of the application for access.
+
+Parameter 4
+
+If you mark 1 you will avoid the access to the non-administrators users, returning the response `denied' and registering that expulsion in the audit of pandora fms.
+
+*/
+
+
+
+function api_set_access_process($thrash1, $thrash2, $other, $returnType) {
+	if (defined ('METACONSOLE')) {
+		return;
+	}
+	
+	$other['data'] = explode('|',$other['data']);
+	
+	$sql = 'select id_usuario,utimestamp from tsesion where descripcion like "%'.$other['data'][2].'%" and accion like "%'.$other['data'][3].'&#x20;Logon%" and id_usuario IN (select id_user from tusuario where is_admin = 1) and id_usuario != "'.$other['data'][0].'" order by utimestamp DESC limit 1';
+	$audit_concurrence = db_get_all_rows_sql($sql);
+	$sql_user = 'select id_usuario,utimestamp from tsesion where descripcion like "%'.$other['data'][2].'%" and accion like "%'.$other['data'][3].'&#x20;Logon%" and id_usuario IN (select id_user from tusuario where is_admin = 1) and id_usuario = "'.$other['data'][0].'" order by utimestamp DESC limit 1';
+	$audit_concurrence_user = db_get_all_rows_sql($sql_user);
+	$sql2 = 'select id_usuario,utimestamp,accion from tsesion where descripcion like "%'.$other['data'][2].'%" and accion like "%'.$other['data'][3].'&#x20;Logoff%" and id_usuario = "'.$audit_concurrence[0]['id_usuario'].'" order by utimestamp DESC limit 1';
+	$audit_concurrence_2 = db_get_all_rows_sql($sql2);
+	
+	//The user trying to log in is an administrator	
+	if(users_is_admin($other['data'][0])){
+	//The admin user is trying to login
+	if($other['data'][1] == 'login'){
+		// Check if there is an administrator user logged in prior to our last login
+		if($audit_concurrence[0]['utimestamp'] > $audit_concurrence_user[0]['utimestamp']){
+			// Check if the administrator user logged in later to us has unlogged and left the node free
+			if($audit_concurrence[0]['utimestamp'] > $audit_concurrence_2[0]['utimestamp']){
+				// The administrator user logged in later has not yet unlogged
+				returnData('string', array('type' => 'string', 'data' => 'taken'));	
+			}
+			else{
+				// The administrator user logged in later has already unlogged
+				returnData('string', array('type' => 'string', 'data' => 'free'));	
+			}			
+		}
+		else{
+			// There is no administrator user who has logged in since then to log us in.
+			db_pandora_audit($other['data'][3].' Logon', 'Logged in '.$other['data'][3].' node '.$other['data'][2] , $other['data'][0]);
+			returnData('string', array('type' => 'string', 'data' => 'free'));
+		}
+		
+	}
+	elseif ($other['data'][1] == 'logout') {
+		// The administrator user wants to log out
+		db_pandora_audit($other['data'][3].' Logoff', 'Logout from '.$other['data'][3].' node '.$other['data'][2], $other['data'][0]);
+	}
+	elseif ($other['data'][1] == 'exclude') {
+		// The administrator user has ejected another administrator user who was logged in
+		db_pandora_audit($other['data'][3].' Logon', 'Logged in '.$other['data'][3].' node '.$other['data'][2] , $other['data'][0]);
+		db_pandora_audit($other['data'][3].' Logoff', 'Logout from '.$other['data'][3].' node '.$other['data'][2] , $audit_concurrence[0]['id_usuario']);
+		
+	}
+	//The admin user is trying to browse
+	elseif ($other['data'][1] == 'browse') {
+		// Check if there is an administrator user logged in prior to our last login
+		if($audit_concurrence[0]['utimestamp'] > $audit_concurrence_user[0]['utimestamp']){
+			// Check if the administrator user logged in later to us has unlogged and left the node free
+			if($audit_concurrence[0]['utimestamp'] > $audit_concurrence_2[0]['utimestamp']){
+				// The administrator user logged in later has not yet unlogged
+				returnData('string', array('type' => 'string', 'data' => $audit_concurrence[0]['id_usuario']));	
+			}
+			else{
+				// The administrator user logged in later has already unlogged
+				returnData('string', array('type' => 'string', 'data' => 'free'));	
+			}			
+		}
+		else{
+			// There is no administrator user who has logged in since then to log us in.
+			returnData('string', array('type' => 'string', 'data' => 'free'));
+		}
+		
+	}
+	elseif ($other['data'][1] == 'cancelled'){
+		//The administrator user tries to log in having another administrator logged in, but instead of expelling him he cancels his log in.
+		db_pandora_audit($other['data'][3].' cancelled access', 'Cancelled access in '.$other['data'][3].' node '.$other['data'][2] , $other['data'][0]);
+		returnData('string', array('type' => 'string', 'data' => 'cancelled'));			
+	}
+	
+}
+else{
+		
+		if($other['data'][4] == 1){
+			//The user trying to log in is not an administrator and is not allowed no admin access
+			db_pandora_audit($other['data'][3].' denied access', 'Denied access to non-admin user '.$other['data'][3].' node '.$other['data'][2] , $other['data'][0]);
+			returnData('string', array('type' => 'string', 'data' => 'denied'));
+		}
+		else{
+		//The user trying to log in is not an administrator and is allowed no admin access
+			if($other['data'][1] == 'login'){
+				//The user trying to login is not admin, can enter without concurrent use filter
+				db_pandora_audit($other['data'][3].' Logon', 'Logged in '.$other['data'][3].' node '.$other['data'][2] , $other['data'][0]);
+				returnData('string', array('type' => 'string', 'data' => 'free'));
+				
+			}
+			elseif ($other['data'][1] == 'logout') {
+			//The user trying to logoff is not admin
+				db_pandora_audit($other['data'][3].' Logoff', 'Logout from '.$other['data'][3].' node '.$other['data'][2], $other['data'][0]);
+			}
+			elseif ($other['data'][1] == 'browse'){
+			//The user trying to browse in an app page is not admin, can enter without concurrent use filter
+				returnData('string', array('type' => 'string', 'data' => 'free'));		
+			}
+		}
+	}
+}
+
+
+function api_get_traps($thrash1, $thrash2, $other, $returnType) {
+	
+	if (defined ('METACONSOLE')) {
+		return;
+	}
+	
+	$other['data'] = explode('|',$other['data']);
+	
+	$other['data'][1] = date("Y-m-d H:i:s",$other['data'][1]);
+	
+	$sql = 'SELECT * from ttrap where timestamp >= "'.$other['data'][1].'"';
+	
+	// $sql = 'SELECT * from ttrap where source = "'.$other['data'][0].'" and timestamp >= "'.$other['data'][1].'"';
+	
+	if($other['data'][4]){
+		$other['data'][4] = date("Y-m-d H:i:s",$other['data'][4]);
+		$sql .= ' and timestamp <= "'.$other['data'][4].'"';
+	}
+	
+	if($other['data'][2]){
+		$sql .= ' limit '.$other['data'][2];
+	}
+	
+	if($other['data'][3]){
+		$sql .= ' offset '.$other['data'][3];
+	}
+	
+	if($other['data'][5]){
+		$sql .= ' and status = 0';
+	}
+	
+	if(sizeof($other['data']) == 0){
+		$sql = 'SELECT * from ttrap';
+	}
+	
+	
+	$traps = db_get_all_rows_sql($sql);
+	
+	if($other['data'][6]){
+		
+		foreach ($traps as $key => $value) {
+			
+			if(!strpos($value['oid_custom'],$other['data'][6]) && $other['data'][7] == 'false'){
+				unset($traps[$key]);
+			}
+			
+			if(strpos($value['oid_custom'],$other['data'][6]) && $other['data'][7] == 'true'){
+				unset($traps[$key]);
+			}
+			
+		}
+			
+	}
+		
+	$traps_json = json_encode($traps);
+
+	if (count($traps) > 0 and $traps !== false) {
+		returnData('string', array('type' => 'string', 'data' => $traps_json));
+	}
+	else {
+		return 0;
+	}
+				
+}
+
+function api_set_validate_traps ($id, $thrash2, $other, $thrash3) {
+	
+	if (defined ('METACONSOLE')) {
+		return;
+	}
+	
+	if($id == 'all'){
+		$result = db_process_sql_update('ttrap',array('status' => 1));	
+	}
+	else{
+		$result = db_process_sql_update('ttrap',
+			array('status' => 1), array('id_trap' => $id));	
+	}
+	
+	if (is_error($result)) {
+		// TODO: Improve the error returning more info
+		returnError('error_update_trap', __('Error in trap update.'));
+	}
+	else {
+			returnData('string',
+				array('type' => 'string',
+					'data' => __('Validated traps.')));
+		}
+	}
+	
+	function api_set_delete_traps ($id, $thrash2, $other, $thrash3) {
+		
+		if (defined ('METACONSOLE')) {
+			return;
+		}
+		
+		if($id == 'all'){
+			$result = db_process_sql ('delete from ttrap');
+		}
+		else{
+			$result = db_process_sql_delete('ttrap',array('id_trap' => $id));	
+		}
+		
+		if (is_error($result)) {
+			// TODO: Improve the error returning more info
+			returnError('error_delete_trap', __('Error in trap delete.'));
+		}
+		else {
+				returnData('string',
+					array('type' => 'string',
+						'data' => __('Deleted traps.')));
+			}
+		}
 
 
 ?>

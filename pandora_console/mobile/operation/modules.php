@@ -270,6 +270,7 @@ class Modules {
 	}
 	
 	private function getListModules($page = 0, $ajax = false) {
+		global $config;
 		$system = System::getInstance();
 		$user = User::getInstance();
 		
@@ -590,34 +591,17 @@ class Modules {
 						$output = $sub_string;
 					}
 				}
-				
-				
-				$is_snapshot = is_snapshot_data($module["datos"]);
-	
-				$handle = "snapshot" . "_" . $module["id_agente_modulo"];
-				$url = 'include/procesos.php?agente=' . $module["id_agente_modulo"];
-		
-				$link = "window.open('../operation/agentes/snapshot_view.php?" .
-				"id=" . $module["id_agente_modulo"] .
-				"&refr=" . $module["module_interval"]."','".$handle."','width=700, height=480')";
-	
-				if ($is_snapshot) {
-					if (is_image_data($module["datos"])) {
-						$row[7] = $row[__('Data')] = '<a href="javascript:' . $link . '">' .
-							html_print_image("images/photo.png", true,
-								array("border" => '0',
-								"alt" => "",
-								"title" => __("Snapshot view"))) . '</a> &nbsp;&nbsp;';
-					}
-					else {
-						$row[7] = $row[__('Data')] = '<a href="javascript:' . $link . '">' .
-							html_print_image("images/default_list.png", true,
-							array("border" => '0',
-								"alt" => "",
-								"title" => __("Snapshot view"))) . '</a> &nbsp;&nbsp;';
-					}
-				}			 
-				 else {
+
+				$is_snapshot = is_snapshot_data ($module["datos"]);
+				$is_large_image = is_text_to_black_string ($module["datos"]);
+				if (($config['command_snapshot']) && ($is_snapshot || $is_large_image)) {
+					$link = ui_get_snapshot_link( array(
+						'id_module' => $module['id_agente_modulo'],
+						'module_name' => $module['module_name']
+					));
+
+					$row[7] = ui_get_snapshot_image($link, $is_snapshot) . '&nbsp;&nbsp;';
+				} else {
 					$row[7] = $row[__('Data')] = '<span style="white-space: nowrap;">' .
 					'<span style="display: none;" class="show_collapside">' .
 						$row[__('Status')] . '&nbsp;&nbsp;</span>' .
@@ -626,18 +610,7 @@ class Modules {
 					$module['id_agente_modulo'] . '&id_agent=' . 
 					$this->id_agent . '">' . $output . '</a>' . '</span>';
 				}
-				
-				
-		/*
-		
-			'<span style="white-space: nowrap;">' .
-			'<span style="display: none;" class="show_collapside">' .
-				$row[__('Status')] . '&nbsp;&nbsp;</span>' .
-			'<a data-ajax="false" class="ui-link" ' .
-				'href="index.php?page=module_graph&id=' . 
-			$module['id_agente_modulo'] . '&id_agent=' . 
-			$this->id_agent . '">' . $output . '</a>' . '</span>';*/
-				
+
 				if (!$ajax) {
 					unset($row[0]);
 					if ($this->columns['agent']) {
@@ -814,23 +787,9 @@ class Modules {
 					$filters_to_serialize[] = sprintf(__("Tag: %s"),
 					$tag_name);
 			}
-			
+
 			$string = '(' . implode(' - ', $filters_to_serialize) . ')';
-			
-			
-			
-			//~ $status = $this->list_status[$this->status];
-			//~ 
-			//~ $group = groups_get_name($this->group, true);
-			//~ 
-			//~ $module_group = db_get_value('name',
-				//~ 'tmodule_group', 'id_mg', $this->module_group);
-			//~ $module_group = io_safe_output($module_group);
-			//~ 
-			//~ $string = sprintf(
-				//~ __("(Status: %s - Group: %s - Module group: %s - Free Search: %s)"),
-				//~ $status, $group, $module_group, $this->free_search);
-			
+
 			return $string;
 		}
 	}

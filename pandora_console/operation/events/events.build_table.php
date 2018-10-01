@@ -17,6 +17,8 @@ global $config;
 
 require_once ($config["homedir"] . "/include/functions_ui.php");
 
+$sort_field = get_parameter("sort_field", "timestamp");
+$sort = get_parameter("sort", "down");
 
 $table = new stdClass();
 if(!isset($table->width)) {
@@ -31,37 +33,54 @@ if(!isset($table->class)) {
 $table->head = array ();
 $table->data = array ();
 
+$params = array (
+	// Pandora sections
+	"sec" => "eventos",
+	"sec2" => "operation/events/events",
+
+	// Events query params
+	"search" => io_safe_input($search),
+	"severity" => $severity,
+	"status" => $status,
+	"id_group" => $id_group,
+	"recursion" => $recursion,
+	"refr" => (int)get_parameter("refr", 0),
+	"id_agent_module" => $id_agent_module,
+	"pagination" => $pagination,
+	"group_rep" => $group_rep,
+	"event_view_hr" => $event_view_hr,
+	"id_user_ack" => $id_user_ack,
+	"tag_with" => $tag_with_base64,
+	"tag_without" => $tag_without_base64,
+	"filter_only_alert" => $filter_only_alert,
+	"offset" => $offset,
+	"toogle_filter" => "no",
+	"filter_id" => $filter_id,
+	"id_name" => $id_name,
+	"history" => (int)$history,
+	"section" => $section,
+	"open_filter" => $open_filter,
+	"date_from" => $date_from,
+	"date_to" => $date_to,
+	"pure" => $config["pure"],
+
+	// Display params
+	"offset" => $offset,
+	"disabled" => $disabled,
+	"sort" => $sort,
+	"sort_field" => $sort_field
+);
+
 if ($group_rep == 2) {
 	$table->class = "databox filters data";
 	$table->head[1] = __('Agent');
 	$table->head[5] = __('More detail');
-	
-	$params = "search=" . io_safe_input($search) . 
-		"&amp;severity=" . $severity . 
-		"&amp;status=" . $status . 
-		"&amp;id_group=" . $id_group . 
-		"&amp;recursion=" . $recursion . 
-		"&amp;refr=" . (int)get_parameter("refr", 0) . 
-		"&amp;id_agent_module=" . $id_agent_module . 
-		"&amp;pagination=" . $pagination . 
-		"&amp;group_rep=2" . 
-		"&amp;event_view_hr=" . $event_view_hr . 
-		"&amp;id_user_ack=" . $id_user_ack .
-		"&amp;tag_with=". $tag_with_base64 . 
-		"&amp;tag_without=" . $tag_without_base64 . 
-		"&amp;filter_only_alert" . $filter_only_alert .
-		"&amp;offset=" . $offset .
-		"&amp;toogle_filter=no" .
-		"&amp;filter_id=" . $filter_id .
-		"&amp;id_name=" . $id_name .
-		"&amp;history=" . (int)$history .
-		"&amp;section=" . $section .
-		"&amp;open_filter=" . $open_filter .
-		"&amp;date_from=" . $date_from .
-		"&amp;date_to=" . $date_to .
-		"&amp;pure=" . $config["pure"];
 
-	$url = "index.php?sec=eventos&amp;sec2=operation/events/events&amp;" . $params;
+	$url =  html_print_sort_arrows(
+		array_merge($params, array('sort_field' => 'status')),
+		'sort'
+	);
+
 	foreach ($result as $key => $res) {
 		
 		if ($res['event_type'] == 'alert_fired') {
@@ -119,7 +138,6 @@ if ($group_rep == 2) {
 	}
 }
 else {
-	
 	//fields that the user has selected to show
 	if ($meta) {
 		$show_fields = events_meta_get_custom_fields_user();
@@ -130,7 +148,10 @@ else {
 
 	//headers
 	$i = 0;
-	$table->head[$i] = __('ID');
+	$table->head[$i] = __('ID') . html_print_sort_arrows(
+		array_merge($params, array('sort_field' => 'event_id')),
+		'sort'
+	);
 
 	$table->align[$i] = 'left';
 
@@ -141,104 +162,154 @@ else {
 		$i++;
 	}
 	if (in_array('estado', $show_fields)) {
-		$table->head[$i] = __('Status');
+		$table->head[$i] = __('Status')  . html_print_sort_arrows(
+			array_merge($params, array('sort_field' => 'status')),
+			'sort'
+		);
 		$table->align[$i] = 'left';
 		$i++;
 	}
 	if (in_array('id_evento', $show_fields)) {
-		$table->head[$i] = __('Event ID');
+		$table->head[$i] = __('Event ID') . html_print_sort_arrows(
+			array_merge($params, array('sort_field' => 'event_id')),
+			'sort'
+		);
 		$table->align[$i] = 'left';
 
 		$i++;
 	}
 	if (in_array('evento', $show_fields)) {
-		$table->head[$i] = __('Event Name');
+		$table->head[$i] = __('Event Name') . html_print_sort_arrows(
+			array_merge($params, array('sort_field' => 'event_name')),
+			'sort'
+		);
 		$table->align[$i] = 'left';
 		$table->style[$i] = 'min-width: 200px; max-width: 350px; word-break: break-all;';
 		$i++;
 	}
 	if (in_array('id_agente', $show_fields)) {
-		$table->head[$i] = __('Agent name');
+		$table->head[$i] = __('Agent name') . html_print_sort_arrows(
+			array_merge($params, array('sort_field' => 'agent_id')),
+			'sort'
+		);
 		$table->align[$i] = 'left';
 		$table->style[$i] = 'max-width: 350px; word-break: break-all;';
 		$i++;
 	}
 	if (in_array('timestamp', $show_fields)) {
-		$table->head[$i] = __('Timestamp');
+		$table->head[$i] = __('Timestamp') . html_print_sort_arrows(
+			array_merge($params, array('sort_field' => 'timestamp')),
+			'sort'
+		);
 		$table->align[$i] = 'left';
 		
 		$i++;
 	}
 	if (in_array('id_usuario', $show_fields)) {
-		$table->head[$i] = __('User');
+		$table->head[$i] = __('User') . html_print_sort_arrows(
+			array_merge($params, array('sort_field' => 'user_id')),
+			'sort'
+		);
 		$table->align[$i] = 'left';
 		
 		$i++;
 	}
 	if (in_array('owner_user', $show_fields)) {
-		$table->head[$i] = __('Owner');
+		$table->head[$i] = __('Owner') . html_print_sort_arrows(
+			array_merge($params, array('sort_field' => 'owner')),
+			'sort'
+		);
 		$table->align[$i] = 'left';
 		
 		$i++;
 	}
 	if (in_array('id_grupo', $show_fields)) {
-		$table->head[$i] = __('Group');
+		$table->head[$i] = __('Group') . html_print_sort_arrows(
+			array_merge($params, array('sort_field' => 'group_id')),
+			'sort'
+		);
 		$table->align[$i] = 'left';
 		
 		$i++;
 	}
 	if (in_array('event_type', $show_fields)) {
-		$table->head[$i] = __('Event type');
+		$table->head[$i] = __('Event Type') . html_print_sort_arrows(
+			array_merge($params, array('sort_field' => 'event_type')),
+			'sort'
+		);
 		$table->align[$i] = 'left';
 		
 		$table->style[$i] = 'min-width: 85px;';
 		$i++;
 	}
 	if (in_array('id_agentmodule', $show_fields)) {
-		$table->head[$i] = __('Agent Module');
+		$table->head[$i] = __('Module Name') . html_print_sort_arrows(
+			array_merge($params, array('sort_field' => 'module_name')),
+			'sort'
+		);
 		$table->align[$i] = 'left';
 		
 		$i++;
 	}
 	if (in_array('id_alert_am', $show_fields)) {
-		$table->head[$i] = __('Alert');
+		$table->head[$i] = __('Alert') . html_print_sort_arrows(
+			array_merge($params, array('sort_field' => 'alert_id')),
+			'sort'
+		);
 		$table->align[$i] = 'left';
 		
 		$i++;
 	}
 
 	if (in_array('criticity', $show_fields)) {
-		$table->head[$i] = __('Severity');
+		$table->head[$i] = __('Severity') . html_print_sort_arrows(
+			array_merge($params, array('sort_field' => 'criticity')),
+			'sort'
+		);
 		$table->align[$i] = 'left';
 		
 		$i++;
 	}
 	if (in_array('user_comment', $show_fields)) {
-		$table->head[$i] = __('Comment');
+		$table->head[$i] = __('Comment') . html_print_sort_arrows(
+			array_merge($params, array('sort_field' => 'comment')),
+			'sort'
+		);
 		$table->align[$i] = 'left';
 		
 		$i++;
 	}
 	if (in_array('tags', $show_fields)) {
-		$table->head[$i] = __('Tags');
+		$table->head[$i] = __('Tags') . html_print_sort_arrows(
+			array_merge($params, array('sort_field' => 'tags')),
+			'sort'
+		);
 		$table->align[$i] = 'left';
 		
 		$i++;
 	}
 	if (in_array('source', $show_fields)) {
-		$table->head[$i] = __('Source');
-		$table->align[$i] = 'left';
+		$table->head[$i] = __('Source') . html_print_sort_arrows(
+			array_merge($params, array('sort_field' => 'source')),
+			'sort'
+		);$table->align[$i] = 'left';
 		
 		$i++;
 	}
 	if (in_array('id_extra', $show_fields)) {
-		$table->head[$i] = __('Extra ID');
+		$table->head[$i] = __('Extra ID') . html_print_sort_arrows(
+			array_merge($params, array('sort_field' => 'extra_id')),
+			'sort'
+		);
 		$table->align[$i] = 'left';
 		
 		$i++;
 	}
 	if (in_array('ack_utimestamp', $show_fields)) {
-		$table->head[$i] = __('ACK Timestamp');
+		$table->head[$i] = __('ACK Timestamp') . html_print_sort_arrows(
+			array_merge($params, array('sort_field' => 'ack_utimestamp')),
+			'sort'
+		);
 		$table->align[$i] = 'left';
 		
 		$i++;
@@ -246,6 +317,23 @@ else {
 	if (in_array('instructions', $show_fields)) {
 		$table->head[$i] = __('Instructions');
 		$table->align[$i] = 'left';
+		
+		$i++;
+	}
+	if (in_array('data', $show_fields)) {
+		$table->head[$i] = __('Data') . html_print_sort_arrows(
+			array_merge($params, array('sort_field' => 'data')),
+			'sort'
+		);
+		$table->align[$i] = 'left';
+		
+		$i++;
+	}
+	if (in_array('module_status', $show_fields)) {
+		$table->head[$i] = __('Module Status') . html_print_sort_arrows(
+			array_merge($params, array('sort_field' => 'module_status')),
+			'sort'
+		);$table->align[$i] = 'left';
 		
 		$i++;
 	}
@@ -663,6 +751,20 @@ else {
 			$table->cellclass[count($table->data)][$i] = $myclass;
 			$i++;
 		}
+			if (in_array('data',$show_fields)) {
+			$data[$i] = $event["data"];
+			if($data[$i] %1 == 0)
+				$data[$i]= number_format($data[$i], 0);
+			else
+				$data[$i]= number_format($data[$i], 2);
+			$table->cellclass[count($table->data)][$i] = $myclass;
+				$i++;
+		}
+		if (in_array('module_status',$show_fields)) {
+			$data[$i] = modules_get_modules_status ($event["module_status"]);
+			$table->cellclass[count($table->data)][$i] = $myclass;
+			$i++;
+		}
 		
 		if ($i != 0 && $allow_action) {
 			//Actions
@@ -741,9 +843,12 @@ else {
 
 	echo '<div id="events_list">';
 	if (!empty ($table->data)) {
-		
+			
 		if ($allow_pagination) {
-			ui_pagination ($total_events, $url, $offset, $pagination);
+			$params_to_paginate = $params;
+			unset($params_to_paginate['offset']);
+			$url_paginate = "index.php?" . http_build_query($params_to_paginate, '', '&amp;');
+			ui_pagination ($total_events, $url_paginate, $offset, $pagination);
 		}
 		
 		if ($allow_action) {
@@ -761,7 +866,6 @@ else {
 		if ($allow_action) {
 			
 			echo '<div style="width:' . $table->width . ';" class="action-buttons">';
-			//~ if (!$readonly && tags_check_acl ($config["id_user"], 0, "EW", $event['clean_tags']) == 1) {
 			if (!$readonly && $show_validate_button) {
 				html_print_button(__('In progress selected'), 'validate_button', false, 'validate_selected(2);', 'class="sub ok"');
 				echo "  ";
@@ -779,7 +883,6 @@ else {
 				</script>
 				<?php
 			}
-			//~ if (!$readonly && tags_check_acl ($config["id_user"], 0,"EM", $event['clean_tags']) == 1) {
 			if (!$readonly && ($show_delete_button)) {
 				html_print_button(__('Delete selected'), 'delete_button', false, 'delete_selected();', 'class="sub delete"');
 				?>

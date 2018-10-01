@@ -1,3 +1,14 @@
+<script type="text/javascript">
+
+function effectFadeOut() {
+	$('.content').fadeOut(800).fadeIn(800)
+}
+$(document).ready(function(){
+	setInterval(effectFadeOut, 1600);
+});
+
+</script>
+
 <?php
 
 // Pandora FMS - the Flexible Monitoring System
@@ -12,6 +23,44 @@
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
+
+global $config;
+check_login ();
+
+if (! check_acl ($config['id_user'], 0, 'PM')) {
+	db_pandora_audit("ACL Violation", "Trying to change License settings");
+	include ("general/noaccess.php");
+	return;
+}
+
+$update_settings = (bool) get_parameter_post ('update_settings');
+
+if ($update_settings) {
+	foreach ($_POST['keys'] as $key => $value) {
+		db_process_sql_update(
+			'tupdate_settings',
+			array(db_escape_key_identifier('value') => $value),
+			array(db_escape_key_identifier('key') => $key));
+	}
+	
+	ui_print_success_message(__('License updated'));
+}
+
+ui_require_javascript_file_enterprise('load_enterprise');
+enterprise_include_once('include/functions_license.php');
+$license = enterprise_hook('license_get_info');
+
+$rows = db_get_all_rows_in_table('tupdate_settings');
+
+$settings = new StdClass;
+foreach ($rows as $row) {
+	$settings->$row['key'] = $row['value'];
+}
+
+echo '<script type="text/javascript">';
+if (enterprise_installed())
+	print_js_var_enteprise();
+echo '</script>';
 
 function render_info ($table) {
 	global $console_mode;
@@ -46,6 +95,164 @@ function render_row ($data, $label) {
 	}
 }
 
+function get_value_sum($arr){
+	foreach($arr as $clave){
+		foreach($clave as $valor){
+			$result += $valor;
+			}
+		}
+		return $result;
+}
+
+function execution_time(){
+	$times = db_get_all_rows_sql("SELECT datos FROM tagente_datos WHERE id_agente_modulo = 29 ORDER BY utimestamp DESC LIMIT 2");
+	if($times[0]['datos'] > $times[1]['datos'] * 1.2)
+		return "<a class= 'content' style= 'color: red;'>Warning Status</a><a>&nbsp&nbsp The execution time could be degrading. For a more extensive information of this data consult the  Execution Time graph</a>";
+	else
+		return "<a style ='color: green;'>Normal Status</a><a>&nbsp&nbsp The execution time is correct. For a more extensive information of this data consult the  Execution Time graph</a>";
+}
+
+
+function get_logs_size($file){
+	$file_name = '/var'. $file .'';
+	$size_server_log = filesize($file_name);
+	return $size_server_log;
+
+}
+
+function get_status_logs($path){
+	$status_server_log = "";
+	$size_server_log = get_logs_size($path);
+	if ($size_server_log <= 10240){
+		$status_server_log = "<a style ='color: green;text-decoration: none;'>Normal Status</a><a style ='text-decoration: none;'>&nbsp&nbsp You have less than 10 MB of logs</a>";
+	}else{
+		$status_server_log = "<a class= 'content' style= 'color: red;text-decoration: none;'>Warning Status</a><a style ='text-decoration: none;'>&nbsp&nbsp You have more than 10 MB of logs</a>";
+	}
+	return $status_server_log;
+}
+function percentage_modules_per_agent(){
+	$status_average_modules = "";
+	$total_agents = db_get_value_sql ('SELECT count(*) FROM tagente');
+	$total_modules = db_get_value_sql ('SELECT count(*) FROM tagente_modulo');
+	$average_modules_per_agent = $total_modules / $total_agents;
+	if($average_modules_per_agent <= 40){
+		$status_average_modules = "<a style ='color: green;text-decoration: none;'>Normal Status</a><a style ='text-decoration: none;'>&nbsp&nbsp The average of modules per agent is less than 40 percent</a>";
+	}else{
+		$status_average_modules = "<a class= 'content' style= 'color: red;text-decoration: none;'>Warning Status</a><a style ='text-decoration: none;'>&nbsp&nbspThe average of modules per agent is more than 40 percent. You can have performance problems</a>";
+	}
+return $status_average_modules;
+}
+
+function license_capacity(){
+	$license = enterprise_hook('license_get_info');
+	$license_limit = $license['limit'];
+	$status_license_capacity = "";
+		$current_count = db_get_value_sql ('SELECT count(*) FROM tagente');
+		if ($current_count > $license_limit * 90 /100){
+			$status_license_capacity = "<a class= 'content' style= 'color: red;text-decoration: none;'>Warning Status</a><a style ='text-decoration: none;'>&nbsp&nbsp The license capacity is more than 90 percent</a>";
+		}else{
+			$status_license_capacity = "<a  style= 'color: green;text-decoration: none;'>Normal Status</a><a style ='text-decoration: none;'>&nbsp&nbsp The license capacity is less than 90 percent</a>";
+		}
+	return $status_license_capacity;
+}
+
+function status_license_params($license_param){
+	$status_license_par ="";
+	if ($license_param <=0)
+		$status_license_par = "OFF";
+	else
+		$status_license_par = "ON";
+	return $status_license_par;
+}
+function interval_average_of_network_modules(){
+	$total_network_modules = db_get_value_sql ("SELECT count(*) FROM tagente_modulo WHERE id_tipo_modulo BETWEEN 6 AND 18");
+	$total_module_interval_time = db_get_value_sql ("SELECT SUM(module_interval) FROM tagente_modulo WHERE id_tipo_modulo BETWEEN 6 AND 18");
+	$average_time= (int) $total_module_interval_time / $total_network_modules;
+	
+	if($average_time < 180 ){
+		$status_average_modules = "<a class= 'content' style= 'color: red;text-decoration: none;'>Warning Status</a><a style ='text-decoration: none;'>&nbsp&nbsp The system has a lot of load and a very fine configuration is required</a>";
+	}else{
+		$status_average_modules = "<a style ='color: green;text-decoration: none;'>Normal Status</a><a style ='text-decoration: none;'>&nbsp&nbsp The system has an acceptable charge</a>";
+	}
+	if ($average_time == 0)
+		$status_average_modules = "<a style ='color: green;text-decoration: none;'>Normal Status</a><a style ='text-decoration: none;'>&nbsp&nbsp The system has no load</a>";
+	return $status_average_modules;
+}
+
+$attachment_total_files = count(glob($config['homedir']."/attachment/{*.*}",GLOB_BRACE));
+
+function files_attachment_folder($total_files){
+	if($total_files <= 700){
+		$status_total_files = "<a style ='color: green;text-decoration: none;'>Normal Status</a><a style ='text-decoration: none;'>&nbsp&nbsp The attachment folder has less than 700 files.</a>";
+	}else{
+		$status_total_files = "<a class= 'content' style= 'color: red;text-decoration: none;'>Warning Status</a><a style ='text-decoration: none;'>&nbsp&nbsp The attachment folder has more than 700 files.</a>";
+	}
+	return $status_total_files;
+}
+
+$tagente_datos_size = db_get_value_sql('SELECT COUNT(*) FROM tagente_datos');
+
+function status_tagente_datos($tagente_datos_size){
+	if  ($tagente_datos_size <=3000000){
+		$tagente_datos_size = "<a style ='color: green;text-decoration: none;'>Normal Status</a><a style ='text-decoration: none;'>&nbsp&nbsp The tagente_datos table has an acceptable amount of data.</a>";
+	}else{
+		$tagente_datos_size = "<a class= 'content' style ='color: red;text-decoration: none;'>Warning Status</a><a>&nbsp&nbsp The tagente_datos table has too much data. A historical database is recommended.</a>";
+	}
+	return $tagente_datos_size;
+}
+
+function status_values($val_rec, $val){
+	if  ($val_rec <= $val)
+		return $val . "<a style='text-decoration: none;'> (Min. Recommended Value </a>" . $val_rec. "<a>)</a>";
+	else
+		return $val . "<a style='text-decoration: none;'> (Min. Recommended Value </a>" . $val_rec. "<a>)</a><a class= 'content' style ='color: red;text-decoration: none;'> Warning Status</a>";
+}
+
+$tables_fragmentation=db_get_sql ("SELECT (data_free/(index_length+data_length)) 
+as frag_ratio from information_schema.tables  where  DATA_FREE > 0 and table_name='tagente_datos' and table_schema='pandora'");
+$db_size=db_get_all_rows_sql("SELECT table_schema,
+ROUND(SUM(data_length+index_length)/1024/1024,3)
+FROM information_schema.TABLES
+GROUP BY table_schema;"
+);
+
+if(strtoupper(substr(PHP_OS, 0, 3)) !== 'WIN'){
+	$total_server_threads = shell_exec("ps -T aux | grep pandora_server | grep -v grep | wc -l");
+	$percentage_threads_ram = shell_exec("ps axo pmem,cmd | grep pandora_server | awk '{sum+=$1} END {print sum}'");
+	$percentage_threads_cpu = shell_exec("ps axo pcpu,cmd | grep pandora_server | awk '{sum+=$1} END {print sum}'");
+	$innodb_buffer_pool_size_min_rec_value = shell_exec("cat /proc/meminfo | grep -i total | head -1 | awk '{print $(NF-1)*0.4/1024}'");
+}
+$path_server_logs ="/log/pandora/pandora_server.log";
+$path_console_logs ="/www/html/pandora_console/pandora_console.log";
+$innodb_log_file_size_min_rec_value = "64M";
+$innodb_log_buffer_size_min_rec_value = "16M";
+$innodb_flush_log_at_trx_commit_min_rec_value = 0;
+$query_cache_limit_min_rec_value = 2; 
+$max_allowed_packet_min_rec_value = 32;
+$innodb_buffer_pool_size_min_rec_value = shell_exec("cat /proc/meminfo | grep -i total | head -1 | awk '{print $(NF-1)*0.4/1024}'");
+$sort_buffer_size_min_rec_value = 32;
+$join_buffer_size_min_rec_value = 265;
+$query_cache_type_min_rec_value = "ON";
+$query_cache_size_min_rec_value = 24;
+$innodb_lock_wait_timeout_max_rec_value = 120;
+$tables_fragmentation_max_rec_value = 10;
+$thread_cache_size_max_rec_value = 8;
+$thread_stack_min_rec_value = 256;
+$max_connections_max_rec_value = 150;
+$key_buffer_size_min_rec_value = 256;
+$read_buffer_size_min_rec_value = 32;
+$read_rnd_buffer_size_min_rec_value = 32;
+$query_cache_min_res_unit_min_rec_value = 2;
+$innodb_file_per_table_min_rec_value = 0;
+
+function status_fragmentation_tables($tables_fragmentation_max_rec_value, $tables_fragmentation){
+	$status_tables_frag = "";
+		if($tables_fragmentation > $tables_fragmentation_max_rec_value)
+			$status_tables_frag = "<a class= 'content' style ='color: red; text-decoration: none;'>Warning Status</a><a style ='text-decoration: none;'>&nbsp&nbsp The fragmentation tables is higher than recommended. You should defragment them.</a>";
+		else
+			$status_tables_frag = "<a style ='color: green; text-decoration: none;'>Normal Status</a><a style ='text-decoration: none;'>&nbsp&nbsp The fragmentation tables is correct.</a>";
+			return $status_tables_frag;
+}
 
 $console_mode = 1;
 if (!isset($argc))
@@ -77,8 +284,6 @@ full path to Pandora FMS 'config.php' file.
 else {
 	if (file_exists("../include/config.php"))
 		include "../include/config.php";
-	
-	global $config;
 	
 	// Not from console, this is a web session
 	if ((!isset($config["id_user"])) OR (!check_acl ($config["id_user"], 0, "PM"))) {
@@ -125,9 +330,9 @@ echo "<tr><th style='background-color:#b1b1b1;font-weight:bold;font-style:italic
 
 render_row (phpversion(), "PHP Version");
 
-render_row (ini_get('max_execution_time'), "PHP Max execution time");
+render_row (ini_get('max_execution_time')."&nbspseconds", "PHP Max execution time");
 
-render_row (ini_get('max_input_time'), "PHP Max input time");
+render_row (ini_get('max_input_time')."&nbspseconds", "PHP Max input time");
 
 render_row (ini_get('memory_limit'), "PHP Memory limit");
 
@@ -246,8 +451,11 @@ switch ($config["dbtype"]) {
 		render_info_data ("SELECT `value`
 			FROM tconfig
 			WHERE `token` = 'db_scheme_build'", "DB Schema Build");
+
+		render_row(get_value_sum($db_size) . "M", "DB Size");	
+		
 				
-		if(strpos($_SERVER['HTTP_USER_AGENT'],'Windows') == false){
+		if(strtoupper(substr(PHP_OS, 0, 3)) !== 'WIN'){
 		
 		echo "<tr><th style='background-color:#b1b1b1;font-weight:bold;font-style:italic;border-radius:2px;' align=center colspan='2'>".__("System info")."</th></tr>";
 				
@@ -312,7 +520,121 @@ switch ($config["dbtype"]) {
 			WHERE \"key\" = 'current_update'", "Current Update #");
 		break;
 }
+$innodb_log_file_size =db_get_value_sql ("SELECT @@innodb_log_file_size")/1048576;
+$innodb_log_buffer_size =db_get_value_sql("SELECT @@innodb_log_buffer_size")/1048576;
+$innodb_flush_log_at_trx_commit =db_get_value_sql("SELECT @@innodb_flush_log_at_trx_commit");
+$max_allowed_packet =db_get_value_sql("SELECT @@max_allowed_packet")/1048576;
+$innodb_buffer_pool_size = db_get_value_sql("SELECT @@innodb_buffer_pool_size")/1024;
+$sort_buffer_size =number_format(db_get_value_sql("SELECT @@sort_buffer_size")/1024, 2);
+$join_buffer_size =db_get_value_sql("SELECT @@join_buffer_size")/1024;
+$query_cache_type =db_get_value_sql("SELECT @@query_cache_type");
+$query_cache_size =db_get_value_sql("SELECT @@query_cache_size")/1048576;
+$query_cache_limit =db_get_value_sql("SELECT @@query_cache_limit")/1048576;
+$innodb_lock_wait_timeout =db_get_value_sql("SELECT @@innodb_lock_wait_timeout");
+$thread_cache_size =db_get_value_sql("SELECT @@thread_cache_size");
+$thread_stack =db_get_value_sql("SELECT @@thread_stack")/1024;
+$max_connections =db_get_value_sql("SELECT @@max_connections");
+$key_buffer_size =db_get_value_sql("SELECT @@key_buffer_size")/1024;
+$read_buffer_size =db_get_value_sql("SELECT @@read_buffer_size")/1024;
+$read_rnd_buffer_size =db_get_value_sql("SELECT @@read_rnd_buffer_size")/1024;
+$query_cache_min_res_unit =db_get_value_sql("SELECT @@query_cache_min_res_unit")/1024;
+$innodb_file_per_table = db_get_value_sql("SELECT @@innodb_file_per_table");
+echo "<tr><th style='background-color:#b1b1b1;font-weight:bold;font-style:italic;border-radius:2px;' align=center colspan='2'>".__("MySQL Performance metrics")."</th></tr>";
 
+render_row(status_values($innodb_log_file_size_min_rec_value,$innodb_log_file_size),'InnoDB log file size ', 'InnoDB log file size ');
+render_row(status_values($innodb_log_buffer_size_min_rec_value,$innodb_log_buffer_size),'InnoDB log buffer size ', 'InnoDB log buffer size ');
+render_row(status_values($innodb_flush_log_at_trx_commit_min_rec_value,$innodb_flush_log_at_trx_commit), 'InnoDB flush log at trx-commit ','InnoDB flush log at trx-commit ');
+render_row(status_values($max_allowed_packet_min_rec_value,$max_allowed_packet), 'Maximun allowed packet ','Maximun allowed packet ');
+render_row(status_values($innodb_buffer_pool_size_min_rec_value,$innodb_buffer_pool_size), 'InnoDB buffer pool size ','InnoDB buffer pool size ');
+render_row(status_values($sort_buffer_size_min_rec_value,$sort_buffer_size), 'Sort buffer size ','Sort buffer size ');
+render_row(status_values($join_buffer_size_min_rec_value,$join_buffer_size), 'Join buffer size ','Join buffer size ');
+render_row(status_values($query_cache_type_min_rec_value,$query_cache_type), 'Query cache type ', 'Query cache type ');
+render_row(status_values($query_cache_size_min_rec_value,$query_cache_size), 'Query cache size ','Query cache size ');
+render_row(status_values($query_cache_limit_min_rec_value,$query_cache_limit), 'Query cache limit ','Query cache limit ');
+render_row(status_values($innodb_lock_wait_timeout_max_rec_value,$innodb_lock_wait_timeout), 'InnoDB lock wait timeout ','InnoDB lock wait timeout ');
+render_row(status_values($thread_cache_size_max_rec_value,$thread_cache_size), 'Thread cache size ','Thread cache size ');
+render_row(status_values($thread_stack_min_rec_value,$thread_stack), 'Thread stack ','Thread stack ');
+render_row(status_values($max_connections_max_rec_value,$max_connections), 'Maximum connections ','Maximun connections ');
+render_row(status_values($key_buffer_size_min_rec_value,$key_buffer_size), 'Key buffer size ','Key buffer size ');
+render_row(status_values($read_buffer_size_min_rec_value,$read_buffer_size), 'Read buffer size ','Read buffer size ');
+render_row(status_values($read_rnd_buffer_size_min_rec_value,$read_rnd_buffer_size), 'Read rnd-buffer size ','Read rnd-buffer size ');
+render_row(status_values($query_cache_min_res_unit_min_rec_value,$query_cache_min_res_unit), 'Query cache min-res-unit ','Query cache min-res-unit ');
+render_row(status_values($innodb_file_per_table_min_rec_value,$innodb_file_per_table), 'InnoDB file per table ','InnoDB file per table ');
+echo "<tr><th style='background-color:#b1b1b1;font-weight:bold;font-style:italic;border-radius:2px;' align=center colspan='2'>".__("Tables fragmentation in the PandoraFMS database")."</th></tr>";
+
+
+
+render_row ($tables_fragmentation_max_rec_value . "%", "Tables fragmentation (maximum recommended value)");
+render_row (number_format($tables_fragmentation, 2) . "%", "Tables fragmentation (current value)");
+render_row (status_fragmentation_tables($tables_fragmentation_max_rec_value, $tables_fragmentation), "Status fragmentation tables");
+
+echo "<tr><th style='background-color:#b1b1b1;font-weight:bold;font-style:italic;border-radius:2px;' align=center colspan='2'>".__(" PandoraFMS logs dates")."</th></tr>";
+
+render_row(number_format(get_logs_size($path_server_logs)/1024, 2) . "M", 'Size server logs (current value)');
+render_row(get_status_logs($path_server_logs),'Status server logs');
+render_row(number_format(get_logs_size($path_console_logs)/1024, 2) . "M", 'Size console logs (current value)');
+render_row(get_status_logs($path_console_logs),'Status console logs');
+
+echo "<tr><th style='background-color:#b1b1b1;font-weight:bold;font-style:italic;border-radius:2px;' align=center colspan='2'>".__(" PandoraFMS Licence Information")."</th></tr>";
+
+render_row( html_print_textarea ('keys[customer_key]', 10, 255, $settings->customer_key, 'style="height:40px; width:450px;"', true),'Customer key');
+render_row( $license['expiry_date'],'Expires');
+render_row( $license['limit'] . ' agents','Platform Limit');
+render_row( $license['count'] . ' agents','Current Platform Count');
+render_row( $license['count_enabled']. ' agents','Current Platform Count (enabled: items)');
+render_row( $license['count_disabled']. ' agents','Current Platform Count (disabled: items)');
+render_row( $license['license_mode'],'License Mode');
+render_row( status_license_params($license['nms']) , 'Network Management System');
+render_row( status_license_params($license['dhpm']) , 'Satellite');
+render_row( $license['licensed_to'], 'Licensed to');
+render_row( license_capacity(), "Status of agents capacity");
+render_row(percentage_modules_per_agent(), "Status of average modules per agent");
+render_row(interval_average_of_network_modules(), "Interval average of the network modules");
+
+echo "<tr><th style='background-color:#b1b1b1;font-weight:bold;font-style:italic;border-radius:2px;' align=center colspan='2'>".__(" Status of the attachment folder")."</th></tr>";
+
+render_row($attachment_total_files, "Total files in the attachment folder");
+render_row(files_attachment_folder($attachment_total_files), "Status of the attachment folder");
+
+echo "<tr><th style='background-color:#b1b1b1;font-weight:bold;font-style:italic;border-radius:2px;' align=center colspan='2'>".__(" Information from the tagente_datos table")."</th></tr>";
+
+render_row($tagente_datos_size, "Total data in the tagente_datos table");
+render_row(status_tagente_datos($tagente_datos_size), "Status of the tagente_datos table");
+render_row(execution_time(), "Degradation of the execution time when executing a count");
+
+echo "<tr><th style='background-color:#b1b1b1;font-weight:bold;font-style:italic;border-radius:2px;' align=center colspan='2'>".__(" Pandora FMS server threads")."</th></tr>";
+
+render_row($total_server_threads, "Total server threads");
+render_row($percentage_threads_ram . "%", "Percentage of threads used by the RAM");
+render_row($percentage_threads_cpu . "%", "Percentage of threads used by the CPU");
+
+echo "<tr><th style='background-color:#b1b1b1;font-weight:bold;font-style:italic;border-radius:2px;' align=center colspan='2'>".__(" Graphs modules that represent the self-monitoring system")."</th></tr>";
+
+$server_name = db_get_value_sql("SELECT name FROM tserver WHERE master = 1");
+$agent_id= db_get_value_sql ("SELECT id_agente FROM tagente WHERE nombre = '$server_name'");
+
+	$id_modules = agents_get_modules($agent_id);
+
+	$id_modules = array (
+		modules_get_agentmodule_id('Agents_Unknown',$agent_id),
+		modules_get_agentmodule_id('Database&#x20;Maintenance',$agent_id),
+		modules_get_agentmodule_id('FreeDisk_SpoolDir',$agent_id),
+		modules_get_agentmodule_id('Free_RAM',$agent_id),
+		modules_get_agentmodule_id('Queued_Modules',$agent_id),
+		modules_get_agentmodule_id('Status',$agent_id),
+		modules_get_agentmodule_id('System_Load_AVG',$agent_id),
+		modules_get_agentmodule_id('Execution_time',$agent_id)
+	);
+
+	foreach ($id_modules as $id_module){
+		$params =array(
+			'agent_module_id'     => $id_module['id_agente_modulo'],
+			'period'              => SECONDS_1MONTH,
+			'date'				  => time()	,
+			'height'              => '150'
+		);
+		render_row(grafico_modulo_sparse ($params),"Graph of the " . $id_module['nombre']." module.");
+	}
 if ($console_mode == 0) {
 	echo "</table>";
 }

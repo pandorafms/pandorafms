@@ -258,10 +258,7 @@ if(!$new_agent){
 	}
 }
 
-
 $groups = users_get_groups ($config["id_user"], "AR",false);
-$agents = agents_get_group_agents (array_keys ($groups));
-
 
 $modules = db_get_all_rows_sql("SELECT id_agente_modulo as id_module, nombre as name FROM tagente_modulo 
 								WHERE id_agente = " . $id_parent);
@@ -279,6 +276,7 @@ if (isset($groups[$grupo]) || $new_agent) {
 	$table->data[4][1] = html_print_select_groups(false, "AR", false, 'grupo', $grupo, '', '', 0, true);
 } else {
 	$table->data[4][1] = groups_get_name($grupo);
+	$table->data[4][1] .= html_print_input_hidden('grupo', $grupo, true);
 }
 $table->data[4][1] .= ' <span id="group_preview">';
 $table->data[4][1] .= ui_print_group_icon ($grupo, true);
@@ -332,7 +330,8 @@ $table->data = array ();
 
 if (enterprise_installed()) {
 	$secondary_groups_selected = enterprise_hook('agents_get_secondary_groups', array($id_agente));
-	$table->data['secondary_groups'][0] = __('Secondary groups');
+	$table->data['secondary_groups'][0] = __('Secondary groups') .
+		ui_print_help_icon("secondary_groups", true);
 	$table->data['secondary_groups'][1] = html_print_select_groups(
 		false,                    // Use the current user to select the groups
 		"AR",                     // ACL permission
@@ -376,28 +375,6 @@ if (enterprise_installed()) {
 		true,                                         // Return HTML (not echo)
 		true                                          // Multiple selection
 	);
-}
-
-// Custom ID
-$table->data[0][0] = __('Custom ID');
-$table->data[0][1] = html_print_input_text ('custom_id', $custom_id, '', 16, 255, true);
-
-$table->data[1][0] = __('Parent');
-$params = array();
-$params['return'] = true;
-$params['show_helptip'] = true;
-$params['input_name'] = 'id_parent';
-$params['print_hidden_input_idagent'] = true;
-$params['hidden_input_idagent_name'] = 'id_agent_parent';
-$params['hidden_input_idagent_value'] = $id_parent;
-$params['value'] = db_get_value ("alias","tagente","id_agente",$id_parent);
-$params['selectbox_id'] = 'cascade_protection_module';
-$params['javascript_is_function_select'] = true;
-$params['cascade_protection'] = true;
-
-$table->data[1][1] = ui_print_agent_autocomplete_input($params);
-$table->data[1][1] .= html_print_checkbox ("cascade_protection", 1, $cascade_protection, true).__('Cascade protection'). "&nbsp;" . ui_print_help_icon("cascade_protection", true);
-$table->data[1][1] .= "&nbsp;&nbsp;" .  __('Module') . "&nbsp;" . html_print_select ($modules_values, "cascade_protection_module", $cascade_protection_module, "", "", 0, true);
 
 //safe operation mode
 if($id_agente){
@@ -415,27 +392,6 @@ if($id_agente){
 	$table->data[2][1] = html_print_checkbox('safe_mode', 1, $safe_mode, true);
 	$table->data[2][1] .= "&nbsp;&nbsp;" .  __('Module') . "&nbsp;" . html_print_select ($safe_mode_modules, "safe_mode_module", $safe_mode_module, "", "", 0, true);
 }
-
-
-// Learn mode / Normal mode
-$table->data[3][0] = __('Module definition') .
-	ui_print_help_icon("module_definition", true);
-$table->data[3][1] = __('Learning mode') . ' ' .
-	html_print_radio_button_extended ("modo", 1, '', $modo, false, 'show_modules_not_learning_mode_context_help();',
-		'style="margin-right: 40px;"', true);
-$table->data[3][1] .= __('Normal mode') . ' ' .
-	html_print_radio_button_extended ("modo", 0, '', $modo, false, 'show_modules_not_learning_mode_context_help();',
-		'style="margin-right: 40px;"', true);
-$table->data[3][1] .= __('Autodisable mode') . ' ' .
-	html_print_radio_button_extended ("modo", 2, '', $modo, false, 'show_modules_not_learning_mode_context_help();',
-		'style="margin-right: 40px;"', true);
-
-// Status (Disabled / Enabled)
-$table->data[4][0] = __('Status');
-$table->data[4][1] = __('Disabled') . ' ' .
-	html_print_radio_button_extended ("disabled", 1, '', $disabled, false, '', 'style="margin-right: 40px;"', true);
-$table->data[4][1] .= __('Active') . ' ' .
-	html_print_radio_button_extended ("disabled", 0, '', $disabled, false, '', 'style="margin-right: 40px;"', true);
 
 // Remote configuration
 $table->data[5][0] = __('Remote configuration');
@@ -464,6 +420,81 @@ if (!$new_agent) {
 }
 else
 	$table->data[5][1] = '<em>' . __('Not available') . '</em>';
+
+
+
+$cps_array[-1] = __('Disabled');
+if($cps > 0){
+	$cps_array[$cps] = __('Enabled');
+}
+else{
+	$cps_inc = 0;
+	if($id_agente){
+		$cps_inc = service_agents_cps($id_agente);
+	}
+	$cps_array[$cps_inc] = __('Enabled');
+}
+
+$table->data[6][0] = __('Cascade protection services');
+$table->data[6][0] .= ui_print_help_tip(__('Disable the alerts and events of the elements that belong to this service'), true);
+$table->data[6][1] = html_print_select($cps_array, 'cps', $cps, '', '', 0, true);
+
+
+}
+// Custom ID
+$table->data[0][0] = __('Custom ID');
+$table->data[0][1] = html_print_input_text ('custom_id', $custom_id, '', 16, 255, true);
+
+$table->data[1][0] = __('Parent');
+$params = array();
+$params['return'] = true;
+$params['show_helptip'] = true;
+$params['input_name'] = 'id_parent';
+$params['print_hidden_input_idagent'] = true;
+$params['hidden_input_idagent_name'] = 'id_agent_parent';
+$params['hidden_input_idagent_value'] = $id_parent;
+$params['value'] = db_get_value ("alias","tagente","id_agente",$id_parent);
+$params['selectbox_id'] = 'cascade_protection_module';
+$params['javascript_is_function_select'] = true;
+$params['cascade_protection'] = true;
+
+$table->data[1][1] = ui_print_agent_autocomplete_input($params);
+if (enterprise_installed()) {
+$table->data[1][1] .= html_print_checkbox ("cascade_protection", 1, $cascade_protection, true).__('Cascade protection'). "&nbsp;" . ui_print_help_icon("cascade_protection", true);
+}
+$table->data[1][1] .= "&nbsp;&nbsp;" .  __('Module') . "&nbsp;" . html_print_select ($modules_values, "cascade_protection_module", $cascade_protection_module, "", "", 0, true);
+// Learn mode / Normal mode
+$table->data[3][0] = __('Module definition') .
+	ui_print_help_icon("module_definition", true);
+$table->data[3][1] = __('Learning mode') . ' ' .
+	html_print_radio_button_extended ("modo", 1, '', $modo, false, 'show_modules_not_learning_mode_context_help();',
+		'style="margin-right: 40px;"', true);
+$table->data[3][1] .= __('Normal mode') . ' ' .
+	html_print_radio_button_extended ("modo", 0, '', $modo, false, 'show_modules_not_learning_mode_context_help();',
+		'style="margin-right: 40px;"', true);
+$table->data[3][1] .= __('Autodisable mode') . ' ' .
+	html_print_radio_button_extended ("modo", 2, '', $modo, false, 'show_modules_not_learning_mode_context_help();',
+		'style="margin-right: 40px;"', true);
+
+// Status (Disabled / Enabled)
+$table->data[4][0] = __('Status');
+$table->data[4][1] = __('Disabled') . ' ' .
+	ui_print_help_tip(__('If the remote configuration is enabled, it will also go into standby mode when disabling it.'), true) . ' ' .
+	html_print_radio_button_extended ("disabled", 1, '', $disabled, false, '', 'style="margin-right: 40px;"', true);
+$table->data[4][1] .= __('Enabled') . ' ' .
+	html_print_radio_button_extended ("disabled", 0, '', $disabled, false, '', 'style="margin-right: 40px;"', true);
+	if (enterprise_installed()) {
+		$table->data[4][2] = __('Url address');
+		$table->data[4][3] = html_print_input_text ('url_description',
+		$url_description, '', 45, 255, true);
+	}else{
+		$table->data[5][0] = __('Url address');
+		$table->data[5][1] = html_print_input_text ('url_description',
+		$url_description, '', 45, 255, true);
+	}
+$table->data[5][2] = __('Quiet');
+$table->data[5][3] .= ui_print_help_tip(__('The agent still runs but the alerts and events will be stop'), true);
+$table->data[5][3] = html_print_checkbox('quiet', 1, $quiet, true);
 
 $listIcons = gis_get_array_list_icons();
 
@@ -509,30 +540,6 @@ if ($config['activate_gis']) {
 		html_print_radio_button_extended ("update_gis_data", 1, '',
 			$update_gis_data, false, '', 'style="margin-right: 40px;"', true);
 }
-
-$table->data[4][2] = __('Url address');
-$table->data[4][3] = html_print_input_text ('url_description',
-	$url_description, '', 45, 255, true);
-
-$table->data[5][2] = __('Quiet');
-$table->data[5][3] .= ui_print_help_tip(__('The agent still runs but the alerts and events will be stop'), true);
-$table->data[5][3] = html_print_checkbox('quiet', 1, $quiet, true);
-
-$cps_array[-1] = __('Disabled');
-if($cps > 0){
-	$cps_array[$cps] = __('Enabled');
-}
-else{
-	$cps_inc = 0;
-	if($id_agente){
-		$cps_inc = service_agents_cps($id_agente);
-	}
-	$cps_array[$cps_inc] = __('Enabled');
-}
-
-$table->data[6][0] = __('Cascade protection services');
-$table->data[6][0] .= ui_print_help_tip(__('Disable the alerts and events of the elements that belong to this service'), true);
-$table->data[6][1] = html_print_select($cps_array, 'cps', $cps, '', '', 0, true);
 
 ui_toggle(html_print_table ($table, true), __('Advanced options'));
 unset($table);
@@ -599,8 +606,8 @@ echo clippy_context_help("modules_not_learning_mode");
 echo "</span>";
 
 
-
 if ($id_agente) {
+	echo '<div class="action-buttons" style="width: ' . $table->width . '">';
 	html_print_submit_button (__('Update'), 'updbutton', false,
 		'class="sub upd"');
 	html_print_input_hidden ('update_agent', 1);

@@ -326,13 +326,8 @@ foreach ($templates as $template) {
 	
 	$data[1] = ui_print_group_icon ($template["id_group"], true);
 	$data[3] = alerts_get_alert_templates_type_name ($template['type']);
-	
-	$hack_id_group_all = $template["id_group"];
-	if ($hack_id_group_all == 0) {
-		//To avoid check all groups instead the pseudo-group all
-		$hack_id_group_all = -1;
-	}
-	if (check_acl($config['id_user'], $hack_id_group_all, "LM")) {
+
+	if (check_acl($config['id_user'], $template["id_group"], "LM")) {
 		$data[4] = '<form method="post" action="index.php?sec='.$sec.'&sec2=godmode/alerts/configure_alert_template&pure='.$pure.'" style="display: inline; float: left">';
 		$data[4] .= html_print_input_hidden ('duplicate_template', 1, true);
 		$data[4] .= html_print_input_hidden ('source_id', $template['id'], true);

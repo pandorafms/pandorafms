@@ -56,7 +56,6 @@ ui_print_page_header (__("Tactical view"), "", false, "", false, $updated_time);
 
 //Currently this function makes loading this page is impossible. Change
 //and create new function.
-//$all_data = group_get_groups_list($config['id_user'], $user_strict, 'AR', true, false, 'tactical');
 
 $all_data = tactical_status_modules_agents($config['id_user'], $user_strict, 'AR', $user_strict);
 

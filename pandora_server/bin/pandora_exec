@@ -36,7 +36,7 @@ my @opts = @ARGV;
 my $timeout = shift(@opts);
 my $command;
 foreach my $arg (@opts) {
-	$command .= quotemeta ($arg) . ' ';
+	$command .= $^O ne 'MSWin32' ? quotemeta ($arg) . ' ' : '"' . $command . '" ';
 }
 chomp ($command);
 my $output = '';

@@ -50,6 +50,7 @@ our @EXPORT = qw(
 		db_text
 		db_update
 		db_update_get_values
+		set_update_agent
 		get_action_id
 		get_addr_id
 		get_agent_addr_id
@@ -800,6 +801,35 @@ sub get_db_rows_limit ($$$;@) {
 	$sth->finish();
 	return @rows;
 }
+
+##########################################################################
+## Updates agent fields using field => value
+##  Be careful, no filter is done.
+##########################################################################
+sub set_update_agent {
+	my ($dbh, $agent_id, $data) = @_;
+
+	return undef unless (defined($agent_id) && $agent_id > 0);
+	return undef unless (ref($data) eq "HASH");
+
+	# Build update query
+	my $query = 'UPDATE tagente SET ';
+
+	my @values;
+	foreach my $field (keys %{$data}) {
+		push @values, $data->{$field};
+
+		$query .= ' ' . $field . ' = ?,';
+	}
+
+	chop($query);
+
+	$query .= ' WHERE id_agente = ? ';
+	push @values, $agent_id;
+
+	return db_update($dbh, $query, @values);
+}
+
 
 ##########################################################################
 ## SQL delete with a LIMIT clause.

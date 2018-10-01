@@ -153,7 +153,7 @@ sub data_consumer ($$) {
 	return unless defined $agent;
 
 	# Use the smallest timeout
-	my $timeout = (($plugin->{'max_timeout'} < $pa_config->{'plugin_timeout'}) && $pa_config->{'max_timeout'}) ?
+	my $timeout = (($plugin->{'max_timeout'} < $pa_config->{'plugin_timeout'}) && $plugin->{'max_timeout'}) ?
 				   $plugin->{'max_timeout'} : $pa_config->{'plugin_timeout'};
 
 	# Setting default timeout if is invalid

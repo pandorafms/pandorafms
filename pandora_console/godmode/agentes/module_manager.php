@@ -23,9 +23,9 @@ else {
 
 enterprise_include ('godmode/agentes/module_manager.php');
 $isFunctionPolicies = enterprise_include_once ('include/functions_policies.php');
-require_once ('include/functions_modules.php');
-require_once ('include/functions_agents.php');
-require_once ('include/functions_servers.php');
+require_once ($config['homedir'] . '/include/functions_modules.php');
+require_once ($config['homedir'] . '/include/functions_agents.php');
+require_once ($config['homedir'] . '/include/functions_servers.php');
 
 $search_string = io_safe_output(urldecode(trim(get_parameter ("search_string", ""))));
 
@@ -35,7 +35,6 @@ if (!isset($policy_page))
 	$policy_page = false;
 
 // Search string filter form
-//echo '<form id="create_module_type" method="post" action="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=module&id_agente='.$id_agente.'">';
 if (($policy_page) || (isset($agent)))
 	echo '<form id="" method="post" action="">';
 else
@@ -67,11 +66,13 @@ $prediction_available = db_get_sql ("SELECT count(*)
 	WHERE server_type = 5"); //POSTGRESQL AND ORACLE COMPATIBLE
 
 // Development mode to use all servers
-if ($develop_bypass) {
+if ($develop_bypass || is_metaconsole()) {
 	$network_available = 1;
 	$wmi_available = 1;
 	$plugin_available = 1;
-	$prediction_available = 1;
+	// FIXME when prediction predictions server modules can be configured
+	// on metaconsole
+	$prediction_available = is_metaconsole() ? 0 : 1;
 }
 
 $modules = array ();
@@ -108,7 +109,7 @@ $checked = get_parameter("checked");
 
 if (($policy_page) || (isset($agent))) {
 	if ($policy_page) {
-		$show_creation = true;
+		$show_creation = !is_central_policies_on_node();
 	}
 	else {
 		if (!isset($all_groups)) {
@@ -655,7 +656,7 @@ foreach ($modules as $module) {
 				"alt" => "")) . "&nbsp;";
 	}
 	
-	if (check_acl ($config['id_user'], $agent['id_grupo'], "AW")) {
+	if (check_acl_one_of_groups ($config["id_user"], $all_groups, "AW")) {
 		$data[0] .= '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente=' . $id_agente . '&tab=module&edit_module=1&id_agent_module='.$module['id_agente_modulo'].'">';
 	}
 	
@@ -667,7 +668,7 @@ foreach ($modules as $module) {
 		$data[0] .= ui_print_truncate_text($module['nombre'], 'module_medium', false, true, true, '[&hellip;]', 'font-size: 7.2pt');
 	}
 	
-	if (check_acl ($config['id_user'], $agent['id_grupo'], "AW")) {
+	if (check_acl_one_of_groups ($config["id_user"], $all_groups, "AW")) {
 		$data[0] .= '</a>';
 	}
 	

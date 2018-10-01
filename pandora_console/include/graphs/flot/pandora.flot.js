@@ -2240,7 +2240,6 @@ function pandoraFlotArea( graph_id, values, legend,
 	}
 
 	function yFormatter(v, axis) {
-		axis.datamin = 0;
 		if (short_data) {
 			var formatted = number_format(v, force_integer, "", short_data);
 		}

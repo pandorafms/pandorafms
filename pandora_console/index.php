@@ -359,7 +359,7 @@ if (! isset ($config['id_user'])) {
 				
 				if ($blocked) {
 					require_once ('general/login_page.php');
-					db_pandora_audit("Password expired", "Password expired: ".$nick, $nick);
+					db_pandora_audit("Password expired", "Password expired: ".io_safe_output($nick), io_safe_output($nick));
 					while (@ob_end_flush ());
 					exit ("</html>");
 				}
@@ -382,7 +382,7 @@ if (! isset ($config['id_user'])) {
 			
 			require_once ('general/login_page.php');
 			db_pandora_audit("Password expired",
-				"Password expired: " . $nick, $nick);
+				"Password expired: " . io_safe_output($nick), $nick);
 			while (@ob_end_flush ());
 			exit ("</html>");
 		}
@@ -539,20 +539,20 @@ if (! isset ($config['id_user'])) {
 			if ((!is_user_admin($nick) || $config['enable_pass_policy_admin']) && file_exists (ENTERPRISE_DIR . "/load_enterprise.php")) {
 				$blocked = login_check_blocked($nick);
 			}
-			
+			$nick_usable = io_safe_output($nick);
 			if (!$blocked) {
 				if (file_exists (ENTERPRISE_DIR . "/load_enterprise.php")) {
 					login_check_failed($nick); //Checks failed attempts
 				}
 				$login_failed = true;
 				require_once ('general/login_page.php');
-				db_pandora_audit("Logon Failed", "Invalid login: ".$nick, $nick);
+				db_pandora_audit("Logon Failed", "Invalid login: ".$nick_usable, $nick_usable);
 				while (@ob_end_flush ());
 				exit ("</html>");
 			}
 			else {
 				require_once ('general/login_page.php');
-				db_pandora_audit("Logon Failed", "Invalid login: ".$nick, $nick);
+				db_pandora_audit("Logon Failed", "Invalid login: ".$nick_usable, $nick_usable);
 				while (@ob_end_flush ());
 				exit ("</html>");
 			}

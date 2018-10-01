@@ -253,7 +253,7 @@ if ($create_user) {
 		
 		
 		db_pandora_audit("User management",
-			"Created user ".io_safe_input($id), false, false, $info);
+			"Created user ".io_safe_output($id), false, false, $info);
 		
 		ui_print_result_message ($result,
 			__('Successfully created'),

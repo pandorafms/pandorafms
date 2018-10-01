@@ -824,6 +824,7 @@ function ui_format_alert_row ($alert, $agent = true, $url = '', $agent_style = f
 			return array ("", "", "", "", "", "", "");
 	}
 
+
 	if (defined('METACONSOLE')) {
 
 		$server = db_get_row ('tmetaconsole_setup', 'id', $alert['server_data']['id']);

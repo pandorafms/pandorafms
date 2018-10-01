@@ -269,6 +269,56 @@ function process_user_login_remote ($login, $pass, $api = false) {
 			else {
 				delete_user_pass_ldap ($login);
 			}
+			
+			$permissions = array();
+			if($config['ldap_advanced_config']){
+				$i = 0;
+				
+				$ldap_adv_perms = json_decode(io_safe_output($config['ldap_adv_perms']), true);
+				foreach ($ldap_adv_perms as $ldap_adv_perm) {
+					$attributes = $ldap_adv_perm['groups_ldap'];
+					
+					foreach ($attributes as $attr) {
+						$attr = explode('=', $attr, 2);
+						foreach ($sr[$attr[0]] as $s_attr) {
+							if(preg_match('/' . $attr[1] . '/', $s_attr)){
+								$permissions[$i]["profile"] = $ldap_adv_perm['profile'];
+								$permissions[$i]["groups"] = $ldap_adv_perm['group'];
+								$permissions[$i]["tags"] = implode(",",$ldap_adv_perm['tags']);
+								$i++;
+							}
+						}
+					}
+				}
+			} else {
+				$permissions[0]["profile"] = $config['default_remote_profile'];
+				$permissions[0]["groups"][] = $config['default_remote_group'];
+				$permissions[0]["tags"] = $config['default_assign_tags'];
+			}
+			if(empty($permissions)) {
+				$config["auth_error"] = __("User not found in database or incorrect password");
+				return false;
+				
+			} else {
+				// check permissions
+				$result = check_permission_ad ($login, $pass, false,
+					$permissions, defined('METACONSOLE'));
+				
+				if ($return === "error_permissions") {
+					$config["auth_error"] =
+						__("Problems with configuration permissions. Please contact with Administrator");
+					return false;
+				}
+				else {
+					if ($return === "permissions_changed") {
+						$config["auth_error"] =
+							__("Your permissions have changed. Please, login again.");
+						return false;
+					}
+				}
+				
+				
+			}
 		}
 
 		return $login;

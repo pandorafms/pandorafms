@@ -513,6 +513,8 @@ function grafico_modulo_sparse_data(
 			}
 			$period_time_interval = $period_time_interval - $params['time_interval'];
 		}
+		//drag the last value to paint the graph correctly
+		$acum_array_data[]= array( 0 => $start_period, 1 => $acum_array_data[$i-1][1]);
 		$array_data['sum1']['data'] = $acum_array_data;
 	}
 
@@ -3034,7 +3036,7 @@ function grafico_incidente_prioridad () {
 		}
 	
 	return pie3d_graph($config['flash_charts'], $data, 320, 200,
-		__('Other'), '', $water_mark,
+		__('Other'), '', '',
 		$config['fontpath'], $config['font_size']);
 }
 
@@ -3075,7 +3077,7 @@ function graph_incidents_status () {
 	}
 	
 	return pie3d_graph($config['flash_charts'], $data, 320, 200,
-		__('Other'), '', $water_mark,
+		__('Other'), '', '',
 		$config['fontpath'], $config['font_size']);
 }
 
@@ -3131,7 +3133,7 @@ function graphic_incident_group () {
 	}
 	
 	return pie3d_graph($config['flash_charts'], $data, 320, 200,
-		__('Other'), '', $water_mark,
+		__('Other'), '', '',
 		$config['fontpath'], $config['font_size']);
 }
 
@@ -3186,7 +3188,7 @@ function graphic_incident_user () {
 	}
 	
 	return pie3d_graph($config['flash_charts'], $data, 320, 200,
-		__('Other'), '', $water_mark,
+		__('Other'), '', '',
 		$config['fontpath'], $config['font_size']);
 }
 
@@ -3240,7 +3242,7 @@ function graphic_incident_source($width = 320, $height = 200) {
 	}
 	
 	return pie3d_graph($config['flash_charts'], $data, $width, $height,
-		__('Other'), '', $water_mark,
+		__('Other'), '', '',
 		$config['fontpath'], $config['font_size']);
 }
 

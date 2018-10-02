@@ -101,7 +101,7 @@ $height = get_parameter('height', null);
 $parent = get_parameter('parent', null);
 $map_linked = get_parameter('map_linked', null);
 $linked_map_node_id = get_parameter('linked_map_node_id', null);
-$linked_map_status_calculation_type = get_parameter('linked_map_status_calculation_type', 'default');
+$linked_map_status_calculation_type = get_parameter('linked_map_status_calculation_type', null);
 
 $map_linked_weight = get_parameter('map_linked_weight', null);
 if ($map_linked_weight !== null) {
@@ -615,8 +615,8 @@ switch ($action) {
 						$values['id_agent'] = $id_agent;
 					}
 
-					if ($linked_map_node_id) {
-						$values['linked_layout_node_id'] = $linked_map_node_id;
+					if ($linked_map_node_id !== null) {
+						$values['linked_layout_node_id'] = (int) $linked_map_node_id;
 					}
 				}
 				else if ($id_agent == 0) {

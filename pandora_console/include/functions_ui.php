@@ -823,10 +823,6 @@ function ui_format_alert_row ($alert, $agent = true, $url = '', $agent_style = f
 		else
 			return array ("", "", "", "", "", "", "");
 	}
-	
-	// Get agent id
-	$id_agent = modules_get_agentmodule_agent ($alert['id_agent_module']);
-	$agente = db_get_row ('tagente', 'id_agente', $id_agent);
 	$template = alerts_get_alert_template ($alert['id_alert_template']);
 	$description = io_safe_output($template['name']);
 	
@@ -934,7 +930,7 @@ function ui_format_alert_row ($alert, $agent = true, $url = '', $agent_style = f
 		ui_print_truncate_text (io_safe_output($description), 'description', false, true, true, '[&hellip;]', 'font-size: 7.1pt') .
 		$disabledHtmlEnd;
 	
-	$actions = alerts_get_alert_agent_module_actions ($alert['id'], false);
+	$actions = alerts_get_alert_agent_module_actions ($alert['id'], false, $alert['server_data']['id']);
 	
 	if (!empty($actions)) {
 		$actionText = '<div><ul class="action_list">';
@@ -4052,7 +4048,7 @@ function ui_get_logo_to_center_networkmap () {
 	global $config;
 
 	if ((!enterprise_installed()) || empty($config['custom_network_center_logo'])) {
-		return DEFAULT_NETWORKMAP_CENTER_LOGO;
+		return 'images/networkmap/bola_pandora_network_maps.png';
 	}
 
 	return 'enterprise/images/custom_general_logos/' . $config['custom_support_logo'];

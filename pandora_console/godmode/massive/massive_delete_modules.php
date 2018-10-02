@@ -52,6 +52,8 @@ function process_manage_delete ($module_name, $id_agents, $module_status = 'all'
 
 	global $config;
 
+	$status_module = (int) get_parameter ('status_module');
+
 	if (empty ($module_name)) {
 		ui_print_error_message(__('No module selected'));
 		return false;
@@ -212,8 +214,10 @@ function process_manage_delete ($module_name, $id_agents, $module_status = 'all'
 			}
 		}
 		else {
-			$modules = agents_get_modules ($id_agents, 'id_agente_modulo',
-				sprintf('nombre IN ("%s")', implode('","',$module_name)), true);
+			if ($status_module != -1) // If module status filter has been applied
+				$modules = agents_get_modules ($id_agents, 'id_agente_modulo', sprintf('nombre IN ("%s") AND id_agente_modulo IN (SELECT id_agente_modulo FROM tagente_estado where estado = %s OR utimestamp=0 )', implode('","',$module_name), $status_module), true);
+			else
+				$modules = agents_get_modules ($id_agents, 'id_agente_modulo', sprintf('nombre IN ("%s")', implode('","',$module_name)), true);
 		}
 	}
 	

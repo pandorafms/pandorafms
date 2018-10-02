@@ -188,7 +188,7 @@ foreach ($fields_available as $key=>$available) {
 }
 
 $table->data[0][0] =  '<b>' . __('Fields available').'</b>';
-$table->data[1][0] = html_print_select ($fields_available, 'fields_available[]', true, '', '', '', true, true, false, '', false, 'width: 300px');
+$table->data[1][0] = html_print_select ($fields_available, 'fields_available[]', true, '', '', 0, true, true, false, '', false, 'width: 300px');
 $table->data[1][1] =  '<a href="javascript:">' .
 	html_print_image('images/darrowright.png', true,
 	array('id' => 'right', 'title' => __('Add fields to select'))) .
@@ -201,7 +201,7 @@ $table->data[1][1] .= '<br><br><br><br><a href="javascript:">' .
 $table->data[0][1] = '';
 $table->data[0][2] = '<b>' . __('Fields selected') . '</b>';
 $table->data[1][2] =  html_print_select($result_selected,
-	'fields_selected[]', true, '', '', '', true, true, false, '', false, 'width: 300px');
+	'fields_selected[]', true, '', '', 0, true, true, false, '', false, 'width: 300px');
 
 echo '<form id="custom_events" method="post" action="index.php?sec=geventos&sec2=godmode/events/events&section=fields&amp;pure='.$config['pure'].'">';
 html_print_table($table);
@@ -223,6 +223,7 @@ $(document).ready (function () {
 				id_field = $(value).attr('value');
 				$("select[name='fields_selected[]']").append($("<option></option>").html(field_name).attr("value", id_field));
 				$("#fields_available").find("option[value='" + id_field + "']").remove();
+				$("#fields_selected").find("option[value='0']").remove();
 			}
 		});
 	});
@@ -234,11 +235,13 @@ $(document).ready (function () {
 					id_field = $(value).attr('value');
 					$("select[name='fields_available[]']").append($("<option></option>").val(id_field).html('<i>' + field_name + '</i>'));
 					$("#fields_selected").find("option[value='" + id_field + "']").remove();
+					$("#fields_available").find("option[value='0']").remove();
 				}
 		});
 	});
 	
 	$("#submit-upd_button").click(function () {
+		$("#fields_selected").find("option[value='0']").remove();
 		$('#fields_selected option').map(function() {
 			$(this).prop('selected', true);
 		});

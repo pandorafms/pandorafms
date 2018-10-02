@@ -93,12 +93,12 @@ class Tree {
 		if (empty($this->filter['searchModule'])) {
 			return "";
 		}
-		return " AND tam.nombre LIKE '%".$this->filter['searchModule']."%' ";
+		return " AND tam.nombre LIKE '%%".$this->filter['searchModule']."%%' ";
 	}
 
 	protected function getAgentSearchFilter() {
 		if (empty($this->filter['searchAgent'])) return "";
-		return " AND LOWER(ta.alias) LIKE LOWER('%".$this->filter['searchAgent']."%')";
+		return " AND LOWER(ta.alias) LIKE LOWER('%%".$this->filter['searchAgent']."%%')";
 	}
 
 
@@ -268,7 +268,7 @@ class Tree {
 
 	protected function getGroupSearchFilter() {
 		if (empty($this->filter['searchGroup'])) return "";
-		return " AND tg.nombre LIKE '%" . $this->filter['searchGroup'] . "%'";
+		return " AND tg.nombre LIKE '%%" . $this->filter['searchGroup'] . "%%'";
 	}
 
 	static function cmpSortNames($a, $b) {

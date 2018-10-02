@@ -29,10 +29,6 @@ require_once($config['homedir'] . "/include/functions_modules.php");
 require_once($config['homedir'] . "/include/functions_groups.php");
 ui_require_css_file ('cluetip');
 
-/**
- * Definitions
- */
-define('DEFAULT_NETWORKMAP_CENTER_LOGO', 'images/networkmap/bola_pandora_network_maps.png');
 
 // Check if a node descends from a given node
 function networkmap_is_descendant ($node, $ascendant, $parents) {

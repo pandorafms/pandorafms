@@ -760,7 +760,7 @@ if ($update_agent) { // if modified some agent paramenter
 	$quiet = (int) get_parameter("quiet", 0);
 	$cps = (int) get_parameter("cps", 0);
 	
-	$old_interval = db_get_value('intervalo', 'tagente', 'id_agente', $id_agente);
+	$old_values = db_get_row('tagente', 'id_agente', $id_agente);
 	$fields = db_get_all_fields_in_table('tagent_custom_fields');
 	
 	if ($fields === false) $fields = array();
@@ -860,11 +860,21 @@ if ($update_agent) { // if modified some agent paramenter
 			// Update the agent from the metaconsole cache
 			enterprise_include_once('include/functions_agents.php');
 			enterprise_hook ('agent_update_from_cache', array($id_agente, $values,$server_name));
-			
-			if ($old_interval != $intervalo) {
-				enterprise_hook('config_agents_update_config_interval', array($id_agente, $intervalo));
+
+			# Update the configuration files
+			if ($old_values['intervalo'] != $intervalo) {
+				enterprise_hook(
+					'config_agents_update_config_token',
+					array($id_agente, 'interval', $intervalo)
+				);
 			}
-			
+			if ($old_values['disabled'] != $disabled) {
+				enterprise_hook(
+					'config_agents_update_config_token',
+					array($id_agente, 'standby', $disabled ? "1" : "0")
+				);
+			}
+
 			if($tpolicy_group_old){
 				foreach ($tpolicy_group_old as $key => $value) {
 					$tpolicy_agents_old= db_get_sql("SELECT * FROM tpolicy_agents 
@@ -1713,12 +1723,18 @@ if ($delete_module) { // DELETE agent module !
 		ui_print_error_message(__('There was a problem deleting the module'));
 	}
 	else {
-		ui_print_success_message(__('Module deleted succesfully'));
+
+		echo '<script type="text/javascript">
+		location="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=module&id_agente='.$id_agente.'";
+		alert("'.__('Module deleted succesfully').'");
+		</script>';
 		
 		$agent = db_get_row ('tagente', 'id_agente', $id_agente);
 		db_pandora_audit("Agent management",
 			"Deleted module '".$module_data["nombre"]."' for agent ".$agent["alias"]);
 	}
+
+
 }
 
 // MODULE DUPLICATION
@@ -1936,11 +1952,11 @@ switch ($tab) {
 					resizable: true,
 					draggable: true,
 					modal: true,
-					height: 220,
+					height: 240,
 					width: 600,
 					title: 'Changing the module name of a satellite agent',
 					open: function(){
-							$('#dialog').html('<br><img src="images/icono-warning-triangulo.png" style="float:left;margin-left:25px;"><p style="float:right;font-style:nunito;font-size:11pt;margin-right:50px;"><span style="font-weight:bold;font-size:12pt;">Warning</span> <br>The names of the modules of a satellite should not be <br> altered manually. Unless you are absolutely certain of <br> the process, do not alter these names.</p>');
+							$('#dialog').html('<br><table><tr><td><img src="images/icono-warning-triangulo.png" style="float:left;margin-left:25px;"></td><td><p style="float:right;font-style:nunito;font-size:11pt;margin-right:50px;margin-left:40px;"><span style="font-weight:bold;font-size:12pt;">Warning</span> <br>The names of the modules of a satellite should not be altered manually. Unless you are absolutely certain of the process, do not alter these names.</p></td></tr></table>');
 					},
 					buttons: [{
 							text: "Ok",
@@ -1970,11 +1986,11 @@ switch ($tab) {
 						resizable: true,
 						draggable: true,
 						modal: true,
-						height: 280,
-						width: 670,
+						height: 240,
+						width: 650,
 						title: 'Changing snmp module name',
 						open: function(){
-								$('#dialog').html('<br><img src="images/icono-warning-triangulo.png" style="float:left;margin-left:25px;margin-top:30px;"><p style="float:right;font-style:nunito;font-size:11pt;margin-right:50px;"><span style="font-weight:bold;font-size:12pt;">Warning</span> <br> 					If you change the name of this module, various features <br> associated with this module, such as network maps, <br> interface graphs or other network modules, may  no longer <br>  work. If you are not completely sure of the process, please <br> do not change the name of the module.					</p>');
+								$('#dialog').html('<br><table><tr><td><img src="images/icono-warning-triangulo.png" style="float:left;margin-left:25px;margin-top:30px;"></td><td><p style="float:right;font-style:nunito;font-size:11pt;margin-right:50px;margin-left:40px;"><span style="font-weight:bold;font-size:12pt;">Warning</span> <br> 					If you change the name of this module, various features associated with this module, such as network maps, interface graphs or other network modules, may  no longer work. If you are not completely sure of the process, please do not change the name of the module.					</p></td></tr></table>');
 						},
 						buttons: [{
 					      text: "Ok",

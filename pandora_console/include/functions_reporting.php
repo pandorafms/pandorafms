@@ -1552,7 +1552,7 @@ function reporting_event_report_group($report, $content,
 function reporting_event_report_module($report, $content,
 	$type = 'dinamic', $force_width_chart = null,
 	$force_height_chart = null, $pdf=0) {
-	
+
 	global $config;
 
 	if($pdf){
@@ -1563,20 +1563,29 @@ function reporting_event_report_module($report, $content,
 	}
 
 	$return['type'] = 'event_report_module';
-	
+
 	if (empty($content['name'])) {
 		$content['name'] = __('Event Report Module');
 	}
-	
+
+	$id_server = false;
+	if(is_metaconsole()){
+		$id_server = metaconsole_get_id_server($content["server_name"]);
+		metaconsole_connect(null, $id_server);
+	}
+
 	$return['title'] = $content['name'];
-	$return['subtitle'] = agents_get_alias($content['id_agent']) .
-		" - " .
-		io_safe_output(
-			modules_get_agentmodule_name($content['id_agent_module']));
+	$return['subtitle'] = agents_get_alias($content['id_agent']) . " - " .
+		io_safe_output(modules_get_agentmodule_name($content['id_agent_module']));
+
+	if(is_metaconsole()){
+		metaconsole_restore_db();
+	}
+
 	$return["description"] = $content["description"];
 	$return["date"] = reporting_get_date_text($report, $content);
 	$return['label'] = (isset($content['style']['label'])) ? $content['style']['label'] : '';
-	
+
 	$event_filter = $content['style'];
 	$return['show_summary_group'] = $event_filter['show_summary_group'];
 	//filter
@@ -1585,22 +1594,18 @@ function reporting_event_report_module($report, $content,
 	$filter_event_type          = json_decode($event_filter['filter_event_type'],true);
 	$filter_event_status        = json_decode($event_filter['filter_event_status'],true);
 	$filter_event_filter_search = $event_filter['event_filter_search'];
-	
+
 	//graphs
 	$event_graph_by_user_validator        = $event_filter['event_graph_by_user_validator'];
 	$event_graph_by_criticity             = $event_filter['event_graph_by_criticity'];
 	$event_graph_validated_vs_unvalidated = $event_filter['event_graph_validated_vs_unvalidated'];
-	
-	$id_server = false;
-	if(is_metaconsole()){
-		$id_server = metaconsole_get_id_server($content["server_name"]);
-	}
+
 	//data events
 	$data = reporting_get_module_detailed_event (
-		$content['id_agent_module'], $content['period'], $report["datetime"], 
-		$show_summary_group, $filter_event_severity, $filter_event_type, 
+		$content['id_agent_module'], $content['period'], $report["datetime"],
+		$show_summary_group, $filter_event_severity, $filter_event_type,
 		$filter_event_status, $filter_event_filter_search, $force_width_chart,
-		$event_graph_by_user_validator, $event_graph_by_criticity, 
+		$event_graph_by_user_validator, $event_graph_by_criticity,
 		$event_graph_validated_vs_unvalidated, $ttl, $id_server);
 
 	if (empty($data)) {
@@ -1608,7 +1613,7 @@ function reporting_event_report_module($report, $content,
 	}
 	else {
 		$return['data'] = array_reverse($data);
-	}	
+	}
 
 	if ($config['metaconsole']) {
 		metaconsole_restore_db();
@@ -1621,7 +1626,7 @@ function reporting_event_report_module($report, $content,
 	else{
 		$return['total_events'] = 0;
 	}
-	
+
 	return reporting_check_structure_content($return);
 }
 
@@ -2865,14 +2870,27 @@ function reporting_alert_get_fired($id_agent_module, $id_alert_template_module, 
 		$id_alert_template_module,
 		$period,
 		$datetime);
+		
+		if (!is_numeric ($datetime)) {
+			$datetime = time_w_fixed_tz($datetime);
+		}
+		if (empty ($datetime)) {
+			$datetime = get_system_time();
+		}
+		
+		$datelimit = $datetime - $period;
 	
+	$empty = '----------------------------';
 	if (empty($firedTimes)) {
 		$firedTimes = array();
-		$firedTimes[0]['timestamp'] = null;
+		$firedTimes[0]['timestamp'] = $empty;
 	}
 
 	foreach ($firedTimes as $fireTime) {
+		if($fireTime['utimestamp'] > $datelimit && $fireTime['utimestamp'] <= $datetime)
 		$fired[] = $fireTime['timestamp'];
+		else
+		$fired[] = $empty;
 	}
 
 	return $fired;
@@ -2955,6 +2973,16 @@ function reporting_alert_report_group($report, $content) {
 		
 		foreach ($alerts as $template => $actions) {
 
+			$datetime = (int) $report["datetime"];
+			if (!is_numeric ($datetime)) {
+				$datetime = time_w_fixed_tz($datetime);
+			}
+			if (empty ($datetime)) {
+				$datetime = get_system_time();
+			}
+			$period = (int) $content["period"];
+			$datelimit = $datetime - $period;
+			
 			$data_action = array();
 			$data_action['actions'] = array();
 			
@@ -2963,7 +2991,7 @@ function reporting_alert_report_group($report, $content) {
 				foreach ($actions["custom"] as $action) {
 					$data_action[$naction]["name"] = $action["name"];
 					$fired = $action["fired"];
-					if ($fired == 0){
+					if ($fired == 0 || ($fired <= $datelimit || $fired > $datetime)){
 						$data_action[$naction]['fired']  = '----------------------------';
 					}
 					else {
@@ -2976,7 +3004,7 @@ function reporting_alert_report_group($report, $content) {
 				foreach ($actions["default"] as $action) {
 					$data_action[$naction]["name"] = $action["name"];
 					$fired = $action["fired"];
-					if ($fired == 0){
+					if ($fired == 0 || ($fired <= $datelimit || $fired > $datetime)){
 						$data_action[$naction]['fired']  = '----------------------------';
 					}
 					else {
@@ -2989,7 +3017,7 @@ function reporting_alert_report_group($report, $content) {
 				foreach ($actions["unavailable"] as $action) {
 					$data_action[$naction]["name"] = $action["name"];
 					$fired = $action["fired"];
-					if ($fired == 0){
+					if ($fired == 0 || ($fired <= $datelimit || $fired > $datetime)){
 						$data_action[$naction]['fired']  = '----------------------------';
 					}
 					else {
@@ -3009,10 +3037,7 @@ function reporting_alert_report_group($report, $content) {
 													(int) $report["datetime"]);
 			$module_actions["actions"]        = $data_action;
 
-			if ($module_actions["template_fired"][0] !== null)
 			$data_row['alerts'][$ntemplates] = $module_actions;
-			else
-			$data_row = null;
 			$ntemplates++;
 		}
 
@@ -3075,6 +3100,16 @@ function reporting_alert_report_agent($report, $content) {
 		
 		foreach ($alerts as $template => $actions) {
 
+			$datetime = (int) $report["datetime"];
+			if (!is_numeric ($datetime)) {
+				$datetime = time_w_fixed_tz($datetime);
+			}
+			if (empty ($datetime)) {
+				$datetime = get_system_time();
+			}
+			$period = (int) $content["period"];
+			$datelimit = $datetime - $period;
+			
 			$data_action = array();
 			$data_action['actions'] = array();
 			
@@ -3083,7 +3118,7 @@ function reporting_alert_report_agent($report, $content) {
 				foreach ($actions["custom"] as $action) {
 					$data_action[$naction]["name"] = $action["name"];
 					$fired = $action["fired"];
-					if ($fired == 0){
+					if ($fired == 0 || ($fired <= $datelimit || $fired > $datetime)){
 						$data_action[$naction]['fired']  = '----------------------------';
 					}
 					else {
@@ -3096,7 +3131,7 @@ function reporting_alert_report_agent($report, $content) {
 				foreach ($actions["default"] as $action) {
 					$data_action[$naction]["name"] = $action["name"];
 					$fired = $action["fired"];
-					if ($fired == 0){
+					if ($fired == 0 || ($fired <= $datelimit || $fired > $datetime)){
 						$data_action[$naction]['fired']  = '----------------------------';
 					}
 					else {
@@ -3109,7 +3144,7 @@ function reporting_alert_report_agent($report, $content) {
 				foreach ($actions["unavailable"] as $action) {
 					$data_action[$naction]["name"] = $action["name"];
 					$fired = $action["fired"];
-					if ($fired == 0){
+					if ($fired == 0 || ($fired <= $datelimit || $fired > $datetime)){
 						$data_action[$naction]['fired']  = '----------------------------';
 					}
 					else {
@@ -3129,10 +3164,7 @@ function reporting_alert_report_agent($report, $content) {
 													(int) $report["datetime"]);
 			$module_actions["actions"]        = $data_action;
 
-			if ($module_actions["template_fired"][0] !== null)
 			$data_row['alerts'][$ntemplates] = $module_actions;
-			else 
-			$data_row = null;
 			$ntemplates++;
 		}
 
@@ -3191,13 +3223,18 @@ function reporting_alert_report_module($report, $content) {
 	// Alerts over $id_agent_module
 	$alerts = alerts_get_effective_alert_actions($content['id_agent_module']);
 
-	if ($alerts === false){
-		return;
-	}
-
 	$ntemplates = 0;
 	
 	foreach ($alerts as $template => $actions) {
+		$datetime = (int) $report["datetime"];
+		if (!is_numeric ($datetime)) {
+			$datetime = time_w_fixed_tz($datetime);
+		}
+		if (empty ($datetime)) {
+			$datetime = get_system_time();
+		}
+		$period = (int) $content["period"];
+		$datelimit = $datetime - $period;
 
 		$data_action = array();
 		$data_action['actions'] = array();
@@ -3207,7 +3244,7 @@ function reporting_alert_report_module($report, $content) {
 			foreach ($actions["custom"] as $action) {
 				$data_action[$naction]["name"] = $action["name"];
 				$fired = $action["fired"];
-				if ($fired == 0){
+				if ($fired == 0 || ($fired <= $datelimit || $fired > $datetime)){
 					$data_action[$naction]['fired']  = '----------------------------';
 				}
 				else {
@@ -3220,7 +3257,7 @@ function reporting_alert_report_module($report, $content) {
 			foreach ($actions["default"] as $action) {
 				$data_action[$naction]["name"] = $action["name"];
 				$fired = $action["fired"];
-				if ($fired == 0){
+				if ($fired == 0 || ($fired <= $datelimit || $fired > $datetime)){
 					$data_action[$naction]['fired']  = '----------------------------';
 				}
 				else {
@@ -3233,7 +3270,7 @@ function reporting_alert_report_module($report, $content) {
 			foreach ($actions["unavailable"] as $action) {
 				$data_action[$naction]["name"] = $action["name"];
 				$fired = $action["fired"];
-				if ($fired == 0){
+				if ($fired == 0 || ($fired <= $datelimit || $fired > $datetime)){
 					$data_action[$naction]['fired']  = '----------------------------';
 				}
 				else {
@@ -3253,10 +3290,7 @@ function reporting_alert_report_module($report, $content) {
 												(int) $report["datetime"]);
 		$module_actions["actions"]        = $data_action;
 
-		if ($module_actions["template_fired"][0] !== null)
 		$data_row['alerts'][$ntemplates] = $module_actions;
-		else
-		$data_row = null;
 		$ntemplates++;
 	}
 
@@ -3816,114 +3850,114 @@ function reporting_value($report, $content, $type,$pdf) {
 		'type_graph'      => $config['type_module_charts'],
 		'time_interval'   => $content['lapse'],
 		'server_id'       => $id_meta,
-		'height'          => $config['graph_image_height']
+		'height'          => $config['graph_image_height'],
+		'fullscale'       => true
 	);
 
 	switch ($type) {
 		case 'max':
-		if($content['lapse_calc'] == 0){
-			$value = reporting_get_agentmodule_data_max(
-				$content['id_agent_module'], $content['period'], $report["datetime"]);
-			if (!$config['simple_module_value']) {
-				$formated_value = $value;
+			if($content['lapse_calc'] == 0){
+				$value = reporting_get_agentmodule_data_max(
+					$content['id_agent_module'], $content['period'], $report["datetime"]);
+				if (!$config['simple_module_value']) {
+					$formated_value = $value;
+				}
+				else {
+					$formated_value = format_for_graph($value, $config['graph_precision']) . " " . $unit;
+				}
 			}
-			else {
-				$formated_value = format_for_graph($value, $config['graph_precision']) . " " . $unit;
-			}
-		}
-		else{
-			$value = '
-			<table border="0" style="margin:0 auto;text-align:center;">
-				<tr>
-					<td width="400px;" height="20%;">';
-					if($content['visual_format'] == 1 || $content['visual_format'] == 2 || $content['visual_format'] == 3){
+			else{
+				$value = '
+				<table border="0" style="margin:0 auto;text-align:center;">
+					<tr>
+						<td width="400px;" height="20%;">';
+						if($content['visual_format'] == 1 || $content['visual_format'] == 2 || $content['visual_format'] == 3){
+
+						$value .= '
+							<table style="width:90%;margin:0 auto;background-color:#eee;border: solid lightgray 1px;">
+								<tr>
+									<th style="padding:5px;background-color:#82b92e;">
+										'.__("Agent").'
+									</th>
+									<th style="padding:5px;background-color:#82b92e;">
+										'.__("Module").'
+									</th>
+									<th style="padding:5px;background-color:#82b92e;">
+										'.__("Maximum").'
+									</th>
+								<tr>
+									<td style="padding:5px;">
+										'.$agent_name.'
+									</td>
+									<td style="padding:5px;">
+										'.$module_name.'
+									</td>
+									<td style="padding:5px;">
+										'.format_for_graph(reporting_get_agentmodule_data_max(
+										$content['id_agent_module'], $content['period'], $report["datetime"]), $config['graph_precision']) . ' ' . $unit.'
+									</td>
+								</tr>
+							</table>';
+						}
+
+						$value .= '
+					</td>
+					<td rowspan="2" width="150px">
+					</td>
+					<td rowspan="2">';
+
+					if($content['visual_format'] == 2 || $content['visual_format'] == 3){
+						$params['force_interval'] = 'max_only';
+						$value .= grafico_modulo_sparse($params);
+					}
 
 					$value .= '
-						<table style="width:90%;margin:0 auto;background-color:#eee;border: solid lightgray 1px;">
+
+					</td>
+				</tr>
+				<tr>
+					<td>';
+
+					if($content['visual_format'] == 1 || $content['visual_format'] == 3){
+
+					$value .= '
+						<table style="width:90%;margin:0 auto;margin-top:30px;background-color:#eee;border: solid lightgray 1px;">
 							<tr>
 								<th style="padding:5px;background-color:#82b92e;">
-									'.__("Agent").'
-								</th>
-								<th style="padding:5px;background-color:#82b92e;">
-									'.__("Module").'
+									'.__("Lapse").'
 								</th>
 								<th style="padding:5px;background-color:#82b92e;">
 									'.__("Maximum").'
 								</th>
-							<tr>
-								<td style="padding:5px;">
-									'.$agent_name.'
-								</td>
-								<td style="padding:5px;">
-									'.$module_name.'
-								</td>
-								<td style="padding:5px;">
-									'.format_for_graph(reporting_get_agentmodule_data_max(
-									$content['id_agent_module'], $content['period'], $report["datetime"]), $config['graph_precision']) . ' ' . $unit.'
-								</td>
 							</tr>
-						</table>';
+							<tr>';
+								$time_begin = db_get_row_sql('select utimestamp from tagente_datos where id_agente_modulo ='.$content['id_agent_module'], true);
+								$date_reference = getdate();
+
+								for ($i=$date_reference[0]; $i > ($date_reference[0]-$content["period"]); $i -= $content["lapse"]) { 
+
+									$value .= '<tr><td style="padding:5px;">'. date("Y-m-d H:i:s", ($i-$content["lapse"]+1)).' to '.date("Y-m-d H:i:s",$i).'</td><td>';
+
+									if ($i>$time_begin['utimestamp']) {
+										$value .= format_for_graph(reporting_get_agentmodule_data_max(
+										$content['id_agent_module'], $content["lapse"], $i), $config['graph_precision']) . ' ' . $unit.'</td></tr>';
+									} else {
+											$value .= 'N/A</td></tr>';
+									}
+
+								}
+
+								$value .='</table>';
 					}
+						$value .= '
+					</td>
+				</tr>
+			</table>';
 
-					$value .= '
-				</td>
-				<td rowspan="2" width="150px">
-				</td>
-				<td rowspan="2">';
+				$formated_value = $value;
+			}
 
-				if($content['visual_format'] == 2 || $content['visual_format'] == 3){
-					$params['force_interval'] = 'max_only';
-					$value .= grafico_modulo_sparse($params);
-				}
-
-				$value .= '
-
-				</td>
-			</tr>
-			<tr>
-				<td>';
-
-				if($content['visual_format'] == 1 || $content['visual_format'] == 3){
-
-				$value .= '
-					<table style="width:90%;margin:0 auto;margin-top:30px;background-color:#eee;border: solid lightgray 1px;">
-						<tr>
-							<th style="padding:5px;background-color:#82b92e;">
-								'.__("Lapse").'
-							</th>
-							<th style="padding:5px;background-color:#82b92e;">
-								'.__("Maximum").'
-							</th>
-						</tr>
-						<tr>';
-							$time_begin = db_get_row_sql('select utimestamp from tagente_datos where id_agente_modulo ='.$content['id_agent_module']);
-							$date_reference = getdate();
-
-							for ($i=$date_reference[0]; $i > ($date_reference[0]-$content["period"]); $i -= $content["lapse"]) { 
-
-								$value .= '<tr><td style="padding:5px;">'. date("Y-m-d H:i:s", ($i-$content["lapse"]+1)).' to '.date("Y-m-d H:i:s",$i).'</td><td>';
-
-								if($i>$time_begin['utimestamp']){
-									$value .= format_for_graph(reporting_get_agentmodule_data_max(
-									$content['id_agent_module'], $content["lapse"], $i), $config['graph_precision']) . ' ' . $unit.'</td></tr>';
-								}
-								else{
-										$value .= 'N/A</td></tr>';
-								}
-
-							}
-
-							$value .='</table>';
-				}
-					$value .= '
-				</td>
-			</tr>
-		</table>';
-
-			$formated_value = $value;
-		}
-
-		break;
+			break;
 		case 'min':
 			if($content['lapse_calc'] == 0){
 				$value = reporting_get_agentmodule_data_min(
@@ -4034,111 +4068,111 @@ function reporting_value($report, $content, $type,$pdf) {
 
 			break;
 		case 'avg':
-		if($content['lapse_calc'] == 0){
-			$value = reporting_get_agentmodule_data_average(
-				$content['id_agent_module'], $content['period'], $report["datetime"]);
-			if (!$config['simple_module_value']) {
-				$formated_value = $value;
+			if($content['lapse_calc'] == 0){
+				$value = reporting_get_agentmodule_data_average(
+					$content['id_agent_module'], $content['period'], $report["datetime"]);
+				if (!$config['simple_module_value']) {
+					$formated_value = $value;
+				}
+				else {
+					$formated_value = format_for_graph($value, $config['graph_precision']) . " " . $unit;
+				}
 			}
-			else {
-				$formated_value = format_for_graph($value, $config['graph_precision']) . " " . $unit;
-			}
-		}
-		else{
-			$value = '
-			<table border="0" style="margin:0 auto;text-align:center;">
-				<tr>
-					<td width="400px;" height="20%;">';
+			else{
+				$value = '
+				<table border="0" style="margin:0 auto;text-align:center;">
+					<tr>
+						<td width="400px;" height="20%;">';
+						
+						if($content['visual_format'] == 1 || $content['visual_format'] == 2 || $content['visual_format'] == 3){
+						$value .= '
+							<table style="width:90%;margin:0 auto;background-color:#eee;border: solid lightgray 1px;">
+								<tr>
+									<th style="padding:5px;background-color:#82b92e;">
+										'.__("Agent").'
+									</th>
+									<th style="padding:5px;background-color:#82b92e;">
+										'.__("Module").'
+									</th>
+									<th style="padding:5px;background-color:#82b92e;">
+										'.__("Average").'
+									</th>
+								<tr>
+									<td style="padding:5px;">
+										'.$agent_name.'
+									</td>
+									<td style="padding:5px;">
+										'.$module_name.'
+									</td>
+									<td style="padding:5px;">
+										'.format_for_graph(reporting_get_agentmodule_data_average(
+										$content['id_agent_module'], $content['period'], $report["datetime"]), $config['graph_precision']) . ' ' . $unit.'
+									</td>
+								</tr>
+							</table>';
+							
+						}
+							
+						$value .= '
+					</td>
+					<td rowspan="2" width="150px">
+					</td>
+					<td rowspan="2">';
+					if($content['visual_format'] == 2 || $content['visual_format'] == 3){
+						$params['force_interval'] = 'avg_only';
+						$value .= grafico_modulo_sparse($params);
+					}
 					
-					if($content['visual_format'] == 1 || $content['visual_format'] == 2 || $content['visual_format'] == 3){
 					$value .= '
-						<table style="width:90%;margin:0 auto;background-color:#eee;border: solid lightgray 1px;">
+					
+					</td>				
+				</tr>
+				<tr>
+					<td>';
+					
+					if($content['visual_format'] == 1 || $content['visual_format'] == 3){
+					
+					$value .= '
+						<table style="width:90%;margin:0 auto;margin-top:30px;background-color:#eee;border: solid lightgray 1px;">
 							<tr>
 								<th style="padding:5px;background-color:#82b92e;">
-									'.__("Agent").'
-								</th>
-								<th style="padding:5px;background-color:#82b92e;">
-									'.__("Module").'
+									'.__("Lapse").'
 								</th>
 								<th style="padding:5px;background-color:#82b92e;">
 									'.__("Average").'
 								</th>
-							<tr>
-								<td style="padding:5px;">
-									'.$agent_name.'
-								</td>
-								<td style="padding:5px;">
-									'.$module_name.'
-								</td>
-								<td style="padding:5px;">
-									'.format_for_graph(reporting_get_agentmodule_data_average(
-									$content['id_agent_module'], $content['period'], $report["datetime"]), $config['graph_precision']) . ' ' . $unit.'
-								</td>
 							</tr>
-						</table>';
-						
+							<tr>';
+								$time_begin = db_get_row_sql('select utimestamp from tagente_datos where id_agente_modulo ='.$content['id_agent_module']);
+								$date_reference = getdate();
+								
+								for ($i=$date_reference[0]; $i > ($date_reference[0]-$content["period"]); $i -= $content["lapse"]) { 
+										
+									$value .= '<tr><td style="padding:5px;">'. date("Y-m-d H:i:s", ($i-$content["lapse"]+1)).' to '.date("Y-m-d H:i:s",$i).'</td><td>';
+									
+									if($i>$time_begin['utimestamp']){
+										$value .= format_for_graph(reporting_get_agentmodule_data_average(
+										$content['id_agent_module'], $content["lapse"], $i), $config['graph_precision']) . ' ' . $unit.'</td></tr>';
+									}
+									else{
+										$value .= 'N/A</td></tr>';
+									}
+									
+								}
+								
+								$value .='</table>';
 					}
 						
-					$value .= '
-				</td>
-				<td rowspan="2" width="150px">
-				</td>
-				<td rowspan="2">';
-				if($content['visual_format'] == 2 || $content['visual_format'] == 3){
-					$params['force_interval'] = 'avg_only';
-					$value .= grafico_modulo_sparse($params);
-				}
+						$value .= '
+						
+					</td>
+				</tr>
+			</table>';
 				
-				$value .= '
-				
-				</td>				
-			</tr>
-			<tr>
-				<td>';
-				
-				if($content['visual_format'] == 1 || $content['visual_format'] == 3){
-				
-				$value .= '
-					<table style="width:90%;margin:0 auto;margin-top:30px;background-color:#eee;border: solid lightgray 1px;">
-						<tr>
-							<th style="padding:5px;background-color:#82b92e;">
-								'.__("Lapse").'
-							</th>
-							<th style="padding:5px;background-color:#82b92e;">
-								'.__("Average").'
-							</th>
-						</tr>
-						<tr>';
-							$time_begin = db_get_row_sql('select utimestamp from tagente_datos where id_agente_modulo ='.$content['id_agent_module']);
-							$date_reference = getdate();
-							
-							for ($i=$date_reference[0]; $i > ($date_reference[0]-$content["period"]); $i -= $content["lapse"]) { 
-									
-								$value .= '<tr><td style="padding:5px;">'. date("Y-m-d H:i:s", ($i-$content["lapse"]+1)).' to '.date("Y-m-d H:i:s",$i).'</td><td>';
-								
-								if($i>$time_begin['utimestamp']){
-									$value .= format_for_graph(reporting_get_agentmodule_data_average(
-									$content['id_agent_module'], $content["lapse"], $i), $config['graph_precision']) . ' ' . $unit.'</td></tr>';
-								}
-								else{
-									$value .= 'N/A</td></tr>';
-								}
-								
-							}
-							
-							$value .='</table>';
-				}
-					
-					$value .= '
-					
-				</td>
-			</tr>
-		</table>';
+				$formated_value = $value;
 			
-			$formated_value = $value;
-		
-		}
-		break;
+			}
+			break;
 		
 		case 'sum':
 			$value = reporting_get_agentmodule_data_sum(
@@ -6245,6 +6279,11 @@ function reporting_custom_graph($report, $content, $type = 'dinamic',
 		}
 		else {
 			$content['name'] = __('Simple graph');
+		}
+	} else {
+		if ($type_report == "custom_graph") {
+			$graphs = db_get_all_rows_field_filter ("tgraph", "id_graph", $content['id_gs']);
+			$id_graph = $content['id_gs'];
 		}
 	}
 

@@ -158,7 +158,7 @@ require Exporter;
 our @ISA = ("Exporter");
 our %EXPORT_TAGS = ( 'all' => [ qw( ) ] );
 our @EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
-our @EXPORT = qw( 	
+our @EXPORT = qw(
 	pandora_add_agent_address
 	pandora_audit
 	pandora_create_agent
@@ -234,6 +234,7 @@ our @EXPORT = qw(
 	pandora_self_monitoring
 	pandora_process_policy_queue
 	subst_alert_macros
+	locate_agent
 	get_agent
 	get_agent_from_alias
 	get_agent_from_addr
@@ -258,6 +259,32 @@ our $EventStormProtection :shared = 0;
 
 # Current master server
 my $Master :shared = 0;
+
+##########################################################################
+# Return the agent given the agent name or alias or address.
+##########################################################################
+sub locate_agent {
+	my ($pa_config, $dbh, $field) = @_;
+
+	if (is_metaconsole($pa_config)) {
+		# Locate agent first in tmetaconsole_agent
+		return undef if (! defined ($field) || $field eq '');
+
+		my $rs = enterprise_hook('get_metaconsole_agent_from_alias', [$dbh, $field]);
+		return $rs if defined($rs) && (ref($rs)); # defined and not a scalar
+
+		$rs = enterprise_hook('get_metaconsole_agent_from_addr', [$dbh, $field]);
+		return $rs if defined($rs) && (ref($rs)); # defined and not a scalar
+
+		$rs = enterprise_hook('get_metaconsole_agent_from_name', [$dbh, $field]);
+		return $rs if defined($rs) && (ref($rs)); # defined and not a scalar
+
+	} else {
+		return get_agent($dbh, $field);
+	}
+
+	return undef;
+}
 
 
 ##########################################################################
@@ -1887,7 +1914,7 @@ sub pandora_planned_downtime_unset_quiet_elements($$$) {
 ########################################################################
 =head2 C<< pandora_planned_downtime_quiet_once_stop (I<$pa_config>, I<$dbh>) >> 
 
-Start the planned downtime, the once type. 
+Stop the planned downtime, the once type. 
 
 =cut
 ########################################################################
@@ -1895,7 +1922,7 @@ sub pandora_planned_downtime_quiet_once_stop($$) {
 	my ($pa_config, $dbh) = @_;
 	my $utimestamp = time();
 	
-	# Stop pending downtimes
+	# Stop executed downtimes
 	my @downtimes = get_db_rows($dbh, 'SELECT *
 		FROM tplanned_downtime
 		WHERE type_downtime = ?
@@ -1996,8 +2023,8 @@ sub pandora_planned_downtime_monthly_start($$) {
 			AND type_execution <> ' . $RDBMS_QUOTE_STRING . 'once' . $RDBMS_QUOTE_STRING . '
 			AND ((periodically_day_from = ? AND periodically_time_from <= ?) OR (periodically_day_from < ?))
 			AND ((periodically_day_to = ? AND periodically_time_to >= ?) OR (periodically_day_to > ?))',
-			'monthly', 'number_day_month',
-			$time, $number_day_month,
+			'monthly',
+			$number_day_month, $time, $number_day_month,
 			$number_day_month, $time, $number_day_month);
 	
 	foreach my $downtime (@downtimes) {	
@@ -2034,7 +2061,7 @@ sub pandora_planned_downtime_monthly_start($$) {
 ########################################################################
 =head2 C<< pandora_planned_downtime_monthly_stop (I<$pa_config>, I<$dbh>) >> 
 
-Start the planned downtime, the montly type. 
+Stop the planned downtime, the monthly type. 
 
 =cut
 ########################################################################
@@ -2065,7 +2092,7 @@ sub pandora_planned_downtime_monthly_stop($$) {
 		$number_day_month = 31;
 	}
 	
-	# Start pending downtimes
+	# Stop executed downtimes
 	my @downtimes = get_db_rows($dbh, 'SELECT *
 		FROM tplanned_downtime
 		WHERE type_periodicity = ?
@@ -2111,7 +2138,7 @@ sub pandora_planned_downtime_monthly_stop($$) {
 ########################################################################
 =head2 C<< pandora_planned_downtime_weekly_start (I<$pa_config>, I<$dbh>) >> 
 
-Start the planned downtime, the montly type. 
+Start the planned downtime, the weekly type. 
 
 =cut
 ########################################################################
@@ -2220,7 +2247,7 @@ sub pandora_planned_downtime_weekly_start($$) {
 ########################################################################
 =head2 C<< pandora_planned_downtime_weekly_stop (I<$pa_config>, I<$dbh>) >> 
 
-Stop the planned downtime, the montly type. 
+Stop the planned downtime, the weekly type. 
 
 =cut
 ########################################################################
@@ -2236,7 +2263,7 @@ sub pandora_planned_downtime_weekly_stop($$) {
 	my $found = 0;
 	my $stop_downtime = 0;
 	
-	# Start pending downtimes
+	# Stop executed downtimes
 	my @downtimes = get_db_rows($dbh, 'SELECT *
 		FROM tplanned_downtime
 		WHERE type_periodicity = ?

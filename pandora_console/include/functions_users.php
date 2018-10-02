@@ -418,10 +418,13 @@ function users_get_first_group ($id_user = false, $privilege = "AR", $all_group 
  * @param int Agent id.
  * @param string Access mode to be checked. Default AR (Agent reading)
  * @param string User id. Current user by default
+ * @param bool True to use the metaconsole tables
  *
  * @return bool Access to that agent (false not, true yes)
  */
-function users_access_to_agent ($id_agent, $mode = "AR", $id_user = false) {
+function users_access_to_agent (
+	$id_agent, $mode = "AR", $id_user = false, $force_meta = false
+) {
 	if (empty ($id_agent))
 		return false;
 
@@ -432,7 +435,7 @@ function users_access_to_agent ($id_agent, $mode = "AR", $id_user = false) {
 
 	return (bool) check_acl_one_of_groups (
 		$id_user,
-		agents_get_all_groups_agent((int)$id_agent),
+		agents_get_all_groups_agent((int)$id_agent, false, $force_meta),
 		$mode);
 }
 

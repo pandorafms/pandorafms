@@ -3709,6 +3709,57 @@ div.simple_value > a > span.text p
   color:white;
 }
 
+.modaldeletebutton{
+	transition-property: background-color, color;
+	transition-duration: 1s;
+  transition-timing-function: ease-out;
+  -webkit-transition-property: background-color, color;
+  -webkit-transition-duration: 1s;
+  -o-transition-property: background-color, color;
+  -o-transition-duration: 1s;
+	cursor:pointer;
+	text-align:center;
+	margin-left:45px;
+	float:left;
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
+	margin-bottom:30px;
+	border-radius: 3px;width:90px;height:30px;background-color:white;border: 1px solid #FA5858;
+}
+
+.modaldeletebuttontext{
+	transition-property: background-color, color;
+	transition-duration: 1s;
+  transition-timing-function: ease-out;
+  -webkit-transition-property: background-color, color;
+  -webkit-transition-duration: 1s;
+  -o-transition-property: background-color, color;
+  -o-transition-duration: 1s;
+	color:#FA5858;font-family:Nunito;font-size:10pt;position:relative;top:6px;
+}
+
+.modaldeletebutton:hover .modaldeletebuttontext {
+  transition-property: background-color, color;
+	transition-duration: 1s;
+  transition-timing-function: ease-out;
+  -webkit-transition-property: background-color, color;
+  -webkit-transition-duration: 1s;
+  -o-transition-property: background-color, color;
+  -o-transition-duration: 1s;
+  color:white;
+}
+
+.modaldeletebutton:hover {
+  transition-property: background-color, color;
+	transition-duration: 1s;
+  transition-timing-function: ease-out;
+  -webkit-transition-property: background-color, color;
+  -webkit-transition-duration: 1s;
+  -o-transition-property: background-color, color;
+  -o-transition-duration: 1s;
+  background-color:#FA5858;
+}
+
 .modalgobutton{
 	transition-property: background-color, color;
 	transition-duration: 1s;
@@ -4691,5 +4742,25 @@ tr:last-child > td > a.down_arrow, tr:first-child > td > a.up_arrow {
     text-align: left;
     display: block;
     vertical-align: middle;
-    line-height: 20px;
+	line-height: 20px;
+}
+
+.tooltip_counters h3{
+	font-size: 12pt;
+	padding-bottom: 10px !important;
+	text-align: center;
+}
+
+.tooltip_counters li{
+	font-size: 8pt;
+	margin: 2px;
+	margin-left: 5px;
+
+}
+.tooltip_counters li div{
+	width: 12px;
+	height: 12px;
+	border-radius: 3px;
+	float: left;
+	margin-right: 5px;
 }

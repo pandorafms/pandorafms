@@ -205,26 +205,19 @@ class Tree {
 		return "AND ta.$field_filter > 0" . $show_init_condition;
 	}
 
-	// FIXME: Separate and condition from inner join
 	protected function getTagJoin () {
-		// $parent is the agent id
-		$group_id = (int) db_get_value('id_grupo', 'tagente', 'id_agente', $this->id);
-		$tag_join = '';
-		if (empty($group_id)) {
-			// ACL error, this will restrict the module search
-			$tag_join = 'INNER JOIN ttag_module tta
-							ON 1=0';
-		}
-		else if (!empty($this->acltags) && isset($this->acltags[$group_id])) {
-			$tags_str = $this->acltags[$group_id];
+		return 'INNER JOIN ttag_module ttm
+			ON tam.id_agente_modulo = ttm.id_agente_modulo';
+	}
 
-			if (!empty($tags_str)) {
-				$tag_join = sprintf('INNER JOIN ttag_module ttm
-											ON tam.id_agente_modulo = ttm.id_agente_modulo
-												AND ttm.id_tag IN (%s)', $tags_str);
-			}
-		}
-		return $tag_join;
+	protected function getTagCondition () {
+		$tags = tags_get_user_applied_agent_tags($this->id, "AR");
+		// All tags permision, returns no condition
+		if ($tags === true) return "";
+		// No permision, do not show anything
+		if ($tags === false) return " AND 1=0";
+		$tags_sql = implode(',', $tags);
+		return "AND ttm.id_tag IN ($tags_sql)";;
 	}
 
 	protected function getModuleStatusFilterFromTestado ($state = false, $without_ands = false) {
@@ -900,7 +893,8 @@ class Tree {
 		$module_search_filter = $this->getModuleSearchFilter();
 		$module_status_filter = $this->getModuleStatusFilterFromTestado();
 		$agent_filter = "AND ta.id_agente = " . $this->id;
-		$tag_join = $this->getTagJoin();
+		$tag_condition = $this->getTagCondition();
+		$tag_join = empty($tag_condition) ? '' : $this->getTagJoin();
 
 		$condition = $this->L2condition;
 		$inner = $this->L2inner;
@@ -929,6 +923,7 @@ class Tree {
 				$agent_status_filter
 				$module_status_filter
 				$module_search_filter
+				$tag_condition
 			ORDER BY tam.nombre ASC, tam.id_agente_modulo ASC";
 		return $sql;
 	}

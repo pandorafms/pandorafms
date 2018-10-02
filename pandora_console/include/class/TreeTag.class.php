@@ -52,6 +52,10 @@ class TreeTag extends Tree {
 	protected function getTagJoin () {
 		return '';
 	}
+
+	protected function getTagCondition () {
+		return '';
+	}
 }
 
 ?>

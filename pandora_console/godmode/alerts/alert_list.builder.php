@@ -70,6 +70,7 @@ if (! $id_agente) {
 
 $table->data[0][0] = __('Module');
 $modules = array ();
+// TODO TAGS agents_get_modules
 if ($id_agente)
 	$modules = agents_get_modules ($id_agente, false, array("delete_pending" => 0));
 

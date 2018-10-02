@@ -205,6 +205,7 @@ function agents_get_alerts_simple ($id_agent = false, $filter = '', $options = f
 	}
 	else {
 		$id_agent = (array) $id_agent;
+		// TODO TAGS agents_get_modules
 		$id_modules = array_keys (agents_get_modules ($id_agent, false, array('delete_pending' => 0)));
 		
 		if (empty ($id_modules))
@@ -592,7 +593,7 @@ function agents_process_manage_config ($source_id_agent, $destiny_id_agents, $co
 			$module = modules_get_agentmodule ($id_agent_module);
 			if ($module === false)
 				return false;
-			
+			// TODO TAGS agents_get_modules
 			$modules = agents_get_modules ($id_destiny_agent, false,
 				array ('nombre' => $module['nombre'], 'disabled' => false));
 			
@@ -1349,6 +1350,7 @@ function agents_get_modules_data_count ($id_agent = 0) {
 	foreach ($id_agent as $agent_id) {
 		//Init value
 		$count[$agent_id] = 0;
+		// TODO TAGS agents_get_modules
 		$modules = array_keys (agents_get_modules ($agent_id)); 
 		foreach ($query as $sql) { 
 			//Add up each table's data
@@ -1679,6 +1681,7 @@ function agents_get_status($id_agent = 0, $noACLs = false) {
 	global $config;
 	
 	if (!$noACLs) {
+		// TODO TAGS agents_get_modules
 		$modules = agents_get_modules ($id_agent, 'id_agente_modulo',
 			array('disabled' => 0), true, false);
 	}
@@ -2126,7 +2129,7 @@ function agents_monitor_total ($id_agent, $filter = '', $disabled = false) {
 //Get alert fired for this agent
 
 function agents_get_alerts_fired ($id_agent, $filter="") {
-	
+	// TODO TAGS agents_get_modules
 	$modules_agent = agents_get_modules($id_agent, "id_agente_modulo", $filter);
 	
 	if (empty($modules_agent)) {
@@ -2374,8 +2377,7 @@ function agents_get_network_interfaces ($agents = false, $agents_filter = false)
 		else
 			$columns[] = 'descripcion';
 
-		$filter = " id_agente = $agent_id AND disabled = 0 AND id_tipo_modulo IN (".implode(",", $accepted_module_types).") AND (nombre LIKE '%_ifOperStatus' OR nombre LIKE 'ifOperStatus_%')";
-		
+		$filter = " tagente_modulo.id_agente = $agent_id AND tagente_modulo.disabled = 0 AND tagente_modulo.id_tipo_modulo IN (".implode(",", $accepted_module_types).") AND (tagente_modulo.nombre LIKE '%_ifOperStatus' OR tagente_modulo.nombre LIKE 'ifOperStatus_%')";
 		$modules = agents_get_modules($agent_id, $columns, $filter, true, false);
 
 		if (!empty($modules)) {
@@ -2441,9 +2443,11 @@ function agents_get_network_interfaces ($agents = false, $agents_filter = false)
 					);
 				
 				if($type_interface){
+					// TODO TAGS agents_get_modules
 					$interface_traffic_modules = agents_get_modules($agent_id, $columns, "nombre LIKE  '". $interface_name . "_if%Octets'");
 				}
 				else{
+					// TODO TAGS agents_get_modules
 					$interface_traffic_modules = agents_get_modules($agent_id, $columns, "nombre LIKE 'if%Octets_$interface_name'");
 				}
 				

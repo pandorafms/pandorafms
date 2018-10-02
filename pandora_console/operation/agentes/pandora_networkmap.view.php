@@ -595,7 +595,7 @@ if (is_ajax ()) {
 	
 	if ($check_changes_num_modules) {
 		$id = (int)get_parameter('id', 0);
-		
+		// TODO TAGS agents_get_modules
 		$modules = agents_get_modules($id);
 		
 		$return = array();

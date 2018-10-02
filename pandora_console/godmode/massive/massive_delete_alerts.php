@@ -120,6 +120,7 @@ function process_manage_delete ($id_alert_template, $id_agents, $module_names) {
 			$modules_id = array();
 			
 			foreach ($id_agents as $id_agent) {
+				// TODO TAGS agents_get_modules
 				$current_modules_agent = agents_get_modules($id_agent, 'id_agente_modulo', array ('disabled' => 0));
 				if ($current_modules_agent != false) {
 					// And their modules

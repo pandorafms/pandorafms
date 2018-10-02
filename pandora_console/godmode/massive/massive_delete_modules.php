@@ -137,6 +137,7 @@ function process_manage_delete ($module_name, $id_agents, $module_status = 'all'
 			}
 		}
 		else {
+			// TODO TAGS agents_get_modules
 			$modules = agents_get_modules ($id_agents, 'id_agente_modulo',
 				$filter_for_module_deletion, true);
 		}
@@ -212,6 +213,7 @@ function process_manage_delete ($module_name, $id_agents, $module_status = 'all'
 			}
 		}
 		else {
+			// TODO TAGS agents_get_modules
 			$modules = agents_get_modules ($id_agents, 'id_agente_modulo',
 				sprintf('nombre IN ("%s")', implode('","',$module_name)), true);
 		}
@@ -439,7 +441,7 @@ if ($module_type != '') {
 else {
 	$filter = false;
 }
-
+// TODO TAGS agents_get_modules
 $names = agents_get_modules (array_keys ($agents),
 	'DISTINCT(nombre)', $filter, false);
 foreach ($names as $name) {

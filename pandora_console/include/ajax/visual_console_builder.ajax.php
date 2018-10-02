@@ -960,6 +960,7 @@ switch ($action) {
 				//Make the html of select box of modules about id_agent.
 				if (($elementFields['id_agent'] != 0)
 					&&($elementFields['id_layout_linked'] == 0)) {
+					// TODO TAGS agents_get_modules
 					$modules = agents_get_modules(
 						$elementFields['id_agent'], false,
 						array('disabled' => 0,
@@ -1022,6 +1023,7 @@ switch ($action) {
 						$elementFields['id_agent_string'] = $elementFields['id_agent'];
 						if (($elementFields['id_agent_string'] != 0)
 							&& ($elementFields['id_layout_linked'] == 0)) {
+							// TODO TAGS agents_get_modules
 							$modules = agents_get_modules(
 								$elementFields['id_agent'], false,
 								array('disabled' => 0,
@@ -1050,6 +1052,7 @@ switch ($action) {
 						$elementFields['id_agent_string'] = $elementFields['id_agent'];
 						if (($elementFields['id_agent_string'] != 0)
 							&& ($elementFields['id_layout_linked'] == 0)) {
+							// TODO TAGS agents_get_modules
 							$modules = agents_get_modules(
 								$elementFields['id_agent'], false,
 								array('disabled' => 0,

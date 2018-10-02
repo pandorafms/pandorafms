@@ -55,6 +55,7 @@ function process_manage_add ($id_agents, $modules, $id_tags) {
 	
 	if (count($modules) == 1 && $modules[0] == '0') {
 		foreach ($id_agents as $id_agent) {
+			// TODO TAGS agents_get_modules
 			$modules_temp = agents_get_modules($id_agent);
 			foreach ($modules_temp as $id_module => $name_module) {
 				$modules_id[] = $id_module;

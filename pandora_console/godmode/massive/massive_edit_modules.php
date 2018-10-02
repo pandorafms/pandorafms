@@ -276,7 +276,7 @@ if ($module_type != '') {
 else {
 	$filter = false;
 }
-
+// TODO TAGS agents_get_modules
 $names = agents_get_modules (array_keys ($agents),
 	'DISTINCT(nombre)', $filter, false);
 foreach ($names as $name) {

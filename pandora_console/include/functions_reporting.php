@@ -1800,7 +1800,7 @@ function reporting_agent_module($report, $content) {
 			$row = array();
 			$row['agent_status'][$agent] = agents_get_status($agent);
 			$row['agent_name'] = agents_get_alias($agent);
-			
+			// TODO TAGS agents_get_modules
 			$agent_modules = agents_get_modules($agent);
 			
 			$row['modules'] = array();
@@ -3079,7 +3079,7 @@ function reporting_alert_report_agent($report, $content) {
 	$return["description"] = $content["description"];
 	$return["date"] = reporting_get_date_text($report, $content);
 	$return['label'] = (isset($content['style']['label'])) ? $content['style']['label'] : '';
-
+	// TODO TAGS agents_get_modules
 	$module_list = agents_get_modules($content['id_agent']);
 
 	$data = array();
@@ -3669,7 +3669,7 @@ function reporting_agent_configuration($report, $content) {
 	$agent_configuration['description'] = $agent_data['comentarios'];
 	$agent_configuration['enabled'] = (int)!$agent_data['disabled'];
 	$agent_configuration['group'] = $report["group"];
-	
+	// TODO TAGS agents_get_modules
 	$modules = agents_get_modules ($content['id_agent']);
 	
 	$agent_configuration['modules'] = array();
@@ -8313,7 +8313,7 @@ function reporting_get_agent_module_info ($id_agent, $filter = false) {
 	}
 	
 	$filter = 'disabled = 0';
-	
+	// TODO TAGS agents_get_modules
 	$modules = agents_get_modules($id_agent, false, $filter, true, false);
 	
 	if ($modules === false) {

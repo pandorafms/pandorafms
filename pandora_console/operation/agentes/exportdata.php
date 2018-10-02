@@ -283,6 +283,7 @@ if (empty($export_btn) || $show_form) {
 	$table->data[2][0] .= ui_print_help_tip(__("No modules of type string. You can not calculate their average"),true);
 	
 	if ($agent > 0) {
+		// TODO TAGS agents_get_modules
 		$modules = agents_get_modules ($agent);
 	}
 	else {

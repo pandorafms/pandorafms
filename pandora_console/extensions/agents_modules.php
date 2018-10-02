@@ -285,6 +285,7 @@ function mainAgentsModules() {
 
 	$count = 0;
 	foreach ($agents as $agent) {
+		// TODO TAGS agents_get_modules
 		$module = agents_get_modules($agent, false,
 			$filter_module_group, true, true);
 		if ($module == false) {
@@ -327,6 +328,7 @@ function mainAgentsModules() {
 			}
 
 		} else {
+			// TODO TAGS agents_get_modules
 			$all_modules = agents_get_modules($agents, false,
 			$filter_module_group, true, true);
 		}
@@ -487,6 +489,7 @@ function mainAgentsModules() {
 			<a class='$rowcolor' href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=".$agent['id_agente']."'>" .
 			$alias['alias'] .
 			"</a></td>";
+		// TODO TAGS agents_get_modules
 		$agent_modules = agents_get_modules($agent['id_agente'], false, $filter_module_group, true, true);
 		
 		$nmodules = 0;

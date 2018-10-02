@@ -273,7 +273,6 @@ $table_data->head_colspan[0] = 3;
 $data = array();
 $data[0] = '<b>' . __('Group') . '</b>';
 $data[1] = '<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=60&amp;group_id='.$agent["id_grupo"].'">'.groups_get_name ($agent["id_grupo"]).'</a>';
-
 // ACCESS RATE GRAPH
 $access_agent = db_get_value_sql("SELECT COUNT(id_agent)
 	FROM tagent_access

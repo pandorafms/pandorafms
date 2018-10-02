@@ -29,7 +29,6 @@ ui_require_javascript_file('openlayers.pandora');
 enterprise_include_once ('operation/agentes/ver_agente.php');
 
 check_login ();
-
 if (is_ajax ()) {
 	$get_agent_json = (bool) get_parameter ('get_agent_json');
 	$get_agent_modules_json = (bool) get_parameter ('get_agent_modules_json');
@@ -718,7 +717,7 @@ if (is_ajax ()) {
 						$id_agent = array_keys(
 							agents_get_group_agents(
 								array_keys (users_get_groups ()), $search, "none"));
-					
+					// TODO TAGS agents_get_modules
 					$agent_modules = agents_get_modules ($id_agent, $fields, $filter, $indexed, true, false, $tags);
 				}
 				// Restore db connection
@@ -731,7 +730,7 @@ if (is_ajax ()) {
 				$id_agent = array_keys(
 					agents_get_group_agents(
 						array_keys(users_get_groups ()), $search, "none"));
-			
+			// TODO TAGS agents_get_modules
 			$agent_modules = agents_get_modules ($id_agent, $fields, $filter, $indexed, true, false, $tags);
 		}
 		

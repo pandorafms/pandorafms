@@ -120,6 +120,7 @@ $table->class = 'databox filters';
 $table->data = array ();
 
 $modules = array ();
+// TODO TAGS agents_get_modules
 if ($source_id_agent)
 	$modules = agents_get_modules ($source_id_agent, 'nombre');
 

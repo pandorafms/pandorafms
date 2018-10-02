@@ -3346,6 +3346,7 @@ function reporting_get_agent_monitors_table ($id_agent, $period = 0, $date = 0) 
 function reporting_get_agent_modules_table ($id_agent, $period = 0, $date = 0) {
 	$table->data = array ();
 	$n_a_string = __('N/A').'(*)';
+	// TODO TAGS agents_get_modules
 	$modules = agents_get_modules ($id_agent, array ("nombre", "descripcion"));
 	if ($modules === false)
 		$modules = array();

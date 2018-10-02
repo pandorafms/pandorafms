@@ -2641,6 +2641,7 @@ function grafico_db_agentes_purge ($id_agent, $width = 380, $height = 300) {
 		$query = "";
 	}
 	else {
+		// TODO TAGS agents_get_modules
 		$modules = agents_get_modules($id_agent);
 		$module_ids = array_keys($modules);
 		
@@ -4836,6 +4837,7 @@ function graph_monitor_wheel ($width = 550, $height = 600, $filter = false) {
 
 			$module_groups = modules_get_modulegroups();
 			$module_groups[0] = __('Not assigned');
+			// TODO TAGS agents_get_modules
 			$modules = agents_get_modules(array_keys($agents), '*');
 
 			$data_agents = array();

@@ -612,7 +612,7 @@ echo "<tr><th style='background-color:#b1b1b1;font-weight:bold;font-style:italic
 
 $server_name = db_get_value_sql("SELECT name FROM tserver WHERE master = 1");
 $agent_id= db_get_value_sql ("SELECT id_agente FROM tagente WHERE nombre = '$server_name'");
-
+	// TODO TAGS agents_get_modules
 	$id_modules = agents_get_modules($agent_id);
 
 	$id_modules = array (

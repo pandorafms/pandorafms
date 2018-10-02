@@ -2628,4 +2628,41 @@ function tags_get_module_policy_tags($id_tag, $id_module) {
 	
 	return $id_module_policy;
 }
+
+/**
+ * Get all tags configured to user associated to the agent.
+ *
+ * @param int $id_agent Agent to extract tags
+ * @param string $access Access to check
+ *
+ * @return mixed 
+ * 		false if user has not permission on agent groups
+ * 		true if there is not any tag restriction
+ * 		array with all tags if there are tags configured
+ */
+function tags_get_user_applied_agent_tags ($id_agent, $access) {
+	global $config;
+
+	$agent_groups = agents_get_all_groups_agent($id_agent);
+	$user_groups = users_get_groups(false, 'AR', false, true);
+	// Check global agent permissions
+	if (!check_acl_one_of_groups($config['id_user'], $agent_groups, $access)) {
+		return false;
+	}
+
+	$acl_column = get_acl_column($access);
+	$tags = array();
+	foreach ($agent_groups as $group) {
+		// If user has not permission to a single group, continue
+		if (!isset($user_groups[$group])) continue;
+		$group_tags = $user_groups[$group]["tags"][$acl_column];
+		if (!empty($group_tags)) {
+			$tags = array_merge($tags, $group_tags);
+		} else {
+			// If an agent
+			return true;
+		}
+	}
+	return empty($tags) ? true : $tags;
+}
 ?>

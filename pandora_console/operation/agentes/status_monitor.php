@@ -158,8 +158,7 @@ else if ($modulegroup > -1) {
 
 // Module name selector
 if ($ag_modulename != '') {
-	$sql_conditions .= sprintf (' AND tagente_modulo.nombre = \'%s\'',
-		$ag_modulename);
+	$sql_conditions .= " AND tagente_modulo.nombre LIKE '%" .$ag_modulename. "%'";
 }
 
 if ($module_option !== 0) {
@@ -344,21 +343,15 @@ $table->data[0][5] = html_print_select($rows_select, 'modulegroup', $modulegroup
 $table->rowspan[0][6] = 2;
 $table->data[0][6] = html_print_submit_button (__('Show'), 'uptbutton',
 						false, 'class="sub search" style="margin-top:0px;"',true);
-$modules = array();
-// TODO change for input text
+
 $table->data[1][0] = __('Module name');
-$table->data[1][1] = html_print_select (index_array ($modules, 'nombre', 'nombre'), 'ag_modulename',
-	$ag_modulename, '', __('All'), '', true, false, true, '', false, 'width: 150px;');
+$table->data[1][1] = html_print_input_text ('ag_modulename', $ag_modulename, '', 35, 50, true);
 
 $table->data[1][2] = __('Search');
 $table->data[1][3] = html_print_input_text ('ag_freestring', $ag_freestring, '', 20, 30, true);
 
-if (!is_metaconsole())
-	$table->data[1][4] = __('Tags') .
-		ui_print_help_tip(__('Only it is show tags in use.'), true);
-else
-	$table->data[1][4] = __('Tags') .
-		ui_print_help_tip(__('Only it is show tags in use.'), true);
+$table->data[1][4] = __('Tags') .
+	ui_print_help_tip(__('Only it is show tags in use.'), true);
 
 $tags = array();
 $tags = tags_get_user_tags();

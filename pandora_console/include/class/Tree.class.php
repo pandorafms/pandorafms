@@ -28,7 +28,6 @@ class Tree {
 	protected $userGroups;
 	protected $userGroupsArray;
 
-	protected $acltags = false;
 	protected $access = false;
 
 	protected $L1fieldName = '';
@@ -69,8 +68,6 @@ class Tree {
 		enterprise_include_once("include/functions_agents.php");
 
 		if (is_metaconsole()) enterprise_include_once("meta/include/functions_ui_meta.php");
-
-		$this->acltags = tags_get_user_groups_and_tags($config['id_user'], $this->access);
 	}
 
 	public function setFilter($filter) {

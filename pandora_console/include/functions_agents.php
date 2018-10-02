@@ -1169,8 +1169,10 @@ function agents_get_modules ($id_agent = null, $details = false,
 		}
 	}
 
+	$stored_details = $details;
 	if (empty ($details)) {
 		$details = "tagente_modulo.nombre";
+		$stored_details = "nombre";
 	}
 	else {
 		$details = (array)$details;
@@ -1215,12 +1217,12 @@ function agents_get_modules ($id_agent = null, $details = false,
 	$modules = array ();
 	foreach ($result as $module) {
 		if ($get_not_init_modules || modules_get_agentmodule_is_init($module['id_agente_modulo'])) {
-			if (is_array ($details) || $details == '*') {
+			if (is_array ($stored_details) || $stored_details == '*') {
 				//Just stack the information in array by ID
 				$modules[$module['id_agente_modulo']] = $module;
 			}
 			else {
-				$modules[$module['id_agente_modulo']] = $module[$details];
+				$modules[$module['id_agente_modulo']] = $module[$stored_details];
 			}
 		}
 	}

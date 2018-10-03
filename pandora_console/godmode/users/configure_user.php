@@ -152,7 +152,8 @@ if ($create_user) {
 		ui_print_error_message (__('The current authentication scheme doesn\'t support creating users on %s', get_product_name()));
 		return;
 	}
-	
+	if (html_print_csrf_error()) return;
+
 	$values = array ();
 	$values['id_user'] = (string) get_parameter ('id_user');
 	$values['fullname'] = (string) get_parameter ('fullname');
@@ -279,6 +280,8 @@ if ($create_user) {
 }
 
 if ($update_user) {
+	if (html_print_csrf_error()) return;
+
 	$values = array ();
 	$values['id_user'] = (string) get_parameter ('id_user');
 	$values['fullname'] = (string) get_parameter ('fullname');
@@ -449,30 +452,22 @@ if ($add_profile) {
 	$group2 = (int) get_parameter ('assign_group');
 	$profile2 = (int) get_parameter ('assign_profile');
 	$tags = (array) get_parameter ('assign_tags');
-	$is_secondary = (bool)get_parameter ('is_secondary', 0);
+	$no_hierarchy = (int)get_parameter ('no_hierarchy', 0);
 
 	foreach ($tags as $k => $tag) {
 		if(empty($tag)) {
 			unset($tags[$k]);
 		}
 	}
-	
-	$tags = $is_secondary ? '' : implode(',', $tags);
+
+	$tags = implode(',', $tags);
 
 	db_pandora_audit("User management",
 		"Added profile for user ".io_safe_input($id2), false, false, 'Profile: ' . $profile2 . ' Group: ' . $group2 . ' Tags: ' . $tags);
-	if (profile_check_group_mode($id2, $group2, $is_secondary)) {
-		$return = profile_create_user_profile($id2, $profile2, $group2, false, $tags, $is_secondary);
-		ui_print_result_message ($return,
-			__('Profile added successfully'),
-			__('Profile cannot be added'));
-	} else {
-		if ($is_secondary) {
-			ui_print_error_message ("A group assigned like primary cannot be assigned like secondary.");
-		} else {
-			ui_print_error_message ("A group assigned like secondary cannot be assigned like primary.");
-		}
-	}
+	$return = profile_create_user_profile($id2, $profile2, $group2, false, $tags, $no_hierarchy);
+	ui_print_result_message ($return,
+		__('Profile added successfully'),
+		__('Profile cannot be added'));
 }
 
 if ($delete_profile) {
@@ -669,6 +664,7 @@ $table->data[15][0] .= ui_print_help_tip(__('This is defined in minutes, If you 
 $table->data[15][1] = html_print_input_text ('session_time', $user_info["session_time"], '', 5, 5, true);
 
 $event_filter_data = db_get_all_rows_sql('SELECT id_name, id_filter FROM tevent_filter');
+if ($event_filter_data === false) $event_filter_data = array();
 $event_filter = array();
 $event_filter[0] = __('None');
 foreach ($event_filter_data as $filter) {
@@ -712,14 +708,12 @@ echo '<form method="post" autocomplete="off">';
 html_print_table ($table);
 
 echo '<div style="width: '.$table->width.'" class="action-buttons">';
-if ($new_user) {
-	if ($config['admin_can_add_user']) {
+if ($config['admin_can_add_user']) {
+	html_print_csrf_hidden();
+	if ($new_user) {
 		html_print_input_hidden ('create_user', 1);
 		html_print_submit_button (__('Create'), 'crtbutton', false, 'class="sub wand"');
-	}
-}
-else {
-	if ($config['user_can_update_info']) {
+	} else {
 		html_print_input_hidden ('update_user', 1);
 		html_print_submit_button (__('Update'), 'uptbutton', false, 'class="sub upd"');
 	}
@@ -730,8 +724,7 @@ echo '<br />';
 
 /* Don't show anything else if we're creating an user */
 if (!empty ($id) && !$new_user) {
-	profile_print_profile_table($id, __('Profiles/Groups assigned to this user'));
-	enterprise_hook('profile_print_profile_secondary_table', array($id));
+	profile_print_profile_table($id);
 
 }
 

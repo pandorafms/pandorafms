@@ -426,9 +426,12 @@ switch ($action) {
 					$description = $item['description'];
 					$period = $item['period'];
 					$group = $item['id_group'];
+					$recursion = $item['recursion'];
 					break;
 				case 'event_report_agent':
 				case 'event_report_group':
+					$recursion = $item['recursion'];
+					break;
 				case 'event_report_module':
 					$description = $item['description'];
 					$period = $item['period'];
@@ -477,12 +480,14 @@ switch ($action) {
 				case 'group_report':
 					$description = $item['description'];
 					$group = $item['id_group'];
+					$recursion = $item['recursion'];
 					break;
 				case 'network_interfaces_report':
 					$description = $item['description'];
 					$group = $item['id_group'];
 					$period = $item['period'];
 					$fullscale = isset($style['fullscale']) ? (bool) $style['fullscale'] : 0;
+					$recursion = $item['recursion'];
 					break;
 				case 'top_n':
 					$description = $item['description'];
@@ -521,6 +526,7 @@ switch ($action) {
 					$es = json_decode($item['external_source'], true);
 					$id_agents = $es['id_agents'];
 					$selection_a_m = get_parameter('selection');
+					$recursion = $item['recursion'];
 					
 					if ((count($es['module']) == 1) && ($es['module'][0] == 0)) {
 						$module = "";
@@ -538,6 +544,7 @@ switch ($action) {
 					$date = $es['date'];
 					$inventory_modules = $es['inventory_modules'];
 					$id_agents = $es['id_agents'];
+					$recursion = $item['recursion'];
 					
 					$idAgent = $es['id_agents'];
 					$idAgentModule = $inventory_modules;
@@ -549,6 +556,7 @@ switch ($action) {
 					$es = json_decode($item['external_source'], true);
 					$inventory_modules = $es['inventory_modules'];
 					$id_agents = $es['id_agents'];
+					$recursion = $item['recursion'];
 					break;
 				
 				case 'agent_configuration':
@@ -557,6 +565,7 @@ switch ($action) {
 				
 				case 'group_configuration':
 					$group = $item['id_group'];
+					$recursion = $item['recursion'];
 					break;
 				
 				case 'netflow_area':
@@ -608,6 +617,7 @@ switch ($action) {
 		
 		break;
 }
+
 
 $urlForm = $config['homeurl'] .
 	'index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=item_editor&action=' . $actionParameter . '&id_report=' . $idReport;
@@ -914,7 +924,7 @@ You can of course remove the warnings, that's why we include the source and do n
 					html_print_select_groups($config['id_user'],
 						"RM", true, 'combo_group', $group, '');
 				
-				echo "&nbsp;&nbsp;&nbsp;".__('Recursion').html_print_checkbox('recursion', 1, 0, true);
+				echo "&nbsp;&nbsp;&nbsp;".__('Recursion').html_print_checkbox('recursion', 1, $recursion, true);
 						
 				?>
 			</td>
@@ -1760,6 +1770,9 @@ function print_SLA_list($width, $action, $idItem = null) {
 					$itemsSLA = db_get_all_rows_filter(
 						'treport_content_sla_combined',
 						array('id_report_content' => $idItem));
+
+
+
 					if ($itemsSLA === false) {
 						$itemsSLA = array();
 					}
@@ -1971,6 +1984,9 @@ function print_General_list($width, $action, $idItem = null, $type = 'general') 
 					$itemsGeneral = db_get_all_rows_filter(
 						'treport_content_item',
 						array('id_report_content' => $idItem));
+
+
+
 					if ($itemsGeneral === false) {
 						$itemsGeneral = array();
 					}

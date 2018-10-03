@@ -842,11 +842,18 @@ function agents_get_group_agents (
 				users_get_groups(false, "AR", true, false, (array)$id_group));
 		}
 	}
-	
+
+	// Search for primary and secondary groups
 	if (!empty($id_group)) {
-		$filter['id_grupo'] = $id_group;
+		$filter[] = '(' . db_format_array_where_clause_sql(
+			array(
+				'id_group' => $id_group,
+				'id_grupo' => $id_group
+			),
+			'OR'
+		) . ')';
 	}
-	
+
 	if ($search === true) {
 		//No added search. Show both disabled and non-disabled
 	}
@@ -908,7 +915,7 @@ function agents_get_group_agents (
 		if (isset($search['status'])) {
 			switch ($search['status']) {
 				case AGENT_STATUS_NORMAL:
-					$filter[] = "normal_count = total_count";
+					$filter[] = "(normal_count = total_count AND notinit_count <> total_count)";
 					break;
 				case AGENT_STATUS_WARNING:
 					$filter[] = "(critical_count = 0 AND warning_count > 0)";
@@ -959,25 +966,25 @@ function agents_get_group_agents (
 	$filter['order'] = 'alias';
 	
 	if (is_metaconsole()) {
-		$table_name = 'tmetaconsole_agent';
-		
+		$table_name = 'tmetaconsole_agent ta LEFT JOIN tmetaconsole_agent_secondary_group tasg ON ta.id_agente = tasg.id_agent';
+
 		$fields = array(
-				'id_tagente AS id_agente',
+				'ta.id_tagente AS id_agente',
 				'alias',
-				'id_tmetaconsole_setup AS id_server'
+				'ta.id_tmetaconsole_setup AS id_server'
 			);
 	}
 	else {
-		$table_name = 'tagente';
-		
+		$table_name = 'tagente LEFT JOIN tagent_secondary_group ON id_agente=id_agent';
+
 		$fields = array(
 				'id_agente',
 				'alias'
 			);
 	}
-	
+
 	$result = db_get_all_rows_filter($table_name, $filter, $fields);
-	
+
 	if ($result === false)
 		return array (); //Return an empty array
 	
@@ -985,7 +992,6 @@ function agents_get_group_agents (
 	foreach ($result as $row) {
 		if (!isset($row["id_agente"]) || !isset($row["alias"]))
 			continue;
-		
 		if ($serialized && isset($row["id_server"])) {
 			$key = $row["id_server"] . $separator . $row["id_agente"];
 		} elseif ($force_serialized) {
@@ -1739,7 +1745,8 @@ function agents_get_status($id_agent = 0, $noACLs = false) {
 		// Get all non disabled modules of the agent
 		$all_modules = db_get_all_rows_filter('tagente_modulo',
 			$filter_modules, 'id_agente_modulo'); 
-		
+		if ($all_modules === false) $all_modules = array();
+
 		$result_modules = array();
 		// Skip non init modules
 		foreach ($all_modules as $module) {
@@ -2018,12 +2025,17 @@ function agents_get_agentmodule_group ($id_module) {
  * This function gets the group for a given agent
  *
  * @param int The agent id
+ * @param bool True to use the metaconsole tables
  *
  * @return int The group id
  */
-function agents_get_agent_group ($id_agent) {
-	$table = is_metaconsole() ? "tmetaconsole_agent" : "tagente";
-	return (int) db_get_value ('id_grupo', $table, 'id_agente', (int) $id_agent);
+function agents_get_agent_group ($id_agent, $force_meta = false) {
+	return (int) db_get_value (
+		'id_grupo',
+		$force_meta ? "tmetaconsole_agent" : "tagente",
+		'id_agente',
+		(int) $id_agent
+	);
 }
 
 /**
@@ -2674,23 +2686,28 @@ function agents_generate_name ($alias, $address = '') {
  *
  * @param int $id_agent
  * @param int $id_group. By default it will search for it in dtabase
+ * @param bool True to use the metaconsole tables
  *
  * @return Array with the main and secondary groups
  */
-function agents_get_all_groups_agent ($id_agent, $group = false) {
+function agents_get_all_groups_agent ($id_agent, $group = false, $force_meta = false) {
+	// Cache the agent id groups
+	static $cache = array();
+	if (isset($cache[$id_agent])) return $cache[$id_agent];
 	// Get the group if is not defined
-	if ($group === false) $group = agents_get_agent_group($id_agent);
+	if ($group === false) $group = agents_get_agent_group($id_agent, $force_meta);
 
 	// If cannot retrieve the group, it means that agent does not exist
 	if (!$group) return array();
 
-	$secondary_groups = enterprise_hook('agents_get_secondary_groups', array($id_agent));
+	$secondary_groups = enterprise_hook('agents_get_secondary_groups', array($id_agent, $force_meta));
 
 	// Return only an array with the group in open version
 	if ($secondary_groups == ENTERPRISE_NOT_HOOK) return array($group);
 
 	// Add a list of groups
 	$secondary_groups['plain'][] = $group;
+	$cache[$id_agent] = $secondary_groups['plain'];
 	return $secondary_groups['plain'];
 }
 
@@ -2731,5 +2748,34 @@ function agents_check_access_agent ($id_agent, $access = "AR") {
 	if (agents_check_agent_exists($id_agent)) return false;
 	// Return null otherwise
 	return null;
+}
+
+function agents_get_status_clause($state, $show_not_init = true) {
+	switch ($state) {
+		case AGENT_STATUS_CRITICAL:
+			return "(ta.critical_count > 0)";
+		case AGENT_STATUS_WARNING:
+			return "(ta.warning_count > 0 AND ta.critical_count = 0)";
+		case AGENT_STATUS_UNKNOWN:
+			return "(
+				ta.critical_count = 0 AND ta.warning_count = 0 AND ta.unknown_count > 0
+			)";
+		case AGENT_STATUS_NOT_INIT:
+			return $show_not_init
+				? "(ta.total_count = ta.notinit_count)"
+				: "1=0";
+		case AGENT_STATUS_NORMAL:
+			return "(
+				ta.critical_count = 0 AND ta.warning_count = 0
+				AND ta.unknown_count = 0 AND ta.normal_count > 0
+			)";
+		case AGENT_STATUS_ALL:
+		default:
+			return $show_not_init
+				? "1=1"
+				: "(ta.total_count <> ta.notinit_count)";
+	}
+	// If the state is not an expected state, return no condition
+	return "1=1";
 }
 ?>

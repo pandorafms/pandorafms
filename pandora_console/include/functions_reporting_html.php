@@ -1960,6 +1960,12 @@ function reporting_html_alert_report($table, $item, $pdf = 0) {
 	$table1->data    = array ();
 	$table1->rowspan = array();
 	$table1->valign  = array();
+	
+	if ($item['data'] == null) {
+		$table->data['alerts']['cell'] = ui_print_empty_data ( __('No alerts defined') , '', true) ;
+		return true;
+	}
+	
 	$table1->head['agent']    = __('Agent');
 	$table1->head['module']   = __('Module');
 	$table1->head['template'] = __('Template');

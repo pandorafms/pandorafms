@@ -47,13 +47,13 @@ else{
 /**
  * Prints the print_r with < pre > tags
  */
-function html_debug_print ($var, $file = '') {
+function html_debug_print ($var, $file = '', $oneline = false) {
 	$more_info = '';
 	if (is_string($var)) {
 		$more_info = 'size: ' . strlen($var);
 	}
 	elseif (is_bool($var)) {
-		$more_info = 'val: ' . 
+		$more_info = 'val: ' .
 			($var ? 'true' : 'false');
 	}
 	elseif (is_null($var)) {
@@ -62,10 +62,13 @@ function html_debug_print ($var, $file = '') {
 	elseif (is_array($var)) {
 		$more_info = count($var);
 	}
-	
+
 	if ($file === true)
 		$file = '/tmp/logDebug';
-	
+
+	if($oneline && is_string($var))
+		$var = preg_replace("/[\t|\n| ]+/", " ", $var);
+
 	if (strlen($file) > 0) {
 		$f = fopen($file, "a");
 		ob_start();
@@ -85,8 +88,13 @@ function html_debug_print ($var, $file = '') {
 }
 
 // Alias for "html_debug_print"
-function html_debug ($var, $file = '') {
-	html_debug_print ($var, $file);
+function html_debug ($var, $file = '', $oneline = false) {
+	html_debug_print ($var, $file, $oneline);
+}
+
+// Alias for "html_debug_print"
+function hd ($var, $file = '', $oneline = false) {
+	html_debug_print ($var, $file, $oneline);
 }
 
 function html_f2str($function, $params) {
@@ -704,37 +712,36 @@ function html_print_extended_select_for_post_process($name, $selected = '',
 	$script = '', $nothing = '', $nothing_value = '0', $size = false,
 	$return = false, $select_style = false, $unique_name = true,
 	$disabled = false, $no_change = 0) {
-	
+
 	global $config;
-	
+
 	require_once($config['homedir'] . "/include/functions_post_process.php");
-	
-	
+
 	$fields = post_process_get_custom_values();
+
 	if($no_change != 0){
 		$fields[-1] = __('No change');
 	}
 
 	$selected_float = (float)$selected;
 	$found = false;
-	
-	if (array_key_exists($selected, $fields))
+
+	if (array_key_exists(number_format($selected, 14, '.', ','), $fields))
 		$found = true;
-	
+
 	if (!$found) {
 		$fields[$selected] = floatval($selected);
 	}
-	
-	
+
 	if ($unique_name === true) {
 		$uniq_name = uniqid($name);
 	}
 	else {
 		$uniq_name = $name;
 	}
-	
+
 	ob_start();
-	
+
 	echo '<div id="' . $uniq_name . '_default" style="width:100%;display:inline;">';
 		html_print_select ($fields, $uniq_name . '_select', $selected,
 			"" . $script, $nothing, $nothing_value, false, false, false,
@@ -747,10 +754,10 @@ function html_print_extended_select_for_post_process($name, $selected = '',
 					'style' => 'width: 18px;')) .
 			'</a>';
 	echo '</div>';
-	
+
 	echo '<div id="' . $uniq_name . '_manual" style="width:100%;display:inline;">';
 		html_print_input_text ($uniq_name . '_text', $selected, '', 20);
-		
+
 		html_print_input_hidden($name, $selected, false, $uniq_name);
 		echo ' <a href="javascript:">' .
 			html_print_image('images/default_list.png', true,
@@ -759,20 +766,17 @@ function html_print_extended_select_for_post_process($name, $selected = '',
 					'title' => __('List'),
 					'style' => 'width: 18px;')) . '</a>';
 	echo '</div>';
-	
+
 	echo "<script type='text/javascript'>
 		$(document).ready (function () {
 			post_process_select_init('$uniq_name');
 			post_process_select_events('$uniq_name');
 		});
-		
+
 	</script>";
-	
+
 	$returnString = ob_get_clean();
-	
-	
-	
-	
+
 	if ($return)
 		return $returnString;
 	else
@@ -2462,4 +2466,70 @@ function html_print_timezone_select ($name, $selected = "") {
 	return html_print_select($timezones, $name, $selected, "", __("None"), "", true, false, false);
 }
 
+/**
+ * Enclose a text into a result_div
+ *
+ * @param string Text to enclose
+ *
+ * @return string Text inside the result_div
+ */
+function html_print_result_div ($text) {
+	$text = preg_replace ('/</', '&lt;', $text);
+	$text = preg_replace ('/>/', '&gt;', $text);
+	$text = preg_replace ('/\n/i','<br>',$text);
+	$text = preg_replace ('/\s/i','&nbsp;',$text);
+
+	$enclose = "<div id='result_div' style='width: 100%; height: 100%; overflow: scroll; padding: 10px; font-size: 14px; line-height: 16px; font-family: mono,monospace; text-align: left'>";
+	$enclose .= $text;
+	$enclose .= "</div>";
+	return $enclose;
+}
+
+/**
+ * Print order arrows links
+ *
+ * @param array Base tags to build url
+ * @param string Order key to add to URL
+ * @param string Value to sort ascendent
+ * @param string Value to sort descendent
+ *
+ * @return string HTML code to display both arrows.
+ */
+function html_print_sort_arrows ($params, $order_tag, $up = 'up', $down = 'down') {
+	// Build the queries
+	$params[$order_tag] = $up;
+	$url_up = "index.php?" . http_build_query($params, '', '&amp;');
+	$params[$order_tag] = $down;
+	$url_down = "index.php?" . http_build_query($params, '', '&amp;');
+
+	// Build the links
+	return '&nbsp;' .
+		'<a href="' . $url_up . '">' .
+			html_print_image("images/sort_up.png", true) .
+		'</a>' .
+		'<a href="' . $url_down . '">' .
+			html_print_image("images/sort_down.png", true) .
+		'</a>'
+	;
+}
+
+/**
+ * Print an input hidden with a new csrf token generated
+ */
+function html_print_csrf_hidden () {
+	html_print_input_hidden('csrf_code', generate_csrf_code());
+}
+
+/**
+ * Print an error if csrf is incorrect
+ */
+function html_print_csrf_error () {
+	if (validate_csrf_code()) return false;
+
+	ui_print_error_message (
+		__('%s cannot verify the origin of the request. Try again, please.',
+			get_product_name())
+	);
+	return true;
+}
 ?>

@@ -261,6 +261,9 @@ $time_to = (string)get_parameter('time_to', '');
 $server_id = (int)get_parameter('server_id', 0);
 $text_agent = (string) get_parameter("text_agent");
 $refr = (int) get_parameter ('refresh');
+$id_extra = (string) get_parameter('id_extra');
+$user_comment = (string) get_parameter('user_comment');
+$source = (string) get_parameter('source');
 
 if ($id_agent != 0) {
 	$text_agent = agents_get_alias($id_agent);

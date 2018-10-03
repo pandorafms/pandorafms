@@ -352,8 +352,6 @@ class Agents {
 				'<span class="agents_tiny_stats">' . reporting_tiny_stats($agent, true, 'agent', '&nbsp;') . ' </span>';
 			
 			$last_time = time_w_fixed_tz($agent["ultimo_contacto"]);
-			html_debug(date('r', $last_time), true);
-			html_debug(get_current_utc_offset(), true);
 			$now = get_system_time();
 			$diferencia = $now - $last_time;
 			$time = ui_print_timestamp ($last_time, true, array('style' => 'font-size: 12px; margin-left: 20px;', 'units' => 'tiny'));

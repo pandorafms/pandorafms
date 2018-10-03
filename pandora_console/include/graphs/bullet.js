@@ -142,10 +142,10 @@ d3.bullet = function() {
 
       tickUpdate.select("line")
           .attr("y1", height)
-          .attr("y2", height * 7 / 6);
+          .attr("y2", height + 7);
 
       tickUpdate.select("text")
-          .attr("y", height * 7 / 6);
+          .attr("y", height + 7);
 
       // Transition the exiting ticks to the new scale, x1.
       tick.exit().transition()

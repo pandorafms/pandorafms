@@ -284,7 +284,7 @@ function pandoraFlotPieCustom(graph_id, values, labels, width,
 		set_watermark(graph_id, plot,
 			$('#watermark_image_' + graph_id).attr('src'));
 	}
-
+/*
 	window.onresize = function(event) {
         $.plot($('#' + graph_id), data, conf_pie);
         if (no_data == data.length) {
@@ -319,7 +319,7 @@ function pandoraFlotPieCustom(graph_id, values, labels, width,
 			$(this).css('transform', "rotate(-35deg)").css('color', 'black');
 		});
     }
-
+*/
 }
 
 function pandoraFlotHBars(graph_id, values, labels, water_mark,
@@ -1636,7 +1636,7 @@ function pandoraFlotArea( graph_id, values, legend,
 				mode: "time",
 				timezone: "browser",
 				localTimezone: true,
-				tickSize: [maxticks, 'hour']
+				//tickSize: [maxticks, 'hour']
 			}],
 			yaxis: {
 				font: {
@@ -1673,7 +1673,9 @@ function pandoraFlotArea( graph_id, values, legend,
 
 	// Re-calculate the graph height with the legend height
 	if (dashboard || vconsole) {
-		var hDiff = $('#'+graph_id).height() - $('#legend_'+graph_id).height();
+		$acum = 0;
+		if(dashboard) $acum = 35;
+		var hDiff = $('#'+graph_id).height() - $('#legend_'+graph_id).height() - $acum;
 		if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ){
 		}
 		else {
@@ -1743,7 +1745,7 @@ function pandoraFlotArea( graph_id, values, legend,
 				mode: "time",
 				timezone: "browser",
 				localTimezone: true,
-				tickSize: [maxticks, 'hour']
+				//tickSize: [maxticks, 'hour']
 			}],
 			yaxis: {
 				font: {
@@ -1769,6 +1771,10 @@ function pandoraFlotArea( graph_id, values, legend,
 		update_left_width_canvas(graph_id);
 	});
 
+	var max_draw = [];
+	max_draw['max'] = plot.getAxes().yaxis.max;
+	max_draw['min'] = plot.getAxes().yaxis.min;
+
 	// Connection between plot and miniplot
 	$('#' + graph_id).bind('plotselected', function (event, ranges) {
 		// do the zooming if exist menu to undo it
@@ -1786,12 +1792,25 @@ function pandoraFlotArea( graph_id, values, legend,
 			}
 		}
 
+		if(thresholded){
+			var y_recal = axis_thresholded(
+				threshold_data,
+				plot.getAxes().yaxis.min,
+				plot.getAxes().yaxis.max,
+				red_threshold, extremes,
+				red_up
+			);
+		}
+		else{
+			var y_recal = ranges.yaxis;
+		}
+
 		if (thresholded) {
 			data_base_treshold = add_threshold (
 				data_base,
 				threshold_data,
 				ranges.yaxis.from,
-				ranges.yaxis.to,
+				y_recal.max,
 				red_threshold,
 				extremes,
 				red_up,
@@ -1822,7 +1841,7 @@ function pandoraFlotArea( graph_id, values, legend,
 					}],
 					yaxis:{
 						min: ranges.yaxis.from,
-						max: ranges.yaxis.to,
+						max: y_recal.max,
 						font: {
 							size: font_size + 2,
 							color: legend_color,
@@ -1881,6 +1900,9 @@ function pandoraFlotArea( graph_id, values, legend,
 		}
 
 		$('#menu_cancelzoom_' + graph_id).attr('src', homeurl + '/images/zoom_cross_grey.png');
+
+		max_draw['max'] = ranges.yaxis.to;
+		max_draw['min'] = ranges.yaxis.from;
 
 		// don't fire event on the overview to prevent eternal loop
 		overview.setSelection(ranges, true);
@@ -2149,10 +2171,11 @@ function pandoraFlotArea( graph_id, values, legend,
 		}
 	});
 
-	$('#'+graph_id).bind('mouseout',resetInteractivity(vconsole));
-
 	if(!vconsole){
-		$('#overview_'+graph_id).bind('mouseout',resetInteractivity);
+		$('#'+graph_id)
+			.bind('mouseout', resetInteractivity);
+		$('#overview_'+graph_id)
+			.bind('mouseout', resetInteractivity);
 	}
 
 	if(image_treshold){
@@ -2174,7 +2197,7 @@ function pandoraFlotArea( graph_id, values, legend,
 			data_base,
 			threshold_data,
 			plot.getAxes().yaxis.min,
-			plot.getAxes().yaxis.max,
+			y_recal.max,
 			red_threshold,
 			extremes,
 			red_up,
@@ -2196,7 +2219,7 @@ function pandoraFlotArea( graph_id, values, legend,
 	}
 
 	// Reset interactivity styles
-	function resetInteractivity(vconsole) {
+	function resetInteractivity() {
 		$('#timestamp_'+graph_id).hide();
 		dataset = plot.getData();
 		for (i = 0; i < dataset.length; ++i) {
@@ -2205,14 +2228,15 @@ function pandoraFlotArea( graph_id, values, legend,
 			$('#legend_' + graph_id + ' .legendLabel')
 				.eq(i).html(label_aux);
 		}
-		$('#legend_' + graph_id + ' .legendLabel').css('color', legend_color);
-		$('#legend_' + graph_id + ' .legendLabel').css('font-size', font_size + 2 +'px');
-		$('#legend_' + graph_id + ' .legendLabel').css('font-family', font + 'Font');
+		$('#legend_' + graph_id + ' .legendLabel')
+			.css('color', legend_color);
+		$('#legend_' + graph_id + ' .legendLabel')
+			.css('font-size', font_size + 2 +'px');
+		$('#legend_' + graph_id + ' .legendLabel')
+			.css('font-family', font + 'Font');
 
 		plot.clearCrosshair();
-		if(!vconsole){
-			overview.clearCrosshair();
-		}
+		overview.clearCrosshair();
 	}
 
 	function yFormatter(v, axis) {
@@ -2254,7 +2278,6 @@ function pandoraFlotArea( graph_id, values, legend,
 
 		$('#menu_threshold_' + graph_id).click(function() {
 			datas = new Array();
-
 			if (thresholded) {
 				$.each(data_base, function() {
 						datas.push(this);
@@ -2265,7 +2288,8 @@ function pandoraFlotArea( graph_id, values, legend,
 				plot = $.plot($('#' + graph_id), data_base,
 					$.extend(true, {}, options, {
 						yaxis: {
-							max: max_draw
+							min: max_draw['min'],
+							max: max_draw['max']
 						},
 						xaxis: {
 							min: plot.getAxes().xaxis.min,
@@ -2275,8 +2299,6 @@ function pandoraFlotArea( graph_id, values, legend,
 				thresholded = false;
 			}
 			else {
-				var max_draw = plot.getAxes().yaxis.datamax;
-
 				if(!thresholded){
 					// Recalculate the y axis
 					var y_recal = axis_thresholded(
@@ -2295,7 +2317,7 @@ function pandoraFlotArea( graph_id, values, legend,
 					data_base,
 					threshold_data,
 					plot.getAxes().yaxis.min,
-					plot.getAxes().yaxis.max,
+					y_recal.max,
 					red_threshold,
 					extremes,
 					red_up,
@@ -2305,7 +2327,8 @@ function pandoraFlotArea( graph_id, values, legend,
 				plot = $.plot($('#' + graph_id), datas_treshold,
 						$.extend(true, {}, options, {
 							yaxis: {
-								max: y_recal.max,
+								min: max_draw['min'],
+								max: y_recal.max
 							},
 							xaxis: {
 								min: plot.getAxes().xaxis.min,
@@ -2330,6 +2353,7 @@ function pandoraFlotArea( graph_id, values, legend,
 			overview.clearSelection();
 			currentRanges = null;
 			thresholded = false;
+			max_draw = [];
 		});
 
 		// Adjust the menu image on top of the plot
@@ -2342,8 +2366,6 @@ function pandoraFlotArea( graph_id, values, legend,
 		// Add bottom margin in the legend
 		// Estimated height of 24 (works fine with this data in all browsers)
 		menu_height = 24;
-		var legend_margin_bottom = parseInt(
-		$('#legend_'+graph_id).css('margin-bottom').split('px')[0]);
 		$('#legend_'+graph_id).css('margin-bottom', '10px');
 		parent_height = parseInt($('#menu_'+graph_id).parent().css('height').split('px')[0]);
 		adjust_menu(graph_id, plot, parent_height, width, show_legend);

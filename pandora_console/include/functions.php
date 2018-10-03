@@ -1364,6 +1364,18 @@ function is_metaconsole() {
 }
 
 /**
+ * @brief Check if there is management operations are allowed in current context
+ * (node // meta)
+ *
+ * @return bool
+ */
+function is_management_allowed() {
+	global $config;
+	return ( (is_metaconsole() && $config["centralized_management"])
+		|| (!is_metaconsole() && !$config["centralized_management"]));
+}
+
+/**
  * @brief Check if there is centralized management in metaconsole environment.
  * 			Usefull to display some policy features on metaconsole.
  *
@@ -2535,15 +2547,9 @@ function set_when_empty (&$var, $default) {
 	}
 }
 
-function sort_by_column (&$array_ref, $column_parameter) {
-	global $column;
-	
-	$column = $column_parameter;
-	
+function sort_by_column (&$array_ref, $column) {
 	if (!empty($column)) {
-		usort($array_ref, function ($a, $b) {
-			global $column;
-			
+		usort($array_ref, function ($a, $b) use ($column) {
 			return strcmp($a[$column], $b[$column]);
 		});
 	}
@@ -3268,7 +3274,7 @@ function generator_chart_to_pdf($type_graph_pdf, $params, $params_combined = fal
 	$img_url  = $config["homeurl"] . "attachment/" . $img_file;
 
 	$width_img  = 500;
-	$height_img = (isset($config['graph_image_height'])) ? $config['graph_image_height'] : 350;
+	$height_img = (isset($config['graph_image_height'])) ? $config['graph_image_height'] : 280;
 
 	$params['height'] = $height_img;
 
@@ -3338,4 +3344,27 @@ function get_copyright_notice () {
 	return $stored_name;
 }
 
+/**
+ * Generate a random code to prevent cross site request fogery attacks
+ *
+ * @return string Generated code
+ */
+function generate_csrf_code() {
+	// Start session to make this var permanent
+	session_start();
+	$_SESSION['csrf_code'] = md5(uniqid(mt_rand(), true));
+	session_write_close();
+	return $_SESSION['csrf_code'];
+}
+
+/**
+ * Validate the CSRF code
+ *
+ * @return bool True if code is valid
+ */
+function validate_csrf_code() {
+	$code = get_parameter('csrf_code');
+	return isset($code) && isset($_SESSION['csrf_code'])
+		&& $_SESSION['csrf_code'] == $code;
+}
 ?>

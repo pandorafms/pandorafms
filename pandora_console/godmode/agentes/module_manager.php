@@ -656,7 +656,7 @@ foreach ($modules as $module) {
 				"alt" => "")) . "&nbsp;";
 	}
 	
-	if (check_acl ($config['id_user'], $agent['id_grupo'], "AW")) {
+	if (check_acl_one_of_groups ($config["id_user"], $all_groups, "AW")) {
 		$data[0] .= '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente=' . $id_agente . '&tab=module&edit_module=1&id_agent_module='.$module['id_agente_modulo'].'">';
 	}
 	
@@ -668,7 +668,7 @@ foreach ($modules as $module) {
 		$data[0] .= ui_print_truncate_text($module['nombre'], 'module_medium', false, true, true, '[&hellip;]', 'font-size: 7.2pt');
 	}
 	
-	if (check_acl ($config['id_user'], $agent['id_grupo'], "AW")) {
+	if (check_acl_one_of_groups ($config["id_user"], $all_groups, "AW")) {
 		$data[0] .= '</a>';
 	}
 	

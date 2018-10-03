@@ -128,10 +128,10 @@ function events_get_events_no_grouped($sql_post, $offset = 0,
 
 function events_get_events_grouped($sql_post, $offset = 0,
 	$pagination = 1, $meta = false, $history = false, $total = false, 
-	$history_db = false, $order = "DESC") {
+	$history_db = false, $order = "down", $sort_field = "timestamp") {
 	
-	global $config; 
-	
+	global $config;
+
 	$table = events_get_events_table($meta, $history);
 	
 	if ($meta) {
@@ -141,12 +141,14 @@ function events_get_events_grouped($sql_post, $offset = 0,
 		$groupby_extra = '';
 	}
 
+
 	switch ($config["dbtype"]) {
 		case "mysql":
 			db_process_sql ('SET group_concat_max_len = 9999999');
+			$event_lj = events_get_secondary_groups_left_join($table);
 			if ($total) {
 				$sql = "SELECT COUNT(*) FROM (SELECT *
-					FROM $table te LEFT JOIN tagent_secondary_group tasg ON te.id_grupo = tasg.id_group
+					FROM $table te $event_lj
 					WHERE 1=1 " . $sql_post . "
 					GROUP BY estado, evento, id_agente, id_agentmodule" . $groupby_extra . ") AS t";
 			}
@@ -160,11 +162,14 @@ function events_get_events_grouped($sql_post, $offset = 0,
 					(SELECT id_usuario FROM $table WHERE id_evento = MAX(te.id_evento)) id_usuario,
 					(SELECT id_agente FROM $table WHERE id_evento = MAX(te.id_evento)) id_agente,
 					(SELECT criticity FROM $table WHERE id_evento = MAX(te.id_evento)) AS criticity,
-					(SELECT ack_utimestamp FROM $table WHERE id_evento = MAX(te.id_evento)) AS ack_utimestamp
-				FROM $table te LEFT JOIN tagent_secondary_group tasg ON te.id_grupo = tasg.id_group
+					(SELECT ack_utimestamp FROM $table WHERE id_evento = MAX(te.id_evento)) AS ack_utimestamp,
+					(SELECT nombre FROM tagente_modulo WHERE id_agente_modulo = te.id_agentmodule) AS module_name
+				FROM $table te $event_lj
 				WHERE 1=1 " . $sql_post . "
-				GROUP BY estado, evento, id_agente, id_agentmodule" . $groupby_extra . "
-				ORDER BY timestamp_rep " . $order . " LIMIT " . $offset . "," . $pagination;
+				GROUP BY estado, evento, id_agente, id_agentmodule" . $groupby_extra;
+				$sql .= " " . events_get_sql_order($sort_field, $order, 2);
+				$sql .= " LIMIT " . $offset . "," . $pagination;
+
 			}
 			break;
 		case "postgresql":
@@ -723,15 +728,15 @@ function events_create_event ($event, $id_group, $id_agent, $status = 0,
 						event_type, criticity, id_agentmodule, id_alert_am,
 						critical_instructions, warning_instructions,
 						unknown_instructions, source, tags, custom_data,
-						server_id, id_extra) 
+						server_id, id_extra, data, module_status) 
 					VALUES (%d, %d, "%s", NOW(), %d, UNIX_TIMESTAMP(NOW()),
 						"%s", "%s", %d, %d, %d, "%s", "%s", "%s", "%s",
-						"%s", "%s", %d, "%s")',
+						"%s", "%s", %d, "%s", %d, %d)',
 					$id_agent, $id_group, $event, $status, $id_user,
 					$event_type, $priority, $id_agent_module, $id_aam,
 					$critical_instructions, $warning_instructions,
 					$unknown_instructions, $source, $tags, $custom_data,
-					$server_id, $id_extra);
+					$server_id, $id_extra, $data, $module_status);
 				break;
 			case "postgresql":
 				$sql = sprintf ('
@@ -740,16 +745,16 @@ function events_create_event ($event, $id_group, $id_agent, $status = 0,
 						event_type, criticity, id_agentmodule, id_alert_am,
 						critical_instructions, warning_instructions,
 						unknown_instructions, source, tags, custom_data,
-						server_id, id_extra) 
+						server_id, id_extra, data, module_status) 
 					VALUES (%d, %d, "%s", NOW(), %d,
 						ceil(date_part(\'epoch\', CURRENT_TIMESTAMP)), "%s",
 						"%s", %d, %d, %d, "%s", "%s", "%s", "%s", "%s",
-						"%s", %d, "%s")',
+						"%s", %d, "%s", %d, %d)',
 					$id_agent, $id_group, $event, $status, $id_user,
 					$event_type, $priority, $id_agent_module, $id_aam,
 					$critical_instructions, $warning_instructions,
 					$unknown_instructions, $source, $tags, $custom_data,
-					$server_id, $id_extra);
+					$server_id, $id_extra, $data, $module_status);
 				break;
 			case "oracle":
 				$sql = sprintf ('
@@ -758,15 +763,15 @@ function events_create_event ($event, $id_group, $id_agent, $status = 0,
 						event_type, criticity, id_agentmodule, id_alert_am,
 						critical_instructions, warning_instructions,
 						unknown_instructions, source, tags, custom_data,
-						server_id, id_extra) 
+						server_id, id_extra, data, module_status) 
 					VALUES (%d, %d, "%s", CURRENT_TIMESTAMP, %d, UNIX_TIMESTAMP,
 						"%s", "%s", %d, %d, %d, "%s", "%s", "%s", "%s",
-						"%s", "%s", %d, "%s")',
+						"%s", "%s", %d, "%s", %d, %d)',
 					$id_agent, $id_group, $event, $status, $id_user,
 					$event_type, $priority, $id_agent_module, $id_aam,
 					$critical_instructions, $warning_instructions,
 					$unknown_instructions, $source, $tags, $custom_data,
-					$server_id, $id_extra);
+					$server_id, $id_extra, $data, $module_status);
 				break;
 		}
 	}
@@ -778,13 +783,13 @@ function events_create_event ($event, $id_group, $id_agent, $status = 0,
 						timestamp, estado, utimestamp, id_usuario,
 						event_type, criticity, id_agentmodule, id_alert_am,
 						critical_instructions, warning_instructions,
-						unknown_instructions, source, tags, custom_data, id_extra) 
+						unknown_instructions, source, tags, custom_data, id_extra, data, module_status) 
 					VALUES (%d, %d, "%s", NOW(), %d, UNIX_TIMESTAMP(NOW()),
-						"%s", "%s", %d, %d, %d, "%s", "%s", "%s", "%s", "%s", "%s", "%s")',
+						"%s", "%s", %d, %d, %d, "%s", "%s", "%s", "%s", "%s", "%s", "%s", %d, %d)',
 					$id_agent, $id_group, $event, $status, $id_user,
 					$event_type, $priority, $id_agent_module, $id_aam,
 					$critical_instructions, $warning_instructions,
-					$unknown_instructions, $source, $tags, $custom_data, $id_extra);
+					$unknown_instructions, $source, $tags, $custom_data, $id_extra, $data, $module_status);
 				break;
 			case "postgresql":
 				$sql = sprintf ('
@@ -792,14 +797,14 @@ function events_create_event ($event, $id_group, $id_agent, $status = 0,
 						timestamp, estado, utimestamp, id_usuario,
 						event_type, criticity, id_agentmodule, id_alert_am,
 						critical_instructions, warning_instructions,
-						unknown_instructions, source, tags, custom_data, id_extra) 
+						unknown_instructions, source, tags, custom_data, id_extra, data, module_status) 
 					VALUES (%d, %d, "%s", NOW(), %d,
 						ceil(date_part(\'epoch\', CURRENT_TIMESTAMP)), "%s",
-						"%s", %d, %d, %d, "%s", "%s", "%s", "%s", "%s", "%s", "%s")',
+						"%s", %d, %d, %d, "%s", "%s", "%s", "%s", "%s", "%s", "%s", %d, %d)',
 					$id_agent, $id_group, $event, $status, $id_user,
 					$event_type, $priority, $id_agent_module, $id_aam,
 					$critical_instructions, $warning_instructions,
-					$unknown_instructions, $source, $tags, $custom_data, $id_extra);
+					$unknown_instructions, $source, $tags, $custom_data, $id_extra, $data, $module_status);
 				break;
 			case "oracle":
 				$sql = sprintf ("
@@ -807,13 +812,13 @@ function events_create_event ($event, $id_group, $id_agent, $status = 0,
 						timestamp, estado, utimestamp, id_usuario,
 						event_type, criticity, id_agentmodule, id_alert_am,
 						critical_instructions, warning_instructions,
-						unknown_instructions, source, tags, custom_data, id_extra) 
+						unknown_instructions, source, tags, custom_data, id_extra, data, module_status) 
 					VALUES (%d, %d, '%s', CURRENT_TIMESTAMP, %d, UNIX_TIMESTAMP,
-						'%s', '%s', %d, %d, %d, '%s', '%s', '%s', '%s', '%s', '%s', '%s')",
+						'%s', '%s', %d, %d, %d, '%s', '%s', '%s', '%s', '%s', '%s', '%s', %d, %d)",
 					$id_agent, $id_group, $event, $status, $id_user,
 					$event_type, $priority, $id_agent_module, $id_aam,
 					$critical_instructions, $warning_instructions,
-					$unknown_instructions, $source, $tags, $custom_data, $id_extra);
+					$unknown_instructions, $source, $tags, $custom_data, $id_extra, $data, $module_status);
 				break;
 		}
 	}
@@ -1524,7 +1529,31 @@ function events_get_all_status ($report = false) {
 	}
 	
 	return $fields;
-} 
+}
+
+/**
+ * Return all event source.
+ *
+ * @return array event source array.
+ */
+function events_get_all_source () {
+	$event_table = events_get_events_table(is_metaconsole(),false);
+	$fields = array ();
+	$fields[''] = __('All');
+	
+	if (users_is_admin()) {
+		$sources = db_get_all_rows_sql("SELECT DISTINCT(source) FROM ". $event_table);
+	} else {
+		$groups_user = users_get_groups ($config['id_user'], "ER", true);
+		$sources = db_get_all_rows_sql("SELECT DISTINCT(source) FROM ". $event_table. " WHERE id_grupo IN (" .implode(",",array_keys($groups_user)) .")");	
+	}
+	
+	foreach ($sources as $key => $source) {
+		$fields[$source['source']] = $source['source'];
+	}
+	
+	return $fields;
+}
 
 /**
  * Decode a numeric status into status description.
@@ -3319,13 +3348,13 @@ function events_get_events_grouped_by_agent($sql_post, $offset = 0,
 		$fields_extra = '';
 	}
 
+	$event_lj = events_get_secondary_groups_left_join($table);
 	if ($total) {
-		$sql = "SELECT COUNT(*) FROM (select id_agente from $table WHERE 1=1 
+		$sql = "SELECT COUNT(*) FROM (select id_agente from $table $event_lj WHERE 1=1 
 				$sql_post GROUP BY id_agente, event_type$groupby_extra ORDER BY id_agente ) AS t";
 	}
 	else {
-		$sql = "select id_agente, count(*) as total$fields_extra from $table te LEFT JOIN tagent_secondary_group tasg
-				ON te.id_grupo = tasg.id_group
+		$sql = "select id_agente, count(*) as total$fields_extra from $table te $event_lj
 			WHERE id_agente > 0 $sql_post GROUP BY id_agente$groupby_extra ORDER BY id_agente LIMIT $offset,$pagination";
 	}
 	
@@ -3339,7 +3368,7 @@ function events_get_events_grouped_by_agent($sql_post, $offset = 0,
 		foreach ($events as $event) {
 			
 			if ($meta) {
-				$sql = "select event_type from $table 
+				$sql = "select event_type from $table te $event_lj
 								WHERE agent_name = '".$event['agent_name']."' $sql_post ORDER BY utimestamp DESC ";
 				$resultado = db_get_row_sql($sql);
 				
@@ -3350,9 +3379,7 @@ function events_get_events_grouped_by_agent($sql_post, $offset = 0,
 									'event_type' => $resultado['event_type']);
 			}
 			else {
-				$sql = "SELECT event_type FROM $table te
-					LEFT JOIN tagent_secondary_group tasg
-						ON te.id_agente = tasg.id_agent
+				$sql = "SELECT event_type FROM $table te $event_lj
 					WHERE id_agente = ".$event['id_agente']." $sql_post ORDER BY utimestamp DESC ";
 				$resultado = db_get_row_sql($sql);
 				
@@ -3702,6 +3729,16 @@ function events_list_events_grouped_agents($sql) {
 	}
 	if (in_array('instructions', $show_fields)) {
 		$table->head[$i] = __('Instructions');
+		$table->align[$i] = 'left';
+		$i++;
+	}
+	if (in_array('data', $show_fields)) {
+		$table->head[$i] = __('Data');
+		$table->align[$i] = 'left';
+		$i++;
+	}
+	if (in_array('module_status', $show_fields)) {
+		$table->head[$i] = __('Module status');
 		$table->align[$i] = 'left';
 		$i++;
 	}
@@ -4104,6 +4141,20 @@ function events_list_events_grouped_agents($sql) {
 			$table->cellclass[count($table->data)][$i] = $myclass;
 			$i++;
 		}
+		if (in_array('data',$show_fields)) {
+				$data[$i] = $event["data"];
+				if($data[$i] %1 == 0)
+					$data[$i]= number_format($data[$i], 0);
+				else
+					$data[$i]= number_format($data[$i], 2);
+				$table->cellclass[count($table->data)][$i] = $myclass;
+					$i++;
+		}
+		if (in_array('module_status',$show_fields)) {
+			$data[$i] = modules_get_modules_status ($event["module_status"]);
+			$table->cellclass[count($table->data)][$i] = $myclass;
+			$i++;
+		}
 		
 		if ($i != 0 && $allow_action) {
 			//Actions
@@ -4171,7 +4222,62 @@ function events_list_events_grouped_agents($sql) {
 	return html_print_table($table,true);
 }
 
+function events_get_sql_order($sort_field = "timestamp", $sort = "DESC", $group_rep = 0) {
+	$sort_field_translated = $sort_field;
+	switch ($sort_field) {
+		case 'event_id':
+			$sort_field_translated = "id_evento";
+			break;
+		case 'event_name':
+			$sort_field_translated = "evento";
+			break;
+		case 'status':
+			$sort_field_translated = "estado";
+			break;
+		case 'agent_id':
+			$sort_field_translated = "id_agente";
+			break;
+		case 'timestamp':
+			$sort_field_translated = ($group_rep == 0) ? "timestamp" : "timestamp_rep";
+			break;
+		case 'user_id':
+			$sort_field_translated = "id_usuario";
+			break;
+		case 'owner':
+			$sort_field_translated = "owner_user";
+			break;
+		case 'group_id':
+			$sort_field_translated = "id_grupo";
+			break;
+		case 'alert_id':
+			$sort_field_translated = "id_alert_am";
+			break;
+		case 'comment':
+			$sort_field_translated = "user_comment";
+			break;
+		case 'extra_id':
+			$sort_field_translated = "id_extra";
+			break;
+	}
 
+	$dir = ($sort == "up") ? "ASC" : "DESC";
 
+	return "ORDER BY $sort_field_translated $dir";
+}
+
+/**
+ * SQL left join of event queries to handle secondary groups
+ *
+ * @param string Table to see if is metaconsole or not
+ *
+ * @return string With the query.
+ */
+function events_get_secondary_groups_left_join($table) {
+	if ($table == 'tevento') {
+		return "LEFT JOIN tagent_secondary_group tasg ON te.id_agente = tasg.id_agent";
+	}
+	return "LEFT JOIN tmetaconsole_agent_secondary_group tasg
+		ON te.id_agente = tasg.id_tagente AND te.server_id = tasg.id_tmetaconsole_setup";
+}
 
 ?>

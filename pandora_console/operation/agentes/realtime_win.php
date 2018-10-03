@@ -83,6 +83,10 @@ echo '<link rel="stylesheet" href="../../include/styles/pandora.css" type="text/
 	</head>
 	<body bgcolor="#ffffff" style='background:#ffffff;'>
 		<?php
+            if (!check_acl ($config["id_user"], 0, "AR")) {
+                require ($config['homedir'] . "/general/noaccess.php");
+                exit;
+            }
             $config['extensions'] = extensions_get_extensions (false, '../../');
             if (!extensions_is_enabled_extension("realtime_graphs.php")) {
 				ui_print_error_message(__('Realtime extension is not enabled.'));

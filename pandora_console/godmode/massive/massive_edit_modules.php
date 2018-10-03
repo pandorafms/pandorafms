@@ -47,17 +47,21 @@ $update = (bool) get_parameter_post ('update');
 if ($update) {
 	$agents_ = '';
 	if ($selection_mode == 'modules') {
+
+		$agents_ = array();
+
 		$force = get_parameter('force_type', false);
 		
 		if ($agents_select == false) {
 			$agents_select = array();
-			$agents_ = array();
 		}
 		
 		foreach ($agents_select as $agent_name) {
 			$agents_[] = agents_get_agent_id($agent_name);
 		}
+
 		$modules_ = $module_name;
+
 	}
 	else if ($selection_mode == 'agents') {
 		$force = get_parameter('force_group', false);
@@ -75,6 +79,7 @@ if ($update) {
 	// If the option to select all of one group or module type is checked
 	if ($force) {
 		if ($force == 'type') {
+
 			$type_condition = '';
 			if ($module_type != 0)
 				$type_condition = "AND tam.id_tipo_modulo = $module_type";
@@ -141,12 +146,11 @@ if ($update) {
 	else {
 		// Standard procedure
 		foreach ($agents_ as $agent_) {
-			
+
 			if ($modules_ == false)
 				$modules_ = array();
 			
 			foreach ($modules_ as $module_) {
-				
 				$result = process_manage_edit ($module_, $agent_, $modules_selection_mode);
 				$count++;
 				$success += (int)$result;
@@ -331,6 +335,7 @@ $table->data['form_modules_2'][2] .= html_print_select (
 		'all' => __('Show all agents')),
 	'agents_selection_mode',
 	'common', false, '', '', true);
+
 $table->data['form_modules_2'][3] = html_print_select (array(), 'agents[]',
 	$agents_select, false, __('None'), 0, true, true, false);
 
@@ -650,25 +655,25 @@ $table->data['edit16'][1] = html_print_input_text ('max_retries', '', '', 5, 10,
 	__('Number of retries that the module will attempt to run.'), true);
 
 $table->data['edit22'][0] = __('Web checks').ui_print_help_icon ("web_checks", true);;
-$table->data['edit22'][1] = '<textarea id="textarea_plugin_parameter" name="plugin_parameter" cols="65" rows="15"></textarea>';
+$table->data['edit22'][1] = '<textarea id="textarea_plugin_parameter" name="plugin_parameter_text" cols="65" rows="15"></textarea>';
 
 $table->data['edit16'][2] = __('Port');
 $table->data['edit16'][3] = html_print_input_text ('tcp_port', '', '', 5, 20, true);
 
 $table->data['edit17'][0] = __('TCP send') . ' ' . ui_print_help_icon ("tcp_send", true);
-$table->data['edit17'][1] = html_print_textarea ('tcp_send', 2, 65, '', '', true);
+$table->data['edit17'][1] = html_print_textarea ('tcp_send2', 2, 65, '', '', true);
 
 $table->data['edit17'][2] = __('TCP receive');
 $table->data['edit17'][3] = html_print_textarea ('tcp_rcv', 2, 65, '', '', true);
 
 $table->data['edit18'][0] = __('WMI query') . ui_print_help_icon ('wmiquery', true);
-$table->data['edit18'][1] = html_print_input_text ('snmp_oid', '', '', 35, 255, true);
+$table->data['edit18'][1] = html_print_input_text ('wmi_query', '', '', 35, 255, true);
 
 $table->data['edit18'][2] = __('Key string');
-$table->data['edit18'][3] = html_print_input_text ('snmp_community', '', '', 20, 60, true);
+$table->data['edit18'][3] = html_print_input_text ('key_string', '', '', 20, 60, true);
 	
 $table->data['edit19'][0] = __('Field number') . ui_print_help_icon ('wmifield', true);
-$table->data['edit19'][1] = html_print_input_text ('tcp_port', '', '', 5, 15, true);
+$table->data['edit19'][1] = html_print_input_text ('field_number', '', '', 5, 15, true);
 
 $table->data['edit20'][0] = __('Plugin') . ui_print_help_icon ('plugin_macros', true);
 $table->data['edit20'][1] = html_print_select_from_sql ('SELECT id, name FROM tplugin ORDER BY name',
@@ -1381,7 +1386,8 @@ function process_manage_edit ($module_name, $agents_select = null, $module_statu
 		'id_category', 'disabled_types_event', 'ip_target', "custom_ip_target",
 		'descripcion', 'min_ff_event_normal', 'min_ff_event_warning',
 		'min_ff_event_critical', 'each_ff', 'module_ff_interval',
-		'ff_timeout', 'max_timeout','tcp_port','max_retries','tcp_rcv','id_plugin');
+		'ff_timeout', 'max_timeout','tcp_port','max_retries','tcp_rcv','id_plugin',
+		'wmi_query','key_string','field_number','tcp_send2','plugin_parameter_text');
 	$values = array ();
 	
 	foreach ($fields as $field) {
@@ -1391,61 +1397,55 @@ function process_manage_edit ($module_name, $agents_select = null, $module_statu
 			case 'id_plugin':
 				if ($value != 0) {
 				
-				$value_field_1 = get_parameter ('_field1_', '');
-				$value_field_1_desc = get_parameter ('desc_field1_', '');
-				
-				$value_field_2 = get_parameter ('_field2_', '');
-				$value_field_2_desc = get_parameter ('desc_field2_', '');
-				
-				$value_field_3 = get_parameter ('_field3_', '');
-				$value_field_3_desc = get_parameter ('desc_field3_', '');
-				
-				$value_field_4 = get_parameter ('_field4_', '');
-				$value_field_4_desc = get_parameter ('desc_field4_', '');
-				
-				$value_field_5 = get_parameter ('_field5_', '');
-				$value_field_5_desc = get_parameter ('desc_field5_', '');
-				
-				$values['macros'] = '{"1":{"macro":"_field1_","desc":"'.io_safe_input($value_field_1_desc).'","help":"'.io_safe_input($value_field_1_desc).'","value":"'.$value_field_1.'"}';
-				
-				if($value_field_2_desc != ''){
-				 $values['macros'] .= ',"2":{"macro":"_field2_","desc":"'.io_safe_input($value_field_2_desc).'","help":"'.io_safe_input($value_field_2_desc).'","value":"'.$value_field_2.'"}';
-				 
-				 if($value_field_3_desc != ''){
-					$values['macros'] .= ',"3":{"macro":"_field3_","desc":"'.io_safe_input($value_field_3_desc).'","help":"'.io_safe_input($value_field_3_desc).'","value":"'.$value_field_3.'"}';
+					$value_field_1 = get_parameter ('_field1_', '');
+					$value_field_1_desc = get_parameter ('desc_field1_', '');
 					
-					if($value_field_4_desc != ''){
-					 $values['macros'] .= ',"4":{"macro":"_field4_","desc":"'.io_safe_input($value_field_4_desc).'","help":"'.io_safe_input($value_field_4_desc).'","value":"'.$value_field_4.'"}';
-					 
-					 if($value_field_5_desc != ''){
-	 				 $values['macros'] .= ',"5":{"macro":"_field5_","desc":"'.io_safe_input($value_field_5_desc).'","help":"'.io_safe_input($value_field_5_desc).'","value":"'.$value_field_5.'"}';
-		 				}
-		 				else{
-		 					$values['macros'] .= '}';
-		 				}
-					 
+					$value_field_2 = get_parameter ('_field2_', '');
+					$value_field_2_desc = get_parameter ('desc_field2_', '');
+					
+					$value_field_3 = get_parameter ('_field3_', '');
+					$value_field_3_desc = get_parameter ('desc_field3_', '');
+					
+					$value_field_4 = get_parameter ('_field4_', '');
+					$value_field_4_desc = get_parameter ('desc_field4_', '');
+					
+					$value_field_5 = get_parameter ('_field5_', '');
+					$value_field_5_desc = get_parameter ('desc_field5_', '');
+					
+					$values['macros'] = '{"1":{"macro":"_field1_","desc":"'.io_safe_input($value_field_1_desc).'","help":"'.io_safe_input($value_field_1_desc).'","value":"'.$value_field_1.'"}';
+				
+					if($value_field_2_desc != ''){
+						$values['macros'] .= ',"2":{"macro":"_field2_","desc":"'.io_safe_input($value_field_2_desc).'","help":"'.io_safe_input($value_field_2_desc).'","value":"'.$value_field_2.'"}';
+					
+						if($value_field_3_desc != ''){
+							$values['macros'] .= ',"3":{"macro":"_field3_","desc":"'.io_safe_input($value_field_3_desc).'","help":"'.io_safe_input($value_field_3_desc).'","value":"'.$value_field_3.'"}';
+							
+							if($value_field_4_desc != ''){
+								$values['macros'] .= ',"4":{"macro":"_field4_","desc":"'.io_safe_input($value_field_4_desc).'","help":"'.io_safe_input($value_field_4_desc).'","value":"'.$value_field_4.'"}';
+							 
+								if($value_field_5_desc != ''){
+									$values['macros'] .= ',"5":{"macro":"_field5_","desc":"'.io_safe_input($value_field_5_desc).'","help":"'.io_safe_input($value_field_5_desc).'","value":"'.$value_field_5.'"}';
+								}
+								else{
+									$values['macros'] .= '}';
+								}
+							 
+							}
+							else{
+								$values['macros'] .= '}';
+							}
+							
+						}
+						else{
+							$values['macros'] .= '}';
+						}
 					}
 					else{
 						$values['macros'] .= '}';
 					}
-					
-				 }
-				 else{
-					 $values['macros'] .= '}';
-				 }
-				 
 				}
-				else{
-					$values['macros'] .= '}';
-				}
-				
-			
-				
-			}
-				
-				
-				
 				break;
+				
 			case 'module_interval':
 				if ($value != 0) {
 					$values[$field] = $value;
@@ -1470,6 +1470,32 @@ function process_manage_edit ($module_name, $agents_select = null, $module_statu
 					}
 				}
 				break;
+			case 'wmi_query':
+				if ($value != '') {
+					$values['snmp_oid'] = $value;
+				}
+				break;
+			case 'key_string':
+				if ($value != '') {
+					$values['snmp_community'] = $value;
+				}
+				break;
+			case 'field_number':
+				if ($value != '') {
+					$values['tcp_port'] = $value;
+				}
+				break;
+			
+			case 'tcp_send2':
+				if ($value != '') {
+					$values['tcp_send'] = $value;
+				}
+				break;
+			case 'plugin_parameter_text':
+				if ($value != '') {
+					$values['plugin_parameter'] = $value;
+				}
+				break;
 			default:
 				if ($value != '') {
 					$values[$field] = $value;
@@ -1477,7 +1503,7 @@ function process_manage_edit ($module_name, $agents_select = null, $module_statu
 				break;
 		}
 	}
-
+	
 	// Specific snmp reused fields
 	if (get_parameter ('tcp_send', '') == 3) {
 		$plugin_user_snmp = get_parameter ('plugin_user_snmp', '');
@@ -1519,12 +1545,14 @@ function process_manage_edit ($module_name, $agents_select = null, $module_statu
 	$update_tags = get_parameter('id_tag', false);
 
 	if (array_search(0, $agents_select) !== false) {
+
 		//Apply at All agents.
 		$modules = db_get_all_rows_filter ('tagente_modulo',
 			$filter_modules,
 			array ('id_agente_modulo'));
 	}
 	else {
+
 		if ($module_name == "0") {
 			//Any module
 			$modules = db_get_all_rows_filter ('tagente_modulo',
@@ -1538,7 +1566,8 @@ function process_manage_edit ($module_name, $agents_select = null, $module_statu
 				array ('id_agente_modulo'));
 		}
 	}
-	
+
+
 	if ($modules === false)
 		return false;
 
@@ -1554,16 +1583,16 @@ function process_manage_edit ($module_name, $agents_select = null, $module_statu
 		}
 		$modules = $modules_to_delete;
 	}
-	
+
 	foreach ($modules as $module) {
 		
 		$result = modules_update_agent_module(
 			$module['id_agente_modulo'], $values, true, $update_tags);
 
-		if (is_error($result)) {
-			
+
+		if (is_error($result))
 			return false;
-		}
+
 	}
 	
 	return true;

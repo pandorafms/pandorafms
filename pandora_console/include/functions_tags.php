@@ -1184,23 +1184,25 @@ function tags_get_tags_for_module_search($id_user = false, $access = 'AR') {
 
 function tags_check_acl_by_module($id_module = 0, $id_user = false,
 	$access = 'AW') {
-	
 	global $config;
-	
-	
+
 	$return = false;
-	
+
 	if (!empty($id_module)) {
 		$tags = tags_get_module_tags($id_module);
-		$group = modules_get_agent_group($id_module);
-		
+		$groups = modules_get_agent_groups($id_module);
+
 		if ($id_user === false) {
 			$id_user = $config["id_user"];
 		}
-		
-		$return = tags_check_acl($id_user, $group, $access, $tags, true);
+
+		foreach ($groups as $group) {
+			if (tags_check_acl($id_user, $group, $access, $tags, true)) {
+				return true;
+			}
+		}
 	}
-	
+
 	return $return;
 }
 
@@ -1274,6 +1276,8 @@ function tags_check_acl($id_user, $id_group, $access, $tags = array(), $flag_id_
 							$tag = tags_get_id($tag);
 						
 						if (in_array($tag, $acls[$group])) {
+							return true;
+						} else if (empty($acls[$group])) {
 							return true;
 						}
 					}
@@ -2478,17 +2482,10 @@ function tags_get_all_user_agents ($id_tag = false, $id_user = false,
 	}
 	
 	$select_fields = implode(',',$fields);
-	
+
 	$groups_clause = "";
-	if ($strict_user) {
-		if (!empty($groups_and_tags)) {
-			$groups_clause = " AND ".tags_get_acl_tags_module_condition($groups_and_tags, "tagente_modulo"); 		 
-		}
-	}
-	else {
-		$groups_clause = " AND tagente.id_grupo IN (".implode(',', array_keys($groups_and_tags)).")";
-	}
-	
+	$groups_clause = " AND tagente.id_grupo IN (".implode(',', array_keys($groups_and_tags)).")";
+
 	if (!empty($filter['id_group'])) {
 		if (is_array($filter['id_group']))
 			$groups_str = implode(",", $filter['id_group']);

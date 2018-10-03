@@ -109,10 +109,10 @@ INSERT INTO `tconfig` (`token`, `value`) VALUES
 ('custom_report_front_logo', 'images/pandora_logo_white.jpg'),
 ('custom_report_front_header', ''),
 ('custom_report_front_footer', ''),
-('MR', 18),
+('MR', 20),
 ('identification_reminder', 1),
 ('identification_reminder_timestamp', 0),
-('current_package_enterprise', '724'),
+('current_package_enterprise', '727'),
 ('post_process_custom_values', '{"0.00000038580247":"Seconds&#x20;to&#x20;months","0.00000165343915":"Seconds&#x20;to&#x20;weeks","0.00001157407407":"Seconds&#x20;to&#x20;days","0.01666666666667":"Seconds&#x20;to&#x20;minutes","0.00000000093132":"Bytes&#x20;to&#x20;Gigabytes","0.00000095367432":"Bytes&#x20;to&#x20;Megabytes","0.0009765625":"Bytes&#x20;to&#x20;Kilobytes","0.00000001653439":"Timeticks&#x20;to&#x20;weeks","0.00000011574074":"Timeticks&#x20;to&#x20;days"}'),
 ('custom_docs_logo', 'default_docs.png'),
 ('custom_support_logo', 'default_support.png'),
@@ -1260,3 +1260,10 @@ INSERT INTO `tprofile_view` (`id_profile`, `sec`, `sec2`, `sec3`) VALUES (5, '*'
 -- Dumping data for table `tcontainer`
 --
 INSERT INTO `tcontainer` SET `name` = 'Default graph container';
+
+--
+-- Dumping data for table `tlog_graph_models`
+--
+INSERT INTO tlog_graph_models VALUES (1, 'Apache&#x20;log&#x20;model',
+	'^.*?&#92;s+.*&quot;.*?&#92;s&#40;&#92;/.*?&#41;&#92;?.*1.1&quot;&#92;s+&#40;.*?&#41;&#92;s+&#40;.*?&#41;&#92;s+',
+	'pagina,&#x20;html_err_code,&#x20;_tiempo_', 1);

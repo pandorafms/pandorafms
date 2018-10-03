@@ -148,10 +148,20 @@ if ($layers != false) {
 		}
 		$agentNamesByLayer = gis_get_agents_layer($layer['id_tmap_layer']);
 
-		$agentNames = array_unique($agentNamesByGroup + $agentNamesByLayer);
+		$groupsByAgentId = gis_get_groups_layer_by_agent_id($layer['id_tmap_layer']);
+		$agentNamesOfGroupItems = array();
+		foreach ($groupsByAgentId as $agentId => $groupInfo) {
+			$agentNamesOfGroupItems[$agentId] = $groupInfo["agent_name"];
+		}
+		
+		$agentNames = array_unique($agentNamesByGroup + $agentNamesByLayer + $agentNamesOfGroupItems);
 
 		foreach ($agentNames as $agentName) {
 			$idAgent = agents_get_agent_id($agentName);
+			if (!$idAgent) {
+				$idAgent = agents_get_agent_id_by_alias($agentName);
+				$idAgent = (!empty($idAgent)) ? $idAgent[0]['id_agente'] : 0;
+			}
 			$coords = gis_get_data_last_position_agent($idAgent);
 			
 			if ($coords === false) {
@@ -165,19 +175,33 @@ if ($layers != false) {
 				}
 			}
 
-			$icon = gis_get_agent_icon_map($idAgent, true);
+			$status = agents_get_status($idAgent);
+			$icon = gis_get_agent_icon_map($idAgent, true, $status);
+			$icon = ui_get_full_url($icon);
 			$icon_size = getimagesize($icon);
 			$icon_width = $icon_size[0];
 			$icon_height = $icon_size[1];
-			$icon = ui_get_full_url($icon);
-			$status = agents_get_status($idAgent);
-			$parent = db_get_value('id_parent', 'tagente', 'id_agente', $idAgent);
 			
-			gis_add_agent_point($layer['layer_name'],
-				io_safe_output($agentName), $coords['stored_latitude'],
-				$coords['stored_longitude'], $icon, $icon_width,
-				$icon_height, $idAgent, $status, 'point_agent_info',
-				$parent);
+			// Is a group item
+			if (!empty($groupsByAgentId[$idAgent])) {
+				$groupId = (int) $groupsByAgentId[$idAgent]["id"];
+				$groupName = $groupsByAgentId[$idAgent]["name"];
+				
+				gis_add_agent_point($layer['layer_name'],
+					io_safe_output($groupName), $coords['stored_latitude'],
+					$coords['stored_longitude'], $icon, $icon_width,
+					$icon_height, $idAgent, $status, 'point_group_info',
+					$groupId);
+			}
+			else {
+				$parent = db_get_value('id_parent', 'tagente', 'id_agente', $idAgent);
+				
+				gis_add_agent_point($layer['layer_name'],
+					io_safe_output($agentName), $coords['stored_latitude'],
+					$coords['stored_longitude'], $icon, $icon_width,
+					$icon_height, $idAgent, $status, 'point_agent_info',
+					$parent);
+			}
 		}
 	}
 	gis_add_parent_lines();

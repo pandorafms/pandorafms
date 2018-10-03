@@ -132,19 +132,31 @@ function flot_area_graph (
 			$params['grid_color'] = '#C1C1C1';
 			break;
 	}
+	$padding_vconsole = $params['dashboard'] ? 'padding: 1px 0px 10px 10px;' : '';
 
 	// Parent layer
-	$return = "<div class='parent_graph' style='width: " . ($params['width']) . ";" . $background_style . "'>";
+	$return = "<div class='parent_graph' style='width: " . ($params['width']) . ";" . $background_style . $padding_vconsole . "'>";
 	// Set some containers to legend, graph, timestamp tooltip, etc.
 	if($params['show_legend']){
-		$return .= "<p id='legend_$graph_id'></p>";
+		$return .= "<p id='legend_$graph_id' style='text-align:left;'></p>";
 	}
 	if(isset($params['graph_combined']) && $params['graph_combined'] &&
 		(!isset($params['from_interface']) || !$params['from_interface']) ){
-		$yellow_up      = 0;
-		$red_up         = 0;
-		$yellow_inverse = false;
-		$red_inverse    = false;
+		if(	isset($params['threshold_data']) && is_array($params['threshold_data'])){
+			$yellow_threshold = $params['threshold_data']['yellow_threshold'];
+			$red_threshold    = $params['threshold_data']['red_threshold'];
+			$yellow_up        = $params['threshold_data']['yellow_up'];
+			$red_up           = $params['threshold_data']['red_up'];
+			$yellow_inverse   = $params['threshold_data']['yellow_inverse'];
+			$red_inverse      = $params['threshold_data']['red_inverse'];
+		}
+		else{
+			$yellow_up      = 0;
+			$red_up         = 0;
+			$yellow_inverse = false;
+			$red_inverse    = false;
+		}
+		
 	}
 	elseif(!isset($params['combined']) || !$params['combined']){
 		$yellow_threshold = $data_module_graph['w_min'];
@@ -164,10 +176,12 @@ function flot_area_graph (
 	}
 	elseif(isset($params['from_interface']) && $params['from_interface']){
 		if(	isset($params['threshold_data']) && is_array($params['threshold_data'])){
-			$yellow_up      = $params['threshold_data']['yellow_up'];
-			$red_up         = $params['threshold_data']['red_up'];
-			$yellow_inverse = $params['threshold_data']['yellow_inverse'];
-			$red_inverse    = $params['threshold_data']['red_inverse'];
+			$yellow_threshold = $params['threshold_data']['yellow_threshold'];
+			$red_threshold    = $params['threshold_data']['red_threshold'];
+			$yellow_up        = $params['threshold_data']['yellow_up'];
+			$red_up           = $params['threshold_data']['red_up'];
+			$yellow_inverse   = $params['threshold_data']['yellow_inverse'];
+			$red_inverse      = $params['threshold_data']['red_inverse'];
 		}
 		else{
 			$yellow_up      = 0;

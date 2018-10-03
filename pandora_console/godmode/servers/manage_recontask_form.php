@@ -108,6 +108,13 @@ if (isset($_GET["update"]) || (isset($_GET["upd"]))) {
 		$id_os = $row["id_os"];
 		$recon_ports = $row["recon_ports"];
 		$snmp_community = $row["snmp_community"];
+		$snmp_version = $row["snmp_version"];
+		$snmp3_auth_user =  $row["snmp_auth_user"];
+		$snmp3_auth_pass =  $row["snmp_auth_pass"];
+		$snmp3_privacy_method = $row["snmp_privacy_method"];
+		$snmp3_privacy_pass = $row["snmp_privacy_pass"];
+		$snmp3_auth_method = $row["snmp_auth_method"];
+		$snmp3_security_level = $row["snmp_security_level"];
 		$id_recon_script = $row["id_recon_script"];
 		$field1 = $row["field1"];
 		$field2 = $row["field2"];
@@ -156,6 +163,13 @@ elseif (isset($_GET["create"]) || isset($_GET["crt"])) {
 		$id_group = 0;
 		$create_incident = 1;
 		$snmp_community = "public";
+		$snmp3_auth_user = '';
+		$snmp3_auth_pass = '';
+		$snmp_version = 1;
+		$snmp3_privacy_method = '';
+		$snmp3_privacy_pass = '';
+		$snmp3_auth_method = '';
+		$snmp3_security_level = '';
 		$id_network_profile = 0;
 		$id_os = -1; // Any
 		$recon_ports = ""; // Any
@@ -212,6 +226,13 @@ $table->rowclass[20] = "network_sweep";
 $table->rowclass[21] = "network_sweep";
 $table->rowclass[22] = "network_sweep";
 $table->rowclass[23] = "network_sweep";
+$table->rowclass[24] = "network_sweep";
+$table->rowclass[25] = "network_sweep recon_v3";
+$table->rowclass[26] = "network_sweep recon_v3";
+$table->rowclass[27] = "network_sweep recon_v3";
+$table->rowclass[28] = "network_sweep recon_v3";
+$table->rowclass[29] = "network_sweep recon_v3";
+$table->rowclass[30] = "network_sweep recon_v3";
 
 $table->rowclass[6] = "recon_script";
 $table->rowclass[13] = "recon_script";
@@ -326,6 +347,34 @@ $table->data[11][1] =  html_print_checkbox ('snmp_enabled', 1, $snmp_enabled, tr
 $table->data[12][0] = "<b>".__('SNMP Default community');
 $table->data[12][0] .= ui_print_help_tip (__('You can specify several values, separated by commas, for example: public,mysecret,1234'), true);
 $table->data[12][1] =  html_print_input_text ('snmp_community', $snmp_community, '', 35, 0, true);
+
+//SNMP version
+
+$snmp_versions['1'] = 'v. 1';
+$snmp_versions['2'] = 'v. 2';
+$snmp_versions['2c'] = 'v. 2c';
+$snmp_versions['3'] = 'v. 3';
+$table->data[24][0] ="<b>". _('SNMP version');
+$table->data[24][1] = html_print_select ($snmp_versions, 'snmp_version', $snmp_version, '', '',	0, true);
+
+$table->data[25][0] ="<b>".__('Auth user');
+$table->data[25][1] = html_print_input_text ('snmp_auth_user', $snmp3_auth_user, '', 15, 60, true, '',
+			false, '', '');
+$table->data[26][0] ="<b>". __('Auth password') . ui_print_help_tip(__("The pass length must be eight character minimum."), true);
+$table->data[26][1] = html_print_input_password ('snmp_auth_pass', $snmp3_auth_pass, '', 15, 60, true, '',
+			false, '');
+$table->data[26][1] .= html_print_input_hidden_extended('active_snmp_v3', 0, 'active_snmp_v3_mmen', true);
+
+$table->data[27][0] ="<b>". __('Privacy method');
+$table->data[27][1] = html_print_select(array('DES' => __('DES'), 'AES' => __('AES')), 'snmp_privacy_method', $snmp3_privacy_method, '', '', '', true, false, false, '', '');
+$table->data[28][0] ="<b>". __('Privacy pass') . ui_print_help_tip(__("The pass length must be eight character minimum."), true);
+$table->data[28][1] = html_print_input_password ('snmp_privacy_pass', $snmp3_privacy_pass, '', 15, 60, true, '',
+		 false, '');
+$table->data[29][0] ="<b>". __('Auth method');
+$table->data[29][1] = html_print_select(array('MD5' => __('MD5'), 'SHA' => __('SHA')), 'snmp_auth_method', $snmp3_auth_method, '', '', '', true, false, false, '', '');
+$table->data[30][0] ="<b>". __('Security level');
+$table->data[30][1] = html_print_select(array('noAuthNoPriv' => __('Not auth and not privacy method'),
+	'authNoPriv' => __('Auth and not privacy method'), 'authPriv' => __('Auth and privacy method')), 'snmp_security_level', $snmp3_security_level, '', '', '', true, false, false, '', '');
 
 // Explanation
 $explanation = db_get_value('description', 'trecon_script', 'id_recon_script', $id_recon_script);
@@ -461,9 +510,24 @@ $('select#id_recon_script').change(function() {
 		get_explanation_recon_script($(this).val());
 });
 
+$('select#snmp_version').change(function () {
+	if (this.value == "3") {
+		$(".recon_v3").show();
+		$("input[name=active_snmp_v3]").val(1);
+		$("input[name=snmp_community]").attr("disabled", true);
+		$("input[name=vlan_enabled]").removeAttr("checked");
+		$("input[name=vlan_enabled]").attr("disabled", true);
+	}
+	else {
+		$(".recon_v3").hide();
+		$("input[name=active_snmp_v3]").val(0);
+		$("input[name=snmp_community]").removeAttr('disabled');
+		$("input[name=vlan_enabled]").removeAttr('disabled');
+	}
+});
+
 $('select#mode').change(function() {
 	var type = $(this).val();
-	
 	if (type == 'recon_script') {
 		$(".recon_script").show();
 		$(".network_sweep").hide();
@@ -474,6 +538,7 @@ $('select#mode').change(function() {
 		$(".recon_script").hide();
 		$(".network_sweep").show();
 		$('.macro_field').remove();
+		$('select#snmp_version').trigger('change');
 	}
 }).change();
 
@@ -543,5 +608,5 @@ function get_explanation_recon_script (id) {
 	});
 	taskManager.addTask(xhr);
 }
-/* ]]> */
+
 </script>

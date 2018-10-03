@@ -141,9 +141,8 @@ if ($create_alert) {
 		}
 
 		$messageAction = ui_print_result_message ($id,
-			__('Successfully created'),
-			$messageAction);
-		
+			__('Successfully created'), $messageAction, '', true);
+
 
 		if ($id !== false) {
 			$action_select = get_parameter('action_select');

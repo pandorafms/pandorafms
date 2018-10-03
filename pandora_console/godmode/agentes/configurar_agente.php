@@ -207,11 +207,6 @@ if ($create_agent) {
 		$agent_creation_error = __('No agent alias specified');
 		$agent_created_ok = 0;
 	}
-	/*elseif (agents_get_agent_id ($nombre_agente)) {
-		$agent_creation_error =
-			__('There is already an agent in the database with this name');
-		$agent_created_ok = 0;
-	}*/
 	else {
 		if($alias_as_name){
 			$sql = 'SELECT nombre FROM tagente WHERE nombre = "' . $alias . '"';

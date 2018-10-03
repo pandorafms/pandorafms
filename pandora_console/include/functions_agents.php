@@ -205,7 +205,6 @@ function agents_get_alerts_simple ($id_agent = false, $filter = '', $options = f
 	}
 	else {
 		$id_agent = (array) $id_agent;
-		// TODO TAGS agents_get_modules
 		$id_modules = array_keys (agents_get_modules ($id_agent, false, array('delete_pending' => 0)));
 		
 		if (empty ($id_modules))
@@ -593,7 +592,6 @@ function agents_process_manage_config ($source_id_agent, $destiny_id_agents, $co
 			$module = modules_get_agentmodule ($id_agent_module);
 			if ($module === false)
 				return false;
-			// TODO TAGS agents_get_modules
 			$modules = agents_get_modules ($id_destiny_agent, false,
 				array ('nombre' => $module['nombre'], 'disabled' => false));
 			
@@ -1636,7 +1634,6 @@ function agents_get_status($id_agent = 0, $noACLs = false) {
 	global $config;
 	
 	if (!$noACLs) {
-		// TODO TAGS agents_get_modules
 		$modules = agents_get_modules ($id_agent, 'id_agente_modulo',
 			array('disabled' => 0), true, false);
 	}
@@ -2081,23 +2078,6 @@ function agents_monitor_total ($id_agent, $filter = '', $disabled = false) {
 	return db_get_sql ($sql);
 }
 
-//Get alert fired for this agent
-
-function agents_get_alerts_fired ($id_agent, $filter="") {
-	// TODO TAGS agents_get_modules
-	$modules_agent = agents_get_modules($id_agent, "id_agente_modulo", $filter);
-	
-	if (empty($modules_agent)) {
-		return 0;
-	}
-	
-	$mod_clause = "(".implode(",", $modules_agent).")";
-	
-	return db_get_sql ("SELECT COUNT(times_fired)
-		FROM talert_template_modules
-		WHERE times_fired != 0 AND id_agent_module IN ".$mod_clause);
-}
-
 //Returns the alert image to display tree view
 
 function agents_tree_view_alert_img ($alert_fired) {
@@ -2398,12 +2378,10 @@ function agents_get_network_interfaces ($agents = false, $agents_filter = false)
 					);
 				
 				if($type_interface){
-					// TODO TAGS agents_get_modules
-					$interface_traffic_modules = agents_get_modules($agent_id, $columns, "nombre LIKE  '". $interface_name . "_if%Octets'");
+					$interface_traffic_modules = agents_get_modules($agent_id, $columns, "tagente_modulo.nombre LIKE  '". $interface_name . "_if%Octets'");
 				}
 				else{
-					// TODO TAGS agents_get_modules
-					$interface_traffic_modules = agents_get_modules($agent_id, $columns, "nombre LIKE 'if%Octets_$interface_name'");
+					$interface_traffic_modules = agents_get_modules($agent_id, $columns, "tagente_modulo.nombre LIKE 'if%Octets_$interface_name'");
 				}
 				
 				if (!empty($interface_traffic_modules) && count($interface_traffic_modules) >= 2) {

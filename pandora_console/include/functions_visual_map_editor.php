@@ -590,6 +590,15 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 				<td align="left" style="">' .
 				html_print_checkbox('show_on_top', 1, '', true) . '</td>';
 			
+			$show_last_value = array('0' => __('Hide last value on boolean modules'), '1' => __('Enabled'), '2' => __('Disabled'));
+			$form_items['show_last_value_row'] = array();
+			$form_items['show_last_value_row']['items'] = array('static_graph');
+			$form_items['show_last_value_row']['html'] = 
+				'<td align="left" style="">' . __('Show last value') . '</td>
+				<td align="left">' .
+				html_print_select($show_last_value, 'last_value', 0, '', '', '', true) .
+				'</td>';
+			
 			$form_items['module_graph_size_row'] = array();
 			$form_items['module_graph_size_row']['items'] = array('module_graph', 'datos');
 			$form_items['module_graph_size_row']['html'] = '<td align="left">' . __('Size') . '</td>

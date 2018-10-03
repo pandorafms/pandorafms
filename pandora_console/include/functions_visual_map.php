@@ -1775,15 +1775,24 @@ function visual_map_print_item($mode = "read", $layoutData,
 							$value = format_for_graph($value, 2);
 						}
 						
-						if (!empty($unit_text))
-							$value .= " " . $unit_text;
-						
 						// Hide value on boolean modules
-						if (!modules_is_boolean($layoutData['id_agente_modulo'])) {
-							$img_style_title .=
-								" <br>" . __("Last value: ")
-								. remove_right_zeros(number_format($value, $config['graph_precision'])).$unit_text;
+						if ($layoutData['show_last_value'] != 2) {
+							if ((!modules_is_boolean($layoutData['id_agente_modulo'])) || 
+								(modules_is_boolean($layoutData['id_agente_modulo']) && $layoutData['show_last_value'] != 0)){
+								if (is_numeric($value)) {
+									$img_style_title .=
+										" <br>" . __("Last value: ")
+										. remove_right_zeros(number_format($value, $config['graph_precision']));
+								} else {
+									$img_style_title .=
+									" <br>" . __("Last value: ")
+									. $value;
+								}
+							}
 						}
+						
+						if (!empty($unit_text))
+							$img_style_title .= " " . $unit_text;
 						
 						if ($layoutData['id_metaconsole'] != 0) {
 							//Restore db connection
@@ -1792,7 +1801,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 					}
 					
 					if(get_parameter('action') == 'edit'){
-					$img_style_title = '';
+						$img_style_title = '';
 					}
 				}
 				

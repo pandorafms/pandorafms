@@ -126,9 +126,25 @@ if ($create_alert) {
 				"Fail Added alert '$unsafe_alert_template_name' for module '$unsafe_module_name' in agent '$unsafe_agent_alias'");
 		}
 		
-		$messageAction = ui_print_result_message ($id,
-			__('Successfully created'), __('Could not be created'), '', true);
+
+		/* Show errors */
+		if (!isset($messageAction)) {
+			$messageAction = __('Could not be created');
+		}
 		
+		if ($id_alert_template == "") {
+			$messageAction = __('No template specified');
+		}
+
+		if ($id_agent_module == "") {
+			$messageAction = __('No module specified');
+		}
+
+		$messageAction = ui_print_result_message ($id,
+			__('Successfully created'),
+			$messageAction);
+		
+
 		if ($id !== false) {
 			$action_select = get_parameter('action_select');
 			

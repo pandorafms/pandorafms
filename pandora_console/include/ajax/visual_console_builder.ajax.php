@@ -960,7 +960,6 @@ switch ($action) {
 				//Make the html of select box of modules about id_agent.
 				if (($elementFields['id_agent'] != 0)
 					&&($elementFields['id_layout_linked'] == 0)) {
-					// TODO TAGS agents_get_modules
 					$modules = agents_get_modules(
 						$elementFields['id_agent'], false,
 						array('disabled' => 0,
@@ -989,7 +988,7 @@ switch ($action) {
 				if (isset($elementFields["linked_layout_status_as_service_warning"])) {
 					$elementFields["linked_layout_status_as_service_warning"] = (float) $elementFields["linked_layout_status_as_service_warning"];
 				}
-				
+				hd($type, true);
 				switch ($type) {
 					case 'auto_sla_graph':
 						$elementFields['event_max_time_row'] = $elementFields['period'];
@@ -1023,7 +1022,6 @@ switch ($action) {
 						$elementFields['id_agent_string'] = $elementFields['id_agent'];
 						if (($elementFields['id_agent_string'] != 0)
 							&& ($elementFields['id_layout_linked'] == 0)) {
-							// TODO TAGS agents_get_modules
 							$modules = agents_get_modules(
 								$elementFields['id_agent'], false,
 								array('disabled' => 0,
@@ -1052,12 +1050,13 @@ switch ($action) {
 						$elementFields['id_agent_string'] = $elementFields['id_agent'];
 						if (($elementFields['id_agent_string'] != 0)
 							&& ($elementFields['id_layout_linked'] == 0)) {
+							hd("vis3", true);
 							// TODO TAGS agents_get_modules
 							$modules = agents_get_modules(
 								$elementFields['id_agent'], false,
 								array('disabled' => 0,
 									'id_agente' => $elementFields['id_agent'],
-									'tagente_modulo.id_tipo_modulo IN' => "(17,23,3,10,33)"));
+									'tagente_modulo.id_tipo_modulo IN' => "(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,18,17,23,3,10,33)"));
 							
 							$elementFields['modules_html'] = '<option value="0">--</option>';
 							foreach ($modules as $id => $name) {

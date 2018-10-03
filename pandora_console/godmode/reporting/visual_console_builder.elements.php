@@ -416,7 +416,6 @@ foreach ($layoutDatas as $layoutData) {
 			}
 			if ($cell_content_enterprise === false) {
 				if (!defined('METACONSOLE')) {
-					// TODO TAGS agents_get_modules
 					$modules = agents_get_modules($layoutData['id_agent']);
 				}
 				else {

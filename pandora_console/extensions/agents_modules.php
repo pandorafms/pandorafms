@@ -70,7 +70,7 @@ function mainAgentsModules() {
 	$hor_offset = (int)get_parameter('hor_offset', 0);
 	$block = $config['block_size'];
 	if(get_parameter('modulegroup') != null){
-		$agents_id = (array)get_parameter('id_agents2', -1);
+		$agents_id = (array)get_parameter('id_agents2', null);
 	}
 	$selection_a_m = (int)get_parameter('selection_agent_module');
 	$modules_selected = (array)get_parameter('module', 0);
@@ -134,8 +134,6 @@ function mainAgentsModules() {
 				. "</a>";
 		}
 	}
-	
-	$groups = users_get_groups ();
 	
 	//groups
 	$filter_groups_label = '<b>'.__('Group').'</b>';
@@ -371,7 +369,10 @@ function mainAgentsModules() {
 			$filter_groups['id_grupo'] = $group_id;	
 		}
 	}
-	$agents = agents_get_agents ($filter_groups);
+
+	if (!empty($filter_groups['id_agente'])) {
+		$agents = agents_get_agents ($filter_groups);
+	}
 	$nagents = count($agents);
 
 	if ($all_modules == false || $agents == false) {

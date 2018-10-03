@@ -673,7 +673,7 @@ if (is_ajax ()) {
 		}
 		
 		if ($status_modulo != -1) {
-			$filter['id_agente_modulo IN'] = ' (SELECT id_agente_modulo FROM tagente_estado where ' . $sql_conditions;
+			$filter['tagente_modulo.id_agente_modulo IN'] = ' (SELECT id_agente_modulo FROM tagente_estado where ' . $sql_conditions;
 		}
 		
 		
@@ -685,7 +685,7 @@ if (is_ajax ()) {
 		if ($get_id_and_name)
 			$fields = array('id_agente_modulo', 'nombre');
 		if ($get_distinct_name)
-			$fields = array('DISTINCT(nombre)');
+			$fields = array('DISTINCT(tagente_modulo.nombre)');
 		
 		$indexed = (bool) get_parameter ('indexed', true);
 		$agentName = (string) get_parameter ('agent_name', null);
@@ -730,7 +730,6 @@ if (is_ajax ()) {
 				$id_agent = array_keys(
 					agents_get_group_agents(
 						array_keys(users_get_groups ()), $search, "none"));
-			// TODO TAGS agents_get_modules
 			$agent_modules = agents_get_modules ($id_agent, $fields, $filter, $indexed, true, false, $tags);
 		}
 		

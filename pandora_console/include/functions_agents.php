@@ -1177,7 +1177,10 @@ function agents_get_modules ($id_agent = null, $details = false,
 	else {
 		$details = (array)$details;
 		$details = io_safe_input ($details);
-		$details = array_map(function ($a) { return 'tagente_modulo.' . $a;}, $details);
+		$details = array_map(function ($a) {
+				return preg_match('/tagente_modulo./i', $a) ? $a : 'tagente_modulo.' . $a;
+			},$details
+		);
 	}
 
 	$sql_tags_join = "";

@@ -174,7 +174,6 @@ function mainInsertData() {
 	$table->data[1][0] = __('Module');
 	$modules = array ();
 	if ($agent_id){
-		// TODO TAGS agents_get_modules
 		$modules = agents_get_modules ($agent_id, false, array("delete_pending" => 0));
 	}
 	$table->data[1][1] = html_print_select ($modules, 'id_agent_module', $id_agent_module, true,

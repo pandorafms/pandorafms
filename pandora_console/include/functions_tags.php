@@ -2640,7 +2640,7 @@ function tags_get_module_policy_tags($id_tag, $id_module) {
  * 		true if there is not any tag restriction
  * 		array with all tags if there are tags configured
  */
-function tags_get_user_applied_agent_tags ($id_agent, $access) {
+function tags_get_user_applied_agent_tags ($id_agent, $access = "AR") {
 	global $config;
 
 	$agent_groups = agents_get_all_groups_agent($id_agent);

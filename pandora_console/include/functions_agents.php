@@ -1328,56 +1328,6 @@ function agents_get_alias_by_name ($name, $case = 'none') {
 }
 
 /**
- * Get the number of pandora data packets in the database.
- *
- * In case an array is passed, it will have a value for every agent passed
- * incl. a total otherwise it will just return the total
- *
- * @param mixed Agent id or array of agent id's, 0 for all
- *
- * @return mixed The number of data in the database
- */
-function agents_get_modules_data_count ($id_agent = 0) {
-	$id_agent = safe_int ($id_agent, 1);
-	
-	if (empty ($id_agent)) {
-		$id_agent = array ();
-	}
-	else {
-		$id_agent = (array) $id_agent;
-	}
-	
-	$count = array ();
-	$count["total"] = 0;
-	
-	$query[0] = "SELECT COUNT(*) FROM tagente_datos";
-	
-	foreach ($id_agent as $agent_id) {
-		//Init value
-		$count[$agent_id] = 0;
-		// TODO TAGS agents_get_modules
-		$modules = array_keys (agents_get_modules ($agent_id)); 
-		foreach ($query as $sql) { 
-			//Add up each table's data
-			//Avoid the count over empty array
-			if (!empty($modules))
-				$count[$agent_id] += (int) db_get_sql ($sql .
-					" WHERE id_agente_modulo IN (".implode (",", $modules).")", 0, true);
-		}
-		//Add total agent count to total count
-		$count["total"] += $count[$agent_id];
-	}
-	
-	if ($count["total"] == 0) {
-		foreach ($query as $sql) {
-			$count["total"] += (int) db_get_sql ($sql, 0, true);
-		}
-	}
-	
-	return $count; //Return the array
-}
-
-/**
  * Check if an agent has alerts fired.
  *
  * @param int Agent id.

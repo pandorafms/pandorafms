@@ -1800,7 +1800,6 @@ function reporting_agent_module($report, $content) {
 			$row = array();
 			$row['agent_status'][$agent] = agents_get_status($agent);
 			$row['agent_name'] = agents_get_alias($agent);
-			// TODO TAGS agents_get_modules
 			$agent_modules = agents_get_modules($agent);
 			
 			$row['modules'] = array();
@@ -3079,7 +3078,6 @@ function reporting_alert_report_agent($report, $content) {
 	$return["description"] = $content["description"];
 	$return["date"] = reporting_get_date_text($report, $content);
 	$return['label'] = (isset($content['style']['label'])) ? $content['style']['label'] : '';
-	// TODO TAGS agents_get_modules
 	$module_list = agents_get_modules($content['id_agent']);
 
 	$data = array();

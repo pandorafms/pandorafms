@@ -142,14 +142,12 @@ function modules_copy_agent_module_to_agent ($id_agent_module, $id_destiny_agent
 	
 	if ($forced_name !== false)
 		$module['nombre'] = $forced_name;
-	// TODO TAGS agents_get_modules
 	$modules = agents_get_modules ($id_destiny_agent, false,
 		array ('nombre' => $module['nombre'], 'disabled' => false));
 	
 	// The module already exist in the target
 	if (! empty ($modules))
 		return array_pop (array_keys ($modules));
-	// TODO TAGS agents_get_modules
 	$modulesDisabled = agents_get_modules ($id_destiny_agent, false,
 		array ('nombre' => $module['nombre'], 'disabled' => true));
 	

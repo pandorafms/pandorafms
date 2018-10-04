@@ -1164,6 +1164,10 @@ sub parse_arguments {
 		my $key = trim($args[$i]);
 
 		$key =~  s/^-//;
+		if ($key =~ /^\s*global_alerts/){
+			push (@{$data{global_alerts}}, trim($args[$i+1]));
+			next;
+		}
 		$data{$key} = trim($args[$i+1]);
 	}
 

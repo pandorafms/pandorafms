@@ -3667,7 +3667,6 @@ function reporting_agent_configuration($report, $content) {
 	$agent_configuration['description'] = $agent_data['comentarios'];
 	$agent_configuration['enabled'] = (int)!$agent_data['disabled'];
 	$agent_configuration['group'] = $report["group"];
-	// TODO TAGS agents_get_modules
 	$modules = agents_get_modules ($content['id_agent']);
 	
 	$agent_configuration['modules'] = array();
@@ -8286,11 +8285,10 @@ function reporting_get_agentmodule_ttr ($id_agent_module, $period = 0, $date = 0
  * Get a detailed report of the modules of the agent
  * 
  * @param int $id_agent Agent id to get the report for.
- * @param string $filter filter for get partial modules.
  * 
  * @return array An array
  */
-function reporting_get_agent_module_info ($id_agent, $filter = false) {
+function reporting_get_agent_module_info ($id_agent) {
 	global $config;
 	
 	$return = array ();
@@ -8306,12 +8304,7 @@ function reporting_get_agent_module_info ($id_agent, $filter = false) {
 		return $return;
 	}
 	
-	if ($filter != '') {
-		$filter = 'AND ';
-	}
-	
-	$filter = 'disabled = 0';
-	// TODO TAGS agents_get_modules
+	$filter = array('disabled' =>  0);
 	$modules = agents_get_modules($id_agent, false, $filter, true, false);
 	
 	if ($modules === false) {

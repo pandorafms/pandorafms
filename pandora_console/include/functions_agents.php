@@ -355,10 +355,12 @@ function agents_get_agents ($filter = false, $fields = false,
 				break;
 			case AGENT_STATUS_NOT_NORMAL:
 				$status_sql =
-					"(
+				"normal_count <> total_count";
+				//The AGENT_STATUS_NOT_NORMAL filter must show all agents that are not in normal status
+					/*"(
 						normal_count <> total_count
 						AND
-						(normal_count + notinit_count) <> total_count)";
+						(normal_count + notinit_count) <> total_count)";*/
 				break;
 			case AGENT_STATUS_NOT_INIT:
 				$status_sql = "notinit_count = total_count";

@@ -490,7 +490,7 @@ function io_input_password($password) {
 	global $config;
 	
 	enterprise_include_once('include/functions_crypto.php');
-	$ciphertext = enterprise_hook('crypto_encrypt', array($password));
+	$ciphertext = enterprise_hook('openssl_encrypt_decrypt', array('encrypt', $password));
 	if ($ciphertext === ENTERPRISE_NOT_HOOK) {
 			return $password;
 	}
@@ -499,7 +499,7 @@ function io_input_password($password) {
 }
 
 /*
- * Process the given password read from the Pandora FMS Database, 
+ * Process the given password read from the Pandora FMS Database,
  * decrypting it if necessary.
  *
  * @param string password Password read from the DB.
@@ -510,7 +510,7 @@ function io_output_password($password) {
 	global $config;
 
 	enterprise_include_once('include/functions_crypto.php');
-	$plaintext = enterprise_hook('crypto_decrypt', array($password));
+	$plaintext = enterprise_hook('openssl_encrypt_decrypt', array('decrypt', $password));
 	if ($plaintext === ENTERPRISE_NOT_HOOK) {
 			return $password;
 	}

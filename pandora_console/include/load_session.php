@@ -52,7 +52,7 @@ function pandora_session_write ($session_id, $data) {
 		$retval_write = db_process_sql_update('tsessions_php', $values, array('id_session' => $session_id));
 	}
 
-	return $retval_write;
+	return ($retval_write !== false) ? true : false;
 }
 
 function pandora_session_destroy ($session_id) {

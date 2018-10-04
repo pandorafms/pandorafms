@@ -10733,22 +10733,20 @@ function api_set_metaconsole_synch($keys) {
 				array(db_escape_key_identifier('value') => $value),
 				array(db_escape_key_identifier('key') => $key));
 		}
-		
+
 		// Validate update the license in nodes:
 		enterprise_include_once('include/functions_metaconsole.php');
-		list ($nodes_failed, $total_nodes) = metaconsole_update_all_nodes_license();
-		if ($nodes_failed === 0) {
-			echo __('Metaconsole and all nodes license updated');
+		$array_metaconsole_update = metaconsole_update_all_nodes_license();
+		if ($array_metaconsole_update[0] === 0) {
+			ui_print_success_message(__('Metaconsole and all nodes license updated'));
 		}
 		else {
-			echo __('Metaconsole license updated but %d of %d node synchronization failed', $nodes_failed, $total_nodes);
+			ui_print_error_message(__('Metaconsole license updated but %d of %d node synchronization failed', $array_metaconsole_update[0], $array_metaconsole_update[1]));
 		}
 	}
 	else{
 		echo __('This function is only for metaconsole');
 	}
-
-	
 }
 
 function api_set_new_cluster($thrash1, $thrash2, $other, $thrash3) {

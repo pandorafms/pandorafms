@@ -2466,26 +2466,26 @@ function is_double_auth_enabled ($user) {
 
 function clear_pandora_error_for_header() {
 	global $config;
-	
+
 	$config["alert_cnt"] = 0;
 	$_SESSION["alert_msg"] = array();
 }
 
 function set_pandora_error_for_header($message, $title = null) {
 	global $config;
-	
+
 	if (!isset($config['alert_cnt']))
 		$config['alert_cnt'] = 0;
-	
-	if (!isset($_SESSION['alert_msg']))
+
+	if ( ( !isset($_SESSION['alert_msg']) && (!is_array($_SESSION['alert_msg'])) ) )
 		$_SESSION['alert_msg'] = array();
-	
+
 	$message_config = array();
 	if (isset($title))
 		$message_config['title'] = $title;
 	$message_config['message'] = $message;
 	$message_config['no_close'] = true;
-	
+
 	$config['alert_cnt']++;
 	$_SESSION['alert_msg'][] = array('type' => 'error', 'message' => $message_config);
 }

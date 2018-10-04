@@ -855,7 +855,8 @@ function ui_format_alert_row ($alert, $agent = true, $url = '', $agent_style = f
 				// Restore the default connection.
 				metaconsole_restore_db();
 				$errors++;
-				break;
+				//break; It does not work in the php7 version remplace for:
+				return false;
 			}
 		}
 
@@ -2139,19 +2140,25 @@ function ui_format_filesize ($bytes) {
  */
 function ui_get_status_images_path () {
 	global $config;
-	
+
 	$imageset = $config["status_images_set"];
-	
+
 	if (strpos ($imageset, ",") === false)
 		$imageset .= ",40x18";
-	list ($imageset, $sizes) = preg_split ("/\,/", $imageset);
-	
+
+	$array_split = preg_split ("/\,/", $imageset);
+	$imageset = $array_split[0];
+	$sizes    = $array_split[1];
+
 	if (strpos ($sizes, "x") === false)
 		$sizes .= "x18";
-	list ($imagewidth, $imageheight) = preg_split ("/x/", $sizes);
-	
+
+	$array_split_size = preg_split ("/x/", $sizes);
+	$imagewidth  = $array_split_size[0];
+	$imageheight = $array_split_size[1];
+
 	$imagespath = 'images/status_sets/'.$imageset;
-	
+
 	return array ($imagespath);
 }
 
@@ -2168,20 +2175,21 @@ function ui_get_status_images_path () {
  */
 function ui_print_status_image ($type, $title = "", $return = false, $options = false, $path = false) {
 	if ($path === false) {
-		list ($imagepath) = ui_get_status_images_path ();
+		$imagepath_array = ui_get_status_images_path ();
+		$imagepath = $imagepath_array[0];
 	}
 	else {
 		$imagepath = $path;
 	}
-	
+
 	$imagepath .= "/" . $type;
-	
+
 	if ($options === false) {
 		$options = array();
 	}
-	
+
 	$options['title'] = $title;
-	
+
 	return html_print_image ($imagepath, $return, $options, false, false, false, true);
 }
 

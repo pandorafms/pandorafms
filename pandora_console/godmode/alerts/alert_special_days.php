@@ -112,8 +112,14 @@ if ($create_special_day) {
 	$values = array();
 	$values['id_group'] = (string) get_parameter ('id_group');
 	$values['description'] = (string) get_parameter ('description');
-	
-	list($year, $month, $day) = explode("-", $date);
+
+
+	$array_date = explode("-", $date);
+
+	$year  = $array_date[0];
+	$month = $array_date[1];
+	$day   = $array_date[2];
+
 	if ($year == '*') {
 		# '0001' means every year.
 		$year = '0001';
@@ -158,20 +164,25 @@ if ($update_special_day) {
 	$description = (string) get_parameter ('description');
 	$id_group = (string) get_parameter ('id_group');
 	$id_group_orig = (string) get_parameter ('id_group_orig');
-	
-	list($year, $month, $day) = explode("-", $date);
+
+	$array_date = explode("-", $date);
+
+	$year  = $array_date[0];
+	$month = $array_date[1];
+	$day   = $array_date[2];
+
 	if ($year == '*') {
 		# '0001' means every year.
 		$year = '0001';
 		$date = $year . '-' . $month . '-' . $day;
 	}
-	
+
 	$values = array ();
 	$values['date'] = $date;
 	$values['id_group'] = $id_group;
 	$values['same_day'] = $same_day;
 	$values['description'] = $description;
-	
+
 	if (!checkdate ($month, $day, $year)) {
 		$result = '';
 	}

@@ -8402,33 +8402,6 @@ function reporting_tiny_stats ($counts_info, $return = false, $type = 'agent', $
 			break;
 	}
 	
-	if ($strict_user && $type == 'agent') {
-		
-		$acltags = tags_get_user_groups_and_tags ($config['id_user'],'AR', $strict_user);
-		$filter['disabled'] = 0;
-		$id_agent = $counts_info['id_agente'];
-		
-		$counts_info = array();
-		$counts_info['normal_count'] = count(tags_get_agent_modules ($id_agent, false, $acltags, false, $filter, false, AGENT_MODULE_STATUS_NORMAL));
-		$counts_info['warning_count'] = count(tags_get_agent_modules ($id_agent, false, $acltags, false, $filter, false, AGENT_MODULE_STATUS_WARNING));
-		$counts_info['critical_count'] = count(tags_get_agent_modules ($id_agent, false, $acltags, false, $filter, false, AGENT_MODULE_STATUS_CRITICAL_BAD));
-		$counts_info['notinit_count'] = count(tags_get_agent_modules ($id_agent, false, $acltags, false, $filter, false, AGENT_MODULE_STATUS_NOT_INIT));
-		$counts_info['unknown_count'] = count(tags_get_agent_modules ($id_agent, false, $acltags, false, $filter, false, AGENT_MODULE_STATUS_UNKNOWN));
-		$counts_info['total_count'] = $counts_info['normal_count'] + $counts_info['warning_count'] + $counts_info['critical_count'] + $counts_info['unknown_count'] + $counts_info['notinit_count'];
-		
-		$all_agent_modules = tags_get_agent_modules ($id_agent, false, $acltags, false, $filter);
-		if (!empty($all_agent_modules)) {
-			$mod_clause = "(".implode(',', array_keys($all_agent_modules)).")";
-
-			$counts_info['fired_count'] = (int) db_get_sql ("SELECT COUNT(times_fired)
-				FROM talert_template_modules
-				WHERE times_fired != 0 AND id_agent_module IN ".$mod_clause);
-		}
-		else {
-			$counts_info['fired_count'] = 0;
-		}
-	}
-	
 	// Store the counts in a data structure to print hidden divs with titles
 	$stats = array();
 	

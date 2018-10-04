@@ -43,6 +43,7 @@ echo '<table width="100%" cellpadding="2" cellspacing="2" class="databox filters
 echo "<tr><td class='datos' style='width:20%; font-weight: bold;'>";
 echo __('Search') . ' ' .
 	html_print_input_text ('search_string', $search_string, '', 15, 255, true);
+	html_print_input_hidden ('search', 1);
 echo "</td>";
 echo "<td class='datos' style='width:10%'>";
 html_print_submit_button (__('Filter'), 'filter', false, 'class="sub search"');

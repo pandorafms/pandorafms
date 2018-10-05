@@ -117,6 +117,7 @@ $sql =
 			FROM tagente_modulo tam
 			LEFT JOIN talert_template_modules tatm
 				ON tatm.id_agent_module = tam.id_agente_modulo
+				AND tatm.times_fired = 1
 			LEFT JOIN tagente_estado tae
 				ON tae.id_agente_modulo = tam.id_agente_modulo
 			INNER JOIN tagente ta
@@ -135,6 +136,7 @@ $sql =
 			FROM tagente_modulo tam
 			LEFT JOIN talert_template_modules tatm
 				ON tatm.id_agent_module = tam.id_agente_modulo
+				AND tatm.times_fired = 1
 			LEFT JOIN tagente_estado tae
 				ON tae.id_agente_modulo = tam.id_agente_modulo
 			INNER JOIN tagente ta

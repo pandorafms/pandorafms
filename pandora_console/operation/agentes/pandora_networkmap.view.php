@@ -563,8 +563,6 @@ if (is_ajax ()) {
 	$get_status_node = (bool)get_parameter('get_status_node', false);
 	$get_status_module = (bool)get_parameter('get_status_module',
 		false);
-	$check_changes_num_modules = (bool)get_parameter(
-		'check_changes_num_modules', false);
 	
 	if ($get_status_node) {
 		$id = (int)get_parameter('id', 0);
@@ -587,20 +585,6 @@ if (is_ajax ()) {
 		$return['id'] = $id;
 		$return['status_color'] = get_status_color_module_networkmap(
 			$id);
-		
-		echo json_encode($return);
-		
-		return;
-	}
-	
-	if ($check_changes_num_modules) {
-		$id = (int)get_parameter('id', 0);
-		// TODO TAGS agents_get_modules
-		$modules = agents_get_modules($id);
-		
-		$return = array();
-		$return['correct'] = true;
-		$return['count'] = count($modules);
 		
 		echo json_encode($return);
 		

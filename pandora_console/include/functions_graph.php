@@ -4183,16 +4183,14 @@ function graph_monitor_wheel ($width = 550, $height = 600, $filter = false) {
 		if (!empty($agents)) {
 			$agents_id = array();
 			$agents_aux = array();
-			foreach ($agents as $key => $agent) {
+			foreach ($agents as $key => $agent) { 
 				$agents_aux[$agent['id_agente']] = $agent;
 			}
 			$agents = $agents_aux;
 			$agents_aux = null;
-			$fields = array('id_agente_modulo', 'id_agente', 'id_module_group', 'nombre');
 
 			$module_groups = modules_get_modulegroups();
 			$module_groups[0] = __('Not assigned');
-			// TODO TAGS agents_get_modules
 			$modules = agents_get_modules(array_keys($agents), '*');
 
 			$data_agents = array();

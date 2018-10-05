@@ -549,7 +549,7 @@ if (!empty($network_interfaces)) {
 		else {
 			$group_array = $user_groups_ids;
 		}
-		// TODO revision tag
+		
 		$acl_tags = tags_get_acl_tags($config['id_user'], $group_array, 'ER',
 			'event_condition', 'AND', '', true, array(), true);
 

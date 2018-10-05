@@ -988,7 +988,6 @@ function tags_get_user_tags($id_user = false, $access = 'AR', $return_tag_any = 
 	}
 	
 	// Get the tags of the required access flag for each group
-	// TODO revision tag
 	$tags = tags_get_acl_tags($id_user, 0, $access, 'data');
 	// If there are wrong parameters or fail ACL check, return false
 	if ($tags_user === ERR_WRONG_PARAMETERS || $tags_user === ERR_ACL) {
@@ -1076,8 +1075,7 @@ function tags_get_tags_for_module_search($id_user = false, $access = 'AR') {
 		//--------------------------------------------------------------
 		return false;
 	}
-    // Get the tags of the required access flag for each group
-		// TODO revision tag
+	// Get the tags of the required access flag for each group
 	$tags = tags_get_acl_tags($id_user, 0, $access, 'data');
 	// If there are wrong parameters or fail ACL check, return false
 	if ($tags_user === ERR_WRONG_PARAMETERS || $tags_user === ERR_ACL) {
@@ -1161,7 +1159,7 @@ function tags_check_acl($id_user, $id_group, $access, $tags = array(), $flag_id_
 			$id_group[] = $parent['id_grupo'];
 		}
 	}
-	// TODO revision tag
+	
 	$acls = tags_get_acl_tags($id_user, $id_group, $access, 'data');
 	
 	// If there are wrong parameters or fail ACL check, return false
@@ -1259,106 +1257,6 @@ function tags_check_acl($id_user, $id_group, $access, $tags = array(), $flag_id_
 	}
 	
 	return false;
-}
-
-function tags_check_acl_event($id_user, $id_group, $access, $tags = array(),$p = false) {
-	global $config;
-	
-	if($id_user === false) {
-		$id_user = $config['id_user'];
-	}
-	// TODO revision tag
-	$acls = tags_get_acl_tags($id_user, $id_group, $access, 'data');
-	
-	// If there are wrong parameters or fail ACL check, return false
-	if($acls === ERR_WRONG_PARAMETERS || $acls === ERR_ACL) {
-		return false;
-	}
-	
-	// If there are not tags restrictions or tags passed, check the group access
-	if (empty($acls) || empty($tags)) {
-		if (!is_array($id_group))
-			$group_id_array = array($id_group);
-			
-		foreach ($id_group as $group) {
-			if (check_acl($id_user, $group, $access))
-				return true;
-		}
-	}
-	
-	# Fix: If user profile has more than one group, due to ACL propagation then id_group can be an array
-	if (is_array($id_group)) {
-		
-		foreach ($id_group  as $group) {
-			if ($group > 0) {
-				if (isset($acls[$group])) {
-					foreach ($tags as $tag) {
-						$tag = tags_get_id($tag);
-						if (in_array($tag, $acls[$group])) {
-							return true;
-						}
-					}
-				}
-				else {
-					//return false;
-					$return = false;
-				}
-			}
-			else {
-				foreach ($acls as $acl_tags) {
-					foreach ($tags as $tag) {
-						$tag = tags_get_id($tag);
-						if (in_array($tag, $acl_tags)) {
-							return true;
-						}
-					}
-				}
-			}
-			
-		}
-		
-	}
-	else {
-		if ($id_group > 0) {
-			if (isset($acls[$id_group])) {
-				foreach ($tags as $tag) {
-					$tag = tags_get_id($tag);
-					
-					if (in_array($tag, $acls[$id_group])) {
-						return true;
-					}
-				}
-			}
-			else {
-				//return false;
-				$return = false;
-			}
-		}
-		else {
-			foreach ($acls as $acl_tags) {
-				foreach ($tags as $tag) {
-					$tag = tags_get_id($tag);
-					if (in_array($tag, $acl_tags)) {
-						return true;
-					}
-				}
-			}
-		}
-	}
-	//return false;
-	$return = false;
-	
-	if ($return == false) {
-		$parent = db_get_value('parent','tgrupo','id_grupo',$id_group);
-		
-		if ($parent !== 0) {
-			$propagate = db_get_value('propagate','tgrupo','id_grupo',$parent);
-			if ($propagate == 1) {
-				$acl_parent = tags_check_acl_event($id_user, $parent, $access, $tags,$p);
-				return $acl_parent;
-			}
-		}
-	}
 }
 
 /* This function checks event ACLs */

@@ -178,7 +178,6 @@ echo '<td style="vertical-align: top; width: 75%; padding-top: 0px;" id="rightco
 // ---------------------------------------------------------------------
 
 if (check_acl($config['id_user'],0,'ER')) {
-	// TODO event tag revision
 	$tags_condition = tags_get_acl_tags(false,0,'ER','event_condition');
 	$event_filter = "estado<>1";
 	if (!empty($tags_condition)) {

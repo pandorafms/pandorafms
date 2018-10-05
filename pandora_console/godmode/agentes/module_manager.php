@@ -455,8 +455,6 @@ $search_string_entities = io_safe_input($search_string);
 $basic_where = sprintf("(nombre LIKE '%%%s%%' OR nombre LIKE '%%%s%%' OR descripcion LIKE '%%%s%%' OR descripcion LIKE '%%%s%%') AND", $search_string, $search_string_entities, $search_string, $search_string_entities);
 
 // Tags acl
-$tags_join = "";
-$tags_condition = "";
 $agent_tags = tags_get_user_applied_agent_tags($id_agente);
 if ($agent_tags !== true) {
 	$where_tags = " AND ttag_module.id_tag IN (" . implode(',', $agent_tags) . ")";

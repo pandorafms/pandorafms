@@ -3554,7 +3554,6 @@ function events_sql_events_grouped_agents($id_agent, $server_id = -1,
 	else {
 		$group_array = array_keys($groups);
 	}
-  // TODO revision tag
 	$tags_acls_condition = tags_get_acl_tags($id_user, $group_array, 'ER',
 		'event_condition', 'AND', '', $meta, array(), true); //FORCE CHECK SQL "(TAG = tag1 AND id_grupo = 1)"
 
@@ -3600,6 +3599,8 @@ function events_list_events_grouped_agents($sql) {
 	$table = events_get_events_table(is_metaconsole(), $history);
 	
 	$sql = "select * from $table 
+				LEFT JOIN tagent_secondary_group 
+				ON tagent_secondary_group.id_agent = tevento.id_agente
 				WHERE $sql";
 	
 	$result = db_get_all_rows_sql ($sql);

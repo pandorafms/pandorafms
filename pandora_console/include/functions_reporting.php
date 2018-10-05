@@ -3667,7 +3667,6 @@ function reporting_agent_configuration($report, $content) {
 	$agent_configuration['description'] = $agent_data['comentarios'];
 	$agent_configuration['enabled'] = (int)!$agent_data['disabled'];
 	$agent_configuration['group'] = $report["group"];
-	// TODO TAGS agents_get_modules
 	$modules = agents_get_modules ($content['id_agent']);
 	
 	$agent_configuration['modules'] = array();
@@ -8286,11 +8285,10 @@ function reporting_get_agentmodule_ttr ($id_agent_module, $period = 0, $date = 0
  * Get a detailed report of the modules of the agent
  * 
  * @param int $id_agent Agent id to get the report for.
- * @param string $filter filter for get partial modules.
  * 
  * @return array An array
  */
-function reporting_get_agent_module_info ($id_agent, $filter = false) {
+function reporting_get_agent_module_info ($id_agent) {
 	global $config;
 	
 	$return = array ();
@@ -8306,12 +8304,7 @@ function reporting_get_agent_module_info ($id_agent, $filter = false) {
 		return $return;
 	}
 	
-	if ($filter != '') {
-		$filter = 'AND ';
-	}
-	
-	$filter = 'disabled = 0';
-	// TODO TAGS agents_get_modules
+	$filter = array('disabled' =>  0);
 	$modules = agents_get_modules($id_agent, false, $filter, true, false);
 	
 	if ($modules === false) {
@@ -8407,33 +8400,6 @@ function reporting_tiny_stats ($counts_info, $return = false, $type = 'agent', $
 			$template_title['not_init_count'] = __('%d not init agents');
 			$template_title['fired_count'] = __('%d Fired alerts');
 			break;
-	}
-	
-	if ($strict_user && $type == 'agent') {
-		
-		$acltags = tags_get_user_groups_and_tags ($config['id_user'],'AR', $strict_user);
-		$filter['disabled'] = 0;
-		$id_agent = $counts_info['id_agente'];
-		
-		$counts_info = array();
-		$counts_info['normal_count'] = count(tags_get_agent_modules ($id_agent, false, $acltags, false, $filter, false, AGENT_MODULE_STATUS_NORMAL));
-		$counts_info['warning_count'] = count(tags_get_agent_modules ($id_agent, false, $acltags, false, $filter, false, AGENT_MODULE_STATUS_WARNING));
-		$counts_info['critical_count'] = count(tags_get_agent_modules ($id_agent, false, $acltags, false, $filter, false, AGENT_MODULE_STATUS_CRITICAL_BAD));
-		$counts_info['notinit_count'] = count(tags_get_agent_modules ($id_agent, false, $acltags, false, $filter, false, AGENT_MODULE_STATUS_NOT_INIT));
-		$counts_info['unknown_count'] = count(tags_get_agent_modules ($id_agent, false, $acltags, false, $filter, false, AGENT_MODULE_STATUS_UNKNOWN));
-		$counts_info['total_count'] = $counts_info['normal_count'] + $counts_info['warning_count'] + $counts_info['critical_count'] + $counts_info['unknown_count'] + $counts_info['notinit_count'];
-		
-		$all_agent_modules = tags_get_agent_modules ($id_agent, false, $acltags, false, $filter);
-		if (!empty($all_agent_modules)) {
-			$mod_clause = "(".implode(',', array_keys($all_agent_modules)).")";
-
-			$counts_info['fired_count'] = (int) db_get_sql ("SELECT COUNT(times_fired)
-				FROM talert_template_modules
-				WHERE times_fired != 0 AND id_agent_module IN ".$mod_clause);
-		}
-		else {
-			$counts_info['fired_count'] = 0;
-		}
 	}
 	
 	// Store the counts in a data structure to print hidden divs with titles

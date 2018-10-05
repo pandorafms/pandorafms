@@ -11748,6 +11748,50 @@ function api_set_validate_traps ($id, $thrash2, $other, $thrash3) {
 						'data' => __('Deleted traps.')));
 			}
 		}
+		
+		function api_get_group_id_by_name($thrash1, $thrash2, $other, $thrash3) {
+			if (defined ('METACONSOLE')) {
+				return;
+			}
+						
+			$sql = sprintf('SELECT id_grupo
+				FROM tgrupo WHERE nombre = "'.$other['data'].'"');
+			
+			$group_id = db_get_all_rows_sql($sql);
+			
+			if (count($group_id) > 0 and $group_id !== false) {
+				$data = array('type' => 'array', 'data' => $group_id);
+				
+				returnData('csv', $data, ';');
+			}
+			else {
+				returnError('error_group_name', 'No groups retrieved.');
+			}
+		}
+		
+		function api_get_timezone($thrash1, $thrash2, $other, $thrash3) {
+			if (defined ('METACONSOLE')) {
+				return;
+			}
+						
+			$sql = sprintf('SELECT value
+				FROM tconfig WHERE token = "timezone"');
+			
+			$timezone = db_get_all_rows_sql($sql);
+			
+			if (count($timezone) > 0 and $timezone !== false) {
+				
+				$data = array('type' => 'string', 'data' => $timezone);
+				
+				returnData('string',array('type' => 'string','data' => $data['data'][0]['value']));
+				
+			}
+			else {
+				returnError('error_timezone', 'No timezone retrieved.');
+			}
+		}
+		
+		
 
 
 ?>

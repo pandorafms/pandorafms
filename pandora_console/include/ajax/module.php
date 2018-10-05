@@ -554,7 +554,10 @@ if ($list_modules) {
 	$tags_sql = "";
 	if($cluster_list != 1) {
 		$tags = tags_get_user_applied_agent_tags ($id_agent, $access);
-		if (is_array($tags)) {
+		if ($tags === false) {
+			$tags_sql = " AND 1=0";
+		}
+		elseif (is_array($tags)) {
 			$tags_sql = " AND ttag_module.id_tag IN (" . implode(',', $tags) . ")";
 			$tags_join = "LEFT JOIN ttag_module
 				ON ttag_module.id_agente_modulo = tagente_modulo.id_agente_modulo";

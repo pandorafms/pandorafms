@@ -2573,6 +2573,7 @@ function agents_get_all_groups_agent ($id_agent, $group = false, $force_meta = f
 	// If cannot retrieve the group, it means that agent does not exist
 	if (!$group) return array();
 
+	enterprise_include_once('include/functions_agents.php');
 	$secondary_groups = enterprise_hook('agents_get_secondary_groups', array($id_agent, $force_meta));
 
 	// Return only an array with the group in open version

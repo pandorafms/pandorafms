@@ -457,7 +457,7 @@ function tags_get_module_tags ($id, $policy = false) {
 		$tags = db_get_all_rows_filter('ttag_module',
 			array('id_agente_modulo' => $id), false);
 	}
-	
+
 	if ($tags === false)
 		return array();
 	
@@ -1111,151 +1111,26 @@ function tags_check_acl_by_module($id_module = 0, $id_user = false,
 	$access = 'AW') {
 	global $config;
 
-	$return = false;
-
-	if (!empty($id_module)) {
-		$tags = tags_get_module_tags($id_module);
-		$groups = modules_get_agent_groups($id_module);
-
-		if ($id_user === false) {
-			$id_user = $config["id_user"];
-		}
-
-		foreach ($groups as $group) {
-			if (tags_check_acl($id_user, $group, $access, $tags, true)) {
-				return true;
-			}
-		}
-	}
-
-	return $return;
-}
-
-/**
- * Check the ACLs with tags
- * 
- * @param string ID of the user (with false the user will be taked from config)
- * @param string id of the group (0 means for at least one)
- * @param string access flag (AR,AW...)
- * @param mixed tags to be checked (array() means for at least one)
- * 
- * @return bool true if the acl check has success, false otherwise
- */
-function tags_check_acl($id_user, $id_group, $access, $tags = array(), $flag_id_tag = false) {
-	global $config;
-	
+	if (empty($id_module)) return false;
 	if ($id_user === false) {
-		$id_user = $config['id_user'];
+		$id_user = $config["id_user"];
 	}
-	
-	// Get parents to check in propagate ACL cases
-	if (!is_array($id_group) && $id_group != 0) {
-		$id_group = array($id_group);
-		$group = db_get_row_filter('tgrupo',
-			array('id_grupo' => $id_group));
-		$parents = groups_get_parents($group['parent'], true);
-		
-		foreach ($parents as $parent) {
-			$id_group[] = $parent['id_grupo'];
-		}
+
+	$tags = tags_get_module_tags($id_module);
+	$groups = modules_get_agent_groups($id_module);
+	$user_groups = users_get_groups($id_user, $acces, false, true);
+
+	$acl_column = get_acl_column($access);
+	foreach ($groups as $group) {
+		// If user has not permission for this group,go to next group
+		if (!isset($user_groups[$group])) continue;
+		// No tags means user can see all tags for this group
+		if (!isset($user_groups[$group]["tags"][$acl_column])) return true;
+		// Check acl
+		$intersection = array_intersect($tags, $user_groups[$group]["tags"][$acl_column]);
+		if(!empty($intersection)) return true;
 	}
-	
-	$acls = tags_get_acl_tags($id_user, $id_group, $access, 'data');
-	
-	// If there are wrong parameters or fail ACL check, return false
-	if ($acls === ERR_WRONG_PARAMETERS || $acls === ERR_ACL) {
-		return false;
-	}
-	
-	// If there are not tags restrictions or tags passed, check the group access
-	if (empty($acls) || empty($tags)) {
-		if (!is_array($id_group))
-			$group_id_array = array($id_group);
-			
-		foreach ($id_group as $group) {
-			if (check_acl($id_user, $group, $access))
-				return true;
-		}
-	}
-	
-	# Fix: If user profile has more than one group, due to ACL propagation then id_group can be an array
-	if (is_array($id_group)) {
-		
-		foreach ($id_group  as $group) {
-			if ($group > 0) {
-				if (array_key_exists(0, $acls)) {
-					//There is a All group
-					
-					foreach ($tags as $tag) {
-						if (in_array($tag, $acls[0])) {
-							return true;
-						}
-						else {
-							return false;
-						}
-					}
-				}
-				else if (isset($acls[$group])) {
-					foreach ($tags as $tag) {
-						if (!$flag_id_tag)
-							$tag = tags_get_id($tag);
-						
-						if (in_array($tag, $acls[$group])) {
-							return true;
-						} else if (empty($acls[$group])) {
-							return true;
-						}
-					}
-				}
-				else {
-					return false;
-				}
-			}
-			else {
-				
-				foreach ($acls as $acl_tags) {
-					foreach ($tags as $tag) {
-						if (!$flag_id_tag)
-							$tag = tags_get_id($tag);
-						
-						if (in_array($tag, $acl_tags)) {
-							return true;
-						}
-					}
-				}
-			}
-		}
-	}
-	else {
-		if ($id_group > 0) {
-			if (isset($acls[$id_group])) {
-				foreach ($tags as $tag) {
-					if (!$flag_id_tag)
-						$tag = tags_get_id($tag);
-					
-					if (in_array($tag, $acls[$id_group])) {
-						return true;
-					}
-				}
-			}
-			else {
-				return false;
-			}
-		}
-		else {
-			foreach ($acls as $acl_tags) {
-				foreach ($tags as $tag) {
-					if (!$flag_id_tag)
-						$tag = tags_get_id($tag);
-					
-					if (in_array($tag, $acl_tags)) {
-						return true;
-					}
-				}
-			}
-		}
-	}
-	
+
 	return false;
 }
 

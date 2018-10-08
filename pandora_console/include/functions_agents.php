@@ -2473,8 +2473,8 @@ function select_modules_for_agent_group(
 	$id_group, $id_agents, $selection, $return = true
 ) {
 	global $config;
-	$agents = implode(",", $id_agents);
-
+	$agents = (empty($id_agents)) ? array() : implode(",", $id_agents);
+		
 	$filter_agent_group = "";
 	$filter_group = "";
 	$filter_agent = "";
@@ -2499,7 +2499,7 @@ function select_modules_for_agent_group(
 	}
 	if (!$selection && $agents != null) {
 		$number_agents = count($id_agents);
-		$selection_filter = "HAVING COUNT(tagente_modulo.id_agente_modulo) = $number_agents";
+		$selection_filter = "HAVING COUNT(id_agente_modulo) = $number_agents";
 	}
 
 	if (tags_has_user_acl_tags(false)){
@@ -2511,20 +2511,23 @@ function select_modules_for_agent_group(
 			ON ttag_module.id_agente_modulo = tagente_modulo.id_agente_modulo";
 	}
 
-	$sql = "SELECT DISTINCT(tagente_modulo.id_agente_modulo), tagente_modulo.nombre
-		FROM tagente_modulo
-		$sql_tags_inner
-		INNER JOIN tagente
-			ON tagente.id_agente = tagente_modulo.id_agente
-		LEFT JOIN tagent_secondary_group tasg
-			ON tagente.id_agente = tasg.id_agent
-		WHERE tagente.disabled = 0
-			AND tagente_modulo.disabled = 0
-			$filter_agent_group
-			$filter_group
-			$filter_agent
-			$sql_conditions_tags
-		GROUP BY tagente_modulo.nombre
+	$sql = "SELECT * FROM
+		(
+			SELECT DISTINCT(tagente_modulo.id_agente_modulo), tagente_modulo.nombre
+			FROM tagente_modulo
+			$sql_tags_inner
+			INNER JOIN tagente
+				ON tagente.id_agente = tagente_modulo.id_agente
+			LEFT JOIN tagent_secondary_group tasg
+				ON tagente.id_agente = tasg.id_agent
+			WHERE tagente.disabled = 0
+				AND tagente_modulo.disabled = 0
+				$filter_agent_group
+				$filter_group
+				$filter_agent
+				$sql_conditions_tags
+		) x
+		GROUP BY nombre
 		$selection_filter";
 
 	$modules = db_get_all_rows_sql($sql);

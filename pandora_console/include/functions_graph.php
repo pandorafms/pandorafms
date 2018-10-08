@@ -1116,7 +1116,9 @@ function grafico_modulo_sparse ($params) {
 		else{
 			$return = graph_nodata_image(
 				$params['width'],
-				$params['height']
+				$params['height'],
+				'area',
+				__('No data to display within the selected interval')
 			);
 		}
 	}
@@ -4697,19 +4699,17 @@ function graphic_module_events ($id_module, $width, $height, $period = 0, $homeu
 }
 
 function graph_nodata_image($width = 300, $height = 110, $type = 'area', $text = '') {
-	$image = ui_get_full_url('images/image_problem_area_small.png',
+	$image = ui_get_full_url('images/image_problem_area.png',
 		false, false, false); 
 	
 	// if ($text == '') {
 	// 	$text = __('No data to show');
 	// }
+	$text_div = '<div class="nodata_text" style="text-align:center;     padding: 30px 0; display:block; font-size:9.5pt;">' . $text . '</div>';
 	
-	$text_div = '<div class="nodata_text">' . $text . '</div>';
+	$image_div = $text_div . '<div class="nodata_container" style="background-position: top; width:40%;height:40%;background-size: contain;background-image: url(\'' . $image . '\');"><div></div></div>';
 	
-	$image_div = '<div class="nodata_container" style="width:80%;height:80%;background-size: 80% 80%;background-image: url(\'' . $image . '\');">' .
-		$text_div . '</div>';
-	
-	$div = '<div style="width:' . $width . 'px; height:' . $height . 'px; border: 1px dotted #ddd; background-color: white; margin: 0 auto;">' .
+	$div = '<div style="width:' . $width . 'px; height:' . $height . 'px; background-color: white; margin: 0 auto;">' .
 		$image_div . '</div>';
 	
 	return $div;

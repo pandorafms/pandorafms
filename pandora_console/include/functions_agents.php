@@ -2470,7 +2470,7 @@ function agents_get_agent_custom_field ($agent_id, $custom_field_name) {
 }
 
 function select_modules_for_agent_group(
-	$id_group, $id_agents, $selection, $return = true
+	$id_group, $id_agents, $selection, $return = true, $index_by_name = false
 ) {
 	global $config;
 	$agents = (empty($id_agents)) ? array() : implode(",", $id_agents);
@@ -2533,16 +2533,23 @@ function select_modules_for_agent_group(
 	$modules = db_get_all_rows_sql($sql);
 	if ($modules === false) $modules = array();
 
-	if($return == false){
-		foreach ($modules as $value) {
-			$modules_array[$value['id_agente_modulo']] = $value['nombre'];
-		}
-		return $modules_array;
-	}
-	else{
+	if ($return) {
 		echo json_encode($modules);
 		return;
 	}
+
+	$modules_array = array();
+	foreach ($modules as $value) {
+		if($index_by_name) {
+			$modules_array[io_safe_output($value['nombre'])] =
+				ui_print_truncate_text(
+					io_safe_output($value['nombre']), 'module_medium', false, true
+				);
+		} else {
+			$modules_array[$value['id_agente_modulo']] = $value['nombre'];
+		}
+	}
+	return $modules_array;
 }
 
 /**

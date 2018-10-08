@@ -35,6 +35,7 @@ if (is_ajax ()) {
 	$get_agent_status_tooltip = (bool) get_parameter ("get_agent_status_tooltip");
 	$get_agents_group_json = (bool) get_parameter ("get_agents_group_json");
 	$get_modules_group_json = (bool) get_parameter ("get_modules_group_json");
+	$get_modules_group_value_name_json = (bool) get_parameter ("get_modules_group_value_name_json");
 	$get_agent_modules_json_for_multiple_agents = (bool) get_parameter("get_agent_modules_json_for_multiple_agents");
 	$get_agent_modules_alerts_json_for_multiple_agents = (bool) get_parameter("get_agent_modules_alerts_json_for_multiple_agents");
 	$get_agent_modules_multiple_alerts_json_for_multiple_agents = (bool) get_parameter("get_agent_modules_multiple_alerts_json_for_multiple_agents");
@@ -165,11 +166,22 @@ if (is_ajax ()) {
 	}
 
 	if ($get_modules_group_json) {
-		$id_group = (int) get_parameter('id_module_group');
+		$id_group = (int) get_parameter('id_module_group', 0);
 		$id_agents = get_parameter('id_agents');
 		$selection = get_parameter('selection');
 		
 		select_modules_for_agent_group($id_group, $id_agents, $selection);
+	}
+
+	if ($get_modules_group_value_name_json) {
+		$id_agents = get_parameter('id_agents');
+		$selection = get_parameter('selection');
+		
+		// No filter by module group
+		$modules = select_modules_for_agent_group(0, $id_agents, $selection, false, true);
+		echo json_encode($modules);
+		return;
+		
 	}
 	
 	if ($get_agent_json) {
@@ -373,17 +385,7 @@ if (is_ajax ()) {
 			$filter .= ' AND t1.id_tipo_modulo NOT IN (' . implode($module_types_excluded) . ')';
 
 		if (!empty($module_name)) {
-			switch ($config['dbtype']) {
-				case "mysql":
-					$filter .= " AND t1.nombre COLLATE utf8_general_ci LIKE '%$module_name%'";
-					break;
-				case "postgresql":
-					$filter .= " AND t1.nombre LIKE '%$module_name%'";
-					break;
-				case "oracle":
-					$filter .= " AND UPPER(t1.nombre) LIKE UPPER('%$module_name%')";
-					break;
-			}
+			$filter .= " AND t1.nombre COLLATE utf8_general_ci LIKE '%$module_name%'";
 		}
 
 		// Status selector
@@ -533,6 +535,7 @@ if (is_ajax ()) {
 			asort($result);
 		}
 		else {
+			$modules = agents_get_modules();
 			if($idAgents[0] < 0){
 				if($selection_mode == 'common'){
 					$sql_agent_total = 'SELECT count(*) FROM tagente WHERE disabled=0';

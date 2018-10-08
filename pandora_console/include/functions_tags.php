@@ -1145,7 +1145,7 @@ function tags_checks_event_acl($id_user, $id_group, $access, $tags = array(), $c
 	if (users_is_admin($id_user)) {
 		return true;
 	}
-	// TODO revision tag
+	
 	$tags_user = tags_get_acl_tags($id_user, $id_group, $access, 'data', '', '', true, $childrens_ids, true);
 	// If there are wrong parameters or fail ACL check, return false
 	if ($tags_user === ERR_WRONG_PARAMETERS || $tags_user === ERR_ACL) {

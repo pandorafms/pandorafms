@@ -40,11 +40,13 @@ $params = array (
 
 	// Events query params
 	"search" => io_safe_input($search),
+	"event_type" => $event_type,
 	"severity" => $severity,
 	"status" => $status,
 	"id_group" => $id_group,
 	"recursion" => $recursion,
 	"refr" => (int)get_parameter("refr", 0),
+	"id_agent" => $id_agent,
 	"id_agent_module" => $id_agent_module,
 	"pagination" => $pagination,
 	"group_rep" => $group_rep,

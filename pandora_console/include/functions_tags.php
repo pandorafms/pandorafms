@@ -2146,7 +2146,9 @@ function tags_get_user_groups_and_tags ($id_user = false, $access = 'AR', $stric
 
 	$return = array();
 	foreach ($acls as $acl) {
-		$return[$acl["id_grupo"]] = implode(",",$acl["tags"][get_acl_column($access)]);
+		$return[$acl["id_grupo"]] = isset($acl["tags"][get_acl_column($access)])
+			? implode(",",$acl["tags"][get_acl_column($access)])
+			: "";
 	}
 
 	return $return;

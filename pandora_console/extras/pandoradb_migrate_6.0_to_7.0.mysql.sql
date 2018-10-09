@@ -1279,6 +1279,7 @@ ALTER TABLE `tservice` ADD COLUMN `evaluate_sla` int(1) NOT NULL default 0;
 -- ---------------------------------------------------------------------
 ALTER TABLE tlayout ADD `background_color` varchar(50) NOT NULL default '#FFF';
 ALTER TABLE tlayout ADD `is_favourite` int(1) NOT NULL DEFAULT 0;
+ALTER TABLE tlayout MODIFY `name` varchar(600) NOT NULL;
 
 UPDATE tlayout SET is_favourite = 1 WHERE name REGEXP '^&#40;' OR name REGEXP '^\\[';
 

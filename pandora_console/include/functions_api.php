@@ -1620,10 +1620,6 @@ function api_set_delete_agent($id, $thrash1, $thrast2, $thrash3) {
 function api_get_all_agents($thrash1, $thrash2, $other, $returnType) {
 	global $config;
 
-	if (defined ('METACONSOLE')) {
-		return;
-	}
-
 	// Error if user cannot read agents.
 	if (!check_acl($config['id_user'], 0, "AR")) {
 		returnError('forbidden', $returnType);
@@ -1672,13 +1668,25 @@ function api_get_all_agents($thrash1, $thrash2, $other, $returnType) {
 	// Initialization of array
 	$result_agents = array();
 	// Filter by state
-	$sql = "SELECT id_agente, alias, direccion, comentarios,
+	
+	if (defined ('METACONSOLE')) {
+		$sql = "SELECT id_agente, alias, direccion, comentarios,
 			tconfig_os.name, url_address, nombre
-		FROM tconfig_os, tagente
+		FROM tconfig_os, tmetaconsole_agent
 		LEFT JOIN tagent_secondary_group
-			ON tagente.id_agente = tagent_secondary_group.id_agent
-		WHERE tagente.id_os = tconfig_os.id_os
+			ON tmetaconsole_agent.id_agente = tagent_secondary_group.id_agent
+		WHERE tmetaconsole_agent.id_os = tconfig_os.id_os
 			AND disabled = 0 $where AND $groups";
+	}
+	else{
+		$sql = "SELECT id_agente, alias, direccion, comentarios,
+				tconfig_os.name, url_address, nombre
+			FROM tconfig_os, tagente
+			LEFT JOIN tagent_secondary_group
+				ON tagente.id_agente = tagent_secondary_group.id_agent
+			WHERE tagente.id_os = tconfig_os.id_os
+				AND disabled = 0 $where AND $groups";
+	}
 
 	$all_agents = db_get_all_rows_sql($sql);
 
@@ -1745,6 +1753,10 @@ function api_get_all_agents($thrash1, $thrash2, $other, $returnType) {
 	} 
 	else {
 		$result_agents = $all_agents;
+	}
+	
+	foreach ($result_agents as $key => $value) {
+		$result_agents[$key]['status'] = agents_get_status($agent['id_agente'], true);
 	}
 	
 	if (count($result_agents) > 0 and $result_agents !== false) {

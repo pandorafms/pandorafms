@@ -48,7 +48,7 @@ if ($create_profiles) {
 					// If the profile doesnt exist, we create it
 					if ($profile_data === false) {
 						db_pandora_audit("User management",
-							"Added profile for user ".io_safe_input($user));
+							"Added profile for user ".io_safe_output($user));
 						$return = profile_create_user_profile ($user, $profile, $group);
 						if ($return !== false) {
 							$n_added ++;

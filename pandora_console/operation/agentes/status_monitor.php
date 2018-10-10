@@ -345,7 +345,8 @@ $table->data[0][6] = html_print_submit_button (__('Show'), 'uptbutton',
 						false, 'class="sub search" style="margin-top:0px;"',true);
 
 $table->data[1][0] = __('Module name');
-$table->data[1][1] = html_print_input_text ('ag_modulename', $ag_modulename, '', 35, 50, true);
+$table->data[1][1] = html_print_autocomplete_modules('ag_modulename',
+	$ag_modulename, false, true, '', array(), true);
 
 $table->data[1][2] = __('Search');
 $table->data[1][3] = html_print_input_text ('ag_freestring', $ag_freestring, '', 20, 30, true);

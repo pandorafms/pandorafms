@@ -192,11 +192,13 @@ function tags_get_modules_count ($id) {
  * @return int Local module tag's count.
  */
 function tags_get_local_modules_count ($id) {
-	$field = 'COUNT(id_tag)';
+	$field = 'COUNT(DISTINCT(tagente_modulo.id_agente_modulo))';
 	$filter = array('id_tag' => $id);
-	
-	$num_modules = (int) db_get_value_filter($field, 'ttag_module', $filter);
-
+	$num_modules = (int) db_get_value_filter(
+		$field,
+		'ttag_module INNER JOIN tagente_modulo ON ttag_module.id_agente_modulo = tagente_modulo.id_agente_modulo',
+		$filter
+	);
 	return $num_modules;
 }
 

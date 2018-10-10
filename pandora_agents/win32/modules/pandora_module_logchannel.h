@@ -29,6 +29,13 @@
 // Log event read buffer size
 #define	BUFFER_SIZE 1024
 
+// WINEVENT consts
+#define WINEVENT_LEVEL_CRITICAL 1
+#define WINEVENT_LEVEL_ERROR 2
+#define WINEVENT_LEVEL_WARNING 3
+#define WINEVENT_LEVEL_INFO 4
+#define WINEVENT_LEVEL_VERBOSE 5
+
 // Types for pointers to Wevtapi.dll functions
 typedef EVT_HANDLE WINAPI (*EvtQueryT) (EVT_HANDLE Session, LPCWSTR Path, LPCWSTR Query, DWORD Flags);
 typedef WINBOOL WINAPI (*EvtNextT) (EVT_HANDLE ResultSet, DWORD EventArraySize, EVT_HANDLE* EventArray, DWORD Timeout, DWORD Flags, PDWORD Returned);

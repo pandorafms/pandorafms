@@ -164,6 +164,8 @@ $clock_animation = get_parameter('clock_animation', 'analogic_1');
 $time_format = get_parameter('time_format', 'time');
 $timezone = get_parameter('timezone', 'Europe/Madrid');
 
+$show_last_value = get_parameter('show_last_value', null);
+
 switch ($action) {
 	case 'get_font':
 		$return = array();
@@ -785,6 +787,9 @@ switch ($action) {
 						if ($height !== null) {
 							$values['height'] = $height;
 						}
+						if ($show_last_value !== null) {
+							$values['show_last_value'] = $show_last_value;
+						}
 						break;
 					case 'simple_value':
 						if ($action == 'update') {
@@ -1280,6 +1285,7 @@ switch ($action) {
 				$values['image'] = $image;
 				$values['width'] = $width;
 				$values['height'] = $height;
+				$values['show_last_value'] = $show_last_value;
 				break;
 			case 'group_item':
 				$values['type'] = GROUP_ITEM;

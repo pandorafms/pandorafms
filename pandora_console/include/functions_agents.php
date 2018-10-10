@@ -336,32 +336,39 @@ function agents_get_agents ($filter = false, $fields = false,
 	if (isset($filter['status'])) {
 		switch ($filter['status']) {
 			case AGENT_STATUS_NORMAL:
-				$status_sql =
-					"normal_count = total_count 
-						AND notinit_count <> total_count";
+				$status_sql = "(
+					critical_count = 0
+					AND warning_count = 0
+					AND unknown_count = 0 
+					AND normal_count > 0)";
 				break;
 			case AGENT_STATUS_WARNING:
-				$status_sql =
-					"critical_count = 0 AND warning_count > 0";
+				$status_sql = "(
+					critical_count = 0 
+					AND warning_count > 0
+					AND total_count > 0)";
 				break;
 			case AGENT_STATUS_CRITICAL:
-				$status_sql =
-					"critical_count > 0";
+				$status_sql = "critical_count > 0";
 				break;
 			case AGENT_STATUS_UNKNOWN:
-				$status_sql =
-					"critical_count = 0 AND warning_count = 0
-						AND unknown_count > 0";
+				$status_sql = "(
+					critical_count = 0 
+					AND warning_count = 0 
+					AND unknown_count > 0)";
 				break;
 			case AGENT_STATUS_NOT_NORMAL:
-				$status_sql =
-					"(
-						normal_count <> total_count
-						AND
-						(normal_count + notinit_count) <> total_count)";
+				$status_sql = "(
+					critical_count > 0
+					OR warning_count > 0
+					OR unknown_count > 0
+					OR total_count = 0
+					OR total_count = notinit_count)";
 				break;
 			case AGENT_STATUS_NOT_INIT:
-				$status_sql = "notinit_count = total_count";
+				$status_sql = "(
+					total_count = 0
+					OR total_count = notinit_count)";
 				break;
 		}
 		unset($filter['status']);
@@ -915,23 +922,39 @@ function agents_get_group_agents (
 		if (isset($search['status'])) {
 			switch ($search['status']) {
 				case AGENT_STATUS_NORMAL:
-					$filter[] = "normal_count = total_count";
+					$filter[] = "(
+						critical_count = 0
+						AND warning_count = 0
+						AND unknown_count = 0 
+						AND normal_count > 0)";
 					break;
 				case AGENT_STATUS_WARNING:
-					$filter[] = "(critical_count = 0 AND warning_count > 0)";
+					$filter[] = "(
+						critical_count = 0 
+						AND warning_count > 0
+						AND total_count > 0)";
 					break;
 				case AGENT_STATUS_CRITICAL:
 					$filter[] = "critical_count > 0";
 					break;
 				case AGENT_STATUS_UNKNOWN:
-					$filter[] = "(critical_count = 0 AND warning_count = 0 AND unknown_count > 0)";
+					$filter[] = "(
+						critical_count = 0 
+						AND warning_count = 0 
+						AND unknown_count > 0)";
 					break;
 				case AGENT_STATUS_NOT_NORMAL:
-					$filter[] = "normal_count <> total_count
-							AND critical_count = 0 AND warning_count = 0";
+					$filter[] = "(
+						critical_count > 0
+						OR warning_count > 0
+						OR unknown_count > 0
+						OR total_count = 0
+						OR total_count = notinit_count)";
 					break;
 				case AGENT_STATUS_NOT_INIT:
-					$filter[] = "notinit_count = total_count";
+					$filter[] = "(
+						total_count = 0
+						OR total_count = notinit_count)";
 					break;
 			}
 			unset($search['status']);
@@ -2732,7 +2755,7 @@ function agents_get_status_clause($state, $show_not_init = true) {
 			)";
 		case AGENT_STATUS_NOT_INIT:
 			return $show_not_init
-				? "(ta.total_count = ta.notinit_count)"
+				? "(ta.total_count = ta.notinit_count OR ta.total_count = 0)"
 				: "1=0";
 		case AGENT_STATUS_NORMAL:
 			return "(

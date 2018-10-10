@@ -219,7 +219,7 @@ $(document).ready (function () {
 					$("#value", $value).append ("<em><?php echo __('Empty') ?></em>");
 				}
 				else {
-					$("#value", $value).append (data);
+					$("#value", $value).append (parseInt(data));
 				}
 				$loading.hide ();
 				$value.show ();

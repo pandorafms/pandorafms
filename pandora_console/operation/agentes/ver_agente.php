@@ -85,22 +85,39 @@ if (is_ajax ()) {
 		
 		switch ($status_agents) {
 			case AGENT_STATUS_NORMAL:
-				$filter[] = "(normal_count = total_count)";
+			$filter[] = "(
+				critical_count = 0
+				AND warning_count = 0
+				AND unknown_count = 0 
+				AND normal_count > 0)";
 				break;
 			case AGENT_STATUS_WARNING:
-				$filter[] = "(critical_count = 0 AND warning_count > 0)";
+			$filter[] = "(
+				critical_count = 0 
+				AND warning_count > 0
+				AND total_count > 0)";
 				break;
 			case AGENT_STATUS_CRITICAL:
 				$filter[] = "(critical_count > 0)";
 				break;
 			case AGENT_STATUS_UNKNOWN:
-				$filter[] = "(critical_count = 0 AND warning_count = 0 AND unknown_count > 0)";
+			$filter[] = "(
+				critical_count = 0 
+				AND warning_count = 0 
+				AND unknown_count > 0)";
 				break;
 			case AGENT_STATUS_NOT_NORMAL:
-				$filter[] = "(normal_count <> total_count)";
+			$filter[] = "(
+				critical_count > 0
+				OR warning_count > 0
+				OR unknown_count > 0
+				OR total_count = 0
+				OR total_count = notinit_count)";
 				break;
 			case AGENT_STATUS_NOT_INIT:
-				$filter[] = "(notinit_count = total_count)";
+			$filter[] = "(
+				total_count = 0
+				OR total_count = notinit_count)";
 				break;
 		}
 		$filter['order'] = "alias ASC";

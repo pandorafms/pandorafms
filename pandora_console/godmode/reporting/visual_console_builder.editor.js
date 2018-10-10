@@ -870,6 +870,7 @@ function readFields() {
 	values['time_format'] = $("select[name=time_format]").val();
 	values['timezone'] = $("select[name=timezone]").val();
 	values['clock_animation'] = $("select[name=clock_animation]").val();
+	values['show_last_value'] = $("select[name=last_value]").val();
 	
 	if (is_metaconsole()) {
 		values['metaconsole'] = 1;
@@ -1380,7 +1381,6 @@ function loadFieldsFromDB(item) {
 		}
 	});
 
-
 	parameter = Array();
 	parameter.push ({name: "page",
 		value: "include/ajax/visual_console_builder.ajax"});
@@ -1459,26 +1459,26 @@ function loadFieldsFromDB(item) {
 					$("select[name=type_graph]").val(val);
 				}
 					
-					if (key == 'label_position') {
-						if($("#hidden-metaconsole").val() == 1){
-							$('#labelposup'+" img").attr('src','../../images/label_up.png');
-							$('#labelposdown'+" img").attr('src','../../images/label_down.png');
-							$('#labelposleft'+" img").attr('src','../../images/label_left.png');
-							$('#labelposright'+" img").attr('src','../../images/label_right.png');
-							$('.labelpos').attr('sel','no');
-							$('#labelpos'+val+" img").attr('src','../../images/label_'+$('#labelpos'+val).attr('id').replace('labelpos','')+'_2.png');
-							$('#labelpos'+val).attr('sel','yes');
-						}
-						else{
-							$('#labelposup'+" img").attr('src','images/label_up.png');
-							$('#labelposdown'+" img").attr('src','images/label_down.png');
-							$('#labelposleft'+" img").attr('src','images/label_left.png');
-							$('#labelposright'+" img").attr('src','images/label_right.png');
-							$('.labelpos').attr('sel','no');
-							$('#labelpos'+val+" img").attr('src','images/label_'+$('#labelpos'+val).attr('id').replace('labelpos','')+'_2.png');
-							$('#labelpos'+val).attr('sel','yes');
-						}
+				if (key == 'label_position') {
+					if($("#hidden-metaconsole").val() == 1){
+						$('#labelposup'+" img").attr('src','../../images/label_up.png');
+						$('#labelposdown'+" img").attr('src','../../images/label_down.png');
+						$('#labelposleft'+" img").attr('src','../../images/label_left.png');
+						$('#labelposright'+" img").attr('src','../../images/label_right.png');
+						$('.labelpos').attr('sel','no');
+						$('#labelpos'+val+" img").attr('src','../../images/label_'+$('#labelpos'+val).attr('id').replace('labelpos','')+'_2.png');
+						$('#labelpos'+val).attr('sel','yes');
 					}
+					else{
+						$('#labelposup'+" img").attr('src','images/label_up.png');
+						$('#labelposdown'+" img").attr('src','images/label_down.png');
+						$('#labelposleft'+" img").attr('src','images/label_left.png');
+						$('#labelposright'+" img").attr('src','images/label_right.png');
+						$('.labelpos').attr('sel','no');
+						$('#labelpos'+val+" img").attr('src','images/label_'+$('#labelpos'+val).attr('id').replace('labelpos','')+'_2.png');
+						$('#labelpos'+val).attr('sel','yes');
+					}
+				}
 					
 				if (key == 'image') {
 					//Load image preview
@@ -1588,6 +1588,10 @@ function loadFieldsFromDB(item) {
 					$("input[name=percentile_label_color]").val(val);
 					$("#percentile_item_row_6 .ColorPickerDivSample")
 						.css('background-color', val);
+				}
+				
+				if (key == 'show_last_value') {
+					$("select[name=last_value]").val(val);
 				}
 				
 				if (key == 'clock_animation') 
@@ -1852,6 +1856,9 @@ function hiddenFields(item) {
 
 	$("#percentile_bar_row_2").css('display', 'none');
 	$("#percentile_bar_row_2." + item).css('display', '');
+	
+	$("#show_last_value_row").css('display', 'none');
+	$("#show_last_value_row." + item).css('display', '');
 
 	$("#percentile_item_row_3").css('display', 'none');
 	$("#percentile_item_row_3." + item).css('display', '');

@@ -103,22 +103,22 @@ if ($read_message) {
 	//Start the message much like an e-mail reply 
 	$new_msg = "\n\n\nOn ".date ($config["date_format"], $message["timestamp"]).' '.$user_name.' '.__('wrote').":\n\n".$message["mensaje"];
 	
-	echo '<form method="post" action="index.php?sec=message_list&amp;sec2=operation/messages/message_list&show_sent=1&amp;delete_message=1&amp;id='.$message_id.'">';
+	echo '<form id="delete_message" method="post" action="index.php?sec=message_list&amp;sec2=operation/messages/message_list&show_sent=1&amp;delete_message=1&amp;id='.$message_id.'">';
 		html_print_table($table);
-		echo "<div style=' text-align: right; width:" . $table->width . "'>";
-			html_print_submit_button(__('Delete'), 'delete_btn', false, 'class="sub delete"');
-		echo "</div>";
 	echo "</form>";
 	
-	echo '<form method="post" action="index.php?sec=message_list&sec2=operation/messages/message_edit&amp;new_msg=1&amp;reply=1">';
+	echo '<form id="reply_message" method="post" action="index.php?sec=message_list&sec2=operation/messages/message_edit&amp;new_msg=1&amp;reply=1">';
 		html_print_input_hidden ("dst_user", $message["id_usuario_origen"]);
 		html_print_input_hidden ("subject", $new_subj);
 		html_print_input_hidden ("message", $new_msg);
 		html_print_input_hidden ("orig_user", $message["id_usuario_destino"]);
-		echo "<div style='text-align: right; width:" . $table->width . "'>";
-			html_print_submit_button (__('Reply'), 'reply', false, 'class="sub next"');
-		echo '</div>';
 	echo '</form>';
+
+	echo "<div class= 'action-buttons' style=' width:" . $table->width . "'>";
+	html_print_submit_button(__('Delete'), 'delete_btn', false, 'form="delete_message" class="sub delete"');
+	echo "&nbsp";
+	html_print_submit_button (__('Reply'), 'reply', false, 'form="reply_message" class="sub next"');
+	echo "</div>";
 	
 	return;
 }

@@ -6277,6 +6277,11 @@ function reporting_custom_graph($report, $content, $type = 'dinamic',
 		else {
 			$content['name'] = __('Simple graph');
 		}
+	} else {
+		if ($type_report == "custom_graph") {
+			$graphs = db_get_all_rows_field_filter ("tgraph", "id_graph", $content['id_gs']);
+			$id_graph = $content['id_gs'];
+		}
 	}
 
 	$return['title'] = $content['name'];

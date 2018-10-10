@@ -212,63 +212,18 @@ if (is_ajax ()) {
 	
 	if ($get_agents_json_for_multiple_modules) {
 		$nameModules = get_parameter('module_name');
-		$selection_mode = get_parameter('selection_mode','common');
+		$selection_mode = get_parameter('selection_mode','common') == "all";
 		$status_modulo = (int) get_parameter ('status_module', -1);
-		
-		$groups = users_get_groups ($config["id_user"], "AW", false);
-		$group_id_list = ($groups ? join(",",array_keys($groups)):"0");
-		
-		$sql = 'SELECT DISTINCT(t1.alias) as name
-			FROM tagente t1, tagente_modulo t2
-			WHERE t1.id_agente = t2.id_agente
-				AND t1.id_grupo IN (' . $group_id_list .')
-				AND t2.nombre IN (\'' . implode('\',\'', $nameModules) . '\')';
-		
-		// Status selector
-		if ($status_modulo == AGENT_MODULE_STATUS_NORMAL) { //Normal
-			$sql_conditions .= ' estado = 0 AND utimestamp > 0)
-			OR (t2.id_tipo_modulo IN(21,22,23,100)) ';
-		}
-		elseif ($status_modulo == AGENT_MODULE_STATUS_CRITICAL_BAD) { //Critical
-			$sql_conditions .= ' estado = 1 AND utimestamp > 0 )';
-		}
-		elseif ($status_modulo == AGENT_MODULE_STATUS_WARNING) { //Warning
-			$sql_conditions .= ' estado = 2 AND utimestamp > 0 )';
-		}
-		elseif ($status_modulo == AGENT_MODULE_STATUS_NOT_NORMAL) { //Not normal
-			$sql_conditions .= ' estado <> 0';
-		} 
-		elseif ($status_modulo == AGENT_MODULE_STATUS_UNKNOWN) { //Unknown
-			$sql_conditions .= ' estado = 3 AND utimestamp <> 0 )';
-		}
-		elseif ($status_modulo == AGENT_MODULE_STATUS_NOT_INIT) { //Not init
-			$sql_conditions .= ' utimestamp = 0 )
-				AND t2.id_tipo_modulo NOT IN (21,22,23,100)';
-		}
-		
-		if ($status_modulo != -1) {
-			$sql .= ' AND t2.id_agente_modulo IN (SELECT id_agente_modulo FROM tagente_estado where ' . $sql_conditions;
-		}
-		
-		if ($selection_mode == 'common') {
-			$sql .= 'AND (
-					SELECT count(t3.nombre)
-					FROM tagente t3, tagente_modulo t4
-					WHERE t3.id_agente = t4.id_agente AND t1.nombre = t3.nombre
-						AND t4.nombre IN (\'' . implode('\',\'', $nameModules) . '\')) = '.count($nameModules);
-		}
 
-		$sql .= ' ORDER BY t1.alias';
-		
-		$nameAgents = db_get_all_rows_sql($sql);
-		
-		if ($nameAgents == false)
-			$nameAgents = array();
-		
-		foreach ($nameAgents as $nameAgent) {
-			$names[] = io_safe_output($nameAgent['name']);
-		}
-		
+		$names = select_agents_for_module_group(
+			$nameModules,
+			$selection_mode,
+			array (
+				'status' => $status_modulo
+			),
+			"AW"
+		);
+
 		echo json_encode($names);
 		return;
 	}

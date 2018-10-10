@@ -2774,33 +2774,33 @@ function modules_get_counter_by_states($state) {
 	return false;
 }
 
-function modules_get_state_condition($state) {
+function modules_get_state_condition($state, $prefix = "tae") {
 	switch ($state) {
 		case AGENT_MODULE_STATUS_CRITICAL_ALERT:
 		case AGENT_MODULE_STATUS_CRITICAL_BAD:
 			return "(
-				tae.estado = ".AGENT_MODULE_STATUS_CRITICAL_ALERT."
-				OR tae.estado = ".AGENT_MODULE_STATUS_CRITICAL_BAD."
+				$prefix.estado = ".AGENT_MODULE_STATUS_CRITICAL_ALERT."
+				OR $prefix.estado = ".AGENT_MODULE_STATUS_CRITICAL_BAD."
 			)";
 		case AGENT_MODULE_STATUS_WARNING_ALERT:
 		case AGENT_MODULE_STATUS_WARNING:
 			return "(
-				tae.estado = ".AGENT_MODULE_STATUS_WARNING_ALERT."
-				OR tae.estado = ".AGENT_MODULE_STATUS_WARNING."
+				$prefix.estado = ".AGENT_MODULE_STATUS_WARNING_ALERT."
+				OR $prefix.estado = ".AGENT_MODULE_STATUS_WARNING."
 			)";
 		case AGENT_MODULE_STATUS_UNKNOWN:
-			return "tae.estado = ".AGENT_MODULE_STATUS_UNKNOWN." ";
+			return "$prefix.estado = ".AGENT_MODULE_STATUS_UNKNOWN." ";
 		case AGENT_MODULE_STATUS_NO_DATA:
 		case AGENT_MODULE_STATUS_NOT_INIT:
 			return "(
-				tae.estado = ".AGENT_MODULE_STATUS_NO_DATA."
-				OR tae.estado = ".AGENT_MODULE_STATUS_NOT_INIT."
+				$prefix.estado = ".AGENT_MODULE_STATUS_NO_DATA."
+				OR $prefix.estado = ".AGENT_MODULE_STATUS_NOT_INIT."
 			)";
 		case AGENT_MODULE_STATUS_NORMAL_ALERT:
 		case AGENT_MODULE_STATUS_NORMAL:
 			return "(
-				tae.estado = ".AGENT_MODULE_STATUS_NORMAL_ALERT."
-				OR tae.estado = ".AGENT_MODULE_STATUS_NORMAL."
+				$prefix.estado = ".AGENT_MODULE_STATUS_NORMAL_ALERT."
+				OR $prefix.estado = ".AGENT_MODULE_STATUS_NORMAL."
 			)";
 	}
 	// If the state is not an expected state, return no condition

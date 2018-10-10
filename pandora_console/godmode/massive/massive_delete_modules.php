@@ -101,12 +101,7 @@ function process_manage_delete ($module_name, $id_agents, $module_status = 'all'
 	}
 	
 	$count_deleted_modules = count($modules);
-	if ($config['dbtype'] == "oracle") {
-		$success = db_process_sql(sprintf("DELETE FROM tagente_modulo WHERE id_agente_modulo IN (%s)", implode(",", $modules)));
-	}
-	else {
-		$success = modules_delete_agent_module ($modules);
-	}
+	$success = modules_delete_agent_module ($modules);
 
 	if (! $success) {
 		ui_print_error_message(
@@ -123,8 +118,6 @@ function process_manage_delete ($module_name, $id_agents, $module_status = 'all'
 }
 
 $module_type = (int) get_parameter ('module_type');
-$idGroupMassive = (int) get_parameter('id_group_massive');
-$idAgentMassive = (int) get_parameter('id_agent_massive');
 $group_select = get_parameter('groups_select');
 
 $delete = (bool) get_parameter_post ('delete');
@@ -146,9 +139,7 @@ if ($delete) {
 				$agents_ = array();
 			}
 			
-			foreach ($agents_select as $agent_name) {
-				$agents_[] = agents_get_agent_id(io_safe_output($agent_name));
-			}
+			$agents_ = $agents_select;
 			$modules_ = $module_name;
 			break;
 		case 'agents':
@@ -231,35 +222,18 @@ $groups = users_get_groups ();
 
 $agents = agents_get_group_agents (array_keys (users_get_groups ()),
 	false, "none");
-switch ($config["dbtype"]) {
-	case "mysql":
-		$module_types = db_get_all_rows_filter ('tagente_modulo,ttipo_modulo',
-			array ('tagente_modulo.id_tipo_modulo = ttipo_modulo.id_tipo',
-				'id_agente' => array_keys ($agents),
-				'disabled' => 0,
-				'order' => 'ttipo_modulo.nombre'),
-			array ('DISTINCT(id_tipo)',
-				'CONCAT(ttipo_modulo.descripcion," (",ttipo_modulo.nombre,")") AS description'));
-		break;
-	case "oracle":
-		$module_types = db_get_all_rows_filter ('tagente_modulo,ttipo_modulo',
-			array ('tagente_modulo.id_tipo_modulo = ttipo_modulo.id_tipo',
-				'id_agente' => array_keys ($agents),
-				'disabled' => 0,
-				'order' => 'ttipo_modulo.nombre'),
-			array ('ttipo_modulo.id_tipo',
-				'ttipo_modulo.descripcion || \' (\' || ttipo_modulo.nombre || \')\' AS description'));
-		break;
-	case "postgresql":
-		$module_types = db_get_all_rows_filter ('tagente_modulo,ttipo_modulo',
-			array ('tagente_modulo.id_tipo_modulo = ttipo_modulo.id_tipo',
-				'id_agente' => array_keys ($agents),
-				'disabled' => 0,
-				'order' => 'description'),
-			array ('DISTINCT(id_tipo)',
-				'ttipo_modulo.descripcion || \' (\' || ttipo_modulo.nombre || \')\' AS description'));
-		break;
-}
+$module_types = db_get_all_rows_filter (
+	'tagente_modulo,ttipo_modulo',
+	array (
+		'tagente_modulo.id_tipo_modulo = ttipo_modulo.id_tipo',
+		'id_agente' => array_keys ($agents),
+		'disabled' => 0,
+		'order' => 'ttipo_modulo.nombre'
+	), array (
+		'DISTINCT(id_tipo)',
+		'CONCAT(ttipo_modulo.descripcion," (",ttipo_modulo.nombre,")") AS description'
+	)
+);
 
 if ($module_types === false)
 	$module_types = array ();
@@ -275,15 +249,11 @@ $table->data = array ();
 $table->style[0] = 'font-weight: bold';
 $table->style[2] = 'font-weight: bold';
 
-
-
 $table->data['selection_mode'][0] = __('Selection mode');
 $table->data['selection_mode'][1] = '<span style="width:110px;display:inline-block;">'.__('Select modules first ') . '</span>' .
 	html_print_radio_button_extended ("selection_mode", 'modules', '', $selection_mode, false, '', 'style="margin-right: 40px;"', true).'<br>';
 $table->data['selection_mode'][1] .= '<span style="width:110px;display:inline-block;">'.__('Select agents first ') . '</span>' .
 	html_print_radio_button_extended ("selection_mode", 'agents', '', $selection_mode, false, '', 'style="margin-right: 40px;"', true);
-
-
 
 $table->rowclass['form_modules_1'] = 'select_modules_row';
 $table->data['form_modules_1'][0] = __('Module type');

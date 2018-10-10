@@ -2552,6 +2552,92 @@ function select_modules_for_agent_group(
 	return $modules_array;
 }
 
+function select_agents_for_module_group(
+	$module_names, $selection, $filter, $access = "AR"
+) {
+	global $config;
+
+	$default_filter  = array (
+		'status' => null
+	);
+
+	$filter = array_merge($default_filter, $filter);
+
+	$module_names_condition = "";
+	$filter_agent_group = "";
+	$selection_filter = "";
+	$sql_conditions_tags = "";
+	$sql_tags_inner = "";
+	$status_filter = "";
+	$module_type_filter = "";
+
+	$groups = array_keys(users_get_groups(false, $access, false));
+
+	// Name
+	if (!users_can_manage_group_all($access)) {
+		$group_string = implode(',', $groups);
+		$filter_agent_group = " AND (
+			tagente.id_grupo IN ($group_string)
+			OR tasg.id_group IN ($group_string)
+		)";
+	}
+
+	// Name filter
+	if ($module_names) {
+		$module_names_sql = implode("','", $module_names);
+		$module_names_condition = " AND tagente_modulo.nombre IN ('$module_names_sql') ";
+	}
+
+	// Common or all modules filter
+	if (!$selection) {
+		$number_modules = count($module_names);
+		$selection_filter = "HAVING COUNT(id_agente) = $number_modules";
+	}
+
+	// Status filter
+	if ($filter['status'] != null) {
+		$status_filter = " AND " . modules_get_state_condition(
+			$filter['status'], "tagente_estado"
+		);
+	}
+
+	// Tags input and ACL conditions
+	if (tags_has_user_acl_tags(false) || $filter['tags'] != null){
+		$sql_conditions_tags = tags_get_acl_tags(
+			$config['id_user'], $groups, $access,
+			'module_condition', 'AND', 'tagente_modulo', true, array(),
+			false);
+		$sql_tags_inner = "INNER JOIN ttag_module
+			ON ttag_module.id_agente_modulo = tagente_modulo.id_agente_modulo";
+	}
+
+	$sql = "SELECT * FROM
+		(
+			SELECT tagente.id_agente, tagente.alias
+			FROM tagente
+			LEFT JOIN tagent_secondary_group tasg
+				ON tagente.id_agente = tasg.id_agent
+			INNER JOIN tagente_modulo
+				ON tagente.id_agente = tagente_modulo.id_agente
+			$sql_tags_inner
+			LEFT JOIN tagente_estado
+				ON tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
+			WHERE tagente.disabled = 0
+				AND tagente_modulo.disabled = 0
+				$module_names_condition
+				$filter_agent_group
+				$sql_conditions_tags
+				$status_filter
+				$module_type_filter
+			GROUP BY tagente_modulo.id_agente_modulo
+		) x
+		GROUP BY id_agente
+		$selection_filter";
+	$modules = db_get_all_rows_sql($sql);
+	if ($modules === false) return array();
+	return index_array(db_get_all_rows_sql($sql), 'id_agente', 'alias');
+}
+
 /**
  * Returns a random name identifier for an agent.
  *

@@ -1755,13 +1755,21 @@ function api_get_all_agents($thrash1, $thrash2, $other, $returnType) {
 		$result_agents = $all_agents;
 	}
 	
+	if (empty($returnType)) {
+		$returnType = "string";
+	}
+	
+	if (empty($separator)) {
+		$separator = ";";
+	}
+	
 	foreach ($result_agents as $key => $value) {
 		$result_agents[$key]['status'] = agents_get_status($result_agents[$key]['id_agente'], true);
 	}
 	
 	if (count($result_agents) > 0 and $result_agents !== false) {
 		$data = array('type' => 'array', 'data' => $result_agents);
-		return json_encode($data['data']);
+		returnData($returnType, $data, $separator);
 	}
 	else {
 		returnError('error_all_agents', 'No agents retrieved.');

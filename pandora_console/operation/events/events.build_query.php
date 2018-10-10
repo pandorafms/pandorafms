@@ -158,7 +158,7 @@ if ($user_comment != '') {
 }
 
 if ($source != '') {
-	$sql_post .= " AND source LIKE '$source'";
+	$sql_post .= " AND source LIKE '%$source%'";
 }
 
 // In metaconsole mode the agent search is performed by name

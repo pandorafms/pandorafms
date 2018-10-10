@@ -666,9 +666,8 @@ $table->data[] = $data;
 $table->rowclass[] = '';
 
 $data = array();
-$sources = events_get_all_source();
 $data[0] = __('Source') . $jump;
-$data[0] .= html_print_select ($sources, 'source', $source, '', '', '', true);
+$data[0] .= html_print_input_text ('source', $source, '', 35, 255, true);
 $data[1] = __('Extra ID') . $jump;
 $data[1] .= html_print_input_text ('id_extra', $id_extra, '', 11, 255, true);
 $data[2] = __("Comment") . $jump;
@@ -975,7 +974,7 @@ $(document).ready( function() {
 						if (i == 'id_group_filter')
 							$("#id_group_filter").val(val);
 						if (i == 'source')
-							$("#source").val(val);
+							$("#text-source").val(val);
 						if (i == 'id_extra')
 							$("#text-id_extra").val(val);
 						if (i == 'user_comment')
@@ -1018,7 +1017,7 @@ $(document).ready( function() {
 			$("#pagination").val(20);
 			$("#update_from_filter_table").val(1);
 			$("#text_id_agent").val("");
-			$("#source").val('');
+			$("#text-source").val('');
 			$("#text-id_extra").val('');
 			$("#text-user_comment").val('');
 			
@@ -1090,7 +1089,7 @@ $(document).ready( function() {
 							}
 						}
 						if (i == 'source')
-							$("#source").val(val);
+							$("#text-source").val(val);
 						if (i == 'id_extra')
 							$("#text-id_extra").val(val);
 						if (i == 'user_comment')
@@ -1161,7 +1160,7 @@ $(document).ready( function() {
 				"id_group_filter": $("#id_group_filter").val(),
 				"date_from": $("#text-date_from").val(),
 				"date_to": $("#text-date_to").val(),
-				"source": $("#source").val(),
+				"source": $("#text-source").val(),
 				"id_extra": $("#text-id_extra").val(),
 				"user_comment": $("#text-user_comment").val()
 			},
@@ -1261,7 +1260,7 @@ $(document).ready( function() {
 			"id_group_filter": $("#id_group_filter").val(),
 			"date_from": $("#text-date_from").val(),
 			"date_to": $("#text-date_to").val(),
-			"source": $("#source").val(),
+			"source": $("#text-source").val(),
 			"id_extra": $("#text-id_extra").val(),
 			"user_comment": $("#text-user_comment").val()
 			},

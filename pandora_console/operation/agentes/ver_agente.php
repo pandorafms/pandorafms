@@ -490,7 +490,6 @@ if (is_ajax ()) {
 			asort($result);
 		}
 		else {
-			$modules = agents_get_modules();
 			if($idAgents[0] < 0){
 				if($selection_mode == 'common'){
 					$sql_agent_total = 'SELECT count(*) FROM tagente WHERE disabled=0';

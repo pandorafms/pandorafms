@@ -2802,6 +2802,11 @@ function modules_get_state_condition($state, $prefix = "tae") {
 				$prefix.estado = ".AGENT_MODULE_STATUS_NORMAL_ALERT."
 				OR $prefix.estado = ".AGENT_MODULE_STATUS_NORMAL."
 			)";
+		case AGENT_MODULE_STATUS_NOT_NORMAL:
+			return "(
+				$prefix.estado <> " . AGENT_MODULE_STATUS_NORMAL . "
+				AND $prefix.estado <> " . AGENT_MODULE_STATUS_NORMAL_ALERT . "
+			)";
 	}
 	// If the state is not an expected state, return no condition
 	return "1=1";

@@ -720,7 +720,6 @@ if (is_ajax ()) {
 						$id_agent = array_keys(
 							agents_get_group_agents(
 								array_keys (users_get_groups ()), $search, "none"));
-					// TODO TAGS agents_get_modules
 					$agent_modules = agents_get_modules ($id_agent, $fields, $filter, $indexed, true, false, $tags);
 				}
 				// Restore db connection

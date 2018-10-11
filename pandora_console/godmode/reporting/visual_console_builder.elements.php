@@ -420,9 +420,11 @@ foreach ($layoutDatas as $layoutData) {
 				}
 				else {
 					if ($layoutData['id_agent'] != 0) {
-						$modules = agents_meta_get_modules(
-							$layoutData['id_metaconsole'],
-							$layoutData['id_agent']);
+						$server = db_get_row('tmetaconsole_setup', 'id', $layoutData['id_metaconsole']);
+						if (metaconsole_connect($server) == NOERR) {
+							$modules = agents_get_modules($layoutData['id_agent']);
+							metaconsole_restore_db();
+						}
 					}
 				}
 				

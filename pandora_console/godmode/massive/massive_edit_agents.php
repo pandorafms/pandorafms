@@ -338,6 +338,7 @@ $agents = agents_get_group_agents (array_keys ($groups));
 
 $modules = db_get_all_rows_sql("SELECT id_agente_modulo as id_module, nombre as name FROM tagente_modulo 
 								WHERE id_agente = " . $id_parent);
+if ($modules === false) $modules = array();
 
 $modules_values = array();
 $modules_values[0] = __('Any');

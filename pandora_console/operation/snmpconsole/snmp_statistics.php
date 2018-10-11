@@ -16,7 +16,6 @@
 
 // Load global vars
 global $config;
-
 enterprise_include ("operation/snmpconsole/snmp_view.php");
 include_once($config['homedir'] . '/include/functions_graph.php');
 require_once($config['homedir'] . "/include/functions_agents.php");
@@ -169,7 +168,7 @@ unset($table_source_data);
 if (empty($table_source_graph_data))
 	$table_source_graph = graph_nodata_image();
 else
-	$table_source_graph = pie3d_graph($config['flash_charts'], $table_source_graph_data, 400, 550, __("Other"),
+	$table_source_graph = pie_graph($table_source_graph_data, 400, 550, __("Other"),
 		'', $water_mark, $config['fontpath'], $config['font_size'], 1);
 
 $table_source_row['graph'] = $table_source_graph;
@@ -216,7 +215,7 @@ unset($table_oid_data);
 if (empty($table_oid_graph_data))
 	$table_oid_graph = graph_nodata_image();
 else
-	$table_oid_graph = pie3d_graph($config['flash_charts'], $table_oid_graph_data, 400, 550, __("Other"),
+	$table_oid_graph = pie_graph($table_oid_graph_data, 400, 550, __("Other"),
 		'', $water_mark, $config['fontpath'], $config['font_size'], 1);
 
 $table_oid_row['graph'] = $table_oid_graph;

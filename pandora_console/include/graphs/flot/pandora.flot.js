@@ -1,15 +1,12 @@
-/*
-
-
-*/
 
 function pandoraFlotPie(graph_id, values, labels, nseries, width, font_size, water_mark, separator, legend_position, height, colors, hide_labels) {
 	var labels = labels.split(separator);
 	var data = values.split(separator);
+
 	if (colors != '') {
 		colors = colors.split(separator);
 	}
-	
+
 	var pieRadius = 0.9;
 
 	var color = null;
@@ -17,31 +14,7 @@ function pandoraFlotPie(graph_id, values, labels, nseries, width, font_size, wat
 		if (colors != '') {
 			color = colors[i];
 		}
-		
 		data[i] = { label: labels[i], data: parseFloat(data[i]), color: color}
-	}
-
-	var label_conf;
-
-	if (width < 400 || hide_labels) {
-		label_conf = {
-			show: false
-		};
-	}
-	else {
-		label_conf = {
-			show: true,
-			radius: pieRadius,
-			formatter: function(label, series) {
-				return '<div style="font-size:' + font_size + 'pt;' +
-					'text-align:center;padding:2px;color:white;">' +
-						label + '<br/>' + series.percent.toFixed(2) + '%</div>';
-			},
-			background: {
-				opacity: 0.5,
-				color: ''
-			}
-		};
 	}
 
 	var show_legend = true;
@@ -50,29 +23,34 @@ function pandoraFlotPie(graph_id, values, labels, nseries, width, font_size, wat
 	}
 
 	var conf_pie = {
-			series: {
-				pie: {
-					show: true,
-					radius: pieRadius,
-					//offset: {top: -100},
-					label: label_conf,
-					//$label_str
-				}
-			},
-			legend: {
-				show: show_legend
-			},
-			grid: {
-				hoverable: true,
-				clickable: true
+		series: {
+			pie: {
+				show: true,
+				radius: pieRadius
 			}
-		};
-
-		if (width < 400) {
-			conf_pie.legend.labelFormatter = function(label, series) {
-					return label + " (" + series.percent.toFixed(2) + "%)";
-				}
+		},
+		legend: {
+			show: show_legend
+		},
+		grid: {
+			hoverable: true,
+			clickable: true
 		}
+	};
+
+	if(hide_labels != false && hide_labels != 0){
+		conf_pie.series.pie.label = {
+			show: true,
+			radius: 2/3,
+			formatter: labelFormatter,
+			threshold: 0.1
+		}
+	}
+	else{
+		conf_pie.series.pie.label = {
+			show:false
+		}
+	}
 
 	switch (legend_position) {
 		case 'bottom':
@@ -89,7 +67,7 @@ function pandoraFlotPie(graph_id, values, labels, nseries, width, font_size, wat
 	var plot = $.plot($('#'+graph_id), data, conf_pie);
 
 	var legends = $('#'+graph_id+' .legendLabel');
-	legends.css('font-size', font_size+'pt');
+		legends.css('font-size', font_size+'pt');
 
 	// Events
 	$('#' + graph_id).bind('plothover', pieHover);
@@ -106,14 +84,18 @@ function pandoraFlotPie(graph_id, values, labels, nseries, width, font_size, wat
 		legends.eq(index).css('color', '');
 	}
 
+	function labelFormatter(label, series) {
+		return '<div style="font-size:' + font_size + 'pt;' + 'text-align:center;padding:2px;color:white;">' +
+						label + '<br/>' + series.percent.toFixed(2) + '%</div>';
+	}
+
 	// Reset styles
 	function resetInteractivity() {
 		legends.css('color', '#3F3F3D');
 	}
-	
+
 	if (water_mark) {
-		set_watermark(graph_id, plot,
-			$('#watermark_image_' + graph_id).attr('src'));
+		set_watermark(graph_id, plot,$('#watermark_image_' + graph_id).attr('src'));
 	}
 }
 

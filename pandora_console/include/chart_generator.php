@@ -126,6 +126,22 @@ if (file_exists ('languages/'.$user_language.'.mo')) {
 				echo grafico_modulo_sparse($params);
 			echo '</div>';
 		}
+		elseif($type_graph_pdf == 'pie_chart'){
+			echo '<div>';
+				echo flot_pie_chart(
+					$params['values'],
+					$params['keys'],
+					$params['width'],
+					$params['height'],
+					$params['water_mark_url'],
+					$params['font'],
+					$params['font_size'],
+					$params['legend_position'],
+					$params['colors'],
+					$params['hide_labels']
+				);
+			echo '</div>';
+		}
 
 		$config['font_size'] = $aux_font_size;
 ?>

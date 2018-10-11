@@ -1307,7 +1307,8 @@ function reporting_event_top_n($report, $content, $type = 'dinamic',
 			
 			if ($show_graph != REPORT_TOP_N_ONLY_TABLE) {
 				arsort($data_pie_graph);
-				$return['charts']['pie'] = pie3d_graph(false,
+				$return['charts']['pie'] = pie_graph(
+					false,
 					$data_pie_graph,
 					$width, $height,
 					__("other"),
@@ -1460,7 +1461,7 @@ function reporting_event_report_group($report, $content,
 			$filter_event_severity,	$filter_event_type, 
 			$filter_event_status, $filter_event_filter_search);
 			
-		$return['chart']['by_agent']= pie3d_graph(
+		$return['chart']['by_agent']= pie_graph(
 			false,
 			$data_graph,
 			500,
@@ -1470,7 +1471,8 @@ function reporting_event_report_group($report, $content,
 			ui_get_full_url(false, false, false, false) . "/images/logo_vertical_water.png",
 			$config['fontpath'],
 			$config['font_size'],
-			$ttl);
+			$ttl
+		);
 	}
 	
 	if ($event_graph_by_user_validator) {
@@ -1479,7 +1481,7 @@ function reporting_event_report_group($report, $content,
 			$report["datetime"],$filter_event_severity,	$filter_event_type, 
 			$filter_event_status, $filter_event_filter_search);
 		
-		$return['chart']['by_user_validator'] = pie3d_graph(
+		$return['chart']['by_user_validator'] = pie_graph(
 			false,
 			$data_graph,
 			500,
@@ -1489,7 +1491,8 @@ function reporting_event_report_group($report, $content,
 			ui_get_full_url(false, false, false, false) . "/images/logo_vertical_water.png",
 			$config['fontpath'],
 			$config['font_size'],
-			$ttl);
+			$ttl
+		);
 	}
 	
 	if ($event_graph_by_criticity) {
@@ -1500,7 +1503,7 @@ function reporting_event_report_group($report, $content,
 		
 		$colors = get_criticity_pie_colors($data_graph);
 		
-		$return['chart']['by_criticity'] = pie3d_graph(
+		$return['chart']['by_criticity'] = pie_graph(
 			false,
 			$data_graph,
 			500,
@@ -1512,7 +1515,8 @@ function reporting_event_report_group($report, $content,
 			$config['font_size'],
 			$ttl,
 			false,
-			$colors);
+			$colors
+		);
 	}
 	
 	if ($event_graph_validated_vs_unvalidated) {
@@ -1521,7 +1525,7 @@ function reporting_event_report_group($report, $content,
 			$report["datetime"],$filter_event_severity,	$filter_event_type, 
 			$filter_event_status, $filter_event_filter_search);
 		
-		$return['chart']['validated_vs_unvalidated'] = pie3d_graph(
+		$return['chart']['validated_vs_unvalidated'] = pie_graph(
 			false,
 			$data_graph,
 			500,
@@ -1531,7 +1535,8 @@ function reporting_event_report_group($report, $content,
 			ui_get_full_url(false, false, false, false) .  "/images/logo_vertical_water.png",
 			$config['fontpath'],
 			$config['font_size'],
-			$ttl);
+			$ttl
+		);
 	}
 	
 	if ($config['metaconsole']) {
@@ -2196,7 +2201,7 @@ function reporting_exception($report, $content, $type = 'dinamic',
 				}
 				
 				
-				$return["chart"]["pie"] = pie3d_graph(
+				$return["chart"]["pie"] = pie_graph(
 					false,
 					$data_pie_graph,
 					600,
@@ -2206,7 +2211,8 @@ function reporting_exception($report, $content, $type = 'dinamic',
 					ui_get_full_url(false, false, false, false) .  "/images/logo_vertical_water.png",
 					$config['fontpath'],
 					$config['font_size'],
-					$ttl);
+					$ttl
+				);
 				
 				
 				$params = array(
@@ -2378,7 +2384,7 @@ function reporting_event_report_agent($report, $content,
 			$report["datetime"],$filter_event_severity,	$filter_event_type, 
 			$filter_event_status, $filter_event_filter_search);
 		
-		$return["chart"]["by_user_validator"] = pie3d_graph(
+		$return["chart"]["by_user_validator"] = pie_graph(
 			false,
 			$data_graph,
 			500,
@@ -2388,7 +2394,8 @@ function reporting_event_report_agent($report, $content,
 			ui_get_full_url(false, false, false, false) . "/images/logo_vertical_water.png",
 			$config['fontpath'],
 			$config['font_size'],
-			$ttl);
+			$ttl
+		);
 	}
 	
 	if ($event_graph_by_criticity) {
@@ -2398,8 +2405,8 @@ function reporting_event_report_agent($report, $content,
 			$filter_event_status, $filter_event_filter_search);
 		
 		$colors = get_criticity_pie_colors($data_graph);
-		
-		$return["chart"]["by_criticity"] = pie3d_graph(
+
+		$return["chart"]["by_criticity"] = pie_graph(
 			false,
 			$data_graph,
 			500,
@@ -2411,7 +2418,8 @@ function reporting_event_report_agent($report, $content,
 			$config['font_size'],
 			$ttl,
 			false,
-			$colors);
+			$colors
+		);
 	}
 	
 	if ($event_graph_validated_vs_unvalidated) {
@@ -2420,7 +2428,7 @@ function reporting_event_report_agent($report, $content,
 			$report["datetime"],$filter_event_severity,	$filter_event_type, 
 			$filter_event_status, $filter_event_filter_search);
 		
-		$return["chart"]["validated_vs_unvalidated"] = pie3d_graph(
+		$return["chart"]["validated_vs_unvalidated"] = pie_graph(
 			false,
 			$data_graph,
 			500,
@@ -2430,7 +2438,8 @@ function reporting_event_report_agent($report, $content,
 			ui_get_full_url(false, false, false, false) . "/images/logo_vertical_water.png",
 			$config['fontpath'],
 			$config['font_size'],
-			$ttl);
+			$ttl
+		);
 	}
 	
 	if ($config['metaconsole']) {
@@ -3309,9 +3318,9 @@ function reporting_alert_report_module($report, $content) {
 
 function reporting_sql_graph($report, $content, $type,
 	$force_width_chart, $force_height_chart, $type_sql_graph) {
-	
+
 	global $config;
-	
+
 	switch ($type_sql_graph) {
 		case 'sql_graph_hbar':
 			$return['type'] = 'sql_graph_hbar';
@@ -3323,7 +3332,7 @@ function reporting_sql_graph($report, $content, $type,
 			$return['type'] = 'sql_graph_pie';
 			break;
 	}
-	
+
 	if (empty($content['name'])) {
 		switch ($type_sql_graph) {
 			case 'sql_graph_vbar':
@@ -3337,23 +3346,22 @@ function reporting_sql_graph($report, $content, $type,
 				break;
 		}
 	}
-	
+
 	// Get chart
-	reporting_set_conf_charts($width, $height, $only_image, $type,
-		$content, $ttl);
-	
+	reporting_set_conf_charts($width, $height, $only_image, $type,$content, $ttl);
+
 	if (!empty($force_width_chart)) {
 		$width = $force_width_chart;
 	}
-	
+
 	if (!empty($force_height_chart)) {
 		$height = $force_height_chart;
 	}
-	
+
 	$return['title'] = $content['name'];
 	$return["description"] = $content["description"];
 	$return["date"] = reporting_get_date_text();
-	
+
 	switch ($type) {
 		case 'dinamic':
 		case 'static':
@@ -3370,7 +3378,7 @@ function reporting_sql_graph($report, $content, $type,
 		case 'data':
 			break;
 	}
-	
+
 	return reporting_check_structure_content($return);
 }
 
@@ -6610,7 +6618,7 @@ function reporting_get_module_detailed_event ($id_modules, $period = 0,
 				array('id_agentmodule' => $id_module), $period, $date, $filter_event_severity,
 				$filter_event_type, $filter_event_status, $filter_event_filter_search);
 			
-			$event['chart']['by_user_validator'] = pie3d_graph(
+			$event['chart']['by_user_validator'] = pie_graph(
 				false,
 				$data_graph,
 				500,
@@ -6620,7 +6628,8 @@ function reporting_get_module_detailed_event ($id_modules, $period = 0,
 				ui_get_full_url(false, false, false, false) . "/images/logo_vertical_water.png",
 				$config['fontpath'],
 				$config['font_size'],
-				$ttl);
+				$ttl
+			);
 		}
 		
 		if ($event_graph_by_criticity) {
@@ -6630,7 +6639,7 @@ function reporting_get_module_detailed_event ($id_modules, $period = 0,
 			
 			$colors = get_criticity_pie_colors($data_graph);
 			
-			$event['chart']['by_criticity'] = pie3d_graph(
+			$event['chart']['by_criticity'] = pie_graph(
 				false,
 				$data_graph,
 				500,
@@ -6642,7 +6651,8 @@ function reporting_get_module_detailed_event ($id_modules, $period = 0,
 				$config['font_size'],
 				$ttl,
 				false,
-				$colors);
+				$colors
+			);
 		}
 		
 		if ($event_graph_validated_vs_unvalidated) {
@@ -6650,7 +6660,7 @@ function reporting_get_module_detailed_event ($id_modules, $period = 0,
 				array('id_agentmodule' => $id_module), $period, $date, $filter_event_severity,
 				$filter_event_type, $filter_event_status, $filter_event_filter_search);
 			
-			$event['chart']['validated_vs_unvalidated'] = pie3d_graph(
+			$event['chart']['validated_vs_unvalidated'] = pie_graph(
 				false,
 				$data_graph,
 				500,
@@ -6660,7 +6670,8 @@ function reporting_get_module_detailed_event ($id_modules, $period = 0,
 				ui_get_full_url(false, false, false, false) .  "/images/logo_vertical_water.png",
 				$config['fontpath'],
 				$config['font_size'],
-				$ttl);
+				$ttl
+			);
 		}
 
 		if (!empty ($event)) {

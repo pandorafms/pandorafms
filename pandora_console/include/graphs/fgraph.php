@@ -180,12 +180,13 @@ function vbar_graph(
 		return '<img src="' . $no_data_image . '" />';
 	}
 
-	if ($flash_chart) {
+	//if ($flash_chart) {
 		return flot_vcolumn_chart ($chart_data, $width, $height, $color,
 			$legend, $long_index, $homeurl, $unit, $water_mark_url,
 			$homedir,$font,$font_size, $from_ux, $from_wux, $backgroundColor,
 			$tick_color);
-	}
+	/*
+		}
 	else {
 		$new_chart_data = array();
 		foreach ($chart_data as $key => $value) {
@@ -216,7 +217,7 @@ function vbar_graph(
 		$id_graph = serialize_in_temp($graph, null, $ttl);
 
 		return "<img src='" . $homeurl . "include/graphs/functions_pchart.php?static_graph=1&graph_type=vbar&ttl=".$ttl."&id_graph=".$id_graph."'>";
-	}
+	}*/
 }
 
 function area_graph(
@@ -307,9 +308,9 @@ function hbar_graph($flash_chart, $chart_data, $width, $height,
 		return '<img src="' . $no_data_image . '" />';
 	}
 
-	if ($flash_chart) {
-		return flot_hcolumn_chart(
-			$chart_data, $width, $height, $water_mark_url, $font, $font_size, $backgroundColor, $tick_color, $val_min, $val_max);
+	//if ($flash_chart) {
+		return flot_hcolumn_chart($chart_data, $width, $height, $water_mark_url, $font, $font_size, $backgroundColor, $tick_color, $val_min, $val_max);
+	/*
 	}
 	else {
 		foreach ($chart_data as $key => $value) {
@@ -344,31 +345,12 @@ function hbar_graph($flash_chart, $chart_data, $width, $height,
 
 		return "<img src='" . $homeurl . "include/graphs/functions_pchart.php?static_graph=1&graph_type=hbar&ttl=".$ttl."&id_graph=".$id_graph."'>";
 	}
+	*/
 }
 
-function pie3d_graph($flash_chart, $chart_data, $width, $height,
-	$others_str = "other", $homedir = "", $water_mark = "", $font = '',
-	$font_size = '', $ttl = 1, $legend_position = false, $colors = '',
-	$hide_labels = false) {
-
-	return pie_graph('3d', $flash_chart, $chart_data, $width, $height,
-		$others_str, $homedir, $water_mark, $font, $font_size, $ttl,
-		$legend_position, $colors, $hide_labels);
-}
-
-function pie2d_graph($flash_chart, $chart_data, $width, $height,
-	$others_str = "other", $homedir="", $water_mark = "", $font = '',
-	$font_size = '', $ttl = 1, $legend_position = false, $colors = '',
-	$hide_labels = false) {
-
-	return pie_graph('2d', $flash_chart, $chart_data, $width, $height,
-		$others_str, $homedir, $water_mark, $font, $font_size, $ttl,
-		$legend_position, $colors, $hide_labels);
-}
-
-function pie_graph($graph_type, $flash_chart, $chart_data, $width,
+function pie_graph($chart_data, $width,
 	$height, $others_str = "other", $homedir="", $water_mark = "",
-	$font = '', $font_size = '', $ttl = 1, $legend_position = false,
+	$font = '', $font_size = 8, $ttl = 1, $legend_position = false,
 	$colors = '', $hide_labels = false) {
 
 	if (empty($chart_data)) {
@@ -405,34 +387,35 @@ function pie_graph($graph_type, $flash_chart, $chart_data, $width,
 		$chart_data = $chart_data_trunc;
 	}
 
-	if ($flash_chart) {
-		return flot_pie_chart(array_values($chart_data),
-			array_keys($chart_data), $width, $height, $water_mark_url,
-			$font, $font_size, $legend_position, $colors, $hide_labels);
-	}
-	else {
-		//TODO SET THE LEGEND POSITION
-		$graph = array();
-		$graph['data'] = $chart_data;
-		$graph['width'] = $width;
-		$graph['height'] = $height;
-		$graph['water_mark'] = $water_mark_file;
-		$graph['font'] = $font;
-		$graph['font_size'] = $font_size;
-		$graph['legend_position'] = $legend_position;
-		$graph['color'] = $colors;
+	$params = array(
+		'values' => array_values($chart_data),
+		'keys' => array_keys($chart_data),
+		'width' => $width,
+		'height' => $height,
+		'water_mark_url' => $water_mark_url,
+		'font' => $font,
+		'font_size' => $font_size,
+		'legend_position' => $legend_position,
+		'colors' => $colors,
+		'hide_labels' => $hide_labels
+	);
 
-		$id_graph = serialize_in_temp($graph, null, $ttl);
-
-		switch ($graph_type) {
-			case "2d":
-				return "<img src='" . $homedir . "include/graphs/functions_pchart.php?static_graph=1&graph_type=pie2d&ttl=".$ttl."&id_graph=".$id_graph."'>";
-				break;
-			case "3d":
-				return "<img src='" . $homedir . "include/graphs/functions_pchart.php?static_graph=1&graph_type=pie3d&ttl=".$ttl."&id_graph=".$id_graph."'>";
-				break;
-		}
+	if($ttl == 2){
+		return generator_chart_to_pdf('pie_chart', $params);
 	}
+
+	return flot_pie_chart(
+		array_values($chart_data),
+		array_keys($chart_data),
+		$width,
+		$height,
+		$water_mark_url,
+		$font,
+		$font_size,
+		$legend_position,
+		$colors,
+		$hide_labels
+	);
 }
 
 function ring_graph($flash_chart, $chart_data, $width,

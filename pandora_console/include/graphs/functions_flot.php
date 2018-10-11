@@ -371,16 +371,16 @@ function menu_graph(
 function flot_pie_chart ($values, $labels, $width, $height, $water_mark,
 	$font = '', $font_size = 8, $legend_position = '', $colors = '',
 	$hide_labels = false) {
-	
+
 	// include_javascript_dependencies_flot_graph();
-	
+
 	$series = sizeof($values);
 	if (($series != sizeof ($labels)) || ($series == 0) ) {
 		return;
 	}
-	
+
 	$graph_id = uniqid('graph_');
-	
+
 	switch ($legend_position) {
 		case 'bottom':
 			$height = $height + (count($values) * 24);
@@ -390,9 +390,9 @@ function flot_pie_chart ($values, $labels, $width, $height, $water_mark,
 			//TODO FOR TOP OR LEFT OR RIGHT
 			break;
 	}
-	
+
 	$return = "<div id='$graph_id' class='graph' style='width: ".$width."px; height: ".$height."px;'></div>";
-	
+
 	if ($water_mark != '') {
 		$return .= "<div id='watermark_$graph_id' style='display:none; position:absolute;'><img id='watermark_image_$graph_id' src='$water_mark'></div>";
 		$water_mark = 'true';
@@ -400,23 +400,23 @@ function flot_pie_chart ($values, $labels, $width, $height, $water_mark,
 	else {
 		$water_mark = 'false';
 	}
-	
+
 	$separator = ';;::;;';
-	
+
 	$labels = implode($separator, $labels);
 	$values = implode($separator, $values);
 	if (!empty($colors)) {
 		$colors = implode($separator, $colors);
 	}
-	
+
 	$return .= "<script type='text/javascript'>";
-	
+
 	$return .= "pandoraFlotPie('$graph_id', '$values', '$labels',
 		'$series', '$width', $font_size, $water_mark, '$separator',
 		'$legend_position', '$height', '$colors', " . json_encode($hide_labels) . ")";
-	
+
 	$return .= "</script>";
-	
+
 	return $return;
 }
 

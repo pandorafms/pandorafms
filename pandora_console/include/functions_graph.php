@@ -2366,8 +2366,8 @@ function graph_alert_status ($defined_alerts, $fired_alerts, $width = 300, $heig
 			'url' => ui_get_full_url("images/logo_vertical_water.png", false, false, false));
 	}
 	
-	$out = pie2d_graph($config['flash_charts'], $data, $width, $height, __("other"),
-		'', '', $config['fontpath'], $config['font_size'], 1, "hidden", $colors);
+	$out = pie_graph($data, $width, $height, __("other"),
+		'', '', $config['fontpath'], $config['font_size'], 1, "hidden", $colors, false);
 	
 	if ($return) {
 		return $out;
@@ -2444,11 +2444,22 @@ function graph_agent_status ($id_agent = false, $width = 300, $height = 200, $re
 	if (array_sum($data) == 0) {
 		$data = array();
 	}
-	
-	$out = pie2d_graph($config['flash_charts'], $data, $width, $height,
-		__("other"), ui_get_full_url(false, false, false, false), '',
-		$config['fontpath'], $config['font_size'], 1, "hidden", $colors);
-	
+
+	$out = pie_graph(
+		$data,
+		$width,
+		$height,
+		__("other"),
+		ui_get_full_url(false, false, false, false),
+		'',
+		$config['fontpath'],
+		$config['font_size'],
+		1,
+		"hidden",
+		$colors,
+		0
+	);
+
 	if ($return) {
 		return $out;
 	}
@@ -2519,8 +2530,19 @@ function graph_event_module ($width = 300, $height = 200, $id_agent) {
 			$config['homedir'] . "/images/logo_vertical_water.png",
 			'url' => ui_get_full_url("images/logo_vertical_water.png", false, false, false));
 	}
-	return pie3d_graph($config['flash_charts'], $data, $width, $height, __("other"),
-		'', $water_mark, $config['fontpath'], $config['font_size'], 1, "bottom");
+
+	return pie_graph(
+		$data,
+		$width,
+		$height,
+		__("other"),
+		'',
+		$water_mark,
+		$config['fontpath'],
+		$config['font_size'],
+		1,
+		"bottom"
+	);
 }
 
 function progress_bar($progress, $width, $height, $title = '', $mode = 1, $value_text = false, $color = false, $options = false) {
@@ -2621,227 +2643,6 @@ function graph_sla_slicebar ($id, $period, $sla_min, $sla_max, $date, $daysWeek 
 	
 	return slicesbar_graph($data, $period, $width, $height, $colors,
 		$config['fontpath'], $round_corner, $home_url, $ttl);
-}
-
-/**
- * Print a pie graph with purge data of agent
- * 
- * @param integer id_agent ID of agent to show
- * @param integer width pie graph width
- * @param integer height pie graph height
- */
-function grafico_db_agentes_purge ($id_agent, $width = 380, $height = 300) {
-	global $config;
-	global $graphic_type;
-	
-	$filter = array();
-	
-	if ($id_agent < 1) {
-		$query = "";
-	}
-	else {
-		$modules = agents_get_modules($id_agent);
-		$module_ids = array_keys($modules);
-		
-		if (!empty($module_ids))
-			$filter['id_agente_modulo'] = $module_ids;
-	}
-	
-	// All data (now)
-	$time_now = time();
-	
-	// 1 day ago
-	$time_1day = $time_now - SECONDS_1DAY;
-	
-	// 1 week ago
-	$time_1week = $time_now - SECONDS_1WEEK;
-	
-	// 1 month ago
-	$time_1month = $time_now - SECONDS_1MONTH;
-	
-	// Three months ago
-	$time_3months = $time_now - SECONDS_3MONTHS;
-	
-	$query_error = false;
-	
-	// Data from 1 day ago
-	$num_1day = 0;
-	$num_1day += (int) db_get_sql('SELECT COUNT(*)
-										FROM tagente_datos
-										WHERE utimestamp > ' . $time_1day);
-	$num_1day += (int) db_get_sql('SELECT COUNT(*)
-										FROM tagente_datos_string
-										WHERE utimestamp > ' . $time_1day);
-	$num_1day += (int) db_get_sql('SELECT COUNT(*)
-										FROM tagente_datos_log4x
-										WHERE utimestamp > ' . $time_1day);
-	if ($num_1day >= 0) {
-		// Data from 1 week ago
-		$num_1week = 0;
-		$num_1week += (int) db_get_sql('SELECT COUNT(*)
-											FROM tagente_datos
-											WHERE utimestamp > ' . $time_1week . '
-											AND utimestamp < ' . $time_1day);
-		$num_1week += (int) db_get_sql('SELECT COUNT(*)
-											FROM tagente_datos_string
-											WHERE utimestamp > ' . $time_1week . '
-											AND utimestamp < ' . $time_1day);
-		$num_1week += (int) db_get_sql('SELECT COUNT(*)
-											FROM tagente_datos_log4x
-											WHERE utimestamp > ' . $time_1week . '
-											AND utimestamp < ' . $time_1day);
-		if ($num_1week >= 0) {
-			if ($num_1week > 0) {
-				$num_1week = 0;
-				$num_1week += (int) db_get_sql('SELECT COUNT(*)
-													FROM tagente_datos
-													WHERE utimestamp > ' . $time_1week);
-				$num_1week += (int) db_get_sql('SELECT COUNT(*)
-													FROM tagente_datos_string
-													WHERE utimestamp > ' . $time_1week);
-				$num_1week += (int) db_get_sql('SELECT COUNT(*)
-													FROM tagente_datos_log4x
-													WHERE utimestamp > ' . $time_1week);
-			}
-			// Data from 1 month ago
-			$num_1month = 0;
-			$num_1month += (int) db_get_sql('SELECT COUNT(*)
-												FROM tagente_datos
-												WHERE utimestamp > ' . $time_1month . '
-												AND utimestamp < ' . $time_1week);
-			$num_1month += (int) db_get_sql('SELECT COUNT(*)
-												FROM tagente_datos_string
-												WHERE utimestamp > ' . $time_1month . '
-												AND utimestamp < ' . $time_1week);
-			$num_1month += (int) db_get_sql('SELECT COUNT(*)
-												FROM tagente_datos_log4x
-												WHERE utimestamp > ' . $time_1month . '
-												AND utimestamp < ' . $time_1week);
-			if ($num_1month >= 0) {
-				if ($num_1month > 0) {
-					$num_1month = 0;
-					$num_1month += (int) db_get_sql('SELECT COUNT(*)
-														FROM tagente_datos
-														WHERE utimestamp > ' . $time_1month);
-					$num_1month += (int) db_get_sql('SELECT COUNT(*)
-														FROM tagente_datos_string
-														WHERE utimestamp > ' . $time_1month);
-					$num_1month += (int) db_get_sql('SELECT COUNT(*)
-														FROM tagente_datos_log4x
-														WHERE utimestamp > ' . $time_1month);
-				}
-				// Data from 3 months ago
-				$num_3months = 0;
-				$num_3months += (int) db_get_sql('SELECT COUNT(*)
-													FROM tagente_datos
-													WHERE utimestamp > ' . $time_3months . '
-													AND utimestamp < ' . $time_1month);
-				$num_3months += (int) db_get_sql('SELECT COUNT(*)
-													FROM tagente_datos
-													WHERE utimestamp > ' . $time_3months . '
-													AND utimestamp < ' . $time_1month);
-				$num_3months += (int) db_get_sql('SELECT COUNT(*)
-													FROM tagente_datos
-													WHERE utimestamp > ' . $time_3months . '
-													AND utimestamp < ' . $time_1month);
-				if ($num_3months >= 0) {
-					if ($num_3months > 0) {
-						$num_3months = 0;
-						$num_3months += (int) db_get_sql('SELECT COUNT(*)
-															FROM tagente_datos
-															WHERE utimestamp > ' . $time_3months);
-						$num_3months += (int) db_get_sql('SELECT COUNT(*)
-															FROM tagente_datos
-															WHERE utimestamp > ' . $time_3months);
-						$num_3months += (int) db_get_sql('SELECT COUNT(*)
-															FROM tagente_datos
-															WHERE utimestamp > ' . $time_3months);
-					}
-					// All data
-					$num_all = 0;
-					$num_all += (int) db_get_sql('SELECT COUNT(*)
-														FROM tagente_datos
-														WHERE utimestamp < ' . $time_3months);
-					$num_all += (int) db_get_sql('SELECT COUNT(*)
-														FROM tagente_datos
-														WHERE utimestamp < ' . $time_3months);
-					$num_all += (int) db_get_sql('SELECT COUNT(*)
-														FROM tagente_datos
-														WHERE utimestamp < ' . $time_3months);
-					if ($num_all >= 0) {
-						$num_older = $num_all - $num_3months;
-						if ($config['history_db_enabled'] == 1) {
-							// All data in common and history database
-							$num_all_w_history = 0;
-							$num_all_w_history += (int) db_get_sql('SELECT COUNT(*)
-																FROM tagente_datos
-																WHERE utimestamp < ' . $time_3months);
-							$num_all_w_history += (int) db_get_sql('SELECT COUNT(*)
-																FROM tagente_datos
-																WHERE utimestamp < ' . $time_3months);
-							$num_all_w_history += (int) db_get_sql('SELECT COUNT(*)
-																FROM tagente_datos
-																WHERE utimestamp < ' . $time_3months);
-							if ($num_all_w_history >= 0) {
-								$num_history = $num_all_w_history - $num_all;
-							}
-						}
-					}
-				}
-			}
-		}
-	}
-	else if (($num_1day == 0) && ($num_1week == 0) && ($num_1month == 0) && ($num_3months == 0) && ($num_all == 0)) {
-		//If no data, returns empty
-		$query_error = true;
-	}
-	
-	// Error
-	if ($query_error || $num_older < 0 || ($config['history_db_enabled'] == 1 && $num_history < 0)
-			|| (empty($num_1day) && empty($num_1week) && empty($num_1month)
-				&& empty($num_3months) && empty($num_all) 
-				&& ($config['history_db_enabled'] == 1 && empty($num_all_w_history)))) {
-		return html_print_image('images/image_problem_area_small.png', true);
-	}
-
-	// Data indexes
-	$str_1day = __("Today");
-	$str_1week = "1 ".__("Week");
-	$str_1month = "1 ".__("Month");
-	$str_3months = "3 ".__("Months");
-	$str_older = "> 3 ".__("Months");
-	
-	// Filling the data array
-	$data = array();
-	if (!empty($num_1day))
-		$data[$str_1day] = $num_1day;
-	if (!empty($num_1week))
-		$data[$str_1week] = $num_1week;
-	if (!empty($num_1month))
-		$data[$str_1month] = $num_1month;
-	if (!empty($num_3months))
-		$data[$str_3months] = $num_3months;
-	if (!empty($num_older))
-		$data[$str_older] = $num_older;
-	if ($config['history_db_enabled'] == 1 && !empty($num_history)) {
-		// In this pie chart only 5 elements are shown, so we need to remove
-		// an element. With a history db enabled the >3 months element are dispensable
-		if (count($data) >= 5 && isset($data[$str_3months]))
-			unset($data[$str_3months]);
-
-		$time_historic_db = time() - ((int)$config['history_db_days'] * SECONDS_1DAY);
-		$date_human = human_time_comparation($time_historic_db);
-		$str_history = "> $date_human (".__("History db").")";
-		$data[$str_history] = $num_history;
-	}
-
-	$water_mark = array(
-			'file' => $config['homedir'] . "/images/logo_vertical_water.png", 
-			'url' => ui_get_full_url("images/logo_vertical_water.png", false, false, false)
-		);
-	
-	return pie3d_graph($config['flash_charts'], $data, $width, $height,
-		__('Other'), '', $water_mark, $config['fontpath'], $config['font_size']);
 }
 
 /**
@@ -2951,55 +2752,6 @@ function graph_db_agentes_modulos($width, $height) {
 }
 
 /**
- * Print a pie graph with users activity in a period of time
- * 
- * @param integer width pie graph width
- * @param integer height pie graph height
- * @param integer period time period
- */
-function graphic_user_activity ($width = 350, $height = 230) {
-	global $config;
-	global $graphic_type;
-	
-	$data = array ();
-	$max_items = 5;
-	switch ($config['dbtype']) {
-		case "mysql":
-		case "postgresql":
-			$sql = sprintf ('SELECT COUNT(id_usuario) n_incidents, id_usuario
-				FROM tsesion
-				GROUP BY id_usuario
-				ORDER BY 1 DESC LIMIT %d', $max_items);
-			break;
-		case "oracle":
-			$sql = sprintf ('SELECT COUNT(id_usuario) n_incidents, id_usuario
-				FROM tsesion 
-				WHERE rownum <= %d
-				GROUP BY id_usuario
-				ORDER BY 1 DESC', $max_items);
-			break;
-	}
-	$logins = db_get_all_rows_sql ($sql);
-	
-	if ($logins == false) {
-		$logins = array();
-	}
-	foreach ($logins as $login) {
-		$data[$login['id_usuario']] = $login['n_incidents'];
-	}
-	
-	if($config["fixed_graph"] == false){
-		$water_mark = array('file' =>
-			$config['homedir'] . "/images/logo_vertical_water.png",
-			'url' => ui_get_full_url("images/logo_vertical_water.png", false, false, false));
-	}
-	
-	return pie3d_graph($config['flash_charts'], $data, $width, $height,
-		__('Other'), '', $water_mark,
-		$config['fontpath'], $config['font_size']);
-}
-
-/**
  * Print a pie graph with priodity incident
  */
 function grafico_incidente_prioridad () {
@@ -3035,9 +2787,11 @@ function grafico_incidente_prioridad () {
 				'url' => ui_get_full_url("images/logo_vertical_water.png", false, false, false));
 		}
 	
-	return pie3d_graph($config['flash_charts'], $data, 320, 200,
+	return pie_graph(
+		$data, 320, 200,
 		__('Other'), '', '',
-		$config['fontpath'], $config['font_size']);
+		$config['fontpath'], $config['font_size']
+	);
 }
 
 /**
@@ -3075,8 +2829,8 @@ function graph_incidents_status () {
 			$config['homedir'] . "/images/logo_vertical_water.png",
 			'url' => ui_get_full_url("images/logo_vertical_water.png", false, false, false));
 	}
-	
-	return pie3d_graph($config['flash_charts'], $data, 320, 200,
+
+	return pie_graph($data, 320, 200,
 		__('Other'), '', '',
 		$config['fontpath'], $config['font_size']);
 }
@@ -3132,7 +2886,7 @@ function graphic_incident_group () {
 			'url' => ui_get_full_url("images/logo_vertical_water.png", false, false, false));
 	}
 	
-	return pie3d_graph($config['flash_charts'], $data, 320, 200,
+	return pie_graph($data, 320, 200,
 		__('Other'), '', '',
 		$config['fontpath'], $config['font_size']);
 }
@@ -3187,7 +2941,8 @@ function graphic_incident_user () {
 			'url' => ui_get_full_url("images/logo_vertical_water.png", false, false, false));
 	}
 	
-	return pie3d_graph($config['flash_charts'], $data, 320, 200,
+	return pie_graph(
+		$data, 320, 200,
 		__('Other'), '', '',
 		$config['fontpath'], $config['font_size']);
 }
@@ -3241,7 +2996,8 @@ function graphic_incident_source($width = 320, $height = 200) {
 			'url' => ui_get_full_url("images/logo_vertical_water.png", false, false, false));
 	}
 	
-	return pie3d_graph($config['flash_charts'], $data, $width, $height,
+	return pie_graph(
+		$data, $width, $height,
 		__('Other'), '', '',
 		$config['fontpath'], $config['font_size']);
 }
@@ -3249,27 +3005,27 @@ function graphic_incident_source($width = 320, $height = 200) {
 function graph_events_validated($width = 300, $height = 200, $extra_filters = array(), $meta = false, $history = false) {
 	global $config;
 	global $graphic_type;
-	
+
 	$event_type = false;
 	if (array_key_exists('event_type', $extra_filters))
 		$event_type = $extra_filters['event_type'];
-	
+
 	$event_severity = false;
 	if (array_key_exists('event_severity', $extra_filters))
 		$event_severity = $extra_filters['event_severity'];
-	
+
 	$event_status = false;
 	if (array_key_exists('event_status', $extra_filters))
 		$event_status = $extra_filters['event_status'];
-	
+
 	$event_filter_search = false;
 	if (array_key_exists('event_filter_search', $extra_filters))
 		$event_filter_search = $extra_filters['event_filter_search'];
-	
+
 	$data_graph = events_get_count_events_validated(
-		array('id_group' => array_keys(users_get_groups())), null, null, 
+		array('id_group' => array_keys(users_get_groups())), null, null,
 		$event_severity, $event_type, $event_status, $event_filter_search);
-	
+
 	$colors = array();
 	foreach ($data_graph as $k => $v) {
 		if ($k == __('Validated')) {
@@ -3279,17 +3035,26 @@ function graph_events_validated($width = 300, $height = 200, $extra_filters = ar
 			$colors[$k] = COL_CRITICAL;
 		}
 	}
-	
+
 	if($config["fixed_graph"] == false){
 		$water_mark = array('file' =>
 			$config['homedir'] . "/images/logo_vertical_water.png",
 			'url' => ui_get_full_url("images/logo_vertical_water.png", false, false, false));
 	}
-	
-	echo pie3d_graph(
-		true, $data_graph, $width, $height, __("other"), "",
+
+	echo pie_graph(
+		$data_graph,
+		$width,
+		$height,
+		__("other"),
+		"",
 		$water_mark,
-		$config['fontpath'], $config['font_size'], 1, false, $colors);
+		$config['fontpath'],
+		$config['font_size'],
+		1,
+		false,
+		$colors
+	);
 }
 
 /**
@@ -3420,7 +3185,8 @@ function grafico_eventos_grupo ($width = 300, $height = 200, $url = "", $meta = 
 		$water_mark = array();
 	}
 	
-	return pie3d_graph($config['flash_charts'], $data, $width, $height,
+	return pie_graph(
+		$data, $width, $height,
 		__('Other'), '', $water_mark,
 		$config['fontpath'], $config['font_size'], 1, 'bottom');
 }
@@ -3484,7 +3250,8 @@ function grafico_eventos_agente ($width = 300, $height = 200, $result = false, $
 			'url' => ui_get_full_url("images/logo_vertical_water.png", false, false, false));
 	}
 	
-	return pie3d_graph($config['flash_charts'], $data, $width, $height,
+	return pie_graph(
+		$data, $width, $height,
 		__('Others'), '', $water_mark,
 		$config['fontpath'], $config['font_size'], 1, 'bottom');
 }
@@ -3565,7 +3332,8 @@ function grafico_eventos_total($filter = "", $width = 320, $height = 200, $noWat
 		$water_mark = array();
 	}
 	
-	return pie3d_graph($config['flash_charts'], $data, $width, $height,
+	return pie_graph(
+		$data, $width, $height,
 		__('Other'), '', $water_mark,
 		$config['fontpath'], $config['font_size'], 1, 'bottom', $colors);
 }
@@ -3615,7 +3383,8 @@ function grafico_eventos_usuario ($width, $height) {
 		'file' => $config['homedir'] .  "/images/logo_vertical_water.png",
 		'url' => ui_get_full_url("/images/logo_vertical_water.png", false, false, false));
 	
-	return pie3d_graph($config['flash_charts'], $data, $width, $height,
+	return pie_graph(
+		$data, $width, $height,
 		__('Other'), '', $water_mark,
 		$config['fontpath'], $config['font_size']);
 }
@@ -3631,10 +3400,11 @@ function grafico_eventos_usuario ($width, $height) {
 function graph_custom_sql_graph ($id, $width, $height,
 	$type = 'sql_graph_vbar', $only_image = false, $homeurl = '',
 	$ttl = 1, $max_num_elements = 8) {
-	
+
 	global $config;
+
 	$SQL_GRAPH_MAX_LABEL_SIZE = 20;
-	
+
 	$report_content = db_get_row ('treport_content', 'id_rc', $id);
 	if($id != null){
 		$historical_db = db_get_value_sql("SELECT historical_db from treport_content where id_rc =".$id);
@@ -3649,42 +3419,30 @@ function graph_custom_sql_graph ($id, $width, $height,
 		$sql = db_get_row('treport_custom_sql', 'id', $report_content["treport_custom_sql_id"]);
 		$sql = io_safe_output($sql['sql']);
 	}
-	
+
 	if (($config['metaconsole'] == 1) && defined('METACONSOLE')) {
 		$metaconsole_connection = enterprise_hook('metaconsole_get_connection', array($report_content['server_name']));
-		
+
 		if ($metaconsole_connection === false) {
 			return false;
 		}
-		
+
 		if (enterprise_hook('metaconsole_load_external_db', array($metaconsole_connection)) != NOERR) {
 			//ui_print_error_message ("Error connecting to ".$server_name);
 			return false;
 		}
 	}
-	
-	
-	switch ($config["dbtype"]) {
-		case "mysql":
-		case "postgresql":
-			break;
-		case "oracle":
-			$sql = str_replace(";", "", $sql);
-			break;
-	}
-	
+
 	$data_result = db_get_all_rows_sql ($sql,$historical_db);
-	
-	
-	
+
 	if (($config['metaconsole'] == 1) && defined('METACONSOLE'))
 		enterprise_hook('metaconsole_restore_db');
-	
+
 	if ($data_result === false)
 		$data_result = array ();
-	
+
 	$data = array ();
-	
+
 	$count = 0;
 	foreach ($data_result as $data_item) {
 		$count++;
@@ -3726,19 +3484,20 @@ function graph_custom_sql_graph ($id, $width, $height,
 			}
 		}
 	}
-	
+//XXXXpie_graph
 	$flash_charts = $config['flash_charts'];
-		
+html_debug_print('entra');
 	if ($only_image) {
 		$flash_charts = false;
+		$ttl =2;	
 	}
-	
+
 	if($config["fixed_graph"] == false){
 		$water_mark = array('file' =>
 			$config['homedir'] . "/images/logo_vertical_water.png",
 			'url' => ui_get_full_url("images/logo_vertical_water.png", false, false, false));
 	}
-	
+
 	switch ($type) {
 		case 'sql_graph_vbar': // vertical bar
 			return vbar_graph(
@@ -3787,8 +3546,17 @@ function graph_custom_sql_graph ($id, $width, $height,
 			);
 			break;
 		case 'sql_graph_pie': // Pie
-			return pie3d_graph($flash_charts, $data, $width, $height, __("other"), $homeurl,
-				$water_mark, $config['fontpath'], '', $ttl);
+			return pie_graph(
+				$data,
+				$width,
+				$height,
+				__("other"),
+				$homeurl,
+				$water_mark,
+				$config['fontpath'],
+				$config['font_size'],
+				$ttl
+			);
 			break;
 	}
 }
@@ -4512,7 +4280,7 @@ function graph_netflow_aggregate_pie ($data, $aggregate, $ttl = 1, $only_image =
 			'url' => ui_get_full_url("images/logo_vertical_water.png", false, false, false));
 	}
 
-	return pie3d_graph($flash_chart, $values, 370, 200,
+	return pie_graph($flash_chart, $values, 370, 200,
 		__('Other'), $config['homeurl'], $water_mark,
 		$config['fontpath'], $config['font_size'], $ttl);
 }

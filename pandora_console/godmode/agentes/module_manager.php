@@ -43,6 +43,7 @@ echo '<table width="100%" cellpadding="2" cellspacing="2" class="databox filters
 echo "<tr><td class='datos' style='width:20%; font-weight: bold;'>";
 echo __('Search') . ' ' .
 	html_print_input_text ('search_string', $search_string, '', 15, 255, true);
+	html_print_input_hidden ('search', 1);
 echo "</td>";
 echo "<td class='datos' style='width:10%'>";
 html_print_submit_button (__('Filter'), 'filter', false, 'class="sub search"');
@@ -423,9 +424,11 @@ foreach ($order as $ord) {
 $limit = (int) $config["block_size"];
 $offset = (int) get_parameter ('offset');
 
-$params = implode(',',
+$params = ($checked)
+	? "tagente_modulo.*, tmodule_group.*"
+	: implode(',',
 	array(
-		'id_agente_modulo',
+		'tagente_modulo.id_agente_modulo',
 		'id_tipo_modulo',
 		'descripcion',
 		'nombre',
@@ -452,80 +455,46 @@ $search_string_entities = io_safe_input($search_string);
 
 $basic_where = sprintf("(nombre LIKE '%%%s%%' OR nombre LIKE '%%%s%%' OR descripcion LIKE '%%%s%%' OR descripcion LIKE '%%%s%%') AND", $search_string, $search_string_entities, $search_string, $search_string_entities);
 
-$where_tags = tags_get_acl_tags($config['id_user'], 0, 'AR', 'module_condition', 'AND', 'tagente_modulo');
+// Tags acl
+$agent_tags = tags_get_user_applied_agent_tags($id_agente);
+if ($agent_tags !== true) {
+	$where_tags = " AND ttag_module.id_tag IN (" . implode(',', $agent_tags) . ")";
+}
 
 $paginate_module = false;
 if (isset($config['paginate_module']))
 	$paginate_module = $config['paginate_module'];
 
-switch ($config["dbtype"]) {
-	case "postgresql":
-		if ($paginate_module) {
-			$limit_sql = " LIMIT $limit OFFSET $offset ";
-		}
-		else {
-			$limit_sql = '';
-		}
-	case "mysql":
-		if ($paginate_module) {
-			if (!isset($limit_sql)) {
-				$limit_sql = " LIMIT $offset, $limit ";
-			}
-		}
-		else {
-			$limit_sql = '';
-		}
-		if ($checked) {
-			$sql = sprintf("SELECT *
-				FROM tagente_modulo
-				LEFT JOIN tmodule_group
-				ON tagente_modulo.id_module_group = tmodule_group.id_mg
-				WHERE %s %s %s %s %s",
-				 $basic_where, $where, $where_tags, $order_sql, $limit_sql);
-		}
-		else {
-			$sql = sprintf("SELECT %s
-				FROM tagente_modulo
-				LEFT JOIN tmodule_group
-				ON tagente_modulo.id_module_group = tmodule_group.id_mg
-				WHERE %s %s %s %s %s",
-				$params, $basic_where, $where, $where_tags, $order_sql, $limit_sql);
-		}
-		
-		
-		$modules = db_get_all_rows_sql($sql);
-		break;
-	case "oracle":
-		$set = array();
-		if ($paginate_module) {
-			$set['limit'] = $limit;
-			$set['offset'] = $offset;
-		}
-
-		if ($checked) {
-			$sql = sprintf("SELECT *
-				FROM tagente_modulo
-				LEFT JOIN tmodule_group
-				ON tmodule_group.id_mg = tagente_modulo.id_module_group
-				WHERE %s %s %s %s",
-				 $basic_where, $where, $where_tags, $order_sql);
-		}
-		else {
-			$sql = sprintf("SELECT %s
-				FROM tagente_modulo
-				LEFT JOIN tmodule_group
-				ON tmodule_group.id_mg = tagente_modulo.id_module_group
-				WHERE %s %s %s %s",
-				$params, $basic_where, $where, $where_tags, $order_sql);
-		}
-		
-		$modules = oracle_recode_query ($sql, $set, 'AND', false);
-		break;
+if ($paginate_module) {
+	if (!isset($limit_sql)) {
+		$limit_sql = " LIMIT $offset, $limit ";
+	}
 }
+else {
+	$limit_sql = '';
+}
+$sql = sprintf("SELECT tagente_modulo.*, tmodule_group.*
+		FROM tagente_modulo
+		LEFT JOIN tmodule_group
+			ON tagente_modulo.id_module_group = tmodule_group.id_mg
+		LEFT JOIN ttag_module
+			ON ttag_module.id_agente_modulo = tagente_modulo.id_agente_modulo
+		WHERE %s %s %s
+		GROUP BY tagente_modulo.id_agente_modulo
+		%s %s",
+	$basic_where, $where, $where_tags,
+	$order_sql, $limit_sql
+);
 
-$sql_total_modules = sprintf("SELECT count(*)
+$modules = db_get_all_rows_sql($sql);
+
+$sql_total_modules = sprintf(
+	"SELECT count(DISTINCT(tagente_modulo.id_agente_modulo))
 	FROM tagente_modulo
-	WHERE %s %s %s", $basic_where, $where, $where_tags);
+	LEFT JOIN ttag_module
+		ON ttag_module.id_agente_modulo = tagente_modulo.id_agente_modulo
+	WHERE %s %s %s", $basic_where, $where, $where_tags
+);
 
 $total_modules = db_get_value_sql($sql_total_modules);
 

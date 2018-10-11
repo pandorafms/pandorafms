@@ -1532,30 +1532,6 @@ function events_get_all_status ($report = false) {
 }
 
 /**
- * Return all event source.
- *
- * @return array event source array.
- */
-function events_get_all_source () {
-	$event_table = events_get_events_table(is_metaconsole(),false);
-	$fields = array ();
-	$fields[''] = __('All');
-	
-	if (users_is_admin()) {
-		$sources = db_get_all_rows_sql("SELECT DISTINCT(source) FROM ". $event_table);
-	} else {
-		$groups_user = users_get_groups ($config['id_user'], "ER", true);
-		$sources = db_get_all_rows_sql("SELECT DISTINCT(source) FROM ". $event_table. " WHERE id_grupo IN (" .implode(",",array_keys($groups_user)) .")");	
-	}
-	
-	foreach ($sources as $key => $source) {
-		$fields[$source['source']] = $source['source'];
-	}
-	
-	return $fields;
-}
-
-/**
  * Decode a numeric status into status description.
  *
  * @param int $status_id Numeric status.
@@ -2240,12 +2216,7 @@ function events_page_details ($event, $server = "") {
 		$strict_user = (bool) db_get_value("strict_acl", "tusuario", "id_user", $config['id_user']);
 		
 		if (!empty($agent['id_grupo'])) {
-			if ($strict_user) {
-				$acl_graph = tags_check_acl_by_module($module["id_agente_modulo"], $config['id_user'], 'RR') === true;
-			}
-			else {
-				$acl_graph = check_acl($config['id_user'], $agent['id_grupo'], "RR");
-			}
+			$acl_graph = check_acl($config['id_user'], $agent['id_grupo'], "RR");
 		}
 		
 		if ($acl_graph) {
@@ -3554,7 +3525,6 @@ function events_sql_events_grouped_agents($id_agent, $server_id = -1,
 	else {
 		$group_array = array_keys($groups);
 	}
-
 	$tags_acls_condition = tags_get_acl_tags($id_user, $group_array, 'ER',
 		'event_condition', 'AND', '', $meta, array(), true); //FORCE CHECK SQL "(TAG = tag1 AND id_grupo = 1)"
 
@@ -3600,6 +3570,8 @@ function events_list_events_grouped_agents($sql) {
 	$table = events_get_events_table(is_metaconsole(), $history);
 	
 	$sql = "select * from $table 
+				LEFT JOIN tagent_secondary_group 
+				ON tagent_secondary_group.id_agent = tevento.id_agente
 				WHERE $sql";
 	
 	$result = db_get_all_rows_sql ($sql);

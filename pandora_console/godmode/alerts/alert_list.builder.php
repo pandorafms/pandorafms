@@ -70,6 +70,7 @@ if (! $id_agente) {
 
 $table->data[0][0] = __('Module');
 $modules = array ();
+
 if ($id_agente)
 	$modules = agents_get_modules ($id_agente, false, array("delete_pending" => 0));
 
@@ -138,7 +139,8 @@ if (check_acl ($config['id_user'], 0, "LM")) {
 
 echo '<form class="add_alert_form" method="post">';
 
-html_print_table ($table);
+if (!isset($step) || $step!=5)
+	html_print_table ($table);
 
 echo '<div class="action-buttons" style="width: '.$table->width.'">';
 

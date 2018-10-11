@@ -20,210 +20,6 @@ include_once($config['homedir'] . "/include/functions_agents.php");
 include_once($config['homedir'] . "/include/functions_modules.php");
 include_once($config['homedir'] . "/include/functions_users.php");
 
-function get_graph_statistics ($chart_array) {
-	global $config;
-
-	/// IMPORTANT!
-	///
-	/// The calculus for AVG, MIN and MAX values are in this function
-	/// because it must be done based on graph array data not using reporting
-	/// function to get coherent data between stats and graph visualization
-
-	$stats = array ();
-
-	$count = 0;
-
-	$size = sizeof($chart_array);
-
-	//Initialize stats array
-	$stats = array ("avg" => 0, "min" => null, "max" => null, "last" => 0);
-
-	foreach ($chart_array as $item) {
-
-		//Sum all values later divide by the number of elements
-		$stats['avg'] = $stats['avg'] + $item;
-
-		//Get minimum
-		if ($stats['min'] == null) {
-			$stats['min'] = $item;
-		}
-		else if ($item < $stats['min']) {
-			$stats['min'] = $item;
-		}
-
-		//Get maximum
-		if ($stats['max'] == null) {
-			$stats['max'] = $item;
-		}
-		else if ($item > $stats['max']) {
-			$stats['max'] = $item;
-		}
-
-		$count++;
-
-		//Get last data
-		if ($count == $size) {
-			$stats['last'] = $item;
-		}
-	}
-
-	//End the calculus for average
-	if ($count > 0) {
-
-		$stats['avg'] = $stats['avg'] / $count;
-	}
-
-	//Format stat data to display properly
-	$stats['last'] = remove_right_zeros(number_format($stats['last'], $config['graph_precision']));
-	$stats['avg'] = remove_right_zeros(number_format($stats['avg'], $config['graph_precision']));
-	$stats['min'] = remove_right_zeros(number_format($stats['min'], $config['graph_precision']));
-	$stats['max'] = remove_right_zeros(number_format($stats['max'], $config['graph_precision']));
-
-	return $stats;
-}
-
-function get_statwin_graph_statistics ($chart_array, $series_suffix = '') {
-
-	/// IMPORTANT!
-	///
-	/// The calculus for AVG, MIN and MAX values are in this function
-	/// because it must be done based on graph array data not using reporting
-	/// function to get coherent data between stats and graph visualization
-
-	$stats = array ();
-
-	$count = 0;
-
-	$size = sizeof($chart_array);
-
-	//Initialize stats array
-	$stats['sum'] = array ("avg" => 0, "min" => null, "max" => null, "last" => 0);
-	$stats['min'] = array ("avg" => 0, "min" => null, "max" => null, "last" => 0);
-	$stats['max'] = array ("avg" => 0, "min" => null, "max" => null, "last" => 0);
-
-	foreach ($chart_array as $item) {
-		if ($series_suffix != '') {
-			if (isset($item['sum' . $series_suffix]))
-				$item['sum'] = $item['sum' . $series_suffix];
-			if (isset($item['min' . $series_suffix]))
-				$item['min'] = $item['min' . $series_suffix];
-			if (isset($item['max' . $series_suffix]))
-				$item['max'] = $item['max' . $series_suffix];
-		}
-
-		//Get stats for normal graph
-		if (isset($item['sum']) && $item['sum']) {
-
-			//Sum all values later divide by the number of elements
-			$stats['sum']['avg'] = $stats['sum']['avg'] + $item['sum'];
-
-			//Get minimum
-			if ($stats['sum']['min'] == null) {
-				$stats['sum']['min'] = $item['sum'];
-			}
-			else if ($item['sum'] < $stats['sum']['min']) {
-				$stats['sum']['min'] = $item['sum'];
-			}
-
-			//Get maximum
-			if ($stats['sum']['max'] == null) {
-				$stats['sum']['max'] = $item['sum'];
-			}
-			else if ($item['sum'] > $stats['sum']['max']) {
-				$stats['sum']['max'] = $item['sum'];
-			}
-		}
-
-		//Get stats for min graph
-		if (isset($item['min']) && $item['min']) {
-			//Sum all values later divide by the number of elements
-			$stats['min']['avg'] = $stats['min']['avg'] + $item['min'];
-
-			//Get minimum
-			if ($stats['min']['min'] == null) {
-				$stats['min']['min'] = $item['min'];
-			}
-			else if ($item['min'] < $stats['min']['min']) {
-				$stats['min']['min'] = $item['min'];
-			}
-
-			//Get maximum
-			if ($stats['min']['max'] == null) {
-				$stats['min']['max'] = $item['min'];
-			}
-			else if ($item['min'] > $stats['min']['max']) {
-				$stats['min']['max'] = $item['min'];
-			}
-		}
-
-		//Get stats for max graph
-		if (isset($item['max']) && $item['max']) {
-			//Sum all values later divide by the number of elements
-			$stats['max']['avg'] = $stats['max']['avg'] + $item['max'];
-
-			//Get minimum
-			if ($stats['max']['min'] == null) {
-				$stats['max']['min'] = $item['max'];
-			}
-			else if ($item['max'] < $stats['max']['min']) {
-				$stats['max']['min'] = $item['max'];
-			}
-
-			//Get maximum
-			if ($stats['max']['max'] == null) {
-				$stats['max']['max'] = $item['max'];
-			}
-			else if ($item['max'] > $stats['max']['max']) {
-				$stats['max']['max'] = $item['max'];
-			}
-		}
-
-		//Count elements
-		$count++;
-
-		//Get last data
-		if ($count == $size) {
-			if (isset($item['sum']) && $item['sum']) {
-				$stats['sum']['last'] = $item['sum'];
-			}
-
-			if (isset($item['min']) && $item['min']) {
-				$stats['min']['last'] = $item['min'];
-			}
-
-			if (isset($item['max']) && $item['max']) {
-				$stats['max']['last'] = $item['max'];
-			}
-		}
-	}
-
-	//End the calculus for average
-	if ($count > 0) {
-
-		$stats['sum']['avg'] = $stats['sum']['avg'] / $count;
-		$stats['min']['avg'] = $stats['min']['avg'] / $count;
-		$stats['max']['avg'] = $stats['max']['avg'] / $count;
-	}
-
-	//Format stat data to display properly
-	$stats['sum']['last'] = round($stats['sum']['last'], 2);
-	$stats['sum']['avg'] = round($stats['sum']['avg'], 2);
-	$stats['sum']['min'] = round($stats['sum']['min'], 2);
-	$stats['sum']['max'] = round($stats['sum']['max'], 2);
-
-	$stats['min']['last'] = round($stats['min']['last'], 2);
-	$stats['min']['avg'] = round($stats['min']['avg'], 2);
-	$stats['min']['min'] = round($stats['min']['min'], 2);
-	$stats['min']['max'] = round($stats['min']['max'], 2);
-
-	$stats['max']['last'] = round($stats['max']['last'], 2);
-	$stats['max']['avg'] = round($stats['max']['avg'], 2);
-	$stats['max']['min'] = round($stats['max']['min'], 2);
-	$stats['max']['max'] = round($stats['max']['max'], 2);
-
-	return $stats;
-}
-
 function grafico_modulo_sparse_data_chart (
 		$agent_module_id,
 		$date_array,
@@ -2482,6 +2278,7 @@ function graph_event_module ($width = 300, $height = 200, $id_agent) {
 
 	// Fix: tag filters implemented! for tag functionality groups have to be all user_groups (propagate ACL funct!)
 	$groups = users_get_groups($config["id_user"]);
+
 	$tags_condition = tags_get_acl_tags($config['id_user'], array_keys($groups), 'ER', 'event_condition', 'AND');
 	
 	$data = array ();
@@ -2643,112 +2440,6 @@ function graph_sla_slicebar ($id, $period, $sla_min, $sla_max, $date, $daysWeek 
 	
 	return slicesbar_graph($data, $period, $width, $height, $colors,
 		$config['fontpath'], $round_corner, $home_url, $ttl);
-}
-
-/**
- * Print a horizontal bar graph with packets data of agents
- * 
- * @param integer width pie graph width
- * @param integer height pie graph height
- */
-function grafico_db_agentes_paquetes($width = 380, $height = 300) {
-	global $config;
-	global $graphic_type;
-	
-	
-	$data = array ();
-	$legend = array ();
-	
-	$agents = agents_get_group_agents (array_keys (users_get_groups (false, 'RR')), false, "none");
-	$count = agents_get_modules_data_count (array_keys ($agents));
-	unset ($count["total"]);
-	arsort ($count, SORT_NUMERIC);
-	$count = array_slice ($count, 0, 8, true);
-	
-	foreach ($count as $agent_id => $value) {
-		$data[$agents[$agent_id]]['g'] = $value;
-	}
-	
-	if($config["fixed_graph"] == false){
-		$water_mark = array('file' =>
-			$config['homedir'] . "/images/logo_vertical_water.png",
-			'url' => ui_get_full_url("images/logo_vertical_water.png", false, false, false));
-	}
-	
-	return hbar_graph($config['flash_charts'], $data, $width, $height, array(),
-		$legend, "", "", true, "", $water_mark,
-		$config['fontpath'], $config['font_size'], false, 1, $config['homeurl'],
-					'white',
-					'black');
-}
-
-/**
- * Print a horizontal bar graph with modules data of agents
- * 
- * @param integer height graph height
- * @param integer width graph width
- */
-function graph_db_agentes_modulos($width, $height) {
-	global $config;
-	global $graphic_type;
-	
-	
-	$data = array ();
-	
-	switch ($config['dbtype']) {
-		case "mysql":
-		case "postgresql":
-			$modules = db_get_all_rows_sql ('
-				SELECT COUNT(id_agente_modulo), id_agente
-				FROM tagente_modulo
-				WHERE delete_pending = 0
-				GROUP BY id_agente
-				ORDER BY 1 DESC LIMIT 10');
-			break;
-		case "oracle":
-			$modules = db_get_all_rows_sql ('
-				SELECT COUNT(id_agente_modulo), id_agente
-				FROM tagente_modulo
-				WHERE rownum <= 10
-				AND delete_pending = 0
-				GROUP BY id_agente
-				ORDER BY 1 DESC');
-			break;
-	}
-	if ($modules === false)
-		$modules = array ();
-	
-	$data = array();
-	foreach ($modules as $module) {
-		$agent_name = agents_get_name ($module['id_agente'], "none");
-		
-		if (empty($agent_name)) {
-			continue;
-		}
-		switch ($config['dbtype']) {
-			case "mysql":
-			case "postgresql":
-				$data[$agent_name]['g'] = $module['COUNT(id_agente_modulo)'];
-				break;
-			case "oracle":
-				$data[$agent_name]['g'] = $module['count(id_agente_modulo)'];
-				break;
-		}
-	}
-	
-	if($config["fixed_graph"] == false){
-		$water_mark = array('file' =>
-			$config['homedir'] . "/images/logo_vertical_water.png",
-			'url' => ui_get_full_url("images/logo_vertical_water.png", false, false, false));
-	}
-	
-	return hbar_graph($config['flash_charts'],
-		$data, $width, $height, array(),
-		array(), "", "", true, "",
-		$water_mark,
-		$config['fontpath'], $config['font_size'], false, 1, $config['homeurl'],
-					'white',
-					'black');
 }
 
 /**
@@ -3191,71 +2882,6 @@ function grafico_eventos_grupo ($width = 300, $height = 200, $url = "", $meta = 
 		$config['fontpath'], $config['font_size'], 1, 'bottom');
 }
 
-function grafico_eventos_agente ($width = 300, $height = 200, $result = false, $meta = false, $history = false) {
-	global $config;
-	global $graphic_type;
-	
-	//It was urlencoded, so we urldecode it
-	//$url = html_entity_decode (rawurldecode ($url), ENT_QUOTES);
-	$data = array ();
-	$loop = 0;
-	
-	if ($result === false) {
-		$result = array();
-	}
-	
-	$system_events = 0;
-	$other_events = 0;
-	$total = array();
-	$i = 0;
-	
-	foreach ($result as $row) {
-		if ($meta) {
-			$count[] = $row["agent_name"];
-		}
-		else {
-			if ($row["id_agente"] == 0) {
-				$count[] = __('SYSTEM');
-			}
-			else
-				$count[] = agents_get_alias($row["id_agente"]) ;
-		}
-		
-	}
-	
-	$total = array_count_values($count);
-	
-	foreach ($total as $key => $total) {
-		if ($meta) {
-			$name = $key." (".$total.")";
-		}
-		else {
-			$name = $key." (".$total.")";
-		}
-		$data[$name] = $total;
-	}
-	
-	/*
-	if ($other_events > 0) {
-		$name = __('Other')." (".$other_events.")";
-		$data[$name] = $other_events;
-	}
-	*/
-	
-	// Sort the data
-	arsort($data);
-	if($config["fixed_graph"] == false){
-		$water_mark = array('file' =>
-			$config['homedir'] . "/images/logo_vertical_water.png",
-			'url' => ui_get_full_url("images/logo_vertical_water.png", false, false, false));
-	}
-	
-	return pie_graph(
-		$data, $width, $height,
-		__('Others'), '', $water_mark,
-		$config['fontpath'], $config['font_size'], 1, 'bottom');
-}
-
 /**
  * Print a pie graph with events data in 320x200 size
  * 
@@ -3281,8 +2907,11 @@ function grafico_eventos_total($filter = "", $width = 320, $height = 200, $noWat
 	}
 	
 	$sql = sprintf("SELECT criticity, COUNT(id_evento) events
-		FROM tevento %s 
-		GROUP BY criticity ORDER BY events DESC", $where);
+		FROM tevento 
+		LEFT JOIN tagent_secondary_group tasg 
+		ON tevento.id_agente = tasg.id_agent
+		%s %s
+		GROUP BY criticity ORDER BY events DESC", $where , $filter);
 	
 	$criticities = db_get_all_rows_sql ($sql, false, false);
 	
@@ -4592,12 +4221,11 @@ function graph_monitor_wheel ($width = 550, $height = 600, $filter = false) {
 		if (!empty($agents)) {
 			$agents_id = array();
 			$agents_aux = array();
-			foreach ($agents as $key => $agent) {
+			foreach ($agents as $key => $agent) { 
 				$agents_aux[$agent['id_agente']] = $agent;
 			}
 			$agents = $agents_aux;
 			$agents_aux = null;
-			$fields = array('id_agente_modulo', 'id_agente', 'id_module_group', 'nombre');
 
 			$module_groups = modules_get_modulegroups();
 			$module_groups[0] = __('Not assigned');

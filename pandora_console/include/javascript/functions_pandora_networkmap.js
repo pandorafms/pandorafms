@@ -3958,26 +3958,6 @@ function get_status_module() {
 	});
 }
 
-function check_changes_num_modules() {
-	var params = [];
-	params.push("check_changes_num_modules=1");
-	params.push("id=" + id_agent);
-	params.push("page=operation/agentes/pandora_networkmap.view");
-	jQuery.ajax({
-		data: params.join("&"),
-		dataType: 'json',
-		type: 'POST',
-		url: action = "../../../ajax.php",
-		success: function (data) {
-			if (data['correct']) {
-				if (module_count != data['count']) {
-					//location.reload(true);
-				}
-			}
-		}
-	});
-}
-
 function show_networkmap_node(id_agent_param, refresh_state) {
 	id_agent = id_agent_param;
 

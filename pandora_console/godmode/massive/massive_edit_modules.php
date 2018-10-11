@@ -282,7 +282,7 @@ else {
 }
 
 $names = agents_get_modules (array_keys ($agents),
-	'DISTINCT(nombre)', $filter, false);
+	'DISTINCT(tagente_modulo.nombre)', $filter, false);
 foreach ($names as $name) {
 	$modules[$name['nombre']] = $name['nombre'];
 }

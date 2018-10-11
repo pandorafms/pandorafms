@@ -68,14 +68,18 @@ if (is_ajax ()) {
 			}
 		}
 		else {
-			$groups_orig = users_get_groups(false, $privilege);
+			$groups_orig = users_get_groups(false, $privilege, false);
 			$groups = array_keys($groups_orig);
 		}
-		
+
 		// Build filter
 		$filter = array();
-		$filter['id_grupo'] = $groups;
-		
+		// Group filter (primary and secondary)
+		$filter[] = "(" .db_format_array_where_clause_sql(
+			array('id_grupo' => $groups, 'id_group' => $groups),
+			'OR'
+		) . ")";
+
 		if (!empty($id_os))
 			$filter['id_os'] = $id_os;
 		if (!empty($agent_name))
@@ -158,12 +162,17 @@ if (is_ajax ()) {
 			}
 			
 		}
-		
+		$filter['group'] = 'id_agente';
+
 		// Build fields
 		$fields = array('id_agente', 'alias');
 
 		// Perform search
-		$agents = db_get_all_rows_filter('tagente', $filter, $fields);
+		$agents = db_get_all_rows_filter(
+			'tagente LEFT JOIN tagent_secondary_group ON id_agente=id_agent',
+			$filter,
+			$fields
+		);
 		if (empty($agents)) $agents = array();
 		
 		foreach ($agents as $k => $v) {

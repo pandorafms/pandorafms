@@ -160,27 +160,6 @@ $ignored_params['refr'] = '';
 				}
 			});
 		}
-		
-		//~ var fetchMap = function () {
-			//~ $.ajax({
-				//~ url: 'public_console.php',
-				//~ type: 'GET',
-				//~ dataType: 'html',
-				//~ data: {
-					//~ hash: '<?php echo $hash; ?>',
-					//~ id_layout: <?php echo $id_layout; ?>,
-					//~ graph_javascript: <?php echo (int) $graph_javascript; ?>,
-					//~ id_user: '<?php echo $config['id_user']; ?>',
-					//~ width: $(window).width(),
-					//~ height: $(window).height(),
-					//~ xhr: true
-				//~ }
-			//~ })
-			//~ .done(function (data, textStatus, xhr) {
-				//~ $('div#vc-container').html(data);
-				//~ startCountDown(refr, fetchMap);
-			//~ });
-		//~ }
 		startCountDown(refr, false);
 		// Auto hide controls
 		var controls = document.getElementById('vc-controls');
@@ -196,7 +175,6 @@ $ignored_params['refr'] = '';
 		$('body').css('margin','0');
 		$('body').css('height','100%');
 		$('body').css('overflow','hidden');
-		$('p').css('margin-top','25px');
 		$(".module_graph .menu_graph").css('display','none');
 		
 		$(".parent_graph").each(function(){

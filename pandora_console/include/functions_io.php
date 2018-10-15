@@ -374,13 +374,18 @@ function __ ($string /*, variable arguments */) {
 	global $l10n;
 	global $config;
 	static $extensions_cache = array();
-	
-	if (array_key_exists($config["id_user"], $extensions_cache)) {
-		$extensions = $extensions_cache[$config["id_user"]];
+
+	if( !isset($config["id_user"]) && count($extensions_cache) > 0 ) {
+		if (array_key_exists($config["id_user"], $extensions_cache)) {
+			$extensions = $extensions_cache[$config["id_user"]];
+		}
+		else {
+			$extensions = extensions_get_extensions();
+			$extensions_cache[$config["id_user"]] = $extensions;
+		}
 	}
-	else {
-		$extensions = extensions_get_extensions();
-		$extensions_cache[$config["id_user"]] = $extensions;
+	else{
+		$extension =null;
 	}
 	if (empty($extensions))
 		$extensions = array();

@@ -3597,17 +3597,17 @@ function visual_map_get_user_layouts ($id_user = 0, $only_names = false, $filter
 			$retval[$layout['id']] = $layout;
 
 		//add_perms
-		if ($groups[$layout['id_group']]['vconsole_view']){
+		if (isset($groups[$layout['id_group']]['vconsole_view'])){
 			$retval[$layout['id']]['vr'] = $groups[$layout['id_group']]['vconsole_view'];
 		}
-		if ($groups[$layout['id_group']]['vconsole_edit']){
+		if (isset($groups[$layout['id_group']]['vconsole_edit'])){
 			$retval[$layout['id']]['vw'] = $groups[$layout['id_group']]['vconsole_edit'];
 		}
-		if ($groups[$layout['id_group']]['vconsole_management']){
+		if (isset($groups[$layout['id_group']]['vconsole_management'])){
 			$retval[$layout['id']]['vm'] = $groups[$layout['id_group']]['vconsole_management'];
 		}
 	}
-	
+
 	return $retval;
 }
 

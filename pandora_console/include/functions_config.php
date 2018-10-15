@@ -1520,7 +1520,7 @@ function config_process_config () {
 	else {
 		if (!json_decode(io_safe_output($config['ad_adv_perms']))) {
 			$temp_ad_adv_perms = array();
-			if ($config['ad_adv_perms'] != '') {
+			if (!isset($config['ad_adv_perms']) && $config['ad_adv_perms'] != '') {
 				$perms = explode(';', io_safe_output($config['ad_adv_perms']));
 				foreach ($perms as $ad_adv_perm) {
 					if (preg_match('/[\[\]]/',$ad_adv_perm)) {
@@ -1584,7 +1584,7 @@ function config_process_config () {
 	else {
 		if (!json_decode(io_safe_output($config['ldap_adv_perms']))) {
 			$temp_ldap_adv_perms = array();
-			if ($config['ldap_adv_perms'] != '') {
+			if (!isset($config['ad_adv_perms']) && $config['ldap_adv_perms'] != '') {
 				$perms = explode(';', io_safe_output($config['ldap_adv_perms']));
 				foreach ($perms as $ad_adv_perm) {
 					if (preg_match('/[\[\]]/',$ad_adv_perm)) {
@@ -2266,9 +2266,14 @@ function config_user_set_custom_config() {
 
 function config_prepare_session() {
 	global $config;
-	
-	$user = users_get_user_by_id($config["id_user"]);
-	$user_sesion_time = $user['session_time'];
+
+	if(isset($config["id_user"])){
+		$user = users_get_user_by_id($config["id_user"]);
+		$user_sesion_time = $user['session_time'];
+	}
+	else{
+		$user_sesion_time = null;
+	}
 
 	if ($user_sesion_time == 0) {
 		// Change the session timeout value to session_timeout minutes  // 8*60*60 = 8 hours
@@ -2278,20 +2283,20 @@ function config_prepare_session() {
 		// Change the session timeout value to session_timeout minutes  // 8*60*60 = 8 hours
 		$sessionCookieExpireTime = $user_sesion_time;
 	}
-	
+
 	if ($sessionCookieExpireTime <= 0)
 		$sessionCookieExpireTime = 10 * 365 * 24 * 60 * 60;
 	else
 		$sessionCookieExpireTime *= 60;
-	
+
 	ini_set('session.gc_maxlifetime', $sessionCookieExpireTime);
 	session_set_cookie_params ($sessionCookieExpireTime);
-	
+
 	// Reset the expiration time upon page load //session_name() is default name of session PHPSESSID
-	
+
 	if (isset($_COOKIE[session_name()]))
 		setcookie(session_name(), $_COOKIE[session_name()], time() + $sessionCookieExpireTime, "/");
-	
+
 	ini_set("post_max_size", $config["max_file_size"]);
 	ini_set("upload_max_filesize", $config["max_file_size"]);
 }

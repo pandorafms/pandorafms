@@ -1544,13 +1544,14 @@ function loadFieldsFromDB(item) {
 				if (key == 'linked_layout_status_type')
 					$("select[name=linked_map_status_calculation_type]").val(val).change();
 				if (key == 'id_layout_linked') {
-					if (data['linked_layout_node_id'] == null) {
-						$("select[name=map_linked]").val(val).change();
-					}
-					else {
-						var $option = $("select[name=map_linked] > option[data-node-id=" + data['linked_layout_node_id'] + "][value=" + val + "]");
-						if ($option.length === 0) $option = $("select[name=map_linked] > option[value=" + val + "]");
-						$option.prop("selected", true).parent().change();
+					if (val != 0) {
+						if (data['linked_layout_node_id'] == null) {
+							$("select[name=map_linked]").val(val).change();
+						} else {
+							var $option = $("select[name=map_linked] > option[data-node-id=" + data['linked_layout_node_id'] + "][value=" + val + "]");
+							if ($option.length === 0) $option = $("select[name=map_linked] > option[value=" + val + "]");
+							$option.prop("selected", true).parent().change();
+						}
 					}
 				}
 				if (key == 'linked_layout_node_id')

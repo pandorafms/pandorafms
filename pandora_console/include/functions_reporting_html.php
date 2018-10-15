@@ -113,7 +113,10 @@ function html_do_report_info($report) {
 			<tr>
 				<td><b>' . __('Report date') . ': </b></td>';
 				if (isset($report['period'])) {
-					$html .= '<td>' . date($config["date_format"], ($report['datetime'] - $report['period']));
+					if (is_numeric($report['datetime']) && is_numeric($report['period'])) {
+						$html .= '<td>' . date($config["date_format"], ($report['datetime'] - $report['period'])) . '</td>';
+					}
+					$html .= '<td></td>';
 				}
 				else {
 					$html .= '<td>' . __('Items period before') . ' <b>' . date($config["date_format"], $report['datetime']) . '</b></td>';

@@ -20,7 +20,7 @@
  */
 
 /**
- * Pandora build version and version 
+ * Pandora build version and version
  */
 $build_version = 'PC181015';
 $pandora_version = 'v7.0NG.727';
@@ -78,7 +78,7 @@ else {
 
 // Check if mysqli is available
 if (!(isset($config["mysqli"]))) {
-	$config["mysqli"] = extension_loaded(mysqli);
+	$config["mysqli"] = extension_loaded('mysqli');
 }
 
 $config['start_time'] = microtime (true);

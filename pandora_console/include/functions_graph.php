@@ -3113,13 +3113,8 @@ function graph_custom_sql_graph ($id, $width, $height,
 			}
 		}
 	}
-//XXXXpie_graph
+
 	$flash_charts = $config['flash_charts'];
-html_debug_print('entra');
-	if ($only_image) {
-		$flash_charts = false;
-		$ttl =2;	
-	}
 
 	if($config["fixed_graph"] == false){
 		$water_mark = array('file' =>
@@ -3898,18 +3893,14 @@ function graph_netflow_aggregate_pie ($data, $aggregate, $ttl = 1, $only_image =
 		$i++;
 	}
 
-	$flash_chart = $config['flash_charts'];
-	if ($only_image) {
-		$flash_chart = false;
-	}
-
 	if($config["fixed_graph"] == false){
 		$water_mark = array('file' =>
 			$config['homedir'] . "/images/logo_vertical_water.png",
 			'url' => ui_get_full_url("images/logo_vertical_water.png", false, false, false));
 	}
 
-	return pie_graph($flash_chart, $values, 370, 200,
+	return pie_graph(
+		$values, 370, 200,
 		__('Other'), $config['homeurl'], $water_mark,
 		$config['fontpath'], $config['font_size'], $ttl);
 }

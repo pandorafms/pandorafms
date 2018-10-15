@@ -1308,7 +1308,6 @@ function reporting_event_top_n($report, $content, $type = 'dinamic',
 			if ($show_graph != REPORT_TOP_N_ONLY_TABLE) {
 				arsort($data_pie_graph);
 				$return['charts']['pie'] = pie_graph(
-					false,
 					$data_pie_graph,
 					$width, $height,
 					__("other"),
@@ -1462,7 +1461,6 @@ function reporting_event_report_group($report, $content,
 			$filter_event_status, $filter_event_filter_search);
 			
 		$return['chart']['by_agent']= pie_graph(
-			false,
 			$data_graph,
 			500,
 			150,
@@ -1482,7 +1480,6 @@ function reporting_event_report_group($report, $content,
 			$filter_event_status, $filter_event_filter_search);
 		
 		$return['chart']['by_user_validator'] = pie_graph(
-			false,
 			$data_graph,
 			500,
 			150,
@@ -1504,7 +1501,6 @@ function reporting_event_report_group($report, $content,
 		$colors = get_criticity_pie_colors($data_graph);
 		
 		$return['chart']['by_criticity'] = pie_graph(
-			false,
 			$data_graph,
 			500,
 			150,
@@ -1526,7 +1522,6 @@ function reporting_event_report_group($report, $content,
 			$filter_event_status, $filter_event_filter_search);
 		
 		$return['chart']['validated_vs_unvalidated'] = pie_graph(
-			false,
 			$data_graph,
 			500,
 			150,
@@ -2201,7 +2196,6 @@ function reporting_exception($report, $content, $type = 'dinamic',
 				
 				
 				$return["chart"]["pie"] = pie_graph(
-					false,
 					$data_pie_graph,
 					600,
 					150,
@@ -2384,7 +2378,6 @@ function reporting_event_report_agent($report, $content,
 			$filter_event_status, $filter_event_filter_search);
 		
 		$return["chart"]["by_user_validator"] = pie_graph(
-			false,
 			$data_graph,
 			500,
 			150,
@@ -2406,7 +2399,6 @@ function reporting_event_report_agent($report, $content,
 		$colors = get_criticity_pie_colors($data_graph);
 
 		$return["chart"]["by_criticity"] = pie_graph(
-			false,
 			$data_graph,
 			500,
 			150,
@@ -2428,7 +2420,6 @@ function reporting_event_report_agent($report, $content,
 			$filter_event_status, $filter_event_filter_search);
 		
 		$return["chart"]["validated_vs_unvalidated"] = pie_graph(
-			false,
 			$data_graph,
 			500,
 			150,
@@ -6569,30 +6560,30 @@ function reporting_get_module_detailed_event ($id_modules, $period = 0,
 	$filter_event_filter_search = false, $force_width_chart = false,
 	$event_graph_by_user_validator = false, $event_graph_by_criticity = false, 
 	$event_graph_validated_vs_unvalidated = false, $ttl = 1, $id_server = false) {
-	
+
 	global $config;
-	
+
 	$id_modules = (array)safe_int ($id_modules, 1);
-	
+
 	if (!is_numeric ($date)) {
 		$date = strtotime ($date);
 	}
 	if (empty ($date)) {
 		$date = get_system_time ();
 	}
-	
+
 	$history = false;
 	if ($config['history_event_enabled'])
 		$history = true;
-	
+
 	$events = array ();
-	
+
 	foreach ($id_modules as $id_module) {
-		$event['data'] = events_get_agent (false, (int) $period, (int) $date, 
-			$history, $show_summary_group, $filter_event_severity, 
-			$filter_event_type, $filter_event_status, $filter_event_filter_search, 
+		$event['data'] = events_get_agent (false, (int) $period, (int) $date,
+			$history, $show_summary_group, $filter_event_severity,
+			$filter_event_type, $filter_event_status, $filter_event_filter_search,
 			false, false, $id_module, true , $id_server);
-			
+
 		//total_events
 		if(isset($event['data'])){
 			$event['total_events'] = count($event['data']);
@@ -6605,18 +6596,17 @@ function reporting_get_module_detailed_event ($id_modules, $period = 0,
 		if (!empty($force_width_chart)) {
 			$width = $force_width_chart;
 		}
-		
+
 		if (!empty($force_height_chart)) {
 			$height = $force_height_chart;
 		}
-		
+
 		if ($event_graph_by_user_validator) {
 			$data_graph = events_get_count_events_validated_by_user(
 				array('id_agentmodule' => $id_module), $period, $date, $filter_event_severity,
 				$filter_event_type, $filter_event_status, $filter_event_filter_search);
-			
+
 			$event['chart']['by_user_validator'] = pie_graph(
-				false,
 				$data_graph,
 				500,
 				150,
@@ -6628,16 +6618,15 @@ function reporting_get_module_detailed_event ($id_modules, $period = 0,
 				$ttl
 			);
 		}
-		
+
 		if ($event_graph_by_criticity) {
 			$data_graph = events_get_count_events_by_criticity(
 				array('id_agentmodule' => $id_module), $period, $date, $filter_event_severity,
 				$filter_event_type, $filter_event_status, $filter_event_filter_search);
-			
+
 			$colors = get_criticity_pie_colors($data_graph);
-			
+
 			$event['chart']['by_criticity'] = pie_graph(
-				false,
 				$data_graph,
 				500,
 				150,
@@ -6651,14 +6640,13 @@ function reporting_get_module_detailed_event ($id_modules, $period = 0,
 				$colors
 			);
 		}
-		
+
 		if ($event_graph_validated_vs_unvalidated) {
 			$data_graph = events_get_count_events_validated(
 				array('id_agentmodule' => $id_module), $period, $date, $filter_event_severity,
 				$filter_event_type, $filter_event_status, $filter_event_filter_search);
-			
+
 			$event['chart']['validated_vs_unvalidated'] = pie_graph(
-				false,
 				$data_graph,
 				500,
 				150,

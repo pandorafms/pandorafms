@@ -30,7 +30,7 @@ function pandora_session_read ($session_id) {
 	if (!empty($session_data))
 		return $session_data;
 	else
-		return false;
+		return '';
 }
 
 function pandora_session_write ($session_id, $data) {

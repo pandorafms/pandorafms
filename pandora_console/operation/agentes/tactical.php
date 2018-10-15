@@ -163,7 +163,7 @@ $table->rowclass[] = '';
 // Server performance 
 // ---------------------------------------------------------------------
 if ($is_admin) {
-	$table->data[4][0] = reporting_get_stats_servers(false);
+	$table->data[4][0] = reporting_get_stats_servers();
 	$table->rowclass[] = '';
 }
 
@@ -183,6 +183,7 @@ if (check_acl($config['id_user'],0,'ER')) {
 	if (!empty($tags_condition)) {
 		$event_filter .= " AND ($tags_condition)";
 	}
+	$event_filter .= " AND utimestamp > (UNIX_TIMESTAMP(NOW()) - " . SECONDS_1DAY . ")";
 	$events = events_print_event_table ($event_filter, 10, "100%",true,false,true);
 	ui_toggle($events, __('Latest events'),false,false);
 }
@@ -200,13 +201,13 @@ $out = '<table cellpadding=0 cellspacing=0 class="databox pies"  style="margin-t
 			<legend>' . 
 				__('Event graph') . 
 			'</legend>' . 
-			grafico_eventos_total("", 280, 150, false) . '</fieldset>';
+			grafico_eventos_total("", 280, 150, false, true) . '</fieldset>';
 	$out .="</td><td>";
 	$out .= '<fieldset class="databox tactical_set">
 			<legend>' .
 				__('Event graph by agent') .
 			'</legend>' .
-			grafico_eventos_grupo(280, 150, "", false, false, false) . '</fieldset>';
+			grafico_eventos_grupo(280, 150, "", false, true) . '</fieldset>';
 	$out .= '</td></tr></table>';
 echo $out;
 

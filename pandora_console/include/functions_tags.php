@@ -1066,7 +1066,7 @@ function tags_check_acl_by_module($id_module = 0, $id_user = false,
 		// If user has not permission for this group,go to next group
 		if (!isset($user_groups[$group])) continue;
 		// No tags means user can see all tags for this group
-		if (!isset($user_groups[$group]["tags"][$acl_column])) return true;
+		if (empty($user_groups[$group]["tags"][$acl_column])) return true;
 		// Check acl
 		$intersection = array_intersect($tags, $user_groups[$group]["tags"][$acl_column]);
 		if(!empty($intersection)) return true;

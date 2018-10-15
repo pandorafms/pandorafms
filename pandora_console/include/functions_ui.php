@@ -548,7 +548,7 @@ function ui_print_group_icon ($id_group, $return = false, $path = "groups_small"
 		$link = false;
 	
 	if ($link)
-		$output = '<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=60&amp;group_id='.$id_group.'">';
+		$output = '<a href="'.$config["homeurl"].'index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=60&amp;group_id='.$id_group.'">';
 	
 	if ($config['show_group_name']) {
 		$output .= '<span title="'. groups_get_name($id_group, true) .'">' .

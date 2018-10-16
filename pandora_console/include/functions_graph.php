@@ -1820,11 +1820,8 @@ function graphic_combined_module (
 				$height = 500;
 			}
 
-			$flash_charts = true;
-
 			if($params_combined['stacked'] == CUSTOM_GRAPH_HBARS){
 				$output = hbar_graph(
-					true,
 					$graph_values,
 					$width,
 					$height,
@@ -1847,7 +1844,6 @@ function graphic_combined_module (
 
 			if($params_combined['stacked'] == CUSTOM_GRAPH_VBARS){
 				$output = vbar_graph(
-					true,
 					$graph_values,
 					$width,
 					$height,
@@ -1941,7 +1937,6 @@ function graphic_combined_module (
 			$color  = color_graph_array();
 
 			$output = ring_graph(
-				true,
 				$graph_values,
 				$width,
 				$height,
@@ -3125,7 +3120,6 @@ function graph_custom_sql_graph ($id, $width, $height,
 	switch ($type) {
 		case 'sql_graph_vbar': // vertical bar
 			return vbar_graph(
-				$flash_charts,
 				$data,
 				$width,
 				$height,
@@ -3149,7 +3143,6 @@ function graph_custom_sql_graph ($id, $width, $height,
 			break;
 		case 'sql_graph_hbar': // horizontal bar
 			return hbar_graph(
-				$flash_charts,
 				$data,
 				$width,
 				$height,
@@ -3198,10 +3191,9 @@ function graph_custom_sql_graph ($id, $width, $height,
 function graph_graphic_agentevents ($id_agent, $width, $height, $period = 0, $homeurl, $return = false, $from_agent_view = false) {
 	global $config;
 	global $graphic_type;
-	
-	
+
 	$data = array ();
-	
+
 	//$resolution = $config['graph_res'] * ($period * 2 / $width); // Number of "slices" we want in graph
 	$resolution = 5 * ($period * 2 / $width); // Number of "slices" we want in graph
 
@@ -3269,7 +3261,7 @@ function graph_graphic_agentevents ($id_agent, $width, $height, $period = 0, $ho
 	}
 
 	$colors = array(1 => COL_NORMAL, 2 => COL_WARNING, 3 => COL_CRITICAL, 4 => COL_UNKNOWN);
-	
+
 	// Draw slicebar graph
 	if ($config['flash_charts']) {
 		$out = flot_slicesbar_graph($data, $period, $width, $height, $full_legend, $colors, $config['fontpath'], $config['round_corner'], $homeurl, '', '', false, $id_agent, $full_legend_date);

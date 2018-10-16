@@ -741,8 +741,7 @@ if (! isset ($config['id_user'])) {
 	}
 }
 else {
-	
-	if ( ($_GET["loginhash_data"])  && ($_GET["loginhash_data"])) {
+	if (isset($_GET["loginhash_data"])) {
 
         $loginhash_data = get_parameter("loginhash_data", "");
         $loginhash_user = str_rot13(get_parameter("loginhash_user", ""));

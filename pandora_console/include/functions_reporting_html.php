@@ -2860,24 +2860,6 @@ function reporting_html_sql(&$table, $item) {
 	}
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 function reporting_get_stats_summary($data, $graph_width, $graph_height) {
 	global $config;
 	
@@ -2902,8 +2884,7 @@ function reporting_get_stats_summary($data, $graph_width, $graph_height) {
 	
 	if ($data["monitor_checks"] > 0) {
 		// Fixed width non interactive charts
-		$status_chart_width = $config["flash_charts"] == false
-			? 100 : $graph_width;
+		$status_chart_width = $graph_width;
 
 		$tdata[0] =
 			'<div style="margin: auto; width: ' . $graph_width . 'px;">' .
@@ -3681,6 +3662,7 @@ function reporting_get_last_activity() {
 }
 
 function reporting_get_event_histogram ($events, $text_header_event = false) {
+
 	global $config;
 	if (!defined("METACONSOLE")) {
 		include_once ($config['homedir'] .'/include/graphs/functions_gd.php');
@@ -3840,9 +3822,9 @@ function reporting_get_event_histogram_meta ($width) {
 
 	$ttl = 1;
 	$urlImage = ui_get_full_url(false, true, false, false);
-	
+
 	$data = array ();
-	
+
 	//$resolution = $config['graph_res'] * ($period * 2 / $width); // Number of "slices" we want in graph
 	$resolution = 5 * ($period * 2 / $width); // Number of "slices" we want in graph
 
@@ -3865,10 +3847,10 @@ function reporting_get_event_histogram_meta ($width) {
 		EVENT_CRIT_MAJOR => COL_MAJOR,
 		EVENT_CRIT_CRITICAL => COL_CRITICAL
 	);
-	
+
 	$user_groups = users_get_groups($config['id_user'], 'ER');
 	$user_groups_ids = array_keys($user_groups);
-	
+
 	if (empty($user_groups)) {
 		$groups_condition = ' AND 1 = 0 ';
 	}
@@ -3880,51 +3862,46 @@ function reporting_get_event_histogram_meta ($width) {
 		$groups_condition .= " AND id_grupo != 0";
 	}
 	$status_condition = " AND estado = 0 ";
-	
+
 	$cont = 0;
 	for ($i = 0; $i < $interval; $i++) {
 		$bottom = $datelimit + ($periodtime * $i);
 		if (! $graphic_type) {
-			if ($config['flash_charts']) {
-				$name = date('H:i:s', $bottom);
-			}
-			else {
-				$name = date('H\h', $bottom);
-			}
+			$name = date('H:i:s', $bottom);
 		}
 		else {
 			$name = $bottom;
 		}
-		
+
 		// Show less values in legend
 		if ($cont == 0 or $cont % 2)
 			$legend[$cont] = $name;
-		
+
 		if ($from_agent_view) {
 			$full_date = date('Y/m/d', $bottom);
 			$full_legend_date[$cont] = $full_date;
 		}
 
 		$full_legend[$cont] = $name;
-		
+
 		$top = $datelimit + ($periodtime * ($i + 1));
-		
+
 		$time_condition = 'utimestamp > '.$bottom . ' AND utimestamp < '.$top; 
 		$sql = sprintf('SELECT criticity,utimestamp
 			FROM tmetaconsole_event
 			WHERE %s %s %s
 			ORDER BY criticity DESC',
 			$time_condition, $groups_condition, $status_condition);
-		
+
 		$events = db_get_all_rows_sql($sql);
-		
+
 		$events_criticity = array();
 		if(is_array($events)){
 			foreach ($events as $key => $value) {
 				array_push($events_criticity,$value['criticity']);
 			}
 		}
-		
+
 		if (!empty($events)) {
 			if(array_search('4',$events_criticity) !== false){
 				$data[$cont]['data'] = EVENT_CRIT_CRITICAL;
@@ -3945,16 +3922,14 @@ function reporting_get_event_histogram_meta ($width) {
 			}else {
 				$data[$cont]['data'] = EVENT_CRIT_INFORMATIONAL;
 			}
-			
 			$data[$cont]['utimestamp'] = $periodtime;
-			
 		} else {
 			$data[$cont]['utimestamp'] = $periodtime;
 			$data[$cont]['data'] = 1;
 		}
 		$cont++;
 	}
-	
+
 	$table = new stdClass();
 
 	$table->width = '100%';
@@ -3964,16 +3939,15 @@ function reporting_get_event_histogram_meta ($width) {
 	$table->head = array ();
 	$table->title = '<span>' . $text_header_event . '</span>';
 	$table->data[0][0] = "" ;
-	
+
 	if (!empty($data)) {
 		$slicebar = flot_slicesbar_graph($data, $period, "100%", 30, $full_legend, $colors, $config['fontpath'], $config['round_corner'], $url, '', '', false, 0, $full_legend_date);
-		
 		$table->data[0][0] = $slicebar;
 	}
 	else {
 		$table->data[0][0] = __('No events');
 	}
-	
+
 	if (!$text_header_event) {
 		$event_graph = '<fieldset class="databox tactical_set">
 					<legend>' .
@@ -3985,7 +3959,6 @@ function reporting_get_event_histogram_meta ($width) {
 		$table->class = 'noclass';
 		$event_graph = html_print_table($table, true);
 	}
-	
 	return $event_graph;
 }
 

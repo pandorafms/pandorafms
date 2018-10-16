@@ -1320,7 +1320,6 @@ function reporting_event_top_n($report, $content, $type = 'dinamic',
 				
 				//Display bars graph
 				$return['charts']['bars'] = hbar_graph(
-					false,
 					$data_hbar,
 					$width,
 					count($data_hbar) * 50,
@@ -2209,7 +2208,6 @@ function reporting_exception($report, $content, $type = 'dinamic',
 				
 				
 				$params = array(
-					'flash_chart' => false,
 					'chart_data' => $data_hbar,
 					'width' => 600,
 					'height' => 25 * count($data_hbar),

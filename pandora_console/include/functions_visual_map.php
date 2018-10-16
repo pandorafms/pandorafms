@@ -1203,7 +1203,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 					if ($layoutData['label_position']=='left') {
 						if ($layoutData['type_graph'] == 'horizontal') {
 							$img = '<div style="float:right;height:'.$himg.'px;">'.
-								hbar_graph(true, $module_data,
+								hbar_graph($module_data,
 								400, 400, $color, array(), array(),
 								ui_get_full_url("images/image_problem.opaque.png", false, false, false),
 								"", "", $water_mark, $config['fontpath'], 6,
@@ -1211,7 +1211,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 						}
 						else {
 							$img = '<div style="float:right;height:'.$himg.'px;">'. 
-								vbar_graph(true, $module_data,
+								vbar_graph($module_data,
 								400, 400, $color, array(), array(),
 								ui_get_full_url("images/image_problem.opaque.png", false, false, false),
 								"", "", $water_mark, $config['fontpath'], 6,
@@ -1221,7 +1221,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 					elseif($layoutData['label_position']=='right') {
 						if ($layoutData['type_graph'] == 'horizontal') {
 							$img = '<div style="float:left;height:'.$himg.'px;">'.
-								hbar_graph(true, $module_data,
+								hbar_graph($module_data,
 								400, 400, $color, array(), array(),
 								ui_get_full_url("images/image_problem.opaque.png", false, false, false),
 								"", "", $water_mark, $config['fontpath'], 6,
@@ -1229,7 +1229,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 						}
 						else {
 							$img = '<div style="float:left;height:'.$himg.'px;">'. 
-								vbar_graph(true, $module_data,
+								vbar_graph($module_data,
 								400, 400, $color, array(), array(),
 								ui_get_full_url("images/image_problem.opaque.png", false, false, false),
 								"", "", $water_mark, $config['fontpath'], 6,
@@ -1238,14 +1238,14 @@ function visual_map_print_item($mode = "read", $layoutData,
 					}
 					else {
 						if ($layoutData['type_graph'] == 'horizontal') {
-							$img = hbar_graph(true, $module_data,
+							$img = hbar_graph($module_data,
 								400, 400, $color, array(), array(),
 								ui_get_full_url("images/image_problem.opaque.png", false, false, false),
 								"", "", $water_mark, $config['fontpath'], 6,
 								"", 0, $config['homeurl'], $layoutData['image'], $layoutData['border_color']);
 						}
 						else {
-							$img = vbar_graph(true, $module_data,
+							$img = vbar_graph($module_data,
 								400, 400, $color, array(), array(),
 								ui_get_full_url("images/image_problem.opaque.png", false, false, false),
 								"", "", $water_mark, $config['fontpath'], 6,
@@ -1257,7 +1257,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 					if ($layoutData['label_position']=='left') {
 						if ($layoutData['type_graph'] == 'horizontal') {
 							$img = '<div style="float:right;height:'.$himg.'px;">'.
-								hbar_graph(true, $module_data,
+								hbar_graph($module_data,
 								$width, $height, $color, array(), array(),
 								ui_get_full_url("images/image_problem.opaque.png", false, false, false),
 								"", "", $water_mark, $config['fontpath'], 6,
@@ -1265,7 +1265,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 						}
 						else {
 							$img = '<div style="float:right;height:'.$himg.'px;">'. 
-								vbar_graph(true, $module_data,
+								vbar_graph($module_data,
 								$width, $height, $color, array(), array(),
 								ui_get_full_url("images/image_problem.opaque.png", false, false, false),
 								"", "", $water_mark, $config['fontpath'], 6,
@@ -1275,7 +1275,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 					elseif($layoutData['label_position']=='right') {
 						if ($layoutData['type_graph'] == 'horizontal') {
 							$img = '<div style="float:left;height:'.$himg.'px;">'.
-								hbar_graph(true, $module_data,
+								hbar_graph($module_data,
 								$width, $height, $color, array(), array(),
 								ui_get_full_url("images/image_problem.opaque.png", false, false, false),
 								"", "", $water_mark, $config['fontpath'], 6,
@@ -1283,7 +1283,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 						}
 						else {
 							$img = '<div style="float:left;height:'.$himg.'px;">'. 
-								vbar_graph(true, $module_data,
+								vbar_graph($module_data,
 								$width, $height, $color, array(), array(),
 								ui_get_full_url("images/image_problem.opaque.png", false, false, false),
 								"", "", $water_mark, $config['fontpath'], 6,
@@ -1292,14 +1292,14 @@ function visual_map_print_item($mode = "read", $layoutData,
 					}
 					else {
 						if ($layoutData['type_graph'] == 'horizontal') {
-							$img = hbar_graph(true, $module_data,
+							$img = hbar_graph($module_data,
 								$width, $height, $color, array(), array(),
 								ui_get_full_url("images/image_problem.opaque.png", false, false, false),
 								"", "", $water_mark, $config['fontpath'], 6,
 								"", 0, $config['homeurl'], $layoutData['image'], $layoutData['border_color']);
 						}
 						else {
-							$img = vbar_graph(true, $module_data,
+							$img = vbar_graph($module_data,
 								$width, $height, $color, array(), array(),
 								ui_get_full_url("images/image_problem.opaque.png", false, false, false),
 								"", "", $water_mark, $config['fontpath'], 6,

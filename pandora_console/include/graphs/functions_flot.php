@@ -421,7 +421,7 @@ function flot_pie_chart ($values, $labels, $width, $height, $water_mark,
 }
 
 // Prints a FLOT pie chart
-function flot_custom_pie_chart ($flash_charts, $graph_values,
+function flot_custom_pie_chart ($graph_values,
 		$width, $height, $colors, $module_name_list, $long_index,
 		$no_data,$xaxisname, $yaxisname, $water_mark, $fontpath, $font_size,
 		$unit, $ttl, $homeurl, $background_color, $legend_position) {
@@ -684,16 +684,12 @@ function flot_vcolumn_chart ($graph_data, $width, $height, $color, $legend, $lon
 	return $return;
 }
 
-function flot_slicesbar_graph ($graph_data, $period, $width, $height, $legend, $colors, $fontpath, $round_corner, $homeurl, $watermark = '', $adapt_key = '', $stat_win = false, $id_agent = 0, $full_legend_date = array()) {
+function flot_slicesbar_graph ($graph_data, $period, $width, $height, $legend, $colors, $fontpath, $round_corner, $homeurl, $watermark = '', $adapt_key = '', $stat_win = false, $id_agent = 0, $full_legend_date = array(), $not_interactive = 0) {
 	global $config;
-	
-	// include_javascript_dependencies_flot_graph();
-		
-	$stacked_str = 'stack: stack,';
-	
+
 	// Get a unique identifier to graph
 	$graph_id = uniqid('graph_');
-	
+
 	// Set some containers to legend, graph, timestamp tooltip, etc.
 	if ($stat_win) {
 		$return = "<div id='$graph_id' class='noresizevc graph $adapt_key' style='width: ".$width."%; height: ".$height."px; display: inline-block;'></div>";
@@ -701,54 +697,51 @@ function flot_slicesbar_graph ($graph_data, $period, $width, $height, $legend, $
 	else {
 		$return = "<div id='$graph_id' class='noresizevc graph $adapt_key' style='width: ".$width."%; height: ".$height."px;'></div>";
 	}
+
 	$return .= "<div id='value_$graph_id' style='display:none; position:absolute; background:#fff; border: solid 1px #aaa; padding: 2px'></div>";
-	
+
 	// Set a weird separator to serialize and unserialize passing data from php to javascript
 	$separator = ';;::;;';
 	$separator2 = ':,:,,,:,:';
-	
+
 	// Transform data from our format to library format
 	$labels = array();
 	$a = array();
 	$vars = array();
-	
+
 	$datacolor = array();
-	
+
 	$max = 0;
-	
+
 	$i = count($graph_data);
-	
+
 	$intervaltick = $period / $i;
-	
-	$leg_max_length = 0;
-	foreach ($legend as $l) {
-		if (strlen($l) > $leg_max_length) {
-			$leg_max_length = strlen($l);
-		}
-	}
-	
-	$fontsize = 7;
-	
+
+	$fontsize = $config['font_size'];
+	$fontpath = $config['fontpath'];
+
 	$extra_height = 15;
 	if (defined("METACONSOLE"))
 		$extra_height = 20;
-	
+
 	$return .= "<div id='extra_$graph_id' style='font-size: ".$fontsize."pt; display:none; position:absolute; overflow: auto; height: ".$extra_height."px; background:#fff; padding: 2px 2px 2px 2px; border: solid #000 1px;'></div>";
-	
-	$maxticks = (int) ($width / ($fontsize * $leg_max_length));
-	
+
+	$maxticks = (int) 20;
+
 	$i_aux = $i;
+
 	while(1) {
 		if ($i_aux <= $maxticks ) {
 			break;
 		}
-		
+
 		$intervaltick*= 2;
-		
+
 		$i_aux /= 2;
 	}
-	
+
 	$intervaltick = (int) $intervaltick;
+
 	$acumulate = 0;
 	$c = 0;
 	$acumulate_data = array();
@@ -773,12 +766,15 @@ function flot_slicesbar_graph ($graph_data, $period, $width, $height, $legend, $
 			}
 		}
 	}
-	
+
 	// Store serialized data to use it from javascript
 	$labels = implode($separator,$labels);
 	$datacolor = implode($separator,$datacolor);
-	$legend = io_safe_output(implode($separator,$legend));
-	if (!empty($full_legend_date)) {
+	if(is_array($legend)){
+		$legend = io_safe_output(implode($separator,$legend));
+	}
+
+	if (!empty($full_legend_date) && count($full_legend_date) > 0 ) {
 		$full_legend_date = io_safe_output(implode($separator,$full_legend_date));
 	}
 	else {
@@ -807,7 +803,7 @@ function flot_slicesbar_graph ($graph_data, $period, $width, $height, $legend, $
 	// Javascript code
 	$return .= "<script type='text/javascript'>";
 	$return .= "//<![CDATA[\n";
-	$return .= "pandoraFlotSlicebar('$graph_id', '$values', '$datacolor', '$labels', '$legend', '$acumulate_data', $intervaltick, false, $max, '$separator', '$separator2', '', $id_agent, '$full_legend_date')";
+	$return .= "pandoraFlotSlicebar('$graph_id', '$values', '$datacolor', '$labels', '$legend', '$acumulate_data', $intervaltick, '$fontpath', $fontsize, '$separator', '$separator2', '', $id_agent, '$full_legend_date', $not_interactive)";
 	$return .= "\n//]]>";
 	$return .= "</script>";
 	

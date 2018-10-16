@@ -530,7 +530,7 @@ function config_update_config () {
 						$error_update[] = __('Product name');
 					if (!config_update_value ('rb_copyright_notice', (string) get_parameter ('rb_copyright_notice')))
 						$error_update[] = __('Copyright notice');
-					
+
 					if (!config_update_value ('meta_custom_logo', (string) get_parameter ('meta_custom_logo')))
 						$error_update[] = __('Custom logo metaconsole');
 					if (!config_update_value ('meta_custom_logo_white_bg', (string) get_parameter ('meta_custom_logo_white_bg')))
@@ -545,7 +545,7 @@ function config_update_config () {
 						$error_update[] = __('Custom title2 login metaconsole');
 					if (!config_update_value ('meta_login_background', (string) get_parameter ('meta_login_background')))
 						$error_update[] = __('Login background metaconsole');
-											
+
 					if (!config_update_value ('meta_custom_docs_url', (string) get_parameter ('meta_custom_docs_url')))
 						$error_update[] = __('Custom Docs url');
 					if (!config_update_value ('meta_custom_support_url', (string) get_parameter ('meta_custom_support_url')))
@@ -553,12 +553,15 @@ function config_update_config () {
 
 					if (!config_update_value ('vc_refr', get_parameter('vc_refr')))
 						$error_update[] = __('Default interval for refresh on Visual Console');
-					if (!config_update_value ('vc_favourite_view', (int) get_parameter('vc_favourite_view', 5)))
+					if (!config_update_value ('vc_favourite_view', (int) get_parameter('vc_favourite_view', 0)))
 						$error_update[] = __('Default line favourite_view for the Visual Console');
 					if (!config_update_value ('vc_menu_items', (int) get_parameter('vc_menu_items', 10)))
 						$error_update[] = __('Default line menu items for the Visual Console');
 					if (!config_update_value ('vc_line_thickness', (int) get_parameter('vc_line_thickness')))
 						$error_update[] = __('Default line thickness for the Visual Console');
+
+					if (!config_update_value ('ser_menu_items', (int) get_parameter('ser_menu_items', 10)))
+						$error_update[] = __('Default line menu items for the Services');
 
 					if (!config_update_value ('agent_size_text_small', get_parameter('agent_size_text_small')))
 						$error_update[] = __('Agent size text');
@@ -1300,6 +1303,16 @@ function config_process_config () {
 		config_update_value ('meta_custom_title2_login', __('METACONSOLE'));
 	}
 
+	if (!isset($config['vc_favourite_view'])) {
+		config_update_value('vc_favourite_view', 0);
+	}
+	if (!isset($config['vc_menu_items'])) {
+		config_update_value('vc_menu_items', 10);
+	}
+	if (!isset($config['ser_menu_items'])) {
+		config_update_value('ser_menu_items', 10);
+	}
+
 	if (!isset ($config['history_db_enabled'])) {
 		config_update_value ( 'history_db_enabled', false);
 	}
@@ -2010,7 +2023,7 @@ function config_process_config () {
 	if (!isset($config['ehorus_req_timeout'])) {
 		config_update_value('ehorus_req_timeout', 5);
 	}
-	
+
 	/* Finally, check if any value was overwritten in a form */
 	config_update_config();
 }

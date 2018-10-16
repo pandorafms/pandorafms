@@ -741,8 +741,8 @@ $table_vc->style[0] = 'font-weight: bold';
 $table_vc->size[0] = '50%';
 $table_vc->data = array ();
 
-$vc_favourite_view_array[0] = 'Classic view';
-$vc_favourite_view_array[1] = 'View of favorites';
+$vc_favourite_view_array[0] = __('Classic view');
+$vc_favourite_view_array[1] = __('View of favorites');
 $table_vc->data[$row][0] = __('Type of view of visual consoles') . 
 								ui_print_help_tip(__('Allows you to directly display the list of favorite visual consoles'), true);
 $table_vc->data[$row][1] = html_print_select($vc_favourite_view_array, 'vc_favourite_view', $config["vc_favourite_view"], '', '', 0, true);
@@ -750,7 +750,6 @@ $row++;
 
 $table_vc->data[$row][0] = __('Number of favorite visual consoles to show in the menu') . 
 								ui_print_help_tip(__('If the number is 0 it will not show the pull-down menu and maximum 25 favorite consoles'), true);
-//$table_vc->data[$row][1] = html_print_input_text ('vc_menu_items', $config["vc_menu_items"], '', 5, 5, true);
 $table_vc->data[$row][1] = "<input type ='number' value=".$config["vc_menu_items"]." size='5' name='vc_menu_items' min='0' max='25'>";
 $row++;
 
@@ -763,8 +762,26 @@ $table_vc->data[$row][1] = html_print_input_text ('vc_line_thickness', $config["
 echo "<fieldset>";
 echo "<legend>" . __('Visual consoles configuration') . "</legend>";
 	html_print_table ($table_vc);
-echo "</fieldset>";	
+echo "</fieldset>";
 
+//----------------------------------------------------------------------
+// Services
+//----------------------------------------------------------------------
+$table_ser = new stdClass();
+$table_ser->width = '100%';
+$table_ser->class = "databox filters";
+$table_ser->style[0] = 'font-weight: bold';
+$table_ser->size[0] = '50%';
+$table_ser->data = array ();
+
+$table_ser->data['number'][0] = __('Number of favorite services to show in the menu') .
+								ui_print_help_tip(__('If the number is 0 it will not show the pull-down menu and maximum 25 favorite services'), true);
+$table_ser->data['number'][1] = "<input type ='number' value=".$config["ser_menu_items"]." size='5' name='ser_menu_items' min='0' max='25'>";
+
+echo "<fieldset>";
+echo "<legend>" . __('Services configuration') . "</legend>";
+	html_print_table ($table_ser);
+echo "</fieldset>";
 
 //----------------------------------------------------------------------
 // OTHER CONFIGURATION

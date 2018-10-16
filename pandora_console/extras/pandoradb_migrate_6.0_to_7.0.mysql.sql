@@ -341,13 +341,18 @@ CREATE TABLE IF NOT EXISTS `ttrap_custom_values` (
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tmetaconsole_setup` (
 	`id` int(10) NOT NULL auto_increment primary key,
-	`server_name` text default '',
-	`server_url` text default '',
-	`dbuser` text default '',
-	`dbpass` text default '',
-	`dbhost` text default '',
-	`dbport` text default '',
-	`dbname` text default '',
+	`server_name` text,
+	`server_url` text,
+	`dbuser` text,
+	`dbpass` text,
+	`dbhost` text,
+	`dbport` text,
+	`dbname` text,
+	`meta_dbuser` text,
+	`meta_dbpass` text,
+	`meta_dbhost` text,
+	`meta_dbport` text,
+	`meta_dbname` text,
 	`auth_token` text default '',
 	`id_group` int(10) unsigned NOT NULL default 0,
 	`api_password` text NOT NULL,
@@ -1281,6 +1286,7 @@ UPDATE tservice SET `is_favourite` = 1 WHERE `name` REGEXP '^[_|.|\[|\(]';
 -- ---------------------------------------------------------------------
 ALTER TABLE tlayout ADD `background_color` varchar(50) NOT NULL default '#FFF';
 ALTER TABLE tlayout ADD `is_favourite` int(1) NOT NULL DEFAULT 0;
+ALTER TABLE tlayout MODIFY `name` varchar(600) NOT NULL;
 
 UPDATE tlayout SET is_favourite = 1 WHERE name REGEXP '^&#40;' OR name REGEXP '^\\[';
 
@@ -1296,6 +1302,7 @@ ALTER TABLE tlayout_data ADD COLUMN `show_on_top` tinyint(1) NOT NULL default '0
 ALTER TABLE tlayout_data ADD COLUMN `clock_animation` varchar(60) NOT NULL default "analogic_1";
 ALTER TABLE tlayout_data ADD COLUMN `time_format` varchar(60) NOT NULL default "time";
 ALTER TABLE tlayout_data ADD COLUMN `timezone` varchar(60) NOT NULL default "Europe/Madrid";
+ALTER TABLE tlayout_data ADD COLUMN `show_last_value` tinyint(1) UNSIGNED NULL default '0';
 
 -- ---------------------------------------------------------------------
 -- Table `tagent_custom_fields`

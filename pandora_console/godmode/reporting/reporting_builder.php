@@ -2075,9 +2075,9 @@ else {
 	$buttons = null;
 	$buttons = array(
 		'main' => array('active' => true,
-			'text' => '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=main&action=new&pure=' .$pure.'">' .
-				html_print_image("images/op_reporting.png", true, array ("title" => __('Main data'))) .'</a>'));
-	$textReportName = '';
+			'text' => '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&pure=' .$pure.'">' .
+				html_print_image("images/report_list.png", true, array ("title" => __('Reports list'))) .'</a>'));
+	$textReportName = __('Create Custom Report');
 }
 
 // Page header for metaconsole

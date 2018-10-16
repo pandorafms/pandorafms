@@ -479,6 +479,7 @@ $table->data[3][1] .= __('Autodisable mode') . ' ' .
 // Status (Disabled / Enabled)
 $table->data[4][0] = __('Status');
 $table->data[4][1] = __('Disabled') . ' ' .
+	ui_print_help_tip(__('If the remote configuration is enabled, it will also go into standby mode when disabling it.'), true) . ' ' .
 	html_print_radio_button_extended ("disabled", 1, '', $disabled, false, '', 'style="margin-right: 40px;"', true);
 $table->data[4][1] .= __('Enabled') . ' ' .
 	html_print_radio_button_extended ("disabled", 0, '', $disabled, false, '', 'style="margin-right: 40px;"', true);

@@ -208,23 +208,13 @@ function groups_combine_acl($acl_group_a, $acl_group_b){
 		"tags" => 1,
 	);
 
+	foreach ($acl_group_a['tags'] as $key => $value) {
+		$acl_group_b['tags'][$key] = array_merge($value, $acl_group_b['tags'][$key]);
+	}
+
 	foreach ($acl_list as $acl => $aux) {
 
-		if($acl == "tags") {
-			// Mix tags
-			
-			if (isset($acl_group_a[$acl]) && ($acl_group_a[$acl] != "")) {
-				if (isset($acl_group_b[$acl]) && ($acl_group_b[$acl] != "")) {
-					if ($acl_group_b[$acl] != ($acl_group_a[$acl])) {
-						$acl_group_b[$acl] = $acl_group_a[$acl] . "," . $acl_group_b[$acl];
-					}
-				}
-				else {
-					$acl_group_b[$acl] = $acl_group_a[$acl];
-				}
-			}
-			continue;
-		}
+		if($acl == "tags") continue;
 		// propagate ACL
 		$acl_group_b[$acl] = $acl_group_a[$acl] || $acl_group_b[$acl];
 	}
@@ -286,6 +276,8 @@ function users_get_groups ($id_user = false, $privilege = "AR", $returnAllGroup 
 
 			foreach ($raw_forest as $g) {
 				// XXX, following code must be remade (TAG)
+				users_get_explode_tags($g);
+				
 				if (!isset($forest_acl[$g["id_grupo"]] )) {
 					$forest_acl[$g["id_grupo"]] = $g;
 				}
@@ -314,6 +306,7 @@ function users_get_groups ($id_user = false, $privilege = "AR", $returnAllGroup 
 							}
 							else {
 								// add group to user ACL forest
+								users_get_explode_tags($group);
 								$tmp = groups_combine_acl($forest_acl[$parent], $group);
 							}
 							if ($tmp !== null) {
@@ -418,10 +411,13 @@ function users_get_first_group ($id_user = false, $privilege = "AR", $all_group 
  * @param int Agent id.
  * @param string Access mode to be checked. Default AR (Agent reading)
  * @param string User id. Current user by default
+ * @param bool True to use the metaconsole tables
  *
  * @return bool Access to that agent (false not, true yes)
  */
-function users_access_to_agent ($id_agent, $mode = "AR", $id_user = false) {
+function users_access_to_agent (
+	$id_agent, $mode = "AR", $id_user = false, $force_meta = false
+) {
 	if (empty ($id_agent))
 		return false;
 
@@ -432,7 +428,7 @@ function users_access_to_agent ($id_agent, $mode = "AR", $id_user = false) {
 
 	return (bool) check_acl_one_of_groups (
 		$id_user,
-		agents_get_all_groups_agent((int)$id_agent),
+		agents_get_all_groups_agent((int)$id_agent, false, $force_meta),
 		$mode);
 }
 
@@ -1064,6 +1060,29 @@ function users_get_strict_mode_groups($id_user, $return_group_all) {
 	}
 	
 	return $return_user_groups;
+}
+
+function users_get_explode_tags(&$group) {
+	
+	if (empty($group['tags'])) {
+		$group['tags'] = array();
+		$group['tags']['agent_view'] = array();
+		$group['tags']['agent_edit'] = array();
+		$group['tags']['agent_disable'] = array();
+		$group['tags']['event_view'] = array();
+		$group['tags']['event_edit'] = array();
+		$group['tags']['event_management'] = array();
+	} else {
+		$aux = explode(',', $group['tags']);
+		$group['tags'] = array();
+		$group['tags']['agent_view'] = ($group['agent_view']) ? $aux : array();
+		$group['tags']['agent_edit'] = ($group['agent_edit']) ? $aux : array();
+		$group['tags']['agent_disable'] = ($group['agent_disable']) ? $aux : array();
+		$group['tags']['event_view'] = ($group['event_view']) ? $aux : array();
+		$group['tags']['event_edit'] = ($group['event_edit']) ? $aux : array();
+		$group['tags']['event_management'] = ($group['event_management']) ? $aux : array();
+	}
+	
 }
 
 ?>

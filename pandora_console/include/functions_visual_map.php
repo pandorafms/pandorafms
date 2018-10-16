@@ -487,7 +487,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 						else {
 							$url = ui_meta_get_url_console_child(
 								$layoutData['id_metaconsole'],
-								"estado", "operation/agentes/ver_agente&amp;id_agente=" . $layoutData['id_agent']);
+								"estado", "operation/agentes/ver_agente&amp;id_agente=" . $layoutData['id_agent'], null, null, null, $isExternalLink);
 						}
 					}
 					else {
@@ -499,7 +499,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 						else {
 							$url = ui_meta_get_url_console_child(
 								$layoutData['id_metaconsole'],
-								"estado", "operation/agentes/ver_agente&amp;id_agente=" . $layoutData['id_agent']);
+								"estado", "operation/agentes/ver_agente&amp;id_agente=" . $layoutData['id_agent'], null, null, null, $isExternalLink);
 						}
 					}
 				}
@@ -662,7 +662,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 						else {
 							$url = ui_meta_get_url_console_child(
 								$layoutData['id_metaconsole'],
-								"estado", "operation/agentes/ver_agente&amp;id_agente=" . $layoutData['id_agent']);
+								"estado", "operation/agentes/ver_agente&amp;id_agente=" . $layoutData['id_agent'], null, null, null, $isExternalLink);
 						}
 					}
 				break;
@@ -724,7 +724,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 						else {
 							$url = ui_meta_get_url_console_child(
 								$layoutData['id_metaconsole'],
-								"estado", 'operation/agentes/ver_agente&amp;id_agente='.$layoutData['id_agent']);
+								"estado", 'operation/agentes/ver_agente&amp;id_agente='.$layoutData['id_agent'], null, null, null, $isExternalLink);
 						}
 					}
 				}
@@ -779,7 +779,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 							else {
 								$url = ui_meta_get_url_console_child(
 									$layoutData['id_metaconsole'],
-									"estado", 'operation/agentes/ver_agente&amp;id_agente='.$layoutData["id_agent"].'&amp;tab=data');
+									"estado", 'operation/agentes/ver_agente&amp;id_agente='.$layoutData["id_agent"].'&amp;tab=data', null, null, null, $isExternalLink);
 							}
 						}
 					}
@@ -1437,88 +1437,37 @@ function visual_map_print_item($mode = "read", $layoutData,
 					}
 				}
 				else{
-					if ($layoutData['id_metaconsole'] != 0) {
-						
-						if($layoutData['clock_animation'] == 'analogic_1'){
-							$img =  '<img src="../../images/console/signes/clock.png" style="width:'.$width.'px;height:'.	($width+40).'px;">';
-						}
-						else{
-							
-							if($layoutData['time_format'] == 'time'){
-								$img =  '<img src="../../images/console/signes/digital-clock.png" style="width:'.$width.'px;height:'.	(($width/3.9)+20).'px;">';
-							}
-							else{
-								$img =  '<img src="../../images/console/signes/digital-clock.png" style="width:'.$width.'px;height:'.	(($width/3.9)+40).'px;">';
-							}
-						
-						}
-						
+					$image_prefix = ($layoutData['id_metaconsole'] != 0) ? "../../" : "";
+					if($layoutData['clock_animation'] == 'analogic_1'){
+						$img =  '<img src="' . $image_prefix . 'images/console/signes/clock.png" style="width:'.$width.'px;height:'.	($width+40).'px;">';
 					}
 					else{
-						if($layoutData['clock_animation'] == 'analogic_1'){
-							$img =  '<img src="images/console/signes/clock.png" style="width:'.$width.'px;height:'.	($width+40).'px;">';
-						}
-						else{							
-								if($layoutData['time_format'] == 'time'){
-									$img =  '<img src="images/console/signes/digital-clock.png" style="width:'.$width.'px;height:'.	(($width/3.9)+20).'px;">';
-								}
-								else{
-									$img =  '<img src="images/console/signes/digital-clock.png" style="width:'.$width.'px;height:'.	(($width/3.9)+40).'px;">';
-								}
-						}
+						$height_offset = ($layoutData['time_format'] == 'time') ? 20 : 40;
+						$img =  '<img src="' . $image_prefix . 'images/console/signes/digital-clock.png" style="width:'.$width.'px;height:'.	(($width/3.9)+$height_offset).'px;">';
 					}
 				}
 			}
 			else{
 				if($layoutData['clock_animation'] == 'analogic_1'){
-					
-					if ($width == 0) {
-						if ($layoutData['label_position']=='left') {
-							$img = '<div id="clock_'.$layoutData['id'].'" style="z-index:'.$show_on_top_index.';float:right;height:'.$himg.'px;">' .print_clock_analogic_1 ($layoutData['time_format'], $layoutData['timezone'],$layoutData['clock_animation'],$layoutData['width'],$layoutData['height'],$layoutData['id'],$layoutData['fill_color']).'</div>';
-						}
-						elseif ($layoutData['label_position']=='right') {
-							$img = '<div id="clock_'.$layoutData['id'].'" style="z-index:'.$show_on_top_index.';float:left;height:'.$himg.'px;">' . print_clock_analogic_1 ($layoutData['time_format'], $layoutData['timezone'],$layoutData['clock_animation'],$layoutData['width'],$layoutData['height'],$layoutData['id'],$layoutData['fill_color']).'</div>';
-						}
-						else {
-							$img = '<div id="clock_'.$layoutData['id'].'" style="z-index:'.$show_on_top_index.';height:'.$himg.'px;">' . print_clock_analogic_1 ($layoutData['time_format'], $layoutData['timezone'],$layoutData['clock_animation'],$layoutData['width'],$layoutData['height'],$layoutData['id'],$layoutData['fill_color']).'</div>';
-						}
+					if ($layoutData['label_position']=='left') {
+						$img = '<div id="clock_'.$layoutData['id'].'" style="z-index:'.$show_on_top_index.';float:right;height:'.$himg.'px;margin-bottom:15px;">' . print_clock_analogic_1 ($layoutData['time_format'], $layoutData['timezone'],$layoutData['clock_animation'],$layoutData['width'],$layoutData['height'],$layoutData['id'],$layoutData['fill_color']).'</div>';
 					}
-					else{
-						if ($layoutData['label_position']=='left') {
-							$img = '<div id="clock_'.$layoutData['id'].'" style="z-index:'.$show_on_top_index.';float:right;height:'.$himg.'px;">' . print_clock_analogic_1 ($layoutData['time_format'], $layoutData['timezone'],$layoutData['clock_animation'],$layoutData['width'],$layoutData['height'],$layoutData['id'],$layoutData['fill_color']).'</div>';
-						}
-						elseif ($layoutData['label_position']=='right') {
-							$img = '<div id="clock_'.$layoutData['id'].'" style="z-index:'.$show_on_top_index.';float:left;height:'.$himg.'px;">' .print_clock_analogic_1 ($layoutData['time_format'], $layoutData['timezone'],$layoutData['clock_animation'],$layoutData['width'],$layoutData['height'],$layoutData['id'],$layoutData['fill_color']).'</div>';
-						}
-						else {
-							$img ='<div id="clock_'.$layoutData['id'].'" style="z-index:'.$show_on_top_index.';height:'.$himg.'px;">' .  print_clock_analogic_1 ($layoutData['time_format'], $layoutData['timezone'],$layoutData['clock_animation'],$layoutData['width'],$layoutData['height'],$layoutData['id'],$layoutData['fill_color']).'</div>';
-						}
+					elseif ($layoutData['label_position']=='right') {
+						$img = '<div id="clock_'.$layoutData['id'].'" style="z-index:'.$show_on_top_index.';float:left;height:'.$himg.'px;margin-bottom:15px;">' . print_clock_analogic_1 ($layoutData['time_format'], $layoutData['timezone'],$layoutData['clock_animation'],$layoutData['width'],$layoutData['height'],$layoutData['id'],$layoutData['fill_color']).'</div>';
 					}
-					
+					else {
+						$img = '<div id="clock_'.$layoutData['id'].'" style="z-index:'.$show_on_top_index.';height:'.$himg.'px;margin-bottom:15px;">' . print_clock_analogic_1 ($layoutData['time_format'], $layoutData['timezone'],$layoutData['clock_animation'],$layoutData['width'],$layoutData['height'],$layoutData['id'],$layoutData['fill_color']).'</div>';
+					}
 				}
 				elseif($layoutData['clock_animation'] == 'digital_1'){
-					
-					if ($width == 0) {
-						if ($layoutData['label_position']=='left') {
-							$img = '<div id="clock_'.$layoutData['id'].'" style="z-index:'.$show_on_top_index.';float:right;height:'.$himg.'px;">' .print_clock_digital_1 ($layoutData['time_format'], $layoutData['timezone'],$layoutData['clock_animation'],$layoutData['width'],$layoutData['height'],$layoutData['id'],$layoutData['fill_color']).'</div>';
-						}
-						elseif ($layoutData['label_position']=='right') {
-							$img = '<div id="clock_'.$layoutData['id'].'" style="z-index:'.$show_on_top_index.';float:left;height:'.$himg.'px;">' . print_clock_digital_1 ($layoutData['time_format'], $layoutData['timezone'],$layoutData['clock_animation'],$layoutData['width'],$layoutData['height'],$layoutData['id'],$layoutData['fill_color']).'</div>';
-						}
-						else {
-							$img = '<div id="clock_'.$layoutData['id'].'" style="z-index:'.$show_on_top_index.';height:'.$himg.'px;">' . print_clock_digital_1 ($layoutData['time_format'], $layoutData['timezone'],$layoutData['clock_animation'],$layoutData['width'],$layoutData['height'],$layoutData['id'],$layoutData['fill_color']).'</div>';
-						}
+					if ($layoutData['label_position']=='left') {
+						$img = '<div id="clock_'.$layoutData['id'].'" style="z-index:'.$show_on_top_index.';float:right;height:'.$himg.'px;">' . print_clock_digital_1 ($layoutData['time_format'], $layoutData['timezone'],$layoutData['clock_animation'],$layoutData['width'],$layoutData['height'],$layoutData['id'],$layoutData['fill_color']).'</div>';
 					}
-					else{
-						if ($layoutData['label_position']=='left') {
-							$img = '<div id="clock_'.$layoutData['id'].'" style="z-index:'.$show_on_top_index.';float:right;height:'.$himg.'px;">' . print_clock_digital_1 ($layoutData['time_format'], $layoutData['timezone'],$layoutData['clock_animation'],$layoutData['width'],$layoutData['height'],$layoutData['id'],$layoutData['fill_color']).'</div>';
-						}
-						elseif ($layoutData['label_position']=='right') {
-							$img = '<div id="clock_'.$layoutData['id'].'" style="z-index:'.$show_on_top_index.';float:left;height:'.$himg.'px;">' .print_clock_digital_1 ($layoutData['time_format'], $layoutData['timezone'],$layoutData['clock_animation'],$layoutData['width'],$layoutData['height'],$layoutData['id'],$layoutData['fill_color']).'</div>';
-						}
-						else {
-							$img ='<div id="clock_'.$layoutData['id'].'" style="z-index:'.$show_on_top_index.';height:'.$himg.'px;">' .  print_clock_digital_1 ($layoutData['time_format'], $layoutData['timezone'],$layoutData['clock_animation'],$layoutData['width'],$layoutData['height'],$layoutData['id'],$layoutData['fill_color']).'</div>';
-						}
+					elseif ($layoutData['label_position']=='right') {
+						$img = '<div id="clock_'.$layoutData['id'].'" style="z-index:'.$show_on_top_index.';float:left;height:'.$himg.'px;">' .print_clock_digital_1 ($layoutData['time_format'], $layoutData['timezone'],$layoutData['clock_animation'],$layoutData['width'],$layoutData['height'],$layoutData['id'],$layoutData['fill_color']).'</div>';
+					}
+					else {
+						$img ='<div id="clock_'.$layoutData['id'].'" style="z-index:'.$show_on_top_index.';height:'.$himg.'px;">' .  print_clock_digital_1 ($layoutData['time_format'], $layoutData['timezone'],$layoutData['clock_animation'],$layoutData['width'],$layoutData['height'],$layoutData['id'],$layoutData['fill_color']).'</div>';
 					}
 				}
 			}
@@ -1775,15 +1724,24 @@ function visual_map_print_item($mode = "read", $layoutData,
 							$value = format_for_graph($value, 2);
 						}
 						
-						if (!empty($unit_text))
-							$value .= " " . $unit_text;
-						
 						// Hide value on boolean modules
-						if (!modules_is_boolean($layoutData['id_agente_modulo'])) {
-							$img_style_title .=
-								" <br>" . __("Last value: ")
-								. remove_right_zeros(number_format($value, $config['graph_precision'])).$unit_text;
+						if ($layoutData['show_last_value'] != 2) {
+							if ((!modules_is_boolean($layoutData['id_agente_modulo'])) || 
+								(modules_is_boolean($layoutData['id_agente_modulo']) && $layoutData['show_last_value'] != 0)){
+								if (is_numeric($value)) {
+									$img_style_title .=
+										" <br>" . __("Last value: ")
+										. remove_right_zeros(number_format($value, $config['graph_precision']));
+								} else {
+									$img_style_title .=
+									" <br>" . __("Last value: ")
+									. $value;
+								}
+							}
 						}
+						
+						if (!empty($unit_text))
+							$img_style_title .= " " . $unit_text;
 						
 						if ($layoutData['id_metaconsole'] != 0) {
 							//Restore db connection
@@ -1792,7 +1750,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 					}
 					
 					if(get_parameter('action') == 'edit'){
-					$img_style_title = '';
+						$img_style_title = '';
 					}
 				}
 				

@@ -158,7 +158,7 @@ if ($user_comment != '') {
 }
 
 if ($source != '') {
-	$sql_post .= " AND source LIKE '$source'";
+	$sql_post .= " AND source LIKE '%$source%'";
 }
 
 // In metaconsole mode the agent search is performed by name
@@ -310,6 +310,7 @@ if ($id_group > 0 && in_array ($id_group, array_keys ($groups))) {
 else {
 	$group_array = array_keys($groups);
 }
+
 if (check_acl ($id_user, 0, "ER"))
 	$tags_acls_condition = tags_get_acl_tags($id_user, $group_array, 'ER',
 		'event_condition', 'AND', '', $meta, array(), true); //FORCE CHECK SQL "(TAG = tag1 AND id_grupo = 1)"

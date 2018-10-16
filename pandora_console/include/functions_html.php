@@ -47,13 +47,13 @@ else{
 /**
  * Prints the print_r with < pre > tags
  */
-function html_debug_print ($var, $file = '') {
+function html_debug_print ($var, $file = '', $oneline = false) {
 	$more_info = '';
 	if (is_string($var)) {
 		$more_info = 'size: ' . strlen($var);
 	}
 	elseif (is_bool($var)) {
-		$more_info = 'val: ' . 
+		$more_info = 'val: ' .
 			($var ? 'true' : 'false');
 	}
 	elseif (is_null($var)) {
@@ -62,10 +62,13 @@ function html_debug_print ($var, $file = '') {
 	elseif (is_array($var)) {
 		$more_info = count($var);
 	}
-	
+
 	if ($file === true)
 		$file = '/tmp/logDebug';
-	
+
+	if($oneline && is_string($var))
+		$var = preg_replace("/[\t|\n| ]+/", " ", $var);
+
 	if (strlen($file) > 0) {
 		$f = fopen($file, "a");
 		ob_start();
@@ -85,8 +88,13 @@ function html_debug_print ($var, $file = '') {
 }
 
 // Alias for "html_debug_print"
-function html_debug ($var, $file = '') {
-	html_debug_print ($var, $file);
+function html_debug ($var, $file = '', $oneline = false) {
+	html_debug_print ($var, $file, $oneline);
+}
+
+// Alias for "html_debug_print"
+function hd ($var, $file = '', $oneline = false) {
+	html_debug_print ($var, $file, $oneline);
 }
 
 function html_f2str($function, $params) {

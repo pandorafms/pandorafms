@@ -37,21 +37,8 @@ ui_print_page_header (__("Export data"), "images/server_export_mc.png");
 
 $group = get_parameter_post ('group', 0);
 $agentName = get_parameter_post ('agent', 0);
-
-switch ($config["dbtype"]) {
-	case "mysql":
-		$agents = agents_get_agents(
-			array('nombre LIKE "' . $agentName . '"'), array ('id_agente'));
-		break;
-	case "postgresql":
-		$agents = agents_get_agents(
-			array('nombre LIKE \'' . $agentName . '\''), array ('id_agente'));
-		break;
-	case "oracle":
-		$agents = agents_get_agents(
-			array('nombre LIKE \'%' . $agentName . '%\''), array ('id_agente'));
-		break;
-}
+$agents = agents_get_agents(
+	array('nombre LIKE "' . $agentName . '"'), array ('id_agente'));
 $agent = $agents[0]['id_agente'];
 
 $module = (array) get_parameter_post ('module_arr', array ());

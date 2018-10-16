@@ -705,18 +705,26 @@ foreach ($simple_alerts as $alert) {
 	if(check_acl_one_of_groups ($config['id_user'], $all_groups, "LW")) {
 		$data[4] .= '&nbsp;&nbsp;<form class="delete_alert_form" action="' . $url . '" method="post" style="display: inline;">';
 		if ($alert['disabled']) {
-			$data[4] .= html_print_image('images/add.disabled.png',
-			true, array('title' => __("Add action")));
+
 		}
 		else {
 			$data[4] .= '<a href="javascript:show_add_action(\'' . $alert['id'] . '\');">';
-			$data[4] .= html_print_image('images/add.png', true, array('title' => __("Add action")));
+
 			$data[4] .= '</a>';
 		}
 		$data[4] .= html_print_input_image ('delete', 'images/cross.png', 1, '', true, array('title' => __('Delete')));
 		$data[4] .= html_print_input_hidden ('delete_alert', 1, true);
 		$data[4] .= html_print_input_hidden ('id_alert', $alert['id'], true);
 		$data[4] .= '</form>';
+
+		$data[4] .= '<form class="view_alert_form" method="post" style="display: inline;">';
+
+		$data[4] .= html_print_input_image ('update', 'images/builder.png', 1, '', true, array('title' => __('Update')));
+		$data[4] .= html_print_input_hidden ('upd_alert', 1, true);
+		$data[4] .= html_print_input_hidden ('id_alert', $alert['id'], true);
+
+		$data[4] .= '</form>';
+		
 	}
 	
 	if(check_acl_one_of_groups ($config['id_user'], $all_groups, "LM")) {

@@ -30,6 +30,7 @@ require_once ('include/functions_modules.php');
 require_once ('include/functions_servers.php');
 require_once ('include/functions_gis.php');
 require_once ('include/functions_users.php');
+enterprise_include_once('include/functions_config_agents.php');
 
 if (is_ajax ()) {
 	$get_n_conf_files = (bool) get_parameter ('get_n_conf_files');
@@ -136,8 +137,11 @@ if ($update_agents) {
 	foreach ($id_agents as $id_agent) {
 		if (!empty($values)) {
 			$group_old = false;
-			if($values['id_grupo']){
-				$group_old = db_get_sql("SELECT id_grupo FROM tagente WHERE id_agente =" .$id_agent);
+			$disabled_old = false;
+			if($values['id_grupo'] || isset($values['disabled'])){
+				$values_old = db_get_row_filter('tagente', array('id_agente' => $id_agent), array('id_grupo', 'disabled'));
+				if ($values_old['id_grupo']) $group_old = $values_old['id_grupo'];
+				if (isset($values['disabled'])) $disabled_old = $values_old['disabled'];
 			}
 			
 			$result = db_process_sql_update ('tagente',
@@ -149,7 +153,14 @@ if ($update_agents) {
 				// Force an update of the agent cache.
 				$result_metaconsole = agent_update_from_cache($id_agent,$values,$server_name);
 			}
-			
+
+			if ($disabled_old !== false && $disabled_old != $values['disabled']) {
+				enterprise_hook(
+					'config_agents_update_config_token',
+					array($id_agent, 'standby', $values['disabled'])
+				);
+			}
+
 			if($group_old || $result){
 				if ($group_old && $group_old != null) {
 					$tpolicy_group_old = db_get_all_rows_sql("SELECT id_policy FROM tpolicy_groups 
@@ -327,6 +338,7 @@ $agents = agents_get_group_agents (array_keys ($groups));
 
 $modules = db_get_all_rows_sql("SELECT id_agente_modulo as id_module, nombre as name FROM tagente_modulo 
 								WHERE id_agente = " . $id_parent);
+if ($modules === false) $modules = array();
 
 $modules_values = array();
 $modules_values[0] = __('Any');
@@ -421,7 +433,9 @@ $table->data[1][1] .= __('Autodisable mode').' '.html_print_radio_button_extende
 // Status (Disabled / Enabled)
 $table->data[2][0] = __('Status');
 $table->data[2][1] = __('No change').' '.html_print_radio_button_extended ("disabled", -1, '', $disabled, false, '', 'style="margin-right: 40px;"', true);
-$table->data[2][1] .= __('Disabled').' '.html_print_radio_button_extended ("disabled", 1, '', $disabled, false, '', 'style="margin-right: 40px;"', true);
+$table->data[2][1] .= __('Disabled') . ' ' .
+	ui_print_help_tip(__('If the remote configuration is enabled, it will also go into standby mode when disabling it.'), true) . ' ' .
+	html_print_radio_button_extended ("disabled", 1, '', $disabled, false, '', 'style="margin-right: 40px;"', true);
 $table->data[2][1] .= __('Active').' '.html_print_radio_button_extended ("disabled", 0, '', $disabled, false, '', 'style="margin-right: 40px;"', true);
 
 // Remote configuration

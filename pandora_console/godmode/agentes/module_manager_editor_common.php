@@ -160,7 +160,7 @@ else{
 
 $table_simple->data[0][0] = __('Name');
 $table_simple->data[0][1] = html_print_input_text_extended ('name',
-	io_safe_input(html_entity_decode($name)), 'text-name', '', 45, 100, $disabledBecauseInPolicy, '', $largeClassDisabledBecauseInPolicy, true);
+	io_safe_input(html_entity_decode($name, ENT_QUOTES, "UTF-8")), 'text-name', '', 45, 100, $disabledBecauseInPolicy, '', $largeClassDisabledBecauseInPolicy, true);
 //$table_simple->data[0][1] = html_print_input_text ('name',
 //	io_safe_output($name), '', 45, 100, true, $disabledBecauseInPolicy);
 
@@ -189,9 +189,23 @@ $table_simple->data[0][3] .= html_print_select_from_sql ('SELECT id_mg, name FRO
 
 $in_policy = strstr($page, "policy_modules");
 if (!$in_policy) {
+	// Cannot select the current module to be itself parent
+	$module_parent_filter = $id_agent_module
+		? array("tagente_modulo.id_agente_modulo" => "<>$id_agent_module")
+		: ""; 
 	$table_simple->data[1][0] = __('Module parent');
-	$table_simple->data[1][1] .= html_print_select_from_sql ('SELECT id_agente_modulo, nombre FROM tagente_modulo WHERE id_agente = ' . $id_agente . ' ORDER BY nombre',
-		'parent_module_id', $parent_module_id, '', __('Not assigned'), '0', true, false, true);
+	$modules_can_be_parent = agents_get_modules($id_agente, false, $module_parent_filter);
+	// If the user cannot have access to parent module, only print the name
+	if ($parent_module_id != 0 && !in_array($parent_module_id, array_keys($modules_can_be_parent))) {
+		$table_simple->data[1][1] = db_get_value(
+			'nombre', 'tagente_modulo', 'id_agente_modulo', $parent_module_id
+		);
+	} else {
+		$table_simple->data[1][1] = html_print_select (
+			$modules_can_be_parent, 'parent_module_id', $parent_module_id, '',
+			__('Not assigned'), '0', true
+		);
+	}
 }
 
 $table_simple->data[2][0] = __('Type').' ' . ui_print_help_icon ('module_type', true);

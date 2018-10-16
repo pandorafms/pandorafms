@@ -4726,3 +4726,41 @@ a.up_arrow {
 tr:last-child > td > a.down_arrow, tr:first-child > td > a.up_arrow {
 	visibility: hidden;
 }
+
+.group_modules_status_box>tbody>tr>td{
+	border-bottom: 1px solid #E2E2E2;
+	border-collapse: collapse;
+	border-spacing:0;
+	width: 10%;
+	height: 20px;
+}
+
+.group_modules_status_div{
+	color: #FFF;
+    width: 100%;
+    height: 100%;
+    text-align: left;
+    display: block;
+    vertical-align: middle;
+	line-height: 20px;
+}
+
+.tooltip_counters h3{
+	font-size: 12pt;
+	padding-bottom: 10px !important;
+	text-align: center;
+}
+
+.tooltip_counters li{
+	font-size: 8pt;
+	margin: 2px;
+	margin-left: 5px;
+
+}
+.tooltip_counters li div{
+	width: 12px;
+	height: 12px;
+	border-radius: 3px;
+	float: left;
+	margin-right: 5px;
+}

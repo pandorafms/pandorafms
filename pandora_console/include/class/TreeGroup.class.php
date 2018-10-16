@@ -20,6 +20,7 @@ require_once($config['homedir']."/include/class/Tree.class.php");
 class TreeGroup extends Tree {
 
 	protected $propagateCounters = true;
+	protected $displayAllGroups  = false;
 
 	public function  __construct($type, $rootType = '', $id = -1, $rootID = -1, $serverID = false, $childrenMethod = "on_demand", $access = 'AR') {
 
@@ -42,6 +43,10 @@ class TreeGroup extends Tree {
 
 	public function setPropagateCounters($value) {
 		$this->propagateCounters = (bool)$value;
+	}
+
+	public function setDisplayAllGroups($value) {
+		$this->displayAllGroups = (bool)$value;
 	}
 
 	protected function getData() {
@@ -132,12 +137,13 @@ class TreeGroup extends Tree {
 			return !$group['have_parent'];
 		});
 		// Propagate child counters to her parents
+
 		if ($this->propagateCounters) {
 			TreeGroup::processCounters($groups);
 			// Filter groups and eliminates the reference to empty groups
-			$groups = TreeGroup::deleteEmptyGroups($groups);
+			$groups = $this->deleteEmptyGroups($groups);
 		} else {
-			$groups = TreeGroup::deleteEmptyGroupsNotPropagate($groups);
+			$groups = $this->deleteEmptyGroupsNotPropagate($groups);
 		}
 
 		usort($groups, array("Tree", "cmpSortNames"));
@@ -345,7 +351,8 @@ class TreeGroup extends Tree {
 	 *
 	 * @return new_groups A new groups structure without empty groups
 	 */
-	protected static function deleteEmptyGroups ($groups) {
+	protected function deleteEmptyGroups ($groups) {
+		if($this->displayAllGroups) return $groups;
 		$new_groups = array();
 		foreach ($groups as $group) {
 			// If a group is empty, do not add to new_groups.
@@ -354,7 +361,7 @@ class TreeGroup extends Tree {
 			}
 			// Tray to remove the children groups
 			if (!empty($group['children'])) {
-				$children = TreeGroup::deleteEmptyGroups ($group['children']);
+				$children = $this->deleteEmptyGroups ($group['children']);
 				if (empty($children)) unset($group['children']);
 				else $group['children'] = $children;
 			}
@@ -363,12 +370,13 @@ class TreeGroup extends Tree {
 		return $new_groups;
 	}
 
-	protected static function deleteEmptyGroupsNotPropagate ($groups) {
+	protected function deleteEmptyGroupsNotPropagate ($groups) {
+		if($this->displayAllGroups) return $groups;
 		$new_groups = array();
 		foreach ($groups as $group) {
 			// Tray to remove the children groups
 			if (!empty($group['children'])) {
-				$children = TreeGroup::deleteEmptyGroupsNotPropagate ($group['children']);
+				$children = $this->deleteEmptyGroupsNotPropagate ($group['children']);
 				if (empty($children)) {
 					unset($group['children']);
 					// If a group is empty, do not add to new_groups.

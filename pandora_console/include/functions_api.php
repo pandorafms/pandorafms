@@ -1175,11 +1175,14 @@ function api_set_update_agent($id_agent, $thrash2, $other, $thrash3) {
 			return;
 		}
 	}
+	$values_old = db_get_row_filter('tagente',
+		array('id_agente' => $id_agent),
+		array('id_grupo', 'disabled')
+	);
+	$tpolicy_group_old = db_get_all_rows_sql("SELECT id_policy FROM tpolicy_groups
+			WHERE id_group = ".$values_old['id_grupo']);
 	
-	$group_old = db_get_sql("SELECT id_grupo FROM tagente WHERE id_agente =" .$id_agent);
-	$tpolicy_group_old = db_get_all_rows_sql("SELECT id_policy FROM tpolicy_groups 
-			WHERE id_group = ".$group_old);
-	
+
 	$return = db_process_sql_update('tagente', 
 		array('alias' => $alias,
 			'direccion' => $ip,
@@ -1200,8 +1203,16 @@ function api_set_update_agent($id_agent, $thrash2, $other, $thrash3) {
 		// register ip for this agent in 'taddress'
 		agents_add_address ($id_agent, $ip);
 	}
-	
+
 	if($return){
+		// Update config file
+		if (isset($disabled) && $values_old['disabled'] != $disabled) {
+			enterprise_hook(
+				'config_agents_update_config_token',
+				array($id_agent, 'standby', $disabled)
+			);
+		}
+
 		if($tpolicy_group_old){
 			foreach ($tpolicy_group_old as $key => $value) {
 				$tpolicy_agents_old= db_get_sql("SELECT * FROM tpolicy_agents 
@@ -1391,6 +1402,68 @@ function api_set_new_agent($thrash1, $thrash2, $other, $thrash3) {
 	}
 }
 
+
+function api_set_create_os($thrash1, $thrash2, $other, $thrash3) {
+	global $config;
+
+
+	if (!check_acl($config['id_user'], 0, "AW")) {
+		returnError('forbidden', 'string');
+		return;
+	}
+	
+	if (defined ('METACONSOLE')) {
+		return;
+	}
+
+	$values = array();
+	
+	$values['name'] = $other['data'][0];
+	$values['description'] = $other['data'][1];
+
+	if (($other['data'][2] !== 0) && ($other['data'][2] != '')) {
+		$values['icon_name'] = $other['data'][2];
+	}
+
+
+
+	$resultOrId = false;
+	if ($other['data'][0] != '') {
+		$resultOrId = db_process_sql_insert('tconfig_os', $values);
+	}
+
+}
+
+function api_set_update_os($id_os, $thrash2, $other, $thrash3) {
+	global $config;
+
+	if (defined ('METACONSOLE')) {
+		return;
+	}
+
+	if (!check_acl($config['id_user'], 0, "AW")) {
+		returnError('forbidden', 'string');
+		return;
+	}
+			
+	$values = array();
+	$values['name'] = $other['data'][0];
+	$values['description'] = $other['data'][1];
+		
+	if (($other['data'][2] !== 0) && ($other['data'][2] != '')) {
+		$values['icon_name'] = $other['data'][2];;
+	}
+	$result = false;
+
+
+	if ($other['data'][0] != '') {
+
+		$result = db_process_sql_update('tconfig_os', $values, array('id_os' => $id_os));
+	}
+
+}
+
+
 /**
  *
  * Creates a custom field
@@ -1547,10 +1620,6 @@ function api_set_delete_agent($id, $thrash1, $thrast2, $thrash3) {
 function api_get_all_agents($thrash1, $thrash2, $other, $returnType) {
 	global $config;
 
-	if (defined ('METACONSOLE')) {
-		return;
-	}
-
 	// Error if user cannot read agents.
 	if (!check_acl($config['id_user'], 0, "AR")) {
 		returnError('forbidden', $returnType);
@@ -1599,13 +1668,25 @@ function api_get_all_agents($thrash1, $thrash2, $other, $returnType) {
 	// Initialization of array
 	$result_agents = array();
 	// Filter by state
-	$sql = "SELECT id_agente, alias, direccion, comentarios,
+	
+	if (defined ('METACONSOLE')) {
+		$sql = "SELECT id_agente, alias, direccion, comentarios,
 			tconfig_os.name, url_address, nombre
-		FROM tconfig_os, tagente
+		FROM tconfig_os, tmetaconsole_agent
 		LEFT JOIN tagent_secondary_group
-			ON tagente.id_agente = tagent_secondary_group.id_agent
-		WHERE tagente.id_os = tconfig_os.id_os
+			ON tmetaconsole_agent.id_agente = tagent_secondary_group.id_agent
+		WHERE tmetaconsole_agent.id_os = tconfig_os.id_os
 			AND disabled = 0 $where AND $groups";
+	}
+	else{
+		$sql = "SELECT id_agente, alias, direccion, comentarios,
+				tconfig_os.name, url_address, nombre
+			FROM tconfig_os, tagente
+			LEFT JOIN tagent_secondary_group
+				ON tagente.id_agente = tagent_secondary_group.id_agent
+			WHERE tagente.id_os = tconfig_os.id_os
+				AND disabled = 0 $where AND $groups";
+	}
 
 	$all_agents = db_get_all_rows_sql($sql);
 
@@ -1672,6 +1753,18 @@ function api_get_all_agents($thrash1, $thrash2, $other, $returnType) {
 	} 
 	else {
 		$result_agents = $all_agents;
+	}
+	
+	if (empty($returnType)) {
+		$returnType = "string";
+	}
+	
+	if (empty($separator)) {
+		$separator = ";";
+	}
+	
+	foreach ($result_agents as $key => $value) {
+		$result_agents[$key]['status'] = agents_get_status($result_agents[$key]['id_agente'], true);
 	}
 	
 	if (count($result_agents) > 0 and $result_agents !== false) {
@@ -7007,10 +7100,11 @@ function otherParameter2Filter($other, $return_as_array = false) {
 	
 	$idAgent = null;
 	if (isset($other['data'][2]) && $other['data'][2] != '') {
-		$idAgent = agents_get_agent_id($other['data'][2]);
+		$idAgents = agents_get_agent_id_by_alias($other['data'][2]);
 		
 		if (!empty($idAgent)) {
-			$filter['id_agente'] = $idAgent;
+
+			$filter[] = "id_agente IN (" . explode(",", $idAgents) .")";
 		}
 		else {
 			$filter['sql'] = "1=0";

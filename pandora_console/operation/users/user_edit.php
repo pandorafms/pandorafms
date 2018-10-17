@@ -146,7 +146,7 @@ if (isset ($_GET["modified"]) && !$view_mode) {
 		}
 		elseif ($password_new !== "NON-INIT") {
 		//	ui_print_error_message (__('Passwords didn\'t match or other problem encountered while updating passwords'));
-			$error_msg='Passwords didn\'t match or other problem encountered while updating passwords';
+			$error_msg = __('Passwords didn\'t match or other problem encountered while updating passwords');
 		}
 	}
 	elseif(empty($password_new) && empty($password_confirm)){
@@ -159,24 +159,24 @@ if (isset ($_GET["modified"]) && !$view_mode) {
 	// No need to display "error" here, because when no update is needed (no changes in data) 
 	// SQL function returns	0 (FALSE), but is not an error, just no change. Previous error
 	// message could be confussing to the user.
-	
+
 	if($return){
-		$success_msg = 'Password successfully updated';
+		$success_msg = __('Password successfully updated');
 
 		$return_update_user = update_user ($id, $upd_info);
 
 		if ($return_update_user === false) {
-			$error_msg='Error updating user info';
+			$error_msg = __('Error updating user info');
 		}
 		elseif($return_update_user == true){
-			$success_msg = 'User info successfully updated';
+			$success_msg = __('User info successfully updated');
 		}
 
 		$user_info = $upd_info;
 	}
 	else{
 		if(!$error_msg){
-			$error_msg='Error updating passwords: ';
+			$error_msg = __('Error updating passwords: %s');
 		}
 
 		$user_auth_error= $config['auth_error'];

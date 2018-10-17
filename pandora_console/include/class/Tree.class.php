@@ -926,8 +926,6 @@ class Tree {
 				$module_search_filter
 				$tag_condition
 			ORDER BY tam.nombre ASC, tam.id_agente_modulo ASC";
-			html_debug($sql, true);
-			html_debug($sql, true, true);
 		return $sql;
 	}
 

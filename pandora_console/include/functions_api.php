@@ -11306,6 +11306,7 @@ function api_get_cluster_status($id_cluster, $trash1, $trash2, $returnType) {
 	
 	if ($value === false) {
 		returnError('id_not_found', $returnType);
+		return;
 	}
 	
 	$data = array('type' => 'string', 'data' => $value);
@@ -11323,6 +11324,7 @@ function api_get_cluster_id_by_name($cluster_name, $trash1, $trash2, $returnType
 	$value = cluster_get_id_by_name($cluster_name);
 	if(($value === false) || ($value === null)){
 		returnError('id_not_found', $returnType);
+		return;
 	}
 
 	$cluster_group = clusters_get_group($value);

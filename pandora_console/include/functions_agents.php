@@ -1069,7 +1069,7 @@ function agents_get_group_agents (
  */
 function agents_get_modules ($id_agent = null, $details = false,
 	$filter = false, $indexed = true, $get_not_init_modules = true,
-	$noACLs = false) {
+	$force_tags = false) {
 	
 	global $config;
 	
@@ -1205,7 +1205,7 @@ function agents_get_modules ($id_agent = null, $details = false,
 	}
 
 	$sql_tags_join = "";
-	if (tags_has_user_acl_tags($config['id_user'])){
+	if (tags_has_user_acl_tags($config['id_user']) || $force_tags){
 		$where_tags = tags_get_acl_tags($config['id_user'], $id_groups, 'AR',
 			'module_condition', 'AND', 'tagente_modulo', false, array(),
 			true);

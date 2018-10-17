@@ -176,7 +176,7 @@ if (isset ($_GET["modified"]) && !$view_mode) {
 	}
 	else{
 		if(!$error_msg){
-			$error_msg = __('Error updating passwords: %s');
+			$error_msg = __('Error updating passwords: ');
 		}
 
 		$user_auth_error= $config['auth_error'];

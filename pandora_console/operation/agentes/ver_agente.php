@@ -340,6 +340,11 @@ if (is_ajax ()) {
 				'tmetaconsole_setup', 'id', $id_server);
 		}
 
+		if (empty($idAgents[0])) {
+			echo json_encode(array());
+			return;
+		}
+
 		$filter = '1 = 1';
 
 		$all = (string)get_parameter('all', 'all');

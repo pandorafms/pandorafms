@@ -298,7 +298,7 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 						'#000000', 'text-grid_color', '', 7, 7, false,
 						'', 'class="grid_color"', true) .
 				'</td>';
-					
+
 			$form_items['radio_choice_graph'] = array();
 			$form_items['radio_choice_graph']['items'] = array(
 				'module_graph',
@@ -312,27 +312,25 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 				. __('Custom graph') . "&nbsp;&nbsp;" .
 				html_print_radio_button('radio_choice', 'custom_graph', '', 'module_graph', true) .
 				'</td>';
-			
-			
+
 			$form_items['custom_graph_row'] = array();
-			$form_items['custom_graph_row']['items'] = array(
-				'module_graph',
-				'datos');
-			$form_items['custom_graph_row']['html'] =
-				'<td align="left" style="">' . __('Custom graph') . '</td>
-				<td align="left" style="">' .
-				html_print_select_from_sql(
-					"SELECT id_graph, name FROM tgraph", 'custom_graph',
-					'', '', __('None'), 0, true) .
-				'</td>';
-			
-			
+			$form_items['custom_graph_row']['html'] = '<td align="left" style="">' . __('Custom graph') . '</td><td align="left" style="">';
+			if(is_metaconsole()){
+				$graphs = array();
+				$graphs = metaconsole_get_custom_graphs(true);
+				$form_items['custom_graph_row']['html'] .= html_print_select($graphs, 'custom_graph', '', '', __('None'), 0, true);
+			}
+			else{
+				$form_items['custom_graph_row']['html'] .= html_print_select_from_sql("SELECT id_graph, name FROM tgraph", 'custom_graph','', '', __('None'), 0, true);
+			}
+			$form_items['custom_graph_row']['html'] .= '</td>';
+
 			$form_items['agent_row'] = array();
 			$form_items['agent_row']['items'] = array('static_graph',
 				'percentile_bar', 'percentile_item', 'module_graph',
 				'simple_value', 'datos', 'auto_sla_graph');
 			$form_items['agent_row']['html'] = '<td align="left">' .
-				__('Agent') . '</td>';			
+				__('Agent') . '</td>';
 			$params = array();
 			$params['return'] = true;
 			$params['show_helptip'] = true;

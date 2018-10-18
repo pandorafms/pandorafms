@@ -1866,7 +1866,7 @@ function events_get_response_target($event_id, $response_id, $server_id, $histor
 			$agente_table_name = 'tmetaconsole_agent';
 			$filter = array(
 				'id_tagente' => $event['id_agente'],
-				'id_metaconsole_setup' => $server_id
+				'id_tmetaconsole_setup' => $server_id
 			);
 		} else {
 			$agente_table_name = 'tagente';

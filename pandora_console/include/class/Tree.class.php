@@ -41,6 +41,8 @@ class Tree {
 	protected $L2conditionInside = '';
 	protected $L2inner = '';
 
+	protected $L3forceTagCondition = false;
+
 	const TV_DEFAULT_AGENT_STATUS = -1;
 
 	public function __construct($type, $rootType = '', $id = -1, $rootID = -1, $serverID = false, $childrenMethod = "on_demand", $access = 'AR') {
@@ -891,7 +893,9 @@ class Tree {
 		$module_status_filter = $this->getModuleStatusFilterFromTestado();
 		$agent_filter = "AND ta.id_agente = " . $this->id;
 		$tag_condition = $this->getTagCondition();
-		$tag_join = empty($tag_condition) ? '' : $this->getTagJoin();
+		$tag_join = empty($tag_condition) && (!$this->L3forceTagCondition)
+			? ''
+			: $this->getTagJoin();
 
 		$condition = $this->L2condition;
 		$inner = $this->L2inner;

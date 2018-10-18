@@ -3342,6 +3342,7 @@ CREATE TABLE IF NOT EXISTS `tlayout_template_data` (
 	`clock_animation` varchar(60) NOT NULL default "analogic_1",
 	`time_format` varchar(60) NOT NULL default "time",
 	`timezone` varchar(60) NOT NULL default "Europe/Madrid",
+	`show_last_value` tinyint(1) UNSIGNED NULL default '0',
 	PRIMARY KEY(`id`),
 	FOREIGN KEY (`id_layout_template`) REFERENCES tlayout_template(`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;

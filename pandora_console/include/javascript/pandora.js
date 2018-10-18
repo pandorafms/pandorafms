@@ -189,8 +189,10 @@ function agent_changed_by_multiple_agents (event, id_agent, selected) {
 			$('#module').empty ();
 			
 			if (isEmptyObject(data)) {
-				var noneText = $("#none_text").html(); //Trick for catch the translate text.
-				
+				//Trick for catch the translate text.
+				var noneText = $("#id_agents").val() === null
+					? $("#select_agent_first_text").html()
+					: $("#none_text").html();
 				if (noneText == null) {
 					noneText = 'None';
 				}

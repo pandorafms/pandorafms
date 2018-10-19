@@ -77,6 +77,6 @@ function pandora_session_gc ($max_lifetime = 300) {
 	return $retval;
 }
 
-$result_handler = session_set_save_handler ('pandora_session_open', 'pandora_session_close', 'pandora_session_read', 'pandora_session_write', 'pandora_session_destroy', 'pandora_session_gc'); 
+$result_handler = @session_set_save_handler ('pandora_session_open', 'pandora_session_close', 'pandora_session_read', 'pandora_session_write', 'pandora_session_destroy', 'pandora_session_gc'); 
 
 ?>

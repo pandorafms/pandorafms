@@ -2300,8 +2300,8 @@ function config_prepare_session() {
 	else
 		$sessionCookieExpireTime *= 60;
 
-	ini_set('session.gc_maxlifetime', $sessionCookieExpireTime);
-	session_set_cookie_params ($sessionCookieExpireTime);
+	@ini_set('session.gc_maxlifetime', $sessionCookieExpireTime);
+	@session_set_cookie_params ($sessionCookieExpireTime);
 
 	// Reset the expiration time upon page load //session_name() is default name of session PHPSESSID
 

@@ -1,0 +1,5 @@
+START TRANSACTION;
+
+ALTER TABLE `tusuario` DROP COLUMN `flash_chart`;
+
+COMMIT;

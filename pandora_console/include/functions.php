@@ -3128,16 +3128,23 @@ function series_type_graph_array($data, $show_elements_graph){
 				if (isset($show_elements_graph['labels']) &&
 					is_array($show_elements_graph['labels']) &&
 					(count($show_elements_graph['labels']) > 0)){
-						$name_legend = $data_return['legend'][$key] = $show_elements_graph['labels'][$value['agent_module_id']] . ' ' ;
+						if ($show_elements_graph['unit'])
+						$name_legend = $data_return['legend'][$key] = $value['agent_alias']  . ' / ' .	$value['module_name'] . ' / ' . __('Unit ')  . ' ' . $show_elements_graph['unit'] .': ';
+						else
+						$name_legend = $data_return['legend'][$key] = $value['agent_alias']  . ' / ' .	$value['module_name'] . ': ';
 				}
 				else{
 					if(strpos($key, 'baseline') !== false){
-						$name_legend = $data_return['legend'][$key] = $value['agent_alias']  . ' / ' .
-													$value['module_name'] . ' Baseline ';
+						if ($show_elements_graph['unit'])
+						$name_legend = $data_return['legend'][$key] = $value['agent_alias']  . ' / ' .	$value['module_name'] . ' / ' . __('Unit ')  . ' ' . $show_elements_graph['unit'] .'Baseline ';
+						else
+						$name_legend = $data_return['legend'][$key] = $value['agent_alias']  . ' / ' .	$value['module_name'] . 'Baseline ';
 					}
 					else{
-						$name_legend = $data_return['legend'][$key] = $value['agent_alias']  . ' / ' .
-													$value['module_name'] . ': ';
+						if ($show_elements_graph['unit'])
+						$name_legend = $data_return['legend'][$key] = $value['agent_alias']  . ' / ' .	$value['module_name'] . ' / ' . __('Unit ')  . ' ' . $show_elements_graph['unit'] .': ';
+						else
+						$name_legend = $data_return['legend'][$key] = $value['agent_alias']  . ' / ' .	$value['module_name'] . ': ';
 					}
 				}
 
@@ -3172,6 +3179,11 @@ function series_type_graph_array($data, $show_elements_graph){
 			elseif(!$show_elements_graph['fullscale'] && strpos($key, 'min') !== false ||
 					!$show_elements_graph['fullscale'] && strpos($key, 'max') !== false){
 				$data_return['series_type'][$key] = $type_graph;
+
+				if ($show_elements_graph['unit'])
+					$name_legend = $data_return['legend'][$key] = $value['agent_alias']  . ' / ' .	$value['module_name'] . ' / ' . __('Unit ')  . ' ' . $show_elements_graph['unit'] .': ';
+				else
+					$name_legend = $data_return['legend'][$key] = $value['agent_alias']  . ' / ' .	$value['module_name'] . ': ';
 
 				$data_return['legend'][$key] = $name_legend;
 				if($show_elements_graph['type_mode_graph']){
@@ -3234,6 +3246,10 @@ function series_type_graph_array($data, $show_elements_graph){
 						__('Percentil') . ' ' .
 						$config['percentil']  .
 						'º ' . __('of module') . ' ';
+						if ($show_elements_graph['unit'])
+						$name_legend = $data_return['legend'][$key] = $value['agent_alias']  . ' / ' .	$value['module_name'] . ' / ' . __('Unit ')  . ' ' . $show_elements_graph['unit'] .': ';
+						else
+						$name_legend = $data_return['legend'][$key] = $value['agent_alias']  . ' / ' .	$value['module_name'] . ': ';
 					$data_return['legend'][$key] .= $name_legend;
 					$data_return['legend'][$key] .= remove_right_zeros(
 													number_format(

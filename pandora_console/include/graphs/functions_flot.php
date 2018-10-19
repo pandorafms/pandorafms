@@ -684,7 +684,14 @@ function flot_vcolumn_chart ($graph_data, $width, $height, $color, $legend, $lon
 	return $return;
 }
 
-function flot_slicesbar_graph ($graph_data, $period, $width, $height, $legend, $colors, $fontpath, $round_corner, $homeurl, $watermark = '', $adapt_key = '', $stat_win = false, $id_agent = 0, $full_legend_date = array(), $not_interactive = 0) {
+function flot_slicesbar_graph (
+	$graph_data, $period, $width,
+	$height, $legend, $colors, $fontpath,
+	$round_corner, $homeurl, $watermark = '',
+	$adapt_key = '', $stat_win = false,
+	$id_agent = 0, $full_legend_date = array(),
+	$not_interactive = 0, $ttl = 1) {
+
 	global $config;
 
 	// Get a unique identifier to graph
@@ -748,7 +755,7 @@ function flot_slicesbar_graph ($graph_data, $period, $width, $height, $legend, $
 	foreach ($graph_data as $label => $values) {
 		$labels[] = $label;
 		$i--;
-		
+
 		foreach ($values as $key => $value) {
 			$jsvar = "d_".$graph_id."_".$i;
 			if ($key == 'data') {
@@ -756,11 +763,11 @@ function flot_slicesbar_graph ($graph_data, $period, $width, $height, $legend, $
 				continue;
 			}
 			$data[$jsvar][] = $value;
-			
+
 			$acumulate_data[$c] = $acumulate;
 			$acumulate += $value;
 			$c++;
-			
+
 			if ($value > $max) {
 				$max = $value;
 			}
@@ -781,32 +788,32 @@ function flot_slicesbar_graph ($graph_data, $period, $width, $height, $legend, $
 		$full_legend_date = false;
 	}
 	$acumulate_data = io_safe_output(implode($separator,$acumulate_data));
-	
+
 	// Store data series in javascript format
 	$jsvars = '';
 	$jsseries = array();
-	
+
 	$date = get_system_time ();
 	$datelimit = ($date - $period) * 1000;
-	
+
 	$i = 0;
-	
+
 	$values2 = array();
-	
+
 	foreach ($data as $jsvar => $values) {
 		$values2[] = implode($separator,$values);
 		$i ++;
 	}
-	
+
 	$values = implode($separator2, $values2);
-	
+
 	// Javascript code
 	$return .= "<script type='text/javascript'>";
 	$return .= "//<![CDATA[\n";
 	$return .= "pandoraFlotSlicebar('$graph_id', '$values', '$datacolor', '$labels', '$legend', '$acumulate_data', $intervaltick, '$fontpath', $fontsize, '$separator', '$separator2', '', $id_agent, '$full_legend_date', $not_interactive)";
 	$return .= "\n//]]>";
 	$return .= "</script>";
-	
+
 	return $return;
 }
 ?>

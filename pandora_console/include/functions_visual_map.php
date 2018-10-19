@@ -1479,7 +1479,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 						$img =  '<img src="../../images/console/signes/module-events.png">';
 					}
 					else{
-						$img =  '<img src="images/console/signes/module-events.png">';	
+						$img =  '<img src="images/console/signes/module-events.png">';
 					}
 				}
 				else{
@@ -1494,28 +1494,28 @@ function visual_map_print_item($mode = "read", $layoutData,
 			else {
 				if ($width == 0 || $height == 0) {
 					if ($layoutData['label_position']=='left') {
-						$img = '<div style="z-index:'.$show_on_top_index.';float:left;height:'.$himg.'px;">' .graph_graphic_moduleevents ($layoutData['id_agent'], $layoutData['id_agente_modulo'], 500, 50, $layoutData['period'], '', true).'</div>';
+						$img = '<div style="z-index:'.$show_on_top_index.';float:left;height:'.$himg.'px;width:500px;">' .graph_graphic_moduleevents ($layoutData['id_agent'], $layoutData['id_agente_modulo'], 500, 50, $layoutData['period'], '', true).'</div>';
 					}
 					elseif ($layoutData['label_position']=='right') {
-						$img = '<div style="z-index:'.$show_on_top_index.';float:right;height:'.$himg.'px;">' . graph_graphic_moduleevents ($layoutData['id_agent'], $layoutData['id_agente_modulo'], 500, 50, $layoutData['period'], '', true).'</div>';
+						$img = '<div style="z-index:'.$show_on_top_index.';float:right;height:'.$himg.'px;width:500px;">' . graph_graphic_moduleevents ($layoutData['id_agent'], $layoutData['id_agente_modulo'], 500, 50, $layoutData['period'], '', true).'</div>';
 					}
 					else {
-						$img = graph_graphic_moduleevents ($layoutData['id_agent'], $layoutData['id_agente_modulo'], 500, 50, $layoutData['period'], '', true);
+						$img = '<div style="width:500px;">' . graph_graphic_moduleevents ($layoutData['id_agent'], $layoutData['id_agente_modulo'], 500, 50, $layoutData['period'], '', true).'</div>';
 					}
 				}
 				else{
 					if ($layoutData['label_position']=='left') {
-						$img = '<div style="z-index:'.$show_on_top_index.';float:left;height:'.$himg.'px;">' . graph_graphic_moduleevents ($layoutData['id_agent'], $layoutData['id_agente_modulo'], $width, $height, $layoutData['period'], '', true).'</div>';
+						$img = '<div style="z-index:'.$show_on_top_index.';float:left;height:'.$himg.'px;width:500px;">' . graph_graphic_moduleevents ($layoutData['id_agent'], $layoutData['id_agente_modulo'], $width, $height, $layoutData['period'], '', true).'</div>';
 					}
 					elseif ($layoutData['label_position']=='right') {
-						$img = '<div style="z-index:'.$show_on_top_index.';float:right;height:'.$himg.'px;">' .graph_graphic_moduleevents ($layoutData['id_agent'], $layoutData['id_agente_modulo'], $width, $height, $layoutData['period'], '', true).'</div>';
+						$img = '<div style="z-index:'.$show_on_top_index.';float:right;height:'.$himg.'px;width:500px;">' .graph_graphic_moduleevents ($layoutData['id_agent'], $layoutData['id_agente_modulo'], $width, $height, $layoutData['period'], '', true).'</div>';
 					}
 					else {
-						$img = graph_graphic_moduleevents ($layoutData['id_agent'], $layoutData['id_agente_modulo'], $width, $height, $layoutData['period'], '', true);
+						$img = '<div style="width:500px;">' . graph_graphic_moduleevents ($layoutData['id_agent'], $layoutData['id_agente_modulo'], $width, $height, $layoutData['period'], '', true).'</div>';
 					}
 				}
 			}
-		
+
 			//Restore db connection
 			if ($layoutData['id_metaconsole'] != 0) {
 				metaconsole_restore_db();
@@ -1524,7 +1524,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 			$z_index = 2 + 1;
 			break;
 	}
-	
+
 	$class = "item ";
 	switch ($type) {
 		case STATIC_GRAPH:

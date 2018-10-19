@@ -2410,31 +2410,48 @@ function progress_bubble($progress, $width, $height, $title = '', $mode = 1, $va
 		"&colorRGB=". $colorRGB . "' />";
 }
 
-function graph_sla_slicebar ($id, $period, $sla_min, $sla_max, $date, $daysWeek = null, $time_from = null, $time_to = null, $width, $height, $home_url, $ttl = 1, $data = false, $round_corner = null) {
+function graph_sla_slicebar (
+	$id, $period, $sla_min, $sla_max,
+	$date, $daysWeek = null, $time_from = null,
+	$time_to = null, $width, $height, $home_url,
+	$ttl = 1, $data = false, $round_corner = null) {
+
 	global $config;
-	
+
 	if ($round_corner === null) {
 		$round_corner = $config['round_corner'];
 	}
-	
-	// If the data is not provided, we got it
-	if ($data === false) {
-		$data = reporting_get_agentmodule_sla_array ($id, $period,
-			$sla_min, $sla_max, $date, $daysWeek, null, null);
-	}
-	
+
 	$col_planned_downtime = '#20973F';
-	
-	$colors = array(1 => COL_NORMAL,
+
+	$colors = array(
+		1 => COL_NORMAL,
 		2 => COL_WARNING,
 		3 => COL_CRITICAL,
 		4 => COL_UNKNOWN,
 		5 => COL_DOWNTIME,
 		6 => COL_NOTINIT,
-		7 => COL_IGNORED);
-	
-	return slicesbar_graph($data, $period, $width, $height, $colors,
-		$config['fontpath'], $round_corner, $home_url, $ttl);
+		7 => COL_IGNORED
+	);
+
+	return	$return['chart'] = flot_slicesbar_graph (
+		$data,
+		$period,
+		$width,
+		$height,
+		'',
+		$colors,
+		$config['fontpath'],
+		$round_corner,
+		$home_url,
+		'',
+		'',
+		false,
+		0,
+		array(),
+		true,
+		$ttl
+	);
 }
 
 /**
@@ -3263,21 +3280,8 @@ function graph_graphic_agentevents ($id_agent, $width, $height, $period = 0, $ho
 	$colors = array(1 => COL_NORMAL, 2 => COL_WARNING, 3 => COL_CRITICAL, 4 => COL_UNKNOWN);
 
 	// Draw slicebar graph
-	if ($config['flash_charts']) {
-		$out = flot_slicesbar_graph($data, $period, $width, $height, $full_legend, $colors, $config['fontpath'], $config['round_corner'], $homeurl, '', '', false, $id_agent, $full_legend_date);
-	}
-	else {
-		$out = slicesbar_graph($data, $period, $width, $height, $colors, $config['fontpath'], $config['round_corner'], $homeurl);
-		
-		// Draw legend
-		$out .=  "<br>";
-		$out .=  "&nbsp;";
-		foreach ($legend as $hour) {
-			$out .=  "<span style='font-size: 6pt'>" . $hour . "</span>";
-			$out .=  "&nbsp;";
-		}
-	}
-	
+	$out = flot_slicesbar_graph($data, $period, 100, 40, $full_legend, $colors, $config['fontpath'], $config['round_corner'], $homeurl, '', '', false, $id_agent, $full_legend_date);
+
 	if ($return) {
 		return $out;
 	}
@@ -3317,12 +3321,7 @@ function graph_graphic_moduleevents ($id_agent, $id_module, $width, $height, $pe
 	for ($i = 0; $i < $interval; $i++) {
 		$bottom = $datelimit + ($periodtime * $i);
 		if (! $graphic_type) {
-			if ($config['flash_charts']) {
-				$name = date('H:i:s', $bottom);
-			}
-			else {
-				$name = date('H\h', $bottom);
-			}
+			$name = date('H\h', $bottom);
 		}
 		else {
 			$name = $bottom;
@@ -3365,23 +3364,31 @@ function graph_graphic_moduleevents ($id_agent, $id_module, $width, $height, $pe
 		$cont++;
 	}
 
-	$colors = array(1 => COL_NORMAL, 2 => COL_WARNING, 3 => COL_CRITICAL, 4 => COL_UNKNOWN);
+	$colors = array(
+		1 => COL_NORMAL,
+		2 => COL_WARNING,
+		3 => COL_CRITICAL,
+		4 => COL_UNKNOWN
+	);
 
-	// Draw slicebar graph
-	if ($config['flash_charts']) {
-		$out = flot_slicesbar_graph($data, $period, $width, $height, $full_legend, $colors, $config['fontpath'], $config['round_corner'], $homeurl, '', '', false, $id_agent);
-	}
-	else {
-		$out = slicesbar_graph($data, $period, $width, $height, $colors, $config['fontpath'], $config['round_corner'], $homeurl);
-
-		// Draw legend
-		$out .=  "<br>";
-		$out .=  "&nbsp;";
-		foreach ($legend as $hour) {
-			$out .=  "<span style='font-size: 6pt'>" . $hour . "</span>";
-			$out .=  "&nbsp;";
-		}
-	}
+	$out = flot_slicesbar_graph(
+		$data,
+		$period,
+		100,
+		$height,
+		$full_legend,
+		$colors,
+		$config['fontpath'],
+		$config['round_corner'],
+		$homeurl,
+		'',
+		'',
+		false,
+		$id_agent,
+		array(),
+		true,
+		1
+	);
 
 	if ($return) {
 		return $out;
@@ -4068,12 +4075,20 @@ function graphic_module_events ($id_module, $width, $height, $period = 0, $homeu
 	$colors = array(1 => '#38B800', 2 => '#FFFF00', 3 => '#FF0000', 4 => '#C3C3C3');
 
 	// Draw slicebar graph
-	if ($config['flash_charts']) {
-		echo flot_slicesbar_graph($data, $period, $width, 50, $legend, $colors, $config['fontpath'], $config['round_corner'], $homeurl, '', $adapt_key, $stat_win);
-	}
-	else {
-		echo slicesbar_graph($data, $period, $width, 15, $colors, $config['fontpath'], $config['round_corner'], $homeurl);
-	}
+	echo flot_slicesbar_graph(
+		$data,
+		$period,
+		$width,
+		50,
+		$legend,
+		$colors,
+		$config['fontpath'],
+		$config['round_corner'],
+		$homeurl,
+		'',
+		$adapt_key,
+		$stat_win
+	);
 }
 
 function graph_nodata_image($width = 300, $height = 110, $type = 'area', $text = '') {

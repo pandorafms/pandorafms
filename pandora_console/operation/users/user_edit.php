@@ -87,8 +87,7 @@ if (isset ($_GET["modified"]) && !$view_mode) {
 	if($default_block_size) {
 		$upd_info["block_size"] = 0;
 	}
-	
-	$upd_info["flash_chart"] = get_parameter ("flash_charts", $config["flash_charts"]);
+
 	$upd_info["section"] = get_parameter ("section", $user_info["section"]);
 	$upd_info["data_section"] = get_parameter ("data_section", '');
 	$dashboard = get_parameter('dashboard', '');
@@ -252,9 +251,6 @@ $data[0] .= $jump . '<span style="width:2%;float:left;line-height:20px;">'.html_
 $data[0] .= __('Default').' ('.$config["global_block_size"].')';
 
 $values = array(-1 => __('Default'),1 => __('Yes'),0 => __('No'));
-
-$data[1] = '<span style="width:40%;float:left;">'.__('Interactive charts') . ui_print_help_tip(__('Whether to use Javascript or static PNG graphs'), true).'</span>';
-$data[1] .= $jump . '<span style="width:20%;float:left;line-height:20px;">'. html_print_select($values, 'flash_charts', $user_info["flash_chart"], '', '', -1, true, false, false).'</span>';
 
 
 $data[2] = '<span style="width:30%;float:left;">'.__('Language').'</span>';

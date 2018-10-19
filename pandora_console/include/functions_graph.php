@@ -1286,7 +1286,6 @@ function graphic_combined_module (
 	$background_color = $params['backgroundColor'];
 	$datelimit        = $date_array["start_date"];
 	$fixed_font_size  = $config['font_size'];
-	$flash_charts     = false;
 
 	if($config["fixed_graph"] == false){
 		$water_mark = array(
@@ -3126,8 +3125,6 @@ function graph_custom_sql_graph ($id, $width, $height,
 		}
 	}
 
-	$flash_charts = $config['flash_charts'];
-
 	if($config["fixed_graph"] == false){
 		$water_mark = array('file' =>
 			$config['homedir'] . "/images/logo_vertical_water.png",
@@ -3228,12 +3225,7 @@ function graph_graphic_agentevents ($id_agent, $width, $height, $period = 0, $ho
 	for ($i = 0; $i < $interval; $i++) {
 		$bottom = $datelimit + ($periodtime * $i);
 		if (! $graphic_type) {
-			if ($config['flash_charts']) {
-				$name = date('H:i', $bottom);
-			}
-			else {
-				$name = date('H\h', $bottom);
-			}
+			$name = date('H:i', $bottom);
 		}
 		else {
 			$name = $bottom;

@@ -6870,7 +6870,6 @@ function api_get_graph_module_data($id, $thrash1, $other, $thrash2) {
 	$ttl = 1;
 
 	global $config;
-	$config['flash_charts'] = 0;
 
 	$params =array(
 		'agent_module_id'     => $id,
@@ -6950,7 +6949,7 @@ function api_set_new_user($id, $thrash2, $other, $thrash3) {
  * @param string $id String username for user login in Pandora
  * @param $thrash2 Don't use.
  * @param array $other it's array, $other as param is <fullname>;<firstname>;<lastname>;<middlename>;<password>;
- *  <email>;<phone>;<language>;<comments>;<is_admin>;<block_size>;<flash_chart> in this order and separator char
+ *  <email>;<phone>;<language>;<comments>;<is_admin>;<block_size>;in this order and separator char
  *  (after text ; ) and separator (pass in param othermode as othermode=url_encode_separator_<separator>)
  *  example:
  *  
@@ -6975,15 +6974,14 @@ function api_set_update_user($id, $thrash2, $other, $thrash3) {
 		'lastname',
 		'middlename',
 		'password',
-		'email', 
+		'email',
 		'phone',
 		'language',
 		'comments',
 		'is_admin',
-		'block_size',
-		'flash_chart');
-	
-	
+		'block_size'
+	);
+
 	if ($id == "") {
 		returnError('error_update_user',
 			__('Error updating user. Id_user cannot be left blank.'));

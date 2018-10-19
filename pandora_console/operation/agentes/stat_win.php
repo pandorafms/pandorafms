@@ -84,11 +84,8 @@ $alias    = db_get_value ("alias","tagente","id_agente",$id_agent);
 		<script type='text/javascript' src='../../include/javascript/jquery.pandora.js'></script>
 		<script type='text/javascript' src='../../include/javascript/jquery.jquery-ui-1.10.0.custom.js'></script>
 		<?php
-			if ($config['flash_charts']) {
-				//Include the javascript for the js charts library
-				include_once($config["homedir"] . '/include/graphs/functions_flot.php');
-				echo include_javascript_dependencies_flot_graph(true, "../");
-			}
+			include_once($config["homedir"] . '/include/graphs/functions_flot.php');
+			echo include_javascript_dependencies_flot_graph(true, "../");
 		?>
 		<script type='text/javascript'>
 			window.onload = function() {
@@ -185,11 +182,7 @@ $alias    = db_get_value ("alias","tagente","id_agente",$id_agent);
 
 		$unit = db_get_value('unit', 'tagente_modulo', 'id_agente_modulo', $id);
 
-		// log4x doesnt support flash yet
-		if ($config['flash_charts'] == 1)
-			echo '<div style="margin-left: 65px; padding-top: 10px;">';
-		else
-			echo '<div style="margin-left: 20px; padding-top: 10px;">';
+		echo '<div style="margin-left: 65px; padding-top: 10px;">';
 
 		$width  = '90%';
 		$height = '450';

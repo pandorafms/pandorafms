@@ -7567,8 +7567,7 @@ function reporting_get_stats_modules_status($data, $graph_width = 250, $graph_he
 	}
 	
 	// Fixed width non interactive charts
-	$status_chart_width = $config["flash_charts"] == false
-		? 100 : $graph_width;
+	$status_chart_width = $graph_width;
 
 	// Modules by status table
 	$table_mbs = html_get_predefined_table();

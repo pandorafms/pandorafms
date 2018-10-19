@@ -2260,8 +2260,7 @@ function config_user_set_custom_config() {
 	if ($userinfo['last_connect'] < (time()-SECONDS_1MINUTE)) {
 		update_user($config['id_user'], array('last_connect' => time()));
 	}
-	
-	// If block_size or flash_chart are provided then override global settings
+
 	if (!empty($userinfo["block_size"]) && ($userinfo["block_size"] != 0))
 		$config["block_size"] = $userinfo["block_size"];
 

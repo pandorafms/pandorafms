@@ -1594,24 +1594,16 @@ function ui_process_page_head ($string, $bitfield) {
 	////////////////////////////////////////////////////////////////////
 	//End load JQuery
 	////////////////////////////////////////////////////////////////////
-	
-	
-	
-	
-	if ($config['flash_charts']) {
-		//Include the javascript for the js charts library
-		include_once($config["homedir"] . '/include/graphs/functions_flot.php');
-		$output .= include_javascript_dependencies_flot_graph(true);
-	}
-	
-	
+
+	include_once($config["homedir"] . '/include/graphs/functions_flot.php');
+	$output .= include_javascript_dependencies_flot_graph(true);
+
 	$output .= '<!--[if gte IE 6]>
 		<link rel="stylesheet" href="include/styles/ie.css" type="text/css"/>
 		<![endif]-->';
-	
+
 	$output .= $string;
-	
-	
+
 	return $output;
 }
 

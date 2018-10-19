@@ -273,6 +273,7 @@ if ($create_command) {
 	$name = (string) get_parameter ('name');
 	$command = (string) get_parameter ('command');
 	$description = (string) get_parameter ('description');
+	$id_group = (string) get_parameter ('id_group', 0);
 	
 	$fields_descriptions = array();
 	$fields_values = array();
@@ -287,7 +288,8 @@ if ($create_command) {
 	$values['fields_values'] = io_json_mb_encode($fields_values);
 	$values['fields_descriptions'] = io_json_mb_encode($fields_descriptions);
 	$values['description'] = $description;
-	
+	$values['id_group'] = $id_group;
+
 	$name_check = db_get_value ('name', 'talert_commands', 'name', $name);
 	
 	if (!$name_check) {

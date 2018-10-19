@@ -94,7 +94,8 @@ function agents_create_agent ($name, $id_group, $interval, $ip_address, $values 
 	
 	if (! is_array ($values))
 		$values = array ();
-	$values['nombre'] = $name;
+	$values['alias'] = $name;
+	$values['nombre'] = hash("sha256",$name . "|" .$ip_address ."|". time() ."|". sprintf("%04d", rand(0,10000)));
 	$values['id_grupo'] = $id_group;
 	$values['intervalo'] = $interval;
 	

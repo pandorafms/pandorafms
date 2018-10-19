@@ -694,6 +694,29 @@ function flot_slicesbar_graph (
 
 	global $config;
 
+	if($ttl == 2){
+		$params = array(
+			'graph_data' => $graph_data,
+			'period' => $period,
+			'width' => $width,
+			'height' => $height,
+			'legend' => $legend,
+			'colors' => $colors,
+			'fontpath' => $fontpath,
+			'round_corner' => $round_corner,
+			'homeurl' => $homeurl,
+			'watermark' => $watermark = '',
+			'adapt_key' => $adapt_key = '',
+			'stat_win' => $stat_win = false,
+			'id_agent' => $id_agent = 0,
+			'full_legend_date' => $full_legend_date = array(),
+			'not_interactive' => $not_interactive = 0,
+			'ttl' => $ttl = 1
+		);
+
+		return generator_chart_to_pdf('slicebar', $params);
+	}
+
 	// Get a unique identifier to graph
 	$graph_id = uniqid('graph_');
 
@@ -810,7 +833,7 @@ function flot_slicesbar_graph (
 	// Javascript code
 	$return .= "<script type='text/javascript'>";
 	$return .= "//<![CDATA[\n";
-	$return .= "pandoraFlotSlicebar('$graph_id', '$values', '$datacolor', '$labels', '$legend', '$acumulate_data', $intervaltick, '$fontpath', $fontsize, '$separator', '$separator2', '', $id_agent, '$full_legend_date', $not_interactive)";
+	$return .= "pandoraFlotSlicebar('$graph_id','$values','$datacolor','$labels','$legend','$acumulate_data',$intervaltick,'$fontpath',$fontsize,'$separator','$separator2',$id_agent,'$full_legend_date',$not_interactive)";
 	$return .= "\n//]]>";
 	$return .= "</script>";
 

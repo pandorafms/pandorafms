@@ -194,6 +194,26 @@ if (file_exists ('languages/'.$user_language.'.mo')) {
 					$params['background_color']
 				);
 				break;
+			case 'slicebar':
+				echo flot_slicesbar_graph (
+					$params['graph_data'],
+					$params['period'],
+					$params['width'],
+					$params['height'],
+					$params['legend'],
+					$params['colors'],
+					$params['fontpath'],
+					$params['round_corner'],
+					$params['homeurl'],
+					$params['watermark'],
+					$params['adapt_key'],
+					$params['stat_winalse'],
+					$params['id_agent'],
+					$params['full_legend_daterray'],
+					$params['not_interactive'],
+					1
+				);
+				break;
 			default:
 				# code...
 				break;

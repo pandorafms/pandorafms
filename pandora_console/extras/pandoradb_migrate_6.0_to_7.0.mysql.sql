@@ -1779,6 +1779,7 @@ CREATE TABLE IF NOT EXISTS `tlayout_template_data` (
 	FOREIGN KEY (`id_layout_template`) REFERENCES tlayout_template(`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
+ALTER TABLE tlayout_template_data ADD COLUMN `show_last_value` tinyint(1) UNSIGNED NULL default '0';
 -- ---------------------------------------------------------------------
 -- Table `tlog_graph_models`
 -- ---------------------------------------------------------------------

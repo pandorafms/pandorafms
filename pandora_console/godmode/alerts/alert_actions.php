@@ -236,9 +236,13 @@ $table->align[3] = 'left';
 
 $filter = array();
 if (!is_user_admin($config['id_user']))
-	$filter['id_group'] = array_keys(users_get_groups(false, "LM"));
+	$filter['talert_actions.id_group'] = array_keys(users_get_groups(false, "LM"));
 
-$actions = db_get_all_rows_filter ('talert_actions', $filter);
+$actions = db_get_all_rows_filter (
+	'talert_actions INNER JOIN talert_commands ON talert_actions.id_alert_command = talert_commands.id',
+	$filter,
+	'talert_actions.* , talert_commands.id_group AS command_group'
+);
 if ($actions === false)
 	$actions = array ();
 
@@ -253,11 +257,19 @@ foreach ($actions as $action) {
 	$iterator++;
 	
 	$data = array ();
-	
+
 	$data[0] = '<a href="index.php?sec='.$sec.'&sec2=godmode/alerts/configure_alert_action&id='.$action['id'].'&pure='.$pure.'">'.
 		$action['name'].'</a>';
 	$data[1] = ui_print_group_icon ($action["id_group"], true) .'&nbsp;';
-	
+	if (!alerts_validate_command_to_action($action["id_group"], $action["command_group"])) {
+		$data[1].= html_print_image(
+			"images/error.png",
+			true,
+			// FIXME: Translation.
+			array("title" => __("The command and the action are not in the same group. Please, contact with an administrator to solve it.")
+		));
+	}
+
 	if (check_acl($config['id_user'], $action["id_group"], "LM")) {
 		$data[2] = '<a href="index.php?sec='.$sec.'&sec2=godmode/alerts/alert_actions&amp;copy_action=1&amp;id='.$action['id'].'&pure='.$pure.'"
 			onClick="if (!confirm(\''.__('Are you sure?').'\')) return false;">' .
@@ -266,7 +278,7 @@ foreach ($actions as $action) {
 			onClick="if (!confirm(\''.__('Are you sure?').'\')) return false;">'.
 			html_print_image("images/cross.png", true) . '</a>';
 	}
-	
+
 	array_push ($table->data, $data);
 }
 if (isset($data)) {

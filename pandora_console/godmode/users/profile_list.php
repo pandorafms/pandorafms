@@ -89,7 +89,7 @@ if ($delete_profile) {
 		}
 		else {
 			db_pandora_audit("Profile management",
-				"Delete profile ". $profile['name']);
+				"Delete profile ". io_safe_output($profile['name']));
 			
 			ui_print_success_message(__('Successfully deleted'));
 		}
@@ -208,7 +208,7 @@ if ($update_profile) {
 				"'.get_product_name().' Management":"'.$pandora_management.'"}';
 			
 			db_pandora_audit("User management",
-				"Update profile ". $name, false, false, $info);
+				"Update profile ".io_safe_output($name), false, false, $info);
 			
 			ui_print_success_message(__('Successfully updated'));
 		}
@@ -255,7 +255,7 @@ if ($create_profile) {
 				"'.get_product_name().' Management":"'.$pandora_management.'"}';
 			
 			db_pandora_audit("User management",
-				"Created profile ". $name, false, false, $info);
+				"Created profile ". io_safe_output($name), false, false, $info);
 		}
 		else {
 			ui_print_error_message(__('There was a problem creating this profile'));

@@ -282,6 +282,17 @@ $(document).ready (function () {
 				
 				var max_fields = parseInt('<?php echo $config["max_macro_fields"]; ?>');
 				
+				// Change the selected group
+				$("#group option").each(function(index, value) {
+					var current_group = $(value).val()
+					if (data.id_group != 0 && current_group != 0 && current_group != data.id_group) {
+						$(value).hide();
+					} else {
+						$(value).show();
+					}
+				});
+				$("#group").val(0);
+
 				for (i = 1; i <= max_fields; i++) {
 					var old_value = '';
 					var old_recovery_value = '';

@@ -57,7 +57,7 @@ else {
 	$sec = 'galertas';
 }
 
-if ((!$copy_action) && (!$delete_action) && (!$update_action)) {
+if ((!$copy_action) && (!$delete_action)) {
 	// Header	
 	if (defined('METACONSOLE')) {
 		alerts_meta_print_header ();
@@ -141,121 +141,8 @@ if ($copy_action) {
 		__('Could not be copied'));
 }
 
-if ($create_action) {
-	$name = (string) get_parameter ('name');
-	$id_alert_command = (int) get_parameter ('id_command');
-	
-	$fields_descriptions = array();
-	$fields_values = array();
-	$info_fields = '';
-	$values = array();
-	for($i=1;$i<=$config['max_macro_fields'];$i++) {
-		$values['field'.$i] = (string) get_parameter ('field'.$i.'_value');
-		$info_fields .= ' Field'.$i.': ' . $values['field'.$i];
-		$values['field'.$i.'_recovery'] = (string) get_parameter ('field'.$i.'_recovery_value');
-		$info_fields .= ' Field'.$i.'Recovery: ' . $values['field'.$i.'_recovery'];
-	}
-
-	$values['id_group'] = (string) get_parameter ('group');
-	$values['action_threshold'] = (int) get_parameter ('action_threshold');
-	
-	$name_check = db_get_value ('name', 'talert_actions', 'name', $name);
-	
-	if ($name_check) {
-		$result = '';
-	}
-	else {
-		$result = alerts_create_alert_action ($name, $id_alert_command,
-			$values);
-		
-		$info = '{"Name":"'.$name.'", "ID alert Command":"'.$id_alert_command.'", "Field information":"'.$info_fields.'", "Group":"'.$values['id_group'].'",
-			"Action threshold":"'.$values['action_threshold'].'"}';
-	}
-	
-	if ($result) {
-		db_pandora_audit("Command management", "Create alert action #" . $result, false, false, $info);
-	}
-	else {
-		db_pandora_audit("Command management", "Fail try to create alert action", false, false);
-	}
-	
-	ui_print_result_message ($result,
-		__('Successfully created'),
-		__('Could not be created'));
-}
-
-if ($update_action) {
-	$id = (string) get_parameter ('id');
-	
-	$al_action = alerts_get_alert_action ($id);
-	
-	if ($al_action !== false) {
-		if ($al_action['id_group'] == 0) {
-			if (! check_acl ($config['id_user'], 0, "PM")) {
-				db_pandora_audit("ACL Violation",
-					"Trying to access Alert Management");
-				require ("general/noaccess.php");
-				exit;
-			}
-			else {
-				// Header
-				if (defined('METACONSOLE')) {
-					alerts_meta_print_header ();
-				}
-				else {
-					ui_print_page_header (__('Alerts').' &raquo; '.__('Alert actions'), "images/gm_alerts.png", false, "alerts_config", true);
-				}
-			}
-		}
-	}
-	else {
-		// Header
-		if (defined('METACONSOLE')) {
-			alerts_meta_print_header ();
-		}
-		else {
-			ui_print_page_header (__('Alerts').' &raquo; '.__('Alert actions'), "images/gm_alerts.png", false, "alerts_config", true);
-		}
-	}
-	
-	
-	$name = (string) get_parameter ('name');
-	$id_alert_command = (int) get_parameter ('id_command');
-	$group = get_parameter ('group');
-	$action_threshold = (int) get_parameter ('action_threshold');
-	
-	$info_fields = '';
-	$values = array();
-	
-	for ($i = 1; $i <= $config['max_macro_fields']; $i++) {
-		$values['field'.$i] = (string) get_parameter ('field'.$i.'_value');
-		$info_fields .= ' Field1: ' . $values['field'.$i];
-		$values['field'.$i.'_recovery'] = (string) get_parameter ('field'.$i.'_recovery_value');
-		$info_fields .= ' Field'.$i.'Recovery: ' . $values['field'.$i.'_recovery'];
-	}
-	
-	$values['name'] = $name;
-	$values['id_alert_command'] = $id_alert_command;
-	$values['id_group'] = $group;
-	$values['action_threshold'] = $action_threshold;
-	
-	if (!$name) {
-		$result = '';
-	}
-	else {
-		$result = alerts_update_alert_action ($id, $values);
-	}
-	
-	if ($result) {
-		db_pandora_audit("Command management", "Update alert action #" . $id, false, false, json_encode($values));
-	}
-	else {
-		db_pandora_audit("Command management", "Fail try to update alert action #" . $id, false, false, json_encode($values));
-	}
-	
-	ui_print_result_message ($result,
-		__('Successfully updated'),
-		__('Could not be updated'));
+if ($update_action || $create_action) {
+	alerts_ui_update_or_create_actions($update_action);
 }
 
 if ($delete_action) {

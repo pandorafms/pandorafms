@@ -321,20 +321,18 @@ if ($copy_command) {
 	$command_to_copy = db_get_row('talert_commands', 'id', $id);
 	if ($command_to_copy === false) {
 		ui_print_error_message(__("Command with id $id does not found."));
-		break 2;
+	} else {
+		// Prepare to insert the copy with same values
+		unset ($command_to_copy['id']);
+		$command_to_copy['name'].= __(' (copy)');
+		$result = db_process_sql_insert('talert_commands', $command_to_copy);
+
+		// Print the result
+		ui_print_result_message ($result,
+			__('Successfully copied'),
+			__('Could not be copied')
+		);
 	}
-
-	// Prepare to insert the copy with same values
-	unset ($command_to_copy['id']);
-	$command_to_copy['name'].= __(' (copy)');
-	$result = db_process_sql_insert('talert_commands', $command_to_copy);
-
-	// Print the result
-	ui_print_result_message ($result,
-		__('Successfully copied'),
-		__('Could not be copied')
-	);
-
 }
 
 $table->width = '100%';

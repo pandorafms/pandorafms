@@ -347,45 +347,49 @@ $table->class = 'databox data';
 
 $table->data = array ();
 $table->head = array ();
-$table->head[0] = __('Name');
-$table->head[1] = __('ID');
-$table->head[2] = __('Description');
-$table->head[3] = __('Delete');
+$table->head['name'] = __('Name');
+$table->head['id'] = __('ID');
+$table->head['group'] = __('Group');
+$table->head['description'] = __('Description');
+$table->head['action'] = __('Delete');
 $table->style = array ();
-$table->style[0] = 'font-weight: bold';
+$table->style['name'] = 'font-weight: bold';
 $table->size = array ();
-$table->size[3] = '40px';
+$table->size['action'] = '40px';
 $table->align = array ();
-$table->align[3] = 'left';
+$table->align['action'] = 'left';
 
-$commands = db_get_all_rows_in_table ('talert_commands');
-if ($commands === false)
-	$commands = array ();
+$commands = db_get_all_rows_filter(
+	'talert_commands',
+	array('id_group' => array_keys(users_get_groups(false, "LM")))
+);
+if ($commands === false) $commands = array ();
 
 foreach ($commands as $command) {
 	$data = array ();
-	
-	$data[0] = '<span style="font-size: 7.5pt">';
+
+	$data['name'] = '<span style="font-size: 7.5pt">';
 	if (! $command['internal'])
-		$data[0] .= '<a href="index.php?sec='.$sec.'&sec2=godmode/alerts/configure_alert_command&id='.$command['id'].'&pure='.$pure.'">'.
+		$data['name'] .= '<a href="index.php?sec='.$sec.'&sec2=godmode/alerts/configure_alert_command&id='.$command['id'].'&pure='.$pure.'">'.
 			$command['name'].'</a>';
 	else
-		$data[0] .= $command['name'];
-	$data[0] .= '</span>';
-	$data[1] = $command['id'];
-	$data[2] = str_replace("\r\n","<br>",
+		$data['name'] .= $command['name'];
+	$data['name'] .= '</span>';
+	$data['id'] = $command['id'];
+	$data['group'] = ui_print_group_icon ($command["id_group"], true);
+	$data['description'] = str_replace("\r\n","<br>",
 		io_safe_output($command['description']));
-	$data[3] = '';
+	$data['action'] = '';
 	if (! $command['internal']) {
-		$data[3] = '<a href="index.php?sec='.$sec.'&sec2=godmode/alerts/alert_commands&delete_command=1&id='.$command['id'].'&pure='.$pure.'"
+		$data['action'] = '<a href="index.php?sec='.$sec.'&sec2=godmode/alerts/alert_commands&delete_command=1&id='.$command['id'].'&pure='.$pure.'"
 			onClick="if (!confirm(\''.__('Are you sure?').'\')) return false;">'.
 			html_print_image("images/cross.png", true) . '</a>';
 	}
-	
+
 	array_push ($table->data, $data);
 }
 
-if (isset($data)) {
+if (count($table->data) > 0) {
 	html_print_table ($table);
 }
 else {

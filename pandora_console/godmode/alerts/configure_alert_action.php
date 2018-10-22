@@ -284,14 +284,16 @@ $(document).ready (function () {
 				
 				// Change the selected group
 				$("#group option").each(function(index, value) {
-					var current_group = $(value).val()
+					var current_group = $(value).val();
 					if (data.id_group != 0 && current_group != 0 && current_group != data.id_group) {
 						$(value).hide();
 					} else {
 						$(value).show();
 					}
 				});
-				$("#group").val(0);
+				if (data.id_group != 0 && $("#group").val() != data.id_group) {
+					$("#group").val(0);
+				}
 
 				for (i = 1; i <= max_fields; i++) {
 					var old_value = '';

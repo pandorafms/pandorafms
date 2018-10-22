@@ -38,6 +38,7 @@ $pure = (int)get_parameter('pure', 0);
 $update_command = (bool) get_parameter ('update_command');
 $create_command = (bool) get_parameter ('create_command');
 $delete_command = (bool) get_parameter ('delete_command');
+$copy_command = (bool) get_parameter ('copy_command');
 
 if (is_ajax ()) {
 	$get_alert_command = (bool) get_parameter ('get_alert_command');
@@ -57,37 +58,13 @@ if (is_ajax ()) {
 		if (isset($command['description'])) {
 			$command['description'] = io_safe_input(str_replace("\r\n","<br>", io_safe_output($command['description'])));
 		}
-		
-		// Get the html rows of the fields form
-		switch ($config["dbtype"]) {
-			case "mysql":
-			case "postgresql":
-				// Descriptions are stored in json
-				$fields_descriptions = empty($command['fields_descriptions']) ?
-					'' : json_decode(io_safe_output($command['fields_descriptions']), true);
-				
-				// Fields values are stored in json
-				$fields_values = empty($command['fields_values']) ?
-					'' : io_safe_output(json_decode($command['fields_values'], true));
-				break;
-			case "oracle":
-				// Descriptions are stored in json
-				$description_field = str_replace("\\\"","\"",$command['fields_descriptions']);
-				$description_field = str_replace("\\","",$description_field);
-				
-				$fields_descriptions = empty($command['fields_descriptions']) ?
-					'' : json_decode(io_safe_output($description_field), true);
-				
-				// Fields values are stored in json
-				$values_fields = str_replace("\\\"","\"",$command['fields_values']);
-				$values_fields = str_replace("\\","",$values_fields);
-				
-				$fields_values = empty($command['fields_values']) ?
-					'' : io_safe_output(json_decode($values_fields, true));
-				
-				break;		
-		}
-		
+		// Descriptions are stored in json
+		$fields_descriptions = empty($command['fields_descriptions']) ?
+			'' : json_decode(io_safe_output($command['fields_descriptions']), true);
+		// Fields values are stored in json
+		$fields_values = empty($command['fields_values']) ?
+			'' : io_safe_output(json_decode($command['fields_values'], true));
+
 		$fields_rows = array();
 		for ($i = 1; $i <= $config['max_macro_fields']; $i++) {
 
@@ -266,9 +243,6 @@ if (defined('METACONSOLE'))
 else
 	ui_print_page_header (__('Alerts').' &raquo; '.__('Alert commands'), "images/gm_alerts.png", false, "alerts_config", true);
 
-
-
-
 if ($create_command) {
 	$name = (string) get_parameter ('name');
 	$command = (string) get_parameter ('command');
@@ -338,8 +312,29 @@ if ($delete_command) {
 	ui_print_result_message ($result,
 		__('Successfully deleted'),
 		__('Could not be deleted'));
-	
-	
+}
+
+if ($copy_command) {
+	$id = (int) get_parameter ('id');
+
+	// Get the info from the source command
+	$command_to_copy = db_get_row('talert_commands', 'id', $id);
+	if ($command_to_copy === false) {
+		ui_print_error_message(__("Command with id $id does not found."));
+		break 2;
+	}
+
+	// Prepare to insert the copy with same values
+	unset ($command_to_copy['id']);
+	$command_to_copy['name'].= __(' (copy)');
+	$result = db_process_sql_insert('talert_commands', $command_to_copy);
+
+	// Print the result
+	ui_print_result_message ($result,
+		__('Successfully copied'),
+		__('Could not be copied')
+	);
+
 }
 
 $table->width = '100%';
@@ -351,7 +346,7 @@ $table->head['name'] = __('Name');
 $table->head['id'] = __('ID');
 $table->head['group'] = __('Group');
 $table->head['description'] = __('Description');
-$table->head['action'] = __('Delete');
+$table->head['action'] = __('Actions');
 $table->style = array ();
 $table->style['name'] = 'font-weight: bold';
 $table->size = array ();
@@ -381,9 +376,14 @@ foreach ($commands as $command) {
 		io_safe_output($command['description']));
 	$data['action'] = '';
 	if (! $command['internal']) {
-		$data['action'] = '<a href="index.php?sec='.$sec.'&sec2=godmode/alerts/alert_commands&delete_command=1&id='.$command['id'].'&pure='.$pure.'"
+		$data['action'] = '<span style="display: inline-flex">';
+		$data['action'].=	'<a href="index.php?sec='.$sec.'&sec2=godmode/alerts/alert_commands&amp;copy_command=1&id='.$command['id'].'&pure='.$pure.'"
+			onClick="if (!confirm(\''.__('Are you sure?').'\')) return false;">'.
+			html_print_image("images/copy.png", true) . '</a>';
+		$data['action'].=	'<a href="index.php?sec='.$sec.'&sec2=godmode/alerts/alert_commands&delete_command=1&id='.$command['id'].'&pure='.$pure.'"
 			onClick="if (!confirm(\''.__('Are you sure?').'\')) return false;">'.
 			html_print_image("images/cross.png", true) . '</a>';
+		$data['action'].= '</span>';
 	}
 
 	array_push ($table->data, $data);

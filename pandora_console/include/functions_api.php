@@ -9523,7 +9523,10 @@ function api_set_create_event($id, $trash1, $other, $returnType) {
 					return;
 				}
 				$id_agent = $agent_cache['id_tagente'];
+
 			}
+
+			$values['id_agente'] = $id_agent;
 
 			if (!util_api_check_agent_and_print_error($id_agent, 'string', 'AR')) {
 				if (is_metaconsole()) metaconsole_restore_db();

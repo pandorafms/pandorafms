@@ -1574,7 +1574,8 @@ You can of course remove the warnings, that's why we include the source and do n
 		
 		<tr id="row_historical_db_check" style="" class="datos">
 			<td style="font-weight:bold;">
-				<?php echo __('Query History Database'); ?>
+				<?php echo __('Query History Database')
+					. ui_print_help_tip(__('With the token enabled the query will affect the Historical Database, which may mean a small drop in performance.'), true); ?>
 			</td>
 			<td style="">
 				<?php

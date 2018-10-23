@@ -1206,13 +1206,29 @@ switch ($action) {
 				break;
 			case 'module_graph':
 				$values['type'] = MODULE_GRAPH;
-				
+
+				if(is_metaconsole()){
+					$explode_id = explode("|", $values['id_custom_graph']);
+					$values['id_custom_graph'] = $explode_id[0];
+					$values['id_metaconsole']  = $explode_id[1];
+				}
+
 				if ($values['id_custom_graph'] > 0 ) {
 					$values['height'] = $height_module_graph;
 					$values['width'] = $width_module_graph;
-					
+
+					if(is_metaconsole()){
+						$server_data = metaconsole_get_connection_by_id($values['id_metaconsole']);
+						// Establishes connection
+						if (metaconsole_load_external_db($server_data) !== NOERR) continue;
+					}
+
 					$graph_conf = db_get_row('tgraph', 'id_graph', $values['id_custom_graph']);
-					
+
+					if(is_metaconsole()){
+						metaconsole_restore_db();
+					}
+
 					$graph_stacked = $graph_conf['stacked'];
 					if ( $graph_stacked == CUSTOM_GRAPH_BULLET_CHART) {
 						$values['height'] = 50;

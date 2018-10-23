@@ -427,13 +427,27 @@ foreach ($layoutDatas as $layoutData) {
 						}
 					}
 				}
-				
+
 				$modules = io_safe_output($modules);
-				
+
 				if ($layoutData['id_agent'] == 0 and $layoutData['id_custom_graph'] != 0) {
-					$table->data[$i + 2][1] = html_print_select_from_sql(
-							"SELECT id_graph, name FROM tgraph", 'custom_graph_' . $idLayoutData,
-							$layoutData['id_custom_graph'], '', __('None'), 0, true);
+					if(is_metaconsole()){
+						$graphs = array();
+						$graphs = metaconsole_get_custom_graphs(true);
+						$table->data[$i + 2][1] = html_print_select(
+							$graphs, 'custom_graph_' . $idLayoutData,
+							$layoutData['id_custom_graph'] . "|" . $layoutData['id_metaconsole'],
+							'', __('None'), 0, true
+						);
+					}
+					else{
+						$table->data[$i + 2][1] = html_print_select_from_sql(
+							"SELECT id_graph, name FROM tgraph",
+							'custom_graph_' . $idLayoutData,
+							$layoutData['id_custom_graph'],
+							'', __('None'), 0, true
+						);
+					}
 				} else {
 					$table->data[$i + 2][1] = html_print_select($modules,
 						'module_' . $idLayoutData,
@@ -446,12 +460,10 @@ foreach ($layoutDatas as $layoutData) {
 			}
 			break;
 	}
-	
-	
-	
+
 	//Empty
 	$table->data[$i + 2][2] = '';
-	
+
 	//Period
 	switch ($layoutData['type']) {
 		case MODULE_GRAPH:

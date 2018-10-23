@@ -1087,6 +1087,34 @@ You can of course remove the warnings, that's why we include the source and do n
 						$agents2[$value['id_agente']] = $value['alias'];
 					}
 					
+					if ((empty($agents2)) || $agents2 == -1) $agents = array();
+					
+					$agents_select = array();
+					if (is_array($id_agents) || is_object($id_agents)){
+						foreach ($id_agents as $id) {
+							foreach ($agents2 as $key => $a) {
+								if ($key == (int)$id) {
+									$agents_select[$key] = $key;
+								}
+							}
+						}
+					}
+					html_print_select($agents2, 'id_agents3[]', $agents_select, $script = '', "", 0, false, true, true, '', false, "min-width: 180px");
+					echo "<span id='spinner_hack' style='display:none;'>" . html_print_image('images/spinner.gif', true) . "</span>";
+				?>
+			</td>
+		</tr>
+		
+		<tr id="agents_modules_row" style="" class="datos">
+			<td style="font-weight:bold;"><?php echo __('Agents'); ?></td>
+			<td>
+				<?php 
+					
+					$all_agent_log = agents_get_agents(false,array('id_agente','alias'));
+					foreach ($all_agent_log as $key => $value) {
+						$agents2[$value['id_agente']] = $value['alias'];
+					}
+					
 					// $agents = agents_get_group_agents($group);
 					if ((empty($agents2)) || $agents2 == -1) $agents = array();
 					
@@ -1101,7 +1129,6 @@ You can of course remove the warnings, that's why we include the source and do n
 						}
 					}
 					html_print_select($agents2, 'id_agents2[]', $agents_select, $script = '', "", 0, false, true, true, '', false, "min-width: 180px");
-					echo "<span id='spinner_hack' style='display:none;'>" . html_print_image('images/spinner.gif', true) . "</span>";
 				?>
 			</td>
 		</tr>
@@ -2862,6 +2889,7 @@ function chooseType() {
 	$("#row_percentil").hide();
 	$("#log_help_tip").css("visibility", "hidden");
 	$("#agents_row").hide();
+	$("#agents_modules_row").hide();
 	$("#select_agent_modules").hide();
 	$("#modules_row").hide();
 	$("#row_show_summary_group").hide();
@@ -3328,7 +3356,7 @@ function chooseType() {
 			$("#row_group").show();
 			$("#row_module_group").show();
 			$("#select_agent_modules").show();
-			$("#agents_row").show();
+			$("#agents_modules_row").show();
 			$("#modules_row").show();
 			$("#row_historical_db_check").hide();
 			break;
@@ -3499,7 +3527,7 @@ function set_last_value_period() {
 }
 
 function source_change_agents() {
-	$("#id_agents2").empty();
+	$("#id_agents3").empty();
 	$("#spinner_hack").show();
 	jQuery.post ("ajax.php",
 		{"page" : "operation/agentes/ver_agente",
@@ -3508,7 +3536,7 @@ function source_change_agents() {
 		},
 		function (data, status) {
 			for (var clave in data) {
-				$("#id_agents2").append('<option value="'+clave+'">'+data[clave]+'</option>');
+				$("#id_agents3").append('<option value="'+clave+'">'+data[clave]+'</option>');
 			}
 			$("#spinner_hack").hide();
 		},

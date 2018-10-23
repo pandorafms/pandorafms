@@ -586,7 +586,7 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 			$form_items['show_on_top_row']['html'] = 
 				'<td align="left" style="">' . __('Always show on top') . '</td>
 				<td align="left" style="">' .
-				html_print_checkbox('show_on_top', 1, '', true) . '</td>';
+				html_print_checkbox('show_on_top', 1, '', true) .ui_print_help_tip (__("It allows the element to be superimposed to the rest of items of the visual console"), true) . '</td>';
 			
 			$show_last_value = array('0' => __('Hide last value on boolean modules'), '1' => __('Enabled'), '2' => __('Disabled'));
 			$form_items['show_last_value_row'] = array();

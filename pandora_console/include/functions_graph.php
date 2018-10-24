@@ -2756,8 +2756,10 @@ function grafico_eventos_grupo ($width = 300, $height = 200, $url = "", $noWater
 	
 	// Add tags condition to filter
 	$tags_condition = tags_get_acl_tags($config['id_user'], 0, 'ER', 'event_condition', 'AND');
-	if ($time_limit) {
-		$tags_condition .= " AND utimestamp > (UNIX_TIMESTAMP(NOW()) - " . SECONDS_1DAY . ")";
+
+	if ($time_limit && $config['event_view_hr']) {
+		$tags_condition .= " AND utimestamp > (UNIX_TIMESTAMP(NOW()) - " .
+			$config['event_view_hr'] * SECONDS_1HOUR  . ")";
 	}
 	
 	//This will give the distinct id_agente, give the id_grupo that goes
@@ -2835,8 +2837,8 @@ function grafico_eventos_total($filter = "", $width = 320, $height = 200, $noWat
 	// Add tags condition to filter
 	$tags_condition = tags_get_acl_tags($config['id_user'], 0, 'ER', 'event_condition', 'AND');
 	$filter .= $tags_condition;
-	if ($time_limit) {
-		$filter .= " AND utimestamp > (UNIX_TIMESTAMP(NOW()) - " . SECONDS_1DAY . ")";
+	if ($time_limit && $config['event_view_hr']) {
+		$filter .= " AND utimestamp > (UNIX_TIMESTAMP(NOW()) - " . $config['event_view_hr'] * SECONDS_1HOUR . ")";
 	}
 
 	$data = array ();

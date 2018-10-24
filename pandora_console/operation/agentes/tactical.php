@@ -183,7 +183,11 @@ if (check_acl($config['id_user'],0,'ER')) {
 	if (!empty($tags_condition)) {
 		$event_filter .= " AND ($tags_condition)";
 	}
-	$event_filter .= " AND utimestamp > (UNIX_TIMESTAMP(NOW()) - " . SECONDS_1DAY . ")";
+
+	if ($config['event_view_hr']) {
+		$event_filter .= " AND utimestamp > (UNIX_TIMESTAMP(NOW()) - " . $config['event_view_hr'] * SECONDS_1HOUR . ")";
+	}
+	
 	$events = events_print_event_table ($event_filter, 10, "100%",true,false,true);
 	ui_toggle($events, __('Latest events'),false,false);
 }
@@ -197,20 +201,44 @@ if ($is_admin) {
 	
 }
 $out = '<table cellpadding=0 cellspacing=0 class="databox pies"  style="margin-top:15px;" width=100%><tr><td>';
-	$out .= '<fieldset class="databox tactical_set">
+	$out .= '<fieldset class="databox tactical_set" id="total_event_graph">
 			<legend>' . 
 				__('Event graph') . 
 			'</legend>' . 
-			grafico_eventos_total("", 280, 150, false, true) . '</fieldset>';
+			html_print_image('images/spinner.gif',true,array('id' => 'spinner_total_event_graph')) . '</fieldset>';
 	$out .="</td><td>";
-	$out .= '<fieldset class="databox tactical_set">
+	$out .= '<fieldset class="databox tactical_set" id="graphic_event_group">
 			<legend>' .
 				__('Event graph by agent') .
 			'</legend>' .
-			grafico_eventos_grupo(280, 150, "", false, true) . '</fieldset>';
+			html_print_image('images/spinner.gif', true, array('id' => 'spinner_graphic_event_group')) . '</fieldset>';
 	$out .= '</td></tr></table>';
 echo $out;
 
 echo '</td>';
 echo '</tr></table>';
 ?>
+<script type="text/javascript">
+	$(document).ready(function () {
+		var parameters = {};
+		parameters["page"] = "include/ajax/events";
+		parameters["total_event_graph"] = 1;
+
+		$.ajax({type: "GET",url: "ajax.php",data: parameters,
+			success: function(data) {
+				$("#spinner_total_event_graph").hide();
+				$("#total_event_graph").append(data);
+			}
+		});
+
+		delete parameters["total_event_graph"];
+		parameters["graphic_event_group"] = 1;
+
+		$.ajax({type: "GET",url: "ajax.php",data: parameters,
+			success: function(data) {
+				$("#spinner_graphic_event_group").hide();
+				$("#graphic_event_group").append(data);
+			}
+		});
+	});
+</script>	

@@ -248,3 +248,10 @@ button h3 {
 .sev-Maintenance {
     background: #A8A8A8;
 }
+.sev-Minor {
+    background: #F099A2;
+    color: #333;
+}
+.sev-Major {
+    background: #C97A4A;
+}

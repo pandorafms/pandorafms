@@ -23,6 +23,7 @@
         "tabs",
         "notifications",
         "http://*/*",
+        "https://*/*",
         "background"
     ],
     "default_locale": "en"

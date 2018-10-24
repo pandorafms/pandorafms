@@ -13,4 +13,6 @@ ALTER TABLE tmetaconsole_setup ADD COLUMN `meta_dbhost` text;
 ALTER TABLE tmetaconsole_setup ADD COLUMN `meta_dbport` text;
 ALTER TABLE tmetaconsole_setup ADD COLUMN `meta_dbname` text;
 
+ALTER TABLE tlayout_template MODIFY `name` varchar(600) NOT NULL;
+
 COMMIT;

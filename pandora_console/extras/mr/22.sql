@@ -1,0 +1,5 @@
+START TRANSACTION;
+
+ALTER TABLE tlayout_template MODIFY `name` varchar(600) NOT NULL;
+
+COMMIT;

@@ -1772,13 +1772,15 @@ if (!empty($duplicate_module)) { // DUPLICATE agent module !
 // =====================
 if ($enable_module) {
 	$result = modules_change_disabled($enable_module, 0);
-	
+	$modulo_nombre = db_get_row_sql("SELECT nombre FROM tagente_modulo WHERE id_agente_modulo = ".$enable_module."");	
+	$modulo_nombre = $modulo_nombre['nombre'];
+
 	if ($result === NOERR) {	
 		enterprise_hook('config_agents_enable_module_conf', array($id_agente, $enable_module));
-		db_pandora_audit("Module management", 'Enable  ' . $enable_module);
+		db_pandora_audit("Module management", 'Enable #' . $enable_module . ' | ' . $modulo_nombre . ' | ' . $agent["alias"]);
 	}
 	else {
-		db_pandora_audit("Module management", 'Fail to enable ' . $enable_module);
+		db_pandora_audit("Module management", 'Fail to enable #' . $enable_module . ' | ' . $modulo_nombre . ' | ' . $agent["alias"]);
 	}
 	
 	ui_print_result_message ($result,
@@ -1787,13 +1789,15 @@ if ($enable_module) {
 
 if ($disable_module) {
 	$result = modules_change_disabled($disable_module, 1);
-	
+	$modulo_nombre = db_get_row_sql("SELECT nombre FROM tagente_modulo WHERE id_agente_modulo = ".$disable_module."");
+	$modulo_nombre = $modulo_nombre['nombre'];
+
 	if ($result === NOERR) {
 		enterprise_hook('config_agents_disable_module_conf', array($id_agente, $disable_module));
-		db_pandora_audit("Module management", 'Disable  ' . $disable_module);
+		db_pandora_audit("Module management", 'Disable #' . $disable_module . ' | ' . $modulo_nombre . ' | ' . $agent["alias"]);
 	}
 	else {
-		db_pandora_audit("Module management", 'Fail to disable ' . $disable_module);
+		db_pandora_audit("Module management", 'Fail to disable #' . $disable_module . ' | ' . $modulo_nombre . ' | ' . $agent["alias"]);
 	}
 	
 	ui_print_result_message ($result,

@@ -2194,19 +2194,26 @@ function graph_agent_status ($id_agent = false, $width = 300, $height = 200, $re
 
 	if ($data_agents == false) {
 		$groups = implode(',', array_keys(users_get_groups(false, 'AR', false)));
+		$p_table = "tagente";
+		$s_table = "tagent_secondary_group";
+		if (is_metaconsole()) {
+			$p_table = "tmetaconsole_agent";
+			$s_table = "tmetaconsole_agent_secondary_group";
+		}
 		$data = db_get_row_sql(sprintf('SELECT
 				SUM(critical_count) AS Critical,
 				SUM(warning_count) AS Warning,
 				SUM(normal_count) AS Normal,
 				SUM(unknown_count) AS Unknown
 				%s
-			FROM tagente ta LEFT JOIN tagent_secondary_group tasg
+			FROM %s ta LEFT JOIN %s tasg
 				ON ta.id_agente = tasg.id_agent
 			WHERE
 				ta.disabled = 0 AND
 				%s
 				(ta.id_grupo IN (%s) OR tasg.id_group IN (%s))',
 			$show_not_init ? ', SUM(notinit_count) "Not init"' : '',
+			$p_table, $s_table,
 			empty($id_agent) ? '' : "ta.id_agente = $id_agent AND",
 			$groups,
 			$groups

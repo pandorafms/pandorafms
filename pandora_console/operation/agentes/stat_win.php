@@ -97,8 +97,11 @@ $alias    = db_get_value ("alias","tagente","id_agente",$id_agent);
 		</script>
 	</head>
 	<body bgcolor="#ffffff" style='background:#ffffff;'>
+	
 		<?php
-
+		echo"<div id='dialog' title='".__('CSV Export Information')."' style='visibility:hidden;'>";
+		echo"<p>" . __('The CSV export has been successful.') . "</p>";
+		echo"</div>";
 		// Module id
 		$id = (int) get_parameter ("id", 0);
 		// Agent id

@@ -383,7 +383,7 @@ function reporting_html_SLA($table, $item, $mini) {
 			}
 		}
 
-		if(isset($item['data'])){
+		if(!(!isset($item['data']) && $hide_notinit_agent == 1)) {
 			$table1 = new stdClass();
 			$table1->width = '99%';
 
@@ -473,12 +473,22 @@ function reporting_html_SLA($table, $item, $mini) {
 			foreach ($item['data'] as $sla) {
 				if(isset($sla)){
 					$the_first_men_time = get_agent_first_time(io_safe_output($sla['agent']));
-					if (!$hide_notinit_agent) {
-						//first_table
-						$row = array();
-						$row[] = $sla['agent'];
-						$row[] = $sla['module'];
 
+					//first_table
+					$row = array();
+					$row[] = $sla['agent'];
+					$row[] = $sla['module'];
+
+					if(is_numeric($sla['dinamic_text'])){
+						$row[] = sla_truncate($sla['max'], $config['graph_precision']) . " / " . 
+							 sla_truncate($sla['min'], $config['graph_precision']);
+					}
+					else{
+						$row[] = $sla['dinamic_text'];
+					}
+					$row[] = round($sla['sla_limit'], 2) . "%";
+
+					if (!$hide_notinit_agent) {
 						if(is_numeric($sla['dinamic_text'])){
 							$row[] = sla_truncate($sla['max'], $config['graph_precision']) . " / " .
 									sla_truncate($sla['min'], $config['graph_precision']);
@@ -647,6 +657,12 @@ function reporting_html_SLA($table, $item, $mini) {
 			$table->colspan['checks_global']['cell'] = 2;
 			$table->data['checks_global']['cell'] = html_print_table($table3, true);
 		}
+		else {
+			$table->colspan['error']['cell'] = 3;
+			$table->data['error']['cell'] =
+				__('There are no Agent/Modules defined');
+		}
+
 		if (!empty($item['charts'])) {
 			$table1 = new stdClass();
 			$table1->width = '99%';
@@ -2321,7 +2337,7 @@ function reporting_html_availability(&$table, $item) {
 
 	global $config;
 
-	if (!empty($item["data"])) {
+	if (!empty($item["data"]) || $hide_notinit_agent !=1) {
 		$table1 = new stdClass();
 		$table1->width = '99%';
 		$table1->data = array ();

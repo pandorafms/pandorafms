@@ -1057,6 +1057,7 @@ else {
 					$_GET['sec2'] = 'general/logon_ok';
 					break;
 				case 'Dashboard':
+					$dashboard_from_main_page = 1;
 					$id_dashboard = db_get_value('id', 'tdashboard', 'name', $home_url);
 					$str = 'sec=reporting&sec2='.ENTERPRISE_DIR.'/dashboard/main_dashboard&id='.$id_dashboard;
 					parse_str($str, $res);

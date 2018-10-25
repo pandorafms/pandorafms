@@ -382,7 +382,7 @@ sub pandora_server_tasks ($) {
 		}
 
 		# Avoid counter overflow
-		if ($counter > 10000){
+		if ($counter >= ~0){
 			$counter = 0;
 		}
 		else {

@@ -28,6 +28,7 @@ class Tactical {
 		else {
 			$this->correct_acl = false;
 		}
+		include_javascript_dependencies_flot_graph();
 	}
 	
 	public function show() {

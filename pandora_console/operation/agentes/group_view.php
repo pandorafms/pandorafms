@@ -246,7 +246,7 @@ if (!empty($result_groups)) {
 				$link = "<a href='index.php?sec=monitoring&sec2=operation/tree&tag_id=".$data['_id_']. "'>";
 			} else {
 				$deep = groups_get_group_deep ($data['_id_']);
-				$link = "<a href='index.php?sec=estado&sec2=operation/agentes/estado_agente&group_id=".$data['_id_']."'>";
+				$link = "<a href='index.php?sec=view&sec2=operation/agentes/estado_agente&group_id=".$data['_id_']."'>";
 			}
 			
 			$group_name = "<b><span style='font-size: 7.5pt'>" . ui_print_truncate_text($data['_name_'], 50) . "</span></b>";
@@ -279,7 +279,7 @@ if (!empty($result_groups)) {
 				href='index.php?sec=monitoring&sec2=operation/tree&tag_id=".$data['_id_']. "'>";
 			} else {
 				$link = "<a class='group_view_data $color_class' style='font-weight: bold; font-size: 18px; text-align: center;' 
-				href='index.php?sec=estado&sec2=operation/agentes/estado_agente&group_id=".$data['_id_']."'>";
+				href='index.php?sec=view&sec2=operation/agentes/estado_agente&group_id=".$data['_id_']."'>";
 			}
 			if ($data["_id_"] == 0) {
 				echo $link . $total_agentes . "</a>";
@@ -296,7 +296,7 @@ if (!empty($result_groups)) {
 				href='index.php?sec=monitoring&sec2=operation/tree&tag_id=".$data['_id_']. "&status=" . AGENT_STATUS_UNKNOWN ."'>";
 			} else {
 				$link = "<a class='group_view_data $color_class' style='font-weight: bold; font-size: 18px; text-align: center;' 
-				href='index.php?sec=estado&sec2=operation/agentes/estado_agente&group_id=".$data['_id_']."&status=" . AGENT_STATUS_UNKNOWN ."'>";
+				href='index.php?sec=view&sec2=operation/agentes/estado_agente&group_id=".$data['_id_']."&status=" . AGENT_STATUS_UNKNOWN ."'>";
 			}
 			if (($data["_id_"] == 0) && ($agents_unknown != 0)) {
 				echo $link . $agents_unknown . "</a>";
@@ -313,7 +313,7 @@ if (!empty($result_groups)) {
 				href='index.php?sec=monitoring&sec2=operation/tree&tag_id=".$data['_id_']. "&status=" . AGENT_STATUS_NOT_INIT ."'>";
 			} else {
 				$link = "<a class='group_view_data $color_class' style='font-weight: bold; font-size: 18px; text-align: center;' 
-				href='index.php?sec=estado&sec2=operation/agentes/estado_agente&group_id=".$data['_id_']."&status=" . AGENT_STATUS_NOT_INIT ."'>";
+				href='index.php?sec=view&sec2=operation/agentes/estado_agente&group_id=".$data['_id_']."&status=" . AGENT_STATUS_NOT_INIT ."'>";
 			}
 			if (($data["_id_"] == 0) && ($agents_notinit != 0)) {
 				echo $link . $agents_notinit . "</a>";
@@ -331,7 +331,7 @@ if (!empty($result_groups)) {
 				href='index.php?sec=monitoring&sec2=operation/tree&tag_id=".$data['_id_']. "&status=" . AGENT_STATUS_CRITICAL ."'>";
 			} else {
 				$link = "<a class='group_view_data $color_class' style='font-weight: bold; font-size: 18px; text-align: center;' 
-				href='index.php?sec=estado&sec2=operation/agentes/estado_agente&group_id=".$data['_id_']."&status=" . AGENT_STATUS_CRITICAL ."'>";
+				href='index.php?sec=view&sec2=operation/agentes/estado_agente&group_id=".$data['_id_']."&status=" . AGENT_STATUS_CRITICAL ."'>";
 			}
 			if (($data["_id_"] == 0) && ($agents_critical != 0)) {
 				echo $link . $agents_critical . "</a>";

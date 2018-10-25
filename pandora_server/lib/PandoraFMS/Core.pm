@@ -4882,7 +4882,7 @@ sub pandora_self_monitoring ($$) {
 
 	my $filename = $pa_config->{"incomingdir"}."/".$pa_config->{'servername'}.".self.".$utimestamp.".data";
 	
-	open (XMLFILE, ">> $filename") or die "[FATAL] Could not open internal monitoring XML file for deploying monitorization at '$filename'";
+	open (XMLFILE, ">", $filename) or die "[FATAL] Could not open internal monitoring XML file for deploying monitorization at '$filename'";
 	print XMLFILE $xml_output;
 	close (XMLFILE);
 }

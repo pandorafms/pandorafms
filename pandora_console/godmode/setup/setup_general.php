@@ -222,7 +222,7 @@ $table->data[36][0] = __('Include agents manually disabled');
 $table->data[36][1] = __('Yes').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button ('include_agents', 1, '', $config["include_agents"], true).'&nbsp;&nbsp;';
 $table->data[36][1] .= __('No').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button ('include_agents', 0, '', $config["include_agents"], true);
 
-$table->data[37][0] = __('audit log directory') .
+$table->data[37][0] = __('Audit log directory') .
 	ui_print_help_tip (__("Directory where audit log is stored."), true);
 $table->data[37][1] = html_print_input_text ('auditdir', io_safe_output($config["auditdir"]), '', 30, 100, true);
 

@@ -3293,7 +3293,7 @@ CREATE TABLE IF NOT EXISTS `tautoconfig_actions` (
 -- ---------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tlayout_template` (
 	`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
-	`name` varchar(50)  NOT NULL,
+	`name` varchar(600)  NOT NULL,
 	`id_group` INTEGER UNSIGNED NOT NULL,
 	`background` varchar(200)  NOT NULL,
 	`height` INTEGER UNSIGNED NOT NULL default 0,

@@ -43,13 +43,13 @@ function db_select_engine() {
 	}
 }
 
-function db_connect($host = null, $db = null, $user = null, $pass = null, $port = null, $critical = true) {
+function db_connect($host = null, $db = null, $user = null, $pass = null, $port = null, $critical = true, $charset = "utf8") {
 	global $config;
 	static $error = 0;
 	
 	switch ($config["dbtype"]) {
 		case "mysql": 
-			$return = mysql_connect_db($host, $db, $user, $pass, $port);
+			$return = mysql_connect_db($host, $db, $user, $pass, $port, $charset);
 			break;
 		case "postgresql":
 			$return = postgresql_connect_db($host, $db, $user, $pass, $port);
@@ -1656,28 +1656,12 @@ function db_get_type_field_table($table, $field) {
 }
 
 /**
- * Get the element count of a table.
+ * Get the columns of a table.
  * 
- * @param string $sql SQL query to get the element count.
+ * @param string $table table to retrieve columns.
  * 
- * @return int Return the number of elements in the table.
+ * @return array with column names.
  */
-function db_get_table_count($table, $search_history_db = false) {
-	global $config;
-	
-	switch ($config["dbtype"]) {
-		case "mysql":
-			return mysql_db_get_table_count($table, $search_history_db);
-			break;
-		case "postgresql":
-			return postgresql_db_get_table_count($table, $search_history_db);
-			break;
-		case "oracle":
-			return oracle_db_get_table_count($table, $search_history_db);
-			break;
-	}
-}
-
 function db_get_fields($table) {
 	global $config;
 	

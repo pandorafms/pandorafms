@@ -227,7 +227,7 @@ int Cron::getResetValue (int position) {
  * @return false if should not execute
  */
 bool Cron::shouldExecuteAt (time_t date) {
-    return this->utimestamp < date;
+    return this->utimestamp <= date;
 }
 
 /**

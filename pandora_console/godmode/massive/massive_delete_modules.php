@@ -274,7 +274,7 @@ $table->data['form_modules_1'][1] = html_print_select ($types, 'module_type', ''
 	'width:100%');
 $table->data['form_modules_1'][3] = __('Select all modules of this type') . ' ' .
 	html_print_checkbox_extended("force_type", 'type', '', '', false,
-		'', 'style="margin-right: 40px;"', true);
+		'style="margin-right: 40px;"', true, '');
 
 $modules = array ();
 if ($module_type != '') {

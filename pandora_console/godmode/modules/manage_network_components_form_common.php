@@ -125,7 +125,7 @@ $table->data[4][1] .= html_print_input_text ('max_warning', $max_warning,
 	'', 5, 15, true) . '</span>';
 $table->data[4][1] .= '<span id="string_warning"><em>'.__('Str.').' </em>&nbsp;';
 $table->data[4][1] .= html_print_input_text ('str_warning', $str_warning,
-	'', 5, 15, true) . '</span>';
+	'', 5, 64, true) . '</span>';
 $table->data[4][1] .= '<br /><em>'.__('Inverse interval').'</em>';
 $table->data[4][1] .= html_print_checkbox ("warning_inverse", 1, $warning_inverse, true);
 
@@ -142,7 +142,7 @@ $table->data[5][1] .= html_print_input_text ('max_critical', $max_critical,
 	'', 5, 15, true) . '</span>';
 $table->data[5][1] .= '<span id="string_critical"><em>'.__('Str.').' </em>&nbsp;';
 $table->data[5][1] .= html_print_input_text ('str_critical', $str_critical,
-	'', 5, 15, true) . '</span>';
+	'', 5, 64, true) . '</span>';
 $table->data[5][1] .= '<br /><em>'.__('Inverse interval').'</em>';
 $table->data[5][1] .= html_print_checkbox ("critical_inverse", 1, $critical_inverse, true);
 

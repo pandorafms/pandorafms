@@ -653,6 +653,15 @@ input.sub[disabled] {
 	cursor: default;
 }
 
+input.vs_button_ghost{
+    background-color: transparent !important;
+    border: 1px solid #82b92e;
+    color: #82b92e !important;
+    text-align: center;
+    padding: 4px 12px;
+    font-weight: bold;
+}
+
 input.next, input.upd, input.ok, input.wand, input.delete, input.cog,
 input.target, input.search, input.copy, input.add, input.graph,
 input.percentile, input.binary, input.camera, input.config,

@@ -31,8 +31,8 @@ use base 'Exporter';
 our @ISA = qw(Exporter);
 
 # version: Defines actual version of Pandora Server for this module only
-my $pandora_version = "7.0NG.727";
-my $pandora_build = "181003";
+my $pandora_version = "7.0NG.728";
+my $pandora_build = "181025";
 our $VERSION = $pandora_version." ".$pandora_build;
 
 our %EXPORT_TAGS = ( 'all' => [ qw() ] );
@@ -1164,6 +1164,10 @@ sub parse_arguments {
 		my $key = trim($args[$i]);
 
 		$key =~  s/^-//;
+		if ($key =~ /^\s*global_alerts/){
+			push (@{$data{global_alerts}}, trim($args[$i+1]));
+			next;
+		}
 		$data{$key} = trim($args[$i+1]);
 	}
 

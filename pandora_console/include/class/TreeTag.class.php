@@ -37,6 +37,8 @@ class TreeTag extends Tree {
 
 		$this->L2condition = "AND ttm.id_tag = " . $this->rootID;
 		$this->L2inner = $this->L1innerInside;
+
+		$this->L3forceTagCondition = true;
 	}
 
 	protected function getData() {
@@ -47,6 +49,10 @@ class TreeTag extends Tree {
 		} elseif ($this->type == 'agent') {
 			$this->getThirdLevel();
 		}
+	}
+
+	protected function getTagJoin () {
+		return '';
 	}
 }
 

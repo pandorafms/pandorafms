@@ -106,8 +106,6 @@ $form .= html_print_table($table, true);
 $form .= '</form>';
 ui_toggle($form, __("Filter"), "", false);
 
-// ui_toggle(graphic_user_activity(400, 150), __("Chart"));
-
 $filter = "1=1";
 
 if (!empty($filter_type)) {

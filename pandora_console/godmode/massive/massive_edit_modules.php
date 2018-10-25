@@ -282,7 +282,7 @@ else {
 }
 
 $names = agents_get_modules (array_keys ($agents),
-	'DISTINCT(nombre)', $filter, false);
+	'DISTINCT(tagente_modulo.nombre)', $filter, false);
 foreach ($names as $name) {
 	$modules[$name['nombre']] = $name['nombre'];
 }
@@ -709,6 +709,7 @@ echo '</form>';
 echo '<h3 class="error invisible" id="message"> </h3>';
 //Hack to translate text "none" in PHP to javascript
 echo '<span id ="none_text" style="display: none;">' . __('None') . '</span>';
+echo '<span id ="select_agent_first_text" style="display: none;">' . __('Please, select an agent first') . '</span>';
 ui_require_jquery_file ('pandora.controls');
 
 if ($selection_mode == 'modules') {

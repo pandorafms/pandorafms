@@ -399,9 +399,8 @@ if (!is_metaconsole()) {
 		$text_module, false, true, '', array(), true, $id_agent_module);
 }
 
-$sources = events_get_all_source();
 $table ->data[22][0] = '<b>' . __('Source') . '</b>';
-$table ->data[22][1] = html_print_select ($sources, 'source', $source, '', '', '', true);
+$table ->data[22][1] = html_print_input_text ('source', $source, '', 35, 255, true);
 
 $table ->data[23][0] = '<b>' . __('Extra ID') . '</b>';
 $table ->data[23][1] = html_print_input_text ('id_extra', $id_extra, '', 11, 255, true);

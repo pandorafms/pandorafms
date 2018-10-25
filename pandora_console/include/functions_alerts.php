@@ -1824,23 +1824,6 @@ function get_group_alerts($id_group, $filter = '', $options = false,
 				FROM tagente_modulo WHERE delete_pending = 0';
 		}
 
-		if ($strict_user) {
-			$groups = users_get_groups($config["id_user"]);
-
-			if ($idGroup !== 0) {
-				$where_tags = tags_get_acl_tags($config['id_user'], $idGroup, 'AR', 'module_condition', 'AND', 'tagente_modulo', true, array(), true); 
-			} else {
-				$where_tags = tags_get_acl_tags($config['id_user'], array_keys($groups), 'AR', 'module_condition', 'AND', 'tagente_modulo', true, array(), true); 
-			}
-		
-			// If there are any errors add imposible condition
-			if (in_array($where_tags, array(ERR_WRONG_PARAMETERS, ERR_ACL))) {
-				$subQuery .= ' AND 1 = 0';
-			} 
-			else {
-				$subQuery .= $where_tags;
-			}
-		}
 	}
 	else {
 		if ($allModules)

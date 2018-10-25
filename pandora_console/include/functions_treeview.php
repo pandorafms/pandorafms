@@ -745,16 +745,7 @@ function treeview_printTable($id_agente, $server_data = array(), $no_head = fals
 
 		foreach ($network_interfaces as $interface_name => $interface) {
 			if (!empty($interface['traffic'])) {
-				$permission = false;
-
-				if ($strict_user) {
-					if (tags_check_acl_by_module($interface['traffic']['in'], $config['id_user'], 'RR') === true
-							&& tags_check_acl_by_module($interface['traffic']['out'], $config['id_user'], 'RR') === true)
-						$permission = true;
-				}
-				else {
-					$permission = check_acl($config['id_user'], $agent["id_grupo"], "RR");
-				}
+				$permission = check_acl($config['id_user'], $agent["id_grupo"], "RR");
 
 				if ($permission) {
 					$params = array(

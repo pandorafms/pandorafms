@@ -849,8 +849,7 @@ function readFields() {
 	
 	values['enable_link'] = $("input[name=enable_link]").is(':checked') ? 1 : 0;
 	values['id_group'] = $("select[name=group]").val();
-	values['id_custom_graph'] = parseInt(
-		$("#custom_graph option:selected").val());
+	values['id_custom_graph'] = $("#custom_graph option:selected").val();
 	values['width_box'] = parseInt(
 		$("input[name='width_box']").val());
 	values['height_box'] = parseInt(
@@ -1544,13 +1543,14 @@ function loadFieldsFromDB(item) {
 				if (key == 'linked_layout_status_type')
 					$("select[name=linked_map_status_calculation_type]").val(val).change();
 				if (key == 'id_layout_linked') {
-					if (data['linked_layout_node_id'] == null) {
-						$("select[name=map_linked]").val(val).change();
-					}
-					else {
-						var $option = $("select[name=map_linked] > option[data-node-id=" + data['linked_layout_node_id'] + "][value=" + val + "]");
-						if ($option.length === 0) $option = $("select[name=map_linked] > option[value=" + val + "]");
-						$option.prop("selected", true).parent().change();
+					if (val != 0) {
+						if (data['linked_layout_node_id'] == null) {
+							$("select[name=map_linked]").val(val).change();
+						} else {
+							var $option = $("select[name=map_linked] > option[data-node-id=" + data['linked_layout_node_id'] + "][value=" + val + "]");
+							if ($option.length === 0) $option = $("select[name=map_linked] > option[value=" + val + "]");
+							$option.prop("selected", true).parent().change();
+						}
 					}
 				}
 				if (key == 'linked_layout_node_id')
@@ -1714,8 +1714,13 @@ function loadFieldsFromDB(item) {
 						.prop('checked', true);
 					$("input[name='radio_choice']").trigger('change');
 
-	  		$("#custom_graph option[value=" + data.id_custom_graph + "]").prop("selected", true);
-										
+					if (is_metaconsole()){
+						$("#custom_graph option[value='" + data.id_custom_graph + '|' + data.id_metaconsole + "']").prop("selected", true);
+					}
+					else{
+						$("#custom_graph option[value=" + data.id_custom_graph + "]").prop("selected", true);
+					}
+
 				}
 			}
 
@@ -2315,12 +2320,18 @@ function setModuleGraph(id_data) {
 				dataType: 'json',
 				success: function (data)
 				{
+
+					var url_hack_metaconsole = '';
+					if (is_metaconsole()) {
+						url_hack_metaconsole = '../../';
+					}
+
 					if (data['no_data'] == true) {
 						$('#' + id_data).html(data['url']);
 					}
 					else {
 						if($("#module_row").css('display')!='none'){
-							$("#" + id_data + " img").attr('src', 'images/console/signes/module_graph.png');
+							$("#" + id_data + " img").attr('src', url_hack_metaconsole + 'images/console/signes/module_graph.png');
 								if($('#text-width_module_graph').val() == 0 || $('#text-height_module_graph').val() == 0){
 									$("#" + id_data + " img").css('width', '300px');
 									$("#" + id_data + " img").css('height', '180px');
@@ -2330,7 +2341,7 @@ function setModuleGraph(id_data) {
 									$("#" + id_data + " img").css('height', $('#text-height_module_graph').val()+'px');
 								}
 						}else{
-							$("#" + id_data + " img").attr('src', 'images/console/signes/custom_graph.png');
+							$("#" + id_data + " img").attr('src', url_hack_metaconsole + 'images/console/signes/custom_graph.png');
 								if($('#text-width_module_graph').val() == 0 || $('#text-height_module_graph').val() == 0){
 									$("#" + id_data + " img").css('width', '300px');
 									$("#" + id_data + " img").css('height', '180px');

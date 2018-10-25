@@ -1351,7 +1351,7 @@ CREATE TABLE IF NOT EXISTS `treport_custom_sql` (
 -- ---------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tlayout` (
 	`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
-	`name` varchar(50)  NOT NULL,
+	`name` varchar(600)  NOT NULL,
 	`id_group` INTEGER UNSIGNED NOT NULL,
 	`background` varchar(200)  NOT NULL,
 	`height` INTEGER UNSIGNED NOT NULL default 0,
@@ -2412,14 +2412,19 @@ CREATE TABLE IF NOT EXISTS `ttrap_custom_values` (
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tmetaconsole_setup` (
 	`id` int(10) NOT NULL auto_increment primary key,
-	`server_name` text default '',
-	`server_url` text default '',
-	`dbuser` text default '',
-	`dbpass` text default '',
-	`dbhost` text default '',
-	`dbport` text default '',
-	`dbname` text default '',
-	`auth_token` text default '',
+	`server_name` text,
+	`server_url` text,
+	`dbuser` text,
+	`dbpass` text,
+	`dbhost` text,
+	`dbport` text,
+	`dbname` text,
+	`meta_dbuser` text,
+	`meta_dbpass` text,
+	`meta_dbhost` text,
+	`meta_dbport` text,
+	`meta_dbname` text,
+	`auth_token` text,
 	`id_group` int(10) unsigned NOT NULL default 0,
 	`api_password` text NOT NULL,
 	`disabled` tinyint(1) unsigned NOT NULL default '0',
@@ -2471,6 +2476,7 @@ CREATE TABLE IF NOT EXISTS `tservice` (
 	`cps` int NOT NULL default 0,
 	`cascade_protection` tinyint(1) NOT NULL default 0,
 	`evaluate_sla` int(1) NOT NULL default 0,
+	`is_favourite` tinyint(1) NOT NULL default 0,
 	PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB 
 COMMENT = 'Table to define services to monitor' 
@@ -3336,6 +3342,7 @@ CREATE TABLE IF NOT EXISTS `tlayout_template_data` (
 	`clock_animation` varchar(60) NOT NULL default "analogic_1",
 	`time_format` varchar(60) NOT NULL default "time",
 	`timezone` varchar(60) NOT NULL default "Europe/Madrid",
+	`show_last_value` tinyint(1) UNSIGNED NULL default '0',
 	PRIMARY KEY(`id`),
 	FOREIGN KEY (`id_layout_template`) REFERENCES tlayout_template(`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;

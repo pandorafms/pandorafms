@@ -341,13 +341,18 @@ CREATE TABLE IF NOT EXISTS `ttrap_custom_values` (
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tmetaconsole_setup` (
 	`id` int(10) NOT NULL auto_increment primary key,
-	`server_name` text default '',
-	`server_url` text default '',
-	`dbuser` text default '',
-	`dbpass` text default '',
-	`dbhost` text default '',
-	`dbport` text default '',
-	`dbname` text default '',
+	`server_name` text,
+	`server_url` text,
+	`dbuser` text,
+	`dbpass` text,
+	`dbhost` text,
+	`dbport` text,
+	`dbname` text,
+	`meta_dbuser` text,
+	`meta_dbpass` text,
+	`meta_dbhost` text,
+	`meta_dbport` text,
+	`meta_dbname` text,
 	`auth_token` text default '',
 	`id_group` int(10) unsigned NOT NULL default 0,
 	`api_password` text NOT NULL,
@@ -1175,13 +1180,13 @@ ALTER TABLE titem MODIFY `source_data` int(10) unsigned;
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('big_operation_step_datos_purge', '100');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('small_operation_step_datos_purge', '1000');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('days_autodisable_deletion', '30');
-INSERT INTO `tconfig` (`token`, `value`) VALUES ('MR', 20);
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('MR', 21);
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('custom_docs_logo', 'default_docs.png');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('custom_support_logo', 'default_support.png');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('custom_logo_white_bg_preview', 'pandora_logo_head_white_bg.png');
 UPDATE tconfig SET value = 'https://licensing.artica.es/pandoraupdate7/server.php' WHERE token='url_update_manager';
 DELETE FROM `tconfig` WHERE `token` = 'current_package_enterprise';
-INSERT INTO `tconfig` (`token`, `value`) VALUES ('current_package_enterprise', '727');
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('current_package_enterprise', '728');
 
 -- ---------------------------------------------------------------------
 -- Table `tconfig_os`
@@ -1273,12 +1278,15 @@ ALTER TABLE `tservice` ADD COLUMN `quiet` tinyint(1) NOT NULL default 0;
 ALTER TABLE `tservice` ADD COLUMN `cps` int NOT NULL default 0;
 ALTER TABLE `tservice` ADD COLUMN `cascade_protection` tinyint(1) NOT NULL default 0;
 ALTER TABLE `tservice` ADD COLUMN `evaluate_sla` int(1) NOT NULL default 0;
+ALTER TABLE `tservice` ADD COLUMN `is_favourite` tinyint(1) NOT NULL default 0;
+UPDATE tservice SET `is_favourite` = 1 WHERE `name` REGEXP '^[_|.|\[|\(]';
 
 -- ---------------------------------------------------------------------
 -- Table `tlayout`
 -- ---------------------------------------------------------------------
 ALTER TABLE tlayout ADD `background_color` varchar(50) NOT NULL default '#FFF';
 ALTER TABLE tlayout ADD `is_favourite` int(1) NOT NULL DEFAULT 0;
+ALTER TABLE tlayout MODIFY `name` varchar(600) NOT NULL;
 
 UPDATE tlayout SET is_favourite = 1 WHERE name REGEXP '^&#40;' OR name REGEXP '^\\[';
 
@@ -1770,6 +1778,7 @@ CREATE TABLE IF NOT EXISTS `tlayout_template_data` (
 	FOREIGN KEY (`id_layout_template`) REFERENCES tlayout_template(`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
+ALTER TABLE tlayout_template_data ADD COLUMN `show_last_value` tinyint(1) UNSIGNED NULL default '0';
 -- ---------------------------------------------------------------------
 -- Table `tlog_graph_models`
 -- ---------------------------------------------------------------------

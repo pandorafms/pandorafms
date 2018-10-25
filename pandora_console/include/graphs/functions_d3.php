@@ -185,7 +185,7 @@ function d3_bullet_chart($chart_data, $width, $height, $color, $legend,
 			.bullet g text { font-size:'.$font_size.'pt;}
 
 		</style>
-		<script src="'. $config['homeurl'] . 'include/graphs/bullet.js"></script>
+		<script src="'. $homeurl . 'include/graphs/bullet.js"></script>
 		<script language="javascript" type="text/javascript">
 		
 		var margin = {top: 5, right: 40, bottom: 20, left: 120};

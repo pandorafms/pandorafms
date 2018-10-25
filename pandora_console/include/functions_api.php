@@ -30,6 +30,7 @@ include_once($config['homedir'] . "/include/functions_network_components.php");
 include_once($config['homedir'] . "/include/functions_netflow.php");
 include_once($config['homedir'] . "/include/functions_servers.php");
 include_once($config['homedir'] . "/include/functions_planned_downtimes.php");
+include_once($config['homedir'] . "/include/functions_db.php");
 enterprise_include_once ('include/functions_local_components.php');
 enterprise_include_once ('include/functions_events.php');
 enterprise_include_once ('include/functions_agents.php');
@@ -6917,9 +6918,9 @@ function api_get_graph_module_data($id, $thrash1, $other, $thrash2) {
 function api_set_new_user($id, $thrash2, $other, $thrash3) {
 	global $config;
 
-	if (defined ('METACONSOLE')) {
-		return;
-	}
+	// if (defined ('METACONSOLE')) {
+	// 	return;
+	// }
 
 	if(!check_acl($config['id_user'], 0, "UM")) {
 		returnError('forbidden', 'string');
@@ -6936,6 +6937,10 @@ function api_set_new_user($id, $thrash2, $other, $thrash3) {
 	$values['phone'] = $other['data'][6];
 	$values['language'] = $other['data'][7];
 	$values['comments'] = $other['data'][8];
+	$values['time_autorefresh'] = $other['data'][9];
+	$values['default_event_filter'] = $other['data'][10];
+	$values['section'] = $other['data'][11];
+	$values['session_time'] = $other['data'][12];
 	
 	if (!create_user ($id, $password, $values))
 		returnError('error_create_user', 'Error create user');
@@ -6980,7 +6985,12 @@ function api_set_update_user($id, $thrash2, $other, $thrash3) {
 		'comments',
 		'is_admin',
 		'block_size',
-		'flash_chart');
+		'flash_chart',
+		'time_autorefresh',
+		'default_event_filter',
+		'section',
+		'session_time'
+	);
 	
 	
 	if ($id == "") {
@@ -6998,6 +7008,7 @@ function api_set_update_user($id, $thrash2, $other, $thrash3) {
 	}
 	
 	$cont = 0;
+	
 	foreach ($fields_user as $field) {
 		if ($other['data'][$cont] != "" and $field != "password") {
 			$values[$field] = $other['data'][$cont];
@@ -8603,9 +8614,9 @@ function api_get_events($trash1, $trash2, $other, $returnType, $user_in_db = nul
 function api_set_delete_user($id, $thrash1, $thrash2, $thrash3) {
 	global $config;
 
-	if (defined ('METACONSOLE')) {
-		return;
-	}
+	// if (defined ('METACONSOLE')) {
+	// 	return;
+	// }
 
 	if (!check_acl($config['id_user'], 0, "UM")) {
 		returnError('forbidden', 'string');
@@ -11505,6 +11516,31 @@ function util_api_check_agent_and_print_error($id_agent, $returnType, $access = 
 	return false;
 }
 
+function api_get_users($thrash1, $thrash2, $other, $returnType) {
+			
+			global $config;
+			
+			$user_info = get_users();
+				
+			if (!isset($returnType) || empty($returnType) || $returnType == '') {
+				$returnType = "json";
+				$data['data'] = "json";
+			}
+			
+			if (!isset($separator) || empty($separator) || $separator == '') {
+				$separator = ";";
+			}
+			
+			$data['data'] = $user_info;
+
+			if (count($data) > 0 and $data !== false) {
+				returnData($returnType, $data, $separator);
+			}
+			else {
+				returnError('error_users', 'No users retrieved.');
+			}
+			
+		}
 
 
 

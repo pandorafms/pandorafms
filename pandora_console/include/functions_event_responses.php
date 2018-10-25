@@ -36,4 +36,31 @@ function event_responses_get_responses() {
 	return db_get_all_rows_filter('tevent_response', $filter);
 }
 
+/**
+ * Validate the responses data to store in database
+ *
+ * @param array (by reference) Array with values to validate and modify
+ */
+function event_responses_validate_data (&$values) {
+	if ($values['type'] != "command" || !enterprise_installed()) {
+		$values['server_to_exec'] = 0;
+	}
+	if ($values['new_window'] == 1) {
+		$values['modal_width'] = 0;
+		$values['modal_height'] = 0;
+	}
+}
+
+/**
+ * Create an event response
+ *
+ * @param array With all event response data
+ *
+ * @return True if successful insertion
+ */
+function event_responses_create_responses($values) {
+	event_responses_validate_data($values);
+	return db_process_sql_insert('tevent_response', $values);
+}
+
 ?>

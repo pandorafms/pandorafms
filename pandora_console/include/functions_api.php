@@ -11457,7 +11457,7 @@ function api_get_modules_id_name_by_cluster_name ($cluster_name){
 function api_get_event_responses($trash1, $trash2, $trash3, $returnType) {
 	global $config;
 
-	// Error if user cannot read agents.
+	// Error if user cannot read event responses.
 	if (!check_acl($config['id_user'], 0, "PM")) {
 		returnError('forbidden', $returnType);
 		return;
@@ -11470,6 +11470,38 @@ function api_get_event_responses($trash1, $trash2, $trash3, $returnType) {
 	}
 
 	returnData ($returnType, array('type' => 'array', 'data' => $responses));
+}
+
+function api_set_create_event_response($trash1, $trash2, $other, $returnType) {
+	global $config;
+
+	// Error if user cannot read event responses.
+	if (!check_acl($config['id_user'], 0, "PM")) {
+		returnError('forbidden', $returnType);
+		return;
+	}
+
+	$values = array();
+	$values['name'] = $other['data'][0];
+	$values['description'] = $other['data'][1];
+	$values['target'] = $other['data'][2];
+	$values['type'] = $other['data'][3];
+	$values['id_group'] = $other['data'][4];
+	$values['modal_width'] = $other['data'][5];
+	$values['modal_height'] = $other['data'][6];
+	$values['new_window'] = $other['data'][7];
+	$values['params'] = $other['data'][8];
+	$values['server_to_exec'] = $other['data'][9];
+
+	// Error if user has not permission for the group.
+	if (!check_acl($config['id_user'], $values['id_group'], "PM")) {
+		returnError('forbidden', $returnType);
+		return;
+	}
+
+	$return = event_responses_create_responses($values) ? 1 : 0;
+
+	returnData ($returnType, array('type' => 'string', 'data' => $return));
 }
 
 function api_get_cluster_items ($cluster_id){

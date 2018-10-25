@@ -40,24 +40,9 @@ switch($action) {
 		$values['modal_height'] = get_parameter('modal_height');
 		$values['new_window'] = get_parameter('new_window');
 		$values['params'] = get_parameter('params');
-		if (enterprise_installed()) {
-			if ($values['type'] == 'command') {
-				$values['server_to_exec'] = get_parameter('server_to_exec');
-			}
-			else {
-				$values['server_to_exec'] = 0;
-			}
-		}
-		else {
-				$values['server_to_exec'] = 0;			
-		}
-		
-		if($values['new_window'] == 1) {
-			$values['modal_width'] = 0;
-			$values['modal_height'] = 0;
-		}
-		
-		$result = db_process_sql_insert('tevent_response', $values);
+		$values['server_to_exec'] = get_parameter('server_to_exec');
+
+		$result = event_responses_create_responses($values);
 
 		if($result) {
 			ui_print_success_message(__('Response added succesfully'));

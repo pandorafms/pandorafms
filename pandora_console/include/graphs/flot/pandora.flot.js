@@ -866,6 +866,7 @@ function pandoraFlotArea( graph_id, values, legend,
 	var unit             = params.unit ? params.unit : '';
 	var homeurl          = params.homeurl;
 	var font_size        = parseInt(params.font_size);
+	if (font != undefined)
 	var font             = params.font.split("/").pop().split(".").shift();
 	var width            = params.width;
 	var height           = params.height;

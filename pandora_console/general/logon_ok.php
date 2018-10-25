@@ -210,6 +210,7 @@ if (!empty($all_data)) {
 			echo '<div id="activity">';
 			
 			$table = new stdClass();
+			$table->class = "databox data";
 			$table->width = '100%'; //Don't specify px
 			$table->data = array ();
 			$table->size = array ();

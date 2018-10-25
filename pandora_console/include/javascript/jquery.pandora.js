@@ -65,39 +65,12 @@ $(document).ready (function () {
 
 		jQuery.post ("ajax.php",
 			{
-				"page": "include/ajax/config.ajax",
-				"token_name": 'visual_animation'
-			},
-			function (data, status) {
+				"page": "operation/system_alert"},
+				function (data, status) {
+					$("#alert_messages").toggle();
+					$("#alert_messages").empty ().append (data);
+					$("#alert_messages").css('opacity', 1);
 
-				if(data){
-					jQuery.post ("ajax.php",
-						{
-							"page": "operation/system_alert"},
-							function (data, status) {
-								$("#alert_messages").toggle();
-								$("#alert_messages").empty ().append (data);
-								$("#alert_messages").css('opacity', 1);
-
-						},
-						"html"
-					);
-					return false;
-				} else {				
-					jQuery.post ("ajax.php",
-					{
-						"page": "operation/system_alert"},
-						function (data, status) {
-							$("#alert_messages").hide ()
-								.empty ()
-								.append (data)
-								.show ()
-								.css('opacity', 1);
-						},
-						"html"
-					);
-					return false;
-				}
 			},
 			"html"
 		);
@@ -107,47 +80,20 @@ $(document).ready (function () {
 		var elem = $(this).attr("id");
 		$('body').append( "<div id='opacidad' style='position:fixed;background:black;z-index:1'></div>" );
 		$("#opacidad").css('opacity', 0.5);
-		
+
 		jQuery.post ("ajax.php",
 			{
-				"page": "include/ajax/config.ajax",
-			 	"token_name": 'visual_animation'
+				"page": "general/alert_enterprise",
+				"message": elem
 			},
 			function (data, status) {
-				if(data){
-					jQuery.post ("ajax.php",
-						{
-							"page": "general/alert_enterprise",
-							"message": elem
-						},
-						function (data, status) {
-							$("#alert_messages").toggle();
-							$("#alert_messages").empty ().append (data);
-							$("#alert_messages").css('opacity', 1);
-						},
-						"html"
-					);
-					return false;
-				} else {
-					jQuery.post ("ajax.php",
-						{
-							"page": "general/alert_enterprise",
-							"message": elem
-						},
-						function (data, status) {
-							$("#alert_messages").hide ()
-								.empty ()
-								.append (data)
-								.show ()
-								.css('opacity', 1);
-						},
-						"html"
-					);
-					return false;
-				}
+				$("#alert_messages").toggle();
+				$("#alert_messages").empty ().append (data);
+				$("#alert_messages").css('opacity', 1);
 			},
 			"html"
 		);
+		return false;
 	});
 
 	// Creacion de ventana modal y botones
@@ -158,63 +104,37 @@ $(document).ready (function () {
 
 		jQuery.post ("ajax.php",
 			{
-				"page": "include/ajax/config.ajax",
-				"token_name": 'visual_animation'
+				"page": "general/alert_enterprise",
+				"message": elem
 			},
 			function (data, status) {
-				if(data){
-					jQuery.post ("ajax.php",
-						{
-							"page": "general/alert_enterprise",
-							"message": elem
-						},
-						function (data, status) {
-							$("#alert_messages").toggle();
-							$("#alert_messages").empty ().append (data);
-							$("#alert_messages").css('opacity', 1);
-						},
-						"html"
-					);
-					return false;
-				} else {
-					jQuery.post ("ajax.php",
-						{
-							"page": "general/alert_enterprise",
-							"message": elem
-						},
-						function (data, status) {
-							$("#alert_messages").hide ()
-								.empty ()
-								.append (data)
-								.show ()
-								.css('opacity', 1);
-						},
-						"html"
-					);
-					return false;
-				}
+				$("#alert_messages").toggle();
+				$("#alert_messages").empty ().append (data);
+				$("#alert_messages").css('opacity', 1);
 			},
-		"html");
+			"html"
+		);
+		return false;
 	});
 	
 	
 	$(".publienterprisehide").click (function () {
+		var elem = $(this).attr("id");
 		$('body').append( "<div id='opacidad' style='position:fixed;background:black;z-index:1'></div>" );
 		$("#opacidad").css('opacity', 0.5);
+
 		jQuery.post ("ajax.php",
 			{
 				"page": "general/alert_enterprise",
-				"message": $(this).attr("id")
+				"message": elem
 			},
 			function (data, status) {
-				$("#alert_messages").hide ()
-					.empty ()
-					.append (data)
-					.show ()
-					.css('opacity', 1);;
-				},
-				"html"
-			);
+				$("#alert_messages").toggle();
+				$("#alert_messages").empty ().append (data);
+				$("#alert_messages").css('opacity', 1);
+			},
+			"html"
+		);
 		return false;
 	});
 

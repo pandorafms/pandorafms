@@ -388,8 +388,8 @@ install () {
 
 	ln -s $PANDORA_BASE_REAL$PANDORA_HOME/plugins $PANDORA_BASE$PANDORA_CFG
 
-	echo "Copying Pandora FMS Agent collections to $PANDORA_BASE$PANDORA_HOME/collections..."
-	cp -r collections $PANDORA_BASE$PANDORA_HOME
+	echo "Creating the collections directory in to $PANDORA_BASE$PANDORA_HOME/collections..."
+	mkdir -p $PANDORA_BASE$PANDORA_HOME/collections
 	chmod -R 700 $PANDORA_BASE$PANDORA_HOME/collections
 	ln -s $PANDORA_BASE_REAL$PANDORA_HOME/collections $PANDORA_BASE$PANDORA_CFG
 	

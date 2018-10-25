@@ -95,7 +95,7 @@ if [ ! -e /etc/pandora/plugins ]; then
 fi
 
 if [ ! -e /etc/pandora/collections ]; then
-	ln -s /usr/share/pandora_agent/collections /etc/pandora
+	mkdir -p /etc/pandora/collections
 fi
 
 mkdir -p /var/spool/pandora/data_out

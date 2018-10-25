@@ -1369,10 +1369,11 @@ function is_metaconsole() {
  *
  * @return bool
  */
-function is_management_allowed() {
+function is_management_allowed($hkey = '') {
 	global $config;
 	return ( (is_metaconsole() && $config["centralized_management"])
-		|| (!is_metaconsole() && !$config["centralized_management"]));
+		|| (!is_metaconsole() && !$config["centralized_management"])
+		|| (!is_metaconsole() && $config["centralized_management"]) && $hkey == hash('sha256', db_get_value ('value', 'tupdate_settings', 'token', 'customer_key')));
 }
 
 /**

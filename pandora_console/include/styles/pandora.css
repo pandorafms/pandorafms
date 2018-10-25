@@ -1393,6 +1393,37 @@ table.databox {
 	color: #222 !important;
 }
 
+.databox.data>tbody>tr>td:first-child{
+    border-left: 1px solid #e2e2e2;
+}
+
+.databox.data>tbody>tr:last-child>td:first-child{
+    border-bottom-left-radius: 4px;
+}
+
+.databox.data>tbody>tr>td:last-child {
+    border-right: 1px solid #e2e2e2;
+}
+
+.databox.data>tbody>tr:last-child >td:last-child {
+    border-bottom-right-radius: 4px;
+}
+
+.databox.data>thead>tr:first-child>th:first-child {
+    border-left: 1px solid #e2e2e2;
+    border-top-left-radius: 4px;
+    border-color: #373737;
+}
+
+.databox.data>thead>tr:first-child>th:last-child {
+    border-right: 1px solid #e2e2e2;
+    border-top-right-radius: 4px;
+    border-color: #373737;
+}
+.databox.data{
+	border: none;
+}
+
 .tabletitle {
 	color: #333;
 }

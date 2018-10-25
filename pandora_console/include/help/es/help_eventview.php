@@ -11,7 +11,7 @@
 <div style="padding-left: 30px; width: 150px; float: left; line-height: 17px;">
 	<h3>Validar</h3>
 	<?php html_print_image("images/tick.png", false, array("title" => "Validated event", "alt" => "Validated event", "width" => '10', "height" => '10')); ?> - Validar evento<br>
-	<?php html_print_image("images/cross.png", false, array("title" => "Event not validated", "alt" => "Event not validated", "width" => '10', "height" => '10')); ?> - Evento no validado
+	<?php //html_print_image("images/cross.png", false, array("title" => "Event not validated", "alt" => "Event not validated", "width" => '10', "height" => '10')); ?><div style="width: 10px;height: 10px; display: inline-block;"></div> - Evento no validado
 </div>
 
 <div style="padding-left: 30px; width: 150px; float: left; line-height: 17px;">
@@ -27,7 +27,8 @@
 	<h3>Acciones</h3>
 	<?php html_print_image("images/ok.png", false, array("title" => "Validate event", "alt" => "Validate event")); ?> - Validar evento<br>
 	<?php html_print_image("images/cross.png", false, array("title" => "Delete event", "alt" => "Delete event")); ?> - Borrar evento<br>
-	<?php html_print_image("images/page_lightning.png", false, array("title" => "Create incident from event", "alt" => "Create incident from event")); ?> - Crear incidente del evento
+	<?php html_print_image("images/eye.png", false, array("title" => "Mostrar más", "alt" => "Mostrar más")); ?> - Mostrar más<br>
+	<?php html_print_image("images/hourglass.png", false, array("title" => "En progreso", "alt" => "En progreso")); ?> - En progreso
 </div>
 
 <div style="clear: both;">&nbsp;</div>

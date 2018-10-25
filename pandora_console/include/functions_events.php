@@ -1850,15 +1850,20 @@ function events_get_response_target($event_id, $response_id, $server_id, $histor
 	// Substitute each macro
 	if (strpos($target, '_agent_address_') !== false) {
 		if ($meta) {
-			$server = metaconsole_get_connection_by_id ($server_id);
-			metaconsole_connect($server);
+			$agente_table_name = 'tmetaconsole_agent';
+			$filter = array(
+				'id_tagente' => $event['id_agente'],
+				'id_tmetaconsole_setup' => $server_id
+			);
+		} else {
+			$agente_table_name = 'tagente';
+			$filter = array('id_agente' => $event['id_agente']);
 		}
-		
-		$target = str_replace('_agent_address_', $event['id_agente'], $target);
-		
-		if($meta) {
-			metaconsole_restore_db_force();
-		}
+
+		$ip = db_get_value_filter('direccion', $agente_table_name, $filter);
+		// If agent has not an ip, display N/A
+		if ($ip === false) $ip = __('N/A');
+		$target = str_replace('_agent_address_', $ip, $target);
 	}
 	if (strpos($target, '_agent_id_') !== false) {
 		$target = str_replace('_agent_id_', $event['id_agente'], $target);

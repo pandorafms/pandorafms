@@ -11472,6 +11472,32 @@ function api_get_event_responses($trash1, $trash2, $trash3, $returnType) {
 	returnData ($returnType, array('type' => 'array', 'data' => $responses));
 }
 
+function api_set_delete_event_response($id_response, $trash2, $trash3, $returnType) {
+	global $config;
+
+	// Error if user cannot read event responses.
+	if (!check_acl($config['id_user'], 0, "PM")) {
+		returnError('forbidden', $returnType);
+		return;
+	}
+
+	// Check if id exists
+	$event_group = db_get_value('id_group', 'tevent_response','id', $id_response);
+	if ($event_group === false) {
+		returnError('id_not_found', $returnType);
+		return;
+	}
+
+	// Check user if can edit the module
+	if (!check_acl($config['id_user'], $event_group, "PM")) {
+		returnError('forbidden', $returnType);
+		return;
+	}
+
+	$result = db_process_sql_delete('tevent_response', array('id' => $id_response));
+	returnData ($returnType, array('type' => 'string', 'data' => $result));
+}
+
 function api_set_create_event_response($trash1, $trash2, $other, $returnType) {
 	global $config;
 

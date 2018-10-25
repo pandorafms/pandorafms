@@ -35,7 +35,7 @@ $get_id_tag = (bool) get_parameter('get_id_tag', 0);
 $get_type = (bool) get_parameter('get_type', 0);
 $list_modules = (bool) get_parameter('list_modules', 0);
 $get_agent_modules_json_by_name = (bool) get_parameter('get_agent_modules_json_by_name', 0);
-
+$get_custom_fields_data = (bool) get_parameter('get_custom_fields_data', 0);
 
 if ($get_agent_modules_json_by_name) {
 	$agent_name = get_parameter('agent_name');
@@ -1104,6 +1104,15 @@ if ($get_type) {
 	echo $graph_type;
 	return;
 }
+
+if ($get_custom_fields_data){
+	$name_custom_fields = get_parameter("name_custom_fields", 0);
+	$array_custom_fields_data = get_custom_fields_data($name_custom_fields);
+	echo json_encode($array_custom_fields_data);
+	return;
+}
+
+
 }
 
 ?>

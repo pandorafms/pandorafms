@@ -31,6 +31,7 @@ include_once($config['homedir'] . "/include/functions_netflow.php");
 include_once($config['homedir'] . "/include/functions_servers.php");
 include_once($config['homedir'] . "/include/functions_planned_downtimes.php");
 include_once($config['homedir'] . "/include/functions_db.php");
+include_once($config['homedir'] . "/include/functions_event_responses.php");
 enterprise_include_once ('include/functions_local_components.php');
 enterprise_include_once ('include/functions_events.php');
 enterprise_include_once ('include/functions_agents.php');
@@ -11451,6 +11452,24 @@ function api_get_modules_id_name_by_cluster_name ($cluster_name){
 		returnError('error_agent_modules', 'No modules retrieved.');
 	}
 	
+}
+
+function api_get_event_responses($trash1, $trash2, $trash3, $returnType) {
+	global $config;
+
+	// Error if user cannot read agents.
+	if (!check_acl($config['id_user'], 0, "PM")) {
+		returnError('forbidden', $returnType);
+		return;
+	}
+
+	$responses = event_responses_get_responses();
+	if (empty($responses)) {
+		returnError('no_data_to_show', $returnType);
+		return;
+	}
+
+	returnData ($returnType, array('type' => 'array', 'data' => $responses));
 }
 
 function api_get_cluster_items ($cluster_id){

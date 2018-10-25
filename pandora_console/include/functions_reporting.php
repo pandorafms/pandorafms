@@ -10065,7 +10065,7 @@ function reporting_get_agentmodule_sla_array ($id_agent_module, $period = 0, $mi
 	return $data_colors;
 }
 
-function reporting_get_stats_servers($tiny = true) {
+function reporting_get_stats_servers() {
 	global $config;
 	
 	$server_performance = servers_get_performance();
@@ -10101,21 +10101,20 @@ function reporting_get_stats_servers($tiny = true) {
 	$table_srv->rowclass[] = '';
 	$table_srv->data[] = $tdata;
 	
-	if ($tiny) {
+	if (isset($server_performance ["total_network_modules"])) {
 		$tdata = array();
-		$tdata[0] = html_print_image('images/network.png', true, array('title' => __('Remote modules'), 'width' => '25px'));
-		$tdata[1] = '<span class="big_data">' . format_numeric($server_performance ["total_remote_modules"]) . '</span>';
+		$tdata[0] = html_print_image('images/network.png', true, array('title' => __('Network modules'), 'width' => '25px'));
+		$tdata[1] = '<span class="big_data">' . format_numeric($server_performance ["total_network_modules"]) . '</span>';
 		
-		/* Hello there! :)
-We added some of what seems to be "buggy" messages to the openSource version recently. This is not to force open-source users to move to the enterprise version, this is just to inform people using Pandora FMS open source that it requires skilled people to maintain and keep it running smoothly without professional support. This does not imply open-source version is limited in any way. If you check the recently added code, it contains only warnings and messages, no limitations except one: we removed the option to add custom logo in header. In the Update Manager section, it warns about the 'danger’ of applying automated updates without a proper backup, remembering in the process that the Enterprise version comes with a human-tested package. Maintaining an OpenSource version with more than 500 agents is not so easy, that's why someone using a Pandora with 8000 agents should consider asking for support. It's not a joke, we know of many setups with a huge number of agents, and we hate to hear that “its becoming unstable and slow” :(
-You can of course remove the warnings, that's why we include the source and do not use any kind of trick. And that's why we added here this comment, to let you know this does not reflect any change in our opensource mentality of does the last 14 years.
-*/
-		
-		$tdata[2] = '<span class="med_data">' . format_numeric($server_performance ["remote_modules_rate"], 2) . '</span>';
+		$tdata[2] = '<span class="med_data">' .
+			format_numeric($server_performance["network_modules_rate"], 2) .
+			'</span>';
+			
+							
 		$tdata[3] = html_print_image('images/module.png', true, array('title' => __('Ratio') . ': ' . __('Modules by second'), 'width' => '16px')) . '/sec </span>';
 		
 		if($server_performance ["total_remote_modules"]>10000 && !enterprise_installed()){
-			$tdata[4] = "<div id='agentsmodal' class='publienterprise' title='Community version' style='text-align:left;'><img data-title='Enterprise version' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>";
+			$tdata[4] = "<div id='remotemodulesmodal' class='publienterprise' title='Community version' style='text-align:left;'><img data-title='Enterprise version' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>";
 		}
 		else{
 			$tdata[4] = '&nbsp;';
@@ -10124,134 +10123,105 @@ You can of course remove the warnings, that's why we include the source and do n
 		$table_srv->rowclass[] = '';
 		$table_srv->data[] = $tdata;
 	}
-	else {
-		if (isset($server_performance ["total_network_modules"])) {
-			$tdata = array();
-			$tdata[0] = html_print_image('images/network.png', true, array('title' => __('Network modules'), 'width' => '25px'));
-			$tdata[1] = '<span class="big_data">' . format_numeric($server_performance ["total_network_modules"]) . '</span>';
-			
-			$tdata[2] = '<span class="med_data">' .
-				format_numeric($server_performance["network_modules_rate"], 2) .
-				'</span>';
-				
-								
-			$tdata[3] = html_print_image('images/module.png', true, array('title' => __('Ratio') . ': ' . __('Modules by second'), 'width' => '16px')) . '/sec </span>';
-			
-			if($server_performance ["total_remote_modules"]>10000 && !enterprise_installed()){
-				$tdata[4] = "<div id='remotemodulesmodal' class='publienterprise' title='Community version' style='text-align:left;'><img data-title='Enterprise version' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>";
-			}
-			else{
-				$tdata[4] = '&nbsp;';
-			}
-			
-			$table_srv->rowclass[] = '';
-			$table_srv->data[] = $tdata;
-		}
-		
-		if (isset($server_performance ["total_plugin_modules"])) {
-			$tdata = array();
-			$tdata[0] = html_print_image('images/plugin.png', true, array('title' => __('Plugin modules'), 'width' => '25px'));
-			$tdata[1] = '<span class="big_data">' . format_numeric($server_performance ["total_plugin_modules"]) . '</span>';
-			
-			$tdata[2] = '<span class="med_data">' . format_numeric($server_performance ["plugin_modules_rate"], 2) . '</span>';
-			$tdata[3] = html_print_image('images/module.png', true, array('title' => __('Ratio') . ': ' . __('Modules by second'), 'width' => '16px')) . '/sec </span>';
-			
-			$table_srv->rowclass[] = '';
-			$table_srv->data[] = $tdata;
-		}
-		
-		if (isset($server_performance ["total_prediction_modules"])) {
-			$tdata = array();
-			$tdata[0] = html_print_image('images/chart_bar.png', true, array('title' => __('Prediction modules'), 'width' => '25px'));
-			$tdata[1] = '<span class="big_data">' . format_numeric($server_performance ["total_prediction_modules"]) . '</span>';
-			
-			$tdata[2] = '<span class="med_data">' . format_numeric($server_performance ["prediction_modules_rate"], 2) . '</span>';
-			$tdata[3] = html_print_image('images/module.png', true, array('title' => __('Ratio') . ': ' . __('Modules by second'), 'width' => '16px')) . '/sec </span>';
-			
-			$table_srv->rowclass[] = '';
-			$table_srv->data[] = $tdata;
-		}
-		
-		if (isset($server_performance ["total_wmi_modules"])) {
-			$tdata = array();
-			$tdata[0] = html_print_image('images/wmi.png', true, array('title' => __('WMI modules'), 'width' => '25px'));
-			$tdata[1] = '<span class="big_data">' . format_numeric($server_performance ["total_wmi_modules"]) . '</span>';
-			
-			$tdata[2] = '<span class="med_data">' . format_numeric($server_performance ["wmi_modules_rate"], 2) . '</span>';
-			$tdata[3] = html_print_image('images/module.png', true, array('title' => __('Ratio') . ': ' . __('Modules by second'), 'width' => '16px')) . '/sec </span>';
-			
-			$table_srv->rowclass[] = '';
-			$table_srv->data[] = $tdata;
-		}
-		
-		if (isset($server_performance ["total_web_modules"])) {
-			$tdata = array();
-			$tdata[0] = html_print_image('images/world.png', true, array('title' => __('Web modules'), 'width' => '25px'));
-			$tdata[1] = '<span class="big_data">' .
-				format_numeric($server_performance ["total_web_modules"]) .
-				'</span>';
-			
-			$tdata[2] = '<span class="med_data">' .
-				format_numeric($server_performance ["web_modules_rate"], 2) .
-				'</span>';
-			$tdata[3] = html_print_image('images/module.png', true, array('title' => __('Ratio') . ': ' . __('Modules by second'), 'width' => '16px')) . '/sec </span>';
-			
-			$table_srv->rowclass[] = '';
-			$table_srv->data[] = $tdata;
-		}
-		
+	
+	if (isset($server_performance ["total_plugin_modules"])) {
 		$tdata = array();
-		$tdata[0] = '<hr style="border: 0; height: 1px; background: #DDD">';
-		$table_srv->colspan[count($table_srv->data)][0] = 4;
-		$table_srv->rowclass[] = '';
-		$table_srv->data[] = $tdata;
+		$tdata[0] = html_print_image('images/plugin.png', true, array('title' => __('Plugin modules'), 'width' => '25px'));
+		$tdata[1] = '<span class="big_data">' . format_numeric($server_performance ["total_plugin_modules"]) . '</span>';
 		
+		$tdata[2] = '<span class="med_data">' . format_numeric($server_performance ["plugin_modules_rate"], 2) . '</span>';
+		$tdata[3] = html_print_image('images/module.png', true, array('title' => __('Ratio') . ': ' . __('Modules by second'), 'width' => '16px')) . '/sec </span>';
 		
-		switch ($config["dbtype"]) {
-			case "mysql":
-				$system_events = db_get_value_sql(
-					'SELECT SQL_NO_CACHE COUNT(id_evento)
-					FROM tevento');
-				break;
-			case "postgresql":
-			case "oracle":
-				$system_events = db_get_value_sql(
-					'SELECT COUNT(id_evento)
-					FROM tevento');
-				break;
-		}
-		
-		
-		
-		$tdata = array();
-		$tdata[0] = html_print_image('images/lightning_go.png', true,
-			array('title' => __('Total events'), 'width' => '25px'));
-		$tdata[1] = '<span class="big_data">' .
-			format_numeric($system_events) . '</span>';
-			
-			/* Hello there! :)
-We added some of what seems to be "buggy" messages to the openSource version recently. This is not to force open-source users to move to the enterprise version, this is just to inform people using Pandora FMS open source that it requires skilled people to maintain and keep it running smoothly without professional support. This does not imply open-source version is limited in any way. If you check the recently added code, it contains only warnings and messages, no limitations except one: we removed the option to add custom logo in header. In the Update Manager section, it warns about the 'danger’ of applying automated updates without a proper backup, remembering in the process that the Enterprise version comes with a human-tested package. Maintaining an OpenSource version with more than 500 agents is not so easy, that's why someone using a Pandora with 8000 agents should consider asking for support. It's not a joke, we know of many setups with a huge number of agents, and we hate to hear that “its becoming unstable and slow” :(
-You can of course remove the warnings, that's why we include the source and do not use any kind of trick. And that's why we added here this comment, to let you know this does not reflect any change in our opensource mentality of does the last 14 years.
-*/
-			
-		if($system_events > 50000 && !enterprise_installed()){
-			$tdata[2] = "<div id='monitoreventsmodal' class='publienterprise' title='Community version' style='text-align:left'><img data-title='Enterprise version' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>";
-		}
-			
-		else{
-		$tdata[3] = "&nbsp;";	
-		}
-		$table_srv->colspan[count($table_srv->data)][1] = 2;
 		$table_srv->rowclass[] = '';
 		$table_srv->data[] = $tdata;
 	}
 	
+	if (isset($server_performance ["total_prediction_modules"])) {
+		$tdata = array();
+		$tdata[0] = html_print_image('images/chart_bar.png', true, array('title' => __('Prediction modules'), 'width' => '25px'));
+		$tdata[1] = '<span class="big_data">' . format_numeric($server_performance ["total_prediction_modules"]) . '</span>';
+		
+		$tdata[2] = '<span class="med_data">' . format_numeric($server_performance ["prediction_modules_rate"], 2) . '</span>';
+		$tdata[3] = html_print_image('images/module.png', true, array('title' => __('Ratio') . ': ' . __('Modules by second'), 'width' => '16px')) . '/sec </span>';
+		
+		$table_srv->rowclass[] = '';
+		$table_srv->data[] = $tdata;
+	}
+	
+	if (isset($server_performance ["total_wmi_modules"])) {
+		$tdata = array();
+		$tdata[0] = html_print_image('images/wmi.png', true, array('title' => __('WMI modules'), 'width' => '25px'));
+		$tdata[1] = '<span class="big_data">' . format_numeric($server_performance ["total_wmi_modules"]) . '</span>';
+		
+		$tdata[2] = '<span class="med_data">' . format_numeric($server_performance ["wmi_modules_rate"], 2) . '</span>';
+		$tdata[3] = html_print_image('images/module.png', true, array('title' => __('Ratio') . ': ' . __('Modules by second'), 'width' => '16px')) . '/sec </span>';
+		
+		$table_srv->rowclass[] = '';
+		$table_srv->data[] = $tdata;
+	}
+	
+	if (isset($server_performance ["total_web_modules"])) {
+		$tdata = array();
+		$tdata[0] = html_print_image('images/world.png', true, array('title' => __('Web modules'), 'width' => '25px'));
+		$tdata[1] = '<span class="big_data">' .
+			format_numeric($server_performance ["total_web_modules"]) .
+			'</span>';
+		
+		$tdata[2] = '<span class="med_data">' .
+			format_numeric($server_performance ["web_modules_rate"], 2) .
+			'</span>';
+		$tdata[3] = html_print_image('images/module.png', true, array('title' => __('Ratio') . ': ' . __('Modules by second'), 'width' => '16px')) . '/sec </span>';
+		
+		$table_srv->rowclass[] = '';
+		$table_srv->data[] = $tdata;
+	}
+	
+	$tdata = array();
+	$tdata[0] = '<hr style="border: 0; height: 1px; background: #DDD">';
+	$table_srv->colspan[count($table_srv->data)][0] = 4;
+	$table_srv->rowclass[] = '';
+	$table_srv->data[] = $tdata;
+
+	$tdata = array();
+	$tdata[0] = html_print_image('images/lightning_go.png', true,
+		array('title' => __('Total events'), 'width' => '25px'));
+	$tdata[1] = '<span class="big_data" id="total_events">' .
+		html_print_image('images/spinner.gif',true) . '</span>';
+		
+		/* Hello there! :)
+We added some of what seems to be "buggy" messages to the openSource version recently. This is not to force open-source users to move to the enterprise version, this is just to inform people using Pandora FMS open source that it requires skilled people to maintain and keep it running smoothly without professional support. This does not imply open-source version is limited in any way. If you check the recently added code, it contains only warnings and messages, no limitations except one: we removed the option to add custom logo in header. In the Update Manager section, it warns about the 'danger’ of applying automated updates without a proper backup, remembering in the process that the Enterprise version comes with a human-tested package. Maintaining an OpenSource version with more than 500 agents is not so easy, that's why someone using a Pandora with 8000 agents should consider asking for support. It's not a joke, we know of many setups with a huge number of agents, and we hate to hear that “its becoming unstable and slow” :(
+You can of course remove the warnings, that's why we include the source and do not use any kind of trick. And that's why we added here this comment, to let you know this does not reflect any change in our opensource mentality of does the last 14 years.
+*/
+
+	if($system_events > 50000 && !enterprise_installed()){
+		$tdata[2] = "<div id='monitoreventsmodal' class='publienterprise' title='Community version' style='text-align:left'><img data-title='Enterprise version' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>";
+	} else {
+		$tdata[3] = "&nbsp;";
+	}
+	$table_srv->colspan[count($table_srv->data)][1] = 2;
+	$table_srv->rowclass[] = '';
+	$table_srv->data[] = $tdata;
+
 	$output = '<fieldset class="databox tactical_set">
 				<legend>' . 
 					__('Server performance') . 
 				'</legend>' . 
 				html_print_table($table_srv, true) . '</fieldset>';
-	
+
+	$output .= '<script type="text/javascript">';
+		$output .= '$(document).ready(function () {';
+			$output .= 'var parameters = {};';
+			$output .= 'parameters["page"] = "include/ajax/events";';
+			$output .= 'parameters["total_events"] = 1;';
+
+			$output .= '$.ajax({type: "GET",url: "ajax.php",data: parameters,';
+				$output .= 'success: function(data) {';
+					$output .= '$("#total_events").text(data);';
+				$output .= '}';
+			$output .= '});';
+		$output .= '});';
+	$output .= '</script>';
+
 	return $output;
 }
 

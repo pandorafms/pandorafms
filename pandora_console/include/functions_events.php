@@ -850,25 +850,14 @@ function events_print_event_table ($filter = "", $limit = 10, $width = 440, $ret
 	if ($filter == '') {
 		$filter = '1 = 1';
 	}
-	
-	switch ($config["dbtype"]) {
-		case "mysql":
-		case "postgresql":
-				$sql = sprintf ("SELECT DISTINCT tevento.*
-					FROM tevento LEFT JOIN tagent_secondary_group tasg ON tevento.id_agente = tasg.id_agent
-					WHERE %s %s
-					ORDER BY utimestamp DESC LIMIT %d", $agent_condition, $filter, $limit);
-			break;
-		case "oracle":
-				$sql = sprintf ("SELECT *
-					FROM tevento
-					WHERE %s %s AND rownum <= %d
-					ORDER BY utimestamp DESC", $agent_condition, $filter, $limit);
-			break;
-	}
+
+	$sql = sprintf ("SELECT DISTINCT tevento.*
+		FROM tevento LEFT JOIN tagent_secondary_group tasg ON tevento.id_agente = tasg.id_agent
+		WHERE %s %s
+		ORDER BY utimestamp DESC LIMIT %d", $agent_condition, $filter, $limit);
 
 	$result = db_get_all_rows_sql ($sql);
-	
+
 	if ($result === false) {
 		if ($return) {
 			$returned = ui_print_info_message (__('No events'), '', true);
@@ -997,8 +986,6 @@ function events_print_event_table ($filter = "", $limit = 10, $width = 440, $ret
 					
 					$data[4] = "<a class='$myclass' href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=".$event["id_agente"]."'>".
 								agents_get_alias($event["id_agente"]). "</A>";
-					
-				// ui_print_agent_name ($event["id_agente"], true, 25, '', true);
 				// for System or SNMP generated alerts
 				}
 				elseif ($event["event_type"] == "system") {

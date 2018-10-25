@@ -2719,10 +2719,8 @@ function graph_events_validated($width = 300, $height = 200, $extra_filters = ar
  * @param integer width pie graph width
  * @param integer height pie graph height
  * @param string url
- * @param bool if the graph required is or not for metaconsole
- * @param bool if the graph required is or not for history table
  */
-function grafico_eventos_grupo ($width = 300, $height = 200, $url = "", $meta = false, $history = false, $noWaterMark = true) {
+function grafico_eventos_grupo ($width = 300, $height = 200, $url = "", $noWaterMark = true, $time_limit = false) {
 	global $config;
 	global $graphic_type;
 	
@@ -2752,26 +2750,17 @@ function grafico_eventos_grupo ($width = 300, $height = 200, $url = "", $meta = 
 	$url = str_replace(
 		'SELECT_id_agente_modulo', 'SELECT id_agente_modulo', $url);
 	
-	
-	// Choose the table where search if metaconsole or not
-	if ($meta) {
-		if ($history) {
-			$event_table = 'tmetaconsole_event_history';
-		}
-		else {
-			$event_table = 'tmetaconsole_event';
-		}
-		$field_extra = ', agent_name';
-		$groupby_extra = ', server_id';
-	}
-	else {
-		$event_table = 'tevento';
-		$field_extra = '';
-		$groupby_extra = '';
-	}
+	$event_table = 'tevento';
+	$field_extra = '';
+	$groupby_extra = '';
 	
 	// Add tags condition to filter
 	$tags_condition = tags_get_acl_tags($config['id_user'], 0, 'ER', 'event_condition', 'AND');
+
+	if ($time_limit && $config['event_view_hr']) {
+		$tags_condition .= " AND utimestamp > (UNIX_TIMESTAMP(NOW()) - " .
+			$config['event_view_hr'] * SECONDS_1HOUR  . ")";
+	}
 	
 	//This will give the distinct id_agente, give the id_grupo that goes
 	//with it and then the number of times it occured. GROUP BY statement
@@ -2805,13 +2794,8 @@ function grafico_eventos_grupo ($width = 300, $height = 200, $url = "", $meta = 
 				$system_events += $row["count"];
 			}
 			else {
-				if ($meta) {
-					$name = mb_substr (io_safe_output($row['agent_name']), 0, 25)." (".$row["count"].")";
-				}
-				else {
-					$alias = agents_get_alias($row["id_agente"]);
-					$name = mb_substr($alias, 0, 25)." #".$row["id_agente"]." (".$row["count"].")";
-				}
+				$alias = agents_get_alias($row["id_agente"]);
+				$name = mb_substr($alias, 0, 25)." #".$row["id_agente"]." (".$row["count"].")";
 				$data[$name] = $row["count"];
 			}
 		}
@@ -2822,14 +2806,7 @@ function grafico_eventos_grupo ($width = 300, $height = 200, $url = "", $meta = 
 		$name = __('SYSTEM')." (".$system_events.")";
 		$data[$name] = $system_events;
 	}
-	
-	/*
-	if ($other_events > 0) {
-		$name = __('Other')." (".$other_events.")";
-		$data[$name] = $other_events;
-	}
-	*/
-	
+
 	// Sort the data
 	arsort($data);
 	if ($noWaterMark) {
@@ -2851,7 +2828,7 @@ function grafico_eventos_grupo ($width = 300, $height = 200, $url = "", $meta = 
  * 
  * @param string filter Filter for query in DB
  */
-function grafico_eventos_total($filter = "", $width = 320, $height = 200, $noWaterMark = true) {
+function grafico_eventos_total($filter = "", $width = 320, $height = 200, $noWaterMark = true, $time_limit = false) {
 	global $config;
 	global $graphic_type;
 	
@@ -2860,23 +2837,25 @@ function grafico_eventos_total($filter = "", $width = 320, $height = 200, $noWat
 	// Add tags condition to filter
 	$tags_condition = tags_get_acl_tags($config['id_user'], 0, 'ER', 'event_condition', 'AND');
 	$filter .= $tags_condition;
-	
+	if ($time_limit && $config['event_view_hr']) {
+		$filter .= " AND utimestamp > (UNIX_TIMESTAMP(NOW()) - " . $config['event_view_hr'] * SECONDS_1HOUR . ")";
+	}
+
 	$data = array ();
 	$legend = array ();
 	$total = 0;
-	
-	$where = '';
+
+	$where = "WHERE 1=1";
 	if (!users_is_admin()) {
 		$where = 'WHERE event_type NOT IN (\'recon_host_detected\', \'system\',\'error\', \'new_agent\', \'configuration_change\')';
 	}
-	
+
 	$sql = sprintf("SELECT criticity, COUNT(id_evento) events
 		FROM tevento 
 		LEFT JOIN tagent_secondary_group tasg 
 		ON tevento.id_agente = tasg.id_agent
 		%s %s
 		GROUP BY criticity ORDER BY events DESC", $where , $filter);
-	
 	$criticities = db_get_all_rows_sql ($sql, false, false);
 	
 	if (empty($criticities)) {

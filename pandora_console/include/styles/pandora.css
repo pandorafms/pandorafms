@@ -3598,6 +3598,8 @@ div.simple_value > a > span.text p
 	max-width:750px;
 	top: 20%;
 	background:white;
+	opacity: 0;
+	transition: opacity 0.5s;
 }
 .modalheader{
 	text-align:center;
@@ -3806,7 +3808,8 @@ color:#82b92e;font-family:Nunito;font-size:10pt;position:relative;top:6px;
 
 
 #opacidad{
-	opacity:0.5;
+	opacity:0;
+	transition: opacity 3s;
 	z-index:1;
 	width:100%;
 	height:100%;

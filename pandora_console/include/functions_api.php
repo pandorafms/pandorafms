@@ -99,7 +99,7 @@ function returnError($typeError, $returnType = 'string') {
 			break;
 		default:
 			returnData("string",
-				array('type' => 'string', 'data' => __($typeError)));
+				array('type' => 'string', 'data' => __($returnType)));
 			break;
 	}
 }

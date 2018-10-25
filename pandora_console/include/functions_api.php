@@ -9279,18 +9279,27 @@ function api_get_agent_id($trash1, $trash2, $data, $returnType) {
  * Agent alias for a given id
  * 
  * @param int $id_agent 
+ * @param int $id_node Only for metaconsole
+ * @param $thrash1 Don't use.
+ * @param $returnType
  * 
 **/
-// http://localhost/pandora_console/include/api.php?op=get&op2=agent_name&id=1&apipass=1234&user=admin&pass=pandora
-function api_get_agent_alias($id_agent, $trash1, $trash2, $returnType) {
-	if (defined ('METACONSOLE')) {
-		return;
+// http://localhost/pandora_console/include/api.php?op=get&op2=agent_alias&id=1&apipass=1234&user=admin&pass=pandora
+// http://localhost/pandora_console/enterprise/meta/include/api.php?op=get&op2=agent_alias&id=1&id2=1&apipass=1234&user=admin&pass=pandora
+function api_get_agent_alias($id_agent, $id_node, $trash1, $returnType) {
+	$table_agent_alias = 'tagente';
+	$force_meta=false;
+
+	if (is_metaconsole()) {
+		$table_agent_alias = 'tmetaconsole_agent';
+		$force_meta = true;
+		$id_agent = db_get_value_sql("SELECT id_agente FROM tmetaconsole_agent WHERE id_tagente = $id_agent AND id_tmetaconsole_setup = $id_node");
 	}
 
-	if (!util_api_check_agent_and_print_error($id_agent, $returnType)) return;
+	if (!util_api_check_agent_and_print_error($id_agent, $returnType, 'AR', $force_meta)) return;
 
 	$sql = sprintf('SELECT alias
-		FROM tagente
+		FROM ' . $table_agent_alias . '
 		WHERE id_agente = %d', $id_agent);
 	$value = db_get_value_sql($sql);
 
@@ -11481,10 +11490,10 @@ function api_get_cluster_items ($cluster_id){
 // AUX FUNCTIONS
 /////////////////////////////////////////////////////////////////////
 
-function util_api_check_agent_and_print_error($id_agent, $returnType, $access = "AR") {
+function util_api_check_agent_and_print_error($id_agent, $returnType, $access = "AR", $force_meta = false) {
 	global $config;
 
-	$check_agent = agents_check_access_agent($id_agent, $access);
+	$check_agent = agents_check_access_agent($id_agent, $access, $force_meta);
 	if ($check_agent === true) return true;
 
 	if ($check_agent === false || !check_acl($config['id_user'], 0, $access)) {

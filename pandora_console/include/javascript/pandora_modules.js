@@ -91,8 +91,8 @@ function configure_modules_form () {
 			$("#text-ff_event").attr ("value", 0);
 			$("#text-post_process").attr("value", 0);
 			$("#text-unit").attr("value", '');
-			$("#text-critical_inverse").attr ("value", 0);
-			$("#text-warning_inverse").attr ("value", 0);
+			$("#checkbox-critical_inverse").attr ("value", 0);
+			$("#checkbox-warning_inverse").attr ("value", 0);
 			$("#textarea_critical_instructions").attr ("value", '');
 			$("#textarea_warning_instructions").attr ("value", '');
 			$("#textarea_unknown_instructions").attr ("value", '');
@@ -138,8 +138,8 @@ function configure_modules_form () {
 					$("#checkbox-history_data").check ();
 				else
 					$("#checkbox-history_data").uncheck ();
-				
-				$("#dynamic_interval_select").attr ("value", (data["dynamic_interval"] == 0) ? 0 : data["dynamic_interval"]);
+
+				$("#dynamic_interval_select").val (data["dynamic_interval"]);
 				$("#text-dynamic_max").attr ("value", (data["dynamic_max"] == 0) ? 0 : data["dynamic_max"]);
 				$("#text-dynamic_min").attr ("value", (data["dynamic_min"] == 0) ? 0 : data["dynamic_min"]);
 				
@@ -157,8 +157,8 @@ function configure_modules_form () {
 				$("#text-ff_event").attr ("value", (data["min_ff_event"] == 0) ? 0 : data["min_ff_event"]);
 				$("#text-post_process").attr("value", (data["post_process"] == 0) ? 0 : data["post_process"]);
 				$("#text-unit").attr("value", (data["unit"] == '') ? '' : data["unit"])
-				$("#text-critical_inverse").attr ("value", (data["critical_inverse"] == 0) ? 0 : data["critical_inverse"]);
-				$("#text-warning_inverse").attr ("value", (data["warning_inverse"] == 0) ? 0 : data["warning_inverse"]);
+				$("#checkbox-critical_inverse").prop ("checked", data["critical_inverse"]);
+				$("#checkbox-warning_inverse").prop ("checked", data["warning_inverse"]);
 				$("#component_loading").hide ();
 				$("#id_module_type").change ();
 				if ($("#id_category").is("select")) {
@@ -300,7 +300,7 @@ function configure_modules_form () {
 				else
 					$("#checkbox-history_data").uncheck ();
 
-				$("#dynamic_interval_select").attr ("value", (data["dynamic_interval"] == 0) ? 0 : data["dynamic_interval"]);
+				$("#dynamic_interval_select").val (data["dynamic_interval"]);
 				$("#text-dynamic_max").attr ("value", (data["dynamic_max"] == 0) ? 0 : data["dynamic_max"]);
 				$("#text-dynamic_min").attr ("value", (data["dynamic_min"] == 0) ? 0 : data["dynamic_min"]);
 				
@@ -322,8 +322,8 @@ function configure_modules_form () {
 				$("#text-ff_event_critical").attr ("value", (data["min_ff_event_critical"] == 0) ? 0 : data["min_ff_event_critical"]);
 				$("#text-post_process").attr("value", (data["post_process"] == 0) ? 0 : data["post_process"]);
 				$("#text-unit").attr("value", (data["unit"] == '') ? '' : data["unit"]);
-				$("#text-critical_inverse").attr ("value", (data["critical_inverse"] == 0) ? 0 : data["critical_inverse"]);
-				$("#text-warning_inverse").attr ("value", (data["warning_inverse"] == 0) ? 0 : data["warning_inverse"]);
+				$("#checkbox-critical_inverse").prop ("checked", data["critical_inverse"]);
+				$("#checkbox-warning_inverse").prop ("checked", data["warning_inverse"]);
 				$("#component_loading").hide ();
 				$("#id_module_type").change ();
 				if ($("#id_category").is("select")) {

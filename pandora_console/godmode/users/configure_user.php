@@ -154,6 +154,8 @@ if ($create_user) {
 	}
 	if (html_print_csrf_error()) return;
 
+	$user_is_admin = (int) get_parameter ('is_admin', 0);
+
 	$values = array ();
 	$values['id_user'] = (string) get_parameter ('id_user');
 	$values['fullname'] = (string) get_parameter ('fullname');
@@ -164,7 +166,7 @@ if ($create_user) {
 	$values['email'] = (string) get_parameter ('email');
 	$values['phone'] = (string) get_parameter ('phone');
 	$values['comments'] = (string) get_parameter ('comments');
-	$values['is_admin'] = (int) get_parameter ('is_admin', 0);
+	$values['is_admin'] = $user_is_admin;
 	$values['language'] = get_parameter ('language', 'default');
 	$values['timezone'] = (string) get_parameter('timezone');
 	$values['default_event_filter'] = (int) get_parameter('default_event_filter');
@@ -193,9 +195,9 @@ if ($create_user) {
 		$values['last_pass_change'] = date ("Y/m/d H:i:s", get_system_time());
 		if(defined('METACONSOLE')) {
 			$values['metaconsole_access'] = get_parameter ('metaconsole_access', 'basic');
-			$values['metaconsole_agents_manager'] = get_parameter ('metaconsole_agents_manager', '0');
+			$values['metaconsole_agents_manager'] = ($user_is_admin == 1 ? 1 : get_parameter ('metaconsole_agents_manager', '0'));
 			$values['metaconsole_assigned_server'] = get_parameter ('metaconsole_assigned_server', '');
-			$values['metaconsole_access_node'] = get_parameter ('metaconsole_access_node', '0');
+			$values['metaconsole_access_node'] = ($user_is_admin == 1 ? 1 : get_parameter ('metaconsole_access_node', '0'));
 		}
 	}
 	$values["not_login"] = (bool)get_parameter ('not_login', false);
@@ -738,12 +740,11 @@ $(document).ready (function () {
 	$('input:radio[name="is_admin"]').change(function() {
 		if($('#radiobtn0002').prop('checked')) {			
 			$('#user_configuration_table-metaconsole_agents_manager').show();
-			$('#user_configuration_table-metaconsole_assigned_server').show();
 			$('#user_configuration_table-metaconsole_access_node').show();
 		}
 		else {			
 			$('#user_configuration_table-metaconsole_agents_manager').hide();
-			$('#user_configuration_table-metaconsole_assigned_server').hide();
+			$('#user_configuration_table-metaconsole_assigned_server').show();
 			$('#user_configuration_table-metaconsole_access_node').hide();
 		}
 	});

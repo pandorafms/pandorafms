@@ -666,6 +666,7 @@ function planned_downtimes_stop ($downtime) {
 function planned_downtimes_created ($values) {
 	global $config;
 	
+	$check_group = (bool) db_get_value ('id_grupo', 'tgrupo', 'id_grupo', $values['id_group']);
 	$check = (bool) db_get_value ('name', 'tplanned_downtime', 'name', $values['name']);
 	
 	$datetime_from = strtotime ($values['once_date_from'] . ' ' . $values['once_time_from']);
@@ -701,6 +702,11 @@ function planned_downtimes_created ($values) {
 		return array('return' => false,
 			'message' => __('Not created. Error inserting data') . ". "
 				. __('The end day must be higher than the start day'));
+	}
+	else if (!$check_group && $values['id_group'] != 0) {
+		return array('return' => false,
+			'message' => __('Not created. Error inserting data') . ". "
+				. __('Group not exist'));
 	}
 	else {
 		if (trim(io_safe_output($values['name'])) != '') {

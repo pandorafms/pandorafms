@@ -1740,6 +1740,8 @@ CREATE TABLE IF NOT EXISTS `tlayout_template` (
 	PRIMARY KEY(`id`)
 )  ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
+ALTER TABLE tlayout_template MODIFY `name` varchar(600) NOT NULL;
+
 -- ---------------------------------------------------------------------
 -- Table `tlayout_template_data`
 -- ---------------------------------------------------------------------

@@ -126,6 +126,58 @@ if (file_exists ('languages/'.$user_language.'.mo')) {
 				echo grafico_modulo_sparse($params);
 			echo '</div>';
 		}
+    elseif($type_graph_pdf == 'hbar'){
+      echo '<div>';
+				echo hbar_graph(
+            $params['flash_chart'],
+            $params['chart_data'],
+            $params['width'],
+            $params['height'],
+          	$params['color'],
+            $params['legend'],
+            $params['long_index'],
+            $params['no_data_image'], 
+            $params['xaxisname'],
+          	$params['yaxisname'],
+            $params['water_mark'],
+            $params['font'],
+            $params['font_size'],
+          	$params['unit'],
+            $params['ttl'],
+            $params['homeurl'],
+            $params['backgroundColor'],
+          	$params['tick_color'],
+            $params['val_min'],
+            $params['val_max']
+        );
+			echo '</div>';
+    }
+    elseif($type_graph_pdf == 'vbar'){
+      echo '<div>';
+				echo vbar_graph(
+          $params['flash_chart'],
+          $params['chart_data'],
+          $params['width'],
+          $params['height'],
+          $params['color'],
+          $params['legend'],
+          $params['long_index'],
+          $params['no_data_image'], 
+          $params['xaxisname'],
+          $params['yaxisname'],
+          $params['water_mark'],
+          $params['font'],
+          $params['font_size'],
+          $params['unit'],
+          $params['ttl'],
+          $params['homeurl'],
+          $params['backgroundColor'],
+          $params['from_ux'],
+          $params['from_wux'],
+          $params['tick_color']
+        );
+			echo '</div>';
+    }
 
 		$config['font_size'] = $aux_font_size;
 ?>

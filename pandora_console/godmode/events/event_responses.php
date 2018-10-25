@@ -42,7 +42,7 @@ switch($action) {
 		$values['params'] = get_parameter('params');
 		$values['server_to_exec'] = get_parameter('server_to_exec');
 
-		$result = event_responses_create_responses($values);
+		$result = event_responses_create_response($values);
 
 		if($result) {
 			ui_print_success_message(__('Response added succesfully'));
@@ -66,7 +66,7 @@ switch($action) {
 		$values['server_to_exec'] = get_parameter('server_to_exec');
 		$response_id = get_parameter('id_response',0);
 
-		$result = event_responses_update_responses($response_id, $values);
+		$result = event_responses_update_response($response_id, $values);
 
 		if($result) {
 			ui_print_success_message(__('Response updated succesfully'));

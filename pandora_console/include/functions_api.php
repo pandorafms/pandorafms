@@ -11454,6 +11454,14 @@ function api_get_modules_id_name_by_cluster_name ($cluster_name){
 	
 }
 
+ /**
+ * @param $trash1
+ * @param $trash2
+ * @param mixed $trash3
+ * @param $returnType
+ *	Example:
+ *	api.php?op=get&op2=event_responses&return_type=csv&apipass=1234&user=admin&pass=pandora
+ */
 function api_get_event_responses($trash1, $trash2, $trash3, $returnType) {
 	global $config;
 
@@ -11472,7 +11480,15 @@ function api_get_event_responses($trash1, $trash2, $trash3, $returnType) {
 	returnData ($returnType, array('type' => 'array', 'data' => $responses));
 }
 
-function api_set_delete_event_response($id_response, $trash2, $trash3, $returnType) {
+ /**
+ * @param $id_response
+ * @param $trash2
+ * @param mixed $trash3
+ * @param $returnType
+ *	Example:
+ *	api.php?op=set&op2=delete_event_response&id=7&apipass=1234&user=admin&pass=pandora
+ */
+function api_set_delete_event_response($id_response, $trash1, $trash2, $returnType) {
 	global $config;
 
 	// Error if user cannot read event responses.
@@ -11498,6 +11514,14 @@ function api_set_delete_event_response($id_response, $trash2, $trash3, $returnTy
 	returnData ($returnType, array('type' => 'string', 'data' => $result));
 }
 
+/**
+ * @param $trash1
+ * @param $trash2
+ * @param mixed $other. Serialized params
+ * @param $returnType
+ *	Example:
+ *	api.php?op=set&op2=create_event_response&other=response%7Cdescription%20response%7Ctouch%7Ccommand%7C0%7C650%7C400%7C0%7Cresponse%7C0&other_mode=url_encode_separator_%7C&apipass=1234&user=admin&pass=pandora
+ */
 function api_set_create_event_response($trash1, $trash2, $other, $returnType) {
 	global $config;
 
@@ -11525,12 +11549,20 @@ function api_set_create_event_response($trash1, $trash2, $other, $returnType) {
 		return;
 	}
 
-	$return = event_responses_create_responses($values) ? 1 : 0;
+	$return = event_responses_create_response($values) ? 1 : 0;
 
 	returnData ($returnType, array('type' => 'string', 'data' => $return));
 }
 
-function api_set_update_event_response($id_response, $trash2, $other, $returnType) {
+/**
+ * @param $id_response
+ * @param $trash2
+ * @param mixed $other. Serialized params
+ * @param $returnType
+ *	Example:
+ *	api.php?op=set&op2=update_event_response&id=7&other=response%7Cdescription%20response%7Ctouch%7Ccommand%7C0%7C650%7C400%7C0%7Cresponse%7C0&other_mode=url_encode_separator_%7C&apipass=1234&user=admin&pass=pandora
+ */
+function api_set_update_event_response($id_response, $trash1, $other, $returnType) {
 	global $config;
 
 	// Error if user cannot read event responses.
@@ -11570,7 +11602,7 @@ function api_set_update_event_response($id_response, $trash2, $other, $returnTyp
 		return;
 	}
 
-	$return = event_responses_update_responses($id_response, $values) ? 1 : 0;
+	$return = event_responses_update_response($id_response, $values) ? 1 : 0;
 
 	returnData ($returnType, array('type' => 'string', 'data' => $return));
 }

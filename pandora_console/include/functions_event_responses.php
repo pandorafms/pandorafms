@@ -58,7 +58,7 @@ function event_responses_validate_data (&$values) {
  *
  * @return True if successful insertion
  */
-function event_responses_create_responses($values) {
+function event_responses_create_response($values) {
 	event_responses_validate_data($values);
 	return db_process_sql_insert('tevent_response', $values);
 }
@@ -70,7 +70,7 @@ function event_responses_create_responses($values) {
  *
  * @return True if successful insertion
  */
-function event_responses_update_responses($response_id, $values) {
+function event_responses_update_response($response_id, $values) {
 	event_responses_validate_data($values);
 	return db_process_sql_update(
 		'tevent_response', $values, array('id' => $response_id)

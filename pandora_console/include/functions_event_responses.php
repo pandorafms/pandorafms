@@ -63,4 +63,18 @@ function event_responses_create_responses($values) {
 	return db_process_sql_insert('tevent_response', $values);
 }
 
+/**
+ * Update an event response
+ *
+ * @param array With all event response data
+ *
+ * @return True if successful insertion
+ */
+function event_responses_update_responses($response_id, $values) {
+	event_responses_validate_data($values);
+	return db_process_sql_update(
+		'tevent_response', $values, array('id' => $response_id)
+	);
+}
+
 ?>

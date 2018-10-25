@@ -11504,6 +11504,51 @@ function api_set_create_event_response($trash1, $trash2, $other, $returnType) {
 	returnData ($returnType, array('type' => 'string', 'data' => $return));
 }
 
+function api_set_update_event_response($id_response, $trash2, $other, $returnType) {
+	global $config;
+
+	// Error if user cannot read event responses.
+	if (!check_acl($config['id_user'], 0, "PM")) {
+		returnError('forbidden', $returnType);
+		return;
+	}
+
+	// Check if id exists
+	$event_response = db_get_row('tevent_response','id', $id_response);
+	if ($event_response === false) {
+		returnError('id_not_found', $returnType);
+		return;
+	}
+
+	// Check user if can edit the module
+	if (!check_acl($config['id_user'], $event_response['id_group'], "PM")) {
+		returnError('forbidden', $returnType);
+		return;
+	}
+
+	$values = array();
+	$values['name'] = $other['data'][0] == '' ? $event_response['name'] : $other['data'][0];
+	$values['description'] = $other['data'][1] == '' ? $event_response['description'] : $other['data'][1];
+	$values['target'] = $other['data'][2] == '' ? $event_response['target'] : $other['data'][2];
+	$values['type'] = $other['data'][3] == '' ? $event_response['type'] : $other['data'][3];
+	$values['id_group'] = $other['data'][4] == '' ? $event_response['id_group'] : $other['data'][4];
+	$values['modal_width'] = $other['data'][5] == '' ? $event_response['modal_width'] : $other['data'][5];
+	$values['modal_height'] = $other['data'][6] == '' ? $event_response['modal_height'] : $other['data'][6];
+	$values['new_window'] = $other['data'][7] == '' ? $event_response['new_window'] : $other['data'][7];
+	$values['params'] = $other['data'][8] == '' ? $event_response['params'] : $other['data'][8];
+	$values['server_to_exec'] = $other['data'][9] == '' ? $event_response['server_to_exec'] : $other['data'][9];
+
+	// Error if user has not permission for the group.
+	if (!check_acl($config['id_user'], $values['id_group'], "PM")) {
+		returnError('forbidden', $returnType);
+		return;
+	}
+
+	$return = event_responses_update_responses($id_response, $values) ? 1 : 0;
+
+	returnData ($returnType, array('type' => 'string', 'data' => $return));
+}
+
 function api_get_cluster_items ($cluster_id){
 	global $config;
 

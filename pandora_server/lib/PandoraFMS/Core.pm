@@ -3854,30 +3854,24 @@ sub process_data ($$$$$$$) {
 	# If is a number, we need to replace "," for "."
 	$data =~ s/\,/\./;
 
-	# Out of bounds
-	if (($module->{'max'} != $module->{'min'}) && ($data > $module->{'max'} || $data < $module->{'min'})) {
-		logger($pa_config, "Received invalid data '" . $data_object->{'data'} . "' from agent '" . $agent->{'nombre'} . "' module '" . $module->{'nombre'} . "' agent " . (defined ($agent) ? "'" . $agent->{'nombre'} . "'" : 'ID ' . $module->{'id_agente'}) . ".", 3);
-		return undef;
-	}
-
 	# Process INC modules
 	if ($module_type =~ m/_inc$/) {
-		$data = process_inc_data ($pa_config, $data, $module, $utimestamp, $dbh);
+		$data = process_inc_data ($pa_config, $data, $module, $agent, $utimestamp, $dbh);
 		
 		# No previous data or error.
 		return undef unless defined ($data);
 	}
 	# Process absolute INC modules
 	elsif ($module_type =~ m/_inc_abs$/) {
-		$data = process_inc_abs_data ($pa_config, $data, $module, $utimestamp, $dbh);
+		$data = process_inc_abs_data ($pa_config, $data, $module, $agent, $utimestamp, $dbh);
 		
 		# No previous data or error.
 		return undef unless defined ($data);
 	}
-
-	# Post process
-	if (is_numeric ($module->{'post_process'}) && $module->{'post_process'} != 0) {
-		$data = $data * $module->{'post_process'};
+	# Process the rest of modules
+	else {
+		$data = post_process($data, $module);
+		return undef unless check_min_max($pa_config, $data, $module, $agent);
 	}
 
 	# TODO: Float precission should be adjusted here in the future with a global
@@ -3890,10 +3884,34 @@ sub process_data ($$$$$$$) {
 }
 
 ##########################################################################
+# Apply post processing to the given data.
+##########################################################################
+sub post_process ($$) {
+	my ($data, $module) = @_;
+
+	return (is_numeric ($module->{'post_process'}) && $module->{'post_process'} != 0) ? $data * $module->{'post_process'} : $data;
+}
+
+##########################################################################
+# Return 1 if the data is whithin the module's boundaries, 0 if not.
+##########################################################################
+sub check_min_max ($$$$) {
+	my ($pa_config, $data, $module, $agent) = @_;
+
+	# Out of bounds
+	if (($module->{'max'} != $module->{'min'}) && ($data > $module->{'max'} || $data < $module->{'min'})) {
+		logger($pa_config, "Received invalid data '" . $data . "' from agent '" . $agent->{'nombre'} . "' module '" . $module->{'nombre'} . "' agent " . (defined ($agent) ? "'" . $agent->{'nombre'} . "'" : 'ID ' . $module->{'id_agente'}) . ".", 3);
+		return 0;
+	}
+
+	return 1;
+}
+
+##########################################################################
 # Process data of type *_inc.
 ##########################################################################
-sub process_inc_data ($$$$$) {
-	my ($pa_config, $data, $module, $utimestamp, $dbh) = @_;
+sub process_inc_data ($$$$$$) {
+	my ($pa_config, $data, $module, $agent, $utimestamp, $dbh) = @_;
 
 	my $data_inc = get_db_single_row ($dbh, 'SELECT * FROM tagente_datos_inc WHERE id_agente_modulo = ?', $module->{'id_agente_modulo'});
 
@@ -3928,17 +3946,25 @@ sub process_inc_data ($$$$$) {
 		return undef;
 	}
 
+	# Compute the rate, apply post processing and check module boundaries.
+	my $rate = ($data - $data_inc->{'datos'}) / ($utimestamp - $data_inc->{'utimestamp'});
+	$rate = post_process($rate, $module);
+	if (!check_min_max($pa_config, $rate, $module, $agent)) {
+		db_do ($dbh, 'UPDATE tagente_datos_inc SET datos = ?, utimestamp = ? WHERE id_agente_modulo = ?', $data, $utimestamp, $module->{'id_agente_modulo'});
+		return undef;
+	}
+
 	# Update inc data
 	db_do ($dbh, 'UPDATE tagente_datos_inc SET datos = ?, utimestamp = ? WHERE id_agente_modulo = ?', $data, $utimestamp, $module->{'id_agente_modulo'});
 
-	return ($data - $data_inc->{'datos'}) / ($utimestamp - $data_inc->{'utimestamp'});
+	return $rate;
 }
 
 ##########################################################################
 # Process data of type *_inc_abs.
 ##########################################################################
-sub process_inc_abs_data ($$$$$) {
-	my ($pa_config, $data, $module, $utimestamp, $dbh) = @_;
+sub process_inc_abs_data ($$$$$$) {
+	my ($pa_config, $data, $module, $agent, $utimestamp, $dbh) = @_;
 
 	my $data_inc = get_db_single_row ($dbh, 'SELECT * FROM tagente_datos_inc WHERE id_agente_modulo = ?', $module->{'id_agente_modulo'});
 
@@ -3968,10 +3994,18 @@ sub process_inc_abs_data ($$$$$) {
 		return undef;
 	}
 
+	# Compute the diff, apply post processing and check module boundaries.
+	my $diff = ($data - $data_inc->{'datos'});
+	$diff = post_process($diff, $module);
+	if (!check_min_max($pa_config, $diff, $module, $agent)) {
+		db_do ($dbh, 'UPDATE tagente_datos_inc SET datos = ?, utimestamp = ? WHERE id_agente_modulo = ?', $data, $utimestamp, $module->{'id_agente_modulo'});
+		return undef;
+	}
+
 	# Update inc data
 	db_do ($dbh, 'UPDATE tagente_datos_inc SET datos = ?, utimestamp = ? WHERE id_agente_modulo = ?', $data, $utimestamp, $module->{'id_agente_modulo'});
 
-	return ($data - $data_inc->{'datos'});
+	return $diff;
 }
 
 sub log4x_get_severity_num($) {

@@ -1104,15 +1104,6 @@ $policyTab = enterprise_hook('policy_tab');
 if ($policyTab == -1)
 	$policyTab = "";
 
-/* UX Console */
-enterprise_include_once('/include/functions_ux_console.php');
-$active_ux = enterprise_hook('get_ux_transactions', array($id_agente));
-if(!empty($active_ux)){
-	$ux_console_tab = enterprise_hook('ux_console_tab');
-	if ($ux_console_tab == -1)
-		$ux_console_tab = "";
-}
-
 /* WUX Console */
 $modules_wux = enterprise_hook('get_wux_modules' , array($id_agente));
 if($modules_wux){

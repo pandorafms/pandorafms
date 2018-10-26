@@ -195,8 +195,9 @@ $("#language").click(function () {
 			{"page": "general/login_required",
 			"change_language": change_language},
 			function (data) {}
-		);
-	location.reload();
+	).done(function () {
+		location.reload();
+	});
 });
 
 ////////////////////////////////////////////////////////////////////////

@@ -6869,7 +6869,6 @@ function api_get_graph_module_data($id, $thrash1, $other, $thrash2) {
 	$ttl = 1;
 
 	global $config;
-	$config['flash_charts'] = 0;
 
 	$params =array(
 		'agent_module_id'     => $id,
@@ -6949,7 +6948,7 @@ function api_set_new_user($id, $thrash2, $other, $thrash3) {
  * @param string $id String username for user login in Pandora
  * @param $thrash2 Don't use.
  * @param array $other it's array, $other as param is <fullname>;<firstname>;<lastname>;<middlename>;<password>;
- *  <email>;<phone>;<language>;<comments>;<is_admin>;<block_size>;<flash_chart> in this order and separator char
+ *  <email>;<phone>;<language>;<comments>;<is_admin>;<block_size>;in this order and separator char
  *  (after text ; ) and separator (pass in param othermode as othermode=url_encode_separator_<separator>)
  *  example:
  *  
@@ -6974,15 +6973,14 @@ function api_set_update_user($id, $thrash2, $other, $thrash3) {
 		'lastname',
 		'middlename',
 		'password',
-		'email', 
+		'email',
 		'phone',
 		'language',
 		'comments',
 		'is_admin',
-		'block_size',
-		'flash_chart');
-	
-	
+		'block_size'
+	);
+
 	if ($id == "") {
 		returnError('error_update_user',
 			__('Error updating user. Id_user cannot be left blank.'));
@@ -10764,22 +10762,20 @@ function api_set_metaconsole_synch($keys) {
 				array(db_escape_key_identifier('value') => $value),
 				array(db_escape_key_identifier('key') => $key));
 		}
-		
+
 		// Validate update the license in nodes:
 		enterprise_include_once('include/functions_metaconsole.php');
-		list ($nodes_failed, $total_nodes) = metaconsole_update_all_nodes_license();
-		if ($nodes_failed === 0) {
-			echo __('Metaconsole and all nodes license updated');
+		$array_metaconsole_update = metaconsole_update_all_nodes_license();
+		if ($array_metaconsole_update[0] === 0) {
+			ui_print_success_message(__('Metaconsole and all nodes license updated'));
 		}
 		else {
-			echo __('Metaconsole license updated but %d of %d node synchronization failed', $nodes_failed, $total_nodes);
+			ui_print_error_message(__('Metaconsole license updated but %d of %d node synchronization failed', $array_metaconsole_update[0], $array_metaconsole_update[1]));
 		}
 	}
 	else{
 		echo __('This function is only for metaconsole');
 	}
-
-	
 }
 
 function api_set_new_cluster($thrash1, $thrash2, $other, $thrash3) {

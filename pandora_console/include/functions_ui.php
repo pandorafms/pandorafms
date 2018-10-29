@@ -2395,6 +2395,10 @@ function ui_get_full_url ($url = '', $no_proxy = false, $add_name_php_file = fal
 	$port = null;   // null means 'use the starndard port'
 	$proxy = false; //By default Pandora FMS doesn't run across proxy.
 	
+	if(isset ($_SERVER['HTTP_X_FORWARDED_PROTO'])
+		&& $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https') {
+		$_SERVER['HTTPS'] = 'on';
+	}
 	if (isset ($_SERVER['HTTPS'])
 		&& ($_SERVER['HTTPS'] === true
 		|| $_SERVER['HTTPS'] == 'on')) {

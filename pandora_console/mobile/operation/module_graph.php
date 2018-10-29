@@ -198,13 +198,11 @@ class ModuleGraph {
 
 	private function javascript_code() {
 		ob_start();
-		
+
 		global $config;
-		if ($config['flash_charts']) {
-				//Include the javascript for the js charts library
-				echo include_javascript_dependencies_flot_graph(true);
-				ui_require_javascript_file('pandora', 'include/javascript/',true);
-		}
+
+		echo include_javascript_dependencies_flot_graph(true);
+		ui_require_javascript_file('pandora', 'include/javascript/',true);
 
 		?>
 		<script type="text/javascript">

@@ -313,7 +313,7 @@ $selectIntervalUp = '';
 $selectIntervalDown = '';
 $sortField = get_parameter('sort_field');
 $sort = get_parameter('sort', 'none');
-$selected = 'border: 1px solid black;';
+$selected = '';
 
 $order[] = array('field' => 'tmodule_group.name', 'order' => 'ASC');
 
@@ -547,7 +547,8 @@ $table->head[7] = __('Warn');
 
 
 $table->head[8] = __('Action');
-$table->head[9] = '<span title="' . __('Delete') . '">' . __('D.') . '</span>';
+$table->head[9] = '<span title="' . __('Delete') . '">' . __('Del.') . '</span>'.
+	html_print_checkbox('all_delete', 0, false, true, false);
 
 $table->rowstyle = array();
 $table->style = array ();
@@ -778,12 +779,13 @@ foreach ($modules as $module) {
 	
 	if (check_acl_one_of_groups ($config['id_user'], $all_groups, "AW")) {
 		// Delete module
-		$data[9] = html_print_checkbox('id_delete[]', $module['id_agente_modulo'], false, true);
-		$data[9] .= '&nbsp;<a href="index.php?sec=gagente&tab=module&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&delete_module='.$module['id_agente_modulo'].'"
+		
+		$data[9] = '<a href="index.php?sec=gagente&tab=module&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&delete_module='.$module['id_agente_modulo'].'"
 			onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
 		$data[9] .= html_print_image ('images/cross.png', true,
 			array ('title' => __('Delete')));
 		$data[9] .= '</a> ';
+		$data[9] .= html_print_checkbox('id_delete[]', $module['id_agente_modulo'], false, true);
 	}
 	
 	array_push ($table->data, $data);
@@ -807,17 +809,32 @@ if (check_acl_one_of_groups ($config['id_user'], $all_groups, "AW")) {
 
 <script type="text/javascript">
 
-$(document).ready (function () {
+	$(document).ready (function () {
 		
-			$('[id^=checkbox-id_delete]').change(function(){
-				if($(this).parent().parent().hasClass('checkselected')){
-					$(this).parent().parent().removeClass('checkselected');
-				}
-				else{
-					$(this).parent().parent().addClass('checkselected');							
-				}
-			});					
-});
+		$('[id^=checkbox-id_delete]').change(function(){
+			if($(this).parent().parent().hasClass('checkselected')){
+				$(this).parent().parent().removeClass('checkselected');
+			}
+			else{
+				$(this).parent().parent().addClass('checkselected');							
+			}
+		});		
+
+
+		$('[id^=checkbox-all_delete]').change(function(){	
+			if ($("#checkbox-all_delete").prop("checked")) {
+				$('[id^=checkbox-id_delete]').parent().parent().addClass('checkselected');
+				$("[name^=id_delete").prop("checked", true);
+			}
+			else{
+				$('[id^=checkbox-id_delete]').parent().parent().removeClass('checkselected');
+				$("[name^=id_delete").prop("checked", false);
+			}	
+		});
+
+
+	});
+
 
 	function change_mod_filter() {
 		var checked = $("#checkbox-status_hierachy_mode").is(":checked");

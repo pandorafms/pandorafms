@@ -1111,7 +1111,6 @@ CREATE TABLE IF NOT EXISTS `tusuario` (
 	`language` varchar(10) default NULL,
 	`timezone` varchar(50) default '',
 	`block_size` int(4) NOT NULL DEFAULT 20,
-	`flash_chart` int(4) NOT NULL DEFAULT 1,
 	`id_skin` int(10) unsigned NOT NULL DEFAULT 0,
 	`disabled` int(4) NOT NULL DEFAULT 0,
 	`shortcut` tinyint(1) DEFAULT 0,

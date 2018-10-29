@@ -224,8 +224,8 @@ class Agent {
 				ob_start();
 
 				// Fixed width non interactive charts
-				$status_chart_width = $config["flash_charts"] == false ? 100 : 160;
-				$graph_width = $config["flash_charts"] == false ? 200 : 160;
+				$status_chart_width = 160;
+				$graph_width = 160;
 				
 				$html = '<div class="agent_graphs">';
 				$html .= "<b>" . __('Modules by status') . "</b>";

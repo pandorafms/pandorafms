@@ -30,7 +30,7 @@ function pandora_session_read ($session_id) {
 	if (!empty($session_data))
 		return $session_data;
 	else
-		return false;
+		return '';
 }
 
 function pandora_session_write ($session_id, $data) {
@@ -52,7 +52,7 @@ function pandora_session_write ($session_id, $data) {
 		$retval_write = db_process_sql_update('tsessions_php', $values, array('id_session' => $session_id));
 	}
 
-	return $retval_write;
+	return ($retval_write !== false) ? true : false;
 }
 
 function pandora_session_destroy ($session_id) {
@@ -77,6 +77,6 @@ function pandora_session_gc ($max_lifetime = 300) {
 	return $retval;
 }
 
-$result_handler = session_set_save_handler ('pandora_session_open', 'pandora_session_close', 'pandora_session_read', 'pandora_session_write', 'pandora_session_destroy', 'pandora_session_gc'); 
+$result_handler = @session_set_save_handler ('pandora_session_open', 'pandora_session_close', 'pandora_session_read', 'pandora_session_write', 'pandora_session_destroy', 'pandora_session_gc'); 
 
 ?>

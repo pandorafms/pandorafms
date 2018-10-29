@@ -239,16 +239,33 @@ echo '</div></form>';
 
 ?>
 <script type="text/javascript">
-	 // If you click on the input type checkbox with id checkbox-all_delete
-	 $('#checkbox-all_delete').click(function() {
-            // If selected (if the checked property equals true)
-            if ($(this).prop('checked')) {
-                // Select each input that has the class .check_delete
-                $('.check_delete').prop('checked', true);
-            } else {
-                // deselect every input that has the class .check_delete
-                $('.check_delete').prop('checked', false);
-            }
-        });
+
+	$( document ).ready(function() {
+
+		$('[id^=checkbox-delete_multiple]').change(function(){
+			if($(this).parent().parent().hasClass('checkselected')){
+				$(this).parent().parent().removeClass('checkselected');
+			}
+			else{
+				$(this).parent().parent().addClass('checkselected');	
+			}
+		});
+
+		// If you click on the input type checkbox with id checkbox-all_delete
+		$('[id^=checkbox-all_delete]').change(function(){	
+			// If selected (if the checked property equals true)
+			if ($("#checkbox-all_delete").prop("checked")) {
+				$('[id^=checkbox-delete_multiple]').parent().parent().addClass('checkselected');
+				// Select each input that has the class .check_delete
+				$(".check_delete").prop("checked", true);
+			}
+			else{
+				$('[id^=checkbox-delete_multiple]').parent().parent().removeClass('checkselected');
+				// deselect every input that has the class .check_delete
+				$(".check_delete").prop("checked", false);
+			}	
+		});
+
+	});
 
 </script>

@@ -3041,9 +3041,9 @@ table#policy_modules td * {
 
 #sumary{
 	color: #FFF;
-	margin: 15px;
+	margin: 2px;
 	padding: 10px 30px;
-	font-size: 20px;
+	font-size: 15px;
 	font-weight: bold;
 	border-radius: 2px;
 }
@@ -3638,6 +3638,9 @@ div.simple_value > a > span.text p
 	max-width:750px;
 	top: 20%;
 	background:white;
+	opacity: 0;
+	transition: opacity 0.5s;
+	-webkit-transition: opacity 0.5s;
 }
 .modalheader{
 	text-align:center;
@@ -3846,7 +3849,9 @@ color:#82b92e;font-family:Nunito;font-size:10pt;position:relative;top:6px;
 
 
 #opacidad{
-	opacity:0.5;
+	opacity:0;
+	transition: opacity 3s;
+	-webkit-transition: opacity 3s;
 	z-index:1;
 	width:100%;
 	height:100%;

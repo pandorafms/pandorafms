@@ -544,28 +544,30 @@ function db_get_module_ranges_unknown($id_agente_modulo, $tstart = false, $tend 
 
 	$return = array();
 	$i=0;
-	foreach ($events as $event) {
-		switch ($event["event_type"]) {
-			case "going_up_critical":
-			case "going_up_warning":
-			case "going_up_normal":
-			case "going_down_critical":
-			case "going_down_warning":
-			case "going_down_normal": {
-				if ($last_status == 1) {
-					$return[$i]["time_to"] = $event["utimestamp"];
-					$i++;
-					$last_status = 0;
+	if(is_array($events)){
+		foreach ($events as $event) {
+			switch ($event["event_type"]) {
+				case "going_up_critical":
+				case "going_up_warning":
+				case "going_up_normal":
+				case "going_down_critical":
+				case "going_down_warning":
+				case "going_down_normal": {
+					if ($last_status == 1) {
+						$return[$i]["time_to"] = $event["utimestamp"];
+						$i++;
+						$last_status = 0;
+					}
+					break;
 				}
-				break;
-			}
-			case "going_unknown":{
-				if ($last_status == 0){
-					$return[$i] = array();
-					$return[$i]["time_from"] = $event["utimestamp"];
-					$last_status = 1;
+				case "going_unknown":{
+					if ($last_status == 0){
+						$return[$i] = array();
+						$return[$i]["time_from"] = $event["utimestamp"];
+						$last_status = 1;
+					}
+					break;
 				}
-				break;
 			}
 		}
 	}
@@ -893,7 +895,7 @@ function db_uncompress_module_data($id_agente_modulo, $tstart = false, $tend = f
 		}
 
 		//sort current slice
-		if(count($return[$pool_id]['data'] > 1)) {
+		if(count($return[$pool_id]['data']) > 1) {
 			usort(
 				$return[$pool_id]['data'],
 				function ($a, $b) {

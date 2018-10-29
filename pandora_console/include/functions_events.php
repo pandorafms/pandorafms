@@ -106,7 +106,7 @@ function events_get_event ($id, $fields = false, $meta = false) {
      }
 
      if ($meta === true){
-             $event = db_get_row ('tmetaconsole_event', 'id_evento', $id, $fiel     ds);       
+             $event = db_get_row ('tmetaconsole_event', 'id_evento', $id, $fields);       
      }else{
              $event = db_get_row ('tevento', 'id_evento', $id, $fields);
      }  

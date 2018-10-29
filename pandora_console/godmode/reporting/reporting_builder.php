@@ -28,6 +28,27 @@ $( document ).ready(function() {
 		});
 		
 	});
+
+	$('[id^=checkbox-massive_report_check]').change(function(){
+		if($(this).parent().parent().parent().hasClass('checkselected')){
+			$(this).parent().parent().parent().removeClass('checkselected');
+		}
+		else{
+			$(this).parent().parent().parent().addClass('checkselected');							
+		}
+	});
+
+	$('[id^=checkbox-all_delete]').change(function(){	
+		if ($("#checkbox-all_delete").prop("checked")) {
+			$('[id^=checkbox-massive_report_check]').parent().parent().parent().addClass('checkselected');
+			$(".check_delete").prop("checked", true);
+		}
+		else{
+			$('[id^=checkbox-massive_report_check]').parent().parent().parent().removeClass('checkselected');
+			$(".check_delete").prop("checked", false);
+		}	
+	});
+
 });
 	
 </script>
@@ -715,9 +736,10 @@ switch ($action) {
 				if ($edit || $delete) {
 					$columnview = true;
 					if (!isset($table->head[$next])) {
-						$table->head[$next] = '<span title="Operations">' . __('Op.') . '</span>';
+						$table->head[$next] = '<span title="Operations">' . __('Op.') . '</span>'.
+							html_print_checkbox('all_delete', 0, false, true, false);
 						$table->size = array ();
-						$table->size[$next] = '80px';
+						//$table->size[$next] = '80px';
 						$table->style[$next] = 'text-align:left;';
 					}
 					

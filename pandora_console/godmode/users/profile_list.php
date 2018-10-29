@@ -270,7 +270,7 @@ if ($create_profile) {
 $table = new stdClass();
 $table->cellpadding = 0;
 $table->cellspacing = 0;
-$table->class = 'databox profile_list';
+$table->class = 'databox profile_list data';
 $table->width = '100%';
 
 $table->head = array ();

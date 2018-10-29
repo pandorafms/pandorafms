@@ -8721,6 +8721,58 @@ function api_set_delete_user_profile($id, $thrash1, $other, $thrash2) {
 }
 
 /**
+ * List all user profiles.
+ *
+ *  api.php?op=get&op2=user_profiles_info&return_type=json&apipass=1234&user=admin&pass=pandora
+ */
+function api_get_user_profiles_info ($thrash1, $thrash2, $thrash3, $returnType) {
+	global $config;
+
+	if (!check_acl($config['id_user'], 0, "PM")){
+		returnError('forbidden', 'string');
+		return;
+	}
+
+	$profiles = db_get_all_rows_filter(
+		'tperfil',
+		array(),
+		array(
+			"id_perfil",
+			"name",
+			"incident_view as IR",
+			"incident_edit as IW",
+			"incident_management as IM",
+			"agent_view as AR",
+			"agent_edit as AW",
+			"agent_disable as AD",
+			"alert_edit as LW",
+			"alert_management as LM",
+			"user_management as UM",
+			"db_management as DM",
+			"event_view as ER",
+			"event_edit as EW",
+			"event_management as EM",
+			"report_view as RR",
+			"report_edit as RW",
+			"report_management as RM",
+			"map_view as MR",
+			"map_edit as MW",
+			"map_management as MM",
+			"vconsole_view as VR",
+			"vconsole_edit as VW",
+			"vconsole_management as VM",
+			"pandora_management as PM"
+		)
+	);
+
+	if ($profiles === false) {
+		returnError('error_list_profiles', __('Error retrieving profiles'));
+	} else {
+		returnData($returnType, array('type' => 'array', 'data' => $profiles));
+	}
+}
+
+/**
  * Create new incident in Pandora.
  * 
  * @param $thrash1 Don't use.

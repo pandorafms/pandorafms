@@ -29,10 +29,10 @@ BuildArch:          noarch
 AutoReq:            0
 Requires:           apache2, apache2-mod_php5
 Requires:           php >= 4.3.0
-Requires:           php5-gd, php5-snmp, php5-json, php5-gettext
-Requires:           php5-mysql, php5-ldap, php5-mbstring, php5 
+Requires:           php-gd, php-snmp, php-json, php-gettext
+Requires:           php-mysqlnd, php-ldap, php-mbstring, php 
 Requires:           graphviz, xorg-x11-fonts-core, graphviz-gd
-Requires:           php5-zip, php5-zlib, php5-curl
+Requires:           php-zip, php-zlib, php-curl
 Provides:           %{name}-%{version}
 
 %description

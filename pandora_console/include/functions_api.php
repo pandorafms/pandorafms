@@ -8835,13 +8835,13 @@ function api_set_create_user_profile_info ($thrash1, $thrash2, $other, $returnTy
  * Update an user profile.
  *
  * @param int Profile id
- * @param Reserved $thrash2
+ * @param Reserved $thrash1
  * @param array parameters in array: name|IR|IW|IM|AR|AW|AD|LW|LM|UM|DM|ER|EW|EM|RR|RW|RM|MR|MW|MM|VR|VW|VM|PM
  * @param string Return type (csv, json, string...)
  *
- *  api.php?op=set&op2=create_user_profile_info&return_type=json&other=API_profile%7C1%7C0%7C0%7C1%7C0%7C0%7C0%7C0%7C0%7C0%7C1%7C0%7C0%7C1%7C0%7C0%7C1%7C0%7C0%7C1%7C0%7C0%7C0&other_mode=url_encode_separator_%7C&apipass=1234&user=admin&pass=pandora
+ *  api.php?op=set&op2=update_user_profile_info&return_type=json&id=6&other=API_profile_updated%7C%7C%7C%7C1%7C1%7C1%7C%7C%7C%7C%7C%7C%7C%7C%7C%7C%7C%7C%7C%7C%7C%7C%7C&other_mode=url_encode_separator_%7C&apipass=1234&user=admin&pass=pandora
  */
-function api_set_update_user_profile_info ($id_profile, $thrash2, $other, $returnType) {
+function api_set_update_user_profile_info ($id_profile, $thrash1, $other, $returnType) {
 	global $config;
 
 	if (!check_acl($config['id_user'], 0, "PM")){
@@ -8886,6 +8886,39 @@ function api_set_update_user_profile_info ($id_profile, $thrash2, $other, $retur
 
 	if ($return === false) {
 		returnError('error_update_user_profile_info', __('Error updating user profile'));
+	} else {
+		returnData($returnType, array('type' => 'array', 'data' => 1));
+	}
+}
+
+/**
+ * Delete an user profile.
+ *
+ * @param int Profile id
+ * @param Reserved $thrash1
+ * @param Reserved $thrash2
+ * @param string Return type (csv, json, string...)
+ *
+ *  api.php?op=set&op2=delete_user_profile_info&return_type=json&id=7&other_mode=url_encode_separator_%7C&apipass=1234&user=admin&pass=pandora
+ */
+function api_set_delete_user_profile_info ($id_profile, $thrash1, $thrash2, $returnType) {
+	global $config;
+
+	if (!check_acl($config['id_user'], 0, "PM")){
+		returnError('forbidden', 'string');
+		return;
+	}
+
+	$profile = db_get_value ('id_perfil', 'tperfil', 'id_perfil', $id_profile);
+	if ($profile === false) {
+		returnError('id_not_found', 'string');
+		return;
+	}
+
+	$return = profile_delete_profile_and_clean_users($id_profile);
+
+	if ($return === false) {
+		returnError('error_delete_user_profile_info', __('Error deleting user profile'));
 	} else {
 		returnData($returnType, array('type' => 'array', 'data' => 1));
 	}

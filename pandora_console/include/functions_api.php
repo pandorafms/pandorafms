@@ -8773,8 +8773,59 @@ function api_get_user_profiles_info ($thrash1, $thrash2, $thrash3, $returnType) 
 }
 
 /**
+ * Create an user profile.
+ *
+ * @param array Serialized parameters: name|IR|IW|IM|AR|AW|AD|LW|LM|UM|DM|ER|EW|EM|RR|RW|RM|MR|MW|MM|VR|VW|VM|PM
+ *
+ *  api.php?op=set&op2=create_user_profile_info&return_type=json&other=API_profile%7C1%7C0%7C0%7C1%7C0%7C0%7C0%7C0%7C0%7C0%7C1%7C0%7C0%7C1%7C0%7C0%7C1%7C0%7C0%7C1%7C0%7C0%7C0&other_mode=url_encode_separator_%7C&apipass=1234&user=admin&pass=pandora
+ */
+function api_set_create_user_profile_info ($thrash1, $thrash2, $other, $returnType) {
+	global $config;
+
+	if (!check_acl($config['id_user'], 0, "PM")){
+		returnError('forbidden', 'string');
+		return;
+	}
+
+	$values = array(
+		'name' => (string)$other['data'][0],
+		'incident_view' => (bool)$other['data'][1] ? 1 : 0,
+		'incident_edit' => (bool)$other['data'][2] ? 1 : 0,
+		'incident_management' => (bool)$other['data'][3] ? 1 : 0,
+		'agent_view' => (bool)$other['data'][4] ? 1 : 0,
+		'agent_edit' => (bool)$other['data'][5] ? 1 : 0,
+		'agent_disable' => (bool)$other['data'][6] ? 1 : 0,
+		'alert_edit' => (bool)$other['data'][7] ? 1 : 0,
+		'alert_management' => (bool)$other['data'][8] ? 1 : 0,
+		'user_management' => (bool)$other['data'][9] ? 1 : 0,
+		'db_management' => (bool)$other['data'][10] ? 1 : 0,
+		'event_view' => (bool)$other['data'][11] ? 1 : 0,
+		'event_edit' => (bool)$other['data'][12] ? 1 : 0,
+		'event_management' => (bool)$other['data'][13] ? 1 : 0,
+		'report_view' => (bool)$other['data'][14] ? 1 : 0,
+		'report_edit' => (bool)$other['data'][15] ? 1 : 0,
+		'report_management' => (bool)$other['data'][16] ? 1 : 0,
+		'map_view' => (bool)$other['data'][17] ? 1 : 0,
+		'map_edit' => (bool)$other['data'][18] ? 1 : 0,
+		'map_management' => (bool)$other['data'][19] ? 1 : 0,
+		'vconsole_view' => (bool)$other['data'][20] ? 1 : 0,
+		'vconsole_edit' => (bool)$other['data'][21] ? 1 : 0,
+		'vconsole_management' => (bool)$other['data'][22] ? 1 : 0,
+		'pandora_management' => (bool)$other['data'][23] ? 1 : 0
+	);
+
+	$return = db_process_sql_insert('tperfil', $values);
+
+	if ($return === false) {
+		returnError('error_create_user_profile_info', __('Error creating user profile'));
+	} else {
+		returnData($returnType, array('type' => 'array', 'data' => 1));
+	}
+}
+
+/**
  * Create new incident in Pandora.
- * 
+ *
  * @param $thrash1 Don't use.
  * @param $thrash2 Don't use.
  * @param array $other it's array, $other as param is <title>;<description>;

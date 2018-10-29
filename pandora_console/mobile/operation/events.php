@@ -297,7 +297,7 @@ class Events {
 					
 					$id_event = $system->getRequest('id_event', 0);
 					
-					if (events_change_status($id_event, EVENT_VALIDATE)) {
+					if (events_change_status($id_event, EVENT_VALIDATE,$system->getConfig('metaconsole'))) {
 						echo json_encode(array('correct' => 1));
 					}
 					else {
@@ -379,11 +379,15 @@ class Events {
 			$this->default_filters['severity'] = false;
 		}
 		
-		$this->filter = $system->getRequest('filter', __('Preset Filters'));
-		if (($this->filter === __("Preset Filters")) || ($this->filter == 0)) {
-			$this->filter = 0;
-		}
-		else {
+		if ($system->getRequest('filter', __('Preset Filters')) === __("Preset Filters")) {
+		         //Set filter as default user event filter (only first time)
+		         $this->filter = db_get_value('default_event_filter', 'tusuario', 'id_user', $system->getConfig('id_user'));
+		 }
+		 else {
+		         $this->filter = $system->getRequest('filter', __('Preset Filters'));
+		 }
+
+		if ($this->filter != 0) {
 			$this->default = false;
 		}
 		

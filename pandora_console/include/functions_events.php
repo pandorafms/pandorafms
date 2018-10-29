@@ -95,21 +95,25 @@ function events_get_events ($filter = false, $fields = false) {
  * 
  * @return mixed False in case of error or invalid values passed. Event row otherwise
  */
-function events_get_event ($id, $fields = false) {
-	if (empty ($id))
-		return false;
-	global $config;
-	
-	if (is_array ($fields)) {
-		if (! in_array ('id_grupo', $fields))
-			$fields[] = 'id_grupo';
-	}
-	
-	$event = db_get_row ('tevento', 'id_evento', $id, $fields);
-	if (! check_acl ($config['id_user'], $event['id_grupo'], 'ER'))
-		return false;
-	
-	return $event;
+function events_get_event ($id, $fields = false, $meta = false) {
+     if (empty ($id))
+             return false;
+     global $config;
+     
+     if (is_array ($fields)) {
+             if (! in_array ('id_grupo', $fields))
+                     $fields[] = 'id_grupo';
+     }
+
+     if ($meta === true){
+             $event = db_get_row ('tmetaconsole_event', 'id_evento', $id, $fiel     ds);       
+     }else{
+             $event = db_get_row ('tevento', 'id_evento', $id, $fields);
+     }  
+     if (! check_acl ($config['id_user'], $event['id_grupo'], 'ER'))
+             return false;
+
+     return $event;
 }
 function events_get_events_no_grouped($sql_post, $offset = 0,
 	$pagination = 1, $meta = false, $history = false, $total = false, 

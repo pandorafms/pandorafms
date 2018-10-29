@@ -95,16 +95,18 @@ function groupview_get_all_counters($tree_group) {
 		? 'tmetaconsole_agent_secondary_group'
 		: 'tagent_secondary_group';
 	$sql =
-		"SELECT SUM(ta.normal_count) AS _monitors_ok_,
-			SUM(ta.critical_count) AS _monitors_critical_,
+		"SELECT SUM(ta.critical_count) AS _monitors_critical_,
 			SUM(ta.warning_count) AS _monitors_warning_,
 			SUM(ta.unknown_count) AS _monitors_unknown_,
 			SUM(ta.notinit_count) AS _monitors_not_init_,
-			SUM(ta.fired_count) AS _monitors_alerts_fired_,
+			SUM(ta.normal_count) AS _monitors_ok_,
 			SUM(ta.total_count) AS _monitor_checks_,
+			SUM(ta.fired_count) AS _monitors_alerts_fired_,
 			SUM(IF(ta.critical_count > 0, 1, 0)) AS _agents_critical_,
+			SUM(IF(ta.critical_count = 0 AND ta.warning_count > 0, 1, 0)) AS _agents_warning_,
 			SUM(IF(ta.critical_count = 0 AND ta.warning_count = 0 AND ta.unknown_count > 0, 1, 0)) AS _agents_unknown_,
 			SUM(IF(ta.total_count = ta.notinit_count, 1, 0)) AS _agents_not_init_,
+			SUM(IF(ta.total_count = ta.normal_count AND ta.total_count <> ta.notinit_count, 1, 0)) AS _agents_ok_,
 			COUNT(ta.id_agente) AS _total_agents_,
 			'$all_name' AS _name_,
 			0 AS _id_,
@@ -169,9 +171,11 @@ function groupview_get_groups_list($id_user = false, $access = 'AR', $is_not_pag
 		$list[$id_group]['_id_'] = $agent_counter['id'];
 		$list[$id_group]['_iconImg_'] = $agent_counter['icon'];
 
-		$list[$id_group]['_agents_not_init_'] = $agent_counter['counters']['not_init'];
-		$list[$id_group]['_agents_unknown_'] = $agent_counter['counters']['unknown'];
 		$list[$id_group]['_agents_critical_'] = $agent_counter['counters']['critical'];
+		$list[$id_group]['_agents_warning_'] = $agent_counter['counters']['warning'];
+		$list[$id_group]['_agents_unknown_'] = $agent_counter['counters']['unknown'];
+		$list[$id_group]['_agents_not_init_'] = $agent_counter['counters']['not_init'];
+		$list[$id_group]['_agents_ok_'] = $agent_counter['counters']['ok'];
 		$list[$id_group]['_total_agents_'] = $agent_counter['counters']['total'];
 
 		$list[$id_group]['_monitors_critical_'] = (int)$modules_counters[$id_group]['total_module_critical'];

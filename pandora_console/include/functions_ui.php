@@ -3849,8 +3849,7 @@ function ui_print_module_string_value($value, $id_agente_module,
 			'id_module' => $id_agente_module,
 			'last_data' => $value,
 			'interval' => $current_interval,
-			'module_name' => $module_name,
-			'timestamp' => db_get_value('timestamp', 'tagente_estado', 'id_agente_modulo', $id_agente_module)
+			'module_name' => $module_name
 		));
 		$salida = ui_get_snapshot_image($link, $is_snapshot) . '&nbsp;&nbsp;';
 	} else {

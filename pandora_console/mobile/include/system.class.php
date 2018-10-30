@@ -12,10 +12,6 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
-if (!isset($config)) {
-	require_once('../include/config.php');
-}
-
 //Singleton
 class System {
 	private static $instance;

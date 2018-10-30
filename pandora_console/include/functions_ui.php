@@ -3968,8 +3968,14 @@ function ui_get_snapshot_link($params, $only_params = false) {
 		"id=" . $params['id_module'] .
 		"&label=" . rawurlencode(urlencode(io_safe_output($params['module_name']))).
 		"&id_node=" . $params['id_node'];
-	if ($params['timestamp'] != 0) $url .= "&timestamp=" . $parms['timestamp'];
-	if ($params['timestamp'] != 0) $url .= "&refr=" . $parms['interval'];
+	
+	if ($params['timestamp'] != 0) {
+		$url .= "&timestamp=" . $params['timestamp'];
+	}
+
+	if ($params['interval'] != 0) {
+		$url .= "&refr=" . $params['interval'];
+	}
 
 	// Second parameter of js winopeng_var
 	$win_handle = dechex(crc32('snapshot_' . $params['id_module']));

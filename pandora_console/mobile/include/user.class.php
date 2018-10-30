@@ -34,10 +34,9 @@ class User {
 				self::$instance = $user;
 			}
 			else {
-				self::$instance = new self;
+				self::$instance = new self();
 			}
 		}
-		
 		return self::$instance;
 	}
 	

@@ -415,7 +415,7 @@ if ($get_extended_event) {
 	$custom_data = events_page_custom_data($event);
 	
 	if ($meta) {
-		metaconsole_restore_db_force();
+		metaconsole_restore_db();
 	}
 	
 	$general = events_page_general($event);

@@ -1228,7 +1228,7 @@ function groups_get_monitors_counter ($group, $agent_filter = array(), $module_f
 			else
 				$module_status = array($module_filter["status"]);
 			
-			$status_array = "";
+			$status_array = array();
 			foreach ($module_status as $status) {
 				switch ($status) {
 					case AGENT_MODULE_STATUS_ALL:

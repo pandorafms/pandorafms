@@ -69,6 +69,7 @@ RUN yum install -y \
 	php-ldap \ 
 	php-common \ 
 	php-zip \ 
+	php-xmlrpc \ 
 	nmap \
 	xprobe2 \
 	mysql-server \

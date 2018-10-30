@@ -50,7 +50,7 @@ function dbmanager_query ($sql, &$error, $dbconnection) {
 	}
 
 	if($config["mysqli"]){
-		while ($row = mysqli_fetch_array ($result)) {
+		while ($row = mysqli_fetch_array ($result, MYSQLI_ASSOC)) {
 			array_push ($retval, $row);
 		}
 	}

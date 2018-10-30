@@ -45,7 +45,7 @@ $rows = db_get_all_rows_in_table('tupdate_settings');
 
 $settings = new StdClass;
 foreach ($rows as $row) {
-	$settings->$row['key'] = $row['value'];
+	$settings->{$row['key']} = $row['value'];
 }
 
 echo '<script type="text/javascript">';

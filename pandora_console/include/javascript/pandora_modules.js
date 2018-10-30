@@ -320,8 +320,23 @@ function configure_modules_form () {
 				$("#text-ff_event_normal").attr ("value", (data["min_ff_event_normal"] == 0) ? 0 : data["min_ff_event_normal"]);
 				$("#text-ff_event_warning").attr ("value", (data["min_ff_event_warning"] == 0) ? 0 : data["min_ff_event_warning"]);
 				$("#text-ff_event_critical").attr ("value", (data["min_ff_event_critical"] == 0) ? 0 : data["min_ff_event_critical"]);
-				$("#text-post_process").attr("value", (data["post_process"] == 0) ? 0 : data["post_process"]);
-				$("#text-unit").attr("value", (data["unit"] == '') ? '' : data["unit"]);
+
+				// Shows manual input if post_process field is setted
+				if (data["post_process"] != 0) {
+					$('#post_process_manual').show();
+					$('#post_process_default').hide();
+				}
+
+				$("#text-post_process_text").attr("value", (data["post_process"] == 0) ? 0 : data["post_process"]);
+
+				// Shows manual input if unit field is setted
+				if (data["unit"] != '') {
+					$('#unit_manual').show();
+					$('#unit_default').hide();
+				}
+
+				$("#text-unit_text").attr("value", (data["unit"] == '') ? '' : data["unit"]);
+
 				$("#checkbox-critical_inverse").prop ("checked", data["critical_inverse"]);
 				$("#checkbox-warning_inverse").prop ("checked", data["warning_inverse"]);
 				$("#component_loading").hide ();

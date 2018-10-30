@@ -1888,7 +1888,7 @@ function events_get_response_target($event_id, $response_id, $server_id, $histor
 			);
 			
 			if($meta) {
-				metaconsole_restore_db_force();
+				metaconsole_restore_db();
 			}
 		} else {
 			$target = str_replace('_module_address_', __('N/A'), $target);

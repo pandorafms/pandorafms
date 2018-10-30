@@ -1869,7 +1869,7 @@ switch ($action) {
 											break;
 									}
 									
-									metaconsole_restore_db_force();
+									metaconsole_restore_db();
 									
 									$temp_sort[$report_item['id_rc']] = $element_name;
 								

@@ -690,7 +690,8 @@ function flot_slicesbar_graph (
 	$round_corner, $homeurl, $watermark = '',
 	$adapt_key = '', $stat_win = false,
 	$id_agent = 0, $full_legend_date = array(),
-	$not_interactive = 0, $ttl = 1) {
+	$not_interactive = 0, $ttl = 1,
+	$widgets = false) {
 
 	global $config;
 
@@ -725,7 +726,12 @@ function flot_slicesbar_graph (
 		$return = "<div id='$graph_id' class='noresizevc graph $adapt_key' style='width: ".$width."%; height: ".$height."px; display: inline-block;'></div>";
 	}
 	else {
-		$return = "<div id='$graph_id' class='noresizevc graph $adapt_key' style='width: ".$width."%; height: ".$height."px;'></div>";
+		if($widgets){
+			$return = "<div id='$graph_id' class='noresizevc graph $adapt_key' style='width: ".$width."px; height: ".$height."px;'></div>";
+		}
+		else{
+			$return = "<div id='$graph_id' class='noresizevc graph $adapt_key' style='width: ".$width."%; height: ".$height."px;'></div>";
+		}
 	}
 
 	$return .= "<div id='value_$graph_id' style='display:none; position:absolute; background:#fff; border: solid 1px #aaa; padding: 2px'></div>";

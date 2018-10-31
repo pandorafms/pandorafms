@@ -486,16 +486,22 @@ function treeview_printTable($id_agente, $server_data = array(), $no_head = fals
 	if ($agent == false) return;
 
 	// Check all groups
-	$groups = agents_get_all_groups_agent($id_agente, $agent["id_grupo"], is_metaconsole());
+	$groups = agents_get_all_groups_agent($id_agente, $agent["id_grupo"]);
 	if (! check_acl_one_of_groups ($config["id_user"], $groups, "AR") && ! check_acl_one_of_groups ($config["id_user"], $groups, "AW") && !$is_extra) {
 		db_pandora_audit("ACL Violation",
 			"Trying to access Agent General Information");
 		require_once ("general/noaccess.php");
+		if (!empty($server_data) && is_metaconsole()) {
+			metaconsole_restore_db();
+		}
 		return;
 	}
 		
 	if ($agent === false) {
 		ui_print_error_message(__('There was a problem loading agent'));
+		if (!empty($server_data) && is_metaconsole()) {
+			metaconsole_restore_db();
+		}
 		return;
 	}
 

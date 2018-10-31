@@ -173,7 +173,16 @@ sub data_consumer ($$) {
 			pa_config => $pa_config,
 			recon_ports => $task->{'recon_ports'},
 			resolve_names => $task->{'resolve_names'},
+			snmp_auth_user => $task->{'snmp_auth_user'},
+			snmp_auth_pass => $task->{'snmp_auth_pass'},
+			snmp_auth_method => $task->{'snmp_auth_method'},
+			snmp_checks => $task->{'snmp_checks'},
 			snmp_enabled => $task->{'snmp_enabled'},
+			snmp_privacy_method => $task->{'snmp_privacy_method'},
+			snmp_privacy_pass => $task->{'snmp_privacy_pass'},
+			snmp_security_level => $task->{'snmp_security_level'},
+			snmp_timeout => $task->{'snmp_timeout'},
+			snmp_version => $task->{'snmp_version'},
 			subnets => \@subnets,
 			task_id => $task->{'id_rt'},
 			vlan_cache_enabled => $task->{'vlan_enabled'},
@@ -310,10 +319,17 @@ sub PandoraFMS::Recon::Base::create_network_profile_modules($$$) {
 			$self->call('message', "Network component ID " . $np_component->{'id_nc'} . " not found.", 5);
 			next;
 		}
-		
+
 		# Use snmp_community from network task instead the component snmp_community
 		$component->{'snmp_community'} = safe_output($self->get_community($device));
-	
+		$component->{'tcp_send'} = $self->{'snmp_version'};
+		$component->{'custom_string_1'} = $self->{'snmp_privacy_method'};
+		$component->{'custom_string_2'} = $self->{'snmp_privacy_pass'};
+		$component->{'custom_string_3'} = $self->{'snmp_security_level'};
+		$component->{'plugin_parameter'} = $self->{'snmp_auth_method'};
+		$component->{'plugin_user'} = $self->{'snmp_auth_user'};
+		$component->{'plugin_pass'} = $self->{'snmp_auth_pass'};
+
 		pandora_create_module_from_network_component($self->{'pa_config'}, $component, $agent_id, $self->{'dbh'});
 	}
 }
@@ -466,8 +482,8 @@ sub PandoraFMS::Recon::Base::create_agent($$) {
 	}
 
 	# Add interfaces to the agent if it responds to SNMP.
+	return $agent_id unless ($self->is_snmp_discovered($device));
 	my $community = $self->get_community($device);
-	return $agent_id unless defined($community);
 
 	my @output = $self->snmp_get_value_array($device, $PandoraFMS::Recon::Base::IFINDEX);
 	foreach my $if_index (@output) {
@@ -506,7 +522,13 @@ sub PandoraFMS::Recon::Base::create_agent($$) {
 				'descripcion' => $if_desc,
 				'id_agente' => $agent_id,
 				'ip_target' => $device,
-				'tcp_send' => 1,
+				'tcp_send' => $self->{'snmp_version'},
+				'custom_string_1' => $self->{'snmp_privacy_method'},
+				'custom_string_2' => $self->{'snmp_privacy_pass'},
+				'custom_string_3' => $self->{'snmp_security_level'},
+				'plugin_parameter' => $self->{'snmp_auth_method'},
+				'plugin_user' => $self->{'snmp_auth_user'},
+				'plugin_pass' => $self->{'snmp_auth_pass'},
 				'snmp_community' => $community,
 				'snmp_oid' => "$PandoraFMS::Recon::Base::IFOPERSTATUS.$if_index"
 			);
@@ -516,6 +538,14 @@ sub PandoraFMS::Recon::Base::create_agent($$) {
 				'descripcion' => $if_desc,
 				'ip_target' => $device,
 				'snmp_community' => $community,
+				'tcp_send' => $self->{'snmp_version'},
+				'custom_string_1' => $self->{'snmp_privacy_method'},
+				'custom_string_2' => $self->{'snmp_privacy_pass'},
+				'custom_string_3' => $self->{'snmp_security_level'},
+				'plugin_parameter' => $self->{'snmp_auth_method'},
+				'plugin_user' => $self->{'snmp_auth_user'},
+				'plugin_pass' => $self->{'snmp_auth_pass'},
+				'tcp_send' => $self->{'snmp_version'},
 			);
 			pandora_update_module_from_hash ($self->{'pa_config'}, \%module, 'id_agente_modulo', $module_id, $self->{'dbh'});
 		}
@@ -531,7 +561,13 @@ sub PandoraFMS::Recon::Base::create_agent($$) {
 						   'descripcion' => 'The total number of octets received on the interface, including framing characters. This object is a 64-bit version of ifInOctets.',
 						   'id_agente' => $agent_id,
 						   'ip_target' => $device,
-						   'tcp_send' => 1,
+						   'tcp_send' => $self->{'snmp_version'},
+						   'custom_string_1' => $self->{'snmp_privacy_method'},
+						   'custom_string_2' => $self->{'snmp_privacy_pass'},
+						   'custom_string_3' => $self->{'snmp_security_level'},
+						   'plugin_parameter' => $self->{'snmp_auth_method'},
+						   'plugin_user' => $self->{'snmp_auth_user'},
+						   'plugin_pass' => $self->{'snmp_auth_pass'},
 						   'snmp_community' => $community,
 						   'snmp_oid' => "$PandoraFMS::Recon::Base::IFHCINOCTECTS.$if_index");
 				pandora_create_module_from_hash ($self->{'pa_config'}, \%module, $self->{'dbh'});
@@ -539,12 +575,19 @@ sub PandoraFMS::Recon::Base::create_agent($$) {
 				my %module = (
 					'ip_target' => $device,
 					'snmp_community' => $community,
+					'tcp_send' => $self->{'snmp_version'},
+					'custom_string_1' => $self->{'snmp_privacy_method'},
+					'custom_string_2' => $self->{'snmp_privacy_pass'},
+					'custom_string_3' => $self->{'snmp_security_level'},
+					'plugin_parameter' => $self->{'snmp_auth_method'},
+					'plugin_user' => $self->{'snmp_auth_user'},
+					'plugin_pass' => $self->{'snmp_auth_pass'},
 				);
 				pandora_update_module_from_hash ($self->{'pa_config'}, \%module, 'id_agente_modulo', $module_id, $self->{'dbh'});
 			}
 		}
 		# ifInOctets
-		else {
+		elsif (defined($self->snmp_get_value($device, "$PandoraFMS::Recon::Base::IFINOCTECTS.$if_index"))) {
 			$module_id = get_agent_module_id($self->{'dbh'}, "${if_name}_ifInOctets", $agent_id);
 			if ($module_id <= 0) {
 				my %module = ('id_tipo_modulo' => 16,
@@ -553,7 +596,13 @@ sub PandoraFMS::Recon::Base::create_agent($$) {
 						   'descripcion' => 'The total number of octets received on the interface, including framing characters.',
 						   'id_agente' => $agent_id,
 						   'ip_target' => $device,
-						   'tcp_send' => 1,
+						   'tcp_send' => $self->{'snmp_version'},
+						   'custom_string_1' => $self->{'snmp_privacy_method'},
+						   'custom_string_2' => $self->{'snmp_privacy_pass'},
+						   'custom_string_3' => $self->{'snmp_security_level'},
+						   'plugin_parameter' => $self->{'snmp_auth_method'},
+						   'plugin_user' => $self->{'snmp_auth_user'},
+						   'plugin_pass' => $self->{'snmp_auth_pass'},
 						   'snmp_community' => $community,
 						   'snmp_oid' => "$PandoraFMS::Recon::Base::IFINOCTECTS.$if_index");
 				pandora_create_module_from_hash ($self->{'pa_config'}, \%module, $self->{'dbh'});
@@ -561,6 +610,13 @@ sub PandoraFMS::Recon::Base::create_agent($$) {
 				my %module = (
 					'ip_target' => $device,
 					'snmp_community' => $community,
+					'tcp_send' => $self->{'snmp_version'},
+					'custom_string_1' => $self->{'snmp_privacy_method'},
+					'custom_string_2' => $self->{'snmp_privacy_pass'},
+					'custom_string_3' => $self->{'snmp_security_level'},
+					'plugin_parameter' => $self->{'snmp_auth_method'},
+					'plugin_user' => $self->{'snmp_auth_user'},
+					'plugin_pass' => $self->{'snmp_auth_pass'},
 				);
 				pandora_update_module_from_hash ($self->{'pa_config'}, \%module, 'id_agente_modulo', $module_id, $self->{'dbh'});
 			}
@@ -577,7 +633,13 @@ sub PandoraFMS::Recon::Base::create_agent($$) {
 						   'descripcion' => 'The total number of octets received on the interface, including framing characters. This object is a 64-bit version of ifOutOctets.',
 						   'id_agente' => $agent_id,
 						   'ip_target' => $device,
-						   'tcp_send' => 1,
+						   'tcp_send' => $self->{'snmp_version'},
+						   'custom_string_1' => $self->{'snmp_privacy_method'},
+						   'custom_string_2' => $self->{'snmp_privacy_pass'},
+						   'custom_string_3' => $self->{'snmp_security_level'},
+						   'plugin_parameter' => $self->{'snmp_auth_method'},
+						   'plugin_user' => $self->{'snmp_auth_user'},
+						   'plugin_pass' => $self->{'snmp_auth_pass'},
 						   'snmp_community' => $community,
 						   'snmp_oid' => "$PandoraFMS::Recon::Base::IFHCOUTOCTECTS.$if_index");
 				pandora_create_module_from_hash ($self->{'pa_config'}, \%module, $self->{'dbh'});
@@ -585,12 +647,20 @@ sub PandoraFMS::Recon::Base::create_agent($$) {
 				my %module = (
 					'ip_target' => $device,
 					'snmp_community' => $community,
+					'tcp_send' => $self->{'snmp_version'},
+					'tcp_send' => $self->{'snmp_version'},
+					'custom_string_1' => $self->{'snmp_privacy_method'},
+					'custom_string_2' => $self->{'snmp_privacy_pass'},
+					'custom_string_3' => $self->{'snmp_security_level'},
+					'plugin_parameter' => $self->{'snmp_auth_method'},
+					'plugin_user' => $self->{'snmp_auth_user'},
+					'plugin_pass' => $self->{'snmp_auth_pass'},
 				);
 				pandora_update_module_from_hash ($self->{'pa_config'}, \%module, 'id_agente_modulo', $module_id, $self->{'dbh'});
 			}
 		}
 		# ifOutOctets
-		else {
+		elsif (defined($self->snmp_get_value($device, "$PandoraFMS::Recon::Base::IFOUTOCTECTS.$if_index"))) {
 			$module_id = get_agent_module_id($self->{'dbh'}, "${if_name}_ifOutOctets", $agent_id);
 			if ($module_id <= 0) {
 				my %module = ('id_tipo_modulo' => 16,
@@ -599,7 +669,13 @@ sub PandoraFMS::Recon::Base::create_agent($$) {
 						   'descripcion' => 'The total number of octets received on the interface, including framing characters.',
 						   'id_agente' => $agent_id,
 						   'ip_target' => $device,
-						   'tcp_send' => 1,
+						   'tcp_send' => $self->{'snmp_version'},
+						   'custom_string_1' => $self->{'snmp_privacy_method'},
+						   'custom_string_2' => $self->{'snmp_privacy_pass'},
+						   'custom_string_3' => $self->{'snmp_security_level'},
+						   'plugin_parameter' => $self->{'snmp_auth_method'},
+						   'plugin_user' => $self->{'snmp_auth_user'},
+						   'plugin_pass' => $self->{'snmp_auth_pass'},
 						   'snmp_community' => $community,
 						   'snmp_oid' => "$PandoraFMS::Recon::Base::IFOUTOCTECTS.$if_index");
 				pandora_create_module_from_hash ($self->{'pa_config'}, \%module, $self->{'dbh'});
@@ -607,6 +683,14 @@ sub PandoraFMS::Recon::Base::create_agent($$) {
 				my %module = (
 					'ip_target' => $device,
 					'snmp_community' => $community,
+					'tcp_send' => $self->{'snmp_version'},
+					'tcp_send' => $self->{'snmp_version'},
+					'custom_string_1' => $self->{'snmp_privacy_method'},
+					'custom_string_2' => $self->{'snmp_privacy_pass'},
+					'custom_string_3' => $self->{'snmp_security_level'},
+					'plugin_parameter' => $self->{'snmp_auth_method'},
+					'plugin_user' => $self->{'snmp_auth_user'},
+					'plugin_pass' => $self->{'snmp_auth_pass'},
 				);
 				pandora_update_module_from_hash ($self->{'pa_config'}, \%module, 'id_agente_modulo', $module_id, $self->{'dbh'});
 			}

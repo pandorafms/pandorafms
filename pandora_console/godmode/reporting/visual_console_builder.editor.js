@@ -829,8 +829,12 @@ function readFields() {
 	values['bars_graph_type'] = $("select[name=bars_graph_type]").val();
 	values['parent'] = $("select[name=parent]").val();
 	values['map_linked'] = $("select[name=map_linked]").val();
+	values['linked_map_node_id'] = $("input[name=linked_map_node_id]").val();
+	values['linked_map_status_calculation_type'] = $("select[name=linked_map_status_calculation_type]").val();
+	values['map_linked_weight'] = $("input[name=map_linked_weight]").val();
+	values['linked_map_status_service_critical'] = $("input[name=linked_map_status_service_critical]").val();
+	values['linked_map_status_service_warning'] = $("input[name=linked_map_status_service_warning]").val();
 	values['element_group'] = $("select[name=element_group]").val();
-	values['map_linked_weight'] = $("select[name=map_linked_weight]").val();
 	values['width_percentile'] = $("input[name=width_percentile]").val();
 	values['bars_graph_height'] = $("input[name=bars_graph_height]").val();
 	values['max_percentile'] = parseInt($("input[name=max_percentile]").val());
@@ -845,8 +849,7 @@ function readFields() {
 	
 	values['enable_link'] = $("input[name=enable_link]").is(':checked') ? 1 : 0;
 	values['id_group'] = $("select[name=group]").val();
-	values['id_custom_graph'] = parseInt(
-		$("#custom_graph option:selected").val());
+	values['id_custom_graph'] = $("#custom_graph option:selected").val();
 	values['width_box'] = parseInt(
 		$("input[name='width_box']").val());
 	values['height_box'] = parseInt(
@@ -866,6 +869,7 @@ function readFields() {
 	values['time_format'] = $("select[name=time_format]").val();
 	values['timezone'] = $("select[name=timezone]").val();
 	values['clock_animation'] = $("select[name=clock_animation]").val();
+	values['show_last_value'] = $("select[name=last_value]").val();
 	
 	if (is_metaconsole()) {
 		values['metaconsole'] = 1;
@@ -1376,7 +1380,6 @@ function loadFieldsFromDB(item) {
 		}
 	});
 
-
 	parameter = Array();
 	parameter.push ({name: "page",
 		value: "include/ajax/visual_console_builder.ajax"});
@@ -1455,26 +1458,26 @@ function loadFieldsFromDB(item) {
 					$("select[name=type_graph]").val(val);
 				}
 					
-					if (key == 'label_position') {
-						if($("#hidden-metaconsole").val() == 1){
-							$('#labelposup'+" img").attr('src','../../images/label_up.png');
-							$('#labelposdown'+" img").attr('src','../../images/label_down.png');
-							$('#labelposleft'+" img").attr('src','../../images/label_left.png');
-							$('#labelposright'+" img").attr('src','../../images/label_right.png');
-							$('.labelpos').attr('sel','no');
-							$('#labelpos'+val+" img").attr('src','../../images/label_'+$('#labelpos'+val).attr('id').replace('labelpos','')+'_2.png');
-							$('#labelpos'+val).attr('sel','yes');
-						}
-						else{
-							$('#labelposup'+" img").attr('src','images/label_up.png');
-							$('#labelposdown'+" img").attr('src','images/label_down.png');
-							$('#labelposleft'+" img").attr('src','images/label_left.png');
-							$('#labelposright'+" img").attr('src','images/label_right.png');
-							$('.labelpos').attr('sel','no');
-							$('#labelpos'+val+" img").attr('src','images/label_'+$('#labelpos'+val).attr('id').replace('labelpos','')+'_2.png');
-							$('#labelpos'+val).attr('sel','yes');
-						}
+				if (key == 'label_position') {
+					if($("#hidden-metaconsole").val() == 1){
+						$('#labelposup'+" img").attr('src','../../images/label_up.png');
+						$('#labelposdown'+" img").attr('src','../../images/label_down.png');
+						$('#labelposleft'+" img").attr('src','../../images/label_left.png');
+						$('#labelposright'+" img").attr('src','../../images/label_right.png');
+						$('.labelpos').attr('sel','no');
+						$('#labelpos'+val+" img").attr('src','../../images/label_'+$('#labelpos'+val).attr('id').replace('labelpos','')+'_2.png');
+						$('#labelpos'+val).attr('sel','yes');
 					}
+					else{
+						$('#labelposup'+" img").attr('src','images/label_up.png');
+						$('#labelposdown'+" img").attr('src','images/label_down.png');
+						$('#labelposleft'+" img").attr('src','images/label_left.png');
+						$('#labelposright'+" img").attr('src','images/label_right.png');
+						$('.labelpos').attr('sel','no');
+						$('#labelpos'+val+" img").attr('src','images/label_'+$('#labelpos'+val).attr('id').replace('labelpos','')+'_2.png');
+						$('#labelpos'+val).attr('sel','yes');
+					}
+				}
 					
 				if (key == 'image') {
 					//Load image preview
@@ -1537,10 +1540,27 @@ function loadFieldsFromDB(item) {
 					$("input[name=height]").val(val);
 				if (key == 'parent_item')
 					$("select[name=parent]").val(val);
-				if (key == 'id_layout_linked')
-					$("select[name=map_linked]").val(val);
+				if (key == 'linked_layout_status_type')
+					$("select[name=linked_map_status_calculation_type]").val(val).change();
+				if (key == 'id_layout_linked') {
+					if (val != 0) {
+						if (data['linked_layout_node_id'] == null) {
+							$("select[name=map_linked]").val(val).change();
+						} else {
+							var $option = $("select[name=map_linked] > option[data-node-id=" + data['linked_layout_node_id'] + "][value=" + val + "]");
+							if ($option.length === 0) $option = $("select[name=map_linked] > option[value=" + val + "]");
+							$option.prop("selected", true).parent().change();
+						}
+					}
+				}
+				if (key == 'linked_layout_node_id')
+					$("input[name=linked_map_node_id]").val(val);
 				if (key == 'id_layout_linked_weight')
-					$("select[name=map_linked_weight]").val(val);
+					$("input[name=map_linked_weight]").val(val);
+				if (key == 'linked_layout_status_as_service_critical')
+					$("input[name=linked_map_status_service_critical]").val(val);
+				if (key == 'linked_layout_status_as_service_warning')
+					$("input[name=linked_map_status_service_warning]").val(val);
 				if (key == 'element_group')
 					$("select[name=element_group]").val(val);
 				if (key == 'width_percentile')
@@ -1570,12 +1590,36 @@ function loadFieldsFromDB(item) {
 						.css('background-color', val);
 				}
 				
+				if (key == 'show_last_value') {
+					$("select[name=last_value]").val(val);
+				}
+				
 				if (key == 'clock_animation') 
 					$("select[name=clock_animation]").val(val);
 				if (key == 'time_format') 
 					$("select[name=time_format]").val(val);
-				if (key == 'timezone') 
-					$("select[name=timezone]").val(val);
+				if (key == 'timezone') {
+					var zone = val.split("/");
+					$("select[name=zone]").val(zone[0]);
+					
+					$.ajax({
+						type: "POST",
+						url: "ajax.php",
+						data: "page=godmode/setup/setup&select_timezone=1&zone=" + zone[0],
+						dataType: "json",
+						success: function(data) {
+							$("#timezone").empty();
+							jQuery.each (data, function (id, value) {
+								timezone = value;
+								var timezone_country = timezone.replace (/^.*\//g, "");
+								$("select[name='timezone']").append($("<option>").val(timezone).html(timezone_country));
+								if (timezone == val) {
+									$("select[name='timezone']").val(timezone);
+								}
+							});
+						}
+					});
+				}
 							
 				if (key == 'value_show') {
 					$("select[name=value_show]").val(val);
@@ -1670,8 +1714,13 @@ function loadFieldsFromDB(item) {
 						.prop('checked', true);
 					$("input[name='radio_choice']").trigger('change');
 
-	  		$("#custom_graph option[value=" + data.id_custom_graph + "]").prop("selected", true);
-										
+					if (is_metaconsole()){
+						$("#custom_graph option[value='" + data.id_custom_graph + '|' + data.id_metaconsole + "']").prop("selected", true);
+					}
+					else{
+						$("#custom_graph option[value=" + data.id_custom_graph + "]").prop("selected", true);
+					}
+
 				}
 			}
 
@@ -1812,6 +1861,9 @@ function hiddenFields(item) {
 
 	$("#percentile_bar_row_2").css('display', 'none');
 	$("#percentile_bar_row_2." + item).css('display', '');
+	
+	$("#show_last_value_row").css('display', 'none');
+	$("#show_last_value_row." + item).css('display', '');
 
 	$("#percentile_item_row_3").css('display', 'none');
 	$("#percentile_item_row_3." + item).css('display', '');
@@ -1838,13 +1890,15 @@ function hiddenFields(item) {
 	$("#parent_row." + item).css('display', '');
 
 	$("#map_linked_row").css('display', 'none');
+	$("#linked_map_status_calculation_row").css('display', 'none');
+	$("#map_linked_weight").css('display', 'none');
+	$("#linked_map_status_service_critical_row").css('display', 'none');
+	$("#linked_map_status_service_warning_row").css('display', 'none');
+
 	$("#map_linked_row." + item).css('display', '');
 
 	$("#element_group_row").css('display', 'none');
 	$("#element_group_row." + item).css('display', '');
-
-	$("#map_linked_weight").css('display', 'none');
-	$("#map_linked_weight." + item).css('display', '');
 
 	$("#module_graph_size_row").css('display', 'none');
 	$("#module_graph_size_row." + item).css('display', '');
@@ -1925,9 +1979,13 @@ function cleanFields(item) {
 	$("input[name=width]").val(0);
 	$("input[name=height]").val(0);
 	$("select[name=parent]").val('');
-	$("select[name=map_linked]").val('');
+	$("select[name=linked_map_status_calculation_type]").val('default').change();
+	$("select[name=map_linked]").val('').change();
+	$("input[name=linked_map_node_id]").val(0);
+	$("input[name=map_linked_weight]").val('');
+	$("input[name=linked_map_status_service_critical]").val('');
+	$("input[name=linked_map_status_service_warning]").val('');
 	$("select[name=element_group]").val('');
-	$("select[name=map_linked_weight]").val('');
 	$("input[name=width_module_graph]").val(300);
 	$("input[name=height_module_graph]").val(180);
 	$("input[name='width_box']").val(300);
@@ -2262,12 +2320,18 @@ function setModuleGraph(id_data) {
 				dataType: 'json',
 				success: function (data)
 				{
+
+					var url_hack_metaconsole = '';
+					if (is_metaconsole()) {
+						url_hack_metaconsole = '../../';
+					}
+
 					if (data['no_data'] == true) {
 						$('#' + id_data).html(data['url']);
 					}
 					else {
 						if($("#module_row").css('display')!='none'){
-							$("#" + id_data + " img").attr('src', 'images/console/signes/module_graph.png');
+							$("#" + id_data + " img").attr('src', url_hack_metaconsole + 'images/console/signes/module_graph.png');
 								if($('#text-width_module_graph').val() == 0 || $('#text-height_module_graph').val() == 0){
 									$("#" + id_data + " img").css('width', '300px');
 									$("#" + id_data + " img").css('height', '180px');
@@ -2277,7 +2341,7 @@ function setModuleGraph(id_data) {
 									$("#" + id_data + " img").css('height', $('#text-height_module_graph').val()+'px');
 								}
 						}else{
-							$("#" + id_data + " img").attr('src', 'images/console/signes/custom_graph.png');
+							$("#" + id_data + " img").attr('src', url_hack_metaconsole + 'images/console/signes/custom_graph.png');
 								if($('#text-width_module_graph').val() == 0 || $('#text-height_module_graph').val() == 0){
 									$("#" + id_data + " img").css('width', '300px');
 									$("#" + id_data + " img").css('height', '180px');
@@ -5141,4 +5205,74 @@ function multiDragMouse(eventDrag){
 			}
 		});
 	});
+}
+
+function linkedMapStatusCalculationTypeChanged ($linkedMapStatusCalcRow, value) {
+	if ($linkedMapStatusCalcRow.length === 0) return;
+
+	switch (value) {
+		case "weight":
+			// Show weight input
+			$linkedMapStatusCalcRow
+				.siblings("#map_linked_weight")
+					.show()
+				.siblings("#linked_map_status_service_critical_row")
+					.hide()
+				.siblings("#linked_map_status_service_warning_row")
+					.hide();
+			break;
+		case "service":
+			// Show critical and warning values
+			$linkedMapStatusCalcRow
+				.siblings("#map_linked_weight")
+					.hide()
+				.siblings("#linked_map_status_service_critical_row")
+					.show()
+				.siblings("#linked_map_status_service_warning_row")
+					.show();
+			break;
+		default:
+			// Hide inputs
+			$linkedMapStatusCalcRow
+				.siblings("#map_linked_weight")
+					.hide()
+				.siblings("#linked_map_status_service_critical_row")
+					.hide()
+				.siblings("#linked_map_status_service_warning_row")
+					.hide();
+			break;
+	}
+}
+
+function linkedMapChanged ($linkedMapRow, value) {
+	if ($linkedMapRow.length === 0) return;
+
+	if (value === 0) {
+		$linkedMapRow
+			.siblings("#linked_map_status_calculation_row")
+				.hide()
+			.siblings("#map_linked_weight")
+				.hide()
+			.siblings("#linked_map_status_service_critical_row")
+				.hide()
+			.siblings("#linked_map_status_service_warning_row")
+				.hide();
+	} else {
+		var $linkedMapStatusCalcRow = $linkedMapRow.siblings("#linked_map_status_calculation_row");
+		var calcType = $linkedMapStatusCalcRow.find("select").val();
+		$linkedMapStatusCalcRow.show();
+		linkedMapStatusCalculationTypeChanged($linkedMapStatusCalcRow, calcType);
+	}
+}
+
+function onLinkedMapChange (event) {
+	var $linkedMapRow = $(event.target).parent().parent();
+	var value = Number.parseInt(event.target.value);
+	linkedMapChanged($linkedMapRow, value);
+}
+
+function onLinkedMapStatusCalculationTypeChange (event) {
+	var $linkedMapStatusCalcRow = $(event.target).parent().parent();
+	var value = event.target.value || "default";
+	linkedMapStatusCalculationTypeChanged($linkedMapStatusCalcRow, value);
 }

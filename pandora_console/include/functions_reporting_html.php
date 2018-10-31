@@ -113,7 +113,10 @@ function html_do_report_info($report) {
 			<tr>
 				<td><b>' . __('Report date') . ': </b></td>';
 				if (isset($report['period'])) {
-					$html .= '<td>' . date($config["date_format"], ($report['datetime'] - $report['period']));
+					if (is_numeric($report['datetime']) && is_numeric($report['period'])) {
+						$html .= '<td>' . date($config["date_format"], ($report['datetime'] - $report['period'])) . '</td>';
+					}
+					$html .= '<td></td>';
 				}
 				else {
 					$html .= '<td>' . __('Items period before') . ' <b>' . date($config["date_format"], $report['datetime']) . '</b></td>';
@@ -348,16 +351,16 @@ function reporting_html_SLA($table, $item, $mini) {
 	$style = json_decode(io_safe_output($style), true);
 	$hide_notinit_agent = $style['hide_notinit_agents'];
 	$same_agent_in_resume = "";
-	
+
 	global $config;
-	
+
 	if ($mini) {
 		$font_size = '1.5';
 	}
 	else {
 		$font_size = '3';
 	}
-	
+
 	$metaconsole_on = is_metaconsole();
 	if($metaconsole_on){
 		$src= '../../';
@@ -371,20 +374,19 @@ function reporting_html_SLA($table, $item, $mini) {
 		$table->data['sla']['cell'] = $item['failed'];
 	}
 	else {
-		
 		if (!empty($item['planned_downtimes'])) {
 			$downtimes_table = reporting_html_planned_downtimes_table($item['planned_downtimes']);
-			
+
 			if (!empty($downtimes_table)) {
 				$table->colspan['planned_downtime']['cell'] = 3;
 				$table->data['planned_downtime']['cell'] = $downtimes_table;
 			}
 		}
 
-		if(isset($item['data'])){
+		if(!(!isset($item['data']) && $hide_notinit_agent == 1)) {
 			$table1 = new stdClass();
 			$table1->width = '99%';
-			
+
 			$table1->align = array();
 			$table1->align[0] = 'left';
 			$table1->align[1] = 'left';
@@ -392,9 +394,9 @@ function reporting_html_SLA($table, $item, $mini) {
 			$table1->align[3] = 'right';
 			$table1->align[4] = 'right';
 			$table1->align[5] = 'right';
-			
+
 			$table1->data = array ();
-			
+
 			$table1->head = array ();
 			$table1->head[0] = __('Agent');
 			$table1->head[1] = __('Module');
@@ -402,7 +404,7 @@ function reporting_html_SLA($table, $item, $mini) {
 			$table1->head[3] = __('SLA Limit');
 			$table1->head[4] = __('SLA Compliance');
 			$table1->head[5] = __('Status');
-			
+
 			$table1->headstyle = array();
 			$table1->headstyle[2] = 'text-align: right';
 			$table1->headstyle[3] = 'text-align: right';
@@ -412,7 +414,7 @@ function reporting_html_SLA($table, $item, $mini) {
 			//second_table for time globals
 			$table2 = new stdClass();
 			$table2->width = '99%';
-			
+
 			$table2->align = array();
 			$table2->align[0] = 'left';
 			$table2->align[1] = 'left';
@@ -421,9 +423,9 @@ function reporting_html_SLA($table, $item, $mini) {
 			$table2->align[4] = 'right';
 			$table2->align[5] = 'right';
 			$table2->align[6] = 'right';
-			
+
 			$table2->data = array ();
-			
+
 			$table2->head = array ();
 			$table2->head[0] = __('Global Time');
 			$table2->head[1] = __('Time Total');
@@ -432,7 +434,7 @@ function reporting_html_SLA($table, $item, $mini) {
 			$table2->head[4] = __('Time Unknown');
 			$table2->head[5] = __('Time Not Init');
 			$table2->head[6] = __('Downtime');
-			
+
 			$table2->headstyle = array();
 			$table2->headstyle[2] = 'text-align: right';
 			$table2->headstyle[3] = 'text-align: right';
@@ -443,7 +445,7 @@ function reporting_html_SLA($table, $item, $mini) {
 			//third_table for time globals
 			$table3 = new stdClass();
 			$table3->width = '99%';
-			
+
 			$table3->align = array();
 			$table3->align[0] = 'left';
 			$table3->align[1] = 'left';
@@ -452,16 +454,16 @@ function reporting_html_SLA($table, $item, $mini) {
 			$table3->align[4] = 'right';
 			$table3->align[5] = 'right';
 			$table3->align[6] = 'right';
-			
+
 			$table3->data = array ();
-			
+
 			$table3->head = array ();
 			$table3->head[0] = __('Checks Time');
 			$table3->head[1] = __('Checks Total');
 			$table3->head[2] = __('Checks Failed');
 			$table3->head[3] = __('Checks OK');
 			$table3->head[4] = __('Checks Unknown');
-			
+
 			$table3->headstyle = array();
 			$table3->headstyle[2] = 'text-align: right';
 			$table3->headstyle[3] = 'text-align: right';
@@ -471,15 +473,25 @@ function reporting_html_SLA($table, $item, $mini) {
 			foreach ($item['data'] as $sla) {
 				if(isset($sla)){
 					$the_first_men_time = get_agent_first_time(io_safe_output($sla['agent']));
-					if (!$hide_notinit_agent) {
-						//first_table
-						$row = array();
-						$row[] = $sla['agent'];
-						$row[] = $sla['module'];
 
+					//first_table
+					$row = array();
+					$row[] = $sla['agent'];
+					$row[] = $sla['module'];
+
+					if(is_numeric($sla['dinamic_text'])){
+						$row[] = sla_truncate($sla['max'], $config['graph_precision']) . " / " . 
+							 sla_truncate($sla['min'], $config['graph_precision']);
+					}
+					else{
+						$row[] = $sla['dinamic_text'];
+					}
+					$row[] = round($sla['sla_limit'], 2) . "%";
+
+					if (!$hide_notinit_agent) {
 						if(is_numeric($sla['dinamic_text'])){
-							$row[] = sla_truncate($sla['max'], $config['graph_precision']) . " / " . 
-									 sla_truncate($sla['min'], $config['graph_precision']);
+							$row[] = sla_truncate($sla['max'], $config['graph_precision']) . " / " .
+									sla_truncate($sla['min'], $config['graph_precision']);
 						}
 						else{
 							$row[] = $sla['dinamic_text'];
@@ -523,7 +535,7 @@ function reporting_html_SLA($table, $item, $mini) {
 							$row2[] = '<span style="color: '.COL_CRITICAL.';">' . human_time_description_raw($sla['time_error'], true) . '</span>';
 						else
 							$row2[] = '--';
-						
+
 						if($sla['time_ok'] != 0)
 							$row2[] = '<span style="color: '.COL_NORMAL.';">' . human_time_description_raw($sla['time_ok'], true) . '</span>';
 						else
@@ -561,15 +573,15 @@ function reporting_html_SLA($table, $item, $mini) {
 							$row[] = $sla['module'];
 
 							if(is_numeric($sla['dinamic_text'])){
-								$row[] = sla_truncate($sla['max'], $config['graph_precision']) . " / " . 
-									 sla_truncate($sla['min'], $config['graph_precision']);
+								$row[] = sla_truncate($sla['max'], $config['graph_precision']) . " / " .
+									sla_truncate($sla['min'], $config['graph_precision']);
 							}
 							else{
 								$row[] = $sla['dinamic_text'];
 							}
-							
+
 							$row[] = round($sla['sla_limit'], 2) . "%";
-							
+
 							if ($sla['sla_value_unknown']) {
 								$row[] = '<span style="font: bold '.$font_size.'em Arial, Sans-serif; color: '.COL_UNKNOWN.';">' .
 									__('N/A') . '</span>';
@@ -602,7 +614,7 @@ function reporting_html_SLA($table, $item, $mini) {
 								$row2[] = '<span style="color: '.COL_CRITICAL.';">' . human_time_description_raw($sla['time_error'], true) . '</span>';
 							else
 								$row2[] = '--';
-							
+
 							if($sla['time_ok'] != 0)
 								$row2[] = '<span style="color: '.COL_NORMAL.';">' . human_time_description_raw($sla['time_ok'], true) . '</span>';
 							else
@@ -638,7 +650,6 @@ function reporting_html_SLA($table, $item, $mini) {
 					$table3->data[] = $row3;
 				}
 			}
-			
 			$table->colspan['sla']['cell'] = 2;
 			$table->data['sla']['cell'] = html_print_table($table1, true);
 			$table->colspan['time_global']['cell'] = 2;
@@ -646,11 +657,18 @@ function reporting_html_SLA($table, $item, $mini) {
 			$table->colspan['checks_global']['cell'] = 2;
 			$table->data['checks_global']['cell'] = html_print_table($table3, true);
 		}
-		
+		else {
+			$table->colspan['error']['cell'] = 3;
+			$table->data['error']['cell'] =
+				__('There are no Agent/Modules defined');
+		}
+
 		if (!empty($item['charts'])) {
 			$table1 = new stdClass();
 			$table1->width = '99%';
-			
+			$table1->size = array ();
+			$table1->size[0] = '10%';
+
 			$table1->data = array ();
 			if (!$hide_notinit_agent) {
 				foreach ($item['charts'] as $chart) {
@@ -681,32 +699,32 @@ function reporting_html_SLA($table, $item, $mini) {
 			$table1->data[0][0] = '<img src ="'. $src .'images/square_green.png">';
 			$table1->size[1] = '14%';
 			$table1->data[0][1] = '<span>'.__('OK') . '</span>';
-			
+
 			$table1->size[2] = '2%';
 			$table1->data[0][2] = '<img src ="'. $src .'images/square_red.png">';
 			$table1->size[3] = '14%';
 			$table1->data[0][3] = '<span>'.__('Critical'). '</span>';
-			
+
 			$table1->size[4] = '2%';
 			$table1->data[0][4] = '<img src ="'. $src .'images/square_gray.png">';
 			$table1->size[5] = '14%';
 			$table1->data[0][5] = '<span>'.__('Unknow'). '</span>';
-			
+
 			$table1->size[6] = '2%';
 			$table1->data[0][6] = '<img src ="'. $src .'images/square_blue.png">';
 			$table1->size[7] = '14%';
 			$table1->data[0][7] = '<span>'.__('Not Init'). '</span>';
-			
+
 			$table1->size[8] = '2%';
 			$table1->data[0][8] = '<img src ="'. $src .'images/square_violet.png">';
 			$table1->size[9] = '14%';
 			$table1->data[0][9] = '<span>'.__('Downtimes'). '</span>';
-		
+
 			$table1->size[10] = '2%';
 			$table1->data[0][10] = '<img src ="'. $src .'images/square_light_gray.png">';
 			$table1->size[11] = '15%';
 			$table1->data[0][11] = '<span>'.__('Ignore time'). '</span>';
-			
+
 			$table->colspan['legend']['cell'] = 2;
 			$table->data['legend']['cell'] = html_print_table($table1, true);
 		}
@@ -1960,6 +1978,12 @@ function reporting_html_alert_report($table, $item, $pdf = 0) {
 	$table1->data    = array ();
 	$table1->rowspan = array();
 	$table1->valign  = array();
+	
+	if ($item['data'] == null) {
+		$table->data['alerts']['cell'] = ui_print_empty_data ( __('No alerts defined') , '', true) ;
+		return true;
+	}
+	
 	$table1->head['agent']    = __('Agent');
 	$table1->head['module']   = __('Module');
 	$table1->head['template'] = __('Template');
@@ -2310,14 +2334,14 @@ function reporting_html_availability(&$table, $item) {
 	$style = json_decode(io_safe_output($style), true);
 	$hide_notinit_agent = $style['hide_notinit_agents'];
 	$same_agent_in_resume = "";
-	
+
 	global $config;
-	
-	if (!empty($item["data"])) {
+
+	if (!empty($item["data"]) || $hide_notinit_agent !=1) {
 		$table1 = new stdClass();
 		$table1->width = '99%';
 		$table1->data = array ();
-		
+
 		$table1->head = array ();
 		$table1->head[0] = __('Agent');
 		// HACK it is saved in show_graph field.
@@ -2335,7 +2359,7 @@ function reporting_html_availability(&$table, $item) {
 		$table1->head[6] = __('Time Not Init Module');
 		$table1->head[7] = __('Time Downtime');
 		$table1->head[8] = __('% Ok');
-		
+
 		$table1->headstyle = array();
 		$table1->headstyle[0]  = 'text-align: left';
 		$table1->headstyle[1]  = 'text-align: left';
@@ -2346,7 +2370,7 @@ function reporting_html_availability(&$table, $item) {
 		$table1->headstyle[6]  = 'text-align: right';
 		$table1->headstyle[7]  = 'text-align: right';
 		$table1->headstyle[8]  = 'text-align: right';
-		
+
 		$table1->style[0]  = 'text-align: left';
 		$table1->style[1]  = 'text-align: left';
 		$table1->style[2]  = 'text-align: right';
@@ -2385,7 +2409,7 @@ function reporting_html_availability(&$table, $item) {
 		$table2->headstyle[4] = 'text-align: right';
 		$table2->headstyle[5] = 'text-align: right';
 		//$table2->headstyle[6] = 'text-align: right';
-		
+
 		$table2->style[0] = 'text-align: left';
 		$table2->style[1] = 'text-align: left';
 		$table2->style[2] = 'text-align: right';
@@ -2396,22 +2420,22 @@ function reporting_html_availability(&$table, $item) {
 
 		foreach ($item['data'] as $row) {
 			$the_first_men_time = get_agent_first_time(io_safe_output($row['agent']));
-			
+
 			if (!$hide_notinit_agent) {
 				$table_row = array();
 				$table_row[] = $row['agent'];
 				$table_row[] = $row['availability_item'];
-				
+
 				if($row['time_total'] != 0)
 					$table_row[] = human_time_description_raw($row['time_total'], true);
 				else
 					$table_row[] = '--';
-				
+
 				if($row['time_error'] != 0)
 					$table_row[] = human_time_description_raw($row['time_error'], true);
 				else
 					$table_row[] = '--';
-				
+
 				if($row['time_ok'] != 0)
 					$table_row[] = human_time_description_raw($row['time_ok'], true);
 				else
@@ -2421,7 +2445,7 @@ function reporting_html_availability(&$table, $item) {
 					$table_row[] = human_time_description_raw($row['time_unknown'], true);
 				else
 					$table_row[] = '--';
-				
+
 				if($row['time_not_init'] != 0)
 					$table_row[] = human_time_description_raw($row['time_not_init'], true);
 				else
@@ -2431,8 +2455,8 @@ function reporting_html_availability(&$table, $item) {
 					$table_row[] = human_time_description_raw($row['time_downtime'], true);
 				else
 					$table_row[] = '--';
-				
-				$table_row[] = '<span style="font-size: 1.2em; font-weight:bold;">' . sla_truncate($row['SLA'], $config['graph_precision']). '%</span>';	
+
+				$table_row[] = '<span style="font-size: 1.2em; font-weight:bold;">' . sla_truncate($row['SLA'], $config['graph_precision']). '%</span>';
 
 				$table_row2 = array();
 				$table_row2[] = $row['agent'];
@@ -2440,24 +2464,24 @@ function reporting_html_availability(&$table, $item) {
 				$table_row2[] = $row['checks_total'];
 				$table_row2[] = $row['checks_error'];
 				$table_row2[] = $row['checks_ok'];
-				$table_row2[] = $row['checks_unknown'];				
+				$table_row2[] = $row['checks_unknown'];
 			}
 			else {
 				if ($item['date']['to'] > $the_first_men_time) {
 					$table_row = array();
 					$table_row[] = $row['agent'];
 					$table_row[] = $row['availability_item'];
-					
+
 					if($row['time_total'] != 0)
 						$table_row[] = human_time_description_raw($row['time_total'], true);
 					else
 						$table_row[] = '--';
-					
+
 					if($row['time_error'] != 0)
 						$table_row[] = human_time_description_raw($row['time_error'], true);
 					else
 						$table_row[] = '--';
-					
+
 					if($row['time_ok'] != 0)
 						$table_row[] = human_time_description_raw($row['time_ok'], true);
 					else
@@ -2467,7 +2491,7 @@ function reporting_html_availability(&$table, $item) {
 						$table_row[] = human_time_description_raw($row['time_unknown'], true);
 					else
 						$table_row[] = '--';
-					
+
 					if($row['time_not_init'] != 0)
 						$table_row[] = human_time_description_raw($row['time_not_init'], true);
 					else
@@ -2477,8 +2501,8 @@ function reporting_html_availability(&$table, $item) {
 						$table_row[] = human_time_description_raw($row['time_downtime'], true);
 					else
 						$table_row[] = '--';
-					
-					$table_row[] = '<span style="font-size: 1.2em; font-weight:bold;">' . sla_truncate($row['SLA'], $config['graph_precision']). '%</span>';	
+
+					$table_row[] = '<span style="font-size: 1.2em; font-weight:bold;">' . sla_truncate($row['SLA'], $config['graph_precision']). '%</span>';
 
 					$table_row2 = array();
 					$table_row2[] = $row['agent'];
@@ -2492,7 +2516,6 @@ function reporting_html_availability(&$table, $item) {
 					$same_agent_in_resume = $item['data']['agent'];
 				}
 			}
-			
 			$table1->data[] = $table_row;
 			$table2->data[] = $table_row2;
 		}
@@ -2502,19 +2525,19 @@ function reporting_html_availability(&$table, $item) {
 		$table->data['error']['cell'] =
 			__('There are no Agent/Modules defined');
 	}
-	
+
 	$table->colspan[1][0] = 2;
 	$table->colspan[2][0] = 2;
 	$data = array();
 	$data[0] = html_print_table($table1, true);
 	array_push ($table->data, $data);
-	
+
 	if ($item['resume']['resume']){
 		$data2 = array();
 		$data2[0] = html_print_table($table2, true);
 		array_push ($table->data, $data2);
-	}	
-	
+	}
+
 	if ($item['resume']['resume'] && !empty($item["data"])) {
 		$table1->width = '99%';
 		$table1->data = array ();
@@ -2525,29 +2548,29 @@ function reporting_html_availability(&$table, $item) {
 			$table1->head['min_text'] = __('Agent min value');
 			$table1->head['min']      = __('Min Value');
 			$table1->head['avg']      = __('Average Value');
-			
+
 			$table1->headstyle = array();
 			$table1->headstyle['min_text'] = 'text-align: left';
 			$table1->headstyle['min'] 	   = 'text-align: right';
 			$table1->headstyle['max_text'] = 'text-align: left';
 			$table1->headstyle['max']      = 'text-align: right';
 			$table1->headstyle['avg']      = 'text-align: right';
-			
+
 			$table1->style = array();
 			$table1->style['min_text'] = 'text-align: left';
 			$table1->style['min']      = 'text-align: right';
 			$table1->style['max_text'] = 'text-align: left';
 			$table1->style['max']      = 'text-align: right';
 			$table1->style['avg']      = 'text-align: right';
-			
+
 			$table1->data[] = array(
 				'max_text' => $item['resume']['max_text'],
 				'max' => sla_truncate($item['resume']['max'], $config['graph_precision']) . "%",
 				'min_text' => $item['resume']['min_text'],
 				'min' => sla_truncate($item['resume']['min'], $config['graph_precision']) . "%",
 				'avg' => '<span style="font-size: 1.2em; font-weight:bold;">' . sla_truncate($item['resume']['avg'], $config['graph_precision']) . "%</span>"
-				);
-			
+			);
+
 			$table->colspan[3][0] = 3;
 			$data = array();
 			$data[0] = html_print_table($table1, true);
@@ -2568,6 +2591,11 @@ function reporting_html_availability_graph(&$table, $item, $pdf=0) {
 	$table1 = new stdClass();
 	$table1->width = '99%';
 	$table1->data = array ();
+	$table1->size = array();
+	$table1->size[0] = '10%';
+	$table1->size[1] = '80%';
+	$table1->size[2] = '5%';
+	$table1->size[3] = '5%';
 	foreach ($item['charts'] as $chart) {
 		$checks_resume = '';
 		$sla_value = '';
@@ -2598,7 +2626,7 @@ function reporting_html_availability_graph(&$table, $item, $pdf=0) {
 			"<span style = 'font: bold 2em Arial, Sans-serif; color: ".$color."'>" .
 				$sla_value .
 			'</span>',
-			$checks_resume 
+			$checks_resume
 		);
 	}
 
@@ -2613,12 +2641,12 @@ function reporting_html_availability_graph(&$table, $item, $pdf=0) {
 	$table2->data[0][0] = '<img src ="'. $src .'images/square_green.png">';
 	$table2->size[1] = '14%';
 	$table2->data[0][1] = '<span>'.__('OK') . '</span>';
-	
+
 	$table2->size[2] = '2%';
 	$table2->data[0][2] = '<img src ="'. $src .'images/square_red.png">';
 	$table2->size[3] = '14%';
 	$table2->data[0][3] = '<span>'.__('Critical'). '</span>';
-	
+
 	$table2->size[4] = '2%';
 	$table2->data[0][4] = '<img src ="'. $src .'images/square_gray.png">';
 	$table2->size[5] = '14%';
@@ -2628,7 +2656,7 @@ function reporting_html_availability_graph(&$table, $item, $pdf=0) {
 	$table2->data[0][6] = '<img src ="'. $src .'images/square_blue.png">';
 	$table2->size[7] = '14%';
 	$table2->data[0][7] = '<span>'.__('Not Init'). '</span>';
-	
+
 	$table2->size[8] = '2%';
 	$table2->data[0][8] = '<img src ="'. $src .'images/square_violet.png">';
 	$table2->size[9] = '14%';
@@ -2638,9 +2666,9 @@ function reporting_html_availability_graph(&$table, $item, $pdf=0) {
 	$table2->data[0][10] = '<img src ="'. $src .'images/square_light_gray.png">';
 	$table2->size[11] = '15%';
 	$table2->data[0][11] = '<span>'.__('Ignore time'). '</span>';
-	
+
 	}
-	
+
 	$table->colspan['charts']['cell'] = 2;
 	$table->data['charts']['cell'] = html_print_table($table1, true);
 	$table->colspan['legend']['cell'] = 2;
@@ -2851,24 +2879,6 @@ function reporting_html_sql(&$table, $item) {
 	}
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 function reporting_get_stats_summary($data, $graph_width, $graph_height) {
 	global $config;
 	
@@ -2893,8 +2903,7 @@ function reporting_get_stats_summary($data, $graph_width, $graph_height) {
 	
 	if ($data["monitor_checks"] > 0) {
 		// Fixed width non interactive charts
-		$status_chart_width = $config["flash_charts"] == false
-			? 100 : $graph_width;
+		$status_chart_width = $graph_width;
 
 		$tdata[0] =
 			'<div style="margin: auto; width: ' . $graph_width . 'px;">' .
@@ -3030,125 +3039,6 @@ function reporting_get_fired_alerts_table ($alerts_fired) {
 	}
 	
 	return $table;
-}
-
-/**
- * Get a report for alerts in a group of agents.
- *
- * It prints the numbers of alerts defined, fired and not fired in a group.
- * It also prints all the alerts that were fired grouped by agents.
- *
- * @param int $id_group Group to get info of the alerts.
- * @param int $period Period of time of the desired alert report.
- * @param int $date Beggining date of the report (current date by default).
- * @param bool $return Flag to return or echo the report (echo by default).
- *
- * @return string
- */
-function reporting_alert_reporting ($id_group, $period = 0, $date = 0, $return = false) {
-	global $config;
-	
-	$output = '';
-	$alerts = get_group_alerts ($id_group);
-	$alerts_fired = get_alerts_fired ($alerts, $period, $date);
-	
-	$fired_percentage = 0;
-	if (sizeof ($alerts) > 0)
-		$fired_percentage = round (sizeof ($alerts_fired) / sizeof ($alerts) * 100, 2);
-	$not_fired_percentage = 100 - $fired_percentage;
-	
-	$data = array ();
-	$data[__('Alerts fired')] = $fired_percentage;
-	$data[__('Alerts not fired')] = $not_fired_percentage;
-	
-	$output .= pie3d_graph(false, $data, 280, 150,
-		__("other"),
-		ui_get_full_url(false, false, false, false) . '/',
-		ui_get_full_url(false, false, false, false) .  "/images/logo_vertical_water.png",
-		$config['fontpath'], $config['font_size']); 
-	
-	$output .= '<strong>'.__('Alerts fired').': '.sizeof ($alerts_fired).'</strong><br />';
-	$output .= '<strong>'.__('Total alerts monitored').': '.sizeof ($alerts).'</strong><br />';
-	
-	if (! sizeof ($alerts_fired)) {
-		if (!$return)
-			echo $output;
-		
-		return $output;
-	}
-	$table = reporting_get_fired_alerts_table ($alerts_fired);
-	$table->width = '100%';
-	$table->class = 'databox';
-	$table->size = array ();
-	$table->size[0] = '100px';
-	$table->style = array ();
-	$table->style[0] = 'font-weight: bold';
-	
-	$output .= html_print_table ($table, true);
-	
-	if (!$return)
-		echo $output;
-	
-	return $output;
-}
-
-/**
- * Get a report for monitors modules in a group of agents.
- *
- * It prints the numbers of monitors defined, showing those which went up and down, in a group.
- * It also prints all the down monitors in the group.
- *
- * @param int $id_group Group to get info of the monitors.
- * @param int $period Period of time of the desired monitor report.
- * @param int $date Beginning date of the report in UNIX time (current date by default).
- * @param bool $return Flag to return or echo the report (by default).
- *
- * @return string
- */
-function reporting_monitor_health ($id_group, $period = 0, $date = 0, $return = false) {
-	if (empty ($date)) //If date is 0, false or empty
-		$date = get_system_time ();
-	
-	$datelimit = $date - $period;
-	$output = '';
-	
-	$monitors = modules_get_monitors_in_group ($id_group);
-	if (empty ($monitors)) //If monitors has returned false or an empty array
-		return;
-	$monitors_down = modules_get_monitors_down ($monitors, $period, $date);
-	$down_percentage = round (count ($monitors_down) / count ($monitors) * 100, 2);
-	$not_down_percentage = 100 - $down_percentage;
-	
-	$output .= '<strong>'.__('Total monitors').': '.count ($monitors).'</strong><br />';
-	$output .= '<strong>'.__('Monitors down on period').': '.count ($monitors_down).'</strong><br />';
-	
-	$table = reporting_get_monitors_down_table ($monitors_down);
-	$table->width = '100%';
-	$table->class = 'databox';
-	$table->size = array ();
-	$table->size[0] = '100px';
-	$table->style = array ();
-	$table->style[0] = 'font-weight: bold';
-	
-	$table->size = array ();
-	$table->size[0] = '100px';
-	
-	$output .= html_print_table ($table, true);
-	
-	$data = array();
-	$data[__('Monitors OK')] = $down_percentage;
-	$data[__('Monitors BAD')] = $not_down_percentage;
-	
-	$output .= pie3d_graph(false, $data, 280, 150,
-		__("other"),
-		ui_get_full_url(false, false, false, false) . '/',
-		ui_get_full_url(false, false, false, false) .  "/images/logo_vertical_water.png",
-		$config['fontpath'], $config['font_size']); 
-	
-	if (!$return)
-		echo $output;
-	
-	return $output;
 }
 
 /** 
@@ -3791,6 +3681,7 @@ function reporting_get_last_activity() {
 }
 
 function reporting_get_event_histogram ($events, $text_header_event = false) {
+
 	global $config;
 	if (!defined("METACONSOLE")) {
 		include_once ($config['homedir'] .'/include/graphs/functions_gd.php');
@@ -3873,37 +3764,38 @@ function reporting_get_event_histogram ($events, $text_header_event = false) {
 				);
 		}
 	}
-	
+
 	$table = new stdClass();
-	if (!$text_header_event) {
-		$table->width = '100%';
-	}
-	else {
-		if (defined("METACONSOLE")) {
-			$table->width = '100%';
-		}
-		else {
-			$table->width = '70%';
-		}
-	}
+	$table->width = '100%';
 	$table->data = array ();
 	$table->size = array ();
 	$table->head = array ();
 	$table->title = '<span>' . $text_header_event . '</span>';
 	$table->data[0][0] = "" ;
-	
-	if (!empty($graph_data)) {
-		if (defined("METACONSOLE"))
-			$slicebar = flot_slicesbar_graph($graph_data, $max_value, "100%", 35, $full_legend, $colors, $config['fontpath'], $config['round_corner'], $url);
-		else {
-			if (!$text_header_event) {
-				$slicebar = slicesbar_graph($graph_data, $max_value, 700, 25, $colors, $config['fontpath'], $config['round_corner'], $urlImage, $ttl);
-			}
-			else {
-				$slicebar = slicesbar_graph($graph_data, $max_value, 350, 18, $colors, $config['fontpath'], $config['round_corner'], $urlImage, $ttl);
-			}
-		}
 
+	if (!empty($graph_data)) {
+		$url_slice = defined("METACONSOLE")
+			? $url
+			: $urlImage;
+
+		$slicebar = flot_slicesbar_graph (
+			$graph_data,
+			$max_value,
+			100,
+			35,
+			$full_legend,
+			$colors,
+			$config['fontpath'],
+			$config['round_corner'],
+			$url,
+			'',
+			'',
+			false,
+			0,
+			array(),
+			true,
+			$ttl
+		);
 
 		$table->data[0][0] = $slicebar;
 	}
@@ -3950,9 +3842,9 @@ function reporting_get_event_histogram_meta ($width) {
 
 	$ttl = 1;
 	$urlImage = ui_get_full_url(false, true, false, false);
-	
+
 	$data = array ();
-	
+
 	//$resolution = $config['graph_res'] * ($period * 2 / $width); // Number of "slices" we want in graph
 	$resolution = 5 * ($period * 2 / $width); // Number of "slices" we want in graph
 
@@ -3975,10 +3867,10 @@ function reporting_get_event_histogram_meta ($width) {
 		EVENT_CRIT_MAJOR => COL_MAJOR,
 		EVENT_CRIT_CRITICAL => COL_CRITICAL
 	);
-	
+
 	$user_groups = users_get_groups($config['id_user'], 'ER');
 	$user_groups_ids = array_keys($user_groups);
-	
+
 	if (empty($user_groups)) {
 		$groups_condition = ' AND 1 = 0 ';
 	}
@@ -3990,51 +3882,46 @@ function reporting_get_event_histogram_meta ($width) {
 		$groups_condition .= " AND id_grupo != 0";
 	}
 	$status_condition = " AND estado = 0 ";
-	
+
 	$cont = 0;
 	for ($i = 0; $i < $interval; $i++) {
 		$bottom = $datelimit + ($periodtime * $i);
 		if (! $graphic_type) {
-			if ($config['flash_charts']) {
-				$name = date('H:i:s', $bottom);
-			}
-			else {
-				$name = date('H\h', $bottom);
-			}
+			$name = date('H:i:s', $bottom);
 		}
 		else {
 			$name = $bottom;
 		}
-		
+
 		// Show less values in legend
 		if ($cont == 0 or $cont % 2)
 			$legend[$cont] = $name;
-		
+
 		if ($from_agent_view) {
 			$full_date = date('Y/m/d', $bottom);
 			$full_legend_date[$cont] = $full_date;
 		}
 
 		$full_legend[$cont] = $name;
-		
+
 		$top = $datelimit + ($periodtime * ($i + 1));
-		
+
 		$time_condition = 'utimestamp > '.$bottom . ' AND utimestamp < '.$top; 
 		$sql = sprintf('SELECT criticity,utimestamp
 			FROM tmetaconsole_event
 			WHERE %s %s %s
 			ORDER BY criticity DESC',
 			$time_condition, $groups_condition, $status_condition);
-		
+
 		$events = db_get_all_rows_sql($sql);
-		
+
 		$events_criticity = array();
 		if(is_array($events)){
 			foreach ($events as $key => $value) {
 				array_push($events_criticity,$value['criticity']);
 			}
 		}
-		
+
 		if (!empty($events)) {
 			if(array_search('4',$events_criticity) !== false){
 				$data[$cont]['data'] = EVENT_CRIT_CRITICAL;
@@ -4055,16 +3942,14 @@ function reporting_get_event_histogram_meta ($width) {
 			}else {
 				$data[$cont]['data'] = EVENT_CRIT_INFORMATIONAL;
 			}
-			
 			$data[$cont]['utimestamp'] = $periodtime;
-			
 		} else {
 			$data[$cont]['utimestamp'] = $periodtime;
 			$data[$cont]['data'] = 1;
 		}
 		$cont++;
 	}
-	
+
 	$table = new stdClass();
 
 	$table->width = '100%';
@@ -4074,16 +3959,33 @@ function reporting_get_event_histogram_meta ($width) {
 	$table->head = array ();
 	$table->title = '<span>' . $text_header_event . '</span>';
 	$table->data[0][0] = "" ;
-	
+
 	if (!empty($data)) {
-		$slicebar = flot_slicesbar_graph($data, $period, "100%", 30, $full_legend, $colors, $config['fontpath'], $config['round_corner'], $url, '', '', false, 0, $full_legend_date);
-		
+		$slicebar = flot_slicesbar_graph(
+			$data,
+			$period,
+			100,
+			30,
+			$full_legend,
+			$colors,
+			$config['fontpath'],
+			$config['round_corner'],
+			$url,
+			'',
+			'',
+			false,
+			0,
+			$full_legend_date,
+			true,
+			1
+		);
+
 		$table->data[0][0] = $slicebar;
 	}
 	else {
 		$table->data[0][0] = __('No events');
 	}
-	
+
 	if (!$text_header_event) {
 		$event_graph = '<fieldset class="databox tactical_set">
 					<legend>' .
@@ -4095,7 +3997,6 @@ function reporting_get_event_histogram_meta ($width) {
 		$table->class = 'noclass';
 		$event_graph = html_print_table($table, true);
 	}
-	
 	return $event_graph;
 }
 

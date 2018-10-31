@@ -66,58 +66,6 @@ Array.prototype.in_array = function () {
 };
 
 /**
- * Fill up select box with id "module" with modules after agent has been selected
- *
- * @param event that has been triggered
- * @param id_agent Agent ID that has been selected
- * @param selected Which module(s) have to be selected
- */
-function agent_changed (event, id_agent, selected) {
-	if (id_agent == undefined)
-		id_agent = this.value;
-	$('#module').attr ('disabled', 1);
-	$('#module').empty ();
-	$('#module').append ($('<option></option>').html ("Loading...").attr ("value", 0));
-	jQuery.post ('ajax.php', 
-				{"page": "operation/agentes/ver_agente",
-				"get_agent_modules_json": 1,
-				"id_agent": id_agent
-				},
-				function (data) {
-					
-					$('#module').empty ();
-					
-					if (typeof($(document).data('text_for_module')) != 'undefined') {
-						$('#module').append ($('<option></option>').html ($(document).data('text_for_module')).attr("value", 0).prop('selected', true));
-					}
-					else {
-						if (typeof(data['any_text']) != 'undefined') {
-							$('#module').append ($('<option></option>').html (data['any_text']).attr ("value", 0).prop('selected', true));
-						}
-						else {
-							var anyText = $("#any_text").html(); //Trick for catch the translate text.
-							
-							if (anyText == null) {
-								anyText = 'Any';
-							}
-							
-							$('#module').append ($('<option></option>').html (anyText).attr ("value", 0).prop('selected', true));
-						}
-					}
-					jQuery.each (data, function (i, val) {
-								s = js_html_entity_decode (val['nombre']);
-								$('#module').append ($('<option></option>').html (s).attr ("value", val['id_agente_modulo']));
-								$('#module').fadeIn ('normal');
-								});
-					if (selected != undefined)
-					$('#module').attr ('value', selected);
-					$('#module').removeAttr('disabled');
-				},
-				"json"
-				);
-}
-
-/**
  * Util for check is empty object
  * 
  * @param obj the object to check
@@ -241,8 +189,10 @@ function agent_changed_by_multiple_agents (event, id_agent, selected) {
 			$('#module').empty ();
 			
 			if (isEmptyObject(data)) {
-				var noneText = $("#none_text").html(); //Trick for catch the translate text.
-				
+				//Trick for catch the translate text.
+				var noneText = $("#id_agents").val() === null
+					? $("#select_agent_first_text").html()
+					: $("#none_text").html();
 				if (noneText == null) {
 					noneText = 'None';
 				}
@@ -529,7 +479,7 @@ function module_changed_by_multiple_modules (event, id_module, selected) {
 			jQuery.each (data, function (i, val) {
 				s = js_html_entity_decode(val);
 				$('#agents')
-					.append ($('<option></option>').html (s).attr ("value", val));
+					.append ($('<option></option>').html (s).attr ("value", i));
 				$('#agents').fadeIn ('normal');
 			});
 			
@@ -1585,6 +1535,10 @@ function display_confirm_dialog (message, ok_text, cancel_text, ok_function) {
 		clean_function();
 	}
 
+	var buttons_obj = {};
+	buttons_obj[cancel_text] = clean_function;
+	buttons_obj[ok_text] = ok_function_clean;
+
 	// Display the dialog
 	$("body").append('<div id="pandora_confirm_dialog_text"><h3>' + message + '</h3></div>');
 	$("#pandora_confirm_dialog_text").dialog({
@@ -1598,10 +1552,7 @@ function display_confirm_dialog (message, ok_text, cancel_text, ok_function) {
 		},
 		closeOnEscape: true,
 		modal: true,
-		buttons: {
-			Cancel: clean_function,
-			"Confirm": ok_function_clean
-		}
+		buttons: buttons_obj
 	});
 }
 

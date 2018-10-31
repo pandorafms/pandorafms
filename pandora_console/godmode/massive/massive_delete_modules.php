@@ -52,6 +52,8 @@ function process_manage_delete ($module_name, $id_agents, $module_status = 'all'
 
 	global $config;
 
+	$status_module = (int) get_parameter ('status_module');
+
 	if (empty ($module_name)) {
 		ui_print_error_message(__('No module selected'));
 		return false;
@@ -76,144 +78,18 @@ function process_manage_delete ($module_name, $id_agents, $module_status = 'all'
 		if (($module_name[0] == "0") and (is_array($module_name)) and (count($module_name) == 1))
 			$filter_for_module_deletion = false;
 		else
-			$filter_for_module_deletion = sprintf('nombre IN ("%s")', implode('","', $module_name));
+			$filter_for_module_deletion = sprintf('tagente_modulo.nombre IN ("%s")', implode('","', $module_name));
 
-		if ($config['dbtype'] == "oracle") {
-			$all_agent_modules = false;
-			if (($module_name[0] == "0") and (is_array($module_name)) and (count($module_name) == 1)) {
-				$all_agent_modules = true;
-			}
-			$names_to_long = array();
-			$i = 0;
-			foreach ($module_name as $name) {
-				if (strlen($name) > 30) {
-					$original_names[] = $module_name[$i];
-					unset($module_name[$i]);
-					$names_to_long[] = substr($name, 0, 28) . "%";
-				}
-				$i++;
-			}
-			$modules = "SELECT id_agente_modulo, nombre FROM tagente_modulo WHERE";
-			$modules .= sprintf(" id_agente IN (%s)", implode(",", $id_agents));
-			if (!empty($module_name) && (!$all_agent_modules)) {
-				$modules .= sprintf(" AND nombre IN ('%s')", implode("','", $module_name));
-			}
-			$modules = db_get_all_rows_sql($modules);
-			$modules2 = "";
-			if (!empty($names_to_long) && (!$all_agent_modules)) {
-				$modules2 = "SELECT id_agente_modulo, nombre FROM tagente_modulo WHERE";
-				$modules2 .= sprintf(" id_agente IN (%s) AND (", implode(",", $id_agents));
-				$j = 0;
-				foreach ($names_to_long as $name) {
-					if ($j == 0) {
-						$modules2 .= "nombre LIKE ('" . $name . "')";
-					}
-					else {
-						$modules2 .= " OR nombre LIKE ('" . $name . "')";
-					}
-					$j++;
-				}
-				$modules2 .= ")";
-				$modules2 = db_get_all_rows_sql($modules2);
-				$modules = array_merge($modules, $modules2);
-			}
-			$all_names = array();
-			foreach ($modules as $module) {
-				$all_modules[] = $module['id_agente_modulo'];
-				$all_names[] = $module['nombre'];
-			}
-			$modules = $all_modules;
-			$modules = array_unique($modules);
-			if (!empty($names_to_long) && (!$all_agent_modules)) {
-				$j = 0;
-				foreach ($all_names as $name) {
-					if (strlen($name) > 30) {
-						if (!in_array($name, $original_names)) {
-							unset($modules[$j]);
-						}
-					}
-					$j++;
-				}
-			}
-		}
-		else {
-			$modules = agents_get_modules ($id_agents, 'id_agente_modulo',
-				$filter_for_module_deletion, true);
-		}
+		$modules = agents_get_modules ($id_agents, 'id_agente_modulo',
+			$filter_for_module_deletion, true);
 	}
 	else {
-		if ($config['dbtype'] == "oracle") {
-			$all_agent_modules = false;
-			$names_to_long = array();
-			if (($module_name[0] == "0") and (is_array($module_name)) and (count($module_name) == 1)) {
-				$all_agent_modules = true;
-			}
-			$i = 0;
-			foreach ($module_name as $name) {
-				if (strlen($name) > 30) {
-					$original_names[] = $module_name[$i];
-					unset($module_name[$i]);
-					$names_to_long[] = substr($name, 0, 28) . "%";
-				}
-				$i++;
-			}
-			$modules = "SELECT id_agente_modulo, nombre FROM tagente_modulo WHERE";
-			$any_agent = false;
-			if ($id_agents == null) {
-				$any_agent = true;
-			}
-			if (!empty($id_agents)) {
-				$modules .= sprintf(" id_agente IN (%s)", implode(",", $id_agents));
-				$agents_selected = true;
-			}
-			if (!empty($module_name) && (!$all_agent_modules)) {
-				if ($any_agent) {
-					$modules .= sprintf(" nombre IN ('%s')", implode("','", $module_name));
-				}
-				else {
-					$modules .= sprintf(" AND nombre IN ('%s')", implode("','", $module_name));
-				}
-			}
-			$modules = db_get_all_rows_sql($modules);
-			if (!empty($names_to_long) && (!$all_agent_modules)) {
-				$modules2 = "SELECT id_agente_modulo, nombre FROM tagente_modulo WHERE";
-				$modules2 .= sprintf(" id_agente IN (%s) AND (", implode(",", $id_agents));
-				$j = 0;
-				foreach ($names_to_long as $name) {
-					if ($j == 0) {
-						$modules2 .= "nombre LIKE ('" . $name . "')";
-					}
-					else {
-						$modules2 .= " OR nombre LIKE ('" . $name . "')";
-					}
-					$j++;
-				}
-				$modules2 .= ")";
-				$modules2 = db_get_all_rows_sql($modules2);
-				$modules = array_merge($modules, $modules2);
-			}
-			$all_names = array();
-			foreach ($modules as $module) {
-				$all_modules[] = $module['id_agente_modulo'];
-				$all_names[] = $module['nombre'];
-			}
-			$modules = $all_modules;
-			$modules = array_unique($modules);
-			if (!empty($names_to_long) && (!$all_agent_modules)) {
-				$j = 0;
-				foreach ($all_names as $name) {
-					if (strlen($name) > 30) {
-						if (!in_array($name, $original_names)) {
-							unset($modules[$j]);
-						}
-					}
-					$j++;
-				}
-			}
-		}
-		else {
+		if ($status_module != -1) {
 			$modules = agents_get_modules ($id_agents, 'id_agente_modulo',
-				sprintf('nombre IN ("%s")', implode('","',$module_name)), true);
+				sprintf('tagente_modulo.nombre IN ("%s") AND tagente_modulo.id_agente_modulo IN (SELECT id_agente_modulo FROM tagente_estado where estado = %s OR utimestamp=0 )', implode('","',$module_name), $status_module), true);
+		} else {
+			$modules = agents_get_modules ($id_agents, 'id_agente_modulo',
+				'tagente_modulo.nombre IN ("' . implode('","',$module_name) . '")', true);
 		}
 	}
 	
@@ -232,12 +108,7 @@ function process_manage_delete ($module_name, $id_agents, $module_status = 'all'
 	}
 	
 	$count_deleted_modules = count($modules);
-	if ($config['dbtype'] == "oracle") {
-		$success = db_process_sql(sprintf("DELETE FROM tagente_modulo WHERE id_agente_modulo IN (%s)", implode(",", $modules)));
-	}
-	else {
-		$success = modules_delete_agent_module ($modules);
-	}
+	$success = modules_delete_agent_module ($modules);
 
 	if (! $success) {
 		ui_print_error_message(
@@ -254,8 +125,6 @@ function process_manage_delete ($module_name, $id_agents, $module_status = 'all'
 }
 
 $module_type = (int) get_parameter ('module_type');
-$idGroupMassive = (int) get_parameter('id_group_massive');
-$idAgentMassive = (int) get_parameter('id_agent_massive');
 $group_select = get_parameter('groups_select');
 
 $delete = (bool) get_parameter_post ('delete');
@@ -277,9 +146,7 @@ if ($delete) {
 				$agents_ = array();
 			}
 			
-			foreach ($agents_select as $agent_name) {
-				$agents_[] = agents_get_agent_id(io_safe_output($agent_name));
-			}
+			$agents_ = $agents_select;
 			$modules_ = $module_name;
 			break;
 		case 'agents':
@@ -362,59 +229,39 @@ $groups = users_get_groups ();
 
 $agents = agents_get_group_agents (array_keys (users_get_groups ()),
 	false, "none");
-switch ($config["dbtype"]) {
-	case "mysql":
-		$module_types = db_get_all_rows_filter ('tagente_modulo,ttipo_modulo',
-			array ('tagente_modulo.id_tipo_modulo = ttipo_modulo.id_tipo',
-				'id_agente' => array_keys ($agents),
-				'disabled' => 0,
-				'order' => 'ttipo_modulo.nombre'),
-			array ('DISTINCT(id_tipo)',
-				'CONCAT(ttipo_modulo.descripcion," (",ttipo_modulo.nombre,")") AS description'));
-		break;
-	case "oracle":
-		$module_types = db_get_all_rows_filter ('tagente_modulo,ttipo_modulo',
-			array ('tagente_modulo.id_tipo_modulo = ttipo_modulo.id_tipo',
-				'id_agente' => array_keys ($agents),
-				'disabled' => 0,
-				'order' => 'ttipo_modulo.nombre'),
-			array ('ttipo_modulo.id_tipo',
-				'ttipo_modulo.descripcion || \' (\' || ttipo_modulo.nombre || \')\' AS description'));
-		break;
-	case "postgresql":
-		$module_types = db_get_all_rows_filter ('tagente_modulo,ttipo_modulo',
-			array ('tagente_modulo.id_tipo_modulo = ttipo_modulo.id_tipo',
-				'id_agente' => array_keys ($agents),
-				'disabled' => 0,
-				'order' => 'description'),
-			array ('DISTINCT(id_tipo)',
-				'ttipo_modulo.descripcion || \' (\' || ttipo_modulo.nombre || \')\' AS description'));
-		break;
-}
+$module_types = db_get_all_rows_filter (
+	'tagente_modulo,ttipo_modulo',
+	array (
+		'tagente_modulo.id_tipo_modulo = ttipo_modulo.id_tipo',
+		'id_agente' => array_keys ($agents),
+		'disabled' => 0,
+		'order' => 'ttipo_modulo.nombre'
+	), array (
+		'DISTINCT(id_tipo)',
+		'CONCAT(ttipo_modulo.descripcion," (",ttipo_modulo.nombre,")") AS description'
+	)
+);
 
 if ($module_types === false)
 	$module_types = array ();
 
-$types = '';
+$types = array();
 foreach ($module_types as $type) {
 	$types[$type['id_tipo']] = $type['description'];
 }
 
+$table = new stdClass();
 $table->width = '100%';
 $table->class = 'databox filters';
 $table->data = array ();
 $table->style[0] = 'font-weight: bold';
 $table->style[2] = 'font-weight: bold';
 
-
-
 $table->data['selection_mode'][0] = __('Selection mode');
 $table->data['selection_mode'][1] = '<span style="width:110px;display:inline-block;">'.__('Select modules first ') . '</span>' .
 	html_print_radio_button_extended ("selection_mode", 'modules', '', $selection_mode, false, '', 'style="margin-right: 40px;"', true).'<br>';
 $table->data['selection_mode'][1] .= '<span style="width:110px;display:inline-block;">'.__('Select agents first ') . '</span>' .
 	html_print_radio_button_extended ("selection_mode", 'agents', '', $selection_mode, false, '', 'style="margin-right: 40px;"', true);
-
-
 
 $table->rowclass['form_modules_1'] = 'select_modules_row';
 $table->data['form_modules_1'][0] = __('Module type');
@@ -428,9 +275,7 @@ $table->data['form_modules_1'][1] = html_print_select ($types, 'module_type', ''
 	'width:100%');
 $table->data['form_modules_1'][3] = __('Select all modules of this type') . ' ' .
 	html_print_checkbox_extended("force_type", 'type', '', '', false,
-		'', 'style="margin-right: 40px;"', true);
-
-
+		'style="margin-right: 40px;"', true, '');
 
 $modules = array ();
 if ($module_type != '') {
@@ -439,9 +284,8 @@ if ($module_type != '') {
 else {
 	$filter = false;
 }
-
 $names = agents_get_modules (array_keys ($agents),
-	'DISTINCT(nombre)', $filter, false);
+	'DISTINCT(tagente_modulo.nombre)', $filter, false);
 foreach ($names as $name) {
 	$modules[$name['nombre']] = $name['nombre'];
 }
@@ -542,6 +386,9 @@ echo '</form>';
 echo '<h3 class="error invisible" id="message"> </h3>';
 
 ui_require_jquery_file ('form');
+//Hack to translate text "none" in PHP to javascript
+echo '<span id ="none_text" style="display: none;">' . __('None') . '</span>';
+echo '<span id ="select_agent_first_text" style="display: none;">' . __('Please, select an agent first') . '</span>';
 ui_require_jquery_file ('pandora.controls');
 
 if ($selection_mode == 'modules') {

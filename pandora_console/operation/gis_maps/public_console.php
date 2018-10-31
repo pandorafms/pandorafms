@@ -153,11 +153,15 @@ if ($layers != false) {
 		foreach ($groupsByAgentId as $agentId => $groupInfo) {
 			$agentNamesOfGroupItems[$agentId] = $groupInfo["agent_name"];
 		}
-
+		
 		$agentNames = array_unique($agentNamesByGroup + $agentNamesByLayer + $agentNamesOfGroupItems);
 
 		foreach ($agentNames as $agentName) {
 			$idAgent = agents_get_agent_id($agentName);
+			if (!$idAgent) {
+				$idAgent = agents_get_agent_id_by_alias($agentName);
+				$idAgent = (!empty($idAgent)) ? $idAgent[0]['id_agente'] : 0;
+			}
 			$coords = gis_get_data_last_position_agent($idAgent);
 			
 			if ($coords === false) {

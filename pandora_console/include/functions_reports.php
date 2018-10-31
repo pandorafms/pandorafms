@@ -95,10 +95,12 @@ function reports_get_reports ($filter = false, $fields = false,
 		$filter[] = sprintf ('private = 0 OR (private = 1 AND id_user = "%s")',
 			$config['id_user']);
 		*/
+		$filter['hidden'] = 0; 
 	if (is_array ($fields)) {
 		$fields[] = 'id_group';
 		$fields[] = 'id_user';
 		$fields[] = 'id_group_edit';
+		$fields[] = 'hidden';
 	}
 	
 	$reports = array ();

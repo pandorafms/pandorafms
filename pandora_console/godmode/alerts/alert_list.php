@@ -47,6 +47,7 @@ $add_action = (bool) get_parameter ('add_action');
 $update_action = (bool) get_parameter ('update_action');
 $delete_action = (bool) get_parameter ('delete_action');
 $delete_alert = (bool) get_parameter ('delete_alert');
+$update_alert = (bool) get_parameter ('update_alert'); ////
 $disable_alert = (bool) get_parameter ('disable_alert');
 $enable_alert = (bool) get_parameter ('enable_alert');
 $standbyon_alert = (bool) get_parameter ('standbyon_alert');
@@ -67,10 +68,32 @@ $standby = get_parameter('standby','');
 $pure = get_parameter('pure', 0);
 $messageAction = '';
 
+if ($update_alert) {
+
+	$id_alert_agent_module = (int) get_parameter ('id_alert_update');
+
+	$id_alert_template = (int) get_parameter ('template');
+	$id_agent_module = (int) get_parameter ('id_agent_module');
+
+	$values_upd = array();
+
+	if (!empty($id_alert_template))
+		$values_upd['id_agent_module'] = $id_agent_module;
+
+	if (!empty($id_alert_template))
+		$values_upd['id_alert_template'] = $id_alert_template;
+
+	$id = alerts_update_alert_agent_module ($id_alert_agent_module, $values_upd);
+
+	$messageAction = ui_print_result_message ($id,
+		__('Successfully updated'), __('Could not be updated'), '', true);
+
+}
+
 if ($create_alert) {
 	$id_alert_template = (int) get_parameter ('template');
 	$id_agent_module = (int) get_parameter ('id_agent_module');
-	
+
 	if (db_get_value_sql("SELECT COUNT(id)
 		FROM talert_template_modules
 		WHERE id_agent_module = " . $id_agent_module . "
@@ -81,7 +104,7 @@ if ($create_alert) {
 	}
 	else {
 		$id = alerts_create_alert_agent_module ($id_agent_module, $id_alert_template);
-		
+
 		$alert_template_name = db_get_value ("name",
 			"talert_templates","id", $id_alert_template);
 		$module_name = db_get_value ("nombre",
@@ -103,9 +126,24 @@ if ($create_alert) {
 				"Fail Added alert '$unsafe_alert_template_name' for module '$unsafe_module_name' in agent '$unsafe_agent_alias'");
 		}
 		
-		$messageAction = ui_print_result_message ($id,
-			__('Successfully created'), __('Could not be created'), '', true);
+
+		/* Show errors */
+		if (!isset($messageAction)) {
+			$messageAction = __('Could not be created');
+		}
 		
+		if ($id_alert_template == "") {
+			$messageAction = __('No template specified');
+		}
+
+		if ($id_agent_module == "") {
+			$messageAction = __('No module specified');
+		}
+
+		$messageAction = ui_print_result_message ($id,
+			__('Successfully created'), $messageAction, '', true);
+
+
 		if ($id !== false) {
 			$action_select = get_parameter('action_select');
 			
@@ -116,6 +154,7 @@ if ($create_alert) {
 				$values['module_action_threshold'] =
 					(int)get_parameter ('module_action_threshold');
 				
+
 				alerts_add_alert_agent_module_action ($id, $action_select, $values);
 			}
 		}

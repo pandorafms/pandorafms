@@ -67,16 +67,16 @@ Pandora_Module_Logchannel::Pandora_Module_Logchannel (string name, string source
 
     // Set the type filter 
 	int type_number = -1;
-	if (upper_type.compare("ERROR") == 0) {
-        type_number = EVENTLOG_ERROR_TYPE;
+	if (upper_type.compare("CRITICAL") == 0) {
+        type_number = WINEVENT_LEVEL_CRITICAL;
+    } else if (upper_type.compare("ERROR") == 0) {
+        type_number = WINEVENT_LEVEL_ERROR;
 	} else if (upper_type.compare("WARNING") == 0) {
-        type_number = EVENTLOG_WARNING_TYPE;
-	} else if (upper_type.compare("INFORMATION") == 0) {
-        type_number = EVENTLOG_INFORMATION_TYPE;
-	} else if (upper_type.compare("AUDIT SUCCESS") == 0) {
-        type_number = EVENTLOG_AUDIT_SUCCESS;
-	} else if (upper_type.compare("AUDIT FAILURE") == 0) {
-        type_number = EVENTLOG_AUDIT_FAILURE;
+        type_number = WINEVENT_LEVEL_WARNING;
+	} else if (upper_type.compare("INFO") == 0) {
+        type_number = WINEVENT_LEVEL_INFO;
+	} else if (upper_type.compare("VERBOSE") == 0) {
+        type_number = WINEVENT_LEVEL_VERBOSE;
     }
 	// Append type to log query
 	if (type_number != -1) {

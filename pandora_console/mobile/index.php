@@ -25,6 +25,8 @@ require_once("include/system.class.php");
 require_once("include/db.class.php");
 require_once("include/user.class.php");
 
+require_once('../include/config.php');
+
 require_once('operation/home.php');
 require_once('operation/tactical.php');
 require_once('operation/groups.php');
@@ -34,8 +36,6 @@ require_once('operation/agents.php');
 require_once('operation/modules.php');
 require_once('operation/module_graph.php');
 require_once('operation/agent.php');
-require_once('operation/networkmaps.php');
-require_once('operation/networkmap.php');
 require_once('operation/visualmaps.php');
 require_once('operation/visualmap.php');
 $enterpriseHook = enterprise_include('mobile/include/enterprise.class.php');
@@ -79,10 +79,6 @@ $system = System::getInstance();
 require_once($system->getConfig('homedir').'/include/constants.php');
 
 $user = User::getInstance();
-
-if (!is_object($user) && gettype($user) == 'object') {
-	$user = unserialize (serialize ($user));
-}
 
 $user->saveLogin();
 
@@ -332,14 +328,6 @@ switch ($action) {
 			case 'agent':
 				$agent = new Agent();
 				$agent->show();
-				break;
-			case 'networkmaps':
-				$networkmaps = new Networkmaps();
-				$networkmaps->show();
-				break;
-			case 'networkmap':
-				$networkmap = new Networkmap();
-				$networkmap->show();
 				break;
 			case 'visualmaps':
 				$visualmaps = new Visualmaps();

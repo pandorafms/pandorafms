@@ -28,6 +28,7 @@ use Socket qw(inet_ntoa inet_aton);
 use Sys::Syslog;
 use Scalar::Util qw(looks_like_number);
 use LWP::UserAgent;
+use threads;
 
 # New in 3.2. Used to sendmail internally, without external scripts
 # use Module::Loaded;

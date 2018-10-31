@@ -66,6 +66,8 @@ else {
 
 // Update user info
 if (isset ($_GET["modified"]) && !$view_mode) {
+	if (html_print_csrf_error()) return;
+
 	$upd_info = array ();
 	$upd_info["fullname"] = get_parameter_post ("fullname", $user_info["fullname"]);
 	$upd_info["firstname"] = get_parameter_post ("firstname", $user_info["firstname"]);
@@ -85,8 +87,7 @@ if (isset ($_GET["modified"]) && !$view_mode) {
 	if($default_block_size) {
 		$upd_info["block_size"] = 0;
 	}
-	
-	$upd_info["flash_chart"] = get_parameter ("flash_charts", $config["flash_charts"]);
+
 	$upd_info["section"] = get_parameter ("section", $user_info["section"]);
 	$upd_info["data_section"] = get_parameter ("data_section", '');
 	$dashboard = get_parameter('dashboard', '');
@@ -251,9 +252,6 @@ $data[0] .= __('Default').' ('.$config["global_block_size"].')';
 
 $values = array(-1 => __('Default'),1 => __('Yes'),0 => __('No'));
 
-$data[1] = '<span style="width:40%;float:left;">'.__('Interactive charts') . ui_print_help_tip(__('Whether to use Javascript or static PNG graphs'), true).'</span>';
-$data[1] .= $jump . '<span style="width:20%;float:left;line-height:20px;">'. html_print_select($values, 'flash_charts', $user_info["flash_chart"], '', '', -1, true, false, false).'</span>';
-
 
 $data[2] = '<span style="width:30%;float:left;">'.__('Language').'</span>';
 $data[2] .= $jump . html_print_select_from_sql ('SELECT id_language, name FROM tlanguage',
@@ -383,10 +381,11 @@ $data = array();
 $autorefresh_list_out = array();
 if(is_metaconsole()) {
 	$autorefresh_list_out['monitoring/tactical'] = "tactical";
+	$autorefresh_list_out['monitoring/group_view'] = "group_view";
 } else {
 	$autorefresh_list_out['operation/agentes/tactical'] = "tactical";
+	$autorefresh_list_out['operation/agentes/group_view'] = "group_view";
 }
-$autorefresh_list_out['operation/agentes/group_view'] = "group_view";
 $autorefresh_list_out['operation/agentes/estado_agente'] = "agent_status";
 $autorefresh_list_out['operation/agentes/alerts_status'] = "alerts_status";
 $autorefresh_list_out['operation/agentes/status_monitor'] = "status_monitor";
@@ -490,6 +489,7 @@ if (!$config["user_can_update_info"]) {
 	echo '<i>'.__('You can not change your user info under the current authentication scheme').'</i>';
 }
 else {
+	html_print_csrf_hidden();
 	html_print_submit_button (__('Update'), 'uptbutton', $view_mode, 'class="sub upd"');
 }
 echo '</div></form>';

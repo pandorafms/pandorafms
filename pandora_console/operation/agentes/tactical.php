@@ -56,7 +56,6 @@ ui_print_page_header (__("Tactical view"), "", false, "", false, $updated_time);
 
 //Currently this function makes loading this page is impossible. Change
 //and create new function.
-//$all_data = group_get_groups_list($config['id_user'], $user_strict, 'AR', true, false, 'tactical');
 
 $all_data = tactical_status_modules_agents($config['id_user'], $user_strict, 'AR', $user_strict);
 
@@ -164,7 +163,7 @@ $table->rowclass[] = '';
 // Server performance 
 // ---------------------------------------------------------------------
 if ($is_admin) {
-	$table->data[4][0] = reporting_get_stats_servers(false);
+	$table->data[4][0] = reporting_get_stats_servers();
 	$table->rowclass[] = '';
 }
 
@@ -178,15 +177,19 @@ echo '<td style="vertical-align: top; width: 75%; padding-top: 0px;" id="rightco
 // Last events information
 // ---------------------------------------------------------------------
 
-$acltags = tags_get_user_groups_and_tags ($config['id_user'], 'ER', $user_strict);
-
-if (!empty($acltags)) {
-	$tags_condition = tags_get_acl_tags_event_condition($acltags, false, $user_strict);
-	
+if (check_acl($config['id_user'],0,'ER')) {
+	$tags_condition = tags_get_acl_tags(false,0,'ER','event_condition');
+	$event_filter = "estado<>1";
 	if (!empty($tags_condition)) {
-		$events = events_print_event_table ("estado<>1 AND ($tags_condition)", 10, "100%",true,false,true);
-		ui_toggle($events, __('Latest events'),false,false);
+		$event_filter .= " AND ($tags_condition)";
 	}
+
+	if ($config['event_view_hr']) {
+		$event_filter .= " AND utimestamp > (UNIX_TIMESTAMP(NOW()) - " . $config['event_view_hr'] * SECONDS_1HOUR . ")";
+	}
+	
+	$events = events_print_event_table ($event_filter, 10, "100%",true,false,true);
+	ui_toggle($events, __('Latest events'),false,false);
 }
 
 // ---------------------------------------------------------------------
@@ -198,20 +201,44 @@ if ($is_admin) {
 	
 }
 $out = '<table cellpadding=0 cellspacing=0 class="databox pies"  style="margin-top:15px;" width=100%><tr><td>';
-	$out .= '<fieldset class="databox tactical_set">
+	$out .= '<fieldset class="databox tactical_set" id="total_event_graph">
 			<legend>' . 
 				__('Event graph') . 
 			'</legend>' . 
-			grafico_eventos_total("", 280, 150, false) . '</fieldset>';
+			html_print_image('images/spinner.gif',true,array('id' => 'spinner_total_event_graph')) . '</fieldset>';
 	$out .="</td><td>";
-	$out .= '<fieldset class="databox tactical_set">
+	$out .= '<fieldset class="databox tactical_set" id="graphic_event_group">
 			<legend>' .
 				__('Event graph by agent') .
 			'</legend>' .
-			grafico_eventos_grupo(280, 150, "", false, false, false) . '</fieldset>';
+			html_print_image('images/spinner.gif', true, array('id' => 'spinner_graphic_event_group')) . '</fieldset>';
 	$out .= '</td></tr></table>';
 echo $out;
 
 echo '</td>';
 echo '</tr></table>';
 ?>
+<script type="text/javascript">
+	$(document).ready(function () {
+		var parameters = {};
+		parameters["page"] = "include/ajax/events";
+		parameters["total_event_graph"] = 1;
+
+		$.ajax({type: "GET",url: "ajax.php",data: parameters,
+			success: function(data) {
+				$("#spinner_total_event_graph").hide();
+				$("#total_event_graph").append(data);
+			}
+		});
+
+		delete parameters["total_event_graph"];
+		parameters["graphic_event_group"] = 1;
+
+		$.ajax({type: "GET",url: "ajax.php",data: parameters,
+			success: function(data) {
+				$("#spinner_graphic_event_group").hide();
+				$("#graphic_event_group").append(data);
+			}
+		});
+	});
+</script>	

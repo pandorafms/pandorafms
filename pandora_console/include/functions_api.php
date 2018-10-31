@@ -99,7 +99,7 @@ function returnError($typeError, $returnType = 'string') {
 			break;
 		default:
 			returnData("string",
-				array('type' => 'string', 'data' => __($typeError)));
+				array('type' => 'string', 'data' => __($returnType)));
 			break;
 	}
 }
@@ -1174,11 +1174,14 @@ function api_set_update_agent($id_agent, $thrash2, $other, $thrash3) {
 			return;
 		}
 	}
+	$values_old = db_get_row_filter('tagente',
+		array('id_agente' => $id_agent),
+		array('id_grupo', 'disabled')
+	);
+	$tpolicy_group_old = db_get_all_rows_sql("SELECT id_policy FROM tpolicy_groups
+			WHERE id_group = ".$values_old['id_grupo']);
 	
-	$group_old = db_get_sql("SELECT id_grupo FROM tagente WHERE id_agente =" .$id_agent);
-	$tpolicy_group_old = db_get_all_rows_sql("SELECT id_policy FROM tpolicy_groups 
-			WHERE id_group = ".$group_old);
-	
+
 	$return = db_process_sql_update('tagente', 
 		array('alias' => $alias,
 			'direccion' => $ip,
@@ -1199,8 +1202,16 @@ function api_set_update_agent($id_agent, $thrash2, $other, $thrash3) {
 		// register ip for this agent in 'taddress'
 		agents_add_address ($id_agent, $ip);
 	}
-	
+
 	if($return){
+		// Update config file
+		if (isset($disabled) && $values_old['disabled'] != $disabled) {
+			enterprise_hook(
+				'config_agents_update_config_token',
+				array($id_agent, 'standby', $disabled)
+			);
+		}
+
 		if($tpolicy_group_old){
 			foreach ($tpolicy_group_old as $key => $value) {
 				$tpolicy_agents_old= db_get_sql("SELECT * FROM tpolicy_agents 
@@ -1390,6 +1401,68 @@ function api_set_new_agent($thrash1, $thrash2, $other, $thrash3) {
 	}
 }
 
+
+function api_set_create_os($thrash1, $thrash2, $other, $thrash3) {
+	global $config;
+
+
+	if (!check_acl($config['id_user'], 0, "AW")) {
+		returnError('forbidden', 'string');
+		return;
+	}
+	
+	if (defined ('METACONSOLE')) {
+		return;
+	}
+
+	$values = array();
+	
+	$values['name'] = $other['data'][0];
+	$values['description'] = $other['data'][1];
+
+	if (($other['data'][2] !== 0) && ($other['data'][2] != '')) {
+		$values['icon_name'] = $other['data'][2];
+	}
+
+
+
+	$resultOrId = false;
+	if ($other['data'][0] != '') {
+		$resultOrId = db_process_sql_insert('tconfig_os', $values);
+	}
+
+}
+
+function api_set_update_os($id_os, $thrash2, $other, $thrash3) {
+	global $config;
+
+	if (defined ('METACONSOLE')) {
+		return;
+	}
+
+	if (!check_acl($config['id_user'], 0, "AW")) {
+		returnError('forbidden', 'string');
+		return;
+	}
+			
+	$values = array();
+	$values['name'] = $other['data'][0];
+	$values['description'] = $other['data'][1];
+		
+	if (($other['data'][2] !== 0) && ($other['data'][2] != '')) {
+		$values['icon_name'] = $other['data'][2];;
+	}
+	$result = false;
+
+
+	if ($other['data'][0] != '') {
+
+		$result = db_process_sql_update('tconfig_os', $values, array('id_os' => $id_os));
+	}
+
+}
+
+
 /**
  *
  * Creates a custom field
@@ -1546,10 +1619,6 @@ function api_set_delete_agent($id, $thrash1, $thrast2, $thrash3) {
 function api_get_all_agents($thrash1, $thrash2, $other, $returnType) {
 	global $config;
 
-	if (defined ('METACONSOLE')) {
-		return;
-	}
-
 	// Error if user cannot read agents.
 	if (!check_acl($config['id_user'], 0, "AR")) {
 		returnError('forbidden', $returnType);
@@ -1598,13 +1667,25 @@ function api_get_all_agents($thrash1, $thrash2, $other, $returnType) {
 	// Initialization of array
 	$result_agents = array();
 	// Filter by state
-	$sql = "SELECT id_agente, alias, direccion, comentarios,
+	
+	if (defined ('METACONSOLE')) {
+		$sql = "SELECT id_agente, alias, direccion, comentarios,
 			tconfig_os.name, url_address, nombre
-		FROM tconfig_os, tagente
+		FROM tconfig_os, tmetaconsole_agent
 		LEFT JOIN tagent_secondary_group
-			ON tagente.id_agente = tagent_secondary_group.id_agent
-		WHERE tagente.id_os = tconfig_os.id_os
+			ON tmetaconsole_agent.id_agente = tagent_secondary_group.id_agent
+		WHERE tmetaconsole_agent.id_os = tconfig_os.id_os
 			AND disabled = 0 $where AND $groups";
+	}
+	else{
+		$sql = "SELECT id_agente, alias, direccion, comentarios,
+				tconfig_os.name, url_address, nombre
+			FROM tconfig_os, tagente
+			LEFT JOIN tagent_secondary_group
+				ON tagente.id_agente = tagent_secondary_group.id_agent
+			WHERE tagente.id_os = tconfig_os.id_os
+				AND disabled = 0 $where AND $groups";
+	}
 
 	$all_agents = db_get_all_rows_sql($sql);
 
@@ -1671,6 +1752,18 @@ function api_get_all_agents($thrash1, $thrash2, $other, $returnType) {
 	} 
 	else {
 		$result_agents = $all_agents;
+	}
+	
+	if (empty($returnType)) {
+		$returnType = "string";
+	}
+	
+	if (empty($separator)) {
+		$separator = ";";
+	}
+	
+	foreach ($result_agents as $key => $value) {
+		$result_agents[$key]['status'] = agents_get_status($result_agents[$key]['id_agente'], true);
 	}
 	
 	if (count($result_agents) > 0 and $result_agents !== false) {
@@ -6776,7 +6869,6 @@ function api_get_graph_module_data($id, $thrash1, $other, $thrash2) {
 	$ttl = 1;
 
 	global $config;
-	$config['flash_charts'] = 0;
 
 	$params =array(
 		'agent_module_id'     => $id,
@@ -6856,7 +6948,7 @@ function api_set_new_user($id, $thrash2, $other, $thrash3) {
  * @param string $id String username for user login in Pandora
  * @param $thrash2 Don't use.
  * @param array $other it's array, $other as param is <fullname>;<firstname>;<lastname>;<middlename>;<password>;
- *  <email>;<phone>;<language>;<comments>;<is_admin>;<block_size>;<flash_chart> in this order and separator char
+ *  <email>;<phone>;<language>;<comments>;<is_admin>;<block_size>;in this order and separator char
  *  (after text ; ) and separator (pass in param othermode as othermode=url_encode_separator_<separator>)
  *  example:
  *  
@@ -6881,15 +6973,14 @@ function api_set_update_user($id, $thrash2, $other, $thrash3) {
 		'lastname',
 		'middlename',
 		'password',
-		'email', 
+		'email',
 		'phone',
 		'language',
 		'comments',
 		'is_admin',
-		'block_size',
-		'flash_chart');
-	
-	
+		'block_size'
+	);
+
 	if ($id == "") {
 		returnError('error_update_user',
 			__('Error updating user. Id_user cannot be left blank.'));
@@ -7006,10 +7097,11 @@ function otherParameter2Filter($other, $return_as_array = false) {
 	
 	$idAgent = null;
 	if (isset($other['data'][2]) && $other['data'][2] != '') {
-		$idAgent = agents_get_agent_id($other['data'][2]);
+		$idAgents = agents_get_agent_id_by_alias($other['data'][2]);
 		
 		if (!empty($idAgent)) {
-			$filter['id_agente'] = $idAgent;
+
+			$filter[] = "id_agente IN (" . explode(",", $idAgents) .")";
 		}
 		else {
 			$filter['sql'] = "1=0";
@@ -9185,18 +9277,27 @@ function api_get_agent_id($trash1, $trash2, $data, $returnType) {
  * Agent alias for a given id
  * 
  * @param int $id_agent 
+ * @param int $id_node Only for metaconsole
+ * @param $thrash1 Don't use.
+ * @param $returnType
  * 
 **/
-// http://localhost/pandora_console/include/api.php?op=get&op2=agent_name&id=1&apipass=1234&user=admin&pass=pandora
-function api_get_agent_alias($id_agent, $trash1, $trash2, $returnType) {
-	if (defined ('METACONSOLE')) {
-		return;
+// http://localhost/pandora_console/include/api.php?op=get&op2=agent_alias&id=1&apipass=1234&user=admin&pass=pandora
+// http://localhost/pandora_console/enterprise/meta/include/api.php?op=get&op2=agent_alias&id=1&id2=1&apipass=1234&user=admin&pass=pandora
+function api_get_agent_alias($id_agent, $id_node, $trash1, $returnType) {
+	$table_agent_alias = 'tagente';
+	$force_meta=false;
+
+	if (is_metaconsole()) {
+		$table_agent_alias = 'tmetaconsole_agent';
+		$force_meta = true;
+		$id_agent = db_get_value_sql("SELECT id_agente FROM tmetaconsole_agent WHERE id_tagente = $id_agent AND id_tmetaconsole_setup = $id_node");
 	}
 
-	if (!util_api_check_agent_and_print_error($id_agent, $returnType)) return;
+	if (!util_api_check_agent_and_print_error($id_agent, $returnType, 'AR', $force_meta)) return;
 
 	$sql = sprintf('SELECT alias
-		FROM tagente
+		FROM ' . $table_agent_alias . '
 		WHERE id_agente = %d', $id_agent);
 	$value = db_get_value_sql($sql);
 
@@ -9428,7 +9529,10 @@ function api_set_create_event($id, $trash1, $other, $returnType) {
 					return;
 				}
 				$id_agent = $agent_cache['id_tagente'];
+
 			}
+
+			$values['id_agente'] = $id_agent;
 
 			if (!util_api_check_agent_and_print_error($id_agent, 'string', 'AR')) {
 				if (is_metaconsole()) metaconsole_restore_db();
@@ -10658,22 +10762,20 @@ function api_set_metaconsole_synch($keys) {
 				array(db_escape_key_identifier('value') => $value),
 				array(db_escape_key_identifier('key') => $key));
 		}
-		
+
 		// Validate update the license in nodes:
 		enterprise_include_once('include/functions_metaconsole.php');
-		list ($nodes_failed, $total_nodes) = metaconsole_update_all_nodes_license();
-		if ($nodes_failed === 0) {
-			echo __('Metaconsole and all nodes license updated');
+		$array_metaconsole_update = metaconsole_update_all_nodes_license();
+		if ($array_metaconsole_update[0] === 0) {
+			ui_print_success_message(__('Metaconsole and all nodes license updated'));
 		}
 		else {
-			echo __('Metaconsole license updated but %d of %d node synchronization failed', $nodes_failed, $total_nodes);
+			ui_print_error_message(__('Metaconsole license updated but %d of %d node synchronization failed', $array_metaconsole_update[0], $array_metaconsole_update[1]));
 		}
 	}
 	else{
 		echo __('This function is only for metaconsole');
 	}
-
-	
 }
 
 function api_set_new_cluster($thrash1, $thrash2, $other, $thrash3) {
@@ -11211,6 +11313,7 @@ function api_get_cluster_status($id_cluster, $trash1, $trash2, $returnType) {
 	
 	if ($value === false) {
 		returnError('id_not_found', $returnType);
+		return;
 	}
 	
 	$data = array('type' => 'string', 'data' => $value);
@@ -11228,6 +11331,7 @@ function api_get_cluster_id_by_name($cluster_name, $trash1, $trash2, $returnType
 	$value = cluster_get_id_by_name($cluster_name);
 	if(($value === false) || ($value === null)){
 		returnError('id_not_found', $returnType);
+		return;
 	}
 
 	$cluster_group = clusters_get_group($value);
@@ -11382,10 +11486,10 @@ function api_get_cluster_items ($cluster_id){
 // AUX FUNCTIONS
 /////////////////////////////////////////////////////////////////////
 
-function util_api_check_agent_and_print_error($id_agent, $returnType, $access = "AR") {
+function util_api_check_agent_and_print_error($id_agent, $returnType, $access = "AR", $force_meta = false) {
 	global $config;
 
-	$check_agent = agents_check_access_agent($id_agent, $access);
+	$check_agent = agents_check_access_agent($id_agent, $access, $force_meta);
 	if ($check_agent === true) return true;
 
 	if ($check_agent === false || !check_acl($config['id_user'], 0, $access)) {

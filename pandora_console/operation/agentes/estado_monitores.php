@@ -138,16 +138,13 @@ echo "</h4>";
 
 ob_start();
 
-
 print_form_filter_monitors($id_agente, $status_filter_monitor, $status_text_monitor, $status_hierachy_mode);
 
 echo "<div id='module_list_loading'>" .
 	html_print_image('images/spinner.gif', true) .
 	'</div>';
 echo "<div id='module_list'>" .
-		
 	"</div>";
-
 
 $html_toggle = ob_get_clean();
 ui_toggle($html_toggle,

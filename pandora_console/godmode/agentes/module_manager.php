@@ -43,6 +43,7 @@ echo '<table width="100%" cellpadding="2" cellspacing="2" class="databox filters
 echo "<tr><td class='datos' style='width:20%; font-weight: bold;'>";
 echo __('Search') . ' ' .
 	html_print_input_text ('search_string', $search_string, '', 15, 255, true);
+	html_print_input_hidden ('search', 1);
 echo "</td>";
 echo "<td class='datos' style='width:10%'>";
 html_print_submit_button (__('Filter'), 'filter', false, 'class="sub search"');
@@ -138,7 +139,7 @@ if (($policy_page) || (isset($agent))) {
 			echo '</td>';
 		}
 		echo '<td class="datos" style="font-weight: bold; width:20%;">';
-		echo __("Type");
+		echo __("<p>Type</p>");
 		html_print_select ($modules, 'moduletype', '', '', '', '', false, false, false, '', false, 'max-width:300px;' );
 		html_print_input_hidden ('edit_module', 1);
 		echo '</td>';
@@ -312,7 +313,7 @@ $selectIntervalUp = '';
 $selectIntervalDown = '';
 $sortField = get_parameter('sort_field');
 $sort = get_parameter('sort', 'none');
-$selected = 'border: 1px solid black;';
+$selected = '';
 
 $order[] = array('field' => 'tmodule_group.name', 'order' => 'ASC');
 
@@ -423,9 +424,11 @@ foreach ($order as $ord) {
 $limit = (int) $config["block_size"];
 $offset = (int) get_parameter ('offset');
 
-$params = implode(',',
+$params = ($checked)
+	? "tagente_modulo.*, tmodule_group.*"
+	: implode(',',
 	array(
-		'id_agente_modulo',
+		'tagente_modulo.id_agente_modulo',
 		'id_tipo_modulo',
 		'descripcion',
 		'nombre',
@@ -452,80 +455,46 @@ $search_string_entities = io_safe_input($search_string);
 
 $basic_where = sprintf("(nombre LIKE '%%%s%%' OR nombre LIKE '%%%s%%' OR descripcion LIKE '%%%s%%' OR descripcion LIKE '%%%s%%') AND", $search_string, $search_string_entities, $search_string, $search_string_entities);
 
-$where_tags = tags_get_acl_tags($config['id_user'], 0, 'AR', 'module_condition', 'AND', 'tagente_modulo');
+// Tags acl
+$agent_tags = tags_get_user_applied_agent_tags($id_agente);
+if ($agent_tags !== true) {
+	$where_tags = " AND ttag_module.id_tag IN (" . implode(',', $agent_tags) . ")";
+}
 
 $paginate_module = false;
 if (isset($config['paginate_module']))
 	$paginate_module = $config['paginate_module'];
 
-switch ($config["dbtype"]) {
-	case "postgresql":
-		if ($paginate_module) {
-			$limit_sql = " LIMIT $limit OFFSET $offset ";
-		}
-		else {
-			$limit_sql = '';
-		}
-	case "mysql":
-		if ($paginate_module) {
-			if (!isset($limit_sql)) {
-				$limit_sql = " LIMIT $offset, $limit ";
-			}
-		}
-		else {
-			$limit_sql = '';
-		}
-		if ($checked) {
-			$sql = sprintf("SELECT *
-				FROM tagente_modulo
-				LEFT JOIN tmodule_group
-				ON tagente_modulo.id_module_group = tmodule_group.id_mg
-				WHERE %s %s %s %s %s",
-				 $basic_where, $where, $where_tags, $order_sql, $limit_sql);
-		}
-		else {
-			$sql = sprintf("SELECT %s
-				FROM tagente_modulo
-				LEFT JOIN tmodule_group
-				ON tagente_modulo.id_module_group = tmodule_group.id_mg
-				WHERE %s %s %s %s %s",
-				$params, $basic_where, $where, $where_tags, $order_sql, $limit_sql);
-		}
-		
-		
-		$modules = db_get_all_rows_sql($sql);
-		break;
-	case "oracle":
-		$set = array();
-		if ($paginate_module) {
-			$set['limit'] = $limit;
-			$set['offset'] = $offset;
-		}
-
-		if ($checked) {
-			$sql = sprintf("SELECT *
-				FROM tagente_modulo
-				LEFT JOIN tmodule_group
-				ON tmodule_group.id_mg = tagente_modulo.id_module_group
-				WHERE %s %s %s %s",
-				 $basic_where, $where, $where_tags, $order_sql);
-		}
-		else {
-			$sql = sprintf("SELECT %s
-				FROM tagente_modulo
-				LEFT JOIN tmodule_group
-				ON tmodule_group.id_mg = tagente_modulo.id_module_group
-				WHERE %s %s %s %s",
-				$params, $basic_where, $where, $where_tags, $order_sql);
-		}
-		
-		$modules = oracle_recode_query ($sql, $set, 'AND', false);
-		break;
+if ($paginate_module) {
+	if (!isset($limit_sql)) {
+		$limit_sql = " LIMIT $offset, $limit ";
+	}
 }
+else {
+	$limit_sql = '';
+}
+$sql = sprintf("SELECT tagente_modulo.*, tmodule_group.*
+		FROM tagente_modulo
+		LEFT JOIN tmodule_group
+			ON tagente_modulo.id_module_group = tmodule_group.id_mg
+		LEFT JOIN ttag_module
+			ON ttag_module.id_agente_modulo = tagente_modulo.id_agente_modulo
+		WHERE %s %s %s
+		GROUP BY tagente_modulo.id_agente_modulo
+		%s %s",
+	$basic_where, $where, $where_tags,
+	$order_sql, $limit_sql
+);
 
-$sql_total_modules = sprintf("SELECT count(*)
+$modules = db_get_all_rows_sql($sql);
+
+$sql_total_modules = sprintf(
+	"SELECT count(DISTINCT(tagente_modulo.id_agente_modulo))
 	FROM tagente_modulo
-	WHERE %s %s %s", $basic_where, $where, $where_tags);
+	LEFT JOIN ttag_module
+		ON ttag_module.id_agente_modulo = tagente_modulo.id_agente_modulo
+	WHERE %s %s %s", $basic_where, $where, $where_tags
+);
 
 $total_modules = db_get_value_sql($sql_total_modules);
 
@@ -578,7 +547,8 @@ $table->head[7] = __('Warn');
 
 
 $table->head[8] = __('Action');
-$table->head[9] = '<span title="' . __('Delete') . '">' . __('D.') . '</span>';
+$table->head[9] = '<span title="' . __('Delete') . '">' . __('Del.') . '</span>'.
+	html_print_checkbox('all_delete', 0, false, true, false);
 
 $table->rowstyle = array();
 $table->style = array ();
@@ -638,7 +608,7 @@ foreach ($modules as $module) {
 			if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK)
 					$table->colspan[$i - 1][0] = 10;
 			else
-				$table->colspan[$i - 1][0] = 8;
+				$table->colspan[$i - 1][0] = 9;
 			
 			$data = array ();
 		}
@@ -809,12 +779,13 @@ foreach ($modules as $module) {
 	
 	if (check_acl_one_of_groups ($config['id_user'], $all_groups, "AW")) {
 		// Delete module
-		$data[9] = html_print_checkbox('id_delete[]', $module['id_agente_modulo'], false, true);
-		$data[9] .= '&nbsp;<a href="index.php?sec=gagente&tab=module&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&delete_module='.$module['id_agente_modulo'].'"
+		
+		$data[9] = '<a href="index.php?sec=gagente&tab=module&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&delete_module='.$module['id_agente_modulo'].'"
 			onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
 		$data[9] .= html_print_image ('images/cross.png', true,
 			array ('title' => __('Delete')));
 		$data[9] .= '</a> ';
+		$data[9] .= html_print_checkbox('id_delete[]', $module['id_agente_modulo'], false, true);
 	}
 	
 	array_push ($table->data, $data);
@@ -838,17 +809,32 @@ if (check_acl_one_of_groups ($config['id_user'], $all_groups, "AW")) {
 
 <script type="text/javascript">
 
-$(document).ready (function () {
+	$(document).ready (function () {
 		
-			$('[id^=checkbox-id_delete]').change(function(){
-				if($(this).parent().parent().hasClass('checkselected')){
-					$(this).parent().parent().removeClass('checkselected');
-				}
-				else{
-					$(this).parent().parent().addClass('checkselected');							
-				}
-			});					
-});
+		$('[id^=checkbox-id_delete]').change(function(){
+			if($(this).parent().parent().hasClass('checkselected')){
+				$(this).parent().parent().removeClass('checkselected');
+			}
+			else{
+				$(this).parent().parent().addClass('checkselected');							
+			}
+		});		
+
+
+		$('[id^=checkbox-all_delete]').change(function(){	
+			if ($("#checkbox-all_delete").prop("checked")) {
+				$('[id^=checkbox-id_delete]').parent().parent().addClass('checkselected');
+				$("[name^=id_delete").prop("checked", true);
+			}
+			else{
+				$('[id^=checkbox-id_delete]').parent().parent().removeClass('checkselected');
+				$("[name^=id_delete").prop("checked", false);
+			}	
+		});
+
+
+	});
+
 
 	function change_mod_filter() {
 		var checked = $("#checkbox-status_hierachy_mode").is(":checked");

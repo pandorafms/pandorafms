@@ -192,11 +192,13 @@ function tags_get_modules_count ($id) {
  * @return int Local module tag's count.
  */
 function tags_get_local_modules_count ($id) {
-	$field = 'COUNT(id_tag)';
+	$field = 'COUNT(DISTINCT(tagente_modulo.id_agente_modulo))';
 	$filter = array('id_tag' => $id);
-	
-	$num_modules = (int) db_get_value_filter($field, 'ttag_module', $filter);
-
+	$num_modules = (int) db_get_value_filter(
+		$field,
+		'ttag_module INNER JOIN tagente_modulo ON ttag_module.id_agente_modulo = tagente_modulo.id_agente_modulo',
+		$filter
+	);
 	return $num_modules;
 }
 
@@ -457,7 +459,7 @@ function tags_get_module_tags ($id, $policy = false) {
 		$tags = db_get_all_rows_filter('ttag_module',
 			array('id_agente_modulo' => $id), false);
 	}
-	
+
 	if ($tags === false)
 		return array();
 	
@@ -722,124 +724,37 @@ function tags_get_acl_tags_module_condition($acltags, $modules_table = '') {
 
 	$condition = '';
 	$group_conditions = array();
-
+	
+	$without_tags = array();
+	$has_secondary = enterprise_hook('agents_is_using_secondary_groups');
 	// The acltags array contains the groups with the acl propagation applied
 	// after the changes done into the 'tags_get_user_groups_and_tags' function.
 	foreach ($acltags as $group_id => $group_tags) {
 		$tag_join = '';
 		if (!empty($group_tags)) {
-			$tag_join = sprintf('INNER JOIN ttag_module ttmc
-									ON tamc.id_agente_modulo = ttmc.id_agente_modulo
-										AND ttmc.id_tag IN (%s)',
-								is_array($group_tags) ? implode(',', $group_tags) : $group_tags);
+			$tag_join = sprintf('AND ttag_module.id_tag IN (%s)',is_array($group_tags) ? implode(',', $group_tags) : $group_tags);
+			if($has_secondary){
+				$agent_condition = sprintf('((tagente.id_grupo = %d OR tasg.id_group = %d) %s)',$group_id,$group_id,$tag_join);
+			} else {
+				$agent_condition = sprintf('((tagente.id_grupo = %d %s))',$group_id,$tag_join);
+			}
+			$group_conditions[] = $agent_condition;
+		} else {
+			$without_tags[] = $group_id;
 		}
-		// FIXME: Not properly way to increse performance
-		if(enterprise_hook('agents_is_using_secondary_groups')){
-			$agent_condition = sprintf('SELECT tamc.id_agente_modulo
-									FROM tagente_modulo tamc
-									%s
-									INNER JOIN tagente tac
-										ON tamc.id_agente = tac.id_agente
-										LEFT JOIN tagent_secondary_group tasg
-											ON tasg.id_agent = tac.id_agente
-												WHERE (tac.id_grupo = %d OR tasg.id_group = %d)',
-									$tag_join, $group_id, $group_id);
-		}
-		else{
-			$agent_condition = sprintf('SELECT tamc.id_agente_modulo
-									FROM tagente_modulo tamc
-									%s
-									INNER JOIN tagente tac
-										ON tamc.id_agente = tac.id_agente
-										AND tac.id_grupo = %d',
-									$tag_join, $group_id);
-		}
-
-		$sql_condition = sprintf('(%sid_agente_modulo IN (%s))', $modules_table, $agent_condition);
-
-		$group_conditions[] = $sql_condition;
-
-		$i++;
 	}
 
-	if (!empty($group_conditions))
+	if (!empty($group_conditions)) {
 		$condition = implode(' OR ', $group_conditions);
-	$condition = !empty($condition) ? "($condition)" : '';
-	
-	return $condition;
-}
-
-// The old function will be keeped to serve as reference of the changes done
-/**
- * Transform the acl_groups data into a SQL condition
- * 
- * @param mixed acl_groups data calculated in tags_get_acl_tags function
- * 
- * @return string SQL condition for tagente_module
- */
-function tags_get_acl_tags_module_condition_old($acltags, $modules_table = '') {
-	if (!empty($modules_table)) {
-		$modules_table .= '.';
 	}
-	
-	$condition = '';
-	
-	// Fix: Wrap SQL expression with "()" to avoid bad SQL sintax that makes Pandora retrieve all modules without taking care of id_agent => id_agent = X AND (sql_tag_expression)   
-	$i = 0;
-	foreach ($acltags as $group_id => $group_tags) {
-		if ($condition != '') {
+	if (!empty($without_tags)) {
+		if (!empty($condition)) {
 			$condition .= ' OR ';
 		}
-		
-		// Fix: Wrap SQL expression with "()" to avoid bad SQL sintax that makes Pandora retrieve all modules without taking care of id_agent => id_agent = X AND (sql_tag_expression) 
-		if ($i == 0)
-			$condition .= ' ( ' . "\n";
-		
-		// Group condition (The module belongs to an agent of the group X)
-		// Juanma (08/05/2014) Fix: Now group and tag is checked at the same time, before only tag was checked due to a bad condition
-		if (!array_key_exists(0, $acltags)) {
-			// Juanma (08/05/2014) Fix: get all groups recursively (Acl proc func!)
-			$group_condition = sprintf('%sid_agente IN (SELECT id_agente FROM tagente WHERE id_grupo IN (%s))', $modules_table, implode(',', array_values(groups_get_id_recursive($group_id))));
-		}
-		else {
-			//Avoid the user profiles with all group access.
-			$group_condition = " 1 = 1 ";
-		}
-		
-		//When the acl is only group without tags
-		if (empty($group_tags)) {
-			$condition .= "($group_condition)\n";
-		}
-		else {
-			if (is_array($group_tags)) {
-				$group_tags_query = implode(',',$group_tags);
-			} else {
-				$group_tags_query = $group_tags;
-			}
-			// Tags condition (The module has at least one of the restricted tags)
-			$tags_condition = sprintf('%sid_agente_modulo IN (SELECT id_agente_modulo FROM ttag_module WHERE id_tag IN (%s))', $modules_table, $group_tags_query);
-			
-			$condition .=
-				"	( \n" .
-				"		$group_condition \n" .
-				"			AND \n" .
-				"		$tags_condition \n" .
-				"	)\n";
-		}
-		
-		$i++;
+		$in_group = implode(",",$without_tags);
+		$condition .= sprintf('(tagente.id_grupo IN (%s) OR tasg.id_group IN (%s))',$in_group,$in_group);
 	}
-	
-	// Fix: Wrap SQL expression with "()" to avoid bad SQL sintax that makes Pandora retrieve all modules without taking care of id_agent => id_agent = X AND (sql_tag_expression) 
-	if (!empty($acltags))
-		$condition .= ' ) ';
-	
-	//Avoid the user profiles with all group access.
-	//if (!empty($condition)) {
-	if (!empty($condition) &&
-		!array_key_exists(0, array_keys($acltags))) {
-		$condition = sprintf("\n((%s) OR %sid_agente NOT IN (SELECT id_agente FROM tagente WHERE id_grupo IN (%s)))", $condition, $modules_table, implode(',',array_keys($acltags)));
-	}
+	$condition = !empty($condition) ? "($condition)" : '';
 	
 	return $condition;
 }
@@ -859,102 +774,54 @@ function tags_get_acl_tags_event_condition($acltags, $meta = false, $force_group
 	
 	// Get all tags of the system
 	$all_tags = tags_get_all_tags(false);
-	
-	// Juanma (08/05/2014) Fix : Will have all groups  retrieved (also propagated ones)
-	$_groups_not_in = '';
 
+	$without_tags = array();
 	foreach ($acltags as $group_id => $group_tags) {
-		// Group condition (The module belongs to an agent of the group X)
-		$group_condition = sprintf('id_grupo IN (%s)', implode(',', array_values(groups_get_id_recursive($group_id, true))));
-		//$_groups_not_in .= implode(',', array_values(groups_get_id_recursive($group_id))) . ',';
-			
-		// Tags condition (The module has at least one of the restricted tags)
-		$tags_condition = '';
+		// NO check if there is not tag associated with groups
 		if (empty($group_tags)) {
-			// FIXME: Not properly way to increse performance
-			if(enterprise_hook('agents_is_using_secondary_groups')){
-				$tags_condition = "id_grupo = ".$group_id . " OR id_group = " . $group_id;
-			}
-			else{
-				$tags_condition = "id_grupo = ".$group_id;
-			}
-		}
-		else {
-			if (!is_array($group_tags)) {
-				$group_tags = explode(',', $group_tags);
-			}
-				
-			foreach ($group_tags as $tag) {
-				// If the tag ID doesnt exist, ignore
-				if (!isset($all_tags[$tag])) {
-					continue;
-				}
-					
-				if ($tags_condition != '') {
-					$tags_condition .= " OR \n";
-				}
-					
-				//~ // Add as condition all the posibilities of the serialized tags
-				//~ $tags_condition .= sprintf('tags LIKE "%s,%%"',io_safe_input($all_tags[$tag]));
-				//~ $tags_condition .= sprintf(' OR tags LIKE "%%,%s,%%"',io_safe_input($all_tags[$tag]));
-				//~ $tags_condition .= sprintf(' OR tags LIKE "%%,%s"',io_safe_input($all_tags[$tag]));
-				//~ $tags_condition .= sprintf(' OR tags LIKE "%s %%"',io_safe_input($all_tags[$tag]));
-				//~ $tags_condition .= sprintf(' OR tags LIKE "%%,%s %%"',io_safe_input($all_tags[$tag]));
-					
-				if ($force_group_and_tag) {
-					if (!empty($all_tags[$tag])) {
-						if ($force_equal) {
-							$tags_condition .= sprintf('(tags = "%s"',io_safe_input($all_tags[$tag]));
-						} else {
-							$tags_condition .= "(tags LIKE '%".io_safe_input($all_tags[$tag])."%'";
-						}
-						$childrens = groups_get_childrens($group_id, null, true);
-							
-						if (empty($childrens)) {
-							$tags_condition .= sprintf(' AND id_grupo = %d )', $group_id);
-						} else {
-							$childrens_ids[] = $group_id;
-							foreach ($childrens as $child) {
-								$childrens_ids[] = (int)$child['id_grupo'];
-							}
-							$ids_str = implode(',', $childrens_ids);
-								
-							$tags_condition .= sprintf(' AND id_grupo IN (%s) )', $ids_str);
-						}
-					} else {
-						$tags_condition .= "id_grupo = ".$group_id;
-					}
-				} else {
-					if ($force_equal) {
-						$tags_condition .= sprintf('tags = "%s"',io_safe_input($all_tags[$tag]));
-					} else {
-						$tags_condition .= "tags LIKE '%".io_safe_input($all_tags[$tag])."%'";
-					}
-				}
-			}
-		}
-			
-		// If there is not tag condition ignore
-		if (empty($tags_condition)) {
+			$without_tags []= $group_id;
 			continue;
 		}
-			
-		if ($condition != '') {
-			$condition .= ' OR ';
+
+		// Group condition (The module belongs to an agent of the group X)
+		//$group_condition = sprintf('id_grupo IN (%s)', implode(',', array_values(groups_get_id_recursive($group_id, true))));
+		$group_condition = "(id_grupo = $group_id OR id_group = $group_id)";
+
+		// Tags condition (The module has at least one of the restricted tags)
+		$tags_condition = '';
+		$tags_condition_array = array();
+
+		foreach ($group_tags as $tag) {
+			// If the tag ID doesnt exist, ignore
+			if (!isset($all_tags[$tag])) continue;
+
+			$tags_condition_array[] = $force_equal
+				? sprintf('tags = "%s"',io_safe_input($all_tags[$tag]))
+				: "tags LIKE '%".io_safe_input($all_tags[$tag])."%'";
 		}
 			
-		$condition .= "($tags_condition)\n";
+		// If there is not tag currently in Pandora, block the group info
+		if (empty($tags_condition_array)) {
+			$tags_condition_array[] = "1=0";
+		}
+		
+		$tags_condition = $group_condition . " AND (" . implode(" OR ", $tags_condition_array) . ")";
+		$condition[] = "($tags_condition)\n";
 	}
-	
-	//Commented because ACLs propagation don't work
-/*
 	if (!empty($condition)) {
-		// Juanma (08/05/2014) Fix : Also add events of other groups (taking care of propagate ACLs func!)
-		if (!empty($_groups_not_in))
-			$condition = sprintf("\n((%s) OR id_grupo NOT IN (%s))", $condition, rtrim($_groups_not_in, ','));
+		$condition = implode(' OR ', $condition);
 	}
-*/
-	
+
+	if (!empty($without_tags)) {
+		if (!empty($condition)) {
+			$condition .= ' OR  ';
+		}
+		$in_group = implode(",",$without_tags);
+		$condition .= sprintf('(id_grupo IN (%s) OR id_group IN (%s))',$in_group,$in_group);
+	}
+
+	$condition = !empty($condition) ? "($condition)" : '';
+
 	return $condition;
 }
 
@@ -975,15 +842,14 @@ function tags_has_user_acl_tags($id_user = false) {
 	if(is_user_admin($id_user)) {
 		return false;
 	}
-	
-	$query = sprintf("SELECT count(*) 
-			FROM tusuario_perfil, tperfil
-			WHERE tperfil.id_perfil = tusuario_perfil.id_perfil AND
-			tusuario_perfil.id_usuario = '%s' AND tags != ''", 
-			$id_user);
-			
+
+	$query = "SELECT count(*)
+		FROM tusuario_perfil
+		WHERE tusuario_perfil.id_usuario = '$id_user'
+			AND tags != '' AND tags !='0'";
+
 	$user_tags = db_get_value_sql($query);
-	
+
 	return (bool)$user_tags;
 }
 
@@ -1150,7 +1016,7 @@ function tags_get_tags_for_module_search($id_user = false, $access = 'AR') {
 		//--------------------------------------------------------------
 		return false;
 	}
-    // Get the tags of the required access flag for each group
+	// Get the tags of the required access flag for each group
 	$tags = tags_get_acl_tags($id_user, 0, $access, 'data');
 	// If there are wrong parameters or fail ACL check, return false
 	if ($tags_user === ERR_WRONG_PARAMETERS || $tags_user === ERR_ACL) {
@@ -1186,252 +1052,27 @@ function tags_check_acl_by_module($id_module = 0, $id_user = false,
 	$access = 'AW') {
 	global $config;
 
-	$return = false;
-
-	if (!empty($id_module)) {
-		$tags = tags_get_module_tags($id_module);
-		$groups = modules_get_agent_groups($id_module);
-
-		if ($id_user === false) {
-			$id_user = $config["id_user"];
-		}
-
-		foreach ($groups as $group) {
-			if (tags_check_acl($id_user, $group, $access, $tags, true)) {
-				return true;
-			}
-		}
-	}
-
-	return $return;
-}
-
-/**
- * Check the ACLs with tags
- * 
- * @param string ID of the user (with false the user will be taked from config)
- * @param string id of the group (0 means for at least one)
- * @param string access flag (AR,AW...)
- * @param mixed tags to be checked (array() means for at least one)
- * 
- * @return bool true if the acl check has success, false otherwise
- */
-function tags_check_acl($id_user, $id_group, $access, $tags = array(), $flag_id_tag = false) {
-	global $config;
-	
+	if (empty($id_module)) return false;
 	if ($id_user === false) {
-		$id_user = $config['id_user'];
+		$id_user = $config["id_user"];
 	}
-	
-	// Get parents to check in propagate ACL cases
-	if (!is_array($id_group) && $id_group != 0) {
-		$id_group = array($id_group);
-		$group = db_get_row_filter('tgrupo',
-			array('id_grupo' => $id_group));
-		$parents = groups_get_parents($group['parent'], true);
-		
-		foreach ($parents as $parent) {
-			$id_group[] = $parent['id_grupo'];
-		}
-	}
-	
-	$acls = tags_get_acl_tags($id_user, $id_group, $access, 'data');
-	
-	// If there are wrong parameters or fail ACL check, return false
-	if ($acls === ERR_WRONG_PARAMETERS || $acls === ERR_ACL) {
-		return false;
-	}
-	
-	// If there are not tags restrictions or tags passed, check the group access
-	if (empty($acls) || empty($tags)) {
-		if (!is_array($id_group))
-			$group_id_array = array($id_group);
-			
-		foreach ($id_group as $group) {
-			if (check_acl($id_user, $group, $access))
-				return true;
-		}
-	}
-	
-	# Fix: If user profile has more than one group, due to ACL propagation then id_group can be an array
-	if (is_array($id_group)) {
-		
-		foreach ($id_group  as $group) {
-			if ($group > 0) {
-				if (array_key_exists(0, $acls)) {
-					//There is a All group
-					
-					foreach ($tags as $tag) {
-						if (in_array($tag, $acls[0])) {
-							return true;
-						}
-						else {
-							return false;
-						}
-					}
-				}
-				else if (isset($acls[$group])) {
-					foreach ($tags as $tag) {
-						if (!$flag_id_tag)
-							$tag = tags_get_id($tag);
-						
-						if (in_array($tag, $acls[$group])) {
-							return true;
-						} else if (empty($acls[$group])) {
-							return true;
-						}
-					}
-				}
-				else {
-					return false;
-				}
-			}
-			else {
-				
-				foreach ($acls as $acl_tags) {
-					foreach ($tags as $tag) {
-						if (!$flag_id_tag)
-							$tag = tags_get_id($tag);
-						
-						if (in_array($tag, $acl_tags)) {
-							return true;
-						}
-					}
-				}
-			}
-		}
-	}
-	else {
-		if ($id_group > 0) {
-			if (isset($acls[$id_group])) {
-				foreach ($tags as $tag) {
-					if (!$flag_id_tag)
-						$tag = tags_get_id($tag);
-					
-					if (in_array($tag, $acls[$id_group])) {
-						return true;
-					}
-				}
-			}
-			else {
-				return false;
-			}
-		}
-		else {
-			foreach ($acls as $acl_tags) {
-				foreach ($tags as $tag) {
-					if (!$flag_id_tag)
-						$tag = tags_get_id($tag);
-					
-					if (in_array($tag, $acl_tags)) {
-						return true;
-					}
-				}
-			}
-		}
-	}
-	
-	return false;
-}
 
-function tags_check_acl_event($id_user, $id_group, $access, $tags = array(),$p = false) {
-	global $config;
-	
-	if($id_user === false) {
-		$id_user = $config['id_user'];
+	$tags = tags_get_module_tags($id_module);
+	$groups = modules_get_agent_groups($id_module);
+	$user_groups = users_get_groups($id_user, $acces, false, true);
+
+	$acl_column = get_acl_column($access);
+	foreach ($groups as $group) {
+		// If user has not permission for this group,go to next group
+		if (!isset($user_groups[$group])) continue;
+		// No tags means user can see all tags for this group
+		if (empty($user_groups[$group]["tags"][$acl_column])) return true;
+		// Check acl
+		$intersection = array_intersect($tags, $user_groups[$group]["tags"][$acl_column]);
+		if(!empty($intersection)) return true;
 	}
-	
-	$acls = tags_get_acl_tags($id_user, $id_group, $access, 'data');
-	
-	// If there are wrong parameters or fail ACL check, return false
-	if($acls === ERR_WRONG_PARAMETERS || $acls === ERR_ACL) {
-		return false;
-	}
-	
-	// If there are not tags restrictions or tags passed, check the group access
-	if (empty($acls) || empty($tags)) {
-		if (!is_array($id_group))
-			$group_id_array = array($id_group);
-			
-		foreach ($id_group as $group) {
-			if (check_acl($id_user, $group, $access))
-				return true;
-		}
-	}
-	
-	# Fix: If user profile has more than one group, due to ACL propagation then id_group can be an array
-	if (is_array($id_group)) {
-		
-		foreach ($id_group  as $group) {
-			if ($group > 0) {
-				if (isset($acls[$group])) {
-					foreach ($tags as $tag) {
-						$tag = tags_get_id($tag);
-						if (in_array($tag, $acls[$group])) {
-							return true;
-						}
-					}
-				}
-				else {
-					//return false;
-					$return = false;
-				}
-			}
-			else {
-				foreach ($acls as $acl_tags) {
-					foreach ($tags as $tag) {
-						$tag = tags_get_id($tag);
-						if (in_array($tag, $acl_tags)) {
-							return true;
-						}
-					}
-				}
-			}
-			
-		}
-		
-	}
-	else {
-		if ($id_group > 0) {
-			if (isset($acls[$id_group])) {
-				foreach ($tags as $tag) {
-					$tag = tags_get_id($tag);
-					
-					if (in_array($tag, $acls[$id_group])) {
-						return true;
-					}
-				}
-			}
-			else {
-				//return false;
-				$return = false;
-			}
-		}
-		else {
-			foreach ($acls as $acl_tags) {
-				foreach ($tags as $tag) {
-					$tag = tags_get_id($tag);
-					if (in_array($tag, $acl_tags)) {
-						return true;
-					}
-				}
-			}
-		}
-	}
-	//return false;
-	$return = false;
-	
-	if ($return == false) {
-		$parent = db_get_value('parent','tgrupo','id_grupo',$id_group);
-		
-		if ($parent !== 0) {
-			$propagate = db_get_value('propagate','tgrupo','id_grupo',$parent);
-			if ($propagate == 1) {
-				$acl_parent = tags_check_acl_event($id_user, $parent, $access, $tags,$p);
-				return $acl_parent;
-			}
-		}
-	}
+
+	return false;
 }
 
 /* This function checks event ACLs */
@@ -2446,7 +2087,9 @@ function tags_get_user_groups_and_tags ($id_user = false, $access = 'AR', $stric
 
 	$return = array();
 	foreach ($acls as $acl) {
-		$return[$acl["id_grupo"]] = $acl["tags"];
+		$return[$acl["id_grupo"]] = isset($acl["tags"][get_acl_column($access)])
+			? implode(",",$acl["tags"][get_acl_column($access)])
+			: "";
 	}
 
 	return $return;
@@ -2700,5 +2343,42 @@ function tags_get_module_policy_tags($id_tag, $id_module) {
 		array('id_tag' => $id_tag, 'id_agente_modulo' => $id_module));
 	
 	return $id_module_policy;
+}
+
+/**
+ * Get all tags configured to user associated to the agent.
+ *
+ * @param int $id_agent Agent to extract tags
+ * @param string $access Access to check
+ *
+ * @return mixed 
+ * 		false if user has not permission on agent groups
+ * 		true if there is not any tag restriction
+ * 		array with all tags if there are tags configured
+ */
+function tags_get_user_applied_agent_tags ($id_agent, $access = "AR") {
+	global $config;
+
+	$agent_groups = agents_get_all_groups_agent($id_agent);
+	$user_groups = users_get_groups(false, 'AR', false, true);
+	// Check global agent permissions
+	if (!check_acl_one_of_groups($config['id_user'], $agent_groups, $access)) {
+		return false;
+	}
+
+	$acl_column = get_acl_column($access);
+	$tags = array();
+	foreach ($agent_groups as $group) {
+		// If user has not permission to a single group, continue
+		if (!isset($user_groups[$group])) continue;
+		$group_tags = $user_groups[$group]["tags"][$acl_column];
+		if (!empty($group_tags)) {
+			$tags = array_merge($tags, $group_tags);
+		} else {
+			// If an agent
+			return true;
+		}
+	}
+	return empty($tags) ? true : $tags;
 }
 ?>

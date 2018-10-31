@@ -38,6 +38,9 @@ $get_event_name = (bool) get_parameter ('get_event_name');
 $meta = get_parameter ('meta', 0);
 $history = get_parameter ('history', 0);
 $table_events = get_parameter('table_events', 0);
+$total_events = (bool)get_parameter('total_events');
+$total_event_graph = (bool)get_parameter('total_event_graph');
+$graphic_event_group = (bool)get_parameter('graphic_event_group');
 
 if ($get_event_name) {
 	$event_id = get_parameter ('event_id');
@@ -412,7 +415,7 @@ if ($get_extended_event) {
 	$custom_data = events_page_custom_data($event);
 	
 	if ($meta) {
-		metaconsole_restore_db_force();
+		metaconsole_restore_db();
 	}
 	
 	$general = events_page_general($event);
@@ -555,7 +558,7 @@ if ($table_events) {
 	
 	// Fix: for tag functionality groups have to be all user_groups (propagate ACL funct!)
 	$groups = users_get_groups($config["id_user"]);
-	
+
 	$tags_condition = tags_get_acl_tags($config['id_user'],
 		array_keys($groups), 'ER', 'event_condition', 'AND');
 	echo '<div id="div_all_events_24h">';
@@ -603,6 +606,39 @@ if ($get_list_events_agents) {
 	$returned_list = events_list_events_grouped_agents($returned_sql);
 	
 	echo $returned_list;
+	return;
+}
+
+if ($total_events) {
+	global $config;
+	
+	$sql_count_event = 'SELECT SQL_NO_CACHE COUNT(id_evento) FROM tevento  ';
+	if ($config['event_view_hr']) {
+		$sql_count_event .= 'WHERE utimestamp > (UNIX_TIMESTAMP(NOW()) - ' . $config['event_view_hr'] * SECONDS_1HOUR . ')';
+	}
+
+	$system_events = db_get_value_sql($sql_count_event);
+	echo $system_events;
+	return;
+}
+
+if ($total_event_graph) {
+	global $config;
+
+	require_once($config["homedir"] . '/include/functions_graph.php');
+
+	$prueba = grafico_eventos_total("", 280, 150, false, true);
+	echo $prueba;
+	return;
+}
+
+if ($graphic_event_group) {
+	global $config;
+
+	require_once($config["homedir"] . '/include/functions_graph.php');
+
+	$prueba = grafico_eventos_grupo(280, 150, "", false, true);
+	echo $prueba;
 	return;
 }
 ?>

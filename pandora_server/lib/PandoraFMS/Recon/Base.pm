@@ -96,6 +96,9 @@ sub new {
 		# Working SNMP community for each device.
 		community_cache => {},
 
+		# Cache of deviced discovered.
+		dicovered_cache => {},
+
 		# Connections between devices.
 		connections => {},
 
@@ -147,8 +150,15 @@ sub new {
 		recon_timing_template => 3,
 		recon_ports => '',
 		resolve_names => 0,
+		snmp_auth_user => '',
+		snmp_auth_pass => '',
+		snmp_auth_method => '',
 		snmp_checks => 2,
+		snmp_privacy_method => '',
+		snmp_privacy_pass => '',
+		snmp_security_level => '',
 		snmp_timeout => 2,
+		snmp_version => 1,
 		subnets => [],
 		@_,
 
@@ -157,8 +167,66 @@ sub new {
 	# Perform some sanity checks.
 	die("No subnet was specified.") unless defined($self->{'subnets'});
 
-	# Disable SNMP scans if no community was given.
-	$self->{'snmp_enabled'} = 0 if (scalar(@{$self->{'communities'}}) == 0);
+	# Check SNMP params id SNMP is enabled
+	if ($self->{'snmp_enabled'}) {
+		# Check SNMP version
+		if ($self->{'snmp_version'} ne '1' && $self->{'snmp_version'} ne '2'
+			&& $self->{'snmp_version'} ne '2c' && $self->{'snmp_version'} ne '3'
+		) {
+			$self->{'snmp_enabled'} = 0;
+			$self->call('message', "SNMP version " . $self->{'snmp_version'} . " not supported (only 1, 2, 2c and 3).", 5);
+		}
+
+		# Check the version 3 parameters
+		if ($self->{'snmp_version'} eq '3') {
+			# Fixed some vars
+			$self->{'communities'} = [];
+
+			# SNMP v3 checks
+			if (
+				$self->{'snmp_security_level'} ne 'noAuthNoPriv' &&
+				$self->{'snmp_security_level'} ne 'authNoPriv' &&
+				$self->{'snmp_security_level'} ne 'authPriv'
+			) {
+				$self->{'snmp_enabled'} = 0;
+				$self->call('message', "Invalid SNMP security level " . $self->{'snmp_security_level'} . ".", 5);
+			}
+			if ($self->{'snmp_privacy_method'} ne 'DES' && $self->{'snmp_privacy_method'} ne 'AES') {
+				$self->{'snmp_enabled'} = 0;
+				$self->call('message', "Invalid SNMP privacy method " . $self->{'snmp_privacy_method'} . ".", 5);
+			}
+			if ($self->{'snmp_auth_method'} ne 'MD5' && $self->{'snmp_auth_method'} ne 'SHA') {
+				$self->{'snmp_enabled'} = 0;
+				$self->call('message', "Invalid SNMP authentication method " . $self->{'snmp_auth_method'} . ".", 5);
+			}
+		} else {
+			# Fixed some vars
+			$self->{'snmp_auth_user'} = '';
+			$self->{'snmp_auth_pass'} = '';
+			$self->{'snmp_auth_method'} = '';
+			$self->{'snmp_privacy_method'} = '';
+			$self->{'snmp_privacy_pass'} = '';
+			$self->{'snmp_security_level'} = '';
+
+			# Disable SNMP scans if no community was given.
+			if (scalar(@{$self->{'communities'}}) == 0) {
+				$self->{'snmp_enabled'} = 0;
+				$self->call('message', "There is not any SNMP community configured.", 5);
+
+			}
+		}
+	}
+
+	# Remove all snmp related values if disabled
+	if (!$self->{'snmp_enabled'}) {
+		$self->{'communities'} = [];
+		$self->{'snmp_auth_user'} = '';
+		$self->{'snmp_auth_pass'} = '';
+		$self->{'snmp_auth_method'} = '';
+		$self->{'snmp_privacy_method'} = '';
+		$self->{'snmp_privacy_pass'} = '';
+		$self->{'snmp_security_level'} = '';
+	}
 
 	return bless($self, $class);
 }
@@ -199,7 +267,7 @@ sub aft_connectivity($$) {
 	my ($self, $switch) = @_;
 	my (%mac_temp, @aft_temp);
 
-	return unless defined($self->get_community($switch));
+	return unless ($self->is_snmp_discovered($switch));
 
 	$self->enable_vlan_cache();
 
@@ -397,8 +465,7 @@ sub find_ifaces($$) {
 	my ($self, $device) = @_;
 
 	# Does it respond to SNMP?
-	my $community = $self->get_community($device);
-	return unless defined($community);
+	return unless ($self->is_snmp_discovered($device));
 
 	my @output = $self->snmp_get_value_array($device, $PandoraFMS::Recon::Base::IFINDEX);
 	foreach my $if_index (@output) {
@@ -476,11 +543,13 @@ sub get_device($$) {
 sub get_community($$) {
 	my ($self, $device) = @_;
 
+	return '' if ($self->{'snmp_version'} eq "3");
+
 	if (defined($self->{'community_cache'}->{$device})) {
 		return $self->{'community_cache'}->{$device};
 	}
 
-	return undef;
+	return '';
 }
 
 ########################################################################################
@@ -787,6 +856,9 @@ sub get_visited_devices($) {
 sub get_vlans($$) {
 	my ($self, $device) = @_;
 
+	# Disabled in verison 3
+	return () if ($self->{'snmp_version'} eq "3");
+
 	# Is the VLAN cache disabled?
 	return () unless ($self->{'__vlan_cache_enabled__'} == 1);
 
@@ -946,6 +1018,17 @@ sub is_visited($$) {
 }
 
 ########################################################################################
+# Returns 1 if the given device has responded successfully to a snmp request
+# Returns 0 otherwise.
+########################################################################################
+sub is_snmp_discovered($$) {
+	my ($self, $device) = @_;
+
+	# Check if device is into discovered cache
+	return (defined($self->{'discovered_cache'}->{$device})) ? 1 : 0;
+}
+
+########################################################################################
 # Mark the given devices as connected to each other on the given interfaces.
 ########################################################################################
 sub mark_connected($$;$$$) {
@@ -999,25 +1082,67 @@ sub mark_visited($$) {
 }
 
 ########################################################################################
-# Looks for a working SNMP community for the given device. Returns 1 if one is
-# found, 0 otherwise. Updates the SNMP community cache.
+# Mark the given device as snmp discovered.
+########################################################################################
+sub mark_discovered($$) {
+	my ($self, $device) = @_;
+
+	$self->{'discovered_cache'}->{$device} = 1;
+}
+
+########################################################################################
+# Validate the configuration for the given device.
+# Returns 1 if successfull snmp contact, 0 otherwise.
+# Updates the SNMP community cache on v1, v2 and v2c.
 ########################################################################################
 sub snmp_responds($$) {
 	my ($self, $device) = @_;
 
-	# We already have a working SNMP community for this device.
-	return 1 if (defined($self->get_community($device)));
+	return 1 if($self->is_snmp_discovered($device));
+
+	return ($self->{'snmp_version'} eq "3")
+		? $self->snmp_responds_v3($device)
+		: $self->snmp_responds_v122c($device);
+}
+
+########################################################################################
+# Looks for a working SNMP community for the given device. Returns 1 if one is
+# found, 0 otherwise. Updates the SNMP community cache.
+########################################################################################
+sub snmp_responds_v122c($$) {
+	my ($self, $device) = @_;
 
 	foreach my $community (@{$self->{'communities'}}) {
 
 		# Clean blanks.
 		$community =~ s/\s+//g;
 
-		`snmpwalk -M/dev/null -r$self->{'snmp_checks'} -t$self->{'snmp_timeout'} -v1 -On -Oe -c $community $device .0 2>/dev/null`;
+		my $command = $self->snmp_get_command($device, ".0", $community);
+		`$command`;
 		if ($? == 0) {
 			$self->set_community($device, $community);
+			$self->mark_discovered($device);
 			return 1;
 		}
+	}
+
+	return 0;
+}
+
+
+########################################################################################
+# Validate the SNMP v3 configuration for a device.
+# Returns 1 if successfull snmp contact, 0 otherwise.
+########################################################################################
+sub snmp_responds_v3($$) {
+	my ($self, $device) = @_;
+
+	my $command = $self->snmp_get_command($device, ".0");
+	`$command`;
+
+	if ($? == 0) {
+		$self->mark_discovered($device);
+		return 1;
 	}
 
 	return 0;
@@ -1168,7 +1293,7 @@ sub scan_subnet($) {
 		if (-x $self->{'fping'} && $net_addr->num() > 1) {
 			$self->call('message', "Calling fping...", 5);
 	
-			my @hosts = `$self->{'fping'} -ga "$subnet" 2>DEVNULL`;
+			my @hosts = `"$self->{'fping'}" -ga "$subnet" 2>DEVNULL`;
 			next if (scalar(@hosts) == 0);
 		
 			my $step = 50.0 / scalar(@subnets) / scalar(@hosts); # The first 50% of the recon task approx.
@@ -1309,8 +1434,8 @@ sub snmp_get($$$) {
 	my ($self, $device, $oid) = @_;
 	my @output;
 
+	return () unless defined $self->is_snmp_discovered($device);
 	my $community = $self->get_community($device);
-	return () unless defined ($community);
 
 	# Check the SNMP query cache first.
 	if (defined($self->{'snmp_cache'}->{"${device}_${oid}"})) {
@@ -1320,13 +1445,15 @@ sub snmp_get($$$) {
 	# Check VLANS.
 	my @vlans = $self->get_vlans($device);
 	if (scalar(@vlans) == 0) {
-		@output = `snmpwalk -M/dev/null -r$self->{'snmp_checks'} -t$self->{'snmp_timeout'}  -v1 -On -Oe -c $community $device $oid 2>/dev/null`;
+		my $command = $self->snmp_get_command($device, $oid, $community);
+		@output = `$command`;
 	}
 	else {
 		# Handle duplicate lines.
 		my %output_hash;
 		foreach my $vlan (@vlans) {
-			foreach my $line (`snmpwalk -M/dev/null -r$self->{'snmp_checks'} -t$self->{'snmp_timeout'}  -v1 -On -Oe -c $community\@$vlan $device $oid 2>/dev/null`) {
+			my $command = $self->snmp_get_command($device, $oid, $community, $vlan);
+			foreach my $line (`$vlan`) {
 				$output_hash{$line} = 1;
 			}
 		}
@@ -1337,6 +1464,30 @@ sub snmp_get($$$) {
 	$self->{'snmp_cache'}->{"${device}_${oid}"} = [@output];
 
 	return @output;
+}
+
+########################################################################################
+# Get the snmpwalk command seing version 1, 2, 2c or 3.
+########################################################################################
+sub snmp_get_command {
+	my ($self, $device, $oid, $community, $vlan) = @_;
+	$vlan = defined($vlan) ? "\@" . $vlan : '';
+
+	my $command = "snmpwalk -M/dev/null -r$self->{'snmp_checks'} -t$self->{'snmp_timeout'} -v$self->{'snmp_version'} -On -Oe ";
+	if ($self->{'snmp_version'} eq "3") {
+		$command .= " -l$self->{'snmp_security_level'} ";
+		if ($self->{'snmp_security_level'} ne "noAuthNoPriv") {
+			$command .= " -u$self->{'snmp_auth_user'} -a$self->{'snmp_auth_method'} -A$self->{'snmp_auth_pass'} ";
+		}
+		if ($self->{'snmp_security_level'} eq "authPriv") {
+			$command .= " -x$self->{'snmp_privacy_method'} -X$self->{'snmp_privacy_pass'} ";
+		}
+	} else {
+		$command .= " -c$community$vlan ";
+	}
+
+	return "$command $device $oid 2>/dev/null";
+
 }
 
 ########################################################################################

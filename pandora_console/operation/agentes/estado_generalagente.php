@@ -137,8 +137,8 @@ $data = array();
 //$table_agent->rowspan[count($table_agent->data)][0] = 6;
 
 // Fixed width non interactive charts
-$status_chart_width = $config["flash_charts"] == false ? 100 : 150;
-$graph_width = $config["flash_charts"] == false ? 200 : 150;
+$status_chart_width = 150;
+$graph_width = 150;
 
 $data[0] = '<div style="margin: 0 auto 6px auto; width: 150px;">';
 $data[0] .= '<div id="status_pie" style="margin: auto; width: ' . $status_chart_width . 'px;">';
@@ -273,7 +273,6 @@ $table_data->head_colspan[0] = 3;
 $data = array();
 $data[0] = '<b>' . __('Group') . '</b>';
 $data[1] = '<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=60&amp;group_id='.$agent["id_grupo"].'">'.groups_get_name ($agent["id_grupo"]).'</a>';
-
 // ACCESS RATE GRAPH
 $access_agent = db_get_value_sql("SELECT COUNT(id_agent)
 	FROM tagent_access
@@ -550,6 +549,7 @@ if (!empty($network_interfaces)) {
 		else {
 			$group_array = $user_groups_ids;
 		}
+		
 		$acl_tags = tags_get_acl_tags($config['id_user'], $group_array, 'ER',
 			'event_condition', 'AND', '', true, array(), true);
 

@@ -20,31 +20,29 @@
  */
 
 /**
- * Create a prediction based on module data with least square method (linear regression) 
+ * Create a prediction based on module data with least square method (linear regression)
  *
  * @param int Module id.
  * @param int Period of the module data.
- * @param int Period of the prediction or false to use it in prediction_date function (see below). 
+ * @param int Period of the prediction or false to use it in prediction_date function (see below).
  * @param int Maximun value using this function for prediction_date.
  * @param int Minimun value using this function for prediction_date.
  * @param bool Result data for CSV file exportation.
- * 
+ *
  * @return array Void array or prediction of the module data.
  */
 function forecast_projection_graph($module_id,
 	$period = SECONDS_2MONTHS, $prediction_period, $max_value = false,
 	$min_value = false, $csv = false) {
-	
+
 	global $config;
-	
-	$max_exec_time = ini_get('max_execution_time'); 
-	
+
+	$max_exec_time = ini_get('max_execution_time');
+
 	if ($max_exec_time !== false) {
-		
-		$max_exec_time = (int)$max_exec_time; 
-	
+		$max_exec_time = (int)$max_exec_time;
 	}
-	
+
 	$begin_time = time();
 
 	$params =array(
@@ -54,16 +52,16 @@ function forecast_projection_graph($module_id,
 		'projection'          => true
 	);
 
-	$module_data = grafico_modulo_sparse ($params);
-	
+	$module_data = grafico_modulo_sparse($params);
+
 	if (empty($module_data)) {
-		return array();	
+		return array();
 	}
-	// Prevents bad behaviour over image error 
+	// Prevents bad behaviour over image error
 	else if (!is_array($module_data) and preg_match('/^<img(.)*$/', $module_data)) {
 		return;
 	}
-	
+
 	// Data initialization
 	$sum_obs        = 0;
 	$sum_xi         = 0;
@@ -113,35 +111,16 @@ function forecast_projection_graph($module_id,
 			$cont++;
 		}
 	}
-
 	$cont--;
 
 	// Calculation over data above:
 	// 1. Calculation of linear correlation coefficient...
-	
-	// 1.1 Average for X: Sum(Xi)/Obs 
+	// 1.1 Average for X: Sum(Xi)/Obs
 	// 1.2 Average for Y: Sum(Yi)/Obs
 	// 2. Covariance between vars
-	// 3.1  Standard deviation for X: sqrt((Sum(Xi²)/Obs) - (avg X)²) 
-	// 3.2 Standard deviation for Y: sqrt((Sum(Yi²)/Obs) - (avg Y)²) 
+	// 3.1  Standard deviation for X: sqrt((Sum(Xi²)/Obs) - (avg X)²)
+	// 3.2 Standard deviation for Y: sqrt((Sum(Yi²)/Obs) - (avg Y)²)
 	// Linear correlation coefficient:
-	
-		
-/*
-	if ($cont != 0) {
-		$covariance = $sum_xi_yi/$cont;
-		$dev_x = sqrt(($sum_xi2/$cont) - ($avg_x*$avg_x));
-		$dev_y = sqrt(($sum_yi2/$cont) - ($avg_y*$avg_y));
-	} else {
-		$covariance = 0;
-		$dev_x = 0;
-		$dev_y = 0;
-	}
-	// Prevents division by zero
-	if ($dev_x != 0 and $dev_y != 0) {
-		$linear_coef = $covariance / ($dev_x * $dev_y);
-	}
-*/
 	// Agent interval could be zero, 300 is the predefined
 	if ($sum_obs == 0) {
 		$agent_interval = SECONDS_5MINUTES;
@@ -149,37 +128,35 @@ function forecast_projection_graph($module_id,
 	else {
 		$agent_interval =  $sum_diff_dates / $sum_obs;
 	}
-	
+
 	// Could be a inverse correlation coefficient
 	// if $linear_coef < 0.0
 	//	 if $linear_coef >= -1.0 and $linear_coef <= -0.8999
 	// 		Function variables have an inverse linear relathionship!
-	//   else 
-	// 		Function variables don't have an inverse linear relathionship!	
-	
+	//   else
+	// 		Function variables don't have an inverse linear relathionship!
 	// Could be a direct correlation coefficient
-	// else 
+	// else
 	//	 if ($linear_coef >= 0.8999 and $linear_coef <= 1.0) {
 	//		Function variables have a direct linear relathionship!
-	//   else 
+	//   else
 	//		Function variables don't have a direct linear relathionship!
-	
 	// 2. Calculation of linear regresion...
-	
+
 	$b_num = (($cont * $sum_xi_yi) - ($sum_xi * $sum_yi));
 	$b_den = (($cont * $sum_xi2) - ($sum_xi * $sum_xi));
 	if ($b_den == 0)
 		return;
 	$b = $b_num / $b_den;
-	
+
 	$a_num = ($sum_yi) - ($b * $sum_xi);
-	
+
 	if ($cont != 0) {
 		$a = $a_num / $cont;
 	} else {
 		$a = 0;
 	}
-	
+
 	// Data inicialization
 	$output_data = array();
 	if ($prediction_period != false) {
@@ -188,11 +165,11 @@ function forecast_projection_graph($module_id,
 	$current_ts = $last_timestamp;
 	$in_range = true;
 	$time_format_2 = '';
-	
+
 	$temp_range = $period;
 	if ($period < $prediction_period)
 		$temp_range = $prediction_period;
-	
+
 	if ($temp_range <= SECONDS_6HOURS) {
 		$time_format = 'H:i:s';
 	}
@@ -206,15 +183,15 @@ function forecast_projection_graph($module_id,
 	elseif ($temp_range <= SECONDS_1MONTH) {
 		$time_format = 'M d';
 		$time_format_2 = 'H\h';
-	} 
+	}
 	else {
 		$time_format = 'M d';
 	}
-	
-	// Aplying linear regression to module data in order to do the prediction	
-	$output_data = array();
+
+	// Aplying linear regression to module data in order to do the prediction
 	$idx = 0;
 	// Create data in graph format like
+
 	while ($in_range) {
 		$now = time();
 
@@ -242,9 +219,10 @@ function forecast_projection_graph($module_id,
 			if ($current_ts - $last_timestamp >= 94608000) {
 				return false;
 			}
-			
+
 			// Found it
-			if ($max_value >= $output_data[$idx][0] and $min_value <= $output_data[$idx][0]) {
+			if (($max_value >= $output_data[$idx][0]) &&
+				($min_value <= $output_data[$idx][0]) ) {
 				return $current_ts;
 			}
 		}
@@ -254,7 +232,6 @@ function forecast_projection_graph($module_id,
 		$current_ts = $current_ts + $agent_interval;
 		$idx++;
 	}
-
 	return $output_data;
 }
 
@@ -264,8 +241,8 @@ function forecast_projection_graph($module_id,
  * @param int Module id.
  * @param int Given data period to make the prediction
  * @param int Max value in the interval.
- * @param int Min value in the interval. 
- * 
+ * @param int Min value in the interval.
+ *
  * @return mixed timestamp with the prediction date or false
  */
 function forecast_prediction_date ($module_id,
@@ -274,6 +251,5 @@ function forecast_prediction_date ($module_id,
 	if ($min_value > $max_value) {
 		return false;
 	}
-	
 	return forecast_projection_graph($module_id, $period, false, $max_value, $min_value);
 }

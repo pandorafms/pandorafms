@@ -395,7 +395,8 @@ function reporting_make_reporting_data($report = null, $id_report,
 					$content,
 					$type,
 					$force_width_chart,
-					$force_height_chart);
+					$force_height_chart
+				);
 				break;
 			case 'netflow_area':
 				$report['contents'][] = reporting_netflow(
@@ -628,41 +629,40 @@ function reporting_make_reporting_data($report = null, $id_report,
 		}
 		$index_content++;
 	}
-	
 	return reporting_check_structure_report($report);
 }
 
 function reporting_SLA($report, $content, $type = 'dinamic',
 	$force_width_chart = null, $force_height_chart = null) {
-	
+
 	global $config;
-	$return = array(); 
+	$return = array();
 	$return['type'] = 'SLA';
-	
+
 	if (empty($content['name'])) {
 		$content['name'] = __('S.L.A.');
 	}
-	
+
 	$return['title'] = $content['name'];
 	$return["description"] = $content["description"];
 	$return["date"] = reporting_get_date_text($report, $content);
-	
+
 	// Get chart
 	reporting_set_conf_charts($width, $height, $only_image, $type,
 		$content, $ttl);
-	
+
 	if (!empty($force_width_chart)) {
 		$width = $force_width_chart;
 	}
-	
+
 	if (!empty($force_height_chart)) {
 		$height = $force_height_chart;
 	}
-	
+
 	$return["id_rc"] = $content['id_rc'];
-	
+
 	$edge_interval = 10;
-	
+
 	if (empty($content['subitems'])) {
 		$slas = db_get_all_rows_field_filter (
 			'treport_content_sla_combined',
@@ -671,7 +671,7 @@ function reporting_SLA($report, $content, $type = 'dinamic',
 	else {
 		$slas = $content['subitems'];
 	}
-	
+
 	if (empty($slas)) {
 		$return['failed'] = __('There are no SLAs defined');
 	}
@@ -684,9 +684,9 @@ function reporting_SLA($report, $content, $type = 'dinamic',
 			$show_table = 1;
 		}
 		else{
-			$show_table = 0;	
+			$show_table = 0;
 		}
-		
+
 		if($content['show_graph'] == 1 || $content['show_graph'] == 2){
 			$show_graphs = 1;
 		}
@@ -695,14 +695,13 @@ function reporting_SLA($report, $content, $type = 'dinamic',
 		}
 
 		$urlImage = ui_get_full_url(false, true, false, false);
-		
 
 		$sla_failed = false;
 		$total_SLA = 0;
 		$total_result_SLA = 'ok';
 		$sla_showed = array();
 		$sla_showed_values = array();
-		
+
 		foreach ($slas as $sla) {
 			$server_name = $sla ['server_name'];
 			//Metaconsole connection
@@ -713,18 +712,18 @@ function reporting_SLA($report, $content, $type = 'dinamic',
 					continue;
 				}
 			}
-			
+
 			if (modules_is_disable_agent($sla['id_agent_module'])
 				|| modules_is_not_init($sla['id_agent_module'])) {
 				if ($metaconsole_on) {
 					//Restore db connection
 					metaconsole_restore_db();
 				}
-				
+
 				continue;
 			}
-			
-			//controller min and max == 0 then dinamic min and max critical 
+
+			//controller min and max == 0 then dinamic min and max critical
 			$dinamic_text = 0;
 			if($sla['sla_min'] == 0 && $sla['sla_max'] == 0){
 				$sla['sla_min'] = null;
@@ -744,7 +743,7 @@ function reporting_SLA($report, $content, $type = 'dinamic',
 				}
 			}
 
-			//for graph slice for module-interval, if not slice=0;  
+			//for graph slice for module-interval, if not slice=0;
 			if($show_graphs){
 				$module_interval = modules_get_interval ($sla['id_agent_module']);
 				$slice = $content["period"] / $module_interval;
@@ -752,35 +751,34 @@ function reporting_SLA($report, $content, $type = 'dinamic',
 			else{
 				$slice = 1;
 			}
-			
+
 			//call functions sla
 			$sla_array = array();
 			$sla_array = reporting_advanced_sla(
-	                    $sla['id_agent_module'],
-        	            $report["datetime"] - $content['period'],
-	                    $report["datetime"],
-                	    $sla['sla_min'], // min_value -> dynamic
-	                    $sla['sla_max'], // max_value -> dynamic
-	                    $inverse_interval, // inverse_interval -> dynamic
-	                    array  ( "1" => $content["sunday"],
-	                             "2" => $content["monday"],
-        	                     "3" => $content["tuesday"],
-                	             "4" => $content["wednesday"],
-                        	     "5" => $content["thursday"],
-	                             "6" => $content["friday"],
-	                             "7" => $content["saturday"]
-                       	    ),
-	          	    $content['time_from'],
-	           	    $content['time_to'],
-        		    $slice
-					);
+				$sla['id_agent_module'],
+				$report["datetime"] - $content['period'],
+				$report["datetime"],
+  			$sla['sla_min'], // min_value -> dynamic
+				$sla['sla_max'], // max_value -> dynamic
+				$inverse_interval, // inverse_interval -> dynamic
+				array ( "1" => $content["sunday"],
+								"2" => $content["monday"],
+								"3" => $content["tuesday"],
+								"4" => $content["wednesday"],
+								"5" => $content["thursday"],
+								"6" => $content["friday"],
+								"7" => $content["saturday"]
+							),
+				$content['time_from'],
+				$content['time_to'],
+				$slice
+			);
 
-            
 			if ($metaconsole_on) {
 				//Restore db connection
 				metaconsole_restore_db();
 			}
-	
+
 			$server_name = $sla ['server_name'];
 			//Metaconsole connection
 			if ($metaconsole_on && $server_name != '') {
@@ -803,7 +801,7 @@ function reporting_SLA($report, $content, $type = 'dinamic',
 						}
 						return ($a<$b)?-1:1;
 					});
-			
+
 					// Compress (overlapped) planned downtimes
 					$npd = count($planned_downtimes);
 					for ($i=0; $i<$npd; $i++) {
@@ -908,7 +906,7 @@ function reporting_SLA($report, $content, $type = 'dinamic',
 				$data['sla_value']       = $sla_array['SLA'];
 				$data['sla_fixed']       = $sla_array['sla_fixed'];
 			}
-			
+
 			//checks whether or not it meets the SLA
 			if ($data['sla_value'] >= $sla['sla_limit']) {
 				$data['sla_status'] = 1;
@@ -918,7 +916,7 @@ function reporting_SLA($report, $content, $type = 'dinamic',
 				$sla_failed = true;
 				$data['sla_status'] = 0;
 			}
-			
+
 			//Do not show right modules if 'only_display_wrong' is active
 			if($content['only_display_wrong'] && $sla_failed == false){
 				continue;
@@ -927,12 +925,44 @@ function reporting_SLA($report, $content, $type = 'dinamic',
 			//find order
 			$data['order'] = $data['sla_value'];
 
-			if($show_table) {					
+			if($show_table) {
 				$return['data'][] = $data;
 			}
-			
+
 			// Slice graphs calculation
 			if ($show_graphs) {
+				$data_init = -1;
+				$acum = 0;
+				$sum = 0;
+				$array_result = array();
+				$i=0;
+				foreach ($raw_graph as $key => $value) {
+					if($data_init == -1){
+						$data_init = $value['data'];
+						$acum      = $value['utimestamp'];
+						$sum       = $value['data'];
+					}
+					else{
+						if($data_init == $value['data']){
+							$acum = $acum + $value['utimestamp'];
+							$sum  = $sum + $value['real_data'];
+						}
+						else{
+							$array_result[$i]['data'] = $data_init;
+							$array_result[$i]['utimestamp'] = $acum;
+							$array_result[$i]['real_data'] = $sum;
+							$i++;
+							$data_init = $value['data'];
+							$acum = $value['utimestamp'];
+							$sum = $value['real_data'];
+						}
+					}
+				}
+
+				$array_result[$i]['data'] = $data_init;
+				$array_result[$i]['utimestamp'] = $acum;
+				$array_result[$i]['real_data'] = $sum;
+
 				$dataslice = array();
 				$dataslice['agent'] = io_safe_output(modules_get_agentmodule_agent_alias ($sla['id_agent_module']));
 				$dataslice['module'] = io_safe_output(modules_get_agentmodule_name ($sla['id_agent_module']));
@@ -948,13 +978,14 @@ function reporting_SLA($report, $content, $type = 'dinamic',
 					$content,
 					$content['time_from'],
 					$content['time_to'],
-					1920,
-					50,
+					100,
+					70,
 					$urlImage,
 					$ttl,
-					$raw_graph,
-					false);
-				
+					$array_result,
+					false
+				);
+
 				$return['charts'][] = $dataslice;
 			}
 
@@ -964,7 +995,7 @@ function reporting_SLA($report, $content, $type = 'dinamic',
 			}
 
 		}
-			
+
 		// SLA items sorted descending ()
 		if ($content['top_n'] == 2) {
 			arsort($return['data']['']);
@@ -1307,7 +1338,7 @@ function reporting_event_top_n($report, $content, $type = 'dinamic',
 			
 			if ($show_graph != REPORT_TOP_N_ONLY_TABLE) {
 				arsort($data_pie_graph);
-				$return['charts']['pie'] = pie3d_graph(false,
+				$return['charts']['pie'] = pie_graph(
 					$data_pie_graph,
 					$width, $height,
 					__("other"),
@@ -1320,7 +1351,6 @@ function reporting_event_top_n($report, $content, $type = 'dinamic',
 				
 				//Display bars graph
 				$return['charts']['bars'] = hbar_graph(
-					false,
 					$data_hbar,
 					$width,
 					count($data_hbar) * 50,
@@ -1460,8 +1490,7 @@ function reporting_event_report_group($report, $content,
 			$filter_event_severity,	$filter_event_type, 
 			$filter_event_status, $filter_event_filter_search);
 			
-		$return['chart']['by_agent']= pie3d_graph(
-			false,
+		$return['chart']['by_agent']= pie_graph(
 			$data_graph,
 			500,
 			150,
@@ -1470,7 +1499,8 @@ function reporting_event_report_group($report, $content,
 			ui_get_full_url(false, false, false, false) . "/images/logo_vertical_water.png",
 			$config['fontpath'],
 			$config['font_size'],
-			$ttl);
+			$ttl
+		);
 	}
 	
 	if ($event_graph_by_user_validator) {
@@ -1479,8 +1509,7 @@ function reporting_event_report_group($report, $content,
 			$report["datetime"],$filter_event_severity,	$filter_event_type, 
 			$filter_event_status, $filter_event_filter_search);
 		
-		$return['chart']['by_user_validator'] = pie3d_graph(
-			false,
+		$return['chart']['by_user_validator'] = pie_graph(
 			$data_graph,
 			500,
 			150,
@@ -1489,7 +1518,8 @@ function reporting_event_report_group($report, $content,
 			ui_get_full_url(false, false, false, false) . "/images/logo_vertical_water.png",
 			$config['fontpath'],
 			$config['font_size'],
-			$ttl);
+			$ttl
+		);
 	}
 	
 	if ($event_graph_by_criticity) {
@@ -1500,8 +1530,7 @@ function reporting_event_report_group($report, $content,
 		
 		$colors = get_criticity_pie_colors($data_graph);
 		
-		$return['chart']['by_criticity'] = pie3d_graph(
-			false,
+		$return['chart']['by_criticity'] = pie_graph(
 			$data_graph,
 			500,
 			150,
@@ -1512,7 +1541,8 @@ function reporting_event_report_group($report, $content,
 			$config['font_size'],
 			$ttl,
 			false,
-			$colors);
+			$colors
+		);
 	}
 	
 	if ($event_graph_validated_vs_unvalidated) {
@@ -1521,8 +1551,7 @@ function reporting_event_report_group($report, $content,
 			$report["datetime"],$filter_event_severity,	$filter_event_type, 
 			$filter_event_status, $filter_event_filter_search);
 		
-		$return['chart']['validated_vs_unvalidated'] = pie3d_graph(
-			false,
+		$return['chart']['validated_vs_unvalidated'] = pie_graph(
 			$data_graph,
 			500,
 			150,
@@ -1531,7 +1560,8 @@ function reporting_event_report_group($report, $content,
 			ui_get_full_url(false, false, false, false) .  "/images/logo_vertical_water.png",
 			$config['fontpath'],
 			$config['font_size'],
-			$ttl);
+			$ttl
+		);
 	}
 	
 	if ($config['metaconsole']) {
@@ -1552,7 +1582,7 @@ function reporting_event_report_group($report, $content,
 function reporting_event_report_module($report, $content,
 	$type = 'dinamic', $force_width_chart = null,
 	$force_height_chart = null, $pdf=0) {
-	
+
 	global $config;
 
 	if($pdf){
@@ -1563,20 +1593,29 @@ function reporting_event_report_module($report, $content,
 	}
 
 	$return['type'] = 'event_report_module';
-	
+
 	if (empty($content['name'])) {
 		$content['name'] = __('Event Report Module');
 	}
-	
+
+	$id_server = false;
+	if(is_metaconsole()){
+		$id_server = metaconsole_get_id_server($content["server_name"]);
+		metaconsole_connect(null, $id_server);
+	}
+
 	$return['title'] = $content['name'];
-	$return['subtitle'] = agents_get_alias($content['id_agent']) .
-		" - " .
-		io_safe_output(
-			modules_get_agentmodule_name($content['id_agent_module']));
+	$return['subtitle'] = agents_get_alias($content['id_agent']) . " - " .
+		io_safe_output(modules_get_agentmodule_name($content['id_agent_module']));
+
+	if(is_metaconsole()){
+		metaconsole_restore_db();
+	}
+
 	$return["description"] = $content["description"];
 	$return["date"] = reporting_get_date_text($report, $content);
 	$return['label'] = (isset($content['style']['label'])) ? $content['style']['label'] : '';
-	
+
 	$event_filter = $content['style'];
 	$return['show_summary_group'] = $event_filter['show_summary_group'];
 	//filter
@@ -1585,22 +1624,18 @@ function reporting_event_report_module($report, $content,
 	$filter_event_type          = json_decode($event_filter['filter_event_type'],true);
 	$filter_event_status        = json_decode($event_filter['filter_event_status'],true);
 	$filter_event_filter_search = $event_filter['event_filter_search'];
-	
+
 	//graphs
 	$event_graph_by_user_validator        = $event_filter['event_graph_by_user_validator'];
 	$event_graph_by_criticity             = $event_filter['event_graph_by_criticity'];
 	$event_graph_validated_vs_unvalidated = $event_filter['event_graph_validated_vs_unvalidated'];
-	
-	$id_server = false;
-	if(is_metaconsole()){
-		$id_server = metaconsole_get_id_server($content["server_name"]);
-	}
+
 	//data events
 	$data = reporting_get_module_detailed_event (
-		$content['id_agent_module'], $content['period'], $report["datetime"], 
-		$show_summary_group, $filter_event_severity, $filter_event_type, 
+		$content['id_agent_module'], $content['period'], $report["datetime"],
+		$show_summary_group, $filter_event_severity, $filter_event_type,
 		$filter_event_status, $filter_event_filter_search, $force_width_chart,
-		$event_graph_by_user_validator, $event_graph_by_criticity, 
+		$event_graph_by_user_validator, $event_graph_by_criticity,
 		$event_graph_validated_vs_unvalidated, $ttl, $id_server);
 
 	if (empty($data)) {
@@ -1608,7 +1643,7 @@ function reporting_event_report_module($report, $content,
 	}
 	else {
 		$return['data'] = array_reverse($data);
-	}	
+	}
 
 	if ($config['metaconsole']) {
 		metaconsole_restore_db();
@@ -1621,7 +1656,7 @@ function reporting_event_report_module($report, $content,
 	else{
 		$return['total_events'] = 0;
 	}
-	
+
 	return reporting_check_structure_content($return);
 }
 
@@ -1795,7 +1830,6 @@ function reporting_agent_module($report, $content) {
 			$row = array();
 			$row['agent_status'][$agent] = agents_get_status($agent);
 			$row['agent_name'] = agents_get_alias($agent);
-			
 			$agent_modules = agents_get_modules($agent);
 			
 			$row['modules'] = array();
@@ -2191,8 +2225,7 @@ function reporting_exception($report, $content, $type = 'dinamic',
 				}
 				
 				
-				$return["chart"]["pie"] = pie3d_graph(
-					false,
+				$return["chart"]["pie"] = pie_graph(
 					$data_pie_graph,
 					600,
 					150,
@@ -2201,11 +2234,11 @@ function reporting_exception($report, $content, $type = 'dinamic',
 					ui_get_full_url(false, false, false, false) .  "/images/logo_vertical_water.png",
 					$config['fontpath'],
 					$config['font_size'],
-					$ttl);
+					$ttl
+				);
 				
 				
 				$params = array(
-					'flash_chart' => false,
 					'chart_data' => $data_hbar,
 					'width' => 600,
 					'height' => 25 * count($data_hbar),
@@ -2373,8 +2406,7 @@ function reporting_event_report_agent($report, $content,
 			$report["datetime"],$filter_event_severity,	$filter_event_type, 
 			$filter_event_status, $filter_event_filter_search);
 		
-		$return["chart"]["by_user_validator"] = pie3d_graph(
-			false,
+		$return["chart"]["by_user_validator"] = pie_graph(
 			$data_graph,
 			500,
 			150,
@@ -2383,7 +2415,8 @@ function reporting_event_report_agent($report, $content,
 			ui_get_full_url(false, false, false, false) . "/images/logo_vertical_water.png",
 			$config['fontpath'],
 			$config['font_size'],
-			$ttl);
+			$ttl
+		);
 	}
 	
 	if ($event_graph_by_criticity) {
@@ -2393,9 +2426,8 @@ function reporting_event_report_agent($report, $content,
 			$filter_event_status, $filter_event_filter_search);
 		
 		$colors = get_criticity_pie_colors($data_graph);
-		
-		$return["chart"]["by_criticity"] = pie3d_graph(
-			false,
+
+		$return["chart"]["by_criticity"] = pie_graph(
 			$data_graph,
 			500,
 			150,
@@ -2406,7 +2438,8 @@ function reporting_event_report_agent($report, $content,
 			$config['font_size'],
 			$ttl,
 			false,
-			$colors);
+			$colors
+		);
 	}
 	
 	if ($event_graph_validated_vs_unvalidated) {
@@ -2415,8 +2448,7 @@ function reporting_event_report_agent($report, $content,
 			$report["datetime"],$filter_event_severity,	$filter_event_type, 
 			$filter_event_status, $filter_event_filter_search);
 		
-		$return["chart"]["validated_vs_unvalidated"] = pie3d_graph(
-			false,
+		$return["chart"]["validated_vs_unvalidated"] = pie_graph(
 			$data_graph,
 			500,
 			150,
@@ -2425,7 +2457,8 @@ function reporting_event_report_agent($report, $content,
 			ui_get_full_url(false, false, false, false) . "/images/logo_vertical_water.png",
 			$config['fontpath'],
 			$config['font_size'],
-			$ttl);
+			$ttl
+		);
 	}
 	
 	if ($config['metaconsole']) {
@@ -2807,18 +2840,17 @@ function agents_get_network_interfaces_array(
 				$row_interface['chart'] = null;
 
 				$width = null;
-				$height = null;
 
 				$params =array(
 					'period'    => $content['period'],
 					'width'     => $width,
-					'height'    => $height,
 					'unit_name' => array_fill(0, count($interface['traffic']), __("bytes/s")),
 					'date'      => $report["datetime"],
 					'only_image'=> $pdf,
 					'homeurl'   => $config['homeurl'],
 					'fullscale' => $fullscale,
-					'server_id' => $id_meta
+					'server_id' => $id_meta,
+					'height'    => $config['graph_image_height']
 				);
 
 				$params_combined = array(
@@ -2866,14 +2898,27 @@ function reporting_alert_get_fired($id_agent_module, $id_alert_template_module, 
 		$id_alert_template_module,
 		$period,
 		$datetime);
+		
+		if (!is_numeric ($datetime)) {
+			$datetime = time_w_fixed_tz($datetime);
+		}
+		if (empty ($datetime)) {
+			$datetime = get_system_time();
+		}
+		
+		$datelimit = $datetime - $period;
 	
+	$empty = '----------------------------';
 	if (empty($firedTimes)) {
 		$firedTimes = array();
-		$firedTimes[0]['timestamp'] = null;
+		$firedTimes[0]['timestamp'] = $empty;
 	}
 
 	foreach ($firedTimes as $fireTime) {
+		if($fireTime['utimestamp'] > $datelimit && $fireTime['utimestamp'] <= $datetime)
 		$fired[] = $fireTime['timestamp'];
+		else
+		$fired[] = $empty;
 	}
 
 	return $fired;
@@ -2956,6 +3001,16 @@ function reporting_alert_report_group($report, $content) {
 		
 		foreach ($alerts as $template => $actions) {
 
+			$datetime = (int) $report["datetime"];
+			if (!is_numeric ($datetime)) {
+				$datetime = time_w_fixed_tz($datetime);
+			}
+			if (empty ($datetime)) {
+				$datetime = get_system_time();
+			}
+			$period = (int) $content["period"];
+			$datelimit = $datetime - $period;
+			
 			$data_action = array();
 			$data_action['actions'] = array();
 			
@@ -2964,7 +3019,7 @@ function reporting_alert_report_group($report, $content) {
 				foreach ($actions["custom"] as $action) {
 					$data_action[$naction]["name"] = $action["name"];
 					$fired = $action["fired"];
-					if ($fired == 0){
+					if ($fired == 0 || ($fired <= $datelimit || $fired > $datetime)){
 						$data_action[$naction]['fired']  = '----------------------------';
 					}
 					else {
@@ -2977,7 +3032,7 @@ function reporting_alert_report_group($report, $content) {
 				foreach ($actions["default"] as $action) {
 					$data_action[$naction]["name"] = $action["name"];
 					$fired = $action["fired"];
-					if ($fired == 0){
+					if ($fired == 0 || ($fired <= $datelimit || $fired > $datetime)){
 						$data_action[$naction]['fired']  = '----------------------------';
 					}
 					else {
@@ -2990,7 +3045,7 @@ function reporting_alert_report_group($report, $content) {
 				foreach ($actions["unavailable"] as $action) {
 					$data_action[$naction]["name"] = $action["name"];
 					$fired = $action["fired"];
-					if ($fired == 0){
+					if ($fired == 0 || ($fired <= $datelimit || $fired > $datetime)){
 						$data_action[$naction]['fired']  = '----------------------------';
 					}
 					else {
@@ -3010,10 +3065,7 @@ function reporting_alert_report_group($report, $content) {
 													(int) $report["datetime"]);
 			$module_actions["actions"]        = $data_action;
 
-			if ($module_actions["template_fired"][0] !== null)
 			$data_row['alerts'][$ntemplates] = $module_actions;
-			else
-			$data_row = null;
 			$ntemplates++;
 		}
 
@@ -3055,7 +3107,6 @@ function reporting_alert_report_agent($report, $content) {
 	$return["description"] = $content["description"];
 	$return["date"] = reporting_get_date_text($report, $content);
 	$return['label'] = (isset($content['style']['label'])) ? $content['style']['label'] : '';
-
 	$module_list = agents_get_modules($content['id_agent']);
 
 	$data = array();
@@ -3076,6 +3127,16 @@ function reporting_alert_report_agent($report, $content) {
 		
 		foreach ($alerts as $template => $actions) {
 
+			$datetime = (int) $report["datetime"];
+			if (!is_numeric ($datetime)) {
+				$datetime = time_w_fixed_tz($datetime);
+			}
+			if (empty ($datetime)) {
+				$datetime = get_system_time();
+			}
+			$period = (int) $content["period"];
+			$datelimit = $datetime - $period;
+			
 			$data_action = array();
 			$data_action['actions'] = array();
 			
@@ -3084,7 +3145,7 @@ function reporting_alert_report_agent($report, $content) {
 				foreach ($actions["custom"] as $action) {
 					$data_action[$naction]["name"] = $action["name"];
 					$fired = $action["fired"];
-					if ($fired == 0){
+					if ($fired == 0 || ($fired <= $datelimit || $fired > $datetime)){
 						$data_action[$naction]['fired']  = '----------------------------';
 					}
 					else {
@@ -3097,7 +3158,7 @@ function reporting_alert_report_agent($report, $content) {
 				foreach ($actions["default"] as $action) {
 					$data_action[$naction]["name"] = $action["name"];
 					$fired = $action["fired"];
-					if ($fired == 0){
+					if ($fired == 0 || ($fired <= $datelimit || $fired > $datetime)){
 						$data_action[$naction]['fired']  = '----------------------------';
 					}
 					else {
@@ -3110,7 +3171,7 @@ function reporting_alert_report_agent($report, $content) {
 				foreach ($actions["unavailable"] as $action) {
 					$data_action[$naction]["name"] = $action["name"];
 					$fired = $action["fired"];
-					if ($fired == 0){
+					if ($fired == 0 || ($fired <= $datelimit || $fired > $datetime)){
 						$data_action[$naction]['fired']  = '----------------------------';
 					}
 					else {
@@ -3130,10 +3191,7 @@ function reporting_alert_report_agent($report, $content) {
 													(int) $report["datetime"]);
 			$module_actions["actions"]        = $data_action;
 
-			if ($module_actions["template_fired"][0] !== null)
 			$data_row['alerts'][$ntemplates] = $module_actions;
-			else 
-			$data_row = null;
 			$ntemplates++;
 		}
 
@@ -3192,13 +3250,18 @@ function reporting_alert_report_module($report, $content) {
 	// Alerts over $id_agent_module
 	$alerts = alerts_get_effective_alert_actions($content['id_agent_module']);
 
-	if ($alerts === false){
-		return;
-	}
-
 	$ntemplates = 0;
 	
 	foreach ($alerts as $template => $actions) {
+		$datetime = (int) $report["datetime"];
+		if (!is_numeric ($datetime)) {
+			$datetime = time_w_fixed_tz($datetime);
+		}
+		if (empty ($datetime)) {
+			$datetime = get_system_time();
+		}
+		$period = (int) $content["period"];
+		$datelimit = $datetime - $period;
 
 		$data_action = array();
 		$data_action['actions'] = array();
@@ -3208,7 +3271,7 @@ function reporting_alert_report_module($report, $content) {
 			foreach ($actions["custom"] as $action) {
 				$data_action[$naction]["name"] = $action["name"];
 				$fired = $action["fired"];
-				if ($fired == 0){
+				if ($fired == 0 || ($fired <= $datelimit || $fired > $datetime)){
 					$data_action[$naction]['fired']  = '----------------------------';
 				}
 				else {
@@ -3221,7 +3284,7 @@ function reporting_alert_report_module($report, $content) {
 			foreach ($actions["default"] as $action) {
 				$data_action[$naction]["name"] = $action["name"];
 				$fired = $action["fired"];
-				if ($fired == 0){
+				if ($fired == 0 || ($fired <= $datelimit || $fired > $datetime)){
 					$data_action[$naction]['fired']  = '----------------------------';
 				}
 				else {
@@ -3234,7 +3297,7 @@ function reporting_alert_report_module($report, $content) {
 			foreach ($actions["unavailable"] as $action) {
 				$data_action[$naction]["name"] = $action["name"];
 				$fired = $action["fired"];
-				if ($fired == 0){
+				if ($fired == 0 || ($fired <= $datelimit || $fired > $datetime)){
 					$data_action[$naction]['fired']  = '----------------------------';
 				}
 				else {
@@ -3254,10 +3317,7 @@ function reporting_alert_report_module($report, $content) {
 												(int) $report["datetime"]);
 		$module_actions["actions"]        = $data_action;
 
-		if ($module_actions["template_fired"][0] !== null)
 		$data_row['alerts'][$ntemplates] = $module_actions;
-		else
-		$data_row = null;
 		$ntemplates++;
 	}
 
@@ -3276,9 +3336,9 @@ function reporting_alert_report_module($report, $content) {
 
 function reporting_sql_graph($report, $content, $type,
 	$force_width_chart, $force_height_chart, $type_sql_graph) {
-	
+
 	global $config;
-	
+
 	switch ($type_sql_graph) {
 		case 'sql_graph_hbar':
 			$return['type'] = 'sql_graph_hbar';
@@ -3290,7 +3350,7 @@ function reporting_sql_graph($report, $content, $type,
 			$return['type'] = 'sql_graph_pie';
 			break;
 	}
-	
+
 	if (empty($content['name'])) {
 		switch ($type_sql_graph) {
 			case 'sql_graph_vbar':
@@ -3304,23 +3364,22 @@ function reporting_sql_graph($report, $content, $type,
 				break;
 		}
 	}
-	
+
 	// Get chart
-	reporting_set_conf_charts($width, $height, $only_image, $type,
-		$content, $ttl);
-	
+	reporting_set_conf_charts($width, $height, $only_image, $type,$content, $ttl);
+
 	if (!empty($force_width_chart)) {
 		$width = $force_width_chart;
 	}
-	
+
 	if (!empty($force_height_chart)) {
 		$height = $force_height_chart;
 	}
-	
+
 	$return['title'] = $content['name'];
 	$return["description"] = $content["description"];
 	$return["date"] = reporting_get_date_text();
-	
+
 	switch ($type) {
 		case 'dinamic':
 		case 'static':
@@ -3337,7 +3396,7 @@ function reporting_sql_graph($report, $content, $type,
 		case 'data':
 			break;
 	}
-	
+
 	return reporting_check_structure_content($return);
 }
 
@@ -3483,79 +3542,6 @@ function reporting_netflow($report, $content, $type,
 	return reporting_check_structure_content($return);
 }
 
-function reporting_simple_baseline_graph($report, $content,
-	$type = 'dinamic', $force_width_chart = null,
-	$force_height_chart = null) {
-
-	global $config;
-
-	if ($config['metaconsole']) {
-		$id_meta = metaconsole_get_id_server($content["server_name"]);
-		$server = metaconsole_get_connection_by_id ($id_meta);
-		metaconsole_connect($server);
-	}
-
-	$return['type'] = 'simple_baseline_graph';
-
-	if (empty($content['name'])) {
-		$content['name'] = __('Simple baseline graph');
-	}
-
-	$module_name = io_safe_output(
-		modules_get_agentmodule_name($content['id_agent_module']));
-	$agent_name = io_safe_output(
-		modules_get_agentmodule_agent_alias ($content['id_agent_module']));
-
-	$return['title'] = $content['name'];
-	$return['subtitle'] = $agent_name . " - " . $module_name;
-	$return["description"] = $content["description"];
-	$return["date"] = reporting_get_date_text($report, $content);
-	$return['label'] = (isset($content['style']['label'])) ? $content['style']['label'] : '';
-
-	// Get chart
-	reporting_set_conf_charts($width, $height, $only_image, $type,
-		$content, $ttl);
-
-	$baseline_data = enterprise_hook(
-		'reporting_enterprise_get_baseline',
-		array (
-			$content['id_agent_module'],
-			$content['period'],
-			$report["datetime"]
-		)
-	);
-
-	if ($baseline_data === ENTERPRISE_NOT_HOOK) {
-		$baseline_data = array ();
-	}
-
-	switch ($type) {
-		case 'dinamic':
-		case 'static':
-			$params =array(
-				'agent_module_id'     => $content['id_agent_module'],
-				'period'              => $content['period'],
-				'date'                => $report["datetime"],
-				'only_image'          => $only_image,
-				'homeurl'             => ui_get_full_url(false, false, false, false),
-				'ttl'                 => $ttl,
-				'array_data_create'   => $baseline_data,
-				'server_id'           => $id_meta
-			);
-
-			$return['chart'] = grafico_modulo_sparse ($params);
-			break;
-		case 'data':
-			break;
-	}
-
-	if ($config['metaconsole']) {
-		metaconsole_restore_db();
-	}
-
-	return reporting_check_structure_content($return);
-}
-
 function reporting_prediction_date($report, $content) {
 	
 	global $config;
@@ -3631,31 +3617,20 @@ function reporting_projection_graph($report, $content,
 	switch ($type) {
 		case 'dinamic':
 		case 'static':
-			$output_projection = forecast_projection_graph(
-				$content['id_agent_module'],
-				$content['period'],
-				$content['top_n_value']
-			);
-
-			// If projection doesn't have data then don't draw graph
-			if ($output_projection ==  NULL) {
-				$output_projection = false;
-			}
-
 			$params =array(
 				'period'     => $content['period'],
 				'width'      => $width,
-				'height'     => $height,
 				'date'       => $report["datetime"],
 				'unit'       => '',
 				'only_image' => $pdf,
 				'homeurl'    => ui_get_full_url(false, false, false, false) . '/',
 				'ttl'        => $ttl,
-				'server_id'  => $id_meta
+				'server_id'  => $id_meta,
+				'height'     => $config['graph_image_height']
 			);
 
 			$params_combined = array(
-				'projection' => $output_projection
+				'projection' => $content['top_n_value'],
 			);
 
 			$return['chart'] = graphic_combined_module(
@@ -3720,7 +3695,6 @@ function reporting_agent_configuration($report, $content) {
 	$agent_configuration['description'] = $agent_data['comentarios'];
 	$agent_configuration['enabled'] = (int)!$agent_data['disabled'];
 	$agent_configuration['group'] = $report["group"];
-	
 	$modules = agents_get_modules ($content['id_agent']);
 	
 	$agent_configuration['modules'] = array();
@@ -3884,131 +3858,131 @@ function reporting_value($report, $content, $type,$pdf) {
 	
 	$return['agent_name'] = $agent_name;
 	$return['module_name'] = $module_name;
-	
+
 	if($pdf){
 		$only_image = 1;
 	}
 
 	$params =array(
-		'agent_module_id'     => $content['id_agent_module'],
-		'period'              => $content['period'],
-		'width'               => '600px',
-		'pure'                => false,///true
-		'date'                => $report["datetime"],
-		'only_image'          => $only_image,
-		'homeurl'             => ui_get_full_url(false, false, false, false),
-		'ttl'                 => 1,///2
-		'type_graph'          => $config['type_module_charts'],
-		'time_interval'       => $content['lapse'],
-		'server_id'           => $id_meta
+		'agent_module_id' => $content['id_agent_module'],
+		'period'          => $content['period'],
+		'width'           => '600px',
+		'pure'            => false,///true
+		'date'            => $report["datetime"],
+		'only_image'      => $only_image,
+		'homeurl'         => ui_get_full_url(false, false, false, false),
+		'ttl'             => 1,///2
+		'type_graph'      => $config['type_module_charts'],
+		'time_interval'   => $content['lapse'],
+		'server_id'       => $id_meta,
+		'height'          => $config['graph_image_height'],
+		'fullscale'       => true
 	);
-	
-	switch ($type) {
 
+	switch ($type) {
 		case 'max':
-		if($content['lapse_calc'] == 0){
-			$value = reporting_get_agentmodule_data_max(
-				$content['id_agent_module'], $content['period'], $report["datetime"]);
-			if (!$config['simple_module_value']) {
-				$formated_value = $value;
+			if($content['lapse_calc'] == 0){
+				$value = reporting_get_agentmodule_data_max(
+					$content['id_agent_module'], $content['period'], $report["datetime"]);
+				if (!$config['simple_module_value']) {
+					$formated_value = $value;
+				}
+				else {
+					$formated_value = format_for_graph($value, $config['graph_precision']) . " " . $unit;
+				}
 			}
-			else {
-				$formated_value = format_for_graph($value, $config['graph_precision']) . " " . $unit;
-			}
-		}
-		else{
-			$value = '
-			<table border="0" style="margin:0 auto;text-align:center;">
-				<tr>
-					<td width="400px;" height="20%;">';
-					if($content['visual_format'] == 1 || $content['visual_format'] == 2 || $content['visual_format'] == 3){
+			else{
+				$value = '
+				<table border="0" style="margin:0 auto;text-align:center;">
+					<tr>
+						<td width="400px;" height="20%;">';
+						if($content['visual_format'] == 1 || $content['visual_format'] == 2 || $content['visual_format'] == 3){
+
+						$value .= '
+							<table style="width:90%;margin:0 auto;background-color:#eee;border: solid lightgray 1px;">
+								<tr>
+									<th style="padding:5px;background-color:#82b92e;">
+										'.__("Agent").'
+									</th>
+									<th style="padding:5px;background-color:#82b92e;">
+										'.__("Module").'
+									</th>
+									<th style="padding:5px;background-color:#82b92e;">
+										'.__("Maximum").'
+									</th>
+								<tr>
+									<td style="padding:5px;">
+										'.$agent_name.'
+									</td>
+									<td style="padding:5px;">
+										'.$module_name.'
+									</td>
+									<td style="padding:5px;">
+										'.format_for_graph(reporting_get_agentmodule_data_max(
+										$content['id_agent_module'], $content['period'], $report["datetime"]), $config['graph_precision']) . ' ' . $unit.'
+									</td>
+								</tr>
+							</table>';
+						}
+
+						$value .= '
+					</td>
+					<td rowspan="2" width="150px">
+					</td>
+					<td rowspan="2">';
+
+					if($content['visual_format'] == 2 || $content['visual_format'] == 3){
+						$params['force_interval'] = 'max_only';
+						$value .= grafico_modulo_sparse($params);
+					}
 
 					$value .= '
-						<table style="width:90%;margin:0 auto;background-color:#eee;border: solid lightgray 1px;">
+
+					</td>
+				</tr>
+				<tr>
+					<td>';
+
+					if($content['visual_format'] == 1 || $content['visual_format'] == 3){
+
+					$value .= '
+						<table style="width:90%;margin:0 auto;margin-top:30px;background-color:#eee;border: solid lightgray 1px;">
 							<tr>
 								<th style="padding:5px;background-color:#82b92e;">
-									'.__("Agent").'
-								</th>
-								<th style="padding:5px;background-color:#82b92e;">
-									'.__("Module").'
+									'.__("Lapse").'
 								</th>
 								<th style="padding:5px;background-color:#82b92e;">
 									'.__("Maximum").'
 								</th>
-							<tr>
-								<td style="padding:5px;">
-									'.$agent_name.'
-								</td>
-								<td style="padding:5px;">
-									'.$module_name.'
-								</td>
-								<td style="padding:5px;">
-									'.format_for_graph(reporting_get_agentmodule_data_max(
-									$content['id_agent_module'], $content['period'], $report["datetime"]), $config['graph_precision']) . ' ' . $unit.'
-								</td>
 							</tr>
-						</table>';
+							<tr>';
+								$time_begin = db_get_row_sql('select utimestamp from tagente_datos where id_agente_modulo ='.$content['id_agent_module'], true);
+								$date_reference = getdate();
+
+								for ($i=$date_reference[0]; $i > ($date_reference[0]-$content["period"]); $i -= $content["lapse"]) { 
+
+									$value .= '<tr><td style="padding:5px;">'. date("Y-m-d H:i:s", ($i-$content["lapse"]+1)).' to '.date("Y-m-d H:i:s",$i).'</td><td>';
+
+									if ($i>$time_begin['utimestamp']) {
+										$value .= format_for_graph(reporting_get_agentmodule_data_max(
+										$content['id_agent_module'], $content["lapse"], $i), $config['graph_precision']) . ' ' . $unit.'</td></tr>';
+									} else {
+											$value .= 'N/A</td></tr>';
+									}
+
+								}
+
+								$value .='</table>';
 					}
+						$value .= '
+					</td>
+				</tr>
+			</table>';
 
-					$value .= '
-				</td>
-				<td rowspan="2" width="150px">
-				</td>
-				<td rowspan="2">';
+				$formated_value = $value;
+			}
 
-				if($content['visual_format'] == 2 || $content['visual_format'] == 3){
-					$params['force_interval'] = 'max_only';
-					$value .= grafico_modulo_sparse($params);
-				}
-
-				$value .= '
-
-				</td>
-			</tr>
-			<tr>
-				<td>';
-
-				if($content['visual_format'] == 1 || $content['visual_format'] == 3){
-
-				$value .= '
-					<table style="width:90%;margin:0 auto;margin-top:30px;background-color:#eee;border: solid lightgray 1px;">
-						<tr>
-							<th style="padding:5px;background-color:#82b92e;">
-								'.__("Lapse").'
-							</th>
-							<th style="padding:5px;background-color:#82b92e;">
-								'.__("Maximum").'
-							</th>
-						</tr>
-						<tr>';
-							$time_begin = db_get_row_sql('select utimestamp from tagente_datos where id_agente_modulo ='.$content['id_agent_module']);
-							$date_reference = getdate();
-
-							for ($i=$date_reference[0]; $i > ($date_reference[0]-$content["period"]); $i -= $content["lapse"]) { 
-
-								$value .= '<tr><td style="padding:5px;">'. date("Y-m-d H:i:s", ($i-$content["lapse"]+1)).' to '.date("Y-m-d H:i:s",$i).'</td><td>';
-
-								if($i>$time_begin['utimestamp']){
-									$value .= format_for_graph(reporting_get_agentmodule_data_max(
-									$content['id_agent_module'], $content["lapse"], $i), $config['graph_precision']) . ' ' . $unit.'</td></tr>';
-								}
-								else{
-										$value .= 'N/A</td></tr>';
-								}
-
-							}
-
-							$value .='</table>';
-				}
-					$value .= '
-				</td>
-			</tr>
-		</table>';
-
-			$formated_value = $value;
-		}
-
-		break;
+			break;
 		case 'min':
 			if($content['lapse_calc'] == 0){
 				$value = reporting_get_agentmodule_data_min(
@@ -4119,111 +4093,111 @@ function reporting_value($report, $content, $type,$pdf) {
 
 			break;
 		case 'avg':
-		if($content['lapse_calc'] == 0){
-			$value = reporting_get_agentmodule_data_average(
-				$content['id_agent_module'], $content['period'], $report["datetime"]);
-			if (!$config['simple_module_value']) {
-				$formated_value = $value;
+			if($content['lapse_calc'] == 0){
+				$value = reporting_get_agentmodule_data_average(
+					$content['id_agent_module'], $content['period'], $report["datetime"]);
+				if (!$config['simple_module_value']) {
+					$formated_value = $value;
+				}
+				else {
+					$formated_value = format_for_graph($value, $config['graph_precision']) . " " . $unit;
+				}
 			}
-			else {
-				$formated_value = format_for_graph($value, $config['graph_precision']) . " " . $unit;
-			}
-		}
-		else{
-			$value = '
-			<table border="0" style="margin:0 auto;text-align:center;">
-				<tr>
-					<td width="400px;" height="20%;">';
+			else{
+				$value = '
+				<table border="0" style="margin:0 auto;text-align:center;">
+					<tr>
+						<td width="400px;" height="20%;">';
+						
+						if($content['visual_format'] == 1 || $content['visual_format'] == 2 || $content['visual_format'] == 3){
+						$value .= '
+							<table style="width:90%;margin:0 auto;background-color:#eee;border: solid lightgray 1px;">
+								<tr>
+									<th style="padding:5px;background-color:#82b92e;">
+										'.__("Agent").'
+									</th>
+									<th style="padding:5px;background-color:#82b92e;">
+										'.__("Module").'
+									</th>
+									<th style="padding:5px;background-color:#82b92e;">
+										'.__("Average").'
+									</th>
+								<tr>
+									<td style="padding:5px;">
+										'.$agent_name.'
+									</td>
+									<td style="padding:5px;">
+										'.$module_name.'
+									</td>
+									<td style="padding:5px;">
+										'.format_for_graph(reporting_get_agentmodule_data_average(
+										$content['id_agent_module'], $content['period'], $report["datetime"]), $config['graph_precision']) . ' ' . $unit.'
+									</td>
+								</tr>
+							</table>';
+							
+						}
+							
+						$value .= '
+					</td>
+					<td rowspan="2" width="150px">
+					</td>
+					<td rowspan="2">';
+					if($content['visual_format'] == 2 || $content['visual_format'] == 3){
+						$params['force_interval'] = 'avg_only';
+						$value .= grafico_modulo_sparse($params);
+					}
 					
-					if($content['visual_format'] == 1 || $content['visual_format'] == 2 || $content['visual_format'] == 3){
 					$value .= '
-						<table style="width:90%;margin:0 auto;background-color:#eee;border: solid lightgray 1px;">
+					
+					</td>				
+				</tr>
+				<tr>
+					<td>';
+					
+					if($content['visual_format'] == 1 || $content['visual_format'] == 3){
+					
+					$value .= '
+						<table style="width:90%;margin:0 auto;margin-top:30px;background-color:#eee;border: solid lightgray 1px;">
 							<tr>
 								<th style="padding:5px;background-color:#82b92e;">
-									'.__("Agent").'
-								</th>
-								<th style="padding:5px;background-color:#82b92e;">
-									'.__("Module").'
+									'.__("Lapse").'
 								</th>
 								<th style="padding:5px;background-color:#82b92e;">
 									'.__("Average").'
 								</th>
-							<tr>
-								<td style="padding:5px;">
-									'.$agent_name.'
-								</td>
-								<td style="padding:5px;">
-									'.$module_name.'
-								</td>
-								<td style="padding:5px;">
-									'.format_for_graph(reporting_get_agentmodule_data_average(
-									$content['id_agent_module'], $content['period'], $report["datetime"]), $config['graph_precision']) . ' ' . $unit.'
-								</td>
 							</tr>
-						</table>';
-						
+							<tr>';
+								$time_begin = db_get_row_sql('select utimestamp from tagente_datos where id_agente_modulo ='.$content['id_agent_module']);
+								$date_reference = getdate();
+								
+								for ($i=$date_reference[0]; $i > ($date_reference[0]-$content["period"]); $i -= $content["lapse"]) { 
+										
+									$value .= '<tr><td style="padding:5px;">'. date("Y-m-d H:i:s", ($i-$content["lapse"]+1)).' to '.date("Y-m-d H:i:s",$i).'</td><td>';
+									
+									if($i>$time_begin['utimestamp']){
+										$value .= format_for_graph(reporting_get_agentmodule_data_average(
+										$content['id_agent_module'], $content["lapse"], $i), $config['graph_precision']) . ' ' . $unit.'</td></tr>';
+									}
+									else{
+										$value .= 'N/A</td></tr>';
+									}
+									
+								}
+								
+								$value .='</table>';
 					}
 						
-					$value .= '
-				</td>
-				<td rowspan="2" width="150px">
-				</td>
-				<td rowspan="2">';
-				if($content['visual_format'] == 2 || $content['visual_format'] == 3){
-					$params['force_interval'] = 'avg_only';
-					$value .= grafico_modulo_sparse($params);
-				}
+						$value .= '
+						
+					</td>
+				</tr>
+			</table>';
 				
-				$value .= '
-				
-				</td>				
-			</tr>
-			<tr>
-				<td>';
-				
-				if($content['visual_format'] == 1 || $content['visual_format'] == 3){
-				
-				$value .= '
-					<table style="width:90%;margin:0 auto;margin-top:30px;background-color:#eee;border: solid lightgray 1px;">
-						<tr>
-							<th style="padding:5px;background-color:#82b92e;">
-								'.__("Lapse").'
-							</th>
-							<th style="padding:5px;background-color:#82b92e;">
-								'.__("Average").'
-							</th>
-						</tr>
-						<tr>';
-							$time_begin = db_get_row_sql('select utimestamp from tagente_datos where id_agente_modulo ='.$content['id_agent_module']);
-							$date_reference = getdate();
-							
-							for ($i=$date_reference[0]; $i > ($date_reference[0]-$content["period"]); $i -= $content["lapse"]) { 
-									
-								$value .= '<tr><td style="padding:5px;">'. date("Y-m-d H:i:s", ($i-$content["lapse"]+1)).' to '.date("Y-m-d H:i:s",$i).'</td><td>';
-								
-								if($i>$time_begin['utimestamp']){
-									$value .= format_for_graph(reporting_get_agentmodule_data_average(
-									$content['id_agent_module'], $content["lapse"], $i), $config['graph_precision']) . ' ' . $unit.'</td></tr>';
-								}
-								else{
-									$value .= 'N/A</td></tr>';
-								}
-								
-							}
-							
-							$value .='</table>';
-				}
-					
-					$value .= '
-					
-				</td>
-			</tr>
-		</table>';
+				$formated_value = $value;
 			
-			$formated_value = $value;
-		
-		}
-		break;
+			}
+			break;
 		
 		case 'sum':
 			$value = reporting_get_agentmodule_data_sum(
@@ -5537,30 +5511,29 @@ function reporting_availability($report, $content, $date=false, $time=false) {
  */
 function reporting_availability_graph($report, $content, $pdf=false) {
 	global $config;
-	$return = array(); 
+	$return = array();
 	$return['type'] = 'availability_graph';
 	$ttl = 1;
 	if ($pdf){
 		$ttl = 2;
 	}
-	
+
 	if (empty($content['name'])) {
 		$content['name'] = __('Availability');
 	}
-	
+
 	$return['title'] = $content['name'];
 	$return["description"] = $content["description"];
 	$return["date"] = reporting_get_date_text($report, $content);
-	
+
 	// Get chart
 	reporting_set_conf_charts($width, $height, $only_image, $type,
 		$content, $ttl);
-	
 
 	$return["id_rc"] = $content['id_rc'];
-	
+
 	$edge_interval = 10;
-	
+
 	if (empty($content['subitems'])) {
 		$slas = db_get_all_rows_field_filter (
 			'treport_content_sla_combined',
@@ -5569,7 +5542,7 @@ function reporting_availability_graph($report, $content, $pdf=false) {
 	else {
 		$slas = $content['subitems'];
 	}
-	
+
 	if (empty($slas)) {
 		$return['failed'] = __('There are no SLAs defined');
 	}
@@ -5578,7 +5551,7 @@ function reporting_availability_graph($report, $content, $pdf=false) {
 		$metaconsole_on = is_metaconsole();
 
 		$urlImage = ui_get_full_url(false, true, false, false);
-		
+
 		$sla_failed = false;
 		$total_SLA = 0;
 		$total_result_SLA = 'ok';
@@ -5586,7 +5559,7 @@ function reporting_availability_graph($report, $content, $pdf=false) {
 		$sla_showed_values = array();
 
 		$priority_mode = $content['style']['priority_mode'];
-		
+
 		foreach ($slas as $sla) {
 			$server_name = $sla ['server_name'];
 			//Metaconsole connection
@@ -5597,18 +5570,17 @@ function reporting_availability_graph($report, $content, $pdf=false) {
 					continue;
 				}
 			}
-			
+
 			if (modules_is_disable_agent($sla['id_agent_module'])
 				|| modules_is_not_init($sla['id_agent_module'])) {
 				if ($metaconsole_on) {
 					//Restore db connection
 					metaconsole_restore_db();
 				}
-				
 				continue;
 			}
-			
-			//controller min and max == 0 then dinamic min and max critical 
+
+			//controller min and max == 0 then dinamic min and max critical
 			$dinamic_text = 0;
 			if($sla['sla_min'] == 0 && $sla['sla_max'] == 0){
 				$sla['sla_min'] = null;
@@ -5628,38 +5600,37 @@ function reporting_availability_graph($report, $content, $pdf=false) {
 				}
 			}
 
-			//for graph slice for module-interval, if not slice=0;	
+			//for graph slice for module-interval, if not slice=0;
 			$module_interval = modules_get_interval ($sla['id_agent_module']);
 			$slice = $content["period"] / $module_interval;
-			
+
 			//call functions sla
 			$sla_array = array();
 			$sla_array = reporting_advanced_sla(
-	                    $sla['id_agent_module'],
-        	            $report["datetime"] - $content['period'],
-	                    $report["datetime"],
-                	    $sla['sla_min'], // min_value -> dynamic
-	                    $sla['sla_max'], // max_value -> dynamic
-	                    $inverse_interval, // inverse_interval -> dynamic
-	                    array  ( "1" => $content["sunday"],
-	                             "2" => $content["monday"],
-        	                     "3" => $content["tuesday"],
-                	             "4" => $content["wednesday"],
-                        	     "5" => $content["thursday"],
-	                             "6" => $content["friday"],
-	                             "7" => $content["saturday"]
-                       	    ),
-	          	    	$content['time_from'],
-	           	   	$content['time_to'],
-        		    	$slice
-					);
+				$sla['id_agent_module'],
+				$report["datetime"] - $content['period'],
+				$report["datetime"],
+				$sla['sla_min'], // min_value -> dynamic
+				$sla['sla_max'], // max_value -> dynamic
+				$inverse_interval, // inverse_interval -> dynamic
+				array ( "1" => $content["sunday"],
+								"2" => $content["monday"],
+								"3" => $content["tuesday"],
+								"4" => $content["wednesday"],
+								"5" => $content["thursday"],
+								"6" => $content["friday"],
+								"7" => $content["saturday"]
+				),
+				$content['time_from'],
+				$content['time_to'],
+				$slice
+			);
 
-            
 			if ($metaconsole_on) {
 				//Restore db connection
 				metaconsole_restore_db();
 			}
-	
+
 			$server_name = $sla ['server_name'];
 			//Metaconsole connection
 			if ($metaconsole_on && $server_name != '') {
@@ -5681,7 +5652,7 @@ function reporting_availability_graph($report, $content, $pdf=false) {
 					}
 					return ($a<$b)?-1:1;
 				});
-		
+
 				// Compress (overlapped) planned downtimes
 				$npd = count($planned_downtimes);
 				for ($i=0; $i<$npd; $i++) {
@@ -5706,9 +5677,9 @@ function reporting_availability_graph($report, $content, $pdf=false) {
 			$data['min']          = $sla['sla_min'];
 			$data['sla_limit']    = $sla['sla_limit'];
 			$data['dinamic_text'] = $dinamic_text;
-			
+
 			if(isset($sla_array[0])){
-				$data['time_total']      = 0;	
+				$data['time_total']      = 0;
 				$data['time_ok']         = 0;
 				$data['time_error']      = 0;
 				$data['time_unknown']    = 0;
@@ -5759,7 +5730,7 @@ function reporting_availability_graph($report, $content, $pdf=false) {
 				$data['checks_not_init'] = $sla_array['checks_not_init'];
 				$data['sla_value']       = $sla_array['SLA'];
 			}
-			
+
 			//checks whether or not it meets the SLA
 			if ($data['sla_value'] >= $sla['sla_limit']) {
 				$data['sla_status'] = 1;
@@ -5778,7 +5749,39 @@ function reporting_availability_graph($report, $content, $pdf=false) {
 			//find order
 			$data['order'] = $data['sla_value'];
 			$return['data'][] = $data;
-			
+
+			$data_init = -1;
+			$acum = 0;
+			$sum = 0;
+			$array_result = array();
+			$i=0;
+			foreach ($raw_graph as $key => $value) {
+				if($data_init == -1){
+					$data_init = $value['data'];
+					$acum      = $value['utimestamp'];
+					$sum       = $value['data'];
+				}
+				else{
+					if($data_init == $value['data']){
+						$acum = $acum + $value['utimestamp'];
+						$sum  = $sum + $value['real_data'];
+					}
+					else{
+						$array_result[$i]['data'] = $data_init;
+						$array_result[$i]['utimestamp'] = $acum;
+						$array_result[$i]['real_data'] = $sum;
+						$i++;
+						$data_init = $value['data'];
+						$acum = $value['utimestamp'];
+						$sum = $value['real_data'];
+					}
+				}
+			}
+
+			$array_result[$i]['data'] = $data_init;
+			$array_result[$i]['utimestamp'] = $acum;
+			$array_result[$i]['real_data'] = $sum;
+
 			// Slice graphs calculation
 			$dataslice = array();
 			$dataslice['agent']        = modules_get_agentmodule_agent_alias ($sla['id_agent_module']);
@@ -5800,22 +5803,22 @@ function reporting_availability_graph($report, $content, $pdf=false) {
 				$content,
 				$content['time_from'],
 				$content['time_to'],
-				1920,
-				50,
+				100,
+				70,
 				$urlImage,
 				$ttl,
-				$raw_graph,
-				false);
-			
+				$array_result,
+				false
+			);
+
 			$return['charts'][] = $dataslice;
 
 			if ($metaconsole_on) {
 				//Restore db connection
 				metaconsole_restore_db();
 			}
-
 		}
-			
+
 		// SLA items sorted descending ()
 		if ($content['top_n'] == 2) {
 			arsort($return['data']['']);
@@ -6331,6 +6334,11 @@ function reporting_custom_graph($report, $content, $type = 'dinamic',
 		else {
 			$content['name'] = __('Simple graph');
 		}
+	} else {
+		if ($type_report == "custom_graph") {
+			$graphs = db_get_all_rows_field_filter ("tgraph", "id_graph", $content['id_gs']);
+			$id_graph = $content['id_gs'];
+		}
 	}
 
 	$return['title'] = $content['name'];
@@ -6344,24 +6352,23 @@ function reporting_custom_graph($report, $content, $type = 'dinamic',
 	$return['chart'] = '';
 
 	$width =null;
-	$height =null;
 
 	switch ($type) {
 		case 'dinamic':
 		case 'static':
-
 			$params =array(
 				'period'     => $content['period'],
 				'width'      => $width,
-				'height'     => $height,
 				'date'       => $report["datetime"],
 				'only_image' => $pdf,
 				'homeurl'    => ui_get_full_url(false, false, false, false),
 				'ttl'        => $ttl,
 				'percentil'  => $graphs[0]["percentil"],
 				'fullscale'  => $graphs[0]["fullscale"],
-				'server_id'  => $id_meta
+				'server_id'  => $id_meta,
+				'height'     => $config['graph_image_height']
 			);
+
 			$params_combined = array(
 				'stacked'        => $graphs[0]["stacked"],
 				'summatory'      => $graphs[0]["summatory_series"],
@@ -6464,7 +6471,8 @@ function reporting_simple_graph($report, $content, $type = 'dinamic',
 				'show_unknown'        => true,
 				'percentil'           => ($content['style']['percentil'] == 1) ? $config['percentil'] : null,
 				'fullscale'           => $fullscale,
-				'server_id'           => $id_meta
+				'server_id'           => $id_meta,
+				'height'              => $config['graph_image_height']
 			);
 
 			$return['chart'] = grafico_modulo_sparse($params);
@@ -6491,15 +6499,14 @@ function reporting_simple_graph($report, $content, $type = 'dinamic',
 
 function reporting_get_date_text($report = null, $content = null) {
 	global $config;
-	
+
 	$return = array();
 	$return['date'] = null;
 	$return['period'] = null;
 	$return['from'] = null;
 	$return['to'] = null;
-	
+
 	if (!empty($report) && !empty($content)) {
-		
 		if ($content['period'] == 0) {
 			$es = json_decode($content['external_source'], true);
 			if ($es['date'] == 0) {
@@ -6515,7 +6522,7 @@ function reporting_get_date_text($report = null, $content = null) {
 			$return['to'] = $report["datetime"];
 		}
 	}
-	
+
 	return $return;
 }
 
@@ -6531,7 +6538,7 @@ function reporting_check_structure_report($return) {
 		$return['datetime'] = "";
 	if (!isset($return['period']))
 		$return['period'] = "";
-	
+
 	return $return;
 }
 
@@ -6551,7 +6558,7 @@ function reporting_check_structure_content($report) {
 		$report["date"]['from'] = "";
 		$report["date"]['to'] = "";
 	}
-	
+
 	return $report;
 }
 
@@ -6611,30 +6618,30 @@ function reporting_get_module_detailed_event ($id_modules, $period = 0,
 	$filter_event_filter_search = false, $force_width_chart = false,
 	$event_graph_by_user_validator = false, $event_graph_by_criticity = false, 
 	$event_graph_validated_vs_unvalidated = false, $ttl = 1, $id_server = false) {
-	
+
 	global $config;
-	
+
 	$id_modules = (array)safe_int ($id_modules, 1);
-	
+
 	if (!is_numeric ($date)) {
 		$date = strtotime ($date);
 	}
 	if (empty ($date)) {
 		$date = get_system_time ();
 	}
-	
+
 	$history = false;
 	if ($config['history_event_enabled'])
 		$history = true;
-	
+
 	$events = array ();
-	
+
 	foreach ($id_modules as $id_module) {
-		$event['data'] = events_get_agent (false, (int) $period, (int) $date, 
-			$history, $show_summary_group, $filter_event_severity, 
-			$filter_event_type, $filter_event_status, $filter_event_filter_search, 
+		$event['data'] = events_get_agent (false, (int) $period, (int) $date,
+			$history, $show_summary_group, $filter_event_severity,
+			$filter_event_type, $filter_event_status, $filter_event_filter_search,
 			false, false, $id_module, true , $id_server);
-			
+
 		//total_events
 		if(isset($event['data'])){
 			$event['total_events'] = count($event['data']);
@@ -6647,18 +6654,17 @@ function reporting_get_module_detailed_event ($id_modules, $period = 0,
 		if (!empty($force_width_chart)) {
 			$width = $force_width_chart;
 		}
-		
+
 		if (!empty($force_height_chart)) {
 			$height = $force_height_chart;
 		}
-		
+
 		if ($event_graph_by_user_validator) {
 			$data_graph = events_get_count_events_validated_by_user(
 				array('id_agentmodule' => $id_module), $period, $date, $filter_event_severity,
 				$filter_event_type, $filter_event_status, $filter_event_filter_search);
-			
-			$event['chart']['by_user_validator'] = pie3d_graph(
-				false,
+
+			$event['chart']['by_user_validator'] = pie_graph(
 				$data_graph,
 				500,
 				150,
@@ -6667,18 +6673,18 @@ function reporting_get_module_detailed_event ($id_modules, $period = 0,
 				ui_get_full_url(false, false, false, false) . "/images/logo_vertical_water.png",
 				$config['fontpath'],
 				$config['font_size'],
-				$ttl);
+				$ttl
+			);
 		}
-		
+
 		if ($event_graph_by_criticity) {
 			$data_graph = events_get_count_events_by_criticity(
 				array('id_agentmodule' => $id_module), $period, $date, $filter_event_severity,
 				$filter_event_type, $filter_event_status, $filter_event_filter_search);
-			
+
 			$colors = get_criticity_pie_colors($data_graph);
-			
-			$event['chart']['by_criticity'] = pie3d_graph(
-				false,
+
+			$event['chart']['by_criticity'] = pie_graph(
 				$data_graph,
 				500,
 				150,
@@ -6689,16 +6695,16 @@ function reporting_get_module_detailed_event ($id_modules, $period = 0,
 				$config['font_size'],
 				$ttl,
 				false,
-				$colors);
+				$colors
+			);
 		}
-		
+
 		if ($event_graph_validated_vs_unvalidated) {
 			$data_graph = events_get_count_events_validated(
 				array('id_agentmodule' => $id_module), $period, $date, $filter_event_severity,
 				$filter_event_type, $filter_event_status, $filter_event_filter_search);
-			
-			$event['chart']['validated_vs_unvalidated'] = pie3d_graph(
-				false,
+
+			$event['chart']['validated_vs_unvalidated'] = pie_graph(
 				$data_graph,
 				500,
 				150,
@@ -6707,7 +6713,8 @@ function reporting_get_module_detailed_event ($id_modules, $period = 0,
 				ui_get_full_url(false, false, false, false) .  "/images/logo_vertical_water.png",
 				$config['fontpath'],
 				$config['font_size'],
-				$ttl);
+				$ttl
+			);
 		}
 
 		if (!empty ($event)) {
@@ -7000,54 +7007,41 @@ function reporting_get_group_stats ($id_group = 0, $access = 'AR') {
 				continue;
 			}
 		}
-		
+
 		if (!empty($group_array)) {
+			$monitors_info = groups_monitor_total_counters($group_array, true);
 			// Get monitor NOT INIT, except disabled AND async modules
-			$data["monitor_not_init"] += (int) groups_get_not_init_monitors ($group_array, array(), array(), false, false, true);
-			
-			// Get monitor OK, except disabled and non-init
-			$data["monitor_ok"] += (int) groups_get_normal_monitors ($group_array, array(), array(), false, false, true);
-			
-			// Get monitor CRITICAL, except disabled and non-init
-			$data["monitor_critical"] += (int) groups_get_critical_monitors ($group_array, array(), array(), false, false, true);
-			
-			// Get monitor WARNING, except disabled and non-init
-			$data["monitor_warning"] += (int) groups_get_warning_monitors ($group_array, array(), array(), false, false, true);
-			
-			// Get monitor UNKNOWN, except disabled and non-init
-			$data["monitor_unknown"] += (int) groups_get_unknown_monitors ($group_array, array(), array(), false, false, true);
-			
-			// Get alerts configured, except disabled 
-			$data["monitor_alerts"] += groups_monitor_alerts ($group_array) ;
-			
-			// Get alert configured currently FIRED, except disabled 
-			$data["monitor_alerts_fired"] += groups_monitor_fired_alerts ($group_array);
-			
-			// Calculate totals using partial counts from above
-			
-			// Get TOTAL non-init modules, except disabled ones and async modules
+			$data["monitor_not_init"] += $monitors_info['not_init'];
 			$data["total_not_init"] += $data["monitor_not_init"];
-		
+			// Get monitor OK, except disabled and non-init
+			$data["monitor_ok"] += $monitors_info['ok'];
+			// Get monitor CRITICAL, except disabled and non-init
+			$data["monitor_critical"] += $monitors_info['critical'];
+			// Get monitor WARNING, except disabled and non-init
+			$data["monitor_warning"] += $monitors_info['warning'];
+			// Get monitor UNKNOWN, except disabled and non-init
+			$data["monitor_unknown"] += $monitors_info['unknown'];
+			$data["monitor_checks"] += $monitors_info['total'];
+
+			// Get alerts configured, except disabled
+			$alerts_info = groups_monitor_alerts_total_counters ($group_array);
+			$data["monitor_alerts"] += $alerts_info['total'];
+			// Get alert configured currently FIRED, except disabled
+			$data["monitor_alerts_fired"] += $alerts_info['fired'];
+
+			$agents_info = groups_agents_total_counters($group_array);
 			// Get TOTAL agents in a group
-			$data["total_agents"] += (int) groups_get_total_agents ($group_array, array(), array(), false, false, true);
-			
+			$data["total_agents"] += $agents_info['total'];
 			// Get Agents OK
-			$data["agent_ok"] += (int) groups_get_normal_agents ($group_array, array(), array(), false, false, true);
-			
-			// Get Agents Warning 
-			$data["agent_warning"] += (int) groups_get_warning_agents ($group_array, array(), array(), false, false, true);
-			
+			$data["agent_ok"] += $agents_info['ok'];
+			// Get Agents Warning
+			$data["agent_warning"] += $agents_info['warning'];
 			// Get Agents Critical
-			$data["agent_critical"] += (int) groups_get_critical_agents ($group_array, array(), array(), false, false, true);
-			
+			$data["agent_critical"] += $agents_info['critical'];
 			// Get Agents Unknown
-			$data["agent_unknown"] += (int) groups_get_unknown_agents ($group_array, array(), array(), false, false, true);
-			
+			$data["agent_unknown"] += $agents_info['unknown'];
 			// Get Agents Not init
-			$data["agent_not_init"] += (int) groups_get_not_init_agents ($group_array, array(), array(), false, false, true);
-		
-			// Get total count of monitors for this group, except disabled.
-			$data["monitor_checks"] += $data["monitor_not_init"] + $data["monitor_unknown"] + $data["monitor_warning"] + $data["monitor_critical"] + $data["monitor_ok"];
+			$data["agent_not_init"] += $agents_info['not_init'];
 		}
 	}
 	// Calculate not_normal monitors
@@ -7573,8 +7567,7 @@ function reporting_get_stats_modules_status($data, $graph_width = 250, $graph_he
 	}
 	
 	// Fixed width non interactive charts
-	$status_chart_width = $config["flash_charts"] == false
-		? 100 : $graph_width;
+	$status_chart_width = $graph_width;
 
 	// Modules by status table
 	$table_mbs = html_get_predefined_table();
@@ -7692,11 +7685,12 @@ You can of course remove the warnings, that's why we include the source and do n
 We added some of what seems to be "buggy" messages to the openSource version recently. This is not to force open-source users to move to the enterprise version, this is just to inform people using Pandora FMS open source that it requires skilled people to maintain and keep it running smoothly without professional support. This does not imply open-source version is limited in any way. If you check the recently added code, it contains only warnings and messages, no limitations except one: we removed the option to add custom logo in header. In the Update Manager section, it warns about the 'danger’ of applying automated updates without a proper backup, remembering in the process that the Enterprise version comes with a human-tested package. Maintaining an OpenSource version with more than 500 agents is not so easy, that's why someone using a Pandora with 8000 agents should consider asking for support. It's not a joke, we know of many setups with a huge number of agents, and we hate to hear that “its becoming unstable and slow” :(
 You can of course remove the warnings, that's why we include the source and do not use any kind of trick. And that's why we added here this comment, to let you know this does not reflect any change in our opensource mentality of does the last 14 years.
 */
-	
-	if(($data["monitor_checks"]/$data["total_agents"]>100) && !enterprise_installed()) {
-	$tdata[5] = "<div id='monitorcheckmodal' class='publienterprise' title='Community version' style=''><img data-title='Enterprise version' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>";
+	if($data["total_agents"]){
+		if(($data["monitor_checks"]/$data["total_agents"]>100) && !enterprise_installed()) {
+			$tdata[5] = "<div id='monitorcheckmodal' class='publienterprise' title='Community version' style=''><img data-title='Enterprise version' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>";
+		}
 	}
-	
+
 	$table_am->rowclass[] = '';
 	$table_am->data[] = $tdata;
 	
@@ -8353,11 +8347,10 @@ function reporting_get_agentmodule_ttr ($id_agent_module, $period = 0, $date = 0
  * Get a detailed report of the modules of the agent
  * 
  * @param int $id_agent Agent id to get the report for.
- * @param string $filter filter for get partial modules.
  * 
  * @return array An array
  */
-function reporting_get_agent_module_info ($id_agent, $filter = false) {
+function reporting_get_agent_module_info ($id_agent) {
 	global $config;
 	
 	$return = array ();
@@ -8373,12 +8366,7 @@ function reporting_get_agent_module_info ($id_agent, $filter = false) {
 		return $return;
 	}
 	
-	if ($filter != '') {
-		$filter = 'AND ';
-	}
-	
-	$filter = 'disabled = 0';
-	
+	$filter = array('disabled' =>  0);
 	$modules = agents_get_modules($id_agent, false, $filter, true, false);
 	
 	if ($modules === false) {
@@ -8474,33 +8462,6 @@ function reporting_tiny_stats ($counts_info, $return = false, $type = 'agent', $
 			$template_title['not_init_count'] = __('%d not init agents');
 			$template_title['fired_count'] = __('%d Fired alerts');
 			break;
-	}
-	
-	if ($strict_user && $type == 'agent') {
-		
-		$acltags = tags_get_user_groups_and_tags ($config['id_user'],'AR', $strict_user);
-		$filter['disabled'] = 0;
-		$id_agent = $counts_info['id_agente'];
-		
-		$counts_info = array();
-		$counts_info['normal_count'] = count(tags_get_agent_modules ($id_agent, false, $acltags, false, $filter, false, AGENT_MODULE_STATUS_NORMAL));
-		$counts_info['warning_count'] = count(tags_get_agent_modules ($id_agent, false, $acltags, false, $filter, false, AGENT_MODULE_STATUS_WARNING));
-		$counts_info['critical_count'] = count(tags_get_agent_modules ($id_agent, false, $acltags, false, $filter, false, AGENT_MODULE_STATUS_CRITICAL_BAD));
-		$counts_info['notinit_count'] = count(tags_get_agent_modules ($id_agent, false, $acltags, false, $filter, false, AGENT_MODULE_STATUS_NOT_INIT));
-		$counts_info['unknown_count'] = count(tags_get_agent_modules ($id_agent, false, $acltags, false, $filter, false, AGENT_MODULE_STATUS_UNKNOWN));
-		$counts_info['total_count'] = $counts_info['normal_count'] + $counts_info['warning_count'] + $counts_info['critical_count'] + $counts_info['unknown_count'] + $counts_info['notinit_count'];
-		
-		$all_agent_modules = tags_get_agent_modules ($id_agent, false, $acltags, false, $filter);
-		if (!empty($all_agent_modules)) {
-			$mod_clause = "(".implode(',', array_keys($all_agent_modules)).")";
-
-			$counts_info['fired_count'] = (int) db_get_sql ("SELECT COUNT(times_fired)
-				FROM talert_template_modules
-				WHERE times_fired != 0 AND id_agent_module IN ".$mod_clause);
-		}
-		else {
-			$counts_info['fired_count'] = 0;
-		}
 	}
 	
 	// Store the counts in a data structure to print hidden divs with titles
@@ -9624,10 +9585,10 @@ function reporting_get_planned_downtimes ($start_date, $end_date, $id_agent_modu
  */
 function reporting_get_agentmodule_sla_day ($id_agent_module, $period = 0, $min_value = 1, $max_value = false, $date = 0, $daysWeek = null, $timeFrom = null, $timeTo = null) {
 	global $config;
-	
+
 	if (empty($id_agent_module))
 		return false;
-	
+
 	// Initialize variables
 	if (empty ($date)) {
 		$date = get_system_time ();
@@ -9637,19 +9598,24 @@ function reporting_get_agentmodule_sla_day ($id_agent_module, $period = 0, $min_
 	}
 	// Limit date to start searching data
 	$datelimit = $date - $period;
-	
+
 	// Substract the not working time
 	// Initialize the working time status machine ($wt_status)
 	// Search the first data at worktime start
-	list ($period_reduced, $wt_status, $datelimit_increased) = reporting_get_agentmodule_sla_day_period ($period, $date, $timeFrom, $timeTo);
+	$array_sla_report = reporting_get_agentmodule_sla_day_period ($period, $date, $timeFrom, $timeTo);
+
+	$period_reduced = $array_sla_report[0];
+	$wt_status = $array_sla_report[1];
+	$datelimit_increased = $array_sla_report[2];
+
 	if ($period_reduced <= 0) {
 		return false;
 	}
-		
+
 	$wt_points = reporting_get_agentmodule_sla_working_timestamp ($period, $date, $timeFrom, $timeTo);
-	
+
 	$search_in_history_db = db_search_in_history_db($datelimit);
-	
+
 	// Get interval data
 	$sql = sprintf ('SELECT *
 		FROM tagente_datos
@@ -9657,7 +9623,7 @@ function reporting_get_agentmodule_sla_day ($id_agent_module, $period = 0, $min_
 			AND utimestamp > %d
 			AND utimestamp <= %d',
 		$id_agent_module, $datelimit, $date);
-	
+
 	//Add the working times (mon - tue - wed ...) and from time to time
 	$days = array();
 	//Translate to mysql week days
@@ -9836,332 +9802,7 @@ function reporting_get_agentmodule_sla_day ($id_agent_module, $period = 0, $min_
 	return (float) (100 - ($bad_period / $period_reduced) * 100);
 }
 
-/** 
- * Get several SLA data for an agentmodule within a period divided on subperiods
- * 
- * @param int Agent module to calculate SLA
- * @param int Period to check the SLA compliance.
- * @param int Minimum data value the module in the right interval
- * @param int Maximum data value the module in the right interval. False will
- * ignore max value
- * @param array $days Array of days week to extract as array('monday' => false, 'tuesday' => true....), and by default is null.
- * @param string $timeFrom Time in the day to start to extract in mysql format, by default null.
- * @param string $timeTo Time in the day to end to extract in mysql format, by default null.
- * 
- * @return Array with values either 1, 2, 3 or 4 depending if the SLA percentage for this subperiod
- * is within the sla limits, on the edge, outside or with an unknown value.
- */
-function reporting_get_agentmodule_sla_array ($id_agent_module, $period = 0, $min_value = 1, $max_value = false, $date = 0, $daysWeek = null, $timeFrom = null, $timeTo = null) {
-	global $config;
-	
-	if (empty($id_agent_module))
-		return false;
-	
-	// Initialize variables
-	if (empty ($date)) {
-		$date = get_system_time ();
-	}
-	if ($daysWeek === null) {
-		$daysWeek = array();
-	}
-
-	// Hotfix: The edge values are confuse to the users
-	$percent = 0;
-	
-	// Limit date to start searching data
-	$datelimit = $date - $period;
-
-	$search_in_history_db = db_search_in_history_db($datelimit);
-	
-	// Get interval data
-	$sql = sprintf ('SELECT * FROM tagente_datos
-		WHERE id_agente_modulo = %d
-			AND utimestamp > %d AND utimestamp <= %d',
-		$id_agent_module, $datelimit, $date);
-	
-	//Add the working times (mon - tue - wed ...) and from time to time
-	$days = array();
-	//Translate to mysql week days
-	
-	if ($daysWeek) {
-		foreach ($daysWeek as $key => $value) {
-			if (!$value) {
-				if ($key == 'monday') {
-					$days[] = 2;
-				}
-				if ($key == 'tuesday') {
-					$days[] = 3;
-				}
-				if ($key == 'wednesday') {
-					$days[] = 4;
-				}
-				if ($key == 'thursday') {
-					$days[] = 5;
-				}
-				if ($key == 'friday') {
-					$days[] = 6;
-				}
-				if ($key == 'saturday') {
-					$days[] = 7;
-				}
-				if ($key == 'sunday') {
-					$days[] = 1;
-				}
-			}
-		}
-	}
-	
-	if (count($days) > 0) {
-		$sql .= ' AND DAYOFWEEK(FROM_UNIXTIME(utimestamp)) NOT IN (' . implode(',', $days) . ')';
-	}
-	
-	if ($timeFrom != $timeTo) {
-		if ($timeFrom < $timeTo) {
-			$sql .= ' AND (TIME(FROM_UNIXTIME(utimestamp)) >= \'' .
-				$timeFrom . '\'
-				AND TIME(FROM_UNIXTIME(utimestamp)) <= \'' .
-				$timeTo . '\')';
-		}
-		elseif ($timeFrom > $timeTo) {
-			$sql .= ' AND (TIME(FROM_UNIXTIME(utimestamp)) >= \'' .
-				$timeFrom . '\'
-				OR TIME(FROM_UNIXTIME(utimestamp)) <= \''.
-				$timeTo . '\')';
-		}
-	}
-	
-	$sql .= ' ORDER BY utimestamp ASC';
-	$interval_data = db_get_all_rows_sql ($sql, $search_in_history_db);
-	
-	if ($interval_data === false) {
-		$interval_data = array ();
-	}
-	
-	
-	// Indexing data
-	$interval_data_indexed = array();
-	foreach($interval_data as $idata) {
-		$interval_data_indexed[$idata['utimestamp']]['data'] = $idata['datos'];
-	}
-	
-	//-----------Calculate unknown status events------------------------
-	$events_unknown = db_get_all_rows_filter ('tevento',
-		array ('id_agentmodule' => $id_agent_module,
-			"utimestamp > $datelimit",
-			"utimestamp < $date",
-			'order' => 'utimestamp ASC'),
-		array ('id_evento', 'evento', 'timestamp', 'utimestamp', 'event_type'));
-	
-	if ($events_unknown === false) {
-		$events_unknown = array ();
-	}
-	
-	// Add unknown periods to data
-	for ($i = 0; isset($events_unknown[$i]); $i++) {
-		$eu = $events_unknown[$i];
-		
-		if ($eu['event_type'] == 'going_unknown') {
-			$interval_data_indexed[$eu['utimestamp']]['data'] = 0;
-			$interval_data_indexed[$eu['utimestamp']]['status'] = 4;
-			
-			// Search the corresponding recovery event.
-			for ($j = $i+1; isset($events_unknown[$j]); $j++) {
-				$eu = $events_unknown[$j];
-				
-				if ($eu['event_type'] != 'going_unknown' && substr ($eu['event_type'], 0, 5) == 'going') {
-					$interval_data_indexed[$eu['utimestamp']]['data'] = 0;
-					$interval_data_indexed[$eu['utimestamp']]['status'] = 6;
-					
-					// Do not process read events again.
-					$i = $j;
-					break;
-				}
-			}
-		}
-	}
-	
-	// Get the last event before inverval to know if graph start on unknown
-	$prev_event = db_get_row_filter ('tevento',
-		array ('id_agentmodule' => $id_agent_module,
-			"utimestamp <= $datelimit",
-			'order' => 'utimestamp DESC'));
-	if (isset($prev_event['event_type']) && $prev_event['event_type'] == 'going_unknown') {
-		$start_unknown = true;
-	}
-	else {
-		$start_unknown = false;
-	}
-	//------------------------------------------------------------------
-	
-	//-----------------Set limits of the interval-----------------------
-	// Get previous data (This adds the first data if the begin of module data is after the begin time interval)
-	$previous_data = modules_get_previous_data ($id_agent_module, $datelimit);
-	if ($previous_data !== false ) {
-		$previous_value = $previous_data['datos'];
-		// if ((($previous_value > ($min_value - $percent)) && ($previous_value < ($min_value + $percent))) || 
-		// 		(($previous_value > ($max_value - $percent)) && ($previous_value < ($max_value + $percent)))) {//2 when value is within the edges
-		// 	$previous_known_status = 2;
-		// }
-		// else
-		if (($previous_value >= ($min_value + $percent)) && ($previous_value <= ($max_value - $percent))) { //1 when value is OK
-			$previous_known_status = 1;
-		}
-		elseif (($previous_value <= ($min_value - $percent)) || ($previous_value >= ($max_value + $percent))) { //3 when value is Wrong
-			$previous_known_status = 3;
-		}
-	}
-
-	// If the starting of the graph is unknown we set it
-	if ($start_unknown) {
-		$interval_data_indexed[$datelimit]['data'] = 0;
-		$interval_data_indexed[$datelimit]['status'] = 4;
-	}
-	else {
-		if ($previous_data !== false ) {
-			$interval_data_indexed[$datelimit]['data'] = $previous_data['datos'];
-		}
-		else { // If there are not data befor interval set unknown
-			$interval_data_indexed[$datelimit]['data'] = 0;
-			$interval_data_indexed[$datelimit]['status'] = 4;
-			$previous_known_status = 1; // Assume the module was in normal status if there is no previous data.
-		}
-	}
-	
-	// Get next data (This adds data before the interval of the report)
-	$next_data = modules_get_next_data ($id_agent_module, $date);
-	
-	if ($next_data !== false) {
-		$interval_data_indexed[$date]['data'] = $previous_data['datos'];
-	}
-	else if (count ($interval_data_indexed) > 0) {
-		// Propagate the last known data to the end of the interval (if there is no module data at the end point)
-		ksort($interval_data_indexed);
-		$last_data = end($interval_data_indexed);
-		$interval_data_indexed[$date] = $last_data;
-	}
-	
-	//------------------------------------------------------------------
-	
-	//--------Calculate planned downtime dates--------------------------
-	$downtime_dates = reporting_get_planned_downtimes_intervals($id_agent_module, $datelimit, $date);
-
-	foreach ($downtime_dates as $downtime_date) {
-		// Delete data of the planned downtime and put the last data on the upper limit
-		$interval_data_indexed[$downtime_date['date_from']]['data'] = 0;
-		$interval_data_indexed[$downtime_date['date_from']]['status'] = 5;
-		$interval_data_indexed[$downtime_date['date_to']]['data'] = 0;
-		$interval_data_indexed[$downtime_date['date_to']]['status'] = 4;
-		
-		$last_downtime_data = false;
-		foreach ($interval_data_indexed as $idi_timestamp => $idi) {
-			if ($idi_timestamp != $downtime_date['date_from'] && $idi_timestamp != $downtime_date['date_to'] && 
-					$idi_timestamp >= $downtime_date['date_from'] && $idi_timestamp <= $downtime_date['date_to']) {
-				$last_downtime_data = $idi['data'];
-				unset($interval_data_indexed[$idi_timestamp]);
-			}
-		}
-		
-		// Set the last data of the interval as limit
-		if ($last_downtime_data !== false) {
-			$interval_data_indexed[$downtime_date['date_to']]['data'] = $last_downtime_data;
-		}
-	}
-	//------------------------------------------------------------------
-	
-	// Sort the array
-	ksort($interval_data_indexed);
-	
-	// We need more or equal two points
-	if (count ($interval_data_indexed) < 2) {
-		return false;
-	}
-	
-	//Get the percentage for the limits
-	$diff = $max_value - $min_value; 
-	
-	// Get module type
-	$id_module_type = db_get_value('id_tipo_modulo', 'tagente_modulo', 'id_agente_modulo', $id_agent_module);
-	// If module is boolean don't create translation intervals (on the edge intervals)
-	// if ($id_module_type == 2 or $id_module_type == 6 or $id_module_type == 9 or $id_module_type == 18) {
-	//      $percent = 0;
-	// }
-	// else {
-	//      // Getting 10% of $diff --> $percent = ($diff/100)*10, so...
-	//      $percent = $diff / 10;
-	// }
-	
-	//Set initial conditions
-	$first_data = array_shift ($interval_data);
-	$previous_utimestamp = $date - $period;
-	
-	$previous_value = $first_data ['datos'];
-	$previous_status = 0;
-	
-	if (isset($first_data['status'])) {
-		// 4 for the Unknown value and 5 for planned downtime
-		$previous_status = $first_data['status'];
-	}
-	// elseif ((($previous_value > ($min_value - $percent)) && ($previous_value < ($min_value + $percent))) || 
-	// 		(($previous_value > ($max_value - $percent)) && ($previous_value < ($max_value + $percent)))) {//2 when value is within the edges
-	// 	$previous_status = 2;
-	// }
-	elseif (($previous_value >= ($min_value + $percent)) && ($previous_value <= ($max_value - $percent))) { //1 when value is OK
-		$previous_status = 1;
-	}
-	elseif (($previous_value <= ($min_value - $percent)) || ($previous_value >= ($max_value + $percent))) { //3 when value is Wrong
-		$previous_status = 3;
-	}
-	
-	$data_colors = array();
-	$i = 0;
-	
-	foreach ($interval_data_indexed as $utimestamp => $data) {
-		$change = false;
-		$value = $data['data'];
-		if (isset($data['status'])) {
-			// Leaving unkown status.
-			if ($data['status'] == 6) {
-				$status = $previous_known_status;
-			}
-			// 4 unknown, 5 planned downtime.
-			else {
-				$status = $data['status'];
-			}
-		}
-		// elseif ((($value > ($min_value - $percent)) && ($value < ($min_value + $percent))) || 
-		// 		(($value > ($max_value - $percent)) && ($value < ($max_value + $percent)))) { //2 when value is within the edges
-		// 	$status = 2;
-		// }
-		elseif (($value >= ($min_value + $percent)) && ($value <= ($max_value - $percent))) { //1 when value is OK
-			$status = 1;
-		}
-		elseif (($value <= ($min_value - $percent)) || ($value >= ($max_value + $percent))) { //3 when value is Wrong
-			$status = 3;
-		}
-		
-		if ($status != $previous_status) {
-			$change = true;
-			$data_colors[$i]['data'] = $previous_status;
-			$data_colors[$i]['utimestamp'] = $utimestamp - $previous_utimestamp;
-			$i++;
-			$previous_status = $status;
-			$previous_utimestamp = $utimestamp;
-		}
-		
-		// Save the last known status.
-		if ($status <= 3) {
-			$previous_known_status = $status;
-		}
-	}
-	if ($change == false) {
-		$data_colors[$i]['data'] = $previous_status;
-		$data_colors[$i]['utimestamp'] = $date - $previous_utimestamp;
-	}
-	
-	return $data_colors;
-}
-
-function reporting_get_stats_servers($tiny = true) {
+function reporting_get_stats_servers() {
 	global $config;
 	
 	$server_performance = servers_get_performance();
@@ -10197,21 +9838,20 @@ function reporting_get_stats_servers($tiny = true) {
 	$table_srv->rowclass[] = '';
 	$table_srv->data[] = $tdata;
 	
-	if ($tiny) {
+	if (isset($server_performance ["total_network_modules"])) {
 		$tdata = array();
-		$tdata[0] = html_print_image('images/network.png', true, array('title' => __('Remote modules'), 'width' => '25px'));
-		$tdata[1] = '<span class="big_data">' . format_numeric($server_performance ["total_remote_modules"]) . '</span>';
+		$tdata[0] = html_print_image('images/network.png', true, array('title' => __('Network modules'), 'width' => '25px'));
+		$tdata[1] = '<span class="big_data">' . format_numeric($server_performance ["total_network_modules"]) . '</span>';
 		
-		/* Hello there! :)
-We added some of what seems to be "buggy" messages to the openSource version recently. This is not to force open-source users to move to the enterprise version, this is just to inform people using Pandora FMS open source that it requires skilled people to maintain and keep it running smoothly without professional support. This does not imply open-source version is limited in any way. If you check the recently added code, it contains only warnings and messages, no limitations except one: we removed the option to add custom logo in header. In the Update Manager section, it warns about the 'danger’ of applying automated updates without a proper backup, remembering in the process that the Enterprise version comes with a human-tested package. Maintaining an OpenSource version with more than 500 agents is not so easy, that's why someone using a Pandora with 8000 agents should consider asking for support. It's not a joke, we know of many setups with a huge number of agents, and we hate to hear that “its becoming unstable and slow” :(
-You can of course remove the warnings, that's why we include the source and do not use any kind of trick. And that's why we added here this comment, to let you know this does not reflect any change in our opensource mentality of does the last 14 years.
-*/
-		
-		$tdata[2] = '<span class="med_data">' . format_numeric($server_performance ["remote_modules_rate"], 2) . '</span>';
+		$tdata[2] = '<span class="med_data">' .
+			format_numeric($server_performance["network_modules_rate"], 2) .
+			'</span>';
+			
+							
 		$tdata[3] = html_print_image('images/module.png', true, array('title' => __('Ratio') . ': ' . __('Modules by second'), 'width' => '16px')) . '/sec </span>';
 		
 		if($server_performance ["total_remote_modules"]>10000 && !enterprise_installed()){
-			$tdata[4] = "<div id='agentsmodal' class='publienterprise' title='Community version' style='text-align:left;'><img data-title='Enterprise version' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>";
+			$tdata[4] = "<div id='remotemodulesmodal' class='publienterprise' title='Community version' style='text-align:left;'><img data-title='Enterprise version' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>";
 		}
 		else{
 			$tdata[4] = '&nbsp;';
@@ -10220,134 +9860,105 @@ You can of course remove the warnings, that's why we include the source and do n
 		$table_srv->rowclass[] = '';
 		$table_srv->data[] = $tdata;
 	}
-	else {
-		if (isset($server_performance ["total_network_modules"])) {
-			$tdata = array();
-			$tdata[0] = html_print_image('images/network.png', true, array('title' => __('Network modules'), 'width' => '25px'));
-			$tdata[1] = '<span class="big_data">' . format_numeric($server_performance ["total_network_modules"]) . '</span>';
-			
-			$tdata[2] = '<span class="med_data">' .
-				format_numeric($server_performance["network_modules_rate"], 2) .
-				'</span>';
-				
-								
-			$tdata[3] = html_print_image('images/module.png', true, array('title' => __('Ratio') . ': ' . __('Modules by second'), 'width' => '16px')) . '/sec </span>';
-			
-			if($server_performance ["total_remote_modules"]>10000 && !enterprise_installed()){
-				$tdata[4] = "<div id='remotemodulesmodal' class='publienterprise' title='Community version' style='text-align:left;'><img data-title='Enterprise version' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>";
-			}
-			else{
-				$tdata[4] = '&nbsp;';
-			}
-			
-			$table_srv->rowclass[] = '';
-			$table_srv->data[] = $tdata;
-		}
-		
-		if (isset($server_performance ["total_plugin_modules"])) {
-			$tdata = array();
-			$tdata[0] = html_print_image('images/plugin.png', true, array('title' => __('Plugin modules'), 'width' => '25px'));
-			$tdata[1] = '<span class="big_data">' . format_numeric($server_performance ["total_plugin_modules"]) . '</span>';
-			
-			$tdata[2] = '<span class="med_data">' . format_numeric($server_performance ["plugin_modules_rate"], 2) . '</span>';
-			$tdata[3] = html_print_image('images/module.png', true, array('title' => __('Ratio') . ': ' . __('Modules by second'), 'width' => '16px')) . '/sec </span>';
-			
-			$table_srv->rowclass[] = '';
-			$table_srv->data[] = $tdata;
-		}
-		
-		if (isset($server_performance ["total_prediction_modules"])) {
-			$tdata = array();
-			$tdata[0] = html_print_image('images/chart_bar.png', true, array('title' => __('Prediction modules'), 'width' => '25px'));
-			$tdata[1] = '<span class="big_data">' . format_numeric($server_performance ["total_prediction_modules"]) . '</span>';
-			
-			$tdata[2] = '<span class="med_data">' . format_numeric($server_performance ["prediction_modules_rate"], 2) . '</span>';
-			$tdata[3] = html_print_image('images/module.png', true, array('title' => __('Ratio') . ': ' . __('Modules by second'), 'width' => '16px')) . '/sec </span>';
-			
-			$table_srv->rowclass[] = '';
-			$table_srv->data[] = $tdata;
-		}
-		
-		if (isset($server_performance ["total_wmi_modules"])) {
-			$tdata = array();
-			$tdata[0] = html_print_image('images/wmi.png', true, array('title' => __('WMI modules'), 'width' => '25px'));
-			$tdata[1] = '<span class="big_data">' . format_numeric($server_performance ["total_wmi_modules"]) . '</span>';
-			
-			$tdata[2] = '<span class="med_data">' . format_numeric($server_performance ["wmi_modules_rate"], 2) . '</span>';
-			$tdata[3] = html_print_image('images/module.png', true, array('title' => __('Ratio') . ': ' . __('Modules by second'), 'width' => '16px')) . '/sec </span>';
-			
-			$table_srv->rowclass[] = '';
-			$table_srv->data[] = $tdata;
-		}
-		
-		if (isset($server_performance ["total_web_modules"])) {
-			$tdata = array();
-			$tdata[0] = html_print_image('images/world.png', true, array('title' => __('Web modules'), 'width' => '25px'));
-			$tdata[1] = '<span class="big_data">' .
-				format_numeric($server_performance ["total_web_modules"]) .
-				'</span>';
-			
-			$tdata[2] = '<span class="med_data">' .
-				format_numeric($server_performance ["web_modules_rate"], 2) .
-				'</span>';
-			$tdata[3] = html_print_image('images/module.png', true, array('title' => __('Ratio') . ': ' . __('Modules by second'), 'width' => '16px')) . '/sec </span>';
-			
-			$table_srv->rowclass[] = '';
-			$table_srv->data[] = $tdata;
-		}
-		
+	
+	if (isset($server_performance ["total_plugin_modules"])) {
 		$tdata = array();
-		$tdata[0] = '<hr style="border: 0; height: 1px; background: #DDD">';
-		$table_srv->colspan[count($table_srv->data)][0] = 4;
-		$table_srv->rowclass[] = '';
-		$table_srv->data[] = $tdata;
+		$tdata[0] = html_print_image('images/plugin.png', true, array('title' => __('Plugin modules'), 'width' => '25px'));
+		$tdata[1] = '<span class="big_data">' . format_numeric($server_performance ["total_plugin_modules"]) . '</span>';
 		
+		$tdata[2] = '<span class="med_data">' . format_numeric($server_performance ["plugin_modules_rate"], 2) . '</span>';
+		$tdata[3] = html_print_image('images/module.png', true, array('title' => __('Ratio') . ': ' . __('Modules by second'), 'width' => '16px')) . '/sec </span>';
 		
-		switch ($config["dbtype"]) {
-			case "mysql":
-				$system_events = db_get_value_sql(
-					'SELECT SQL_NO_CACHE COUNT(id_evento)
-					FROM tevento');
-				break;
-			case "postgresql":
-			case "oracle":
-				$system_events = db_get_value_sql(
-					'SELECT COUNT(id_evento)
-					FROM tevento');
-				break;
-		}
-		
-		
-		
-		$tdata = array();
-		$tdata[0] = html_print_image('images/lightning_go.png', true,
-			array('title' => __('Total events'), 'width' => '25px'));
-		$tdata[1] = '<span class="big_data">' .
-			format_numeric($system_events) . '</span>';
-			
-			/* Hello there! :)
-We added some of what seems to be "buggy" messages to the openSource version recently. This is not to force open-source users to move to the enterprise version, this is just to inform people using Pandora FMS open source that it requires skilled people to maintain and keep it running smoothly without professional support. This does not imply open-source version is limited in any way. If you check the recently added code, it contains only warnings and messages, no limitations except one: we removed the option to add custom logo in header. In the Update Manager section, it warns about the 'danger’ of applying automated updates without a proper backup, remembering in the process that the Enterprise version comes with a human-tested package. Maintaining an OpenSource version with more than 500 agents is not so easy, that's why someone using a Pandora with 8000 agents should consider asking for support. It's not a joke, we know of many setups with a huge number of agents, and we hate to hear that “its becoming unstable and slow” :(
-You can of course remove the warnings, that's why we include the source and do not use any kind of trick. And that's why we added here this comment, to let you know this does not reflect any change in our opensource mentality of does the last 14 years.
-*/
-			
-		if($system_events > 50000 && !enterprise_installed()){
-			$tdata[2] = "<div id='monitoreventsmodal' class='publienterprise' title='Community version' style='text-align:left'><img data-title='Enterprise version' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>";
-		}
-			
-		else{
-		$tdata[3] = "&nbsp;";	
-		}
-		$table_srv->colspan[count($table_srv->data)][1] = 2;
 		$table_srv->rowclass[] = '';
 		$table_srv->data[] = $tdata;
 	}
 	
+	if (isset($server_performance ["total_prediction_modules"])) {
+		$tdata = array();
+		$tdata[0] = html_print_image('images/chart_bar.png', true, array('title' => __('Prediction modules'), 'width' => '25px'));
+		$tdata[1] = '<span class="big_data">' . format_numeric($server_performance ["total_prediction_modules"]) . '</span>';
+		
+		$tdata[2] = '<span class="med_data">' . format_numeric($server_performance ["prediction_modules_rate"], 2) . '</span>';
+		$tdata[3] = html_print_image('images/module.png', true, array('title' => __('Ratio') . ': ' . __('Modules by second'), 'width' => '16px')) . '/sec </span>';
+		
+		$table_srv->rowclass[] = '';
+		$table_srv->data[] = $tdata;
+	}
+	
+	if (isset($server_performance ["total_wmi_modules"])) {
+		$tdata = array();
+		$tdata[0] = html_print_image('images/wmi.png', true, array('title' => __('WMI modules'), 'width' => '25px'));
+		$tdata[1] = '<span class="big_data">' . format_numeric($server_performance ["total_wmi_modules"]) . '</span>';
+		
+		$tdata[2] = '<span class="med_data">' . format_numeric($server_performance ["wmi_modules_rate"], 2) . '</span>';
+		$tdata[3] = html_print_image('images/module.png', true, array('title' => __('Ratio') . ': ' . __('Modules by second'), 'width' => '16px')) . '/sec </span>';
+		
+		$table_srv->rowclass[] = '';
+		$table_srv->data[] = $tdata;
+	}
+	
+	if (isset($server_performance ["total_web_modules"])) {
+		$tdata = array();
+		$tdata[0] = html_print_image('images/world.png', true, array('title' => __('Web modules'), 'width' => '25px'));
+		$tdata[1] = '<span class="big_data">' .
+			format_numeric($server_performance ["total_web_modules"]) .
+			'</span>';
+		
+		$tdata[2] = '<span class="med_data">' .
+			format_numeric($server_performance ["web_modules_rate"], 2) .
+			'</span>';
+		$tdata[3] = html_print_image('images/module.png', true, array('title' => __('Ratio') . ': ' . __('Modules by second'), 'width' => '16px')) . '/sec </span>';
+		
+		$table_srv->rowclass[] = '';
+		$table_srv->data[] = $tdata;
+	}
+	
+	$tdata = array();
+	$tdata[0] = '<hr style="border: 0; height: 1px; background: #DDD">';
+	$table_srv->colspan[count($table_srv->data)][0] = 4;
+	$table_srv->rowclass[] = '';
+	$table_srv->data[] = $tdata;
+
+	$tdata = array();
+	$tdata[0] = html_print_image('images/lightning_go.png', true,
+		array('title' => __('Total events'), 'width' => '25px'));
+	$tdata[1] = '<span class="big_data" id="total_events">' .
+		html_print_image('images/spinner.gif',true) . '</span>';
+		
+		/* Hello there! :)
+We added some of what seems to be "buggy" messages to the openSource version recently. This is not to force open-source users to move to the enterprise version, this is just to inform people using Pandora FMS open source that it requires skilled people to maintain and keep it running smoothly without professional support. This does not imply open-source version is limited in any way. If you check the recently added code, it contains only warnings and messages, no limitations except one: we removed the option to add custom logo in header. In the Update Manager section, it warns about the 'danger’ of applying automated updates without a proper backup, remembering in the process that the Enterprise version comes with a human-tested package. Maintaining an OpenSource version with more than 500 agents is not so easy, that's why someone using a Pandora with 8000 agents should consider asking for support. It's not a joke, we know of many setups with a huge number of agents, and we hate to hear that “its becoming unstable and slow” :(
+You can of course remove the warnings, that's why we include the source and do not use any kind of trick. And that's why we added here this comment, to let you know this does not reflect any change in our opensource mentality of does the last 14 years.
+*/
+
+	if($system_events > 50000 && !enterprise_installed()){
+		$tdata[2] = "<div id='monitoreventsmodal' class='publienterprise' title='Community version' style='text-align:left'><img data-title='Enterprise version' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>";
+	} else {
+		$tdata[3] = "&nbsp;";
+	}
+	$table_srv->colspan[count($table_srv->data)][1] = 2;
+	$table_srv->rowclass[] = '';
+	$table_srv->data[] = $tdata;
+
 	$output = '<fieldset class="databox tactical_set">
 				<legend>' . 
 					__('Server performance') . 
 				'</legend>' . 
 				html_print_table($table_srv, true) . '</fieldset>';
-	
+
+	$output .= '<script type="text/javascript">';
+		$output .= '$(document).ready(function () {';
+			$output .= 'var parameters = {};';
+			$output .= 'parameters["page"] = "include/ajax/events";';
+			$output .= 'parameters["total_events"] = 1;';
+
+			$output .= '$.ajax({type: "GET",url: "ajax.php",data: parameters,';
+				$output .= 'success: function(data) {';
+					$output .= '$("#total_events").text(data);';
+				$output .= '}';
+			$output .= '});';
+		$output .= '});';
+	$output .= '</script>';
+
 	return $output;
 }
 

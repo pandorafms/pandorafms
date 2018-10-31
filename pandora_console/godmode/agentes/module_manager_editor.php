@@ -34,6 +34,11 @@ if (is_ajax ()) {
 		
 		// Decrypt passwords in the component.
 		$component['plugin_pass'] = io_output_password($component['plugin_pass']);
+
+		$component['str_warning'] = io_safe_output($component['str_warning']);
+		$component['str_critical'] = io_safe_output($component['str_critical']);
+		$component['warning_inverse'] = (bool)$component['warning_inverse'];
+		$component['critical_inverse'] = (bool)$component['critical_inverse'];
 		
 		echo io_json_mb_encode ($component);
 		return;

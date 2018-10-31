@@ -28,6 +28,27 @@ $( document ).ready(function() {
 		});
 		
 	});
+
+	$('[id^=checkbox-massive_report_check]').change(function(){
+		if($(this).parent().parent().parent().hasClass('checkselected')){
+			$(this).parent().parent().parent().removeClass('checkselected');
+		}
+		else{
+			$(this).parent().parent().parent().addClass('checkselected');							
+		}
+	});
+
+	$('[id^=checkbox-all_delete]').change(function(){	
+		if ($("#checkbox-all_delete").prop("checked")) {
+			$('[id^=checkbox-massive_report_check]').parent().parent().parent().addClass('checkselected');
+			$(".check_delete").prop("checked", true);
+		}
+		else{
+			$('[id^=checkbox-massive_report_check]').parent().parent().parent().removeClass('checkselected');
+			$(".check_delete").prop("checked", false);
+		}	
+	});
+
 });
 	
 </script>
@@ -715,9 +736,10 @@ switch ($action) {
 				if ($edit || $delete) {
 					$columnview = true;
 					if (!isset($table->head[$next])) {
-						$table->head[$next] = '<span title="Operations">' . __('Op.') . '</span>';
+						$table->head[$next] = '<span title="Operations">' . __('Op.') . '</span>'.
+							html_print_checkbox('all_delete', 0, false, true, false);
 						$table->size = array ();
-						$table->size[$next] = '80px';
+						//$table->size[$next] = '80px';
 						$table->style[$next] = 'text-align:left;';
 					}
 					
@@ -1847,7 +1869,7 @@ switch ($action) {
 											break;
 									}
 									
-									metaconsole_restore_db_force();
+									metaconsole_restore_db();
 									
 									$temp_sort[$report_item['id_rc']] = $element_name;
 								
@@ -2075,9 +2097,9 @@ else {
 	$buttons = null;
 	$buttons = array(
 		'main' => array('active' => true,
-			'text' => '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=main&action=new&pure=' .$pure.'">' .
-				html_print_image("images/op_reporting.png", true, array ("title" => __('Main data'))) .'</a>'));
-	$textReportName = '';
+			'text' => '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&pure=' .$pure.'">' .
+				html_print_image("images/report_list.png", true, array ("title" => __('Reports list'))) .'</a>'));
+	$textReportName = __('Create Custom Report');
 }
 
 // Page header for metaconsole

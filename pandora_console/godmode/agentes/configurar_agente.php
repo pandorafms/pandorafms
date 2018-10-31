@@ -207,11 +207,6 @@ if ($create_agent) {
 		$agent_creation_error = __('No agent alias specified');
 		$agent_created_ok = 0;
 	}
-	/*elseif (agents_get_agent_id ($nombre_agente)) {
-		$agent_creation_error =
-			__('There is already an agent in the database with this name');
-		$agent_created_ok = 0;
-	}*/
 	else {
 		if($alias_as_name){
 			$sql = 'SELECT nombre FROM tagente WHERE nombre = "' . $alias . '"';
@@ -760,7 +755,7 @@ if ($update_agent) { // if modified some agent paramenter
 	$quiet = (int) get_parameter("quiet", 0);
 	$cps = (int) get_parameter("cps", 0);
 	
-	$old_interval = db_get_value('intervalo', 'tagente', 'id_agente', $id_agente);
+	$old_values = db_get_row('tagente', 'id_agente', $id_agente);
 	$fields = db_get_all_fields_in_table('tagent_custom_fields');
 	
 	if ($fields === false) $fields = array();
@@ -860,11 +855,21 @@ if ($update_agent) { // if modified some agent paramenter
 			// Update the agent from the metaconsole cache
 			enterprise_include_once('include/functions_agents.php');
 			enterprise_hook ('agent_update_from_cache', array($id_agente, $values,$server_name));
-			
-			if ($old_interval != $intervalo) {
-				enterprise_hook('config_agents_update_config_interval', array($id_agente, $intervalo));
+
+			# Update the configuration files
+			if ($old_values['intervalo'] != $intervalo) {
+				enterprise_hook(
+					'config_agents_update_config_token',
+					array($id_agente, 'interval', $intervalo)
+				);
 			}
-			
+			if ($old_values['disabled'] != $disabled) {
+				enterprise_hook(
+					'config_agents_update_config_token',
+					array($id_agente, 'standby', $disabled ? "1" : "0")
+				);
+			}
+
 			if($tpolicy_group_old){
 				foreach ($tpolicy_group_old as $key => $value) {
 					$tpolicy_agents_old= db_get_sql("SELECT * FROM tpolicy_agents 
@@ -919,8 +924,9 @@ if ($update_agent) { // if modified some agent paramenter
 
 			enterprise_hook ('update_agent', array ($id_agente));
 			ui_print_success_message (__('Successfully updated'));
+			$unsafe_alias = io_safe_output($alias);
 			db_pandora_audit("Agent management",
-				"Updated agent $alias", false, false, $info);
+				"Updated agent $unsafe_alias", false, false, $info);
 
 		}
 	}
@@ -1421,7 +1427,7 @@ if ($update_module) {
 		$edit_module = true;
 		
 		db_pandora_audit("Agent management",
-			"Fail to try update module '$name' for agent " . $agent["alias"]);
+			"Fail to try update module '".io_safe_output($name)."' for agent " . io_safe_output($agent["alias"]));
 	}
 	else {
 		if ($prediction_module == 3) {
@@ -1439,7 +1445,7 @@ if ($update_module) {
 		$agent = db_get_row ('tagente', 'id_agente', $id_agente);
 		
 		db_pandora_audit("Agent management",
-			"Updated module '$name' for agent ".$agent["alias"], false, false, io_json_mb_encode($values));
+			"Updated module '".io_safe_output($name)."' for agent ". io_safe_output($agent["alias"]), false, false, io_json_mb_encode($values));
 	}
 }
 
@@ -1580,7 +1586,7 @@ if ($create_module) {
 		$edit_module = true;
 		$moduletype = $id_module;
 		db_pandora_audit("Agent management",
-			"Fail to try added module '$name' for agent ".$agent["alias"]);
+			"Fail to try added module '".io_safe_output($name)."' for agent ".io_safe_output($agent["alias"]));
 	}
 	else {
 		if ($prediction_module == 3) {
@@ -1598,7 +1604,7 @@ if ($create_module) {
 		
 		$agent = db_get_row ('tagente', 'id_agente', $id_agente);
 		db_pandora_audit("Agent management",
-			"Added module '$name' for agent ".$agent["alias"], false, true, io_json_mb_encode($values));
+			"Added module '".io_safe_output($name)."' for agent ".io_safe_output($agent["alias"]), false, true, io_json_mb_encode($values));
 	}
 }
 
@@ -1713,12 +1719,18 @@ if ($delete_module) { // DELETE agent module !
 		ui_print_error_message(__('There was a problem deleting the module'));
 	}
 	else {
-		ui_print_success_message(__('Module deleted succesfully'));
+
+		echo '<script type="text/javascript">
+		location="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=module&id_agente='.$id_agente.'";
+		alert("'.__('Module deleted succesfully').'");
+		</script>';
 		
 		$agent = db_get_row ('tagente', 'id_agente', $id_agente);
 		db_pandora_audit("Agent management",
-			"Deleted module '".$module_data["nombre"]."' for agent ".$agent["alias"]);
+			"Deleted module '".io_safe_output($module_data["nombre"])."' for agent ".io_safe_output($agent["alias"]));
 	}
+
+
 }
 
 // MODULE DUPLICATION
@@ -1748,11 +1760,11 @@ if (!empty($duplicate_module)) { // DUPLICATE agent module !
 	
 	if ($result) {
 		db_pandora_audit("Agent management",
-			"Duplicate module '".$id_duplicate_module."' for agent " . $agent["alias"] . " with the new id for clon " . $result);
+			"Duplicate module '".$id_duplicate_module."' for agent " . io_safe_output($agent["alias"]) . " with the new id for clon " . $result);
 	}
 	else {
 		db_pandora_audit("Agent management",
-			"Fail to try duplicate module '".$id_duplicate_module."' for agent " . $agent["alias"]);
+			"Fail to try duplicate module '".$id_duplicate_module."' for agent " . io_safe_output($agent["alias"]));
 	}
 }
 
@@ -1760,13 +1772,15 @@ if (!empty($duplicate_module)) { // DUPLICATE agent module !
 // =====================
 if ($enable_module) {
 	$result = modules_change_disabled($enable_module, 0);
-	
+	$modulo_nombre = db_get_row_sql("SELECT nombre FROM tagente_modulo WHERE id_agente_modulo = ".$enable_module."");	
+	$modulo_nombre = $modulo_nombre['nombre'];
+
 	if ($result === NOERR) {	
 		enterprise_hook('config_agents_enable_module_conf', array($id_agente, $enable_module));
-		db_pandora_audit("Module management", 'Enable  ' . $enable_module);
+		db_pandora_audit("Module management", 'Enable #' . $enable_module . ' | ' . $modulo_nombre . ' | ' . $agent["alias"]);
 	}
 	else {
-		db_pandora_audit("Module management", 'Fail to enable ' . $enable_module);
+		db_pandora_audit("Module management", 'Fail to enable #' . $enable_module . ' | ' . $modulo_nombre . ' | ' . $agent["alias"]);
 	}
 	
 	ui_print_result_message ($result,
@@ -1775,13 +1789,15 @@ if ($enable_module) {
 
 if ($disable_module) {
 	$result = modules_change_disabled($disable_module, 1);
-	
+	$modulo_nombre = db_get_row_sql("SELECT nombre FROM tagente_modulo WHERE id_agente_modulo = ".$disable_module."");
+	$modulo_nombre = $modulo_nombre['nombre'];
+
 	if ($result === NOERR) {
 		enterprise_hook('config_agents_disable_module_conf', array($id_agente, $disable_module));
-		db_pandora_audit("Module management", 'Disable  ' . $disable_module);
+		db_pandora_audit("Module management", 'Disable #' . $disable_module . ' | ' . $modulo_nombre . ' | ' . $agent["alias"]);
 	}
 	else {
-		db_pandora_audit("Module management", 'Fail to disable ' . $disable_module);
+		db_pandora_audit("Module management", 'Fail to disable #' . $disable_module . ' | ' . $modulo_nombre . ' | ' . $agent["alias"]);
 	}
 	
 	ui_print_result_message ($result,
@@ -1936,11 +1952,11 @@ switch ($tab) {
 					resizable: true,
 					draggable: true,
 					modal: true,
-					height: 220,
+					height: 240,
 					width: 600,
 					title: 'Changing the module name of a satellite agent',
 					open: function(){
-							$('#dialog').html('<br><img src="images/icono-warning-triangulo.png" style="float:left;margin-left:25px;"><p style="float:right;font-style:nunito;font-size:11pt;margin-right:50px;"><span style="font-weight:bold;font-size:12pt;">Warning</span> <br>The names of the modules of a satellite should not be <br> altered manually. Unless you are absolutely certain of <br> the process, do not alter these names.</p>');
+							$('#dialog').html('<br><table><tr><td><img src="images/icono-warning-triangulo.png" style="float:left;margin-left:25px;"></td><td><p style="float:right;font-style:nunito;font-size:11pt;margin-right:50px;margin-left:40px;"><span style="font-weight:bold;font-size:12pt;">Warning</span> <br>The names of the modules of a satellite should not be altered manually. Unless you are absolutely certain of the process, do not alter these names.</p></td></tr></table>');
 					},
 					buttons: [{
 							text: "Ok",
@@ -1970,11 +1986,11 @@ switch ($tab) {
 						resizable: true,
 						draggable: true,
 						modal: true,
-						height: 280,
-						width: 670,
+						height: 240,
+						width: 650,
 						title: 'Changing snmp module name',
 						open: function(){
-								$('#dialog').html('<br><img src="images/icono-warning-triangulo.png" style="float:left;margin-left:25px;margin-top:30px;"><p style="float:right;font-style:nunito;font-size:11pt;margin-right:50px;"><span style="font-weight:bold;font-size:12pt;">Warning</span> <br> 					If you change the name of this module, various features <br> associated with this module, such as network maps, <br> interface graphs or other network modules, may  no longer <br>  work. If you are not completely sure of the process, please <br> do not change the name of the module.					</p>');
+								$('#dialog').html('<br><table><tr><td><img src="images/icono-warning-triangulo.png" style="float:left;margin-left:25px;margin-top:30px;"></td><td><p style="float:right;font-style:nunito;font-size:11pt;margin-right:50px;margin-left:40px;"><span style="font-weight:bold;font-size:12pt;">Warning</span> <br> 					If you change the name of this module, various features associated with this module, such as network maps, interface graphs or other network modules, may  no longer work. If you are not completely sure of the process, please do not change the name of the module.					</p></td></tr></table>');
 						},
 						buttons: [{
 					      text: "Ok",

@@ -50,7 +50,10 @@ function alerts_get_alerts($id_group = 0, $free_search = "", $status = "all", $s
 			
 			$id_groups = array_keys($groups);
 			
-			$group_query = " AND t3.id_grupo IN (" . implode(',', $id_groups) . ") ";
+			$group_query = " AND (
+				t3.id_grupo IN (" . implode(',', $id_groups) . ")
+				OR tasg.id_group IN (" . implode(',', $id_groups) . ")
+			)";
 		}
 		else {
 			$group_query = "";
@@ -103,6 +106,8 @@ function alerts_get_alerts($id_group = 0, $free_search = "", $status = "all", $s
 			ON t0.id_agent_module = t2.id_agente_modulo
 		INNER JOIN tagente t3
 			ON t2.id_agente = t3.id_agente
+		LEFT JOIN tagent_secondary_group tasg
+			ON tasg.id_agent = t3.id_agente
 		WHERE 1=1
 			' . $status_query . ' ' . $standby_query . ' ' . $group_query . '
 			AND (t1.name LIKE "%' . $free_search . '%"
@@ -1014,14 +1019,16 @@ function alerts_create_alert_agent_module ($id_agent_module, $id_alert_template,
  * @return mixed Affected rows or false if something goes wrong.
  */
 function alerts_update_alert_agent_module ($id_alert_agent_module, $values) {
-	if (empty ($id_agent_module))
+
+	if (empty ($id_alert_agent_module))
 		return false;
+
 	if (! is_array ($values))
 		return false;
-	
+
 	return (@db_process_sql_update ('talert_template_modules',
 		$values,
-		array ('id' => $id_alert_template))) !== false;
+		array ('id' => $id_alert_agent_module))) !== false;
 }
 
 /**
@@ -1306,13 +1313,25 @@ function alerts_delete_alert_agent_module_action ($id_alert_agent_module_action)
  *
  * @return mixed Actions associated or false if something goes wrong.
  */
-function alerts_get_alert_agent_module_actions ($id_alert_agent_module, $fields = false) {
+function alerts_get_alert_agent_module_actions ($id_alert_agent_module, $fields = false, $server_id = -1) {
 	if (empty ($id_alert_agent_module))
 		return false;
-	
-	$actions = db_get_all_rows_filter ('talert_template_module_actions',
-		array ('id_alert_template_module' => $id_alert_agent_module),
-		$fields);
+
+	if (defined('METACONSOLE')) {
+		$server = db_get_row ('tmetaconsole_setup', 'id', $server_id);
+
+		if (metaconsole_connect($server) == NOERR) {
+			$actions = db_get_all_rows_filter ('talert_template_module_actions',
+				array ('id_alert_template_module' => $id_alert_agent_module),
+				$fields);
+
+			metaconsole_restore_db ();
+		}
+	} else {
+		$actions = db_get_all_rows_filter ('talert_template_module_actions',
+			array ('id_alert_template_module' => $id_alert_agent_module),
+			$fields);
+	}
 	
 	if ($actions === false)
 		return array ();
@@ -1633,23 +1652,13 @@ function get_agent_alert_fired ($id_agent, $id_alert, $period, $date = 0) {
  *
  * @return array An array with all the events happened.
  */
-function get_module_alert_fired ($id_agent_module, $id_alert, $period, $date = 0) {
+function get_module_alert_fired ($id_agent_module, $id_alert) {
 	
-	if (!is_numeric ($date)) {
-		$date = time_w_fixed_tz($date);
-	}
-	if (empty ($date)) {
-		$date = get_system_time();
-	}
-	
-	$datelimit = $date - $period;
-	
-	$sql = sprintf ('SELECT timestamp
+	$sql = sprintf ('SELECT *
 		FROM tevento
-		WHERE id_agentmodule = %d AND utimestamp > %d
-			AND utimestamp <= %d
+		WHERE id_agentmodule = %d
 			AND id_alert_am = %d 
-		ORDER BY timestamp DESC', $id_agent_module, $datelimit, $date, $id_alert);
+		ORDER BY timestamp DESC', $id_agent_module, $id_alert);
 	
 	return db_get_all_rows_sql ($sql);
 }
@@ -1792,9 +1801,12 @@ function get_group_alerts($id_group, $filter = '', $options = false,
 						FROM tagente_modulo
 						WHERE delete_pending = 0
 							AND id_agente IN (SELECT id_agente
-								FROM tagente
+								FROM tagente ta
+								LEFT JOIN tagent_secondary_group tasg
+									ON ta.id_agente = tasg.id_agent
 								WHERE
-									id_grupo IN (' . implode(',', $id_group) . '))';
+										id_grupo IN (' . implode(',', $id_group) . ')
+										OR id_group IN (' . implode(',', $id_group) . '))';
 
 				}
 			}
@@ -1812,23 +1824,6 @@ function get_group_alerts($id_group, $filter = '', $options = false,
 				FROM tagente_modulo WHERE delete_pending = 0';
 		}
 
-		if ($strict_user) {
-			$groups = users_get_groups($config["id_user"]);
-
-			if ($idGroup !== 0) {
-				$where_tags = tags_get_acl_tags($config['id_user'], $idGroup, 'AR', 'module_condition', 'AND', 'tagente_modulo', true, array(), true); 
-			} else {
-				$where_tags = tags_get_acl_tags($config['id_user'], array_keys($groups), 'AR', 'module_condition', 'AND', 'tagente_modulo', true, array(), true); 
-			}
-		
-			// If there are any errors add imposible condition
-			if (in_array($where_tags, array(ERR_WRONG_PARAMETERS, ERR_ACL))) {
-				$subQuery .= ' AND 1 = 0';
-			} 
-			else {
-				$subQuery .= $where_tags;
-			}
-		}
 	}
 	else {
 		if ($allModules)
@@ -1861,6 +1856,8 @@ function get_group_alerts($id_group, $filter = '', $options = false,
 				ON talert_template_modules.id_agent_module = t2.id_agente_modulo
 			INNER JOIN tagente t3
 				ON t2.id_agente = t3.id_agente
+			LEFT JOIN tagent_secondary_group tasg
+				ON tasg.id_agent = t2.id_agente
 			INNER JOIN talert_templates t4
 				ON talert_template_modules.id_alert_template = t4.id
 		WHERE id_agent_module in (%s) %s %s %s",

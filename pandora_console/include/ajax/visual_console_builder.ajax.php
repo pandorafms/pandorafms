@@ -100,7 +100,22 @@ $width = get_parameter('width', null);
 $height = get_parameter('height', null);
 $parent = get_parameter('parent', null);
 $map_linked = get_parameter('map_linked', null);
+$linked_map_node_id = get_parameter('linked_map_node_id', null);
+$linked_map_status_calculation_type = get_parameter('linked_map_status_calculation_type', null);
+
 $map_linked_weight = get_parameter('map_linked_weight', null);
+if ($map_linked_weight !== null) {
+	$map_linked_weight = (int) $map_linked_weight;
+}
+$linked_map_status_service_critical = get_parameter('linked_map_status_service_critical', null);
+if ($linked_map_status_service_critical !== null) {
+	$linked_map_status_service_critical = (float) $linked_map_status_service_critical;
+}
+$linked_map_status_service_warning = get_parameter('linked_map_status_service_warning', null);
+if ($linked_map_status_service_warning !== null) {
+	$linked_map_status_service_warning = (float) $linked_map_status_service_warning;
+}
+
 $element_group = get_parameter('element_group', null);
 $width_percentile = get_parameter('width_percentile', 0);
 $bars_graph_height = get_parameter('bars_graph_height', null);
@@ -148,6 +163,8 @@ $show_statistics = get_parameter('show_statistics', 0);
 $clock_animation = get_parameter('clock_animation', 'analogic_1');
 $time_format = get_parameter('time_format', 'time');
 $timezone = get_parameter('timezone', 'Europe/Madrid');
+
+$show_last_value = get_parameter('show_last_value', null);
 
 switch ($action) {
 	case 'get_font':
@@ -408,7 +425,7 @@ switch ($action) {
 		
 		// Linked to other layout ?? - Only if not module defined
 		if ($layoutData['id_layout_linked'] != 0) {
-			$status = visual_map_get_layout_status ($layoutData['id_layout_linked'], $layoutData['id_layout_linked_weight']);
+			$status = visual_map_get_layout_status($layoutData['id_layout_linked'], $layoutData);
 		
 		// Single object
 		}
@@ -599,6 +616,10 @@ switch ($action) {
 					if ($id_agent !== null) {
 						$values['id_agent'] = $id_agent;
 					}
+
+					if ($linked_map_node_id !== null) {
+						$values['linked_layout_node_id'] = (int) $linked_map_node_id;
+					}
 				}
 				else if ($id_agent == 0) {
 					$values['id_agent'] = 0;
@@ -619,11 +640,26 @@ switch ($action) {
 				if ($map_linked !== null) {
 					$values['id_layout_linked'] = $map_linked;
 				}
-				if ($element_group !== null) {
-					$values['element_group'] = $element_group;
+				if ($linked_map_status_calculation_type !== null) {
+					$values['linked_layout_status_type'] = $linked_map_status_calculation_type;
 				}
 				if ($map_linked_weight !== null) {
+					if ($map_linked_weight > 100) $map_linked_weight = 100;
+					if ($map_linked_weight < 0) $map_linked_weight = 0;
 					$values['id_layout_linked_weight'] = $map_linked_weight;
+				}
+				if ($linked_map_status_service_critical !== null) {
+					if ($linked_map_status_service_critical > 100) $linked_map_status_service_critical = 100;
+					if ($linked_map_status_service_critical < 0) $linked_map_status_service_critical = 0;
+					$values['linked_layout_status_as_service_critical'] = $linked_map_status_service_critical;
+				}
+				if ($linked_map_status_service_warning !== null) {
+					if ($linked_map_status_service_warning > 100) $linked_map_status_service_warning = 100;
+					if ($linked_map_status_service_warning < 0) $linked_map_status_service_warning = 0;
+					$values['linked_layout_status_as_service_warning'] = $linked_map_status_service_warning;
+				}
+				if ($element_group !== null) {
+					$values['element_group'] = $element_group;
 				}
 				switch ($type) {
 					// -- line_item ------------------------------------
@@ -750,6 +786,9 @@ switch ($action) {
 						}
 						if ($height !== null) {
 							$values['height'] = $height;
+						}
+						if ($show_last_value !== null) {
+							$values['show_last_value'] = $show_last_value;
 						}
 						break;
 					case 'simple_value':
@@ -944,7 +983,16 @@ switch ($action) {
 				if ($elementFields['id_metaconsole'] != 0) {
 					metaconsole_restore_db();
 				}
-				
+
+				if (isset($elementFields["id_layout_linked_weight"])) {
+					$elementFields["id_layout_linked_weight"] = (int) $elementFields["id_layout_linked_weight"];
+				}
+				if (isset($elementFields["linked_layout_status_as_service_critical"])) {
+					$elementFields["linked_layout_status_as_service_critical"] = (float) $elementFields["linked_layout_status_as_service_critical"];
+				}
+				if (isset($elementFields["linked_layout_status_as_service_warning"])) {
+					$elementFields["linked_layout_status_as_service_warning"] = (float) $elementFields["linked_layout_status_as_service_warning"];
+				}
 				switch ($type) {
 					case 'auto_sla_graph':
 						$elementFields['event_max_time_row'] = $elementFields['period'];
@@ -1010,7 +1058,7 @@ switch ($action) {
 								$elementFields['id_agent'], false,
 								array('disabled' => 0,
 									'id_agente' => $elementFields['id_agent'],
-									'tagente_modulo.id_tipo_modulo IN' => "(17,23,3,10,33)"));
+									'tagente_modulo.id_tipo_modulo IN' => "(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,18,17,23,3,10,33)"));
 							
 							$elementFields['modules_html'] = '<option value="0">--</option>';
 							foreach ($modules as $id => $name) {
@@ -1096,8 +1144,32 @@ switch ($action) {
 		}
 		$values['id_agente_modulo'] = $id_module;
 		$values['id_layout_linked'] = $map_linked;
+
+		if (defined('METACONSOLE') && $metaconsole) {
+			$values['linked_layout_node_id'] = (int) $linked_map_node_id;
+		}
+
+		$values['linked_layout_status_type'] = $linked_map_status_calculation_type;
+
+		if ($map_linked_weight !== null) {
+			if ($map_linked_weight > 100) $map_linked_weight = 100;
+			if ($map_linked_weight < 0) $map_linked_weight = 0;
+			$values['id_layout_linked_weight'] = $map_linked_weight;
+		}
+
+		if ($linked_map_status_service_critical !== null) {
+			if ($linked_map_status_service_critical > 100) $linked_map_status_service_critical = 100;
+			if ($linked_map_status_service_critical < 0) $linked_map_status_service_critical = 0;
+			$values['linked_layout_status_as_service_critical'] = $linked_map_status_service_critical;
+		}
+
+		if ($linked_map_status_service_warning !== null) {
+			if ($linked_map_status_service_warning > 100) $linked_map_status_service_warning = 100;
+			if ($linked_map_status_service_warning < 0) $linked_map_status_service_warning = 0;
+			$values['linked_layout_status_as_service_warning'] = $linked_map_status_service_warning;
+		}
+
 		$values['element_group'] = $element_group;
-		$values['id_layout_linked_weight'] = $map_linked_weight;
 		$values['parent_item'] = $parent;
 		$values['enable_link'] = $enable_link;
 		$values['show_on_top'] = $show_on_top;
@@ -1134,13 +1206,29 @@ switch ($action) {
 				break;
 			case 'module_graph':
 				$values['type'] = MODULE_GRAPH;
-				
+
+				if(is_metaconsole()){
+					$explode_id = explode("|", $values['id_custom_graph']);
+					$values['id_custom_graph'] = $explode_id[0];
+					$values['id_metaconsole']  = $explode_id[1];
+				}
+
 				if ($values['id_custom_graph'] > 0 ) {
 					$values['height'] = $height_module_graph;
 					$values['width'] = $width_module_graph;
-					
+
+					if(is_metaconsole()){
+						$server_data = metaconsole_get_connection_by_id($values['id_metaconsole']);
+						// Establishes connection
+						if (metaconsole_load_external_db($server_data) !== NOERR) continue;
+					}
+
 					$graph_conf = db_get_row('tgraph', 'id_graph', $values['id_custom_graph']);
-					
+
+					if(is_metaconsole()){
+						metaconsole_restore_db();
+					}
+
 					$graph_stacked = $graph_conf['stacked'];
 					if ( $graph_stacked == CUSTOM_GRAPH_BULLET_CHART) {
 						$values['height'] = 50;
@@ -1213,6 +1301,7 @@ switch ($action) {
 				$values['image'] = $image;
 				$values['width'] = $width;
 				$values['height'] = $height;
+				$values['show_last_value'] = $show_last_value;
 				break;
 			case 'group_item':
 				$values['type'] = GROUP_ITEM;
@@ -1361,7 +1450,6 @@ if ($get_element_status) {
 		array('id' => $id_element));
 	
 	$res = visual_map_get_status_element($layoutData);
-	
 	echo $res;
 	
 	return;

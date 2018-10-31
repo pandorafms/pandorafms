@@ -32,6 +32,7 @@ require_once ($config['homedir'].'/include/functions_modules.php');
 require_once ($config['homedir'].'/include/functions_users.php');
 require_once ($config['homedir'].'/include/functions.php');
 require_once ($config['homedir'].'/include/graphs/functions_d3.php');
+enterprise_include_once('include/functions_visual_map.php');
 
 function visual_map_print_item_toolbox($idDiv, $text, $float) {
 	if ($float == 'left') {
@@ -486,7 +487,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 						else {
 							$url = ui_meta_get_url_console_child(
 								$layoutData['id_metaconsole'],
-								"estado", "operation/agentes/ver_agente&amp;id_agente=" . $layoutData['id_agent']);
+								"estado", "operation/agentes/ver_agente&amp;id_agente=" . $layoutData['id_agent'], null, null, null, $isExternalLink);
 						}
 					}
 					else {
@@ -498,7 +499,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 						else {
 							$url = ui_meta_get_url_console_child(
 								$layoutData['id_metaconsole'],
-								"estado", "operation/agentes/ver_agente&amp;id_agente=" . $layoutData['id_agent']);
+								"estado", "operation/agentes/ver_agente&amp;id_agente=" . $layoutData['id_agent'], null, null, null, $isExternalLink);
 						}
 					}
 				}
@@ -661,7 +662,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 						else {
 							$url = ui_meta_get_url_console_child(
 								$layoutData['id_metaconsole'],
-								"estado", "operation/agentes/ver_agente&amp;id_agente=" . $layoutData['id_agent']);
+								"estado", "operation/agentes/ver_agente&amp;id_agente=" . $layoutData['id_agent'], null, null, null, $isExternalLink);
 						}
 					}
 				break;
@@ -723,7 +724,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 						else {
 							$url = ui_meta_get_url_console_child(
 								$layoutData['id_metaconsole'],
-								"estado", 'operation/agentes/ver_agente&amp;id_agente='.$layoutData['id_agent']);
+								"estado", 'operation/agentes/ver_agente&amp;id_agente='.$layoutData['id_agent'], null, null, null, $isExternalLink);
 						}
 					}
 				}
@@ -778,7 +779,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 							else {
 								$url = ui_meta_get_url_console_child(
 									$layoutData['id_metaconsole'],
-									"estado", 'operation/agentes/ver_agente&amp;id_agente='.$layoutData["id_agent"].'&amp;tab=data');
+									"estado", 'operation/agentes/ver_agente&amp;id_agente='.$layoutData["id_agent"].'&amp;tab=data', null, null, null, $isExternalLink);
 							}
 						}
 					}
@@ -801,6 +802,18 @@ function visual_map_print_item($mode = "read", $layoutData,
 					$url = $element_enterprise['url'];
 				}
 				break;
+		}
+
+		// Override url
+		if (
+			is_metaconsole() &&
+			!empty($layoutData["id_layout_linked"]) &&
+			!empty($layoutData["linked_layout_node_id"])
+		) {
+			$url = ui_meta_get_url_console_child(
+				$layoutData['linked_layout_node_id'],
+				"network", "operation/visual_console/render_view&amp;id=" . (int) $layoutData["id_layout_linked"]
+			);
 		}
 	}
 	
@@ -1190,7 +1203,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 					if ($layoutData['label_position']=='left') {
 						if ($layoutData['type_graph'] == 'horizontal') {
 							$img = '<div style="float:right;height:'.$himg.'px;">'.
-								hbar_graph(true, $module_data,
+								hbar_graph($module_data,
 								400, 400, $color, array(), array(),
 								ui_get_full_url("images/image_problem.opaque.png", false, false, false),
 								"", "", $water_mark, $config['fontpath'], 6,
@@ -1198,7 +1211,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 						}
 						else {
 							$img = '<div style="float:right;height:'.$himg.'px;">'. 
-								vbar_graph(true, $module_data,
+								vbar_graph($module_data,
 								400, 400, $color, array(), array(),
 								ui_get_full_url("images/image_problem.opaque.png", false, false, false),
 								"", "", $water_mark, $config['fontpath'], 6,
@@ -1208,7 +1221,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 					elseif($layoutData['label_position']=='right') {
 						if ($layoutData['type_graph'] == 'horizontal') {
 							$img = '<div style="float:left;height:'.$himg.'px;">'.
-								hbar_graph(true, $module_data,
+								hbar_graph($module_data,
 								400, 400, $color, array(), array(),
 								ui_get_full_url("images/image_problem.opaque.png", false, false, false),
 								"", "", $water_mark, $config['fontpath'], 6,
@@ -1216,7 +1229,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 						}
 						else {
 							$img = '<div style="float:left;height:'.$himg.'px;">'. 
-								vbar_graph(true, $module_data,
+								vbar_graph($module_data,
 								400, 400, $color, array(), array(),
 								ui_get_full_url("images/image_problem.opaque.png", false, false, false),
 								"", "", $water_mark, $config['fontpath'], 6,
@@ -1225,14 +1238,14 @@ function visual_map_print_item($mode = "read", $layoutData,
 					}
 					else {
 						if ($layoutData['type_graph'] == 'horizontal') {
-							$img = hbar_graph(true, $module_data,
+							$img = hbar_graph($module_data,
 								400, 400, $color, array(), array(),
 								ui_get_full_url("images/image_problem.opaque.png", false, false, false),
 								"", "", $water_mark, $config['fontpath'], 6,
 								"", 0, $config['homeurl'], $layoutData['image'], $layoutData['border_color']);
 						}
 						else {
-							$img = vbar_graph(true, $module_data,
+							$img = vbar_graph($module_data,
 								400, 400, $color, array(), array(),
 								ui_get_full_url("images/image_problem.opaque.png", false, false, false),
 								"", "", $water_mark, $config['fontpath'], 6,
@@ -1244,7 +1257,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 					if ($layoutData['label_position']=='left') {
 						if ($layoutData['type_graph'] == 'horizontal') {
 							$img = '<div style="float:right;height:'.$himg.'px;">'.
-								hbar_graph(true, $module_data,
+								hbar_graph($module_data,
 								$width, $height, $color, array(), array(),
 								ui_get_full_url("images/image_problem.opaque.png", false, false, false),
 								"", "", $water_mark, $config['fontpath'], 6,
@@ -1252,7 +1265,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 						}
 						else {
 							$img = '<div style="float:right;height:'.$himg.'px;">'. 
-								vbar_graph(true, $module_data,
+								vbar_graph($module_data,
 								$width, $height, $color, array(), array(),
 								ui_get_full_url("images/image_problem.opaque.png", false, false, false),
 								"", "", $water_mark, $config['fontpath'], 6,
@@ -1262,7 +1275,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 					elseif($layoutData['label_position']=='right') {
 						if ($layoutData['type_graph'] == 'horizontal') {
 							$img = '<div style="float:left;height:'.$himg.'px;">'.
-								hbar_graph(true, $module_data,
+								hbar_graph($module_data,
 								$width, $height, $color, array(), array(),
 								ui_get_full_url("images/image_problem.opaque.png", false, false, false),
 								"", "", $water_mark, $config['fontpath'], 6,
@@ -1270,7 +1283,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 						}
 						else {
 							$img = '<div style="float:left;height:'.$himg.'px;">'. 
-								vbar_graph(true, $module_data,
+								vbar_graph($module_data,
 								$width, $height, $color, array(), array(),
 								ui_get_full_url("images/image_problem.opaque.png", false, false, false),
 								"", "", $water_mark, $config['fontpath'], 6,
@@ -1279,14 +1292,14 @@ function visual_map_print_item($mode = "read", $layoutData,
 					}
 					else {
 						if ($layoutData['type_graph'] == 'horizontal') {
-							$img = hbar_graph(true, $module_data,
+							$img = hbar_graph($module_data,
 								$width, $height, $color, array(), array(),
 								ui_get_full_url("images/image_problem.opaque.png", false, false, false),
 								"", "", $water_mark, $config['fontpath'], 6,
 								"", 0, $config['homeurl'], $layoutData['image'], $layoutData['border_color']);
 						}
 						else {
-							$img = vbar_graph(true, $module_data,
+							$img = vbar_graph($module_data,
 								$width, $height, $color, array(), array(),
 								ui_get_full_url("images/image_problem.opaque.png", false, false, false),
 								"", "", $water_mark, $config['fontpath'], 6,
@@ -1424,88 +1437,37 @@ function visual_map_print_item($mode = "read", $layoutData,
 					}
 				}
 				else{
-					if ($layoutData['id_metaconsole'] != 0) {
-						
-						if($layoutData['clock_animation'] == 'analogic_1'){
-							$img =  '<img src="../../images/console/signes/clock.png" style="width:'.$width.'px;height:'.	($width+40).'px;">';
-						}
-						else{
-							
-							if($layoutData['time_format'] == 'time'){
-								$img =  '<img src="../../images/console/signes/digital-clock.png" style="width:'.$width.'px;height:'.	(($width/3.9)+20).'px;">';
-							}
-							else{
-								$img =  '<img src="../../images/console/signes/digital-clock.png" style="width:'.$width.'px;height:'.	(($width/3.9)+40).'px;">';
-							}
-						
-						}
-						
+					$image_prefix = ($layoutData['id_metaconsole'] != 0) ? "../../" : "";
+					if($layoutData['clock_animation'] == 'analogic_1'){
+						$img =  '<img src="' . $image_prefix . 'images/console/signes/clock.png" style="width:'.$width.'px;height:'.	($width+40).'px;">';
 					}
 					else{
-						if($layoutData['clock_animation'] == 'analogic_1'){
-							$img =  '<img src="images/console/signes/clock.png" style="width:'.$width.'px;height:'.	($width+40).'px;">';
-						}
-						else{							
-								if($layoutData['time_format'] == 'time'){
-									$img =  '<img src="images/console/signes/digital-clock.png" style="width:'.$width.'px;height:'.	(($width/3.9)+20).'px;">';
-								}
-								else{
-									$img =  '<img src="images/console/signes/digital-clock.png" style="width:'.$width.'px;height:'.	(($width/3.9)+40).'px;">';
-								}
-						}
+						$height_offset = ($layoutData['time_format'] == 'time') ? 20 : 40;
+						$img =  '<img src="' . $image_prefix . 'images/console/signes/digital-clock.png" style="width:'.$width.'px;height:'.	(($width/3.9)+$height_offset).'px;">';
 					}
 				}
 			}
 			else{
 				if($layoutData['clock_animation'] == 'analogic_1'){
-					
-					if ($width == 0) {
-						if ($layoutData['label_position']=='left') {
-							$img = '<div id="clock_'.$layoutData['id'].'" style="z-index:'.$show_on_top_index.';float:right;height:'.$himg.'px;">' .print_clock_analogic_1 ($layoutData['time_format'], $layoutData['timezone'],$layoutData['clock_animation'],$layoutData['width'],$layoutData['height'],$layoutData['id'],$layoutData['fill_color']).'</div>';
-						}
-						elseif ($layoutData['label_position']=='right') {
-							$img = '<div id="clock_'.$layoutData['id'].'" style="z-index:'.$show_on_top_index.';float:left;height:'.$himg.'px;">' . print_clock_analogic_1 ($layoutData['time_format'], $layoutData['timezone'],$layoutData['clock_animation'],$layoutData['width'],$layoutData['height'],$layoutData['id'],$layoutData['fill_color']).'</div>';
-						}
-						else {
-							$img = '<div id="clock_'.$layoutData['id'].'" style="z-index:'.$show_on_top_index.';height:'.$himg.'px;">' . print_clock_analogic_1 ($layoutData['time_format'], $layoutData['timezone'],$layoutData['clock_animation'],$layoutData['width'],$layoutData['height'],$layoutData['id'],$layoutData['fill_color']).'</div>';
-						}
+					if ($layoutData['label_position']=='left') {
+						$img = '<div id="clock_'.$layoutData['id'].'" style="z-index:'.$show_on_top_index.';float:right;height:'.$himg.'px;margin-bottom:15px;">' . print_clock_analogic_1 ($layoutData['time_format'], $layoutData['timezone'],$layoutData['clock_animation'],$layoutData['width'],$layoutData['height'],$layoutData['id'],$layoutData['fill_color']).'</div>';
 					}
-					else{
-						if ($layoutData['label_position']=='left') {
-							$img = '<div id="clock_'.$layoutData['id'].'" style="z-index:'.$show_on_top_index.';float:right;height:'.$himg.'px;">' . print_clock_analogic_1 ($layoutData['time_format'], $layoutData['timezone'],$layoutData['clock_animation'],$layoutData['width'],$layoutData['height'],$layoutData['id'],$layoutData['fill_color']).'</div>';
-						}
-						elseif ($layoutData['label_position']=='right') {
-							$img = '<div id="clock_'.$layoutData['id'].'" style="z-index:'.$show_on_top_index.';float:left;height:'.$himg.'px;">' .print_clock_analogic_1 ($layoutData['time_format'], $layoutData['timezone'],$layoutData['clock_animation'],$layoutData['width'],$layoutData['height'],$layoutData['id'],$layoutData['fill_color']).'</div>';
-						}
-						else {
-							$img ='<div id="clock_'.$layoutData['id'].'" style="z-index:'.$show_on_top_index.';height:'.$himg.'px;">' .  print_clock_analogic_1 ($layoutData['time_format'], $layoutData['timezone'],$layoutData['clock_animation'],$layoutData['width'],$layoutData['height'],$layoutData['id'],$layoutData['fill_color']).'</div>';
-						}
+					elseif ($layoutData['label_position']=='right') {
+						$img = '<div id="clock_'.$layoutData['id'].'" style="z-index:'.$show_on_top_index.';float:left;height:'.$himg.'px;margin-bottom:15px;">' . print_clock_analogic_1 ($layoutData['time_format'], $layoutData['timezone'],$layoutData['clock_animation'],$layoutData['width'],$layoutData['height'],$layoutData['id'],$layoutData['fill_color']).'</div>';
 					}
-					
+					else {
+						$img = '<div id="clock_'.$layoutData['id'].'" style="z-index:'.$show_on_top_index.';height:'.$himg.'px;margin-bottom:15px;">' . print_clock_analogic_1 ($layoutData['time_format'], $layoutData['timezone'],$layoutData['clock_animation'],$layoutData['width'],$layoutData['height'],$layoutData['id'],$layoutData['fill_color']).'</div>';
+					}
 				}
 				elseif($layoutData['clock_animation'] == 'digital_1'){
-					
-					if ($width == 0) {
-						if ($layoutData['label_position']=='left') {
-							$img = '<div id="clock_'.$layoutData['id'].'" style="z-index:'.$show_on_top_index.';float:right;height:'.$himg.'px;">' .print_clock_digital_1 ($layoutData['time_format'], $layoutData['timezone'],$layoutData['clock_animation'],$layoutData['width'],$layoutData['height'],$layoutData['id'],$layoutData['fill_color']).'</div>';
-						}
-						elseif ($layoutData['label_position']=='right') {
-							$img = '<div id="clock_'.$layoutData['id'].'" style="z-index:'.$show_on_top_index.';float:left;height:'.$himg.'px;">' . print_clock_digital_1 ($layoutData['time_format'], $layoutData['timezone'],$layoutData['clock_animation'],$layoutData['width'],$layoutData['height'],$layoutData['id'],$layoutData['fill_color']).'</div>';
-						}
-						else {
-							$img = '<div id="clock_'.$layoutData['id'].'" style="z-index:'.$show_on_top_index.';height:'.$himg.'px;">' . print_clock_digital_1 ($layoutData['time_format'], $layoutData['timezone'],$layoutData['clock_animation'],$layoutData['width'],$layoutData['height'],$layoutData['id'],$layoutData['fill_color']).'</div>';
-						}
+					if ($layoutData['label_position']=='left') {
+						$img = '<div id="clock_'.$layoutData['id'].'" style="z-index:'.$show_on_top_index.';float:right;height:'.$himg.'px;">' . print_clock_digital_1 ($layoutData['time_format'], $layoutData['timezone'],$layoutData['clock_animation'],$layoutData['width'],$layoutData['height'],$layoutData['id'],$layoutData['fill_color']).'</div>';
 					}
-					else{
-						if ($layoutData['label_position']=='left') {
-							$img = '<div id="clock_'.$layoutData['id'].'" style="z-index:'.$show_on_top_index.';float:right;height:'.$himg.'px;">' . print_clock_digital_1 ($layoutData['time_format'], $layoutData['timezone'],$layoutData['clock_animation'],$layoutData['width'],$layoutData['height'],$layoutData['id'],$layoutData['fill_color']).'</div>';
-						}
-						elseif ($layoutData['label_position']=='right') {
-							$img = '<div id="clock_'.$layoutData['id'].'" style="z-index:'.$show_on_top_index.';float:left;height:'.$himg.'px;">' .print_clock_digital_1 ($layoutData['time_format'], $layoutData['timezone'],$layoutData['clock_animation'],$layoutData['width'],$layoutData['height'],$layoutData['id'],$layoutData['fill_color']).'</div>';
-						}
-						else {
-							$img ='<div id="clock_'.$layoutData['id'].'" style="z-index:'.$show_on_top_index.';height:'.$himg.'px;">' .  print_clock_digital_1 ($layoutData['time_format'], $layoutData['timezone'],$layoutData['clock_animation'],$layoutData['width'],$layoutData['height'],$layoutData['id'],$layoutData['fill_color']).'</div>';
-						}
+					elseif ($layoutData['label_position']=='right') {
+						$img = '<div id="clock_'.$layoutData['id'].'" style="z-index:'.$show_on_top_index.';float:left;height:'.$himg.'px;">' .print_clock_digital_1 ($layoutData['time_format'], $layoutData['timezone'],$layoutData['clock_animation'],$layoutData['width'],$layoutData['height'],$layoutData['id'],$layoutData['fill_color']).'</div>';
+					}
+					else {
+						$img ='<div id="clock_'.$layoutData['id'].'" style="z-index:'.$show_on_top_index.';height:'.$himg.'px;">' .  print_clock_digital_1 ($layoutData['time_format'], $layoutData['timezone'],$layoutData['clock_animation'],$layoutData['width'],$layoutData['height'],$layoutData['id'],$layoutData['fill_color']).'</div>';
 					}
 				}
 			}
@@ -1517,7 +1479,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 						$img =  '<img src="../../images/console/signes/module-events.png">';
 					}
 					else{
-						$img =  '<img src="images/console/signes/module-events.png">';	
+						$img =  '<img src="images/console/signes/module-events.png">';
 					}
 				}
 				else{
@@ -1532,28 +1494,28 @@ function visual_map_print_item($mode = "read", $layoutData,
 			else {
 				if ($width == 0 || $height == 0) {
 					if ($layoutData['label_position']=='left') {
-						$img = '<div style="z-index:'.$show_on_top_index.';float:left;height:'.$himg.'px;">' .graph_graphic_moduleevents ($layoutData['id_agent'], $layoutData['id_agente_modulo'], 500, 50, $layoutData['period'], '', true).'</div>';
+						$img = '<div style="z-index:'.$show_on_top_index.';float:left;height:'.$himg.'px;width:500px;">' .graph_graphic_moduleevents ($layoutData['id_agent'], $layoutData['id_agente_modulo'], 500, 50, $layoutData['period'], '', true).'</div>';
 					}
 					elseif ($layoutData['label_position']=='right') {
-						$img = '<div style="z-index:'.$show_on_top_index.';float:right;height:'.$himg.'px;">' . graph_graphic_moduleevents ($layoutData['id_agent'], $layoutData['id_agente_modulo'], 500, 50, $layoutData['period'], '', true).'</div>';
+						$img = '<div style="z-index:'.$show_on_top_index.';float:right;height:'.$himg.'px;width:500px;">' . graph_graphic_moduleevents ($layoutData['id_agent'], $layoutData['id_agente_modulo'], 500, 50, $layoutData['period'], '', true).'</div>';
 					}
 					else {
-						$img = graph_graphic_moduleevents ($layoutData['id_agent'], $layoutData['id_agente_modulo'], 500, 50, $layoutData['period'], '', true);
+						$img = '<div style="width:500px;">' . graph_graphic_moduleevents ($layoutData['id_agent'], $layoutData['id_agente_modulo'], 500, 50, $layoutData['period'], '', true).'</div>';
 					}
 				}
 				else{
 					if ($layoutData['label_position']=='left') {
-						$img = '<div style="z-index:'.$show_on_top_index.';float:left;height:'.$himg.'px;">' . graph_graphic_moduleevents ($layoutData['id_agent'], $layoutData['id_agente_modulo'], $width, $height, $layoutData['period'], '', true).'</div>';
+						$img = '<div style="z-index:'.$show_on_top_index.';float:left;height:'.$himg.'px;width:500px;">' . graph_graphic_moduleevents ($layoutData['id_agent'], $layoutData['id_agente_modulo'], $width, $height, $layoutData['period'], '', true).'</div>';
 					}
 					elseif ($layoutData['label_position']=='right') {
-						$img = '<div style="z-index:'.$show_on_top_index.';float:right;height:'.$himg.'px;">' .graph_graphic_moduleevents ($layoutData['id_agent'], $layoutData['id_agente_modulo'], $width, $height, $layoutData['period'], '', true).'</div>';
+						$img = '<div style="z-index:'.$show_on_top_index.';float:right;height:'.$himg.'px;width:500px;">' .graph_graphic_moduleevents ($layoutData['id_agent'], $layoutData['id_agente_modulo'], $width, $height, $layoutData['period'], '', true).'</div>';
 					}
 					else {
-						$img = graph_graphic_moduleevents ($layoutData['id_agent'], $layoutData['id_agente_modulo'], $width, $height, $layoutData['period'], '', true);
+						$img = '<div style="width:500px;">' . graph_graphic_moduleevents ($layoutData['id_agent'], $layoutData['id_agente_modulo'], $width, $height, $layoutData['period'], '', true).'</div>';
 					}
 				}
 			}
-		
+
 			//Restore db connection
 			if ($layoutData['id_metaconsole'] != 0) {
 				metaconsole_restore_db();
@@ -1562,7 +1524,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 			$z_index = 2 + 1;
 			break;
 	}
-	
+
 	$class = "item ";
 	switch ($type) {
 		case STATIC_GRAPH:
@@ -1762,15 +1724,24 @@ function visual_map_print_item($mode = "read", $layoutData,
 							$value = format_for_graph($value, 2);
 						}
 						
-						if (!empty($unit_text))
-							$value .= " " . $unit_text;
-						
 						// Hide value on boolean modules
-						if (!modules_is_boolean($layoutData['id_agente_modulo'])) {
-							$img_style_title .=
-								" <br>" . __("Last value: ")
-								. remove_right_zeros(number_format($value, $config['graph_precision'])).$unit_text;
+						if ($layoutData['show_last_value'] != 2) {
+							if ((!modules_is_boolean($layoutData['id_agente_modulo'])) || 
+								(modules_is_boolean($layoutData['id_agente_modulo']) && $layoutData['show_last_value'] != 0)){
+								if (is_numeric($value)) {
+									$img_style_title .=
+										" <br>" . __("Last value: ")
+										. remove_right_zeros(number_format($value, $config['graph_precision']));
+								} else {
+									$img_style_title .=
+									" <br>" . __("Last value: ")
+									. $value;
+								}
+							}
 						}
+						
+						if (!empty($unit_text))
+							$img_style_title .= " " . $unit_text;
 						
 						if ($layoutData['id_metaconsole'] != 0) {
 							//Restore db connection
@@ -1779,7 +1750,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 					}
 					
 					if(get_parameter('action') == 'edit'){
-					$img_style_title = '';
+						$img_style_title = '';
 					}
 				}
 				
@@ -3136,38 +3107,22 @@ function visual_map_get_status_element($layoutData) {
 		WHERE id_agente_modulo = ' . $layoutData['id_agente_modulo']);
 
 	//Linked to other layout ?? - Only if not module defined
-	if ($layoutData['id_layout_linked'] != 0) {
-		if ($layoutData['id_layout_linked_weight'] != 0) {
-			$calculate_weight = true;
+	if (!empty($layoutData['id_layout_linked'])) {
+		if (!empty($layoutData['linked_layout_node_id'])) {
+			//Metaconsole db connection
+			$connection = db_get_row_filter ('tmetaconsole_setup',
+				array('id' => $layoutData['linked_layout_node_id']));
+			if (metaconsole_load_external_db($connection) != NOERR) return VISUAL_MAP_STATUS_UNKNOWN;
 		}
-		else {
-			$calculate_weight = false;
-		}
-		$status = visual_map_get_layout_status ($layoutData['id_layout_linked'], 0, 0, $calculate_weight);
 
-		if ($layoutData['id_layout_linked_weight'] > 0) {
-			$elements_to_compare = db_get_all_rows_sql("SELECT id, element_group FROM tlayout_data WHERE type = 0 AND id_layout = " . $layoutData['id_layout_linked']);
-			
-			$childs_group_acl = array();
-			foreach ($elements_to_compare as $c) {
-				if (check_acl ($config['id_user'], $c['element_group'], "VR")) {
-					$childs_group_acl[] = $c['id'];
-				}
-			}
-			$elements_to_compare = $childs_group_acl;
-			
-			$aux_weight = ($status['elements_in_critical'] / count($elements_to_compare)) * 100;
-			
-			if ($aux_weight >= $layoutData['id_layout_linked_weight']) {
-				$status = $status['temp_total'];
-			}
-			else {
-				$status = VISUAL_MAP_STATUS_NORMAL;
-				if (count($elements_to_compare) == 0) {
-       		$status = VISUAL_MAP_STATUS_UNKNOWN;
-        }
-			}
+		$status = visual_map_get_layout_status($layoutData['id_layout_linked'], $layoutData);
+
+		if (!empty($layoutData['linked_layout_node_id'])) {
+			//Restore db connection
+			metaconsole_restore_db();
 		}
+
+		return $status;
 	}
 	else {
 		switch ($layoutData["type"]) {
@@ -3642,20 +3597,59 @@ function visual_map_get_user_layouts ($id_user = 0, $only_names = false, $filter
 			$retval[$layout['id']] = $layout;
 
 		//add_perms
-		if ($groups[$layout['id_group']]['vconsole_view']){
+		if (isset($groups[$layout['id_group']]['vconsole_view'])){
 			$retval[$layout['id']]['vr'] = $groups[$layout['id_group']]['vconsole_view'];
 		}
-		if ($groups[$layout['id_group']]['vconsole_edit']){
+		if (isset($groups[$layout['id_group']]['vconsole_edit'])){
 			$retval[$layout['id']]['vw'] = $groups[$layout['id_group']]['vconsole_edit'];
 		}
-		if ($groups[$layout['id_group']]['vconsole_management']){
+		if (isset($groups[$layout['id_group']]['vconsole_management'])){
 			$retval[$layout['id']]['vm'] = $groups[$layout['id_group']]['vconsole_management'];
 		}
 	}
-	
+
 	return $retval;
 }
 
+function visual_map_translate_agent_status ($agent_status) {
+	switch ($agent_status) {
+		case AGENT_STATUS_NORMAL:
+		default:
+			return VISUAL_MAP_STATUS_NORMAL;
+		case AGENT_STATUS_CRITICAL:
+			return VISUAL_MAP_STATUS_CRITICAL_BAD;
+		case AGENT_STATUS_WARNING:
+			return VISUAL_MAP_STATUS_WARNING;
+		case AGENT_STATUS_NOT_INIT:
+		case AGENT_STATUS_UNKNOWN:
+		case -1:
+			return VISUAL_MAP_STATUS_UNKNOWN;
+		case AGENT_STATUS_ALERT_FIRED:
+			return VISUAL_MAP_STATUS_CRITICAL_ALERT;
+	}
+}
+
+function visual_map_translate_module_status ($module_status) {
+	switch ($module_status) {
+		case AGENT_MODULE_STATUS_NORMAL:
+		case AGENT_MODULE_STATUS_NORMAL_ALERT:
+		default:
+			return VISUAL_MAP_STATUS_NORMAL;
+		case AGENT_MODULE_STATUS_CRITICAL_BAD:
+			return VISUAL_MAP_STATUS_CRITICAL_BAD;
+		case AGENT_MODULE_STATUS_WARNING:
+			return VISUAL_MAP_STATUS_WARNING;
+		case AGENT_MODULE_STATUS_UNKNOWN:
+		case AGENT_MODULE_STATUS_NOT_INIT:
+		case AGENT_MODULE_STATUS_NO_DATA:
+		case -1:
+			return VISUAL_MAP_STATUS_UNKNOWN;
+		case AGENT_MODULE_STATUS_CRITICAL_ALERT:
+			return VISUAL_MAP_STATUS_CRITICAL_ALERT;
+		case AGENT_MODULE_STATUS_WARNING_ALERT:
+			return VISUAL_MAP_STATUS_WARNING_ALERT;
+	}
+}
 
 /** 
  * Get the status of a layout.
@@ -3665,205 +3659,231 @@ function visual_map_get_user_layouts ($id_user = 0, $only_names = false, $filter
  * are OK. If any of them is down, then result is down (0)
  * 
  * @param int Id of the layout
+ * @param array Information about the status calculation of the item
  * @param int Depth (for recursion control)
  * 
  * @return bool The status of the given layout. True if it's OK, false if not.
  */
-function visual_map_get_layout_status ($id_layout = 0, $depth = 0, $elements_in_critical = 0, $calculate_weight = false) {
+function visual_map_get_layout_status ($layout_id, $status_data = array(), $depth = 0) {
 	global $config;
 
-	$temp_status = VISUAL_MAP_STATUS_NORMAL;
-	$temp_total = VISUAL_MAP_STATUS_NORMAL;
-	$depth++; // For recursion depth checking
+	// TODO: Implement this limit into the setup
+	if ($depth > 10) return VISUAL_MAP_STATUS_UNKNOWN;
 	
-	// TODO: Implement this limit as a configurable item in setup
-	if ($depth > 10) {
-		return VISUAL_MAP_STATUS_UNKNOWN; // No status data if we need to exit by a excesive recursion
-	}
+	$layout_items = db_get_all_rows_filter("tlayout_data", array("id_layout" => $layout_id));
+
+	if ($layout_items === false) return VISUAL_MAP_STATUS_UNKNOWN;
 	
-	$id_layout = (int) $id_layout;
-	
-	$result = db_get_all_rows_filter ('tlayout_data',
-		array ('id_layout' => $id_layout),
-		array (
-			'id_agente_modulo',
-			'id_group',
-			'parent_item',
-			'id_layout_linked',
-			'id_agent',
-			'type',
-			'id_layout_linked_weight',
-			'id',
-			'id_layout',
-			'element_group',
-			'id_metaconsole'));
-	if ($result === false)
-		return VISUAL_MAP_STATUS_NORMAL;
-		
-	$stcount = 0;
-	$stcount_u = 0;
-	foreach ($result as $data) {
-		if ($data['type'] == 0) {
-			$stcount++;
-			if ($data["id_layout_linked"] == 0 && $data["id_agente_modulo"] == 0 && $data["id_agent"] == 0) {
-				$stcount_u++;
-			}
+	// Check for valid items to retrieve the status for
+	$valid_layout_items = array();
+	foreach ($layout_items as $layout_item_data) {
+		if (
+			// Group items
+			(
+				$layout_item_data['type'] == GROUP_ITEM &&
+				!empty($layout_item_data["id_group"]) &&
+				// ACL check
+				check_acl($config["id_user"], $layout_item_data["id_group"], "VR") &&
+				check_acl($config["id_user"], $layout_item_data["element_group"], "VR")
+			) ||
+			// Rest of items
+			(
+				(
+					// At least one of this ids is required
+					!empty($layout_item_data["id_layout_linked"]) ||
+					!empty($layout_item_data["id_agente_modulo"]) ||
+					!empty($layout_item_data["id_agent"])
+				) &&
+				// ACL check
+				check_acl($config["id_user"], $layout_item_data["element_group"], "VR")
+			)
+		) {
+			$valid_layout_items[] = $layout_item_data;
 		}
 	}
-	if ($stcount == 0 || $stcount_u == $stcount) {
-		return VISUAL_MAP_STATUS_UNKNOWN;
+	
+	if (empty($valid_layout_items)) return VISUAL_MAP_STATUS_UNKNOWN;
+
+	// Sort by node id to reduce the number of connections
+	if (is_metaconsole()) {
+		sort_by_column($valid_layout_items, "id_metaconsole");
 	}
 
-	foreach ($result as $data) {
-		$layout_group = $data['element_group'];
-		if (!check_acl ($config['id_user'], $layout_group, "VR")) {
-			continue;
-		}
+	$num_elements_by_status = array();
+	$meta_connected_to = null;
+
+	foreach ($valid_layout_items as $layout_item_data) {
+		$node_id = null;
 		
-		switch ($data['type']) {
-			case GROUP_ITEM:
-				if ($data["id_layout_linked"] == 0) {
-					$group_status = groups_get_status($data['id_group']);
-					switch ($group_status) {
-						case AGENT_STATUS_ALERT_FIRED:
-							$status = VISUAL_MAP_STATUS_CRITICAL_ALERT;
-							break;
-						case AGENT_STATUS_CRITICAL:
-							$status = VISUAL_MAP_STATUS_CRITICAL_BAD;
-							break;
-						case AGENT_STATUS_WARNING:
-							$status = VISUAL_MAP_STATUS_WARNING;
-							break;
-						case AGENT_STATUS_UNKNOWN:
-							$status = VISUAL_MAP_STATUS_UNKNOWN;
-							break;
-						case AGENT_STATUS_NORMAL:
-						default:
-							$status = VISUAL_MAP_STATUS_NORMAL;
-							break;
+		if (is_metaconsole()) {
+			$node_id = (
+				!empty($layout_item_data["id_layout_linked"]) &&
+				!empty($layout_item_data["linked_layout_node_id"])
+			)
+				? $layout_item_data["linked_layout_node_id"]
+				: $layout_item_data["id_metaconsole"];
+			
+			if (empty($node_id) && $meta_connected_to) {
+				metaconsole_restore_db(); // Restore db connection
+				$meta_connected_to = null;
+			}
+			else if (
+				!empty($node_id) && (
+					empty($meta_connected_to) ||
+					$meta_connected_to != $node_id
+				)
+			) {
+				if (!empty($meta_connected_to)) metaconsole_restore_db(); // Restore db connection
+				$connection = metaconsole_get_connection_by_id($node_id);
+				if (metaconsole_load_external_db($connection) != NOERR) continue;
+				$meta_connected_to = $node_id;
+			}
+		}
+
+		$status = VISUAL_MAP_STATUS_NORMAL;
+
+		$ent_element_status = enterprise_hook("enterprise_visual_map_get_status_element", array($layoutData));
+		if ($ent_element_status === ENTERPRISE_NOT_HOOK) {
+			$ent_element_status = false;
+		}
+
+		// Enterprise element
+		if ($ent_element_status !== false) {
+			$status = $ent_element_status;
+		}
+		// Other
+		else {
+			switch ($layout_item_data["type"]) {
+				case STATIC_GRAPH:
+				case PERCENTILE_BAR:
+				case PERCENTILE_BUBBLE:
+				case CIRCULAR_PROGRESS_BAR:
+				case CIRCULAR_INTERIOR_PROGRESS_BAR:
+					// Linked layout
+					if (!empty($layout_item_data["id_layout_linked"])) {
+						$status = visual_map_get_layout_status($layout_item_data["id_layout_linked"], $layout_item_data, $depth + 1);
 					}
-				}
-				else {
-					$status = visual_map_get_layout_status(
-						$data["id_layout_linked"], $depth);
-				}
-				break;
-			default:
-				if (($data["id_layout_linked"] == 0 &&
-					$data["id_agente_modulo"] == 0 &&
-					$data["id_agent"] == 0) ||
-					$data['type'] != 0){
-						continue;
+					// Module
+					else if (!empty($layout_item_data["id_agente_modulo"])) {
+						$module_status = modules_get_agentmodule_status($layout_item_data["id_agente_modulo"]);
+						$status = visual_map_translate_module_status($module_status);
 					}
-				
-				// Other Layout (Recursive!)
-				if (($data["id_layout_linked"] != 0) && ($data["id_agente_modulo"] == 0)) {
-					if ($data['id_layout_linked_weight'] > 0) {
-						$calculate_weight_c = true;
+					// Agent
+					else if (!empty($layout_item_data["id_agent"])) {
+						$agent_status = agents_get_status($layout_item_data["id_agent"], true);
+						$status = visual_map_translate_agent_status($agent_status);
 					}
+					// Unknown
 					else {
-						$calculate_weight_c = false;
+						$status = VISUAL_MAP_STATUS_UNKNOWN;
 					}
-					$status = visual_map_get_layout_status($data["id_layout_linked"], $depth, 0, $calculate_weight_c);
-
-					$elements_in_child = db_get_all_rows_sql("SELECT id, element_group FROM tlayout_data WHERE type = 0 AND id_layout = " . $data['id_layout_linked']);
-					$layout_group = $data['element_group'];
-					
-					$childs_group_acl = array();
-					foreach ($elements_in_child as $c) {
-						if (check_acl ($config['id_user'], $c['element_group'], "VR")) {
-							$childs_group_acl[] = $c['id'];
-						}
-					}
-					$elements_in_child = $childs_group_acl;
-					
-					if ($calculate_weight_c) {
-						$aux_weight = ($status['elements_in_critical'] / count($elements_in_child)) * 100;
-						
-						if ($aux_weight >= $data['id_layout_linked_weight']) {
-							$status = $status['temp_total'];
-						}
-						else {
-							$status = VISUAL_MAP_STATUS_NORMAL;
-							if (count($elements_in_child) == 0) {
-								$status = VISUAL_MAP_STATUS_UNKNOWN;
-							}
-						}
-					}
-				}
-				// Module
-				elseif ($data["id_agente_modulo"] != 0) {
-					//Metaconsole db connection
-					if ($data['id_metaconsole'] != 0) {
-						$connection = db_get_row_filter ('tmetaconsole_setup',
-							array('id' => $data['id_metaconsole']));
-						if (metaconsole_load_external_db($connection) != NOERR) {
-							continue;
-						}
-					}
-
-					$status = modules_get_agentmodule_status($data["id_agente_modulo"]);
-					if ($status == 4){
-						$status = 3;
-					}
-
-					//Restore db connection
-					if ($data['id_metaconsole'] != 0) {
-						metaconsole_restore_db();
-					}
-				}
-				// Agent
-				else {
-					//--------------------------------------------------
-					// ADDED NO CHECK ACL FOR AVOID CHECK TAGS THAT
-					// MAKE VERY SLOW THE VISUALMAPS WITH ACL TAGS
-					//--------------------------------------------------
-					//Metaconsole db connection
-					if ($data['id_metaconsole'] != 0) {
-						$connection = db_get_row_filter ('tmetaconsole_setup',
-							array('id' => $data['id_metaconsole']));
-						if (metaconsole_load_external_db($connection) != NOERR) {
-							continue;
-						}
-					}
-					$status = agents_get_status($data["id_agent"], true);
-
-					//Restore db connection
-					if ($data['id_metaconsole'] != 0) {
-						metaconsole_restore_db();
-					}
-				}
-				break;
-		}
-		
-		if ($calculate_weight) {
-			if ($status == VISUAL_MAP_STATUS_CRITICAL_BAD || $status == VISUAL_MAP_STATUS_WARNING) {
-				$elements_in_critical++;
+					break;
+				case GROUP_ITEM:
+					$group_status = groups_get_status($layout_item_data['id_group']);
+					$status = visual_map_translate_agent_status($group_status);
+					break;
+				default:
+					// If it's a graph, a progress bar or a data tag, ALWAYS report status OK
+					// (=0) to avoid confussions here.
+					$status = VISUAL_MAP_STATUS_NORMAL;
+					break;
 			}
+		}
+
+		// When the status calculation type is 'default', only one critical element is required to
+		// set the layout status as critical, so we can return the critical status right now.
+		if (
+			$status_data["linked_layout_status_type"] === "default" && (
+				$status == VISUAL_MAP_STATUS_CRITICAL_BAD ||
+				$status == VISUAL_MAP_STATUS_CRITICAL_ALERT
+			)
+		) {
+			if (is_metaconsole() && $meta_connected_to) {
+				metaconsole_restore_db(); // Restore db connection
+			}
+			return $status;
 		}
 		else {
-			if ($status == VISUAL_MAP_STATUS_CRITICAL_BAD) {
+			if (!isset($num_elements_by_status[$status])) $num_elements_by_status[$status] = 0;
+			$num_elements_by_status[$status]++;
+		}
+	}
+
+	if (is_metaconsole() && $meta_connected_to) {
+		metaconsole_restore_db(); // Restore db connection
+	}
+
+	// Status calculation
+	switch ($status_data["linked_layout_status_type"]) {
+		default:
+		case "default":
+			$num_items_critical_alert = $num_elements_by_status[VISUAL_MAP_STATUS_CRITICAL_ALERT];
+			$num_items_critical = $num_elements_by_status[VISUAL_MAP_STATUS_CRITICAL_BAD];
+			$num_items_warning = $num_elements_by_status[VISUAL_MAP_STATUS_WARNING];
+			$num_items_unknown = $num_elements_by_status[VISUAL_MAP_STATUS_UNKNOWN];
+			
+			if ($num_items_critical_alert > 0) {
+				return VISUAL_MAP_STATUS_CRITICAL_ALERT;
+			}
+			else if ($num_items_critical > 0) {
 				return VISUAL_MAP_STATUS_CRITICAL_BAD;
 			}
-		
-		}
-		if ($calculate_weight) {
-			if ($status == VISUAL_MAP_STATUS_CRITICAL_BAD) {
-				$temp_total = VISUAL_MAP_STATUS_CRITICAL_BAD;
+			else if ($num_items_warning > 0) {
+				return VISUAL_MAP_STATUS_WARNING;
 			}
-			else if ($status == VISUAL_MAP_STATUS_WARNING && $temp_total != VISUAL_MAP_STATUS_CRITICAL_BAD) {
-				$temp_total = VISUAL_MAP_STATUS_WARNING;
+			else if ($num_items_unknown > 0) {
+				return VISUAL_MAP_STATUS_UNKNOWN;
 			}
-		}
-		else if ($status > $temp_total) {
-			$temp_total = $status;
-		}
+			else {
+				return VISUAL_MAP_STATUS_NORMAL;
+			}
+			break;
+		case "weight":
+			$weight = $status_data["id_layout_linked_weight"];
+			$num_items = count($valid_layout_items);
+			$num_items_critical_alert = $num_elements_by_status[VISUAL_MAP_STATUS_CRITICAL_ALERT];
+			$num_items_critical = $num_elements_by_status[VISUAL_MAP_STATUS_CRITICAL_BAD];
+			$num_items_warning = $num_elements_by_status[VISUAL_MAP_STATUS_WARNING];
+			$num_items_unknown = $num_elements_by_status[VISUAL_MAP_STATUS_UNKNOWN];
+			
+			if (
+				$num_items_critical > 0 &&
+				((($num_items_critical_alert + $num_items_critical) * 100) / $num_items) >= $weight
+			) {
+				return $num_items_critical_alert > 0 ? VISUAL_MAP_STATUS_CRITICAL_ALERT : VISUAL_MAP_STATUS_CRITICAL_BAD;
+			}
+			else if (
+				$num_items_warning > 0 &&
+				(($num_items_warning * 100) / $num_items) >= $weight
+			) {
+				return VISUAL_MAP_STATUS_WARNING;
+			}
+			else if (
+				$num_items_unknown > 0 &&
+				(($num_items_unknown * 100) / $num_items) >= $weight
+			) {
+				return VISUAL_MAP_STATUS_UNKNOWN;
+			}
+			else {
+				return VISUAL_MAP_STATUS_NORMAL;
+			}
+			break;
+		case "service":
+			$num_items_critical = $num_elements_by_status[VISUAL_MAP_STATUS_CRITICAL_BAD]
+				+ $num_elements_by_status[VISUAL_MAP_STATUS_CRITICAL_ALERT];
+			$critical_percentage = ($num_items_critical * 100) / count($valid_layout_items);
+
+			if ($critical_percentage >= $status_data["linked_layout_status_as_service_critical"]) {
+				return VISUAL_MAP_STATUS_CRITICAL_BAD;
+			}
+			else if ($critical_percentage >= $status_data["linked_layout_status_as_service_warning"]) {
+				return VISUAL_MAP_STATUS_WARNING;
+			}
+			else {
+				return VISUAL_MAP_STATUS_NORMAL;
+			}
+			break;
 	}
-	if ($calculate_weight) {
-		return array('elements_in_critical' => $elements_in_critical, 'temp_total' => $temp_total);
-	}
-	
-	return $temp_total;
 }
 
 /**

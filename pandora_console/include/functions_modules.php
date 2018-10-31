@@ -142,14 +142,12 @@ function modules_copy_agent_module_to_agent ($id_agent_module, $id_destiny_agent
 	
 	if ($forced_name !== false)
 		$module['nombre'] = $forced_name;
-	
 	$modules = agents_get_modules ($id_destiny_agent, false,
 		array ('nombre' => $module['nombre'], 'disabled' => false));
 	
 	// The module already exist in the target
 	if (! empty ($modules))
 		return array_pop (array_keys ($modules));
-	
 	$modulesDisabled = agents_get_modules ($id_destiny_agent, false,
 		array ('nombre' => $module['nombre'], 'disabled' => true));
 	
@@ -441,9 +439,9 @@ function modules_update_agent_module ($id, $values,
 	}
 	
 	$result = @db_process_sql_update ('tagente_modulo', $values, $where);
-	
+
 	if ($result == false) {
-		if ($result_disable == ERR_GENERIC ){
+		if ($result_disable === ERR_GENERIC ){
 			return ERR_DB;
 		}
 		else{
@@ -2687,8 +2685,14 @@ function get_module_realtime_link_graph ($module) {
  * 			with some user action through the console
  * @param int New status
  * @param int Agent module to force new status
+ * @param int Agent id to force state recalculations
  */
-function force_set_module_status ($status, $id_agent_module) {
+function force_set_module_status ($status, $id_agent_module, $id_agent) {
+	// Force recalculate counters
+	db_process_sql_update('tagente',
+		array('update_module_count' => 1),
+		array('id_agente' => $id_agent)
+	);
 	return db_process_sql_update( 'tagente_estado',
 		array(
 			'estado' => $status,
@@ -2750,5 +2754,67 @@ function modules_get_modules_status ($mod_status_id) {
 	}
 	
 	return $mod_status_desc;
-} 
+}
+
+function modules_get_counter_by_states($state) {
+	switch ($state) {
+		case AGENT_MODULE_STATUS_CRITICAL_ALERT:
+		case AGENT_MODULE_STATUS_CRITICAL_BAD:
+			return "critical_count";
+		case AGENT_MODULE_STATUS_WARNING_ALERT:
+		case AGENT_MODULE_STATUS_WARNING:
+			return "warning_count";
+			break;
+		case AGENT_MODULE_STATUS_UNKNOWN:
+			return "unknown_count";
+		case AGENT_MODULE_STATUS_NO_DATA:
+		case AGENT_MODULE_STATUS_NOT_INIT:
+			return "notinit_count";
+		case AGENT_MODULE_STATUS_NORMAL_ALERT:
+		case AGENT_MODULE_STATUS_NORMAL:
+			return "normal_count";
+	}
+
+	// If the state is not an expected state, return condition
+	// to not show any data
+	return false;
+}
+
+function modules_get_state_condition($state, $prefix = "tae") {
+	switch ($state) {
+		case AGENT_MODULE_STATUS_CRITICAL_ALERT:
+		case AGENT_MODULE_STATUS_CRITICAL_BAD:
+			return "(
+				$prefix.estado = ".AGENT_MODULE_STATUS_CRITICAL_ALERT."
+				OR $prefix.estado = ".AGENT_MODULE_STATUS_CRITICAL_BAD."
+			)";
+		case AGENT_MODULE_STATUS_WARNING_ALERT:
+		case AGENT_MODULE_STATUS_WARNING:
+			return "(
+				$prefix.estado = ".AGENT_MODULE_STATUS_WARNING_ALERT."
+				OR $prefix.estado = ".AGENT_MODULE_STATUS_WARNING."
+			)";
+		case AGENT_MODULE_STATUS_UNKNOWN:
+			return "$prefix.estado = ".AGENT_MODULE_STATUS_UNKNOWN." ";
+		case AGENT_MODULE_STATUS_NO_DATA:
+		case AGENT_MODULE_STATUS_NOT_INIT:
+			return "(
+				$prefix.estado = ".AGENT_MODULE_STATUS_NO_DATA."
+				OR $prefix.estado = ".AGENT_MODULE_STATUS_NOT_INIT."
+			)";
+		case AGENT_MODULE_STATUS_NORMAL_ALERT:
+		case AGENT_MODULE_STATUS_NORMAL:
+			return "(
+				$prefix.estado = ".AGENT_MODULE_STATUS_NORMAL_ALERT."
+				OR $prefix.estado = ".AGENT_MODULE_STATUS_NORMAL."
+			)";
+		case AGENT_MODULE_STATUS_NOT_NORMAL:
+			return "(
+				$prefix.estado <> " . AGENT_MODULE_STATUS_NORMAL . "
+				AND $prefix.estado <> " . AGENT_MODULE_STATUS_NORMAL_ALERT . "
+			)";
+	}
+	// If the state is not an expected state, return no condition
+	return "1=1";
+}
 ?>

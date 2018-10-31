@@ -1477,42 +1477,6 @@ function oracle_list_all_field_table($table_name, $return_mode = 'array') {
 }
 
 /**
- * Get the element count of a table.
- * 
- * @param string $sql SQL query to get the element count.
- * 
- * @return int Return the number of elements in the table.
- */
-function oracle_db_get_table_count($sql, $search_history_db = false) {
-	global $config;
-	
-	$history_count = 0;
-	$count = oracle_db_get_value_sql ($sql);
-	if ($count === false) {
-		$count = 0;
-	}
-	
-	// Search the history DB for matches
-	if ($search_history_db && $config['history_db_enabled'] == 1) {
-		
-		// Connect to the history DB
-		if (! isset ($config['history_db_connection']) || $config['history_db_connection'] === false) {
-			$config['history_db_connection'] = oracle_connect_db ($config['history_db_host'], $config['history_db_name'], $config['history_db_user'], io_output_password($config['history_db_pass']), $config['history_db_port'], false);
-		}
-		if ($config['history_db_connection'] !== false) {
-			$history_count = oracle_db_get_value_sql ($sql, $config['history_db_connection']);
-			if ($history_count === false) {
-				$history_count = 0;
-			}
-		}
-	}
-	
-	$count += $history_count;
-	
-	return $count;
-}
-
-/**
  * Process a file with an oracle schema sentences.
  * Based on the function which installs the pandoradb.sql schema.
  * 

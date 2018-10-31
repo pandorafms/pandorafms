@@ -36,7 +36,7 @@ use Encode::Locale;
 Encode::Locale::decode_argv;
 
 # version: define current version
-my $version = "7.0NG.726 PS180903";
+my $version = "7.0NG.728 PS181031";
 
 # save program name for logging
 my $progname = basename($0);
@@ -136,6 +136,7 @@ sub help_screen{
 	help_screen_line('--delete_cluster_agent', '<id_agent> <id_cluster>', 'Deleting cluster agent');
 	help_screen_line('--delete_cluster_item', '<id_item>', 'Deleting cluster item');
 	help_screen_line('--get_cluster_status', '<id_cluster>', 'Getting cluster status');
+	help_screen_line('--set_disabled_and_standby', '<id_agent> <id_node> <value>', 'Overwrite and disable and standby status');
 	print "\nMODULES:\n\n" unless $param ne '';
 	help_screen_line('--create_data_module', "<module_name> <module_type> <agent_name> [<description> <module_group> \n\t  <min> <max> <post_process> <interval> <warning_min> <warning_max> <critical_min> <critical_max> \n\t <history_data> <definition_file> <warning_str> <critical_str>\n\t  <unknown_events> <ff_threshold> <each_ff> <ff_threshold_normal>\n\t  <ff_threshold_warning> <ff_threshold_critical> <ff_timeout> <warning_inverse> <critical_inverse>\n\t <critical_instructions> <warning_instructions> <unknown_instructions>]", 'Add data server module to agent');
 	help_screen_line('--create_web_module', "<module_name> <module_type> <agent_name> [<description> <module_group> \n\t  <min> <max> <post_process> <interval> <warning_min> <warning_max> <critical_min> <critical_max> \n\t <history_data> <retries> <requests> <agent_browser_id> <auth_server> <auth_realm> <definition_file>\n\t <proxy_url> <proxy_auth_login> <proxy_auth_password> <warning_str> <critical_str>\n\t  <unknown_events> <ff_threshold> <each_ff> <ff_threshold_normal>\n\t  <ff_threshold_warning> <ff_threshold_critical> <ff_timeout> <warning_inverse> <critical_inverse>\n\t <critical_instructions> <warning_instructions> <unknown_instructions>].\n\t The valid data types are web_data, web_proc, web_content_data or web_content_string", 'Add web server module to agent');
@@ -172,7 +173,7 @@ sub help_screen{
 	print "\nUSERS:\n\n" unless $param ne '';
 	help_screen_line('--create_user', '<user_name> <user_password> <is_admin> [<comments>]', 'Create user');
 	help_screen_line('--delete_user', '<user_name>', 'Delete user');
-	help_screen_line('--update_user', '<user_id> <field_to_change> <new_value>', "Update a user field. The fields\n\t   can be the following: email, phone, is_admin (0-1), language, id_skin, flash_chart (0-1)\n\t  , comments, fullname, password");
+	help_screen_line('--update_user', '<user_id> <field_to_change> <new_value>', "Update a user field. The fields\n\t   can be the following: email, phone, is_admin (0-1), language, id_skin, comments, fullname, password");
 	help_screen_line('--enable_user', '<user_id>', 'Enable a given user');
 	help_screen_line('--disable_user', '<user_id>', 'Disable a given user');
 	help_screen_line('--add_profile', '<user_name> <profile_name> <group_name>', 'Add perfil to user');
@@ -2362,7 +2363,7 @@ sub cli_user_update() {
 	my $user_exists = get_user_exists ($dbh, $user_id);
 	exist_check($user_exists,'user',$user_id);
 	
-	if($field eq 'email' || $field eq 'phone' || $field eq 'is_admin' || $field eq 'language' || $field eq 'id_skin' || $field eq 'flash_chart') {
+	if($field eq 'email' || $field eq 'phone' || $field eq 'is_admin' || $field eq 'language' || $field eq 'id_skin') {
 		# Fields admited, no changes
 	}
 	elsif($field eq 'comments' || $field eq 'fullname') {
@@ -6125,6 +6126,10 @@ sub pandora_manage_main ($$$) {
 			param_check($ltotal, 1, 0);
 			cli_migration_agent();
 		}
+		elsif ($param eq '--set_disabled_and_standby') {
+			param_check($ltotal, 3, 1);
+			cli_set_disabled_and_standby();
+		}
 		else {
 			print_log "[ERROR] Invalid option '$param'.\n\n";
 			$param = '';
@@ -6709,4 +6714,23 @@ sub cli_get_cluster_status() {
 	else{
 		print "\n0\n";
 	}
+}
+
+##############################################################################
+# Set an agent disabled and with standby.
+# Related option: --set_disabled_and_standby
+##############################################################################
+
+sub cli_set_disabled_and_standby() {
+	my ($id, $id_node, $value) = @ARGV[2..4];
+	$id_node = 0 unless defined($id_node);
+	$value = 1 unless defined($value); #Set to disabled by default
+
+	# Call the API.
+	my $result = api_call(
+		$conf, 'set', 'disabled_and_standby', $id, $id_node, $value
+	);
+
+	my $exit_code =  (defined($result) && "$result" eq "1") ? "1" : "0";
+	print "\n$exit_code\n";
 }

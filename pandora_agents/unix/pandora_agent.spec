@@ -2,8 +2,8 @@
 #Pandora FMS Linux Agent
 #
 %define name        pandorafms_agent_unix
-%define version     7.0NG.726
-%define release     180903
+%define version     7.0NG.728
+%define release     181031
 
 Summary:            Pandora FMS Linux agent, PERL version
 Name:               %{name}
@@ -88,7 +88,7 @@ if [ ! -e /etc/pandora/plugins ]; then
 fi
 
 if [ ! -e /etc/pandora/collections ]; then
-	ln -s /usr/share/pandora_agent/collections /etc/pandora
+	mkdir /etc/pandora/collections
 fi
 cp -aRf /usr/share/pandora_agent/pandora_agent_logrotate /etc/logrotate.d/pandora_agent
 

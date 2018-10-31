@@ -41,8 +41,8 @@ my $Sem = undef;
 # Semaphore used to control the number of threads
 my $ThreadSem = undef;
 
-use constant AGENT_VERSION => '7.0NG.726';
-use constant AGENT_BUILD => '180903';
+use constant AGENT_VERSION => '7.0NG.728';
+use constant AGENT_BUILD => '181031';
 
 # Agent log default file size maximum and instances
 use constant DEFAULT_MAX_LOG_SIZE => 600000;
@@ -186,6 +186,7 @@ my %DefaultConf = (
 	'xml_buffer' => 0,
 	'custom_id' => '',
 	'url_address' => '',
+	'standby' => 0,
 );
 my %Conf = %DefaultConf;
 
@@ -1331,6 +1332,41 @@ sub check_collections () {
 		# Set proper file permissions
 		chmodr (0750, "$ConfDir/collections/$collection");
 	}
+}
+
+################################################################################
+# Sleep function
+################################################################################
+sub sleep_agent {
+	my ($main_agent, $iter_base_time) = @_;
+
+	# Sleep if main agent
+	if ($main_agent != 0) {
+		foreach my $broker_pid (@BrokerPid) {
+			waitpid ($broker_pid, 0);
+		}
+
+		# Cron mode
+		exit (0) if ($Conf{'cron_mode'} == 1);
+
+		$iter_base_time += $Conf{'intensive_interval'};
+		my $now = time();
+
+		my $interval_remain = $iter_base_time - $now;
+
+		if ($interval_remain >= 0) {
+			sleep ($interval_remain);
+		} else {
+			# don't sleep if iteraion took more than "intensive_interval" seconds
+			$iter_base_time = $now; # use current time as base time
+		}
+	}
+	# Finish if broker agent
+	else {
+		exit (0);
+	}
+
+	return $iter_base_time;
 }
 
 ###############################################################################
@@ -2959,6 +2995,12 @@ while (1) {
 		}
 	}
 
+	# Do not report to server if standby mode is enabled
+	if ($Conf{'standby'} eq '1' && $Conf{'debug'} ne '1') {
+		$iter_base_time = sleep_agent($main_agent, $iter_base_time);
+		next;
+	}
+
 	my $address;
 
 	if(defined($Conf{'address'})) {
@@ -3161,31 +3203,8 @@ while (1) {
 		$SIG{'INT'} = \&udp_server_signal;
 	}
 
-	# Sleep if main agent
-	if ($main_agent != 0) {
-		foreach my $broker_pid (@BrokerPid) {
-			waitpid ($broker_pid, 0);
-		}
-		
-		# Cron mode
-		last if ($Conf{'cron_mode'} == 1);
-
-		$iter_base_time += $Conf{'intensive_interval'};
-		my $now = time();
-
-		my $interval_remain = $iter_base_time - $now;
-
-		if ($interval_remain >= 0) {
-			sleep ($interval_remain);
-		} else {
-			# don't sleep if iteraion took more than "intensive_interval" seconds
-			$iter_base_time = $now; # use current time as base time
-		}
-	}
-	# Finish if broker agent
-	else {
-		exit (0);
-	}
+	# Sleep agent function
+	$iter_base_time = sleep_agent($main_agent, $iter_base_time);
 }
 
 __END__

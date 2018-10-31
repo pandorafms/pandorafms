@@ -20,210 +20,6 @@ include_once($config['homedir'] . "/include/functions_agents.php");
 include_once($config['homedir'] . "/include/functions_modules.php");
 include_once($config['homedir'] . "/include/functions_users.php");
 
-function get_graph_statistics ($chart_array) {
-	global $config;
-
-	/// IMPORTANT!
-	///
-	/// The calculus for AVG, MIN and MAX values are in this function
-	/// because it must be done based on graph array data not using reporting
-	/// function to get coherent data between stats and graph visualization
-
-	$stats = array ();
-
-	$count = 0;
-
-	$size = sizeof($chart_array);
-
-	//Initialize stats array
-	$stats = array ("avg" => 0, "min" => null, "max" => null, "last" => 0);
-
-	foreach ($chart_array as $item) {
-
-		//Sum all values later divide by the number of elements
-		$stats['avg'] = $stats['avg'] + $item;
-
-		//Get minimum
-		if ($stats['min'] == null) {
-			$stats['min'] = $item;
-		}
-		else if ($item < $stats['min']) {
-			$stats['min'] = $item;
-		}
-
-		//Get maximum
-		if ($stats['max'] == null) {
-			$stats['max'] = $item;
-		}
-		else if ($item > $stats['max']) {
-			$stats['max'] = $item;
-		}
-
-		$count++;
-
-		//Get last data
-		if ($count == $size) {
-			$stats['last'] = $item;
-		}
-	}
-
-	//End the calculus for average
-	if ($count > 0) {
-
-		$stats['avg'] = $stats['avg'] / $count;
-	}
-
-	//Format stat data to display properly
-	$stats['last'] = remove_right_zeros(number_format($stats['last'], $config['graph_precision']));
-	$stats['avg'] = remove_right_zeros(number_format($stats['avg'], $config['graph_precision']));
-	$stats['min'] = remove_right_zeros(number_format($stats['min'], $config['graph_precision']));
-	$stats['max'] = remove_right_zeros(number_format($stats['max'], $config['graph_precision']));
-
-	return $stats;
-}
-
-function get_statwin_graph_statistics ($chart_array, $series_suffix = '') {
-
-	/// IMPORTANT!
-	///
-	/// The calculus for AVG, MIN and MAX values are in this function
-	/// because it must be done based on graph array data not using reporting
-	/// function to get coherent data between stats and graph visualization
-
-	$stats = array ();
-
-	$count = 0;
-
-	$size = sizeof($chart_array);
-
-	//Initialize stats array
-	$stats['sum'] = array ("avg" => 0, "min" => null, "max" => null, "last" => 0);
-	$stats['min'] = array ("avg" => 0, "min" => null, "max" => null, "last" => 0);
-	$stats['max'] = array ("avg" => 0, "min" => null, "max" => null, "last" => 0);
-
-	foreach ($chart_array as $item) {
-		if ($series_suffix != '') {
-			if (isset($item['sum' . $series_suffix]))
-				$item['sum'] = $item['sum' . $series_suffix];
-			if (isset($item['min' . $series_suffix]))
-				$item['min'] = $item['min' . $series_suffix];
-			if (isset($item['max' . $series_suffix]))
-				$item['max'] = $item['max' . $series_suffix];
-		}
-
-		//Get stats for normal graph
-		if (isset($item['sum']) && $item['sum']) {
-
-			//Sum all values later divide by the number of elements
-			$stats['sum']['avg'] = $stats['sum']['avg'] + $item['sum'];
-
-			//Get minimum
-			if ($stats['sum']['min'] == null) {
-				$stats['sum']['min'] = $item['sum'];
-			}
-			else if ($item['sum'] < $stats['sum']['min']) {
-				$stats['sum']['min'] = $item['sum'];
-			}
-
-			//Get maximum
-			if ($stats['sum']['max'] == null) {
-				$stats['sum']['max'] = $item['sum'];
-			}
-			else if ($item['sum'] > $stats['sum']['max']) {
-				$stats['sum']['max'] = $item['sum'];
-			}
-		}
-
-		//Get stats for min graph
-		if (isset($item['min']) && $item['min']) {
-			//Sum all values later divide by the number of elements
-			$stats['min']['avg'] = $stats['min']['avg'] + $item['min'];
-
-			//Get minimum
-			if ($stats['min']['min'] == null) {
-				$stats['min']['min'] = $item['min'];
-			}
-			else if ($item['min'] < $stats['min']['min']) {
-				$stats['min']['min'] = $item['min'];
-			}
-
-			//Get maximum
-			if ($stats['min']['max'] == null) {
-				$stats['min']['max'] = $item['min'];
-			}
-			else if ($item['min'] > $stats['min']['max']) {
-				$stats['min']['max'] = $item['min'];
-			}
-		}
-
-		//Get stats for max graph
-		if (isset($item['max']) && $item['max']) {
-			//Sum all values later divide by the number of elements
-			$stats['max']['avg'] = $stats['max']['avg'] + $item['max'];
-
-			//Get minimum
-			if ($stats['max']['min'] == null) {
-				$stats['max']['min'] = $item['max'];
-			}
-			else if ($item['max'] < $stats['max']['min']) {
-				$stats['max']['min'] = $item['max'];
-			}
-
-			//Get maximum
-			if ($stats['max']['max'] == null) {
-				$stats['max']['max'] = $item['max'];
-			}
-			else if ($item['max'] > $stats['max']['max']) {
-				$stats['max']['max'] = $item['max'];
-			}
-		}
-
-		//Count elements
-		$count++;
-
-		//Get last data
-		if ($count == $size) {
-			if (isset($item['sum']) && $item['sum']) {
-				$stats['sum']['last'] = $item['sum'];
-			}
-
-			if (isset($item['min']) && $item['min']) {
-				$stats['min']['last'] = $item['min'];
-			}
-
-			if (isset($item['max']) && $item['max']) {
-				$stats['max']['last'] = $item['max'];
-			}
-		}
-	}
-
-	//End the calculus for average
-	if ($count > 0) {
-
-		$stats['sum']['avg'] = $stats['sum']['avg'] / $count;
-		$stats['min']['avg'] = $stats['min']['avg'] / $count;
-		$stats['max']['avg'] = $stats['max']['avg'] / $count;
-	}
-
-	//Format stat data to display properly
-	$stats['sum']['last'] = round($stats['sum']['last'], 2);
-	$stats['sum']['avg'] = round($stats['sum']['avg'], 2);
-	$stats['sum']['min'] = round($stats['sum']['min'], 2);
-	$stats['sum']['max'] = round($stats['sum']['max'], 2);
-
-	$stats['min']['last'] = round($stats['min']['last'], 2);
-	$stats['min']['avg'] = round($stats['min']['avg'], 2);
-	$stats['min']['min'] = round($stats['min']['min'], 2);
-	$stats['min']['max'] = round($stats['min']['max'], 2);
-
-	$stats['max']['last'] = round($stats['max']['last'], 2);
-	$stats['max']['avg'] = round($stats['max']['avg'], 2);
-	$stats['max']['min'] = round($stats['max']['min'], 2);
-	$stats['max']['max'] = round($stats['max']['max'], 2);
-
-	return $stats;
-}
-
 function grafico_modulo_sparse_data_chart (
 		$agent_module_id,
 		$date_array,
@@ -264,9 +60,7 @@ function grafico_modulo_sparse_data_chart (
 			$data_module_graph['id_module_type'] == 18 ||
 			$data_module_graph['id_module_type'] == 9  ||
 			$data_module_graph['id_module_type'] == 31 ||
-			$data_module_graph['id_module_type'] == 100 ||
-			$params['baseline'] || $params['projection']
-			){
+			$data_module_graph['id_module_type'] == 100 ){
 
 			$data = db_get_all_rows_filter (
 				'tagente_datos',
@@ -421,8 +215,7 @@ function grafico_modulo_sparse_data(
 			$data_module_graph['id_module_type'] == 18 ||
 			$data_module_graph['id_module_type'] == 9  ||
 			$data_module_graph['id_module_type'] == 31 ||
-			$data_module_graph['id_module_type'] == 100 ||
-			$params['projection'] ){
+			$data_module_graph['id_module_type'] == 100 ){
 				$array_data = grafico_modulo_sparse_data_chart (
 					$agent_module_id,
 					$date_array,
@@ -516,6 +309,8 @@ function grafico_modulo_sparse_data(
 			}
 			$period_time_interval = $period_time_interval - $params['time_interval'];
 		}
+		//drag the last value to paint the graph correctly
+		$acum_array_data[]= array( 0 => $start_period, 1 => $acum_array_data[$i-1][1]);
 		$array_data['sum1']['data'] = $acum_array_data;
 	}
 
@@ -892,7 +687,9 @@ function grafico_modulo_sparse ($params) {
 	}
 
 	if(!isset($params['zoom'])){
-		$params['zoom'] = $config['zoom_graph'];
+		$params['zoom'] = $config['zoom_graph']
+			? $config['zoom_graph']
+			: 1;
 	}
 
 	if(!isset($params['type_mode_graph'])){
@@ -921,7 +718,6 @@ function grafico_modulo_sparse ($params) {
 	$array_data   = array();
 	$legend       = array();
 	$array_events_alerts = array();
-
 
 	$date_array = array();
 	$date_array["period"]     = $params['period'];
@@ -964,53 +760,58 @@ function grafico_modulo_sparse ($params) {
 	}
 
 	if(!$params['array_data_create']){
-		if ($params['compare'] !== false) {
-			$series_suffix = 2;
+		if($params['baseline']){
+			$array_data = get_baseline_data($agent_module_id, $date_array, $data_module_graph, $params);
+		}
+		else{
+			if ($params['compare'] !== false) {
+				$series_suffix = 2;
 
-			$date_array_prev['final_date'] = $date_array['start_date'];
-			$date_array_prev['start_date'] = $date_array['start_date'] - $date_array['period'];
-			$date_array_prev['period']     = $date_array['period'];
+				$date_array_prev['final_date'] = $date_array['start_date'];
+				$date_array_prev['start_date'] = $date_array['start_date'] - $date_array['period'];
+				$date_array_prev['period']     = $date_array['period'];
 
-			if ($params['compare'] === 'overlapped') {
-				$params['flag_overlapped'] = 1;
+				if ($params['compare'] === 'overlapped') {
+					$params['flag_overlapped'] = 1;
+				}
+				else{
+					$params['flag_overlapped'] = 0;
+				}
+
+				$array_data = grafico_modulo_sparse_data(
+					$agent_module_id,
+					$date_array_prev,
+					$data_module_graph,
+					$params,
+					$series_suffix
+				);
+
+				switch ($params['compare']) {
+					case 'separated':
+					case 'overlapped':
+						// Store the chart calculated
+						$array_data_prev = $array_data;
+						$legend_prev     = $legend;
+						break;
+				}
 			}
-			else{
-				$params['flag_overlapped'] = 0;
-			}
+
+			$series_suffix = 1;
+			$params['flag_overlapped'] = 0;
 
 			$array_data = grafico_modulo_sparse_data(
 				$agent_module_id,
-				$date_array_prev,
+				$date_array,
 				$data_module_graph,
 				$params,
 				$series_suffix
 			);
 
-			switch ($params['compare']) {
-				case 'separated':
-				case 'overlapped':
-					// Store the chart calculated
-					$array_data_prev = $array_data;
-					$legend_prev     = $legend;
-					break;
-			}
-		}
-
-		$series_suffix = 1;
-		$params['flag_overlapped'] = 0;
-
-		$array_data = grafico_modulo_sparse_data(
-			$agent_module_id,
-			$date_array,
-			$data_module_graph,
-			$params,
-			$series_suffix
-		);
-
-		if($params['compare']){
-			if ($params['compare'] === 'overlapped') {
-				$array_data = array_merge($array_data, $array_data_prev);
-				$legend     = array_merge($legend, $legend_prev);
+			if($params['compare']){
+				if ($params['compare'] === 'overlapped') {
+					$array_data = array_merge($array_data, $array_data_prev);
+					$legend     = array_merge($legend, $legend_prev);
+				}
 			}
 		}
 	}
@@ -1219,7 +1020,7 @@ function graphic_combined_module (
 	}
 	else{
 		$params['stacked'] = 'area';
-		$params['projection'] = $params_combined['projection'];
+		$params['projection'] = true;
 	}
 
 	if(!isset($params_combined['labels'])){
@@ -1485,7 +1286,6 @@ function graphic_combined_module (
 	$background_color = $params['backgroundColor'];
 	$datelimit        = $date_array["start_date"];
 	$fixed_font_size  = $config['font_size'];
-	$flash_charts     = false;
 
 	if($config["fixed_graph"] == false){
 		$water_mark = array(
@@ -1511,6 +1311,14 @@ function graphic_combined_module (
 			$date_array["period"]     = $params['period'];
 			$date_array["final_date"] = $params['date'];
 			$date_array["start_date"] = $params['date'] - $params['period'];
+
+			if($params_combined['projection']){
+				$output_projection = forecast_projection_graph(
+					$module_list[0],
+					$params['period'],
+					$params_combined['projection']
+				);
+			}
 
 			$i=0;
 			$array_data = array();
@@ -1578,10 +1386,13 @@ function graphic_combined_module (
 				$i++;
 			}
 
-			if($params_combined['projection'] && is_array($params_combined['projection'])){
-				$date_array_projection = max($params_combined['projection']);
-				$date_array['final_date'] = $date_array_projection[0] / 1000;
-				$array_data['projection']['data']= $params_combined['projection'];
+			if($params_combined['projection']){
+				// If projection doesn't have data then don't draw graph
+				if ($output_projection !=  NULL) {
+					$date_array_projection = max($output_projection);
+					$date_array['final_date'] = $date_array_projection[0] / 1000;
+					$array_data['projection']['data']= $output_projection;
+				}
 			}
 
 			//summatory and average series
@@ -2008,11 +1819,8 @@ function graphic_combined_module (
 				$height = 500;
 			}
 
-			$flash_charts = true;
-
 			if($params_combined['stacked'] == CUSTOM_GRAPH_HBARS){
 				$output = hbar_graph(
-					true,
 					$graph_values,
 					$width,
 					$height,
@@ -2035,7 +1843,6 @@ function graphic_combined_module (
 
 			if($params_combined['stacked'] == CUSTOM_GRAPH_VBARS){
 				$output = vbar_graph(
-					true,
 					$graph_values,
 					$width,
 					$height,
@@ -2129,7 +1936,6 @@ function graphic_combined_module (
 			$color  = color_graph_array();
 
 			$output = ring_graph(
-				true,
 				$graph_values,
 				$width,
 				$height,
@@ -2350,8 +2156,8 @@ function graph_alert_status ($defined_alerts, $fired_alerts, $width = 300, $heig
 			'url' => ui_get_full_url("images/logo_vertical_water.png", false, false, false));
 	}
 	
-	$out = pie2d_graph($config['flash_charts'], $data, $width, $height, __("other"),
-		'', '', $config['fontpath'], $config['font_size'], 1, "hidden", $colors);
+	$out = pie_graph($data, $width, $height, __("other"),
+		'', '', $config['fontpath'], $config['font_size'], 1, "hidden", $colors, false);
 	
 	if ($return) {
 		return $out;
@@ -2382,19 +2188,26 @@ function graph_agent_status ($id_agent = false, $width = 300, $height = 200, $re
 
 	if ($data_agents == false) {
 		$groups = implode(',', array_keys(users_get_groups(false, 'AR', false)));
+		$p_table = "tagente";
+		$s_table = "tagent_secondary_group";
+		if (is_metaconsole()) {
+			$p_table = "tmetaconsole_agent";
+			$s_table = "tmetaconsole_agent_secondary_group";
+		}
 		$data = db_get_row_sql(sprintf('SELECT
 				SUM(critical_count) AS Critical,
 				SUM(warning_count) AS Warning,
 				SUM(normal_count) AS Normal,
 				SUM(unknown_count) AS Unknown
 				%s
-			FROM tagente ta LEFT JOIN tagent_secondary_group tasg
+			FROM %s ta LEFT JOIN %s tasg
 				ON ta.id_agente = tasg.id_agent
 			WHERE
 				ta.disabled = 0 AND
 				%s
 				(ta.id_grupo IN (%s) OR tasg.id_group IN (%s))',
 			$show_not_init ? ', SUM(notinit_count) "Not init"' : '',
+			$p_table, $s_table,
 			empty($id_agent) ? '' : "ta.id_agente = $id_agent AND",
 			$groups,
 			$groups
@@ -2428,11 +2241,22 @@ function graph_agent_status ($id_agent = false, $width = 300, $height = 200, $re
 	if (array_sum($data) == 0) {
 		$data = array();
 	}
-	
-	$out = pie2d_graph($config['flash_charts'], $data, $width, $height,
-		__("other"), ui_get_full_url(false, false, false, false), '',
-		$config['fontpath'], $config['font_size'], 1, "hidden", $colors);
-	
+
+	$out = pie_graph(
+		$data,
+		$width,
+		$height,
+		__("other"),
+		ui_get_full_url(false, false, false, false),
+		'',
+		$config['fontpath'],
+		$config['font_size'],
+		1,
+		"hidden",
+		$colors,
+		0
+	);
+
 	if ($return) {
 		return $out;
 	}
@@ -2455,6 +2279,7 @@ function graph_event_module ($width = 300, $height = 200, $id_agent) {
 
 	// Fix: tag filters implemented! for tag functionality groups have to be all user_groups (propagate ACL funct!)
 	$groups = users_get_groups($config["id_user"]);
+
 	$tags_condition = tags_get_acl_tags($config['id_user'], array_keys($groups), 'ER', 'event_condition', 'AND');
 	
 	$data = array ();
@@ -2503,8 +2328,19 @@ function graph_event_module ($width = 300, $height = 200, $id_agent) {
 			$config['homedir'] . "/images/logo_vertical_water.png",
 			'url' => ui_get_full_url("images/logo_vertical_water.png", false, false, false));
 	}
-	return pie3d_graph($config['flash_charts'], $data, $width, $height, __("other"),
-		'', $water_mark, $config['fontpath'], $config['font_size'], 1, "bottom");
+
+	return pie_graph(
+		$data,
+		$width,
+		$height,
+		__("other"),
+		'',
+		$water_mark,
+		$config['fontpath'],
+		$config['font_size'],
+		1,
+		"bottom"
+	);
 }
 
 function progress_bar($progress, $width, $height, $title = '', $mode = 1, $value_text = false, $color = false, $options = false) {
@@ -2580,407 +2416,48 @@ function progress_bubble($progress, $width, $height, $title = '', $mode = 1, $va
 		"&colorRGB=". $colorRGB . "' />";
 }
 
-function graph_sla_slicebar ($id, $period, $sla_min, $sla_max, $date, $daysWeek = null, $time_from = null, $time_to = null, $width, $height, $home_url, $ttl = 1, $data = false, $round_corner = null) {
+function graph_sla_slicebar (
+	$id, $period, $sla_min, $sla_max,
+	$date, $daysWeek = null, $time_from = null,
+	$time_to = null, $width, $height, $home_url,
+	$ttl = 1, $data = false, $round_corner = null) {
+
 	global $config;
-	
+
 	if ($round_corner === null) {
 		$round_corner = $config['round_corner'];
 	}
-	
-	// If the data is not provided, we got it
-	if ($data === false) {
-		$data = reporting_get_agentmodule_sla_array ($id, $period,
-			$sla_min, $sla_max, $date, $daysWeek, null, null);
-	}
-	
+
 	$col_planned_downtime = '#20973F';
-	
-	$colors = array(1 => COL_NORMAL,
+
+	$colors = array(
+		1 => COL_NORMAL,
 		2 => COL_WARNING,
 		3 => COL_CRITICAL,
 		4 => COL_UNKNOWN,
 		5 => COL_DOWNTIME,
 		6 => COL_NOTINIT,
-		7 => COL_IGNORED);
-	
-	return slicesbar_graph($data, $period, $width, $height, $colors,
-		$config['fontpath'], $round_corner, $home_url, $ttl);
-}
+		7 => COL_IGNORED
+	);
 
-/**
- * Print a pie graph with purge data of agent
- * 
- * @param integer id_agent ID of agent to show
- * @param integer width pie graph width
- * @param integer height pie graph height
- */
-function grafico_db_agentes_purge ($id_agent, $width = 380, $height = 300) {
-	global $config;
-	global $graphic_type;
-	
-	$filter = array();
-	
-	if ($id_agent < 1) {
-		$query = "";
-	}
-	else {
-		$modules = agents_get_modules($id_agent);
-		$module_ids = array_keys($modules);
-		
-		if (!empty($module_ids))
-			$filter['id_agente_modulo'] = $module_ids;
-	}
-	
-	// All data (now)
-	$time_now = time();
-	
-	// 1 day ago
-	$time_1day = $time_now - SECONDS_1DAY;
-	
-	// 1 week ago
-	$time_1week = $time_now - SECONDS_1WEEK;
-	
-	// 1 month ago
-	$time_1month = $time_now - SECONDS_1MONTH;
-	
-	// Three months ago
-	$time_3months = $time_now - SECONDS_3MONTHS;
-	
-	$query_error = false;
-	
-	// Data from 1 day ago
-	$num_1day = 0;
-	$num_1day += (int) db_get_sql('SELECT COUNT(*)
-										FROM tagente_datos
-										WHERE utimestamp > ' . $time_1day);
-	$num_1day += (int) db_get_sql('SELECT COUNT(*)
-										FROM tagente_datos_string
-										WHERE utimestamp > ' . $time_1day);
-	$num_1day += (int) db_get_sql('SELECT COUNT(*)
-										FROM tagente_datos_log4x
-										WHERE utimestamp > ' . $time_1day);
-	if ($num_1day >= 0) {
-		// Data from 1 week ago
-		$num_1week = 0;
-		$num_1week += (int) db_get_sql('SELECT COUNT(*)
-											FROM tagente_datos
-											WHERE utimestamp > ' . $time_1week . '
-											AND utimestamp < ' . $time_1day);
-		$num_1week += (int) db_get_sql('SELECT COUNT(*)
-											FROM tagente_datos_string
-											WHERE utimestamp > ' . $time_1week . '
-											AND utimestamp < ' . $time_1day);
-		$num_1week += (int) db_get_sql('SELECT COUNT(*)
-											FROM tagente_datos_log4x
-											WHERE utimestamp > ' . $time_1week . '
-											AND utimestamp < ' . $time_1day);
-		if ($num_1week >= 0) {
-			if ($num_1week > 0) {
-				$num_1week = 0;
-				$num_1week += (int) db_get_sql('SELECT COUNT(*)
-													FROM tagente_datos
-													WHERE utimestamp > ' . $time_1week);
-				$num_1week += (int) db_get_sql('SELECT COUNT(*)
-													FROM tagente_datos_string
-													WHERE utimestamp > ' . $time_1week);
-				$num_1week += (int) db_get_sql('SELECT COUNT(*)
-													FROM tagente_datos_log4x
-													WHERE utimestamp > ' . $time_1week);
-			}
-			// Data from 1 month ago
-			$num_1month = 0;
-			$num_1month += (int) db_get_sql('SELECT COUNT(*)
-												FROM tagente_datos
-												WHERE utimestamp > ' . $time_1month . '
-												AND utimestamp < ' . $time_1week);
-			$num_1month += (int) db_get_sql('SELECT COUNT(*)
-												FROM tagente_datos_string
-												WHERE utimestamp > ' . $time_1month . '
-												AND utimestamp < ' . $time_1week);
-			$num_1month += (int) db_get_sql('SELECT COUNT(*)
-												FROM tagente_datos_log4x
-												WHERE utimestamp > ' . $time_1month . '
-												AND utimestamp < ' . $time_1week);
-			if ($num_1month >= 0) {
-				if ($num_1month > 0) {
-					$num_1month = 0;
-					$num_1month += (int) db_get_sql('SELECT COUNT(*)
-														FROM tagente_datos
-														WHERE utimestamp > ' . $time_1month);
-					$num_1month += (int) db_get_sql('SELECT COUNT(*)
-														FROM tagente_datos_string
-														WHERE utimestamp > ' . $time_1month);
-					$num_1month += (int) db_get_sql('SELECT COUNT(*)
-														FROM tagente_datos_log4x
-														WHERE utimestamp > ' . $time_1month);
-				}
-				// Data from 3 months ago
-				$num_3months = 0;
-				$num_3months += (int) db_get_sql('SELECT COUNT(*)
-													FROM tagente_datos
-													WHERE utimestamp > ' . $time_3months . '
-													AND utimestamp < ' . $time_1month);
-				$num_3months += (int) db_get_sql('SELECT COUNT(*)
-													FROM tagente_datos
-													WHERE utimestamp > ' . $time_3months . '
-													AND utimestamp < ' . $time_1month);
-				$num_3months += (int) db_get_sql('SELECT COUNT(*)
-													FROM tagente_datos
-													WHERE utimestamp > ' . $time_3months . '
-													AND utimestamp < ' . $time_1month);
-				if ($num_3months >= 0) {
-					if ($num_3months > 0) {
-						$num_3months = 0;
-						$num_3months += (int) db_get_sql('SELECT COUNT(*)
-															FROM tagente_datos
-															WHERE utimestamp > ' . $time_3months);
-						$num_3months += (int) db_get_sql('SELECT COUNT(*)
-															FROM tagente_datos
-															WHERE utimestamp > ' . $time_3months);
-						$num_3months += (int) db_get_sql('SELECT COUNT(*)
-															FROM tagente_datos
-															WHERE utimestamp > ' . $time_3months);
-					}
-					// All data
-					$num_all = 0;
-					$num_all += (int) db_get_sql('SELECT COUNT(*)
-														FROM tagente_datos
-														WHERE utimestamp < ' . $time_3months);
-					$num_all += (int) db_get_sql('SELECT COUNT(*)
-														FROM tagente_datos
-														WHERE utimestamp < ' . $time_3months);
-					$num_all += (int) db_get_sql('SELECT COUNT(*)
-														FROM tagente_datos
-														WHERE utimestamp < ' . $time_3months);
-					if ($num_all >= 0) {
-						$num_older = $num_all - $num_3months;
-						if ($config['history_db_enabled'] == 1) {
-							// All data in common and history database
-							$num_all_w_history = 0;
-							$num_all_w_history += (int) db_get_sql('SELECT COUNT(*)
-																FROM tagente_datos
-																WHERE utimestamp < ' . $time_3months);
-							$num_all_w_history += (int) db_get_sql('SELECT COUNT(*)
-																FROM tagente_datos
-																WHERE utimestamp < ' . $time_3months);
-							$num_all_w_history += (int) db_get_sql('SELECT COUNT(*)
-																FROM tagente_datos
-																WHERE utimestamp < ' . $time_3months);
-							if ($num_all_w_history >= 0) {
-								$num_history = $num_all_w_history - $num_all;
-							}
-						}
-					}
-				}
-			}
-		}
-	}
-	else if (($num_1day == 0) && ($num_1week == 0) && ($num_1month == 0) && ($num_3months == 0) && ($num_all == 0)) {
-		//If no data, returns empty
-		$query_error = true;
-	}
-	
-	// Error
-	if ($query_error || $num_older < 0 || ($config['history_db_enabled'] == 1 && $num_history < 0)
-			|| (empty($num_1day) && empty($num_1week) && empty($num_1month)
-				&& empty($num_3months) && empty($num_all) 
-				&& ($config['history_db_enabled'] == 1 && empty($num_all_w_history)))) {
-		return html_print_image('images/image_problem_area_small.png', true);
-	}
-
-	// Data indexes
-	$str_1day = __("Today");
-	$str_1week = "1 ".__("Week");
-	$str_1month = "1 ".__("Month");
-	$str_3months = "3 ".__("Months");
-	$str_older = "> 3 ".__("Months");
-	
-	// Filling the data array
-	$data = array();
-	if (!empty($num_1day))
-		$data[$str_1day] = $num_1day;
-	if (!empty($num_1week))
-		$data[$str_1week] = $num_1week;
-	if (!empty($num_1month))
-		$data[$str_1month] = $num_1month;
-	if (!empty($num_3months))
-		$data[$str_3months] = $num_3months;
-	if (!empty($num_older))
-		$data[$str_older] = $num_older;
-	if ($config['history_db_enabled'] == 1 && !empty($num_history)) {
-		// In this pie chart only 5 elements are shown, so we need to remove
-		// an element. With a history db enabled the >3 months element are dispensable
-		if (count($data) >= 5 && isset($data[$str_3months]))
-			unset($data[$str_3months]);
-
-		$time_historic_db = time() - ((int)$config['history_db_days'] * SECONDS_1DAY);
-		$date_human = human_time_comparation($time_historic_db);
-		$str_history = "> $date_human (".__("History db").")";
-		$data[$str_history] = $num_history;
-	}
-
-	$water_mark = array(
-			'file' => $config['homedir'] . "/images/logo_vertical_water.png", 
-			'url' => ui_get_full_url("images/logo_vertical_water.png", false, false, false)
-		);
-	
-	return pie3d_graph($config['flash_charts'], $data, $width, $height,
-		__('Other'), '', $water_mark, $config['fontpath'], $config['font_size']);
-}
-
-/**
- * Print a horizontal bar graph with packets data of agents
- * 
- * @param integer width pie graph width
- * @param integer height pie graph height
- */
-function grafico_db_agentes_paquetes($width = 380, $height = 300) {
-	global $config;
-	global $graphic_type;
-	
-	
-	$data = array ();
-	$legend = array ();
-	
-	$agents = agents_get_group_agents (array_keys (users_get_groups (false, 'RR')), false, "none");
-	$count = agents_get_modules_data_count (array_keys ($agents));
-	unset ($count["total"]);
-	arsort ($count, SORT_NUMERIC);
-	$count = array_slice ($count, 0, 8, true);
-	
-	foreach ($count as $agent_id => $value) {
-		$data[$agents[$agent_id]]['g'] = $value;
-	}
-	
-	if($config["fixed_graph"] == false){
-		$water_mark = array('file' =>
-			$config['homedir'] . "/images/logo_vertical_water.png",
-			'url' => ui_get_full_url("images/logo_vertical_water.png", false, false, false));
-	}
-	
-	return hbar_graph($config['flash_charts'], $data, $width, $height, array(),
-		$legend, "", "", true, "", $water_mark,
-		$config['fontpath'], $config['font_size'], false, 1, $config['homeurl'],
-					'white',
-					'black');
-}
-
-/**
- * Print a horizontal bar graph with modules data of agents
- * 
- * @param integer height graph height
- * @param integer width graph width
- */
-function graph_db_agentes_modulos($width, $height) {
-	global $config;
-	global $graphic_type;
-	
-	
-	$data = array ();
-	
-	switch ($config['dbtype']) {
-		case "mysql":
-		case "postgresql":
-			$modules = db_get_all_rows_sql ('
-				SELECT COUNT(id_agente_modulo), id_agente
-				FROM tagente_modulo
-				WHERE delete_pending = 0
-				GROUP BY id_agente
-				ORDER BY 1 DESC LIMIT 10');
-			break;
-		case "oracle":
-			$modules = db_get_all_rows_sql ('
-				SELECT COUNT(id_agente_modulo), id_agente
-				FROM tagente_modulo
-				WHERE rownum <= 10
-				AND delete_pending = 0
-				GROUP BY id_agente
-				ORDER BY 1 DESC');
-			break;
-	}
-	if ($modules === false)
-		$modules = array ();
-	
-	$data = array();
-	foreach ($modules as $module) {
-		$agent_name = agents_get_name ($module['id_agente'], "none");
-		
-		if (empty($agent_name)) {
-			continue;
-		}
-		switch ($config['dbtype']) {
-			case "mysql":
-			case "postgresql":
-				$data[$agent_name]['g'] = $module['COUNT(id_agente_modulo)'];
-				break;
-			case "oracle":
-				$data[$agent_name]['g'] = $module['count(id_agente_modulo)'];
-				break;
-		}
-	}
-	
-	if($config["fixed_graph"] == false){
-		$water_mark = array('file' =>
-			$config['homedir'] . "/images/logo_vertical_water.png",
-			'url' => ui_get_full_url("images/logo_vertical_water.png", false, false, false));
-	}
-	
-	return hbar_graph($config['flash_charts'],
-		$data, $width, $height, array(),
-		array(), "", "", true, "",
-		$water_mark,
-		$config['fontpath'], $config['font_size'], false, 1, $config['homeurl'],
-					'white',
-					'black');
-}
-
-/**
- * Print a pie graph with users activity in a period of time
- * 
- * @param integer width pie graph width
- * @param integer height pie graph height
- * @param integer period time period
- */
-function graphic_user_activity ($width = 350, $height = 230) {
-	global $config;
-	global $graphic_type;
-	
-	$data = array ();
-	$max_items = 5;
-	switch ($config['dbtype']) {
-		case "mysql":
-		case "postgresql":
-			$sql = sprintf ('SELECT COUNT(id_usuario) n_incidents, id_usuario
-				FROM tsesion
-				GROUP BY id_usuario
-				ORDER BY 1 DESC LIMIT %d', $max_items);
-			break;
-		case "oracle":
-			$sql = sprintf ('SELECT COUNT(id_usuario) n_incidents, id_usuario
-				FROM tsesion 
-				WHERE rownum <= %d
-				GROUP BY id_usuario
-				ORDER BY 1 DESC', $max_items);
-			break;
-	}
-	$logins = db_get_all_rows_sql ($sql);
-	
-	if ($logins == false) {
-		$logins = array();
-	}
-	foreach ($logins as $login) {
-		$data[$login['id_usuario']] = $login['n_incidents'];
-	}
-	
-	if($config["fixed_graph"] == false){
-		$water_mark = array('file' =>
-			$config['homedir'] . "/images/logo_vertical_water.png",
-			'url' => ui_get_full_url("images/logo_vertical_water.png", false, false, false));
-	}
-	
-	return pie3d_graph($config['flash_charts'], $data, $width, $height,
-		__('Other'), '', $water_mark,
-		$config['fontpath'], $config['font_size']);
+	return	$return['chart'] = flot_slicesbar_graph (
+		$data,
+		$period,
+		$width,
+		$height,
+		'',
+		$colors,
+		$config['fontpath'],
+		$round_corner,
+		$home_url,
+		'',
+		'',
+		false,
+		0,
+		array(),
+		true,
+		$ttl
+	);
 }
 
 /**
@@ -3019,9 +2496,11 @@ function grafico_incidente_prioridad () {
 				'url' => ui_get_full_url("images/logo_vertical_water.png", false, false, false));
 		}
 	
-	return pie3d_graph($config['flash_charts'], $data, 320, 200,
-		__('Other'), '', $water_mark,
-		$config['fontpath'], $config['font_size']);
+	return pie_graph(
+		$data, 320, 200,
+		__('Other'), '', '',
+		$config['fontpath'], $config['font_size']
+	);
 }
 
 /**
@@ -3059,9 +2538,9 @@ function graph_incidents_status () {
 			$config['homedir'] . "/images/logo_vertical_water.png",
 			'url' => ui_get_full_url("images/logo_vertical_water.png", false, false, false));
 	}
-	
-	return pie3d_graph($config['flash_charts'], $data, 320, 200,
-		__('Other'), '', $water_mark,
+
+	return pie_graph($data, 320, 200,
+		__('Other'), '', '',
 		$config['fontpath'], $config['font_size']);
 }
 
@@ -3116,8 +2595,8 @@ function graphic_incident_group () {
 			'url' => ui_get_full_url("images/logo_vertical_water.png", false, false, false));
 	}
 	
-	return pie3d_graph($config['flash_charts'], $data, 320, 200,
-		__('Other'), '', $water_mark,
+	return pie_graph($data, 320, 200,
+		__('Other'), '', '',
 		$config['fontpath'], $config['font_size']);
 }
 
@@ -3171,8 +2650,9 @@ function graphic_incident_user () {
 			'url' => ui_get_full_url("images/logo_vertical_water.png", false, false, false));
 	}
 	
-	return pie3d_graph($config['flash_charts'], $data, 320, 200,
-		__('Other'), '', $water_mark,
+	return pie_graph(
+		$data, 320, 200,
+		__('Other'), '', '',
 		$config['fontpath'], $config['font_size']);
 }
 
@@ -3225,35 +2705,36 @@ function graphic_incident_source($width = 320, $height = 200) {
 			'url' => ui_get_full_url("images/logo_vertical_water.png", false, false, false));
 	}
 	
-	return pie3d_graph($config['flash_charts'], $data, $width, $height,
-		__('Other'), '', $water_mark,
+	return pie_graph(
+		$data, $width, $height,
+		__('Other'), '', '',
 		$config['fontpath'], $config['font_size']);
 }
 
 function graph_events_validated($width = 300, $height = 200, $extra_filters = array(), $meta = false, $history = false) {
 	global $config;
 	global $graphic_type;
-	
+
 	$event_type = false;
 	if (array_key_exists('event_type', $extra_filters))
 		$event_type = $extra_filters['event_type'];
-	
+
 	$event_severity = false;
 	if (array_key_exists('event_severity', $extra_filters))
 		$event_severity = $extra_filters['event_severity'];
-	
+
 	$event_status = false;
 	if (array_key_exists('event_status', $extra_filters))
 		$event_status = $extra_filters['event_status'];
-	
+
 	$event_filter_search = false;
 	if (array_key_exists('event_filter_search', $extra_filters))
 		$event_filter_search = $extra_filters['event_filter_search'];
-	
+
 	$data_graph = events_get_count_events_validated(
-		array('id_group' => array_keys(users_get_groups())), null, null, 
+		array('id_group' => array_keys(users_get_groups())), null, null,
 		$event_severity, $event_type, $event_status, $event_filter_search);
-	
+
 	$colors = array();
 	foreach ($data_graph as $k => $v) {
 		if ($k == __('Validated')) {
@@ -3263,17 +2744,26 @@ function graph_events_validated($width = 300, $height = 200, $extra_filters = ar
 			$colors[$k] = COL_CRITICAL;
 		}
 	}
-	
+
 	if($config["fixed_graph"] == false){
 		$water_mark = array('file' =>
 			$config['homedir'] . "/images/logo_vertical_water.png",
 			'url' => ui_get_full_url("images/logo_vertical_water.png", false, false, false));
 	}
-	
-	echo pie3d_graph(
-		true, $data_graph, $width, $height, __("other"), "",
+
+	echo pie_graph(
+		$data_graph,
+		$width,
+		$height,
+		__("other"),
+		"",
 		$water_mark,
-		$config['fontpath'], $config['font_size'], 1, false, $colors);
+		$config['fontpath'],
+		$config['font_size'],
+		1,
+		false,
+		$colors
+	);
 }
 
 /**
@@ -3282,10 +2772,8 @@ function graph_events_validated($width = 300, $height = 200, $extra_filters = ar
  * @param integer width pie graph width
  * @param integer height pie graph height
  * @param string url
- * @param bool if the graph required is or not for metaconsole
- * @param bool if the graph required is or not for history table
  */
-function grafico_eventos_grupo ($width = 300, $height = 200, $url = "", $meta = false, $history = false, $noWaterMark = true) {
+function grafico_eventos_grupo ($width = 300, $height = 200, $url = "", $noWaterMark = true, $time_limit = false) {
 	global $config;
 	global $graphic_type;
 	
@@ -3315,26 +2803,17 @@ function grafico_eventos_grupo ($width = 300, $height = 200, $url = "", $meta = 
 	$url = str_replace(
 		'SELECT_id_agente_modulo', 'SELECT id_agente_modulo', $url);
 	
-	
-	// Choose the table where search if metaconsole or not
-	if ($meta) {
-		if ($history) {
-			$event_table = 'tmetaconsole_event_history';
-		}
-		else {
-			$event_table = 'tmetaconsole_event';
-		}
-		$field_extra = ', agent_name';
-		$groupby_extra = ', server_id';
-	}
-	else {
-		$event_table = 'tevento';
-		$field_extra = '';
-		$groupby_extra = '';
-	}
+	$event_table = 'tevento';
+	$field_extra = '';
+	$groupby_extra = '';
 	
 	// Add tags condition to filter
 	$tags_condition = tags_get_acl_tags($config['id_user'], 0, 'ER', 'event_condition', 'AND');
+
+	if ($time_limit && $config['event_view_hr']) {
+		$tags_condition .= " AND utimestamp > (UNIX_TIMESTAMP(NOW()) - " .
+			$config['event_view_hr'] * SECONDS_1HOUR  . ")";
+	}
 	
 	//This will give the distinct id_agente, give the id_grupo that goes
 	//with it and then the number of times it occured. GROUP BY statement
@@ -3368,13 +2847,8 @@ function grafico_eventos_grupo ($width = 300, $height = 200, $url = "", $meta = 
 				$system_events += $row["count"];
 			}
 			else {
-				if ($meta) {
-					$name = mb_substr (io_safe_output($row['agent_name']), 0, 25)." (".$row["count"].")";
-				}
-				else {
-					$alias = agents_get_alias($row["id_agente"]);
-					$name = mb_substr($alias, 0, 25)." #".$row["id_agente"]." (".$row["count"].")";
-				}
+				$alias = agents_get_alias($row["id_agente"]);
+				$name = mb_substr($alias, 0, 25)." #".$row["id_agente"]." (".$row["count"].")";
 				$data[$name] = $row["count"];
 			}
 		}
@@ -3385,14 +2859,7 @@ function grafico_eventos_grupo ($width = 300, $height = 200, $url = "", $meta = 
 		$name = __('SYSTEM')." (".$system_events.")";
 		$data[$name] = $system_events;
 	}
-	
-	/*
-	if ($other_events > 0) {
-		$name = __('Other')." (".$other_events.")";
-		$data[$name] = $other_events;
-	}
-	*/
-	
+
 	// Sort the data
 	arsort($data);
 	if ($noWaterMark) {
@@ -3404,72 +2871,9 @@ function grafico_eventos_grupo ($width = 300, $height = 200, $url = "", $meta = 
 		$water_mark = array();
 	}
 	
-	return pie3d_graph($config['flash_charts'], $data, $width, $height,
+	return pie_graph(
+		$data, $width, $height,
 		__('Other'), '', $water_mark,
-		$config['fontpath'], $config['font_size'], 1, 'bottom');
-}
-
-function grafico_eventos_agente ($width = 300, $height = 200, $result = false, $meta = false, $history = false) {
-	global $config;
-	global $graphic_type;
-	
-	//It was urlencoded, so we urldecode it
-	//$url = html_entity_decode (rawurldecode ($url), ENT_QUOTES);
-	$data = array ();
-	$loop = 0;
-	
-	if ($result === false) {
-		$result = array();
-	}
-	
-	$system_events = 0;
-	$other_events = 0;
-	$total = array();
-	$i = 0;
-	
-	foreach ($result as $row) {
-		if ($meta) {
-			$count[] = $row["agent_name"];
-		}
-		else {
-			if ($row["id_agente"] == 0) {
-				$count[] = __('SYSTEM');
-			}
-			else
-				$count[] = agents_get_alias($row["id_agente"]) ;
-		}
-		
-	}
-	
-	$total = array_count_values($count);
-	
-	foreach ($total as $key => $total) {
-		if ($meta) {
-			$name = $key." (".$total.")";
-		}
-		else {
-			$name = $key." (".$total.")";
-		}
-		$data[$name] = $total;
-	}
-	
-	/*
-	if ($other_events > 0) {
-		$name = __('Other')." (".$other_events.")";
-		$data[$name] = $other_events;
-	}
-	*/
-	
-	// Sort the data
-	arsort($data);
-	if($config["fixed_graph"] == false){
-		$water_mark = array('file' =>
-			$config['homedir'] . "/images/logo_vertical_water.png",
-			'url' => ui_get_full_url("images/logo_vertical_water.png", false, false, false));
-	}
-	
-	return pie3d_graph($config['flash_charts'], $data, $width, $height,
-		__('Others'), '', $water_mark,
 		$config['fontpath'], $config['font_size'], 1, 'bottom');
 }
 
@@ -3478,7 +2882,7 @@ function grafico_eventos_agente ($width = 300, $height = 200, $result = false, $
  * 
  * @param string filter Filter for query in DB
  */
-function grafico_eventos_total($filter = "", $width = 320, $height = 200, $noWaterMark = true) {
+function grafico_eventos_total($filter = "", $width = 320, $height = 200, $noWaterMark = true, $time_limit = false) {
 	global $config;
 	global $graphic_type;
 	
@@ -3487,20 +2891,25 @@ function grafico_eventos_total($filter = "", $width = 320, $height = 200, $noWat
 	// Add tags condition to filter
 	$tags_condition = tags_get_acl_tags($config['id_user'], 0, 'ER', 'event_condition', 'AND');
 	$filter .= $tags_condition;
-	
+	if ($time_limit && $config['event_view_hr']) {
+		$filter .= " AND utimestamp > (UNIX_TIMESTAMP(NOW()) - " . $config['event_view_hr'] * SECONDS_1HOUR . ")";
+	}
+
 	$data = array ();
 	$legend = array ();
 	$total = 0;
-	
-	$where = '';
+
+	$where = "WHERE 1=1";
 	if (!users_is_admin()) {
 		$where = 'WHERE event_type NOT IN (\'recon_host_detected\', \'system\',\'error\', \'new_agent\', \'configuration_change\')';
 	}
-	
+
 	$sql = sprintf("SELECT criticity, COUNT(id_evento) events
-		FROM tevento %s 
-		GROUP BY criticity ORDER BY events DESC", $where);
-	
+		FROM tevento 
+		LEFT JOIN tagent_secondary_group tasg 
+		ON tevento.id_agente = tasg.id_agent
+		%s %s
+		GROUP BY criticity ORDER BY events DESC", $where , $filter);
 	$criticities = db_get_all_rows_sql ($sql, false, false);
 	
 	if (empty($criticities)) {
@@ -3549,7 +2958,8 @@ function grafico_eventos_total($filter = "", $width = 320, $height = 200, $noWat
 		$water_mark = array();
 	}
 	
-	return pie3d_graph($config['flash_charts'], $data, $width, $height,
+	return pie_graph(
+		$data, $width, $height,
 		__('Other'), '', $water_mark,
 		$config['fontpath'], $config['font_size'], 1, 'bottom', $colors);
 }
@@ -3599,7 +3009,8 @@ function grafico_eventos_usuario ($width, $height) {
 		'file' => $config['homedir'] .  "/images/logo_vertical_water.png",
 		'url' => ui_get_full_url("/images/logo_vertical_water.png", false, false, false));
 	
-	return pie3d_graph($config['flash_charts'], $data, $width, $height,
+	return pie_graph(
+		$data, $width, $height,
 		__('Other'), '', $water_mark,
 		$config['fontpath'], $config['font_size']);
 }
@@ -3615,10 +3026,11 @@ function grafico_eventos_usuario ($width, $height) {
 function graph_custom_sql_graph ($id, $width, $height,
 	$type = 'sql_graph_vbar', $only_image = false, $homeurl = '',
 	$ttl = 1, $max_num_elements = 8) {
-	
+
 	global $config;
+
 	$SQL_GRAPH_MAX_LABEL_SIZE = 20;
-	
+
 	$report_content = db_get_row ('treport_content', 'id_rc', $id);
 	if($id != null){
 		$historical_db = db_get_value_sql("SELECT historical_db from treport_content where id_rc =".$id);
@@ -3633,42 +3045,30 @@ function graph_custom_sql_graph ($id, $width, $height,
 		$sql = db_get_row('treport_custom_sql', 'id', $report_content["treport_custom_sql_id"]);
 		$sql = io_safe_output($sql['sql']);
 	}
-	
+
 	if (($config['metaconsole'] == 1) && defined('METACONSOLE')) {
 		$metaconsole_connection = enterprise_hook('metaconsole_get_connection', array($report_content['server_name']));
-		
+
 		if ($metaconsole_connection === false) {
 			return false;
 		}
-		
+
 		if (enterprise_hook('metaconsole_load_external_db', array($metaconsole_connection)) != NOERR) {
 			//ui_print_error_message ("Error connecting to ".$server_name);
 			return false;
 		}
 	}
-	
-	
-	switch ($config["dbtype"]) {
-		case "mysql":
-		case "postgresql":
-			break;
-		case "oracle":
-			$sql = str_replace(";", "", $sql);
-			break;
-	}
-	
+
 	$data_result = db_get_all_rows_sql ($sql,$historical_db);
-	
-	
-	
+
 	if (($config['metaconsole'] == 1) && defined('METACONSOLE'))
 		enterprise_hook('metaconsole_restore_db');
-	
+
 	if ($data_result === false)
 		$data_result = array ();
-	
+
 	$data = array ();
-	
+
 	$count = 0;
 	foreach ($data_result as $data_item) {
 		$count++;
@@ -3710,23 +3110,16 @@ function graph_custom_sql_graph ($id, $width, $height,
 			}
 		}
 	}
-	
-	$flash_charts = $config['flash_charts'];
-		
-	if ($only_image) {
-		$flash_charts = false;
-	}
-	
+
 	if($config["fixed_graph"] == false){
 		$water_mark = array('file' =>
 			$config['homedir'] . "/images/logo_vertical_water.png",
 			'url' => ui_get_full_url("images/logo_vertical_water.png", false, false, false));
 	}
-	
+
 	switch ($type) {
 		case 'sql_graph_vbar': // vertical bar
 			return vbar_graph(
-				$flash_charts,
 				$data,
 				$width,
 				$height,
@@ -3743,14 +3136,13 @@ function graph_custom_sql_graph ($id, $width, $height,
 				$ttl,
 				$homeurl,
 				"white",
+				true,
 				false,
-				false,
-				"c1c1c1"
+				"#c1c1c1"
 			);
 			break;
 		case 'sql_graph_hbar': // horizontal bar
 			return hbar_graph(
-				$flash_charts,
 				$data,
 				$width,
 				$height,
@@ -3767,12 +3159,21 @@ function graph_custom_sql_graph ($id, $width, $height,
 				$ttl,
 				$homeurl,
 				'white',
-				'c1c1c1'
+				'#c1c1c1'
 			);
 			break;
 		case 'sql_graph_pie': // Pie
-			return pie3d_graph($flash_charts, $data, $width, $height, __("other"), $homeurl,
-				$water_mark, $config['fontpath'], '', $ttl);
+			return pie_graph(
+				$data,
+				$width,
+				$height,
+				__("other"),
+				$homeurl,
+				$water_mark,
+				$config['fontpath'],
+				$config['font_size'],
+				$ttl
+			);
 			break;
 	}
 }
@@ -3790,10 +3191,9 @@ function graph_custom_sql_graph ($id, $width, $height,
 function graph_graphic_agentevents ($id_agent, $width, $height, $period = 0, $homeurl, $return = false, $from_agent_view = false) {
 	global $config;
 	global $graphic_type;
-	
-	
+
 	$data = array ();
-	
+
 	//$resolution = $config['graph_res'] * ($period * 2 / $width); // Number of "slices" we want in graph
 	$resolution = 5 * ($period * 2 / $width); // Number of "slices" we want in graph
 
@@ -3811,12 +3211,7 @@ function graph_graphic_agentevents ($id_agent, $width, $height, $period = 0, $ho
 	for ($i = 0; $i < $interval; $i++) {
 		$bottom = $datelimit + ($periodtime * $i);
 		if (! $graphic_type) {
-			if ($config['flash_charts']) {
-				$name = date('H:i', $bottom);
-			}
-			else {
-				$name = date('H\h', $bottom);
-			}
+			$name = date('H:i', $bottom);
 		}
 		else {
 			$name = $bottom;
@@ -3861,23 +3256,10 @@ function graph_graphic_agentevents ($id_agent, $width, $height, $period = 0, $ho
 	}
 
 	$colors = array(1 => COL_NORMAL, 2 => COL_WARNING, 3 => COL_CRITICAL, 4 => COL_UNKNOWN);
-	
+
 	// Draw slicebar graph
-	if ($config['flash_charts']) {
-		$out = flot_slicesbar_graph($data, $period, $width, $height, $full_legend, $colors, $config['fontpath'], $config['round_corner'], $homeurl, '', '', false, $id_agent, $full_legend_date);
-	}
-	else {
-		$out = slicesbar_graph($data, $period, $width, $height, $colors, $config['fontpath'], $config['round_corner'], $homeurl);
-		
-		// Draw legend
-		$out .=  "<br>";
-		$out .=  "&nbsp;";
-		foreach ($legend as $hour) {
-			$out .=  "<span style='font-size: 6pt'>" . $hour . "</span>";
-			$out .=  "&nbsp;";
-		}
-	}
-	
+	$out = flot_slicesbar_graph($data, $period, 100, 40, $full_legend, $colors, $config['fontpath'], $config['round_corner'], $homeurl, '', '', false, $id_agent, $full_legend_date);
+
 	if ($return) {
 		return $out;
 	}
@@ -3917,12 +3299,7 @@ function graph_graphic_moduleevents ($id_agent, $id_module, $width, $height, $pe
 	for ($i = 0; $i < $interval; $i++) {
 		$bottom = $datelimit + ($periodtime * $i);
 		if (! $graphic_type) {
-			if ($config['flash_charts']) {
-				$name = date('H:i:s', $bottom);
-			}
-			else {
-				$name = date('H\h', $bottom);
-			}
+			$name = date('H\h', $bottom);
 		}
 		else {
 			$name = $bottom;
@@ -3965,23 +3342,31 @@ function graph_graphic_moduleevents ($id_agent, $id_module, $width, $height, $pe
 		$cont++;
 	}
 
-	$colors = array(1 => COL_NORMAL, 2 => COL_WARNING, 3 => COL_CRITICAL, 4 => COL_UNKNOWN);
+	$colors = array(
+		1 => COL_NORMAL,
+		2 => COL_WARNING,
+		3 => COL_CRITICAL,
+		4 => COL_UNKNOWN
+	);
 
-	// Draw slicebar graph
-	if ($config['flash_charts']) {
-		$out = flot_slicesbar_graph($data, $period, $width, $height, $full_legend, $colors, $config['fontpath'], $config['round_corner'], $homeurl, '', '', false, $id_agent);
-	}
-	else {
-		$out = slicesbar_graph($data, $period, $width, $height, $colors, $config['fontpath'], $config['round_corner'], $homeurl);
-
-		// Draw legend
-		$out .=  "<br>";
-		$out .=  "&nbsp;";
-		foreach ($legend as $hour) {
-			$out .=  "<span style='font-size: 6pt'>" . $hour . "</span>";
-			$out .=  "&nbsp;";
-		}
-	}
+	$out = flot_slicesbar_graph(
+		$data,
+		$period,
+		100,
+		$height,
+		$full_legend,
+		$colors,
+		$config['fontpath'],
+		$config['round_corner'],
+		$homeurl,
+		'',
+		'',
+		false,
+		$id_agent,
+		array(),
+		true,
+		1
+	);
 
 	if ($return) {
 		return $out;
@@ -4115,7 +3500,7 @@ function fullscale_data (
 					if($min_value != PHP_INT_MAX) {
 						$data["min" . $series_suffix]['data'][] = array($real_date , $min_value);
 					}
-					
+
 					if($max_value != -PHP_INT_MAX) {
 						$data["max" . $series_suffix]['data'][] = array($real_date , $max_value);
 					}
@@ -4141,7 +3526,7 @@ function fullscale_data (
 					$min_value_total = $min_value;
 				}
 				//avg sum_total
-				$sum_data_total += $sum_data;
+				$sum_data_total += $sum_data/$count_data;
 
 				//avg count_total
 				$count_data_total++;
@@ -4189,6 +3574,7 @@ function fullscale_data (
 				}
 			}
 		}
+
 		$data["sum" . $series_suffix]['min'] = $min_value_total;
 		$data["sum" . $series_suffix]['max'] = $max_value_total;
 		$data["sum" . $series_suffix]['avg'] = $sum_data_total/$count_data_total;
@@ -4253,12 +3639,12 @@ function fullscale_data (
 
 				if(isset($v["datos"]) && $v["datos"]){
 					//max
-					if($v['datos'] >= $max_value){
-						$max_value = $v['datos'];
+					if((float)$v['datos'] >= $max_value_max){
+						$max_value_max = $v['datos'];
 					}
 					//min
-					if($v['datos'] <= $min_value){
-						$min_value = $v['datos'];
+					if((float)$v['datos'] <= $min_value_min){
+						$min_value_min = $v['datos'];
 					}
 					//avg sum
 					$sum_data += $v["datos"];
@@ -4274,8 +3660,8 @@ function fullscale_data (
 			}
 		}
 
-		$data["sum" . $series_suffix]['min'] = $min_value;
-		$data["sum" . $series_suffix]['max'] = $max_value;
+		$data["sum" . $series_suffix]['min'] = $min_value_min;
+		$data["sum" . $series_suffix]['max'] = $max_value_max;
 		$data["sum" . $series_suffix]['avg'] = $sum_data/$count_data;
 	}
 
@@ -4484,18 +3870,14 @@ function graph_netflow_aggregate_pie ($data, $aggregate, $ttl = 1, $only_image =
 		$i++;
 	}
 
-	$flash_chart = $config['flash_charts'];
-	if ($only_image) {
-		$flash_chart = false;
-	}
-
 	if($config["fixed_graph"] == false){
 		$water_mark = array('file' =>
 			$config['homedir'] . "/images/logo_vertical_water.png",
 			'url' => ui_get_full_url("images/logo_vertical_water.png", false, false, false));
 	}
 
-	return pie3d_graph($flash_chart, $values, 370, 200,
+	return pie_graph(
+		$values, 370, 200,
 		__('Other'), $config['homeurl'], $water_mark,
 		$config['fontpath'], $config['font_size'], $ttl);
 }
@@ -4671,12 +4053,20 @@ function graphic_module_events ($id_module, $width, $height, $period = 0, $homeu
 	$colors = array(1 => '#38B800', 2 => '#FFFF00', 3 => '#FF0000', 4 => '#C3C3C3');
 
 	// Draw slicebar graph
-	if ($config['flash_charts']) {
-		echo flot_slicesbar_graph($data, $period, $width, 50, $legend, $colors, $config['fontpath'], $config['round_corner'], $homeurl, '', $adapt_key, $stat_win);
-	}
-	else {
-		echo slicesbar_graph($data, $period, $width, 15, $colors, $config['fontpath'], $config['round_corner'], $homeurl);
-	}
+	echo flot_slicesbar_graph(
+		$data,
+		$period,
+		$width,
+		50,
+		$legend,
+		$colors,
+		$config['fontpath'],
+		$config['round_corner'],
+		$homeurl,
+		'',
+		$adapt_key,
+		$stat_win
+	);
 }
 
 function graph_nodata_image($width = 300, $height = 110, $type = 'area', $text = '') {
@@ -4807,12 +4197,11 @@ function graph_monitor_wheel ($width = 550, $height = 600, $filter = false) {
 		if (!empty($agents)) {
 			$agents_id = array();
 			$agents_aux = array();
-			foreach ($agents as $key => $agent) {
+			foreach ($agents as $key => $agent) { 
 				$agents_aux[$agent['id_agente']] = $agent;
 			}
 			$agents = $agents_aux;
 			$agents_aux = null;
-			$fields = array('id_agente_modulo', 'id_agente', 'id_module_group', 'nombre');
 
 			$module_groups = modules_get_modulegroups();
 			$module_groups[0] = __('Not assigned');
@@ -5094,6 +4483,55 @@ function graph_monitor_wheel ($width = 550, $height = 600, $filter = false) {
 	include_once($config['homedir'] . "/include/graphs/functions_d3.php");
 
 	return d3_sunburst_graph ($graph_data, $width, $height, true);
+}
+
+function get_baseline_data($agent_module_id, $date_array, $data_module_graph, $params){
+	$period = $date_array["period"];
+	$date = $date_array["final_date"];
+	$array_data = array();
+	for ($i = 0; $i < 4; $i++) {
+		$date_array = array();
+		$date_array["period"]     = $period;
+		$date_array["final_date"] = $date - $period * $i;
+		$date_array["start_date"] = $date - $period * ($i + 1);
+
+		$data = grafico_modulo_sparse_data(
+			$agent_module_id,
+			$date_array,
+			$data_module_graph,
+			$params,
+			$i
+		);
+
+		$array_data[] = $data;
+
+	}
+	$result = array();
+	$array_data[1] = array_reverse($array_data[1]['sum1']['slice_data']);
+	$array_data[2] = array_reverse($array_data[2]['sum2']['slice_data']);
+	$array_data[3] = array_reverse($array_data[3]['sum3']['slice_data']);
+	foreach ($array_data[0]['sum0']['slice_data'] as $key => $value) {
+		$data1 = array_pop($array_data[1]);
+		$data2 = array_pop($array_data[2]);
+		$data3 = array_pop($array_data[3]);
+
+		$result['slice_data'][$key]['min'] = ($data1['min'] + $data2['min'] + $data3['min'] + $value['min']) / 4;
+		$result['slice_data'][$key]['avg'] = ($data1['avg'] + $data2['avg'] + $data3['avg'] + $value['avg']) / 4;
+		$result['slice_data'][$key]['max'] = ($data1['max'] + $data2['max'] + $data3['max'] + $value['max']) / 4;
+
+		$result['data'][] = array($key, $result['slice_data'][$key]['avg']);
+	}
+
+	$result['avg'] = ($array_data[0]['sum0']['avg'] + $array_data[1]['sum1']['avg'] + $array_data[2]['sum2']['avg'] +$array_data[3]['sum3']['avg'])/4;
+	$result['max'] = max($array_data[0]['sum0']['max'], $array_data[1]['sum1']['max'], $array_data[2]['sum2']['max'], $array_data[3]['sum3']['max']);
+	$result['min'] = min($array_data[0]['sum0']['min'], $array_data[1]['sum1']['min'], $array_data[2]['sum2']['min'], $array_data[3]['sum3']['min']);
+
+	$result['agent_module_id'] = $array_data[0]['sum0']['agent_module_id'];
+	$result['id_module_type'] = $array_data[0]['sum0']['id_module_type'];
+	$result['agent_name'] = $array_data[0]['sum0']['agent_name'];
+	$result['module_name'] = $array_data[0]['sum0']['module_name'];
+	$result['agent_alias'] = $array_data[0]['sum0']['agent_alias'];
+	return array('sum0' => $result);
 }
 
 ?>

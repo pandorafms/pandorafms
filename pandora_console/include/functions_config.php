@@ -43,7 +43,6 @@ function config_create_value ($token, $value) {
  */
 function config_update_value ($token, $value) {
 	global $config;
-	$config['flash_charts'] = true;
 	// Include functions_io to can call __() function
 	include_once($config['homedir'] . '/include/functions_io.php');
 	
@@ -530,7 +529,7 @@ function config_update_config () {
 						$error_update[] = __('Product name');
 					if (!config_update_value ('rb_copyright_notice', (string) get_parameter ('rb_copyright_notice')))
 						$error_update[] = __('Copyright notice');
-					
+
 					if (!config_update_value ('meta_custom_logo', (string) get_parameter ('meta_custom_logo')))
 						$error_update[] = __('Custom logo metaconsole');
 					if (!config_update_value ('meta_custom_logo_white_bg', (string) get_parameter ('meta_custom_logo_white_bg')))
@@ -545,7 +544,7 @@ function config_update_config () {
 						$error_update[] = __('Custom title2 login metaconsole');
 					if (!config_update_value ('meta_login_background', (string) get_parameter ('meta_login_background')))
 						$error_update[] = __('Login background metaconsole');
-											
+
 					if (!config_update_value ('meta_custom_docs_url', (string) get_parameter ('meta_custom_docs_url')))
 						$error_update[] = __('Custom Docs url');
 					if (!config_update_value ('meta_custom_support_url', (string) get_parameter ('meta_custom_support_url')))
@@ -553,12 +552,15 @@ function config_update_config () {
 
 					if (!config_update_value ('vc_refr', get_parameter('vc_refr')))
 						$error_update[] = __('Default interval for refresh on Visual Console');
-					if (!config_update_value ('vc_favourite_view', (int) get_parameter('vc_favourite_view', 5)))
+					if (!config_update_value ('vc_favourite_view', (int) get_parameter('vc_favourite_view', 0)))
 						$error_update[] = __('Default line favourite_view for the Visual Console');
 					if (!config_update_value ('vc_menu_items', (int) get_parameter('vc_menu_items', 10)))
 						$error_update[] = __('Default line menu items for the Visual Console');
 					if (!config_update_value ('vc_line_thickness', (int) get_parameter('vc_line_thickness')))
 						$error_update[] = __('Default line thickness for the Visual Console');
+
+					if (!config_update_value ('ser_menu_items', (int) get_parameter('ser_menu_items', 10)))
+						$error_update[] = __('Default line menu items for the Services');
 
 					if (!config_update_value ('agent_size_text_small', get_parameter('agent_size_text_small')))
 						$error_update[] = __('Agent size text');
@@ -631,10 +633,10 @@ function config_update_config () {
 					if (!config_update_value ('type_mode_graph', (int) get_parameter('type_mode_graph', 0)))
 						$error_update[] = __('Default soft graphs');
 
-					if (!config_update_value ('zoom_graph', (int) get_parameter('zoom_graph', 0)))
+					if (!config_update_value ('zoom_graph', (int) get_parameter('zoom_graph', 1)))
 						$error_update[] = __('Default zoom graphs');
 
-					if (!config_update_value ('graph_image_height', (int) get_parameter('graph_image_height', 0)))
+					if (!config_update_value ('graph_image_height', (int) get_parameter('graph_image_height', 280)))
 						$error_update[] = __('Default height of the chart image');
 
 					if (!config_update_value ('classic_menu', (bool) get_parameter('classic_menu', false)))
@@ -667,10 +669,7 @@ function config_update_config () {
 						}
 					}
 					//--------------------------------------------------
-					
-					
-					
-					
+
 					//--------------------------------------------------
 					// CUSTOM INTERVAL VALUES
 					//--------------------------------------------------
@@ -1303,6 +1302,16 @@ function config_process_config () {
 		config_update_value ('meta_custom_title2_login', __('METACONSOLE'));
 	}
 
+	if (!isset($config['vc_favourite_view'])) {
+		config_update_value('vc_favourite_view', 0);
+	}
+	if (!isset($config['vc_menu_items'])) {
+		config_update_value('vc_menu_items', 10);
+	}
+	if (!isset($config['ser_menu_items'])) {
+		config_update_value('ser_menu_items', 10);
+	}
+
 	if (!isset ($config['history_db_enabled'])) {
 		config_update_value ( 'history_db_enabled', false);
 	}
@@ -1523,7 +1532,7 @@ function config_process_config () {
 	else {
 		if (!json_decode(io_safe_output($config['ad_adv_perms']))) {
 			$temp_ad_adv_perms = array();
-			if ($config['ad_adv_perms'] != '') {
+			if (!isset($config['ad_adv_perms']) && $config['ad_adv_perms'] != '') {
 				$perms = explode(';', io_safe_output($config['ad_adv_perms']));
 				foreach ($perms as $ad_adv_perm) {
 					if (preg_match('/[\[\]]/',$ad_adv_perm)) {
@@ -1587,7 +1596,7 @@ function config_process_config () {
 	else {
 		if (!json_decode(io_safe_output($config['ldap_adv_perms']))) {
 			$temp_ldap_adv_perms = array();
-			if ($config['ldap_adv_perms'] != '') {
+			if (!isset($config['ad_adv_perms']) && $config['ldap_adv_perms'] != '') {
 				$perms = explode(';', io_safe_output($config['ldap_adv_perms']));
 				foreach ($perms as $ad_adv_perm) {
 					if (preg_match('/[\[\]]/',$ad_adv_perm)) {
@@ -1859,11 +1868,15 @@ function config_process_config () {
 	if (!isset($config['render_proc'])) {
 		config_update_value ('render_proc', 0);
 	}
-	
+
 	if (!isset($config['graph_image_height'])) {
-		config_update_value ('graph_image_height', 320);
+		config_update_value ('graph_image_height', 280);
 	}
-	
+
+	if (!isset($config['zoom_graph'])) {
+		config_update_value ('zoom_graph', 1);
+	}
+
 	if (!isset($config["render_proc_ok"])) {
 		config_update_value ('render_proc_ok', __('Ok') );
 	}
@@ -2009,7 +2022,7 @@ function config_process_config () {
 	if (!isset($config['ehorus_req_timeout'])) {
 		config_update_value('ehorus_req_timeout', 5);
 	}
-	
+
 	/* Finally, check if any value was overwritten in a form */
 	config_update_config();
 }
@@ -2246,8 +2259,7 @@ function config_user_set_custom_config() {
 	if ($userinfo['last_connect'] < (time()-SECONDS_1MINUTE)) {
 		update_user($config['id_user'], array('last_connect' => time()));
 	}
-	
-	// If block_size or flash_chart are provided then override global settings
+
 	if (!empty($userinfo["block_size"]) && ($userinfo["block_size"] != 0))
 		$config["block_size"] = $userinfo["block_size"];
 
@@ -2265,9 +2277,14 @@ function config_user_set_custom_config() {
 
 function config_prepare_session() {
 	global $config;
-	
-	$user = users_get_user_by_id($config["id_user"]);
-	$user_sesion_time = $user['session_time'];
+
+	if(isset($config["id_user"])){
+		$user = users_get_user_by_id($config["id_user"]);
+		$user_sesion_time = $user['session_time'];
+	}
+	else{
+		$user_sesion_time = null;
+	}
 
 	if ($user_sesion_time == 0) {
 		// Change the session timeout value to session_timeout minutes  // 8*60*60 = 8 hours
@@ -2277,20 +2294,20 @@ function config_prepare_session() {
 		// Change the session timeout value to session_timeout minutes  // 8*60*60 = 8 hours
 		$sessionCookieExpireTime = $user_sesion_time;
 	}
-	
+
 	if ($sessionCookieExpireTime <= 0)
 		$sessionCookieExpireTime = 10 * 365 * 24 * 60 * 60;
 	else
 		$sessionCookieExpireTime *= 60;
-	
-	ini_set('session.gc_maxlifetime', $sessionCookieExpireTime);
-	session_set_cookie_params ($sessionCookieExpireTime);
-	
+
+	@ini_set('session.gc_maxlifetime', $sessionCookieExpireTime);
+	@session_set_cookie_params ($sessionCookieExpireTime);
+
 	// Reset the expiration time upon page load //session_name() is default name of session PHPSESSID
-	
+
 	if (isset($_COOKIE[session_name()]))
 		setcookie(session_name(), $_COOKIE[session_name()], time() + $sessionCookieExpireTime, "/");
-	
+
 	ini_set("post_max_size", $config["max_file_size"]);
 	ini_set("upload_max_filesize", $config["max_file_size"]);
 }

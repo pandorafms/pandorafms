@@ -47,17 +47,21 @@ $update = (bool) get_parameter_post ('update');
 if ($update) {
 	$agents_ = '';
 	if ($selection_mode == 'modules') {
+
+		$agents_ = array();
+
 		$force = get_parameter('force_type', false);
 		
 		if ($agents_select == false) {
 			$agents_select = array();
-			$agents_ = array();
 		}
 		
 		foreach ($agents_select as $agent_name) {
 			$agents_[] = agents_get_agent_id($agent_name);
 		}
+
 		$modules_ = $module_name;
+
 	}
 	else if ($selection_mode == 'agents') {
 		$force = get_parameter('force_group', false);
@@ -75,6 +79,7 @@ if ($update) {
 	// If the option to select all of one group or module type is checked
 	if ($force) {
 		if ($force == 'type') {
+
 			$type_condition = '';
 			if ($module_type != 0)
 				$type_condition = "AND tam.id_tipo_modulo = $module_type";
@@ -141,12 +146,11 @@ if ($update) {
 	else {
 		// Standard procedure
 		foreach ($agents_ as $agent_) {
-			
+
 			if ($modules_ == false)
 				$modules_ = array();
 			
 			foreach ($modules_ as $module_) {
-				
 				$result = process_manage_edit ($module_, $agent_, $modules_selection_mode);
 				$count++;
 				$success += (int)$result;
@@ -267,7 +271,7 @@ $table->data['form_modules_1'][1] = html_print_select ($types,
 
 $table->data['form_modules_1'][3] = __('Select all modules of this type') . ' ' .
 	html_print_checkbox_extended ("force_type", 'type', '', '', false,
-		'', 'style="margin-right: 40px;"', true);
+		'style="margin-right: 40px;"', true, '');
 
 $modules = array ();
 if ($module_type != '') {
@@ -278,7 +282,7 @@ else {
 }
 
 $names = agents_get_modules (array_keys ($agents),
-	'DISTINCT(nombre)', $filter, false);
+	'DISTINCT(tagente_modulo.nombre)', $filter, false);
 foreach ($names as $name) {
 	$modules[$name['nombre']] = $name['nombre'];
 }
@@ -331,6 +335,7 @@ $table->data['form_modules_2'][2] .= html_print_select (
 		'all' => __('Show all agents')),
 	'agents_selection_mode',
 	'common', false, '', '', true);
+
 $table->data['form_modules_2'][3] = html_print_select (array(), 'agents[]',
 	$agents_select, false, __('None'), 0, true, true, false);
 
@@ -704,6 +709,7 @@ echo '</form>';
 echo '<h3 class="error invisible" id="message"> </h3>';
 //Hack to translate text "none" in PHP to javascript
 echo '<span id ="none_text" style="display: none;">' . __('None') . '</span>';
+echo '<span id ="select_agent_first_text" style="display: none;">' . __('Please, select an agent first') . '</span>';
 ui_require_jquery_file ('pandora.controls');
 
 if ($selection_mode == 'modules') {
@@ -1540,12 +1546,14 @@ function process_manage_edit ($module_name, $agents_select = null, $module_statu
 	$update_tags = get_parameter('id_tag', false);
 
 	if (array_search(0, $agents_select) !== false) {
+
 		//Apply at All agents.
 		$modules = db_get_all_rows_filter ('tagente_modulo',
 			$filter_modules,
 			array ('id_agente_modulo'));
 	}
 	else {
+
 		if ($module_name == "0") {
 			//Any module
 			$modules = db_get_all_rows_filter ('tagente_modulo',
@@ -1559,7 +1567,8 @@ function process_manage_edit ($module_name, $agents_select = null, $module_statu
 				array ('id_agente_modulo'));
 		}
 	}
-	
+
+
 	if ($modules === false)
 		return false;
 
@@ -1575,16 +1584,16 @@ function process_manage_edit ($module_name, $agents_select = null, $module_statu
 		}
 		$modules = $modules_to_delete;
 	}
-	
+
 	foreach ($modules as $module) {
 		
 		$result = modules_update_agent_module(
 			$module['id_agente_modulo'], $values, true, $update_tags);
 
-		if (is_error($result)) {
-			
+
+		if (is_error($result))
 			return false;
-		}
+
 	}
 	
 	return true;

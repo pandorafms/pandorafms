@@ -823,10 +823,26 @@ function ui_format_alert_row ($alert, $agent = true, $url = '', $agent_style = f
 		else
 			return array ("", "", "", "", "", "", "");
 	}
-	
-	// Get agent id
-	$id_agent = modules_get_agentmodule_agent ($alert['id_agent_module']);
-	$agente = db_get_row ('tagente', 'id_agente', $id_agent);
+
+
+	if (defined('METACONSOLE')) {
+
+		$server = db_get_row ('tmetaconsole_setup', 'id', $alert['server_data']['id']);
+
+		if (metaconsole_connect($server) == NOERR) {
+
+			// Get agent data from node
+			$agente = db_get_row ('tagente', 'id_agente', $alert['id_agent']);
+
+			metaconsole_restore_db ();
+		}
+
+	} else {
+		// Get agent id
+		$id_agent = modules_get_agentmodule_agent ($alert['id_agent_module']);
+		$agente = db_get_row ('tagente', 'id_agente', $id_agent);
+	}
+
 	$template = alerts_get_alert_template ($alert['id_alert_template']);
 	$description = io_safe_output($template['name']);
 	
@@ -839,7 +855,8 @@ function ui_format_alert_row ($alert, $agent = true, $url = '', $agent_style = f
 				// Restore the default connection.
 				metaconsole_restore_db();
 				$errors++;
-				break;
+				//break; It does not work in the php7 version remplace for:
+				return false;
 			}
 		}
 
@@ -934,7 +951,7 @@ function ui_format_alert_row ($alert, $agent = true, $url = '', $agent_style = f
 		ui_print_truncate_text (io_safe_output($description), 'description', false, true, true, '[&hellip;]', 'font-size: 7.1pt') .
 		$disabledHtmlEnd;
 	
-	$actions = alerts_get_alert_agent_module_actions ($alert['id'], false);
+	$actions = alerts_get_alert_agent_module_actions ($alert['id'], false, $alert['server_data']['id']);
 	
 	if (!empty($actions)) {
 		$actionText = '<div><ul class="action_list">';
@@ -962,7 +979,7 @@ function ui_format_alert_row ($alert, $agent = true, $url = '', $agent_style = f
 	
 	if ($alert["times_fired"] > 0) {
 		$status = STATUS_ALERT_FIRED;
-		$title = __('Alert fired').' '.$alert["times_fired"].' '.__('times');
+		$title = __('Alert fired').' '.$alert["internal_counter"].' '.__('time(s)');
 	}
 	elseif ($alert["disabled"] > 0) {
 		$status = STATUS_ALERT_DISABLED;
@@ -1577,24 +1594,16 @@ function ui_process_page_head ($string, $bitfield) {
 	////////////////////////////////////////////////////////////////////
 	//End load JQuery
 	////////////////////////////////////////////////////////////////////
-	
-	
-	
-	
-	if ($config['flash_charts']) {
-		//Include the javascript for the js charts library
-		include_once($config["homedir"] . '/include/graphs/functions_flot.php');
-		$output .= include_javascript_dependencies_flot_graph(true);
-	}
-	
-	
+
+	include_once($config["homedir"] . '/include/graphs/functions_flot.php');
+	$output .= include_javascript_dependencies_flot_graph(true);
+
 	$output .= '<!--[if gte IE 6]>
 		<link rel="stylesheet" href="include/styles/ie.css" type="text/css"/>
 		<![endif]-->';
-	
+
 	$output .= $string;
-	
-	
+
 	return $output;
 }
 
@@ -1952,6 +1961,23 @@ function ui_print_help_tip ($text, $return = false, $img = 'images/tip.png', $is
 	echo $output;
 }
 
+function ui_print_help_tip_border ($text, $return = false, $img = 'images/tip_border.png', $is_relative = false) {
+	$output =
+		'<a href="javascript:" class="tip" >' .
+			html_print_image (
+				$img,
+				true,
+				array('title' => $text),
+				false,
+				$is_relative && is_metaconsole()
+			) .
+		'</a>';
+	
+	if ($return)
+		return $output;
+	echo $output;
+}
+
 /**
  * Powerful debug function that also shows a backtrace.
  * 
@@ -2123,19 +2149,25 @@ function ui_format_filesize ($bytes) {
  */
 function ui_get_status_images_path () {
 	global $config;
-	
+
 	$imageset = $config["status_images_set"];
-	
+
 	if (strpos ($imageset, ",") === false)
 		$imageset .= ",40x18";
-	list ($imageset, $sizes) = preg_split ("/\,/", $imageset);
-	
+
+	$array_split = preg_split ("/\,/", $imageset);
+	$imageset = $array_split[0];
+	$sizes    = $array_split[1];
+
 	if (strpos ($sizes, "x") === false)
 		$sizes .= "x18";
-	list ($imagewidth, $imageheight) = preg_split ("/x/", $sizes);
-	
+
+	$array_split_size = preg_split ("/x/", $sizes);
+	$imagewidth  = $array_split_size[0];
+	$imageheight = $array_split_size[1];
+
 	$imagespath = 'images/status_sets/'.$imageset;
-	
+
 	return array ($imagespath);
 }
 
@@ -2152,20 +2184,21 @@ function ui_get_status_images_path () {
  */
 function ui_print_status_image ($type, $title = "", $return = false, $options = false, $path = false) {
 	if ($path === false) {
-		list ($imagepath) = ui_get_status_images_path ();
+		$imagepath_array = ui_get_status_images_path ();
+		$imagepath = $imagepath_array[0];
 	}
 	else {
 		$imagepath = $path;
 	}
-	
+
 	$imagepath .= "/" . $type;
-	
+
 	if ($options === false) {
 		$options = array();
 	}
-	
+
 	$options['title'] = $title;
-	
+
 	return html_print_image ($imagepath, $return, $options, false, false, false, true);
 }
 
@@ -2362,6 +2395,10 @@ function ui_get_full_url ($url = '', $no_proxy = false, $add_name_php_file = fal
 	$port = null;   // null means 'use the starndard port'
 	$proxy = false; //By default Pandora FMS doesn't run across proxy.
 	
+	if(isset ($_SERVER['HTTP_X_FORWARDED_PROTO'])
+		&& $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https') {
+		$_SERVER['HTTPS'] = 'on';
+	}
 	if (isset ($_SERVER['HTTPS'])
 		&& ($_SERVER['HTTPS'] === true
 		|| $_SERVER['HTTPS'] == 'on')) {
@@ -3812,8 +3849,7 @@ function ui_print_module_string_value($value, $id_agente_module,
 			'id_module' => $id_agente_module,
 			'last_data' => $value,
 			'interval' => $current_interval,
-			'module_name' => $module_name,
-			'timestamp' => db_get_value('timestamp', 'tagente_estado', 'id_agente_modulo', $id_agente_module)
+			'module_name' => $module_name
 		));
 		$salida = ui_get_snapshot_image($link, $is_snapshot) . '&nbsp;&nbsp;';
 	} else {
@@ -3931,8 +3967,14 @@ function ui_get_snapshot_link($params, $only_params = false) {
 		"id=" . $params['id_module'] .
 		"&label=" . rawurlencode(urlencode(io_safe_output($params['module_name']))).
 		"&id_node=" . $params['id_node'];
-	if ($params['timestamp'] != 0) $url .= "&timestamp=" . $parms['timestamp'];
-	if ($params['timestamp'] != 0) $url .= "&refr=" . $parms['interval'];
+	
+	if ($params['timestamp'] != 0) {
+		$url .= "&timestamp=" . $params['timestamp'];
+	}
+
+	if ($params['interval'] != 0) {
+		$url .= "&refr=" . $params['interval'];
+	}
 
 	// Second parameter of js winopeng_var
 	$win_handle = dechex(crc32('snapshot_' . $params['id_module']));
@@ -4052,7 +4094,7 @@ function ui_get_logo_to_center_networkmap () {
 	global $config;
 
 	if ((!enterprise_installed()) || empty($config['custom_network_center_logo'])) {
-		return DEFAULT_NETWORKMAP_CENTER_LOGO;
+		return 'images/networkmap/bola_pandora_network_maps.png';
 	}
 
 	return 'enterprise/images/custom_general_logos/' . $config['custom_support_logo'];

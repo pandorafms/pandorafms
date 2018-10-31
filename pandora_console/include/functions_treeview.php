@@ -468,8 +468,6 @@ function treeview_printTable($id_agente, $server_data = array(), $no_head = fals
 	enterprise_include_once ('meta/include/functions_ui_meta.php');
 	include_graphs_dependencies();
 
-	$strict_user = (bool) db_get_value("strict_acl", "tusuario", "id_user", $config['id_user']);
-
 	$is_extra = enterprise_hook('policies_is_agent_extra_policy', array($id_agente));
 
 	if ($is_extra === ENTERPRISE_NOT_HOOK) {
@@ -483,9 +481,13 @@ function treeview_printTable($id_agente, $server_data = array(), $no_head = fals
 			return;
 	}
 
+	// Get the agent info
 	$agent = db_get_row ("tagente", "id_agente", $id_agente);
-	
-	if (! check_acl ($config["id_user"], $agent["id_grupo"], "AR") && ! check_acl ($config["id_user"], $agent["id_grupo"], "AW") && !$is_extra) {
+	if ($agent == false) return;
+
+	// Check all groups
+	$groups = agents_get_all_groups_agent($id_agente, $agent["id_grupo"], is_metaconsole());
+	if (! check_acl_one_of_groups ($config["id_user"], $groups, "AR") && ! check_acl_one_of_groups ($config["id_user"], $groups, "AW") && !$is_extra) {
 		db_pandora_audit("ACL Violation",
 			"Trying to access Agent General Information");
 		require_once ("general/noaccess.php");
@@ -522,7 +524,7 @@ function treeview_printTable($id_agente, $server_data = array(), $no_head = fals
 		$hashdata = $user.$pwd_deserialiced['auth_token'];
 		
 		$hashdata = md5($hashdata);
-		$url = $server_data["server_url"] . "/index.php?" .
+		$url = "//" . $server_data["server_url"] . "/index.php?" .
 				"sec=estado&" .
 				"sec2=operation/agentes/ver_agente&" .
 				"id_agente=" . $agent["id_agente"] . "&" .
@@ -608,7 +610,7 @@ function treeview_printTable($id_agente, $server_data = array(), $no_head = fals
 		$go_to_agent = '<div style="text-align: right;">';
 		
 		if($agent["id_os"] != 100){
-			$go_to_agent .= '<a target=_blank href="' . $console_url . 'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.$url_hash.'">';
+			$go_to_agent .= '<a target=_blank href="' . "//" . $console_url . 'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.$url_hash.'">';
 			$go_to_agent .= html_print_submit_button (__('Go to agent edition'), 'upd_button', false, 'class="sub config"', true);
 		}
 		else{
@@ -745,16 +747,7 @@ function treeview_printTable($id_agente, $server_data = array(), $no_head = fals
 
 		foreach ($network_interfaces as $interface_name => $interface) {
 			if (!empty($interface['traffic'])) {
-				$permission = false;
-
-				if ($strict_user) {
-					if (tags_check_acl_by_module($interface['traffic']['in'], $config['id_user'], 'RR') === true
-							&& tags_check_acl_by_module($interface['traffic']['out'], $config['id_user'], 'RR') === true)
-						$permission = true;
-				}
-				else {
-					$permission = check_acl($config['id_user'], $agent["id_grupo"], "RR");
-				}
+				$permission = check_acl($config['id_user'], $agent["id_grupo"], "RR");
 
 				if ($permission) {
 					$params = array(

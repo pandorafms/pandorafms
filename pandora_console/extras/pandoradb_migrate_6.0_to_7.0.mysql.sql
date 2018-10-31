@@ -341,13 +341,18 @@ CREATE TABLE IF NOT EXISTS `ttrap_custom_values` (
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tmetaconsole_setup` (
 	`id` int(10) NOT NULL auto_increment primary key,
-	`server_name` text default '',
-	`server_url` text default '',
-	`dbuser` text default '',
-	`dbpass` text default '',
-	`dbhost` text default '',
-	`dbport` text default '',
-	`dbname` text default '',
+	`server_name` text,
+	`server_url` text,
+	`dbuser` text,
+	`dbpass` text,
+	`dbhost` text,
+	`dbport` text,
+	`dbname` text,
+	`meta_dbuser` text,
+	`meta_dbpass` text,
+	`meta_dbhost` text,
+	`meta_dbport` text,
+	`meta_dbname` text,
 	`auth_token` text default '',
 	`id_group` int(10) unsigned NOT NULL default 0,
 	`api_password` text NOT NULL,
@@ -1175,13 +1180,13 @@ ALTER TABLE titem MODIFY `source_data` int(10) unsigned;
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('big_operation_step_datos_purge', '100');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('small_operation_step_datos_purge', '1000');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('days_autodisable_deletion', '30');
-INSERT INTO `tconfig` (`token`, `value`) VALUES ('MR', 19);
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('MR', 22);
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('custom_docs_logo', 'default_docs.png');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('custom_support_logo', 'default_support.png');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('custom_logo_white_bg_preview', 'pandora_logo_head_white_bg.png');
 UPDATE tconfig SET value = 'https://licensing.artica.es/pandoraupdate7/server.php' WHERE token='url_update_manager';
 DELETE FROM `tconfig` WHERE `token` = 'current_package_enterprise';
-INSERT INTO `tconfig` (`token`, `value`) VALUES ('current_package_enterprise', '726');
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('current_package_enterprise', '729');
 
 -- ---------------------------------------------------------------------
 -- Table `tconfig_os`
@@ -1213,6 +1218,9 @@ UPDATE `tlink` SET `link` = 'https://github.com/pandorafms/pandorafms/issues' WH
 -- ---------------------------------------------------------------------
 ALTER TABLE tevent_filter ADD COLUMN `date_from` date DEFAULT NULL;
 ALTER TABLE tevent_filter ADD COLUMN `date_to` date DEFAULT NULL;
+ALTER TABLE tevent_filter ADD COLUMN `user_comment` text NOT NULL;
+ALTER TABLE tevent_filter ADD COLUMN `source` tinytext NOT NULL;
+ALTER TABLE tevent_filter ADD COLUMN `id_extra` tinytext NOT NULL;
 -- ---------------------------------------------------------------------
 -- Table `tusuario`
 -- ---------------------------------------------------------------------
@@ -1222,13 +1230,14 @@ ALTER TABLE tusuario ADD CONSTRAINT `fk_id_filter` FOREIGN KEY (`id_filter`) REF
 ALTER TABLE tusuario ADD COLUMN `session_time` int(10) signed NOT NULL default '0';
 alter table tusuario add autorefresh_white_list text not null default '';
 ALTER TABLE tusuario ADD COLUMN `time_autorefresh` int(5) unsigned NOT NULL default '30';
+ALTER TABLE `tusuario` DROP COLUMN `flash_chart`;
 
 -- ---------------------------------------------------------------------
 -- Table `tagente_modulo`
 -- ---------------------------------------------------------------------
 ALTER TABLE tagente_modulo ADD COLUMN `dynamic_next` bigint(20) NOT NULL default '0';
 ALTER TABLE tagente_modulo ADD COLUMN `dynamic_two_tailed` tinyint(1) unsigned default '0';
-ALTER TABLE tagente_modulo ADD COLUMN `parent_module_id` int(10) unsigned NOT NULL;
+ALTER TABLE tagente_modulo ADD COLUMN `parent_module_id` int(10) unsigned NOT NULL default 0;
 ALTER TABLE `tagente_modulo` ADD COLUMN `cps` int NOT NULL default 0;
 
 -- ---------------------------------------------------------------------
@@ -1270,12 +1279,15 @@ ALTER TABLE `tservice` ADD COLUMN `quiet` tinyint(1) NOT NULL default 0;
 ALTER TABLE `tservice` ADD COLUMN `cps` int NOT NULL default 0;
 ALTER TABLE `tservice` ADD COLUMN `cascade_protection` tinyint(1) NOT NULL default 0;
 ALTER TABLE `tservice` ADD COLUMN `evaluate_sla` int(1) NOT NULL default 0;
+ALTER TABLE `tservice` ADD COLUMN `is_favourite` tinyint(1) NOT NULL default 0;
+UPDATE tservice SET `is_favourite` = 1 WHERE `name` REGEXP '^[_|.|\[|\(]';
 
 -- ---------------------------------------------------------------------
 -- Table `tlayout`
 -- ---------------------------------------------------------------------
 ALTER TABLE tlayout ADD `background_color` varchar(50) NOT NULL default '#FFF';
 ALTER TABLE tlayout ADD `is_favourite` int(1) NOT NULL DEFAULT 0;
+ALTER TABLE tlayout MODIFY `name` varchar(600) NOT NULL;
 
 UPDATE tlayout SET is_favourite = 1 WHERE name REGEXP '^&#40;' OR name REGEXP '^\\[';
 
@@ -1291,6 +1303,7 @@ ALTER TABLE tlayout_data ADD COLUMN `show_on_top` tinyint(1) NOT NULL default '0
 ALTER TABLE tlayout_data ADD COLUMN `clock_animation` varchar(60) NOT NULL default "analogic_1";
 ALTER TABLE tlayout_data ADD COLUMN `time_format` varchar(60) NOT NULL default "time";
 ALTER TABLE tlayout_data ADD COLUMN `timezone` varchar(60) NOT NULL default "Europe/Madrid";
+ALTER TABLE tlayout_data ADD COLUMN `show_last_value` tinyint(1) UNSIGNED NULL default '0';
 
 -- ---------------------------------------------------------------------
 -- Table `tagent_custom_fields`
@@ -1728,6 +1741,8 @@ CREATE TABLE IF NOT EXISTS `tlayout_template` (
 	PRIMARY KEY(`id`)
 )  ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
+ALTER TABLE tlayout_template MODIFY `name` varchar(600) NOT NULL;
+
 -- ---------------------------------------------------------------------
 -- Table `tlayout_template_data`
 -- ---------------------------------------------------------------------
@@ -1765,3 +1780,34 @@ CREATE TABLE IF NOT EXISTS `tlayout_template_data` (
 	PRIMARY KEY(`id`),
 	FOREIGN KEY (`id_layout_template`) REFERENCES tlayout_template(`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
+
+ALTER TABLE tlayout_template_data ADD COLUMN `show_last_value` tinyint(1) UNSIGNED NULL default '0';
+-- ---------------------------------------------------------------------
+-- Table `tlog_graph_models`
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tlog_graph_models` (
+	`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+	`title` TEXT NOT NULL,
+	`regexp` TEXT NOT NULL,
+	`fields` TEXT NOT NULL,
+	`average` tinyint(1) NOT NULL default '0',
+	PRIMARY KEY(`id`)
+) ENGINE = InnoDB DEFAULT CHARSET=utf8;
+
+INSERT INTO tlog_graph_models VALUES (1, 'Apache&#x20;log&#x20;model',
+	'^.*?&#92;s+.*&quot;.*?&#92;s&#40;&#92;/.*?&#41;&#92;?.*1.1&quot;&#92;s+&#40;.*?&#41;&#92;s+&#40;.*?&#41;&#92;s+',
+	'pagina,&#x20;html_err_code,&#x20;_tiempo_', 1);
+	
+-- -----------------------------------------------------
+-- Add column in table `treport`
+-- -----------------------------------------------------
+
+ALTER TABLE `treport` ADD COLUMN `hidden` tinyint(1) NOT NULL DEFAULT 0;
+
+ALTER TABLE `trecon_task` ADD COLUMN `snmp_version` varchar(5) NOT NULL default '1';
+ALTER TABLE `trecon_task` ADD COLUMN `snmp_auth_user` varchar(255) NOT NULL default '';
+ALTER TABLE `trecon_task` ADD COLUMN `snmp_auth_pass` varchar(255) NOT NULL default '';
+ALTER TABLE `trecon_task` ADD COLUMN `snmp_auth_method` varchar(25) NOT NULL default '';
+ALTER TABLE `trecon_task` ADD COLUMN `snmp_privacy_method` varchar(25) NOT NULL default '';
+ALTER TABLE `trecon_task` ADD COLUMN `snmp_privacy_pass` varchar(255) NOT NULL default '';
+ALTER TABLE `trecon_task` ADD COLUMN `snmp_security_level` varchar(25) NOT NULL default '';

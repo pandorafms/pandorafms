@@ -102,16 +102,8 @@ if ($groups_user === false) {
 $groups_id = implode(',', array_keys($groups_user));
 
 $form_filter .= "<tr>";
-switch ($config["dbtype"]) {
-	case "mysql":
-	case "postgresql":
-		$temp = db_get_all_rows_sql("SELECT id, name FROM talert_actions WHERE id_group IN ($groups_id);");
-		break;
-	case "oracle":
-		$temp = db_get_all_rows_sql("SELECT id, name FROM talert_actions WHERE id_group IN ($groups_id)");
-		break;
-}
 
+$temp = db_get_all_rows_sql("SELECT id, name FROM talert_actions WHERE id_group IN ($groups_id);");
 $arrayActions = array();
 if (is_array($temp)) {
 	foreach ($temp as $actionElement) {
@@ -186,23 +178,10 @@ if ($searchFlag) {
 				field3_recovery LIKE '%" . trim($fieldContent) . "%')";
 	if (strlen(trim($moduleName)) > 0)
 		$where .= " AND id_agent_module IN (SELECT id_agente_modulo FROM tagente_modulo WHERE nombre LIKE '%" . trim($moduleName) . "%')";
-	//if ($agentID != -1)
-		//$where .= " AND id_agent_module IN (SELECT id_agente_modulo FROM tagente_modulo WHERE id_agente = " . $agentID . ")";
 	if (strlen(trim($agentName)) > 0) {
-		
-		switch ($config["dbtype"]) {
-			case "mysql":
-			case "postgresql":
-				$where .= " AND id_agent_module IN (SELECT t2.id_agente_modulo
-					FROM tagente t1 INNER JOIN tagente_modulo t2 ON t1.id_agente = t2.id_agente
-					WHERE t1.alias LIKE '" . trim($agentName) . "')";
-				break;
-			case "oracle":
-				$where .= " AND id_agent_module IN (SELECT t2.id_agente_modulo
-					FROM tagente t1 INNER JOIN tagente_modulo t2 ON t1.id_agente = t2.id_agente
-					WHERE t1.alias LIKE '" . trim($agentName) . "')";
-				break;
-		}
+		$where .= " AND id_agent_module IN (SELECT t2.id_agente_modulo
+			FROM tagente t1 INNER JOIN tagente_modulo t2 ON t1.id_agente = t2.id_agente
+			WHERE t1.alias LIKE '" . trim($agentName) . "')";
 	}
 	if ($actionID != -1 && $actionID != '')
 		$where .= " AND talert_template_modules.id IN (SELECT id_alert_template_module FROM talert_template_module_actions WHERE id_alert_action = " . $actionID . ")";
@@ -212,17 +191,7 @@ if ($searchFlag) {
 		$where .= " AND talert_template_modules.standby = " . $standby;
 }
 
-switch ($config["dbtype"]) {
-	case "mysql":
-	case "postgresql":
-		$id_agents = array_keys ($agents);
-		break;
-	case "oracle":
-		$id_agents = false;
-		break;
-}
-
-
+$id_agents = array_keys ($agents);
 
 $total = agents_get_alerts_simple ($id_agents, false,
 	false, $where, false, false, false, true);
@@ -645,7 +614,7 @@ foreach ($simple_alerts as $alert) {
 	
 	if ($alert["times_fired"] > 0) {
 		$status = STATUS_ALERT_FIRED;
-		$title = __('Alert fired').' '.$alert["times_fired"].' '.__('times');
+		$title = __('Alert fired').' '.$alert["internal_counter"].' '.__('time(s)');
 	}
 	elseif ($alert["disabled"] > 0) {
 		$status = STATUS_ALERT_DISABLED;
@@ -704,19 +673,32 @@ foreach ($simple_alerts as $alert) {
 	// To manage alert is necessary LW permissions in the agent group 
 	if(check_acl_one_of_groups ($config['id_user'], $all_groups, "LW")) {
 		$data[4] .= '&nbsp;&nbsp;<form class="delete_alert_form" action="' . $url . '" method="post" style="display: inline;">';
-		if ($alert['disabled']) {
-			$data[4] .= html_print_image('images/add.disabled.png',
-			true, array('title' => __("Add action")));
-		}
-		else {
-			$data[4] .= '<a href="javascript:show_add_action(\'' . $alert['id'] . '\');">';
-			$data[4] .= html_print_image('images/add.png', true, array('title' => __("Add action")));
-			$data[4] .= '</a>';
+		$is_cluster = (bool)get_parameter('id_cluster');
+		if (!$is_cluster) {
+			if ($alert['disabled']) {
+				$data[4] .= html_print_image('images/add.disabled.png',
+					true, array('title' => __("Add action")));
+			}
+			else {
+				$data[4] .= '<a href="javascript:show_add_action(\'' . $alert['id'] . '\');">';
+				$data[4] .= html_print_image('images/add.png', true, array('title' => __("Add action")));
+				$data[4] .= '</a>';
+			}
 		}
 		$data[4] .= html_print_input_image ('delete', 'images/cross.png', 1, '', true, array('title' => __('Delete')));
 		$data[4] .= html_print_input_hidden ('delete_alert', 1, true);
 		$data[4] .= html_print_input_hidden ('id_alert', $alert['id'], true);
 		$data[4] .= '</form>';
+
+		if ($is_cluster) {
+			$data[4] .= '<form class="view_alert_form" method="post" style="display: inline;">';
+
+			$data[4] .= html_print_input_image ('update', 'images/builder.png', 1, '', true, array('title' => __('Update')));
+			$data[4] .= html_print_input_hidden ('upd_alert', 1, true);
+			$data[4] .= html_print_input_hidden ('id_alert', $alert['id'], true);
+
+			$data[4] .= '</form>';
+		}
 	}
 	
 	if(check_acl_one_of_groups ($config['id_user'], $all_groups, "LM")) {

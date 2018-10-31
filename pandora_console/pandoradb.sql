@@ -259,7 +259,7 @@ CREATE TABLE IF NOT EXISTS `tagente_modulo` (
 	`prediction_sample_window` int(10) default 0,
 	`prediction_samples` int(4) default 0,
 	`prediction_threshold` int(4) default 0,
-	`parent_module_id` int(10) unsigned NOT NULL,
+	`parent_module_id` int(10) unsigned NOT NULL default 0,
 	`cps` int NOT NULL default 0,
 	PRIMARY KEY  (`id_agente_modulo`),
 	KEY `main_idx` (`id_agente_modulo`,`id_agente`),
@@ -775,6 +775,13 @@ CREATE TABLE IF NOT EXISTS `trecon_task` (
 	`alias_as_name` tinyint(2) NOT NULL default '0',
 	`snmp_enabled` tinyint(1) unsigned default '0',
 	`vlan_enabled` tinyint(1) unsigned default '0',
+	`snmp_version` varchar(5) NOT NULL default '1',
+	`snmp_auth_user` varchar(255) NOT NULL default '',
+	`snmp_auth_pass` varchar(255) NOT NULL default '',
+	`snmp_auth_method` varchar(25) NOT NULL default '',
+	`snmp_privacy_method` varchar(25) NOT NULL default '',
+	`snmp_privacy_pass` varchar(255) NOT NULL default '',
+	`snmp_security_level` varchar(25) NOT NULL default '',
 	PRIMARY KEY  (`id_rt`),
 	KEY `recon_task_daemon` (`id_recon_server`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
@@ -1079,6 +1086,9 @@ CREATE TABLE IF NOT EXISTS `tevent_filter` (
 	`filter_only_alert` int(10) NOT NULL default -1,
 	`date_from` date default NULL,
 	`date_to` date default NULL,
+	`source` tinytext NOT NULL,
+	`id_extra` tinytext NOT NULL,
+	`user_comment` text NOT NULL,
 	PRIMARY KEY  (`id_filter`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -1101,7 +1111,6 @@ CREATE TABLE IF NOT EXISTS `tusuario` (
 	`language` varchar(10) default NULL,
 	`timezone` varchar(50) default '',
 	`block_size` int(4) NOT NULL DEFAULT 20,
-	`flash_chart` int(4) NOT NULL DEFAULT 1,
 	`id_skin` int(10) unsigned NOT NULL DEFAULT 0,
 	`disabled` int(4) NOT NULL DEFAULT 0,
 	`shortcut` tinyint(1) DEFAULT 0,
@@ -1239,6 +1248,7 @@ CREATE TABLE IF NOT EXISTS `treport` (
 	`id_group_edit` mediumint(8) unsigned NULL DEFAULT 0,
 	`metaconsole` tinyint(1) DEFAULT 0,
 	`non_interactive` tinyint(1) UNSIGNED NOT NULL default 0,
+	`hidden` tinyint(1) DEFAULT 0,
 	PRIMARY KEY(`id_report`)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
@@ -1340,7 +1350,7 @@ CREATE TABLE IF NOT EXISTS `treport_custom_sql` (
 -- ---------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tlayout` (
 	`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
-	`name` varchar(50)  NOT NULL,
+	`name` varchar(600)  NOT NULL,
 	`id_group` INTEGER UNSIGNED NOT NULL,
 	`background` varchar(200)  NOT NULL,
 	`height` INTEGER UNSIGNED NOT NULL default 0,
@@ -1378,12 +1388,17 @@ CREATE TABLE IF NOT EXISTS `tlayout_data` (
 	`border_color` varchar(200) DEFAULT "",
 	`fill_color` varchar(200) DEFAULT "",
 	`show_statistics` tinyint(2) NOT NULL default '0',
+	`linked_layout_node_id` INT(10) NOT NULL default 0,
+	`linked_layout_status_type` ENUM ('default', 'weight', 'service') DEFAULT 'default',
 	`id_layout_linked_weight` int(10) NOT NULL default '0',
+	`linked_layout_status_as_service_warning` FLOAT(20, 3) NOT NULL default 0,
+	`linked_layout_status_as_service_critical` FLOAT(20, 3) NOT NULL default 0,
 	`element_group` int(10) NOT NULL default '0',
 	`show_on_top` tinyint(1) NOT NULL default '0',
 	`clock_animation` varchar(60) NOT NULL default "analogic_1",
 	`time_format` varchar(60) NOT NULL default "time",
 	`timezone` varchar(60) NOT NULL default "Europe/Madrid",
+	`show_last_value` tinyint(1) UNSIGNED NULL default '0',
 	
 	PRIMARY KEY(`id`)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
@@ -2357,6 +2372,7 @@ CREATE TABLE IF NOT EXISTS `tpolicy_modules_inventory` (
 	`username` varchar(100) default '',
 	`password` varchar(100) default '',
 	`pending_delete` tinyint(1) default '0',
+	`custom_fields` MEDIUMBLOB NOT NULL,
 	PRIMARY KEY  (`id`),
 	FOREIGN KEY (`id_policy`) REFERENCES tpolicies(`id`)
 		ON UPDATE CASCADE ON DELETE CASCADE,
@@ -2395,14 +2411,19 @@ CREATE TABLE IF NOT EXISTS `ttrap_custom_values` (
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tmetaconsole_setup` (
 	`id` int(10) NOT NULL auto_increment primary key,
-	`server_name` text default '',
-	`server_url` text default '',
-	`dbuser` text default '',
-	`dbpass` text default '',
-	`dbhost` text default '',
-	`dbport` text default '',
-	`dbname` text default '',
-	`auth_token` text default '',
+	`server_name` text,
+	`server_url` text,
+	`dbuser` text,
+	`dbpass` text,
+	`dbhost` text,
+	`dbport` text,
+	`dbname` text,
+	`meta_dbuser` text,
+	`meta_dbpass` text,
+	`meta_dbhost` text,
+	`meta_dbport` text,
+	`meta_dbname` text,
+	`auth_token` text,
 	`id_group` int(10) unsigned NOT NULL default 0,
 	`api_password` text NOT NULL,
 	`disabled` tinyint(1) unsigned NOT NULL default '0',
@@ -2454,6 +2475,7 @@ CREATE TABLE IF NOT EXISTS `tservice` (
 	`cps` int NOT NULL default 0,
 	`cascade_protection` tinyint(1) NOT NULL default 0,
 	`evaluate_sla` int(1) NOT NULL default 0,
+	`is_favourite` tinyint(1) NOT NULL default 0,
 	PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB 
 COMMENT = 'Table to define services to monitor' 
@@ -3271,7 +3293,7 @@ CREATE TABLE IF NOT EXISTS `tautoconfig_actions` (
 -- ---------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tlayout_template` (
 	`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
-	`name` varchar(50)  NOT NULL,
+	`name` varchar(600)  NOT NULL,
 	`id_group` INTEGER UNSIGNED NOT NULL,
 	`background` varchar(200)  NOT NULL,
 	`height` INTEGER UNSIGNED NOT NULL default 0,
@@ -3309,12 +3331,29 @@ CREATE TABLE IF NOT EXISTS `tlayout_template_data` (
 	`border_color` varchar(200) DEFAULT "",
 	`fill_color` varchar(200) DEFAULT "",
 	`show_statistics` tinyint(2) NOT NULL default '0',
+	`linked_layout_node_id` INT(10) NOT NULL default 0,
+	`linked_layout_status_type` ENUM ('default', 'weight', 'service') DEFAULT 'default',
 	`id_layout_linked_weight` int(10) NOT NULL default '0',
+	`linked_layout_status_as_service_warning` FLOAT(20, 3) NOT NULL default 0,
+	`linked_layout_status_as_service_critical` FLOAT(20, 3) NOT NULL default 0,
 	`element_group` int(10) NOT NULL default '0',
 	`show_on_top` tinyint(1) NOT NULL default '0',
 	`clock_animation` varchar(60) NOT NULL default "analogic_1",
 	`time_format` varchar(60) NOT NULL default "time",
 	`timezone` varchar(60) NOT NULL default "Europe/Madrid",
+	`show_last_value` tinyint(1) UNSIGNED NULL default '0',
 	PRIMARY KEY(`id`),
 	FOREIGN KEY (`id_layout_template`) REFERENCES tlayout_template(`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE = InnoDB DEFAULT CHARSET=utf8;
+
+-- ---------------------------------------------------------------------
+-- Table `tlog_graph_models`
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tlog_graph_models` (
+	`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+	`title` TEXT NOT NULL,
+	`regexp` TEXT NOT NULL,
+	`fields` TEXT NOT NULL,
+	`average` tinyint(1) NOT NULL default '0',
+	PRIMARY KEY(`id`)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;

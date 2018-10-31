@@ -28,13 +28,14 @@ require_once($config['homedir'] . '/include/functions_users.php');
  *
  * @param int $id_agent The agent id.
  * @param boolean $show_disabled Show the agent found althought it is disabled. By default false.
+ * @param boolean $force_meta 
  *
  * @return boolean The result to check if the agent is in the DB.
  */
-function agents_check_agent_exists($id_agent, $show_disabled = true) {
+function agents_check_agent_exists($id_agent, $show_disabled = true, $force_meta = false) {
 	$agent = db_get_value_filter(
 		'id_agente',
-		'tagente',
+		$force_meta ? 'tmetaconsole_agent' : 'tagente',
 		array('id_agente' => $id_agent, 'disabled' => !$show_disabled)
 	);
 
@@ -94,7 +95,8 @@ function agents_create_agent ($name, $id_group, $interval, $ip_address, $values 
 	
 	if (! is_array ($values))
 		$values = array ();
-	$values['nombre'] = $name;
+	$values['alias'] = $name;
+	$values['nombre'] = hash("sha256",$name . "|" .$ip_address ."|". time() ."|". sprintf("%04d", rand(0,10000)));
 	$values['id_grupo'] = $id_group;
 	$values['intervalo'] = $interval;
 	
@@ -336,32 +338,39 @@ function agents_get_agents ($filter = false, $fields = false,
 	if (isset($filter['status'])) {
 		switch ($filter['status']) {
 			case AGENT_STATUS_NORMAL:
-				$status_sql =
-					"normal_count = total_count 
-						AND notinit_count <> total_count";
+				$status_sql = "(
+					critical_count = 0
+					AND warning_count = 0
+					AND unknown_count = 0 
+					AND normal_count > 0)";
 				break;
 			case AGENT_STATUS_WARNING:
-				$status_sql =
-					"critical_count = 0 AND warning_count > 0";
+				$status_sql = "(
+					critical_count = 0 
+					AND warning_count > 0
+					AND total_count > 0)";
 				break;
 			case AGENT_STATUS_CRITICAL:
-				$status_sql =
-					"critical_count > 0";
+				$status_sql = "critical_count > 0";
 				break;
 			case AGENT_STATUS_UNKNOWN:
-				$status_sql =
-					"critical_count = 0 AND warning_count = 0
-						AND unknown_count > 0";
+				$status_sql = "(
+					critical_count = 0 
+					AND warning_count = 0 
+					AND unknown_count > 0)";
 				break;
 			case AGENT_STATUS_NOT_NORMAL:
-				$status_sql =
-					"(
-						normal_count <> total_count
-						AND
-						(normal_count + notinit_count) <> total_count)";
+				$status_sql = "(
+					critical_count > 0
+					OR warning_count > 0
+					OR unknown_count > 0
+					OR total_count = 0
+					OR total_count = notinit_count)";
 				break;
 			case AGENT_STATUS_NOT_INIT:
-				$status_sql = "notinit_count = total_count";
+				$status_sql = "(
+					total_count = 0
+					OR total_count = notinit_count)";
 				break;
 		}
 		unset($filter['status']);
@@ -592,7 +601,6 @@ function agents_process_manage_config ($source_id_agent, $destiny_id_agents, $co
 			$module = modules_get_agentmodule ($id_agent_module);
 			if ($module === false)
 				return false;
-			
 			$modules = agents_get_modules ($id_destiny_agent, false,
 				array ('nombre' => $module['nombre'], 'disabled' => false));
 			
@@ -818,8 +826,9 @@ function agents_get_group_agents (
 	$filter = array();
 	
 	if (!$noACL) {
-		$id_group = groups_safe_acl($config["id_user"], $id_group, "AR");
-		
+		$id_group = $id_group == 0
+			? array_keys(users_get_groups(false, "AR", false))
+			: groups_safe_acl($config["id_user"], $id_group, "AR");
 		if (empty ($id_group)) {
 			//An empty array means the user doesn't have access
 			return array ();
@@ -915,23 +924,39 @@ function agents_get_group_agents (
 		if (isset($search['status'])) {
 			switch ($search['status']) {
 				case AGENT_STATUS_NORMAL:
-					$filter[] = "normal_count = total_count";
+					$filter[] = "(
+						critical_count = 0
+						AND warning_count = 0
+						AND unknown_count = 0 
+						AND normal_count > 0)";
 					break;
 				case AGENT_STATUS_WARNING:
-					$filter[] = "(critical_count = 0 AND warning_count > 0)";
+					$filter[] = "(
+						critical_count = 0 
+						AND warning_count > 0
+						AND total_count > 0)";
 					break;
 				case AGENT_STATUS_CRITICAL:
 					$filter[] = "critical_count > 0";
 					break;
 				case AGENT_STATUS_UNKNOWN:
-					$filter[] = "(critical_count = 0 AND warning_count = 0 AND unknown_count > 0)";
+					$filter[] = "(
+						critical_count = 0 
+						AND warning_count = 0 
+						AND unknown_count > 0)";
 					break;
 				case AGENT_STATUS_NOT_NORMAL:
-					$filter[] = "normal_count <> total_count
-							AND critical_count = 0 AND warning_count = 0";
+					$filter[] = "(
+						critical_count > 0
+						OR warning_count > 0
+						OR unknown_count > 0
+						OR total_count = 0
+						OR total_count = notinit_count)";
 					break;
 				case AGENT_STATUS_NOT_INIT:
-					$filter[] = "notinit_count = total_count";
+					$filter[] = "(
+						total_count = 0
+						OR total_count = notinit_count)";
 					break;
 			}
 			unset($search['status']);
@@ -966,12 +991,12 @@ function agents_get_group_agents (
 	$filter['order'] = 'alias';
 	
 	if (is_metaconsole()) {
-		$table_name = 'tmetaconsole_agent LEFT JOIN tmetaconsole_agent_secondary_group ON ta.id_agente = tasg.id_agent';
+		$table_name = 'tmetaconsole_agent ta LEFT JOIN tmetaconsole_agent_secondary_group tasg ON ta.id_agente = tasg.id_agent';
 
 		$fields = array(
-				'id_tagente AS id_agente',
+				'ta.id_tagente AS id_agente',
 				'alias',
-				'id_tmetaconsole_setup AS id_server'
+				'ta.id_tmetaconsole_setup AS id_server'
 			);
 	}
 	else {
@@ -1046,7 +1071,7 @@ function agents_get_group_agents (
  */
 function agents_get_modules ($id_agent = null, $details = false,
 	$filter = false, $indexed = true, $get_not_init_modules = true,
-	$noACLs = false) {
+	$force_tags = false) {
 	
 	global $config;
 	
@@ -1054,7 +1079,8 @@ function agents_get_modules ($id_agent = null, $details = false,
 	if (empty($userGroups)) {
 		return array();
 	}
-	$id_userGroups = $id_groups = array_keys($userGroups);
+	$id_groups = array_keys($userGroups);
+	$id_groups_sql = implode(',', $id_groups);
 	
 	// =================================================================
 	// When there is not a agent id. Get a agents of groups that the
@@ -1084,49 +1110,25 @@ function agents_get_modules ($id_agent = null, $details = false,
 	if (!is_array($id_agent)) {
 		$id_agent = safe_int ($id_agent, 1);
 	}
-	
-	$where = "(
-			1 = (
-				SELECT is_admin
-				FROM tusuario
-				WHERE id_user = '" . $config['id_user'] . "'
-			)
-			OR
-			tagente_modulo.id_agente IN (
-				SELECT id_agente
-				FROM tagente tas LEFT JOIN tagent_secondary_group tasgs
-					ON tas.id_agente = tasgs.id_agent
-				WHERE (tas.id_grupo IN (
-						" . implode(',', $id_userGroups) . "
-					) OR
-					tasgs.id_group IN (
-						" . implode(',', $id_userGroups) . "
-					)
-				)
-			)
-			OR 0 IN (
-				SELECT id_grupo
-				FROM tusuario_perfil
-				WHERE id_usuario = '" . $config['id_user'] . "'
-					AND id_perfil IN (
-						SELECT id_perfil
-						FROM tperfil WHERE agent_view = 1
-					)
-				)
+
+	$where = "1 = 1 ";
+	// Groups ACL only when user is not empty
+	if (!users_can_manage_group_all("AR")) {
+		$where = "(
+			tagente.id_grupo IN ($id_groups_sql) OR tasg.id_group IN ($id_groups_sql)
 		)";
-	
-	if (! empty ($id_agent)) {
-		$where .= sprintf (' AND id_agente IN (%s)', implode (",", (array) $id_agent));
 	}
-	
-	$where .= ' AND delete_pending = 0 ';
-	
+
+	if (! empty ($id_agent)) {
+		$id_agent_sql = implode (",", (array)$id_agent);
+		$where .= " AND tagente.id_agente IN ($id_agent_sql) ";
+	}
+
 	if (! empty ($filter)) {
 		$where .= ' AND ';
 		if (is_array ($filter)) {
 			$fields = array ();
-			
-			
+
 			//----------------------------------------------------------
 			// Code for filters as array of arrays
 			//  for example:
@@ -1151,11 +1153,10 @@ function agents_get_modules ($id_agent = null, $details = false,
 				}
 			}
 			//----------------------------------------------------------
-			
 			foreach ($list_filter as $item) {
 				$field = $item['field'];
 				$value = $item['value'];
-				
+
 				//Check <> operator
 				$operatorDistin = false;
 				if (strlen($value) > 2) {
@@ -1163,119 +1164,91 @@ function agents_get_modules ($id_agent = null, $details = false,
 						$operatorDistin = true;
 					}
 				}
-				
+
 				if ($value[0] == '%') {
-					switch ($config['dbtype']) {
-						case "mysql":
-						case "postgresql":
-							array_push ($fields,
-								$field . ' LIKE "' . $value . '"');
-							break;
-						case "oracle":
-							array_push ($fields,
-								$field . ' LIKE \'' . $value . '\'');
-							break;
-					}
+					array_push ($fields,
+						$field . ' LIKE "' . $value . '"');
 				}
 				else if ($operatorDistin) {
 					array_push($fields, $field.' <> ' . substr($value, 2));
 				}
 				else if (substr($value, -1) == '%') {
-					switch ($config['dbtype']) {
-						case "mysql":
-						case "postgresql":
-							array_push ($fields, $field.' LIKE "'.$value.'"');
-							break;
-						case "oracle":
-							array_push ($fields, $field.' LIKE \''.$value.'\'');
-							break;
-					}
+					array_push ($fields, $field.' LIKE "'.$value.'"');
 				}
-				//else if (strstr($value, '666=666', true) == '') {
 				else if (strncmp($value, '666=666', 7) == 0) {
-					switch ($config['dbtype']) {
-						case "mysql":
-						case "postgresql":
-							array_push ($fields, ' '.$value);
-							break;
-						case "oracle":
-							array_push ($fields, ' '.$value);
-							break;
-					}
+					array_push ($fields, ' '.$value);
 				}
 				else if (preg_match('/\bin\b/i',$field)) {
 					array_push ($fields, $field.' '.$value);
 				}
 				else {
-					switch ($config["dbtype"]) {
-						case "mysql":
-							array_push ($fields, $field.' = "'.$value.'"');
-							break;
-						case "postgresql":
-							array_push ($fields, $field.' = \''.$value.'\'');
-							break;
-						case "oracle":
-							if (is_int ($value) || is_float ($value) || is_double ($value))
-								array_push ($fields, $field.' = '.$value.'');
-							else
-								array_push ($fields, $field.' = \''.$value.'\'');
-							break;
-					}
+					array_push ($fields, 'tagente_modulo.' . $field.' = "'.$value.'"');
 				}
 			}
-			$where .= implode (' AND ', $fields); 
+			$where .= implode (' AND ', $fields);
 		}
 		else {
 			$where .= $filter;
 		}
 	}
-	
+
+	$stored_details = $details;
 	if (empty ($details)) {
-		$details = "nombre";
+		$details = "tagente_modulo.nombre";
+		$stored_details = "nombre";
 	}
-	else { 
+	else {
+		$details = (array)$details;
 		$details = io_safe_input ($details);
+		$details = array_map(function ($a) {
+				return preg_match('/tagente_modulo./i', $a) ? $a : 'tagente_modulo.' . $a;
+			},$details
+		);
 	}
-	
-	//$where .= " AND id_policy_module = 0 ";
-	
-	if (tags_has_user_acl_tags($config['id_user'])){
+
+	$sql_tags_join = "";
+	if (tags_has_user_acl_tags($config['id_user']) || $force_tags){
 		$where_tags = tags_get_acl_tags($config['id_user'], $id_groups, 'AR',
 			'module_condition', 'AND', 'tagente_modulo', false, array(),
-			true); 
-		
+			true);
 		$where .= "\n\n" . $where_tags;
+		$sql_tags_join = "INNER JOIN ttag_module
+			ON ttag_module.id_agente_modulo = tagente_modulo.id_agente_modulo";
 	}
-	
+
 	$sql = sprintf ('SELECT %s%s
 					FROM tagente_modulo
-					WHERE
-						%s
-					ORDER BY nombre',
-					($details != '*' && $indexed) ? 'id_agente_modulo,' : '',
+					%s
+					INNER JOIN tagente
+						ON tagente.id_agente = tagente_modulo.id_agente
+					LEFT JOIN tagent_secondary_group tasg
+						ON tagente.id_agente = tasg.id_agent
+					WHERE tagente_modulo.delete_pending = 0
+						AND %s
+					GROUP BY tagente_modulo.id_agente_modulo
+					ORDER BY tagente_modulo.nombre',
+					($details != 'tagente_modulo.*' && $indexed) ? 'tagente_modulo.id_agente_modulo,' : '',
 					io_safe_output(implode (",", (array) $details)),
+					$sql_tags_join,
 					$where);
-	
-	
 	$result = db_get_all_rows_sql ($sql);
-	
-	
+
 	if (empty ($result)) {
 		return array ();
 	}
-	
+
 	if (! $indexed)
 		return $result;
-	
+
 	$modules = array ();
 	foreach ($result as $module) {
 		if ($get_not_init_modules || modules_get_agentmodule_is_init($module['id_agente_modulo'])) {
-			if (is_array ($details) || $details == '*') {
+			if (is_array ($stored_details) || $stored_details == '*') {
 				//Just stack the information in array by ID
 				$modules[$module['id_agente_modulo']] = $module;
 			}
 			else {
-				$modules[$module['id_agente_modulo']] = $module[$details];
+				$modules[$module['id_agente_modulo']] = $module[$stored_details];
 			}
 		}
 	}
@@ -1375,55 +1348,6 @@ function agents_get_alias_by_name ($name, $case = 'none') {
 		default:
 			return ($alias);
 	}
-}
-
-/**
- * Get the number of pandora data packets in the database.
- *
- * In case an array is passed, it will have a value for every agent passed
- * incl. a total otherwise it will just return the total
- *
- * @param mixed Agent id or array of agent id's, 0 for all
- *
- * @return mixed The number of data in the database
- */
-function agents_get_modules_data_count ($id_agent = 0) {
-	$id_agent = safe_int ($id_agent, 1);
-	
-	if (empty ($id_agent)) {
-		$id_agent = array ();
-	}
-	else {
-		$id_agent = (array) $id_agent;
-	}
-	
-	$count = array ();
-	$count["total"] = 0;
-	
-	$query[0] = "SELECT COUNT(*) FROM tagente_datos";
-	
-	foreach ($id_agent as $agent_id) {
-		//Init value
-		$count[$agent_id] = 0;
-		$modules = array_keys (agents_get_modules ($agent_id)); 
-		foreach ($query as $sql) { 
-			//Add up each table's data
-			//Avoid the count over empty array
-			if (!empty($modules))
-				$count[$agent_id] += (int) db_get_sql ($sql .
-					" WHERE id_agente_modulo IN (".implode (",", $modules).")", 0, true);
-		}
-		//Add total agent count to total count
-		$count["total"] += $count[$agent_id];
-	}
-	
-	if ($count["total"] == 0) {
-		foreach ($query as $sql) {
-			$count["total"] += (int) db_get_sql ($sql, 0, true);
-		}
-	}
-	
-	return $count; //Return the array
 }
 
 /**
@@ -2025,11 +1949,17 @@ function agents_get_agentmodule_group ($id_module) {
  * This function gets the group for a given agent
  *
  * @param int The agent id
+ * @param bool True to use the metaconsole tables
  *
  * @return int The group id
  */
-function agents_get_agent_group ($id_agent) {
-	return (int) db_get_value ('id_grupo', "tagente", 'id_agente', (int) $id_agent);
+function agents_get_agent_group ($id_agent, $force_meta = false) {
+	return (int) db_get_value (
+		'id_grupo',
+		$force_meta ? "tmetaconsole_agent" : "tagente",
+		'id_agente',
+		(int) $id_agent
+	);
 }
 
 /**
@@ -2171,23 +2101,6 @@ function agents_monitor_total ($id_agent, $filter = '', $disabled = false) {
 		$sql .= " AND tagente.disabled = 0 AND tagente_modulo.disabled = 0";
 	
 	return db_get_sql ($sql);
-}
-
-//Get alert fired for this agent
-
-function agents_get_alerts_fired ($id_agent, $filter="") {
-	
-	$modules_agent = agents_get_modules($id_agent, "id_agente_modulo", $filter);
-	
-	if (empty($modules_agent)) {
-		return 0;
-	}
-	
-	$mod_clause = "(".implode(",", $modules_agent).")";
-	
-	return db_get_sql ("SELECT COUNT(times_fired)
-		FROM talert_template_modules
-		WHERE times_fired != 0 AND id_agent_module IN ".$mod_clause);
 }
 
 //Returns the alert image to display tree view
@@ -2424,8 +2337,7 @@ function agents_get_network_interfaces ($agents = false, $agents_filter = false)
 		else
 			$columns[] = 'descripcion';
 
-		$filter = " id_agente = $agent_id AND disabled = 0 AND id_tipo_modulo IN (".implode(",", $accepted_module_types).") AND (nombre LIKE '%_ifOperStatus' OR nombre LIKE 'ifOperStatus_%')";
-		
+		$filter = " tagente_modulo.id_agente = $agent_id AND tagente_modulo.disabled = 0 AND tagente_modulo.id_tipo_modulo IN (".implode(",", $accepted_module_types).") AND (tagente_modulo.nombre LIKE '%_ifOperStatus' OR tagente_modulo.nombre LIKE 'ifOperStatus_%')";
 		$modules = agents_get_modules($agent_id, $columns, $filter, true, false);
 
 		if (!empty($modules)) {
@@ -2491,10 +2403,10 @@ function agents_get_network_interfaces ($agents = false, $agents_filter = false)
 					);
 				
 				if($type_interface){
-					$interface_traffic_modules = agents_get_modules($agent_id, $columns, "nombre LIKE  '". $interface_name . "_if%Octets'");
+					$interface_traffic_modules = agents_get_modules($agent_id, $columns, "tagente_modulo.nombre LIKE  '". $interface_name . "_if%Octets'");
 				}
 				else{
-					$interface_traffic_modules = agents_get_modules($agent_id, $columns, "nombre LIKE 'if%Octets_$interface_name'");
+					$interface_traffic_modules = agents_get_modules($agent_id, $columns, "tagente_modulo.nombre LIKE 'if%Octets_$interface_name'");
 				}
 				
 				if (!empty($interface_traffic_modules) && count($interface_traffic_modules) >= 2) {
@@ -2582,85 +2494,173 @@ function agents_get_agent_custom_field ($agent_id, $custom_field_name) {
 	return db_get_value_sql($sql);
 }
 
-function select_modules_for_agent_group($id_group, $id_agents, 
-	$selection, $return = true) {
-	
-	$agents = implode(",", $id_agents);
-
+function select_modules_for_agent_group(
+	$id_group, $id_agents, $selection, $return = true, $index_by_name = false
+) {
+	global $config;
+	$agents = (empty($id_agents)) ? array() : implode(",", $id_agents);
+		
+	$filter_agent_group = "";
 	$filter_group = "";
 	$filter_agent = "";
+	$selection_filter = "";
+	$sql_conditions_tags = "";
+	$sql_tags_inner = "";
+
+	$groups = array_keys(users_get_groups(false, "AR", false));
 
 	if ($id_group != 0) {
-		$filter_group = " AND id_module_group = ". $id_group;
+		$filter_group = " AND tagente_modulo.id_module_group = ". $id_group;
 	}
 	if ($agents != null) {
-		$filter_agent = " AND id_agente IN (" . $agents . ")";
+		$filter_agent = " AND tagente.id_agente IN (" . $agents . ")";
+	}
+	if (!users_can_manage_group_all("AR")) {
+		$group_string = implode(',', $groups);
+		$filter_agent_group = " AND (
+			tagente.id_grupo IN ($group_string)
+			OR tasg.id_group IN ($group_string)
+		)";
+	}
+	if (!$selection && $agents != null) {
+		$number_agents = count($id_agents);
+		$selection_filter = "HAVING COUNT(id_agente_modulo) = $number_agents";
 	}
 
-	if ($selection == 1 || (count($id_agents) == 1)) {
-		$modules = db_get_all_rows_sql("SELECT DISTINCT nombre, id_agente_modulo 
-										FROM tagente_modulo 
-										WHERE 1 = 1" . $filter_agent . $filter_group);
-
-		if (empty($modules)) $modules = array();
-
-		$found = array();
-		foreach ($modules as $i=>$row) {
-		    $check = $row['nombre'];
-		    if (@$found[$check]++) {
-		        unset($modules[$i]);
-		    }
-		}
+	if (tags_has_user_acl_tags(false)){
+		$sql_conditions_tags = tags_get_acl_tags(
+			$config['id_user'], $groups, 'AR',
+			'module_condition', 'AND', 'tagente_modulo', true, array(),
+			false);
+		$sql_tags_inner = "INNER JOIN ttag_module
+			ON ttag_module.id_agente_modulo = tagente_modulo.id_agente_modulo";
 	}
-	else {
-		$modules = db_get_all_rows_sql("SELECT nombre, id_agente_modulo 
-										FROM tagente_modulo
-										WHERE 1 = 1" . $filter_agent . $filter_group);
 
-		if (empty($modules)) $modules = array();
+	$sql = "SELECT * FROM
+		(
+			SELECT DISTINCT(tagente_modulo.id_agente_modulo), tagente_modulo.nombre
+			FROM tagente_modulo
+			$sql_tags_inner
+			INNER JOIN tagente
+				ON tagente.id_agente = tagente_modulo.id_agente
+			LEFT JOIN tagent_secondary_group tasg
+				ON tagente.id_agente = tasg.id_agent
+			WHERE tagente.disabled = 0
+				AND tagente_modulo.disabled = 0
+				$filter_agent_group
+				$filter_group
+				$filter_agent
+				$sql_conditions_tags
+		) x
+		GROUP BY nombre
+		$selection_filter";
 
-		foreach ($modules as $m) {
-			$is_in_all_agents = true;
-			$module_name = $m['nombre'];
-			foreach ($id_agents as $a) {
-				$module_in_agent = db_get_value_filter('id_agente_modulo',
-					'tagente_modulo', array('id_agente' => $a, 'nombre' => $module_name));
-				if (!$module_in_agent) {
-					$is_in_all_agents = false;
-				}
-			}
-			if ($is_in_all_agents) {
-				$modules_to_report[] = $m;
-			}
-		}
-		$modules = $modules_to_report;
+	$modules = db_get_all_rows_sql($sql);
+	if ($modules === false) $modules = array();
 
-		$found = array();
-		if (is_array($modules) || is_object($modules)){
-			foreach ($modules as $i=>$row) {
-			    $check = $row['nombre'];
-			    if (@$found[$check]++) {
-			        unset($modules[$i]);
-			    }
-			}
-		}
-	}
-	if (is_array($modules) || is_object($modules)){
-		foreach ($modules as $k => $v) {
-			$modules[$k] = io_safe_output($v);
-		}
-	}
-	
-	if($return == false){
-		foreach ($modules as $value) {
-			$modules_array[$value['id_agente_modulo']] = $value['nombre'];
-		}
-		return $modules_array;
-	}
-	else{
+	if ($return) {
 		echo json_encode($modules);
 		return;
 	}
+
+	$modules_array = array();
+	foreach ($modules as $value) {
+		if($index_by_name) {
+			$modules_array[io_safe_output($value['nombre'])] =
+				ui_print_truncate_text(
+					io_safe_output($value['nombre']), 'module_medium', false, true
+				);
+		} else {
+			$modules_array[$value['id_agente_modulo']] = $value['nombre'];
+		}
+	}
+	return $modules_array;
+}
+
+function select_agents_for_module_group(
+	$module_names, $selection, $filter, $access = "AR"
+) {
+	global $config;
+
+	$default_filter  = array (
+		'status' => null
+	);
+
+	$filter = array_merge($default_filter, $filter);
+
+	$module_names_condition = "";
+	$filter_agent_group = "";
+	$selection_filter = "";
+	$sql_conditions_tags = "";
+	$sql_tags_inner = "";
+	$status_filter = "";
+	$module_type_filter = "";
+
+	$groups = array_keys(users_get_groups(false, $access, false));
+
+	// Name
+	if (!users_can_manage_group_all($access)) {
+		$group_string = implode(',', $groups);
+		$filter_agent_group = " AND (
+			tagente.id_grupo IN ($group_string)
+			OR tasg.id_group IN ($group_string)
+		)";
+	}
+
+	// Name filter
+	if ($module_names) {
+		$module_names_sql = implode("','", $module_names);
+		$module_names_condition = " AND tagente_modulo.nombre IN ('$module_names_sql') ";
+	}
+
+	// Common or all modules filter
+	if (!$selection) {
+		$number_modules = count($module_names);
+		$selection_filter = "HAVING COUNT(id_agente) = $number_modules";
+	}
+
+	// Status filter
+	if ($filter['status'] != null) {
+		$status_filter = " AND " . modules_get_state_condition(
+			$filter['status'], "tagente_estado"
+		);
+	}
+
+	// Tags input and ACL conditions
+	if (tags_has_user_acl_tags(false) || $filter['tags'] != null){
+		$sql_conditions_tags = tags_get_acl_tags(
+			$config['id_user'], $groups, $access,
+			'module_condition', 'AND', 'tagente_modulo', true, array(),
+			false);
+		$sql_tags_inner = "INNER JOIN ttag_module
+			ON ttag_module.id_agente_modulo = tagente_modulo.id_agente_modulo";
+	}
+
+	$sql = "SELECT * FROM
+		(
+			SELECT tagente.id_agente, tagente.alias
+			FROM tagente
+			LEFT JOIN tagent_secondary_group tasg
+				ON tagente.id_agente = tasg.id_agent
+			INNER JOIN tagente_modulo
+				ON tagente.id_agente = tagente_modulo.id_agente
+			$sql_tags_inner
+			LEFT JOIN tagente_estado
+				ON tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
+			WHERE tagente.disabled = 0
+				AND tagente_modulo.disabled = 0
+				$module_names_condition
+				$filter_agent_group
+				$sql_conditions_tags
+				$status_filter
+				$module_type_filter
+			GROUP BY tagente_modulo.id_agente_modulo
+		) x
+		GROUP BY id_agente
+		$selection_filter";
+	$modules = db_get_all_rows_sql($sql);
+	if ($modules === false) return array();
+	return index_array(db_get_all_rows_sql($sql), 'id_agente', 'alias');
 }
 
 /**
@@ -2680,23 +2680,29 @@ function agents_generate_name ($alias, $address = '') {
  *
  * @param int $id_agent
  * @param int $id_group. By default it will search for it in dtabase
+ * @param bool True to use the metaconsole tables
  *
  * @return Array with the main and secondary groups
  */
-function agents_get_all_groups_agent ($id_agent, $group = false) {
+function agents_get_all_groups_agent ($id_agent, $group = false, $force_meta = false) {
+	// Cache the agent id groups
+	static $cache = array();
+	if (isset($cache[$id_agent])) return $cache[$id_agent];
 	// Get the group if is not defined
-	if ($group === false) $group = agents_get_agent_group($id_agent);
+	if ($group === false) $group = agents_get_agent_group($id_agent, $force_meta);
 
 	// If cannot retrieve the group, it means that agent does not exist
 	if (!$group) return array();
 
-	$secondary_groups = enterprise_hook('agents_get_secondary_groups', array($id_agent));
+	enterprise_include_once('include/functions_agents.php');
+	$secondary_groups = enterprise_hook('agents_get_secondary_groups', array($id_agent, $force_meta));
 
 	// Return only an array with the group in open version
 	if ($secondary_groups == ENTERPRISE_NOT_HOOK) return array($group);
 
 	// Add a list of groups
 	$secondary_groups['plain'][] = $group;
+	$cache[$id_agent] = $secondary_groups['plain'];
 	return $secondary_groups['plain'];
 }
 
@@ -2724,18 +2730,48 @@ function agents_count_agents_filter ($filter = array(), $access = "AR") {
  *
  * @param int Id agent
  * @param string ACL access bit
+ * @param boolean $force_meta
  *
  * @return True if user has access, false if user has not permissions and
  * 		null if id agent does not exist
  */
-function agents_check_access_agent ($id_agent, $access = "AR") {
+function agents_check_access_agent ($id_agent, $access = "AR", $force_meta = false) {
 	global $config;
 
-	if (users_access_to_agent($id_agent, $access)) return true;
+	if (users_access_to_agent($id_agent, $access, false, $force_meta)) return true;
 
 	// If agent exist return false
-	if (agents_check_agent_exists($id_agent)) return false;
+	if (agents_check_agent_exists($id_agent, true, $force_meta)) return false;
 	// Return null otherwise
 	return null;
+}
+
+function agents_get_status_clause($state, $show_not_init = true) {
+	switch ($state) {
+		case AGENT_STATUS_CRITICAL:
+			return "(ta.critical_count > 0)";
+		case AGENT_STATUS_WARNING:
+			return "(ta.warning_count > 0 AND ta.critical_count = 0)";
+		case AGENT_STATUS_UNKNOWN:
+			return "(
+				ta.critical_count = 0 AND ta.warning_count = 0 AND ta.unknown_count > 0
+			)";
+		case AGENT_STATUS_NOT_INIT:
+			return $show_not_init
+				? "(ta.total_count = ta.notinit_count OR ta.total_count = 0)"
+				: "1=0";
+		case AGENT_STATUS_NORMAL:
+			return "(
+				ta.critical_count = 0 AND ta.warning_count = 0
+				AND ta.unknown_count = 0 AND ta.normal_count > 0
+			)";
+		case AGENT_STATUS_ALL:
+		default:
+			return $show_not_init
+				? "1=1"
+				: "(ta.total_count <> ta.notinit_count)";
+	}
+	// If the state is not an expected state, return no condition
+	return "1=1";
 }
 ?>

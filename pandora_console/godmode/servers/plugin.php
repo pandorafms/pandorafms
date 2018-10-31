@@ -728,7 +728,7 @@ else {
 	
 	if ($rows !== false) {
 		if(defined('METACONSOLE'))
-			echo '<table width="100%" cellspacing="4" cellpadding="4" class="databox">';
+			echo '<table width="100%" cellspacing="4" cellpadding="4" class="databox data">';
 		else
 			echo '<table width="100%" cellspacing="4" cellpadding="4" class="databox data">';
 			
@@ -833,7 +833,7 @@ ui_require_javascript_file('pandora_modules');
 			i++;
 		}
 		
-		$('#command_preview').html(command+' '+parameters);
+		$('#command_preview').html(_.escape(command) + ' ' + _.escape(parameters));
 	}
 	
 	function show_locked_dialog(id_plugin, plugin_name) {

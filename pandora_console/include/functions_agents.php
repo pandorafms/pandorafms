@@ -2977,6 +2977,7 @@ function agent_counters_custom_fields($filters){
 		// For all nodes
 		if(isset($metaconsole_connections) && is_array($metaconsole_connections)){
 			$result_meta = array();
+			$data = array();
 			foreach ($metaconsole_connections as $metaconsole) {
 				// Get server connection data
 				$server_data = metaconsole_get_connection($metaconsole);
@@ -3019,6 +3020,28 @@ function agent_counters_custom_fields($filters){
 
 				$result_meta[$server_data['id']] = db_get_all_rows_sql($query);
 
+				$query_data = sprintf("SELECT
+						CONCAT(ta.id_agente,', ', %d) AS ids,
+						tcd.description,
+						ta.id_agente,
+						%d AS id_server
+					FROM tagente ta
+					INNER JOIN tagent_custom_data tcd
+						ON tcd.id_agent = ta.id_agente
+					INNER JOIN tagent_custom_fields tcf
+						ON tcd.id_field = tcf.id_field
+					WHERE ta.disabled = 0
+						AND tcf.name = '%s'
+						AND tcd.description <> ''",
+					$server_data['id'],
+					$server_data['id'],
+					$custom_field_name
+				);
+
+				$node_result = db_get_all_rows_sql($query_data);
+				if (empty($node_result)) $node_result = array();
+
+				$data = array_merge($data, $node_result);
 				// Restore connection to root node
 				metaconsole_restore_db();
 			}
@@ -3080,6 +3103,30 @@ function agent_counters_custom_fields($filters){
 			}
 
 			$final_result['counters_name'] = $array_data;
+		}
+
+		if(isset($data) && is_array($data)){
+			$data = array_reduce($data, function ($data, $item) {
+				$node_id = (int) $item["id_server"];
+				$agent_id = (int) $item["id_agente"];
+				$description = $item["description"];
+				if (!isset($data["descriptions_by_node_and_agent"][$node_id])) {
+					$data["descriptions_by_node_and_agent"][$node_id] = array();
+				}
+
+				$data["descriptions_by_node_and_agent"][$node_id][$agent_id] = $description;
+
+				$data["id_pairs_for_query"] .= (!empty($data["id_pairs_for_query"]) ? "," : "")
+					. "(" . $item["ids"] . ")";
+
+				return $data;
+			}, array(
+				"descriptions_by_node_and_agent" => array(),
+				"id_pairs_for_query" => ""
+			));
+
+			$final_result['ids'] = $data["id_pairs_for_query"];
+			$final_result['indexed_descriptions'] = $data["descriptions_by_node_and_agent"];
 		}
 	}
 	else{

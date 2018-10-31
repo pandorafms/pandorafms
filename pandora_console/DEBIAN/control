@@ -1,10 +1,10 @@
 package: pandorafms-console
-Version: 7.0NG.728-181029
+Version: 7.0NG.728-181031
 Architecture: all
 Priority: optional
 Section: admin
 Installed-Size: 42112
 Maintainer: Artica ST <deptec@artica.es>
 Homepage: http://pandorafms.org/
-Depends: php5.6 | php5, php5.6-snmp | php5-snmp, php5.6-gd | php5-gd, php5.6-mysql | php5-mysql, php-db, php5.6-xmlrpc | php5-xmlrpc, php-gettext, php5.6-curl | php5-curl, graphviz, dbconfig-common, php5.6-ldap | php5-ldap, mysql-client | virtual-mysql-client
+Depends: php | php7.2, php7.2-snmp | php-snmp, php7.2-gd | php-gd, php7.2-mysqlnd | php-mysqlnd, php-db, php7.2-xmlrpc | php-xmlrpc, php-gettext, php7.2-curl | php-curl, graphviz, dbconfig-common, php7.2-ldap | php-ldap, mysql-client | virtual-mysql-client, php-xmlrpc
 Description: Pandora FMS is an Open Source monitoring tool. It monitor your systems and applications, and allows you to control the status of any element of them. The web console is the graphical user interface (GUI) to manage the pool and to generate reports and graphs from the Pandora FMS monitoring process.

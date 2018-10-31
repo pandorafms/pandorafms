@@ -640,7 +640,7 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 			
 			
 			foreach ($form_items as $item => $item_options) {
-				echo '<tr id="' . $item . '" style="" class="' . implode(' ', $item_options['items']) . '">';
+				echo '<tr id="' . $item . '" style="" class="' . implode(' ', (array)$item_options['items']) . '">';
 				echo $item_options['html'];
 				echo '</tr>';
 			}
@@ -721,9 +721,11 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 
 					$node_visual_maps = db_get_all_rows_filter("tlayout", array(), array("id", "name"));
 
-					foreach ($node_visual_maps as $node_visual_map) {
-						$node_visual_map["node_id"] = (int) $server["id"];
-						$visual_maps[] = $node_visual_map;
+					if(isset($node_visual_maps) && is_array($node_visual_maps)){
+						foreach ($node_visual_maps as $node_visual_map) {
+							$node_visual_map["node_id"] = (int) $server["id"];
+							$visual_maps[] = $node_visual_map;
+						}
 					}
 
 					metaconsole_restore_db();

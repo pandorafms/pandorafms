@@ -50,11 +50,23 @@ if ($id_node > 0) {
 	}
 }
 $row_module = modules_get_agentmodule($id);
-$row_state = db_get_row('tagente_estado', 'id_agente_modulo', $id);
+
+// Retrieve data
+$utimestamp = get_parameter("timestamp", '');
+if($utimestamp == '') {
+	// Retrieve last data
+	$row_state = db_get_row('tagente_estado', 'id_agente_modulo', $id);
+	$last_timestamp = date("Y-m-d H:i:s", $row_state['utimestamp']);
+} else {
+	// Retrieve target data
+	$state = db_get_row('tagente_estado', 'id_agente_modulo', $id, array('id_agente'));
+	$row_state = db_get_row_filter('tagente_datos_string', array('id_agente_modulo' => $id, 'utimestamp' => $utimestamp));
+	$row_state['id_agente'] = $state['id_agente'];
+	$last_timestamp = date("Y-m-d H:i:s", $row_state['utimestamp']);
+}
 
 // Build the info
 $label = get_parameter ("label", io_safe_output($row_module['module_name']));
-$last_timestamp = get_parameter("timestamp", $row_state['timestamp']);
 $last_data = io_safe_output($row_state["datos"]);
 $refresh = (int) get_parameter ("refr", $row_state['current_interval']);
 

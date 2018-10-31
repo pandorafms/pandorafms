@@ -3,7 +3,7 @@
 #
 %define name        pandorafms_console
 %define version     7.0NG.728
-%define release     181029
+%define release     181031
 
 # User and Group under which Apache is running
 %define httpd_name  httpd
@@ -28,7 +28,7 @@ AutoReq:            0
 Requires:           %{httpd_name} >= 2.0.0
 Requires:           mod_php >= 5.2.0
 Requires:           php-gd, php-ldap, php-snmp, php-session, php-gettext
-Requires:           php-mysql, php-mbstring, php-zip, php-zlib, php-curl
+Requires:           php-mysqlnd, php-mbstring, php-zip, php-zlib, php-curl
 Requires:           xorg-x11-fonts-75dpi, xorg-x11-fonts-misc
 Requires:           graphviz
 Provides:           %{name}-%{version}

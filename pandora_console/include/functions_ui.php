@@ -2395,6 +2395,10 @@ function ui_get_full_url ($url = '', $no_proxy = false, $add_name_php_file = fal
 	$port = null;   // null means 'use the starndard port'
 	$proxy = false; //By default Pandora FMS doesn't run across proxy.
 	
+	if(isset ($_SERVER['HTTP_X_FORWARDED_PROTO'])
+		&& $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https') {
+		$_SERVER['HTTPS'] = 'on';
+	}
 	if (isset ($_SERVER['HTTPS'])
 		&& ($_SERVER['HTTPS'] === true
 		|| $_SERVER['HTTPS'] == 'on')) {
@@ -3845,8 +3849,7 @@ function ui_print_module_string_value($value, $id_agente_module,
 			'id_module' => $id_agente_module,
 			'last_data' => $value,
 			'interval' => $current_interval,
-			'module_name' => $module_name,
-			'timestamp' => db_get_value('timestamp', 'tagente_estado', 'id_agente_modulo', $id_agente_module)
+			'module_name' => $module_name
 		));
 		$salida = ui_get_snapshot_image($link, $is_snapshot) . '&nbsp;&nbsp;';
 	} else {
@@ -3964,8 +3967,14 @@ function ui_get_snapshot_link($params, $only_params = false) {
 		"id=" . $params['id_module'] .
 		"&label=" . rawurlencode(urlencode(io_safe_output($params['module_name']))).
 		"&id_node=" . $params['id_node'];
-	if ($params['timestamp'] != 0) $url .= "&timestamp=" . $parms['timestamp'];
-	if ($params['timestamp'] != 0) $url .= "&refr=" . $parms['interval'];
+	
+	if ($params['timestamp'] != 0) {
+		$url .= "&timestamp=" . $params['timestamp'];
+	}
+
+	if ($params['interval'] != 0) {
+		$url .= "&refr=" . $params['interval'];
+	}
 
 	// Second parameter of js winopeng_var
 	$win_handle = dechex(crc32('snapshot_' . $params['id_module']));

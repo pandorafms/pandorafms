@@ -2948,6 +2948,55 @@ function get_custom_fields_data ($custom_field_name) {
 }
 
 function agent_counters_custom_fields($filters){
+	//filter by status
+	$and_status = "";
+	if(is_array($filters['id_status'])){
+		if(!in_array(-1, $filters['id_status'])){
+			if(!in_array(AGENT_MODULE_STATUS_NOT_NORMAL, $filters['id_status'])){
+				if(count($filters['id_status']) > 0){
+					$and_status = " AND ( ";
+					foreach ($filters['id_status'] as $key => $value) {
+						$and_status .= ($key != 0)
+							? " OR ("
+							: " (";
+						switch ($value) {
+							default:
+							case AGENT_STATUS_NORMAL:
+								$and_status .= " ta.critical_count = 0
+									AND ta.warning_count = 0
+									AND ta.unknown_count = 0
+									AND ta.total_count <> ta.notinit_count ) ";
+								break;
+							case AGENT_STATUS_CRITICAL:
+								$and_status .= " ta.critical_count > 0 ) ";
+								break;
+							case AGENT_STATUS_WARNING:
+								$and_status .= " ta.critical_count = 0
+									AND ta.warning_count > 0 ) ";
+								break;
+							case AGENT_STATUS_UNKNOWN:
+								$and_status .= " ta.critical_count = 0
+									AND ta.warning_count = 0
+									AND ta.unknown_count > 0 ) ";
+								break;
+							case AGENT_STATUS_NOT_INIT:
+								$and_status .= " ta.total_count = ta.notinit_count ) ";
+								break;
+						}
+					}
+					$and_status .= " ) ";
+				}
+			}
+			else{
+				$and_status = " AND (
+					( ta.critical_count > 0 )
+					OR ( ta.critical_count = 0 AND ta.warning_count > 0 )
+					OR ( ta.critical_count = 0 AND ta.warning_count = 0 AND ta.unknown_count > 0 )
+					OR ( ta.total_count = ta.notinit_count )
+				) ";
+			}
+		}
+	}
 
 	//filter group and check ACL groups
 	$groups_and = "";
@@ -2964,9 +3013,9 @@ function agent_counters_custom_fields($filters){
 
 	//filter custom data
 	$custom_data_and = '';
-	if(!in_array(0, $filters['id_custom_fields_data'])){
+	if(!in_array(-1, $filters['id_custom_fields_data'])){
 		$custom_data_array = implode("', '", $filters['id_custom_fields_data']);
-		$custom_data_and = "AND tcd.description IN ('.$custom_data_array.')";
+		$custom_data_and = "AND tcd.description IN ('" . $custom_data_array . "')";
 	}
 
 	//filter custom name
@@ -3012,10 +3061,12 @@ function agent_counters_custom_fields($filters){
 						AND tcd.description <> ''
 						%s
 						%s
+						%s
 					GROUP BY tcd.description",
 					$custom_field_name,
 					$custom_data_and,
-					$groups_and
+					$groups_and,
+					$and_status
 				);
 
 				$result_meta[$server_data['id']] = db_get_all_rows_sql($query);
@@ -3026,16 +3077,25 @@ function agent_counters_custom_fields($filters){
 						ta.id_agente,
 						%d AS id_server
 					FROM tagente ta
+					LEFT JOIN tagent_secondary_group tasg
+						ON ta.id_agente = tasg.id_agent
 					INNER JOIN tagent_custom_data tcd
 						ON tcd.id_agent = ta.id_agente
 					INNER JOIN tagent_custom_fields tcf
 						ON tcd.id_field = tcf.id_field
 					WHERE ta.disabled = 0
 						AND tcf.name = '%s'
-						AND tcd.description <> ''",
+						AND tcd.description <> ''
+						%s
+						%s
+						%s
+					",
 					$server_data['id'],
 					$server_data['id'],
-					$custom_field_name
+					$custom_field_name,
+					$custom_data_and,
+					$groups_and,
+					$and_status
 				);
 
 				$node_result = db_get_all_rows_sql($query_data);

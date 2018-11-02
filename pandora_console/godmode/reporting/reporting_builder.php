@@ -119,7 +119,9 @@ if ($schedule_report != '') {
 	$time = date(TIME_FORMAT);
 	$parameters[0] = get_parameter('id_schedule_report');
 	//$parameters[1] = db_get_value('schedule_email', 'treport', 'id_report', $id_report);
-	$parameters[1] = get_parameter('schedule_email');
+	$parameters[1] = get_parameter('schedule_email_address');
+	$parameters[2] = get_parameter('schedule_subject', '');
+	$parameters[3] = get_parameter('schedule_email', '');
 	$parameters['first_execution'] = strtotime ($date.' '.$time);
 	
 	$values = array(

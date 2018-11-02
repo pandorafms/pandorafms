@@ -1008,7 +1008,7 @@ function html_print_input_text_extended ($name, $value, $id, $alt, $size, $maxle
 	++$idcounter;
 	
 	$valid_attrs = array ("accept", "disabled", "maxlength",
-		"name", "readonly", "size", "value", "accesskey",
+		"name", "readonly", "placeholder", "size", "value", "accesskey",
 		"class", "dir", "id", "lang", "style", "tabindex",
 		"title", "xml:lang", "onfocus", "onblur", "onselect",
 		"onchange", "onclick", "ondblclick", "onmousedown",

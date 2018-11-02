@@ -4809,3 +4809,12 @@ tr:last-child > td > a.down_arrow, tr:first-child > td > a.up_arrow {
 	float: left;
 	margin-right: 5px;
 }
+
+/* Message list popup */
+div#dialog_messages table th {
+    text-align: left;
+}
+
+div#dialog_messages table th:last-child {
+    text-align: right;
+}

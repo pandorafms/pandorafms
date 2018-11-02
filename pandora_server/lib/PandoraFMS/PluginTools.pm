@@ -32,7 +32,7 @@ our @ISA = qw(Exporter);
 
 # version: Defines actual version of Pandora Server for this module only
 my $pandora_version = "7.0NG.728";
-my $pandora_build = "181031";
+my $pandora_build = "181102";
 our $VERSION = $pandora_version." ".$pandora_build;
 
 our %EXPORT_TAGS = ( 'all' => [ qw() ] );
@@ -936,7 +936,10 @@ sub call_url {
 
 	if ($response->is_success){
 		return $response->decoded_content;
+	} elsif (!empty($response->{'_msg'})) {
+		print_stderror($conf, 'Failed: ' .  $response->{'_msg'});
 	}
+
 	return undef;
 }
 
@@ -958,7 +961,10 @@ sub post_url {
 
 	if ($response->is_success){
 		return $response->decoded_content;
+	} elsif (!empty($response->{'_msg'})) {
+		print_stderror($conf, 'Failed: ' . $response->{'_msg'});
 	}
+
 	return undef;	
 }
 
@@ -987,6 +993,12 @@ sub init {
 				# Disable verify host certificate (only needed for self-signed cert)
 				$conf->{'__system'}->{ua}->ssl_opts( 'verify_hostname' => 0 );
 				$conf->{'__system'}->{ua}->ssl_opts( 'SSL_verify_mode' => 0x00 );
+
+				# Disable library extra checks 
+				BEGIN {
+					$ENV{PERL_NET_HTTPS_SSL_SOCKET_CLASS} = "Net::SSL";
+					$ENV{PERL_LWP_SSL_VERIFY_HOSTNAME} = 0;
+				}
 			}
 		}
 	};

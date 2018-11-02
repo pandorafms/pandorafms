@@ -1803,6 +1803,7 @@ INSERT INTO tlog_graph_models VALUES (1, 'Apache&#x20;log&#x20;model',
 -- -----------------------------------------------------
 
 ALTER TABLE `treport` ADD COLUMN `hidden` tinyint(1) NOT NULL DEFAULT 0;
+ALTER TABLE `treport` ADD COLUMN `orientation` varchar(25) NOT NULL default 'vertical';
 
 ALTER TABLE `trecon_task` ADD COLUMN `snmp_version` varchar(5) NOT NULL default '1';
 ALTER TABLE `trecon_task` ADD COLUMN `snmp_auth_user` varchar(255) NOT NULL default '';

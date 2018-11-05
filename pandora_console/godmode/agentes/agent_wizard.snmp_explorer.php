@@ -261,7 +261,7 @@ if ($snmpwalk) {
 }
 
 if ($create_modules) {
-	$modules = get_parameter("module", array());
+	$modules = io_safe_output(get_parameter("module", array()));
 	
 	$devices = array();
 	$processes = array();

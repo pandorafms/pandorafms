@@ -3021,6 +3021,8 @@ function agent_counters_custom_fields($filters){
 	//filter custom name
 	$custom_field_name = $filters['id_custom_fields'];
 
+	$module_filter = ' AND (select count(*) as n from tagente_modulo where nombre LIKE "%desc%" and id_agente=ta.id_agente) > 0 ';
+
 	if(is_metaconsole()){
 		$metaconsole_connections = metaconsole_get_connection_names();
 		// For all nodes
@@ -3062,11 +3064,13 @@ function agent_counters_custom_fields($filters){
 						%s
 						%s
 						%s
+						%s
 					GROUP BY tcd.description",
 					$custom_field_name,
 					$custom_data_and,
 					$groups_and,
-					$and_status
+					$and_status,
+					$module_filter
 				);
 
 				$result_meta[$server_data['id']] = db_get_all_rows_sql($query);
@@ -3089,13 +3093,15 @@ function agent_counters_custom_fields($filters){
 						%s
 						%s
 						%s
+						%s
 					",
 					$server_data['id'],
 					$server_data['id'],
 					$custom_field_name,
 					$custom_data_and,
 					$groups_and,
-					$and_status
+					$and_status,
+					$module_filter
 				);
 
 				$node_result = db_get_all_rows_sql($query_data);

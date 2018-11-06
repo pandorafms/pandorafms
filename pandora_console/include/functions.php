@@ -1377,7 +1377,7 @@ function is_management_allowed($hkey = '') {
 	global $config;
 	return ( (is_metaconsole() && $config["centralized_management"])
 		|| (!is_metaconsole() && !$config["centralized_management"])
-		|| (!is_metaconsole() && $config["centralized_management"]) && $hkey == hash('sha256', db_get_value ('value', 'tupdate_settings', 'token', 'customer_key')));
+		|| (!is_metaconsole() && $config["centralized_management"]) && $hkey == generate_hash_to_api());
 }
 
 /**
@@ -3388,4 +3388,8 @@ function validate_csrf_code() {
 	return isset($code) && isset($_SESSION['csrf_code'])
 		&& $_SESSION['csrf_code'] == $code;
 }
+
+function generate_hash_to_api(){
+	hash('sha256', db_get_value ('value', 'tupdate_settings', '`key`', 'customer_key'));
+	}
 ?>

@@ -175,6 +175,7 @@ if ($update) {
 	}
 }
 
+$table = new stdClass();
 $table->id = 'delete_table';
 $table->class = 'databox filters';
 $table->width = '100%';
@@ -235,7 +236,7 @@ switch ($config["dbtype"]) {
 if ($module_types === false)
 	$module_types = array ();
 
-$types = '';
+$types = array();
 foreach ($module_types as $type) {
 	$types[$type['id_tipo']] = $type['description'];
 }
@@ -248,22 +249,18 @@ $snmp_versions['3'] = 'v. 3';
 $table->width = '100%';
 $table->data = array ();
 
-
-
 $table->data['selection_mode'][0] = __('Selection mode');
 $table->data['selection_mode'][1] = '<span style="width:110px;display:inline-block;">'.__('Select modules first ') . '</span>' .
 	html_print_radio_button_extended ("selection_mode", 'modules', '', $selection_mode, false, '', 'style="margin-right: 40px;"', true).'<br>';
 $table->data['selection_mode'][1] .= '<span style="width:110px;display:inline-block;">'.__('Select agents first ') . '</span>' .
 	html_print_radio_button_extended ("selection_mode", 'agents', '', $selection_mode, false, '', 'style="margin-right: 40px;"', true);
 
-
-
-
 $table->rowclass['form_modules_1'] = 'select_modules_row';
 $table->data['form_modules_1'][0] = __('Module type');
 $table->data['form_modules_1'][0] .= '<span id="module_loading" class="invisible">';
 $table->data['form_modules_1'][0] .= html_print_image('images/spinner.png', true);
 $table->data['form_modules_1'][0] .= '</span>';
+
 $types[0] = __('All');
 $table->colspan['form_modules_1'][1] = 2;
 $table->data['form_modules_1'][1] = html_print_select ($types,

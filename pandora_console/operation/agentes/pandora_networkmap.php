@@ -639,7 +639,7 @@ switch ($tab) {
 						}
 					}
 					else {
-						$data['nodes'] = $count - 1; //PandoraFMS node is not an agent
+						$data['nodes'] = ($network_map['id_group'] == 0) ? $count - 1 : $count; //PandoraFMS node is not an agent
 					}
 				}
 				

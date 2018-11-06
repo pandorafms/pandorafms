@@ -56,7 +56,7 @@ $utimestamp = get_parameter("timestamp", '');
 if($utimestamp == '') {
 	// Retrieve last data
 	$row_state = db_get_row('tagente_estado', 'id_agente_modulo', $id);
-	$last_timestamp = $row_state['timestamp'];
+	$last_timestamp = date("Y-m-d H:i:s", $row_state['utimestamp']);
 } else {
 	// Retrieve target data
 	$state = db_get_row('tagente_estado', 'id_agente_modulo', $id, array('id_agente'));

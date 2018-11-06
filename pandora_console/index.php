@@ -452,6 +452,7 @@ if (! isset ($config['id_user'])) {
 								$id_dashboard_select =
 									db_get_value('id', 'tdashboard', 'name', $home_url);
 								$_GET['id_dashboard_select'] = $id_dashboard_select;
+								$_GET['d_from_main_page'] = 1;
 								break;
 							case 'Visual console':
 								$_GET["sec"] = "network";
@@ -1057,9 +1058,8 @@ else {
 					$_GET['sec2'] = 'general/logon_ok';
 					break;
 				case 'Dashboard':
-					$dashboard_from_main_page = 1;
 					$id_dashboard = db_get_value('id', 'tdashboard', 'name', $home_url);
-					$str = 'sec=reporting&sec2='.ENTERPRISE_DIR.'/dashboard/main_dashboard&id='.$id_dashboard;
+					$str = 'sec=reporting&sec2='.ENTERPRISE_DIR.'/dashboard/main_dashboard&id='.$id_dashboard.'&d_from_main_page=1';
 					parse_str($str, $res);
 					foreach ($res as $key => $param) {
 						$_GET[$key] = $param;

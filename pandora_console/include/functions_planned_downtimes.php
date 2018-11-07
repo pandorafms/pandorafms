@@ -666,6 +666,7 @@ function planned_downtimes_stop ($downtime) {
 function planned_downtimes_created ($values) {
 	global $config;
 	
+	$check_id_user = (bool) db_get_value ('id_user', 'tusuario', 'id_user', $values['id_user']);
 	$check_group = (bool) db_get_value ('id_grupo', 'tgrupo', 'id_grupo', $values['id_group']);
 	$check = (bool) db_get_value ('name', 'tplanned_downtime', 'name', $values['name']);
 	
@@ -702,6 +703,26 @@ function planned_downtimes_created ($values) {
 		return array('return' => false,
 			'message' => __('Not created. Error inserting data') . ". "
 				. __('The end day must be higher than the start day'));
+	}
+	else if ($values['type_downtime'] !== 'quiet' && $values['type_downtime'] !== 'disable_agents' && $values['type_downtime'] !== 'disable_agents_alerts') {
+		return array('return' => false,
+			'message' => __('Not created. Error inserting data') . ". "
+				. __('The downtime must be quiet, disable_agents or disable_agents_alerts'));
+	}
+	else if ($values['type_execution'] !== 'periodically' && $values['type_execution'] !== 'once' ) {
+		return array('return' => false,
+			'message' => __('Not created. Error inserting data') . ". "
+				. __('The execution must be once or periodically'));
+	}
+	else if ($values['type_periodicity'] !== 'weekly' && $values['type_periodicity'] !== 'monthly' ) {
+		return array('return' => false,
+			'message' => __('Not created. Error inserting data') . ". "
+				. __('The periodicity must be weekly or monthly'));
+	}
+	else if (!$check_id_user){
+		return array('return' => false,
+			'message' => __('Not created. Error inserting data') . ". "
+				. __('User not exist'));
 	}
 	else if (!$check_group && $values['id_group'] != 0) {
 		return array('return' => false,

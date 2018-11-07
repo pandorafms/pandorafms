@@ -5411,7 +5411,8 @@ function api_set_planned_downtimes_created ($id, $thrash1, $other, $thrash3) {
 		'periodically_day_to' => $other['data'][14],
 		'type_downtime' => $other['data'][15],
 		'type_execution' => $other['data'][16],
-		'type_periodicity' => $other['data'][17]
+		'type_periodicity' => $other['data'][17],
+		'id_user' => $other['data'][18]
 	);
 	
 	$returned = planned_downtimes_created($values);

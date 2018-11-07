@@ -80,7 +80,7 @@ $alias    = db_get_value ("alias","tagente","id_agente",$id_agent);
 		<link rel="stylesheet" href="../../include/styles/pandora_minimal.css" type="text/css" />
 		<link rel="stylesheet" href="../../include/styles/jquery-ui-1.10.0.custom.css" type="text/css" />
 		<script type='text/javascript' src='../../include/javascript/pandora.js'></script>
-		<script type='text/javascript' src='../../include/javascript/jquery-1.9.0.js'></script>
+		<script type='text/javascript' src='../../include/javascript/jquery-3.3.1.min.js'></script>
 		<script type='text/javascript' src='../../include/javascript/jquery.pandora.js'></script>
 		<script type='text/javascript' src='../../include/javascript/jquery.jquery-ui-1.10.0.custom.js'></script>
 		<?php

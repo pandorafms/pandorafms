@@ -36,6 +36,8 @@ $get_type = (bool) get_parameter('get_type', 0);
 $list_modules = (bool) get_parameter('list_modules', 0);
 $get_agent_modules_json_by_name = (bool) get_parameter('get_agent_modules_json_by_name', 0);
 $get_custom_fields_data = (bool) get_parameter('get_custom_fields_data', 0);
+$build_table_custom_fields = (bool)get_parameter('build_table_custom_fields', 0);
+$build_table_child_custom_fields = (bool)get_parameter('build_table_child_custom_fields', 0);
 
 if ($get_agent_modules_json_by_name) {
 	$agent_name = get_parameter('agent_name');
@@ -1089,6 +1091,269 @@ if ($get_custom_fields_data){
 	return;
 }
 
+
+if($build_table_custom_fields){
+	$order = get_parameter("order", '');
+	$length = get_parameter("length", 20);
+	$start = get_parameter("start", 0);
+	$draw = get_parameter("draw", 0);
+	$search = get_parameter("search", '');
+	$indexed_descriptions = json_decode(io_safe_output(get_parameter("indexed_descriptions", '')), true);
+
+	//order query
+	$order_column = $order[0]['column'];
+	$type_order = $order[0]['dir'];
+	switch ($order_column) {
+		default:
+		case '1':
+			$order_by = "ORDER BY temp.name_custom_fields " . $type_order;
+			break;
+		case '2':
+			$order_by = "ORDER BY tma.server_name " . $type_order;
+			break;
+		case '3':
+			$order_by = "ORDER BY tma.alias " . $type_order;
+			break;
+		case '4':
+			$order_by = "ORDER BY tma.direccion " . $type_order;
+			break;
+	}
+
+	//table temporary for save array in table by order and search custom_field data
+	$table_temporary = "CREATE TEMPORARY TABLE temp_custom_fields (
+		id_server int(10),
+		id_agent int(10),
+		name_custom_fields varchar(2048),
+		KEY `data_index_temp_1` (`id_server`, `id_agent`)
+	)";
+	db_process_sql($table_temporary);
+
+	//insert values array in table temporary
+	$values_insert = array();
+	foreach ($indexed_descriptions as $key => $value) {
+		$values_insert[] = "(".$value['id_server'].", ".$value['id_agente'].", '".$value['description']."')";
+	}
+	$values_insert_implode = implode(",", $values_insert);
+	$query_insert ="INSERT INTO temp_custom_fields VALUES ". $values_insert_implode;
+	db_process_sql($query_insert);
+
+	//search table for alias, custom field data, server_name, direction
+	$search_query = "";
+	if($search['value'] != ''){
+		$search_query = ' AND (tma.alias LIKE "%' . $search['value']. '%"';
+		$search_query .= ' OR tma.server_name LIKE "%' . $search['value']. '%"';
+		$search_query .= ' OR tma.direccion LIKE "%' . $search['value']. '%"';
+		$search_query .= ' OR temp.name_custom_fields LIKE "%' . $search['value']. '%" ) ';
+	}
+
+	//query all fields result
+	$query = sprintf("SELECT
+			tma.id_agente,
+			tma.id_tagente,
+			tma.id_tmetaconsole_setup,
+			tma.alias,
+			tma.direccion,
+			tma.server_name,
+			temp.name_custom_fields,
+			(CASE
+				WHEN tma.critical_count > 0
+					THEN 1
+				WHEN tma.critical_count = 0
+					AND tma.warning_count > 0
+					THEN 2
+				WHEN tma.critical_count = 0
+					AND tma.warning_count = 0
+					AND tma.unknown_count > 0
+					THEN 3
+				WHEN tma.critical_count = 0
+					AND tma.warning_count = 0
+					AND tma.unknown_count = 0
+					AND tma.notinit_count <> tma.total_count
+					THEN 0
+				WHEN tma.total_count = tma.notinit_count
+					THEN 5
+				ELSE 0
+			END) AS `status`
+		FROM tmetaconsole_agent tma
+		INNER JOIN temp_custom_fields temp
+			ON temp.id_agent = tma.id_tagente
+			AND temp.id_server = tma.id_tmetaconsole_setup
+		WHERE tma.disabled = 0
+		%s
+		%s
+		LIMIT %d OFFSET %d
+		",
+		$search_query,
+		$order_by,
+		$length,
+		$start
+	);
+
+	$result = db_get_all_rows_sql($query);
+
+	//query count
+	$query_count = sprintf("SELECT
+			COUNT(tma.id_agente) AS `count`
+		FROM tmetaconsole_agent tma
+		INNER JOIN temp_custom_fields temp
+			ON temp.id_agent = tma.id_tagente
+			AND temp.id_server = tma.id_tmetaconsole_setup
+		WHERE tma.disabled = 0
+		%s
+		",
+		$search_query
+	);
+
+	$count = db_get_sql($query_count);
+
+	//prepare rows for table dinamic
+	$data = array();
+	foreach ($result as $values) {
+		switch ($values['status']) {
+			case AGENT_STATUS_NORMAL:
+				$image_status = html_print_image(
+					'images/agent_ok.png',
+					true,
+					array(
+						'title' => __('Agents ok')
+					)
+				);
+				break;
+			case AGENT_STATUS_CRITICAL:
+				$image_status = html_print_image(
+					'images/agent_critical.png',
+					true,
+					array(
+						'title' => __('Agents critical')
+					)
+				);
+			break;
+			case AGENT_STATUS_WARNING:
+				$image_status = html_print_image(
+					'images/agent_warning.png',
+					true,
+					array(
+						'title' => __('Agents warning')
+					)
+				);
+			break;
+			case AGENT_STATUS_UNKNOWN:
+				$image_status = html_print_image(
+					'images/agent_unknown.png',
+					true,
+					array(
+						'title' => __('Agents unknown')
+					)
+				);
+			break;
+			case AGENT_STATUS_ALERT_FIRED:
+				$image_status = 'alert';
+			break;
+			case AGENT_STATUS_NOT_INIT:
+				$image_status = html_print_image(
+					'images/agent_notinit.png',
+					true,
+					array(
+						'title' => __('Agents not init')
+					)
+				);
+			break;
+			default:
+				$image_status= html_print_image(
+					'images/agent_ok.png',
+					true,
+					array(
+						'title' => __('Agents ok')
+					)
+				);
+				break;
+		}
+
+		$data[] = array(
+			"ref" => $referencia,
+			"data_custom_field" => $values['name_custom_fields'],
+			"server" => $values['server_name'],
+			"agent" => $values['alias'],
+			"IP" => $values['direccion'],
+			"status" => $image_status,
+			"id_agent" => $values['id_tagente'],
+			"id_server" => $values['id_tmetaconsole_setup']
+		);
+	}
+
+	$result = array(
+		"draw" => $draw,
+		"recordsTotal" => count($data),
+		"recordsFiltered" => $count,
+		"data" => $data
+	);
+	echo json_encode($result);
+	return;
+}
+
+if($build_table_child_custom_fields){
+	$id_agent = get_parameter("id_agent", 0);
+	$id_server = get_parameter("id_server", 0);
+
+	if(!$id_server || !$id_agent){
+		return false;
+	}
+
+	if (is_metaconsole()) {
+		$server = metaconsole_get_connection_by_id ($id_server);
+		metaconsole_connect($server);
+	}
+
+	$query = sprintf("SELECT tam.nombre,
+			tam.min_warning, tam.max_warning,
+			tam.min_critical, tam.max_critical,
+			tae.estado, tae.current_interval,
+			tae.utimestamp
+		FROM tagente_modulo tam
+		INNER JOIN tagente_estado tae
+			ON tam.id_agente_modulo = tae.id_agente_modulo
+		WHERE tam.id_agente = %d",
+		$id_agent
+	);
+
+	$modules = db_get_all_rows_sql ($query);
+
+	$table_modules = new stdClass();
+	$table_modules->width = "100%";
+	$table_modules->class="databox data";
+
+	$table_modules->head = array();
+	$table_modules->head[0] = __('Name');
+	$table_modules->head[1] = __('Min Warning');
+	$table_modules->head[2] = __('Max Warning');
+	$table_modules->head[3] = __('Min Critical');
+	$table_modules->head[4] = __('Max Critical');
+	$table_modules->head[5] = __('Status');
+	$table_modules->head[6] = __('Current interval');
+	$table_modules->head[7] = __('utimestamp');
+
+	$table_modules->data = array();
+	if(isset($modules) && is_array($modules)){
+		foreach ($modules as $key => $value) {
+			$table_modules->data[$key][0] = $value['nombre'];
+			$table_modules->data[$key][1] = $value['min_warning'];
+			$table_modules->data[$key][2] = $value['max_warning'];
+			$table_modules->data[$key][3] = $value['min_critical'];
+			$table_modules->data[$key][4] = $value['max_critical'];
+			$table_modules->data[$key][5] = $value['estado'];
+			$table_modules->data[$key][6] = $value['current_interval'];
+			$table_modules->data[$key][7] = date('d/m/Y h:i:s', $value['utimestamp']);
+		}
+	}
+
+	if (is_metaconsole()) {
+			metaconsole_restore_db();
+	}
+
+	html_print_table ($table_modules);
+
+	return;
+}
 
 }
 

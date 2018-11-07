@@ -1564,7 +1564,7 @@ function ui_process_page_head ($string, $bitfield) {
 	}
 	else {
 		$config['jquery'] = array_merge(
-			array ("jquery" => "include/javascript/jquery-1.9.0.js",
+			array ("jquery" => "include/javascript/jquery-3.3.1.min.js",
 				"pandora" => "include/javascript/jquery.pandora.js",
 				'jquery-ui' => 'include/javascript/jquery.jquery-ui-1.10.0.custom.js'),
 			$config['jquery']);

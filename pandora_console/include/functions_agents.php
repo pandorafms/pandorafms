@@ -3021,7 +3021,16 @@ function agent_counters_custom_fields($filters){
 	//filter custom name
 	$custom_field_name = $filters['id_custom_fields'];
 
-	$module_filter = ' AND (select count(*) as n from tagente_modulo where nombre LIKE "%desc%" and id_agente=ta.id_agente) > 0 ';
+	//filters module
+	$module_filter = "";
+	if($filters['module_search']){
+		$module_filter = ' AND (
+			SELECT count(*) AS n
+			FROM tagente_modulo
+			WHERE nombre LIKE "%' . $filters['module_search'] . '%"
+				AND id_agente=ta.id_agente
+		) > 0 ';
+	}
 
 	if(is_metaconsole()){
 		$metaconsole_connections = metaconsole_get_connection_names();
@@ -3076,7 +3085,6 @@ function agent_counters_custom_fields($filters){
 				$result_meta[$server_data['id']] = db_get_all_rows_sql($query);
 
 				$query_data = sprintf("SELECT
-						CONCAT(ta.id_agente,', ', %d) AS ids,
 						tcd.description,
 						ta.id_agente,
 						%d AS id_server
@@ -3095,7 +3103,6 @@ function agent_counters_custom_fields($filters){
 						%s
 						%s
 					",
-					$server_data['id'],
 					$server_data['id'],
 					$custom_field_name,
 					$custom_data_and,
@@ -3171,6 +3178,7 @@ function agent_counters_custom_fields($filters){
 			$final_result['counters_name'] = $array_data;
 		}
 
+		/*
 		if(isset($data) && is_array($data)){
 			$data = array_reduce($data, function ($data, $item) {
 				$node_id = (int) $item["id_server"];
@@ -3191,9 +3199,10 @@ function agent_counters_custom_fields($filters){
 				"id_pairs_for_query" => ""
 			));
 
-			$final_result['ids'] = $data["id_pairs_for_query"];
 			$final_result['indexed_descriptions'] = $data["descriptions_by_node_and_agent"];
 		}
+		*/
+		$final_result['indexed_descriptions'] = $data;
 	}
 	else{
 		//TODO

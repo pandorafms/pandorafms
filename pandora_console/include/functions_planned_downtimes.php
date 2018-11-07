@@ -722,12 +722,12 @@ function planned_downtimes_created ($values) {
 	else if (!$check_id_user){
 		return array('return' => false,
 			'message' => __('Not created. Error inserting data') . ". "
-				. __('User not exist'));
+				. __('There is no user with such id'));
 	}
 	else if (!$check_group && $values['id_group'] != 0) {
 		return array('return' => false,
 			'message' => __('Not created. Error inserting data') . ". "
-				. __('Group not exist'));
+				. __('There is no group with such id'));
 	}
 	else {
 		if (trim(io_safe_output($values['name'])) != '') {

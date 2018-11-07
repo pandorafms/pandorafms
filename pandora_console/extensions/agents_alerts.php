@@ -472,7 +472,7 @@ function print_alerts_summary_modal_window($id, $alerts) {
 		
 		if ($alert["times_fired"] > 0) {
 			$status = STATUS_ALERT_FIRED;
-			$title = __('Alert fired').' '.$alert["times_fired"].' '.__('times');
+			$title = __('Alert fired').' '.$alert["internal_counter"].' '.__('time(s)');
 		}
 		elseif ($alert["disabled"] > 0) {
 			$status = STATUS_ALERT_DISABLED;

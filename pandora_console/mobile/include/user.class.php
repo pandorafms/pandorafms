@@ -34,10 +34,9 @@ class User {
 				self::$instance = $user;
 			}
 			else {
-				self::$instance = new self;
+				self::$instance = new self();
 			}
 		}
-		
 		return self::$instance;
 	}
 	
@@ -228,12 +227,8 @@ class User {
 		$ui->showFooter(false);
 		$ui->beginContent();
 		
-		if ($system->getConfig('metaconsole'))
-			$logo_image = html_print_image (ui_get_mobile_login_icon(),
-						true, array ("alt" => "logo", "border" => 0));
-		else
-			$logo_image = html_print_image (ui_get_mobile_login_icon(),
-						true, array ("alt" => "logo", "border" => 0),false, false, false, true);
+		$logo_image = html_print_image (ui_get_mobile_login_icon(),
+			true, array ("alt" => "logo", "border" => 0), false, false, false, true);
 		
 		$ui->contentAddHtml('<div style="text-align: center;" class="login_logo">' .
 			$logo_image . '</div>');
@@ -292,7 +287,7 @@ class User {
 		$ui->beginContent();
 			$ui->contentAddHtml('<div style="text-align: center;" class="login_logo">' .
 				html_print_image (ui_get_mobile_login_icon(),
-					true, array ("alt" => "logo", "border" => 0)) .
+					true, array ("alt" => "logo", "border" => 0), false, false, false, true) .
 					'</div>');
 			$ui->contentAddHtml('<div id="login_container">');
 			$ui->beginForm();

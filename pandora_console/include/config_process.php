@@ -20,9 +20,9 @@
  */
 
 /**
- * Pandora build version and version 
+ * Pandora build version and version
  */
-$build_version = 'PC181025';
+$build_version = 'PC181107';
 $pandora_version = 'v7.0NG.728';
 
 // Do not overwrite default timezone set if defined.
@@ -78,7 +78,7 @@ else {
 
 // Check if mysqli is available
 if (!(isset($config["mysqli"]))) {
-	$config["mysqli"] = extension_loaded(mysqli);
+	$config["mysqli"] = extension_loaded('mysqli');
 }
 
 $config['start_time'] = microtime (true);
@@ -250,10 +250,20 @@ if (isset($_POST['vc_refr'])) {
 
 
 //======= Autorefresh code =============================================
-$select = db_process_sql("SELECT autorefresh_white_list FROM tusuario WHERE id_user = '" . $config['id_user'] . "'");
-$autorefresh_list = json_decode($select[0]['value']);
-$config['autorefresh_white_list'] = array();
-$config['autorefresh_white_list'] = $autorefresh_list;
+if(isset($config['id_user'])){
+	$select = db_process_sql("SELECT autorefresh_white_list FROM tusuario WHERE id_user = '" . $config['id_user'] . "'");
+	if(isset($select[0]['value'])){
+		$autorefresh_list = json_decode($select[0]['value']);
+	}
+	else{
+		$autorefresh_list =null;
+	}
+	$config['autorefresh_white_list'] = array();
+	$config['autorefresh_white_list'] = $autorefresh_list;
+}
+else{
+	$config['autorefresh_white_list'] = null;
+}
 // Specific metaconsole autorefresh white list sections
 if (defined('METACONSOLE')) {
 	$config['autorefresh_white_list'][] = 'monitoring/tactical';

@@ -69,6 +69,10 @@ require_once('functions_io.php');
 //}
 
 function https_is_running() {
+	if(isset ($_SERVER['HTTP_X_FORWARDED_PROTO'])
+		&& $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https') {
+		return true;
+	}
 	if (isset ($_SERVER['HTTPS'])
 		&& ($_SERVER['HTTPS'] === true
 		|| $_SERVER['HTTPS'] == 'on')) {
@@ -1369,10 +1373,11 @@ function is_metaconsole() {
  *
  * @return bool
  */
-function is_management_allowed() {
+function is_management_allowed($hkey = '') {
 	global $config;
 	return ( (is_metaconsole() && $config["centralized_management"])
-		|| (!is_metaconsole() && !$config["centralized_management"]));
+		|| (!is_metaconsole() && !$config["centralized_management"])
+		|| (!is_metaconsole() && $config["centralized_management"]) && $hkey == generate_hash_to_api());
 }
 
 /**
@@ -2466,26 +2471,26 @@ function is_double_auth_enabled ($user) {
 
 function clear_pandora_error_for_header() {
 	global $config;
-	
+
 	$config["alert_cnt"] = 0;
 	$_SESSION["alert_msg"] = array();
 }
 
 function set_pandora_error_for_header($message, $title = null) {
 	global $config;
-	
+
 	if (!isset($config['alert_cnt']))
 		$config['alert_cnt'] = 0;
-	
-	if (!isset($_SESSION['alert_msg']))
+
+	if ( ( !isset($_SESSION['alert_msg']) && (!is_array($_SESSION['alert_msg'])) ) )
 		$_SESSION['alert_msg'] = array();
-	
+
 	$message_config = array();
 	if (isset($title))
 		$message_config['title'] = $title;
 	$message_config['message'] = $message;
 	$message_config['no_close'] = true;
-	
+
 	$config['alert_cnt']++;
 	$_SESSION['alert_msg'][] = array('type' => 'error', 'message' => $message_config);
 }
@@ -3128,16 +3133,23 @@ function series_type_graph_array($data, $show_elements_graph){
 				if (isset($show_elements_graph['labels']) &&
 					is_array($show_elements_graph['labels']) &&
 					(count($show_elements_graph['labels']) > 0)){
-						$name_legend = $data_return['legend'][$key] = $show_elements_graph['labels'][$value['agent_module_id']] . ' ' ;
+						if ($show_elements_graph['unit'])
+						$name_legend = $data_return['legend'][$key] = $value['agent_alias']  . ' / ' .	$value['module_name'] . ' / ' . __('Unit ')  . ' ' . $show_elements_graph['unit'] .': ';
+						else
+						$name_legend = $data_return['legend'][$key] = $value['agent_alias']  . ' / ' .	$value['module_name'] . ': ';
 				}
 				else{
 					if(strpos($key, 'baseline') !== false){
-						$name_legend = $data_return['legend'][$key] = $value['agent_alias']  . ' / ' .
-													$value['module_name'] . ' Baseline ';
+						if ($show_elements_graph['unit'])
+						$name_legend = $data_return['legend'][$key] = $value['agent_alias']  . ' / ' .	$value['module_name'] . ' / ' . __('Unit ')  . ' ' . $show_elements_graph['unit'] .'Baseline ';
+						else
+						$name_legend = $data_return['legend'][$key] = $value['agent_alias']  . ' / ' .	$value['module_name'] . 'Baseline ';
 					}
 					else{
-						$name_legend = $data_return['legend'][$key] = $value['agent_alias']  . ' / ' .
-													$value['module_name'] . ': ';
+						if ($show_elements_graph['unit'])
+						$name_legend = $data_return['legend'][$key] = $value['agent_alias']  . ' / ' .	$value['module_name'] . ' / ' . __('Unit ')  . ' ' . $show_elements_graph['unit'] .': ';
+						else
+						$name_legend = $data_return['legend'][$key] = $value['agent_alias']  . ' / ' .	$value['module_name'] . ': ';
 					}
 				}
 
@@ -3172,6 +3184,11 @@ function series_type_graph_array($data, $show_elements_graph){
 			elseif(!$show_elements_graph['fullscale'] && strpos($key, 'min') !== false ||
 					!$show_elements_graph['fullscale'] && strpos($key, 'max') !== false){
 				$data_return['series_type'][$key] = $type_graph;
+
+				if ($show_elements_graph['unit'])
+					$name_legend = $data_return['legend'][$key] = $value['agent_alias']  . ' / ' .	$value['module_name'] . ' / ' . __('Unit ')  . ' ' . $show_elements_graph['unit'] .': ';
+				else
+					$name_legend = $data_return['legend'][$key] = $value['agent_alias']  . ' / ' .	$value['module_name'] . ': ';
 
 				$data_return['legend'][$key] = $name_legend;
 				if($show_elements_graph['type_mode_graph']){
@@ -3234,6 +3251,10 @@ function series_type_graph_array($data, $show_elements_graph){
 						__('Percentil') . ' ' .
 						$config['percentil']  .
 						'º ' . __('of module') . ' ';
+						if ($show_elements_graph['unit'])
+						$name_legend = $data_return['legend'][$key] = $value['agent_alias']  . ' / ' .	$value['module_name'] . ' / ' . __('Unit ')  . ' ' . $show_elements_graph['unit'] .': ';
+						else
+						$name_legend = $data_return['legend'][$key] = $value['agent_alias']  . ' / ' .	$value['module_name'] . ': ';
 					$data_return['legend'][$key] .= $name_legend;
 					$data_return['legend'][$key] .= remove_right_zeros(
 													number_format(
@@ -3367,4 +3388,8 @@ function validate_csrf_code() {
 	return isset($code) && isset($_SESSION['csrf_code'])
 		&& $_SESSION['csrf_code'] == $code;
 }
+
+function generate_hash_to_api(){
+	hash('sha256', db_get_value ('value', 'tupdate_settings', '`key`', 'customer_key'));
+	}
 ?>

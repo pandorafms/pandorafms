@@ -89,11 +89,8 @@ $interface_traffic_modules = array(
 		<script type='text/javascript' src='../../include/javascript/jquery.pandora.js'></script>
 		<script type='text/javascript' src='../../include/javascript/jquery.jquery-ui-1.10.0.custom.js'></script>
 		<?php
-			if ($config['flash_charts']) {
-				//Include the javascript for the js charts library
-				include_once($config["homedir"] . '/include/graphs/functions_flot.php');
-				echo include_javascript_dependencies_flot_graph(true, "../");
-			}
+			include_once($config["homedir"] . '/include/graphs/functions_flot.php');
+			echo include_javascript_dependencies_flot_graph(true, "../");
 		?>
 			<script type='text/javascript'>
 			<!--
@@ -146,10 +143,7 @@ $interface_traffic_modules = array(
 
 		$urlImage = ui_get_full_url(false);
 
-		if ($config['flash_charts'] == 1)
-			echo '<div style="margin-left: 70px; padding-top: 10px;">';
-		else
-			echo '<div style="margin-left: 50px; padding-top: 10px;">';
+		echo '<div style="margin-left: 70px; padding-top: 10px;">';
 
 		$height = 400;
 		$width  = '90%';
@@ -320,30 +314,22 @@ ui_require_jquery_file("ui.datepicker-" . $custom_user_language, "include/javasc
 ui_include_time_picker(true);
 ?>
 <script>
+	var show_overview = false;
+	var height_window;
+	var width_window;
+	$(document).ready(function() {
+		height_window = $(window).height();
+		width_window = $(window).width();
+	});
 
-<?php
-	//Resize window when show the overview graph.
-	if ($config['flash_charts']) {
-?>
-		var show_overview = false;
-		var height_window;
-		var width_window;
-		$(document).ready(function() {
-			height_window = $(window).height();
-			width_window = $(window).width();
+	$("*").filter(function() {
+		if (typeof(this.id) == "string")
+			return this.id.match(/menu_overview_graph.*/);
+		else
+			return false;
+		}).click(function() {
+			show_overview = !show_overview;
 		});
-
-		$("*").filter(function() {
-			if (typeof(this.id) == "string")
-				return this.id.match(/menu_overview_graph.*/);
-			else
-				return false;
-			}).click(function() {
-				show_overview = !show_overview;
-			});
-<?php
-	}
-?>
 
 	// Add datepicker and timepicker
 	$("#text-start_date").datepicker({

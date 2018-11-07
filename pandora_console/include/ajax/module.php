@@ -539,14 +539,6 @@ if ($list_modules) {
 			break;
 	}
 
-	switch ($config["dbtype"]) {
-		case "oracle":
-			if (isset($order['field']) && $order['field'] == 'tagente_modulo.nombre') {
-				$order['field'] = 'dbms_lob.substr(tagente_modulo.nombre,4000,1)';
-			}
-			break;
-	}
-
 	// Fix: for tag functionality groups have to be all user_groups (propagate ACL funct!)
 	$groups = users_get_groups($config["id_user"], $access);
 
@@ -599,8 +591,7 @@ if ($list_modules) {
 
 	//Count monitors/modules
 	$order_sql = $order['field'] . " " . $order['order'];
-	$sql = "SELECT COUNT(*)
-		FROM tagente_modulo
+	$sql_condition = "FROM tagente_modulo
 		$tags_join
 		INNER JOIN tagente_estado
 			ON tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
@@ -609,13 +600,15 @@ if ($list_modules) {
 		WHERE tagente_modulo.id_agente = $id_agente
 			AND nombre LIKE '$status_text_monitor_sql'
 			AND delete_pending = 0
+			AND disabled = 0
 			AND $status_filter_sql
+			AND $status_module_group_filter
 			$tags_sql
 			AND tagente_estado.estado != $monitor_filter
-		GROUP BY tagente_modulo.id_agente_modulo
 		";
 
-	$count_modules = db_get_all_rows_sql($sql);
+	$count_modules = db_get_all_rows_sql('SELECT COUNT(DISTINCT tagente_modulo.id_agente_modulo)' . $sql_condition);
+
 	if (isset($count_modules[0]))
 		$count_modules = reset($count_modules[0]);
 	else
@@ -623,22 +616,9 @@ if ($list_modules) {
 
 	//Get monitors/modules
 	// Get all module from agent
-	$sql = "SELECT tagente_estado.*, tagente_modulo.*, tmodule_group.*
-		FROM tagente_modulo
-		$tags_join
-		INNER JOIN tagente_estado
-			ON tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
-		LEFT JOIN tmodule_group
-			ON tagente_modulo.id_module_group = tmodule_group.id_mg
-		WHERE tagente_modulo.id_agente = $id_agente
-			AND nombre LIKE '$status_text_monitor_sql'
-			AND delete_pending = 0
-			AND $status_filter_sql
-			$tags_sql
-			AND tagente_estado.estado != $monitor_filter
-		GROUP BY tagente_modulo.id_agente_modulo
-		ORDER BY tmodule_group.name, $order_sql
-	";
+	$sql_modules_info = "SELECT tagente_estado.*, tagente_modulo.*, tmodule_group.* 
+		$sql_condition
+		GROUP BY tagente_modulo.id_agente_modulo ORDER BY $order_sql";
 
 	if ($monitors_change_filter) {
 		$limit = " LIMIT " . $config['block_size'] . " OFFSET 0";
@@ -651,10 +631,10 @@ if ($list_modules) {
 		$paginate_module = $config['paginate_module'];
 
 	if ($paginate_module) {
-		$modules = db_get_all_rows_sql ($sql . $limit);
+		$modules = db_get_all_rows_sql ($sql_modules_info . $limit);
 	}
 	else {
-		$modules = db_get_all_rows_sql ($sql);
+		$modules = db_get_all_rows_sql ($sql_modules_info);
 	}
 	if (empty ($modules)) {
 		$modules = array ();

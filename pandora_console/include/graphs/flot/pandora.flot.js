@@ -1,15 +1,12 @@
-/*
-
-
-*/
 
 function pandoraFlotPie(graph_id, values, labels, nseries, width, font_size, water_mark, separator, legend_position, height, colors, hide_labels) {
 	var labels = labels.split(separator);
 	var data = values.split(separator);
+
 	if (colors != '') {
 		colors = colors.split(separator);
 	}
-	
+
 	var pieRadius = 0.9;
 
 	var color = null;
@@ -17,31 +14,7 @@ function pandoraFlotPie(graph_id, values, labels, nseries, width, font_size, wat
 		if (colors != '') {
 			color = colors[i];
 		}
-		
 		data[i] = { label: labels[i], data: parseFloat(data[i]), color: color}
-	}
-
-	var label_conf;
-
-	if (width < 400 || hide_labels) {
-		label_conf = {
-			show: false
-		};
-	}
-	else {
-		label_conf = {
-			show: true,
-			radius: pieRadius,
-			formatter: function(label, series) {
-				return '<div style="font-size:' + font_size + 'pt;' +
-					'text-align:center;padding:2px;color:white;">' +
-						label + '<br/>' + series.percent.toFixed(2) + '%</div>';
-			},
-			background: {
-				opacity: 0.5,
-				color: ''
-			}
-		};
 	}
 
 	var show_legend = true;
@@ -50,29 +23,34 @@ function pandoraFlotPie(graph_id, values, labels, nseries, width, font_size, wat
 	}
 
 	var conf_pie = {
-			series: {
-				pie: {
-					show: true,
-					radius: pieRadius,
-					//offset: {top: -100},
-					label: label_conf,
-					//$label_str
-				}
-			},
-			legend: {
-				show: show_legend
-			},
-			grid: {
-				hoverable: true,
-				clickable: true
+		series: {
+			pie: {
+				show: true,
+				radius: pieRadius
 			}
-		};
-
-		if (width < 400) {
-			conf_pie.legend.labelFormatter = function(label, series) {
-					return label + " (" + series.percent.toFixed(2) + "%)";
-				}
+		},
+		legend: {
+			show: show_legend
+		},
+		grid: {
+			hoverable: true,
+			clickable: true
 		}
+	};
+
+	if(hide_labels != false && hide_labels != 0){
+		conf_pie.series.pie.label = {
+			show: true,
+			radius: 2/3,
+			formatter: labelFormatter,
+			threshold: 0.1
+		}
+	}
+	else{
+		conf_pie.series.pie.label = {
+			show:false
+		}
+	}
 
 	switch (legend_position) {
 		case 'bottom':
@@ -89,7 +67,7 @@ function pandoraFlotPie(graph_id, values, labels, nseries, width, font_size, wat
 	var plot = $.plot($('#'+graph_id), data, conf_pie);
 
 	var legends = $('#'+graph_id+' .legendLabel');
-	legends.css('font-size', font_size+'pt');
+		legends.css('font-size', font_size+'pt');
 
 	// Events
 	$('#' + graph_id).bind('plothover', pieHover);
@@ -106,14 +84,18 @@ function pandoraFlotPie(graph_id, values, labels, nseries, width, font_size, wat
 		legends.eq(index).css('color', '');
 	}
 
+	function labelFormatter(label, series) {
+		return '<div style="font-size:' + font_size + 'pt;' + 'text-align:center;padding:2px;color:white;">' +
+						label + '<br/>' + series.percent.toFixed(2) + '%</div>';
+	}
+
 	// Reset styles
 	function resetInteractivity() {
 		legends.css('color', '#3F3F3D');
 	}
-	
+
 	if (water_mark) {
-		set_watermark(graph_id, plot,
-			$('#watermark_image_' + graph_id).attr('src'));
+		set_watermark(graph_id, plot,$('#watermark_image_' + graph_id).attr('src'));
 	}
 }
 
@@ -687,16 +669,21 @@ function pandoraFlotVBars(graph_id, values, labels, labels_long, legend, colors,
 	}
 }
 
-function pandoraFlotSlicebar(graph_id, values, datacolor, labels, legend, acumulate_data, intervaltick, water_mark, maxvalue, separator, separator2, graph_javascript, id_agent, full_legend) {
+function pandoraFlotSlicebar(graph_id, values, datacolor, labels, legend, acumulate_data, intervaltick,
+	font, font_size, separator, separator2, id_agent, full_legend, not_interactive) {
+
 	values = values.split(separator2);
 	labels = labels.split(separator);
 	legend = legend.split(separator);
 	acumulate_data = acumulate_data.split(separator);
 	datacolor = datacolor.split(separator);
+
 	if (full_legend != false) {
 		full_legend = full_legend.split(separator);
 	}
 
+	var font_size = parseInt(font_size);
+	var font      = font.split("/").pop().split(".").shift();
 	// Check possible adapt_keys on classes
 	check_adaptions(graph_id);
 
@@ -704,6 +691,7 @@ function pandoraFlotSlicebar(graph_id, values, datacolor, labels, legend, acumul
 
 	for (i=0;i<values.length;i++) {
 		var serie = values[i].split(separator);
+
 		var aux = new Array();
 		$.each(serie,function(i,v) {
 			aux.push([v, i]);
@@ -711,75 +699,63 @@ function pandoraFlotSlicebar(graph_id, values, datacolor, labels, legend, acumul
 
 		datas.push({
 			data: aux,
-			bars: { show: true, fill: true ,fillColor: datacolor[i] , horizontal: true, lineWidth:0, steps:false }
+			bars: {
+				show: true,
+				fill: 1,
+				fillColor: { colors: [ { opacity: 1 }, { opacity: 1 } ] },
+				lineWidth:0,
+				horizontal: true,
+				steps:false,
+				barWidth: 24 * 60 * 60 * 600
+			},
+			color:datacolor[i]
 		});
 	}
-
-	var stack = 0, bars = true, lines = false, steps = false;
 
 	var regex = /visual_console/;
 	var match = regex.exec(window.location.href);
 
-	if (match == null) {
-		var options = {
-			series: {
-				stack: stack,
-				shadowSize: 0.1,
-				color: '#ddd'
+	var options = {
+		series: {
+			stack: true,
+        	bars:{
+				align: 'center'
+			}
+		},
+		grid: {
+			borderWidth:1,
+			borderColor: '#C1C1C1',
+			tickColor: '#fff'
 			},
-			grid: {
-				hoverable: true,
-				clickable: true,
-				borderWidth:1,
-				borderColor: '',
-				tickColor: '#fff'
-				},
-			xaxes: [ {
-					tickFormatter: xFormatter,
-					color: '',
-					tickSize: intervaltick,
-					tickLength: 0
-					} ],
-			yaxes: [ {
-					show: false,
-					tickLength: 0
-				}],
-			legend: {
-				show: false
+		xaxes: [ {
+				tickFormatter: xFormatter,
+				color: '',
+				tickSize: intervaltick,
+				tickLength: 0,
+				font: {
+					size: font_size + 2,
+					family: font+'Font'
 				}
-		};
+				} ],
+		yaxes: [ {
+				show: false,
+				tickLength: 0
+			}],
+		legend: {
+			show: false
+			}
+	};
+
+	if (match == null && not_interactive == 0) {
+		options.grid['hoverable'] = true;
+		options.grid['clickable'] = true;
 	}
-	else {
-		var options = {
-			series: {
-				stack: stack,
-				shadowSize: 0.1,
-				color: '#ddd'
-			},
-			grid: {
-				hoverable: false,
-				clickable: false,
-				borderWidth:1,
-				borderColor: '',
-				tickColor: '#fff'
-				},
-			xaxes: [ {
-					tickFormatter: xFormatter,
-					color: '',
-					tickSize: intervaltick,
-					tickLength: 0
-					} ],
-			yaxes: [ {
-					show: false,
-					tickLength: 0
-				}],
-			legend: {
-				show: false
-				}
-		};
+	else{
+		options.grid['hoverable'] = false;
+		options.grid['clickable'] = false;
 	}
 
-	var plot = $.plot($('#'+graph_id), datas, options );
+	$.plot($('#'+graph_id), datas, options );
 
 	if (match == null) {
 		// Events
@@ -849,12 +825,10 @@ function pandoraFlotSlicebar(graph_id, values, datacolor, labels, legend, acumul
 
 	// Format functions
 	function xFormatter(v, axis) {
-		for (i = 0; i < acumulate_data.length; i++) {
-			if (acumulate_data[i] == v) {
-				return '<span style=\'font-size: 6pt\'>' + legend[i] + '</span>';
-			}
-		}
-		return '';
+		v = new Date(1000*v);
+		date_format = (v.getHours()<10?'0':'') + v.getHours() + ":" +
+			(v.getMinutes()<10?'0':'') + v.getMinutes();
+		return date_format;
 	}
 }
 
@@ -2262,17 +2236,25 @@ function pandoraFlotArea( graph_id, values, legend,
 	}
 
 	$('#overview_' + graph_id).css('display', 'none');
-
+	
 	if (menu) {
 		var parent_height;
 		$('#menu_overview_' + graph_id).click(function() {
 			$('#overview_' + graph_id).toggle();
 		});
 
-		$("#menu_export_csv_"+graph_id)
-			.click(function (event) {
-				event.preventDefault();
+		$("#menu_export_csv_"+graph_id).click(function (e) {
+				e.preventDefault();
 				plot.exportDataCSV();
+				var es_firefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
+					if(es_firefox){
+			   		 $("#dialog").css('visibility', 'visible').dialog();
+					}
+				delete data_base[0].threshold;
+				plot = $.plot($('#' + graph_id), data_base,
+				$.extend(true, {}, options, {
+					legend: { show: true }
+				}));
 		});
 
 		$('#menu_threshold_' + graph_id).click(function() {
@@ -2508,7 +2490,6 @@ function update_left_width_canvas(graph_id) {
 
 function check_adaptions(graph_id) {
 	var classes = $('#'+graph_id).attr('class').split(' ');
-
 	$.each(classes, function(i,v) {
 		// If has a class starting with adapted, we adapt it
 		if (v.split('_')[0] == 'adapted') {

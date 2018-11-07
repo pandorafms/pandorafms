@@ -3,44 +3,36 @@
  * @package Include/help/ja
  */
 ?>
-<h1>Cron for server modules</h1>
+<h1>サーバモジュールの cron</h1>
 
-Using the configuration parameter sets <b>Cron from</b> and <b>Cron to</b> makes
-it possible for a module to run only for certain periods of time. 
-The way in which it is configured is similar to the syntax of 
-<a style="font-size:14px;" href="https://en.wikipedia.org/wiki/Cron">cron</a>. 
-Just as they appear in the <?php echo get_product_name();?> console, each one of the parameters  
-has three options.
+設定パラメータ <b>Cron from</b> および <b>Cron to</b> を用いることにより、特定の時間にのみモジュールを実行するようにできます。
+設定のための書式は、<a style="font-size:14px;" href="https://en.wikipedia.org/wiki/Cron">cron</a> に似ています。
+<?php echo get_product_name();?> コンソールに表示され、それぞれのパラメータには 3つのオプションがあります。
 
 <h4>Cron from: any</h4>
 
-The module will not have restrictions in that parameter. Whatever the value is 
-will be executed, and it is equivalent to the asterisk (*) in the cron nomenclature. In this 
-case <b>Cron to</b> is ignored.
+パラメータによるモジュールに対する制限はありません。値が何であっても実行され、cron のアスタリスク(*)と同等です。この場合、<b>Cron to</b> は無視されます。
 
 <h4>Cron from: different from any. Cron to: any</h4>
 
-The module will run only during the time in which the date matches that  
-parameter. It is equivalent to writingjust one number in cron nomenclature.
+パラメータにマッチする日時の間のみモジュールが実行されます。cron に一つの値を記載するのと同等です。
 
 <h4>Cron from: different from any. Cron to: different from any</h4>
 
-The module will run only during the time specified between <b>Cron from</b> and <b>Cron to</b>. 
-It is equivalent to writing  number dash number (n-n) in cron nomenclature.
+モジュールは、<b>Cron from</b> と <b>Cron to</b> で指定された間の時間のみ実行されます。
+cron で、ハイフンを用いた数値(n-n)を記載するのと同等です。
 
-<h2>Agent interval</h2>
+<h2>エージェントの実行間隔</h2>
 
-As long as cron conditions are met, the agent will run following 
-its execution interval.
+cron 条件が満たされている限り、エージェントは実行間隔に従って実行されます。
 
-<h2>Examples</h2>
+<h2>例</h2>
 
 <ul>
-	<li><i>* * * * *</i>: No cron configured.</li>
-	<li><i>15 20 * * *</i>: It will run every day at 20:15.</li>
-	<li><i>* 20 * * *</i>: It will run every day during the hour 20, that is, from 20:00 to 20:59.</li>
-	<li><i>* 8-19 * * *</i>: It will run everyday from 8:00 to 19:59.</li>
-	<li><i>15-45 * 1-16 * *</i>: It will run every first 16 days of the month every hour, from quarter past to quarter to.</li>
-	<li><i>* * * 5 *</i>: It will run only in May.</li>
+	<li><i>* * * * *</i>: cron 設定なし。</li>
+	<li><i>15 20 * * *</i>: 毎日 20:15 に実行します。</li>
+	<li><i>* 20 * * *</i>: 毎日 20時台、20:00 から 20:59 の間に実行します。</li>
+	<li><i>* 8-19 * * *</i>: 毎日 8:00 から 19:59 の間に実行します。</li>
+	<li><i>15-45 * 1-16 * *</i>: 毎月 1日から 16日まで、毎時 15分から 45分の間で実行します。</li>
+	<li><i>* * * 5 *</i>: 5月にのみ実行します。</li>
 <ul>
-

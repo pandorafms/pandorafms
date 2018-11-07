@@ -36,7 +36,7 @@ use Encode::Locale;
 Encode::Locale::decode_argv;
 
 # version: define current version
-my $version = "7.0NG.728 PS181025";
+my $version = "7.0NG.728 PS181107";
 
 # save program name for logging
 my $progname = basename($0);
@@ -112,7 +112,7 @@ sub help_screen{
 	help_screen_line('--delete_group', '<group_name>', 'Delete an agent group');
 	help_screen_line('--update_group', '<group_id>','[<group_name> <parent_group_name> <icon> <description>]', 'Update an agent group');
 	help_screen_line('--stop_downtime', '<downtime_name>', 'Stop a planned downtime');
-	help_screen_line('--create_downtime', "<downtime_name> <description> <date_from> <date_to> <id_group> <monday> <tuesday>\n\t <wednesday> <thursday> <friday> <saturday> <sunday> <periodically_time_from>\n\t <periodically_time_to> <periodically_day_from> <periodically_day_to> <type_downtime> <type_execution> <type_periodicity>", 'Create a planned downtime');
+	help_screen_line('--create_downtime', "<downtime_name> <description> <date_from> <date_to> <id_group> <monday> <tuesday>\n\t <wednesday> <thursday> <friday> <saturday> <sunday> <periodically_time_from>\n\t <periodically_time_to> <periodically_day_from> <periodically_day_to> <type_downtime> <type_execution> <type_periodicity> <id_user>", 'Create a planned downtime');
 	help_screen_line('--add_item_planned_downtime', "<id_downtime> <id_agente1,id_agente2,id_agente3...id_agenteN> <name_module1,name_module2,name_module3...name_moduleN> ", 'Add a items planned downtime');
 	help_screen_line('--get_all_planned_downtimes', '<name> [<id_group> <type_downtime> <type_execution> <type_periodicity>]', 'Get all planned downtime');
 	help_screen_line('--get_planned_downtimes_items', '<name> [<id_group> <type_downtime> <type_execution> <type_periodicity>]', 'Get all items of planned downtimes');
@@ -173,7 +173,7 @@ sub help_screen{
 	print "\nUSERS:\n\n" unless $param ne '';
 	help_screen_line('--create_user', '<user_name> <user_password> <is_admin> [<comments>]', 'Create user');
 	help_screen_line('--delete_user', '<user_name>', 'Delete user');
-	help_screen_line('--update_user', '<user_id> <field_to_change> <new_value>', "Update a user field. The fields\n\t   can be the following: email, phone, is_admin (0-1), language, id_skin, flash_chart (0-1)\n\t  , comments, fullname, password");
+	help_screen_line('--update_user', '<user_id> <field_to_change> <new_value>', "Update a user field. The fields\n\t   can be the following: email, phone, is_admin (0-1), language, id_skin, comments, fullname, password");
 	help_screen_line('--enable_user', '<user_id>', 'Enable a given user');
 	help_screen_line('--disable_user', '<user_id>', 'Disable a given user');
 	help_screen_line('--add_profile', '<user_name> <profile_name> <group_name>', 'Add perfil to user');
@@ -2363,7 +2363,7 @@ sub cli_user_update() {
 	my $user_exists = get_user_exists ($dbh, $user_id);
 	exist_check($user_exists,'user',$user_id);
 	
-	if($field eq 'email' || $field eq 'phone' || $field eq 'is_admin' || $field eq 'language' || $field eq 'id_skin' || $field eq 'flash_chart') {
+	if($field eq 'email' || $field eq 'phone' || $field eq 'is_admin' || $field eq 'language' || $field eq 'id_skin') {
 		# Fields admited, no changes
 	}
 	elsif($field eq 'comments' || $field eq 'fullname') {
@@ -4095,7 +4095,7 @@ sub cli_policy_add_agent() {
 
 sub cli_create_planned_downtime() {
 	my $name = @ARGV[2];
-	my @todo = @ARGV[3..20];
+	my @todo = @ARGV[3..21];
 	my $other = join('|', @todo);
 	
 	my $result = api_call(\%conf,'set', 'planned_downtimes_created', $name, undef, "$other");
@@ -6035,7 +6035,7 @@ sub pandora_manage_main ($$$) {
 			cli_add_tag_to_module();
 		} 
 		elsif ($param eq '--create_downtime') {
-			param_check($ltotal, 19);
+			param_check($ltotal, 20);
 			cli_create_planned_downtime();
 		}
 		elsif ($param eq '--add_item_downtime') {

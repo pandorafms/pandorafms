@@ -1180,13 +1180,13 @@ ALTER TABLE titem MODIFY `source_data` int(10) unsigned;
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('big_operation_step_datos_purge', '100');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('small_operation_step_datos_purge', '1000');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('days_autodisable_deletion', '30');
-INSERT INTO `tconfig` (`token`, `value`) VALUES ('MR', 21);
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('MR', 22);
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('custom_docs_logo', 'default_docs.png');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('custom_support_logo', 'default_support.png');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('custom_logo_white_bg_preview', 'pandora_logo_head_white_bg.png');
 UPDATE tconfig SET value = 'https://licensing.artica.es/pandoraupdate7/server.php' WHERE token='url_update_manager';
 DELETE FROM `tconfig` WHERE `token` = 'current_package_enterprise';
-INSERT INTO `tconfig` (`token`, `value`) VALUES ('current_package_enterprise', '728');
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('current_package_enterprise', '729');
 
 -- ---------------------------------------------------------------------
 -- Table `tconfig_os`
@@ -1230,6 +1230,7 @@ ALTER TABLE tusuario ADD CONSTRAINT `fk_id_filter` FOREIGN KEY (`id_filter`) REF
 ALTER TABLE tusuario ADD COLUMN `session_time` int(10) signed NOT NULL default '0';
 alter table tusuario add autorefresh_white_list text not null default '';
 ALTER TABLE tusuario ADD COLUMN `time_autorefresh` int(5) unsigned NOT NULL default '30';
+ALTER TABLE `tusuario` DROP COLUMN `flash_chart`;
 
 -- ---------------------------------------------------------------------
 -- Table `tagente_modulo`
@@ -1739,6 +1740,8 @@ CREATE TABLE IF NOT EXISTS `tlayout_template` (
 	`is_favourite` INTEGER UNSIGNED NOT NULL default 0,
 	PRIMARY KEY(`id`)
 )  ENGINE = InnoDB DEFAULT CHARSET=utf8;
+
+ALTER TABLE tlayout_template MODIFY `name` varchar(600) NOT NULL;
 
 -- ---------------------------------------------------------------------
 -- Table `tlayout_template_data`

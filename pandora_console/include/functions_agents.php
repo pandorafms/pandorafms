@@ -28,13 +28,14 @@ require_once($config['homedir'] . '/include/functions_users.php');
  *
  * @param int $id_agent The agent id.
  * @param boolean $show_disabled Show the agent found althought it is disabled. By default false.
+ * @param boolean $force_meta 
  *
  * @return boolean The result to check if the agent is in the DB.
  */
-function agents_check_agent_exists($id_agent, $show_disabled = true) {
+function agents_check_agent_exists($id_agent, $show_disabled = true, $force_meta = false) {
 	$agent = db_get_value_filter(
 		'id_agente',
-		'tagente',
+		$force_meta ? 'tmetaconsole_agent' : 'tagente',
 		array('id_agente' => $id_agent, 'disabled' => !$show_disabled)
 	);
 
@@ -2733,17 +2734,18 @@ function agents_count_agents_filter ($filter = array(), $access = "AR") {
  *
  * @param int Id agent
  * @param string ACL access bit
+ * @param boolean $force_meta
  *
  * @return True if user has access, false if user has not permissions and
  * 		null if id agent does not exist
  */
-function agents_check_access_agent ($id_agent, $access = "AR") {
+function agents_check_access_agent ($id_agent, $access = "AR", $force_meta = false) {
 	global $config;
 
-	if (users_access_to_agent($id_agent, $access)) return true;
+	if (users_access_to_agent($id_agent, $access, false, $force_meta)) return true;
 
 	// If agent exist return false
-	if (agents_check_agent_exists($id_agent)) return false;
+	if (agents_check_agent_exists($id_agent, true, $force_meta)) return false;
 	// Return null otherwise
 	return null;
 }

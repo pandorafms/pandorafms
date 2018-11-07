@@ -198,8 +198,12 @@ echo "<div class='modalgobutton gopandora'>
 <script>
 
 $(".cerrar").click(function(){
-  $("#alert_messages").hide();
-  $( "#opacidad" ).remove();
+  $("#alert_messages")
+    .css('opacity', 0)
+    .hide();
+  $( "#opacidad" )
+    .css('opacity', 0)
+    .remove();
 });
 
 $(".gopandora").click(function(){

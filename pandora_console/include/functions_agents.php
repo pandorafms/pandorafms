@@ -921,6 +921,10 @@ function agents_get_group_agents (
 			unset ($search["alias"]);
 		}
 		
+		if (isset($search['id_os'])) {
+			$filter[] = "id_os = ". $search['id_os'];
+		}
+		
 		if (isset($search['status'])) {
 			switch ($search['status']) {
 				case AGENT_STATUS_NORMAL:

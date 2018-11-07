@@ -30,7 +30,7 @@
 		},
 		yaxis: {
 			tickFormatter: function (value, axis) {
-				return shortNumber(value);
+				return shortNumber(roundToTwo(value)) ;
 			}
 		},
 		series: {
@@ -177,6 +177,9 @@
 		}
 
 		return number + " " + shorts[pos];
+	}
+	function roundToTwo(num) {
+		return +(Math.round(num + "e+2")  + "e-2");
 	}
 
 	$('#graph').change(function() {

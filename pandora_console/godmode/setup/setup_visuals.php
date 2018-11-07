@@ -865,7 +865,7 @@ $row++;
 $table_other->data[$row][0] = __('Show only the group name');
 $table_other->data[$row][0] .= ui_print_help_tip(
 	__('Show the group name instead the group icon.'), true);
-	html_print_checkbox('show_group_name', 1,
+$table_other->data[$row][1] = html_print_checkbox('show_group_name', 1,
 	$config['show_group_name'], true);
 $row++;
 

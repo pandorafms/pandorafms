@@ -667,6 +667,8 @@ sub main() {
 				}
 				
 				logger (\%Config, $Config{'rb_product_name'} . ' Server restarting (' . $@ . ') in 5 seconds.', 1);
+				# Re-initialize
+				pandora_init(\%Config, pandora_get_initial_product_name() . ' Server');
 				pandora_load_config (\%Config);
 				pandora_restart (5);
 			}

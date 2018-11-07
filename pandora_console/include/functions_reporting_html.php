@@ -480,8 +480,8 @@ function reporting_html_SLA($table, $item, $mini) {
 					$row[] = $sla['module'];
 
 					if(is_numeric($sla['dinamic_text'])){
-						$row[] = sla_truncate($sla['max'], $config['graph_precision']) . " / " . 
-							 sla_truncate($sla['min'], $config['graph_precision']);
+						$row[] = sla_truncate($sla['max'], $config['graph_precision']) . " / " .
+							sla_truncate($sla['min'], $config['graph_precision']);
 					}
 					else{
 						$row[] = $sla['dinamic_text'];
@@ -489,14 +489,6 @@ function reporting_html_SLA($table, $item, $mini) {
 					$row[] = round($sla['sla_limit'], 2) . "%";
 
 					if (!$hide_notinit_agent) {
-						if(is_numeric($sla['dinamic_text'])){
-							$row[] = sla_truncate($sla['max'], $config['graph_precision']) . " / " .
-									sla_truncate($sla['min'], $config['graph_precision']);
-						}
-						else{
-							$row[] = $sla['dinamic_text'];
-						}
-						$row[] = round($sla['sla_limit'], 2) . "%";
 
 						if (reporting_sla_is_not_init_from_array($sla)) {
 							$row[] = '<span style="font: bold '.$font_size.'em Arial, Sans-serif; color: '.COL_NOTINIT.';">' .

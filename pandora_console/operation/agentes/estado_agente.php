@@ -623,7 +623,7 @@ foreach ($agents as $agent) {
 	$data[0] = '<div class="left_' . $agent["id_agente"] . '">';
 	$data[0] .= '<span>';
 	
-	$data[0] .= '<a href="index.php?sec=view&sec2=operation/agentes/ver_agente&id_agente='.$agent["id_agente"].'"> <span style="font-size: 7pt;font-weight:bold" title ="' . $agent["nombre"]. '">'.$agent["alias"].'</span></a>';
+	$data[0] .= '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$agent["id_agente"].'"> <span style="font-size: 7pt;font-weight:bold" title ="' . $agent["nombre"]. '">'.$agent["alias"].'</span></a>';
 	$data[0] .= '</span>';
 	
 	if ($agent['quiet']) {
@@ -642,7 +642,7 @@ foreach ($agents as $agent) {
 		$data[0] .= '<a href="index.php?sec=reporting&sec2=enterprise/godmode/reporting/cluster_view&id='.$cluster['id'].'">'.__('View').'</a>';
 	}
 	else{
-		$data[0] .= '<a href="index.php?sec=view&sec2=operation/agentes/ver_agente&id_agente='.$agent["id_agente"].'">'.__('View').'</a>';
+		$data[0] .= '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$agent["id_agente"].'">'.__('View').'</a>';
 	}
 	
 	if (check_acl ($config['id_user'], $agent["id_grupo"], "AW")) {

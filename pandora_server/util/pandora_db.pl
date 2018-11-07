@@ -34,7 +34,7 @@ use PandoraFMS::Config;
 use PandoraFMS::DB;
 
 # version: define current version
-my $version = "7.0NG.728 PS181105";
+my $version = "7.0NG.728 PS181107";
 
 # Pandora server configuration
 my %conf;
@@ -292,22 +292,12 @@ sub pandora_purgedb ($$) {
 
 	# Delete pending modules
 	log_message ('PURGE', "Deleting pending delete modules (data table).", '');
-
 	my @deleted_modules = get_db_rows ($dbh, 'SELECT id_agente_modulo FROM tagente_modulo WHERE delete_pending = 1');
-	my @all_modules = get_db_rows ($dbh, 'SELECT id_agente_modulo, parent_module_id FROM tagente_modulo');
 	foreach my $module (@deleted_modules) {
 	    
 	    my $buffer = 1000;
 	    my $id_module = $module->{'id_agente_modulo'};
-
-	   	foreach my $m (@all_modules) {
-			my $id_parent = $m->{'parent_module_id'};
-			my $id_module_fetched = $m->{'id_agente_modulo'};
-			if ($id_parent == $id_module) {
-				db_do ($dbh, 'UPDATE tagente_modulo SET parent_module_id=0 WHERE id_agente_modulo=?', $id_module_fetched);
-			}
-	    }
-
+	    
 		log_message ('', ".");
 		
 		while(1) {

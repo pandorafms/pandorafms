@@ -343,7 +343,7 @@ if (!empty($result_groups)) {
 				href='index.php?sec=monitoring&sec2=operation/tree&tag_id=".$data['_id_']. "&status=" . AGENT_STATUS_NORMAL ."'>";
 			} else {
 				$link = "<a class='group_view_data $color_class' style='font-weight: bold; font-size: 18px; text-align: center;' 
-				href='index.php?sec=estado&sec2=operation/agentes/estado_agente&group_id=".$data['_id_']."&status=" . AGENT_STATUS_NORMAL ."'>";
+				href='index.php?sec=view&sec2=operation/agentes/estado_agente&group_id=".$data['_id_']."&status=" . AGENT_STATUS_NORMAL ."'>";
 			}
 			if (($data["_id_"] == 0) && ($agents_ok != 0)) {
 				echo $link . $agents_ok . "</a>";
@@ -361,7 +361,7 @@ if (!empty($result_groups)) {
 				href='index.php?sec=monitoring&sec2=operation/tree&tag_id=".$data['_id_']. "&status=" . AGENT_STATUS_WARNING ."'>";
 			} else {
 				$link = "<a class='group_view_data $color_class' style='font-weight: bold; font-size: 18px; text-align: center;' 
-				href='index.php?sec=estado&sec2=operation/agentes/estado_agente&group_id=".$data['_id_']."&status=" . AGENT_STATUS_WARNING ."'>";
+				href='index.php?sec=view&sec2=operation/agentes/estado_agente&group_id=".$data['_id_']."&status=" . AGENT_STATUS_WARNING ."'>";
 			}
 			if (($data["_id_"] == 0) && ($agents_warning != 0)) {
 				echo $link . $agents_warning . "</a>";
@@ -394,10 +394,10 @@ if (!empty($result_groups)) {
 			echo "<td class='group_view_data group_view_data_unk $color_class' style='font-weight: bold; font-size: 18px; text-align: center;'>";
 			if (!isset($data['_is_tag_'])) {
 				$link = "<a class='group_view_data $color_class' style='font-weight: bold; font-size: 18px; text-align: center;' 
-				href='index.php?sec=estado&sec2=operation/agentes/status_monitor&ag_group=".$data['_id_']."&status=" . AGENT_MODULE_STATUS_UNKNOWN . "'>";
+				href='index.php?sec=view&sec2=operation/agentes/status_monitor&ag_group=".$data['_id_']."&status=" . AGENT_MODULE_STATUS_UNKNOWN . "'>";
 			} else {
 				$link = "<a class='group_view_data $color_class' style='font-weight: bold; font-size: 18px; text-align: center;' 
-				href='index.php?sec=estado&sec2=operation/agentes/status_monitor&tag_filter=".$data['_id_']."&status=" . AGENT_MODULE_STATUS_UNKNOWN . "'>";
+				href='index.php?sec=view&sec2=operation/agentes/status_monitor&tag_filter=".$data['_id_']."&status=" . AGENT_MODULE_STATUS_UNKNOWN . "'>";
 			}
 			if (($data["_id_"] == 0) && ($monitor_unknown != 0)) {
 				echo $link . $monitor_unknown . "</a>";
@@ -411,10 +411,10 @@ if (!empty($result_groups)) {
 			echo "<td class='group_view_data group_view_data_unk $color_class' style='font-weight: bold; font-size: 18px; text-align: center;'>";
 			if (!isset($data['_is_tag_'])) {
 				$link = "<a class='group_view_data $color_class' style='font-weight: bold; font-size: 18px; text-align: center;' 
-				href='index.php?sec=estado&sec2=operation/agentes/status_monitor&ag_group=".$data['_id_']."&status=" . AGENT_MODULE_STATUS_NOT_INIT . "'>";
+				href='index.php?sec=view&sec2=operation/agentes/status_monitor&ag_group=".$data['_id_']."&status=" . AGENT_MODULE_STATUS_NOT_INIT . "'>";
 			} else {
 				$link = "<a class='group_view_data $color_class' style='font-weight: bold; font-size: 18px; text-align: center;' 
-				href='index.php?sec=estado&sec2=operation/agentes/status_monitor&tag_filter=".$data['_id_']."&status=" . AGENT_MODULE_STATUS_NOT_INIT . "'>";
+				href='index.php?sec=view&sec2=operation/agentes/status_monitor&tag_filter=".$data['_id_']."&status=" . AGENT_MODULE_STATUS_NOT_INIT . "'>";
 			}
 			if (($data["_id_"] == 0) && ($monitor_not_init != 0)) {
 				echo $link . $monitor_not_init . "</a>";
@@ -428,10 +428,10 @@ if (!empty($result_groups)) {
 			echo "<td class='group_view_data group_view_data_ok $color_class' style='font-weight: bold; font-size: 18px; text-align: center;'>";
 			if (!isset($data['_is_tag_'])) {
 				$link = "<a class='group_view_data $color_class' style='font-weight: bold; font-size: 18px; text-align: center;' 
-				href='index.php?sec=estado&sec2=operation/agentes/status_monitor&ag_group=".$data['_id_']."&status=" . AGENT_MODULE_STATUS_NORMAL . "'>";
+				href='index.php?sec=view&sec2=operation/agentes/status_monitor&ag_group=".$data['_id_']."&status=" . AGENT_MODULE_STATUS_NORMAL . "'>";
 			} else {
 				$link = "<a class='group_view_data $color_class' style='font-weight: bold; font-size: 18px; text-align: center;' 
-				href='index.php?sec=estado&sec2=operation/agentes/status_monitor&tag_filter=".$data['_id_']."&status=" . AGENT_MODULE_STATUS_NORMAL . "'>";
+				href='index.php?sec=view&sec2=operation/agentes/status_monitor&tag_filter=".$data['_id_']."&status=" . AGENT_MODULE_STATUS_NORMAL . "'>";
 			}
 			if (($data["_id_"] == 0) && ($monitor_ok != 0)) {
 				echo $link . $monitor_ok . "</a>";
@@ -445,10 +445,10 @@ if (!empty($result_groups)) {
 			echo "<td class='group_view_data group_view_data_warn $color_class' style='font-weight: bold; font-size: 18px; text-align: center;'>";
 			if (!isset($data['_is_tag_'])) {
 				$link = "<a class='group_view_data group_view_data_warn $color_class' style='font-weight: bold; font-size: 18px; text-align: center;' 
-				href='index.php?sec=estado&sec2=operation/agentes/status_monitor&ag_group=".$data['_id_']."&status=" . AGENT_MODULE_STATUS_WARNING . "'>";
+				href='index.php?sec=view&sec2=operation/agentes/status_monitor&ag_group=".$data['_id_']."&status=" . AGENT_MODULE_STATUS_WARNING . "'>";
 			} else {
 				$link = "<a class='group_view_data group_view_data_warn $color_class' style='font-weight: bold; font-size: 18px; text-align: center;' 
-				href='index.php?sec=estado&sec2=operation/agentes/status_monitor&tag_filter=".$data['_id_']."&status=" . AGENT_MODULE_STATUS_WARNING . "'>";
+				href='index.php?sec=view&sec2=operation/agentes/status_monitor&tag_filter=".$data['_id_']."&status=" . AGENT_MODULE_STATUS_WARNING . "'>";
 			}
 			if (($data["_id_"] == 0) && ($monitor_warning != 0)) {
 				echo $link . $monitor_warning . "</a>";
@@ -462,10 +462,10 @@ if (!empty($result_groups)) {
 			echo "<td class='group_view_data group_view_data_crit $color_class' style='font-weight: bold; font-size: 18px; text-align: center;'>";
 			if (!isset($data['_is_tag_'])) {
 				$link = "<a class='group_view_data $color_class' style='font-weight: bold; font-size: 18px; text-align: center;' 
-				href='index.php?sec=estado&sec2=operation/agentes/status_monitor&ag_group=".$data['_id_']."&status=" . AGENT_MODULE_STATUS_CRITICAL_BAD . "'>";
+				href='index.php?sec=view&sec2=operation/agentes/status_monitor&ag_group=".$data['_id_']."&status=" . AGENT_MODULE_STATUS_CRITICAL_BAD . "'>";
 			} else {
 				$link = "<a class='group_view_data $color_class' style='font-weight: bold; font-size: 18px; text-align: center;' 
-				href='index.php?sec=estado&sec2=operation/agentes/status_monitor&tag_filter=".$data['_id_']."&status=" . AGENT_MODULE_STATUS_CRITICAL_BAD . "'>";
+				href='index.php?sec=view&sec2=operation/agentes/status_monitor&tag_filter=".$data['_id_']."&status=" . AGENT_MODULE_STATUS_CRITICAL_BAD . "'>";
 			}
 			if (($data["_id_"] == 0) && ($monitor_critical != 0)) {
 				echo $link . $monitor_critical . "</a>";

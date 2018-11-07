@@ -130,36 +130,58 @@ if (isset ($_GET["modified"]) && !$view_mode) {
 					if ($return) {
 						$return2 = save_pass_history($id, $password_new);
 					}
-					ui_print_result_message ($return,
+					/*ui_print_result_message ($return,
 					__('Password successfully updated'),
-					__('Error updating passwords: %s', $config['auth_error']));
+					__('Error updating passwords: %s', $config['auth_error']));*/
 				}
 			}
 			else {
 				$return = update_user_password ($id, $password_new);
-				ui_print_result_message ($return,
+				/*ui_print_result_message ($return,
 					__('Password successfully updated'),
-					__('Error updating passwords: %s', $config['auth_error']));
+					__('Error updating passwords: %s', $config['auth_error']));*/
 			}
 			
 		}
 		elseif ($password_new !== "NON-INIT") {
-			ui_print_error_message (__('Passwords didn\'t match or other problem encountered while updating passwords'));
+		//	ui_print_error_message (__('Passwords didn\'t match or other problem encountered while updating passwords'));
+			$error_msg = __('Passwords didn\'t match or other problem encountered while updating passwords');
 		}
+	}
+	elseif(empty($password_new) && empty($password_confirm)){
+		$return=true;
+	}	
+	elseif(empty($password_new) || empty($password_confirm)){
+		$return=false;
 	}
 	
 	// No need to display "error" here, because when no update is needed (no changes in data) 
 	// SQL function returns	0 (FALSE), but is not an error, just no change. Previous error
 	// message could be confussing to the user.
-	
-	$return = update_user ($id, $upd_info);
-	if ($return > 0) {
-		ui_print_result_message ($return,
-			__('User info successfully updated'),
-			__('Error updating user info'));
+
+	if($return){
+		$success_msg = __('Password successfully updated');
+
+		$return_update_user = update_user ($id, $upd_info);
+
+		if ($return_update_user === false) {
+			$error_msg = __('Error updating user info');
+		}
+		elseif($return_update_user == true){
+			$success_msg = __('User info successfully updated');
+		}
+
+		$user_info = $upd_info;
 	}
-	
-	$user_info = $upd_info;
+	else{
+		if(!$error_msg){
+			$error_msg = __('Error updating passwords: ');
+		}
+
+		$user_auth_error= $config['auth_error'];
+	}
+
+	ui_print_result_message ($return, $success_msg, $error_msg,$user_auth_error);
 }
 
 // Prints action status for current message 

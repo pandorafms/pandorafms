@@ -5411,7 +5411,8 @@ function api_set_planned_downtimes_created ($id, $thrash1, $other, $thrash3) {
 		'periodically_day_to' => $other['data'][14],
 		'type_downtime' => $other['data'][15],
 		'type_execution' => $other['data'][16],
-		'type_periodicity' => $other['data'][17]
+		'type_periodicity' => $other['data'][17],
+		'id_user' => $other['data'][18]
 	);
 	
 	$returned = planned_downtimes_created($values);
@@ -10869,12 +10870,17 @@ function api_set_new_cluster($thrash1, $thrash2, $other, $thrash3) {
 		else
 			db_pandora_audit("Report management", "Failed to create cluster agent $name");
 		
-		returnData('string',
-			array('type' => 'string', 'data' => (int)$id_cluster));
+		if ($id_cluster !== false)
+			returnData('string',
+				array('type' => 'string', 'data' => (int)$id_cluster));
+		else
+			returnError('error_set_new_cluster', __('Failed to create cluster.'));
 	} else {
 		returnError('error_set_new_cluster', __('Agent name cannot be empty.'));
 		return;
 	}
+
+	return;
 }
 	
 function api_set_add_cluster_agent($thrash1, $thrash2, $other, $thrash3) {

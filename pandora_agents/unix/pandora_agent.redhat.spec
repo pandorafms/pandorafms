@@ -3,7 +3,7 @@
 #
 %define name        pandorafms_agent_unix
 %define version     7.0NG.728
-%define release     181105
+%define release     181107
 
 Summary:            Pandora FMS Linux agent, PERL version
 Name:               %{name}
@@ -95,7 +95,8 @@ if [ ! -e /etc/pandora/plugins ]; then
 fi
 
 if [ ! -e /etc/pandora/collections ]; then
-	mkdir -p /etc/pandora/collections
+	mkdir -p /usr/share/pandora_agent/collections
+	ln -s /usr/share/pandora_agent/collections /etc/pandora
 fi
 
 mkdir -p /var/spool/pandora/data_out

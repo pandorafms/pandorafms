@@ -60,26 +60,9 @@ if (is_ajax ()) {
 		$keys_prefix = (string) get_parameter ('keys_prefix', '');
 		$status_agents = (int)get_parameter('status_agents', AGENT_STATUS_ALL);
 		
-		if ($id_group > 0) {
-			$groups = array($id_group);
-			if ($recursion === 'true' || $recursion == 1 ) {
-				$groups = array_merge($groups,
-					groups_get_id_recursive($id_group, true));
-			}
-		}
-		else {
-			$groups_orig = users_get_groups(false, $privilege, false);
-			$groups = array_keys($groups_orig);
-		}
-
 		// Build filter
 		$filter = array();
-		// Group filter (primary and secondary)
-		$filter[] = "(" .db_format_array_where_clause_sql(
-			array('id_grupo' => $groups, 'id_group' => $groups),
-			'OR'
-		) . ")";
-
+		
 		if (!empty($id_os))
 			$filter['id_os'] = $id_os;
 		if (!empty($agent_name))
@@ -87,44 +70,7 @@ if (is_ajax ()) {
 		if (!empty($agent_alias))
 			$filter['alias'] = '%' . $agent_alias . '%';
 		
-		switch ($status_agents) {
-			case AGENT_STATUS_NORMAL:
-			$filter[] = "(
-				critical_count = 0
-				AND warning_count = 0
-				AND unknown_count = 0 
-				AND normal_count > 0)";
-				break;
-			case AGENT_STATUS_WARNING:
-			$filter[] = "(
-				critical_count = 0 
-				AND warning_count > 0
-				AND total_count > 0)";
-				break;
-			case AGENT_STATUS_CRITICAL:
-				$filter[] = "(critical_count > 0)";
-				break;
-			case AGENT_STATUS_UNKNOWN:
-			$filter[] = "(
-				critical_count = 0 
-				AND warning_count = 0 
-				AND unknown_count > 0)";
-				break;
-			case AGENT_STATUS_NOT_NORMAL:
-			$filter[] = "(
-				critical_count > 0
-				OR warning_count > 0
-				OR unknown_count > 0
-				OR total_count = 0
-				OR total_count = notinit_count)";
-				break;
-			case AGENT_STATUS_NOT_INIT:
-			$filter[] = "(
-				total_count = 0
-				OR total_count = notinit_count)";
-				break;
-		}
-		$filter['order'] = "alias ASC";
+		$filter['status'] = $status_agents;
 		
 		if($cluster_mode){
 			
@@ -162,28 +108,18 @@ if (is_ajax ()) {
 			}
 			
 		}
-		$filter['group'] = 'id_agente';
-
-		// Build fields
-		$fields = array('id_agente', 'alias');
 
 		// Perform search
-		$agents = db_get_all_rows_filter(
-			'tagente LEFT JOIN tagent_secondary_group ON id_agente=id_agent',
-			$filter,
-			$fields
-		);
+		$agents = agents_get_group_agents($id_group,$filter,"lower",false,false,false,'|',$cluster_mode);
 		if (empty($agents)) $agents = array();
-		
-		foreach ($agents as $k => $v) {
-			$agents[$k] = io_safe_output($v);
-		}
 
 		// Add keys prefix
 		if ($keys_prefix !== '') {
+			$i = 0;
 			foreach ($agents as $k => $v) {
-				$agents[$keys_prefix . $k] = io_safe_output($v);
+				$agents[$keys_prefix . $i] = array('id_agente' => $k, 'alias' => io_safe_output($v));
 				unset($agents[$k]);
+				$i++;
 			}
 		}
 		

@@ -3531,7 +3531,9 @@ function visual_map_get_user_layouts ($id_user = 0, $only_names = false, $filter
 		$filter = array ();
 	} else {
 		if(!empty($filter['name'])){
-			$where .= "name LIKE '%".io_safe_output($filter['name'])."%'";
+			$where .= sprintf("name LIKE '%%%s%%'",
+            	db_escape_string_sql(io_safe_output($filter['name'])));
+
 			unset($filter['name']);
 		}
 	}

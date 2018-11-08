@@ -2787,13 +2787,17 @@ function agents_get_status_clause($state, $show_not_init = true) {
  *
  * @return array custom fields data.
  */
-function get_custom_fields ($custom_field_id = false, $select = true) {
+function get_custom_fields ($custom_field_id = false, $select = true, $display_on_front = false) {
 	$fields = ($select)
 		? ' tcf.id_field, tcf.name '
 		: ' tcf.* ';
 
 	$where = ($custom_field_id)
 		? ' WHERE tcf.id_field ='.$custom_field_id
+		: ' WHERE 1=1';
+
+	$display = ($display_on_front)
+		? ' AND tcf.display_on_front = 1'
 		: '';
 
 	$result_array=array();
@@ -2801,9 +2805,12 @@ function get_custom_fields ($custom_field_id = false, $select = true) {
 		$sql = sprintf("SELECT
 			%s
 			FROM tagent_custom_fields tcf
-			%s",
+			%s
+			%s
+			",
 			$fields,
-			$where
+			$where,
+			$display
 		);
 
 		$result = db_get_all_rows_sql($sql);
@@ -2834,9 +2841,12 @@ function get_custom_fields ($custom_field_id = false, $select = true) {
 				$sql = sprintf("SELECT
 					%s
 					FROM tagent_custom_fields tcf
-					%s",
+					%s
+					%s
+					",
 					$fields,
-					$where
+					$where,
+					$display
 				);
 
 				$result[]= db_get_all_rows_sql($sql);
@@ -2880,13 +2890,6 @@ function get_custom_fields_data ($custom_field_name) {
 		return false;
 	}
 
-	//XXX ACL GROUP
-	/*
-		$where_group = ($id_group)
-			? ' AND ta.id_grupo IN ($id_group)'
-			: '';
-	*/
-
 	if(!is_metaconsole()){
 		$sql = sprintf("SELECT tcf.id_field, tcf.name, tcd.description
 			FROM tagent_custom_fields tcf
@@ -2896,7 +2899,8 @@ function get_custom_fields_data ($custom_field_name) {
 				ON tcd.id_agent = ta.id_agente
 			WHERE tcd.description <> ''
 				AND tcf.name = '%s'
-			GROUP BY tcf.id_field, tcd.description", $custom_field_name
+			GROUP BY tcf.id_field, tcd.description",
+			$custom_field_name
 		);
 
 		$result = db_get_all_rows_sql($sql);
@@ -3182,30 +3186,6 @@ function agent_counters_custom_fields($filters){
 			$final_result['counters_name'] = $array_data;
 		}
 
-		/*
-		if(isset($data) && is_array($data)){
-			$data = array_reduce($data, function ($data, $item) {
-				$node_id = (int) $item["id_server"];
-				$agent_id = (int) $item["id_agente"];
-				$description = $item["description"];
-				if (!isset($data["descriptions_by_node_and_agent"][$node_id])) {
-					$data["descriptions_by_node_and_agent"][$node_id] = array();
-				}
-
-				$data["descriptions_by_node_and_agent"][$node_id][$agent_id] = $description;
-
-				$data["id_pairs_for_query"] .= (!empty($data["id_pairs_for_query"]) ? "," : "")
-					. "(" . $item["ids"] . ")";
-
-				return $data;
-			}, array(
-				"descriptions_by_node_and_agent" => array(),
-				"id_pairs_for_query" => ""
-			));
-
-			$final_result['indexed_descriptions'] = $data["descriptions_by_node_and_agent"];
-		}
-		*/
 		$final_result['indexed_descriptions'] = $data;
 	}
 	else{

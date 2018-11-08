@@ -1297,9 +1297,14 @@ if($build_table_custom_fields){
 if($build_table_child_custom_fields){
 	$id_agent = get_parameter("id_agent", 0);
 	$id_server = get_parameter("id_server", 0);
+	$module_search = str_replace('amp;', '',get_parameter("module_search", ''));
 
 	if(!$id_server || !$id_agent){
 		return false;
+	}
+
+	if($module_search != ''){
+		$name_where = " AND tam.nombre LIKE '%" . $module_search . "%'";
 	}
 
 	if (is_metaconsole()) {
@@ -1315,9 +1320,13 @@ if($build_table_child_custom_fields){
 		FROM tagente_modulo tam
 		INNER JOIN tagente_estado tae
 			ON tam.id_agente_modulo = tae.id_agente_modulo
-		WHERE tam.id_agente = %d",
-		$id_agent
+		WHERE tam.id_agente = %d
+		%s",
+		$id_agent,
+		$name_where
 	);
+
+	hd($query, true, true);
 
 	$modules = db_get_all_rows_sql ($query);
 

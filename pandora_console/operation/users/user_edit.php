@@ -160,7 +160,9 @@ if (isset ($_GET["modified"]) && !$view_mode) {
 	// message could be confussing to the user.
 
 	if($return){
-		$success_msg = __('Password successfully updated');
+		if(!empty($password_new) && !empty($password_confirm)){
+			$success_msg = __('Password successfully updated');
+		}		
 
 		$return_update_user = update_user ($id, $upd_info);
 
@@ -169,6 +171,15 @@ if (isset ($_GET["modified"]) && !$view_mode) {
 		}
 		elseif($return_update_user == true){
 			$success_msg = __('User info successfully updated');
+		}
+		else{
+			if(!empty($password_new) && !empty($password_confirm)){
+				$success_msg = __('Password successfully updated');
+			}	
+			else{
+				$return=false;
+				$error_msg = __('No changes have been made'); 
+			}	
 		}
 
 		$user_info = $upd_info;

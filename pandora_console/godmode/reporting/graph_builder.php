@@ -81,8 +81,6 @@ if ($add_graph) {
 	$description = get_parameter_post ("description");
 	$module_number = get_parameter_post ("module_number");
 	$idGroup = get_parameter_post ('graph_id_group');
-	$width = get_parameter_post ("width");
-	$height = get_parameter_post ("height");
 	$stacked = get_parameter ("stacked", 0);
 	$period = get_parameter_post ("period");
 	$threshold = get_parameter('threshold');
@@ -102,8 +100,6 @@ if ($add_graph) {
 		'name' => $name,
 		'description' => $description,
 		'period' => $period,
-		'width' => $width,
-		'height' => $height,
 		'private' => 0,
 		'id_group' => $idGroup,
 		'stacked' => $stacked,
@@ -134,8 +130,6 @@ if ($update_graph) {
 	$name = get_parameter('name');
 	$id_group = get_parameter('graph_id_group');
 	$description = get_parameter('description');
-	$width = get_parameter('width');
-	$height = get_parameter('height');
 	$period = get_parameter('period');
 	$stacked = get_parameter('stacked');
 	$percentil = get_parameter('percentil');

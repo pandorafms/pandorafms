@@ -48,7 +48,7 @@ function createXMLData($agent, $agentModule, $time, $data) {
 		$data
 	);
 	
-	$file_name = $config["remote_config"] . "/" . io_safe_output($agent["alias"]) . "." . str_replace($time, " ", "_") . ".data";
+	$file_name = $config["remote_config"] . "/" . io_safe_output($agent["alias"]) . "." . strtotime($time) . ".data";
 	return (bool) @file_put_contents($file_name, $xml);
 }
 
@@ -115,7 +115,7 @@ function mainInsertData() {
 				$utimestamp = strtotime($date . " " . $time) - get_fixed_offset();
 				$timestamp = date(DATE_FORMAT . " " . TIME_FORMAT, $utimestamp);
 				$result = createXMLData($agent, $agentModule, $timestamp, $data);
-				
+
 				if ($result) {
 					$done++;
 				}

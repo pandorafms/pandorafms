@@ -60,21 +60,8 @@ if (is_ajax ()) {
 		$keys_prefix = (string) get_parameter ('keys_prefix', '');
 		$status_agents = (int)get_parameter('status_agents', AGENT_STATUS_ALL);
 		
-		if ($id_group > 0) {
-			$groups = array($id_group);
-			if ($recursion === 'true' || $recursion == 1 ) {
-				$groups = array_merge($groups,
-					groups_get_id_recursive($id_group, true));
-			}
-		}
-		else {
-			$groups_orig = users_get_groups(false, $privilege);
-			$groups = array_keys($groups_orig);
-		}
-		
 		// Build filter
 		$filter = array();
-		$filter['id_grupo'] = $groups;
 		
 		if (!empty($id_os))
 			$filter['id_os'] = $id_os;
@@ -83,44 +70,7 @@ if (is_ajax ()) {
 		if (!empty($agent_alias))
 			$filter['alias'] = '%' . $agent_alias . '%';
 		
-		switch ($status_agents) {
-			case AGENT_STATUS_NORMAL:
-			$filter[] = "(
-				critical_count = 0
-				AND warning_count = 0
-				AND unknown_count = 0 
-				AND normal_count > 0)";
-				break;
-			case AGENT_STATUS_WARNING:
-			$filter[] = "(
-				critical_count = 0 
-				AND warning_count > 0
-				AND total_count > 0)";
-				break;
-			case AGENT_STATUS_CRITICAL:
-				$filter[] = "(critical_count > 0)";
-				break;
-			case AGENT_STATUS_UNKNOWN:
-			$filter[] = "(
-				critical_count = 0 
-				AND warning_count = 0 
-				AND unknown_count > 0)";
-				break;
-			case AGENT_STATUS_NOT_NORMAL:
-			$filter[] = "(
-				critical_count > 0
-				OR warning_count > 0
-				OR unknown_count > 0
-				OR total_count = 0
-				OR total_count = notinit_count)";
-				break;
-			case AGENT_STATUS_NOT_INIT:
-			$filter[] = "(
-				total_count = 0
-				OR total_count = notinit_count)";
-				break;
-		}
-		$filter['order'] = "alias ASC";
+		$filter['status'] = $status_agents;
 		
 		if($cluster_mode){
 			
@@ -158,23 +108,18 @@ if (is_ajax ()) {
 			}
 			
 		}
-		
-		// Build fields
-		$fields = array('id_agente', 'alias');
 
 		// Perform search
-		$agents = db_get_all_rows_filter('tagente', $filter, $fields);
+		$agents = agents_get_group_agents($id_group,$filter,"lower",false,false,false,'|',$cluster_mode);
 		if (empty($agents)) $agents = array();
-		
-		foreach ($agents as $k => $v) {
-			$agents[$k] = io_safe_output($v);
-		}
 
 		// Add keys prefix
 		if ($keys_prefix !== '') {
+			$i = 0;
 			foreach ($agents as $k => $v) {
-				$agents[$keys_prefix . $k] = io_safe_output($v);
+				$agents[$keys_prefix . $i] = array('id_agente' => $k, 'alias' => io_safe_output($v));
 				unset($agents[$k]);
+				$i++;
 			}
 		}
 		
@@ -1094,15 +1039,6 @@ if ($collectiontab == -1)
 $policyTab = enterprise_hook('policy_tab');
 if ($policyTab == -1)
 	$policyTab = "";
-
-/* UX Console */
-enterprise_include_once('/include/functions_ux_console.php');
-$active_ux = enterprise_hook('get_ux_transactions', array($id_agente));
-if(!empty($active_ux)){
-	$ux_console_tab = enterprise_hook('ux_console_tab');
-	if ($ux_console_tab == -1)
-		$ux_console_tab = "";
-}
 
 /* WUX Console */
 $modules_wux = enterprise_hook('get_wux_modules' , array($id_agente));

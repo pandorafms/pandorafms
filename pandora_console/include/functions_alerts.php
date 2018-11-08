@@ -2311,9 +2311,13 @@ function alerts_ui_update_or_create_actions($update = true) {
 	$group = get_parameter ('group');
 	$action_threshold = (int) get_parameter ('action_threshold');
 
-	// Validate the command
+	// Validate some values
 	if (!$id_alert_command) {
-		ui_print_error_message(__('Invalid alert command.'));
+		ui_print_error_message(__('No command specified'));
+		return;
+	}
+	if (!$name) {
+		ui_print_error_message(__('No name specified'));
 		return;
 	}
 	$comamnd_group = db_get_value('id_group', 'talert_commands', 'id', $id_alert_command);

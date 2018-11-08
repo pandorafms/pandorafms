@@ -87,8 +87,7 @@ if (isset ($_GET["modified"]) && !$view_mode) {
 	if($default_block_size) {
 		$upd_info["block_size"] = 0;
 	}
-	
-	$upd_info["flash_chart"] = get_parameter ("flash_charts", $config["flash_charts"]);
+
 	$upd_info["section"] = get_parameter ("section", $user_info["section"]);
 	$upd_info["data_section"] = get_parameter ("data_section", '');
 	$dashboard = get_parameter('dashboard', '');
@@ -131,36 +130,69 @@ if (isset ($_GET["modified"]) && !$view_mode) {
 					if ($return) {
 						$return2 = save_pass_history($id, $password_new);
 					}
-					ui_print_result_message ($return,
+					/*ui_print_result_message ($return,
 					__('Password successfully updated'),
-					__('Error updating passwords: %s', $config['auth_error']));
+					__('Error updating passwords: %s', $config['auth_error']));*/
 				}
 			}
 			else {
 				$return = update_user_password ($id, $password_new);
-				ui_print_result_message ($return,
+				/*ui_print_result_message ($return,
 					__('Password successfully updated'),
-					__('Error updating passwords: %s', $config['auth_error']));
+					__('Error updating passwords: %s', $config['auth_error']));*/
 			}
 			
 		}
 		elseif ($password_new !== "NON-INIT") {
-			ui_print_error_message (__('Passwords didn\'t match or other problem encountered while updating passwords'));
+		//	ui_print_error_message (__('Passwords didn\'t match or other problem encountered while updating passwords'));
+			$error_msg = __('Passwords didn\'t match or other problem encountered while updating passwords');
 		}
+	}
+	elseif(empty($password_new) && empty($password_confirm)){
+		$return=true;
+	}	
+	elseif(empty($password_new) || empty($password_confirm)){
+		$return=false;
 	}
 	
 	// No need to display "error" here, because when no update is needed (no changes in data) 
 	// SQL function returns	0 (FALSE), but is not an error, just no change. Previous error
 	// message could be confussing to the user.
-	
-	$return = update_user ($id, $upd_info);
-	if ($return > 0) {
-		ui_print_result_message ($return,
-			__('User info successfully updated'),
-			__('Error updating user info'));
+
+	if($return){
+		if(!empty($password_new) && !empty($password_confirm)){
+			$success_msg = __('Password successfully updated');
+		}		
+
+		$return_update_user = update_user ($id, $upd_info);
+
+		if ($return_update_user === false) {
+			$error_msg = __('Error updating user info');
+		}
+		elseif($return_update_user == true){
+			$success_msg = __('User info successfully updated');
+		}
+		else{
+			if(!empty($password_new) && !empty($password_confirm)){
+				$success_msg = __('Password successfully updated');
+			}	
+			else{
+				$return=false;
+				$error_msg = __('No changes have been made'); 
+			}	
+		}
+
+		$user_info = $upd_info;
 	}
-	
-	$user_info = $upd_info;
+	else{
+		if(!$error_msg){
+			$error_msg = __('Error updating passwords: ');
+		}
+
+		$user_auth_error= $config['auth_error'];
+	}
+
+	ui_print_result_message ($return, $success_msg, $error_msg,$user_auth_error);
 }
 
 // Prints action status for current message 
@@ -252,9 +284,6 @@ $data[0] .= $jump . '<span style="width:2%;float:left;line-height:20px;">'.html_
 $data[0] .= __('Default').' ('.$config["global_block_size"].')';
 
 $values = array(-1 => __('Default'),1 => __('Yes'),0 => __('No'));
-
-$data[1] = '<span style="width:40%;float:left;">'.__('Interactive charts') . ui_print_help_tip(__('Whether to use Javascript or static PNG graphs'), true).'</span>';
-$data[1] .= $jump . '<span style="width:20%;float:left;line-height:20px;">'. html_print_select($values, 'flash_charts', $user_info["flash_chart"], '', '', -1, true, false, false).'</span>';
 
 
 $data[2] = '<span style="width:30%;float:left;">'.__('Language').'</span>';
@@ -385,10 +414,11 @@ $data = array();
 $autorefresh_list_out = array();
 if(is_metaconsole()) {
 	$autorefresh_list_out['monitoring/tactical'] = "tactical";
+	$autorefresh_list_out['monitoring/group_view'] = "group_view";
 } else {
 	$autorefresh_list_out['operation/agentes/tactical'] = "tactical";
+	$autorefresh_list_out['operation/agentes/group_view'] = "group_view";
 }
-$autorefresh_list_out['operation/agentes/group_view'] = "group_view";
 $autorefresh_list_out['operation/agentes/estado_agente'] = "agent_status";
 $autorefresh_list_out['operation/agentes/alerts_status'] = "alerts_status";
 $autorefresh_list_out['operation/agentes/status_monitor'] = "status_monitor";

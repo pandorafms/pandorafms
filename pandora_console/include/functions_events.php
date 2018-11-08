@@ -850,25 +850,14 @@ function events_print_event_table ($filter = "", $limit = 10, $width = 440, $ret
 	if ($filter == '') {
 		$filter = '1 = 1';
 	}
-	
-	switch ($config["dbtype"]) {
-		case "mysql":
-		case "postgresql":
-				$sql = sprintf ("SELECT DISTINCT tevento.*
-					FROM tevento LEFT JOIN tagent_secondary_group tasg ON tevento.id_agente = tasg.id_agent
-					WHERE %s %s
-					ORDER BY utimestamp DESC LIMIT %d", $agent_condition, $filter, $limit);
-			break;
-		case "oracle":
-				$sql = sprintf ("SELECT *
-					FROM tevento
-					WHERE %s %s AND rownum <= %d
-					ORDER BY utimestamp DESC", $agent_condition, $filter, $limit);
-			break;
-	}
+
+	$sql = sprintf ("SELECT DISTINCT tevento.*
+		FROM tevento LEFT JOIN tagent_secondary_group tasg ON tevento.id_agente = tasg.id_agent
+		WHERE %s %s
+		ORDER BY utimestamp DESC LIMIT %d", $agent_condition, $filter, $limit);
 
 	$result = db_get_all_rows_sql ($sql);
-	
+
 	if ($result === false) {
 		if ($return) {
 			$returned = ui_print_info_message (__('No events'), '', true);
@@ -997,8 +986,6 @@ function events_print_event_table ($filter = "", $limit = 10, $width = 440, $ret
 					
 					$data[4] = "<a class='$myclass' href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=".$event["id_agente"]."'>".
 								agents_get_alias($event["id_agente"]). "</A>";
-					
-				// ui_print_agent_name ($event["id_agente"], true, 25, '', true);
 				// for System or SNMP generated alerts
 				}
 				elseif ($event["event_type"] == "system") {
@@ -1162,7 +1149,7 @@ function events_print_type_description ($type, $return = false) {
 			break;
 		case "going_down_critical":
 		case "going_up_critical": //This is to be backwards compatible
-			$output .= __('Going down to critical state');
+			$output .= __('Going up to critical state');
 			break;
 		case "going_up_normal":
 		case "going_down_normal": //This is to be backwards compatible
@@ -1863,15 +1850,20 @@ function events_get_response_target($event_id, $response_id, $server_id, $histor
 	// Substitute each macro
 	if (strpos($target, '_agent_address_') !== false) {
 		if ($meta) {
-			$server = metaconsole_get_connection_by_id ($server_id);
-			metaconsole_connect($server);
+			$agente_table_name = 'tmetaconsole_agent';
+			$filter = array(
+				'id_tagente' => $event['id_agente'],
+				'id_tmetaconsole_setup' => $server_id
+			);
+		} else {
+			$agente_table_name = 'tagente';
+			$filter = array('id_agente' => $event['id_agente']);
 		}
-		
-		$target = str_replace('_agent_address_', $event['id_agente'], $target);
-		
-		if($meta) {
-			metaconsole_restore_db_force();
-		}
+
+		$ip = db_get_value_filter('direccion', $agente_table_name, $filter);
+		// If agent has not an ip, display N/A
+		if ($ip === false) $ip = __('N/A');
+		$target = str_replace('_agent_address_', $ip, $target);
 	}
 	if (strpos($target, '_agent_id_') !== false) {
 		$target = str_replace('_agent_id_', $event['id_agente'], $target);
@@ -1896,7 +1888,7 @@ function events_get_response_target($event_id, $response_id, $server_id, $histor
 			);
 			
 			if($meta) {
-				metaconsole_restore_db_force();
+				metaconsole_restore_db();
 			}
 		} else {
 			$target = str_replace('_module_address_', __('N/A'), $target);
@@ -2677,13 +2669,14 @@ function events_page_comments ($event, $childrens_ids = array()) {
 			}
 			break;
 	}
-	
-	if ((tags_checks_event_acl($config["id_user"], $event["id_grupo"], "EM", $event['clean_tags'], $childrens_ids)) || (tags_checks_event_acl($config["id_user"], $event["id_grupo"], "EW", $event['clean_tags'],$childrens_ids))) {
-		$comments_form = '<br><div id="comments_form" style="width:98%;">'.html_print_textarea("comment", 3, 10, '', 'style="min-height: 15px; width: 100%;"', true);
+
+	if (((tags_checks_event_acl($config["id_user"], $event["id_grupo"], "EM", $event['clean_tags'], $childrens_ids)) || (tags_checks_event_acl($config["id_user"], $event["id_grupo"], "EW", $event['clean_tags'],$childrens_ids))) && $config["show_events_in_local"] == false || $config["event_replication"] == false) {
+		$comments_form = '<br><div id="comments_form" style="width:98%;">'.html_print_textarea("comment", 3, 10, '', 'style="min-height: 15px; width: 100%; disabled"', true);
+
 		$comments_form .= '<br><div style="text-align:right;">'.html_print_button(__('Add comment'),'comment_button',false,'event_comment();','class="sub next"',true).'</div><br></div>';
 	}
 	else {
-		$comments_form = '';
+		$comments_form = ui_print_message(__( 'If event replication is ongoing, it won\'t be possible to enter comments here. This option is only to allow local pandora users to see comments, but not to operate with them. The operation, when event replication is enabled, must be done only in the Metaconsole.'));
 	}
 	
 	$comments = '<div id="extended_event_comments_page" class="extended_event_pages">'.$comments_form.html_print_table($table_comments, true).'</div>';

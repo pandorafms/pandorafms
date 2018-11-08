@@ -511,9 +511,16 @@ if (is_ajax ()) {
 		$id = (int)get_parameter('id', 0);
 		$x = (int)get_parameter('x', 0);
 		$y = (int)get_parameter('y', 0);
+		$scale = (float)get_parameter('scale', 0);
 		
 		$networkmap = db_get_row('tmap', 'id', $id);
 		
+		$array_filter = json_decode($networkmap['filter']);
+		if (isset($array_filter->z_dash)) {
+			$array_filter->z_dash = number_format($scale,2);
+		}
+		$filter = json_encode($array_filter);
+
 		// ACL for the network map
 		// $networkmap_read = check_acl ($config['id_user'], $networkmap['id_group'], "MR");
 		$networkmap_write = check_acl ($config['id_user'], $networkmap['id_group'], "MW");
@@ -529,7 +536,7 @@ if (is_ajax ()) {
 		$networkmap['center_x'] = $x;
 		$networkmap['center_y'] = $y;
 		db_process_sql_update('tmap',
-			array('center_x' => $networkmap['center_x'], 'center_y' => $networkmap['center_y']),
+			array('center_x' => $networkmap['center_x'], 'center_y' => $networkmap['center_y'], 'filter' => $filter),
 			array('id' => $id));
 		
 		$return = array();

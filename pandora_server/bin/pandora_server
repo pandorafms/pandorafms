@@ -382,7 +382,7 @@ sub pandora_server_tasks ($) {
 		}
 
 		# Avoid counter overflow
-		if ($counter > 10000){
+		if ($counter >= ~0){
 			$counter = 0;
 		}
 		else {
@@ -668,6 +668,15 @@ sub main() {
 				
 				logger (\%Config, $Config{'rb_product_name'} . ' Server restarting (' . $@ . ') in 5 seconds.', 1);
 				pandora_load_config (\%Config);
+				if (enterprise_load (\%Config) == 0) {
+					$Config{'__enterprise_enabled'} = 0;
+					print_message (\%Config, " [*] Pandora FMS Enterprise module not available.", 1);
+					logger (\%Config, " [*] Pandora FMS Enterprise module not available.", 1);
+				} else {
+					$Config{'__enterprise_enabled'} = 1;
+					print_message (\%Config, " [*] " . pandora_get_initial_product_name() . " Enterprise module loaded.", 1);
+					logger (\%Config, " [*] " . pandora_get_initial_product_name() . " Enterprise module loaded.", 1);
+				}
 				pandora_restart (5);
 			}
 			$test_remote = 0;

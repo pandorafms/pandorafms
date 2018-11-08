@@ -43,44 +43,55 @@ function cron_update_module_interval ($module_id, $cron) {
 
 // Get the number of seconds left to the next execution of the given cron entry.
 function cron_next_execution ($cron, $module_interval, $module_id) {
-	
+
 	// Get day of the week and month from cron config
-	list ($minute, $hour, $mday, $month, $wday) = explode (" ", $cron);
-	
+	$cron_array = explode (" ", $cron);
+	$minute = $cron_array[0];
+	$hour = $cron_array[1];
+	$mday = $cron_array[2];
+	$month = $cron_array[3];
+	$wday = $cron_array[4];
+
 	// Get last execution time
 	$last_execution = db_get_value('utimestamp', 'tagente_estado', 'id_agente_modulo', $module_id);
 	$cur_time = ($last_execution !== false) ? $last_execution : time();
-	
+
 	// Any day of the way
 	if ($wday == '*') {
 		$nex_time = cron_next_execution_date ($cron,  $cur_time, $module_interval);
 		return $nex_time - $cur_time;
 	}
-	
+
 	// A specific day of the week
 	$count = 0;
 	$nex_time = $cur_time;
 	do {
 		$nex_time = cron_next_execution_date ($cron, $nex_time, $module_interval);
 		$nex_time_wd = $nex_time;
-		list ($nex_mon, $nex_wday) = explode (" ", date ("m w", $nex_time_wd));
-		
+
+		$array_nex = explode (" ", date ("m w", $nex_time_wd));
+		$nex_mon   = $array_nex[0];
+		$nex_wday  = $array_nex[1];
+
 		do {
 			// Check the day of the week
 			if ($nex_wday == $wday) {
 				return $nex_time_wd - $cur_time;
 			}
-			
+
 			// Move to the next day of the month
 			$nex_time_wd += SECONDS_1DAY;
-			list ($nex_mon_wd, $nex_wday) = explode (" ", date ("m w", $nex_time_wd));
+
+			$array_nex_w = explode (" ", date ("m w", $nex_time_wd));
+			$nex_mon_wd  = $array_nex_w[0];
+			$nex_wday    = $array_nex_w[1];
 		}
 		while ($mday == '*' && $nex_mon_wd == $nex_mon);
-		
+
 		$count++;
 	}
 	while ($count < SECONDS_1MINUTE);
-	
+
 	// Something went wrong, default to 5 minutes
 	return SECONDS_5MINUTES;
 }

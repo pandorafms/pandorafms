@@ -1112,7 +1112,6 @@ CREATE TABLE IF NOT EXISTS `tusuario` (
 	`language` varchar(10) default NULL,
 	`timezone` varchar(50) default '',
 	`block_size` int(4) NOT NULL DEFAULT 20,
-	`flash_chart` int(4) NOT NULL DEFAULT 1,
 	`id_skin` int(10) unsigned NOT NULL DEFAULT 0,
 	`disabled` int(4) NOT NULL DEFAULT 0,
 	`shortcut` tinyint(1) DEFAULT 0,
@@ -3295,7 +3294,7 @@ CREATE TABLE IF NOT EXISTS `tautoconfig_actions` (
 -- ---------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tlayout_template` (
 	`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
-	`name` varchar(50)  NOT NULL,
+	`name` varchar(600)  NOT NULL,
 	`id_group` INTEGER UNSIGNED NOT NULL,
 	`background` varchar(200)  NOT NULL,
 	`height` INTEGER UNSIGNED NOT NULL default 0,

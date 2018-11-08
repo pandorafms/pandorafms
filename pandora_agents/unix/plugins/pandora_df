@@ -25,12 +25,33 @@
 ###############################################################################
 
 use strict;
+use warnings;
 
 # Retrieve information from all filesystems
 my $all_filesystems = 0;
 
 # Regex flag
 my $regex_mode = 0;
+my $inode_mode = 0;
+
+# Exclusion
+my @exclude_fs = ();
+my $cmd = undef;
+
+
+sub in_array {
+	my ($array, $value) = @_;
+
+	if (!defined($value)) {
+		return 0;
+	}
+
+	my %params = map { $_ => 1 } @{$array};
+	if (exists($params{$value})) {
+		return 1;
+	}
+	return 0;
+}
 
 sub check_re($$){
 	my $item  = shift;
@@ -65,10 +86,24 @@ if ($#ARGV < 0) {
 	$all_filesystems = 1;
 }
 
-# Check if regex mode is enabled
-if ($ARGV[0] eq "-r") {
-	$regex_mode = 1;
-	shift @ARGV;
+while ($#ARGV >= 0) {
+	my $param = shift @ARGV;
+	if ($param eq '-r') {
+		$regex_mode = 1;
+		shift @ARGV;
+	}
+	elsif ($param eq '-i') {
+		$inode_mode = 1;
+	}
+	elsif ($param eq '-exclude_fs') {
+		my $_tmp = shift @ARGV;
+		chomp ($_tmp);
+		@exclude_fs = split /,/, $_tmp;
+	}
+	elsif ($param eq '-custom_cmd') {
+		$cmd = shift @ARGV;
+		chomp ($cmd);
+	}
 }
 
 # Parse command line parameters
@@ -90,7 +125,15 @@ if ($onlyexclude) {
 
 # Retrieve filesystem information
 # -P use the POSIX output format for portability
-my @df = `df -P`;
+
+
+$cmd = 'df -PT' unless defined($cmd);
+
+if ($inode_mode > 0) {
+	$cmd = 'df -PTi';
+}
+
+my @df = `$cmd`;
 shift (@df);
 
 # No filesystems? Something went wrong.
@@ -102,9 +145,13 @@ my %out;
 # Parse filesystem usage
 foreach my $row (@df) {
 	my @columns = split (' ', $row);
-	exit 1 if ($#columns < 4);
-	if (check_in (\%filesystems,$columns[0]) || ($all_filesystems == 1 && !check_in(\%excluded_filesystems,$columns[0]) )) {
-		$out{$columns[0]} = $columns[4] ;
+	exit 1 if ($#columns < 5);
+
+	next if (in_array(\@exclude_fs, $columns[1]) > 0);
+
+	if (check_in (\%filesystems,$columns[0])
+	|| ($all_filesystems == 1 && !check_in(\%excluded_filesystems,$columns[0])) ){
+		$out{$columns[0]} = $columns[5] ;
 	}
 }
 
@@ -115,7 +162,7 @@ while (my ($filesystem, $use) = each (%out)) {
 
 	# Print module output
 	print "<module>\n";
-	print "<name><![CDATA[" . $filesystem . "]]></name>\n";
+	print "<name><![CDATA[" . ($inode_mode > 0 ? 'Inodes:' : '') . $filesystem . "]]></name>\n";
 	print "<type><![CDATA[generic_data]]></type>\n";
 	print "<data><![CDATA[" . $use . "]]></data>\n";
 	print "<description><![CDATA[% of usage in this volume]]></description>\n";

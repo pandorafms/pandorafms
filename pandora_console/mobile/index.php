@@ -25,6 +25,8 @@ require_once("include/system.class.php");
 require_once("include/db.class.php");
 require_once("include/user.class.php");
 
+require_once('../include/config.php');
+
 require_once('operation/home.php');
 require_once('operation/tactical.php');
 require_once('operation/groups.php');
@@ -77,10 +79,6 @@ $system = System::getInstance();
 require_once($system->getConfig('homedir').'/include/constants.php');
 
 $user = User::getInstance();
-
-if (!is_object($user) && gettype($user) == 'object') {
-	$user = unserialize (serialize ($user));
-}
 
 $user->saveLogin();
 

@@ -112,20 +112,113 @@ if (file_exists ('languages/'.$user_language.'.mo')) {
 		$aux_font_size = $config['font_size'];
 		$config['font_size'] = $config['font_size'] + 3;
 
-		if($type_graph_pdf == 'combined'){
-			echo '<div>';
+		echo '<div>';
+		switch ($type_graph_pdf) {
+			case 'combined':
 				echo graphic_combined_module(
 					$module_list,
 					$params,
 					$params_combined
 				);
-			echo '</div>';
-		}
-		elseif($type_graph_pdf == 'sparse'){
-			echo '<div>';
+				break;
+			case 'sparse':
 				echo grafico_modulo_sparse($params);
-			echo '</div>';
+				break;
+			case 'pie_chart':
+				echo flot_pie_chart(
+					$params['values'],
+					$params['keys'],
+					$params['width'],
+					$params['height'],
+					$params['water_mark_url'],
+					$params['font'],
+					$params['font_size'],
+					$params['legend_position'],
+					$params['colors'],
+					$params['hide_labels']
+				);
+				break;
+			case 'vbar':
+				echo flot_vcolumn_chart(
+					$params['chart_data'],
+					$params['width'],
+					$params['height'],
+					$params['color'],
+					$params['legend'],
+					$params['long_index'],
+					$params['homeurl'],
+					$params['unit'],
+					$params['water_mark_url'],
+					$params['homedir'],
+					$params['font'],
+					$params['font_size'],
+					$params['from_ux'],
+					$params['from_wux'],
+					$params['backgroundColor'],
+					$params['tick_color']
+				);
+				break;
+			case 'hbar':
+				echo flot_hcolumn_chart(
+					$params['chart_data'],
+					$params['width'],
+					$params['height'],
+					$params['water_mark_url'],
+					$params['font'],
+					$params['font_size'],
+					$params['backgroundColor'],
+					$params['tick_color'],
+					$params['val_min'],
+					$params['val_max']
+				);
+				break;
+			case 'ring_graph':
+				echo flot_custom_pie_chart (
+					$params['chart_data'],
+					$params['width'],
+					$params['height'],
+					$params['colors'],
+					$params['module_name_list'],
+					$params['long_index'],
+					$params['no_data'],
+					false,
+					'',
+					$params['water_mark'],
+					$params['font'],
+					$params['font_size'],
+					$params['unit'],
+					$params['ttl'],
+					$params['homeurl'],
+					$params['background_color'],
+					$params['legend_position'],
+					$params['background_color']
+				);
+				break;
+			case 'slicebar':
+				echo flot_slicesbar_graph (
+					$params['graph_data'],
+					$params['period'],
+					$params['width'],
+					$params['height'],
+					$params['legend'],
+					$params['colors'],
+					$params['fontpath'],
+					$params['round_corner'],
+					$params['homeurl'],
+					$params['watermark'],
+					$params['adapt_key'],
+					$params['stat_winalse'],
+					$params['id_agent'],
+					$params['full_legend_daterray'],
+					$params['not_interactive'],
+					1
+				);
+				break;
+			default:
+				# code...
+				break;
 		}
+		echo '</div>';
 
 		$config['font_size'] = $aux_font_size;
 ?>

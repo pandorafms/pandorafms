@@ -7,6 +7,19 @@ RUN { \
 	echo 'baseurl = http://dl.fedoraproject.org/pub/epel/6/x86_64'; \
 	echo 'enabled=1'; \
 	echo 'gpgcheck=0'; \
+	echo  ''; \
+	echo '[remi-php72]'; \
+	echo 'name=Remi php72'; \
+	echo 'baseurl=http://rpms.remirepo.net/enterprise/6/php72/x86_64/'; \
+	echo 'enabled=1'; \
+	echo 'gpgcheck=0'; \
+	echo  ''; \
+	echo '[remi-safe]'; \
+	echo 'name=Safe Remis RPM repository'; \
+	echo 'mirrorlist=http://cdn.remirepo.net/enterprise/$releasever/safe/mirror'; \
+	echo 'enabled=1'; \
+	echo 'gpgcheck=0'; \
+	echo  ''; \
 } > /etc/yum.repos.d/extra_repos.repo
 
 RUN { \
@@ -19,9 +32,10 @@ RUN { \
 
 RUN yum -y update; yum clean all;
 
+RUN yum --disablerepo=updates install -y firefox
+
 # Generic dependencies
 RUN yum install -y \
-	firefox \
 	python-pip \
 	xorg-x11-server-Xvfb; yum clean all;
 RUN pip install pyvirtualdisplay
@@ -55,6 +69,7 @@ RUN yum install -y \
 	php-ldap \ 
 	php-common \ 
 	php-zip \ 
+	php-xmlrpc \ 
 	nmap \
 	xprobe2 \
 	mysql-server \
@@ -62,13 +77,10 @@ RUN yum install -y \
 
 # Pandora FMS Server dependencies
 RUN yum install -y \ 
-	git \
-	cronie \
 	ntp \
-	wget \
+	vim \
+	htop \
 	nano \
-	curl \
-	xterm \
 	postfix \
 	wmic \
 	perl-HTML-Tree \ 
@@ -93,7 +105,6 @@ RUN yum install -y \
 	perl-Time-HiRes \ 
 	perl-XML-Twig \ 
 	perl-Encode-Locale \
-	net-snmp \
 	net-snmp-utils \
 	fontconfig \
 	freetype \

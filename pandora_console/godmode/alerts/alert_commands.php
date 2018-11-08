@@ -283,9 +283,22 @@ if ($create_command) {
 		db_pandora_audit("Command management", "Fail try to create alert command", false, false);
 	}
 	
-	ui_print_result_message ($result, 
+	/* Show errors */
+	if (!isset($messageAction)) {
+		$messageAction = __('Could not be created');
+	}
+	
+	if ($name == "") {
+		$messageAction = __('No name specified');
+	}
+
+	if ($command == "") {
+		$messageAction = __('No command specified');
+	}
+
+	$messageAction = ui_print_result_message ($result,
 		__('Successfully created'),
-		__('Could not be created'));
+		$messageAction);		
 }
 
 

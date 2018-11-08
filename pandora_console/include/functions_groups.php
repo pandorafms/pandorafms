@@ -14,6 +14,8 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
+global $config;
+
 require_once ($config['homedir'].'/include/functions_users.php');
 
 /**
@@ -1226,7 +1228,7 @@ function groups_get_monitors_counter ($group, $agent_filter = array(), $module_f
 			else
 				$module_status = array($module_filter["status"]);
 			
-			$status_array = "";
+			$status_array = array();
 			foreach ($module_status as $status) {
 				switch ($status) {
 					case AGENT_MODULE_STATUS_ALL:

@@ -245,11 +245,12 @@ $module_types = db_get_all_rows_filter (
 if ($module_types === false)
 	$module_types = array ();
 
-$types = '';
+$types = array();
 foreach ($module_types as $type) {
 	$types[$type['id_tipo']] = $type['description'];
 }
 
+$table = new stdClass();
 $table->width = '100%';
 $table->class = 'databox filters';
 $table->data = array ();
@@ -274,7 +275,7 @@ $table->data['form_modules_1'][1] = html_print_select ($types, 'module_type', ''
 	'width:100%');
 $table->data['form_modules_1'][3] = __('Select all modules of this type') . ' ' .
 	html_print_checkbox_extended("force_type", 'type', '', '', false,
-		'', 'style="margin-right: 40px;"', true);
+		'style="margin-right: 40px;"', true, '');
 
 $modules = array ();
 if ($module_type != '') {

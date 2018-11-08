@@ -1230,6 +1230,7 @@ ALTER TABLE tusuario ADD CONSTRAINT `fk_id_filter` FOREIGN KEY (`id_filter`) REF
 ALTER TABLE tusuario ADD COLUMN `session_time` int(10) signed NOT NULL default '0';
 alter table tusuario add autorefresh_white_list text not null default '';
 ALTER TABLE tusuario ADD COLUMN `time_autorefresh` int(5) unsigned NOT NULL default '30';
+ALTER TABLE `tusuario` DROP COLUMN `flash_chart`;
 
 -- ---------------------------------------------------------------------
 -- Table `tagente_modulo`
@@ -1739,6 +1740,8 @@ CREATE TABLE IF NOT EXISTS `tlayout_template` (
 	`is_favourite` INTEGER UNSIGNED NOT NULL default 0,
 	PRIMARY KEY(`id`)
 )  ENGINE = InnoDB DEFAULT CHARSET=utf8;
+
+ALTER TABLE tlayout_template MODIFY `name` varchar(600) NOT NULL;
 
 -- ---------------------------------------------------------------------
 -- Table `tlayout_template_data`

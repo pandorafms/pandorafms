@@ -1314,7 +1314,7 @@ function agents_get_name ($id_agent, $case = "none") {
 }
 
 /**
- * Get alias of an agent.
+ * Get alias of an agent (cached function).
  *
  * @param int $id_agent Agent id.
  * @param string $case Case (upper, lower, none)
@@ -1323,6 +1323,13 @@ function agents_get_name ($id_agent, $case = "none") {
  */
 function agents_get_alias ($id_agent, $case = 'none') {
 	global $config;
+	// Prepare cache
+	static $cache = array();
+	if (empty($case)) $case = 'none';
+
+	// Check cache
+	if (isset($cache[$case][$id_agent])) return $cache[$case][$id_agent];
+
 	if($config['dbconnection_cache'] == null && is_metaconsole()){
 		$alias = (string) db_get_value ('alias', 'tmetaconsole_agent', 'id_tagente', (int) $id_agent);
 	} else {
@@ -1331,13 +1338,15 @@ function agents_get_alias ($id_agent, $case = 'none') {
 
 	switch ($case) {
 		case 'upper':
-			return mb_strtoupper($alias, 'UTF-8');
+			$alias = mb_strtoupper($alias, 'UTF-8');
+			break;
 		case 'lower':
-			return mb_strtolower($alias, 'UTF-8');
-		case 'none':
-		default:
-			return ($alias);
+			$alias = mb_strtolower($alias, 'UTF-8');
+			break;
 	}
+
+	$cache[$case][$id_agent] = $alias;
+	return $alias;
 }
 
 function agents_get_alias_by_name ($name, $case = 'none') {

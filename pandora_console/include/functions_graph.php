@@ -4387,7 +4387,7 @@ function graph_monitor_wheel ($width = 550, $height = 600, $filter = false) {
 					$data_agents[$agent_id]['children'][$module_group_id]['children'][] = $data_module;
 					unset($modules[$module_id]);
 				}
-				function order_module_group_keys ($value, $key) {
+				function order_module_group_keys ($value) {
 					$value['children'] = array_merge($value['children']);
 					return $value;
 				}

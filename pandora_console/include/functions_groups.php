@@ -1701,7 +1701,7 @@ function groups_get_tree_good (&$groups, $parent = false, &$childs) {
 		if ($parent === false && (!isset($group['parent']) || $group['parent'] == 0 || !in_array($group['parent'], $groups))) {
 			$return[$id] = $group;
 			//unset($groups[$id]);
-			$children = groups_get_tree_good($groups, $id);
+			$children = groups_get_tree_good($groups, $id, $noUse);
 			
 			if (!empty($children)) {
 				$return[$id]['children'] = $children;
@@ -1713,7 +1713,7 @@ function groups_get_tree_good (&$groups, $parent = false, &$childs) {
 		else if ($parent && isset($group['parent']) && $group['parent'] == $parent) {
 			$return[$id] = $group;
 			//unset($groups[$id]);
-			$children = groups_get_tree_good($groups, $id);
+			$children = groups_get_tree_good($groups, $id, $noUse);
 			
 			if (!empty($children)) {
 				$return[$id]['children'] = $children;

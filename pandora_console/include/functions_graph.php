@@ -1015,7 +1015,7 @@ function graphic_combined_module (
 
 	$params['stacked'] = $params_combined['stacked'];
 
-	if(!isset($params_combined['projection'])){
+	if(!isset($params_combined['projection']) || $params_combined['projection'] == false){
 		$params_combined['projection'] = false;
 	}
 	else{

@@ -6303,42 +6303,45 @@ function reporting_custom_graph($report, $content, $type = 'dinamic',
 	$graph = db_get_row ("tgraph", "id_graph", $content['id_gs']);
 	$return = array();
 	$return['type'] = 'custom_graph';
+
 	if (empty($content['name'])) {
-		if ($type_report == "custom_graph") {
+		if($type_report == "custom_graph"){
 			$content['name'] = __('Custom graph');
-			$graphs = db_get_all_rows_field_filter ("tgraph", "id_graph", $content['id_gs']);
-			$id_graph = $content['id_gs'];
-		}
-		else if($type_report == "automatic_graph"){
+		} else if($type_report == "automatic_graph"){
 			$content['name'] = __('Automatic combined graph');
-			$graphs[0]["stacked"] = '';
-			$graphs[0]["summatory_series"] = '';
-			$graphs[0]["average_series"] = '';
-			$graphs[0]["modules_series"] = '';
-			$graphs[0]["fullscale"] = $content['style']['fullscale'];
-			if(is_array($content['id_agent_module'])){
-				foreach ($content['id_agent_module'] as $key => $value) {
-					if($content['each_agent']){
-						$modules[] = $value;
-					}
-					else{
-						$modules[] = $value['module'];
-					}
+		} else {
+			$content['name'] ='';
+		}
+	}
+
+	if ($type_report == "custom_graph") {
+		$graphs = db_get_all_rows_field_filter ("tgraph", "id_graph", $content['id_gs']);
+		$id_graph = $content['id_gs'];
+	}
+	else if($type_report == "automatic_graph"){
+		$graphs[0]["stacked"] = '';
+		$graphs[0]["summatory_series"] = '';
+		$graphs[0]["average_series"] = '';
+		$graphs[0]["modules_series"] = '';
+		$graphs[0]["fullscale"] = $content['style']['fullscale'];
+
+		if(is_array($content['id_agent_module'])){
+			foreach ($content['id_agent_module'] as $key => $value) {
+				if($content['each_agent']){
+					$modules[] = $value;
+				}
+				else{
+					$modules[] = $value['module'];
 				}
 			}
-			else{
-				$modules[] = $content['id_agent_module'];
-			}
-			$id_graph = 0;
 		}
-		else {
-			$content['name'] = __('Simple graph');
+		else{
+			$modules[] = $content['id_agent_module'];
 		}
-	} else {
-		if ($type_report == "custom_graph") {
-			$graphs = db_get_all_rows_field_filter ("tgraph", "id_graph", $content['id_gs']);
-			$id_graph = $content['id_gs'];
-		}
+		$id_graph = 0;
+	}
+	else {
+		$content['name'] = __('Simple graph');
 	}
 
 	$return['title'] = $content['name'];

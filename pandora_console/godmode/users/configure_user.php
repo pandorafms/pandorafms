@@ -744,7 +744,6 @@ $(document).ready (function () {
 		}
 		else {			
 			$('#user_configuration_table-metaconsole_agents_manager').hide();
-			$('#user_configuration_table-metaconsole_assigned_server').show();
 			$('#user_configuration_table-metaconsole_access_node').hide();
 		}
 	});

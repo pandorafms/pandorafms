@@ -487,7 +487,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 						else {
 							$url = ui_meta_get_url_console_child(
 								$layoutData['id_metaconsole'],
-								"estado", "operation/agentes/ver_agente&amp;id_agente=" . $layoutData['id_agent'], null, null, null, $isExternalLink);
+								"view", "operation/agentes/status_monitor&amp;id_module=" . $layoutData['id_agente_modulo'], null, null, null, $isExternalLink);
 						}
 					}
 					else {

@@ -1215,7 +1215,7 @@ if($build_table_custom_fields){
 		switch ($values['status']) {
 			case AGENT_STATUS_NORMAL:
 				$image_status = html_print_image(
-					'images/agent_ok.png',
+					'images/status_sets/default/agent_ok.png',
 					true,
 					array(
 						'title' => __('Agents ok')
@@ -1224,7 +1224,7 @@ if($build_table_custom_fields){
 				break;
 			case AGENT_STATUS_CRITICAL:
 				$image_status = html_print_image(
-					'images/agent_critical.png',
+					'images/status_sets/default/agent_critical.png',
 					true,
 					array(
 						'title' => __('Agents critical')
@@ -1233,7 +1233,7 @@ if($build_table_custom_fields){
 			break;
 			case AGENT_STATUS_WARNING:
 				$image_status = html_print_image(
-					'images/agent_warning.png',
+					'images/status_sets/default/agent_warning.png',
 					true,
 					array(
 						'title' => __('Agents warning')
@@ -1242,7 +1242,7 @@ if($build_table_custom_fields){
 			break;
 			case AGENT_STATUS_UNKNOWN:
 				$image_status = html_print_image(
-					'images/agent_unknown.png',
+					'images/status_sets/default/agent_down.png',
 					true,
 					array(
 						'title' => __('Agents unknown')
@@ -1254,7 +1254,7 @@ if($build_table_custom_fields){
 			break;
 			case AGENT_STATUS_NOT_INIT:
 				$image_status = html_print_image(
-					'images/agent_notinit.png',
+					'images/status_sets/default/agent_no_data.png',
 					true,
 					array(
 						'title' => __('Agents not init')
@@ -1263,7 +1263,7 @@ if($build_table_custom_fields){
 			break;
 			default:
 				$image_status= html_print_image(
-					'images/agent_ok.png',
+					'images/status_sets/default/agent_ok.png',
 					true,
 					array(
 						'title' => __('Agents ok')
@@ -1352,7 +1352,66 @@ if($build_table_child_custom_fields){
 			$table_modules->data[$key][2] = $value['max_warning'];
 			$table_modules->data[$key][3] = $value['min_critical'];
 			$table_modules->data[$key][4] = $value['max_critical'];
-			$table_modules->data[$key][5] = $value['estado'];
+			switch ($value['estado']) {
+				case 0:
+				case 300:
+					$table_modules->data[$key][5] = '('. $value['estado'] . ') ' . html_print_image(
+						'images/status_sets/default/severity_normal.png',
+						true,
+						array(
+							'title' => __('Modules normal')
+						)
+					);
+					break;
+				case 1:
+				case 100:
+					$table_modules->data[$key][5] = '('. $value['estado'] . ') ' . html_print_image(
+						'images/status_sets/default/severity_critical.png',
+						true,
+						array(
+							'title' => __('Modules critical')
+						)
+					);
+				break;
+				case 2:
+				case 200:
+					$table_modules->data[$key][5] = '('. $value['estado'] . ') ' . html_print_image(
+						'images/status_sets/default/severity_warning.png',
+						true,
+						array(
+							'title' => __('Modules warning')
+						)
+					);
+				break;
+				case 3:
+					$table_modules->data[$key][5] = '('. $value['estado'] . ') ' . html_print_image(
+						'images/status_sets/default/severity_maintenance.png',
+						true,
+						array(
+							'title' => __('Modules unknown')
+						)
+					);
+				break;
+				case 4:
+				case 5:
+					$table_modules->data[$key][5] = '('. $value['estado'] . ') ' . html_print_image(
+						'images/status_sets/default/severity_informational.png',
+						true,
+						array(
+							'title' => __('Modules no init')
+						)
+					);
+				break;
+				default:
+					$table_modules->data[$key][5] = '('. $value['estado'] . ') ' . html_print_image(
+						'images/status_sets/default/severity_normal.png',
+						true,
+						array(
+							'title' => __('Modules normal')
+						)
+					);
+					break;
+			}
 			$table_modules->data[$key][6] = $value['current_interval'];
 			$table_modules->data[$key][7] = date('d/m/Y h:i:s', $value['utimestamp']);
 		}

@@ -3895,7 +3895,7 @@ function ui_print_module_string_value($value, $id_agente_module,
 					" / " . $module_name;
 				$salida = "<div " .
 					"id='hidden_value_module_" . $id_agente_module . "'
-					style='display: none; width: 100%; height: 100%; overflow: scroll; padding: 10px; font-size: 14px; line-height: 16px; font-family: mono,monospace; text-align: left' title='" . $title_dialog . "'>" .
+					style='display: none; width: 100%; height: 100%; overflow: auto; padding: 10px; font-size: 14px; line-height: 16px; font-family: mono,monospace; text-align: left' title='" . $title_dialog . "'>" .
 					$value .
 					"</div>" . 
 					"<span " .

@@ -2479,7 +2479,7 @@ function html_print_result_div ($text) {
 	$text = preg_replace ('/\n/i','<br>',$text);
 	$text = preg_replace ('/\s/i','&nbsp;',$text);
 
-	$enclose = "<div id='result_div' style='width: 100%; height: 100%; overflow: scroll; padding: 10px; font-size: 14px; line-height: 16px; font-family: mono,monospace; text-align: left'>";
+	$enclose = "<div id='result_div' style='width: 100%; height: 100%; overflow: auto; padding: 10px; font-size: 14px; line-height: 16px; font-family: mono,monospace; text-align: left'>";
 	$enclose .= $text;
 	$enclose .= "</div>";
 	return $enclose;

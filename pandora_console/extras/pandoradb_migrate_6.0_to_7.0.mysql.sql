@@ -1231,6 +1231,7 @@ ALTER TABLE tusuario ADD COLUMN `session_time` int(10) signed NOT NULL default '
 alter table tusuario add autorefresh_white_list text not null default '';
 ALTER TABLE tusuario ADD COLUMN `time_autorefresh` int(5) unsigned NOT NULL default '30';
 ALTER TABLE `tusuario` DROP COLUMN `flash_chart`;
+ALTER TABLE `tusuario` ADD COLUMN `default_custom_view` int(10) unsigned NULL default '0';
 
 -- ---------------------------------------------------------------------
 -- Table `tagente_modulo`
@@ -1811,3 +1812,17 @@ ALTER TABLE `trecon_task` ADD COLUMN `snmp_auth_method` varchar(25) NOT NULL def
 ALTER TABLE `trecon_task` ADD COLUMN `snmp_privacy_method` varchar(25) NOT NULL default '';
 ALTER TABLE `trecon_task` ADD COLUMN `snmp_privacy_pass` varchar(255) NOT NULL default '';
 ALTER TABLE `trecon_task` ADD COLUMN `snmp_security_level` varchar(25) NOT NULL default '';
+
+-- ---------------------------------------------------------------------
+-- Table `tagent_custom_fields_filter`
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tagent_custom_fields_filter` (
+	`id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+	`name` varchar(600) NOT NULL,
+	`id_group` int(10) unsigned default '0',
+	`id_custom_field` varchar(600) default '',
+	`id_custom_fields_data` varchar(600) default '',
+	`id_status` varchar(600) default '',
+	`module_search` varchar(600) default '',
+	PRIMARY KEY(`id`)
+) ENGINE = InnoDB DEFAULT CHARSET=utf8;

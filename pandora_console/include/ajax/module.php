@@ -35,9 +35,15 @@ $get_id_tag = (bool) get_parameter('get_id_tag', 0);
 $get_type = (bool) get_parameter('get_type', 0);
 $list_modules = (bool) get_parameter('list_modules', 0);
 $get_agent_modules_json_by_name = (bool) get_parameter('get_agent_modules_json_by_name', 0);
+
 $get_custom_fields_data = (bool) get_parameter('get_custom_fields_data', 0);
 $build_table_custom_fields = (bool)get_parameter('build_table_custom_fields', 0);
 $build_table_child_custom_fields = (bool)get_parameter('build_table_child_custom_fields', 0);
+$build_table_save_filter = (bool)get_parameter('build_table_save_filter', 0);
+$append_tab_filter = (bool)get_parameter('append_tab_filter', 0);
+$create_filter_cf = (bool)get_parameter('create_filter_cf', 0);
+$update_filter_cf = (bool)get_parameter('update_filter_cf', 0);
+$delete_filter_cf = (bool)get_parameter('delete_filter_cf', 0);
 
 if ($get_agent_modules_json_by_name) {
 	$agent_name = get_parameter('agent_name');
@@ -1326,8 +1332,6 @@ if($build_table_child_custom_fields){
 		$name_where
 	);
 
-	hd($query, true, true);
-
 	$modules = db_get_all_rows_sql ($query);
 
 	$table_modules = new stdClass();
@@ -1335,15 +1339,15 @@ if($build_table_child_custom_fields){
 	$table_modules->class="databox data";
 
 	$table_modules->head = array();
-	$table_modules->head[0] = __('Name');
-	$table_modules->head[1] = __('Data');
-	$table_modules->head[2] = __('Min Warning');
-	$table_modules->head[3] = __('Max Warning');
-	$table_modules->head[4] = __('Min Critical');
-	$table_modules->head[5] = __('Max Critical');
+	$table_modules->head[0] = __('Module name');
+	$table_modules->head[1] = __('Min Warning');
+	$table_modules->head[2] = __('Max Warning');
+	$table_modules->head[3] = __('Min Critical');
+	$table_modules->head[4] = __('Max Critical');
+	$table_modules->head[5] = __('Status');
 	$table_modules->head[6] = __('Current interval');
 	$table_modules->head[7] = __('Date');
-	$table_modules->head[8] = __('Status');	
+	$table_modules->head[8] = __('Status');
 
 	$table_modules->data = array();
 	if(isset($modules) && is_array($modules)){
@@ -1355,7 +1359,7 @@ if($build_table_child_custom_fields){
 			$table_modules->data[$key][4] = $value['min_critical'];
 			$table_modules->data[$key][5] = $value['max_critical'];
 			$table_modules->data[$key][6] = $value['current_interval'];
-			$table_modules->data[$key][7] = date('d/m/Y h:i:s', $value['utimestamp']);			
+			$table_modules->data[$key][7] = date('d/m/Y h:i:s', $value['utimestamp']);
 			switch ($value['estado']) {
 				case 0:
 				case 300:
@@ -1425,6 +1429,275 @@ if($build_table_child_custom_fields){
 
 	html_print_table ($table_modules);
 
+	return;
+}
+
+if($build_table_save_filter){
+	$type_form = get_parameter("type_form", '');
+
+	if($type_form == 'save'){
+		$tabs = '<div id="tabs" style="height:95%;">';
+			$tabs .= "<ul class='tab_save_filter'>";
+				$tabs .= "<li>";
+					$tabs .= "<a href='#extended_create_filter' id='link_create'>";
+						$tabs .= html_print_image('images/lightning_go.png',true);
+						$tabs .= "<span>". __('New Filter') . "</span>";
+					$tabs .= "</a>";
+				$tabs .= "</li>";
+
+				$tabs .= "<li>";
+					$tabs .= "<a href='#extended_update_filter' id='link_update'>";
+						$tabs .= html_print_image('images/zoom.png',true);
+						$tabs .= "<span>".__('Existing Filter')."</span>";
+					$tabs .= "</a>";
+				$tabs .= "</li>";
+			$tabs .= "</ul>";
+
+			$tabs .= '<div id="extended_create_filter">';
+			$tabs .= '</div>';
+			$tabs .= '<div id="extended_update_filter">';
+			$tabs .= '</div>';
+		$tabs .= "</div>";
+		echo $tabs;
+	}
+	else{
+		$table = new StdClass;
+		$table->id = 'save_filter_form';
+		$table->width = '100%';
+		$table->class = 'databox';
+		
+		$array_filters = get_filters_custom_fields_view(0, true);
+		$table->data[0][0] = __('Filter name');
+		$table->data[0][1] = html_print_select(
+			$array_filters, 'id_name',
+			'', '', '', '',
+			true, false, true, '', false
+		);
+		$table->data[0][3] = html_print_submit_button (__('Load filter'), 'load_filter', false, 'class="sub upd"', true);
+		
+		echo "<form action='' method='post'>"; 
+			html_print_table($table);
+		echo "</form>";
+	}
+	return;
+}
+
+if($append_tab_filter){
+	$filters = json_decode(io_safe_output(get_parameter("filters", '')), true);
+
+	$table = new StdClass;
+	$table->id = 'save_filter_form';
+	$table->width = '100%';
+	$table->class = 'databox';
+
+	if($filters['id'] == 'extended_create_filter'){
+		echo "<div id='msg_error_create'></div>";
+		$table->data[0][0] = __('Filter name');
+		$table->data[0][1] = html_print_input_text('id_name', '', '', 15, 255, true);
+		$table->data[0][2] = html_print_submit_button (__('Create filter'), 'create_filter', false, 'class="sub upd"', true);
+	}
+	else{
+		echo "<div id='msg_error_update'></div>";
+		echo "<div id='msg_error_delete'></div>";
+		$array_filters = get_filters_custom_fields_view(0, true);
+		$table->data[0][0] = __('Filter name');
+		$table->data[0][1] = html_print_select(
+			$array_filters, 'id_name',
+			'', '', __('None'), -1,
+			true, false, true, '', false
+		);
+		$table->data[0][2] = html_print_submit_button (__('Delete filter'), 'delete_filter', false, 'class="sub upd"', true);
+		$table->data[0][3] = html_print_submit_button (__('Update filter'), 'update_filter', false, 'class="sub upd"', true);
+	}
+
+	html_print_table($table);
+	return;
+}
+
+if($create_filter_cf){
+	//initialize result
+	$result_array = array();
+	$result_array['error'] = 0;
+	$result_array['msg'] = '';
+
+	//initialize vars
+	$filters = json_decode(io_safe_output(get_parameter("filters", '')), true);
+	$name_filter = get_parameter("name_filter", '');
+
+	//check that the name is not empty
+	if($name_filter == ''){
+		$result_array['error'] = 1;
+		$result_array['msg'] = ui_print_error_message(
+			__('The name must not be empty'),
+			'', true
+		);
+		echo json_encode($result_array);
+		return;
+	}
+
+	$name_exists = get_filters_custom_fields_view(0, false, $name_filter);
+
+	if($name_exists){
+		$result_array['error'] = 1;
+		$result_array['msg'] = ui_print_error_message(
+			__('Filter name already exists in the bbdd'),
+			'', true
+		);
+		echo json_encode($result_array);
+		return;
+	}
+
+	//check custom field is not empty
+	if($filters['id_custom_fields'] == ''){
+		$result_array['error'] = 1;
+		$result_array['msg'] = ui_print_error_message(
+			__('Please, select a custom field'),
+			'', true
+		);
+		echo json_encode($result_array);
+		return;
+	}
+
+	//insert
+	$values = array();
+	$values['name'] = $name_filter;
+	$values['id_group'] = $filters['group'];
+	$values['id_custom_field'] = $filters['id_custom_fields'];
+	$values['id_custom_fields_data'] = json_encode($filters['id_custom_fields_data']);
+	$values['id_status'] = json_encode($filters['id_status']);
+	$values['module_search'] = $filters['module_search'];
+
+	$insert = db_process_sql_insert('tagent_custom_fields_filter', $values);
+
+	//check error insert
+	if($insert) {
+		$result_array['error'] = 0;
+		$result_array['msg'] = ui_print_success_message(
+			__("Success create filter."),
+			'', true
+		);
+	} else {
+		$result_array['error'] = 1;
+		$result_array['msg'] = ui_print_error_message(
+			__("Error create filter."),
+			'', true
+		);
+	}
+
+	echo json_encode($result_array);
+	return;
+}
+
+if($update_filter_cf){
+	//initialize result
+	$result_array = array();
+	$result_array['error'] = 0;
+	$result_array['msg'] = '';
+
+	//initialize vars
+	$filters = json_decode(io_safe_output(get_parameter("filters", '')), true);
+	$id_filter = get_parameter("id_filter", '');
+
+	//check selected filter
+	if($id_filter == -1){
+		$result_array['error'] = 1;
+		$result_array['msg'] = ui_print_error_message(
+			__('please, select a filter'),
+			'', true
+		);
+		echo json_encode($result_array);
+		return;
+	}
+
+	//array condition update
+	$condition = array();
+	$condition['id'] = $id_filter;
+
+	//check selected custom fields
+	if($filters['id_custom_fields'] == ''){
+		$result_array['error'] = 1;
+		$result_array['msg'] = ui_print_error_message(
+			__('please, select a custom field'),
+			'', true
+		);
+		echo json_encode($result_array);
+		return;
+	}
+
+	//array values update
+	$values = array();
+	$values['id_group'] = $filters['group'];
+	$values['id_custom_field'] = $filters['id_custom_fields'];
+	$values['id_custom_fields_data'] = json_encode($filters['id_custom_fields_data']);
+	$values['id_status'] = json_encode($filters['id_status']);
+	$values['module_search'] = $filters['module_search'];
+
+	//update
+	$update = db_process_sql_update('tagent_custom_fields_filter', $values, $condition);
+
+	//check error insert
+	if($update) {
+		$result_array['error'] = 0;
+		$result_array['msg'] = ui_print_success_message(
+			__("Success update filter."),
+			'', true
+		);
+	} else {
+		$result_array['error'] = 1;
+		$result_array['msg'] = ui_print_error_message(
+			__("Error update filter."),
+			'', true
+		);
+	}
+
+	echo json_encode($result_array);
+	return;
+}
+
+if($delete_filter_cf){
+	//Initialize result
+	$result_array = array();
+	$result_array['error'] = 0;
+	$result_array['msg'] = '';
+
+	//Initialize vars
+	$filters = json_decode(io_safe_output(get_parameter("filters", '')), true);
+	$id_filter = get_parameter("id_filter", '');
+
+	//Check selected filter
+	if($id_filter == -1){
+		$result_array['error'] = 1;
+		$result_array['msg'] = ui_print_error_message(
+			__('please, select a filter'),
+			'', true
+		);
+		echo json_encode($result_array);
+		return;
+	}
+
+	//Array condition update
+	$condition = array();
+	$condition['id'] = $id_filter;
+
+	//Delete
+	$delete = db_process_sql_delete('tagent_custom_fields_filter', $condition);
+
+	//Check error insert
+	if($delete) {
+		$result_array['error'] = 0;
+		$result_array['msg'] = ui_print_success_message(
+			__("Success delete filter."),
+			'', true
+		);
+	} else {
+		$result_array['error'] = 1;
+		$result_array['msg'] = ui_print_error_message(
+			__("Error delete filter."),
+			'', true
+		);
+	}
+
+	echo json_encode($result_array);
 	return;
 }
 

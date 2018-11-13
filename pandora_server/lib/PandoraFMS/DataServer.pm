@@ -52,7 +52,6 @@ my %Agents :shared;
 my $Sem :shared;
 my $TaskSem :shared;
 my $AgentSem :shared;
-my $ModuleSem :shared;
 
 ########################################################################################
 # Data Server class constructor.
@@ -69,7 +68,6 @@ sub new ($$;$) {
 	$Sem = Thread::Semaphore->new;
 	$TaskSem = Thread::Semaphore->new (0);
 	$AgentSem = Thread::Semaphore->new (1);
-	$ModuleSem = Thread::Semaphore->new (1);
 	
 	# Call the constructor of the parent class
 	my $self = $class->SUPER::new($config, DATASERVER, \&PandoraFMS::DataServer::data_producer, \&PandoraFMS::DataServer::data_consumer, $dbh);
@@ -677,7 +675,6 @@ sub process_module_data ($$$$$$$$$$) {
 	$module_conf->{'module_macros'} = '' unless defined ($module_conf->{'module_macros'});
 	
 	# Get module data or create it if it does not exist
-	$ModuleSem->down ();
 	my $module = get_db_single_row ($dbh, 'SELECT * FROM tagente_modulo WHERE id_agente = ? AND ' . db_text ('nombre') . ' = ?', $agent->{'id_agente'}, safe_input($module_name));
 	if (! defined ($module)) {
 		
@@ -685,14 +682,12 @@ sub process_module_data ($$$$$$$$$$) {
 		# Do not auto create modules
 		#if ($pa_config->{'autocreate'} ne '1') {
 		#	logger($pa_config, "Module '$module_name' not found for agent '$agent_name' and module auto-creation disabled.", 10);
-		#	$ModuleSem->up ();
 		#	return;
 		#}
 		
 		# Is the agent not learning?
 		if (($agent->{'modo'} == 0) && !($force_processing)) {
 			logger($pa_config, "Learning mode disabled. Skipping module '$module_name' agent '$agent_name'.", 10);
-			$ModuleSem->up ();
 			return;
 		}
 		
@@ -700,7 +695,6 @@ sub process_module_data ($$$$$$$$$$) {
 		$module_conf->{'id_tipo_modulo'} = get_module_id ($dbh, $module_type);
 		if ($module_conf->{'id_tipo_modulo'} <= 0) {
 			logger($pa_config, "Invalid module type '$module_type' for module '$module_name' agent '$agent_name'.", 3);
-			$ModuleSem->up ();
 			return;
 		}
 		
@@ -758,7 +752,6 @@ sub process_module_data ($$$$$$$$$$) {
 		$module = get_db_single_row ($dbh, 'SELECT * FROM tagente_modulo WHERE id_agente = ? AND ' . db_text('nombre') . ' = ?', $agent->{'id_agente'}, safe_input($module_name));
 		if (! defined ($module)) {
 			logger($pa_config, "Could not create module '$module_name' for agent '$agent_name'.", 3);
-			$ModuleSem->up ();
 			return;
 		}
 		
@@ -815,8 +808,6 @@ sub process_module_data ($$$$$$$$$$) {
 	if ((($agent->{'modo'} eq '1') || ($agent->{'modo'} eq '2')) && $policy_linked == 0) {
 		update_module_configuration ($pa_config, $dbh, $module, $module_conf);
 	}
-	
-	$ModuleSem->up ();
 	
 	# Module disabled!
 	if ($module->{'disabled'} eq '1') {

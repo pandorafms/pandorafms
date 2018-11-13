@@ -34,7 +34,7 @@ use PandoraFMS::Config;
 use PandoraFMS::DB;
 
 # version: define current version
-my $version = "7.0NG.728 PS181112";
+my $version = "7.0NG.728 PS181113";
 
 # Pandora server configuration
 my %conf;
@@ -297,7 +297,9 @@ sub pandora_purgedb ($$) {
 	    
 	    my $buffer = 1000;
 	    my $id_module = $module->{'id_agente_modulo'};
-	    
+
+		db_do ($dbh, 'UPDATE tagente_modulo SET parent_module_id=0 WHERE parent_module_id=?', $id_module);
+
 		log_message ('', ".");
 		
 		while(1) {

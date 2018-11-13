@@ -14,6 +14,17 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 
+// Enable profiler for testing
+if (!defined("__PAN_XHPROF__")) define ("__PAN_XHPROF__", 0);
+
+if (__PAN_XHPROF__ === 1) {
+	if (function_exists('tideways_xhprof_enable')) {
+		tideways_xhprof_enable();
+	} else {
+		error_log("Cannot find tideways_xhprof_enable function");
+	}
+}
+
 //Set character encoding to UTF-8 - fixes a lot of multibyte character headaches
 if (function_exists ('mb_internal_encoding')) {
 	mb_internal_encoding ("UTF-8");
@@ -1266,3 +1277,8 @@ require('include/php_to_js_values.php');
 		*/
 	}
 </script>
+<?php
+if (__PAN_XHPROF__ === 1) {
+	pandora_xhprof_display_result("node_index");
+}
+?>

@@ -14,6 +14,15 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 
+// Enable profiler for testing
+if (!defined("__PAN_XHPROF__")) define ("__PAN_XHPROF__", 0);
+
+if (__PAN_XHPROF__ === 1) {
+	if (function_exists('tideways_xhprof_enable')) {
+		tideways_xhprof_enable();
+	}
+}
+
 if ((! file_exists("include/config.php")) || (! is_readable("include/config.php"))) {
 	exit;
 }
@@ -89,5 +98,9 @@ if (file_exists ($page)) {
 }
 else {
 	echo '<br /><b class="error">Sorry! I can\'t find the page '.$page.'!</b>';
+}
+
+if (__PAN_XHPROF__ === 1) {
+	pandora_xhprof_display_result("ajax", "console");
 }
 ?>

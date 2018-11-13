@@ -238,7 +238,7 @@ function grafico_modulo_sparse_data(
 		}
 	}
 
-	if($array_data === false){
+	if($array_data === false || !isset($array_data['sum1']['data'][0][1])){
 		return false;
 	}
 
@@ -3594,6 +3594,7 @@ function fullscale_data (
 		}
 	}
 	else{
+		if ($data_uncompress === false) $data_uncompress = array();
 		foreach ($data_uncompress as $k) {
 			foreach ($k["data"] as $v) {
 				if (isset($v["type"]) && $v["type"] == 1) { # skip unnecesary virtual data
@@ -3662,7 +3663,9 @@ function fullscale_data (
 
 		$data["sum" . $series_suffix]['min'] = $min_value_min;
 		$data["sum" . $series_suffix]['max'] = $max_value_max;
-		$data["sum" . $series_suffix]['avg'] = $sum_data/$count_data;
+		$data["sum" . $series_suffix]['avg'] = $count_data == 0
+			? 0
+			: $sum_data/$count_data;
 	}
 
 	if($show_percentil && !$compare){

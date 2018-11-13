@@ -88,7 +88,7 @@ if (!check_acl_one_of_groups($config['id_user'], $all_groups, "AR")) {
 		?>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 		<title><?php echo __("%s Snapshot data view for module (%s)", get_product_name(), $label); ?></title>
-		<script type='text/javascript' src='../../include/javascript/jquery-1.7.1.js'></script>
+		<script type='text/javascript' src='../../include/javascript/jquery-3.3.1.min.js'></script>
 	</head>
 	<body style='background:#000; color: #ccc;'>
 		<?php

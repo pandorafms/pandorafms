@@ -36,6 +36,14 @@ $get_type = (bool) get_parameter('get_type', 0);
 $list_modules = (bool) get_parameter('list_modules', 0);
 $get_agent_modules_json_by_name = (bool) get_parameter('get_agent_modules_json_by_name', 0);
 
+$get_custom_fields_data = (bool) get_parameter('get_custom_fields_data', 0);
+$build_table_custom_fields = (bool)get_parameter('build_table_custom_fields', 0);
+$build_table_child_custom_fields = (bool)get_parameter('build_table_child_custom_fields', 0);
+$build_table_save_filter = (bool)get_parameter('build_table_save_filter', 0);
+$append_tab_filter = (bool)get_parameter('append_tab_filter', 0);
+$create_filter_cf = (bool)get_parameter('create_filter_cf', 0);
+$update_filter_cf = (bool)get_parameter('update_filter_cf', 0);
+$delete_filter_cf = (bool)get_parameter('delete_filter_cf', 0);
 
 if ($get_agent_modules_json_by_name) {
 	$agent_name = get_parameter('agent_name');
@@ -1084,6 +1092,615 @@ if ($get_type) {
 	echo $graph_type;
 	return;
 }
+
+if ($get_custom_fields_data){
+	$name_custom_fields = get_parameter("name_custom_fields", 0);
+	$array_custom_fields_data = get_custom_fields_data($name_custom_fields);
+	echo json_encode($array_custom_fields_data);
+	return;
+}
+
+
+if($build_table_custom_fields){
+	$order = get_parameter("order", '');
+	$length = get_parameter("length", 20);
+	$start = get_parameter("start", 0);
+	$draw = get_parameter("draw", 0);
+	$search = get_parameter("search", '');
+	$indexed_descriptions = json_decode(io_safe_output(get_parameter("indexed_descriptions", '')), true);
+
+	//order query
+	$order_column = $order[0]['column'];
+	$type_order = $order[0]['dir'];
+	switch ($order_column) {
+		default:
+		case '1':
+			$order_by = "ORDER BY temp.name_custom_fields " . $type_order;
+			break;
+		case '2':
+			$order_by = "ORDER BY tma.server_name " . $type_order;
+			break;
+		case '3':
+			$order_by = "ORDER BY tma.alias " . $type_order;
+			break;
+		case '4':
+			$order_by = "ORDER BY tma.direccion " . $type_order;
+			break;
+	}
+
+	//table temporary for save array in table by order and search custom_field data
+	$table_temporary = "CREATE TEMPORARY TABLE temp_custom_fields (
+		id_server int(10),
+		id_agent int(10),
+		name_custom_fields varchar(2048),
+		KEY `data_index_temp_1` (`id_server`, `id_agent`)
+	)";
+	db_process_sql($table_temporary);
+
+	//insert values array in table temporary
+	$values_insert = array();
+	foreach ($indexed_descriptions as $key => $value) {
+		$values_insert[] = "(".$value['id_server'].", ".$value['id_agente'].", '".$value['description']."')";
+	}
+	$values_insert_implode = implode(",", $values_insert);
+	$query_insert ="INSERT INTO temp_custom_fields VALUES ". $values_insert_implode;
+	db_process_sql($query_insert);
+
+	//search table for alias, custom field data, server_name, direction
+	$search_query = "";
+	if($search['value'] != ''){
+		$search_query = ' AND (tma.alias LIKE "%' . $search['value']. '%"';
+		$search_query .= ' OR tma.server_name LIKE "%' . $search['value']. '%"';
+		$search_query .= ' OR tma.direccion LIKE "%' . $search['value']. '%"';
+		$search_query .= ' OR temp.name_custom_fields LIKE "%' . $search['value']. '%" ) ';
+	}
+
+	//query all fields result
+	$query = sprintf("SELECT
+			tma.id_agente,
+			tma.id_tagente,
+			tma.id_tmetaconsole_setup,
+			tma.alias,
+			tma.direccion,
+			tma.server_name,
+			temp.name_custom_fields,
+			(CASE
+				WHEN tma.critical_count > 0
+					THEN 1
+				WHEN tma.critical_count = 0
+					AND tma.warning_count > 0
+					THEN 2
+				WHEN tma.critical_count = 0
+					AND tma.warning_count = 0
+					AND tma.unknown_count > 0
+					THEN 3
+				WHEN tma.critical_count = 0
+					AND tma.warning_count = 0
+					AND tma.unknown_count = 0
+					AND tma.notinit_count <> tma.total_count
+					THEN 0
+				WHEN tma.total_count = tma.notinit_count
+					THEN 5
+				ELSE 0
+			END) AS `status`
+		FROM tmetaconsole_agent tma
+		INNER JOIN temp_custom_fields temp
+			ON temp.id_agent = tma.id_tagente
+			AND temp.id_server = tma.id_tmetaconsole_setup
+		WHERE tma.disabled = 0
+		%s
+		%s
+		LIMIT %d OFFSET %d
+		",
+		$search_query,
+		$order_by,
+		$length,
+		$start
+	);
+
+	$result = db_get_all_rows_sql($query);
+
+	//query count
+	$query_count = sprintf("SELECT
+			COUNT(tma.id_agente) AS `count`
+		FROM tmetaconsole_agent tma
+		INNER JOIN temp_custom_fields temp
+			ON temp.id_agent = tma.id_tagente
+			AND temp.id_server = tma.id_tmetaconsole_setup
+		WHERE tma.disabled = 0
+		%s
+		",
+		$search_query
+	);
+
+	$count = db_get_sql($query_count);
+
+	//prepare rows for table dinamic
+	$data = array();
+	foreach ($result as $values) {
+		switch ($values['status']) {
+			case AGENT_STATUS_NORMAL:
+				$image_status = html_print_image(
+					'images/status_sets/default/agent_ok.png',
+					true,
+					array(
+						'title' => __('Agents ok')
+					)
+				);
+				break;
+			case AGENT_STATUS_CRITICAL:
+				$image_status = html_print_image(
+					'images/status_sets/default/agent_critical.png',
+					true,
+					array(
+						'title' => __('Agents critical')
+					)
+				);
+			break;
+			case AGENT_STATUS_WARNING:
+				$image_status = html_print_image(
+					'images/status_sets/default/agent_warning.png',
+					true,
+					array(
+						'title' => __('Agents warning')
+					)
+				);
+			break;
+			case AGENT_STATUS_UNKNOWN:
+				$image_status = html_print_image(
+					'images/status_sets/default/agent_down.png',
+					true,
+					array(
+						'title' => __('Agents unknown')
+					)
+				);
+			break;
+			case AGENT_STATUS_ALERT_FIRED:
+				$image_status = 'alert';
+			break;
+			case AGENT_STATUS_NOT_INIT:
+				$image_status = html_print_image(
+					'images/status_sets/default/agent_no_data.png',
+					true,
+					array(
+						'title' => __('Agents not init')
+					)
+				);
+			break;
+			default:
+				$image_status= html_print_image(
+					'images/status_sets/default/agent_ok.png',
+					true,
+					array(
+						'title' => __('Agents ok')
+					)
+				);
+				break;
+		}
+
+		$data[] = array(
+			"ref" => $referencia,
+			"data_custom_field" => $values['name_custom_fields'],
+			"server" => $values['server_name'],
+			"agent" => $values['alias'],
+			"IP" => $values['direccion'],
+			"status" => $image_status,
+			"id_agent" => $values['id_tagente'],
+			"id_server" => $values['id_tmetaconsole_setup']
+		);
+	}
+
+	$result = array(
+		"draw" => $draw,
+		"recordsTotal" => count($data),
+		"recordsFiltered" => $count,
+		"data" => $data
+	);
+	echo json_encode($result);
+	return;
+}
+
+if($build_table_child_custom_fields){
+	$id_agent = get_parameter("id_agent", 0);
+	$id_server = get_parameter("id_server", 0);
+	$module_search = str_replace('amp;', '',get_parameter("module_search", ''));
+
+	if(!$id_server || !$id_agent){
+		return false;
+	}
+
+	if($module_search != ''){
+		$name_where = " AND tam.nombre LIKE '%" . $module_search . "%'";
+	}
+
+	if (is_metaconsole()) {
+		$server = metaconsole_get_connection_by_id ($id_server);
+		metaconsole_connect($server);
+	}
+
+	$query = sprintf("SELECT tam.nombre,
+			tam.min_warning, tam.max_warning,
+			tam.min_critical, tam.max_critical,
+			tae.estado, tae.current_interval,
+			tae.utimestamp, tae.datos
+		FROM tagente_modulo tam
+		INNER JOIN tagente_estado tae
+			ON tam.id_agente_modulo = tae.id_agente_modulo
+		WHERE tam.id_agente = %d
+		%s",
+		$id_agent,
+		$name_where
+	);
+
+	$modules = db_get_all_rows_sql ($query);
+
+	$table_modules = new stdClass();
+	$table_modules->width = "100%";
+	$table_modules->class="databox data";
+
+	$table_modules->head = array();
+	$table_modules->head[0] = __('Module name');
+	$table_modules->head[1] = __('Min Warning');
+	$table_modules->head[2] = __('Max Warning');
+	$table_modules->head[3] = __('Min Critical');
+	$table_modules->head[4] = __('Max Critical');
+	$table_modules->head[5] = __('Status');
+	$table_modules->head[6] = __('Current interval');
+	$table_modules->head[7] = __('Date');
+	$table_modules->head[8] = __('Status');
+
+	$table_modules->data = array();
+	if(isset($modules) && is_array($modules)){
+		foreach ($modules as $key => $value) {
+			$table_modules->data[$key][0] = $value['nombre'];
+			$table_modules->data[$key][1] = $value['datos'];
+			$table_modules->data[$key][2] = $value['min_warning'];
+			$table_modules->data[$key][3] = $value['max_warning'];
+			$table_modules->data[$key][4] = $value['min_critical'];
+			$table_modules->data[$key][5] = $value['max_critical'];
+			$table_modules->data[$key][6] = $value['current_interval'];
+			$table_modules->data[$key][7] = date('d/m/Y h:i:s', $value['utimestamp']);
+			switch ($value['estado']) {
+				case 0:
+				case 300:
+					$table_modules->data[$key][8] = html_print_image(
+						'images/status_sets/default/severity_normal.png',
+						true,
+						array(
+							'title' => __('Modules normal')
+						)
+					);
+					break;
+				case 1:
+				case 100:
+					$table_modules->data[$key][8] = html_print_image(
+						'images/status_sets/default/severity_critical.png',
+						true,
+						array(
+							'title' => __('Modules critical')
+						)
+					);
+				break;
+				case 2:
+				case 200:
+					$table_modules->data[$key][8] = html_print_image(
+						'images/status_sets/default/severity_warning.png',
+						true,
+						array(
+							'title' => __('Modules warning')
+						)
+					);
+				break;
+				case 3:
+					$table_modules->data[$key][8] = html_print_image(
+						'images/status_sets/default/severity_maintenance.png',
+						true,
+						array(
+							'title' => __('Modules unknown')
+						)
+					);
+				break;
+				case 4:
+				case 5:
+					$table_modules->data[$key][8] = html_print_image(
+						'images/status_sets/default/severity_informational.png',
+						true,
+						array(
+							'title' => __('Modules no init')
+						)
+					);
+				break;
+				default:
+					$table_modules->data[$key][8] = html_print_image(
+						'images/status_sets/default/severity_normal.png',
+						true,
+						array(
+							'title' => __('Modules normal')
+						)
+					);
+					break;
+			}
+		}
+	}
+
+	if (is_metaconsole()) {
+			metaconsole_restore_db();
+	}
+
+	html_print_table ($table_modules);
+
+	return;
+}
+
+if($build_table_save_filter){
+	$type_form = get_parameter("type_form", '');
+
+	if($type_form == 'save'){
+		$tabs = '<div id="tabs" style="height:95%;">';
+			$tabs .= "<ul class='tab_save_filter'>";
+				$tabs .= "<li>";
+					$tabs .= "<a href='#extended_create_filter' id='link_create'>";
+						$tabs .= html_print_image('images/lightning_go.png',true);
+						$tabs .= "<span>". __('New Filter') . "</span>";
+					$tabs .= "</a>";
+				$tabs .= "</li>";
+
+				$tabs .= "<li>";
+					$tabs .= "<a href='#extended_update_filter' id='link_update'>";
+						$tabs .= html_print_image('images/zoom.png',true);
+						$tabs .= "<span>".__('Existing Filter')."</span>";
+					$tabs .= "</a>";
+				$tabs .= "</li>";
+			$tabs .= "</ul>";
+
+			$tabs .= '<div id="extended_create_filter">';
+			$tabs .= '</div>';
+			$tabs .= '<div id="extended_update_filter">';
+			$tabs .= '</div>';
+		$tabs .= "</div>";
+		echo $tabs;
+	}
+	else{
+		$table = new StdClass;
+		$table->id = 'save_filter_form';
+		$table->width = '100%';
+		$table->class = 'databox';
+		
+		$array_filters = get_filters_custom_fields_view(0, true);
+		$table->data[0][0] = __('Filter name');
+		$table->data[0][1] = html_print_select(
+			$array_filters, 'id_name',
+			'', '', '', '',
+			true, false, true, '', false
+		);
+		$table->data[0][3] = html_print_submit_button (__('Load filter'), 'load_filter', false, 'class="sub upd"', true);
+		
+		echo "<form action='' method='post'>"; 
+			html_print_table($table);
+		echo "</form>";
+	}
+	return;
+}
+
+if($append_tab_filter){
+	$filters = json_decode(io_safe_output(get_parameter("filters", '')), true);
+
+	$table = new StdClass;
+	$table->id = 'save_filter_form';
+	$table->width = '100%';
+	$table->class = 'databox';
+
+	if($filters['id'] == 'extended_create_filter'){
+		echo "<div id='msg_error_create'></div>";
+		$table->data[0][0] = __('Filter name');
+		$table->data[0][1] = html_print_input_text('id_name', '', '', 15, 255, true);
+		$table->data[0][2] = html_print_submit_button (__('Create filter'), 'create_filter', false, 'class="sub upd"', true);
+	}
+	else{
+		echo "<div id='msg_error_update'></div>";
+		echo "<div id='msg_error_delete'></div>";
+		$array_filters = get_filters_custom_fields_view(0, true);
+		$table->data[0][0] = __('Filter name');
+		$table->data[0][1] = html_print_select(
+			$array_filters, 'id_name',
+			'', '', __('None'), -1,
+			true, false, true, '', false
+		);
+		$table->data[0][2] = html_print_submit_button (__('Delete filter'), 'delete_filter', false, 'class="sub upd"', true);
+		$table->data[0][3] = html_print_submit_button (__('Update filter'), 'update_filter', false, 'class="sub upd"', true);
+	}
+
+	html_print_table($table);
+	return;
+}
+
+if($create_filter_cf){
+	//initialize result
+	$result_array = array();
+	$result_array['error'] = 0;
+	$result_array['msg'] = '';
+
+	//initialize vars
+	$filters = json_decode(io_safe_output(get_parameter("filters", '')), true);
+	$name_filter = get_parameter("name_filter", '');
+
+	//check that the name is not empty
+	if($name_filter == ''){
+		$result_array['error'] = 1;
+		$result_array['msg'] = ui_print_error_message(
+			__('The name must not be empty'),
+			'', true
+		);
+		echo json_encode($result_array);
+		return;
+	}
+
+	$name_exists = get_filters_custom_fields_view(0, false, $name_filter);
+
+	if($name_exists){
+		$result_array['error'] = 1;
+		$result_array['msg'] = ui_print_error_message(
+			__('Filter name already exists in the bbdd'),
+			'', true
+		);
+		echo json_encode($result_array);
+		return;
+	}
+
+	//check custom field is not empty
+	if($filters['id_custom_fields'] == ''){
+		$result_array['error'] = 1;
+		$result_array['msg'] = ui_print_error_message(
+			__('Please, select a custom field'),
+			'', true
+		);
+		echo json_encode($result_array);
+		return;
+	}
+
+	//insert
+	$values = array();
+	$values['name'] = $name_filter;
+	$values['id_group'] = $filters['group'];
+	$values['id_custom_field'] = $filters['id_custom_fields'];
+	$values['id_custom_fields_data'] = json_encode($filters['id_custom_fields_data']);
+	$values['id_status'] = json_encode($filters['id_status']);
+	$values['module_search'] = $filters['module_search'];
+
+	$insert = db_process_sql_insert('tagent_custom_fields_filter', $values);
+
+	//check error insert
+	if($insert) {
+		$result_array['error'] = 0;
+		$result_array['msg'] = ui_print_success_message(
+			__("Success create filter."),
+			'', true
+		);
+	} else {
+		$result_array['error'] = 1;
+		$result_array['msg'] = ui_print_error_message(
+			__("Error create filter."),
+			'', true
+		);
+	}
+
+	echo json_encode($result_array);
+	return;
+}
+
+if($update_filter_cf){
+	//initialize result
+	$result_array = array();
+	$result_array['error'] = 0;
+	$result_array['msg'] = '';
+
+	//initialize vars
+	$filters = json_decode(io_safe_output(get_parameter("filters", '')), true);
+	$id_filter = get_parameter("id_filter", '');
+
+	//check selected filter
+	if($id_filter == -1){
+		$result_array['error'] = 1;
+		$result_array['msg'] = ui_print_error_message(
+			__('please, select a filter'),
+			'', true
+		);
+		echo json_encode($result_array);
+		return;
+	}
+
+	//array condition update
+	$condition = array();
+	$condition['id'] = $id_filter;
+
+	//check selected custom fields
+	if($filters['id_custom_fields'] == ''){
+		$result_array['error'] = 1;
+		$result_array['msg'] = ui_print_error_message(
+			__('please, select a custom field'),
+			'', true
+		);
+		echo json_encode($result_array);
+		return;
+	}
+
+	//array values update
+	$values = array();
+	$values['id_group'] = $filters['group'];
+	$values['id_custom_field'] = $filters['id_custom_fields'];
+	$values['id_custom_fields_data'] = json_encode($filters['id_custom_fields_data']);
+	$values['id_status'] = json_encode($filters['id_status']);
+	$values['module_search'] = $filters['module_search'];
+
+	//update
+	$update = db_process_sql_update('tagent_custom_fields_filter', $values, $condition);
+
+	//check error insert
+	if($update) {
+		$result_array['error'] = 0;
+		$result_array['msg'] = ui_print_success_message(
+			__("Success update filter."),
+			'', true
+		);
+	} else {
+		$result_array['error'] = 1;
+		$result_array['msg'] = ui_print_error_message(
+			__("Error update filter."),
+			'', true
+		);
+	}
+
+	echo json_encode($result_array);
+	return;
+}
+
+if($delete_filter_cf){
+	//Initialize result
+	$result_array = array();
+	$result_array['error'] = 0;
+	$result_array['msg'] = '';
+
+	//Initialize vars
+	$filters = json_decode(io_safe_output(get_parameter("filters", '')), true);
+	$id_filter = get_parameter("id_filter", '');
+
+	//Check selected filter
+	if($id_filter == -1){
+		$result_array['error'] = 1;
+		$result_array['msg'] = ui_print_error_message(
+			__('please, select a filter'),
+			'', true
+		);
+		echo json_encode($result_array);
+		return;
+	}
+
+	//Array condition update
+	$condition = array();
+	$condition['id'] = $id_filter;
+
+	//Delete
+	$delete = db_process_sql_delete('tagent_custom_fields_filter', $condition);
+
+	//Check error insert
+	if($delete) {
+		$result_array['error'] = 0;
+		$result_array['msg'] = ui_print_success_message(
+			__("Success delete filter."),
+			'', true
+		);
+	} else {
+		$result_array['error'] = 1;
+		$result_array['msg'] = ui_print_error_message(
+			__("Error delete filter."),
+			'', true
+		);
+	}
+
+	echo json_encode($result_array);
+	return;
+}
+
 }
 
 ?>

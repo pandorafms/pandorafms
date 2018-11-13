@@ -152,11 +152,9 @@ echo "<div id='delete_in_progress_dialog' style='display: none; text-align: cent
 
 //CSS
 ui_require_css_file ('color-picker');
-ui_require_css_file ('jquery-ui-1.8.17.custom');
-
+ui_require_css_file ('jquery-ui.min');
 
 //Javascript
-//ui_require_jquery_file('jquery-ui-1.8.17.custom.min');
 ui_require_jquery_file('colorpicker');
 ui_require_javascript_file('wz_jsgraphics');
 ui_require_javascript_file('pandora_visual_console');

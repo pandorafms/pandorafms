@@ -1456,6 +1456,14 @@ function ui_process_page_head ($string, $bitfield) {
 			$exists_css = !empty($skin_styles);
 		}
 	}
+
+// Add the jquery UI styles CSS
+$config['css']['jquery-UI'] = "include/styles/jquery-ui.min.css";
+// Add the dialog styles CSS
+$config['css']['dialog'] = "include/styles/dialog.css";
+// Add the dialog styles CSS
+$config['css']['dialog'] = "include/javascript/introjs.css";
+
 	//If skin's css files exists then add them
 	if ($exists_css) {
 		foreach ($skin_styles as $filename => $name) {
@@ -1472,18 +1480,7 @@ function ui_process_page_head ($string, $bitfield) {
 			$config['style'] => "include/styles/" . $config['style'] . ".css"),
 			$config['css']);
 	}
-	
-	
-	
-	// Add the jquery UI styles CSS
-	$config['css']['jquery-UI'] = "include/styles/jquery-ui-1.10.0.custom.css";
-	// Add the dialog styles CSS
-	$config['css']['dialog'] = "include/styles/dialog.css";
-	// Add the dialog styles CSS
-	$config['css']['dialog'] = "include/javascript/introjs.css";
-	
-	
-	
+
 	//We can't load empty and we loaded (conditionally) ie
 	$loaded = array ('', 'ie');
 	
@@ -1500,18 +1497,14 @@ function ui_process_page_head ($string, $bitfield) {
 	////////////////////////////////////////////////////////////////////
 	//End load CSS
 	////////////////////////////////////////////////////////////////////
-	
-	
-	
-	
+
 	////////////////////////////////////////////////////////////////////
 	//Load JS
 	////////////////////////////////////////////////////////////////////
 	if (empty ($config['js'])) {
 		$config['js'] = array (); //If it's empty, false or not init set array to empty just in case
 	}
-	
-	
+
 	//Pandora specific JavaScript should go first
 	$config['js'] = array_merge (array ("pandora" => "include/javascript/pandora.js"), $config['js']);
 	//Load base64 javascript library
@@ -1525,26 +1518,22 @@ function ui_process_page_head ($string, $bitfield) {
 	$config['js']['clippy'] = "include/javascript/clippy.js";
 	//Load Underscore.js library
 	$config['js']['underscore'] = "include/javascript/underscore-min.js";
-	
-	
+
 	//Load other javascript
 	//We can't load empty
 	$loaded = array ('');
 	foreach ($config['js'] as $name => $filename) {
 		if (in_array ($name, $loaded))
 			continue;
-		
 		array_push ($loaded, $name);
-		
+
 		$url_js = ui_get_full_url($filename);
 		$output .= '<script type="text/javascript" src="' . $url_js . '"></script>'."\n\t";
 	}
 	////////////////////////////////////////////////////////////////////
 	//End load JS
 	////////////////////////////////////////////////////////////////////
-	
-	
-	
+
 	////////////////////////////////////////////////////////////////////
 	//Load jQuery
 	////////////////////////////////////////////////////////////////////
@@ -1564,9 +1553,9 @@ function ui_process_page_head ($string, $bitfield) {
 	}
 	else {
 		$config['jquery'] = array_merge(
-			array ("jquery" => "include/javascript/jquery-1.9.0.js",
+			array ("jquery" => "include/javascript/jquery-3.3.1.min.js",
 				"pandora" => "include/javascript/jquery.pandora.js",
-				'jquery-ui' => 'include/javascript/jquery.jquery-ui-1.10.0.custom.js'),
+				'jquery-ui' => 'include/javascript/jquery-ui.min.js'),
 			$config['jquery']);
 	}
 	

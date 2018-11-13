@@ -445,6 +445,7 @@ switch ($tab) {
 		
 		if (enterprise_installed()) {
 			$old_networkmaps_enterprise = db_get_all_rows_sql("SELECT * FROM tnetworkmap_enterprise");
+			if ($old_networkmaps_enterprise === false) $old_networkmaps_enterprise = array();
 		}
 		$old_networkmaps_open = db_get_all_rows_sql("SELECT * FROM tnetwork_map");
 		

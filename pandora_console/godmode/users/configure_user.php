@@ -169,6 +169,7 @@ if ($create_user) {
 	$values['language'] = get_parameter ('language', 'default');
 	$values['timezone'] = (string) get_parameter('timezone');
 	$values['default_event_filter'] = (int) get_parameter('default_event_filter');
+	$values['default_custom_view'] = (int) get_parameter('default_custom_view');
 	$dashboard = get_parameter('dashboard', '');
 	$visual_console = get_parameter('visual_console', '');
 
@@ -281,6 +282,7 @@ if ($update_user) {
 	$values['language'] = (string) get_parameter ('language');
 	$values['timezone'] = (string) get_parameter('timezone');
 	$values['default_event_filter'] = (int) get_parameter('default_event_filter');
+	$values['default_custom_view'] = (int) get_parameter('default_custom_view');
 	$dashboard = get_parameter('dashboard', '');
 	$visual_console = get_parameter('visual_console', '');
 	
@@ -570,7 +572,16 @@ if (!$meta) {
 	}
 }
 
-$table->data[11][0] = __('Interactive charts').' '.ui_print_help_tip(__('Whether to use Javascript or static PNG graphs'), true) ;
+if($meta){
+	$array_filters = get_filters_custom_fields_view(0, true);
+	$table->data[11][0] = __('Search custom field view').' '.ui_print_help_tip(__('Load by default the selected view in custom field view'), true);
+	$table->data[11][1] =html_print_select(
+		$array_filters, 'default_custom_view',
+		$user_info['default_custom_view'], '', __('None'), 0,
+		true, false, true, '', false
+	);
+}
+
 $values = array(-1 => __('Use global conf'), 1 => __('Yes'), 0 => __('No'));
 
 $table->data[12][0] = __('Home screen').

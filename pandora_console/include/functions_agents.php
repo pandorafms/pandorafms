@@ -3204,4 +3204,33 @@ function agent_counters_custom_fields($filters){
 
 	return $final_result;
 }
+
+function get_filters_custom_fields_view($id = 0, $for_select = false, $name = ""){
+	if($for_select){
+		$query = "SELECT id, `name` FROM tagent_custom_fields_filter";
+		$rs = db_get_all_rows_sql($query);
+		if(isset($rs) && is_array($rs)){
+			foreach ($rs as $key => $value) {
+				$result[$value['id']] = $value['name'];
+			}
+		}
+		else{
+			$result = false;
+		}
+	}
+	else{
+		$query = "SELECT * FROM tagent_custom_fields_filter WHERE 1=1";
+
+		if($id){
+			$query .= " AND id = " . $id;
+		}
+
+		if($name){
+			$query .= " AND `name` = '" . $name . "'";
+		}
+
+		$result = db_get_all_rows_sql($query);
+	}
+	return $result;
+}
 ?>

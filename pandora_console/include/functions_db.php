@@ -43,7 +43,7 @@ function db_select_engine() {
 	}
 }
 
-function db_connect($host = null, $db = null, $user = null, $pass = null, $port = null, $critical = true, $charset = "utf8") {
+function db_connect($host = null, $db = null, $user = null, $pass = null, $port = null, $critical = true, $charset = null) {
 	global $config;
 	static $error = 0;
 	

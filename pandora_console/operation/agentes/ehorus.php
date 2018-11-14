@@ -53,7 +53,7 @@ if (empty($ehorus_agent_id)) {
 $hostname = $config['ehorus_hostname'];
 $port = $config['ehorus_port'];
 $user = $config['ehorus_user'];
-$password = io_output_password($config['ehorus_pass']);
+$password = io_safe_output(io_output_password($config['ehorus_pass']));
 $curl_timeout = $config['ehorus_req_timeout'];
 
 $base_url = 'https://' . $hostname . ':' . $port;

@@ -732,10 +732,14 @@ $(document).ready (function () {
 		if($('#radiobtn0002').prop('checked')) {			
 			$('#user_configuration_table-metaconsole_agents_manager').show();
 			$('#user_configuration_table-metaconsole_access_node').show();
+			if($('#checkbox-metaconsole_agents_manager').prop('checked')) {			
+				$('#user_configuration_table-metaconsole_assigned_server').show();
+			}
 		}
 		else {			
 			$('#user_configuration_table-metaconsole_agents_manager').hide();
 			$('#user_configuration_table-metaconsole_access_node').hide();
+			$('#user_configuration_table-metaconsole_assigned_server').hide();
 		}
 	});
 	

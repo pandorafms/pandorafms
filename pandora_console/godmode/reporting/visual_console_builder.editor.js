@@ -2616,7 +2616,7 @@ function setEventsBar(id_data, values) {
 	parameter.push ({name: "id_agent", value: values['id_agent']});
 	parameter.push ({name: "id_agent_module", value: values['module']});
 	if (is_metaconsole()) {
-		parameter.push ({name: "id_metaconsole", value: id_metaconsole});
+		parameter.push ({name: "id_metaconsole", value: values['server_id']});
 	}
 	parameter.push ({name: "period", value: values['event_max_time_row']});
 	parameter.push ({name: "id_visual_console", value: id_visual_console});

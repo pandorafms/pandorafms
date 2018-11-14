@@ -190,7 +190,7 @@ $ignored_params['refr'] = '';
 		//~ fetchMap();
 	});
 	
-	$(window).load (function () {
+	$(window).on('load', function () {
 		$('.item:not(.icon) img:not(.b64img)').each( function() {
 			if ($(this).css('float')=='left' || $(this).css('float')=='right') {
 				if(	$(this).parent()[0].tagName == 'DIV'){

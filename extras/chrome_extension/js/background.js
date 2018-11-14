@@ -3,7 +3,7 @@ var isFetching = null;
 var storedEvents = new Array();
 var notVisited = {};
 
-$(window).load(function() {
+$(window).on('load', function() {
 	initilise();
 	// Wait some ms to throw main function
 	var delay = setTimeout(main, 100);

@@ -203,7 +203,7 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 			$form_items['image_row']['html'] =
 				'<td align="left">' . __('Image') . '</td>
 				<td align="left">' .
-				html_print_select ($images_list, 'image', '', 'showPreview(this.value);', 'None', 'none', true) .
+				html_print_select ($images_list, 'image', '', 'showPreview(this.value);', 'None', '', true) .
 				'</td>';
 				
 			$form_items['clock_animation_row'] = array();
@@ -696,7 +696,7 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 				__('Parent') . '</td>
 				<td align="left">' .
 				html_print_input_hidden('parents_load', base64_encode(json_encode($parents)), true) .
-				html_print_select($parents, 'parent', '', '', __('None'), 0, true) .
+				html_print_select($parents, 'parent', 0, '', __('None'), 0, true) .
 				'</td>';
 			
 			$form_items_advance['map_linked_row'] = array();
@@ -879,11 +879,12 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 					"VR",
 					true,
 					'element_group',
-					__('All'),
-					'',
-					'',
 					0,
-					true) .
+					'',
+					'',
+					'',
+					true
+				) .
 				ui_print_help_tip (
 					__("If selected, restrict visualization of this item in the visual console to users who have access to selected group. This is also used on calculating child visual consoles."), true) . 
 				'</td>';

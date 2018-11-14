@@ -186,7 +186,7 @@ $ignored_params['refr'] = '';
 			
 	});
 	
-	$(window).load (function () {
+	$(window).on('load', function () {
 		$('.item:not(.icon) img').each(function(){
 			
 			

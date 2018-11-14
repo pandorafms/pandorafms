@@ -50,10 +50,10 @@ function toggle_advance_options_palette(close) {
 function visual_map_main() {
 	img_handler_start = "images/dot_red.png";
 	img_handler_end = "images/dot_green.png";
-	get_image_url(img_handler_start).success(function (data) {
+	get_image_url(img_handler_start).done(function (data) {
 		img_handler_start = data;
 	});
-	get_image_url(img_handler_end).success(function (data) {
+	get_image_url(img_handler_end).done(function (data) {
 		img_handler_end = data;
 	});
 
@@ -65,9 +65,7 @@ function visual_map_main() {
 	eventsItems();
 
 	//Fixed to wait the load of images.
-	$(window).load(function() {
-		
-
+	$(window).on('load', function() {
 		$('#module').change(function(){
 			var txt = $("#module").val();
 			if(selectedItem == 'simple_value' || creationItem == 'simple_value'){
@@ -153,8 +151,7 @@ function visual_map_main() {
 			draw_user_lines("", 0, 0, 0 , 0, 0, true);
 
 			//~ center_labels();
-		}
-	);
+	});
 
 	obj_js_user_lines = new jsGraphics("background");
 
@@ -1978,14 +1975,14 @@ function cleanFields(item) {
 	$("select[name=period]").val('');
 	$("input[name=width]").val(0);
 	$("input[name=height]").val(0);
-	$("select[name=parent]").val('');
+	$("select[name=parent]").val(0);
 	$("select[name=linked_map_status_calculation_type]").val('default').change();
-	$("select[name=map_linked]").val('').change();
+	$("select[name=map_linked]").val(0).change();
 	$("input[name=linked_map_node_id]").val(0);
 	$("input[name=map_linked_weight]").val('');
 	$("input[name=linked_map_status_service_critical]").val('');
 	$("input[name=linked_map_status_service_warning]").val('');
-	$("select[name=element_group]").val('');
+	$("select[name=element_group]").val(0);
 	$("input[name=width_module_graph]").val(300);
 	$("input[name=height_module_graph]").val(180);
 	$("input[name='width_box']").val(300);

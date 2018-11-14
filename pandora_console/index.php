@@ -940,7 +940,12 @@ if (get_parameter ('login', 0) !== 0) {
 			
 		include_once("general/login_help_dialog.php");
 	}
-	
+
+	$php_version = phpversion();
+	$php_version_array = explode('.', $php_version);
+	if($php_version_array[0] < 7){
+		include_once("general/php7_message.php");
+	}
 }
 
 // Header

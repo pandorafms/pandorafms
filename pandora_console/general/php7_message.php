@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 
 // This program is free software; you can redistribute it and/or
@@ -28,13 +28,13 @@ else{
 }
 
 // Prints help dialog information
-echo '<div id="login_help_dialog" title="REQUIRED PHP UPDATE" style="display: none;">';
+echo '<div id="login_help_dialog" title="PHP UPDATE REQUIRED" style="display: none;">';
 	echo '<div style="width:70%; font-size: 10pt; margin: 20px; float:left">';
-		echo "<p ><b style='font-size: 10pt;'>" . __('For a correct operation of PandoraFMS you will have to update php to version 7.0 or later.') . "</b></p>";
-		echo "<p style='font-size: 10pt;'><b>" . __(' If you don\'t update, you will lose functionalities:') . "</b></p>";
+		echo "<p><b style='font-size: 10pt;'>" . __('For a correct operation of PandoraFMS, PHP must be updated to version 7.0 or higher.') . "</b></p>";
+		echo "<p style='font-size: 10pt;'><b>" . __('Otherwise, functionalities will be lost.') . "</b></p>";
 		echo "<ul>";
 			echo "<li style='padding:5px;'>" . __('Report download in PDF format') . "</li>";
-			echo "<li style='padding:5px;'>" . __('Sending emails') . "</li>";
+			echo "<li style='padding:5px;'>" . __('Emails Sending') . "</li>";
 			echo "<li style='padding:5px;'>" . __('Metaconsole Collections') . "</li>";
 			echo "<li style='padding:5px;'>" . '...' . "</li>";
 		echo "</ul>";

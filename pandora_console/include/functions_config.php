@@ -2251,7 +2251,7 @@ function config_check () {
 			"<li style='color: #676767'>" . __('Metaconsole Collections') . "</li>" .
 			"<li style='color: #676767'>" . '...' . "</li>" .
 			"</ol>" .
-			'<a target="blank" href="' . $url_help . '">'.__('Acess Help').'</a>',
+			'<a target="blank" href="' . $url_help . '">'.__('Access Help').'</a>',
 			__("REQUIRED PHP UPDATE"));
 	}
 }

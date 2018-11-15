@@ -1,5 +1,4 @@
 /*
-
 Author: The Pandora FMS team
 Name: Default theme
 Description: The default Pandora FMS theme layout
@@ -4820,9 +4819,6 @@ div#dialog_messages table th:last-child {
 }
 
 /* --- JQUERY-UI --- */
-.ui-front {
-	z-index: 10000;
-}
 .ui-button-text-only .ui-button-text {
 	font-family: nunito;
 	font-size: 9pt;
@@ -4848,10 +4844,10 @@ div#dialog_messages table th:last-child {
 	width: 100% !important;
 	overflow: hidden !important;
 	text-overflow: ellipsis !important;
-   	font-size: 11pt;
-   	position: relative;
-    top: 5px;
-    float: none !important;
+	font-size: 11pt;
+	position: relative;
+	top: 5px;
+	float: none !important;
 }
 .ui-dialog .ui-dialog-titlebar-close {
 	position: absolute !important;
@@ -4891,7 +4887,7 @@ div#dialog_messages table th:last-child {
 	width:90px !important;
 }
 .ui-widget-content {
-	background: #ffffff url(../../../include/styles/images/ui-bg_flat_75_ffffff_40x100.png) 50% 50% repeat-x;
+	background: #ffffff url(include/styles/images/ui-bg_flat_75_ffffff_40x100.png) 50% 50% repeat-x;
 }
 .ui-state-default,
 .ui-widget-content .ui-state-default,
@@ -4899,9 +4895,9 @@ div#dialog_messages table th:last-child {
 	margin-top: 3px;
 	border: 1px solid #d3d3d3 !important;
 	border-bottom:0 !important;
-    background: #e6e6e6 url(images/ui-bg_glass_75_e6e6e6_1x400.png) 50% 50% repeat-x !important;
-    font-weight: normal !important;
-    color: #555555 !important;
+	background: #e6e6e6 url(images/ui-bg_glass_75_e6e6e6_1x400.png) 50% 50% repeat-x !important;
+	font-weight: normal !important;
+	color: #555555 !important;
 }
 .ui-corner-all,
 .ui-corner-top,
@@ -4959,8 +4955,6 @@ div#dialog_messages table th:last-child {
 .ui-datepicker-buttonpane .ui-datepicker-current {
 	margin-left: 0.2em !important;
 }
-.ui-icon {
-}
 .ui-dialog .ui-widget-content {
 	border: 0px !important;
 }
@@ -4993,8 +4987,11 @@ div#dialog_messages table th:last-child {
 	font-family: Verdana,Arial,sans-serif !important;
 }
 
-a.ui-button:active, .ui-button:active, .ui-button.ui-state-active:hover,
- .ui-state-focus, .ui-widget-content .ui-state-focus, .ui-widget-header .ui-state-focus, .ui-button:hover, .ui-button:focus{
+a.ui-button:active, .ui-button:active,
+.ui-button.ui-state-active:hover,
+.ui-state-focus .ui-widget-content,
+.ui-state-focus .ui-widget-header,
+.ui-state-focus .ui-button:hover, .ui-button:focus{
 	background: transparent !important;
 	border: none !important;
 }
@@ -5002,17 +4999,43 @@ a.ui-button:active, .ui-button:active, .ui-button.ui-state-active:hover,
 .ui-state-hover, .ui-widget-content .ui-state-hover, .ui-widget-header .ui-state-hover{
 	border: 1px solid #999999 !important;
 	border-bottom: 0 !important;
-    background: #dadada url(images/ui-bg_glass_75_dadada_1x400.png) 50% 50% repeat-x !important;
+	background: #dadada url(images/ui-bg_glass_75_dadada_1x400.png) 50% 50% repeat-x !important;
 }
 
 .ui-state-active, .ui-widget-content .ui-state-active, .ui-widget-header .ui-state-active{
 	border: 1px solid #aaaaaa !important;
 	border-bottom: 0 !important;
-    background: #ffffff url(images/ui-bg_glass_65_ffffff_1x400.png) 50% 50% repeat-x !important;
-    font-weight: normal !important;
-    color: #212121 !important;
+	background: #ffffff url(images/ui-bg_glass_65_ffffff_1x400.png) 50% 50% repeat-x !important;
+	font-weight: normal !important;
+	color: #212121 !important;
 }
 .ui-state-active a, .ui-state-active a:link, .ui-state-active a:visited{
 	color: #212121 !important;
+}
+
+ul.ui-front{
+	z-index: 1000000 !important;
+	padding-right: 0px !important;
+}
+
+ul.ui-front li{
+	padding: 3px !important;
+}
+
+ul.ui-front li:hover{
+	background-color: #e1e3e1 !important;
+}
+
+ul.ui-front li a.ui-menu-item-wrapper{
+	background: transparent !important;
+	border: none !important;
+}
+
+ul.ui-front li a.ui-menu-item-wrapper span{
+	padding-left: 5px !important;
+}
+
+ul.ui-front li a.ui-menu-item-wrapper:hover{
+	text-decoration: none !important;
 }
 /* --- END - JQUERY-UI --- */

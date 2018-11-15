@@ -38,7 +38,7 @@ echo '<div id="login_help_dialog" title="REQUIRED PHP UPDATE" style="display: no
 			echo "<li style='padding:5px;'>" . __('Metaconsole Collections') . "</li>";
 			echo "<li style='padding:5px;'>" . '...' . "</li>";
 		echo "</ul>";
-		echo '<p><a target="blank" href="' . $url_help . '"><b>'.__('Acess Help').'</b></a></p>';
+		echo '<p><a target="blank" href="' . $url_help . '"><b>'.__('Access Help').'</b></a></p>';
 	echo '</div>';
 	echo "<div style='margin-top: 80px;'>";
 		echo html_print_image('images/icono_warning_mr.png', true, array("alt" => __('Warning php version'), "border" => 0));

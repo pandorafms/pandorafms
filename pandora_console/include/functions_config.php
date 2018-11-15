@@ -2231,6 +2231,29 @@ function config_check () {
 				__("phantomjs is not installed"));
 		}
 	}
+
+
+	$php_version = phpversion();
+	$php_version_array = explode('.', $php_version);
+	if($php_version_array[0] < 7){
+		if ($config['language'] == 'es') {
+			$url_help = 'https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_es:Instalaci%C3%B3n_y_actualizaci%C3%B3n_PHP_7';
+		}
+		else{
+			$url_help = 'https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_en:_PHP_7';
+		}
+
+		set_pandora_error_for_header(
+			__('For a correct operation of PandoraFMS you will have to update php to version 7.0 or later.') . "<br>" .
+			__(' If you don\'t update, you will lose functionalities:') . "<br>" .
+			"<ol><li style='color: #676767'>" . __('Report download in PDF format') . "</li>" .
+			"<li style='color: #676767'>" . __('Sending emails') . "</li>" .
+			"<li style='color: #676767'>" . __('Metaconsole Collections') . "</li>" .
+			"<li style='color: #676767'>" . '...' . "</li>" .
+			"</ol>" .
+			'<a target="blank" href="' . $url_help . '">'.__('Acess Help').'</a>',
+			__("REQUIRED PHP UPDATE"));
+	}
 }
 
 function config_return_in_bytes($val) {

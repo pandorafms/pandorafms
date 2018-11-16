@@ -1615,16 +1615,6 @@ You can of course remove the warnings, that's why we include the source and do n
 				?>
 			</td>
 		</tr>
-		
-		<tr id="row_hide_notinit_agents" style="" class="datos">
-			<td style="font-weight:bold;"><?php echo __('Hide not init agents');?></td>
-			<td>
-				<?php
-				html_print_checkbox('hide_notinit_agents', 1,
-					$hide_notinit_agents, false, false);
-				?>
-			</td>
-		</tr>
 
 		<tr id="row_priority_mode" style="" class="datos">
 			<td style="font-weight:bold;"><?php	echo __('Priority mode');?></td>

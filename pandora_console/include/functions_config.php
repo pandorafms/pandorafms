@@ -2244,15 +2244,15 @@ function config_check () {
 		}
 
 		set_pandora_error_for_header(
-			__('For a correct operation of PandoraFMS you will have to update php to version 7.0 or later.') . "<br>" .
-			__(' If you don\'t update, you will lose functionalities:') . "<br>" .
+			__('For a correct operation of PandoraFMS, PHP must be updated to version 7.0 or higher.') . "<br>" .
+			__('Otherwise, functionalities will be lost.') . "<br>" .
 			"<ol><li style='color: #676767'>" . __('Report download in PDF format') . "</li>" .
-			"<li style='color: #676767'>" . __('Sending emails') . "</li>" .
+			"<li style='color: #676767'>" . __('Emails Sending') . "</li>" .
 			"<li style='color: #676767'>" . __('Metaconsole Collections') . "</li>" .
 			"<li style='color: #676767'>" . '...' . "</li>" .
 			"</ol>" .
 			'<a target="blank" href="' . $url_help . '">'.__('Access Help').'</a>',
-			__("REQUIRED PHP UPDATE"));
+			__("PHP UPDATE REQUIRED"));
 	}
 }
 

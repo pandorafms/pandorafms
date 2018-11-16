@@ -349,7 +349,6 @@ function reporting_html_print_report($report, $mini = false, $report_info = 1) {
 function reporting_html_SLA($table, $item, $mini) {
 	$style = db_get_value('style', 'treport_content', 'id_rc', $item['id_rc']);
 	$style = json_decode(io_safe_output($style), true);
-	$hide_notinit_agent = $style['hide_notinit_agents'];
 	$same_agent_in_resume = "";
 
 	global $config;
@@ -383,7 +382,7 @@ function reporting_html_SLA($table, $item, $mini) {
 			}
 		}
 
-		if(!(!isset($item['data']) && $hide_notinit_agent == 1)) {
+		if(isset($item['data'])) {
 			$table1 = new stdClass();
 			$table1->width = '99%';
 
@@ -488,154 +487,71 @@ function reporting_html_SLA($table, $item, $mini) {
 					}
 					$row[] = round($sla['sla_limit'], 2) . "%";
 
-					if (!$hide_notinit_agent) {
-
-						if (reporting_sla_is_not_init_from_array($sla)) {
-							$row[] = '<span style="font: bold '.$font_size.'em Arial, Sans-serif; color: '.COL_NOTINIT.';">' .
-								__('N/A') . '</span>';
-							$row[] = '<span style="font: bold '.$font_size.'em Arial, Sans-serif; color: '.COL_NOTINIT.';">' .
-								__('Not init') . '</span>';
-						} elseif (reporting_sla_is_ignored_from_array($sla)) {
-							$row[] = '<span style="font: bold '.$font_size.'em Arial, Sans-serif; color: '.COL_IGNORED.';">' .
-								__('N/A') . '</span>';
-							$row[] = '<span style="font: bold '.$font_size.'em Arial, Sans-serif; color: '.COL_IGNORED.';">' .
-								__('No data') . '</span>';
-						// Normal calculation
-						} elseif ($sla['sla_status']) {
-							$row[] = '<span style="font: bold '.$font_size.'em Arial, Sans-serif; color: '.COL_NORMAL.';">' .
-								sla_truncate($sla['sla_value'], $config['graph_precision']) . "%" . '</span>';
-							$row[] = '<span style="font: bold '.$font_size.'em Arial, Sans-serif; color: '.COL_NORMAL.';">' .
-								__('OK') . '</span>';
-						}
-						else {
-							$row[] = '<span style="font: bold '.$font_size.'em Arial, Sans-serif; color: '.COL_CRITICAL.';">' .
-								sla_truncate($sla['sla_value'], $config['graph_precision']) . "%" . '</span>';
-							$row[] = '<span style="font: bold '.$font_size.'em Arial, Sans-serif; color: '.COL_CRITICAL.';">' .
-								__('Fail') . '</span>';
-						}
-
-						//second table for time globals
-						$row2 = array();
-						$row2[] = $sla['agent'] . ' -- [' . $sla['module'] . ']';
-
-						if($sla['time_total'] != 0)
-							$row2[] = human_time_description_raw($sla['time_total']);
-						else
-							$row2[] = '--';
-
-						if($sla['time_error'] != 0)
-							$row2[] = '<span style="color: '.COL_CRITICAL.';">' . human_time_description_raw($sla['time_error'], true) . '</span>';
-						else
-							$row2[] = '--';
-
-						if($sla['time_ok'] != 0)
-							$row2[] = '<span style="color: '.COL_NORMAL.';">' . human_time_description_raw($sla['time_ok'], true) . '</span>';
-						else
-							$row2[] = '--';
-
-						if($sla['time_unknown'] != 0)
-							$row2[] = '<span style="color: '.COL_UNKNOWN.';">' . human_time_description_raw($sla['time_unknown'], true) . '</span>';
-						else
-							$row2[] = '--';
-
-						if($sla['time_not_init'] != 0)
-							$row2[] = '<span style="color: '.COL_NOTINIT.';">' . human_time_description_raw($sla['time_not_init'], true) . '</span>';
-						else
-							$row2[] = '--';
-
-						if($sla['time_downtime'] != 0)
-							$row2[] = '<span style="color: '.COL_DOWNTIME .';">' . human_time_description_raw($sla['time_downtime'], true) . '</span>';
-						else
-							$row2[] = '--';
-
-						//third table for checks globals
-						$row3 = array();
-						$row3[] = $sla['agent'] . ' -- [' . $sla['module'] . ']';
-						$row3[] = $sla['checks_total'];
-						$row3[] = '<span style="color: '.COL_CRITICAL.';">' . $sla['checks_error'] . '</span>';
-						$row3[] = '<span style="color: '.COL_NORMAL.';">' . $sla['checks_ok'] . '</span>';
-						$row3[] = '<span style="color: '.COL_UNKNOWN.';">' . $sla['checks_unknown'] . '</span>';
-
+					if (reporting_sla_is_not_init_from_array($sla)) {
+						$row[] = '<span style="font: bold '.$font_size.'em Arial, Sans-serif; color: '.COL_NOTINIT.';">' .
+							__('N/A') . '</span>';
+						$row[] = '<span style="font: bold '.$font_size.'em Arial, Sans-serif; color: '.COL_NOTINIT.';">' .
+							__('Not init') . '</span>';
+					} elseif (reporting_sla_is_ignored_from_array($sla)) {
+						$row[] = '<span style="font: bold '.$font_size.'em Arial, Sans-serif; color: '.COL_IGNORED.';">' .
+							__('N/A') . '</span>';
+						$row[] = '<span style="font: bold '.$font_size.'em Arial, Sans-serif; color: '.COL_IGNORED.';">' .
+							__('No data') . '</span>';
+					// Normal calculation
+					} elseif ($sla['sla_status']) {
+						$row[] = '<span style="font: bold '.$font_size.'em Arial, Sans-serif; color: '.COL_NORMAL.';">' .
+							sla_truncate($sla['sla_value'], $config['graph_precision']) . "%" . '</span>';
+						$row[] = '<span style="font: bold '.$font_size.'em Arial, Sans-serif; color: '.COL_NORMAL.';">' .
+							__('OK') . '</span>';
 					}
 					else {
-						if ($item['date']['to'] > $the_first_men_time) {
-							//first_table
-							$row = array();
-							$row[] = $sla['agent'];
-							$row[] = $sla['module'];
-
-							if(is_numeric($sla['dinamic_text'])){
-								$row[] = sla_truncate($sla['max'], $config['graph_precision']) . " / " .
-									sla_truncate($sla['min'], $config['graph_precision']);
-							}
-							else{
-								$row[] = $sla['dinamic_text'];
-							}
-
-							$row[] = round($sla['sla_limit'], 2) . "%";
-
-							if ($sla['sla_value_unknown']) {
-								$row[] = '<span style="font: bold '.$font_size.'em Arial, Sans-serif; color: '.COL_UNKNOWN.';">' .
-									__('N/A') . '</span>';
-								$row[] = '<span style="font: bold '.$font_size.'em Arial, Sans-serif; color: '.COL_UNKNOWN.';">' .
-									__('Unknown') . '</span>';
-							}
-							elseif ($sla['sla_status']) {
-								$row[] = '<span style="font: bold '.$font_size.'em Arial, Sans-serif; color: '.COL_NORMAL.';">' .
-									sla_truncate($sla['sla_value'], $config['graph_precision']) . "%" . '</span>';
-								$row[] = '<span style="font: bold '.$font_size.'em Arial, Sans-serif; color: '.COL_NORMAL.';">' .
-									__('OK') . '</span>';
-							}
-							else {
-								$row[] = '<span style="font: bold '.$font_size.'em Arial, Sans-serif; color: '.COL_CRITICAL.';">' .
-									sla_truncate($sla['sla_value'], $config['graph_precision']) . "%" . '</span>';
-								$row[] = '<span style="font: bold '.$font_size.'em Arial, Sans-serif; color: '.COL_CRITICAL.';">' .
-									__('Fail') . '</span>';
-							}
-
-							//second table for time globals
-							$row2 = array();
-							$row2[] = $sla['agent'] . ' -- [' . $sla['module'] . ']';
-
-							if($sla['time_total'] != 0)
-								$row2[] = human_time_description_raw($sla['time_total']);
-							else
-								$row2[] = '--';
-
-							if($sla['time_error'] != 0)
-								$row2[] = '<span style="color: '.COL_CRITICAL.';">' . human_time_description_raw($sla['time_error'], true) . '</span>';
-							else
-								$row2[] = '--';
-
-							if($sla['time_ok'] != 0)
-								$row2[] = '<span style="color: '.COL_NORMAL.';">' . human_time_description_raw($sla['time_ok'], true) . '</span>';
-							else
-								$row2[] = '--';
-
-							if($sla['time_unknown'] != 0)
-								$row2[] = '<span style="color: '.COL_UNKNOWN.';">' . human_time_description_raw($sla['time_unknown'], true) . '</span>';
-							else
-								$row2[] = '--';
-
-							if($sla['time_not_init'] != 0)
-								$row2[] = '<span style="color: '.COL_NOTINIT.';">' . human_time_description_raw($sla['time_not_init'], true) . '</span>';
-							else
-								$row2[] = '--';
-
-							if($sla['time_downtime'] != 0)
-								$row2[] = '<span style="color: '.COL_DOWNTIME .';">'. human_time_description_raw($sla['time_downtime'], true) . '</span>';
-							else
-								$row2[] = '--';
-
-							//third table for checks globals
-							$row3 = array();
-							$row3[] = $sla['agent'] . ' -- [' . $sla['module'] . ']';
-							$row3[] = $sla['checks_total'];
-							$row3[] = '<span style="color: '.COL_CRITICAL.';">' . $sla['checks_error'] . '</span>';
-							$row3[] = '<span style="color: '.COL_NORMAL.';">' . $sla['checks_ok'] . '</span>';
-							$row3[] = '<span style="color: '.COL_UNKNOWN.';">' . $sla['checks_unknown'] . '</span>';
-						}
+						$row[] = '<span style="font: bold '.$font_size.'em Arial, Sans-serif; color: '.COL_CRITICAL.';">' .
+							sla_truncate($sla['sla_value'], $config['graph_precision']) . "%" . '</span>';
+						$row[] = '<span style="font: bold '.$font_size.'em Arial, Sans-serif; color: '.COL_CRITICAL.';">' .
+							__('Fail') . '</span>';
 					}
+
+					//second table for time globals
+					$row2 = array();
+					$row2[] = $sla['agent'] . ' -- [' . $sla['module'] . ']';
+
+					if($sla['time_total'] != 0)
+						$row2[] = human_time_description_raw($sla['time_total']);
+					else
+						$row2[] = '--';
+
+					if($sla['time_error'] != 0)
+						$row2[] = '<span style="color: '.COL_CRITICAL.';">' . human_time_description_raw($sla['time_error'], true) . '</span>';
+					else
+						$row2[] = '--';
+
+					if($sla['time_ok'] != 0)
+						$row2[] = '<span style="color: '.COL_NORMAL.';">' . human_time_description_raw($sla['time_ok'], true) . '</span>';
+					else
+						$row2[] = '--';
+
+					if($sla['time_unknown'] != 0)
+						$row2[] = '<span style="color: '.COL_UNKNOWN.';">' . human_time_description_raw($sla['time_unknown'], true) . '</span>';
+					else
+						$row2[] = '--';
+
+					if($sla['time_not_init'] != 0)
+						$row2[] = '<span style="color: '.COL_NOTINIT.';">' . human_time_description_raw($sla['time_not_init'], true) . '</span>';
+					else
+						$row2[] = '--';
+
+					if($sla['time_downtime'] != 0)
+						$row2[] = '<span style="color: '.COL_DOWNTIME .';">' . human_time_description_raw($sla['time_downtime'], true) . '</span>';
+					else
+						$row2[] = '--';
+
+					//third table for checks globals
+					$row3 = array();
+					$row3[] = $sla['agent'] . ' -- [' . $sla['module'] . ']';
+					$row3[] = $sla['checks_total'];
+					$row3[] = '<span style="color: '.COL_CRITICAL.';">' . $sla['checks_error'] . '</span>';
+					$row3[] = '<span style="color: '.COL_NORMAL.';">' . $sla['checks_ok'] . '</span>';
+					$row3[] = '<span style="color: '.COL_UNKNOWN.';">' . $sla['checks_unknown'] . '</span>';
 
 					$table1->data[] = $row;
 					$table2->data[] = $row2;
@@ -662,23 +578,13 @@ function reporting_html_SLA($table, $item, $mini) {
 			$table1->size[0] = '10%';
 
 			$table1->data = array ();
-			if (!$hide_notinit_agent) {
-				foreach ($item['charts'] as $chart) {
-					$table1->data[] = array(
-						$chart['agent'] . "<br />" . $chart['module'],
-						$chart['chart']);
-				}
+
+			foreach ($item['charts'] as $chart) {
+				$table1->data[] = array(
+					$chart['agent'] . "<br />" . $chart['module'],
+					$chart['chart']);
 			}
-			else{
-				foreach ($item['charts'] as $chart) {
-					$the_first_men_time = get_agent_first_time(io_safe_output($chart['agent']));
-					if ($item['date']['to'] > $the_first_men_time) {
-						$table1->data[] = array(
-							$chart['agent'] . "<br />" . $chart['module'],
-							$chart['chart']);
-					}
-				}
-			}
+
 			$table->colspan['charts']['cell'] = 2;
 			$table->data['charts']['cell'] = html_print_table($table1, true);
 
@@ -2324,12 +2230,11 @@ function reporting_html_text(&$table, $item) {
 function reporting_html_availability(&$table, $item) {
 	$style = db_get_value('style', 'treport_content', 'id_rc', $item['id_rc']);
 	$style = json_decode(io_safe_output($style), true);
-	$hide_notinit_agent = $style['hide_notinit_agents'];
 	$same_agent_in_resume = "";
 
 	global $config;
 
-	if (!empty($item["data"]) || $hide_notinit_agent !=1) {
+	if (!empty($item["data"])) {
 		$table1 = new stdClass();
 		$table1->width = '99%';
 		$table1->data = array ();
@@ -2413,101 +2318,50 @@ function reporting_html_availability(&$table, $item) {
 		foreach ($item['data'] as $row) {
 			$the_first_men_time = get_agent_first_time(io_safe_output($row['agent']));
 
-			if (!$hide_notinit_agent) {
-				$table_row = array();
-				$table_row[] = $row['agent'];
-				$table_row[] = $row['availability_item'];
+			$table_row = array();
+			$table_row[] = $row['agent'];
+			$table_row[] = $row['availability_item'];
 
-				if($row['time_total'] != 0)
-					$table_row[] = human_time_description_raw($row['time_total'], true);
-				else
-					$table_row[] = '--';
+			if($row['time_total'] != 0)
+				$table_row[] = human_time_description_raw($row['time_total'], true);
+			else
+				$table_row[] = '--';
 
-				if($row['time_error'] != 0)
-					$table_row[] = human_time_description_raw($row['time_error'], true);
-				else
-					$table_row[] = '--';
+			if($row['time_error'] != 0)
+				$table_row[] = human_time_description_raw($row['time_error'], true);
+			else
+				$table_row[] = '--';
 
-				if($row['time_ok'] != 0)
-					$table_row[] = human_time_description_raw($row['time_ok'], true);
-				else
-					$table_row[] = '--';
+			if($row['time_ok'] != 0)
+				$table_row[] = human_time_description_raw($row['time_ok'], true);
+			else
+				$table_row[] = '--';
 
-				if($row['time_unknown'] != 0)
-					$table_row[] = human_time_description_raw($row['time_unknown'], true);
-				else
-					$table_row[] = '--';
+			if($row['time_unknown'] != 0)
+				$table_row[] = human_time_description_raw($row['time_unknown'], true);
+			else
+				$table_row[] = '--';
 
-				if($row['time_not_init'] != 0)
-					$table_row[] = human_time_description_raw($row['time_not_init'], true);
-				else
-					$table_row[] = '--';
+			if($row['time_not_init'] != 0)
+				$table_row[] = human_time_description_raw($row['time_not_init'], true);
+			else
+				$table_row[] = '--';
 
-				if($row['time_downtime'] != 0)
-					$table_row[] = human_time_description_raw($row['time_downtime'], true);
-				else
-					$table_row[] = '--';
+			if($row['time_downtime'] != 0)
+				$table_row[] = human_time_description_raw($row['time_downtime'], true);
+			else
+				$table_row[] = '--';
 
-				$table_row[] = '<span style="font-size: 1.2em; font-weight:bold;">' . sla_truncate($row['SLA'], $config['graph_precision']). '%</span>';
+			$table_row[] = '<span style="font-size: 1.2em; font-weight:bold;">' . sla_truncate($row['SLA'], $config['graph_precision']). '%</span>';
 
-				$table_row2 = array();
-				$table_row2[] = $row['agent'];
-				$table_row2[] = $row['availability_item'];
-				$table_row2[] = $row['checks_total'];
-				$table_row2[] = $row['checks_error'];
-				$table_row2[] = $row['checks_ok'];
-				$table_row2[] = $row['checks_unknown'];
-			}
-			else {
-				if ($item['date']['to'] > $the_first_men_time) {
-					$table_row = array();
-					$table_row[] = $row['agent'];
-					$table_row[] = $row['availability_item'];
+			$table_row2 = array();
+			$table_row2[] = $row['agent'];
+			$table_row2[] = $row['availability_item'];
+			$table_row2[] = $row['checks_total'];
+			$table_row2[] = $row['checks_error'];
+			$table_row2[] = $row['checks_ok'];
+			$table_row2[] = $row['checks_unknown'];
 
-					if($row['time_total'] != 0)
-						$table_row[] = human_time_description_raw($row['time_total'], true);
-					else
-						$table_row[] = '--';
-
-					if($row['time_error'] != 0)
-						$table_row[] = human_time_description_raw($row['time_error'], true);
-					else
-						$table_row[] = '--';
-
-					if($row['time_ok'] != 0)
-						$table_row[] = human_time_description_raw($row['time_ok'], true);
-					else
-						$table_row[] = '--';
-
-					if($row['time_unknown'] != 0)
-						$table_row[] = human_time_description_raw($row['time_unknown'], true);
-					else
-						$table_row[] = '--';
-
-					if($row['time_not_init'] != 0)
-						$table_row[] = human_time_description_raw($row['time_not_init'], true);
-					else
-						$table_row[] = '--';
-
-					if($row['time_downtime'] != 0)
-						$table_row[] = human_time_description_raw($row['time_downtime'], true);
-					else
-						$table_row[] = '--';
-
-					$table_row[] = '<span style="font-size: 1.2em; font-weight:bold;">' . sla_truncate($row['SLA'], $config['graph_precision']). '%</span>';
-
-					$table_row2 = array();
-					$table_row2[] = $row['agent'];
-					$table_row2[] = $row['availability_item'];
-					$table_row2[] = $row['checks_total'];
-					$table_row2[] = $row['checks_error'];
-					$table_row2[] = $row['checks_ok'];
-					$table_row2[] = $row['checks_unknown'];
-				}
-				else {
-					$same_agent_in_resume = $item['data']['agent'];
-				}
-			}
 			$table1->data[] = $table_row;
 			$table2->data[] = $table_row2;
 		}

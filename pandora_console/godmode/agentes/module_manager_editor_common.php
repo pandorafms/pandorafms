@@ -249,9 +249,10 @@ else {
 		$idModuleType = '';
 	}
 
+	//Removed web analysis and log4x from select
 	$sql = sprintf ('SELECT id_tipo, descripcion
 		FROM ttipo_modulo
-		WHERE categoria IN (%s)
+		WHERE categoria IN (%s) AND id_tipo NOT IN (24, 25)
 		ORDER BY descripcion',
 		implode (',', $categories));
 
@@ -259,12 +260,6 @@ else {
 		$idModuleType, '', '', '', true, false, false, $disabledBecauseInPolicy, false, false, 100);
 
 	// Store the relation between id and name of the types on a hidden field
-	$sql = sprintf ('SELECT id_tipo, nombre
-			FROM ttipo_modulo
-			WHERE categoria IN (%s)
-			ORDER BY descripcion',
-			implode (',', $categories));
-
 	$type_names = db_get_all_rows_sql($sql);
 
 	$type_names_hash = array();

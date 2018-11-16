@@ -1032,11 +1032,11 @@ function config_process_config () {
 	}
 	
 	if (!isset ($config["replication_interval"])) {
-		config_update_value ('replication_interval', 120);
+		config_update_value ('replication_interval', 1);
 	}
 	
 	if (!isset ($config["replication_limit"])) {
-		config_update_value ('replication_limit', 1000);
+		config_update_value ('replication_limit', 50);
 	}
 	
 	if (!isset ($config["replication_dbengine"])) {

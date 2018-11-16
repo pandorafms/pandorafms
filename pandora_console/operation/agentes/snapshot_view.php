@@ -60,7 +60,7 @@ if($utimestamp == '') {
 } else {
 	// Retrieve target data
 	$state = db_get_row('tagente_estado', 'id_agente_modulo', $id, array('id_agente'));
-	$row_state = db_get_row_filter('tagente_datos_string', array('id_agente_modulo' => $id, 'utimestamp' => $utimestamp));
+	$row_state = db_get_row_filter('tagente_datos_string', array('id_agente_modulo' => $id, 'utimestamp' => $utimestamp), false, 'AND', 1);
 	$row_state['id_agente'] = $state['id_agente'];
 	$last_timestamp = date("Y-m-d H:i:s", $row_state['utimestamp']);
 }

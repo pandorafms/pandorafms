@@ -867,7 +867,7 @@ sub db_insert ($$$;@) {
 	};
 	if ($@) {
 		my $exception = @_;
-		if ($DBI::err == 1213) {
+		if ($DBI::err == 1213 || $DBI::err == 1205) {
 			$dbh->do($query, undef, @values);
 			$insert_id = $dbh->{'mysql_insertid'};
 		}
@@ -891,7 +891,7 @@ sub db_update ($$;@) {
 	};
 	if ($@) {
 		my $exception = @_;
-		if ($DBI::err == 1213) {
+		if ($DBI::err == 1213 || $DBI::err == 1205) {
 			$rows = $dbh->do($query, undef, @values);
 		}
 		else {
@@ -1137,7 +1137,7 @@ sub db_do ($$;@) {
 	};
 	if ($@) {
 		my $exception = @_;
-		if ($DBI::err == 1213) {
+		if ($DBI::err == 1213 || $DBI::err == 1205) {
 			$dbh->do($query, undef, @values);
 		}
 		else {

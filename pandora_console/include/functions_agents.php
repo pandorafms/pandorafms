@@ -2787,4 +2787,67 @@ function agents_get_status_clause($state, $show_not_init = true) {
 	// If the state is not an expected state, return no condition
 	return "1=1";
 }
+
+function agents_get_image_status($status){
+	switch ($status) {
+		case AGENT_STATUS_NORMAL:
+			$image_status = html_print_image(
+				'images/status_sets/default/agent_ok.png',
+				true,
+				array(
+					'title' => __('Agents ok')
+				)
+			);
+			break;
+		case AGENT_STATUS_CRITICAL:
+			$image_status = html_print_image(
+				'images/status_sets/default/agent_critical.png',
+				true,
+				array(
+					'title' => __('Agents critical')
+				)
+			);
+		break;
+		case AGENT_STATUS_WARNING:
+			$image_status = html_print_image(
+				'images/status_sets/default/agent_warning.png',
+				true,
+				array(
+					'title' => __('Agents warning')
+				)
+			);
+		break;
+		case AGENT_STATUS_UNKNOWN:
+			$image_status = html_print_image(
+				'images/status_sets/default/agent_down.png',
+				true,
+				array(
+					'title' => __('Agents unknown')
+				)
+			);
+		break;
+		case AGENT_STATUS_ALERT_FIRED:
+			$image_status = 'alert';
+		break;
+		case AGENT_STATUS_NOT_INIT:
+			$image_status = html_print_image(
+				'images/status_sets/default/agent_no_data.png',
+				true,
+				array(
+					'title' => __('Agents not init')
+				)
+			);
+		break;
+		default:
+			$image_status= html_print_image(
+				'images/status_sets/default/agent_ok.png',
+				true,
+				array(
+					'title' => __('Agents ok')
+				)
+			);
+			break;
+	}
+	return $image_status;
+}
 ?>

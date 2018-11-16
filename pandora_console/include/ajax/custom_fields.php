@@ -57,13 +57,13 @@ if($build_table_custom_fields){
 		case '1':
 			$order_by = "ORDER BY temp.name_custom_fields " . $type_order;
 			break;
-		case '2':
+		case '4':
 			$order_by = "ORDER BY tma.server_name " . $type_order;
 			break;
-		case '3':
+		case '2':
 			$order_by = "ORDER BY tma.alias " . $type_order;
 			break;
-		case '4':
+		case '3':
 			$order_by = "ORDER BY tma.direccion " . $type_order;
 			break;
 	}
@@ -158,65 +158,7 @@ if($build_table_custom_fields){
 	//prepare rows for table dinamic
 	$data = array();
 	foreach ($result as $values) {
-		switch ($values['status']) {
-			case AGENT_STATUS_NORMAL:
-				$image_status = html_print_image(
-					'images/status_sets/default/agent_ok.png',
-					true,
-					array(
-						'title' => __('Agents ok')
-					)
-				);
-				break;
-			case AGENT_STATUS_CRITICAL:
-				$image_status = html_print_image(
-					'images/status_sets/default/agent_critical.png',
-					true,
-					array(
-						'title' => __('Agents critical')
-					)
-				);
-			break;
-			case AGENT_STATUS_WARNING:
-				$image_status = html_print_image(
-					'images/status_sets/default/agent_warning.png',
-					true,
-					array(
-						'title' => __('Agents warning')
-					)
-				);
-			break;
-			case AGENT_STATUS_UNKNOWN:
-				$image_status = html_print_image(
-					'images/status_sets/default/agent_down.png',
-					true,
-					array(
-						'title' => __('Agents unknown')
-					)
-				);
-			break;
-			case AGENT_STATUS_ALERT_FIRED:
-				$image_status = 'alert';
-			break;
-			case AGENT_STATUS_NOT_INIT:
-				$image_status = html_print_image(
-					'images/status_sets/default/agent_no_data.png',
-					true,
-					array(
-						'title' => __('Agents not init')
-					)
-				);
-			break;
-			default:
-				$image_status= html_print_image(
-					'images/status_sets/default/agent_ok.png',
-					true,
-					array(
-						'title' => __('Agents ok')
-					)
-				);
-				break;
-		}
+		$image_status = agents_get_image_status($values['status']);
 
 		$data[] = array(
 			"ref" => $referencia,
@@ -224,7 +166,7 @@ if($build_table_custom_fields){
 			"server" => $values['server_name'],
 			"agent" => $values['alias'],
 			"IP" => $values['direccion'],
-			"status" => $image_status,
+			"status" => "<div id='reload_status_agent_" . $values['id_tmetaconsole_setup'] . "_" . $values['id_tagente'] ."'>" . $image_status . "</div>",
 			"id_agent" => $values['id_tagente'],
 			"id_server" => $values['id_tmetaconsole_setup']
 		);
@@ -262,6 +204,7 @@ if($build_table_child_custom_fields){
 			tam.min_warning, tam.max_warning,
 			tam.min_critical, tam.max_critical,
 			tam.str_warning, tam.str_critical,
+			tam.id_tipo_modulo,
 			tae.estado, tae.current_interval,
 			tae.utimestamp, tae.datos
 		FROM tagente_modulo tam
@@ -288,10 +231,21 @@ if($build_table_child_custom_fields){
 	$table_modules->head[5] = __('Status');
 
 	$table_modules->data = array();
+	$status_agent = -1;
 	if(isset($modules) && is_array($modules)){
 		foreach ($modules as $key => $value) {
 			$table_modules->data[$key][0] = $value['nombre'];
-			$table_modules->data[$key][1] = $value['datos'];
+			if($value["id_tipo_modulo"] != 3 &&
+				$value["id_tipo_modulo"] != 10 &&
+				$value["id_tipo_modulo"] != 17 &&
+				$value["id_tipo_modulo"] != 23 &&
+				$value["id_tipo_modulo"] != 33 ){
+				$table_modules->data[$key][1] = remove_right_zeros(number_format($value["datos"], $config['graph_precision']));
+			}
+			else{
+				$table_modules->data[$key][1] = $value["datos"];
+			}
+
 			$table_modules->data[$key][2] = ui_print_module_warn_value (
 				$value["max_warning"],
 				$value["min_warning"],
@@ -300,11 +254,15 @@ if($build_table_child_custom_fields){
 				$value["min_critical"],
 				$value["str_critical"]
 			);
+
 			$table_modules->data[$key][3] = $value['current_interval'];
 			$table_modules->data[$key][4] = ui_print_timestamp($value['utimestamp'], true);
 			switch ($value['estado']) {
 				case 0:
 				case 300:
+					if($status_agent != 1 && $status_agent != 2 && $status_agent != 3){
+						$status_agent = 0;
+					}
 					$table_modules->data[$key][5] = html_print_image(
 						'images/status_sets/default/severity_normal.png',
 						true,
@@ -315,6 +273,7 @@ if($build_table_child_custom_fields){
 					break;
 				case 1:
 				case 100:
+					$status_agent = 1;
 					$table_modules->data[$key][5] = html_print_image(
 						'images/status_sets/default/severity_critical.png',
 						true,
@@ -325,6 +284,10 @@ if($build_table_child_custom_fields){
 				break;
 				case 2:
 				case 200:
+					if($status_agent != 1){
+						$status_agent = 2;
+					}
+
 					$table_modules->data[$key][5] = html_print_image(
 						'images/status_sets/default/severity_warning.png',
 						true,
@@ -334,6 +297,10 @@ if($build_table_child_custom_fields){
 					);
 				break;
 				case 3:
+					if($status_agent != 1 && $status_agent != 2){
+						$status_agent = 3;
+					}
+
 					$table_modules->data[$key][5] = html_print_image(
 						'images/status_sets/default/severity_maintenance.png',
 						true,
@@ -344,6 +311,9 @@ if($build_table_child_custom_fields){
 				break;
 				case 4:
 				case 5:
+					if($status_agent == -1 || $status_agent == 4){
+						$status_agent = 5;
+					}
 					$table_modules->data[$key][5] = html_print_image(
 						'images/status_sets/default/severity_informational.png',
 						true,
@@ -353,6 +323,10 @@ if($build_table_child_custom_fields){
 					);
 				break;
 				default:
+					if($status_agent != 1 && $status_agent != 2 && $status_agent != 3){
+						$status_agent = 0;
+					}
+
 					$table_modules->data[$key][5] = html_print_image(
 						'images/status_sets/default/severity_normal.png',
 						true,
@@ -369,8 +343,9 @@ if($build_table_child_custom_fields){
 			metaconsole_restore_db();
 	}
 
-	html_print_table ($table_modules);
-
+	$data['modules_table'] = html_print_table($table_modules, true);
+	$data['img_status_agent'] = agents_get_image_status($status_agent);
+	echo json_encode($data);
 	return;
 }
 

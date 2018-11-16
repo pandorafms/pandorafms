@@ -21,6 +21,7 @@ global $config;
 include_once($config['homedir'] . "/include/functions_agents.php");
 include_once($config['homedir'] . "/include/functions_modules.php");
 include_once($config['homedir'] . "/include/functions_ui.php");
+include_once($config['homedir'] . '/include/functions_custom_fields.php');
 enterprise_include_once ('include/functions_metaconsole.php');
 
 $get_custom_fields_data = (bool) get_parameter('get_custom_fields_data', 0);
@@ -260,6 +261,7 @@ if($build_table_child_custom_fields){
 	$query = sprintf("SELECT tam.nombre,
 			tam.min_warning, tam.max_warning,
 			tam.min_critical, tam.max_critical,
+			tam.str_warning, tam.str_critical,
 			tae.estado, tae.current_interval,
 			tae.utimestamp, tae.datos
 		FROM tagente_modulo tam
@@ -280,29 +282,30 @@ if($build_table_child_custom_fields){
 	$table_modules->head = array();
 	$table_modules->head[0] = __('Module name');
 	$table_modules->head[1] = __('Data');
-	$table_modules->head[2] = __('Min Warning');
-	$table_modules->head[3] = __('Max Warning');
-	$table_modules->head[4] = __('Min Critical');
-	$table_modules->head[5] = __('Max Critical');
-	$table_modules->head[6] = __('Current interval');
-	$table_modules->head[7] = __('Timestamp');
-	$table_modules->head[8] = __('Status');
+	$table_modules->head[2] = __('Treshold');
+	$table_modules->head[3] = __('Current interval');
+	$table_modules->head[4] = __('Timestamp');
+	$table_modules->head[5] = __('Status');
 
 	$table_modules->data = array();
 	if(isset($modules) && is_array($modules)){
 		foreach ($modules as $key => $value) {
 			$table_modules->data[$key][0] = $value['nombre'];
 			$table_modules->data[$key][1] = $value['datos'];
-			$table_modules->data[$key][2] = $value['min_warning'];
-			$table_modules->data[$key][3] = $value['max_warning'];
-			$table_modules->data[$key][4] = $value['min_critical'];
-			$table_modules->data[$key][5] = $value['max_critical'];
-			$table_modules->data[$key][6] = $value['current_interval'];
-			$table_modules->data[$key][7] = date('d/m/Y h:i:s', $value['utimestamp']);
+			$table_modules->data[$key][2] = ui_print_module_warn_value (
+				$value["max_warning"],
+				$value["min_warning"],
+				$value["str_warning"],
+				$value["max_critical"],
+				$value["min_critical"],
+				$value["str_critical"]
+			);
+			$table_modules->data[$key][3] = $value['current_interval'];
+			$table_modules->data[$key][4] = ui_print_timestamp($value['utimestamp'], true);
 			switch ($value['estado']) {
 				case 0:
 				case 300:
-					$table_modules->data[$key][8] = html_print_image(
+					$table_modules->data[$key][5] = html_print_image(
 						'images/status_sets/default/severity_normal.png',
 						true,
 						array(
@@ -312,7 +315,7 @@ if($build_table_child_custom_fields){
 					break;
 				case 1:
 				case 100:
-					$table_modules->data[$key][8] = html_print_image(
+					$table_modules->data[$key][5] = html_print_image(
 						'images/status_sets/default/severity_critical.png',
 						true,
 						array(
@@ -322,7 +325,7 @@ if($build_table_child_custom_fields){
 				break;
 				case 2:
 				case 200:
-					$table_modules->data[$key][8] = html_print_image(
+					$table_modules->data[$key][5] = html_print_image(
 						'images/status_sets/default/severity_warning.png',
 						true,
 						array(
@@ -331,7 +334,7 @@ if($build_table_child_custom_fields){
 					);
 				break;
 				case 3:
-					$table_modules->data[$key][8] = html_print_image(
+					$table_modules->data[$key][5] = html_print_image(
 						'images/status_sets/default/severity_maintenance.png',
 						true,
 						array(
@@ -341,7 +344,7 @@ if($build_table_child_custom_fields){
 				break;
 				case 4:
 				case 5:
-					$table_modules->data[$key][8] = html_print_image(
+					$table_modules->data[$key][5] = html_print_image(
 						'images/status_sets/default/severity_informational.png',
 						true,
 						array(
@@ -350,7 +353,7 @@ if($build_table_child_custom_fields){
 					);
 				break;
 				default:
-					$table_modules->data[$key][8] = html_print_image(
+					$table_modules->data[$key][5] = html_print_image(
 						'images/status_sets/default/severity_normal.png',
 						true,
 						array(

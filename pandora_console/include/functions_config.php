@@ -1032,7 +1032,7 @@ function config_process_config () {
 	}
 	
 	if (!isset ($config["replication_interval"])) {
-		config_update_value ('replication_interval', 1);
+		config_update_value ('replication_interval', 10);
 	}
 	
 	if (!isset ($config["replication_limit"])) {

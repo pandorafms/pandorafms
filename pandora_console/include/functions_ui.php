@@ -2411,7 +2411,7 @@ function ui_get_full_url ($url = '', $no_proxy = false, $add_name_php_file = fal
 	if (!empty($config['public_url'])) {
 		$fullurl = $config['public_url'];
 		$proxy = true;
-
+		$fullurl .= '/';
 	} else {
 		
 		if (!$no_proxy) {

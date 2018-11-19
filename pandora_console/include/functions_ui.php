@@ -2407,29 +2407,38 @@ function ui_get_full_url ($url = '', $no_proxy = false, $add_name_php_file = fal
 			$port = $_SERVER['SERVER_PORT'];
 		}
 	}
-	
-	if (!$no_proxy) {
-		//Check if the PandoraFMS runs across the proxy like as
-		//mod_proxy of Apache
-		//and check if public_url is setted
-		if (!empty($config['public_url'])
-			&& (!empty($_SERVER['HTTP_X_FORWARDED_HOST']))) {
-			$fullurl = $config['public_url'];
-			$proxy = true;
+
+	if (!empty($config['public_url'])) {
+		$fullurl = $config['public_url'];
+		// if user had specify a custom public_url, disable internal homeurl & homeurl_static
+		$config['homeurl'] = '';
+		$config['homeurl_static'] = '';
+
+	} else {
+		
+		if (!$no_proxy) {
+			//Check if the PandoraFMS runs across the proxy like as
+			//mod_proxy of Apache
+			//and check if public_url is set
+			if (!empty($config['public_url'])
+				&& (!empty($_SERVER['HTTP_X_FORWARDED_HOST']))) {
+				$fullurl = $config['public_url'];
+				$proxy = true;
+			}
+			else {
+				$fullurl = $protocol.'://' . $_SERVER['SERVER_NAME'];
+			}
 		}
 		else {
 			$fullurl = $protocol.'://' . $_SERVER['SERVER_NAME'];
 		}
-	}
-	else {
-		$fullurl = $protocol.'://' . $_SERVER['SERVER_NAME'];
-	}
-	
-	// using a different port than the standard
-	if (!$proxy) {
+
 		// using a different port than the standard
-		if ( $port != null ) {
-			$fullurl .= ":" . $port;
+		if (!$proxy) {
+			// using a different port than the standard
+			if ( $port != null ) {
+				$fullurl .= ":" . $port;
+			}
 		}
 	}
 	

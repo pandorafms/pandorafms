@@ -2334,11 +2334,8 @@ function config_prepare_session() {
 
 	// Reset the expiration time upon page load //session_name() is default name of session PHPSESSID
 
-	$date = new DateTime(null, new DateTimeZone('Europe/Madrid'));
-	$current_time = $date->getTimestamp() + $date->getOffset();
-
 	if (isset($_COOKIE[session_name()]))
-		setcookie(session_name(), $_COOKIE[session_name()], $current_time + $sessionCookieExpireTime, "/");
+		setcookie(session_name(), $_COOKIE[session_name()], time() + $sessionCookieExpireTime, "/");
 
 	ini_set("post_max_size", $config["max_file_size"]);
 	ini_set("upload_max_filesize", $config["max_file_size"]);

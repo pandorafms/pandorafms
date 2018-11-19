@@ -2410,9 +2410,7 @@ function ui_get_full_url ($url = '', $no_proxy = false, $add_name_php_file = fal
 
 	if (!empty($config['public_url'])) {
 		$fullurl = $config['public_url'];
-		// if user had specify a custom public_url, disable internal homeurl & homeurl_static
-		$config['homeurl'] = '';
-		$config['homeurl_static'] = '';
+		$proxy = true;
 
 	} else {
 		

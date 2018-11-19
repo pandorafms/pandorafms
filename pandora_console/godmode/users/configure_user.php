@@ -24,6 +24,7 @@ include_once($config['homedir'] . "/include/functions_profile.php");
 include_once($config['homedir'] . '/include/functions_users.php');
 include_once ($config['homedir'] . '/include/functions_groups.php');
 include_once ($config['homedir'] . '/include/functions_visual_map.php');
+include_once($config['homedir'] . '/include/functions_custom_fields.php');
 enterprise_include_once('include/functions_profile.php');
 
 $meta = false;

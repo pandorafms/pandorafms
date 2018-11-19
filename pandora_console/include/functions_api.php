@@ -10014,6 +10014,11 @@ function api_set_enable_disable_agent ($id, $thrash2, $other, $thrash3) {
 	}
 		
 	$disabled = ( $other['data'][0] ? 0 : 1 );
+
+	enterprise_hook(
+		'config_agents_update_config_token',
+		array($id, 'standby', $disabled ? "1" : "0")
+	);
 	
 	$result = db_process_sql_update('tagente',
 		array('disabled' => $disabled), array('id_agente' => $id));

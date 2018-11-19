@@ -2023,6 +2023,12 @@ function config_process_config () {
 		config_update_value('ehorus_req_timeout', 5);
 	}
 
+	if (is_metaconsole()) {
+		if (!isset($config["metaconsole_deploy_collection"])) {
+			config_update_value('metaconsole_deploy_collection', 0);
+		}
+	}
+
 	/* Finally, check if any value was overwritten in a form */
 	config_update_config();
 }

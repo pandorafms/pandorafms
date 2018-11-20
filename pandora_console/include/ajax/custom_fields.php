@@ -189,22 +189,22 @@ if($build_table_custom_fields){
 	foreach ($result as $values) {
 		$image_status = agents_get_image_status($values['status']);
 
+		//link nodes
+		$agent_link = '<a href="'.
+		$hash_array_nodes[$values['id_tmetaconsole_setup']]['server_url'] . '/' .
+			'index.php?' .
+			'sec=estado&amp;' .
+			'sec2=operation/agentes/ver_agente&amp;' .
+			'id_agente='. $values['id_tagente'] .
+			$hash_array_nodes[$values['id_tmetaconsole_setup']]['hashurl'] . '">'
+		;
+
+		$agent_alias = ui_print_truncate_text($values['alias'],
+			'agent_small', false, true, false, '[&hellip;]',
+			'font-size:7.5pt;'
+		);
+
 		if (can_user_access_node ()) {
-			//link nodes
-			$agent_link = '<a href="'.
-				$hash_array_nodes[$values['id_tmetaconsole_setup']]['server_url'] . '/' .
-				'index.php?' .
-				'sec=estado&amp;' .
-				'sec2=operation/agentes/ver_agente&amp;' .
-				'id_agente='. $values['id_tagente'] .
-				$hash_array_nodes[$values['id_tmetaconsole_setup']]['hashurl'] . '">'
-			;
-
-			$agent_alias = ui_print_truncate_text($values['alias'],
-				'agent_small', false, true, false, '[&hellip;]',
-				'font-size:7.5pt;'
-			);
-
 			$agent = $agent_link . '<b>' . $agent_alias . '</b></a>';
 		}
 		else {

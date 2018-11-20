@@ -266,7 +266,7 @@ foreach ($actions as $action) {
 			"images/error.png",
 			true,
 			// FIXME: Translation.
-			array("title" => __("The command and the action are not in the same group. Please, contact with an administrator to solve it.")
+			array("title" => __("The action and the command associated with it do not have the same group. Please contact an administrator to fix it.")
 		));
 	}
 

@@ -3774,7 +3774,7 @@ function reporting_agent_configuration($report, $content) {
 	return reporting_check_structure_content($return);
 }
 
-function reporting_value($report, $content, $type,$pdf) {
+function reporting_value($report, $content, $type,$pdf=false) {
 	global $config;
 
 	$return = array();

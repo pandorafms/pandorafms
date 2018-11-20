@@ -54,6 +54,7 @@ if ($update_command) {
 	$name = (string) get_parameter ('name');
 	$command = (string) get_parameter ('command');
 	$description = (string) get_parameter ('description');
+	$id_group = (string) get_parameter ('id_group', 0);
 	
 	$fields_descriptions = array();
 	$fields_values = array();
@@ -71,7 +72,8 @@ if ($update_command) {
 	$values['name'] = $name;
 	$values['command'] = $command;
 	$values['description'] = $description;
-	
+	$values['id_group'] = $id_group;
+
 	//Check it the new name is used in the other command.
 	$id_check = db_get_value ('id', 'talert_commands', 'name', $name);
 	if (($id_check != $id) && (!empty($id_check))) {
@@ -100,12 +102,13 @@ $command = '';
 $description = '';
 $fields_descriptions = '';
 $fields_values = '';
+$id_group = 0;
 if ($id) {
 	$alert = alerts_get_alert_command ($id);
 	$name = $alert['name'];
 	$command = $alert['command'];
 	$description = $alert['description'];
-	
+	$id_group = $alert['id_group'];
 	$fields_descriptions = $alert['fields_descriptions'];
 	$fields_values = $alert['fields_values'];
 }
@@ -123,13 +126,7 @@ $table->width = '100%';
 $table->class = 'databox filters';
 
 if (defined('METACONSOLE')) {
-	if ($id) {
-		$table->head[0] = __('Update Command');
-	}
-	else {
-		$table->head[0] = __('Create Command');
-	}
-	
+	$table->head[0] = ($id) ? __('Update Command') : __('Create Command');
 	$table->head_colspan[0] = 4;
 	$table->headstyle[0] = 'text-align: center';
 }
@@ -142,18 +139,25 @@ $table->size = array ();
 $table->size[0] = '20%';
 $table->data = array ();
 
-$table->colspan[0][1] = 3;
-$table->data[0][0] = __('Name');
-$table->data[0][2] = html_print_input_text ('name', $name, '', 35, 255, true);
+$table->colspan['name'][1] = 3;
+$table->data['name'][0] = __('Name');
+$table->data['name'][2] = html_print_input_text ('name', $name, '', 35, 255, true);
 
-$table->colspan[1][1] = 3;
-$table->data[1][0] = __('Command');
-$table->data[1][0] .= ui_print_help_icon ('alert_macros', true);
-$table->data[1][1] = html_print_textarea ('command', 8, 30, $command, '', true);
+$table->colspan['command'][1] = 3;
+$table->data['command'][0] = __('Command');
+$table->data['command'][0] .= ui_print_help_icon ('alert_macros', true);
+$table->data['command'][1] = html_print_textarea ('command', 8, 30, $command, '', true);
 
-$table->colspan[2][1] = 3;
-$table->data[2][0] = __('Description');
-$table->data[2][1] = html_print_textarea ('description', 10, 30, $description, '', true);
+$table->colspan['group'][1] = 3;
+$table->data['group'][0] = __('Group');
+$table->data['group'][1] = html_print_select_groups(false, "LM",
+	true, 'id_group', $id_group, false,
+	'', 0, true);
+
+$table->colspan['description'][1] = 3;
+$table->data['description'][0] = __('Description');
+$table->data['description'][1] = html_print_textarea ('description', 10, 30, $description, '', true);
+
 
 for ($i = 1; $i <= $config['max_macro_fields']; $i++) {
 	

@@ -2268,5 +2268,121 @@ function alerts_normalize_actions_escalation($escalation) {
 		
 	return $escalation;
 }
+/**
+ * Check if a command can be added to an action.
+ *
+ * @param int Action group id
+ * @param int Command group id
+ *
+ * @return False if command group and alert group are distint of 0 and they are not equal
+ */
+function alerts_validate_command_to_action($action_group, $command_group) {
+	// If action group or command group is All, all commands can be applicated.
+	if ($action_group == 0 || $command_group == 0) return true;
+	return $action_group == $command_group;
+}
+
+/**
+ * Print the UI update actions
+ *
+ * @param bool Update or create
+ */
+function alerts_ui_update_or_create_actions($update = true) {
+	global $config;
+	$id = (string) get_parameter ('id');
+
+	// Check ACL of existing aler action
+	if($update) {
+		$al_action = alerts_get_alert_action ($id);
+		if ($al_action !== false) {
+			if ($al_action['id_group'] == 0) {
+				if (! check_acl ($config['id_user'], 0, "PM")) {
+					db_pandora_audit("ACL Violation",
+						"Trying to access Alert Management");
+					require ("general/noaccess.php");
+					exit;
+				}
+			}
+		}
+	}
+
+	$name = (string) get_parameter ('name');
+	$id_alert_command = (int) get_parameter ('id_command');
+	$group = get_parameter ('group');
+	$action_threshold = (int) get_parameter ('action_threshold');
+
+	// Validate some values
+	if (!$id_alert_command) {
+		ui_print_error_message(__('No command specified'));
+		return;
+	}
+	if (!$name) {
+		ui_print_error_message(__('No name specified'));
+		return;
+	}
+	$comamnd_group = db_get_value('id_group', 'talert_commands', 'id', $id_alert_command);
+	if(!alerts_validate_command_to_action($group, $comamnd_group)) {
+		ui_print_error_message(__("Alert and command group does not match"));
+		return;
+	}
+
+	// Fill fields info
+	$info_fields = '';
+	$values = array();
+	for ($i = 1; $i <= $config['max_macro_fields']; $i++) {
+		$values['field'.$i] = (string) get_parameter ('field'.$i.'_value');
+		$info_fields .= ' Field'.$i.': ' . $values['field'.$i];
+		$values['field'.$i.'_recovery'] = (string) get_parameter ('field'.$i.'_recovery_value');
+		$info_fields .= ' Field'.$i.'Recovery: ' . $values['field'.$i.'_recovery'];
+	}
+
+	$values['id_group'] = $group;
+	$values['action_threshold'] = $action_threshold;
+	if ($update) {
+		$values['name'] = $name;
+		$values['id_alert_command'] = $id_alert_command;
+		$result = (!$name) ? '' : alerts_update_alert_action ($id, $values);
+	} else {
+		$name_check = db_get_value ('name', 'talert_actions', 'name', $name);
+		if ($name_check) {
+			$result = '';
+		}
+		else {
+			$result = alerts_create_alert_action ($name, $id_alert_command,
+				$values);
+			$values = array(
+				"Name" => $name,
+				"ID alert Command" => $id_alert_command,
+				"Field information" => $info_fields,
+				"Group" => $values['id_group'],
+				"Action threshold" => $values['action_threshold']
+			);
+		}
+	}
+
+	if ($result) {
+		db_pandora_audit(
+			"Command management",
+			$update ? "Update alert action #" . $id : "Create alert action #" . $result,
+			false,
+			false,
+			json_encode($values)
+		);
+	}
+	else {
+		db_pandora_audit(
+			"Command management",
+			$update ?  "Fail try to update alert action #" . $id : "Fail try to create alert action",
+			false,
+			false,
+			$update ? json_encode($values) : ''
+		);
+	}
+
+	ui_print_result_message ($result,
+		$update ? __('Successfully updated') : __('Successfully created'),
+		$update ? __('Could not be updated') : __('Could not be created')
+	);
+}
 
 ?>

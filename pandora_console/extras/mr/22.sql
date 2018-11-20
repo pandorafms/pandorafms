@@ -1,5 +1,7 @@
 START TRANSACTION;
 
+ALTER TABLE `talert_commands` ADD COLUMN `id_group` mediumint(8) unsigned NULL default 0;
+
 ALTER TABLE `tusuario` DROP COLUMN `flash_chart`;
 
 ALTER TABLE `tusuario` ADD COLUMN `default_custom_view` int(10) unsigned NULL default '0';

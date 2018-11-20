@@ -369,6 +369,7 @@ CREATE TABLE  IF NOT EXISTS `talert_commands` (
 	`id` int(10) unsigned NOT NULL auto_increment,
 	`name` varchar(100) NOT NULL default '',
 	`command` text,
+	`id_group` mediumint(8) unsigned NULL default 0,
 	`description` text,
 	`internal` tinyint(1) default 0,
 	`fields_descriptions` TEXT,

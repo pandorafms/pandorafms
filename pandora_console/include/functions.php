@@ -1787,10 +1787,7 @@ function check_login ($output = true) {
 	}
 	else {
 		require_once($config["homedir"].'/mobile/include/user.class.php');
-		if(session_id() == '') {
-			session_start ();
-		}
-		session_write_close ();
+
 		if (isset($_SESSION['user'])) {
 			$user = $_SESSION['user'];
 			$id_user = $user->getIdUser();
@@ -3372,7 +3369,7 @@ function get_copyright_notice () {
  */
 function generate_csrf_code() {
 	// Start session to make this var permanent
-	session_start();
+	if (session_status() === PHP_SESSION_NONE) session_start();
 	$_SESSION['csrf_code'] = md5(uniqid(mt_rand(), true));
 	session_write_close();
 	return $_SESSION['csrf_code'];

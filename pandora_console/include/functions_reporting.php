@@ -320,25 +320,33 @@ function reporting_make_reporting_data($report = null, $id_report,
 				$report['contents'][] = reporting_value(
 					$report,
 					$content,
-					'max',$pdf);
+					'max',
+					$pdf
+				);
 				break;
 			case 'avg_value':
 				$report['contents'][] = reporting_value(
 					$report,
 					$content,
-					'avg',$pdf);
+					'avg',
+					$pdf
+				);
 				break;
 			case 'min_value':
 				$report['contents'][] = reporting_value(
 					$report,
 					$content,
-					'min',$pdf);
+					'min',
+					$pdf
+				);
 				break;
 			case 'sumatory':
 				$report['contents'][] = reporting_value(
 					$report,
 					$content,
-					'sum');
+					'sum',
+					$pdf
+				);
 				break;
 			case 'historical_data':
 				$report['contents'][] = reporting_historical_data(
@@ -349,25 +357,33 @@ function reporting_make_reporting_data($report = null, $id_report,
 				$report['contents'][] = reporting_value(
 					$report,
 					$content,
-					'MTTR');
+					'MTTR',
+					$pdf
+				);
 				break;
 			case 'MTBF':
 				$report['contents'][] = reporting_value(
 					$report,
 					$content,
-					'MTBF');
+					'MTBF',
+					$pdf
+				);
 				break;
 			case 'TTO':
 				$report['contents'][] = reporting_value(
 					$report,
 					$content,
-					'TTO');
+					'TTO',
+					$pdf
+				);
 				break;
 			case 'TTRT':
 				$report['contents'][] = reporting_value(
 					$report,
 					$content,
-					'TTRT');
+					'TTRT',
+					$pdf
+				);
 				break;
 			case 'agent_configuration':
 				$report['contents'][] = reporting_agent_configuration(
@@ -3774,7 +3790,7 @@ function reporting_agent_configuration($report, $content) {
 	return reporting_check_structure_content($return);
 }
 
-function reporting_value($report, $content, $type,$pdf) {
+function reporting_value($report, $content, $type, $pdf) {
 	global $config;
 
 	$return = array();

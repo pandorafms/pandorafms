@@ -810,7 +810,7 @@ if (isset ($_GET["bye"])) {
 	include ("general/logoff.php");
 	$iduser = $_SESSION["id_usuario"];
 	db_logoff ($iduser, $_SERVER['REMOTE_ADDR']);
-	// Unregister Session (compatible with 5.2 and 6.x, old code was deprecated
+
 	$_SESSION = array();
 	session_destroy();
 	header_remove("Set-Cookie");

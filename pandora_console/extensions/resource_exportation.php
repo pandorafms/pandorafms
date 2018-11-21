@@ -16,14 +16,14 @@
 
 if (isset($_GET['get_ptr'])) {
 	if ($_GET['get_ptr'] == 1) {
-		
-		session_start ();
-		session_write_close ();
-		
+
 		$ownDir = dirname(__FILE__) . '/';
 		$ownDir = str_replace("\\", "/", $ownDir);
+
+		// Don't start a session before this import.
+		// The session is configured and started inside the config process.
 		require_once ($ownDir.'../include/config.php');
-		
+
 		// Login check
 		if (!isset($_SESSION["id_usuario"])) {
 			$config['id_user'] = null;

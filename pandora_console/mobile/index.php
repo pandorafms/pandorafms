@@ -19,13 +19,12 @@ if (function_exists ('mb_internal_encoding')) {
 }
 
 $develop_bypass = 0;
+require_once '../include/config.php';
 
 require_once("include/ui.class.php");
 require_once("include/system.class.php");
 require_once("include/db.class.php");
 require_once("include/user.class.php");
-
-require_once('../include/config.php');
 
 require_once('operation/home.php');
 require_once('operation/tactical.php');

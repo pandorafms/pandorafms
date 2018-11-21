@@ -32,9 +32,7 @@ if (!$config["MR"]) {
 
 echo '<a class="white_bold footer" target="_blank" href="' . $config["homeurl"] . $license_file. '">';
 
-if(enterprise_installed()){
-	enterprise_include_once("../include/functions_update_manager.php");
-}
+include_once ($config["homedir"]."/include/functions_update_manager.php");
 
 $current_package = update_manager_get_current_package();
 

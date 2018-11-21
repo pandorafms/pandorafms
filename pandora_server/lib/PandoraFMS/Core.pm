@@ -111,6 +111,7 @@ use warnings;
 
 use DBI;
 use Encode;
+use Encode::CN;
 use XML::Simple;
 use HTML::Entities;
 use Time::Local;

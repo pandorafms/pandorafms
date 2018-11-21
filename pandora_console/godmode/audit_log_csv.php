@@ -12,18 +12,16 @@
 
 $ownDir = dirname(__FILE__) . '/';
 $ownDir = str_replace("\\", "/", $ownDir);
-require_once($ownDir . "../include/config.php");
 
-require_once($config["homedir"] . "/include/functions.php");
-require_once($config["homedir"] . "/include/functions_db.php");
-require_once($config["homedir"] . "/include/auth/mysql.php");
+// Don't start a session before this import.
+// The session is configured and started inside the config process.
+require_once ($ownDir . "../include/config.php");
+
+require_once ($config["homedir"] . "/include/functions.php");
+require_once ($config["homedir"] . "/include/functions_db.php");
+require_once ($config["homedir"] . "/include/auth/mysql.php");
 
 global $config;
-
-if (! isset($_SESSION["id_usuario"])) {
-	session_start();
-	session_write_close();
-}
 
 // Login check
 if (!isset($_SESSION["id_usuario"])) {

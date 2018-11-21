@@ -13,9 +13,10 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
-session_start ();
-
+// Don't start a session before this import.
+// The session is configured and started inside the config process.
 require_once ("../../include/config.php");
+
 require_once ("../../include/functions.php");
 require_once ("../../include/functions_db.php");
 require_once ("../../include/functions_users.php");

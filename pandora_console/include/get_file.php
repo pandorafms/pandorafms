@@ -13,13 +13,14 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
-if (! isset($_SESSION['id_usuario'])) {
-	session_start();
-}
 
-require_once('functions.php');
-require_once('functions_filemanager.php');
+
+// Don't start a session before this import.
+// The session is configured and started inside the config process.
 require_once ("config.php");
+require_once ('functions.php');
+require_once ('functions_filemanager.php');
+
 global $config;
 
 check_login ();

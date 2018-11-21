@@ -18,9 +18,8 @@ if ((! file_exists("include/config.php")) || (! is_readable("include/config.php"
 	exit;
 }
 
-// Real start
-session_start();
-
+// Don't start a session before this import.
+// The session is configured and started inside the config process.
 require_once ('include/config.php');
 require_once ('include/functions.php');
 require_once ('include/functions_db.php');
@@ -82,7 +81,6 @@ if (isset($config['metaconsole'])) {
 	if ($config['metaconsole'])
 		define ('METACONSOLE', true);
 }
-session_write_close ();
 
 if (file_exists ($page)) {
 	require_once ($page);

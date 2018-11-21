@@ -76,14 +76,6 @@ if (isInACL($ipOrigin)) {
 		if ($user_in_db !== false) {
 			$config['id_user'] = $user_in_db;
 			$correctLogin = true;
-			
-			//XXXX
-			session_start();
-			$_SESSION["id_usuario"] = $user;
-			session_write_close();
-
-			file_put_contents(session_save_path() . DIRECTORY_SEPARATOR . "pansess_" . session_id(), $user);
-
 		}
 		else {
 			$no_login_msg = "Incorrect user credentials";

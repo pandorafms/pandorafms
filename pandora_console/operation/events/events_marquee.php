@@ -13,18 +13,18 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
-session_start ();
-
 error_reporting(1);
 
 // Local settings for marquee extension
-
 $MAX_MARQUEE_EVENTS=10;
 $MARQUEE_INTERVAL=90;
 $MARQUEE_FONT_SIZE="32px";
 $MARQUEE_SPEED=12;
 
 $output = "";
+
+// Don't start a session before this import.
+// The session is configured and started inside the config process.
 require_once "../../include/config.php";
 require_once "../../include/functions.php";
 require_once "../../include/functions_db.php";

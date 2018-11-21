@@ -562,7 +562,7 @@ if (! isset ($config['id_user'])) {
 		$query_params_redirect = $_GET;
 		// Visual console do not want sec2
 		if($home_page == 'Visual console') unset($query_params_redirect["sec2"]);
-		$redirect_url = '?1=1';
+		$redirect_url = '?logged=1';
 		foreach ($query_params_redirect as $key => $value) {
 			if ($key == "login") continue;
 			$redirect_url .= '&'.safe_url_extraclean($key).'='.safe_url_extraclean($value);

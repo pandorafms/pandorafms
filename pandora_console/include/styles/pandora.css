@@ -5038,4 +5038,16 @@ ul.ui-front li a.ui-menu-item-wrapper span{
 ul.ui-front li a.ui-menu-item-wrapper:hover{
 	text-decoration: none !important;
 }
+
+input[type=submit].ui-button-dialog{
+	margin: .5em 1em .5em 0 !important;
+	cursor: pointer !important;
+	background: white !important;
+	background-color: white !important;
+	color: #82b92e !important;
+	text-align: center !important;
+	border: 1px solid #82b92e !important;
+	height:30px !important;
+	width:90px !important;
+}
 /* --- END - JQUERY-UI --- */

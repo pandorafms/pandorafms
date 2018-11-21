@@ -176,12 +176,12 @@ date_default_timezone_set("Europe/Madrid");
 //////////////////////////////////////
 require_once ($config["homedir"].'/include/load_session.php');
 
-if (empty(session_id())) session_start();
+if (session_id() == '') session_start();
 
 config_process_config();
 config_prepare_session();
 
-// Set a the system timezone default 
+// Set a the system timezone default
 if ((!isset($config["timezone"])) OR ($config["timezone"] == "")) {
 	$config["timezone"] = "Europe/Berlin";
 }

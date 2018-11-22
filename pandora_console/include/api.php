@@ -72,10 +72,14 @@ switch($info) {
 if (isInACL($ipOrigin)) {
 	if (empty($apiPassword) || (!empty($apiPassword) && $api_password === $apiPassword)) {
 		$user_in_db = process_user_login($user, $password, true);
-		
 		if ($user_in_db !== false) {
 			$config['id_user'] = $user_in_db;
 			$correctLogin = true;
+
+			if (session_status() === PHP_SESSION_NONE) session_start();
+			$_SESSION["id_usuario"] = $user;
+			session_write_close();
+
 		}
 		else {
 			$no_login_msg = "Incorrect user credentials";
@@ -177,11 +181,6 @@ if ($correctLogin) {
 		else {
 			returnError('no_exist_operation', $returnType);
 		}
-	}
-
-	//XXXXX
-	if (file_exists(session_save_path() . DIRECTORY_SEPARATOR . "pansess_" . session_id())) {
-		unlink(session_save_path() . DIRECTORY_SEPARATOR . "pansess_" . session_id());
 	}
 }
 else {

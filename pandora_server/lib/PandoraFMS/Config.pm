@@ -507,7 +507,7 @@ sub pandora_load_config {
 	}
 
 	# Collect items from config file and put in an array 
-	if (! open (CFG, "< $archivo_cfg")) {
+	if (! open (CFG, "<:encoding(UTF-8)", $archivo_cfg)) {
 		print "[ERROR] Error opening configuration file $archivo_cfg: $!.\n";
 		exit 1;
 	}

@@ -175,6 +175,7 @@ if ($OS eq 'linux') {
 } elsif ($OS =~ /win/i) {
 	$OS = "windows";
 	$OS_VERSION = `ver`;
+	$OS_VERSION =~ s/[^[:ascii:]]//g; 
 	$DEVNULL = '/Nul';
 } elsif ($OS eq 'freebsd') {
 	$OS_VERSION = `uname -r`;

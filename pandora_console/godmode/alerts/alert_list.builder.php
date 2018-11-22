@@ -137,19 +137,17 @@ if (check_acl ($config['id_user'], 0, "LM")) {
 	$table->data[3][1] .= ' ' . __('seconds') . ui_print_help_icon ('action_threshold', true);
 
 
-if (!isset($step) || $step!=5) {
+if (!isset($step)) {
 	echo '<form class="add_alert_form" method="post">';
 	html_print_table ($table);
 }
 
 echo '<div class="action-buttons" style="width: '.$table->width.'">';
 
-if (!isset($step) || $step!=5) {
+if (!isset($step)) {
 	if($id_cluster){
 		echo "<input onclick='window.location.replace(\"index.php?sec=reporting&sec2=enterprise/godmode/reporting/cluster_view&id=".$id_cluster."\");' type=button style='float:right;margin-left:20px;' name='store' class='sub upd' value='".__('Finish and view cluster')."'>";
 	}
-
-
 
 	html_print_submit_button (__('Add alert'), 'add', false, 'class="sub wand"');
 	html_print_input_hidden ('create_alert', 1);
@@ -223,7 +221,7 @@ $(document).ready (function () {
 					$("#value", $value).append ("<em><?php echo __('Empty') ?></em>");
 				}
 				else {
-					$("#value", $value).append (parseInt(data));
+					$("#value", $value).append (data);
 				}
 				$loading.hide ();
 				$value.show ();

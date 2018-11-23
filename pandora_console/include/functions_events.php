@@ -95,7 +95,7 @@ function events_get_events ($filter = false, $fields = false) {
  * 
  * @return mixed False in case of error or invalid values passed. Event row otherwise
  */
-function events_get_event ($id, $fields = false) {
+function events_get_event ($id, $fields = false, $meta = false, $history = false) {
 	if (empty ($id))
 		return false;
 	global $config;
@@ -104,8 +104,10 @@ function events_get_event ($id, $fields = false) {
 		if (! in_array ('id_grupo', $fields))
 			$fields[] = 'id_grupo';
 	}
+
+	$table = events_get_events_table($meta, $history);
 	
-	$event = db_get_row ('tevento', 'id_evento', $id, $fields);
+	$event = db_get_row ($table, 'id_evento', $id, $fields);
 	if (! check_acl ($config['id_user'], $event['id_grupo'], 'ER'))
 		return false;
 	

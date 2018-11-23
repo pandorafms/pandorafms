@@ -1208,21 +1208,21 @@ $(".logo_preview").click (function(e) {
 	switch (e.target.id) {
 		case 'button-custom_logo_preview':
 			icon_name = $("select#custom_logo option:selected").val();
-			icon_path = "<?php echo $config['homeurl'];  if(enterprise_installed){ echo 'enterprise/'; } ?>images/custom_logo/" + icon_name;
+			icon_path = "<?php echo $config['homeurl'];  if(enterprise_installed()){ echo 'enterprise/'; } ?>images/custom_logo/" + icon_name;
 			options.grayed = true;
 			break;
 		case 'button-custom_logo_white_bg_preview':
 			icon_name = $("select#custom_logo_white_bg option:selected").val();
-			icon_path = "<?php echo $config['homeurl'];  if(enterprise_installed){ echo 'enterprise/'; } ?>images/custom_logo/" + icon_name;
+			icon_path = "<?php echo $config['homeurl'];  if(enterprise_installed()){ echo 'enterprise/'; } ?>images/custom_logo/" + icon_name;
 			break;
 		case 'button-custom_logo_login_preview':
 			icon_name = $("select#custom_logo_login option:selected").val();
-			icon_path = "<?php echo $config['homeurl']; if(enterprise_installed){ echo 'enterprise/'; } ?>images/custom_logo_login/" + icon_name;
+			icon_path = "<?php echo $config['homeurl']; if(enterprise_installed()){ echo 'enterprise/'; } ?>images/custom_logo_login/" + icon_name;
 			options.grayed = true;
 			break;
 		case 'button-custom_splash_login_preview':
 			icon_name = $("select#custom_splash_login option:selected").val();
-			icon_path = "<?php echo $config['homeurl']; if(enterprise_installed){ echo 'enterprise/'; } ?>images/custom_splash_login/" + icon_name;
+			icon_path = "<?php echo $config['homeurl']; if(enterprise_installed()){ echo 'enterprise/'; } ?>images/custom_splash_login/" + icon_name;
 			options.title = "<?php echo __('Splash Preview'); ?>";
 			break;
 		case 'button-custom_docs_logo_preview':

@@ -3188,16 +3188,14 @@ function graph_custom_sql_graph ($id, $width, $height,
  * @param string homeurl
  * @param bool return or echo the result
  */
-function graph_graphic_agentevents ($id_agent, $width, $height, $period = 0, $homeurl, $return = false, $from_agent_view = false) {
+function graph_graphic_agentevents ($id_agent, $width, $height, $period = 0, $homeurl, $return = false, $from_agent_view = false, $widgets=false) {
 	global $config;
 	global $graphic_type;
 
 	$data = array ();
 
-	//$resolution = $config['graph_res'] * ($period * 2 / $width); // Number of "slices" we want in graph
-	$resolution = 5 * ($period * 2 / $width); // Number of "slices" we want in graph
-
-	$interval = (int) ($period / $resolution);
+	//TODO interval
+	$interval = 24;
 	$date = get_system_time ();
 	$datelimit = $date - $period;
 	$periodtime = floor ($period / $interval);
@@ -3206,7 +3204,7 @@ function graph_graphic_agentevents ($id_agent, $width, $height, $period = 0, $ho
 	$legend = array();
 	$full_legend = array();
 	$full_legend_date = array();
-	
+
 	$cont = 0;
 	for ($i = 0; $i < $interval; $i++) {
 		$bottom = $datelimit + ($periodtime * $i);
@@ -3216,24 +3214,24 @@ function graph_graphic_agentevents ($id_agent, $width, $height, $period = 0, $ho
 		else {
 			$name = $bottom;
 		}
-		
+
 		// Show less values in legend
 		if ($cont == 0 or $cont % 2)
 			$legend[$cont] = $name;
-		
+
 		if ($from_agent_view) {
 			$full_date = date('Y/m/d', $bottom);
 			$full_legend_date[$cont] = $full_date;
 		}
 
 		$full_legend[$cont] = $name;
-		
+
 		$top = $datelimit + ($periodtime * ($i + 1));
 		$event = db_get_row_filter ('tevento',
 			array ('id_agente' => $id_agent,
 				'utimestamp > '.$bottom,
 				'utimestamp < '.$top), 'criticity, utimestamp');
-		
+
 		if (!empty($event['utimestamp'])) {
 			$data[$cont]['utimestamp'] = $periodtime;
 			switch ($event['criticity']) {
@@ -3258,7 +3256,7 @@ function graph_graphic_agentevents ($id_agent, $width, $height, $period = 0, $ho
 	$colors = array(1 => COL_NORMAL, 2 => COL_WARNING, 3 => COL_CRITICAL, 4 => COL_UNKNOWN);
 
 	// Draw slicebar graph
-	$out = flot_slicesbar_graph($data, $period, 100, 40, $full_legend, $colors, $config['fontpath'], $config['round_corner'], $homeurl, '', '', false, $id_agent, $full_legend_date);
+	$out = flot_slicesbar_graph($data, $period, $width, $height, $full_legend, $colors, $config['fontpath'], $config['round_corner'], $homeurl, '', '', false, $id_agent, $full_legend_date, 0, 1, $widgets);
 
 	if ($return) {
 		return $out;

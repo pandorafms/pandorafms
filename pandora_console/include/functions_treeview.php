@@ -714,20 +714,15 @@ function treeview_printTable($id_agente, $server_data = array(), $no_head = fals
 
 	ui_toggle($table_advanced, __('Advanced information'));
 
-	// Blank space below title, DONT remove this, this
-	// Breaks the layout when Flash charts are enabled :-o
-	//echo '<div id="id_div" style="height: 10px">&nbsp;</div>';
-
 	if ($config["agentaccess"]) {
 		$access_graph = '<div style="width:100%; height:130px;">';
-		$access_graph .= graphic_agentaccess($id_agente, 380, 120, SECONDS_1DAY, true, true);
+		$access_graph .= graphic_agentaccess ($id_agente, 380, 120, SECONDS_1DAY, true, true);
 		$access_graph .= '</div>';
 		ui_toggle($access_graph, __('Agent access rate (24h)'));
 	}
 
-	$events_graph = '<div style="margin-left: 10px;">';
-	$events_graph .= graph_graphic_agentevents ($id_agente, 290, 15,
-		SECONDS_1DAY, '', true);
+	$events_graph = '<div style="margin-left:10px; width:100%;">';
+	$events_graph .= graph_graphic_agentevents ($id_agente, 375, 45, SECONDS_1DAY, '', true, false, true);
 	$events_graph .= '</div><br>';
 
 	ui_toggle($events_graph, __('Events (24h)'));

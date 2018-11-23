@@ -645,7 +645,7 @@ $data[0][0] .=
 			__('Events (24h)') .
 		'</th></tr>' .
 		'<tr><td style="text-align:center;padding-left:20px;padding-right:20px;"><br />' .
-		graph_graphic_agentevents ($id_agente, 450, 40, SECONDS_1DAY, '', true, true) . 
+		graph_graphic_agentevents ($id_agente, 100, 45, SECONDS_1DAY, '', true, true) . 
 		'<br /></td></tr>' . 
 	'</table>';
 

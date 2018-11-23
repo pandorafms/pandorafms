@@ -651,7 +651,7 @@ function add_macro_field(macro, row_model_id) {
 	$macro_field.attr('class', 'macro_field');
 	
 	// Get the number of fields already printed
-	var fields = $('.macro_field').size();
+	var fields = $('.macro_field').length;
 	
 	// If is the first, we insert it after model row
 	if (fields == 0) {

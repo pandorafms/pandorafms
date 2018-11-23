@@ -122,7 +122,6 @@ $table->colspan[0][1] = 2;
 
 $table->data[1][0] = __('Group');
 
-$groups = users_get_groups ();
 $own_info = get_user_info ($config['id_user']);
 // Only display group "All" if user is administrator or has "PM" privileges
 if ($own_info['is_admin'] || check_acl ($config['id_user'], 0, "PM"))
@@ -133,9 +132,17 @@ $table->data[1][1] = html_print_select_groups(false, "LW", $display_all_group, '
 $table->colspan[1][1] = 2;
 
 $table->data[2][0] = __('Command');
-$table->data[2][1] = html_print_select_from_sql ('SELECT id, name
-	FROM talert_commands',
-	'id_command', $id_command, '', __('None'), 0, true);
+$commands_sql = db_get_all_rows_filter(
+	'talert_commands',
+	array('id_group' => array_keys(users_get_groups(false, "LW"))),
+	array('id', 'name'),
+	'AND',
+	false,
+	true
+);
+$table->data[2][1] = html_print_select_from_sql ($commands_sql, 'id_command', $id_command,
+	'', __('None'), 0, true
+);
 $table->data[2][1] .= ' ';
 if (check_acl ($config['id_user'], 0, "PM")) {
 	$table->data[2][1] .= html_print_image ('images/add.png', true);
@@ -282,6 +289,19 @@ $(document).ready (function () {
 				
 				var max_fields = parseInt('<?php echo $config["max_macro_fields"]; ?>');
 				
+				// Change the selected group
+				$("#group option").each(function(index, value) {
+					var current_group = $(value).val();
+					if (data.id_group != 0 && current_group != 0 && current_group != data.id_group) {
+						$(value).hide();
+					} else {
+						$(value).show();
+					}
+				});
+				if (data.id_group != 0 && $("#group").val() != data.id_group) {
+					$("#group").val(0);
+				}
+
 				for (i = 1; i <= max_fields; i++) {
 					var old_value = '';
 					var old_recovery_value = '';

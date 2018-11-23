@@ -155,16 +155,67 @@ if($build_table_custom_fields){
 
 	$count = db_get_sql($query_count);
 
+	//for link nodes.
+	$array_nodes  = metaconsole_get_connections();
+	if(isset($array_nodes) && is_array($array_nodes)){
+		$hash_array_nodes = array();
+		foreach ($array_nodes as $key => $server) {
+			$pwd = $server['auth_token'];
+			$auth_serialized = json_decode($pwd,true);
+
+			if (is_array($auth_serialized)) {
+				$pwd = $auth_serialized['auth_token'];
+				$api_password = $auth_serialized['api_password'];
+				$console_user = $auth_serialized['console_user'];
+				$console_password = $auth_serialized['console_password'];
+			}
+
+			$user = $config['id_user'];
+			$user_rot13 = str_rot13($config['id_user']);
+			$hashdata = $user.$pwd;
+			$hashdata = md5($hashdata);
+			$url_hash = '&amp;' .
+				'loginhash=auto&amp;' .
+				'loginhash_data=' . $hashdata . '&amp;' .
+				'loginhash_user=' . $user_rot13;
+
+			$hash_array_nodes[$server['id']]['hashurl'] = $url_hash;
+			$hash_array_nodes[$server['id']]['server_url'] = $server['server_url'];
+		}
+	}
+
 	//prepare rows for table dinamic
 	$data = array();
 	foreach ($result as $values) {
 		$image_status = agents_get_image_status($values['status']);
 
+		//link nodes
+		$agent_link = '<a href="'.
+		$hash_array_nodes[$values['id_tmetaconsole_setup']]['server_url'] . '/' .
+			'index.php?' .
+			'sec=estado&amp;' .
+			'sec2=operation/agentes/ver_agente&amp;' .
+			'id_agente='. $values['id_tagente'] .
+			$hash_array_nodes[$values['id_tmetaconsole_setup']]['hashurl'] . '">'
+		;
+
+		$agent_alias = ui_print_truncate_text($values['alias'],
+			'agent_small', false, true, false, '[&hellip;]',
+			'font-size:7.5pt;'
+		);
+
+		if (can_user_access_node ()) {
+			$agent = $agent_link . '<b>' . $agent_alias . '</b></a>';
+		}
+		else {
+			$agent = $agent_alias;
+		}
+
 		$data[] = array(
 			"ref" => $referencia,
 			"data_custom_field" => $values['name_custom_fields'],
 			"server" => $values['server_name'],
-			"agent" => $values['alias'],
+			"agent" => $agent,
 			"IP" => $values['direccion'],
 			"status" => "<div id='reload_status_agent_" . $values['id_tmetaconsole_setup'] . "_" . $values['id_tagente'] ."'>" . $image_status . "</div>",
 			"id_agent" => $values['id_tagente'],

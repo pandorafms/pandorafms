@@ -2023,6 +2023,12 @@ function config_process_config () {
 		config_update_value('ehorus_req_timeout', 5);
 	}
 
+	if (is_metaconsole()) {
+		if (!isset($config["metaconsole_deploy_collection"])) {
+			config_update_value('metaconsole_deploy_collection', 0);
+		}
+	}
+
 	/* Finally, check if any value was overwritten in a form */
 	config_update_config();
 }
@@ -2323,11 +2329,7 @@ function config_prepare_session() {
 	else
 		$sessionCookieExpireTime *= 60;
 
-	@ini_set('session.gc_maxlifetime', $sessionCookieExpireTime);
-	@session_set_cookie_params ($sessionCookieExpireTime);
-
 	// Reset the expiration time upon page load //session_name() is default name of session PHPSESSID
-
 	if (isset($_COOKIE[session_name()]))
 		setcookie(session_name(), $_COOKIE[session_name()], time() + $sessionCookieExpireTime, "/");
 

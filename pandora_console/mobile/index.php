@@ -19,12 +19,19 @@ if (function_exists ('mb_internal_encoding')) {
 }
 
 $develop_bypass = 0;
-require_once '../include/config.php';
 
 require_once("include/ui.class.php");
 require_once("include/system.class.php");
 require_once("include/db.class.php");
 require_once("include/user.class.php");
+
+/* Info:
+ * The classes above doesn't start any session before it's properly
+ * configured into the file below, but it's important the classes
+ * exist at the time the session is started for things like
+ * serializing objects stored into the session.
+ */
+require_once '../include/config.php';
 
 require_once('operation/home.php');
 require_once('operation/tactical.php');
@@ -78,7 +85,6 @@ $system = System::getInstance();
 require_once($system->getConfig('homedir').'/include/constants.php');
 
 $user = User::getInstance();
-
 $user->saveLogin();
 
 $default_page = 'home';

@@ -164,14 +164,6 @@ else {
 		$table->align[$i] = 'left';
 		$i++;
 	}
-	if ($fields == 'estado') {
-		$table->head[$i] = __('Status')  . html_print_sort_arrows(
-			array_merge($params, array('sort_field' => 'status')),
-			'sort'
-		);
-		$table->align[$i] = 'left';
-		$i++;
-	}
 	if ($fields == 'id_evento') {
 		$table->head[$i] = __('Event ID') . html_print_sort_arrows(
 			array_merge($params, array('sort_field' => 'event_id')),
@@ -341,6 +333,18 @@ else {
 		$i++;
 	}
 	}
+
+	if (in_array('estado', $show_fields)) {
+		$table->head[$i] = '<span style="white-space: nowrap;">'.__('Status')  . html_print_sort_arrows(
+			array_merge($params, array('sort_field' => 'status')),
+			'sort'
+		).'</span>';
+		$table->align[$i] = 'left';
+		$table->style[$i] = 'white-space: nowrap !important; width: 1px !important;';
+		$i++;
+	}
+
+
 	if ($i != 0 && $allow_action) {
 		$table->head[$i] = __('Action');
 		$table->align[$i] = 'left';
@@ -489,14 +493,6 @@ else {
 				$data[$i] = db_get_value('name','tserver');
 			}
 			$table->cellclass[count($table->data)][$i] = $myclass;
-			$i++;
-		}
-		if ($fields == 'estado') {
-			$data[$i] = html_print_image ($img_st, true, 
-				array ("class" => "image_status",
-					"title" => $title_st,
-					"id" => 'status_img_'.$event["id_evento"]));
-			$table->cellstyle[count($table->data)][$i] = 'background: #F3F3F3;';
 			$i++;
 		}
 		if ($fields == 'id_evento') {
@@ -776,6 +772,15 @@ else {
 			$table->cellclass[count($table->data)][$i] = $myclass;
 			$i++;
 		}
+		}
+
+		if (in_array('estado', $show_fields)) {
+				$data[$i] = html_print_image ($img_st, true, 
+					array ("class" => "image_status",
+						"title" => $title_st,
+						"id" => 'status_img_'.$event["id_evento"]));
+				$table->cellstyle[count($table->data)][$i] = 'background: #F3F3F3; white-space: nowrap; width: 1px;';
+				$i++;
 		}
 		
 		if ($i != 0 && $allow_action) {

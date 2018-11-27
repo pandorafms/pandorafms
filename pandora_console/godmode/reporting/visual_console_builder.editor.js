@@ -801,6 +801,10 @@ function readFields() {
 	values['label'] = $("input[name=label]").val();
 	var text = tinymce.get('text-label').getContent();
 	values['label'] = text;
+
+	if ($("input[name=percentile_label]").val().length > 0)
+		values['label'] = $("input[name=percentile_label]").val();
+
 	values['line-height'] = $("#text-label_ifr").contents().find("p").css('line-height');
 	values['type_graph'] = $("select[name=type_graph]").val();
 	values['image'] = $("select[name=image]").val();

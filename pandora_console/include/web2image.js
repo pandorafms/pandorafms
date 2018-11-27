@@ -51,14 +51,18 @@ page.open(url, 'POST', post_data, function start(status) {
 
 page.onLoadFinished = function (status) {
 	if(!base_64){
-		page.render(output_filename, {format: 'png'});
+		setTimeout(function() {
+			page.render(output_filename, {format: 'png'});
+			phantom.exit();
+		}, 200);
 	}
 	else{
 		var base64 = page.renderBase64('png');
 		//XXXX
 		console.log(base64);
+		phantom.exit();
 	}
-	phantom.exit();
+
 }
 
 

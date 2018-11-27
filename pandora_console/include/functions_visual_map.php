@@ -2049,6 +2049,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 			}
 
 			echo $img;
+			echo io_safe_output($text);
 			
 			break;
 		case CIRCULAR_INTERIOR_PROGRESS_BAR:

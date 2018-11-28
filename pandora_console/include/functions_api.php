@@ -7625,6 +7625,65 @@ function api_set_alert_actions($id, $id2, $other, $trash1) {
 	}
 }
 
+
+function api_set_alert_commands($id, $thrash2, $other, $trash1) {
+	global $config;
+
+	$command = $other['data'][0];
+	$id_group = $other['data'][1];
+	$description = $other['data'][2];
+	$internal = $other['data'][3];
+	$fields_descriptions_decode = io_safe_output(base64_decode($other['data'][4], true));
+	$fields_values_decode = io_safe_output(base64_decode($other['data'][5], true));
+
+
+	if (defined ('METACONSOLE')) {
+		return;
+	}
+
+	if (!check_acl($config['id_user'], 0, "LW")){
+		returnError('forbidden', 'string');
+		return;
+	}
+
+	$name = db_get_value ('id', 'talert_commands', 'name', $id);
+	$group = db_get_value ('id_grupo', 'tgrupo', 'id_grupo', $id_group);
+
+	if ($name) {
+		returnError('error_parameter', 'Name already exist');
+		return;
+	}
+
+	if (!$group && $id_group != 0) {
+		returnError('error_parameter', 'Group does not exist');
+		return;
+	}
+
+	if ($other['type'] == 'string') {
+		returnError('error_parameter', 'Error in the parameters.');
+		return;
+	}
+	else if ($other['type'] == 'array') {
+
+		
+		$values = array('name' => $id,'command' => $command, 'id_group' => $id_group,
+		 'description' => $description, 'internal' => $internal, 'fields_descriptions' => $fields_descriptions_decode,
+		 'fields_values' => $fields_values_decode);
+		
+		$return = db_process_sql_insert('talert_commands', $values);
+		
+		$data['type'] = 'string';
+		if ($return === false) {
+			$data['data'] = 0;
+		}
+		else {
+			$data['data'] = $return;
+		}
+		returnData('string', $data);
+		return;
+	}
+}
+
 function api_set_new_event($trash1, $trash2, $other, $trash3) {
 	$simulate = false;
 	$time = get_system_time();

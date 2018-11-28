@@ -375,8 +375,8 @@ function __ ($string /*, variable arguments */) {
 	global $config;
 	static $extensions_cache = array();
 
-	if( !isset($config["id_user"]) && count($extensions_cache) > 0 ) {
-		if (array_key_exists($config["id_user"], $extensions_cache)) {
+	if( isset($config["id_user"]) ) {
+		if ( count($extensions_cache) > 0 && array_key_exists($config["id_user"], $extensions_cache)) {
 			$extensions = $extensions_cache[$config["id_user"]];
 		}
 		else {
@@ -385,8 +385,9 @@ function __ ($string /*, variable arguments */) {
 		}
 	}
 	else{
-		$extension =null;
+		$extensions=null;
 	}
+
 	if (empty($extensions))
 		$extensions = array();
 	

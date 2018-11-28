@@ -6352,7 +6352,17 @@ function reporting_custom_graph($report, $content, $type = 'dinamic',
 			}
 		}
 		else{
-			$modules[] = $content['id_agent_module'];
+			if ($content['id_agent_module']) {
+				$modules[] = $content['id_agent_module'];
+			} else {
+				// restore to metaconsole database
+				metaconsole_restore_db();
+				$module_source = db_get_all_rows_sql("SELECT id_agent_module FROM tgraph_source WHERE id_graph = " . $content['id_gs']);
+				foreach ($module_source as $key => $value) {
+					$modules[$key] = $value['id_agent_module'];
+				}
+				metaconsole_connect($server);
+			}
 		}
 		$id_graph = 0;
 	}
@@ -6407,7 +6417,7 @@ function reporting_custom_graph($report, $content, $type = 'dinamic',
 			break;
 	}
 
-	if ($config['metaconsole'] && $type_report != 'automatic_graph') {
+	if ($config['metaconsole']) {
 		metaconsole_restore_db();
 	}
 

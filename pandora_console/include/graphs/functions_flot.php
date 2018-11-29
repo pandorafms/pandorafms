@@ -691,7 +691,7 @@ function flot_slicesbar_graph (
 	$adapt_key = '', $stat_win = false,
 	$id_agent = 0, $full_legend_date = array(),
 	$not_interactive = 0, $ttl = 1,
-	$widgets = false) {
+	$widgets = false, $show = true) {
 
 	global $config;
 
@@ -839,7 +839,7 @@ function flot_slicesbar_graph (
 	// Javascript code
 	$return .= "<script type='text/javascript'>";
 	$return .= "//<![CDATA[\n";
-	$return .= "pandoraFlotSlicebar('$graph_id','$values','$datacolor','$labels','$legend','$acumulate_data',$intervaltick,'$fontpath',$fontsize,'$separator','$separator2',$id_agent,'$full_legend_date',$not_interactive)";
+	$return .= "pandoraFlotSlicebar('$graph_id','$values','$datacolor','$labels','$legend','$acumulate_data',$intervaltick,'$fontpath',$fontsize,'$separator','$separator2',$id_agent,'$full_legend_date',$not_interactive, '$show')";
 	$return .= "\n//]]>";
 	$return .= "</script>";
 

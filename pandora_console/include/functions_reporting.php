@@ -9970,7 +9970,7 @@ You can of course remove the warnings, that's why we include the source and do n
 			$output .= 'parameters["page"] = "include/ajax/events";';
 			$output .= 'parameters["total_events"] = 1;';
 
-			$output .= '$.ajax({type: "GET",url: "ajax.php",data: parameters,';
+			$output .= '$.ajax({type: "GET",url: "/pandora_console/ajax.php",data: parameters,';
 				$output .= 'success: function(data) {';
 					$output .= '$("#total_events").text(data);';
 				$output .= '}';

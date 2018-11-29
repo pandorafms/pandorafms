@@ -1205,7 +1205,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 							$img = '<div style="float:right;height:'.$himg.'px;">'.
 								hbar_graph($module_data,
 								400, 400, $color, array(), array(),
-								ui_get_full_url("images/image_problem.opaque.png", false, false, false),
+								ui_get_full_url("images/image_problem_area.png", false, false, false),
 								"", "", $water_mark, $config['fontpath'], 6,
 								"", 0, $config['homeurl'], $layoutData['image'], $layoutData['border_color']) . '</div>';
 						}
@@ -1213,7 +1213,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 							$img = '<div style="float:right;height:'.$himg.'px;">'. 
 								vbar_graph($module_data,
 								400, 400, $color, array(), array(),
-								ui_get_full_url("images/image_problem.opaque.png", false, false, false),
+								ui_get_full_url("images/image_problem_area.png", false, false, false),
 								"", "", $water_mark, $config['fontpath'], 6,
 								"", 0, $config['homeurl'], $layoutData['image'], true, false, $layoutData['border_color']) . '</div>';
 						}
@@ -1223,7 +1223,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 							$img = '<div style="float:left;height:'.$himg.'px;">'.
 								hbar_graph($module_data,
 								400, 400, $color, array(), array(),
-								ui_get_full_url("images/image_problem.opaque.png", false, false, false),
+								ui_get_full_url("images/image_problem_area.png", false, false, false),
 								"", "", $water_mark, $config['fontpath'], 6,
 								"", 0, $config['homeurl'], $layoutData['image'], $layoutData['border_color']) . '</div>';
 						}
@@ -1231,7 +1231,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 							$img = '<div style="float:left;height:'.$himg.'px;">'. 
 								vbar_graph($module_data,
 								400, 400, $color, array(), array(),
-								ui_get_full_url("images/image_problem.opaque.png", false, false, false),
+								ui_get_full_url("images/image_problem_area.png", false, false, false),
 								"", "", $water_mark, $config['fontpath'], 6,
 								"", 0, $config['homeurl'], $layoutData['image'], true, false, $layoutData['border_color']) . '</div>';
 						}
@@ -1240,14 +1240,14 @@ function visual_map_print_item($mode = "read", $layoutData,
 						if ($layoutData['type_graph'] == 'horizontal') {
 							$img = hbar_graph($module_data,
 								400, 400, $color, array(), array(),
-								ui_get_full_url("images/image_problem.opaque.png", false, false, false),
+								ui_get_full_url("images/image_problem_area.png", false, false, false),
 								"", "", $water_mark, $config['fontpath'], 6,
 								"", 0, $config['homeurl'], $layoutData['image'], $layoutData['border_color']);
 						}
 						else {
 							$img = vbar_graph($module_data,
 								400, 400, $color, array(), array(),
-								ui_get_full_url("images/image_problem.opaque.png", false, false, false),
+								ui_get_full_url("images/image_problem_area.png", false, false, false),
 								"", "", $water_mark, $config['fontpath'], 6,
 								"", 0, $config['homeurl'], $layoutData['image'], true, false, $layoutData['border_color']);
 						}
@@ -1259,7 +1259,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 							$img = '<div style="float:right;height:'.$himg.'px;">'.
 								hbar_graph($module_data,
 								$width, $height, $color, array(), array(),
-								ui_get_full_url("images/image_problem.opaque.png", false, false, false),
+								ui_get_full_url("images/image_problem_area.png", false, false, false),
 								"", "", $water_mark, $config['fontpath'], 6,
 								"", 0, $config['homeurl'], $layoutData['image'], $layoutData['border_color']) . '</div>';
 						}
@@ -1267,7 +1267,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 							$img = '<div style="float:right;height:'.$himg.'px;">'. 
 								vbar_graph($module_data,
 								$width, $height, $color, array(), array(),
-								ui_get_full_url("images/image_problem.opaque.png", false, false, false),
+								ui_get_full_url("images/image_problem_area.png", false, false, false),
 								"", "", $water_mark, $config['fontpath'], 6,
 								"", 0, $config['homeurl'], $layoutData['image'], true, false, $layoutData['border_color']) . '</div>';
 						}
@@ -1277,7 +1277,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 							$img = '<div style="float:left;height:'.$himg.'px;">'.
 								hbar_graph($module_data,
 								$width, $height, $color, array(), array(),
-								ui_get_full_url("images/image_problem.opaque.png", false, false, false),
+								ui_get_full_url("images/image_problem_area.png", false, false, false),
 								"", "", $water_mark, $config['fontpath'], 6,
 								"", 0, $config['homeurl'], $layoutData['image'], $layoutData['border_color']) . '</div>';
 						}
@@ -1285,7 +1285,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 							$img = '<div style="float:left;height:'.$himg.'px;">'. 
 								vbar_graph($module_data,
 								$width, $height, $color, array(), array(),
-								ui_get_full_url("images/image_problem.opaque.png", false, false, false),
+								ui_get_full_url("images/image_problem_area.png", false, false, false),
 								"", "", $water_mark, $config['fontpath'], 6,
 								"", 0, $config['homeurl'], $layoutData['image'], true, false, $layoutData['border_color']) . '</div>';
 						}
@@ -1294,14 +1294,14 @@ function visual_map_print_item($mode = "read", $layoutData,
 						if ($layoutData['type_graph'] == 'horizontal') {
 							$img = hbar_graph($module_data,
 								$width, $height, $color, array(), array(),
-								ui_get_full_url("images/image_problem.opaque.png", false, false, false),
+								ui_get_full_url("images/image_problem_area.png", false, false, false),
 								"", "", $water_mark, $config['fontpath'], 6,
 								"", 0, $config['homeurl'], $layoutData['image'], $layoutData['border_color']);
 						}
 						else {
 							$img = vbar_graph($module_data,
 								$width, $height, $color, array(), array(),
-								ui_get_full_url("images/image_problem.opaque.png", false, false, false),
+								ui_get_full_url("images/image_problem_area.png", false, false, false),
 								"", "", $water_mark, $config['fontpath'], 6,
 								"", 0, $config['homeurl'], $layoutData['image'], true, false, $layoutData['border_color']);
 						}
@@ -2282,11 +2282,9 @@ function visual_map_print_item($mode = "read", $layoutData,
 	if ($layoutData['parent_item'] != 0) {
 		$parent = db_get_row_filter('tlayout_data',
 			array('id' => $layoutData['parent_item']));
-		
+
 		echo '<script type="text/javascript">';
-		echo '$(document).ready (function() {
-			lines.push({"id": "' . $id . '" , "node_begin":"' . $layoutData['parent_item'] . '","node_end":"' . $id . '","color":"' . visual_map_get_color_line_status($parent) . '","thickness":"' . (empty($config["vc_line_thickness"]) ? 2 : $config["vc_line_thickness"]) . '"});
-		});';
+		echo 'lines.push({"id": "' . $id . '" , "node_begin":"' . $layoutData['parent_item'] . '","node_end":"' . $id . '","color":"' . visual_map_get_color_line_status($parent) . '","thickness":"' . (empty($config["vc_line_thickness"]) ? 2 : $config["vc_line_thickness"]) . '"});';
 		echo '</script>';
 	}
 }
@@ -2306,19 +2304,35 @@ function get_if_module_is_image ($id_module) {
 }
 
 function get_bars_module_data ($id_module) {
-	$mod_values = db_get_value_filter('datos', 'tagente_estado', array('id_agente_modulo' => $id_module));
+	//This charts is only serialize graphs.
+	//In other string show image no data to show.
 
-	if (preg_match("/\r\n/", $mod_values)) {
-		$values = explode("\r\n", $mod_values);
-	}
-	elseif (preg_match("/\n/", $mod_values)) {
-		$values = explode("\n", $mod_values);
+	$mod_values = db_get_value_filter(
+		'datos',
+		'tagente_estado',
+		array(
+			'id_agente_modulo' => $id_module
+		)
+	);
+
+	$values = false;
+	//avoid showing the image type modules. WUX
+	if(strpos($mod_values, 'data:image/png;base64') !== 0){
+		if (preg_match("/\r\n/", $mod_values)) {
+			$values = explode("\r\n", $mod_values);
+		}
+		elseif (preg_match("/\n/", $mod_values)) {
+			$values = explode("\n", $mod_values);
+		}
 	}
 
 	$values_to_return = array();
 	$index = 0;
 	$color_index = 0;
 	$total = 0;
+
+	if(!$values) return false;
+
 	foreach ($values as $val) {
 		$data = explode(",", $val);
 		$values_to_return[$data[0]] = array('g' =>$data[1]);
@@ -3323,9 +3337,7 @@ function visual_map_print_user_lines($layout_data, $proportion = null) {
 	}
 
 	echo '<script type="text/javascript">';
-	echo '$(document).ready (function() {
-		user_lines.push(' . json_encode($line) . ');
-	});';
+	echo 'user_lines.push(' . json_encode($line) . ');';
 	echo '</script>';
 }
 

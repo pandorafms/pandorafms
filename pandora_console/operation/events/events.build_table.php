@@ -78,10 +78,13 @@ if ($group_rep == 2) {
 	$table->head[1] = __('Agent');
 	$table->head[5] = __('More detail');
 
-	$url =  html_print_sort_arrows(
-		array_merge($params, array('sort_field' => 'status')),
-		'sort'
-	);
+	//$url =  html_print_sort_arrows(
+	//	array_merge($params, array('sort_field' => 'status')),
+	//	'sort'
+	//);
+
+	$params_sort_field_status = array_merge($params, array('sort_field' => 'status'));
+	$url = "index.php?" . http_build_query($params_sort_field_status, '', '&amp;');
 
 	foreach ($result as $key => $res) {
 		

@@ -30,6 +30,8 @@ include_once($config['homedir'] . "/include/functions_network_components.php");
 include_once($config['homedir'] . "/include/functions_netflow.php");
 include_once($config['homedir'] . "/include/functions_servers.php");
 include_once($config['homedir'] . "/include/functions_planned_downtimes.php");
+include_once($config['homedir'] . "/include/functions_db.php");
+include_once($config['homedir'] . "/include/functions_event_responses.php");
 enterprise_include_once ('include/functions_local_components.php');
 enterprise_include_once ('include/functions_events.php');
 enterprise_include_once ('include/functions_agents.php');
@@ -11466,6 +11468,159 @@ function api_get_modules_id_name_by_cluster_name ($cluster_name){
 		returnError('error_agent_modules', 'No modules retrieved.');
 	}
 	
+}
+
+ /**
+ * @param $trash1
+ * @param $trash2
+ * @param mixed $trash3
+ * @param $returnType
+ *	Example:
+ *	api.php?op=get&op2=event_responses&return_type=csv&apipass=1234&user=admin&pass=pandora
+ */
+function api_get_event_responses($trash1, $trash2, $trash3, $returnType) {
+	global $config;
+
+	// Error if user cannot read event responses.
+	if (!check_acl($config['id_user'], 0, "PM")) {
+		returnError('forbidden', $returnType);
+		return;
+	}
+
+	$responses = event_responses_get_responses();
+	if (empty($responses)) {
+		returnError('no_data_to_show', $returnType);
+		return;
+	}
+
+	returnData ($returnType, array('type' => 'array', 'data' => $responses));
+}
+
+ /**
+ * @param $id_response
+ * @param $trash2
+ * @param mixed $trash3
+ * @param $returnType
+ *	Example:
+ *	api.php?op=set&op2=delete_event_response&id=7&apipass=1234&user=admin&pass=pandora
+ */
+function api_set_delete_event_response($id_response, $trash1, $trash2, $returnType) {
+	global $config;
+
+	// Error if user cannot read event responses.
+	if (!check_acl($config['id_user'], 0, "PM")) {
+		returnError('forbidden', $returnType);
+		return;
+	}
+
+	// Check if id exists
+	$event_group = db_get_value('id_group', 'tevent_response','id', $id_response);
+	if ($event_group === false) {
+		returnError('id_not_found', $returnType);
+		return;
+	}
+
+	// Check user if can edit the module
+	if (!check_acl($config['id_user'], $event_group, "PM")) {
+		returnError('forbidden', $returnType);
+		return;
+	}
+
+	$result = db_process_sql_delete('tevent_response', array('id' => $id_response));
+	returnData ($returnType, array('type' => 'string', 'data' => $result));
+}
+
+/**
+ * @param $trash1
+ * @param $trash2
+ * @param mixed $other. Serialized params
+ * @param $returnType
+ *	Example:
+ *	api.php?op=set&op2=create_event_response&other=response%7Cdescription%20response%7Ctouch%7Ccommand%7C0%7C650%7C400%7C0%7Cresponse%7C0&other_mode=url_encode_separator_%7C&apipass=1234&user=admin&pass=pandora
+ */
+function api_set_create_event_response($trash1, $trash2, $other, $returnType) {
+	global $config;
+
+	// Error if user cannot read event responses.
+	if (!check_acl($config['id_user'], 0, "PM")) {
+		returnError('forbidden', $returnType);
+		return;
+	}
+
+	$values = array();
+	$values['name'] = $other['data'][0];
+	$values['description'] = $other['data'][1];
+	$values['target'] = $other['data'][2];
+	$values['type'] = $other['data'][3];
+	$values['id_group'] = $other['data'][4];
+	$values['modal_width'] = $other['data'][5];
+	$values['modal_height'] = $other['data'][6];
+	$values['new_window'] = $other['data'][7];
+	$values['params'] = $other['data'][8];
+	$values['server_to_exec'] = $other['data'][9];
+
+	// Error if user has not permission for the group.
+	if (!check_acl($config['id_user'], $values['id_group'], "PM")) {
+		returnError('forbidden', $returnType);
+		return;
+	}
+
+	$return = event_responses_create_response($values) ? 1 : 0;
+
+	returnData ($returnType, array('type' => 'string', 'data' => $return));
+}
+
+/**
+ * @param $id_response
+ * @param $trash2
+ * @param mixed $other. Serialized params
+ * @param $returnType
+ *	Example:
+ *	api.php?op=set&op2=update_event_response&id=7&other=response%7Cdescription%20response%7Ctouch%7Ccommand%7C0%7C650%7C400%7C0%7Cresponse%7C0&other_mode=url_encode_separator_%7C&apipass=1234&user=admin&pass=pandora
+ */
+function api_set_update_event_response($id_response, $trash1, $other, $returnType) {
+	global $config;
+
+	// Error if user cannot read event responses.
+	if (!check_acl($config['id_user'], 0, "PM")) {
+		returnError('forbidden', $returnType);
+		return;
+	}
+
+	// Check if id exists
+	$event_response = db_get_row('tevent_response','id', $id_response);
+	if ($event_response === false) {
+		returnError('id_not_found', $returnType);
+		return;
+	}
+
+	// Check user if can edit the module
+	if (!check_acl($config['id_user'], $event_response['id_group'], "PM")) {
+		returnError('forbidden', $returnType);
+		return;
+	}
+
+	$values = array();
+	$values['name'] = $other['data'][0] == '' ? $event_response['name'] : $other['data'][0];
+	$values['description'] = $other['data'][1] == '' ? $event_response['description'] : $other['data'][1];
+	$values['target'] = $other['data'][2] == '' ? $event_response['target'] : $other['data'][2];
+	$values['type'] = $other['data'][3] == '' ? $event_response['type'] : $other['data'][3];
+	$values['id_group'] = $other['data'][4] == '' ? $event_response['id_group'] : $other['data'][4];
+	$values['modal_width'] = $other['data'][5] == '' ? $event_response['modal_width'] : $other['data'][5];
+	$values['modal_height'] = $other['data'][6] == '' ? $event_response['modal_height'] : $other['data'][6];
+	$values['new_window'] = $other['data'][7] == '' ? $event_response['new_window'] : $other['data'][7];
+	$values['params'] = $other['data'][8] == '' ? $event_response['params'] : $other['data'][8];
+	$values['server_to_exec'] = $other['data'][9] == '' ? $event_response['server_to_exec'] : $other['data'][9];
+
+	// Error if user has not permission for the group.
+	if (!check_acl($config['id_user'], $values['id_group'], "PM")) {
+		returnError('forbidden', $returnType);
+		return;
+	}
+
+	$return = event_responses_update_response($id_response, $values) ? 1 : 0;
+
+	returnData ($returnType, array('type' => 'string', 'data' => $return));
 }
 
 function api_get_cluster_items ($cluster_id){

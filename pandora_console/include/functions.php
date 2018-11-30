@@ -3320,12 +3320,13 @@ function generator_chart_to_pdf($type_graph_pdf, $params, $params_combined = fal
 		. ' "' . $session_id . '"'
 		. ' "' . $params['return_img_base_64'] . '"';
 
-	$result = exec($cmd);
+	exec($cmd, $result);
+	$img_content = join("\n", $result);
 
 	if($params['return_img_base_64']){
 		// To be used in alerts
 		$width_img  = 500;
-		return $result;
+		return $img_content;
 	}
 	else{
 		// to be used in PDF files

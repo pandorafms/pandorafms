@@ -213,6 +213,16 @@ if (file_exists ('languages/'.$user_language.'.mo')) {
 
 		$config['font_size'] = $aux_font_size;
 ?>
+
+		<script type="text/javascript">
+			$('document').ready(function () {
+				setTimeout(function () {
+					if (typeof window.callPhantom === 'function') {
+						window.callPhantom("loaded");
+					}
+				}, 10);
+			});
+		</script>
 	</body>
 
 </html>

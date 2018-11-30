@@ -26,6 +26,12 @@ if (! check_acl ($config['id_user'], 0, "PM") && ! is_user_admin ($config['id_us
 	return;
 }
 
+$php_version = phpversion();
+$php_version_array = explode('.', $php_version);
+if($php_version_array[0] < 7){
+	include_once("general/php7_message.php");
+}
+
 $tab = get_parameter('tab', 'online');
 
 $buttons = array(

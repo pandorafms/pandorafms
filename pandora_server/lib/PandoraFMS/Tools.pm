@@ -68,6 +68,7 @@ our @EXPORT = qw(
 	PROVISIONINGSERVER
 	MIGRATIONSERVER
 	METACONSOLE_LICENSE
+	OFFLINE_LICENSE
 	$DEVNULL
 	$OS
 	$OS_VERSION
@@ -93,6 +94,7 @@ our @EXPORT = qw(
 	sqlWrap
 	is_numeric
 	is_metaconsole
+	is_offline
 	to_number
 	clean_blank
 	pandora_sendmail
@@ -152,8 +154,11 @@ use constant MODULE_WARNING => 2;
 use constant MODULE_UNKNOWN => 3;
 use constant MODULE_NOTINIT => 4;
 
-# Value for a metaconsole license type
+# Mask for a metaconsole license type
 use constant METACONSOLE_LICENSE => 0x01;
+
+# Mask for an offline license type
+use constant OFFLINE_LICENSE => 0x02;
 
 # Alert modes
 use constant RECOVERED_ALERT => 0;
@@ -170,6 +175,7 @@ if ($OS eq 'linux') {
 } elsif ($OS =~ /win/i) {
 	$OS = "windows";
 	$OS_VERSION = `ver`;
+	$OS_VERSION =~ s/[^[:ascii:]]//g; 
 	$DEVNULL = '/Nul';
 } elsif ($OS eq 'freebsd') {
 	$OS_VERSION = `uname -r`;
@@ -1639,8 +1645,22 @@ sub is_metaconsole ($) {
 	my ($pa_config) = @_;
 
 	if (defined($pa_config->{"license_type"}) &&
-		$pa_config->{"license_type"} == METACONSOLE_LICENSE &&
+		($pa_config->{"license_type"} & METACONSOLE_LICENSE) &&
 		$pa_config->{"node_metaconsole"} == 0) {
+		return 1;
+	}
+
+	return 0;
+}
+
+###############################################################################
+# Returns 1 if a valid offline license is configured, 0 otherwise.
+###############################################################################
+sub is_offline ($) {
+	my ($pa_config) = @_;
+
+	if (defined($pa_config->{"license_type"}) &&
+		($pa_config->{"license_type"} & OFFLINE_LICENSE)) {
 		return 1;
 	}
 

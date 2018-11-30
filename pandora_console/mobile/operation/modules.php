@@ -281,8 +281,7 @@ class Modules {
 		$modules = array();
 		$modules_db = array();
 		
-		$sql_conditions_base = " WHERE tagente.id_agente = tagente_modulo.id_agente 
-			AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo";
+		$sql_conditions_base = " WHERE 1=1";
 		
 		
 		// Part SQL for the id_agent
@@ -400,7 +399,14 @@ class Modules {
 		
 		$sql_total = "SELECT count(*)";
 		
-		$sql = " FROM tagente, tagente_modulo, tagente_estado" . 
+		$sql = " FROM tagente INNER JOIN tagente_modulo
+				ON tagente_modulo.id_agente = tagente.id_agente
+			INNER JOIN tagente_estado 
+				ON tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
+			LEFT JOIN tagent_secondary_group tasg
+				ON tagente.id_agente = tasg.id_agent
+			LEFT JOIN ttag_module
+				ON ttag_module.id_agente_modulo = tagente_modulo.id_agente_modulo" . 
 			$sql_conditions_all;
 		
 		$sql_limit = "ORDER BY tagente.nombre ASC ";

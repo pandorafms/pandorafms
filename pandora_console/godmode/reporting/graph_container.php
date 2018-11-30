@@ -66,7 +66,6 @@ if ($enterpriseEnable) {
 }
 
 $subsection = reporting_enterprise_add_graph_template_subsection('', $buttons);
-reporting_enterprise_select_graph_template_tab();
 
 $buttons['graph_container'] = array('active' => true,
 	'text' => '<a href="index.php?sec=reporting&sec2=godmode/reporting/graph_container">' .

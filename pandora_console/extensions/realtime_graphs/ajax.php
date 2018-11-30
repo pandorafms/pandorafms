@@ -77,6 +77,15 @@ switch($graph) {
 				if (count($data_array) > 1) {
 					$data = $data_array[1];
 				}
+				// Redefine boolean data
+				switch ($data) {
+					case "up(1)":
+						$data = 1;
+						break;
+					case "down(0)":
+						$data = 0;
+						break;
+				}
 			}
 		}
 		break;

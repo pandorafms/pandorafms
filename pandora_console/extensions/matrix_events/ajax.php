@@ -32,26 +32,17 @@ if (is_ajax()) {
 		$limit = (int) get_parameter("limit", 5);
 
 		$tags_condition = tags_get_acl_tags($config['id_user'], 0, 'ER', 'event_condition', 'AND');
-		$filter = "estado<>1 $tags_condition";
+		
+		$filter = "estado <> 1 $tags_condition";
 
-		switch ($config["dbtype"]) {
-			case "mysql":
-			case "postgresql":
-					$sql = sprintf ("SELECT id_agente, evento, utimestamp
-									FROM tevento
-									WHERE %s
-									ORDER BY utimestamp DESC LIMIT %d",
-									$filter, $limit);
-				break;
-			case "oracle":
-					$sql = sprintf ("SELECT *
-									FROM tevento
-									WHERE %s
-										AND rownum <= %d
-									ORDER BY utimestamp DESC",
-									$filter, $limit);
-				break;
-		}
+		$sql = sprintf ("SELECT id_agente, evento, utimestamp
+						FROM tevento
+						LEFT JOIN tagent_secondary_group 
+						ON tevento.id_agente = tagent_secondary_group.id_agent
+						WHERE %s
+						ORDER BY utimestamp DESC LIMIT %d",
+						$filter, $limit);
+		
 		$result = db_get_all_rows_sql ($sql);
 
 		$events = array();

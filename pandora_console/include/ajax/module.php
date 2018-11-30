@@ -18,7 +18,6 @@ if(check_login()){
 
 global $config;
 
-
 include_once($config['homedir'] . "/include/functions_agents.php");
 include_once($config['homedir'] . "/include/functions_modules.php");
 include_once($config['homedir'] . "/include/functions_ui.php");
@@ -35,7 +34,6 @@ $get_id_tag = (bool) get_parameter('get_id_tag', 0);
 $get_type = (bool) get_parameter('get_type', 0);
 $list_modules = (bool) get_parameter('list_modules', 0);
 $get_agent_modules_json_by_name = (bool) get_parameter('get_agent_modules_json_by_name', 0);
-
 
 if ($get_agent_modules_json_by_name) {
 	$agent_name = get_parameter('agent_name');
@@ -74,9 +72,9 @@ if ($search_modules) {
 	$id_agents = json_decode(io_safe_output(get_parameter('id_agents')));
 	$filter =  '%' . get_parameter('q', '') . '%';
 	$other_filter = json_decode(io_safe_output(get_parameter('other_filter')), true);
-
+	// TODO TAGS agents_get_modules
 	$modules = agents_get_modules($id_agents, false,
-		(array('nombre' => $filter) + $other_filter));
+		(array('tagente_modulo.nombre' => $filter) + $other_filter));
 
 	if ($modules === false) $modules = array();
 
@@ -474,16 +472,17 @@ if ($list_modules) {
 	$sort = get_parameter('sort', 'none');
 	$selected = 'border: 1px solid black;';
 
+	$order[] = array('field' => 'tmodule_group.name', 'order' => 'ASC');
 	switch ($sortField) {
 		case 'type':
 			switch ($sort) {
 				case 'up':
 					$selectTypeUp = $selected;
-					$order = array('field' => 'tagente_modulo.id_modulo', 'order' => 'ASC');
+					$order[] = array('field' => 'tagente_modulo.id_modulo', 'order' => 'ASC');
 					break;
 				case 'down':
 					$selectTypeDown = $selected;
-					$order = array('field' => 'tagente_modulo.id_modulo', 'order' => 'DESC');
+					$order[] = array('field' => 'tagente_modulo.id_modulo', 'order' => 'DESC');
 					break;
 			}
 			break;
@@ -491,11 +490,11 @@ if ($list_modules) {
 			switch ($sort) {
 				case 'up':
 					$selectNameUp = $selected;
-					$order = array('field' => 'tagente_modulo.nombre', 'order' => 'ASC');
+					$order[] = array('field' => 'tagente_modulo.nombre', 'order' => 'ASC');
 					break;
 				case 'down':
 					$selectNameDown = $selected;
-					$order = array('field' => 'tagente_modulo.nombre', 'order' => 'DESC');
+					$order[] = array('field' => 'tagente_modulo.nombre', 'order' => 'DESC');
 					break;
 			}
 			break;
@@ -503,11 +502,11 @@ if ($list_modules) {
 			switch ($sort) {
 				case 'up':
 					$selectStatusUp = $selected;
-					$order = array('field' => 'tagente_estado.estado=0 DESC,tagente_estado.estado=3 DESC,tagente_estado.estado=2 DESC,tagente_estado.estado=1 DESC', 'order' => '');
+					$order[] = array('field' => 'tagente_estado.estado=0 DESC,tagente_estado.estado=3 DESC,tagente_estado.estado=2 DESC,tagente_estado.estado=1 DESC', 'order' => '');
 					break;
 				case 'down':
 					$selectStatusDown = $selected;
-					$order = array('field' => 'tagente_estado.estado=1 DESC,tagente_estado.estado=2 DESC,tagente_estado.estado=3 DESC,tagente_estado.estado=0 DESC', 'order' => '');
+					$order[] = array('field' => 'tagente_estado.estado=1 DESC,tagente_estado.estado=2 DESC,tagente_estado.estado=3 DESC,tagente_estado.estado=0 DESC', 'order' => '');
 					break;
 			}
 			break;
@@ -515,11 +514,11 @@ if ($list_modules) {
 			switch ($sort) {
 				case 'up':
 					$selectLastContactUp = $selected;
-					$order = array('field' => 'tagente_estado.utimestamp', 'order' => 'ASC');
+					$order[] = array('field' => 'tagente_estado.utimestamp', 'order' => 'ASC');
 					break;
 				case 'down':
 					$selectLastContactDown = $selected;
-					$order = array('field' => 'tagente_estado.utimestamp', 'order' => 'DESC');
+					$order[] = array('field' => 'tagente_estado.utimestamp', 'order' => 'DESC');
 					break;
 			}
 			break;
@@ -535,25 +534,25 @@ if ($list_modules) {
 			$selectLastContactUp = '';
 			$selectLastContactDown = '';
 
-			$order = array('field' => 'tagente_modulo.nombre', 'order' => 'ASC');
-			break;
-	}
-
-	switch ($config["dbtype"]) {
-		case "oracle":
-			if (isset($order['field']) && $order['field'] == 'tagente_modulo.nombre') {
-				$order['field'] = 'dbms_lob.substr(tagente_modulo.nombre,4000,1)';
-			}
+			$order[] = array('field' => 'tagente_modulo.nombre', 'order' => 'ASC');
 			break;
 	}
 
 	// Fix: for tag functionality groups have to be all user_groups (propagate ACL funct!)
 	$groups = users_get_groups($config["id_user"], $access);
 
-	if($cluster_list != 1){
-		$tags_sql = tags_get_acl_tags($config['id_user'],
-			array_keys($groups), $access, 'module_condition', 'AND',
-			'tagente_modulo', false, array(), true);
+	$tags_join = "";
+	$tags_sql = "";
+	if($cluster_list != 1) {
+		$tags = tags_get_user_applied_agent_tags ($id_agent, $access);
+		if ($tags === false) {
+			$tags_sql = " AND 1=0";
+		}
+		elseif (is_array($tags)) {
+			$tags_sql = " AND ttag_module.id_tag IN (" . implode(',', $tags) . ")";
+			$tags_join = "LEFT JOIN ttag_module
+				ON ttag_module.id_agente_modulo = tagente_modulo.id_agente_modulo";
+		}
 	}
 
 	$status_filter_monitor = (int)get_parameter('status_filter_monitor', -1);
@@ -571,10 +570,10 @@ if ($list_modules) {
 	}
 
 	if ($status_module_group != -1) {
-	$status_module_group_filter = 'id_module_group = ' . $status_module_group;
+	$status_module_group_filter = 'tagente_modulo.id_module_group = ' . $status_module_group;
 	}
 	else {
-		$status_module_group_filter = 'id_module_group >= 0';
+		$status_module_group_filter = 'tagente_modulo.id_module_group >= 0';
 	}
 
 	$status_text_monitor_sql = '%';
@@ -590,68 +589,38 @@ if ($list_modules) {
 	}
 
 	//Count monitors/modules
-	switch ($config["dbtype"]) {
-		case "mysql":
-			$sql = sprintf("
-					SELECT COUNT(*)
-						FROM tagente_estado,
-							(SELECT *
-							FROM tagente_modulo
-							WHERE id_agente = %d AND nombre LIKE \"%s\" AND delete_pending = 0
-								AND disabled = 0 AND %s) tagente_modulo
-						LEFT JOIN tmodule_group
-							ON tagente_modulo.id_module_group = tmodule_group.id_mg
-						WHERE tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
-							AND %s %s
-							AND tagente_estado.estado != %d
-							AND tagente_modulo.%s
-						ORDER BY tagente_modulo.id_module_group , %s  %s",
-					$id_agente, $status_text_monitor_sql,$status_module_group_filter,$status_filter_sql, $tags_sql, $monitor_filter,
-					$status_module_group_filter, $order['field'], $order['order']);
-			break;
-		case "postgresql":
-			$sql = sprintf("
-				SELECT COUNT(DISTINCT tagente_modulo.id_module_group)
-				FROM tagente_estado,
-					(SELECT *
-					FROM tagente_modulo
-					WHERE id_agente = %d AND nombre LIKE '%s'
-						AND delete_pending = 0
-						AND disabled = 0 AND %s) tagente_modulo
-				LEFT JOIN tmodule_group
-					ON tagente_modulo.id_module_group = tmodule_group.id_mg
-				WHERE tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
-					AND %s %s
-					AND tagente_estado.estado != %d
-					AND tagente_modulo.%s
-				GROUP BY tagente_modulo.id_module_group,
-					tagente_modulo.nombre
-				ORDER BY tagente_modulo.id_module_group , %s  %s",
-				$id_agente, $status_text_monitor_sql,$status_module_group_filter,$status_filter_sql,
-				$tags_sql, $monitor_filter,$status_module_group_filter,$order['field'],
-				$order['order']);
-			break;
-		case "oracle":
-			$sql = sprintf ("
-					SELECT COUNT(*)" .
-				" FROM tagente_estado, tagente_modulo
-					LEFT JOIN tmodule_group
-					ON tmodule_group.id_mg = tagente_modulo.id_module_group
-				WHERE tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
-					AND tagente_modulo.id_agente = %d
-					AND tagente_modulo.nombre LIKE '%s'
-					AND %s %s
-					AND tagente_modulo.delete_pending = 0
-					AND tagente_modulo.disabled = 0
-					AND tagente_estado.estado != %d
-					AND tagente_modulo.%s
-				ORDER BY tagente_modulo.id_module_group , %s %s
-				", $id_agente, $status_text_monitor_sql, $status_filter_sql, $tags_sql, $monitor_filter,
-				$status_module_group_filter,$order['field'], $order['order']);
-			break;
+
+	// Build the order sql
+	$first = true;
+	foreach ($order as $ord) {
+		if ($first) {
+			$first = false;
+		}
+		else {
+			$order_sql .= ',';
+		}
+		
+		$order_sql .= $ord['field'].' '.$ord['order'];
 	}
 
-	$count_modules = db_get_all_rows_sql($sql);
+	$sql_condition = "FROM tagente_modulo
+		$tags_join
+		INNER JOIN tagente_estado
+			ON tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
+		LEFT JOIN tmodule_group
+			ON tagente_modulo.id_module_group = tmodule_group.id_mg
+		WHERE tagente_modulo.id_agente = $id_agente
+			AND nombre LIKE '$status_text_monitor_sql'
+			AND delete_pending = 0
+			AND disabled = 0
+			AND $status_filter_sql
+			AND $status_module_group_filter
+			$tags_sql
+			AND tagente_estado.estado != $monitor_filter
+		";
+
+	$count_modules = db_get_all_rows_sql('SELECT COUNT(DISTINCT tagente_modulo.id_agente_modulo)' . $sql_condition);
+
 	if (isset($count_modules[0]))
 		$count_modules = reset($count_modules[0]);
 	else
@@ -659,68 +628,9 @@ if ($list_modules) {
 
 	//Get monitors/modules
 	// Get all module from agent
-	switch ($config["dbtype"]) {
-		case "mysql":
-			$sql = sprintf("
-				SELECT *
-				FROM tagente_estado,
-					(SELECT *
-					FROM tagente_modulo
-					WHERE id_agente = %d AND nombre LIKE \"%s\" AND delete_pending = 0
-						AND disabled = 0 AND %s) tagente_modulo
-				LEFT JOIN tmodule_group
-					ON tagente_modulo.id_module_group = tmodule_group.id_mg
-				WHERE tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
-					AND %s %s
-					AND tagente_estado.estado != %d
-					AND tagente_modulo.%s
-				ORDER BY tmodule_group.name , %s %s",
-				$id_agente, $status_text_monitor_sql,$status_module_group_filter,$status_filter_sql, $tags_sql, $monitor_filter,
-				$status_module_group_filter, $order['field'], $order['order']);
-
-			break;
-		case "postgresql":
-			$sql = sprintf("
-				SELECT *
-				FROM tagente_estado,
-					(SELECT *
-					FROM tagente_modulo
-					WHERE id_agente = %d AND nombre LIKE '%s' AND delete_pending = 0
-						AND disabled = 0 AND %s) tagente_modulo
-				LEFT JOIN tmodule_group
-					ON tagente_modulo.id_module_group = tmodule_group.id_mg
-				WHERE tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
-					AND %s %s
-					AND tagente_estado.estado != %d
-					AND tagente_modulo.%s
-				ORDER BY tmodule_group.name , %s  %s",
-				$id_agente, $status_text_monitor_sql,$status_module_group_filter,$status_filter_sql, $tags_sql, $monitor_filter,
-				$status_module_group_filter, $order['field'], $order['order']);
-			break;
-		// If Dbms is Oracle then field_list in sql statement has to be recoded. See oracle_list_all_field_table()
-		case "oracle":
-			$fields_tagente_estado = oracle_list_all_field_table('tagente_estado', 'string');
-			$fields_tagente_modulo = oracle_list_all_field_table('tagente_modulo', 'string');
-			$fields_tmodule_group = oracle_list_all_field_table('tmodule_group', 'string');
-
-			$sql = sprintf ("
-					SELECT " . $fields_tagente_estado . ', ' . $fields_tagente_modulo . ', ' . $fields_tmodule_group .
-				" FROM tagente_estado, tagente_modulo
-					LEFT JOIN tmodule_group
-					ON tmodule_group.id_mg = tagente_modulo.id_module_group
-				WHERE tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
-					AND tagente_modulo.id_agente = %d
-					AND tagente_modulo.nombre LIKE '%s'
-					AND %s %s
-					AND tagente_modulo.delete_pending = 0
-					AND tagente_modulo.disabled = 0
-					AND tagente_estado.estado != %d
-					AND tagente_modulo.%s
-				ORDER BY tmodule_group.name , %s %s
-				", $id_agente, $status_text_monitor_sql, $tags_sql, $status_filter_sql, $monitor_filter,
-				 $status_module_group_filter, $order['field'], $order['order']);
-			break;
-	}
+	$sql_modules_info = "SELECT tagente_estado.*, tagente_modulo.*, tmodule_group.* 
+		$sql_condition
+		GROUP BY tagente_modulo.id_agente_modulo ORDER BY $order_sql";
 
 	if ($monitors_change_filter) {
 		$limit = " LIMIT " . $config['block_size'] . " OFFSET 0";
@@ -733,10 +643,10 @@ if ($list_modules) {
 		$paginate_module = $config['paginate_module'];
 
 	if ($paginate_module) {
-		$modules = db_get_all_rows_sql ($sql . $limit);
+		$modules = db_get_all_rows_sql ($sql_modules_info . $limit);
 	}
 	else {
-		$modules = db_get_all_rows_sql ($sql);
+		$modules = db_get_all_rows_sql ($sql_modules_info);
 	}
 	if (empty ($modules)) {
 		$modules = array ();
@@ -1186,6 +1096,7 @@ if ($get_type) {
 	echo $graph_type;
 	return;
 }
+
 }
 
 ?>

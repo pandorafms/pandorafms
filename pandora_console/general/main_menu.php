@@ -335,11 +335,8 @@ $(document).ready( function() {
 	handsIn = 0;
 	handsIn2 = 0;
 
-	//Daniel maya 02/06/2016 Display menu with click --INI
 	if(!click_display){
-		//Daniel barbero 10/08/2016 Display menu with click --INI
 		if (autohidden_menu) {
-		//Daniel barbero 10/08/2016 Display menu with click --END
 			$('.menu_icon').mouseenter(function() {
 				table_hover = $(this);
 				handsIn = 1;
@@ -358,38 +355,11 @@ $(document).ready( function() {
 						$("ul#sub"+table_hover[0].id).hide();
 					}
 				}, 2500);
-			});
-		//Daniel barbero 10/08/2016 Display menu with click --INI
-		} else {
-			$('.menu_icon').mouseenter(function() {
-				table_hover = $(this);
-				handsIn = 1;
-				openTime = new Date().getTime();
-				$("ul#sub"+table_hover[0].id).show();
-				if( typeof(table_noHover) != 'undefined')
-					if ( "ul#sub"+table_hover[0].id != "ul#sub"+table_noHover[0].id )
-						$("ul#sub"+table_noHover[0].id).hide();
-			}).mouseleave(function() {
-				table_noHover = $(this);
-				handsIn = 0;
-				$("ul#sub"+table_hover[0].id).hide();
-				/*
-				setTimeout(function() {
-					opened = new Date().getTime() - openTime;
-					if(opened > 3000 && handsIn == 0) {
-						openTime = 4000;
-						$("ul#sub"+table_hover[0].id).hide();
-					}
-				}, 2500);
-				*/
 			});
 		}
-		//Daniel barbero 10/08/2016 Display menu with click --END
 	}else{
 		$(document).ready(function() {
-			//Daniel barbero 10/08/2016 Display menu with click --INI
 			if (autohidden_menu) {
-			//Daniel barbero 10/08/2016 Display menu with click --END
 				$('.menu_icon').on("click", function() {
 					if( typeof(table_hover) != 'undefined'){
 						$("ul#sub"+table_hover[0].id).hide();
@@ -409,7 +379,6 @@ $(document).ready( function() {
 						}
 					}, 5500);
 				});
-			//Daniel barbero 10/08/2016 Display menu with click --INI
 			} else {
 				$('.menu_icon').on("click", function() {
 					if( typeof(table_hover) != 'undefined'){
@@ -421,10 +390,8 @@ $(document).ready( function() {
 					$("ul#sub"+table_hover[0].id).show();
 				});
 			}
-			//Daniel barbero 10/08/2016 Display menu with click --END
 		});
 	}
-	//Daniel maya 02/06/2016 Display menu with click --END
 
 -	$('.has_submenu').mouseenter(function() {
 		table_hover2 = $(this);

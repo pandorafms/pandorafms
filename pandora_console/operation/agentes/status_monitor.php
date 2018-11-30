@@ -87,16 +87,25 @@ if ($id_module) {
 enterprise_hook('open_meta_frame');
 
 // Get Groups and profiles from user
-$user_groups = implode (',', array_keys (users_get_groups ()));
+$user_groups = implode (',', array_keys (users_get_groups (false,'AR',false)));
 
 ////////////////////////////////////
 // Begin Build SQL sentences
-$sql_from = ' FROM ttipo_modulo,tagente LEFT JOIN tagent_secondary_group tasg ON tagente.id_agente = tasg.id_agent, tagente_modulo, tagente_estado,tmodule ';
+$sql_from = " FROM tagente_modulo 
+	INNER JOIN tagente 
+		ON tagente_modulo.id_agente = tagente.id_agente 
+	LEFT JOIN tagent_secondary_group tasg
+	 	ON tagente.id_agente = tasg.id_agent
+	INNER JOIN tagente_estado
+		ON tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
+	INNER JOIN tmodule
+		ON tmodule.id_module = tagente_modulo.id_modulo
+	INNER JOIN ttipo_modulo
+		ON tagente_modulo.id_tipo_modulo = ttipo_modulo.id_tipo
+	LEFT JOIN ttag_module
+		ON tagente_modulo.id_agente_modulo = ttag_module.id_agente_modulo";
 
-$sql_conditions_base = ' WHERE tagente.id_agente = tagente_modulo.id_agente 
-		AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo AND tagente_modulo.id_tipo_modulo = ttipo_modulo.id_tipo AND tmodule.id_module = tagente_modulo.id_modulo';
-
-$sql_conditions = ' AND tagente.disabled = 0';
+$sql_conditions = ' WHERE tagente.disabled = 0';
 
 if (is_numeric($ag_group)) {
 	$id_ag_group = 0;
@@ -149,8 +158,7 @@ else if ($modulegroup > -1) {
 
 // Module name selector
 if ($ag_modulename != '') {
-	$sql_conditions .= sprintf (' AND tagente_modulo.nombre = \'%s\'',
-		$ag_modulename);
+	$sql_conditions .= " AND tagente_modulo.nombre LIKE '%" .$ag_modulename. "%'";
 }
 
 if ($module_option !== 0) {
@@ -261,8 +269,7 @@ if (!users_is_admin()) {
 }
 
 // Two modes of filter. All the filters and only ACLs filter
-$sql_conditions_all = $sql_conditions_base . $sql_conditions . $sql_conditions_group . $sql_conditions_tags . $sql_conditions_custom_fields;
-$sql_conditions_acl = $sql_conditions_base . $sql_conditions_group . $sql_conditions_tags . $sql_conditions_custom_fields;
+$sql_conditions_all = $sql_conditions . $sql_conditions_group . $sql_conditions_tags . $sql_conditions_custom_fields;
 
 // Get count to paginate
 if (!defined('METACONSOLE')) 
@@ -336,22 +343,16 @@ $table->data[0][5] = html_print_select($rows_select, 'modulegroup', $modulegroup
 $table->rowspan[0][6] = 2;
 $table->data[0][6] = html_print_submit_button (__('Show'), 'uptbutton',
 						false, 'class="sub search" style="margin-top:0px;"',true);
-$modules = array();
-$modules = modules_get_modules_name ($sql_from , $sql_conditions_acl, is_metaconsole());
 
 $table->data[1][0] = __('Module name');
-$table->data[1][1] = html_print_select (index_array ($modules, 'nombre', 'nombre'), 'ag_modulename',
-	$ag_modulename, '', __('All'), '', true, false, true, '', false, 'width: 150px;');
+$table->data[1][1] = html_print_autocomplete_modules('ag_modulename',
+	$ag_modulename, false, true, '', array(), true);
 
 $table->data[1][2] = __('Search');
 $table->data[1][3] = html_print_input_text ('ag_freestring', $ag_freestring, '', 20, 30, true);
 
-if (!is_metaconsole())
-	$table->data[1][4] = __('Tags') .
-		ui_print_help_tip(__('Only it is show tags in use.'), true);
-else
-	$table->data[1][4] = __('Tags') .
-		ui_print_help_tip(__('Only it is show tags in use.'), true);
+$table->data[1][4] = __('Tags') .
+	ui_print_help_tip(__('Only it is show tags in use.'), true);
 
 $tags = array();
 $tags = tags_get_user_tags();

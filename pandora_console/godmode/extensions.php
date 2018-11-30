@@ -151,10 +151,13 @@ $table->head[] = __("Login Function");
 $table->head[] = __("Agent operation tab");
 $table->head[] = __("Agent godmode tab");
 $table->head[] = __("Operation");
-
+/*
 $table->width = array();
 $table->width[] = '30%';
 $table->width[] = '30%';
+*/
+$table->width = '100%';
+$table->class = 'databox data';
 
 $table->align = array();
 $table->align[] = 'left';

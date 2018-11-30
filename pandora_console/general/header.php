@@ -72,37 +72,48 @@ config_check();
 				$table->width = "100%";
 				$table->styleTable = 'margin: auto; margin-top: 0px;';
 				$table->rowclass[0] = '';
-				$table->data[0][11] = ui_print_help_tip (__("Blank characters are used as AND conditions"), true);
-				// Search bar
-				$search_bar = '<form method="get" style="display: inline;" name="quicksearch" action="">';
-				if (!isset($config['search_keywords'])) {
-					$search_bar .= '<script type="text/javascript"> var fieldKeyWordEmpty = true; </script>';
+				
+				$acl_head_search = true;
+				if ($config["acl_enterprise"] == 1 && !users_is_admin()) {
+					$acl_head_search = db_get_sql("SELECT sec FROM tusuario 
+						INNER JOIN tusuario_perfil ON tusuario.id_user = tusuario_perfil.id_usuario 
+						INNER JOIN tprofile_view ON tprofile_view.id_profile = tusuario_perfil.id_perfil 
+						WHERE tusuario.id_user = '".$config['id_user']."' AND (sec = '*' OR sec = 'head_search')");
 				}
-				else {
-					if (strlen($config['search_keywords']) == 0)
+				if ($acl_head_search) {
+					$table->data[0][11] = ui_print_help_tip (__("Blank characters are used as AND conditions"), true);
+					
+					// Search bar
+					$search_bar = '<form method="get" style="display: inline;" name="quicksearch" action="">';
+					if (!isset($config['search_keywords'])) {
 						$search_bar .= '<script type="text/javascript"> var fieldKeyWordEmpty = true; </script>';
+					}
+					else {
+						if (strlen($config['search_keywords']) == 0)
+							$search_bar .= '<script type="text/javascript"> var fieldKeyWordEmpty = true; </script>';
+						else
+							$search_bar .= '<script type="text/javascript"> var fieldKeyWordEmpty = false; </script>';
+					}
+					
+					$search_bar .= '<input type="text" id="keywords" name="keywords"';
+					if (!isset($config['search_keywords']))
+						$search_bar .= "value='" . __("Enter keywords to search") . "'";
+					else if (strlen($config['search_keywords']) == 0)
+						$search_bar .= "value='" . __("Enter keywords to search") . "'";
 					else
-						$search_bar .= '<script type="text/javascript"> var fieldKeyWordEmpty = false; </script>';
+						$search_bar .= "value='" . $config['search_keywords'] . "'";
+					
+					$search_bar .= 'onfocus="javascript: if (fieldKeyWordEmpty) $(\'#keywords\').val(\'\');"
+						onkeyup="javascript: fieldKeyWordEmpty = false;"
+						style="margin-top:5px;" class="search_input" />';
+					
+					//$search_bar .= 'onClick="javascript: document.quicksearch.submit()"';
+					
+					$search_bar .= "<input type='hidden' name='head_search_keywords' value='abc' />";
+					$search_bar .= '</form>';
+					
+					$table->data[0]['searchbar'] = $search_bar;
 				}
-				
-				$search_bar .= '<input type="text" id="keywords" name="keywords"';
-				if (!isset($config['search_keywords']))
-					$search_bar .= "value='" . __("Enter keywords to search") . "'";
-				else if (strlen($config['search_keywords']) == 0)
-					$search_bar .= "value='" . __("Enter keywords to search") . "'";
-				else
-					$search_bar .= "value='" . $config['search_keywords'] . "'";
-				
-				$search_bar .= 'onfocus="javascript: if (fieldKeyWordEmpty) $(\'#keywords\').val(\'\');"
-					onkeyup="javascript: fieldKeyWordEmpty = false;"
-					style="margin-top:5px;" class="search_input" />';
-				
-				//$search_bar .= 'onClick="javascript: document.quicksearch.submit()"';
-				
-				$search_bar .= "<input type='hidden' name='head_search_keywords' value='abc' />";
-				$search_bar .= '</form>';
-				
-				$table->data[0]['searchbar'] = $search_bar;
 				
 				// Servers check
 				$servers = array();

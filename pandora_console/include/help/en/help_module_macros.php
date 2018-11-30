@@ -30,43 +30,43 @@
 	This macros can be used in module alerts.
 </p>
 
-<h2>Si el módulo es de tipo analisis de módulo web:</h2>
+<h2>IF THE MODULE IS A WEB MODULE ANALYSIS TYPE: </h2>
 
 <p>
-	Las macros dinámicas tendrán un formato especial que empieza por @ y tendrán estas posibles sustituciones:
+Dynamic macros will have a special format starting with @ and will have these possible substitutions:
 </p>
 <ol>
 	<li style="font-family: 'lato-bolder'; font-size: 12pt;">
-		@DATE_FORMAT (fecha/hora actual con formato definido por el usuario)
+		@DATE_FORMAT (current date/time with user-defined format)
 	</li>
 	<li style="font-family: 'lato-bolder'; font-size: 12pt;">
-		@DATE_FORMAT_nh (horas)
+		@DATE_FORMAT_nh (hours)
 	</li>
 	<li style="font-family: 'lato-bolder'; font-size: 12pt;">
-		@DATE_FORMAT_nm (minutos)
+		@DATE_FORMAT_nm (minutes)
 	</li>
 	<li style="font-family: 'lato-bolder'; font-size: 12pt;">
-		@DATE_FORMAT_nd (días)
+		@DATE_FORMAT_nd (days)
 	</li>
 	<li style="font-family: 'lato-bolder'; font-size: 12pt;">
-		@DATE_FORMAT_ns (segundos)
+		@DATE_FORMAT_ns (seconds)
 	</li>
 	<li style="font-family: 'lato-bolder'; font-size: 12pt;">
-		@DATE_FORMAT_nM (mes)
+		@DATE_FORMAT_nM (month)
 	</li>
 	<li style="font-family: 'lato-bolder'; font-size: 12pt;">
-		@DATE_FORMAT_nY (años)
+		@DATE_FORMAT_nY (years)
 	</li>
 </ol>
 <p>
-	Donde “n” puede ser un numero sin signo (positivo) o negativo.
+Where "n" can be a number without a sign (positive) or negative.
 </p>
 <p>
-	Y FORMAT sigue el standard de strftime de perl:
+And FORMAT follows the standard of perl's strftime:
 	http://search.cpan.org/~dexter/POSIX-strftime-GNU-0.02/lib/POSIX/strftime/GNU.pm
 </p>
 <p>
-	Ejemplos:
+	Examples:
 </p>
 <pre>
 	@DATE_%Y-%m-%d %H:%M:%S

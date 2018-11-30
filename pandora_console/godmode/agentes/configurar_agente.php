@@ -207,11 +207,6 @@ if ($create_agent) {
 		$agent_creation_error = __('No agent alias specified');
 		$agent_created_ok = 0;
 	}
-	/*elseif (agents_get_agent_id ($nombre_agente)) {
-		$agent_creation_error =
-			__('There is already an agent in the database with this name');
-		$agent_created_ok = 0;
-	}*/
 	else {
 		if($alias_as_name){
 			$sql = 'SELECT nombre FROM tagente WHERE nombre = "' . $alias . '"';
@@ -1777,13 +1772,15 @@ if (!empty($duplicate_module)) { // DUPLICATE agent module !
 // =====================
 if ($enable_module) {
 	$result = modules_change_disabled($enable_module, 0);
-	
+	$modulo_nombre = db_get_row_sql("SELECT nombre FROM tagente_modulo WHERE id_agente_modulo = ".$enable_module."");	
+	$modulo_nombre = $modulo_nombre['nombre'];
+
 	if ($result === NOERR) {	
 		enterprise_hook('config_agents_enable_module_conf', array($id_agente, $enable_module));
-		db_pandora_audit("Module management", 'Enable  ' . $enable_module);
+		db_pandora_audit("Module management", 'Enable #' . $enable_module . ' | ' . $modulo_nombre . ' | ' . $agent["alias"]);
 	}
 	else {
-		db_pandora_audit("Module management", 'Fail to enable ' . $enable_module);
+		db_pandora_audit("Module management", 'Fail to enable #' . $enable_module . ' | ' . $modulo_nombre . ' | ' . $agent["alias"]);
 	}
 	
 	ui_print_result_message ($result,
@@ -1792,13 +1789,15 @@ if ($enable_module) {
 
 if ($disable_module) {
 	$result = modules_change_disabled($disable_module, 1);
-	
+	$modulo_nombre = db_get_row_sql("SELECT nombre FROM tagente_modulo WHERE id_agente_modulo = ".$disable_module."");
+	$modulo_nombre = $modulo_nombre['nombre'];
+
 	if ($result === NOERR) {
 		enterprise_hook('config_agents_disable_module_conf', array($id_agente, $disable_module));
-		db_pandora_audit("Module management", 'Disable  ' . $disable_module);
+		db_pandora_audit("Module management", 'Disable #' . $disable_module . ' | ' . $modulo_nombre . ' | ' . $agent["alias"]);
 	}
 	else {
-		db_pandora_audit("Module management", 'Fail to disable ' . $disable_module);
+		db_pandora_audit("Module management", 'Fail to disable #' . $disable_module . ' | ' . $modulo_nombre . ' | ' . $agent["alias"]);
 	}
 	
 	ui_print_result_message ($result,
@@ -1944,7 +1943,7 @@ switch ($tab) {
 			
 			var aget_id_os = '<?php echo agents_get_os(modules_get_agentmodule_agent(get_parameter("id_agent_module"))); ?>';
 			
-			if('<?php echo modules_get_agentmodule_name(get_parameter("id_agent_module")); ?>' != $('#text-name').val() &&
+			if('<?php echo html_entity_decode(modules_get_agentmodule_name(get_parameter("id_agent_module"))); ?>' != $('#text-name').val() &&
 			 '<?php echo agents_get_os(modules_get_agentmodule_agent(get_parameter("id_agent_module"))); ?>' == 19){
 				
 				event.preventDefault();
@@ -1978,7 +1977,7 @@ switch ($tab) {
 			
 			var module_type_snmp =  '<?php echo modules_get_agentmodule_type(get_parameter("id_agent_module")); ?>';
 			
-			if('<?php echo modules_get_agentmodule_name(get_parameter("id_agent_module")); ?>' != $('#text-name').val() && (
+			if('<?php echo html_entity_decode(modules_get_agentmodule_name(get_parameter("id_agent_module"))); ?>' != $('#text-name').val() && (
 				module_type_snmp == 15 || module_type_snmp == 16 || module_type_snmp == 17 || module_type_snmp == 18)){
 					
 					event.preventDefault();

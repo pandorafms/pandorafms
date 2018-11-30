@@ -92,8 +92,8 @@ echo '<div id="login_id_dialog" title="' .
 
 		if ($zone_selected == "") {
 			if ($config["timezone"] != "") {
-				list($zone) = explode("/", $config["timezone"]);
-				$zone_selected = $zone;
+				$zone_array = explode("/", $config["timezone"]);
+				$zone_selected = $zone_array[0];
 			}
 			else {
 				$zone_selected = 'Europe';
@@ -102,7 +102,7 @@ echo '<div id="login_id_dialog" title="' .
 
 		$timezones = timezone_identifiers_list();
 		foreach ($timezones as $timezone) {
-			if (strpos($timezone, $zone_selected) !== false) { 
+			if (strpos($timezone, $zone_selected) !== false) {
 				$timezone_country = preg_replace('/^.*\//', '', $timezone);
 				$timezone_n[$timezone] = $timezone_country;
 			}
@@ -195,8 +195,9 @@ $("#language").click(function () {
 			{"page": "general/login_required",
 			"change_language": change_language},
 			function (data) {}
-		);
-	location.reload();
+	).done(function () {
+		location.reload();
+	});
 });
 
 ////////////////////////////////////////////////////////////////////////

@@ -1203,17 +1203,17 @@ function visual_map_print_item($mode = "read", $layoutData,
 					if ($layoutData['label_position']=='left') {
 						if ($layoutData['type_graph'] == 'horizontal') {
 							$img = '<div style="float:right;height:'.$himg.'px;">'.
-								hbar_graph(true, $module_data,
+								hbar_graph($module_data,
 								400, 400, $color, array(), array(),
-								ui_get_full_url("images/image_problem.opaque.png", false, false, false),
+								ui_get_full_url("images/image_problem_area.png", false, false, false),
 								"", "", $water_mark, $config['fontpath'], 6,
 								"", 0, $config['homeurl'], $layoutData['image'], $layoutData['border_color']) . '</div>';
 						}
 						else {
 							$img = '<div style="float:right;height:'.$himg.'px;">'. 
-								vbar_graph(true, $module_data,
+								vbar_graph($module_data,
 								400, 400, $color, array(), array(),
-								ui_get_full_url("images/image_problem.opaque.png", false, false, false),
+								ui_get_full_url("images/image_problem_area.png", false, false, false),
 								"", "", $water_mark, $config['fontpath'], 6,
 								"", 0, $config['homeurl'], $layoutData['image'], true, false, $layoutData['border_color']) . '</div>';
 						}
@@ -1221,33 +1221,33 @@ function visual_map_print_item($mode = "read", $layoutData,
 					elseif($layoutData['label_position']=='right') {
 						if ($layoutData['type_graph'] == 'horizontal') {
 							$img = '<div style="float:left;height:'.$himg.'px;">'.
-								hbar_graph(true, $module_data,
+								hbar_graph($module_data,
 								400, 400, $color, array(), array(),
-								ui_get_full_url("images/image_problem.opaque.png", false, false, false),
+								ui_get_full_url("images/image_problem_area.png", false, false, false),
 								"", "", $water_mark, $config['fontpath'], 6,
 								"", 0, $config['homeurl'], $layoutData['image'], $layoutData['border_color']) . '</div>';
 						}
 						else {
 							$img = '<div style="float:left;height:'.$himg.'px;">'. 
-								vbar_graph(true, $module_data,
+								vbar_graph($module_data,
 								400, 400, $color, array(), array(),
-								ui_get_full_url("images/image_problem.opaque.png", false, false, false),
+								ui_get_full_url("images/image_problem_area.png", false, false, false),
 								"", "", $water_mark, $config['fontpath'], 6,
 								"", 0, $config['homeurl'], $layoutData['image'], true, false, $layoutData['border_color']) . '</div>';
 						}
 					}
 					else {
 						if ($layoutData['type_graph'] == 'horizontal') {
-							$img = hbar_graph(true, $module_data,
+							$img = hbar_graph($module_data,
 								400, 400, $color, array(), array(),
-								ui_get_full_url("images/image_problem.opaque.png", false, false, false),
+								ui_get_full_url("images/image_problem_area.png", false, false, false),
 								"", "", $water_mark, $config['fontpath'], 6,
 								"", 0, $config['homeurl'], $layoutData['image'], $layoutData['border_color']);
 						}
 						else {
-							$img = vbar_graph(true, $module_data,
+							$img = vbar_graph($module_data,
 								400, 400, $color, array(), array(),
-								ui_get_full_url("images/image_problem.opaque.png", false, false, false),
+								ui_get_full_url("images/image_problem_area.png", false, false, false),
 								"", "", $water_mark, $config['fontpath'], 6,
 								"", 0, $config['homeurl'], $layoutData['image'], true, false, $layoutData['border_color']);
 						}
@@ -1257,17 +1257,17 @@ function visual_map_print_item($mode = "read", $layoutData,
 					if ($layoutData['label_position']=='left') {
 						if ($layoutData['type_graph'] == 'horizontal') {
 							$img = '<div style="float:right;height:'.$himg.'px;">'.
-								hbar_graph(true, $module_data,
+								hbar_graph($module_data,
 								$width, $height, $color, array(), array(),
-								ui_get_full_url("images/image_problem.opaque.png", false, false, false),
+								ui_get_full_url("images/image_problem_area.png", false, false, false),
 								"", "", $water_mark, $config['fontpath'], 6,
 								"", 0, $config['homeurl'], $layoutData['image'], $layoutData['border_color']) . '</div>';
 						}
 						else {
 							$img = '<div style="float:right;height:'.$himg.'px;">'. 
-								vbar_graph(true, $module_data,
+								vbar_graph($module_data,
 								$width, $height, $color, array(), array(),
-								ui_get_full_url("images/image_problem.opaque.png", false, false, false),
+								ui_get_full_url("images/image_problem_area.png", false, false, false),
 								"", "", $water_mark, $config['fontpath'], 6,
 								"", 0, $config['homeurl'], $layoutData['image'], true, false, $layoutData['border_color']) . '</div>';
 						}
@@ -1275,33 +1275,33 @@ function visual_map_print_item($mode = "read", $layoutData,
 					elseif($layoutData['label_position']=='right') {
 						if ($layoutData['type_graph'] == 'horizontal') {
 							$img = '<div style="float:left;height:'.$himg.'px;">'.
-								hbar_graph(true, $module_data,
+								hbar_graph($module_data,
 								$width, $height, $color, array(), array(),
-								ui_get_full_url("images/image_problem.opaque.png", false, false, false),
+								ui_get_full_url("images/image_problem_area.png", false, false, false),
 								"", "", $water_mark, $config['fontpath'], 6,
 								"", 0, $config['homeurl'], $layoutData['image'], $layoutData['border_color']) . '</div>';
 						}
 						else {
 							$img = '<div style="float:left;height:'.$himg.'px;">'. 
-								vbar_graph(true, $module_data,
+								vbar_graph($module_data,
 								$width, $height, $color, array(), array(),
-								ui_get_full_url("images/image_problem.opaque.png", false, false, false),
+								ui_get_full_url("images/image_problem_area.png", false, false, false),
 								"", "", $water_mark, $config['fontpath'], 6,
 								"", 0, $config['homeurl'], $layoutData['image'], true, false, $layoutData['border_color']) . '</div>';
 						}
 					}
 					else {
 						if ($layoutData['type_graph'] == 'horizontal') {
-							$img = hbar_graph(true, $module_data,
+							$img = hbar_graph($module_data,
 								$width, $height, $color, array(), array(),
-								ui_get_full_url("images/image_problem.opaque.png", false, false, false),
+								ui_get_full_url("images/image_problem_area.png", false, false, false),
 								"", "", $water_mark, $config['fontpath'], 6,
 								"", 0, $config['homeurl'], $layoutData['image'], $layoutData['border_color']);
 						}
 						else {
-							$img = vbar_graph(true, $module_data,
+							$img = vbar_graph($module_data,
 								$width, $height, $color, array(), array(),
-								ui_get_full_url("images/image_problem.opaque.png", false, false, false),
+								ui_get_full_url("images/image_problem_area.png", false, false, false),
 								"", "", $water_mark, $config['fontpath'], 6,
 								"", 0, $config['homeurl'], $layoutData['image'], true, false, $layoutData['border_color']);
 						}
@@ -1437,88 +1437,37 @@ function visual_map_print_item($mode = "read", $layoutData,
 					}
 				}
 				else{
-					if ($layoutData['id_metaconsole'] != 0) {
-						
-						if($layoutData['clock_animation'] == 'analogic_1'){
-							$img =  '<img src="../../images/console/signes/clock.png" style="width:'.$width.'px;height:'.	($width+40).'px;">';
-						}
-						else{
-							
-							if($layoutData['time_format'] == 'time'){
-								$img =  '<img src="../../images/console/signes/digital-clock.png" style="width:'.$width.'px;height:'.	(($width/3.9)+20).'px;">';
-							}
-							else{
-								$img =  '<img src="../../images/console/signes/digital-clock.png" style="width:'.$width.'px;height:'.	(($width/3.9)+40).'px;">';
-							}
-						
-						}
-						
+					$image_prefix = ($layoutData['id_metaconsole'] != 0) ? "../../" : "";
+					if($layoutData['clock_animation'] == 'analogic_1'){
+						$img =  '<img src="' . $image_prefix . 'images/console/signes/clock.png" style="width:'.$width.'px;height:'.	($width+40).'px;">';
 					}
 					else{
-						if($layoutData['clock_animation'] == 'analogic_1'){
-							$img =  '<img src="images/console/signes/clock.png" style="width:'.$width.'px;height:'.	($width+40).'px;">';
-						}
-						else{							
-								if($layoutData['time_format'] == 'time'){
-									$img =  '<img src="images/console/signes/digital-clock.png" style="width:'.$width.'px;height:'.	(($width/3.9)+20).'px;">';
-								}
-								else{
-									$img =  '<img src="images/console/signes/digital-clock.png" style="width:'.$width.'px;height:'.	(($width/3.9)+40).'px;">';
-								}
-						}
+						$height_offset = ($layoutData['time_format'] == 'time') ? 20 : 40;
+						$img =  '<img src="' . $image_prefix . 'images/console/signes/digital-clock.png" style="width:'.$width.'px;height:'.	(($width/3.9)+$height_offset).'px;">';
 					}
 				}
 			}
 			else{
 				if($layoutData['clock_animation'] == 'analogic_1'){
-					
-					if ($width == 0) {
-						if ($layoutData['label_position']=='left') {
-							$img = '<div id="clock_'.$layoutData['id'].'" style="z-index:'.$show_on_top_index.';float:right;height:'.$himg.'px;">' .print_clock_analogic_1 ($layoutData['time_format'], $layoutData['timezone'],$layoutData['clock_animation'],$layoutData['width'],$layoutData['height'],$layoutData['id'],$layoutData['fill_color']).'</div>';
-						}
-						elseif ($layoutData['label_position']=='right') {
-							$img = '<div id="clock_'.$layoutData['id'].'" style="z-index:'.$show_on_top_index.';float:left;height:'.$himg.'px;">' . print_clock_analogic_1 ($layoutData['time_format'], $layoutData['timezone'],$layoutData['clock_animation'],$layoutData['width'],$layoutData['height'],$layoutData['id'],$layoutData['fill_color']).'</div>';
-						}
-						else {
-							$img = '<div id="clock_'.$layoutData['id'].'" style="z-index:'.$show_on_top_index.';height:'.$himg.'px;">' . print_clock_analogic_1 ($layoutData['time_format'], $layoutData['timezone'],$layoutData['clock_animation'],$layoutData['width'],$layoutData['height'],$layoutData['id'],$layoutData['fill_color']).'</div>';
-						}
+					if ($layoutData['label_position']=='left') {
+						$img = '<div id="clock_'.$layoutData['id'].'" style="z-index:'.$show_on_top_index.';float:right;height:'.$himg.'px;margin-bottom:15px;">' . print_clock_analogic_1 ($layoutData['time_format'], $layoutData['timezone'],$layoutData['clock_animation'],$layoutData['width'],$layoutData['height'],$layoutData['id'],$layoutData['fill_color']).'</div>';
 					}
-					else{
-						if ($layoutData['label_position']=='left') {
-							$img = '<div id="clock_'.$layoutData['id'].'" style="z-index:'.$show_on_top_index.';float:right;height:'.$himg.'px;">' . print_clock_analogic_1 ($layoutData['time_format'], $layoutData['timezone'],$layoutData['clock_animation'],$layoutData['width'],$layoutData['height'],$layoutData['id'],$layoutData['fill_color']).'</div>';
-						}
-						elseif ($layoutData['label_position']=='right') {
-							$img = '<div id="clock_'.$layoutData['id'].'" style="z-index:'.$show_on_top_index.';float:left;height:'.$himg.'px;">' .print_clock_analogic_1 ($layoutData['time_format'], $layoutData['timezone'],$layoutData['clock_animation'],$layoutData['width'],$layoutData['height'],$layoutData['id'],$layoutData['fill_color']).'</div>';
-						}
-						else {
-							$img ='<div id="clock_'.$layoutData['id'].'" style="z-index:'.$show_on_top_index.';height:'.$himg.'px;">' .  print_clock_analogic_1 ($layoutData['time_format'], $layoutData['timezone'],$layoutData['clock_animation'],$layoutData['width'],$layoutData['height'],$layoutData['id'],$layoutData['fill_color']).'</div>';
-						}
+					elseif ($layoutData['label_position']=='right') {
+						$img = '<div id="clock_'.$layoutData['id'].'" style="z-index:'.$show_on_top_index.';float:left;height:'.$himg.'px;margin-bottom:15px;">' . print_clock_analogic_1 ($layoutData['time_format'], $layoutData['timezone'],$layoutData['clock_animation'],$layoutData['width'],$layoutData['height'],$layoutData['id'],$layoutData['fill_color']).'</div>';
 					}
-					
+					else {
+						$img = '<div id="clock_'.$layoutData['id'].'" style="z-index:'.$show_on_top_index.';height:'.$himg.'px;margin-bottom:15px;">' . print_clock_analogic_1 ($layoutData['time_format'], $layoutData['timezone'],$layoutData['clock_animation'],$layoutData['width'],$layoutData['height'],$layoutData['id'],$layoutData['fill_color']).'</div>';
+					}
 				}
 				elseif($layoutData['clock_animation'] == 'digital_1'){
-					
-					if ($width == 0) {
-						if ($layoutData['label_position']=='left') {
-							$img = '<div id="clock_'.$layoutData['id'].'" style="z-index:'.$show_on_top_index.';float:right;height:'.$himg.'px;">' .print_clock_digital_1 ($layoutData['time_format'], $layoutData['timezone'],$layoutData['clock_animation'],$layoutData['width'],$layoutData['height'],$layoutData['id'],$layoutData['fill_color']).'</div>';
-						}
-						elseif ($layoutData['label_position']=='right') {
-							$img = '<div id="clock_'.$layoutData['id'].'" style="z-index:'.$show_on_top_index.';float:left;height:'.$himg.'px;">' . print_clock_digital_1 ($layoutData['time_format'], $layoutData['timezone'],$layoutData['clock_animation'],$layoutData['width'],$layoutData['height'],$layoutData['id'],$layoutData['fill_color']).'</div>';
-						}
-						else {
-							$img = '<div id="clock_'.$layoutData['id'].'" style="z-index:'.$show_on_top_index.';height:'.$himg.'px;">' . print_clock_digital_1 ($layoutData['time_format'], $layoutData['timezone'],$layoutData['clock_animation'],$layoutData['width'],$layoutData['height'],$layoutData['id'],$layoutData['fill_color']).'</div>';
-						}
+					if ($layoutData['label_position']=='left') {
+						$img = '<div id="clock_'.$layoutData['id'].'" style="z-index:'.$show_on_top_index.';float:right;height:'.$himg.'px;">' . print_clock_digital_1 ($layoutData['time_format'], $layoutData['timezone'],$layoutData['clock_animation'],$layoutData['width'],$layoutData['height'],$layoutData['id'],$layoutData['fill_color']).'</div>';
 					}
-					else{
-						if ($layoutData['label_position']=='left') {
-							$img = '<div id="clock_'.$layoutData['id'].'" style="z-index:'.$show_on_top_index.';float:right;height:'.$himg.'px;">' . print_clock_digital_1 ($layoutData['time_format'], $layoutData['timezone'],$layoutData['clock_animation'],$layoutData['width'],$layoutData['height'],$layoutData['id'],$layoutData['fill_color']).'</div>';
-						}
-						elseif ($layoutData['label_position']=='right') {
-							$img = '<div id="clock_'.$layoutData['id'].'" style="z-index:'.$show_on_top_index.';float:left;height:'.$himg.'px;">' .print_clock_digital_1 ($layoutData['time_format'], $layoutData['timezone'],$layoutData['clock_animation'],$layoutData['width'],$layoutData['height'],$layoutData['id'],$layoutData['fill_color']).'</div>';
-						}
-						else {
-							$img ='<div id="clock_'.$layoutData['id'].'" style="z-index:'.$show_on_top_index.';height:'.$himg.'px;">' .  print_clock_digital_1 ($layoutData['time_format'], $layoutData['timezone'],$layoutData['clock_animation'],$layoutData['width'],$layoutData['height'],$layoutData['id'],$layoutData['fill_color']).'</div>';
-						}
+					elseif ($layoutData['label_position']=='right') {
+						$img = '<div id="clock_'.$layoutData['id'].'" style="z-index:'.$show_on_top_index.';float:left;height:'.$himg.'px;">' .print_clock_digital_1 ($layoutData['time_format'], $layoutData['timezone'],$layoutData['clock_animation'],$layoutData['width'],$layoutData['height'],$layoutData['id'],$layoutData['fill_color']).'</div>';
+					}
+					else {
+						$img ='<div id="clock_'.$layoutData['id'].'" style="z-index:'.$show_on_top_index.';height:'.$himg.'px;">' .  print_clock_digital_1 ($layoutData['time_format'], $layoutData['timezone'],$layoutData['clock_animation'],$layoutData['width'],$layoutData['height'],$layoutData['id'],$layoutData['fill_color']).'</div>';
 					}
 				}
 			}
@@ -1530,7 +1479,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 						$img =  '<img src="../../images/console/signes/module-events.png">';
 					}
 					else{
-						$img =  '<img src="images/console/signes/module-events.png">';	
+						$img =  '<img src="images/console/signes/module-events.png">';
 					}
 				}
 				else{
@@ -1545,28 +1494,28 @@ function visual_map_print_item($mode = "read", $layoutData,
 			else {
 				if ($width == 0 || $height == 0) {
 					if ($layoutData['label_position']=='left') {
-						$img = '<div style="z-index:'.$show_on_top_index.';float:left;height:'.$himg.'px;">' .graph_graphic_moduleevents ($layoutData['id_agent'], $layoutData['id_agente_modulo'], 500, 50, $layoutData['period'], '', true).'</div>';
+						$img = '<div style="z-index:'.$show_on_top_index.';float:left;height:'.$himg.'px;width:500px;">' .graph_graphic_moduleevents ($layoutData['id_agent'], $layoutData['id_agente_modulo'], 500, 50, $layoutData['period'], '', true).'</div>';
 					}
 					elseif ($layoutData['label_position']=='right') {
-						$img = '<div style="z-index:'.$show_on_top_index.';float:right;height:'.$himg.'px;">' . graph_graphic_moduleevents ($layoutData['id_agent'], $layoutData['id_agente_modulo'], 500, 50, $layoutData['period'], '', true).'</div>';
+						$img = '<div style="z-index:'.$show_on_top_index.';float:right;height:'.$himg.'px;width:500px;">' . graph_graphic_moduleevents ($layoutData['id_agent'], $layoutData['id_agente_modulo'], 500, 50, $layoutData['period'], '', true).'</div>';
 					}
 					else {
-						$img = graph_graphic_moduleevents ($layoutData['id_agent'], $layoutData['id_agente_modulo'], 500, 50, $layoutData['period'], '', true);
+						$img = '<div style="width:500px;">' . graph_graphic_moduleevents ($layoutData['id_agent'], $layoutData['id_agente_modulo'], 500, 50, $layoutData['period'], '', true).'</div>';
 					}
 				}
 				else{
 					if ($layoutData['label_position']=='left') {
-						$img = '<div style="z-index:'.$show_on_top_index.';float:left;height:'.$himg.'px;">' . graph_graphic_moduleevents ($layoutData['id_agent'], $layoutData['id_agente_modulo'], $width, $height, $layoutData['period'], '', true).'</div>';
+						$img = '<div style="z-index:'.$show_on_top_index.';float:left;height:'.$himg.'px;width:500px;">' . graph_graphic_moduleevents ($layoutData['id_agent'], $layoutData['id_agente_modulo'], $width, $height, $layoutData['period'], '', true).'</div>';
 					}
 					elseif ($layoutData['label_position']=='right') {
-						$img = '<div style="z-index:'.$show_on_top_index.';float:right;height:'.$himg.'px;">' .graph_graphic_moduleevents ($layoutData['id_agent'], $layoutData['id_agente_modulo'], $width, $height, $layoutData['period'], '', true).'</div>';
+						$img = '<div style="z-index:'.$show_on_top_index.';float:right;height:'.$himg.'px;width:500px;">' .graph_graphic_moduleevents ($layoutData['id_agent'], $layoutData['id_agente_modulo'], $width, $height, $layoutData['period'], '', true).'</div>';
 					}
 					else {
-						$img = graph_graphic_moduleevents ($layoutData['id_agent'], $layoutData['id_agente_modulo'], $width, $height, $layoutData['period'], '', true);
+						$img = '<div style="width:500px;">' . graph_graphic_moduleevents ($layoutData['id_agent'], $layoutData['id_agente_modulo'], $width, $height, $layoutData['period'], '', true).'</div>';
 					}
 				}
 			}
-		
+
 			//Restore db connection
 			if ($layoutData['id_metaconsole'] != 0) {
 				metaconsole_restore_db();
@@ -1575,7 +1524,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 			$z_index = 2 + 1;
 			break;
 	}
-	
+
 	$class = "item ";
 	switch ($type) {
 		case STATIC_GRAPH:
@@ -1684,78 +1633,11 @@ function visual_map_print_item($mode = "read", $layoutData,
 			break;
 		case STATIC_GRAPH:
 		case GROUP_ITEM:
-		
-		
-		if (! defined ('METACONSOLE')) {
-		}
-		else {
-			// For each server defined and not disabled:
-			$servers = db_get_all_rows_sql ('SELECT *
-				FROM tmetaconsole_setup
-				WHERE disabled = 0');
-			if ($servers === false)
-				$servers = array();
-			
-			$result = array();
-			$count_modules = 0;
-			foreach ($servers as $server) {
-				// If connection was good then retrieve all data server
-				if (metaconsole_connect($server) == NOERR)
-					$connection = true;
-				else
-					$connection = false;
-				 
-				$result_server = db_get_all_rows_sql ($sql);
-				
-				if (!empty($result_server)) {
-					
-					// Create HASH login info
-					$pwd = $server['auth_token'];
-					$auth_serialized = json_decode($pwd,true);
-					
-					if (is_array($auth_serialized)) {
-						$pwd = $auth_serialized['auth_token'];
-						$api_password = $auth_serialized['api_password'];
-						$console_user = $auth_serialized['console_user'];
-						$console_password = $auth_serialized['console_password'];
-					}
-					
-					$user = $config['id_user'];
-					$user_rot13 = str_rot13($config['id_user']);
-					$hashdata = $user.$pwd;
-					$hashdata = md5($hashdata);
-					$url_hash = '&' .
-						'loginhash=auto&' .
-						'loginhash_data=' . $hashdata . '&' .
-						'loginhash_user=' . $user_rot13;
-					
-					foreach ($result_server as $result_element_key => $result_element_value) {
-						
-						$result_server[$result_element_key]['server_id'] = $server['id'];
-						$result_server[$result_element_key]['server_name'] = $server['server_name'];
-						$result_server[$result_element_key]['server_url'] = $server['server_url'].'/';
-						$result_server[$result_element_key]['hashdata'] = $hashdata;
-						$result_server[$result_element_key]['user'] = $config['id_user'];
-						
-						$count_modules++;
-						
-					}
-					
-					$result = array_merge($result, $result_server);
-				}
-				
-				if ($connection) {
-					metaconsole_restore_db();
-				}
-			}
-		}
-		
 			if (($layoutData['image'] != null && $layoutData['image'] != 'none') || $layoutData['show_statistics'] == 1) {
 						
 				$img_style_title = strip_tags($label);
 				if ($layoutData['type'] == STATIC_GRAPH) {
 					if ($layoutData['id_agente_modulo'] != 0) {
-						
 						if ($layoutData['id_metaconsole'] != 0) {
 							//Metaconsole db connection
 							$connection = db_get_row_filter ('tmetaconsole_setup',
@@ -1831,83 +1713,84 @@ function visual_map_print_item($mode = "read", $layoutData,
 				else if($layoutData['label_position']=='right'){
 					$imgpos = 'float:left';
 				}
-				
 				$varsize = getimagesize($config['homedir'] . '/' . $img);
-				
-				
-				if($layoutData['show_statistics'] == 1){
-					
+
+				if($layoutData['show_statistics'] == 1) {
 					if (get_parameter('action') == 'edit') {
-								
 						if ($width == 0 || $height == 0) {
-							
-						 echo '<img id="image_'.$id.'" src="images/console/signes/group_status.png" style="width:520px;height:80px;'.$imgpos.'">';
+							echo '<img id="image_'.$id.'" src="images/console/signes/group_status.png" style="width:520px;height:80px;'.$imgpos.'">';
 						}
 						else{
-						 echo '<img id="image_'.$id.'" src="images/console/signes/group_status.png" style="width:'.$width.'px;height:'.$height.'px;'.$imgpos.'">';
+							echo '<img id="image_'.$id.'" src="images/console/signes/group_status.png" style="width:'.$width.'px;height:'.$height.'px;'.$imgpos.'">';
 						}
-						
 					}
 					else{
-						
-							$agents_critical = agents_get_agents(array (
-										'disabled' => 0,
-										'id_grupo' => $layoutData['id_group'],
-										'status' => AGENT_STATUS_CRITICAL),
-										array ('COUNT(*) as total'), 'AR', false);
-						
-							$agents_warning = agents_get_agents(array (
-										'disabled' => 0,
-										'id_grupo' => $layoutData['id_group'],
-										'status' => AGENT_STATUS_WARNING),
-										array ('COUNT(*) as total'), 'AR', false);
-										
-							$agents_unknown = agents_get_agents(array (
-											'disabled' => 0,
-											'id_grupo' => $layoutData['id_group'],
-											'status' => AGENT_STATUS_UNKNOWN),
-											array ('COUNT(*) as total'), 'AR', false);
-														
-							$agents_ok = agents_get_agents(array (
-											'disabled' => 0,
-											'id_grupo' => $layoutData['id_group'],
-											'status' => AGENT_STATUS_OK),
-											array ('COUNT(*) as total'), 'AR', false);
-											
-						 $total_agents = $agents_critical[0]['total'] + $agents_warning[0]['total'] + $agents_unknown[0]['total'] + $agents_ok[0]['total'];
-						 
-						 $stat_agent_ok = $agents_ok[0]['total']/$total_agents*100;
-						 $stat_agent_wa = $agents_warning[0]['total']/$total_agents*100;
-						 $stat_agent_cr = $agents_critical[0]['total']/$total_agents*100;
-						 $stat_agent_un = $agents_unknown[0]['total']/$total_agents*100;
-							
-							if($width == 0 || $height == 0){
-								$dyn_width = 520;			
-								$dyn_height = 80;
-							}
-							else{
-								$dyn_width = $width;			
-								$dyn_height = $height;
-							}
-							
-							
-							echo '<table cellpadding="0" cellspacing="0" border="0" class="databox" style="width:'.$dyn_width.'px;height:'.$dyn_height.'px;text-align:center;';
-							
-							if($layoutData['label_position'] == 'left'){
-								echo "float:right;";
-							}
-							elseif ($layoutData['label_position'] == 'right') {
-								echo "float:left;";
-							}
-							
-							echo '">';
-								
-								echo "<tr style='height:10%;'>";
-									echo "<th style='text-align:center;background-color:#9d9ea0;color:black;font-weight:bold;'>" .groups_get_name($layoutData['id_group'],true) . "</th>";
-								
-								echo "</tr>";
-								echo "<tr style='background-color:whitesmoke;height:90%;'>";
-									echo "<td>";
+						$agents_critical = agents_get_agents(
+							array (
+								'disabled' => 0,
+								'id_grupo' => $layoutData['id_group'],
+								'status' => AGENT_STATUS_CRITICAL
+							),
+							array ('COUNT(*) as total'),
+							'AR',
+							false
+						);
+						$agents_warning = agents_get_agents(
+							array (
+								'disabled' => 0,
+								'id_grupo' => $layoutData['id_group'],
+								'status' => AGENT_STATUS_WARNING
+							),
+							array ('COUNT(*) as total'),
+							'AR',
+							false
+						);
+						$agents_unknown = agents_get_agents(
+							array (
+								'disabled' => 0,
+								'id_grupo' => $layoutData['id_group'],
+								'status' => AGENT_STATUS_UNKNOWN
+							),
+							array ('COUNT(*) as total'),
+							'AR',
+							false
+						);
+						$agents_ok = agents_get_agents(
+							array (
+								'disabled' => 0,
+								'id_grupo' => $layoutData['id_group'],
+								'status' => AGENT_STATUS_OK
+							),
+							array ('COUNT(*) as total'),
+							'AR',
+							false
+						);
+						$total_agents = $agents_critical[0]['total'] + $agents_warning[0]['total'] + $agents_unknown[0]['total'] + $agents_ok[0]['total'];
+						$stat_agent_ok = $agents_ok[0]['total']/$total_agents*100;
+						$stat_agent_wa = $agents_warning[0]['total']/$total_agents*100;
+						$stat_agent_cr = $agents_critical[0]['total']/$total_agents*100;
+						$stat_agent_un = $agents_unknown[0]['total']/$total_agents*100;
+						if($width == 0 || $height == 0){
+							$dyn_width = 520;
+							$dyn_height = 80;
+						} else {
+							$dyn_width = $width;
+							$dyn_height = $height;
+						}
+						echo '<table cellpadding="0" cellspacing="0" border="0" class="databox" style="width:'.$dyn_width.'px;height:'.$dyn_height.'px;text-align:center;';
+						if($layoutData['label_position'] == 'left'){
+							echo "float:right;";
+						}
+						elseif ($layoutData['label_position'] == 'right') {
+							echo "float:left;";
+						}
+
+						echo '">';
+							echo "<tr style='height:10%;'>";
+								echo "<th style='text-align:center;background-color:#9d9ea0;color:black;font-weight:bold;'>" .groups_get_name($layoutData['id_group'],true) . "</th>";
+							echo "</tr>";
+							echo "<tr style='background-color:whitesmoke;height:90%;'>";
+								echo "<td>";
 									echo "<div style='margin-left:2%;color: #FFF;font-size: 12px;display:inline;background-color:#FC4444;position:relative;height:80%;width:9.4%;height:80%;border-radius:2px;text-align:center;padding:5px;'>". remove_right_zeros(number_format($stat_agent_cr, 2)) ."%</div>";
 									echo "<div style='background-color:white;color: black ;font-size: 12px;display:inline;position:relative;height:80%;width:9.4%;height:80%;border-radius:2px;text-align:center;padding:5px;'>Critical</div>";
 									echo "<div style='margin-left:2%;color: #FFF;font-size: 12px;display:inline;background-color:#f8db3f;position:relative;height:80%;width:9.4%;height:80%;border-radius:2px;text-align:center;padding:5px;'>". remove_right_zeros(number_format($stat_agent_wa, 2)) ."%</div>";
@@ -1916,68 +1799,38 @@ function visual_map_print_item($mode = "read", $layoutData,
 									echo "<div style='background-color:white;color: black ;font-size: 12px;display:inline;position:relative;height:80%;width:9.4%;height:80%;border-radius:2px;text-align:center;padding:5px;'>Normal</div>";
 									echo "<div style='margin-left:2%;color: #FFF;font-size: 12px;display:inline;background-color:#9d9ea0;position:relative;height:80%;width:9.4%;height:80%;border-radius:2px;text-align:center;padding:5px;'>". remove_right_zeros(number_format($stat_agent_un, 2)) ."%</div>";
 									echo "<div style='background-color:white;color: black ;font-size: 12px;display:inline;position:relative;height:80%;width:9.4%;height:80%;border-radius:2px;text-align:center;padding:5px;'>Unknown</div>";
-									
-									echo "</td>";
-								echo "</tr>";
-							echo "</table>";
-						
-						
+								echo "</td>";
+							echo "</tr>";
+						echo "</table>";
 					}
-		
-				}
-				else{
-				
+				} else {
+					$options = array(
+						"class" => "image",
+						"id" => "image_" . $id,
+						"title" => $img_style_title,
+						"style" => $borderStyle.$imgpos
+					);
 					if ($width == 0 || $height == 0) {
 						if($varsize[0] > 150 || $varsize[1] > 150){
-							echo html_print_image($img, true,
-							array("class" => "image",
-							"id" => "image_" . $id,
-							"width" => "70px",
-							"height" => "70px",
-							"title" => $img_style_title,
-							"style" => $borderStyle.$imgpos), false,
-							false, false, $isExternalLink);
-						}
-						else{
-							echo html_print_image($img, true,
-							array("class" => "image",
-							"id" => "image_" . $id,
-							"title" => $img_style_title,
-							"style" => $borderStyle.$imgpos), false,
-							false, false, $isExternalLink);
+							$options['width'] = "70px";
+							$options['height'] = "70px";
 						}
 					}
 					else{
-					echo html_print_image($img, true,
-						array("class" => "image",
-							"id" => "image_" . $id,
-							"width" => $width,
-							"height" => $height,
-							"title" => $img_style_title,
-							"style" => $borderStyle.$imgpos), false,
-							false, false, $isExternalLink);
+						$options['width'] = $width;
+						$options['height'] = $height;
 					}
-			
+					echo html_print_image($img, true, $options,
+						false, false, false, $isExternalLink);
 				}
-					
 			}
-			
-			if($layoutData['label_position']=='down'){
-				echo io_safe_output($text);
-			}			
-			else if($layoutData['label_position']=='left' || $layoutData['label_position']=='right'){
+
+			if ($layoutData['label_position'] != 'up') {
 				echo io_safe_output($text);
 			}
-			
-			if (! defined ('METACONSOLE')) {
-			}
-			else {
-				metaconsole_restore_db();
-			}
-				
-			
-			break;
-		
+
+			if (is_metaconsole()) metaconsole_restore_db();
+		break;
 		case PERCENTILE_BAR:
 			if (($layoutData['image'] == 'value') && ($value_text !== false)) {
 				$unit_text = db_get_sql ('SELECT unit
@@ -2014,6 +1867,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 			}
 			
 			echo $img;
+			echo io_safe_output($text);
 			
 		break;
 		case PERCENTILE_BUBBLE:
@@ -2057,6 +1911,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 			}
 			
 			echo $img;
+			echo io_safe_output($text);
 			
 			break;
 		case CIRCULAR_PROGRESS_BAR:
@@ -2100,6 +1955,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 			}
 
 			echo $img;
+			echo io_safe_output($text);
 			
 			break;
 		case CIRCULAR_INTERIOR_PROGRESS_BAR:
@@ -2144,6 +2000,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 			}
 			
 			echo $img;
+			echo io_safe_output($text);
 			
 			break;
 		case MODULE_GRAPH:
@@ -2333,11 +2190,9 @@ function visual_map_print_item($mode = "read", $layoutData,
 	if ($layoutData['parent_item'] != 0) {
 		$parent = db_get_row_filter('tlayout_data',
 			array('id' => $layoutData['parent_item']));
-		
+
 		echo '<script type="text/javascript">';
-		echo '$(document).ready (function() {
-			lines.push({"id": "' . $id . '" , "node_begin":"' . $layoutData['parent_item'] . '","node_end":"' . $id . '","color":"' . visual_map_get_color_line_status($parent) . '","thickness":"' . (empty($config["vc_line_thickness"]) ? 2 : $config["vc_line_thickness"]) . '"});
-		});';
+		echo 'lines.push({"id": "' . $id . '" , "node_begin":"' . $layoutData['parent_item'] . '","node_end":"' . $id . '","color":"' . visual_map_get_color_line_status($parent) . '","thickness":"' . (empty($config["vc_line_thickness"]) ? 2 : $config["vc_line_thickness"]) . '"});';
 		echo '</script>';
 	}
 }
@@ -2357,19 +2212,35 @@ function get_if_module_is_image ($id_module) {
 }
 
 function get_bars_module_data ($id_module) {
-	$mod_values = db_get_value_filter('datos', 'tagente_estado', array('id_agente_modulo' => $id_module));
+	//This charts is only serialize graphs.
+	//In other string show image no data to show.
 
-	if (preg_match("/\r\n/", $mod_values)) {
-		$values = explode("\r\n", $mod_values);
-	}
-	elseif (preg_match("/\n/", $mod_values)) {
-		$values = explode("\n", $mod_values);
+	$mod_values = db_get_value_filter(
+		'datos',
+		'tagente_estado',
+		array(
+			'id_agente_modulo' => $id_module
+		)
+	);
+
+	$values = false;
+	//avoid showing the image type modules. WUX
+	if(strpos($mod_values, 'data:image/png;base64') !== 0){
+		if (preg_match("/\r\n/", $mod_values)) {
+			$values = explode("\r\n", $mod_values);
+		}
+		elseif (preg_match("/\n/", $mod_values)) {
+			$values = explode("\n", $mod_values);
+		}
 	}
 
 	$values_to_return = array();
 	$index = 0;
 	$color_index = 0;
 	$total = 0;
+
+	if(!$values) return false;
+
 	foreach ($values as $val) {
 		$data = explode(",", $val);
 		$values_to_return[$data[0]] = array('g' =>$data[1]);
@@ -3374,9 +3245,7 @@ function visual_map_print_user_lines($layout_data, $proportion = null) {
 	}
 
 	echo '<script type="text/javascript">';
-	echo '$(document).ready (function() {
-		user_lines.push(' . json_encode($line) . ');
-	});';
+	echo 'user_lines.push(' . json_encode($line) . ');';
 	echo '</script>';
 }
 
@@ -3420,7 +3289,7 @@ function visual_map_print_visual_map ($id_layout, $show_links = true,
 		var user_lines = Array();
 		
 		//Fixed to wait the load of images.
-		$(window).load(function () {
+		$(window).on('load', function () {
 			draw_lines(lines, 'background_' + id_layout);
 			draw_user_lines_read('background_' + id_layout);
 			//center_labels();
@@ -3648,17 +3517,17 @@ function visual_map_get_user_layouts ($id_user = 0, $only_names = false, $filter
 			$retval[$layout['id']] = $layout;
 
 		//add_perms
-		if ($groups[$layout['id_group']]['vconsole_view']){
+		if (isset($groups[$layout['id_group']]['vconsole_view'])){
 			$retval[$layout['id']]['vr'] = $groups[$layout['id_group']]['vconsole_view'];
 		}
-		if ($groups[$layout['id_group']]['vconsole_edit']){
+		if (isset($groups[$layout['id_group']]['vconsole_edit'])){
 			$retval[$layout['id']]['vw'] = $groups[$layout['id_group']]['vconsole_edit'];
 		}
-		if ($groups[$layout['id_group']]['vconsole_management']){
+		if (isset($groups[$layout['id_group']]['vconsole_management'])){
 			$retval[$layout['id']]['vm'] = $groups[$layout['id_group']]['vconsole_management'];
 		}
 	}
-	
+
 	return $retval;
 }
 

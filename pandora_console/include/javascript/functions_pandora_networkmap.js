@@ -87,15 +87,16 @@ function inner_minimap_box(param_x, param_y) {
 	return false;
 }
 
-function set_center(id) {
-	pos_x = (width_svg / 2) - translation[0];
-	pos_y = (height_svg / 2) - translation[1];
+function set_center(id, event) {
+	pos_x = (width_svg / 2) - (translation[0] / scale);
+	pos_y = (height_svg / 2) - (translation[1] / scale);
 
 	var params = [];
 	params.push("set_center=1");
 	params.push("id=" + id);
 	params.push("x=" + pos_x);
 	params.push("y=" + pos_y);
+	params.push("scale=" + scale);
 	params.push("page=operation/agentes/pandora_networkmap.view");
 	jQuery.ajax({
 		data: params.join("&"),
@@ -2720,7 +2721,7 @@ function init_graph(parameter_object) {
 	}
 	window.scale_minimap = 4.2;
 	window.translation = [0, 0];
-	window.scale = 0.5;
+	window.scale = (typeof (z_dash) != "undefined") ? z_dash : 0.5;
 	window.node_radius = 40;
 	if (typeof (parameter_object.node_radius) != "undefined") {
 		window.node_radius = parameter_object.node_radius;
@@ -3955,26 +3956,6 @@ function get_status_module() {
 		});
 
 
-	});
-}
-
-function check_changes_num_modules() {
-	var params = [];
-	params.push("check_changes_num_modules=1");
-	params.push("id=" + id_agent);
-	params.push("page=operation/agentes/pandora_networkmap.view");
-	jQuery.ajax({
-		data: params.join("&"),
-		dataType: 'json',
-		type: 'POST',
-		url: action = "../../../ajax.php",
-		success: function (data) {
-			if (data['correct']) {
-				if (module_count != data['count']) {
-					//location.reload(true);
-				}
-			}
-		}
 	});
 }
 

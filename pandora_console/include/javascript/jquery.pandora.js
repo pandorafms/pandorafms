@@ -34,7 +34,9 @@
 $(document).ready (function () {
 	$("a#show_messages_dialog").click (function () {
 		jQuery.post ("ajax.php",
-			{"page": "operation/messages/message_list"},
+			{
+				"page": "operation/messages/message_list"
+			},
 			function (data, status) {
 				$("#dialog_messages").hide ()
 					.empty ()
@@ -49,9 +51,8 @@ $(document).ready (function () {
 						},
 						width: 700,
 						height: 300
-					})
-					.show ();
-			},
+					}).show ();
+				},
 			"html"
 		);
 
@@ -59,46 +60,17 @@ $(document).ready (function () {
 	});
 
 	$("a.show_systemalert_dialog").click (function () {
+		$('body').append( "<div id='opacidad' style='position:fixed;background:black;z-index:1'></div>" );
+		$("#opacidad").css('opacity', 0.5);
+
 		jQuery.post ("ajax.php",
-			{"page": "include/ajax/config.ajax",
-			 "token_name": 'visual_animation'
-		},
-		function (data, status) {
-			if(data){
-				$('body').append( "<div id='opacidad' style='position:fixed;background:black;opacity:0.001;z-index:1'></div>" );
-				jQuery.post ("ajax.php",
-					{"page": "operation/system_alert"},
-						function (data, status) {
-							
-							$("#alert_messages").css('width','auto');
-							$("#alert_messages").css('height','auto');
-							
-							$("#alert_messages").css('visibility','hidden');
-							$("#alert_messages").empty ().append (data);
-							$("#alert_messages").css('display','block');
-							
-							setTimeout( function() {
-			          animation_modal('alert_messages');
-			     }, 50);
-						},
-						"html"
-					);
-					return false;
-			}
-			else{
-				$('body').append( "<div id='opacidad' style='position:fixed;background:black;opacity:0.6;z-index:1'></div>" );
-				jQuery.post ("ajax.php",
-					{"page": "operation/system_alert"},
-						function (data, status) {
-							$("#alert_messages").hide ()
-								.empty ()
-								.append (data)
-								.show ();
-						},
-						"html"
-					);
-				return false;
-			}
+			{
+				"page": "operation/system_alert"},
+				function (data, status) {
+					$("#alert_messages").show();
+					$("#alert_messages").empty ().append (data);
+					$("#alert_messages").css('opacity', 1);
+
 			},
 			"html"
 		);
@@ -106,140 +78,63 @@ $(document).ready (function () {
 	
 	$("a.modalpopup").click (function () {
 		var elem = $(this).attr("id");
-		
-		jQuery.post ("ajax.php",
-			{"page": "include/ajax/config.ajax",
-			 "token_name": 'visual_animation'
-		},
-			function (data, status) {
-				if(data){
-					$('body').append( "<div id='opacidad' style='position:fixed;background:black;opacity:0.001;z-index:1'></div>" );
-						jQuery.post ("ajax.php",
-							{
-								"page": "general/alert_enterprise",
-								"message": elem
-							},
-							function (data, status) {
-								
-								$("#alert_messages").css('width','auto');
-								$("#alert_messages").css('height','auto');
-								
-								$("#alert_messages").css('visibility','hidden');
-								$("#alert_messages").empty ().append (data);
-								$("#alert_messages").css('display','block');
-								
-								setTimeout( function() {
-									animation_modal('alert_messages');
-						 }, 50);
-							},
-							"html"
-						);
-					return false;
-				}
-				else{
-					$('body').append( "<div id='opacidad' style='position:fixed;background:black;opacity:0.6;z-index:1'></div>" );
-					jQuery.post ("ajax.php",
-					{
-						"page": "general/alert_enterprise",
-						"message": elem
-					},
-					function (data, status) {
-						$("#alert_messages").hide ()
-							.empty ()
-							.append (data)
-							.show ();
-					},
-					"html"
-				);
-			return false;			
-		}		
-	},
-	"html"
-	);
-});
+		$('body').append( "<div id='opacidad' style='position:fixed;background:black;z-index:1'></div>" );
+		$("#opacidad").css('opacity', 0.5);
 
-// Creacion de ventana modal y botones
-
-	$(".publienterprise").click (function () {
-		
-		var elem = $(this).attr("id");
-		
-		jQuery.post ("ajax.php",
-			{"page": "include/ajax/config.ajax",
-			 "token_name": 'visual_animation'
-		},
-			function (data, status) {
-				
-		if(data){
-					
-			$('body').append( "<div id='opacidad' style='position:fixed;background:black;opacity:0.001;z-index:1'></div>" );
-				jQuery.post ("ajax.php",
-					{
-						"page": "general/alert_enterprise",
-						"message": elem
-					},
-					function (data, status) {
-						
-						$("#alert_messages").css('width','auto');
-						$("#alert_messages").css('height','auto');
-						
-						$("#alert_messages").css('visibility','hidden');
-						$("#alert_messages").empty ().append (data);
-						$("#alert_messages").css('display','block');
-						
-						setTimeout( function() {
-							animation_modal('alert_messages');
-				 }, 50);
-					},
-					"html"
-				);
-
-				return false;
-			
-		}
-		else{
-			
-		$('body').append( "<div id='opacidad' style='position:fixed;background:black;opacity:0.6;z-index:1'></div>" );
-		
 		jQuery.post ("ajax.php",
 			{
 				"page": "general/alert_enterprise",
 				"message": elem
 			},
 			function (data, status) {
-				$("#alert_messages").hide ()
-					.empty ()
-					.append (data)
-					.show ();
+				$("#alert_messages").show();
+				$("#alert_messages").empty ().append (data);
+				$("#alert_messages").css('opacity', 1);
 			},
 			"html"
 		);
-
 		return false;
-		}
-		},
-		"html"
-	);	
-});
-	
-	
-	$(".publienterprisehide").click (function () {
-		$('body').append( "<div id='opacidad' style='position:fixed;background:black;opacity:0.6;z-index:1'></div>" );
+	});
+
+	// Creacion de ventana modal y botones
+	$(".publienterprise").click (function () {
+		var elem = $(this).attr("id");
+		$('body').append( "<div id='opacidad' style='position:fixed;background:black;z-index:1'></div>" );
+		$("#opacidad").css('opacity', 0.5);
+
 		jQuery.post ("ajax.php",
 			{
 				"page": "general/alert_enterprise",
-				"message": $(this).attr("id")
+				"message": elem
 			},
 			function (data, status) {
-				$("#alert_messages").hide ()
-					.empty ()
-					.append (data)
-					.show ();
+				$("#alert_messages").show();
+				$("#alert_messages").empty ().append (data);
+				$("#alert_messages").css('opacity', 1);
 			},
 			"html"
 		);
+		return false;
+	});
+	
+	
+	$(".publienterprisehide").click (function () {
+		var elem = $(this).attr("id");
+		$('body').append( "<div id='opacidad' style='position:fixed;background:black;z-index:1'></div>" );
+		$("#opacidad").css('opacity', 0.5);
 
-
+		jQuery.post ("ajax.php",
+			{
+				"page": "general/alert_enterprise",
+				"message": elem
+			},
+			function (data, status) {
+				$("#alert_messages").show();
+				$("#alert_messages").empty ().append (data);
+				$("#alert_messages").css('opacity', 1);
+			},
+			"html"
+		);
 		return false;
 	});
 
@@ -335,43 +230,36 @@ $(document).ready (function () {
 	forced_title_callback();
 	
 	
-	$(document).on("scroll", function(){	
+	$(document).on("scroll", function(){
 		
 		if(document.documentElement.scrollTop != 0 || document.body.scrollTop != 0){
 			if($('#head').css('position') =='fixed'){
 				if($('#menu').css('position') =='fixed'){
-						$('#menu').css('top','80px');
-					}
-					else{
-						$('#menu').css('top','60px');
-					}	
-				}
-				else{
-					if($('#menu').css('position') =='fixed'){
-							$('#menu').css('top','20px');
-						}
-						else{
-							$('#menu').css('top','80px');
-						}	
-				}
-		}
-		else{
+					$('#menu').css('top','80px');
+				} else {
+					$('#menu').css('top','60px');
+				}	
+			} else {
+				if($('#menu').css('position') =='fixed'){
+					$('#menu').css('top','20px');
+				} else {
+					$('#menu').css('top','80px');
+				}	
+			}
+		} else {
 			if($('#head').css('position') =='fixed'){
 				if($('#menu').css('position') =='fixed'){
-						$('#menu').css('top','80px');
-					}
-					else{
-						$('#menu').css('top','60px');
-					}	
+					$('#menu').css('top','80px');
+				} else {
+					$('#menu').css('top','60px');
 				}
-				else{
-					if($('#menu').css('position') =='fixed'){
-							$('#menu').css('top','80px');
-						}
-						else{
-							$('#menu').css('top','80px');
-						}	
-				}
+			} else {
+				if($('#menu').css('position') =='fixed'){
+					$('#menu').css('top','80px');
+				} else {
+					$('#menu').css('top','80px');
+				}	
+			}
 		}
 		
 		// if((document.documentElement.scrollTop != 0 || document.body.scrollTop != 0) && $('#menu').css('position') =='fixed'){
@@ -395,12 +283,15 @@ $(document).ready (function () {
 		// 		$('#menu').css('top','60px');
 		// 	}	
 		// }
-});
+	});
 
-$("#alert_messages").draggable();
-$("#alert_messages").css({'left':+parseInt(screen.width/2)-parseInt($("#alert_messages").css('width'))/2+'px'});
+	$("#alert_messages").draggable();
+	$("#alert_messages").css({'left':+parseInt(screen.width/2)-parseInt($("#alert_messages").css('width'))/2+'px'});
 	
 });
+
+
+
 
 function forced_title_callback() {
 	// Forced title code
@@ -481,24 +372,5 @@ function forced_title_callback() {
 	$('body').on('mouseout', '.forced_title', function () {
 		$('#forced_title_layer').hide().empty();
 	});
-}
-
-function animation_modal(id){
-	
-	var animation_width = $("#"+id).css('width');
-	var animation_height =  $("#"+id).css('height');
-	var posanimation_left = parseInt($('#'+id).css('left'));
-	var preanimation_left = parseInt($('#'+id).css('left'))+parseInt($('#'+id).css('left'))/2;
-	$('#'+id).css({'width':'100px','height':'60px'});
-	$("#alert_messages").css('visibility','visible');
-	$('#'+id).css('left',+preanimation_left+'px');
-	$('#'+id).css('opacity',0);
-	
-	$('#opacidad').animate({'opacity':0.8},2000);
-	
-	$("#"+id)
-	.animate({'width': animation_width,'left':posanimation_left+'px','opacity':1},1000)
-	.animate({'height': animation_height},1000);
-		
 }
 

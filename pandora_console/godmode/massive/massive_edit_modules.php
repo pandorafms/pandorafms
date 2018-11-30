@@ -175,6 +175,7 @@ if ($update) {
 	}
 }
 
+$table = new stdClass();
 $table->id = 'delete_table';
 $table->class = 'databox filters';
 $table->width = '100%';
@@ -235,7 +236,7 @@ switch ($config["dbtype"]) {
 if ($module_types === false)
 	$module_types = array ();
 
-$types = '';
+$types = array();
 foreach ($module_types as $type) {
 	$types[$type['id_tipo']] = $type['description'];
 }
@@ -248,22 +249,18 @@ $snmp_versions['3'] = 'v. 3';
 $table->width = '100%';
 $table->data = array ();
 
-
-
 $table->data['selection_mode'][0] = __('Selection mode');
 $table->data['selection_mode'][1] = '<span style="width:110px;display:inline-block;">'.__('Select modules first ') . '</span>' .
 	html_print_radio_button_extended ("selection_mode", 'modules', '', $selection_mode, false, '', 'style="margin-right: 40px;"', true).'<br>';
 $table->data['selection_mode'][1] .= '<span style="width:110px;display:inline-block;">'.__('Select agents first ') . '</span>' .
 	html_print_radio_button_extended ("selection_mode", 'agents', '', $selection_mode, false, '', 'style="margin-right: 40px;"', true);
 
-
-
-
 $table->rowclass['form_modules_1'] = 'select_modules_row';
 $table->data['form_modules_1'][0] = __('Module type');
 $table->data['form_modules_1'][0] .= '<span id="module_loading" class="invisible">';
 $table->data['form_modules_1'][0] .= html_print_image('images/spinner.png', true);
 $table->data['form_modules_1'][0] .= '</span>';
+
 $types[0] = __('All');
 $table->colspan['form_modules_1'][1] = 2;
 $table->data['form_modules_1'][1] = html_print_select ($types,
@@ -271,7 +268,7 @@ $table->data['form_modules_1'][1] = html_print_select ($types,
 
 $table->data['form_modules_1'][3] = __('Select all modules of this type') . ' ' .
 	html_print_checkbox_extended ("force_type", 'type', '', '', false,
-		'', 'style="margin-right: 40px;"', true);
+		'style="margin-right: 40px;"', true, '');
 
 $modules = array ();
 if ($module_type != '') {
@@ -282,7 +279,7 @@ else {
 }
 
 $names = agents_get_modules (array_keys ($agents),
-	'DISTINCT(nombre)', $filter, false);
+	'DISTINCT(tagente_modulo.nombre)', $filter, false);
 foreach ($names as $name) {
 	$modules[$name['nombre']] = $name['nombre'];
 }
@@ -709,6 +706,7 @@ echo '</form>';
 echo '<h3 class="error invisible" id="message"> </h3>';
 //Hack to translate text "none" in PHP to javascript
 echo '<span id ="none_text" style="display: none;">' . __('None') . '</span>';
+echo '<span id ="select_agent_first_text" style="display: none;">' . __('Please, select an agent first') . '</span>';
 ui_require_jquery_file ('pandora.controls');
 
 if ($selection_mode == 'modules') {

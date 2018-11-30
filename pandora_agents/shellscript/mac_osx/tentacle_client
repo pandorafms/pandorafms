@@ -58,8 +58,17 @@ use strict;
 use File::Basename;
 use Getopt::Std;
 use IO::Select;
-use IO::Compress::Zip qw(zip $ZipError);
-use IO::Uncompress::Unzip qw(unzip $UnzipError);
+my $zlib_available = 1;
+
+eval {
+	eval "use IO::Compress::Zip qw(zip);1" or die($@);
+	eval "use IO::Uncompress::Unzip qw(unzip);1" or die($@);
+};
+if ($@) {
+	print_log ("Zip transfer not available, required libraries not found (IO::Compress::Zip, IO::Uncompress::Unzip).");
+	$zlib_available = 0;
+}
+
 use Socket (qw(SOCK_STREAM AF_INET AF_INET6));
 my $SOCKET_MODULE =
 	eval { require IO::Socket::INET6 } ? 'IO::Socket::INET6'
@@ -324,7 +333,9 @@ sub parse_options {
 
 	# Compress data
 	if (defined ($opts{'z'})) {
-		$t_zip = 1;
+		if ($zlib_available == 1) {
+			$t_zip = 1;
+		}
 	}
 }
 
@@ -622,7 +633,7 @@ sub zrecv_file {
 	# Receive file
 	$zdata = recv_data_block ($size);
 	if (!unzip(\$zdata => \$data)) {
-		print_log ("Uncompress error: $UnzipError");
+		print_log ("Uncompress error: $IO::Uncompress::Unzip::UnzipError");
 		send_data ("ZRECV ERR\n");
 		return;
 	}
@@ -705,7 +716,7 @@ sub zsend_file {
 	# Read the file and compress its contents
 	if (! zip($file => \$data)) {
 		send_data ("QUIT\n");
-		error ("Compression error: $ZipError");
+		error ("Compression error: $IO::Compress::Zip::ZipError");
 		return;
 	}
 
@@ -725,7 +736,7 @@ sub zsend_file {
 		error ("Server responded $response.");
 	}
 
-	print_log ("Server responded SEND OK");
+	print_log ("Server responded ZSEND OK");
 	send_data ($data);
 
 	# Wait for server response

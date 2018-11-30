@@ -25,13 +25,12 @@ if ($get_image_path_status){
 	$only_src = get_parameter("only_src", 0);
 	
 	$result = array();
-	
+
 	$result['bad'] = html_print_image($img_src . '_bad.png', true, '', $only_src);
 	$result['ok'] = html_print_image($img_src . '_ok.png', true, '', $only_src);
 	$result['warning'] = html_print_image($img_src . '_warning.png', true, '', $only_src);
-	$result['ok'] = html_print_image($img_src . '_ok.png', true, '', $only_src);
 	$result['normal'] = html_print_image($img_src . '.png', true, '', $only_src);
-	
+
 	echo json_encode($result);
 	return;
 }
@@ -328,8 +327,19 @@ switch ($action) {
 	
 	
 	case 'get_layout_data':
+		if(is_metaconsole()){
+			$server_data = metaconsole_get_connection_by_id($server_id);
+			// Establishes connection
+			if (metaconsole_load_external_db($server_data) !== NOERR) continue;
+		}
+
 		$layoutData = db_get_row_filter('tlayout_data',
 			array('id' => $id_element));
+
+		if(is_metaconsole()){
+			metaconsole_restore_db();
+		}
+
 		$layoutData['height'] = $layoutData['height'];
 		$layoutData['width']  = $layoutData['width'];
 		echo json_encode($layoutData);
@@ -726,6 +736,14 @@ switch ($action) {
 						if ($id_custom_graph !== null) {
 							$values['id_custom_graph'] = $id_custom_graph;
 						}
+
+						if(is_metaconsole()){
+							if($values['id_custom_graph'] != 0){
+								$explode_id = explode("|", $values['id_custom_graph']);
+								$values['id_custom_graph'] = $explode_id[0];
+								$values['id_metaconsole'] = $explode_id[1];
+							}
+						}
 						break;
 					case 'bars_graph':
 						if ($width_percentile !== null) {
@@ -993,7 +1011,6 @@ switch ($action) {
 				if (isset($elementFields["linked_layout_status_as_service_warning"])) {
 					$elementFields["linked_layout_status_as_service_warning"] = (float) $elementFields["linked_layout_status_as_service_warning"];
 				}
-				
 				switch ($type) {
 					case 'auto_sla_graph':
 						$elementFields['event_max_time_row'] = $elementFields['period'];
@@ -1059,7 +1076,7 @@ switch ($action) {
 								$elementFields['id_agent'], false,
 								array('disabled' => 0,
 									'id_agente' => $elementFields['id_agent'],
-									'tagente_modulo.id_tipo_modulo IN' => "(17,23,3,10,33)"));
+									'tagente_modulo.id_tipo_modulo IN' => "(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,18,17,23,3,10,33)"));
 							
 							$elementFields['modules_html'] = '<option value="0">--</option>';
 							foreach ($modules as $id => $name) {
@@ -1207,13 +1224,31 @@ switch ($action) {
 				break;
 			case 'module_graph':
 				$values['type'] = MODULE_GRAPH;
-				
+
+				if(is_metaconsole()){
+					if($values['id_custom_graph'] != 0){
+						$explode_id = explode("|", $values['id_custom_graph']);
+						$values['id_custom_graph'] = $explode_id[0];
+						$values['id_metaconsole'] = $explode_id[1];
+					}
+				}
+
 				if ($values['id_custom_graph'] > 0 ) {
 					$values['height'] = $height_module_graph;
 					$values['width'] = $width_module_graph;
-					
+
+					if(is_metaconsole()){
+						$server_data = metaconsole_get_connection_by_id($values['id_metaconsole']);
+						// Establishes connection
+						if (metaconsole_load_external_db($server_data) !== NOERR) continue;
+					}
+
 					$graph_conf = db_get_row('tgraph', 'id_graph', $values['id_custom_graph']);
-					
+
+					if(is_metaconsole()){
+						metaconsole_restore_db();
+					}
+
 					$graph_stacked = $graph_conf['stacked'];
 					if ( $graph_stacked == CUSTOM_GRAPH_BULLET_CHART) {
 						$values['height'] = 50;

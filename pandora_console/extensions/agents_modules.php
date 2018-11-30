@@ -70,7 +70,7 @@ function mainAgentsModules() {
 	$hor_offset = (int)get_parameter('hor_offset', 0);
 	$block = $config['block_size'];
 	if(get_parameter('modulegroup') != null){
-		$agents_id = (array)get_parameter('id_agents2', -1);	
+		$agents_id = (array)get_parameter('id_agents2', null);
 	}
 	$selection_a_m = (int)get_parameter('selection_agent_module');
 	$modules_selected = (array)get_parameter('module', 0);
@@ -100,6 +100,9 @@ function mainAgentsModules() {
 	if($agents_id[0] != -1 ){
 		serialize_in_temp($agents_id, $config['id_user']."_agents", 1);
 	}
+
+
+	//if($agents_id != -1) $agents_id = null;
 	
 	if ($config["pure"] == 0) {
 		if($modules_selected[0] && $agents_id[0]){
@@ -132,8 +135,6 @@ function mainAgentsModules() {
 		}
 	}
 	
-	$groups = users_get_groups ();
-	
 	//groups
 	$filter_groups_label = '<b>'.__('Group').'</b>';
 	$filter_groups = html_print_select_groups(false, "AR", true, 'group_id', $group_id, '', '', '', true, false, true, '', false , 'width: auto;');
@@ -144,18 +145,7 @@ function mainAgentsModules() {
 	$filter_module_groups_label = '<b>'.__('Module group').'</b>';
 	$filter_module_groups = html_print_select_from_sql ("SELECT * FROM tmodule_group ORDER BY name",
 		'modulegroup', $modulegroup, '',__('All'), 0, true, false, true, false, 'width: auto;');
-			
-	$agents_select = array();
-	if (is_array($id_agents) || is_object($id_agents)){
-		foreach ($id_agents as $id) {
-			foreach ($agents as $key => $a) {
-				if ($key == (int)$id) {
-					$agents_select[$key] = $key;
-				}
-			}
-		}
-	}
-	
+
 	//agent
 	$agents = agents_get_group_agents($group_id);
 	if ((empty($agents)) || $agents == -1) $agents = array();
@@ -293,6 +283,7 @@ function mainAgentsModules() {
 
 	$count = 0;
 	foreach ($agents as $agent) {
+		// TODO TAGS agents_get_modules
 		$module = agents_get_modules($agent, false,
 			$filter_module_group, true, true);
 		if ($module == false) {
@@ -301,7 +292,6 @@ function mainAgentsModules() {
 		$count++;
 	}
 	$total_pagination = count($agents);
-
 	if($agents_id[0] != -1){
 		$all_modules = array();
 		foreach ($modules_selected as $key => $value) {
@@ -332,11 +322,11 @@ function mainAgentsModules() {
 					foreach ($result_sql as $key => $value) {
 						$all_modules[$value['id_agente_modulo']] = io_safe_output($name); 
 					}
-				} 
-				// $all_modules[$value] = modules_get_agentmodule_name($value);
+				}
 			}
 
 		} else {
+			// TODO TAGS agents_get_modules
 			$all_modules = agents_get_modules($agents, false,
 			$filter_module_group, true, true);
 		}
@@ -346,7 +336,6 @@ function mainAgentsModules() {
 	$modules_by_name = array();
 	$name = '';
 	$cont = 0;
-	
 	foreach ($all_modules as $key => $module) {
 		if ($module == $name) {
 			$modules_by_name[$cont-1]['id'][] = $key;
@@ -358,7 +347,6 @@ function mainAgentsModules() {
 			$cont ++;
 		}
 	}
-	
 	if ($config["pure"] == 1) {
 		$block = count($modules_by_name);
 	}
@@ -381,7 +369,10 @@ function mainAgentsModules() {
 			$filter_groups['id_grupo'] = $group_id;	
 		}
 	}
-	$agents = agents_get_agents ($filter_groups);
+
+	if (!empty($filter_groups['id_agente'])) {
+		$agents = agents_get_agents ($filter_groups);
+	}
 	$nagents = count($agents);
 
 	if ($all_modules == false || $agents == false) {
@@ -499,10 +490,10 @@ function mainAgentsModules() {
 			<a class='$rowcolor' href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=".$agent['id_agente']."'>" .
 			$alias['alias'] .
 			"</a></td>";
+		// TODO TAGS agents_get_modules
 		$agent_modules = agents_get_modules($agent['id_agente'], false, $filter_module_group, true, true);
 		
 		$nmodules = 0;
-		
 		foreach ($modules_by_name as $module) {
 			$nmodules++;
 			

@@ -47,7 +47,6 @@ $option_type = get_parameter('option_type', 0);
 //  - others
 //----------------------------------------------------------------------
 $list_modules = array();
-
 $modules_networkmap_no_proc = agents_get_modules(
 	$id_agente, false, array(
 		'id_modulo' => 2, // networkmap type
@@ -62,7 +61,6 @@ $modules_networkmap_no_proc = agents_get_modules(
 		));
 if (empty($modules_networkmap_no_proc))
 	$modules_networkmap_no_proc = array();
-
 $modules_others = agents_get_modules(
 	$id_agente, false, array(
 		'id_tipo_modulo' => array(
@@ -77,7 +75,6 @@ $modules_others = agents_get_modules(
 
 if (empty($modules_others))
 	$modules_others = array();
-
 $modules_boolean = agents_get_modules(
 	$id_agente, false, array(
 		'id_tipo_modulo' => array(

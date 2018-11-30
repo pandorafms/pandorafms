@@ -14,7 +14,7 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
-function mysql_connect_db($host = null, $db = null, $user = null, $pass = null, $port = null) {
+function mysql_connect_db($host = null, $db = null, $user = null, $pass = null, $port = null, $charset = null) {
 	global $config;
 	
 	if ($host === null)
@@ -42,6 +42,10 @@ function mysql_connect_db($host = null, $db = null, $user = null, $pass = null, 
 		}
 		db_change_cache_id ($db, $host);
 
+		if (isset($charset)) {
+			mysqli_set_charset($connect_id, $charset);
+		}
+
 		mysqli_select_db($connect_id, $db);
 	}
 	else {
@@ -51,6 +55,10 @@ function mysql_connect_db($host = null, $db = null, $user = null, $pass = null, 
 		}
 
 		db_change_cache_id ($db, $host);
+
+		if (isset($charset)) {
+			@mysql_set_charset($connect_id, $charset);
+		}
 
 		mysql_select_db($db, $connect_id);
 	}	
@@ -1196,47 +1204,6 @@ function mysql_db_get_type_field_table($table, $field) {
 
 		return mysql_field_type($result, $field);
 	}
-}
-
-/**
- * Get the element count of a table.
- * 
- * @param string $sql SQL query to get the element count.
- * 
- * @return int Return the number of elements in the table.
- */
-function mysql_db_get_table_count($sql, $search_history_db = false) {
-	global $config;
-	
-	$history_count = 0;
-	$count = mysql_db_get_value_sql ($sql);
-	if ($count === false) {
-		$count = 0;
-	}
-	
-	// Search the history DB for matches
-	if ($search_history_db && $config['history_db_enabled'] == 1) {
-		
-		// Connect to the history DB
-		if (! isset ($config['history_db_connection']) || $config['history_db_connection'] === false) {
-			if ($config["mysqli"]) {
-				$config['history_db_connection'] = mysqli_connect_db ($config['history_db_host'], $config['history_db_user'], io_output_password($config['history_db_pass']), $config['history_db_name'], $config['history_db_port'], false);
-			}
-			else {
-				$config['history_db_connection'] = mysql_connect_db ($config['history_db_host'], $config['history_db_name'], $config['history_db_user'], io_output_password($config['history_db_pass']), $config['history_db_port'], false);
-			}
-		}
-		if ($config['history_db_connection'] !== false) {
-			$history_count = mysql_db_get_value_sql ($sql, $config['history_db_connection']);
-			if ($history_count === false) {
-				$history_count = 0;
-			}
-		}
-	}
-	
-	$count += $history_count;
-	
-	return $count;
 }
 
 function mysql_get_fields($table) {

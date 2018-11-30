@@ -511,9 +511,16 @@ if (is_ajax ()) {
 		$id = (int)get_parameter('id', 0);
 		$x = (int)get_parameter('x', 0);
 		$y = (int)get_parameter('y', 0);
+		$scale = (float)get_parameter('scale', 0);
 		
 		$networkmap = db_get_row('tmap', 'id', $id);
 		
+		$array_filter = json_decode($networkmap['filter']);
+		if (isset($array_filter->z_dash)) {
+			$array_filter->z_dash = number_format($scale,2);
+		}
+		$filter = json_encode($array_filter);
+
 		// ACL for the network map
 		// $networkmap_read = check_acl ($config['id_user'], $networkmap['id_group'], "MR");
 		$networkmap_write = check_acl ($config['id_user'], $networkmap['id_group'], "MW");
@@ -529,7 +536,7 @@ if (is_ajax ()) {
 		$networkmap['center_x'] = $x;
 		$networkmap['center_y'] = $y;
 		db_process_sql_update('tmap',
-			array('center_x' => $networkmap['center_x'], 'center_y' => $networkmap['center_y']),
+			array('center_x' => $networkmap['center_x'], 'center_y' => $networkmap['center_y'], 'filter' => $filter),
 			array('id' => $id));
 		
 		$return = array();
@@ -563,8 +570,6 @@ if (is_ajax ()) {
 	$get_status_node = (bool)get_parameter('get_status_node', false);
 	$get_status_module = (bool)get_parameter('get_status_module',
 		false);
-	$check_changes_num_modules = (bool)get_parameter(
-		'check_changes_num_modules', false);
 	
 	if ($get_status_node) {
 		$id = (int)get_parameter('id', 0);
@@ -587,20 +592,6 @@ if (is_ajax ()) {
 		$return['id'] = $id;
 		$return['status_color'] = get_status_color_module_networkmap(
 			$id);
-		
-		echo json_encode($return);
-		
-		return;
-	}
-	
-	if ($check_changes_num_modules) {
-		$id = (int)get_parameter('id', 0);
-		
-		$modules = agents_get_modules($id);
-		
-		$return = array();
-		$return['correct'] = true;
-		$return['count'] = count($modules);
 		
 		echo json_encode($return);
 		

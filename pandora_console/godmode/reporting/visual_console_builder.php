@@ -560,7 +560,6 @@ switch ($activeTab) {
 								foreach ($name_modules as $mod) {
 
 									foreach ($id_agents as $ag) {
-										
 										$id_module = agents_get_modules($ag,
 											array('id_agente_modulo'),
 											array('nombre' => $mod));

@@ -541,10 +541,9 @@ function get_users ($order = false) {
  * @return string userid
  */
 function stripdn ($dn) {
-	list ($uid, $trash) = explode (',', $dn, 2);
-	list ($trash, $user) = explode ('=', $uid);
-	
-	return ($user);
+	$array_explode  = explode (',', $dn, 2);
+	$array_explode2 = explode ('=', $array_explode[0]);
+	return ($$array_explode2[1]);
 }
 
 /**

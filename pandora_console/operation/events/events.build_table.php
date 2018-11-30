@@ -40,11 +40,13 @@ $params = array (
 
 	// Events query params
 	"search" => io_safe_input($search),
+	"event_type" => $event_type,
 	"severity" => $severity,
 	"status" => $status,
 	"id_group" => $id_group,
 	"recursion" => $recursion,
 	"refr" => (int)get_parameter("refr", 0),
+	"id_agent" => $id_agent,
 	"id_agent_module" => $id_agent_module,
 	"pagination" => $pagination,
 	"group_rep" => $group_rep,
@@ -76,10 +78,13 @@ if ($group_rep == 2) {
 	$table->head[1] = __('Agent');
 	$table->head[5] = __('More detail');
 
-	$url =  html_print_sort_arrows(
-		array_merge($params, array('sort_field' => 'status')),
-		'sort'
-	);
+	//$url =  html_print_sort_arrows(
+	//	array_merge($params, array('sort_field' => 'status')),
+	//	'sort'
+	//);
+
+	$params_sort_field_status = array_merge($params, array('sort_field' => 'status'));
+	$url = "index.php?" . http_build_query($params_sort_field_status, '', '&amp;');
 
 	foreach ($result as $key => $res) {
 		
@@ -159,14 +164,6 @@ else {
 	foreach ($show_fields as $k_s => $fields) {
 	if ($fields == 'server_name') {
 		$table->head[$i] = __('Server');
-		$table->align[$i] = 'left';
-		$i++;
-	}
-	if ($fields == 'estado') {
-		$table->head[$i] = __('Status')  . html_print_sort_arrows(
-			array_merge($params, array('sort_field' => 'status')),
-			'sort'
-		);
 		$table->align[$i] = 'left';
 		$i++;
 	}
@@ -339,6 +336,18 @@ else {
 		$i++;
 	}
 	}
+
+	if (in_array('estado', $show_fields)) {
+		$table->head[$i] = '<span style="white-space: nowrap;">'.__('Status')  . html_print_sort_arrows(
+			array_merge($params, array('sort_field' => 'status')),
+			'sort'
+		).'</span>';
+		$table->align[$i] = 'left';
+		$table->style[$i] = 'white-space: nowrap !important; width: 1px !important;';
+		$i++;
+	}
+
+
 	if ($i != 0 && $allow_action) {
 		$table->head[$i] = __('Action');
 		$table->align[$i] = 'left';
@@ -487,14 +496,6 @@ else {
 				$data[$i] = db_get_value('name','tserver');
 			}
 			$table->cellclass[count($table->data)][$i] = $myclass;
-			$i++;
-		}
-		if ($fields == 'estado') {
-			$data[$i] = html_print_image ($img_st, true, 
-				array ("class" => "image_status",
-					"title" => $title_st,
-					"id" => 'status_img_'.$event["id_evento"]));
-			$table->cellstyle[count($table->data)][$i] = 'background: #F3F3F3;';
 			$i++;
 		}
 		if ($fields == 'id_evento') {
@@ -678,7 +679,14 @@ else {
 			}
 			$comments_help_tip = "";
 			if (!empty($event_user_comment_str)) {
-				$comments_help_tip = ui_print_help_tip($event_user_comment_str, true);
+
+				if($myclass == 'datos_yellow'){
+					$comments_help_tip = ui_print_help_tip_border($event_user_comment_str, true);
+				}
+				else{
+					$comments_help_tip = ui_print_help_tip($event_user_comment_str, true);
+				}
+				
 			}
 			
 			$data[$i] = '<span id="comment_header_' . $event['id_evento'] . '">' . $comments_help_tip . '</span>';
@@ -767,6 +775,15 @@ else {
 			$table->cellclass[count($table->data)][$i] = $myclass;
 			$i++;
 		}
+		}
+
+		if (in_array('estado', $show_fields)) {
+				$data[$i] = html_print_image ($img_st, true, 
+					array ("class" => "image_status",
+						"title" => $title_st,
+						"id" => 'status_img_'.$event["id_evento"]));
+				$table->cellstyle[count($table->data)][$i] = 'background: #F3F3F3; white-space: nowrap; width: 1px;';
+				$i++;
 		}
 		
 		if ($i != 0 && $allow_action) {

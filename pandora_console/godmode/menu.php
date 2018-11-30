@@ -120,7 +120,9 @@ if (check_acl ($config['id_user'], 0, "AW")) {
 		$sub2["godmode/massive/massive_operations&amp;tab=massive_users"]["text"] = __('Users operations');
 	}
 	$sub2["godmode/massive/massive_operations&amp;tab=massive_alerts"]["text"] = __('Alerts operations');
-	enterprise_hook('massivepolicies_submenu');
+	if ($config["centralized_management"] != 1) {
+		enterprise_hook('massivepolicies_submenu');
+	}
 	enterprise_hook('massivesnmp_submenu');
 	enterprise_hook('massivesatellite_submenu');
 

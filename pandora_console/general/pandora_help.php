@@ -14,8 +14,10 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 
-
+// Don't start a session before this import.
+// The session is configured and started inside the config process.
 require_once ("../include/config.php");
+
 require_once ("../include/functions.php");
 require_once ("../include/functions_html.php");
 ?>
@@ -32,11 +34,6 @@ require_once ("../include/functions_html.php");
 
 $id = get_parameter ('id');
 $id_user = get_parameter ('id_user');
-
-if (! isset($_SESSION['id_usuario'])) {
-	session_start();
-	session_write_close();
-}
 
 $user_language = get_user_language ($id_user);
 

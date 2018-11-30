@@ -141,7 +141,17 @@ function vbar_graph(
 	setup_watermark($water_mark, $water_mark_file, $water_mark_url);
 
 	if (empty($chart_data)) {
-		return '<img src="' . $no_data_image . '" />';
+		return html_print_image (
+			$no_data_image,
+			true,
+			array(
+				'width' => $width,
+				'height' => $height,
+				'title' => __('No data to show')
+			),
+			false,
+			true
+		);
 	}
 
 	if($ttl == 2){
@@ -271,7 +281,17 @@ function hbar_graph($chart_data, $width, $height,
 	setup_watermark($water_mark, $water_mark_file, $water_mark_url);
 
 	if (empty($chart_data)) {
-		return '<img src="' . $no_data_image . '" />';
+		return html_print_image (
+			$no_data_image,
+			true,
+			array(
+				'width' => $width,
+				'height' => $height,
+				'title' => __('No data to show')
+			),
+			false,
+			true
+		);
 	}
 
 	if($ttl == 2){

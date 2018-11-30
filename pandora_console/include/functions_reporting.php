@@ -218,11 +218,11 @@ function reporting_make_reporting_data($report = null, $id_report,
 				}
 			}
 			
-			if(sizeof($content['id_agent']) != 1){
+			if(is_array($content['id_agent']) && sizeof($content['id_agent']) != 1){
 				$content['style']['name_label'] = str_replace("_agent_",sizeof($content['id_agent']).__(' agents'),$content['style']['name_label']);
 			}
 
-			if(sizeof($content['id_agent_module']) != 1){
+			if(is_array($content['id_agent_module']) &&  sizeof($content['id_agent_module']) != 1){
 				$content['style']['name_label'] = str_replace("_module_",sizeof($content['id_agent_module']).__(' modules'),$content['style']['name_label']);
 			}
 
@@ -6063,6 +6063,7 @@ function reporting_general($report, $content) {
 	$i = 0;
 	$index = 0;
 	$is_string = array();
+
 	foreach ($generals as $row) {
 		//Metaconsole connection
 		$server_name = $row ['server_name'];

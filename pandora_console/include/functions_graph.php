@@ -3284,13 +3284,10 @@ function graph_graphic_moduleevents ($id_agent, $id_module, $width, $height, $pe
 
 	$data = array ();
 
-	//$resolution = $config['graph_res'] * ($period * 2 / $width); // Number of "slices" we want in graph
-	$resolution = 5 * ($period * 2 / $width); // Number of "slices" we want in graph
-	$interval = (int) ($period / $resolution);
-	$date = get_system_time ();
+	$interval = 24;
+	$date = get_system_time();
 	$datelimit = $date - $period;
 	$periodtime = floor ($period / $interval);
-	$time = array ();
 	$data = array ();
 	$legend = array();
 	$full_legend = array();

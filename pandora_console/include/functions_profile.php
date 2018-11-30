@@ -145,6 +145,20 @@ function profile_delete_profile ($id_profile) {
 }
 
 /**
+ * Delete profile from database and remove from the assigned users (tusuario_perfil)
+ *
+ * @param int Profile ID
+ *
+ * @return bool Whether or not it's deleted in both tables
+ */
+function profile_delete_profile_and_clean_users ($id_profile) {
+	return
+		(bool)db_process_sql_delete('tperfil', array('id_perfil' => $id_profile)) &&
+		(bool)db_process_sql_delete('tusuario_perfil', array('id_perfil' => $id_profile))
+	;
+}
+
+/**
  * Print the table to display, create and delete profiles
  *
  *	@param int User id

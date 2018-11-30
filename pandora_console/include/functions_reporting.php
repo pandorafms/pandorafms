@@ -144,6 +144,35 @@ function reporting_make_reporting_data($report = null, $id_report,
 	$metaconsole_on = is_metaconsole();
 	$index_content = 0;
 	foreach ($contents as $content) {
+
+		if (!empty($content["id_agent_module"]) && !empty($content["id_agent"])
+			&& tags_has_user_acl_tags($config['id_user'])) {
+			$where_tags = tags_get_acl_tags(
+				$config['id_user'],
+				$id_groups,
+				'AR',
+				'module_condition',
+				'AND',
+				'tagente_modulo',
+				false,
+				array(),
+				true);
+
+			$sql_tags_join = "INNER JOIN tagente ON tagente.id_agente = t1.id_agente
+				INNER JOIN ttag_module ON ttag_module.id_agente_modulo = t1.id_agente_modulo";
+
+			$sql = sprintf('SELECT count(*) FROM tagente_modulo t1
+				%s WHERE t1.delete_pending = 0 AND t1.id_agente_modulo = '. $content["id_agent_module"] .'
+				AND t1.id_agente = ' . $content['id_agent'] . ' %s',
+				$sql_tags_join, $where_tags);
+
+			$result_tags = db_get_value_sql($sql);
+
+			if (!$result_tags) {
+				continue;
+			}
+		}
+
 		$server_name = $content['server_name'];
 		
 		// General reports with 0 period means last value

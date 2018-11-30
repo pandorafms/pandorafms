@@ -336,6 +336,16 @@ if (is_ajax ()) {
 			$filter .= ' AND t1.id_agente_modulo IN (SELECT id_agente_modulo FROM tagente_estado where ' . $sql_conditions;
 		}
 
+		$sql_tags_join = "";
+		$where_tags = "";
+		if (tags_has_user_acl_tags($config['id_user'])) {
+			$where_tags = tags_get_acl_tags($config['id_user'], $id_groups, 'AR',
+				'module_condition', 'AND', 'tagente_modulo', false, array(), true);
+
+			$sql_tags_join = "INNER JOIN tagente ON tagente.id_agente = t1.id_agente
+					INNER JOIN ttag_module ON ttag_module.id_agente_modulo = t1.id_agente_modulo";
+		}
+
 		if (is_metaconsole()) {
 			$result = array();
 			$nameModules = array();
@@ -396,9 +406,10 @@ if (is_ajax ()) {
 				}
 
 				//Get agent's modules
-				$sql = sprintf('SELECT t1.id_agente, t1.id_agente_modulo, t1.nombre
-								FROM tagente_modulo t1
-								WHERE %s
+				$sql = sprintf(
+					'SELECT t1.id_agente, t1.id_agente_modulo, t1.nombre
+								FROM tagente_modulo t1 %s
+								WHERE %s %s
 									AND t1.delete_pending = 0
 									AND t1.id_agente IN (%s)
 									AND (
@@ -407,7 +418,7 @@ if (is_ajax ()) {
 										WHERE t2.delete_pending = 0
 											AND t1.nombre = t2.nombre
 											AND t2.id_agente IN (%s)) = (%d)',
-					$filter, implode(',', $id_agents),
+					$sql_tags_join, $filter, $where_tags, implode(',', $id_agents),
 					implode(',', $id_agents), count($id_agents));
 
 				$modules = db_get_all_rows_sql($sql);
@@ -458,34 +469,27 @@ if (is_ajax ()) {
 		}
 		else {
 			if($idAgents[0] < 0){
-				if($selection_mode == 'common'){
+				if($selection_mode == 'common') {
 					$sql_agent_total = 'SELECT count(*) FROM tagente WHERE disabled=0';
 					$agent_total = db_get_value_sql($sql_agent_total);
-					$sql = "SELECT tam.nombre, tam.id_agente_modulo
-							FROM tagente_modulo tam
-							JOIN (
-							SELECT COUNT(*) AS num_names, nombre
-							FROM tagente_modulo
-							WHERE disabled=0
-							AND delete_pending=0
-							GROUP BY nombre
-							) AS tj
-							ON tj.num_names = $agent_total
-								AND tj.nombre = tam.nombre ";
-				}
-				else{
-					$sql = 'SELECT nombre, id_agente_modulo
-							FROM tagente_modulo';
+					$sql = sprintf ("SELECT t1.nombre, t1.id_agente_modulo FROM tagente_modulo t1
+						JOIN (SELECT COUNT(*) AS num_names, nombre FROM tagente_modulo
+						WHERE disabled=0 AND delete_pending=0 GROUP BY nombre) AS tj
+						ON tj.num_names = $agent_total AND tj.nombre = t1.nombre %s %s",
+						$sql_tags_join, (empty($where_tags)) ? "" : " WHERE 1=1 $where_tags");
+				} else {
+					$sql = sprintf('SELECT t1.nombre, t1.id_agente_modulo FROM tagente_modulo t1 %s %s', 
+						$sql_tags_join, (empty($where_tags)) ? "" : " WHERE 1=1 $where_tags");
 				}
 			}
 			else {
-				$sql = 'SELECT DISTINCT nombre, t1.id_agente_modulo
-						FROM tagente_modulo t1, tagente_estado t2
-						WHERE t1.id_agente_modulo = t2.id_agente_modulo AND
-						' . $filter . '
-							AND t1.delete_pending = 0
-							AND t1.id_agente IN (' . implode(',', $idAgents) . ')
-							AND t2.datos NOT LIKE "%image%"';
+				$sql = sprintf (
+					'SELECT DISTINCT t1.nombre, t1.id_agente_modulo FROM tagente_modulo t1
+					INNER JOIN tagente_estado t2 ON t1.id_agente_modulo = t2.id_agente_modulo 
+					%s WHERE %s AND t1.delete_pending = 0 
+					AND t1.id_agente IN ('. implode(',', $idAgents) .') 
+					%s %s', 
+					$sql_tags_join, $filter, ' AND t2.datos NOT LIKE "%image%"', $where_tags);
 
 				if ($selection_mode == 'common') {
 					$sql .= ' AND (

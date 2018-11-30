@@ -3640,7 +3640,9 @@ function reporting_get_event_histogram ($events, $text_header_event = false) {
 			0,
 			array(),
 			true,
-			$ttl
+			$ttl,
+			false,
+			false
 		);
 
 		$table->data[0][0] = $slicebar;
@@ -3823,7 +3825,9 @@ function reporting_get_event_histogram_meta ($width) {
 			0,
 			$full_legend_date,
 			true,
-			1
+			1,
+			false,
+			false
 		);
 
 		$table->data[0][0] = $slicebar;

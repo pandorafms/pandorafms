@@ -670,7 +670,7 @@ function pandoraFlotVBars(graph_id, values, labels, labels_long, legend, colors,
 }
 
 function pandoraFlotSlicebar(graph_id, values, datacolor, labels, legend, acumulate_data, intervaltick,
-	font, font_size, separator, separator2, id_agent, full_legend, not_interactive) {
+	font, font_size, separator, separator2, id_agent, full_legend, not_interactive, show_date) {
 
 	values = values.split(separator2);
 	labels = labels.split(separator);
@@ -728,6 +728,7 @@ function pandoraFlotSlicebar(graph_id, values, datacolor, labels, legend, acumul
 			tickColor: '#fff'
 			},
 		xaxes: [ {
+				show:show_date,
 				tickFormatter: xFormatter,
 				color: '',
 				tickSize: intervaltick,

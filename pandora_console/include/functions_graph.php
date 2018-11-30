@@ -2456,7 +2456,9 @@ function graph_sla_slicebar (
 		0,
 		array(),
 		true,
-		$ttl
+		$ttl,
+		false,
+		false
 	);
 }
 

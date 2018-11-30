@@ -191,7 +191,7 @@ function get_custom_fields_data ($custom_field_name) {
 }
 
 function agent_counters_custom_fields($filters){
-	//filter by status
+	//filter by status agent
 	$and_status = "";
 	if(is_array($filters['id_status'])){
 		if(!in_array(-1, $filters['id_status'])){
@@ -241,17 +241,100 @@ function agent_counters_custom_fields($filters){
 		}
 	}
 
+	//filter by status module
+	$and_module_status = "";
+	if(is_array($filters['module_status'])){
+		if(!in_array(-1, $filters['module_status'])){
+			if(!in_array(AGENT_MODULE_STATUS_NOT_NORMAL, $filters['module_status'])){
+				if(count($filters['module_status']) > 0){
+					$and_module_status = " AND ( ";
+					foreach ($filters['module_status'] as $key => $value) {
+						$and_module_status .= ($key != 0)
+							? " OR ("
+							: " (";
+						switch ($value) {
+							default:
+							case AGENT_STATUS_NORMAL:
+								$and_module_status .= " tae.estado = 0 OR tae.estado = 300 ) ";
+								break;
+							case AGENT_STATUS_CRITICAL:
+								$and_module_status .= " tae.estado = 1 OR tae.estado = 100 ) ";
+								break;
+							case AGENT_STATUS_WARNING:
+								$and_module_status .= " tae.estado = 2 OR tae.estado = 200 ) ";
+								break;
+							case AGENT_STATUS_UNKNOWN:
+								$and_module_status .= " tae.estado = 3 ) ";
+								break;
+							case AGENT_STATUS_NOT_INIT:
+								$and_module_status .= " tae.estado = 4 OR tae.estado = 5 ) ";
+								break;
+						}
+					}
+					$and_module_status .= " ) ";
+				}
+			}
+			else{
+				//not normal
+				$and_module_status = "AND tae.estado <> 0 AND tae.estado <> 300 ";
+			}
+		}
+	}
+
+	//filters module
+	if($filters['module_search']){
+		$and_module_search = 'AND nombre LIKE "%' . $filters['module_search'] . '%"';
+	}
+
+	$module_filter = "";
+	if($and_module_search != '' || $and_module_status != ''){
+		$module_filter = ' AND (
+			SELECT count(*) AS n
+			FROM tagente_modulo tam
+			INNER JOIN tagente_estado tae
+				ON tae.id_agente_modulo = tam.id_agente
+			WHERE tam.id_agente=ta.id_agente
+				'. $and_module_search . ' ' . $and_module_status .'
+		) > 0 ';
+	}
+
 	//filter group and check ACL groups
 	$groups_and = "";
 	if (!users_can_manage_group_all("AR")) {
-		if(!$filters['group']){
-			$id_groups = explode(", ", array_keys(users_get_groups()));
+		if($filters['group']){
+			$user_groups = array_keys(users_get_groups());
+			$id_groups = implode(", ", $user_groups);
 			$groups_and = " AND (ta.id_grupo IN ($id_groups) OR tasg.id_group IN($id_groups))";
 		}
 	}
 
 	if($filters['group']){
-		$groups_and = " AND (ta.id_grupo =". $filters['group']." OR tasg.id_group =". $filters['group'].")";
+		//recursion check acl
+		if($filters['recursion']){
+			$recursion_groups = groups_get_id_recursive($filters['group'], true);
+			if (!users_can_manage_group_all("AR")) {
+				if(isset($user_groups) && is_array($user_groups)){
+					$groups_intersect = array_intersect($user_groups, $recursion_groups);
+					if(isset($groups_intersect) && is_array($groups_intersect)){
+						$groups_intersect = implode(", ", $groups_intersect);
+						$groups_and = " AND (ta.id_grupo IN ($groups_intersect) OR tasg.id_group IN($groups_intersect))";
+					}
+					else{
+						return false;
+					}
+				}
+				else{
+					return false;
+				}
+			}
+			else{
+				$recursion_groups = implode(", ", $recursion_groups);
+				$groups_and = " AND (ta.id_grupo IN ($recursion_groups) OR tasg.id_group IN($recursion_groups))";
+			}
+		}
+		else{
+			$groups_and = " AND (ta.id_grupo =". $filters['group']." OR tasg.id_group =". $filters['group'].")";
+		}
 	}
 
 	//filter custom data
@@ -263,17 +346,6 @@ function agent_counters_custom_fields($filters){
 
 	//filter custom name
 	$custom_field_name = $filters['id_custom_fields'];
-
-	//filters module
-	$module_filter = "";
-	if($filters['module_search']){
-		$module_filter = ' AND (
-			SELECT count(*) AS n
-			FROM tagente_modulo
-			WHERE nombre LIKE "%' . $filters['module_search'] . '%"
-				AND id_agente=ta.id_agente
-		) > 0 ';
-	}
 
 	if(is_metaconsole()){
 		$metaconsole_connections = metaconsole_get_connection_names();

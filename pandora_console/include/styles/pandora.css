@@ -1384,7 +1384,7 @@ table.databox {
 	border: 0px none #E2E2E2;
 }
 
-.databox>thead>tr>th, .databox>tbody>tr>th {
+.databox>thead>tr>th, .databox>tbody>tr>th, .databox>thead>tr>th a {
 	padding: 9px 7px;
 	font-weight: normal;
 	color: #fff;

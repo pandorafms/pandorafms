@@ -120,6 +120,7 @@ if (isset($config["error"])) {
 // If metaconsole activated, redirect to it
 if ($config['metaconsole'] == 1 && $config['enterprise_installed'] == 1) {
 	header ("Location: " . $config['homeurl'] . "enterprise/meta");
+	exit; //Always exit after sending location headers
 }
 
 if (file_exists (ENTERPRISE_DIR . "/include/functions_login.php")) {
@@ -568,6 +569,7 @@ if (! isset ($config['id_user'])) {
 			$redirect_url .= '&'.safe_url_extraclean($key).'='.safe_url_extraclean($value);
 		}
 		header("Location: ".$config['homeurl']."index.php".$redirect_url);
+		exit; //Always exit after sending location headers
 	}
 	// Hash login process
 	elseif (isset ($_GET["loginhash"])) {

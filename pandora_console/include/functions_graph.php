@@ -238,7 +238,7 @@ function grafico_modulo_sparse_data(
 		}
 	}
 
-	if($array_data === false){
+	if($array_data === false || !isset($array_data['sum1']['data'][0][1])){
 		return false;
 	}
 
@@ -912,7 +912,9 @@ function grafico_modulo_sparse ($params) {
 		else{
 			$return = graph_nodata_image(
 				$params['width'],
-				$params['height']
+				$params['height'],
+				'area',
+				__('No data to display within the selected interval')
 			);
 		}
 	}
@@ -2456,7 +2458,9 @@ function graph_sla_slicebar (
 		0,
 		array(),
 		true,
-		$ttl
+		$ttl,
+		false,
+		false
 	);
 }
 
@@ -3282,13 +3286,10 @@ function graph_graphic_moduleevents ($id_agent, $id_module, $width, $height, $pe
 
 	$data = array ();
 
-	//$resolution = $config['graph_res'] * ($period * 2 / $width); // Number of "slices" we want in graph
-	$resolution = 5 * ($period * 2 / $width); // Number of "slices" we want in graph
-	$interval = (int) ($period / $resolution);
-	$date = get_system_time ();
+	$interval = 24;
+	$date = get_system_time();
 	$datelimit = $date - $period;
 	$periodtime = floor ($period / $interval);
-	$time = array ();
 	$data = array ();
 	$legend = array();
 	$full_legend = array();
@@ -3592,6 +3593,7 @@ function fullscale_data (
 		}
 	}
 	else{
+		if ($data_uncompress === false) $data_uncompress = array();
 		foreach ($data_uncompress as $k) {
 			foreach ($k["data"] as $v) {
 				if (isset($v["type"]) && $v["type"] == 1) { # skip unnecesary virtual data
@@ -3660,7 +3662,9 @@ function fullscale_data (
 
 		$data["sum" . $series_suffix]['min'] = $min_value_min;
 		$data["sum" . $series_suffix]['max'] = $max_value_max;
-		$data["sum" . $series_suffix]['avg'] = $sum_data/$count_data;
+		$data["sum" . $series_suffix]['avg'] = $count_data == 0
+			? 0
+			: $sum_data/$count_data;
 	}
 
 	if($show_percentil && !$compare){
@@ -4068,19 +4072,17 @@ function graphic_module_events ($id_module, $width, $height, $period = 0, $homeu
 }
 
 function graph_nodata_image($width = 300, $height = 110, $type = 'area', $text = '') {
-	$image = ui_get_full_url('images/image_problem_area_small.png',
+	$image = ui_get_full_url('images/image_problem_area.png',
 		false, false, false); 
 	
 	// if ($text == '') {
 	// 	$text = __('No data to show');
 	// }
+	$text_div = '<div class="nodata_text" style="text-align:center;     padding: 30px 0; display:block; font-size:9.5pt;">' . $text . '</div>';
 	
-	$text_div = '<div class="nodata_text">' . $text . '</div>';
+	$image_div = $text_div . '<div class="nodata_container" style="background-position: top; width:40%;height:40%;background-size: contain;background-image: url(\'' . $image . '\');"><div></div></div>';
 	
-	$image_div = '<div class="nodata_container" style="width:80%;height:80%;background-size: 80% 80%;background-image: url(\'' . $image . '\');">' .
-		$text_div . '</div>';
-	
-	$div = '<div style="width:' . $width . 'px; height:' . $height . 'px; border: 1px dotted #ddd; background-color: white; margin: 0 auto;">' .
+	$div = '<div style="width:' . $width . 'px; height:' . $height . 'px; background-color: white; margin: 0 auto;">' .
 		$image_div . '</div>';
 	
 	return $div;

@@ -144,6 +144,35 @@ function reporting_make_reporting_data($report = null, $id_report,
 	$metaconsole_on = is_metaconsole();
 	$index_content = 0;
 	foreach ($contents as $content) {
+
+		if (!empty($content["id_agent_module"]) && !empty($content["id_agent"])
+			&& tags_has_user_acl_tags($config['id_user'])) {
+			$where_tags = tags_get_acl_tags(
+				$config['id_user'],
+				$id_groups,
+				'AR',
+				'module_condition',
+				'AND',
+				'tagente_modulo',
+				false,
+				array(),
+				true);
+
+			$sql_tags_join = "INNER JOIN tagente ON tagente.id_agente = t1.id_agente
+				INNER JOIN ttag_module ON ttag_module.id_agente_modulo = t1.id_agente_modulo";
+
+			$sql = sprintf('SELECT count(*) FROM tagente_modulo t1
+				%s WHERE t1.delete_pending = 0 AND t1.id_agente_modulo = '. $content["id_agent_module"] .'
+				AND t1.id_agente = ' . $content['id_agent'] . ' %s',
+				$sql_tags_join, $where_tags);
+
+			$result_tags = db_get_value_sql($sql);
+
+			if (!$result_tags) {
+				continue;
+			}
+		}
+
 		$server_name = $content['server_name'];
 		
 		// General reports with 0 period means last value
@@ -218,11 +247,11 @@ function reporting_make_reporting_data($report = null, $id_report,
 				}
 			}
 			
-			if(sizeof($content['id_agent']) != 1){
+			if(is_array($content['id_agent']) && sizeof($content['id_agent']) != 1){
 				$content['style']['name_label'] = str_replace("_agent_",sizeof($content['id_agent']).__(' agents'),$content['style']['name_label']);
 			}
 
-			if(sizeof($content['id_agent_module']) != 1){
+			if(is_array($content['id_agent_module']) &&  sizeof($content['id_agent_module']) != 1){
 				$content['style']['name_label'] = str_replace("_module_",sizeof($content['id_agent_module']).__(' modules'),$content['style']['name_label']);
 			}
 
@@ -6063,6 +6092,7 @@ function reporting_general($report, $content) {
 	$i = 0;
 	$index = 0;
 	$is_string = array();
+
 	foreach ($generals as $row) {
 		//Metaconsole connection
 		$server_name = $row ['server_name'];
@@ -6352,7 +6382,17 @@ function reporting_custom_graph($report, $content, $type = 'dinamic',
 			}
 		}
 		else{
-			$modules[] = $content['id_agent_module'];
+			if ($content['id_agent_module']) {
+				$modules[] = $content['id_agent_module'];
+			} else {
+				// restore to metaconsole database
+				metaconsole_restore_db();
+				$module_source = db_get_all_rows_sql("SELECT id_agent_module FROM tgraph_source WHERE id_graph = " . $content['id_gs']);
+				foreach ($module_source as $key => $value) {
+					$modules[$key] = $value['id_agent_module'];
+				}
+				metaconsole_connect($server);
+			}
 		}
 		$id_graph = 0;
 	}
@@ -6407,7 +6447,7 @@ function reporting_custom_graph($report, $content, $type = 'dinamic',
 			break;
 	}
 
-	if ($config['metaconsole'] && $type_report != 'automatic_graph') {
+	if ($config['metaconsole']) {
 		metaconsole_restore_db();
 	}
 
@@ -7503,8 +7543,8 @@ function reporting_get_stats_alerts($data, $links = false) {
 			$urls['monitor_alerts'] = "index.php?sec=estado&sec2=operation/agentes/alerts_status&pure=" . $config['pure'];
 			$urls['monitor_alerts_fired'] = "index.php?sec=estado&sec2=operation/agentes/alerts_status&filter=fired&pure=" . $config['pure'];
 		} else {
-			$urls['monitor_alerts'] = "index.php?sec=estado&amp;sec2=operation/agentes/alerts_status&amp;refr=60";
-			$urls['monitor_alerts_fired'] = "index.php?sec=estado&amp;sec2=operation/agentes/alerts_status&amp;refr=60&filter=fired";
+			$urls['monitor_alerts'] = $config['homeurl']."index.php?sec=estado&amp;sec2=operation/agentes/alerts_status&amp;refr=60";
+			$urls['monitor_alerts_fired'] = $config['homeurl']."index.php?sec=estado&amp;sec2=operation/agentes/alerts_status&amp;refr=60&filter=fired";
 		}
 	}
 	
@@ -7560,19 +7600,19 @@ function reporting_get_stats_modules_status($data, $graph_width = 250, $graph_he
 	// Link URLS
 	if ($links === false) {
 		$urls = array();
-		$urls['monitor_critical'] = "index.php?" .
+		$urls['monitor_critical'] = $config['homeurl']."index.php?" .
 			"sec=view&amp;sec2=operation/agentes/status_monitor&amp;" .
 			"refr=60&amp;status=" . AGENT_MODULE_STATUS_CRITICAL_BAD . "&pure=" . $config['pure'];
-		$urls['monitor_warning'] = "index.php?" .
+		$urls['monitor_warning'] = $config['homeurl']."index.php?" .
 			"sec=view&amp;sec2=operation/agentes/status_monitor&amp;" .
 			"refr=60&amp;status=" . AGENT_MODULE_STATUS_WARNING . "&pure=" . $config['pure'];
-		$urls['monitor_ok'] = "index.php?" .
+		$urls['monitor_ok'] = $config['homeurl']."index.php?" .
 			"sec=view&amp;sec2=operation/agentes/status_monitor&amp;" .
 			"refr=60&amp;status=" . AGENT_MODULE_STATUS_NORMAL . "&pure=" . $config['pure'];
-		$urls['monitor_unknown'] = "index.php?" .
+		$urls['monitor_unknown'] = $config['homeurl']."index.php?" .
 			"sec=view&amp;sec2=operation/agentes/status_monitor&amp;" .
 			"refr=60&amp;status=" . AGENT_MODULE_STATUS_UNKNOWN . "&pure=" . $config['pure'];
-		$urls['monitor_not_init'] = "index.php?" .
+		$urls['monitor_not_init'] = $config['homeurl']."index.php?" .
 			"sec=view&amp;sec2=operation/agentes/status_monitor&amp;" .
 			"refr=60&amp;status=" . AGENT_MODULE_STATUS_NOT_INIT . "&pure=" . $config['pure'];
 	}
@@ -7675,8 +7715,8 @@ function reporting_get_stats_agents_monitors($data) {
 	}
 	else {
 		$urls = array();
-		$urls['total_agents'] = "index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=60";
-		$urls['monitor_checks'] = "index.php?sec=view&amp;sec2=operation/agentes/status_monitor&amp;refr=60&amp;status=-1";
+		$urls['total_agents'] = $config['homeurl']."index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=60";
+		$urls['monitor_checks'] = $config['homeurl']."index.php?sec=view&amp;sec2=operation/agentes/status_monitor&amp;refr=60&amp;status=-1";
 	}
 	
 	// Agents and modules table

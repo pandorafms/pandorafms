@@ -670,7 +670,7 @@ function pandoraFlotVBars(graph_id, values, labels, labels_long, legend, colors,
 }
 
 function pandoraFlotSlicebar(graph_id, values, datacolor, labels, legend, acumulate_data, intervaltick,
-	font, font_size, separator, separator2, id_agent, full_legend, not_interactive) {
+	font, font_size, separator, separator2, id_agent, full_legend, not_interactive, show_date) {
 
 	values = values.split(separator2);
 	labels = labels.split(separator);
@@ -728,6 +728,7 @@ function pandoraFlotSlicebar(graph_id, values, datacolor, labels, legend, acumul
 			tickColor: '#fff'
 			},
 		xaxes: [ {
+				show:show_date,
 				tickFormatter: xFormatter,
 				color: '',
 				tickSize: intervaltick,
@@ -1873,7 +1874,7 @@ function pandoraFlotArea( graph_id, values, legend,
 			}));
 		}
 
-		$('#menu_cancelzoom_' + graph_id).attr('src', homeurl + '/images/zoom_cross_grey.png');
+		$('#menu_cancelzoom_' + graph_id).attr('src', homeurl + 'images/zoom_cross_grey.png');
 
 		max_draw['max'] = ranges.yaxis.to;
 		max_draw['min'] = ranges.yaxis.from;
@@ -2330,7 +2331,7 @@ function pandoraFlotArea( graph_id, values, legend,
 					legend: { show: true }
 				}));
 			$('#menu_cancelzoom_' + graph_id)
-				.attr('src', homeurl + '/images/zoom_cross.disabled.png');
+				.attr('src', homeurl + 'images/zoom_cross.disabled.png');
 			overview.clearSelection();
 			currentRanges = null;
 			thresholded = false;

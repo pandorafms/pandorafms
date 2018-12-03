@@ -853,10 +853,15 @@ function events_print_event_table ($filter = "", $limit = 10, $width = 440, $ret
 		$filter = '1 = 1';
 	}
 
+	$secondary_join = '';
+	if (!users_can_manage_group_all("ER")) {
+		$secondary_join = "LEFT JOIN tagent_secondary_group tasg ON tevento.id_agente = tasg.id_agent";
+	}
+
 	$sql = sprintf ("SELECT DISTINCT tevento.*
-		FROM tevento LEFT JOIN tagent_secondary_group tasg ON tevento.id_agente = tasg.id_agent
+		FROM tevento %s
 		WHERE %s %s
-		ORDER BY utimestamp DESC LIMIT %d", $agent_condition, $filter, $limit);
+		ORDER BY utimestamp DESC LIMIT %d", $secondary_join, $agent_condition, $filter, $limit);
 
 	$result = db_get_all_rows_sql ($sql);
 

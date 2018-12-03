@@ -27,9 +27,9 @@ check_login ();
 
 $auth_method = db_get_value('value', 'tconfig', 'token', 'auth');
 
-if($auth_method != 'ad')
+if($auth_method != 'ad' && $auth_method != 'ldap'){
 	require_once("auth/" . $auth_method . ".php");
-
+}
 
 
 $styleError = "background:url(\"../images/err.png\") no-repeat scroll 0 0 transparent; padding:4px 1px 6px 30px; color:#CC0000;";

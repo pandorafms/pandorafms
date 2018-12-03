@@ -2721,7 +2721,7 @@ function init_graph(parameter_object) {
 	}
 	window.scale_minimap = 4.2;
 	window.translation = [0, 0];
-	window.scale = (typeof (z_dash) != "undefined") ? z_dash : 0.5;
+	window.scale = z_dash || 0.5;
 	window.node_radius = 40;
 	if (typeof (parameter_object.node_radius) != "undefined") {
 		window.node_radius = parameter_object.node_radius;

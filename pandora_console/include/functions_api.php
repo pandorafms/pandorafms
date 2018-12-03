@@ -7667,14 +7667,14 @@ function api_set_alert_actions($id, $id2, $other, $trash1) {
 
 /**
  * Create a new alert command
- * @param $id as command name
- *  other=<serialized_parameters> (optional). Are the following in this order:
+ * @param $id as command name  (optional)
+ *  other=<serialized_parameters> (mandatory). Are the following in this order:
  *	<name>
- *	<command>
- *	<id_group>
- *	<description>
- *	<internal>
- *	<field_description_1><field_value_1><field_description_2><field_value_2>...<field_description_n><field_value_n>
+ *	<command> (mandatory)
+ *	<id_group> (optional)
+ *	<description> (optional)
+ *	<internal> (optional)
+ *	<field_description_1><field_value_1><field_description_2><field_value_2>...<field_description_n><field_value_n> (optional)
 
  example:
 
@@ -7684,7 +7684,9 @@ function api_set_alert_commands($id, $thrash2, $other, $trash1) {
 	global $config;
 
 	$command = $other['data'][0];
-	$id_group = $other['data'][1];
+	$id_group = 0;
+	if ($other['data'][1] != '')
+		$id_group = $other['data'][1];
 	$description = $other['data'][2];
 	$internal = $other['data'][3];
 

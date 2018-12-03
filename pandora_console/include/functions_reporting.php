@@ -7543,8 +7543,8 @@ function reporting_get_stats_alerts($data, $links = false) {
 			$urls['monitor_alerts'] = "index.php?sec=estado&sec2=operation/agentes/alerts_status&pure=" . $config['pure'];
 			$urls['monitor_alerts_fired'] = "index.php?sec=estado&sec2=operation/agentes/alerts_status&filter=fired&pure=" . $config['pure'];
 		} else {
-			$urls['monitor_alerts'] = "index.php?sec=estado&amp;sec2=operation/agentes/alerts_status&amp;refr=60";
-			$urls['monitor_alerts_fired'] = "index.php?sec=estado&amp;sec2=operation/agentes/alerts_status&amp;refr=60&filter=fired";
+			$urls['monitor_alerts'] = $config['homeurl']."index.php?sec=estado&amp;sec2=operation/agentes/alerts_status&amp;refr=60";
+			$urls['monitor_alerts_fired'] = $config['homeurl']."index.php?sec=estado&amp;sec2=operation/agentes/alerts_status&amp;refr=60&filter=fired";
 		}
 	}
 	
@@ -7600,19 +7600,19 @@ function reporting_get_stats_modules_status($data, $graph_width = 250, $graph_he
 	// Link URLS
 	if ($links === false) {
 		$urls = array();
-		$urls['monitor_critical'] = "index.php?" .
+		$urls['monitor_critical'] = $config['homeurl']."index.php?" .
 			"sec=view&amp;sec2=operation/agentes/status_monitor&amp;" .
 			"refr=60&amp;status=" . AGENT_MODULE_STATUS_CRITICAL_BAD . "&pure=" . $config['pure'];
-		$urls['monitor_warning'] = "index.php?" .
+		$urls['monitor_warning'] = $config['homeurl']."index.php?" .
 			"sec=view&amp;sec2=operation/agentes/status_monitor&amp;" .
 			"refr=60&amp;status=" . AGENT_MODULE_STATUS_WARNING . "&pure=" . $config['pure'];
-		$urls['monitor_ok'] = "index.php?" .
+		$urls['monitor_ok'] = $config['homeurl']."index.php?" .
 			"sec=view&amp;sec2=operation/agentes/status_monitor&amp;" .
 			"refr=60&amp;status=" . AGENT_MODULE_STATUS_NORMAL . "&pure=" . $config['pure'];
-		$urls['monitor_unknown'] = "index.php?" .
+		$urls['monitor_unknown'] = $config['homeurl']."index.php?" .
 			"sec=view&amp;sec2=operation/agentes/status_monitor&amp;" .
 			"refr=60&amp;status=" . AGENT_MODULE_STATUS_UNKNOWN . "&pure=" . $config['pure'];
-		$urls['monitor_not_init'] = "index.php?" .
+		$urls['monitor_not_init'] = $config['homeurl']."index.php?" .
 			"sec=view&amp;sec2=operation/agentes/status_monitor&amp;" .
 			"refr=60&amp;status=" . AGENT_MODULE_STATUS_NOT_INIT . "&pure=" . $config['pure'];
 	}
@@ -7715,8 +7715,8 @@ function reporting_get_stats_agents_monitors($data) {
 	}
 	else {
 		$urls = array();
-		$urls['total_agents'] = "index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=60";
-		$urls['monitor_checks'] = "index.php?sec=view&amp;sec2=operation/agentes/status_monitor&amp;refr=60&amp;status=-1";
+		$urls['total_agents'] = $config['homeurl']."index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=60";
+		$urls['monitor_checks'] = $config['homeurl']."index.php?sec=view&amp;sec2=operation/agentes/status_monitor&amp;refr=60&amp;status=-1";
 	}
 	
 	// Agents and modules table

@@ -533,4 +533,13 @@ function get_filters_custom_fields_view($id = 0, $for_select = false, $name = ""
 	}
 	return $result;
 }
+
+function get_group_filter_custom_field_view ($id){
+	if(isset($id)){
+		$res = db_get_row_filter('tagent_custom_fields_filter',array('id' => $id));
+		return $res;
+	}
+	return false;
+}
+
 ?>

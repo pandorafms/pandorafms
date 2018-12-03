@@ -32,6 +32,7 @@ $append_tab_filter = (bool)get_parameter('append_tab_filter', 0);
 $create_filter_cf = (bool)get_parameter('create_filter_cf', 0);
 $update_filter_cf = (bool)get_parameter('update_filter_cf', 0);
 $delete_filter_cf = (bool)get_parameter('delete_filter_cf', 0);
+$change_name_filter = (bool)get_parameter('change_name_filter', 0);
 
 if ($get_custom_fields_data){
 	$name_custom_fields = get_parameter("name_custom_fields", 0);
@@ -457,7 +458,7 @@ if($build_table_save_filter){
 		$table->id = 'save_filter_form';
 		$table->width = '100%';
 		$table->class = 'databox';
-		
+
 		$array_filters = get_filters_custom_fields_view(0, true);
 		$table->data[0][0] = __('Filter name');
 		$table->data[0][1] = html_print_select(
@@ -465,9 +466,10 @@ if($build_table_save_filter){
 			'', '', '', '',
 			true, false, true, '', false
 		);
+
 		$table->data[0][3] = html_print_submit_button (__('Load filter'), 'load_filter', false, 'class="sub upd"', true);
-		
-		echo "<form action='' method='post'>"; 
+
+		echo "<form action='' method='post'>";
 			html_print_table($table);
 		echo "</form>";
 	}
@@ -486,7 +488,16 @@ if($append_tab_filter){
 		echo "<div id='msg_error_create'></div>";
 		$table->data[0][0] = __('Filter name');
 		$table->data[0][1] = html_print_input_text('id_name', '', '', 15, 255, true);
-		$table->data[0][2] = html_print_submit_button (__('Create filter'), 'create_filter', false, 'class="sub upd"', true);
+
+		$table->data[0][2] = __('Group');
+		$table->data[0][3] = html_print_select_groups(
+			$config['id_user'], 'AR', true, 'group_search',
+			0, '',  '', '0', true, false,
+			false, '', false, '', false, false,
+			'id_grupo', false
+		);
+
+		$table->data[0][4] = html_print_submit_button (__('Create filter'), 'create_filter', false, 'class="sub upd"', true);
 	}
 	else{
 		echo "<div id='msg_error_update'></div>";
@@ -494,12 +505,22 @@ if($append_tab_filter){
 		$array_filters = get_filters_custom_fields_view(0, true);
 		$table->data[0][0] = __('Filter name');
 		$table->data[0][1] = html_print_select(
-			$array_filters, 'id_name',
-			'', '', __('None'), -1,
-			true, false, true, '', false
+			$array_filters, 'id_name', '',
+			'filter_name_change_group(this.value)',
+			__('None'), -1, true, false, true,
+			'', false
 		);
+
+		$table->data[1][0] = __('Group');
+		$table->data[1][1] = html_print_select_groups(
+			$config['id_user'], 'AR', true, 'group_search_up',
+			$group, '',  '', '0', true, false,
+			false, '', false, '', false, false,
+			'id_grupo', false
+		);
+
 		$table->data[0][2] = html_print_submit_button (__('Delete filter'), 'delete_filter', false, 'class="sub upd"', true);
-		$table->data[0][3] = html_print_submit_button (__('Update filter'), 'update_filter', false, 'class="sub upd"', true);
+		$table->data[1][2] = html_print_submit_button (__('Update filter'), 'update_filter', false, 'class="sub upd"', true);
 	}
 
 	html_print_table($table);
@@ -515,6 +536,7 @@ if($create_filter_cf){
 	//initialize vars
 	$filters = json_decode(io_safe_output(get_parameter("filters", '')), true);
 	$name_filter = get_parameter("name_filter", '');
+	$group_search = get_parameter("group_search", 0);
 
 	//check that the name is not empty
 	if($name_filter == ''){
@@ -553,6 +575,7 @@ if($create_filter_cf){
 	//insert
 	$values = array();
 	$values['name'] = $name_filter;
+	$values['group_search'] = $group_search;
 	$values['id_group'] = $filters['group'];
 	$values['id_custom_field'] = $filters['id_custom_fields'];
 	$values['id_custom_fields_data'] = json_encode($filters['id_custom_fields_data']);
@@ -591,6 +614,7 @@ if($update_filter_cf){
 	//initialize vars
 	$filters = json_decode(io_safe_output(get_parameter("filters", '')), true);
 	$id_filter = get_parameter("id_filter", '');
+	$group_search = get_parameter("group_search", 0);
 
 	//check selected filter
 	if($id_filter == -1){
@@ -621,6 +645,7 @@ if($update_filter_cf){
 	//array values update
 	$values = array();
 	$values['id_group'] = $filters['group'];
+	$values['group_search'] = $group_search;
 	$values['id_custom_field'] = $filters['id_custom_fields'];
 	$values['id_custom_fields_data'] = json_encode($filters['id_custom_fields_data']);
 	$values['id_status'] = json_encode($filters['id_status']);
@@ -697,6 +722,16 @@ if($delete_filter_cf){
 	return;
 }
 
+if($change_name_filter){
+	$id_filter = get_parameter("id_filter", 0);
+	if(isset($id_filter)){
+		$res = get_group_filter_custom_field_view($id_filter);
+		echo json_encode($res);
+		return;
+	}
+
+	return json_encode(false);
+}
 
 
 

@@ -11871,8 +11871,142 @@ function util_api_check_agent_and_print_error($id_agent, $returnType, $access = 
 	return false;
 }
 
+function api_set_validate_traps ($id, $thrash2, $other, $thrash3) {
+	
+	if (defined ('METACONSOLE')) {
+		return;
+	}
+	
+	if($id == 'all'){
+		$result = db_process_sql_update('ttrap',array('status' => 1));	
+	}
+	else{
+		$result = db_process_sql_update('ttrap',
+			array('status' => 1), array('id_trap' => $id));	
+	}
+	
+	if (is_error($result)) {
+		// TODO: Improve the error returning more info
+		returnError('error_update_trap', __('Error in trap update.'));
+	}
+	else {
+			returnData('string',
+				array('type' => 'string',
+					'data' => __('Validated traps.')));
+		}
+	}
+	
+	function api_set_delete_traps ($id, $thrash2, $other, $thrash3) {
+		
+		if (defined ('METACONSOLE')) {
+			return;
+		}
+		
+		if($id == 'all'){
+			$result = db_process_sql ('delete from ttrap');
+		}
+		else{
+			$result = db_process_sql_delete('ttrap',array('id_trap' => $id));	
+		}
+		
+		if (is_error($result)) {
+			// TODO: Improve the error returning more info
+			returnError('error_delete_trap', __('Error in trap delete.'));
+		}
+		else {
+				returnData('string',
+					array('type' => 'string',
+						'data' => __('Deleted traps.')));
+			}
+		}
+		
+		function api_get_group_id_by_name($thrash1, $thrash2, $other, $thrash3) {
+			if (defined ('METACONSOLE')) {
+				return;
+			}
+						
+			$sql = sprintf('SELECT id_grupo
+				FROM tgrupo WHERE nombre = "'.$other['data'].'"');
+			
+			$group_id = db_get_all_rows_sql($sql);
+			
+			if (count($group_id) > 0 and $group_id !== false) {
+				$data = array('type' => 'array', 'data' => $group_id);
+				
+				returnData('csv', $data, ';');
+			}
+			else {
+				returnError('error_group_name', 'No groups retrieved.');
+			}
+		}
+		
+		function api_get_timezone($thrash1, $thrash2, $other, $thrash3) {
+			if (defined ('METACONSOLE')) {
+				return;
+			}
+						
+			$sql = sprintf('SELECT value
+				FROM tconfig WHERE token = "timezone"');
+			
+			$timezone = db_get_all_rows_sql($sql);
+			
+			if (count($timezone) > 0 and $timezone !== false) {
+				
+				$data = array('type' => 'string', 'data' => $timezone);
+				
+				returnData('string',array('type' => 'string','data' => $data['data'][0]['value']));
+				
+			}
+			else {
+				returnError('error_timezone', 'No timezone retrieved.');
+			}
+		}
 
-
+		function api_get_language($thrash1, $thrash2, $other, $thrash3) {
+			if (defined ('METACONSOLE')) {
+				return;
+			}
+						
+			$sql = sprintf('SELECT value
+				FROM tconfig WHERE token = "language"');
+			
+			$language = db_get_all_rows_sql($sql);
+			
+			if (count($language) > 0 and $language !== false) {
+				
+				$data = array('type' => 'string', 'data' => $language);
+				
+				returnData('string',array('type' => 'string','data' => $data['data'][0]['value']));
+				
+			}
+			else {
+				returnError('error_language', 'No language retrieved.');
+			}
+		}
+		
+		function api_get_session_timeout($thrash1, $thrash2, $other, $thrash3) {
+			if (defined ('METACONSOLE')) {
+				return;
+			}
+						
+			$sql = sprintf('SELECT value
+				FROM tconfig WHERE token = "session_timeout"');
+			
+			$language = db_get_all_rows_sql($sql);
+			
+			if (count($language) > 0 and $language !== false) {
+				
+				$data = array('type' => 'string', 'data' => $language);
+				
+				returnData('string',array('type' => 'string','data' => $data['data'][0]['value']));
+				
+			}
+			else {
+				returnError('error_session_timeout', 'No session timeout retrieved.');
+			}
+		}
+		
+		
 
 
 ?>

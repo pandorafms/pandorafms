@@ -40,7 +40,6 @@ if ($get_custom_fields_data){
 	return;
 }
 
-
 if($build_table_custom_fields){
 	$order = get_parameter("order", '');
 	$length = get_parameter("length", 20);
@@ -237,6 +236,7 @@ if($build_table_child_custom_fields){
 	$id_agent = get_parameter("id_agent", 0);
 	$id_server = get_parameter("id_server", 0);
 	$module_search = str_replace('amp;', '',get_parameter("module_search", ''));
+	$module_status = str_replace('amp;', '',get_parameter("module_status", ''));
 
 	if(!$id_server || !$id_agent){
 		return false;
@@ -534,6 +534,8 @@ if($create_filter_cf){
 	$values['id_custom_fields_data'] = json_encode($filters['id_custom_fields_data']);
 	$values['id_status'] = json_encode($filters['id_status']);
 	$values['module_search'] = $filters['module_search'];
+	$values['module_status'] = json_encode($filters['module_status']);
+	$values['recursion'] = $filters['recursion'];
 
 	$insert = db_process_sql_insert('tagent_custom_fields_filter', $values);
 
@@ -599,6 +601,8 @@ if($update_filter_cf){
 	$values['id_custom_fields_data'] = json_encode($filters['id_custom_fields_data']);
 	$values['id_status'] = json_encode($filters['id_status']);
 	$values['module_search'] = $filters['module_search'];
+	$values['module_status'] = json_encode($filters['module_status']);
+	$values['recursion'] = $filters['recursion'];
 
 	//update
 	$update = db_process_sql_update('tagent_custom_fields_filter', $values, $condition);

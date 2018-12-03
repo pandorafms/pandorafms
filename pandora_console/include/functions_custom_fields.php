@@ -292,7 +292,7 @@ function agent_counters_custom_fields($filters){
 			SELECT count(*) AS n
 			FROM tagente_modulo tam
 			INNER JOIN tagente_estado tae
-				ON tae.id_agente_modulo = tam.id_agente
+				ON tae.id_agente_modulo = tam.id_agente_modulo
 			WHERE tam.id_agente=ta.id_agente
 				'. $and_module_search . ' ' . $and_module_status .'
 		) > 0 ';
@@ -457,36 +457,38 @@ function agent_counters_custom_fields($filters){
 			);
 
 			foreach ($result_meta as $k => $nodo) {
-				foreach ($nodo as $key => $value) {
-					//Sum counters total
-					$final_result['counters_total']['t_m_normal'] += $value['m_normal'];
-					$final_result['counters_total']['t_m_critical'] += $value['m_critical'];
-					$final_result['counters_total']['t_m_warning'] += $value['m_warning'];
-					$final_result['counters_total']['t_m_unknown'] += $value['m_unknown'];
-					$final_result['counters_total']['t_m_not_init'] += $value['m_not_init'];
-					$final_result['counters_total']['t_m_alerts'] += $value['m_alerts'];
-					$final_result['counters_total']['t_m_total'] += $value['m_total'];
-					$final_result['counters_total']['t_a_critical'] += $value['a_critical'];
-					$final_result['counters_total']['t_a_warning'] += $value['a_warning'];
-					$final_result['counters_total']['t_a_unknown'] += $value['a_unknown'];
-					$final_result['counters_total']['t_a_normal'] += $value['a_normal'];
-					$final_result['counters_total']['t_a_not_init'] += $value['a_not_init'];
-					$final_result['counters_total']['t_a_agents'] += $value['a_agents'];
+				if(isset($nodo) && is_array($nodo)){
+					foreach ($nodo as $key => $value) {
+						//Sum counters total
+						$final_result['counters_total']['t_m_normal'] += $value['m_normal'];
+						$final_result['counters_total']['t_m_critical'] += $value['m_critical'];
+						$final_result['counters_total']['t_m_warning'] += $value['m_warning'];
+						$final_result['counters_total']['t_m_unknown'] += $value['m_unknown'];
+						$final_result['counters_total']['t_m_not_init'] += $value['m_not_init'];
+						$final_result['counters_total']['t_m_alerts'] += $value['m_alerts'];
+						$final_result['counters_total']['t_m_total'] += $value['m_total'];
+						$final_result['counters_total']['t_a_critical'] += $value['a_critical'];
+						$final_result['counters_total']['t_a_warning'] += $value['a_warning'];
+						$final_result['counters_total']['t_a_unknown'] += $value['a_unknown'];
+						$final_result['counters_total']['t_a_normal'] += $value['a_normal'];
+						$final_result['counters_total']['t_a_not_init'] += $value['a_not_init'];
+						$final_result['counters_total']['t_a_agents'] += $value['a_agents'];
 
-					//Sum counters for data
-					$array_data[$value['name_data']]['m_normal'] += $value['m_normal'];
-					$array_data[$value['name_data']]['m_critical'] += $value['m_critical'];
-					$array_data[$value['name_data']]['m_warning'] += $value['m_warning'];
-					$array_data[$value['name_data']]['m_unknown'] += $value['m_unknown'];
-					$array_data[$value['name_data']]['m_not_init'] += $value['m_not_init'];
-					$array_data[$value['name_data']]['m_alerts'] += $value['m_alerts'];
-					$array_data[$value['name_data']]['m_total'] += $value['m_total'];
-					$array_data[$value['name_data']]['a_critical'] += $value['a_critical'];
-					$array_data[$value['name_data']]['a_warning'] += $value['a_warning'];
-					$array_data[$value['name_data']]['a_unknown'] += $value['a_unknown'];
-					$array_data[$value['name_data']]['a_normal'] += $value['a_normal'];
-					$array_data[$value['name_data']]['a_not_init'] += $value['a_not_init'];
-					$array_data[$value['name_data']]['a_agents'] += $value['a_agents'];
+						//Sum counters for data
+						$array_data[$value['name_data']]['m_normal'] += $value['m_normal'];
+						$array_data[$value['name_data']]['m_critical'] += $value['m_critical'];
+						$array_data[$value['name_data']]['m_warning'] += $value['m_warning'];
+						$array_data[$value['name_data']]['m_unknown'] += $value['m_unknown'];
+						$array_data[$value['name_data']]['m_not_init'] += $value['m_not_init'];
+						$array_data[$value['name_data']]['m_alerts'] += $value['m_alerts'];
+						$array_data[$value['name_data']]['m_total'] += $value['m_total'];
+						$array_data[$value['name_data']]['a_critical'] += $value['a_critical'];
+						$array_data[$value['name_data']]['a_warning'] += $value['a_warning'];
+						$array_data[$value['name_data']]['a_unknown'] += $value['a_unknown'];
+						$array_data[$value['name_data']]['a_normal'] += $value['a_normal'];
+						$array_data[$value['name_data']]['a_not_init'] += $value['a_not_init'];
+						$array_data[$value['name_data']]['a_agents'] += $value['a_agents'];
+					}
 				}
 			}
 

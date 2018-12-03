@@ -236,7 +236,7 @@ if($build_table_child_custom_fields){
 	$id_agent = get_parameter("id_agent", 0);
 	$id_server = get_parameter("id_server", 0);
 	$module_search = str_replace('amp;', '',get_parameter("module_search", ''));
-	$module_status = str_replace('amp;', '',get_parameter("module_status", ''));
+	$module_status = get_parameter("module_status", 0);
 
 	if(!$id_server || !$id_agent){
 		return false;
@@ -244,6 +244,46 @@ if($build_table_child_custom_fields){
 
 	if($module_search != ''){
 		$name_where = " AND tam.nombre LIKE '%" . $module_search . "%'";
+	}
+
+	//filter by status module
+	$and_module_status = "";
+	if(is_array($module_status)){
+		if(!in_array(-1, $module_status)){
+			if(!in_array(AGENT_MODULE_STATUS_NOT_NORMAL, $module_status)){
+				if(count($module_status) > 0){
+					$and_module_status = " AND ( ";
+					foreach ($module_status as $key => $value) {
+						$and_module_status .= ($key != 0)
+							? " OR ("
+							: " (";
+						switch ($value) {
+							default:
+							case AGENT_STATUS_NORMAL:
+								$and_module_status .= " tae.estado = 0 OR tae.estado = 300 ) ";
+								break;
+							case AGENT_STATUS_CRITICAL:
+								$and_module_status .= " tae.estado = 1 OR tae.estado = 100 ) ";
+								break;
+							case AGENT_STATUS_WARNING:
+								$and_module_status .= " tae.estado = 2 OR tae.estado = 200 ) ";
+								break;
+							case AGENT_STATUS_UNKNOWN:
+								$and_module_status .= " tae.estado = 3 ) ";
+								break;
+							case AGENT_STATUS_NOT_INIT:
+								$and_module_status .= " tae.estado = 4 OR tae.estado = 5 ) ";
+								break;
+						}
+					}
+					$and_module_status .= " ) ";
+				}
+			}
+			else{
+				//not normal
+				$and_module_status = "AND tae.estado <> 0 AND tae.estado <> 300 ";
+			}
+		}
 	}
 
 	if (is_metaconsole()) {
@@ -262,9 +302,10 @@ if($build_table_child_custom_fields){
 		INNER JOIN tagente_estado tae
 			ON tam.id_agente_modulo = tae.id_agente_modulo
 		WHERE tam.id_agente = %d
-		%s",
+		%s %s",
 		$id_agent,
-		$name_where
+		$name_where,
+		$and_module_status
 	);
 
 	$modules = db_get_all_rows_sql ($query);
@@ -282,7 +323,7 @@ if($build_table_child_custom_fields){
 	$table_modules->head[5] = __('Status');
 
 	$table_modules->data = array();
-	$status_agent = -1;
+
 	if(isset($modules) && is_array($modules)){
 		foreach ($modules as $key => $value) {
 			$table_modules->data[$key][0] = $value['nombre'];
@@ -311,9 +352,6 @@ if($build_table_child_custom_fields){
 			switch ($value['estado']) {
 				case 0:
 				case 300:
-					if($status_agent != 1 && $status_agent != 2 && $status_agent != 3){
-						$status_agent = 0;
-					}
 					$table_modules->data[$key][5] = html_print_image(
 						'images/status_sets/default/severity_normal.png',
 						true,
@@ -324,7 +362,6 @@ if($build_table_child_custom_fields){
 					break;
 				case 1:
 				case 100:
-					$status_agent = 1;
 					$table_modules->data[$key][5] = html_print_image(
 						'images/status_sets/default/severity_critical.png',
 						true,
@@ -335,10 +372,6 @@ if($build_table_child_custom_fields){
 				break;
 				case 2:
 				case 200:
-					if($status_agent != 1){
-						$status_agent = 2;
-					}
-
 					$table_modules->data[$key][5] = html_print_image(
 						'images/status_sets/default/severity_warning.png',
 						true,
@@ -348,10 +381,6 @@ if($build_table_child_custom_fields){
 					);
 				break;
 				case 3:
-					if($status_agent != 1 && $status_agent != 2){
-						$status_agent = 3;
-					}
-
 					$table_modules->data[$key][5] = html_print_image(
 						'images/status_sets/default/severity_maintenance.png',
 						true,
@@ -362,9 +391,6 @@ if($build_table_child_custom_fields){
 				break;
 				case 4:
 				case 5:
-					if($status_agent == -1 || $status_agent == 4){
-						$status_agent = 5;
-					}
 					$table_modules->data[$key][5] = html_print_image(
 						'images/status_sets/default/severity_informational.png',
 						true,
@@ -374,10 +400,6 @@ if($build_table_child_custom_fields){
 					);
 				break;
 				default:
-					if($status_agent != 1 && $status_agent != 2 && $status_agent != 3){
-						$status_agent = 0;
-					}
-
 					$table_modules->data[$key][5] = html_print_image(
 						'images/status_sets/default/severity_normal.png',
 						true,
@@ -389,6 +411,8 @@ if($build_table_child_custom_fields){
 			}
 		}
 	}
+
+	$status_agent = agents_get_status($id_agent, true);
 
 	if (is_metaconsole()) {
 			metaconsole_restore_db();

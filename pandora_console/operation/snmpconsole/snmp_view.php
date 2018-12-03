@@ -708,50 +708,61 @@ $table->head = array ();
 $table->size = array ();
 $table->data = array ();
 $table->align = array ();
+$table->headstyle = array ();
 
 $table->head[0] = __('Status');
 $table->align[0] = "center";
 $table->size[0] = '5%';
+$table->headstyle[0] = 'text-align: center';
 
 $table->head[1] = __('SNMP Agent');
 $table->align[1] = "center";
 $table->size[1] = '15%';
+$table->headstyle[1] = 'text-align: center';
 
 $table->head[2] = __('Enterprise String');
 $table->align[2] = "center";
 $table->size[2] = '18%';
+$table->headstyle[2] = 'text-align: center';
 
 if ($group_by) {
 	$table->head[3] = __('Count');
 	$table->align[3] = "center";
 	$table->size[3] = '5%';
+	$table->headstyle[3] = 'text-align: center';
 }
 
 $table->head[4] = __('Trap subtype');
 $table->align[4] = "center";
 $table->size[4] = '10%';
+$table->headstyle[4] = 'text-align: center';
 
 $table->head[5] = __('User ID');
 $table->align[5] = "center";
 $table->size[5] = '10%';
+$table->headstyle[5] = 'text-align: center';
 
 $table->head[6] = __('Timestamp');
 $table->align[6] = "center";
 $table->size[6] = '10%';
+$table->headstyle[6] = 'text-align: center';
 
 $table->head[7] = __('Alert');
 $table->align[7] = "center";
 $table->size[7] = '5%';
+$table->headstyle[7] = 'text-align: center';
 
 $table->head[8] = __('Action');
 $table->align[8] = "center";
 $table->size[8] = '10%';
+$table->headstyle[8] = 'text-align: center';
 
 $table->head[9] = html_print_checkbox_extended ("allbox", 1, false,
 	false, "javascript:CheckAll();",
 	'class="chk" title="'.__('All').'"', true);
 $table->align[9] = "center";
 $table->size[9] = '5%';
+$table->headstyle[9] = 'text-align: center';
 
 $table->style[8] = "background: #F3F3F3; color: #111 !important;";
 

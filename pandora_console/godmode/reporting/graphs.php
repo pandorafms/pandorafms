@@ -168,8 +168,7 @@ if (!empty ($graphs)) {
 		$op_column = true;
 		$table->align[4] = 'left';
 		$table->head[4] = __('Op.') .
-			html_print_checkbox('all_delete', 0, false, true, false,
-		'check_all_checkboxes();');
+			html_print_checkbox('all_delete', 0, false, true, false);
 		$table->size[4] = '90px';
 	}
 	$table->data = array ();
@@ -236,13 +235,29 @@ else {
 
 $("input[name=all_delete]").css("margin-left", "32px");
 
-	function check_all_checkboxes() {
-		if ($("input[name=all_delete]").prop("checked")) {
-			$(".check_delete").prop("checked", true);
-		}
-		else {
-			$(".check_delete").prop("checked", false);
-		}
-	}
+	$( document ).ready(function() {
 
+		$('[id^=checkbox-delete_multiple]').change(function(){
+			if($(this).parent().parent().hasClass('checkselected')){
+				$(this).parent().parent().removeClass('checkselected');
+			}
+			else{
+				$(this).parent().parent().addClass('checkselected');							
+			}
+		});
+
+		$('[id^=checkbox-all_delete]').change(function(){	
+			if ($("#checkbox-all_delete").prop("checked")) {
+				$('[id^=checkbox-delete_multiple]').parent().parent().addClass('checkselected');
+				$(".check_delete").prop("checked", true);
+			}
+			else{
+				$('[id^=checkbox-delete_multiple]').parent().parent().removeClass('checkselected');
+				$(".check_delete").prop("checked", false);
+			}	
+		});
+
+	});
+	
 </script>
+

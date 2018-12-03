@@ -1293,7 +1293,7 @@ sub scan_subnet($) {
 		if (-x $self->{'fping'} && $net_addr->num() > 1) {
 			$self->call('message', "Calling fping...", 5);
 	
-			my @hosts = `$self->{'fping'} -ga "$subnet" 2>DEVNULL`;
+			my @hosts = `"$self->{'fping'}" -ga "$subnet" 2>DEVNULL`;
 			next if (scalar(@hosts) == 0);
 		
 			my $step = 50.0 / scalar(@subnets) / scalar(@hosts); # The first 50% of the recon task approx.

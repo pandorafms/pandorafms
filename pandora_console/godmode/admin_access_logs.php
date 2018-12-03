@@ -233,7 +233,7 @@ foreach ($result as $row) {
 	$data[2] = ui_print_help_tip(date($config["date_format"], $row["utimestamp"]), true)
 		. ui_print_timestamp($row["utimestamp"], true);
 	$data[3] = $row["ip_origen"];
-	$data[4] = $row["descripcion"];
+	$data[4] = io_safe_output($row["descripcion"]);
 	
 	if ($enterprise_include !== ENTERPRISE_NOT_HOOK) {
 		$data[5] = enterprise_hook("cell1EntepriseAudit", array($row["id_sesion"]));

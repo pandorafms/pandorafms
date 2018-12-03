@@ -13,13 +13,8 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
-
-if (! isset($_SESSION['id_usuario'])) {
-	session_start();
-	//session_write_close();
-}
-
-// Global & session management
+// Don't start a session before this import.
+// The session is configured and started inside the config process.
 require_once ('../../include/config.php');
 require_once ($config['homedir'] . '/include/auth/mysql.php');
 require_once ($config['homedir'] . '/include/functions.php');
@@ -78,17 +73,14 @@ $alias    = db_get_value ("alias","tagente","id_agente",$id_agent);
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 		<title><?php echo __("%s Graph", get_product_name()) . ' (' . $alias . ' - ' . $label; ?>)</title>
 		<link rel="stylesheet" href="../../include/styles/pandora_minimal.css" type="text/css" />
-		<link rel="stylesheet" href="../../include/styles/jquery-ui-1.10.0.custom.css" type="text/css" />
+		<link rel="stylesheet" href="../../include/styles/jquery-ui.min.css" type="text/css" />
 		<script type='text/javascript' src='../../include/javascript/pandora.js'></script>
-		<script type='text/javascript' src='../../include/javascript/jquery-1.9.0.js'></script>
+		<script type='text/javascript' src='../../include/javascript/jquery-3.3.1.min.js'></script>
 		<script type='text/javascript' src='../../include/javascript/jquery.pandora.js'></script>
-		<script type='text/javascript' src='../../include/javascript/jquery.jquery-ui-1.10.0.custom.js'></script>
+		<script type='text/javascript' src='../../include/javascript/jquery-ui.min.js'></script>
 		<?php
-			if ($config['flash_charts']) {
-				//Include the javascript for the js charts library
-				include_once($config["homedir"] . '/include/graphs/functions_flot.php');
-				echo include_javascript_dependencies_flot_graph(true, "../");
-			}
+			include_once($config["homedir"] . '/include/graphs/functions_flot.php');
+			echo include_javascript_dependencies_flot_graph(true, "../");
 		?>
 		<script type='text/javascript'>
 			window.onload = function() {
@@ -100,8 +92,11 @@ $alias    = db_get_value ("alias","tagente","id_agente",$id_agent);
 		</script>
 	</head>
 	<body bgcolor="#ffffff" style='background:#ffffff;'>
+	
 		<?php
-
+		echo"<div id='dialog' title='".__('CSV Export Information')."' style='visibility:hidden;'>";
+		echo"<p>" . __('The CSV export has been successful.') . "</p>";
+		echo"</div>";
 		// Module id
 		$id = (int) get_parameter ("id", 0);
 		// Agent id
@@ -185,11 +180,7 @@ $alias    = db_get_value ("alias","tagente","id_agente",$id_agent);
 
 		$unit = db_get_value('unit', 'tagente_modulo', 'id_agente_modulo', $id);
 
-		// log4x doesnt support flash yet
-		if ($config['flash_charts'] == 1)
-			echo '<div style="margin-left: 65px; padding-top: 10px;">';
-		else
-			echo '<div style="margin-left: 20px; padding-top: 10px;">';
+		echo '<div style="margin-left: 65px; padding-top: 10px;">';
 
 		$width  = '90%';
 		$height = '450';

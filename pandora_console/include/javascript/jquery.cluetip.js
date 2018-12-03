@@ -202,7 +202,7 @@
           ajaxSettings.complete = function() {
             imgCount = $('#cluetip-inner img').length;
             if (imgCount) {
-              $('#cluetip-inner img').load(function() {
+              $('#cluetip-inner img').on('load', function() {
                 imgCount--;
                 if (imgCount<1) {
                   $('#cluetip-waitimage').hide();

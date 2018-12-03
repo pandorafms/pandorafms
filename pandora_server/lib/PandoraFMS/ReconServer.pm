@@ -587,7 +587,7 @@ sub PandoraFMS::Recon::Base::create_agent($$) {
 			}
 		}
 		# ifInOctets
-		else {
+		elsif (defined($self->snmp_get_value($device, "$PandoraFMS::Recon::Base::IFINOCTECTS.$if_index"))) {
 			$module_id = get_agent_module_id($self->{'dbh'}, "${if_name}_ifInOctets", $agent_id);
 			if ($module_id <= 0) {
 				my %module = ('id_tipo_modulo' => 16,
@@ -660,7 +660,7 @@ sub PandoraFMS::Recon::Base::create_agent($$) {
 			}
 		}
 		# ifOutOctets
-		else {
+		elsif (defined($self->snmp_get_value($device, "$PandoraFMS::Recon::Base::IFOUTOCTECTS.$if_index"))) {
 			$module_id = get_agent_module_id($self->{'dbh'}, "${if_name}_ifOutOctets", $agent_id);
 			if ($module_id <= 0) {
 				my %module = ('id_tipo_modulo' => 16,

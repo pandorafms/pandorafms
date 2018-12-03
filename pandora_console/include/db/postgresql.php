@@ -1055,40 +1055,5 @@ function postgresql_db_get_type_field_table($table, $field) {
 	return pg_field_type($result, $field); 
 }
 
-/**
- * Get the element count of a table.
- * 
- * @param string $sql SQL query to get the element count.
- * 
- * @return int Return the number of elements in the table.
- */
-function postgresql_db_get_table_count($sql, $search_history_db = false) {
-	global $config;
-	
-	$history_count = 0;
-	$count = postgresql_db_get_value_sql ($sql);
-	if ($count === false) {
-		$count = 0;
-	}
-	
-	// Search the history DB for matches
-	if ($search_history_db && $config['history_db_enabled'] == 1) {
-		
-		// Connect to the history DB
-		if (! isset ($config['history_db_connection']) || $config['history_db_connection'] === false) {
-			$config['history_db_connection'] = postgresql_connect_db ($config['history_db_host'], $config['history_db_name'], $config['history_db_user'], io_output_password($config['history_db_pass']), $config['history_db_port'], false);
-		}
-		if ($config['history_db_connection'] !== false) {
-			$history_count = postgresql_db_get_value_sql ($sql, $config['history_db_connection']);
-			if ($history_count === false) {
-				$history_count = 0;
-			}
-		}
-	}
-	
-	$count += $history_count;
-	
-	return $count;
-}
 
 ?>

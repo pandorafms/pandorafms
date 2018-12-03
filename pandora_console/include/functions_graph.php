@@ -238,7 +238,7 @@ function grafico_modulo_sparse_data(
 		}
 	}
 
-	if($array_data === false){
+	if($array_data === false || !isset($array_data['sum1']['data'][0][1])){
 		return false;
 	}
 
@@ -912,7 +912,9 @@ function grafico_modulo_sparse ($params) {
 		else{
 			$return = graph_nodata_image(
 				$params['width'],
-				$params['height']
+				$params['height'],
+				'area',
+				__('No data to display within the selected interval')
 			);
 		}
 	}
@@ -1015,7 +1017,7 @@ function graphic_combined_module (
 
 	$params['stacked'] = $params_combined['stacked'];
 
-	if(!isset($params_combined['projection'])){
+	if(!isset($params_combined['projection']) || $params_combined['projection'] == false){
 		$params_combined['projection'] = false;
 	}
 	else{
@@ -1286,7 +1288,6 @@ function graphic_combined_module (
 	$background_color = $params['backgroundColor'];
 	$datelimit        = $date_array["start_date"];
 	$fixed_font_size  = $config['font_size'];
-	$flash_charts     = false;
 
 	if($config["fixed_graph"] == false){
 		$water_mark = array(
@@ -1820,11 +1821,8 @@ function graphic_combined_module (
 				$height = 500;
 			}
 
-			$flash_charts = true;
-
 			if($params_combined['stacked'] == CUSTOM_GRAPH_HBARS){
 				$output = hbar_graph(
-					true,
 					$graph_values,
 					$width,
 					$height,
@@ -1847,7 +1845,6 @@ function graphic_combined_module (
 
 			if($params_combined['stacked'] == CUSTOM_GRAPH_VBARS){
 				$output = vbar_graph(
-					true,
 					$graph_values,
 					$width,
 					$height,
@@ -1941,7 +1938,6 @@ function graphic_combined_module (
 			$color  = color_graph_array();
 
 			$output = ring_graph(
-				true,
 				$graph_values,
 				$width,
 				$height,
@@ -2162,8 +2158,8 @@ function graph_alert_status ($defined_alerts, $fired_alerts, $width = 300, $heig
 			'url' => ui_get_full_url("images/logo_vertical_water.png", false, false, false));
 	}
 	
-	$out = pie2d_graph($config['flash_charts'], $data, $width, $height, __("other"),
-		'', '', $config['fontpath'], $config['font_size'], 1, "hidden", $colors);
+	$out = pie_graph($data, $width, $height, __("other"),
+		'', '', $config['fontpath'], $config['font_size'], 1, "hidden", $colors, false);
 	
 	if ($return) {
 		return $out;
@@ -2194,19 +2190,26 @@ function graph_agent_status ($id_agent = false, $width = 300, $height = 200, $re
 
 	if ($data_agents == false) {
 		$groups = implode(',', array_keys(users_get_groups(false, 'AR', false)));
+		$p_table = "tagente";
+		$s_table = "tagent_secondary_group";
+		if (is_metaconsole()) {
+			$p_table = "tmetaconsole_agent";
+			$s_table = "tmetaconsole_agent_secondary_group";
+		}
 		$data = db_get_row_sql(sprintf('SELECT
 				SUM(critical_count) AS Critical,
 				SUM(warning_count) AS Warning,
 				SUM(normal_count) AS Normal,
 				SUM(unknown_count) AS Unknown
 				%s
-			FROM tagente ta LEFT JOIN tagent_secondary_group tasg
+			FROM %s ta LEFT JOIN %s tasg
 				ON ta.id_agente = tasg.id_agent
 			WHERE
 				ta.disabled = 0 AND
 				%s
 				(ta.id_grupo IN (%s) OR tasg.id_group IN (%s))',
 			$show_not_init ? ', SUM(notinit_count) "Not init"' : '',
+			$p_table, $s_table,
 			empty($id_agent) ? '' : "ta.id_agente = $id_agent AND",
 			$groups,
 			$groups
@@ -2240,11 +2243,22 @@ function graph_agent_status ($id_agent = false, $width = 300, $height = 200, $re
 	if (array_sum($data) == 0) {
 		$data = array();
 	}
-	
-	$out = pie2d_graph($config['flash_charts'], $data, $width, $height,
-		__("other"), ui_get_full_url(false, false, false, false), '',
-		$config['fontpath'], $config['font_size'], 1, "hidden", $colors);
-	
+
+	$out = pie_graph(
+		$data,
+		$width,
+		$height,
+		__("other"),
+		ui_get_full_url(false, false, false, false),
+		'',
+		$config['fontpath'],
+		$config['font_size'],
+		1,
+		"hidden",
+		$colors,
+		0
+	);
+
 	if ($return) {
 		return $out;
 	}
@@ -2316,8 +2330,19 @@ function graph_event_module ($width = 300, $height = 200, $id_agent) {
 			$config['homedir'] . "/images/logo_vertical_water.png",
 			'url' => ui_get_full_url("images/logo_vertical_water.png", false, false, false));
 	}
-	return pie3d_graph($config['flash_charts'], $data, $width, $height, __("other"),
-		'', $water_mark, $config['fontpath'], $config['font_size'], 1, "bottom");
+
+	return pie_graph(
+		$data,
+		$width,
+		$height,
+		__("other"),
+		'',
+		$water_mark,
+		$config['fontpath'],
+		$config['font_size'],
+		1,
+		"bottom"
+	);
 }
 
 function progress_bar($progress, $width, $height, $title = '', $mode = 1, $value_text = false, $color = false, $options = false) {
@@ -2393,31 +2418,50 @@ function progress_bubble($progress, $width, $height, $title = '', $mode = 1, $va
 		"&colorRGB=". $colorRGB . "' />";
 }
 
-function graph_sla_slicebar ($id, $period, $sla_min, $sla_max, $date, $daysWeek = null, $time_from = null, $time_to = null, $width, $height, $home_url, $ttl = 1, $data = false, $round_corner = null) {
+function graph_sla_slicebar (
+	$id, $period, $sla_min, $sla_max,
+	$date, $daysWeek = null, $time_from = null,
+	$time_to = null, $width, $height, $home_url,
+	$ttl = 1, $data = false, $round_corner = null) {
+
 	global $config;
-	
+
 	if ($round_corner === null) {
 		$round_corner = $config['round_corner'];
 	}
-	
-	// If the data is not provided, we got it
-	if ($data === false) {
-		$data = reporting_get_agentmodule_sla_array ($id, $period,
-			$sla_min, $sla_max, $date, $daysWeek, null, null);
-	}
-	
+
 	$col_planned_downtime = '#20973F';
-	
-	$colors = array(1 => COL_NORMAL,
+
+	$colors = array(
+		1 => COL_NORMAL,
 		2 => COL_WARNING,
 		3 => COL_CRITICAL,
 		4 => COL_UNKNOWN,
 		5 => COL_DOWNTIME,
 		6 => COL_NOTINIT,
-		7 => COL_IGNORED);
-	
-	return slicesbar_graph($data, $period, $width, $height, $colors,
-		$config['fontpath'], $round_corner, $home_url, $ttl);
+		7 => COL_IGNORED
+	);
+
+	return	$return['chart'] = flot_slicesbar_graph (
+		$data,
+		$period,
+		$width,
+		$height,
+		'',
+		$colors,
+		$config['fontpath'],
+		$round_corner,
+		$home_url,
+		'',
+		'',
+		false,
+		0,
+		array(),
+		true,
+		$ttl,
+		false,
+		false
+	);
 }
 
 /**
@@ -2456,9 +2500,11 @@ function grafico_incidente_prioridad () {
 				'url' => ui_get_full_url("images/logo_vertical_water.png", false, false, false));
 		}
 	
-	return pie3d_graph($config['flash_charts'], $data, 320, 200,
+	return pie_graph(
+		$data, 320, 200,
 		__('Other'), '', '',
-		$config['fontpath'], $config['font_size']);
+		$config['fontpath'], $config['font_size']
+	);
 }
 
 /**
@@ -2496,8 +2542,8 @@ function graph_incidents_status () {
 			$config['homedir'] . "/images/logo_vertical_water.png",
 			'url' => ui_get_full_url("images/logo_vertical_water.png", false, false, false));
 	}
-	
-	return pie3d_graph($config['flash_charts'], $data, 320, 200,
+
+	return pie_graph($data, 320, 200,
 		__('Other'), '', '',
 		$config['fontpath'], $config['font_size']);
 }
@@ -2553,7 +2599,7 @@ function graphic_incident_group () {
 			'url' => ui_get_full_url("images/logo_vertical_water.png", false, false, false));
 	}
 	
-	return pie3d_graph($config['flash_charts'], $data, 320, 200,
+	return pie_graph($data, 320, 200,
 		__('Other'), '', '',
 		$config['fontpath'], $config['font_size']);
 }
@@ -2608,7 +2654,8 @@ function graphic_incident_user () {
 			'url' => ui_get_full_url("images/logo_vertical_water.png", false, false, false));
 	}
 	
-	return pie3d_graph($config['flash_charts'], $data, 320, 200,
+	return pie_graph(
+		$data, 320, 200,
 		__('Other'), '', '',
 		$config['fontpath'], $config['font_size']);
 }
@@ -2662,7 +2709,8 @@ function graphic_incident_source($width = 320, $height = 200) {
 			'url' => ui_get_full_url("images/logo_vertical_water.png", false, false, false));
 	}
 	
-	return pie3d_graph($config['flash_charts'], $data, $width, $height,
+	return pie_graph(
+		$data, $width, $height,
 		__('Other'), '', '',
 		$config['fontpath'], $config['font_size']);
 }
@@ -2670,27 +2718,27 @@ function graphic_incident_source($width = 320, $height = 200) {
 function graph_events_validated($width = 300, $height = 200, $extra_filters = array(), $meta = false, $history = false) {
 	global $config;
 	global $graphic_type;
-	
+
 	$event_type = false;
 	if (array_key_exists('event_type', $extra_filters))
 		$event_type = $extra_filters['event_type'];
-	
+
 	$event_severity = false;
 	if (array_key_exists('event_severity', $extra_filters))
 		$event_severity = $extra_filters['event_severity'];
-	
+
 	$event_status = false;
 	if (array_key_exists('event_status', $extra_filters))
 		$event_status = $extra_filters['event_status'];
-	
+
 	$event_filter_search = false;
 	if (array_key_exists('event_filter_search', $extra_filters))
 		$event_filter_search = $extra_filters['event_filter_search'];
-	
+
 	$data_graph = events_get_count_events_validated(
-		array('id_group' => array_keys(users_get_groups())), null, null, 
+		array('id_group' => array_keys(users_get_groups())), null, null,
 		$event_severity, $event_type, $event_status, $event_filter_search);
-	
+
 	$colors = array();
 	foreach ($data_graph as $k => $v) {
 		if ($k == __('Validated')) {
@@ -2700,17 +2748,26 @@ function graph_events_validated($width = 300, $height = 200, $extra_filters = ar
 			$colors[$k] = COL_CRITICAL;
 		}
 	}
-	
+
 	if($config["fixed_graph"] == false){
 		$water_mark = array('file' =>
 			$config['homedir'] . "/images/logo_vertical_water.png",
 			'url' => ui_get_full_url("images/logo_vertical_water.png", false, false, false));
 	}
-	
-	echo pie3d_graph(
-		true, $data_graph, $width, $height, __("other"), "",
+
+	echo pie_graph(
+		$data_graph,
+		$width,
+		$height,
+		__("other"),
+		"",
 		$water_mark,
-		$config['fontpath'], $config['font_size'], 1, false, $colors);
+		$config['fontpath'],
+		$config['font_size'],
+		1,
+		false,
+		$colors
+	);
 }
 
 /**
@@ -2719,10 +2776,8 @@ function graph_events_validated($width = 300, $height = 200, $extra_filters = ar
  * @param integer width pie graph width
  * @param integer height pie graph height
  * @param string url
- * @param bool if the graph required is or not for metaconsole
- * @param bool if the graph required is or not for history table
  */
-function grafico_eventos_grupo ($width = 300, $height = 200, $url = "", $meta = false, $history = false, $noWaterMark = true) {
+function grafico_eventos_grupo ($width = 300, $height = 200, $url = "", $noWaterMark = true, $time_limit = false) {
 	global $config;
 	global $graphic_type;
 	
@@ -2752,26 +2807,17 @@ function grafico_eventos_grupo ($width = 300, $height = 200, $url = "", $meta = 
 	$url = str_replace(
 		'SELECT_id_agente_modulo', 'SELECT id_agente_modulo', $url);
 	
-	
-	// Choose the table where search if metaconsole or not
-	if ($meta) {
-		if ($history) {
-			$event_table = 'tmetaconsole_event_history';
-		}
-		else {
-			$event_table = 'tmetaconsole_event';
-		}
-		$field_extra = ', agent_name';
-		$groupby_extra = ', server_id';
-	}
-	else {
-		$event_table = 'tevento';
-		$field_extra = '';
-		$groupby_extra = '';
-	}
+	$event_table = 'tevento';
+	$field_extra = '';
+	$groupby_extra = '';
 	
 	// Add tags condition to filter
 	$tags_condition = tags_get_acl_tags($config['id_user'], 0, 'ER', 'event_condition', 'AND');
+
+	if ($time_limit && $config['event_view_hr']) {
+		$tags_condition .= " AND utimestamp > (UNIX_TIMESTAMP(NOW()) - " .
+			$config['event_view_hr'] * SECONDS_1HOUR  . ")";
+	}
 	
 	//This will give the distinct id_agente, give the id_grupo that goes
 	//with it and then the number of times it occured. GROUP BY statement
@@ -2805,13 +2851,8 @@ function grafico_eventos_grupo ($width = 300, $height = 200, $url = "", $meta = 
 				$system_events += $row["count"];
 			}
 			else {
-				if ($meta) {
-					$name = mb_substr (io_safe_output($row['agent_name']), 0, 25)." (".$row["count"].")";
-				}
-				else {
-					$alias = agents_get_alias($row["id_agente"]);
-					$name = mb_substr($alias, 0, 25)." #".$row["id_agente"]." (".$row["count"].")";
-				}
+				$alias = agents_get_alias($row["id_agente"]);
+				$name = mb_substr($alias, 0, 25)." #".$row["id_agente"]." (".$row["count"].")";
 				$data[$name] = $row["count"];
 			}
 		}
@@ -2822,14 +2863,7 @@ function grafico_eventos_grupo ($width = 300, $height = 200, $url = "", $meta = 
 		$name = __('SYSTEM')." (".$system_events.")";
 		$data[$name] = $system_events;
 	}
-	
-	/*
-	if ($other_events > 0) {
-		$name = __('Other')." (".$other_events.")";
-		$data[$name] = $other_events;
-	}
-	*/
-	
+
 	// Sort the data
 	arsort($data);
 	if ($noWaterMark) {
@@ -2841,7 +2875,8 @@ function grafico_eventos_grupo ($width = 300, $height = 200, $url = "", $meta = 
 		$water_mark = array();
 	}
 	
-	return pie3d_graph($config['flash_charts'], $data, $width, $height,
+	return pie_graph(
+		$data, $width, $height,
 		__('Other'), '', $water_mark,
 		$config['fontpath'], $config['font_size'], 1, 'bottom');
 }
@@ -2851,7 +2886,7 @@ function grafico_eventos_grupo ($width = 300, $height = 200, $url = "", $meta = 
  * 
  * @param string filter Filter for query in DB
  */
-function grafico_eventos_total($filter = "", $width = 320, $height = 200, $noWaterMark = true) {
+function grafico_eventos_total($filter = "", $width = 320, $height = 200, $noWaterMark = true, $time_limit = false) {
 	global $config;
 	global $graphic_type;
 	
@@ -2860,23 +2895,25 @@ function grafico_eventos_total($filter = "", $width = 320, $height = 200, $noWat
 	// Add tags condition to filter
 	$tags_condition = tags_get_acl_tags($config['id_user'], 0, 'ER', 'event_condition', 'AND');
 	$filter .= $tags_condition;
-	
+	if ($time_limit && $config['event_view_hr']) {
+		$filter .= " AND utimestamp > (UNIX_TIMESTAMP(NOW()) - " . $config['event_view_hr'] * SECONDS_1HOUR . ")";
+	}
+
 	$data = array ();
 	$legend = array ();
 	$total = 0;
-	
-	$where = '';
+
+	$where = "WHERE 1=1";
 	if (!users_is_admin()) {
 		$where = 'WHERE event_type NOT IN (\'recon_host_detected\', \'system\',\'error\', \'new_agent\', \'configuration_change\')';
 	}
-	
+
 	$sql = sprintf("SELECT criticity, COUNT(id_evento) events
 		FROM tevento 
 		LEFT JOIN tagent_secondary_group tasg 
 		ON tevento.id_agente = tasg.id_agent
 		%s %s
 		GROUP BY criticity ORDER BY events DESC", $where , $filter);
-	
 	$criticities = db_get_all_rows_sql ($sql, false, false);
 	
 	if (empty($criticities)) {
@@ -2925,7 +2962,8 @@ function grafico_eventos_total($filter = "", $width = 320, $height = 200, $noWat
 		$water_mark = array();
 	}
 	
-	return pie3d_graph($config['flash_charts'], $data, $width, $height,
+	return pie_graph(
+		$data, $width, $height,
 		__('Other'), '', $water_mark,
 		$config['fontpath'], $config['font_size'], 1, 'bottom', $colors);
 }
@@ -2975,7 +3013,8 @@ function grafico_eventos_usuario ($width, $height) {
 		'file' => $config['homedir'] .  "/images/logo_vertical_water.png",
 		'url' => ui_get_full_url("/images/logo_vertical_water.png", false, false, false));
 	
-	return pie3d_graph($config['flash_charts'], $data, $width, $height,
+	return pie_graph(
+		$data, $width, $height,
 		__('Other'), '', $water_mark,
 		$config['fontpath'], $config['font_size']);
 }
@@ -2991,10 +3030,11 @@ function grafico_eventos_usuario ($width, $height) {
 function graph_custom_sql_graph ($id, $width, $height,
 	$type = 'sql_graph_vbar', $only_image = false, $homeurl = '',
 	$ttl = 1, $max_num_elements = 8) {
-	
+
 	global $config;
+
 	$SQL_GRAPH_MAX_LABEL_SIZE = 20;
-	
+
 	$report_content = db_get_row ('treport_content', 'id_rc', $id);
 	if($id != null){
 		$historical_db = db_get_value_sql("SELECT historical_db from treport_content where id_rc =".$id);
@@ -3009,42 +3049,30 @@ function graph_custom_sql_graph ($id, $width, $height,
 		$sql = db_get_row('treport_custom_sql', 'id', $report_content["treport_custom_sql_id"]);
 		$sql = io_safe_output($sql['sql']);
 	}
-	
+
 	if (($config['metaconsole'] == 1) && defined('METACONSOLE')) {
 		$metaconsole_connection = enterprise_hook('metaconsole_get_connection', array($report_content['server_name']));
-		
+
 		if ($metaconsole_connection === false) {
 			return false;
 		}
-		
+
 		if (enterprise_hook('metaconsole_load_external_db', array($metaconsole_connection)) != NOERR) {
 			//ui_print_error_message ("Error connecting to ".$server_name);
 			return false;
 		}
 	}
-	
-	
-	switch ($config["dbtype"]) {
-		case "mysql":
-		case "postgresql":
-			break;
-		case "oracle":
-			$sql = str_replace(";", "", $sql);
-			break;
-	}
-	
+
 	$data_result = db_get_all_rows_sql ($sql,$historical_db);
-	
-	
-	
+
 	if (($config['metaconsole'] == 1) && defined('METACONSOLE'))
 		enterprise_hook('metaconsole_restore_db');
-	
+
 	if ($data_result === false)
 		$data_result = array ();
-	
+
 	$data = array ();
-	
+
 	$count = 0;
 	foreach ($data_result as $data_item) {
 		$count++;
@@ -3086,23 +3114,16 @@ function graph_custom_sql_graph ($id, $width, $height,
 			}
 		}
 	}
-	
-	$flash_charts = $config['flash_charts'];
-		
-	if ($only_image) {
-		$flash_charts = false;
-	}
-	
+
 	if($config["fixed_graph"] == false){
 		$water_mark = array('file' =>
 			$config['homedir'] . "/images/logo_vertical_water.png",
 			'url' => ui_get_full_url("images/logo_vertical_water.png", false, false, false));
 	}
-	
+
 	switch ($type) {
 		case 'sql_graph_vbar': // vertical bar
 			return vbar_graph(
-				$flash_charts,
 				$data,
 				$width,
 				$height,
@@ -3119,14 +3140,13 @@ function graph_custom_sql_graph ($id, $width, $height,
 				$ttl,
 				$homeurl,
 				"white",
+				true,
 				false,
-				false,
-				"c1c1c1"
+				"#c1c1c1"
 			);
 			break;
 		case 'sql_graph_hbar': // horizontal bar
 			return hbar_graph(
-				$flash_charts,
 				$data,
 				$width,
 				$height,
@@ -3143,12 +3163,21 @@ function graph_custom_sql_graph ($id, $width, $height,
 				$ttl,
 				$homeurl,
 				'white',
-				'c1c1c1'
+				'#c1c1c1'
 			);
 			break;
 		case 'sql_graph_pie': // Pie
-			return pie3d_graph($flash_charts, $data, $width, $height, __("other"), $homeurl,
-				$water_mark, $config['fontpath'], '', $ttl);
+			return pie_graph(
+				$data,
+				$width,
+				$height,
+				__("other"),
+				$homeurl,
+				$water_mark,
+				$config['fontpath'],
+				$config['font_size'],
+				$ttl
+			);
 			break;
 	}
 }
@@ -3163,17 +3192,14 @@ function graph_custom_sql_graph ($id, $width, $height,
  * @param string homeurl
  * @param bool return or echo the result
  */
-function graph_graphic_agentevents ($id_agent, $width, $height, $period = 0, $homeurl, $return = false, $from_agent_view = false) {
+function graph_graphic_agentevents ($id_agent, $width, $height, $period = 0, $homeurl, $return = false, $from_agent_view = false, $widgets=false) {
 	global $config;
 	global $graphic_type;
-	
-	
-	$data = array ();
-	
-	//$resolution = $config['graph_res'] * ($period * 2 / $width); // Number of "slices" we want in graph
-	$resolution = 5 * ($period * 2 / $width); // Number of "slices" we want in graph
 
-	$interval = (int) ($period / $resolution);
+	$data = array ();
+
+	//TODO interval
+	$interval = 24;
 	$date = get_system_time ();
 	$datelimit = $date - $period;
 	$periodtime = floor ($period / $interval);
@@ -3182,39 +3208,34 @@ function graph_graphic_agentevents ($id_agent, $width, $height, $period = 0, $ho
 	$legend = array();
 	$full_legend = array();
 	$full_legend_date = array();
-	
+
 	$cont = 0;
 	for ($i = 0; $i < $interval; $i++) {
 		$bottom = $datelimit + ($periodtime * $i);
 		if (! $graphic_type) {
-			if ($config['flash_charts']) {
-				$name = date('H:i', $bottom);
-			}
-			else {
-				$name = date('H\h', $bottom);
-			}
+			$name = date('H:i', $bottom);
 		}
 		else {
 			$name = $bottom;
 		}
-		
+
 		// Show less values in legend
 		if ($cont == 0 or $cont % 2)
 			$legend[$cont] = $name;
-		
+
 		if ($from_agent_view) {
 			$full_date = date('Y/m/d', $bottom);
 			$full_legend_date[$cont] = $full_date;
 		}
 
 		$full_legend[$cont] = $name;
-		
+
 		$top = $datelimit + ($periodtime * ($i + 1));
 		$event = db_get_row_filter ('tevento',
 			array ('id_agente' => $id_agent,
 				'utimestamp > '.$bottom,
 				'utimestamp < '.$top), 'criticity, utimestamp');
-		
+
 		if (!empty($event['utimestamp'])) {
 			$data[$cont]['utimestamp'] = $periodtime;
 			switch ($event['criticity']) {
@@ -3237,23 +3258,10 @@ function graph_graphic_agentevents ($id_agent, $width, $height, $period = 0, $ho
 	}
 
 	$colors = array(1 => COL_NORMAL, 2 => COL_WARNING, 3 => COL_CRITICAL, 4 => COL_UNKNOWN);
-	
+
 	// Draw slicebar graph
-	if ($config['flash_charts']) {
-		$out = flot_slicesbar_graph($data, $period, $width, $height, $full_legend, $colors, $config['fontpath'], $config['round_corner'], $homeurl, '', '', false, $id_agent, $full_legend_date);
-	}
-	else {
-		$out = slicesbar_graph($data, $period, $width, $height, $colors, $config['fontpath'], $config['round_corner'], $homeurl);
-		
-		// Draw legend
-		$out .=  "<br>";
-		$out .=  "&nbsp;";
-		foreach ($legend as $hour) {
-			$out .=  "<span style='font-size: 6pt'>" . $hour . "</span>";
-			$out .=  "&nbsp;";
-		}
-	}
-	
+	$out = flot_slicesbar_graph($data, $period, $width, $height, $full_legend, $colors, $config['fontpath'], $config['round_corner'], $homeurl, '', '', false, $id_agent, $full_legend_date, 0, 1, $widgets);
+
 	if ($return) {
 		return $out;
 	}
@@ -3278,13 +3286,10 @@ function graph_graphic_moduleevents ($id_agent, $id_module, $width, $height, $pe
 
 	$data = array ();
 
-	//$resolution = $config['graph_res'] * ($period * 2 / $width); // Number of "slices" we want in graph
-	$resolution = 5 * ($period * 2 / $width); // Number of "slices" we want in graph
-	$interval = (int) ($period / $resolution);
-	$date = get_system_time ();
+	$interval = 24;
+	$date = get_system_time();
 	$datelimit = $date - $period;
 	$periodtime = floor ($period / $interval);
-	$time = array ();
 	$data = array ();
 	$legend = array();
 	$full_legend = array();
@@ -3293,12 +3298,7 @@ function graph_graphic_moduleevents ($id_agent, $id_module, $width, $height, $pe
 	for ($i = 0; $i < $interval; $i++) {
 		$bottom = $datelimit + ($periodtime * $i);
 		if (! $graphic_type) {
-			if ($config['flash_charts']) {
-				$name = date('H:i:s', $bottom);
-			}
-			else {
-				$name = date('H\h', $bottom);
-			}
+			$name = date('H\h', $bottom);
 		}
 		else {
 			$name = $bottom;
@@ -3341,23 +3341,31 @@ function graph_graphic_moduleevents ($id_agent, $id_module, $width, $height, $pe
 		$cont++;
 	}
 
-	$colors = array(1 => COL_NORMAL, 2 => COL_WARNING, 3 => COL_CRITICAL, 4 => COL_UNKNOWN);
+	$colors = array(
+		1 => COL_NORMAL,
+		2 => COL_WARNING,
+		3 => COL_CRITICAL,
+		4 => COL_UNKNOWN
+	);
 
-	// Draw slicebar graph
-	if ($config['flash_charts']) {
-		$out = flot_slicesbar_graph($data, $period, $width, $height, $full_legend, $colors, $config['fontpath'], $config['round_corner'], $homeurl, '', '', false, $id_agent);
-	}
-	else {
-		$out = slicesbar_graph($data, $period, $width, $height, $colors, $config['fontpath'], $config['round_corner'], $homeurl);
-
-		// Draw legend
-		$out .=  "<br>";
-		$out .=  "&nbsp;";
-		foreach ($legend as $hour) {
-			$out .=  "<span style='font-size: 6pt'>" . $hour . "</span>";
-			$out .=  "&nbsp;";
-		}
-	}
+	$out = flot_slicesbar_graph(
+		$data,
+		$period,
+		100,
+		$height,
+		$full_legend,
+		$colors,
+		$config['fontpath'],
+		$config['round_corner'],
+		$homeurl,
+		'',
+		'',
+		false,
+		$id_agent,
+		array(),
+		true,
+		1
+	);
 
 	if ($return) {
 		return $out;
@@ -3585,6 +3593,7 @@ function fullscale_data (
 		}
 	}
 	else{
+		if ($data_uncompress === false) $data_uncompress = array();
 		foreach ($data_uncompress as $k) {
 			foreach ($k["data"] as $v) {
 				if (isset($v["type"]) && $v["type"] == 1) { # skip unnecesary virtual data
@@ -3653,7 +3662,9 @@ function fullscale_data (
 
 		$data["sum" . $series_suffix]['min'] = $min_value_min;
 		$data["sum" . $series_suffix]['max'] = $max_value_max;
-		$data["sum" . $series_suffix]['avg'] = $sum_data/$count_data;
+		$data["sum" . $series_suffix]['avg'] = $count_data == 0
+			? 0
+			: $sum_data/$count_data;
 	}
 
 	if($show_percentil && !$compare){
@@ -3861,18 +3872,14 @@ function graph_netflow_aggregate_pie ($data, $aggregate, $ttl = 1, $only_image =
 		$i++;
 	}
 
-	$flash_chart = $config['flash_charts'];
-	if ($only_image) {
-		$flash_chart = false;
-	}
-
 	if($config["fixed_graph"] == false){
 		$water_mark = array('file' =>
 			$config['homedir'] . "/images/logo_vertical_water.png",
 			'url' => ui_get_full_url("images/logo_vertical_water.png", false, false, false));
 	}
 
-	return pie3d_graph($flash_chart, $values, 370, 200,
+	return pie_graph(
+		$values, 370, 200,
 		__('Other'), $config['homeurl'], $water_mark,
 		$config['fontpath'], $config['font_size'], $ttl);
 }
@@ -4048,28 +4055,34 @@ function graphic_module_events ($id_module, $width, $height, $period = 0, $homeu
 	$colors = array(1 => '#38B800', 2 => '#FFFF00', 3 => '#FF0000', 4 => '#C3C3C3');
 
 	// Draw slicebar graph
-	if ($config['flash_charts']) {
-		echo flot_slicesbar_graph($data, $period, $width, 50, $legend, $colors, $config['fontpath'], $config['round_corner'], $homeurl, '', $adapt_key, $stat_win);
-	}
-	else {
-		echo slicesbar_graph($data, $period, $width, 15, $colors, $config['fontpath'], $config['round_corner'], $homeurl);
-	}
+	echo flot_slicesbar_graph(
+		$data,
+		$period,
+		$width,
+		50,
+		$legend,
+		$colors,
+		$config['fontpath'],
+		$config['round_corner'],
+		$homeurl,
+		'',
+		$adapt_key,
+		$stat_win
+	);
 }
 
 function graph_nodata_image($width = 300, $height = 110, $type = 'area', $text = '') {
-	$image = ui_get_full_url('images/image_problem_area_small.png',
+	$image = ui_get_full_url('images/image_problem_area.png',
 		false, false, false); 
 	
 	// if ($text == '') {
 	// 	$text = __('No data to show');
 	// }
+	$text_div = '<div class="nodata_text" style="text-align:center;     padding: 30px 0; display:block; font-size:9.5pt;">' . $text . '</div>';
 	
-	$text_div = '<div class="nodata_text">' . $text . '</div>';
+	$image_div = $text_div . '<div class="nodata_container" style="background-position: top; width:40%;height:40%;background-size: contain;background-image: url(\'' . $image . '\');"><div></div></div>';
 	
-	$image_div = '<div class="nodata_container" style="width:80%;height:80%;background-size: 80% 80%;background-image: url(\'' . $image . '\');">' .
-		$text_div . '</div>';
-	
-	$div = '<div style="width:' . $width . 'px; height:' . $height . 'px; border: 1px dotted #ddd; background-color: white; margin: 0 auto;">' .
+	$div = '<div style="width:' . $width . 'px; height:' . $height . 'px; background-color: white; margin: 0 auto;">' .
 		$image_div . '</div>';
 	
 	return $div;
@@ -4374,7 +4387,7 @@ function graph_monitor_wheel ($width = 550, $height = 600, $filter = false) {
 					$data_agents[$agent_id]['children'][$module_group_id]['children'][] = $data_module;
 					unset($modules[$module_id]);
 				}
-				function order_module_group_keys ($value, $key) {
+				function order_module_group_keys ($value) {
 					$value['children'] = array_merge($value['children']);
 					return $value;
 				}

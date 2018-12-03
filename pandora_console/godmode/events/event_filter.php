@@ -111,7 +111,7 @@ $table->head[2] = __('Event type');
 $table->head[3] = __('Event status');
 $table->head[4] = __('Severity');
 $table->head[5] = __('Action') .
-	html_print_checkbox('all_delete', 0, false, true, false, 'check_all_checkboxes();');
+	html_print_checkbox('all_delete', 0, false, true, false);
 $table->style = array ();
 $table->style[0] = 'font-weight: bold';
 $table->align = array ();
@@ -178,12 +178,32 @@ echo "</div>";
 ?>
 
 <script type="text/javascript">
-	function check_all_checkboxes() {
-		if ($("#checkbox-all_delete").prop("checked")) {
-			$(".check_delete").prop('checked', true);
-		}
-		else {
-			$(".check_delete").prop('checked', false);
-		}
-	}
+
+$("input[name=all_delete]").css("margin-left", "32px");
+	
+	$( document ).ready(function() {
+
+		$('[id^=checkbox-delete_multiple]').change(function(){
+			if($(this).parent().parent().hasClass('checkselected')){
+				$(this).parent().parent().removeClass('checkselected');
+			}
+			else{
+				$(this).parent().parent().addClass('checkselected');							
+			}
+		});
+
+		$('[id^=checkbox-all_delete]').change(function(){	
+			if ($("#checkbox-all_delete").prop("checked")) {
+				$('[id^=checkbox-delete_multiple]').parent().parent().addClass('checkselected');
+				$(".check_delete").prop("checked", true);
+			}
+			else{
+				$('[id^=checkbox-delete_multiple]').parent().parent().removeClass('checkselected');
+				$(".check_delete").prop("checked", false);
+			}	
+		});
+
+	});
+	
 </script>
+

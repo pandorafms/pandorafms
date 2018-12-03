@@ -16,123 +16,80 @@
 
 function dbmanager_query ($sql, &$error, $dbconnection) {
 	global $config;
-	
-	switch ($config["dbtype"]) {
-		case "mysql":
-			$retval = array();
-			
-			if ($sql == '')
-				return false;
-			
-			$sql = html_entity_decode($sql, ENT_QUOTES);
-			if ($config["mysqli"]) {
-				$result = mysqli_query ($dbconnection, $sql);
-				if ($result === false) {
-					$backtrace = debug_backtrace ();
-					$error = mysqli_error ($dbconnection);
-					return false;
-				}
-			}
-			else{
-				$result = mysql_query ($sql, $dbconnection);
-				if ($result === false) {
-					$backtrace = debug_backtrace ();
-					$error = mysql_error ();
-					return false;
-				}	
-			}
-			
-			if ($result === true) {
-				if($config["mysqli"]){
-					return mysqli_affected_rows ($dbconnection);
-				}
-				else{
-					return mysql_affected_rows ();	
-				}
-			}
-			
-			if($config["mysqli"]){
-				while ($row = mysqli_fetch_array ($result, MYSQL_ASSOC)) {
-					array_push ($retval, $row);
-				}
-			}
-			else{
-				while ($row = mysql_fetch_array ($result, MYSQL_ASSOC)) {
-					array_push ($retval, $row);
-				}
-			}
 
-			if($config["mysqli"]){
-				mysqli_free_result ($result);
-			}
-			else{
-				mysql_free_result ($result);	
-			}
-			
-			if (! empty ($retval))
-				return $retval;
-			
-			//Return false, check with === or !==
-			return "Empty";
-			break;
-		case "postgresql":
-		case "oracle":
-			$retval = array();
-			
-			if ($sql == '')
-				return false;
-			
-			$sql = html_entity_decode($sql, ENT_QUOTES);
-			
-			$result = db_process_sql($sql, "affected_rows", '', false, $status);
-			
-			//$result = mysql_query ($sql);
-			if ($result === false) {
-				$backtrace = debug_backtrace();
-				$error = db_get_last_error();
-				
-				if (empty($error)) {
-					return "Empty";
-				}
-				
-				return false;
-			}
-			
-			if ($status == 2) {
-				return $result;
-			}
-			else {
-				return $result;
-			}
-			break;
+	$retval = array();
+
+	if ($sql == '')
+		return false;
+
+	$sql = html_entity_decode($sql, ENT_QUOTES);
+	if ($config["mysqli"]) {
+		$result = mysqli_query ($dbconnection, $sql);
+		if ($result === false) {
+			$backtrace = debug_backtrace ();
+			$error = mysqli_error ($dbconnection);
+			return false;
+		}
 	}
+	else{
+		$result = mysql_query ($sql, $dbconnection);
+		if ($result === false) {
+			$backtrace = debug_backtrace ();
+			$error = mysql_error ();
+			return false;
+		}
+	}
+
+	if ($result === true) {
+		if($config["mysqli"]){
+			return mysqli_affected_rows ($dbconnection);
+		}
+		else{
+			return mysql_affected_rows ();
+		}
+	}
+
+	if($config["mysqli"]){
+		while ($row = mysqli_fetch_array ($result, MYSQLI_ASSOC)) {
+			array_push ($retval, $row);
+		}
+	}
+	else{
+		while ($row = mysql_fetch_array ($result, MYSQL_ASSOC)) {
+			array_push ($retval, $row);
+		}
+	}
+
+	if($config["mysqli"]){
+		mysqli_free_result ($result);
+	}
+	else{
+		mysql_free_result ($result);
+	}
+
+	if (! empty ($retval))
+		return $retval;
+
+	//Return false, check with === or !==
+	return "Empty";
 }
 
 
 function dbmgr_extension_main () {
 	ui_require_css_file ('dbmanager', 'extensions/dbmanager/');
-	
+
 	global $config;
-	
+
 	if (!is_user_admin($config['id_user'])) {
 		db_pandora_audit("ACL Violation", "Trying to access Setup Management");
 		require ("general/noaccess.php");
 		return;
 	}
-	
-	/*
-	 * Disabled at the moment.
-	if (!check_referer()) {
-		require ("general/noaccess.php");
-		
-		return;
-	}
-	*/
-	
+
 	$sql = (string) get_parameter ('sql');
-	
+
 	ui_print_page_header (__('Database interface'), "images/gm_db.png", false, false, true);
-	
+
 	echo '<div class="notify">';
 	echo __("This is an advanced extension to interface with %s database directly from WEB console
 		using native SQL sentences. Please note that <b>you can damage</b> your %s installation
@@ -142,10 +99,10 @@ function dbmgr_extension_main () {
 		with a depth knowledge of %s internals.",
 		get_product_name(), get_product_name(), get_product_name());
 	echo '</div>';
-	
+
 	echo "<br />";
 	echo "Some samples of usage: <blockquote><em>SHOW STATUS;<br />DESCRIBE tagente<br />SELECT * FROM tserver<br />UPDATE tagente SET id_grupo = 15 WHERE nombre LIKE '%194.179%'</em></blockquote>";
-	
+
 	echo "<br /><br />";
 	echo "<form method='post' action=''>";
 	html_print_textarea ('sql', 5, 50, html_entity_decode($sql, ENT_QUOTES));
@@ -155,45 +112,45 @@ function dbmgr_extension_main () {
 	html_print_submit_button (__('Execute SQL'), '', false, 'class="sub next"');
 	echo '</div>';
 	echo "</form>";
-	
+
 	// Processing SQL Code
 	if ($sql == '')
 		return;
-	
+
 	echo "<br />";
 	echo "<hr />";
 	echo "<br />";
-	
+
 	$dbconnection = $config['dbconnection'];
 	$error = '';
-	
+
 	$result = dbmanager_query ($sql, $error, $dbconnection);
-	
+
 	if ($result === false) {
 		echo '<strong>An error has occured when querying the database.</strong><br />';
 		echo $error;
-		
+
 		db_pandora_audit("DB Interface Extension", "Error in SQL", false, false, $sql);
-		
+
 		return;
 	}
-	
+
 	if (! is_array ($result)) {
 		echo "<strong>Output: <strong>".$result;
-		
+
 		db_pandora_audit("DB Interface Extension", "SQL", false, false, $sql);
-		
+
 		return;
 	}
-	
+
 	echo "<div style='overflow: auto;'>";
 	$table = new stdClass();
 	$table->width = '100%';
 	$table->class = 'databox data';
 	$table->head = array_keys ($result[0]);
-	
+
 	$table->data = $result;
-	
+
 	html_print_table ($table);
 	echo "</div>";
 }

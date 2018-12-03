@@ -13,13 +13,8 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
-
-if (! isset($_SESSION['id_usuario'])) {
-	session_start();
-	session_write_close();
-}
-
-// Global & session management
+// Don't start a session before this import.
+// The session is configured and started inside the config process.
 require_once ('../../include/config.php');
 require_once ($config['homedir'] . '/include/auth/mysql.php');
 require_once ($config['homedir'] . '/include/functions.php');
@@ -30,7 +25,7 @@ require_once ($config['homedir'] . '/include/functions_custom_graphs.php');
 require_once ($config['homedir'] . '/include/functions_modules.php');
 require_once ($config['homedir'] . '/include/functions_agents.php');
 require_once ($config['homedir'] . '/include/functions_tags.php');
-enterprise_include_once('include/functions_agents.php');
+enterprise_include_once ('include/functions_agents.php');
 
 check_login();
 
@@ -83,17 +78,14 @@ $interface_traffic_modules = array(
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 		<title><?php echo __('%s Interface Graph', get_product_name()) . ' (' .agents_get_alias($agent_id) . ' - ' . $interface_name; ?>)</title>
 		<link rel="stylesheet" href="../../include/styles/pandora_minimal.css" type="text/css" />
-		<link rel="stylesheet" href="../../include/styles/jquery-ui-1.10.0.custom.css" type="text/css" />
+		<link rel="stylesheet" href="../../include/styles/jquery-ui.min.css" type="text/css" />
 		<script type='text/javascript' src='../../include/javascript/pandora.js'></script>
-		<script type='text/javascript' src='../../include/javascript/jquery-1.9.0.js'></script>
+		<script type='text/javascript' src='../../include/javascript/jquery-3.3.1.min.js'></script>
 		<script type='text/javascript' src='../../include/javascript/jquery.pandora.js'></script>
-		<script type='text/javascript' src='../../include/javascript/jquery.jquery-ui-1.10.0.custom.js'></script>
+		<script type='text/javascript' src='../../include/javascript/jquery-ui.min.js'></script>
 		<?php
-			if ($config['flash_charts']) {
-				//Include the javascript for the js charts library
-				include_once($config["homedir"] . '/include/graphs/functions_flot.php');
-				echo include_javascript_dependencies_flot_graph(true, "../");
-			}
+			include_once($config["homedir"] . '/include/graphs/functions_flot.php');
+			echo include_javascript_dependencies_flot_graph(true, "../");
 		?>
 			<script type='text/javascript'>
 			<!--
@@ -146,10 +138,7 @@ $interface_traffic_modules = array(
 
 		$urlImage = ui_get_full_url(false);
 
-		if ($config['flash_charts'] == 1)
-			echo '<div style="margin-left: 70px; padding-top: 10px;">';
-		else
-			echo '<div style="margin-left: 50px; padding-top: 10px;">';
+		echo '<div style="margin-left: 70px; padding-top: 10px;">';
 
 		$height = 400;
 		$width  = '90%';
@@ -320,30 +309,22 @@ ui_require_jquery_file("ui.datepicker-" . $custom_user_language, "include/javasc
 ui_include_time_picker(true);
 ?>
 <script>
+	var show_overview = false;
+	var height_window;
+	var width_window;
+	$(document).ready(function() {
+		height_window = $(window).height();
+		width_window = $(window).width();
+	});
 
-<?php
-	//Resize window when show the overview graph.
-	if ($config['flash_charts']) {
-?>
-		var show_overview = false;
-		var height_window;
-		var width_window;
-		$(document).ready(function() {
-			height_window = $(window).height();
-			width_window = $(window).width();
+	$("*").filter(function() {
+		if (typeof(this.id) == "string")
+			return this.id.match(/menu_overview_graph.*/);
+		else
+			return false;
+		}).click(function() {
+			show_overview = !show_overview;
 		});
-
-		$("*").filter(function() {
-			if (typeof(this.id) == "string")
-				return this.id.match(/menu_overview_graph.*/);
-			else
-				return false;
-			}).click(function() {
-				show_overview = !show_overview;
-			});
-<?php
-	}
-?>
 
 	// Add datepicker and timepicker
 	$("#text-start_date").datepicker({

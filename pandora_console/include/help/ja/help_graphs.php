@@ -1,6 +1,6 @@
 <?php
 /*
-* @package Include/help/es/
+* @package Include/help/ja
 */
 ?>
 
@@ -48,69 +48,67 @@ div.img_title {
 </style>
 
 <body class="hlp_graphs">
-<h1>INTERPRETING GHRAPHS IN <?php echo get_product_name();?></h1>
+<h1><?php echo get_product_name();?> におけるグラフ処理</h1>
 
+<p><?php echo get_product_name();?>では、グラフは指定した期間においてモジュールが持つ値を表現します。</p>
+<p><?php echo get_product_name();?>には、大量のデータが保存されるため、2つの異なるタイプの機能を提供しています。</p>
 
-<p>In <?php echo get_product_name();?>, graphs represent the values a module has had during a given period.</p>
-<p>Due to the large amount of data that <?php echo get_product_name();?> stores, two different types of functionality are offered</p>
-
-
-<h2>NORMAL GRAPHS</h2>
+<h2>通常グラフ</h2>
 
 <img class="hlp_graphs" src="<?php echo $config["homeurl"];?>images/help/chart_normal_sample.png" alt="regular chart sample" />
 
-<h4>General characteristics</h4>
-<p>These are graphs that represent the information stored by the module at a basic level.</p>
-<p>They allow us to see an approximation of the values in which our module oscillates.</p>
-<p>The module data are divided into <i>boxes</i> in such a way that a sample of the module values is represented, <b>not all values are shown</b>. This is complemented by dividing the view into three graphs, <b>Max</b> (maximum values), <b>min</b> (minimum values) and <b>avg</b> (average values)</p>
+<h4>一般的な特性</h4>
+<p>基本的なレベルでモジュールに保存された情報を表現するグラフがあります。</p>
+<p>モジュールの変動する値の近似値を見ることができます。<p>
+<p>モジュールデータは表示をシンプルにするための<i>箱</i>に分割され、<b>全ての値が表示されるわけではありません</b>。これは、表示を <b>最大</b>、<b>最小</b>、<b>平均</b>の 3つのグラフに分割することによって補完しています。</p>
 
 <ul class="clean">
-<li><b>Advantages</b>: They are generated very quickly without consuming hardly any resources.</li>
-<li><b>Disadvantages</b>: The information provided is approximate. The status of the monitors they represent are calculated on an event-driven basis.</li>
+<li><b>利点</b>: 多くのリソースを消費することなく素早く表示されます。</li>
+<li><b>欠点</b>: 提供される情報はおおよその値です。それらが表す監視状況は、イベント発生状況に基づいて計算されます。</li>
 
 
 
-<h4>Display options</h4>
+<h4>表示オプション</h4>
 
 <dl>
-<dt>Refresh time</dt>
-<dd>Time the graph will take to be created again.</dd>
+<dt>リフレッシュ時間</dt>
+<dd>グラフが再生成された時間です。</dd>
 
-<dt>Avg. Only</dt>
-<dd>Only the averages graph will be created.</dd>
+<dt>平均のみ</dt>
+<dd>平均のみのグラフが生成されます。</dd>
 
-<dt>Starting date</dt>
-<dd>Date until which the graphic will be created.</dd>
+<dt>開始日時</dt>
+<dd>この日時までのグラフが生成されます。</dd>
 
-<dt>Startup time</dt>
-<dd>Hour minutes and seconds until the graphic is created.</dd>
+<dt>開始時間</dt>
+<dd>グラフが生成されるまでの時間、分、秒です。</dd>
 
-<dt>Zoom factor</dt>
-<dd>Graph viewfinder size, multiplicative.</dd>
+<dt>拡大率(Zoom)</dt>
+<dd>グラフの拡大率です。</dd>
 
-<dt>Time Range</dt>
-<dd>Sets the time period from which data will be collected.</dd>
+<dt>時間範囲</dt>
+<dd>データを集める時間設定です。</dd>
 
-<dt>Show events</dt>
-<dd>Displays indicator points with event information at the top.</dd>
+<dt>イベント表示</dt>
+<dd>一番上にイベント情報をポイント表示します。</dd>
 
-<dt>Show alerts</dt>
-<dd>Shows indicator points with triggered alert information at the top.</dd>
+<dt>アラート表示</dt>
+<dd>一番上に発生したアラートの情報をポイント表示します。</dd>
 
-<dt>Show percentile</dt>
-<dd>Adds a graph that indicates the percentile line (configurable in general visual options of <?php echo get_product_name();?>).</dd>
+<dt>パーセント表示</dt>
+<dd>グラフにパーセント表示の線を追加します。(<?php echo get_product_name();?> の表示オプションで設定できます)</dd>
 
-<dt>Time comparison (superimposed)</dt>
-<dd>Displays the same graphic overlay, but in the period before the selected one. For example, if we request a period of one week and activate this option, the week before the chosen one will also be shown superimposed.</dd>
+<dt>時間比較 (重ね合わせ)</dt>
+<dd>同一のグラフを重ね合わせて表示します。ただし、選択した期間より前との重ね合わせです。例えば、期間として 1週間を選択し、このオプションをチェックすると、選択した期間の前の 1週間が重ねあわされて表示されます。</dd>
 
-<dt>Time comparison (independent)</dt>
-<dd>Displays the same graph, but in the period before the selected one, in a separate area. For example, if we request a period of one week and activate this option, the week before the chosen one will also be shown.</dd>
+<dt>時間比較 (分割)</dt>
+<dd>同一のグラフを表示します。ただし、選択した期間より前のグラフを別々に表示します。例えば、期間として 1週間を選択し、このオプションをチェックすると、選択した期間の前の 1週間のグラフも表示されます。</dd>
 
-<dt>Display unknown graphic</dt>
-<dd>It shows boxes in grey shading covering the periods in which <?php echo get_product_name();?> cannot guarantee the module's status, either due to data loss, disconnection of a software agent, etc.</dd>
+<dt>不明グラフ表示</dt>
+<dd><?php echo get_product_name();?> がモジュールの状態を把握していない、データ欠損、ソフトウエアエージェントの接続断などがあった期間を、グレーの箱で表示します。</dd>
 
-<dt>Show Full Scale Graph (TIP)</dt>
-<dd>Switches the creation mode from "normal" to "TIP". In this mode, the graphs will show real data rather than approximations, so the time it will take to generate them will be longer. More detailed information on this type of graphs can be found in the following section.</dd>
+<dt>詳細グラフ表示 (TIP)</dt>
+<dd>生成モードを "通常" から "TIP" へ切り替えます。このモードでは、グラフを近似値ではなく実データで表示します。そのため、生成にかかる時間は長くなります。このグラフでは、次に説明するより詳細の情報が参照できます。</dd>
 
 </dl>
 
@@ -121,27 +119,27 @@ div.img_title {
 <br />
 
 
-<h2>TIP GRAPS</h2>
+<h2>詳細グラフ</h2>
 <img class="hlp_graphs "src="<?php echo $config["homeurl"];?>images/help/chart_tip_sample.png" alt="TIP chart sample" />
 
-<h4>General characteristics</h4>
-<p>These are graphs that represent <b>real data</b>.</p>
-<p>They show us a true representation of the data reported by our module.</p>
-<p>As these are real data, it will not be necessary to supplement the information with extra graphs (avg, min, max).</p>
-<p>The calculation of periods in unknown state is supported by events, such as normal graphs, but is complemented by extra detection if there is any.</p>
-<p>Examples of resolution offered by normal and TIP methods:</p>
+<h4>一般的な特性</h4>
+<p><b>実データ</b>を表現するグラフです。</p>
+<p>モジュールが収集したデータをそのままの状態で表示します。</p>
+<p>実データのため、追加のグラフ(平均、最小、最大)で情報を補足する必要はありませせん。</p>
+<p>通常のグラフど同様に、不明状態の期間の計算に対応していますが、存在する場合は補完されます。</p>
+<p>通常と TIP グラフで提供される表示例:</p>
 
-<div class="img_title">Example of normal graph in unknown interval</div>
-<img class="hlp_graphs "src="<?php echo $config["homeurl"];?>images/help/chart_normal_detail.png" alt="TIP chart detail" />
+<div class="img_title">不明期間の通常グラフの例</div>
+<img class="hlp_graphs "src="<?php echo $config["homeurl"];?>images/help/chart_normal_detail.png" alt="Normal chart detail" />
 
-<div class="img_title">Example of TIP graph in unknown interval</div>
+<div class="img_title">不明期間の TIP グラフの例</div>
 <img class="hlp_graphs "src="<?php echo $config["homeurl"];?>images/help/chart_tip_detail.png" alt="TIP chart detail" />
 
 <br />
 
 <ul class="clean">
-<li><b>Advantages</b>: The data represented are real data. This is the most realistic way to review module data.</li>
-<li><b>Disadvantages</b>: Processing is slower than in normal graphs. Depending on the time range and the volume of data to be displayed, your display may be less fluid.</li>
+<li><b>利点</b>: 表示されるのは実データです。モジュールのデータを最も忠実に表現します。</li>
+<li><b>欠点</b>: 通常のグラフより処理が遅くなります。表示する時間間隔やデータ量によっては、表示が遅くなります。</li>
 </ul>
 
 </body>

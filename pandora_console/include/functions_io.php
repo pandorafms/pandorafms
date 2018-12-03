@@ -194,7 +194,7 @@ function io_html_to_ascii($hex) {
  * 
  * @return void
  */
-function io_safe_output_array(&$item, $key, $utf8 = true) {
+function io_safe_output_array(&$item, $key=false, $utf8=true) {
 	$item = io_safe_output($item, $utf8);
 }
 
@@ -374,13 +374,18 @@ function __ ($string /*, variable arguments */) {
 	global $l10n;
 	global $config;
 	static $extensions_cache = array();
-	
-	if (array_key_exists($config["id_user"], $extensions_cache)) {
-		$extensions = $extensions_cache[$config["id_user"]];
+
+	if( !isset($config["id_user"]) && count($extensions_cache) > 0 ) {
+		if (array_key_exists($config["id_user"], $extensions_cache)) {
+			$extensions = $extensions_cache[$config["id_user"]];
+		}
+		else {
+			$extensions = extensions_get_extensions();
+			$extensions_cache[$config["id_user"]] = $extensions;
+		}
 	}
-	else {
-		$extensions = extensions_get_extensions();
-		$extensions_cache[$config["id_user"]] = $extensions;
+	else{
+		$extension =null;
 	}
 	if (empty($extensions))
 		$extensions = array();
@@ -490,7 +495,7 @@ function io_input_password($password) {
 	global $config;
 	
 	enterprise_include_once('include/functions_crypto.php');
-	$ciphertext = enterprise_hook('crypto_encrypt', array($password));
+	$ciphertext = enterprise_hook('openssl_encrypt_decrypt', array('encrypt', $password));
 	if ($ciphertext === ENTERPRISE_NOT_HOOK) {
 			return $password;
 	}
@@ -499,7 +504,7 @@ function io_input_password($password) {
 }
 
 /*
- * Process the given password read from the Pandora FMS Database, 
+ * Process the given password read from the Pandora FMS Database,
  * decrypting it if necessary.
  *
  * @param string password Password read from the DB.
@@ -510,7 +515,7 @@ function io_output_password($password) {
 	global $config;
 
 	enterprise_include_once('include/functions_crypto.php');
-	$plaintext = enterprise_hook('crypto_decrypt', array($password));
+	$plaintext = enterprise_hook('openssl_encrypt_decrypt', array('decrypt', $password));
 	if ($plaintext === ENTERPRISE_NOT_HOOK) {
 			return $password;
 	}

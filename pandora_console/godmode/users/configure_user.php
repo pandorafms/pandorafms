@@ -24,6 +24,7 @@ include_once($config['homedir'] . "/include/functions_profile.php");
 include_once($config['homedir'] . '/include/functions_users.php');
 include_once ($config['homedir'] . '/include/functions_groups.php');
 include_once ($config['homedir'] . '/include/functions_visual_map.php');
+include_once($config['homedir'] . '/include/functions_custom_fields.php');
 enterprise_include_once('include/functions_profile.php');
 
 $meta = false;
@@ -133,13 +134,12 @@ if ($new_user && $config['admin_can_add_user']) {
 	if ($isFunctionSkins !== ENTERPRISE_NOT_HOOK) {
 		$user_info['id_skin'] = '';
 	}
-	
+
 	$user_info['section'] = '';
 	$user_info['data_section'] = '';
 	//This attributes are inherited from global configuration
 	$user_info['block_size'] = $config["block_size"];
-	$user_info['flash_chart'] = $config["flash_charts"];
-	
+
 	if (enterprise_installed() && defined('METACONSOLE')) {
 		$user_info['metaconsole_agents_manager'] = 0;
 		$user_info['metaconsole_assigned_server'] = '';
@@ -154,6 +154,8 @@ if ($create_user) {
 	}
 	if (html_print_csrf_error()) return;
 
+	$user_is_admin = (int) get_parameter ('is_admin', 0);
+
 	$values = array ();
 	$values['id_user'] = (string) get_parameter ('id_user');
 	$values['fullname'] = (string) get_parameter ('fullname');
@@ -164,19 +166,19 @@ if ($create_user) {
 	$values['email'] = (string) get_parameter ('email');
 	$values['phone'] = (string) get_parameter ('phone');
 	$values['comments'] = (string) get_parameter ('comments');
-	$values['is_admin'] = (int) get_parameter ('is_admin', 0);
+	$values['is_admin'] = $user_is_admin;
 	$values['language'] = get_parameter ('language', 'default');
 	$values['timezone'] = (string) get_parameter('timezone');
 	$values['default_event_filter'] = (int) get_parameter('default_event_filter');
+	$values['default_custom_view'] = (int) get_parameter('default_custom_view');
 	$dashboard = get_parameter('dashboard', '');
 	$visual_console = get_parameter('visual_console', '');
-	
+
 	if ($isFunctionSkins !== ENTERPRISE_NOT_HOOK) {
 		$values['id_skin'] = (int) get_parameter ('skin', 0);
 	}
 	$values['block_size'] = (int) get_parameter ('block_size', $config["block_size"]);
-	$values['flash_chart'] = (int) get_parameter ('flash_charts', $config["flash_charts"]);
-	
+
 	$values['section'] = get_parameter ('section');
 	if (($values['section'] == 'Event list') || ($values['section'] == 'Group view') || ($values['section'] == 'Alert detail') || ($values['section'] == 'Tactical view') || ($values['section'] == 'Default')) {
 		$values["data_section"] = '';
@@ -187,21 +189,21 @@ if ($create_user) {
 	} else if ($values['section'] == 'Other' || io_safe_output($values['section']) == 'External link'){
 		$values["data_section"] = get_parameter ('data_section');
 	}
-	
+
 	if (enterprise_installed()) {
 		$values['force_change_pass'] = 1;
 		$values['last_pass_change'] = date ("Y/m/d H:i:s", get_system_time());
 		if(defined('METACONSOLE')) {
 			$values['metaconsole_access'] = get_parameter ('metaconsole_access', 'basic');
-			$values['metaconsole_agents_manager'] = get_parameter ('metaconsole_agents_manager', '0');
+			$values['metaconsole_agents_manager'] = ($user_is_admin == 1 ? 1 : get_parameter ('metaconsole_agents_manager', '0'));
 			$values['metaconsole_assigned_server'] = get_parameter ('metaconsole_assigned_server', '');
-			$values['metaconsole_access_node'] = get_parameter ('metaconsole_access_node', '0');
+			$values['metaconsole_access_node'] = ($user_is_admin == 1 ? 1 : get_parameter ('metaconsole_access_node', '0'));
 		}
 	}
 	$values["not_login"] = (bool)get_parameter ('not_login', false);
 	$values["strict_acl"] = (bool)get_parameter ('strict_acl', false);
 	$values["session_time"] = (int)get_parameter('session_time', 0);
-	
+
 	if ($id == '') {
 		ui_print_error_message (__('User ID cannot be empty'));
 		$user_info = $values;
@@ -225,7 +227,7 @@ if ($create_user) {
 	}
 	else {
 		$info = 
-		'{"Id_user":"' . $values['id_user'] . '","FullName":"' . $values['fullname'] . '","Firstname":"'. $values['firstname'] .'","Lastname":"'. $values['lastname'] . '","Email":"' . $values['email'] . '","Phone":"' . $values['phone'] . '","Comments":"' . $values['comments'] .'","Is_admin":"' . $values['is_admin'] .'","Language":"' . $values['language'] .'","Timezone":"' . $values['timezone'] . '","Block size":"' . $values['block_size'] . '","Interactive Charts":"' . $values['flash_chart'].'"';
+		'{"Id_user":"' . $values['id_user'] . '","FullName":"' . $values['fullname'] . '","Firstname":"'. $values['firstname'] .'","Lastname":"'. $values['lastname'] . '","Email":"' . $values['email'] . '","Phone":"' . $values['phone'] . '","Comments":"' . $values['comments'] .'","Is_admin":"' . $values['is_admin'] .'","Language":"' . $values['language'] .'","Timezone":"' . $values['timezone'] . '","Block size":"' . $values['block_size'] . '"';
 			
 		if ($isFunctionSkins !== ENTERPRISE_NOT_HOOK) {
 			$info .= ',"Skin":"' . $values['id_skin'].'"}';
@@ -233,25 +235,12 @@ if ($create_user) {
 		else{
 			$info .= '}';
 		}
-		
-		switch ($config['dbtype']) {
-			case "mysql":
-			case "postgresql":
-				$result = create_user($id, $password_new, $values);
-				if ($result) {
-					$res = save_pass_history($id, $password_new);
-				}
-				break;
-			case "oracle":
-				$result = db_process_sql('/INSERT INTO tusuario (fullname, firstname, lastname, email, phone, comments, is_admin, language, id_skin, block_size, flash_chart, id_user, password, last_connect, registered) VALUES (\'' . $values['fullname'] . '\',\'\',\'\',\'\',\'\',\'\',' . $values['is_admin'] . ',\'' . $values['language'] .'\',' . $values['id_skin'] . ',' . $values['block_size'] . ',' . $values['flash_chart'] . ',\'' . $id . '\',\'' . $password_new . '\',0,\'' . get_system_time () . '\')');
-				
-				if ($result) {
-					$res = db_process_sql('/INSERT INTO tpassword_history (id_user, password, date_begin) VALUES (\'' . $id . '\',\'' . md5($password_new) . '\',\'' . date ("Y/m/d H:i:s", get_system_time()) . '\')');
-				}
-				break;
+
+		$result = create_user($id, $password_new, $values);
+		if ($result) {
+			$res = save_pass_history($id, $password_new);
 		}
-		
-		
+
 		db_pandora_audit("User management",
 			"Created user ".io_safe_output($id), false, false, $info);
 		
@@ -294,6 +283,7 @@ if ($update_user) {
 	$values['language'] = (string) get_parameter ('language');
 	$values['timezone'] = (string) get_parameter('timezone');
 	$values['default_event_filter'] = (int) get_parameter('default_event_filter');
+	$values['default_custom_view'] = (int) get_parameter('default_custom_view');
 	$dashboard = get_parameter('dashboard', '');
 	$visual_console = get_parameter('visual_console', '');
 	
@@ -301,9 +291,7 @@ if ($update_user) {
 		$values['id_skin'] = get_parameter ('skin', 0);
 	}
 	$values['block_size'] = get_parameter ('block_size', $config["block_size"]);
-	$values['flash_chart'] = get_parameter ('flash_charts', $config["flash_charts"]);
-	
-	
+
 	$values['section'] = get_parameter ('section');
 	if (($values['section'] == 'Event list') || ($values['section'] == 'Group view') || ($values['section'] == 'Alert detail') || ($values['section'] == 'Tactical view') || ($values['section'] == 'Default')) {
 		$values["data_section"] = '';
@@ -384,7 +372,6 @@ if ($update_user) {
 				"Language":"' . $values['language'] . '",
 				"Timezone":"' . $values['timezone'] . '",
 				"Block size":"' . $values['block_size'] . '",
-				"Flash Chats":"' . $values['flash_chart'] . '",
 				"Section":"' . $values['section'].'"';
 			
 			if ($isFunctionSkins !== ENTERPRISE_NOT_HOOK) {
@@ -586,10 +573,17 @@ if (!$meta) {
 	}
 }
 
-$table->data[11][0] = __('Interactive charts').' '.ui_print_help_tip(__('Whether to use Javascript or static PNG graphs'), true) ;
+if($meta){
+	$array_filters = get_filters_custom_fields_view(0, true);
+	$table->data[11][0] = __('Search custom field view').' '.ui_print_help_tip(__('Load by default the selected view in custom field view'), true);
+	$table->data[11][1] =html_print_select(
+		$array_filters, 'default_custom_view',
+		$user_info['default_custom_view'], '', __('None'), 0,
+		true, false, true, '', false
+	);
+}
+
 $values = array(-1 => __('Use global conf'), 1 => __('Yes'), 0 => __('No'));
-$table->data[11][1] = html_print_select($values, 'flash_charts',
-	$user_info["flash_chart"], '', '', -1, true, false, false);
 
 $table->data[12][0] = __('Home screen').
 		ui_print_help_tip(__('User can customize the home page. By default, will display \'Agent Detail\'. Example: Select \'Other\' and type sec=estado&sec2=operation/agentes/estado_agente to show agent detail view'), true);
@@ -738,13 +732,15 @@ $(document).ready (function () {
 	$('input:radio[name="is_admin"]').change(function() {
 		if($('#radiobtn0002').prop('checked')) {			
 			$('#user_configuration_table-metaconsole_agents_manager').show();
-			$('#user_configuration_table-metaconsole_assigned_server').show();
 			$('#user_configuration_table-metaconsole_access_node').show();
+			if($('#checkbox-metaconsole_agents_manager').prop('checked')) {			
+				$('#user_configuration_table-metaconsole_assigned_server').show();
+			}
 		}
 		else {			
 			$('#user_configuration_table-metaconsole_agents_manager').hide();
-			$('#user_configuration_table-metaconsole_assigned_server').hide();
 			$('#user_configuration_table-metaconsole_access_node').hide();
+			$('#user_configuration_table-metaconsole_assigned_server').hide();
 		}
 	});
 	

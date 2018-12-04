@@ -663,7 +663,9 @@ function reporting_make_reporting_data($report = null, $id_report,
 					$content,
 					$type,
 					$force_width_chart,
-					$force_height_chart);
+					$force_height_chart,
+					$pdf
+				);
 				break;
 			case 'module_histogram_graph':
 				$report['contents'][] = reporting_enterprise_module_histogram_graph(
@@ -1201,10 +1203,10 @@ function reporting_event_top_n($report, $content, $type = 'dinamic',
 				}
 			}
 			
-			$ag_name = modules_get_agentmodule_agent_alias($row ['id_agent_module']); 
+			$ag_name = modules_get_agentmodule_agent_alias($row ['id_agent_module']);
 			$mod_name = modules_get_agentmodule_name ($row ['id_agent_module']);
 			$unit = db_get_value('unit', 'tagente_modulo',
-				'id_agente_modulo', $row ['id_agent_module']); 
+				'id_agente_modulo', $row ['id_agent_module']);
 			
 			
 			switch ($top_n) {

@@ -91,12 +91,12 @@ function showEvents(){
 			var a = document.createElement('a');
 			var temp_style;
 			
-			var agent_url = (allEvents[i]["agent_name"] == 0)
+			var agent_url = (allEvents[i]["agent"] == 0)
 				? localStorage["ip_address"]
 					+ "/index.php?sec=eventos&sec2=operation/events/events"
 				: localStorage["ip_address"]
 					+ "/index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente="
-					+ allEvents[i]['agent_name'];
+					+ allEvents[i]['agent'];
 			a.setAttribute("href",agent_url);
 			a.target = "_blank";
 			a.className = 'a_2_mo';

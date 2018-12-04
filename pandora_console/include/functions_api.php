@@ -1410,10 +1410,6 @@ function api_set_create_os($thrash1, $thrash2, $other, $thrash3) {
 		returnError('forbidden', 'string');
 		return;
 	}
-	
-	if (defined ('METACONSOLE')) {
-		return;
-	}
 
 	$values = array();
 	
@@ -1429,16 +1425,17 @@ function api_set_create_os($thrash1, $thrash2, $other, $thrash3) {
 	$resultOrId = false;
 	if ($other['data'][0] != '') {
 		$resultOrId = db_process_sql_insert('tconfig_os', $values);
+
+		if ($resultOrId)
+			echo __('Success creating OS');
+		else
+			echo __('Error creating OS');
 	}
 
 }
 
 function api_set_update_os($id_os, $thrash2, $other, $thrash3) {
 	global $config;
-
-	if (defined ('METACONSOLE')) {
-		return;
-	}
 
 	if (!check_acl($config['id_user'], 0, "AW")) {
 		returnError('forbidden', 'string');
@@ -1457,7 +1454,10 @@ function api_set_update_os($id_os, $thrash2, $other, $thrash3) {
 
 	if ($other['data'][0] != '') {
 
-		$result = db_process_sql_update('tconfig_os', $values, array('id_os' => $id_os));
+		if (db_process_sql_update('tconfig_os', $values, array('id_os' => $id_os)))
+			echo __('Success updating OS');
+		else
+			echo __('Error updating OS');
 	}
 
 }

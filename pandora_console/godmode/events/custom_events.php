@@ -229,15 +229,31 @@ $(document).ready (function () {
 	});
 	
 	$("#left").click (function () {
+		var current_fields_size = ($('#fields_selected option').size());	
+		var selected_fields = [];
+		var selected_fields_total = '';
+
 		jQuery.each($("select[name='fields_selected[]'] option:selected"), function (key, value) {
-				field_name = $(value).html();
-				if (field_name != <?php echo "'".__('None')."'"; ?>) {
-					id_field = $(value).attr('value');
-					$("select[name='fields_available[]']").append($("<option></option>").val(id_field).html('<i>' + field_name + '</i>'));
-					$("#fields_selected").find("option[value='" + id_field + "']").remove();
-					$("#fields_available").find("option[value='0']").remove();
-				}
+			field_name = $(value).html();
+ 			selected_fields.push(field_name);
+		 	selected_fields_total = selected_fields.length;
 		});
+
+		if(selected_fields_total === current_fields_size){
+			display_confirm_dialog(
+				"<?php echo '<span style=text-transform:none;font-size:9.5pt;>'.__('There must be at least one custom field. Timestamp will be set by default').'</span>'; ?>",
+				"<?php echo __('Confirm'); ?>",
+				"<?php echo __('Cancel'); ?>",
+				function () {
+					move_left();
+					$("#fields_available").find("option[value='timestamp']").remove();
+					$("select[name='fields_selected[]']").append($("<option></option>").val('timestamp').html('<i>' + 'Timestamp' + '</i>'));
+				}
+			);
+		}
+		else{
+			move_left();
+		}
 	});
 	
 	$("#submit-upd_button").click(function () {
@@ -247,4 +263,16 @@ $(document).ready (function () {
 		});
 	});
 });
+
+function move_left(){
+	jQuery.each($("select[name='fields_selected[]'] option:selected"), function (key, value) {
+		field_name = $(value).html();
+		if (field_name != <?php echo "'".__('None')."'"; ?>) {
+			id_field = $(value).attr('value');
+			$("select[name='fields_available[]']").append($("<option></option>").val(id_field).html('<i>' + field_name + '</i>'));
+			$("#fields_selected").find("option[value='" + id_field + "']").remove();
+			$("#fields_available").find("option[value='0']").remove();
+		}
+	});
+}
 </script>

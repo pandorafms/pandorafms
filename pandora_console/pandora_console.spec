@@ -3,7 +3,7 @@
 #
 %define name        pandorafms_console
 %define version     7.0NG.729
-%define release     181130
+%define release     181204
 %define httpd_name      httpd
 # User and Group under which Apache is running
 %define httpd_name  apache2
@@ -27,7 +27,8 @@ Prefix:              /srv/www/htdocs
 BuildRoot:          %{_tmppath}/%{name}
 BuildArch:          noarch
 AutoReq:            0
-Requires:           apache2, apache2-mod_php5
+Requires:           apache2
+Requires:           (apache2-mod_php5 or apache2-mod_php7)
 Requires:           php >= 4.3.0
 Requires:           php-gd, php-snmp, php-json, php-gettext
 Requires:           php-mysqlnd, php-ldap, php-mbstring, php 

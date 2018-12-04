@@ -202,7 +202,9 @@ if (file_exists ('languages/'.$user_language.'.mo')) {
 					$params['id_agent'],
 					$params['full_legend_daterray'],
 					$params['not_interactive'],
-					1
+					$params['ttl'],
+					$params['widgets'],
+					$params['show']
 				);
 				break;
 			default:

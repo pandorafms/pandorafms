@@ -32,6 +32,7 @@ $append_tab_filter = (bool)get_parameter('append_tab_filter', 0);
 $create_filter_cf = (bool)get_parameter('create_filter_cf', 0);
 $update_filter_cf = (bool)get_parameter('update_filter_cf', 0);
 $delete_filter_cf = (bool)get_parameter('delete_filter_cf', 0);
+$change_name_filter = (bool)get_parameter('change_name_filter', 0);
 
 if ($get_custom_fields_data){
 	$name_custom_fields = get_parameter("name_custom_fields", 0);
@@ -39,7 +40,6 @@ if ($get_custom_fields_data){
 	echo json_encode($array_custom_fields_data);
 	return;
 }
-
 
 if($build_table_custom_fields){
 	$order = get_parameter("order", '');
@@ -237,6 +237,7 @@ if($build_table_child_custom_fields){
 	$id_agent = get_parameter("id_agent", 0);
 	$id_server = get_parameter("id_server", 0);
 	$module_search = str_replace('amp;', '',get_parameter("module_search", ''));
+	$module_status = get_parameter("module_status", 0);
 
 	if(!$id_server || !$id_agent){
 		return false;
@@ -244,6 +245,46 @@ if($build_table_child_custom_fields){
 
 	if($module_search != ''){
 		$name_where = " AND tam.nombre LIKE '%" . $module_search . "%'";
+	}
+
+	//filter by status module
+	$and_module_status = "";
+	if(is_array($module_status)){
+		if(!in_array(-1, $module_status)){
+			if(!in_array(AGENT_MODULE_STATUS_NOT_NORMAL, $module_status)){
+				if(count($module_status) > 0){
+					$and_module_status = " AND ( ";
+					foreach ($module_status as $key => $value) {
+						$and_module_status .= ($key != 0)
+							? " OR ("
+							: " (";
+						switch ($value) {
+							default:
+							case AGENT_STATUS_NORMAL:
+								$and_module_status .= " tae.estado = 0 OR tae.estado = 300 ) ";
+								break;
+							case AGENT_STATUS_CRITICAL:
+								$and_module_status .= " tae.estado = 1 OR tae.estado = 100 ) ";
+								break;
+							case AGENT_STATUS_WARNING:
+								$and_module_status .= " tae.estado = 2 OR tae.estado = 200 ) ";
+								break;
+							case AGENT_STATUS_UNKNOWN:
+								$and_module_status .= " tae.estado = 3 ) ";
+								break;
+							case AGENT_STATUS_NOT_INIT:
+								$and_module_status .= " tae.estado = 4 OR tae.estado = 5 ) ";
+								break;
+						}
+					}
+					$and_module_status .= " ) ";
+				}
+			}
+			else{
+				//not normal
+				$and_module_status = "AND tae.estado <> 0 AND tae.estado <> 300 ";
+			}
+		}
 	}
 
 	if (is_metaconsole()) {
@@ -262,9 +303,10 @@ if($build_table_child_custom_fields){
 		INNER JOIN tagente_estado tae
 			ON tam.id_agente_modulo = tae.id_agente_modulo
 		WHERE tam.id_agente = %d
-		%s",
+		%s %s",
 		$id_agent,
-		$name_where
+		$name_where,
+		$and_module_status
 	);
 
 	$modules = db_get_all_rows_sql ($query);
@@ -282,7 +324,7 @@ if($build_table_child_custom_fields){
 	$table_modules->head[5] = __('Status');
 
 	$table_modules->data = array();
-	$status_agent = -1;
+
 	if(isset($modules) && is_array($modules)){
 		foreach ($modules as $key => $value) {
 			$table_modules->data[$key][0] = $value['nombre'];
@@ -311,9 +353,6 @@ if($build_table_child_custom_fields){
 			switch ($value['estado']) {
 				case 0:
 				case 300:
-					if($status_agent != 1 && $status_agent != 2 && $status_agent != 3){
-						$status_agent = 0;
-					}
 					$table_modules->data[$key][5] = html_print_image(
 						'images/status_sets/default/severity_normal.png',
 						true,
@@ -324,7 +363,6 @@ if($build_table_child_custom_fields){
 					break;
 				case 1:
 				case 100:
-					$status_agent = 1;
 					$table_modules->data[$key][5] = html_print_image(
 						'images/status_sets/default/severity_critical.png',
 						true,
@@ -335,10 +373,6 @@ if($build_table_child_custom_fields){
 				break;
 				case 2:
 				case 200:
-					if($status_agent != 1){
-						$status_agent = 2;
-					}
-
 					$table_modules->data[$key][5] = html_print_image(
 						'images/status_sets/default/severity_warning.png',
 						true,
@@ -348,10 +382,6 @@ if($build_table_child_custom_fields){
 					);
 				break;
 				case 3:
-					if($status_agent != 1 && $status_agent != 2){
-						$status_agent = 3;
-					}
-
 					$table_modules->data[$key][5] = html_print_image(
 						'images/status_sets/default/severity_maintenance.png',
 						true,
@@ -362,9 +392,6 @@ if($build_table_child_custom_fields){
 				break;
 				case 4:
 				case 5:
-					if($status_agent == -1 || $status_agent == 4){
-						$status_agent = 5;
-					}
 					$table_modules->data[$key][5] = html_print_image(
 						'images/status_sets/default/severity_informational.png',
 						true,
@@ -374,10 +401,6 @@ if($build_table_child_custom_fields){
 					);
 				break;
 				default:
-					if($status_agent != 1 && $status_agent != 2 && $status_agent != 3){
-						$status_agent = 0;
-					}
-
 					$table_modules->data[$key][5] = html_print_image(
 						'images/status_sets/default/severity_normal.png',
 						true,
@@ -389,6 +412,8 @@ if($build_table_child_custom_fields){
 			}
 		}
 	}
+
+	$status_agent = agents_get_status($id_agent, true);
 
 	if (is_metaconsole()) {
 			metaconsole_restore_db();
@@ -433,17 +458,19 @@ if($build_table_save_filter){
 		$table->id = 'save_filter_form';
 		$table->width = '100%';
 		$table->class = 'databox';
-		
+
 		$array_filters = get_filters_custom_fields_view(0, true);
+
 		$table->data[0][0] = __('Filter name');
 		$table->data[0][1] = html_print_select(
 			$array_filters, 'id_name',
 			'', '', '', '',
 			true, false, true, '', false
 		);
+
 		$table->data[0][3] = html_print_submit_button (__('Load filter'), 'load_filter', false, 'class="sub upd"', true);
-		
-		echo "<form action='' method='post'>"; 
+
+		echo "<form action='' method='post'>";
 			html_print_table($table);
 		echo "</form>";
 	}
@@ -462,7 +489,16 @@ if($append_tab_filter){
 		echo "<div id='msg_error_create'></div>";
 		$table->data[0][0] = __('Filter name');
 		$table->data[0][1] = html_print_input_text('id_name', '', '', 15, 255, true);
-		$table->data[0][2] = html_print_submit_button (__('Create filter'), 'create_filter', false, 'class="sub upd"', true);
+
+		$table->data[0][2] = __('Group');
+		$table->data[0][3] = html_print_select_groups(
+			$config['id_user'], 'AR', true, 'group_search_cr',
+			0, '',  '', '0', true, false,
+			false, '', false, '', false, false,
+			'id_grupo', false
+		);
+
+		$table->data[0][4] = html_print_submit_button (__('Create filter'), 'create_filter', false, 'class="sub upd"', true);
 	}
 	else{
 		echo "<div id='msg_error_update'></div>";
@@ -470,12 +506,22 @@ if($append_tab_filter){
 		$array_filters = get_filters_custom_fields_view(0, true);
 		$table->data[0][0] = __('Filter name');
 		$table->data[0][1] = html_print_select(
-			$array_filters, 'id_name',
-			'', '', __('None'), -1,
-			true, false, true, '', false
+			$array_filters, 'id_name', '',
+			'filter_name_change_group(this.value)',
+			__('None'), -1, true, false, true,
+			'', false
 		);
+
+		$table->data[1][0] = __('Group');
+		$table->data[1][1] = html_print_select_groups(
+			$config['id_user'], 'AR', true, 'group_search_up',
+			$group, '',  '', '0', true, false,
+			false, '', false, '', false, false,
+			'id_grupo', false
+		);
+
 		$table->data[0][2] = html_print_submit_button (__('Delete filter'), 'delete_filter', false, 'class="sub upd"', true);
-		$table->data[0][3] = html_print_submit_button (__('Update filter'), 'update_filter', false, 'class="sub upd"', true);
+		$table->data[1][2] = html_print_submit_button (__('Update filter'), 'update_filter', false, 'class="sub upd"', true);
 	}
 
 	html_print_table($table);
@@ -491,6 +537,7 @@ if($create_filter_cf){
 	//initialize vars
 	$filters = json_decode(io_safe_output(get_parameter("filters", '')), true);
 	$name_filter = get_parameter("name_filter", '');
+	$group_search = get_parameter("group_search", 0);
 
 	//check that the name is not empty
 	if($name_filter == ''){
@@ -529,11 +576,14 @@ if($create_filter_cf){
 	//insert
 	$values = array();
 	$values['name'] = $name_filter;
+	$values['group_search'] = $group_search;
 	$values['id_group'] = $filters['group'];
 	$values['id_custom_field'] = $filters['id_custom_fields'];
 	$values['id_custom_fields_data'] = json_encode($filters['id_custom_fields_data']);
 	$values['id_status'] = json_encode($filters['id_status']);
 	$values['module_search'] = $filters['module_search'];
+	$values['module_status'] = json_encode($filters['module_status']);
+	$values['recursion'] = $filters['recursion'];
 
 	$insert = db_process_sql_insert('tagent_custom_fields_filter', $values);
 
@@ -565,6 +615,7 @@ if($update_filter_cf){
 	//initialize vars
 	$filters = json_decode(io_safe_output(get_parameter("filters", '')), true);
 	$id_filter = get_parameter("id_filter", '');
+	$group_search = get_parameter("group_search", 0);
 
 	//check selected filter
 	if($id_filter == -1){
@@ -595,10 +646,13 @@ if($update_filter_cf){
 	//array values update
 	$values = array();
 	$values['id_group'] = $filters['group'];
+	$values['group_search'] = $group_search;
 	$values['id_custom_field'] = $filters['id_custom_fields'];
 	$values['id_custom_fields_data'] = json_encode($filters['id_custom_fields_data']);
 	$values['id_status'] = json_encode($filters['id_status']);
 	$values['module_search'] = $filters['module_search'];
+	$values['module_status'] = json_encode($filters['module_status']);
+	$values['recursion'] = $filters['recursion'];
 
 	//update
 	$update = db_process_sql_update('tagent_custom_fields_filter', $values, $condition);
@@ -669,6 +723,16 @@ if($delete_filter_cf){
 	return;
 }
 
+if($change_name_filter){
+	$id_filter = get_parameter("id_filter", 0);
+	if(isset($id_filter)){
+		$res = get_group_filter_custom_field_view($id_filter);
+		echo json_encode($res);
+		return;
+	}
+
+	return json_encode(false);
+}
 
 
 

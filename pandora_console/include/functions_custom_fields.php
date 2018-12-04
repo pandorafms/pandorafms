@@ -191,7 +191,7 @@ function get_custom_fields_data ($custom_field_name) {
 }
 
 function agent_counters_custom_fields($filters){
-	//filter by status
+	//filter by status agent
 	$and_status = "";
 	if(is_array($filters['id_status'])){
 		if(!in_array(-1, $filters['id_status'])){
@@ -241,17 +241,100 @@ function agent_counters_custom_fields($filters){
 		}
 	}
 
+	//filter by status module
+	$and_module_status = "";
+	if(is_array($filters['module_status'])){
+		if(!in_array(-1, $filters['module_status'])){
+			if(!in_array(AGENT_MODULE_STATUS_NOT_NORMAL, $filters['module_status'])){
+				if(count($filters['module_status']) > 0){
+					$and_module_status = " AND ( ";
+					foreach ($filters['module_status'] as $key => $value) {
+						$and_module_status .= ($key != 0)
+							? " OR ("
+							: " (";
+						switch ($value) {
+							default:
+							case AGENT_STATUS_NORMAL:
+								$and_module_status .= " tae.estado = 0 OR tae.estado = 300 ) ";
+								break;
+							case AGENT_STATUS_CRITICAL:
+								$and_module_status .= " tae.estado = 1 OR tae.estado = 100 ) ";
+								break;
+							case AGENT_STATUS_WARNING:
+								$and_module_status .= " tae.estado = 2 OR tae.estado = 200 ) ";
+								break;
+							case AGENT_STATUS_UNKNOWN:
+								$and_module_status .= " tae.estado = 3 ) ";
+								break;
+							case AGENT_STATUS_NOT_INIT:
+								$and_module_status .= " tae.estado = 4 OR tae.estado = 5 ) ";
+								break;
+						}
+					}
+					$and_module_status .= " ) ";
+				}
+			}
+			else{
+				//not normal
+				$and_module_status = "AND tae.estado <> 0 AND tae.estado <> 300 ";
+			}
+		}
+	}
+
+	//filters module
+	if($filters['module_search']){
+		$and_module_search = 'AND nombre LIKE "%' . $filters['module_search'] . '%"';
+	}
+
+	$module_filter = "";
+	if($and_module_search != '' || $and_module_status != ''){
+		$module_filter = ' AND (
+			SELECT count(*) AS n
+			FROM tagente_modulo tam
+			INNER JOIN tagente_estado tae
+				ON tae.id_agente_modulo = tam.id_agente_modulo
+			WHERE tam.id_agente=ta.id_agente
+				'. $and_module_search . ' ' . $and_module_status .'
+		) > 0 ';
+	}
+
 	//filter group and check ACL groups
 	$groups_and = "";
 	if (!users_can_manage_group_all("AR")) {
-		if(!$filters['group']){
-			$id_groups = explode(", ", array_keys(users_get_groups()));
+		if($filters['group']){
+			$user_groups = array_keys(users_get_groups());
+			$id_groups = implode(", ", $user_groups);
 			$groups_and = " AND (ta.id_grupo IN ($id_groups) OR tasg.id_group IN($id_groups))";
 		}
 	}
 
 	if($filters['group']){
-		$groups_and = " AND (ta.id_grupo =". $filters['group']." OR tasg.id_group =". $filters['group'].")";
+		//recursion check acl
+		if($filters['recursion']){
+			$recursion_groups = groups_get_id_recursive($filters['group'], true);
+			if (!users_can_manage_group_all("AR")) {
+				if(isset($user_groups) && is_array($user_groups)){
+					$groups_intersect = array_intersect($user_groups, $recursion_groups);
+					if(isset($groups_intersect) && is_array($groups_intersect)){
+						$groups_intersect = implode(", ", $groups_intersect);
+						$groups_and = " AND (ta.id_grupo IN ($groups_intersect) OR tasg.id_group IN($groups_intersect))";
+					}
+					else{
+						return false;
+					}
+				}
+				else{
+					return false;
+				}
+			}
+			else{
+				$recursion_groups = implode(", ", $recursion_groups);
+				$groups_and = " AND (ta.id_grupo IN ($recursion_groups) OR tasg.id_group IN($recursion_groups))";
+			}
+		}
+		else{
+			$groups_and = " AND (ta.id_grupo =". $filters['group']." OR tasg.id_group =". $filters['group'].")";
+		}
 	}
 
 	//filter custom data
@@ -263,17 +346,6 @@ function agent_counters_custom_fields($filters){
 
 	//filter custom name
 	$custom_field_name = $filters['id_custom_fields'];
-
-	//filters module
-	$module_filter = "";
-	if($filters['module_search']){
-		$module_filter = ' AND (
-			SELECT count(*) AS n
-			FROM tagente_modulo
-			WHERE nombre LIKE "%' . $filters['module_search'] . '%"
-				AND id_agente=ta.id_agente
-		) > 0 ';
-	}
 
 	if(is_metaconsole()){
 		$metaconsole_connections = metaconsole_get_connection_names();
@@ -385,36 +457,38 @@ function agent_counters_custom_fields($filters){
 			);
 
 			foreach ($result_meta as $k => $nodo) {
-				foreach ($nodo as $key => $value) {
-					//Sum counters total
-					$final_result['counters_total']['t_m_normal'] += $value['m_normal'];
-					$final_result['counters_total']['t_m_critical'] += $value['m_critical'];
-					$final_result['counters_total']['t_m_warning'] += $value['m_warning'];
-					$final_result['counters_total']['t_m_unknown'] += $value['m_unknown'];
-					$final_result['counters_total']['t_m_not_init'] += $value['m_not_init'];
-					$final_result['counters_total']['t_m_alerts'] += $value['m_alerts'];
-					$final_result['counters_total']['t_m_total'] += $value['m_total'];
-					$final_result['counters_total']['t_a_critical'] += $value['a_critical'];
-					$final_result['counters_total']['t_a_warning'] += $value['a_warning'];
-					$final_result['counters_total']['t_a_unknown'] += $value['a_unknown'];
-					$final_result['counters_total']['t_a_normal'] += $value['a_normal'];
-					$final_result['counters_total']['t_a_not_init'] += $value['a_not_init'];
-					$final_result['counters_total']['t_a_agents'] += $value['a_agents'];
+				if(isset($nodo) && is_array($nodo)){
+					foreach ($nodo as $key => $value) {
+						//Sum counters total
+						$final_result['counters_total']['t_m_normal'] += $value['m_normal'];
+						$final_result['counters_total']['t_m_critical'] += $value['m_critical'];
+						$final_result['counters_total']['t_m_warning'] += $value['m_warning'];
+						$final_result['counters_total']['t_m_unknown'] += $value['m_unknown'];
+						$final_result['counters_total']['t_m_not_init'] += $value['m_not_init'];
+						$final_result['counters_total']['t_m_alerts'] += $value['m_alerts'];
+						$final_result['counters_total']['t_m_total'] += $value['m_total'];
+						$final_result['counters_total']['t_a_critical'] += $value['a_critical'];
+						$final_result['counters_total']['t_a_warning'] += $value['a_warning'];
+						$final_result['counters_total']['t_a_unknown'] += $value['a_unknown'];
+						$final_result['counters_total']['t_a_normal'] += $value['a_normal'];
+						$final_result['counters_total']['t_a_not_init'] += $value['a_not_init'];
+						$final_result['counters_total']['t_a_agents'] += $value['a_agents'];
 
-					//Sum counters for data
-					$array_data[$value['name_data']]['m_normal'] += $value['m_normal'];
-					$array_data[$value['name_data']]['m_critical'] += $value['m_critical'];
-					$array_data[$value['name_data']]['m_warning'] += $value['m_warning'];
-					$array_data[$value['name_data']]['m_unknown'] += $value['m_unknown'];
-					$array_data[$value['name_data']]['m_not_init'] += $value['m_not_init'];
-					$array_data[$value['name_data']]['m_alerts'] += $value['m_alerts'];
-					$array_data[$value['name_data']]['m_total'] += $value['m_total'];
-					$array_data[$value['name_data']]['a_critical'] += $value['a_critical'];
-					$array_data[$value['name_data']]['a_warning'] += $value['a_warning'];
-					$array_data[$value['name_data']]['a_unknown'] += $value['a_unknown'];
-					$array_data[$value['name_data']]['a_normal'] += $value['a_normal'];
-					$array_data[$value['name_data']]['a_not_init'] += $value['a_not_init'];
-					$array_data[$value['name_data']]['a_agents'] += $value['a_agents'];
+						//Sum counters for data
+						$array_data[$value['name_data']]['m_normal'] += $value['m_normal'];
+						$array_data[$value['name_data']]['m_critical'] += $value['m_critical'];
+						$array_data[$value['name_data']]['m_warning'] += $value['m_warning'];
+						$array_data[$value['name_data']]['m_unknown'] += $value['m_unknown'];
+						$array_data[$value['name_data']]['m_not_init'] += $value['m_not_init'];
+						$array_data[$value['name_data']]['m_alerts'] += $value['m_alerts'];
+						$array_data[$value['name_data']]['m_total'] += $value['m_total'];
+						$array_data[$value['name_data']]['a_critical'] += $value['a_critical'];
+						$array_data[$value['name_data']]['a_warning'] += $value['a_warning'];
+						$array_data[$value['name_data']]['a_unknown'] += $value['a_unknown'];
+						$array_data[$value['name_data']]['a_normal'] += $value['a_normal'];
+						$array_data[$value['name_data']]['a_not_init'] += $value['a_not_init'];
+						$array_data[$value['name_data']]['a_agents'] += $value['a_agents'];
+					}
 				}
 			}
 
@@ -432,8 +506,16 @@ function agent_counters_custom_fields($filters){
 }
 
 function get_filters_custom_fields_view($id = 0, $for_select = false, $name = ""){
+	//filter group and check ACL groups
+	$groups_and = "";
+	if (!users_can_manage_group_all()) {
+		$user_groups = array_keys(users_get_groups(false, "AR", false));
+		$id_groups = implode(", ", $user_groups);
+		$groups_and = " AND (group_search IN ($id_groups)) ";
+	}
+
 	if($for_select){
-		$query = "SELECT id, `name` FROM tagent_custom_fields_filter";
+		$query = "SELECT id, `name` FROM tagent_custom_fields_filter WHERE 1=1" . $groups_and;
 		$rs = db_get_all_rows_sql($query);
 		if(isset($rs) && is_array($rs)){
 			foreach ($rs as $key => $value) {
@@ -445,7 +527,7 @@ function get_filters_custom_fields_view($id = 0, $for_select = false, $name = ""
 		}
 	}
 	else{
-		$query = "SELECT * FROM tagent_custom_fields_filter WHERE 1=1";
+		$query = "SELECT * FROM tagent_custom_fields_filter WHERE 1=1" . $groups_and;
 
 		if($id){
 			$query .= " AND id = " . $id;
@@ -459,4 +541,13 @@ function get_filters_custom_fields_view($id = 0, $for_select = false, $name = ""
 	}
 	return $result;
 }
+
+function get_group_filter_custom_field_view ($id){
+	if(isset($id)){
+		$res = db_get_row_filter('tagent_custom_fields_filter',array('id' => $id));
+		return $res;
+	}
+	return false;
+}
+
 ?>

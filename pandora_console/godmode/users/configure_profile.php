@@ -175,7 +175,7 @@ if ($id_profile || $new_profile) {
 		$vconsole_management = (bool) $profile["vconsole_management"];
 		
 		$id_audit = db_pandora_audit("User management",
-			"Edit profile ". $name);
+			"Edit profile ". io_safe_output($name));
 		enterprise_include_once('include/functions_audit.php');
 		
 		$info = 'Name: ' . $name .

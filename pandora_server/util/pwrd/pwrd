@@ -20,7 +20,6 @@
 # chkconfig:   - 85 1
 # description: PWRD Grid is a distributed platform for browser-based automation.
 # processname: pwr
-# pidfile:     $BASE_DIR/pwr.pid
  
 # Source function library.
 

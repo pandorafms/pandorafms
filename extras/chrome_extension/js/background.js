@@ -144,7 +144,7 @@ function parseReplyEvents (reply) {
 		fetchedEvents.push({
 			'id' : event.id_evento,
 			'agent_name' : event.agent_name,
-			'agent' : event.id_agent,
+			'agent' : event.id_agente,
 			'date' : event.timestamp,
 			'title' : event.evento,
 			'module' : event.id_agentmodule,
@@ -215,7 +215,7 @@ function getNotification(pEvent){
 	if(pEvent['module'] != 0) even += " in the module with Id "+ pEvent['module'];
 	even += ".";
 
-	var url = (pEvent['agent']=="")
+	var url = (pEvent['agent'] == 0)
 		? localStorage["ip_address"]+"/index.php?sec=eventos&sec2=operation/events/events"
 		: localStorage["ip_address"]+"/index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=" + pEvent['agent'];
 

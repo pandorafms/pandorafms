@@ -3306,7 +3306,7 @@ function draw_elements_graph() {
 		})
 		.attr("startOffset", function (d) {
 			if (d.source.x < d.target.x) {
-				return "";
+				return "0%";
 			}
 			else {
 				return "85%";
@@ -3356,7 +3356,7 @@ function draw_elements_graph() {
 				return "85%";
 			}
 			else {
-				return "";
+				return "0%";
 			}
 		})
 		.attr("text-anchor", function (d) {

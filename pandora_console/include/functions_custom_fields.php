@@ -506,8 +506,16 @@ function agent_counters_custom_fields($filters){
 }
 
 function get_filters_custom_fields_view($id = 0, $for_select = false, $name = ""){
+	//filter group and check ACL groups
+	$groups_and = "";
+	if (!users_can_manage_group_all()) {
+		$user_groups = array_keys(users_get_groups(false, "AR", false));
+		$id_groups = implode(", ", $user_groups);
+		$groups_and = " AND (group_search IN ($id_groups)) ";
+	}
+
 	if($for_select){
-		$query = "SELECT id, `name` FROM tagent_custom_fields_filter";
+		$query = "SELECT id, `name` FROM tagent_custom_fields_filter WHERE 1=1" . $groups_and;
 		$rs = db_get_all_rows_sql($query);
 		if(isset($rs) && is_array($rs)){
 			foreach ($rs as $key => $value) {
@@ -519,7 +527,7 @@ function get_filters_custom_fields_view($id = 0, $for_select = false, $name = ""
 		}
 	}
 	else{
-		$query = "SELECT * FROM tagent_custom_fields_filter WHERE 1=1";
+		$query = "SELECT * FROM tagent_custom_fields_filter WHERE 1=1" . $groups_and;
 
 		if($id){
 			$query .= " AND id = " . $id;

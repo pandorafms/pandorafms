@@ -460,6 +460,7 @@ if($build_table_save_filter){
 		$table->class = 'databox';
 
 		$array_filters = get_filters_custom_fields_view(0, true);
+
 		$table->data[0][0] = __('Filter name');
 		$table->data[0][1] = html_print_select(
 			$array_filters, 'id_name',
@@ -491,7 +492,7 @@ if($append_tab_filter){
 
 		$table->data[0][2] = __('Group');
 		$table->data[0][3] = html_print_select_groups(
-			$config['id_user'], 'AR', true, 'group_search',
+			$config['id_user'], 'AR', true, 'group_search_cr',
 			0, '',  '', '0', true, false,
 			false, '', false, '', false, false,
 			'id_grupo', false

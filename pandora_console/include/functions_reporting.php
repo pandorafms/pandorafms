@@ -9300,6 +9300,7 @@ function reporting_get_agentmodule_data_sum ($id_agent_module,
 		$id_module_type);
 	$module_interval = modules_get_interval ($id_agent_module);
 	$uncompressed_module = is_module_uncompressed ($module_name);
+
 	
 	// Wrong module type
 	if (is_module_data_string ($module_name)) {
@@ -9309,7 +9310,17 @@ function reporting_get_agentmodule_data_sum ($id_agent_module,
 	// Incremental modules are treated differently
 	$module_inc = is_module_inc ($module_name);
 
-	if (!$uncompressed_module)
+	if ($uncompressed_module) {
+		// Get module data
+		$interval_data = db_get_all_rows_sql('
+			SELECT * FROM tagente_datos 
+			WHERE id_agente_modulo = ' . (int) $id_agent_module . '
+				AND utimestamp > ' . (int) $datelimit . '
+				AND utimestamp < ' . (int) $date . '
+			ORDER BY utimestamp ASC', $search_in_history_db);
+
+	}
+	else
 		$interval_data = db_uncompress_module_data((int) $id_agent_module, (int) $datelimit, (int) $date);
 
 	if ($interval_data === false) $interval_data = array ();

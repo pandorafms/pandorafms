@@ -30,6 +30,8 @@ include_once($config['homedir'] . "/include/functions_network_components.php");
 include_once($config['homedir'] . "/include/functions_netflow.php");
 include_once($config['homedir'] . "/include/functions_servers.php");
 include_once($config['homedir'] . "/include/functions_planned_downtimes.php");
+include_once($config['homedir'] . "/include/functions_db.php");
+include_once($config['homedir'] . "/include/functions_event_responses.php");
 enterprise_include_once ('include/functions_local_components.php');
 enterprise_include_once ('include/functions_events.php');
 enterprise_include_once ('include/functions_agents.php');
@@ -8722,8 +8724,212 @@ function api_set_delete_user_profile($id, $thrash1, $other, $thrash2) {
 }
 
 /**
+ * List all user profiles.
+ *
+ * @param Reserved $thrash1
+ * @param Reserved $thrash2
+ * @param Reserved $thrash3
+ * @param string Return type (csv, json, string...)
+ *
+ *  api.php?op=get&op2=user_profiles_info&return_type=json&apipass=1234&user=admin&pass=pandora
+ */
+function api_get_user_profiles_info ($thrash1, $thrash2, $thrash3, $returnType) {
+	global $config;
+
+	if (!check_acl($config['id_user'], 0, "PM")){
+		returnError('forbidden', 'string');
+		return;
+	}
+
+	$profiles = db_get_all_rows_filter(
+		'tperfil',
+		array(),
+		array(
+			"id_perfil",
+			"name",
+			"incident_view as IR",
+			"incident_edit as IW",
+			"incident_management as IM",
+			"agent_view as AR",
+			"agent_edit as AW",
+			"agent_disable as AD",
+			"alert_edit as LW",
+			"alert_management as LM",
+			"user_management as UM",
+			"db_management as DM",
+			"event_view as ER",
+			"event_edit as EW",
+			"event_management as EM",
+			"report_view as RR",
+			"report_edit as RW",
+			"report_management as RM",
+			"map_view as MR",
+			"map_edit as MW",
+			"map_management as MM",
+			"vconsole_view as VR",
+			"vconsole_edit as VW",
+			"vconsole_management as VM",
+			"pandora_management as PM"
+		)
+	);
+
+	if ($profiles === false) {
+		returnError('error_list_profiles', __('Error retrieving profiles'));
+	} else {
+		returnData($returnType, array('type' => 'array', 'data' => $profiles));
+	}
+}
+
+/**
+ * Create an user profile.
+ *
+ * @param Reserved $thrash1
+ * @param Reserved $thrash2
+ * @param array parameters in array: name|IR|IW|IM|AR|AW|AD|LW|LM|UM|DM|ER|EW|EM|RR|RW|RM|MR|MW|MM|VR|VW|VM|PM
+ * @param string Return type (csv, json, string...)
+ *
+ *  api.php?op=set&op2=create_user_profile_info&return_type=json&other=API_profile%7C1%7C0%7C0%7C1%7C0%7C0%7C0%7C0%7C0%7C0%7C1%7C0%7C0%7C1%7C0%7C0%7C1%7C0%7C0%7C1%7C0%7C0%7C0&other_mode=url_encode_separator_%7C&apipass=1234&user=admin&pass=pandora
+ */
+function api_set_create_user_profile_info ($thrash1, $thrash2, $other, $returnType) {
+	global $config;
+
+	if (!check_acl($config['id_user'], 0, "PM")){
+		returnError('forbidden', 'string');
+		return;
+	}
+
+	$values = array(
+		'name' => (string)$other['data'][0],
+		'incident_view' => (bool)$other['data'][1] ? 1 : 0,
+		'incident_edit' => (bool)$other['data'][2] ? 1 : 0,
+		'incident_management' => (bool)$other['data'][3] ? 1 : 0,
+		'agent_view' => (bool)$other['data'][4] ? 1 : 0,
+		'agent_edit' => (bool)$other['data'][5] ? 1 : 0,
+		'agent_disable' => (bool)$other['data'][6] ? 1 : 0,
+		'alert_edit' => (bool)$other['data'][7] ? 1 : 0,
+		'alert_management' => (bool)$other['data'][8] ? 1 : 0,
+		'user_management' => (bool)$other['data'][9] ? 1 : 0,
+		'db_management' => (bool)$other['data'][10] ? 1 : 0,
+		'event_view' => (bool)$other['data'][11] ? 1 : 0,
+		'event_edit' => (bool)$other['data'][12] ? 1 : 0,
+		'event_management' => (bool)$other['data'][13] ? 1 : 0,
+		'report_view' => (bool)$other['data'][14] ? 1 : 0,
+		'report_edit' => (bool)$other['data'][15] ? 1 : 0,
+		'report_management' => (bool)$other['data'][16] ? 1 : 0,
+		'map_view' => (bool)$other['data'][17] ? 1 : 0,
+		'map_edit' => (bool)$other['data'][18] ? 1 : 0,
+		'map_management' => (bool)$other['data'][19] ? 1 : 0,
+		'vconsole_view' => (bool)$other['data'][20] ? 1 : 0,
+		'vconsole_edit' => (bool)$other['data'][21] ? 1 : 0,
+		'vconsole_management' => (bool)$other['data'][22] ? 1 : 0,
+		'pandora_management' => (bool)$other['data'][23] ? 1 : 0
+	);
+
+	$return = db_process_sql_insert('tperfil', $values);
+
+	if ($return === false) {
+		returnError('error_create_user_profile_info', __('Error creating user profile'));
+	} else {
+		returnData($returnType, array('type' => 'array', 'data' => 1));
+	}
+}
+
+/**
+ * Update an user profile.
+ *
+ * @param int Profile id
+ * @param Reserved $thrash1
+ * @param array parameters in array: name|IR|IW|IM|AR|AW|AD|LW|LM|UM|DM|ER|EW|EM|RR|RW|RM|MR|MW|MM|VR|VW|VM|PM
+ * @param string Return type (csv, json, string...)
+ *
+ *  api.php?op=set&op2=update_user_profile_info&return_type=json&id=6&other=API_profile_updated%7C%7C%7C%7C1%7C1%7C1%7C%7C%7C%7C%7C%7C%7C%7C%7C%7C%7C%7C%7C%7C%7C%7C%7C&other_mode=url_encode_separator_%7C&apipass=1234&user=admin&pass=pandora
+ */
+function api_set_update_user_profile_info ($id_profile, $thrash1, $other, $returnType) {
+	global $config;
+
+	if (!check_acl($config['id_user'], 0, "PM")){
+		returnError('forbidden', 'string');
+		return;
+	}
+
+	$profile = db_get_row ('tperfil', 'id_perfil', $id_profile);
+	if ($profile === false) {
+		returnError('id_not_found', 'string');
+		return;
+	}
+
+	$values = array(
+		'name' => $other['data'][0] == '' ? $profile['name'] : (string)$other['data'][0],
+		'incident_view' => $other['data'][1] == '' ? $profile['incident_view'] : (bool)$other['data'][1] ? 1 : 0,
+		'incident_edit' => $other['data'][2] == '' ? $profile['incident_edit'] : (bool)$other['data'][2] ? 1 : 0,
+		'incident_management' => $other['data'][3] == '' ? $profile['incident_management'] : (bool)$other['data'][3] ? 1 : 0,
+		'agent_view' => $other['data'][4] == '' ? $profile['agent_view'] : (bool)$other['data'][4] ? 1 : 0,
+		'agent_edit' => $other['data'][5] == '' ? $profile['agent_edit'] : (bool)$other['data'][5] ? 1 : 0,
+		'agent_disable' => $other['data'][6] == '' ? $profile['agent_disable'] : (bool)$other['data'][6] ? 1 : 0,
+		'alert_edit' => $other['data'][7] == '' ? $profile['alert_edit'] : (bool)$other['data'][7] ? 1 : 0,
+		'alert_management' => $other['data'][8] == '' ? $profile['alert_management'] : (bool)$other['data'][8] ? 1 : 0,
+		'user_management' => $other['data'][9] == '' ? $profile['user_management'] : (bool)$other['data'][9] ? 1 : 0,
+		'db_management' => $other['data'][10] == '' ? $profile['db_management'] : (bool)$other['data'][10] ? 1 : 0,
+		'event_view' => $other['data'][11] == '' ? $profile['event_view'] : (bool)$other['data'][11] ? 1 : 0,
+		'event_edit' => $other['data'][12] == '' ? $profile['event_edit'] : (bool)$other['data'][12] ? 1 : 0,
+		'event_management' => $other['data'][13] == '' ? $profile['event_management'] : (bool)$other['data'][13] ? 1 : 0,
+		'report_view' => $other['data'][14] == '' ? $profile['report_view'] : (bool)$other['data'][14] ? 1 : 0,
+		'report_edit' => $other['data'][15] == '' ? $profile['report_edit'] : (bool)$other['data'][15] ? 1 : 0,
+		'report_management' => $other['data'][16] == '' ? $profile['report_management'] : (bool)$other['data'][16] ? 1 : 0,
+		'map_view' => $other['data'][17] == '' ? $profile['map_view'] : (bool)$other['data'][17] ? 1 : 0,
+		'map_edit' => $other['data'][18] == '' ? $profile['map_edit'] : (bool)$other['data'][18] ? 1 : 0,
+		'map_management' => $other['data'][19] == '' ? $profile['map_management'] : (bool)$other['data'][19] ? 1 : 0,
+		'vconsole_view' => $other['data'][20] == '' ? $profile['vconsole_view'] : (bool)$other['data'][20] ? 1 : 0,
+		'vconsole_edit' => $other['data'][21] == '' ? $profile['vconsole_edit'] : (bool)$other['data'][21] ? 1 : 0,
+		'vconsole_management' => $other['data'][22] == '' ? $profile['vconsole_management'] : (bool)$other['data'][22] ? 1 : 0,
+		'pandora_management' => $other['data'][23] == '' ? $profile['pandora_management'] : (bool)$other['data'][23] ? 1 : 0
+	);
+
+	$return = db_process_sql_update('tperfil', $values, array('id_perfil' => $id_profile));
+
+	if ($return === false) {
+		returnError('error_update_user_profile_info', __('Error updating user profile'));
+	} else {
+		returnData($returnType, array('type' => 'array', 'data' => 1));
+	}
+}
+
+/**
+ * Delete an user profile.
+ *
+ * @param int Profile id
+ * @param Reserved $thrash1
+ * @param Reserved $thrash2
+ * @param string Return type (csv, json, string...)
+ *
+ *  api.php?op=set&op2=delete_user_profile_info&return_type=json&id=7&other_mode=url_encode_separator_%7C&apipass=1234&user=admin&pass=pandora
+ */
+function api_set_delete_user_profile_info ($id_profile, $thrash1, $thrash2, $returnType) {
+	global $config;
+
+	if (!check_acl($config['id_user'], 0, "PM")){
+		returnError('forbidden', 'string');
+		return;
+	}
+
+	$profile = db_get_value ('id_perfil', 'tperfil', 'id_perfil', $id_profile);
+	if ($profile === false) {
+		returnError('id_not_found', 'string');
+		return;
+	}
+
+	$return = profile_delete_profile_and_clean_users($id_profile);
+
+	if ($return === false) {
+		returnError('error_delete_user_profile_info', __('Error deleting user profile'));
+	} else {
+		returnData($returnType, array('type' => 'array', 'data' => 1));
+	}
+}
+
+/**
  * Create new incident in Pandora.
- * 
+ *
  * @param $thrash1 Don't use.
  * @param $thrash2 Don't use.
  * @param array $other it's array, $other as param is <title>;<description>;
@@ -11468,6 +11674,159 @@ function api_get_modules_id_name_by_cluster_name ($cluster_name){
 	
 }
 
+ /**
+ * @param $trash1
+ * @param $trash2
+ * @param mixed $trash3
+ * @param $returnType
+ *	Example:
+ *	api.php?op=get&op2=event_responses&return_type=csv&apipass=1234&user=admin&pass=pandora
+ */
+function api_get_event_responses($trash1, $trash2, $trash3, $returnType) {
+	global $config;
+
+	// Error if user cannot read event responses.
+	if (!check_acl($config['id_user'], 0, "PM")) {
+		returnError('forbidden', $returnType);
+		return;
+	}
+
+	$responses = event_responses_get_responses();
+	if (empty($responses)) {
+		returnError('no_data_to_show', $returnType);
+		return;
+	}
+
+	returnData ($returnType, array('type' => 'array', 'data' => $responses));
+}
+
+ /**
+ * @param $id_response
+ * @param $trash2
+ * @param mixed $trash3
+ * @param $returnType
+ *	Example:
+ *	api.php?op=set&op2=delete_event_response&id=7&apipass=1234&user=admin&pass=pandora
+ */
+function api_set_delete_event_response($id_response, $trash1, $trash2, $returnType) {
+	global $config;
+
+	// Error if user cannot read event responses.
+	if (!check_acl($config['id_user'], 0, "PM")) {
+		returnError('forbidden', $returnType);
+		return;
+	}
+
+	// Check if id exists
+	$event_group = db_get_value('id_group', 'tevent_response','id', $id_response);
+	if ($event_group === false) {
+		returnError('id_not_found', $returnType);
+		return;
+	}
+
+	// Check user if can edit the module
+	if (!check_acl($config['id_user'], $event_group, "PM")) {
+		returnError('forbidden', $returnType);
+		return;
+	}
+
+	$result = db_process_sql_delete('tevent_response', array('id' => $id_response));
+	returnData ($returnType, array('type' => 'string', 'data' => $result));
+}
+
+/**
+ * @param $trash1
+ * @param $trash2
+ * @param mixed $other. Serialized params
+ * @param $returnType
+ *	Example:
+ *	api.php?op=set&op2=create_event_response&other=response%7Cdescription%20response%7Ctouch%7Ccommand%7C0%7C650%7C400%7C0%7Cresponse%7C0&other_mode=url_encode_separator_%7C&apipass=1234&user=admin&pass=pandora
+ */
+function api_set_create_event_response($trash1, $trash2, $other, $returnType) {
+	global $config;
+
+	// Error if user cannot read event responses.
+	if (!check_acl($config['id_user'], 0, "PM")) {
+		returnError('forbidden', $returnType);
+		return;
+	}
+
+	$values = array();
+	$values['name'] = $other['data'][0];
+	$values['description'] = $other['data'][1];
+	$values['target'] = $other['data'][2];
+	$values['type'] = $other['data'][3];
+	$values['id_group'] = $other['data'][4];
+	$values['modal_width'] = $other['data'][5];
+	$values['modal_height'] = $other['data'][6];
+	$values['new_window'] = $other['data'][7];
+	$values['params'] = $other['data'][8];
+	$values['server_to_exec'] = $other['data'][9];
+
+	// Error if user has not permission for the group.
+	if (!check_acl($config['id_user'], $values['id_group'], "PM")) {
+		returnError('forbidden', $returnType);
+		return;
+	}
+
+	$return = event_responses_create_response($values) ? 1 : 0;
+
+	returnData ($returnType, array('type' => 'string', 'data' => $return));
+}
+
+/**
+ * @param $id_response
+ * @param $trash2
+ * @param mixed $other. Serialized params
+ * @param $returnType
+ *	Example:
+ *	api.php?op=set&op2=update_event_response&id=7&other=response%7Cdescription%20response%7Ctouch%7Ccommand%7C0%7C650%7C400%7C0%7Cresponse%7C0&other_mode=url_encode_separator_%7C&apipass=1234&user=admin&pass=pandora
+ */
+function api_set_update_event_response($id_response, $trash1, $other, $returnType) {
+	global $config;
+
+	// Error if user cannot read event responses.
+	if (!check_acl($config['id_user'], 0, "PM")) {
+		returnError('forbidden', $returnType);
+		return;
+	}
+
+	// Check if id exists
+	$event_response = db_get_row('tevent_response','id', $id_response);
+	if ($event_response === false) {
+		returnError('id_not_found', $returnType);
+		return;
+	}
+
+	// Check user if can edit the module
+	if (!check_acl($config['id_user'], $event_response['id_group'], "PM")) {
+		returnError('forbidden', $returnType);
+		return;
+	}
+
+	$values = array();
+	$values['name'] = $other['data'][0] == '' ? $event_response['name'] : $other['data'][0];
+	$values['description'] = $other['data'][1] == '' ? $event_response['description'] : $other['data'][1];
+	$values['target'] = $other['data'][2] == '' ? $event_response['target'] : $other['data'][2];
+	$values['type'] = $other['data'][3] == '' ? $event_response['type'] : $other['data'][3];
+	$values['id_group'] = $other['data'][4] == '' ? $event_response['id_group'] : $other['data'][4];
+	$values['modal_width'] = $other['data'][5] == '' ? $event_response['modal_width'] : $other['data'][5];
+	$values['modal_height'] = $other['data'][6] == '' ? $event_response['modal_height'] : $other['data'][6];
+	$values['new_window'] = $other['data'][7] == '' ? $event_response['new_window'] : $other['data'][7];
+	$values['params'] = $other['data'][8] == '' ? $event_response['params'] : $other['data'][8];
+	$values['server_to_exec'] = $other['data'][9] == '' ? $event_response['server_to_exec'] : $other['data'][9];
+
+	// Error if user has not permission for the group.
+	if (!check_acl($config['id_user'], $values['id_group'], "PM")) {
+		returnError('forbidden', $returnType);
+		return;
+	}
+
+	$return = event_responses_update_response($id_response, $values) ? 1 : 0;
+
+	returnData ($returnType, array('type' => 'string', 'data' => $return));
+}
+
 function api_get_cluster_items ($cluster_id){
 	global $config;
 
@@ -11512,8 +11871,142 @@ function util_api_check_agent_and_print_error($id_agent, $returnType, $access = 
 	return false;
 }
 
+function api_set_validate_traps ($id, $thrash2, $other, $thrash3) {
+	
+	if (defined ('METACONSOLE')) {
+		return;
+	}
+	
+	if($id == 'all'){
+		$result = db_process_sql_update('ttrap',array('status' => 1));	
+	}
+	else{
+		$result = db_process_sql_update('ttrap',
+			array('status' => 1), array('id_trap' => $id));	
+	}
+	
+	if (is_error($result)) {
+		// TODO: Improve the error returning more info
+		returnError('error_update_trap', __('Error in trap update.'));
+	}
+	else {
+			returnData('string',
+				array('type' => 'string',
+					'data' => __('Validated traps.')));
+		}
+	}
+	
+	function api_set_delete_traps ($id, $thrash2, $other, $thrash3) {
+		
+		if (defined ('METACONSOLE')) {
+			return;
+		}
+		
+		if($id == 'all'){
+			$result = db_process_sql ('delete from ttrap');
+		}
+		else{
+			$result = db_process_sql_delete('ttrap',array('id_trap' => $id));	
+		}
+		
+		if (is_error($result)) {
+			// TODO: Improve the error returning more info
+			returnError('error_delete_trap', __('Error in trap delete.'));
+		}
+		else {
+				returnData('string',
+					array('type' => 'string',
+						'data' => __('Deleted traps.')));
+			}
+		}
+		
+		function api_get_group_id_by_name($thrash1, $thrash2, $other, $thrash3) {
+			if (defined ('METACONSOLE')) {
+				return;
+			}
+						
+			$sql = sprintf('SELECT id_grupo
+				FROM tgrupo WHERE nombre = "'.$other['data'].'"');
+			
+			$group_id = db_get_all_rows_sql($sql);
+			
+			if (count($group_id) > 0 and $group_id !== false) {
+				$data = array('type' => 'array', 'data' => $group_id);
+				
+				returnData('csv', $data, ';');
+			}
+			else {
+				returnError('error_group_name', 'No groups retrieved.');
+			}
+		}
+		
+		function api_get_timezone($thrash1, $thrash2, $other, $thrash3) {
+			if (defined ('METACONSOLE')) {
+				return;
+			}
+						
+			$sql = sprintf('SELECT value
+				FROM tconfig WHERE token = "timezone"');
+			
+			$timezone = db_get_all_rows_sql($sql);
+			
+			if (count($timezone) > 0 and $timezone !== false) {
+				
+				$data = array('type' => 'string', 'data' => $timezone);
+				
+				returnData('string',array('type' => 'string','data' => $data['data'][0]['value']));
+				
+			}
+			else {
+				returnError('error_timezone', 'No timezone retrieved.');
+			}
+		}
 
-
+		function api_get_language($thrash1, $thrash2, $other, $thrash3) {
+			if (defined ('METACONSOLE')) {
+				return;
+			}
+						
+			$sql = sprintf('SELECT value
+				FROM tconfig WHERE token = "language"');
+			
+			$language = db_get_all_rows_sql($sql);
+			
+			if (count($language) > 0 and $language !== false) {
+				
+				$data = array('type' => 'string', 'data' => $language);
+				
+				returnData('string',array('type' => 'string','data' => $data['data'][0]['value']));
+				
+			}
+			else {
+				returnError('error_language', 'No language retrieved.');
+			}
+		}
+		
+		function api_get_session_timeout($thrash1, $thrash2, $other, $thrash3) {
+			if (defined ('METACONSOLE')) {
+				return;
+			}
+						
+			$sql = sprintf('SELECT value
+				FROM tconfig WHERE token = "session_timeout"');
+			
+			$language = db_get_all_rows_sql($sql);
+			
+			if (count($language) > 0 and $language !== false) {
+				
+				$data = array('type' => 'string', 'data' => $language);
+				
+				returnData('string',array('type' => 'string','data' => $data['data'][0]['value']));
+				
+			}
+			else {
+				returnError('error_session_timeout', 'No session timeout retrieved.');
+			}
+		}
+		
+		
 
 
 ?>

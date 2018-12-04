@@ -25,13 +25,12 @@ if ($get_image_path_status){
 	$only_src = get_parameter("only_src", 0);
 	
 	$result = array();
-	
+
 	$result['bad'] = html_print_image($img_src . '_bad.png', true, '', $only_src);
 	$result['ok'] = html_print_image($img_src . '_ok.png', true, '', $only_src);
 	$result['warning'] = html_print_image($img_src . '_warning.png', true, '', $only_src);
-	$result['ok'] = html_print_image($img_src . '_ok.png', true, '', $only_src);
 	$result['normal'] = html_print_image($img_src . '.png', true, '', $only_src);
-	
+
 	echo json_encode($result);
 	return;
 }

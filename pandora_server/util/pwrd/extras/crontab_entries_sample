@@ -1,0 +1,20 @@
+# Sample PWRD crontab control tweaks
+
+# Do not allow firefox running for more than 1h
+0 * * * * root /opt/pwrd_maintenance.sh -k
+
+# Force node-start
+*/5 * * * * root /opt/pwrd_maintenance.sh -s
+
+# Reset firefox version if does not match required 47.0.1
+* * * * * root /opt/pwrd_maintenance.sh -f 
+
+# Restart node if java process is not found
+* * * * * root /opt/pwrd_maintenance.sh -r
+
+# Restart node if no activity since last check
+*/5 * * * * root /opt/pwrd_maintenance.sh -c1 
+
+# Restart node if connection have been lost to hub
+*/5 * * * * root /opt/pwrd_maintenance.sh -c2 
+

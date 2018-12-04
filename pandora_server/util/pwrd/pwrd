@@ -40,7 +40,7 @@ JAVA=/usr/bin/java
 PWR_GLOBAL_DIR=""
 
 # Customize PWR running user
-USER=root
+USER="root"
 
 # Customize PWR application files directory
 PWR_INST_DIR="$PWR_GLOBAL_DIR/opt"
@@ -96,6 +96,7 @@ function start_xvfb() {
 
 # Stop Xvfb
 function stop_xvfb() {
+    echo
     if test -f $XVFB_PID_FILE ; then
         # Check if there's more instances of pwrd running i.e. standalone + node
         if [ ! -e "$BASE_DIR/pwrd_node.pid" ] && [ ! -e "$BASE_DIR/pwrd.pid" ]; then
@@ -114,7 +115,7 @@ function stop_xvfb() {
         else
             [ -e $BASE_DIR/pwrd_node.pid ] && echo -n `cat $BASE_DIR/pwrd_node.pid`
             [ -e $BASE_DIR/pwrd.pid ] && echo -n `cat $BASE_DIR/pwrd.pid`
-            echo "pwrd processes left. Skipping Xvfb"
+            echo -e "\nThere're pwrd processes left. Skipping Xvfb"
         fi
     fi
 }
@@ -258,24 +259,25 @@ function stop() {
         echo -n "Stopping PWRD..."
         PID=$(cat $pid_file)
         [ "$PID" == "" ] && PID=`ps aux | grep "$JAVA -jar $PWR" | grep -v grep | awk '{print $2}'`
-        [ "$PID" != "" ] && su $USER -c "kill -3 $PID"
-        [ "$PID" != "" ] && kill -9 $PID >/dev/null 2>&1
+        [ "$PID" != "" ] && ps --pid $PID >/dev/null && su $USER -c "kill -3 $PID"
+        [ "$PID" != "" ] && ps --pid $PID >/dev/null && kill -9 $PID >/dev/null 2>&1
         if [ $? -eq 0 ]; then
             sleep 2
-            test -f $pid_file && rm -f $pid_file
             if [ -e /etc/rc.d/init.d/functions ]; then
                 success
             fi
+            test -f $pid_file && rm -f $pid_file
+
+            stop_xvfb
         else
-            echo "PWRD could not be stopped..."
-            [ "$PID" == "" ] && [ -f $pid_file ] && rm -f $pid_file
             if [ -e /etc/rc.d/init.d/functions ]; then
                 failure
             else
                 echo "Failed"
             fi
         fi
-        stop_xvfb
+        # Clean pid file
+        test -f $pid_file && rm -f $pid_file
     else
         echo "PWRD is not running."
         stop_xvfb
@@ -297,7 +299,7 @@ function status() {
     if test -f $pid_file ; then
     echo "checking: $pid_file"
         PID=`cat $pid_file`
-        if [ "$PID" != "" ] && ps --pid $PID >/dev/null ; then
+        if [ "$PID" != "" ] && ps --pid $PID >/dev/null; then
             echo "PWRD$mode is running: $PID"
             if test -f $XVFB_PID_FILE ; then
                 PID=`cat $XVFB_PID_FILE`

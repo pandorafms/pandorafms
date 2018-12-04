@@ -205,3 +205,67 @@ div.installation_step {
   color:white;
 }
 
+:focus {
+	outline: 0;
+}
+
+/* POPUP */
+.popup-lightbox{
+  position: fixed;
+  z-index: 8888;
+  width: 100%;
+  height: 100%;
+  background-color: #000;
+  opacity: 0.6;
+  visibility: hidden;
+}
+
+.popup{
+  max-height: 450px;     
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  -webkit-transform: translate(-50%, -50%);    
+  background-color: #FFF; 
+  z-index: 9999; 
+  display: none;   
+}
+
+.popup-title{
+  background-color: #82b92e; 
+  padding: 10px 20px; 
+  color: #FFF; 
+  font-size:12pt; 
+  text-align: center;
+  font-family:Sans, Arial, sans;
+}
+
+.popup-inner{
+  max-height: 350px;   
+  background: #FFF;
+/*  overflow-y: scroll;*/
+  padding: 25px 35px; 
+  font-size: 11pt;
+}
+
+.popup-button-green{
+	background-color: #82B92E;
+	border: 1px solid transparent;
+	color: blue;
+}
+
+.popup-button-green span{
+	color: #FFF !important;
+}
+
+.popup-button-green:hover{
+	background-color: transparent !important;
+	border: 1px solid #82B92E;
+	color: red !important;
+}
+
+.popup-button-green:hover span{
+	color: #82B92E !important;
+}
+/* POPUP -END */

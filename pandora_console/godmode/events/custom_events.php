@@ -229,7 +229,7 @@ $(document).ready (function () {
 	});
 	
 	$("#left").click (function () {
-		var current_fields_size = ($('#fields_selected option').size());	
+		var current_fields_size = ($('#fields_selected option').length);	
 		var selected_fields = [];
 		var selected_fields_total = '';
 

@@ -742,8 +742,10 @@ function readFields() {
 	var text = tinymce.get('text-label').getContent();
 	values['label'] = text;
 
-	if ($("input[name=percentile_label]").val().length > 0)
-		values['label'] = $("input[name=percentile_label]").val();
+	if ($("input[name=percentile_label]").val().length > 0) {
+		values['percentile_label_color'] = $("input[name=percentile_label_color]").val();
+		values['label'] = "<span style='color:"+values['percentile_label_color']+";'>" + $("input[name=percentile_label]").val() + "</span>";
+	}
 
 	values['line-height'] = $("#text-label_ifr").contents().find("p").css('line-height');
 	values['type_graph'] = $("select[name=type_graph]").val();
@@ -784,7 +786,6 @@ function readFields() {
 	values['event_max_time_row'] = $("select[name=event_max_time_row]").val();
 	values['type_percentile'] = $("select[name=type_percentile]").val();
 	values['percentile_color'] = $("input[name=percentile_color]").val();
-	values['percentile_label_color'] = $("input[name=percentile_label_color]").val();
 	values['percentile_label'] = $("input[name=percentile_label]").val();
 	values['value_show'] = $("select[name=value_show]").val();
 	

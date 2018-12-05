@@ -510,7 +510,7 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 				__('Max value') . '</td>
 				<td align="left">' . html_print_input_text('max_percentile', 0, '', 3, 5, true) . '</td>';
 
-			$percentile_type = array('percentile' => __('Percentile'), 'bubble' => __('Bubble'), 'circular_progress_bar' => __('Circular porgress bar'), 'interior_circular_progress_bar' => __('Circular progress bar (interior)'));
+			$percentile_type = array('percentile' => __('Percentile'), 'bubble' => __('Bubble'), 'circular_progress_bar' => __('Circular progress bar'), 'interior_circular_progress_bar' => __('Circular progress bar (interior)'));
 			$percentile_value = array('percent' => __('Percent'), 'value' => __('Value'));
 			if (is_metaconsole()){
 				$form_items['percentile_item_row_3'] = array();
@@ -903,11 +903,6 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 		</tbody>
 	</table>
 	<?php
-	//------------------------------------------------------------------------------
-	
-	
-	
-	
 	
 	echo '</div>';
 	

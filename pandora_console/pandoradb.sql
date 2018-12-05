@@ -3371,5 +3371,8 @@ CREATE TABLE IF NOT EXISTS `tagent_custom_fields_filter` (
 	`id_custom_fields_data` varchar(600) default '',
 	`id_status` varchar(600) default '',
 	`module_search` varchar(600) default '',
+	`module_status` varchar(600) default '',
+	`recursion` int(1) unsigned default '0',
+	`group_search` int(10) unsigned default '0',
 	PRIMARY KEY(`id`)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;

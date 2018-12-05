@@ -111,6 +111,7 @@ use warnings;
 
 use DBI;
 use Encode;
+use Encode::CN;
 use XML::Simple;
 use HTML::Entities;
 use Time::Local;
@@ -4579,7 +4580,7 @@ Process groups statistics for statistics table
 ##########################################################################
 sub pandora_process_event_replication ($) {
 	my $pa_config = shift;
-	
+	my $dbh_metaconsole;
 	my %pa_config = %{$pa_config};
 
 	# Get the console DB connection
@@ -4593,46 +4594,57 @@ sub pandora_process_event_replication ($) {
 	# desactivated the event replication or the replication
 	# interval is wrong: abort
 	if($is_event_replication_enabled == 0) {
+		db_disconnect($dbh);
 		return;
 	}
 	
 	if($replication_interval <= 0) {
-		logger($pa_config, "Replication interval configuration is not a value greater than 0. Event replication thread will be aborted.", 1);
+		logger($pa_config, "The event replication interval must be greater than 0. Event replication aborted.", 1);
+		db_disconnect($dbh);
 		return;
 	}
 	
-	# Get the metaconsole DB connection
-	my $dbh_metaconsole = enterprise_hook('get_metaconsole_dbh', [$pa_config, $dbh]);
-	
-	if($dbh_metaconsole eq '') {
-		logger($pa_config, "Metaconsole DB connection error. Event replication thread will be aborted.", 1);
-		return;
-	}
-	
-	# Get server id on metaconsole
-	my $metaconsole_server_id = enterprise_hook('get_metaconsole_setup_server_id', [$dbh_metaconsole, safe_input($pa_config->{'servername'})]);
-
-	# If the server name is not found in metaconsole setup: abort
-	if($metaconsole_server_id == -1) {
-		logger($pa_config, "The server name is not configured in metaconsole. Event replication thread will be aborted.", 1);
-		return;
-	}
-	
-	my $replication_mode = enterprise_hook('get_event_replication_mode', [$dbh]);
-				
-	logger($pa_config, "Starting replication events process.", 1);
+	logger($pa_config, "Started event replication thread.", 1);
 
 	while($THRRUN == 1) { 
-
-		# If we are not the master server sleep and check again.
-		if (pandora_is_master($pa_config) == 0) {
-			sleep ($pa_config->{'server_threshold'});
-			next;
-		}
-
-		# Check the queue each N seconds
+		eval {{
+			local $SIG{__DIE__};
+			
+			# Get the metaconsole DB connection
+			$dbh_metaconsole = enterprise_hook('get_metaconsole_dbh', [$pa_config, $dbh]);
+			$dbh_metaconsole = undef if $dbh_metaconsole eq '';
+			if (!defined($dbh_metaconsole)) {
+				logger($pa_config, "Metaconsole DB connection error. Event replication postponed.", 5);
+				next;
+			}
+			
+			# Get server id on metaconsole
+			my $metaconsole_server_id = enterprise_hook('get_metaconsole_setup_server_id', [$dbh_metaconsole, safe_input($pa_config->{'servername'})]);
+		
+			# If the server name is not found in metaconsole setup: abort
+			if($metaconsole_server_id == -1) {
+				logger($pa_config, "The server name is not configured in metaconsole. Event replication postponed.", 5);
+				db_disconnect($dbh_metaconsole);
+				next;
+			}
+			
+			my $replication_mode = enterprise_hook('get_event_replication_mode', [$dbh]);
+						
+			while($THRRUN == 1) { 
+		
+				# If we are not the master server sleep and check again.
+				if (pandora_is_master($pa_config) == 0) {
+					sleep ($pa_config->{'server_threshold'});
+					next;
+				}
+		
+				# Check the queue each N seconds
+				enterprise_hook('pandora_replicate_copy_events',[$pa_config, $dbh, $dbh_metaconsole, $metaconsole_server_id, $replication_mode]);
+				sleep ($replication_interval);
+			}
+		}};
+		db_disconnect($dbh_metaconsole) if defined($dbh_metaconsole);
 		sleep ($replication_interval);
-		enterprise_hook('pandora_replicate_copy_events',[$pa_config, $dbh, $dbh_metaconsole, $metaconsole_server_id, $replication_mode]);
 	}
 
 	db_disconnect($dbh);

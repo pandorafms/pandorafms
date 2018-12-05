@@ -361,11 +361,13 @@ function agents_get_agents ($filter = false, $fields = false,
 				break;
 			case AGENT_STATUS_NOT_NORMAL:
 				$status_sql = "(
-					critical_count > 0
-					OR warning_count > 0
-					OR unknown_count > 0
-					OR total_count = 0
+					normal_count <> total_count
 					OR total_count = notinit_count)";
+				//The AGENT_STATUS_NOT_NORMAL filter must show all agents that are not in normal status
+					/*"(
+						normal_count <> total_count
+						AND
+						(normal_count + notinit_count) <> total_count)";*/
 				break;
 			case AGENT_STATUS_NOT_INIT:
 				$status_sql = "(

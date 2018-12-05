@@ -120,6 +120,7 @@ if (isset($config["error"])) {
 // If metaconsole activated, redirect to it
 if ($config['metaconsole'] == 1 && $config['enterprise_installed'] == 1) {
 	header ("Location: " . $config['homeurl'] . "enterprise/meta");
+	exit; //Always exit after sending location headers
 }
 
 if (file_exists (ENTERPRISE_DIR . "/include/functions_login.php")) {
@@ -562,12 +563,13 @@ if (! isset ($config['id_user'])) {
 		$query_params_redirect = $_GET;
 		// Visual console do not want sec2
 		if($home_page == 'Visual console') unset($query_params_redirect["sec2"]);
-		$redirect_url = '?1=1';
+		$redirect_url = '?logged=1';
 		foreach ($query_params_redirect as $key => $value) {
 			if ($key == "login") continue;
 			$redirect_url .= '&'.safe_url_extraclean($key).'='.safe_url_extraclean($value);
 		}
 		header("Location: ".$config['homeurl']."index.php".$redirect_url);
+		exit; //Always exit after sending location headers
 	}
 	// Hash login process
 	elseif (isset ($_GET["loginhash"])) {
@@ -810,7 +812,7 @@ if (isset ($_GET["bye"])) {
 	include ("general/logoff.php");
 	$iduser = $_SESSION["id_usuario"];
 	db_logoff ($iduser, $_SERVER['REMOTE_ADDR']);
-	// Unregister Session (compatible with 5.2 and 6.x, old code was deprecated
+
 	$_SESSION = array();
 	session_destroy();
 	header_remove("Set-Cookie");

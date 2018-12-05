@@ -1370,3 +1370,7 @@ DIV.nodata_container {
 .legend_graph td.legendLabel {
 	font-size: 12px !important;
 }
+
+.ui-popup-hidden {
+	display: none;
+}

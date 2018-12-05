@@ -13,17 +13,8 @@
 // GNU General Public License for more details.
 
 // Global & session manageme
+
 session_id($_REQUEST["session_id"]);
-if (file_exists(session_save_path() . "/pansess_" . session_id()) ) {
-    $user = file_get_contents(session_save_path() . "/pansess_" . session_id());
-}
-session_start();
-if (isset($user)) {
-    $_SESSION["id_usuario"] = $user;
-}
-session_write_close();
-
-
 
 require_once ('config.php');
 require_once ($config['homedir'] . '/include/auth/mysql.php');
@@ -132,7 +123,7 @@ if (file_exists ('languages/'.$user_language.'.mo')) {
 					$params['height'],
 					$params['water_mark_url'],
 					$params['font'],
-					$params['font_size'],
+					$config['font_size'],
 					$params['legend_position'],
 					$params['colors'],
 					$params['hide_labels']
@@ -151,7 +142,7 @@ if (file_exists ('languages/'.$user_language.'.mo')) {
 					$params['water_mark_url'],
 					$params['homedir'],
 					$params['font'],
-					$params['font_size'],
+					$config['font_size'],
 					$params['from_ux'],
 					$params['from_wux'],
 					$params['backgroundColor'],
@@ -165,7 +156,7 @@ if (file_exists ('languages/'.$user_language.'.mo')) {
 					$params['height'],
 					$params['water_mark_url'],
 					$params['font'],
-					$params['font_size'],
+					$config['font_size'],
 					$params['backgroundColor'],
 					$params['tick_color'],
 					$params['val_min'],
@@ -185,7 +176,7 @@ if (file_exists ('languages/'.$user_language.'.mo')) {
 					'',
 					$params['water_mark'],
 					$params['font'],
-					$params['font_size'],
+					$config['font_size'],
 					$params['unit'],
 					$params['ttl'],
 					$params['homeurl'],
@@ -211,7 +202,9 @@ if (file_exists ('languages/'.$user_language.'.mo')) {
 					$params['id_agent'],
 					$params['full_legend_daterray'],
 					$params['not_interactive'],
-					1
+					$params['ttl'],
+					$params['widgets'],
+					$params['show']
 				);
 				break;
 			default:
@@ -222,6 +215,16 @@ if (file_exists ('languages/'.$user_language.'.mo')) {
 
 		$config['font_size'] = $aux_font_size;
 ?>
+
+		<script type="text/javascript">
+			$('document').ready(function () {
+				setTimeout(function () {
+					if (typeof window.callPhantom === 'function') {
+						window.callPhantom("loaded");
+					}
+				}, 10);
+			});
+		</script>
 	</body>
 
 </html>

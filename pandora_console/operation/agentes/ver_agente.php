@@ -343,7 +343,8 @@ if (is_ajax ()) {
 				'module_condition', 'AND', 'tagente_modulo', false, array(), true);
 
 			$sql_tags_join = "INNER JOIN tagente ON tagente.id_agente = t1.id_agente
-					INNER JOIN ttag_module ON ttag_module.id_agente_modulo = t1.id_agente_modulo";
+				INNER JOIN ttag_module ON ttag_module.id_agente_modulo = t1.id_agente_modulo
+				LEFT JOIN tagent_secondary_group tasg ON tagente.id_agente = tasg.id_agent";
 		}
 
 		if (is_metaconsole()) {
@@ -478,17 +479,17 @@ if (is_ajax ()) {
 						ON tj.num_names = $agent_total AND tj.nombre = t1.nombre %s %s",
 						$sql_tags_join, (empty($where_tags)) ? "" : " WHERE 1=1 $where_tags");
 				} else {
-					$sql = sprintf('SELECT t1.nombre, t1.id_agente_modulo FROM tagente_modulo t1 %s %s', 
+					$sql = sprintf('SELECT t1.nombre, t1.id_agente_modulo FROM tagente_modulo t1 %s %s',
 						$sql_tags_join, (empty($where_tags)) ? "" : " WHERE 1=1 $where_tags");
 				}
 			}
 			else {
 				$sql = sprintf (
 					'SELECT DISTINCT t1.nombre, t1.id_agente_modulo FROM tagente_modulo t1
-					INNER JOIN tagente_estado t2 ON t1.id_agente_modulo = t2.id_agente_modulo 
-					%s WHERE %s AND t1.delete_pending = 0 
-					AND t1.id_agente IN ('. implode(',', $idAgents) .') 
-					%s %s', 
+					INNER JOIN tagente_estado t2 ON t1.id_agente_modulo = t2.id_agente_modulo
+					%s WHERE %s AND t1.delete_pending = 0
+					AND t1.id_agente IN ('. implode(',', $idAgents) .')
+					%s %s',
 					$sql_tags_join, $filter, ' AND t2.datos NOT LIKE "%image%"', $where_tags);
 
 				if ($selection_mode == 'common') {

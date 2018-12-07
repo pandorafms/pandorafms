@@ -7627,6 +7627,49 @@ function api_set_alert_actions($id, $id2, $other, $trash1) {
 	}
 }
 
+/**
+ * Create a new module group
+ * @param $id as module group name (mandatory)
+ example:
+
+ *http://localhost/pandora_console/include/api.php?op=set&op2=new_module_group&id=Module_group_name&apipass=1234&user=admin&pass=pandora
+*/
+function api_set_new_module_group($id, $thrash2, $other, $trash1) {
+	global $config;
+
+	if (defined ('METACONSOLE')) {
+		return;
+	}
+
+	if (!check_acl($config['id_user'], 0, "PM")){
+		returnError('forbidden', 'string');
+		return;
+	}
+
+	if ($id == '' || !$id) {
+		returnError('error_parameter', __('Module group must have a name'));
+		return;
+	}
+
+	$name = db_get_value ('name', 'tmodule_group', 'name', $id);
+
+
+	if ($name) {
+		returnError('error_parameter', __('Each module group must have a different name'));
+		return;
+	}
+
+	$return = db_process_sql_insert('tmodule_group', array('name' => $id));
+
+
+	if ($return === false)
+		returnError('error_new_moodule_group', 'There was a problem creating group');
+	else
+		returnData('string', array('type' => 'string', 'data' => $return));
+
+}
+
+
 function api_set_new_event($trash1, $trash2, $other, $trash3) {
 	$simulate = false;
 	$time = get_system_time();

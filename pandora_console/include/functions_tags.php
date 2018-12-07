@@ -770,7 +770,7 @@ function tags_get_acl_tags_module_condition($acltags, $modules_table = '') {
 function tags_get_acl_tags_event_condition($acltags, $meta = false, $force_group_and_tag = false, $force_equal = false) {
 	
 	global $config;
-	$condition = '';
+	$condition = array();
 	
 	// Get all tags of the system
 	$all_tags = tags_get_all_tags(false);

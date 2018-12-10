@@ -175,6 +175,7 @@ function networkmap_process_networkmap($id = 0) {
 			$nodes_and_relations['nodes'] = array();
 			$index = 0;
 			foreach ($nodes as $key => $node) {
+				$nodes_and_relations['nodes'][$index]['id'] = $node["id"];
 				$nodes_and_relations['nodes'][$index]['id_map'] = $id;
 				
 				$nodes_and_relations['nodes'][$index]['x'] = (int)$node['coords'][0];
@@ -303,6 +304,7 @@ function networkmap_process_networkmap($id = 0) {
 			$index = 0;
 			$node_center = array();
 			foreach ($nodes as $key => $node) {
+				$nodes_and_relations['nodes'][$index]['id'] = $node["id"];
 				$nodes_and_relations['nodes'][$index]['id_map'] = $id;
 				
 				$children_count = 0;
@@ -1072,6 +1074,7 @@ function networkmap_loadfile($id = 0, $file = '',
 			$node_id = $items[1];
 			$node_x = $items[2] * 100; //200 is for show more big
 			$node_y = $height_map - $items[3] * 100; //200 is for show more big
+			$data['id'] = $node_id;
 			$data['text'] = '';
 			$data['image'] = '';
 			$data['width'] = 10;

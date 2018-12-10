@@ -1867,7 +1867,9 @@ function visual_map_print_item($mode = "read", $layoutData,
 			}
 			
 			echo $img;
-			echo io_safe_output($text);
+
+			if (get_parameter('tab')=='editor')
+				echo "<span style='color:".$fill_color.";'>".io_safe_output($text)."</span>";
 			
 		break;
 		case PERCENTILE_BUBBLE:
@@ -1911,7 +1913,9 @@ function visual_map_print_item($mode = "read", $layoutData,
 			}
 			
 			echo $img;
-			echo io_safe_output($text);
+
+			if (get_parameter('tab')=='editor')
+				echo "<span style='color:".$fill_color.";'>".io_safe_output($text)."</span>";
 			
 			break;
 		case CIRCULAR_PROGRESS_BAR:
@@ -1955,7 +1959,9 @@ function visual_map_print_item($mode = "read", $layoutData,
 			}
 
 			echo $img;
-			echo io_safe_output($text);
+
+			if (get_parameter('tab')=='editor')
+				echo "<span style='color:".$fill_color.";'>".io_safe_output($text)."</span>";
 			
 			break;
 		case CIRCULAR_INTERIOR_PROGRESS_BAR:
@@ -2000,7 +2006,9 @@ function visual_map_print_item($mode = "read", $layoutData,
 			}
 			
 			echo $img;
-			echo io_safe_output($text);
+
+			if (get_parameter('tab')=='editor')
+				echo "<span style='color:".$fill_color.";'>".io_safe_output($text)."</span>";
 			
 			break;
 		case MODULE_GRAPH:

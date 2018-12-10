@@ -663,7 +663,9 @@ function reporting_make_reporting_data($report = null, $id_report,
 					$content,
 					$type,
 					$force_width_chart,
-					$force_height_chart);
+					$force_height_chart,
+					$pdf
+				);
 				break;
 			case 'module_histogram_graph':
 				$report['contents'][] = reporting_enterprise_module_histogram_graph(
@@ -1201,10 +1203,10 @@ function reporting_event_top_n($report, $content, $type = 'dinamic',
 				}
 			}
 			
-			$ag_name = modules_get_agentmodule_agent_alias($row ['id_agent_module']); 
+			$ag_name = modules_get_agentmodule_agent_alias($row ['id_agent_module']);
 			$mod_name = modules_get_agentmodule_name ($row ['id_agent_module']);
 			$unit = db_get_value('unit', 'tagente_modulo',
-				'id_agente_modulo', $row ['id_agent_module']); 
+				'id_agente_modulo', $row ['id_agent_module']);
 			
 			
 			switch ($top_n) {
@@ -9340,6 +9342,7 @@ function reporting_get_agentmodule_data_sum ($id_agent_module,
 		$id_module_type);
 	$module_interval = modules_get_interval ($id_agent_module);
 	$uncompressed_module = is_module_uncompressed ($module_name);
+
 	
 	// Wrong module type
 	if (is_module_data_string ($module_name)) {
@@ -9348,46 +9351,23 @@ function reporting_get_agentmodule_data_sum ($id_agent_module,
 	
 	// Incremental modules are treated differently
 	$module_inc = is_module_inc ($module_name);
-	
-	// Get module data
-	$interval_data = db_get_all_rows_sql('
+
+	if ($uncompressed_module) {
+		// Get module data
+		$interval_data = db_get_all_rows_sql('
 			SELECT * FROM tagente_datos 
 			WHERE id_agente_modulo = ' . (int) $id_agent_module . '
 				AND utimestamp > ' . (int) $datelimit . '
 				AND utimestamp < ' . (int) $date . '
 			ORDER BY utimestamp ASC', $search_in_history_db);
+
+	}
+	else
+		$interval_data = db_uncompress_module_data((int) $id_agent_module, (int) $datelimit, (int) $date);
+
 	if ($interval_data === false) $interval_data = array ();
 	
-	// Uncompressed module data
-	if ($uncompressed_module) {
-		$min_necessary = 1;
-	
-	// Compressed module data
-	}
-	else {
-		// Get previous data
-		$previous_data = modules_get_previous_data ($id_agent_module, $datelimit);
-		if ($previous_data !== false) {
-			$previous_data['utimestamp'] = $datelimit;
-			array_unshift ($interval_data, $previous_data);
-		}
-		
-		// Get next data
-		$next_data = modules_get_next_data ($id_agent_module, $date);
-		if ($next_data !== false) {
-			$next_data['utimestamp'] = $date;
-			array_push ($interval_data, $next_data);
-		}
-		else if (count ($interval_data) > 0) {
-			// Propagate the last known data to the end of the interval
-			$next_data = array_pop ($interval_data);
-			array_push ($interval_data, $next_data);
-			$next_data['utimestamp'] = $date;
-			array_push ($interval_data, $next_data);
-		}
-		
-		$min_necessary = 2;
-	}
+	$min_necessary = 1;
 	
 	if (count ($interval_data) < $min_necessary) {
 		return false;
@@ -9395,11 +9375,14 @@ function reporting_get_agentmodule_data_sum ($id_agent_module,
 	
 	// Set initial conditions
 	$total = 0;
-	if (! $uncompressed_module) {
-		$previous_data = array_shift ($interval_data);
-	}
-	
+	$partial_total = 0;
+	$count_sum = 0;
+
 	foreach ($interval_data as $data) {
+
+		$partial_total = 0;
+		$count_sum = 0;
+
 		switch ($config["dbtype"]) {
 			case "mysql":
 			case "postgresql":
@@ -9410,18 +9393,25 @@ function reporting_get_agentmodule_data_sum ($id_agent_module,
 					oracle_format_float_to_php($data['datos']);
 				break;
 		}
-		
-		if ($uncompressed_module) {
-			$total += $data['datos'];
-		}
-		else if ($module_inc) {
-			$total += $previous_data['datos'] * ($data['utimestamp'] - $previous_data['utimestamp']);
+
+		if (!$module_inc) {
+			foreach ($data['data'] as $val) {
+				if (is_numeric($val['datos'])) {
+					$partial_total += $val['datos'];
+					$count_sum++;
+				}
+			}
+
+			if ($count_sum===0) continue;
+
+			$total += $partial_total/$count_sum;
 		}
 		else {
-			$total += $previous_data['datos'] * ($data['utimestamp'] - $previous_data['utimestamp']) / $module_interval;
+			$last = end($data['data']);
+			$total += $last['datos'];
 		}
-		$previous_data = $data;
 	}
+
 	
 	return $total;
 }

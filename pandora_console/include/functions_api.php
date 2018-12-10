@@ -7670,6 +7670,49 @@ function api_set_new_module_group($id, $thrash2, $other, $trash1) {
 }
 
 
+/**
+ * synchronize module group
+ * @param $other as server_names (mandatory)
+ example:
+
+ *api.php?op=set&op2=module_group_synch&other=server_name1|server_name2|server_name3&other_mode=url_encode_separator_|&apipass=1234&user=admin&pass=pandora
+*/
+
+function api_set_module_group_synch($thrash1, $thrash2, $other, $thrash4) {
+	global $config;
+
+	if (defined('METACONSOLE')) {
+		if (!check_acl($config['id_user'], 0, "PM")) {
+			returnError('forbidden', 'string');
+			return;
+		}
+
+		enterprise_include_once('include/functions_meta.php');
+		$target = array();
+		foreach ($other['data'] as $server) {
+			$target[] = $server;
+		}
+
+		$return = meta_module_group_synchronizing($targets);
+
+		$module_group_update_err = $return["module_group_update_err"];
+		$module_group_create_err = $return["module_group_create_err"];
+		$module_group_update_ok = $return["module_group_update_ok"];
+		$module_group_create_ok = $return["module_group_create_ok"];
+	
+		// User feedback
+		if ($module_group_create_err > 0 or $module_group_update_err > 0) {
+			ui_print_error_message (__('Error creating/updating %s/%s module groups', $module_group_create_err, $module_group_update_err));
+		}
+		if ($module_group_create_ok > 0 or $module_group_update_ok > 0){
+			ui_print_success_message (__('Created/Updated %s/%s module groups', $module_group_create_ok, $module_group_update_ok));
+		}
+	}
+	else{
+		echo __('This function is only for metaconsole');
+	}
+}
+
 function api_set_new_event($trash1, $trash2, $other, $trash3) {
 	$simulate = false;
 	$time = get_system_time();

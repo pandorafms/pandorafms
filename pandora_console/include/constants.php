@@ -485,6 +485,7 @@ define("OPTION_AGENT_AUTOCOMPLETE",		9);
 define("OPTION_SELECT_MULTISELECTION",	10);
 define("OPTION_COLOR_PICKER",			11);
 
+define("DASHBOARD_WIDGET_ID_VISUAL_CONSOLE", 22);
 
 /* Transactional map constants */
 define("NODE_TYPE", 0);

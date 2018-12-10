@@ -3060,7 +3060,8 @@ sub pandora_create_agent ($$$$$$$$$$;$$$$$$$$$) {
 	                                                 'custom_id' => $custom_id,
 	                                                 'url_address' => $url_address,
 	                                                 'timezone_offset' => $timezone_offset,
-	                                                 'alias' => $alias
+	                                                 'alias' => $alias,
+													 'update_module_count' => 1, # Force to replicate in metaconsole
 	                                                });                           
 	                                                
 	my $agent_id = db_insert ($dbh, 'id_agente', "INSERT INTO tagente $columns", @{$values});

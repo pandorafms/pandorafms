@@ -10361,7 +10361,7 @@ function reporting_label_macro ($item, $label) {
 		case 'MTTR':
 		case 'automatic_graph':
 			if (preg_match("/_agent_/", $label)) {
-				if (count($item['agents']) > 1) {
+				if (isset($item['agents']) && count($item['agents']) > 1) {
 					$agent_name = count($item['agents']) . __(' agents');
 				}
 				else {

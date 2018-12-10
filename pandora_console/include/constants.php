@@ -485,15 +485,6 @@ define("OPTION_AGENT_AUTOCOMPLETE",		9);
 define("OPTION_SELECT_MULTISELECTION",	10);
 define("OPTION_COLOR_PICKER",			11);
 
-<<<<<<< Updated upstream
-define("DASHBOARD_WIDGET_ID_VISUAL_CONSOLE", 22);
-
-=======
-<<<<<<< Updated upstream
-=======
-
->>>>>>> Stashed changes
->>>>>>> Stashed changes
 /* Transactional map constants */
 define("NODE_TYPE", 0);
 define("ARROW_TYPE", 1);

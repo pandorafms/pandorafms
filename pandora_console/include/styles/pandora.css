@@ -886,6 +886,12 @@ input.group_item_min {
 input.group_item_min[disabled] {
 	background: #fefefe url(../../images/group_green.disabled.png) no-repeat center !important;
 }
+input.color_cloud_min {
+	background: #fefefe url(../../images/color_cloud_item.png) no-repeat center !important;
+}
+input.color_cloud_min[disabled] {
+	background: #fefefe url(../../images/color_cloud_item.disabled.png) no-repeat center !important;
+}
 
 div#cont {
 	position: fixed;

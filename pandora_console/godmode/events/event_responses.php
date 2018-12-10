@@ -16,6 +16,8 @@
 
 global $config;
 
+include_once($config['homedir'] . "/include/functions_event_responses.php");
+
 check_login ();
 
 if (! check_acl($config['id_user'], 0, "PM")) {

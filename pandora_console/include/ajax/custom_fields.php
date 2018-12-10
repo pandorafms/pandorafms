@@ -484,21 +484,23 @@ if($append_tab_filter){
 	$table->id = 'save_filter_form';
 	$table->width = '100%';
 	$table->class = 'databox';
+	$table->rowspan = array();
 
 	if($filters['id'] == 'extended_create_filter'){
 		echo "<div id='msg_error_create'></div>";
 		$table->data[0][0] = __('Filter name');
 		$table->data[0][1] = html_print_input_text('id_name', '', '', 15, 255, true);
 
-		$table->data[0][2] = __('Group');
-		$table->data[0][3] = html_print_select_groups(
+		$table->data[1][0] = __('Group');
+		$table->data[1][1] = html_print_select_groups(
 			$config['id_user'], 'AR', true, 'group_search_cr',
 			0, '',  '', '0', true, false,
-			false, '', false, '', false, false,
+			false, '', false, 'width:180px;', false, false,
 			'id_grupo', false
 		);
 
-		$table->data[0][4] = html_print_submit_button (__('Create filter'), 'create_filter', false, 'class="sub upd"', true);
+		$table->rowspan[0][2] = 2;
+		$table->data[0][2] = html_print_submit_button (__('Create filter'), 'create_filter', false, 'class="sub upd"', true);
 	}
 	else{
 		echo "<div id='msg_error_update'></div>";
@@ -516,7 +518,7 @@ if($append_tab_filter){
 		$table->data[1][1] = html_print_select_groups(
 			$config['id_user'], 'AR', true, 'group_search_up',
 			$group, '',  '', '0', true, false,
-			false, '', false, '', false, false,
+			false, '', false, 'width:180px;', false, false,
 			'id_grupo', false
 		);
 

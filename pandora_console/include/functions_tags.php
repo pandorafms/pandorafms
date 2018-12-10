@@ -808,8 +808,11 @@ function tags_get_acl_tags_event_condition($acltags, $meta = false, $force_group
 		$tags_condition = $group_condition . " AND (" . implode(" OR ", $tags_condition_array) . ")";
 		$condition[] = "($tags_condition)\n";
 	}
+	
 	if (!empty($condition)) {
 		$condition = implode(' OR ', $condition);
+	} else {
+		$condition = '';
 	}
 
 	if (!empty($without_tags)) {

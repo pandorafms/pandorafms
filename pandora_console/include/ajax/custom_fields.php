@@ -73,6 +73,7 @@ if($build_table_custom_fields){
 		id_server int(10),
 		id_agent int(10),
 		name_custom_fields varchar(2048),
+		`status` int(2),
 		KEY `data_index_temp_1` (`id_server`, `id_agent`)
 	)";
 	db_process_sql($table_temporary);
@@ -80,7 +81,7 @@ if($build_table_custom_fields){
 	//insert values array in table temporary
 	$values_insert = array();
 	foreach ($indexed_descriptions as $key => $value) {
-		$values_insert[] = "(".$value['id_server'].", ".$value['id_agente'].", '".$value['description']."')";
+		$values_insert[] = "(".$value['id_server'].", ".$value['id_agente'].", '".$value['description']."', ".$value['status'].")";
 	}
 	$values_insert_implode = implode(",", $values_insert);
 	$query_insert ="INSERT INTO temp_custom_fields VALUES ". $values_insert_implode;
@@ -104,25 +105,7 @@ if($build_table_custom_fields){
 			tma.direccion,
 			tma.server_name,
 			temp.name_custom_fields,
-			(CASE
-				WHEN tma.critical_count > 0
-					THEN 1
-				WHEN tma.critical_count = 0
-					AND tma.warning_count > 0
-					THEN 2
-				WHEN tma.critical_count = 0
-					AND tma.warning_count = 0
-					AND tma.unknown_count > 0
-					THEN 3
-				WHEN tma.critical_count = 0
-					AND tma.warning_count = 0
-					AND tma.unknown_count = 0
-					AND tma.notinit_count <> tma.total_count
-					THEN 0
-				WHEN tma.total_count = tma.notinit_count
-					THEN 5
-				ELSE 0
-			END) AS `status`
+			temp.status
 		FROM tmetaconsole_agent tma
 		INNER JOIN temp_custom_fields temp
 			ON temp.id_agent = tma.id_tagente
@@ -413,7 +396,10 @@ if($build_table_child_custom_fields){
 		}
 	}
 
-	$status_agent = agents_get_status($id_agent, true);
+	//status agents from tagente
+	$sql_info_agents = "SELECT * fROM tagente WHERE id_agente =" . $id_agent;
+	$info_agents = db_get_row_sql($sql_info_agents);
+	$status_agent = agents_get_status_from_counts($info_agents);
 
 	if (is_metaconsole()) {
 			metaconsole_restore_db();

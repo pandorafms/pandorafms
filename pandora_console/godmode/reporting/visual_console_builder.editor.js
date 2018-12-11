@@ -145,7 +145,9 @@ function visual_map_main() {
 			}
 					
 		});
-		
+
+		bindColorRangeEvents();
+
 			draw_lines(lines, 'background', true);
 
 			draw_user_lines("", 0, 0, 0 , 0, 0, true);
@@ -651,6 +653,9 @@ function update_button_palette_callback() {
 			var image = values['image'] + ".png";
 			set_image("image", idItem, image);
 			break;
+			case "color_cloud":
+				setColorCloud(id_visual_console, idItem);
+				break;
 		default:
 		if($('input[name=width]').val() == ''){
 		alert('Undefined width');
@@ -813,6 +818,25 @@ function readFields() {
 	values['clock_animation'] = $("select[name=clock_animation]").val();
 	values['show_last_value'] = $("select[name=last_value]").val();
 	
+	// Color Cloud values
+	if (selectedItem == "color_cloud" || creationItem == "color_cloud") {
+		var diameter = $("input[name=diameter]").val();
+		values["diameter"] = values["width"] = values["height"] = diameter;
+		var defaultColor = $("input[name=default_color]").val();
+		values["default_color"] = defaultColor;
+
+		// Ranges
+		$('input[name="color_range_from_values[]"]').each(function (index, element) {
+			values["color_range_from_values[" + index + "]"] = $(element).val();
+		});
+		$('input[name="color_range_to_values[]"]').each(function (index, element) {
+			values["color_range_to_values[" + index + "]"] = $(element).val();
+		});
+		$('input[name="color_range_color_values[]"]').each(function (index, element) {
+			values["color_range_colors[" + index + "]"] = $(element).val();
+		});
+	}
+
 	if (is_metaconsole()) {
 		values['metaconsole'] = 1;
 		values['id_agent'] = $("#hidden-agent").val();
@@ -1179,6 +1203,7 @@ function toggle_item_palette() {
 		activeToolboxButton('line_item', true);
 		activeToolboxButton('auto_sla_graph', true);
 		activeToolboxButton('donut_graph', true);
+		activeToolboxButton('color_cloud', true);
 
 		if (typeof(enterprise_activeToolboxButton) == 'function') {
 			enterprise_activeToolboxButton(true);
@@ -1209,6 +1234,7 @@ function toggle_item_palette() {
 		activeToolboxButton('group_item', false);
 		activeToolboxButton('box_item', false);
 		activeToolboxButton('line_item', false);
+		activeToolboxButton('color_cloud', false);
 
 		activeToolboxButton('copy_item', false);
 		activeToolboxButton('edit_item', false);
@@ -1615,6 +1641,26 @@ function loadFieldsFromDB(item) {
 						.css('background-color', val);
 				}
 
+				// Color Cloud values
+				if (key === "diameter") $("input[name='diameter']").val(val);
+				if (key === "dynamic_data") {
+					if (val == null) val = {};
+					var defaultColor = val["default_color"] || "#FFFFFF";
+					$('input[name="default_color"]').val(defaultColor);
+					
+					var colorRanges = val["color_ranges"] || [];
+					var $colorRangeCreationTable = $("table.color-range-creation");
+
+					if ($colorRangeCreationTable.length > 0) {
+						colorRanges.forEach(function (range) {
+							$colorRangeTable = getColorRangeTable(
+								$colorRangeCreationTable,
+								range
+							);
+							$colorRangeTable.insertBefore($colorRangeCreationTable);
+						});
+					}
+				}
 			});
 			
 				$('#count_items').html(1);		
@@ -1896,6 +1942,14 @@ function hiddenFields(item) {
 	$("#line_case").css('display', 'none');
 	$("#line_case." + item).css('display', '');
 
+	// Color cloud rows
+	$("#color_cloud_diameter_row").hide();
+	$("#color_cloud_diameter_row." + item).show();
+	$("#color_cloud_def_color_row").hide();
+	$("#color_cloud_def_color_row." + item).show();
+	$("#color_cloud_color_ranges_row").hide();
+	$("#color_cloud_color_ranges_row." + item).show();
+
 	$("input[name='radio_choice']").trigger('change');
 
 	if (typeof(enterprise_hiddenFields) == 'function') {
@@ -1949,6 +2003,11 @@ function cleanFields(item) {
 	$("select[name='timezone']").val('Europe/Madrid');
 	$("select[name='clock_animation']").val('analogic_1');
 
+	// Color cloud fields
+	$("input[name='diameter']").val(100);
+	$("input[name='default_color']").val("#FFFFFF");
+	// Clean dynamic fields
+	$("table.color-range:not(table.color-range-creation)").remove();
 
 	$("#preview").empty();
 
@@ -2717,6 +2776,43 @@ function setPercentileBubble(id_data, values) {
 	});
 }
 
+function setColorCloud (visualConsoleId, dataId, $container) {
+	$container = $container || $("#" + dataId + ".item.color_cloud");
+	if ($container.length === 0) return;
+
+	var $spinner = $container.find("#image_" + dataId);
+	var $svg = $container.children("svg");
+
+	if ($svg.length === 0) {
+		$svg = $("<svg />");
+		$container.append($svg);
+	}
+	
+	if ($spinner.length > 0) $svg.hide();
+
+	jQuery
+		.post(
+			get_url_ajax(),
+			{
+				"page": "include/ajax/visual_console_builder.ajax",
+				"action": "get_color_cloud",
+				"id_visual_console": visualConsoleId,
+				"id_element": dataId
+			},
+			null,
+			"html"
+		)
+		.done(function (data) {
+			var $newSvg = $(data);
+			// Check if $newSvg contains a svg
+			if ($newSvg.is("svg")) $svg.replaceWith($newSvg);
+		})
+		.always(function () {
+			if ($spinner.length > 0) $spinner.remove();
+			$svg.show();
+		});
+}
+
 function get_image_url(img_src) {
 	var img_url= null;
 	var parameter = Array();
@@ -2765,16 +2861,12 @@ function set_color_line_status(lines, id_data, values) {
 
 }
 
-
-
-
 function createItem(type, values, id_data) {
 	var sizeStyle = '';
 	var imageSize = '';
 	var item = null;
 
 	metaconsole = $("input[name='metaconsole']").val();
-
 
 	switch (type) {
 		case 'box_item':
@@ -3586,6 +3678,15 @@ function createItem(type, values, id_data) {
 			var image = values['image'] + ".png";
 			set_image("image", id_data, image);
 			break;
+		case 'color_cloud':
+			var diameter = values["diameter"] || values["width"] || 100;
+
+			item = $('<div id="' + id_data + '" class="item color_cloud" style="text-align: left; position: absolute; width: ' + diameter  + 'px; height: ' + diameter + 'px; top: ' + values['top'] + 'px; left: ' + values['left'] + 'px;">' +
+				'<img id="image_' + id_data + '" class="image" src="images/spinner.gif" width="' + diameter  + '" height="' + diameter + '" /><br />' +
+				'</div>'
+			);
+			setColorCloud(id_visual_console, id_data, item);
+			break;
 		default:
 			//Maybe create in any Enterprise item.
 			if (typeof(enterprise_createItem) == 'function') {
@@ -3821,6 +3922,15 @@ function updateDB_visual(type, idElement , values, event, top, left) {
 				}
 			}
 			
+			break;
+		case 'color_cloud':
+			var diameter = values["diameter"];
+			var $container = $("#" + idElement + ".item.color_cloud");
+			$container
+				.children("svg")
+					.attr("width", diameter)
+					.attr("height", diameter);
+			setColorCloud(id_visual_console, idElement, $container);
 			break;
 		case 'background':
 			if(values['width'] == '0' || values['height'] == '0'){
@@ -4276,6 +4386,15 @@ function eventsItems(drag) {
 				activeToolboxButton('delete_item', true);
 				activeToolboxButton('show_grid', false);
 			}
+			if ($(divParent).hasClass('color_cloud')) {
+				creationItem = null;
+				selectedItem = 'color_cloud';
+				idItem = $(divParent).attr('id');
+				activeToolboxButton('copy_item', true);
+				activeToolboxButton('edit_item', true);
+				activeToolboxButton('delete_item', true);
+				activeToolboxButton('show_grid', false);
+			}
 			if ($(divParent).hasClass('handler_start')) {
 				idItem = $(divParent).attr('id')
 					.replace("handler_start_", "");
@@ -4462,6 +4581,9 @@ function eventsItems(drag) {
 			}
 			if ($(event.target).hasClass('clock')) {
 				selectedItem = 'clock';
+			}
+			if ($(event.target).hasClass('color_cloud')) {
+				selectedItem = 'color_cloud';
 			}
 			if ($(event.target).hasClass('handler_start')) {
 				selectedItem = 'handler_start';
@@ -4801,6 +4923,10 @@ function click_button_toolbox(id) {
 			toolbuttonActive = creationItem = 'line_item';
 			toggle_item_palette();
 			break;
+		case 'color_cloud':
+			toolbuttonActive = creationItem = 'color_cloud';
+			toggle_item_palette();
+			break;
 		case 'copy_item':
 			click_copy_item_callback();
 			break;
@@ -4835,6 +4961,7 @@ function click_button_toolbox(id) {
 				activeToolboxButton('group_item', false);
 				activeToolboxButton('auto_sla_graph', false);
 				activeToolboxButton('donut_graph', false);
+				activeToolboxButton('color_cloud', false);
 				activeToolboxButton('copy_item', false);
 				activeToolboxButton('edit_item', false);
 				activeToolboxButton('delete_item', false);
@@ -4868,6 +4995,7 @@ function click_button_toolbox(id) {
 				activeToolboxButton('group_item', true);
 				activeToolboxButton('auto_sla_graph', true);
 				activeToolboxButton('donut_graph', true);
+				activeToolboxButton('color_cloud', true);
 			}
 			break;
 		case 'save_visualmap':
@@ -5213,4 +5341,97 @@ function onLinkedMapStatusCalculationTypeChange (event) {
 	var $linkedMapStatusCalcRow = $(event.target).parent().parent();
 	var value = event.target.value || "default";
 	linkedMapStatusCalculationTypeChanged($linkedMapStatusCalcRow, value);
+}
+
+function validateColorRange (values) {
+	return (
+		(values["from_value"].length > 0 || values["to_value"].length > 0) &&
+		values["color"].length > 0 &&
+		!Number.isNaN(Number.parseFloat(values["from_value"])) &&
+		!Number.isNaN(Number.parseFloat(values["to_value"]))
+	)
+}
+
+function getColorRangeTable ($colorRangeCreationTable, values) {
+	var $colorRangeTable = $colorRangeCreationTable.clone();
+	$colorRangeTable.attr("id", "").removeClass("color-range-creation");
+
+	// ref inputs
+	var $fromValueInput = $colorRangeTable.find('input[name="from_value_new"]');
+	var $toValueInput = $colorRangeTable.find('input[name="to_value_new"]');
+	var $colorInput = $colorRangeTable.find('input[name="color_new"]');
+
+	// Override input values
+	if (values != null) {
+		if (values["from_value"] != null) {
+			$fromValueInput.val(values["from_value"]);
+		}
+		if (values["to_value"] != null) {
+			$toValueInput.val(values["to_value"]);
+		}
+		if (values["color"] != null) {
+			$colorInput.val(values["color"]);
+		}
+	}
+
+	// Change the name of the new inputs (and clear the id attr)
+	$fromValueInput.attr("name", "color_range_from_values[]").attr("id", "");
+	$toValueInput.attr("name", "color_range_to_values[]").attr("id", "");
+	$colorInput.attr("name", "color_range_color_values[]").attr("id", "");
+
+	// Change the add button
+	$colorRangeAddBtn = $colorRangeTable.find("a.color-range-add");
+	if ($colorRangeAddBtn.length > 0) {
+		$colorRangeAddBtn
+			.removeClass("color-range-add")
+			.addClass("color-range-delete")
+			.click(function (e) {
+				e.preventDefault();
+				e.stopPropagation();
+				$colorRangeTable.remove();
+			});
+			
+			// Change img
+			$colorRangeAddImg = $colorRangeAddBtn.children("img");
+			if ($colorRangeAddImg.length > 0) {
+				$colorRangeAddImg.prop("src", "images/delete.png");
+			}
+	}
+
+	return $colorRangeTable;
+}
+
+function handleColorRangeCreation (event) {
+	event.preventDefault();
+	event.stopPropagation();
+
+	var $creationBtn = $(event.target);
+	var $colorRangeCreationTable = $creationBtn.parents("table.color-range-creation");
+
+	// ref inputs
+	var $fromValueInput = $colorRangeCreationTable.find('input[name="from_value_new"]');
+	var $toValueInput = $colorRangeCreationTable.find('input[name="to_value_new"]');
+	var $colorInput = $colorRangeCreationTable.find('input[name="color_new"]');
+
+	// TODO: Show info about validation
+	var values = {
+		"from_value": $fromValueInput.val(),
+		"to_value": $toValueInput.val(),
+		"color": $colorInput.val()
+	}
+	if (!validateColorRange(values)) return;
+
+	var $newColorRangeTable = getColorRangeTable($colorRangeCreationTable);
+	
+	// Clear creation inputs
+	$fromValueInput.val("");
+	$toValueInput.val("");
+	$colorInput.val("#FFFFFF");
+
+	// Add the new table
+	$newColorRangeTable.insertBefore($colorRangeCreationTable);
+}
+
+function bindColorRangeEvents () {
+	$("a.color-range-add").click(handleColorRangeCreation);
 }

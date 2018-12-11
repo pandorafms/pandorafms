@@ -39,7 +39,7 @@ function events_get_all_fields() {
 	$columns['estado'] = __('Status');
 	$columns['timestamp'] = __('Timestamp');
 	$columns['event_type'] = __('Event type');
-	$columns['id_agentmodule'] = __('Agent module');
+	$columns['id_agentmodule'] = __('Module name');
 	$columns['id_alert_am'] = __('Alert');
 	$columns['criticity'] = __('Severity');
 	$columns['user_comment'] = __('Comment');

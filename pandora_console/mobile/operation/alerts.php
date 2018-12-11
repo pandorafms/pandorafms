@@ -263,7 +263,7 @@ class Alerts {
 			
 			$row = array();
 			if (isset($this->columns['agent']) && $this->columns['agent']) {
-				$row[__('Agent')] = sprintf($disabled_style, io_safe_output($alert['agent_name']));
+				$row[__('Agent')] = sprintf($disabled_style, io_safe_output($alert['agent_alias']));
 			}
 			$row[__('Module')] = sprintf($disabled_style,
 				io_safe_output($alert['module_name']));

@@ -451,7 +451,26 @@ function agent_counters_custom_fields($filters){
 				$query_data = sprintf("SELECT
 						tcd.description,
 						ta.id_agente,
-						%d AS id_server
+						%d AS id_server,
+						(CASE
+							WHEN ta.critical_count > 0
+								THEN 1
+							WHEN ta.critical_count = 0
+								AND ta.warning_count > 0
+								THEN 2
+							WHEN ta.critical_count = 0
+								AND ta.warning_count = 0
+								AND ta.unknown_count > 0
+								THEN 3
+							WHEN ta.critical_count = 0
+								AND ta.warning_count = 0
+								AND ta.unknown_count = 0
+								AND ta.notinit_count <> ta.total_count
+								THEN 0
+							WHEN ta.total_count = ta.notinit_count
+								THEN 5
+							ELSE 0
+						END) AS `status`
 					FROM tagente ta
 					LEFT JOIN tagent_secondary_group tasg
 						ON ta.id_agente = tasg.id_agent

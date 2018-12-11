@@ -159,7 +159,8 @@ function reporting_make_reporting_data($report = null, $id_report,
 				true);
 
 			$sql_tags_join = "INNER JOIN tagente ON tagente.id_agente = t1.id_agente
-				INNER JOIN ttag_module ON ttag_module.id_agente_modulo = t1.id_agente_modulo";
+				INNER JOIN ttag_module ON ttag_module.id_agente_modulo = t1.id_agente_modulo
+				LEFT JOIN tagent_secondary_group tasg ON tagente.id_agente = tasg.id_agent";
 
 			$sql = sprintf('SELECT count(*) FROM tagente_modulo t1
 				%s WHERE t1.delete_pending = 0 AND t1.id_agente_modulo = '. $content["id_agent_module"] .'

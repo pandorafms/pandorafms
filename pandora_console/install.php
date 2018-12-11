@@ -33,6 +33,9 @@
 	<script type="text/javascript">
 		options_text = new Array('An existing Database','A new Database');
 		options_values = new Array('db_exist','db_new');
+
+		var userHasConfirmed = false;
+
 		function ChangeDBDrop(causer) {
 			if (causer.value != 'db_exist') {
 				window.document.step2_form.drop.checked = 0;
@@ -79,6 +82,19 @@
 			document.getElementById('open_popup').style["display"] = "none";
 			document.getElementById('open_popup').style["visibility"] = "hidden";
 		}
+		function handleConfirmClick (event) {
+			userHasConfirmed = true;
+			var step3_form = document.getElementsByName('step2_form')[0];
+			step3_form.submit();
+		}
+		function handleStep3FormSubmit (event) {
+			var dbOverride = document.getElementById("drop").checked;
+			if (dbOverride && !userHasConfirmed) {
+				event.preventDefault();
+				popupShow();
+				return false;
+			}
+		}
 	</script>
 	<body>
 		<div id='add-lightbox' onclick='popupClose();' class='popup-lightbox'></div>
@@ -87,12 +103,12 @@
 				<span id='title_popup'>Warning</span>
 				<a href='#' onclick='popupClose();'><img src='./images/icono_cerrar.png' alt='close' title='Close' style='float:right;'/></a>
 			</div>
-			<div id='editor_section' class='popup-inner' style='padding: 20px 40px;'>
+			<div class='popup-inner' style='padding: 20px 40px;'>
 			<?php 
 				echo "<p><strong>Attention</strong>, you are going to <strong>overwrite the data</strong> of your current installation.</p><p>This means that if you do not have a backup <strong>you will irremissibly LOSE ALL THE STORED DATA</strong>, the configuration and everything relevant to your installation.</p><p><strong>Are you sure of what you are going to do?</strong></p>"; 
 				echo "<div style='text-align:right;';>";
-				echo "<a id='step4popup' href='install.php?step=4'><button type='submit' class='btn_install_next'><span class='btn_install_next_text'>Yes, I'm sure I want to delete everything</span></button></a>";
-				echo "<a href='javascript:popupClose();'><button type='submit' class='btn_install_next popup-button-green'><span class='btn_install_next_text'>Cancel</span></button></a>";
+				echo "<button type='button' class='btn_install_next' onclick='javascript:handleConfirmClick();'><span class='btn_install_next_text'>Yes, I'm sure I want to delete everything</span></button>";
+				echo "<button type='button' class='btn_install_next popup-button-green' onclick='javascript:popupClose();'><span class='btn_install_next_text'>Cancel</span></button>";
 				echo "</div>";
 			?>
 			</div>
@@ -100,7 +116,7 @@
 		<div style='height: 10px'>
 			<?php
 $version = '7.0NG.729';
-$build = '181210';
+$build = '181211';
 			$banner = "v$version Build $build";
 			
 			error_reporting(0);
@@ -670,17 +686,8 @@ function install_step3() {
 		echo "</div>";
 		?>
 		<script type="text/javascript">
-			var checkDrop = document.getElementById('step4button').addEventListener("click", function(event){
-				if(document.getElementById("drop").checked){
-					popupShow();
-				}
-				else{
-					document.getElementsByName('step2_form')[0].submit();
-				}
-		    	event.preventDefault();
-			});
 			var step3_form = document.getElementsByName('step2_form')[0];
-			step3_form.addEventListener("submit", checkDrop, true);
+			step3_form.addEventListener("submit", handleStep3FormSubmit);
 		</script>
 		<?php
 	}

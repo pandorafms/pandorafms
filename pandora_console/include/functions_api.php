@@ -149,7 +149,7 @@ function returnData($returnType, $data, $separator = ';') {
 				else {
 					if (!empty($data['data'])) {
 						foreach ($data['data'] as $dataContent) {
-							$clean = array_map("array_apply_io_safe_output", $dataContent);
+							$clean = array_map("array_apply_io_safe_output", (array)$dataContent);
 							foreach ($clean as $k => $v) {
 								$clean[$k] = str_replace("\r", "\n", $clean[$k]);
 								$clean[$k] = str_replace("\n", " ", $clean[$k]);
@@ -10538,6 +10538,38 @@ function api_set_create_service($thrash1, $thrash2, $other, $thrash3) {
 		returnError('error_create_service', __('Error in creation service'));
 	}
 }
+
+
+
+
+function api_set_module_group_synch($thrash1, $thrash2, $other, $returnType) {
+	global $config;
+enterprise_include_once ('meta/include/functions_meta.php');
+	if (is_metaconsole()) {
+
+		if (!check_acl($config['id_user'], 0, "PM")) {
+			returnError('forbidden', 'string');
+			return;
+		}
+		$targets = array();
+		foreach ($other['data'] as $server) {
+			$targets[] = $server;
+		}
+
+		$return = meta_module_group_synchronizing($targets);
+
+		// User feedback
+		returnData ($returnType, array('type' => 'array', 'data' => $return));
+
+	}
+	else{
+		returnError ('not_defined_in_metaconsole',__('This function is only for metaconsole'));
+	}
+}
+
+
+
+
 
 /**
  * Update a service.

@@ -3674,9 +3674,10 @@ function insertDB(type, values) {
 		success: function (data) {
 			if (data['correct']) {
 				id = data['id_data'];
-				if((type === 'group_item') || (type === 'icon') || (type === 'static_graph')){
-					values['naturalWidth'] = $('#preview > img')[0].naturalWidth;
-					values['naturalHeight'] = $('#preview > img')[0].naturalHeight;
+				var image_to_show = $('#preview > img')[0];
+				if((type === 'group_item') || (type === 'icon') || (type === 'static_graph' && typeof(image_to_show) !== 'undefined')){
+					values['naturalWidth'] = image_to_show.naturalWidth;
+					values['naturalHeight'] = image_to_show.naturalHeight;
 				}
 				createItem(type, values, id);
 				addItemSelectParents(id, data['text']);
@@ -4946,6 +4947,9 @@ function showPreviewStaticGraph(staticGraph) {
 	if (is_metaconsole()) {
 		$spinner.prop("src", "../../images/spinner.gif");
 	}
+
+	// If no image configured do not show anything
+	if (staticGraph === null) return;
 
 	$("#preview")
 		.empty()

@@ -2007,6 +2007,8 @@ function cleanFields(item) {
 	$("input[name='diameter']").val(100);
 	$("input[name='default_color']").val("#FFFFFF");
 	// Clean dynamic fields
+	$("table.color-range-creation input[type=text]").val("");
+	$("table.color-range-creation input[type=color]").val("#FFFFFF");
 	$("table.color-range:not(table.color-range-creation)").remove();
 
 	$("#preview").empty();

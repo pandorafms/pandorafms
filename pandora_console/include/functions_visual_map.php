@@ -4095,8 +4095,8 @@ function visual_map_get_color_cloud_element ($data) {
 	<svg height="<?php echo $diameter; ?>" width="<?php echo $diameter; ?>">
 		<defs>
 			<radialGradient id="<?php echo $gradient_id; ?>" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
-				<stop offset="0%" style="stop-color:<?php echo $color; ?>;stop-opacity:0.8" />
-				<stop offset="60%" style="stop-color:<?php echo $color; ?>;stop-opacity:0.4" />
+				<stop offset="0%" style="stop-color:<?php echo $color; ?>;stop-opacity:0.9" />
+				<!-- <stop offset="50%" style="stop-color:<?php echo $color; ?>;stop-opacity:0.6" /> -->
 				<stop offset="100%" style="stop-color:<?php echo $color; ?>;stop-opacity:0" />
 			</radialGradient>
 		</defs>

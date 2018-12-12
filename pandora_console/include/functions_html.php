@@ -97,6 +97,15 @@ function hd ($var, $file = '', $oneline = false) {
 	html_debug_print ($var, $file, $oneline);
 }
 
+function debug () {
+	$args_num = func_num_args();
+	$arg_list = func_get_args();
+	
+	for ($i = 0; $i < $args_num; $i++) {
+		html_debug_print($arg_list[$i], true);
+	}
+}
+
 function html_f2str($function, $params) {
 	ob_start();
 	
@@ -1335,6 +1344,36 @@ function html_print_input_hidden_extended($name, $value, $id, $return = false, $
 	if ($return)
 		return $output;
 	
+	echo $output;
+}
+
+/**
+ * Render a color input element.
+ *
+ * The element will have an id like: "hidden-$name"
+ * 
+ * @param string $name Input name.
+ * @param int $value Input value. Decimal representation of the color's hexadecimal value.
+ * @param string $class Set the class of input.
+ * @param bool $return Whether to return an output string or echo now (optional, echo by default).
+ *
+ * @return string HTML code if return parameter is true.
+ */
+function html_print_input_color ($name, $value, $class = false, $return = false) {
+	$attr_type = 'type="color"';
+	$attr_id = 'id="color-' . htmlspecialchars($name, ENT_QUOTES) . '"';
+	$attr_name = 'name="' . htmlspecialchars($name, ENT_QUOTES) . '"';
+	$attr_value = 'value="' . htmlspecialchars($value, ENT_QUOTES) . '"';
+	$attr_class = 'class="' . ($class !== false ? htmlspecialchars($class, ENT_QUOTES) : "") . '"';
+
+	$output = '<input '
+		. $attr_type . ' '
+		. $attr_id . ' '
+		. $attr_name . ' '
+		. $attr_value . ' '
+		. $attr_class . ' />';
+
+	if ($return) return $output;
 	echo $output;
 }
 

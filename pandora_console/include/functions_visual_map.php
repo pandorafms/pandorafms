@@ -1569,6 +1569,9 @@ function visual_map_print_item($mode = "read", $layoutData,
 		case BOX_ITEM:
 			$class .= "box_item";
 			break;
+		case COLOR_CLOUD:
+			$class .= "color_cloud";
+			break;
 		default:
 			if (!empty($element_enterprise)) {
 				$class .= $element_enterprise['class'];
@@ -2180,6 +2183,9 @@ function visual_map_print_item($mode = "read", $layoutData,
 				}
 			
 			}
+			break;
+		case COLOR_CLOUD:
+			echo visual_map_get_color_cloud_element($layoutData);
 			break;
 		default:
 			if (!empty($element_enterprise)) {
@@ -3883,6 +3889,10 @@ function visual_map_create_internal_name_item($label = null, $type, $image, $age
 			case 'group_item':
 				$text = __('Group') . " - ";
 				break;
+			case COLOR_CLOUD:
+			case 'color_cloud':
+				$text = __('Color cloud') . " - ";
+				break;
 			case 'icon':
 			case ICON:
 				$text = __('Icon') . " - " .
@@ -4020,6 +4030,8 @@ function visual_map_type_in_js($type) {
 			break;
 		case LINE_ITEM:
 			return 'line_item';
+		case COLOR_CLOUD:
+			return 'color_cloud';
 			break;
 	}
 }
@@ -4035,5 +4047,63 @@ function visual_map_macro($label,$module){
 	return $label;
 }
 
+function visual_map_get_color_cloud_element ($data) {
+	$id = (int) $data["id"];
+	$diameter = (int) $data["width"];
+	$dynamic_fields = array();
+
+	try {
+		// Yes, the dynamic fields object is stored into the label field. ¯\_(ツ)_/¯
+		if (!empty($data["label"])) {
+			$dynamic_fields = json_decode($data["label"], true);
+		}
+	} catch (Exception $ex) {}
+
+	$default_color = !empty($dynamic_fields["default_color"])
+		? $dynamic_fields["default_color"]
+		: "#FFFFFF";
+	$color = $default_color;
+	// The svg gradient needs a unique identifier
+	$gradient_id = "grad_" . $id;
+
+	// Color ranges
+	if (
+		!empty($dynamic_fields["color_ranges"]) &&
+		!empty($data["id_agente_modulo"])
+	) {
+		// TODO: Metaconsole support.
+		$value = modules_get_last_value($data["id_agente_modulo"]);
+
+		if ($value !== false) {
+			/* TODO: It would be ok to give support to string values in the future?
+			 * It can be done by matching the range value with the value if it is a
+			 * string. I think the function to retrieve the value only supports
+			 * numeric values.
+			 */
+			$value = (float) $value;
+			foreach ($dynamic_fields["color_ranges"] as $range) {
+				if ($range["from_value"] <= $value && $range["to_value"] >= $value) {
+					$color = $range["color"];
+					break;
+				}
+			}
+		}
+	}
+
+	ob_start();
+?>
+	<svg height="<?php echo $diameter; ?>" width="<?php echo $diameter; ?>">
+		<defs>
+			<radialGradient id="<?php echo $gradient_id; ?>" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
+				<stop offset="0%" style="stop-color:<?php echo $color; ?>;stop-opacity:0.9" />
+				<!-- <stop offset="50%" style="stop-color:<?php echo $color; ?>;stop-opacity:0.6" /> -->
+				<stop offset="100%" style="stop-color:<?php echo $color; ?>;stop-opacity:0" />
+			</radialGradient>
+		</defs>
+		<circle cx="50%" cy="50%" r="50%" fill="url(#<?php echo $gradient_id; ?>)" />
+	</svg>
+<?php
+	return ob_get_clean();
+}
 
 ?>

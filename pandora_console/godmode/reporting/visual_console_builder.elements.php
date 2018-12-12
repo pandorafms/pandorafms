@@ -202,6 +202,11 @@ foreach ($layoutDatas as $layoutData) {
 				html_print_image('images/line_item.png', true,
 					array('title' => __('Line')));
 			break;
+		case COLOR_CLOUD:
+			$table->data[$i + 1]['icon'] =
+				html_print_image('images/color_cloud_item.png', true,
+					array('title' => __('Color cloud')));
+			break;
 		default:
 			if (enterprise_installed()) {
 				$table->data[$i + 1]['icon'] =
@@ -259,6 +264,11 @@ foreach ($layoutDatas as $layoutData) {
 			// hasn't the width and height.
 			$table->data[$i + 1][2] = '';
 			break;
+		case COLOR_CLOUD:
+			$table->data[$i + 1][2] = html_print_input_text('width_' . $idLayoutData, $layoutData['width'], '', 2, 5, true) .
+					' x ' .
+					html_print_input_text('height_' . $idLayoutData, $layoutData['width'], '', 2, 5, true);
+			break;
 		default:
 			$table->data[$i + 1][2] = html_print_input_text('width_' . $idLayoutData, $layoutData['width'], '', 2, 5, true) .
 				' x ' .
@@ -284,6 +294,7 @@ foreach ($layoutDatas as $layoutData) {
 	switch ($layoutData['type']) {
 		case BOX_ITEM:
 		case LINE_ITEM:
+		case COLOR_CLOUD:
 			$table->data[$i + 1][4] = "";
 			break;
 		default:
@@ -485,6 +496,7 @@ foreach ($layoutDatas as $layoutData) {
 		case LINE_ITEM:
 		case BOX_ITEM:
 		case AUTO_SLA_GRAPH:
+		case COLOR_CLOUD:
 			$table->data[$i + 2][4] = "";
 			break;
 		default:

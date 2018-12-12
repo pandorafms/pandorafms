@@ -3320,7 +3320,10 @@ function generator_chart_to_pdf($type_graph_pdf, $params, $params_combined = fal
 		. ' "' . $session_id . '"'
 		. ' "' . $params['return_img_base_64'] . '"';
 
-	exec($cmd, $result);
+	$result = null;
+	$retcode = null;
+	exec($cmd, $result, $retcode);
+
 	$img_content = join("\n", $result);
 
 	if($params['return_img_base_64']){

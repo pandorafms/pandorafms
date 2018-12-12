@@ -1049,6 +1049,10 @@ function graphic_combined_module (
 		$params_combined['id_graph'] = 0;
 	}
 
+	if(!isset($params_combined['type_report'])){
+		$params_combined['type_report'] = '';
+	}
+
 	if(!isset($params['percentil'])){
 		$params_combined['percentil'] = null;
 	}
@@ -1207,8 +1211,8 @@ function graphic_combined_module (
 		);
 
 		$series = db_get_all_rows_sql(
-			'SELECT summatory_series,average_series,modules_series 
-			FROM tgraph 
+			'SELECT summatory_series,average_series, modules_series
+			FROM tgraph
 			WHERE id_graph = '.
 			$params_combined['id_graph']
 		);
@@ -1301,7 +1305,6 @@ function graphic_combined_module (
 		);
 	}
 
-	//XXX arreglar estas
 	$long_index = '';
 	switch ($params_combined['stacked']) {
 		default:
@@ -1324,7 +1327,16 @@ function graphic_combined_module (
 
 			$i=0;
 			$array_data = array();
+
 			foreach ($module_list as $key => $agent_module_id) {
+				if(is_metaconsole() && $params_combined['type_report'] == 'automatic_graph'){
+					$server  = metaconsole_get_connection_by_id ($agent_module_id['server']);
+					if (metaconsole_connect ($server) != NOERR){
+						continue;
+					}
+					$agent_module_id = $agent_module_id['module'];
+				}
+
 				$module_data = db_get_row_sql (
 					'SELECT * FROM tagente_modulo
 					WHERE id_agente_modulo = ' .
@@ -1340,12 +1352,12 @@ function graphic_combined_module (
 				$data_module_graph['id_module_type'] = $module_data['id_tipo_modulo'];
 				$data_module_graph['module_type']    = modules_get_moduletype_name($data_module_graph['id_module_type']);
 				$data_module_graph['uncompressed']   = is_module_uncompressed($data_module_graph['module_type']);
-				$data_module_graph['w_min']    		 = $module_data['min_warning'];
-				$data_module_graph['w_max']   		 = $module_data['max_warning'];
-				$data_module_graph['w_inv']    		 = $module_data['warning_inverse'];
-				$data_module_graph['c_min']    		 = $module_data['min_critical'];
-				$data_module_graph['c_max']    		 = $module_data['max_critical'];
-				$data_module_graph['c_inv']    		 = $module_data['critical_inverse'];
+				$data_module_graph['w_min']          = $module_data['min_warning'];
+				$data_module_graph['w_max']          = $module_data['max_warning'];
+				$data_module_graph['w_inv']          = $module_data['warning_inverse'];
+				$data_module_graph['c_min']          = $module_data['min_critical'];
+				$data_module_graph['c_max']          = $module_data['max_critical'];
+				$data_module_graph['c_inv']          = $module_data['critical_inverse'];
 				$data_module_graph['module_id']      = $agent_module_id;
 
 				//stract data
@@ -1357,7 +1369,7 @@ function graphic_combined_module (
 					$i
 				);
 
-				$series_suffix     = $i;
+				$series_suffix = $i;
 
 				//convert to array graph and weight
 				foreach ($array_data_module as $key => $value) {
@@ -1386,6 +1398,10 @@ function graphic_combined_module (
 
 				//$array_events_alerts[$series_suffix] = $events;
 				$i++;
+
+				if(is_metaconsole() && $params_combined['type_report'] == 'automatic_graph'){
+					metaconsole_restore_db();
+				}
 			}
 
 			if($params_combined['projection']){
@@ -1544,7 +1560,6 @@ function graphic_combined_module (
 				$water_mark,
 				$array_events_alerts
 			);
-
 			break;
 		case CUSTOM_GRAPH_BULLET_CHART_THRESHOLD:
 		case CUSTOM_GRAPH_BULLET_CHART:

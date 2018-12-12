@@ -238,7 +238,7 @@ function grafico_modulo_sparse_data(
 		}
 	}
 
-	if($array_data === false || !isset($array_data['sum1']['data'][0][1])){
+	if ($array_data === false || (!$params['graph_combined'] && !isset($array_data['sum1']['data'][0][1]))) {
 		return false;
 	}
 

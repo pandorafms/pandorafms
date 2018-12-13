@@ -218,12 +218,10 @@ if (file_exists ('languages/'.$user_language.'.mo')) {
 	<script type="text/javascript">
 		$('document').ready(function () {
 			setTimeout(function () {
-				if (typeof window.callPhantom === 'function') {
-					try {
-						var status = window.callPhantom({ status: "loaded" });
-					} catch (error) {
-						console.log("CALLBACK ERROR", error.message)
-					}
+				try {
+					var status = window.callPhantom({ status: "loaded" });
+				} catch (error) {
+					console.log("CALLBACK ERROR", error.message)
 				}
 			}, 100);
 		});

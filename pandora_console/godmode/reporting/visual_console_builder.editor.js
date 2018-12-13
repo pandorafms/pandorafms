@@ -653,9 +653,6 @@ function update_button_palette_callback() {
 			var image = values['image'] + ".png";
 			set_image("image", idItem, image);
 			break;
-			case "color_cloud":
-				setColorCloud(id_visual_console, idItem);
-				break;
 		default:
 		if($('input[name=width]').val() == ''){
 		alert('Undefined width');
@@ -2782,7 +2779,7 @@ function setColorCloud (visualConsoleId, dataId, $container) {
 	$container = $container || $("#" + dataId + ".item.color_cloud");
 	if ($container.length === 0) return;
 
-	var $spinner = $container.find("#image_" + dataId);
+	var $spinner = $container.children("img");
 	var $svg = $container.children("svg");
 
 	if ($svg.length === 0) {
@@ -3928,10 +3925,11 @@ function updateDB_visual(type, idElement , values, event, top, left) {
 		case 'color_cloud':
 			var diameter = values["diameter"];
 			var $container = $("#" + idElement + ".item.color_cloud");
-			$container
-				.children("svg")
-					.attr("width", diameter)
-					.attr("height", diameter);
+			if ($container.children("img").length === 0) {
+				$container.append(
+					'<img id="image_' + idElement + '" class="image" src="images/spinner.gif" width="' + diameter  + '" height="' + diameter + '" />'
+				);
+			}
 			setColorCloud(id_visual_console, idElement, $container);
 			break;
 		case 'background':
@@ -5396,7 +5394,10 @@ function getColorRangeTable ($colorRangeCreationTable, values) {
 			// Change img
 			$colorRangeAddImg = $colorRangeAddBtn.children("img");
 			if ($colorRangeAddImg.length > 0) {
-				$colorRangeAddImg.prop("src", "images/delete.png");
+				var src = $("#hidden-metaconsole").val() == 1
+					? "../../images/delete.png"
+					: "images/delete.png";
+				$colorRangeAddImg.prop("src", src);
 			}
 	}
 

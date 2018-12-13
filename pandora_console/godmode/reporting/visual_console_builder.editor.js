@@ -3681,7 +3681,7 @@ function createItem(type, values, id_data) {
 			var diameter = values["diameter"] || values["width"] || 100;
 
 			item = $('<div id="' + id_data + '" class="item color_cloud" style="text-align: left; position: absolute; width: ' + diameter  + 'px; height: ' + diameter + 'px; top: ' + values['top'] + 'px; left: ' + values['left'] + 'px;">' +
-				'<img id="image_' + id_data + '" class="image" src="images/spinner.gif" width="' + diameter  + '" height="' + diameter + '" /><br />' +
+				'<img id="image_' + id_data + '" class="image" src="images/spinner.gif" width="' + diameter  + '" height="' + diameter + '" />' +
 				'</div>'
 			);
 			setColorCloud(id_visual_console, id_data, item);

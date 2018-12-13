@@ -4071,8 +4071,21 @@ function visual_map_get_color_cloud_element ($data) {
 		!empty($dynamic_fields["color_ranges"]) &&
 		!empty($data["id_agente_modulo"])
 	) {
-		// TODO: Metaconsole support.
-		$value = modules_get_last_value($data["id_agente_modulo"]);
+		$node_id = null;
+		$node_connected = false;
+		// Connect to node
+		if (is_metaconsole() && !empty($data["id_metaconsole"])) {
+			$node_id = (int) $data["id_metaconsole"];
+			if (metaconsole_connect(null, $node_id) === NOERR) $node_connected = true;
+		}
+
+		// Fetch module value
+		$value = (!$node_id || ($node_id && $node_connected))
+			? modules_get_last_value($data["id_agente_modulo"])
+			: false;
+
+		// Restore connection
+		if ($node_connected) metaconsole_restore_db();
 
 		if ($value !== false) {
 			/* TODO: It would be ok to give support to string values in the future?

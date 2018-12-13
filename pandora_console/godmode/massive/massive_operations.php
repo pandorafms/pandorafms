@@ -32,6 +32,14 @@ enterprise_include ('godmode/massive/massive_operations.php');
 $tab = (string) get_parameter ('tab', 'massive_agents');
 $option = (string) get_parameter ('option', '');
 
+if ($tab == 'massive_policies' && is_central_policies_on_node()){
+	ui_print_warning_message(__('This node is configured with centralized mode. All policies information is read only. Go to metaconsole to manage it.'));
+	db_pandora_audit("ACL Violation",
+		"Trying to access massive operation section");
+	require ("general/noaccess.php");
+	return;
+}
+
 $options_alerts = array(
 	'add_alerts' => __('Bulk alert add'),
 	'delete_alerts' => __('Bulk alert delete'), 

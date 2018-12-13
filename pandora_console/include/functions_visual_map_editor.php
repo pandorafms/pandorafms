@@ -612,10 +612,14 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 				"</td>";
 
 			// Color ranges
+			$color_range_tip = __("TODO");
 			$form_items["color_cloud_color_ranges_row"] = array();
 			$form_items["color_cloud_color_ranges_row"]["items"] = array("color_cloud");
 			$form_items["color_cloud_color_ranges_row"]["html"] =
-				"<td align=\"left\">" . __("Color ranges") . "</td>" .
+				"<td align=\"left\">" .
+					__("Ranges") .
+					ui_print_help_tip($color_range_tip, true) .
+				"</td>" .
 				"<td align=\"left\">" .
 					"<table id=\"new-color-range\" class=\"databox color-range color-range-creation\">" .
 						"<tr>" .
@@ -817,6 +821,7 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 						var $mapLinkedSelect = $("select#map_linked");
 						var $linkedMapNodeIDInput = $("input#hidden-linked_map_node_id");
 						var visualMaps = <?php echo json_encode($visual_maps); ?>;
+						if (!(visualMaps instanceof Array)) visualMaps = [];
 						var nodesById = <?php echo json_encode($meta_servers_by_id); ?>;
 
 						visualMaps.forEach(function (vMap) {

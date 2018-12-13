@@ -55,7 +55,7 @@ page.onError = function(msg){
 	page.close();
 }
 
-page.onCallback = function (st) {console.log("CALLBACK CALLED", st.status)
+page.onCallback = function (st) {
 	if (!base_64) {
 		page.render(output_filename, { format: 'png' });
 	} else {

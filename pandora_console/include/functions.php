@@ -3286,18 +3286,18 @@ function generator_chart_to_pdf($type_graph_pdf, $params, $params_combined = fal
 	global $config;
 
 	if(is_metaconsole()){
-		$hack_metaconsole = "../../";
+		$hack_metaconsole = "../..";
 	}
 	else{
 		$hack_metaconsole = "";
 	}
 
 	$file_js  = $config["homedir"] . "/include/web2image.js";
-	$url      = ui_get_full_url(false) . $hack_metaconsole ."include/chart_generator.php";
+	$url      = ui_get_full_url(false) . $hack_metaconsole . "/include/chart_generator.php";
 
 	$img_file = "img_". uniqid()  .".png";
 	$img_path = $config["homedir"] . "/attachment/" . $img_file;
-	$img_url  = ui_get_full_url(false) . $hack_metaconsole . "attachment/" . $img_file;
+	$img_url  = ui_get_full_url(false) . $hack_metaconsole . "/attachment/" . $img_file;
 
 	$width_img  = 500;
 	$height_img = (isset($config['graph_image_height'])) ? $config['graph_image_height'] : 280;

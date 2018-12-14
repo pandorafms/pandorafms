@@ -612,7 +612,7 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 				"</td>";
 
 			// Color ranges
-			$color_range_tip = __("TODO");
+			$color_range_tip = __("The color of the element will be the one selected in the first range created in which the value of the module is found (with the initial and final values of the range included)") . ".";
 			$form_items["color_cloud_color_ranges_row"] = array();
 			$form_items["color_cloud_color_ranges_row"]["items"] = array("color_cloud");
 			$form_items["color_cloud_color_ranges_row"]["html"] =

@@ -4560,6 +4560,62 @@ function api_get_alert_template($id_template, $thrash1, $other, $thrash3) {
 }
 
 /**
+ * List of alert actions.
+ * 
+ * @param array $other it's array, $other as param is <action_name>;<separator_data> and separator (pass in param
+ *  othermode as othermode=url_encode_separator_<separator>)
+ * @param $returnType (csv, string or json).
+ * 
+ *  example:
+ *  
+ *  api.php?op=get&op2=alert_actions&apipass=1234&user=admin&pass=pandora&other=Create|;&other_mode=url_encode_separator_|&return_type=json
+ *  
+ */
+function api_get_alert_actions($thrash1, $thrash2, $other, $returnType) {
+	global $config;
+	if (!check_acl($config['id_user'], 0, "LM")) {
+		returnError('forbidden', 'string');
+		return;
+	}
+
+	if (!isset($other['data'][0]))
+		$other['data'][1] = '';
+	if (!isset($other['data'][1]))
+		$separator = ';'; //by default
+	else
+		$separator = $other['data'][1];
+
+	$action_name = $other['data'][0];
+
+
+	$filter = array();
+	if (!is_user_admin($config['id_user']))
+	$filter['talert_actions.id_group'] = array_keys(users_get_groups(false, "LM"));
+	$filter['talert_actions.name'] = "%$action_name%";
+
+	$actions = db_get_all_rows_filter (
+	'talert_actions INNER JOIN talert_commands ON talert_actions.id_alert_command = talert_commands.id',
+	$filter,
+	'talert_actions.id, talert_actions.name'
+	);
+	if ($actions === false)
+		$actions = array ();
+
+	if ($actions !== false) {
+		$data['type'] = 'array';
+		$data['data'] = $actions;
+	}
+	if (!$actions) {
+		returnError('error_get_alert_actions',
+		__('Error getting alert actions.'));
+	}
+	else {
+		returnData($returnType, $data, $separator);
+	}
+}
+
+
+/**
  * Get module groups, and print all the result like a csv.
  *
  * @param $thrash1 Don't use.

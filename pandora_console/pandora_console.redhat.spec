@@ -3,7 +3,7 @@
 #
 %define name        pandorafms_console
 %define version     7.0NG.730
-%define release     181216
+%define release     181217
 
 # User and Group under which Apache is running
 %define httpd_name  httpd

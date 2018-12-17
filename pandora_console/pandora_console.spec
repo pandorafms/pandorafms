@@ -28,7 +28,7 @@ BuildRoot:          %{_tmppath}/%{name}
 BuildArch:          noarch
 AutoReq:            0
 Requires:           apache2
-Requires:           (apache2-mod_php5 or apache2-mod_php7)
+Requires:           apache2-mod_php7
 Requires:           php >= 4.3.0
 Requires:           php-gd, php-snmp, php-json, php-gettext
 Requires:           php-mysqlnd, php-ldap, php-mbstring, php 

@@ -32,6 +32,7 @@ include_once($config['homedir'] . "/include/functions_servers.php");
 include_once($config['homedir'] . "/include/functions_planned_downtimes.php");
 include_once($config['homedir'] . "/include/functions_db.php");
 include_once($config['homedir'] . "/include/functions_event_responses.php");
+include_once($config['homedir'] . "/include/functions_policies.php");
 enterprise_include_once ('include/functions_local_components.php');
 enterprise_include_once ('include/functions_events.php');
 enterprise_include_once ('include/functions_agents.php');
@@ -6447,6 +6448,54 @@ function api_set_update_snmp_module_policy($id, $thrash1, $other, $thrash3) {
 		returnData('string',
 			array('type' => 'string', 'data' => __('SNMP policy module updated.')));
 }
+
+
+function api_set_remove_agent_from_policy ($id, $id2, $thrash2, $thrash3) {
+	global $config;
+
+	if (!check_acl($config['id_user'], 0, "AW")){
+		returnError('forbidden', 'string');
+		return;
+	}
+
+	if ($id == '' || !$id) {
+		returnError('error_parameter', __('Error deleting agent from policy. Policy cannot be left blank.'));
+		return;
+	}
+
+	if ($id2 == '' || !$id2) {
+		returnError('error_parameter', __('Error deleting agent from policy. Agent cannot be left blank.'));
+		return;
+	}
+
+	$policy = policies_get_policy ($id, false, false);
+	$agent = db_get_row_filter('tagente', array('id_agente' => $id2));
+	$policy_agent = db_get_row_filter('tpolicy_agents', array('id_policy' => $id ,'id_agent' => $id2));
+
+	if (empty ($policy)){
+		returnError('error_policy', __('This policy does not exist.'));
+		return;
+	}
+	if (empty ($agent)){
+		returnError('error_agent', __('This agent does not exist.'));
+		return;
+	}	
+	if (empty ($policy_agent)){
+		returnError('error_policy_agent', __('This agent does not exist in this policy.'));
+		return;
+	}
+
+	$return = policies_change_delete_pending_agent($policy_agent['id']);
+	$data = __('Successfully added to delete pending id agent %d to id policy %d.', $id2, $id);
+
+	if ($return === false)
+		returnError('error_delete_policy_agent', 'Could not be deleted id agent %d from id policy %d', $id2, $id);
+	else
+		returnData('string', array('type' => 'string', 'data' => $data));
+
+
+}
+
 
 /**
  * Create a new group. And return the id_group of the new group. 

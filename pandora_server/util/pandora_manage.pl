@@ -195,6 +195,7 @@ sub help_screen{
 	help_screen_line('--apply_policy', '<policy_name>', 'Force apply a policy');
 	help_screen_line('--apply_all_policies', '', 'Force apply to all the policies');
 	help_screen_line('--add_agent_to_policy', '<agent_name> <policy_name>', 'Add an agent to a policy');
+	help_screen_line('--remove_agent_from_policy', '<policy_id> <agent_id>', 'Delete an agent to a policy');
 	help_screen_line('--delete_not_policy_modules', '', 'Delete all modules without policy from configuration file');
 	help_screen_line('--disable_policy_alerts', '<policy_name>', 'Disable all the alerts of a policy');
 	help_screen_line('--create_policy', '<policy_name> <group_name> <description>');
@@ -4101,6 +4102,19 @@ sub cli_policy_add_agent() {
 	}
 }
 
+##############################################################################
+# delete an agent to a policy
+# Related option: --remove_agent_from_policy
+##############################################################################
+
+sub cli_policy_delete_agent() {
+	my ($policy_id, $agent_id) = @ARGV[2..3];
+	
+	my $result = api_call(\%conf,'set', 'remove_agent_from_policy', $policy_id, $agent_id);
+	print "$result \n\n ";
+
+}
+
 sub cli_create_planned_downtime() {
 	my $name = @ARGV[2];
 	my @todo = @ARGV[3..21];
@@ -5835,6 +5849,10 @@ sub pandora_manage_main ($$$) {
 		elsif ($param eq '--add_agent_to_policy') {
 			param_check($ltotal, 2);
 			cli_policy_add_agent();
+		}
+		elsif ($param eq '--remove_agent_from_policy') {
+			param_check($ltotal, 2);
+			cli_policy_delete_agent();
 		}
 		elsif ($param eq '--enable_user') {
 			param_check($ltotal, 1);

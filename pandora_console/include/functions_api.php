@@ -6449,7 +6449,16 @@ function api_set_update_snmp_module_policy($id, $thrash1, $other, $thrash3) {
 			array('type' => 'string', 'data' => __('SNMP policy module updated.')));
 }
 
-
+/**
+ * Remove an agent from a policy.
+ * @param $id Id of the policy
+ * @param $id2 Id of the agent policy
+ * @param $trash1
+ * @param $trash2
+ * 
+ * Example: 
+ * api.php?op=set&op2=remove_agent_from_policy&apipass=1234&user=admin&pass=pandora&id=11&id2=2
+ */
 function api_set_remove_agent_from_policy ($id, $id2, $thrash2, $thrash3) {
 	global $config;
 

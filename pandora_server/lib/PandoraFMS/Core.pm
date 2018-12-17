@@ -3400,7 +3400,16 @@ sub pandora_evaluate_snmp_alerts ($$$$$$$$$) {
 		$alert->{'oid'} = decode_entities($alert->{'oid'});
 		my $oid = $alert->{'oid'};
 		if ($oid ne '') {
-			next if (index ($trap_oid, $oid) == -1 && index ($trap_oid_text, $oid) == -1);
+			my $term = substr($oid, -1);
+			# Strict match.
+			if ($term eq '$') {
+				chop($oid);
+				next if ($trap_oid ne $oid && $trap_oid_text ne $oid);
+			}
+			# Partial match.
+			else {
+				next if (index ($trap_oid, $oid) == -1 && index ($trap_oid_text, $oid) == -1);
+			}
 			$alert_data .= "OID: $oid ";
 		}
 

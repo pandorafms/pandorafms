@@ -2027,6 +2027,14 @@ function config_process_config () {
 		if (!isset($config["metaconsole_deploy_collection"])) {
 			config_update_value('metaconsole_deploy_collection', 0);
 		}
+
+		if (!isset($config["metaconsole_deploy_inventory_plugin"])) {
+			config_update_value('metaconsole_deploy_inventory_plugin', 0);
+		}
+
+		if (!isset($config["metaconsole_deploy_plugin_server"])) {
+			config_update_value('metaconsole_deploy_plugin_server', 0);
+		}
 	}
 
 	/* Finally, check if any value was overwritten in a form */

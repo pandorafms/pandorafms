@@ -213,6 +213,20 @@ function is_metaconsole() {
 		return false;
 }
 
+function dialog_message(message_id){
+	$(message_id).css('display', 'inline').dialog({
+		modal: true,
+		show: "blind",
+		hide: "blind",
+		buttons:{
+			"Close": function(){
+				$(this).dialog("close");
+			}
+		}
+	});
+
+}
+
 function update_button_palette_callback() {
 
 	var values = {};
@@ -223,16 +237,11 @@ function update_button_palette_callback() {
 	switch (selectedItem) {
 		case 'background':
 			if(values['width'] < 1024 || values['height'] < 768){
-				alert('Min allowed size is 1024x768');
+				dialog_message("#message_min_allowed_size");
 				return false;
 			}
-
-			if(values['width'] == 0 && values['height'] == 0) {
-				values['width'] =
-					$("#hidden-background_original_width").val();
-				values['height'] =
-					$("#hidden-background_original_height").val();
-			}
+			$("#hidden-background_width").val(values['width']);
+			$("#hidden-background_height").val(values['height']);
 			$("#background").css('width', values['width']);
 			$("#background").css('height', values['height']);
 
@@ -244,11 +253,19 @@ function update_button_palette_callback() {
 			break;
 		case 'box_item':
 			if($('input[name=width_box]').val() == ''){
-				alert('Undefined width');
+				dialog_message("#message_alert_no_width");
+				return false;
+			}
+			if (parseInt($("input[name='width_box']").val()) > parseInt($("#hidden-background_width").val())) {
+				dialog_message("#message_alert_max_width");
 				return false;
 			}
 			if($('input[name=height_box]').val() == ''){
-				alert('Undefined height');
+				dialog_message("#message_alert_no_height");
+				return false;
+			}
+			if (parseInt($("input[name='height_box']").val()) > parseInt($("#hidden-background_width").val())) {
+				dialog_message("#message_alert_max_height");
 				return false;
 			}
 
@@ -267,7 +284,7 @@ function update_button_palette_callback() {
 			break;
 		case 'group_item':
 			if((values['image'] == '' || values['image'] == 'none') && (values['label'] == '') && (values['show_statistics'] == false)){
-				alert('Undefined image');
+				dialog_message("#message_alert_no_image");
 				return false;
 			}
 
@@ -385,15 +402,31 @@ function update_button_palette_callback() {
 			break;
 		case 'static_graph':
 			if($('input[name=width]').val() == ''){
-				alert('Undefined width');
+				dialog_message("#message_alert_no_width");
+				return false;
+			}
+			if (parseInt($("input[name='width']").val()) > parseInt($("#hidden-background_width").val())) {
+				dialog_message("#message_alert_max_width");
 				return false;
 			}
 			if($('input[name=height]').val() == ''){
-				alert('Undefined height');
+				dialog_message("#message_alert_no_height");
+				return false;
+			}
+			if (parseInt($("input[name='height']").val()) > parseInt($("#hidden-background_width").val())) {
+				dialog_message("#message_alert_max_height");
+				return false;
+			}
+			if ((values['module'] == 0)) {
+				dialog_message("#message_alert_no_module");
+				return false;
+			}
+			if ((values['agent'] == '')) {
+				dialog_message("#message_alert_no_agent");
 				return false;
 			}
 			if(((values['image'] == '' || values['image'] == 'none') && (values['label'] == ''))){
-				alert('Undefined image');
+				dialog_message("#message_alert_no_image");
 				return false;
 			}
 
@@ -485,13 +518,24 @@ function update_button_palette_callback() {
 			break;
 		case 'percentile_bar':
 		case 'percentile_item':
-			if($('input[name=width_percentile]').val() == ''){
-				alert('Undefined width');
+			if($('input[name=height_percentile]').val() == ''){
+				dialog_message("#message_alert_no_height");
 				return false;
 			}
-
-			if($('input[name=height_percentile]').val() == ''){
-				alert('Undefined height');
+			if($('input[name=width_percentile]').val() == ''){
+				dialog_message("#message_alert_no_width");
+				return false;
+			}
+			if($('input[name=width_percentile]').val() >  parseInt($("#hidden-background_width").val())){
+				dialog_message("#message_alert_max_width");
+				return false;
+			}
+			if ((values['module'] == 0)) {
+				dialog_message("#message_alert_no_module");
+				return false;
+			}
+			if ((values['agent'] == '')) {
+				dialog_message("#message_alert_no_agent");
 				return false;
 			}
 
@@ -516,31 +560,42 @@ function update_button_palette_callback() {
 			if($('#dir_items').html() == 'horizontal'){
 				if(parseInt($('#text-left').val()) + (parseInt($('input[name=height_module_graph]').val() * $('#count_items').html())) > parseInt($('#background').css('width'))
 				|| parseInt($('#text-left').val()) + (parseInt($('input[name=width_module_graph]').val() * $('#count_items').html())) > parseInt($('#background').css('width'))){
-					
 					alert($('#count_items').html()+' joined graph items are wider than background');
 					return false;
-					
 				}
 			}
-			
 			if($('#dir_items').html() == 'vertical'){
 				if(parseInt($('#text-top').val()) + (parseInt($('input[name=height_module_graph]').val() * $('#count_items').html())) > parseInt($('#background').css('height'))){
 					alert($('#count_items').html()+' joined graph items are higher than background');
 					return false;
-					
 				}
 			}
-			
+			if ((values['module'] == 0)) {
+				dialog_message("#message_alert_no_module");
+				return false;
+			}
+			if ((values['agent'] == '')) {
+				dialog_message("#message_alert_no_agent");
+			return false;
+				}
 			if($('input[name=width_module_graph]').val() == ''){
-				alert('Undefined width');
+				dialog_message("#message_alert_no_width");
 				return false;
 			}
 			if($('input[name=height_module_graph]').val() == ''){
-				alert('Undefined height');
+				dialog_message("#message_alert_no_height");
+				return false;
+			}
+			if (parseInt(values['width_module_graph']) > parseInt($("#hidden-background_width").val())) {
+				dialog_message("#message_alert_max_width");
+				return false;
+			}
+			if (parseInt($('input[name=height_module_graph]').val()) >  parseInt($("#hidden-background_height").val())) {
+				dialog_message("#message_alert_max_height");
 				return false;
 			}
 			if($('#custom_graph_row').css('display') != 'none' && $("#custom_graph option:selected").html() == 'None'){
-				alert('Undefined graph');
+				dialog_message("#message_alert_no_custom_graph");
 				return false;
 			}
 		
@@ -550,12 +605,19 @@ function update_button_palette_callback() {
 			break;
 		case 'bars_graph':
 			if($('input[name=width_percentile]').val() == ''){
-				alert('Undefined width');
+				dialog_message("#message_alert_no_width");
 				return false;
 			}
-
 			if($('input[name=bars_graph_height]').val() == ''){
-				alert('Undefined height');
+				dialog_message("#message_alert_no_height");
+				return false;
+			}
+			if ((values['module'] == 0)) {
+				dialog_message("#message_alert_no_module");
+				return false;
+			}
+			if ((values['agent_string'] == '')) {
+				dialog_message("#message_alert_no_agent");
 				return false;
 			}
 		
@@ -566,6 +628,10 @@ function update_button_palette_callback() {
 			break;
 			
 		case 'clock':
+			if (parseInt(values['width_percentile']) >  parseInt($("#hidden-background_width").val())) {
+				dialog_message("#message_alert_max_width");
+				return false;
+			}
 		
 			$("#text_" + idItem).html(values['label']);
 			$("#image_" + idItem).attr("src", "images/spinner.gif");
@@ -573,12 +639,28 @@ function update_button_palette_callback() {
 			break;	
 			
 		case 'auto_sla_graph':
-			if($('input[name=width]').val() == ''){
-				alert('Undefined width');
+			if (values['height'] == '') {
+				dialog_message("#message_alert_no_height");
 				return false;
 			}
-			if($('input[name=height]').val() == ''){
-				alert('Undefined height');
+			if (parseInt(values['height']) > parseInt($("#hidden-background_height").val())) {
+				dialog_message("#message_alert_max_height");
+				return false;
+			}
+			if (values['width'] == '') {
+				dialog_message("#message_alert_no_width");
+				return false;
+			}
+			if (parseInt(values['width']) > parseInt($("#hidden-background_width").val())) {
+				dialog_message("#message_alert_max_width");
+				return false;
+			}
+			if ((values['module'] == 0)) {
+				dialog_message("#message_alert_no_module");
+				return false;
+			}
+			if ((values['agent'] == '')) {
+				dialog_message("#message_alert_no_agent");
 				return false;
 			}
 			$("#text_" + idItem).html(values['label']);
@@ -587,8 +669,19 @@ function update_button_palette_callback() {
 			setEventsBar(idItem, values);
 			break;
 		case 'donut_graph':
+			if (parseInt(values['width_percentile']) >  parseInt($("#hidden-background_width").val())) {
+				dialog_message("#message_alert_max_width");
+				return false;
+			}
+			if ((values['module'] == 0)) {
+				dialog_message("#message_alert_no_module_string_type");
+				return false;
+			}
+			if ((values['agent_string'] == '')) {
+				dialog_message("#message_alert_no_agent");
+				return false;
+			}
 			$("#image_" + idItem).attr("src", "images/spinner.gif");
-
 			setDonutsGraph(idItem, values);
 			break;
 		case 'simple_value':
@@ -606,21 +699,41 @@ function update_button_palette_callback() {
 					'<table><tbody><tr><td></td></tr><tr><td><span style="width:'+values['width_data_image']+'px;" id="text_' + idItem + '" class="text">'+values["label"]+'</span></td></tr><tr><td></td></tr></tbody></table>'
 				)
 			}
+			if ((values['module'] == 0)) {
+				dialog_message("#message_alert_no_module");
+				return false;
+			}
+			if ((values['agent'] == '')) {
+				dialog_message("#message_alert_no_agent");
+				return false;
+			}
 			break;
 		case 'label':
+			if ((values['label'] == '')) {
+				dialog_message("#message_alert_no_label");
+				return false;
+			}
 			$("#text_" + idItem).html(values['label']);
 			break;
 		case 'icon':
 			if($('input[name=width]').val() == ''){
-			alert('Undefined width');
+				dialog_message("#message_alert_no_width");
 			return false;
+			}
+			if (parseInt($('input[name=width]').val()) >  parseInt($("#hidden-background_width").val())) {
+				dialog_message("#message_alert_max_width");
+				return false;
 			}
 			if($('input[name=height]').val() == ''){
-			alert('Undefined height');
+				dialog_message("#message_alert_no_height");
 			return false;
 			}
+			if (parseInt($('input[name=height]').val()) >  parseInt($("#hidden-background_height").val())) {
+				dialog_message("#message_alert_max_height");
+				return false;
+			}
 			if(values['image'] == '' || values['image'] == 'none'){
-			alert('Undefined image');
+				dialog_message("#message_alert_no_image");
 			return false;
 			}
 			$("#image_" + idItem).attr('src', "images/spinner.gif");
@@ -653,14 +766,56 @@ function update_button_palette_callback() {
 			var image = values['image'] + ".png";
 			set_image("image", idItem, image);
 			break;
+			case 'line_item':
+			if (parseInt(values['line_width']) >  parseInt($("#hidden-background_width").val())) {
+				dialog_message("#message_alert_max_width");
+				return false;
+			}
+			break;
+			case 'color_cloud':
+			if (parseInt(values['diameter']) >  parseInt($("#hidden-background_height").val())) {
+				dialog_message("#message_alert_max_height");
+				return false;
+			}
+			if ((values['module'] == 0)) {
+				dialog_message("#message_alert_no_module");
+				return false;
+			}
+			if ((values['agent'] == '')) {
+				dialog_message("#message_alert_no_agent");
+				return false;
+			}
+			break;
+			case 'service':
+				if (values['height'] == '' || values['height_module_graph'] == 0) {
+					dialog_message("#message_alert_no_height");
+					return false;
+				}
+				if (parseInt(values['height']) > parseInt($("#hidden-background_height").val())) {
+					dialog_message("#message_alert_max_height");
+					return false;
+				}
+				if (values['width'] == '' || values['width_module_graph'] == 0) {
+					dialog_message("#message_alert_no_width");
+					return false;
+				}
+				if (parseInt(values['width']) >  parseInt($("#hidden-background_width").val())) {
+					dialog_message("#message_alert_max_width");
+					return false;
+				}
+				if($("select[name=service]").val() == '' || $("select[name=service]").val() == 'none'){
+					dialog_message("#message_alert_no_service");
+					return false;
+				}
+				break;
 		default:
 		if($('input[name=width]').val() == ''){
-		alert('Undefined width');
-		return false;
+			dialog_message("#message_alert_no_width");
+			return false;
 		}
 		if($('input[name=height]').val() == ''){
-		alert('Undefined height');
-		return false;
+			dialog_message("#message_alert_no_height");
+			return false;
 		}
 			//Maybe save in any Enterprise item.
 			if (typeof(enterprise_update_button_palette_callback) == 'function') {
@@ -860,144 +1015,288 @@ function create_button_palette_callback() {
 	var validate = true;
 	switch (creationItem) {
 		case 'box_item':
-			if (($("input[name='width_box']").val() == '')) {
-				alert('Undefined width');
+			if ($("input[name='width_box']").val() == '') {
+				dialog_message("#message_alert_no_width");
 				validate = false;
 			}
-			if (($("input[name='height_box']").val() == '')) {
-				alert('Undefined height');
+			if (parseInt($("input[name='width_box']").val()) > parseInt($("#hidden-background_width").val())) {
+				dialog_message("#message_alert_max_width");
+				validate = false;
+			}
+			if ($("input[name='height_box']").val() == '') {
+				dialog_message("#message_alert_no_height");
+				validate = false;
+			}
+			if(parseInt($("input[name='height_box']").val()) > parseInt($("#hidden-background_height").val())) {
+				dialog_message("#message_alert_max_height");
 				validate = false;
 			}
 			break;
 		case 'group_item':
+			if (values['height'] == '') {
+				dialog_message("#message_alert_no_height");
+				validate = false;
+			}
+			if (parseInt(values['height']) > parseInt($("#hidden-background_height").val())) {
+				dialog_message("#message_alert_max_height");
+				validate = false;
+			}
+			if (values['width'] == '') {
+				dialog_message("#message_alert_no_width");
+				validate = false;
+			}
+			if (parseInt(values['width']) > parseInt($("#hidden-background_width").val())) {
+				dialog_message("#message_alert_max_width");
+				validate = false;
+			}
 			if((values['image'] == '' || values['image'] == 'none') && (values['label'] == '') && (values['show_statistics'] == false)){
-				alert('Undefined images');
+				dialog_message("#message_alert_no_image");
 				validate = false;
 			}
 			break;
 		case 'static_graph':
-			if ((values['width'] == '')) {
-				alert('Undefined width');
+	
+			if (values['height'] == '') {
+				dialog_message("#message_alert_no_height");
 				validate = false;
 			}
-			if ((values['height'] == '')) {
-				alert('Undefined height');
+			if (parseInt(values['height']) > parseInt($("#hidden-background_height").val())) {
+				dialog_message("#message_alert_max_height");
+				validate = false;
+			}
+			if (values['width'] == '') {
+				dialog_message("#message_alert_no_width");
+				validate = false;
+			}
+			if (parseInt(values['width']) > parseInt($("#hidden-background_width").val())) {
+				dialog_message("#message_alert_max_width");
+				validate = false;
+			}
+			if ((values['module'] == 0)) {
+				dialog_message("#message_alert_no_module");
+				validate = false;
+			}
+			if ((values['agent'] == '')) {
+				dialog_message("#message_alert_no_agent");
 				validate = false;
 			}
 			if((values['image'] == '' || values['image'] == 'none') && (values['label']) == false){
-				alert('Undefined image');
+				dialog_message("#message_alert_no_image");
 				validate = false;
 			}
-			
 
 			break;
 		case 'auto_sla_graph':
+
+			if (values['height'] == '') {
+				dialog_message("#message_alert_no_height");
+				validate = false;
+			}
+			if (parseInt(values['height']) > parseInt($("#hidden-background_height").val())) {
+				dialog_message("#message_alert_max_height");
+				validate = false;
+			}
+			if (values['width'] == '') {
+				dialog_message("#message_alert_no_width");
+				validate = false;
+			}
+			if (parseInt(values['width']) > parseInt($("#hidden-background_width").val())) {
+				dialog_message("#message_alert_max_width");
+				validate = false;
+			}
+			if ((values['module'] == 0)) {
+				dialog_message("#message_alert_no_module");
+				validate = false;
+			}
 			if ((values['agent'] == '')) {
-				alert($("#message_alert_no_agent").html());
+				dialog_message("#message_alert_no_agent");
 				validate = false;
 			}
 			break;
 		case 'donut_graph':
+			if (parseInt(values['width_percentile']) >  parseInt($("#hidden-background_width").val())) {
+				dialog_message("#message_alert_max_width");
+				validate = false;
+			}
+			if ((values['module'] == 0)) {
+				dialog_message("#message_alert_no_module_string_type");
+				validate = false;
+			}
 			if ((values['agent_string'] == '')) {
-				alert($("#message_alert_no_agent").html());
+				dialog_message("#message_alert_no_agent");
 				validate = false;
 			}
 			break;
 		case 'label':
 			if ((values['label'] == '')) {
-				alert($("#message_alert_no_label").html());
+				dialog_message("#message_alert_no_label");
 				validate = false;
 			}
 			break;
 		case 'icon':
 			if ((values['width'] == '')) {
-				alert('Undefined width');
+				dialog_message("#message_alert_no_width");
+				validate = false;
+			}
+			if (parseInt(values['width']) > parseInt($("#hidden-background_width").val())) {
+				dialog_message("#message_alert_max_width");
 				validate = false;
 			}
 			if ((values['height'] == '')) {
-				alert('Undefined height');
+				dialog_message("#message_alert_no_height");
+				validate = false;
+			}
+			if (parseInt(values['height']) > parseInt($("#hidden-background_height").val())) {
+				dialog_message("#message_alert_max_height");
 				validate = false;
 			}
 			if ((values['image'] == '' || values['image'] == 'none')) {
-				alert($("#message_alert_no_image").html());
+				dialog_message("#message_alert_no_image");
 				validate = false;
 			}
 			break;
 		case 'percentile_bar':
 		case 'percentile_item':
-			if ((values['width'] == '')) {
-				alert('Undefined width');
-				validate = false;
-			}
-			if ((values['agent'] == '')) {
-				alert($("#message_alert_no_agent").html());
-				validate = false;
-			}
-			if ((values['module'] == 0)) {
-				alert($("#message_alert_no_module").html());
-				validate = false;
-			}
-			if ((values['max_percentile'] == '')) {
-				alert($("#message_alert_no_max_percentile").html());
+			if (parseInt(values['width_percentile']) >  parseInt($("#hidden-background_width").val())) {
+				dialog_message("#message_alert_max_width");
 				validate = false;
 			}
 			if ((values['width_percentile'] == '')) {
-				alert($("#message_alert_no_width_percentile").html());
+				dialog_message("#message_alert_no_width");
 				validate = false;
 			}
+			if ((values['module'] == 0)) {
+				dialog_message("#message_alert_no_module");
+				validate = false;
+			}
+			if ((values['agent'] == '')) {
+				dialog_message("#message_alert_no_agent");
+				validate = false;
+			}
+		
+			if ((values['max_percentile'] == '')) {
+				dialog_message("#message_alert_no_max_percentile");
+				validate = false;
+			}
+		
 			break;
 		case 'module_graph':
-			if (values['width_module_graph'] == '') {
-				alert('Undefined width');
-				validate = false;
-			}
-			if (values['height_module_graph'] == '') {
-				alert('Undefined height');
+			if ((values['module'] == 0)) {
+				dialog_message("#message_alert_no_module");
 				validate = false;
 			}
 			if (values['id_custom_graph'] == 0) {
 				if ((values['agent'] == '')) {
-					alert($("#message_alert_no_agent").html());
-					validate = false;
-				}
-				if ((values['module'] == 0)) {
-					alert($("#message_alert_no_module").html());
+					dialog_message("#message_alert_no_agent");
 					validate = false;
 				}
 				if ((values['period'] == 0)) {
-					alert($("#message_alert_no_period").html());
+					dialog_message("#message_alert_no_period");
 					validate = false;
 				}
 			}
-			break;
-		case 'bars_graph':
-			if ((values['agent_string'] == '')) {
-				alert($("#message_alert_no_agent").html());
+			if (values['height_module_graph'] == '' || values['height_module_graph'] == 0) {
+				dialog_message("#message_alert_no_height");
 				validate = false;
 			}
-			if ((values['module'] == 0)) {
-				alert($("#message_alert_no_module").html());
+			if (parseInt(values['height_module_graph']) > parseInt($("#hidden-background_height").val())) {
+				dialog_message("#message_alert_max_height");
+				validate = false;
+			}
+			if (values['width_module_graph'] == '' || values['width_module_graph'] == 0) {
+				dialog_message("#message_alert_no_width");
+				validate = false;
+			}
+			if (parseInt(values['width_module_graph']) >  parseInt($("#hidden-background_width").val())) {
+				dialog_message("#message_alert_max_width");
+				validate = false;
+			}
+			break;
+		case 'bars_graph':
+			if ((values['bars_graph_height'] == '')) {
+				dialog_message("#message_alert_no_height");
+				validate = false;
+			}
+			if (parseInt(values['bars_graph_height']) > parseInt($("#hidden-background_height").val())) {
+				dialog_message("#message_alert_max_height");
 				validate = false;
 			}
 			if ((values['width_percentile'] == '')) {
-				alert($("#message_alert_no_width_percentile").html());
+				dialog_message("#message_alert_no_width");
 				validate = false;
 			}
-			if ((values['bars_graph_height'] == '')) {
-				alert($("#message_alert_no_bars_graph_height").html());
+			if (parseInt(values['width_percentile']) >  parseInt($("#hidden-background_width").val())) {
+				dialog_message("#message_alert_max_width");
+				validate = false;
+			}
+			if ((values['module'] == 0)) {
+				dialog_message("#message_alert_no_module");
+				validate = false;
+			}
+			if ((values['agent_string'] == '')) {
+				dialog_message("#message_alert_no_agent");
 				validate = false;
 			}
 			break;
 		case 'simple_value':
-			if ((values['agent'] == '')) {
-				alert($("#message_alert_no_agent").html());
+			if ((values['module'] == 0)) {
+				dialog_message("#message_alert_no_module");
 				validate = false;
 			}
-			if ((values['module'] == 0)) {
-				alert($("#message_alert_no_module").html());
+			if ((values['agent'] == '')) {
+				dialog_message("#message_alert_no_agent");
 				validate = false;
 			}
 			break;
+		case 'clock':
+			if (parseInt(values['width_percentile']) >  parseInt($("#hidden-background_width").val())) {
+				dialog_message("#message_alert_max_width");
+				validate = false;
+			}
+			break;
+			case 'line_item':
+			if (parseInt(values['line_width']) >  parseInt($("#hidden-background_width").val())) {
+				dialog_message("#message_alert_max_width");
+				validate = false;
+			}
+			break;
+			case 'color_cloud':
+			if (parseInt(values['diameter']) >  parseInt($("#hidden-background_height").val())) {
+				dialog_message("#message_alert_max_height");
+				validate = false;
+			}
+			if ((values['module'] == 0)) {
+				dialog_message("#message_alert_no_module");
+				validate = false;
+			}
+			if ((values['agent'] == '')) {
+				dialog_message("#message_alert_no_agent");
+				validate = false;
+			}
+			break;
+		case 'service':
+			if (values['height'] == '' || values['height_module_graph'] == 0) {
+				dialog_message("#message_alert_no_height");
+				validate = false;
+			}
+			if (parseInt(values['height']) > parseInt($("#hidden-background_height").val())) {
+				dialog_message("#message_alert_max_height");
+				validate = false;
+			}
+			if (values['width'] == '' || values['width_module_graph'] == 0) {
+				dialog_message("#message_alert_no_width");
+				validate = false;
+			}
+			if (parseInt(values['width']) >  parseInt($("#hidden-background_width").val())) {
+				dialog_message("#message_alert_max_width");
+				validate = false;
+			}
+			if($("select[name=service]").val() == '' || $("select[name=service]").val() == 'none'){
+				dialog_message("#message_alert_no_service");
+				validate = false;
+			}
+			break;
+
 		default:
 			//Maybe save in any Enterprise item.
 			if (typeof(enterprise_create_button_palette_callback) == 'function') {
@@ -3603,7 +3902,6 @@ function createItem(type, values, id_data) {
 		case 'clock':
 			sizeStyle = '';
 			imageSize = '';
-
 			if(values['label_position'] == 'up'){
 				item = $('<div id="' + id_data + '" class="item clock" style="text-align: left; position: absolute; ' + sizeStyle + ' top: ' + values['top'] + 'px; left: ' + values['left'] + 'px;">' +
 						'<table><tr><td></td></tr><tr><td><span id="text_' + id_data + '" class="text">' + values['label'] + '</span></td></tr><tr><td></td></tr></table>' +

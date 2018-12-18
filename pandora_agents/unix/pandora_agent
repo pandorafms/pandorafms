@@ -2397,6 +2397,7 @@ sub check_module_cron {
 		$interval
 	);
 
+    my $is_first = ($module->{'cron_utimestamp'} == 0) ? 1 : 
 	$module->{'cron_utimestamp'} = $now + $time_to_next_execution;
 	$module->{'cron_interval'} = $time_to_next_execution;
 	
@@ -2405,7 +2406,7 @@ sub check_module_cron {
 	}
 
 	# On first execution checking if cron is valid is required
-	return 1 unless ($module->{'cron_utimestamp'} == 0);
+	return 1 unless ($is_first);
 
 	# Check if current timestamp is a valid cron date
 	my $next_execution = cron_next_execution_date(

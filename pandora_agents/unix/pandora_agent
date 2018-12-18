@@ -2397,7 +2397,7 @@ sub check_module_cron {
 		$interval
 	);
 
-    my $is_first = ($module->{'cron_utimestamp'} == 0) ? 1 : 
+	my $is_first = ($module->{'cron_utimestamp'} == 0) ? 1 : 0;
 	$module->{'cron_utimestamp'} = $now + $time_to_next_execution;
 	$module->{'cron_interval'} = $time_to_next_execution;
 	

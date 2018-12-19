@@ -16,6 +16,8 @@
 
 global $config;
 
+include_once($config['homedir'] . "/include/functions_event_responses.php");
+
 check_login ();
 
 if (! check_acl($config['id_user'], 0, "PM")) {
@@ -25,14 +27,7 @@ if (! check_acl($config['id_user'], 0, "PM")) {
 	return;
 }
 
-if (!is_user_admin($config['id_user'])) {
-	$id_groups = array_keys(users_get_groups(false, "PM"));
-	$event_responses = db_get_all_rows_filter('tevent_response',
-		array('id_group' => $id_groups));
-}
-else {
-	$event_responses = db_get_all_rows_in_table('tevent_response');
-}
+$event_responses = event_responses_get_responses();
 
 if(empty($event_responses)) {
 	ui_print_info_message ( array('no_close'=>true, 'message'=>  __('No responses found') ) );

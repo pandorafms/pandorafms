@@ -111,7 +111,7 @@ else {
 	$table->align[1] = "left";
 	$table->align[2] = "left";
 	$table->align[3] = "left";
-	$table->align[4] = "left";
+	$table->align[4] = "right";
 	
 	$table->size[0] = "20px";
 	$table->size[1] = "100px";

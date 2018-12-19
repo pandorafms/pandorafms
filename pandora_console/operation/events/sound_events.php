@@ -13,14 +13,8 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
-// Real start
-session_start ();
-
-// Load global vars
-if ((! file_exists("../../include/config.php")) || (! is_readable("../../include/config.php"))) {
-	exit;
-}
-
+// Don't start a session before this import.
+// The session is configured and started inside the config process.
 require_once ('../../include/config.php');
 require_once ('../../include/functions.php');
 require_once ('../../include/functions_db.php');

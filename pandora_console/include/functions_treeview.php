@@ -486,16 +486,22 @@ function treeview_printTable($id_agente, $server_data = array(), $no_head = fals
 	if ($agent == false) return;
 
 	// Check all groups
-	$groups = agents_get_all_groups_agent($id_agente, $agent["id_grupo"], is_metaconsole());
+	$groups = agents_get_all_groups_agent($id_agente, $agent["id_grupo"]);
 	if (! check_acl_one_of_groups ($config["id_user"], $groups, "AR") && ! check_acl_one_of_groups ($config["id_user"], $groups, "AW") && !$is_extra) {
 		db_pandora_audit("ACL Violation",
 			"Trying to access Agent General Information");
 		require_once ("general/noaccess.php");
+		if (!empty($server_data) && is_metaconsole()) {
+			metaconsole_restore_db();
+		}
 		return;
 	}
 		
 	if ($agent === false) {
 		ui_print_error_message(__('There was a problem loading agent'));
+		if (!empty($server_data) && is_metaconsole()) {
+			metaconsole_restore_db();
+		}
 		return;
 	}
 
@@ -524,7 +530,7 @@ function treeview_printTable($id_agente, $server_data = array(), $no_head = fals
 		$hashdata = $user.$pwd_deserialiced['auth_token'];
 		
 		$hashdata = md5($hashdata);
-		$url = "//" . $server_data["server_url"] . "/index.php?" .
+		$url = $server_data["server_url"] . "/index.php?" .
 				"sec=estado&" .
 				"sec2=operation/agentes/ver_agente&" .
 				"id_agente=" . $agent["id_agente"] . "&" .
@@ -610,7 +616,7 @@ function treeview_printTable($id_agente, $server_data = array(), $no_head = fals
 		$go_to_agent = '<div style="text-align: right;">';
 		
 		if($agent["id_os"] != 100){
-			$go_to_agent .= '<a target=_blank href="' . "//" . $console_url . 'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.$url_hash.'">';
+			$go_to_agent .= '<a target=_blank href="' . $console_url . 'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.$url_hash.'">';
 			$go_to_agent .= html_print_submit_button (__('Go to agent edition'), 'upd_button', false, 'class="sub config"', true);
 		}
 		else{
@@ -708,20 +714,15 @@ function treeview_printTable($id_agente, $server_data = array(), $no_head = fals
 
 	ui_toggle($table_advanced, __('Advanced information'));
 
-	// Blank space below title, DONT remove this, this
-	// Breaks the layout when Flash charts are enabled :-o
-	//echo '<div id="id_div" style="height: 10px">&nbsp;</div>';
-
 	if ($config["agentaccess"]) {
 		$access_graph = '<div style="width:100%; height:130px;">';
-		$access_graph .= graphic_agentaccess($id_agente, 380, 120, SECONDS_1DAY, true, true);
+		$access_graph .= graphic_agentaccess ($id_agente, 380, 120, SECONDS_1DAY, true, true);
 		$access_graph .= '</div>';
 		ui_toggle($access_graph, __('Agent access rate (24h)'));
 	}
 
-	$events_graph = '<div style="margin-left: 10px;">';
-	$events_graph .= graph_graphic_agentevents ($id_agente, 290, 15,
-		SECONDS_1DAY, '', true);
+	$events_graph = '<div style="margin-left:10px; width:100%;">';
+	$events_graph .= graph_graphic_agentevents ($id_agente, 375, 45, SECONDS_1DAY, '', true, false, true);
 	$events_graph .= '</div><br>';
 
 	ui_toggle($events_graph, __('Events (24h)'));

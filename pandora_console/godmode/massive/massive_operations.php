@@ -32,6 +32,7 @@ enterprise_include ('godmode/massive/massive_operations.php');
 $tab = (string) get_parameter ('tab', 'massive_agents');
 $option = (string) get_parameter ('option', '');
 
+
 $options_alerts = array(
 	'add_alerts' => __('Bulk alert add'),
 	'delete_alerts' => __('Bulk alert delete'), 
@@ -222,6 +223,11 @@ if ((get_cfg_var("max_execution_time") != 0)
 	echo '<div id="notify_conf" class="notify">';
 	echo __("In order to perform massive operations, PHP needs a correct configuration in timeout parameters. Please, open your PHP configuration file (php.ini) for example: <i>sudo vi /etc/php5/apache2/php.ini;</i><br> And set your timeout parameters to a correct value: <br><i> max_execution_time = 0</i> and <i>max_input_time = -1</i>");
 	echo '</div>';
+}
+
+if ($tab == 'massive_policies' && is_central_policies_on_node()){
+	ui_print_warning_message(__('This node is configured with centralized mode. All policies information is read only. Go to metaconsole to manage it.'));
+	return;
 }
 
 // Catch all submit operations in this view to display Wait banner

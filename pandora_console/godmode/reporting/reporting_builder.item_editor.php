@@ -1574,7 +1574,8 @@ You can of course remove the warnings, that's why we include the source and do n
 		
 		<tr id="row_historical_db_check" style="" class="datos">
 			<td style="font-weight:bold;">
-				<?php echo __('Query History Database'); ?>
+				<?php echo __('Query History Database')
+					. ui_print_help_tip(__('With the token enabled the query will affect the Historical Database, which may mean a small drop in performance.'), true); ?>
 			</td>
 			<td style="">
 				<?php
@@ -1612,16 +1613,6 @@ You can of course remove the warnings, that's why we include the source and do n
 				<?php
 				html_print_checkbox('show_in_landscape', 1,
 					$show_in_landscape, false, false);
-				?>
-			</td>
-		</tr>
-		
-		<tr id="row_hide_notinit_agents" style="" class="datos">
-			<td style="font-weight:bold;"><?php echo __('Hide not init agents');?></td>
-			<td>
-				<?php
-				html_print_checkbox('hide_notinit_agents', 1,
-					$hide_notinit_agents, false, false);
 				?>
 			</td>
 		</tr>

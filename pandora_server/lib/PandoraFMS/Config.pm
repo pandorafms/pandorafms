@@ -44,8 +44,8 @@ our @EXPORT = qw(
 	);
 
 # version: Defines actual version of Pandora Server for this module only
-my $pandora_version = "7.0NG.728";
-my $pandora_build = "181030";
+my $pandora_version = "7.0NG.730";
+my $pandora_build = "181217";
 our $VERSION = $pandora_version." ".$pandora_build;
 
 # Setup hash
@@ -507,7 +507,7 @@ sub pandora_load_config {
 	}
 
 	# Collect items from config file and put in an array 
-	if (! open (CFG, "< $archivo_cfg")) {
+	if (! open (CFG, "<:encoding(UTF-8)", $archivo_cfg)) {
 		print "[ERROR] Error opening configuration file $archivo_cfg: $!.\n";
 		exit 1;
 	}

@@ -1473,16 +1473,6 @@ switch ($action) {
 							$values['server_name'] = get_parameter ('combo_server');
 						
 						
-						if (is_metaconsole()) {
-							// For SQL Query check if it is setted in the meta
-							if ($values['type'] == "sql") {
-								if (empty($values['server_name'])) {
-									$good_format = false;
-								}
-							}
-						}
-						
-						
 						$values['id_agent'] = get_parameter('id_agent');
 						$values['id_gs'] = get_parameter('id_custom_graph');
 						if (($values['type'] == 'alert_report_agent') or ($values['type'] == 'event_report_agent') or ($values['type'] == 'agent_configuration') or ($values['type'] == 'group_configuration'))

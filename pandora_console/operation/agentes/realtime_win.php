@@ -13,13 +13,8 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
-
-if (! isset($_SESSION['id_usuario'])) {
-	session_start();
-	//session_write_close();
-}
-
-// Global & session management
+// Don't start a session before this import.
+// The session is configured and started inside the config process.
 require_once ('../../include/config.php');
 require_once ($config['homedir'] . '/include/auth/mysql.php');
 require_once ($config['homedir'] . '/include/functions.php');

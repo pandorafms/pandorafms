@@ -204,7 +204,7 @@
 
 				$form
 					.prop('method', 'POST')
-					.prop('action', plot.getOptions().export.homeurl + '/include/graphs/export_data.php')
+					.prop('action', plot.getOptions().export.homeurl + 'include/graphs/export_data.php')
 					.append($dataInput, $typeInput, $separatorInput, $excelInput)
 					.hide()
 					// Firefox made me write into the DOM for this :(
@@ -394,7 +394,7 @@
 
 				$form
 					.prop('method', 'POST')
-					.prop('action', plot.getOptions().export.homeurl + '/include/graphs/export_data.php')
+					.prop('action', plot.getOptions().export.homeurl + 'include/graphs/export_data.php')
 					.append($dataInput, $typeInput, $separatorInput, $excelInput)
 					.hide()
 					// Firefox made me write into the DOM for this :(

@@ -1845,9 +1845,9 @@ function get_group_alerts($id_group, $filter = '', $options = false,
 		}
 	}
 	
-	$selectText = 'talert_template_modules.*, t2.nombre AS agent_module_name, t3.alias AS agent_name, t4.name AS template_name';
+	$selectText = 'DISTINCT talert_template_modules.*, t2.nombre AS agent_module_name, t3.alias AS agent_name, t4.name AS template_name';
 	if ($count !== false) {
-		$selectText = 'COUNT(talert_template_modules.id) AS count';
+		$selectText = 'COUNT(DISTINCT talert_template_modules.id) AS count';
 	}
 	
 	$sql = sprintf ("SELECT %s
@@ -1871,7 +1871,7 @@ function get_group_alerts($id_group, $filter = '', $options = false,
 		return $alerts[0]['count'];
 	}
 	else {
-		return $alerts;	
+		return $alerts;
 	}
 }
 

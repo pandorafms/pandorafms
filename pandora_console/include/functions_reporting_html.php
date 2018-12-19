@@ -2466,61 +2466,57 @@ function reporting_html_availability_graph(&$table, $item, $pdf=0) {
 			$sla_value = sla_truncate($chart['sla_value'], $config['graph_precision']) . '%';
 			$checks_resume = "(" . $chart['checks_ok'] . "/" . $chart['checks_total'] . ")";
 		}
-		$table1->data[] = array(
-			$chart['agent'] . "<br />" . $chart['module'],
-			$chart['chart'],
-			"<span style = 'font: bold 2em Arial, Sans-serif; color: ".$color."'>" .
-				$sla_value .
-			'</span>',
-			$checks_resume
-		);
+
+		$table1->data[0][0] = $chart['agent'] . "<br />" . $chart['module'];
+		$table1->data[0][1] = $chart['chart'];
+		$table1->data[0][2] = "<span style = 'font: bold 2em Arial, Sans-serif; color: ".$color."'>" . $sla_value . '</span>';
+		$table1->data[0][3] = $checks_resume;
 	}
 
 	if($item['type'] == 'availability_graph'){
+		//table_legend_graphs;
+		$table2 = new stdClass();
+		$table2->width = '99%';
+		$table2->data = array ();
+		$table2->size = array ();
+		$table2->size[0] = '2%';
+		$table2->data[0][0] = '<img src ="'. $src .'images/square_green.png">';
+		$table2->size[1] = '14%';
+		$table2->data[0][1] = '<span>'.__('OK') . '</span>';
 
-	//table_legend_graphs;
-	$table2 = new stdClass();
-	$table2->width = '99%';
-	$table2->data = array ();
-	$table2->size = array ();
-	$table2->size[0] = '2%';
-	$table2->data[0][0] = '<img src ="'. $src .'images/square_green.png">';
-	$table2->size[1] = '14%';
-	$table2->data[0][1] = '<span>'.__('OK') . '</span>';
+		$table2->size[2] = '2%';
+		$table2->data[0][2] = '<img src ="'. $src .'images/square_red.png">';
+		$table2->size[3] = '14%';
+		$table2->data[0][3] = '<span>'.__('Critical'). '</span>';
 
-	$table2->size[2] = '2%';
-	$table2->data[0][2] = '<img src ="'. $src .'images/square_red.png">';
-	$table2->size[3] = '14%';
-	$table2->data[0][3] = '<span>'.__('Critical'). '</span>';
+		$table2->size[4] = '2%';
+		$table2->data[0][4] = '<img src ="'. $src .'images/square_gray.png">';
+		$table2->size[5] = '14%';
+		$table2->data[0][5] = '<span>'.__('Unknow'). '</span>';
 
-	$table2->size[4] = '2%';
-	$table2->data[0][4] = '<img src ="'. $src .'images/square_gray.png">';
-	$table2->size[5] = '14%';
-	$table2->data[0][5] = '<span>'.__('Unknow'). '</span>';
+		$table2->size[6] = '2%';
+		$table2->data[0][6] = '<img src ="'. $src .'images/square_blue.png">';
+		$table2->size[7] = '14%';
+		$table2->data[0][7] = '<span>'.__('Not Init'). '</span>';
 
-	$table2->size[6] = '2%';
-	$table2->data[0][6] = '<img src ="'. $src .'images/square_blue.png">';
-	$table2->size[7] = '14%';
-	$table2->data[0][7] = '<span>'.__('Not Init'). '</span>';
+		$table2->size[8] = '2%';
+		$table2->data[0][8] = '<img src ="'. $src .'images/square_violet.png">';
+		$table2->size[9] = '14%';
+		$table2->data[0][9] = '<span>'.__('Downtimes'). '</span>';
 
-	$table2->size[8] = '2%';
-	$table2->data[0][8] = '<img src ="'. $src .'images/square_violet.png">';
-	$table2->size[9] = '14%';
-	$table2->data[0][9] = '<span>'.__('Downtimes'). '</span>';
-
-	$table2->size[10] = '2%';
-	$table2->data[0][10] = '<img src ="'. $src .'images/square_light_gray.png">';
-	$table2->size[11] = '15%';
-	$table2->data[0][11] = '<span>'.__('Ignore time'). '</span>';
-
+		$table2->size[10] = '2%';
+		$table2->data[0][10] = '<img src ="'. $src .'images/square_light_gray.png">';
+		$table2->size[11] = '15%';
+		$table2->data[0][11] = '<span>'.__('Ignore time'). '</span>';
 	}
 
 	$table->colspan['charts']['cell'] = 2;
 	$table->data['charts']['cell'] = html_print_table($table1, true);
 	$table->colspan['legend']['cell'] = 2;
 	$table->data['legend']['cell'] = html_print_table($table2, true);
+
 	if($pdf){
-		return html_print_table($table, true);
+		return html_print_table($table1, true) . '<br />' . html_print_table($table2, true);
 	}
 }
 
@@ -3640,7 +3636,9 @@ function reporting_get_event_histogram ($events, $text_header_event = false) {
 			0,
 			array(),
 			true,
-			$ttl
+			$ttl,
+			false,
+			false
 		);
 
 		$table->data[0][0] = $slicebar;
@@ -3823,7 +3821,9 @@ function reporting_get_event_histogram_meta ($width) {
 			0,
 			$full_legend_date,
 			true,
-			1
+			1,
+			false,
+			false
 		);
 
 		$table->data[0][0] = $slicebar;

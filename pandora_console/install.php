@@ -33,6 +33,9 @@
 	<script type="text/javascript">
 		options_text = new Array('An existing Database','A new Database');
 		options_values = new Array('db_exist','db_new');
+
+		var userHasConfirmed = false;
+
 		function ChangeDBDrop(causer) {
 			if (causer.value != 'db_exist') {
 				window.document.step2_form.drop.checked = 0;
@@ -66,12 +69,54 @@
 				document.getElementById('tr_dbgrant').style["display"] = "none";
 			}
 		}
+		function popupShow(){
+			document.getElementsByTagName('body')[0].style["margin"] = "0";
+			document.getElementById('install_container').style["padding-top"] = "45px";
+			document.getElementById('install_container').style["margin-top"] = "0";
+			document.getElementById('add-lightbox').style["visibility"] = "visible";
+			document.getElementById('open_popup').style["display"] = "block";
+			document.getElementById('open_popup').style["visibility"] = "visible";
+		}
+		function popupClose(){
+			document.getElementById('add-lightbox').style["visibility"] = "hidden";
+			document.getElementById('open_popup').style["display"] = "none";
+			document.getElementById('open_popup').style["visibility"] = "hidden";
+		}
+		function handleConfirmClick (event) {
+			userHasConfirmed = true;
+			var step3_form = document.getElementsByName('step2_form')[0];
+			step3_form.submit();
+		}
+		function handleStep3FormSubmit (event) {
+			var dbOverride = document.getElementById("drop").checked;
+			if (dbOverride && !userHasConfirmed) {
+				event.preventDefault();
+				popupShow();
+				return false;
+			}
+		}
 	</script>
 	<body>
+		<div id='add-lightbox' onclick='popupClose();' class='popup-lightbox'></div>
+		<div id='open_popup' class='popup' style='visibility:hidden;display: block;'>
+			<div class='popup-title'>
+				<span id='title_popup'>Warning</span>
+				<a href='#' onclick='popupClose();'><img src='./images/icono_cerrar.png' alt='close' title='Close' style='float:right;'/></a>
+			</div>
+			<div class='popup-inner' style='padding: 20px 40px;'>
+			<?php 
+				echo "<p><strong>Attention</strong>, you are going to <strong>overwrite the data</strong> of your current installation.</p><p>This means that if you do not have a backup <strong>you will irremissibly LOSE ALL THE STORED DATA</strong>, the configuration and everything relevant to your installation.</p><p><strong>Are you sure of what you are going to do?</strong></p>"; 
+				echo "<div style='text-align:right;';>";
+				echo "<button type='button' class='btn_install_next' onclick='javascript:handleConfirmClick();'><span class='btn_install_next_text'>Yes, I'm sure I want to delete everything</span></button>";
+				echo "<button type='button' class='btn_install_next popup-button-green' onclick='javascript:popupClose();'><span class='btn_install_next_text'>Cancel</span></button>";
+				echo "</div>";
+			?>
+			</div>
+		</div>
 		<div style='height: 10px'>
 			<?php
-$version = '7.0NG.729';
-$build = '181120';
+$version = '7.0NG.730';
+$build = '181219';
 			$banner = "v$version Build $build";
 			
 			error_reporting(0);
@@ -343,7 +388,7 @@ function adjust_paths_for_freebsd($engine, $connection = false) {
 
 function install_step1() {
 	global $banner;
-	
+
 	echo "
 	<div id='install_container'>
 	<div id='wizard'>
@@ -608,7 +653,7 @@ function install_step3() {
 
 		
 	echo	"   <td valign=top>Drop Database if exists<br>
-			        <input class='login' type='checkbox' name='drop' value=1>
+			        <input class='login' type='checkbox' name='drop' id='drop' value=1>
 			    </td>";
 				
 	echo		"<td>Full path to HTTP publication directory<br>
@@ -618,14 +663,7 @@ function install_step3() {
 				value='".dirname (__FILE__)."'>
 				
 				<tr>";
-	if ($_SERVER['SERVER_ADDR'] == 'localhost' || $_SERVER['SERVER_ADDR'] == '127.0.0.1') {
-		echo "<td valign=top>
-				Drop Database if exists<br>
-				<input class='login' type='checkbox' name='drop' value=1>
-				"; 
-	} else {
-		echo "<td>";
-	}
+	echo "<td>";
 	echo		"<td>URL path to Pandora FMS Console<br>
 				<span style='font-size: 9px'>For example '/pandora_console'</span>
 				</br>
@@ -637,8 +675,14 @@ function install_step3() {
 	if (!$error) {
 		echo "<div style='text-align:right; width:100%;'>";
 		echo "<a id='step4' href='install.php?step=4'>
-				<button class='btn_install_next' type='submit'><span class='btn_install_next_text'>Next</span></button></a>";
+					<button class='btn_install_next' type='submit' id='step4button'><span class='btn_install_next_text'>Next</span></button></a>";
 		echo "</div>";
+		?>
+		<script type="text/javascript">
+			var step3_form = document.getElementsByName('step2_form')[0];
+			step3_form.addEventListener("submit", handleStep3FormSubmit);
+		</script>
+		<?php
 	}
 
 	echo "</div>";

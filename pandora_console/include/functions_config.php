@@ -2027,6 +2027,14 @@ function config_process_config () {
 		if (!isset($config["metaconsole_deploy_collection"])) {
 			config_update_value('metaconsole_deploy_collection', 0);
 		}
+
+		if (!isset($config["metaconsole_deploy_inventory_plugin"])) {
+			config_update_value('metaconsole_deploy_inventory_plugin', 0);
+		}
+
+		if (!isset($config["metaconsole_deploy_plugin_server"])) {
+			config_update_value('metaconsole_deploy_plugin_server', 0);
+		}
 	}
 
 	/* Finally, check if any value was overwritten in a form */
@@ -2329,11 +2337,7 @@ function config_prepare_session() {
 	else
 		$sessionCookieExpireTime *= 60;
 
-	@ini_set('session.gc_maxlifetime', $sessionCookieExpireTime);
-	@session_set_cookie_params ($sessionCookieExpireTime);
-
 	// Reset the expiration time upon page load //session_name() is default name of session PHPSESSID
-
 	if (isset($_COOKIE[session_name()]))
 		setcookie(session_name(), $_COOKIE[session_name()], time() + $sessionCookieExpireTime, "/");
 

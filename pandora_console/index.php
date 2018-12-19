@@ -105,10 +105,9 @@ if ((! file_exists ("include/config.php")) || (! is_readable ("include/config.ph
 	exit;
 }
 
-// Real start
-if(session_id() == '') {
-	session_start ();
-}
+//////////////////////////////////////
+//// PLEASE DO NOT CHANGE ORDER //////
+//////////////////////////////////////
 require_once ("include/config.php");
 require_once ("include/functions_config.php");
 
@@ -121,11 +120,13 @@ if (isset($config["error"])) {
 // If metaconsole activated, redirect to it
 if ($config['metaconsole'] == 1 && $config['enterprise_installed'] == 1) {
 	header ("Location: " . $config['homeurl'] . "enterprise/meta");
+	exit; //Always exit after sending location headers
 }
 
 if (file_exists (ENTERPRISE_DIR . "/include/functions_login.php")) {
 	include_once (ENTERPRISE_DIR . "/include/functions_login.php");
 }
+////////////////////////////////////////
 
 if (!empty ($config["https"]) && empty ($_SERVER['HTTPS'])) {
 	$query = '';
@@ -359,7 +360,7 @@ if (! isset ($config['id_user'])) {
 				
 				if ($blocked) {
 					require_once ('general/login_page.php');
-					db_pandora_audit("Password expired", "Password expired: ".io_safe_output($nick), io_safe_output($nick));
+					db_pandora_audit("Password expired", "Password expired: ".$nick, $nick);
 					while (@ob_end_flush ());
 					exit ("</html>");
 				}
@@ -382,7 +383,7 @@ if (! isset ($config['id_user'])) {
 			
 			require_once ('general/login_page.php');
 			db_pandora_audit("Password expired",
-				"Password expired: " . io_safe_output($nick), $nick);
+				"Password expired: " . $nick, $nick);
 			while (@ob_end_flush ());
 			exit ("</html>");
 		}
@@ -540,20 +541,20 @@ if (! isset ($config['id_user'])) {
 			if ((!is_user_admin($nick) || $config['enable_pass_policy_admin']) && file_exists (ENTERPRISE_DIR . "/load_enterprise.php")) {
 				$blocked = login_check_blocked($nick);
 			}
-			$nick_usable = io_safe_output($nick);
+			
 			if (!$blocked) {
 				if (file_exists (ENTERPRISE_DIR . "/load_enterprise.php")) {
 					login_check_failed($nick); //Checks failed attempts
 				}
 				$login_failed = true;
 				require_once ('general/login_page.php');
-				db_pandora_audit("Logon Failed", "Invalid login: ".$nick_usable, $nick_usable);
+				db_pandora_audit("Logon Failed", "Invalid login: ".$nick, $nick);
 				while (@ob_end_flush ());
 				exit ("</html>");
 			}
 			else {
 				require_once ('general/login_page.php');
-				db_pandora_audit("Logon Failed", "Invalid login: ".$nick_usable, $nick_usable);
+				db_pandora_audit("Logon Failed", "Invalid login: ".$nick, $nick);
 				while (@ob_end_flush ());
 				exit ("</html>");
 			}
@@ -562,11 +563,13 @@ if (! isset ($config['id_user'])) {
 		$query_params_redirect = $_GET;
 		// Visual console do not want sec2
 		if($home_page == 'Visual console') unset($query_params_redirect["sec2"]);
-		$redirect_url = '?1=1';
+		$redirect_url = '?logged=1';
 		foreach ($query_params_redirect as $key => $value) {
+			if ($key == "login") continue;
 			$redirect_url .= '&'.safe_url_extraclean($key).'='.safe_url_extraclean($value);
 		}
 		header("Location: ".$config['homeurl']."index.php".$redirect_url);
+		exit; //Always exit after sending location headers
 	}
 	// Hash login process
 	elseif (isset ($_GET["loginhash"])) {
@@ -809,9 +812,12 @@ if (isset ($_GET["bye"])) {
 	include ("general/logoff.php");
 	$iduser = $_SESSION["id_usuario"];
 	db_logoff ($iduser, $_SERVER['REMOTE_ADDR']);
-	// Unregister Session (compatible with 5.2 and 6.x, old code was deprecated
-	unset($_SESSION['id_usuario']);
-	unset($iduser);
+
+	$_SESSION = array();
+	session_destroy();
+	header_remove("Set-Cookie");
+	setcookie(session_name(), $_COOKIE[session_name()], time() - 4800, "/");
+
 	if ($config['auth'] == 'saml') {
 		require_once($config['saml_path'] . 'simplesamlphp/lib/_autoload.php');
 		$as = new SimpleSAML_Auth_Simple('PandoraFMS');

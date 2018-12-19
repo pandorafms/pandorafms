@@ -29,11 +29,13 @@ function main() {
 	if (isFetching) return;
 	isFetching = true;
 
-	var feedUrl = localStorage["ip_address"]+'/include/api.php?op=get&op2=events&return_type=csv&apipass='+localStorage["api_pass"]+'&user='+localStorage["user_name"]+'&pass='+localStorage["pass"];
+	var feedUrl = localStorage["ip_address"]+'/include/api.php?op=get&op2=events&return_type=json&apipass='+localStorage["api_pass"]+'&user='+localStorage["user_name"]+'&pass='+localStorage["pass"];
+
 	req = new XMLHttpRequest();
 	req.onload = handleResponse;
 	req.onerror = handleError;
 	req.open("GET", feedUrl, true);
+	req.withCredentials = true
 	req.send(null);
 }
 
@@ -132,25 +134,23 @@ function fetchNewEvents(A,B){
 function parseReplyEvents (reply) {
 
 	// Split the API response
-	var e_array = reply.split("\n");
+	var data = JSON.parse(reply)
+	var e_array = JSON.parse(reply).data;
 
 	// Form a properly object
 	var fetchedEvents=new Array();
 	for(var i=0;i<e_array.length;i++){
-		// Avoid to parse empty lines
-		if (e_array[i].length == 0) continue;
-
-		var event=e_array[i].split(";");
+		var event=e_array[i];
 		fetchedEvents.push({
-			'id' : event[0],
-			'agent_name' : event[1],
-			'agent' : event[2],
-			'date' : event[5],
-			'title' : event[6],
-			'module' : event[9],
-			'type' : event[14],
-			'source' : event[17],
-			'severity' : event[28],
+			'id' : event.id_evento,
+			'agent_name' : event.agent_name,
+			'agent' : event.id_agente,
+			'date' : event.timestamp,
+			'title' : event.evento,
+			'module' : event.id_agentmodule,
+			'type' : event.event_type,
+			'source' : event.source,
+			'severity' : event.criticity_name,
 			'visited' : false
 		});
 	}
@@ -215,7 +215,7 @@ function getNotification(pEvent){
 	if(pEvent['module'] != 0) even += " in the module with Id "+ pEvent['module'];
 	even += ".";
 
-	var url = (pEvent['agent']=="")
+	var url = (pEvent['agent'] == 0)
 		? localStorage["ip_address"]+"/index.php?sec=eventos&sec2=operation/events/events"
 		: localStorage["ip_address"]+"/index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=" + pEvent['agent'];
 

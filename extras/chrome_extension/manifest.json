@@ -1,6 +1,6 @@
 {
     "name": "__MSG_name__",
-    "version": "2.0",
+    "version": "2.1",
     "manifest_version": 2,
     "description": "Pandora FMS Event viewer Chrome extension",
     "homepage_url": "http://pandorafms.com",
@@ -23,6 +23,7 @@
         "tabs",
         "notifications",
         "http://*/*",
+        "https://*/*",
         "background"
     ],
     "default_locale": "en"

@@ -157,7 +157,7 @@ $module_macros = array ();
 // Create agent
 if ($create_agent) {
 	$mssg_warning = 0;
-	$alias = (string) get_parameter_post("alias",'');
+	$alias = trim (preg_replace('/[\/\\\|%#&$-]/', '', html_entity_decode( str_replace('`','&lsquo;',(string) get_parameter_post ("alias", "")))));
 	$alias_as_name = (int) get_parameter_post("alias_as_name", 0);
 	$direccion_agente = (string) get_parameter_post("direccion",'');
 
@@ -709,7 +709,7 @@ if ($update_agent) { // if modified some agent paramenter
 	$mssg_warning = 0;
 	$id_agente = (int) get_parameter_post ("id_agente");
 	$nombre_agente = str_replace('`','&lsquo;',(string) get_parameter_post ("agente", ""));
-	$alias = str_replace('`','&lsquo;',(string) get_parameter_post ("alias", ""));
+	$alias = trim (preg_replace('/[\/\\\|%#&$-]/', '', html_entity_decode( str_replace('`','&lsquo;',(string) get_parameter_post ("alias", "")))));
 	$alias_as_name = (int) get_parameter_post ('alias_as_name', 0);
 	$direccion_agente = (string) get_parameter_post ("direccion", '');
 	//safe_output only validate ip

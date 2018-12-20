@@ -62,7 +62,9 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 				'clock' => __('Clock'),
 				'group_item' => __('Group'),
 				'box_item' => __('Box'),
-				'line_item' => __('Line'));
+				'line_item' => __('Line'),
+				'color_cloud' => __('Color cloud')
+			);
 			
 			if (enterprise_installed()) {
 				enterprise_visual_map_editor_add_title_palette($titles);
@@ -203,7 +205,7 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 			$form_items['image_row']['html'] =
 				'<td align="left">' . __('Image') . '</td>
 				<td align="left">' .
-				html_print_select ($images_list, 'image', '', 'showPreview(this.value);', 'None', 'none', true) .
+				html_print_select ($images_list, 'image', '', 'showPreview(this.value);', 'None', '', true) .
 				'</td>';
 				
 			$form_items['clock_animation_row'] = array();
@@ -328,7 +330,7 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 			$form_items['agent_row'] = array();
 			$form_items['agent_row']['items'] = array('static_graph',
 				'percentile_bar', 'percentile_item', 'module_graph',
-				'simple_value', 'datos', 'auto_sla_graph');
+				'simple_value', 'datos', 'auto_sla_graph', 'color_cloud');
 			$form_items['agent_row']['html'] = '<td align="left">' .
 				__('Agent') . '</td>';
 			$params = array();
@@ -395,7 +397,8 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 			$form_items['module_row'] = array();
 			$form_items['module_row']['items'] = array('static_graph',
 				'percentile_bar', 'percentile_item', 'module_graph',
-				'simple_value', 'datos', 'auto_sla_graph', 'donut_graph', 'bars_graph');
+				'simple_value', 'datos', 'auto_sla_graph', 'donut_graph', 'bars_graph',
+				'color_cloud');
 			$form_items['module_row']['html'] = '<td align="left">' .
 				__('Module') . '</td>
 				<td align="left">' .
@@ -510,7 +513,12 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 				__('Max value') . '</td>
 				<td align="left">' . html_print_input_text('max_percentile', 0, '', 3, 5, true) . '</td>';
 
-			$percentile_type = array('percentile' => __('Percentile'), 'bubble' => __('Bubble'), 'circular_progress_bar' => __('Circular porgress bar'), 'interior_circular_progress_bar' => __('Circular progress bar (interior)'));
+			$percentile_type = array(
+				"percentile" => __("Percentile"),
+				"bubble" => __("Bubble"),
+				"circular_progress_bar" => __("Circular porgress bar"),
+				"interior_circular_progress_bar" => __("Circular progress bar (interior)")
+			);
 			$percentile_value = array('percent' => __('Percent'), 'value' => __('Value'));
 			if (is_metaconsole()){
 				$form_items['percentile_item_row_3'] = array();
@@ -534,14 +542,14 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 				$form_items['percentile_item_row_3']['html'] = '<td align="left">' .
 					__('Type') . '</td>
 					<td align="left">' .
-					html_print_select($percentile_type, 'type_percentile', 'percentile', '', '', '', true) .
+					html_print_select($percentile_type, 'type_percentile', 'percentile', '', '', '', true, false, false) .
 					'</td>';
 
 				$form_items['percentile_item_row_4'] = array();
 				$form_items['percentile_item_row_4']['items'] = array('percentile_bar', 'percentile_item', 'datos');
 				$form_items['percentile_item_row_4']['html'] = '<td align="left">' . __('Value to show') . '</td>
 					<td align="left">' .
-					html_print_select($percentile_value, 'value_show', 'percent', '', '', '', true) .
+					html_print_select($percentile_value, 'value_show', 'percent', '', '', '', true, false, false) .
 					'</td>';
 			}
 
@@ -580,13 +588,76 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 				'<td align="left" style="">' . __('Show statistics') . '</td>
 				<td align="left" style="">' .
 				html_print_checkbox('show_statistics', 1, '', true) . '</td>';
+			
+			// Start of Color Cloud rows
+			
+			// Diameter
+			$default_diameter = 100;
+			$form_items["color_cloud_diameter_row"] = array();
+			$form_items["color_cloud_diameter_row"]["items"] = array("color_cloud");
+			$form_items["color_cloud_diameter_row"]["html"] =
+				"<td align=\"left\">" . __("Diameter") . "</td>
+				<td align=\"left\">" .
+					html_print_input_text("diameter", $default_diameter, "", 3, 5, true) .
+				"</td>";
+
+			// Default color
+			$default_color = "#FFFFFF";
+			$form_items["color_cloud_def_color_row"] = array();
+			$form_items["color_cloud_def_color_row"]["items"] = array("color_cloud");
+			$form_items["color_cloud_def_color_row"]["html"] =
+				"<td align=\"left\">" . __("Default color") . "</td>
+				<td align=\"left\">" .
+					html_print_input_color("default_color", $default_color, false, true) .
+				"</td>";
+
+			// Color ranges
+			$color_range_tip = __("The color of the element will be the one selected in the first range created in which the value of the module is found (with the initial and final values of the range included)") . ".";
+			$form_items["color_cloud_color_ranges_row"] = array();
+			$form_items["color_cloud_color_ranges_row"]["items"] = array("color_cloud");
+			$form_items["color_cloud_color_ranges_row"]["html"] =
+				"<td align=\"left\">" .
+					__("Ranges") .
+					ui_print_help_tip($color_range_tip, true) .
+				"</td>" .
+				"<td align=\"left\">" .
+					"<table id=\"new-color-range\" class=\"databox color-range color-range-creation\">" .
+						"<tr>" .
+							"<td>" . __("From value") . "</td>" .
+							"<td>" .
+								html_print_input_text("from_value_new", "", "", 5, 255, true) .
+							"</td>" .
+							"<td rowspan=\"4\">" .
+								"<a class=\"color-range-add\" href=\"#\">" .
+									html_print_image("images/add.png", true) .
+								"</a>" .
+							"</td>" .
+						"</tr>" .
+							"<td>" . __("To value") . "</td>" .
+							"<td>" .
+								html_print_input_text("to_value_new", "", "", 5, 255, true) .
+							"</td>" .
+							"<td></td>" .
+						"<tr>" .
+						"</tr>" .
+						"<tr>" .
+							"<td>" . __("Color") . "</td>" .
+							"<td>" .
+								html_print_input_color("color_new", $default_color, false, true) .
+							"</td>" .
+							"<td></td>" .
+						"</tr>" .
+					"</table>" .
+				"</td>";
 				
+			// End of Color Cloud rows
+			
 			$form_items['show_on_top_row'] = array();
 			$form_items['show_on_top_row']['items'] = array('group_item');
 			$form_items['show_on_top_row']['html'] = 
 				'<td align="left" style="">' . __('Always show on top') . '</td>
 				<td align="left" style="">' .
-				html_print_checkbox('show_on_top', 1, '', true) . '</td>';
+				html_print_checkbox('show_on_top', 1, '', true) .ui_print_help_tip (__("It allows the element to be superimposed to the rest of items of the visual console"), true) . '</td>';
 			
 			$show_last_value = array('0' => __('Hide last value on boolean modules'), '1' => __('Enabled'), '2' => __('Disabled'));
 			$form_items['show_last_value_row'] = array();
@@ -616,7 +687,7 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 				__('Type') . '</td>
 				<td align="left">' . html_print_select($bars_graph_types, 'bars_graph_type', 'vertical', '', '', '', true) . '</td>';
 			
-			
+
 			//Insert and modify before the buttons to create or update.
 			if (enterprise_installed()) {
 				enterprise_visual_map_editor_modify_form_items_palette($form_items);
@@ -661,7 +732,7 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 			$form_items_advance['position_row']['items'] = array('static_graph',
 				'percentile_bar', 'percentile_item', 'module_graph',
 				'simple_value', 'label', 'icon', 'datos', 'box_item',
-				'auto_sla_graph', 'bars_graph','clock', 'donut_graph');
+				'auto_sla_graph', 'bars_graph','clock', 'donut_graph', 'color_cloud');
 			$form_items_advance['position_row']['html'] = '
 				<td align="left">' . __('Position') . '</td>
 				<td align="left">(' . html_print_input_text('left', '0', '', 3, 5, true) .
@@ -696,7 +767,7 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 				__('Parent') . '</td>
 				<td align="left">' .
 				html_print_input_hidden('parents_load', base64_encode(json_encode($parents)), true) .
-				html_print_select($parents, 'parent', '', '', __('None'), 0, true) .
+				html_print_select($parents, 'parent', 0, '', __('None'), 0, true) .
 				'</td>';
 			
 			$form_items_advance['map_linked_row'] = array();
@@ -750,6 +821,7 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 						var $mapLinkedSelect = $("select#map_linked");
 						var $linkedMapNodeIDInput = $("input#hidden-linked_map_node_id");
 						var visualMaps = <?php echo json_encode($visual_maps); ?>;
+						if (!(visualMaps instanceof Array)) visualMaps = [];
 						var nodesById = <?php echo json_encode($meta_servers_by_id); ?>;
 
 						visualMaps.forEach(function (vMap) {
@@ -870,7 +942,7 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 			$form_items_advance['element_group_row']['items'] = array(
 				'group_item', 'static_graph', 'percentile_bar',
 				'percentile_item', 'module_graph', 'simple_value',
-				'icon', 'label', 'datos', 'donut_graph');
+				'icon', 'label', 'datos', 'donut_graph', 'color_cloud');
 			$form_items_advance['element_group_row']['html'] = '<td align="left">'.
 				__('Restrict access to group') . '</td>' .
 				'<td align="left">' .
@@ -879,11 +951,12 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 					"VR",
 					true,
 					'element_group',
-					__('All'),
-					'',
-					'',
 					0,
-					true) .
+					'',
+					'',
+					'',
+					true
+				) .
 				ui_print_help_tip (
 					__("If selected, restrict visualization of this item in the visual console to users who have access to selected group. This is also used on calculating child visual consoles."), true) . 
 				'</td>';
@@ -902,11 +975,6 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 		</tbody>
 	</table>
 	<?php
-	//------------------------------------------------------------------------------
-	
-	
-	
-	
 	
 	echo '</div>';
 	
@@ -1025,6 +1093,7 @@ function visual_map_editor_print_toolbox() {
 		visual_map_print_button_editor('group_item', __('Group'), 'left', false, 'group_item_min', true);
 		visual_map_print_button_editor('box_item', __('Box'), 'left', false, 'box_item_min', true);
 		visual_map_print_button_editor('line_item', __('Line'), 'left', false, 'line_item_min', true);
+		visual_map_print_button_editor('color_cloud', __('Color cloud'), 'left', false, 'color_cloud_min', true);
   		if(defined("METACONSOLE")){
  		 echo '<a href="javascript:" class="tip"><img src="'.$config['homeurl_static'].'/images/tip.png" data-title="The data displayed in editor mode is not real" data-use_title_for_force_title="1" 
 			class="forced_title" alt="The data displayed in editor mode is not real"></a>';

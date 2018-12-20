@@ -36,7 +36,7 @@ use Encode::Locale;
 Encode::Locale::decode_argv;
 
 # version: define current version
-my $version = "7.0NG.728 PS181113";
+my $version = "7.0NG.730 PS181220";
 
 # save program name for logging
 my $progname = basename($0);
@@ -103,7 +103,7 @@ sub help_screen{
 	print "Available options by category:\n\n" unless $param ne '';
 	print "Available options for $param:\n\n" unless $param eq '';
 	print "AGENTS:\n\n" unless $param ne '';
-	help_screen_line('--create_agent', "<agent_name> <operating_system> <group> <server_name> \n\t  [<address> <description> <interval>]", 'Create agent');
+	help_screen_line('--create_agent', "<agent_name> <operating_system> <group> <server_name> \n\t  [<address> <description> <interval> <alias_as_name>]", 'Create agent');
 	help_screen_line('--update_agent', '<agent_name> <field_to_change> <new_value>', "Update an agent field. The fields can be \n\t  the following: agent_name, address, description, group_name, interval, os_name, disabled (0-1), \n\t  parent_name, cascade_protection (0-1), icon_path, update_gis_data (0-1), custom_id");
 	help_screen_line('--delete_agent', '<agent_name>', 'Delete agent');
 	help_screen_line('--disable_group', '<group_name>', 'Disable agents from an entire group');
@@ -996,21 +996,29 @@ sub cli_enable_group() {
 ##############################################################################
 
 sub cli_create_agent() {
-	my ($agent_name,$os_name,$group_name,$server_name,$address,$description,$interval) = @ARGV[2..8];
+	my ($agent_name,$os_name,$group_name,$server_name,$address,$description,$interval, $alias_as_name) = @ARGV[2..9];
 	
 	print_log "[INFO] Creating agent '$agent_name'\n\n";
 	
 	$address = '' unless defined ($address);
 	$description = (defined ($description) ? safe_input($description)  : '' );	# safe_input() might be better at pandora_create_agent() (when passing 'description' to db_insert())
 	$interval = 300 unless defined ($interval);
-	
+	$alias_as_name = 1 unless defined ($alias_as_name);
+	my $agent_alias = undef;
+
+	if (!$alias_as_name) {
+		$agent_alias = $agent_name;
+		$agent_name = generate_agent_name_hash($agent_alias, $conf{'dbhost'});
+	}
+
 	my $id_group = get_group_id($dbh,$group_name);
 	exist_check($id_group,'group',$group_name);
 	my $os_id = get_os_id($dbh,$os_name);
 	exist_check($id_group,'operating system',$group_name);
 	my $agent_exists = get_agent_id($dbh,$agent_name);
 	non_exist_check($agent_exists, 'agent name', $agent_name);
-	pandora_create_agent ($conf, $server_name, $agent_name, $address, $id_group, 0, $os_id, $description, $interval, $dbh);
+	pandora_create_agent ($conf, $server_name, $agent_name, $address, $id_group, 0, $os_id, $description, $interval, $dbh,
+		undef, undef, undef, undef, undef, undef, undef, undef, $agent_alias);
 }
 
 ##############################################################################
@@ -5697,7 +5705,7 @@ sub pandora_manage_main ($$$) {
 			cli_enable_group();
 		}
 		elsif ($param eq '--create_agent') {
-			param_check($ltotal, 7, 3);
+			param_check($ltotal, 8, 4);
 			cli_create_agent();
 		}
 		elsif ($param eq '--delete_agent') {

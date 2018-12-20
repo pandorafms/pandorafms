@@ -25,6 +25,7 @@
  * @param string Snmp especific OID.
  */
 function snmp_generate_trap($snmp_host_address, $snmp_community, $snmp_oid, $snmp_agent, $snmp_data, $snmp_type) {
+	global $config;
 	// Call snmptrap
 	if (empty($config['snmptrap'])) {
 		switch (PHP_OS) {
@@ -35,7 +36,9 @@ function snmp_generate_trap($snmp_host_address, $snmp_community, $snmp_oid, $snm
 				$snmptrap_bin = '/usr/pkg/bin/snmptrap';
 				break;
 			default:
-				$snmptrap_bin = 'snmptrap';
+				$snmptrap_bin = strtoupper(substr(PHP_OS, 0, 3)) === 'WIN'
+					? 'C:\Windows\snmptrap.exe'
+					: 'snmptrap';
 				break;
 		}
 	}

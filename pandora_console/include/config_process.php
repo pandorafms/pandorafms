@@ -22,8 +22,8 @@
 /**
  * Pandora build version and version
  */
-$build_version = 'PC181113';
-$pandora_version = 'v7.0NG.728';
+$build_version = 'PC181220';
+$pandora_version = 'v7.0NG.730';
 
 // Do not overwrite default timezone set if defined.
 $script_tz = @date_default_timezone_get();
@@ -171,19 +171,21 @@ require_once ($ownDir. 'functions_config.php');
 
 date_default_timezone_set("Europe/Madrid");
 
+//////////////////////////////////////
+//// PLEASE DO NOT CHANGE ORDER //////
+//////////////////////////////////////
+require_once ($config["homedir"].'/include/load_session.php');
+
+if (session_status() === PHP_SESSION_NONE) session_start();
 
 config_process_config();
-
 config_prepare_session();
-require_once ($config["homedir"].'/include/load_session.php');
-if(session_id() == '') {
-	$resultado = session_start();
-}
 
-// Set a the system timezone default 
+// Set a the system timezone default
 if ((!isset($config["timezone"])) OR ($config["timezone"] == "")) {
 	$config["timezone"] = "Europe/Berlin";
 }
+////////////////////////////////////////
 
 date_default_timezone_set($config["timezone"]);
 

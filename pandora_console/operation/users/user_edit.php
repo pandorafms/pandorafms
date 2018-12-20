@@ -491,7 +491,7 @@ $data[0] .= $table_ichanges;
 
 //time autorefresh
 $times = get_refresh_time_array();
-$data[1] = '<span style="width:40%;float:left;">'.__('Time autorefresh').'</span>';
+$data[1] = '<span style="width:40%;float:left;">'.__('Time autorefresh'). ui_print_help_tip(__('Interval of autorefresh of the elements, by default they are 30 seconds, needing to enable the autorefresh first'), true).'</span>';
 $data[1] .= $jump . '<span style="width:20%;float:left;">'. html_print_select ($times, 'time_autorefresh', $user_info["time_autorefresh"], '', '', '', true,false,false).'</span>';
 
 $table->rowclass[] = '';

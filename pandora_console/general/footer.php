@@ -32,9 +32,7 @@ if (!$config["MR"]) {
 
 echo '<a class="white_bold footer" target="_blank" href="' . $config["homeurl"] . $license_file. '">';
 
-if(enterprise_installed()){
-	enterprise_include_once("../include/functions_update_manager.php");
-}
+include_once ($config["homedir"]."/include/functions_update_manager.php");
 
 $current_package = update_manager_get_current_package();
 
@@ -48,7 +46,7 @@ else{
 echo sprintf(__('%s %s - Build %s - MR %s', get_product_name(), $pandora_version, $build_package_version, $config["MR"]));
 
 echo '</a><br />';
-echo '<a class="white footer">'. __('Page generated at') . ' '. date('F j, Y h:i a'); //Always use timestamp here
+echo '<a class="white footer">'. __('Page generated at') . ' '. date($config["date_format"]); 
 echo '</a><br /><span style="color:#eff">&reg; '.get_copyright_notice().'</span>';
 
 if (isset ($config['debug'])) {

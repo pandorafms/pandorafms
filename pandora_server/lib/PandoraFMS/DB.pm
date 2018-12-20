@@ -131,9 +131,6 @@ sub db_connect ($$$$$$) {
 		# Enable character semantics
 		$dbh->{'mysql_enable_utf8'} = 1;
 		
-        # Tell the server to return UTF-8 strings.
-		$dbh->do("SET NAMES 'utf8';") if ($^O eq 'MSWin32');
-
 		return $dbh;
 	}
 	elsif ($rdbms eq 'postgresql') {
@@ -867,7 +864,7 @@ sub db_insert ($$$;@) {
 	};
 	if ($@) {
 		my $exception = @_;
-		if ($DBI::err == 1213) {
+		if ($DBI::err == 1213 || $DBI::err == 1205) {
 			$dbh->do($query, undef, @values);
 			$insert_id = $dbh->{'mysql_insertid'};
 		}
@@ -891,7 +888,7 @@ sub db_update ($$;@) {
 	};
 	if ($@) {
 		my $exception = @_;
-		if ($DBI::err == 1213) {
+		if ($DBI::err == 1213 || $DBI::err == 1205) {
 			$rows = $dbh->do($query, undef, @values);
 		}
 		else {
@@ -1137,7 +1134,7 @@ sub db_do ($$;@) {
 	};
 	if ($@) {
 		my $exception = @_;
-		if ($DBI::err == 1213) {
+		if ($DBI::err == 1213 || $DBI::err == 1205) {
 			$dbh->do($query, undef, @values);
 		}
 		else {

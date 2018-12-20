@@ -18,7 +18,6 @@ if(check_login()){
 
 global $config;
 
-
 include_once($config['homedir'] . "/include/functions_agents.php");
 include_once($config['homedir'] . "/include/functions_modules.php");
 include_once($config['homedir'] . "/include/functions_ui.php");
@@ -35,7 +34,6 @@ $get_id_tag = (bool) get_parameter('get_id_tag', 0);
 $get_type = (bool) get_parameter('get_type', 0);
 $list_modules = (bool) get_parameter('list_modules', 0);
 $get_agent_modules_json_by_name = (bool) get_parameter('get_agent_modules_json_by_name', 0);
-
 
 if ($get_agent_modules_json_by_name) {
 	$agent_name = get_parameter('agent_name');
@@ -474,16 +472,17 @@ if ($list_modules) {
 	$sort = get_parameter('sort', 'none');
 	$selected = 'border: 1px solid black;';
 
+	$order[] = array('field' => 'tmodule_group.name', 'order' => 'ASC');
 	switch ($sortField) {
 		case 'type':
 			switch ($sort) {
 				case 'up':
 					$selectTypeUp = $selected;
-					$order = array('field' => 'tagente_modulo.id_modulo', 'order' => 'ASC');
+					$order[] = array('field' => 'tagente_modulo.id_modulo', 'order' => 'ASC');
 					break;
 				case 'down':
 					$selectTypeDown = $selected;
-					$order = array('field' => 'tagente_modulo.id_modulo', 'order' => 'DESC');
+					$order[] = array('field' => 'tagente_modulo.id_modulo', 'order' => 'DESC');
 					break;
 			}
 			break;
@@ -491,11 +490,11 @@ if ($list_modules) {
 			switch ($sort) {
 				case 'up':
 					$selectNameUp = $selected;
-					$order = array('field' => 'tagente_modulo.nombre', 'order' => 'ASC');
+					$order[] = array('field' => 'tagente_modulo.nombre', 'order' => 'ASC');
 					break;
 				case 'down':
 					$selectNameDown = $selected;
-					$order = array('field' => 'tagente_modulo.nombre', 'order' => 'DESC');
+					$order[] = array('field' => 'tagente_modulo.nombre', 'order' => 'DESC');
 					break;
 			}
 			break;
@@ -503,11 +502,11 @@ if ($list_modules) {
 			switch ($sort) {
 				case 'up':
 					$selectStatusUp = $selected;
-					$order = array('field' => 'tagente_estado.estado=0 DESC,tagente_estado.estado=3 DESC,tagente_estado.estado=2 DESC,tagente_estado.estado=1 DESC', 'order' => '');
+					$order[] = array('field' => 'tagente_estado.estado=0 DESC,tagente_estado.estado=3 DESC,tagente_estado.estado=2 DESC,tagente_estado.estado=1 DESC', 'order' => '');
 					break;
 				case 'down':
 					$selectStatusDown = $selected;
-					$order = array('field' => 'tagente_estado.estado=1 DESC,tagente_estado.estado=2 DESC,tagente_estado.estado=3 DESC,tagente_estado.estado=0 DESC', 'order' => '');
+					$order[] = array('field' => 'tagente_estado.estado=1 DESC,tagente_estado.estado=2 DESC,tagente_estado.estado=3 DESC,tagente_estado.estado=0 DESC', 'order' => '');
 					break;
 			}
 			break;
@@ -515,11 +514,11 @@ if ($list_modules) {
 			switch ($sort) {
 				case 'up':
 					$selectLastContactUp = $selected;
-					$order = array('field' => 'tagente_estado.utimestamp', 'order' => 'ASC');
+					$order[] = array('field' => 'tagente_estado.utimestamp', 'order' => 'ASC');
 					break;
 				case 'down':
 					$selectLastContactDown = $selected;
-					$order = array('field' => 'tagente_estado.utimestamp', 'order' => 'DESC');
+					$order[] = array('field' => 'tagente_estado.utimestamp', 'order' => 'DESC');
 					break;
 			}
 			break;
@@ -535,7 +534,7 @@ if ($list_modules) {
 			$selectLastContactUp = '';
 			$selectLastContactDown = '';
 
-			$order = array('field' => 'tagente_modulo.nombre', 'order' => 'ASC');
+			$order[] = array('field' => 'tagente_modulo.nombre', 'order' => 'ASC');
 			break;
 	}
 
@@ -590,7 +589,20 @@ if ($list_modules) {
 	}
 
 	//Count monitors/modules
-	$order_sql = $order['field'] . " " . $order['order'];
+
+	// Build the order sql
+	$first = true;
+	foreach ($order as $ord) {
+		if ($first) {
+			$first = false;
+		}
+		else {
+			$order_sql .= ',';
+		}
+		
+		$order_sql .= $ord['field'].' '.$ord['order'];
+	}
+
 	$sql_condition = "FROM tagente_modulo
 		$tags_join
 		INNER JOIN tagente_estado
@@ -1084,6 +1096,7 @@ if ($get_type) {
 	echo $graph_type;
 	return;
 }
+
 }
 
 ?>

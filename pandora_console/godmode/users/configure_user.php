@@ -24,6 +24,7 @@ include_once($config['homedir'] . "/include/functions_profile.php");
 include_once($config['homedir'] . '/include/functions_users.php');
 include_once ($config['homedir'] . '/include/functions_groups.php');
 include_once ($config['homedir'] . '/include/functions_visual_map.php');
+include_once($config['homedir'] . '/include/functions_custom_fields.php');
 enterprise_include_once('include/functions_profile.php');
 
 $meta = false;
@@ -169,6 +170,7 @@ if ($create_user) {
 	$values['language'] = get_parameter ('language', 'default');
 	$values['timezone'] = (string) get_parameter('timezone');
 	$values['default_event_filter'] = (int) get_parameter('default_event_filter');
+	$values['default_custom_view'] = (int) get_parameter('default_custom_view');
 	$dashboard = get_parameter('dashboard', '');
 	$visual_console = get_parameter('visual_console', '');
 
@@ -240,7 +242,7 @@ if ($create_user) {
 		}
 
 		db_pandora_audit("User management",
-			"Created user ".io_safe_output($id), false, false, $info);
+			"Created user ".io_safe_input($id), false, false, $info);
 		
 		ui_print_result_message ($result,
 			__('Successfully created'),
@@ -281,6 +283,7 @@ if ($update_user) {
 	$values['language'] = (string) get_parameter ('language');
 	$values['timezone'] = (string) get_parameter('timezone');
 	$values['default_event_filter'] = (int) get_parameter('default_event_filter');
+	$values['default_custom_view'] = (int) get_parameter('default_custom_view');
 	$dashboard = get_parameter('dashboard', '');
 	$visual_console = get_parameter('visual_console', '');
 	
@@ -389,7 +392,7 @@ if ($update_user) {
 			}
 			
 			
-			db_pandora_audit("User management", "Updated user ".io_safe_output($id),
+			db_pandora_audit("User management", "Updated user ".io_safe_input($id),
 				false, false, $info);
 			
 			ui_print_result_message ($res1,
@@ -447,7 +450,7 @@ if ($add_profile) {
 	$tags = implode(',', $tags);
 
 	db_pandora_audit("User management",
-		"Added profile for user ".io_safe_output($id2), false, false, 'Profile: ' . $profile2 . ' Group: ' . $group2 . ' Tags: ' . $tags);
+		"Added profile for user ".io_safe_input($id2), false, false, 'Profile: ' . $profile2 . ' Group: ' . $group2 . ' Tags: ' . $tags);
 	$return = profile_create_user_profile($id2, $profile2, $group2, false, $tags, $no_hierarchy);
 	ui_print_result_message ($return,
 		__('Profile added successfully'),
@@ -463,7 +466,7 @@ if ($delete_profile) {
 	$perfil = db_get_row('tperfil', 'id_perfil', $id_perfil);
 	
 	db_pandora_audit("User management",
-		"Deleted profile for user ".io_safe_output($id2), false, false, 'The profile with id ' . $id_perfil . ' in the group ' . $perfilUser['id_grupo']);
+		"Deleted profile for user ".io_safe_input($id2), false, false, 'The profile with id ' . $id_perfil . ' in the group ' . $perfilUser['id_grupo']);
 	
 	$return = profile_delete_user_profile ($id2, $id_up);
 	ui_print_result_message ($return,
@@ -570,7 +573,16 @@ if (!$meta) {
 	}
 }
 
-$table->data[11][0] = __('Interactive charts').' '.ui_print_help_tip(__('Whether to use Javascript or static PNG graphs'), true) ;
+if($meta){
+	$array_filters = get_filters_custom_fields_view(0, true);
+	$table->data[11][0] = __('Search custom field view').' '.ui_print_help_tip(__('Load by default the selected view in custom field view'), true);
+	$table->data[11][1] =html_print_select(
+		$array_filters, 'default_custom_view',
+		$user_info['default_custom_view'], '', __('None'), 0,
+		true, false, true, '', false
+	);
+}
+
 $values = array(-1 => __('Use global conf'), 1 => __('Yes'), 0 => __('No'));
 
 $table->data[12][0] = __('Home screen').
@@ -721,10 +733,14 @@ $(document).ready (function () {
 		if($('#radiobtn0002').prop('checked')) {			
 			$('#user_configuration_table-metaconsole_agents_manager').show();
 			$('#user_configuration_table-metaconsole_access_node').show();
+			if($('#checkbox-metaconsole_agents_manager').prop('checked')) {			
+				$('#user_configuration_table-metaconsole_assigned_server').show();
+			}
 		}
 		else {			
 			$('#user_configuration_table-metaconsole_agents_manager').hide();
 			$('#user_configuration_table-metaconsole_access_node').hide();
+			$('#user_configuration_table-metaconsole_assigned_server').hide();
 		}
 	});
 	

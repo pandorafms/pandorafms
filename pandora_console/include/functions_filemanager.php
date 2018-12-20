@@ -742,7 +742,7 @@ function filemanager_file_explorer($real_directory, $relative_directory,
 		$data[4] .= '<span style="display: flex">';
 		$typefile = array_pop(explode(".",$fileinfo['name']));
 		if (is_writable ($fileinfo['realpath'])  &&
-			(! is_dir ($fileinfo['realpath']) || count (scandir ($fileinfo['realpath'])) < 3)) {
+			(! is_dir ($fileinfo['realpath']) || count (scandir ($fileinfo['realpath'])) < 3) && (!$readOnly)) {
 			$data[4] .= '<form method="post" action="' . $url . '" style="">';
 			$data[4] .= '<input type="image" src="images/cross.png" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
 			$data[4] .= html_print_input_hidden ('filename', $fileinfo['realpath'], true);

@@ -68,17 +68,20 @@ function mainModuleGroups() {
 	    return preg_match("/$agent_group_search/i", $v['name']);
 	}, ARRAY_FILTER_USE_BOTH);
 
-	$groups_view = $is_not_paginated
-		? $info
-		: array_slice($info, $offset, $config['block_size']);
-	$agents_counters = array_reduce($groups_view, function($carry, $item){
-		$carry[$item['id']] = $item;
-		return $carry;
-	}, array());
+	if (!empty($info)) {
+		$groups_view = $is_not_paginated
+			? $info
+			: array_slice($info, $offset, $config['block_size']);
+		$agents_counters = array_reduce($groups_view, function($carry, $item){
+			$carry[$item['id']] = $item;
+			return $carry;
+		}, array());
 
-	$ids_array = array_keys($agents_counters);
+		$ids_array = array_keys($agents_counters);
 
-	$ids_group = implode(',', $ids_array);
+		$ids_group = implode(',', $ids_array);
+	} else
+		$ids_group = -1;
 
 	$condition_critical = modules_get_state_condition(AGENT_MODULE_STATUS_CRITICAL_ALERT);
 	$condition_warning  = modules_get_state_condition(AGENT_MODULE_STATUS_WARNING_ALERT);
@@ -199,7 +202,7 @@ $sql =
 	echo "<td>";
 	echo "</tr></table>";
 
-	if(count($array_for_defect) > 0){
+	if(true){
 		$table = new StdClass();
 		$table->style[0] = 'color: #ffffff; background-color: #373737; font-weight: bolder; padding-right: 10px; min-width: 230px;';
 		$table->width = '100%';

@@ -304,7 +304,8 @@ function reporting_make_reporting_data($report = null, $id_report,
 				$report['contents'][] = reporting_availability_graph(
 					$report,
 					$content,
-					$pdf);
+					$pdf
+				);
 				break;
 			case 'sql':
 				$report['contents'][] = reporting_sql(

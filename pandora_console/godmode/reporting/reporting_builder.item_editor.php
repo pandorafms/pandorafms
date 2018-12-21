@@ -1082,13 +1082,15 @@ You can of course remove the warnings, that's why we include the source and do n
 							WHERE tagente.id_agente = tagent_module_log.id_agent AND tagente.disabled = 0';
 					}
 					$all_agent_log = db_get_all_rows_sql($sql_log_report);
-					
-					foreach ($all_agent_log as $key => $value) {
-						$agents2[$value['id_agente']] = $value['alias'];
+
+					if(isset($all_agent_log) && is_array($all_agent_log)){
+						foreach ($all_agent_log as $key => $value) {
+							$agents2[$value['id_agente']] = $value['alias'];
+						}
 					}
-					
+
 					if ((empty($agents2)) || $agents2 == -1) $agents = array();
-					
+
 					$agents_select = array();
 					if (is_array($id_agents) || is_object($id_agents)){
 						foreach ($id_agents as $id) {

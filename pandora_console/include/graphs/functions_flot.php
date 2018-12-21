@@ -409,6 +409,8 @@ function flot_pie_chart ($values, $labels, $width, $height, $water_mark,
 		$colors = implode($separator, $colors);
 	}
 
+	include_javascript_dependencies_flot_graph();
+
 	$return .= "<script type='text/javascript'>";
 
 	$return .= "pandoraFlotPie('$graph_id', '$values', '$labels',

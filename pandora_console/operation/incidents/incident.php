@@ -1,3 +1,31 @@
+<script type="text/javascript">
+		
+	$( document ).ready(function() {
+
+		$('[id^=checkbox-id_inc]').change(function(){
+			if($(this).parent().parent().hasClass('checkselected')){
+				$(this).parent().parent().removeClass('checkselected');
+			}
+			else{
+				$(this).parent().parent().addClass('checkselected');							
+			}
+		});
+
+		$('[id^=checkbox-all_action]').change(function(){	
+			if ($("#checkbox-all_action").prop("checked")) {
+				$('[id^=checkbox-id_inc]').parent().parent().addClass('checkselected');
+				$('[name^=id_inc]').prop("checked", true);
+			}
+			else{
+				$('[id^=checkbox-id_inc]').parent().parent().removeClass('checkselected');
+				$('[name^=id_inc]').prop("checked", false);
+			}	
+		});
+
+	});
+
+</script>
+
 <?php
 
 // Pandora FMS - http://pandorafms.com
@@ -340,7 +368,7 @@ else {
 	$table->head[5] = __('Updated');
 	$table->head[6] = __('Source');
 	$table->head[7] = __('Owner');
-	$table->head[8] = __('Action');
+	$table->head[8] = __('Action'). html_print_checkbox('all_action', 0, false, true, false);
 	
 	$table->size[0] = 43;
 	$table->size[7] = 50;

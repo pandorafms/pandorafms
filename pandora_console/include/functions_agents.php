@@ -28,13 +28,14 @@ require_once($config['homedir'] . '/include/functions_users.php');
  *
  * @param int $id_agent The agent id.
  * @param boolean $show_disabled Show the agent found althought it is disabled. By default false.
+ * @param boolean $force_meta 
  *
  * @return boolean The result to check if the agent is in the DB.
  */
-function agents_check_agent_exists($id_agent, $show_disabled = true) {
+function agents_check_agent_exists($id_agent, $show_disabled = true, $force_meta = false) {
 	$agent = db_get_value_filter(
 		'id_agente',
-		'tagente',
+		$force_meta ? 'tmetaconsole_agent' : 'tagente',
 		array('id_agente' => $id_agent, 'disabled' => !$show_disabled)
 	);
 
@@ -360,11 +361,13 @@ function agents_get_agents ($filter = false, $fields = false,
 				break;
 			case AGENT_STATUS_NOT_NORMAL:
 				$status_sql = "(
-					critical_count > 0
-					OR warning_count > 0
-					OR unknown_count > 0
-					OR total_count = 0
+					normal_count <> total_count
 					OR total_count = notinit_count)";
+				//The AGENT_STATUS_NOT_NORMAL filter must show all agents that are not in normal status
+					/*"(
+						normal_count <> total_count
+						AND
+						(normal_count + notinit_count) <> total_count)";*/
 				break;
 			case AGENT_STATUS_NOT_INIT:
 				$status_sql = "(
@@ -920,6 +923,10 @@ function agents_get_group_agents (
 			unset ($search["alias"]);
 		}
 		
+		if (isset($search['id_os'])) {
+			$filter['id_os'] = $search['id_os'];
+		}
+		
 		if (isset($search['status'])) {
 			switch ($search['status']) {
 				case AGENT_STATUS_NORMAL:
@@ -1309,7 +1316,7 @@ function agents_get_name ($id_agent, $case = "none") {
 }
 
 /**
- * Get alias of an agent.
+ * Get alias of an agent (cached function).
  *
  * @param int $id_agent Agent id.
  * @param string $case Case (upper, lower, none)
@@ -1318,6 +1325,13 @@ function agents_get_name ($id_agent, $case = "none") {
  */
 function agents_get_alias ($id_agent, $case = 'none') {
 	global $config;
+	// Prepare cache
+	static $cache = array();
+	if (empty($case)) $case = 'none';
+
+	// Check cache
+	if (isset($cache[$case][$id_agent])) return $cache[$case][$id_agent];
+
 	if($config['dbconnection_cache'] == null && is_metaconsole()){
 		$alias = (string) db_get_value ('alias', 'tmetaconsole_agent', 'id_tagente', (int) $id_agent);
 	} else {
@@ -1326,13 +1340,15 @@ function agents_get_alias ($id_agent, $case = 'none') {
 
 	switch ($case) {
 		case 'upper':
-			return mb_strtoupper($alias, 'UTF-8');
+			$alias = mb_strtoupper($alias, 'UTF-8');
+			break;
 		case 'lower':
-			return mb_strtolower($alias, 'UTF-8');
-		case 'none':
-		default:
-			return ($alias);
+			$alias = mb_strtolower($alias, 'UTF-8');
+			break;
 	}
+
+	$cache[$case][$id_agent] = $alias;
+	return $alias;
 }
 
 function agents_get_alias_by_name ($name, $case = 'none') {
@@ -2729,17 +2745,18 @@ function agents_count_agents_filter ($filter = array(), $access = "AR") {
  *
  * @param int Id agent
  * @param string ACL access bit
+ * @param boolean $force_meta
  *
  * @return True if user has access, false if user has not permissions and
  * 		null if id agent does not exist
  */
-function agents_check_access_agent ($id_agent, $access = "AR") {
+function agents_check_access_agent ($id_agent, $access = "AR", $force_meta = false) {
 	global $config;
 
-	if (users_access_to_agent($id_agent, $access)) return true;
+	if (users_access_to_agent($id_agent, $access, false, $force_meta)) return true;
 
 	// If agent exist return false
-	if (agents_check_agent_exists($id_agent)) return false;
+	if (agents_check_agent_exists($id_agent, true, $force_meta)) return false;
 	// Return null otherwise
 	return null;
 }
@@ -2771,5 +2788,68 @@ function agents_get_status_clause($state, $show_not_init = true) {
 	}
 	// If the state is not an expected state, return no condition
 	return "1=1";
+}
+
+function agents_get_image_status($status){
+	switch ($status) {
+		case AGENT_STATUS_NORMAL:
+			$image_status = html_print_image(
+				'images/status_sets/default/agent_ok.png',
+				true,
+				array(
+					'title' => __('Agents ok')
+				)
+			);
+			break;
+		case AGENT_STATUS_CRITICAL:
+			$image_status = html_print_image(
+				'images/status_sets/default/agent_critical.png',
+				true,
+				array(
+					'title' => __('Agents critical')
+				)
+			);
+		break;
+		case AGENT_STATUS_WARNING:
+			$image_status = html_print_image(
+				'images/status_sets/default/agent_warning.png',
+				true,
+				array(
+					'title' => __('Agents warning')
+				)
+			);
+		break;
+		case AGENT_STATUS_UNKNOWN:
+			$image_status = html_print_image(
+				'images/status_sets/default/agent_down.png',
+				true,
+				array(
+					'title' => __('Agents unknown')
+				)
+			);
+		break;
+		case AGENT_STATUS_ALERT_FIRED:
+			$image_status = 'alert';
+		break;
+		case AGENT_STATUS_NOT_INIT:
+			$image_status = html_print_image(
+				'images/status_sets/default/agent_no_data.png',
+				true,
+				array(
+					'title' => __('Agents not init')
+				)
+			);
+		break;
+		default:
+			$image_status= html_print_image(
+				'images/status_sets/default/agent_ok.png',
+				true,
+				array(
+					'title' => __('Agents ok')
+				)
+			);
+			break;
+	}
+	return $image_status;
 }
 ?>

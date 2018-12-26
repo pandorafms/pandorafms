@@ -27,14 +27,14 @@ email アクションを設定するには、_field1_ (送信先アドレス)、
 <ul>
     <li>_address_ : アラートが発生したエージェントのアドレス</li>
     <li>_address_n_ : "n" で示される位置に対応するエージェントのアドレス。例: address_1_ , address_2_</li>
-    <li>_agent_: Alias of the agent that triggered the alert. If there is no alias assigned, the name of the agent will be used instead.</li>
-    <li>_agentalias_: Alias of the agent that triggered the alert.</li>
+    <li>_agent_: アラートが発生したエージェントの別名。別名が無い場合は、エージェント名が利用されます。</li>
+    <li>_agentalias_: アラートが発生したエージェントの別名</li>
     <li>_agentcustomfield_<i>n</i>_ : エージェントカスタムフィールド番号<i>n</i> (例: _agentcustomfield_9_). </li>
     <li>_agentcustomid_: エージェントカスタムID</li>
     <li>_agentdescription_ : 発生したアラートの説明</li>
     <li>_agentgroup_ : エージェントグループ名</li>
     <li>_agentname_: アラートが発生したエージェント.</li>
-    <li>_agentos_: Agent's operative system</li>
+    <li>_agentos_: エージェントの OS</li>
     <li>_agentstatus_ : エージェントの現在の状態</li>
     <li>_alert_critical_instructions_: モジュールが障害状態の場合の手順</li>
     <li>_alert_description_ : アラートの説明</li>
@@ -48,9 +48,9 @@ email アクションを設定するには、_field1_ (送信先アドレス)、
     <li>_all_address_ : アラートを発報した全エージェントのアドレス</li>
     <li>_data_ : アラート発生時のモジュールのデータ(値)</li>
     <li>_email_tag_ : モジュールタグに関連付けられた Email。</li>
-    <li>_event_cfX_ : (イベントアラートのみ) アラートを発報したイベントのカスタムフィールドのキー。 For example, if there is a custom field whose key is IPAM, its value can be obtained using the _event_cfIPAM_ macro.</li>
+    <li>_event_cfX_ : (イベントアラートのみ) アラートを発報したイベントのカスタムフィールドのキー。 例えば、キーが IPAM のカスタムフィールドがある場合、_event_cfIPAM_ マクロにて値を得ることができます。</li>
     <li>_event_description_ :  (イベントアラートのみ) <?php echo get_product_name();?> イベントの説明 です</li>
-    <li>_event_extra_id_: (Only event alerts) Extra id.</li>
+    <li>_event_extra_id_: (イベントアラートのみ) 拡張 ID</li>
     <li>_event_id_ : (イベントアラートのみ) アラート発生元のイベントID</li>
     <li>_event_text_severity_ : (イベントアラートのみ) イベント(アラートの発生元)のテキストでの重要度 (Maintenance, Informational, Normal Minor, Warning, Major, Critical)</li>
     <li>_field1_ : ユーザ定義フィールド1</li>
@@ -91,7 +91,7 @@ email アクションを設定するには、_field1_ (送信先アドレス)、
     <li>_plugin_parameters_ : モジュールのプラグインパラメータ</li>
     <li>_policy_ : モジュールが属するポリシー名 (存在する場合)</li>
     <li>_prevdata_ : アラートを発報する前のモジュールデータ</li>
-	<li>_rca_: Root cause analysis chain (only for services).</li>
+    <li>_rca_: 根本原因分析 (サービスのみ).</li>
     <li>_server_ip_ : エージェントが割り当てられているサーバ IP。</li>
     <li>_server_name_ : エージェントが割り当てられているサーバ名。 </li>
     <li>_target_ip_ : モジュールの対象IPアドレス</li>

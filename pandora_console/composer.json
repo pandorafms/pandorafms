@@ -1,0 +1,14 @@
+{
+    "name": "Pandora FMS",
+    "description": "Pandora Flexible Monitoring System ",
+    "authors": [
+        {
+            "name": "Artica",
+            "email": "info@artica.es"
+        }
+    ],
+    "require": {
+        "mpdf/mpdf": "^7.1",
+        "swiftmailer/swiftmailer": "^6.0"
+    }
+}

@@ -32,8 +32,12 @@ echo "<div class='modalokbutton cerrar' style='margin-top: 10px'>
 <script>
 
 $(".cerrar").click(function(){
-  $("#alert_messages").hide();
-  $( "#opacidad" ).remove();
+  $("#alert_messages")
+  	.css('opacity', 0)
+  	.hide();
+  $( "#opacidad" )
+  	.css('opacity', 0)
+  	.remove();
 });
 
 </script>

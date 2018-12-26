@@ -50,7 +50,7 @@ if (is_ajax()) {
 		else {
 			snmp_browser_print_tree ($snmp_tree);
 			echo html_print_submit_button(__('Create network components'),'create_network_component', 
-				false, array('style' => 'display: none; position: fixed; bottom: 55px; right: 80px;', 'class' => 'sub add'), true);
+				false, array('style' => 'display: none; position: absolute; bottom: 0px; right: 35px;', 'class' => 'sub add'), true);
 				
 			echo '<div id="dialog_error" style="display: none" title="Network components">';
 			echo "<div>";

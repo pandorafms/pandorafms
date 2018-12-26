@@ -112,8 +112,14 @@ if ($create_special_day) {
 	$values = array();
 	$values['id_group'] = (string) get_parameter ('id_group');
 	$values['description'] = (string) get_parameter ('description');
-	
-	list($year, $month, $day) = explode("-", $date);
+
+
+	$array_date = explode("-", $date);
+
+	$year  = $array_date[0];
+	$month = $array_date[1];
+	$day   = $array_date[2];
+
 	if ($year == '*') {
 		# '0001' means every year.
 		$year = '0001';
@@ -130,6 +136,7 @@ if ($create_special_day) {
 		$date_check = db_get_value_filter ('date', 'talert_special_days', $filter);
 		if ($date_check == $date) {
 			$result = '';
+			$messageAction = __('Could not be created, it already exists');
 		}
 		else {
 			$result = alerts_create_alert_special_day ($date, $same_day, $values);
@@ -143,10 +150,16 @@ if ($create_special_day) {
 	else {
 		db_pandora_audit("Command management", "Fail try to create special day", false, false);
 	}
-	
-	ui_print_result_message ($result, 
+
+
+	/* Show errors */
+	if (!isset($messageAction)) {
+		$messageAction = __('Could not be created');
+	}
+
+	$messageAction = ui_print_result_message ($result,
 		__('Successfully created'),
-		__('Could not be created'));
+		$messageAction);	
 }
 
 if ($update_special_day) {
@@ -158,20 +171,25 @@ if ($update_special_day) {
 	$description = (string) get_parameter ('description');
 	$id_group = (string) get_parameter ('id_group');
 	$id_group_orig = (string) get_parameter ('id_group_orig');
-	
-	list($year, $month, $day) = explode("-", $date);
+
+	$array_date = explode("-", $date);
+
+	$year  = $array_date[0];
+	$month = $array_date[1];
+	$day   = $array_date[2];
+
 	if ($year == '*') {
 		# '0001' means every year.
 		$year = '0001';
 		$date = $year . '-' . $month . '-' . $day;
 	}
-	
+
 	$values = array ();
 	$values['date'] = $date;
 	$values['id_group'] = $id_group;
 	$values['same_day'] = $same_day;
 	$values['description'] = $description;
-	
+
 	if (!checkdate ($month, $day, $year)) {
 		$result = '';
 	}
@@ -183,6 +201,7 @@ if ($update_special_day) {
 			$date_check = db_get_value_filter ('date', 'talert_special_days', $filter);
 			if ($date_check == $date) {
 				$result = '';
+				$messageAction = __('Could not be updated, it already exists');
 			}
 			else {
 				$result = alerts_update_alert_special_day ($id, $values);
@@ -202,9 +221,15 @@ if ($update_special_day) {
 		db_pandora_audit("Command management", "Fail to update special day " . $id, false, false);
 	}
 	
-	ui_print_result_message ($result,
+
+	/* Show errors */
+	if (!isset($messageAction)) {
+		$messageAction = __('Could not be updated');
+	}
+
+	$messageAction = ui_print_result_message ($result,
 		__('Successfully updated'),
-		__('Could not be updated'));
+		$messageAction);
 }
 
 if ($delete_special_day) {

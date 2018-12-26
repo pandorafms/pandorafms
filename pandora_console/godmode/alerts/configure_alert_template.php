@@ -428,9 +428,21 @@ if ($create_template) {
 			json_encode($values));
 	}
 	
-	ui_print_result_message ($result,
+
+	/* Show errors */
+	if (!isset($messageAction)) {
+		$messageAction = __('Could not be created');
+	}
+	
+	if ($name == "") {
+		$messageAction = __('No template name specified');
+	}
+
+	$messageAction = ui_print_result_message ($result,
 		__('Successfully created'),
-		__('Could not be created'));
+		$messageAction);		
+
+	
 	/* Go to previous step in case of error */
 	if ($result === false)
 		$step = $step - 1;

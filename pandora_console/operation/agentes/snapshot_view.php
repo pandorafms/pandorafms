@@ -13,12 +13,8 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
-
-if (! isset($_SESSION['id_usuario'])) {
-	session_start();
-	//session_write_close();
-}
-
+// Don't start a session before this import.
+// The session is configured and started inside the config process.
 require_once ('../../include/config.php');
 require_once ($config['homedir'] . '/include/auth/mysql.php');
 require_once ($config['homedir'] . '/include/functions.php');
@@ -50,11 +46,23 @@ if ($id_node > 0) {
 	}
 }
 $row_module = modules_get_agentmodule($id);
-$row_state = db_get_row('tagente_estado', 'id_agente_modulo', $id);
+
+// Retrieve data
+$utimestamp = get_parameter("timestamp", '');
+if($utimestamp == '') {
+	// Retrieve last data
+	$row_state = db_get_row('tagente_estado', 'id_agente_modulo', $id);
+	$last_timestamp = date("Y-m-d H:i:s", $row_state['utimestamp']);
+} else {
+	// Retrieve target data
+	$state = db_get_row('tagente_estado', 'id_agente_modulo', $id, array('id_agente'));
+	$row_state = db_get_row_filter('tagente_datos_string', array('id_agente_modulo' => $id, 'utimestamp' => $utimestamp), false, 'AND', 1);
+	$row_state['id_agente'] = $state['id_agente'];
+	$last_timestamp = date("Y-m-d H:i:s", $row_state['utimestamp']);
+}
 
 // Build the info
 $label = get_parameter ("label", io_safe_output($row_module['module_name']));
-$last_timestamp = get_parameter("timestamp", $row_state['timestamp']);
 $last_data = io_safe_output($row_state["datos"]);
 $refresh = (int) get_parameter ("refr", $row_state['current_interval']);
 
@@ -76,7 +84,7 @@ if (!check_acl_one_of_groups($config['id_user'], $all_groups, "AR")) {
 		?>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 		<title><?php echo __("%s Snapshot data view for module (%s)", get_product_name(), $label); ?></title>
-		<script type='text/javascript' src='../../include/javascript/jquery-1.7.1.js'></script>
+		<script type='text/javascript' src='../../include/javascript/jquery-3.3.1.min.js'></script>
 	</head>
 	<body style='background:#000; color: #ccc;'>
 		<?php

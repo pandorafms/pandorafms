@@ -43,13 +43,13 @@ function db_select_engine() {
 	}
 }
 
-function db_connect($host = null, $db = null, $user = null, $pass = null, $port = null, $critical = true) {
+function db_connect($host = null, $db = null, $user = null, $pass = null, $port = null, $critical = true, $charset = null) {
 	global $config;
 	static $error = 0;
 	
 	switch ($config["dbtype"]) {
 		case "mysql": 
-			$return = mysql_connect_db($host, $db, $user, $pass, $port);
+			$return = mysql_connect_db($host, $db, $user, $pass, $port, $charset);
 			break;
 		case "postgresql":
 			$return = postgresql_connect_db($host, $db, $user, $pass, $port);
@@ -544,28 +544,30 @@ function db_get_module_ranges_unknown($id_agente_modulo, $tstart = false, $tend 
 
 	$return = array();
 	$i=0;
-	foreach ($events as $event) {
-		switch ($event["event_type"]) {
-			case "going_up_critical":
-			case "going_up_warning":
-			case "going_up_normal":
-			case "going_down_critical":
-			case "going_down_warning":
-			case "going_down_normal": {
-				if ($last_status == 1) {
-					$return[$i]["time_to"] = $event["utimestamp"];
-					$i++;
-					$last_status = 0;
+	if(is_array($events)){
+		foreach ($events as $event) {
+			switch ($event["event_type"]) {
+				case "going_up_critical":
+				case "going_up_warning":
+				case "going_up_normal":
+				case "going_down_critical":
+				case "going_down_warning":
+				case "going_down_normal": {
+					if ($last_status == 1) {
+						$return[$i]["time_to"] = $event["utimestamp"];
+						$i++;
+						$last_status = 0;
+					}
+					break;
 				}
-				break;
-			}
-			case "going_unknown":{
-				if ($last_status == 0){
-					$return[$i] = array();
-					$return[$i]["time_from"] = $event["utimestamp"];
-					$last_status = 1;
+				case "going_unknown":{
+					if ($last_status == 0){
+						$return[$i] = array();
+						$return[$i]["time_from"] = $event["utimestamp"];
+						$last_status = 1;
+					}
+					break;
 				}
-				break;
 			}
 		}
 	}
@@ -893,7 +895,7 @@ function db_uncompress_module_data($id_agente_modulo, $tstart = false, $tend = f
 		}
 
 		//sort current slice
-		if(count($return[$pool_id]['data'] > 1)) {
+		if(count($return[$pool_id]['data']) > 1) {
 			usort(
 				$return[$pool_id]['data'],
 				function ($a, $b) {
@@ -1654,28 +1656,12 @@ function db_get_type_field_table($table, $field) {
 }
 
 /**
- * Get the element count of a table.
+ * Get the columns of a table.
  * 
- * @param string $sql SQL query to get the element count.
+ * @param string $table table to retrieve columns.
  * 
- * @return int Return the number of elements in the table.
+ * @return array with column names.
  */
-function db_get_table_count($table, $search_history_db = false) {
-	global $config;
-	
-	switch ($config["dbtype"]) {
-		case "mysql":
-			return mysql_db_get_table_count($table, $search_history_db);
-			break;
-		case "postgresql":
-			return postgresql_db_get_table_count($table, $search_history_db);
-			break;
-		case "oracle":
-			return oracle_db_get_table_count($table, $search_history_db);
-			break;
-	}
-}
-
 function db_get_fields($table) {
 	global $config;
 	

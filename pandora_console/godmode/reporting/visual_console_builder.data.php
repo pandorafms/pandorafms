@@ -195,9 +195,9 @@ html_print_submit_button ($textButtonSubmit, 'update_layout', false,
 echo '</div>';
 
 echo "</form>";
+ui_require_css_file ("color-picker");
+ui_require_jquery_file ("colorpicker");
 ?>
-
-<script src="include/javascript/jquery.colorpicker.js"></script>
 
 <script type="text/javascript">
 

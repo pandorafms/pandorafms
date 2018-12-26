@@ -34,7 +34,7 @@ use PandoraFMS::Config;
 use PandoraFMS::DB;
 
 # version: define current version
-my $version = "7.0NG.728 PS181024";
+my $version = "7.0NG.730 PS181226";
 
 # Pandora server configuration
 my %conf;
@@ -297,7 +297,9 @@ sub pandora_purgedb ($$) {
 	    
 	    my $buffer = 1000;
 	    my $id_module = $module->{'id_agente_modulo'};
-	    
+
+		db_do ($dbh, 'UPDATE tagente_modulo SET parent_module_id=0 WHERE parent_module_id=?', $id_module);
+
 		log_message ('', ".");
 		
 		while(1) {
@@ -1040,8 +1042,20 @@ else {
 
 # Connect to the DB
 my $dbh = db_connect ($conf{'dbengine'}, $conf{'dbname'}, $conf{'dbhost'}, $conf{'dbport'}, $conf{'dbuser'}, $conf{'dbpass'});
-my $history_dbh = ($conf{'_history_db_enabled'} eq '1') ? db_connect ($conf{'dbengine'}, $conf{'_history_db_name'},
-		$conf{'_history_db_host'}, $conf{'_history_db_port'}, $conf{'_history_db_user'}, $conf{'_history_db_pass'}) : undef;
+my $history_dbh = undef;
+is_metaconsole(\%conf);
+if ($conf{'_history_db_enabled'} eq '1') {
+	eval {
+		$history_dbh = db_connect ($conf{'dbengine'}, $conf{'_history_db_name'}, $conf{'_history_db_host'}, $conf{'_history_db_port'}, $conf{'_history_db_user'}, $conf{'_history_db_pass'});
+	};
+	if ($@) {
+		if (is_offline(\%conf)) {
+			log_message ('!', "Cannot connect to the history database. Skipping.");
+		} else {
+			die ("$@\n");
+		}
+	}
+}
 
 # Get a lock
 my $lock = db_get_lock ($dbh, 'pandora_db');
@@ -1053,13 +1067,13 @@ if ($lock == 0 && $conf{'_force'} == 0) {
 # Main
 pandoradb_main(\%conf, $dbh, $history_dbh);
 
-# Cleanup and exit
-db_disconnect ($history_dbh) if defined ($history_dbh);
-db_disconnect ($dbh);
-
 # Release the lock
 if ($lock == 1) {
 	db_release_lock ($dbh, 'pandora_db');
 }
+
+# Cleanup and exit
+db_disconnect ($history_dbh) if defined ($history_dbh);
+db_disconnect ($dbh);
 
 exit 0;

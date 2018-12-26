@@ -81,8 +81,6 @@ if ($add_graph) {
 	$description = get_parameter_post ("description");
 	$module_number = get_parameter_post ("module_number");
 	$idGroup = get_parameter_post ('graph_id_group');
-	$width = get_parameter_post ("width");
-	$height = get_parameter_post ("height");
 	$stacked = get_parameter ("stacked", 0);
 	$period = get_parameter_post ("period");
 	$threshold = get_parameter('threshold');
@@ -102,8 +100,6 @@ if ($add_graph) {
 		'name' => $name,
 		'description' => $description,
 		'period' => $period,
-		'width' => $width,
-		'height' => $height,
 		'private' => 0,
 		'id_group' => $idGroup,
 		'stacked' => $stacked,
@@ -134,8 +130,6 @@ if ($update_graph) {
 	$name = get_parameter('name');
 	$id_group = get_parameter('graph_id_group');
 	$description = get_parameter('description');
-	$width = get_parameter('width');
-	$height = get_parameter('height');
 	$period = get_parameter('period');
 	$stacked = get_parameter('stacked');
 	$percentil = get_parameter('percentil');
@@ -195,7 +189,8 @@ if ($add_module) {
 		"')");
 	
 		if (count($id_agent_modules) > 0 && $id_agent_modules != '') {
-			$order = db_get_row_sql("SELECT `field_order` from tgraph_source ORDER BY `field_order` DESC");
+			$order = db_get_row_sql("SELECT `field_order` from tgraph_source WHERE id_graph=$id_graph ORDER BY `field_order` DESC");
+
 			$order = $order['field_order'];
 				foreach($id_agent_modules as $id_agent_module){
 					$order++;
@@ -207,8 +202,13 @@ if ($add_module) {
 }
 
 if ($delete_module) {
+	$id_graph = get_parameter('id');	
+		
 	$deleteGraph = get_parameter('delete');
+	$order_val = db_get_value('field_order', 'tgraph_source', 'id_gs', $deleteGraph);
 	$result = db_process_sql_delete('tgraph_source', array('id_gs' => $deleteGraph));
+	db_process_sql ('UPDATE tgraph_source SET field_order=field_order-1 WHERE id_graph='.$id_graph.' AND field_order>'.$order_val);
+
 }
 
 if ($change_weight) {

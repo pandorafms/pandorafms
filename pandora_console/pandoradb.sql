@@ -369,6 +369,7 @@ CREATE TABLE  IF NOT EXISTS `talert_commands` (
 	`id` int(10) unsigned NOT NULL auto_increment,
 	`name` varchar(100) NOT NULL default '',
 	`command` text,
+	`id_group` mediumint(8) unsigned NULL default 0,
 	`description` text,
 	`internal` tinyint(1) default 0,
 	`fields_descriptions` TEXT,
@@ -1111,7 +1112,6 @@ CREATE TABLE IF NOT EXISTS `tusuario` (
 	`language` varchar(10) default NULL,
 	`timezone` varchar(50) default '',
 	`block_size` int(4) NOT NULL DEFAULT 20,
-	`flash_chart` int(4) NOT NULL DEFAULT 1,
 	`id_skin` int(10) unsigned NOT NULL DEFAULT 0,
 	`disabled` int(4) NOT NULL DEFAULT 0,
 	`shortcut` tinyint(1) DEFAULT 0,
@@ -1134,6 +1134,7 @@ CREATE TABLE IF NOT EXISTS `tusuario` (
 	`default_event_filter` int(10) unsigned NOT NULL default 0,
 	`autorefresh_white_list` text not null default '',
 	`time_autorefresh` int(5) unsigned NOT NULL default '30',
+	`default_custom_view` int(10) unsigned NULL default '0',
 	CONSTRAINT `fk_filter_id` FOREIGN KEY (`id_filter`) REFERENCES tevent_filter (`id_filter`) ON DELETE SET NULL,
 	UNIQUE KEY `id_user` (`id_user`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -1250,6 +1251,7 @@ CREATE TABLE IF NOT EXISTS `treport` (
 	`metaconsole` tinyint(1) DEFAULT 0,
 	`non_interactive` tinyint(1) UNSIGNED NOT NULL default 0,
 	`hidden` tinyint(1) DEFAULT 0,
+	`orientation` varchar(25) NOT NULL default 'vertical',
 	PRIMARY KEY(`id_report`)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
@@ -2620,6 +2622,7 @@ CREATE TABLE IF NOT EXISTS `tevent_rule` (
 	`user_comment` text NOT NULL,
 	`id_tag` integer(10) unsigned NOT NULL default '0',
 	`name` text default '',
+	`group_recursion` INT(1) unsigned default 0,
 	PRIMARY KEY  (`id_event_rule`),
 	KEY `idx_id_event_alert` (`id_event_alert`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -3294,7 +3297,7 @@ CREATE TABLE IF NOT EXISTS `tautoconfig_actions` (
 -- ---------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tlayout_template` (
 	`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
-	`name` varchar(50)  NOT NULL,
+	`name` varchar(600)  NOT NULL,
 	`id_group` INTEGER UNSIGNED NOT NULL,
 	`background` varchar(200)  NOT NULL,
 	`height` INTEGER UNSIGNED NOT NULL default 0,
@@ -3356,5 +3359,22 @@ CREATE TABLE IF NOT EXISTS `tlog_graph_models` (
 	`regexp` TEXT NOT NULL,
 	`fields` TEXT NOT NULL,
 	`average` tinyint(1) NOT NULL default '0',
+	PRIMARY KEY(`id`)
+) ENGINE = InnoDB DEFAULT CHARSET=utf8;
+
+-- ---------------------------------------------------------------------
+-- Table `tagent_custom_fields_filter`
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tagent_custom_fields_filter` (
+	`id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+	`name` varchar(600) NOT NULL,
+	`id_group` int(10) unsigned default '0',
+	`id_custom_field` varchar(600) default '',
+	`id_custom_fields_data` varchar(600) default '',
+	`id_status` varchar(600) default '',
+	`module_search` varchar(600) default '',
+	`module_status` varchar(600) default '',
+	`recursion` int(1) unsigned default '0',
+	`group_search` int(10) unsigned default '0',
 	PRIMARY KEY(`id`)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;

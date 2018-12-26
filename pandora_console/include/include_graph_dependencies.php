@@ -19,14 +19,14 @@ function include_graphs_dependencies($home_url = '', $serialize_ttl = 1) {
 	global $config;
 	global $ttl;
 	global $homeurl;
-	
+
 	$ttl = $serialize_ttl;
 	$homeurl = $home_url;
 	include_once($homeurl . 'include/functions_io.php');
 	include_once($homeurl . 'include/functions.php');
 	include_once($homeurl . 'include/functions_html.php');
-	
-	if ($config['flash_charts'] && !defined('AJAX') && !get_parameter('static_graph',0)) {
+
+	if (!defined('AJAX') && !get_parameter('static_graph',0)) {
 		include_once($homeurl . 'include/graphs/functions_flot.php');
 	}
 	include_once($homeurl . 'include/graphs/functions_gd.php');

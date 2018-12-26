@@ -34,6 +34,11 @@ if (is_ajax ()) {
 		
 		// Decrypt passwords in the component.
 		$component['plugin_pass'] = io_output_password($component['plugin_pass']);
+
+		$component['str_warning'] = io_safe_output($component['str_warning']);
+		$component['str_critical'] = io_safe_output($component['str_critical']);
+		$component['warning_inverse'] = (bool)$component['warning_inverse'];
+		$component['critical_inverse'] = (bool)$component['critical_inverse'];
 		
 		echo io_json_mb_encode ($component);
 		return;
@@ -568,7 +573,7 @@ ui_require_javascript_file ('pandora_modules');
 ?>
 <script language="javascript">
 /* <![CDATA[ */
-var no_name_lang = "<?php echo __('No module name provided') ?>";
+var no_name_lang = "<?php echo __ui_print_info_message ( array('no_close'=>true, 'message'=>  __('No module name provided') ) ); ?>";
 var no_target_lang = "<?php echo __('No target IP provided') ?>";
 var no_oid_lang = "<?php echo __('No SNMP OID provided') ?>";
 var no_prediction_module_lang = "<?php echo __('No module to predict') ?>";

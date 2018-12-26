@@ -541,7 +541,7 @@ if (!empty($interfaces_list)) {
 	$table->data[0][1] = '';
 	$table->data[0][2] = '<b>'.__('Modules').'</b>';
 	
-	$table->data[1][0] = html_print_select ($interfaces_list, 'id_snmp[]', 0, false, '', '', true, true, true, '', false, 'width:500px;');
+	$table->data[1][0] = html_print_select ($interfaces_list, 'id_snmp[]', 0, false, '', '', true, true, true, '', false, 'width:500px; overflow: auto;');
 	$table->data[1][1] = html_print_image('images/darrowright.png', true);
 	$table->data[1][2] = html_print_select (array (), 'module[]', 0, false, '', 0, true, true, true, '', false, 'width:200px;');
 	$table->data[1][2] .= html_print_input_hidden('agent', $id_agent, true);

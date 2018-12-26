@@ -111,7 +111,7 @@ else {
 	$table->align[1] = "left";
 	$table->align[2] = "left";
 	$table->align[3] = "left";
-	$table->align[4] = "left";
+	$table->align[4] = "right";
 	
 	$table->size[0] = "20px";
 	$table->size[1] = "100px";
@@ -125,7 +125,7 @@ else {
 		$table->head[1] = __('Sender');
 	$table->head[2] = __('Subject');
 	$table->head[3] = __('Timestamp');
-	$table->head[4] = __('Delete'). html_print_checkbox('all_delete', 0, false, true, false, 'check_all_checkboxes();');
+	$table->head[4] = __('Delete'). html_print_checkbox('all_delete_messages', 0, false, true, false);
 	
 	foreach ($messages as $message_id => $message) {
 		$data = array ();
@@ -192,13 +192,13 @@ else {
 			$data[4] = '<a href="index.php?sec=message_list&amp;sec2=operation/messages/message_list&show_sent=1&delete_message=1&id='.$message_id.'"
 				onClick="javascript:if (!confirm(\''.__('Are you sure?').'\')) return false;">' .
 				html_print_image ('images/cross.png', true, array("title" => __('Delete'))) . '</a>'.
-				html_print_checkbox_extended ('delete_multiple[]', $message_id, false, false, '', 'class="check_delete"', true);
+				html_print_checkbox_extended ('delete_multiple_messages[]', $message_id, false, false, '', 'class="check_delete_messages"', true);
 		}
 		else {
 			$data[4] = '<a href="index.php?sec=message_list&amp;sec2=operation/messages/message_list&delete_message=1&id='.$message_id.'"
 				onClick="javascript:if (!confirm(\''.__('Are you sure?').'\')) return false;">' .
 				html_print_image ('images/cross.png', true, array("title" => __('Delete'))) . '</a>'.
-				html_print_checkbox_extended ('delete_multiple[]', $message_id, false, false, '', 'class="check_delete"', true);
+				html_print_checkbox_extended ('delete_multiple_messages[]', $message_id, false, false, '', 'class="check_delete_messages"', true);
 		}
 		array_push ($table->data, $data);
 	}
@@ -229,12 +229,29 @@ echo "</div>";
 ?>
 
 <script type="text/javascript">
-	function check_all_checkboxes() {
-		if ($("input[name=all_delete]").prop('checked')) {
-			$(".check_delete").prop('checked', true);
-		}
-		else {
-			$(".check_delete").prop('checked', false);
-		}
-	}
+
+	$( document ).ready(function() {
+
+		$('[id^=checkbox-delete_multiple_messages]').change(function(){
+			if($(this).parent().parent().hasClass('checkselected')){
+				$(this).parent().parent().removeClass('checkselected');
+			}
+			else{
+				$(this).parent().parent().addClass('checkselected');							
+			}
+		});
+
+		$('[id^=checkbox-all_delete_messages]').change(function(){	
+			if ($("#checkbox-all_delete_messages").prop("checked")) {
+				$('[id^=checkbox-delete_multiple_messages]').parent().parent().addClass('checkselected');
+				$(".check_delete_messages").prop("checked", true);
+			}
+			else{
+				$('[id^=checkbox-delete_multiple_messages]').parent().parent().removeClass('checkselected');
+				$(".check_delete_messages").prop("checked", false);
+			}	
+		});
+
+	});
+
 </script>

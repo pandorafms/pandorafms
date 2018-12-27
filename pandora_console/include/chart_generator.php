@@ -63,7 +63,7 @@ if (file_exists ('languages/'.$user_language.'.mo')) {
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 		<title>Pandora FMS Graph (<?php echo agents_get_alias($agent_id) . ' - ' . $interface_name; ?>)</title>
-        <link rel="stylesheet" href="styles/pandora.css" type="text/css" />
+		<link rel="stylesheet" href="styles/pandora.css" type="text/css" />
 		<link rel="stylesheet" href="styles/pandora_minimal.css" type="text/css" />
 		<link rel="stylesheet" href="styles/jquery-ui.min.css" type="text/css" />
 		<script language="javascript" type='text/javascript' src='javascript/pandora.js'></script>

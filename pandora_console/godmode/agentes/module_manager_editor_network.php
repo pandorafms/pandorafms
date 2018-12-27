@@ -251,10 +251,6 @@ snmp_browser_print_container (false, '100%', '60%', 'none');
 ?>
 <script type="text/javascript">
 $(document).ready (function () {
-
-	network_component_group_change_event();
-	$('#network_component_group').trigger('change');
-
 	$("#id_module_type").change(function (){
 		if ((this.value == "17") || (this.value == "18") || (this.value == "16") || (this.value == "15")) {
 			if ($("#snmp_version").val() == "3"){

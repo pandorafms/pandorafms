@@ -25,10 +25,20 @@
 	};
 
 	$.fn.showMessage = function (msg) {
-		return $(this).hide ().empty ()
-				.text (msg)
-				.slideDown ();
-		};
+		return $(this)
+			.hide ()
+			.empty ()
+			.html (
+				'<table cellspacing="0" cellpadding="0" id="" class="info_box error textodialogo" style="">'
+					+ '<tbody>' + '<tr>'
+					+ '<td class="icon" rowspan="2" style="padding-right: 10px; padding-top: 3px;"><img src="http://localhost/pandora_console/images/err.png"></td>'
+					+ '<td class="title" style="text-transform: uppercase; padding-top: 10px;"><b>Error</b></td>'
+					+ '</tr><tr>'
+					+ '<td style="color:#333;padding-top:10px">'+msg+'</td>'
+					+ '<td></td></tr></tbody></table>'
+			)
+			.slideDown ();
+	};
 }) (jQuery);
 
 $(document).ready (function () {

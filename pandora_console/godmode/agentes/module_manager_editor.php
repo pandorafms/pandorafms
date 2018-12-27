@@ -573,7 +573,7 @@ ui_require_javascript_file ('pandora_modules');
 ?>
 <script language="javascript">
 /* <![CDATA[ */
-var no_name_lang = "<?php echo __ui_print_info_message ( array('no_close'=>true, 'message'=>  __('No module name provided') ) ); ?>";
+var no_name_lang = "<?php echo __('No module name provided') ?>";
 var no_target_lang = "<?php echo __('No target IP provided') ?>";
 var no_oid_lang = "<?php echo __('No SNMP OID provided') ?>";
 var no_prediction_module_lang = "<?php echo __('No module to predict') ?>";
@@ -582,9 +582,6 @@ var no_execute_test_from = "<?php echo __('No server provided') ?>"
 
 $(document).ready (function () {
 	configure_modules_form ();
-	
-
-
 
 	$("#module_form").submit(function() {
 		if (typeof(check_remote_conf) != 'undefined') { 

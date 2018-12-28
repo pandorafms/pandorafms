@@ -48,8 +48,6 @@ CREATE TABLE IF NOT EXISTS `tlocal_component` (
 	`dynamic_interval` int(4) unsigned default '0',
 	`dynamic_max` int(4) default '0',
 	`dynamic_min` int(4) default '0',
-	`dynamic_next` bigint(20) NOT NULL default '0',
-	`dynamic_two_tailed` tinyint(1) unsigned default '0',
 	`prediction_sample_window` int(10) default 0,
 	`prediction_samples` int(4) default 0,
 	`prediction_threshold` int(4) default 0,
@@ -57,6 +55,9 @@ CREATE TABLE IF NOT EXISTS `tlocal_component` (
 	FOREIGN KEY (`id_network_component_group`) REFERENCES tnetwork_component_group(`id_sg`)
 		ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+ALTER TABLE `tlocal_component` ADD COLUMN `dynamic_next` bigint(20) NOT NULL default '0';
+ALTER TABLE `tlocal_component` ADD COLUMN `dynamic_two_tailed` tinyint(1) unsigned default '0';
 
 -- -----------------------------------------------------
 -- Table `tpolicy_modules`
@@ -125,8 +126,6 @@ CREATE TABLE IF NOT EXISTS `tpolicy_modules` (
 	`dynamic_interval` int(4) unsigned default '0',
 	`dynamic_max` int(4) default '0',
 	`dynamic_min` int(4) default '0',
-	`dynamic_next` bigint(20) NOT NULL default '0',
-	`dynamic_two_tailed` tinyint(1) unsigned default '0',
 	`prediction_sample_window` int(10) default 0,
 	`prediction_samples` int(4) default 0,
 	`prediction_threshold` int(4) default 0,
@@ -134,6 +133,9 @@ CREATE TABLE IF NOT EXISTS `tpolicy_modules` (
 	KEY `main_idx` (`id_policy`),
 	UNIQUE (`id_policy`, `name`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+
+ALTER TABLE `tpolicy_modules` ADD COLUMN `dynamic_next` bigint(20) NOT NULL default '0';
+ALTER TABLE `tpolicy_modules` ADD COLUMN `dynamic_two_tailed` tinyint(1) unsigned default '0';
 
 -- ---------------------------------------------------------------------
 -- Table `tpolicies`
@@ -177,10 +179,12 @@ CREATE TABLE IF NOT EXISTS `tpolicy_agents` (
 	`policy_applied` tinyint(1) unsigned default '0',
 	`pending_delete` tinyint(1) unsigned default '0',
 	`last_apply_utimestamp` int(10) unsigned NOT NULL default 0,
-	`id_node` int(10) NOT NULL DEFAULT '0',
 	PRIMARY KEY  (`id`),
-	UNIQUE (`id_policy`, `id_agent`, `id_node`)
+	UNIQUE (`id_policy`, `id_agent`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+
+ALTER TABLE `tpolicy_agents` ADD COLUMN `id_node` int(10) NOT NULL DEFAULT '0';
+ALTER TABLE `tpolicy_agents` ADD UNIQUE(`id_policy`, `id_agent`, `id_node`);
 
 -- -----------------------------------------------------
 -- Table `tpolicy_groups`
@@ -286,13 +290,14 @@ CREATE TABLE IF NOT EXISTS `tagent_module_inventory` (
 	`utimestamp` bigint(20) default '0',
 	`flag` tinyint(1) unsigned default '1',
 	`id_policy_module_inventory` int(10) NOT NULL default '0',
-	`custom_fields` MEDIUMBLOB NOT NULL,
 	PRIMARY KEY  (`id_agent_module_inventory`),
 	FOREIGN KEY (`id_agente`) REFERENCES tagente(`id_agente`)
 		ON UPDATE CASCADE ON DELETE CASCADE,
 	FOREIGN KEY (`id_module_inventory`) REFERENCES tmodule_inventory(`id_module_inventory`)
 		ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+ALTER TABLE `tagent_module_inventory` ADD COLUMN `custom_fields` MEDIUMBLOB NOT NULL;
 
 -- ---------------------------------------------------------------------
 -- Table `tpolicy_modules_inventory`
@@ -305,13 +310,14 @@ CREATE TABLE IF NOT EXISTS `tpolicy_modules_inventory` (
 	`username` varchar(100) default '',
 	`password` varchar(100) default '',
 	`pending_delete` tinyint(1) default '0',
-	`custom_fields` MEDIUMBLOB NOT NULL,
 	PRIMARY KEY  (`id`),
 	FOREIGN KEY (`id_policy`) REFERENCES tpolicies(`id`)
 		ON UPDATE CASCADE ON DELETE CASCADE,
 	FOREIGN KEY (`id_module_inventory`) REFERENCES tmodule_inventory(`id_module_inventory`)
 		ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+ALTER TABLE `tpolicy_modules_inventory` ADD COLUMN `custom_fields` MEDIUMBLOB NOT NULL;
 
 -- -----------------------------------------------------
 -- Table `tagente_datos_inventory`
@@ -344,18 +350,13 @@ CREATE TABLE IF NOT EXISTS `ttrap_custom_values` (
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tmetaconsole_setup` (
 	`id` int(10) NOT NULL auto_increment primary key,
-	`server_name` text,
-	`server_url` text,
-	`dbuser` text,
-	`dbpass` text,
-	`dbhost` text,
-	`dbport` text,
-	`dbname` text,
-	`meta_dbuser` text,
-	`meta_dbpass` text,
-	`meta_dbhost` text,
-	`meta_dbport` text,
-	`meta_dbname` text,
+	`server_name` text default '',
+	`server_url` text default '',
+	`dbuser` text default '',
+	`dbpass` text default '',
+	`dbhost` text default '',
+	`dbport` text default '',
+	`dbname` text default '',
 	`auth_token` text default '',
 	`id_group` int(10) unsigned NOT NULL default 0,
 	`api_password` text NOT NULL,
@@ -364,6 +365,12 @@ CREATE TABLE IF NOT EXISTS `tmetaconsole_setup` (
 ) ENGINE=InnoDB 
 COMMENT = 'Table to store metaconsole sources' 
 DEFAULT CHARSET=utf8;
+
+ALTER TABLE tmetaconsole_setup ADD COLUMN `meta_dbuser` text;
+ALTER TABLE tmetaconsole_setup ADD COLUMN `meta_dbpass` text;
+ALTER TABLE tmetaconsole_setup ADD COLUMN `meta_dbhost` text;
+ALTER TABLE tmetaconsole_setup ADD COLUMN `meta_dbport` text;
+ALTER TABLE tmetaconsole_setup ADD COLUMN `meta_dbname` text;
 
 -- ---------------------------------------------------------------------
 -- Table `tprofile_view`
@@ -547,10 +554,11 @@ CREATE TABLE IF NOT EXISTS `tevent_rule` (
 	`user_comment` text NOT NULL,
 	`id_tag` integer(10) unsigned NOT NULL default '0',
 	`name` text default '',
-	`group_recursion` INT(1) unsigned default 0,
 	PRIMARY KEY  (`id_event_rule`),
 	KEY `idx_id_event_alert` (`id_event_alert`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+ALTER TABLE `tevent_rule` ADD COLUMN `group_recursion` INT(1) unsigned default 0;
 
 -- -----------------------------------------------------
 -- Table `tevent_alert`
@@ -748,13 +756,14 @@ CREATE TABLE IF NOT EXISTS `treport_content_template` (
 	`module_names` TEXT,
 	`module_free_text` TEXT,
 	`each_agent` tinyint(1) default 1,
-	`historical_db` tinyint(1) UNSIGNED NOT NULL default 0,
-	`lapse_calc` tinyint(1) UNSIGNED NOT NULL default '0',
-	`lapse` int(11) UNSIGNED NOT NULL default '300',
-	`visual_format` tinyint(1) UNSIGNED NOT NULL default '0',
-	`hide_no_data` tinyint(1) default 0,
 	PRIMARY KEY(`id_rc`)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
+
+ALTER TABLE treport_content_template ADD COLUMN `historical_db` tinyint(1) NOT NULL DEFAULT '0';
+ALTER TABLE treport_content_template ADD COLUMN `lapse_calc` tinyint(1) default '0';
+ALTER TABLE treport_content_template ADD COLUMN `lapse` int(11) default '300';
+ALTER TABLE treport_content_template ADD COLUMN `visual_format` tinyint(1) default '0';
+ALTER TABLE treport_content_template ADD COLUMN `hide_no_data` tinyint(1) default '0';
 
 -- -----------------------------------------------------
 -- Table `treport_content_sla_com_temp` (treport_content_sla_combined_template)
@@ -851,8 +860,6 @@ CREATE TABLE IF NOT EXISTS `tmetaconsole_event` (
 	`ack_utimestamp` BIGINT(20) NOT NULL DEFAULT '0',
 	`server_id` int(10) NOT NULL,
 	`custom_data` TEXT NOT NULL DEFAULT '',
-	`data` double(22,5) default NULL,
-	`module_status` int(4) NOT NULL default '0',
 	PRIMARY KEY  (`id_evento`),
 	KEY `idx_agente` (`id_agente`),
 	KEY `idx_agentmodule` (`id_agentmodule`),
@@ -865,6 +872,9 @@ CREATE TABLE IF NOT EXISTS `tmetaconsole_event` (
 -- Criticity: 4 - Critical (red) (status 1)
 -- Criticity: 5 - Minor
 -- Criticity: 6 - Major
+
+ALTER TABLE `tmetaconsole_event` ADD COLUMN `data` double(22,5) default NULL;
+ALTER TABLE `tmetaconsole_event` ADD COLUMN `module_status` int(4) NOT NULL default '0';
 
 -- ---------------------------------------------------------------------
 -- Table `tmetaconsole_event_history`
@@ -898,8 +908,6 @@ CREATE TABLE IF NOT EXISTS `tmetaconsole_event_history` (
 	`ack_utimestamp` BIGINT(20) NOT NULL DEFAULT '0',
 	`server_id` int(10) NOT NULL,
 	`custom_data` TEXT NOT NULL DEFAULT '',
-	`data` double(22,5) default NULL,
-	`module_status` int(4) NOT NULL default '0',
 	PRIMARY KEY  (`id_evento`),
 	KEY `idx_agente` (`id_agente`),
 	KEY `idx_agentmodule` (`id_agentmodule`),
@@ -913,6 +921,8 @@ CREATE TABLE IF NOT EXISTS `tmetaconsole_event_history` (
 -- Criticity: 5 - Minor
 -- Criticity: 6 - Major
 
+ALTER TABLE `tmetaconsole_event_history` ADD COLUMN `data` double(22,5) default NULL;
+ALTER TABLE `tmetaconsole_event_history` ADD COLUMN `module_status` int(4) NOT NULL default '0';
 -- ---------------------------------------------------------------------
 -- Table `textension_translate_string`
 -- ---------------------------------------------------------------------
@@ -965,12 +975,10 @@ CREATE TABLE IF NOT EXISTS `tmetaconsole_agent` (
 	`agent_version` varchar(100) default '',
 	`ultimo_contacto_remoto` datetime default '1970-01-01 00:00:00',
 	`disabled` tinyint(2) NOT NULL default '0',
-	`remote` tinyint(1) NOT NULL default '0',
 	`id_parent` int(10) unsigned default '0',
 	`custom_id` varchar(255) default '',
 	`server_name` varchar(100) default '',
 	`cascade_protection` tinyint(2) NOT NULL default '0',
-	`cascade_protection_module` int(10) unsigned default '0',
 	`timezone_offset` TINYINT(2) NULL DEFAULT '0' COMMENT 'number of hours of diference with the server timezone' ,
 	`icon_path` VARCHAR(127) NULL DEFAULT NULL COMMENT 'path in the server to the image of the icon representing the agent' ,
 	`update_gis_data` TINYINT(1) NOT NULL DEFAULT '1' COMMENT 'set it to one to update the position data (altitude, longitude, latitude) when getting information from the agent or to 0 to keep the last value and do not update it' ,
@@ -985,8 +993,6 @@ CREATE TABLE IF NOT EXISTS `tmetaconsole_agent` (
 	`fired_count` bigint(20) NOT NULL default '0',
 	`update_module_count` tinyint(1) NOT NULL default '0',
 	`update_alert_count` tinyint(1) NOT NULL default '0',
-	`transactional_agent` tinyint(1) NOT NULL default '0',
-	`alias` varchar(600) BINARY NOT NULL default '',
 	PRIMARY KEY  (`id_agente`),
 	KEY `nombre` (`nombre`(255)),
 	KEY `direccion` (`direccion`),
@@ -994,6 +1000,11 @@ CREATE TABLE IF NOT EXISTS `tmetaconsole_agent` (
 	KEY `id_grupo` (`id_grupo`),
 	FOREIGN KEY (`id_tmetaconsole_setup`) REFERENCES tmetaconsole_setup(`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+
+ALTER TABLE tmetaconsole_agent ADD COLUMN `remote` tinyint(1) NOT NULL default '0';
+ALTER TABLE tmetaconsole_agent ADD COLUMN `cascade_protection_module` int(10) default '0';
+ALTER TABLE tmetaconsole_agent ADD COLUMN `transactional_agent` tinyint(1) NOT NULL default '0';
+ALTER TABLE tmetaconsole_agent ADD COLUMN `alias` VARCHAR(600) not null DEFAULT '';
 
 -- ---------------------------------------------------------------------
 -- Table `ttransaction`

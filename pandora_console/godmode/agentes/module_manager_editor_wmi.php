@@ -44,8 +44,8 @@ else {
 $data = array ();
 $data[0] = __('Target IP');
 $data[1] = html_print_input_text ('ip_target', $ip_target, '', 15, 60, true);
-$data[2] = __('Namespace');
-$data[2] .= ui_print_help_icon ('wminamespace', true);
+$data[2] = __('Namespace') .
+	 ui_print_help_tip (__("Optional. WMI namespace. If unsure leave blank."), true);
 $data[3] = html_print_input_text ('tcp_send', $tcp_send, '', 5, 20, true, $disabledBecauseInPolicy, false,
 									'', $classdisabledBecauseInPolicy);
 push_table_simple ($data, 'target_ip');
@@ -70,12 +70,12 @@ $table_simple->colspan['wmi_query'][1] = 3;
 push_table_simple ($data, 'wmi_query');
 
 $data = array ();
-$data[0] = __('Key string');
-$data[0] .= ui_print_help_icon ('wmikey', true);
+$data[0] = __('Key string') .
+	ui_print_help_tip (__("Optional. Substring to look for in the WQL query result. The module returns 1 if found, 0 if not."), true);
 $data[1] = html_print_input_text ('snmp_community', $snmp_community, '', 20, 60, true, $disabledBecauseInPolicy, false,
 									 '', $classdisabledBecauseInPolicy);
-$data[2] = __('Field number');
-$data[2] .= ui_print_help_icon ('wmifield', true);
+$data[2] = __('Field number').
+	ui_print_help_tip (__("Column number to retrieve from the WQL query result (starting from zero)."), true);
 $data[3] = html_print_input_text ('tcp_port', $tcp_port, '', 5, 15, true, $disabledBecauseInPolicy, false,
 									 '', $classdisabledBecauseInPolicy);
 

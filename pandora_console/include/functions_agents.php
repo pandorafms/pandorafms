@@ -827,7 +827,8 @@ function agents_get_group_agents (
 	
 	$filter = array();
 	
-	if (!$noACL) {
+	// check available groups for target user only if asking for 'All' group
+	if (!$noACL && $id_group == 0) {
 		$id_group = $id_group == 0
 			? array_keys(users_get_groups(false, "AR", false))
 			: groups_safe_acl($config["id_user"], $id_group, "AR");
@@ -848,7 +849,8 @@ function agents_get_group_agents (
 			$id_group = groups_get_id_recursive($id_group, true);
 		}
 		
-		if (!$noACL) {
+		// check available groups for target user only if asking for 'All' group
+		if (!$noACL && $id_group == 0) {
 			$id_group = array_keys(
 				users_get_groups(false, "AR", true, false, (array)$id_group));
 		}

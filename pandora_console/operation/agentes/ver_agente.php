@@ -110,7 +110,7 @@ if (is_ajax ()) {
 		}
 
 		// Perform search
-		$agents = agents_get_group_agents($id_group,$filter,"lower",false,false,false,'|',$cluster_mode);
+		$agents = agents_get_group_agents($id_group,$filter,"lower",false,$recursion,false,'|',$cluster_mode);
 		if (empty($agents)) $agents = array();
 
 		// Add keys prefix

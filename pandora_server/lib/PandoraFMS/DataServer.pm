@@ -491,13 +491,13 @@ sub process_xml_data ($$$$$) {
 
 	                                                $field_agent->{'id_agent'} = $agent_id;
 	                                                $field_agent->{'id_field'} = $custom_field_info->{'id_field'};
-	                                                $field_agent->{'description'} = $cf_value;
+	                                                $field_agent->{'description'} = safe_input($cf_value);
 
         	                                        db_process_insert($dbh, 'id_field', 'tagent_custom_data', $field_agent);
 						} else {
 							
 							db_update ($dbh, "UPDATE tagent_custom_data SET description = ? WHERE id_field = ? AND id_agent = ?",
-									$cf_value ,$custom_field_info->{"id_field"}, $agent->{'id_agente'});
+									safe_input($cf_value), $custom_field_info->{"id_field"}, $agent->{'id_agente'});
 						}
                                         }
                                         else {

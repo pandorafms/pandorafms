@@ -1377,7 +1377,7 @@ function is_management_allowed($hkey = '') {
 	global $config;
 	return ( (is_metaconsole() && $config["centralized_management"])
 		|| (!is_metaconsole() && !$config["centralized_management"])
-		|| (!is_metaconsole() && $config["centralized_management"]) && $hkey == hash('sha256', db_get_value ('value', 'tupdate_settings', 'token', 'customer_key')));
+		|| (!is_metaconsole() && $config["centralized_management"]) && $hkey == generate_hash_to_api());
 }
 
 /**
@@ -1787,10 +1787,7 @@ function check_login ($output = true) {
 	}
 	else {
 		require_once($config["homedir"].'/mobile/include/user.class.php');
-		if(session_id() == '') {
-			session_start ();
-		}
-		session_write_close ();
+
 		if (isset($_SESSION['user'])) {
 			$user = $_SESSION['user'];
 			$id_user = $user->getIdUser();
@@ -3323,12 +3320,13 @@ function generator_chart_to_pdf($type_graph_pdf, $params, $params_combined = fal
 		. ' "' . $session_id . '"'
 		. ' "' . $params['return_img_base_64'] . '"';
 
-	$result = exec($cmd);
+	exec($cmd, $result);
+	$img_content = join("\n", $result);
 
 	if($params['return_img_base_64']){
 		// To be used in alerts
 		$width_img  = 500;
-		return $result;
+		return $img_content;
 	}
 	else{
 		// to be used in PDF files
@@ -3372,7 +3370,7 @@ function get_copyright_notice () {
  */
 function generate_csrf_code() {
 	// Start session to make this var permanent
-	session_start();
+	if (session_status() === PHP_SESSION_NONE) session_start();
 	$_SESSION['csrf_code'] = md5(uniqid(mt_rand(), true));
 	session_write_close();
 	return $_SESSION['csrf_code'];
@@ -3388,4 +3386,8 @@ function validate_csrf_code() {
 	return isset($code) && isset($_SESSION['csrf_code'])
 		&& $_SESSION['csrf_code'] == $code;
 }
+
+function generate_hash_to_api(){
+	hash('sha256', db_get_value ('value', 'tupdate_settings', '`key`', 'customer_key'));
+	}
 ?>

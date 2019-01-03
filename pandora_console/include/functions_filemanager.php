@@ -495,17 +495,13 @@ function filemanager_file_explorer($real_directory, $relative_directory,
 	
 	if ($homedir_filemanager === false) {
 		$homedir_filemanager = $config['homedir'];
-		unset($config['homedir_filemanager']);
-		config_update_value('homedir_filemanager',
-			$homedir_filemanager);
 	}
-	else {
-		$config['homedir_filemanager'] = $homedir_filemanager;
-		
-	}
-	
-	
-	
+	unset($config['homedir_filemanager']);
+	config_update_value(
+		'homedir_filemanager',
+		$homedir_filemanager
+	);
+
 	$hack_metaconsole = '';
 	if (defined('METACONSOLE'))
 		$hack_metaconsole = '../../';
@@ -743,11 +739,11 @@ function filemanager_file_explorer($real_directory, $relative_directory,
 		//Actions buttons
 		//Delete button
 		$data[4] = '';
-		$data[4] .= '<span style="">';
+		$data[4] .= '<span style="display: flex">';
 		$typefile = array_pop(explode(".",$fileinfo['name']));
 		if (is_writable ($fileinfo['realpath'])  &&
-			(! is_dir ($fileinfo['realpath']) || count (scandir ($fileinfo['realpath'])) < 3)) {
-			$data[4] .= '<form method="post" action="' . $url . '" style="display: inline;">';
+			(! is_dir ($fileinfo['realpath']) || count (scandir ($fileinfo['realpath'])) < 3) && (!$readOnly)) {
+			$data[4] .= '<form method="post" action="' . $url . '" style="">';
 			$data[4] .= '<input type="image" src="images/cross.png" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
 			$data[4] .= html_print_input_hidden ('filename', $fileinfo['realpath'], true);
 			$data[4] .= html_print_input_hidden('hash', md5($fileinfo['realpath'] . $config['dbpass']), true);

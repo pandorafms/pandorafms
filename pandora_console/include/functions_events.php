@@ -95,25 +95,23 @@ function events_get_events ($filter = false, $fields = false) {
  * 
  * @return mixed False in case of error or invalid values passed. Event row otherwise
  */
-function events_get_event ($id, $fields = false, $meta = false) {
-     if (empty ($id))
-             return false;
-     global $config;
-     
-     if (is_array ($fields)) {
-             if (! in_array ('id_grupo', $fields))
-                     $fields[] = 'id_grupo';
-     }
+function events_get_event ($id, $fields = false, $meta = false, $history = false) {
+	if (empty ($id))
+		return false;
+	global $config;
+	
+	if (is_array ($fields)) {
+		if (! in_array ('id_grupo', $fields))
+			$fields[] = 'id_grupo';
+	}
 
-     if ($meta === true){
-             $event = db_get_row ('tmetaconsole_event', 'id_evento', $id, $fields);       
-     }else{
-             $event = db_get_row ('tevento', 'id_evento', $id, $fields);
-     }  
-     if (! check_acl ($config['id_user'], $event['id_grupo'], 'ER'))
-             return false;
-
-     return $event;
+	$table = events_get_events_table($meta, $history);
+	
+	$event = db_get_row ($table, 'id_evento', $id, $fields);
+	if (! check_acl ($config['id_user'], $event['id_grupo'], 'ER'))
+		return false;
+	
+	return $event;
 }
 function events_get_events_no_grouped($sql_post, $offset = 0,
 	$pagination = 1, $meta = false, $history = false, $total = false, 
@@ -855,10 +853,12 @@ function events_print_event_table ($filter = "", $limit = 10, $width = 440, $ret
 		$filter = '1 = 1';
 	}
 
+	$secondary_join = "LEFT JOIN tagent_secondary_group tasg ON tevento.id_agente = tasg.id_agent";
+
 	$sql = sprintf ("SELECT DISTINCT tevento.*
-		FROM tevento LEFT JOIN tagent_secondary_group tasg ON tevento.id_agente = tasg.id_agent
+		FROM tevento %s
 		WHERE %s %s
-		ORDER BY utimestamp DESC LIMIT %d", $agent_condition, $filter, $limit);
+		ORDER BY utimestamp DESC LIMIT %d", $secondary_join, $agent_condition, $filter, $limit);
 
 	$result = db_get_all_rows_sql ($sql);
 
@@ -1892,7 +1892,7 @@ function events_get_response_target($event_id, $response_id, $server_id, $histor
 			);
 			
 			if($meta) {
-				metaconsole_restore_db_force();
+				metaconsole_restore_db();
 			}
 		} else {
 			$target = str_replace('_module_address_', __('N/A'), $target);

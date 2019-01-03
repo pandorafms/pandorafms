@@ -690,7 +690,8 @@ function flot_slicesbar_graph (
 	$round_corner, $homeurl, $watermark = '',
 	$adapt_key = '', $stat_win = false,
 	$id_agent = 0, $full_legend_date = array(),
-	$not_interactive = 0, $ttl = 1) {
+	$not_interactive = 0, $ttl = 1,
+	$widgets = false, $show = true) {
 
 	global $config;
 
@@ -705,13 +706,15 @@ function flot_slicesbar_graph (
 			'fontpath' => $fontpath,
 			'round_corner' => $round_corner,
 			'homeurl' => $homeurl,
-			'watermark' => $watermark = '',
-			'adapt_key' => $adapt_key = '',
-			'stat_win' => $stat_win = false,
-			'id_agent' => $id_agent = 0,
-			'full_legend_date' => $full_legend_date = array(),
-			'not_interactive' => $not_interactive = 0,
-			'ttl' => $ttl = 1
+			'watermark' => $watermark,
+			'adapt_key' => $adapt_key,
+			'stat_win' => $stat_win,
+			'id_agent' => $id_agent,
+			'full_legend_date' => $full_legend_date,
+			'not_interactive' => $not_interactive,
+			'ttl' => 1,
+			'widgets' => $widgets,
+			'show' => $show
 		);
 
 		return generator_chart_to_pdf('slicebar', $params);
@@ -725,7 +728,12 @@ function flot_slicesbar_graph (
 		$return = "<div id='$graph_id' class='noresizevc graph $adapt_key' style='width: ".$width."%; height: ".$height."px; display: inline-block;'></div>";
 	}
 	else {
-		$return = "<div id='$graph_id' class='noresizevc graph $adapt_key' style='width: ".$width."%; height: ".$height."px;'></div>";
+		if($widgets){
+			$return = "<div id='$graph_id' class='noresizevc graph $adapt_key' style='width: ".$width."px; height: ".$height."px;'></div>";
+		}
+		else{
+			$return = "<div id='$graph_id' class='noresizevc graph $adapt_key' style='width: ".$width."%; height: ".$height."px;'></div>";
+		}
 	}
 
 	$return .= "<div id='value_$graph_id' style='display:none; position:absolute; background:#fff; border: solid 1px #aaa; padding: 2px'></div>";
@@ -833,7 +841,7 @@ function flot_slicesbar_graph (
 	// Javascript code
 	$return .= "<script type='text/javascript'>";
 	$return .= "//<![CDATA[\n";
-	$return .= "pandoraFlotSlicebar('$graph_id','$values','$datacolor','$labels','$legend','$acumulate_data',$intervaltick,'$fontpath',$fontsize,'$separator','$separator2',$id_agent,'$full_legend_date',$not_interactive)";
+	$return .= "pandoraFlotSlicebar('$graph_id','$values','$datacolor','$labels','$legend','$acumulate_data',$intervaltick,'$fontpath',$fontsize,'$separator','$separator2',$id_agent,'$full_legend_date',$not_interactive, '$show')";
 	$return .= "\n//]]>";
 	$return .= "</script>";
 

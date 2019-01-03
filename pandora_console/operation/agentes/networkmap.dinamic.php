@@ -18,10 +18,11 @@
 global $config;
 
 check_login ();
-if (_id_ != "_id_") {
+if (defined('_id_') && _id_ != "_id_") {
 	$id = _id_;
 }
 else {
+	define("_id_", "_id_");
 	$id = get_parameter('id_networkmap', true);
 }
 
@@ -36,8 +37,7 @@ if (enterprise_installed()) {
 		$activeTab = $tab;
 	}
 }
-
-if (_activeTab_ != "_activeTab_") {
+if (defined("_activeTab_") && _activeTab_ != "_activeTab_") {
 	$activeTab = _activeTab_;
 	$tab = $activeTab;
 }

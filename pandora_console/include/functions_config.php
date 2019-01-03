@@ -1032,11 +1032,11 @@ function config_process_config () {
 	}
 	
 	if (!isset ($config["replication_interval"])) {
-		config_update_value ('replication_interval', 120);
+		config_update_value ('replication_interval', 10);
 	}
 	
 	if (!isset ($config["replication_limit"])) {
-		config_update_value ('replication_limit', 1000);
+		config_update_value ('replication_limit', 50);
 	}
 	
 	if (!isset ($config["replication_dbengine"])) {
@@ -2023,6 +2023,12 @@ function config_process_config () {
 		config_update_value('ehorus_req_timeout', 5);
 	}
 
+	if (is_metaconsole()) {
+		if (!isset($config["metaconsole_deploy_collection"])) {
+			config_update_value('metaconsole_deploy_collection', 0);
+		}
+	}
+
 	/* Finally, check if any value was overwritten in a form */
 	config_update_config();
 }
@@ -2231,6 +2237,29 @@ function config_check () {
 				__("phantomjs is not installed"));
 		}
 	}
+
+
+	$php_version = phpversion();
+	$php_version_array = explode('.', $php_version);
+	if($php_version_array[0] < 7){
+		if ($config['language'] == 'es') {
+			$url_help = 'https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_es:Instalaci%C3%B3n_y_actualizaci%C3%B3n_PHP_7';
+		}
+		else{
+			$url_help = 'https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_en:_PHP_7';
+		}
+
+		set_pandora_error_for_header(
+			__('For a correct operation of PandoraFMS, PHP must be updated to version 7.0 or higher.') . "<br>" .
+			__('Otherwise, functionalities will be lost.') . "<br>" .
+			"<ol><li style='color: #676767'>" . __('Report download in PDF format') . "</li>" .
+			"<li style='color: #676767'>" . __('Emails Sending') . "</li>" .
+			"<li style='color: #676767'>" . __('Metaconsole Collections') . "</li>" .
+			"<li style='color: #676767'>" . '...' . "</li>" .
+			"</ol>" .
+			'<a target="blank" href="' . $url_help . '">'.__('Access Help').'</a>',
+			__("PHP UPDATE REQUIRED"));
+	}
 }
 
 function config_return_in_bytes($val) {
@@ -2300,11 +2329,7 @@ function config_prepare_session() {
 	else
 		$sessionCookieExpireTime *= 60;
 
-	@ini_set('session.gc_maxlifetime', $sessionCookieExpireTime);
-	@session_set_cookie_params ($sessionCookieExpireTime);
-
 	// Reset the expiration time upon page load //session_name() is default name of session PHPSESSID
-
 	if (isset($_COOKIE[session_name()]))
 		setcookie(session_name(), $_COOKIE[session_name()], time() + $sessionCookieExpireTime, "/");
 

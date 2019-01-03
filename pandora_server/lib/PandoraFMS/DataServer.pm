@@ -402,7 +402,7 @@ sub process_xml_data ($$$$$) {
 						
 						$field_agent->{'id_agent'} = $agent_id;
 						$field_agent->{'id_field'} = $custom_field_info->{'id_field'};
-						$field_agent->{'description'} = $cf_value;
+						$field_agent->{'description'} = safe_input($cf_value);
 						
 						db_process_insert($dbh, 'id_field', 'tagent_custom_data', $field_agent);
 					}

@@ -137,8 +137,8 @@ $data = array();
 //$table_agent->rowspan[count($table_agent->data)][0] = 6;
 
 // Fixed width non interactive charts
-$status_chart_width = $config["flash_charts"] == false ? 100 : 150;
-$graph_width = $config["flash_charts"] == false ? 200 : 150;
+$status_chart_width = 150;
+$graph_width = 150;
 
 $data[0] = '<div style="margin: 0 auto 6px auto; width: 150px;">';
 $data[0] .= '<div id="status_pie" style="margin: auto; width: ' . $status_chart_width . 'px;">';
@@ -645,7 +645,7 @@ $data[0][0] .=
 			__('Events (24h)') .
 		'</th></tr>' .
 		'<tr><td style="text-align:center;padding-left:20px;padding-right:20px;"><br />' .
-		graph_graphic_agentevents ($id_agente, 450, 40, SECONDS_1DAY, '', true, true) . 
+		graph_graphic_agentevents ($id_agente, 100, 45, SECONDS_1DAY, '', true, true) . 
 		'<br /></td></tr>' . 
 	'</table>';
 

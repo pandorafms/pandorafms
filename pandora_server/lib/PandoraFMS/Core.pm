@@ -111,6 +111,7 @@ use warnings;
 
 use DBI;
 use Encode;
+use Encode::CN;
 use XML::Simple;
 use HTML::Entities;
 use Time::Local;
@@ -3059,7 +3060,8 @@ sub pandora_create_agent ($$$$$$$$$$;$$$$$$$$$) {
 	                                                 'custom_id' => $custom_id,
 	                                                 'url_address' => $url_address,
 	                                                 'timezone_offset' => $timezone_offset,
-	                                                 'alias' => $alias
+	                                                 'alias' => $alias,
+													 'update_module_count' => 1, # Force to replicate in metaconsole
 	                                                });                           
 	                                                
 	my $agent_id = db_insert ($dbh, 'id_agente', "INSERT INTO tagente $columns", @{$values});
@@ -3854,30 +3856,24 @@ sub process_data ($$$$$$$) {
 	# If is a number, we need to replace "," for "."
 	$data =~ s/\,/\./;
 
-	# Out of bounds
-	if (($module->{'max'} != $module->{'min'}) && ($data > $module->{'max'} || $data < $module->{'min'})) {
-		logger($pa_config, "Received invalid data '" . $data_object->{'data'} . "' from agent '" . $agent->{'nombre'} . "' module '" . $module->{'nombre'} . "' agent " . (defined ($agent) ? "'" . $agent->{'nombre'} . "'" : 'ID ' . $module->{'id_agente'}) . ".", 3);
-		return undef;
-	}
-
 	# Process INC modules
 	if ($module_type =~ m/_inc$/) {
-		$data = process_inc_data ($pa_config, $data, $module, $utimestamp, $dbh);
+		$data = process_inc_data ($pa_config, $data, $module, $agent, $utimestamp, $dbh);
 		
 		# No previous data or error.
 		return undef unless defined ($data);
 	}
 	# Process absolute INC modules
 	elsif ($module_type =~ m/_inc_abs$/) {
-		$data = process_inc_abs_data ($pa_config, $data, $module, $utimestamp, $dbh);
+		$data = process_inc_abs_data ($pa_config, $data, $module, $agent, $utimestamp, $dbh);
 		
 		# No previous data or error.
 		return undef unless defined ($data);
 	}
-
-	# Post process
-	if (is_numeric ($module->{'post_process'}) && $module->{'post_process'} != 0) {
-		$data = $data * $module->{'post_process'};
+	# Process the rest of modules
+	else {
+		$data = post_process($data, $module);
+		return undef unless check_min_max($pa_config, $data, $module, $agent);
 	}
 
 	# TODO: Float precission should be adjusted here in the future with a global
@@ -3890,10 +3886,34 @@ sub process_data ($$$$$$$) {
 }
 
 ##########################################################################
+# Apply post processing to the given data.
+##########################################################################
+sub post_process ($$) {
+	my ($data, $module) = @_;
+
+	return (is_numeric ($module->{'post_process'}) && $module->{'post_process'} != 0) ? $data * $module->{'post_process'} : $data;
+}
+
+##########################################################################
+# Return 1 if the data is whithin the module's boundaries, 0 if not.
+##########################################################################
+sub check_min_max ($$$$) {
+	my ($pa_config, $data, $module, $agent) = @_;
+
+	# Out of bounds
+	if (($module->{'max'} != $module->{'min'}) && ($data > $module->{'max'} || $data < $module->{'min'})) {
+		logger($pa_config, "Received invalid data '" . $data . "' from agent '" . $agent->{'nombre'} . "' module '" . $module->{'nombre'} . "' agent " . (defined ($agent) ? "'" . $agent->{'nombre'} . "'" : 'ID ' . $module->{'id_agente'}) . ".", 3);
+		return 0;
+	}
+
+	return 1;
+}
+
+##########################################################################
 # Process data of type *_inc.
 ##########################################################################
-sub process_inc_data ($$$$$) {
-	my ($pa_config, $data, $module, $utimestamp, $dbh) = @_;
+sub process_inc_data ($$$$$$) {
+	my ($pa_config, $data, $module, $agent, $utimestamp, $dbh) = @_;
 
 	my $data_inc = get_db_single_row ($dbh, 'SELECT * FROM tagente_datos_inc WHERE id_agente_modulo = ?', $module->{'id_agente_modulo'});
 
@@ -3928,17 +3948,25 @@ sub process_inc_data ($$$$$) {
 		return undef;
 	}
 
+	# Compute the rate, apply post processing and check module boundaries.
+	my $rate = ($data - $data_inc->{'datos'}) / ($utimestamp - $data_inc->{'utimestamp'});
+	$rate = post_process($rate, $module);
+	if (!check_min_max($pa_config, $rate, $module, $agent)) {
+		db_do ($dbh, 'UPDATE tagente_datos_inc SET datos = ?, utimestamp = ? WHERE id_agente_modulo = ?', $data, $utimestamp, $module->{'id_agente_modulo'});
+		return undef;
+	}
+
 	# Update inc data
 	db_do ($dbh, 'UPDATE tagente_datos_inc SET datos = ?, utimestamp = ? WHERE id_agente_modulo = ?', $data, $utimestamp, $module->{'id_agente_modulo'});
 
-	return ($data - $data_inc->{'datos'}) / ($utimestamp - $data_inc->{'utimestamp'});
+	return $rate;
 }
 
 ##########################################################################
 # Process data of type *_inc_abs.
 ##########################################################################
-sub process_inc_abs_data ($$$$$) {
-	my ($pa_config, $data, $module, $utimestamp, $dbh) = @_;
+sub process_inc_abs_data ($$$$$$) {
+	my ($pa_config, $data, $module, $agent, $utimestamp, $dbh) = @_;
 
 	my $data_inc = get_db_single_row ($dbh, 'SELECT * FROM tagente_datos_inc WHERE id_agente_modulo = ?', $module->{'id_agente_modulo'});
 
@@ -3968,10 +3996,18 @@ sub process_inc_abs_data ($$$$$) {
 		return undef;
 	}
 
+	# Compute the diff, apply post processing and check module boundaries.
+	my $diff = ($data - $data_inc->{'datos'});
+	$diff = post_process($diff, $module);
+	if (!check_min_max($pa_config, $diff, $module, $agent)) {
+		db_do ($dbh, 'UPDATE tagente_datos_inc SET datos = ?, utimestamp = ? WHERE id_agente_modulo = ?', $data, $utimestamp, $module->{'id_agente_modulo'});
+		return undef;
+	}
+
 	# Update inc data
 	db_do ($dbh, 'UPDATE tagente_datos_inc SET datos = ?, utimestamp = ? WHERE id_agente_modulo = ?', $data, $utimestamp, $module->{'id_agente_modulo'});
 
-	return ($data - $data_inc->{'datos'});
+	return $diff;
 }
 
 sub log4x_get_severity_num($) {
@@ -4545,7 +4581,7 @@ Process groups statistics for statistics table
 ##########################################################################
 sub pandora_process_event_replication ($) {
 	my $pa_config = shift;
-	
+	my $dbh_metaconsole;
 	my %pa_config = %{$pa_config};
 
 	# Get the console DB connection
@@ -4559,46 +4595,57 @@ sub pandora_process_event_replication ($) {
 	# desactivated the event replication or the replication
 	# interval is wrong: abort
 	if($is_event_replication_enabled == 0) {
+		db_disconnect($dbh);
 		return;
 	}
 	
 	if($replication_interval <= 0) {
-		logger($pa_config, "Replication interval configuration is not a value greater than 0. Event replication thread will be aborted.", 1);
+		logger($pa_config, "The event replication interval must be greater than 0. Event replication aborted.", 1);
+		db_disconnect($dbh);
 		return;
 	}
 	
-	# Get the metaconsole DB connection
-	my $dbh_metaconsole = enterprise_hook('get_metaconsole_dbh', [$pa_config, $dbh]);
-	
-	if($dbh_metaconsole eq '') {
-		logger($pa_config, "Metaconsole DB connection error. Event replication thread will be aborted.", 1);
-		return;
-	}
-	
-	# Get server id on metaconsole
-	my $metaconsole_server_id = enterprise_hook('get_metaconsole_setup_server_id', [$dbh_metaconsole, safe_input($pa_config->{'servername'})]);
-
-	# If the server name is not found in metaconsole setup: abort
-	if($metaconsole_server_id == -1) {
-		logger($pa_config, "The server name is not configured in metaconsole. Event replication thread will be aborted.", 1);
-		return;
-	}
-	
-	my $replication_mode = enterprise_hook('get_event_replication_mode', [$dbh]);
-				
-	logger($pa_config, "Starting replication events process.", 1);
+	logger($pa_config, "Started event replication thread.", 1);
 
 	while($THRRUN == 1) { 
-
-		# If we are not the master server sleep and check again.
-		if (pandora_is_master($pa_config) == 0) {
-			sleep ($pa_config->{'server_threshold'});
-			next;
-		}
-
-		# Check the queue each N seconds
+		eval {{
+			local $SIG{__DIE__};
+			
+			# Get the metaconsole DB connection
+			$dbh_metaconsole = enterprise_hook('get_metaconsole_dbh', [$pa_config, $dbh]);
+			$dbh_metaconsole = undef if $dbh_metaconsole eq '';
+			if (!defined($dbh_metaconsole)) {
+				logger($pa_config, "Metaconsole DB connection error. Event replication postponed.", 5);
+				next;
+			}
+			
+			# Get server id on metaconsole
+			my $metaconsole_server_id = enterprise_hook('get_metaconsole_setup_server_id', [$dbh_metaconsole, safe_input($pa_config->{'servername'})]);
+		
+			# If the server name is not found in metaconsole setup: abort
+			if($metaconsole_server_id == -1) {
+				logger($pa_config, "The server name is not configured in metaconsole. Event replication postponed.", 5);
+				db_disconnect($dbh_metaconsole);
+				next;
+			}
+			
+			my $replication_mode = enterprise_hook('get_event_replication_mode', [$dbh]);
+						
+			while($THRRUN == 1) { 
+		
+				# If we are not the master server sleep and check again.
+				if (pandora_is_master($pa_config) == 0) {
+					sleep ($pa_config->{'server_threshold'});
+					next;
+				}
+		
+				# Check the queue each N seconds
+				enterprise_hook('pandora_replicate_copy_events',[$pa_config, $dbh, $dbh_metaconsole, $metaconsole_server_id, $replication_mode]);
+				sleep ($replication_interval);
+			}
+		}};
+		db_disconnect($dbh_metaconsole) if defined($dbh_metaconsole);
 		sleep ($replication_interval);
-		enterprise_hook('pandora_replicate_copy_events',[$pa_config, $dbh, $dbh_metaconsole, $metaconsole_server_id, $replication_mode]);
 	}
 
 	db_disconnect($dbh);

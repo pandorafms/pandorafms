@@ -445,6 +445,7 @@ switch ($tab) {
 		
 		if (enterprise_installed()) {
 			$old_networkmaps_enterprise = db_get_all_rows_sql("SELECT * FROM tnetworkmap_enterprise");
+			if ($old_networkmaps_enterprise === false) $old_networkmaps_enterprise = array();
 		}
 		$old_networkmaps_open = db_get_all_rows_sql("SELECT * FROM tnetwork_map");
 		
@@ -456,16 +457,17 @@ switch ($tab) {
 				$ent_maps_to_migrate[] = $old_map_ent['id'];
 			}
 		}
-		
+
 		$open_maps_to_migrate = array();
-		foreach ($old_networkmaps_open as $old_map_open) {
-			$text_filter = $old_map_open['text_filter'];
-			
-			if ($text_filter != "migrated") {
-				$open_maps_to_migrate[] = $old_map_open['id_networkmap'];
+		if(isset($old_networkmaps_open) && is_array($old_networkmaps_open)){
+			foreach ($old_networkmaps_open as $old_map_open) {
+				$text_filter = $old_map_open['text_filter'];
+				if ($text_filter != "migrated") {
+					$open_maps_to_migrate[] = $old_map_open['id_networkmap'];
+				}
 			}
 		}
-		
+
 		if (!empty($ent_maps_to_migrate) || !empty($open_maps_to_migrate)) {
 			?>
 			<div id="migration_dialog" style="text-align: center;">
@@ -639,7 +641,7 @@ switch ($tab) {
 						}
 					}
 					else {
-						$data['nodes'] = $count - 1; //PandoraFMS node is not an agent
+						$data['nodes'] = ($network_map['id_group'] == 0) ? $count - 1 : $count; //PandoraFMS node is not an agent
 					}
 				}
 				

@@ -121,8 +121,8 @@ $zone_name = array('Africa' => __('Africa'), 'America' => __('America'), 'Antarc
 $zone_selected = get_parameter('zone');
 if ($zone_selected == "") {
 	if ($config["timezone"] != "") {
-		list($zone) = explode("/", $config["timezone"]);
-		$zone_selected = $zone;
+		$zone_array = explode("/", $config["timezone"]);
+		$zone_selected = $zone_array[0];
 	}
 	else {
 		$zone_selected = 'Europe';
@@ -131,7 +131,7 @@ if ($zone_selected == "") {
 
 $timezones = timezone_identifiers_list();
 foreach ($timezones as $timezone) {
-	if (strpos($timezone, $zone_selected) !== false) { 
+	if (strpos($timezone, $zone_selected) !== false) {
 		$timezone_n[$timezone] = $timezone;
 	}
 }

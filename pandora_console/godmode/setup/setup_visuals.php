@@ -865,7 +865,7 @@ $row++;
 $table_other->data[$row][0] = __('Show only the group name');
 $table_other->data[$row][0] .= ui_print_help_tip(
 	__('Show the group name instead the group icon.'), true);
-	html_print_checkbox('show_group_name', 1,
+$table_other->data[$row][1] = html_print_checkbox('show_group_name', 1,
 	$config['show_group_name'], true);
 $row++;
 
@@ -1208,21 +1208,21 @@ $(".logo_preview").click (function(e) {
 	switch (e.target.id) {
 		case 'button-custom_logo_preview':
 			icon_name = $("select#custom_logo option:selected").val();
-			icon_path = "<?php echo $config['homeurl'];  if(enterprise_installed){ echo 'enterprise/'; } ?>images/custom_logo/" + icon_name;
+			icon_path = "<?php echo $config['homeurl'];  if(enterprise_installed()){ echo 'enterprise/'; } ?>images/custom_logo/" + icon_name;
 			options.grayed = true;
 			break;
 		case 'button-custom_logo_white_bg_preview':
 			icon_name = $("select#custom_logo_white_bg option:selected").val();
-			icon_path = "<?php echo $config['homeurl'];  if(enterprise_installed){ echo 'enterprise/'; } ?>images/custom_logo/" + icon_name;
+			icon_path = "<?php echo $config['homeurl'];  if(enterprise_installed()){ echo 'enterprise/'; } ?>images/custom_logo/" + icon_name;
 			break;
 		case 'button-custom_logo_login_preview':
 			icon_name = $("select#custom_logo_login option:selected").val();
-			icon_path = "<?php echo $config['homeurl']; if(enterprise_installed){ echo 'enterprise/'; } ?>images/custom_logo_login/" + icon_name;
+			icon_path = "<?php echo $config['homeurl']; if(enterprise_installed()){ echo 'enterprise/'; } ?>images/custom_logo_login/" + icon_name;
 			options.grayed = true;
 			break;
 		case 'button-custom_splash_login_preview':
 			icon_name = $("select#custom_splash_login option:selected").val();
-			icon_path = "<?php echo $config['homeurl']; if(enterprise_installed){ echo 'enterprise/'; } ?>images/custom_splash_login/" + icon_name;
+			icon_path = "<?php echo $config['homeurl']; if(enterprise_installed()){ echo 'enterprise/'; } ?>images/custom_splash_login/" + icon_name;
 			options.title = "<?php echo __('Splash Preview'); ?>";
 			break;
 		case 'button-custom_docs_logo_preview':

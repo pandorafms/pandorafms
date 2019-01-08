@@ -12,14 +12,13 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
-// Real start
-
+// Don't start a session before this import.
+// The session is configured and started inside the config process.
 require_once ("../../include/config.php");
 
 // Set root on homedir, as defined in setup
 chdir ($config["homedir"]);
 
-session_start ();
 ob_start ();
 echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">'."\n";
 echo '<html xmlns="http://www.w3.org/1999/xhtml">'."\n";

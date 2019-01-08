@@ -35,15 +35,15 @@ function pandora_session_read ($session_id) {
 
 function pandora_session_write ($session_id, $data) {
 	$session_id = addslashes($session_id);
-	
+
 	$values = array();
 	$values['last_active'] = time();
-	
+
 	if (!empty($data))
 		$values['data'] = addslashes($data);
-	
+
 	$session_exists = (bool) db_get_value('COUNT(id_session)', 'tsessions_php', 'id_session', $session_id);
-	
+
 	if (!$session_exists) {
 		$values['id_session'] = $session_id;
 		$retval_write = db_process_sql_insert('tsessions_php', $values);
@@ -52,7 +52,7 @@ function pandora_session_write ($session_id, $data) {
 		$retval_write = db_process_sql_update('tsessions_php', $values, array('id_session' => $session_id));
 	}
 
-	return ($retval_write !== false) ? true : false;
+	return $retval_write !== false;
 }
 
 function pandora_session_destroy ($session_id) {
@@ -77,6 +77,8 @@ function pandora_session_gc ($max_lifetime = 300) {
 	return $retval;
 }
 
-$result_handler = @session_set_save_handler ('pandora_session_open', 'pandora_session_close', 'pandora_session_read', 'pandora_session_write', 'pandora_session_destroy', 'pandora_session_gc'); 
-
+// FIXME: SAML should work with pandora session handlers
+if (db_get_value('value', 'tconfig', 'token', 'auth') != "saml") {
+	$result_handler = session_set_save_handler ('pandora_session_open', 'pandora_session_close', 'pandora_session_read', 'pandora_session_write', 'pandora_session_destroy', 'pandora_session_gc');
+}
 ?>

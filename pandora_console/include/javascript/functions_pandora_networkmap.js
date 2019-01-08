@@ -2721,7 +2721,7 @@ function init_graph(parameter_object) {
 	}
 	window.scale_minimap = 4.2;
 	window.translation = [0, 0];
-	window.scale = (typeof (z_dash) != "undefined") ? z_dash : 0.5;
+	window.scale = z_dash || 0.5;
 	window.node_radius = 40;
 	if (typeof (parameter_object.node_radius) != "undefined") {
 		window.node_radius = parameter_object.node_radius;
@@ -3306,7 +3306,7 @@ function draw_elements_graph() {
 		})
 		.attr("startOffset", function (d) {
 			if (d.source.x < d.target.x) {
-				return "";
+				return "0%";
 			}
 			else {
 				return "85%";
@@ -3356,7 +3356,7 @@ function draw_elements_graph() {
 				return "85%";
 			}
 			else {
-				return "";
+				return "0%";
 			}
 		})
 		.attr("text-anchor", function (d) {

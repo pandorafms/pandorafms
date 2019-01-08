@@ -238,7 +238,7 @@ function grafico_modulo_sparse_data(
 		}
 	}
 
-	if($array_data === false){
+	if ($array_data === false || (!$params['graph_combined'] && !isset($array_data['sum1']['data'][0][1]))) {
 		return false;
 	}
 
@@ -912,7 +912,9 @@ function grafico_modulo_sparse ($params) {
 		else{
 			$return = graph_nodata_image(
 				$params['width'],
-				$params['height']
+				$params['height'],
+				'area',
+				__('No data to display within the selected interval')
 			);
 		}
 	}
@@ -1015,7 +1017,7 @@ function graphic_combined_module (
 
 	$params['stacked'] = $params_combined['stacked'];
 
-	if(!isset($params_combined['projection'])){
+	if(!isset($params_combined['projection']) || $params_combined['projection'] == false){
 		$params_combined['projection'] = false;
 	}
 	else{
@@ -1045,6 +1047,10 @@ function graphic_combined_module (
 
 	if(!isset($params_combined['id_graph'])){
 		$params_combined['id_graph'] = 0;
+	}
+
+	if(!isset($params_combined['type_report'])){
+		$params_combined['type_report'] = '';
 	}
 
 	if(!isset($params['percentil'])){
@@ -1205,8 +1211,8 @@ function graphic_combined_module (
 		);
 
 		$series = db_get_all_rows_sql(
-			'SELECT summatory_series,average_series,modules_series 
-			FROM tgraph 
+			'SELECT summatory_series,average_series, modules_series
+			FROM tgraph
 			WHERE id_graph = '.
 			$params_combined['id_graph']
 		);
@@ -1299,7 +1305,6 @@ function graphic_combined_module (
 		);
 	}
 
-	//XXX arreglar estas
 	$long_index = '';
 	switch ($params_combined['stacked']) {
 		default:
@@ -1322,7 +1327,16 @@ function graphic_combined_module (
 
 			$i=0;
 			$array_data = array();
+
 			foreach ($module_list as $key => $agent_module_id) {
+				if(is_metaconsole() && $params_combined['type_report'] == 'automatic_graph'){
+					$server  = metaconsole_get_connection_by_id ($agent_module_id['server']);
+					if (metaconsole_connect ($server) != NOERR){
+						continue;
+					}
+					$agent_module_id = $agent_module_id['module'];
+				}
+
 				$module_data = db_get_row_sql (
 					'SELECT * FROM tagente_modulo
 					WHERE id_agente_modulo = ' .
@@ -1338,12 +1352,12 @@ function graphic_combined_module (
 				$data_module_graph['id_module_type'] = $module_data['id_tipo_modulo'];
 				$data_module_graph['module_type']    = modules_get_moduletype_name($data_module_graph['id_module_type']);
 				$data_module_graph['uncompressed']   = is_module_uncompressed($data_module_graph['module_type']);
-				$data_module_graph['w_min']    		 = $module_data['min_warning'];
-				$data_module_graph['w_max']   		 = $module_data['max_warning'];
-				$data_module_graph['w_inv']    		 = $module_data['warning_inverse'];
-				$data_module_graph['c_min']    		 = $module_data['min_critical'];
-				$data_module_graph['c_max']    		 = $module_data['max_critical'];
-				$data_module_graph['c_inv']    		 = $module_data['critical_inverse'];
+				$data_module_graph['w_min']          = $module_data['min_warning'];
+				$data_module_graph['w_max']          = $module_data['max_warning'];
+				$data_module_graph['w_inv']          = $module_data['warning_inverse'];
+				$data_module_graph['c_min']          = $module_data['min_critical'];
+				$data_module_graph['c_max']          = $module_data['max_critical'];
+				$data_module_graph['c_inv']          = $module_data['critical_inverse'];
 				$data_module_graph['module_id']      = $agent_module_id;
 
 				//stract data
@@ -1355,7 +1369,7 @@ function graphic_combined_module (
 					$i
 				);
 
-				$series_suffix     = $i;
+				$series_suffix = $i;
 
 				//convert to array graph and weight
 				foreach ($array_data_module as $key => $value) {
@@ -1384,6 +1398,10 @@ function graphic_combined_module (
 
 				//$array_events_alerts[$series_suffix] = $events;
 				$i++;
+
+				if(is_metaconsole() && $params_combined['type_report'] == 'automatic_graph'){
+					metaconsole_restore_db();
+				}
 			}
 
 			if($params_combined['projection']){
@@ -1542,7 +1560,6 @@ function graphic_combined_module (
 				$water_mark,
 				$array_events_alerts
 			);
-
 			break;
 		case CUSTOM_GRAPH_BULLET_CHART_THRESHOLD:
 		case CUSTOM_GRAPH_BULLET_CHART:
@@ -2456,7 +2473,9 @@ function graph_sla_slicebar (
 		0,
 		array(),
 		true,
-		$ttl
+		$ttl,
+		false,
+		false
 	);
 }
 
@@ -3188,16 +3207,14 @@ function graph_custom_sql_graph ($id, $width, $height,
  * @param string homeurl
  * @param bool return or echo the result
  */
-function graph_graphic_agentevents ($id_agent, $width, $height, $period = 0, $homeurl, $return = false, $from_agent_view = false) {
+function graph_graphic_agentevents ($id_agent, $width, $height, $period = 0, $homeurl, $return = false, $from_agent_view = false, $widgets=false) {
 	global $config;
 	global $graphic_type;
 
 	$data = array ();
 
-	//$resolution = $config['graph_res'] * ($period * 2 / $width); // Number of "slices" we want in graph
-	$resolution = 5 * ($period * 2 / $width); // Number of "slices" we want in graph
-
-	$interval = (int) ($period / $resolution);
+	//TODO interval
+	$interval = 24;
 	$date = get_system_time ();
 	$datelimit = $date - $period;
 	$periodtime = floor ($period / $interval);
@@ -3206,7 +3223,7 @@ function graph_graphic_agentevents ($id_agent, $width, $height, $period = 0, $ho
 	$legend = array();
 	$full_legend = array();
 	$full_legend_date = array();
-	
+
 	$cont = 0;
 	for ($i = 0; $i < $interval; $i++) {
 		$bottom = $datelimit + ($periodtime * $i);
@@ -3216,24 +3233,24 @@ function graph_graphic_agentevents ($id_agent, $width, $height, $period = 0, $ho
 		else {
 			$name = $bottom;
 		}
-		
+
 		// Show less values in legend
 		if ($cont == 0 or $cont % 2)
 			$legend[$cont] = $name;
-		
+
 		if ($from_agent_view) {
 			$full_date = date('Y/m/d', $bottom);
 			$full_legend_date[$cont] = $full_date;
 		}
 
 		$full_legend[$cont] = $name;
-		
+
 		$top = $datelimit + ($periodtime * ($i + 1));
 		$event = db_get_row_filter ('tevento',
 			array ('id_agente' => $id_agent,
 				'utimestamp > '.$bottom,
 				'utimestamp < '.$top), 'criticity, utimestamp');
-		
+
 		if (!empty($event['utimestamp'])) {
 			$data[$cont]['utimestamp'] = $periodtime;
 			switch ($event['criticity']) {
@@ -3258,7 +3275,7 @@ function graph_graphic_agentevents ($id_agent, $width, $height, $period = 0, $ho
 	$colors = array(1 => COL_NORMAL, 2 => COL_WARNING, 3 => COL_CRITICAL, 4 => COL_UNKNOWN);
 
 	// Draw slicebar graph
-	$out = flot_slicesbar_graph($data, $period, 100, 40, $full_legend, $colors, $config['fontpath'], $config['round_corner'], $homeurl, '', '', false, $id_agent, $full_legend_date);
+	$out = flot_slicesbar_graph($data, $period, $width, $height, $full_legend, $colors, $config['fontpath'], $config['round_corner'], $homeurl, '', '', false, $id_agent, $full_legend_date, 0, 1, $widgets);
 
 	if ($return) {
 		return $out;
@@ -3284,13 +3301,10 @@ function graph_graphic_moduleevents ($id_agent, $id_module, $width, $height, $pe
 
 	$data = array ();
 
-	//$resolution = $config['graph_res'] * ($period * 2 / $width); // Number of "slices" we want in graph
-	$resolution = 5 * ($period * 2 / $width); // Number of "slices" we want in graph
-	$interval = (int) ($period / $resolution);
-	$date = get_system_time ();
+	$interval = 24;
+	$date = get_system_time();
 	$datelimit = $date - $period;
 	$periodtime = floor ($period / $interval);
-	$time = array ();
 	$data = array ();
 	$legend = array();
 	$full_legend = array();
@@ -3594,6 +3608,7 @@ function fullscale_data (
 		}
 	}
 	else{
+		if ($data_uncompress === false) $data_uncompress = array();
 		foreach ($data_uncompress as $k) {
 			foreach ($k["data"] as $v) {
 				if (isset($v["type"]) && $v["type"] == 1) { # skip unnecesary virtual data
@@ -3662,7 +3677,9 @@ function fullscale_data (
 
 		$data["sum" . $series_suffix]['min'] = $min_value_min;
 		$data["sum" . $series_suffix]['max'] = $max_value_max;
-		$data["sum" . $series_suffix]['avg'] = $sum_data/$count_data;
+		$data["sum" . $series_suffix]['avg'] = $count_data == 0
+			? 0
+			: $sum_data/$count_data;
 	}
 
 	if($show_percentil && !$compare){
@@ -4070,19 +4087,17 @@ function graphic_module_events ($id_module, $width, $height, $period = 0, $homeu
 }
 
 function graph_nodata_image($width = 300, $height = 110, $type = 'area', $text = '') {
-	$image = ui_get_full_url('images/image_problem_area_small.png',
+	$image = ui_get_full_url('images/image_problem_area.png',
 		false, false, false); 
 	
 	// if ($text == '') {
 	// 	$text = __('No data to show');
 	// }
+	$text_div = '<div class="nodata_text" style="text-align:center;     padding: 30px 0; display:block; font-size:9.5pt;">' . $text . '</div>';
 	
-	$text_div = '<div class="nodata_text">' . $text . '</div>';
+	$image_div = $text_div . '<div class="nodata_container" style="background-position: top; width:40%;height:40%;background-size: contain;background-image: url(\'' . $image . '\');"><div></div></div>';
 	
-	$image_div = '<div class="nodata_container" style="width:80%;height:80%;background-size: 80% 80%;background-image: url(\'' . $image . '\');">' .
-		$text_div . '</div>';
-	
-	$div = '<div style="width:' . $width . 'px; height:' . $height . 'px; border: 1px dotted #ddd; background-color: white; margin: 0 auto;">' .
+	$div = '<div style="width:' . $width . 'px; height:' . $height . 'px; background-color: white; margin: 0 auto;">' .
 		$image_div . '</div>';
 	
 	return $div;
@@ -4387,7 +4402,7 @@ function graph_monitor_wheel ($width = 550, $height = 600, $filter = false) {
 					$data_agents[$agent_id]['children'][$module_group_id]['children'][] = $data_module;
 					unset($modules[$module_id]);
 				}
-				function order_module_group_keys ($value, $key) {
+				function order_module_group_keys ($value) {
 					$value['children'] = array_merge($value['children']);
 					return $value;
 				}

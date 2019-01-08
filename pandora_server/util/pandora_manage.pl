@@ -36,7 +36,7 @@ use Encode::Locale;
 Encode::Locale::decode_argv;
 
 # version: define current version
-my $version = "7.0NG.728 PS181030";
+my $version = "7.0NG.730 PS181221";
 
 # save program name for logging
 my $progname = basename($0);
@@ -103,7 +103,7 @@ sub help_screen{
 	print "Available options by category:\n\n" unless $param ne '';
 	print "Available options for $param:\n\n" unless $param eq '';
 	print "AGENTS:\n\n" unless $param ne '';
-	help_screen_line('--create_agent', "<agent_name> <operating_system> <group> <server_name> \n\t  [<address> <description> <interval>]", 'Create agent');
+	help_screen_line('--create_agent', "<agent_name> <operating_system> <group> <server_name> \n\t  [<address> <description> <interval> <alias_as_name>]", 'Create agent');
 	help_screen_line('--update_agent', '<agent_name> <field_to_change> <new_value>', "Update an agent field. The fields can be \n\t  the following: agent_name, address, description, group_name, interval, os_name, disabled (0-1), \n\t  parent_name, cascade_protection (0-1), icon_path, update_gis_data (0-1), custom_id");
 	help_screen_line('--delete_agent', '<agent_name>', 'Delete agent');
 	help_screen_line('--disable_group', '<group_name>', 'Disable agents from an entire group');
@@ -112,7 +112,7 @@ sub help_screen{
 	help_screen_line('--delete_group', '<group_name>', 'Delete an agent group');
 	help_screen_line('--update_group', '<group_id>','[<group_name> <parent_group_name> <icon> <description>]', 'Update an agent group');
 	help_screen_line('--stop_downtime', '<downtime_name>', 'Stop a planned downtime');
-	help_screen_line('--create_downtime', "<downtime_name> <description> <date_from> <date_to> <id_group> <monday> <tuesday>\n\t <wednesday> <thursday> <friday> <saturday> <sunday> <periodically_time_from>\n\t <periodically_time_to> <periodically_day_from> <periodically_day_to> <type_downtime> <type_execution> <type_periodicity>", 'Create a planned downtime');
+	help_screen_line('--create_downtime', "<downtime_name> <description> <date_from> <date_to> <id_group> <monday> <tuesday>\n\t <wednesday> <thursday> <friday> <saturday> <sunday> <periodically_time_from>\n\t <periodically_time_to> <periodically_day_from> <periodically_day_to> <type_downtime> <type_execution> <type_periodicity> <id_user>", 'Create a planned downtime');
 	help_screen_line('--add_item_planned_downtime', "<id_downtime> <id_agente1,id_agente2,id_agente3...id_agenteN> <name_module1,name_module2,name_module3...name_moduleN> ", 'Add a items planned downtime');
 	help_screen_line('--get_all_planned_downtimes', '<name> [<id_group> <type_downtime> <type_execution> <type_periodicity>]', 'Get all planned downtime');
 	help_screen_line('--get_planned_downtimes_items', '<name> [<id_group> <type_downtime> <type_execution> <type_periodicity>]', 'Get all items of planned downtimes');
@@ -996,21 +996,29 @@ sub cli_enable_group() {
 ##############################################################################
 
 sub cli_create_agent() {
-	my ($agent_name,$os_name,$group_name,$server_name,$address,$description,$interval) = @ARGV[2..8];
+	my ($agent_name,$os_name,$group_name,$server_name,$address,$description,$interval, $alias_as_name) = @ARGV[2..9];
 	
 	print_log "[INFO] Creating agent '$agent_name'\n\n";
 	
 	$address = '' unless defined ($address);
 	$description = (defined ($description) ? safe_input($description)  : '' );	# safe_input() might be better at pandora_create_agent() (when passing 'description' to db_insert())
 	$interval = 300 unless defined ($interval);
-	
+	$alias_as_name = 1 unless defined ($alias_as_name);
+	my $agent_alias = undef;
+
+	if (!$alias_as_name) {
+		$agent_alias = $agent_name;
+		$agent_name = generate_agent_name_hash($agent_alias, $conf{'dbhost'});
+	}
+
 	my $id_group = get_group_id($dbh,$group_name);
 	exist_check($id_group,'group',$group_name);
 	my $os_id = get_os_id($dbh,$os_name);
 	exist_check($id_group,'operating system',$group_name);
 	my $agent_exists = get_agent_id($dbh,$agent_name);
 	non_exist_check($agent_exists, 'agent name', $agent_name);
-	pandora_create_agent ($conf, $server_name, $agent_name, $address, $id_group, 0, $os_id, $description, $interval, $dbh);
+	pandora_create_agent ($conf, $server_name, $agent_name, $address, $id_group, 0, $os_id, $description, $interval, $dbh,
+		undef, undef, undef, undef, undef, undef, undef, undef, $agent_alias);
 }
 
 ##############################################################################
@@ -4095,7 +4103,7 @@ sub cli_policy_add_agent() {
 
 sub cli_create_planned_downtime() {
 	my $name = @ARGV[2];
-	my @todo = @ARGV[3..20];
+	my @todo = @ARGV[3..21];
 	my $other = join('|', @todo);
 	
 	my $result = api_call(\%conf,'set', 'planned_downtimes_created', $name, undef, "$other");
@@ -5697,7 +5705,7 @@ sub pandora_manage_main ($$$) {
 			cli_enable_group();
 		}
 		elsif ($param eq '--create_agent') {
-			param_check($ltotal, 7, 3);
+			param_check($ltotal, 8, 4);
 			cli_create_agent();
 		}
 		elsif ($param eq '--delete_agent') {
@@ -6035,7 +6043,7 @@ sub pandora_manage_main ($$$) {
 			cli_add_tag_to_module();
 		} 
 		elsif ($param eq '--create_downtime') {
-			param_check($ltotal, 19);
+			param_check($ltotal, 20);
 			cli_create_planned_downtime();
 		}
 		elsif ($param eq '--add_item_downtime') {

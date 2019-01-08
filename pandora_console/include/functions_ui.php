@@ -548,7 +548,7 @@ function ui_print_group_icon ($id_group, $return = false, $path = "groups_small"
 		$link = false;
 	
 	if ($link)
-		$output = '<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=60&amp;group_id='.$id_group.'">';
+		$output = '<a href="'.$config["homeurl"].'index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=60&amp;group_id='.$id_group.'">';
 	
 	if ($config['show_group_name']) {
 		$output .= '<span title="'. groups_get_name($id_group, true) .'">' .
@@ -1456,6 +1456,14 @@ function ui_process_page_head ($string, $bitfield) {
 			$exists_css = !empty($skin_styles);
 		}
 	}
+
+// Add the jquery UI styles CSS
+$config['css']['jquery-UI'] = "include/styles/jquery-ui.min.css";
+// Add the dialog styles CSS
+$config['css']['dialog'] = "include/styles/dialog.css";
+// Add the dialog styles CSS
+$config['css']['dialog'] = "include/javascript/introjs.css";
+
 	//If skin's css files exists then add them
 	if ($exists_css) {
 		foreach ($skin_styles as $filename => $name) {
@@ -1472,18 +1480,7 @@ function ui_process_page_head ($string, $bitfield) {
 			$config['style'] => "include/styles/" . $config['style'] . ".css"),
 			$config['css']);
 	}
-	
-	
-	
-	// Add the jquery UI styles CSS
-	$config['css']['jquery-UI'] = "include/styles/jquery-ui-1.10.0.custom.css";
-	// Add the dialog styles CSS
-	$config['css']['dialog'] = "include/styles/dialog.css";
-	// Add the dialog styles CSS
-	$config['css']['dialog'] = "include/javascript/introjs.css";
-	
-	
-	
+
 	//We can't load empty and we loaded (conditionally) ie
 	$loaded = array ('', 'ie');
 	
@@ -1500,18 +1497,14 @@ function ui_process_page_head ($string, $bitfield) {
 	////////////////////////////////////////////////////////////////////
 	//End load CSS
 	////////////////////////////////////////////////////////////////////
-	
-	
-	
-	
+
 	////////////////////////////////////////////////////////////////////
 	//Load JS
 	////////////////////////////////////////////////////////////////////
 	if (empty ($config['js'])) {
 		$config['js'] = array (); //If it's empty, false or not init set array to empty just in case
 	}
-	
-	
+
 	//Pandora specific JavaScript should go first
 	$config['js'] = array_merge (array ("pandora" => "include/javascript/pandora.js"), $config['js']);
 	//Load base64 javascript library
@@ -1525,26 +1518,22 @@ function ui_process_page_head ($string, $bitfield) {
 	$config['js']['clippy'] = "include/javascript/clippy.js";
 	//Load Underscore.js library
 	$config['js']['underscore'] = "include/javascript/underscore-min.js";
-	
-	
+
 	//Load other javascript
 	//We can't load empty
 	$loaded = array ('');
 	foreach ($config['js'] as $name => $filename) {
 		if (in_array ($name, $loaded))
 			continue;
-		
 		array_push ($loaded, $name);
-		
+
 		$url_js = ui_get_full_url($filename);
 		$output .= '<script type="text/javascript" src="' . $url_js . '"></script>'."\n\t";
 	}
 	////////////////////////////////////////////////////////////////////
 	//End load JS
 	////////////////////////////////////////////////////////////////////
-	
-	
-	
+
 	////////////////////////////////////////////////////////////////////
 	//Load jQuery
 	////////////////////////////////////////////////////////////////////
@@ -1564,9 +1553,9 @@ function ui_process_page_head ($string, $bitfield) {
 	}
 	else {
 		$config['jquery'] = array_merge(
-			array ("jquery" => "include/javascript/jquery-1.9.0.js",
+			array ("jquery" => "include/javascript/jquery-3.3.1.min.js",
 				"pandora" => "include/javascript/jquery.pandora.js",
-				'jquery-ui' => 'include/javascript/jquery.jquery-ui-1.10.0.custom.js'),
+				'jquery-ui' => 'include/javascript/jquery-ui.min.js'),
 			$config['jquery']);
 	}
 	
@@ -2100,7 +2089,7 @@ function ui_print_moduletype_icon ($id_moduletype, $return = false, $relative = 
  * @return string HTML string
  */
 function ui_print_module_warn_value ($max_warning, $min_warning, $str_warning, $max_critical, $min_critical, $str_critical) {
-	$data = "<span style='font-size: 8px' title='" . __("Warning") . ": " . __("Max") . $max_warning . "/" . __("Min") . $min_warning . " - " . __("Critical") . ": " . __("Max") . $max_critical . "/" . __("Min") . $min_critical . "'>";
+	$data = "<span title='" . __("Warning") . ": " . __("Max") . $max_warning . "/" . __("Min") . $min_warning . " - " . __("Critical") . ": " . __("Max") . $max_critical . "/" . __("Min") . $min_critical . "'>";
 	
 	if ($max_warning != $min_warning) {
 		$data .= format_for_graph($max_warning) ."/". format_for_graph ($min_warning);
@@ -3849,8 +3838,7 @@ function ui_print_module_string_value($value, $id_agente_module,
 			'id_module' => $id_agente_module,
 			'last_data' => $value,
 			'interval' => $current_interval,
-			'module_name' => $module_name,
-			'timestamp' => db_get_value('timestamp', 'tagente_estado', 'id_agente_modulo', $id_agente_module)
+			'module_name' => $module_name
 		));
 		$salida = ui_get_snapshot_image($link, $is_snapshot) . '&nbsp;&nbsp;';
 	} else {
@@ -3896,7 +3884,7 @@ function ui_print_module_string_value($value, $id_agente_module,
 					" / " . $module_name;
 				$salida = "<div " .
 					"id='hidden_value_module_" . $id_agente_module . "'
-					style='display: none; width: 100%; height: 100%; overflow: scroll; padding: 10px; font-size: 14px; line-height: 16px; font-family: mono,monospace; text-align: left' title='" . $title_dialog . "'>" .
+					style='display: none; width: 100%; height: 100%; overflow: auto; padding: 10px; font-size: 14px; line-height: 16px; font-family: mono,monospace; text-align: left' title='" . $title_dialog . "'>" .
 					$value .
 					"</div>" . 
 					"<span " .
@@ -3968,8 +3956,14 @@ function ui_get_snapshot_link($params, $only_params = false) {
 		"id=" . $params['id_module'] .
 		"&label=" . rawurlencode(urlencode(io_safe_output($params['module_name']))).
 		"&id_node=" . $params['id_node'];
-	if ($params['timestamp'] != 0) $url .= "&timestamp=" . $parms['timestamp'];
-	if ($params['timestamp'] != 0) $url .= "&refr=" . $parms['interval'];
+	
+	if ($params['timestamp'] != 0) {
+		$url .= "&timestamp=" . $params['timestamp'];
+	}
+
+	if ($params['interval'] != 0) {
+		$url .= "&refr=" . $params['interval'];
+	}
 
 	// Second parameter of js winopeng_var
 	$win_handle = dechex(crc32('snapshot_' . $params['id_module']));

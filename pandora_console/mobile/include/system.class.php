@@ -23,9 +23,7 @@ class System {
 		$this->loadConfig();
 		$session_id = session_id();
 		DB::getInstance($this->getConfig('db_engine', 'mysql'));
-		if (empty($session_id)) {
-			session_start();
-		}
+		if (session_status() === PHP_SESSION_NONE) session_start();
 		$this->session = $_SESSION;
 		session_write_close();
 
@@ -71,7 +69,7 @@ class System {
 	}
 	
 	public function setSessionBase($name, $value) {
-		session_start();
+		if (session_status() === PHP_SESSION_NONE) session_start();
 		$_SESSION[$name] = $value;
 		session_write_close();
 	}
@@ -79,7 +77,7 @@ class System {
 	public function setSession($name, $value) {
 		$this->session[$name] = $value;
 		
-		session_start();
+		if (session_status() === PHP_SESSION_NONE) session_start();
 		$_SESSION = $this->session;
 		session_write_close();
 	}
@@ -94,7 +92,7 @@ class System {
 	}
 	
 	public function sessionDestroy() {
-		session_start();
+		if (session_status() === PHP_SESSION_NONE) session_start();
 		session_destroy();
 	}
 	

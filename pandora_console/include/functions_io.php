@@ -194,7 +194,7 @@ function io_html_to_ascii($hex) {
  * 
  * @return void
  */
-function io_safe_output_array(&$item, $key, $utf8 = true) {
+function io_safe_output_array(&$item, $key=false, $utf8=true) {
 	$item = io_safe_output($item, $utf8);
 }
 

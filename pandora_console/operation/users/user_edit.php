@@ -130,44 +130,81 @@ if (isset ($_GET["modified"]) && !$view_mode) {
 					if ($return) {
 						$return2 = save_pass_history($id, $password_new);
 					}
-					ui_print_result_message ($return,
+					/*ui_print_result_message ($return,
 					__('Password successfully updated'),
-					__('Error updating passwords: %s', $config['auth_error']));
+					__('Error updating passwords: %s', $config['auth_error']));*/
 				}
 			}
 			else {
 				$return = update_user_password ($id, $password_new);
-				ui_print_result_message ($return,
+				/*ui_print_result_message ($return,
 					__('Password successfully updated'),
-					__('Error updating passwords: %s', $config['auth_error']));
+					__('Error updating passwords: %s', $config['auth_error']));*/
 			}
 			
 		}
 		elseif ($password_new !== "NON-INIT") {
-			ui_print_error_message (__('Passwords didn\'t match or other problem encountered while updating passwords'));
+		//	ui_print_error_message (__('Passwords didn\'t match or other problem encountered while updating passwords'));
+			$error_msg = __('Passwords didn\'t match or other problem encountered while updating passwords');
 		}
+	}
+	elseif(empty($password_new) && empty($password_confirm)){
+		$return=true;
+	}	
+	elseif(empty($password_new) || empty($password_confirm)){
+		$return=false;
 	}
 	
 	// No need to display "error" here, because when no update is needed (no changes in data) 
 	// SQL function returns	0 (FALSE), but is not an error, just no change. Previous error
 	// message could be confussing to the user.
 
-	if ((filter_var($upd_info["email"], FILTER_VALIDATE_EMAIL) || $upd_info["email"]=="") && (preg_match('/^[0-9- ]+$/D', $upd_info["phone"]) || $upd_info["phone"]=="")) {
-		$return = update_user ($id, $upd_info);
-		if ($return > 0) {
-			ui_print_result_message ($return,
-				__('User info successfully updated'),
-				__('Error updating user info'));
+	if($return){
+		if(!empty($password_new) && !empty($password_confirm)){
+			$success_msg = __('Password successfully updated');
+		}		
+
+		// if info is valid then proceed with update
+		if ((filter_var($upd_info["email"], FILTER_VALIDATE_EMAIL) || $upd_info["email"]=="") && (preg_match('/^[0-9- ]+$/D', $upd_info["phone"]) || $upd_info["phone"]=="")) {
+			$return_update_user = update_user ($id, $upd_info);
+
+			if ($return_update_user === false) {
+				$error_msg = __('Error updating user info');
+			}
+			elseif($return_update_user == true){
+				$success_msg = __('User info successfully updated');
+			}
+			else{
+				if(!empty($password_new) && !empty($password_confirm)){
+					$success_msg = __('Password successfully updated');
+				}	
+				else{
+					$return=false;
+					$error_msg = __('No changes have been made'); 
+				}	
+			}
+
+			ui_print_result_message ($return, $success_msg, $error_msg,$user_auth_error);
+
 		}
+		else if (!filter_var($upd_info["email"], FILTER_VALIDATE_EMAIL))
+			ui_print_error_message (__('Please enter a valid email'));
+		else if (!preg_match('/^[0-9- ]+$/D', $upd_info["phone"]))
+			ui_print_error_message (__('Please enter a valid phone number'));
+
+		$user_info = $upd_info;
+
 	}
-	else if (!filter_var($upd_info["email"], FILTER_VALIDATE_EMAIL)) {
-		ui_print_error_message (__('Please enter a valid email'));
+	else{
+		if(!$error_msg){
+			$error_msg = __('Error updating passwords: ');
+		}
+
+		$user_auth_error= $config['auth_error'];
+
+		ui_print_result_message ($return, $success_msg, $error_msg,$user_auth_error);
 	}
-	else if (!preg_match('/^[0-9- ]+$/D', $upd_info["phone"])) {
-		ui_print_error_message (__('Please enter a valid phone number'));
-	}
-	
-	$user_info = $upd_info;
+
 }
 
 // Prints action status for current message 
@@ -466,7 +503,7 @@ $data[0] .= $table_ichanges;
 
 //time autorefresh
 $times = get_refresh_time_array();
-$data[1] = '<span style="width:40%;float:left;">'.__('Time autorefresh').'</span>';
+$data[1] = '<span style="width:40%;float:left;">'.__('Time autorefresh'). ui_print_help_tip(__('Interval of autorefresh of the elements, by default they are 30 seconds, needing to enable the autorefresh first'), true).'</span>';
 $data[1] .= $jump . '<span style="width:20%;float:left;">'. html_print_select ($times, 'time_autorefresh', $user_info["time_autorefresh"], '', '', '', true,false,false).'</span>';
 
 $table->rowclass[] = '';

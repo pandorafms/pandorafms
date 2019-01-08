@@ -60,26 +60,9 @@ if (is_ajax ()) {
 		$keys_prefix = (string) get_parameter ('keys_prefix', '');
 		$status_agents = (int)get_parameter('status_agents', AGENT_STATUS_ALL);
 		
-		if ($id_group > 0) {
-			$groups = array($id_group);
-			if ($recursion === 'true' || $recursion == 1 ) {
-				$groups = array_merge($groups,
-					groups_get_id_recursive($id_group, true));
-			}
-		}
-		else {
-			$groups_orig = users_get_groups(false, $privilege, false);
-			$groups = array_keys($groups_orig);
-		}
-
 		// Build filter
 		$filter = array();
-		// Group filter (primary and secondary)
-		$filter[] = "(" .db_format_array_where_clause_sql(
-			array('id_grupo' => $groups, 'id_group' => $groups),
-			'OR'
-		) . ")";
-
+		
 		if (!empty($id_os))
 			$filter['id_os'] = $id_os;
 		if (!empty($agent_name))
@@ -87,44 +70,7 @@ if (is_ajax ()) {
 		if (!empty($agent_alias))
 			$filter['alias'] = '%' . $agent_alias . '%';
 		
-		switch ($status_agents) {
-			case AGENT_STATUS_NORMAL:
-			$filter[] = "(
-				critical_count = 0
-				AND warning_count = 0
-				AND unknown_count = 0 
-				AND normal_count > 0)";
-				break;
-			case AGENT_STATUS_WARNING:
-			$filter[] = "(
-				critical_count = 0 
-				AND warning_count > 0
-				AND total_count > 0)";
-				break;
-			case AGENT_STATUS_CRITICAL:
-				$filter[] = "(critical_count > 0)";
-				break;
-			case AGENT_STATUS_UNKNOWN:
-			$filter[] = "(
-				critical_count = 0 
-				AND warning_count = 0 
-				AND unknown_count > 0)";
-				break;
-			case AGENT_STATUS_NOT_NORMAL:
-			$filter[] = "(
-				critical_count > 0
-				OR warning_count > 0
-				OR unknown_count > 0
-				OR total_count = 0
-				OR total_count = notinit_count)";
-				break;
-			case AGENT_STATUS_NOT_INIT:
-			$filter[] = "(
-				total_count = 0
-				OR total_count = notinit_count)";
-				break;
-		}
-		$filter['order'] = "alias ASC";
+		$filter['status'] = $status_agents;
 		
 		if($cluster_mode){
 			
@@ -162,28 +108,18 @@ if (is_ajax ()) {
 			}
 			
 		}
-		$filter['group'] = 'id_agente';
-
-		// Build fields
-		$fields = array('id_agente', 'alias');
 
 		// Perform search
-		$agents = db_get_all_rows_filter(
-			'tagente LEFT JOIN tagent_secondary_group ON id_agente=id_agent',
-			$filter,
-			$fields
-		);
+		$agents = agents_get_group_agents($id_group,$filter,"lower",false,false,false,'|',$cluster_mode);
 		if (empty($agents)) $agents = array();
-		
-		foreach ($agents as $k => $v) {
-			$agents[$k] = io_safe_output($v);
-		}
 
 		// Add keys prefix
 		if ($keys_prefix !== '') {
+			$i = 0;
 			foreach ($agents as $k => $v) {
-				$agents[$keys_prefix . $k] = io_safe_output($v);
+				$agents[$keys_prefix . $i] = array('id_agente' => $k, 'alias' => io_safe_output($v));
 				unset($agents[$k]);
+				$i++;
 			}
 		}
 		
@@ -400,6 +336,17 @@ if (is_ajax ()) {
 			$filter .= ' AND t1.id_agente_modulo IN (SELECT id_agente_modulo FROM tagente_estado where ' . $sql_conditions;
 		}
 
+		$sql_tags_join = "";
+		$where_tags = "";
+		if (tags_has_user_acl_tags($config['id_user'])) {
+			$where_tags = tags_get_acl_tags($config['id_user'], $id_groups, 'AR',
+				'module_condition', 'AND', 'tagente_modulo', false, array(), true);
+
+			$sql_tags_join = "INNER JOIN tagente ON tagente.id_agente = t1.id_agente
+				INNER JOIN ttag_module ON ttag_module.id_agente_modulo = t1.id_agente_modulo
+				LEFT JOIN tagent_secondary_group tasg ON tagente.id_agente = tasg.id_agent";
+		}
+
 		if (is_metaconsole()) {
 			$result = array();
 			$nameModules = array();
@@ -460,9 +407,10 @@ if (is_ajax ()) {
 				}
 
 				//Get agent's modules
-				$sql = sprintf('SELECT t1.id_agente, t1.id_agente_modulo, t1.nombre
-								FROM tagente_modulo t1
-								WHERE %s
+				$sql = sprintf(
+					'SELECT t1.id_agente, t1.id_agente_modulo, t1.nombre
+								FROM tagente_modulo t1 %s
+								WHERE %s %s
 									AND t1.delete_pending = 0
 									AND t1.id_agente IN (%s)
 									AND (
@@ -471,7 +419,7 @@ if (is_ajax ()) {
 										WHERE t2.delete_pending = 0
 											AND t1.nombre = t2.nombre
 											AND t2.id_agente IN (%s)) = (%d)',
-					$filter, implode(',', $id_agents),
+					$sql_tags_join, $filter, $where_tags, implode(',', $id_agents),
 					implode(',', $id_agents), count($id_agents));
 
 				$modules = db_get_all_rows_sql($sql);
@@ -522,34 +470,27 @@ if (is_ajax ()) {
 		}
 		else {
 			if($idAgents[0] < 0){
-				if($selection_mode == 'common'){
+				if($selection_mode == 'common') {
 					$sql_agent_total = 'SELECT count(*) FROM tagente WHERE disabled=0';
 					$agent_total = db_get_value_sql($sql_agent_total);
-					$sql = "SELECT tam.nombre, tam.id_agente_modulo
-							FROM tagente_modulo tam
-							JOIN (
-							SELECT COUNT(*) AS num_names, nombre
-							FROM tagente_modulo
-							WHERE disabled=0
-							AND delete_pending=0
-							GROUP BY nombre
-							) AS tj
-							ON tj.num_names = $agent_total
-								AND tj.nombre = tam.nombre ";
-				}
-				else{
-					$sql = 'SELECT nombre, id_agente_modulo
-							FROM tagente_modulo';
+					$sql = sprintf ("SELECT t1.nombre, t1.id_agente_modulo FROM tagente_modulo t1
+						JOIN (SELECT COUNT(*) AS num_names, nombre FROM tagente_modulo
+						WHERE disabled=0 AND delete_pending=0 GROUP BY nombre) AS tj
+						ON tj.num_names = $agent_total AND tj.nombre = t1.nombre %s %s",
+						$sql_tags_join, (empty($where_tags)) ? "" : " WHERE 1=1 $where_tags");
+				} else {
+					$sql = sprintf('SELECT t1.nombre, t1.id_agente_modulo FROM tagente_modulo t1 %s %s',
+						$sql_tags_join, (empty($where_tags)) ? "" : " WHERE 1=1 $where_tags");
 				}
 			}
 			else {
-				$sql = 'SELECT DISTINCT nombre, t1.id_agente_modulo
-						FROM tagente_modulo t1, tagente_estado t2
-						WHERE t1.id_agente_modulo = t2.id_agente_modulo AND
-						' . $filter . '
-							AND t1.delete_pending = 0
-							AND t1.id_agente IN (' . implode(',', $idAgents) . ')
-							AND t2.datos NOT LIKE "%image%"';
+				$sql = sprintf (
+					'SELECT DISTINCT t1.nombre, t1.id_agente_modulo FROM tagente_modulo t1
+					INNER JOIN tagente_estado t2 ON t1.id_agente_modulo = t2.id_agente_modulo
+					%s WHERE %s AND t1.delete_pending = 0
+					AND t1.id_agente IN ('. implode(',', $idAgents) .')
+					%s %s',
+					$sql_tags_join, $filter, ' AND t2.datos NOT LIKE "%image%"', $where_tags);
 
 				if ($selection_mode == 'common') {
 					$sql .= ' AND (

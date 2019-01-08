@@ -65,6 +65,8 @@ if (! $id_agente) {
 	$params['selectbox_id'] = 'id_agent_module';
 	$params['javascript_is_function_select'] = true;
 	$params['metaconsole_enabled'] = false;
+	$params['use_hidden_input_idagent'] = true;
+	$params['print_hidden_input_idagent'] = true;
 	$table->data['agent'][1] = ui_print_agent_autocomplete_input($params);
 }
 

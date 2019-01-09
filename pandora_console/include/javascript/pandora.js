@@ -594,11 +594,50 @@ function post_process_select_init_unit(name,selected) {
 function post_process_select_events_unit(name,selected) {
 	
 	$('.' + name + '_toggler').click(function() {
-		$('#' + name + '_select option[value=none]').attr("selected",true);
-		$('#text-' + name + '_text').val("");
+		var value = $('#text-' + name + '_text').val();
+		
+		var count = $('#' + name + '_select option')
+			.filter(function(i, item) {
+				
+				if ($(item).val() == value)
+					return true;
+				else return false;
+			})
+			.length;
+		
+		if (count != 1) {
+			$('#' + name + '_select')
+				.append($("<option>").val(value).text(value));
+			
+		}
+		
+		$('#' + name + '_select option')
+			.filter(function(i, item) {
+				
+				if ($(item).val() == value)
+					return true;
+				else return false;
+			})
+			.prop("selected", true);
+		
 		toggleBoth(name);
+		$('#text-' + name + '_text').focus();
+	});
+	
+	// When select a default period, is setted in seconds
+	$('#' + name + '_select').change(function() {
+		var value = $('#' + name + '_select').val();
+		
+		$('.' + name).val(value); 
+		$('#text-' + name + '_text').val(value);
+	});
+	
+	$('#text-' + name + '_text').keyup (function () {
+		var value = $('#text-' + name + '_text').val();
+		$('.' + name).val(value);
 	});
 }
+
 
 function post_process_select_events(name) {
 	$('.' + name + '_toggler').click(function() {

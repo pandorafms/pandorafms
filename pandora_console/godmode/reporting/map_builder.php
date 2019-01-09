@@ -43,6 +43,7 @@ else{
     $url_visual_console_favorite        = 'index.php?sec=screen&sec2=screens/screens&action=visualmap_favorite';
     $url_visual_console_template        = 'index.php?sec=screen&sec2=screens/screens&action=visualmap_template';
     $url_visual_console_template_wizard = 'index.php?sec=screen&sec2=screens/screens&action=visualmap_wizard';
+    $url_visual_console_manager         = 'index.php?sec=screen&sec2=enterprise/extensions/visual_console_manager';
 }
 
 $pure = (int)get_parameter('pure', 0);
@@ -74,6 +75,14 @@ if($is_enterprise && $vconsoles_manage){
 		'text' => '<a href="'.$url_visual_console_template_wizard.'">' .
 					html_print_image ("images/wand.png", true, array ("title" => __('Visual Console Template Wizard'))) .'</a>'
 	);
+
+	if ($is_metaconsole) {
+       	$buttons['visual_console_manager'] = array(
+       		'active' => false,
+       		'text' => '<a href="'.$url_visual_console_manager.'">' .
+       	        html_print_image ("images/builder.png", true, array ("title" => __('Visual Console Manager'))) .'</a>'
+       	);
+    }
 }
 
 if (!$is_metaconsole) {

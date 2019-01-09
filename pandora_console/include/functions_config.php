@@ -204,10 +204,12 @@ function config_update_config () {
 						$error_update[] = __('Identification_reminder');
 					if (!config_update_value ('include_agents', (bool)get_parameter('include_agents')))
 						$error_update[] = __('Include_agents');
-						if (!config_update_value ('alias_as_name', get_parameter('alias_as_name')))
-							$error_update[] = __('alias_as_name');
+					if (!config_update_value ('alias_as_name', get_parameter('alias_as_name')))
+						$error_update[] = __('alias_as_name');
 					if (!config_update_value ('auditdir', get_parameter('auditdir')))
 						$error_update[] = __('Audit log directory');
+					if (!config_update_value ('unique_ip', get_parameter('unique_ip')))
+						$error_update[] = __('unique_ip');					
 					break;
 				case 'enterprise':
 					if (isset($config['enterprise_installed']) && $config['enterprise_installed'] == 1) {
@@ -1123,6 +1125,10 @@ function config_process_config () {
 		config_update_value ('limit_parameters_massive', ini_get("max_input_vars") / 2);
 	}
 	
+	if (!isset ($config["unique_ip"])) {
+		config_update_value ('unique_ip', 0);
+	}
+
 	/* 
 	 *Parse the ACL IP list for access API
 	 */

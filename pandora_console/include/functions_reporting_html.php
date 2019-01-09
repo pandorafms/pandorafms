@@ -2570,6 +2570,15 @@ function reporting_html_general(&$table, $item) {
 					/* End - Order by agent */
 					
 					foreach ($item['data'] as $row) {
+						$module_type = db_get_value("id_tipo_modulo", "tagente_modulo","nombre", $row['module']);
+						if($module_type == 6 || $module_type == 9 || $module_type == 18 || $module_type == 2){
+							$row['formated_value'] = round($row['formated_value'], 0, PHP_ROUND_HALF_DOWN);
+						}
+						if(($module_type == 6 || $module_type == 9 || $module_type == 18 || $module_type == 2) && $row['formated_value'] == 1){
+							$row['formated_value'] = "Up";
+						}elseif(($module_type == 6 || $module_type == 9 || $module_type == 18 || $module_type == 2) && $row['formated_value'] == 0){
+							$row['formated_value'] = "Down";
+						}
 						if ($item['date']['period'] != 0) {
 							$table1->data[] = array(
 								$row['agent'],
@@ -2640,8 +2649,18 @@ function reporting_html_general(&$table, $item) {
 					$row['agent'] = $agent;
 					$table1->style['agent'] = 'text-align: center;';
 					foreach ($list_modules as $name) {
+						$module_type = db_get_value("id_tipo_modulo", "tagente_modulo","nombre", $name);
+						if($module_type == 6 || $module_type == 9 || $module_type == 18 || $module_type == 2){
+							$modules[$name] = round($modules[$name], 0, PHP_ROUND_HALF_DOWN);
+						}
 						$table1->style[$name] = 'text-align: center;';
 						if (isset($modules[$name])) {
+							if(($module_type == 6 || $module_type == 9 || $module_type == 18 || $module_type == 2) && $modules[$name] == 1){
+								$modules[$name] = "Up";
+							}elseif(($module_type == 6 || $module_type == 9 || $module_type == 18 || $module_type == 2) && $modules[$name] == 0){
+								hd( $modules[$name], true);
+								$modules[$name] = "Down";
+							}
 							$row[$name] = $modules[$name];
 						}
 						else {

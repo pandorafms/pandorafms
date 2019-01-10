@@ -2568,15 +2568,14 @@ function reporting_html_general(&$table, $item) {
 					array_multisort($aux, SORT_ASC, $item['data']);
 					
 					/* End - Order by agent */
-					
+
 					foreach ($item['data'] as $row) {
-						$module_type = db_get_value("id_tipo_modulo", "tagente_modulo","nombre", $row['module']);
-						if($module_type == 6 || $module_type == 9 || $module_type == 18 || $module_type == 2){
+						if($row['id_module_type'] == 6 || $row['id_module_type'] == 9 || $row['id_module_type'] == 18 || $row['id_module_type'] == 2){
 							$row['formated_value'] = round($row['formated_value'], 0, PHP_ROUND_HALF_DOWN);
 						}
-						if(($module_type == 6 || $module_type == 9 || $module_type == 18 || $module_type == 2) && $row['formated_value'] == 1){
+						if(($row['id_module_type'] == 6 || $row['id_module_type'] == 9 || $row['id_module_type'] == 18 || $row['id_module_type'] == 2) && $row['formated_value'] == 1){
 							$row['formated_value'] = "Up";
-						}elseif(($module_type == 6 || $module_type == 9 || $module_type == 18 || $module_type == 2) && $row['formated_value'] == 0){
+						}elseif(($row['id_module_type'] == 6 || $row['id_module_type'] == 9 || $row['id_module_type'] == 18 || $row['id_module_type'] == 2) && $row['formated_value'] == 0){
 							$row['formated_value'] = "Down";
 						}
 						if ($item['date']['period'] != 0) {
@@ -2639,28 +2638,16 @@ function reporting_html_general(&$table, $item) {
 					}
 				}
 				$list_modules = array_keys($list_modules);
-				
 				$table1->width = '99%';
 				$table1->data = array ();
 				$table1->head = array_merge(array(__('Agent')), $list_modules);
 				foreach ($item['data'] as $agent => $modules) {
 					$row = array();
-					
 					$row['agent'] = $agent;
 					$table1->style['agent'] = 'text-align: center;';
 					foreach ($list_modules as $name) {
-						$module_type = db_get_value("id_tipo_modulo", "tagente_modulo","nombre", $name);
-						if($module_type == 6 || $module_type == 9 || $module_type == 18 || $module_type == 2){
-							$modules[$name] = round($modules[$name], 0, PHP_ROUND_HALF_DOWN);
-						}
 						$table1->style[$name] = 'text-align: center;';
 						if (isset($modules[$name])) {
-							if(($module_type == 6 || $module_type == 9 || $module_type == 18 || $module_type == 2) && $modules[$name] == 1){
-								$modules[$name] = "Up";
-							}elseif(($module_type == 6 || $module_type == 9 || $module_type == 18 || $module_type == 2) && $modules[$name] == 0){
-								hd( $modules[$name], true);
-								$modules[$name] = "Down";
-							}
 							$row[$name] = $modules[$name];
 						}
 						else {

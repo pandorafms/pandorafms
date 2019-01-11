@@ -14,7 +14,7 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
-function mysql_connect_db($host = null, $db = null, $user = null, $pass = null, $port = null, $charset = "utf8") {
+function mysql_connect_db($host = null, $db = null, $user = null, $pass = null, $port = null, $charset = null) {
 	global $config;
 	
 	if ($host === null)
@@ -42,7 +42,9 @@ function mysql_connect_db($host = null, $db = null, $user = null, $pass = null, 
 		}
 		db_change_cache_id ($db, $host);
 
-		mysqli_set_charset($connect_id, $charset);
+		if (isset($charset)) {
+			mysqli_set_charset($connect_id, $charset);
+		}
 
 		mysqli_select_db($connect_id, $db);
 	}
@@ -54,7 +56,9 @@ function mysql_connect_db($host = null, $db = null, $user = null, $pass = null, 
 
 		db_change_cache_id ($db, $host);
 
-		@mysql_set_charset($connect_id, $charset);
+		if (isset($charset)) {
+			@mysql_set_charset($connect_id, $charset);
+		}
 
 		mysql_select_db($db, $connect_id);
 	}	

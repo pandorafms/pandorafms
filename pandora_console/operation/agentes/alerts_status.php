@@ -432,7 +432,7 @@ if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
 		if (!is_metaconsole()) {
 			$table->size[8] = '4%';
 			if (check_acl ($config["id_user"], $id_group, "LW") || check_acl ($config["id_user"], $id_group, "LM")) {
-				$table->head[9] = __('Validate');
+				$table->head[9] = __('Validate'). html_print_checkbox('all_validate', 0, false, true, false);
 				$table->align[9] = 'center';
 				$table->size[9] = '5%';
 			}
@@ -620,6 +620,28 @@ ui_require_jquery_file('cluetip');
 		}).click (function () {
 			return false;
 		});
+
+
+		$('[id^=checkbox-validate]').change(function(){
+			if($(this).parent().parent().hasClass('checkselected')){
+				$(this).parent().parent().removeClass('checkselected');
+			}
+			else{
+				$(this).parent().parent().addClass('checkselected');							
+			}
+		});
+
+		$('[id^=checkbox-all_validate]').change(function(){	
+			if ($("#checkbox-all_validate").prop("checked")) {
+				$('[id^=checkbox-validate]').parent().parent().addClass('checkselected');				
+				$('[name^=validate]').prop("checked", true);
+			}
+			else{
+				$('[id^=checkbox-validate]').parent().parent().removeClass('checkselected');
+				$('[name^=validate]').prop("checked", false);				
+			}	
+		});
+
 	});
 
 	$('table.alert-status-filter #ag_group').change (function () {

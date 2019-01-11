@@ -13,17 +13,8 @@
 // GNU General Public License for more details.
 
 // Global & session manageme
+
 session_id($_REQUEST["session_id"]);
-if (file_exists(session_save_path() . "/pansess_" . session_id()) ) {
-    $user = file_get_contents(session_save_path() . "/pansess_" . session_id());
-}
-session_start();
-if (isset($user)) {
-    $_SESSION["id_usuario"] = $user;
-}
-session_write_close();
-
-
 
 require_once ('config.php');
 require_once ($config['homedir'] . '/include/auth/mysql.php');
@@ -72,13 +63,13 @@ if (file_exists ('languages/'.$user_language.'.mo')) {
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 		<title>Pandora FMS Graph (<?php echo agents_get_alias($agent_id) . ' - ' . $interface_name; ?>)</title>
-        <link rel="stylesheet" href="styles/pandora.css" type="text/css" />
+		<link rel="stylesheet" href="styles/pandora.css" type="text/css" />
 		<link rel="stylesheet" href="styles/pandora_minimal.css" type="text/css" />
-		<link rel="stylesheet" href="styles/jquery-ui-1.10.0.custom.css" type="text/css" />
+		<link rel="stylesheet" href="styles/jquery-ui.min.css" type="text/css" />
 		<script language="javascript" type='text/javascript' src='javascript/pandora.js'></script>
-		<script language="javascript" type='text/javascript' src='javascript/jquery-1.9.0.js'></script>
+		<script language="javascript" type='text/javascript' src='javascript/jquery-3.3.1.min.js'></script>
 		<script language="javascript" type='text/javascript' src='javascript/jquery.pandora.js'></script>
-		<script language="javascript" type='text/javascript' src='javascript/jquery.jquery-ui-1.10.0.custom.js'></script>
+		<script language="javascript" type='text/javascript' src='javascript/jquery-ui.min.js'></script>
 		<script language="javascript" type="text/javascript" src="graphs/flot/jquery.flot.js"></script>
 		<script language="javascript" type="text/javascript" src="graphs/flot/jquery.flot.min.js"></script>
 		<script language="javascript" type="text/javascript" src="graphs/flot/jquery.flot.time.js"></script>
@@ -95,9 +86,8 @@ if (file_exists ('languages/'.$user_language.'.mo')) {
 		<script language="javascript" type="text/javascript" src="graphs/flot/pandora.flot.js"></script>
 	</head>
 	<body bgcolor="#ffffff" style='background:#ffffff;'>
-<?php
-
-    	$params['only_image'] = false;
+	<?php
+		$params['only_image'] = false;
 		$params['width']      = (int) $_REQUEST['viewport_width'];
 		$params['menu']       = false;
 
@@ -112,75 +102,130 @@ if (file_exists ('languages/'.$user_language.'.mo')) {
 		$aux_font_size = $config['font_size'];
 		$config['font_size'] = $config['font_size'] + 3;
 
-		if($type_graph_pdf == 'combined'){
-			echo '<div>';
+		echo '<div>';
+		switch ($type_graph_pdf) {
+			case 'combined':
 				echo graphic_combined_module(
 					$module_list,
 					$params,
 					$params_combined
 				);
-			echo '</div>';
-		}
-		elseif($type_graph_pdf == 'sparse'){
-			echo '<div>';
+				break;
+			case 'sparse':
 				echo grafico_modulo_sparse($params);
-			echo '</div>';
+				break;
+			case 'pie_chart':
+				echo flot_pie_chart(
+					$params['values'],
+					$params['keys'],
+					$params['width'],
+					$params['height'],
+					$params['water_mark_url'],
+					$params['font'],
+					$config['font_size'],
+					$params['legend_position'],
+					$params['colors'],
+					$params['hide_labels']
+				);
+				break;
+			case 'vbar':
+				echo flot_vcolumn_chart(
+					$params['chart_data'],
+					$params['width'],
+					$params['height'],
+					$params['color'],
+					$params['legend'],
+					$params['long_index'],
+					$params['homeurl'],
+					$params['unit'],
+					$params['water_mark_url'],
+					$params['homedir'],
+					$params['font'],
+					$config['font_size'],
+					$params['from_ux'],
+					$params['from_wux'],
+					$params['backgroundColor'],
+					$params['tick_color']
+				);
+				break;
+			case 'hbar':
+				echo flot_hcolumn_chart(
+					$params['chart_data'],
+					$params['width'],
+					$params['height'],
+					$params['water_mark_url'],
+					$params['font'],
+					$config['font_size'],
+					$params['backgroundColor'],
+					$params['tick_color'],
+					$params['val_min'],
+					$params['val_max']
+				);
+				break;
+			case 'ring_graph':
+				echo flot_custom_pie_chart (
+					$params['chart_data'],
+					$params['width'],
+					$params['height'],
+					$params['colors'],
+					$params['module_name_list'],
+					$params['long_index'],
+					$params['no_data'],
+					false,
+					'',
+					$params['water_mark'],
+					$params['font'],
+					$config['font_size'],
+					$params['unit'],
+					$params['ttl'],
+					$params['homeurl'],
+					$params['background_color'],
+					$params['legend_position'],
+					$params['background_color']
+				);
+				break;
+			case 'slicebar':
+				echo flot_slicesbar_graph (
+					$params['graph_data'],
+					$params['period'],
+					$params['width'],
+					$params['height'],
+					$params['legend'],
+					$params['colors'],
+					$params['fontpath'],
+					$params['round_corner'],
+					$params['homeurl'],
+					$params['watermark'],
+					$params['adapt_key'],
+					$params['stat_winalse'],
+					$params['id_agent'],
+					$params['full_legend_daterray'],
+					$params['not_interactive'],
+					$params['ttl'],
+					$params['widgets'],
+					$params['show']
+				);
+				break;
+			default:
+				# code...
+				break;
 		}
-    elseif($type_graph_pdf == 'hbar'){
-      echo '<div>';
-				echo hbar_graph(
-            $params['flash_chart'],
-            $params['chart_data'],
-            $params['width'],
-            $params['height'],
-          	$params['color'],
-            $params['legend'],
-            $params['long_index'],
-            $params['no_data_image'], 
-            $params['xaxisname'],
-          	$params['yaxisname'],
-            $params['water_mark'],
-            $params['font'],
-            $params['font_size'],
-          	$params['unit'],
-            $params['ttl'],
-            $params['homeurl'],
-            $params['backgroundColor'],
-          	$params['tick_color'],
-            $params['val_min'],
-            $params['val_max']
-        );
-			echo '</div>';
-    }
-    elseif($type_graph_pdf == 'vbar'){
-      echo '<div>';
-				echo vbar_graph(
-          $params['flash_chart'],
-          $params['chart_data'],
-          $params['width'],
-          $params['height'],
-          $params['color'],
-          $params['legend'],
-          $params['long_index'],
-          $params['no_data_image'], 
-          $params['xaxisname'],
-          $params['yaxisname'],
-          $params['water_mark'],
-          $params['font'],
-          $params['font_size'],
-          $params['unit'],
-          $params['ttl'],
-          $params['homeurl'],
-          $params['backgroundColor'],
-          $params['from_ux'],
-          $params['from_wux'],
-          $params['tick_color']
-        );
-			echo '</div>';
-    }
+		echo '</div>';
 
 		$config['font_size'] = $aux_font_size;
-?>
-	</body>
+	?>
 
+	<script type="text/javascript">
+		$('document').ready(function () {
+			setTimeout(function () {
+				try {
+					var status = window.callPhantom({ status: "loaded" });
+				} catch (error) {
+					console.log("CALLBACK ERROR", error.message)
+				}
+			}, 100);
+		});
+	</script>
+
+	</body>
 </html>

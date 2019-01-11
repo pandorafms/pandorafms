@@ -13,14 +13,13 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
-// Real start
-
+// Don't start a session before this import.
+// The session is configured and started inside the config process.
 require_once ("../../include/config.php");
 
 // Set root on homedir, as defined in setup
 chdir ($config["homedir"]);
 
-session_start ();
 ob_start ();
 /* Enterprise support */
 if (file_exists (ENTERPRISE_DIR . "/load_enterprise.php")) {
@@ -190,7 +189,7 @@ $ignored_params['refr'] = '';
 		//~ fetchMap();
 	});
 	
-	$(window).load (function () {
+	$(window).on('load', function () {
 		$('.item:not(.icon) img:not(.b64img)').each( function() {
 			if ($(this).css('float')=='left' || $(this).css('float')=='right') {
 				if(	$(this).parent()[0].tagName == 'DIV'){

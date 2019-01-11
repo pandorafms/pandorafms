@@ -69,6 +69,10 @@ require_once('functions_io.php');
 //}
 
 function https_is_running() {
+	if(isset ($_SERVER['HTTP_X_FORWARDED_PROTO'])
+		&& $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https') {
+		return true;
+	}
 	if (isset ($_SERVER['HTTPS'])
 		&& ($_SERVER['HTTPS'] === true
 		|| $_SERVER['HTTPS'] == 'on')) {
@@ -1373,7 +1377,7 @@ function is_management_allowed($hkey = '') {
 	global $config;
 	return ( (is_metaconsole() && $config["centralized_management"])
 		|| (!is_metaconsole() && !$config["centralized_management"])
-		|| (!is_metaconsole() && $config["centralized_management"]) && $hkey == hash('sha256', db_get_value ('value', 'tupdate_settings', 'token', 'customer_key')));
+		|| (!is_metaconsole() && $config["centralized_management"]) && $hkey == generate_hash_to_api());
 }
 
 /**
@@ -1783,10 +1787,7 @@ function check_login ($output = true) {
 	}
 	else {
 		require_once($config["homedir"].'/mobile/include/user.class.php');
-		if(session_id() == '') {
-			session_start ();
-		}
-		session_write_close ();
+
 		if (isset($_SESSION['user'])) {
 			$user = $_SESSION['user'];
 			$id_user = $user->getIdUser();
@@ -2467,26 +2468,26 @@ function is_double_auth_enabled ($user) {
 
 function clear_pandora_error_for_header() {
 	global $config;
-	
+
 	$config["alert_cnt"] = 0;
 	$_SESSION["alert_msg"] = array();
 }
 
 function set_pandora_error_for_header($message, $title = null) {
 	global $config;
-	
+
 	if (!isset($config['alert_cnt']))
 		$config['alert_cnt'] = 0;
-	
-	if (!isset($_SESSION['alert_msg']))
+
+	if ( ( !isset($_SESSION['alert_msg']) && (!is_array($_SESSION['alert_msg'])) ) )
 		$_SESSION['alert_msg'] = array();
-	
+
 	$message_config = array();
 	if (isset($title))
 		$message_config['title'] = $title;
 	$message_config['message'] = $message;
 	$message_config['no_close'] = true;
-	
+
 	$config['alert_cnt']++;
 	$_SESSION['alert_msg'][] = array('type' => 'error', 'message' => $message_config);
 }
@@ -3284,11 +3285,19 @@ function series_type_graph_array($data, $show_elements_graph){
 function generator_chart_to_pdf($type_graph_pdf, $params, $params_combined = false, $module_list = false){
 	global $config;
 
+	if(is_metaconsole()){
+		$hack_metaconsole = "../..";
+	}
+	else{
+		$hack_metaconsole = "";
+	}
+
 	$file_js  = $config["homedir"] . "/include/web2image.js";
-	$url      = $config["homeurl"] . "include/chart_generator.php";
+	$url      = ui_get_full_url(false) . $hack_metaconsole . "/include/chart_generator.php";
+
 	$img_file = "img_". uniqid()  .".png";
 	$img_path = $config["homedir"] . "/attachment/" . $img_file;
-	$img_url  = $config["homeurl"] . "attachment/" . $img_file;
+	$img_url  = ui_get_full_url(false) . $hack_metaconsole . "/attachment/" . $img_file;
 
 	$width_img  = 500;
 	$height_img = (isset($config['graph_image_height'])) ? $config['graph_image_height'] : 280;
@@ -3319,12 +3328,16 @@ function generator_chart_to_pdf($type_graph_pdf, $params, $params_combined = fal
 		. ' "' . $session_id . '"'
 		. ' "' . $params['return_img_base_64'] . '"';
 
-	$result = exec($cmd);
+	$result = null;
+	$retcode = null;
+	exec($cmd, $result, $retcode);
+
+	$img_content = join("\n", $result);
 
 	if($params['return_img_base_64']){
 		// To be used in alerts
 		$width_img  = 500;
-		return $result;
+		return $img_content;
 	}
 	else{
 		// to be used in PDF files
@@ -3368,7 +3381,7 @@ function get_copyright_notice () {
  */
 function generate_csrf_code() {
 	// Start session to make this var permanent
-	session_start();
+	if (session_status() === PHP_SESSION_NONE) session_start();
 	$_SESSION['csrf_code'] = md5(uniqid(mt_rand(), true));
 	session_write_close();
 	return $_SESSION['csrf_code'];
@@ -3384,4 +3397,8 @@ function validate_csrf_code() {
 	return isset($code) && isset($_SESSION['csrf_code'])
 		&& $_SESSION['csrf_code'] == $code;
 }
+
+function generate_hash_to_api(){
+	hash('sha256', db_get_value ('value', 'tupdate_settings', '`key`', 'customer_key'));
+	}
 ?>

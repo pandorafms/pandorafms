@@ -228,11 +228,11 @@ foreach ($result as $row) {
 	$rowPair = !$rowPair;
 	
 	$data = array();
-	$data[0] = $row["id_usuario"];
+	$data[0] = io_safe_output($row["id_usuario"]);
 	$data[1] = ui_print_session_action_icon($row["accion"], true) . $row["accion"];
 	$data[2] = ui_print_help_tip(date($config["date_format"], $row["utimestamp"]), true)
 		. ui_print_timestamp($row["utimestamp"], true);
-	$data[3] = $row["ip_origen"];
+	$data[3] = io_safe_output($row["ip_origen"]);
 	$data[4] = io_safe_output($row["descripcion"]);
 	
 	if ($enterprise_include !== ENTERPRISE_NOT_HOOK) {

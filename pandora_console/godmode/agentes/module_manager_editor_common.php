@@ -249,9 +249,10 @@ else {
 		$idModuleType = '';
 	}
 
+	//Removed web analysis and log4x from select
 	$sql = sprintf ('SELECT id_tipo, descripcion
 		FROM ttipo_modulo
-		WHERE categoria IN (%s)
+		WHERE categoria IN (%s) AND id_tipo NOT IN (24, 25)
 		ORDER BY descripcion',
 		implode (',', $categories));
 
@@ -259,12 +260,6 @@ else {
 		$idModuleType, '', '', '', true, false, false, $disabledBecauseInPolicy, false, false, 100);
 
 	// Store the relation between id and name of the types on a hidden field
-	$sql = sprintf ('SELECT id_tipo, nombre
-			FROM ttipo_modulo
-			WHERE categoria IN (%s)
-			ORDER BY descripcion',
-			implode (',', $categories));
-
 	$type_names = db_get_all_rows_sql($sql);
 
 	$type_names_hash = array();
@@ -439,7 +434,7 @@ $table_advanced->data[2][1] .= html_print_input_hidden ('moduletype', $moduletyp
 $table_advanced->data[2][3] = __('Post process').' ' . ui_print_help_icon ('postprocess', true);
 $table_advanced->data[2][4] =
 	html_print_extended_select_for_post_process('post_process',
-		$post_process, '', '', '0', false, true, false, true,
+		$post_process, '', '', '0', false, true, false, false,
 		$disabledBecauseInPolicy);
 $table_advanced->colspan[2][4] = 3;
 

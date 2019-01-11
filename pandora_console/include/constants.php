@@ -204,6 +204,7 @@ define('CIRCULAR_INTERIOR_PROGRESS_BAR', 16);
 define('DONUT_GRAPH',		17);
 define('BARS_GRAPH',		18);
 define('CLOCK',		19);
+define('COLOR_CLOUD',	20);
 //Some styles
 define('MIN_WIDTH',			300);
 define('MIN_HEIGHT',		120);

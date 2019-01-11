@@ -728,7 +728,7 @@ else {
 	
 	if ($rows !== false) {
 		if(defined('METACONSOLE'))
-			echo '<table width="100%" cellspacing="4" cellpadding="4" class="databox">';
+			echo '<table width="100%" cellspacing="4" cellpadding="4" class="databox data">';
 		else
 			echo '<table width="100%" cellspacing="4" cellpadding="4" class="databox data">';
 			

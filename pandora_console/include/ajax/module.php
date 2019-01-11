@@ -18,7 +18,6 @@ if(check_login()){
 
 global $config;
 
-
 include_once($config['homedir'] . "/include/functions_agents.php");
 include_once($config['homedir'] . "/include/functions_modules.php");
 include_once($config['homedir'] . "/include/functions_ui.php");
@@ -35,7 +34,6 @@ $get_id_tag = (bool) get_parameter('get_id_tag', 0);
 $get_type = (bool) get_parameter('get_type', 0);
 $list_modules = (bool) get_parameter('list_modules', 0);
 $get_agent_modules_json_by_name = (bool) get_parameter('get_agent_modules_json_by_name', 0);
-
 
 if ($get_agent_modules_json_by_name) {
 	$agent_name = get_parameter('agent_name');
@@ -474,16 +472,17 @@ if ($list_modules) {
 	$sort = get_parameter('sort', 'none');
 	$selected = 'border: 1px solid black;';
 
+	$order[] = array('field' => 'tmodule_group.name', 'order' => 'ASC');
 	switch ($sortField) {
 		case 'type':
 			switch ($sort) {
 				case 'up':
 					$selectTypeUp = $selected;
-					$order = array('field' => 'tagente_modulo.id_modulo', 'order' => 'ASC');
+					$order[] = array('field' => 'tagente_modulo.id_modulo', 'order' => 'ASC');
 					break;
 				case 'down':
 					$selectTypeDown = $selected;
-					$order = array('field' => 'tagente_modulo.id_modulo', 'order' => 'DESC');
+					$order[] = array('field' => 'tagente_modulo.id_modulo', 'order' => 'DESC');
 					break;
 			}
 			break;
@@ -491,11 +490,11 @@ if ($list_modules) {
 			switch ($sort) {
 				case 'up':
 					$selectNameUp = $selected;
-					$order = array('field' => 'tagente_modulo.nombre', 'order' => 'ASC');
+					$order[] = array('field' => 'tagente_modulo.nombre', 'order' => 'ASC');
 					break;
 				case 'down':
 					$selectNameDown = $selected;
-					$order = array('field' => 'tagente_modulo.nombre', 'order' => 'DESC');
+					$order[] = array('field' => 'tagente_modulo.nombre', 'order' => 'DESC');
 					break;
 			}
 			break;
@@ -503,11 +502,11 @@ if ($list_modules) {
 			switch ($sort) {
 				case 'up':
 					$selectStatusUp = $selected;
-					$order = array('field' => 'tagente_estado.estado=0 DESC,tagente_estado.estado=3 DESC,tagente_estado.estado=2 DESC,tagente_estado.estado=1 DESC', 'order' => '');
+					$order[] = array('field' => 'tagente_estado.estado=0 DESC,tagente_estado.estado=3 DESC,tagente_estado.estado=2 DESC,tagente_estado.estado=1 DESC', 'order' => '');
 					break;
 				case 'down':
 					$selectStatusDown = $selected;
-					$order = array('field' => 'tagente_estado.estado=1 DESC,tagente_estado.estado=2 DESC,tagente_estado.estado=3 DESC,tagente_estado.estado=0 DESC', 'order' => '');
+					$order[] = array('field' => 'tagente_estado.estado=1 DESC,tagente_estado.estado=2 DESC,tagente_estado.estado=3 DESC,tagente_estado.estado=0 DESC', 'order' => '');
 					break;
 			}
 			break;
@@ -515,11 +514,11 @@ if ($list_modules) {
 			switch ($sort) {
 				case 'up':
 					$selectLastContactUp = $selected;
-					$order = array('field' => 'tagente_estado.utimestamp', 'order' => 'ASC');
+					$order[] = array('field' => 'tagente_estado.utimestamp', 'order' => 'ASC');
 					break;
 				case 'down':
 					$selectLastContactDown = $selected;
-					$order = array('field' => 'tagente_estado.utimestamp', 'order' => 'DESC');
+					$order[] = array('field' => 'tagente_estado.utimestamp', 'order' => 'DESC');
 					break;
 			}
 			break;
@@ -535,15 +534,7 @@ if ($list_modules) {
 			$selectLastContactUp = '';
 			$selectLastContactDown = '';
 
-			$order = array('field' => 'tagente_modulo.nombre', 'order' => 'ASC');
-			break;
-	}
-
-	switch ($config["dbtype"]) {
-		case "oracle":
-			if (isset($order['field']) && $order['field'] == 'tagente_modulo.nombre') {
-				$order['field'] = 'dbms_lob.substr(tagente_modulo.nombre,4000,1)';
-			}
+			$order[] = array('field' => 'tagente_modulo.nombre', 'order' => 'ASC');
 			break;
 	}
 
@@ -598,9 +589,21 @@ if ($list_modules) {
 	}
 
 	//Count monitors/modules
-	$order_sql = $order['field'] . " " . $order['order'];
-	$sql = "SELECT COUNT(*)
-		FROM tagente_modulo
+
+	// Build the order sql
+	$first = true;
+	foreach ($order as $ord) {
+		if ($first) {
+			$first = false;
+		}
+		else {
+			$order_sql .= ',';
+		}
+		
+		$order_sql .= $ord['field'].' '.$ord['order'];
+	}
+
+	$sql_condition = "FROM tagente_modulo
 		$tags_join
 		INNER JOIN tagente_estado
 			ON tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
@@ -609,13 +612,15 @@ if ($list_modules) {
 		WHERE tagente_modulo.id_agente = $id_agente
 			AND nombre LIKE '$status_text_monitor_sql'
 			AND delete_pending = 0
+			AND disabled = 0
 			AND $status_filter_sql
+			AND $status_module_group_filter
 			$tags_sql
 			AND tagente_estado.estado != $monitor_filter
-		GROUP BY tagente_modulo.id_agente_modulo
 		";
 
-	$count_modules = db_get_all_rows_sql($sql);
+	$count_modules = db_get_all_rows_sql('SELECT COUNT(DISTINCT tagente_modulo.id_agente_modulo)' . $sql_condition);
+
 	if (isset($count_modules[0]))
 		$count_modules = reset($count_modules[0]);
 	else
@@ -623,22 +628,9 @@ if ($list_modules) {
 
 	//Get monitors/modules
 	// Get all module from agent
-	$sql = "SELECT tagente_estado.*, tagente_modulo.*, tmodule_group.*
-		FROM tagente_modulo
-		$tags_join
-		INNER JOIN tagente_estado
-			ON tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
-		LEFT JOIN tmodule_group
-			ON tagente_modulo.id_module_group = tmodule_group.id_mg
-		WHERE tagente_modulo.id_agente = $id_agente
-			AND nombre LIKE '$status_text_monitor_sql'
-			AND delete_pending = 0
-			AND $status_filter_sql
-			$tags_sql
-			AND tagente_estado.estado != $monitor_filter
-		GROUP BY tagente_modulo.id_agente_modulo
-		ORDER BY tmodule_group.name, $order_sql
-	";
+	$sql_modules_info = "SELECT tagente_estado.*, tagente_modulo.*, tmodule_group.* 
+		$sql_condition
+		GROUP BY tagente_modulo.id_agente_modulo ORDER BY $order_sql";
 
 	if ($monitors_change_filter) {
 		$limit = " LIMIT " . $config['block_size'] . " OFFSET 0";
@@ -651,10 +643,10 @@ if ($list_modules) {
 		$paginate_module = $config['paginate_module'];
 
 	if ($paginate_module) {
-		$modules = db_get_all_rows_sql ($sql . $limit);
+		$modules = db_get_all_rows_sql ($sql_modules_info . $limit);
 	}
 	else {
-		$modules = db_get_all_rows_sql ($sql);
+		$modules = db_get_all_rows_sql ($sql_modules_info);
 	}
 	if (empty ($modules)) {
 		$modules = array ();
@@ -1104,6 +1096,7 @@ if ($get_type) {
 	echo $graph_type;
 	return;
 }
+
 }
 
 ?>

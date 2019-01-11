@@ -14,6 +14,8 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
+global $config;
+
 require_once ($config['homedir'].'/include/functions_users.php');
 
 /**
@@ -439,7 +441,7 @@ function groups_get_all($groupWithAgents = false) {
  * Get all groups recursive from an initial group.
  *
  * @param int Id of the parent group
- * @param bool Whether to return All group or not
+ * @param bool Whether to force recursive search ignoring propagation (true) or not (false)
  *
  * @return Array with all result groups
  */
@@ -449,10 +451,11 @@ function groups_get_id_recursive($id_parent, $all = false) {
 	$return = array_merge($return, array($id_parent));
 	
 	//Check propagate
-	$id = db_get_value_filter('id_grupo', 'tgrupo', array('id_grupo' => $id_parent, 'propagate' => 1));
+	$propagate = db_get_value_filter('propagate', 'tgrupo', array('id_grupo' => $id_parent));
 	
-	if (($id !== false) || $all) {
+	if (($propagate != 1) || $all) {
 		$children = db_get_all_rows_filter("tgrupo", array('parent' => $id_parent, 'disabled' => 0), array('id_grupo'));
+
 		if ($children === false) {
 			$children = array();
 		}
@@ -1226,7 +1229,7 @@ function groups_get_monitors_counter ($group, $agent_filter = array(), $module_f
 			else
 				$module_status = array($module_filter["status"]);
 			
-			$status_array = "";
+			$status_array = array();
 			foreach ($module_status as $status) {
 				switch ($status) {
 					case AGENT_MODULE_STATUS_ALL:
@@ -1699,7 +1702,7 @@ function groups_get_tree_good (&$groups, $parent = false, &$childs) {
 		if ($parent === false && (!isset($group['parent']) || $group['parent'] == 0 || !in_array($group['parent'], $groups))) {
 			$return[$id] = $group;
 			//unset($groups[$id]);
-			$children = groups_get_tree_good($groups, $id);
+			$children = groups_get_tree_good($groups, $id, $noUse);
 			
 			if (!empty($children)) {
 				$return[$id]['children'] = $children;
@@ -1711,7 +1714,7 @@ function groups_get_tree_good (&$groups, $parent = false, &$childs) {
 		else if ($parent && isset($group['parent']) && $group['parent'] == $parent) {
 			$return[$id] = $group;
 			//unset($groups[$id]);
-			$children = groups_get_tree_good($groups, $id);
+			$children = groups_get_tree_good($groups, $id, $noUse);
 			
 			if (!empty($children)) {
 				$return[$id]['children'] = $children;

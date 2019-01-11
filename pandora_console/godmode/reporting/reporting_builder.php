@@ -28,6 +28,27 @@ $( document ).ready(function() {
 		});
 		
 	});
+
+	$('[id^=checkbox-massive_report_check]').change(function(){
+		if($(this).parent().parent().parent().hasClass('checkselected')){
+			$(this).parent().parent().parent().removeClass('checkselected');
+		}
+		else{
+			$(this).parent().parent().parent().addClass('checkselected');							
+		}
+	});
+
+	$('[id^=checkbox-all_delete]').change(function(){	
+		if ($("#checkbox-all_delete").prop("checked")) {
+			$('[id^=checkbox-massive_report_check]').parent().parent().parent().addClass('checkselected');
+			$(".check_delete").prop("checked", true);
+		}
+		else{
+			$('[id^=checkbox-massive_report_check]').parent().parent().parent().removeClass('checkselected');
+			$(".check_delete").prop("checked", false);
+		}	
+	});
+
 });
 	
 </script>
@@ -98,7 +119,9 @@ if ($schedule_report != '') {
 	$time = date(TIME_FORMAT);
 	$parameters[0] = get_parameter('id_schedule_report');
 	//$parameters[1] = db_get_value('schedule_email', 'treport', 'id_report', $id_report);
-	$parameters[1] = get_parameter('schedule_email');
+	$parameters[1] = get_parameter('schedule_email_address');
+	$parameters[2] = get_parameter('schedule_subject', '');
+	$parameters[3] = get_parameter('schedule_email', '');
 	$parameters['first_execution'] = strtotime ($date.' '.$time);
 	
 	$values = array(
@@ -715,9 +738,10 @@ switch ($action) {
 				if ($edit || $delete) {
 					$columnview = true;
 					if (!isset($table->head[$next])) {
-						$table->head[$next] = '<span title="Operations">' . __('Op.') . '</span>';
+						$table->head[$next] = '<span title="Operations">' . __('Op.') . '</span>'.
+							html_print_checkbox('all_delete', 0, false, true, false);
 						$table->size = array ();
-						$table->size[$next] = '80px';
+						//$table->size[$next] = '80px';
 						$table->style[$next] = 'text-align:left;';
 					}
 					
@@ -1847,7 +1871,7 @@ switch ($action) {
 											break;
 									}
 									
-									metaconsole_restore_db_force();
+									metaconsole_restore_db();
 									
 									$temp_sort[$report_item['id_rc']] = $element_name;
 								

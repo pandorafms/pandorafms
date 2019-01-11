@@ -34,7 +34,7 @@ use PandoraFMS::Config;
 use PandoraFMS::DB;
 
 # version: define current version
-my $version = "7.0NG.728 PS181025";
+my $version = "7.0NG.730 PS190111";
 
 # Pandora server configuration
 my %conf;
@@ -292,21 +292,13 @@ sub pandora_purgedb ($$) {
 
 	# Delete pending modules
 	log_message ('PURGE', "Deleting pending delete modules (data table).", '');
-
 	my @deleted_modules = get_db_rows ($dbh, 'SELECT id_agente_modulo FROM tagente_modulo WHERE delete_pending = 1');
-	my @all_modules = get_db_rows ($dbh, 'SELECT id_agente_modulo, parent_module_id FROM tagente_modulo');
 	foreach my $module (@deleted_modules) {
 	    
 	    my $buffer = 1000;
 	    my $id_module = $module->{'id_agente_modulo'};
 
-	   	foreach my $m (@all_modules) {
-			my $id_parent = $m->{'parent_module_id'};
-			my $id_module_fetched = $m->{'id_agente_modulo'};
-			if ($id_parent == $id_module) {
-				db_do ($dbh, 'UPDATE tagente_modulo SET parent_module_id=0 WHERE id_agente_modulo=?', $id_module_fetched);
-			}
-	    }
+		db_do ($dbh, 'UPDATE tagente_modulo SET parent_module_id=0 WHERE parent_module_id=?', $id_module);
 
 		log_message ('', ".");
 		
@@ -1050,8 +1042,20 @@ else {
 
 # Connect to the DB
 my $dbh = db_connect ($conf{'dbengine'}, $conf{'dbname'}, $conf{'dbhost'}, $conf{'dbport'}, $conf{'dbuser'}, $conf{'dbpass'});
-my $history_dbh = ($conf{'_history_db_enabled'} eq '1') ? db_connect ($conf{'dbengine'}, $conf{'_history_db_name'},
-		$conf{'_history_db_host'}, $conf{'_history_db_port'}, $conf{'_history_db_user'}, $conf{'_history_db_pass'}) : undef;
+my $history_dbh = undef;
+is_metaconsole(\%conf);
+if ($conf{'_history_db_enabled'} eq '1') {
+	eval {
+		$history_dbh = db_connect ($conf{'dbengine'}, $conf{'_history_db_name'}, $conf{'_history_db_host'}, $conf{'_history_db_port'}, $conf{'_history_db_user'}, $conf{'_history_db_pass'});
+	};
+	if ($@) {
+		if (is_offline(\%conf)) {
+			log_message ('!', "Cannot connect to the history database. Skipping.");
+		} else {
+			die ("$@\n");
+		}
+	}
+}
 
 # Get a lock
 my $lock = db_get_lock ($dbh, 'pandora_db');
@@ -1063,13 +1067,13 @@ if ($lock == 0 && $conf{'_force'} == 0) {
 # Main
 pandoradb_main(\%conf, $dbh, $history_dbh);
 
-# Cleanup and exit
-db_disconnect ($history_dbh) if defined ($history_dbh);
-db_disconnect ($dbh);
-
 # Release the lock
 if ($lock == 1) {
 	db_release_lock ($dbh, 'pandora_db');
 }
+
+# Cleanup and exit
+db_disconnect ($history_dbh) if defined ($history_dbh);
+db_disconnect ($dbh);
 
 exit 0;

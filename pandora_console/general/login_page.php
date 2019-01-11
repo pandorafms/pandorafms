@@ -70,8 +70,9 @@ switch ($login_screen) {
 		$logo_link = 'index.php';
 		$logo_title = __('Refresh');
 		break;
-	$splash_title = __('Splash login');
 }
+
+$splash_title = __('Splash login');
 
 $url = '?login=1';
 //These variables come from index.php
@@ -303,7 +304,7 @@ echo '</div>';
 echo '<div id="ver_num">'.$pandora_version.(($develop_bypass == 1) ? ' '.__('Build').' '.$build_version : '') . '</div>';
 echo '</div>';
 
-if ($process_error_message == '' && $mail != "") {
+if (!isset($process_error_message) && isset($mail)) {
 	echo '<div id="reset_correct" title="' . __('Password reset') . '">';
 		echo '<div class="content_alert">';
 			echo '<div class="icon_message_alert">';
@@ -315,13 +316,13 @@ if ($process_error_message == '' && $mail != "") {
 					echo '<p>'  . __('An email has been sent to your email address') . '</p>';
 				echo '</div>';
 				echo '<div class="button_message_alert">';
-					html_print_submit_button("Ok", 'reset_correct_button', false);  
+					html_print_submit_button("Ok", 'reset_correct_button', false);
 				echo '</div>';
 			echo '</div>';
 		echo '</div>';
 	echo '</div>';
 }
-else if ($process_error_message != '') {
+else if (isset($process_error_message)) {
 	echo '<div id="reset_correct" title="' . __('Password reset') . '">';
 		echo '<div class="content_alert">';
 			echo '<div class="icon_message_alert">';
@@ -333,7 +334,7 @@ else if ($process_error_message != '') {
 					echo '<p>'  . $process_error_message . '</p>';
 				echo '</div>';
 				echo '<div class="button_message_alert">';
-					html_print_submit_button("Ok", 'reset_correct_button', false);  
+					html_print_submit_button("Ok", 'reset_correct_button', false);
 				echo '</div>';
 			echo '</div>';
 		echo '</div>';
@@ -341,7 +342,7 @@ else if ($process_error_message != '') {
 }
 
 
-if ($correct_reset_pass_process != "") {
+if (isset($correct_reset_pass_process)) {
 	echo '<div id="final_process_correct" title="' . __('Password reset') . '">';
 		echo '<div class="content_alert">';
 			echo '<div class="icon_message_alert">';
@@ -353,7 +354,7 @@ if ($correct_reset_pass_process != "") {
 					echo '<p>'  . $correct_reset_pass_process . '</p>';
 				echo '</div>';
 				echo '<div class="button_message_alert">';
-					html_print_submit_button("Ok", 'final_process_correct_button', false);  
+					html_print_submit_button("Ok", 'final_process_correct_button', false);
 				echo '</div>';
 			echo '</div>';
 		echo '</div>';
@@ -483,8 +484,8 @@ if($login_screen == 'error_authconfig' || $login_screen == 'error_emptyconfig' |
 }
 
 ui_require_css_file ('dialog');
-ui_require_css_file ('jquery-ui-1.10.0.custom');
-ui_require_jquery_file('jquery-ui-1.10.0.custom');
+ui_require_css_file ('jquery-ui.min');
+ui_require_jquery_file('jquery-ui.min');
 ?>
 
 <?php

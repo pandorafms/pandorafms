@@ -1584,8 +1584,8 @@ $config['css']['dialog'] = "include/javascript/introjs.css";
 	//End load JQuery
 	////////////////////////////////////////////////////////////////////
 
-	include_once($config["homedir"] . '/include/graphs/functions_flot.php');
-	$output .= include_javascript_dependencies_flot_graph(true);
+	include_once (__DIR__ . '/graphs/functions_flot.php');
+	$output .= include_javascript_dependencies_flot_graph (true);
 
 	$output .= '<!--[if gte IE 6]>
 		<link rel="stylesheet" href="include/styles/ie.css" type="text/css"/>

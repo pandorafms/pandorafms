@@ -971,14 +971,6 @@ else {
 							$('#button-submit_event_response').hide(function() {
 								$('#response_loading_dialog').show(function() {
 
-									var total_checked = $(".chk_val:checked").length;
-
-									// Limit number of events to apply custom responses to for performance reasons
-									if (total_checked > 10) {
-										$('#max_custom_event_resp_msg').show();
-										return;
-									}
-
 									$(".chk_val").each(function() {
 										
 										if ($(this).is(":checked")) {
@@ -1001,14 +993,6 @@ else {
 						else {
 							$('#button-btn_str').hide(function() {
 								$('#execute_again_loading').show(function() {
-
-									var total_checked = $(".chk_val:checked").length;
-
-									// Limit number of events to apply custom responses to for performance reasons
-									if (total_checked > 10) {
-										$('#max_custom_event_resp_msg').show();
-										return;
-									}
 
 									$(".chk_val").each(function() {
 										

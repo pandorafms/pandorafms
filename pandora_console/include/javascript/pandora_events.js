@@ -158,10 +158,11 @@ function show_response_dialog(event_id, response_id, response) {
 	var params = [];
 	params.push("page=include/ajax/events");
 	params.push("dialogue_event_response=1");
+	params.push("massive=0");
 	params.push("event_id="+event_id);
 	params.push("target="+response['target']);
 	params.push("response_id="+response_id);
-	
+
 	jQuery.ajax ({
 		data: params.join ("&"),
 		type: 'POST',
@@ -183,6 +184,54 @@ function show_response_dialog(event_id, response_id, response) {
 					height: response['modal_height']
 				})
 				.show ();
+		}
+	});
+}
+
+//Show the modal window of event responses when multiple events are selected
+function show_massive_response_dialog(event_id, response_id, response, out_iterator, end) {
+	var ajax_file = $('#hidden-ajax_file').val();
+	
+	var params = [];
+	params.push("page=include/ajax/events");
+	params.push("dialogue_event_response=1");
+	params.push("massive=1");
+	params.push("end="+end);
+	params.push("out_iterator="+out_iterator);
+	params.push("event_id="+event_id);
+	params.push("target="+response['target']);
+	params.push("response_id="+response_id);
+
+
+	jQuery.ajax ({
+		data: params.join ("&"),
+		response_tg: response['target'],
+		response_id: response_id,
+		out_iterator: out_iterator,
+		type: 'POST',
+		url: action=ajax_file,
+		dataType: 'html',
+		success: function (data) {
+			if (out_iterator === 0)
+				$("#event_response_window").empty();
+
+			$("#event_response_window").hide ()
+				.append (data)
+				.dialog ({
+					title: $('#select_custom_response option:selected').html(),
+					resizable: true,
+					draggable: true,
+					modal: false,
+					open: function(event, ui) {
+						$('#response_loading_dialog').hide();
+						$('#button-submit_event_response').show();
+					},
+					width: response['modal_width'], 
+					height: response['modal_height']
+				})
+				.show ();
+
+			perform_response_massive(this.response_tg, this.response_id, this.out_iterator);
 		}
 	});
 }
@@ -365,6 +414,42 @@ function perform_response(target, response_id) {
 			$('#response_out').html(out);
 			$('#response_loading_command').hide();
 			$('#re_exec_command').show();
+		}
+	});
+
+	return false;
+}
+
+// Perform a response and put the output into a div
+function perform_response_massive(target, response_id, out_iterator) {
+	var ajax_file = $('#hidden-ajax_file').val();
+	
+	$('#re_exec_command').hide();
+	$('#response_loading_command_'+out_iterator).show();
+	$('#response_out_'+out_iterator).html('');
+	
+	var finished = 0;
+	var time = Math.round(+new Date()/1000);
+	var timeout = time + 10;
+
+	var params = [];
+	params.push("page=include/ajax/events");
+	params.push("perform_event_response=1");
+	params.push("target="+target);
+	params.push("response_id="+response_id)
+	
+	jQuery.ajax ({
+		data: params.join ("&"),
+		type: 'POST',
+		url: action=ajax_file,
+		async: true,
+		timeout: 10000,
+		dataType: 'html',
+		success: function (data) {
+			var out = data.replace(/[\n|\r]/g, "<br>");
+			$('#response_out_'+out_iterator).html(out);
+			$('#response_loading_command_'+out_iterator).hide();
+			$('#re_exec_command_'+out_iterator).show();
 		}
 	});
 

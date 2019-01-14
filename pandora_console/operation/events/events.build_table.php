@@ -20,6 +20,8 @@ require_once ($config["homedir"] . "/include/functions_ui.php");
 $sort_field = get_parameter("sort_field", "timestamp");
 $sort = get_parameter("sort", "down");
 
+$response_id = get_parameter ("response_id", "");
+
 $table = new stdClass();
 if(!isset($table->width)) {
 	$table->width = '100%';
@@ -887,9 +889,8 @@ else {
 			
 			echo '<div style="width:' . $table->width . ';" class="action-buttons">';
 			if (!$readonly && $show_validate_button) {
-				html_print_button(__('In progress selected'), 'validate_button', false, 'validate_selected(2);', 'class="sub ok"');
-				echo "  ";
-				html_print_button(__('Validate selected'), 'validate_button', false, 'validate_selected(1);', 'class="sub ok"');
+				$array_events_actions['in_progress_selected'] = 'In progress selected';
+				$array_events_actions['validate_selected'] = 'Validate selected';
 				// Fix: validated_selected JS function has to be included with the proper user ACLs 
 				?>
 				<script type="text/javascript">
@@ -904,7 +905,7 @@ else {
 				<?php
 			}
 			if (!$readonly && ($show_delete_button)) {
-				html_print_button(__('Delete selected'), 'delete_button', false, 'delete_selected();', 'class="sub delete"');
+				$array_events_actions['delete_selected'] = 'Delete selected';
 				?>
 				<script type="text/javascript">
 					function delete_selected() {
@@ -916,9 +917,136 @@ else {
 				</script>
 				<?php
 			}
+
 			echo '</div>';
 			echo '</form>';
+
+			$sql_event_resp = "SELECT id, name FROM tevent_response WHERE type LIKE 'command'";
+			$event_responses = db_get_all_rows_sql ($sql_event_resp);
+
+			foreach ($event_responses as $val)
+				$array_events_actions[$val['id']] = $val['name'];
+
+			echo '<div style="width:100%;text-align:right;">';
+			echo '<form method="post" id="form_event_response">';
+			html_print_select($array_events_actions, 'response_id', '', '', '', 0, false, false, false);
+			echo '&nbsp&nbsp';
+			html_print_button(__('Execute event response'), 'submit_event_response', false, 'execute_event_response(true);', 'class="sub next"');
+			echo "<span id='response_loading_dialog' style='display:none'>".html_print_image('images/spinner.gif', true)."</span>";
+			echo '</form>';
+			echo '<span id="max_custom_event_resp_msg" style="display:none; color:#FC4444; line-height: 200%;">'.__("A maximum of 10 event custom responses can be selected").'</span>';
+			echo '</div>';
 		}
+
+		?>
+			<script type="text/javascript">
+
+				function execute_event_response(event_list_btn) { 
+
+					$('#max_custom_event_resp_msg').hide();
+
+					var response_id = $('select[name=response_id]').val();
+
+					if (!isNaN(response_id)) { // It is a custom response
+
+						var response = get_response(response_id);
+
+						var counter=0;
+						var end=0;
+
+						// If cannot get response abort it
+						if (response == null) {
+							return;
+						}
+
+						var total_checked = $(".chk_val:checked").length;
+
+						// Limit number of events to apply custom responses to for performance reasons
+						if (total_checked > 10) {
+							$('#max_custom_event_resp_msg').show();
+							return;
+						}
+
+						if (event_list_btn) {
+							$('#button-submit_event_response').hide(function() {
+								$('#response_loading_dialog').show(function() {
+
+									var total_checked = $(".chk_val:checked").length;
+
+									// Limit number of events to apply custom responses to for performance reasons
+									if (total_checked > 10) {
+										$('#max_custom_event_resp_msg').show();
+										return;
+									}
+
+									$(".chk_val").each(function() {
+										
+										if ($(this).is(":checked")) {
+											//var server_id = $('#hidden-server_id_'+).
+											event_id = $(this).val();
+											server_id = $('#hidden-server_id_'+event_id).val();
+
+											response['target'] = get_response_target(event_id, response_id, server_id);
+
+											if (total_checked-1 === counter) end=1;
+
+											show_massive_response_dialog(event_id, response_id, response, counter, end);
+
+											counter++;
+										}
+									});
+								});
+							});
+						}
+						else {
+							$('#button-btn_str').hide(function() {
+								$('#execute_again_loading').show(function() {
+
+									var total_checked = $(".chk_val:checked").length;
+
+									// Limit number of events to apply custom responses to for performance reasons
+									if (total_checked > 10) {
+										$('#max_custom_event_resp_msg').show();
+										return;
+									}
+
+									$(".chk_val").each(function() {
+										
+										if ($(this).is(":checked")) {
+											//var server_id = $('#hidden-server_id_'+).
+											event_id = $(this).val();
+											server_id = $('#hidden-server_id_'+event_id).val();
+
+											response['target'] = get_response_target(event_id, response_id, server_id);
+
+											if (total_checked-1 === counter) end=1;
+
+											show_massive_response_dialog(event_id, response_id, response, counter, end);
+
+											counter++;
+										}
+									});
+								});
+							});
+						}
+
+					}
+					else { // It is not a custom response
+						switch (response_id) {
+							case 'in_progress_selected':
+								validate_selected(2);
+								break;
+							case 'validate_selected':
+								validate_selected(1);
+							break;
+							case 'delete_selected':
+								delete_selected();
+							break;
+						}
+					}
+				}
+			</script>
+		<?php
 	}
 	else {
 		echo '<div class="nf">' . __('No events') . '</div>';

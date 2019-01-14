@@ -490,6 +490,8 @@ sub pandora_load_config {
 	
 	$pa_config->{'snmp_extlog'} = ""; # 7.0 726
 
+	$pa_config->{"fsnmp"} = "/usr/bin/pandorafsnmp"; # 7.0 732
+
 	# Check for UID0
 	if ($pa_config->{"quiet"} != 0){
 		if ($> == 0){
@@ -1122,6 +1124,9 @@ sub pandora_load_config {
 		}
 		elsif ($parametro =~ m/^snmp_extlog\s(.*)/i) { 
 			$pa_config->{'snmp_extlog'} = clean_blank($1); 
+		}
+		elsif ($parametro =~ m/^fsnmp\s(.*)/i) {
+			$pa_config->{'fsnmp'}= clean_blank($1); 
 		}
 	} # end of loop for parameter #
 

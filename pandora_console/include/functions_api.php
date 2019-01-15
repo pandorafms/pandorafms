@@ -9774,6 +9774,11 @@ function api_set_create_event($id, $trash1, $other, $returnType) {
 				return;
 			}
 			$values['id_grupo'] = $other['data'][1];
+
+			if (groups_get_name($values['id_grupo']) === false) {
+				returnError('error_parameter', 'Group ID does not exist');
+				return;
+			}
 		}
 		else {
 			returnError('error_parameter', 'Group ID required.');
@@ -10117,7 +10122,7 @@ function api_get_netflow_get_summary ($discard_1, $discard_2, $params) {
 }
 
 //http://localhost/pandora_console/include/api.php?op=set&op2=validate_event_by_id&id=23&apipass=1234&user=admin&pass=pandora
-function api_set_validate_event_by_id ($id, $trash1, $trash2, $returnType) {
+function api_set_validate_event_by_id ($id, $trash1 = null, $trash2 = null, $returnType = 'string') {
 	global $config;
 	$data['type'] = 'string';
 	$check_id = db_get_value('id_evento', 'tevento', 'id_evento', $id);
@@ -10136,7 +10141,7 @@ function api_set_validate_event_by_id ($id, $trash1, $trash2, $returnType) {
 				'ack_utimestamp' => $ack_utimestamp,
 				'estado' => 1
 				);
-			
+
 			$result = db_process_sql_update('tevento', $values, array('id_evento' => $id));
 			
 			if ($result === false) {

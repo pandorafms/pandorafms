@@ -900,10 +900,12 @@ else {
 								validate_event_advanced($(this).val(), new_status);
 							}
 						});  
+						location.reload();
 					}
 				</script>
 				<?php
 			}
+
 			if (!$readonly && ($show_delete_button)) {
 				$array_events_actions['delete_selected'] = 'Delete selected';
 				?>
@@ -927,7 +929,7 @@ else {
 			foreach ($event_responses as $val)
 				$array_events_actions[$val['id']] = $val['name'];
 
-			if (!$config["centralized_management"]) {
+			if ($config['event_replication'] != 1) {
 				echo '<div style="width:100%;text-align:right;">';
 				echo '<form method="post" id="form_event_response">';
 				html_print_select($array_events_actions, 'response_id', '', '', '', 0, false, false, false);
@@ -1029,8 +1031,6 @@ else {
 								delete_selected();
 							break;
 						}
-
-						$( ".chk_val" ).prop( "checked", false );
 					}
 				}
 			</script>

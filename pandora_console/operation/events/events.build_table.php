@@ -1027,6 +1027,8 @@ else {
 								delete_selected();
 							break;
 						}
+
+						$( ".chk_val" ).prop( "checked", false );
 					}
 				}
 			</script>

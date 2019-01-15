@@ -226,6 +226,9 @@ function show_massive_response_dialog(event_id, response_id, response, out_itera
 						$('#response_loading_dialog').hide();
 						$('#button-submit_event_response').show();
 					},
+					close: function(event, ui) {
+						$( ".chk_val" ).prop( "checked", false );
+					},
 					width: response['modal_width'], 
 					height: response['modal_height']
 				})

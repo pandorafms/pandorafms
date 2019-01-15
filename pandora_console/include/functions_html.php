@@ -735,8 +735,11 @@ function html_print_extended_select_for_post_process($name, $selected = '',
 	$selected_float = (float)$selected;
 	$found = false;
 
-	if (array_key_exists(number_format($selected, 14, '.', ','), $fields))
-		$found = true;
+	if($selected){
+		if (array_key_exists(number_format($selected, 14, '.', ','), $fields)) {
+			$found = true;
+		}
+	}
 
 	if (!$found) {
 		$fields[$selected] = floatval($selected);
@@ -1017,7 +1020,7 @@ function html_print_input_text_extended ($name, $value, $id, $alt, $size, $maxle
 	++$idcounter;
 	
 	$valid_attrs = array ("accept", "disabled", "maxlength",
-		"name", "readonly", "size", "value", "accesskey",
+		"name", "readonly", "placeholder", "size", "value", "accesskey",
 		"class", "dir", "id", "lang", "style", "tabindex",
 		"title", "xml:lang", "onfocus", "onblur", "onselect",
 		"onchange", "onclick", "ondblclick", "onmousedown",

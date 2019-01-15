@@ -51,31 +51,27 @@ if ($update) {
 		$agents_ = array();
 
 		$force = get_parameter('force_type', false);
-		
+
 		if ($agents_select == false) {
 			$agents_select = array();
 		}
-		
-		foreach ($agents_select as $agent_name) {
-			$agents_[] = agents_get_agent_id($agent_name);
-		}
 
+		$agents_ = $agents_select;
 		$modules_ = $module_name;
-
 	}
 	else if ($selection_mode == 'agents') {
 		$force = get_parameter('force_group', false);
-		
+
 		$agents_ = $agents_id;
 		$modules_ = $modules_select;
 	}
-	
+
 	$success = 0;
 	$count = 0;
-	
+
 	if ($agents_ == false)
 		$agents_ = array();
-	
+
 	// If the option to select all of one group or module type is checked
 	if ($force) {
 		if ($force == 'type') {

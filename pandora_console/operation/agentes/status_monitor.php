@@ -552,7 +552,7 @@ if (is_metaconsole()) {
 	
 	$filters .= html_print_table($table, true);
 	$filters .= "</form>";
-	ui_toggle($filters, __('Show Options'));
+	ui_toggle($filters, __('Show Options'), '', false);
 }
 else {
 	$table->colspan[3][0] = 7;
@@ -778,84 +778,89 @@ $sql = 'SELECT
 	ORDER BY ' . $order['field'] . " " . $order['order'] . '
 	LIMIT '.$offset.",".$limit_sql;
 
-if (! defined ('METACONSOLE')) {
-	$result = db_get_all_rows_sql ($sql);
-	
-	if ($result === false) {
-		$result = array ();
+// When you enter for the first time you have less than 4 query params in the url
+$first_interaction = count($_GET) > 4;
+// We do not show the modules until the user searches with the filter
+if ($first_interaction) {
+	if (! defined ('METACONSOLE')) {
+		$result = db_get_all_rows_sql($sql);
+
+		if ($result === false) {
+			$result = array();
+		} else {
+			ui_pagination($count, false, $offset);
+		}
 	}
-	else
-		ui_pagination ($count, false, $offset);
-}
-else {
-	// For each server defined and not disabled:
-	$servers = db_get_all_rows_sql ('SELECT *
+	else {
+		// For each server defined and not disabled:
+		$servers = db_get_all_rows_sql('SELECT *
 		FROM tmetaconsole_setup
 		WHERE disabled = 0');
-	if ($servers === false)
-		$servers = array();
-	
-	$result = array();
-	$count_modules = 0;
-	foreach ($servers as $server) {
+		if ($servers === false)
+			$servers = array();
+
+		$result = array();
+		$count_modules = 0;
+		foreach ($servers as $server) {
 		// If connection was good then retrieve all data server
-		if (metaconsole_connect($server) == NOERR)
-			$connection = true;
-		else
-			$connection = false;
-		 
-		$result_server = db_get_all_rows_sql ($sql);
-		
-		if (!empty($result_server)) {
+			if (metaconsole_connect($server) == NOERR)
+				$connection = true;
+			else
+				$connection = false;
+
+			$result_server = db_get_all_rows_sql($sql);
+
+			if (!empty($result_server)) {
 			
 			// Create HASH login info
-			$pwd = $server['auth_token'];
-			$auth_serialized = json_decode($pwd,true);
-			
-			if (is_array($auth_serialized)) {
-				$pwd = $auth_serialized['auth_token'];
-				$api_password = $auth_serialized['api_password'];
-				$console_user = $auth_serialized['console_user'];
-				$console_password = $auth_serialized['console_password'];
-			}
-			
-			$user = $config['id_user'];
-			$user_rot13 = str_rot13($config['id_user']);
-			$hashdata = $user.$pwd;
-			$hashdata = md5($hashdata);
-			$url_hash = '&' .
-				'loginhash=auto&' .
-				'loginhash_data=' . $hashdata . '&' .
-				'loginhash_user=' . $user_rot13;
-			
-			foreach ($result_server as $result_element_key => $result_element_value) {
-				
-				$result_server[$result_element_key]['server_id'] = $server['id'];
-				$result_server[$result_element_key]['server_name'] = $server['server_name'];
-				$result_server[$result_element_key]['server_url'] = $server['server_url'].'/';
-				$result_server[$result_element_key]['hashdata'] = $hashdata;
-				$result_server[$result_element_key]['user'] = $config['id_user'];
-				$result_server[$result_element_key]['groups_in_server'] =
-					agents_get_all_groups_agent(
+				$pwd = $server['auth_token'];
+				$auth_serialized = json_decode($pwd, true);
+
+				if (is_array($auth_serialized)) {
+					$pwd = $auth_serialized['auth_token'];
+					$api_password = $auth_serialized['api_password'];
+					$console_user = $auth_serialized['console_user'];
+					$console_password = $auth_serialized['console_password'];
+				}
+
+				$user = $config['id_user'];
+				$user_rot13 = str_rot13($config['id_user']);
+				$hashdata = $user . $pwd;
+				$hashdata = md5($hashdata);
+				$url_hash = '&' .
+					'loginhash=auto&' .
+					'loginhash_data=' . $hashdata . '&' .
+					'loginhash_user=' . $user_rot13;
+
+				foreach ($result_server as $result_element_key => $result_element_value) {
+
+					$result_server[$result_element_key]['server_id'] = $server['id'];
+					$result_server[$result_element_key]['server_name'] = $server['server_name'];
+					$result_server[$result_element_key]['server_url'] = $server['server_url'] . '/';
+					$result_server[$result_element_key]['hashdata'] = $hashdata;
+					$result_server[$result_element_key]['user'] = $config['id_user'];
+					$result_server[$result_element_key]['groups_in_server'] =
+						agents_get_all_groups_agent(
 						$result_element_value['id_agent'],
 						$result_element_value['id_group']
-				);
-				
-				$count_modules++;
-				
+					);
+
+					$count_modules++;
+
+				}
+
+				$result = array_merge($result, $result_server);
 			}
-			
-			$result = array_merge($result, $result_server);
+			metaconsole_restore_db();
 		}
-		metaconsole_restore_db();
+
+		if ($count_modules > $config['block_size']) {
+			ui_pagination($count_modules, false, $offset);
+		}
+
+		// Get number of elements of the pagination
+		$result = ui_meta_get_subset_array($result, $inferior_limit, $superior_limit);
 	}
-	
-	if ($count_modules > $config['block_size']) {
-		ui_pagination ($count_modules, false, $offset);
-	}
-	
-	// Get number of elements of the pagination
-	$result = ui_meta_get_subset_array($result, $inferior_limit, $superior_limit);
 }
 
 if (($config['dbtype'] == 'oracle') && ($result !== false)) {
@@ -1391,9 +1396,14 @@ if (!empty($result)) {
 	}
 	
 	html_print_table ($table);
+
+} else {
+	if ($first_interaction) {
+		ui_print_info_message(array('no_close' => true, 'message' => __('This group doesn\'t have any monitor')));
+	} else {
+		ui_print_info_message(array('no_close' => true, 'message' => __('Sorry no search parameters')));
+	}
 }
-else
-	ui_print_info_message ( array ( 'no_close' => true, 'message' => __('This group doesn\'t have any monitor') ) );
 // End Build List Result
 /////////////////////////////////////
 

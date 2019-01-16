@@ -37,10 +37,7 @@ else{
 		"&session_id=" + session_id;
 }
 
-
-
 var page = require('webpage').create();
-
 
 page.viewportSize = {
 	width: viewport_width,
@@ -49,19 +46,25 @@ page.viewportSize = {
 
 page.zoomFactor = 1;
 
+page.onConsoleMessage = function(msg){
+	console.log(msg);
+};
 
-page.onCallback = function (st){
-	if(!base_64){
-		page.render(output_filename, {format: 'png'});
-	} else{
+page.onError = function(msg){
+	console.log(msg);
+	page.close();
+}
+
+page.onCallback = function (st) {
+	if (!base_64) {
+		page.render(output_filename, { format: 'png' });
+	} else {
 		var base64 = page.renderBase64('png');
 		// do not remove this console.output
 		console.log(base64);
 	}
 	phantom.exit();
-
 };
-
 
 page.open(url, 'POST', post_data, function (status) {
 });

@@ -115,8 +115,8 @@
 		</div>
 		<div style='height: 10px'>
 			<?php
-$version = '7.0NG.729';
-$build = '181211';
+$version = '7.0NG.730';
+$build = '190116';
 			$banner = "v$version Build $build";
 			
 			error_reporting(0);
@@ -663,14 +663,7 @@ function install_step3() {
 				value='".dirname (__FILE__)."'>
 				
 				<tr>";
-	if ($_SERVER['SERVER_ADDR'] == 'localhost' || $_SERVER['SERVER_ADDR'] == '127.0.0.1') {
-		echo "<td valign=top>
-				Drop Database if exists<br>
-				<input class='login' type='checkbox' name='drop' value=1>
-				"; 
-	} else {
-		echo "<td>";
-	}
+	echo "<td>";
 	echo		"<td>URL path to Pandora FMS Console<br>
 				<span style='font-size: 9px'>For example '/pandora_console'</span>
 				</br>

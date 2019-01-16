@@ -79,14 +79,10 @@ function profile_create_user_profile ($id_user,
 	$tags = '',
 	$no_hierarchy = false
 ) {
-
 	global $config;
 
 	if (empty ($id_profile) || $id_group < 0)
-	return false;
-
-	// Secondary server is an enterprise function
-	if (!enterprise_installed() && $no_hierarchy) return false;
+		return false;
 
 	// Checks if the user exists
 	$result_user = users_get_user_by_id($id_user);

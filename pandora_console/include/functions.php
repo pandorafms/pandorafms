@@ -3285,11 +3285,19 @@ function series_type_graph_array($data, $show_elements_graph){
 function generator_chart_to_pdf($type_graph_pdf, $params, $params_combined = false, $module_list = false){
 	global $config;
 
+	if(is_metaconsole()){
+		$hack_metaconsole = "../..";
+	}
+	else{
+		$hack_metaconsole = "";
+	}
+
 	$file_js  = $config["homedir"] . "/include/web2image.js";
-	$url      = $config["homeurl"] . "include/chart_generator.php";
+	$url      = ui_get_full_url(false) . $hack_metaconsole . "/include/chart_generator.php";
+
 	$img_file = "img_". uniqid()  .".png";
 	$img_path = $config["homedir"] . "/attachment/" . $img_file;
-	$img_url  = $config["homeurl"] . "attachment/" . $img_file;
+	$img_url  = ui_get_full_url(false) . $hack_metaconsole . "/attachment/" . $img_file;
 
 	$width_img  = 500;
 	$height_img = (isset($config['graph_image_height'])) ? $config['graph_image_height'] : 280;
@@ -3320,7 +3328,10 @@ function generator_chart_to_pdf($type_graph_pdf, $params, $params_combined = fal
 		. ' "' . $session_id . '"'
 		. ' "' . $params['return_img_base_64'] . '"';
 
-	exec($cmd, $result);
+	$result = null;
+	$retcode = null;
+	exec($cmd, $result, $retcode);
+
 	$img_content = join("\n", $result);
 
 	if($params['return_img_base_64']){
@@ -3389,5 +3400,39 @@ function validate_csrf_code() {
 
 function generate_hash_to_api(){
 	hash('sha256', db_get_value ('value', 'tupdate_settings', '`key`', 'customer_key'));
+}
+
+/**
+ * Disable the profiller and display de result
+ *
+ * @param string Key to identify the profiler run.
+ * @param string Way to display the result
+ * 		"link" (default): Click into word "Performance" to display the profilling info.
+ * 		"console": Display with a message in pandora_console.log.
+ */
+function pandora_xhprof_display_result($key = "", $method = "link") {
+	// Check if function exists
+	if (!function_exists('tideways_xhprof_disable')) {
+		error_log("Cannot find tideways_xhprof_disable function");
+		return;
 	}
+
+	$run_id = uniqid();
+	$data = tideways_xhprof_disable();
+	$source = "pandora_$key";
+	file_put_contents(
+		sys_get_temp_dir() . "/" . $run_id . ".$source.xhprof",
+		serialize($data)
+	);
+	$new_url = "http://{$_SERVER['HTTP_HOST']}/profiler/index.php?run={$run_id}&source={$source}";
+	switch($method) {
+		case "console":
+			error_log("'{$new_url}'");
+		case "link":
+		default:
+			echo "<a href='{$new_url}' target='_new'>Performance</a>\n";
+			break;
+
+	}
+}
 ?>

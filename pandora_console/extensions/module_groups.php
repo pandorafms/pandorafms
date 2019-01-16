@@ -61,17 +61,27 @@ function mainModuleGroups() {
 	$info = groupview_plain_groups($info);
 	$counter = count($info);
 	$offset = get_parameter('offset', 0);
-	$groups_view = $is_not_paginated
-		? $info
-		: array_slice($info, $offset, $config['block_size']);
-	$agents_counters = array_reduce($groups_view, function($carry, $item){
-		$carry[$item['id']] = $item;
-		return $carry;
-	}, array());
+	$agent_group_search = get_parameter('agent_group_search', '');
+	$module_group_search = get_parameter('module_group_search', '');
 
-	$ids_array = array_keys($agents_counters);
+	$info = array_filter($info, function($v, $k) use ($agent_group_search) {
+	    return preg_match("/$agent_group_search/i", $v['name']);
+	}, ARRAY_FILTER_USE_BOTH);
 
-	$ids_group = implode(',', $ids_array);
+	if (!empty($info)) {
+		$groups_view = $is_not_paginated
+			? $info
+			: array_slice($info, $offset, $config['block_size']);
+		$agents_counters = array_reduce($groups_view, function($carry, $item){
+			$carry[$item['id']] = $item;
+			return $carry;
+		}, array());
+
+		$ids_array = array_keys($agents_counters);
+
+		$ids_group = implode(',', $ids_array);
+	} else
+		$ids_group = -1;
 
 	$condition_critical = modules_get_state_condition(AGENT_MODULE_STATUS_CRITICAL_ALERT);
 	$condition_warning  = modules_get_state_condition(AGENT_MODULE_STATUS_WARNING_ALERT);
@@ -90,6 +100,12 @@ function mainModuleGroups() {
 		$array_module_group[$value['id_mg']] = $value['name'];
 	}
 	$array_module_group[0] = 'Nothing';
+
+
+	$array_module_group = array_filter($array_module_group, function($v, $k) use ($module_group_search) {
+	    return preg_match("/$module_group_search/i", $v);
+	}, ARRAY_FILTER_USE_BOTH);
+
 	foreach ($agents_counters as $key => $value) {
 		$array_for_defect[$key]['gm'] = $array_module_group;
 		$array_for_defect[$key]['data']['name'] = $value['name'];
@@ -167,7 +183,26 @@ $sql =
 
 	ui_print_page_header (__("Combined table of agent group and module group"), "images/module_group.png", false, "", false, '');
 
-	if(count($array_for_defect) > 0){
+	echo "<table cellpadding='4' cellspacing='4' class='databox filters' width='100%' style='font-weight: bold; margin-bottom: 10px;'>
+		<tr>";
+	echo "<form method='post'
+		action='index.php?sec=view&sec2=extensions/module_groups'>";
+
+	echo "<td>";
+	echo __('Search by agent group') . '&nbsp;';
+	html_print_input_text ("agent_group_search", $agent_group_search);
+
+	echo "</td><td>";
+	echo __('Search by module group') . '&nbsp;';
+	html_print_input_text ("module_group_search", $module_group_search);
+
+	echo "</td><td>";
+	echo "<input name='srcbutton' type='submit' class='sub search' value='".__('Search')."'>";
+	echo "</form>";
+	echo "<td>";
+	echo "</tr></table>";
+
+	if(true){
 		$table = new StdClass();
 		$table->style[0] = 'color: #ffffff; background-color: #373737; font-weight: bolder; padding-right: 10px; min-width: 230px;';
 		$table->width = '100%';

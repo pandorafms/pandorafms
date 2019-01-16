@@ -380,9 +380,14 @@ class Events {
 		}
 		
 		if ($system->getRequest('filter', __('Preset Filters')) === __("Preset Filters")) {
-		         //Set filter as default user event filter (only first time)
-		         $this->filter = db_get_value('default_event_filter', 'tusuario', 'id_user', $system->getConfig('id_user'));
-		 }
+			//Set filter as default user event filter (only first time)
+			$this->filter = db_get_value('default_event_filter', 'tusuario', 'id_user', $system->getConfig('id_user'));
+			
+			//Use user set default filter if admin set default filter is "none"
+			if ($this->filter == 0){
+				$this->filter = db_get_value('id_filter', 'tusuario', 'id_user', $system->getConfig('id_user'));
+			}
+		}
 		 else {
 		         $this->filter = $system->getRequest('filter', __('Preset Filters'));
 		 }

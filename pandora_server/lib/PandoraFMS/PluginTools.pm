@@ -47,6 +47,7 @@ our @EXPORT = qw(
 	api_create_group
 	call_url
 	check_lib_version
+	csv_to_obj
 	decrypt
 	empty
 	encrypt
@@ -67,6 +68,7 @@ our @EXPORT = qw(
 	join_by_field
 	load_perl_modules
 	logger
+	mask_to_decimal
 	merge_hashes
 	parse_arguments
 	parse_configuration
@@ -74,6 +76,7 @@ our @EXPORT = qw(
 	process_performance
 	post_url
 	print_agent
+	print_discovery_module
 	print_error
 	print_execution_result
 	print_message
@@ -126,12 +129,56 @@ sub check_lib_version {
 }
 
 ################################################################################
+# Convert CSV string to hash
+################################################################################
+sub csv_to_obj {
+	my ($csv) = @_;
+	my @ahr;
+	my @lines = split /\n/, $csv;
+
+	return [] unless $#lines >= 0;
+
+	# scan headers
+	my @hr_headers = split /,/, shift @lines;
+
+	# Clean \n\r
+	@hr_headers = map { $_ =~ s/\"//g; trim($_); } @hr_headers;
+
+	foreach my $line (@lines) {
+		my $i = 0;
+		my %hr = map { $_ =~ s/\"//g; $hr_headers[$i++] => trim($_) } split /,/, $line;
+
+		push @ahr, \%hr;
+	}
+	return \@ahr;
+}
+
+################################################################################
 # Get current time (milis)
 ################################################################################
 sub get_current_utime_milis { return getCurrentUTimeMilis(); }
 sub getCurrentUTimeMilis {
 	#return trim (`date +"%s%3N"`); # returns 1449681679712
 	return floor(time*1000);
+}
+
+################################################################################
+# Mask to decimal
+################################################################################
+sub mask_to_decimal {
+	my $mask = shift;
+	my ($a,$b,$c,$d) = $mask =~ /^(\d+)\.(\d+)\.(\d+)\.(\d+)$/;
+
+	$a = sprintf "%08b", $a;
+	$b = sprintf "%08b", $b;
+	$c = sprintf "%08b", $c;
+	$d = sprintf "%08b", $d;
+	
+	my $str = $a . $b . $c . $d;
+
+	$str =~ s/0.*$//;
+
+	return length($str);
 }
 
 ################################################################################
@@ -442,8 +489,14 @@ sub print_agent {
 
 	$xml .= ">";
 
-	foreach my $module (@{$modules_def}) {
-		$xml .= print_module($config, $module,1);
+	if (ref($modules_def) eq "ARRAY") {
+		foreach my $module (@{$modules_def}) {
+			$xml .= print_module($config, $module,1);
+		}
+	} elsif (ref($modules_def) eq "HASH" && (defined $modules_def->{'name'})) {
+		$xml .= print_module($config, $modules_def,1);
+	} elsif (ref($modules_def) eq "HASH" && (defined $modules_def->{'discovery'})) {
+		$xml .= print_discovery_module($config, $modules_def,1);
 	}
 
 	# print tail
@@ -455,6 +508,28 @@ sub print_agent {
 
 	return $xml;
 
+}
+
+################################################################################
+# print_module
+################################################################################
+sub print_discovery_module {
+	my ($conf, $global_data, $not_print_flag) = @_;
+
+	return undef if (ref($global_data) ne "HASH" || !defined($global_data->{'discovery'}));
+	return "" if empty($global_data);
+
+	my $data = $global_data->{'discovery'};
+
+	my $xml_module = "<discovery><![CDATA[";
+	$xml_module .= encode_base64(encode_json($data));
+	$xml_module .= "]]></discovery>\n";
+
+	if (empty ($not_print_flag)) {
+		print $xml_module;	
+	}
+
+	return $xml_module;
 }
 
 ################################################################################
@@ -660,7 +735,7 @@ sub transfer_xml {
 	my $file_path;
 
 	if (! (empty ($name))) {
-		$file_name = $name . "_" . time() . ".data";
+		$file_name = $name . "." . sprintf("%d",time()) . ".data";
 	}
 	else {
 		# Inherit file name
@@ -672,7 +747,7 @@ sub transfer_xml {
 			$file_name = trim(`hostname`);
 		}
 
-		$file_name .=  "_" . time() . ".data";
+		$file_name .=  "." . sprintf("%d",time()) . ".data";
 	}
 
 	logger($conf, "transfer_xml", "Failed to generate file name.") if empty($file_name);
@@ -680,6 +755,8 @@ sub transfer_xml {
 	$conf->{temp} = $conf->{tmp}             if (empty($conf->{temp}) && defined($conf->{tmp}));
 	$conf->{temp} = $conf->{temporal}        if (empty($conf->{temp}) && defined($conf->{temporal}));
 	$conf->{temp} = $conf->{__system}->{tmp} if (empty($conf->{temp}) && defined($conf->{__system})) && (ref($conf->{__system}) eq "HASH");
+	$conf->{temp} = $ENV{'TMP'}              if empty($conf->{temp}) && $^O =~ /win/i;
+	$conf->{temp} = '/tmp'                   if empty($conf->{temp}) && $^O =~ /lin/i;
 
 	$file_path = $conf->{temp} . "/" . $file_name;
 	
@@ -687,7 +764,7 @@ sub transfer_xml {
 	
 	if ( -e $file_path ) {
 		sleep (1);
-		$file_name = $name . "_" . time() . ".data";
+		$file_name = $name . "." . sprintf("%d",time()) . ".data";
 		$file_path = $conf->{temp} . "/" . $file_name;
 	}
 
@@ -2252,6 +2329,8 @@ sub decrypt {
 sub get_unix_time {
 	my ($str_time,$separator_dates,$separator_hours) = @_;
 
+	return 0 if empty($str_time);
+
 	if (empty($separator_dates)) {
 		$separator_dates = "\/";
 	}
@@ -2260,10 +2339,15 @@ sub get_unix_time {
 		$separator_hours = ":";
 	}
 
-
-	use Time::Local;
-	my ($mday,$mon,$year,$hour,$min,$sec) = split(/[\s$separator_dates$separator_hours]+/, $str_time);
-	my $time = timelocal($sec,$min,$hour,$mday,$mon-1,$year);
+	my $time;
+	eval {
+		use Time::Local;
+		my ($mday,$mon,$year,$hour,$min,$sec) = split(/[\s$separator_dates$separator_hours]+/, $str_time);
+		$time = timelocal($sec,$min,$hour,$mday,$mon-1,$year);
+	};
+	if ($@) {
+		return 0;
+	}
 	return $time;
 }
 

@@ -886,12 +886,6 @@ input.group_item_min {
 input.group_item_min[disabled] {
 	background: #fefefe url(../../images/group_green.disabled.png) no-repeat center !important;
 }
-input.color_cloud_min {
-	background: #fefefe url(../../images/color_cloud_item.png) no-repeat center !important;
-}
-input.color_cloud_min[disabled] {
-	background: #fefefe url(../../images/color_cloud_item.disabled.png) no-repeat center !important;
-}
 
 div#cont {
 	position: fixed;
@@ -1390,7 +1384,7 @@ table.databox {
 	border: 0px none #E2E2E2;
 }
 
-.databox>thead>tr>th, .databox>tbody>tr>th, .databox>thead>tr>th a {
+.databox>thead>tr>th, .databox>tbody>tr>th {
 	padding: 9px 7px;
 	font-weight: normal;
 	color: #fff;
@@ -5044,16 +5038,58 @@ ul.ui-front li a.ui-menu-item-wrapper span{
 ul.ui-front li a.ui-menu-item-wrapper:hover{
 	text-decoration: none !important;
 }
-
-input[type=submit].ui-button-dialog{
-	margin: .5em 1em .5em 0 !important;
-	cursor: pointer !important;
-	background: white !important;
-	background-color: white !important;
-	color: #82b92e !important;
-	text-align: center !important;
-	border: 1px solid #82b92e !important;
-	height:30px !important;
-	width:90px !important;
-}
 /* --- END - JQUERY-UI --- */
+
+.toogle_switch {
+  position: relative;
+  display: inline-block;
+  width: 47px;
+  height: 24px;
+}
+
+.toogle_switch input { 
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  -webkit-transition: .7s;
+  transition: .7s;
+  border-radius: 34px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 16px;
+  width: 16px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  -webkit-transition: .7s;
+  transition: .7s;
+  border-radius: 50%;
+}
+
+input:checked + .slider {
+  background-color: #82b92e;
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px #82b92e;
+}
+
+input:checked + .slider:before {
+  -webkit-transform: translateX(26px);
+  -ms-transform: translateX(26px);
+  transform: translateX(26px);
+  background-color: rgb(197, 235, 192);
+}

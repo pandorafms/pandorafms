@@ -52,8 +52,8 @@ $table_enable->style['name'] = 'font-weight: bold';
 // Enable eHorus
 $row = array();
 $row['name'] = __('Enable eHorus');
-$row['control'] = __('Yes').'&nbsp;'.html_print_radio_button ('ehorus_enabled', 1, '', $config['ehorus_enabled'], true).'&nbsp;&nbsp;';
-$row['control'] .= __('No').'&nbsp;'.html_print_radio_button ('ehorus_enabled', 0, '', $config['ehorus_enabled'], true);
+$row['control'] = __('Enabled').'&nbsp;'.html_print_radio_button ('ehorus_enabled', 1, '', $config['ehorus_enabled'], true).'&nbsp;&nbsp;';
+$row['control'] .= __('Disabled').'&nbsp;'.html_print_radio_button ('ehorus_enabled', 0, '', $config['ehorus_enabled'], true);
 $row['button'] = html_print_submit_button(__('Update'), 'update_button', false, 'class="sub upd"', true);
 $table_enable->data['ehorus_enabled'] = $row;
 

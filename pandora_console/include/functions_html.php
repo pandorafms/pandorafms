@@ -1957,6 +1957,83 @@ function html_print_checkbox ($name, $value, $checked = false, $return = false, 
 }
 
 /**
+ * Render a checkbox button input toogle switch type. Extended version, use html_print_checkbox_toogle_switch() to simplify.
+ *
+ * @param string Input name.
+ * @param string Input value.
+ * @param string Set the button to be marked (optional, unmarked by default).
+ * @param bool Disable the button  (optional, button enabled by default).
+ * @param string Script to execute when onClick event is triggered (optional).
+ * @param string Optional HTML attributes. It's a free string which will be 
+	inserted into the HTML tag, use it carefully (optional).
+ * @param bool Whether to return an output string or echo now (optional, echo by default).
+ *
+ * @return string HTML code if return parameter is true.
+ */
+
+function html_print_checkbox_toogle_switch_extended ($name, $value, $checked, $disabled, $script, $attributes, $return = false, $id='') {
+	static $idcounter = array ();
+	
+	//If duplicate names exist, it will start numbering. Otherwise it won't
+	if (isset ($idcounter[$name])) {
+		$idcounter[$name]++;
+	}
+	else {
+		$idcounter[$name] = 0;
+	}
+	
+	$id_aux = preg_replace('/[^a-z0-9\:\;\-\_]/i', '', $name.($idcounter[$name] ? $idcounter[$name] : ''));
+	
+	$output = '<label class="toogle_switch"><input name="'.$name.'" type="checkbox" value="'.$value.'" '. ($checked ? 'checked="checked"': '');
+	if ($id == '') {
+		$output .= ' id="checkbox-'.$id_aux.'"';
+	} else {
+		$output .= ' '.$id.'"';
+	}
+	
+	if ($script != '') {
+		$output .= ' onclick="'. $script . '"';
+	}
+	
+	if ($disabled) {
+		$output .= ' disabled="disabled"';
+	}
+	
+	$output .= ' ' . $attributes ;
+	$output .= ' /><span class="slider"></span></label>';
+	$output .= "\n";
+	
+	if ($return === false)
+		echo $output;
+	
+	return $output;
+}
+
+/**
+ * Render a checkbox button input toogle switch type.
+ *
+ * @param string Input name.
+ * @param string Input value.
+ * @param string Set the button to be marked (optional, unmarked by default).
+ * @param bool Whether to return an output string or echo now (optional, echo by default).
+ * @param bool $disabled Disable the button (optional, button enabled by default).
+ *
+ * @return string HTML code if return parameter is true.
+ */
+
+function html_print_checkbox_toogle_switch ($name, $value, $checked = false, $return = false, $disabled = false, $script = '', $disabled_hidden = false) {
+	$output = html_print_checkbox_toogle_switch_extended ($name, $value, (bool) $checked, $disabled, $script, '', true);
+	if (!$disabled_hidden) {
+		$output .= html_print_input_hidden($name . '_sent', 1, true);
+	}
+	
+	if ($return === false)
+		echo $output;
+	
+	return $output;
+}
+
+/**
  * Prints an image HTML element.
  *
  * @param string $src Image source filename.

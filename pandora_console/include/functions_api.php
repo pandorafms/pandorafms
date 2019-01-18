@@ -12339,6 +12339,8 @@ function api_set_reset_agent_counts ($id, $thrash1, $thrash2, $thrash3) {
 
 
 	$data = __('Successfully updated module/alert count in id agent %d.', $id);
+	if ($id == "All")
+		$data = __('Successfully updated module/alert count in all agents');
 
 	if ($return === false)
 		returnError('error_reset_agent_counts', 'Could not be updated module/alert counts in id agent %d.', $id);

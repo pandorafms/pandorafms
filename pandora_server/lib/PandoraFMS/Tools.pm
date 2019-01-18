@@ -125,6 +125,8 @@ our @EXPORT = qw(
 	start_server_thread
 	stop_server_threads
 	generate_agent_name_hash
+	long_to_ip
+	ip_to_long
 );
 
 # ID of the different servers
@@ -1954,6 +1956,22 @@ sub rightrotate {
 	my ($x, $c) = @_;
 
 	return (0xFFFFFFFF & ($x << (32 - $c))) | ($x >> $c);
+}
+
+###############################################################################
+# Returns IP address(v4) in longint format
+###############################################################################
+sub ip_to_long {
+	my $ip_str = shift;
+	return unpack "N", inet_aton($ip_str);
+}
+
+###############################################################################
+# Returns IP address(v4) in longint format
+###############################################################################
+sub long_to_ip {
+	my $ip_long = shift;
+	return inet_ntoa pack("N", ($ip_long));
 }
 
 # End of function declaration

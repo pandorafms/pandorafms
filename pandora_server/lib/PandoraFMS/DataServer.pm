@@ -396,7 +396,7 @@ sub process_xml_data ($$$$$) {
 					
 					# If it exists add the value to the agent
 					if (defined ($custom_field_info)) {
-						my $cf_value = get_tag_value ($custom_field, 'value', '');
+						my $cf_value = safe_input(get_tag_value ($custom_field, 'value', ''));
 
 						my $field_agent;
 						
@@ -482,7 +482,7 @@ sub process_xml_data ($$$$$) {
 						my $custom_field_data = get_db_single_row($dbh, 'SELECT * FROM tagent_custom_data WHERE id_field = ? AND id_agent = ?',
 											$custom_field_info->{"id_field"}, $agent->{"id_agente"});
 
-                                                my $cf_value = get_tag_value ($custom_field, 'value', '');
+                                                my $cf_value = safe_input(get_tag_value ($custom_field, 'value', ''));
 
 						#If not defined we must create if defined just updated
 						if(!defined($custom_field_data)) {
@@ -497,7 +497,7 @@ sub process_xml_data ($$$$$) {
 						} else {
 							
 							db_update ($dbh, "UPDATE tagent_custom_data SET description = ? WHERE id_field = ? AND id_agent = ?",
-									$cf_value ,$custom_field_info->{"id_field"}, $agent->{'id_agente'});
+									$cf_value, $custom_field_info->{"id_field"}, $agent->{'id_agente'});
 						}
                                         }
                                         else {

@@ -362,10 +362,11 @@ function pandoraFlotHBars(graph_id, values, labels, water_mark,
 				tickFormatter: xFormatter,
 			},
 			yaxis:  {
-				color: tick_color,
-				axisLabelUseCanvas: true,
-				axisLabelFontSizePixels: font_size,
-				axisLabelFontFamily: font+'Font',
+				font: {
+					size: font_size + 2,
+					color: 'rgb(84, 84, 84)',
+					family: font+'Font'
+				},
 				ticks: yFormatter,
 			},
 			legend: {
@@ -417,7 +418,7 @@ function pandoraFlotHBars(graph_id, values, labels, water_mark,
 				div_attributes += "min-height: 2.5em;";
 			}
 
-			div_attributes += '" title="'+title+'" class="'+font+'" '+ ' style="overflow: hidden;"';
+			div_attributes += '" title="'+title+'" style="overflow: hidden;"';
 
 			format.push([i,'<div ' + div_attributes + '>'
 				+ label

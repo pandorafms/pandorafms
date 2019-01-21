@@ -159,7 +159,8 @@ function reporting_make_reporting_data($report = null, $id_report,
 				true);
 
 			$sql_tags_join = "INNER JOIN tagente ON tagente.id_agente = t1.id_agente
-				INNER JOIN ttag_module ON ttag_module.id_agente_modulo = t1.id_agente_modulo";
+				INNER JOIN ttag_module ON ttag_module.id_agente_modulo = t1.id_agente_modulo
+				LEFT JOIN tagent_secondary_group tasg ON tagente.id_agente = tasg.id_agent";
 
 			$sql = sprintf('SELECT count(*) FROM tagente_modulo t1
 				%s WHERE t1.delete_pending = 0 AND t1.id_agente_modulo = '. $content["id_agent_module"] .'
@@ -303,7 +304,8 @@ function reporting_make_reporting_data($report = null, $id_report,
 				$report['contents'][] = reporting_availability_graph(
 					$report,
 					$content,
-					$pdf);
+					$pdf
+				);
 				break;
 			case 'sql':
 				$report['contents'][] = reporting_sql(
@@ -3821,7 +3823,7 @@ function reporting_agent_configuration($report, $content) {
 	return reporting_check_structure_content($return);
 }
 
-function reporting_value($report, $content, $type, $pdf) {
+function reporting_value($report, $content, $type, $pdf=false) {
 	global $config;
 
 	$return = array();
@@ -6342,13 +6344,18 @@ function reporting_custom_graph($report, $content, $type = 'dinamic',
 
 	require_once ($config["homedir"] . '/include/functions_graph.php');
 
-	if ($config['metaconsole']) {
-		$id_meta = metaconsole_get_id_server($content["server_name"]);
-		$server  = metaconsole_get_connection_by_id ($id_meta);
-		metaconsole_connect($server);
+	if ($type_report == "custom_graph") {
+		if (is_metaconsole()) {
+			$id_meta = metaconsole_get_id_server($content["server_name"]);
+			$server  = metaconsole_get_connection_by_id ($id_meta);
+			if (metaconsole_connect ($server) != NOERR){
+				return false;
+			}
+		}
 	}
 
 	$graph = db_get_row ("tgraph", "id_graph", $content['id_gs']);
+
 	$return = array();
 	$return['type'] = 'custom_graph';
 
@@ -6372,30 +6379,25 @@ function reporting_custom_graph($report, $content, $type = 'dinamic',
 		$graphs[0]["average_series"] = '';
 		$graphs[0]["modules_series"] = '';
 		$graphs[0]["fullscale"] = $content['style']['fullscale'];
+		$modules = $content['id_agent_module'];
 
-		if(is_array($content['id_agent_module'])){
-			foreach ($content['id_agent_module'] as $key => $value) {
-				if($content['each_agent']){
-					$modules[] = $value;
-				}
-				else{
-					$modules[] = $value['module'];
-				}
-			}
-		}
-		else{
-			if ($content['id_agent_module']) {
-				$modules[] = $content['id_agent_module'];
-			} else {
-				// restore to metaconsole database
-				metaconsole_restore_db();
-				$module_source = db_get_all_rows_sql("SELECT id_agent_module FROM tgraph_source WHERE id_graph = " . $content['id_gs']);
+		if(!$modules){
+			$module_source = db_get_all_rows_sql(
+				"SELECT id_agent_module, id_server
+				FROM tgraph_source
+				WHERE id_graph = " .
+				$content['id_gs']
+			);
+
+			if(isset($module_source) && is_array($module_source)){
+				$modules = array();
 				foreach ($module_source as $key => $value) {
-					$modules[$key] = $value['id_agent_module'];
+					$modules[$key]['module'] = $value['id_agent_module'];
+					$modules[$key]['server'] = $value['id_server'];
 				}
-				metaconsole_connect($server);
 			}
 		}
+
 		$id_graph = 0;
 	}
 	else {
@@ -6435,7 +6437,8 @@ function reporting_custom_graph($report, $content, $type = 'dinamic',
 				'summatory'      => $graphs[0]["summatory_series"],
 				'average'        => $graphs[0]["average_series"],
 				'modules_series' => $graphs[0]["modules_series"],
-				'id_graph'       => $id_graph
+				'id_graph'       => $id_graph,
+				'type_report'    => $type_report
 			);
 
 			$return['chart'] = graphic_combined_module(
@@ -6445,12 +6448,12 @@ function reporting_custom_graph($report, $content, $type = 'dinamic',
 			);
 
 			break;
-		case 'data':
-			break;
 	}
 
-	if ($config['metaconsole']) {
-		metaconsole_restore_db();
+	if ($type_report == "custom_graph") {
+		if (is_metaconsole()) {
+			metaconsole_restore_db();
+		}
 	}
 
 	return reporting_check_structure_content($return);
@@ -10000,7 +10003,7 @@ You can of course remove the warnings, that's why we include the source and do n
 			$output .= 'parameters["page"] = "include/ajax/events";';
 			$output .= 'parameters["total_events"] = 1;';
 
-			$output .= '$.ajax({type: "GET",url: "ajax.php",data: parameters,';
+			$output .= '$.ajax({type: "GET",url: "/pandora_console/ajax.php",data: parameters,';
 				$output .= 'success: function(data) {';
 					$output .= '$("#total_events").text(data);';
 				$output .= '}';
@@ -10361,7 +10364,7 @@ function reporting_label_macro ($item, $label) {
 		case 'MTTR':
 		case 'automatic_graph':
 			if (preg_match("/_agent_/", $label)) {
-				if (count($item['agents']) > 1) {
+				if (isset($item['agents']) && count($item['agents']) > 1) {
 					$agent_name = count($item['agents']) . __(' agents');
 				}
 				else {

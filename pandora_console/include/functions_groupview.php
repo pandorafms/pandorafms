@@ -68,6 +68,7 @@ function groupview_get_modules_counters($groups_ids = false) {
 			ta.id_grupo AS g
 		FROM $table ta
 		WHERE ta.id_grupo IN ($groups_ids)
+		AND ta.disabled = 0
 		GROUP BY ta.id_grupo
 		UNION ALL
 		SELECT SUM(ta.normal_count) AS module_normal,

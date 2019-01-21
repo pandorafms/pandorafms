@@ -269,32 +269,8 @@ function process_user_login_remote ($login, $pass, $api = false) {
 			else {
 				delete_user_pass_ldap ($login);
 			}
-			
-			$permissions = array();
-			if($config['ldap_advanced_config']){
-				$i = 0;
-				
-				$ldap_adv_perms = json_decode(io_safe_output($config['ldap_adv_perms']), true);
-				foreach ($ldap_adv_perms as $ldap_adv_perm) {
-					$attributes = $ldap_adv_perm['groups_ldap'];
-					
-					foreach ($attributes as $attr) {
-						$attr = explode('=', $attr, 2);
-						foreach ($sr[$attr[0]] as $s_attr) {
-							if(preg_match('/' . $attr[1] . '/', $s_attr)){
-								$permissions[$i]["profile"] = $ldap_adv_perm['profile'];
-								$permissions[$i]["groups"] = $ldap_adv_perm['group'];
-								$permissions[$i]["tags"] = implode(",",$ldap_adv_perm['tags']);
-								$i++;
-							}
-						}
-					}
-				}
-			} else {
-				$permissions[0]["profile"] = $config['default_remote_profile'];
-				$permissions[0]["groups"][] = $config['default_remote_group'];
-				$permissions[0]["tags"] = $config['default_assign_tags'];
-			}
+
+			$permissions = fill_permissions_ldap($sr);
 			if(empty($permissions)) {
 				$config["auth_error"] = __("User not found in database or incorrect password");
 				return false;
@@ -388,33 +364,7 @@ function process_user_login_remote ($login, $pass, $api = false) {
 			}
 		}
 		
-		$permissions = array();
-		if($config['ldap_advanced_config']){
-			$i = 0;
-			
-			$ldap_adv_perms = json_decode(io_safe_output($config['ldap_adv_perms']), true);
-			
-			foreach ($ldap_adv_perms as $ldap_adv_perm) {
-				$attributes = $ldap_adv_perm['groups_ldap'];
-				
-				foreach ($attributes as $attr) {
-					$attr = explode('=', $attr, 2);
-					foreach ($sr[$attr[0]] as $s_attr) {
-						if(preg_match('/' . $attr[1] . '/', $s_attr)){
-							$permissions[$i]["profile"] = $ldap_adv_perm['profile'];
-							$permissions[$i]["groups"] = $ldap_adv_perm['group'];
-							$permissions[$i]["tags"] = implode(",",$ldap_adv_perm['tags']);
-							$i++;
-						}
-					}
-				}
-			}
-		} else {
-			$permissions[0]["profile"] = $config['default_remote_profile'];
-			$permissions[0]["groups"][] = $config['default_remote_group'];
-			$permissions[0]["tags"] = $config['default_assign_tags'];
-		}
-		
+		$permissions = fill_permissions_ldap($sr);
 		if(empty($permissions)) {
 			$config["auth_error"] = __("User not found in database or incorrect password");
 			return false;
@@ -904,10 +854,11 @@ function create_user_and_permisions_ldap ($id_user, $password, $user_info,
 				$id_profile = $permission["profile"];
 				$id_groups = $permission["groups"];
 				$tags = $permission["tags"];
+				$no_hierarchy = (bool)$permission["no_hierarchy"] ? 1 : 0;
 				
 				foreach ($id_groups as $id_group) {
 					$profile = profile_create_user_profile(
-						$id_user, $id_profile, $id_group, false, $tags);
+						$id_user, $id_profile, $id_group, false, $tags, $no_hierarchy);
 				}
 				
 				if ( defined("METACONSOLE") && $syncronize ) {
@@ -934,7 +885,7 @@ function create_user_and_permisions_ldap ($id_user, $password, $user_info,
 							db_process_sql_insert ("tusuario", $values);
 							foreach ($id_groups as $id_group) {
 								$profile = profile_create_user_profile ($id_user,
-									$id_profile, $id_group, false, $tags);
+									$id_profile, $id_group, false, $tags, $no_hierarchy);
 							}
 						}
 						
@@ -1139,6 +1090,46 @@ function check_permission_ldap ($id_user, $password, $user_info,
 	else {
 		return "error_permissions";
 	}
+}
+
+/**
+ * Fill permissions array with setup values
+ *
+ * @param string sr return value from LDAP connection
+ *
+ * @return array with all permission on LDAP authentication
+ */
+function fill_permissions_ldap ($sr) {
+	global $config;
+
+	$permissions = array();
+	if(!$config['ldap_advanced_config']){
+		$permissions[0]["profile"] = $config['default_remote_profile'];
+		$permissions[0]["groups"][] = $config['default_remote_group'];
+		$permissions[0]["tags"] = $config['default_assign_tags'];
+		$permissions[0]["no_hierarchy"] = $config['default_no_hierarchy'];
+		return $permissions;
+	}
+
+	// Decode permissions in advanced mode
+	$ldap_adv_perms = json_decode(io_safe_output($config['ldap_adv_perms']), true);
+	foreach ($ldap_adv_perms as $ldap_adv_perm) {
+		$attributes = $ldap_adv_perm['groups_ldap'];
+		foreach ($attributes as $attr) {
+			$attr = explode('=', $attr, 2);
+			foreach ($sr[$attr[0]] as $s_attr) {
+				if(preg_match('/' . $attr[1] . '/', $s_attr)){
+					$permissions[] = array(
+						"profile" => $ldap_adv_perm['profile'],
+						"groups" => $ldap_adv_perm['group'],
+						"tags" => implode(",",$ldap_adv_perm['tags']),
+						"no_hierarchy" => (bool)$ldap_adv_perm['no_hierarchy'] ? 1 : 0
+					);
+				}
+			}
+		}
+	}
+	return $permissions;
 }
 
 /**

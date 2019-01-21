@@ -60,8 +60,6 @@ if ($edit_graph) {
 	$stacked = $graphInTgraph['stacked'];
 	$period = $graphInTgraph['period'];
 	$id_group = $graphInTgraph['id_group'];
-	$width = $graphInTgraph['width'];
-	$height = $graphInTgraph['height'];
 	$check = false;
 	$percentil = $graphInTgraph['percentil'];
 	$summatory_series = $graphInTgraph['summatory_series'];
@@ -78,8 +76,6 @@ else {
 	$id_agent = 0;
 	$id_module = 0;
 	$id_group = 0;
-	$width = 550;
-	$height = 210;
 	$period = SECONDS_1DAY;
 	$factor = 1;
 	$stacked = 4;
@@ -136,15 +132,6 @@ if ($stacked == CUSTOM_GRAPH_GAUGE)
 	$hidden = ' style="display:none;" ';
 else
 	$hidden = '';
-echo "<tr>";
-echo "<td class='datos stacked' $hidden>";
-echo "<b>".__('Width')."</b></td>";
-echo "<td class='datos'>";
-echo "<input type='text' name='width' value='$width' $hidden size=6></td>";
-echo "<td class='datos2'>";
-echo "<b>".__('Height')."</b></td>";
-echo "<td class='datos2'>";
-echo "<input type='text' name='height' value='$height' size=6></td></tr>";
 
 echo "<tr>";
 echo "<td class='datos'>";

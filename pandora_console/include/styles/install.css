@@ -252,7 +252,7 @@ div.installation_step {
 .popup-button-green{
 	background-color: #82B92E;
 	border: 1px solid transparent;
-	color: blue;
+	color: #FFF;
 }
 
 .popup-button-green span{
@@ -262,7 +262,7 @@ div.installation_step {
 .popup-button-green:hover{
 	background-color: transparent !important;
 	border: 1px solid #82B92E;
-	color: red !important;
+	color: #82B92E !important;
 }
 
 .popup-button-green:hover span{

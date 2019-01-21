@@ -3491,4 +3491,29 @@ function is_in_network ($ip, $ip_lower, $ip_upper) {
 		return false;
 	}
 }
+/**
+ * 
+ */
+function ip_belongs_to_network($ip, $network, $mask) {
+	if ($ip == $network) {
+		return true;
+	}
+	$ranges = range_ips_for_network($network, $mask);
+	return  is_in_network($ip, $ranges['first'], $ranges['last']);
+}
+/**
+ * convert the mask to cird format
+ *
+ * @param string mask
+ * @return string true or false if the ip is between the two ips
+ */
+function mask2cidr($mask){
+	if(!isset($mask))
+		return 0;
+
+	$long = ip2long($mask);
+	$base = ip2long('255.255.255.255');
+	return 32-log(($long ^ $base)+1,2);
+}
+
 ?>

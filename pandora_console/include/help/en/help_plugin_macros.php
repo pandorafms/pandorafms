@@ -31,10 +31,10 @@ Hidden this macros because they cannot edit in the module form
 -->
 
 <li>_plugin_parameters_ : Plug-in Parameters of the module.</li>
-<li>_name_tag_ : Nombre de los tags asociados al módulo.</li>
-<li>_email_tag_ : Emails asociados a los tags de módulos.</li>
-<li>_phone_tag_ : Teléfonos asociados a los tags de módulos.</li>
-<li>_moduletags_ : Teléfonos asociados a los tags de módulos.</li>
+<li>_name_tag_ : Names of the tags associated to the module.</li>
+<li>_email_tag_ : Emails associated to module tags.</li>
+<li>_phone_tag_ : Phone numbers associated to module tags.</li>
+<li>_moduletags_ : URLs associated to module tags.</li>
 <li>_agentcustomfield_<i>n</i>_: Agent custom field number <i>n</i> (eg. _agentcustomfield_9_).</li>
 </ul>
 <p>

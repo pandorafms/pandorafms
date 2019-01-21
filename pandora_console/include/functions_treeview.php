@@ -278,6 +278,11 @@ function treeview_printModuleTable($id_module, $server_data = false, $no_head = 
 			));
 			$salida = ui_get_snapshot_image($link, $is_snapshot) . '&nbsp;&nbsp;';
 		}
+
+		if($salida !== NULL){
+			$last_data_str =  html_print_image('images/clock2.png', true, array('title' => $last_data["timestamp"], 'width' => '18px')); 
+		}
+		
 		$last_data_str .=  $salida;
 	}
 	else {

@@ -26,7 +26,8 @@
 
 	$.fn.showMessage = function (msg) {
 		return $(this).hide ().empty ()
-				.text (msg)
+		// here, previously .text (msg)
+				.html (msg)
 				.slideDown ();
 		};
 }) (jQuery);

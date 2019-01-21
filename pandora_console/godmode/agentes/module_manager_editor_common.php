@@ -249,29 +249,33 @@ else {
 		$idModuleType = '';
 	}
 
-	$sql = sprintf ('SELECT id_tipo, descripcion
+	//Removed web analysis and log4x from select
+	$sql = sprintf (
+		'SELECT id_tipo, descripcion, nombre
 		FROM ttipo_modulo
-		WHERE categoria IN (%s)
+		WHERE categoria IN (%s) AND id_tipo NOT IN (24, 25)
 		ORDER BY descripcion',
-		implode (',', $categories));
-
-	$table_simple->data[2][1] = html_print_select_from_sql ($sql, 'id_module_type',
-		$idModuleType, '', '', '', true, false, false, $disabledBecauseInPolicy, false, false, 100);
-
-	// Store the relation between id and name of the types on a hidden field
-	$sql = sprintf ('SELECT id_tipo, nombre
-			FROM ttipo_modulo
-			WHERE categoria IN (%s)
-			ORDER BY descripcion',
-			implode (',', $categories));
+		implode (',', $categories)
+	);
 
 	$type_names = db_get_all_rows_sql($sql);
 
 	$type_names_hash = array();
-	foreach ($type_names as $tn) {
-		$type_names_hash[$tn['id_tipo']] = $tn['nombre'];
+	$type_description_hash = array();
+	if (isset($type_names) && is_array($type_names)) {
+		foreach ($type_names as $tn) {
+			$type_names_hash[$tn['id_tipo']] = $tn['nombre'];
+			$type_description_hash[$tn['id_tipo']] = $tn['descripcion'];
+		}
 	}
 
+	$table_simple->data[2][1] =	html_print_select (
+		$type_description_hash, 'id_module_type', $idModuleType,
+		$disabledBecauseInPolicy, '', 0, true,
+		false, true, '', false, false, false, 100
+	);
+
+	// Store the relation between id and name of the types on a hidden field
 	$table_simple->data[2][1] .= html_print_input_hidden('type_names',base64_encode(io_json_mb_encode($type_names_hash)),true);
 }
 
@@ -439,7 +443,7 @@ $table_advanced->data[2][1] .= html_print_input_hidden ('moduletype', $moduletyp
 $table_advanced->data[2][3] = __('Post process').' ' . ui_print_help_icon ('postprocess', true);
 $table_advanced->data[2][4] =
 	html_print_extended_select_for_post_process('post_process',
-		$post_process, '', '', '0', false, true, false, true,
+		$post_process, '', '', '0', false, true, false, false,
 		$disabledBecauseInPolicy);
 $table_advanced->colspan[2][4] = 3;
 

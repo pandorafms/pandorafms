@@ -1332,7 +1332,7 @@ function print_phases_donut (recipient, phases) {
 	var svg = d3.select(recipient)
 		.append("svg")
 			.attr("width", 800)
-			.attr("height", 400)
+			.attr("height", 500)
 		.append("g");
 
 	svg.append("g")
@@ -1361,7 +1361,7 @@ function print_phases_donut (recipient, phases) {
 		.outerRadius(radius * 0.9);
 
 	width  = 800;
-	height = 400;
+	height = 500;
 	svg.attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
 
 	var key = function(d){ return d.data.label; };
@@ -1440,6 +1440,8 @@ function print_phases_donut (recipient, phases) {
 			return d.startAngle + (d.endAngle - d.startAngle)/2;
 		}
 
+		var ex = 1;
+		var sum = 0;
 		text.transition().duration(0)
 			.attrTween("transform", function(d) {
 				this._current = this._current || d;
@@ -1447,8 +1449,26 @@ function print_phases_donut (recipient, phases) {
 				this._current = interpolate(0);
 				return function(t) {
 					var d2 = interpolate(t);
-					var pos = outerArc.centroid(d2);
-					pos[0] = radius * (midAngle(d2) < Math.PI ? 1 : -1);
+
+					//fix for labels of a very small portion increase the
+					//height of the label so that they do not overlap
+					if( ( d2.endAngle - d2.startAngle ) < 0.1){
+						var pos = outerArc.centroid(d2);
+						if (ex%2==0){
+							pos[0] = 150;
+						}
+						else{
+							pos[0] = -150;
+							sum++;
+						}
+						pos[1] = pos[1] - (35*sum);
+						ex++;
+					}
+					else{
+						var pos = outerArc.centroid(d2);
+						pos[0] = radius * (midAngle(d2) < Math.PI ? 1 : -1);
+					}
+
 					return "translate("+ pos +")";
 				};
 			})
@@ -1458,6 +1478,17 @@ function print_phases_donut (recipient, phases) {
 				this._current = interpolate(0);
 				return function(t) {
 					var d2 = interpolate(t);
+
+					//fix for labels of a very small portion increase the
+					//height of the label so that they do not overlap
+					if( ( d2.endAngle - d2.startAngle ) < 0.1){
+						if (ex%2==0){
+							return "start";
+						}
+						else{
+							return "end";
+						}
+					}
 					return midAngle(d2) < Math.PI ? "start":"end";
 				};
 			});
@@ -1468,10 +1499,12 @@ function print_phases_donut (recipient, phases) {
 		/* ------- SLICE TO TEXT POLYLINES -------*/
 		var polyline = svg.select(".lines").selectAll("polyline")
 			.data(pie(data), key);
-		
+
 		polyline.enter()
 			.append("polyline");
 
+		var ex2 = 1;
+		var sum2 = 0;
 		polyline.transition().duration(0)
 			.attrTween("points", function(d){
 				this._current = this._current || d;
@@ -1479,16 +1512,33 @@ function print_phases_donut (recipient, phases) {
 				this._current = interpolate(0);
 				return function(t) {
 					var d2 = interpolate(t);
-					var pos = outerArc.centroid(d2);
-					pos[0] = radius * 0.95 * (midAngle(d2) < Math.PI ? 1 : -1);
+
+					//fix for labels of a very small portion increase the
+					//height of the label so that they do not overlap
+					if( ( d2.endAngle - d2.startAngle ) < 0.1){
+						var pos = outerArc.centroid(d2);
+						if (ex2%2==0){
+							pos[0] = 150 * 0.95;
+						}
+						else{
+							pos[0] = -150 * 0.95;
+							sum2++;
+						}
+						pos[1] = pos[1] - (30*sum2);
+						ex2++;
+					}
+					else{
+						var pos = outerArc.centroid(d2);
+						pos[0] = radius * 0.95 * (midAngle(d2) < Math.PI ? 1 : -1);
+					}
 					return [arc.centroid(d2), outerArc.centroid(d2), pos];
-				};			
+				};
 			})
 			.style("stroke", "black")
 			.style("opacity", ".3")
 			.style("stroke-width", "2px")
 			.style("fill", "none");
-		
+
 		polyline.exit()
 			.remove();
 	}

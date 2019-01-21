@@ -193,25 +193,49 @@ if ($dialogue_event_response) {
 	$event_id = get_parameter ('event_id');
 	$response_id = get_parameter ('response_id');
 	$command = get_parameter ('target');
-	
+	$massive = get_parameter ('massive');
+	$end = get_parameter ('end');
+	$show_execute_again_btn = get_parameter ('show_execute_again_btn');
+	$out_iterator = get_parameter ('out_iterator');
 	$event_response = db_get_row('tevent_response','id',$response_id);
 	
 	$event = db_get_row('tevento','id_evento',$event_id);
 	
 	$prompt = "<br>> ";
-	
 	switch($event_response['type']) {
 		case 'command':
-			echo "<div style='text-align:left'>";
-			echo $prompt.sprintf(__('Executing command: %s',$command));
-			echo "</div><br>";
+
 			
-			echo "<div id='response_loading_command' style='display:none'>".html_print_image('images/spinner.gif', true)."</div>";
-			echo "<br><div id='response_out' style='text-align:left'></div>";
-			
-			echo "<br><div id='re_exec_command' style='display:none;'>";
-			html_print_button(__('Execute again'),'btn_str',false,'perform_response(\''.$command.'\', ' . $response_id . ');', "class='sub next'");
-			echo "</div>";
+			if ($massive) {
+				echo "<div style='text-align:left'>";
+				echo $prompt.sprintf("(Event #$event_id) ".__('Executing command: %s',$command));
+				echo "</div><br>";
+
+				echo "<div id='response_loading_command_".$out_iterator."' style='display:none'>".html_print_image('images/spinner.gif', true)."</div>";
+				echo "<br><div id='response_out_".$out_iterator."' style='text-align:left'></div>";
+
+				if ($end) {
+
+					echo "<br><div id='re_exec_command_".$out_iterator."' style='display:none;'>";
+					html_print_button(__('Execute again'),'btn_str',false,'execute_event_response(false);', "class='sub next'");
+					echo "<span id='execute_again_loading' style='display:none'>".html_print_image('images/spinner.gif', true)."</span>";
+					echo "</div>";
+				}
+			}
+			else {
+
+				echo "<div style='text-align:left'>";
+				echo $prompt.sprintf(__('Executing command: %s',$command));
+				echo "</div><br>";
+
+				echo "<div id='response_loading_command' style='display:none'>".html_print_image('images/spinner.gif', true)."</div>";
+				echo "<br><div id='response_out' style='text-align:left'></div>";
+
+				echo "<br><div id='re_exec_command' style='display:none;'>";
+				html_print_button(__('Execute again'),'btn_str',false,'perform_response(\''.$command.'\', ' . $response_id . ');', "class='sub next'");
+				echo "</div>";
+			}
+
 			break;
 		case 'url':
 			$command = str_replace("localhost",$_SERVER['SERVER_NAME'],$command);

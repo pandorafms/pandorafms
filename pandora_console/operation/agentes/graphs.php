@@ -18,6 +18,7 @@ global $config;
 
 require_once ("include/functions_agents.php");
 require_once ("include/functions_custom_graphs.php");
+ui_require_javascript_file ('calendar');
 
 if (! check_acl ($config['id_user'], $id_grupo, "AR") && ! check_acl ($config['id_user'], 0, "AW")) {
 	db_pandora_audit("ACL Violation",
@@ -242,7 +243,7 @@ echo '</div>';
 
 //Dialog to save the custom graph
 echo "<div id='dialog_save_custom_graph' style='display: none;'>";
-$table = null;
+$table = new stdClass();
 $table->width = '100%';
 $table->style[0] = 'font-weight: bolder; text-align: right;';
 $table->data[0][0] = __('Name custom graph');

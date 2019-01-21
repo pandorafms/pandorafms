@@ -74,9 +74,9 @@ if (isset ($_GET["modified"]) && !$view_mode) {
 	$upd_info["lastname"] = get_parameter_post ("lastname", $user_info["lastname"]);
 	$password_new = get_parameter_post ("password_new", "");
 	$password_confirm = get_parameter_post ("password_conf", "");
-	$upd_info["email"] = get_parameter_post ("email", $user_info["email"]);
-	$upd_info["phone"] = get_parameter_post ("phone", $user_info["phone"]);
-	$upd_info["comments"] = get_parameter_post ("comments", $user_info["comments"]);
+	$upd_info["email"] = get_parameter_post ("email", "");
+	$upd_info["phone"] = get_parameter_post ("phone", "");
+	$upd_info["comments"] = get_parameter_post ("comments", "");
 	$upd_info["language"] = get_parameter_post ("language", $user_info["language"]);
 	$upd_info["timezone"] = get_parameter_post ("timezone", "");
 	$upd_info["id_skin"] = get_parameter ("skin", $user_info["id_skin"]);
@@ -164,25 +164,36 @@ if (isset ($_GET["modified"]) && !$view_mode) {
 			$success_msg = __('Password successfully updated');
 		}		
 
-		$return_update_user = update_user ($id, $upd_info);
+		// if info is valid then proceed with update
+		if ((filter_var($upd_info["email"], FILTER_VALIDATE_EMAIL) || $upd_info["email"]=="") && (preg_match('/^[0-9- ]+$/D', $upd_info["phone"]) || $upd_info["phone"]=="")) {
+			$return_update_user = update_user ($id, $upd_info);
 
-		if ($return_update_user === false) {
-			$error_msg = __('Error updating user info');
-		}
-		elseif($return_update_user == true){
-			$success_msg = __('User info successfully updated');
-		}
-		else{
-			if(!empty($password_new) && !empty($password_confirm)){
-				$success_msg = __('Password successfully updated');
-			}	
+			if ($return_update_user === false) {
+				$error_msg = __('Error updating user info');
+			}
+			elseif($return_update_user == true){
+				$success_msg = __('User info successfully updated');
+			}
 			else{
-				$return=false;
-				$error_msg = __('No changes have been made'); 
-			}	
+				if(!empty($password_new) && !empty($password_confirm)){
+					$success_msg = __('Password successfully updated');
+				}	
+				else{
+					$return=false;
+					$error_msg = __('No changes have been made'); 
+				}	
+			}
+
+			ui_print_result_message ($return, $success_msg, $error_msg,$user_auth_error);
+
 		}
+		else if (!filter_var($upd_info["email"], FILTER_VALIDATE_EMAIL))
+			ui_print_error_message (__('Please enter a valid email'));
+		else if (!preg_match('/^[0-9- ]+$/D', $upd_info["phone"]))
+			ui_print_error_message (__('Please enter a valid phone number'));
 
 		$user_info = $upd_info;
+
 	}
 	else{
 		if(!$error_msg){
@@ -190,9 +201,10 @@ if (isset ($_GET["modified"]) && !$view_mode) {
 		}
 
 		$user_auth_error= $config['auth_error'];
+
+		ui_print_result_message ($return, $success_msg, $error_msg,$user_auth_error);
 	}
 
-	ui_print_result_message ($return, $success_msg, $error_msg,$user_auth_error);
 }
 
 // Prints action status for current message 
@@ -221,7 +233,7 @@ $data = array();
 $data[0] = '<span style="width:50%;float:left;"><b>' . __('User ID') . '</b></span>';
 $data[0] .= $jump . '<span style="font-weight: normal;width:20%;float:left;">' . $id . '</span>';
 $data[1] = '<span style="width:40%;float:left;line-height:20px;"><b>' . __('Full (display) name') . '</b></span>';
-$data[1] .= $jump . '<span style="width:20%;float:left;line-height:20px;">' . html_print_input_text_extended ("fullname", $user_info["fullname"], '', '', 20, 100, $view_mode, '', 'class="input"', true).'</span>';
+$data[1] .= $jump . '<span style="width:20%;float:left;line-height:20px;">' . html_print_input_text_extended ("fullname", $user_info["fullname"], 'fullname', '', 20, 100, $view_mode, '', 'class="input"', true).'</span>';
 // Show "Picture" (in future versions, why not, allow users to upload it's own avatar here.
 
 if (is_user_admin ($id)) {
@@ -243,9 +255,9 @@ $table->data[] = $data;
 
 $data = array();
 $data[0] = '<span style="width:50%;float:left;">'.__('E-mail').'</span>';
-$data[0] .= $jump .'<span style="width:20%;float:left;line-height:20px;">'. html_print_input_text_extended ("email", $user_info["email"], '', '', '25', '100', $view_mode, '', 'class="input"', true).'</span>';
+$data[0] .= $jump .'<span style="width:20%;float:left;line-height:20px;">'. html_print_input_text_extended ("email", $user_info["email"], 'email', '', '25', '100', $view_mode, '', 'class="input"', true).'</span>';
 $data[1] = '<span style="width:40%;float:left;">'.__('Phone number').'</span>';
-$data[1] .= $jump . '<div style="width:20%;float:left;line-height:50px;">'.html_print_input_text_extended ("phone", $user_info["phone"], '', '', '20', '30', $view_mode, '', 'class="input"', true).'</div>';
+$data[1] .= $jump . '<div style="width:20%;float:left;line-height:50px;">'.html_print_input_text_extended ("phone", $user_info["phone"], 'phone', '', '20', '30', $view_mode, '', 'class="input"', true).'</div>';
 $table->rowclass[] = '';
 $table->rowstyle[] = 'font-weight: bold;';
 $table->data[] = $data;
@@ -254,9 +266,9 @@ if ($view_mode === false) {
 	if ($config["user_can_update_password"]) {
 		$data = array();
 		$data[0] = '<span style="width:50%;float:left;">'.__('New Password').'</span>';
-		$data[0] .=  $jump .'<span style="width:20%;float:left;line-height:20px;">'.html_print_input_text_extended ("password_new", "", '', '', '25', '45', $view_mode, '', 'class="input"', true, true).'</span>';
+		$data[0] .=  $jump .'<span style="width:20%;float:left;line-height:20px;">'.html_print_input_text_extended ("password_new", "", 'password_new', '', '25', '45', $view_mode, '', 'class="input"', true, true).'</span>';
 		$data[1] = '<span style="width:40%;float:left;">'.__('Password confirmation').'</span>';
-		$data[1] .= $jump . '<span style="width:20%;float:left;line-height:20px;">'.html_print_input_text_extended ("password_conf", "", '', '', '20', '45', $view_mode, '', 'class="input"', true, true).'</span>';
+		$data[1] .= $jump . '<span style="width:20%;float:left;line-height:20px;">'.html_print_input_text_extended ("password_conf", "", 'password_conf', '', '20', '45', $view_mode, '', 'class="input"', true, true).'</span>';
 		$table->rowclass[] = '';
 		$table->rowstyle[] = 'font-weight: bold;';
 		$table->data[] = $data;

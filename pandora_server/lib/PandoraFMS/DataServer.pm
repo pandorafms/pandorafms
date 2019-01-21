@@ -219,6 +219,10 @@ sub data_consumer ($$) {
 			process_xml_server ($self->getConfig (), $file_name, $xml_data, $self->getDBH ());
 		} elsif (defined($xml_data->{'connection_source'})) {
 			enterprise_hook('process_xml_connections', [$self->getConfig (), $file_name, $xml_data, $self->getDBH ()]);
+		} elsif (defined($xml_data->{'network_matrix'})){
+			process_xml_matrix_network(
+				$self->getConfig(), $xml_data, $self->getDBH()
+			);
 		} else {
 			process_xml_data ($self->getConfig (), $file_name, $xml_data, $self->getServerID (), $self->getDBH ());
 		}
@@ -1004,6 +1008,45 @@ sub process_events_dataserver {
 			0,
 			$dbh
 		);
+	}
+
+	return;
+}
+
+
+##########################################################################
+# Process events in the XML.
+##########################################################################
+sub process_xml_matrix_network {
+	my ($pa_config, $data, $dbh)  = @_;
+
+	my $utimestamp = $data->{'network_matrix'}->[0]->{'utimestamp'};
+	my $content = $data->{'network_matrix'}->[0]->{'content'};
+	return unless defined($utimestamp) && defined($content);
+
+	# Try to decode the base64 inside
+	my $matrix_info;
+	eval {
+		$matrix_info = decode_json(decode_base64($content));
+	};
+
+	if ($@) {
+		logger($pa_config, "Error processing base64 matrix data '$content'.", 5);
+		return;
+	}
+	foreach my $source (keys %$matrix_info) {
+		foreach my $destination (keys %{$matrix_info->{$source}}) {
+			my $matrix_single_data = $matrix_info->{$source}->{$destination};
+			$matrix_single_data->{'source'} = $source;
+			$matrix_single_data->{'destination'} = $destination;
+			$matrix_single_data->{'utimestamp'} = $utimestamp;
+			eval {
+				db_process_insert($dbh, 'id', 'tnetwork_matrix', $matrix_single_data);
+			};
+			if ($@) {
+				logger($pa_config, "Error inserted matrix data. Source: $source, destination: $destination, utimestamp: $utimestamp.", 5);
+			}
+		}
 	}
 
 	return;

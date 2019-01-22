@@ -978,20 +978,19 @@ sub unlink_modules {
 sub process_events_dataserver {
 	my ($pa_config, $data, $agent_id, $group_id, $dbh) = @_;
 
-	return unless defined($data->{'events'});
+	return unless defined($data->{'events'}->[0]->{'event'});
 
-	foreach my $event (@{$data->{'events'}}) {
-		next unless defined($event->{'event'}) && defined($event->{'event'}->[0]);
-		my $event_info_encoded = $event->{'event'}->[0];
+	foreach my $event (@{$data->{'events'}->[0]->{'event'}}) {
+		next unless defined($event);
 
 		# Try to decode the base64 inside
 		my $event_info;
 		eval {
-			$event_info = decode_json(decode_base64($event_info_encoded));
+			$event_info = decode_json(decode_base64($event));
 		};
 
 		if ($@) {
-			logger($pa_config, "Error processing base64 event data '$event_info_encoded'.", 5);
+			logger($pa_config, "Error processing base64 event data '$event'.", 5);
 			next;
 		}
 		next unless defined($event_info->{'data'});

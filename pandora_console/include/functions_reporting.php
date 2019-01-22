@@ -6547,7 +6547,7 @@ function reporting_simple_graph($report, $content, $type = 'dinamic',
 				$content['id_agent_module'],
 				$content['period'],
 				$report["datetime"]);
-
+			$return['chart'] = array();
 			foreach ($data as $d) {
 				$return['chart'][$d['utimestamp']] = $d['data'];
 			}

@@ -18,7 +18,7 @@ use warnings;
 use LWP::UserAgent;
 use HTTP::Cookies;
 use HTTP::Request::Common;
-
+use Socket qw(inet_ntoa inet_aton);
 use File::Copy;
 use Scalar::Util qw(looks_like_number);
 use Time::HiRes qw(time);
@@ -40,6 +40,8 @@ our %EXPORT_TAGS = ( 'all' => [ qw() ] );
 our @EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
 
 our @EXPORT = qw(
+	__ip_to_long
+	__long_to_ip
 	api_available
 	api_call
 	api_create_custom_field
@@ -126,6 +128,22 @@ sub check_lib_version {
 	}
 
 	return 1;
+}
+
+###############################################################################
+# Returns IP address(v4) in longint format
+###############################################################################
+sub __ip_to_long {
+	my $ip_str = shift;
+	return unpack "N", inet_aton($ip_str);
+}
+
+###############################################################################
+# Returns IP address(v4) in longint format
+###############################################################################
+sub __long_to_ip {
+	my $ip_long = shift;
+	return inet_ntoa pack("N", ($ip_long));
 }
 
 ################################################################################
@@ -491,7 +509,11 @@ sub print_agent {
 
 	if (ref($modules_def) eq "ARRAY") {
 		foreach my $module (@{$modules_def}) {
-			$xml .= print_module($config, $module,1);
+			if (ref($module) eq "HASH" && (defined $module->{'name'})) {
+				$xml .= print_module($config, $module,1);
+			} elsif (ref($module) eq "HASH" && (defined $module->{'discovery'})) {
+				$xml .= print_discovery_module($config, $module,1);
+			}
 		}
 	} elsif (ref($modules_def) eq "HASH" && (defined $modules_def->{'name'})) {
 		$xml .= print_module($config, $modules_def,1);

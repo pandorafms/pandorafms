@@ -1215,30 +1215,29 @@ function mysql_get_fields($table) {
 /**
  * Process a file with an oracle schema sentences.
  * Based on the function which installs the pandoradb.sql schema.
- * 
+ *
  * @param string $path File path.
  * @param bool $handle_error Whether to handle the mysqli_query/mysql_query errors or throw an exception.
- * 
+ *
  * @return bool Return the final status of the operation.
  */
 function mysql_db_process_file ($path, $handle_error = true) {
 	global $config;
-	
+
 	if (file_exists($path)) {
 		$file_content = file($path);
 		$query = "";
-		
+
 		// Begin the transaction
 		mysql_db_process_sql_begin();
-		
+
 		foreach ($file_content as $sql_line) {
 			if (trim($sql_line) != "" && strpos($sql_line, "--") === false) {
-				
 				$query .= $sql_line;
-				
+
 				if (preg_match("/;[\040]*\$/", $sql_line)) {
 					if ($config["mysqli"]) {
-						$query_result = mysqli_query($config['dbconnection'], $query); 
+						$query_result = mysqli_query($config['dbconnection'], $query);
 					}
 					else {
 						$query_result = mysql_query($query);
@@ -1246,9 +1245,14 @@ function mysql_db_process_file ($path, $handle_error = true) {
 					if (!$result = $query_result) {
 						// Error. Rollback the transaction
 						mysql_db_process_sql_rollback();
-						
-						$error_message = mysql_error();
-						
+
+						if($config["mysqli"]){
+							$error_message = mysqli_error($config['dbconnection']);
+						}
+						else{
+							$error_message = mysql_error();
+						}
+
 						// Handle the error
 						if ($handle_error) {
 							$backtrace = debug_backtrace();
@@ -1258,7 +1262,7 @@ function mysql_db_process_file ($path, $handle_error = true) {
 							set_error_handler('db_sql_error_handler');
 							trigger_error($error);
 							restore_error_handler();
-							
+
 							return false;
 						}
 						// Throw an exception with the error message
@@ -1270,10 +1274,9 @@ function mysql_db_process_file ($path, $handle_error = true) {
 				}
 			}
 		}
-		
+
 		// No errors. Commit the transaction
 		mysql_db_process_sql_commit();
-		
 		return true;
 	}
 	else {

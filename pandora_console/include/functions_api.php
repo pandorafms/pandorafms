@@ -100,6 +100,10 @@ function returnError($typeError, $returnType = 'string') {
 			returnData($returnType,
 				array('type' => 'string', 'data' => __('No data to show.')));
 			break;
+		case 'centralized':
+			returnData($returnType,
+				array('type' => 'string', 'data' => __('This console is not manager of this environment, please manage this feature from centralized manager console (Metaconsole).')));
+			break;
 		default:
 			returnData("string",
 				array('type' => 'string', 'data' => __($returnType)));

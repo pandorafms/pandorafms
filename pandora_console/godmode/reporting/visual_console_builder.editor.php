@@ -151,8 +151,8 @@ echo "<div id='delete_in_progress_dialog' style='display: none; text-align: cent
 	"</div>";
 
 //CSS
-ui_require_css_file ('color-picker');
-ui_require_css_file ('jquery-ui.min');
+ui_require_css_file ('color-picker','include/styles/js/');
+ui_require_css_file ('jquery-ui.min','include/styles/js/');
 
 //Javascript
 ui_require_jquery_file('colorpicker');

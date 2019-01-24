@@ -299,7 +299,7 @@ $sql =
 		ui_print_info_message ( array('no_close'=>true, 'message'=> __('There are no defined groups or module groups') ));
 	}
 
-	ui_require_css_file('cluetip');
+	ui_require_css_file ('cluetip','include/styles/js/');
 	ui_require_jquery_file('cluetip');
 	?>
 	<script>

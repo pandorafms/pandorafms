@@ -594,7 +594,7 @@ echo '<span id="ip_text" style="display: none;">' . __('IP') . '</span>';
 	<textarea id="tinyMCE_editor" name="tinyMCE_editor"></textarea>
 </div>
 <?php
-ui_require_css_file ('color-picker');
+ui_require_css_file ('color-picker','include/styles/js/');
 
 ui_require_jquery_file ('colorpicker');
 ui_require_jquery_file ('pandora.controls');

@@ -21,6 +21,8 @@ else {
 	$homedir = '';
 }
 
+ui_require_css_file ('login');
+
 include_once($homedir . 'include/functions_ui.php');
 include_once($homedir . 'include/functions.php');
 include_once(__DIR__ . '/../include/functions_html.php');
@@ -484,7 +486,7 @@ if($login_screen == 'error_authconfig' || $login_screen == 'error_emptyconfig' |
 }
 
 ui_require_css_file ('dialog');
-ui_require_css_file ('jquery-ui.min');
+ui_require_css_file ('jquery-ui.min','include/styles/js/');
 ui_require_jquery_file('jquery-ui.min');
 ?>
 

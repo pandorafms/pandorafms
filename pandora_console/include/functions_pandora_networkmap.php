@@ -1518,7 +1518,7 @@ function show_networkmap($id = 0, $user_readonly = false, $nodes_and_relations =
 	$networkmap['filter']['l2_network_interfaces'] = 1;
 	
 	echo '<script type="text/javascript" src="' . $config['homeurl'] . 'include/javascript/d3.3.5.14.js" charset="utf-8"></script>';
-	ui_require_css_file("jquery.contextMenu", 'include/javascript/');
+	ui_require_css_file("jquery.contextMenu", 'include/styles/js/');
 	echo '<script type="text/javascript" src="' . $config['homeurl'] . 'include/javascript/jquery.contextMenu.js"></script>';
 	echo '<script type="text/javascript" src="' . $config['homeurl'] . 'include/javascript/functions_pandora_networkmap.js"></script>';
 	echo '<div id="networkconsole_' . $networkmap['id'] . '" style="position: relative; overflow: hidden; background: #FAFAFA">';

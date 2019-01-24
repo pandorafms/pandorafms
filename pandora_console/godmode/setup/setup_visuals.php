@@ -982,7 +982,7 @@ html_print_submit_button (__('Update'), 'update_button', false, 'class="sub upd"
 echo '</div>';
 echo '</form>';
 
-ui_require_css_file ("color-picker");
+ui_require_css_file ('color-picker','include/styles/js/');
 ui_require_jquery_file ("colorpicker");
 
 function load_fonts() {

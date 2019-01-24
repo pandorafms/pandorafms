@@ -317,7 +317,7 @@ ui_toggle($html_toggle,
 </script>
 <?php
 
-ui_require_css_file ('cluetip');
+ui_require_css_file ('cluetip','include/styles/js/');
 ui_require_jquery_file ('cluetip');
 
 echo "<div id='module_details_dialog' style='display: none;'></div>";

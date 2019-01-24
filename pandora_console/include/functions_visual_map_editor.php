@@ -988,7 +988,7 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 			__('Click end point<br />of the line') .
 		'</div>';
 	
-	ui_require_css_file ('color-picker');
+	ui_require_css_file ('color-picker','include/styles/js/');
 	
 	ui_require_jquery_file ('colorpicker');
 	?>

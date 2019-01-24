@@ -3399,7 +3399,7 @@ function validate_csrf_code() {
 }
 
 function generate_hash_to_api(){
-	hash('sha256', db_get_value ('value', 'tupdate_settings', '`key`', 'customer_key'));
+	return (string)hash('sha256', db_get_value ('value', 'tupdate_settings', '`key`', 'customer_key'));
 }
 
 /**

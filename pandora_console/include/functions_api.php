@@ -99,6 +99,10 @@ function returnError($typeError, $returnType = 'string') {
 			returnData($returnType,
 				array('type' => 'string', 'data' => __('No data to show.')));
 			break;
+		case 'centralized':
+			returnData($returnType,
+				array('type' => 'string', 'data' => __('This console is not manager of this environment, please manage this feature from centralized manager console (Metaconsole).')));
+			break;
 		default:
 			returnData("string",
 				array('type' => 'string', 'data' => __($returnType)));
@@ -149,7 +153,7 @@ function returnData($returnType, $data, $separator = ';') {
 				else {
 					if (!empty($data['data'])) {
 						foreach ($data['data'] as $dataContent) {
-							$clean = array_map("array_apply_io_safe_output", $dataContent);
+							$clean = array_map("array_apply_io_safe_output", (array)$dataContent);
 							foreach ($clean as $k => $v) {
 								$clean[$k] = str_replace("\r", "\n", $clean[$k]);
 								$clean[$k] = str_replace("\n", " ", $clean[$k]);
@@ -7684,6 +7688,94 @@ function api_set_alert_actions($id, $id2, $other, $trash1) {
 	}
 }
 
+/**
+ * Create a new module group
+ * @param $id as module group name (mandatory)
+ example:
+
+ *http://localhost/pandora_console/include/api.php?op=set&op2=new_module_group&id=Module_group_name&apipass=1234&user=admin&pass=pandora
+*/
+function api_set_new_module_group($id, $thrash2, $other, $trash1) {
+	global $config;
+
+	if (defined ('METACONSOLE')) {
+		return;
+	}
+
+	if (!check_acl($config['id_user'], 0, "PM")){
+		returnError('forbidden', 'string');
+		return;
+	}
+
+	if ($id == '' || !$id) {
+		returnError('error_parameter', __('Module group must have a name'));
+		return;
+	}
+
+	$name = db_get_value ('name', 'tmodule_group', 'name', $id);
+
+
+	if ($name) {
+		returnError('error_parameter', __('Each module group must have a different name'));
+		return;
+	}
+
+	$return = db_process_sql_insert('tmodule_group', array('name' => $id));
+
+
+	if ($return === false)
+		returnError('error_new_moodule_group', 'There was a problem creating group');
+	else
+		returnData('string', array('type' => 'string', 'data' => $return));
+
+}
+
+
+/**
+ * synchronize module group
+ * @param $other as server_names (mandatory)
+ example:
+
+ *api.php?op=set&op2=module_group_synch&other=server_name1|server_name2|server_name3&other_mode=url_encode_separator_|&apipass=1234&user=admin&pass=pandora
+*/
+
+function api_set_module_group_synch($thrash1, $thrash2, $other, $thrash4) {
+	global $config;
+	enterprise_include_once ('meta/include/functions_meta.php');
+
+	if (is_metaconsole()) {
+		if (!check_acl($config['id_user'], 0, "PM")) {
+			returnError('forbidden', 'string');
+			return;
+		}
+		$targets = array();
+		foreach ($other['data'] as $server) {
+			$targets[] = $server;
+		}
+		$return = meta_module_group_synchronizing($targets, true);
+
+		$module_group_update_err = $return["module_group_update_err"];
+		$module_group_create_err = $return["module_group_create_err"];
+		$module_group_update_ok = $return["module_group_update_ok"];
+		$module_group_create_ok = $return["module_group_create_ok"];
+
+		$string_ok = __('Created/Updated %s/%s module groups', $module_group_create_ok, $module_group_update_ok);
+	
+		// User feedback
+		if ($module_group_create_err > 0 or $module_group_update_err > 0) {
+			returnError ('module_group_synch_err',__('Error creating/updating %s/%s module groups <br>', $module_group_create_err, $module_group_update_err));
+		}
+		if ($module_group_create_ok > 0 or $module_group_update_ok > 0){
+			returnData ('string', array('type' => 'string', 'data' => $string_ok));
+		}
+
+	}
+	else{
+		returnError ('not_defined_in_metaconsole',__('This function is only for metaconsole'));
+	}
+}
+
+
 function api_set_new_event($trash1, $trash2, $other, $trash3) {
 	$simulate = false;
 	$time = get_system_time();
@@ -10600,6 +10692,7 @@ function api_set_create_service($thrash1, $thrash2, $other, $thrash3) {
 		returnError('error_create_service', __('Error in creation service'));
 	}
 }
+
 
 /**
  * Update a service.

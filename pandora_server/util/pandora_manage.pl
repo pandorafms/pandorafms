@@ -36,7 +36,7 @@ use Encode::Locale;
 Encode::Locale::decode_argv;
 
 # version: define current version
-my $version = "7.0NG.730 PS190123";
+my $version = "7.0NG.730 PS190125";
 
 # save program name for logging
 my $progname = basename($0);
@@ -144,7 +144,9 @@ sub help_screen{
 	help_screen_line('--create_snmp_module', "<module_name> <module_type> <agent_name> <module_address> <module_port>\n\t  <version> [<community> <oid> <description> <module_group> <min> <max> <post_process> <interval>\n\t   <warning_min> <warning_max> <critical_min> <critical_max> <history_data> \n\t  <snmp3_priv_method> <snmp3_priv_pass> <snmp3_sec_level> <snmp3_auth_method> \n\t  <snmp3_auth_user> <snmp3_auth_pass> <ff_threshold> <warning_str> \n\t  <critical_str> <unknown_events> <each_ff> <ff_threshold_normal>\n\t  <ff_threshold_warning> <ff_threshold_critical> <timeout> <retries>
 	\n\t <critical_instructions> <warning_instructions> <unknown_instructions>\n\t <warning_inverse> <critical_inverse>]", 'Add snmp network module to agent');
 	help_screen_line('--create_plugin_module', "<module_name> <module_type> <agent_name> <module_address> \n\t  <module_port> <plugin_name> <user> <password> <parameters> [<description> \n\t  <module_group> <min> <max> <post_process> <interval> <warning_min> <warning_max> <critical_min> \n\t  <critical_max> <history_data> <ff_threshold> <warning_str> <critical_str>\n\t  <unknown_events> <each_ff> <ff_threshold_normal> <ff_threshold_warning>\n\t  <ff_threshold_critical> <timeout> \n\t <critical_instructions> <warning_instructions> <unknown_instructions>\n\t <warning_inverse> <critical_inverse>]", 'Add plug-in module to agent');
+    help_screen_line('--get_module_group', '[<module_group_name>]', 'Dysplay all module groups');
     help_screen_line('--create_module_group', '<module_group_name>');
+    help_screen_line('--module_group_synch', "<server_name1|server_name2|server_name3...> [<return_type>]", 'Synchronize metaconsole module groups');
 	help_screen_line('--delete_module', 'Delete module from agent', '<module_name> <agent_name>');
     help_screen_line('--data_module', "<server_name> <agent_name> <module_name> \n\t  <module_type> <module_new_data> [<datetime>]", 'Insert data to module');
     help_screen_line('--get_module_data', "<agent_name> <module_name> <interval> [<csv_separator>]", "\n\t  Show the data of a module in the last X seconds (interval) in CSV format");
@@ -241,8 +243,8 @@ sub help_screen{
 ########################################################################
 # 
 ########################################################################
-sub api_call($$$;$$$) {
-	my ($pa_config, $op, $op2, $id, $id2, $other) = @_;
+sub api_call($$$;$$$$) {
+	my ($pa_config, $op, $op2, $id, $id2, $other, $return_type) = @_;
 	my $content = undef;
 	
 	eval {
@@ -256,6 +258,7 @@ sub api_call($$$;$$$) {
 		$params->{"id"} = $id;
 		$params->{"id2"} = $id2;
 		$params->{"other"} = $other;
+		$params->{"return_type"} = $return_type;
 		$params->{"other_mode"} = "url_encode_separator_|";
 		
 		# Call the API.
@@ -1603,6 +1606,54 @@ sub cli_create_module_group () {
 	non_exist_check($id_module_group,'group',$module_group_name);
 	
 	db_insert ($dbh, 'id_mg', 'INSERT INTO tmodule_group (name) VALUES (?)', safe_input($module_group_name));
+}
+
+##############################################################################
+# Show all the module group (without parameters) or the module groups with a filter parameters
+# Related option: --get_module_group
+##############################################################################
+
+sub cli_get_module_group() {
+	my ($module_group_name) = @ARGV[2..2];
+
+	my $condition = ' 1=1 ';
+
+	if($module_group_name ne '') {
+		$condition .= " AND name LIKE '%$module_group_name%' ";
+	}
+
+	my @module_group = get_db_rows ($dbh, "SELECT * FROM tmodule_group WHERE $condition");	
+
+	if(scalar(@module_group) == 0) {
+		print_log "[INFO] No groups found\n\n";
+		exit;
+	}
+
+	my $head_print = 0;
+	foreach my $groups (@module_group) {
+
+		if($head_print == 0) {
+			$head_print = 1;
+			print "id_module_group, group_name\n";
+		}
+		print $groups->{'id_mg'}.",".safe_output($groups->{'name'})."\n";
+	}
+
+	if($head_print == 0) {
+		print_log "[INFO] No groups found\n\n";
+	}
+
+}
+
+
+sub cli_module_group_synch() {
+	my $other = @ARGV[2];
+	my $return_type = @ARGV[3];
+	if ($return_type eq '') {
+		$return_type = 'csv';
+	}
+	my $result = api_call(\%conf,'set', 'module_group_synch', undef, undef, "$other", $return_type);
+	print "$result \n\n ";
 }
 
 ##############################################################################
@@ -5734,9 +5785,18 @@ sub pandora_manage_main ($$$) {
 			param_check($ltotal, 38, 35);
 			cli_create_web_module(0);
 		}
+
+		elsif ($param eq '--get_module_group') {
+			param_check($ltotal, 1, 1);
+			cli_get_module_group();
+		}
 		elsif ($param eq '--create_module_group') {
 			param_check($ltotal, 1, 1);
 			cli_create_module_group();
+		}
+		elsif ($param eq '--module_group_synch') {
+			param_check($ltotal, 2, 1);
+			cli_module_group_synch();
 		}
 		elsif ($param eq '--create_network_module') {
 			param_check($ltotal, 32, 20);

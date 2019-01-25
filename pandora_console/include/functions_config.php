@@ -2248,7 +2248,7 @@ function config_check () {
 			__('Please, change it on your PHP configuration file (php.ini) or contact with administrator (Dont forget restart apache process after changes)'), __("Problems with disable functions in PHP.INI"));
 	}
 
-	$result_ejecution = exec($config['phantomjs_bin'] . '/phantomjs --version');
+	$result_ejecution = exec('"'.io_safe_output($config['phantomjs_bin']) . '/phantomjs" --version');
 	if(!isset($result_ejecution) || $result_ejecution == '') {
 		if ($config['language'] == 'es') {
 			set_pandora_error_for_header(

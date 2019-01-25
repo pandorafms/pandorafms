@@ -594,6 +594,9 @@ sub process_xml_data ($$$$$) {
 
 	# Process snmptrapd modules
 	enterprise_hook('process_snmptrap_data', [$pa_config, $data, $server_id, $dbh]);
+
+	# Process disovery modules
+	enterprise_hook('process_discovery_data', [$pa_config, $data, $server_id, $dbh]);
 }
 
 ##########################################################################

@@ -3435,4 +3435,85 @@ function pandora_xhprof_display_result($key = "", $method = "link") {
 
 	}
 }
+
+/**
+ * From a network with a mask remove the smallest ip and the highest
+ *
+ * @param string address to identify the network.
+ * @param string mask to identify the mask network
+ * @return array or false with smallest ip and highest ip
+ */
+function range_ips_for_network($address, $mask) {
+	if(!isset($address) || !isset($mask)){
+		return false;
+	}
+
+	//convert ip addresses to long form
+	$address_long = ip2long($address);
+	$mask_long = ip2long($mask);
+
+	//caculate first usable address
+	$ip_host_first = ((~$mask_long) & $address_long);
+	$ip_first = ($address_long ^ $ip_host_first) + 1;
+
+	//caculate last usable address
+	$ip_broadcast_invert = ~$mask_long;
+	$ip_last = ($address_long | $ip_broadcast_invert) - 1;
+
+	$range = array(
+		'first' => long2ip($ip_first),
+		'last' => long2ip($ip_last)
+	);
+
+	return $range;
+}
+
+/**
+ * from two ips find out if there is such an ip
+ *
+ * @param string ip ip wont validate
+ * @param string ip_lower
+ * @param string ip_upper
+ * @return bool true or false if the ip is between the two ips
+ */
+function is_in_network ($ip, $ip_lower, $ip_upper) {
+	if(!isset($ip) || !isset($ip_lower) || !isset($ip_upper)){
+		return false;
+	}
+
+	$ip = (float)sprintf("%u",ip2long($ip));
+	$ip_lower = (float)sprintf("%u",ip2long($ip_lower));
+	$ip_upper = (float)sprintf("%u",ip2long($ip_upper));
+
+	if ($ip >= $ip_lower && $ip <= $ip_upper){
+		return true;
+	} else {
+		return false;
+	}
+}
+/**
+ * 
+ */
+function ip_belongs_to_network($ip, $network, $mask) {
+	if ($ip == $network) {
+		return true;
+	}
+	$ranges = range_ips_for_network($network, $mask);
+	return  is_in_network($ip, $ranges['first'], $ranges['last']);
+}
+/**
+ * convert the mask to cird format
+ *
+ * @param string mask
+ * @return string true or false if the ip is between the two ips
+ */
+function mask2cidr($mask){
+	if(!isset($mask))
+		return 0;
+
+	$long = ip2long($mask);
+	$base = ip2long('255.255.255.255');
+	return 32-log(($long ^ $base)+1,2);
+}
+
 ?>

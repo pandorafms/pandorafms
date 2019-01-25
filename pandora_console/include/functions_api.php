@@ -32,7 +32,6 @@ include_once($config['homedir'] . "/include/functions_servers.php");
 include_once($config['homedir'] . "/include/functions_planned_downtimes.php");
 include_once($config['homedir'] . "/include/functions_db.php");
 include_once($config['homedir'] . "/include/functions_event_responses.php");
-include_once($config['homedir'] . "/include/functions_policies.php");
 enterprise_include_once ('include/functions_local_components.php');
 enterprise_include_once ('include/functions_events.php');
 enterprise_include_once ('include/functions_agents.php');

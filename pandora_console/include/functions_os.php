@@ -67,12 +67,21 @@ function os_get_name($id_os) {
 }
 
 
-function os_get_os() {
+function os_get_os($hash = false) {
+	$result = array();
 	$op_systems = db_get_all_rows_in_table('tconfig_os');
 	if (empty($op_systems))
 		$op_systems = array();
-	
-	return $op_systems;
+
+	if ($hash) {
+		foreach ($op_systems as $key => $value) {
+			$result[$value['id_os']] = $value['name'];
+		}
+	} else {
+		$result = $op_systems;
+	}
+
+	return $result;
 }
 
 function os_get_icon($id_os) {

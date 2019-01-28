@@ -97,6 +97,15 @@ function hd ($var, $file = '', $oneline = false) {
 	html_debug_print ($var, $file, $oneline);
 }
 
+function debug () {
+	$args_num = func_num_args();
+	$arg_list = func_get_args();
+	
+	for ($i = 0; $i < $args_num; $i++) {
+		html_debug_print($arg_list[$i], true);
+	}
+}
+
 function html_f2str($function, $params) {
 	ob_start();
 	
@@ -726,8 +735,11 @@ function html_print_extended_select_for_post_process($name, $selected = '',
 	$selected_float = (float)$selected;
 	$found = false;
 
-	if (array_key_exists(number_format($selected, 14, '.', ','), $fields))
-		$found = true;
+	if($selected){
+		if (array_key_exists(number_format($selected, 14, '.', ','), $fields)) {
+			$found = true;
+		}
+	}
 
 	if (!$found) {
 		$fields[$selected] = floatval($selected);
@@ -1008,12 +1020,13 @@ function html_print_input_text_extended ($name, $value, $id, $alt, $size, $maxle
 	++$idcounter;
 	
 	$valid_attrs = array ("accept", "disabled", "maxlength",
-		"name", "readonly", "size", "value", "accesskey",
+		"name", "readonly", "placeholder", "size", "value", "accesskey",
 		"class", "dir", "id", "lang", "style", "tabindex",
 		"title", "xml:lang", "onfocus", "onblur", "onselect",
 		"onchange", "onclick", "ondblclick", "onmousedown",
 		"onmouseup", "onmouseover", "onmousemove", "onmouseout",
-		"onkeypress", "onkeydown", "onkeyup", "required");
+		"onkeypress", "onkeydown", "onkeyup", "required",
+		"autocomplete");
 	
 	$output = '<input '.($password ? 'type="password" autocomplete="off" ' : 'type="text" ');
 	
@@ -1184,22 +1197,27 @@ function html_print_input_password ($name, $value, $alt = '',
  *
  * @return string HTML code if return parameter is true.
  */
-function html_print_input_text ($name, $value, $alt = '', $size = 50, $maxlength = 255, $return = false, $disabled = false, $required = false, $function = "", $class = "", $onChange ="") {
+function html_print_input_text ($name, $value, $alt = '', $size = 50, $maxlength = 255, $return = false, $disabled = false, $required = false, $function = "", $class = "", $onChange ="", $autocomplete="") {
 	if ($maxlength == 0)
 		$maxlength = 255;
-		
+
 	if ($size == 0)
 		$size = 10;
-	
+
 	$attr = array();
-	if ($required)
+	if ($required){
 		$attr['required'] = 'required';
-	if ($class != '')
+	}
+	if ($class != ''){
 		$attr['class'] = $class;
+	}
 	if ($onChange != '') {
 		$attr['onchange'] = $onChange;
 	}
-	
+	if($autocomplete !== ''){
+		$attr['autocomplete'] = $autocomplete;
+	}
+
 	return html_print_input_text_extended ($name, $value, 'text-'.$name, $alt, $size, $maxlength, $disabled, '', $attr, $return, false, $function);
 }
 
@@ -1335,6 +1353,36 @@ function html_print_input_hidden_extended($name, $value, $id, $return = false, $
 	if ($return)
 		return $output;
 	
+	echo $output;
+}
+
+/**
+ * Render a color input element.
+ *
+ * The element will have an id like: "hidden-$name"
+ * 
+ * @param string $name Input name.
+ * @param int $value Input value. Decimal representation of the color's hexadecimal value.
+ * @param string $class Set the class of input.
+ * @param bool $return Whether to return an output string or echo now (optional, echo by default).
+ *
+ * @return string HTML code if return parameter is true.
+ */
+function html_print_input_color ($name, $value, $class = false, $return = false) {
+	$attr_type = 'type="color"';
+	$attr_id = 'id="color-' . htmlspecialchars($name, ENT_QUOTES) . '"';
+	$attr_name = 'name="' . htmlspecialchars($name, ENT_QUOTES) . '"';
+	$attr_value = 'value="' . htmlspecialchars($value, ENT_QUOTES) . '"';
+	$attr_class = 'class="' . ($class !== false ? htmlspecialchars($class, ENT_QUOTES) : "") . '"';
+
+	$output = '<input '
+		. $attr_type . ' '
+		. $attr_id . ' '
+		. $attr_name . ' '
+		. $attr_value . ' '
+		. $attr_class . ' />';
+
+	if ($return) return $output;
 	echo $output;
 }
 
@@ -2479,7 +2527,7 @@ function html_print_result_div ($text) {
 	$text = preg_replace ('/\n/i','<br>',$text);
 	$text = preg_replace ('/\s/i','&nbsp;',$text);
 
-	$enclose = "<div id='result_div' style='width: 100%; height: 100%; overflow: scroll; padding: 10px; font-size: 14px; line-height: 16px; font-family: mono,monospace; text-align: left'>";
+	$enclose = "<div id='result_div' style='width: 100%; height: 100%; overflow: auto; padding: 10px; font-size: 14px; line-height: 16px; font-family: mono,monospace; text-align: left'>";
 	$enclose .= $text;
 	$enclose .= "</div>";
 	return $enclose;

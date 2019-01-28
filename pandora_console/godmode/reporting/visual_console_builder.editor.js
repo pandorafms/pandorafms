@@ -145,7 +145,9 @@ function visual_map_main() {
 			}
 					
 		});
-		
+
+		bindColorRangeEvents();
+
 			draw_lines(lines, 'background', true);
 
 			draw_user_lines("", 0, 0, 0 , 0, 0, true);
@@ -220,12 +222,11 @@ function update_button_palette_callback() {
 	// TODO VALIDATE DATA
 	switch (selectedItem) {
 		case 'background':
-			
 			if(values['width'] < 1024 || values['height'] < 768){
-			alert('Min allowed size is 1024x768');
-			return false;	
+				alert('Min allowed size is 1024x768');
+				return false;
 			}
-			
+
 			if(values['width'] == 0 && values['height'] == 0) {
 				values['width'] =
 					$("#hidden-background_original_width").val();
@@ -235,7 +236,6 @@ function update_button_palette_callback() {
 			$("#background").css('width', values['width']);
 			$("#background").css('height', values['height']);
 
-			//$("#background").css('background', 'url(images/console/background/' + values['background'] + ')');
 			var image = values['background'];
 			$("#background_img").attr('src', "images/spinner.gif");
 			set_image("background", null, image);
@@ -243,7 +243,6 @@ function update_button_palette_callback() {
 			idElement = 0;
 			break;
 		case 'box_item':
-		
 			if($('input[name=width_box]').val() == ''){
 				alert('Undefined width');
 				return false;
@@ -252,11 +251,11 @@ function update_button_palette_callback() {
 				alert('Undefined height');
 				return false;
 			}
-		
+
 			$("#" + idItem + " div").css('background-color', values['fill_color']);
 			$("#" + idItem + " div").css('border-color', values['border_color']);
 			$("#" + idItem + " div").css('border-width', values['border_width'] + "px");
-			
+
 			if(values['height_box']==0 || values['width_box']==0){
 				$("#" + idItem + " div").css('width', "300px");
 				$("#" + idItem + " div").css('height', "180px");
@@ -271,54 +270,43 @@ function update_button_palette_callback() {
 				alert('Undefined image');
 				return false;
 			}
-			
+
 			$("#text_" + idItem).html(values['label']);
-			
+
 			if(values['show_statistics'] == 1){
-				
 				if (!$('#image_'+idItem).length) {
-					
 					if(values['label_position'] == 'left'){
-					
 						var $image = $('<img></img>')
 							.attr('id', 'image_' + idItem)
 							.attr('class', 'image')
 							.attr('src', 'images/console/icons/'+values["image"]+".png")
 							.attr('style','float:right;');
-					
 					}
 					else if(values['label_position'] == 'right'){
-					
 						var $image = $('<img></img>')
 							.attr('id', 'image_' + idItem)
 							.attr('class', 'image')
 							.attr('src', 'images/console/icons/'+values["image"]+".png")
 							.attr('style','float:left;');
-					
 					}
 					else{
-						
 						var $image = $('<img></img>')
 							.attr('id', 'image_' + idItem)
 							.attr('class', 'image')
 							.attr('src', 'images/console/icons/'+values["image"]+".png");
-						
 					}
-					
-					
+
 					$('#'+idItem).append($image);
-					
 				}
-				
+
 				if ((values['width'] == 0) || (values['height'] == 0)) {
-						$("#image_" + idItem).removeAttr('width');
-						$("#image_" + idItem).removeAttr('height');
-						$("#image_" + idItem).attr('width', 520);
-						$("#image_" + idItem).attr('height', 80);
-						$("#image_" + idItem).css('width', '520px');
-						$("#image_" + idItem).css('height', '80px');
-						$("#image_" + idItem).attr('src', 'images/console/signes/group_status.png');
-							
+					$("#image_" + idItem).removeAttr('width');
+					$("#image_" + idItem).removeAttr('height');
+					$("#image_" + idItem).attr('width', 520);
+					$("#image_" + idItem).attr('height', 80);
+					$("#image_" + idItem).css('width', '520px');
+					$("#image_" + idItem).css('height', '80px');
+					$("#image_" + idItem).attr('src', 'images/console/signes/group_status.png');
 				}
 				else {
 					$("#image_" + idItem).removeAttr('width');
@@ -328,49 +316,36 @@ function update_button_palette_callback() {
 					$("#image_" + idItem).css('width', values['width'] + 'px');
 					$("#image_" + idItem).css('height', values['height'] + 'px');
 					$("#image_" + idItem).attr('src', 'images/console/signes/group_status.png');
-				}				
-				
+				}
 			}
 			else{
-				
 				if ((values['width'] == 0) || (values['height'] == 0)) {
-					
 					if(values['image'] != '' && values['image'] != 'none'){
-						
 						if (!$('#image_'+idItem).length) {
-  						
 							if(values['label_position'] == 'left'){
-							
 								var $image = $('<img></img>')
 									.attr('id', 'image_' + idItem)
 									.attr('class', 'image')
 									.attr('src', 'images/console/icons/'+values["image"]+".png")
 									.attr('style','float:right;');
-							
 							}
 							else if(values['label_position'] == 'right'){
-							
 								var $image = $('<img></img>')
 									.attr('id', 'image_' + idItem)
 									.attr('class', 'image')
 									.attr('src', 'images/console/icons/'+values["image"]+".png")
 									.attr('style','float:left;');
-							
 							}
 							else{
-								
 								var $image = $('<img></img>')
 									.attr('id', 'image_' + idItem)
 									.attr('class', 'image')
 									.attr('src', 'images/console/icons/'+values["image"]+".png");
-								
 							}
-							
-							
+
 							$('#'+idItem).append($image);
-							
 						}
-						
+
 						if($('#preview > img').prop('naturalWidth') == null || $('#preview > img')[0].naturalWidth > 150 || $('#preview > img')[0].naturalHeight > 150){
 							$("#image_" + idItem).removeAttr('width');
 							$("#image_" + idItem).removeAttr('height');
@@ -382,15 +357,11 @@ function update_button_palette_callback() {
 						else{
 							$("#image_" + idItem).removeAttr('width');
 							$("#image_" + idItem).removeAttr('height');
-							
 							$("#image_" + idItem).attr('width', $('#preview > img')[0].naturalHeight);
 							$("#image_" + idItem).attr('height', $('#preview > img')[0].naturalHeight);
 							$("#image_" + idItem).css('width', $('#preview > img')[0].naturalHeight+'px');
-							$("#image_" + idItem).css('height', $('#preview > img')[0].naturalHeight+'px');	
-							
-							
+							$("#image_" + idItem).css('height', $('#preview > img')[0].naturalHeight+'px');
 						}
-						
 					}
 					else{
 						$("#image_" + idItem).removeAttr('width');
@@ -401,7 +372,6 @@ function update_button_palette_callback() {
 						$("#image_" + idItem).css('height', '70px');
 						$("#image_" + idItem).remove();
 					}
-						
 				}
 				else {
 					$("#image_" + idItem).removeAttr('width');
@@ -411,14 +381,9 @@ function update_button_palette_callback() {
 					$("#image_" + idItem).css('width', values['width'] + 'px');
 					$("#image_" + idItem).css('height', values['height'] + 'px');
 				}
-				
 			}
-			
-			
-			
 			break;
 		case 'static_graph':
-		
 			if($('input[name=width]').val() == ''){
 				alert('Undefined width');
 				return false;
@@ -433,10 +398,8 @@ function update_button_palette_callback() {
 			}
 
 			$("#text_" + idItem).html(values['label']);
-			
+
 			if(values['show_statistics'] == 1){
-				
-				
 				if ((values['width'] == 0) || (values['height'] == 0)) {
 						$("#image_" + idItem).removeAttr('width');
 						$("#image_" + idItem).removeAttr('height');
@@ -445,7 +408,6 @@ function update_button_palette_callback() {
 						$("#image_" + idItem).css('width', '520px');
 						$("#image_" + idItem).css('height', '80px');
 						$("#image_" + idItem).attr('src', 'images/console/signes/group_status.png');
-							
 				}
 				else {
 					$("#image_" + idItem).removeAttr('width');
@@ -455,50 +417,35 @@ function update_button_palette_callback() {
 					$("#image_" + idItem).css('width', values['width'] + 'px');
 					$("#image_" + idItem).css('height', values['height'] + 'px');
 					$("#image_" + idItem).attr('src', 'images/console/signes/group_status.png');
-				}				
-				
+				}
 			}
 			else{
-				
 				if ((values['width'] == 0) || (values['height'] == 0)) {
-					
 					if(values['image'] != '' && values['image'] != 'none'){
-						
 						if (!$('#image_'+idItem).length) {
-  						
 							if(values['label_position'] == 'left'){
-							
 								var $image = $('<img></img>')
 									.attr('id', 'image_' + idItem)
 									.attr('class', 'image')
 									.attr('src', 'images/console/icons/'+values["image"]+".png")
 									.attr('style','float:right;');
-							
 							}
 							else if(values['label_position'] == 'right'){
-							
 								var $image = $('<img></img>')
 									.attr('id', 'image_' + idItem)
 									.attr('class', 'image')
 									.attr('src', 'images/console/icons/'+values["image"]+".png")
 									.attr('style','float:left;');
-							
 							}
 							else{
-								
 								var $image = $('<img></img>')
 									.attr('id', 'image_' + idItem)
 									.attr('class', 'image')
 									.attr('src', 'images/console/icons/'+values["image"]+".png");
-								
 							}
-							
-							
 							$('#'+idItem).append($image);
-							
 						}
-						
-						
+
 						if($('#preview > img').prop('naturalWidth') == null || $('#preview > img')[0].naturalWidth > 150 || $('#preview > img')[0].naturalHeight > 150){
 							$("#image_" + idItem).removeAttr('width');
 							$("#image_" + idItem).removeAttr('height');
@@ -510,15 +457,11 @@ function update_button_palette_callback() {
 						else{
 							$("#image_" + idItem).removeAttr('width');
 							$("#image_" + idItem).removeAttr('height');
-							
 							$("#image_" + idItem).attr('width', $('#preview > img')[0].naturalHeight);
 							$("#image_" + idItem).attr('height', $('#preview > img')[0].naturalHeight);
 							$("#image_" + idItem).css('width', $('#preview > img')[0].naturalHeight+'px');
-							$("#image_" + idItem).css('height', $('#preview > img')[0].naturalHeight+'px');	
-							
-							
+							$("#image_" + idItem).css('height', $('#preview > img')[0].naturalHeight+'px');
 						}
-						
 					}
 					else{
 						$("#image_" + idItem).removeAttr('width');
@@ -529,7 +472,6 @@ function update_button_palette_callback() {
 						$("#image_" + idItem).css('height', '70px');
 						$("#image_" + idItem).remove();
 					}
-						
 				}
 				else {
 					$("#image_" + idItem).removeAttr('width');
@@ -539,9 +481,7 @@ function update_button_palette_callback() {
 					$("#image_" + idItem).css('width', values['width'] + 'px');
 					$("#image_" + idItem).css('height', values['height'] + 'px');
 				}
-				
 			}
-			
 			break;
 		case 'percentile_bar':
 		case 'percentile_item':
@@ -549,13 +489,15 @@ function update_button_palette_callback() {
 				alert('Undefined width');
 				return false;
 			}
+
 			if($('input[name=height_percentile]').val() == ''){
 				alert('Undefined height');
 				return false;
 			}
-		
+
 			$("#text_" + idItem).html(values['label']);
 			$("#image_" + idItem).attr("src", "images/spinner.gif");
+
 			if (values['type_percentile'] == 'bubble') {
 				setPercentileBubble(idItem, values);
 			}
@@ -568,7 +510,7 @@ function update_button_palette_callback() {
 			else {
 				setPercentileBar(idItem, values);
 			}
-			
+
 			break;
 		case 'module_graph':
 			if($('#dir_items').html() == 'horizontal'){
@@ -801,6 +743,12 @@ function readFields() {
 	values['label'] = $("input[name=label]").val();
 	var text = tinymce.get('text-label').getContent();
 	values['label'] = text;
+
+	if ($("input[name=percentile_label]").val().length > 0) {
+		values['percentile_label_color'] = $("input[name=percentile_label_color]").val();
+		values['label'] = "<span style='color:"+values['percentile_label_color']+";'>" + $("input[name=percentile_label]").val() + "</span>";
+	}
+
 	values['line-height'] = $("#text-label_ifr").contents().find("p").css('line-height');
 	values['type_graph'] = $("select[name=type_graph]").val();
 	values['image'] = $("select[name=image]").val();
@@ -840,7 +788,6 @@ function readFields() {
 	values['event_max_time_row'] = $("select[name=event_max_time_row]").val();
 	values['type_percentile'] = $("select[name=type_percentile]").val();
 	values['percentile_color'] = $("input[name=percentile_color]").val();
-	values['percentile_label_color'] = $("input[name=percentile_label_color]").val();
 	values['percentile_label'] = $("input[name=percentile_label]").val();
 	values['value_show'] = $("select[name=value_show]").val();
 	
@@ -868,6 +815,25 @@ function readFields() {
 	values['clock_animation'] = $("select[name=clock_animation]").val();
 	values['show_last_value'] = $("select[name=last_value]").val();
 	
+	// Color Cloud values
+	if (selectedItem == "color_cloud" || creationItem == "color_cloud") {
+		var diameter = $("input[name=diameter]").val();
+		values["diameter"] = values["width"] = values["height"] = diameter;
+		var defaultColor = $("input[name=default_color]").val();
+		values["default_color"] = defaultColor;
+
+		// Ranges
+		$('input[name="color_range_from_values[]"]').each(function (index, element) {
+			values["color_range_from_values[" + index + "]"] = $(element).val();
+		});
+		$('input[name="color_range_to_values[]"]').each(function (index, element) {
+			values["color_range_to_values[" + index + "]"] = $(element).val();
+		});
+		$('input[name="color_range_color_values[]"]').each(function (index, element) {
+			values["color_range_colors[" + index + "]"] = $(element).val();
+		});
+	}
+
 	if (is_metaconsole()) {
 		values['metaconsole'] = 1;
 		values['id_agent'] = $("#hidden-agent").val();
@@ -1234,6 +1200,7 @@ function toggle_item_palette() {
 		activeToolboxButton('line_item', true);
 		activeToolboxButton('auto_sla_graph', true);
 		activeToolboxButton('donut_graph', true);
+		activeToolboxButton('color_cloud', true);
 
 		if (typeof(enterprise_activeToolboxButton) == 'function') {
 			enterprise_activeToolboxButton(true);
@@ -1264,6 +1231,7 @@ function toggle_item_palette() {
 		activeToolboxButton('group_item', false);
 		activeToolboxButton('box_item', false);
 		activeToolboxButton('line_item', false);
+		activeToolboxButton('color_cloud', false);
 
 		activeToolboxButton('copy_item', false);
 		activeToolboxButton('edit_item', false);
@@ -1670,6 +1638,26 @@ function loadFieldsFromDB(item) {
 						.css('background-color', val);
 				}
 
+				// Color Cloud values
+				if (key === "diameter") $("input[name='diameter']").val(val);
+				if (key === "dynamic_data") {
+					if (val == null) val = {};
+					var defaultColor = val["default_color"] || "#FFFFFF";
+					$('input[name="default_color"]').val(defaultColor);
+					
+					var colorRanges = val["color_ranges"] || [];
+					var $colorRangeCreationTable = $("table.color-range-creation");
+
+					if ($colorRangeCreationTable.length > 0) {
+						colorRanges.forEach(function (range) {
+							$colorRangeTable = getColorRangeTable(
+								$colorRangeCreationTable,
+								range
+							);
+							$colorRangeTable.insertBefore($colorRangeCreationTable);
+						});
+					}
+				}
 			});
 			
 				$('#count_items').html(1);		
@@ -1951,6 +1939,14 @@ function hiddenFields(item) {
 	$("#line_case").css('display', 'none');
 	$("#line_case." + item).css('display', '');
 
+	// Color cloud rows
+	$("#color_cloud_diameter_row").hide();
+	$("#color_cloud_diameter_row." + item).show();
+	$("#color_cloud_def_color_row").hide();
+	$("#color_cloud_def_color_row." + item).show();
+	$("#color_cloud_color_ranges_row").hide();
+	$("#color_cloud_color_ranges_row." + item).show();
+
 	$("input[name='radio_choice']").trigger('change');
 
 	if (typeof(enterprise_hiddenFields) == 'function') {
@@ -2004,6 +2000,13 @@ function cleanFields(item) {
 	$("select[name='timezone']").val('Europe/Madrid');
 	$("select[name='clock_animation']").val('analogic_1');
 
+	// Color cloud fields
+	$("input[name='diameter']").val(100);
+	$("input[name='default_color']").val("#FFFFFF");
+	// Clean dynamic fields
+	$("table.color-range-creation input[type=text]").val("");
+	$("table.color-range-creation input[type=color]").val("#FFFFFF");
+	$("table.color-range:not(table.color-range-creation)").remove();
 
 	$("#preview").empty();
 
@@ -2479,7 +2482,6 @@ function setPercentileCircular (id_data, values) {
 	width_percentile = values['width_percentile'];
 
 	var parameter = Array();
-
 	parameter.push ({name: "page", value: "include/ajax/visual_console_builder.ajax"});
 	parameter.push ({name: "action", value: "get_module_value"});
 	parameter.push ({name: "id_element", value: id_data});
@@ -2514,7 +2516,7 @@ function setPercentileCircular (id_data, values) {
 			else {
 				value_text = module_value + " " + unit_text;
 			}
-			
+
 			$("#" + id_data + " img").attr('src', url_hack_metaconsole + 'images/console/signes/circular-progress-bar.png');
 			if($('#text-width_percentile').val() == 0){
 				$("#" + id_data + " img").css('width', '130px');
@@ -2524,12 +2526,12 @@ function setPercentileCircular (id_data, values) {
 				$("#" + id_data + " img").css('width', $('#text-width_percentile').val()+'px');
 				$("#" + id_data + " img").css('height', $('#text-width_percentile').val()+'px');
 			}
-			
+
 			if($('#'+id_data+' table').css('float') == 'right' || $('#'+id_data+ ' table').css('float') == 'left'){
-				$('#'+id_data+ ' img').css('margin-top', 	parseInt($('#'+id_data).css('height'))/2 - parseInt($('#'+id_data+ ' img').css('height'))/2);	
+				$('#'+id_data+ ' img').css('margin-top', 	parseInt($('#'+id_data).css('height'))/2 - parseInt($('#'+id_data+ ' img').css('height'))/2);
 			}
 			else{
-				$('#'+id_data+ ' img').css('margin-left',parseInt($('#'+id_data).css('width'))/2 - parseInt($('#'+id_data+ ' img').css('width'))/2);		
+				$('#'+id_data+ ' img').css('margin-left',parseInt($('#'+id_data).css('width'))/2 - parseInt($('#'+id_data+ ' img').css('width'))/2);
 			}
 		}
 	});
@@ -2773,6 +2775,43 @@ function setPercentileBubble(id_data, values) {
 	});
 }
 
+function setColorCloud (visualConsoleId, dataId, $container) {
+	$container = $container || $("#" + dataId + ".item.color_cloud");
+	if ($container.length === 0) return;
+
+	var $spinner = $container.children("img");
+	var $svg = $container.children("svg");
+
+	if ($svg.length === 0) {
+		$svg = $("<svg />");
+		$container.append($svg);
+	}
+	
+	if ($spinner.length > 0) $svg.hide();
+
+	jQuery
+		.post(
+			get_url_ajax(),
+			{
+				"page": "include/ajax/visual_console_builder.ajax",
+				"action": "get_color_cloud",
+				"id_visual_console": visualConsoleId,
+				"id_element": dataId
+			},
+			null,
+			"html"
+		)
+		.done(function (data) {
+			var $newSvg = $(data);
+			// Check if $newSvg contains a svg
+			if ($newSvg.is("svg")) $svg.replaceWith($newSvg);
+		})
+		.always(function () {
+			if ($spinner.length > 0) $spinner.remove();
+			$svg.show();
+		});
+}
+
 function get_image_url(img_src) {
 	var img_url= null;
 	var parameter = Array();
@@ -2821,16 +2860,12 @@ function set_color_line_status(lines, id_data, values) {
 
 }
 
-
-
-
 function createItem(type, values, id_data) {
 	var sizeStyle = '';
 	var imageSize = '';
 	var item = null;
 
 	metaconsole = $("input[name='metaconsole']").val();
-
 
 	switch (type) {
 		case 'box_item':
@@ -3642,6 +3677,15 @@ function createItem(type, values, id_data) {
 			var image = values['image'] + ".png";
 			set_image("image", id_data, image);
 			break;
+		case 'color_cloud':
+			var diameter = values["diameter"] || values["width"] || 100;
+
+			item = $('<div id="' + id_data + '" class="item color_cloud" style="text-align: left; position: absolute; width: ' + diameter  + 'px; height: ' + diameter + 'px; top: ' + values['top'] + 'px; left: ' + values['left'] + 'px;">' +
+				'<img id="image_' + id_data + '" class="image" src="images/spinner.gif" width="' + diameter  + '" height="' + diameter + '" />' +
+				'</div>'
+			);
+			setColorCloud(id_visual_console, id_data, item);
+			break;
 		default:
 			//Maybe create in any Enterprise item.
 			if (typeof(enterprise_createItem) == 'function') {
@@ -3730,9 +3774,10 @@ function insertDB(type, values) {
 		success: function (data) {
 			if (data['correct']) {
 				id = data['id_data'];
-				if((type === 'group_item') || (type === 'icon') || (type === 'static_graph')){
-					values['naturalWidth'] = $('#preview > img')[0].naturalWidth;
-					values['naturalHeight'] = $('#preview > img')[0].naturalHeight;
+				var image_to_show = $('#preview > img')[0];
+				if((type === 'group_item') || (type === 'icon') || (type === 'static_graph' && typeof(image_to_show) !== 'undefined')){
+					values['naturalWidth'] = image_to_show.naturalWidth;
+					values['naturalHeight'] = image_to_show.naturalHeight;
 				}
 				createItem(type, values, id);
 				addItemSelectParents(id, data['text']);
@@ -3835,14 +3880,12 @@ function updateDB_visual(type, idElement , values, event, top, left) {
 		case 'clock':
 		case 'auto_sla_graph':
 		case 'donut_graph':
-			
-			if ((typeof(values['mov_left']) != 'undefined') &&
-					(typeof(values['mov_top']) != 'undefined')) {
+			if ((typeof(values['absolute_left']) != 'undefined') &&
+					(typeof(values['absolute_top']) != 'undefined')) {
 				$("#" + idElement).css('top', '0px').css('top', top + 'px');
 				$("#" + idElement).css('left', '0px').css('left', left + 'px');
 			}
-			else if ((typeof(values['absolute_left']) != 'undefined') &&
-					(typeof(values['absolute_top']) != 'undefined')) {
+			else{
 				$("#" + idElement).css('top', '0px').css('top', top + 'px');
 				$("#" + idElement).css('left', '0px').css('left', left + 'px');
 			}
@@ -3879,6 +3922,16 @@ function updateDB_visual(type, idElement , values, event, top, left) {
 				}
 			}
 			
+			break;
+		case 'color_cloud':
+			var diameter = values["diameter"];
+			var $container = $("#" + idElement + ".item.color_cloud");
+			if ($container.children("img").length === 0) {
+				$container.append(
+					'<img id="image_' + idElement + '" class="image" src="images/spinner.gif" width="' + diameter  + '" height="' + diameter + '" />'
+				);
+			}
+			setColorCloud(id_visual_console, idElement, $container);
 			break;
 		case 'background':
 			if(values['width'] == '0' || values['height'] == '0'){
@@ -3951,7 +4004,6 @@ function updateDB(type, idElement , values, event) {
 	jQuery.each(values, function(key, val) {
 		parameter.push({name: key, value: val});
 	});
-
 
 	switch (type) {
 		// -- line_item --
@@ -4335,6 +4387,15 @@ function eventsItems(drag) {
 				activeToolboxButton('delete_item', true);
 				activeToolboxButton('show_grid', false);
 			}
+			if ($(divParent).hasClass('color_cloud')) {
+				creationItem = null;
+				selectedItem = 'color_cloud';
+				idItem = $(divParent).attr('id');
+				activeToolboxButton('copy_item', true);
+				activeToolboxButton('edit_item', true);
+				activeToolboxButton('delete_item', true);
+				activeToolboxButton('show_grid', false);
+			}
 			if ($(divParent).hasClass('handler_start')) {
 				idItem = $(divParent).attr('id')
 					.replace("handler_start_", "");
@@ -4521,6 +4582,9 @@ function eventsItems(drag) {
 			}
 			if ($(event.target).hasClass('clock')) {
 				selectedItem = 'clock';
+			}
+			if ($(event.target).hasClass('color_cloud')) {
+				selectedItem = 'color_cloud';
 			}
 			if ($(event.target).hasClass('handler_start')) {
 				selectedItem = 'handler_start';
@@ -4860,6 +4924,10 @@ function click_button_toolbox(id) {
 			toolbuttonActive = creationItem = 'line_item';
 			toggle_item_palette();
 			break;
+		case 'color_cloud':
+			toolbuttonActive = creationItem = 'color_cloud';
+			toggle_item_palette();
+			break;
 		case 'copy_item':
 			click_copy_item_callback();
 			break;
@@ -4894,6 +4962,7 @@ function click_button_toolbox(id) {
 				activeToolboxButton('group_item', false);
 				activeToolboxButton('auto_sla_graph', false);
 				activeToolboxButton('donut_graph', false);
+				activeToolboxButton('color_cloud', false);
 				activeToolboxButton('copy_item', false);
 				activeToolboxButton('edit_item', false);
 				activeToolboxButton('delete_item', false);
@@ -4927,6 +4996,7 @@ function click_button_toolbox(id) {
 				activeToolboxButton('group_item', true);
 				activeToolboxButton('auto_sla_graph', true);
 				activeToolboxButton('donut_graph', true);
+				activeToolboxButton('color_cloud', true);
 			}
 			break;
 		case 'save_visualmap':
@@ -5005,6 +5075,9 @@ function showPreviewStaticGraph(staticGraph) {
 	if (is_metaconsole()) {
 		$spinner.prop("src", "../../images/spinner.gif");
 	}
+
+	// If no image configured do not show anything
+	if (staticGraph === null) return;
 
 	$("#preview")
 		.empty()
@@ -5272,4 +5345,100 @@ function onLinkedMapStatusCalculationTypeChange (event) {
 	var $linkedMapStatusCalcRow = $(event.target).parent().parent();
 	var value = event.target.value || "default";
 	linkedMapStatusCalculationTypeChanged($linkedMapStatusCalcRow, value);
+}
+
+function validateColorRange (values) {
+	return (
+		(values["from_value"].length > 0 || values["to_value"].length > 0) &&
+		values["color"].length > 0 &&
+		!Number.isNaN(Number.parseFloat(values["from_value"])) &&
+		!Number.isNaN(Number.parseFloat(values["to_value"]))
+	)
+}
+
+function getColorRangeTable ($colorRangeCreationTable, values) {
+	var $colorRangeTable = $colorRangeCreationTable.clone();
+	$colorRangeTable.attr("id", "").removeClass("color-range-creation");
+
+	// ref inputs
+	var $fromValueInput = $colorRangeTable.find('input[name="from_value_new"]');
+	var $toValueInput = $colorRangeTable.find('input[name="to_value_new"]');
+	var $colorInput = $colorRangeTable.find('input[name="color_new"]');
+
+	// Override input values
+	if (values != null) {
+		if (values["from_value"] != null) {
+			$fromValueInput.val(values["from_value"]);
+		}
+		if (values["to_value"] != null) {
+			$toValueInput.val(values["to_value"]);
+		}
+		if (values["color"] != null) {
+			$colorInput.val(values["color"]);
+		}
+	}
+
+	// Change the name of the new inputs (and clear the id attr)
+	$fromValueInput.attr("name", "color_range_from_values[]").attr("id", "");
+	$toValueInput.attr("name", "color_range_to_values[]").attr("id", "");
+	$colorInput.attr("name", "color_range_color_values[]").attr("id", "");
+
+	// Change the add button
+	$colorRangeAddBtn = $colorRangeTable.find("a.color-range-add");
+	if ($colorRangeAddBtn.length > 0) {
+		$colorRangeAddBtn
+			.removeClass("color-range-add")
+			.addClass("color-range-delete")
+			.click(function (e) {
+				e.preventDefault();
+				e.stopPropagation();
+				$colorRangeTable.remove();
+			});
+			
+			// Change img
+			$colorRangeAddImg = $colorRangeAddBtn.children("img");
+			if ($colorRangeAddImg.length > 0) {
+				var src = $("#hidden-metaconsole").val() == 1
+					? "../../images/delete.png"
+					: "images/delete.png";
+				$colorRangeAddImg.prop("src", src);
+			}
+	}
+
+	return $colorRangeTable;
+}
+
+function handleColorRangeCreation (event) {
+	event.preventDefault();
+	event.stopPropagation();
+
+	var $creationBtn = $(event.target);
+	var $colorRangeCreationTable = $creationBtn.parents("table.color-range-creation");
+
+	// ref inputs
+	var $fromValueInput = $colorRangeCreationTable.find('input[name="from_value_new"]');
+	var $toValueInput = $colorRangeCreationTable.find('input[name="to_value_new"]');
+	var $colorInput = $colorRangeCreationTable.find('input[name="color_new"]');
+
+	// TODO: Show info about validation
+	var values = {
+		"from_value": $fromValueInput.val(),
+		"to_value": $toValueInput.val(),
+		"color": $colorInput.val()
+	}
+	if (!validateColorRange(values)) return;
+
+	var $newColorRangeTable = getColorRangeTable($colorRangeCreationTable);
+	
+	// Clear creation inputs
+	$fromValueInput.val("");
+	$toValueInput.val("");
+	$colorInput.val("#FFFFFF");
+
+	// Add the new table
+	$newColorRangeTable.insertBefore($colorRangeCreationTable);
+}
+
+function bindColorRangeEvents () {
+	$("a.color-range-add").click(handleColorRangeCreation);
 }

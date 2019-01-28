@@ -409,12 +409,14 @@ function flot_pie_chart ($values, $labels, $width, $height, $water_mark,
 		$colors = implode($separator, $colors);
 	}
 
-	$return .= "<script type='text/javascript'>";
+	include_javascript_dependencies_flot_graph();
 
+	$return .= "<script type='text/javascript'>";
+	$return .= "$(document).ready( function () {";
 	$return .= "pandoraFlotPie('$graph_id', '$values', '$labels',
 		'$series', '$width', $font_size, $water_mark, '$separator',
 		'$legend_position', '$height', '$colors', " . json_encode($hide_labels) . ")";
-
+	$return .= "});";
 	$return .= "</script>";
 
 	return $return;
@@ -474,11 +476,11 @@ function flot_custom_pie_chart ($graph_values,
 	$colors = implode($separator, $temp_colors);
 	
 	$return .= "<script type='text/javascript'>";
-	
+	$return .= "$(document).ready( function () {";
 	$return .= "pandoraFlotPieCustom('$graph_id', '$values', '$labels',
 			'$width', $font_size, '$fontpath', $water_mark,
 			'$separator', '$legend_position', '$height', '$colors','$legend','$background_color')";
-	
+	$return .= "});";
 	$return .= "</script>";
 	
 	return $return;
@@ -575,10 +577,10 @@ function flot_hcolumn_chart ($graph_data, $width, $height, $water_mark, $font = 
 	
 	// Javascript code
 	$return .= "<script type='text/javascript'>";
-	
+	$return .= "$(document).ready( function () {";
 	$return .= "pandoraFlotHBars('$graph_id', '$values', '$labels',
 		false, $max, '$water_mark', '$separator', '$separator2', '$font', $font_size, '$background_color', '$tick_color', $val_min, $val_max)";
-
+	$return .= "});";
 	$return .= "</script>";
 	
 	return $return;
@@ -666,7 +668,7 @@ function flot_vcolumn_chart ($graph_data, $width, $height, $color, $legend, $lon
 	
 	// Javascript code
 	$return .= "<script type='text/javascript'>";
-
+	$return .= "$(document).ready( function () {";
 	if ($from_ux) {
 		if($from_wux){
 			$return .= "pandoraFlotVBars('$graph_id', '$values', '$labels', '$labels', '$legend', '$colors', false, $max, '$water_mark', '$separator', '$separator2','$font',$font_size, true, true, '$background_color', '$tick_color')";
@@ -678,7 +680,7 @@ function flot_vcolumn_chart ($graph_data, $width, $height, $color, $legend, $lon
 	else {
 		$return .= "pandoraFlotVBars('$graph_id', '$values', '$labels', '$labels', '$legend', '$colors', false, $max, '$water_mark', '$separator', '$separator2','$font',$font_size, false, false, '$background_color', '$tick_color')";
 	}
-
+	$return .= "});";
 	$return .= "</script>";
 	
 	return $return;
@@ -691,7 +693,7 @@ function flot_slicesbar_graph (
 	$adapt_key = '', $stat_win = false,
 	$id_agent = 0, $full_legend_date = array(),
 	$not_interactive = 0, $ttl = 1,
-	$widgets = false) {
+	$widgets = false, $show = true) {
 
 	global $config;
 
@@ -706,13 +708,15 @@ function flot_slicesbar_graph (
 			'fontpath' => $fontpath,
 			'round_corner' => $round_corner,
 			'homeurl' => $homeurl,
-			'watermark' => $watermark = '',
-			'adapt_key' => $adapt_key = '',
-			'stat_win' => $stat_win = false,
-			'id_agent' => $id_agent = 0,
-			'full_legend_date' => $full_legend_date = array(),
-			'not_interactive' => $not_interactive = 0,
-			'ttl' => $ttl = 1
+			'watermark' => $watermark,
+			'adapt_key' => $adapt_key,
+			'stat_win' => $stat_win,
+			'id_agent' => $id_agent,
+			'full_legend_date' => $full_legend_date,
+			'not_interactive' => $not_interactive,
+			'ttl' => 1,
+			'widgets' => $widgets,
+			'show' => $show
 		);
 
 		return generator_chart_to_pdf('slicebar', $params);
@@ -839,7 +843,9 @@ function flot_slicesbar_graph (
 	// Javascript code
 	$return .= "<script type='text/javascript'>";
 	$return .= "//<![CDATA[\n";
-	$return .= "pandoraFlotSlicebar('$graph_id','$values','$datacolor','$labels','$legend','$acumulate_data',$intervaltick,'$fontpath',$fontsize,'$separator','$separator2',$id_agent,'$full_legend_date',$not_interactive)";
+	$return .= "$(document).ready( function () {";
+	$return .= "pandoraFlotSlicebar('$graph_id','$values','$datacolor','$labels','$legend','$acumulate_data',$intervaltick,'$fontpath',$fontsize,'$separator','$separator2',$id_agent,'$full_legend_date',$not_interactive, '$show')";
+	$return .= "});";
 	$return .= "\n//]]>";
 	$return .= "</script>";
 

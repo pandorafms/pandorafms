@@ -361,11 +361,13 @@ function agents_get_agents ($filter = false, $fields = false,
 				break;
 			case AGENT_STATUS_NOT_NORMAL:
 				$status_sql = "(
-					critical_count > 0
-					OR warning_count > 0
-					OR unknown_count > 0
-					OR total_count = 0
+					normal_count <> total_count
 					OR total_count = notinit_count)";
+				//The AGENT_STATUS_NOT_NORMAL filter must show all agents that are not in normal status
+					/*"(
+						normal_count <> total_count
+						AND
+						(normal_count + notinit_count) <> total_count)";*/
 				break;
 			case AGENT_STATUS_NOT_INIT:
 				$status_sql = "(
@@ -825,7 +827,8 @@ function agents_get_group_agents (
 	
 	$filter = array();
 	
-	if (!$noACL) {
+	// check available groups for target user only if asking for 'All' group
+	if (!$noACL && $id_group == 0) {
 		$id_group = $id_group == 0
 			? array_keys(users_get_groups(false, "AR", false))
 			: groups_safe_acl($config["id_user"], $id_group, "AR");
@@ -846,7 +849,8 @@ function agents_get_group_agents (
 			$id_group = groups_get_id_recursive($id_group, true);
 		}
 		
-		if (!$noACL) {
+		// check available groups for target user only if asking for 'All' group
+		if (!$noACL && $id_group == 0) {
 			$id_group = array_keys(
 				users_get_groups(false, "AR", true, false, (array)$id_group));
 		}
@@ -1229,8 +1233,8 @@ function agents_get_modules ($id_agent = null, $details = false,
 						ON tagente.id_agente = tasg.id_agent
 					WHERE tagente_modulo.delete_pending = 0
 						AND %s
-					GROUP BY tagente_modulo.id_agente_modulo
-					ORDER BY tagente_modulo.nombre',
+					GROUP BY 1
+					ORDER BY 1',
 					($details != 'tagente_modulo.*' && $indexed) ? 'tagente_modulo.id_agente_modulo,' : '',
 					io_safe_output(implode (",", (array) $details)),
 					$sql_tags_join,

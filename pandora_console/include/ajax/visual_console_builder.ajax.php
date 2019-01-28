@@ -15,9 +15,7 @@
 // Login check
 global $config;
 
-check_login ();
-
-
+check_login();
 
 $get_image_path_status = get_parameter('get_image_path_status', 0);
 if ($get_image_path_status){
@@ -25,13 +23,12 @@ if ($get_image_path_status){
 	$only_src = get_parameter("only_src", 0);
 	
 	$result = array();
-	
+
 	$result['bad'] = html_print_image($img_src . '_bad.png', true, '', $only_src);
 	$result['ok'] = html_print_image($img_src . '_ok.png', true, '', $only_src);
 	$result['warning'] = html_print_image($img_src . '_warning.png', true, '', $only_src);
-	$result['ok'] = html_print_image($img_src . '_ok.png', true, '', $only_src);
 	$result['normal'] = html_print_image($img_src . '.png', true, '', $only_src);
-	
+
 	echo json_encode($result);
 	return;
 }
@@ -165,6 +162,12 @@ $time_format = get_parameter('time_format', 'time');
 $timezone = get_parameter('timezone', 'Europe/Madrid');
 
 $show_last_value = get_parameter('show_last_value', null);
+
+$diameter = (int) get_parameter("diameter", $width);
+$default_color = get_parameter("default_color", "#FFFFFF");
+$color_range_from_values = get_parameter("color_range_from_values", array());
+$color_range_to_values = get_parameter("color_range_to_values", array());
+$color_range_colors = get_parameter("color_range_colors", array());
 
 switch ($action) {
 	case 'get_font':
@@ -539,7 +542,10 @@ switch ($action) {
 		echo json_encode($return);
 		break;
 	
-	
+	case 'get_color_cloud':
+		$layoutData = db_get_row_filter('tlayout_data', array('id' => $id_element));
+		echo visual_map_get_color_cloud_element($layoutData);
+		break;
 	
 	case 'update':
 	case 'move':
@@ -836,6 +842,36 @@ switch ($action) {
 							$values['fill_color'] = $fill_color;
 						}
 						break;
+					case "color_cloud":
+						$values['width'] = $diameter;
+						$values['height'] = $diameter;
+						// Fill Color Cloud values
+						$extra = array(
+							"default_color" => $default_color,
+							"color_ranges" => array()
+						);
+
+						$num_ranges = count($color_range_colors);
+						for ($i = 0; $i < $num_ranges; $i++) {
+							if (
+								!isset($color_range_from_values[$i]) ||
+								!isset($color_range_to_values[$i]) ||
+								!isset($color_range_colors[$i])
+							) {
+								return;
+							}
+
+							$extra["color_ranges"][] = array(
+								"from_value" => (float) $color_range_from_values[$i],
+								"to_value" => (float) $color_range_to_values[$i],
+								"color" => $color_range_colors[$i] // already html encoded
+							);
+						}
+
+						// Yes, we are using the label to store the extra info.
+						// Sorry not sorry.
+						$values["label"] = json_encode($extra);
+						break;
 					default:
 						if (enterprise_installed()) {
 							if ($image !== null) {
@@ -897,6 +933,12 @@ switch ($action) {
 							unset($values['width']);
 							unset($values['height']);
 							break;
+						case 'color_cloud':
+							unset($values['width']);
+							unset($values['height']);
+							unset($values['diameter']);
+							unset($values['label']);
+							break;
 						// -- line_item --
 						case 'handler_start':
 						case 'handler_end':
@@ -953,6 +995,7 @@ switch ($action) {
 			case 'clock':
 			case 'auto_sla_graph':
 			case 'donut_graph':
+			case 'color_cloud':
 				$elementFields = db_get_row_filter('tlayout_data',
 					array('id' => $id_element));
 				
@@ -1091,6 +1134,16 @@ switch ($action) {
 						$elementFields['border_color'] = $elementFields['border_color'];
 						$elementFields['border_width'] = $elementFields['border_width'];
 						$elementFields['fill_color'] = $elementFields['fill_color'];
+						break;
+					
+					case 'color_cloud':
+						$elementFields["diameter"] = $elementFields["width"];
+						$elementFields["dynamic_data"] = null;
+						try {
+							// Yes, it's using the label field to store the extra data
+							$elementFields["dynamic_data"] = json_decode($elementFields["label"], true);
+						} catch (Exception $ex) {}
+						$elementFields["label"] = "";
 						break;
 					
 					// -- line_item --
@@ -1348,6 +1401,37 @@ switch ($action) {
 				$values['width'] = $width;
 				$values['height'] = $height;
 				break;
+			case 'color_cloud':
+				$values['type'] = COLOR_CLOUD;
+				$values['width'] = $diameter;
+				$values['height'] = $diameter;
+
+				$extra = array(
+					"default_color" => $default_color,
+					"color_ranges" => array()
+				);
+
+				$num_ranges = count($color_range_colors);
+				for ($i = 0; $i < $num_ranges; $i++) {
+					if (
+						!isset($color_range_from_values[$i]) ||
+						!isset($color_range_to_values[$i]) ||
+						!isset($color_range_colors[$i])
+					) {
+						return;
+					}
+
+					$extra["color_ranges"][] = array(
+						"from_value" => (int) $color_range_from_values[$i],
+						"to_value" => (int) $color_range_to_values[$i],
+						"color" => $color_range_colors[$i] // already html encoded
+					);
+				}
+
+				// Yes, we are using the label to store the extra info.
+				// Sorry not sorry.
+				$values["label"] = json_encode($extra);
+				break;
 			default:
 				if (enterprise_installed()) {
 					enterprise_ajax_insert_fill_values_insert($type, $values);
@@ -1392,7 +1476,6 @@ switch ($action) {
 			
 			$text = visual_map_create_internal_name_item($label, $type, $image, $agent, $id_module, $idData);
 			
-			$values['label'] = io_safe_output($values['label']);
 			$values['left'] = $values['pos_x'];
 			$values['top'] = $values['pos_y'];
 			$values['parent'] = $values['parent_item'];
@@ -1424,9 +1507,22 @@ switch ($action) {
 					$return['values']['type_percentile'] = 'percentile';
 					break;				
 			
-				
+				case COLOR_CLOUD:
+					$return["values"]["diameter"] = $values["width"];
+					
+					try {
+						// Yes, it's using the label field to store the extra data
+						$return["values"]["dynamic_data"] = json_decode($values["label"], true);
+					} catch (Exception $ex) {
+						$return["values"]["dynamic_data"] = array();
+					}
+					$values["label"] = "";
+					break;
 			}
 		}
+
+		// Don't move this piece of code
+		$return["values"]["label"] = io_safe_output($values['label']);
 		
 		echo json_encode($return);
 		break;

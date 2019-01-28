@@ -144,6 +144,36 @@ function reporting_make_reporting_data($report = null, $id_report,
 	$metaconsole_on = is_metaconsole();
 	$index_content = 0;
 	foreach ($contents as $content) {
+
+		if (!empty($content["id_agent_module"]) && !empty($content["id_agent"])
+			&& tags_has_user_acl_tags($config['id_user'])) {
+			$where_tags = tags_get_acl_tags(
+				$config['id_user'],
+				$id_groups,
+				'AR',
+				'module_condition',
+				'AND',
+				'tagente_modulo',
+				false,
+				array(),
+				true);
+
+			$sql_tags_join = "INNER JOIN tagente ON tagente.id_agente = t1.id_agente
+				INNER JOIN ttag_module ON ttag_module.id_agente_modulo = t1.id_agente_modulo
+				LEFT JOIN tagent_secondary_group tasg ON tagente.id_agente = tasg.id_agent";
+
+			$sql = sprintf('SELECT count(*) FROM tagente_modulo t1
+				%s WHERE t1.delete_pending = 0 AND t1.id_agente_modulo = '. $content["id_agent_module"] .'
+				AND t1.id_agente = ' . $content['id_agent'] . ' %s',
+				$sql_tags_join, $where_tags);
+
+			$result_tags = db_get_value_sql($sql);
+
+			if (!$result_tags) {
+				continue;
+			}
+		}
+
 		$server_name = $content['server_name'];
 		
 		// General reports with 0 period means last value
@@ -218,11 +248,11 @@ function reporting_make_reporting_data($report = null, $id_report,
 				}
 			}
 			
-			if(sizeof($content['id_agent']) != 1){
+			if(is_array($content['id_agent']) && sizeof($content['id_agent']) != 1){
 				$content['style']['name_label'] = str_replace("_agent_",sizeof($content['id_agent']).__(' agents'),$content['style']['name_label']);
 			}
 
-			if(sizeof($content['id_agent_module']) != 1){
+			if(is_array($content['id_agent_module']) &&  sizeof($content['id_agent_module']) != 1){
 				$content['style']['name_label'] = str_replace("_module_",sizeof($content['id_agent_module']).__(' modules'),$content['style']['name_label']);
 			}
 
@@ -274,7 +304,8 @@ function reporting_make_reporting_data($report = null, $id_report,
 				$report['contents'][] = reporting_availability_graph(
 					$report,
 					$content,
-					$pdf);
+					$pdf
+				);
 				break;
 			case 'sql':
 				$report['contents'][] = reporting_sql(
@@ -634,7 +665,9 @@ function reporting_make_reporting_data($report = null, $id_report,
 					$content,
 					$type,
 					$force_width_chart,
-					$force_height_chart);
+					$force_height_chart,
+					$pdf
+				);
 				break;
 			case 'module_histogram_graph':
 				$report['contents'][] = reporting_enterprise_module_histogram_graph(
@@ -1172,10 +1205,10 @@ function reporting_event_top_n($report, $content, $type = 'dinamic',
 				}
 			}
 			
-			$ag_name = modules_get_agentmodule_agent_alias($row ['id_agent_module']); 
+			$ag_name = modules_get_agentmodule_agent_alias($row ['id_agent_module']);
 			$mod_name = modules_get_agentmodule_name ($row ['id_agent_module']);
 			$unit = db_get_value('unit', 'tagente_modulo',
-				'id_agente_modulo', $row ['id_agent_module']); 
+				'id_agente_modulo', $row ['id_agent_module']);
 			
 			
 			switch ($top_n) {
@@ -1499,12 +1532,17 @@ function reporting_event_report_group($report, $content,
 	$return['chart']['by_user_validator'] = null;
 	$return['chart']['by_criticity'] = null;
 	$return['chart']['validated_vs_unvalidated'] = null;
-	
+	$server_name = $content['server_name'];
+	if (is_metaconsole() && $server_name != '')
+		$metaconsole_dbtable = true;
+	else
+		$metaconsole_dbtable = false;
+
 	if ($event_graph_by_agent) {
 		$data_graph = events_get_count_events_by_agent(
 			$content['id_group'], $content['period'], $report["datetime"],
 			$filter_event_severity,	$filter_event_type, 
-			$filter_event_status, $filter_event_filter_search);
+			$filter_event_status, $filter_event_filter_search, $metaconsole_dbtable);
 			
 		$return['chart']['by_agent']= pie_graph(
 			$data_graph,
@@ -1523,7 +1561,7 @@ function reporting_event_report_group($report, $content,
 		$data_graph = events_get_count_events_validated_by_user(
 			array('id_group' => $content['id_group']), $content['period'],
 			$report["datetime"],$filter_event_severity,	$filter_event_type, 
-			$filter_event_status, $filter_event_filter_search);
+			$filter_event_status, $filter_event_filter_search, $metaconsole_dbtable);
 		
 		$return['chart']['by_user_validator'] = pie_graph(
 			$data_graph,
@@ -1542,7 +1580,7 @@ function reporting_event_report_group($report, $content,
 		$data_graph = events_get_count_events_by_criticity(
 			array('id_group' => $content['id_group']), $content['period'],
 			$report["datetime"],$filter_event_severity,	$filter_event_type, 
-			$filter_event_status, $filter_event_filter_search);
+			$filter_event_status, $filter_event_filter_search, $metaconsole_dbtable);
 		
 		$colors = get_criticity_pie_colors($data_graph);
 		
@@ -1565,7 +1603,7 @@ function reporting_event_report_group($report, $content,
 		$data_graph = events_get_count_events_validated(
 			array('id_group' => $content['id_group']), $content['period'],
 			$report["datetime"],$filter_event_severity,	$filter_event_type, 
-			$filter_event_status, $filter_event_filter_search);
+			$filter_event_status, $filter_event_filter_search, $metaconsole_dbtable);
 		
 		$return['chart']['validated_vs_unvalidated'] = pie_graph(
 			$data_graph,
@@ -1646,13 +1684,19 @@ function reporting_event_report_module($report, $content,
 	$event_graph_by_criticity             = $event_filter['event_graph_by_criticity'];
 	$event_graph_validated_vs_unvalidated = $event_filter['event_graph_validated_vs_unvalidated'];
 
+
+	$server_name = $content['server_name'];
+	if (is_metaconsole() && $server_name != '')
+		$metaconsole_dbtable = true;
+	else
+		$metaconsole_dbtable = false;
 	//data events
 	$data = reporting_get_module_detailed_event (
 		$content['id_agent_module'], $content['period'], $report["datetime"],
 		$show_summary_group, $filter_event_severity, $filter_event_type,
 		$filter_event_status, $filter_event_filter_search, $force_width_chart,
 		$event_graph_by_user_validator, $event_graph_by_criticity,
-		$event_graph_validated_vs_unvalidated, $ttl, $id_server);
+		$event_graph_validated_vs_unvalidated, $ttl, $id_server, $metaconsole_dbtable);
 
 	if (empty($data)) {
 		$return['failed'] = __('No events');
@@ -2416,11 +2460,16 @@ function reporting_event_report_agent($report, $content,
 	$return["chart"]["by_criticity"] = null;
 	$return["chart"]["validated_vs_unvalidated"] = null;
 	
+	$server_name = $content['server_name'];
+	if (is_metaconsole() && $server_name != '')
+		$metaconsole_dbtable = true;
+	else
+		$metaconsole_dbtable = false;
 	if ($event_graph_by_user_validator) {
 		$data_graph = events_get_count_events_validated_by_user(
 			array('id_agent' => $content['id_agent']), $content['period'],
 			$report["datetime"],$filter_event_severity,	$filter_event_type, 
-			$filter_event_status, $filter_event_filter_search);
+			$filter_event_status, $filter_event_filter_search, $metaconsole_dbtable);
 		
 		$return["chart"]["by_user_validator"] = pie_graph(
 			$data_graph,
@@ -2439,7 +2488,7 @@ function reporting_event_report_agent($report, $content,
 		$data_graph = events_get_count_events_by_criticity(
 			array('id_agent' => $content['id_agent']), $content['period'],
 			$report["datetime"],$filter_event_severity,	$filter_event_type, 
-			$filter_event_status, $filter_event_filter_search);
+			$filter_event_status, $filter_event_filter_search, $metaconsole_dbtable);
 		
 		$colors = get_criticity_pie_colors($data_graph);
 
@@ -2462,7 +2511,7 @@ function reporting_event_report_agent($report, $content,
 		$data_graph = events_get_count_events_validated(
 			array('id_agent' => $content['id_agent']), $content['period'],
 			$report["datetime"],$filter_event_severity,	$filter_event_type, 
-			$filter_event_status, $filter_event_filter_search);
+			$filter_event_status, $filter_event_filter_search, $metaconsole_dbtable);
 		
 		$return["chart"]["validated_vs_unvalidated"] = pie_graph(
 			$data_graph,
@@ -3790,7 +3839,7 @@ function reporting_agent_configuration($report, $content) {
 	return reporting_check_structure_content($return);
 }
 
-function reporting_value($report, $content, $type, $pdf) {
+function reporting_value($report, $content, $type, $pdf=false) {
 	global $config;
 
 	$return = array();
@@ -6063,6 +6112,7 @@ function reporting_general($report, $content) {
 	$i = 0;
 	$index = 0;
 	$is_string = array();
+
 	foreach ($generals as $row) {
 		//Metaconsole connection
 		$server_name = $row ['server_name'];
@@ -6310,13 +6360,18 @@ function reporting_custom_graph($report, $content, $type = 'dinamic',
 
 	require_once ($config["homedir"] . '/include/functions_graph.php');
 
-	if ($config['metaconsole']) {
-		$id_meta = metaconsole_get_id_server($content["server_name"]);
-		$server  = metaconsole_get_connection_by_id ($id_meta);
-		metaconsole_connect($server);
+	if ($type_report == "custom_graph") {
+		if (is_metaconsole()) {
+			$id_meta = metaconsole_get_id_server($content["server_name"]);
+			$server  = metaconsole_get_connection_by_id ($id_meta);
+			if (metaconsole_connect ($server) != NOERR){
+				return false;
+			}
+		}
 	}
 
 	$graph = db_get_row ("tgraph", "id_graph", $content['id_gs']);
+
 	$return = array();
 	$return['type'] = 'custom_graph';
 
@@ -6340,20 +6395,25 @@ function reporting_custom_graph($report, $content, $type = 'dinamic',
 		$graphs[0]["average_series"] = '';
 		$graphs[0]["modules_series"] = '';
 		$graphs[0]["fullscale"] = $content['style']['fullscale'];
+		$modules = $content['id_agent_module'];
 
-		if(is_array($content['id_agent_module'])){
-			foreach ($content['id_agent_module'] as $key => $value) {
-				if($content['each_agent']){
-					$modules[] = $value;
-				}
-				else{
-					$modules[] = $value['module'];
+		if(!$modules){
+			$module_source = db_get_all_rows_sql(
+				"SELECT id_agent_module, id_server
+				FROM tgraph_source
+				WHERE id_graph = " .
+				$content['id_gs']
+			);
+
+			if(isset($module_source) && is_array($module_source)){
+				$modules = array();
+				foreach ($module_source as $key => $value) {
+					$modules[$key]['module'] = $value['id_agent_module'];
+					$modules[$key]['server'] = $value['id_server'];
 				}
 			}
 		}
-		else{
-			$modules[] = $content['id_agent_module'];
-		}
+
 		$id_graph = 0;
 	}
 	else {
@@ -6393,7 +6453,8 @@ function reporting_custom_graph($report, $content, $type = 'dinamic',
 				'summatory'      => $graphs[0]["summatory_series"],
 				'average'        => $graphs[0]["average_series"],
 				'modules_series' => $graphs[0]["modules_series"],
-				'id_graph'       => $id_graph
+				'id_graph'       => $id_graph,
+				'type_report'    => $type_report
 			);
 
 			$return['chart'] = graphic_combined_module(
@@ -6403,12 +6464,12 @@ function reporting_custom_graph($report, $content, $type = 'dinamic',
 			);
 
 			break;
-		case 'data':
-			break;
 	}
 
-	if ($config['metaconsole'] && $type_report != 'automatic_graph') {
-		metaconsole_restore_db();
+	if ($type_report == "custom_graph") {
+		if (is_metaconsole()) {
+			metaconsole_restore_db();
+		}
 	}
 
 	return reporting_check_structure_content($return);
@@ -6502,7 +6563,7 @@ function reporting_simple_graph($report, $content, $type = 'dinamic',
 				$content['id_agent_module'],
 				$content['period'],
 				$report["datetime"]);
-
+			$return['chart'] = array();
 			foreach ($data as $d) {
 				$return['chart'][$d['utimestamp']] = $d['data'];
 			}
@@ -6636,7 +6697,7 @@ function reporting_get_module_detailed_event ($id_modules, $period = 0,
 	$filter_event_type = false, $filter_event_status = false, 
 	$filter_event_filter_search = false, $force_width_chart = false,
 	$event_graph_by_user_validator = false, $event_graph_by_criticity = false, 
-	$event_graph_validated_vs_unvalidated = false, $ttl = 1, $id_server = false) {
+	$event_graph_validated_vs_unvalidated = false, $ttl = 1, $id_server = false, $metaconsole_dbtable = false) {
 
 	global $config;
 
@@ -6681,7 +6742,7 @@ function reporting_get_module_detailed_event ($id_modules, $period = 0,
 		if ($event_graph_by_user_validator) {
 			$data_graph = events_get_count_events_validated_by_user(
 				array('id_agentmodule' => $id_module), $period, $date, $filter_event_severity,
-				$filter_event_type, $filter_event_status, $filter_event_filter_search);
+				$filter_event_type, $filter_event_status, $filter_event_filter_search, $metaconsole_dbtable);
 
 			$event['chart']['by_user_validator'] = pie_graph(
 				$data_graph,
@@ -6699,7 +6760,7 @@ function reporting_get_module_detailed_event ($id_modules, $period = 0,
 		if ($event_graph_by_criticity) {
 			$data_graph = events_get_count_events_by_criticity(
 				array('id_agentmodule' => $id_module), $period, $date, $filter_event_severity,
-				$filter_event_type, $filter_event_status, $filter_event_filter_search);
+				$filter_event_type, $filter_event_status, $filter_event_filter_search, $metaconsole_dbtable);
 
 			$colors = get_criticity_pie_colors($data_graph);
 
@@ -6721,7 +6782,7 @@ function reporting_get_module_detailed_event ($id_modules, $period = 0,
 		if ($event_graph_validated_vs_unvalidated) {
 			$data_graph = events_get_count_events_validated(
 				array('id_agentmodule' => $id_module), $period, $date, $filter_event_severity,
-				$filter_event_type, $filter_event_status, $filter_event_filter_search);
+				$filter_event_type, $filter_event_status, $filter_event_filter_search, $metaconsole_dbtable);
 
 			$event['chart']['validated_vs_unvalidated'] = pie_graph(
 				$data_graph,
@@ -7503,8 +7564,8 @@ function reporting_get_stats_alerts($data, $links = false) {
 			$urls['monitor_alerts'] = "index.php?sec=estado&sec2=operation/agentes/alerts_status&pure=" . $config['pure'];
 			$urls['monitor_alerts_fired'] = "index.php?sec=estado&sec2=operation/agentes/alerts_status&filter=fired&pure=" . $config['pure'];
 		} else {
-			$urls['monitor_alerts'] = "index.php?sec=estado&amp;sec2=operation/agentes/alerts_status&amp;refr=60";
-			$urls['monitor_alerts_fired'] = "index.php?sec=estado&amp;sec2=operation/agentes/alerts_status&amp;refr=60&filter=fired";
+			$urls['monitor_alerts'] = $config['homeurl']."index.php?sec=estado&amp;sec2=operation/agentes/alerts_status&amp;refr=60";
+			$urls['monitor_alerts_fired'] = $config['homeurl']."index.php?sec=estado&amp;sec2=operation/agentes/alerts_status&amp;refr=60&filter=fired";
 		}
 	}
 	
@@ -7560,19 +7621,19 @@ function reporting_get_stats_modules_status($data, $graph_width = 250, $graph_he
 	// Link URLS
 	if ($links === false) {
 		$urls = array();
-		$urls['monitor_critical'] = "index.php?" .
+		$urls['monitor_critical'] = $config['homeurl']."index.php?" .
 			"sec=view&amp;sec2=operation/agentes/status_monitor&amp;" .
 			"refr=60&amp;status=" . AGENT_MODULE_STATUS_CRITICAL_BAD . "&pure=" . $config['pure'];
-		$urls['monitor_warning'] = "index.php?" .
+		$urls['monitor_warning'] = $config['homeurl']."index.php?" .
 			"sec=view&amp;sec2=operation/agentes/status_monitor&amp;" .
 			"refr=60&amp;status=" . AGENT_MODULE_STATUS_WARNING . "&pure=" . $config['pure'];
-		$urls['monitor_ok'] = "index.php?" .
+		$urls['monitor_ok'] = $config['homeurl']."index.php?" .
 			"sec=view&amp;sec2=operation/agentes/status_monitor&amp;" .
 			"refr=60&amp;status=" . AGENT_MODULE_STATUS_NORMAL . "&pure=" . $config['pure'];
-		$urls['monitor_unknown'] = "index.php?" .
+		$urls['monitor_unknown'] = $config['homeurl']."index.php?" .
 			"sec=view&amp;sec2=operation/agentes/status_monitor&amp;" .
 			"refr=60&amp;status=" . AGENT_MODULE_STATUS_UNKNOWN . "&pure=" . $config['pure'];
-		$urls['monitor_not_init'] = "index.php?" .
+		$urls['monitor_not_init'] = $config['homeurl']."index.php?" .
 			"sec=view&amp;sec2=operation/agentes/status_monitor&amp;" .
 			"refr=60&amp;status=" . AGENT_MODULE_STATUS_NOT_INIT . "&pure=" . $config['pure'];
 	}
@@ -7675,8 +7736,8 @@ function reporting_get_stats_agents_monitors($data) {
 	}
 	else {
 		$urls = array();
-		$urls['total_agents'] = "index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=60";
-		$urls['monitor_checks'] = "index.php?sec=view&amp;sec2=operation/agentes/status_monitor&amp;refr=60&amp;status=-1";
+		$urls['total_agents'] = $config['homeurl']."index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=60";
+		$urls['monitor_checks'] = $config['homeurl']."index.php?sec=view&amp;sec2=operation/agentes/status_monitor&amp;refr=60&amp;status=-1";
 	}
 	
 	// Agents and modules table
@@ -9300,6 +9361,7 @@ function reporting_get_agentmodule_data_sum ($id_agent_module,
 		$id_module_type);
 	$module_interval = modules_get_interval ($id_agent_module);
 	$uncompressed_module = is_module_uncompressed ($module_name);
+
 	
 	// Wrong module type
 	if (is_module_data_string ($module_name)) {
@@ -9308,46 +9370,23 @@ function reporting_get_agentmodule_data_sum ($id_agent_module,
 	
 	// Incremental modules are treated differently
 	$module_inc = is_module_inc ($module_name);
-	
-	// Get module data
-	$interval_data = db_get_all_rows_sql('
+
+	if ($uncompressed_module) {
+		// Get module data
+		$interval_data = db_get_all_rows_sql('
 			SELECT * FROM tagente_datos 
 			WHERE id_agente_modulo = ' . (int) $id_agent_module . '
 				AND utimestamp > ' . (int) $datelimit . '
 				AND utimestamp < ' . (int) $date . '
 			ORDER BY utimestamp ASC', $search_in_history_db);
+
+	}
+	else
+		$interval_data = db_uncompress_module_data((int) $id_agent_module, (int) $datelimit, (int) $date);
+
 	if ($interval_data === false) $interval_data = array ();
 	
-	// Uncompressed module data
-	if ($uncompressed_module) {
-		$min_necessary = 1;
-	
-	// Compressed module data
-	}
-	else {
-		// Get previous data
-		$previous_data = modules_get_previous_data ($id_agent_module, $datelimit);
-		if ($previous_data !== false) {
-			$previous_data['utimestamp'] = $datelimit;
-			array_unshift ($interval_data, $previous_data);
-		}
-		
-		// Get next data
-		$next_data = modules_get_next_data ($id_agent_module, $date);
-		if ($next_data !== false) {
-			$next_data['utimestamp'] = $date;
-			array_push ($interval_data, $next_data);
-		}
-		else if (count ($interval_data) > 0) {
-			// Propagate the last known data to the end of the interval
-			$next_data = array_pop ($interval_data);
-			array_push ($interval_data, $next_data);
-			$next_data['utimestamp'] = $date;
-			array_push ($interval_data, $next_data);
-		}
-		
-		$min_necessary = 2;
-	}
+	$min_necessary = 1;
 	
 	if (count ($interval_data) < $min_necessary) {
 		return false;
@@ -9355,11 +9394,14 @@ function reporting_get_agentmodule_data_sum ($id_agent_module,
 	
 	// Set initial conditions
 	$total = 0;
-	if (! $uncompressed_module) {
-		$previous_data = array_shift ($interval_data);
-	}
-	
+	$partial_total = 0;
+	$count_sum = 0;
+
 	foreach ($interval_data as $data) {
+
+		$partial_total = 0;
+		$count_sum = 0;
+
 		switch ($config["dbtype"]) {
 			case "mysql":
 			case "postgresql":
@@ -9370,18 +9412,25 @@ function reporting_get_agentmodule_data_sum ($id_agent_module,
 					oracle_format_float_to_php($data['datos']);
 				break;
 		}
-		
-		if ($uncompressed_module) {
-			$total += $data['datos'];
-		}
-		else if ($module_inc) {
-			$total += $previous_data['datos'] * ($data['utimestamp'] - $previous_data['utimestamp']);
+
+		if (!$module_inc) {
+			foreach ($data['data'] as $val) {
+				if (is_numeric($val['datos'])) {
+					$partial_total += $val['datos'];
+					$count_sum++;
+				}
+			}
+
+			if ($count_sum===0) continue;
+
+			$total += $partial_total/$count_sum;
 		}
 		else {
-			$total += $previous_data['datos'] * ($data['utimestamp'] - $previous_data['utimestamp']) / $module_interval;
+			$last = end($data['data']);
+			$total += $last['datos'];
 		}
-		$previous_data = $data;
 	}
+
 	
 	return $total;
 }
@@ -9970,7 +10019,7 @@ You can of course remove the warnings, that's why we include the source and do n
 			$output .= 'parameters["page"] = "include/ajax/events";';
 			$output .= 'parameters["total_events"] = 1;';
 
-			$output .= '$.ajax({type: "GET",url: "ajax.php",data: parameters,';
+			$output .= '$.ajax({type: "GET",url: "/pandora_console/ajax.php",data: parameters,';
 				$output .= 'success: function(data) {';
 					$output .= '$("#total_events").text(data);';
 				$output .= '}';
@@ -10331,7 +10380,7 @@ function reporting_label_macro ($item, $label) {
 		case 'MTTR':
 		case 'automatic_graph':
 			if (preg_match("/_agent_/", $label)) {
-				if (count($item['agents']) > 1) {
+				if (isset($item['agents']) && count($item['agents']) > 1) {
 					$agent_name = count($item['agents']) . __(' agents');
 				}
 				else {

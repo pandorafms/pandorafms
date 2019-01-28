@@ -321,7 +321,7 @@ switch ($opt) {
 		// Last contact
 		$row = array();
 		$row[] = __('Last contact');
-		if ($agent["ultimo_contacto"] == "01-01-1970 00:00:00") {
+		if ($agent["ultimo_contacto"] == "1970-01-01 00:00:00") {
 			$row[] = __('Never');
 		}
 		else {
@@ -332,7 +332,7 @@ switch ($opt) {
 		// Last remote contact
 		$row = array();
 		$row[] = __('Remote');
-		if ($agent["ultimo_contacto_remoto"] == "01-01-1970 00:00:00") {
+		if ($agent["ultimo_contacto_remoto"] == "1970-01-01 00:00:00") {
 			$row[] = __('Never');
 		}
 		else {

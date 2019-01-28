@@ -853,10 +853,12 @@ function events_print_event_table ($filter = "", $limit = 10, $width = 440, $ret
 		$filter = '1 = 1';
 	}
 
+	$secondary_join = "LEFT JOIN tagent_secondary_group tasg ON tevento.id_agente = tasg.id_agent";
+
 	$sql = sprintf ("SELECT DISTINCT tevento.*
-		FROM tevento LEFT JOIN tagent_secondary_group tasg ON tevento.id_agente = tasg.id_agent
+		FROM tevento %s
 		WHERE %s %s
-		ORDER BY utimestamp DESC LIMIT %d", $agent_condition, $filter, $limit);
+		ORDER BY utimestamp DESC LIMIT %d", $secondary_join, $agent_condition, $filter, $limit);
 
 	$result = db_get_all_rows_sql ($sql);
 
@@ -2708,7 +2710,7 @@ function events_clean_tags ($tags) {
  */
 function events_get_count_events_by_agent ($id_group, $period, $date,
 	$filter_event_severity = false, $filter_event_type = false,
-	$filter_event_status = false, $filter_event_filter_search = false) {
+	$filter_event_status = false, $filter_event_filter_search = false, $dbmeta = false) {
 	
 	global $config;
 
@@ -2800,16 +2802,22 @@ function events_get_count_events_by_agent ($id_group, $period, $date,
 			' OR id_evento LIKE "%' . io_safe_input($filter_event_filter_search) . '%")';
 	}
 
+	$tagente = 'tagente'; 
+	$tevento = 'tevento';
+	if($dbmeta){
+		$tagente = 'tmetaconsole_agent';
+		$tevento = 'tmetaconsole_event';
+	}
 	$sql = sprintf ('SELECT id_agente,
 		(SELECT t2.alias
-			FROM tagente t2
+			FROM %s t2
 			WHERE t2.id_agente = t3.id_agente) AS agent_name,
 		COUNT(*) AS count
-		FROM tevento t3
+		FROM %s t3
 		WHERE utimestamp > %d AND utimestamp <= %d
 			AND id_grupo IN (%s) %s 
 		GROUP BY id_agente',
-		$datelimit, $date, implode (",", $id_group), $sql_where);
+		$tagente, $tevento, $datelimit, $date, implode (",", $id_group), $sql_where);
 	
 	$rows = db_get_all_rows_sql ($sql);
 	
@@ -2841,7 +2849,7 @@ function events_get_count_events_by_agent ($id_group, $period, $date,
  */
 function events_get_count_events_validated_by_user ($filter, $period, $date,
 	$filter_event_severity = false, $filter_event_type = false,
-	$filter_event_status = false, $filter_event_filter_search = false) {
+	$filter_event_status = false, $filter_event_filter_search = false, $dbmeta = false) {
 	global $config;
 	//group
 	$sql_filter = ' AND 1=1 ';
@@ -2947,16 +2955,20 @@ function events_get_count_events_validated_by_user ($filter, $period, $date,
 			' OR id_evento LIKE "%' . io_safe_input($filter_event_filter_search) . '%")';
 	}
 	
+	$tevento = 'tevento';
+	if($dbmeta)
+		$tevento = 'tmetaconsole_event';
+
 	$sql = sprintf ('SELECT id_usuario,
 		(SELECT t2.fullname
 			FROM tusuario t2
 			WHERE t2.id_user = t3.id_usuario) AS user_name,
 		COUNT(*) AS count
-		FROM tevento t3
+		FROM %s t3
 		WHERE utimestamp > %d AND utimestamp <= %d
 			%s %s
 		GROUP BY id_usuario',
-		$datelimit, $date, $sql_filter, $sql_where);
+		$tevento, $datelimit, $date, $sql_filter, $sql_where);
 	$rows = db_get_all_rows_sql ($sql);
 	
 	if ($rows == false)
@@ -2986,7 +2998,7 @@ function events_get_count_events_validated_by_user ($filter, $period, $date,
  */
 function events_get_count_events_by_criticity ($filter, $period, $date,
 	$filter_event_severity = false, $filter_event_type = false,
-	$filter_event_status = false, $filter_event_filter_search = false) {
+	$filter_event_status = false, $filter_event_filter_search = false, $dbmeta = false) {
 	
 	global $config;
 	
@@ -3092,13 +3104,16 @@ function events_get_count_events_by_criticity ($filter, $period, $date,
 			' OR id_evento LIKE "%' . io_safe_input($filter_event_filter_search) . '%")';
 	}
 
+	$tevento = 'tevento';
+	if ($dbmeta)
+		$tevento = 'tmetaconsole_event';
 	$sql = sprintf ('SELECT criticity,
 		COUNT(*) AS count
-		FROM tevento
+		FROM %s
 		WHERE utimestamp > %d AND utimestamp <= %d
 			%s %s
 		GROUP BY criticity',
-		$datelimit, $date, $sql_filter, $sql_where);
+		$tevento, $datelimit, $date, $sql_filter, $sql_where);
 	
 	$rows = db_get_all_rows_sql ($sql);
 	
@@ -3126,7 +3141,7 @@ function events_get_count_events_by_criticity ($filter, $period, $date,
  */
 function events_get_count_events_validated ($filter, $period = null, $date = null,
 	$filter_event_severity = false, $filter_event_type = false,
-	$filter_event_status = false, $filter_event_filter_search = false) {
+	$filter_event_status = false, $filter_event_filter_search = false, $dbmeta = false) {
 	
 	global $config;
 
@@ -3250,7 +3265,10 @@ function events_get_count_events_validated ($filter, $period = null, $date = nul
 			' OR id_evento LIKE "%' . io_safe_input($filter_event_filter_search) . '%")';
 	}
 
-	$sql = sprintf ("SELECT estado, COUNT(*) AS count FROM tevento WHERE %s %s GROUP BY estado", $sql_filter, $sql_where);
+	$tevento = 'tevento';
+	if ($dbmeta)
+		$tevento = 'tmetaconsole_event';
+	$sql = sprintf ("SELECT estado, COUNT(*) AS count FROM %s WHERE %s %s GROUP BY estado", $tevento, $sql_filter, $sql_where);
 
 	$rows = db_get_all_rows_sql ($sql);
 	

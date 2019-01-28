@@ -441,7 +441,7 @@ function groups_get_all($groupWithAgents = false) {
  * Get all groups recursive from an initial group.
  *
  * @param int Id of the parent group
- * @param bool Whether to return All group or not
+ * @param bool Whether to force recursive search ignoring propagation (true) or not (false)
  *
  * @return Array with all result groups
  */
@@ -451,10 +451,11 @@ function groups_get_id_recursive($id_parent, $all = false) {
 	$return = array_merge($return, array($id_parent));
 	
 	//Check propagate
-	$id = db_get_value_filter('id_grupo', 'tgrupo', array('id_grupo' => $id_parent, 'propagate' => 1));
+	$propagate = db_get_value_filter('propagate', 'tgrupo', array('id_grupo' => $id_parent));
 	
-	if (($id !== false) || $all) {
+	if (($propagate != 1) || $all) {
 		$children = db_get_all_rows_filter("tgrupo", array('parent' => $id_parent, 'disabled' => 0), array('id_grupo'));
+
 		if ($children === false) {
 			$children = array();
 		}

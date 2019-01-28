@@ -484,7 +484,7 @@ $table->data[4][1] = __('Disabled') . ' ' .
 $table->data[4][1] .= __('Enabled') . ' ' .
 	html_print_radio_button_extended ("disabled", 0, '', $disabled, false, '', 'style="margin-right: 40px;"', true);
 	if (enterprise_installed()) {
-		$table->data[4][2] = __('Url address');
+		$table->data[4][2] = __('Url address') . ui_print_help_tip(__('URL address must be complete, for example: https://pandorafms.com/'), true);
 		$table->data[4][3] = html_print_input_text ('url_description',
 		$url_description, '', 45, 255, true);
 	}else{

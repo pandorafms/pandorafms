@@ -79,14 +79,10 @@ function profile_create_user_profile ($id_user,
 	$tags = '',
 	$no_hierarchy = false
 ) {
-
 	global $config;
 
 	if (empty ($id_profile) || $id_group < 0)
-	return false;
-
-	// Secondary server is an enterprise function
-	if (!enterprise_installed() && $no_hierarchy) return false;
+		return false;
 
 	// Checks if the user exists
 	$result_user = users_get_user_by_id($id_user);
@@ -142,6 +138,25 @@ function profile_delete_user_profile ($id_user, $id_profile) {
  */
 function profile_delete_profile ($id_profile) {
 	return (bool)db_process_sql_delete('tperfil', array('id_perfil' => $id_profile));
+}
+
+/**
+ * Delete profile from database and remove from the assigned users (tusuario_perfil)
+ *
+ * @param int Profile ID
+ *
+ * @return bool Whether or not it's deleted in both tables
+ */
+function profile_delete_profile_and_clean_users ($id_profile) {
+
+	$profile_deletion = (bool)db_process_sql_delete('tperfil', array('id_perfil' => $id_profile));
+
+	// Delete in tusuario_perfil only if is needed
+	if (!(bool)db_get_value('id_perfil', 'tusuario_perfil', 'id_perfil', $id_profile)) {
+		return $profile_deletion;
+	}
+	return $profile_deletion &&
+		(bool)db_process_sql_delete('tusuario_perfil', array('id_perfil' => $id_profile));
 }
 
 /**

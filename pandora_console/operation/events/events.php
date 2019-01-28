@@ -559,6 +559,18 @@ if ($validate) {
 if ($delete) {
 	$ids = (array) get_parameter ("validate_ids", -1);
 	
+	// Discard deleting in progress events
+	$in_process_status = db_get_all_rows_sql("
+		SELECT id_evento
+		FROM tevento
+		WHERE estado=2");
+
+	foreach ($in_process_status as $val) {
+		if (($key = array_search($val['id_evento'], $ids)) !== false) {
+	    	unset($ids[$key]);
+	    }
+	}
+
 	if ($ids[0] != -1) {
 		$return = events_delete_event ($ids, ($group_rep == 1), $meta);
 		ui_print_result_message ($return,

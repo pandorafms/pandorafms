@@ -41,8 +41,8 @@ my $Sem = undef;
 # Semaphore used to control the number of threads
 my $ThreadSem = undef;
 
-use constant AGENT_VERSION => '7.0NG.729';
-use constant AGENT_BUILD => '181127';
+use constant AGENT_VERSION => '7.0NG.730';
+use constant AGENT_BUILD => '190128';
 
 # Agent log default file size maximum and instances
 use constant DEFAULT_MAX_LOG_SIZE => 600000;
@@ -516,11 +516,18 @@ sub parse_conf_modules($) {
 					log_message ('setup', "Invalid regular expression in intensive condition: $line");
 				}
 			}
-		} elsif ($line =~ /^\s*module_crontab\s+(((\*|(\d+(-\d+){0,1}))\s*){5}).*$/) {
+		} elsif ($line =~ /^\s*module_crontab\s+(.*)$/) {
 			my $cron_text = $1;
 			chomp ($cron_text);
+			$cron_text =~ s/\s+$//;
+			# Get module name if is already read.
+			my $module_name_message = "";
+			$module_name_message = " (module $module->{'name'})" if defined($module->{'name'});
 			if (cron_check_syntax($cron_text)) {
 				$module->{'cron'} = $cron_text;
+				log_message('debug', "Cron '$module->{'cron'}' configured $module_name_message.");
+			} else {
+				log_message('setup', "Incorrect cron syntax '$cron_text'. This module$module_name_message will be executed always.");
 			}
 		} elsif ($line =~ /^\s*module_end\s*$/) {
 			
@@ -2397,6 +2404,7 @@ sub check_module_cron {
 		$interval
 	);
 
+	my $is_first = ($module->{'cron_utimestamp'} == 0) ? 1 : 0;
 	$module->{'cron_utimestamp'} = $now + $time_to_next_execution;
 	$module->{'cron_interval'} = $time_to_next_execution;
 	
@@ -2405,7 +2413,7 @@ sub check_module_cron {
 	}
 
 	# On first execution checking if cron is valid is required
-	return 1 unless ($module->{'cron_utimestamp'} == 0);
+	return 1 unless ($is_first);
 
 	# Check if current timestamp is a valid cron date
 	my $next_execution = cron_next_execution_date(

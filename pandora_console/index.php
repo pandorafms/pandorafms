@@ -14,6 +14,17 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 
+// Enable profiler for testing
+if (!defined("__PAN_XHPROF__")) define ("__PAN_XHPROF__", 0);
+
+if (__PAN_XHPROF__ === 1) {
+	if (function_exists('tideways_xhprof_enable')) {
+		tideways_xhprof_enable();
+	} else {
+		error_log("Cannot find tideways_xhprof_enable function");
+	}
+}
+
 //Set character encoding to UTF-8 - fixes a lot of multibyte character headaches
 if (function_exists ('mb_internal_encoding')) {
 	mb_internal_encoding ("UTF-8");
@@ -120,6 +131,7 @@ if (isset($config["error"])) {
 // If metaconsole activated, redirect to it
 if ($config['metaconsole'] == 1 && $config['enterprise_installed'] == 1) {
 	header ("Location: " . $config['homeurl'] . "enterprise/meta");
+	exit; //Always exit after sending location headers
 }
 
 if (file_exists (ENTERPRISE_DIR . "/include/functions_login.php")) {
@@ -359,7 +371,7 @@ if (! isset ($config['id_user'])) {
 				
 				if ($blocked) {
 					require_once ('general/login_page.php');
-					db_pandora_audit("Password expired", "Password expired: ".io_safe_output($nick), io_safe_output($nick));
+					db_pandora_audit("Password expired", "Password expired: ".$nick, $nick);
 					while (@ob_end_flush ());
 					exit ("</html>");
 				}
@@ -382,7 +394,7 @@ if (! isset ($config['id_user'])) {
 			
 			require_once ('general/login_page.php');
 			db_pandora_audit("Password expired",
-				"Password expired: " . io_safe_output($nick), $nick);
+				"Password expired: " . $nick, $nick);
 			while (@ob_end_flush ());
 			exit ("</html>");
 		}
@@ -540,20 +552,20 @@ if (! isset ($config['id_user'])) {
 			if ((!is_user_admin($nick) || $config['enable_pass_policy_admin']) && file_exists (ENTERPRISE_DIR . "/load_enterprise.php")) {
 				$blocked = login_check_blocked($nick);
 			}
-			$nick_usable = io_safe_output($nick);
+			
 			if (!$blocked) {
 				if (file_exists (ENTERPRISE_DIR . "/load_enterprise.php")) {
 					login_check_failed($nick); //Checks failed attempts
 				}
 				$login_failed = true;
 				require_once ('general/login_page.php');
-				db_pandora_audit("Logon Failed", "Invalid login: ".$nick_usable, $nick_usable);
+				db_pandora_audit("Logon Failed", "Invalid login: ".$nick, $nick);
 				while (@ob_end_flush ());
 				exit ("</html>");
 			}
 			else {
 				require_once ('general/login_page.php');
-				db_pandora_audit("Logon Failed", "Invalid login: ".$nick_usable, $nick_usable);
+				db_pandora_audit("Logon Failed", "Invalid login: ".$nick, $nick);
 				while (@ob_end_flush ());
 				exit ("</html>");
 			}
@@ -568,6 +580,7 @@ if (! isset ($config['id_user'])) {
 			$redirect_url .= '&'.safe_url_extraclean($key).'='.safe_url_extraclean($value);
 		}
 		header("Location: ".$config['homeurl']."index.php".$redirect_url);
+		exit; //Always exit after sending location headers
 	}
 	// Hash login process
 	elseif (isset ($_GET["loginhash"])) {
@@ -1275,3 +1288,8 @@ require('include/php_to_js_values.php');
 		*/
 	}
 </script>
+<?php
+if (__PAN_XHPROF__ === 1) {
+	pandora_xhprof_display_result("node_index");
+}
+?>

@@ -3285,11 +3285,19 @@ function series_type_graph_array($data, $show_elements_graph){
 function generator_chart_to_pdf($type_graph_pdf, $params, $params_combined = false, $module_list = false){
 	global $config;
 
+	if(is_metaconsole()){
+		$hack_metaconsole = "../..";
+	}
+	else{
+		$hack_metaconsole = "";
+	}
+
 	$file_js  = $config["homedir"] . "/include/web2image.js";
-	$url      = $config["homeurl"] . "include/chart_generator.php";
+	$url      = ui_get_full_url(false) . $hack_metaconsole . "/include/chart_generator.php";
+
 	$img_file = "img_". uniqid()  .".png";
 	$img_path = $config["homedir"] . "/attachment/" . $img_file;
-	$img_url  = $config["homeurl"] . "attachment/" . $img_file;
+	$img_url  = ui_get_full_url(false) . $hack_metaconsole . "/attachment/" . $img_file;
 
 	$width_img  = 500;
 	$height_img = (isset($config['graph_image_height'])) ? $config['graph_image_height'] : 280;
@@ -3320,12 +3328,16 @@ function generator_chart_to_pdf($type_graph_pdf, $params, $params_combined = fal
 		. ' "' . $session_id . '"'
 		. ' "' . $params['return_img_base_64'] . '"';
 
-	$result = exec($cmd);
+	$result = null;
+	$retcode = null;
+	exec($cmd, $result, $retcode);
+
+	$img_content = join("\n", $result);
 
 	if($params['return_img_base_64']){
 		// To be used in alerts
 		$width_img  = 500;
-		return $result;
+		return $img_content;
 	}
 	else{
 		// to be used in PDF files
@@ -3387,6 +3399,121 @@ function validate_csrf_code() {
 }
 
 function generate_hash_to_api(){
-	hash('sha256', db_get_value ('value', 'tupdate_settings', '`key`', 'customer_key'));
+	return (string)hash('sha256', db_get_value ('value', 'tupdate_settings', '`key`', 'customer_key'));
+}
+
+/**
+ * Disable the profiller and display de result
+ *
+ * @param string Key to identify the profiler run.
+ * @param string Way to display the result
+ * 		"link" (default): Click into word "Performance" to display the profilling info.
+ * 		"console": Display with a message in pandora_console.log.
+ */
+function pandora_xhprof_display_result($key = "", $method = "link") {
+	// Check if function exists
+	if (!function_exists('tideways_xhprof_disable')) {
+		error_log("Cannot find tideways_xhprof_disable function");
+		return;
 	}
+
+	$run_id = uniqid();
+	$data = tideways_xhprof_disable();
+	$source = "pandora_$key";
+	file_put_contents(
+		sys_get_temp_dir() . "/" . $run_id . ".$source.xhprof",
+		serialize($data)
+	);
+	$new_url = "http://{$_SERVER['HTTP_HOST']}/profiler/index.php?run={$run_id}&source={$source}";
+	switch($method) {
+		case "console":
+			error_log("'{$new_url}'");
+		case "link":
+		default:
+			echo "<a href='{$new_url}' target='_new'>Performance</a>\n";
+			break;
+
+	}
+}
+
+/**
+ * From a network with a mask remove the smallest ip and the highest
+ *
+ * @param string address to identify the network.
+ * @param string mask to identify the mask network
+ * @return array or false with smallest ip and highest ip
+ */
+function range_ips_for_network($address, $mask) {
+	if(!isset($address) || !isset($mask)){
+		return false;
+	}
+
+	//convert ip addresses to long form
+	$address_long = ip2long($address);
+	$mask_long = ip2long($mask);
+
+	//caculate first usable address
+	$ip_host_first = ((~$mask_long) & $address_long);
+	$ip_first = ($address_long ^ $ip_host_first) + 1;
+
+	//caculate last usable address
+	$ip_broadcast_invert = ~$mask_long;
+	$ip_last = ($address_long | $ip_broadcast_invert) - 1;
+
+	$range = array(
+		'first' => long2ip($ip_first),
+		'last' => long2ip($ip_last)
+	);
+
+	return $range;
+}
+
+/**
+ * from two ips find out if there is such an ip
+ *
+ * @param string ip ip wont validate
+ * @param string ip_lower
+ * @param string ip_upper
+ * @return bool true or false if the ip is between the two ips
+ */
+function is_in_network ($ip, $ip_lower, $ip_upper) {
+	if(!isset($ip) || !isset($ip_lower) || !isset($ip_upper)){
+		return false;
+	}
+
+	$ip = (float)sprintf("%u",ip2long($ip));
+	$ip_lower = (float)sprintf("%u",ip2long($ip_lower));
+	$ip_upper = (float)sprintf("%u",ip2long($ip_upper));
+
+	if ($ip >= $ip_lower && $ip <= $ip_upper){
+		return true;
+	} else {
+		return false;
+	}
+}
+/**
+ * 
+ */
+function ip_belongs_to_network($ip, $network, $mask) {
+	if ($ip == $network) {
+		return true;
+	}
+	$ranges = range_ips_for_network($network, $mask);
+	return  is_in_network($ip, $ranges['first'], $ranges['last']);
+}
+/**
+ * convert the mask to cird format
+ *
+ * @param string mask
+ * @return string true or false if the ip is between the two ips
+ */
+function mask2cidr($mask){
+	if(!isset($mask))
+		return 0;
+
+	$long = ip2long($mask);
+	$base = ip2long('255.255.255.255');
+	return 32-log(($long ^ $base)+1,2);
+}
+
 ?>

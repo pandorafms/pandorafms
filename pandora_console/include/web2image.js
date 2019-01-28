@@ -4,8 +4,6 @@ if (system.args.length < 3 || system.args.length > 11) {
 	phantom.exit(1);
 }
 
-var webPage	    = require('webpage');
-var page            = webPage.create();
 var url             = system.args[1];
 var type_graph_pdf  = system.args[2];
 var url_params      = system.args[3];
@@ -39,30 +37,35 @@ else{
 		"&session_id=" + session_id;
 }
 
+var page = require('webpage').create();
+
 page.viewportSize = {
 	width: viewport_width,
 	height: viewport_height
 };
+
 page.zoomFactor = 1;
 
-page.open(url, 'POST', post_data, function start(status) {
+page.onConsoleMessage = function(msg){
+	console.log(msg);
+};
 
-});
-
-page.onLoadFinished = function (status) {
-	if(!base_64){
-		setTimeout(function() {
-			page.render(output_filename, {format: 'png'});
-			phantom.exit();
-		}, 200);
-	}
-	else{
-		var base64 = page.renderBase64('png');
-		//XXXX
-		console.log(base64);
-		phantom.exit();
-	}
-
+page.onError = function(msg){
+	console.log(msg);
+	page.close();
 }
 
+page.onCallback = function (st) {
+	if (!base_64) {
+		page.render(output_filename, { format: 'png' });
+	} else {
+		var base64 = page.renderBase64('png');
+		// do not remove this console.output
+		console.log(base64);
+	}
+	phantom.exit();
+};
+
+page.open(url, 'POST', post_data, function (status) {
+});
 

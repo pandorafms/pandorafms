@@ -924,9 +924,8 @@ if ($update_agent) { // if modified some agent paramenter
 
 			enterprise_hook ('update_agent', array ($id_agente));
 			ui_print_success_message (__('Successfully updated'));
-			$unsafe_alias = io_safe_output($alias);
 			db_pandora_audit("Agent management",
-				"Updated agent $unsafe_alias", false, false, $info);
+				"Updated agent $alias", false, false, $info);
 
 		}
 	}
@@ -1427,7 +1426,7 @@ if ($update_module) {
 		$edit_module = true;
 		
 		db_pandora_audit("Agent management",
-			"Fail to try update module '".io_safe_output($name)."' for agent " . io_safe_output($agent["alias"]));
+			"Fail to try update module '$name' for agent " . $agent["alias"]);
 	}
 	else {
 		if ($prediction_module == 3) {
@@ -1445,7 +1444,7 @@ if ($update_module) {
 		$agent = db_get_row ('tagente', 'id_agente', $id_agente);
 		
 		db_pandora_audit("Agent management",
-			"Updated module '".io_safe_output($name)."' for agent ". io_safe_output($agent["alias"]), false, false, io_json_mb_encode($values));
+			"Updated module '$name' for agent ".$agent["alias"], false, false, io_json_mb_encode($values));
 	}
 }
 
@@ -1586,7 +1585,7 @@ if ($create_module) {
 		$edit_module = true;
 		$moduletype = $id_module;
 		db_pandora_audit("Agent management",
-			"Fail to try added module '".io_safe_output($name)."' for agent ".io_safe_output($agent["alias"]));
+			"Fail to try added module '$name' for agent ".$agent["alias"]);
 	}
 	else {
 		if ($prediction_module == 3) {
@@ -1604,7 +1603,7 @@ if ($create_module) {
 		
 		$agent = db_get_row ('tagente', 'id_agente', $id_agente);
 		db_pandora_audit("Agent management",
-			"Added module '".io_safe_output($name)."' for agent ".io_safe_output($agent["alias"]), false, true, io_json_mb_encode($values));
+			"Added module '$name' for agent ".$agent["alias"], false, true, io_json_mb_encode($values));
 	}
 }
 
@@ -1727,7 +1726,7 @@ if ($delete_module) { // DELETE agent module !
 		
 		$agent = db_get_row ('tagente', 'id_agente', $id_agente);
 		db_pandora_audit("Agent management",
-			"Deleted module '".io_safe_output($module_data["nombre"])."' for agent ".io_safe_output($agent["alias"]));
+			"Deleted module '".$module_data["nombre"]."' for agent ".$agent["alias"]);
 	}
 
 
@@ -1760,11 +1759,11 @@ if (!empty($duplicate_module)) { // DUPLICATE agent module !
 	
 	if ($result) {
 		db_pandora_audit("Agent management",
-			"Duplicate module '".$id_duplicate_module."' for agent " . io_safe_output($agent["alias"]) . " with the new id for clon " . $result);
+			"Duplicate module '".$id_duplicate_module."' for agent " . $agent["alias"] . " with the new id for clon " . $result);
 	}
 	else {
 		db_pandora_audit("Agent management",
-			"Fail to try duplicate module '".$id_duplicate_module."' for agent " . io_safe_output($agent["alias"]));
+			"Fail to try duplicate module '".$id_duplicate_module."' for agent " . $agent["alias"]);
 	}
 }
 

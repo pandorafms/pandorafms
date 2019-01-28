@@ -249,6 +249,10 @@ function config_update_config () {
 							$error_update[] = __('Activate Log Collector');
 						if (!config_update_value ('enable_update_manager', get_parameter('enable_update_manager')))
 							$error_update[] = __('Enable Update Manager');
+						if (!config_update_value ('ipam_ocuppied_critical_treshold', get_parameter('ipam_ocuppied_critical_treshold')))
+							$error_update[] = __('Ipam Ocuppied Manager Critical');
+						if (!config_update_value ('ipam_ocuppied_warning_treshold', get_parameter('ipam_ocuppied_warning_treshold')))
+							$error_update[] = __('Ipam Ocuppied Manager Warning');
 
 						$inventory_changes_blacklist = get_parameter('inventory_changes_blacklist', array());
 						if (!config_update_value ('inventory_changes_blacklist', implode(',',$inventory_changes_blacklist)))
@@ -312,6 +316,8 @@ function config_update_config () {
 						$error_update[] = __('Autocreate profile group');
 					if (!config_update_value ('default_assign_tags', implode(",",get_parameter ('default_assign_tags'))))
 						$error_update[] = __('Autocreate profile tags');
+					if (!config_update_value ('default_no_hierarchy', (int)get_parameter ('default_no_hierarchy')))
+						$error_update[] = __('Automatically assigned no hierarchy');
 					if (!config_update_value ('autocreate_blacklist', get_parameter ('autocreate_blacklist')))
 						$error_update[] = __('Autocreate blacklist');
 					
@@ -1083,6 +1089,14 @@ function config_process_config () {
 		config_update_value ('enable_update_manager', 1);
 	}
 
+	if (!isset ($config["ipam_ocuppied_critical_treshold"])) {
+		config_update_value ('ipam_ocuppied_critical_treshold', 90);
+	}
+
+	if (!isset ($config["ipam_ocuppied_warning_treshold"])) {
+		config_update_value ('ipam_ocuppied_warning_treshold', 80);
+	}
+
 	if (!isset ($config["reset_pass_option"])) {
 		config_update_value ('reset_pass_option', 0);
 	}
@@ -1452,7 +1466,10 @@ function config_process_config () {
 	if (!isset ($config['default_assign_tags'])) {
 		config_update_value ( 'default_assign_tags', '');
 	}
-	
+	if (!isset ($config['default_no_hierarchy'])) {
+		config_update_value ('default_no_hierarchy', 0);
+	}
+
 	if (!isset ($config['ldap_server'])) {
 		config_update_value ( 'ldap_server', 'localhost');
 	}
@@ -2026,6 +2043,14 @@ function config_process_config () {
 	if (is_metaconsole()) {
 		if (!isset($config["metaconsole_deploy_collection"])) {
 			config_update_value('metaconsole_deploy_collection', 0);
+		}
+
+		if (!isset($config["metaconsole_deploy_inventory_plugin"])) {
+			config_update_value('metaconsole_deploy_inventory_plugin', 0);
+		}
+
+		if (!isset($config["metaconsole_deploy_plugin_server"])) {
+			config_update_value('metaconsole_deploy_plugin_server', 0);
 		}
 	}
 

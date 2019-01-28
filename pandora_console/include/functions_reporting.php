@@ -6397,7 +6397,7 @@ function reporting_custom_graph($report, $content, $type = 'dinamic',
 		$graphs[0]["fullscale"] = $content['style']['fullscale'];
 		$modules = $content['id_agent_module'];
 
-		if(!$modules){
+		if(!$modules || !is_array($modules)) {
 			$module_source = db_get_all_rows_sql(
 				"SELECT id_agent_module, id_server
 				FROM tgraph_source
@@ -6405,7 +6405,7 @@ function reporting_custom_graph($report, $content, $type = 'dinamic',
 				$content['id_gs']
 			);
 
-			if(isset($module_source) && is_array($module_source)){
+			if(isset($module_source) && is_array($module_source)) {
 				$modules = array();
 				foreach ($module_source as $key => $value) {
 					$modules[$key]['module'] = $value['id_agent_module'];

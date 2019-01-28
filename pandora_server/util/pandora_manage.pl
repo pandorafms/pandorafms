@@ -164,6 +164,8 @@ sub help_screen{
 	help_screen_line('--enable_alerts', '', 'Enable alerts in all groups (system wide)');
 	help_screen_line('--create_alert_template', "<template_name> <condition_type_serialized>\n\t   <time_from> <time_to> [<description> <group_name> <field1> <field2> \n\t  <field3> <priority>  <default_action> <days> <time_threshold> <min_alerts> \n\t  <max_alerts> <alert_recovery> <field2_recovery> <field3_recovery> \n\t  <condition_type_separator>]", 'Create alert template');
 	help_screen_line('--delete_alert_template', '<template_name>', 'Delete alert template');
+	help_screen_line('--get_alert_actions', '[<action_name> <separator> <return_type>]', 'get all alert actions');
+	help_screen_line('--get_alert_actions_meta', '[<server_name> <action_name> <separator> <return_type>]', 'get all alert actions in nodes');
 	help_screen_line('--update_alert_template', "<template_name> <field_to_change> \n\t  <new_value>", 'Update a field of an alert template');
 	help_screen_line('--validate_all_alerts', '', 'Validate all the alerts');
 	help_screen_line('--create_special_day', "<special_day> <same_day> <description> <group>", 'Create special day');
@@ -3081,6 +3083,35 @@ sub cli_delete_alert_template() {
 }
 
 ##############################################################################
+# Get alert actions.
+# Related option: --get_alert_actions
+##############################################################################
+
+sub cli_get_alert_actions() {
+	my ($action_name,$separator,$return_type) = @ARGV[2..4];
+	if ($return_type eq '') {
+		$return_type = 'csv';
+	}
+	my $result = api_call(\%conf,'get', 'alert_actions', undef, undef, "$action_name|$separator",$return_type);
+	print "$result \n\n ";
+}
+
+##############################################################################
+# Get alert actions in nodes.
+# Related option: --get_alert_actions_meta
+##############################################################################
+
+sub cli_get_alert_actions_meta() {
+	my ($server_name,$action_name,$separator,$return_type) = @ARGV[2..5];
+	if ($return_type eq '') {
+		$return_type = 'csv';
+	}
+
+	my $result = api_call(\%conf,'get', 'alert_actions_meta', undef, undef, "$server_name|$action_name|$separator",$return_type);
+	print "$result \n\n ";
+}
+
+##############################################################################
 # Add profile.
 # Related option: --add_profile
 ##############################################################################
@@ -5973,6 +6004,14 @@ sub pandora_manage_main ($$$) {
 		elsif ($param eq '--delete_alert_template') {
 			param_check($ltotal, 1);
 			cli_delete_alert_template();
+		}
+		elsif ($param eq '--get_alert_actions') {
+			param_check($ltotal, 3, 3);
+			cli_get_alert_actions();
+		}
+		elsif ($param eq '--get_alert_actions_meta') {
+			param_check($ltotal, 4, 4);
+			cli_get_alert_actions_meta();
 		}
 		elsif ($param eq '--update_alert_template') {
 			param_check($ltotal, 3);

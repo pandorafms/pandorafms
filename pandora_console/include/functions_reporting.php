@@ -6389,7 +6389,7 @@ function reporting_custom_graph($report, $content, $type = 'dinamic',
 		$graphs = db_get_all_rows_field_filter ("tgraph", "id_graph", $content['id_gs']);
 		$id_graph = $content['id_gs'];
 	}
-	else if($type_report == "automatic_graph"){
+	else if($type_report == "automatic_graph") {
 		$graphs[0]["stacked"] = '';
 		$graphs[0]["summatory_series"] = '';
 		$graphs[0]["average_series"] = '';
@@ -6397,13 +6397,12 @@ function reporting_custom_graph($report, $content, $type = 'dinamic',
 		$graphs[0]["fullscale"] = $content['style']['fullscale'];
 		$modules = $content['id_agent_module'];
 
-		if(!$modules || !is_array($modules)) {
+		if (is_metaconsole()) {
 			$module_source = db_get_all_rows_sql(
-				"SELECT id_agent_module, id_server
-				FROM tgraph_source
-				WHERE id_graph = " .
-				$content['id_gs']
-			);
+			"SELECT id_agent_module, id_server
+			FROM tgraph_source
+			WHERE id_graph = " .
+			$content['id_gs']);
 
 			if(isset($module_source) && is_array($module_source)) {
 				$modules = array();

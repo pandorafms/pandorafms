@@ -3175,7 +3175,9 @@ sub cli_get_alert_commands() {
 	if($head_print == 0) {
 		print_log "[INFO] No commands found\n\n";
 	}
+}
 
+##############################################################################
 # Get alert actions.
 # Related option: --get_alert_actions
 ##############################################################################

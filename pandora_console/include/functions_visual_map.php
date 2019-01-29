@@ -3550,7 +3550,7 @@ function visual_map_get_user_layouts ($id_user = 0, $only_names = false, $filter
 function visual_map_translate_agent_status ($agent_status) {
 	switch ($agent_status) {
 		case AGENT_STATUS_NORMAL:
-		AGENT_MODULE_STATUS_NORMAL_ALERT:
+		case AGENT_MODULE_STATUS_NORMAL_ALERT:
 		default:
 			return VISUAL_MAP_STATUS_NORMAL;
 		case AGENT_STATUS_CRITICAL:

@@ -604,6 +604,9 @@ sub process_xml_data ($$$$$) {
 
 	# Process events
 	process_events_dataserver($pa_config, $data, $agent_id, $group_id, $dbh);
+
+	# Process disovery modules
+	enterprise_hook('process_discovery_data', [$pa_config, $data, $server_id, $dbh]);
 }
 
 ##########################################################################

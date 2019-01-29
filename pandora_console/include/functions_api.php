@@ -32,7 +32,6 @@ include_once($config['homedir'] . "/include/functions_servers.php");
 include_once($config['homedir'] . "/include/functions_planned_downtimes.php");
 include_once($config['homedir'] . "/include/functions_db.php");
 include_once($config['homedir'] . "/include/functions_event_responses.php");
-include_once($config['homedir'] . "/include/functions_policies.php");
 enterprise_include_once ('include/functions_local_components.php');
 enterprise_include_once ('include/functions_events.php');
 enterprise_include_once ('include/functions_agents.php');
@@ -100,6 +99,10 @@ function returnError($typeError, $returnType = 'string') {
 			returnData($returnType,
 				array('type' => 'string', 'data' => __('No data to show.')));
 			break;
+		case 'centralized':
+			returnData($returnType,
+				array('type' => 'string', 'data' => __('This console is not manager of this environment, please manage this feature from centralized manager console (Metaconsole).')));
+			break;
 		default:
 			returnData("string",
 				array('type' => 'string', 'data' => __($returnType)));
@@ -150,7 +153,7 @@ function returnData($returnType, $data, $separator = ';') {
 				else {
 					if (!empty($data['data'])) {
 						foreach ($data['data'] as $dataContent) {
-							$clean = array_map("array_apply_io_safe_output", $dataContent);
+							$clean = array_map("array_apply_io_safe_output", (array)$dataContent);
 							foreach ($clean as $k => $v) {
 								$clean[$k] = str_replace("\r", "\n", $clean[$k]);
 								$clean[$k] = str_replace("\n", " ", $clean[$k]);
@@ -4561,6 +4564,62 @@ function api_get_alert_template($id_template, $thrash1, $other, $thrash3) {
 }
 
 /**
+ * List of alert actions.
+ * 
+ * @param array $other it's array, $other as param is <action_name>;<separator_data> and separator (pass in param
+ *  othermode as othermode=url_encode_separator_<separator>)
+ * @param $returnType (csv, string or json).
+ * 
+ *  example:
+ *  
+ *  api.php?op=get&op2=alert_actions&apipass=1234&user=admin&pass=pandora&other=Create|;&other_mode=url_encode_separator_|&return_type=json
+ *  
+ */
+function api_get_alert_actions($thrash1, $thrash2, $other, $returnType) {
+	global $config;
+	if (!check_acl($config['id_user'], 0, "LM")) {
+		returnError('forbidden', 'string');
+		return;
+	}
+
+	if (!isset($other['data'][0]))
+		$other['data'][1] = '';
+	if (!isset($other['data'][1]))
+		$separator = ';'; //by default
+	else
+		$separator = $other['data'][1];
+
+	$action_name = $other['data'][0];
+
+
+	$filter = array();
+	if (!is_user_admin($config['id_user']))
+	$filter['talert_actions.id_group'] = array_keys(users_get_groups(false, "LM"));
+	$filter['talert_actions.name'] = "%$action_name%";
+
+	$actions = db_get_all_rows_filter (
+	'talert_actions INNER JOIN talert_commands ON talert_actions.id_alert_command = talert_commands.id',
+	$filter,
+	'talert_actions.id, talert_actions.name'
+	);
+	if ($actions === false)
+		$actions = array ();
+
+	if ($actions !== false) {
+		$data['type'] = 'array';
+		$data['data'] = $actions;
+	}
+	if (!$actions) {
+		returnError('error_get_alert_actions',
+		__('Error getting alert actions.'));
+	}
+	else {
+		returnData($returnType, $data, $separator);
+	}
+}
+
+
+/**
  * Get module groups, and print all the result like a csv.
  *
  * @param $thrash1 Don't use.
@@ -6977,9 +7036,9 @@ function api_get_graph_module_data($id, $thrash1, $other, $thrash2) {
 function api_set_new_user($id, $thrash2, $other, $thrash3) {
 	global $config;
 
-	if (defined ('METACONSOLE')) {
-		return;
-	}
+	// if (defined ('METACONSOLE')) {
+	// 	return;
+	// }
 
 	if(!check_acl($config['id_user'], 0, "UM")) {
 		returnError('forbidden', 'string');
@@ -6996,6 +7055,10 @@ function api_set_new_user($id, $thrash2, $other, $thrash3) {
 	$values['phone'] = $other['data'][6];
 	$values['language'] = $other['data'][7];
 	$values['comments'] = $other['data'][8];
+	$values['time_autorefresh'] = $other['data'][9];
+	$values['default_event_filter'] = $other['data'][10];
+	$values['section'] = $other['data'][11];
+	$values['session_time'] = $other['data'][12];
 	
 	if (!create_user ($id, $password, $values))
 		returnError('error_create_user', 'Error create user');
@@ -7039,7 +7102,12 @@ function api_set_update_user($id, $thrash2, $other, $thrash3) {
 		'language',
 		'comments',
 		'is_admin',
-		'block_size'
+		'block_size',
+		'flash_chart',
+		'time_autorefresh',
+		'default_event_filter',
+		'section',
+		'session_time'
 	);
 
 	if ($id == "") {
@@ -7684,6 +7752,94 @@ function api_set_alert_actions($id, $id2, $other, $trash1) {
 		return;
 	}
 }
+
+/**
+ * Create a new module group
+ * @param $id as module group name (mandatory)
+ example:
+
+ *http://localhost/pandora_console/include/api.php?op=set&op2=new_module_group&id=Module_group_name&apipass=1234&user=admin&pass=pandora
+*/
+function api_set_new_module_group($id, $thrash2, $other, $trash1) {
+	global $config;
+
+	if (defined ('METACONSOLE')) {
+		return;
+	}
+
+	if (!check_acl($config['id_user'], 0, "PM")){
+		returnError('forbidden', 'string');
+		return;
+	}
+
+	if ($id == '' || !$id) {
+		returnError('error_parameter', __('Module group must have a name'));
+		return;
+	}
+
+	$name = db_get_value ('name', 'tmodule_group', 'name', $id);
+
+
+	if ($name) {
+		returnError('error_parameter', __('Each module group must have a different name'));
+		return;
+	}
+
+	$return = db_process_sql_insert('tmodule_group', array('name' => $id));
+
+
+	if ($return === false)
+		returnError('error_new_moodule_group', 'There was a problem creating group');
+	else
+		returnData('string', array('type' => 'string', 'data' => $return));
+
+}
+
+
+/**
+ * synchronize module group
+ * @param $other as server_names (mandatory)
+ example:
+
+ *api.php?op=set&op2=module_group_synch&other=server_name1|server_name2|server_name3&other_mode=url_encode_separator_|&apipass=1234&user=admin&pass=pandora
+*/
+
+function api_set_module_group_synch($thrash1, $thrash2, $other, $thrash4) {
+	global $config;
+	enterprise_include_once ('meta/include/functions_meta.php');
+
+	if (is_metaconsole()) {
+		if (!check_acl($config['id_user'], 0, "PM")) {
+			returnError('forbidden', 'string');
+			return;
+		}
+		$targets = array();
+		foreach ($other['data'] as $server) {
+			$targets[] = $server;
+		}
+		$return = meta_module_group_synchronizing($targets, true);
+
+		$module_group_update_err = $return["module_group_update_err"];
+		$module_group_create_err = $return["module_group_create_err"];
+		$module_group_update_ok = $return["module_group_update_ok"];
+		$module_group_create_ok = $return["module_group_create_ok"];
+
+		$string_ok = __('Created/Updated %s/%s module groups', $module_group_create_ok, $module_group_update_ok);
+	
+		// User feedback
+		if ($module_group_create_err > 0 or $module_group_update_err > 0) {
+			returnError ('module_group_synch_err',__('Error creating/updating %s/%s module groups <br>', $module_group_create_err, $module_group_update_err));
+		}
+		if ($module_group_create_ok > 0 or $module_group_update_ok > 0){
+			returnData ('string', array('type' => 'string', 'data' => $string_ok));
+		}
+
+	}
+	else{
+		returnError ('not_defined_in_metaconsole',__('This function is only for metaconsole'));
+	}
+}
+
 
 function api_set_new_event($trash1, $trash2, $other, $trash3) {
 	$simulate = false;
@@ -8662,9 +8818,9 @@ function api_get_events($trash1, $trash2, $other, $returnType, $user_in_db = nul
 function api_set_delete_user($id, $thrash1, $thrash2, $thrash3) {
 	global $config;
 
-	if (defined ('METACONSOLE')) {
-		return;
-	}
+	// if (defined ('METACONSOLE')) {
+	// 	return;
+	// }
 
 	if (!check_acl($config['id_user'], 0, "UM")) {
 		returnError('forbidden', 'string');
@@ -10601,6 +10757,7 @@ function api_set_create_service($thrash1, $thrash2, $other, $thrash3) {
 		returnError('error_create_service', __('Error in creation service'));
 	}
 }
+
 
 /**
  * Update a service.
@@ -12735,4 +12892,29 @@ function api_get_session_timeout($thrash1, $thrash2, $other, $thrash3) {
 	}
 }
 
+function api_get_users($thrash1, $thrash2, $other, $returnType) {
+			
+			global $config;
+			
+			$user_info = get_users();
+				
+			if (!isset($returnType) || empty($returnType) || $returnType == '') {
+				$returnType = "json";
+				$data['data'] = "json";
+			}
+			
+			if (!isset($separator) || empty($separator) || $separator == '') {
+				$separator = ";";
+			}
+			
+			$data['data'] = $user_info;
+
+			if (count($data) > 0 and $data !== false) {
+				returnData($returnType, $data, $separator);
+			}
+			else {
+				returnError('error_users', 'No users retrieved.');
+			}
+			
+		}
 ?>

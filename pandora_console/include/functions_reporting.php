@@ -1538,12 +1538,17 @@ function reporting_event_report_group($report, $content,
 	$return['chart']['by_user_validator'] = null;
 	$return['chart']['by_criticity'] = null;
 	$return['chart']['validated_vs_unvalidated'] = null;
-	
+	$server_name = $content['server_name'];
+	if (is_metaconsole() && $server_name != '')
+		$metaconsole_dbtable = true;
+	else
+		$metaconsole_dbtable = false;
+
 	if ($event_graph_by_agent) {
 		$data_graph = events_get_count_events_by_agent(
 			$content['id_group'], $content['period'], $report["datetime"],
 			$filter_event_severity,	$filter_event_type, 
-			$filter_event_status, $filter_event_filter_search);
+			$filter_event_status, $filter_event_filter_search, $metaconsole_dbtable);
 			
 		$return['chart']['by_agent']= pie_graph(
 			$data_graph,
@@ -1562,7 +1567,7 @@ function reporting_event_report_group($report, $content,
 		$data_graph = events_get_count_events_validated_by_user(
 			array('id_group' => $content['id_group']), $content['period'],
 			$report["datetime"],$filter_event_severity,	$filter_event_type, 
-			$filter_event_status, $filter_event_filter_search);
+			$filter_event_status, $filter_event_filter_search, $metaconsole_dbtable);
 		
 		$return['chart']['by_user_validator'] = pie_graph(
 			$data_graph,
@@ -1581,7 +1586,7 @@ function reporting_event_report_group($report, $content,
 		$data_graph = events_get_count_events_by_criticity(
 			array('id_group' => $content['id_group']), $content['period'],
 			$report["datetime"],$filter_event_severity,	$filter_event_type, 
-			$filter_event_status, $filter_event_filter_search);
+			$filter_event_status, $filter_event_filter_search, $metaconsole_dbtable);
 		
 		$colors = get_criticity_pie_colors($data_graph);
 		
@@ -1604,7 +1609,7 @@ function reporting_event_report_group($report, $content,
 		$data_graph = events_get_count_events_validated(
 			array('id_group' => $content['id_group']), $content['period'],
 			$report["datetime"],$filter_event_severity,	$filter_event_type, 
-			$filter_event_status, $filter_event_filter_search);
+			$filter_event_status, $filter_event_filter_search, $metaconsole_dbtable);
 		
 		$return['chart']['validated_vs_unvalidated'] = pie_graph(
 			$data_graph,
@@ -1685,13 +1690,19 @@ function reporting_event_report_module($report, $content,
 	$event_graph_by_criticity             = $event_filter['event_graph_by_criticity'];
 	$event_graph_validated_vs_unvalidated = $event_filter['event_graph_validated_vs_unvalidated'];
 
+
+	$server_name = $content['server_name'];
+	if (is_metaconsole() && $server_name != '')
+		$metaconsole_dbtable = true;
+	else
+		$metaconsole_dbtable = false;
 	//data events
 	$data = reporting_get_module_detailed_event (
 		$content['id_agent_module'], $content['period'], $report["datetime"],
 		$show_summary_group, $filter_event_severity, $filter_event_type,
 		$filter_event_status, $filter_event_filter_search, $force_width_chart,
 		$event_graph_by_user_validator, $event_graph_by_criticity,
-		$event_graph_validated_vs_unvalidated, $ttl, $id_server);
+		$event_graph_validated_vs_unvalidated, $ttl, $id_server, $metaconsole_dbtable);
 
 	if (empty($data)) {
 		$return['failed'] = __('No events');
@@ -2455,11 +2466,16 @@ function reporting_event_report_agent($report, $content,
 	$return["chart"]["by_criticity"] = null;
 	$return["chart"]["validated_vs_unvalidated"] = null;
 	
+	$server_name = $content['server_name'];
+	if (is_metaconsole() && $server_name != '')
+		$metaconsole_dbtable = true;
+	else
+		$metaconsole_dbtable = false;
 	if ($event_graph_by_user_validator) {
 		$data_graph = events_get_count_events_validated_by_user(
 			array('id_agent' => $content['id_agent']), $content['period'],
 			$report["datetime"],$filter_event_severity,	$filter_event_type, 
-			$filter_event_status, $filter_event_filter_search);
+			$filter_event_status, $filter_event_filter_search, $metaconsole_dbtable);
 		
 		$return["chart"]["by_user_validator"] = pie_graph(
 			$data_graph,
@@ -2478,7 +2494,7 @@ function reporting_event_report_agent($report, $content,
 		$data_graph = events_get_count_events_by_criticity(
 			array('id_agent' => $content['id_agent']), $content['period'],
 			$report["datetime"],$filter_event_severity,	$filter_event_type, 
-			$filter_event_status, $filter_event_filter_search);
+			$filter_event_status, $filter_event_filter_search, $metaconsole_dbtable);
 		
 		$colors = get_criticity_pie_colors($data_graph);
 
@@ -2501,7 +2517,7 @@ function reporting_event_report_agent($report, $content,
 		$data_graph = events_get_count_events_validated(
 			array('id_agent' => $content['id_agent']), $content['period'],
 			$report["datetime"],$filter_event_severity,	$filter_event_type, 
-			$filter_event_status, $filter_event_filter_search);
+			$filter_event_status, $filter_event_filter_search, $metaconsole_dbtable);
 		
 		$return["chart"]["validated_vs_unvalidated"] = pie_graph(
 			$data_graph,
@@ -6553,7 +6569,7 @@ function reporting_simple_graph($report, $content, $type = 'dinamic',
 				$content['id_agent_module'],
 				$content['period'],
 				$report["datetime"]);
-
+			$return['chart'] = array();
 			foreach ($data as $d) {
 				$return['chart'][$d['utimestamp']] = $d['data'];
 			}
@@ -6687,7 +6703,7 @@ function reporting_get_module_detailed_event ($id_modules, $period = 0,
 	$filter_event_type = false, $filter_event_status = false, 
 	$filter_event_filter_search = false, $force_width_chart = false,
 	$event_graph_by_user_validator = false, $event_graph_by_criticity = false, 
-	$event_graph_validated_vs_unvalidated = false, $ttl = 1, $id_server = false) {
+	$event_graph_validated_vs_unvalidated = false, $ttl = 1, $id_server = false, $metaconsole_dbtable = false) {
 
 	global $config;
 
@@ -6732,7 +6748,7 @@ function reporting_get_module_detailed_event ($id_modules, $period = 0,
 		if ($event_graph_by_user_validator) {
 			$data_graph = events_get_count_events_validated_by_user(
 				array('id_agentmodule' => $id_module), $period, $date, $filter_event_severity,
-				$filter_event_type, $filter_event_status, $filter_event_filter_search);
+				$filter_event_type, $filter_event_status, $filter_event_filter_search, $metaconsole_dbtable);
 
 			$event['chart']['by_user_validator'] = pie_graph(
 				$data_graph,
@@ -6750,7 +6766,7 @@ function reporting_get_module_detailed_event ($id_modules, $period = 0,
 		if ($event_graph_by_criticity) {
 			$data_graph = events_get_count_events_by_criticity(
 				array('id_agentmodule' => $id_module), $period, $date, $filter_event_severity,
-				$filter_event_type, $filter_event_status, $filter_event_filter_search);
+				$filter_event_type, $filter_event_status, $filter_event_filter_search, $metaconsole_dbtable);
 
 			$colors = get_criticity_pie_colors($data_graph);
 
@@ -6772,7 +6788,7 @@ function reporting_get_module_detailed_event ($id_modules, $period = 0,
 		if ($event_graph_validated_vs_unvalidated) {
 			$data_graph = events_get_count_events_validated(
 				array('id_agentmodule' => $id_module), $period, $date, $filter_event_severity,
-				$filter_event_type, $filter_event_status, $filter_event_filter_search);
+				$filter_event_type, $filter_event_status, $filter_event_filter_search, $metaconsole_dbtable);
 
 			$event['chart']['validated_vs_unvalidated'] = pie_graph(
 				$data_graph,

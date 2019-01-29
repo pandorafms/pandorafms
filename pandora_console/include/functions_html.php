@@ -1025,7 +1025,8 @@ function html_print_input_text_extended ($name, $value, $id, $alt, $size, $maxle
 		"title", "xml:lang", "onfocus", "onblur", "onselect",
 		"onchange", "onclick", "ondblclick", "onmousedown",
 		"onmouseup", "onmouseover", "onmousemove", "onmouseout",
-		"onkeypress", "onkeydown", "onkeyup", "required");
+		"onkeypress", "onkeydown", "onkeyup", "required",
+		"autocomplete");
 	
 	$output = '<input '.($password ? 'type="password" autocomplete="off" ' : 'type="text" ');
 	
@@ -1196,22 +1197,27 @@ function html_print_input_password ($name, $value, $alt = '',
  *
  * @return string HTML code if return parameter is true.
  */
-function html_print_input_text ($name, $value, $alt = '', $size = 50, $maxlength = 255, $return = false, $disabled = false, $required = false, $function = "", $class = "", $onChange ="") {
+function html_print_input_text ($name, $value, $alt = '', $size = 50, $maxlength = 255, $return = false, $disabled = false, $required = false, $function = "", $class = "", $onChange ="", $autocomplete="") {
 	if ($maxlength == 0)
 		$maxlength = 255;
-		
+
 	if ($size == 0)
 		$size = 10;
-	
+
 	$attr = array();
-	if ($required)
+	if ($required){
 		$attr['required'] = 'required';
-	if ($class != '')
+	}
+	if ($class != ''){
 		$attr['class'] = $class;
+	}
 	if ($onChange != '') {
 		$attr['onchange'] = $onChange;
 	}
-	
+	if($autocomplete !== ''){
+		$attr['autocomplete'] = $autocomplete;
+	}
+
 	return html_print_input_text_extended ($name, $value, 'text-'.$name, $alt, $size, $maxlength, $disabled, '', $attr, $return, false, $function);
 }
 

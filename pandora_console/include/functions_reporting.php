@@ -10535,6 +10535,7 @@ function reporting_translate_sla_status_for_graph ($status) {
  * @return array With report presentation info and report data.
  */
 function reporting_nt_top_n_report ($period, $content, $pdf) {
+	$return = array();
 	$return['type'] = 'nt_top_n';
 	$return['title'] = $content["name"];
 	$return["description"] = $content["description"];

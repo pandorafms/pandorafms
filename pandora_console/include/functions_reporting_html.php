@@ -3959,6 +3959,7 @@ function reporting_html_nt_top_n ($table, $item, $mini) {
 				'pkts' => $s_item["sum_pkts"]
 			);
 		}
+		$table->data["send_title"] = "<h3>" . __("Network traffic sent")  . "</h3>";
 		$table->data["send"] = html_print_table($table_top, true);
 	}
 

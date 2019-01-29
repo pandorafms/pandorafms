@@ -112,6 +112,7 @@ our @EXPORT = qw(
 	md5_init
 	pandora_ping
 	pandora_ping_latency
+	pandora_block_ping
 	resolve_hostname
 	ticks_totime
 	safe_input
@@ -1271,6 +1272,24 @@ sub pandora_ping_latency ($$$$) {
 	
 	# If no valid get values until now, just return with empty value (not valid)
 	return $output;
+}
+
+########################################################################
+=head2 C<< pandora_block_ping (I<$pa_config>, I<$hosts>) >> 
+
+Ping all given hosts. Returns an array with all hosts detected as alive.
+
+=cut
+########################################################################
+sub pandora_block_ping($@) {
+	my ($pa_config, @hosts) = @_;
+
+	# fping timeout in milliseconds
+	my $cmd = $pa_config->{'fping'} . " -a -q -t " . (1000 * $pa_config->{'networktimeout'}) . " " . (join (' ', @hosts));
+
+	my @output = `$cmd 2>$DEVNULL`;
+
+	return @output;
 }
 
 ########################################################################

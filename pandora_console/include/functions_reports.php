@@ -657,7 +657,10 @@ function reports_get_report_types ($template = false, $not_editor = false) {
 		$types['event_report_log'] = array('optgroup' => __('Log'),
 		'name' => __('Log report'));
 	}
-	
+
+	$types['nt_top_n'] = array('optgroup' => __('Network traffic'),
+		'name' => __('Network Traffic Top N'));
+
 	return $types;
 }
 ?>

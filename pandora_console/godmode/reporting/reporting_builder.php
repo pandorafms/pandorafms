@@ -1105,6 +1105,11 @@ switch ($action) {
 								$values['visual_format'] = get_parameter('visual_format');
 								$good_format = true;
 								break;
+							case 'nt_top_n':
+								$values['period'] = get_parameter('period');
+								$values['top_n_value'] = get_parameter('quantity');
+								$good_format = true;
+								break;
 							default:
 								$values['period'] = get_parameter('period');
 								$values['top_n'] = get_parameter('radiobutton_max_min_avg',0);
@@ -1288,6 +1293,7 @@ switch ($action) {
 							case 'MTBF':
 							case 'MTTR':
 							case 'simple_baseline_graph':
+							case 'nt_top_n':
 								if ($label != '')
 									$style['label'] = $label;
 								else
@@ -1450,6 +1456,11 @@ switch ($action) {
 								$values['lapse_calc'] = get_parameter('lapse_calc');
 								$values['lapse'] = get_parameter('lapse');
 								$values['visual_format'] = get_parameter('visual_format');
+								$good_format = true;
+								break;
+							case 'nt_top_n':
+								$values['top_n_value'] = get_parameter('quantity');
+								$values['period'] = get_parameter('period');
 								$good_format = true;
 								break;
 							default:
@@ -1648,6 +1659,7 @@ switch ($action) {
 							case 'MTBF':
 							case 'MTTR':
 							case 'simple_baseline_graph':
+							case 'nt_top_n':
 								if ($label != '')
 									$style['label'] = $label;
 								else

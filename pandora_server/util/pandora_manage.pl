@@ -3144,7 +3144,7 @@ sub cli_get_alert_commands() {
 		$id_group = get_group_id($dbh, $group_name);
 		exist_check($id_group,'group',$group_name);
 		
-		$condition .= " AND id_grupo = $id_group ";
+		$condition .= " AND id_group = $id_group ";
 	}
 	
 	if($description ne '') {

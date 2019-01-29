@@ -6105,6 +6105,7 @@ sub pandora_manage_main ($$$) {
 		elsif ($param eq '--get_alert_commands') {
 			param_check($ltotal, 5, 5);
 			cli_get_alert_commands();
+		}
 		elsif ($param eq '--get_alert_actions') {
 			param_check($ltotal, 3, 3);
 			cli_get_alert_actions();

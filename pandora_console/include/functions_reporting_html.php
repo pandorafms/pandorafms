@@ -319,6 +319,9 @@ function reporting_html_print_report($report, $mini = false, $report_info = 1) {
 			case 'SLA':
 				reporting_html_SLA($table, $item, $mini);
 				break;
+			case 'nt_top_n':
+				reporting_html_nt_top_n($table, $item, $mini);
+				break;
 			case 'SLA_monthly':
 				reporting_enterprise_html_SLA_monthly($table, $item, $mini);
 				break;
@@ -3920,6 +3923,60 @@ function reporting_html_planned_downtimes_table ($planned_downtimes) {
 	$downtimes_table .= html_print_table($table, true);
 	
 	return $downtimes_table;
+}
+
+/**
+ * Print network traffic data into top n tables
+ * (one for received data and another for sent)
+ *
+ * @param stdClass Table class to paint the report
+ * @param array Associative array with info about 
+ * @param bool Unused
+ */
+function reporting_html_nt_top_n ($table, $item, $mini) {
+	// Prepare the table
+	$table_top = new stdClass();
+	$table_top->cellpadding = 0;
+	$table_top->cellspacing = 0;
+	$table_top->width = "100%";
+	$table_top->class = "databox data";
+	$table_top->cellpadding = 0;
+	$table_top->cellspacing = 0;
+	$table_top->width = "100%";
+	$table_top->class = "databox data";
+	$table_top->head['host'] = __('Agent');
+	$table_top->head['bytes'] = __('Bytes');
+	$table_top->head['pkts'] = __('Packages');
+
+	// Build the table for sent packages
+	if (empty($item["data"]["send"])) {
+		$table->data["send_title"] = "<h3>" . __("No network traffic sent data") . "</h3>";
+	} else {
+		foreach ($item["data"]["send"] as $s_item) {
+			$table_top->data[] = array(
+				'host' => $s_item["host"],
+				'bytes' => $s_item["sum_bytes"],
+				'pkts' => $s_item["sum_pkts"]
+			);
+		}
+		$table->data["send"] = html_print_table($table_top, true);
+	}
+
+	// Reset the table and build the table for received packages
+	$table_top->data = array();
+	if (empty($item["data"]["send"])) {
+		$table->data["recv_title"] = "<h3>" . __("No network traffic received data") . "</h3>";
+	} else {
+		foreach ($item["data"]["recv"] as $s_item) {
+			$table_top->data[] = array(
+				'host' => $s_item["host"],
+				'bytes' => $s_item["sum_bytes"],
+				'pkts' => $s_item["sum_pkts"]
+			);
+		}
+		$table->data["recv_title"] = "<h3>" . __("Network traffic received")  . "</h3>";
+		$table->data["recv"] = html_print_table($table_top, true);
+	}
 }
 
 ?>

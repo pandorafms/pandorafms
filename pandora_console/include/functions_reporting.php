@@ -675,6 +675,12 @@ function reporting_make_reporting_data($report = null, $id_report,
 					$content,
 					$pdf);
 				break;
+			case 'nt_top_n':
+				$report['contents'][] = reporting_nt_top_n_report(
+					$report,
+					$content,
+					$pdf);
+				break;
 		}
 		$index_content++;
 	}
@@ -10517,5 +10523,37 @@ function reporting_translate_sla_status_for_graph ($status) {
 		REPORT_STATUS_IGNORED => 7
 	);
 	return $sts[$status];
+}
+
+/**
+ * Build the required data to build network traffic top N report
+ *
+ * @param int Period (time window).
+ * @param array Information about the item of report.
+ * @param bool Pdf or not
+ *
+ * @return array With report presentation info and report data.
+ */
+function reporting_nt_top_n_report ($period, $content, $pdf) {
+	$return['type'] = 'nt_top_n';
+	$return['title'] = $content["name"];
+	$return["description"] = $content["description"];
+
+	// Get the data sent and received
+	$return["data"] = array();
+	$start_time = $period['datetime'] - (int)$content['period'];
+	$sql = "SELECT SUM(bytes) sum_bytes, SUM(pkts) sum_pkts, %s host
+		FROM tnetwork_matrix
+		WHERE utimestamp > {$start_time} AND utimestamp < {$period['datetime']}
+		GROUP BY %s
+		ORDER BY sum_bytes DESC
+		LIMIT {$content['top_n_value']}";
+	$return["data"]["send"] = db_get_all_rows_sql(
+		sprintf($sql, "source", "source")
+	);
+	$return["data"]["recv"] = db_get_all_rows_sql(
+		sprintf($sql, "destination", "destination")
+	);
+	return $return;
 }
 ?>

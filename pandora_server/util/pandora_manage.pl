@@ -164,6 +164,8 @@ sub help_screen{
 	help_screen_line('--enable_alerts', '', 'Enable alerts in all groups (system wide)');
 	help_screen_line('--create_alert_template', "<template_name> <condition_type_serialized>\n\t   <time_from> <time_to> [<description> <group_name> <field1> <field2> \n\t  <field3> <priority>  <default_action> <days> <time_threshold> <min_alerts> \n\t  <max_alerts> <alert_recovery> <field2_recovery> <field3_recovery> \n\t  <condition_type_separator>]", 'Create alert template');
 	help_screen_line('--delete_alert_template', '<template_name>', 'Delete alert template');
+	help_screen_line('--create_alert_command', "<command_name> <comand> [<id_group> <description> \n\t <internal> <fields_descriptions> <fields_values>", 'Create alert command');
+	help_screen_line('--get_alert_commands', "[<command_name> <comand> <id_group> <description> \n\t <internal>]", 'Displays all alert commands');
 	help_screen_line('--get_alert_actions', '[<action_name> <separator> <return_type>]', 'get all alert actions');
 	help_screen_line('--get_alert_actions_meta', '[<server_name> <action_name> <separator> <return_type>]', 'get all alert actions in nodes');
 	help_screen_line('--update_alert_template', "<template_name> <field_to_change> \n\t  <new_value>", 'Update a field of an alert template');
@@ -3081,6 +3083,99 @@ sub cli_delete_alert_template() {
 	
 	my $result = pandora_delete_alert_template($dbh,$template_name);
 	exist_check($result,'alert template',$template_name);
+}
+
+##############################################################################
+# Add alert command.
+# Related option: --create_alert_command
+##############################################################################
+
+sub cli_create_alert_command() {
+	my ($command_name,$command,$group_name,$description,$internal,$fields_descriptions,$fields_values) = @ARGV[2..8];
+	
+	print_log "[INFO] Adding command '$command_name'\n\n";
+	
+	my $command_id = get_command_id($dbh,$command_name);
+	non_exist_check($command_id,'command',$command_name);
+	
+	my $id_group;
+	
+	if (! $group_name || $group_name eq "All") {
+		$id_group = 0;
+	}
+	else {
+		$id_group = get_group_id($dbh,$group_name);
+		exist_check($id_group,'group',$group_name);
+	}
+	
+	my %parameters;						
+	
+	$parameters{'name'} = $command_name;
+	$parameters{'command'} = $command;
+	$parameters{'id_group'} = $id_group;
+	$parameters{'description'} = $description;
+	$parameters{'internal'} = $internal;
+	$parameters{'fields_descriptions'} = $fields_descriptions;
+	$parameters{'fields_values'} = $fields_values;
+	
+	pandora_create_alert_command ($conf, \%parameters, $dbh);
+}
+
+##############################################################################
+# Show all the alert commands (without parameters) or the alert commands with a filter parameters
+# Related option: --get_alert_commands
+##############################################################################
+
+sub cli_get_alert_commands() {
+	my ($command_name, $command, $group_name, $description, $internal) = @ARGV[2..6];
+
+	my $id_group;
+	my $condition = ' 1=1 ';
+
+	if($command_name ne '') {
+		my $name = safe_input ($command_name);		
+		$condition .= " AND name LIKE '%$name%' ";
+	}
+	
+	if($command ne '') {
+		$condition .= " AND command LIKE '%$command%' ";
+	}
+
+	if($group_name ne '') {
+		$id_group = get_group_id($dbh, $group_name);
+		exist_check($id_group,'group',$group_name);
+		
+		$condition .= " AND id_group = $id_group ";
+	}
+	
+	if($description ne '') {
+		$condition .= " AND description LIKE '%$description%' ";
+	}
+
+	if($internal ne '') {
+		$condition .= " AND internal = $internal ";
+	}
+
+	my @alert_command = get_db_rows ($dbh, "SELECT * FROM talert_commands WHERE $condition");	
+
+	if(scalar(@alert_command) == 0) {
+		print_log "[INFO] No commands found\n\n";
+		exit;
+	}
+
+	my $head_print = 0;
+	foreach my $commands (@alert_command) {
+
+		if($head_print == 0) {
+			$head_print = 1;
+			print "id_command, command_name\n";
+		}
+		print $commands->{'id'}.",".safe_output($commands->{'name'})."\n";
+	}
+
+	if($head_print == 0) {
+		print_log "[INFO] No commands found\n\n";
+	}
 }
 
 ##############################################################################
@@ -6019,8 +6114,16 @@ sub pandora_manage_main ($$$) {
 			cli_create_alert_template();
 		}
 		elsif ($param eq '--delete_alert_template') {
-			param_check($ltotal, 1);
+			param_check($ltotal, 7);
 			cli_delete_alert_template();
+		}
+		elsif ($param eq '--create_alert_command') {
+			param_check($ltotal, 7, 2);
+			cli_create_alert_command();
+		}
+		elsif ($param eq '--get_alert_commands') {
+			param_check($ltotal, 5, 5);
+			cli_get_alert_commands();
 		}
 		elsif ($param eq '--get_alert_actions') {
 			param_check($ltotal, 3, 3);

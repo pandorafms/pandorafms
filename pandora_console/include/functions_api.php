@@ -37,6 +37,7 @@ enterprise_include_once ('include/functions_events.php');
 enterprise_include_once ('include/functions_agents.php');
 enterprise_include_once ('include/functions_modules.php');
 enterprise_include_once ('include/functions_clusters.php');
+enterprise_include_once ('include/functions_alerts.php');
 
 /**
  * Parse the "other" parameter.
@@ -4514,6 +4515,45 @@ function api_get_all_alert_templates($thrash1, $thrash2, $other, $thrash3) {
 	}
 }
 
+function api_get_all_alert_commands($thrash1, $thrash2, $other, $thrash3) {
+	global $config;
+
+	if (defined ('METACONSOLE')) {
+		return;
+	}
+	
+	if (!isset($other['data'][0]))
+		$separator = ';'; // by default
+	else
+		$separator = $other['data'][0];
+
+	if (!check_acl($config["id_user"], 0, "LM")) {
+		returnError("forbidden", "csv");
+		return;
+	}
+	
+	$commands = db_get_all_rows_filter(
+		'talert_commands',
+		array('id_group' => array_keys(users_get_groups(false, "LM")))
+	);
+
+if ($commands === false) $commands = array ();
+	
+	if ($commands !== false) {
+		$data['type'] = 'array';
+		$data['data'] = $commands;
+	}
+	
+	if (!$commands) {
+		returnError('error_get_all_alert_commands',
+			__('Error getting all alert commands.'));
+	}
+	else {
+		returnData('csv', $data, $separator);
+	}
+}
+
+
 /**
  * Get an alert tamplate, and print the result like a csv.
  * 
@@ -7837,6 +7877,108 @@ function api_set_module_group_synch($thrash1, $thrash2, $other, $thrash4) {
 	}
 	else{
 		returnError ('not_defined_in_metaconsole',__('This function is only for metaconsole'));
+	}
+}
+
+
+/**
+ * Create a new alert command
+ * @param $id as command name  (optional)
+ *  other=<serialized_parameters> (mandatory). Are the following in this order:
+ *	<name>
+ *	<command> (mandatory)
+ *	<id_group> (optional)
+ *	<description> (optional)
+ *	<internal> (optional)
+ *	<field_description_1><field_value_1><field_description_2><field_value_2>...<field_description_n><field_value_n> (optional)
+
+ example:
+
+ *http://localhost/pandora_console/include/api.php?op=set&op2=alert_commands&id=PRUEBA1&other=command|0|Desc|1|des1|val1|des2|val2|des3|val3||val4|des5&other_mode=url_encode_separator_|&apipass=1234&user=admin&pass=pandora
+*/
+function api_set_alert_commands($id, $thrash2, $other, $trash1) {
+	global $config;
+
+	$command = $other['data'][0];
+	$id_group = 0;
+	if ($other['data'][1] != '')
+		$id_group = $other['data'][1];
+	$description = $other['data'][2];
+	$internal = $other['data'][3];
+
+	if (defined ('METACONSOLE')) {
+		return;
+	}
+
+	if (!check_acl($config['id_user'], 0, "LW")){
+		returnError('forbidden', 'string');
+		return;
+	}
+
+	$name = db_get_value ('id', 'talert_commands', 'name', $id);
+	$group = db_get_value ('id_grupo', 'tgrupo', 'id_grupo', $id_group);
+
+	if ($id == '' || !$id) {
+		returnError('error_parameter', __('Name cannot be empty.'));
+		return;
+	}
+
+	if ($command == '' || !$command) {
+		returnError('error_parameter', __('Command cannot be empty.'));
+		return;
+	}
+
+	if ($name) {
+		returnError('error_parameter', __('Name already exist'));
+		return;
+	}
+
+	if (!$group && $id_group != 0) {
+		returnError('error_parameter', __('Group does not exist'));
+		return;
+	}
+
+	if ($other['type'] == 'string') {
+		returnError('error_parameter', 'Error in the parameters.');
+		return;
+	}
+	else if ($other['type'] == 'array') {
+
+		$fields_descriptions = array();
+		$fields_values = array();
+		$max_macro_fields = $config['max_macro_fields'] * 2;
+
+		$values = array();
+		for ($i=0;$i<$max_macro_fields; $i++) {
+			$n = $i + 4;
+
+			if (!$other['data'][$n])
+				$other['data'][$n] = '';
+
+			if ($n%2==0)
+				$fields_descriptions[] = $other['data'][$n];
+			else
+				$fields_values[] = $other['data'][$n];
+		}
+
+		$fields_descriptions_encode = io_json_mb_encode($fields_descriptions);
+		$fields_values_encode = io_json_mb_encode($fields_values);
+
+		$values = array('id_group' => $id_group,
+		 'description' => $description, 'internal' => $internal, 'fields_descriptions' => $fields_descriptions_encode,
+		 'fields_values' => $fields_values_encode);
+		
+		$return = alerts_create_alert_command($id, $command, $values);
+		
+		$data['type'] = 'string';
+		if ($return === false) {
+			$data['data'] = 0;
+		}
+		else {
+			$data['data'] = $return;
+		}
+		returnData('string', $data);
+		return;
 	}
 }
 

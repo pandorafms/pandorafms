@@ -262,6 +262,11 @@ function modules_change_disabled($id_agent_module, $new_value = 1) {
 		if ($current_disabled == $new_value) {
 			continue;
 		}
+
+		// Validate alerts for disabled modules.
+		if ($new_value == 1) {
+			alerts_validate_alert_module($id_module);
+		}
 		
 		$id_agent_changed[] = modules_get_agentmodule_agent($id_module); 
 		$id_agent_module_changed[] = $id_module;

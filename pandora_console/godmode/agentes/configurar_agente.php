@@ -868,6 +868,11 @@ if ($update_agent) { // if modified some agent paramenter
 					'config_agents_update_config_token',
 					array($id_agente, 'standby', $disabled ? "1" : "0")
 				);
+				
+				// Validate alerts for disabled agents.
+				if ($disabled) {
+					alerts_validate_alert_agent($id_agente);
+				}
 			}
 
 			if($tpolicy_group_old){

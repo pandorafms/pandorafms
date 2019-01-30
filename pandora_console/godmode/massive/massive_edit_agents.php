@@ -159,6 +159,11 @@ if ($update_agents) {
 					'config_agents_update_config_token',
 					array($id_agent, 'standby', $values['disabled'])
 				);
+
+				// Validate alerts for disabled agents.
+				if ($values['disabled'] == 1) {
+					alerts_validate_alert_agent($id_agent);
+				}
 			}
 
 			if($group_old || $result){

@@ -34,31 +34,86 @@ require_once $config['homedir'].'/include/functions_notifications.php';
 
 
 /**
+ * Set targets for given messaje
+ *
+ * @param integer $message_id Message id.
+ * @param array   $users      An array with all target users.
+ * @param array   $groups     An array with all target groups.
+ *
+ * @return boolean Task status.
+ */
+function message_set_targets(
+    int $message_id,
+    array $users=null,
+    array $groups=null
+) {
+    if (empty($message_id)) {
+        return false;
+    }
+
+    if (is_array($users)) {
+        $values = [];
+        foreach ($users as $user) {
+            if (empty($user)) {
+                continue;
+            }
+
+            $values['id_mensaje'] = $message_id;
+            $values['id_user'] = $user;
+        }
+
+        if (!empty($values)) {
+            $ret = db_process_sql_insert('tnotification_user', $values);
+            if ($ret === false) {
+                return false;
+            }
+        }
+    }
+
+    if (is_array($groups)) {
+        $values = [];
+        foreach ($groups as $group) {
+            if (empty($group)) {
+                continue;
+            }
+
+            $values['id_mensaje'] = $message_id;
+            $values['id_group'] = $group;
+        }
+
+        if (!empty($values)) {
+            $ret = db_process_sql_insert('tnotification_group', $values);
+            if ($ret === false) {
+                return false;
+            }
+        }
+    }
+
+    return true;
+}
+
+
+/**
  * Creates a private message to be forwarded to other people
  *
- * @param string $usuario_origen  The sender of the message.
- * @param string $usuario_destino The receiver of the message.
- * @param string $subject         Subject of the message (much like E-Mail).
- * @param string $mensaje         The actual message. This message will be
- *                                cleaned by io_safe_input (html is allowed but
- *                                loose html chars will be translated).
+ * @param string $usuario_origen The sender of the message.
+ * @param array  $target_users   The receiver of the message.
+ * @param array  $target_groups  Target groups to be delivered.
+ * @param string $subject        Subject of the message (much like E-Mail).
+ * @param string $mensaje        The actual message. This message will be
+ *                               cleaned by io_safe_input (html is allowed but
+ *                               loose html chars will be translated).
  *
  * @return boolean true when delivered, false in case of error
  */
 function messages_create_message(
     string $usuario_origen,
-    string $usuario_destino,
+    array $target_users,
+    array $target_groups,
     string $subject,
     string $mensaje
 ) {
     $users = users_get_info();
-
-    if (!array_key_exists($usuario_origen, $users)
-        || !array_key_exists($usuario_destino, $users)
-    ) {
-        return false;
-        // Users don't exist so don't send to them.
-    }
 
     // Create message.
     $message_id = db_process_sql_insert(
@@ -75,13 +130,19 @@ function messages_create_message(
     // Update URL
     // Update targets.
     if ($message_id !== false) {
-        $return = db_process_sql_insert(
-            'tnotification_user',
-            [
-                'id_mensaje' => $message_id,
-                'id_user'    => $usuario_destino,
-            ]
+        $ret = message_set_targets(
+            $message_id,
+            $target_users,
+            $target_groups
         );
+        if ($ret === false) {
+            // Failed to deliver messages. Erase message and show error.
+            db_process_sql_delete(
+                'tmensajes',
+                ['id_mensaje' => $message_id]
+            );
+            return false;
+        }
     }
 
     if ($return === false) {
@@ -89,65 +150,6 @@ function messages_create_message(
     } else {
         return true;
     }
-}
-
-
-/**
- * Creates private messages to be forwarded to groups
- *
- * @param string $usuario_origen The sender of the message.
- * @param string $dest_group     The receivers (group) of the message.
- * @param string $subject        Subject of the message (much like E-Mail).
- * @param string $mensaje        The actual message. This message will be
- *                               cleaned by io_safe_input (html is allowed but
- *                               loose html chars will be translated).
- *
- * @return boolean true when delivered, false in case of error
- */
-function messages_create_group(
-    string $usuario_origen,
-    string $dest_group,
-    string $subject,
-    string $mensaje
-) {
-    $users = users_get_info();
-    $group_users = groups_get_users($dest_group);
-
-    if (! array_key_exists($usuario_origen, $users)) {
-        // Users don't exist in the system.
-        return false;
-    } else if (empty($group_users)) {
-        /*
-            There are no users in the group, so it hasn't failed
-            although it hasn't done anything.
-        */
-
-        return true;
-    }
-
-    // Array unique.
-    foreach ($group_users as $user) {
-        foreach ($user as $key => $us) {
-            if ($key == 'id_user') {
-                $group_user[$us] = $us;
-            }
-        }
-    }
-
-    foreach ($group_user as $user) {
-        $return = messages_create_message(
-            $usuario_origen,
-            get_user_id($user),
-            $subject,
-            $mensaje
-        );
-        if ($return === false) {
-            // Error sending message.
-            return false;
-        }
-    }
-
-    return true;
 }
 
 
@@ -160,8 +162,6 @@ function messages_create_group(
  */
 function messages_delete_message(int $id_message)
 {
-    global $config;
-    // 'id_usuario_destino' => $config["id_user"],
     $where = ['id_mensaje' => $id_message];
     return (bool) db_process_sql_delete('tmensajes', $where);
 }
@@ -208,10 +208,9 @@ function messages_get_message(int $message_id)
     global $config;
 
     $sql = sprintf(
-        "SELECT id_usuario_origen, id_usuario_destino, subject, mensaje, timestamp
+        'SELECT *
         FROM tmensajes
-        WHERE id_usuario_destino='%s' AND id_mensaje=%d",
-        $config['id_user'],
+        WHERE id_mensaje=%d',
         $message_id
     );
     $row = db_get_row_sql($sql);
@@ -239,7 +238,7 @@ function messages_get_message_sent(int $message_id)
     global $config;
 
     $sql = sprintf(
-        "SELECT id_usuario_origen, id_usuario_destino, subject, mensaje, timestamp
+        "SELECT id_usuario_origen, subject, mensaje, timestamp
         FROM tmensajes
         WHERE id_usuario_origen='%s' AND id_mensaje=%d",
         $config['id_user'],
@@ -250,6 +249,16 @@ function messages_get_message_sent(int $message_id)
     if (empty($row)) {
         return false;
     }
+
+    $targets = get_notification_targets($message_id);
+
+    $row['id_usuario_destino'] = implode(
+        ',',
+        $targets['users']
+    ).implode(
+        ',',
+        $targets['groups']
+    );
 
     return $row;
 }
@@ -281,15 +290,15 @@ function messages_get_count(
     }
 
     $sql = sprintf(
-        "SELECT count(*) FROM tmensajes tm 
+        "SELECT count(tm.id_mensaje) FROM tmensajes tm 
         left join tnotification_user nu
             ON tm.id_mensaje=nu.id_mensaje 
+            AND nu.id_user='%s'
         left join tnotification_group ng
             ON tm.id_mensaje=ng.id_mensaje 
         left join tusuario_perfil up
-            ON tm.id_mensaje=ng.id_mensaje
-            AND ng.id_group=up.id_grupo
-        WHERE (nu.id_user='%s' OR ng.id_group=0 OR up.id_grupo=ng.id_group)
+            ON ng.id_group=up.id_grupo
+            AND (ng.id_group=0 OR up.id_grupo=ng.id_group)
             %s",
         $config['id_user'],
         $filter
@@ -359,36 +368,21 @@ function messages_get_overview(
     }
 
     $sql = sprintf(
-        "SELECT * FROM tmensajes tm 
+        "SELECT tm.* FROM tmensajes tm 
         left join tnotification_user nu
             ON tm.id_mensaje=nu.id_mensaje 
+            AND nu.id_user='%s' 
         left join tnotification_group ng
             ON tm.id_mensaje=ng.id_mensaje 
         left join tusuario_perfil up
-            ON tm.id_mensaje=ng.id_mensaje
-            AND ng.id_group=up.id_grupo
-        WHERE (nu.id_user='%s' OR ng.id_group=0 OR up.id_grupo=ng.id_group)
+            ON ng.id_group=up.id_grupo
+            AND (ng.id_group=0 OR up.id_grupo=ng.id_group)
         ORDER BY %s",
         $config['id_user'],
         $order
     );
 
-    $result = [];
-    $return = db_get_all_rows_sql($sql);
-
-    if ($return === false) {
-        return $result;
-    }
-
-    foreach ($return as $message) {
-        $id_message = $message['id_mensaje'];
-        $result[$id_message]['sender'] = $message['id_usuario_origen'];
-        $result[$id_message]['subject'] = $message['subject'];
-        $result[$id_message]['timestamp'] = $message['timestamp'];
-        $result[$id_message]['status'] = $message['estado'];
-    }
-
-    return $result;
+    return db_get_all_rows_sql($sql);
 }
 
 
@@ -427,25 +421,10 @@ function messages_get_overview_sent(
         $order .= ' DESC';
     }
 
-    $result = [];
-    $return = db_get_all_rows_field_filter(
+    return db_get_all_rows_field_filter(
         'tmensajes',
         'id_usuario_origen',
         $config['id_user'],
         $order
     );
-
-    if ($return === false) {
-        return $result;
-    }
-
-    foreach ($return as $message) {
-        $id_message = $message['id_mensaje'];
-        $result[$id_message]['dest'] = $message['id_usuario_destino'];
-        $result[$id_message]['subject'] = $message['subject'];
-        $result[$id_message]['timestamp'] = $message['timestamp'];
-        $result[$id_message]['status'] = $message['estado'];
-    }
-
-    return $result;
 }

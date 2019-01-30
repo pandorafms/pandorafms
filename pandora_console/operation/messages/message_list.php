@@ -88,13 +88,10 @@ if ($delete_msg) {
 }
 
 if ($multiple_delete) {
-    $ids = (array) get_parameter('delete_multiple', []);
+    $ids = (array) get_parameter('delete_multiple_messages', []);
 
     foreach ($ids as $id) {
-        $result = db_process_sql_delete(
-            'tmensajes',
-            ['id_mensaje' => $id]
-        );
+        $result = messages_delete_message($id);
 
         if ($result === false) {
             break;
@@ -166,7 +163,9 @@ if (empty($messages)) {
     $table->head[3] = __('Timestamp');
     $table->head[4] = __('Delete').html_print_checkbox('all_delete_messages', 0, false, true, false);
 
-    foreach ($messages as $message_id => $message) {
+
+    foreach ($messages as $message) {
+        $message_id = $message['id_mensaje'];
         $data = [];
         $data[0] = '';
         if ($message['status'] == 1) {

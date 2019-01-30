@@ -1,6 +1,7 @@
 <?php
-/* Package Include/help/en
- */
+/*
+    Package Include/help/en
+*/
 ?>
 <h1>Agent GIS view</h1>
 

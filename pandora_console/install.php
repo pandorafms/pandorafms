@@ -487,7 +487,7 @@ function install_step2() {
 		echo "<h2>Checking software dependencies</h2>";
 			echo "<table border=0 width=230>";
 			$res = 0;
-			$res += check_variable(phpversion(),"5.2","PHP version >= 5.2",1);
+			$res += check_variable(phpversion(),"7.0","PHP version >= 7.0",1);
 			$res += check_extension("gd","PHP GD extension");
 			$res += check_extension("ldap","PHP LDAP extension");
 			$res += check_extension("snmp","PHP SNMP extension");
@@ -518,7 +518,6 @@ function install_step2() {
 				font-size: 8.5pt;margin-top: 2px; font-weight: bolder;'>DB Engines</span>";
 			echo "</td><td>";
 			echo "</td></tr>";
-			check_extension("mysql", "PHP MySQL extension");
 			check_extension("mysqli", "PHP MySQL(mysqli) extension");
 			echo "</table>";
 			

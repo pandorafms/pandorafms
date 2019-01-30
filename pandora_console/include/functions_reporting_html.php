@@ -3945,7 +3945,7 @@ function reporting_html_nt_top_n ($table, $item, $mini) {
 	$table_top->width = "100%";
 	$table_top->class = "databox data";
 	$table_top->head['host'] = __('Agent');
-	$table_top->head['bytes'] = __('Bytes');
+	$table_top->head['bytes'] = __('Kilobytes');
 	$table_top->head['pkts'] = __('Packages');
 
 	// Build the table for sent packages
@@ -3955,8 +3955,8 @@ function reporting_html_nt_top_n ($table, $item, $mini) {
 		foreach ($item["data"]["send"] as $s_item) {
 			$table_top->data[] = array(
 				'host' => $s_item["host"],
-				'bytes' => $s_item["sum_bytes"],
-				'pkts' => $s_item["sum_pkts"]
+				'bytes' => remove_right_zeros(number_format($s_item["sum_bytes"]/1024, $config['graph_precision'])),
+				'pkts' => remove_right_zeros(number_format($s_item["sum_pkts"], $config['graph_precision']))
 			);
 		}
 		$table->data["send_title"] = "<h3>" . __("Network traffic sent")  . "</h3>";
@@ -3971,8 +3971,8 @@ function reporting_html_nt_top_n ($table, $item, $mini) {
 		foreach ($item["data"]["recv"] as $s_item) {
 			$table_top->data[] = array(
 				'host' => $s_item["host"],
-				'bytes' => $s_item["sum_bytes"],
-				'pkts' => $s_item["sum_pkts"]
+				'bytes' => remove_right_zeros(number_format($s_item["sum_bytes"]/1024, $config['graph_precision'])),
+				'pkts' => remove_right_zeros(number_format($s_item["sum_pkts"], $config['graph_precision']))
 			);
 		}
 		$table->data["recv_title"] = "<h3>" . __("Network traffic received")  . "</h3>";

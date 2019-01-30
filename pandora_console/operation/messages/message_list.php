@@ -109,18 +109,20 @@ if ($show_sent) {
     // Sent view.
     $num_messages = messages_get_count_sent($config['id_user']);
     if ($num_messages > 0 && !is_ajax()) {
-        echo '<p>'.__('You have').' <b>'.$num_messages.'</b>'.__('sent message(s)').'.</p>';
+        echo '<p>'.__('You have').' <b>'.$num_messages.'</b> '.__('sent message(s)').'.</p>';
     }
 
     $messages = messages_get_overview_sent('', 'DESC');
 } else {
     // Messages received.
-    $num_messages = messages_get_count($config['id_user']);
+    $num_messages = messages_get_count($config['id_user'], true);
     if ($num_messages > 0 && !is_ajax()) {
-        echo '<p>'.__('You have').' <b>'.$num_messages.'</b>'.__('unread message(s)').'.</p>';
+        $unread_messages = messages_get_count($config['id_user']);
+        echo '<p>'.__('You have').' <b>'.$unread_messages.'</b> '.__('unread message(s)').'.</p>';
+        $messages = messages_get_overview();
+    } else {
+        $messages = messages_get_overview('status', 'ASC', false);
     }
-
-    $messages = messages_get_overview();
 }
 
 if (empty($messages)) {
@@ -168,7 +170,7 @@ if (empty($messages)) {
         $message_id = $message['id_mensaje'];
         $data = [];
         $data[0] = '';
-        if ($message['status'] == 1) {
+        if ($message['read'] == 1) {
             if ($show_sent) {
                 $data[0] .= '<a href="index.php?sec=message_list&amp;sec2=operation/messages/message_edit&read_message=1&amp;show_sent=1&amp;id_message='.$message_id.'">';
                 $data[0] .= html_print_image('images/email_open.png', true, ['border' => 0, 'title' => __('Click to read')]);

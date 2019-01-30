@@ -81,14 +81,19 @@ function get_notification_targets(int $id_message)
 
     if (is_array($ret)) {
         foreach ($ret as $row) {
-            array_push($targets['users'], $row['id_user']);
+            array_push(
+                $targets['users'],
+                get_user_fullname($row['id_user'])
+            );
         }
     }
 
-    $ret = $targets['groups'] = db_get_all_rows_sql(
+    $ret = db_get_all_rows_sql(
         sprintf(
-            'SELECT id_group
+            'SELECT COALESCE(tg.nombre,ng.id_group) as "id_group"
                 FROM tnotification_group ng
+                LEFT JOIN tgrupo tg
+                    ON tg.id_grupo=ng.id_group
                 WHERE ng.id_mensaje = %d',
             $id_message
         )
@@ -96,9 +101,49 @@ function get_notification_targets(int $id_message)
 
     if (is_array($ret)) {
         foreach ($ret as $row) {
+            if ($row['id_group'] == '0') {
+                $row['id_group'] = '<b>'.__('All').'</b>';
+            }
+
             array_push($targets['groups'], $row['id_group']);
         }
     }
 
     return $targets;
+}
+
+
+/**
+ * Check if current user has grants to read this notification
+ *
+ * @param integer $id_message Target message.
+ *
+ * @return boolean true, read available. False if not.
+ */
+function check_notification_readable(int $id_message)
+{
+    global $config;
+
+    if (empty($id_message)) {
+        return false;
+    }
+
+    $sql = sprintf(
+        'SELECT tm.*, utimestamp_read > 0 as "read" FROM tmensajes tm 
+            LEFT JOIN tnotification_user nu
+                ON tm.id_mensaje=nu.id_mensaje 
+                AND tm.id_mensaje=%d
+            LEFT JOIN (tnotification_group ng
+                INNER JOIN tusuario_perfil up
+                    ON ng.id_group=up.id_grupo
+                    AND up.id_grupo=ng.id_group
+            ) ON tm.id_mensaje=ng.id_mensaje 
+            WHERE utimestamp_erased is null
+                AND (up.id_usuario="%s" OR nu.id_user="%s" OR ng.id_group=0)',
+        $id_message,
+        $config['id_user'],
+        $config['id_user']
+    );
+
+    return (bool) db_get_value_sql($sql);
 }

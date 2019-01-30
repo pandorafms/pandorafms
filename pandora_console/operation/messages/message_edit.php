@@ -90,7 +90,7 @@ if ($read_message) {
         messages_process_read($message_id);
     }
 
-    if ($message == false) {
+    if ($message === false) {
         echo '<div>'.__('This message does not exist in the system').'</div>';
         return;
         // Move out of this page and go processing other pages.

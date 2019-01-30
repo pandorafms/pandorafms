@@ -73,7 +73,7 @@ function message_set_targets(
     if (is_array($groups)) {
         $values = [];
         foreach ($groups as $group) {
-            if (empty($group)) {
+            if ($group != 0 && empty($group)) {
                 continue;
             }
 
@@ -162,8 +162,43 @@ function messages_create_message(
  */
 function messages_delete_message(int $id_message)
 {
-    $where = ['id_mensaje' => $id_message];
-    return (bool) db_process_sql_delete('tmensajes', $where);
+    global $config;
+
+    // Check if user has grants to access the message.
+    if (check_notification_readable($id_message) === false) {
+        return false;
+    }
+
+    $utimestamp = time();
+
+    $ret = db_process_sql_update(
+        'tnotification_user',
+        ['utimestamp_erased' => $utimestamp],
+        [
+            'id_mensaje' => $id_message,
+            'id_user'    => $config['id_user'],
+        ]
+    );
+
+    if ($ret === 0) {
+        // No previous updates.
+        // Message available to user due group assignment.
+        $ret = db_process_sql_insert(
+            'tnotification_user',
+            [
+                'id_mensaje'        => $id_message,
+                'id_user'           => $config['id_user'],
+                'utimestamp_erased' => $utimestamp,
+            ]
+        );
+
+        // Quick fix. Insertions returns 0.
+        if ($ret !== false) {
+            $ret = 1;
+        }
+    }
+
+    return (bool) $ret;
 }
 
 
@@ -179,17 +214,45 @@ function messages_process_read(
     int $message_id,
     bool $read=true
 ) {
-    if (empty($read)) {
-        $read = 0;
-    } else {
-        $read = 1;
+    global $config;
+
+    // Check if user has grants to read the message.
+    if (check_notification_readable($message_id) === false) {
+        return false;
     }
 
-    return (bool) db_process_sql_update(
-        'tmensajes',
-        ['estado' => $read],
-        ['id_mensaje' => $message_id]
+    if (empty($read)) {
+        // Mark as unread.
+        $utimestamp = null;
+    } else {
+        // Mark as read.
+        $utimestamp = time();
+    }
+
+    $ret = db_process_sql_update(
+        'tnotification_user',
+        ['utimestamp_read' => $utimestamp],
+        [
+            'id_mensaje'      => $message_id,
+            'id_user'         => $config['id_user'],
+            'utimestamp_read' => null,
+        ]
     );
+
+    if ($ret === 0) {
+        // No previous updates.
+        // Message available to user due group assignment.
+        $ret = db_process_sql_insert(
+            'tnotification_user',
+            [
+                'id_mensaje'      => $message_id,
+                'id_user'         => $config['id_user'],
+                'utimestamp_read' => $utimestamp,
+            ]
+        );
+    }
+
+    return (bool) $ret;
 }
 
 
@@ -207,10 +270,17 @@ function messages_get_message(int $message_id)
 {
     global $config;
 
+    // Check if user has grants to read the message.
+    if (check_notification_readable($message_id) === false) {
+        return false;
+    }
+
     $sql = sprintf(
-        'SELECT *
-        FROM tmensajes
-        WHERE id_mensaje=%d',
+        'SELECT *, nu.utimestamp_read > 0 as "read"
+        FROM tmensajes tm
+        LEFT JOIN tnotification_user nu
+            ON nu.id_mensaje = tm.id_mensaje
+        WHERE tm.id_mensaje=%d',
         $message_id
     );
     $row = db_get_row_sql($sql);
@@ -218,6 +288,8 @@ function messages_get_message(int $message_id)
     if (empty($row)) {
         return false;
     }
+
+    $row['id_usuario_destino'] = $config['id_user'];
 
     return $row;
 }
@@ -255,7 +327,7 @@ function messages_get_message_sent(int $message_id)
     $row['id_usuario_destino'] = implode(
         ',',
         $targets['users']
-    ).implode(
+    ).','.implode(
         ',',
         $targets['groups']
     );
@@ -282,26 +354,30 @@ function messages_get_count(
     }
 
     if (!empty($incl_read)) {
-        // Retrieve only unread messages.
-        $filter = 'AND nu.uptimestap_read == NULL';
-    } else {
         // Do not filter.
-        $filter = '';
+        $read = '';
+    } else {
+        // Retrieve only unread messages.
+        $read = 'where t.read is null';
     }
 
     $sql = sprintf(
-        "SELECT count(tm.id_mensaje) FROM tmensajes tm 
-        left join tnotification_user nu
-            ON tm.id_mensaje=nu.id_mensaje 
-            AND nu.id_user='%s'
-        left join tnotification_group ng
-            ON tm.id_mensaje=ng.id_mensaje 
-        left join tusuario_perfil up
-            ON ng.id_group=up.id_grupo
-            AND (ng.id_group=0 OR up.id_grupo=ng.id_group)
-            %s",
-        $config['id_user'],
-        $filter
+        'SELECT count(*) FROM (
+            SELECT tm.*, utimestamp_read > 0 as "read" FROM tmensajes tm 
+            LEFT JOIN tnotification_user nu
+                ON tm.id_mensaje=nu.id_mensaje 
+            LEFT JOIN (tnotification_group ng
+                INNER JOIN tusuario_perfil up
+                    ON ng.id_group=up.id_grupo
+                    AND up.id_grupo=ng.id_group
+            ) ON tm.id_mensaje=ng.id_mensaje 
+            WHERE utimestamp_erased is null
+                AND (up.id_usuario="%s" OR nu.id_user="%s" OR ng.id_group=0)
+        ) t 
+        %s',
+        $user,
+        $user,
+        $read
     );
 
     return (int) db_get_sql($sql);
@@ -335,16 +411,18 @@ function messages_get_count_sent(string $user='')
 /**
  * Get message overview in array
  *
- * @param string $order     How to order them valid:
- *                          (status (default), subject, timestamp, sender).
- * @param string $order_dir Direction of order
- *                          (ASC = Ascending, DESC = Descending).
+ * @param string  $order     How to order them valid:
+ *                           (status (default), subject, timestamp, sender).
+ * @param string  $order_dir Direction of order
+ *                           (ASC = Ascending, DESC = Descending).
+ * @param boolean $incl_read Include read messages in return.
  *
  * @return integer The number of messages this user has
  */
 function messages_get_overview(
     string $order='status',
-    string $order_dir='ASC'
+    string $order_dir='ASC',
+    bool $incl_read=true
 ) {
     global $config;
 
@@ -367,18 +445,32 @@ function messages_get_overview(
         $order .= ' DESC';
     }
 
+    if (!empty($incl_read)) {
+        // Do not filter.
+        $read = '';
+    } else {
+        // Retrieve only unread messages.
+        $read = 'where t.read is null';
+    }
+
     $sql = sprintf(
-        "SELECT tm.* FROM tmensajes tm 
-        left join tnotification_user nu
-            ON tm.id_mensaje=nu.id_mensaje 
-            AND nu.id_user='%s' 
-        left join tnotification_group ng
-            ON tm.id_mensaje=ng.id_mensaje 
-        left join tusuario_perfil up
-            ON ng.id_group=up.id_grupo
-            AND (ng.id_group=0 OR up.id_grupo=ng.id_group)
-        ORDER BY %s",
+        'SELECT * FROM (
+            SELECT tm.*, utimestamp_read > 0 as "read" FROM tmensajes tm 
+            LEFT JOIN tnotification_user nu
+                ON tm.id_mensaje=nu.id_mensaje 
+            LEFT JOIN (tnotification_group ng
+                INNER JOIN tusuario_perfil up
+                    ON ng.id_group=up.id_grupo
+                    AND up.id_grupo=ng.id_group
+            ) ON tm.id_mensaje=ng.id_mensaje 
+            WHERE utimestamp_erased is null
+                AND (up.id_usuario="%s" OR nu.id_user="%s" OR ng.id_group=0)
+        ) t 
+        %s
+        ORDER BY %s',
         $config['id_user'],
+        $config['id_user'],
+        $read,
         $order
     );
 

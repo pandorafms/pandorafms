@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "target": "es5",
+    "module": "es6",
+    "strict": true,
+    "alwaysStrict": true,
+    "allowJs": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true,
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "sourceMap": true,
+    // "isolatedModules": true,
+    "noEmit": true,
+    "noImplicitAny": true,
+    "noImplicitReturns": true,
+    "pretty": true
+  },
+  "include": ["**/*.ts"],
+  "exclude": ["node_modules"]
+}

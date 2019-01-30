@@ -1,0 +1,37 @@
+{
+  "name": "pandora-fms-visual-console",
+  "version": "1.0.0",
+  "description": "Visual Console",
+  "scripts": {
+    "test": "echo \"Not implemented\" && exit 1",
+    "build": "webpack --mode=production",
+    "build:dev": "webpack --mode=development",
+    "build:watch": "webpack --mode=development --watch",
+    "start": "webpack-dev-server --color --mode=development",
+    "format": "prettier"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pandorafms/pandorafms.git"
+  },
+  "author": "Alejandro Gallardo Escobar <alejandro.gallardo@artica.es>",
+  "license": "GPL2",
+  "private": true,
+  "bugs": {
+    "url": "https://github.com/pandorafms/pandorafms/issues"
+  },
+  "homepage": "https://github.com/pandorafms/pandorafms#readme",
+  "dependencies": {
+    "@typescript-eslint/eslint-plugin": "^1.1.1",
+    "@typescript-eslint/parser": "^1.1.1",
+    "awesome-typescript-loader": "^5.2.1",
+    "eslint": "^5.12.1",
+    "eslint-config-prettier": "^4.0.0",
+    "eslint-plugin-prettier": "^3.0.1",
+    "prettier": "^1.16.1",
+    "typescript": "^3.2.4",
+    "webpack": "^4.29.0",
+    "webpack-cli": "^3.2.1",
+    "webpack-dev-server": "^3.1.14"
+  }
+}

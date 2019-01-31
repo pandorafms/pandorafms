@@ -32,10 +32,14 @@ if (get_parameter('update_config', 0)) {
 		$id = notifications_desc_to_id($source['description']);
 		if (empty($id)) return false;
 		$enable_value = switch_to_int(get_parameter("enable-$id"));
+		$mail_value = (int)get_parameter("mail-{$id}", 0);
+		$user_value = (int)get_parameter("user-{$id}", 0);
 		$res = mysql_db_process_sql_update(
 			'tnotification_source',
 			array(
-				'enabled' => $enable_value),
+				'enabled' => $enable_value,
+				'user_editable' => $user_value,
+				'also_mail' => $mail_value),
 			array('id' => $source['id'])
 		);
 		return $res && $carry;

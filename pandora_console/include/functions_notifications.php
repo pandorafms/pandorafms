@@ -192,8 +192,9 @@ function notifications_print_ball() {
 function notifications_print_global_source_configuration($source) {
 
     // Get some values to generate the title
+    $id = notifications_desc_to_id($source['description']);
     $switch_values = array (
-        'name' => "enable-" . notifications_desc_to_id($source['description']),
+        'name' => "enable-" . $id,
         'value' => $source['enabled']
     );
     // Generate the title
@@ -202,6 +203,17 @@ function notifications_print_global_source_configuration($source) {
     $html_title .=    "<h2>{$source['description']}</h2>";
     $html_title .= "</div>";
 
+    // Generate the checkboxes and time select
+    $html_checkboxes = "<div class='global-config-notification-checkboxes'>";
+    $html_checkboxes .= "   <span>";
+    $html_checkboxes .=         html_print_checkbox("mail-$id", 1, $source['also_mail'], true);
+    $html_checkboxes .=         __('Also email users with notification content');
+    $html_checkboxes .= "   </span><br><span>";
+    $html_checkboxes .=         html_print_checkbox("user-$id", 1, $source['user_editable'], true);
+    $html_checkboxes .=         __('Users cannot modify notification preferences');
+    $html_checkboxes .= "   </span>";
+    $html_checkboxes .= "</div>";
+
     // Return all html
-    return $html_title;
+    return $html_title . $html_checkboxes;
 }

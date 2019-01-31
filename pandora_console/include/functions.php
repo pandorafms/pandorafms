@@ -3516,4 +3516,15 @@ function mask2cidr($mask){
 	return 32-log(($long ^ $base)+1,2);
 }
 
+/**
+ * Convert the checkbox result to 1 or 0
+ *
+ * @param string $value Param returned by swith fomulary.
+ *
+ * @return int 1 if value is "on". 0 otherwise.
+ */
+function switch_to_int(string $value) {
+	return $value === "on" ? 1 : 0;
+}
+
 ?>

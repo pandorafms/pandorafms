@@ -5175,3 +5175,59 @@ input[type="submit"].ui-button-dialog {
   width: 90px !important;
 }
 /* --- END - JQUERY-UI --- */
+
+/* --- SWITCH --- */
+.p-switch {
+  position: relative;
+  display: inline-block;
+  width: 30px;
+  height: 17px;
+}
+
+.p-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.p-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  -webkit-transition: 0.4s;
+  transition: 0.4s;
+  border-radius: 34px;
+}
+
+.p-slider:before {
+  position: absolute;
+  content: "";
+  height: 13px;
+  width: 13px;
+  left: 2px;
+  bottom: 2px;
+  background-color: white;
+  -webkit-transition: 0.4s;
+  transition: 0.4s;
+  border-radius: 50%;
+}
+
+input:checked + .p-slider {
+  background-color: #82b92e;
+}
+
+input:focus + .p-slider {
+  box-shadow: 0 0 1px #82b92e;
+}
+
+input:checked + .p-slider:before {
+  -webkit-transform: translateX(13px);
+  -ms-transform: translateX(13px);
+  transform: translateX(13px);
+}
+
+/* --- END SWITCH --- */

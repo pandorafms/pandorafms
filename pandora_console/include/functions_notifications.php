@@ -27,6 +27,7 @@
  * ============================================================================
  */
 
+define('NOTIFICATIONS_POSTPONE_FOREVER', -1);
 
 /**
  * Retrieves source ID for given source.
@@ -214,6 +215,26 @@ function notifications_print_global_source_configuration($source) {
     $html_checkboxes .= "   </span>";
     $html_checkboxes .= "</div>";
 
+    // Generate the select with the time
+    $html_select_pospone = __('Users can postpone notifications up to');
+    $html_select_pospone .= html_print_select (
+		array(
+            SECONDS_5MINUTES => __('5 minutes'),
+            SECONDS_15MINUTES => __('15 minutes'),
+            SECONDS_12HOURS => __('12 hours'),
+            SECONDS_1DAY => __('1 day'),
+            SECONDS_1WEEK => __('1 week'),
+            SECONDS_15DAYS => __('15 days'),
+            SECONDS_1MONTH => __('1 month'),
+            NOTIFICATIONS_POSTPONE_FOREVER => __('forever')),
+        "postpone-{$id}",
+        $source['max_postpone_time'],
+        '',
+        '',
+        0,
+        true
+    );
+
     // Return all html
-    return $html_title . $html_checkboxes;
+    return $html_title . $html_checkboxes . $html_select_pospone;
 }

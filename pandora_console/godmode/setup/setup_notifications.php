@@ -34,12 +34,15 @@ if (get_parameter('update_config', 0)) {
 		$enable_value = switch_to_int(get_parameter("enable-$id"));
 		$mail_value = (int)get_parameter("mail-{$id}", 0);
 		$user_value = (int)get_parameter("user-{$id}", 0);
+		$postpone_value = (int)get_parameter("postpone-{$id}", 0);
 		$res = mysql_db_process_sql_update(
 			'tnotification_source',
 			array(
 				'enabled' => $enable_value,
 				'user_editable' => $user_value,
-				'also_mail' => $mail_value),
+				'also_mail' => $mail_value,
+				'max_postpone_time' => $postpone_value
+			),
 			array('id' => $source['id'])
 		);
 		return $res && $carry;

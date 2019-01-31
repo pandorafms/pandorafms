@@ -4912,6 +4912,23 @@ div#dialog_messages table th:last-child {
   text-align: right;
 }
 
+.notification-ball {
+  border: white solid 2px;
+  border-radius: 50px;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.notification-ball-no-messages {
+  background-color: #82b92e;
+}
+.notification-ball-new-messages {
+  background-color: #fc4444;
+}
+
 /* --- JQUERY-UI --- */
 .ui-button-text-only .ui-button-text {
   font-family: "nunito", sans-serif;

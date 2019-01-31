@@ -147,3 +147,19 @@ function check_notification_readable(int $id_message)
 
     return (bool) db_get_value_sql($sql);
 }
+
+/**
+ * Print the notification ball to see unread messages
+ *
+ * @return string with HTML code of notification ball
+ */
+function notifications_print_ball() {
+    $num_notifications = messages_get_count();
+    $class_status = $num_notifications == 0
+        ? 'notification-ball-no-messages'
+        : 'notification-ball-new-messages';
+    return
+        "<div class='notification-ball $class_status' id='notification-ball-header'>
+            $num_notifications
+        </div>";
+}

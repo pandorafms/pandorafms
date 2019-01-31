@@ -1953,6 +1953,25 @@ CREATE TABLE `tnotification_source_group` (
     `id_source` BIGINT(20) UNSIGNED NOT NULL,
     `id_group` mediumint(4) unsigned NOT NULL,
     PRIMARY KEY (`id_source`,`id_group`),
+	INDEX (`id_group`),
     FOREIGN KEY (`id_source`) REFERENCES `tnotification_source`(`id`)
+        ON UPDATE CASCADE ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------------------------------------------------
+-- Table `tnotification_source_user`
+-- ----------------------------------------------------------------------
+CREATE TABLE `tnotification_source_group_user` (
+    `id_source` BIGINT(20) UNSIGNED NOT NULL,
+    `id_group` mediumint(4) unsigned NOT NULL,
+    `id_user` VARCHAR(60),
+    `enabled` INT(1) DEFAULT NULL,
+    `also_mail` INT(1) DEFAULT NULL,
+    PRIMARY KEY (`id_source`,`id_user`),
+    FOREIGN KEY (`id_source`) REFERENCES `tnotification_source`(`id`)
+        ON UPDATE CASCADE ON DELETE CASCADE,
+    FOREIGN KEY (`id_user`) REFERENCES `tusuario`(`id_user`)
+        ON UPDATE CASCADE ON DELETE CASCADE,
+    FOREIGN KEY (`id_group`) REFERENCES `tnotification_source_group`(`id_group`)
         ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

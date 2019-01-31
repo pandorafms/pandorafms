@@ -4929,6 +4929,16 @@ div#dialog_messages table th:last-child {
   background-color: #fc4444;
 }
 
+.global-config-notification-title {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.global-config-notification-title h2 {
+  margin-left: 10px;
+}
+
 /* --- JQUERY-UI --- */
 .ui-button-text-only .ui-button-text {
   font-family: "nunito", sans-serif;

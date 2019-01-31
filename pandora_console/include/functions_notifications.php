@@ -42,15 +42,24 @@ function get_notification_source_id(string $source)
     }
 
     return db_get_value_sql(
-        sprintf(
-            'SELECT id
-                FROM `tnotification_source`
-                WHERE lower(`description`) = lower("%s")',
-            $source
-        )
+        "SELECT id
+            FROM `tnotification_source`
+            WHERE `description` LIKE '{$source}%'"
     );
 }
 
+/**
+ * Converts description into a handable identifier
+ *
+ * @param string $desc Full description
+ *
+ * @return string First word in lowercase. Empty string if no word detected.
+ */
+function notifications_desc_to_id(string $desc) {
+    preg_match('/^[a-zA-Z]*/', $desc, $matches);
+    $match = $matches[0];
+    return isset($match) ? $match : '';
+}
 
 /**
  * Retrieve all targets for given message.
@@ -149,6 +158,15 @@ function check_notification_readable(int $id_message)
 }
 
 /**
+ * Return all info from tnotification_source
+ *
+ * @return array with sources info
+ */
+function notifications_get_all_sources() {
+    return mysql_db_get_all_rows_in_table('tnotification_source');
+}
+
+/**
  * Print the notification ball to see unread messages
  *
  * @return string with HTML code of notification ball
@@ -162,4 +180,28 @@ function notifications_print_ball() {
         "<div class='notification-ball $class_status' id='notification-ball-header'>
             $num_notifications
         </div>";
+}
+
+/**
+ * Print notification configuration global
+ *
+ * @param array notification source data
+ *
+ * @return string with HTML of source configuration
+ */
+function notifications_print_global_source_configuration($source) {
+
+    // Get some values to generate the title
+    $switch_values = array (
+        'name' => "enable-" . notifications_desc_to_id($source['description']),
+        'value' => $source['enabled']
+    );
+    // Generate the title
+    $html_title = "<div class='global-config-notification-title'>";
+    $html_title .=     html_print_switch($switch_values);
+    $html_title .=    "<h2>{$source['description']}</h2>";
+    $html_title .= "</div>";
+
+    // Return all html
+    return $html_title;
 }

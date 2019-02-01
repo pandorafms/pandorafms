@@ -481,12 +481,7 @@ if ($config['pure'] == 0 || $meta) {
     ?>
     <script type="text/javascript">
         function openSoundEventWindow() {
-            url = '
-    <?php
-    echo ui_get_full_url('operation/events/sound_events.php');
-    ?>
-    ';
-            
+            url = "<?php echo ui_get_full_url('operation/events/sound_events.php'); ?>";
             window.open(url, '<?php __('Sound Alerts'); ?>','width=600, height=450, toolbar=no, location=no, directories=no, status=no, menubar=no, resizable=no'); 
         }
     </script>

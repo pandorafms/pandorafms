@@ -1460,77 +1460,52 @@ $(".logo_preview").click (function(e) {
         title: "<?php echo __('Logo preview'); ?>"
     };
 
+    var homeUrl = "<?php echo $config['homeurl']; ?>";
+    var homeUrlEnt = homeUrl + "<?php echo enterprise_installed() ? 'enterprise/' : ''; ?>";
+
     // Fill it seing the target has been clicked
     switch (e.target.id) {
         case 'button-custom_logo_preview':
             icon_name = $("select#custom_logo option:selected").val();
-            icon_path = "
-            <?php
-            echo $config['homeurl'];
-            if (enterprise_installed()) {
-                echo 'enterprise/';
-            }
-            ?>
-            images/custom_logo/" + icon_name;
+            icon_path = homeUrlEnt + "images/custom_logo/" + icon_name;
             options.grayed = true;
             break;
         case 'button-custom_logo_white_bg_preview':
             icon_name = $("select#custom_logo_white_bg option:selected").val();
-            icon_path = "
-            <?php
-            echo $config['homeurl'];
-            if (enterprise_installed()) {
-                echo 'enterprise/';
-            }
-            ?>
-            images/custom_logo/" + icon_name;
+            icon_path = homeUrlEnt + "images/custom_logo/" + icon_name;
             break;
         case 'button-custom_logo_login_preview':
             icon_name = $("select#custom_logo_login option:selected").val();
-            icon_path = "
-            <?php
-            echo $config['homeurl'];
-            if (enterprise_installed()) {
-                echo 'enterprise/';
-            }
-            ?>
-            images/custom_logo_login/" + icon_name;
+            icon_path = homeUrlEnt + "images/custom_logo_login/" + icon_name;
             options.grayed = true;
             break;
         case 'button-custom_splash_login_preview':
             icon_name = $("select#custom_splash_login option:selected").val();
-            icon_path = "
-            <?php
-            echo $config['homeurl'];
-            if (enterprise_installed()) {
-                echo 'enterprise/';
-            }
-            ?>
-            images/custom_splash_login/" + icon_name;
+            icon_path = homeUrlEnt + "images/custom_splash_login/" + icon_name;
             options.title = "<?php echo __('Splash Preview'); ?>";
             break;
         case 'button-custom_docs_logo_preview':
             icon_name = $("select#custom_docs_logo option:selected").val();
-            icon_path = "<?php echo $config['homeurl']; ?>enterprise/images/custom_general_logos/" + icon_name;
+            icon_path = homeUrlEnt + "images/custom_general_logos/" + icon_name;
             options.grayed = true;
             break;
         case 'button-custom_support_logo_preview':
             icon_name = $("select#custom_support_logo option:selected").val();
-            icon_path = "<?php echo $config['homeurl']; ?>enterprise/images/custom_general_logos/" + icon_name;
+            icon_path = homeUrlEnt + "images/custom_general_logos/" + icon_name;
             options.grayed = true;
             break;
         case 'button-custom_network_center_logo_preview':
             icon_name = $("select#custom_network_center_logo option:selected").val();
-            icon_path = "<?php echo $config['homeurl']; ?>enterprise/images/custom_general_logos/" + icon_name;
+            icon_path = homeUrlEnt + "images/custom_general_logos/" + icon_name;
             break;
         case 'button-custom_mobile_console_logo_preview':
             icon_name = $("select#custom_mobile_console_logo option:selected").val();
-            icon_path = "<?php echo $config['homeurl']; ?>enterprise/images/custom_general_logos/" + icon_name;
+            icon_path = homeUrlEnt + "images/custom_general_logos/" + icon_name;
             options.title = "<?php echo __('Mobile console logo preview'); ?>";
             break;
         case 'button-login_background_preview':
             icon_name = $("select#login_background option:selected").val();
-            icon_path = "<?php echo $config['homeurl']; ?>/images/backgrounds/" + icon_name;
+            icon_path = homeUrl + "images/backgrounds/" + icon_name;
             options.title = "<?php echo __('Background preview'); ?>";
             break;
     }
@@ -1541,7 +1516,7 @@ $(".logo_preview").click (function(e) {
 
 $("#button-gis_icon_preview").click (function (e) {
     var icon_prefix = $("select#gis_default_icon option:selected").val();
-    var icon_path = "<?php echo $config['homeurl']; ?>/images/gis_map/icons/" + icon_prefix;
+    var icon_path = homeUrl + "images/gis_map/icons/" + icon_prefix;
 
     if (icon_prefix == "")
         return;

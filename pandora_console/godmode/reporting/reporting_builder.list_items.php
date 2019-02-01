@@ -682,13 +682,7 @@ function toggleFormFilter() {
 function message_check_sort_items() {
     var return_value = false;
     
-    return_value = confirm("
-    <?php
-    echo __(
-        "Are you sure to sort the items into the report?\\n".'This action change the sorting of items into data base.'
-    );
-    ?>
-  ");
+    return_value = confirm('<?php echo __("Are you sure to sort the items into the report?\\n. This action change the sorting of items into data base."); ?>');
     
     return return_value;
 }

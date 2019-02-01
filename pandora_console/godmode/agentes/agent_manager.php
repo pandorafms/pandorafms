@@ -1013,12 +1013,11 @@ ui_require_jquery_file('bgiframe');
         });
 
         paint_qrcode(
-            "
-    <?php
-    echo ui_get_full_url('mobile/index.php?page=agent&id='.$id_agente);
-    ?>
-   ",
-            "#qr_code_agent_view", 128, 128);
+            "<?php echo ui_get_full_url('mobile/index.php?page=agent&id='.$id_agente); ?>",
+            "#qr_code_agent_view",
+            128,
+            128
+        );
         $("#text-agente").prop('disabled', true);
 
     });

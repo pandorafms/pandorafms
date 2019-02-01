@@ -292,24 +292,17 @@ ui_require_javascript_file('tiny_mce', 'include/javascript/tiny_mce/');
 
 <script type="text/javascript">
 $(document).ready (function () {
-    <?php
-    if ($id_command) {
-        ?>
-        original_command = "
-        <?php
-        $command = alerts_get_alert_command_command($id_command);
-            $command = io_safe_output($command);
-            echo addslashes($command);
-        ?>
-   ";
-        render_command_preview (original_command);
+    var original_command;
+    var origicommand_descriptionnal_command;
+
+    if (<?php echo (int) $id_command; ?>) {
+        original_command = "<?php echo addslashes(io_safe_output(alerts_get_alert_command_command($id_command))); ?>";
+        render_command_preview(original_command);
         command_description = "<?php echo str_replace("\r\n", '<br>', addslashes(io_safe_output(alerts_get_alert_command_description($id_command)))); ?>";
         
         render_command_description(command_description);
-        <?php
     }
-    ?>
-    
+
     $("#id_command").change (function () {
         values = Array ();
         values.push({

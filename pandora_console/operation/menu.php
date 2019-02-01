@@ -350,15 +350,13 @@ if (check_acl($config['id_user'], 0, 'ER')
     ?>
     <script type="text/javascript">
     function openSoundEventWindow() {
-        url = '
-    <?php
-    echo ui_get_full_url('operation/events/sound_events.php');
-    ?>
-   ';
+        url = '<?php echo ui_get_full_url('operation/events/sound_events.php'); ?>';
         
-        window.open(url,
+        window.open(
+            url,
             '<?php __('Sound Alerts'); ?>',
-            'width=600, height=450, resizable=no, toolbar=no, location=no, directories=no, status=no, menubar=no');
+            'width=600, height=450, resizable=no, toolbar=no, location=no, directories=no, status=no, menubar=no'
+        );
     }
     </script>
     <?php
@@ -535,4 +533,3 @@ $operation_menu_array = $menu_operation;
 if (!$config['pure']) {
     menu_print_menu($menu_operation, true);
 }
-

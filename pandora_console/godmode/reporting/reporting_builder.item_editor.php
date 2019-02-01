@@ -3737,11 +3737,7 @@ function set_last_value_period() {
     if (checked) {
         $("#row_period").hide();
         period_set_value($("#hidden-period").attr('class'), 0);
-        alert("
-    <?php
-    echo __('Warning: period 0 reports cannot be used to show information back in time. Information contained in this kind of reports will be always reporting the most recent information');
-    ?>
-   ");
+        alert("<?php echo __('Warning: period 0 reports cannot be used to show information back in time. Information contained in this kind of reports will be always reporting the most recent information'); ?>");
     }
     else {
         $("#row_period").show();

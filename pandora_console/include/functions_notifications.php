@@ -167,6 +167,13 @@ function notifications_get_all_sources() {
     return mysql_db_get_all_rows_in_table('tnotification_source');
 }
 
+/**
+ * Return the user sources to be inserted into a select
+ *
+ * @param int $source_id Source database identificator
+ *
+ * @return array with the user id in keys and user id in value too
+ */
 function notifications_get_user_sources_for_select($source_id) {
     $users = db_get_all_rows_filter(
         'tnotification_source_user',
@@ -179,6 +186,14 @@ function notifications_get_user_sources_for_select($source_id) {
     return index_array($users, 'id_user', 'id_user');
 }
 
+
+/**
+ * Return the groups sources to be inserted into a select
+ *
+ * @param int $source_id Source database identificator
+ *
+ * @return array with the group id in keys and group name in value
+ */
 function notifications_get_group_sources_for_select($source_id) {
     $users = db_get_all_rows_filter(
         'tnotification_source_group tnsg
@@ -270,6 +285,14 @@ function notifications_print_global_source_configuration($source) {
     return $html_title . $html_selectors . $html_checkboxes . $html_select_pospone;
 }
 
+/**
+ * Print select boxes of notified users or groups
+ *
+ * @param array $info_selec All info required for build the selector
+ * @param string $id users|groups
+ *
+ * @return string HTML with the generated selector
+ */
 function notifications_print_source_select_box($info_selec, $id) {
 
     $title = $id == "users" ? __('Notified users') : __('Notified groups');
@@ -280,6 +303,7 @@ function notifications_print_source_select_box($info_selec, $id) {
     $html_select = "<div class='global-config-notification-single-selector'>";
     $html_select .= "   <div>";
     $html_select .= "       <h4>$title</h4>";
+    // Put a true if empty sources to avoid to sow the 'None' value
     $html_select .=         html_print_select(empty($info_selec) ? true : $info_selec, "multi-{$id}[]", 0, false, '', '', true, true);
     $html_select .= "   </div>";
     $html_select .= "   <div class='global-notifications-icons'>";

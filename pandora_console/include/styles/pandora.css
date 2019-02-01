@@ -4939,6 +4939,33 @@ div#dialog_messages table th:last-child {
   margin-left: 10px;
 }
 
+.global-config-notification-selectors {
+  display: flex;
+  flex-direction: row;
+  margin-bottom: 10px;
+}
+
+.global-config-notification-selectors h4 {
+  margin: 0;
+}
+
+.global-config-notification-single-selector {
+  display: flex;
+  width: 100%;
+  padding: 0 10px;
+}
+
+.global-config-notification-single-selector :first-child,
+.global-config-notification-single-selector :first-child select {
+  width: 99%;
+}
+
+.global-config-notification-single-selector :last-child {
+  flex-direction: column;
+  display: flex;
+  justify-content: flex-end;
+}
+
 /* --- JQUERY-UI --- */
 .ui-button-text-only .ui-button-text {
   font-family: "nunito", sans-serif;

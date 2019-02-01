@@ -167,6 +167,31 @@ function notifications_get_all_sources() {
     return mysql_db_get_all_rows_in_table('tnotification_source');
 }
 
+function notifications_get_user_sources_for_select($source_id) {
+    $users = db_get_all_rows_filter(
+        'tnotification_source_user',
+        array('id_source' => $source_id),
+        'id_user'
+    );
+    // If fails or no one is selected, return empty array
+    if ($users === false) return array();
+
+    return index_array($users, 'id_user', 'id_user');
+}
+
+function notifications_get_group_sources_for_select($source_id) {
+    $users = db_get_all_rows_filter(
+        'tnotification_source_group tnsg
+            INNER JOIN tgrupo tg ON tnsg.id_group = tg.id_grupo',
+        array('id_source' => $source_id),
+        array ('tnsg.id_group', 'tg.nombre')
+    );
+    // If fails or no one is selected, return empty array
+    if ($users === false) return array();
+
+    return index_array($users, 'id_group', 'nombre');
+}
+
 /**
  * Print the notification ball to see unread messages
  *
@@ -204,6 +229,12 @@ function notifications_print_global_source_configuration($source) {
     $html_title .=    "<h2>{$source['description']}</h2>";
     $html_title .= "</div>";
 
+    // Generate the html for title
+    $html_selectors = "<div class='global-config-notification-selectors'>";
+    $html_selectors .=       notifications_print_source_select_box(notifications_get_user_sources_for_select($source['id']), 'users');
+    $html_selectors .=       notifications_print_source_select_box(notifications_get_group_sources_for_select($source['id']), 'groups');
+    $html_selectors .= "</div>";
+
     // Generate the checkboxes and time select
     $html_checkboxes = "<div class='global-config-notification-checkboxes'>";
     $html_checkboxes .= "   <span>";
@@ -236,5 +267,25 @@ function notifications_print_global_source_configuration($source) {
     );
 
     // Return all html
-    return $html_title . $html_checkboxes . $html_select_pospone;
+    return $html_title . $html_selectors . $html_checkboxes . $html_select_pospone;
+}
+
+function notifications_print_source_select_box($info_selec, $id) {
+
+    $title = $id == "users" ? __('Notified users') : __('Notified groups');
+    $add_title = $id == "users" ? __('Add users') : __('Add groups');
+    $delete_title = $id == "users" ? __('Delete users') : __('Delete groups');
+
+    // Generate the HTML
+    $html_select = "<div class='global-config-notification-single-selector'>";
+    $html_select .= "   <div>";
+    $html_select .= "       <h4>$title</h4>";
+    $html_select .=         html_print_select(empty($info_selec) ? true : $info_selec, "multi-{$id}[]", 0, false, '', '', true, true);
+    $html_select .= "   </div>";
+    $html_select .= "   <div class='global-notifications-icons'>";
+    $html_select .=         html_print_image('images/input_add.png', true, array('title' => $add_title));
+    $html_select .=         html_print_image('images/input_delete.png', true, array('title' => $delete_title));
+    $html_select .= "   </div>";
+    $html_select .= "</div>";
+    return $html_select;
 }

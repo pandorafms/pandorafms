@@ -195,16 +195,16 @@ function notifications_get_user_sources_for_select($source_id) {
  * @return array with the group id in keys and group name in value
  */
 function notifications_get_group_sources_for_select($source_id) {
-    $users = db_get_all_rows_filter(
+    $groups = db_get_all_rows_filter(
         'tnotification_source_group tnsg
-            INNER JOIN tgrupo tg ON tnsg.id_group = tg.id_grupo',
+            LEFT JOIN tgrupo tg ON tnsg.id_group = tg.id_grupo',
         array('id_source' => $source_id),
-        array ('tnsg.id_group', 'tg.nombre')
+        array ('tnsg.id_group', 'IFNULL(tg.nombre, "All") AS name')
     );
     // If fails or no one is selected, return empty array
-    if ($users === false) return array();
+    if ($groups === false) return array();
 
-    return index_array($users, 'id_group', 'nombre');
+    return index_array($groups, 'id_group', 'name');
 }
 
 /**
@@ -238,6 +238,12 @@ function notifications_print_global_source_configuration($source) {
         'name' => "enable-" . $id,
         'value' => $source['enabled']
     );
+
+    // Search if group all is set and handle that situation
+    $source_groups = notifications_get_group_sources_for_select($source['id']);
+    $is_group_all = isset($source_groups["0"]);
+    if($is_group_all) unset($source_groups["0"]);
+
     // Generate the title
     $html_title = "<div class='global-config-notification-title'>";
     $html_title .=     html_print_switch($switch_values);
@@ -246,13 +252,16 @@ function notifications_print_global_source_configuration($source) {
 
     // Generate the html for title
     $html_selectors = "<div class='global-config-notification-selectors'>";
-    $html_selectors .=       notifications_print_source_select_box(notifications_get_user_sources_for_select($source['id']), 'users');
-    $html_selectors .=       notifications_print_source_select_box(notifications_get_group_sources_for_select($source['id']), 'groups');
+    $html_selectors .=       notifications_print_source_select_box(notifications_get_user_sources_for_select($source['id']), 'users', $is_group_all);
+    $html_selectors .=       notifications_print_source_select_box($source_groups, 'groups', $is_group_all);
     $html_selectors .= "</div>";
 
     // Generate the checkboxes and time select
     $html_checkboxes = "<div class='global-config-notification-checkboxes'>";
     $html_checkboxes .= "   <span>";
+    $html_checkboxes .=         html_print_checkbox("all-$id", 1, $is_group_all, true, false, 'notifications_disable_source(event)');
+    $html_checkboxes .=         __('Notify all users');
+    $html_checkboxes .= "   </span><br><span>";
     $html_checkboxes .=         html_print_checkbox("mail-$id", 1, $source['also_mail'], true);
     $html_checkboxes .=         __('Also email users with notification content');
     $html_checkboxes .= "   </span><br><span>";
@@ -290,10 +299,11 @@ function notifications_print_global_source_configuration($source) {
  *
  * @param array $info_selec All info required for build the selector
  * @param string $id users|groups
+ * @param bool $disabled Disable the selectors
  *
  * @return string HTML with the generated selector
  */
-function notifications_print_source_select_box($info_selec, $id) {
+function notifications_print_source_select_box($info_selec, $id, $disabled) {
 
     $title = $id == "users" ? __('Notified users') : __('Notified groups');
     $add_title = $id == "users" ? __('Add users') : __('Add groups');
@@ -304,7 +314,7 @@ function notifications_print_source_select_box($info_selec, $id) {
     $html_select .= "   <div>";
     $html_select .= "       <h4>$title</h4>";
     // Put a true if empty sources to avoid to sow the 'None' value
-    $html_select .=         html_print_select(empty($info_selec) ? true : $info_selec, "multi-{$id}[]", 0, false, '', '', true, true);
+    $html_select .=         html_print_select(empty($info_selec) ? true : $info_selec, "multi-{$id}[]", 0, false, '', '', true, true, true,'', $disabled);
     $html_select .= "   </div>";
     $html_select .= "   <div class='global-notifications-icons'>";
     $html_select .=         html_print_image('images/input_add.png', true, array('title' => $add_title));

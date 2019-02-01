@@ -4939,6 +4939,10 @@ div#dialog_messages table th:last-child {
   margin-left: 10px;
 }
 
+.global-config-notification-checkboxes :first-child {
+  font-weight: bold;
+}
+
 .global-config-notification-selectors {
   display: flex;
   flex-direction: row;

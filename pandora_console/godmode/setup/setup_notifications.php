@@ -35,7 +35,8 @@ if (get_parameter('update_config', 0)) {
 		$mail_value = (int)get_parameter("mail-{$id}", 0);
 		$user_value = (int)get_parameter("user-{$id}", 0);
 		$postpone_value = (int)get_parameter("postpone-{$id}", 0);
-		$res = mysql_db_process_sql_update(
+		$all_users = (int)get_parameter("all-{$id}", 0);
+		$res = db_process_sql_update(
 			'tnotification_source',
 			array(
 				'enabled' => $enable_value,
@@ -45,7 +46,10 @@ if (get_parameter('update_config', 0)) {
 			),
 			array('id' => $source['id'])
 		);
-		return $res && $carry;
+		$all_users_res = $all_users
+			? notifications_add_group_to_source($source['id'], array(0))
+			: notifications_remove_group_from_source($source['id'], array(0));
+		return $all_users_res && $res && $carry;
 	}, true);
 }
 

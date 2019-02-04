@@ -208,6 +208,53 @@ function notifications_get_group_sources_for_select($source_id) {
 }
 
 /**
+ * Delete a set of groups from notification source
+ *
+ * @param int Source id
+ * @param array Id of groups to be deleted
+ *
+ * @return bool True if success. False otherwise.
+ */
+function notifications_remove_group_from_source ($source_id, $groups) {
+    // Source id is mandatory
+    if (!isset($source_id)) return false;
+
+    // Delete from database
+    return db_process_sql_delete (
+        'tnotification_source_group',
+        array(
+            'id_group' => $groups,
+            'id_source' => $source_id
+        )
+    ) !== false;
+}
+
+/**
+ * Insert a set of groups to notification source
+ *
+ * @param int Source id
+ * @param array Id of groups to be deleted
+ *
+ * @return bool True if success. False otherwise.
+ */
+function notifications_add_group_to_source ($source_id, $groups) {
+    // Source id is mandatory
+    if (!isset($source_id)) return false;
+
+    // Insert into database all groups passed
+    $res = true;
+    foreach ($groups as $group) {
+        $res = db_process_sql_insert(
+            'tnotification_source_group',
+            array(
+                'id_group' => $group,
+                'id_source' => $source_id)
+            ) !== false;
+    }
+    return $res;
+}
+
+/**
  * Print the notification ball to see unread messages
  *
  * @return string with HTML code of notification ball

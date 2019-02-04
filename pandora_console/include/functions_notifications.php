@@ -299,8 +299,8 @@ function notifications_print_global_source_configuration($source) {
 
     // Generate the html for title
     $html_selectors = "<div class='global-config-notification-selectors'>";
-    $html_selectors .=       notifications_print_source_select_box(notifications_get_user_sources_for_select($source['id']), 'users', $is_group_all);
-    $html_selectors .=       notifications_print_source_select_box($source_groups, 'groups', $is_group_all);
+    $html_selectors .=       notifications_print_source_select_box(notifications_get_user_sources_for_select($source['id']), 'users', $id, $is_group_all);
+    $html_selectors .=       notifications_print_source_select_box($source_groups, 'groups', $id, $is_group_all);
     $html_selectors .= "</div>";
 
     // Generate the checkboxes and time select
@@ -346,11 +346,12 @@ function notifications_print_global_source_configuration($source) {
  *
  * @param array $info_selec All info required for build the selector
  * @param string $id users|groups
+ * @param string $source_id Id of source
  * @param bool $disabled Disable the selectors
  *
  * @return string HTML with the generated selector
  */
-function notifications_print_source_select_box($info_selec, $id, $disabled) {
+function notifications_print_source_select_box($info_selec, $id, $source_id, $disabled) {
 
     $title = $id == "users" ? __('Notified users') : __('Notified groups');
     $add_title = $id == "users" ? __('Add users') : __('Add groups');
@@ -361,7 +362,7 @@ function notifications_print_source_select_box($info_selec, $id, $disabled) {
     $html_select .= "   <div>";
     $html_select .= "       <h4>$title</h4>";
     // Put a true if empty sources to avoid to sow the 'None' value
-    $html_select .=         html_print_select(empty($info_selec) ? true : $info_selec, "multi-{$id}[]", 0, false, '', '', true, true, true,'', $disabled);
+    $html_select .=         html_print_select(empty($info_selec) ? true : $info_selec, "multi-{$id}-{$source_id}[]", 0, false, '', '', true, true, true,'', $disabled);
     $html_select .= "   </div>";
     $html_select .= "   <div class='global-notifications-icons'>";
     $html_select .=         html_print_image('images/input_add.png', true, array('title' => $add_title));

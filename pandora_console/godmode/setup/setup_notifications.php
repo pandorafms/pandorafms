@@ -75,3 +75,23 @@ html_print_input_hidden('update_config', 1);
 html_print_table($table_content);
 echo '</form>';
 
+?>
+<script>
+
+// Get the source id
+function notifications_get_source_id(id) {
+	var matched = id.match(/.*-(.*)/);
+	if (matched == null) return '';
+	return matched[1];
+}
+
+// Disable or enable the select seeing the checked value of notify all users
+function notifications_disable_source(event) {
+	var id = notifications_get_source_id(event.target.id);
+	var is_checked = document.getElementById(event.target.id).checked;
+	var selectors = ['groups', 'users'];
+	selectors.map(function (select) {
+		document.getElementById('multi-' + select + '-' + id).disabled = is_checked;
+	});
+}
+</script>

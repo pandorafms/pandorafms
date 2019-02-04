@@ -261,7 +261,7 @@ function reporting_make_reporting_data(
         }
 
         if (isset($content['style']['name_label'])) {
-            // Add macros name
+            // Add macros name.
             $items_label = [];
             $items_label['type'] = $content['type'];
             $items_label['id_agent'] = $content['id_agent'];
@@ -272,11 +272,10 @@ function reporting_make_reporting_data(
             $metaconsole_on = is_metaconsole();
             $server_name = $content['server_name'];
 
-            // Metaconsole connection
+            // Metaconsole connection.
             if ($metaconsole_on && $server_name != '') {
                 $connection = metaconsole_get_connection($server_name);
                 if (!metaconsole_load_external_db($connection)) {
-                    // ui_print_error_message ("Error connecting to ".$server_name);
                     continue;
                 }
             }
@@ -889,7 +888,6 @@ function reporting_SLA(
             if ($metaconsole_on && $server_name != '') {
                 $connection = metaconsole_get_connection($server_name);
                 if (!metaconsole_load_external_db($connection)) {
-                    // ui_print_error_message ("Error connecting to ".$server_name);
                     continue;
                 }
             }
@@ -898,7 +896,7 @@ function reporting_SLA(
                 || modules_is_not_init($sla['id_agent_module'])
             ) {
                 if ($metaconsole_on) {
-                    // Restore db connection
+                    // Restore db connection.
                     metaconsole_restore_db();
                 }
 

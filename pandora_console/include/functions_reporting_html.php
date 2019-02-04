@@ -102,12 +102,12 @@ function html_do_report_info($report)
 
     $date_today = date($config['date_format']);
 
-    $html = '<div style="border: 1px dashed #999; padding: 10px 15px; background: #f5f5f5;margin-top:20px;margin-bottom:20px;">'.'<table>
-			<tr>
-				<td><b>'.__('Generated').': </b></td><td>'.$date_today.'</td>
-			</tr>
-			<tr>
-				<td><b>'.__('Report date').': </b></td>';
+    $html = '<div style="border: 1px dashed #999; padding: 10px 15px; background: #f5f5f5;margin-top:20px;margin-bottom:20px;"><table>
+            <tr>
+                <td><b>'.__('Generated').': </b></td><td>'.$date_today.'</td>
+            </tr>
+            <tr>
+                <td><b>'.__('Report date').': </b></td>';
     if (isset($report['period'])) {
         if (is_numeric($report['datetime']) && is_numeric($report['period'])) {
             $html .= '<td>'.date($config['date_format'], ($report['datetime'] - $report['period'])).'</td>';
@@ -119,10 +119,10 @@ function html_do_report_info($report)
     }
 
     $html .= '</tr>
-			<tr>
-				<td valign="top"><b>'.__('Description').': </b></td><td>'.io_safe_output($report['description']).'</td>
-			</tr>
-		 </table>'.'</div>';
+            <tr>
+                <td valign="top"><b>'.__('Description').': </b></td><td>'.io_safe_output($report['description']).'</td>
+            </tr>
+         </table>'.'</div>';
 
     echo $html;
 }
@@ -397,9 +397,20 @@ function reporting_html_print_report($report, $mini=false, $report_info=1)
 }
 
 
-function reporting_html_SLA($table, $item, $mini)
+function reporting_html_SLA($table, $item, $mini, $pdf=0)
 {
-    $style = db_get_value('style', 'treport_content', 'id_rc', $item['id_rc']);
+    if ($table === false) {
+        $table = new stdClass();
+        $table->width = '99%';
+        $table->class = 'table_beauty';
+    }
+
+    $style = db_get_value(
+        'style',
+        'treport_content',
+        'id_rc',
+        $item['id_rc']
+    );
     $style = json_decode(io_safe_output($style), true);
     $same_agent_in_resume = '';
 
@@ -423,7 +434,9 @@ function reporting_html_SLA($table, $item, $mini)
         $table->data['sla']['cell'] = $item['failed'];
     } else {
         if (!empty($item['planned_downtimes'])) {
-            $downtimes_table = reporting_html_planned_downtimes_table($item['planned_downtimes']);
+            $downtimes_table = reporting_html_planned_downtimes_table(
+                $item['planned_downtimes']
+            );
 
             if (!empty($downtimes_table)) {
                 $table->colspan['planned_downtime']['cell'] = 3;
@@ -459,7 +472,7 @@ function reporting_html_SLA($table, $item, $mini)
             $table1->headstyle[4] = 'text-align: right';
             $table1->headstyle[5] = 'text-align: right';
 
-            // second_table for time globals
+            // Second_table for time globals.
             $table2 = new stdClass();
             $table2->width = '99%';
 
@@ -490,7 +503,7 @@ function reporting_html_SLA($table, $item, $mini)
             $table2->headstyle[5] = 'text-align: right';
             $table2->headstyle[6] = 'text-align: right';
 
-            // third_table for time globals
+            // Third_table for time globals.
             $table3 = new stdClass();
             $table3->width = '99%';
 
@@ -520,15 +533,23 @@ function reporting_html_SLA($table, $item, $mini)
 
             foreach ($item['data'] as $sla) {
                 if (isset($sla)) {
-                    $the_first_men_time = get_agent_first_time(io_safe_output($sla['agent']));
+                    $the_first_men_time = get_agent_first_time(
+                        io_safe_output($sla['agent'])
+                    );
 
-                    // first_table
+                    // First_table.
                     $row = [];
                     $row[] = $sla['agent'];
                     $row[] = $sla['module'];
 
                     if (is_numeric($sla['dinamic_text'])) {
-                        $row[] = sla_truncate($sla['max'], $config['graph_precision']).' / '.sla_truncate($sla['min'], $config['graph_precision']);
+                        $row[] = sla_truncate(
+                            $sla['max'],
+                            $config['graph_precision']
+                        ).' / '.sla_truncate(
+                            $sla['min'],
+                            $config['graph_precision']
+                        );
                     } else {
                         $row[] = $sla['dinamic_text'];
                     }
@@ -550,47 +571,64 @@ function reporting_html_SLA($table, $item, $mini)
                         $row[] = '<span style="font: bold '.$font_size.'em Arial, Sans-serif; color: '.COL_CRITICAL.';">'.__('Fail').'</span>';
                     }
 
-                    // second table for time globals
+                    // Second table for time globals.
                     $row2 = [];
                     $row2[] = $sla['agent'].' -- ['.$sla['module'].']';
 
                     if ($sla['time_total'] != 0) {
-                        $row2[] = human_time_description_raw($sla['time_total']);
+                        $row2[] = human_time_description_raw(
+                            $sla['time_total']
+                        );
                     } else {
                         $row2[] = '--';
                     }
 
                     if ($sla['time_error'] != 0) {
-                        $row2[] = '<span style="color: '.COL_CRITICAL.';">'.human_time_description_raw($sla['time_error'], true).'</span>';
+                        $row2[] = '<span style="color: '.COL_CRITICAL.';">'.human_time_description_raw(
+                            $sla['time_error'],
+                            true
+                        ).'</span>';
                     } else {
                         $row2[] = '--';
                     }
 
                     if ($sla['time_ok'] != 0) {
-                        $row2[] = '<span style="color: '.COL_NORMAL.';">'.human_time_description_raw($sla['time_ok'], true).'</span>';
+                        $row2[] = '<span style="color: '.COL_NORMAL.';">'.human_time_description_raw(
+                            $sla['time_ok'],
+                            true
+                        ).'</span>';
                     } else {
                         $row2[] = '--';
                     }
 
                     if ($sla['time_unknown'] != 0) {
-                        $row2[] = '<span style="color: '.COL_UNKNOWN.';">'.human_time_description_raw($sla['time_unknown'], true).'</span>';
+                        $row2[] = '<span style="color: '.COL_UNKNOWN.';">'.human_time_description_raw(
+                            $sla['time_unknown'],
+                            true
+                        ).'</span>';
                     } else {
                         $row2[] = '--';
                     }
 
                     if ($sla['time_not_init'] != 0) {
-                        $row2[] = '<span style="color: '.COL_NOTINIT.';">'.human_time_description_raw($sla['time_not_init'], true).'</span>';
+                        $row2[] = '<span style="color: '.COL_NOTINIT.';">'.human_time_description_raw(
+                            $sla['time_not_init'],
+                            true
+                        ).'</span>';
                     } else {
                         $row2[] = '--';
                     }
 
                     if ($sla['time_downtime'] != 0) {
-                        $row2[] = '<span style="color: '.COL_DOWNTIME.';">'.human_time_description_raw($sla['time_downtime'], true).'</span>';
+                        $row2[] = '<span style="color: '.COL_DOWNTIME.';">'.human_time_description_raw(
+                            $sla['time_downtime'],
+                            true
+                        ).'</span>';
                     } else {
                         $row2[] = '--';
                     }
 
-                    // third table for checks globals
+                    // Third table for checks globals.
                     $row3 = [];
                     $row3[] = $sla['agent'].' -- ['.$sla['module'].']';
                     $row3[] = $sla['checks_total'];
@@ -605,11 +643,20 @@ function reporting_html_SLA($table, $item, $mini)
             }
 
             $table->colspan['sla']['cell'] = 2;
-            $table->data['sla']['cell'] = html_print_table($table1, true);
+            $table->data['sla']['cell'] = html_print_table(
+                $table1,
+                true
+            );
             $table->colspan['time_global']['cell'] = 2;
-            $table->data['time_global']['cell'] = html_print_table($table2, true);
+            $table->data['time_global']['cell'] = html_print_table(
+                $table2,
+                true
+            );
             $table->colspan['checks_global']['cell'] = 2;
-            $table->data['checks_global']['cell'] = html_print_table($table3, true);
+            $table->data['checks_global']['cell'] = html_print_table(
+                $table3,
+                true
+            );
         } else {
             $table->colspan['error']['cell'] = 3;
             $table->data['error']['cell'] = __('There are no Agent/Modules defined');
@@ -631,9 +678,12 @@ function reporting_html_SLA($table, $item, $mini)
             }
 
             $table->colspan['charts']['cell'] = 2;
-            $table->data['charts']['cell'] = html_print_table($table1, true);
+            $table->data['charts']['cell'] = html_print_table(
+                $table1,
+                true
+            );
 
-            // table_legend_graphs;
+            // Table_legend_graphs.
             $table1 = new stdClass();
             $table1->width = '99%';
             $table1->data = [];
@@ -669,8 +719,15 @@ function reporting_html_SLA($table, $item, $mini)
             $table1->data[0][11] = '<span>'.__('Ignore time').'</span>';
 
             $table->colspan['legend']['cell'] = 2;
-            $table->data['legend']['cell'] = html_print_table($table1, true);
+            $table->data['legend']['cell'] = html_print_table(
+                $table1,
+                true
+            );
         }
+    }
+
+    if ($pdf !== 0) {
+        return html_print_table($table, true);
     }
 }
 
@@ -794,7 +851,7 @@ function reporting_html_event_report_group($table, $item, $pdf=0)
         }
 
         foreach ($item['data'] as $k => $event) {
-            // First pass along the class of this row
+            // First pass along the class of this row.
             if ($item['show_summary_group']) {
                 $table1->cellclass[$k][1] = $table1->cellclass[$k][2] = $table1->cellclass[$k][4] = $table1->cellclass[$k][5] = $table1->cellclass[$k][6] = $table1->cellclass[$k][7] = get_priority_class($event['criticity']);
             } else {
@@ -1559,53 +1616,53 @@ function reporting_html_group_report($table, $item)
     $table->colspan['group_report']['cell'] = 3;
     $table->cellstyle['group_report']['cell'] = 'text-align: center;';
     $table->data['group_report']['cell'] = "<table width='100%'>
-		<tr>
-			<td></td>
-			<td colspan='3'><div class='cellBold cellCenter'>".__('Total')."</div></td>
-			<td colspan='3'><div class='cellBold cellCenter'>".__('Unknown')."</div></td>
-		</tr>
-		<tr>
-			<td><div class='cellBold cellCenter'>".__('Agents')."</div></td>
-			<td colspan='3'><div class='cellBold cellCenter cellWhite cellBorder1 cellBig'>".$item['data']['group_stats']['total_agents']."</div></td>
-			<td colspan='3'><div class='cellBold cellCenter cellUnknown cellBorder1 cellBig'>".$item['data']['group_stats']['agents_unknown']."</div></td>
-		</tr>
-		<tr>
-			<td></td>
-			<td><div class='cellBold cellCenter'>".__('Total')."</div></td>
-			<td><div class='cellBold cellCenter'>".__('Normal')."</div></td>
-			<td><div class='cellBold cellCenter'>".__('Critical')."</div></td>
-			<td><div class='cellBold cellCenter'>".__('Warning')."</div></td>
-			<td><div class='cellBold cellCenter'>".__('Unknown')."</div></td>
-			<td><div class='cellBold cellCenter'>".__('Not init')."</div></td>
-		</tr>
-		<tr>
-			<td><div class='cellBold cellCenter'>".__('Monitors')."</div></td>
-			<td><div class='cellBold cellCenter cellWhite cellBorder1 cellBig'>".$item['data']['group_stats']['monitor_checks']."</div></td>
-			<td><div class='cellBold cellCenter cellNormal cellBorder1 cellBig'>".$item['data']['group_stats']['monitor_ok']."</div></td>
-			<td><div class='cellBold cellCenter cellCritical cellBorder1 cellBig'>".$item['data']['group_stats']['monitor_critical']."</div></td>
-			<td><div class='cellBold cellCenter cellWarning cellBorder1 cellBig'>".$item['data']['group_stats']['monitor_warning']."</div></td>
-			<td><div class='cellBold cellCenter cellUnknown cellBorder1 cellBig'>".$item['data']['group_stats']['monitor_unknown']."</div></td>
-			<td><div class='cellBold cellCenter cellNotInit cellBorder1 cellBig'>".$item['data']['group_stats']['monitor_not_init']."</div></td>
-		</tr>
-		<tr>
-			<td></td>
-			<td colspan='3'><div class='cellBold cellCenter'>".__('Defined')."</div></td>
-			<td colspan='3'><div class='cellBold cellCenter'>".__('Fired')."</div></td>
-		</tr>
-		<tr>
-			<td><div class='cellBold cellCenter'>".__('Alerts')."</div></td>
-			<td colspan='3'><div class='cellBold cellCenter cellWhite cellBorder1 cellBig'>".$item['data']['group_stats']['monitor_alerts']."</div></td>
-			<td colspan='3'><div class='cellBold cellCenter cellAlert cellBorder1 cellBig'>".$item['data']['group_stats']['monitor_alerts_fired']."</div></td>
-		</tr>
-		<tr>
-			<td></td>
-			<td colspan='6'><div class='cellBold cellCenter'>".__('Last %s', human_time_description_raw($item['date']['period']))."</div></td>
-		</tr>
-		<tr>
-			<td><div class='cellBold cellCenter'>".__('Events')."</div></td>
-			<td colspan='6'><div class='cellBold cellCenter cellWhite cellBorder1 cellBig'>".$item['data']['count_events'].'</div></td>
-		</tr>
-	</table>';
+        <tr>
+            <td></td>
+            <td colspan='3'><div class='cellBold cellCenter'>".__('Total')."</div></td>
+            <td colspan='3'><div class='cellBold cellCenter'>".__('Unknown')."</div></td>
+        </tr>
+        <tr>
+            <td><div class='cellBold cellCenter'>".__('Agents')."</div></td>
+            <td colspan='3'><div class='cellBold cellCenter cellWhite cellBorder1 cellBig'>".$item['data']['group_stats']['total_agents']."</div></td>
+            <td colspan='3'><div class='cellBold cellCenter cellUnknown cellBorder1 cellBig'>".$item['data']['group_stats']['agents_unknown']."</div></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td><div class='cellBold cellCenter'>".__('Total')."</div></td>
+            <td><div class='cellBold cellCenter'>".__('Normal')."</div></td>
+            <td><div class='cellBold cellCenter'>".__('Critical')."</div></td>
+            <td><div class='cellBold cellCenter'>".__('Warning')."</div></td>
+            <td><div class='cellBold cellCenter'>".__('Unknown')."</div></td>
+            <td><div class='cellBold cellCenter'>".__('Not init')."</div></td>
+        </tr>
+        <tr>
+            <td><div class='cellBold cellCenter'>".__('Monitors')."</div></td>
+            <td><div class='cellBold cellCenter cellWhite cellBorder1 cellBig'>".$item['data']['group_stats']['monitor_checks']."</div></td>
+            <td><div class='cellBold cellCenter cellNormal cellBorder1 cellBig'>".$item['data']['group_stats']['monitor_ok']."</div></td>
+            <td><div class='cellBold cellCenter cellCritical cellBorder1 cellBig'>".$item['data']['group_stats']['monitor_critical']."</div></td>
+            <td><div class='cellBold cellCenter cellWarning cellBorder1 cellBig'>".$item['data']['group_stats']['monitor_warning']."</div></td>
+            <td><div class='cellBold cellCenter cellUnknown cellBorder1 cellBig'>".$item['data']['group_stats']['monitor_unknown']."</div></td>
+            <td><div class='cellBold cellCenter cellNotInit cellBorder1 cellBig'>".$item['data']['group_stats']['monitor_not_init']."</div></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td colspan='3'><div class='cellBold cellCenter'>".__('Defined')."</div></td>
+            <td colspan='3'><div class='cellBold cellCenter'>".__('Fired')."</div></td>
+        </tr>
+        <tr>
+            <td><div class='cellBold cellCenter'>".__('Alerts')."</div></td>
+            <td colspan='3'><div class='cellBold cellCenter cellWhite cellBorder1 cellBig'>".$item['data']['group_stats']['monitor_alerts']."</div></td>
+            <td colspan='3'><div class='cellBold cellCenter cellAlert cellBorder1 cellBig'>".$item['data']['group_stats']['monitor_alerts_fired']."</div></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td colspan='6'><div class='cellBold cellCenter'>".__('Last %s', human_time_description_raw($item['date']['period']))."</div></td>
+        </tr>
+        <tr>
+            <td><div class='cellBold cellCenter'>".__('Events')."</div></td>
+            <td colspan='6'><div class='cellBold cellCenter cellWhite cellBorder1 cellBig'>".$item['data']['count_events'].'</div></td>
+        </tr>
+    </table>';
 }
 
 
@@ -2302,15 +2359,15 @@ function reporting_html_url(&$table, $item, $key)
     $table->colspan['data']['cell'] = 3;
     $table->cellstyle['data']['cell'] = 'text-align: left;';
     $table->data['data']['cell'] = '
-		<iframe id="item_'.$key.'" src ="'.$item['url'].'" width="100%" height="100%">
-		</iframe>';
+        <iframe id="item_'.$key.'" src ="'.$item['url'].'" width="100%" height="100%">
+        </iframe>';
     // TODO: make this dynamic and get the height if the iframe to resize this item
     $table->data['data']['cell'] .= '
-		<script type="text/javascript">
-			$(document).ready (function () {
-				$("#item_'.$key.'").height(500);
-			});
-		</script>';
+        <script type="text/javascript">
+            $(document).ready (function () {
+                $("#item_'.$key.'").height(500);
+            });
+        </script>';
 }
 
 
@@ -2635,8 +2692,8 @@ function get_agent_first_time($agent_name)
 
     $utimestamp = db_get_all_rows_sql(
         'SELECT utimestamp FROM tagente_datos WHERE id_agente_modulo IN 
-		(SELECT id_agente_modulo FROM tagente_modulo WHERE id_agente = '.$id.')
-		ORDER BY utimestamp ASC LIMIT 1'
+        (SELECT id_agente_modulo FROM tagente_modulo WHERE id_agente = '.$id.')
+        ORDER BY utimestamp ASC LIMIT 1'
     );
     $utimestamp = $utimestamp[0]['utimestamp'];
 
@@ -2878,7 +2935,7 @@ function reporting_get_stats_summary($data, $graph_width, $graph_height)
         $table_sum->data[] = $tdata;
 
     $output = '<fieldset class="databox tactical_set">
-				<legend>'.__('Summary').'</legend>'.html_print_table($table_sum, true).'</fieldset>';
+                <legend>'.__('Summary').'</legend>'.html_print_table($table_sum, true).'</fieldset>';
 
     return $output;
 }
@@ -3459,12 +3516,12 @@ function reporting_get_agents_by_status($data, $graph_width=250, $graph_height=1
 
     if (!defined('METACONSOLE')) {
         $agents_data = '<fieldset class="databox tactical_set">
-					<legend>'.__('Agents by status').'</legend>'.html_print_table($table_agent, true).'</fieldset>';
+                    <legend>'.__('Agents by status').'</legend>'.html_print_table($table_agent, true).'</fieldset>';
     } else {
         $table_agent->style = [];
         $table_agent->class = 'tactical_view';
         $agents_data = '<fieldset class="tactical_set">
-					<legend>'.__('Agents by status').'</legend>'.html_print_table($table_agent, true).'</fieldset>';
+                    <legend>'.__('Agents by status').'</legend>'.html_print_table($table_agent, true).'</fieldset>';
     }
 
     return $agents_data;
@@ -3487,7 +3544,7 @@ function reporting_get_total_agents_and_monitors($data, $graph_width=250, $graph
     $total_data[3] = $total_module <= 0 ? '-' : $total_module;
     $table_total->data[] = $total_data;
     $total_agent_module = '<fieldset class="databox tactical_set">
-					<legend>'.__('Total agents and monitors').'</legend>'.html_print_table($table_total, true).'</fieldset>';
+                    <legend>'.__('Total agents and monitors').'</legend>'.html_print_table($table_total, true).'</fieldset>';
 
     return $total_agent_module;
 }
@@ -3506,12 +3563,12 @@ function reporting_get_total_servers($num_servers)
 
     if (!defined('METACONSOLE')) {
         $node_overview = '<fieldset class="databox tactical_set">
-					<legend>'.__('Node overview').'</legend>'.html_print_table($table_node, true).'</fieldset>';
+                    <legend>'.__('Node overview').'</legend>'.html_print_table($table_node, true).'</fieldset>';
     } else {
         $table_node->style = [];
         $table_node->class = 'tactical_view';
         $node_overview = '<fieldset class="tactical_set">
-					<legend>'.__('Node overview').'</legend>'.html_print_table($table_node, true).'</fieldset>';
+                    <legend>'.__('Node overview').'</legend>'.html_print_table($table_node, true).'</fieldset>';
     }
 
     return $node_overview;
@@ -3555,7 +3612,7 @@ function reporting_get_events($data, $links=false)
 
     if (!defined('METACONSOLE')) {
         $event_view = '<fieldset class="databox tactical_set">
-					<legend>'.__('Events by severity').'</legend>'.html_print_table($table_events, true).'</fieldset>';
+                    <legend>'.__('Events by severity').'</legend>'.html_print_table($table_events, true).'</fieldset>';
     } else {
         $table_events->class = 'tactical_view';
         $table_events->styleTable = 'text-align:center;';
@@ -3565,7 +3622,7 @@ function reporting_get_events($data, $links=false)
         $table_events->size[3] = '10%';
 
         $event_view = '<fieldset class="tactical_set">
-					<legend>'.__('Important Events by Criticity').'</legend>'.html_print_table($table_events, true).'</fieldset>';
+                    <legend>'.__('Important Events by Criticity').'</legend>'.html_print_table($table_events, true).'</fieldset>';
     }
 
     return $event_view;
@@ -3597,9 +3654,9 @@ function reporting_get_last_activity()
         case 'mysql':
             $sql = sprintf(
                 'SELECT id_usuario,accion,fecha,ip_origen,descripcion,utimestamp
-				FROM tsesion
-				WHERE (`utimestamp` > UNIX_TIMESTAMP(NOW()) - '.SECONDS_1WEEK.") 
-					AND `id_usuario` = '%s' ORDER BY `utimestamp` DESC LIMIT 5",
+                FROM tsesion
+                WHERE (`utimestamp` > UNIX_TIMESTAMP(NOW()) - '.SECONDS_1WEEK.") 
+                    AND `id_usuario` = '%s' ORDER BY `utimestamp` DESC LIMIT 5",
                 $config['id_user']
             );
         break;
@@ -3607,9 +3664,9 @@ function reporting_get_last_activity()
         case 'postgresql':
             $sql = sprintf(
                 "SELECT \"id_usuario\", accion, fecha, \"ip_origen\", descripcion, utimestamp
-				FROM tsesion
-				WHERE (\"utimestamp\" > ceil(date_part('epoch', CURRENT_TIMESTAMP)) - ".SECONDS_1WEEK.") 
-					AND \"id_usuario\" = '%s' ORDER BY \"utimestamp\" DESC LIMIT 5",
+                FROM tsesion
+                WHERE (\"utimestamp\" > ceil(date_part('epoch', CURRENT_TIMESTAMP)) - ".SECONDS_1WEEK.") 
+                    AND \"id_usuario\" = '%s' ORDER BY \"utimestamp\" DESC LIMIT 5",
                 $config['id_user']
             );
         break;
@@ -3617,9 +3674,9 @@ function reporting_get_last_activity()
         case 'oracle':
             $sql = sprintf(
                 "SELECT id_usuario, accion, fecha, ip_origen, descripcion, utimestamp
-				FROM tsesion
-				WHERE ((utimestamp > ceil((sysdate - to_date('19700101000000','YYYYMMDDHH24MISS')) * (".SECONDS_1DAY.')) - '.SECONDS_1WEEK.") 
-					AND id_usuario = '%s') AND rownum <= 10 ORDER BY utimestamp DESC",
+                FROM tsesion
+                WHERE ((utimestamp > ceil((sysdate - to_date('19700101000000','YYYYMMDDHH24MISS')) * (".SECONDS_1DAY.')) - '.SECONDS_1WEEK.") 
+                    AND id_usuario = '%s') AND rownum <= 10 ORDER BY utimestamp DESC",
                 $config['id_user']
             );
         break;
@@ -3797,7 +3854,7 @@ function reporting_get_event_histogram($events, $text_header_event=false)
     if (!defined('METACONSOLE')) {
         if (!$text_header_event) {
             $event_graph = '<fieldset class="databox tactical_set">
-						<legend>'.$text_header_event.'</legend>'.html_print_table($table, true).'</fieldset>';
+                        <legend>'.$text_header_event.'</legend>'.html_print_table($table, true).'</fieldset>';
         } else {
             $table->class = 'noclass';
             $event_graph = html_print_table($table, true);
@@ -3895,9 +3952,9 @@ function reporting_get_event_histogram_meta($width)
         $time_condition = 'utimestamp > '.$bottom.' AND utimestamp < '.$top;
         $sql = sprintf(
             'SELECT criticity,utimestamp
-			FROM tmetaconsole_event
-			WHERE %s %s %s
-			ORDER BY criticity DESC',
+            FROM tmetaconsole_event
+            WHERE %s %s %s
+            ORDER BY criticity DESC',
             $time_condition,
             $groups_condition,
             $status_condition
@@ -3981,7 +4038,7 @@ function reporting_get_event_histogram_meta($width)
 
     if (!$text_header_event) {
         $event_graph = '<fieldset class="databox tactical_set">
-					<legend>'.$text_header_event.'</legend>'.html_print_table($table, true).'</fieldset>';
+                    <legend>'.$text_header_event.'</legend>'.html_print_table($table, true).'</fieldset>';
     } else {
         $table->class = 'noclass';
         $event_graph = html_print_table($table, true);

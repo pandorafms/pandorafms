@@ -57,9 +57,9 @@ if (check_acl($config['id_user'], 0, 'PM')) {
 }
 
 $options_modules = [
-    'delete_modules' => __('Bulk module delete'),
     'edit_modules'   => __('Bulk module edit'),
     'copy_modules'   => __('Bulk module copy'),
+    'delete_modules' => __('Bulk module delete'),
 ];
 
 $options_plugins = [
@@ -79,7 +79,7 @@ if ($policies_options != ENTERPRISE_NOT_HOOK) {
 
 $options_snmp = [];
 $snmp_options = enterprise_hook('massive_snmp_options');
-
+$snmp_options = array_reverse($snmp_options);
 if ($snmp_options != ENTERPRISE_NOT_HOOK) {
     $options_snmp = array_merge($options_snmp, $snmp_options);
 }
@@ -384,4 +384,3 @@ switch ($option) {
         }
     break;
 }
-

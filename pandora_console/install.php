@@ -113,7 +113,7 @@
         <div style='height: 10px'>
             <?php
             $version = '7.0NG.731';
-            $build = '190131';
+            $build = '190204';
             $banner = "v$version Build $build";
 
             error_reporting(0);
@@ -126,24 +126,19 @@
             } else {
                 $step = $_GET['step'];
                 switch ($step) {
-                    case 11:
-                        install_step1_licence();
+                    case 11: install_step1_licence();
                     break;
 
-                    case 2:
-                        install_step2();
+                    case 2: install_step2();
                     break;
 
-                    case 3:
-                        install_step3();
+                    case 3: install_step3();
                     break;
 
-                    case 4:
-                        install_step4();
+                    case 4: install_step4();
                     break;
 
-                    case 5:
-                        install_step5();
+                    case 5: install_step5();
                     break;
                 }
             }

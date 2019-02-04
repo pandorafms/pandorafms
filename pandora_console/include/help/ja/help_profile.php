@@ -1,7 +1,7 @@
 <?php
 /*
-* @package Include/help/ja/
-*/
+ * @package Include/help/ja/
+ */
 ?>
 
 <h1>プロファイル</h1>

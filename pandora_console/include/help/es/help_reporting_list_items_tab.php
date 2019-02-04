@@ -1,7 +1,7 @@
 <?php
 /*
-* @package Include/help/es
-*/
+ * @package Include/help/es
+ */
 ?>
 
 <h1>Report list items</h1>

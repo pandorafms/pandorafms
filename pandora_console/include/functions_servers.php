@@ -984,6 +984,9 @@ function servers_get_server_string_name(int $server)
         case SERVER_TYPE_SYSLOG:
         return __('Syslog server');
 
+        case SERVER_TYPE_WUX:
+        return __('WUX server');
+
         default:
         return __('N/A');
     }

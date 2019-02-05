@@ -251,6 +251,28 @@ function notifications_remove_group_from_source ($source_id, $groups) {
 }
 
 /**
+ * Delete a set of users from notification source
+ *
+ * @param int Source id
+ * @param array Id of users to be deleted
+ *
+ * @return bool True if success. False otherwise.
+ */
+function notifications_remove_users_from_source ($source_id, $users) {
+    // Source id is mandatory
+    if (!isset($source_id)) return false;
+
+    // Delete from database
+    return db_process_sql_delete (
+        'tnotification_source_user',
+        array(
+            'id_user' => $users,
+            'id_source' => $source_id
+        )
+    ) !== false;
+}
+
+/**
  * Insert a set of groups to notification source
  *
  * @param int Source id
@@ -444,7 +466,7 @@ function notifications_print_source_select_box($info_selec, $id, $source_id, $di
     $html_select .= "   </div>";
     $html_select .= "   <div class='global-notifications-icons'>";
     $html_select .=         html_print_image('images/input_add.png', true, array('title' => $add_title, 'onclick' => "add_source_dialog('$id', '$source_id')"));
-    $html_select .=         html_print_image('images/input_delete.png', true, array('title' => $delete_title));
+    $html_select .=         html_print_image('images/input_delete.png', true, array('title' => $delete_title, 'onclick' => "remove_source_elements('$id', '$source_id')"));
     $html_select .= "   </div>";
     $html_select .= "</div>";
     return $html_select;

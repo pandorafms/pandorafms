@@ -29,11 +29,13 @@ if (! check_acl($config['id_user'], 0, 'PM') && ! is_user_admin($config['id_user
 }
 
 // AJAX actions.
+$source_id = get_parameter('source_id', '');
+$users = get_parameter('users', '');
+$elements = get_parameter('elements', array());
+$id = empty($source_id) ? 0 : get_notification_source_id($source_id);
+$is_users = $users === "users";
 if (get_parameter('get_selection_two_ways_form', 0)) {
-	$source_id = get_parameter('source_id', '');
-	$users = get_parameter('users', '');
-	$id = get_notification_source_id($source_id);
-	$info_selec = $users === "users"
+	$info_selec = $is_users
 		? notifications_get_user_source_not_configured($id)
 		: notifications_get_group_source_not_configured($id);
 
@@ -45,13 +47,19 @@ if (get_parameter('get_selection_two_ways_form', 0)) {
 	return;
 }
 if (get_parameter('add_source_to_database', 0)) {
-	$source_id = get_parameter('source_id', '');
-	$users = get_parameter('users', '');
-	$elements = get_parameter('elements', array());
-	$id = get_notification_source_id($source_id);
-	$res = $users === "users"
+	$res = $is_users
 		? notifications_add_users_to_source($id, $elements)
 		: notifications_add_group_to_source($id, $elements);
+	$result = array(
+		'result' => $res
+	);
+	echo json_encode($result);
+	return;
+}
+if (get_parameter('remove_source_on_database', 0)) {
+	$res = $is_users
+		? notifications_remove_users_from_source($id, $elements)
+		: notifications_remove_group_from_source($id, $elements);
 	$result = array(
 		'result' => $res
 	);
@@ -118,23 +126,24 @@ function notifications_get_source_id(id) {
 	return matched[1];
 }
 
+// Get index of two ways element dialog.
+function notifications_two_ways_element_get_dialog (id, source_id) {
+	return 'global_config_notifications_dialog_add-' + id + '-' + source_id;
+}
+
+// Get index of two ways element form.
+function notifications_two_ways_element_get_sufix (id, source_id) {
+	return 'multi-' + id + '-' + source_id;
+}
+
 // Disable or enable the select seeing the checked value of notify all users
 function notifications_disable_source(event) {
 	var id = notifications_get_source_id(event.target.id);
 	var is_checked = document.getElementById(event.target.id).checked;
 	var selectors = ['groups', 'users'];
 	selectors.map(function (select) {
-		document.getElementById('multi-' + select + '-' + id).disabled = is_checked;
+		document.getElementById(notifications_two_ways_element_get_sufix(select, id)).disabled = is_checked;
 	});
-}
-
-// Get index of two ways element dialog.
-function notifications_two_ways_element_get_dialog (id, source_id) {
-	return 'global_config_notifications_dialog_add-' + id + '-' + source_id;
-}
-// Get index of two ways element form.
-function notifications_two_ways_element_get_sufix (id, source_id) {
-	return 'multi-' + id + '-' + source_id;
 }
 
 // Open a dialog with selector of source elements.
@@ -187,7 +196,7 @@ function notifications_modify_two_ways_element (id, source_id, operation) {
 		end_id + index_sufix
 	);
 	for (var i = select.options.length - 1; i >= 0; i--) {
-		if(select.options[i].selected ==true){
+		if(select.options[i].selected){
 			select_end.appendChild(select.options[i]);
 		}
 	}
@@ -211,7 +220,9 @@ function notifications_add_source_element_to_database(id, source_id) {
 		function (data, status) {
 			if (data.result) {
 				// Append to other element
-				var out_select = document.getElementById('multi-' + id + '-' + source_id);
+				var out_select = document.getElementById(
+					notifications_two_ways_element_get_sufix(id, source_id)
+				);
 				for (var i = select.options.length - 1; i >= 0; i--) {
 					out_select.appendChild(select.options[i]);
 				}
@@ -219,6 +230,39 @@ function notifications_add_source_element_to_database(id, source_id) {
 				$("#" + notifications_two_ways_element_get_dialog(id, source_id)).dialog("close");
 			} else {
 				console.log("Cannot update element.");
+			}
+		},
+		"json"
+	);
+}
+
+// Add elements to database and remove it form main select
+function remove_source_elements(id, source_id) {
+	var index = notifications_two_ways_element_get_sufix(id, source_id);
+	var select = document.getElementById(index);
+	var selected = [];
+	var selected_index = [];
+	for (var i = select.options.length - 1; i >= 0; i--) {
+		if(select.options[i].selected){
+			selected.push(select.options[i].value);
+			selected_index.push(i);
+		}
+	}
+	jQuery.post ("ajax.php",
+		{"page" : "godmode/setup/setup_notifications",
+			"remove_source_on_database" : 1,
+			"users" : id,
+			"source_id" : source_id,
+			"elements": selected
+		},
+		function (data, status) {
+			if (data.result) {
+				// Append to other element
+				for (var i = selected_index.length - 1; i >= 0; i--) {
+					select.remove(selected_index[i]);
+				}
+			} else {
+				console.log("Cannot delete elements.");
 			}
 		},
 		"json"

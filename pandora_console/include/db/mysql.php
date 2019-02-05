@@ -616,6 +616,7 @@ function mysql_db_format_array_where_clause_sql ($values, $join = 'AND', $prefix
 	$i = 1;
 	$max = count ($values);
 	foreach ($values as $field => $value) {
+		$negative = false;
 		if (is_numeric ($field)) {
 			/* User provide the exact operation to do */
 			$query .= $value;
@@ -626,7 +627,10 @@ function mysql_db_format_array_where_clause_sql ($values, $join = 'AND', $prefix
 			$i++;
 			continue;
 		}
-		
+		if ($field[0] == "!") {
+			$negative = true;
+			$field = substr($field, 1);
+		}
 		if ($field[0] != "`") {
 			//If the field is as <table>.<field>, don't scape.
 			if (strstr($field, '.') === false)
@@ -643,7 +647,8 @@ function mysql_db_format_array_where_clause_sql ($values, $join = 'AND', $prefix
 			$query .= sprintf ("%s = %f", $field, $value);
 		}
 		elseif (is_array ($value)) {
-			$query .= sprintf ('%s IN ("%s")', $field, implode ('", "', $value));
+			$not = $negative ? ' NOT ' : '';
+			$query .= sprintf ('%s %sIN ("%s")', $field, $not, implode ('", "', $value));
 		}
 		else {
 			if ($value === "") {

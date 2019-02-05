@@ -117,6 +117,10 @@ function notifications_disable_source(event) {
 function add_source_dialog(users, source_id) {
 	// Display the dialog
 	var dialog_id = 'global_config_notifications_dialog_add-' + users + '-' + source_id;
+	// Clean id element.
+	var previous_dialog = document.getElementById(dialog_id);
+	if (previous_dialog !== null) previous_dialog.remove();
+	// Create or recreate the content.
 	var not_dialog = document.createElement('div');
 	not_dialog.setAttribute('class', 'global_config_notifications_dialog_add');
 	not_dialog.setAttribute('id', dialog_id);

@@ -4953,7 +4953,8 @@ div#dialog_messages table th:last-child {
   margin: 0;
 }
 
-.global-config-notification-single-selector {
+.global-config-notification-single-selector,
+.global_config_notifications_dialog_add select {
   display: flex;
   width: 100%;
   padding: 0 10px;
@@ -4968,6 +4969,23 @@ div#dialog_messages table th:last-child {
   flex-direction: column;
   display: flex;
   justify-content: flex-end;
+}
+
+.global_config_notifications_dialog_add {
+  display: flex;
+  flex-direction: row;
+  margin: 8px;
+}
+
+.global_config_notifications_two_ways_form_arrows {
+  display: flex;
+  flex-flow: column;
+  justify-content: center;
+  margin: 0 5px;
+}
+
+.global_config_notifications_two_ways_form_arrows img {
+  margin: 15px 0;
 }
 
 /* --- JQUERY-UI --- */

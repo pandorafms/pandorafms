@@ -18,6 +18,8 @@
 // Load global vars
 global $config;
 
+require_once ($config['homedir'] . '/include/functions_notifications.php');
+
 check_login ();
 
 if (! check_acl($config['id_user'], 0, 'PM') && ! is_user_admin($config['id_user'])) {
@@ -27,6 +29,22 @@ if (! check_acl($config['id_user'], 0, 'PM') && ! is_user_admin($config['id_user
 }
 
 // Actions
+// AJAX
+if (get_parameter('get_selection_two_ways_form', 0)) {
+	$source_id = get_parameter('source_id', '');
+	$users = get_parameter('users', '');
+	$id = get_notification_source_id($source_id);
+	$info_selec = $users === "users"
+		? notifications_get_user_source_not_configured($id)
+		: notifications_get_group_source_not_configured($id);
+
+	echo notifications_print_two_ways_select(
+		$info_selec,
+		$users,
+		$source_id
+	);
+	return;
+}
 if (get_parameter('update_config', 0)) {
 	$res_global = array_reduce(notifications_get_all_sources(), function($carry, $source){
 		$id = notifications_desc_to_id($source['description']);
@@ -93,5 +111,57 @@ function notifications_disable_source(event) {
 	selectors.map(function (select) {
 		document.getElementById('multi-' + select + '-' + id).disabled = is_checked;
 	});
+}
+
+// Open a dialog with selector of source elements.
+function add_source_dialog(users, source_id) {
+	// Display the dialog
+	var dialog_id = 'global_config_notifications_dialog_add-' + users + '-' + source_id;
+	var not_dialog = document.createElement('div');
+	not_dialog.setAttribute('class', 'global_config_notifications_dialog_add');
+	not_dialog.setAttribute('id', dialog_id);
+	document.body.appendChild(not_dialog);
+	$("#" + dialog_id).dialog({
+		resizable: false,
+		draggable: true,
+		modal: true,
+		dialogClass: "global_config_notifications_dialog_add_wrapper",
+		overlay: {
+			opacity: 0.5,
+			background: "black"
+		},
+		closeOnEscape: true,
+		modal: true
+	});
+
+	jQuery.post ("ajax.php",
+		{"page" : "godmode/setup/setup_notifications",
+			"get_selection_two_ways_form" : 1,
+			"users" : users,
+			"source_id" : source_id
+		},
+		function (data, status) {
+			not_dialog.innerHTML = data
+		},
+		"html"
+	);
+}
+
+// Move from selected and not selected source elements.
+function notifications_modify_two_ways_element (id, source_id, operation) {
+	var index_sufix = 'multi-' + id + '-' + source_id;
+	var start_id = operation === 'add' ? 'all-' : 'selected-';
+	var end_id = operation !== 'add' ? 'all-' : 'selected-';
+	var select = document.getElementById(
+		start_id + index_sufix
+	);
+	var select_end = document.getElementById(
+		end_id + index_sufix
+	);
+	for (var i = 0; i < select.options.length; i++) {
+		if(select.options[i].selected ==true){
+			select_end.appendChild(select.options[i]);
+		}
+	}
 }
 </script>

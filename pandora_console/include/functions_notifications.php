@@ -195,16 +195,37 @@ function notifications_get_user_sources_for_select($source_id) {
  * @return array with the group id in keys and group name in value
  */
 function notifications_get_group_sources_for_select($source_id) {
+    $groups = notifications_get_group_sources (
+        array('id_source' => $source_id),
+        array('id_group')
+    );
+    return index_array($groups, 'id_group', 'name');
+}
+
+/**
+ * Get the group sources
+ *
+ * @param array $filter Filter of sql query.
+ */
+function notifications_get_group_sources ($filter = array(), $fields = array()) {
+    // Get only the tnotifications_source_group fields in addition to group name.
+    if (empty($fields)) $fields[] = "tnsg.*";
+    $fields = array_map(function($field) {
+        if (!preg_match("/^tnsg./", $field)) $field = "tnsg.{$field}";
+        return $field;
+    }, $fields);
+
+    // Get groups.
     $groups = db_get_all_rows_filter(
         'tnotification_source_group tnsg
             LEFT JOIN tgrupo tg ON tnsg.id_group = tg.id_grupo',
-        array('id_source' => $source_id),
-        array ('tnsg.id_group', 'IFNULL(tg.nombre, "All") AS name')
+        $filter,
+        array_merge ($fields, array('IFNULL(tg.nombre, "All") AS name'))
     );
+
     // If fails or no one is selected, return empty array
     if ($groups === false) return array();
-
-    return index_array($groups, 'id_group', 'name');
+    return $groups;
 }
 
 /**
@@ -252,6 +273,36 @@ function notifications_add_group_to_source ($source_id, $groups) {
             ) !== false;
     }
     return $res;
+}
+
+/**
+ * Get the groups that not own to a source and, for that reason, they can be
+ * added to the source.
+ *
+ * @param int $source_id Source id.
+ * @return array Indexed by id group all selectable groups.
+ */
+function notifications_get_group_source_not_configured ($source_id) {
+    $groups_selected = notifications_get_group_sources_for_select($source_id);
+    $all_groups = users_get_groups_for_select(false, "AR", false, true, $groups_selected);
+    return array_diff($all_groups, $groups_selected);
+}
+
+/**
+ * Get the users that not own to a source and, for that reason, they can be
+ * added to the source.
+ *
+ * @param int $source_id
+ * @return array Indexed by id user, all selectable users.
+ */
+function notifications_get_user_source_not_configured ($source_id) {
+    $users_selected = array_keys(notifications_get_user_sources_for_select($source_id));
+    $users = get_users(
+        'id_user',
+        array('!id_user' => $users_selected),
+        array('id_user')
+    );
+    return index_array($users, 'id_user', 'id_user');
 }
 
 /**
@@ -365,9 +416,29 @@ function notifications_print_source_select_box($info_selec, $id, $source_id, $di
     $html_select .=         html_print_select(empty($info_selec) ? true : $info_selec, "multi-{$id}-{$source_id}[]", 0, false, '', '', true, true, true,'', $disabled);
     $html_select .= "   </div>";
     $html_select .= "   <div class='global-notifications-icons'>";
-    $html_select .=         html_print_image('images/input_add.png', true, array('title' => $add_title));
+    $html_select .=         html_print_image('images/input_add.png', true, array('title' => $add_title, 'onclick' => "add_source_dialog('$id', '$source_id')"));
     $html_select .=         html_print_image('images/input_delete.png', true, array('title' => $delete_title));
     $html_select .= "   </div>";
     $html_select .= "</div>";
+    return $html_select;
+}
+
+/**
+ * Print the select with right and left arrows to select new sources
+ * (groups or users).
+ *
+ * @param array $info_selec Array with source info.
+ * @param string $users users|groups.
+ * @param source $source_id Source id.
+ * @return string HTML with the select code.
+ */
+function notifications_print_two_ways_select($info_selec, $users, $source_id) {
+	$html_select .= html_print_select(empty($info_selec) ? true : $info_selec, "all-multi-{$users}-{$source_id}[]", 0, false, '', '', true, true, true,'');
+	$html_select .= "<div class='global_config_notifications_two_ways_form_arrows'>";
+    $html_select .= html_print_image('images/darrowright.png', true, array('title' => $add_title, 'onclick' => "notifications_modify_two_ways_element('$users', '$source_id', 'add')"));
+    $html_select .= html_print_image('images/darrowleft.png', true, array('title' => $add_title, 'onclick' => "notifications_modify_two_ways_element('$users', '$source_id', 'remove')"));
+	$html_select .= "</div>";
+    $html_select .= html_print_select(true, "selected-multi-{$users}-{$source_id}[]", 0, false, '', '', true, true, true, '');
+
     return $html_select;
 }

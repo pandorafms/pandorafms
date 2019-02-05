@@ -265,10 +265,37 @@ function notifications_add_group_to_source ($source_id, $groups) {
     // Insert into database all groups passed
     $res = true;
     foreach ($groups as $group) {
-        $res = db_process_sql_insert(
+        if (empty($group)) continue;
+        $res = $res && db_process_sql_insert(
             'tnotification_source_group',
             array(
                 'id_group' => $group,
+                'id_source' => $source_id)
+            ) !== false;
+    }
+    return $res;
+}
+
+/**
+ * Insert a set of users to notification source
+ *
+ * @param int Source id
+ * @param array Id of users to be deleted
+ *
+ * @return bool True if success. False otherwise.
+ */
+ function notifications_add_users_to_source ($source_id, $users) {
+    // Source id is mandatory
+    if (!isset($source_id)) return false;
+
+    // Insert into database all groups passed
+    $res = true;
+    foreach ($users as $user) {
+        if (empty($user)) continue;
+        $res = $res && db_process_sql_insert(
+            'tnotification_source_user',
+            array(
+                'id_user' => $user,
                 'id_source' => $source_id)
             ) !== false;
     }
@@ -433,12 +460,15 @@ function notifications_print_source_select_box($info_selec, $id, $source_id, $di
  * @return string HTML with the select code.
  */
 function notifications_print_two_ways_select($info_selec, $users, $source_id) {
+    $html_select = "<div class='global_config_notifications_dialog_add'>";
 	$html_select .= html_print_select(empty($info_selec) ? true : $info_selec, "all-multi-{$users}-{$source_id}[]", 0, false, '', '', true, true, true,'');
 	$html_select .= "<div class='global_config_notifications_two_ways_form_arrows'>";
     $html_select .= html_print_image('images/darrowright.png', true, array('title' => $add_title, 'onclick' => "notifications_modify_two_ways_element('$users', '$source_id', 'add')"));
     $html_select .= html_print_image('images/darrowleft.png', true, array('title' => $add_title, 'onclick' => "notifications_modify_two_ways_element('$users', '$source_id', 'remove')"));
 	$html_select .= "</div>";
     $html_select .= html_print_select(true, "selected-multi-{$users}-{$source_id}[]", 0, false, '', '', true, true, true, '');
+    $html_select .= "</div>";
+    $html_select .= html_print_button(__('Add'), 'Add', false, "notifications_add_source_element_to_database('$users', '$source_id')", "class='sub add'", true);
 
     return $html_select;
 }

@@ -28,8 +28,7 @@ if (! check_acl($config['id_user'], 0, 'PM') && ! is_user_admin($config['id_user
     return;
 }
 
-// Actions
-// AJAX
+// AJAX actions.
 if (get_parameter('get_selection_two_ways_form', 0)) {
 	$source_id = get_parameter('source_id', '');
 	$users = get_parameter('users', '');
@@ -45,6 +44,22 @@ if (get_parameter('get_selection_two_ways_form', 0)) {
 	);
 	return;
 }
+if (get_parameter('add_source_to_database', 0)) {
+	$source_id = get_parameter('source_id', '');
+	$users = get_parameter('users', '');
+	$elements = get_parameter('elements', array());
+	$id = get_notification_source_id($source_id);
+	$res = $users === "users"
+		? notifications_add_users_to_source($id, $elements)
+		: notifications_add_group_to_source($id, $elements);
+	$result = array(
+		'result' => $res
+	);
+	echo json_encode($result);
+	return;
+}
+
+// Form actions.
 if (get_parameter('update_config', 0)) {
 	$res_global = array_reduce(notifications_get_all_sources(), function($carry, $source){
 		$id = notifications_desc_to_id($source['description']);
@@ -113,23 +128,32 @@ function notifications_disable_source(event) {
 	});
 }
 
+// Get index of two ways element dialog.
+function notifications_two_ways_element_get_dialog (id, source_id) {
+	return 'global_config_notifications_dialog_add-' + id + '-' + source_id;
+}
+// Get index of two ways element form.
+function notifications_two_ways_element_get_sufix (id, source_id) {
+	return 'multi-' + id + '-' + source_id;
+}
+
 // Open a dialog with selector of source elements.
 function add_source_dialog(users, source_id) {
 	// Display the dialog
-	var dialog_id = 'global_config_notifications_dialog_add-' + users + '-' + source_id;
+	var dialog_id = notifications_two_ways_element_get_dialog(users, source_id);
 	// Clean id element.
 	var previous_dialog = document.getElementById(dialog_id);
 	if (previous_dialog !== null) previous_dialog.remove();
 	// Create or recreate the content.
 	var not_dialog = document.createElement('div');
-	not_dialog.setAttribute('class', 'global_config_notifications_dialog_add');
+	not_dialog.setAttribute('class', 'global_config_notifications_dialog_add_wrapper');
 	not_dialog.setAttribute('id', dialog_id);
 	document.body.appendChild(not_dialog);
 	$("#" + dialog_id).dialog({
 		resizable: false,
 		draggable: true,
 		modal: true,
-		dialogClass: "global_config_notifications_dialog_add_wrapper",
+		dialogClass: "global_config_notifications_dialog_add_full",
 		overlay: {
 			opacity: 0.5,
 			background: "black"
@@ -153,7 +177,7 @@ function add_source_dialog(users, source_id) {
 
 // Move from selected and not selected source elements.
 function notifications_modify_two_ways_element (id, source_id, operation) {
-	var index_sufix = 'multi-' + id + '-' + source_id;
+	var index_sufix = notifications_two_ways_element_get_sufix (id, source_id);
 	var start_id = operation === 'add' ? 'all-' : 'selected-';
 	var end_id = operation !== 'add' ? 'all-' : 'selected-';
 	var select = document.getElementById(
@@ -167,5 +191,37 @@ function notifications_modify_two_ways_element (id, source_id, operation) {
 			select_end.appendChild(select.options[i]);
 		}
 	}
+}
+
+// Add elements to database and close dialog
+function notifications_add_source_element_to_database(id, source_id) {
+	var index = 'selected-' + notifications_two_ways_element_get_sufix (id, source_id);
+	var select = document.getElementById(index);
+	var selected = [];
+	for (var i = select.options.length - 1; i >= 0; i--) {
+		selected.push(select.options[i].value);
+	}
+	jQuery.post ("ajax.php",
+		{"page" : "godmode/setup/setup_notifications",
+			"add_source_to_database" : 1,
+			"users" : id,
+			"source_id" : source_id,
+			"elements": selected
+		},
+		function (data, status) {
+			if (data.result) {
+				// Append to other element
+				var out_select = document.getElementById('multi-' + id + '-' + source_id);
+				for (var i = select.options.length - 1; i >= 0; i--) {
+					out_select.appendChild(select.options[i]);
+				}
+				// Close the dialog
+				$("#" + notifications_two_ways_element_get_dialog(id, source_id)).dialog("close");
+			} else {
+				console.log("Cannot update element.");
+			}
+		},
+		"json"
+	);
 }
 </script>

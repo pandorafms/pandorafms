@@ -4965,7 +4965,8 @@ div#dialog_messages table th:last-child {
   width: 99%;
 }
 
-.global-config-notification-single-selector :last-child {
+.global-config-notification-single-selector :last-child,
+.global_config_notifications_dialog_add_wrapper {
   flex-direction: column;
   display: flex;
   justify-content: flex-end;

@@ -158,7 +158,7 @@ function notifications_modify_two_ways_element (id, source_id, operation) {
 	var select_end = document.getElementById(
 		end_id + index_sufix
 	);
-	for (var i = 0; i < select.options.length; i++) {
+	for (var i = select.options.length - 1; i >= 0; i--) {
 		if(select.options[i].selected ==true){
 			select_end.appendChild(select.options[i]);
 		}

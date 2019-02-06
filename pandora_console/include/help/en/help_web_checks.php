@@ -6,7 +6,7 @@
 <h1>WEB Monitoring</h1>
 
 <p>
-Advanced WEB Monitoring is a feature done by the Goliat/WEB Server in <?php echo get_product_name();?> Enterprise version.
+Advanced WEB Monitoring is a feature done by the Goliat/WEB Server in <?php echo get_product_name(); ?> Enterprise version.
 <br /><br />
 This is a sample of GOLIAT Webcheck module:
 <br />
@@ -43,12 +43,12 @@ The following macros are available:
 <li>_moduledescription_ : Description of the module who fired the alert.</li>
 <li>_modulestatus_ : Status of the module.</li>
 <li>_moduletags_ : Tags associated to the module.</li>
-<li>_id_agent_ : Id of agent, useful to build direct URL to redirect to a <?php echo get_product_name();?> console webpage.</li>
+<li>_id_agent_ : Id of agent, useful to build direct URL to redirect to a <?php echo get_product_name(); ?> console webpage.</li>
 <li>_policy_ : Name of the policy the module belongs to (if applies).</li>
 <li>_interval_ : Execution interval of the module. </li>
 <li>_target_ip_ : IP address of the target of the module.</li>
 <li>_target_port_ : Port number of the target of the module.</li>
-<li>_plugin_parameters_ : Plug-in Parameters of the module.</li>	
+<li>_plugin_parameters_ : Plug-in Parameters of the module.</li>    
 <li>_email_tag_ : Emails associated to the module tags.</li>
 
 </ul>

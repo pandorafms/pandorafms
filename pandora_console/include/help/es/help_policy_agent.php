@@ -1,7 +1,7 @@
 <?php
 /*
-* @package Include/help/es/
-*/
+ * @package Include/help/es/
+ */
 ?>
 
 <h1>Agentes de la politica</h1>

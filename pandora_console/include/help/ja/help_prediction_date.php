@@ -13,4 +13,4 @@
 <p>以下の例では、disk_temp_free というモジュールで、二か月間を選択しデータ範囲を [5-0] として、04 Dec 2011 18:36:23 が出力されています。</p>
 <p>これはグラフ表示バージョンです。 </p>
 
-<?php html_print_image("images/help/prediction_date.png", false, array('height' => '210')); ?>
+<?php html_print_image('images/help/prediction_date.png', false, ['height' => '210']);

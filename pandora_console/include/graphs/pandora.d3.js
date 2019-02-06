@@ -12,7 +12,6 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 
-
 // The recipient is the selector of the html element
 // The elements is an array with the names of the wheel elements
 // The matrix must be a 2 dimensional array with a row and a column for each element
@@ -21,246 +20,297 @@
 // matrix = [[0, 0, 2],     // a[a => a, a => b, a => c]
 //           [5, 0, 1],     // b[b => a, b => b, b => c]
 //           [2, 3, 0]];    // c[c => a, c => b, c => c]
-function chordDiagram (recipient, elements, matrix, unit, width) {
+function chordDiagram(recipient, elements, matrix, unit, width) {
+  d3.chart = d3.chart || {};
+  d3.chart.chordWheel = function(options) {
+    // Default values
+    var width = 700;
+    var margin = 150;
+    var padding = 0.02;
 
-	d3.chart = d3.chart || {};
-	d3.chart.chordWheel = function(options) {
-		
-		// Default values
-		var width = 700;
-		var margin = 150;
-		var padding = 0.02;
+    function chart(selection) {
+      selection.each(function(data) {
+        var matrix = data.matrix;
+        var elements = data.elements;
+        var radius = width / 2 - margin;
 
-		function chart(selection) {
-			selection.each(function(data) {
+        // create the layout
+        var chord = d3.layout
+          .chord()
+          .padding(padding)
+          .sortSubgroups(d3.descending);
 
-				var matrix = data.matrix;
-				var elements = data.elements;
-				var radius = width / 2 - margin;
+        // Select the svg element, if it exists.
+        var svg = d3
+          .select(this)
+          .selectAll("svg")
+          .data([data]);
 
-				// create the layout
-				var chord = d3.layout.chord()
-					.padding(padding)
-					.sortSubgroups(d3.descending);
+        // Otherwise, create the skeletal chart.
+        var gEnter = svg
+          .enter()
+          .append("svg:svg")
+          .attr("width", width)
+          .attr("height", width)
+          .attr("class", "dependencyWheel")
+          .append("g")
+          .attr("transform", "translate(" + width / 2 + "," + width / 2 + ")");
 
-				// Select the svg element, if it exists.
-				var svg = d3.select(this).selectAll("svg").data([data]);
+        var arc = d3.svg
+          .arc()
+          .innerRadius(radius)
+          .outerRadius(radius + 20);
 
-				// Otherwise, create the skeletal chart.
-				var gEnter = svg.enter().append("svg:svg")
-					.attr("width", width)
-					.attr("height", width)
-					.attr("class", "dependencyWheel")
-					.append("g")
-					.attr("transform", "translate(" + (width / 2) + "," + (width / 2) + ")");
+        var fill = function(d) {
+          return "hsl(" + parseInt((d.index / 26) * 360, 10) + ",80%,70%)";
+        };
 
-				var arc = d3.svg.arc()
-					.innerRadius(radius)
-					.outerRadius(radius + 20);
+        // Returns an event handler for fading a given chord group.
+        var fade = function(opacity) {
+          return function(g, i) {
+            svg
+              .selectAll(".chord")
+              .filter(function(d) {
+                return d.source.index != i && d.target.index != i;
+              })
+              .transition()
+              .style("opacity", opacity);
+            var groups = [];
+            svg.selectAll(".chord").filter(function(d) {
+              if (d.source.index == i) {
+                groups.push(d.target.index);
+              }
+              if (d.target.index == i) {
+                groups.push(d.source.index);
+              }
+            });
+            groups.push(i);
+            var length = groups.length;
+            svg
+              .selectAll(".group")
+              .filter(function(d) {
+                for (var i = 0; i < length; i++) {
+                  if (groups[i] == d.index) return false;
+                }
+                return true;
+              })
+              .transition()
+              .style("opacity", opacity);
+          };
+        };
 
-				var fill = function(d) {
-					return "hsl(" + parseInt((d.index / 26) * 360, 10) + ",80%,70%)";
-				};
+        chord.matrix(matrix);
 
-				// Returns an event handler for fading a given chord group.
-				var fade = function(opacity) {
-					return function(g, i) {
-						svg.selectAll(".chord")
-								.filter(function(d) {
-									return d.source.index != i && d.target.index != i;
-								})
-							.transition()
-								.style("opacity", opacity);
-						var groups = [];
-						svg.selectAll(".chord")
-								.filter(function(d) {
-									if (d.source.index == i) {
-										groups.push(d.target.index);
-									}
-									if (d.target.index == i) {
-										groups.push(d.source.index);
-									}
-								});
-						groups.push(i);
-						var length = groups.length;
-						svg.selectAll('.group')
-								.filter(function(d) {
-									for (var i = 0; i < length; i++) {
-										if(groups[i] == d.index) return false;
-									}
-									return true;
-								})
-								.transition()
-								.style("opacity", opacity);
-					};
-				};
+        var rootGroup = chord.groups()[0];
+        var rotation =
+          (-(rootGroup.endAngle - rootGroup.startAngle) / 2) * (180 / Math.PI);
 
-				chord.matrix(matrix);
+        var g = gEnter
+          .selectAll("g.group")
+          .data(chord.groups)
+          .enter()
+          .append("svg:g")
+          .attr("class", "group")
+          .attr("transform", function(d) {
+            return "rotate(" + rotation + ")";
+          });
 
-				var rootGroup = chord.groups()[0];
-				var rotation = - (rootGroup.endAngle - rootGroup.startAngle) / 2 * (180 / Math.PI);
+        g.append("svg:path")
+          .style("fill", fill)
+          .style("stroke", fill)
+          .attr("d", arc)
+          .on("mouseover", fade(0.1))
+          .on("mouseout", fade(1));
 
-				var g = gEnter.selectAll("g.group")
-					.data(chord.groups)
-					.enter().append("svg:g")
-					.attr("class", "group")
-					.attr("transform", function(d) {
-						return "rotate(" + rotation + ")";
-					});
+        g.append("svg:text")
+          .each(function(d) {
+            d.angle = (d.startAngle + d.endAngle) / 2;
+          })
+          .attr("dy", ".35em")
+          .attr("text-anchor", function(d) {
+            return d.angle > Math.PI ? "end" : null;
+          })
+          .attr("transform", function(d) {
+            return (
+              "rotate(" +
+              ((d.angle * 180) / Math.PI - 90) +
+              ")" +
+              "translate(" +
+              (radius + 26) +
+              ")" +
+              (d.angle > Math.PI ? "rotate(180)" : "")
+            );
+          })
+          .text(function(d) {
+            return elements[d.index];
+          });
 
-				g.append("svg:path")
-					.style("fill", fill)
-					.style("stroke", fill)
-					.attr("d", arc)
-					.on("mouseover", fade(0.1))
-					.on("mouseout", fade(1));
+        gEnter
+          .selectAll("path.chord")
+          .data(chord.chords)
+          .enter()
+          .append("svg:path")
+          .attr("class", "chord")
+          .style("stroke", function(d) {
+            return d3.rgb(fill(d.source)).darker();
+          })
+          .style("fill", function(d) {
+            return fill(d.source);
+          })
+          .attr("d", d3.svg.chord().radius(radius))
+          .attr("transform", function(d) {
+            return "rotate(" + rotation + ")";
+          })
+          .style("opacity", 1);
 
-				g.append("svg:text")
-					.each(function(d) { d.angle = (d.startAngle + d.endAngle) / 2; })
-					.attr("dy", ".35em")
-					.attr("text-anchor", function(d) { return d.angle > Math.PI ? "end" : null; })
-					.attr("transform", function(d) {
-						return "rotate(" + (d.angle * 180 / Math.PI - 90) + ")" +
-							"translate(" + (radius + 26) + ")" +
-							(d.angle > Math.PI ? "rotate(180)" : "");
-					})
-					.text(function(d) { return elements[d.index]; });
+        // Add an elaborate mouseover title for each chord.
+        gEnter
+          .selectAll("path.chord")
+          .on("mouseover", over_user)
+          .on("mouseout", out_user)
+          .on("mousemove", move_tooltip);
 
-				gEnter.selectAll("path.chord")
-					.data(chord.chords)
-					.enter().append("svg:path")
-					.attr("class", "chord")
-					.style("stroke", function(d) { return d3.rgb(fill(d.source)).darker(); })
-					.style("fill", function(d) { return fill(d.source); })
-					.attr("d", d3.svg.chord().radius(radius))
-					.attr("transform", function(d) {
-						return "rotate(" + rotation + ")";
-					})
-					.style("opacity", 1);
+        function move_tooltip(d) {
+          x = d3.event.pageX + 10;
+          y = d3.event.pageY + 10;
 
-				// Add an elaborate mouseover title for each chord.
-				gEnter.selectAll("path.chord")
-					.on("mouseover", over_user)
-					.on("mouseout", out_user)
-					.on("mousemove", move_tooltip);
+          $("#tooltip").css("left", x + "px");
+          $("#tooltip").css("top", y + "px");
+        }
 
-				function move_tooltip(d) {
-					x = d3.event.pageX + 10;
-					y = d3.event.pageY + 10;
-					
-					$("#tooltip").css('left', x + 'px');
-					$("#tooltip").css('top', y + 'px');
-				}
-				
-				function over_user(d) {
-					id = d.id;
-					
-					$("#" + id).css('border', '1px solid black');
-					$("#" + id).css('z-index', '1');
-					
-					show_tooltip(d);
-				}
-				
-				function out_user(d) {
-					id = d.id;
-					
-					$("#" + id).css('border', '');
-					$("#" + id).css('z-index', '');
-					
-					hide_tooltip();
-				}
+        function over_user(d) {
+          id = d.id;
 
-				function create_tooltip(d, x, y) {
-					if ($("#tooltip").length == 0) {
-						$(recipient)
-							.append($("<div></div>")
-							.attr('id', 'tooltip')
-							.html(
-								elements[d.source.index]
-								+ " → "
-								+ elements[d.target.index]
-								+ ": <b>" + d.source.value.toFixed(2) + " " + unit + "</b>"
-								+ "<br>"
-								+ elements[d.target.index]
-								+ " → "
-								+ elements[d.source.index]
-								+ ": <b>" + d.target.value.toFixed(2) + " " + unit + "</b>"
-							));
-					}
-					else {
-						$("#tooltip").html(
-							elements[d.source.index]
-							+ " → "
-							+ elements[d.target.index]
-							+ ": <b>" + d.source.value.toFixed(2) + " " + unit + "</b>"
-							+ "<br>"
-							+ elements[d.target.index]
-							+ " → "
-							+ elements[d.source.index]
-							+ ": <b>" + d.target.value.toFixed(2) + " " + unit + "</b>"
-						);
-					}
-					
-					$("#tooltip").attr('style', 'background: #fff;' +
-						'position: absolute;' +
-						'display: inline-block;' +
-						'width: auto;' +
-						'max-width: 500px;' +
-						'text-align: left;' +
-						'padding: 10px 10px 10px 10px;' +
-						'z-index: 2;' +
-						"-webkit-box-shadow: 7px 7px 5px rgba(50, 50, 50, 0.75);" +
-						"-moz-box-shadow:    7px 7px 5px rgba(50, 50, 50, 0.75);" +
-						"box-shadow:         7px 7px 5px rgba(50, 50, 50, 0.75);" +
-						'left: ' + x + 'px;' +
-						'top: ' + y + 'px;');
-				}
-				
-				function show_tooltip(d) {
-					x = d3.event.pageX + 10;
-					y = d3.event.pageY + 10;
-					
-					create_tooltip(d, x, y);
-				}
-				
-				function hide_tooltip() {
-					$("#tooltip").hide();
-				}
-			});
-		}
+          $("#" + id).css("border", "1px solid black");
+          $("#" + id).css("z-index", "1");
 
-		chart.width = function(value) {
-			if (!arguments.length) return width;
-			width = value;
-			return chart;
-		};
+          show_tooltip(d);
+        }
 
-		chart.margin = function(value) {
-			if (!arguments.length) return margin;
-			margin = value;
-			return chart;
-		};
+        function out_user(d) {
+          id = d.id;
 
-		chart.padding = function(value) {
-			if (!arguments.length) return padding;
-			padding = value;
-			return chart;
-		};
+          $("#" + id).css("border", "");
+          $("#" + id).css("z-index", "");
 
-		return chart;
-	};
+          hide_tooltip();
+        }
 
-	var chart = d3.chart.chordWheel()
-				.width(width)
-				.margin(150)
-				.padding(.02);
+        function create_tooltip(d, x, y) {
+          if ($("#tooltip").length == 0) {
+            $(recipient).append(
+              $("<div></div>")
+                .attr("id", "tooltip")
+                .html(
+                  elements[d.source.index] +
+                    " → " +
+                    elements[d.target.index] +
+                    ": <b>" +
+                    d.source.value.toFixed(2) +
+                    " " +
+                    unit +
+                    "</b>" +
+                    "<br>" +
+                    elements[d.target.index] +
+                    " → " +
+                    elements[d.source.index] +
+                    ": <b>" +
+                    d.target.value.toFixed(2) +
+                    " " +
+                    unit +
+                    "</b>"
+                )
+            );
+          } else {
+            $("#tooltip").html(
+              elements[d.source.index] +
+                " → " +
+                elements[d.target.index] +
+                ": <b>" +
+                d.source.value.toFixed(2) +
+                " " +
+                unit +
+                "</b>" +
+                "<br>" +
+                elements[d.target.index] +
+                " → " +
+                elements[d.source.index] +
+                ": <b>" +
+                d.target.value.toFixed(2) +
+                " " +
+                unit +
+                "</b>"
+            );
+          }
 
-	d3.select(recipient)
-		.datum({
-			elements: elements,
-			matrix: matrix
-		})
-		.call(chart);
+          $("#tooltip").attr(
+            "style",
+            "background: #fff;" +
+              "position: absolute;" +
+              "display: inline-block;" +
+              "width: auto;" +
+              "max-width: 500px;" +
+              "text-align: left;" +
+              "padding: 10px 10px 10px 10px;" +
+              "z-index: 2;" +
+              "-webkit-box-shadow: 7px 7px 5px rgba(50, 50, 50, 0.75);" +
+              "-moz-box-shadow:    7px 7px 5px rgba(50, 50, 50, 0.75);" +
+              "box-shadow:         7px 7px 5px rgba(50, 50, 50, 0.75);" +
+              "left: " +
+              x +
+              "px;" +
+              "top: " +
+              y +
+              "px;"
+          );
+        }
+
+        function show_tooltip(d) {
+          x = d3.event.pageX + 10;
+          y = d3.event.pageY + 10;
+
+          create_tooltip(d, x, y);
+        }
+
+        function hide_tooltip() {
+          $("#tooltip").hide();
+        }
+      });
+    }
+
+    chart.width = function(value) {
+      if (!arguments.length) return width;
+      width = value;
+      return chart;
+    };
+
+    chart.margin = function(value) {
+      if (!arguments.length) return margin;
+      margin = value;
+      return chart;
+    };
+
+    chart.padding = function(value) {
+      if (!arguments.length) return padding;
+      padding = value;
+      return chart;
+    };
+
+    return chart;
+  };
+
+  var chart = d3.chart
+    .chordWheel()
+    .width(width)
+    .margin(150)
+    .padding(0.02);
+
+  d3.select(recipient)
+    .datum({
+      elements: elements,
+      matrix: matrix
+    })
+    .call(chart);
 }
 
 // The recipient is the selector of the html element
@@ -299,2036 +349,2398 @@ function chordDiagram (recipient, elements, matrix, unit, width) {
 //  ]
 // };
 function treeMap(recipient, data, width, height) {
+  //var isIE = BrowserDetect.browser == 'Explorer';
+  var isIE = true;
+  var chartWidth = width;
+  var chartHeight = height;
+  if (width === "auto") {
+    chartWidth = $(recipient).innerWidth();
+  }
+  if (height === "auto") {
+    chartHeight = $(recipient).innerHeight();
+  }
+  var xscale = d3.scale.linear().range([0, chartWidth]);
+  var yscale = d3.scale.linear().range([0, chartHeight]);
+  var color = d3.scale.category10();
+  var headerHeight = 20;
+  var headerColor = "#555555";
+  var transitionDuration = 500;
+  var root;
+  var node;
 
-	//var isIE = BrowserDetect.browser == 'Explorer';
-	var isIE = true;
-	var chartWidth = width;
-	var chartHeight = height;
-	if (width === 'auto') {
-		chartWidth = $(recipient).innerWidth();
-	}
-	if (height === 'auto') {
-		chartHeight = $(recipient).innerHeight();
-	}
-	var xscale = d3.scale.linear().range([0, chartWidth]);
-	var yscale = d3.scale.linear().range([0, chartHeight]);
-	var color = d3.scale.category10();
-	var headerHeight = 20;
-	var headerColor = "#555555";
-	var transitionDuration = 500;
-	var root;
-	var node;
+  var treemap = d3.layout
+    .treemap()
+    .round(false)
+    .size([chartWidth, chartHeight])
+    .sticky(true)
+    .value(function(d) {
+      return d.value;
+    });
 
-	var treemap = d3.layout.treemap()
-		.round(false)
-		.size([chartWidth, chartHeight])
-		.sticky(true)
-		.value(function(d) {
-			return d.value;
-		});
+  var chart = d3
+    .select(recipient)
+    .append("svg:svg")
+    .attr("width", chartWidth)
+    .attr("height", chartHeight)
+    .append("svg:g");
 
-	var chart = d3.select(recipient)
-		.append("svg:svg")
-		.attr("width", chartWidth)
-		.attr("height", chartHeight)
-		.append("svg:g");
+  node = root = data;
+  var nodes = treemap.nodes(root);
 
-	node = root = data;
-	var nodes = treemap.nodes(root);
+  var children = nodes.filter(function(d) {
+    return !d.children;
+  });
+  var parents = nodes.filter(function(d) {
+    return d.children;
+  });
 
-	var children = nodes.filter(function(d) {
-		return !d.children;
-	});
-	var parents = nodes.filter(function(d) {
-		return d.children;
-	});
+  // create parent cells
+  var parentCells = chart.selectAll("g.cell.parent").data(parents, function(d) {
+    return d.id;
+  });
+  var parentEnterTransition = parentCells
+    .enter()
+    .append("g")
+    .attr("class", "cell parent")
+    .on("click", function(d) {
+      zoom(d);
+    })
+    .append("svg")
+    .attr("class", "clip")
+    .attr("width", function(d) {
+      return Math.max(0.01, d.dx);
+    })
+    .attr("height", headerHeight);
+  parentEnterTransition
+    .append("rect")
+    .attr("width", function(d) {
+      return Math.max(0.01, d.dx);
+    })
+    .attr("height", headerHeight)
+    .style("fill", headerColor);
+  parentEnterTransition
+    .append("text")
+    .attr("class", "label")
+    .attr("fill", "white")
+    .attr("transform", "translate(3, 13)")
+    .attr("width", function(d) {
+      return Math.max(0.01, d.dx);
+    })
+    .attr("height", headerHeight)
+    .text(function(d) {
+      return d.name;
+    });
+  // update transition
+  var parentUpdateTransition = parentCells
+    .transition()
+    .duration(transitionDuration);
+  parentUpdateTransition.select(".cell").attr("transform", function(d) {
+    return "translate(" + d.dx + "," + d.y + ")";
+  });
+  parentUpdateTransition
+    .select("rect")
+    .attr("width", function(d) {
+      return Math.max(0.01, d.dx);
+    })
+    .attr("height", headerHeight)
+    .style("fill", headerColor);
+  parentUpdateTransition
+    .select(".label")
+    .attr("transform", "translate(3, 13)")
+    .attr("width", function(d) {
+      return Math.max(0.01, d.dx);
+    })
+    .attr("height", headerHeight)
+    .text(function(d) {
+      return d.name;
+    });
+  // remove transition
+  parentCells.exit().remove();
 
-	// create parent cells
-	var parentCells = chart.selectAll("g.cell.parent")
-		.data(parents, function(d) {
-			return d.id;
-		});
-	var parentEnterTransition = parentCells.enter()
-		.append("g")
-		.attr("class", "cell parent")
-		.on("click", function(d) {
-			zoom(d);
-		})
-		.append("svg")
-		.attr("class", "clip")
-		.attr("width", function(d) {
-			return Math.max(0.01, d.dx);
-		})
-		.attr("height", headerHeight);
-	parentEnterTransition.append("rect")
-		.attr("width", function(d) {
-			return Math.max(0.01, d.dx);
-		})
-		.attr("height", headerHeight)
-		.style("fill", headerColor);
-	parentEnterTransition.append('text')
-		.attr("class", "label")
-		.attr("fill", "white")
-		.attr("transform", "translate(3, 13)")
-		.attr("width", function(d) {
-			return Math.max(0.01, d.dx);
-		})
-		.attr("height", headerHeight)
-		.text(function(d) {
-			return d.name;
-		});
-	// update transition
-	var parentUpdateTransition = parentCells.transition().duration(transitionDuration);
-	parentUpdateTransition.select(".cell")
-		.attr("transform", function(d) {
-			return "translate(" + d.dx + "," + d.y + ")";
-		});
-	parentUpdateTransition.select("rect")
-		.attr("width", function(d) {
-			return Math.max(0.01, d.dx);
-		})
-		.attr("height", headerHeight)
-		.style("fill", headerColor);
-	parentUpdateTransition.select(".label")
-		.attr("transform", "translate(3, 13)")
-		.attr("width", function(d) {
-			return Math.max(0.01, d.dx);
-		})
-		.attr("height", headerHeight)
-		.text(function(d) {
-			return d.name;
-		});
-	// remove transition
-	parentCells.exit()
-		.remove();
+  // create children cells
+  var childrenCells = chart
+    .selectAll("g.cell.child")
+    .data(children, function(d) {
+      return d.id;
+    });
 
-	// create children cells
-	var childrenCells = chart.selectAll("g.cell.child")
-		.data(children, function(d) {
-			return d.id;
-		});
+  // enter transition
+  var childEnterTransition = childrenCells
+    .enter()
+    .append("g")
+    .attr("class", "cell child")
+    .on("click", function(d) {
+      zoom(node === d.parent ? root : d.parent);
+    })
+    .on("mouseover", over_user)
+    .on("mouseout", out_user)
+    .on("mousemove", move_tooltip)
+    .append("svg")
+    .attr("class", "clip");
 
-	// enter transition
-	var childEnterTransition = childrenCells.enter()
-		.append("g")
-		.attr("class", "cell child")
-		.on("click", function(d) {
-			zoom(node === d.parent ? root : d.parent);
-		})
-		.on("mouseover", over_user)
-		.on("mouseout", out_user)
-		.on("mousemove", move_tooltip)
-		.append("svg")
-		.attr("class", "clip");
+  childEnterTransition
+    .append("rect")
+    .classed("background", true)
+    .style("fill", function(d) {
+      return color(d.name);
+    });
 
-	childEnterTransition.append("rect")
-		.classed("background", true)
-		.style("fill", function(d) {
-			return color(d.name);
-		});
+  childEnterTransition
+    .append("text")
+    .attr("class", "label")
+    .attr("x", function(d) {
+      return d.dx / 2;
+    })
+    .attr("y", function(d) {
+      return d.dy / 2;
+    })
+    .attr("dy", ".35em")
+    .attr("text-anchor", "middle")
+    .style("display", "none")
+    .text(function(d) {
+      return d.name;
+    });
 
-	childEnterTransition.append('text')
-		.attr("class", "label")
-		.attr('x', function(d) {
-			return d.dx / 2;
-		})
-		.attr('y', function(d) {
-			return d.dy / 2;
-		})
-		.attr("dy", ".35em")
-		.attr("text-anchor", "middle")
-		.style("display", "none")
-		.text(function(d) {
-			return d.name;
-		});
+  // update transition
+  var childUpdateTransition = childrenCells
+    .transition()
+    .duration(transitionDuration);
 
-	// update transition
-	var childUpdateTransition = childrenCells.transition().duration(transitionDuration);
+  childUpdateTransition.select(".cell").attr("transform", function(d) {
+    return "translate(" + d.x + "," + d.y + ")";
+  });
 
-	childUpdateTransition.select(".cell")
-		.attr("transform", function(d) {
-			return "translate(" + d.x + "," + d.y + ")";
-		});
+  childUpdateTransition
+    .select("rect")
+    .attr("width", function(d) {
+      return Math.max(0.01, d.dx);
+    })
+    .attr("height", function(d) {
+      return d.dy;
+    });
 
-	childUpdateTransition.select("rect")
-		.attr("width", function(d) {
-			return Math.max(0.01, d.dx);
-		})
-		.attr("height", function(d) {
-			return d.dy;
-		});
+  childUpdateTransition
+    .select(".label")
+    .attr("x", function(d) {
+      return d.dx / 2;
+    })
+    .attr("y", function(d) {
+      return d.dy / 2;
+    })
+    .attr("dy", ".35em")
+    .attr("text-anchor", "middle")
+    .style("display", "none")
+    .text(function(d) {
+      return d.name;
+    });
 
-	childUpdateTransition.select(".label")
-		.attr('x', function(d) {
-			return d.dx / 2;
-		})
-		.attr('y', function(d) {
-			return d.dy / 2;
-		})
-		.attr("dy", ".35em")
-		.attr("text-anchor", "middle")
-		.style("display", "none")
-		.text(function(d) {
-			return d.name;
-		});
+  // exit transition
+  childrenCells.exit().remove();
 
-	// exit transition
-	childrenCells.exit()
-		.remove();
+  d3.select("select").on("change", function() {
+    treemap.value(this.value == "size" ? size : count).nodes(root);
+    zoom(node);
+  });
 
-	d3.select("select").on("change", function() {
-		treemap.value(this.value == "size" ? size : count)
-			.nodes(root);
-		zoom(node);
-	});
+  zoom(node);
 
-	zoom(node);
+  function size(d) {
+    return d.size;
+  }
 
-	function size(d) {
-		return d.size;
-	}
+  function count(d) {
+    return 1;
+  }
 
-	function count(d) {
-		return 1;
-	}
+  //and another one
+  function textHeight(d) {
+    var ky = chartHeight / d.dy;
+    yscale.domain([d.y, d.y + d.dy]);
+    return (ky * d.dy) / headerHeight;
+  }
 
-	//and another one
-	function textHeight(d) {
-		var ky = chartHeight / d.dy;
-		yscale.domain([d.y, d.y + d.dy]);
-		return (ky * d.dy) / headerHeight;
-	}
+  function getRGBComponents(color) {
+    var r = color.substring(1, 3);
+    var g = color.substring(3, 5);
+    var b = color.substring(5, 7);
+    return {
+      R: parseInt(r, 16),
+      G: parseInt(g, 16),
+      B: parseInt(b, 16)
+    };
+  }
 
-	function getRGBComponents (color) {
-		var r = color.substring(1, 3);
-		var g = color.substring(3, 5);
-		var b = color.substring(5, 7);
-		return {
-			R: parseInt(r, 16),
-			G: parseInt(g, 16),
-			B: parseInt(b, 16)
-		};
-	}
+  function idealTextColor(bgColor) {
+    var nThreshold = 105;
+    var components = getRGBComponents(bgColor);
+    var bgDelta =
+      components.R * 0.299 + components.G * 0.587 + components.B * 0.114;
+    return 255 - bgDelta < nThreshold ? "#000000" : "#ffffff";
+  }
 
-	function idealTextColor (bgColor) {
-		var nThreshold = 105;
-		var components = getRGBComponents(bgColor);
-		var bgDelta = (components.R * 0.299) + (components.G * 0.587) + (components.B * 0.114);
-		return ((255 - bgDelta) < nThreshold) ? "#000000" : "#ffffff";
-	}
-	
-	function zoom(d) {
-		treemap
-			.padding([headerHeight / (chartHeight / d.dy), 0, 0, 0])
-			.nodes(d);
+  function zoom(d) {
+    treemap.padding([headerHeight / (chartHeight / d.dy), 0, 0, 0]).nodes(d);
 
-		// moving the next two lines above treemap layout messes up padding of zoom result
-		var kx = chartWidth / d.dx;
-		var ky = chartHeight / d.dy;
-		var level = d;
+    // moving the next two lines above treemap layout messes up padding of zoom result
+    var kx = chartWidth / d.dx;
+    var ky = chartHeight / d.dy;
+    var level = d;
 
-		xscale.domain([d.x, d.x + d.dx]);
-		yscale.domain([d.y, d.y + d.dy]);
+    xscale.domain([d.x, d.x + d.dx]);
+    yscale.domain([d.y, d.y + d.dy]);
 
-		if (node != level) {
-			chart.selectAll(".cell.child .label")
-				.style("display", "none");
-		}
+    if (node != level) {
+      chart.selectAll(".cell.child .label").style("display", "none");
+    }
 
-		var zoomTransition = chart.selectAll("g.cell").transition().duration(transitionDuration)
-			.attr("transform", function(d) {
-				return "translate(" + xscale(d.x) + "," + yscale(d.y) + ")";
-			})
-			.each("start", function() {
-				d3.select(this).select("label")
-					.style("display", "none");
-			})
-			.each("end", function(d, i) {
-				if (!i && (level !== self.root)) {
-					chart.selectAll(".cell.child")
-						.filter(function(d) {
-							return d.parent === self.node; // only get the children for selected group
-						})
-						.select(".label")
-						.style("display", "")
-						.style("color", function(d) {
-							return idealTextColor(color(d.parent.name));
-						});
-				}
-			});
+    var zoomTransition = chart
+      .selectAll("g.cell")
+      .transition()
+      .duration(transitionDuration)
+      .attr("transform", function(d) {
+        return "translate(" + xscale(d.x) + "," + yscale(d.y) + ")";
+      })
+      .each("start", function() {
+        d3.select(this)
+          .select("label")
+          .style("display", "none");
+      })
+      .each("end", function(d, i) {
+        if (!i && level !== self.root) {
+          chart
+            .selectAll(".cell.child")
+            .filter(function(d) {
+              return d.parent === self.node; // only get the children for selected group
+            })
+            .select(".label")
+            .style("display", "")
+            .style("color", function(d) {
+              return idealTextColor(color(d.parent.name));
+            });
+        }
+      });
 
-		zoomTransition.select(".clip")
-			.attr("width", function(d) {
-				return Math.max(0.01, (kx * d.dx));
-			})
-			.attr("height", function(d) {
-				return d.children ? headerHeight : Math.max(0.01, (ky * d.dy));
-			});
+    zoomTransition
+      .select(".clip")
+      .attr("width", function(d) {
+        return Math.max(0.01, kx * d.dx);
+      })
+      .attr("height", function(d) {
+        return d.children ? headerHeight : Math.max(0.01, ky * d.dy);
+      });
 
-		zoomTransition.select(".label")
-			.attr("width", function(d) {
-				return Math.max(0.01, (kx * d.dx));
-			})
-			.attr("height", function(d) {
-				return d.children ? headerHeight : Math.max(0.01, (ky * d.dy));
-			})
-			.text(function(d) {
-				return d.name;
-			});
+    zoomTransition
+      .select(".label")
+      .attr("width", function(d) {
+        return Math.max(0.01, kx * d.dx);
+      })
+      .attr("height", function(d) {
+        return d.children ? headerHeight : Math.max(0.01, ky * d.dy);
+      })
+      .text(function(d) {
+        return d.name;
+      });
 
-		zoomTransition.select(".child .label")
-			.attr("x", function(d) {
-				return kx * d.dx / 2;
-			})
-			.attr("y", function(d) {
-				return ky * d.dy / 2;
-			});
+    zoomTransition
+      .select(".child .label")
+      .attr("x", function(d) {
+        return (kx * d.dx) / 2;
+      })
+      .attr("y", function(d) {
+        return (ky * d.dy) / 2;
+      });
 
-		zoomTransition.select("rect")
-			.attr("width", function(d) {
-				return Math.max(0.01, (kx * d.dx));
-			})
-			.attr("height", function(d) {
-				return d.children ? headerHeight : Math.max(0.01, (ky * d.dy));
-			});
+    zoomTransition
+      .select("rect")
+      .attr("width", function(d) {
+        return Math.max(0.01, kx * d.dx);
+      })
+      .attr("height", function(d) {
+        return d.children ? headerHeight : Math.max(0.01, ky * d.dy);
+      });
 
-		node = d;
+    node = d;
 
-		if (d3.event) {
-			d3.event.stopPropagation();
-		}
-	}
+    if (d3.event) {
+      d3.event.stopPropagation();
+    }
+  }
 
+  function position() {
+    this.style("left", function(d) {
+      return d.x + "px";
+    })
+      .style("top", function(d) {
+        return d.y + "px";
+      })
+      .style("width", function(d) {
+        return Math.max(0, d.dx - 1) + "px";
+      })
+      .style("height", function(d) {
+        return Math.max(0, d.dy - 1) + "px";
+      });
+  }
 
-	function position() {
-		this.style("left", function(d) { return d.x + "px"; })
-			.style("top", function(d) { return d.y + "px"; })
-			.style("width", function(d) { return Math.max(0, d.dx - 1) + "px"; })
-			.style("height", function(d) { return Math.max(0, d.dy - 1) + "px"; });
-	}
-	
-	function move_tooltip(d) {
-		x = d3.event.pageX + 10;
-		y = d3.event.pageY + 10;
-		
-		$("#tooltip").css('left', x + 'px');
-		$("#tooltip").css('top', y + 'px');
-	}
-	
-	function over_user(d) {
-		id = d.id;
-		
-		$("#" + id).css('border', '1px solid black');
-		$("#" + id).css('z-index', '1');
-		
-		show_tooltip(d);
-	}
-	
-	function out_user(d) {
-		id = d.id;
-		
-		$("#" + id).css('border', '');
-		$("#" + id).css('z-index', '');
-		
-		hide_tooltip();
-	}
+  function move_tooltip(d) {
+    x = d3.event.pageX + 10;
+    y = d3.event.pageY + 10;
 
-	function create_tooltip(d, x, y) {
-		if ($("#tooltip").length == 0) {
-			$(recipient)
-				.append($("<div></div>")
-				.attr('id', 'tooltip')
-				.html(d.tooltip_content));
-		}
-		else {
-			$("#tooltip").html(d.tooltip_content);
-		}
-		
-		$("#tooltip").attr('style', 'background: #fff;' +
-			'position: absolute;' +
-			'display: block;' +
-			'width: 200px;' +
-			'text-align: left;' +
-			'padding: 10px 10px 10px 10px;' +
-			'z-index: 2;' +
-			"-webkit-box-shadow: 7px 7px 5px rgba(50, 50, 50, 0.75);" +
-			"-moz-box-shadow:    7px 7px 5px rgba(50, 50, 50, 0.75);" +
-			"box-shadow:         7px 7px 5px rgba(50, 50, 50, 0.75);" +
-			'left: ' + x + 'px;' +
-			'top: ' + y + 'px;');
-	}
-	
-	function show_tooltip(d) {
-		x = d3.event.pageX + 10;
-		y = d3.event.pageY + 10;
-		
-		create_tooltip(d, x, y);
-	}
-	
-	function hide_tooltip() {
-		$("#tooltip").hide();
-	}
+    $("#tooltip").css("left", x + "px");
+    $("#tooltip").css("top", y + "px");
+  }
+
+  function over_user(d) {
+    id = d.id;
+
+    $("#" + id).css("border", "1px solid black");
+    $("#" + id).css("z-index", "1");
+
+    show_tooltip(d);
+  }
+
+  function out_user(d) {
+    id = d.id;
+
+    $("#" + id).css("border", "");
+    $("#" + id).css("z-index", "");
+
+    hide_tooltip();
+  }
+
+  function create_tooltip(d, x, y) {
+    if ($("#tooltip").length == 0) {
+      $(recipient).append(
+        $("<div></div>")
+          .attr("id", "tooltip")
+          .html(d.tooltip_content)
+      );
+    } else {
+      $("#tooltip").html(d.tooltip_content);
+    }
+
+    $("#tooltip").attr(
+      "style",
+      "background: #fff;" +
+        "position: absolute;" +
+        "display: block;" +
+        "width: 200px;" +
+        "text-align: left;" +
+        "padding: 10px 10px 10px 10px;" +
+        "z-index: 2;" +
+        "-webkit-box-shadow: 7px 7px 5px rgba(50, 50, 50, 0.75);" +
+        "-moz-box-shadow:    7px 7px 5px rgba(50, 50, 50, 0.75);" +
+        "box-shadow:         7px 7px 5px rgba(50, 50, 50, 0.75);" +
+        "left: " +
+        x +
+        "px;" +
+        "top: " +
+        y +
+        "px;"
+    );
+  }
+
+  function show_tooltip(d) {
+    x = d3.event.pageX + 10;
+    y = d3.event.pageY + 10;
+
+    create_tooltip(d, x, y);
+  }
+
+  function hide_tooltip() {
+    $("#tooltip").hide();
+  }
 }
-
 
 // A sunburst is similar to a treemap, except it uses a radial layout.
 // The root node of the tree is at the center, with leaves on the circumference.
 // The area (or angle, depending on implementation) of each arc corresponds to its value.
 // Sunburst design by John Stasko. Data courtesy Jeff Heer.
 // http://bl.ocks.org/mbostock/4348373
-function sunburst (recipient, data, width, height) {
+function sunburst(recipient, data, width, height) {
+  if (width === "auto") {
+    width = $(recipient).innerWidth();
+  }
+  if (height === "auto") {
+    height = width;
+  }
+  // var width = 960,
+  // 	height = 700;
+  var radius = Math.min(width, height) / 2;
 
-	if (width === 'auto') {
-		width = $(recipient).innerWidth();
-	}
-	if (height === 'auto') {
-		height = width;
-	}
-	// var width = 960,
-	// 	height = 700;
-	var radius = Math.min(width, height) / 2;
+  var x = d3.scale.linear().range([0, 2 * Math.PI]);
 
-	var x = d3.scale.linear()
-		.range([0, 2 * Math.PI]);
+  var y = d3.scale.sqrt().range([0, radius]);
 
-	var y = d3.scale.sqrt()
-		.range([0, radius]);
+  var color = d3.scale.category20c();
 
-	var color = d3.scale.category20c();
+  var svg = d3
+    .select(recipient)
+    .append("svg")
+    .attr("width", width)
+    .attr("height", height);
 
-	var svg = d3.select(recipient).append("svg")
-		.attr("width", width)
-		.attr("height", height);
+  var partition = d3.layout.partition().value(function(d) {
+    return d.size;
+  });
 
-	var partition = d3.layout.partition()
-		.value(function(d) { return d.size; });
+  var arc = d3.svg
+    .arc()
+    .startAngle(function(d) {
+      return Math.max(0, Math.min(2 * Math.PI, x(d.x)));
+    })
+    .endAngle(function(d) {
+      return Math.max(0, Math.min(2 * Math.PI, x(d.x + d.dx)));
+    })
+    .innerRadius(function(d) {
+      return Math.max(0, y(d.y));
+    })
+    .outerRadius(function(d) {
+      return Math.max(0, y(d.y + d.dy));
+    });
 
-	var arc = d3.svg.arc()
-		.startAngle(function(d) { return Math.max(0, Math.min(2 * Math.PI, x(d.x))); })
-		.endAngle(function(d) { return Math.max(0, Math.min(2 * Math.PI, x(d.x + d.dx))); })
-		.innerRadius(function(d) { return Math.max(0, y(d.y)); })
-		.outerRadius(function(d) { return Math.max(0, y(d.y + d.dy)); });
+  var g = svg
+    .selectAll("g")
+    .data(partition.nodes(data))
+    .enter()
+    .append("g")
+    .attr(
+      "transform",
+      "translate(" + width / 2 + "," + (height / 2 + 10) + ")"
+    );
 
-	var g = svg.selectAll("g")
-		.data(partition.nodes(data))
-		.enter().append("g")
-		.attr("transform", "translate(" + width / 2 + "," + (height / 2 + 10) + ")");
+  var path = g
+    .append("path")
+    .attr("d", arc)
+    .style("fill", function(d) {
+      return d.color
+        ? d3.rgb(d.color)
+        : color((d.children ? d : d.parent).name);
+    })
+    .style("cursor", "pointer")
+    .on("click", click)
+    .on("mouseover", over_user)
+    .on("mouseout", out_user)
+    .on("mousemove", move_tooltip);
 
-	var path = g.append("path")
-		.attr("d", arc)
-		.style("fill", function(d) { return d.color ? d3.rgb(d.color) : color((d.children ? d : d.parent).name); })
-		.style("cursor", "pointer")
-		.on("click", click)
-		.on("mouseover", over_user)
-		.on("mouseout", out_user)
-		.on("mousemove", move_tooltip);
+  function computeTextRotation(d) {
+    var ang = ((x(d.x + d.dx / 2) - Math.PI / 2) / Math.PI) * 180;
+    return ang > 90 ? 180 + ang : ang;
+  }
 
-	function computeTextRotation(d) {
-		var ang = (x(d.x + d.dx / 2) - Math.PI / 2) / Math.PI * 180;
-        return (ang > 90) ? 180 + ang : ang;
-	}
+  var text = g
+    .append("text")
+    .attr("transform", function(d) {
+      return (
+        "translate(" +
+        arc.centroid(d) +
+        ")rotate(" +
+        computeTextRotation(d) +
+        ")"
+      );
+    })
+    .attr("x", function(d) {
+      return computeTextRotation(d) > 180 ? -40 : -30;
+    })
+    .attr("dx", "6") // margin
+    .attr("dy", ".35em") // vertical-align
+    .attr("opacity", function(d) {
+      if (typeof d.show_name != "undefined" && d.show_name) return 1;
+      else return 0;
+    })
+    .text(function(d) {
+      return d.name;
+    })
+    .style("font-size", "10px")
+    // Makes svg elements invisible to events
+    .style("pointer-events", "none");
 
-	var text = g.append("text")
-		.attr("transform", function(d) { return "translate(" + arc.centroid(d) + ")rotate(" + computeTextRotation(d) + ")"; })
-		.attr("x", function (d) { return computeTextRotation(d) > 180 ? -40 : -30; })
-		.attr("dx", "6") // margin
-		.attr("dy", ".35em") // vertical-align
-		.attr("opacity", function(d) {
-			if (typeof d.show_name != "undefined" && d.show_name)
-				return 1;
-			else
-				return 0;
-		})
-		.text(function(d) {
-			return d.name;
-		})
-		.style("font-size", "10px")
-		 // Makes svg elements invisible to events
-		.style("pointer-events", "none");
+  function click(d) {
+    if (typeof d.link != "undefined") {
+      window.location.href = d.link;
+    } else {
+      // fade out all text elements
+      text.transition().attr("opacity", 0);
 
-	function click(d) {
-		if (typeof d.link != "undefined") {
-			window.location.href = d.link;
-		}
-		else {
-			// fade out all text elements
-			text.transition().attr("opacity", 0);
+      path
+        .transition()
+        .duration(750)
+        .attrTween("d", arcTween(d))
+        .each("end", function(e, i) {
+          // check if the animated element's data e lies within the visible angle span given in d
+          if (
+            typeof e.type != "undefined" &&
+            (e.type == "group" ||
+              (e.type == "agent" &&
+                (d.type == "group" ||
+                  d.type == "agent" ||
+                  d.type == "module_group" ||
+                  d.type == "module")) ||
+              ((e.type == "module_group" || e.type == "module") &&
+                (d.type == "agent" || d.type == "module_group"))) &&
+            e.x >= d.x &&
+            e.x < d.x + d.dx
+          ) {
+            // get a selection of the associated text element
+            var arcText = d3.select(this.parentNode).select("text");
+            // fade in the text element and recalculate positions
+            arcText
+              .attr("transform", function(d) {
+                return (
+                  "translate(" +
+                  arc.centroid(d) +
+                  ")rotate(" +
+                  computeTextRotation(d) +
+                  ")"
+                );
+              })
+              .attr("x", function(d) {
+                return computeTextRotation(d) > 180 ? -40 : -30;
+              })
+              .transition()
+              .duration(250)
+              .attr("opacity", 1);
+          }
+        });
+    }
+  }
 
-			path.transition()
-				.duration(750)
-				.attrTween("d", arcTween(d))
-				.each("end", function(e, i) {
-					// check if the animated element's data e lies within the visible angle span given in d
-					if ((typeof e.type != 'undefined'
-							&& (e.type == "group"
-								|| ( e.type == "agent" && (d.type == "group" || d.type == "agent" || d.type == "module_group" || d.type == "module") )
-								|| ( (e.type == "module_group" || e.type == "module") && (d.type == "agent" || d.type == "module_group") ) ))
-							&& e.x >= d.x && e.x < (d.x + d.dx)) {
-						// get a selection of the associated text element
-						var arcText = d3.select(this.parentNode).select("text");
-						// fade in the text element and recalculate positions
-						arcText
-							.attr("transform", function(d) { return "translate(" + arc.centroid(d) + ")rotate(" + computeTextRotation(d) + ")"; })
-							.attr("x", function (d) { return computeTextRotation(d) > 180 ? -40 : -30; })
-							.transition().duration(250)
-								.attr("opacity", 1);
-		 			}
-				});
-		}
-	}
+  d3.select(self.frameElement).style("height", height + "px");
 
-	d3.select(self.frameElement).style("height", height + "px");
+  // Interpolate the scales!
+  function arcTween(d) {
+    var xd = d3.interpolate(x.domain(), [d.x, d.x + d.dx]),
+      yd = d3.interpolate(y.domain(), [d.y, 1]),
+      yr = d3.interpolate(y.range(), [d.y ? 20 : 0, radius]);
+    return function(d, i) {
+      return i
+        ? function(t) {
+            return arc(d);
+          }
+        : function(t) {
+            x.domain(xd(t));
+            y.domain(yd(t)).range(yr(t));
+            return arc(d);
+          };
+    };
+  }
 
-	// Interpolate the scales!
-	function arcTween(d) {
-		var xd = d3.interpolate(x.domain(), [d.x, d.x + d.dx]),
-			yd = d3.interpolate(y.domain(), [d.y, 1]),
-			yr = d3.interpolate(y.range(), [d.y ? 20 : 0, radius]);
-		return function(d, i) {
-			return i
-				? function(t) { return arc(d); }
-				: function(t) { x.domain(xd(t)); y.domain(yd(t)).range(yr(t)); return arc(d); };
-		};
-	}
+  function move_tooltip(d) {
+    var x = d3.event.pageX + 10;
+    var y = d3.event.pageY + 10;
 
-	function move_tooltip(d) {
-		var x = d3.event.pageX + 10;
-		var y = d3.event.pageY + 10;
-		
-		$("#tooltip").css('left', x + 'px');
-		$("#tooltip").css('top', y + 'px');
-	}
-	
-	function over_user(d) {
-		id = d.id;
-		
-		$("#" + id).css('border', '1px solid black');
-		$("#" + id).css('z-index', '1');
-		
-		show_tooltip(d);
-	}
-	
-	function out_user(d) {
-		id = d.id;
-		
-		$("#" + id).css('border', '');
-		$("#" + id).css('z-index', '');
-		
-		hide_tooltip();
-	}
+    $("#tooltip").css("left", x + "px");
+    $("#tooltip").css("top", y + "px");
+  }
 
-	function create_tooltip(d, x, y) {
-		var tooltip = (typeof d.tooltip_content != 'undefined') ? d.tooltip_content : d.name;
+  function over_user(d) {
+    id = d.id;
 
-		if ($("#tooltip").length == 0) {
-			$(recipient)
-				.append($("<div></div>")
-				.attr('id', 'tooltip')
-				.html(tooltip));
-		}
-		else {
-			$("#tooltip").html(tooltip);
-		}
-		
-		$("#tooltip").attr('style', 'background: #fff;' +
-			'position: absolute;' +
-			'display: block;' +
-			'width: 200px;' +
-			'text-align: left;' +
-			'padding: 10px 10px 10px 10px;' +
-			'z-index: 2;' +
-			"-webkit-box-shadow: 7px 7px 5px rgba(50, 50, 50, 0.75);" +
-			"-moz-box-shadow:    7px 7px 5px rgba(50, 50, 50, 0.75);" +
-			"box-shadow:         7px 7px 5px rgba(50, 50, 50, 0.75);" +
-			'left: ' + x + 'px;' +
-			'top: ' + y + 'px;');
-	}
-	
-	function show_tooltip(d) {
-		var x = d3.event.pageX + 10;
-		var y = d3.event.pageY + 10;
-		
-		create_tooltip(d, x, y);
-	}
-	
-	function hide_tooltip() {
-		$("#tooltip").hide();
-	}
+    $("#" + id).css("border", "1px solid black");
+    $("#" + id).css("z-index", "1");
+
+    show_tooltip(d);
+  }
+
+  function out_user(d) {
+    id = d.id;
+
+    $("#" + id).css("border", "");
+    $("#" + id).css("z-index", "");
+
+    hide_tooltip();
+  }
+
+  function create_tooltip(d, x, y) {
+    var tooltip =
+      typeof d.tooltip_content != "undefined" ? d.tooltip_content : d.name;
+
+    if ($("#tooltip").length == 0) {
+      $(recipient).append(
+        $("<div></div>")
+          .attr("id", "tooltip")
+          .html(tooltip)
+      );
+    } else {
+      $("#tooltip").html(tooltip);
+    }
+
+    $("#tooltip").attr(
+      "style",
+      "background: #fff;" +
+        "position: absolute;" +
+        "display: block;" +
+        "width: 200px;" +
+        "text-align: left;" +
+        "padding: 10px 10px 10px 10px;" +
+        "z-index: 2;" +
+        "-webkit-box-shadow: 7px 7px 5px rgba(50, 50, 50, 0.75);" +
+        "-moz-box-shadow:    7px 7px 5px rgba(50, 50, 50, 0.75);" +
+        "box-shadow:         7px 7px 5px rgba(50, 50, 50, 0.75);" +
+        "left: " +
+        x +
+        "px;" +
+        "top: " +
+        y +
+        "px;"
+    );
+  }
+
+  function show_tooltip(d) {
+    var x = d3.event.pageX + 10;
+    var y = d3.event.pageY + 10;
+
+    create_tooltip(d, x, y);
+  }
+
+  function hide_tooltip() {
+    $("#tooltip").hide();
+  }
 }
 
-function createGauge(name, etiqueta, value, min, max, min_warning,max_warning,warning_inverse,min_critical,max_critical,critical_inverse,font_size, height, font)
-{
-	var gauges;
+function createGauge(
+  name,
+  etiqueta,
+  value,
+  min,
+  max,
+  min_warning,
+  max_warning,
+  warning_inverse,
+  min_critical,
+  max_critical,
+  critical_inverse,
+  font_size,
+  height,
+  font
+) {
+  var gauges;
 
-	var config = 
-	{
-		size: height,
-		label: etiqueta,
-		min: undefined != min ? min : 0,
-		max: undefined != max ? max : 100,
-		font_size: font_size
-	}
-	
-	if (value == null) {
-		config.majorTicks = 1;
-		config.minorTicks = 1;
-		value = false;
-	}
-	else {
-		config.minorTicks = 10;
-	}
+  var config = {
+    size: height,
+    label: etiqueta,
+    min: undefined != min ? min : 0,
+    max: undefined != max ? max : 100,
+    font_size: font_size
+  };
 
-	save_min_critical = min_critical;
-	save_max_critical = max_critical;
-	save_min_warning  = min_warning;
-	save_max_warning  = max_warning;
-	
-	if (max_warning < config.min) {
-		config.min = max_warning;
-	}
-	if (min_warning < config.min) {
-		config.min = min_warning;
-	}
-	if (max_critical < config.min) {
-		config.min = max_critical;
-	}
-	if (min_critical < config.min) {
-		config.min = min_critical;
-	}
+  if (value == null) {
+    config.majorTicks = 1;
+    config.minorTicks = 1;
+    value = false;
+  } else {
+    config.minorTicks = 10;
+  }
 
-	if (max_warning > config.max) {
-		config.max = max_warning;
-	}
-	if (min_warning > config.max) {
-		config.max = min_warning;
-	}
-	if (max_critical > config.max) {
-		config.max = max_critical;
-	}
-	if (min_critical > config.max) {
-		config.max = min_critical;
-	}
-	
-	if(config.max < value){
-		config.max = value;
-	}
+  save_min_critical = min_critical;
+  save_max_critical = max_critical;
+  save_min_warning = min_warning;
+  save_max_warning = max_warning;
 
-	if(config.min > value){
-		config.min = value;
-	}
-	
-	if (critical_inverse == 1) {
-		if (max_critical == 0) {
-			max_critical = min_critical;
-			min_critical = config.min;
-		}
-		else {
-			max_critical  = save_min_critical;
-			min_critical  = config.min;
-			max_critical2 = config.max;
-			min_critical2 = save_max_critical; 
-		}
-	}
-	else {
-		if ((min_critical > max_critical) && (max_critical == 0)) {
-			max_critical = config.max;
-		}
-	}
+  if (max_warning < config.min) {
+    config.min = max_warning;
+  }
+  if (min_warning < config.min) {
+    config.min = min_warning;
+  }
+  if (max_critical < config.min) {
+    config.min = max_critical;
+  }
+  if (min_critical < config.min) {
+    config.min = min_critical;
+  }
 
-	if (warning_inverse == 1) {
-		if (max_warning == 0) {
-			max_warning = min_warning;
-			min_warning = config.min;
-		}
-		else{
-			max_warning  = save_min_warning;
-			min_warning  = config.min;
-			max_warning2 = config.max;
-			min_warning2 = save_max_warning;
-		}
-	
-	}
-	else {	
-		if ((min_warning > max_warning) && (max_warning == 0)) {
-			max_warning = config.max;
-		}
-	}
+  if (max_warning > config.max) {
+    config.max = max_warning;
+  }
+  if (min_warning > config.max) {
+    config.max = min_warning;
+  }
+  if (max_critical > config.max) {
+    config.max = max_critical;
+  }
+  if (min_critical > config.max) {
+    config.max = min_critical;
+  }
 
-	if (value !== false) {
-		if(typeof max_warning2 !== 'undefined'){
-			if ( min_warning >= 0 && ( min_warning != max_warning ) ) {
-				config.yellowZones = [{ from: min_warning, to: max_warning },{ from: min_warning2, to: max_warning2 }];
-			}	
-		}
-		else{
-			if ( min_warning >= 0 && ( min_warning != max_warning ) ) {
-				config.yellowZones = [{ from: min_warning, to: max_warning }];
-			}
-		}
+  if (config.max < value) {
+    config.max = value;
+  }
 
-		if(typeof max_critical2 !== 'undefined'){
-			if ( min_critical >= 0 && ( min_critical != max_critical ) ) {
-				config.redZones = [{ from: min_critical, to: max_critical},{from: min_critical2, to: max_critical2 }];
-			}	
-		}
-		else {
-			if ( min_critical >= 0 && ( min_critical != max_critical ) ) {
-				config.redZones = [{ from: min_critical, to: max_critical }];
-			}
-		}
-	}
+  if (config.min > value) {
+    config.min = value;
+  }
 
-	var range = config.max - config.min;
-	
-	gauges = new Gauge(name, config, font);
-	gauges.render();
-	gauges.redraw(value);
-	$(".gauge>text").each(function() {	
-		label = $(this).text();
-		
-		if (!isNaN(label)){
-			label = parseFloat(label);
-			text = label.toLocaleString();
-			if ( label >= 1000000)
-					text = text.substring(0,4) + "M";
-			else if (label >= 100000)
-					text = text.substring(0,3) + "K";
-				else if (label >= 10000)
-					text = text.substring(0,3) + "K";
-				
-			$(this).text(text);
-		}
-	});
-	$(".pointerContainer>text").each(function() {	
-		label = $(this).text();
-		
-		if (!isNaN(label)){
-			label = parseFloat(label);
-			text = label.toLocaleString();
-			if ( label >= 10000000)
-				text = text.substring(0,4) + "M";
-			else if ( label >= 1000000)
-						text = text.substring(0,4) + "M";
-				else if (label >= 100000)
-						text = text.substring(0,3) + "K";
-					else if (label >= 10000)
-						text = text.substring(0,3) + "K";
-			$(this).text(text);
-		}
-	});
-	config = false;
-	max_warning2 = false;
-	min_warning2 = false;
+  if (critical_inverse == 1) {
+    if (max_critical == 0) {
+      max_critical = min_critical;
+      min_critical = config.min;
+    } else {
+      max_critical = save_min_critical;
+      min_critical = config.min;
+      max_critical2 = config.max;
+      min_critical2 = save_max_critical;
+    }
+  } else {
+    if (min_critical > max_critical && max_critical == 0) {
+      max_critical = config.max;
+    }
+  }
+
+  if (warning_inverse == 1) {
+    if (max_warning == 0) {
+      max_warning = min_warning;
+      min_warning = config.min;
+    } else {
+      max_warning = save_min_warning;
+      min_warning = config.min;
+      max_warning2 = config.max;
+      min_warning2 = save_max_warning;
+    }
+  } else {
+    if (min_warning > max_warning && max_warning == 0) {
+      max_warning = config.max;
+    }
+  }
+
+  if (value !== false) {
+    if (typeof max_warning2 !== "undefined") {
+      if (min_warning >= 0 && min_warning != max_warning) {
+        config.yellowZones = [
+          { from: min_warning, to: max_warning },
+          { from: min_warning2, to: max_warning2 }
+        ];
+      }
+    } else {
+      if (min_warning >= 0 && min_warning != max_warning) {
+        config.yellowZones = [{ from: min_warning, to: max_warning }];
+      }
+    }
+
+    if (typeof max_critical2 !== "undefined") {
+      if (min_critical >= 0 && min_critical != max_critical) {
+        config.redZones = [
+          { from: min_critical, to: max_critical },
+          { from: min_critical2, to: max_critical2 }
+        ];
+      }
+    } else {
+      if (min_critical >= 0 && min_critical != max_critical) {
+        config.redZones = [{ from: min_critical, to: max_critical }];
+      }
+    }
+  }
+
+  var range = config.max - config.min;
+
+  gauges = new Gauge(name, config, font);
+  gauges.render();
+  gauges.redraw(value);
+  $(".gauge>text").each(function() {
+    label = $(this).text();
+
+    if (!isNaN(label)) {
+      label = parseFloat(label);
+      text = label.toLocaleString();
+      if (label >= 1000000) text = text.substring(0, 4) + "M";
+      else if (label >= 100000) text = text.substring(0, 3) + "K";
+      else if (label >= 10000) text = text.substring(0, 3) + "K";
+
+      $(this).text(text);
+    }
+  });
+  $(".pointerContainer>text").each(function() {
+    label = $(this).text();
+
+    if (!isNaN(label)) {
+      label = parseFloat(label);
+      text = label.toLocaleString();
+      if (label >= 10000000) text = text.substring(0, 4) + "M";
+      else if (label >= 1000000) text = text.substring(0, 4) + "M";
+      else if (label >= 100000) text = text.substring(0, 3) + "K";
+      else if (label >= 10000) text = text.substring(0, 3) + "K";
+      $(this).text(text);
+    }
+  });
+  config = false;
+  max_warning2 = false;
+  min_warning2 = false;
 }
 
 function createGauges(data, width, height, font_size, no_data_image, font) {
-	var nombre,label,minimun_warning,maximun_warning,minimun_critical,maximun_critical,
-		mininum,maxinum,valor;
+  var nombre,
+    label,
+    minimun_warning,
+    maximun_warning,
+    minimun_critical,
+    maximun_critical,
+    mininum,
+    maxinum,
+    valor;
 
-	for (key in data) {
-		nombre = data[key].gauge;
+  for (key in data) {
+    nombre = data[key].gauge;
 
-		label = data[key].label;
+    label = data[key].label;
 
-		label = label.replace(/&#x20;/g,' ');
-		label = label.replace(/\(/g,'\(');
-		label = label.replace(/\)/g,'\)');
+    label = label.replace(/&#x20;/g, " ");
+    label = label.replace(/\(/g, "(");
+    label = label.replace(/\)/g, ")");
 
-		label = label.replace(/&#40;/g,'\(');
-		label = label.replace(/&#41;/g,'\)');
+    label = label.replace(/&#40;/g, "(");
+    label = label.replace(/&#41;/g, ")");
 
-		minimun_warning = round_with_decimals(parseFloat( data[key].min_warning ));
-		maximun_warning = round_with_decimals(parseFloat( data[key].max_warning ));
-		minimun_critical = round_with_decimals(parseFloat( data[key].min_critical ));
-		maximun_critical = round_with_decimals(parseFloat( data[key].max_critical ));
+    minimun_warning = round_with_decimals(parseFloat(data[key].min_warning));
+    maximun_warning = round_with_decimals(parseFloat(data[key].max_warning));
+    minimun_critical = round_with_decimals(parseFloat(data[key].min_critical));
+    maximun_critical = round_with_decimals(parseFloat(data[key].max_critical));
 
-		mininum = round_with_decimals(parseFloat(data[key].min));
-		maxinum = round_with_decimals(parseFloat(data[key].max));
+    mininum = round_with_decimals(parseFloat(data[key].min));
+    maxinum = round_with_decimals(parseFloat(data[key].max));
 
-		critical_inverse = parseInt(data[key].critical_inverse);
-		warning_inverse  = parseInt(data[key].warning_inverse);
+    critical_inverse = parseInt(data[key].critical_inverse);
+    warning_inverse = parseInt(data[key].warning_inverse);
 
-		valor = round_with_decimals(data[key].value);
+    valor = round_with_decimals(data[key].value);
 
-
-		if (isNaN(valor)) 
-			valor = null;
-		createGauge(nombre, label, valor, mininum, maxinum,
-				minimun_warning, maximun_warning, warning_inverse, minimun_critical,
-					maximun_critical, critical_inverse, font_size, height, font);
-
-	}
+    if (isNaN(valor)) valor = null;
+    createGauge(
+      nombre,
+      label,
+      valor,
+      mininum,
+      maxinum,
+      minimun_warning,
+      maximun_warning,
+      warning_inverse,
+      minimun_critical,
+      maximun_critical,
+      critical_inverse,
+      font_size,
+      height,
+      font
+    );
+  }
 }
 
-function Gauge(placeholderName, configuration, font)
-{
+function Gauge(placeholderName, configuration, font) {
+  var font = font
+    .split("/")
+    .pop()
+    .split(".")
+    .shift();
+  this.placeholderName = placeholderName;
 
-	var font = font.split("/").pop().split(".").shift();
-	this.placeholderName = placeholderName;
-	
-	var self = this; // for internal d3 functions
-	
-	this.configure = function(configuration)
-	{
-		this.config = configuration;
-		
-		this.config.size = this.config.size * 0.9;
-		this.config.font_size = this.config.font_size;
-		
-		this.config.raduis = this.config.size * 0.97 / 2;
-		this.config.cx = this.config.size / 2;
-		this.config.cy = this.config.size / 2;
-		
-		this.config.min = undefined != configuration.min ? configuration.min : 0; 
-		this.config.max = undefined != configuration.max ? configuration.max : 100; 
-		this.config.range = this.config.max - this.config.min;
-		
-		this.config.majorTicks = configuration.majorTicks || 5;
-		this.config.minorTicks = configuration.minorTicks || 2;
-		
-		this.config.greenColor 	= configuration.greenColor || "#109618";
-		this.config.yellowColor = configuration.yellowColor || "#FF9900";
-		this.config.redColor 	= configuration.redColor || "#DC3912";
-		
-		this.config.transitionDuration = configuration.transitionDuration || 500;
-	}
+  var self = this; // for internal d3 functions
 
-	this.render = function()
-	{
-		this.body = d3.select("#" + this.placeholderName)
-							.append("svg:svg")
-							.attr("class", "gauge")
-							.attr("width", this.config.size)
-							.attr("height", this.config.size);
-		
-		this.body.append("svg:circle")
-					.attr("cx", this.config.cx)
-					.attr("cy", this.config.cy)
-					.attr("r", this.config.raduis)
-					.style("fill", "#ccc")
-					.style("stroke", "#000")
-					.style("stroke-width", "0.5px");
-					
-		this.body.append("svg:circle")
-					.attr("cx", this.config.cx)
-					.attr("cy", this.config.cy)
-					.attr("r", 0.9 * this.config.raduis)
-					.style("fill", "#fff")
-					.style("stroke", "#e0e0e0")
-					.style("stroke-width", "2px");
-					
-		for (var index in this.config.greenZones)
-		{
-			this.drawBand(this.config.greenZones[index].from, this.config.greenZones[index].to, self.config.greenColor);
-		}
-		
-		for (var index in this.config.yellowZones)
-		{
-			this.drawBand(this.config.yellowZones[index].from, this.config.yellowZones[index].to, self.config.yellowColor);
-		}
-		
-		for (var index in this.config.redZones)
-		{
-			this.drawBand(this.config.redZones[index].from, this.config.redZones[index].to, self.config.redColor);
-		}
-		
-		if (undefined != this.config.label)
-		{
-			var fontSize = Math.round(this.config.size / 9);
-			this.body.append("svg:text")
-						.attr("x", this.config.cx)
-						.attr("y", this.config.cy / 2 + fontSize / 2)
-						.attr("dy", fontSize / 2)
-						.attr("text-anchor", "middle")
-						.attr("class", font)
-						.text(this.config.label)
-						.style("font-size", this.config.font_size+"pt")
-						.style("fill", "#333")
-						.style("stroke-width", "0px");
-		}
-		
-		var fontSize = Math.round(this.config.size / 16);
-		var majorDelta = this.config.range / (this.config.majorTicks - 1);
-		for (var major = this.config.min; major <= this.config.max; major += majorDelta)
-		{
-			var minorDelta = majorDelta / this.config.minorTicks;
-			for (var minor = major + minorDelta; minor < Math.min(major + majorDelta, this.config.max); minor += minorDelta)
-			{
-				var point1 = this.valueToPoint(minor, 0.75);
-				var point2 = this.valueToPoint(minor, 0.85);
-				
-				this.body.append("svg:line")
-							.attr("x1", point1.x)
-							.attr("y1", point1.y)
-							.attr("x2", point2.x)
-							.attr("y2", point2.y)
-							.style("stroke", "#666")
-							.style("stroke-width", "1px");
-			}
-			
-			var point1 = this.valueToPoint(major, 0.7);
-			var point2 = this.valueToPoint(major, 0.85);
-			
-			this.body.append("svg:line")
-						.attr("x1", point1.x)
-						.attr("y1", point1.y)
-						.attr("x2", point2.x)
-						.attr("y2", point2.y)
-						.style("stroke", "#333")
-						.style("stroke-width", "2px");
-			
-			if (major == this.config.min || major == this.config.max)
-			{
-				var point = this.valueToPoint(major, 0.63);
-				
-				this.body.append("svg:text")
-				 			.attr("x", point.x)
-				 			.attr("y", point.y)
-				 			.attr("dy", fontSize / 3)
-				 			.attr("text-anchor", major == this.config.min ? "start" : "end")
-				 			.text(major)
-				 			.style("font-size", this.config.font_size+"pt")
-							.style("fill", "#333")
-							.style("stroke-width", "0px");
-			}
-		}
-		
-		var pointerContainer = this.body.append("svg:g").attr("class", "pointerContainer");
-		
-		var midValue = (this.config.min + this.config.max) / 2;
-		
-		var pointerPath = this.buildPointerPath(midValue);
-		
-		var pointerLine = d3.svg.line()
-									.x(function(d) { return d.x })
-									.y(function(d) { return d.y })
-									.interpolate("basis");
-		
-		pointerContainer.selectAll("path")
-							.data([pointerPath])
-							.enter()
-								.append("svg:path")
-									.attr("d", pointerLine)
-									.style("fill", "#dc3912")
-									.style("stroke", "#c63310")
-									.style("fill-opacity", 0.7)
-					
-		pointerContainer.append("svg:circle")
-							.attr("cx", this.config.cx)
-							.attr("cy", this.config.cy)
-							.attr("r", 0.12 * this.config.raduis)
-							.style("fill", "#4684EE")
-							.style("stroke", "#666")
-							.style("opacity", 1);
-		
-		var fontSize = Math.round(this.config.size / 10);
-		pointerContainer.selectAll("text")
-							.data([midValue])
-							.enter()
-								.append("svg:text")
-									.attr("x", this.config.cx)
-									.attr("y", this.config.size - this.config.cy / 4 - fontSize)
-									.attr("dy", fontSize / 2)
-									.attr("text-anchor", "middle")
-									.style("font-size", this.config.font_size+"pt")
-									.style("fill", "#000")
-									.style("stroke-width", "0px");
-		
-		this.redraw(this.config.min, 0);
-	}
-	
-	this.buildPointerPath = function(value)
-	{
-		var delta = this.config.range / 13;
-		
-		var head = valueToPoint(value, 0.85);
-		var head1 = valueToPoint(value - delta, 0.12);
-		var head2 = valueToPoint(value + delta, 0.12);
-		
-		var tailValue = value - (this.config.range * (1/(270/360)) / 2);
-		var tail = valueToPoint(tailValue, 0.28);
-		var tail1 = valueToPoint(tailValue - delta, 0.12);
-		var tail2 = valueToPoint(tailValue + delta, 0.12);
-		
-		return [head, head1, tail2, tail, tail1, head2, head];
-		
-		function valueToPoint(value, factor)
-		{
-			var point = self.valueToPoint(value, factor);
-			point.x -= self.config.cx;
-			point.y -= self.config.cy;
-			return point;
-		}
-	}
-	
-	this.drawBand = function(start, end, color)
-	{
-		if (start === undefined) return;
-		if (end === undefined) return;
-		if (0 >= end - start) return;
+  this.configure = function(configuration) {
+    this.config = configuration;
 
-		this.body.append("svg:path")
-					.style("fill", color)
-					.attr("d", d3.svg.arc()
-						.startAngle(this.valueToRadians(start))
-						.endAngle(this.valueToRadians(end))
-						.innerRadius(Math.round(0.65 * this.config.raduis))
-						.outerRadius(Math.round(0.85 * this.config.raduis)))
-					.attr("transform", function() { return "translate(" + self.config.cx + ", " + self.config.cy + ") rotate(270)" });
-	}
+    this.config.size = this.config.size * 0.9;
+    this.config.font_size = this.config.font_size;
 
-	this.redraw = function(value, transitionDuration)
-	{
-		var pointerContainer = this.body.select(".pointerContainer");
+    this.config.raduis = (this.config.size * 0.97) / 2;
+    this.config.cx = this.config.size / 2;
+    this.config.cy = this.config.size / 2;
 
-		pointerContainer.selectAll("text").text(round_with_decimals(value));
+    this.config.min = undefined != configuration.min ? configuration.min : 0;
+    this.config.max = undefined != configuration.max ? configuration.max : 100;
+    this.config.range = this.config.max - this.config.min;
 
-		var pointer = pointerContainer.selectAll("path");
-		pointer.transition()
-					.duration(undefined != transitionDuration ? transitionDuration : this.config.transitionDuration)
-					//.delay(0)
-					//.ease("linear")
-					//.attr("transform", function(d) 
-					.attrTween("transform", function()
-					{
-						var pointerValue = value;
-						if (value > self.config.max) pointerValue = self.config.max + 0.02*self.config.range;
-						else if (value < self.config.min) pointerValue = self.config.min - 0.02*self.config.range;
-						var targetRotation = (self.valueToDegrees(pointerValue) - 90);
-						var currentRotation = self._currentRotation || targetRotation;
-						self._currentRotation = targetRotation;
+    this.config.majorTicks = configuration.majorTicks || 5;
+    this.config.minorTicks = configuration.minorTicks || 2;
 
-						return function(step) 
-						{
-							var rotation = currentRotation + (targetRotation-currentRotation)*step;
-							return "translate(" + self.config.cx + ", " + self.config.cy + ") rotate(" + rotation + ")"; 
-						}
-					});
-	}
-	
-	this.valueToDegrees = function(value)
-	{
-		// thanks @closealert
-		//return value / this.config.range * 270 - 45;
-		return value / this.config.range * 270 - (this.config.min / this.config.range * 270 + 45);
-	}
-	
-	this.valueToRadians = function(value)
-	{
-		return this.valueToDegrees(value) * Math.PI / 180;
-	}
-	
-	this.valueToPoint = function(value, factor)
-	{
-		return { 	x: this.config.cx - this.config.raduis * factor * Math.cos(this.valueToRadians(value)),
-					y: this.config.cy - this.config.raduis * factor * Math.sin(this.valueToRadians(value))		};
-	}
-	
-	// initialization
-	this.configure(configuration);
+    this.config.greenColor = configuration.greenColor || "#109618";
+    this.config.yellowColor = configuration.yellowColor || "#FF9900";
+    this.config.redColor = configuration.redColor || "#DC3912";
+
+    this.config.transitionDuration = configuration.transitionDuration || 500;
+  };
+
+  this.render = function() {
+    this.body = d3
+      .select("#" + this.placeholderName)
+      .append("svg:svg")
+      .attr("class", "gauge")
+      .attr("width", this.config.size)
+      .attr("height", this.config.size);
+
+    this.body
+      .append("svg:circle")
+      .attr("cx", this.config.cx)
+      .attr("cy", this.config.cy)
+      .attr("r", this.config.raduis)
+      .style("fill", "#ccc")
+      .style("stroke", "#000")
+      .style("stroke-width", "0.5px");
+
+    this.body
+      .append("svg:circle")
+      .attr("cx", this.config.cx)
+      .attr("cy", this.config.cy)
+      .attr("r", 0.9 * this.config.raduis)
+      .style("fill", "#fff")
+      .style("stroke", "#e0e0e0")
+      .style("stroke-width", "2px");
+
+    for (var index in this.config.greenZones) {
+      this.drawBand(
+        this.config.greenZones[index].from,
+        this.config.greenZones[index].to,
+        self.config.greenColor
+      );
+    }
+
+    for (var index in this.config.yellowZones) {
+      this.drawBand(
+        this.config.yellowZones[index].from,
+        this.config.yellowZones[index].to,
+        self.config.yellowColor
+      );
+    }
+
+    for (var index in this.config.redZones) {
+      this.drawBand(
+        this.config.redZones[index].from,
+        this.config.redZones[index].to,
+        self.config.redColor
+      );
+    }
+
+    if (undefined != this.config.label) {
+      var fontSize = Math.round(this.config.size / 9);
+      this.body
+        .append("svg:text")
+        .attr("x", this.config.cx)
+        .attr("y", this.config.cy / 2 + fontSize / 2)
+        .attr("dy", fontSize / 2)
+        .attr("text-anchor", "middle")
+        .attr("class", font)
+        .text(this.config.label)
+        .style("font-size", this.config.font_size + "pt")
+        .style("fill", "#333")
+        .style("stroke-width", "0px");
+    }
+
+    var fontSize = Math.round(this.config.size / 16);
+    var majorDelta = this.config.range / (this.config.majorTicks - 1);
+    for (
+      var major = this.config.min;
+      major <= this.config.max;
+      major += majorDelta
+    ) {
+      var minorDelta = majorDelta / this.config.minorTicks;
+      for (
+        var minor = major + minorDelta;
+        minor < Math.min(major + majorDelta, this.config.max);
+        minor += minorDelta
+      ) {
+        var point1 = this.valueToPoint(minor, 0.75);
+        var point2 = this.valueToPoint(minor, 0.85);
+
+        this.body
+          .append("svg:line")
+          .attr("x1", point1.x)
+          .attr("y1", point1.y)
+          .attr("x2", point2.x)
+          .attr("y2", point2.y)
+          .style("stroke", "#666")
+          .style("stroke-width", "1px");
+      }
+
+      var point1 = this.valueToPoint(major, 0.7);
+      var point2 = this.valueToPoint(major, 0.85);
+
+      this.body
+        .append("svg:line")
+        .attr("x1", point1.x)
+        .attr("y1", point1.y)
+        .attr("x2", point2.x)
+        .attr("y2", point2.y)
+        .style("stroke", "#333")
+        .style("stroke-width", "2px");
+
+      if (major == this.config.min || major == this.config.max) {
+        var point = this.valueToPoint(major, 0.63);
+
+        this.body
+          .append("svg:text")
+          .attr("x", point.x)
+          .attr("y", point.y)
+          .attr("dy", fontSize / 3)
+          .attr("text-anchor", major == this.config.min ? "start" : "end")
+          .text(major)
+          .style("font-size", this.config.font_size + "pt")
+          .style("fill", "#333")
+          .style("stroke-width", "0px");
+      }
+    }
+
+    var pointerContainer = this.body
+      .append("svg:g")
+      .attr("class", "pointerContainer");
+
+    var midValue = (this.config.min + this.config.max) / 2;
+
+    var pointerPath = this.buildPointerPath(midValue);
+
+    var pointerLine = d3.svg
+      .line()
+      .x(function(d) {
+        return d.x;
+      })
+      .y(function(d) {
+        return d.y;
+      })
+      .interpolate("basis");
+
+    pointerContainer
+      .selectAll("path")
+      .data([pointerPath])
+      .enter()
+      .append("svg:path")
+      .attr("d", pointerLine)
+      .style("fill", "#dc3912")
+      .style("stroke", "#c63310")
+      .style("fill-opacity", 0.7);
+
+    pointerContainer
+      .append("svg:circle")
+      .attr("cx", this.config.cx)
+      .attr("cy", this.config.cy)
+      .attr("r", 0.12 * this.config.raduis)
+      .style("fill", "#4684EE")
+      .style("stroke", "#666")
+      .style("opacity", 1);
+
+    var fontSize = Math.round(this.config.size / 10);
+    pointerContainer
+      .selectAll("text")
+      .data([midValue])
+      .enter()
+      .append("svg:text")
+      .attr("x", this.config.cx)
+      .attr("y", this.config.size - this.config.cy / 4 - fontSize)
+      .attr("dy", fontSize / 2)
+      .attr("text-anchor", "middle")
+      .style("font-size", this.config.font_size + "pt")
+      .style("fill", "#000")
+      .style("stroke-width", "0px");
+
+    this.redraw(this.config.min, 0);
+  };
+
+  this.buildPointerPath = function(value) {
+    var delta = this.config.range / 13;
+
+    var head = valueToPoint(value, 0.85);
+    var head1 = valueToPoint(value - delta, 0.12);
+    var head2 = valueToPoint(value + delta, 0.12);
+
+    var tailValue = value - (this.config.range * (1 / (270 / 360))) / 2;
+    var tail = valueToPoint(tailValue, 0.28);
+    var tail1 = valueToPoint(tailValue - delta, 0.12);
+    var tail2 = valueToPoint(tailValue + delta, 0.12);
+
+    return [head, head1, tail2, tail, tail1, head2, head];
+
+    function valueToPoint(value, factor) {
+      var point = self.valueToPoint(value, factor);
+      point.x -= self.config.cx;
+      point.y -= self.config.cy;
+      return point;
+    }
+  };
+
+  this.drawBand = function(start, end, color) {
+    if (start === undefined) return;
+    if (end === undefined) return;
+    if (0 >= end - start) return;
+
+    this.body
+      .append("svg:path")
+      .style("fill", color)
+      .attr(
+        "d",
+        d3.svg
+          .arc()
+          .startAngle(this.valueToRadians(start))
+          .endAngle(this.valueToRadians(end))
+          .innerRadius(Math.round(0.65 * this.config.raduis))
+          .outerRadius(Math.round(0.85 * this.config.raduis))
+      )
+      .attr("transform", function() {
+        return (
+          "translate(" +
+          self.config.cx +
+          ", " +
+          self.config.cy +
+          ") rotate(270)"
+        );
+      });
+  };
+
+  this.redraw = function(value, transitionDuration) {
+    var pointerContainer = this.body.select(".pointerContainer");
+
+    pointerContainer.selectAll("text").text(round_with_decimals(value));
+
+    var pointer = pointerContainer.selectAll("path");
+    pointer
+      .transition()
+      .duration(
+        undefined != transitionDuration
+          ? transitionDuration
+          : this.config.transitionDuration
+      )
+      //.delay(0)
+      //.ease("linear")
+      //.attr("transform", function(d)
+      .attrTween("transform", function() {
+        var pointerValue = value;
+        if (value > self.config.max)
+          pointerValue = self.config.max + 0.02 * self.config.range;
+        else if (value < self.config.min)
+          pointerValue = self.config.min - 0.02 * self.config.range;
+        var targetRotation = self.valueToDegrees(pointerValue) - 90;
+        var currentRotation = self._currentRotation || targetRotation;
+        self._currentRotation = targetRotation;
+
+        return function(step) {
+          var rotation =
+            currentRotation + (targetRotation - currentRotation) * step;
+          return (
+            "translate(" +
+            self.config.cx +
+            ", " +
+            self.config.cy +
+            ") rotate(" +
+            rotation +
+            ")"
+          );
+        };
+      });
+  };
+
+  this.valueToDegrees = function(value) {
+    // thanks @closealert
+    //return value / this.config.range * 270 - 45;
+    return (
+      (value / this.config.range) * 270 -
+      ((this.config.min / this.config.range) * 270 + 45)
+    );
+  };
+
+  this.valueToRadians = function(value) {
+    return (this.valueToDegrees(value) * Math.PI) / 180;
+  };
+
+  this.valueToPoint = function(value, factor) {
+    return {
+      x:
+        this.config.cx -
+        this.config.raduis * factor * Math.cos(this.valueToRadians(value)),
+      y:
+        this.config.cy -
+        this.config.raduis * factor * Math.sin(this.valueToRadians(value))
+    };
+  };
+
+  // initialization
+  this.configure(configuration);
 }
 
-function print_phases_donut (recipient, phases) {
-	var svg = d3.select(recipient)
-		.append("svg")
-			.attr("width", 800)
-			.attr("height", 400)
-		.append("g");
+function print_phases_donut(recipient, phases) {
+  var svg = d3
+    .select(recipient)
+    .append("svg")
+    .attr("width", 800)
+    .attr("height", 500)
+    .append("g");
 
-	svg.append("g")
-		.attr("class", "slices");
-	svg.append("g")
-		.attr("class", "labels");
-	svg.append("g")
-		.attr("class", "lines");
+  svg.append("g").attr("class", "slices");
+  svg.append("g").attr("class", "labels");
+  svg.append("g").attr("class", "lines");
 
-	var width = 550,
-		height = 300,
-		radius = Math.min(width, height) / 2;
+  var width = 550,
+    height = 300,
+    radius = Math.min(width, height) / 2;
 
-	var pie = d3.layout.pie()
-		.sort(null)
-		.value(function(d) {
-			return parseFloat(d.label2);
-		});
+  var pie = d3.layout
+    .pie()
+    .sort(null)
+    .value(function(d) {
+      return parseFloat(d.label2);
+    });
 
-	var arc = d3.svg.arc()
-		.outerRadius(radius * 0.8)
-		.innerRadius(radius * 0.4);
+  var arc = d3.svg
+    .arc()
+    .outerRadius(radius * 0.8)
+    .innerRadius(radius * 0.4);
 
-	var outerArc = d3.svg.arc()
-		.innerRadius(radius * 0.9)
-		.outerRadius(radius * 0.9);
+  var outerArc = d3.svg
+    .arc()
+    .innerRadius(radius * 0.9)
+    .outerRadius(radius * 0.9);
 
-	width  = 800;
-	height = 400;
-	svg.attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+  width = 800;
+  height = 500;
+  svg.attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
 
-	var key = function(d){ return d.data.label; };
+  var key = function(d) {
+    return d.data.label;
+  };
 
-	function phasesData (){
-		return phases.map(function(phase){
-			return { label: phase_name(phase, 1), label2: phase_name(phase, 2), value: phase.status }
-		});
-	}
+  function phasesData() {
+    return phases.map(function(phase) {
+      return {
+        label: phase_name(phase, 1),
+        label2: phase_name(phase, 2),
+        value: phase.status
+      };
+    });
+  }
 
-	function phase_name (phase, index) {
-		if (index == 1) {
-			return phase.phase_name;
-		}
-		else {
-			return phase.phase_time;
-		}
-	}
+  function phase_name(phase, index) {
+    if (index == 1) {
+      return phase.phase_name;
+    } else {
+      return phase.phase_time;
+    }
+  }
 
-	print_phases(phasesData());
+  print_phases(phasesData());
 
-	function print_phases(data) {
-		/* ------- PIE SLICES -------*/
-		var slice = svg.select(".slices").selectAll("path.slice")
-			.data(pie(data), key);
+  function print_phases(data) {
+    /* ------- PIE SLICES -------*/
+    var slice = svg
+      .select(".slices")
+      .selectAll("path.slice")
+      .data(pie(data), key);
 
-		slice.enter()
-			.insert("path")
-			.style("fill", function(d) {
-				if (d.data.value == 0) {
-					return "#80BA27";
-				}
-				else {
-					return "#FC4444";
-				}
-			})
-			.attr("class", "slice");
+    slice
+      .enter()
+      .insert("path")
+      .style("fill", function(d) {
+        if (d.data.value == 0) {
+          return "#80BA27";
+        } else {
+          return "#FC4444";
+        }
+      })
+      .attr("class", "slice");
 
-		slice
-			.transition().duration(0)
-			.attrTween("d", function(d) {
-				this._current = this._current || d;
-				var interpolate = d3.interpolate(this._current, d);
-				this._current = interpolate(0);
-				return function(t) {
-					return arc(interpolate(t));
-				};
-			});
+    slice
+      .transition()
+      .duration(0)
+      .attrTween("d", function(d) {
+        this._current = this._current || d;
+        var interpolate = d3.interpolate(this._current, d);
+        this._current = interpolate(0);
+        return function(t) {
+          return arc(interpolate(t));
+        };
+      });
 
-		slice.exit()
-			.remove();
+    slice.exit().remove();
 
-		/* ------- TEXT LABELS -------*/
-		var text = svg.select(".labels").selectAll("text")
-			.data(pie(data), key);
+    /* ------- TEXT LABELS -------*/
+    var text = svg
+      .select(".labels")
+      .selectAll("text")
+      .data(pie(data), key);
 
-		text.enter()
-			.append("text")
-				.append("tspan")
-					.attr("dy", ".1em")
-					.text(function(d) {
-						return d.data.label;
-					})
-					.style("font-family", "Verdana")
-					.style("font-size", "15px")
-				.append("tspan")
-					.attr("dy", "1.2em")
-					.attr("dx", "-2.8em")
-					.text(function(d) {
-						return d.data.label2 + "ms";
-					})
-					.style("font-family", "Verdana")
-					.style("font-size", "15px");
-		
-		function midAngle(d){
-			return d.startAngle + (d.endAngle - d.startAngle)/2;
-		}
+    text
+      .enter()
+      .append("text")
+      .append("tspan")
+      .attr("dy", ".1em")
+      .text(function(d) {
+        return d.data.label;
+      })
+      .style("font-family", "Verdana")
+      .style("font-size", "15px")
+      .append("tspan")
+      .attr("dy", "1.2em")
+      .attr("dx", "-2.8em")
+      .text(function(d) {
+        return d.data.label2 + "ms";
+      })
+      .style("font-family", "Verdana")
+      .style("font-size", "15px");
 
-		text.transition().duration(0)
-			.attrTween("transform", function(d) {
-				this._current = this._current || d;
-				var interpolate = d3.interpolate(this._current, d);
-				this._current = interpolate(0);
-				return function(t) {
-					var d2 = interpolate(t);
-					var pos = outerArc.centroid(d2);
-					pos[0] = radius * (midAngle(d2) < Math.PI ? 1 : -1);
-					return "translate("+ pos +")";
-				};
-			})
-			.styleTween("text-anchor", function(d){
-				this._current = this._current || d;
-				var interpolate = d3.interpolate(this._current, d);
-				this._current = interpolate(0);
-				return function(t) {
-					var d2 = interpolate(t);
-					return midAngle(d2) < Math.PI ? "start":"end";
-				};
-			});
+    function midAngle(d) {
+      return d.startAngle + (d.endAngle - d.startAngle) / 2;
+    }
 
-		text.exit()
-			.remove();
+    var ex = 1;
+    var sum = 0;
+    text
+      .transition()
+      .duration(0)
+      .attrTween("transform", function(d) {
+        this._current = this._current || d;
+        var interpolate = d3.interpolate(this._current, d);
+        this._current = interpolate(0);
+        return function(t) {
+          var d2 = interpolate(t);
 
-		/* ------- SLICE TO TEXT POLYLINES -------*/
-		var polyline = svg.select(".lines").selectAll("polyline")
-			.data(pie(data), key);
-		
-		polyline.enter()
-			.append("polyline");
+          //fix for labels of a very small portion increase the
+          //height of the label so that they do not overlap
+          if (d2.endAngle - d2.startAngle < 0.1) {
+            var pos = outerArc.centroid(d2);
+            if (ex % 2 == 0) {
+              pos[0] = 150;
+            } else {
+              pos[0] = -150;
+              sum++;
+            }
+            pos[1] = pos[1] - 35 * sum;
+            ex++;
+          } else {
+            var pos = outerArc.centroid(d2);
+            pos[0] = radius * (midAngle(d2) < Math.PI ? 1 : -1);
+          }
 
-		polyline.transition().duration(0)
-			.attrTween("points", function(d){
-				this._current = this._current || d;
-				var interpolate = d3.interpolate(this._current, d);
-				this._current = interpolate(0);
-				return function(t) {
-					var d2 = interpolate(t);
-					var pos = outerArc.centroid(d2);
-					pos[0] = radius * 0.95 * (midAngle(d2) < Math.PI ? 1 : -1);
-					return [arc.centroid(d2), outerArc.centroid(d2), pos];
-				};			
-			})
-			.style("stroke", "black")
-			.style("opacity", ".3")
-			.style("stroke-width", "2px")
-			.style("fill", "none");
-		
-		polyline.exit()
-			.remove();
-	}
+          return "translate(" + pos + ")";
+        };
+      })
+      .styleTween("text-anchor", function(d) {
+        this._current = this._current || d;
+        var interpolate = d3.interpolate(this._current, d);
+        this._current = interpolate(0);
+        return function(t) {
+          var d2 = interpolate(t);
+
+          //fix for labels of a very small portion increase the
+          //height of the label so that they do not overlap
+          if (d2.endAngle - d2.startAngle < 0.1) {
+            if (ex % 2 == 0) {
+              return "start";
+            } else {
+              return "end";
+            }
+          }
+          return midAngle(d2) < Math.PI ? "start" : "end";
+        };
+      });
+
+    text.exit().remove();
+
+    /* ------- SLICE TO TEXT POLYLINES -------*/
+    var polyline = svg
+      .select(".lines")
+      .selectAll("polyline")
+      .data(pie(data), key);
+
+    polyline.enter().append("polyline");
+
+    var ex2 = 1;
+    var sum2 = 0;
+    polyline
+      .transition()
+      .duration(0)
+      .attrTween("points", function(d) {
+        this._current = this._current || d;
+        var interpolate = d3.interpolate(this._current, d);
+        this._current = interpolate(0);
+        return function(t) {
+          var d2 = interpolate(t);
+
+          //fix for labels of a very small portion increase the
+          //height of the label so that they do not overlap
+          if (d2.endAngle - d2.startAngle < 0.1) {
+            var pos = outerArc.centroid(d2);
+            if (ex2 % 2 == 0) {
+              pos[0] = 150 * 0.95;
+            } else {
+              pos[0] = -150 * 0.95;
+              sum2++;
+            }
+            pos[1] = pos[1] - 30 * sum2;
+            ex2++;
+          } else {
+            var pos = outerArc.centroid(d2);
+            pos[0] = radius * 0.95 * (midAngle(d2) < Math.PI ? 1 : -1);
+          }
+          return [arc.centroid(d2), outerArc.centroid(d2), pos];
+        };
+      })
+      .style("stroke", "black")
+      .style("opacity", ".3")
+      .style("stroke-width", "2px")
+      .style("fill", "none");
+
+    polyline.exit().remove();
+  }
 }
 
-function progress_bar_d3 (recipient, percentile, width, height, color, unit, label, label_color) {
-	var startPercent = 0;
-	var endPercent = parseInt(percentile) / 100;
-	var count = Math.abs((endPercent - startPercent) / 0.01);
-	var step = endPercent < startPercent ? -0.01 : 0.01;
+function progress_bar_d3(
+  recipient,
+  percentile,
+  width,
+  height,
+  color,
+  unit,
+  label,
+  label_color
+) {
+  var startPercent = 0;
+  var endPercent = parseInt(percentile) / 100;
+  var count = Math.abs((endPercent - startPercent) / 0.01);
+  var step = endPercent < startPercent ? -0.01 : 0.01;
 
-	var circle = d3.select(recipient)
-		.append("svg")
-			.attr("width", width)
-			.attr("height", height);
+  var circle = d3
+    .select(recipient)
+    .append("svg")
+    .attr("width", width)
+    .attr("height", height);
 
-	var progress_back = circle.append('rect')
-		.attr('fill', '#000000')
-		.attr('fill-opacity', 0.5)
-		.attr('height', 20)
-		.attr('width', width)
-		.attr('rx', 10)
-		.attr('ry', 10)
-		.attr('x', 0);
+  var progress_back = circle
+    .append("rect")
+    .attr("fill", "#000000")
+    .attr("fill-opacity", 0.5)
+    .attr("height", 20)
+    .attr("width", width)
+    .attr("rx", 10)
+    .attr("ry", 10)
+    .attr("x", 0);
 
-	var progress_front = circle.append('rect')
-		.attr('fill', color)
-		.attr('fill-opacity', 1)
-		.attr('height', 20)
-		.attr('width', 0)
-		.attr('rx', 10)
-		.attr('ry', 10)
-		.attr('x', 0);
+  var progress_front = circle
+    .append("rect")
+    .attr("fill", color)
+    .attr("fill-opacity", 1)
+    .attr("height", 20)
+    .attr("width", 0)
+    .attr("rx", 10)
+    .attr("ry", 10)
+    .attr("x", 0);
 
-	var labelText = circle.append("text")
-		.attr("transform", "translate(" + (width/2) + ", " + (height/2) + ")")
-		.attr('fill', label_color)
-		.style("font-family", "arial")
-		.style("font-weight", "bold")
-		.style("font-size", 20)
-		.html(label)
-		.attr('dy', '15')
-		.attr('text-anchor', 'middle');
+  var labelText = circle
+    .append("text")
+    .attr("transform", "translate(" + width / 2 + ", " + height / 2 + ")")
+    .attr("fill", label_color)
+    .style("font-family", "arial")
+    .style("font-weight", "bold")
+    .style("font-size", 20)
+    .html(label)
+    .attr("dy", "15")
+    .attr("text-anchor", "middle");
 
-	var numberText = circle.append("text")
-		.attr("transform", "translate(" + (width/2) + ", " + (height/2) + ")")
-		.attr('fill', '#FFFFFF')
-		.style("font-family", "arial")
-		.style("font-weight", "bold")
-		.style("font-size", 14)
-		.attr('text-anchor', 'middle')
-		.attr('dy', '-10');
+  var numberText = circle
+    .append("text")
+    .attr("transform", "translate(" + width / 2 + ", " + height / 2 + ")")
+    .attr("fill", "#FFFFFF")
+    .style("font-family", "arial")
+    .style("font-weight", "bold")
+    .style("font-size", 14)
+    .attr("text-anchor", "middle")
+    .attr("dy", "-10");
 
-	function updateProgress(bar_progress) {
-		var percent_value = Number(bar_progress * 100);
-		numberText.text(percent_value.toFixed() + " " + unit);
-		progress_front.attr('width', (width * bar_progress));
-	}
+  function updateProgress(bar_progress) {
+    var percent_value = Number(bar_progress * 100);
+    numberText.text(percent_value.toFixed() + " " + unit);
+    progress_front.attr("width", width * bar_progress);
+  }
 
-	var bar_progress = startPercent;
+  var bar_progress = startPercent;
 
-	(function loops() {
-		updateProgress(bar_progress);
+  (function loops() {
+    updateProgress(bar_progress);
 
-		if (count > 0) {
-			count--;
-			bar_progress += step;
-			setTimeout(loops, 30);
-		}
-	})();
+    if (count > 0) {
+      count--;
+      bar_progress += step;
+      setTimeout(loops, 30);
+    }
+  })();
 }
 
-function progress_bubble_d3 (recipient, percentile, width, height, color, unit, label, label_color) {
-	var startPercent = 0;
-	var endPercent = parseInt(percentile) / 100;
-	var count = Math.abs((endPercent - startPercent) / 0.01);
-	var step = endPercent < startPercent ? -0.01 : 0.01;
+function progress_bubble_d3(
+  recipient,
+  percentile,
+  width,
+  height,
+  color,
+  unit,
+  label,
+  label_color
+) {
+  var startPercent = 0;
+  var endPercent = parseInt(percentile) / 100;
+  var count = Math.abs((endPercent - startPercent) / 0.01);
+  var step = endPercent < startPercent ? -0.01 : 0.01;
 
-	var numberSize = 0;
-	var textSize = 0;
-	var unitSize = 0;
-	var yPosText = 0;
-	var yPosNumber = 0;
-	if (width >= 500) {
-		numberSize = 100;
-		textSize = 50;
-		unitSize = 50;
-		yPosNumber = '15';
-		yPosText = '-100';
-	}
-	else if (width >= 400) {
-		numberSize = 80;
-		textSize = 40;
-		unitSize = 40;
-		yPosNumber = '15';
-		yPosText = '-80';
-	}
-	else if (width >= 300) {
-		numberSize = 60;
-		textSize = 30;
-		unitSize = 30;
-		yPosNumber = '15';
-		yPosText = '-45';
-	}
-	else if (width >= 200) {
-		numberSize = 40;
-		textSize = 20;
-		unitSize = 20;
-		yPosNumber = '50';
-		yPosText = '-30';
-	}
-	else if (width >= 100) {
-		numberSize = 20;
-		textSize = 10;
-		unitSize = 10;
-		yPosNumber = '5';
-		yPosText = '-20';
-	}
-	else {
-		numberSize = 10;
-		textSize = 8;
-		unitSize = 8;
-		yPosNumber = '5';
-		yPosText = '-10';
-	}
+  var numberSize = 0;
+  var textSize = 0;
+  var unitSize = 0;
+  var yPosText = 0;
+  var yPosNumber = 0;
+  if (width >= 500) {
+    numberSize = 100;
+    textSize = 50;
+    unitSize = 50;
+    yPosNumber = "15";
+    yPosText = "-100";
+  } else if (width >= 400) {
+    numberSize = 80;
+    textSize = 40;
+    unitSize = 40;
+    yPosNumber = "15";
+    yPosText = "-80";
+  } else if (width >= 300) {
+    numberSize = 60;
+    textSize = 30;
+    unitSize = 30;
+    yPosNumber = "15";
+    yPosText = "-45";
+  } else if (width >= 200) {
+    numberSize = 40;
+    textSize = 20;
+    unitSize = 20;
+    yPosNumber = "50";
+    yPosText = "-30";
+  } else if (width >= 100) {
+    numberSize = 20;
+    textSize = 10;
+    unitSize = 10;
+    yPosNumber = "5";
+    yPosText = "-20";
+  } else {
+    numberSize = 10;
+    textSize = 8;
+    unitSize = 8;
+    yPosNumber = "5";
+    yPosText = "-10";
+  }
 
-	var circle = d3.select(recipient)
-		.append("svg")
-			.attr("width", width)
-			.attr("height", height);
+  var circle = d3
+    .select(recipient)
+    .append("svg")
+    .attr("width", width)
+    .attr("height", height);
 
-	var progress_back = circle.append('circle')
-		.attr("transform", "translate(" + (width/2) + ", " + (height/2) + ")")
-		.attr('fill', '#000000')
-		.attr('fill-opacity', 0)
-		.attr('r', width/2);
+  var progress_back = circle
+    .append("circle")
+    .attr("transform", "translate(" + width / 2 + ", " + height / 2 + ")")
+    .attr("fill", "#000000")
+    .attr("fill-opacity", 0)
+    .attr("r", width / 2);
 
-	var progress_front = circle.append('circle')
-		.attr("transform", "translate(" + (width/2) + ", " + (height/2) + ")")
-		.attr('fill', color)
-		.attr('fill-opacity', 1)
-		.attr('r', 0);
+  var progress_front = circle
+    .append("circle")
+    .attr("transform", "translate(" + width / 2 + ", " + height / 2 + ")")
+    .attr("fill", color)
+    .attr("fill-opacity", 1)
+    .attr("r", 0);
 
-	var labelText = circle.append("text")
-		.attr("transform", "translate(" + (width/2) + ", " + (height/2) + ")")
-		.attr('fill', label_color)
-		.style("font-family", "arial")
-		.style("font-weight", "bold")
-		.style("font-size", textSize)
-		.html(label)
-		.attr('dy', -(width/3))
-		.attr('text-anchor', 'middle');
+  var labelText = circle
+    .append("text")
+    .attr("transform", "translate(" + width / 2 + ", " + height / 2 + ")")
+    .attr("fill", label_color)
+    .style("font-family", "arial")
+    .style("font-weight", "bold")
+    .style("font-size", textSize)
+    .html(label)
+    .attr("dy", -(width / 3))
+    .attr("text-anchor", "middle");
 
-	var numberText = circle.append("text")
-		.attr("transform", "translate(" + (width/2) + ", " + (height/2) + ")")
-		.attr('fill', label_color)
-		.style("font-family", "arial")
-		.style("font-weight", "bold")
-		.style("font-size", numberSize)
-		.attr('text-anchor', 'middle')
-		.attr('dy', width/3);
+  var numberText = circle
+    .append("text")
+    .attr("transform", "translate(" + width / 2 + ", " + height / 2 + ")")
+    .attr("fill", label_color)
+    .style("font-family", "arial")
+    .style("font-weight", "bold")
+    .style("font-size", numberSize)
+    .attr("text-anchor", "middle")
+    .attr("dy", width / 3);
 
-	function updateProgress(bar_progress) {
-		var percent_value = Number(bar_progress * 100);
-		numberText.text(percent_value.toFixed() + " " + unit);
-		progress_front.attr('r', ((width/2) * bar_progress));
-	}
+  function updateProgress(bar_progress) {
+    var percent_value = Number(bar_progress * 100);
+    numberText.text(percent_value.toFixed() + " " + unit);
+    progress_front.attr("r", (width / 2) * bar_progress);
+  }
 
-	var bar_progress = startPercent;
+  var bar_progress = startPercent;
 
-	(function loops() {
-		updateProgress(bar_progress);
+  (function loops() {
+    updateProgress(bar_progress);
 
-		if (count > 0) {
-			count--;
-			bar_progress += step;
-			setTimeout(loops, 30);
-		}
-	})();
+    if (count > 0) {
+      count--;
+      bar_progress += step;
+      setTimeout(loops, 30);
+    }
+  })();
 }
 
-function print_circular_progress_bar (recipient, percentile, width, height, color, unit, label, label_color) {
-	var twoPi = Math.PI * 2;
-	var radius = (width / 2);
-	var border = 20;
-	var startPercent = 0;
-	var endPercent = parseInt(percentile) / 100;
-	var count = Math.abs((endPercent - startPercent) / 0.01);
-	var step = endPercent < startPercent ? -0.01 : 0.01;
+function print_circular_progress_bar(
+  recipient,
+  percentile,
+  width,
+  height,
+  color,
+  unit,
+  label,
+  label_color
+) {
+  var twoPi = Math.PI * 2;
+  var radius = width / 2;
+  var border = 20;
+  var startPercent = 0;
+  var endPercent = parseInt(percentile) / 100;
+  var count = Math.abs((endPercent - startPercent) / 0.01);
+  var step = endPercent < startPercent ? -0.01 : 0.01;
 
-	var numberSize = 0;
-	var textSize = 0;
-	var unitSize = 0;
-	var yPosText = 0;
-	var yPosUnit = 0;
-	var yPosNumber = 0;
-	if (width >= 500) {
-		numberSize = 100;
-		textSize = 50;
-		unitSize = 50;
-		yPosNumber = '15';
-		yPosText = '-100';
-		yPosUnit = '100';
-	}
-	else if (width >= 400) {
-		numberSize = 80;
-		textSize = 40;
-		unitSize = 40;
-		yPosNumber = '15';
-		yPosText = '-80';
-		yPosUnit = '80';
-	}
-	else if (width >= 300) {
-		numberSize = 60;
-		textSize = 30;
-		unitSize = 30;
-		yPosNumber = '15';
-		yPosText = '-45';
-		yPosUnit = '60';
-	}
-	else if (width >= 200) {
-		numberSize = 40;
-		textSize = 20;
-		unitSize = 20;
-		yPosNumber = '10';
-		yPosText = '-30';
-		yPosUnit = '40';
-	}
-	else if (width >= 100) {
-		numberSize = 20;
-		textSize = 10;
-		unitSize = 10;
-		yPosNumber = '5';
-		yPosText = '-15';
-		yPosUnit = '20';
-	}
-	else {
-		numberSize = 8;
-		textSize = 4;
-		unitSize = 4;
-		yPosNumber = '2';
-		yPosText = '-5';
-		yPosUnit = '5';
-	}
+  var numberSize = 0;
+  var textSize = 0;
+  var unitSize = 0;
+  var yPosText = 0;
+  var yPosUnit = 0;
+  var yPosNumber = 0;
+  if (width >= 500) {
+    numberSize = 100;
+    textSize = 50;
+    unitSize = 50;
+    yPosNumber = "15";
+    yPosText = "-100";
+    yPosUnit = "100";
+  } else if (width >= 400) {
+    numberSize = 80;
+    textSize = 40;
+    unitSize = 40;
+    yPosNumber = "15";
+    yPosText = "-80";
+    yPosUnit = "80";
+  } else if (width >= 300) {
+    numberSize = 60;
+    textSize = 30;
+    unitSize = 30;
+    yPosNumber = "15";
+    yPosText = "-45";
+    yPosUnit = "60";
+  } else if (width >= 200) {
+    numberSize = 40;
+    textSize = 20;
+    unitSize = 20;
+    yPosNumber = "10";
+    yPosText = "-30";
+    yPosUnit = "40";
+  } else if (width >= 100) {
+    numberSize = 20;
+    textSize = 10;
+    unitSize = 10;
+    yPosNumber = "5";
+    yPosText = "-15";
+    yPosUnit = "20";
+  } else {
+    numberSize = 8;
+    textSize = 4;
+    unitSize = 4;
+    yPosNumber = "2";
+    yPosText = "-5";
+    yPosUnit = "5";
+  }
 
-	var arc = d3.svg.arc()
-		.startAngle(0)
-		.innerRadius(radius)
-		.outerRadius(radius - border);
+  var arc = d3.svg
+    .arc()
+    .startAngle(0)
+    .innerRadius(radius)
+    .outerRadius(radius - border);
 
-	var circle = d3.select(recipient)
-		.append("svg")
-			.attr("width", width)
-			.attr("height", height)
-			.append("g")
-				.attr("transform", "translate(" + (width/2) + ", " + (height/2) + ")");
+  var circle = d3
+    .select(recipient)
+    .append("svg")
+    .attr("width", width)
+    .attr("height", height)
+    .append("g")
+    .attr("transform", "translate(" + width / 2 + ", " + height / 2 + ")");
 
-	var meter = circle.append("g")
-		.attr('class', 'progress-meter');
+  var meter = circle.append("g").attr("class", "progress-meter");
 
-	meter.append("path")
-		.attr('fill', '#000000')
-		.attr('fill-opacity', 0.5)
-		.attr('d', arc.endAngle(twoPi));
+  meter
+    .append("path")
+    .attr("fill", "#000000")
+    .attr("fill-opacity", 0.5)
+    .attr("d", arc.endAngle(twoPi));
 
-	var foreground = circle.append("path")
-		.attr('fill', color)
-		.attr('fill-opacity', 1)
-		.attr('stroke', color)
-		.attr('stroke-opacity', 1);
-	
-	var front = circle.append("path")
-		.attr('fill', color)
-		.attr('fill-opacity', 1);
+  var foreground = circle
+    .append("path")
+    .attr("fill", color)
+    .attr("fill-opacity", 1)
+    .attr("stroke", color)
+    .attr("stroke-opacity", 1);
 
-	var labelText = circle.append("text")
-		.attr('fill', label_color)
-		.style("font-family", "arial")
-		.style("font-weight", "bold")
-		.style("font-size", textSize)
-		.html(label)
-		.attr('text-anchor', 'middle')
-		.attr('dy', yPosText);
+  var front = circle
+    .append("path")
+    .attr("fill", color)
+    .attr("fill-opacity", 1);
 
-	var numberText = circle.append("text")
-		.attr('fill', label_color)
-		.style("font-family", "arial")
-		.style("font-weight", "bold")
-		.style("font-size", numberSize)
-		.attr('text-anchor', 'middle')
-		.attr('dy', yPosNumber);
+  var labelText = circle
+    .append("text")
+    .attr("fill", label_color)
+    .style("font-family", "arial")
+    .style("font-weight", "bold")
+    .style("font-size", textSize)
+    .html(label)
+    .attr("text-anchor", "middle")
+    .attr("dy", yPosText);
 
-	var percentText = circle.append("text")
-		.attr('fill', label_color)
-		.style("font-family", "arial")
-		.style("font-weight", "bold")
-		.style("font-size", unitSize)
-		.text(unit)
-		.attr('text-anchor', 'middle')
-		.attr('dy', yPosUnit);
+  var numberText = circle
+    .append("text")
+    .attr("fill", label_color)
+    .style("font-family", "arial")
+    .style("font-weight", "bold")
+    .style("font-size", numberSize)
+    .attr("text-anchor", "middle")
+    .attr("dy", yPosNumber);
 
-	function updateProgress(progress) {
-		foreground.attr('d', arc.endAngle(twoPi * progress));
-		front.attr('d', arc.endAngle(twoPi * progress));
-		var percent_value = Number(progress * 100);
-		numberText.text(percent_value.toFixed());
-	}
+  var percentText = circle
+    .append("text")
+    .attr("fill", label_color)
+    .style("font-family", "arial")
+    .style("font-weight", "bold")
+    .style("font-size", unitSize)
+    .text(unit)
+    .attr("text-anchor", "middle")
+    .attr("dy", yPosUnit);
 
-	var progress = startPercent;
+  function updateProgress(progress) {
+    foreground.attr("d", arc.endAngle(twoPi * progress));
+    front.attr("d", arc.endAngle(twoPi * progress));
+    var percent_value = Number(progress * 100);
+    numberText.text(percent_value.toFixed());
+  }
 
-	(function loops() {
-		updateProgress(progress);
+  var progress = startPercent;
 
-		if (count > 0) {
-			count--;
-			progress += step;
-			setTimeout(loops, 30);
-		}
-	})();
+  (function loops() {
+    updateProgress(progress);
+
+    if (count > 0) {
+      count--;
+      progress += step;
+      setTimeout(loops, 30);
+    }
+  })();
 }
 
-function print_interior_circular_progress_bar (recipient, percentile, width, height, color, unit, label, label_color) {
-	var twoPi = Math.PI * 2;
-	var radius = (width / 2) - 20;
-	var radius2 = (width / 2);
-	var border = 20;
-	var startPercent = 0;
-	var endPercent = parseInt(percentile) / 100;
-	var count = Math.abs((endPercent - startPercent) / 0.01);
-	var step = endPercent < startPercent ? -0.01 : 0.01;
+function print_interior_circular_progress_bar(
+  recipient,
+  percentile,
+  width,
+  height,
+  color,
+  unit,
+  label,
+  label_color
+) {
+  var twoPi = Math.PI * 2;
+  var radius = width / 2 - 20;
+  var radius2 = width / 2;
+  var border = 20;
+  var startPercent = 0;
+  var endPercent = parseInt(percentile) / 100;
+  var count = Math.abs((endPercent - startPercent) / 0.01);
+  var step = endPercent < startPercent ? -0.01 : 0.01;
 
-	var numberSize = 0;
-	var textSize = 0;
-	var unitSize = 0;
-	var yPosText = 0;
-	var yPosUnit = 0;
-	var yPosNumber = 0;
-	if (width >= 500) {
-		numberSize = 100;
-		textSize = 50;
-		unitSize = 50;
-		yPosNumber = '15';
-		yPosText = '-100';
-		yPosUnit = '100';
-	}
-	else if (width >= 400) {
-		numberSize = 80;
-		textSize = 40;
-		unitSize = 40;
-		yPosNumber = '15';
-		yPosText = '-80';
-		yPosUnit = '80';
-	}
-	else if (width >= 300) {
-		numberSize = 60;
-		textSize = 30;
-		unitSize = 30;
-		yPosNumber = '15';
-		yPosText = '-45';
-		yPosUnit = '60';
-	}
-	else if (width >= 200) {
-		numberSize = 40;
-		textSize = 20;
-		unitSize = 20;
-		yPosNumber = '10';
-		yPosText = '-30';
-		yPosUnit = '40';
-	}
-	else if (width >= 100) {
-		numberSize = 20;
-		textSize = 10;
-		unitSize = 10;
-		yPosNumber = '5';
-		yPosText = '-15';
-		yPosUnit = '20';
-	}
-	else {
-		numberSize = 8;
-		textSize = 4;
-		unitSize = 4;
-		yPosNumber = '2';
-		yPosText = '-5';
-		yPosUnit = '5';
-	}
+  var numberSize = 0;
+  var textSize = 0;
+  var unitSize = 0;
+  var yPosText = 0;
+  var yPosUnit = 0;
+  var yPosNumber = 0;
+  if (width >= 500) {
+    numberSize = 100;
+    textSize = 50;
+    unitSize = 50;
+    yPosNumber = "15";
+    yPosText = "-100";
+    yPosUnit = "100";
+  } else if (width >= 400) {
+    numberSize = 80;
+    textSize = 40;
+    unitSize = 40;
+    yPosNumber = "15";
+    yPosText = "-80";
+    yPosUnit = "80";
+  } else if (width >= 300) {
+    numberSize = 60;
+    textSize = 30;
+    unitSize = 30;
+    yPosNumber = "15";
+    yPosText = "-45";
+    yPosUnit = "60";
+  } else if (width >= 200) {
+    numberSize = 40;
+    textSize = 20;
+    unitSize = 20;
+    yPosNumber = "10";
+    yPosText = "-30";
+    yPosUnit = "40";
+  } else if (width >= 100) {
+    numberSize = 20;
+    textSize = 10;
+    unitSize = 10;
+    yPosNumber = "5";
+    yPosText = "-15";
+    yPosUnit = "20";
+  } else {
+    numberSize = 8;
+    textSize = 4;
+    unitSize = 4;
+    yPosNumber = "2";
+    yPosText = "-5";
+    yPosUnit = "5";
+  }
 
-	var arc = d3.svg.arc()
-		.startAngle(0)
-		.innerRadius(radius)
-		.outerRadius(radius - border);
+  var arc = d3.svg
+    .arc()
+    .startAngle(0)
+    .innerRadius(radius)
+    .outerRadius(radius - border);
 
-	var arc2 = d3.svg.arc()
-		.startAngle(0)
-		.innerRadius(radius2)
-		.outerRadius(radius2 - border);
+  var arc2 = d3.svg
+    .arc()
+    .startAngle(0)
+    .innerRadius(radius2)
+    .outerRadius(radius2 - border);
 
-	var circle = d3.select(recipient)
-		.append("svg")
-			.attr("width", width)
-			.attr("height", height)
-			.append("g")
-				.attr("transform", "translate(" + (width/2) + ", " + (height/2) + ")");
+  var circle = d3
+    .select(recipient)
+    .append("svg")
+    .attr("width", width)
+    .attr("height", height)
+    .append("g")
+    .attr("transform", "translate(" + width / 2 + ", " + height / 2 + ")");
 
-	var meter = circle.append("g")
-		.attr('class', 'progress-meter');
+  var meter = circle.append("g").attr("class", "progress-meter");
 
-	meter.append("path")
-		.attr('fill', '#000000')
-		.attr('fill-opacity', 0.5)
-		.attr('d', arc.endAngle(twoPi));
+  meter
+    .append("path")
+    .attr("fill", "#000000")
+    .attr("fill-opacity", 0.5)
+    .attr("d", arc.endAngle(twoPi));
 
-	var meter = circle.append("g")
-		.attr('class', 'progress-meter');
+  var meter = circle.append("g").attr("class", "progress-meter");
 
-	meter.append("path")
-		.attr('fill', color)
-		.attr('fill-opacity', 1)
-		.attr('d', arc2.endAngle(twoPi));
+  meter
+    .append("path")
+    .attr("fill", color)
+    .attr("fill-opacity", 1)
+    .attr("d", arc2.endAngle(twoPi));
 
-	var foreground = circle.append("path")
-		.attr('fill', color)
-		.attr('fill-opacity', 1)
-		.attr('stroke', color)
-		.attr('stroke-opacity', 1);
-	
-	var front = circle.append("path")
-		.attr('fill', color)
-		.attr('fill-opacity', 1);
+  var foreground = circle
+    .append("path")
+    .attr("fill", color)
+    .attr("fill-opacity", 1)
+    .attr("stroke", color)
+    .attr("stroke-opacity", 1);
 
-	var labelText = circle.append("text")
-		.attr('fill', label_color)
-		.style("font-family", "arial")
-		.style("font-weight", "bold")
-		.style("font-size", textSize)
-		.html(label)
-		.attr('text-anchor', 'middle')
-		.attr('dy', yPosText);
+  var front = circle
+    .append("path")
+    .attr("fill", color)
+    .attr("fill-opacity", 1);
 
-	var numberText = circle.append("text")
-		.attr('fill', label_color)
-		.style("font-family", "arial")
-		.style("font-weight", "bold")
-		.style("font-size", numberSize)
-		.attr('text-anchor', 'middle')
-		.attr('dy', yPosNumber);
+  var labelText = circle
+    .append("text")
+    .attr("fill", label_color)
+    .style("font-family", "arial")
+    .style("font-weight", "bold")
+    .style("font-size", textSize)
+    .html(label)
+    .attr("text-anchor", "middle")
+    .attr("dy", yPosText);
 
-	var percentText = circle.append("text")
-		.attr('fill', label_color)
-		.style("font-family", "arial")
-		.style("font-weight", "bold")
-		.style("font-size", unitSize)
-		.text(unit)
-		.attr('text-anchor', 'middle')
-		.attr('dy', yPosUnit);
+  var numberText = circle
+    .append("text")
+    .attr("fill", label_color)
+    .style("font-family", "arial")
+    .style("font-weight", "bold")
+    .style("font-size", numberSize)
+    .attr("text-anchor", "middle")
+    .attr("dy", yPosNumber);
 
-	function updateProgress(progress) {
-		foreground.attr('d', arc.endAngle(twoPi * progress));
-		front.attr('d', arc.endAngle(twoPi * progress));
-		var percent_value = Number(progress * 100);
-		numberText.text(percent_value.toFixed());
-	}
+  var percentText = circle
+    .append("text")
+    .attr("fill", label_color)
+    .style("font-family", "arial")
+    .style("font-weight", "bold")
+    .style("font-size", unitSize)
+    .text(unit)
+    .attr("text-anchor", "middle")
+    .attr("dy", yPosUnit);
 
-	var progress = startPercent;
+  function updateProgress(progress) {
+    foreground.attr("d", arc.endAngle(twoPi * progress));
+    front.attr("d", arc.endAngle(twoPi * progress));
+    var percent_value = Number(progress * 100);
+    numberText.text(percent_value.toFixed());
+  }
 
-	(function loops() {
-		updateProgress(progress);
+  var progress = startPercent;
 
-		if (count > 0) {
-			count--;
-			progress += step;
-			setTimeout(loops, 30);
-		}
-	})();
+  (function loops() {
+    updateProgress(progress);
+
+    if (count > 0) {
+      count--;
+      progress += step;
+      setTimeout(loops, 30);
+    }
+  })();
 }
 
-function print_donut_graph (recipient, width, height, module_data, resume_color) {
-	var svg = d3.select(recipient)
-		.append("svg")
-			.attr("width", width)
-			.attr("height", height)
-		.append("g");
+function print_donut_graph(
+  recipient,
+  width,
+  height,
+  module_data,
+  resume_color
+) {
+  var svg = d3
+    .select(recipient)
+    .append("svg")
+    .attr("width", width)
+    .attr("height", height)
+    .append("g");
 
-	svg.append("g")
-		.attr("class", "slices");
+  svg.append("g").attr("class", "slices");
 
-	var radius = 120;
-	var increment_y = 60;
-	var increment_y_padding = 25;
-	var decrement_x_padding = 150;
-	if (width >= 500) {
-		radius = 180;
-		increment_y = 60;
-		increment_y_padding = 20;
-		decrement_x_padding = 40;
-	}
-	else if (width >= 400) {
-		radius = 140;
-		increment_y = 40;
-		increment_y_padding = 20;
-		decrement_x_padding = 40;
-	}
-	else if (width >= 300) {
-		radius = 100;
-		increment_y = 40;
-		increment_y_padding = 15;
-		decrement_x_padding = 40;
-	}
-	else if (width >= 200) {
-		radius = 50;
-		increment_y = 40;
-		increment_y_padding = 15;
-		decrement_x_padding = 25;
-	}
-	else if (width >= 100) {
-		radius = 20;
-		increment_y = 20;
-		increment_y_padding = 8;
-		decrement_x_padding = 25;
-	}
-	else {
-		radius = 10;
-		increment_y = 10;
-		increment_y_padding = 3;
-		decrement_x_padding = 5;
-	}
+  var radius = 120;
+  var increment_y = 60;
+  var increment_y_padding = 25;
+  var decrement_x_padding = 150;
+  if (width >= 500) {
+    radius = 180;
+    increment_y = 60;
+    increment_y_padding = 20;
+    decrement_x_padding = 40;
+  } else if (width >= 400) {
+    radius = 140;
+    increment_y = 40;
+    increment_y_padding = 20;
+    decrement_x_padding = 40;
+  } else if (width >= 300) {
+    radius = 100;
+    increment_y = 40;
+    increment_y_padding = 15;
+    decrement_x_padding = 40;
+  } else if (width >= 200) {
+    radius = 50;
+    increment_y = 40;
+    increment_y_padding = 15;
+    decrement_x_padding = 25;
+  } else if (width >= 100) {
+    radius = 20;
+    increment_y = 20;
+    increment_y_padding = 8;
+    decrement_x_padding = 25;
+  } else {
+    radius = 10;
+    increment_y = 10;
+    increment_y_padding = 3;
+    decrement_x_padding = 5;
+  }
 
-	var arc = d3.svg.arc()
-		.outerRadius(radius * 0.8)
-		.innerRadius(radius * 0.4);
+  var arc = d3.svg
+    .arc()
+    .outerRadius(radius * 0.8)
+    .innerRadius(radius * 0.4);
 
-	var key = function(d){ return d.data.label; };
+  var key = function(d) {
+    return d.data.label;
+  };
 
-	var pie = d3.layout.pie()
-		.sort(null)
-		.value(function(d) {
-			return parseFloat(d.percent);
-		});
+  var pie = d3.layout
+    .pie()
+    .sort(null)
+    .value(function(d) {
+      return parseFloat(d.percent);
+    });
 
-	jQuery.each(module_data, function (key, m_d) {
-		svg.append("g")
-			.append("rect")
-				.attr("transform", "translate(" + (((width / 2) - (radius + decrement_x_padding))) + "," + (((height / 2) - radius) - increment_y) + ")")
-				.attr('fill', m_d.color)
-				.attr('x', -20)
-				.attr('y', -10)
-				.attr('width', 20)
-				.attr('height', 10);
+  jQuery.each(module_data, function(key, m_d) {
+    svg
+      .append("g")
+      .append("rect")
+      .attr(
+        "transform",
+        "translate(" +
+          (width / 2 - (radius + decrement_x_padding)) +
+          "," +
+          (height / 2 - radius - increment_y) +
+          ")"
+      )
+      .attr("fill", m_d.color)
+      .attr("x", -20)
+      .attr("y", -10)
+      .attr("width", 20)
+      .attr("height", 10);
 
-		svg.append("g")
-			.append("text")
-				.attr('fill', resume_color)
-				.attr("transform", "translate(" + (((width / 2) - (radius + decrement_x_padding)) + 10) + "," + (((height / 2) - radius) - increment_y) + ")")
-				.text(m_d.tag_name)
-				.style("font-family", "smallfontFont")
-				.style("font-size", "7pt");
-		
-		increment_y -= increment_y_padding;
-	});
+    svg
+      .append("g")
+      .append("text")
+      .attr("fill", resume_color)
+      .attr(
+        "transform",
+        "translate(" +
+          (width / 2 - (radius + decrement_x_padding) + 10) +
+          "," +
+          (height / 2 - radius - increment_y) +
+          ")"
+      )
+      .text(m_d.tag_name)
+      .style("font-family", "smallfontFont")
+      .style("font-size", "7pt");
 
-	function donutData (){
-		return module_data.map(function(m_data){
-			return { label: m_data.tag_name, percent: m_data.percent, color : m_data.color}
-		});
-	}
+    increment_y -= increment_y_padding;
+  });
 
-	print_phases(donutData());
+  function donutData() {
+    return module_data.map(function(m_data) {
+      return {
+        label: m_data.tag_name,
+        percent: m_data.percent,
+        color: m_data.color
+      };
+    });
+  }
 
-	function print_phases(data) {
-		var slice = svg.select(".slices").selectAll("path.slice")
-			.data(pie(data), key);
+  print_phases(donutData());
 
-		slice.enter()
-			.insert("path")
-			.style("fill", function(d) {
-					return d.data.color;
-			})
-			.attr("class", "slice")
-			.attr("transform", "translate(" + width / 2 + "," + (height - radius) + ")");
+  function print_phases(data) {
+    var slice = svg
+      .select(".slices")
+      .selectAll("path.slice")
+      .data(pie(data), key);
 
-		slice.transition()
-				.duration(0)
-				.attrTween("d", function(d) {
-					this._current = this._current || d;
-					var interpolate = d3.interpolate(this._current, d);
-					this._current = interpolate(0);
-					return function(t) {
-						return arc(interpolate(t));
-					};
-				});
- 
-		slice.exit().remove();
-	}
+    slice
+      .enter()
+      .insert("path")
+      .style("fill", function(d) {
+        return d.data.color;
+      })
+      .attr("class", "slice")
+      .attr(
+        "transform",
+        "translate(" + width / 2 + "," + (height - radius) + ")"
+      );
+
+    slice
+      .transition()
+      .duration(0)
+      .attrTween("d", function(d) {
+        this._current = this._current || d;
+        var interpolate = d3.interpolate(this._current, d);
+        this._current = interpolate(0);
+        return function(t) {
+          return arc(interpolate(t));
+        };
+      });
+
+    slice.exit().remove();
+  }
 }
 
-function printClockAnalogic1 (time_format, timezone, clock_animation,width,height,id_element,color) {
-		
-	if(width != 0){
-		width = width-20;
-		height = width-20;
-	}
-	
-	
-	if(width == 0){
-		width = 180;
-		height = 180;
-	}	
-	
-var radians = 0.0174532925, 
-	clockRadius = width/2,
-	margin = 10,
-		width = (clockRadius+margin)*2,
-    height = (clockRadius+margin)*2,
-    hourHandLength = 2*clockRadius/3,
+function printClockAnalogic1(
+  time_format,
+  timezone,
+  clock_animation,
+  width,
+  height,
+  id_element,
+  color
+) {
+  if (width != 0) {
+    width = width - 20;
+    height = width - 20;
+  }
+
+  if (width == 0) {
+    width = 180;
+    height = 180;
+  }
+
+  var radians = 0.0174532925,
+    clockRadius = width / 2,
+    margin = 10,
+    width = (clockRadius + margin) * 2,
+    height = (clockRadius + margin) * 2,
+    hourHandLength = (2 * clockRadius) / 3,
     minuteHandLength = clockRadius,
-    secondHandLength = clockRadius-12,
+    secondHandLength = clockRadius - 12,
     secondHandBalance = 30,
     secondTickStart = clockRadius;
-    secondTickLength = -10,
-    hourTickStart = clockRadius,
-    hourTickLength = -18,
-    secondLabelRadius = clockRadius + 16,
-    secondLabelYOffset = 5,
-    hourLabelRadius = clockRadius - 40,
-    hourLabelYOffset = 7;
+  (secondTickLength = -10),
+    (hourTickStart = clockRadius),
+    (hourTickLength = -18),
+    (secondLabelRadius = clockRadius + 16),
+    (secondLabelYOffset = 5),
+    (hourLabelRadius = clockRadius - 40),
+    (hourLabelYOffset = 7);
 
-var hourScale = d3.scale.linear()
-	.range([0,330])
-	.domain([0,11]);
+  var hourScale = d3.scale
+    .linear()
+    .range([0, 330])
+    .domain([0, 11]);
 
-var minuteScale = secondScale = d3.scale.linear()
-	.range([0,354])
-	.domain([0,59]);
+  var minuteScale = (secondScale = d3.scale
+    .linear()
+    .range([0, 354])
+    .domain([0, 59]));
 
-var handData = [
-	{
-		type:'hour',
-		value:0,
-		length:-hourHandLength,
-		scale:hourScale
-	},
-	{
-		type:'minute',
-		value:0,
-		length:-minuteHandLength,
-		scale:minuteScale
-	},
-	{
-		type:'second',
-		value:0,
-		length:-secondHandLength,
-		scale:secondScale,
-		balance:secondHandBalance
-	}
-];
+  var handData = [
+    {
+      type: "hour",
+      value: 0,
+      length: -hourHandLength,
+      scale: hourScale
+    },
+    {
+      type: "minute",
+      value: 0,
+      length: -minuteHandLength,
+      scale: minuteScale
+    },
+    {
+      type: "second",
+      value: 0,
+      length: -secondHandLength,
+      scale: secondScale,
+      balance: secondHandBalance
+    }
+  ];
 
-function drawClock(){ //create all the clock elements
-	updateData(timezone);	//draw them in the correct starting position
-	var svg = d3.select("#clock_"+id_element).append("svg")
-	    .attr("width", width)
-	    .attr("height", height);
+  function drawClock() {
+    //create all the clock elements
+    updateData(timezone); //draw them in the correct starting position
+    var svg = d3
+      .select("#clock_" + id_element)
+      .append("svg")
+      .attr("width", width)
+      .attr("height", height);
 
-	var face = svg.append('g')
-		.attr('id','clock-face')
-		.attr('transform','translate(' + (clockRadius + margin) + ',' + (clockRadius + margin) + ')');
+    var face = svg
+      .append("g")
+      .attr("id", "clock-face")
+      .attr(
+        "transform",
+        "translate(" +
+          (clockRadius + margin) +
+          "," +
+          (clockRadius + margin) +
+          ")"
+      );
 
-	//add marks for seconds
-	face.selectAll('.second-tick')
-		.data(d3.range(0,60)).enter()
-			.append('line')
-			.attr('class', 'second-tick')
-			.attr('x1',0)
-			.attr('x2',0)
-			.attr('y1',secondTickStart)
-			.attr('y2',secondTickStart + secondTickLength)
-			.attr('stroke',color)
-			.attr('transform',function(d){
-				return 'rotate(' + secondScale(d) + ')';
-			});
-	//and labels
+    //add marks for seconds
+    face
+      .selectAll(".second-tick")
+      .data(d3.range(0, 60))
+      .enter()
+      .append("line")
+      .attr("class", "second-tick")
+      .attr("x1", 0)
+      .attr("x2", 0)
+      .attr("y1", secondTickStart)
+      .attr("y2", secondTickStart + secondTickLength)
+      .attr("stroke", color)
+      .attr("transform", function(d) {
+        return "rotate(" + secondScale(d) + ")";
+      });
+    //and labels
 
-	// face.selectAll('.second-label')
-	// 	.data(d3.range(5,61,5))
-	// 		.enter()
-	// 		.append('text')
-	// 		.attr('class', 'second-label')
-	// 		.attr('text-anchor','middle')
-	// 		.attr('x',function(d){
-	// 			return secondLabelRadius*Math.sin(secondScale(d)*radians);
-	// 		})
-	// 		.attr('y',function(d){
-	// 			return -secondLabelRadius*Math.cos(secondScale(d)*radians) + secondLabelYOffset;
-	// 		})
-	// 		.text(function(d){
-	// 			return d;
-	// 		});
+    // face.selectAll('.second-label')
+    // 	.data(d3.range(5,61,5))
+    // 		.enter()
+    // 		.append('text')
+    // 		.attr('class', 'second-label')
+    // 		.attr('text-anchor','middle')
+    // 		.attr('x',function(d){
+    // 			return secondLabelRadius*Math.sin(secondScale(d)*radians);
+    // 		})
+    // 		.attr('y',function(d){
+    // 			return -secondLabelRadius*Math.cos(secondScale(d)*radians) + secondLabelYOffset;
+    // 		})
+    // 		.text(function(d){
+    // 			return d;
+    // 		});
 
-	//... and hours
-	face.selectAll('.hour-tick')
-		.data(d3.range(0,12)).enter()
-			.append('line')
-			.attr('class', 'hour-tick')
-			.attr('x1',0)
-			.attr('x2',0)
-			.attr('y1',hourTickStart)
-			.attr('y2',hourTickStart + hourTickLength)
-			.attr('stroke',color)
-			.attr('transform',function(d){
-				return 'rotate(' + hourScale(d) + ')';
-			});
+    //... and hours
+    face
+      .selectAll(".hour-tick")
+      .data(d3.range(0, 12))
+      .enter()
+      .append("line")
+      .attr("class", "hour-tick")
+      .attr("x1", 0)
+      .attr("x2", 0)
+      .attr("y1", hourTickStart)
+      .attr("y2", hourTickStart + hourTickLength)
+      .attr("stroke", color)
+      .attr("transform", function(d) {
+        return "rotate(" + hourScale(d) + ")";
+      });
 
-	face.selectAll('.hour-label')
-		.data(d3.range(3,13,3))
-			.enter()
-			.append('text')
-			.attr('class', 'hour-label')
-			.attr('text-anchor','middle')
-			.attr('stroke',color)
-			.attr('x',function(d){
-				return hourLabelRadius*Math.sin(hourScale(d)*radians);
-			})
-			.attr('y',function(d){
-				return -hourLabelRadius*Math.cos(hourScale(d)*radians) + hourLabelYOffset;
-			})
-			.text(function(d){
-				return d;
-			});
+    face
+      .selectAll(".hour-label")
+      .data(d3.range(3, 13, 3))
+      .enter()
+      .append("text")
+      .attr("class", "hour-label")
+      .attr("text-anchor", "middle")
+      .attr("stroke", color)
+      .attr("x", function(d) {
+        return hourLabelRadius * Math.sin(hourScale(d) * radians);
+      })
+      .attr("y", function(d) {
+        return (
+          -hourLabelRadius * Math.cos(hourScale(d) * radians) + hourLabelYOffset
+        );
+      })
+      .text(function(d) {
+        return d;
+      });
 
+    var hands = face.append("g").attr("id", "clock-hands");
 
-	var hands = face.append('g').attr('id','clock-hands');
+    face
+      .append("g")
+      .attr("id", "face-overlay")
+      .append("circle")
+      .attr("class", "hands-cover")
+      .attr("stroke", color)
+      .attr("x", 0)
+      .attr("y", 0)
+      .attr("r", clockRadius / 20);
 
-	face.append('g').attr('id','face-overlay')
-		.append('circle').attr('class','hands-cover')
-			.attr('stroke',color)
-			.attr('x',0)
-			.attr('y',0)
-			.attr('r',clockRadius/20);
+    hands
+      .selectAll("line")
+      .data(handData)
+      .enter()
+      .append("line")
+      .attr("stroke", color)
+      .attr("class", function(d) {
+        return d.type + "-hand";
+      })
+      .attr("x1", 0)
+      .attr("y1", function(d) {
+        return d.balance ? d.balance : 0;
+      })
+      .attr("x2", 0)
+      .attr("y2", function(d) {
+        return d.length;
+      })
+      .attr("transform", function(d) {
+        return "rotate(" + d.scale(d.value) + ")";
+      });
+  }
 
-	hands.selectAll('line')
-		.data(handData)
-			.enter()
-			.append('line')
-			.attr('stroke',color)
-			.attr('class', function(d){
-				return d.type + '-hand';
-			})
-			.attr('x1',0)
-			.attr('y1',function(d){
-				return d.balance ? d.balance : 0;
-			})
-			.attr('x2',0)
-			.attr('y2',function(d){
-				return d.length;
-			})
-			.attr('transform',function(d){
-				return 'rotate('+ d.scale(d.value) +')';
-			});
-}
+  function moveHands() {
+    d3.select("#clock_" + id_element + " #clock-hands")
+      .selectAll("line")
+      .data(handData)
+      .transition()
+      .attr("transform", function(d) {
+        return "rotate(" + d.scale(d.value) + ")";
+      });
+  }
 
-function moveHands(){
-	d3.select("#clock_"+id_element+' #clock-hands').selectAll('line')
-	.data(handData)
-		.transition()
-		.attr('transform',function(d){
-			return 'rotate('+ d.scale(d.value) +')';
-		});
-}
-
-function updateData(tz){
-	
-		var d = new Date();
-		var dt = d.getTime();
+  function updateData(tz) {
+    var d = new Date();
+    var dt = d.getTime();
     os = d.getTimezoneOffset();
-		tz = parseInt(tz) + parseInt(os * 60);
-		var t = new Date((dt + (tz * 1000)));
-	
-	handData[0].value = (t.getHours() % 12) + t.getMinutes()/60 ;
-	handData[1].value = t.getMinutes();
-	handData[2].value = t.getSeconds();
+    tz = parseInt(tz) + parseInt(os * 60);
+    var t = new Date(dt + tz * 1000);
+
+    handData[0].value = (t.getHours() % 12) + t.getMinutes() / 60;
+    handData[1].value = t.getMinutes();
+    handData[2].value = t.getSeconds();
+  }
+
+  drawClock();
+
+  setInterval(function() {
+    updateData(timezone);
+    moveHands();
+  }, 1000);
+
+  d3.select(self.frameElement).style("height", height + "px");
+
+  $("#clock_" + id_element).css("margin-top", "0");
 }
 
-drawClock();
+function printClockDigital1(
+  time_format,
+  timezone,
+  clock_animation,
+  width,
+  height,
+  id_element,
+  color
+) {
+  var svgUnderlay = d3.select("#clock_" + id_element + " svg"),
+    svgOverlay = d3.select("#clock_" + id_element),
+    svg = d3.selectAll("#clock_" + id_element + " svg");
 
-setInterval(function(){
-	updateData(timezone);
-	moveHands();
-}, 1000);
+  svgUnderlay.attr("id", "underlay_" + id_element);
+  svgOverlay.attr("id", "overlay_" + id_element);
 
-d3.select(self.frameElement).style("height", height + "px");
-
-$('#clock_'+id_element).css('margin-top','0');
-	
-}
-
-function printClockDigital1 (time_format, timezone, clock_animation,width,height,id_element,color) {
-	
-var svgUnderlay = d3.select("#clock_"+id_element+" svg"),
-    svgOverlay = d3.select("#clock_"+id_element),
-    svg = d3.selectAll("#clock_"+id_element+" svg");
-
-svgUnderlay.attr("id", "underlay_"+id_element);
-svgOverlay.attr("id", "overlay_"+id_element);
-
-var digit = svg.selectAll(".digit"),
+  var digit = svg.selectAll(".digit"),
     separator = svg.selectAll(".separator circle");
 
-var digitPattern = [
-  [1,0,1,1,0,1,1,1,1,1],
-  [1,0,0,0,1,1,1,0,1,1],
-  [1,1,1,1,1,0,0,1,1,1],
-  [0,0,1,1,1,1,1,0,1,1],
-  [1,0,1,0,0,0,1,0,1,0],
-  [1,1,0,1,1,1,1,1,1,1],
-  [1,0,1,1,0,1,1,0,1,1]
-];
+  var digitPattern = [
+    [1, 0, 1, 1, 0, 1, 1, 1, 1, 1],
+    [1, 0, 0, 0, 1, 1, 1, 0, 1, 1],
+    [1, 1, 1, 1, 1, 0, 0, 1, 1, 1],
+    [0, 0, 1, 1, 1, 1, 1, 0, 1, 1],
+    [1, 0, 1, 0, 0, 0, 1, 0, 1, 0],
+    [1, 1, 0, 1, 1, 1, 1, 1, 1, 1],
+    [1, 0, 1, 1, 0, 1, 1, 0, 1, 1]
+  ];
 
-(function tick() {
-	
-	var tz = timezone;
-	var d = new Date();
-	var dt = d.getTime();
-	os = d.getTimezoneOffset();
-	tz = parseInt(tz) + parseInt(os * 60);
-	var t = new Date((dt + (tz * 1000)));
+  (function tick() {
+    var tz = timezone;
+    var d = new Date();
+    var dt = d.getTime();
+    os = d.getTimezoneOffset();
+    tz = parseInt(tz) + parseInt(os * 60);
+    var t = new Date(dt + tz * 1000);
 
-  var now = new Date,
+    var now = new Date(),
       hours = t.getHours(),
       minutes = t.getMinutes(),
       seconds = t.getSeconds();
 
-  digit = digit.data([hours / 10 | 0, hours % 10, minutes / 10 | 0, minutes % 10, seconds / 10 | 0, seconds % 10]);
-  digit.select("path:nth-child(1)").classed("lit", function(d) { return digitPattern[0][d]; });
-  digit.select("path:nth-child(2)").classed("lit", function(d) { return digitPattern[1][d]; });
-  digit.select("path:nth-child(3)").classed("lit", function(d) { return digitPattern[2][d]; });
-  digit.select("path:nth-child(4)").classed("lit", function(d) { return digitPattern[3][d]; });
-  digit.select("path:nth-child(5)").classed("lit", function(d) { return digitPattern[4][d]; });
-  digit.select("path:nth-child(6)").classed("lit", function(d) { return digitPattern[5][d]; });
-  digit.select("path:nth-child(7)").classed("lit", function(d) { return digitPattern[6][d]; });
-  separator.classed("lit", 1);
+    digit = digit.data([
+      (hours / 10) | 0,
+      hours % 10,
+      (minutes / 10) | 0,
+      minutes % 10,
+      (seconds / 10) | 0,
+      seconds % 10
+    ]);
+    digit.select("path:nth-child(1)").classed("lit", function(d) {
+      return digitPattern[0][d];
+    });
+    digit.select("path:nth-child(2)").classed("lit", function(d) {
+      return digitPattern[1][d];
+    });
+    digit.select("path:nth-child(3)").classed("lit", function(d) {
+      return digitPattern[2][d];
+    });
+    digit.select("path:nth-child(4)").classed("lit", function(d) {
+      return digitPattern[3][d];
+    });
+    digit.select("path:nth-child(5)").classed("lit", function(d) {
+      return digitPattern[4][d];
+    });
+    digit.select("path:nth-child(6)").classed("lit", function(d) {
+      return digitPattern[5][d];
+    });
+    digit.select("path:nth-child(7)").classed("lit", function(d) {
+      return digitPattern[6][d];
+    });
+    separator.classed("lit", 1);
 
-  setTimeout(tick, 1000 - now % 1000);
-})();
-	
+    setTimeout(tick, 1000 - (now % 1000));
+  })();
 }

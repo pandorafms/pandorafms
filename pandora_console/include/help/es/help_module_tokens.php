@@ -1,5 +1,6 @@
 <?php
-/* Include package help/es
+/*
+    Include package help/es
 */
 ?>
  <h1>Definición de los módulos</h1>
@@ -21,7 +22,7 @@ module_end <br>
 Existen diferentes tipos de módulos, con diferentes subopciones, pero todos los módulos tienen una estructura similar a esta. Los parámetros module_interval y module_description son opcionales, y el resto completamente obligatorios. 
 <br><br>
 <h2>Elementos comunes de todos los módulos</h2>
-<br><br>	
+<br><br>    
 <b>module_begin</b>
 <br><br>
 Define el inicio del módulo.
@@ -241,7 +242,7 @@ module_end<br>
 <br>
 <b>Watchdog de procesos</b>
 <br><br>
-Un Watchdog es un sistema que permite actuar inmediatamente ante la caída de un proceso, generalmente, levantando el proceso que se ha caído. El agente de Windows de <?php echo get_product_name();?>, puede actuar como Watchdog ante la caída de un proceso, a esto le llamamos modo watchdog para procesos:
+Un Watchdog es un sistema que permite actuar inmediatamente ante la caída de un proceso, generalmente, levantando el proceso que se ha caído. El agente de Windows de <?php echo get_product_name(); ?>, puede actuar como Watchdog ante la caída de un proceso, a esto le llamamos modo watchdog para procesos:
 <br><br>
 Dado que ejecutar un proceso puede requerir algunos parámetros, hay algunas opciones adicionales de configuración para este tipo de módulos. Es importante destacar que el modo watchdog solo funciona cuando el tipo de módulo es asíncrono. Veamos un ejemplo de configuración de un module_proc con watchdog:
 <br><br>
@@ -264,7 +265,7 @@ Esta es la definición de los parámetros adicionales para module_proc con watch
 <br><br>
     <i>module_startdelay:</i> Número de milisegundos que el módulo esperará antes de lanzar el proceso por primera vez. Si el proceso tarda mucho en arrancar, es bueno decirle al agente por medio de este parámetro que "espere" antes de empezar a comprobar de nuevo si el proceso se ha levantado. En este ejemplo espera 3 segundos. 
 <br><br>
-    <i>module_retrydelay:</i> Similar al anterior pero para caídas/reintentos posteriores, después de detectar una caída. Cuando <?php echo get_product_name();?> detecta una caída, relanza el proceso, espera el nº de milisegundos indicados en este parámetro y vuelve a comprobar si el proceso ya esta levantado. 
+    <i>module_retrydelay:</i> Similar al anterior pero para caídas/reintentos posteriores, después de detectar una caída. Cuando <?php echo get_product_name(); ?> detecta una caída, relanza el proceso, espera el nº de milisegundos indicados en este parámetro y vuelve a comprobar si el proceso ya esta levantado. 
 <br><br>
 <b>module_cpuproc 'process'</b>
 <br><br>

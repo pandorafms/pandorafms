@@ -17,39 +17,39 @@ For example, a ping module with a 5 minute interval, a FF threshold of 1 and a F
 <th>Data</th>
 <th>Status change</th>
 <tr>
-	<td>12:00</td>
-	<td>1</td>
-	<td>No</td>
+    <td>12:00</td>
+    <td>1</td>
+    <td>No</td>
 </tr>
 <tr>
-	<td>12:05</td>
-	<td>1</td>
-	<td>No</td>
+    <td>12:05</td>
+    <td>1</td>
+    <td>No</td>
 </tr>
 <tr>
-	<td>12:10</td>
-	<td>0</td>
-	<td>No</td>
+    <td>12:10</td>
+    <td>0</td>
+    <td>No</td>
 </tr>
 <tr>
-	<td><b>12:11</b></td>
-	<td>1</td>
-	<td>No</td>
+    <td><b>12:11</b></td>
+    <td>1</td>
+    <td>No</td>
 </tr>
 <tr>
-	<td>12:16</td>
-	<td>1</td>
-	<td>No</td>
+    <td>12:16</td>
+    <td>1</td>
+    <td>No</td>
 </tr>
 <tr>
-	<td>12:21</td>
-	<td>0</td>
-	<td>No</td>
+    <td>12:21</td>
+    <td>0</td>
+    <td>No</td>
 </tr>
 <tr>
-	<td><b>12:22</b></td>
-	<td>0</td>
-	<td><b>Yes</b></td>
+    <td><b>12:22</b></td>
+    <td>0</td>
+    <td><b>Yes</b></td>
 </tr>
 </table>
 

@@ -17,233 +17,245 @@
 */
 
 .menu {
-	border-width: 0px 0px 0px 0px;
-	border-style: none;
-	border-color: #777;
+  border-width: 0px 0px 0px 0px;
+  border-style: none;
+  border-color: #777;
 }
 .menu ul {
-	list-style-type: none;
-	padding: 0;
-	margin: 0;
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
 }
-.menu li.selected, .menu li.not_selected {
-	border: 0px none black;
-	border-bottom: 0px none #d4d4d4;
-	margin: 0;
+.menu li.selected,
+.menu li.not_selected {
+  border: 0px none black;
+  border-bottom: 0px none #d4d4d4;
+  margin: 0;
 }
-
 
 .menu li a {
-	/*background-color: inherit;*/
-	color: #FFFFFF;
-	/*font-weight: bold;*/
-	/* This makes it so that the whole li is clickable */
-	text-decoration:none;
+  /*background-color: inherit;*/
+  color: #ffffff;
+  /*font-weight: bold;*/
+  /* This makes it so that the whole li is clickable */
+  text-decoration: none;
 }
 
-li:hover ul { display: block; }
+li:hover ul {
+  display: block;
+}
 
 .submenu_text {
-	padding: 10.5px;
-	margin-left: 0px;
-	width: 100%;
+  padding: 10.5px;
+  margin-left: 0px;
+  width: 100%;
 }
 
-.menu li.subselected a{
-	background-color: grey !important;
+.menu li.subselected a {
+  background-color: grey !important;
 }
 
 .menu a:hover {
-	text-decoration:none;
-	border:0px;
+  text-decoration: none;
+  border: 0px;
 }
 .submenu {
-	margin: 0px 0px 0px 0px;
-	position: absolute;
-	z-index: 999;
-	left: 44px;
-	min-height: 35px;
-	height: 35px;
-	width: 180px;
+  margin: 0px 0px 0px 0px;
+  position: absolute;
+  z-index: 999;
+  left: 44px;
+  min-height: 35px;
+  height: 35px;
+  width: 180px;
 }
 
-.submenu2{
-	position: absolute;
-	z-index: 999;
-	left: 180px;
+.submenu2 {
+  position: absolute;
+  z-index: 999;
+  left: 180px;
 }
 
-.sub_subMenu{
-	min-height: 35px !important;
-	height: 35px;
-	width: 180px;
-	font-weight: normal !important;
+.sub_subMenu {
+  min-height: 35px !important;
+  height: 35px;
+  width: 180px;
+  font-weight: normal !important;
 }
-.sub_subMenu.selected{
-	font-weight: bold !important;
+.sub_subMenu.selected {
+  font-weight: bold !important;
 }
 
 .submenu2 li a {
-	margin-left: 0px;
-	padding-left: 0px;
+  margin-left: 0px;
+  padding-left: 0px;
 }
 
 .menu li img.toggle {
-	visibility: hidden;
-	float:right;
-	/* Positions it back where it should be */
-	border-left: 1px;
+  visibility: hidden;
+  float: right;
+  /* Positions it back where it should be */
+  border-left: 1px;
 }
 
 .menu li.has_submenu > a > div {
-	background: url(../../images/arrow.png) no-repeat 80% 50%;
-	z-index: 1; /* Positions it on top of the rest */
+  background: url(../../images/arrow.png) no-repeat 80% 50%;
+  z-index: 1; /* Positions it on top of the rest */
 }
-.menu li.has_submenu>.SubNoLink{
-	background: url(../../images/arrow.png) no-repeat 80% 50%;
-	z-index: 1; /* Positions it on top of the rest */
-}
-
-.is_submenu2{
-	background-color: #E4E4E4 !important;
+.menu li.has_submenu > .SubNoLink {
+  background: url(../../images/arrow.png) no-repeat 80% 50%;
+  z-index: 1; /* Positions it on top of the rest */
 }
 
-.menu li.submenu_not_selected a, .menu li.submenu2_not_selected a {
-	font-weight: normal !important;
+.is_submenu2 {
+  background-color: #e4e4e4 !important;
+}
+
+.menu li.submenu_not_selected a,
+.menu li.submenu2_not_selected a {
+  font-weight: normal !important;
 }
 
 .submenu_selected {
-	margin-bottom: 0px !important;
-	box-shadow: inset 4px 0 #80BA27 !important; 
+  margin-bottom: 0px !important;
+  box-shadow: inset 4px 0 #80ba27 !important;
 }
 
-.menu .menu_icon, .menu li.links {
-	background-position: 4px 4px;
-	background-repeat: no-repeat;
-	cursor: pointer;
+.menu .menu_icon,
+.menu li.links {
+  background-position: 4px 4px;
+  background-repeat: no-repeat;
+  cursor: pointer;
 }
 
 .menu li.links {
-	background-image: url(../../images/link.png);
-	background-position: 4px 8px;
+  background-image: url(../../images/link.png);
+  background-position: 4px 8px;
 }
 
 /* Icons specified here */
 #icon_oper-networkconsole {
- 	background: url(../../images/op_network.menu.png) no-repeat 50% 50%;
+  background: url(../../images/op_network.menu.png) no-repeat 50% 50%;
 }
 #icon_oper-agents {
-	border-top-right-radius: 5px;
-	border-right-style: solid;
-	border-right-width: 0px;
-	background: url(../../images/op_monitoring.menu.png) no-repeat 50% 50%;
+  border-top-right-radius: 5px;
+  border-right-style: solid;
+  border-right-width: 0px;
+  background: url(../../images/op_monitoring.menu.png) no-repeat 50% 50%;
 }
 #icon_oper-events {
-	background: url(../../images/op_events.menu.png) no-repeat 50% 50%;
+  background: url(../../images/op_events.menu.png) no-repeat 50% 50%;
 }
 
 /* users */
 #icon_oper-users {
-	background: url(../../images/op_workspace.menu.png) no-repeat 50% 50%;
+  background: url(../../images/op_workspace.menu.png) no-repeat 50% 50%;
 }
 /* trap console */
-#icon_oper-snmpc, #icon_god-snmpc {
-	background: url(../../images/op_snmp.menu.png) no-repeat 50% 50%;
+#icon_oper-snmpc,
+#icon_god-snmpc {
+  background: url(../../images/op_snmp.menu.png) no-repeat 50% 50%;
 }
 #icon_oper-reporting {
-	background: url(../../images/op_reporting.menu.png) no-repeat 50% 50%;
+  background: url(../../images/op_reporting.menu.png) no-repeat 50% 50%;
 }
 #icon_oper-gismaps {
-	background: url(../../images/op_gis.menu.png) no-repeat 50% 50%;
+  background: url(../../images/op_gis.menu.png) no-repeat 50% 50%;
 }
 #icon_oper-netflow {
-	background: url(../../images/op_netflow.menu.png) no-repeat 50% 50%;
+  background: url(../../images/op_netflow.menu.png) no-repeat 50% 50%;
 }
 #icon_oper-extensions {
-	background: url(../../images/extensions.menu.png) no-repeat 50% 50%;
+  background: url(../../images/extensions.menu.png) no-repeat 50% 50%;
 }
 
 /* Godmode images */
 #icon_god-resources {
-	background: url(../../images/gm_resources.menu.png) no-repeat 50% 50%;
+  background: url(../../images/gm_resources.menu.png) no-repeat 50% 50%;
 }
 #icon_god-configuration {
-	background: url(../../images/gm_configuration.menu.png) no-repeat 50% 50%;
+  background: url(../../images/gm_configuration.menu.png) no-repeat 50% 50%;
 }
 #icon_god-alerts {
-	background: url(../../images/gm_alerts.menu.png) no-repeat 50% 50%;
+  background: url(../../images/gm_alerts.menu.png) no-repeat 50% 50%;
 }
 #icon_god-users {
-	background: url(../../images/gm_users.menu.png) no-repeat 50% 50%;
+  background: url(../../images/gm_users.menu.png) no-repeat 50% 50%;
 }
 #icon_god-reporting {
-	background: url(../../images/reporting_edit.menu.png) no-repeat 50% 50%;
+  background: url(../../images/reporting_edit.menu.png) no-repeat 50% 50%;
 }
 #icon_god-servers {
-	background: url(../../images/gm_servers.menu.png) no-repeat 50% 50%;
+  background: url(../../images/gm_servers.menu.png) no-repeat 50% 50%;
 }
 #icon_god-setup {
-	background: url(../../images/gm_setup.menu.png) no-repeat 50% 50%;
+  background: url(../../images/gm_setup.menu.png) no-repeat 50% 50%;
 }
 #icon_god-events {
-	background: url(../../images/gm_events.menu.png) no-repeat 50% 50%;
+  background: url(../../images/gm_events.menu.png) no-repeat 50% 50%;
 }
 #icon_god-extensions {
-	background: url(../../images/builder.menu.png) no-repeat 50% 50%;
+  background: url(../../images/builder.menu.png) no-repeat 50% 50%;
 }
 #icon_god-links {
-	border-top: 4px solid #777!important;
-	border-color: #777;
-	background: url(../../images/links.menu.png) no-repeat 50% 50%;
+  border-top: 4px solid #777 !important;
+  border-color: #777;
+  background: url(../../images/links.menu.png) no-repeat 50% 50%;
 }
 #icon_god-um_messages {
-	border-color: #777;
-	background: url(../../images/um_messages.menu.png) no-repeat 50% 50%;
+  border-color: #777;
+  background: url(../../images/um_messages.menu.png) no-repeat 50% 50%;
 }
 
 #menu_container {
-	z-index: 3;
-	position: absolute;
-	left: -80px;
-	background-color: #AAA;
+  z-index: 3;
+  position: absolute;
+  left: -80px;
+  background-color: #aaa;
 }
 
 .notification_ball {
-	margin-top: 2px;
-	margin-left: 29px;
-	font-size: 6pt;
-	font-weight: 900;
-	background: red;
-	height: 12px;
-	width: 12px;
-	border-radius: 50px;
-	position: absolute;
-	text-align: center;
-	color: white;
-	padding-top: 1px;
-	font-family: sans-serif;
+  margin-top: 2px;
+  margin-left: 29px;
+  font-size: 6pt;
+  font-weight: 900;
+  background: red;
+  height: 12px;
+  width: 12px;
+  border-radius: 50px;
+  position: absolute;
+  text-align: center;
+  color: white;
+  padding-top: 1px;
+  font-family: sans-serif;
 }
 
 ul {
-	margin: 0;
-	padding: 0;
-	list-style: none;
-	}
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
 
 ul li {
-	position: relative;
-	}
-	
+  position: relative;
+}
+
 .menu li ul {
-	position: absolute;
-	top: 0;
-	display: none;
+  position: absolute;
+  top: 0;
+  display: none;
 }
 
 /* Fix IE. Hide from IE Mac \*/
-* html ul li { float: left; height: 1%; }
-* html ul li a { height: 1%; }
+* html ul li {
+  float: left;
+  height: 1%;
+}
+* html ul li a {
+  height: 1%;
+}
 /* End */
 
-ul li a:hover { color: #E2144A; } /* Hover Styles */
+ul li a:hover {
+  color: #e2144a;
+} /* Hover Styles */
 /*li ul li a { padding: 2px 5px; }  Sub Menu Styles */

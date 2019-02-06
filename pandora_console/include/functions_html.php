@@ -2593,9 +2593,10 @@ function html_print_switch ($attributes = array()) {
 
 	$name_html = isset($attributes['name']) ? "name = {$attributes['name']}" : '';
 	$checked_html = (bool)$attributes['value'] ? 'checked' : '';
+	$disabled_html = (bool)$attributes['disabled'] ? 'disabled' : '';
 	return
 		"<label class='p-switch'>
-			<input type='checkbox' $name_html $checked_html>
+			<input type='checkbox' $name_html $checked_html $disabled_html>
 			<span class='p-slider'></span>
 		</label>";
 }

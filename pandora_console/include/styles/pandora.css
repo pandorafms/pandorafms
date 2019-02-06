@@ -5290,4 +5290,8 @@ input:checked + .p-slider:before {
   transform: translateX(13px);
 }
 
+input:disabled + .p-slider {
+  opacity: 0.4;
+}
+
 /* --- END SWITCH --- */

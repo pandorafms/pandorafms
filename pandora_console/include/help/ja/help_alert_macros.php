@@ -33,7 +33,7 @@
     <li>_data_ : アラート発生時のモジュールのデータ(値)</li>
     <li>_email_tag_ : モジュールタグに関連付けられた Email。</li>
     <li>_event_cfX_ : (イベントアラートのみ) アラートを発報したイベントのカスタムフィールドのキー。 For example, if there is a custom field whose key is IPAM, its value can be obtained using the _event_cfIPAM_ macro.</li>
-    <li>_event_description_ :  (イベントアラートのみ) <?php echo get_product_name();?> イベントの説明 です</li>
+    <li>_event_description_ :  (イベントアラートのみ) <?php echo get_product_name(); ?> イベントの説明 です</li>
     <li>_event_extra_id_: (Only event alerts) Extra id.</li>
     <li>_event_id_ : (イベントアラートのみ) アラート発生元のイベントID</li>
     <li>_event_text_severity_ : (イベントアラートのみ) イベント(アラートの発生元)のテキストでの重要度 (Maintenance, Informational, Normal Minor, Warning, Major, Critical)</li>
@@ -75,7 +75,7 @@
     <li>_plugin_parameters_ : モジュールのプラグインパラメータ</li>
     <li>_policy_ : モジュールが属するポリシー名 (存在する場合)</li>
     <li>_prevdata_ : アラートを発報する前のモジュールデータ</li>
-	<li>_rca_: Root cause analysis chain (only for services).</li>
+    <li>_rca_: Root cause analysis chain (only for services).</li>
     <li>_server_ip_ : エージェントが割り当てられているサーバ IP。</li>
     <li>_server_name_ : エージェントが割り当てられているサーバ名。 </li>
     <li>_target_ip_ : モジュールの対象IPアドレス</li>

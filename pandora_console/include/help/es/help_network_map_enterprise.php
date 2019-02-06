@@ -1,7 +1,7 @@
 <?php
 /*
-* @package Include/es
-*/
+ * @package Include/es
+ */
 ?>
 
 <h1>Mapas de red</h1>
@@ -35,7 +35,7 @@
 
 <h2>Minimapa</h2>
 
-<p>El minimapa nos provee de una vista global que muestra toda la extensión del mapa, pero en una vista mucho mas pequeña, además que frente a la vista del mapa se muestra completamente todos los nodos pero sin estado y sin las relaciones. Excepto el punto ficticio de <?php echo get_product_name();?> que se muestra en verde. Y además se muestra un recuadro rojo de la parte del mapa que se esta mostrando.</p>
+<p>El minimapa nos provee de una vista global que muestra toda la extensión del mapa, pero en una vista mucho mas pequeña, además que frente a la vista del mapa se muestra completamente todos los nodos pero sin estado y sin las relaciones. Excepto el punto ficticio de <?php echo get_product_name(); ?> que se muestra en verde. Y además se muestra un recuadro rojo de la parte del mapa que se esta mostrando.</p>
 
 <p>Se encuentra en la esquina superior izquierda, y se puede ocultar pulsando en el icono de la flecha.
 </p>
@@ -46,7 +46,7 @@
 <p>Desde el menú contextual del mapa de red puedes realizar tareas mas complejas sobre el.</p>
 
 <p>Se muestra si hacemos click derecho en alguna sección del mapa vacía.</p>
-<?php html_print_image ("images/help/mapa vista menu mapa.png", false, array('width' => '550px')); ?>
+<?php html_print_image('images/help/mapa vista menu mapa.png', false, ['width' => '550px']); ?>
 
 <p>Y las opciones disponibles son:</p>
 
@@ -60,19 +60,19 @@
 <p>Desde el menú contextual del nodo puedes realizar tareas mas complejas sobre el.</p>
 
 <p>Se muestra si hacemos click derecho en algún nodo.</p>
-<?php html_print_image ("images/help/mapa vista menu nodo.png", false, array('width' => '550px')); ?>
+<?php html_print_image('images/help/mapa vista menu nodo.png', false, ['width' => '550px']); ?>
 
 <p>Y las opciones disponibles son:</p>
 
     <li>Mostrar una vista en detalle con datos del nodo. Además en esta vista podremos consultar sus interfaces (si las tiene), editar su nombre y su forma o ver que enlaces tiene disponibles para editarlos o borrarlos.</li>
-    <?php html_print_image ("images/help/informacion de nodo.png", false, array('width' => '550px')); ?>
+    <?php html_print_image('images/help/informacion de nodo.png', false, ['width' => '550px']); ?>
     <li>Añadir un enlace entre interfaces. Con esto podremos enlazar dos módulos de interfaz entre si, o uno de ellos con otro agente. Primero seleccionamos el hijo de la unión y posteriormente el padre</li>
-    <?php html_print_image ("images/help/crear enlace de interfaz hijo.png", false, array('width' => '550px')); ?>
-    <?php html_print_image ("images/help/crear enlace de interfaz padre.png", false, array('width' => '550px')); ?>
-    <?php html_print_image ("images/help/crear enlace de interfaz tabla.png", false, array('width' => '550px')); ?>
+    <?php html_print_image('images/help/crear enlace de interfaz hijo.png', false, ['width' => '550px']); ?>
+    <?php html_print_image('images/help/crear enlace de interfaz padre.png', false, ['width' => '550px']); ?>
+    <?php html_print_image('images/help/crear enlace de interfaz tabla.png', false, ['width' => '550px']); ?>
     <li>Definir un enlace padre-hijo entre agentes, siguiendo la misma metodología que con los enlaces de interfaz, primero se seleccionaría el hijo, y posteriormente, el padre.</li>
-    <?php html_print_image ("images/help/crear enlace agente agente hijo.png", false, array('width' => '550px')); ?>
-    <?php html_print_image ("images/help/crear enlace agente agente padre.png", false, array('width' => '550px')); ?>
+    <?php html_print_image('images/help/crear enlace agente agente hijo.png', false, ['width' => '550px']); ?>
+    <?php html_print_image('images/help/crear enlace agente agente padre.png', false, ['width' => '550px']); ?>
     <li>Eliminar el nodo seleccionado (y todos sus enlaces).</li>
 
 <h2>Creación de un mapa de red</h2>
@@ -80,9 +80,9 @@
 <p>Para la creación de un mapa de red puedes hacerlo como:</p>
 
     <li>Despliegue de todos los agentes contenidos en un grupo.</li>
-    <?php html_print_image ("images/help/creacion mapa normal.png", false, array('width' => '550px')); ?>
+    <?php html_print_image('images/help/creacion mapa normal.png', false, ['width' => '550px']); ?>
     <li>Creación de un mapa de red en blanco. </li>
-    <?php html_print_image ("images/help/creacion mapa vacio.png", false, array('width' => '550px')); ?>
+    <?php html_print_image('images/help/creacion mapa vacio.png', false, ['width' => '550px']); ?>
 
 <br><br>Vamos a hacer una vista rápida de los campos que tiene el formulario de creación (habrá muchos menos valores para la creación de un mapa vacío):<br><br>
 
@@ -98,7 +98,7 @@
     <li><b>Tarea de reconocimiento de origen:</b> Nos permite seleccionar la tarea de reconocimiento para generar el mapa.</li>
     <li><b>IP:</b> Nos permite seleccionar la IP generar el mapa (solo generación por máscara ip).</li>
     <li><b>Método de generación del mapa de red:</b> el método de distribución de los nodos que formarán el mapa de red, por defecto es spring2, pero existen los siguientes:</li>
-        <p>- <i>Radial:</i> en el cual todos los nodos se dispondrán alrededor del nodo ficticio que simboliza el <?php echo get_product_name();?>.<br>
+        <p>- <i>Radial:</i> en el cual todos los nodos se dispondrán alrededor del nodo ficticio que simboliza el <?php echo get_product_name(); ?>.<br>
         - <i>Circular:</i> en el cual se dispondrá los nodos en círculos concentricos.<br>
         - <i>Flat:</i> en el cual se dispondrá los nodos de forma arborescente.<br>
         - <i>spring1, spring2:</i> son variaciones del Flat. <br>

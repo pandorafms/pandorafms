@@ -190,7 +190,7 @@ img.ui-datepicker-trigger {
 /*
 .ui-datepicker-cover {
 	display: none;
-	display/**/: block;
+	display: block;
 	position: absolute;
 	z-index: -1;
 	filter: mask();

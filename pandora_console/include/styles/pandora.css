@@ -5164,3 +5164,30 @@ input[type="submit"].ui-button-dialog {
   width: 90px !important;
 }
 /* --- END - JQUERY-UI --- */
+
+/*
+  PDF STYLES
+*/
+
+table.header_table {
+  width: 100%;
+}
+
+table.header_table thead tr th,
+table.header_table tbody tr td {
+  padding: 10px;
+}
+
+thead.header_tr tr {
+  background: #e6e6e6;
+}
+
+thead.header_tr tr th {
+  font-weight: normal;
+  text-align: right;
+}
+
+thead.header_tr tr th.th_first {
+  font-weight: bold;
+  text-align: left;
+}

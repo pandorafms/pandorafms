@@ -454,7 +454,7 @@ function reporting_html_SLA($table, $item, $mini, $pdf=0)
         if (isset($item['data'])) {
             $table1 = new stdClass();
             $table1->width = '99%';
-            $table1->class = 'content_table databox';
+
             $table1->align = [];
             $table1->align[0] = 'left';
             $table1->align[1] = 'left';
@@ -479,10 +479,14 @@ function reporting_html_SLA($table, $item, $mini, $pdf=0)
             $table1->headstyle[4] = 'text-align: right';
             $table1->headstyle[5] = 'text-align: right';
 
+            $table1->style = [];
+            $table1->style[0] = 'page-break-before: always;';
+
+            $table1->rowstyle = [];
+
             // Second_table for time globals.
             $table2 = new stdClass();
             $table2->width = '99%';
-            $table2->class = 'content_table';
 
             $table2->align = [];
             $table2->align[0] = 'left';
@@ -514,7 +518,6 @@ function reporting_html_SLA($table, $item, $mini, $pdf=0)
             // Third_table for time globals.
             $table3 = new stdClass();
             $table3->width = '99%';
-            $table3->class = 'content_table';
 
             $table3->align = [];
             $table3->align[0] = 'left';
@@ -645,6 +648,7 @@ function reporting_html_SLA($table, $item, $mini, $pdf=0)
                     $row3[] = '<span style="color: '.COL_NORMAL.';">'.$sla['checks_ok'].'</span>';
                     $row3[] = '<span style="color: '.COL_UNKNOWN.';">'.$sla['checks_unknown'].'</span>';
 
+                    $table1->rowstyle[] = 'page-break-before: always;';
                     $table1->data[] = $row;
                     $table2->data[] = $row2;
                     $table3->data[] = $row3;
@@ -675,19 +679,19 @@ function reporting_html_SLA($table, $item, $mini, $pdf=0)
                 );
                 $return_pdf .= '</td></tr>';
 
-                $return_pdf .= '<tr><td colspan=3>';
-                $return_pdf .= html_print_table(
-                    $table2,
-                    true
-                );
-                $return_pdf .= '</td></tr>';
+                    $return_pdf .= '<tr><td colspan=3>';
+                    $return_pdf .= html_print_table(
+                        $table2,
+                        true
+                    );
+                    $return_pdf .= '</td></tr>';
 
-                $return_pdf .= '<tr><td colspan=3>';
-                $return_pdf .= html_print_table(
-                    $table3,
-                    true
-                );
-                $return_pdf .= '</td></tr>';
+                    $return_pdf .= '<tr><td colspan=3>';
+                    $return_pdf .= html_print_table(
+                        $table3,
+                        true
+                    );
+                    $return_pdf .= '</td></tr>';
             }
         } else {
             $table->colspan['error']['cell'] = 3;

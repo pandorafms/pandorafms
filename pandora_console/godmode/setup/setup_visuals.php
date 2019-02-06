@@ -550,13 +550,6 @@ $table_styles->data[$row][1] = html_print_checkbox_toogle_switch(
     true
 );
 
-$table_styles->data[$row][0] = __('Visual effects and animation');
-$table_styles->data[$row][1] = html_print_checkbox(
-    'visual_animation',
-    1,
-    $config['visual_animation'],
-    true
-);
 
 echo '<fieldset>';
 echo '<legend>'.__('Style configuration').'</legend>';

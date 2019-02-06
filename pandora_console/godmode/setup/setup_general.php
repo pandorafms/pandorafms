@@ -125,8 +125,6 @@ if (strtoupper(substr(PHP_OS, 0, 3)) == 'WIN') {
 
 $table->data[19][1] = html_print_checkbox_toogle_switch_extended('activate_netflow', 1, $config['activate_netflow'], $rbt_disabled, '', '', true);
 
-$table->data[19][1] = __('Yes').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button_extended('activate_netflow', 1, '', $config['activate_netflow'], $rbt_disabled, '', '', true).'&nbsp;&nbsp;';
-$table->data[19][1] .= __('No').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button_extended('activate_netflow', 0, '', $config['activate_netflow'], $rbt_disabled, '', '', true);
 
 $zone_name = [
     'Africa'     => __('Africa'),

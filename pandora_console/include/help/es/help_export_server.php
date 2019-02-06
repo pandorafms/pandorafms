@@ -5,10 +5,10 @@
 ?>
 <h1>Servidor de exportación</h1>
 
-<p>La versión Enterprise de <?php echo get_product_name();?> implementa, mediante el export server, un mecanismo de escalado de datos que permite virtualmente una implantación distribuida capaz de monitorizar un número ilimitado de información, siempre que se diseñe adecuadamente y se disgregue en diferentes perfiles de información.</p>
+<p>La versión Enterprise de <?php echo get_product_name(); ?> implementa, mediante el export server, un mecanismo de escalado de datos que permite virtualmente una implantación distribuida capaz de monitorizar un número ilimitado de información, siempre que se diseñe adecuadamente y se disgregue en diferentes perfiles de información.</p>
 
 <ul>
-<li type="circle">Nombre: El nombre del servidor de <?php echo get_product_name();?>.</li>
+<li type="circle">Nombre: El nombre del servidor de <?php echo get_product_name(); ?>.</li>
 <li type="circle">Servidor de exportacion: Combo donde se elige la instancia del servidor de export server que se usara para exporta los datos.</li>
 <li type="circle">Prefijo: Prefijo que se usa para a&ntilde;adir al nombre del agente que envía los datos. Cuando se reenvían datos de un agente llamado &#34;Farscape&#34;, por ejemplo y su prefijo en el servidor de exportación es &#34;EU01&#34;, los datos del agente reenviado seran vistos en el servidor de destino con el nombre de agente EU01-Farscape.</li>
 <li type="circle">Interval: Se define el intervalo de tiempo cada cuantos segundos se quieren enviar los datos que haya pendientes.</li> 

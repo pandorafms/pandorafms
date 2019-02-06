@@ -30,6 +30,10 @@ use XML::Simple;
 use POSIX qw(setsid strftime);
 use IO::Uncompress::Unzip;
 
+# Required for file names with accents
+use Encode qw(decode);
+use Encode::Locale ();
+
 # For Reverse Geocoding
 use LWP::Simple;
 
@@ -111,6 +115,7 @@ sub data_producer ($) {
 	# Do not read more than max_queue_files files
  	my $file_count = 0;
  	while (my $file = readdir (DIR)) {
+ 		$file = Encode::decode( locale_fs => $file );
 
 		# Data files must have the extension .data
 		next if ($file !~ /^.*[\._]\d+\.data$/);
@@ -594,6 +599,9 @@ sub process_xml_data ($$$$$) {
 
 	# Process snmptrapd modules
 	enterprise_hook('process_snmptrap_data', [$pa_config, $data, $server_id, $dbh]);
+
+	# Process disovery modules
+	enterprise_hook('process_discovery_data', [$pa_config, $data, $server_id, $dbh]);
 }
 
 ##########################################################################

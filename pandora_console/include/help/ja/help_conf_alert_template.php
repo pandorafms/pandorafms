@@ -44,7 +44,7 @@
 
 入力が完了したら、"次" ボタンをクリックし、次の画面に行きます。
 
-<?php html_print_image ("images/help/alert1.png", false, array('width' => '550px')); ?>
+<?php html_print_image('images/help/alert1.png', false, ['width' => '550px']); ?>
 <br><br>
 次に、入力するフィールドの詳細を説明します。
 <br><br>
@@ -85,7 +85,7 @@
 
 テンプレートがデフォルトで持つアクションをメニューから選択します。テンプレートをモジュールに割り当てた時、このアクションが自動的に設定されます。"なし"か、いずれか一つを選択することができますが、デフォルトとしては複数のアクションは選択できません。
 
-<?php html_print_image ("images/help/alert2.png", false, array('width' => '550px')); ?>
+<?php html_print_image('images/help/alert2.png', false, ['width' => '550px']); ?>
 
 次の入力フィールは以下の通りです。<br><br>
 

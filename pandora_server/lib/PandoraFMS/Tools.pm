@@ -112,6 +112,7 @@ our @EXPORT = qw(
 	md5_init
 	pandora_ping
 	pandora_ping_latency
+	pandora_block_ping
 	resolve_hostname
 	ticks_totime
 	safe_input
@@ -125,6 +126,8 @@ our @EXPORT = qw(
 	start_server_thread
 	stop_server_threads
 	generate_agent_name_hash
+	long_to_ip
+	ip_to_long
 );
 
 # ID of the different servers
@@ -1272,6 +1275,24 @@ sub pandora_ping_latency ($$$$) {
 }
 
 ########################################################################
+=head2 C<< pandora_block_ping (I<$pa_config>, I<$hosts>) >> 
+
+Ping all given hosts. Returns an array with all hosts detected as alive.
+
+=cut
+########################################################################
+sub pandora_block_ping($@) {
+	my ($pa_config, @hosts) = @_;
+
+	# fping timeout in milliseconds
+	my $cmd = $pa_config->{'fping'} . " -a -q -t " . (1000 * $pa_config->{'networktimeout'}) . " " . (join (' ', @hosts));
+
+	my @output = `$cmd 2>$DEVNULL`;
+
+	return @output;
+}
+
+########################################################################
 =head2 C<< month_have_days (I<$month>, I<$year>) >> 
 
 Pass a $month (as january 0 number and each month with numbers) and the year
@@ -1954,6 +1975,22 @@ sub rightrotate {
 	my ($x, $c) = @_;
 
 	return (0xFFFFFFFF & ($x << (32 - $c))) | ($x >> $c);
+}
+
+###############################################################################
+# Returns IP address(v4) in longint format
+###############################################################################
+sub ip_to_long {
+	my $ip_str = shift;
+	return unpack "N", inet_aton($ip_str);
+}
+
+###############################################################################
+# Returns IP address(v4) in longint format
+###############################################################################
+sub long_to_ip {
+	my $ip_long = shift;
+	return inet_ntoa pack("N", ($ip_long));
 }
 
 # End of function declaration

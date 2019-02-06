@@ -15,20 +15,20 @@
 新たなサービスを作成するには、「作成」ボタンをクリックします。
 <br><br>
 
-<?php html_print_image ("images/help/service2.png", false, array('width' => '550px')); ?>
+<?php html_print_image('images/help/service2.png', false, ['width' => '550px']); ?>
 <br><br>
 この時点では、アイテムが無い状態でサービスが作成されています。そのため、サービスにアイテムを追加する必要があります。新たなアイテムを追加するには、右上のサービス管理タブのオレンジ色のツールアイコンをクリックし、作成をクリックします。すると、以下のようなフォームが表示されます。このフォームでは、追加したいエージェントのモジュールを選択します。また、サービスにおける、そのモジュールの正常、警告、障害状態に対するウエイトを入力します。サービス内で重要なモジュールほどウエイトは大きくします。
 <br><br>
 
-<?php html_print_image ("images/help/service1.png", false, array('width' => '550px')); ?>
+<?php html_print_image('images/help/service1.png', false, ['width' => '550px']); ?>
 <br><br>
 全てのフィールドに入力し作成ボタンをクリックすると、処理が実行されたメッセージと共に次のような画面が表示されます。
 <br><br>
-<?php html_print_image ("images/help/service3.png", false, array('width' => '550px')); ?>
+<?php html_print_image('images/help/service3.png', false, ['width' => '550px']); ?>
 <br><br>
 サービスを監視するために必要な全てのアイテムを追加できます。例えば、このサービスに適切な重みを持たせた要素を追加すると、次のようになります。
 <br><br>
-<?php html_print_image ("images/help/service4.png", false, array('width' => '550px')); ?>
+<?php html_print_image('images/help/service4.png', false, ['width' => '550px']); ?>
 <br><br>
 すると、下に示すようなサービス一覧が表示されます。画面にはリアルタイムで計算された値が表示され、表示されるパラメータは次の通りです。
 <br><br>
@@ -42,7 +42,7 @@
 <li>    <i>状態(Status):</i> 値および障害・警告の閾値に応じたサービスの状態。<br></li>
 </ul>
 <br><br>
-<?php html_print_image ("images/help/service5.png", false, array('width' => '550px')); ?>
+<?php html_print_image('images/help/service5.png', false, ['width' => '550px']); ?>
 <br><br>
 サービス名をクリックするとサービスビューが表示されます。前述の通り、サービスの値は、それぞれのモジュールの状態に関連した重み付け(ウエイト)を計算したものです。モジュールと同様に、サービスの状態はその値に依存しています。この画面では、それぞれのサービスアイテムの状態を次のパラメータと共に表示します。
 <br><br>
@@ -58,7 +58,7 @@
 </ol>
 
 <br><br>
-<?php html_print_image ("images/help/service6.png", false, array('width' => '550px')); ?>
+<?php html_print_image('images/help/service6.png', false, ['width' => '550px']); ?>
 <br><br>
 サービスに関連付けするモジュールを作成することも可能です。これには、定期的な状態計算、アラートシステムの統合などの利点があります。モジュールをサービスに関連付けるには、次の手順を実施します。
 <br><br>
@@ -72,5 +72,5 @@
 <br><br>
 </ol>
 <br><br>
-<?php html_print_image ("images/help/service7.png", false, array('width' => '550px')); ?>
+<?php html_print_image('images/help/service7.png', false, ['width' => '550px']); ?>
 <br><br>

@@ -17,34 +17,34 @@ For example, an asynchronous proc module with a FF threshold of 1 and a FF timeo
 <th>Data</th>
 <th>Status change</th>
 <tr>
-	<td>12:00</td>
-	<td>1</td>
-	<td>No</td>
+    <td>12:00</td>
+    <td>1</td>
+    <td>No</td>
 </tr>
 <tr>
-	<td>12:05</td>
-	<td>0</td>
-	<td>No</td>
+    <td>12:05</td>
+    <td>0</td>
+    <td>No</td>
 </tr>
 <tr>
-	<td><b>12:20</b></td>
-	<td>0</td>
-	<td>No</td>
+    <td><b>12:20</b></td>
+    <td>0</td>
+    <td>No</td>
 </tr>
 <tr>
-	<td>12:25</b></td>
-	<td>1</td>
-	<td>No</td>
+    <td>12:25</b></td>
+    <td>1</td>
+    <td>No</td>
 </tr>
 <tr>
-	<td>12:45</td>
-	<td>0</td>
-	<td>No</td>
+    <td>12:45</td>
+    <td>0</td>
+    <td>No</td>
 </tr>
 <tr>
-	<td><b>12:50</b></td>
-	<td>0</td>
-	<td><b>Yes</b></td>
+    <td><b>12:50</b></td>
+    <td>0</td>
+    <td><b>Yes</b></td>
 </tr>
 </table>
 

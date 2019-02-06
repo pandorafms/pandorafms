@@ -1,7 +1,7 @@
 <?php
 /*
-* @packafe Include/help/ja/
-*/
+ * @packafe Include/help/ja/
+ */
 ?>
 
 <h1>キュー</h1>

@@ -9,7 +9,7 @@ Mediante los grupos de parámetros de configuración <b>Cron desde</b> y <b>Cron
 puede hacer que un módulo solo se ejecute durante ciertos periodos de tiempo. El 
 modo en el que se configura es parecido a la sintaxis de 
 <a style="font-size:14px;" href="https://es.wikipedia.org/wiki/Cron_(Unix)">cron</a>. 
-Tal y como aparecen en la consola de <?php echo get_product_name();?>, cada uno de los parámetros 
+Tal y como aparecen en la consola de <?php echo get_product_name(); ?>, cada uno de los parámetros 
 tiene tres opciones.
 
 <h4>Cron desde: cualquiera</h4>
@@ -36,11 +36,11 @@ su intervalo de ejecución.
 <h2>Ejemplos</h2>
 
 <ul>
-	<li><i>* * * * *</i>: No hay cron configurado.</li>
-	<li><i>15 20 * * *</i>: Se ejecutará todos los días a las 20:15.</li>
-	<li><i>* 20 * * *</i>: Se ejecutará todos los días durante las 20 horas, es decir, entre las 20:00 y las 20:59.</li>
-	<li><i>* 8-19 * * *</i>: Se ejecutará todos los días entre las 8:00 y las 19:59.</li>
-	<li><i>15-45 * 1-16 * *</i>: Se ejecutará todos los primeros 16 días del mes a todas horas entre y cuarto y menos cuarto.</li>
-	<li><i>* * * 5 *</i>: Se ejecutará solamente en mayo.</li>
+    <li><i>* * * * *</i>: No hay cron configurado.</li>
+    <li><i>15 20 * * *</i>: Se ejecutará todos los días a las 20:15.</li>
+    <li><i>* 20 * * *</i>: Se ejecutará todos los días durante las 20 horas, es decir, entre las 20:00 y las 20:59.</li>
+    <li><i>* 8-19 * * *</i>: Se ejecutará todos los días entre las 8:00 y las 19:59.</li>
+    <li><i>15-45 * 1-16 * *</i>: Se ejecutará todos los primeros 16 días del mes a todas horas entre y cuarto y menos cuarto.</li>
+    <li><i>* * * 5 *</i>: Se ejecutará solamente en mayo.</li>
 <ul>
 

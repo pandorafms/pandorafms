@@ -16,6 +16,7 @@
 
 require_once ("include/functions_messages.php");
 require_once ('include/functions_servers.php');
+require_once ('include/functions_notifications.php');
 
 // Check permissions
 
@@ -65,6 +66,7 @@ config_check();
 					$table->style[8] =
 					$table->style[9] =
 					$table->style['qr'] =
+					$table->style['notifications'] =
 					'width: 22px; text-align:center; height: 22px; padding-right: 9px;padding-left: 9px;';
 				$table->style[7] = 'width: 20px; padding-right: 9px;';
 				$table->style['searchbar'] = 'width: 180px; min-width: 180px;';
@@ -360,7 +362,7 @@ config_check();
 					$table->data[0][9] .= '</a>';
 				}
 
-
+				$table->data[0]['notifications'] = notifications_print_ball();
 
 				html_print_table($table);
 				

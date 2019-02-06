@@ -27,6 +27,7 @@
  * ============================================================================
  */
 
+define('NOTIFICATIONS_POSTPONE_FOREVER', -1);
 
 /**
  * Retrieves source ID for given source.
@@ -42,15 +43,24 @@ function get_notification_source_id(string $source)
     }
 
     return db_get_value_sql(
-        sprintf(
-            'SELECT id
-                FROM `tnotification_source`
-                WHERE lower(`description`) = lower("%s")',
-            $source
-        )
+        "SELECT id
+            FROM `tnotification_source`
+            WHERE `description` LIKE '{$source}%'"
     );
 }
 
+/**
+ * Converts description into a handable identifier
+ *
+ * @param string $desc Full description
+ *
+ * @return string First word in lowercase. Empty string if no word detected.
+ */
+function notifications_desc_to_id(string $desc) {
+    preg_match('/^[a-zA-Z]*/', $desc, $matches);
+    $match = $matches[0];
+    return isset($match) ? $match : '';
+}
 
 /**
  * Retrieve all targets for given message.
@@ -146,4 +156,341 @@ function check_notification_readable(int $id_message)
     );
 
     return (bool) db_get_value_sql($sql);
+}
+
+/**
+ * Return all info from tnotification_source
+ *
+ * @return array with sources info
+ */
+function notifications_get_all_sources() {
+    return mysql_db_get_all_rows_in_table('tnotification_source');
+}
+
+/**
+ * Return the user sources to be inserted into a select
+ *
+ * @param int $source_id Source database identificator
+ *
+ * @return array with the user id in keys and user id in value too
+ */
+function notifications_get_user_sources_for_select($source_id) {
+    $users = db_get_all_rows_filter(
+        'tnotification_source_user',
+        array('id_source' => $source_id),
+        'id_user'
+    );
+    // If fails or no one is selected, return empty array
+    if ($users === false) return array();
+
+    return index_array($users, 'id_user', 'id_user');
+}
+
+
+/**
+ * Return the groups sources to be inserted into a select
+ *
+ * @param int $source_id Source database identificator
+ *
+ * @return array with the group id in keys and group name in value
+ */
+function notifications_get_group_sources_for_select($source_id) {
+    $groups = notifications_get_group_sources (
+        array('id_source' => $source_id),
+        array('id_group')
+    );
+    return index_array($groups, 'id_group', 'name');
+}
+
+/**
+ * Get the group sources
+ *
+ * @param array $filter Filter of sql query.
+ */
+function notifications_get_group_sources ($filter = array(), $fields = array()) {
+    // Get only the tnotifications_source_group fields in addition to group name.
+    if (empty($fields)) $fields[] = "tnsg.*";
+    $fields = array_map(function($field) {
+        if (!preg_match("/^tnsg./", $field)) $field = "tnsg.{$field}";
+        return $field;
+    }, $fields);
+
+    // Get groups.
+    $groups = db_get_all_rows_filter(
+        'tnotification_source_group tnsg
+            LEFT JOIN tgrupo tg ON tnsg.id_group = tg.id_grupo',
+        $filter,
+        array_merge ($fields, array('IFNULL(tg.nombre, "All") AS name'))
+    );
+
+    // If fails or no one is selected, return empty array
+    if ($groups === false) return array();
+    return $groups;
+}
+
+/**
+ * Delete a set of groups from notification source
+ *
+ * @param int Source id
+ * @param array Id of groups to be deleted
+ *
+ * @return bool True if success. False otherwise.
+ */
+function notifications_remove_group_from_source ($source_id, $groups) {
+    // Source id is mandatory
+    if (!isset($source_id)) return false;
+
+    // Delete from database
+    return db_process_sql_delete (
+        'tnotification_source_group',
+        array(
+            'id_group' => $groups,
+            'id_source' => $source_id
+        )
+    ) !== false;
+}
+
+/**
+ * Delete a set of users from notification source
+ *
+ * @param int Source id
+ * @param array Id of users to be deleted
+ *
+ * @return bool True if success. False otherwise.
+ */
+function notifications_remove_users_from_source ($source_id, $users) {
+    // Source id is mandatory
+    if (!isset($source_id)) return false;
+
+    // Delete from database
+    return db_process_sql_delete (
+        'tnotification_source_user',
+        array(
+            'id_user' => $users,
+            'id_source' => $source_id
+        )
+    ) !== false;
+}
+
+/**
+ * Insert a set of groups to notification source
+ *
+ * @param int Source id
+ * @param array Id of groups to be deleted
+ *
+ * @return bool True if success. False otherwise.
+ */
+function notifications_add_group_to_source ($source_id, $groups) {
+    // Source id is mandatory
+    if (!isset($source_id)) return false;
+
+    // Insert into database all groups passed
+    $res = true;
+    foreach ($groups as $group) {
+        if (empty($group)) continue;
+        $res = $res && db_process_sql_insert(
+            'tnotification_source_group',
+            array(
+                'id_group' => $group,
+                'id_source' => $source_id)
+            ) !== false;
+    }
+    return $res;
+}
+
+/**
+ * Insert a set of users to notification source
+ *
+ * @param int Source id
+ * @param array Id of users to be deleted
+ *
+ * @return bool True if success. False otherwise.
+ */
+ function notifications_add_users_to_source ($source_id, $users) {
+    // Source id is mandatory
+    if (!isset($source_id)) return false;
+
+    // Insert into database all groups passed
+    $res = true;
+    foreach ($users as $user) {
+        if (empty($user)) continue;
+        $res = $res && db_process_sql_insert(
+            'tnotification_source_user',
+            array(
+                'id_user' => $user,
+                'id_source' => $source_id)
+            ) !== false;
+    }
+    return $res;
+}
+
+/**
+ * Get the groups that not own to a source and, for that reason, they can be
+ * added to the source.
+ *
+ * @param int $source_id Source id.
+ * @return array Indexed by id group all selectable groups.
+ */
+function notifications_get_group_source_not_configured ($source_id) {
+    $groups_selected = notifications_get_group_sources_for_select($source_id);
+    $all_groups = users_get_groups_for_select(false, "AR", false, true, $groups_selected);
+    return array_diff($all_groups, $groups_selected);
+}
+
+/**
+ * Get the users that not own to a source and, for that reason, they can be
+ * added to the source.
+ *
+ * @param int $source_id
+ * @return array Indexed by id user, all selectable users.
+ */
+function notifications_get_user_source_not_configured ($source_id) {
+    $users_selected = array_keys(notifications_get_user_sources_for_select($source_id));
+    $users = get_users(
+        'id_user',
+        array('!id_user' => $users_selected),
+        array('id_user')
+    );
+    return index_array($users, 'id_user', 'id_user');
+}
+
+/**
+ * Print the notification ball to see unread messages
+ *
+ * @return string with HTML code of notification ball
+ */
+function notifications_print_ball() {
+    $num_notifications = messages_get_count();
+    $class_status = $num_notifications == 0
+        ? 'notification-ball-no-messages'
+        : 'notification-ball-new-messages';
+    return
+        "<div class='notification-ball $class_status' id='notification-ball-header'>
+            $num_notifications
+        </div>";
+}
+
+/**
+ * Print notification configuration global
+ *
+ * @param array notification source data
+ *
+ * @return string with HTML of source configuration
+ */
+function notifications_print_global_source_configuration($source) {
+
+    // Get some values to generate the title
+    $id = notifications_desc_to_id($source['description']);
+    $switch_values = array (
+        'name' => "enable-" . $id,
+        'value' => $source['enabled']
+    );
+
+    // Search if group all is set and handle that situation
+    $source_groups = notifications_get_group_sources_for_select($source['id']);
+    $is_group_all = isset($source_groups["0"]);
+    if($is_group_all) unset($source_groups["0"]);
+
+    // Generate the title
+    $html_title = "<div class='global-config-notification-title'>";
+    $html_title .=     html_print_switch($switch_values);
+    $html_title .=    "<h2>{$source['description']}</h2>";
+    $html_title .= "</div>";
+
+    // Generate the html for title
+    $html_selectors = "<div class='global-config-notification-selectors'>";
+    $html_selectors .=       notifications_print_source_select_box(notifications_get_user_sources_for_select($source['id']), 'users', $id, $is_group_all);
+    $html_selectors .=       notifications_print_source_select_box($source_groups, 'groups', $id, $is_group_all);
+    $html_selectors .= "</div>";
+
+    // Generate the checkboxes and time select
+    $html_checkboxes = "<div class='global-config-notification-checkboxes'>";
+    $html_checkboxes .= "   <span>";
+    $html_checkboxes .=         html_print_checkbox("all-$id", 1, $is_group_all, true, false, 'notifications_disable_source(event)');
+    $html_checkboxes .=         __('Notify all users');
+    $html_checkboxes .= "   </span><br><span>";
+    $html_checkboxes .=         html_print_checkbox("mail-$id", 1, $source['also_mail'], true);
+    $html_checkboxes .=         __('Also email users with notification content');
+    $html_checkboxes .= "   </span><br><span>";
+    $html_checkboxes .=         html_print_checkbox("user-$id", 1, $source['user_editable'], true);
+    $html_checkboxes .=         __('Users cannot modify notification preferences');
+    $html_checkboxes .= "   </span>";
+    $html_checkboxes .= "</div>";
+
+    // Generate the select with the time
+    $html_select_pospone = __('Users can postpone notifications up to');
+    $html_select_pospone .= html_print_select (
+		array(
+            SECONDS_5MINUTES => __('5 minutes'),
+            SECONDS_15MINUTES => __('15 minutes'),
+            SECONDS_12HOURS => __('12 hours'),
+            SECONDS_1DAY => __('1 day'),
+            SECONDS_1WEEK => __('1 week'),
+            SECONDS_15DAYS => __('15 days'),
+            SECONDS_1MONTH => __('1 month'),
+            NOTIFICATIONS_POSTPONE_FOREVER => __('forever')),
+        "postpone-{$id}",
+        $source['max_postpone_time'],
+        '',
+        '',
+        0,
+        true
+    );
+
+    // Return all html
+    return $html_title . $html_selectors . $html_checkboxes . $html_select_pospone;
+}
+
+/**
+ * Print select boxes of notified users or groups
+ *
+ * @param array $info_selec All info required for build the selector
+ * @param string $id users|groups
+ * @param string $source_id Id of source
+ * @param bool $disabled Disable the selectors
+ *
+ * @return string HTML with the generated selector
+ */
+function notifications_print_source_select_box($info_selec, $id, $source_id, $disabled) {
+
+    $title = $id == "users" ? __('Notified users') : __('Notified groups');
+    $add_title = $id == "users" ? __('Add users') : __('Add groups');
+    $delete_title = $id == "users" ? __('Delete users') : __('Delete groups');
+
+    // Generate the HTML
+    $html_select = "<div class='global-config-notification-single-selector'>";
+    $html_select .= "   <div>";
+    $html_select .= "       <h4>$title</h4>";
+    // Put a true if empty sources to avoid to sow the 'None' value
+    $html_select .=         html_print_select(empty($info_selec) ? true : $info_selec, "multi-{$id}-{$source_id}[]", 0, false, '', '', true, true, true,'', $disabled);
+    $html_select .= "   </div>";
+    $html_select .= "   <div class='global-notifications-icons'>";
+    $html_select .=         html_print_image('images/input_add.png', true, array('title' => $add_title, 'onclick' => "add_source_dialog('$id', '$source_id')"));
+    $html_select .=         html_print_image('images/input_delete.png', true, array('title' => $delete_title, 'onclick' => "remove_source_elements('$id', '$source_id')"));
+    $html_select .= "   </div>";
+    $html_select .= "</div>";
+    return $html_select;
+}
+
+/**
+ * Print the select with right and left arrows to select new sources
+ * (groups or users).
+ *
+ * @param array $info_selec Array with source info.
+ * @param string $users users|groups.
+ * @param source $source_id Source id.
+ * @return string HTML with the select code.
+ */
+function notifications_print_two_ways_select($info_selec, $users, $source_id) {
+    $html_select = "<div class='global_config_notifications_dialog_add'>";
+	$html_select .= html_print_select(empty($info_selec) ? true : $info_selec, "all-multi-{$users}-{$source_id}[]", 0, false, '', '', true, true, true,'');
+	$html_select .= "<div class='global_config_notifications_two_ways_form_arrows'>";
+    $html_select .= html_print_image('images/darrowright.png', true, array('title' => $add_title, 'onclick' => "notifications_modify_two_ways_element('$users', '$source_id', 'add')"));
+    $html_select .= html_print_image('images/darrowleft.png', true, array('title' => $add_title, 'onclick' => "notifications_modify_two_ways_element('$users', '$source_id', 'remove')"));
+	$html_select .= "</div>";
+    $html_select .= html_print_select(true, "selected-multi-{$users}-{$source_id}[]", 0, false, '', '', true, true, true, '');
+    $html_select .= "</div>";
+    $html_select .= html_print_button(__('Add'), 'Add', false, "notifications_add_source_element_to_database('$users', '$source_id')", "class='sub add'", true);
+
+    return $html_select;
 }

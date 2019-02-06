@@ -11,6 +11,9 @@
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
+ui_require_css_file('tree');
+ui_require_css_file('fixed-bottom-box');
+
 // Load global vars
 global $config;
 

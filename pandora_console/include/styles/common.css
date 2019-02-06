@@ -1,35 +1,3 @@
-/* Common useful styles */
-.invisible {
-  display: none;
-}
-.left {
-  clear: left;
-  float: left;
-}
-.right {
-  clear: right;
-  float: right;
-}
-.clear {
-  clear: both;
-}
-.top {
-  vertical-align: top;
-  margin-top: 0;
-  padding-top: 0;
-}
-img.left {
-  margin-right: 1em;
-  margin-bottom: 1.8em;
-}
-img.right {
-  margin-left: 1em;
-  margin-bottom: 1.8em;
-}
-.text-right {
-  text-align: right;
-}
-
 /* Debug styles */
 pre.debug,
 div.backtrace {
@@ -64,4 +32,50 @@ div.database_debug_title {
   margin-top: 15px;
   padding: 5px;
   width: 95%;
+}
+
+/* Common useful styles */
+.invisible {
+  display: none;
+}
+.left {
+  clear: left;
+  float: left;
+}
+.right {
+  clear: right;
+  float: right;
+}
+.clear {
+  clear: both;
+}
+.top {
+  vertical-align: top;
+  margin-top: 0;
+  padding-top: 0;
+}
+img.left {
+  margin-right: 1em;
+  margin-bottom: 1.8em;
+}
+img.right {
+  margin-left: 1em;
+  margin-bottom: 1.8em;
+}
+.text-right {
+  text-align: right;
+}
+.noshadow {
+  -moz-box-shadow: 0px !important;
+  -webkit-box-shadow: 0px !important;
+  box-shadow: 0px !important;
+}
+.center_align {
+  text-align: center;
+}
+.left_align {
+  text-align: left;
+}
+.right_align {
+  text-align: right;
 }

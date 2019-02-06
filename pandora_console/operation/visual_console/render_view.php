@@ -227,7 +227,6 @@ if ($config['pure']) {
     echo '</div>';
     // Floating menu - End
     ui_require_jquery_file('countdown');
-    ui_require_css_file('countdown');
 
     ?>
     <style type="text/css">

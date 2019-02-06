@@ -35,6 +35,8 @@ use threads;
 
 # Used to calculate the MD5 checksum of a string
 use constant MOD232 => 2**32;
+# 2 to the power of 32.
+use constant POW232 => 2**32;
 
 # UTF-8 flags deletion from multibyte characters when files are opened.
 use open OUT => ":utf8";
@@ -68,6 +70,7 @@ our @EXPORT = qw(
 	PROVISIONINGSERVER
 	MIGRATIONSERVER
 	METACONSOLE_LICENSE
+	OFFLINE_LICENSE
 	$DEVNULL
 	$OS
 	$OS_VERSION
@@ -93,6 +96,7 @@ our @EXPORT = qw(
 	sqlWrap
 	is_numeric
 	is_metaconsole
+	is_offline
 	to_number
 	clean_blank
 	pandora_sendmail
@@ -108,6 +112,7 @@ our @EXPORT = qw(
 	md5_init
 	pandora_ping
 	pandora_ping_latency
+	pandora_block_ping
 	resolve_hostname
 	ticks_totime
 	safe_input
@@ -120,6 +125,9 @@ our @EXPORT = qw(
 	check_server_threads
 	start_server_thread
 	stop_server_threads
+	generate_agent_name_hash
+	long_to_ip
+	ip_to_long
 );
 
 # ID of the different servers
@@ -152,8 +160,11 @@ use constant MODULE_WARNING => 2;
 use constant MODULE_UNKNOWN => 3;
 use constant MODULE_NOTINIT => 4;
 
-# Value for a metaconsole license type
+# Mask for a metaconsole license type
 use constant METACONSOLE_LICENSE => 0x01;
+
+# Mask for an offline license type
+use constant OFFLINE_LICENSE => 0x02;
 
 # Alert modes
 use constant RECOVERED_ALERT => 0;
@@ -170,6 +181,7 @@ if ($OS eq 'linux') {
 } elsif ($OS =~ /win/i) {
 	$OS = "windows";
 	$OS_VERSION = `ver`;
+	$OS_VERSION =~ s/[^[:ascii:]]//g; 
 	$DEVNULL = '/Nul';
 } elsif ($OS eq 'freebsd') {
 	$OS_VERSION = `uname -r`;
@@ -589,7 +601,7 @@ sub logger ($$;$) {
 		open (FILE, ">> $file") or die "[FATAL] Could not open logfile '$file'";
 		# Get an exclusive lock on the file (LOCK_EX)
 		flock (FILE, 2);
-		print FILE strftime ("%Y-%m-%d %H:%M:%S", localtime()) . " " . $pa_config->{'servername'} . " [V". $level ."] " . $message . "\n";
+		print FILE strftime ("%Y-%m-%d %H:%M:%S", localtime()) . " " . (defined($pa_config->{'servername'}) ? $pa_config->{'servername'} : '') . " [V". $level ."] " . $message . "\n";
 		close (FILE);
 	}
 }
@@ -1263,6 +1275,24 @@ sub pandora_ping_latency ($$$$) {
 }
 
 ########################################################################
+=head2 C<< pandora_block_ping (I<$pa_config>, I<$hosts>) >> 
+
+Ping all given hosts. Returns an array with all hosts detected as alive.
+
+=cut
+########################################################################
+sub pandora_block_ping($@) {
+	my ($pa_config, @hosts) = @_;
+
+	# fping timeout in milliseconds
+	my $cmd = $pa_config->{'fping'} . " -a -q -t " . (1000 * $pa_config->{'networktimeout'}) . " " . (join (' ', @hosts));
+
+	my @output = `$cmd 2>$DEVNULL`;
+
+	return @output;
+}
+
+########################################################################
 =head2 C<< month_have_days (I<$month>, I<$year>) >> 
 
 Pass a $month (as january 0 number and each month with numbers) and the year
@@ -1639,8 +1669,22 @@ sub is_metaconsole ($) {
 	my ($pa_config) = @_;
 
 	if (defined($pa_config->{"license_type"}) &&
-		$pa_config->{"license_type"} == METACONSOLE_LICENSE &&
+		($pa_config->{"license_type"} & METACONSOLE_LICENSE) &&
 		$pa_config->{"node_metaconsole"} == 0) {
+		return 1;
+	}
+
+	return 0;
+}
+
+###############################################################################
+# Returns 1 if a valid offline license is configured, 0 otherwise.
+###############################################################################
+sub is_offline ($) {
+	my ($pa_config) = @_;
+
+	if (defined($pa_config->{"license_type"}) &&
+		($pa_config->{"license_type"} & OFFLINE_LICENSE)) {
 		return 1;
 	}
 
@@ -1791,6 +1835,162 @@ sub stop_server_threads {
 	}
 
 	@ServerThreads = ();
+}
+
+################################################################################
+# Generate random hash as agent name.
+################################################################################
+sub generate_agent_name_hash {
+	my ($agent_alias, $server_ip) = @_;
+	return sha256(join('|', ($agent_alias, $server_ip, time(), sprintf("%04d", rand(10000)))));
+}
+
+###############################################################################
+# Return the SHA256 checksum of the given string as a hex string.
+# Pseudocode from: http://en.wikipedia.org/wiki/SHA-2#Pseudocode
+###############################################################################
+my @K2 = (
+	0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b, 0x59f111f1,
+	0x923f82a4, 0xab1c5ed5, 0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3,
+	0x72be5d74, 0x80deb1fe, 0x9bdc06a7, 0xc19bf174, 0xe49b69c1, 0xefbe4786,
+	0x0fc19dc6, 0x240ca1cc, 0x2de92c6f, 0x4a7484aa, 0x5cb0a9dc, 0x76f988da,
+	0x983e5152, 0xa831c66d, 0xb00327c8, 0xbf597fc7, 0xc6e00bf3, 0xd5a79147,
+	0x06ca6351, 0x14292967, 0x27b70a85, 0x2e1b2138, 0x4d2c6dfc, 0x53380d13,
+	0x650a7354, 0x766a0abb, 0x81c2c92e, 0x92722c85, 0xa2bfe8a1, 0xa81a664b,
+	0xc24b8b70, 0xc76c51a3, 0xd192e819, 0xd6990624, 0xf40e3585, 0x106aa070,
+	0x19a4c116, 0x1e376c08, 0x2748774c, 0x34b0bcb5, 0x391c0cb3, 0x4ed8aa4a,
+	0x5b9cca4f, 0x682e6ff3, 0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208,
+	0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2
+);
+sub sha256 {
+	my $str = shift;
+
+	# No input!
+	if (!defined($str)) {
+		return "";
+	}
+
+	# Note: All variables are unsigned 32 bits and wrap modulo 2^32 when
+	# calculating.
+
+	# First 32 bits of the fractional parts of the square roots of the first 8
+	# primes.
+	my $h0 = 0x6a09e667;
+	my $h1 = 0xbb67ae85;
+	my $h2 = 0x3c6ef372;
+	my $h3 = 0xa54ff53a;
+	my $h4 = 0x510e527f;
+	my $h5 = 0x9b05688c;
+	my $h6 = 0x1f83d9ab;
+	my $h7 = 0x5be0cd19;
+
+	# Pre-processing.
+	my $msg = unpack ("B*", pack ("A*", $str));
+	my $bit_len = length ($msg);
+
+	# Append "1" bit to message.
+	$msg .= '1';
+
+	# Append "0" bits until message length in bits = 448 (mod 512).
+	$msg .= '0' while ((length ($msg) % 512) != 448);
+
+	# Append bit /* bit, not byte */ length of unpadded message as 64-bit
+	# big-endian integer to message.
+	$msg .= unpack ("B32", pack ("N", $bit_len >> 32));
+	$msg .= unpack ("B32", pack ("N", $bit_len));
+
+	# Process the message in successive 512-bit chunks.
+	for (my $i = 0; $i < length ($msg); $i += 512) {
+
+		my @w;
+		my $chunk = substr ($msg, $i, 512);
+
+		# Break chunk into sixteen 32-bit big-endian words.
+		for (my $j = 0; $j < length ($chunk); $j += 32) {
+			push (@w, unpack ("N", pack ("B32", substr ($chunk, $j, 32))));
+		}
+
+		# Extend the first 16 words into the remaining 48 words w[16..63] of the message schedule array:
+		for (my $i = 16; $i < 64; $i++) {
+			my $s0 = rightrotate($w[$i - 15], 7) ^ rightrotate($w[$i - 15], 18) ^ ($w[$i - 15] >> 3);
+			my $s1 = rightrotate($w[$i - 2], 17) ^ rightrotate($w[$i - 2], 19) ^ ($w[$i - 2] >> 10);
+			$w[$i] = ($w[$i - 16] + $s0 + $w[$i - 7] + $s1) % POW232;
+		}
+
+		# Initialize working variables to current hash value.
+		my $a = $h0;
+		my $b = $h1;
+		my $c = $h2;
+		my $d = $h3;
+		my $e = $h4;
+		my $f = $h5;
+		my $g = $h6;
+		my $h = $h7;
+
+		# Compression function main loop.
+		for (my $i = 0; $i < 64; $i++) {
+			my $S1 = rightrotate($e, 6) ^ rightrotate($e, 11) ^ rightrotate($e, 25);
+			my $ch = ($e & $f) ^ ((0xFFFFFFFF & (~ $e)) & $g);
+			my $temp1 = ($h + $S1 + $ch + $K2[$i] + $w[$i]) % POW232;
+			my $S0 = rightrotate($a, 2) ^ rightrotate($a, 13) ^ rightrotate($a, 22);
+			my $maj = ($a & $b) ^ ($a & $c) ^ ($b & $c);
+			my $temp2 = ($S0 + $maj) % POW232;
+
+			$h = $g;
+			$g = $f;
+			$f = $e;
+			$e = ($d + $temp1) % POW232;
+			$d = $c;
+			$c = $b;
+			$b = $a;
+			$a = ($temp1 + $temp2) % POW232;
+		}
+
+		# Add the compressed chunk to the current hash value.
+		$h0 = ($h0 + $a) % POW232;
+		$h1 = ($h1 + $b) % POW232;
+		$h2 = ($h2 + $c) % POW232;
+		$h3 = ($h3 + $d) % POW232;
+		$h4 = ($h4 + $e) % POW232;
+		$h5 = ($h5 + $f) % POW232;
+		$h6 = ($h6 + $g) % POW232;
+		$h7 = ($h7 + $h) % POW232;
+	}
+
+	# Produce the final hash value (big-endian).
+	return unpack ("H*", pack ("N", $h0)) .
+	       unpack ("H*", pack ("N", $h1)) .
+	       unpack ("H*", pack ("N", $h2)) .
+	       unpack ("H*", pack ("N", $h3)) .
+	       unpack ("H*", pack ("N", $h4)) .
+	       unpack ("H*", pack ("N", $h5)) .
+	       unpack ("H*", pack ("N", $h6)) .
+	       unpack ("H*", pack ("N", $h7));
+}
+
+###############################################################################
+# Rotate a 32-bit number a number of bits to the right.
+###############################################################################
+sub rightrotate {
+	my ($x, $c) = @_;
+
+	return (0xFFFFFFFF & ($x << (32 - $c))) | ($x >> $c);
+}
+
+###############################################################################
+# Returns IP address(v4) in longint format
+###############################################################################
+sub ip_to_long {
+	my $ip_str = shift;
+	return unpack "N", inet_aton($ip_str);
+}
+
+###############################################################################
+# Returns IP address(v4) in longint format
+###############################################################################
+sub long_to_ip {
+	my $ip_long = shift;
+	return inet_ntoa pack("N", ($ip_long));
 }
 
 # End of function declaration

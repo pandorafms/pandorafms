@@ -346,7 +346,9 @@ class ICal
                 $rrules = array();
                 $rrule_strings = explode(';', $anEvent['RRULE']);
                 foreach ($rrule_strings as $s) {
-                    list($k, $v) = explode('=', $s);
+                    $s_array = explode('=', $s);
+                    $k = $s_array[0];
+                    $v = $s_array[1];
                     $rrules[$k] = $v;
                 }
                 // Get frequency

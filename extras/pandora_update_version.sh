@@ -16,7 +16,7 @@ else
 fi
 VERSION=$2
 if [ $# == 2 ]; then
-	BUILD=`date +%g%m%d`
+	BUILD=`date +%y%m%d`
 else
 	BUILD=$3
 fi

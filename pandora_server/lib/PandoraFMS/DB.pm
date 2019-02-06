@@ -62,6 +62,7 @@ our @EXPORT = qw(
 		get_agent_module_id
 		get_alert_template_module_id
 		get_alert_template_name
+		get_command_id
 		get_db_rows
 		get_db_rows_limit
 		get_db_single_row
@@ -131,9 +132,6 @@ sub db_connect ($$$$$$) {
 		# Enable character semantics
 		$dbh->{'mysql_enable_utf8'} = 1;
 		
-        # Tell the server to return UTF-8 strings.
-		$dbh->do("SET NAMES 'utf8';") if ($^O eq 'MSWin32');
-
 		return $dbh;
 	}
 	elsif ($rdbms eq 'postgresql') {
@@ -209,6 +207,16 @@ sub get_action_id ($$) {
 	my ($dbh, $action_name) = @_;
 
 	my $rc = get_db_value ($dbh, "SELECT id FROM talert_actions WHERE name = ?", $action_name);
+	return defined ($rc) ? $rc : -1;
+}
+
+########################################################################
+## Return command ID given the command name.
+########################################################################
+sub get_command_id ($$) {
+	my ($dbh, $command_name) = @_;
+
+	my $rc = get_db_value ($dbh, "SELECT id FROM talert_commands WHERE name = ?", safe_input($command_name));
 	return defined ($rc) ? $rc : -1;
 }
 
@@ -867,7 +875,7 @@ sub db_insert ($$$;@) {
 	};
 	if ($@) {
 		my $exception = @_;
-		if ($DBI::err == 1213) {
+		if ($DBI::err == 1213 || $DBI::err == 1205) {
 			$dbh->do($query, undef, @values);
 			$insert_id = $dbh->{'mysql_insertid'};
 		}
@@ -891,7 +899,7 @@ sub db_update ($$;@) {
 	};
 	if ($@) {
 		my $exception = @_;
-		if ($DBI::err == 1213) {
+		if ($DBI::err == 1213 || $DBI::err == 1205) {
 			$rows = $dbh->do($query, undef, @values);
 		}
 		else {
@@ -1137,7 +1145,7 @@ sub db_do ($$;@) {
 	};
 	if ($@) {
 		my $exception = @_;
-		if ($DBI::err == 1213) {
+		if ($DBI::err == 1213 || $DBI::err == 1205) {
 			$dbh->do($query, undef, @values);
 		}
 		else {

@@ -44,8 +44,8 @@ our @EXPORT = qw(
 	);
 
 # version: Defines actual version of Pandora Server for this module only
-my $pandora_version = "7.0NG.728";
-my $pandora_build = "181025";
+my $pandora_version = "7.0NG.731";
+my $pandora_build = "190206";
 our $VERSION = $pandora_version." ".$pandora_build;
 
 # Setup hash
@@ -490,6 +490,8 @@ sub pandora_load_config {
 	
 	$pa_config->{'snmp_extlog'} = ""; # 7.0 726
 
+	$pa_config->{"fsnmp"} = "/usr/bin/pandorafsnmp"; # 7.0 732
+
 	# Check for UID0
 	if ($pa_config->{"quiet"} != 0){
 		if ($> == 0){
@@ -507,7 +509,7 @@ sub pandora_load_config {
 	}
 
 	# Collect items from config file and put in an array 
-	if (! open (CFG, "< $archivo_cfg")) {
+	if (! open (CFG, "<:encoding(UTF-8)", $archivo_cfg)) {
 		print "[ERROR] Error opening configuration file $archivo_cfg: $!.\n";
 		exit 1;
 	}
@@ -1122,6 +1124,9 @@ sub pandora_load_config {
 		}
 		elsif ($parametro =~ m/^snmp_extlog\s(.*)/i) { 
 			$pa_config->{'snmp_extlog'} = clean_blank($1); 
+		}
+		elsif ($parametro =~ m/^fsnmp\s(.*)/i) {
+			$pa_config->{'fsnmp'}= clean_blank($1); 
 		}
 	} # end of loop for parameter #
 

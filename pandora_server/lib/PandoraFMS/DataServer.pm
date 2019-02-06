@@ -30,6 +30,10 @@ use XML::Simple;
 use POSIX qw(setsid strftime);
 use IO::Uncompress::Unzip;
 
+# Required for file names with accents
+use Encode qw(decode);
+use Encode::Locale ();
+
 # For Reverse Geocoding
 use LWP::Simple;
 
@@ -52,7 +56,6 @@ my %Agents :shared;
 my $Sem :shared;
 my $TaskSem :shared;
 my $AgentSem :shared;
-my $ModuleSem :shared;
 
 ########################################################################################
 # Data Server class constructor.
@@ -69,7 +72,6 @@ sub new ($$;$) {
 	$Sem = Thread::Semaphore->new;
 	$TaskSem = Thread::Semaphore->new (0);
 	$AgentSem = Thread::Semaphore->new (1);
-	$ModuleSem = Thread::Semaphore->new (1);
 	
 	# Call the constructor of the parent class
 	my $self = $class->SUPER::new($config, DATASERVER, \&PandoraFMS::DataServer::data_producer, \&PandoraFMS::DataServer::data_consumer, $dbh);
@@ -113,6 +115,7 @@ sub data_producer ($) {
 	# Do not read more than max_queue_files files
  	my $file_count = 0;
  	while (my $file = readdir (DIR)) {
+ 		$file = Encode::decode( locale_fs => $file );
 
 		# Data files must have the extension .data
 		next if ($file !~ /^.*[\._]\d+\.data$/);
@@ -398,7 +401,7 @@ sub process_xml_data ($$$$$) {
 					
 					# If it exists add the value to the agent
 					if (defined ($custom_field_info)) {
-						my $cf_value = get_tag_value ($custom_field, 'value', '');
+						my $cf_value = safe_input(get_tag_value ($custom_field, 'value', ''));
 
 						my $field_agent;
 						
@@ -484,7 +487,7 @@ sub process_xml_data ($$$$$) {
 						my $custom_field_data = get_db_single_row($dbh, 'SELECT * FROM tagent_custom_data WHERE id_field = ? AND id_agent = ?',
 											$custom_field_info->{"id_field"}, $agent->{"id_agente"});
 
-                                                my $cf_value = get_tag_value ($custom_field, 'value', '');
+                                                my $cf_value = safe_input(get_tag_value ($custom_field, 'value', ''));
 
 						#If not defined we must create if defined just updated
 						if(!defined($custom_field_data)) {
@@ -499,7 +502,7 @@ sub process_xml_data ($$$$$) {
 						} else {
 							
 							db_update ($dbh, "UPDATE tagent_custom_data SET description = ? WHERE id_field = ? AND id_agent = ?",
-									$cf_value ,$custom_field_info->{"id_field"}, $agent->{'id_agente'});
+									$cf_value, $custom_field_info->{"id_field"}, $agent->{'id_agente'});
 						}
                                         }
                                         else {
@@ -596,6 +599,9 @@ sub process_xml_data ($$$$$) {
 
 	# Process snmptrapd modules
 	enterprise_hook('process_snmptrap_data', [$pa_config, $data, $server_id, $dbh]);
+
+	# Process disovery modules
+	enterprise_hook('process_discovery_data', [$pa_config, $data, $server_id, $dbh]);
 }
 
 ##########################################################################
@@ -677,7 +683,6 @@ sub process_module_data ($$$$$$$$$$) {
 	$module_conf->{'module_macros'} = '' unless defined ($module_conf->{'module_macros'});
 	
 	# Get module data or create it if it does not exist
-	$ModuleSem->down ();
 	my $module = get_db_single_row ($dbh, 'SELECT * FROM tagente_modulo WHERE id_agente = ? AND ' . db_text ('nombre') . ' = ?', $agent->{'id_agente'}, safe_input($module_name));
 	if (! defined ($module)) {
 		
@@ -685,14 +690,12 @@ sub process_module_data ($$$$$$$$$$) {
 		# Do not auto create modules
 		#if ($pa_config->{'autocreate'} ne '1') {
 		#	logger($pa_config, "Module '$module_name' not found for agent '$agent_name' and module auto-creation disabled.", 10);
-		#	$ModuleSem->up ();
 		#	return;
 		#}
 		
 		# Is the agent not learning?
 		if (($agent->{'modo'} == 0) && !($force_processing)) {
 			logger($pa_config, "Learning mode disabled. Skipping module '$module_name' agent '$agent_name'.", 10);
-			$ModuleSem->up ();
 			return;
 		}
 		
@@ -700,7 +703,6 @@ sub process_module_data ($$$$$$$$$$) {
 		$module_conf->{'id_tipo_modulo'} = get_module_id ($dbh, $module_type);
 		if ($module_conf->{'id_tipo_modulo'} <= 0) {
 			logger($pa_config, "Invalid module type '$module_type' for module '$module_name' agent '$agent_name'.", 3);
-			$ModuleSem->up ();
 			return;
 		}
 		
@@ -758,7 +760,6 @@ sub process_module_data ($$$$$$$$$$) {
 		$module = get_db_single_row ($dbh, 'SELECT * FROM tagente_modulo WHERE id_agente = ? AND ' . db_text('nombre') . ' = ?', $agent->{'id_agente'}, safe_input($module_name));
 		if (! defined ($module)) {
 			logger($pa_config, "Could not create module '$module_name' for agent '$agent_name'.", 3);
-			$ModuleSem->up ();
 			return;
 		}
 		
@@ -815,8 +816,6 @@ sub process_module_data ($$$$$$$$$$) {
 	if ((($agent->{'modo'} eq '1') || ($agent->{'modo'} eq '2')) && $policy_linked == 0) {
 		update_module_configuration ($pa_config, $dbh, $module, $module_conf);
 	}
-	
-	$ModuleSem->up ();
 	
 	# Module disabled!
 	if ($module->{'disabled'} eq '1') {

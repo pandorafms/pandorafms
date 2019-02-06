@@ -18,7 +18,7 @@ use warnings;
 use LWP::UserAgent;
 use HTTP::Cookies;
 use HTTP::Request::Common;
-
+use Socket qw(inet_ntoa inet_aton);
 use File::Copy;
 use Scalar::Util qw(looks_like_number);
 use Time::HiRes qw(time);
@@ -31,8 +31,8 @@ use base 'Exporter';
 our @ISA = qw(Exporter);
 
 # version: Defines actual version of Pandora Server for this module only
-my $pandora_version = "7.0NG.728";
-my $pandora_build = "181025";
+my $pandora_version = "7.0NG.731";
+my $pandora_build = "190206";
 our $VERSION = $pandora_version." ".$pandora_build;
 
 our %EXPORT_TAGS = ( 'all' => [ qw() ] );
@@ -40,6 +40,8 @@ our %EXPORT_TAGS = ( 'all' => [ qw() ] );
 our @EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
 
 our @EXPORT = qw(
+	__ip_to_long
+	__long_to_ip
 	api_available
 	api_call
 	api_create_custom_field
@@ -47,6 +49,7 @@ our @EXPORT = qw(
 	api_create_group
 	call_url
 	check_lib_version
+	csv_to_obj
 	decrypt
 	empty
 	encrypt
@@ -67,6 +70,7 @@ our @EXPORT = qw(
 	join_by_field
 	load_perl_modules
 	logger
+	mask_to_decimal
 	merge_hashes
 	parse_arguments
 	parse_configuration
@@ -74,6 +78,7 @@ our @EXPORT = qw(
 	process_performance
 	post_url
 	print_agent
+	print_discovery_module
 	print_error
 	print_execution_result
 	print_message
@@ -125,6 +130,47 @@ sub check_lib_version {
 	return 1;
 }
 
+###############################################################################
+# Returns IP address(v4) in longint format
+###############################################################################
+sub __ip_to_long {
+	my $ip_str = shift;
+	return unpack "N", inet_aton($ip_str);
+}
+
+###############################################################################
+# Returns IP address(v4) in longint format
+###############################################################################
+sub __long_to_ip {
+	my $ip_long = shift;
+	return inet_ntoa pack("N", ($ip_long));
+}
+
+################################################################################
+# Convert CSV string to hash
+################################################################################
+sub csv_to_obj {
+	my ($csv) = @_;
+	my @ahr;
+	my @lines = split /\n/, $csv;
+
+	return [] unless $#lines >= 0;
+
+	# scan headers
+	my @hr_headers = split /,/, shift @lines;
+
+	# Clean \n\r
+	@hr_headers = map { $_ =~ s/\"//g; trim($_); } @hr_headers;
+
+	foreach my $line (@lines) {
+		my $i = 0;
+		my %hr = map { $_ =~ s/\"//g; $hr_headers[$i++] => trim($_) } split /,/, $line;
+
+		push @ahr, \%hr;
+	}
+	return \@ahr;
+}
+
 ################################################################################
 # Get current time (milis)
 ################################################################################
@@ -132,6 +178,25 @@ sub get_current_utime_milis { return getCurrentUTimeMilis(); }
 sub getCurrentUTimeMilis {
 	#return trim (`date +"%s%3N"`); # returns 1449681679712
 	return floor(time*1000);
+}
+
+################################################################################
+# Mask to decimal
+################################################################################
+sub mask_to_decimal {
+	my $mask = shift;
+	my ($a,$b,$c,$d) = $mask =~ /^(\d+)\.(\d+)\.(\d+)\.(\d+)$/;
+
+	$a = sprintf "%08b", $a;
+	$b = sprintf "%08b", $b;
+	$c = sprintf "%08b", $c;
+	$d = sprintf "%08b", $d;
+	
+	my $str = $a . $b . $c . $d;
+
+	$str =~ s/0.*$//;
+
+	return length($str);
 }
 
 ################################################################################
@@ -442,8 +507,18 @@ sub print_agent {
 
 	$xml .= ">";
 
-	foreach my $module (@{$modules_def}) {
-		$xml .= print_module($config, $module,1);
+	if (ref($modules_def) eq "ARRAY") {
+		foreach my $module (@{$modules_def}) {
+			if (ref($module) eq "HASH" && (defined $module->{'name'})) {
+				$xml .= print_module($config, $module,1);
+			} elsif (ref($module) eq "HASH" && (defined $module->{'discovery'})) {
+				$xml .= print_discovery_module($config, $module,1);
+			}
+		}
+	} elsif (ref($modules_def) eq "HASH" && (defined $modules_def->{'name'})) {
+		$xml .= print_module($config, $modules_def,1);
+	} elsif (ref($modules_def) eq "HASH" && (defined $modules_def->{'discovery'})) {
+		$xml .= print_discovery_module($config, $modules_def,1);
 	}
 
 	# print tail
@@ -455,6 +530,28 @@ sub print_agent {
 
 	return $xml;
 
+}
+
+################################################################################
+# print_module
+################################################################################
+sub print_discovery_module {
+	my ($conf, $global_data, $not_print_flag) = @_;
+
+	return undef if (ref($global_data) ne "HASH" || !defined($global_data->{'discovery'}));
+	return "" if empty($global_data);
+
+	my $data = $global_data->{'discovery'};
+
+	my $xml_module = "<discovery><![CDATA[";
+	$xml_module .= encode_base64(encode_json($data));
+	$xml_module .= "]]></discovery>\n";
+
+	if (empty ($not_print_flag)) {
+		print $xml_module;	
+	}
+
+	return $xml_module;
 }
 
 ################################################################################
@@ -660,7 +757,7 @@ sub transfer_xml {
 	my $file_path;
 
 	if (! (empty ($name))) {
-		$file_name = $name . "_" . time() . ".data";
+		$file_name = $name . "." . sprintf("%d",time()) . ".data";
 	}
 	else {
 		# Inherit file name
@@ -672,7 +769,7 @@ sub transfer_xml {
 			$file_name = trim(`hostname`);
 		}
 
-		$file_name .=  "_" . time() . ".data";
+		$file_name .=  "." . sprintf("%d",time()) . ".data";
 	}
 
 	logger($conf, "transfer_xml", "Failed to generate file name.") if empty($file_name);
@@ -680,6 +777,8 @@ sub transfer_xml {
 	$conf->{temp} = $conf->{tmp}             if (empty($conf->{temp}) && defined($conf->{tmp}));
 	$conf->{temp} = $conf->{temporal}        if (empty($conf->{temp}) && defined($conf->{temporal}));
 	$conf->{temp} = $conf->{__system}->{tmp} if (empty($conf->{temp}) && defined($conf->{__system})) && (ref($conf->{__system}) eq "HASH");
+	$conf->{temp} = $ENV{'TMP'}              if empty($conf->{temp}) && $^O =~ /win/i;
+	$conf->{temp} = '/tmp'                   if empty($conf->{temp}) && $^O =~ /lin/i;
 
 	$file_path = $conf->{temp} . "/" . $file_name;
 	
@@ -687,7 +786,7 @@ sub transfer_xml {
 	
 	if ( -e $file_path ) {
 		sleep (1);
-		$file_name = $name . "_" . time() . ".data";
+		$file_name = $name . "." . sprintf("%d",time()) . ".data";
 		$file_path = $conf->{temp} . "/" . $file_name;
 	}
 
@@ -936,7 +1035,10 @@ sub call_url {
 
 	if ($response->is_success){
 		return $response->decoded_content;
+	} elsif (!empty($response->{'_msg'})) {
+		print_stderror($conf, 'Failed: ' .  $response->{'_msg'});
 	}
+
 	return undef;
 }
 
@@ -958,7 +1060,10 @@ sub post_url {
 
 	if ($response->is_success){
 		return $response->decoded_content;
+	} elsif (!empty($response->{'_msg'})) {
+		print_stderror($conf, 'Failed: ' . $response->{'_msg'});
 	}
+
 	return undef;	
 }
 
@@ -987,6 +1092,12 @@ sub init {
 				# Disable verify host certificate (only needed for self-signed cert)
 				$conf->{'__system'}->{ua}->ssl_opts( 'verify_hostname' => 0 );
 				$conf->{'__system'}->{ua}->ssl_opts( 'SSL_verify_mode' => 0x00 );
+
+				# Disable library extra checks 
+				BEGIN {
+					$ENV{PERL_NET_HTTPS_SSL_SOCKET_CLASS} = "Net::SSL";
+					$ENV{PERL_LWP_SSL_VERIFY_HOSTNAME} = 0;
+				}
 			}
 		}
 	};
@@ -1905,16 +2016,18 @@ sub snmp_walk {
 		$timeout = $snmp->{timeout};
 	}
 
+	$snmp->{extra} = '' unless defined $snmp->{extra};
+
 	if ( defined ($snmp->{version} )
 	  && (($snmp->{version} eq "1")
 	   || ($snmp->{version} eq "2")
 	   || ($snmp->{version} eq "2c"))) {
 
 		if (defined $snmp->{port}){
-			$cmd = "snmpwalk -t $timeout -On -v $snmp->{version} -c $snmp->{community} $snmp->{host}:$snmp->{port} $snmp->{oid}";
+			$cmd = "snmpwalk -t $timeout $snmp->{extra} -On -v $snmp->{version} -c $snmp->{community} $snmp->{host}:$snmp->{port} $snmp->{oid}";
 		}
 		else {
-			$cmd = "snmpwalk -t $timeout -On -v $snmp->{version} -c $snmp->{community} $snmp->{host} $snmp->{oid}";
+			$cmd = "snmpwalk -t $timeout $snmp->{extra} -On -v $snmp->{version} -c $snmp->{community} $snmp->{host} $snmp->{oid}";
 		}
 
 	}
@@ -1925,42 +2038,42 @@ sub snmp_walk {
 		# $securityLevel = (noAuthNoPriv|authNoPriv|authPriv);
 
 		# unauthenticated request
-		# Ex. snmpwalk -t $timeout -On -v 3 -n "" -u noAuthUser -l noAuthNoPriv test.net-snmp.org sysUpTime
+		# Ex. snmpwalk -t $timeout $snmp->{extra} -On -v 3 -n "" -u noAuthUser -l noAuthNoPriv test.net-snmp.org sysUpTime
 
 		# authenticated request
-		# Ex. snmpwalk -t $timeout -On -v 3 -n "" -u MD5User -a MD5 -A "The Net-SNMP Demo Password" -l authNoPriv test.net-snmp.org sysUpTime
+		# Ex. snmpwalk -t $timeout $snmp->{extra} -On -v 3 -n "" -u MD5User -a MD5 -A "The Net-SNMP Demo Password" -l authNoPriv test.net-snmp.org sysUpTime
 
 		# authenticated and encrypted request
-		# Ex. snmpwalk -t $timeout -On -v 3 -n "" -u MD5DESUser -a MD5 -A "The Net-SNMP Demo Password" -x DES -X "The Net-SNMP Demo Password" -l authPriv test.net-snmp.org system
+		# Ex. snmpwalk -t $timeout $snmp->{extra} -On -v 3 -n "" -u MD5DESUser -a MD5 -A "The Net-SNMP Demo Password" -x DES -X "The Net-SNMP Demo Password" -l authPriv test.net-snmp.org system
 
 		if ($snmp->{securityLevel} =~ /^noAuthNoPriv$/i){
 			# Unauthenticated request
 
 			if (defined $snmp->{port}){
-				$cmd = "snmpwalk -t $timeout -On -v $snmp->{version} -n \"$snmp->{context}\" -l $snmp->{securityLevel} $snmp->{host}:$snmp->{port} $snmp->{oid}";
+				$cmd = "snmpwalk -t $timeout $snmp->{extra} -On -v $snmp->{version} -n \"$snmp->{context}\" -l $snmp->{securityLevel} $snmp->{host}:$snmp->{port} $snmp->{oid}";
 			}
 			else {
-				$cmd = "snmpwalk -t $timeout -On -v $snmp->{version} -n \"$snmp->{context}\" -l $snmp->{securityLevel} $snmp->{host} $snmp->{oid}";
+				$cmd = "snmpwalk -t $timeout $snmp->{extra} -On -v $snmp->{version} -n \"$snmp->{context}\" -l $snmp->{securityLevel} $snmp->{host} $snmp->{oid}";
 			}
 		}
 		elsif ($snmp->{securityLevel} =~ /^authNoPriv$/i){ 
 			# Authenticated request
 
 			if (defined $snmp->{port}){
-				$cmd = "snmpwalk -t $timeout -On -v $snmp->{version} -n \"$snmp->{context}\" -u $snmp->{securityName} -a $snmp->{authProtocol} -A $snmp->{authKey} -l $snmp->{securityLevel} $snmp->{host}:$snmp->{port} $snmp->{oid}";
+				$cmd = "snmpwalk -t $timeout $snmp->{extra} -On -v $snmp->{version} -n \"$snmp->{context}\" -u $snmp->{securityName} -a $snmp->{authProtocol} -A $snmp->{authKey} -l $snmp->{securityLevel} $snmp->{host}:$snmp->{port} $snmp->{oid}";
 			}
 			else {
-				$cmd = "snmpwalk -t $timeout -On -v $snmp->{version} -n \"$snmp->{context}\" -u $snmp->{securityName} -a $snmp->{authProtocol} -A $snmp->{authKey} -l $snmp->{securityLevel} $snmp->{host} $snmp->{oid}";
+				$cmd = "snmpwalk -t $timeout $snmp->{extra} -On -v $snmp->{version} -n \"$snmp->{context}\" -u $snmp->{securityName} -a $snmp->{authProtocol} -A $snmp->{authKey} -l $snmp->{securityLevel} $snmp->{host} $snmp->{oid}";
 			}
 		}
 		elsif ($snmp->{securityLevel} =~ /^authPriv$/i){
 			# Authenticated and encrypted request
 
 			if (defined $snmp->{port}){
-				$cmd = "snmpwalk -t $timeout -On -v $snmp->{version} -n \"$snmp->{context}\" -u $snmp->{securityName} -l $snmp->{securityLevel} -a $snmp->{authProtocol} -A $snmp->{authKey} -x $snmp->{privProtocol} -X $snmp->{privKey} $snmp->{host}:$snmp->{port} $snmp->{oid}";
+				$cmd = "snmpwalk -t $timeout $snmp->{extra} -On -v $snmp->{version} -n \"$snmp->{context}\" -u $snmp->{securityName} -l $snmp->{securityLevel} -a $snmp->{authProtocol} -A $snmp->{authKey} -x $snmp->{privProtocol} -X $snmp->{privKey} $snmp->{host}:$snmp->{port} $snmp->{oid}";
 			}
 			else {
-				$cmd = "snmpwalk -t $timeout -On -v $snmp->{version} -n \"$snmp->{context}\" -u $snmp->{securityName} -l $snmp->{securityLevel} -a $snmp->{authProtocol} -A $snmp->{authKey} -x $snmp->{privProtocol} -X $snmp->{privKey} $snmp->{host} $snmp->{oid}";
+				$cmd = "snmpwalk -t $timeout $snmp->{extra} -On -v $snmp->{version} -n \"$snmp->{context}\" -u $snmp->{securityName} -l $snmp->{securityLevel} -a $snmp->{authProtocol} -A $snmp->{authKey} -x $snmp->{privProtocol} -X $snmp->{privKey} $snmp->{host} $snmp->{oid}";
 			}
 		}
 	}
@@ -2016,16 +2129,18 @@ sub snmp_get {
 		$timeout = $snmp->{timeout};
 	}
 
+	$snmp->{extra} = '' unless defined $snmp->{extra};
+
 	if ( defined ($snmp->{version} )
 	  && (($snmp->{version} eq "1")
 	   || ($snmp->{version} eq "2")
 	   || ($snmp->{version} eq "2c"))) {
 
 		if (defined $snmp->{port}){
-			$cmd = "snmpget -r $retries -t $timeout -On -v $snmp->{version} -c $snmp->{community} $snmp->{host}:$snmp->{port} $snmp->{oid}";
+			$cmd = "snmpget -r $retries -t $timeout $snmp->{extra} -On -v $snmp->{version} -c $snmp->{community} $snmp->{host}:$snmp->{port} $snmp->{oid}";
 		}
 		else {
-			$cmd = "snmpget -r $retries -t $timeout -On -v $snmp->{version} -c $snmp->{community} $snmp->{host} $snmp->{oid}";
+			$cmd = "snmpget -r $retries -t $timeout $snmp->{extra} -On -v $snmp->{version} -c $snmp->{community} $snmp->{host} $snmp->{oid}";
 		}
 
 	}
@@ -2036,42 +2151,42 @@ sub snmp_get {
 		# $securityLevel = (noAuthNoPriv|authNoPriv|authPriv);
 
 		# unauthenticated request
-		# Ex. snmpget -r $retries -t $timeout -On -v 3 -n "" -u noAuthUser -l noAuthNoPriv test.net-snmp.org sysUpTime
+		# Ex. snmpget -r $retries -t $timeout $snmp->{extra} -On -v 3 -n "" -u noAuthUser -l noAuthNoPriv test.net-snmp.org sysUpTime
 
 		# authenticated request
-		# Ex. snmpget -r $retries -t $timeout -On -v 3 -n "" -u MD5User -a MD5 -A "The Net-SNMP Demo Password" -l authNoPriv test.net-snmp.org sysUpTime
+		# Ex. snmpget -r $retries -t $timeout $snmp->{extra} -On -v 3 -n "" -u MD5User -a MD5 -A "The Net-SNMP Demo Password" -l authNoPriv test.net-snmp.org sysUpTime
 
 		# authenticated and encrypted request
-		# Ex. snmpget -r $retries -t $timeout -On -v 3 -n "" -u MD5DESUser -a MD5 -A "The Net-SNMP Demo Password" -x DES -X "The Net-SNMP Demo Password" -l authPriv test.net-snmp.org system
+		# Ex. snmpget -r $retries -t $timeout $snmp->{extra} -On -v 3 -n "" -u MD5DESUser -a MD5 -A "The Net-SNMP Demo Password" -x DES -X "The Net-SNMP Demo Password" -l authPriv test.net-snmp.org system
 
 		if ($snmp->{securityLevel} =~ /^noAuthNoPriv$/i){
 			# Unauthenticated request
 
 			if (defined $snmp->{port}){
-				$cmd = "snmpget -r $retries -t $timeout -On -v $snmp->{version} -n \"$snmp->{context}\" -l $snmp->{securityLevel} $snmp->{host}:$snmp->{port} $snmp->{oid}";
+				$cmd = "snmpget -r $retries -t $timeout $snmp->{extra} -On -v $snmp->{version} -n \"$snmp->{context}\" -l $snmp->{securityLevel} $snmp->{host}:$snmp->{port} $snmp->{oid}";
 			}
 			else {
-				$cmd = "snmpget -r $retries -t $timeout -On -v $snmp->{version} -n \"$snmp->{context}\" -l $snmp->{securityLevel} $snmp->{host} $snmp->{oid}";
+				$cmd = "snmpget -r $retries -t $timeout $snmp->{extra} -On -v $snmp->{version} -n \"$snmp->{context}\" -l $snmp->{securityLevel} $snmp->{host} $snmp->{oid}";
 			}
 		}
 		elsif ($snmp->{securityLevel} =~ /^authNoPriv$/i){ 
 			# Authenticated request
 
 			if (defined $snmp->{port}){
-				$cmd = "snmpget -r $retries -t $timeout -On -v $snmp->{version} -n \"$snmp->{context}\" -u $snmp->{securityName} -a $snmp->{authProtocol} -A $snmp->{authKey} -l $snmp->{securityLevel} $snmp->{host}:$snmp->{port} $snmp->{oid}";
+				$cmd = "snmpget -r $retries -t $timeout $snmp->{extra} -On -v $snmp->{version} -n \"$snmp->{context}\" -u $snmp->{securityName} -a $snmp->{authProtocol} -A $snmp->{authKey} -l $snmp->{securityLevel} $snmp->{host}:$snmp->{port} $snmp->{oid}";
 			}
 			else {
-				$cmd = "snmpget -r $retries -t $timeout -On -v $snmp->{version} -n \"$snmp->{context}\" -u $snmp->{securityName} -a $snmp->{authProtocol} -A $snmp->{authKey} -l $snmp->{securityLevel} $snmp->{host} $snmp->{oid}";
+				$cmd = "snmpget -r $retries -t $timeout $snmp->{extra} -On -v $snmp->{version} -n \"$snmp->{context}\" -u $snmp->{securityName} -a $snmp->{authProtocol} -A $snmp->{authKey} -l $snmp->{securityLevel} $snmp->{host} $snmp->{oid}";
 			}
 		}
 		elsif ($snmp->{securityLevel} =~ /^authPriv$/i){
 			# Authenticated and encrypted request
 
 			if (defined $snmp->{port}){
-				$cmd = "snmpget -r $retries -t $timeout -On -v $snmp->{version} -n \"$snmp->{context}\" -u $snmp->{securityName} -l $snmp->{securityLevel} -a $snmp->{authProtocol} -A $snmp->{authKey} -x $snmp->{privProtocol} -X $snmp->{privKey} $snmp->{host}:$snmp->{port} $snmp->{oid}";
+				$cmd = "snmpget -r $retries -t $timeout $snmp->{extra} -On -v $snmp->{version} -n \"$snmp->{context}\" -u $snmp->{securityName} -l $snmp->{securityLevel} -a $snmp->{authProtocol} -A $snmp->{authKey} -x $snmp->{privProtocol} -X $snmp->{privKey} $snmp->{host}:$snmp->{port} $snmp->{oid}";
 			}
 			else {
-				$cmd = "snmpget -r $retries -t $timeout -On -v $snmp->{version} -n \"$snmp->{context}\" -u $snmp->{securityName} -l $snmp->{securityLevel} -a $snmp->{authProtocol} -A $snmp->{authKey} -x $snmp->{privProtocol} -X $snmp->{privKey} $snmp->{host} $snmp->{oid}";
+				$cmd = "snmpget -r $retries -t $timeout $snmp->{extra} -On -v $snmp->{version} -n \"$snmp->{context}\" -u $snmp->{securityName} -l $snmp->{securityLevel} -a $snmp->{authProtocol} -A $snmp->{authKey} -x $snmp->{privProtocol} -X $snmp->{privKey} $snmp->{host} $snmp->{oid}";
 			}
 		}
 	}
@@ -2236,6 +2351,8 @@ sub decrypt {
 sub get_unix_time {
 	my ($str_time,$separator_dates,$separator_hours) = @_;
 
+	return 0 if empty($str_time);
+
 	if (empty($separator_dates)) {
 		$separator_dates = "\/";
 	}
@@ -2244,10 +2361,15 @@ sub get_unix_time {
 		$separator_hours = ":";
 	}
 
-
-	use Time::Local;
-	my ($mday,$mon,$year,$hour,$min,$sec) = split(/[\s$separator_dates$separator_hours]+/, $str_time);
-	my $time = timelocal($sec,$min,$hour,$mday,$mon-1,$year);
+	my $time;
+	eval {
+		use Time::Local;
+		my ($mday,$mon,$year,$hour,$min,$sec) = split(/[\s$separator_dates$separator_hours]+/, $str_time);
+		$time = timelocal($sec,$min,$hour,$mday,$mon-1,$year);
+	};
+	if ($@) {
+		return 0;
+	}
 	return $time;
 }
 

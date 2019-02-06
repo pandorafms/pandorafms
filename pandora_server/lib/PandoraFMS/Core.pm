@@ -163,6 +163,7 @@ our @EXPORT = qw(
 	pandora_add_agent_address
 	pandora_audit
 	pandora_create_agent
+	pandora_create_alert_command
 	pandora_create_group
 	pandora_create_incident
 	pandora_create_module
@@ -2679,6 +2680,23 @@ sub pandora_delete_all_template_module_actions ($$) {
 	my ($dbh, $template_module_id) = @_;
 	
 	return db_do ($dbh, 'DELETE FROM talert_template_module_actions WHERE id_alert_template_module = ?', $template_module_id);
+}
+
+########################################################################
+=head2 C<< pandora_create_alert_command(I<$pa_config>, I<$parameters>, I<$dbh>) >>
+
+Create a alert command.
+
+=cut
+########################################################################
+sub pandora_create_alert_command ($$$) {
+	my ($pa_config, $parameters, $dbh) = @_;
+	
+	logger($pa_config, "Creating alert command '$parameters->{'name'}'.", 10);
+	
+	my $command_id = db_process_insert($dbh, 'id', 'talert_commands', $parameters);
+	
+	return $command_id;
 }
 
 ########################################################################

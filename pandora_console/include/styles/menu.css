@@ -34,11 +34,8 @@
 }
 
 .menu li a {
-  /*background-color: inherit;*/
-  color: #ffffff;
-  /*font-weight: bold;*/
-  /* This makes it so that the whole li is clickable */
-  text-decoration: none;
+	color: #FFFFFF;
+	text-decoration:none;
 }
 
 li:hover ul {
@@ -46,9 +43,10 @@ li:hover ul {
 }
 
 .submenu_text {
-  padding: 10.5px;
-  margin-left: 0px;
-  width: 100%;
+	padding: 10.5px;
+	margin-left: 0px;
+	width: 100%;
+	color: #fff;
 }
 
 .menu li.subselected a {
@@ -259,3 +257,136 @@ ul li a:hover {
   color: #e2144a;
 } /* Hover Styles */
 /*li ul li a { padding: 2px 5px; }  Sub Menu Styles */
+
+
+
+/*
+ * ---------------------------------------------------------------------
+ * - MAIN LEFT MENU and SUBMENU 									-
+ * ---------------------------------------------------------------------
+ */
+.menu li.selected {
+	font-weight: bold;
+}
+
+.menu_icon{
+	transition-property: background-color;
+	transition-duration: 0.5s;
+	transition-timing-function: ease-out;
+	-webkit-transition-property: background-color;
+	-webkit-transition-duration: 0.5s;
+	-webkit-transition-timing-function: ease-out;
+	-moz-transition-property: background-color;
+	-moz-transition-duration: 0.5s;
+	-moz-transition-timing-function: ease-out;
+	-o-transition-property: background-color;
+	-o-transition-duration: 0.5s;
+	-o-transition-timing-function: ease-out;
+}
+
+.menu_icon:hover{
+	transition-property: background-color;
+	transition-duration: 0.5s;
+	transition-timing-function: ease-out;
+	-webkit-transition-property: background-color;
+	-webkit-transition-duration: 0.5s;
+	-webkit-transition-timing-function: ease-out;
+	-moz-transition-property: background-color;
+	-moz-transition-duration: 0.5s;
+	-moz-transition-timing-function: ease-out;
+	-o-transition-property: background-color;
+	-o-transition-duration: 0.5s;
+	-o-transition-timing-function: ease-out;
+	background-color: #585858 !important;
+}
+.submenu_not_selected:hover{
+	transition-property: background-color;
+	transition-duration: 0.5s;
+	transition-timing-function: ease-out;
+	-webkit-transition-property: background-color;
+	-webkit-transition-duration: 0.5s;
+	-webkit-transition-timing-function: ease-out;
+	-moz-transition-property: background-color;
+	-moz-transition-duration: 0.5s;
+	-moz-transition-timing-function: ease-out;
+	-o-transition-property: background-color;
+	-o-transition-duration: 0.5s;
+	-o-transition-timing-function: ease-out;
+	background-color: #585858 !important;
+}
+.submenu_selected:hover{
+	background-color: #585858 !important;
+}
+.sub_subMenu{
+	transition-property: background-color;
+	transition-duration: 0.5s;
+	transition-timing-function: ease-out;
+	-webkit-transition-property: background-color;
+	-webkit-transition-duration: 0.5s;
+	-webkit-transition-timing-function: ease-out;
+	-moz-transition-property: background-color;
+	-moz-transition-duration: 0.5s;
+	-moz-transition-timing-function: ease-out;
+	-o-transition-property: background-color;
+	-o-transition-duration: 0.5s;
+}
+.sub_subMenu:hover{
+	transition-property: background-color;
+	transition-duration: 0.5s;
+	transition-timing-function: ease-out;
+	-webkit-transition-property: background-color;
+	-webkit-transition-duration: 0.5s;
+	-webkit-transition-timing-function: ease-out;
+	-moz-transition-property: background-color;
+	-moz-transition-duration: 0.5s;
+	-moz-transition-timing-function: ease-out;
+	-o-transition-property: background-color;
+	-o-transition-duration: 0.5s;
+	background-color: #585858 !important;
+}
+
+.menu li.selected {
+	box-shadow: inset 4px 0 #80BA27;
+}
+/* creo que no se usan
+.is_submenu2 li {
+	background-color: #ff0000;
+}
+
+.is_submenu2 {
+	background-color: #222222 !important;
+}
+*/
+.operation {
+	background-color: #333 !important;
+	border-top-right-radius: 5px;
+	border-right-style: solid;
+	border-right-width: 0px;
+}
+
+.operation .selected {
+	background-color: #585858 !important;
+}
+
+.menu li, .menu .li.not_selected {
+	border-radius: 0px 0px 0px 0px;
+	display: block;
+	min-height: 35px;
+	border-bottom: 0px none #424242;
+	vertical-align: middle;
+}
+
+.godmode, .menu_icon ul li{
+	background-color: #222;
+}
+.operation .menu_icon ul li{
+	background-color: #333;
+}
+
+.godmode{
+	border-top: 4px solid #777 !important;
+	padding-bottom: 4px !important;
+	border-bottom-right-radius: 5px;
+	border-right-style: solid;
+	border-right-width: 0px;
+}

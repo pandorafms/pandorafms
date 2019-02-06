@@ -192,7 +192,7 @@ if ($own_info['is_admin'] || check_acl($config['id_user'], 0, 'PM')) {
         echo '</div></form>';
     }
 
-    ui_require_css_file('cluetip');
+    ui_require_css_file('cluetip','include/styles/js/');
     ui_require_jquery_file('cluetip');
     ui_require_jquery_file('pandora.controls');
     ui_require_jquery_file('bgiframe');

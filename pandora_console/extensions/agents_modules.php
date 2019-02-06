@@ -235,7 +235,6 @@ function mainAgentsModules()
         echo '</div>';
         // Floating menu - End
         ui_require_jquery_file('countdown');
-        ui_require_css_file('countdown');
     }
 
     if ($config['pure'] != 1) {

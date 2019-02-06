@@ -681,7 +681,7 @@ if (empty($traps)) {
 
         ui_require_css_file('pandora_enterprise', ENTERPRISE_DIR.'/include/styles/');
         ui_require_css_file('pandora_dashboard', ENTERPRISE_DIR.'/include/styles/');
-        ui_require_css_file('cluetip');
+        ui_require_css_file('cluetip','include/styles/js/');
 
         ui_require_jquery_file('countdown');
         ui_require_javascript_file('pandora_dashboard', ENTERPRISE_DIR.'/include/javascript/');

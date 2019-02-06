@@ -5,7 +5,7 @@
 ?>
 <h1>ヒストリデータベース</h1>
 
-ヒストリデータベースは、メインの <?php echo get_product_name();?> データベースの応答速度を確保するために、古いモジュールデータを毎日移動させるためのデータベースです。データは、<?php echo get_product_name();?> コンソールでレポートやグラフを表示するときにシームレスに参照できます。
+ヒストリデータベースは、メインの <?php echo get_product_name(); ?> データベースの応答速度を確保するために、古いモジュールデータを毎日移動させるためのデータベースです。データは、<?php echo get_product_name(); ?> コンソールでレポートやグラフを表示するときにシームレスに参照できます。
 <br><br>
 <b>ヒストリデータベースの設定</b>
 <br><br>
@@ -14,7 +14,7 @@
 <ol>
 <li>新たなヒストリデータベースの作成
 <br><br>
-<li>新たなデータベースに必要なテーブルを作成します。<?php echo get_product_name();?> コンソールと共に提供されている DB Tool スクリプトが利用できます。
+<li>新たなデータベースに必要なテーブルを作成します。<?php echo get_product_name(); ?> コンソールと共に提供されている DB Tool スクリプトが利用できます。
 <br><br>
 <i>cat pandoradb.sql | mysql -u user -p -D history_db</i>
 <br><br>
@@ -22,10 +22,10 @@
 <br><br>
 <i>Mysql Example: GRANT ALL PRIVILEGES ON pandora.* TO 'pandora'@'IP' IDENTIFIED BY 'password'</i>
 <br><br>
-<li><?php echo get_product_name();?> コンソールの 設定(Setup) -> ヒストリデータベース(History database) のメニューへ行き、ホスト名、ポート番号、データベース名および、新たなデータベースのユーザ名とパスワードを入力します。
+<li><?php echo get_product_name(); ?> コンソールの 設定(Setup) -> ヒストリデータベース(History database) のメニューへ行き、ホスト名、ポート番号、データベース名および、新たなデータベースのユーザ名とパスワードを入力します。
 </ol>
 <br><br>
-<?php html_print_image ("images/help/historyddbb.png", false, array('width' => '550px')); ?>
+<?php html_print_image('images/help/historyddbb.png', false, ['width' => '550px']); ?>
 <br><br>
 "日間"に指定した日数より古いデータが、"ステップ"に指定したブロックサイズでヒストリデータベースに移動されます。負荷上昇を避けるために、"遅延"に指定した秒数だけブロック間の転送を待ちます。
 <br><br>

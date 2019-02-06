@@ -6,7 +6,7 @@
 <h1>ウェブモニタリング</h1>
 
 <p>
-拡張ウェブモニタリングは、<?php echo get_product_name();?> エンタープライズ版の Goliat で動作する機能です。
+拡張ウェブモニタリングは、<?php echo get_product_name(); ?> エンタープライズ版の Goliat で動作する機能です。
 <br><br>
 以下に、GOLIAT ウェブチェックモジュールのサンプルを示します。
 <br>

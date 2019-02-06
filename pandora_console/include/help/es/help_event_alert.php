@@ -1,25 +1,25 @@
 <?php
 /*
-* @package Include/help/es
-*/
+ * @package Include/help/es
+ */
 ?>
 
 <h1>Alerta de evento</h1>
 
-Desde la versión 4.0 de <?php echo get_product_name();?> se pueden definir alertas sobre los eventos, lo que permite trabajar desde una perspectiva completamente nueva y mucho más flexible. Esta es una característica Enterprise.<br><br>
+Desde la versión 4.0 de <?php echo get_product_name(); ?> se pueden definir alertas sobre los eventos, lo que permite trabajar desde una perspectiva completamente nueva y mucho más flexible. Esta es una característica Enterprise.<br><br>
 
 Las Alertas de evento nuevas se crean pinchando en el botón Create en el menú Event alerts en el menú de Administración.
 <br><br>
 
 
-<?php html_print_image ("images/help/event01.png", false, array('width' => '250px')); ?>
+<?php html_print_image('images/help/event01.png', false, ['width' => '250px']); ?>
 
 
 <br>
 Una alerta de eventos está compuesta por distintas reglas, relacionadas entre sí por operadores lógicos (and, or, xor, nand, nor, nxor).
 <br><br>
 
-<?php html_print_image ("images/help/event02.png", false, array('width' => '550px')); ?>
+<?php html_print_image('images/help/event02.png', false, ['width' => '550px']); ?>
 
 <br>
 Para hacer más fácil trabajar con ellas, los parámetros de configuración de una alerta de eventos son idénticos a los de una alerta de módulo. Aquí se puede encontrar una explicación detallada de cada uno de ellos. Únicamente existen dos parámetros específicos de las alertas de eventos:
@@ -32,7 +32,7 @@ Cada regla se configura para saltar ante un determinado tipo de evento, cuando s
 <br><br>
 
 
-<?php html_print_image ("images/help/event03.png", false, array('width' => '550px')); ?>
+<?php html_print_image('images/help/event03.png', false, ['width' => '550px']); ?>
 
 <br>
 
@@ -56,9 +56,9 @@ Por ejemplo, podríamos configurar una regla que case con los eventos generados 
 <br><br>
 
 
-<?php html_print_image ("images/help/event04.png", false, array('width' => '550px')); ?>
+<?php html_print_image('images/help/event04.png', false, ['width' => '550px']); ?>
 
 <br>
-<p>Dado el elevado número de eventos que puede llegar a albergar la base de datos de <?php echo get_product_name();?>, el servidor trabaja sobre una ventana de eventos que se define en el fichero de configuración pandora_server.conf mediante el parámetro event_window. Los eventos que se hayan generado fuera de esta ventana de tiempo no serán procesados por el servidor, de modo que no tiene sentido especificar en una regla una ventana de tiempo superior a la configurada en el servidor </p>
+<p>Dado el elevado número de eventos que puede llegar a albergar la base de datos de <?php echo get_product_name(); ?>, el servidor trabaja sobre una ventana de eventos que se define en el fichero de configuración pandora_server.conf mediante el parámetro event_window. Los eventos que se hayan generado fuera de esta ventana de tiempo no serán procesados por el servidor, de modo que no tiene sentido especificar en una regla una ventana de tiempo superior a la configurada en el servidor </p>
 
 

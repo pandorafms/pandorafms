@@ -183,17 +183,36 @@ function notifications_get_all_sources()
  */
 function notifications_get_user_sources_for_select($source_id)
 {
+    $users = notifications_get_user_sources(
+        ['id_source' => $source_id],
+        ['id_user']
+    );
+
+    return index_array($users, 'id_user', 'id_user');
+}
+
+
+/**
+ * Get the user sources
+ *
+ * @param array $filter Filter of sql query.
+ * @param array $fields Fields to get of query.
+ *
+ * @return array Array with user sources data.
+ */
+function notifications_get_user_sources($filter=[], $fields=[])
+{
     $users = db_get_all_rows_filter(
         'tnotification_source_user',
-        ['id_source' => $source_id],
-        'id_user'
+        $filter,
+        $fields
     );
-    // If fails or no one is selected, return empty array
+    // If fails or no one is selected, return empty array.
     if ($users === false) {
         return [];
     }
 
-    return index_array($users, 'id_user', 'id_user');
+    return $users;
 }
 
 
@@ -358,6 +377,12 @@ function notifications_add_users_to_source($source_id, $users)
 
     // Insert into database all groups passed
     $res = true;
+    $also_mail = db_get_value(
+        'also_mail',
+        'tnotification_source',
+        'id',
+        $source_id
+    );
     foreach ($users as $user) {
         if (empty($user)) {
             continue;
@@ -368,6 +393,8 @@ function notifications_add_users_to_source($source_id, $users)
             [
                 'id_user'   => $user,
                 'id_source' => $source_id,
+                'enabled'   => 1,
+                'also_mail' => (int) $also_mail,
             ]
         ) !== false;
     }
@@ -407,6 +434,48 @@ function notifications_get_user_source_not_configured($source_id)
         ['id_user']
     );
     return index_array($users, 'id_user', 'id_user');
+}
+
+
+function notifications_build_user_enable_return($status, $enabled)
+{
+    return [
+        'status'  => ((bool) $status === true) ? 1 : 0,
+        'enabled' => ((bool) $enabled === true) ? 1 : 0,
+    ];
+}
+
+
+function notifications_get_user_label_status($source, $user, $label)
+{
+    // If not enabled, it cannot be modificable.
+    if (!$source['enabled'] || !$source[$label]) {
+        return notifications_build_user_enable_return(false, false);
+    }
+
+    // See at first for direct reference.
+    $user_source = notifications_get_user_sources(
+        [
+            'id_source' => $source['id'],
+            'id_user'   => $user,
+        ]
+    );
+    if (!empty($user_source)) {
+        return notifications_build_user_enable_return(
+            isset($user_source[0][$label]) ? $user_source[0][$label] : false,
+            $source['user_editable']
+        );
+    }
+
+    $common_groups = array_intersect(
+        array_keys(users_get_groups($user)),
+        array_keys(
+            notifications_get_group_sources_for_select($source['id'])
+        )
+    );
+    // No group found, return no permissions.
+    $value = empty($common_groups) ? false : $source[$label];
+    return notifications_build_user_enable_return($value, false);
 }
 
 
@@ -470,7 +539,7 @@ function notifications_print_global_source_configuration($source)
     $html_checkboxes .= __('Also email users with notification content');
     $html_checkboxes .= '   </span><br><span>';
     $html_checkboxes .= html_print_checkbox("user-$id", 1, $source['user_editable'], true);
-    $html_checkboxes .= __('Users cannot modify notification preferences');
+    $html_checkboxes .= __('Users can modify notification preferences');
     $html_checkboxes .= '   </span>';
     $html_checkboxes .= '</div>';
 
@@ -554,4 +623,17 @@ function notifications_print_two_ways_select($info_selec, $users, $source_id)
     $html_select .= html_print_button(__('Add'), 'Add', false, "notifications_add_source_element_to_database('$users', '$source_id')", "class='sub add'", true);
 
     return $html_select;
+}
+
+
+function notifications_print_user_switch($source, $user, $label)
+{
+    $status = notifications_get_user_label_status($source, $user, $label);
+    return html_print_switch(
+        [
+            'name'     => $label,
+            'value'    => $status['status'],
+            'disabled' => !$status['enabled'],
+        ]
+    );
 }

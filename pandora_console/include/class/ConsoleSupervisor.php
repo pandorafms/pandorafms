@@ -387,7 +387,6 @@ class ConsoleSupervisor
             }
 
             $insertion_string = substr($insertion_string, 0, -1);
-
             db_process_sql($users_sql.' VALUES '.$insertion_string);
         }
 
@@ -445,7 +444,7 @@ class ConsoleSupervisor
     public function notify(
         array $data,
         int $source_id=0,
-        int $max_age=0
+        int $max_age=86400
     ) {
         // Uses 'check failed' logic.
         if (is_array($data) === false) {
@@ -561,6 +560,9 @@ class ConsoleSupervisor
             $this->warn('Failed to generate notification');
             return;
         }
+
+        // Update reference to update targets.
+        $notification['id_mensaje'] = $id;
 
         $this->updateTargets($notification);
 

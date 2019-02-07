@@ -25,7 +25,7 @@
 require_once 'functions_agents.php';
 require_once $config['homedir'].'/include/functions_modules.php';
 require_once $config['homedir'].'/include/functions_groups.php';
-ui_require_css_file('cluetip');
+ui_require_css_file('cluetip', 'include/styles/js/');
 
 
 // Check if a node descends from a given node

@@ -168,8 +168,8 @@ echo "<div id='saving_in_progress_dialog' style='display: none; text-align: cent
 echo "<div id='delete_in_progress_dialog' style='display: none; text-align: center;' title='".__('Action in progress')."'>".__('Deletion in progress').'<br />'.html_print_image('images/spinner.gif', true).'</div>';
 
 // CSS
-ui_require_css_file('color-picker');
-ui_require_css_file('jquery-ui.min');
+ui_require_css_file('color-picker', 'include/styles/js/');
+ui_require_css_file('jquery-ui.min', 'include/styles/js/');
 
 // Javascript
 ui_require_jquery_file('colorpicker');

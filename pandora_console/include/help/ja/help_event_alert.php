@@ -1,7 +1,7 @@
 <?php
 /*
-* @package Include/help/ja
-*/
+ * @package Include/help/ja
+ */
 ?>
 
 <h1>イベントアラート</h1>
@@ -12,14 +12,14 @@
 
 <br><br>
 
-<?php html_print_image ("images/help/event01.png", false, array('width' => '250px')); ?>
+<?php html_print_image('images/help/event01.png', false, ['width' => '250px']); ?>
 
 <br>
 イベントアラートは、論理式(and、or、xor、nand、nor、nxor)で結合されたルールで組
 み立てられます。
 <br><br>
 
-<?php html_print_image ("images/help/event02.png", false, array('width' => '550px')); ?>
+<?php html_print_image('images/help/event02.png', false, ['width' => '550px']); ?>
 
 <br>
 簡単に言うと、イベントアラートの設定パラメータは、モジュールアラートと同じです。イベントアラート特有のパラメータは2つだけです。
@@ -32,7 +32,7 @@
 <br><br>
 
 
-<?php html_print_image ("images/help/event03.png", false, array('width' => '550px')); ?>
+<?php html_print_image('images/help/event03.png', false, ['width' => '550px']); ?>
 
 <br>
 
@@ -56,8 +56,8 @@
 <br><br>
 
 
-<?php html_print_image ("images/help/event04.png", false, array('width' => '550px')); ?>
+<?php html_print_image('images/help/event04.png', false, ['width' => '550px']); ?>
 
 
-<p>* <?php echo get_product_name();?> データベースに保存できるイベント数に関しては、pandora_server.conf ファイルの event_window パラメータにて定義します。この時間範囲を越えるイベントが発生した場合は、サーバは処理を行いません。そのため、サーバの設定よりも大きな時間間隔を設定しても意味がありません。 </p>
+<p>* <?php echo get_product_name(); ?> データベースに保存できるイベント数に関しては、pandora_server.conf ファイルの event_window パラメータにて定義します。この時間範囲を越えるイベントが発生した場合は、サーバは処理を行いません。そのため、サーバの設定よりも大きな時間間隔を設定しても意味がありません。 </p>
 

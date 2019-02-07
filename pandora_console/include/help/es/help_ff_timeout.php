@@ -17,34 +17,34 @@ Por ejemplo, un módulo asíncrono de tipo proc con un umbral de FF de 1 y un ti
 <th>Data</th>
 <th>Status change</th>
 <tr>
-	<td>12:00</td>
-	<td>1</td>
-	<td>No</td>
+    <td>12:00</td>
+    <td>1</td>
+    <td>No</td>
 </tr>
 <tr>
-	<td>12:05</td>
-	<td>0</td>
-	<td>No</td>
+    <td>12:05</td>
+    <td>0</td>
+    <td>No</td>
 </tr>
 <tr>
-	<td><b>12:20</b></td>
-	<td>0</td>
-	<td>No</td>
+    <td><b>12:20</b></td>
+    <td>0</td>
+    <td>No</td>
 </tr>
 <tr>
-	<td>12:25</b></td>
-	<td>1</td>
-	<td>No</td>
+    <td>12:25</b></td>
+    <td>1</td>
+    <td>No</td>
 </tr>
 <tr>
-	<td>12:45</td>
-	<td>0</td>
-	<td>No</td>
+    <td>12:45</td>
+    <td>0</td>
+    <td>No</td>
 </tr>
 <tr>
-	<td><b>12:50</b></td>
-	<td>0</td>
-	<td><b>Yes</b></td>
+    <td><b>12:50</b></td>
+    <td>0</td>
+    <td><b>Yes</b></td>
 </tr>
 </table>
 

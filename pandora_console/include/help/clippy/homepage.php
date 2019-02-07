@@ -4,101 +4,85 @@
 // ==================================================
 // Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
-
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the  GNU Lesser General Public License
 // as published by the Free Software Foundation; version 2
-
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
 /**
- * @package Include
+ * @package    Include
  * @subpackage Clippy
  */
 
-function clippy_start_page_homepage() {
-	global $config;
-	
-	$clippy_is_annoying = (int)get_cookie('clippy_is_annoying', 0);
-	$nagios = (int)get_cookie('nagios', -1);
-	
-	$easter_egg_toy = $nagios % 6;
-	if (($easter_egg_toy == 5) ||
-		($easter_egg_toy == -1)) {
-		$image = 'images/clippy/clippy.png';
-	}
-	else {
-		$image = 'images/clippy/easter_egg_0' . $easter_egg_toy . '.png';
-	}
-	if ($image != 'easter_egg_04.png') {
-		$style = 'display: block; position: absolute; left: -112px; top: -80px;';
-	}
-	else {
-		$style = 'display: block; position: absolute; left: -200px; top: -80px;';
-	}
-	
-	clippy_clean_help();
-	
-	$return_tours = array();
-	$return_tours['first_step_by_default'] = true;
-	$return_tours['tours'] = array();
-	
-	
-	//==================================================================
-	//Help tour with the some task for to help the user.
-	//------------------------------------------------------------------
-	$return_tours['tours']['homepage'] = array();
-	$return_tours['tours']['homepage']['steps'] = array();
-	$return_tours['tours']['homepage']['steps'][] = array(
-		'element'=> '#clippy',
-		'intro' => 
-			'<div class="clippy_body" style="text-align: left; padding-left: 20px; padding-right: 20px;">'.
-			__('Hi, can I help you?') . '<br/><br/>' .
-			__('Let me introduce my self: I am Pandorin, the annoying assistant of %s. You can follow my steps to do basic tasks in %s or you can close me and never see me again.', get_product_name(), get_product_name()) .
-			'<br /> ' .
-			'<br /> ' .
-			'<div class="clippy_body" style="font-size: 7pt;">' .
-				html_print_checkbox_extended
-					('clippy_is_annoying', 1, $clippy_is_annoying, false,
-					'set_clippy_annoying()', '', true) .
-					__('Close this wizard and don\'t open it again.') .
-				'</div>' .
-			'</div>' .
-			'<div style="position:relative;">
-			<div id="pandorin" style="' . $style . '">' .
-				html_print_image(
-					$image,
-					true,
-					array('id'=> 'clippy_toy', 'onclick' => 'easter_egg_clippy(1);')) .
-			'</div>
-			</div>'
-		);
-	$return_tours['tours']['homepage']['steps'][] = array(
-		'element'=> '#clippy',
-		'intro' => __('Which task would you like to do first?') . '<br/><br/>' .
-			'<ul style="text-align: left; margin-left: 10px; list-style-type: disc;">' .
-				'<li>' .
-					"<a href='javascript: clippy_go_link_show_help(\"index.php?sec=gagente&sec2=godmode/agentes/modificar_agente\", \"monitoring_server_step_1\");'>" . 
-						__('Ping a Linux or Windows server using a %s agent.', get_product_name()) .
-					'</a>' .
-				'</li>' .
-				'<li>' .
-					"<a href='javascript: clippy_go_link_show_help(\"index.php\", \"email_alert_module_step_1\");'>" . 
-						__('Create a alert by email in a critical module.') .
-					'</a>' .
-				'</li>' .
-				//'<li>' . __('Monitor a switch with remote SNMP') . '</li>' .
-				//'<li>' . __('Monitor a Windows server with remote WMI') . '</li>' .
-			'</ul>'
-		);
-	$return_tours['tours']['homepage']['conf'] = array();
-	$return_tours['tours']['homepage']['conf']['show_bullets'] = 0;
-	$return_tours['tours']['homepage']['conf']['show_step_numbers'] = 0;
-	$return_tours['tours']['homepage']['conf']['name_obj_js_tour'] = 'intro_homepage';
-	$return_tours['tours']['homepage']['conf']['other_js'] = "
+
+function clippy_start_page_homepage()
+{
+    global $config;
+
+    $clippy_is_annoying = (int) get_cookie('clippy_is_annoying', 0);
+    $nagios = (int) get_cookie('nagios', -1);
+
+    $easter_egg_toy = ($nagios % 6);
+    if (($easter_egg_toy == 5)
+        || ($easter_egg_toy == -1)
+    ) {
+        $image = 'images/clippy/clippy.png';
+    } else {
+        $image = 'images/clippy/easter_egg_0'.$easter_egg_toy.'.png';
+    }
+
+    if ($image != 'easter_egg_04.png') {
+        $style = 'display: block; position: absolute; left: -112px; top: -80px;';
+    } else {
+        $style = 'display: block; position: absolute; left: -200px; top: -80px;';
+    }
+
+    clippy_clean_help();
+
+    $pandorin_img = html_print_image(
+        $image,
+        true,
+        [
+            'id'      => 'clippy_toy',
+            'onclick' => 'easter_egg_clippy(1);',
+        ]
+    );
+
+    $pandorin_chkb = html_print_checkbox_extended(
+        'clippy_is_annoying',
+        1,
+        $clippy_is_annoying,
+        false,
+        'set_clippy_annoying()',
+        '',
+        true
+    );
+
+    $return_tours = [];
+    $return_tours['first_step_by_default'] = true;
+    $return_tours['tours'] = [];
+
+    // ==================================================================
+    // Help tour with the some task for to help the user.
+    // ------------------------------------------------------------------
+    $return_tours['tours']['homepage'] = [];
+    $return_tours['tours']['homepage']['steps'] = [];
+    $return_tours['tours']['homepage']['steps'][] = [
+        'element' => '#clippy',
+        'intro'   => '<div class="clippy_body" style="text-align: left; padding-left: 20px; padding-right: 20px;">'.__('Hi, can I help you?').'<br/><br/>'.__('Let me introduce my self: I am Pandorin, the annoying assistant of %s. You can follow my steps to do basic tasks in %s or you can close me and never see me again.', get_product_name(), get_product_name()).'<br /> <br /> <div class="clippy_body" style="font-size: 7pt;">'.$pandorin_chkb.__('Close this wizard and don\'t open it again.').'</div></div><div style="position:relative;"><div id="pandorin" style="'.$style.'">'.$pandorin_img.'</div></div>',
+    ];
+    $return_tours['tours']['homepage']['steps'][] = [
+        'element' => '#clippy',
+        'intro'   => __('Which task would you like to do first?').'<br/><br/><ul style="text-align: left; margin-left: 10px; list-style-type: disc;"><li>'."<a href='javascript: clippy_go_link_show_help(\"index.php?sec=gagente&sec2=godmode/agentes/modificar_agente\", \"monitoring_server_step_1\");'>".__('Ping a Linux or Windows server using a %s agent.', get_product_name()).'</a></li><li>'."<a href='javascript: clippy_go_link_show_help(\"index.php\", \"email_alert_module_step_1\");'>".__('Create a alert by email in a critical module.').'</a></li></ul>',
+    ];
+    $return_tours['tours']['homepage']['conf'] = [];
+    $return_tours['tours']['homepage']['conf']['show_bullets'] = 0;
+    $return_tours['tours']['homepage']['conf']['show_step_numbers'] = 0;
+    $return_tours['tours']['homepage']['conf']['name_obj_js_tour'] = 'intro_homepage';
+    $return_tours['tours']['homepage']['conf']['other_js'] = "
 		var started = 0;
 		
 		function show_clippy() {
@@ -181,56 +165,46 @@ function clippy_start_page_homepage() {
 		}
 		
 		";
-	if ($config['logged']) {
-		$return_tours['tours']['homepage']['conf']['autostart'] = true;
-	}
-	else {
-		$return_tours['tours']['homepage']['conf']['autostart'] = false;
-	}
-	
-	if ($config["tutorial_mode"] == 'on_demand') {
-		$return_tours['tours']['homepage']['conf']['autostart'] = false;
-	}
-	
-	if ($clippy_is_annoying === 1) {
-		$return_tours['tours']['homepage']['conf']['autostart'] = false;
-	}
-	
-	//==================================================================
-	
-	
-	//==================================================================
-	//Help tour about the email alert module (step 1)
-	//------------------------------------------------------------------
-	$return_tours['tours']['email_alert_module_step_1'] = array();
-	$return_tours['tours']['email_alert_module_step_1']['steps'] = array();
-	$return_tours['tours']['email_alert_module_step_1']['steps'][] = array(
-		'element'=> '#clippy',
-		'intro' => __('The first thing you have to do is to setup the e-mail config on the %s Server.', get_product_name()) .
-			'<br />' .
-			ui_print_help_icon ('context_pandora_server_email', true, '', 'images/help.png') .
-			'<br />' .
-			__('If you have it already configured you can go to the next step.')
-		);
-	$return_tours['tours']['email_alert_module_step_1']['steps'][] = array(
-		'element'=> '#icon_god-alerts',
-		'position' => 'top',
-		'intro' => __('Now, pull down the Manage alerts menu and click on Actions. ')
-		);
-	$return_tours['tours']['email_alert_module_step_1']['conf'] = array();
-	$return_tours['tours']['email_alert_module_step_1']['conf']['show_bullets'] = 0;
-	$return_tours['tours']['email_alert_module_step_1']['conf']['show_step_numbers'] = 0;
-	
-	$return_tours['tours']['email_alert_module_step_1']['conf']['complete_js'] = "
+    if ($config['logged']) {
+        $return_tours['tours']['homepage']['conf']['autostart'] = true;
+    } else {
+        $return_tours['tours']['homepage']['conf']['autostart'] = false;
+    }
+
+    if ($config['tutorial_mode'] == 'on_demand') {
+        $return_tours['tours']['homepage']['conf']['autostart'] = false;
+    }
+
+    if ($clippy_is_annoying === 1) {
+        $return_tours['tours']['homepage']['conf']['autostart'] = false;
+    }
+
+    // ==================================================================
+    // ==================================================================
+    // Help tour about the email alert module (step 1)
+    // ------------------------------------------------------------------
+    $return_tours['tours']['email_alert_module_step_1'] = [];
+    $return_tours['tours']['email_alert_module_step_1']['steps'] = [];
+    $return_tours['tours']['email_alert_module_step_1']['steps'][] = [
+        'element' => '#clippy',
+        'intro'   => __('The first thing you have to do is to setup the e-mail config on the %s Server.', get_product_name()).'<br />'.ui_print_help_icon('context_pandora_server_email', true, '', 'images/help.png').'<br />'.__('If you have it already configured you can go to the next step.'),
+    ];
+    $return_tours['tours']['email_alert_module_step_1']['steps'][] = [
+        'element'  => '#icon_god-alerts',
+        'position' => 'top',
+        'intro'    => __('Now, pull down the Manage alerts menu and click on Actions. '),
+    ];
+    $return_tours['tours']['email_alert_module_step_1']['conf'] = [];
+    $return_tours['tours']['email_alert_module_step_1']['conf']['show_bullets'] = 0;
+    $return_tours['tours']['email_alert_module_step_1']['conf']['show_step_numbers'] = 0;
+
+    $return_tours['tours']['email_alert_module_step_1']['conf']['complete_js'] = '
 		;
-		";
-	$return_tours['tours']['email_alert_module_step_1']['conf']['exit_js'] = "
+		';
+    $return_tours['tours']['email_alert_module_step_1']['conf']['exit_js'] = '
 		location.reload();
-		";
-	$return_tours['tours']['email_alert_module_step_1']['conf']['next_help'] = 'email_alert_module_step_2';
-	//==================================================================
-	
-	
-	return $return_tours;
+		';
+    $return_tours['tours']['email_alert_module_step_1']['conf']['next_help'] = 'email_alert_module_step_2';
+    // ==================================================================
+    return $return_tours;
 }
-?>

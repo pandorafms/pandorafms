@@ -1,12 +1,12 @@
 <?php
 /*
-* @package Include/ja
-*/
+ * @package Include/ja
+ */
 ?>
 
 <h1>ネットワークマップコンソール</h1>
 
-<p><?php echo get_product_name();?> Enterprise では、編集可能なネットワークマップを作成することができます。ネットワーク参照メニューにあるオープンソース版のものと比べるとより対話形式になっています。</p>
+<p><?php echo get_product_name(); ?> Enterprise では、編集可能なネットワークマップを作成することができます。ネットワーク参照メニューにあるオープンソース版のものと比べるとより対話形式になっています。</p>
 
 <p>オープンソース版に対して Enterprise 版のネットワークマップでは、次のような機能があります。</p>
 
@@ -48,7 +48,7 @@
 <p>コントロールパネルからは、ネットワークマップのより複雑な操作ができます。</p>
 
 <p>これは右上に隠れています。ミニマップと同様に、矢印をクリックすることで表示できます。</p>
-<?php html_print_image ("images/help/netmap1.png", false, array('width' => '550px')); ?>
+<?php html_print_image('images/help/netmap1.png', false, ['width' => '550px']); ?>
 
 <p>操作オプションは次の通りです。</p>
 
@@ -66,12 +66,12 @@
 <p>詳細表示ウインドウは、一つのエージェントのビジュアル表示です。開いたマップと同じ頻度で更新されます。個々のウインドウは完全に独立しているため、複数のウインドウを開くことができます。</p>
 
 
-<?php html_print_image ("images/help/netmap2.png", false, array('width' => '550px')); ?><br><br>
+<?php html_print_image('images/help/netmap2.png', false, ['width' => '550px']); ?><br><br>
 
 
 
     <p>エージェントの状態と同じ色の枠で表示されます。<br>
-    エージェント名は、<?php echo get_product_name();?> のエージェントのページへのリンクになっています。<br>
+    エージェント名は、<?php echo get_product_name(); ?> のエージェントのページへのリンクになっています。<br>
     ウインドウ内には、不明状態ではないすべてのモジュールが、緑や赤といったモジュールの状態に応じて表示されます。<br>
         モジュールをクリックすると、モジュールのメインデータと共に簡単な説明が表示されます。<br>
     枠の中には、SNMP Proc のモジュールがあります。ネットワーク機器関連のエージェントで、ネットワークインタフェースの監視に使われます。<br></p>
@@ -80,7 +80,7 @@
 </h2>
 <p>仮想ポイントの詳細を表示すると、仮想ポイントを編集するためのオプションパレットをポップアップウインドウで表示します。</p>
 
-<?php html_print_image ("images/help/netmap3.png", false, array('width' => '550px')); ?><br><br>
+<?php html_print_image('images/help/netmap3.png', false, ['width' => '550px']); ?><br><br>
 
 
 <p>次のオプションのフォームがあります。</p>

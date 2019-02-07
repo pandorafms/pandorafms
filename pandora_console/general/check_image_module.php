@@ -1,9 +1,9 @@
 <?php
 
-include_once ('include/config.php');
-include_once ('include/functions.php');
-include_once ('include/functions_db.php');
-include_once ('include/auth/mysql.php');
+require_once 'include/config.php';
+require_once 'include/functions.php';
+require_once 'include/functions_db.php';
+require_once 'include/auth/mysql.php';
 
 $id = get_parameter('get_image');
 
@@ -13,13 +13,8 @@ $result = db_get_sql($sql);
 
 $image = strpos($result, 'data:image');
 
-if($image === false){
-  echo 0;
+if ($image === false) {
+    echo 0;
+} else {
+    echo 1;
 }
-else{
-  echo 1;
-}
-
-?>
-
-

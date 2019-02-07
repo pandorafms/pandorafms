@@ -356,6 +356,7 @@ class ConsoleSupervisor
         bool $update=false
     ) {
         $notification_id = $notification['id_mensaje'];
+        $blacklist = [];
 
         if (is_array($this->targetUsers) === true
             && count($this->targetUsers) > 0
@@ -382,6 +383,7 @@ class ConsoleSupervisor
                                 io_safe_output($notification['subject']),
                             ]
                         );
+                        array_push($blacklist, $user['id_user']);
                     }
                 }
             }
@@ -407,13 +409,14 @@ class ConsoleSupervisor
                 if ($update === false) {
                     // Send mail.
                     if (isset($group['also_mail']) && $group['also_mail'] == 1) {
-                        $this->warn('Mailing group: '.$group['id_group']."\n");
                         enterprise_hook(
                             'send_email_group',
                             [
                                 $group['id_group'],
                                 io_safe_output($notification['mensaje']).'<br><hl><br>'.$notification['url'],
                                 io_safe_output($notification['subject']),
+                                null,
+                                $blacklist,
                             ]
                         );
                     }

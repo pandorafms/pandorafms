@@ -1278,3 +1278,11 @@ INSERT INTO `tnotification_source`(`description`, `icon`, `max_postpone_time`, `
   ("Advertisement", "icono_info_mr.png", 86400, 1, 1, 0),
   ("Official&#x20;communication", "icono_info_mr.png", 86400, 1, 1, 0),
   ("Sugerence", "icono_info_mr.png", 86400, 1, 1, 0);
+
+-- 
+-- Dumping data for table `tnotification_source_user`
+-- 
+INSERT INTO `tnotification_source_user`(`id_source`,`id_user`,`enabled`,`also_mail`) VALUES
+  ((SELECT `id` FROM `tnotification_source` WHERE `description`="System&#x20;status"), "admin",1,0);
+
+  

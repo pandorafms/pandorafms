@@ -28,7 +28,7 @@
 
 global $config;
 
-require_once __DIR__.'/../functions.php';
+require_once $config['homedir'].'/include/functions_db.php';
 require_once $config['homedir'].'/include/functions_io.php';
 require_once $config['homedir'].'/include/functions_notifications.php';
 require_once $config['homedir'].'/include/functions_servers.php';
@@ -36,7 +36,7 @@ require_once $config['homedir'].'/include/functions_servers.php';
 // Enterprise includes.
 enterprise_include_once('include/functions_metaconsole.php');
 enterprise_include_once('include/functions_license.php');
-
+enterprise_include_once('extensions/cron/functions.php');
 
 /**
  * Base class to run scheduled tasks in cron extension
@@ -170,12 +170,6 @@ class ConsoleSupervisor
         // Enterprise support.
         if (file_exists($config['homedir'].'/'.ENTERPRISE_DIR.'/load_enterprise.php')) {
             include_once $config['homedir'].'/'.ENTERPRISE_DIR.'/load_enterprise.php';
-        }
-
-        $time = get_system_time();
-        $scheduled_tasks = db_get_all_rows_in_table('tuser_task_scheduled');
-        if (!$scheduled_tasks) {
-            $scheduled_tasks = [];
         }
 
         // Automatic checks launched by supervisor.
@@ -334,6 +328,13 @@ class ConsoleSupervisor
 
         $this->checkUpdates();
 
+        /*
+         * Check if there're new minor updates available.
+         *    NOTIF.UPDATEMANAGER.MINOR
+         */
+
+        $this->checkMinorRelease();
+
         if ($this->verbose === true) {
             // Release the lock.
             enterprise_hook('cron_supervisor_release_lock');
@@ -345,12 +346,17 @@ class ConsoleSupervisor
     /**
      * Update targets for given notification using object targets.
      *
-     * @param integer $notification_id Current notification.
+     * @param array   $notification Current notification.
+     * @param boolean $update       Only update db targets, no email.
      *
      * @return void
      */
-    public function updateTargets(int $notification_id)
-    {
+    public function updateTargets(
+        array $notification,
+        bool $update=false
+    ) {
+        $notification_id = $notification['id_mensaje'];
+
         if (is_array($this->targetUsers) === true
             && count($this->targetUsers) > 0
         ) {
@@ -365,10 +371,18 @@ class ConsoleSupervisor
                 );
                 $insertion_string .= ',';
 
-                // Send mail.
-                if (isset($user['also_mail']) && $user['also_mail'] == 1) {
-                    $this->warn('Mailing user: '.$user['id_user']."\n");
-                    // TODO: Add sendmail sequence.
+                if ($update === false) {
+                    // Send mail.
+                    if (isset($user['also_mail']) && $user['also_mail'] == 1) {
+                        enterprise_hook(
+                            'send_email_user',
+                            [
+                                $user['id_user'],
+                                io_safe_output($notification['mensaje']).'<br><hl><br>'.$notification['url'],
+                                io_safe_output($notification['subject']),
+                            ]
+                        );
+                    }
                 }
             }
 
@@ -391,10 +405,19 @@ class ConsoleSupervisor
                 );
                 $insertion_string .= ',';
 
-                // Send mail.
-                if (isset($group['also_mail']) && $group['also_mail'] == 1) {
-                    $this->warn('Mailing group: '.$group['id_group']."\n");
-                    // TODO: Add sendmail sequence.
+                if ($update === false) {
+                    // Send mail.
+                    if (isset($group['also_mail']) && $group['also_mail'] == 1) {
+                        $this->warn('Mailing group: '.$group['id_group']."\n");
+                        enterprise_hook(
+                            'send_email_group',
+                            [
+                                $group['id_group'],
+                                io_safe_output($notification['mensaje']).'<br><hl><br>'.$notification['url'],
+                                io_safe_output($notification['subject']),
+                            ]
+                        );
+                    }
                 }
             }
 
@@ -422,7 +445,7 @@ class ConsoleSupervisor
     public function notify(
         array $data,
         int $source_id=0,
-        int $max_age=86400
+        int $max_age=0
     ) {
         // Uses 'check failed' logic.
         if (is_array($data) === false) {
@@ -475,7 +498,7 @@ class ConsoleSupervisor
             case 'NOTIF.NEWSLETTER.SUBSCRIPTION':
             case 'NOTIF.UPDATEMANAGER.OPENSETUP':
             case 'NOTIF.UPDATEMANAGER.UPDATE':
-
+            case 'NOTIF.UPDATEMANAGER.MINOR':
             default:
                 // NOTIF.SERVER.STATUS.
                 // NOTIF.SERVER.STATUS.ID_SERVER.
@@ -514,8 +537,7 @@ class ConsoleSupervisor
                 ],
                 ['id_mensaje' => $prev['id_mensaje']]
             );
-
-            $this->updateTargets($prev['id_mensaje']);
+            $this->updateTargets($prev, true);
             return;
         }
 
@@ -540,7 +562,7 @@ class ConsoleSupervisor
             return;
         }
 
-        $this->updateTargets($id);
+        $this->updateTargets($notification);
 
     }
 
@@ -2007,6 +2029,41 @@ class ConsoleSupervisor
             $this->cleanNotifications('NOTIF.UPDATEMANAGER.OPENSETUP');
             $this->cleanNotifications('NOTIF.UPDATEMANAGER.UPDATE');
         }
+    }
+
+
+    /**
+     * Check if there're minor updates available.
+     *
+     * @return void
+     */
+    public function checkMinorRelease()
+    {
+        global $config;
+
+        $check_minor_release_available = db_check_minor_relase_available();
+
+        if ($check_minor_release_available) {
+            $url = 'http://wiki.pandorafms.com/index.php?title=Pandora:Documentation_en:Anexo_Upgrade#Version_7.0NG_.28_Rolling_Release_.29';
+            if ($config['language'] == 'es') {
+                $url = 'http://wiki.pandorafms.com/index.php?title=Pandora:Documentation_es:Actualizacion#Versi.C3.B3n_7.0NG_.28_Rolling_Release_.29';
+            }
+
+            $this->notify(
+                [
+                    'type'    => 'NOTIF.UPDATEMANAGER.MINOR',
+                    'title'   => __('Minor release/s available'),
+                    'message' => __(
+                        'There are one or more minor releases waiting for update. <a style="font-size:8pt;font-style:italic;" target="blank" href="%s">.About minor release update</a>.',
+                        $url
+                    ),
+                    'url'     => $url,
+                ]
+            );
+        } else {
+            $this->cleanNotifications('NOTIF.UPDATEMANAGER.MINOR');
+        }
+
     }
 
 

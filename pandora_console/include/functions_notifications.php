@@ -193,7 +193,7 @@ function get_notification_source_targets(int $id_source)
         $i = 0;
         foreach ($users as $user) {
             $ret['users'][$i]['id_user'] = $user['id_user'];
-            $ret['users'][$i++]['also_mail'] = $also_mail;
+            $ret['users'][$i++]['also_mail'] = $user['also_mail'];
         }
     }
 

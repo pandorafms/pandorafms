@@ -2664,8 +2664,8 @@ function config_check()
 
     include_once __DIR__.'/class/ConsoleSupervisor.php';
 
-    // Enterprise controlles supervisor using discovery cron task.
-    if (!license_free()) {
+    // Enterprise customers launch supervisor using discovery task.
+    if (license_free()) {
         $supervisor = new ConsoleSupervisor(false);
         $supervisor->run();
     }

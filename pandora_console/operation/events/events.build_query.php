@@ -41,6 +41,39 @@ if ($id_group > 0) {
     $childrens_ids = array_keys($groups);
 }
 
+if (($date_from == '') && ($date_to == '')) {
+    if ($event_view_hr > 0) {
+        $filter_resume['hours_max'] = $event_view_hr;
+        $unixtime = (get_system_time() - ($event_view_hr * SECONDS_1HOUR));
+        $sql_post .= ' AND (utimestamp > '.$unixtime.')';
+    }
+} else {
+    // Some of this values will have the user's timezone,
+    // so we need to reverse it to the system's timezone
+    // before using it into the db.
+    $fixed_offset = get_fixed_offset();
+
+    if (!empty($date_from)) {
+        if (empty($time_from)) {
+            $time_from = '00:00:00';
+        }
+
+        $utimestamp_from = (strtotime($date_from.' '.$time_from) - $fixed_offset);
+        $filter_resume['time_from'] = date(DATE_FORMAT.' '.TIME_FORMAT, $utimestamp_from);
+        $sql_post .= ' AND (utimestamp >= '.$utimestamp_from.')';
+    }
+
+    if (!empty($date_to)) {
+        if (empty($time_to)) {
+            $time_to = '23:59:59';
+        }
+
+        $utimestamp_to = (strtotime($date_to.' '.$time_to) - $fixed_offset);
+        $filter_resume['time_to'] = date(DATE_FORMAT.' '.TIME_FORMAT, $utimestamp_to);
+        $sql_post .= ' AND (utimestamp <= '.$utimestamp_to.')';
+    }
+}
+
 // Group selection
 if ($id_group > 0 && in_array($id_group, array_keys($groups))) {
     if ($propagate) {
@@ -51,11 +84,15 @@ if ($id_group > 0 && in_array($id_group, array_keys($groups))) {
         $sql_post = " AND (id_grupo = $id_group OR id_group = $id_group)";
     }
 } else {
-    $sql_post = sprintf(
-        ' AND (id_grupo IN (%s) OR id_group IN (%s)) ',
-        implode(',', array_keys($groups)),
-        implode(',', array_keys($groups))
-    );
+    hd(users_can_manage_group_all('ER'));
+    if (!users_is_admin() && !users_can_manage_group_all('ER')) {
+        hd(users_can_manage_group_all('ER'));
+        $sql_post = sprintf(
+            ' AND (id_grupo IN (%s) OR id_group IN (%s)) ',
+            implode(',', array_keys($groups)),
+            implode(',', array_keys($groups))
+        );
+    }
 }
 
 // Skip system messages if user is not PM
@@ -218,39 +255,6 @@ if (!isset($date_to)) {
     $date_to = '';
 }
 
-if (($date_from == '') && ($date_to == '')) {
-    if ($event_view_hr > 0) {
-        $filter_resume['hours_max'] = $event_view_hr;
-        $unixtime = (get_system_time() - ($event_view_hr * SECONDS_1HOUR));
-        $sql_post .= ' AND (utimestamp > '.$unixtime.')';
-    }
-} else {
-    // Some of this values will have the user's timezone,
-    // so we need to reverse it to the system's timezone
-    // before using it into the db
-    $fixed_offset = get_fixed_offset();
-
-    if (!empty($date_from)) {
-        if (empty($time_from)) {
-            $time_from = '00:00:00';
-        }
-
-        $utimestamp_from = (strtotime($date_from.' '.$time_from) - $fixed_offset);
-        $filter_resume['time_from'] = date(DATE_FORMAT.' '.TIME_FORMAT, $utimestamp_from);
-        $sql_post .= ' AND (utimestamp >= '.$utimestamp_from.')';
-    }
-
-    if (!empty($date_to)) {
-        if (empty($time_to)) {
-            $time_to = '23:59:59';
-        }
-
-        $utimestamp_to = (strtotime($date_to.' '.$time_to) - $fixed_offset);
-        $filter_resume['time_to'] = date(DATE_FORMAT.' '.TIME_FORMAT, $utimestamp_to);
-        $sql_post .= ' AND (utimestamp <= '.$utimestamp_to.')';
-    }
-}
-
 // Search by tag
 if (!empty($tag_with)) {
     if (!users_is_admin()) {
@@ -398,3 +402,5 @@ if ($meta) {
         }
     }
 }
+
+hd($sql_post);

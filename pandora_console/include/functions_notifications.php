@@ -168,9 +168,9 @@ function check_notification_readable(int $id_message)
  *
  * @return array with sources info
  */
-function notifications_get_all_sources()
+function notifications_get_all_sources($filter=[])
 {
-    return db_get_all_rows_in_table('tnotification_source');
+    return db_get_all_rows_filter('tnotification_source', $filter);
 }
 
 
@@ -478,6 +478,27 @@ function notifications_get_user_label_status($source, $user, $label)
     return notifications_build_user_enable_return($value, false);
 }
 
+function notifications_set_user_label_status($source, $user, $label, $value) {
+    $source_info = notifications_get_all_sources(['id' => $source]);
+    if (!isset($source_info[0])
+        || !$source_info[0]['enabled']
+        || !$source_info[0][$label]
+        || !$source_info[0]['user_editable']
+    ) {
+        return false;
+    }
+
+    return (bool) db_process_sql_update(
+        'tnotification_source_user',
+        [$label => $value],
+        [
+            'id_user'   => $user,
+            'id_source' => $source,
+        ]
+    );
+
+}
+
 
 /**
  * Print the notification ball to see unread messages
@@ -634,6 +655,8 @@ function notifications_print_user_switch($source, $user, $label)
             'name'     => $label,
             'value'    => $status['status'],
             'disabled' => !$status['enabled'],
+            'class'    => 'notifications-user-label_individual',
+            'id'       => 'notifications-user-'.$source['id'].'-label-'.$label,
         ]
     );
 }

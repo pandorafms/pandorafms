@@ -26,38 +26,36 @@ if (! check_acl($config['id_user'], 0, 'PM') && ! is_user_admin($config['id_user
 }
 
 // AJAX actions.
-$source_id = get_parameter('source_id', '');
+$source = get_parameter('source', '');
 $users = get_parameter('users', '');
 $elements = get_parameter('elements', []);
-$id = empty($source_id) ? 0 : get_notification_source_id($source_id);
 $is_users = $users === 'users';
 if (get_parameter('get_selection_two_ways_form', 0)) {
-    $info_selec = $is_users ? notifications_get_user_source_not_configured($id) : notifications_get_group_source_not_configured($id);
+    $info_selec = $is_users ? notifications_get_user_source_not_configured($source) : notifications_get_group_source_not_configured($source);
 
     echo notifications_print_two_ways_select(
         $info_selec,
         $users,
-        $source_id
+        $source
     );
     return;
 }
 
 if (get_parameter('add_source_to_database', 0)) {
-    $res = $is_users ? notifications_add_users_to_source($id, $elements) : notifications_add_group_to_source($id, $elements);
+    $res = $is_users ? notifications_add_users_to_source($source, $elements) : notifications_add_group_to_source($source, $elements);
     $result = ['result' => $res];
     echo json_encode($result);
     return;
 }
 
 if (get_parameter('remove_source_on_database', 0)) {
-    $res = $is_users ? notifications_remove_users_from_source($id, $elements) : notifications_remove_group_from_source($id, $elements);
+    $res = $is_users ? notifications_remove_users_from_source($source, $elements) : notifications_remove_group_from_source($source, $elements);
     $result = ['result' => $res];
     echo json_encode($result);
     return;
 }
 
 if (get_parameter('update_config', 0)) {
-    $source = (int) get_parameter('source', 0);
     $element = (string) get_parameter('element', '');
     $value = (int) get_parameter('value', 0);
 
@@ -159,7 +157,7 @@ function add_source_dialog(users, source_id) {
         {"page" : "godmode/setup/setup_notifications",
             "get_selection_two_ways_form" : 1,
             "users" : users,
-            "source_id" : source_id
+            "source" : source_id
         },
         function (data, status) {
             not_dialog.innerHTML = data
@@ -198,7 +196,7 @@ function notifications_add_source_element_to_database(id, source_id) {
         {"page" : "godmode/setup/setup_notifications",
             "add_source_to_database" : 1,
             "users" : id,
-            "source_id" : source_id,
+            "source" : source_id,
             "elements": selected
         },
         function (data, status) {
@@ -236,13 +234,13 @@ function remove_source_elements(id, source_id) {
         {"page" : "godmode/setup/setup_notifications",
             "remove_source_on_database" : 1,
             "users" : id,
-            "source_id" : source_id,
+            "source" : source_id,
             "elements": selected
         },
         function (data, status) {
             if (data.result) {
                 // Append to other element
-                for (var i = selected_index.length - 1; i >= 0; i--) {
+                for (var i = 0; i < selected_index.length; i++) {
                     select.remove(selected_index[i]);
                 }
             } else {

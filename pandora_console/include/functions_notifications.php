@@ -52,21 +52,6 @@ function get_notification_source_id(string $source)
 
 
 /**
- * Converts description into a handable identifier
- *
- * @param string $desc Full description
- *
- * @return string First word in lowercase. Empty string if no word detected.
- */
-function notifications_desc_to_id(string $desc)
-{
-    preg_match('/^[a-zA-Z]*/', $desc, $matches);
-    $match = $matches[0];
-    return isset($match) ? $match : '';
-}
-
-
-/**
  * Retrieve all targets for given message.
  *
  * @param integer $id_message Message id.
@@ -348,7 +333,9 @@ function notifications_add_group_to_source($source_id, $groups)
     // Insert into database all groups passed.
     $res = true;
     foreach ($groups as $group) {
-        if (!isset($group)) continue;
+        if (!isset($group)) {
+            continue;
+        }
 
         $res = $res && db_process_sql_insert(
             'tnotification_source_group',
@@ -559,9 +546,8 @@ function notifications_print_ball()
 function notifications_print_global_source_configuration($source)
 {
     // Get some values to generate the title.
-    $id = notifications_desc_to_id($source['description']);
     $switch_values = [
-        'name'  => 'enable-'.$id,
+        'name'  => 'enable-'.$source['id'],
         'value' => $source['enabled'],
         'id'    => 'nt-'.$source['id'].'-enabled',
         'class' => 'elem-clickable',
@@ -582,19 +568,19 @@ function notifications_print_global_source_configuration($source)
 
     // Generate the html for title
     $html_selectors = "<div class='global-config-notification-selectors'>";
-    $html_selectors .= notifications_print_source_select_box(notifications_get_user_sources_for_select($source['id']), 'users', $id, $is_group_all);
-    $html_selectors .= notifications_print_source_select_box($source_groups, 'groups', $id, $is_group_all);
+    $html_selectors .= notifications_print_source_select_box(notifications_get_user_sources_for_select($source['id']), 'users', $source['id'], $is_group_all);
+    $html_selectors .= notifications_print_source_select_box($source_groups, 'groups', $source['id'], $is_group_all);
     $html_selectors .= '</div>';
     // Generate the checkboxes and time select
     $html_checkboxes = "<div class='global-config-notification-checkboxes'>";
     $html_checkboxes .= '   <span>';
-    $html_checkboxes .= html_print_checkbox_extended("all-$id", 1, $is_group_all, false, '', 'class= "elem-clickable"', true, 'id="nt-'.$source['id'].'-all_users"');
+    $html_checkboxes .= html_print_checkbox_extended('all-'.$source['id'], 1, $is_group_all, false, '', 'class= "elem-clickable"', true, 'id="nt-'.$source['id'].'-all_users"');
     $html_checkboxes .= __('Notify all users');
     $html_checkboxes .= '   </span><br><span>';
-    $html_checkboxes .= html_print_checkbox_extended("mail-$id", 1, $source['also_mail'], false, '', 'class= "elem-clickable"', true, 'id="nt-'.$source['id'].'-also_mail"');
+    $html_checkboxes .= html_print_checkbox_extended('mail-'.$source['id'], 1, $source['also_mail'], false, '', 'class= "elem-clickable"', true, 'id="nt-'.$source['id'].'-also_mail"');
     $html_checkboxes .= __('Also email users with notification content');
     $html_checkboxes .= '   </span><br><span>';
-    $html_checkboxes .= html_print_checkbox_extended("user-$id", 1, $source['user_editable'], false, '', 'class= "elem-clickable"', true, 'id="nt-'.$source['id'].'-user_editable"');
+    $html_checkboxes .= html_print_checkbox_extended('user-'.$source['id'], 1, $source['user_editable'], false, '', 'class= "elem-clickable"', true, 'id="nt-'.$source['id'].'-user_editable"');
     $html_checkboxes .= __('Users can modify notification preferences');
     $html_checkboxes .= '   </span>';
     $html_checkboxes .= '</div>';

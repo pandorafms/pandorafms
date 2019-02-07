@@ -3914,7 +3914,7 @@ function reporting_get_event_histogram($events, $text_header_event=false)
             $graph_data,
             $max_value,
             100,
-            35,
+            25,
             $full_legend,
             $colors,
             $config['fontpath'],

@@ -25,39 +25,20 @@
  * GNU General Public License for more details.
  * ============================================================================
  */
-
-table {
-  border-collapse: collapse;
-}
-table th {
-  background-color: #434343;
-  color: #fff;
-}
-table.databox {
-  margin-bottom: 15px;
-}
-table.databox td {
-  width: 100%;
-}
-
-table.content_table {
-  page-break-inside: avoid;
-}
-
 table.header_table {
   width: 100%;
 }
 
-table.header_table tbody tr th,
+table.header_table thead tr th,
 table.header_table tbody tr td {
   padding: 10px;
 }
 
-thead.header_tr tbody tr {
+thead.header_tr tr {
   background: #e6e6e6;
 }
 
-thead.header_tr tbody tr th {
+thead.header_tr tr th {
   font-weight: normal;
   text-align: right;
 }

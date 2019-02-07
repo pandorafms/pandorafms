@@ -1271,11 +1271,10 @@ INSERT INTO tlog_graph_models VALUES (1, 'Apache&#x20;log&#x20;model',
 --
 -- Dumping data for table `tnotification_source`
 --
-INSERT INTO `tnotification_source`(`description`, `icon`, `max_postpone_time`, `user_editable`, `also_mail`) VALUES
-  ("System&#x20;status", "icono_info_mr.png", 86400, 1, 0),
-  ("Message", "icono_info_mr.png", 86400, 1, 0),
-  ("Pending&#x20;task", "icono_info_mr.png", 86400, 1, 0),
-  ("Advertisement", "icono_info_mr.png", 86400, 1, 0),
-  ("Official&#x20;communication", "icono_info_mr.png", 86400, 1, 0),
-  ("Sugerence", "icono_info_mr.png", 86400, 1, 0);
-
+INSERT INTO `tnotification_source`(`description`, `icon`, `max_postpone_time`, `enabled`, `user_editable`, `also_mail`) VALUES
+  ("System&#x20;status", "icono_info_mr.png", 86400, 1, 1, 0),
+  ("Message", "icono_info_mr.png", 86400, 1, 1, 0),
+  ("Pending&#x20;task", "icono_info_mr.png", 86400, 1, 1, 0),
+  ("Advertisement", "icono_info_mr.png", 86400, 1, 1, 0),
+  ("Official&#x20;communication", "icono_info_mr.png", 86400, 1, 1, 0),
+  ("Sugerence", "icono_info_mr.png", 86400, 1, 1, 0);

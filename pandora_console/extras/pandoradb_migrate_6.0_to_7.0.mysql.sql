@@ -1886,13 +1886,13 @@ CREATE TABLE `tnotification_source` (
 --
 -- Dumping data for table `tnotification_source`
 --
-INSERT INTO `tnotification_source`(`description`, `icon`, `max_postpone_time`, `user_editable`, `also_mail`) VALUES
-  ("System&#x20;status", "icono_info_mr.png", 86400, 1, 0),
-  ("Message", "icono_info_mr.png", 86400, 1, 0),
-  ("Pending&#x20;task", "icono_info_mr.png", 86400, 1, 0),
-  ("Advertisement", "icono_info_mr.png", 86400, 1, 0),
-  ("Official&#x20;communication", "icono_info_mr.png", 86400, 1, 0),
-  ("Sugerence", "icono_info_mr.png", 86400, 1, 0);
+INSERT INTO `tnotification_source`(`description`, `icon`, `max_postpone_time`, `enabled`, `user_editable`, `also_mail`) VALUES
+  ("System&#x20;status", "icono_info_mr.png", 86400, 1, 1, 0),
+  ("Message", "icono_info_mr.png", 86400, 1, 1, 0),
+  ("Pending&#x20;task", "icono_info_mr.png", 86400, 1, 1, 0),
+  ("Advertisement", "icono_info_mr.png", 86400, 1, 1, 0),
+  ("Official&#x20;communication", "icono_info_mr.png", 86400, 1, 1, 0),
+  ("Sugerence", "icono_info_mr.png", 86400, 1, 1, 0);
 
 -- -----------------------------------------------------
 -- Table `tmensajes`
@@ -1901,6 +1901,7 @@ ALTER TABLE `tmensajes` ADD COLUMN `url` TEXT;
 ALTER TABLE `tmensajes` ADD COLUMN `response_mode` VARCHAR(200) DEFAULT NULL;
 ALTER TABLE `tmensajes` ADD COLUMN `citicity` INT(10) UNSIGNED DEFAULT '0';
 ALTER TABLE `tmensajes` ADD COLUMN `id_source` BIGINT(20) UNSIGNED NOT NULL;
+ALTER TABLE `tmensajes` ADD COLUMN `subtype` VARCHAR(255) DEFAULT '';
 ALTER TABLE `tmensajes` ADD CONSTRAINT `tsource_fk` FOREIGN KEY (`id_source`) REFERENCES `tnotification_source` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 
 

@@ -1191,6 +1191,7 @@ CREATE TABLE IF NOT EXISTS `tmensajes` (
 	`response_mode` VARCHAR(200) DEFAULT NULL,
 	`citicity` INT(10) UNSIGNED DEFAULT '0',
 	`id_source` BIGINT(20) UNSIGNED NOT NULL,
+	`subtype` VARCHAR(255) DEFAULT '',
 	PRIMARY KEY (`id_mensaje`),
 	UNIQUE KEY `id_mensaje` (`id_mensaje`),
 	KEY `tsource_fk` (`id_source`),

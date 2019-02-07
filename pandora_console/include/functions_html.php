@@ -2587,16 +2587,27 @@ function html_print_csrf_error () {
  * @param array $atributes. Valid params:
  * 		name: Usefull to handle in forms
  * 		value: If is checked or not
+ * 		disabled: Disabled. Cannot be pressed.
+ * 		id: Optional id for the switch.
+ * 		class: Additional classes (string).
  * @return string with HTML of button
  */
 function html_print_switch ($attributes = array()) {
+	$html_expand = '';
 
-	$name_html = isset($attributes['name']) ? "name = {$attributes['name']}" : '';
-	$checked_html = (bool)$attributes['value'] ? 'checked' : '';
-	$disabled_html = (bool)$attributes['disabled'] ? 'disabled' : '';
+	// Check the load values on status.
+	$html_expand .= (bool)$attributes['value'] ? ' checked' : '';
+	$html_expand .= (bool)$attributes['disabled'] ? ' disabled' : '';
+
+	// Only load the valid attributes.
+	$valid_attrs = ['id', 'class', 'name'];
+	foreach ($valid_attrs as $va) {
+		if (!isset($attributes[$va])) continue;
+		$html_expand .= ' '.$va.'="'.$attributes[$va].'"';
+	}
 	return
 		"<label class='p-switch'>
-			<input type='checkbox' $name_html $checked_html $disabled_html>
+			<input type='checkbox' $html_expand>
 			<span class='p-slider'></span>
 		</label>";
 }

@@ -166,6 +166,8 @@ function check_notification_readable(int $id_message)
 /**
  * Return all info from tnotification_source
  *
+ * @param array $filter Filter to table tnotification_source.
+ *
  * @return array with sources info
  */
 function notifications_get_all_sources($filter=[])
@@ -177,7 +179,7 @@ function notifications_get_all_sources($filter=[])
 /**
  * Return the user sources to be inserted into a select
  *
- * @param integer $source_id Source database identificator
+ * @param integer $source_id Source database identificator.
  *
  * @return array with the user id in keys and user id in value too
  */
@@ -219,7 +221,7 @@ function notifications_get_user_sources($filter=[], $fields=[])
 /**
  * Return the groups sources to be inserted into a select
  *
- * @param integer $source_id Source database identificator
+ * @param integer $source_id Source database identificator.
  *
  * @return array with the group id in keys and group name in value
  */
@@ -237,6 +239,9 @@ function notifications_get_group_sources_for_select($source_id)
  * Get the group sources
  *
  * @param array $filter Filter of sql query.
+ * @param array $fields Fields retrieved.
+ *
+ * @return array With the group info
  */
 function notifications_get_group_sources($filter=[], $fields=[])
 {
@@ -276,8 +281,8 @@ function notifications_get_group_sources($filter=[], $fields=[])
 /**
  * Delete a set of groups from notification source
  *
- * @param int Source id
- * @param array Id of groups to be deleted
+ * @param integer $source_id Source id.
+ * @param array   $groups    Id of groups to be deleted.
  *
  * @return boolean True if success. False otherwise.
  */
@@ -302,8 +307,8 @@ function notifications_remove_group_from_source($source_id, $groups)
 /**
  * Delete a set of users from notification source
  *
- * @param int Source id
- * @param array Id of users to be deleted
+ * @param integer $source_id Source id.
+ * @param array   $users     Id of users to be deleted.
  *
  * @return boolean True if success. False otherwise.
  */
@@ -328,8 +333,8 @@ function notifications_remove_users_from_source($source_id, $users)
 /**
  * Insert a set of groups to notification source
  *
- * @param int Source id
- * @param array Id of groups to be deleted
+ * @param integer $source_id Source id.
+ * @param array   $groups    Id of groups to be deleted.
  *
  * @return boolean True if success. False otherwise.
  */
@@ -363,8 +368,8 @@ function notifications_add_group_to_source($source_id, $groups)
 /**
  * Insert a set of users to notification source
  *
- * @param int Source id
- * @param array Id of users to be deleted
+ * @param integer $source_id Source id.
+ * @param array   $users     Id of users to be deleted.
  *
  * @return boolean True if success. False otherwise.
  */
@@ -407,7 +412,8 @@ function notifications_add_users_to_source($source_id, $users)
  * Get the groups that not own to a source and, for that reason, they can be
  * added to the source.
  *
- * @param  integer $source_id Source id.
+ * @param integer $source_id Source id.
+ *
  * @return array Indexed by id group all selectable groups.
  */
 function notifications_get_group_source_not_configured($source_id)
@@ -422,7 +428,8 @@ function notifications_get_group_source_not_configured($source_id)
  * Get the users that not own to a source and, for that reason, they can be
  * added to the source.
  *
- * @param  integer $source_id
+ * @param integer $source_id Source id.
+ *
  * @return array Indexed by id user, all selectable users.
  */
 function notifications_get_user_source_not_configured($source_id)
@@ -437,6 +444,14 @@ function notifications_get_user_source_not_configured($source_id)
 }
 
 
+/**
+ * Build a data struct to handle the value of a label
+ *
+ * @param mixed $status  Status value.
+ * @param mixed $enabled Enabled value.
+ *
+ * @return array with status (1|0) and enabled (1|0)
+ */
 function notifications_build_user_enable_return($status, $enabled)
 {
     return [
@@ -446,6 +461,15 @@ function notifications_build_user_enable_return($status, $enabled)
 }
 
 
+/**
+ * Get user label (enabled, also_mail...) status.
+ *
+ * @param integer $source Id of notification source.
+ * @param string  $user   User id.
+ * @param string  $label  Label id (enabled, also_email...).
+ *
+ * @return array Return of notifications_build_user_enable_return.
+ */
 function notifications_get_user_label_status($source, $user, $label)
 {
     // If not enabled, it cannot be modificable.
@@ -478,7 +502,19 @@ function notifications_get_user_label_status($source, $user, $label)
     return notifications_build_user_enable_return($value, false);
 }
 
-function notifications_set_user_label_status($source, $user, $label, $value) {
+
+/**
+ * Set the status to a single label on config of users notifications.
+ *
+ * @param integer $source Id of notification source.
+ * @param string  $user   User id.
+ * @param string  $label  Label id (enabled, also_email...).
+ * @param mixed   $value  Numeric value: 1 or 0.
+ *
+ * @return boolean True if success.
+ */
+function notifications_set_user_label_status($source, $user, $label, $value)
+{
     $source_info = notifications_get_all_sources(['id' => $source]);
     if (!isset($source_info[0])
         || !$source_info[0]['enabled']
@@ -501,9 +537,9 @@ function notifications_set_user_label_status($source, $user, $label, $value) {
 
 
 /**
- * Print the notification ball to see unread messages
+ * Print the notification ball to see unread messages.
  *
- * @return string with HTML code of notification ball
+ * @return string with HTML code of notification ball.
  */
 function notifications_print_ball()
 {
@@ -518,7 +554,7 @@ function notifications_print_ball()
 /**
  * Print notification configuration global
  *
- * @param array notification source data
+ * @param array $source Notification source data.
  *
  * @return string with HTML of source configuration
  */
@@ -593,15 +629,19 @@ function notifications_print_global_source_configuration($source)
 /**
  * Print select boxes of notified users or groups
  *
- * @param array   $info_selec All info required for build the selector
- * @param string  $id         users|groups
- * @param string  $source_id  Id of source
- * @param boolean $disabled   Disable the selectors
+ * @param array   $info_selec All info required for build the selector.
+ * @param string  $id         One of users|groups.
+ * @param string  $source_id  Id of source.
+ * @param boolean $disabled   Disable the selectors.
  *
  * @return string HTML with the generated selector
  */
-function notifications_print_source_select_box($info_selec, $id, $source_id, $disabled)
-{
+function notifications_print_source_select_box(
+    $info_selec,
+    $id,
+    $source_id,
+    $disabled
+) {
     $title = $id == 'users' ? __('Notified users') : __('Notified groups');
     $add_title = $id == 'users' ? __('Add users') : __('Add groups');
     $delete_title = $id == 'users' ? __('Delete users') : __('Delete groups');
@@ -626,9 +666,10 @@ function notifications_print_source_select_box($info_selec, $id, $source_id, $di
  * Print the select with right and left arrows to select new sources
  * (groups or users).
  *
- * @param  array  $info_selec Array with source info.
- * @param  string $users      users|groups.
- * @param  source $source_id  Source id.
+ * @param array  $info_selec Array with source info.
+ * @param string $users      One of users|groups.
+ * @param source $source_id  Source id.
+ *
  * @return string HTML with the select code.
  */
 function notifications_print_two_ways_select($info_selec, $users, $source_id)
@@ -647,6 +688,15 @@ function notifications_print_two_ways_select($info_selec, $users, $source_id)
 }
 
 
+/**
+ * Print a label status represented by a switch
+ *
+ * @param integer $source Source id.
+ * @param string  $user   User id.
+ * @param string  $label  Label (enabled, also_mail...).
+ *
+ * @return string With HTML code
+ */
 function notifications_print_user_switch($source, $user, $label)
 {
     $status = notifications_get_user_label_status($source, $user, $label);

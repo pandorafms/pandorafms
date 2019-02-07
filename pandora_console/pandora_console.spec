@@ -2,8 +2,8 @@
 # Pandora FMS Console
 #
 %define name        pandorafms_console
-%define version     7.0NG.730
-%define release     190114
+%define version     7.0NG.731
+%define release     190207
 %define httpd_name      httpd
 # User and Group under which Apache is running
 %define httpd_name  apache2

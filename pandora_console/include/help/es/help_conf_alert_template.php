@@ -1,6 +1,6 @@
 <?php
 /**
- * @package Include/help/en 
+ * @package Include/help/en
  */
 ?> 
 
@@ -42,7 +42,7 @@ Al alegir la condición regular aparece la posibilidad de marcar la casilla Trig
 
 Una vez se han rellenado los campos se pincha en el botón “Next” y se accede a la siguiente pantalla .
 
-<?php html_print_image ("images/help/alert1.png", false, array('width' => '550px')); ?>
+<?php html_print_image('images/help/alert1.png', false, ['width' => '550px']); ?>
 <br><br>
 A continuación se detallan los campos que hay que rellenar: 
 <br><br>
@@ -85,7 +85,7 @@ En este combo se define la acción por defecto que va a tener el template. Esta 
 
 Una vez se han rellenado los campos se pincha en el botón “Next” y se accede a la siguiente pantalla . <br><br>
 
-<?php html_print_image ("images/help/alert2.png", false, array('width' => '550px')); ?>
+<?php html_print_image('images/help/alert2.png', false, ['width' => '550px']); ?>
 
 A continuación se detallan los campos que hay que rellenar: <br><br>
 

@@ -172,7 +172,7 @@ if ($meta) {
     $id_agent = get_parameter('id_agent', 0);
     if ($id_agent) {
         $sql_post .= ' AND agent_name IN (SELECT nombre FROM tmetaconsole_agent WHERE
-		id_tagente ='.$id_agent." AND alias LIKE '".io_safe_input($text_agent)."')";
+		id_tagente ='.$id_agent." AND alias LIKE '".$text_agent."')";
         $filter_resume['agent'] = $text_agent;
     }
 } else {

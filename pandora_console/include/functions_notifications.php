@@ -340,17 +340,15 @@ function notifications_remove_users_from_source($source_id, $users)
  */
 function notifications_add_group_to_source($source_id, $groups)
 {
-    // Source id is mandatory
+    // Source id is mandatory.
     if (!isset($source_id)) {
         return false;
     }
 
-    // Insert into database all groups passed
+    // Insert into database all groups passed.
     $res = true;
     foreach ($groups as $group) {
-        if (empty($group)) {
-            continue;
-        }
+        if (!isset($group)) continue;
 
         $res = $res && db_process_sql_insert(
             'tnotification_source_group',
@@ -560,11 +558,13 @@ function notifications_print_ball()
  */
 function notifications_print_global_source_configuration($source)
 {
-    // Get some values to generate the title
+    // Get some values to generate the title.
     $id = notifications_desc_to_id($source['description']);
     $switch_values = [
         'name'  => 'enable-'.$id,
         'value' => $source['enabled'],
+        'id'    => 'nt-'.$source['id'].'-enabled',
+        'class' => 'elem-clickable',
     ];
 
     // Search if group all is set and handle that situation
@@ -585,17 +585,16 @@ function notifications_print_global_source_configuration($source)
     $html_selectors .= notifications_print_source_select_box(notifications_get_user_sources_for_select($source['id']), 'users', $id, $is_group_all);
     $html_selectors .= notifications_print_source_select_box($source_groups, 'groups', $id, $is_group_all);
     $html_selectors .= '</div>';
-
     // Generate the checkboxes and time select
     $html_checkboxes = "<div class='global-config-notification-checkboxes'>";
     $html_checkboxes .= '   <span>';
-    $html_checkboxes .= html_print_checkbox("all-$id", 1, $is_group_all, true, false, 'notifications_disable_source(event)');
+    $html_checkboxes .= html_print_checkbox_extended("all-$id", 1, $is_group_all, false, '', 'class= "elem-clickable"', true, 'id="nt-'.$source['id'].'-all_users"');
     $html_checkboxes .= __('Notify all users');
     $html_checkboxes .= '   </span><br><span>';
-    $html_checkboxes .= html_print_checkbox("mail-$id", 1, $source['also_mail'], true);
+    $html_checkboxes .= html_print_checkbox_extended("mail-$id", 1, $source['also_mail'], false, '', 'class= "elem-clickable"', true, 'id="nt-'.$source['id'].'-also_mail"');
     $html_checkboxes .= __('Also email users with notification content');
     $html_checkboxes .= '   </span><br><span>';
-    $html_checkboxes .= html_print_checkbox("user-$id", 1, $source['user_editable'], true);
+    $html_checkboxes .= html_print_checkbox_extended("user-$id", 1, $source['user_editable'], false, '', 'class= "elem-clickable"', true, 'id="nt-'.$source['id'].'-user_editable"');
     $html_checkboxes .= __('Users can modify notification preferences');
     $html_checkboxes .= '   </span>';
     $html_checkboxes .= '</div>';
@@ -613,12 +612,15 @@ function notifications_print_global_source_configuration($source)
             SECONDS_1MONTH                 => __('1 month'),
             NOTIFICATIONS_POSTPONE_FOREVER => __('forever'),
         ],
-        "postpone-{$id}",
+        'nt-'.$source['id'].'-max_postpone_time',
         $source['max_postpone_time'],
         '',
         '',
         0,
-        true
+        true,
+        false,
+        true,
+        'elem-changeable'
     );
 
     // Return all html

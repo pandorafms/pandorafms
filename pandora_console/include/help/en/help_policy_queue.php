@@ -1,7 +1,7 @@
 <?php
 /*
-* @packafe Include/help/en/
-*/
+ * @packafe Include/help/en/
+ */
 ?>
 
 <h1>Queue</h1>

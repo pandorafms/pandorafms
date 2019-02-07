@@ -17,69 +17,66 @@
 */
 
 .title .toggle {
-	background: none;
+  background: none;
 }
 .title .toggle {
-	background: transparent url(images/toggle.png) no-repeat scroll !important;
+  background: transparent url(images/toggle.png) no-repeat scroll !important;
 }
 
 .title a {
-	clear: none;
-	zoom: 100%;
-	padding: 1;
+  clear: none;
+  zoom: 100%;
+  padding: 1;
 }
 
-* html .timeEntry_control { /* IE only */
-	margin-top: -4px;
+* html .timeEntry_control {
+  /* IE only */
+  margin-top: -4px;
 }
 
 table#simple input#text-snmp_oid {
-	width: 70%;
+  width: 70%;
 }
 
 div.configuration {
-	margin-top: -20px;
+  margin-top: -20px;
 }
 
 form.delete_link {
-	display:inline;
+  display: inline;
 }
 ul.action_list {
-	list-style-position: outside;
+  list-style-position: outside;
 }
 ul.action_list li {
-	display: block;
+  display: block;
 }
 span.action_name {
-	vertical-align: top;
-	float: none;
+  vertical-align: top;
+  float: none;
 }
 
 div#foot {
+  background: #ccc;
+  width: auto;
 
-	background: #CCC;
-	width: auto;
-
-	clear: both;
-	position: relative;
-	-moz-border-radius: 10px;
-	-webkit-border-radius: 10px;
-	border-radius: 10px;
-	-moz-box-shadow: 0px 0px 15px #000000;
-	-webkit-box-shadow: 0px 0px 15px #000000;
-	box-shadow: 0px 0px 15px #000000;
+  clear: both;
+  position: relative;
+  -moz-border-radius: 10px;
+  -webkit-border-radius: 10px;
+  border-radius: 10px;
+  -moz-box-shadow: 0px 0px 15px #000000;
+  -webkit-box-shadow: 0px 0px 15px #000000;
+  box-shadow: 0px 0px 15px #000000;
 }
 div#foot a {
-	color: #333!important;	
+  color: #333 !important;
 }
 
 div#foot a.white:after {
-
-	font-size: 10px;
-	color: #666666;
-	position: absolute;
-	bottom: 5px;
-	right: 10px;
+  font-size: 10px;
+  color: #666666;
+  position: absolute;
+  bottom: 5px;
+  right: 10px;
 }
-
-

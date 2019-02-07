@@ -36,7 +36,7 @@ use Encode::Locale;
 Encode::Locale::decode_argv;
 
 # version: define current version
-my $version = "7.0NG.731 PS190131";
+my $version = "7.0NG.731 PS190207";
 
 # save program name for logging
 my $progname = basename($0);
@@ -137,6 +137,7 @@ sub help_screen{
 	help_screen_line('--delete_cluster_item', '<id_item>', 'Deleting cluster item');
 	help_screen_line('--get_cluster_status', '<id_cluster>', 'Getting cluster status');
 	help_screen_line('--set_disabled_and_standby', '<id_agent> <id_node> <value>', 'Overwrite and disable and standby status');
+	help_screen_line('--reset_agent_counts', '<id_agent>', 'Resets module counts and alert counts in the agents');
 	print "\nMODULES:\n\n" unless $param ne '';
 	help_screen_line('--create_data_module', "<module_name> <module_type> <agent_name> [<description> <module_group> \n\t  <min> <max> <post_process> <interval> <warning_min> <warning_max> <critical_min> <critical_max> \n\t <history_data> <definition_file> <warning_str> <critical_str>\n\t  <unknown_events> <ff_threshold> <each_ff> <ff_threshold_normal>\n\t  <ff_threshold_warning> <ff_threshold_critical> <ff_timeout> <warning_inverse> <critical_inverse>\n\t <critical_instructions> <warning_instructions> <unknown_instructions>]", 'Add data server module to agent');
 	help_screen_line('--create_web_module', "<module_name> <module_type> <agent_name> [<description> <module_group> \n\t  <min> <max> <post_process> <interval> <warning_min> <warning_max> <critical_min> <critical_max> \n\t <history_data> <retries> <requests> <agent_browser_id> <auth_server> <auth_realm> <definition_file>\n\t <proxy_url> <proxy_auth_login> <proxy_auth_password> <warning_str> <critical_str>\n\t  <unknown_events> <ff_threshold> <each_ff> <ff_threshold_normal>\n\t  <ff_threshold_warning> <ff_threshold_critical> <ff_timeout> <warning_inverse> <critical_inverse>\n\t <critical_instructions> <warning_instructions> <unknown_instructions>].\n\t The valid data types are web_data, web_proc, web_content_data or web_content_string", 'Add web server module to agent');
@@ -6375,6 +6376,10 @@ sub pandora_manage_main ($$$) {
 			param_check($ltotal, 3, 1);
 			cli_set_disabled_and_standby();
 		}
+		elsif ($param eq '--reset_agent_counts') {
+			param_check($ltotal, 1, 0);
+			cli_reset_agent_counts();
+		}
 		else {
 			print_log "[ERROR] Invalid option '$param'.\n\n";
 			$param = '';
@@ -6978,4 +6983,17 @@ sub cli_set_disabled_and_standby() {
 
 	my $exit_code =  (defined($result) && "$result" eq "1") ? "1" : "0";
 	print "\n$exit_code\n";
+}
+
+##############################################################################
+# Resets module counts and alert counts in the agents.
+# Related option: --reset_agent_counts
+##############################################################################
+
+sub cli_reset_agent_counts() {
+	my $agent_id = @ARGV[2];
+
+	my $result = api_call(\%conf,'set', 'reset_agent_counts', $agent_id);
+	print "$result \n\n ";
+
 }

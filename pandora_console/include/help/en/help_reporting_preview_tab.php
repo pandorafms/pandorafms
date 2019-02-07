@@ -1,7 +1,7 @@
 <?php
 /*
-* @package Include/help/en/
-*/
+ * @package Include/help/en/
+ */
 ?>
 
 <h1>Preview</h1>

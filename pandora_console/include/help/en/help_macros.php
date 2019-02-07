@@ -9,9 +9,9 @@ Is possible configure macros in the module execution (module_exec) or in a plugi
 <br /><br />
 Each macro has 3 parameters:
 <ul>
-	<li>Description</li>
-	<li>Default value (optional)</li>
-	<li>Help (optional)</li>
+    <li>Description</li>
+    <li>Default value (optional)</li>
+    <li>Help (optional)</li>
 </ul>
 
 In example, to configure a module that returns the apache's running process
@@ -26,9 +26,9 @@ ps -A | grep _field1_ | wc -l
 And configure the parameters of the macro as:
 
 <ul>
-	<li>Description: Process</li>
-	<li>Default value: apache2</li>
-	<li>Help: Name of substring of the running processes counted by the module</li>
+    <li>Description: Process</li>
+    <li>Default value: apache2</li>
+    <li>Help: Name of substring of the running processes counted by the module</li>
 </ul>
 
 When we configure the module from this component, will appear a text field "Process" 

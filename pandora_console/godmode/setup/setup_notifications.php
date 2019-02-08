@@ -1,18 +1,31 @@
 <?php
+/**
+ * Library. Notification system auxiliary functions.
+ *
+ * @category   UI file
+ * @package    Pandora FMS
+ * @subpackage Community
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
 
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation for version 2.
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-// Warning: This file may be required into the metaconsole's setup
-// Load global vars
 global $config;
 
 require_once $config['homedir'].'/include/functions_notifications.php';
@@ -31,7 +44,7 @@ $users = get_parameter('users', '');
 $elements = get_parameter('elements', []);
 $is_users = $users === 'users';
 if (get_parameter('get_selection_two_ways_form', 0)) {
-    $info_selec = $is_users ? notifications_get_user_source_not_configured($source) : notifications_get_group_source_not_configured($source);
+    $info_selec = ($is_users) ? notifications_get_user_source_not_configured($source) : notifications_get_group_source_not_configured($source);
 
     echo notifications_print_two_ways_select(
         $info_selec,
@@ -42,14 +55,14 @@ if (get_parameter('get_selection_two_ways_form', 0)) {
 }
 
 if (get_parameter('add_source_to_database', 0)) {
-    $res = $is_users ? notifications_add_users_to_source($source, $elements) : notifications_add_group_to_source($source, $elements);
+    $res = ($is_users) ? notifications_add_users_to_source($source, $elements) : notifications_add_group_to_source($source, $elements);
     $result = ['result' => $res];
     echo json_encode($result);
     return;
 }
 
 if (get_parameter('remove_source_on_database', 0)) {
-    $res = $is_users ? notifications_remove_users_from_source($source, $elements) : notifications_remove_group_from_source($source, $elements);
+    $res = ($is_users) ? notifications_remove_users_from_source($source, $elements) : notifications_remove_group_from_source($source, $elements);
     $result = ['result' => $res];
     echo json_encode($result);
     return;
@@ -65,7 +78,7 @@ if (get_parameter('update_config', 0)) {
     switch ($element) {
         // All users has other action.
         case 'all_users':
-            $res = $value ? notifications_add_group_to_source($source, [0]) : notifications_remove_group_from_source($source, [0]);
+            $res = ($value) ? notifications_add_group_to_source($source, [0]) : notifications_remove_group_from_source($source, [0]);
         break;
 
         default:
@@ -89,7 +102,7 @@ $table_content->id = 'notifications-wrapper';
 $table_content->class = 'databox filters';
 $table_content->size['name'] = '30%';
 
-// Print each source configuration
+// Print each source configuration.
 $table_content->data = array_map(
     function ($source) {
         return notifications_print_global_source_configuration($source);
@@ -101,13 +114,6 @@ html_print_table($table_content);
 
 ?>
 <script>
-// Get the source id
-function notifications_get_source_id(id) {
-    var matched = id.match(/.*-(.*)/);
-    if (matched == null) return '';
-    return matched[1];
-}
-
 // Get index of two ways element dialog.
 function notifications_two_ways_element_get_dialog (id, source_id) {
     return 'global_config_notifications_dialog_add-' + id + '-' + source_id;
@@ -116,16 +122,6 @@ function notifications_two_ways_element_get_dialog (id, source_id) {
 // Get index of two ways element form.
 function notifications_two_ways_element_get_sufix (id, source_id) {
     return 'multi-' + id + '-' + source_id;
-}
-
-// Disable or enable the select seeing the checked value of notify all users
-function notifications_disable_source(event) {
-    var id = notifications_get_source_id(event.target.id);
-    var is_checked = document.getElementById(event.target.id).checked;
-    var selectors = ['groups', 'users'];
-    selectors.map(function (select) {
-        document.getElementById(notifications_two_ways_element_get_sufix(select, id)).disabled = is_checked;
-    });
 }
 
 // Open a dialog with selector of source elements.

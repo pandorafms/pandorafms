@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Library. Notification system auxiliary functions.
  *
@@ -44,9 +43,12 @@ function get_notification_source_id(string $source)
     }
 
     return db_get_value_sql(
-        "SELECT id
-            FROM `tnotification_source`
-            WHERE `description` LIKE '{$source}%'"
+        sprintf(
+            'SELECT id
+                FROM `tnotification_source`
+                WHERE lower(`description`) = lower("%s")',
+            $source
+        )
     );
 }
 
@@ -238,7 +240,7 @@ function notifications_get_group_sources($filter=[], $fields=[])
     $fields = array_map(
         function ($field) {
             if (!preg_match('/^tnsg./', $field)) {
-                $field = "tnsg.{$field}";
+                $field = 'tnsg.'.$field;
             }
 
             return $field;
@@ -254,7 +256,7 @@ function notifications_get_group_sources($filter=[], $fields=[])
         array_merge($fields, ['IFNULL(tg.nombre, "All") AS name'])
     );
 
-    // If fails or no one is selected, return empty array
+    // If fails or no one is selected, return empty array.
     if ($groups === false) {
         return [];
     }
@@ -273,12 +275,12 @@ function notifications_get_group_sources($filter=[], $fields=[])
  */
 function notifications_remove_group_from_source($source_id, $groups)
 {
-    // Source id is mandatory
+    // Source id is mandatory.
     if (!isset($source_id)) {
         return false;
     }
 
-    // Delete from database
+    // Delete from database.
     return db_process_sql_delete(
         'tnotification_source_group',
         [
@@ -299,12 +301,12 @@ function notifications_remove_group_from_source($source_id, $groups)
  */
 function notifications_remove_users_from_source($source_id, $users)
 {
-    // Source id is mandatory
+    // Source id is mandatory.
     if (!isset($source_id)) {
         return false;
     }
 
-    // Delete from database
+    // Delete from database.
     return db_process_sql_delete(
         'tnotification_source_user',
         [
@@ -360,12 +362,12 @@ function notifications_add_group_to_source($source_id, $groups)
  */
 function notifications_add_users_to_source($source_id, $users)
 {
-    // Source id is mandatory
+    // Source id is mandatory.
     if (!isset($source_id)) {
         return false;
     }
 
-    // Insert into database all groups passed
+    // Insert into database all groups passed.
     $res = true;
     $also_mail = db_get_value(
         'also_mail',
@@ -529,10 +531,14 @@ function notifications_set_user_label_status($source, $user, $label, $value)
 function notifications_print_ball()
 {
     $num_notifications = messages_get_count();
-    $class_status = $num_notifications == 0 ? 'notification-ball-no-messages' : 'notification-ball-new-messages';
-    return "<div class='notification-ball $class_status' id='notification-ball-header'>
-            $num_notifications
-        </div>";
+    $class_status = ($num_notifications == 0) ? 'notification-ball-no-messages' : 'notification-ball-new-messages';
+    return sprintf(
+        '<div class="notification-ball %s" id="notification-ball-header">
+            %s
+        </div>',
+        $class_status,
+        $num_notifications
+    );
 }
 
 
@@ -553,25 +559,25 @@ function notifications_print_global_source_configuration($source)
         'class' => 'elem-clickable',
     ];
 
-    // Search if group all is set and handle that situation
+    // Search if group all is set and handle that situation.
     $source_groups = notifications_get_group_sources_for_select($source['id']);
     $is_group_all = isset($source_groups['0']);
     if ($is_group_all) {
         unset($source_groups['0']);
     }
 
-    // Generate the title
+    // Generate the title.
     $html_title = "<div class='global-config-notification-title'>";
     $html_title .= html_print_switch($switch_values);
-    $html_title .= "<h2>{$source['description']}</h2>";
+    $html_title .= '<h2>'.$source['description'].'</h2>';
     $html_title .= '</div>';
 
-    // Generate the html for title
+    // Generate the html for title.
     $html_selectors = "<div class='global-config-notification-selectors'>";
     $html_selectors .= notifications_print_source_select_box(notifications_get_user_sources_for_select($source['id']), 'users', $source['id'], $is_group_all);
     $html_selectors .= notifications_print_source_select_box($source_groups, 'groups', $source['id'], $is_group_all);
     $html_selectors .= '</div>';
-    // Generate the checkboxes and time select
+    // Generate the checkboxes and time select.
     $html_checkboxes = "<div class='global-config-notification-checkboxes'>";
     $html_checkboxes .= '   <span>';
     $html_checkboxes .= html_print_checkbox_extended('all-'.$source['id'], 1, $is_group_all, false, '', 'class= "elem-clickable"', true, 'id="nt-'.$source['id'].'-all_users"');
@@ -585,7 +591,7 @@ function notifications_print_global_source_configuration($source)
     $html_checkboxes .= '   </span>';
     $html_checkboxes .= '</div>';
 
-    // Generate the select with the time
+    // Generate the select with the time.
     $html_select_pospone = __('Users can postpone notifications up to');
     $html_select_pospone .= html_print_select(
         [
@@ -609,7 +615,7 @@ function notifications_print_global_source_configuration($source)
         'elem-changeable'
     );
 
-    // Return all html
+    // Return all html.
     return $html_title.$html_selectors.$html_checkboxes.$html_select_pospone;
 }
 
@@ -630,20 +636,20 @@ function notifications_print_source_select_box(
     $source_id,
     $disabled
 ) {
-    $title = $id == 'users' ? __('Notified users') : __('Notified groups');
-    $add_title = $id == 'users' ? __('Add users') : __('Add groups');
-    $delete_title = $id == 'users' ? __('Delete users') : __('Delete groups');
+    $title = ($id === 'users') ? __('Notified users') : __('Notified groups');
+    $add_title = ($id === 'users') ? __('Add users') : __('Add groups');
+    $delete_title = ($id === 'users') ? __('Delete users') : __('Delete groups');
 
-    // Generate the HTML
+    // Generate the HTML.
     $html_select = "<div class='global-config-notification-single-selector'>";
     $html_select .= '   <div>';
-    $html_select .= "       <h4>$title</h4>";
-    // Put a true if empty sources to avoid to sow the 'None' value
-    $html_select .= html_print_select(empty($info_selec) ? true : $info_selec, "multi-{$id}-{$source_id}[]", 0, false, '', '', true, true, true, '', $disabled);
+    $html_select .= '       <h4>'.$title.'</h4>';
+    // Put a true if empty sources to avoid to sow the 'None' value.
+    $html_select .= html_print_select(empty($info_selec) ? true : $info_selec, 'multi-'.$id.'-'.$source_id.'[]', 0, false, '', '', true, true, true, '', $disabled);
     $html_select .= '   </div>';
     $html_select .= "   <div class='global-notifications-icons'>";
-    $html_select .= html_print_image('images/input_add.png', true, ['title' => $add_title, 'onclick' => "add_source_dialog('$id', '$source_id')"]);
-    $html_select .= html_print_image('images/input_delete.png', true, ['title' => $delete_title, 'onclick' => "remove_source_elements('$id', '$source_id')"]);
+    $html_select .= html_print_image('images/input_add.png', true, ['title' => $add_title, 'onclick' => 'add_source_dialog("'.$id.', "'.$source_id.'")"']);
+    $html_select .= html_print_image('images/input_delete.png', true, ['title' => $delete_title, 'onclick' => 'remove_source_elements("'.$id.'", "'.$source_id.'")"']);
     $html_select .= '   </div>';
     $html_select .= '</div>';
     return $html_select;
@@ -663,14 +669,14 @@ function notifications_print_source_select_box(
 function notifications_print_two_ways_select($info_selec, $users, $source_id)
 {
     $html_select = "<div class='global_config_notifications_dialog_add'>";
-    $html_select .= html_print_select(empty($info_selec) ? true : $info_selec, "all-multi-{$users}-{$source_id}[]", 0, false, '', '', true, true, true, '');
+    $html_select .= html_print_select(empty($info_selec) ? true : $info_selec, 'all-multi-'.$users.'-'.$source_id.'[]', 0, false, '', '', true, true, true, '');
     $html_select .= "<div class='global_config_notifications_two_ways_form_arrows'>";
-    $html_select .= html_print_image('images/darrowright.png', true, ['title' => $add_title, 'onclick' => "notifications_modify_two_ways_element('$users', '$source_id', 'add')"]);
-    $html_select .= html_print_image('images/darrowleft.png', true, ['title' => $add_title, 'onclick' => "notifications_modify_two_ways_element('$users', '$source_id', 'remove')"]);
+    $html_select .= html_print_image('images/darrowright.png', true, ['title' => $add_title, 'onclick' => 'notifications_modify_two_ways_element("'.$users.'", "'.$source_id.'", "add")']);
+    $html_select .= html_print_image('images/darrowleft.png', true, ['title' => $add_title, 'onclick' => 'notifications_modify_two_ways_element("'.$users.'", "'.$source_id.'", "remove")']);
     $html_select .= '</div>';
-    $html_select .= html_print_select(true, "selected-multi-{$users}-{$source_id}[]", 0, false, '', '', true, true, true, '');
+    $html_select .= html_print_select(true, 'selected-multi-'.$users.'-'.$source_id.'[]', 0, false, '', '', true, true, true, '');
     $html_select .= '</div>';
-    $html_select .= html_print_button(__('Add'), 'Add', false, "notifications_add_source_element_to_database('$users', '$source_id')", "class='sub add'", true);
+    $html_select .= html_print_button(__('Add'), 'Add', false, 'notifications_add_source_element_to_database("'.$users.'", "'.$source_id.'")', "class='sub add'", true);
 
     return $html_select;
 }

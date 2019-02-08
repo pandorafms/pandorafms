@@ -2611,20 +2611,19 @@ function events_get_extended_events(int $id_evento)
 
 
 /**
- * Generates the 'extended' page in event view.
+ * Generates the 'related' page in event view.
  *
  * @param array  $event  To be displayed.
  * @param string $server Server (if in metaconsole environment).
  *
  * @return string HTML to be displayed.
  */
-function events_page_extended($event, $server='')
+function events_page_related($event, $server='')
 {
-    $html = '';
-
-    $data = [];
-    $data[0] = __('Extended events');
-    $data[1] = '';
+    $html = '<div id="extended_event_related_page" class="extended_event_pages">';
+    $html .= '<h4>'.__('Extended information').'</h4>';
+    $html .= '<div id="related_data"><p>'.__('Loading').'...</p></div>';
+    $html .= '</div>';
 
     return $html;
 }

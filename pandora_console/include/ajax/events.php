@@ -397,6 +397,10 @@ if ($get_extended_event) {
     // Tabs.
     $tabs = "<ul style='background:#ffffff !important; border-top: 0px; border-left: 0px; border-right: 0px; border-top-left-radius: 0px; border-top-right-radius: 0px; border-bottom-right-radius: 0px; border-bottom-left-radius: 0px; border-color: #D3D3D3;'>";
     $tabs .= "<li><a href='#extended_event_general_page' id='link_general'>".html_print_image('images/lightning_go.png', true)."<span style='position:relative;top:-6px;left:5px;margin-right:10px;'>".__('General').'</span></a></li>';
+    if ($event['extended_info'] == 1) {
+        $tabs .= "<li><a href='#extended_event_related_page' id='link_related'>".html_print_image('images/zoom.png', true)."<span style='position:relative;top:-6px;left:5px;margin-right:10px;'>".__('Related').'</span></a></li>';
+    }
+
     $tabs .= "<li><a href='#extended_event_details_page' id='link_details'>".html_print_image('images/zoom.png', true)."<span style='position:relative;top:-6px;left:5px;margin-right:10px;'>".__('Details').'</span></a></li>';
     $tabs .= "<li><a href='#extended_event_custom_fields_page' id='link_custom_fields'>".html_print_image('images/custom_field_col.png', true)."<span style='position:relative;top:-6px;left:5px;margin-right:10px;'>".__('Agent fields').'</span></a></li>';
     $tabs .= "<li><a href='#extended_event_comments_page' id='link_comments'>".html_print_image('images/pencil.png', true)."<span style='position:relative;top:-6px;left:5px;margin-right:10px;'>".__('Comments').'</span></a></li>';
@@ -487,6 +491,10 @@ if ($get_extended_event) {
 
     $details = events_page_details($event, $server);
 
+    if ($event['extended_info'] == 1) {
+        $related = events_page_related($event, $server);
+    }
+
     // Juanma (09/05/2014) Fix: Needs to reconnect to node, in previous funct
     // node connection was lost.
     if ($meta) {
@@ -515,7 +523,7 @@ if ($get_extended_event) {
 
     $loading = '<div id="response_loading" style="display:none">'.html_print_image('images/spinner.gif', true).'</div>';
 
-    $out = '<div id="tabs" style="height:95%; overflow: auto">'.$tabs.$notifications.$loading.$general.$details.$custom_fields.$comments.$responses.$custom_data.html_print_input_hidden('id_event', $event['id_evento']).'</div>';
+    $out = '<div id="tabs" style="height:95%; overflow: auto">'.$tabs.$notifications.$loading.$general.$details.$related.$custom_fields.$comments.$responses.$custom_data.html_print_input_hidden('id_event', $event['id_evento']).'</div>';
 
     $js = '<script>
 	$(function() {
@@ -533,20 +541,24 @@ if ($get_extended_event) {
             $js .= '$tabs.tabs( "option", "active", 1);';
         break;
 
-        case 'custom_fields':
+        case 'related':
             $js .= '$tabs.tabs( "option", "active", 2);';
         break;
 
-        case 'comments':
+        case 'custom_fields':
             $js .= '$tabs.tabs( "option", "active", 3);';
         break;
 
-        case 'responses':
+        case 'comments':
             $js .= '$tabs.tabs( "option", "active", 4);';
         break;
 
-        case 'custom_data':
+        case 'responses':
             $js .= '$tabs.tabs( "option", "active", 5);';
+        break;
+
+        case 'custom_data':
+            $js .= '$tabs.tabs( "option", "active", 6);';
         break;
 
         default:
@@ -554,9 +566,28 @@ if ($get_extended_event) {
         break;
     }
 
-    $js .= '
-	});
-	</script>';
+    $js .= '});';
+
+    if ($event['extended_info'] == 1) {
+        $js .= '
+        $("#link_related").click(function (){
+          $.post ({
+                url : "ajax.php",
+                data : {
+                    page: "include/ajax/events_extended",
+                    get_extended_info: 1,
+                    id_event: '.$event['id_evento'].'
+                },
+                dataType : "html",
+                success: function (data) {
+                    $("#related_data").html(data);
+                    console.log("vamos puta");
+                }
+            });
+        });';
+    }
+
+    $js .= '</script>';
 
     echo $out.$js;
 }

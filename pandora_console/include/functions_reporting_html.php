@@ -672,26 +672,27 @@ function reporting_html_SLA($table, $item, $mini, $pdf=0)
                     true
                 );
             } else {
-                $return_pdf .= '<tr><td colspan=3>';
+                $table1->title = $item['title'];
+                $table1->titleclass = 'title_table_pdf';
+                $table1->titlestyle = 'text-align:left;';
                 $return_pdf .= html_print_table(
                     $table1,
                     true
                 );
-                $return_pdf .= '</td></tr>';
-
-                    $return_pdf .= '<tr><td colspan=3>';
-                    $return_pdf .= html_print_table(
-                        $table2,
-                        true
-                    );
-                    $return_pdf .= '</td></tr>';
-
-                    $return_pdf .= '<tr><td colspan=3>';
-                    $return_pdf .= html_print_table(
-                        $table3,
-                        true
-                    );
-                    $return_pdf .= '</td></tr>';
+                $table2->title = $item['title'];
+                $table2->titleclass = 'title_table_pdf';
+                $table2->titlestyle = 'text-align:left;';
+                $return_pdf .= html_print_table(
+                    $table2,
+                    true
+                );
+                $table3->title = $item['title'];
+                $table3->titleclass = 'title_table_pdf';
+                $table3->titlestyle = 'text-align:left;';
+                $return_pdf .= html_print_table(
+                    $table3,
+                    true
+                );
             }
         } else {
             $table->colspan['error']['cell'] = 3;
@@ -699,82 +700,83 @@ function reporting_html_SLA($table, $item, $mini, $pdf=0)
         }
 
         if (!empty($item['charts'])) {
-            /*
-                $table1 = new stdClass();
-                $table1->width = '99%';
-                $table1->size = [];
-                $table1->size[0] = '10%';
+            $table1 = new stdClass();
+            $table1->width = '99%';
+            $table1->size = [];
+            $table1->size[0] = '10%';
 
-                $table1->data = [];
+            $table1->data = [];
 
-                foreach ($item['charts'] as $chart) {
+            foreach ($item['charts'] as $chart) {
                 $table1->data[] = [
                     $chart['agent'].'<br />'.$chart['module'],
                     $chart['chart'],
                 ];
-                }
+            }
 
-                if ($pdf === 0) {
+            if ($pdf === 0) {
                 $table->colspan['charts']['cell'] = 2;
                 $table->data['charts']['cell'] = html_print_table(
                     $table1,
                     true
                 );
-                } else {
+            } else {
+                $table1->title = $item['title'];
+                $table1->titleclass = 'title_table_pdf';
+                $table1->titlestyle = 'text-align:left;';
                 $return_pdf .= html_print_table(
                     $table1,
                     true
                 );
-                }
+            }
 
-                // Table_legend_graphs.
-                $table1 = new stdClass();
-                $table1->width = '99%';
-                $table1->data = [];
-                $table1->size = [];
-                $table1->size[0] = '2%';
-                $table1->data[0][0] = '<img src ="'.$src.'images/square_green.png">';
-                $table1->size[1] = '14%';
-                $table1->data[0][1] = '<span>'.__('OK').'</span>';
+            // Table_legend_graphs.
+            $table1 = new stdClass();
+            $table1->width = '99%';
+            $table1->data = [];
+            $table1->size = [];
+            $table1->size[0] = '2%';
+            $table1->data[0][0] = '<img src ="'.$src.'images/square_green.png">';
+            $table1->size[1] = '14%';
+            $table1->data[0][1] = '<span>'.__('OK').'</span>';
 
-                $table1->size[2] = '2%';
-                $table1->data[0][2] = '<img src ="'.$src.'images/square_red.png">';
-                $table1->size[3] = '14%';
-                $table1->data[0][3] = '<span>'.__('Critical').'</span>';
+            $table1->size[2] = '2%';
+            $table1->data[0][2] = '<img src ="'.$src.'images/square_red.png">';
+            $table1->size[3] = '14%';
+            $table1->data[0][3] = '<span>'.__('Critical').'</span>';
 
-                $table1->size[4] = '2%';
-                $table1->data[0][4] = '<img src ="'.$src.'images/square_gray.png">';
-                $table1->size[5] = '14%';
-                $table1->data[0][5] = '<span>'.__('Unknow').'</span>';
+            $table1->size[4] = '2%';
+            $table1->data[0][4] = '<img src ="'.$src.'images/square_gray.png">';
+            $table1->size[5] = '14%';
+            $table1->data[0][5] = '<span>'.__('Unknow').'</span>';
 
-                $table1->size[6] = '2%';
-                $table1->data[0][6] = '<img src ="'.$src.'images/square_blue.png">';
-                $table1->size[7] = '14%';
-                $table1->data[0][7] = '<span>'.__('Not Init').'</span>';
+            $table1->size[6] = '2%';
+            $table1->data[0][6] = '<img src ="'.$src.'images/square_blue.png">';
+            $table1->size[7] = '14%';
+            $table1->data[0][7] = '<span>'.__('Not Init').'</span>';
 
-                $table1->size[8] = '2%';
-                $table1->data[0][8] = '<img src ="'.$src.'images/square_violet.png">';
-                $table1->size[9] = '14%';
-                $table1->data[0][9] = '<span>'.__('Downtimes').'</span>';
+            $table1->size[8] = '2%';
+            $table1->data[0][8] = '<img src ="'.$src.'images/square_violet.png">';
+            $table1->size[9] = '14%';
+            $table1->data[0][9] = '<span>'.__('Downtimes').'</span>';
 
-                $table1->size[10] = '2%';
-                $table1->data[0][10] = '<img src ="'.$src.'images/square_light_gray.png">';
-                $table1->size[11] = '15%';
-                $table1->data[0][11] = '<span>'.__('Ignore time').'</span>';
+            $table1->size[10] = '2%';
+            $table1->data[0][10] = '<img src ="'.$src.'images/square_light_gray.png">';
+            $table1->size[11] = '15%';
+            $table1->data[0][11] = '<span>'.__('Ignore time').'</span>';
 
-                if ($pdf === 0) {
+            if ($pdf === 0) {
                 $table->colspan['legend']['cell'] = 2;
                 $table->data['legend']['cell'] = html_print_table(
                     $table1,
                     true
                 );
-                } else {
+            } else {
                 $return_pdf .= html_print_table(
                     $table1,
                     true
                 );
-                }
-            */
+            }
         }
     }
 
@@ -2348,13 +2350,28 @@ function reporting_html_value(&$table, $item, $mini, $only_value=false, $check_e
 }
 
 
-function reporting_html_increment(&$table, $item)
+/**
+ * Show a brief analysis in which the variation of the value
+ * of the indicated module is indicated.
+ *
+ * @param  string  $table
+ * @param  array   $item
+ * @param  integer $pdf
+ * @return html
+ */
+function reporting_html_increment($table, $item, $pdf=0)
 {
     global $config;
 
+    $return_pdf = '';
+
     if (isset($item['data']['error'])) {
-        $table->colspan['error']['cell'] = 3;
-        $table->data['error']['cell'] = $item['data']['message'];
+        if ($pdf === 0) {
+            $table->colspan['error']['cell'] = 3;
+            $table->data['error']['cell'] = $item['data']['message'];
+        } else {
+            $return_pdf = $item['data']['message'];
+        }
     } else {
         $table1 = new stdClass();
         $table1->width = '99%';
@@ -2403,9 +2420,17 @@ function reporting_html_increment(&$table, $item)
 
         $table1->data[] = $table1_row;
 
-        $data = [];
-        $data[0] = html_print_table($table1, true);
-        array_push($table->data, $data);
+        if ($pdf === 0) {
+            $data = [];
+            $data[0] = html_print_table($table1, true);
+            array_push($table->data, $data);
+        } else {
+            $return_pdf = html_print_table($table1, true);
+        }
+    }
+
+    if ($pdf !== 0) {
+        return $return_pdf;
     }
 }
 

@@ -641,18 +641,59 @@ function notifications_print_source_select_box(
     $delete_title = ($id === 'users') ? __('Delete users') : __('Delete groups');
 
     // Generate the HTML.
-    $html_select = "<div class='global-config-notification-single-selector'>";
-    $html_select .= '   <div>';
-    $html_select .= '       <h4>'.$title.'</h4>';
-    // Put a true if empty sources to avoid to sow the 'None' value.
-    $html_select .= html_print_select(empty($info_selec) ? true : $info_selec, 'multi-'.$id.'-'.$source_id.'[]', 0, false, '', '', true, true, true, '', $disabled);
-    $html_select .= '   </div>';
-    $html_select .= "   <div class='global-notifications-icons'>";
-    $html_select .= html_print_image('images/input_add.png', true, ['title' => $add_title, 'onclick' => 'add_source_dialog("'.$id.', "'.$source_id.'")"']);
-    $html_select .= html_print_image('images/input_delete.png', true, ['title' => $delete_title, 'onclick' => 'remove_source_elements("'.$id.'", "'.$source_id.'")"']);
-    $html_select .= '   </div>';
-    $html_select .= '</div>';
-    return $html_select;
+    return sprintf(
+        "
+        <div class='global-config-notification-single-selector'>
+            <div>
+                <h4>%s</h4>
+                %s
+            </div>
+            <div class='global-notifications-icons'>
+                %s
+                %s
+            </div>
+        </div>
+        ",
+        $title,
+        // Put a true if empty sources to avoid to sow the 'None' value.
+        html_print_select(
+            empty($info_selec) ? true : $info_selec,
+            'multi-'.$id.'-'.$source_id.'[]',
+            0,
+            false,
+            '',
+            '',
+            true,
+            true,
+            true,
+            '',
+            $disabled
+        ),
+        html_print_image(
+            'images/input_add.png',
+            true,
+            [
+                'title'   => $add_title,
+                'onclick' => sprintf(
+                    "add_source_dialog('%s', '%s')",
+                    $id,
+                    $source_id
+                ),
+            ]
+        ),
+        html_print_image(
+            'images/input_delete.png',
+            true,
+            [
+                'title'   => $delete_title,
+                'onclick' => sprintf(
+                    "remove_source_elements('%s', '%s')",
+                    $id,
+                    $source_id
+                ),
+            ]
+        )
+    );
 }
 
 
@@ -668,17 +709,79 @@ function notifications_print_source_select_box(
  */
 function notifications_print_two_ways_select($info_selec, $users, $source_id)
 {
-    $html_select = "<div class='global_config_notifications_dialog_add'>";
-    $html_select .= html_print_select(empty($info_selec) ? true : $info_selec, 'all-multi-'.$users.'-'.$source_id.'[]', 0, false, '', '', true, true, true, '');
-    $html_select .= "<div class='global_config_notifications_two_ways_form_arrows'>";
-    $html_select .= html_print_image('images/darrowright.png', true, ['title' => $add_title, 'onclick' => 'notifications_modify_two_ways_element("'.$users.'", "'.$source_id.'", "add")']);
-    $html_select .= html_print_image('images/darrowleft.png', true, ['title' => $add_title, 'onclick' => 'notifications_modify_two_ways_element("'.$users.'", "'.$source_id.'", "remove")']);
-    $html_select .= '</div>';
-    $html_select .= html_print_select(true, 'selected-multi-'.$users.'-'.$source_id.'[]', 0, false, '', '', true, true, true, '');
-    $html_select .= '</div>';
-    $html_select .= html_print_button(__('Add'), 'Add', false, 'notifications_add_source_element_to_database("'.$users.'", "'.$source_id.'")', "class='sub add'", true);
-
-    return $html_select;
+    return sprintf(
+        "
+        <div class='global_config_notifications_dialog_add'>
+            %s
+            <div class='global_config_notifications_two_ways_form_arrows'>
+                %s
+                %s
+            </div>
+            %s
+        </div>
+        %s
+        ",
+        html_print_select(
+            empty($info_selec) ? true : $info_selec,
+            'all-multi-'.$users.'-'.$source_id.'[]',
+            0,
+            false,
+            '',
+            '',
+            true,
+            true,
+            true,
+            ''
+        ),
+        html_print_image(
+            'images/darrowright.png',
+            true,
+            [
+                'title'   => __('Add elements'),
+                'onclick' => sprintf(
+                    "notifications_modify_two_ways_element('%s', '%s', 'add')",
+                    $users,
+                    $source_id
+                ),
+            ]
+        ),
+        html_print_image(
+            'images/darrowleft.png',
+            true,
+            [
+                'title'   => __('Remove elements'),
+                'onclick' => sprintf(
+                    "notifications_modify_two_ways_element('%s', '%s', 'remove')",
+                    $users,
+                    $source_id
+                ),
+            ]
+        ),
+        html_print_select(
+            true,
+            'selected-multi-'.$users.'-'.$source_id.'[]',
+            0,
+            false,
+            '',
+            '',
+            true,
+            true,
+            true,
+            ''
+        ),
+        html_print_button(
+            __('Add'),
+            'Add',
+            false,
+            sprintf(
+                "notifications_add_source_element_to_database('%s', '%s')",
+                $users,
+                $source_id
+            ),
+            "class='sub add'",
+            true
+        )
+    );
 }
 
 

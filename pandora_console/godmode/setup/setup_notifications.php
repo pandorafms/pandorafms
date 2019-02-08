@@ -44,7 +44,7 @@ $users = get_parameter('users', '');
 $elements = get_parameter('elements', []);
 $is_users = $users === 'users';
 if (get_parameter('get_selection_two_ways_form', 0)) {
-    $info_selec = ($is_users) ? notifications_get_user_source_not_configured($source) : notifications_get_group_source_not_configured($source);
+    $info_selec = ($is_users === true) ? notifications_get_user_source_not_configured($source) : notifications_get_group_source_not_configured($source);
 
     echo notifications_print_two_ways_select(
         $info_selec,
@@ -133,7 +133,10 @@ function add_source_dialog(users, source_id) {
     if (previous_dialog !== null) previous_dialog.remove();
     // Create or recreate the content.
     var not_dialog = document.createElement('div');
-    not_dialog.setAttribute('class', 'global_config_notifications_dialog_add_wrapper');
+    not_dialog.setAttribute(
+        'class',
+        'global_config_notifications_dialog_add_wrapper'
+    );
     not_dialog.setAttribute('id', dialog_id);
     document.body.appendChild(not_dialog);
     $("#" + dialog_id).dialog({
@@ -182,7 +185,8 @@ function notifications_modify_two_ways_element (id, source_id, operation) {
 
 // Add elements to database and close dialog
 function notifications_add_source_element_to_database(id, source_id) {
-    var index = 'selected-' + notifications_two_ways_element_get_sufix (id, source_id);
+    var index = 'selected-' +
+        notifications_two_ways_element_get_sufix (id, source_id);
     var select = document.getElementById(index);
     var selected = [];
     for (var i = select.options.length - 1; i >= 0; i--) {
@@ -205,7 +209,11 @@ function notifications_add_source_element_to_database(id, source_id) {
                     out_select.appendChild(select.options[i]);
                 }
                 // Close the dialog
-                $("#" + notifications_two_ways_element_get_dialog(id, source_id)).dialog("close");
+                $("#" + notifications_two_ways_element_get_dialog(
+                    id,
+                    source_id
+                ))
+                .dialog("close");
             } else {
                 console.log("Cannot update element.");
             }
@@ -304,7 +312,9 @@ function notifications_handle_change_element(event) {
                         value = element.value;
                         break;
                     default:
-                        console.error("Unregonized action (insert on db)", action.bit, '.');
+                        console.error(
+                            "Unregonized action (insert on db)", action.bit, '.'
+                        );
                         return;
                 }
             }

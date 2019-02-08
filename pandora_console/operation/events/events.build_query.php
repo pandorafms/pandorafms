@@ -19,7 +19,6 @@ if (check_acl($id_user, 0, 'ER')) {
     $groups = users_get_groups($id_user, 'EM');
 }
 
-
 $propagate = db_get_value('propagate', 'tgrupo', 'id_grupo', $id_group);
 
 if ($id_group > 0) {
@@ -41,7 +40,15 @@ if ($id_group > 0) {
     $childrens_ids = array_keys($groups);
 }
 
-if (($date_from == '') && ($date_to == '')) {
+if (!isset($date_from)) {
+    $date_from = '';
+}
+
+if (!isset($date_to)) {
+    $date_to = '';
+}
+
+if (($date_from === '') && ($date_to === '')) {
     if ($event_view_hr > 0) {
         $filter_resume['hours_max'] = $event_view_hr;
         $unixtime = (get_system_time() - ($event_view_hr * SECONDS_1HOUR));
@@ -74,20 +81,18 @@ if (($date_from == '') && ($date_to == '')) {
     }
 }
 
-// Group selection
+// Group selection.
 if ($id_group > 0 && in_array($id_group, array_keys($groups))) {
     if ($propagate) {
         $childrens_str = implode(',', $childrens_ids);
-        $sql_post = " AND (id_grupo IN ($childrens_str) OR id_group IN ($childrens_str))";
+        $sql_post .= " AND (id_grupo IN ($childrens_str) OR id_group IN ($childrens_str))";
     } else {
-        // If a group is selected and it's in the groups allowed
-        $sql_post = " AND (id_grupo = $id_group OR id_group = $id_group)";
+        // If a group is selected and it's in the groups allowed.
+        $sql_post .= " AND (id_grupo = $id_group OR id_group = $id_group)";
     }
 } else {
-    hd(users_can_manage_group_all('ER'));
     if (!users_is_admin() && !users_can_manage_group_all('ER')) {
-        hd(users_can_manage_group_all('ER'));
-        $sql_post = sprintf(
+        $sql_post .= sprintf(
             ' AND (id_grupo IN (%s) OR id_group IN (%s)) ',
             implode(',', array_keys($groups)),
             implode(',', array_keys($groups))
@@ -95,7 +100,7 @@ if ($id_group > 0 && in_array($id_group, array_keys($groups))) {
     }
 }
 
-// Skip system messages if user is not PM
+// Skip system messages if user is not PM.
 if (!check_acl($id_user, 0, 'PM')) {
     $sql_post .= ' AND id_grupo != 0';
 }
@@ -201,7 +206,7 @@ if ($source != '') {
     $sql_post .= " AND source LIKE '%$source%'";
 }
 
-// In metaconsole mode the agent search is performed by name
+// In metaconsole mode the agent search is performed by name.
 if ($meta) {
     $text_agent = get_parameter('text_agent', '');
     $id_agent = get_parameter('id_agent', 0);
@@ -216,7 +221,7 @@ if ($meta) {
         break;
 
         case -1:
-            // Agent doesnt exist. No results will returned
+            // Agent doesnt exist. No results will returned.
             $sql_post .= ' AND 1 = 0';
         break;
 
@@ -229,9 +234,7 @@ if ($meta) {
 
 
 
-if ($meta) {
-    // There is another filter.
-} else {
+if (!$meta) {
     if (!empty($text_module)) {
         $filter_resume['module'] = $text_module;
         $sql_post .= " AND id_agentmodule IN (
@@ -247,15 +250,7 @@ if ($id_user_ack != '0') {
     $sql_post .= " AND id_usuario = '".$id_user_ack."'";
 }
 
-if (!isset($date_from)) {
-    $date_from = '';
-}
-
-if (!isset($date_to)) {
-    $date_to = '';
-}
-
-// Search by tag
+// Search by tag.
 if (!empty($tag_with)) {
     if (!users_is_admin()) {
         $user_tags = array_flip(tags_get_tags_for_module_search());
@@ -309,7 +304,7 @@ if (!empty($tag_without)) {
     $sql_post .= ' ) ';
 }
 
-// Filter/Only alerts
+// Filter/Only alerts.
 if (isset($filter_only_alert)) {
     if ($filter_only_alert == 0) {
         $filter_resume['alerts'] = $filter_only_alert;
@@ -320,7 +315,7 @@ if (isset($filter_only_alert)) {
     }
 }
 
-// Tags ACLS
+// Tags ACLS.
 if ($id_group > 0 && in_array($id_group, array_keys($groups))) {
     $group_array = (array) $id_group;
 } else {
@@ -339,7 +334,7 @@ if (check_acl($id_user, 0, 'ER')) {
         [],
         true
     );
-    // FORCE CHECK SQL "(TAG = tag1 AND id_grupo = 1)"
+    // FORCE CHECK SQL "(TAG = tag1 AND id_grupo = 1)".
 } else if (check_acl($id_user, 0, 'EW')) {
     $tags_acls_condition = tags_get_acl_tags(
         $id_user,
@@ -352,7 +347,7 @@ if (check_acl($id_user, 0, 'ER')) {
         [],
         true
     );
-    // FORCE CHECK SQL "(TAG = tag1 AND id_grupo = 1)"
+    // FORCE CHECK SQL "(TAG = tag1 AND id_grupo = 1)".
 } else if (check_acl($id_user, 0, 'EM')) {
     $tags_acls_condition = tags_get_acl_tags(
         $id_user,
@@ -365,14 +360,14 @@ if (check_acl($id_user, 0, 'ER')) {
         [],
         true
     );
-    // FORCE CHECK SQL "(TAG = tag1 AND id_grupo = 1)"
+    // FORCE CHECK SQL "(TAG = tag1 AND id_grupo = 1)".
 }
 
 if (($tags_acls_condition != ERR_WRONG_PARAMETERS) && ($tags_acls_condition != ERR_ACL) && ($tags_acls_condition != -110000)) {
     $sql_post .= $tags_acls_condition;
 }
 
-// Metaconsole fitlers
+// Metaconsole fitlers.
 if ($meta) {
     if ($server_id) {
         $filter_resume['server'] = $server_id;
@@ -402,5 +397,3 @@ if ($meta) {
         }
     }
 }
-
-hd($sql_post);

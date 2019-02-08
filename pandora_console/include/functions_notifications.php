@@ -523,6 +523,11 @@ function notifications_set_user_label_status($source, $user, $label, $value)
 }
 
 
+// /////////////////////////////////////////////////////////////////////////////
+// UI FUNCTIONS
+// /////////////////////////////////////////////////////////////////////////////
+
+
 /**
  * Print the notification ball to see unread messages.
  *
@@ -533,7 +538,11 @@ function notifications_print_ball()
     $num_notifications = messages_get_count();
     $class_status = ($num_notifications == 0) ? 'notification-ball-no-messages' : 'notification-ball-new-messages';
     return sprintf(
-        '<div class="notification-ball %s" id="notification-ball-header">
+        '<div
+            onclick="addNotifications(event)"
+            class="notification-ball %s"
+            id="notification-ball-header"
+        >
             %s
         </div>',
         $class_status,
@@ -805,5 +814,60 @@ function notifications_print_user_switch($source, $user, $label)
             'class'    => 'notifications-user-label_individual',
             'id'       => 'notifications-user-'.$source['id'].'-label-'.$label,
         ]
+    );
+}
+
+
+/**
+ * Generates the dropdown notifications menu.
+ *
+ * @return string HTML with dropdown menu.
+ */
+function notifications_print_dropdown()
+{
+    $mess = messages_get_overview('status', 'DESC', false, true);
+    if ($mess === false) {
+        $mess = [];
+    }
+
+    return sprintf(
+        "<div class='notification-wrapper' style='display:none;'>
+            %s
+        </div>",
+        array_reduce(
+            $mess,
+            function ($carry, $message) {
+                return $carry.notifications_print_dropdown_element($message);
+            },
+            ''
+        )
+    );
+}
+
+
+/**
+ * Print a single notification box
+ *
+ * @param array $message_info Info of printed message.
+ *
+ * @return string HTML code of single message
+ */
+function notifications_print_dropdown_element($message_info)
+{
+    return sprintf(
+        "<div class='notification-item'>
+            <img src='%s'>
+            <div class='notification-info'>
+                <h4 class='notification-title'>
+                    %s
+                </h4>
+                <p class='notification-subtitle'>
+                    %s
+                </p>
+            </div>
+        </div>",
+        html_print_image('images/'.$message_info['icon'], true),
+        $message_info['description'],
+        $message_info['mensaje']
     );
 }

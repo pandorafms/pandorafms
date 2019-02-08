@@ -411,18 +411,20 @@ function messages_get_count_sent(string $user='')
 /**
  * Get message overview in array
  *
- * @param string  $order     How to order them valid:
- *                           (status (default), subject, timestamp, sender).
- * @param string  $order_dir Direction of order
- *                           (ASC = Ascending, DESC = Descending).
- * @param boolean $incl_read Include read messages in return.
+ * @param string  $order            How to order them valid:
+ *                                  (status (default), subject, timestamp, sender).
+ * @param string  $order_dir        Direction of order
+ *                                  (ASC = Ascending, DESC = Descending).
+ * @param boolean $incl_read        Include read messages in return.
+ * @param boolean $incl_source_info Include source info.
  *
  * @return integer The number of messages this user has
  */
 function messages_get_overview(
     string $order='status',
     string $order_dir='ASC',
-    bool $incl_read=true
+    bool $incl_read=true,
+    bool $incl_source_info=false
 ) {
     global $config;
 
@@ -453,21 +455,32 @@ function messages_get_overview(
         $read = 'where t.read is null';
     }
 
+    $source_fields = '';
+    $source_join = '';
+    if ($incl_source_info) {
+        $source_fields = ', tns.*';
+        $source_join = 'INNER JOIN tnotification_source tns
+            ON tns.id=tm.id_source';
+    }
+
     $sql = sprintf(
         'SELECT * FROM (
-            SELECT tm.*, utimestamp_read > 0 as "read" FROM tmensajes tm 
+            SELECT tm.*, utimestamp_read > 0 as "read" %s FROM tmensajes tm 
             LEFT JOIN tnotification_user nu
                 ON tm.id_mensaje=nu.id_mensaje 
             LEFT JOIN (tnotification_group ng
                 INNER JOIN tusuario_perfil up
                     ON ng.id_group=up.id_grupo
                     AND up.id_grupo=ng.id_group
-            ) ON tm.id_mensaje=ng.id_mensaje 
+            ) ON tm.id_mensaje=ng.id_mensaje
+            %s
             WHERE utimestamp_erased is null
                 AND (up.id_usuario="%s" OR nu.id_user="%s" OR ng.id_group=0)
         ) t 
         %s
         ORDER BY %s',
+        $source_fields,
+        $source_join,
         $config['id_user'],
         $config['id_user'],
         $read,

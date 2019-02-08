@@ -4929,6 +4929,59 @@ div#dialog_messages table th:last-child {
   background-color: #fc4444;
 }
 
+.notification-wrapper {
+  background: white;
+  border: #a5a5a5 solid 1px;
+  z-index: 900000;
+  position: absolute;
+  width: 400px;
+  margin-top: -5px;
+}
+.notification-wrapper::before {
+  content: "";
+  display: block;
+  position: absolute;
+  width: 0px;
+  height: 0;
+  border-color: transparent;
+  border-width: 12px;
+  border-style: solid;
+  bottom: 100%;
+  left: 78%;
+  left: calc(78% - 2px);
+  margin-left: -12px;
+  border-bottom-color: white;
+}
+.notification-item {
+  background: whitesmoke;
+  height: 100px;
+  margin: 7px;
+  border: #cccccc solid 1px;
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+}
+.notification-item > * {
+  padding-left: 15px;
+}
+
+.notification-info {
+  width: 87%;
+  display: flex;
+  flex-flow: column nowrap;
+}
+.notification-item img {
+  max-width: 100%;
+  max-height: 100%;
+}
+.notification-title {
+  margin: 0;
+}
+.notification-subtitle {
+  margin: 0;
+  color: #373737;
+}
+
 .global-config-notification-title {
   display: flex;
   flex-direction: row;

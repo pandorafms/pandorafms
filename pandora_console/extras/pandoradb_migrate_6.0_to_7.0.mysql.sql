@@ -1856,6 +1856,19 @@ ALTER TABLE `tevento` ADD COLUMN `data` double(22,5) default NULL;
 
 ALTER TABLE `tevento` ADD COLUMN `module_status` int(4) NOT NULL default '0';
 
+-- ---------------------------------------------------------------------
+-- Table `tevent_extended`
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tevent_extended` (
+	`id` serial PRIMARY KEY,
+	`id_evento` bigint(20) unsigned NOT NULL,
+	`external_id` bigint(20) unsigned,
+	`utimestamp` bigint(20) NOT NULL default '0',
+	`description` text,
+	FOREIGN KEY `tevent_ext_fk`(`id_evento`) REFERENCES `tevento`(`id_evento`)
+    ON UPDATE CASCADE ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 -- -----------------------------------------------------
 -- Table `tgis_map_layer_groups`
 -- -----------------------------------------------------

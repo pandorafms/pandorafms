@@ -1,7 +1,7 @@
 <h1>予想グラフ</h1>
 
 
-<?php html_print_image("images/help/projection_periods.png", false, array('height' => '210')); ?>
+<?php html_print_image('images/help/projection_periods.png', false, ['height' => '210']); ?>
 <br>
 <p>
 予想グラフは将来のモジュールデータを予想します。予想は線形回帰を利用しています。

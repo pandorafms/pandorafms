@@ -11,7 +11,7 @@ This page is the place where the admin can configure <strong>a connection to a G
 
 <h2>Connection types</h2>
 <p>
-Currently <?php echo get_product_name();?> support 3 differet kinds of connections: OpenStreetMap, Google Maps and Static Image.
+Currently <?php echo get_product_name(); ?> support 3 differet kinds of connections: OpenStreetMap, Google Maps and Static Image.
 </p>
 <h3>Open Street Maps</h3>
 <p>

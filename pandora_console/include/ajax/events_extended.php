@@ -68,7 +68,7 @@ $get_extended_info = get_parameter('get_extended_info', 0);
 
 
 if ($get_extended_info == 1) {
-    if (isset($id_event) === falsse) {
+    if (isset($id_event) === false) {
         echo 'Internal error. Invalid event.';
         exit;
     }

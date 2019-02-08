@@ -4929,7 +4929,7 @@ div#dialog_messages table th:last-child {
   background-color: #fc4444;
 }
 
-.notification-wrapper {
+#notification-wrapper {
   background: white;
   border: #a5a5a5 solid 1px;
   z-index: 900000;
@@ -4937,7 +4937,7 @@ div#dialog_messages table th:last-child {
   width: 400px;
   margin-top: -5px;
 }
-.notification-wrapper::before {
+#notification-wrapper::before {
   content: "";
   display: block;
   position: absolute;
@@ -4951,6 +4951,15 @@ div#dialog_messages table th:last-child {
   left: calc(78% - 2px);
   margin-left: -12px;
   border-bottom-color: white;
+}
+#notification-wrapper-shadow {
+  height: 100%;
+  width: 100%;
+  background: #111;
+  position: fixed;
+  z-index: 9009;
+  top: 0;
+  opacity: 0.3;
 }
 .notification-item {
   background: whitesmoke;

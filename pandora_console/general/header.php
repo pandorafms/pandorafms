@@ -386,23 +386,25 @@ config_check();
     ?>
 
     function addNotifications(event) {
-        var elements = document.getElementsByClassName("notification-wrapper");
-        if (!elements) return;
-        Array.prototype.forEach.call(elements, function(elem) {
-            toggle_element(elem);
-        });
+        var element = document.getElementById("notification-content");
+        if (!element) return;
+        element.style.display = "block";
         attatch_to_image();
     }
 
     function attatch_to_image() {
-        var notification_elems = document.getElementsByClassName("notification-wrapper");
-        var image_attached = document.getElementById("notification-ball-header").getBoundingClientRect().left;
-        Array.prototype.forEach.call(notification_elems, function(elem) {
-            elem.style.left = image_attached - 300 + "px";
-        });
+        var notification_elem = document.getElementById("notification-wrapper");
+        var image_attached =
+            document.getElementById("notification-ball-header")
+                .getBoundingClientRect()
+                .left
+        ;
+        notification_elem.style.left = image_attached - 300 + "px";
     }
-    function toggle_element(elem) {
-        elem.style.display = elem.style.display === "none" ? "block" : "none";
+
+    function notifications_hide() {
+        var element = document.getElementById("notification-content");
+        element.style.display = "none"
     }
 
     // Resize event

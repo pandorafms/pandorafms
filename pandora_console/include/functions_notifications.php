@@ -831,8 +831,15 @@ function notifications_print_dropdown()
     }
 
     return sprintf(
-        "<div class='notification-wrapper' style='display:none;'>
-            %s
+        "<div id='notification-content' style='display:none;'>
+            <div id='notification-wrapper'>
+                %s
+            </div>
+            <div
+                id='notification-wrapper-shadow'
+                onclick='notifications_hide()'
+            >
+            </div>
         </div>",
         array_reduce(
             $mess,

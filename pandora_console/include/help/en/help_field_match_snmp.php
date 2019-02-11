@@ -1,7 +1,7 @@
 <?php
 /*
-* @package Include /help/en
-*/
+ * @package Include /help/en
+ */
 ?>
 
 <h1>Variable bindings/Data #1-20</h1>
@@ -11,26 +11,26 @@
 
 <table width=100%>
 <tr>
-	<p>You can use up to 20 variables for doing the filtering (and reusing later for macros). But they doesnt need to follow a specific order. The position of the variable can be defined in the field preceding value.
+    <p>You can use up to 20 variables for doing the filtering (and reusing later for macros). But they doesnt need to follow a specific order. The position of the variable can be defined in the field preceding value.
 That is, if we want to make an alert seeking values ​​"Uno" in the first variable received at the trap, "Tres" in the third variable received by the trap and the same for “Cinco” and “Siete”, is configured as you can see below:</p>
 </tr>
 <tr>
-	<img src="../images/help/custom_oid.png" width='520' height='180'>
+    <img src="../images/help/custom_oid.png" width='520' height='180'>
 </tr>
 <tr>
-	<p>We can use the value of the variables in macros _snmp_f1_ coincidence .. so _snmp_f7_ to define the alert, the alert action allows us to use these macros:</p>
+    <p>We can use the value of the variables in macros _snmp_f1_ coincidence .. so _snmp_f7_ to define the alert, the alert action allows us to use these macros:</p>
 </tr>
 <tr>
-	<img src="../images/help/custom_oid2.png" width='520' height='60'>
+    <img src="../images/help/custom_oid2.png" width='520' height='60'>
 </tr>
 <tr>
-	<p>Here's an example of SNMP trap that will trigger the alert:</p>
+    <p>Here's an example of SNMP trap that will trigger the alert:</p>
 </tr>
 <tr>
-	<img src="../images/help/trap.png" width='520' height='220'>
+    <img src="../images/help/trap.png" width='520' height='220'>
 </tr>
 <tr>
-	<p>Alert generated (an internal audit) will have this text:</p>
+    <p>Alert generated (an internal audit) will have this text:</p>
  
 <p>SNMP Alert of 192.168.5.2 with OID .1.3.6.1.4.1.2789.2005
 Varbind 100: “cien” Varbind 3: “tres” Varbind 20: “veinte” Varbind 60: “sesenta”</p>

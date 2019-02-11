@@ -360,7 +360,7 @@
 </tr>
 
 <tr>
-<td>D M j G:i:s T Y					</td><td>Sat Mar 10 15:16:08 MST 2001</td>
+<td>D M j G:i:s T Y                    </td><td>Sat Mar 10 15:16:08 MST 2001</td>
 </tr>
 <tr>
 <td>H:i:s</td><td>17:16:17</td>

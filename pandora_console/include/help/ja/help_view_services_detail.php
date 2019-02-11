@@ -1,5 +1,6 @@
 <?php
-/* Include Package help/ja/
+/*
+    Include Package help/ja/
 */
 ?>
 

@@ -363,9 +363,11 @@ function messages_get_count(
 
     $sql = sprintf(
         'SELECT count(*) FROM (
-            SELECT tm.*, utimestamp_read > 0 as "read" FROM tmensajes tm 
+            SELECT DISTINCT tm.*, utimestamp_read > 0 as "read"
+            FROM tmensajes tm 
             LEFT JOIN tnotification_user nu
                 ON tm.id_mensaje=nu.id_mensaje 
+                AND nu.id_user="%s"
             LEFT JOIN (tnotification_group ng
                 INNER JOIN tusuario_perfil up
                     ON ng.id_group=up.id_grupo
@@ -375,6 +377,7 @@ function messages_get_count(
                 AND (nu.id_user="%s" OR (up.id_usuario="%s" AND ng.id_group=0))
         ) t 
         %s',
+        $user,
         $user,
         $user,
         $read
@@ -467,11 +470,14 @@ function messages_get_overview(
             ON tns.id=tm.id_source';
     }
 
+    // Using distinct because could be double assignment due group/user.
     $sql = sprintf(
         'SELECT * FROM (
-            SELECT tm.*, utimestamp_read > 0 as "read" %s FROM tmensajes tm 
+            SELECT DISTINCT tm.*, utimestamp_read > 0 as "read" %s
+            FROM tmensajes tm 
             LEFT JOIN tnotification_user nu
                 ON tm.id_mensaje=nu.id_mensaje 
+                AND nu.id_user="%s" 
             LEFT JOIN (tnotification_group ng
                 INNER JOIN tusuario_perfil up
                     ON ng.id_group=up.id_grupo
@@ -486,6 +492,7 @@ function messages_get_overview(
         ORDER BY %s
         %s',
         $source_fields,
+        $config['id_user'],
         $source_join,
         $config['id_user'],
         $config['id_user'],

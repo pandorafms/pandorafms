@@ -131,10 +131,13 @@ function check_notification_readable(int $id_message)
         return false;
     }
 
+    // Using distinct to avoid double response on group messages read by user.
     $sql = sprintf(
-        'SELECT tm.*, utimestamp_read > 0 as "read" FROM tmensajes tm 
+        'SELECT DISTINCT tm.*, utimestamp_read > 0 as "read"
+            FROM tmensajes tm 
             LEFT JOIN tnotification_user nu
                 ON tm.id_mensaje=nu.id_mensaje 
+                AND nu.id_user="%s"
                 AND tm.id_mensaje=%d
             LEFT JOIN (tnotification_group ng
                 INNER JOIN tusuario_perfil up
@@ -143,6 +146,7 @@ function check_notification_readable(int $id_message)
             ) ON tm.id_mensaje=ng.id_mensaje 
             WHERE utimestamp_erased is null
                 AND (nu.id_user="%s" OR (up.id_usuario="%s" AND ng.id_group=0))',
+        $config['id_user'],
         $id_message,
         $config['id_user'],
         $config['id_user']

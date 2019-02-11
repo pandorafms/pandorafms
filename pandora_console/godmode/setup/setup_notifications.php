@@ -98,16 +98,21 @@ if (get_parameter('check_new_notifications', 0)) {
     $last_id_ui = (int) get_parameter('last_id', 0);
     $counters = notifications_get_counters();
     if ((int) $last_id_ui === (int) $counters['last_id']) {
-        echo json_encode(['new_notifications' => []]);
+        echo json_encode(['has_new_notifications' => false]);
         return;
     }
 
     // If there is new messages, get the info.
     echo json_encode(
         [
-            'notifications'     => $counters['notifications'],
-            'last_id'           => $counters['last_id'],
-            'new_notifications' => messages_get_overview(
+            'has_new_notifications' => true,
+            'new_ball'              => base64_encode(
+                notifications_print_ball(
+                    $counters['notifications'],
+                    $counters['last_id']
+                )
+            ),
+            'new_notifications'     => messages_get_overview(
                 'timestamp',
                 'ASC',
                 false,

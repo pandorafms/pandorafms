@@ -425,7 +425,22 @@ config_check();
                 "last_id": last_id
             },
             function (data, status) {
-                // TODO
+                if(!data.has_new_notifications) return;
+                // Substitute the ball
+                var new_ball = atob(data.new_ball);
+                var ball_wrapper = document
+                    .getElementById('notification-ball-header')
+                    .parentElement;
+                if (ball_wrapper === null) {
+                    console.error('Cannot update notification ball');
+                    return;
+                }
+                ball_wrapper.innerHTML = new_ball;
+
+                // Show the toasts
+                //TODO
+
+
             },
             "json"
         )

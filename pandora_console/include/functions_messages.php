@@ -418,6 +418,7 @@ function messages_get_count_sent(string $user='')
  * @param boolean $incl_read        Include read messages in return.
  * @param boolean $incl_source_info Include source info.
  * @param integer $limit            Maximum number of result in the query.
+ * @param array   $other_filter     Add a filter on main query.
  *
  * @return integer The number of messages this user has
  */

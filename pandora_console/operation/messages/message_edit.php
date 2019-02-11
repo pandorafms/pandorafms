@@ -106,34 +106,69 @@ if ($read_message) {
         $dst_name = $message['id_usuario_destino'];
     }
 
-    $table = new stdClass();
-    $table->width = '100%';
-    $table->class = 'databox filters';
-    $table->data = [];
+    // Parse message chain.
+    ?>
 
-    $table->data[0][0] = __('Sender');
-    $table->data[0][1] = $user_name.' '.__('at').' '.ui_print_timestamp(
-        $message['timestamp'],
-        true,
-        ['prominent' => 'timestamp']
-    );
+<h1>Conversation with <?php echo $user_name; ?></h1>
+<h2>Subject: <?php echo $message['subject']; ?></h2>
 
-    $table->data[1][0] = __('Destination');
-    $table->data[1][1] = $dst_name;
+    <?php
+    $conversation = [];
+    $target_str = $message['mensaje'];
 
-    $table->data[2][0] = __('Subject');
-    $table->data[2][1] = html_print_input_text_extended(
-        'subject',
-        $message['subject'],
-        'text-subject',
-        '',
-        50,
-        70,
-        true,
-        false,
-        '',
-        'readonly'
-    );
+    while (preg_match_all(
+        '/(.*)On(.*)wrote:(.*)/',
+        $target_str,
+        $decoded,
+        PREG_PATTERN_ORDER
+    ) !== false && empty($target_str) !== true) {
+        if (empty($decoded[2]) !== true) {
+            array_push(
+                $conversation,
+                [
+                    'message' => array_pop($decoded)[0],
+                    'date'    => array_pop($decoded)[0],
+                ]
+            );
+        } else {
+            array_push(
+                $conversation,
+                ['message' => $target_str]
+            );
+        }
+
+        $target_str = $decoded[1][0];
+    }
+
+    ui_require_css_file('message_edit');
+    foreach ($conversation as $row) {
+        $date = $row['date'];
+
+        if ($date === null) {
+            $date = date(
+                $config['date_format'],
+                $message['timestamp']
+            ).' '.$user_name;
+        }
+
+        $order = [
+            "\r\n",
+            "\n",
+            "\r",
+        ];
+        $replace = '<br />';
+        $parsed_message = str_replace(
+            $order,
+            $replace,
+            io_safe_output($row['message'])
+        );
+
+        echo '<div class="container">';
+        echo '  <p>'.$parsed_message.'</p>';
+        echo '<span class="time-left">'.$date.'</span>';
+        echo '</div>';
+    }
+
 
     $order = [
         "\r\n",
@@ -142,16 +177,6 @@ if ($read_message) {
     ];
     $replace = '<br />';
     $parsed_message = str_replace($order, $replace, $message['mensaje']);
-
-    $table->data[3][0] = __('Message');
-    $table->data[3][1] = html_print_textarea(
-        'message',
-        15,
-        255,
-        $message['mensaje'],
-        'readonly',
-        true
-    );
 
     // Prevent RE: RE: RE:.
     if (strstr($message['subject'], 'RE:')) {
@@ -166,8 +191,8 @@ if ($read_message) {
         $message['timestamp']
     ).' '.$user_name.' '.__('wrote').":\n\n".$message['mensaje'];
 
+
     echo '<form id="delete_message" method="post" action="index.php?sec=message_list&amp;sec2=operation/messages/message_list&show_sent=1&amp;delete_message=1&amp;id='.$message_id.'">';
-        html_print_table($table);
     echo '</form>';
 
     echo '<form id="reply_message" method="post" action="index.php?sec=message_list&sec2=operation/messages/message_edit&amp;new_msg=1&amp;reply=1">';
@@ -179,7 +204,7 @@ if ($read_message) {
 
     echo "<div class= 'action-buttons' style=' width:".$table->width."'>";
     html_print_submit_button(
-        __('Delete'),
+        __('Delete conversation'),
         'delete_btn',
         false,
         'form="delete_message" class="sub delete"'

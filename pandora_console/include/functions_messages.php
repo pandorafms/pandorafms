@@ -339,14 +339,16 @@ function messages_get_message_sent(int $message_id)
 /**
  * Counts private messages
  *
- * @param string  $user      Target user.
- * @param boolean $incl_read Whether or not to include read messages.
+ * @param string  $user          Target user.
+ * @param boolean $incl_read     Whether or not to include read messages.
+ * @param boolean $ignore_source Ignore source.
  *
  * @return integer The number of messages this user has
  */
 function messages_get_count(
     string $user='',
-    bool $incl_read=false
+    bool $incl_read=false,
+    bool $ignore_source=false
 ) {
     if (empty($user)) {
         global $config;
@@ -361,10 +363,19 @@ function messages_get_count(
         $read = 'where t.read is null';
     }
 
+    if ($ignore_source === true) {
+        $source_sql = '';
+    } else {
+        $source_sql = 'INNER JOIN tnotification_source ns
+            ON tm.id_source = ns.id
+            AND ns.enabled = 1';
+    }
+
     $sql = sprintf(
         'SELECT count(*) FROM (
             SELECT DISTINCT tm.*, utimestamp_read > 0 as "read"
             FROM tmensajes tm 
+            %s
             LEFT JOIN tnotification_user nu
                 ON tm.id_mensaje=nu.id_mensaje 
                 AND nu.id_user="%s"
@@ -377,6 +388,7 @@ function messages_get_count(
                 AND (nu.id_user="%s" OR (up.id_usuario="%s" AND ng.id_group=0))
         ) t 
         %s',
+        $source_sql,
         $user,
         $user,
         $user,

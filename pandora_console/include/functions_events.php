@@ -2602,11 +2602,33 @@ function events_get_extended_events(int $id_evento)
 {
     return db_get_all_rows_sql(
         sprintf(
-            'SELECT * FROM tevent_extended WHERE id_evento=%d',
+            'SELECT * FROM tevent_extended
+            WHERE id_evento=%d ORDER BY utimestamp DESC',
             $id_evento
         )
     );
 
+}
+
+
+/**
+ * Return if event has extended info or not.
+ *
+ * @param integer $id_event Target event.
+ *
+ * @return boolean Has extended info or not
+ */
+function events_has_extended_info(int $id_event)
+{
+    return (bool) db_get_value_sql(
+        sprintf(
+            '
+            SELECT count(*) as "n"
+            FROM tevent_extended WHERE id_evento=%d
+        ',
+            $id_event
+        )
+    );
 }
 
 

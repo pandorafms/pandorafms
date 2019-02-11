@@ -643,8 +643,7 @@ CREATE TABLE IF NOT EXISTS `tevento` (
 	`ack_utimestamp` BIGINT(20) NOT NULL DEFAULT '0',
 	`custom_data` TEXT NOT NULL,
 	`data` double(22,5) default NULL,
-	`module_status` int(4) NOT NULL default '0',
-	`extended_info` tinyint(1) NOT NULL default '0'
+	`module_status` int(4) NOT NULL default '0'
 	PRIMARY KEY  (`id_evento`),
 	KEY `idx_agente` (`id_agente`),
 	KEY `idx_agentmodule` (`id_agentmodule`),

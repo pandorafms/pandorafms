@@ -397,7 +397,7 @@ if ($get_extended_event) {
     // Tabs.
     $tabs = "<ul style='background:#ffffff !important; border-top: 0px; border-left: 0px; border-right: 0px; border-top-left-radius: 0px; border-top-right-radius: 0px; border-bottom-right-radius: 0px; border-bottom-left-radius: 0px; border-color: #D3D3D3;'>";
     $tabs .= "<li><a href='#extended_event_general_page' id='link_general'>".html_print_image('images/lightning_go.png', true)."<span style='position:relative;top:-6px;left:5px;margin-right:10px;'>".__('General').'</span></a></li>';
-    if ($event['extended_info'] == 1) {
+    if (events_has_extended_info($event['id_evento']) === true) {
         $tabs .= "<li><a href='#extended_event_related_page' id='link_related'>".html_print_image('images/zoom.png', true)."<span style='position:relative;top:-6px;left:5px;margin-right:10px;'>".__('Related').'</span></a></li>';
     }
 
@@ -491,7 +491,7 @@ if ($get_extended_event) {
 
     $details = events_page_details($event, $server);
 
-    if ($event['extended_info'] == 1) {
+    if (events_has_extended_info($event['id_evento']) === true) {
         $related = events_page_related($event, $server);
     }
 
@@ -568,7 +568,7 @@ if ($get_extended_event) {
 
     $js .= '});';
 
-    if ($event['extended_info'] == 1) {
+    if (events_has_extended_info($event['id_evento']) === true) {
         $js .= '
         $("#link_related").click(function (){
           $.post ({

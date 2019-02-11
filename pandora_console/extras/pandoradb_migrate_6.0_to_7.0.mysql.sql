@@ -1856,8 +1856,6 @@ ALTER TABLE `tevento` ADD COLUMN `data` double(22,5) default NULL;
 
 ALTER TABLE `tevento` ADD COLUMN `module_status` int(4) NOT NULL default '0';
 
-ALTER TABLE `tevento` ADD COLUMN `extended_info` tinyint(1) NOT NULL default '0';
-
 -- ---------------------------------------------------------------------
 -- Table `tevent_extended`
 -- ---------------------------------------------------------------------

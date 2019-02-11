@@ -1,0 +1,4 @@
+.visual-console-item > * {
+  width: inherit;
+  height: inherit;
+}

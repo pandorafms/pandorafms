@@ -1,7 +1,10 @@
 module.exports = {
   mode: process.env.NODE_ENV,
   entry: __dirname + "/src/index.ts",
-  devtool: "inline-source-map",
+  devtool: "source-map",
+  resolve: {
+    extensions: [".ts", ".js", ".json"]
+  },
   module: {
     rules: [
       {

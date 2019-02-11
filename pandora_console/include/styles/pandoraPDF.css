@@ -72,3 +72,7 @@ th.title_table_pdf {
   background-color: #acacac;
   padding: 15px;
 }
+
+table.table_agent_module tr td {
+  padding: 5px;
+}

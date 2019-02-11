@@ -2064,82 +2064,58 @@ div#logo_text3 {
 
 /* TABLAS */
 /* Cells divs to set individual styles with the table objects */
-div.cellBold {
-  width: 100%;
-  height: 100%;
+td.cellBold {
   font-weight: bold;
 }
 
-div.cellRight {
-  width: 100%;
-  height: 100%;
+td.cellRight {
   text-align: right;
 }
 
-div.cellCenter {
-  width: 100%;
-  height: 100%;
+td.cellCenter {
   text-align: center;
 }
 
-div.cellWhite {
-  width: 100%;
-  height: 100%;
+td.cellWhite {
   background: #fff;
   color: #111;
 }
 
-div.cellNormal {
-  width: 100%;
-  height: 100%;
+td.cellNormal {
   background: #6eb432;
   color: #fff;
 }
 
-div.cellCritical {
-  width: 100%;
-  height: 100%;
+td.cellCritical {
   background: #f85858;
   color: #fff;
 }
 
-div.cellWarning {
-  width: 100%;
-  height: 100%;
+td.cellWarning {
   background: #ffea59;
   color: #111;
 }
 
-div.cellUnknown {
-  width: 100%;
-  height: 100%;
+td.cellUnknown {
   background: #aaaaaa;
   color: #ffffff;
 }
 
-div.cellNotInit {
-  width: 100%;
-  height: 100%;
+td.cellNotInit {
   background: #3ba0ff;
   color: #ffffff;
 }
 
-div.cellAlert {
-  width: 100%;
-  height: 100%;
+td.cellAlert {
   background: #ff8800;
   color: #111;
 }
 
-div.cellBorder1 {
-  width: 100%;
-  height: 100%;
+td.cellBorder1 {
   border: 1px solid #666;
 }
 
-div.cellBig {
-  width: 100%;
-  height: 100%;
+td.cellBig {
   font-size: 18px;
 }
 

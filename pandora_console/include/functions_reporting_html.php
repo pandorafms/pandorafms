@@ -407,6 +407,16 @@ function reporting_html_print_report($report, $mini=false, $report_info=1)
 }
 
 
+/**
+ * Function to print to HTML SLA report.
+ *
+ * @param object  $table Head table or false if it comes from pdf.
+ * @param array   $item  Items data.
+ * @param boolean $mini  If true or false letter mini.
+ * @param boolean $pdf   If it comes from pdf.
+ *
+ * @return html
+ */
 function reporting_html_SLA($table, $item, $mini, $pdf=0)
 {
     $return_pdf = '';
@@ -786,11 +796,25 @@ function reporting_html_SLA($table, $item, $mini, $pdf=0)
 }
 
 
-function reporting_html_top_n($table, $item)
+/**
+ * Function to print html report top N.
+ *
+ * @param object  $table Head table or false if it comes from pdf.
+ * @param array   $item  Items data.
+ * @param boolean $pdf   If it comes from pdf.
+ *
+ * @return html
+ */
+function reporting_html_top_n($table, $item, $pdf=0)
 {
+    $return_pdf = '';
     if (!empty($item['failed'])) {
-        $table->colspan['top_n']['cell'] = 3;
-        $table->data['top_n']['cell'] = $item['failed'];
+        if ($pdf !== 0) {
+            $return_pdf .= $item['failed'];
+        } else {
+            $table->colspan['top_n']['cell'] = 3;
+            $table->data['top_n']['cell'] = $item['failed'];
+        }
     } else {
         $table1 = new stdClass();
         $table1->width = '99%';
@@ -821,16 +845,31 @@ function reporting_html_top_n($table, $item)
         }
 
         $table->colspan['top_n']['cell'] = 3;
-        $table->data['top_n']['cell'] = html_print_table($table1, true);
+        if ($pdf !== 0) {
+            $table1->title = $item['title'];
+            $table1->titleclass = 'title_table_pdf';
+            $table1->titlestyle = 'text-align:left;';
+            $return_pdf .= html_print_table($table1, true);
+        } else {
+            $table->data['top_n']['cell'] = html_print_table($table1, true);
+        }
 
         if (!empty($item['charts']['pie'])) {
-            $table->colspan['char_pie']['cell'] = 3;
-            $table->data['char_pie']['cell'] = $item['charts']['pie'];
+            if ($pdf !== 0) {
+                $return_pdf .= $item['charts']['pie'];
+            } else {
+                $table->colspan['char_pie']['cell'] = 3;
+                $table->data['char_pie']['cell'] = $item['charts']['pie'];
+            }
         }
 
         if (!empty($item['charts']['bars'])) {
-            $table->colspan['char_bars']['cell'] = 3;
-            $table->data['char_bars']['cell'] = $item['charts']['bars'];
+            if ($pdf !== 0) {
+                $return_pdf .= $item['charts']['bars'];
+            } else {
+                $table->colspan['char_bars']['cell'] = 3;
+                $table->data['char_bars']['cell'] = $item['charts']['bars'];
+            }
         }
 
         if (!empty($item['resume'])) {
@@ -860,9 +899,20 @@ function reporting_html_top_n($table, $item)
             $row[] = $item['resume']['max']['formated_value'];
             $table1->data[] = $row;
 
-            $table->colspan['resume']['cell'] = 3;
-            $table->data['resume']['cell'] = html_print_table($table1, true);
+            if ($pdf !== 0) {
+                $table1->title = $item['title'];
+                $table1->titleclass = 'title_table_pdf';
+                $table1->titlestyle = 'text-align:left;';
+                $return_pdf .= html_print_table($table1, true);
+            } else {
+                $table->colspan['resume']['cell'] = 3;
+                $table->data['resume']['cell'] = html_print_table($table1, true);
+            }
         }
+    }
+
+    if ($pdf !== 0) {
+        return $return_pdf;
     }
 }
 
@@ -1374,7 +1424,7 @@ function reporting_html_inventory($table, $item)
 }
 
 
-function reporting_html_agent_module($table, $item)
+function reporting_html_agent_module($table, $item, $pdf=0)
 {
     $table->colspan['agent_module']['cell'] = 3;
     $table->cellstyle['agent_module']['cell'] = 'text-align: center;';
@@ -1575,6 +1625,17 @@ function reporting_html_agent_module($table, $item)
 
         $table->data['agent_module']['cell'] = $table_data;
     }
+
+    if ($pdf !== 0) {
+        $table->title = $item['title'];
+        $table->titleclass = 'title_table_pdf';
+        $table->titlestyle = 'text-align:left;';
+        $return_pdf .= html_print_table(
+            $table,
+            true
+        );
+        return $return_pdf;
+    }
 }
 
 
@@ -1666,60 +1727,66 @@ function reporting_html_exception($table, $item)
 }
 
 
-function reporting_html_group_report($table, $item)
+function reporting_html_group_report($table, $item, $pdf=0)
 {
     global $config;
 
     $table->colspan['group_report']['cell'] = 3;
     $table->cellstyle['group_report']['cell'] = 'text-align: center;';
-    $table->data['group_report']['cell'] = "<table width='100%'>
-        <tr>
+    $data = "<table class='databox' width='100%'>
+        <tbody><tr>
             <td></td>
-            <td colspan='3'><div class='cellBold cellCenter'>".__('Total')."</div></td>
-            <td colspan='3'><div class='cellBold cellCenter'>".__('Unknown')."</div></td>
+            <td colspan='3' class='cellBold cellCenter'>".__('Total')."</td>
+            <td colspan='3' class='cellBold cellCenter'>".__('Unknown')."</td>
         </tr>
         <tr>
-            <td><div class='cellBold cellCenter'>".__('Agents')."</div></td>
-            <td colspan='3'><div class='cellBold cellCenter cellWhite cellBorder1 cellBig'>".$item['data']['group_stats']['total_agents']."</div></td>
-            <td colspan='3'><div class='cellBold cellCenter cellUnknown cellBorder1 cellBig'>".$item['data']['group_stats']['agents_unknown']."</div></td>
-        </tr>
-        <tr>
-            <td></td>
-            <td><div class='cellBold cellCenter'>".__('Total')."</div></td>
-            <td><div class='cellBold cellCenter'>".__('Normal')."</div></td>
-            <td><div class='cellBold cellCenter'>".__('Critical')."</div></td>
-            <td><div class='cellBold cellCenter'>".__('Warning')."</div></td>
-            <td><div class='cellBold cellCenter'>".__('Unknown')."</div></td>
-            <td><div class='cellBold cellCenter'>".__('Not init')."</div></td>
-        </tr>
-        <tr>
-            <td><div class='cellBold cellCenter'>".__('Monitors')."</div></td>
-            <td><div class='cellBold cellCenter cellWhite cellBorder1 cellBig'>".$item['data']['group_stats']['monitor_checks']."</div></td>
-            <td><div class='cellBold cellCenter cellNormal cellBorder1 cellBig'>".$item['data']['group_stats']['monitor_ok']."</div></td>
-            <td><div class='cellBold cellCenter cellCritical cellBorder1 cellBig'>".$item['data']['group_stats']['monitor_critical']."</div></td>
-            <td><div class='cellBold cellCenter cellWarning cellBorder1 cellBig'>".$item['data']['group_stats']['monitor_warning']."</div></td>
-            <td><div class='cellBold cellCenter cellUnknown cellBorder1 cellBig'>".$item['data']['group_stats']['monitor_unknown']."</div></td>
-            <td><div class='cellBold cellCenter cellNotInit cellBorder1 cellBig'>".$item['data']['group_stats']['monitor_not_init']."</div></td>
+            <td class='cellBold cellCenter'>".__('Agents')."</td>
+            <td colspan='3' class='cellBold cellCenter cellWhite cellBorder1 cellBig'>".$item['data']['group_stats']['total_agents']."</td>
+            <td colspan='3' class='cellBold cellCenter cellUnknown cellBorder1 cellBig'>".$item['data']['group_stats']['agents_unknown']."</td>
         </tr>
         <tr>
             <td></td>
-            <td colspan='3'><div class='cellBold cellCenter'>".__('Defined')."</div></td>
-            <td colspan='3'><div class='cellBold cellCenter'>".__('Fired')."</div></td>
+            <td class='cellBold cellCenter'>".__('Total')."</td>
+            <td class='cellBold cellCenter'>".__('Normal')."</td>
+            <td class='cellBold cellCenter'>".__('Critical')."</td>
+            <td class='cellBold cellCenter'>".__('Warning')."</td>
+            <td class='cellBold cellCenter'>".__('Unknown')."</td>
+            <td class='cellBold cellCenter'>".__('Not init')."</td>
         </tr>
         <tr>
-            <td><div class='cellBold cellCenter'>".__('Alerts')."</div></td>
-            <td colspan='3'><div class='cellBold cellCenter cellWhite cellBorder1 cellBig'>".$item['data']['group_stats']['monitor_alerts']."</div></td>
-            <td colspan='3'><div class='cellBold cellCenter cellAlert cellBorder1 cellBig'>".$item['data']['group_stats']['monitor_alerts_fired']."</div></td>
+            <td class='cellBold cellCenter'>".__('Monitors')."</td>
+            <td class='cellBold cellCenter cellWhite cellBorder1 cellBig'>".$item['data']['group_stats']['monitor_checks']."</td>
+            <td class='cellBold cellCenter cellNormal cellBorder1 cellBig'>".$item['data']['group_stats']['monitor_ok']."</td>
+            <td class='cellBold cellCenter cellCritical cellBorder1 cellBig'>".$item['data']['group_stats']['monitor_critical']."</td>
+            <td class='cellBold cellCenter cellWarning cellBorder1 cellBig'>".$item['data']['group_stats']['monitor_warning']."</td>
+            <td class='cellBold cellCenter cellUnknown cellBorder1 cellBig'>".$item['data']['group_stats']['monitor_unknown']."</td>
+            <td class='cellBold cellCenter cellNotInit cellBorder1 cellBig'>".$item['data']['group_stats']['monitor_not_init']."</td>
         </tr>
         <tr>
             <td></td>
-            <td colspan='6'><div class='cellBold cellCenter'>".__('Last %s', human_time_description_raw($item['date']['period']))."</div></td>
+            <td colspan='3' class='cellBold cellCenter'>".__('Defined')."</td>
+            <td colspan='3' class='cellBold cellCenter'>".__('Fired')."</td>
         </tr>
         <tr>
-            <td><div class='cellBold cellCenter'>".__('Events')."</div></td>
-            <td colspan='6'><div class='cellBold cellCenter cellWhite cellBorder1 cellBig'>".$item['data']['count_events'].'</div></td>
+            <td class='cellBold cellCenter'>".__('Alerts')."</td>
+            <td colspan='3' class='cellBold cellCenter cellWhite cellBorder1 cellBig'>".$item['data']['group_stats']['monitor_alerts']."</td>
+            <td colspan='3' class='cellBold cellCenter cellAlert cellBorder1 cellBig'>".$item['data']['group_stats']['monitor_alerts_fired']."</td>
         </tr>
+        <tr>
+            <td></td>
+            <td colspan='6' class='cellBold cellCenter'>".__('Last %s', human_time_description_raw($item['date']['period']))."</td>
+        </tr>
+        <tr>
+            <td class='cellBold cellCenter'>".__('Events')."</td>
+            <td colspan='6' class='cellBold cellCenter cellWhite cellBorder1 cellBig'>".$item['data']['count_events'].'</td>
+        </tr></tbody>
     </table>';
+
+    $table->data['group_report']['cell'] = $data;
+
+    if ($pdf !== 0) {
+        return $data;
+    }
 }
 
 
@@ -2802,11 +2869,22 @@ function get_agent_first_time($agent_name)
 }
 
 
-function reporting_html_general(&$table, $item)
+/**
+ * Function to print to HTML General report.
+ *
+ * @param object  $table Head table or false if it comes from pdf.
+ * @param array   $item  Items data.
+ * @param boolean $pdf   If it comes from pdf.
+ *
+ * @return html
+ */
+function reporting_html_general($table, $item, $pdf=0)
 {
+    $return_pdf = '';
     if (!empty($item['data'])) {
         $data_in_same_row = $item['show_in_same_row'];
         switch ($item['subtype']) {
+            default:
             case REPORT_GENERAL_NOT_GROUP_BY_AGENT:
                 if (!$data_in_same_row) {
                     $table1 = new stdClass();
@@ -2825,14 +2903,14 @@ function reporting_html_general(&$table, $item)
                     $table1->style[2] = 'text-align: left';
                     $table1->style[3] = 'text-align: left';
 
-                    // Begin - Order by agent
+                    // Begin - Order by agent.
                     foreach ($item['data'] as $key => $row) {
                         $aux[$key] = $row['agent'];
                     }
 
                     array_multisort($aux, SORT_ASC, $item['data']);
 
-                    // End - Order by agent
+                    // End - Order by agent.
                     foreach ($item['data'] as $row) {
                         if ($item['date']['period'] != 0) {
                             $table1->data[] = [
@@ -2886,7 +2964,6 @@ function reporting_html_general(&$table, $item)
                     }
                 }
             break;
-
             case REPORT_GENERAL_GROUP_BY_AGENT:
                 $list_modules = [];
                 foreach ($item['data'] as $modules) {
@@ -2919,12 +2996,23 @@ function reporting_html_general(&$table, $item)
             break;
         }
 
-        $table->colspan['data']['cell'] = 3;
-        $table->cellstyle['data']['cell'] = 'text-align: center;';
-        $table->data['data']['cell'] = html_print_table($table1, true);
+        if ($pdf !== 0) {
+            $table1->title = $item['title'];
+            $table1->titleclass = 'title_table_pdf';
+            $table1->titlestyle = 'text-align:left;';
+            $return_pdf .= html_print_table($table1, true);
+        } else {
+            $table->colspan['data']['cell'] = 3;
+            $table->cellstyle['data']['cell'] = 'text-align: center;';
+            $table->data['data']['cell'] = html_print_table($table1, true);
+        }
     } else {
-        $table->colspan['error']['cell'] = 3;
-        $table->data['error']['cell'] = __('There are no Agent/Modules defined');
+        if ($pdf !== 0) {
+            $return_pdf .= __('There are no Agent/Modules defined');
+        } else {
+            $table->colspan['error']['cell'] = 3;
+            $table->data['error']['cell'] = __('There are no Agent/Modules defined');
+        }
     }
 
     if ($item['resume'] && !empty($item['data'])) {
@@ -2954,10 +3042,21 @@ function reporting_html_general(&$table, $item)
         $table_summary->data[0][3] = $item['max']['agent'].' - '.$item['max']['module'];
         $table_summary->data[0][4] = $item['max']['formated_value'];
 
-        $table->colspan['summary_title']['cell'] = 3;
-        $table->data['summary_title']['cell'] = '<b>'.__('Summary').'</b>';
-        $table->colspan['summary_table']['cell'] = 3;
-        $table->data['summary_table']['cell'] = html_print_table($table_summary, true);
+        if ($pdf !== 0) {
+            $return_pdf .= html_print_table($table_summary, true);
+        } else {
+            $table->colspan['summary_title']['cell'] = 3;
+            $table->data['summary_title']['cell'] = '<b>'.__('Summary').'</b>';
+            $table->colspan['summary_table']['cell'] = 3;
+            $table->data['summary_table']['cell'] = html_print_table(
+                $table_summary,
+                true
+            );
+        }
+    }
+
+    if ($pdf !== 0) {
+        return $return_pdf;
     }
 }
 

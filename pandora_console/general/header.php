@@ -411,6 +411,32 @@ config_check();
         element.style.display = "none"
     }
 
+    function check_new_notifications() {
+        var last_id = document.getElementById('notification-ball-header')
+            .getAttribute('last_id');
+        if (last_id === null) {
+            console.error('Cannot retrieve notifications ball last_id.');
+            return;
+        }
+
+        jQuery.post ("ajax.php",
+            {"page" : "godmode/setup/setup_notifications",
+                "check_new_notifications" : 1,
+                "last_id": last_id
+            },
+            function (data, status) {
+                // TODO
+            },
+            "json"
+        )
+        .fail(function(xhr, textStatus, errorThrown){
+            console.error(
+                "Cannot get new notifications. Error: ",
+                xhr.responseText
+            );
+        });
+    }
+
     // Resize event
     window.addEventListener("resize", function() {
         attatch_to_image();
@@ -420,6 +446,10 @@ config_check();
     
     var new_chat = <?php echo (int) $_SESSION['new_chat']; ?>;
     $(document).ready (function () {
+
+        // Check new notifications on a periodic way
+        setInterval(check_new_notifications, 10000);
+
         <?php
         if (($autorefresh_list !== null) && (array_search($_GET['sec2'], $autorefresh_list) !== false) && (!isset($_GET['refr']))) {
             $do_refresh = true;

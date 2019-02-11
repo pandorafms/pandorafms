@@ -26,6 +26,8 @@
  * ============================================================================
  */
 
+require_once $config['homedir'].'/include/functions_messages.php';
+
 define('NOTIFICATIONS_POSTPONE_FOREVER', -1);
 
 

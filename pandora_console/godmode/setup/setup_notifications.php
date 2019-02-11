@@ -94,6 +94,32 @@ if (get_parameter('update_config', 0)) {
     return;
 }
 
+if (get_parameter('check_new_notifications', 0)) {
+    $last_id_ui = (int) get_parameter('last_id', 0);
+    $counters = notifications_get_counters();
+    if ((int) $last_id_ui === (int) $counters['last_id']) {
+        echo json_encode(['new_notifications' => []]);
+        return;
+    }
+
+    // If there is new messages, get the info.
+    echo json_encode(
+        [
+            'notifications'     => $counters['notifications'],
+            'last_id'           => $counters['last_id'],
+            'new_notifications' => messages_get_overview(
+                'timestamp',
+                'ASC',
+                false,
+                true,
+                0,
+                ['id_mensaje' => '>'.$last_id_ui]
+            ),
+        ]
+    );
+    return;
+}
+
 // Notification table. It is just a wrapper.
 $table_content = new StdClass();
 $table_content->data = [];

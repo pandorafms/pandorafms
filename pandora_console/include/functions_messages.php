@@ -426,7 +426,8 @@ function messages_get_overview(
     string $order_dir='ASC',
     bool $incl_read=true,
     bool $incl_source_info=false,
-    int $limit=0
+    int $limit=0,
+    array $other_filter=[]
 ) {
     global $config;
 
@@ -480,6 +481,7 @@ function messages_get_overview(
                 AND (up.id_usuario="%s" OR nu.id_user="%s" OR ng.id_group=0)
         ) t 
         %s
+        %s
         ORDER BY %s
         %s',
         $source_fields,
@@ -487,6 +489,7 @@ function messages_get_overview(
         $config['id_user'],
         $config['id_user'],
         $read,
+        db_format_array_where_clause_sql($other_filter, 'AND', ' AND '),
         $order,
         ($limit !== 0) ? ' LIMIT '.$limit : ''
     );

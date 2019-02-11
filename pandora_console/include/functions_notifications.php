@@ -519,7 +519,37 @@ function notifications_set_user_label_status($source, $user, $label, $value)
             'id_source' => $source,
         ]
     );
+}
 
+
+/**
+ * Get the counters of notification. Usefull to print the header notification
+ * ball.
+ *
+ * @return array With the fields:
+ *      'notifications' => Total new notifications,
+ *      'last_id' => Id of last read value. Usefull to make comparisons.
+ */
+function notifications_get_counters()
+{
+    $num_notifications = 0;
+    $last_id = 0;
+    $last_message = messages_get_overview(
+        'timestamp',
+        'DESC',
+        false,
+        false,
+        1
+    );
+    if (!empty($last_message)) {
+        $num_notifications = messages_get_count();
+        $last_id = $last_message[0]['id_mensaje'];
+    }
+
+    return [
+        'notifications' => $num_notifications,
+        'last_id'       => $last_id,
+    ];
 }
 
 
@@ -531,21 +561,27 @@ function notifications_set_user_label_status($source, $user, $label, $value)
 /**
  * Print the notification ball to see unread messages.
  *
+ * @param integer $num_notifications Number of messages shown
+ *      in notification ball.
+ * @param integer $last_id           Id of last message shown
+ *           in the notification ball.
+ *
  * @return string with HTML code of notification ball.
  */
-function notifications_print_ball()
+function notifications_print_ball($num_notifications, $last_id)
 {
-    $num_notifications = messages_get_count();
     $class_status = ($num_notifications == 0) ? 'notification-ball-no-messages' : 'notification-ball-new-messages';
     return sprintf(
         '<div
             onclick="addNotifications(event)"
             class="notification-ball %s"
             id="notification-ball-header"
+            last_id="%s"
         >
             %s
         </div>',
         $class_status,
+        $last_id,
         $num_notifications
     );
 }

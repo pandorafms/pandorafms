@@ -319,7 +319,11 @@ config_check();
                     ).'</a>';
                 }
 
-                $table->data[0]['notifications'] = notifications_print_ball();
+                $notifications_numbers = notifications_get_counters();
+                $table->data[0]['notifications'] = notifications_print_ball(
+                    $notifications_numbers['notifications'],
+                    $notifications_numbers['last_id']
+                );
 
                 // Logout
                 $table->data[0][5] = '<a class="white" href="'.ui_get_full_url('index.php?bye=bye').'">';

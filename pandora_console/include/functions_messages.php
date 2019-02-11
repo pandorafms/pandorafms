@@ -417,6 +417,7 @@ function messages_get_count_sent(string $user='')
  *                                  (ASC = Ascending, DESC = Descending).
  * @param boolean $incl_read        Include read messages in return.
  * @param boolean $incl_source_info Include source info.
+ * @param integer $limit            Maximum number of result in the query.
  *
  * @return integer The number of messages this user has
  */
@@ -424,7 +425,8 @@ function messages_get_overview(
     string $order='status',
     string $order_dir='ASC',
     bool $incl_read=true,
-    bool $incl_source_info=false
+    bool $incl_source_info=false,
+    int $limit=0
 ) {
     global $config;
 
@@ -478,13 +480,15 @@ function messages_get_overview(
                 AND (up.id_usuario="%s" OR nu.id_user="%s" OR ng.id_group=0)
         ) t 
         %s
-        ORDER BY %s',
+        ORDER BY %s
+        %s',
         $source_fields,
         $source_join,
         $config['id_user'],
         $config['id_user'],
         $read,
-        $order
+        $order,
+        ($limit !== 0) ? ' LIMIT '.$limit : ''
     );
 
     return db_get_all_rows_sql($sql);

@@ -142,7 +142,7 @@ function check_notification_readable(int $id_message)
                     AND up.id_grupo=ng.id_group
             ) ON tm.id_mensaje=ng.id_mensaje 
             WHERE utimestamp_erased is null
-                AND (up.id_usuario="%s" OR nu.id_user="%s" OR ng.id_group=0)',
+                AND (nu.id_user="%s" OR (up.id_usuario="%s" AND ng.id_group=0))',
         $id_message,
         $config['id_user'],
         $config['id_user']

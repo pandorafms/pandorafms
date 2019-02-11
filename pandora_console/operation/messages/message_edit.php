@@ -106,13 +106,9 @@ if ($read_message) {
         $dst_name = $message['id_usuario_destino'];
     }
 
-    // Parse message chain.
-    ?>
+    echo '<h1>Conversation with '.$user_name.'</h1>';
+    echo '<h2>Subject: '.$message['subject'].'</h2>';
 
-<h1>Conversation with <?php echo $user_name; ?></h1>
-<h2>Subject: <?php echo $message['subject']; ?></h2>
-
-    <?php
     $conversation = [];
     $target_str = $message['mensaje'];
 
@@ -160,7 +156,7 @@ if ($read_message) {
         $parsed_message = str_replace(
             $order,
             $replace,
-            io_safe_output($row['message'])
+            trim(io_safe_output($row['message']))
         );
 
         echo '<div class="container">';
@@ -317,7 +313,6 @@ if ($reply) {
         $users[$user_reply['id_user']] = $user_reply['fullname'];
     }
 }
-
 
 
 if ($own_info['is_admin'] || check_acl($config['id_user'], 0, 'PM')) {

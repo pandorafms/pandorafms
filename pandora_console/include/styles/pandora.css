@@ -5357,3 +5357,90 @@ input:disabled + .p-slider {
 }
 
 /* --- END SWITCH --- */
+
+/* --- TOAST --- */
+#notifications-toasts-wrapper {
+  position: fixed;
+  right: 20px;
+  top: 70px;
+  width: 270px;
+  height: 100%;
+  z-index: 6;
+  pointer-events: none;
+}
+
+.snackbar {
+  max-width: 270px;
+  background-color: #333;
+  color: #fff;
+  text-align: center;
+  /* border-radius: 2px; */
+  padding: 16px;
+  margin: 10px;
+  border-radius: 4px;
+  visibility: hidden;
+  pointer-events: all;
+}
+
+.snackbar.show {
+  visibility: visible;
+  -webkit-animation: fadein 0.5s, fadeout 0.5s 7.5s;
+  animation: fadein 0.5s, fadeout 0.5s 7.5s;
+}
+
+.snackbar p,
+.snackbar h3 {
+  text-align: left;
+  margin: 0;
+  pointer-events: none;
+}
+.snackbar h3 {
+  color: white;
+  margin-bottom: 10px;
+}
+
+@-webkit-keyframes fadein {
+  from {
+    bottom: 0;
+    opacity: 0;
+  }
+  to {
+    bottom: 30px;
+    opacity: 1;
+  }
+}
+
+@keyframes fadein {
+  from {
+    bottom: 0;
+    opacity: 0;
+  }
+  to {
+    bottom: 30px;
+    opacity: 1;
+  }
+}
+
+@-webkit-keyframes fadeout {
+  from {
+    bottom: 30px;
+    opacity: 1;
+  }
+  to {
+    bottom: 0;
+    opacity: 0;
+  }
+}
+
+@keyframes fadeout {
+  from {
+    bottom: 30px;
+    opacity: 1;
+  }
+  to {
+    bottom: 0;
+    opacity: 0;
+  }
+}
+
+/* --- END TOAST --- */

@@ -411,6 +411,38 @@ config_check();
         element.style.display = "none"
     }
 
+    function click_on_notification_toast(event) {
+        // TODO action.
+        document.getElementById(event.target.id).remove();
+    }
+
+    function print_toast(title, subtitle, severity, id, onclick) {
+        // TODO severity.
+        severity = '';
+
+        // Start the toast.
+        var toast = document.createElement('div');
+        toast.className = 'snackbar ' + severity;
+        toast.setAttribute('onclick', onclick);
+        toast.id = id;
+
+        // Fill toast.
+        var toast_title = document.createElement('h3');
+        var toast_text = document.createElement('p');
+        toast_title.innerHTML = title;
+        toast_text.innerHTML = subtitle;
+        toast.appendChild(toast_title);
+        toast.appendChild(toast_text);
+
+        // Show and program the hide event.
+        toast.className = toast.className + ' show';
+        setTimeout(function(){
+            toast.className = toast.className.replace("show", "");
+        }, 8000);
+
+        return toast;
+    }
+
     function check_new_notifications() {
         var last_id = document.getElementById('notification-ball-header')
             .getAttribute('last_id');
@@ -420,12 +452,27 @@ config_check();
         }
 
         jQuery.post ("ajax.php",
-            {"page" : "godmode/setup/setup_notifications",
+            {
+                "page" : "godmode/setup/setup_notifications",
                 "check_new_notifications" : 1,
                 "last_id": last_id
             },
             function (data, status) {
+                // Clean the toasts wrapper at first.
+                var toast_wrapper = document.getElementById(
+                    'notifications-toasts-wrapper'
+                );
+                if (toast_wrapper === null) {
+                    console.error('Cannot place toast notifications.');
+                    return;
+                }
+                while (toast_wrapper.firstChild) {
+                    toast_wrapper.removeChild(toast_wrapper.firstChild);
+                }
+
+                // Return if no new notification.
                 if(!data.has_new_notifications) return;
+
                 // Substitute the ball
                 var new_ball = atob(data.new_ball);
                 var ball_wrapper = document
@@ -437,10 +484,18 @@ config_check();
                 }
                 ball_wrapper.innerHTML = new_ball;
 
-                // Show the toasts
-                //TODO
-
-
+                // Add the new toasts.
+                data.new_notifications.forEach(function(ele) {
+                    toast_wrapper.appendChild(
+                        print_toast(
+                            ele.description,
+                            ele.mensaje,
+                            ele.criticity,
+                            'notification-toast-id-' + ele.id_mensaje,
+                            'click_on_notification_toast(event)'
+                        )
+                    );
+                });
             },
             "json"
         )
@@ -464,6 +519,14 @@ config_check();
 
         // Check new notifications on a periodic way
         setInterval(check_new_notifications, 10000);
+
+        // Print the wrapper for notifications
+        var notifications_toasts_wrapper = document.createElement('div');
+        notifications_toasts_wrapper.id = 'notifications-toasts-wrapper';
+        document.body.insertBefore(
+            notifications_toasts_wrapper,
+            document.body.firstChild
+        );
 
         <?php
         if (($autorefresh_list !== null) && (array_search($_GET['sec2'], $autorefresh_list) !== false) && (!isset($_GET['refr']))) {

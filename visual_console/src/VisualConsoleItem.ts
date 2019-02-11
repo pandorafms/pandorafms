@@ -27,7 +27,7 @@ export type ItemClickEvent<ItemProps extends VisualConsoleItemProps> = {
  * This will allow us to ensure the type safety.
  *
  * @param data Raw object.
- * @return An object representing the size.
+ * @return An object representing the item props.
  * @throws Will throw a TypeError if some property
  * is missing from the raw object or have an invalid type.
  */

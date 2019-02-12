@@ -1,5 +1,4 @@
 <?php
-
 // Pandora FMS - http://pandorafms.com
 // ==================================================
 // Copyright (c) 2005-2011 Artica Soluciones Tecnologicas

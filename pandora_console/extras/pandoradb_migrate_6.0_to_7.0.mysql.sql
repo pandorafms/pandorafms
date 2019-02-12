@@ -1199,13 +1199,13 @@ ALTER TABLE titem MODIFY `source_data` int(10) unsigned;
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('big_operation_step_datos_purge', '100');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('small_operation_step_datos_purge', '1000');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('days_autodisable_deletion', '30');
-INSERT INTO `tconfig` (`token`, `value`) VALUES ('MR', 23);
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('MR', 24);
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('custom_docs_logo', 'default_docs.png');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('custom_support_logo', 'default_support.png');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('custom_logo_white_bg_preview', 'pandora_logo_head_white_bg.png');
 UPDATE tconfig SET value = 'https://licensing.artica.es/pandoraupdate7/server.php' WHERE token='url_update_manager';
 DELETE FROM `tconfig` WHERE `token` = 'current_package_enterprise';
-INSERT INTO `tconfig` (`token`, `value`) VALUES ('current_package_enterprise', '730');
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('current_package_enterprise', '731');
 
 -- ---------------------------------------------------------------------
 -- Table `tconfig_os`
@@ -1886,13 +1886,13 @@ CREATE TABLE `tnotification_source` (
 --
 -- Dumping data for table `tnotification_source`
 --
-INSERT INTO `tnotification_source`(`description`, `icon`, `max_postpone_time`, `user_editable`, `also_mail`) VALUES
-  ("System&#x20;status", "icono_info_mr.png", 86400, 1, 0),
-  ("Message", "icono_info_mr.png", 86400, 1, 0),
-  ("Pending&#x20;task", "icono_info_mr.png", 86400, 1, 0),
-  ("Advertisement", "icono_info_mr.png", 86400, 1, 0),
-  ("Official&#x20;communication", "icono_info_mr.png", 86400, 1, 0),
-  ("Sugerence", "icono_info_mr.png", 86400, 1, 0);
+INSERT INTO `tnotification_source`(`description`, `icon`, `max_postpone_time`, `enabled`, `user_editable`, `also_mail`) VALUES
+  ("System&#x20;status", "icono_info_mr.png", 86400, 1, 1, 0),
+  ("Message", "icono_info_mr.png", 86400, 1, 1, 0),
+  ("Pending&#x20;task", "icono_info_mr.png", 86400, 1, 1, 0),
+  ("Advertisement", "icono_info_mr.png", 86400, 1, 1, 0),
+  ("Official&#x20;communication", "icono_info_mr.png", 86400, 1, 1, 0),
+  ("Sugerence", "icono_info_mr.png", 86400, 1, 1, 0);
 
 -- -----------------------------------------------------
 -- Table `tmensajes`
@@ -1901,6 +1901,7 @@ ALTER TABLE `tmensajes` ADD COLUMN `url` TEXT;
 ALTER TABLE `tmensajes` ADD COLUMN `response_mode` VARCHAR(200) DEFAULT NULL;
 ALTER TABLE `tmensajes` ADD COLUMN `citicity` INT(10) UNSIGNED DEFAULT '0';
 ALTER TABLE `tmensajes` ADD COLUMN `id_source` BIGINT(20) UNSIGNED NOT NULL;
+ALTER TABLE `tmensajes` ADD COLUMN `subtype` VARCHAR(255) DEFAULT '';
 ALTER TABLE `tmensajes` ADD CONSTRAINT `tsource_fk` FOREIGN KEY (`id_source`) REFERENCES `tnotification_source` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 
 

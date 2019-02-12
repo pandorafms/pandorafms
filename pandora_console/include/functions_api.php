@@ -472,11 +472,12 @@ function api_get_module_last_value($idAgentModule, $trash1, $other=';', $returnT
     DB column mapping table used by tree_agents (and get module_properties)
 */
 
-// agent related field mappings (output field => column designation for 'tagente')
+/*
+ * Agent related field mappings (output field => column designation for 'tagente').
+ * agent_id is not in this list (because it is mandatory).
+ * agent_id_group is not in this list.
+ */
 $agent_field_column_mapping = [
-    /*
-        agent_id is not in this list (because it is mandatory) */
-    // agent_id_group is not in this list
     'agent_name'                      => 'nombre as agent_name',
     'agent_direction'                 => 'direccion as agent_direction',
     'agent_comentary'                 => 'comentarios as agent_comentary',
@@ -496,8 +497,8 @@ $agent_field_column_mapping = [
 ];
 
 // module related field mappings 1/2 (output field => column for 'tagente_modulo')
+// module_id_agent_modulo  is not in this list
 $module_field_column_mampping = [
-    // module_id_agent_modulo  is not in this list
     'module_id_agent'          => 'id_agente as module_id_agent',
     'module_id_module_type'    => 'id_tipo_modulo as module_id_module_type',
     'module_description'       => 'descripcion as module_description',
@@ -541,8 +542,8 @@ $module_field_column_mampping = [
 ];
 
 // module related field mappings 2/2 (output field => column for 'tagente_estado')
+// module_id_agent_modulo  is not in this list
 $estado_fields_to_columns_mapping = [
-    // module_id_agent_modulo  is not in this list
     'module_id_agent_state'     => 'id_agente_estado as module_id_agent_state',
     'module_data'               => 'datos as module_data',
     'module_timestamp'          => 'timestamp as module_timestamp',
@@ -14610,57 +14611,66 @@ function api_get_users($thrash1, $thrash2, $other, $returnType)
 
 }
 
+
 /**
  * Resets module counts and alert counts in the agents
+ *
  * @param $id id of the agent you want to synchronize. Add "All" to synchronize all agents
  * @param $trash1
  * @param $trash2
  * @param $trash3
- * 
- * Example: 
+ *
+ * Example:
  * api.php?op=set&op2=reset_agent_counts&apipass=1234&user=admin&pass=pandora&id=All
  */
-function api_set_reset_agent_counts ($id, $thrash1, $thrash2, $thrash3)
+function api_set_reset_agent_counts($id, $thrash1, $thrash2, $thrash3)
 {
-	global $config;
+    global $config;
 
-	if (!check_acl($config['id_user'], 0, "AW")) {
-		returnError('forbidden', 'string');
-		return;
-	}
+    if (!check_acl($config['id_user'], 0, 'AW')) {
+        returnError('forbidden', 'string');
+        return;
+    }
 
-	if ($id == '' || !$id) {
-		returnError('error_parameter', __('Error. Agent cannot be left blank.'));
-		return;
-	}
+    if ($id == '' || !$id) {
+        returnError('error_parameter', __('Error. Agent cannot be left blank.'));
+        return;
+    }
 
-	if ($id != "All"){
-		$agent = db_get_row_filter('tagente', array('id_agente' => $id));
-		if (empty ($agent)){
-			returnError('error_agent', __('This agent does not exist.'));
-			return;
-		}else {
-			$return = db_process_sql_update ('tagente',
-				array ('update_module_count' => 1, 'update_alert_count' => 1),
-				array('id_agente' => $id)
-			);
-		}
-	}
-	else {
-		$return = db_process_sql_update ('tagente',
-		array ('update_module_count' => 1, 'update_alert_count' => 1)
-		);
-	}
+    if ($id != 'All') {
+        $agent = db_get_row_filter('tagente', ['id_agente' => $id]);
+        if (empty($agent)) {
+            returnError('error_agent', __('This agent does not exist.'));
+            return;
+        } else {
+            $return = db_process_sql_update(
+                'tagente',
+                [
+                    'update_module_count' => 1,
+                    'update_alert_count'  => 1,
+                ],
+                ['id_agente' => $id]
+            );
+        }
+    } else {
+        $return = db_process_sql_update(
+            'tagente',
+            [
+                'update_module_count' => 1,
+                'update_alert_count'  => 1,
+            ]
+        );
+    }
 
+    $data = __('Successfully updated module/alert count in id agent %d.', $id);
+    if ($id == 'All') {
+        $data = __('Successfully updated module/alert count in all agents');
+    }
 
-	$data = __('Successfully updated module/alert count in id agent %d.', $id);
-	if ($id == "All")
-		$data = __('Successfully updated module/alert count in all agents');
-
-	if ($return === false)
-		returnError('error_reset_agent_counts', 'Could not be updated module/alert counts in id agent %d.', $id);
-	else
-		returnData('string', array('type' => 'string', 'data' => $data));
-
+    if ($return === false) {
+        returnError('error_reset_agent_counts', 'Could not be updated module/alert counts in id agent %d.', $id);
+    } else {
+        returnData('string', ['type' => 'string', 'data' => $data]);
+    }
 
 }

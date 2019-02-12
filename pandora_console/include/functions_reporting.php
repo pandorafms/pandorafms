@@ -1183,12 +1183,11 @@ function reporting_SLA(
             }
         }
 
-        // SLA items sorted descending ()
         if ($content['top_n'] == 2) {
+            // SLA items sorted descending ()
             arsort($return['data']['']);
-        }
-        // SLA items sorted ascending
-        else if ($content['top_n'] == 1) {
+        } else if ($content['top_n'] == 1) {
+            // SLA items sorted ascending
             asort($sla_showed_values);
         }
 
@@ -6724,7 +6723,7 @@ function reporting_general($report, $content)
             'id_agente_modulo',
             $row['id_agent_module']
         );
-
+        $id_module_type = db_get_value('id_tipo_modulo', 'tagente_modulo', 'nombre', $mod_name);
         if ($content['period'] == 0) {
             $data_res[$index] = modules_get_last_value($row['id_agent_module']);
         } else {
@@ -6771,16 +6770,31 @@ function reporting_general($report, $content)
                 $agent_name[$index] = $ag_name;
                 $module_name[$index] = $mod_name;
                 $units[$index] = $unit;
+                $id_module_types[$index] = $id_module_type;
                 $operations[$index] = $row['operation'];
             break;
 
             case REPORT_GENERAL_GROUP_BY_AGENT:
+                $id_module_types[$index] = $id_module_type;
+                if ($id_module_types[$index] == 2 || $id_module_types[$index] == 6 || $id_module_types[$index] == 9 || $id_module_types[$index] == 18) {
+                    $data_res[$index] = round($data_res[$index], 0, PHP_ROUND_HALF_DOWN);
+                }
+
+                if ($id_module_types[$index] == 2 || $id_module_types[$index] == 6 || $id_module_types[$index] == 9 || $id_module_types[$index] == 18) {
+                    if ($data_res[$index] == 1) {
+                        $data_res[$index] = 'Up';
+                    } else if ($data_res[$index] == 0) {
+                        $data_res[$index] = 'Down';
+                    }
+                }
+
                 if ($data_res[$index] === false) {
                     $return['data'][$ag_name][$mod_name] = null;
                 } else {
                     if (!is_numeric($data_res[$index])) {
                         $return['data'][$ag_name][$mod_name] = $data_res[$index];
                     } else {
+                        hd($data_res[$index], true);
                         $return['data'][$ag_name][$mod_name] = format_for_graph($data_res[$index], 2).' '.$unit;
                     }
                 }
@@ -6896,7 +6910,7 @@ function reporting_general($report, $content)
                 $data['module'] = $module_name[$i];
                 $data['id_agent_module'] = $id_agent_module[$i];
                 $data['id_agent'] = agents_get_agent_id_by_module_id($id_agent_module[$i]);
-
+                $data['id_module_type'] = $id_module_types[$i];
                 $data['operator'] = '';
                 if ($content['period'] != 0) {
                     switch ($operations[$i]) {

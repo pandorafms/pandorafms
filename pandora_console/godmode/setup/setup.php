@@ -107,6 +107,12 @@ $buttons['ehorus'] = [
     'text'   => '<a href="index.php?sec=gsetup&sec2=godmode/setup/setup&section=ehorus">'.html_print_image('images/ehorus/ehorus.png', true, ['title' => __('eHorus')]).'</a>',
 ];
 
+// FIXME: Not definitive icon
+$buttons['notifications'] = [
+    'active' => false,
+    'text'   => '<a href="index.php?sec=gsetup&sec2=godmode/setup/setup&section=notifications">'.html_print_image('images/alerts_template.png', true, ['title' => __('Notifications')]).'</a>',
+];
+
 $help_header = '';
 if (enterprise_installed()) {
     $subpage = setup_enterprise_add_subsection_main($section, $buttons, $help_header);
@@ -142,6 +148,11 @@ switch ($section) {
     case 'ehorus':
         $buttons['ehorus']['active'] = true;
         $subpage = ' &raquo '.__('eHorus');
+    break;
+
+    case 'notifications':
+        $buttons['notifications']['active'] = true;
+        $subpage = ' &raquo '.__('Notifications');
     break;
 }
 
@@ -181,6 +192,10 @@ switch ($section) {
 
     case 'ehorus':
         include_once $config['homedir'].'/godmode/setup/setup_ehorus.php';
+    break;
+
+    case 'notifications':
+        include_once $config['homedir'].'/godmode/setup/setup_notifications.php';
     break;
 
     default:

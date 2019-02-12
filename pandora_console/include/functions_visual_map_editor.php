@@ -1150,7 +1150,7 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background)
     echo '<div id="div_step_2" class="forced_title_layer"
 		style="display: none; position: absolute; z-index: 99;">'.__('Click end point<br />of the line').'</div>';
 
-    ui_require_css_file('color-picker','include/styles/js/');
+    ui_require_css_file('color-picker', 'include/styles/js/');
 
     ui_require_jquery_file('colorpicker');
     ?>

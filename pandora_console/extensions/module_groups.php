@@ -309,7 +309,7 @@ function mainModuleGroups()
         ui_print_info_message(['no_close' => true, 'message' => __('There are no defined groups or module groups') ]);
     }
 
-    ui_require_css_file('cluetip','include/styles/js/');
+    ui_require_css_file('cluetip', 'include/styles/js/');
     ui_require_jquery_file('cluetip');
     ?>
     <script>

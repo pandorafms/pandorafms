@@ -1701,6 +1701,32 @@ function alerts_get_effective_alert_actions($id_agent_module)
 
 
 /**
+ *  Validate alerts for the given module.
+ *
+ * @param int agent_module_id ID of the module
+ */
+function alerts_validate_alert_module ($agent_module_id) {
+	
+	db_process_sql(sprintf('UPDATE talert_template_modules
+		SET times_fired=0, internal_counter=0
+		WHERE id_agent_module = %d',
+		$agent_module_id));
+}
+
+/**
+ *  Validate alerts for the given agent.
+ *
+ * @param int agent_id ID of the agent
+ */
+function alerts_validate_alert_agent ($agent_id) {
+	db_process_sql(sprintf('UPDATE talert_template_modules tm
+		INNER JOIN tagente_modulo am ON tm.id_agent_module = am.id_agente_modulo
+		SET tm.times_fired=0, tm.internal_counter=0
+		WHERE am.id_agente = %d',
+		$agent_id));
+}
+
+/**
  *  Validates an alert id or an array of alert id's.
  *
  * @param mixed Array of alerts ids or single id.

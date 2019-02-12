@@ -967,7 +967,11 @@ function notifications_print_dropdown()
 function notifications_print_dropdown_element($message_info)
 {
     return sprintf(
-        "<div class='notification-item'>
+        "<div
+            class='notification-item'
+            onclick='click_on_notification_toast(event)'
+            id='notification-item-id-%s'
+        >
             <img src='%s'>
             <div class='notification-info'>
                 <h4 class='notification-title'>
@@ -978,6 +982,7 @@ function notifications_print_dropdown_element($message_info)
                 </p>
             </div>
         </div>",
+        $message_info['id_mensaje'],
         html_print_image('images/'.$message_info['icon'], true),
         $message_info['description'],
         $message_info['mensaje']

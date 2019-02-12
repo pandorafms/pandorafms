@@ -423,7 +423,7 @@ config_check();
     }
 
     function click_on_notification_toast(event) {
-        var match = /notification-toast-id-([0-9]+)/.exec(event.target.id);
+        var match = /notification-.*-id-([0-9]+)/.exec(event.target.id);
         if (!match) {
             console.error(
                 "Cannot handle toast click event. Id not valid: ",

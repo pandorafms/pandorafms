@@ -126,18 +126,15 @@ if (get_parameter('check_new_notifications', 0)) {
 }
 
 if (get_parameter('mark_notification_as_read', 0)) {
-    hd("asdfe", true);
     $message = (int) get_parameter('message', 0);
     messages_process_read($message);
     // TODO check read.
     $url = messages_get_url($message);
-    hd("asdfe 2" . $url, true);
     // Return false if cannot get the URL.
     if ($url === false) {
         echo json_encode(['result' => false]);
         return;
     }
-    hd("asdfe 03", true);
 
     // If there is new messages, get the info.
     echo json_encode(

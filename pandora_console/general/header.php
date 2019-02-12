@@ -197,7 +197,6 @@ config_check();
                 if (!isset($_GET['refr'])) {
                     $_GET['refr'] = null;
                 }
-
                 $select = db_process_sql("SELECT autorefresh_white_list,time_autorefresh FROM tusuario WHERE id_user = '".$config['id_user']."'");
                 $autorefresh_list = json_decode($select[0]['autorefresh_white_list']);
 
@@ -398,8 +397,37 @@ config_check();
     }
 
     function click_on_notification_toast(event) {
-        // TODO action.
-        document.getElementById(event.target.id).remove();
+        var match = /notification-toast-id-([0-9]+)/.exec(event.target.id);
+        if (!match) {
+            console.error(
+                "Cannot handle toast click event. Id not valid: ",
+                event.target.id
+            );
+            return;
+        }
+        jQuery.post ("ajax.php",
+            {
+                "page" : "godmode/setup/setup_notifications",
+                "mark_notification_as_read" : 1,
+                "message": match[1]
+            },
+            function (data, status) {
+                console.log(data.url)
+                if (!data.result) {
+                    console.error("Cannot redirect to URL.");
+                    return;
+                }
+                window.location.replace(data.url);
+                document.getElementById(event.target.id).remove();
+            },
+            "json"
+        )
+        .fail(function(xhr, textStatus, errorThrown){
+            console.error(
+                "Failed onclik event on toast. Error: ",
+                xhr.responseText
+            );
+        });
     }
 
     function print_toast(title, subtitle, severity, id, onclick) {
@@ -471,17 +499,19 @@ config_check();
                 ball_wrapper.innerHTML = new_ball;
 
                 // Add the new toasts.
-                data.new_notifications.forEach(function(ele) {
-                    toast_wrapper.appendChild(
-                        print_toast(
-                            ele.description,
-                            ele.mensaje,
-                            ele.criticity,
-                            'notification-toast-id-' + ele.id_mensaje,
-                            'click_on_notification_toast(event)'
-                        )
-                    );
-                });
+                if (Array.isArray(data.new_notifications)) {
+                    data.new_notifications.forEach(function(ele) {
+                        toast_wrapper.appendChild(
+                            print_toast(
+                                ele.description,
+                                ele.mensaje,
+                                ele.criticity,
+                                'notification-toast-id-' + ele.id_mensaje,
+                                'click_on_notification_toast(event)'
+                            )
+                        );
+                    });
+                }
             },
             "json"
         )

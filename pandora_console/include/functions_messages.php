@@ -215,7 +215,6 @@ function messages_process_read(
     bool $read=true
 ) {
     global $config;
-
     // Check if user has grants to read the message.
     if (check_notification_readable($message_id) === false) {
         return false;
@@ -559,4 +558,29 @@ function messages_get_overview_sent(
         $config['id_user'],
         $order
     );
+}
+
+
+/**
+ * Get the URL of a message. If field in db is null, it returs a link to
+ *      messages view.
+ *
+ * @param integer $message_id Message id to get URL.
+ *
+ * @return mixed False if fails. A string with URL otherwise.
+ */
+function messages_get_url($message_id)
+{
+    $messages = messages_get_message($message_id);
+    if ($messages === false) {
+        return false;
+    }
+
+    // Return URL stored if is set in database.
+    if (isset($messages['url'])) {
+        return $messages['url'];
+    }
+
+    // Return the message direction.
+    return ui_get_full_url('index.php?sec=message_list&sec2=operation/messages/message_edit&read_message=1&id_message='.$message_id);
 }

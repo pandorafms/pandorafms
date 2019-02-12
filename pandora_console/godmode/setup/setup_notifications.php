@@ -146,6 +146,11 @@ if (get_parameter('mark_notification_as_read', 0)) {
     return;
 }
 
+if (get_parameter('get_notifications_dropdown', 0)) {
+    echo notifications_print_dropdown();
+    return;
+}
+
 // Notification table. It is just a wrapper.
 $table_content = new StdClass();
 $table_content->data = [];

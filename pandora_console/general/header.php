@@ -363,6 +363,9 @@ config_check();
     </tr>
 </table>
 
+<!-- Notifications content wrapper-->
+<div id='notification-content' style='display:none;' /></div>
+
 <script type="text/javascript">
     /* <![CDATA[ */
     
@@ -376,13 +379,36 @@ config_check();
 
     function addNotifications(event) {
         var element = document.getElementById("notification-content");
-        if (!element) return;
-        element.style.display = "block";
-        attatch_to_image();
+        if (!element) {
+            console.error('Cannot locate the notification content element.');
+            return;
+        }
+        // If notification-content is empty, retrieve the notifications.
+        if (!element.firstChild) {
+            jQuery.post ("ajax.php",
+                {
+                    "page" : "godmode/setup/setup_notifications",
+                    "get_notifications_dropdown" : 1,
+                },
+                function (data, status) {
+                    // Apppend data
+                    element.innerHTML = data;
+                    // Show the content
+                    element.style.display = "block";
+                    attatch_to_image();
+                },
+                "html"
+            );
+        } else {
+            // If there is some notifications retrieved, only show it.
+            element.style.display = "block";
+            attatch_to_image();
+        }
     }
 
     function attatch_to_image() {
         var notification_elem = document.getElementById("notification-wrapper");
+        if (!notification_elem) return;
         var image_attached =
             document.getElementById("notification-ball-header")
                 .getBoundingClientRect()
@@ -495,7 +521,13 @@ config_check();
                     console.error('Cannot update notification ball');
                     return;
                 }
+                // Print the new ball and clean old notifications
                 ball_wrapper.innerHTML = new_ball;
+                var not_drop = document.getElementById('notification-content');
+                while (not_drop.firstChild && not_drop) {
+                    not_drop.removeChild(not_drop.firstChild);
+                }
+
 
                 // Add the new toasts.
                 if (Array.isArray(data.new_notifications)) {
@@ -656,6 +688,3 @@ config_check();
     });
 /* ]]> */
 </script>
-
-<?php
-echo notifications_print_dropdown();

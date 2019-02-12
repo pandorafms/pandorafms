@@ -4287,10 +4287,12 @@ div#dialog_messages table th:last-child {
   display: flex;
   justify-content: center;
   align-items: center;
+  cursor: pointer;
 }
 
 .notification-ball-no-messages {
   background-color: #82b92e;
+  cursor: inherit;
 }
 .notification-ball-new-messages {
   background-color: #fc4444;

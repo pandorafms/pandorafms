@@ -160,7 +160,7 @@ function check_notification_readable(int $id_message)
  * Returns the target users and groups assigned to be notified on
  * desired source.
  *
- * @param integer $id_source
+ * @param integer $id_source Source identificator.
  *
  * @return array [users] and [groups] with the targets.
  */
@@ -635,16 +635,18 @@ function notifications_get_counters()
  */
 function notifications_print_ball($num_notifications, $last_id)
 {
-    $class_status = ($num_notifications == 0) ? 'notification-ball-no-messages' : 'notification-ball-new-messages';
+    $no_notifications = (int) $num_notifications === 0;
+    $class_status = ($no_notifications) ? 'notification-ball-no-messages' : 'notification-ball-new-messages';
     return sprintf(
         '<div
-            onclick="addNotifications(event)"
+            %s
             class="notification-ball %s"
             id="notification-ball-header"
             last_id="%s"
         >
             %s
         </div>',
+        ($no_notifications) ? '' : 'onclick="addNotifications(event)"',
         $class_status,
         $last_id,
         $num_notifications
@@ -935,16 +937,15 @@ function notifications_print_dropdown()
     }
 
     return sprintf(
-        "<div id='notification-content' style='display:none;'>
-            <div id='notification-wrapper'>
-                %s
+        "<div id='notification-wrapper'>
+            %s
             </div>
             <div
                 id='notification-wrapper-shadow'
                 onclick='notifications_hide()'
             >
-            </div>
-        </div>",
+        </div>
+        ",
         array_reduce(
             $mess,
             function ($carry, $message) {

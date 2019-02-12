@@ -157,65 +157,6 @@ function check_notification_readable(int $id_message)
 
 
 /**
- * Returns the target users and groups assigned to be notified on
- * desired source.
- *
- * @param integer $id_source
- *
- * @return array [users] and [groups] with the targets.
- */
-function get_notification_source_targets(int $id_source)
-{
-    $ret = [];
-
-    $users = db_get_all_rows_sql(
-        sprintf(
-            'SELECT 
-                id_user,
-                IF(ns.user_editable = 1,nsu.also_mail,ns.also_mail) AS also_mail
-            FROM tnotification_source_user nsu
-            INNER JOIN tnotification_source ns
-                ON ns.id=nsu.id_source
-            WHERE ns.id = %d 
-            AND ((ns.enabled is NULL OR ns.enabled != 0)
-                OR (nsu.enabled is NULL OR nsu.enabled != 0))',
-            $id_source
-        )
-    );
-
-    if ($users !== false) {
-        $i = 0;
-        foreach ($users as $user) {
-            $ret['users'][$i]['id_user'] = $user['id_user'];
-            $ret['users'][$i++]['also_mail'] = $user['also_mail'];
-        }
-    }
-
-    $groups = db_get_all_rows_sql(
-        sprintf(
-            'SELECT id_group,ns.also_mail
-            FROM tnotification_source_group nsg
-            INNER JOIN tnotification_source ns
-                ON ns.id=nsg.id_source
-            WHERE ns.id = %d 
-            AND (ns.enabled is NULL OR ns.enabled != 0)',
-            $id_source
-        )
-    );
-
-    if ($groups !== false) {
-        $i = 0;
-        foreach ($groups as $group) {
-            $ret['groups'][$i]['id_group'] = $group['id_group'];
-            $ret['groups'][$i++]['also_mail'] = $group['also_mail'];
-        }
-    }
-
-    return $ret;
-}
-
-
-/**
  * Return all info from tnotification_source
  *
  * @param array $filter Filter to table tnotification_source.

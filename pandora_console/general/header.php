@@ -255,20 +255,7 @@ config_check();
                 $table->data[0][1] = $autorefresh_link_open_img.$autorefresh_img.$autorefresh_link_close;
                 $table->data[0][2] = $autorefresh_link_open_txt.$autorefresh_txt.$autorefresh_link_close.$autorefresh_additional;
                 // ======================================================
-                $check_minor_release_available = false;
                 $pandora_management = check_acl($config['id_user'], 0, 'PM');
-
-                $check_minor_release_available = db_check_minor_relase_available();
-
-                if ($check_minor_release_available) {
-                    if (users_is_admin($config['id_user'])) {
-                        if ($config['language'] == 'es') {
-                            set_pandora_error_for_header('Hay una o mas revisiones menores en espera para ser actualizadas. <a style="font-size:8pt;font-style:italic;" target="blank" href="http://wiki.pandorafms.com/index.php?title=Pandora:Documentation_es:Actualizacion#Versi.C3.B3n_7.0NG_.28_Rolling_Release_.29">'.__('Sobre actualización de revisión menor').'</a>', 'Revisión/es menor/es disponible/s');
-                        } else {
-                            set_pandora_error_for_header('There are one or more minor releases waiting for update. <a style="font-size:8pt;font-style:italic;" target="blank" href="http://wiki.pandorafms.com/index.php?title=Pandora:Documentation_en:Anexo_Upgrade#Version_7.0NG_.28_Rolling_Release_.29">'.__('About minor release update').'</a>', 'minor release/s available');
-                        }
-                    }
-                }
 
                 echo '<div id="alert_messages" style="display: none"></div>';
 

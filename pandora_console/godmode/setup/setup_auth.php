@@ -43,7 +43,7 @@ if (is_ajax()) {
         if ($type_auth != 'mysql') {
             // Fallback to local authentication
             $row = [];
-            $row['name'] = __('Fallback to local authentication').ui_print_help_tip(__('Enable this option if you want to fallback to local authentication when remote (ldap etc...) authentication failed. Only available when "Save password" is enabled.'), true);
+            $row['name'] = __('Fallback to local authentication').ui_print_help_tip(__('Enable this option if you want to fallback to local authentication when remote (ldap etc...) authentication failed. Only available when \'Save password\' is enabled.'), true);
             $row['control'] = __('Yes').'&nbsp;'.html_print_radio_button('fallback_local_auth', 1, '', $config['fallback_local_auth'], true).'&nbsp;&nbsp;';
             $row['control'] .= __('No').'&nbsp;'.html_print_radio_button('fallback_local_auth', 0, '', $config['fallback_local_auth'], true);
             $table->data['fallback_local_auth'] = $row;

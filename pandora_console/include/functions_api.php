@@ -14609,3 +14609,58 @@ function api_get_users($thrash1, $thrash2, $other, $returnType)
     }
 
 }
+
+/**
+ * Resets module counts and alert counts in the agents
+ * @param $id id of the agent you want to synchronize. Add "All" to synchronize all agents
+ * @param $trash1
+ * @param $trash2
+ * @param $trash3
+ * 
+ * Example: 
+ * api.php?op=set&op2=reset_agent_counts&apipass=1234&user=admin&pass=pandora&id=All
+ */
+function api_set_reset_agent_counts ($id, $thrash1, $thrash2, $thrash3)
+{
+	global $config;
+
+	if (!check_acl($config['id_user'], 0, "AW")) {
+		returnError('forbidden', 'string');
+		return;
+	}
+
+	if ($id == '' || !$id) {
+		returnError('error_parameter', __('Error. Agent cannot be left blank.'));
+		return;
+	}
+
+	if ($id != "All"){
+		$agent = db_get_row_filter('tagente', array('id_agente' => $id));
+		if (empty ($agent)){
+			returnError('error_agent', __('This agent does not exist.'));
+			return;
+		}else {
+			$return = db_process_sql_update ('tagente',
+				array ('update_module_count' => 1, 'update_alert_count' => 1),
+				array('id_agente' => $id)
+			);
+		}
+	}
+	else {
+		$return = db_process_sql_update ('tagente',
+		array ('update_module_count' => 1, 'update_alert_count' => 1)
+		);
+	}
+
+
+	$data = __('Successfully updated module/alert count in id agent %d.', $id);
+	if ($id == "All")
+		$data = __('Successfully updated module/alert count in all agents');
+
+	if ($return === false)
+		returnError('error_reset_agent_counts', 'Could not be updated module/alert counts in id agent %d.', $id);
+	else
+		returnData('string', array('type' => 'string', 'data' => $data));
+
+
+}

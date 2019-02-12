@@ -1754,7 +1754,8 @@ function get_snmpwalk(
     $quick_print=0,
     $base_oid='',
     $snmp_port='',
-    $server_to_exec=0
+    $server_to_exec=0,
+    $extra_arguments=''
 ) {
     global $config;
 
@@ -1805,15 +1806,15 @@ function get_snmpwalk(
         case '3':
             switch ($snmp3_security_level) {
                 case 'authNoPriv':
-                    $command_str = $snmpwalk_bin.' -m ALL -Oa -v 3'.' -u '.escapeshellarg($snmp3_auth_user).' -A '.escapeshellarg($snmp3_auth_pass).' -l '.escapeshellarg($snmp3_security_level).' -a '.escapeshellarg($snmp3_auth_method).' '.escapeshellarg($ip_target).' '.$base_oid.' 2> '.$error_redir_dir;
+                    $command_str = $snmpwalk_bin.' -m ALL -Oa '.$extra_arguments.' -v 3'.' -u '.escapeshellarg($snmp3_auth_user).' -A '.escapeshellarg($snmp3_auth_pass).' -l '.escapeshellarg($snmp3_security_level).' -a '.escapeshellarg($snmp3_auth_method).' '.escapeshellarg($ip_target).' '.$base_oid.' 2> '.$error_redir_dir;
                 break;
 
                 case 'noAuthNoPriv':
-                    $command_str = $snmpwalk_bin.' -m ALL -Oa -v 3'.' -u '.escapeshellarg($snmp3_auth_user).' -l '.escapeshellarg($snmp3_security_level).' '.escapeshellarg($ip_target).' '.$base_oid.' 2> '.$error_redir_dir;
+                    $command_str = $snmpwalk_bin.' -m ALL -Oa '.$extra_arguments.' -v 3'.' -u '.escapeshellarg($snmp3_auth_user).' -l '.escapeshellarg($snmp3_security_level).' '.escapeshellarg($ip_target).' '.$base_oid.' 2> '.$error_redir_dir;
                 break;
 
                 default:
-                    $command_str = $snmpwalk_bin.' -m ALL -Oa -v 3'.' -u '.escapeshellarg($snmp3_auth_user).' -A '.escapeshellarg($snmp3_auth_pass).' -l '.escapeshellarg($snmp3_security_level).' -a '.escapeshellarg($snmp3_auth_method).' -x '.escapeshellarg($snmp3_privacy_method).' -X '.escapeshellarg($snmp3_privacy_pass).' '.escapeshellarg($ip_target).' '.$base_oid.' 2> '.$error_redir_dir;
+                    $command_str = $snmpwalk_bin.' -m ALL -Oa '.$extra_arguments.' -v 3'.' -u '.escapeshellarg($snmp3_auth_user).' -A '.escapeshellarg($snmp3_auth_pass).' -l '.escapeshellarg($snmp3_security_level).' -a '.escapeshellarg($snmp3_auth_method).' -x '.escapeshellarg($snmp3_privacy_method).' -X '.escapeshellarg($snmp3_privacy_pass).' '.escapeshellarg($ip_target).' '.$base_oid.' 2> '.$error_redir_dir;
                 break;
             }
         break;
@@ -1822,7 +1823,7 @@ function get_snmpwalk(
         case '2c':
         case '1':
         default:
-            $command_str = $snmpwalk_bin.' -m ALL -Oa -v '.escapeshellarg($snmp_version).' -c '.escapeshellarg(io_safe_output($snmp_community)).' '.escapeshellarg($ip_target).' '.$base_oid.' 2> '.$error_redir_dir;
+            $command_str = $snmpwalk_bin.' -m ALL '.$extra_arguments.' -Oa -v '.escapeshellarg($snmp_version).' -c '.escapeshellarg(io_safe_output($snmp_community)).' '.escapeshellarg($ip_target).' '.$base_oid.' 2> '.$error_redir_dir;
         break;
     }
 

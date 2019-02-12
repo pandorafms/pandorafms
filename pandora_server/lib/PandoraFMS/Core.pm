@@ -249,6 +249,7 @@ our @EXPORT = qw(
 	pandora_delete_graph_source
 	pandora_delete_custom_graph
 	pandora_edit_custom_graph
+	notification_set_targets
 	);
 
 # Some global variables
@@ -1458,6 +1459,35 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 		my $ticket_description = $field10;
 
 		pandora_create_integria_ticket($pa_config, $api_path, $api_pass, $integria_user, $integria_user_pass, $ticket_name, $ticket_group_id, $ticket_priority, $ticket_email, $ticket_owner, $ticket_description);
+
+
+	# Generate notification
+	} elsif ($clean_name eq "Generate Notification") {
+
+		# Translate macros
+		$field3 = subst_alert_macros($field3, \%macros, $pa_config, $dbh, $agent, $module);
+		$field4 = subst_alert_macros($field4, \%macros, $pa_config, $dbh, $agent, $module);
+
+		# If no targets ignore notification
+		if (defined($field1) && defined($field2) && ($field1 ne "" || $field2 ne "")) {
+			my @user_list = map {clean_blank($_)} split /,/, $field1;
+			my @group_list = map {clean_blank($_)} split /,/, $field2;
+
+			my $notification = {};
+			$notification->{'subject'} = safe_input($field3);
+			$notification->{'mensaje'} = safe_input($field4);
+			$notification->{'id_source'} = get_db_value($dbh, 'SELECT id FROM tnotification_source WHERE description = ?', safe_input('System status'));
+
+			# Create message
+			my $notification_id = db_process_insert($dbh,'id_mensaje','tmensajes',$notification);
+			if (!$notification_id) {
+				logger($pa_config, "Failed action '" . $action->{'name'} . "' for alert '". $alert->{'name'} . "' agent '" . (defined($agent) ? $agent->{'alias'} : 'N/A') . "'.", 3);
+			} else {
+				notification_set_targets($pa_config, $dbh, $notification_id, \@user_list, \@group_list);
+			}
+		} else {
+			logger($pa_config, "Failed action '" . $action->{'name'} . "' for alert '". $alert->{'name'} . "' agent '" . (defined($agent) ? $agent->{'alias'} : 'N/A') . "' Empty targets. Ignored.", 3);
+		}
 
 	# Unknown
 	} else {
@@ -5744,6 +5774,62 @@ sub pandora_safe_mode_modules_update {
 		logger($pa_config, "Update modules for safe mode agent with alias:" . $agent->{'alias'} . ".", 10);
 		db_do($dbh, 'UPDATE tagente_modulo SET disabled=1 WHERE id_agente=? AND id_agente_modulo!=?', $agent_id, $agent->{'safe_mode_module'});
 	}
+}
+
+##########################################################################
+
+=head2 C<< message_set_targets (I<$dbh>, I<$pa_config>, I<$notification_id>, I<$users>, I<$groups>) >>
+Set targets for given messaje (users and groups in hash ref)
+=cut
+
+##########################################################################
+sub notification_set_targets {
+	my ($pa_config, $dbh, $notification_id, $users, $groups) = @_;
+	my $ret = undef;
+
+	if (!defined($pa_config)) {
+		return undef;
+	}
+
+	if (!defined($notification_id)) {
+		return undef;
+	}
+
+	if (ref($users) eq "ARRAY") {
+		my $values = {};
+		foreach my $user (@{$users}) {
+			if (defined($user) && $user eq "") {
+				next;
+			}
+
+			$values->{'id_mensaje'} = $notification_id;
+			$values->{'id_user'} = $user;
+		}
+
+		$ret = db_process_insert($dbh, '', 'tnotification_user', $values);
+		if (!$ret) {
+			return undef;
+		}
+	}
+
+	if (ref($groups) eq "ARRAY") {
+		my $values = {};
+		foreach my $group (@{$groups}) {
+			if ($group != 0 && empty($group)) {
+				next;
+			}
+
+			$values->{'id_mensaje'} = $notification_id;
+			$values->{'id_group'} = $group;
+		}
+
+		$ret = db_process_insert($dbh, '', 'tnotification_group', $values);
+		if (!$ret) {
+			return undef;
+		}
+	}
+
+	return 1;
 }
 
 # End of function declaration

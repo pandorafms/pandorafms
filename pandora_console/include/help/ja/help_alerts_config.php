@@ -3,21 +3,21 @@
  * @package Include/help/ja
  */
 ?> 
- <h1><?php echo get_product_name();?> アラート設定クイックガイド</h1>
+ <h1><?php echo get_product_name(); ?> アラート設定クイックガイド</h1>
 <br>
 
 <b>アラートシステムの概要</b><br><br>
 
-<?php echo get_product_name();?> のアラート定義は複雑だと良く言われます。バージョン 2.0 以前は、アラートの設定は簡単でした。個々のアラートで状態を定義し、それぞれの場合においてアクションが実施されなかった時に何をするかを定義していました。これは "直感的" です (しかし、それぞれが閾値の設定を持っており、多くの人の頭痛の種になっていました)。シンプルではありますが、良くは無いのではないでしょうか。<br><br>
+<?php echo get_product_name(); ?> のアラート定義は複雑だと良く言われます。バージョン 2.0 以前は、アラートの設定は簡単でした。個々のアラートで状態を定義し、それぞれの場合においてアクションが実施されなかった時に何をするかを定義していました。これは "直感的" です (しかし、それぞれが閾値の設定を持っており、多くの人の頭痛の種になっていました)。シンプルではありますが、良くは無いのではないでしょうか。<br><br>
 
-一人のユーザ (たくさんのエージェントをインストールし、<?php echo get_product_name();?> を良く利用していました) が、2000 のモジュール全てに対して、アラートを 設定 しなくてはいけないという点でとても大変であるということを言及しました。この点とその他問題のために、我々はアラートシステムをモジュール化し、アラートが発生したときに実行するアクション (アラートアクション) および、アクションによって実行されるコマンド (アラートコマンド) から、アラートを発生させる定義 (アラートテンプレート) を分割するよう改変を行いました。モジュールとアラートテンプレートの組み合わせにより、アラートが発生します。<br><br>
+一人のユーザ (たくさんのエージェントをインストールし、<?php echo get_product_name(); ?> を良く利用していました) が、2000 のモジュール全てに対して、アラートを 設定 しなくてはいけないという点でとても大変であるということを言及しました。この点とその他問題のために、我々はアラートシステムをモジュール化し、アラートが発生したときに実行するアクション (アラートアクション) および、アクションによって実行されるコマンド (アラートコマンド) から、アラートを発生させる定義 (アラートテンプレート) を分割するよう改変を行いました。モジュールとアラートテンプレートの組み合わせにより、アラートが発生します。<br><br>
 
 この方法で、"Host alive" というモジュールを持ち、"Host down" というアラートテンプレートが関連付けられた 1000 のシステムがあったとします。このとき、"Call to the operator" というアラートがデフォルトで実行されます。そして、オペレータへ通知する前に何回のアラート検知までを許容するか(何回目まではオペレータへ通知しないか)を変更したいと考えたとき、テンプレートの定義を変更するだけで実現できます。1000個のアラート設定を一つ一つ設定変更する必要はありません。<br><br>
 
-<?php echo get_product_name();?> で、何人かのユーザは、数十のマシンのみを管理していますが、数百を管理しているユーザもいます。また、数千ものシステムをモニタしているユーザもいます。我々は、<?php echo get_product_name();?> で、すべての種類の環境の管理を可能にしなければいけません。<br><br><br><br>
+<?php echo get_product_name(); ?> で、何人かのユーザは、数十のマシンのみを管理していますが、数百を管理しているユーザもいます。また、数千ものシステムをモニタしているユーザもいます。我々は、<?php echo get_product_name(); ?> で、すべての種類の環境の管理を可能にしなければいけません。<br><br><br><br>
 <b>アラートの仕組み</b><br><br>
 
-<?php html_print_image ("images/help/alert01.png", false, array('width' => '550px')); ?>
+<?php html_print_image('images/help/alert01.png', false, ['width' => '550px']); ?>
 
 アラートは次の組み合わせです。<br><br>
 
@@ -39,11 +39,11 @@
 
 アクションとテンプレートを定義するとき、フィールド1、フィールド2、フィールド３というフィールドがあります。これらはコマンド実行時にパラメータとして渡されます。このパラメータの値は、テンプレートからアクションへ、そしてコマンドへ引き渡されます。テンプレートからアクションへの引き渡しは、アクションでフィールドが定義されていない場合のみ実行されます。アクションで定義されている場合はそれが使われます。<br><br>
 
-<?php html_print_image ("images/help/alert02.png", false, array('width' => '550px')); ?>
+<?php html_print_image('images/help/alert02.png', false, ['width' => '550px']); ?>
 
 これは、テンプレートの値がどのようにアクションの値で上書きされるかの例です。<br><br>
 
-<?php html_print_image ("images/help/alert03.png", false, array('width' => '550px')); ?>
+<?php html_print_image('images/help/alert03.png', false, ['width' => '550px']); ?>
 
 例として、次のフィールド設定で、アラート発生時にメールを送信するテンプレートを作成します。<br><br>
 
@@ -68,33 +68,33 @@
 
 ここで、上記のような例を仮定すると、まずは数値データのモジュールを一つモニタします。以下の例では、system CPU 使用率をモニタするモジュールをとりあげます。温度を返す温度センサーなどでも良いです。まず最初に、モジュールがデータを正しく受け取っているかを見てみましょう。 <br><br>
 
-<?php html_print_image ("images/help/alert04.png", false, array('width' => '550px')); ?>
+<?php html_print_image('images/help/alert04.png', false, ['width' => '550px']); ?>
 
 このスクリーンショットでは、sys_cpu というモジュールがあり、現在の値が 7 であるということが解ります。この例では、この値が 20以上になったらアラートを上げたいと考えます。そのためには、20以上の値になったら、障害状態になるようにモジュールを設定します。設定するには、スパナアイコンをクリックします。 <br><br>
 
-<?php html_print_image ("images/help/alert05.png", false, array('width' => '550px')); ?>
+<?php html_print_image('images/help/alert05.png', false, ['width' => '550px']); ?>
 
 以下の画面の赤で囲っている部分の値を設定します。<br><br>
 <br><br>
 
-<?php html_print_image ("images/help/alert06.png", false, array('width' => '550px')); ?>
+<?php html_print_image('images/help/alert06.png', false, ['width' => '550px']); ?>
 
 設定を反映させます。これで、CPU モジュールの値が 20以上になるとステータスが障害状態になり、次のように赤い表示になります。<br><br>
 
 
-<?php html_print_image ("images/help/alert07.png", false, array('width' => '550px')); ?>
+<?php html_print_image('images/help/alert07.png', false, ['width' => '550px']); ?>
 
-以上で、どのような時が正常 (正常で緑表示) で、どのような時が異常 (障害で赤表示) かをシステムが認識するようになりました。次のすべきは、モジュールが障害状態になったときにメール通知する設定です。そのためには、<?php echo get_product_name();?> アラートシステムを利用します。<br><br>
+以上で、どのような時が正常 (正常で緑表示) で、どのような時が異常 (障害で赤表示) かをシステムが認識するようになりました。次のすべきは、モジュールが障害状態になったときにメール通知する設定です。そのためには、<?php echo get_product_name(); ?> アラートシステムを利用します。<br><br>
 
-この設定をするには、まずは、必要なコマンド (メールを送る) が一つあるということを認識する必要があります。この例では、<?php echo get_product_name();?> にあらかじめ定義されているメール送信コマンドを利用するので簡単です。 <br><br>
+この設定をするには、まずは、必要なコマンド (メールを送る) が一つあるということを認識する必要があります。この例では、<?php echo get_product_name(); ?> にあらかじめ定義されているメール送信コマンドを利用するので簡単です。 <br><br>
 
 <b>アラートの設定</b><br><br>
 
 まずは、"Send an email to the operator" というアクションを作成しないといけません。新たなアクションを作成するには、システム管理メニューから、アラート管理 -> アクションの順にクリックします。<br><br>
 
-<?php html_print_image ("images/help/alert08.png", false, array('width' => '550px')); ?>
+<?php html_print_image('images/help/alert08.png', false, ['width' => '550px']); ?>
 
-このアクションでは、eMail というメールを送信するコマンドを使います。これはとても簡単で、一つのフィールド (フィールド 1) だけ設定すれば良く、他の 2つの設定は不要です。フィールド1、2、3 は何かというのは、<?php echo get_product_name();?> のアラートシステムの中で最もわかりにくい部分の一つです。<br><br>
+このアクションでは、eMail というメールを送信するコマンドを使います。これはとても簡単で、一つのフィールド (フィールド 1) だけ設定すれば良く、他の 2つの設定は不要です。フィールド1、2、3 は何かというのは、<?php echo get_product_name(); ?> のアラートシステムの中で最もわかりにくい部分の一つです。<br><br>
 
 これらのフィールドは、アラートテンプレートの情報をコマンド設定へ "渡す" ために利用されます。また、そこから、実際に実行されるコマンドに渡されます。つまり、テンプレートとコマンド設定の両方から、異なる情報を実行されるコマンドに与えることができます。この場合、コマンドに対してフィールド 1のみを指定し、フィールド 2 と 3 は設定していません。<br><br>
 
@@ -104,7 +104,7 @@
 
 次に、後から使えるように可能な限り一般的な内容で、アラートテンプレートを作成する必要があります。これは、"モジュールが障害状態であることを認識" し、デフォルトとして、オペレータにメールを送信します。システム管理メニューから、「アラート管理」->「テンプレート」をクリックして、「作成」ボタンをクリックしてください。<br><br>
 
-<?php html_print_image ("images/help/alert09.png", false, array('width' => '550px')); ?>
+<?php html_print_image('images/help/alert09.png', false, ['width' => '550px']); ?>
 
 "条件種別(Condition)" フィールドにて状態を定義します。この場合、"障害状態(Critical stateus)" を選択しています。これにより、モジュールが障害状態になった時にアラートが通知されます。ここで、"cpu sys" モジュールに対して、20以上の値になった場合に障害状態となるように設定しています。<br><br>
 
@@ -112,7 +112,7 @@
 
 ステップ2 へ進むために、"次(next)" ボタンをクリックします。<br><br>
 
-<?php html_print_image ("images/help/alert10.png", false, array('width' => '550px')); ?>
+<?php html_print_image('images/help/alert10.png', false, ['width' => '550px']); ?>
 
 ステップ2 では、アラートテンプレートのアラート通知に関する全ての設定を行います。最初のいくつかはとても簡単で、アラートを発生させる日や時間を定義します。<br><br>
 
@@ -121,7 +121,7 @@
 
     <i>再通知間隔(Time threshhold):</i> デフォルトでは 1日です。例では 1日ですが、5分に設定すると、モジュールが常にダウン状態の場合、5分間隔でアラート通知されます。もし、1日 (24時間) に設定すると、ダウンしたときに、まず一度アラート通知します。モジュールが復旧し、再びダウンすると、再びアラート通知します。しかし、二度目のダウンからダウン状態が続いても、24時間以内であればアラートを通知しません。<br><br>
 
-    <i>最小アラート数(Min. Number of alerts):</i> <?php echo get_product_name();?> がアラートテンプレートで定義したアクションを実行する状態変化 (この例では、モジュールの障害状態) の回数です。この設定により、正常状態と障害状態を繰り返す大量のアラートが発生を避けることができます。ここに 1を設定すると、モジュールの一度の障害状態は無視します。0 を設定すると、モジュールの初回の障害状態でアラート通知がされます。<br><br>
+    <i>最小アラート数(Min. Number of alerts):</i> <?php echo get_product_name(); ?> がアラートテンプレートで定義したアクションを実行する状態変化 (この例では、モジュールの障害状態) の回数です。この設定により、正常状態と障害状態を繰り返す大量のアラートが発生を避けることができます。ここに 1を設定すると、モジュールの一度の障害状態は無視します。0 を設定すると、モジュールの初回の障害状態でアラート通知がされます。<br><br>
 
     <i>最大アラート数(Max. Number of alerts):</i> 1 は、アクションを一度だけ実行することを意味します。もし、ここに 10 を設定すると、アクションを 10回実行します。この設定により、アラートの実行回数を制限することができます。<br><br>
 
@@ -131,14 +131,14 @@
 Subject: [MONITORING] Farscape cpu_sys is in CRITICAL status with value 20<br>
 Texto email:<br><br>
 
-This is an automated alert generated by <?php echo get_product_name();?><br>
-Please contact your <?php echo get_product_name();?> for more information. *DO NOT* reply this email.<br></i><br>
+This is an automated alert generated by <?php echo get_product_name(); ?><br>
+Please contact your <?php echo get_product_name(); ?> for more information. *DO NOT* reply this email.<br></i><br>
 
 下に、前もって定義したデフォルトのアクションが表示されます。このテンプレートを利用する全てのアラートは、設定を変更しなければデフォルトでこの定義済アクションを利用します。<br><br>
 
 次のステップ3では、障害状態が復旧したときの通知に関する設定をみていきます。<br><br>
 
-<?php html_print_image ("images/help/alert11.png", false, array('width' => '550px')); ?>
+<?php html_print_image('images/help/alert11.png', false, ['width' => '550px']); ?>
 
 ほとんど一緒ですが、フィールド1(field1)がありません。なぜなら、(アラート通知時に) 実行されたアクションと同じだからです。この例では、cpu-syst モジュールが復旧したということを示す件名のメールを送るだけです。<br><br>
 
@@ -148,7 +148,7 @@ Please contact your <?php echo get_product_name();?> for more information. *DO N
 
 以上で、必要な設定が完了しました。あとは、アラートテンプレートをモジュールに関連づけるだけです。そのためには、エージェントのモジュールのアラートタブへいきます。<br><br>
 
-<?php html_print_image ("images/help/alert12.png", false, array('width' => '550px')); ?>
+<?php html_print_image('images/help/alert12.png', false, ['width' => '550px']); ?>
 
 設定は簡単です。この画面ショットでは、 "Last_Backup_Unixtime" というモジュールに対して、事前に定義した "Module critical" というアラートが設定されています。加えて、ここでは下の画面を操作して、モジュール "cpu-sys" と、アラートテンプレート "Module critical" を関連づけようとしています。デフォルトで、このテンプレートで設定した "Sancho Lerena へメールを送信する" というアクションが表示されています。<br><br>
 
@@ -160,8 +160,8 @@ Please contact your <?php echo get_product_name();?> for more information. *DO N
 
 例えば、最初の障害発生時は XXXXX にメールを送り、障害状態が継続している場合は ZZZZ にメールを送信したい場合があったとします。そのためには、アラートの関連付のあとに、割り当てられたアラートに定義済のアクションを追加することができます。以下に画面ショットを示します。<br><br>
 
-<?php html_print_image ("images/help/alert13.png", false, array('width' => '550px')); ?>
-<?php html_print_image ("images/help/alert14.png", false, array('width' => '550px')); ?>
+<?php html_print_image('images/help/alert13.png', false, ['width' => '550px']); ?>
+<?php html_print_image('images/help/alert14.png', false, ['width' => '550px']); ?>
 
 
 
@@ -173,7 +173,7 @@ Please contact your <?php echo get_product_name();?> for more information. *DO N
 
 <b>メール送信以外のアラートコマンドの利用</b><br><br>
 
-メール送信は、<?php echo get_product_name();?> の内部コマンドであり、フィールド1、フィールド2、フィールド3 はそれぞれメール送信先、件名、本文として使うように定義されており変更することはできません。では、別のアクションを自分で定義したい時はどうすれば良いでしょうか。<br><br>
+メール送信は、<?php echo get_product_name(); ?> の内部コマンドであり、フィールド1、フィールド2、フィールド3 はそれぞれメール送信先、件名、本文として使うように定義されており変更することはできません。では、別のアクションを自分で定義したい時はどうすれば良いでしょうか。<br><br>
 
 この場合は、新たなコマンドの定義画面へ行き、自分で定義を行います。検知したアラートそれぞれのログファイルを作成したいとします。ログファイルのフォーマットは次のようなものを想定します。<br><br>
 
@@ -184,11 +184,11 @@ Please contact your <?php echo get_product_name();?> for more information. *DO N
 
 そのためには、次のようにコマンドの作成へ行きます。<br><br>
 
-<?php html_print_image ("images/help/alert15.png", false, array('width' => '550px')); ?>
+<?php html_print_image('images/help/alert15.png', false, ['width' => '550px']); ?>
 
 そして、アクションを定義します。<br><br>
 
-<?php html_print_image ("images/help/alert16.png", false, array('width' => '550px')); ?>
+<?php html_print_image('images/help/alert16.png', false, ['width' => '550px']); ?>
 
 作成したログを見ると次のようになっています。<br><br>
 
@@ -196,4 +196,4 @@ Please contact your <?php echo get_product_name();?> for more information. *DO N
 
 アラートは、"farscape" エージェントの "cpu_sys" モジュールで、18:17:10 に発生したこと、また、現在のデータは "23.00" であり、アクションで設定した説明が含まれていることがわかります。<br><br>
 
-コマンド実行時に、フィールドやその他がどのように引き渡されて実行されたかは簡単にはわかりません。それを確認する簡単な方法は、pandora サーバの設定ファイル /etc/pandora/pandora_server.conf にて、デバッグトレースを有効にする (verbose 10) ことです。 そして、<?php echo get_product_name();?> サーバがどのようにコマンドを実行しているか確認するには、サーバを再起動し (/etc/init.d/pandora_server restart)、/var/log/pandora/pandora_server.log に出力されている定義されたアラートの実行ログを探します。<br><br>
+コマンド実行時に、フィールドやその他がどのように引き渡されて実行されたかは簡単にはわかりません。それを確認する簡単な方法は、pandora サーバの設定ファイル /etc/pandora/pandora_server.conf にて、デバッグトレースを有効にする (verbose 10) ことです。 そして、<?php echo get_product_name(); ?> サーバがどのようにコマンドを実行しているか確認するには、サーバを再起動し (/etc/init.d/pandora_server restart)、/var/log/pandora/pandora_server.log に出力されている定義されたアラートの実行ログを探します。<br><br>

@@ -824,23 +824,25 @@ if ($update_agent) {
             ]
         );
 
-			# Update the configuration files
-			if ($old_values['intervalo'] != $intervalo) {
-				enterprise_hook(
-					'config_agents_update_config_token',
-					array($id_agente, 'interval', $intervalo)
-				);
-			}
-			if ($old_values['disabled'] != $disabled) {
-				enterprise_hook(
-					'config_agents_update_config_token',
-					array($id_agente, 'standby', $disabled ? "1" : "0")
-				);
-				// Validate alerts for disabled agents.
-				if ($disabled) {
-					alerts_validate_alert_agent($id_agente);
-				}
-			}
+        if ($old_value === false) {
+            // Create custom field if not exist
+            $update_custom = db_process_sql_insert(
+                'tagent_custom_data',
+                [
+                    'id_field'    => $key,
+                    'id_agent'    => $id_agente,
+                    'description' => $value,
+                ]
+            );
+        } else {
+            $update_custom = db_process_sql_update(
+                'tagent_custom_data',
+                ['description' => $value],
+                [
+                    'id_field' => $key,
+                    'id_agent' => $id_agente,
+                ]
+            );
 
             if ($update_custom == 1) {
                     $update_custom_result = 1;
@@ -943,6 +945,10 @@ if ($update_agent) {
                         $disabled ? '1' : '0',
                     ]
                 );
+                // Validate alerts for disabled agents.
+                if ($disabled) {
+                    alerts_validate_alert_agent($id_agente);
+                }
             }
 
             if ($tpolicy_group_old) {

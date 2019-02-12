@@ -63,16 +63,9 @@ if ($update_agents) {
         $values['intervalo'] = get_parameter('interval');
     }
 
-			if ($disabled_old !== false && $disabled_old != $values['disabled']) {
-				enterprise_hook(
-					'config_agents_update_config_token',
-					array($id_agent, 'standby', $values['disabled'])
-				);
-				// Validate alerts for disabled agents.
-				if ($values['disabled'] == 1) {
-					alerts_validate_alert_agent($id_agent);
-				}
-			}
+    if (get_parameter('id_os', '') != -1) {
+        $values['id_os'] = get_parameter('id_os');
+    }
 
     if (get_parameter('id_parent', '') != '') {
         $values['id_parent'] = get_parameter('id_agent_parent', 0);
@@ -212,6 +205,10 @@ if ($update_agents) {
                         $values['disabled'],
                     ]
                 );
+                // Validate alerts for disabled agents.
+                if ($values['disabled'] == 1) {
+                    alerts_validate_alert_agent($id_agent);
+                }
             }
 
             if ($group_old || $result) {

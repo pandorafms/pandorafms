@@ -311,48 +311,54 @@ function modules_copy_agent_module_to_agent($id_agent_module, $id_destiny_agent,
  *
  * @return True if the module was disabled. False if not.
  */
-function modules_change_disabled($id_agent_module, $new_value = 1) {
-	$id_agent_module = (array) $id_agent_module;
-	
-	$id_agent_module_changed = array();
-	
-	foreach ($id_agent_module as $id_module) {
-		// If the module is already disabled/enabled ignore
-		$current_disabled = db_get_value('disabled', 'tagente_modulo',
-			'id_agente_modulo', $id_module);
-		if ($current_disabled == $new_value) {
-			continue;
-		}
+function modules_change_disabled($id_agent_module, $new_value=1)
+{
+    $id_agent_module = (array) $id_agent_module;
 
-		// Validate alerts for disabled modules.
-		if ($new_value == 1) {
-			alerts_validate_alert_module($id_module);
-		}
+    $id_agent_module_changed = [];
 
-		$id_agent_changed[] = modules_get_agentmodule_agent($id_module); 
-		$id_agent_module_changed[] = $id_module;
-	}
-	
-	if (empty($id_agent_module_changed)) {
-		return NOERR;
-	}
-	else {
-		$result = db_process_sql_update('tagente_modulo',
-			array('disabled' => (int) $new_value),
-			array('id_agente_modulo' => $id_agent_module_changed));
-	}
-	
-	if ($result) {
-		// Change the agent flag to update modules count
-		db_process_sql_update('tagente',
-			array('update_module_count' => 1),
-			array('id_agente' => $id_agent_changed));
-		
-		return NOERR;
-	}
-	else {
-		return ERR_GENERIC;
-	}
+    foreach ($id_agent_module as $id_module) {
+        // If the module is already disabled/enabled ignore
+        $current_disabled = db_get_value(
+            'disabled',
+            'tagente_modulo',
+            'id_agente_modulo',
+            $id_module
+        );
+        if ($current_disabled == $new_value) {
+            continue;
+        }
+        // Validate alerts for disabled modules.
+        if ($new_value == 1) {
+            alerts_validate_alert_module($id_module);
+        }
+
+        $id_agent_changed[] = modules_get_agentmodule_agent($id_module);
+        $id_agent_module_changed[] = $id_module;
+    }
+
+    if (empty($id_agent_module_changed)) {
+        return NOERR;
+    } else {
+        $result = db_process_sql_update(
+            'tagente_modulo',
+            ['disabled' => (int) $new_value],
+            ['id_agente_modulo' => $id_agent_module_changed]
+        );
+    }
+
+    if ($result) {
+        // Change the agent flag to update modules count
+        db_process_sql_update(
+            'tagente',
+            ['update_module_count' => 1],
+            ['id_agente' => $id_agent_changed]
+        );
+
+        return NOERR;
+    } else {
+        return ERR_GENERIC;
+    }
 }
 
 

@@ -684,8 +684,16 @@ function notifications_print_global_source_configuration($source)
 
     // Generate the html for title.
     $html_selectors = "<div class='global-config-notification-selectors'>";
-    $html_selectors .= notifications_print_source_select_box(notifications_get_user_sources_for_select($source['id']), 'users', $source['id'], $is_group_all);
-    $html_selectors .= notifications_print_source_select_box($source_groups, 'groups', $source['id'], $is_group_all);
+    $html_selectors .= notifications_print_source_select_box(
+        notifications_get_user_sources_for_select($source['id']),
+        'users',
+        $source['id']
+    );
+    $html_selectors .= notifications_print_source_select_box(
+        $source_groups,
+        'groups',
+        $source['id']
+    );
     $html_selectors .= '</div>';
     // Generate the checkboxes and time select.
     $html_checkboxes = "<div class='global-config-notification-checkboxes'>";
@@ -733,18 +741,16 @@ function notifications_print_global_source_configuration($source)
 /**
  * Print select boxes of notified users or groups
  *
- * @param array   $info_selec All info required for build the selector.
- * @param string  $id         One of users|groups.
- * @param string  $source_id  Id of source.
- * @param boolean $disabled   Disable the selectors.
+ * @param array  $info_selec All info required for build the selector.
+ * @param string $id         One of users|groups.
+ * @param string $source_id  Id of source.
  *
  * @return string HTML with the generated selector
  */
 function notifications_print_source_select_box(
     $info_selec,
     $id,
-    $source_id,
-    $disabled
+    $source_id
 ) {
     $title = ($id === 'users') ? __('Notified users') : __('Notified groups');
     $add_title = ($id === 'users') ? __('Add users') : __('Add groups');
@@ -774,10 +780,7 @@ function notifications_print_source_select_box(
             '',
             '',
             true,
-            true,
-            true,
-            '',
-            $disabled
+            true
         ),
         html_print_image(
             'images/input_add.png',

@@ -412,7 +412,6 @@ config_check();
                 "message": match[1]
             },
             function (data, status) {
-                console.log(data.url)
                 if (!data.result) {
                     console.error("Cannot redirect to URL.");
                     return;

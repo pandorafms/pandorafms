@@ -1267,3 +1267,22 @@ INSERT INTO `tcontainer` SET `name` = 'Default graph container';
 INSERT INTO tlog_graph_models VALUES (1, 'Apache&#x20;log&#x20;model',
 	'^.*?&#92;s+.*&quot;.*?&#92;s&#40;&#92;/.*?&#41;&#92;?.*1.1&quot;&#92;s+&#40;.*?&#41;&#92;s+&#40;.*?&#41;&#92;s+',
 	'pagina,&#x20;html_err_code,&#x20;_tiempo_', 1);
+
+--
+-- Dumping data for table `tnotification_source`
+--
+INSERT INTO `tnotification_source`(`description`, `icon`, `max_postpone_time`, `enabled`, `user_editable`, `also_mail`) VALUES
+  ("System&#x20;status", "icono_info_mr.png", 86400, 1, 1, 0),
+  ("Message", "icono_info_mr.png", 86400, 1, 1, 0),
+  ("Pending&#x20;task", "icono_info_mr.png", 86400, 1, 1, 0),
+  ("Advertisement", "icono_info_mr.png", 86400, 1, 1, 0),
+  ("Official&#x20;communication", "icono_info_mr.png", 86400, 1, 1, 0),
+  ("Sugerence", "icono_info_mr.png", 86400, 1, 1, 0);
+
+-- 
+-- Dumping data for table `tnotification_source_user`
+-- 
+INSERT INTO `tnotification_source_user`(`id_source`,`id_user`,`enabled`,`also_mail`) VALUES
+  ((SELECT `id` FROM `tnotification_source` WHERE `description`="System&#x20;status"), "admin",1,0);
+
+  

@@ -4273,6 +4273,89 @@ div#dialog_messages table th:last-child {
   text-align: right;
 }
 
+/*
+ * ---------------------------------------------------------------------
+ * - Notifications
+ * ---------------------------------------------------------------------
+ */
+
+.notification-ball {
+  border: white solid 2px;
+  border-radius: 50px;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.notification-ball-no-messages {
+  background-color: #82b92e;
+}
+.notification-ball-new-messages {
+  background-color: #fc4444;
+}
+
+.global-config-notification-title {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.global-config-notification-title h2 {
+  margin-left: 10px;
+}
+
+.global-config-notification-checkboxes :first-child {
+  font-weight: bold;
+}
+
+.global-config-notification-selectors {
+  display: flex;
+  flex-direction: row;
+  margin-bottom: 10px;
+}
+
+.global-config-notification-selectors h4 {
+  margin: 0;
+}
+
+.global-config-notification-single-selector,
+.global_config_notifications_dialog_add select {
+  display: flex;
+  width: 100%;
+  padding: 0 10px;
+}
+
+.global-config-notification-single-selector :first-child,
+.global-config-notification-single-selector :first-child select {
+  width: 99%;
+}
+
+.global-config-notification-single-selector :last-child,
+.global_config_notifications_dialog_add_wrapper {
+  flex-direction: column;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.global_config_notifications_dialog_add {
+  display: flex;
+  flex-direction: row;
+  margin: 8px;
+}
+
+.global_config_notifications_two_ways_form_arrows {
+  display: flex;
+  flex-flow: column;
+  justify-content: center;
+  margin: 0 5px;
+}
+
+.global_config_notifications_two_ways_form_arrows img {
+  margin: 15px 0;
+}
+
 /* jQuery dialog */
 .no-close .ui-dialog-titlebar-close {
   display: none;

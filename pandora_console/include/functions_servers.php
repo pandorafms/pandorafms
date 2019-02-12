@@ -1,20 +1,29 @@
 <?php
-
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the  GNU Lesser General Public License
-// as published by the Free Software Foundation; version 2
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-
 /**
- * @package    Include
- * @subpackage Servers
+ * Auxiliary functions to manage servers.
+ *
+ * @category   Library
+ * @package    Pandora FMS
+ * @subpackage Opensource
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
  */
 
 
@@ -920,4 +929,65 @@ function servers_get_status($id_server)
 {
     $serverinfo = servers_get_info($id_server);
     return $serverinfo[$id_server];
+}
+
+
+/**
+ * Return server name based on identifier.
+ *
+ * @param integer $server Server identifier.
+ *
+ * @return string Server name
+ */
+function servers_get_server_string_name(int $server)
+{
+    switch ($server) {
+        case SERVER_TYPE_DATA:
+        return __('Data server');
+
+        case SERVER_TYPE_NETWORK:
+        return __('Network server');
+
+        case SERVER_TYPE_SNMP:
+        return __('SNMP server');
+
+        case SERVER_TYPE_ENTERPRISE_ICMP:
+        return __('Enterprise ICMP server');
+
+        case SERVER_TYPE_ENTERPRISE_SNMP:
+        return __('Enterprise SNMP server');
+
+        case SERVER_TYPE_PLUGIN:
+        return __('Plugin server');
+
+        case SERVER_TYPE_PREDICTION:
+        return __('Prediction Server');
+
+        case SERVER_TYPE_WMI:
+        return __('WMI server');
+
+        case SERVER_TYPE_WEB:
+        return __('Web server');
+
+        case SERVER_TYPE_EXPORT:
+        return __('Export server');
+
+        case SERVER_TYPE_INVENTORY:
+        return __('Inventory server');
+
+        case SERVER_TYPE_EVENT:
+        return __('Event server');
+
+        case SERVER_TYPE_RECON:
+        return __('Discovery server');
+
+        case SERVER_TYPE_SYSLOG:
+        return __('Syslog server');
+
+        case SERVER_TYPE_WUX:
+        return __('WUX server');
+
+        default:
+        return __('N/A');
+    }
 }

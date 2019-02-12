@@ -2991,3 +2991,22 @@ function html_print_csrf_error()
     return true;
 }
 
+
+/**
+ * Print an swith button
+ *
+ * @param  array $atributes. Valid params:
+ *         name: Usefull to handle in forms
+ *         value: If is checked or not
+ * @return string with HTML of button
+ */
+function html_print_switch($attributes=[])
+{
+    $name_html = isset($attributes['name']) ? "name = {$attributes['name']}" : '';
+    $checked_html = (bool) $attributes['value'] ? 'checked' : '';
+    return "<label class='p-switch'>
+			<input type='checkbox' $name_html $checked_html>
+			<span class='p-slider'></span>
+		</label>";
+}
+

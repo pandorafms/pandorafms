@@ -619,10 +619,9 @@ if (! isset($config['id_user'])) {
 
         header('Location: '.$config['homeurl'].'index.php'.$redirect_url);
         exit;
-        // Always exit after sending location headers
-    }
-    // Hash login process
-    else if (isset($_GET['loginhash'])) {
+        // Always exit after sending location headers.
+    } else if (isset($_GET['loginhash'])) {
+        // Hash login process
         $loginhash_data = get_parameter('loginhash_data', '');
         $loginhash_user = str_rot13(get_parameter('loginhash_user', ''));
 
@@ -638,9 +637,8 @@ if (! isset($config['id_user'])) {
 
             exit('</html>');
         }
-    }
-    // There is no user connected
-    else {
+    } else {
+        // There is no user connected.
         if ($config['enterprise_installed']) {
             enterprise_include_once('include/functions_reset_pass.php');
         }
@@ -722,64 +720,55 @@ if (! isset($config['id_user'])) {
                     $show_error = false;
 
                     if (!$first) {
-                        if ($reset) {
-                            if ($user_reset_pass == '') {
+                        if ($user_reset_pass == '') {
+                            $reset = false;
+                            $error = __('Id user cannot be empty');
+                            $show_error = true;
+                        } else {
+                            $check_user = check_user_id($user_reset_pass);
+
+                            if (!$check_user) {
                                 $reset = false;
-                                $error = __('Id user cannot be empty');
+                                register_pass_change_try($user_reset_pass, 0);
+                                $error = __('Error in reset password request');
                                 $show_error = true;
                             } else {
-                                $check_user = check_user_id($user_reset_pass);
+                                $check_mail = check_user_have_mail($user_reset_pass);
 
-                                if (!$check_user) {
+                                if (!$check_mail) {
                                     $reset = false;
                                     register_pass_change_try($user_reset_pass, 0);
-                                    $error = __('Error in reset password request');
+                                    $error = __('This user doesn\'t have a valid email address');
                                     $show_error = true;
                                 } else {
-                                    $check_mail = check_user_have_mail($user_reset_pass);
-
-                                    if (!$check_mail) {
-                                        $reset = false;
-                                        register_pass_change_try($user_reset_pass, 0);
-                                        $error = __('This user doesn\'t have a valid email address');
-                                        $show_error = true;
-                                    } else {
-                                        $mail = $check_mail;
-                                    }
+                                    $mail = $check_mail;
                                 }
                             }
                         }
 
-                        if (!$reset) {
-                            if ($config['enterprise_installed']) {
-                                include_once 'enterprise/include/reset_pass.php';
-                            }
+                        $cod_hash = $user_reset_pass.'::::'.md5(rand(10, 1000000).rand(10, 1000000).rand(10, 1000000));
+
+                        $subject = '['.io_safe_output(get_product_name()).'] '.__('Reset password');
+                        $body = __('This is an automatically sent message for user ');
+                        $body .= ' "<strong>'.$user_reset_pass.'"</strong>';
+                        $body .= '<p />';
+                        $body .= __('Please click the link below to reset your password');
+                        $body .= '<p />';
+                        $body .= '<a href="'.$config['homeurl'].'index.php?reset_hash='.$cod_hash.'">'.__('Reset your password').'</a>';
+                        $body .= '<p />';
+                        $body .= get_product_name();
+                        $body .= '<p />';
+                        $body .= '<em>'.__('Please do not reply to this email.').'</em>';
+
+                        $result = send_email_to_user($mail, $body, $subject);
+
+                        if (!$result) {
+                            $process_error_message = __('Error at sending the email');
                         } else {
-                            $cod_hash = $user_reset_pass.'::::'.md5(rand(10, 1000000).rand(10, 1000000).rand(10, 1000000));
-
-                            $subject = '['.get_product_name().'] '.__('Reset password');
-                            $body = __('This is an automatically sent message for user ');
-                            $body .= ' "<strong>'.$user_reset_pass.'"</strong>';
-                            $body .= '<p />';
-                            $body .= __('Please click the link below to reset your password');
-                            $body .= '<p />';
-                            $body .= '<a href="'.$config['homeurl'].'index.php?reset_hash='.$cod_hash.'">'.__('Reset your password').'</a>';
-                            $body .= '<p />';
-                            $body .= get_product_name();
-                            $body .= '<p />';
-                            $body .= '<em>'.__('Please do not reply to this email.').'</em>';
-
-                            $result = send_email_to_user($mail, $body, $subject);
-
-                            $process_error_message = '';
-                            if (!$result) {
-                                $process_error_message = __('Error at sending the email');
-                            } else {
-                                send_token_to_db($user_reset_pass, $cod_hash);
-                            }
-
-                            include_once 'general/login_page.php';
+                            send_token_to_db($user_reset_pass, $cod_hash);
                         }
+
+                        include_once 'general/login_page.php';
                     } else {
                         include_once 'enterprise/include/reset_pass.php';
                     }
@@ -1363,4 +1352,3 @@ require 'include/php_to_js_values.php';
 if (__PAN_XHPROF__ === 1) {
     pandora_xhprof_display_result('node_index');
 }
-

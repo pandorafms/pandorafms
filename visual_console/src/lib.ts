@@ -1,4 +1,12 @@
-import { Position, Size, UnknownObject } from "./types";
+import {
+  UnknownObject,
+  Position,
+  Size,
+  WithAgentProps,
+  WithModuleProps,
+  LinkedVisualConsoleProps,
+  LinkedVisualConsolePropsStatus
+} from "./types";
 
 /**
  * Return a number or a default value from a raw value.
@@ -57,4 +65,108 @@ export function sizePropsDecoder(data: UnknownObject): Size | never {
     width: parseInt(data.width),
     height: parseInt(data.height)
   };
+}
+
+/**
+ * Build a valid typed object from a raw object.
+ * @param data Raw object.
+ * @return An object representing the agent properties.
+ */
+export function agentPropsDecoder(data: UnknownObject): WithAgentProps {
+  // Object destructuring: http://exploringjs.com/es6/ch_destructuring.html
+  const { metaconsoleId, agentId: id, agentName: name } = data;
+
+  const agentProps: WithAgentProps = {
+    agentId: parseIntOr(id, null),
+    agentName: typeof name === "string" && name.length > 0 ? name : null
+  };
+
+  return metaconsoleId != null
+    ? {
+        metaconsoleId,
+        ...agentProps // Object spread: http://exploringjs.com/es6/ch_parameter-handling.html#sec_spread-operator
+      }
+    : agentProps;
+}
+
+/**
+ * Build a valid typed object from a raw object.
+ * @param data Raw object.
+ * @return An object representing the module and agent properties.
+ */
+export function modulePropsDecoder(data: UnknownObject): WithModuleProps {
+  // Object destructuring: http://exploringjs.com/es6/ch_destructuring.html
+  const { moduleId: id, moduleName: name } = data;
+
+  return {
+    moduleId: parseIntOr(id, null),
+    moduleName: typeof name === "string" && name.length > 0 ? name : null,
+    ...agentPropsDecoder(data)
+  };
+}
+
+/**
+ * Build a valid typed object from a raw object.
+ * @param data Raw object.
+ * @return An object representing the linked visual console properties.
+ * @throws Will throw a TypeError if the status calculation properties are invalid.
+ */
+export function linkedVCPropsDecoder(
+  data: UnknownObject
+): LinkedVisualConsoleProps | never {
+  // Object destructuring: http://exploringjs.com/es6/ch_destructuring.html
+  const {
+    metaconsoleId,
+    linkedLayoutId: id,
+    linkedLayoutAgentId: agentId
+  } = data;
+
+  let linkedLayoutStatusProps: LinkedVisualConsolePropsStatus = {
+    linkedLayoutStatusType: "default"
+  };
+  switch (data.linkedLayoutStatusType) {
+    case "weight":
+      const weight = parseIntOr(data.linkedLayoutStatusTypeWeight, null);
+      if (weight == null)
+        throw new TypeError("invalid status calculation properties.");
+
+      if (data.linkedLayoutStatusTypeWeight)
+        linkedLayoutStatusProps = {
+          linkedLayoutStatusType: "weight",
+          linkedLayoutStatusTypeWeight: weight
+        };
+      break;
+    case "service":
+      const warningThreshold = parseIntOr(
+        data.linkedLayoutStatusTypeWarningThreshold,
+        null
+      );
+      const criticalThreshold = parseIntOr(
+        data.linkedLayoutStatusTypeCriticalThreshold,
+        null
+      );
+      if (warningThreshold == null || criticalThreshold == null) {
+        throw new TypeError("invalid status calculation properties.");
+      }
+
+      linkedLayoutStatusProps = {
+        linkedLayoutStatusType: "service",
+        linkedLayoutStatusTypeWarningThreshold: warningThreshold,
+        linkedLayoutStatusTypeCriticalThreshold: criticalThreshold
+      };
+      break;
+  }
+
+  const linkedLayoutBaseProps = {
+    linkedLayoutId: parseIntOr(id, null),
+    linkedLayoutAgentId: parseIntOr(agentId, null),
+    ...linkedLayoutStatusProps // Object spread: http://exploringjs.com/es6/ch_parameter-handling.html#sec_spread-operator
+  };
+
+  return metaconsoleId != null
+    ? {
+        metaconsoleId,
+        ...linkedLayoutBaseProps // Object spread: http://exploringjs.com/es6/ch_parameter-handling.html#sec_spread-operator
+      }
+    : linkedLayoutBaseProps;
 }

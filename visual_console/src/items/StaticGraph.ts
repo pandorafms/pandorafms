@@ -4,6 +4,8 @@ import {
   UnknownObject
 } from "../types";
 
+import { modulePropsDecoder } from "../lib";
+
 import VisualConsoleItem, {
   VisualConsoleItemProps,
   itemPropsDecoder
@@ -49,7 +51,8 @@ export function staticGraphPropsDecoder(
   return {
     imageSrc: data.imageSrc,
     showLastValueTooltip: parseShowLastValueTooltip(data.showLastValueTooltip),
-    ...itemPropsDecoder(data) // Object spread. It will merge the properties of the two objects.
+    ...itemPropsDecoder(data), // Object spread. It will merge the properties of the two objects.
+    ...modulePropsDecoder(data) // Object spread. It will merge the properties of the two objects.
   };
 }
 

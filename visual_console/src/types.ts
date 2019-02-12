@@ -23,11 +23,7 @@ export interface WithModuleProps extends WithAgentProps {
   moduleName: string | null;
 }
 
-export type LinkedVisualConsoleProps = {
-  metaconsoleId?: number | null;
-  linkedLayoutId: number | null;
-  linkedLayoutAgentId: number | null;
-} & (
+export type LinkedVisualConsolePropsStatus =
   | {
       linkedLayoutStatusType: "default";
     }
@@ -39,4 +35,9 @@ export type LinkedVisualConsoleProps = {
       linkedLayoutStatusType: "service";
       linkedLayoutStatusTypeWarningThreshold: number;
       linkedLayoutStatusTypeCriticalThreshold: number;
-    });
+    };
+export type LinkedVisualConsoleProps = {
+  metaconsoleId?: number | null;
+  linkedLayoutId: number | null;
+  linkedLayoutAgentId: number | null;
+} & LinkedVisualConsolePropsStatus;

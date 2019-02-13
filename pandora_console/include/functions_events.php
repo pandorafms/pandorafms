@@ -2622,8 +2622,8 @@ function events_has_extended_info(int $id_event)
 {
     return (bool) db_get_value_sql(
         sprintf(
-            'SELECT count(*) FROM (
-                SELECT * as "n"
+            'SELECT count(*) as "n" FROM (
+                SELECT *
                 FROM tevent_extended WHERE id_evento=%d LIMIT 1) t',
             $id_event
         )

@@ -170,6 +170,7 @@ config_check();
                 if (!isset($_GET['refr'])) {
                     $_GET['refr'] = null;
                 }
+
                 $select = db_process_sql("SELECT autorefresh_white_list,time_autorefresh FROM tusuario WHERE id_user = '".$config['id_user']."'");
                 $autorefresh_list = json_decode($select[0]['autorefresh_white_list']);
 
@@ -416,8 +417,6 @@ config_check();
         toast_div.appendChild(toast_text);
         toast.appendChild(toast_div);
 
-        console.log(toast);
-
         // Show and program the hide event.
         toast_div.className = toast_div.className + ' show';
         setTimeout(function(){
@@ -478,7 +477,7 @@ config_check();
                     data.new_notifications.forEach(function(ele) {
                         toast_wrapper.appendChild(
                             print_toast(
-                                ele.description,
+                                ele.subject,
                                 ele.mensaje,
                                 ele.criticity,
                                 ele.full_url,

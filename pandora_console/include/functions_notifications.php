@@ -978,7 +978,7 @@ function notifications_print_dropdown_element($message_info)
             href='%s'
             target='_blank'
         >
-            <img src='%s'>
+            %s
             <div class='notification-info'>
                 <h4 class='notification-title'>
                     %s
@@ -991,7 +991,7 @@ function notifications_print_dropdown_element($message_info)
         $message_info['id_mensaje'],
         messages_get_url($message_info['id_mensaje']),
         html_print_image('images/'.$message_info['icon'], true),
-        $message_info['description'],
-        $message_info['mensaje']
+        $message_info['subject'],
+        str_replace([io_safe_input('<br>')], ' ', $message_info['mensaje'])
     );
 }

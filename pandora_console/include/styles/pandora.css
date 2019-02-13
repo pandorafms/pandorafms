@@ -4292,7 +4292,7 @@ div#dialog_messages table th:last-child {
 
 .notification-ball-no-messages {
   background-color: #82b92e;
-  cursor: inherit;
+  cursor: pointer;
 }
 .notification-ball-new-messages {
   background-color: #fc4444;
@@ -4342,6 +4342,7 @@ div#dialog_messages table th:last-child {
   display: flex;
   flex-flow: row nowrap;
   align-items: center;
+  padding: 5px;
 }
 .notification-item > * {
   padding-left: 15px;
@@ -4754,6 +4755,7 @@ input:checked + .p-slider:before {
   border-radius: 4px;
   visibility: hidden;
   pointer-events: all;
+  transition: visibility 0s 1s;
 }
 
 .snackbar.show {

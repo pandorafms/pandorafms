@@ -3902,13 +3902,16 @@ function visual_map_translate_agent_status($agent_status)
 {
     switch ($agent_status) {
         case AGENT_STATUS_NORMAL:
+        case AGENT_MODULE_STATUS_NORMAL_ALERT:
         default:
         return VISUAL_MAP_STATUS_NORMAL;
 
         case AGENT_STATUS_CRITICAL:
+        case AGENT_MODULE_STATUS_CRITICAL_ALERT:
         return VISUAL_MAP_STATUS_CRITICAL_BAD;
 
         case AGENT_STATUS_WARNING:
+        case AGENT_MODULE_STATUS_WARNING_ALERT:
         return VISUAL_MAP_STATUS_WARNING;
 
         case AGENT_STATUS_NOT_INIT:

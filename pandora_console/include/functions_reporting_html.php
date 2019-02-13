@@ -3104,6 +3104,16 @@ function reporting_html_general($table, $item, $pdf=0)
 
                     // End - Order by agent.
                     foreach ($item['data'] as $row) {
+                        if ($row['id_module_type'] == 6 || $row['id_module_type'] == 9 || $row['id_module_type'] == 18 || $row['id_module_type'] == 2) {
+                            $row['formated_value'] = round($row['formated_value'], 0, PHP_ROUND_HALF_DOWN);
+                        }
+
+                        if (($row['id_module_type'] == 6 || $row['id_module_type'] == 9 || $row['id_module_type'] == 18 || $row['id_module_type'] == 2) && $row['formated_value'] == 1) {
+                            $row['formated_value'] = 'Up';
+                        } else if (($row['id_module_type'] == 6 || $row['id_module_type'] == 9 || $row['id_module_type'] == 18 || $row['id_module_type'] == 2) && $row['formated_value'] == 0) {
+                            $row['formated_value'] = 'Down';
+                        }
+
                         if ($item['date']['period'] != 0) {
                             $table1->data[] = [
                                 $row['agent'],
@@ -3165,13 +3175,11 @@ function reporting_html_general($table, $item, $pdf=0)
                 }
 
                 $list_modules = array_keys($list_modules);
-
                 $table1->width = '99%';
                 $table1->data = [];
                 $table1->head = array_merge([__('Agent')], $list_modules);
                 foreach ($item['data'] as $agent => $modules) {
                     $row = [];
-
                     $row['agent'] = $agent;
                     $table1->style['agent'] = 'text-align: center;';
                     foreach ($list_modules as $name) {

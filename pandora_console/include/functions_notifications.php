@@ -713,6 +713,7 @@ function notifications_print_global_source_configuration($source)
 
     // Generate the select with the time.
     $html_select_pospone = __('Users can postpone notifications up to');
+    // FIXMEit should not be disabled.
     $html_select_pospone .= html_print_select(
         [
             SECONDS_5MINUTES               => __('5 minutes'),
@@ -732,7 +733,8 @@ function notifications_print_global_source_configuration($source)
         true,
         false,
         true,
-        'elem-changeable'
+        'elem-changeable',
+        true,
     );
 
     // Return all html.

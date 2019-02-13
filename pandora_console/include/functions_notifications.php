@@ -938,12 +938,14 @@ function notifications_print_dropdown()
 
     return sprintf(
         "<div id='notification-wrapper'>
-            %s
+            <div id='notification-wrapper-inner'>
+                %s
             </div>
-            <div
-                id='notification-wrapper-shadow'
-                onclick='notifications_hide()'
-            >
+        </div>
+        <div
+            id='notification-wrapper-shadow'
+            onclick='notifications_hide()'
+        >
         </div>
         ",
         array_reduce(

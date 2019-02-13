@@ -4305,8 +4305,6 @@ div#dialog_messages table th:last-child {
   position: absolute;
   width: 400px;
   margin-top: -5px;
-  max-height: 78%;
-  overflow: auto;
 }
 #notification-wrapper::before {
   content: "";
@@ -4322,6 +4320,10 @@ div#dialog_messages table th:last-child {
   left: calc(78% - 2px);
   margin-left: -12px;
   border-bottom-color: white;
+}
+#notification-wrapper-inner {
+  max-height: 400px;
+  overflow: auto;
 }
 #notification-wrapper-shadow {
   height: 100%;

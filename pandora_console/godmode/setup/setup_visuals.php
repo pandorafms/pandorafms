@@ -75,7 +75,7 @@ $table_behaviour->data[$row][1] = html_print_select($values, 'vc_refr', $config[
 $row++;
 
 $table_behaviour->data[$row][0] = __('Paginated module view');
-$table_behaviour->data[$row][1] = html_print_checkbox(
+$table_behaviour->data[$row][1] = html_print_checkbox_toogle_switch(
     'paginate_module',
     1,
     $config['paginate_module'],
@@ -84,7 +84,7 @@ $table_behaviour->data[$row][1] = html_print_checkbox(
 $row++;
 
 $table_behaviour->data[$row][0] = __('Display data of proc modules in other format');
-$table_behaviour->data[$row][1] = html_print_checkbox(
+$table_behaviour->data[$row][1] = html_print_checkbox_toogle_switch(
     'render_proc',
     1,
     $config['render_proc'],
@@ -102,7 +102,7 @@ $row++;
 
 // Daniel maya 02/06/2016 Display menu with click --INI
 $table_behaviour->data[$row][0] = __('Click to display lateral menus').ui_print_help_tip(__('When enabled, the lateral menus are shown when left clicking them, instead of hovering over them'), true);
-$table_behaviour->data[$row][1] = html_print_checkbox(
+$table_behaviour->data[$row][1] = html_print_checkbox_toogle_switch(
     'click_display',
     1,
     $config['click_display'],
@@ -121,7 +121,7 @@ if (enterprise_installed()) {
 }
 
 $table_behaviour->data[$row][0] = __('Classic menu mode').ui_print_help_tip(__('Text menu options always visible, don\'t hide'), true);
-$table_behaviour->data[$row][1] = html_print_checkbox(
+$table_behaviour->data[$row][1] = html_print_checkbox_toogle_switch(
     'classic_menu',
     1,
     $config['classic_menu'],
@@ -491,7 +491,7 @@ if (enterprise_installed()) {
 
 if (enterprise_installed()) {
     $table_styles->data[$row][0] = __('Disable logo in graphs');
-    $table_styles->data[$row][1] = html_print_checkbox(
+    $table_styles->data[$row][1] = html_print_checkbox_toogle_switch(
         'fixed_graph',
         1,
         $config['fixed_graph'],
@@ -507,7 +507,7 @@ if (enterprise_installed()) {
     */
 
 $table_styles->data[$row][0] = __('Disable helps');
-$table_styles->data[$row][1] = html_print_checkbox(
+$table_styles->data[$row][1] = html_print_checkbox_toogle_switch(
     'disable_help',
     1,
     $config['disable_help'],
@@ -516,7 +516,7 @@ $table_styles->data[$row][1] = html_print_checkbox(
 $row++;
 
 $table_styles->data[$row][0] = __('Fixed header');
-$table_styles->data[$row][1] = html_print_checkbox(
+$table_styles->data[$row][1] = html_print_checkbox_toogle_switch(
     'fixed_header',
     1,
     $config['fixed_header'],
@@ -525,7 +525,7 @@ $table_styles->data[$row][1] = html_print_checkbox(
 $row++;
 
 $table_styles->data[$row][0] = __('Fixed menu');
-$table_styles->data[$row][1] = html_print_checkbox(
+$table_styles->data[$row][1] = html_print_checkbox_toogle_switch(
     'fixed_menu',
     1,
     $config['fixed_menu'],
@@ -535,7 +535,7 @@ $row++;
 
 // For 5.1 Autohidden menu feature
 $table_styles->data['autohidden'][0] = __('Autohidden menu');
-$table_styles->data['autohidden'][1] = html_print_checkbox(
+$table_styles->data['autohidden'][1] = html_print_checkbox_toogle_switch(
     'autohidden_menu',
     1,
     $config['autohidden_menu'],
@@ -543,12 +543,13 @@ $table_styles->data['autohidden'][1] = html_print_checkbox(
 );
 
 $table_styles->data[$row][0] = __('Visual effects and animation');
-$table_styles->data[$row][1] = html_print_checkbox(
+$table_styles->data[$row][1] = html_print_checkbox_toogle_switch(
     'visual_animation',
     1,
     $config['visual_animation'],
     true
 );
+
 
 echo '<fieldset>';
 echo '<legend>'.__('Style configuration').'</legend>';
@@ -566,7 +567,7 @@ $table_gis->size[0] = '50%';
 $table_gis->data = [];
 
 $table_gis->data[$row][0] = __('GIS Labels').ui_print_help_tip(__('This enabling this, you get a label with agent name in GIS maps. If you have lots of agents in the map, will be unreadable. Disabled by default.'), true);
-$table_gis->data[$row][1] = html_print_checkbox(
+$table_gis->data[$row][1] = html_print_checkbox_toogle_switch(
     'gis_label',
     1,
     $config['gis_label'],
@@ -679,7 +680,7 @@ $table_font->data[$row][1] = html_print_input_text(
 $row++;
 
 $table_font->data[$row][0] = __('Show unit along with value in reports').ui_print_help_tip(__('This enabling this, max, min and avg values will be shown with units.'), true);
-$table_font->data[$row][1] = html_print_checkbox(
+$table_font->data[$row][1] = html_print_checkbox_toogle_switch(
     'simple_module_value',
     1,
     $config['simple_module_value'],
@@ -777,7 +778,7 @@ $table_chars->data[$row][1] = html_print_input_text(
 $row++;
 
 $table_chars->data[$row][0] = __('Use round corners');
-$table_chars->data[$row][1] = html_print_checkbox(
+$table_chars->data[$row][1] = html_print_checkbox_toogle_switch(
     'round_corner',
     1,
     $config['round_corner'],
@@ -946,7 +947,7 @@ $table_other->data[$row][0] = __('Show report info with description').ui_print_h
     __('Custom report description info. It will be applied to all reports and templates by default.'),
     true
 );
-$table_other->data[$row][1] = html_print_checkbox(
+$table_other->data[$row][1] = html_print_checkbox_toogle_switch(
     'custom_report_info',
     1,
     $config['custom_report_info'],
@@ -966,6 +967,7 @@ $table_other->data[$row][1] = html_print_checkbox(
     $config['custom_report_front'],
     true
 );
+
 $row++;
 // ----------------------------------------------------------------------
 $dirItems = scandir($config['homedir'].'/images/custom_logo');
@@ -1059,7 +1061,7 @@ $table_other->data['custom_report_front-footer'][1] = html_print_textarea(
 
 
 $table_other->data[$row][0] = __('Show QR Code icon in the header');
-$table_other->data[$row][1] = html_print_checkbox(
+$table_other->data[$row][1] = html_print_checkbox_toogle_switch(
     'show_qr_code_header',
     1,
     $config['show_qr_code_header'],
@@ -1097,7 +1099,7 @@ $table_other->data[$row][0] .= ui_print_help_tip(
     __('Show the group name instead the group icon.'),
     true
 );
-$table_other->data[$row][1] = html_print_checkbox(
+$table_other->data[$row][1] = html_print_checkbox_toogle_switch(
     'show_group_name',
     1,
     $config['show_group_name'],
@@ -1440,6 +1442,7 @@ $(document).ready (function () {
             .prop('checked');
         display_custom_report_front(custom_report,$(this).parent().parent().parent().parent().attr('id'));
     });
+    $(".databox.filters").css('margin-bottom','-10px');
 });
 
 // Change the favicon preview when is changed

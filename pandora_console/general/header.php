@@ -57,7 +57,7 @@ config_check();
                 $table->cellspacing = 0;
                 $table->head = [];
                 $table->data = [];
-                $table->style[0] = $table->style['clippy'] = $table->style[1] = $table->style[3] = $table->style[4] = $table->style[5] = $table->style[6] = $table->style[8] = $table->style[9] = $table->style['qr'] = $table->style['notifications'] = 'width: 22px; text-align:center; height: 22px; padding-right: 9px;padding-left: 9px;';
+                $table->style['clippy'] = $table->style[1] = $table->style[4] = $table->style[5] = $table->style[6] = $table->style[8] = $table->style[9] = $table->style['qr'] = $table->style['notifications'] = 'width: 22px; text-align:center; height: 22px; padding-right: 9px;padding-left: 9px;';
                 $table->style[7] = 'width: 20px; padding-right: 9px;';
                 $table->style['searchbar'] = 'width: 180px; min-width: 180px;';
                 $table->style[11] = 'padding-left: 10px; padding-right: 5px;width: 16px;';
@@ -110,27 +110,6 @@ config_check();
                 $table->data[0]['searchbar'] = $search_bar;
             }
 
-                // Servers check
-                $servers = [];
-                $servers['all'] = (int) db_get_value('COUNT(id_server)', 'tserver');
-                $servers['up'] = (int) servers_check_status();
-                $servers['down'] = ($servers['all'] - $servers['up']);
-            if ($servers['up'] == 0) {
-                // All Servers down or no servers at all
-                $servers_check_img = html_print_image('images/header_down.png', true, ['alt' => 'cross', 'class' => 'bot', 'title' => __('All systems').': '.__('Down')]);
-            } else if ($servers['down'] != 0) {
-                // Some servers down
-                $servers_check_img = html_print_image('images/header_warning.png', true, ['alt' => 'error', 'class' => 'bot', 'title' => $servers['down'].' '.__('servers down')]);
-            } else {
-                // All servers up
-                $servers_check_img = html_print_image('images/header_ready.png', true, ['alt' => 'ok', 'class' => 'bot', 'title' => __('All systems').': '.__('Ready')]);
-            }
-
-                unset($servers);
-            // Since this is the header, we don't like to trickle down variables.
-                $servers_link_open = '<a class="white" href="index.php?sec=gservers&amp;sec2=godmode/servers/modificar_server&amp;refr=60">';
-                $servers_link_close = '</a>';
-
             if ($config['show_qr_code_header'] == 0) {
                 $show_qr_code_header = 'display: none;';
             } else {
@@ -174,12 +153,6 @@ config_check();
                         ]
                     ).'</a>';
                 }
-
-
-                $table->data[0][0] = $servers_link_open.$servers_check_img.$servers_link_close;
-
-
-
 
                 // ======= Autorefresh code =============================
                 $autorefresh_txt = '';
@@ -255,42 +228,6 @@ config_check();
                 // ======================================================
                 $pandora_management = check_acl($config['id_user'], 0, 'PM');
 
-                echo '<div id="alert_messages" style="display: none"></div>';
-
-                if ($config['alert_cnt'] > 0) {
-                    $maintenance_link = 'javascript:';
-                    $maintenance_title = __('System alerts detected - Please fix as soon as possible');
-                    $maintenance_class = $maintenance_id = 'show_systemalert_dialog white';
-
-                    $maintenance_link_open_txt = '<a href="'.$maintenance_link.'" title="'.$maintenance_title.'" class="'.$maintenance_class.'" id="show_systemalert_dialog">';
-                    $maintenance_link_open_img = '<a href="'.$maintenance_link.'" title="'.$maintenance_title.'" class="'.$maintenance_class.'">';
-                    $maintenance_link_close = '</a>';
-                    if (!$pandora_management) {
-                        $maintenance_img = '';
-                    } else {
-                        $maintenance_img = $maintenance_link_open_img.html_print_image(
-                            'images/header_yellow.png',
-                            true,
-                            [
-                                'title' => __(
-                                    'You have %d warning(s)',
-                                    $config['alert_cnt']
-                                ),
-                                'id'    => 'yougotalert',
-                                'class' => 'bot',
-                            ]
-                        ).$maintenance_link_close;
-                    }
-                } else {
-                    if (!$pandora_management) {
-                        $maintenance_img = '';
-                    } else {
-                        $maintenance_img = html_print_image('images/header_ready.png', true, ['title' => __('There are not warnings'), 'id' => 'yougotalert', 'class' => 'bot']);
-                    }
-                }
-
-                $table->data[0][3] = $maintenance_img;
-
                 // Main help icon
                 if (!$config['disable_help']) {
                     $table->data[0][4] = '<a href="#" class="modalpopup" id="helpmodal">'.html_print_image(
@@ -332,16 +269,6 @@ config_check();
                 $table->data[0][8] .= html_print_image('images/header_chat.png', true, ['title' => __('New chat message')]);
                 $table->data[0][8] .= '</a>';
                 $table->data[0][8] .= '</span>';
-
-                // Messages
-                $msg_cnt = messages_get_count($config['id_user']);
-                if ($msg_cnt > 0) {
-                    echo '<div id="dialog_messages" style="display: none"></div>';
-
-                    $table->data[0][9] = '<a href="ajax.php?page=operation/messages/message_list" title="'.__('Message overview').'" id="show_messages_dialog">';
-                    $table->data[0][9] .= html_print_image('images/header_email.png', true, ['title' => __('You have %d unread message(s)', $msg_cnt), 'id' => 'yougotmail', 'class' => 'bot', 'style' => 'width:24px;']);
-                    $table->data[0][9] .= '</a>';
-                }
 
                 html_print_table($table);
 
@@ -644,33 +571,12 @@ config_check();
         $("#ui_close_dialog_titlebar").click(function () {
             $("#agent_access").css("display","");
         });
-        
-        function blinkmail(){
-            $("#yougotmail").delay(100).fadeTo(300,0.2).delay(100).fadeTo(300,1, blinkmail);
-        }
-        function blinkalert(){
-            $("#yougotalert").delay(100).fadeTo(300,0.2).delay(100).fadeTo(300,1, blinkalert);
-        }
+
         function blinkpubli(){
             $(".publienterprise").delay(100).fadeTo(300,0.2).delay(100).fadeTo(300,1, blinkpubli);
         }
-        <?php
-        if ($msg_cnt > 0) {
-            ?>
-            blinkmail();
-            <?php
-        }
-        ?>
-        
-        
-        <?php
-        if ($config['alert_cnt'] > 0) {
-            ?>
-            blinkalert();
-            <?php
-        }
-        ?>
-            blinkpubli();
+
+        blinkpubli();
 
         <?php
         if ($_GET['refr']) {

@@ -9,9 +9,9 @@
 What source to use for the time. This can be (for now) either the local system (System) or database (Database).<br />
 </p>
 <p>
-This is useful when your database is not on the same system as your webserver or your <?php echo get_product_name();?> servers. 
+This is useful when your database is not on the same system as your webserver or your <?php echo get_product_name(); ?> servers. 
 In that case any time difference will miscalculate the time differences and timestamps.
-You should use NTP to sync all your <?php echo get_product_name();?> servers and your MySQL server. 
+You should use NTP to sync all your <?php echo get_product_name(); ?> servers and your MySQL server. 
 By using these preferences you don't have to sync your webserver but it's still recommended.
 </p>
 <p>
@@ -30,28 +30,31 @@ var unixtime = parseInt(unixtime_ms / 1000);
 </p>
 <p>
 <?php
-$option = array ("prominent" => "timestamp");
+$option = ['prominent' => 'timestamp'];
 ?>
-<b>Current System time:</b> <?php ui_print_timestamp (time (), false, $option); ?>
+<b>Current System time:</b> <?php ui_print_timestamp(time(), false, $option); ?>
 <br />
 <b>Current Database time:</b>
 <?php
 global $config;
 
-switch ($config["dbtype"]) {
-	case "mysql":
-		$timestamp = db_process_sql("SELECT UNIX_TIMESTAMP();");
-		$timestamp = $timestamp[0]['UNIX_TIMESTAMP()'];
-		break;
-	case "postgresql":
-		$timestamp = db_get_value_sql("SELECT ceil(date_part('epoch', CURRENT_TIMESTAMP));");
-		break;
-	case "oracle":
-		$timestamp = db_process_sql("SELECT ceil((sysdate - to_date('19700101000000','YYYYMMDDHH24MISS')) * (86400)) as dt FROM dual");
-		$timestamp = $timestamp[0]['dt'];
-		break;
+switch ($config['dbtype']) {
+    case 'mysql':
+        $timestamp = db_process_sql('SELECT UNIX_TIMESTAMP();');
+        $timestamp = $timestamp[0]['UNIX_TIMESTAMP()'];
+    break;
+
+    case 'postgresql':
+        $timestamp = db_get_value_sql("SELECT ceil(date_part('epoch', CURRENT_TIMESTAMP));");
+    break;
+
+    case 'oracle':
+        $timestamp = db_process_sql("SELECT ceil((sysdate - to_date('19700101000000','YYYYMMDDHH24MISS')) * (86400)) as dt FROM dual");
+        $timestamp = $timestamp[0]['dt'];
+    break;
 }
-ui_print_timestamp ($timestamp, false, $option);
+
+ui_print_timestamp($timestamp, false, $option);
 ?>
 <br />
 <b>Your browser time:</b> <script type="text/javascript">document.write (date);</script>

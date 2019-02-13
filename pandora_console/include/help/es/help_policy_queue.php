@@ -1,7 +1,7 @@
 <?php
 /*
-* @packafe Include/help/es/
-*/
+ * @packafe Include/help/es/
+ */
 ?>
 
 <h1>Cola</h1>

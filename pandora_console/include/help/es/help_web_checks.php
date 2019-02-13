@@ -6,7 +6,7 @@
 <h1>Monitorización WEB </h1>
 
 <p>
-La monitorización WEB avanzada es una funcionalidad que realiza el Servidor WEB de Goliat en la versión Enterprise de <?php echo get_product_name();?>.
+La monitorización WEB avanzada es una funcionalidad que realiza el Servidor WEB de Goliat en la versión Enterprise de <?php echo get_product_name(); ?>.
 
 <br><br>
 Este es un ejemplo del modulo Webcheck de GOLIAT:

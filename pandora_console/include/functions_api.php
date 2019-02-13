@@ -472,11 +472,12 @@ function api_get_module_last_value($idAgentModule, $trash1, $other=';', $returnT
     DB column mapping table used by tree_agents (and get module_properties)
 */
 
-// agent related field mappings (output field => column designation for 'tagente')
+/*
+ * Agent related field mappings (output field => column designation for 'tagente').
+ * agent_id is not in this list (because it is mandatory).
+ * agent_id_group is not in this list.
+ */
 $agent_field_column_mapping = [
-    /*
-        agent_id is not in this list (because it is mandatory) */
-    // agent_id_group is not in this list
     'agent_name'                      => 'nombre as agent_name',
     'agent_direction'                 => 'direccion as agent_direction',
     'agent_comentary'                 => 'comentarios as agent_comentary',
@@ -496,8 +497,8 @@ $agent_field_column_mapping = [
 ];
 
 // module related field mappings 1/2 (output field => column for 'tagente_modulo')
+// module_id_agent_modulo  is not in this list
 $module_field_column_mampping = [
-    // module_id_agent_modulo  is not in this list
     'module_id_agent'          => 'id_agente as module_id_agent',
     'module_id_module_type'    => 'id_tipo_modulo as module_id_module_type',
     'module_description'       => 'descripcion as module_description',
@@ -541,8 +542,8 @@ $module_field_column_mampping = [
 ];
 
 // module related field mappings 2/2 (output field => column for 'tagente_estado')
+// module_id_agent_modulo  is not in this list
 $estado_fields_to_columns_mapping = [
-    // module_id_agent_modulo  is not in this list
     'module_id_agent_state'     => 'id_agente_estado as module_id_agent_state',
     'module_data'               => 'datos as module_data',
     'module_timestamp'          => 'timestamp as module_timestamp',

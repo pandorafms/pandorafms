@@ -2629,21 +2629,6 @@ function reporting_html_availability_graph(&$table, $item, $pdf=0)
 }
 
 
-function get_agent_first_time($agent_name)
-{
-    $id = agents_get_agent_id($agent_name, true);
-
-    $utimestamp = db_get_all_rows_sql(
-        'SELECT utimestamp FROM tagente_datos WHERE id_agente_modulo IN 
-		(SELECT id_agente_modulo FROM tagente_modulo WHERE id_agente = '.$id.')
-		ORDER BY utimestamp ASC LIMIT 1'
-    );
-    $utimestamp = $utimestamp[0]['utimestamp'];
-
-    return $utimestamp;
-}
-
-
 function reporting_html_general(&$table, $item)
 {
     if (!empty($item['data'])) {
@@ -2676,6 +2661,16 @@ function reporting_html_general(&$table, $item)
 
                     // End - Order by agent
                     foreach ($item['data'] as $row) {
+                        if ($row['id_module_type'] == 6 || $row['id_module_type'] == 9 || $row['id_module_type'] == 18 || $row['id_module_type'] == 2) {
+                            $row['formated_value'] = round($row['formated_value'], 0, PHP_ROUND_HALF_DOWN);
+                        }
+
+                        if (($row['id_module_type'] == 6 || $row['id_module_type'] == 9 || $row['id_module_type'] == 18 || $row['id_module_type'] == 2) && $row['formated_value'] == 1) {
+                            $row['formated_value'] = 'Up';
+                        } else if (($row['id_module_type'] == 6 || $row['id_module_type'] == 9 || $row['id_module_type'] == 18 || $row['id_module_type'] == 2) && $row['formated_value'] == 0) {
+                            $row['formated_value'] = 'Down';
+                        }
+
                         if ($item['date']['period'] != 0) {
                             $table1->data[] = [
                                 $row['agent'],
@@ -2738,13 +2733,11 @@ function reporting_html_general(&$table, $item)
                 }
 
                 $list_modules = array_keys($list_modules);
-
                 $table1->width = '99%';
                 $table1->data = [];
                 $table1->head = array_merge([__('Agent')], $list_modules);
                 foreach ($item['data'] as $agent => $modules) {
                     $row = [];
-
                     $row['agent'] = $agent;
                     $table1->style['agent'] = 'text-align: center;';
                     foreach ($list_modules as $name) {
@@ -2801,6 +2794,21 @@ function reporting_html_general(&$table, $item)
         $table->colspan['summary_table']['cell'] = 3;
         $table->data['summary_table']['cell'] = html_print_table($table_summary, true);
     }
+}
+
+
+function get_agent_first_time($agent_name)
+{
+    $id = agents_get_agent_id($agent_name, true);
+
+    $utimestamp = db_get_all_rows_sql(
+        'SELECT utimestamp FROM tagente_datos WHERE id_agente_modulo IN 
+		(SELECT id_agente_modulo FROM tagente_modulo WHERE id_agente = '.$id.')
+		ORDER BY utimestamp ASC LIMIT 1'
+    );
+    $utimestamp = $utimestamp[0]['utimestamp'];
+
+    return $utimestamp;
 }
 
 

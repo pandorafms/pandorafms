@@ -4346,6 +4346,10 @@ div#dialog_messages table th:last-child {
   pointer-events: none;
 }
 
+.notification-item:hover {
+  text-decoration: none;
+}
+
 .notification-info {
   width: 87%;
   display: flex;

@@ -102,6 +102,18 @@ if (get_parameter('check_new_notifications', 0)) {
         return;
     }
 
+    $messages = messages_get_overview(
+        'timestamp',
+        'ASC',
+        false,
+        true,
+        0,
+        ['id_mensaje' => '>'.$last_id_ui]
+    );
+    if ($messages === false) {
+        $messages = [];
+    }
+
     // If there is new messages, get the info.
     echo json_encode(
         [
@@ -112,13 +124,12 @@ if (get_parameter('check_new_notifications', 0)) {
                     $counters['last_id']
                 )
             ),
-            'new_notifications'     => messages_get_overview(
-                'timestamp',
-                'ASC',
-                false,
-                true,
-                0,
-                ['id_mensaje' => '>'.$last_id_ui]
+            'new_notifications'     => array_map(
+                function ($elem) {
+                    $elem['full_url'] = messages_get_url($elem['id_mensaje']);
+                    return $elem;
+                },
+                $messages
             ),
         ]
     );

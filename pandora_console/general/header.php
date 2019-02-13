@@ -417,13 +417,26 @@ config_check();
         notification_elem.style.left = image_attached - 300 + "px";
     }
 
+    function notifications_clean_ui(action, self_id) {
+        switch(action) {
+            case 'item':
+                // Recalculate the notification ball.
+                check_new_notifications();
+                break;
+            case 'toast':
+                // Only remove the toast element.
+                document.getElementById(self_id).remove();
+                break;
+        }
+    }
+
     function notifications_hide() {
         var element = document.getElementById("notification-content");
         element.style.display = "none"
     }
 
     function click_on_notification_toast(event) {
-        var match = /notification-.*-id-([0-9]+)/.exec(event.target.id);
+        var match = /notification-(.*)-id-([0-9]+)/.exec(event.target.id);
         if (!match) {
             console.error(
                 "Cannot handle toast click event. Id not valid: ",
@@ -435,15 +448,14 @@ config_check();
             {
                 "page" : "godmode/setup/setup_notifications",
                 "mark_notification_as_read" : 1,
-                "message": match[1]
+                "message": match[2]
             },
             function (data, status) {
                 if (!data.result) {
                     console.error("Cannot redirect to URL.");
                     return;
                 }
-                window.location.replace(data.url);
-                document.getElementById(event.target.id).remove();
+                notifications_clean_ui(match[1], event.target.id);
             },
             "json"
         )
@@ -455,28 +467,34 @@ config_check();
         });
     }
 
-    function print_toast(title, subtitle, severity, id, onclick) {
+    function print_toast(title, subtitle, severity, url, id, onclick) {
         // TODO severity.
         severity = '';
 
         // Start the toast.
-        var toast = document.createElement('div');
-        toast.className = 'snackbar ' + severity;
+        var toast = document.createElement('a');
         toast.setAttribute('onclick', onclick);
-        toast.id = id;
+        toast.setAttribute('href', url);
+        toast.setAttribute('target', '_blank');
 
         // Fill toast.
+        var toast_div = document.createElement('div');
+        toast_div.className = 'snackbar ' + severity;
+        toast_div.id = id;
         var toast_title = document.createElement('h3');
         var toast_text = document.createElement('p');
         toast_title.innerHTML = title;
         toast_text.innerHTML = subtitle;
-        toast.appendChild(toast_title);
-        toast.appendChild(toast_text);
+        toast_div.appendChild(toast_title);
+        toast_div.appendChild(toast_text);
+        toast.appendChild(toast_div);
+
+        console.log(toast);
 
         // Show and program the hide event.
-        toast.className = toast.className + ' show';
+        toast_div.className = toast_div.className + ' show';
         setTimeout(function(){
-            toast.className = toast.className.replace("show", "");
+            toast_div.className = toast_div.className.replace("show", "");
         }, 8000);
 
         return toast;
@@ -528,7 +546,6 @@ config_check();
                     not_drop.removeChild(not_drop.firstChild);
                 }
 
-
                 // Add the new toasts.
                 if (Array.isArray(data.new_notifications)) {
                     data.new_notifications.forEach(function(ele) {
@@ -537,6 +554,7 @@ config_check();
                                 ele.description,
                                 ele.mensaje,
                                 ele.criticity,
+                                ele.full_url,
                                 'notification-toast-id-' + ele.id_mensaje,
                                 'click_on_notification_toast(event)'
                             )

@@ -295,13 +295,7 @@ function reporting_html_print_report($report, $mini=false, $report_info=1)
             break;
 
             case 'sql_graph_vbar':
-                reporting_html_sql_graph($table, $item);
-            break;
-
             case 'sql_graph_hbar':
-                reporting_html_sql_graph($table, $item);
-            break;
-
             case 'sql_graph_pie':
                 reporting_html_sql_graph($table, $item);
             break;
@@ -1424,7 +1418,16 @@ function reporting_html_inventory($table, $item)
 }
 
 
-function reporting_html_agent_module($table, $item, $pdf=0)
+/**
+ * Print in html the agent / module report
+ * showing the status of these modules.
+ *
+ * @param object $table Head table or false if it comes from pdf.
+ * @param array  $item  Items data.
+ *
+ * @return void
+ */
+function reporting_html_agent_module($table, $item)
 {
     $table->colspan['agent_module']['cell'] = 3;
     $table->cellstyle['agent_module']['cell'] = 'text-align: center;';
@@ -1625,26 +1628,29 @@ function reporting_html_agent_module($table, $item, $pdf=0)
 
         $table->data['agent_module']['cell'] = $table_data;
     }
-
-    if ($pdf !== 0) {
-        $table->title = $item['title'];
-        $table->titleclass = 'title_table_pdf';
-        $table->titlestyle = 'text-align:left;';
-        $return_pdf .= html_print_table(
-            $table,
-            true
-        );
-        return $return_pdf;
-    }
 }
 
 
-function reporting_html_exception($table, $item)
+/**
+ * Function to print to HTML Exception report.
+ *
+ * @param object  $table Head table or false if it comes from pdf.
+ * @param array   $item  Items data.
+ * @param boolean $pdf   If it comes from pdf.
+ *
+ * @return html
+ */
+function reporting_html_exception($table, $item, $pdf=0)
 {
+    $return_pdf = '';
     if (!empty($item['failed'])) {
-        $table->colspan['group_report']['cell'] = 3;
-        $table->cellstyle['group_report']['cell'] = 'text-align: center;';
-        $table->data['group_report']['cell'] = $item['failed'];
+        if ($pdf !== 0) {
+            $return_pdf .= $item['failed'];
+        } else {
+            $table->colspan['group_report']['cell'] = 3;
+            $table->cellstyle['group_report']['cell'] = 'text-align: center;';
+            $table->data['group_report']['cell'] = $item['failed'];
+        }
     } else {
         $table1 = new stdClass();
         $table1->width = '99%';
@@ -1679,18 +1685,30 @@ function reporting_html_exception($table, $item)
             $table1->data[] = $row;
         }
 
-        $table->colspan['data']['cell'] = 3;
-        $table->cellstyle['data']['cell'] = 'text-align: center;';
-        $table->data['data']['cell'] = html_print_table($table1, true);
+        if ($pdf !== 0) {
+            $table1->title = $item['title'];
+            $table1->titleclass = 'title_table_pdf';
+            $table1->titlestyle = 'text-align:left;';
+            $return_pdf .= html_print_table($table1, true);
+        } else {
+            $table->colspan['data']['cell'] = 3;
+            $table->cellstyle['data']['cell'] = 'text-align: center;';
+            $table->data['data']['cell'] = html_print_table($table1, true);
+        }
 
         if (!empty($item['chart'])) {
-            $table->colspan['chart_pie']['cell'] = 3;
-            $table->cellstyle['chart_pie']['cell'] = 'text-align: center;';
-            $table->data['chart_pie']['cell'] = $item['chart']['pie'];
+            if ($pdf !== 0) {
+                $return_pdf .= $item['chart']['pie'];
+                $return_pdf .= $item['chart']['hbar'];
+            } else {
+                $table->colspan['chart_pie']['cell'] = 3;
+                $table->cellstyle['chart_pie']['cell'] = 'text-align: center;';
+                $table->data['chart_pie']['cell'] = $item['chart']['pie'];
 
-            $table->colspan['chart_hbar']['cell'] = 3;
-            $table->cellstyle['chart_hbar']['cell'] = 'text-align: center;';
-            $table->data['chart_hbar']['cell'] = $item['chart']['hbar'];
+                $table->colspan['chart_hbar']['cell'] = 3;
+                $table->cellstyle['chart_hbar']['cell'] = 'text-align: center;';
+                $table->data['chart_hbar']['cell'] = $item['chart']['hbar'];
+            }
         }
 
         if (!empty($item['resume'])) {
@@ -1719,10 +1737,21 @@ function reporting_html_exception($table, $item)
                 'max' => $item['resume']['max']['formated_value'],
             ];
 
-            $table->colspan['resume']['cell'] = 3;
-            $table->cellstyle['resume']['cell'] = 'text-align: center;';
-            $table->data['resume']['cell'] = html_print_table($table1, true);
+            if ($pdf !== 0) {
+                $table1->title = $item['title'];
+                $table1->titleclass = 'title_table_pdf';
+                $table1->titlestyle = 'text-align:left;';
+                $return_pdf .= html_print_table($table1, true);
+            } else {
+                $table->colspan['resume']['cell'] = 3;
+                $table->cellstyle['resume']['cell'] = 'text-align: center;';
+                $table->data['resume']['cell'] = html_print_table($table1, true);
+            }
         }
+    }
+
+    if ($pdf !== 0) {
+        return $return_pdf;
     }
 }
 
@@ -1970,7 +1999,16 @@ function reporting_html_event_report_agent($table, $item, $pdf=0)
 }
 
 
-function reporting_html_historical_data($table, $item)
+/**
+ * Function to print to HTML historical data report.
+ *
+ * @param object  $table Head table or false if it comes from pdf.
+ * @param array   $item  Items data.
+ * @param boolean $pdf   If it comes from pdf.
+ *
+ * @return html
+ */
+function reporting_html_historical_data($table, $item, $pdf=0)
 {
     global $config;
 
@@ -1997,13 +2035,40 @@ function reporting_html_historical_data($table, $item)
         $table1->data[] = $row;
     }
 
-    $table->colspan['database_serialized']['cell'] = 3;
-    $table->cellstyle['database_serialized']['cell'] = 'text-align: center;';
-    $table->data['database_serialized']['cell'] = html_print_table($table1, true);
+    if ($pdf === 0) {
+        $table->colspan['database_serialized']['cell'] = 3;
+        $table->cellstyle['database_serialized']['cell'] = 'text-align: center;';
+        $table->data['database_serialized']['cell'] = html_print_table(
+            $table1,
+            true
+        );
+    } else {
+        $table1->title = $item['title'];
+        $table1->titleclass = 'title_table_pdf';
+        $table1->titlestyle = 'text-align:left;';
+        return html_print_table(
+            $table1,
+            true
+        );
+    }
 }
 
 
-function reporting_html_database_serialized($table, $item)
+/**
+ * It displays an item in the table format report from
+ * the data stored within the table named 'tagente_datos_stringin'
+ * the Pandora FMS Database.
+ * For it, the agent should serialize the data separating
+ * them with a line-separating character and another
+ * which separates the fields. All lines should contain all fields.
+ *
+ * @param object  $table Head table or false if it comes from pdf.
+ * @param array   $item  Items data.
+ * @param boolean $pdf   If it comes from pdf.
+ *
+ * @return html
+ */
+function reporting_html_database_serialized($table, $item, $pdf=0)
 {
     $table1 = new stdClass();
     $table1->width = '100%';
@@ -2023,40 +2088,92 @@ function reporting_html_database_serialized($table, $item)
         }
     }
 
-    $table->colspan['database_serialized']['cell'] = 3;
-    $table->cellstyle['database_serialized']['cell'] = 'text-align: center;';
-    $table->data['database_serialized']['cell'] = html_print_table($table1, true);
+    if ($pdf === 0) {
+        $table->colspan['database_serialized']['cell'] = 3;
+        $table->cellstyle['database_serialized']['cell'] = 'text-align: center;';
+        $table->data['database_serialized']['cell'] = html_print_table(
+            $table1,
+            true
+        );
+    } else {
+        $table1->title = $item['title'];
+        $table1->titleclass = 'title_table_pdf';
+        $table1->titlestyle = 'text-align:left;';
+        return html_print_table(
+            $table1,
+            true
+        );
+    }
 }
 
 
-function reporting_html_group_configuration($table, $item)
+/**
+ * Shows the data of a group and the agents that are part of them.
+ *
+ * @param object  $table Head table or false if it comes from pdf.
+ * @param array   $item  Items data.
+ * @param boolean $pdf   If it comes from pdf.
+ *
+ * @return html
+ */
+function reporting_html_group_configuration($table, $item, $pdf=0)
 {
-    $table1 = new stdClass();
-    $table1->width = '100%';
-    $table1->head = [];
-    $table1->data = [];
     $cell = '';
     foreach ($item['data'] as $agent) {
-        $table2 = new stdClass();
-        $table2->width = '100%';
-        $table2->data = [];
-        reporting_html_agent_configuration($table2, ['data' => $agent]);
-
-        $cell .= html_print_table($table2, true);
+        if ($pdf === 0) {
+            $table2 = new stdClass();
+            $table2->width = '100%';
+            $table2->data = [];
+            reporting_html_agent_configuration(
+                $table2,
+                ['data' => $agent],
+                $pdf
+            );
+            $cell .= html_print_table(
+                $table2,
+                true
+            );
+        } else {
+            $cell .= reporting_html_agent_configuration(
+                false,
+                ['data' => $agent],
+                $pdf,
+                $item['title']
+            );
+        }
     }
 
-    $table->colspan['group_configuration']['cell'] = 3;
-    $table->cellstyle['group_configuration']['cell'] = 'text-align: center;';
-    $table->data['group_configuration']['cell'] = $cell;
+    if ($pdf === 0) {
+        $table->colspan['group_configuration']['cell'] = 3;
+        $table->cellstyle['group_configuration']['cell'] = 'text-align: center;';
+        $table->data['group_configuration']['cell'] = $cell;
+    } else {
+        return $cell;
+    }
 }
 
 
-function reporting_html_network_interfaces_report($table, $item, $pdf=false)
+/**
+ * This type of report element will generate the interface graphs
+ * of all those devices that belong to the selected group.
+ *
+ * @param object  $table Head table or false if it comes from pdf.
+ * @param array   $item  Items data.
+ * @param boolean $pdf   If it comes from pdf.
+ *
+ * @return html
+ */
+function reporting_html_network_interfaces_report($table, $item, $pdf=0)
 {
+    $return_pdf = '';
     if (!empty($item['failed'])) {
-        $table->colspan['interfaces']['cell'] = 3;
-        $table->cellstyle['interfaces']['cell'] = 'text-align: left;';
-        $table->data['interfaces']['cell'] = $item['failed'];
+        if ($pdf === 0) {
+            $table->colspan['interfaces']['cell'] = 3;
+            $table->cellstyle['interfaces']['cell'] = 'text-align: left;';
+            $table->data['interfaces']['cell'] = $item['failed'];
+        } else {
+            $return_pdf .= $item['failed'];
+        }
     } else {
         foreach ($item['data'] as $agent) {
             $table_agent = new StdCLass();
@@ -2069,9 +2186,6 @@ function reporting_html_network_interfaces_report($table, $item, $pdf=false)
             $table_agent->style[0] = 'text-align: center';
 
             $table_agent->data['interfaces'] = '';
-            if ($pdf) {
-                $return_pdf .= __('Agent').' '.$agent['agent'];
-            }
 
             foreach ($agent['interfaces'] as $interface) {
                 $table_interface = new StdClass();
@@ -2103,22 +2217,35 @@ function reporting_html_network_interfaces_report($table, $item, $pdf=false)
                     $table_interface->cellstyle['graph'][0] = 'text-align: center;';
                 }
 
-                if ($pdf) {
-                    $table_interface->class = 'table-beauty';
-                    $return_pdf .= html_print_table($table_interface, true);
+                if ($pdf !== 0) {
+                    $table_interface->title = $item['title'].' '.__('Agents').': '.$agent['agent'];
+                    $table_interface->titleclass = 'title_table_pdf';
+                    $table_interface->titlestyle = 'text-align:left;';
+                    $table_interface->styleTable = 'page-break-inside:avoid;';
+
+                    $return_pdf .= html_print_table(
+                        $table_interface,
+                        true
+                    );
                 }
 
-                $table_agent->data['interfaces'] .= html_print_table($table_interface, true);
+                $table_agent->data['interfaces'] .= html_print_table(
+                    $table_interface,
+                    true
+                );
                 $table_agent->colspan[$interface_name][0] = 3;
             }
 
             $id = uniqid();
             $table->colspan[$id][0] = 3;
-            $table->data[$id] = html_print_table($table_agent, true);
+            $table->data[$id] = html_print_table(
+                $table_agent,
+                true
+            );
         }
     }
 
-    if ($pdf) {
+    if ($pdf !== 0) {
         return $return_pdf;
     }
 }
@@ -2207,6 +2334,19 @@ function reporting_html_alert_report($table, $item, $pdf=0)
 }
 
 
+/**
+ * This type of report element allows custom graphs to be defined
+ * for use in reports.
+ * These graphs will be created using SQL code entered by the user.
+ * This SQL code should always return a variable called "label"
+ * for the text labels or name of the elements to be displayed
+ * and a field called "value" to store the numerical value to be represented.
+ *
+ * @param object $table Parameters table.
+ * @param array  $item  Items data.
+ *
+ * @return void
+ */
 function reporting_html_sql_graph($table, $item)
 {
     $table->colspan['chart']['cell'] = 3;
@@ -2261,10 +2401,23 @@ function reporting_html_prediction_date($table, $item, $mini)
 }
 
 
-function reporting_html_agent_configuration(&$table, $item)
-{
-    $table->colspan['agent']['cell'] = 3;
-    $table->cellstyle['agent']['cell'] = 'text-align: left;';
+/**
+ * Shows the data of agents and modules.
+ *
+ * @param object  $table Head table or false if it comes from pdf.
+ * @param array   $item  Items data.
+ * @param boolean $pdf   If it comes from pdf.
+ * @param string  $title Show title pdf.
+ *
+ * @return html
+ */
+function reporting_html_agent_configuration(
+    $table,
+    $item,
+    $pdf=0,
+    $title=''
+) {
+    $return_pdf = '';
 
     $table1 = new stdClass();
     $table1->width = '99%';
@@ -2276,6 +2429,7 @@ function reporting_html_agent_configuration(&$table, $item)
     $table1->head['description'] = __('Description');
     $table1->head['status'] = __('Status');
     $table1->data = [];
+
     $row = [];
     $row['name'] = $item['data']['name'];
     $row['group'] = $item['data']['group_icon'];
@@ -2289,13 +2443,32 @@ function reporting_html_agent_configuration(&$table, $item)
     }
 
     $table1->data[] = $row;
-    $table->data['agent']['cell'] = html_print_table($table1, true);
 
-    $table->colspan['modules']['cell'] = 3;
-    $table->cellstyle['modules']['cell'] = 'text-align: left;';
+    if ($pdf === 0) {
+        $table->colspan['agent']['cell'] = 3;
+        $table->cellstyle['agent']['cell'] = 'text-align: left;';
+        $table->data['agent']['cell'] = html_print_table(
+            $table1,
+            true
+        );
+    } else {
+        $return_pdf .= html_print_table(
+            $table1,
+            true
+        );
+    }
+
+    if ($pdf === 0) {
+        $table->colspan['modules']['cell'] = 3;
+        $table->cellstyle['modules']['cell'] = 'text-align: left;';
+    }
 
     if (empty($item['data']['modules'])) {
-        $table->data['modules']['cell'] = __('Empty modules');
+        if ($pdf === 0) {
+            $table->data['modules']['cell'] = __('Empty modules');
+        } else {
+            $return_pdf .= __('Empty modules');
+        }
     } else {
         $table1->width = '99%';
         $table1->head = [];
@@ -2339,7 +2512,25 @@ function reporting_html_agent_configuration(&$table, $item)
             $table1->data[] = $row;
         }
 
-        $table->data['modules']['cell'] = html_print_table($table1, true);
+        if ($pdf === 0) {
+            $table->data['modules']['cell'] = html_print_table($table1, true);
+        } else {
+            if ($title !== '') {
+                $item['title'] = $title;
+            }
+
+            $table1->title = $item['title'].' '.__('Agent').': '.$item['data']['name'];
+            $table1->titleclass = 'title_table_pdf';
+            $table1->titlestyle = 'text-align:left;';
+            $return_pdf .= html_print_table(
+                $table1,
+                true
+            );
+        }
+    }
+
+    if ($pdf !== 0) {
+        return $return_pdf;
     }
 }
 
@@ -2421,9 +2612,10 @@ function reporting_html_value(&$table, $item, $mini, $only_value=false, $check_e
  * Show a brief analysis in which the variation of the value
  * of the indicated module is indicated.
  *
- * @param  string  $table
- * @param  array   $item
- * @param  integer $pdf
+ * @param string  $table Reference table in pdf a false.
+ * @param array   $item  Parameters for item pdf.
+ * @param boolean $pdf   Send pdf.
+ *
  * @return html
  */
 function reporting_html_increment($table, $item, $pdf=0)
@@ -2437,7 +2629,7 @@ function reporting_html_increment($table, $item, $pdf=0)
             $table->colspan['error']['cell'] = 3;
             $table->data['error']['cell'] = $item['data']['message'];
         } else {
-            $return_pdf = $item['data']['message'];
+            $return_pdf .= $item['data']['message'];
         }
     } else {
         $table1 = new stdClass();
@@ -3061,11 +3253,25 @@ function reporting_html_general($table, $item, $pdf=0)
 }
 
 
-function reporting_html_sql(&$table, $item)
+/**
+ * Function to print to HTML query sql.
+ *
+ * @param object  $table Head table or false if it comes from pdf.
+ * @param array   $item  Items data.
+ * @param boolean $pdf   If it comes from pdf.
+ *
+ * @return html
+ */
+function reporting_html_sql($table, $item, $pdf=0)
 {
+    $return_pdf = '';
     if (!$item['correct']) {
-        $table->colspan['error']['cell'] = 3;
-        $table->data['error']['cell'] = $item['error'];
+        if ($pdf === 0) {
+            $table->colspan['error']['cell'] = 3;
+            $table->data['error']['cell'] = $item['error'];
+        } else {
+            $return_pdf .= $item['error'];
+        }
     } else {
         $first = true;
 
@@ -3074,10 +3280,10 @@ function reporting_html_sql(&$table, $item)
         $table2->width = '100%';
 
         foreach ($item['data'] as $row) {
-            if ($first) {
+            if ($first === true) {
                 $first = false;
 
-                // Print the header
+                // Print the header.
                 foreach ($row as $key => $value) {
                     $table2->head[] = $key;
                 }
@@ -3086,9 +3292,26 @@ function reporting_html_sql(&$table, $item)
             $table2->data[] = $row;
         }
 
-        $table->colspan['data']['cell'] = 3;
-        $table->cellstyle['data']['cell'] = 'text-align: center;';
-        $table->data['data']['cell'] = html_print_table($table2, true);
+        if ($pdf === 0) {
+            $table->colspan['data']['cell'] = 3;
+            $table->cellstyle['data']['cell'] = 'text-align: center;';
+            $table->data['data']['cell'] = html_print_table(
+                $table2,
+                true
+            );
+        } else {
+            $table2->title = $item['title'];
+            $table2->titleclass = 'title_table_pdf';
+            $table2->titlestyle = 'text-align:left;';
+            $return_pdf .= html_print_table(
+                $table2,
+                true
+            );
+        }
+    }
+
+    if ($pdf !== 0) {
+        return $return_pdf;
     }
 }
 

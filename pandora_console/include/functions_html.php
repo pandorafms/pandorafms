@@ -1851,7 +1851,6 @@ function html_get_predefined_table($model='transparent', $columns=4)
  * $table->titleclass - Title class
  * $table->styleTable - Table style
  * $table->caption - Table title
- * $table->pdf_report - Table repeat title conteiner.
  * @param bool Whether to return an output string or echo now
  *
  * @return string HTML code if return parameter is true.

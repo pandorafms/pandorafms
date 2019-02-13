@@ -26,6 +26,8 @@
  * ============================================================================
  */
 
+require_once __DIR__.'/constants.php';
+
 
 /**
  * Get a server.
@@ -203,7 +205,7 @@ function servers_get_performance()
                 case SERVER_TYPE_EXPORT:
                 case SERVER_TYPE_INVENTORY:
                 case SERVER_TYPE_EVENT:
-                case SERVER_TYPE_RECON:
+                case SERVER_TYPE_DISCOVERY:
                 case SERVER_TYPE_SYSLOG:
                 break;
             }
@@ -424,8 +426,8 @@ function servers_get_info($id_server=-1)
                 $id_modulo = 0;
             break;
 
-            case SERVER_TYPE_RECON:
-                $server['img'] = html_print_image('images/recon.png', true, ['title' => __('Recon server')]);
+            case SERVER_TYPE_DISCOVERY:
+                $server['img'] = html_print_image('images/recon.png', true, ['title' => __('Discovery server')]);
                 $server['type'] = 'recon';
                 $id_modulo = 0;
             break;
@@ -598,11 +600,11 @@ function servers_get_info($id_server=-1)
                 $server['lag'] = 0;
                 $server['module_lag'] = 0;
             }
-            // Recon server
-            else if ($server['server_type'] == SERVER_TYPE_RECON) {
+            // Discovery server
+            else if ($server['server_type'] == SERVER_TYPE_DISCOVERY) {
                 $server['name'] = '<a href="index.php?sec=estado&amp;sec2=operation/servers/recon_view&amp;server_id='.$server['id_server'].'">'.$server['name'].'</a>';
 
-                // Total jobs running on this recon server
+                // Total jobs running on this Discovery server
                 $server['modules'] = db_get_sql(
                     'SELECT COUNT(id_rt)
 					FROM trecon_task
@@ -978,7 +980,7 @@ function servers_get_server_string_name(int $server)
         case SERVER_TYPE_EVENT:
         return __('Event server');
 
-        case SERVER_TYPE_RECON:
+        case SERVER_TYPE_DISCOVERY:
         return __('Discovery server');
 
         case SERVER_TYPE_SYSLOG:

@@ -402,9 +402,9 @@ class HostDevices implements Wizard
         $table->data[0][0] = '<b>'.__('Task name').'</b>';
         $table->data[0][1] = html_print_input_text('name', $name, '', 25, 0, true);
 
-        // Recon server.
-        $table->data[1][0] = '<b>'.__('Recon server').ui_print_help_tip(
-            __('You must select a Recon Server for the Task, otherwise the Recon Task will never run'),
+        // Discovery server.
+        $table->data[1][0] = '<b>'.__('Discovery server').ui_print_help_tip(
+            __('You must select a Discovery Server for the Task, otherwise the Recon Task will never run'),
             true
         );
 
@@ -818,8 +818,8 @@ function get_explanation_recon_script (id) {
 }
 
 </script>
-        <?php
-    return null;
+    <?php
+        return null;
         /*
             Page 4, last.
             return [

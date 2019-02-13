@@ -937,57 +937,66 @@ class ConsoleSupervisor
         );
 
         $time = time();
-        foreach ($queue_state as $queue) {
-            $key = $queue['id_server'];
-            $type = $queue['server_type'];
-            $new_data[$key] = $queue['queued_modules'];
+        if (is_array($queue_state) === true) {
+            foreach ($queue_state as $queue) {
+                $key = $queue['id_server'];
+                $type = $queue['server_type'];
+                $new_data[$key] = $queue['queued_modules'];
 
-            // Compare queue increments in a not over 900 seconds.
-            if (empty($previous[$key]['modules'])
-                || ($time - $previous[$key]['utime']) > 900
-            ) {
-                $previous[$key]['modules'] = 0;
-            }
-
-            $modules_queued = ($queue['queued_modules'] - $previous[$key]['modules']);
-
-            // 50 Modules queued since last check. Or more than 1500 queued.
-            if ($modules_queued > $MAX_GROWN
-                || $queue['queued_modules'] > $MAX_QUEUE
-            ) {
-                $msg = 'Queue has grown %d modules. Total %d';
-                if ($modules_queued <= 0) {
-                    $msg = 'Queue is decreasing in %d modules. But there are %d queued.';
-                    $modules_queued *= -1;
+                // Compare queue increments in a not over 900 seconds.
+                if (empty($previous[$key]['modules'])
+                    || ($time - $previous[$key]['utime']) > 900
+                ) {
+                    $previous[$key]['modules'] = 0;
                 }
 
-                $this->notify(
-                    [
-                        'type'    => 'NOTIF.SERVER.QUEUE.'.$key,
-                        'title'   => __(
-                            '%s (%s) performance is being lacked.',
-                            servers_get_server_string_name($type),
-                            $queue['name']
-                        ),
-                        'message' => __(
-                            $msg,
-                            $modules_queued,
-                            $queue['queued_modules']
-                        ),
-                        'url'     => ui_get_full_url(
-                            'index.php?sec=gservers&sec2=godmode/servers/modificar_server&refr=60'
-                        ),
-                    ]
-                );
-            } else {
-                $this->cleanNotifications('NOTIF.SERVER.QUEUE.'.$key);
+                $modules_queued = ($queue['queued_modules'] - $previous[$key]['modules']);
+
+                // 50 Modules queued since last check. Or more than 1500 queued.
+                if ($modules_queued > $MAX_GROWN
+                    || $queue['queued_modules'] > $MAX_QUEUE
+                ) {
+                    $msg = 'Queue has grown %d modules. Total %d';
+                    if ($modules_queued <= 0) {
+                        $msg = 'Queue is decreasing in %d modules. But there are %d queued.';
+                        $modules_queued *= -1;
+                    }
+
+                    $this->notify(
+                        [
+                            'type'    => 'NOTIF.SERVER.QUEUE.'.$key,
+                            'title'   => __(
+                                '%s (%s) performance is being lacked.',
+                                servers_get_server_string_name($type),
+                                $queue['name']
+                            ),
+                            'message' => __(
+                                $msg,
+                                $modules_queued,
+                                $queue['queued_modules']
+                            ),
+                            'url'     => ui_get_full_url(
+                                'index.php?sec=gservers&sec2=godmode/servers/modificar_server&refr=60'
+                            ),
+                        ]
+                    );
+                } else {
+                    $this->cleanNotifications('NOTIF.SERVER.QUEUE.'.$key);
+                }
+
+                $new[$key]['modules'] = $queue['queued_modules'];
+                $new[$key]['utime'] = $time;
             }
 
-            $new[$key]['modules'] = $queue['queued_modules'];
-            $new[$key]['utime'] = $time;
-        }
+            // Update file content.
+            file_put_contents($idx_file, json_encode($new));
+        } else {
+            // No queue data, ignore.
+            unlink($idx_file);
 
-        file_put_contents($idx_file, json_encode($new));
+            // Clean notifications.
+            $this->cleanNotifications('NOTIF.SERVER.QUEUE.%');
+        }
     }
 
 

@@ -1,6 +1,6 @@
-package PandoraFMS::ReconServer;
+package PandoraFMS::DiscoveryServer;
 ##########################################################################
-# Pandora FMS Recon Server.
+# Pandora FMS Discovery Server.
 # Pandora FMS. the Flexible Monitoring System. http://www.pandorafms.org
 ##########################################################################
 # Copyright (c) 2005-2009 Artica Soluciones Tecnologicas S.L
@@ -57,16 +57,16 @@ use constant OS_ROUTER => 17;
 use constant OS_SWITCH => 18;
 
 ########################################################################################
-# Recon Server class constructor.
+# Discovery Server class constructor.
 ########################################################################################
 sub new ($$$$$$) {
 	my ($class, $config, $dbh) = @_;
 	
-	return undef unless $config->{'reconserver'} == 1;
+	return undef unless $config->{'reconserver'} == 1 || $config->{'discoveryserver'} == 1;
 	
 	if (! -e $config->{'nmap'}) {
-		logger ($config, ' [E] ' . $config->{'nmap'} . " needed by " . $config->{'rb_product_name'} . " Recon Server not found.", 1);
-		print_message ($config, ' [E] ' . $config->{'nmap'} . " needed by " . $config->{'rb_product_name'} . " Recon Server not found.", 1);
+		logger ($config, ' [E] ' . $config->{'nmap'} . " needed by " . $config->{'rb_product_name'} . " Discovery Server not found.", 1);
+		print_message ($config, ' [E] ' . $config->{'nmap'} . " needed by " . $config->{'rb_product_name'} . " Discovery Server not found.", 1);
 		return undef;
 	}
 
@@ -78,14 +78,14 @@ sub new ($$$$$$) {
 	
 	# Restart automatic recon tasks.
 	db_do ($dbh, 'UPDATE trecon_task  SET utimestamp = 0 WHERE id_recon_server = ? AND status <> -1 AND interval_sweep > 0',
-	       get_server_id ($dbh, $config->{'servername'}, RECONSERVER));
+	       get_server_id ($dbh, $config->{'servername'}, DISCOVERYSERVER));
 
 	# Reset (but do not restart) manual recon tasks.
 	db_do ($dbh, 'UPDATE trecon_task  SET status = -1 WHERE id_recon_server = ? AND status <> -1 AND interval_sweep = 0',
-	       get_server_id ($dbh, $config->{'servername'}, RECONSERVER));
+	       get_server_id ($dbh, $config->{'servername'}, DISCOVERYSERVER));
 
 	# Call the constructor of the parent class
-	my $self = $class->SUPER::new($config, RECONSERVER, \&PandoraFMS::ReconServer::data_producer, \&PandoraFMS::ReconServer::data_consumer, $dbh);
+	my $self = $class->SUPER::new($config, DISCOVERYSERVER, \&PandoraFMS::DiscoveryServer::data_producer, \&PandoraFMS::DiscoveryServer::data_consumer, $dbh);
 	
 	bless $self, $class;
 	return $self;
@@ -98,7 +98,7 @@ sub run ($) {
 	my $self = shift;
 	my $pa_config = $self->getConfig ();
 	
-	print_message ($pa_config, " [*] Starting " . $pa_config->{'rb_product_name'} . " Recon Server.", 1);
+	print_message ($pa_config, " [*] Starting " . $pa_config->{'rb_product_name'} . " Discovery Server.", 1);
 	$self->setNumThreads ($pa_config->{'recon_threads'});
 	$self->SUPER::run (\@TaskQueue, \%PendingTasks, $Sem, $TaskSem);
 }
@@ -121,9 +121,10 @@ sub data_producer ($) {
 	# Status -1 means "done".
 	
 	my @rows = get_db_rows ($dbh, 'SELECT * FROM trecon_task 
-                                   WHERE id_recon_server = ?
-                                   AND disabled = 0
-                                   AND utimestamp = 0 OR (status = -1 AND interval_sweep > 0 AND (utimestamp + interval_sweep) < UNIX_TIMESTAMP())', $server_id);
+		WHERE id_recon_server = ?
+		AND disabled = 0
+		AND ((utimestamp = 0 AND interval_sweep != 0 OR status = 1)
+			OR (status = -1 AND interval_sweep > 0 AND (utimestamp + interval_sweep) < UNIX_TIMESTAMP()))', $server_id);
 	foreach my $row (@rows) {
 		
 		# Update task status
@@ -154,12 +155,13 @@ sub data_consumer ($$) {
 		logger($pa_config, 'Starting recon task for net ' . $task->{'subnet'} . '.', 10);
 	}
 
-	# Call nmap
-	my $nmap_args  = '-nsP -PE --max-retries '.$pa_config->{'icmp_checks'}.' --host-timeout '.$pa_config->{'networktimeout'}.'s -T'.$pa_config->{'recon_timing_template'};
-	my $np = new PandoraFMS::NmapParser;
 	eval {
 		my @subnets = split(/,/, safe_output($task->{'subnet'}));
 		my @communities = split(/,/, safe_output($task->{'snmp_community'}));
+		my @auth_strings = ();
+		if(defined($task->{'auth_strings'})) {
+			@auth_strings = split(/,/, safe_output($task->{'auth_strings'}));
+		}
 
 		my $recon = new PandoraFMS::Recon::Base(
 			communities => \@communities,
@@ -186,6 +188,8 @@ sub data_consumer ($$) {
 			subnets => \@subnets,
 			task_id => $task->{'id_rt'},
 			vlan_cache_enabled => $task->{'vlan_enabled'},
+			wmi_enabled => $task->{'wmi_enabled'},
+			auth_strings_array => \@auth_strings,
 			%{$pa_config}
 		);
 
@@ -746,6 +750,35 @@ sub PandoraFMS::Recon::Base::set_parent($$$) {
 
 	# Connect the host to its parent.
 	db_do($self->{'dbh'}, 'UPDATE tagente SET id_parent=? WHERE id_agente=?', $agent_parent->{'id_agente'}, $agent->{'id_agente'});
+}
+
+##########################################################################
+# Create a WMI module for the given agent.
+##########################################################################
+sub PandoraFMS::Recon::Base::wmi_module {
+	my ($self, $agent_id, $target, $wmi_query, $wmi_auth, $column,
+        $module_name, $module_description, $module_type, $unit) = @_;
+
+	# Check whether the module already exists.
+	my $module_id = get_agent_module_id($self->{'dbh'}, $module_name, $agent_id);
+	return if ($module_id > 0);
+
+	my ($user, $pass) = ($wmi_auth ne '') ? split('%', $wmi_auth) : (undef, undef);
+	my %module = (
+		'descripcion' => safe_input($module_description),
+		'id_agente' => $agent_id,
+		'id_modulo' => 6,
+		'id_tipo_modulo' => get_module_id($self->{'dbh'}, $module_type),
+		'ip_target' => $target,
+		'nombre' => safe_input($module_name),
+		'plugin_pass' => defined($pass) ? $pass : '',
+		'plugin_user' => defined($user) ? $user : '',
+		'snmp_oid' => $wmi_query,
+		'tcp_port' => $column,
+		'unit' => defined($unit) ? $unit : ''
+	);
+	
+	pandora_create_module_from_hash($self->{'pa_config'}, \%module, $self->{'dbh'});
 }
 
 ##########################################################################

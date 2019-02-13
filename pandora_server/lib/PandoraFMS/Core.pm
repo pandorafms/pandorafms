@@ -4514,7 +4514,7 @@ sub pandora_server_statistics ($$) {
 			$server->{"lag"} = 0;
 			$server->{"module_lag"} = 0;
 		# Recon server
-		} elsif ($server->{"server_type"} == RECONSERVER) {
+		} elsif ($server->{"server_type"} == DISCOVERYSERVER) {
 
 				# Total jobs running on this recon server
 				$server->{"modules"} = get_db_value ($dbh, "SELECT COUNT(id_rt) FROM trecon_task WHERE id_recon_server = ?", $server->{"id_server"});

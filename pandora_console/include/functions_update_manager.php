@@ -711,7 +711,7 @@ function update_manager_extract_package()
 
     rrmdir($path_package);
 
-    if ($result != 0) {
+    if ($result == 0) {
         db_process_sql_update(
             'tconfig',
             [

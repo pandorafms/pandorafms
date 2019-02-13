@@ -734,7 +734,7 @@ function notifications_print_global_source_configuration($source)
         false,
         true,
         'elem-changeable',
-        true,
+        true
     );
 
     // Return all html.

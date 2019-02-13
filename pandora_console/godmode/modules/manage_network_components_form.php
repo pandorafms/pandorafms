@@ -143,7 +143,7 @@ if (isset($id)) {
             $snmp3_auth_pass = io_output_password($component['plugin_pass']);
             $snmp3_auth_method = $component['plugin_parameter'];
             $snmp3_privacy_method = $component['custom_string_1'];
-            $snmp3_privacy_pass = $component['custom_string_2'];
+            $snmp3_privacy_pass = io_output_password($component['custom_string_2']);
             $snmp3_security_level = $component['custom_string_3'];
         }
     } else if (isset($new_component) && $new_component && !$create_network_from_snmp_browser) {

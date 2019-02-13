@@ -1,6 +1,6 @@
 <?php
 /**
- * @package Include/help/en 
+ * @package Include/help/en
  */
 ?> 
 
@@ -42,7 +42,7 @@ By choosing the regular condition the possibility to select the Trigger box when
 
 Once the fields have been filled, press on the "Next" button and this way you will have access to the following screen.
 
-<?php html_print_image ("images/help/alert1.png", false, array('width' => '550px')); ?>
+<?php html_print_image('images/help/alert1.png', false, ['width' => '550px']); ?>
 <br><br>
 Next we are going to detail the fields to fill in: 
 <br><br>
@@ -83,7 +83,7 @@ Defines the value for the "_ﬁeldX_" variable. Here could be used the list of m
 
 In this combo is defined the action by default that the template is going to have. This is the action that will be automatically created when the template would be assigned to the module. You can put none or one, but you can not put several actions by default.
 
-<?php html_print_image ("images/help/alert2.png", false, array('width' => '550px')); ?>
+<?php html_print_image('images/help/alert2.png', false, ['width' => '550px']); ?>
 
 Next are the fields that you should fill in:<br><br>
 

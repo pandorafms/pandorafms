@@ -11,6 +11,6 @@
 <p>
 設定済の利用マップ定義一覧の参照できます。
 <strong>編集</strong>するにはマップ名をクリックします。
-<strong>削除</strong>するには削除アイコン(<?php html_print_image("images/cross.png", false, array("alt" => "delete icon")) ?> )をクリックします。
+<strong>削除</strong>するには削除アイコン(<?php html_print_image('images/cross.png', false, ['alt' => 'delete icon']); ?> )をクリックします。
 また、新たな設定を<strong>作成</strong>するには、「作成」ボタンをクリックします。
 </p>

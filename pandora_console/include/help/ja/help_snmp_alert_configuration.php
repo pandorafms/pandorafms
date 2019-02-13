@@ -1,7 +1,7 @@
 <?php
 /*
-* @package Include /help/ja
-*/
+ * @package Include /help/ja
+ */
 ?>
 
 <h1>アラート設定</h1>

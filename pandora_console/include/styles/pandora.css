@@ -4755,7 +4755,6 @@ input:checked + .p-slider:before {
   border-radius: 4px;
   visibility: hidden;
   pointer-events: all;
-  transition: visibility 0s 1s;
 }
 
 .snackbar.show {

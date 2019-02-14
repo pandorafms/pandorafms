@@ -523,7 +523,6 @@ if ($config['pure'] == 0 || $meta) {
     echo '</div>';
     // Floating menu - End
     ui_require_jquery_file('countdown');
-    ui_require_css_file('countdown');
 }
 
 // Error div for ajax messages

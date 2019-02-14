@@ -634,7 +634,7 @@ echo '</div>';
 enterprise_hook('close_meta_frame');
 
 
-ui_require_css_file('cluetip');
+ui_require_css_file('cluetip', 'include/styles/js/');
 ui_require_jquery_file('cluetip');
 ?>
 

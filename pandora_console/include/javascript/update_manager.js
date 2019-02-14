@@ -1312,7 +1312,7 @@ function update_last_package(package, version, homeurl) {
 
   $("#box_online .content").html("");
   $("#box_online .loading").show();
-  $("#box_online .download_package").show();
+  $("#box_online .downloading_package").show();
 
   var parameters = {};
   parameters["page"] = "include/ajax/update_manager.ajax";
@@ -1326,7 +1326,7 @@ function update_last_package(package, version, homeurl) {
     parameters,
     function(data) {
       if (data["in_progress"]) {
-        $("#box_online .download_package").hide();
+        $("#box_online .downloading_package").hide();
 
         $("#box_online .content").html(data["message"]);
 
@@ -1341,7 +1341,7 @@ function update_last_package(package, version, homeurl) {
           parameters2,
           function(data) {
             if (data["correct"]) {
-              $("#box_online .download_package").hide();
+              $("#box_online .downloading_package").hide();
 
               $("#box_online .content").html(data["message"]);
 

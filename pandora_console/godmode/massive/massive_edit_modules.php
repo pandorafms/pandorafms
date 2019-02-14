@@ -143,7 +143,7 @@ if ($update) {
             }
         }
     } else {
-        // Standard procedure
+        // Standard procedure.
         foreach ($agents_ as $agent_) {
             if ($modules_ == false) {
                 $modules_ = [];
@@ -315,7 +315,7 @@ if ($module_type != '') {
 
 $names = agents_get_modules(
     array_keys($agents),
-    'DISTINCT(tagente_modulo.nombre)',
+    'tagente_modulo.nombre',
     $filter,
     false
 );
@@ -1965,4 +1965,3 @@ function process_manage_edit($module_name, $agents_select=null, $module_status='
 
     return true;
 }
-

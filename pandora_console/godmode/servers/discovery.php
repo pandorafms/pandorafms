@@ -1,6 +1,18 @@
 <?php
 
 global $config;
+
+check_login();
+
+if (! check_acl($config['id_user'], 0, 'AW')) {
+    db_pandora_audit(
+        'ACL Violation',
+        'Trying to access Server Management'
+    );
+    include 'general/noaccess.php';
+    exit;
+}
+
 ui_print_page_header(__('Discover'), 'wizards/hostDevices.png', false, '', true);
 
 

@@ -105,9 +105,9 @@ class Wizard
             return html_print_input_text(
                 $data['name'],
                 $data['value'],
-                $data['alt'] = '',
-                $data['size'] = 50,
-                $data['maxlength'] = 255,
+                ((isset($data['alt']) === true) ? $data['alt'] : ''),
+                ((isset($data['size']) === true) ? $data['size'] : 50),
+                ((isset($data['maxlength']) === true) ? $data['maxlength'] : 255),
                 ((isset($data['return']) === true) ? $data['return'] : true),
                 ((isset($data['disabled']) === true) ? $data['disabled'] : false),
                 ((isset($data['required']) === true) ? $data['required'] : false),
@@ -230,7 +230,7 @@ class Wizard
      *
      * @return string HTML code.
      */
-    public function printForm(array $data)
+    public function printForm(array $data, bool $return=false)
     {
         $form = $data['form'];
         $inputs = $data['inputs'];
@@ -243,12 +243,16 @@ class Wizard
 
         foreach ($inputs as $input) {
             $output .= '<li><label>'.$input['label'].'</label>';
-            $output .= '<label>'.$this->printInput($input['var']).'</li>';
+            $output .= $this->printInput($input['arguments']).'</li>';
         }
 
         $output .= '</ul>';
         $output .= '</form>';
         $output .= $js;
+
+        if ($return === false) {
+            echo $output;
+        }
 
         return $output;
 

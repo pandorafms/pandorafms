@@ -327,6 +327,93 @@ class HostDevices extends Wizard
      */
     public function parseNetScan()
     {
+        if ($this->page == 0) {
+            // Error. Must not be here.
+            return true;
+        }
+
+        // Validate response from page 0. No, not a bug, we're always 1 page
+        // from 'validation' page.
+        if ($this->page == 1) {
+            $taskname = get_parameter('taskname', '');
+            $comment = get_parameter('comment', '');
+            $server_id = get_parameter('id_recon_server', '');
+            $network = get_parameter('name', '');
+            $id_group = get_parameter('id_group', '');
+
+            if ($taskname == '') {
+                $this->msg = __('You must provide a task name.');
+                return false;
+            }
+
+            if ($server_id == '') {
+                $this->msg = __('You must select a Discovery Server.');
+                return false;
+            }
+
+            if ($network == '') {
+                // XXX: Could be improved validating provided network.
+                $this->msg = __('You must provide a valid network.');
+                return false;
+            }
+
+            if ($id_group == '') {
+                $this->msg = __('You must select a valid group.');
+                return false;
+            }
+
+            // Assign fields.
+            $this->task['name'] = $taskname;
+            $this->task['description'] = $comment;
+            $this->task['subnet'] = $network;
+            $this->task['id_recon_server'] = $server_id;
+            // Disabled 2 Implies wizard non finished.
+            $this->task['disabled'] = 2;
+
+            $this->task['id_rt'] = 5;
+
+            if (!isset($this->task['id_rt'])) {
+                // Create.
+                $this->task['id_rt'] = db_process_sql_insert(
+                    'trecon_task',
+                    $this->task
+                );
+            } else {
+                // Update.
+                db_process_sql_update(
+                    'trecon_task',
+                    $this->task,
+                    ['id_rt' => $this->task['id_rt']]
+                );
+            }
+
+            return true;
+        }
+
+        // Validate response from page 1.
+        if ($this->page == 2) {
+            $id_rt = get_parameter('task', -1);
+
+            $this->task = db_get_row(
+                'trecon_task',
+                'id_rt',
+                $id_rt
+            );
+
+            hd($this->task);
+
+            return false;
+        }
+
+        if ($this->page == 3) {
+            // Interval and schedules.
+            // By default manual if not defined.
+            $interval = get_parameter('interval', 0);
+
+            $this->task['interval_sweep'] = $interval;
+            return false;
+        }
+
         return false;
 
     }
@@ -355,18 +442,83 @@ class HostDevices extends Wizard
         $user_groups = users_get_groups(false, 'AW', true, false, null, 'id_grupo');
         $user_groups = array_keys($user_groups);
 
-        if (isset($this->page) && $this->page == 1) {
-            // Parse page 0 responses.
-            $this->parseNetScan();
+        if ($this->parseNetScan() === false) {
+            // Error.
+            ui_print_error_message(
+                $this->msg
+            );
+
+            $form = [
+                'form'   => [
+                    'method' => 'POST',
+                    'action' => '#',
+                ],
+                'inputs' => [
+                    [
+                        'arguments' => [
+                            'type'  => 'hidden',
+                            'name'  => 'page',
+                            'value' => ($this->page - 1),
+                        ],
+                    ],
+                    [
+                        'arguments' => [
+                            'name'       => 'submit',
+                            'label'      => __('Go back'),
+                            'type'       => 'submit',
+                            'attributes' => 'class="sub cancel"',
+                            'return'     => true,
+                        ],
+                    ],
+                ],
+            ];
+
+            $this->printForm($form);
+            return null;
         }
 
-        if (!isset($this->page) || $this->page == 0) {
-            // Interval.
-            $interv_manual = 0;
-            if ((int) $interval == 0) {
-                $interv_manual = 1;
-            }
+        if (isset($this->page)
+            && $this->page != 0
+            && isset($this->task['id_rt']) === false
+        ) {
+            // Error.
+            ui_print_error_message(
+                __('Internal error, please re-run this wizard.')
+            );
 
+            $form = [
+                'form'   => [
+                    'method' => 'POST',
+                    'action' => '#',
+                ],
+                'inputs' => [
+                    [
+                        'arguments' => [
+                            'type'  => 'hidden',
+                            'name'  => 'page',
+                            'value' => 0,
+                        ],
+                    ],
+                    [
+                        'arguments' => [
+                            'name'       => 'submit',
+                            'label'      => __('Go back'),
+                            'type'       => 'submit',
+                            'attributes' => 'class="sub cancel"',
+                            'return'     => true,
+                        ],
+                    ],
+                ],
+            ];
+
+            $this->printForm($form);
+            return null;
+        }
+
+        // -------------------------------.
+        // Page 0. wizard starts HERE.
+        // -------------------------------.
+        if (!isset($this->page) || $this->page == 0) {
             if (isset($this->page) === false
                 || $this->page == 0
             ) {
@@ -377,6 +529,17 @@ class HostDevices extends Wizard
                     'label'     => '<b>'.__('Task name').'</b>',
                     'arguments' => [
                         'name'  => 'taskname',
+                        'value' => '',
+                        'type'  => 'text',
+                        'size'  => 25,
+                    ],
+                ];
+
+                // Input task name.
+                $form['inputs'][] = [
+                    'label'     => '<b>'.__('Comment').'</b>',
+                    'arguments' => [
+                        'name'  => 'comment',
                         'value' => '',
                         'type'  => 'text',
                         'size'  => 25,
@@ -417,38 +580,6 @@ class HostDevices extends Wizard
                         'type'  => 'text',
                         'size'  => 25,
                     ],
-                ];
-
-                // Input interval.
-                $form['inputs'][] = [
-                    'label'     => '<b>'.__('Interval').'</b>'.ui_print_help_tip(
-                        __('Manual interval means that it will be executed only On-demand'),
-                        true
-                    ),
-                    'arguments' => [
-                        'type'     => 'select',
-                        'selected' => $interv_manual,
-                        'fields'   => [
-                            0 => __('Defined'),
-                            1 => __('Manual'),
-                        ],
-                        'name'     => 'interval_manual_defined',
-                        'return'   => true,
-                    ],
-                    'extra'     => '<span id="interval_manual_container">'.html_print_extended_select_for_time(
-                        'interval',
-                        $interval,
-                        '',
-                        '',
-                        '0',
-                        false,
-                        true,
-                        false,
-                        false
-                    ).ui_print_help_tip(
-                        __('The minimum recomended interval for Recon Task is 5 minutes'),
-                        true
-                    ).'</span>',
                 ];
 
                 // Input Group.
@@ -553,17 +684,19 @@ class HostDevices extends Wizard
                 'hidden'        => 1,
                 'block_id'      => 'snmp_extra',
                 'block_content' => [
-                    'label'     => __('SNMP version'),
-                    'arguments' => [
-                        'name'   => 'auth_strings',
-                        'fields' => [
-                            '1'  => 'v. 1',
-                            '2c' => 'v. 2c',
-                            '3'  => 'v. 3',
+                    [
+                        'label'     => __('SNMP version'),
+                        'arguments' => [
+                            'name'   => 'auth_strings',
+                            'fields' => [
+                                '1'  => 'v. 1',
+                                '2c' => 'v. 2c',
+                                '3'  => 'v. 3',
+                            ],
+                            'type'   => 'select',
+                            'script' => "\$('#snmp_options_v'+this.value).toggle()",
+                            'return' => true,
                         ],
-                        'type'   => 'select',
-                        'script' => "\$('#snmp_options_v'+this.value).toggle()",
-                        'return' => true,
                     ],
                 ],
             ];
@@ -572,13 +705,15 @@ class HostDevices extends Wizard
                 'hidden'        => 1,
                 'block_id'      => 'snmp_options_v1',
                 'block_content' => [
-                    'label'     => __('Community'),
-                    'arguments' => [
-                        'name'   => 'community',
-                        'type'   => 'text',
-                        'size'   => 25,
-                        'return' => true,
+                    [
+                        'label'     => __('Community'),
+                        'arguments' => [
+                            'name'   => 'community',
+                            'type'   => 'text',
+                            'size'   => 25,
+                            'return' => true,
 
+                        ],
                     ],
                 ],
             ];

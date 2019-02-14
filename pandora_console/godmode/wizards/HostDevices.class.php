@@ -8,6 +8,10 @@ require_once $config['homedir'].'/include/functions_users.php';
  */
 class HostDevices extends Wizard
 {
+    // CSV constants.
+    const HDW_CSV_NOT_DATA = 0;
+    const HDW_CSV_DUPLICATED = 0;
+    const HDW_CSV_GROUP_EXISTS = 0;
 
     /**
      * Undocumented variable
@@ -114,11 +118,10 @@ class HostDevices extends Wizard
         if ($mode === null) {
             $this->setBreadcrum(['<a href="index.php?sec=gservers&sec2=godmode/servers/discovery&wiz=hd">Host&devices</a>']);
             $this->printHeader();
-            if (extensions_is_enabled_extension('csv_import')) {
-                echo '<a href="'.$this->url.'&mode=importcsv" alt="importcsv">Importar csv</a>';
-            }
 
+            echo '<a href="'.$this->url.'&mode=importcsv" alt="importcsv">Importar csv</a>';
             echo '<a href="'.$this->url.'&mode=netscan" alt="netscan">Escanear red</a>';
+
             return;
         }
 
@@ -126,7 +129,7 @@ class HostDevices extends Wizard
             $this->setBreadcrum(
                 [
                     '<a href="index.php?sec=gservers&sec2=godmode/servers/discovery&wiz=hd">Host&devices</a>',
-                    '<a href="index.php?sec=gservers&sec2=godmode/servers/discovery&wiz=hd&mode=csv">Import CSV</a>',
+                    '<a href="index.php?sec=gservers&sec2=godmode/servers/discovery&wiz=hd&mode=importcsv">Import CSV</a>',
                 ]
             );
             $this->printHeader();
@@ -178,8 +181,7 @@ class HostDevices extends Wizard
     {
         global $config;
 
-        if (!check_acl($config['id_user'], 0, 'AW')
-        ) {
+        if (!check_acl($config['id_user'], 0, 'AW')) {
             db_pandora_audit(
                 'ACL Violation',
                 'Trying to access db status'
@@ -188,17 +190,133 @@ class HostDevices extends Wizard
             return;
         }
 
-        if (!extensions_is_enabled_extension('csv_import')) {
-            ui_print_error_message(
+        if (!isset($this->page) || $this->page == 0) {
+            $this->printForm(
                 [
-                    'message'  => __('Extension CSV Import is not enabled.'),
-                    'no_close' => true,
+                    'form'   => [
+                        'action'  => '#',
+                        'method'  => 'POST',
+                        'enctype' => 'multipart/form-data',
+                    ],
+                    'inputs' => [
+                        [
+                            'arguments' => [
+                                'type'   => 'hidden',
+                                'name'   => 'import_file',
+                                'value'  => 1,
+                                'return' => true,
+                            ],
+                        ],
+                        [
+                            'label'     => __('Upload file'),
+                            'arguments' => [
+                                'type'   => 'file',
+                                'name'   => 'file',
+                                'return' => true,
+                            ],
+                        ],
+                        [
+                            'label'     => __('Server'),
+                            'arguments' => [
+                                'type'   => 'select',
+                                'fields' => servers_get_names(),
+                                'name'   => 'server',
+                                'return' => true,
+                            ],
+                        ],
+                        [
+                            'label'     => __('Separator'),
+                            'arguments' => [
+                                'type'   => 'select',
+                                'fields' => [
+                                    ',' => ',',
+                                    ';' => ';',
+                                    ':' => ':',
+                                    '.' => '.',
+                                    '#' => '#',
+                                ],
+                                'name'   => 'separator',
+                                'return' => true,
+                            ],
+                        ],
+                        [
+                            'arguments' => [
+                                'name'   => 'page',
+                                'value'  => 1,
+                                'type'   => 'hidden',
+                                'return' => true,
+                            ],
+                        ],
+                        [
+                            'arguments' => [
+                                'name'       => 'submit',
+                                'label'      => __('Go'),
+                                'type'       => 'submit',
+                                'attributes' => 'class="sub next"',
+                                'return'     => true,
+                            ],
+                        ],
+                    ],
                 ]
             );
-            return;
         }
 
-        include_once $config['homedir'].'/enterprise/extensions/csv_import/main.php';
+        if (isset($this->page) && $this->page == 1) {
+            $server = get_parameter('server');
+            $separator = get_parameter('separator');
+
+            if (isset($_FILES['file'])) {
+                $file_status_code = get_file_upload_status('file');
+                $file_status = translate_file_upload_status($file_status_code);
+
+                if ($file_status === true) {
+                    $error_message = [];
+                    $line = -1;
+                    $file = fopen($_FILES['file']['tmp_name'], 'r');
+                    if (! empty($file)) {
+                        while (($data = fgetcsv($file, 1000, $separator)) !== false) {
+                            $result = $this->processCsvData($data, $server);
+                            $line++;
+                            if ($result === HDW_CSV_NOT_DATA || $result === HDW_CSV_DUPLICATED || $result === HDW_CSV_GROUP_EXISTS) {
+                                if ($result === HDW_CSV_NOT_DATA) {
+                                    $error_message[] = __('No data or wrong separator in line ').$line.'</br>';
+                                } else if ($result === HDW_CSV_DUPLICATED) {
+                                    $error_message[] = __('Agent ').io_safe_input($data[0]).__(' duplicated').'</br>';
+                                } else {
+                                    $error_message[] = __("Id group %s in line %s doesn't exist in %s", $data[4], $line, get_product_name()).'</br>';
+                                }
+
+                                continue;
+                            }
+
+                            ui_print_result_message(
+                                $result !== false,
+                                __('Created agent %s', $result['agent_name']),
+                                __('Could not create agent %s', $result['agent_name'])
+                            );
+                        }
+                    }
+
+                    fclose($file);
+
+                    if (empty($error_message)) {
+                        ui_print_success_message(__('File processed'));
+                    } else {
+                        foreach ($error_message as $msg) {
+                            ui_print_error_message($msg);
+                        }
+                    }
+                } else {
+                    ui_print_error_message($file_status);
+                }
+
+                @unlink($_FILES['file']['tmp_name']);
+            } else {
+                ui_print_error_message(__('No input file detected'));
+            }
+
+            echo $this->breadcrum[0];
+        }
     }
 
 
@@ -402,6 +520,64 @@ class HostDevices extends Wizard
                 'msg'    => $this->msg,
             ];
         }
+    }
+
+
+    /**
+     * Process the csv of agent.
+     *
+     * @param array  $data   Data of agent.
+     * @param string $server Name of server.
+     *
+     * @return array with data porcessed.
+     */
+    private static function processCsvData($data, $server='')
+    {
+        if (empty($data) || count($data) < 5) {
+            return HDW_CSV_NOT_DATA;
+        }
+
+        $data['network_components'] = array_slice($data, 6);
+        $data['agent_name'] = io_safe_input($data[0]);
+        $data['alias'] = io_safe_input($data[0]);
+        $data['ip_address'] = $data[1];
+        $data['id_os'] = $data[2];
+        $data['interval'] = $data[3];
+        $data['id_group'] = $data[4];
+        $data['comentarios'] = io_safe_input($data[5]);
+
+        $exists = (bool) agents_get_agent_id($data['agent_name']);
+        if ($exists) {
+            return HDW_CSV_DUPLICATED;
+        }
+
+        $group_exists_in_pandora = (bool) groups_get_group_by_id($data['id_group']);
+        if (!$group_exists_in_pandora) {
+            return HDW_CSV_GROUP_EXISTS;
+        }
+
+        $data['id_agent'] = agents_create_agent(
+            $data['agent_name'],
+            $data['id_group'],
+            $data['interval'],
+            $data['ip_address'],
+            [
+                'id_os'       => $data['id_os'],
+                'server_name' => $server,
+                'modo'        => 1,
+                'alias'       => $data['alias'],
+                'comentarios' => $data['comentarios'],
+            ]
+        );
+
+        foreach ($data['network_components'] as $id_network_component) {
+            network_components_create_module_from_network_component(
+                (int) $id_network_component,
+                $data['id_agent']
+            );
+        }
+
+        return $data;
     }
 
 

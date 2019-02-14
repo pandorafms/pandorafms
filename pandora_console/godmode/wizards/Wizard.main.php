@@ -308,7 +308,7 @@ class Wizard
         $inputs = $data['inputs'];
         $js = $data['js'];
 
-        $output = '<form action="'.$form['action'].'" method="'.$form['method'];
+        $output = '<form enctype="'.$form['enctype'].'" action="'.$form['action'].'" method="'.$form['method'];
         $output .= '" '.$form['extra'].'>';
 
         $output .= '<ul class="wizard">';

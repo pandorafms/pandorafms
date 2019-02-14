@@ -13,6 +13,13 @@ class Wizard
      */
     public $breadcrum;
 
+    /**
+     * Undocumented variable
+     *
+     * @var [type]
+     */
+    public $page;
+
 
     /**
      * Setter for breadcrum

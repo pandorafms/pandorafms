@@ -1,7 +1,34 @@
 <?php
+/**
+ * Extension to schedule tasks on Pandora FMS Console
+ *
+ * @category   Wizard
+ * @package    Pandora FMS
+ * @subpackage Host&Devices
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
 
 require_once __DIR__.'/Wizard.main.php';
 require_once $config['homedir'].'/include/functions_users.php';
+enterprise_include('include/class/CSVImportAgents.class.php');
 
 /**
  * Undocumented class
@@ -54,13 +81,6 @@ class HostDevices extends Wizard
      * @var [type]
      */
     public $url;
-
-    /**
-     * Undocumented variable
-     *
-     * @var [type]
-     */
-    public $page;
 
     /**
      * Stores all needed parameters to create a recon task.
@@ -125,15 +145,18 @@ class HostDevices extends Wizard
             return;
         }
 
-        if ($mode == 'importcsv') {
-            $this->setBreadcrum(
-                [
-                    '<a href="index.php?sec=gservers&sec2=godmode/servers/discovery&wiz=hd">Host&devices</a>',
-                    '<a href="index.php?sec=gservers&sec2=godmode/servers/discovery&wiz=hd&mode=importcsv">Import CSV</a>',
-                ]
-            );
-            $this->printHeader();
-            return $this->runCSV();
+        if (enterprise_installed()) {
+            if ($mode == 'importcsv') {
+                $this->setBreadcrum(
+                    [
+                        '<a href="index.php?sec=gservers&sec2=godmode/servers/discovery&wiz=hd">Host&devices</a>',
+                        '<a href="index.php?sec=gservers&sec2=godmode/servers/discovery&wiz=hd&mode=importcsv">Import CSV</a>',
+                    ]
+                );
+                $this->printHeader();
+                $csv_importer = new CSVImportAgents($this->page, $this->breadcrum);
+                return $csv_importer->runCSV();
+            }
         }
 
         if ($mode == 'netscan') {
@@ -170,154 +193,6 @@ class HostDevices extends Wizard
 
 
     // Extra methods.
-
-
-    /**
-     * Undocumented function
-     *
-     * @return void
-     */
-    public function runCSV()
-    {
-        global $config;
-
-        if (!check_acl($config['id_user'], 0, 'AW')) {
-            db_pandora_audit(
-                'ACL Violation',
-                'Trying to access db status'
-            );
-            include 'general/noaccess.php';
-            return;
-        }
-
-        if (!isset($this->page) || $this->page == 0) {
-            $this->printForm(
-                [
-                    'form'   => [
-                        'action'  => '#',
-                        'method'  => 'POST',
-                        'enctype' => 'multipart/form-data',
-                    ],
-                    'inputs' => [
-                        [
-                            'arguments' => [
-                                'type'   => 'hidden',
-                                'name'   => 'import_file',
-                                'value'  => 1,
-                                'return' => true,
-                            ],
-                        ],
-                        [
-                            'label'     => __('Upload file'),
-                            'arguments' => [
-                                'type'   => 'file',
-                                'name'   => 'file',
-                                'return' => true,
-                            ],
-                        ],
-                        [
-                            'label'     => __('Server'),
-                            'arguments' => [
-                                'type'   => 'select',
-                                'fields' => servers_get_names(),
-                                'name'   => 'server',
-                                'return' => true,
-                            ],
-                        ],
-                        [
-                            'label'     => __('Separator'),
-                            'arguments' => [
-                                'type'   => 'select',
-                                'fields' => [
-                                    ',' => ',',
-                                    ';' => ';',
-                                    ':' => ':',
-                                    '.' => '.',
-                                    '#' => '#',
-                                ],
-                                'name'   => 'separator',
-                                'return' => true,
-                            ],
-                        ],
-                        [
-                            'arguments' => [
-                                'name'   => 'page',
-                                'value'  => 1,
-                                'type'   => 'hidden',
-                                'return' => true,
-                            ],
-                        ],
-                        [
-                            'arguments' => [
-                                'name'       => 'submit',
-                                'label'      => __('Go'),
-                                'type'       => 'submit',
-                                'attributes' => 'class="sub next"',
-                                'return'     => true,
-                            ],
-                        ],
-                    ],
-                ]
-            );
-        }
-
-        if (isset($this->page) && $this->page == 1) {
-            $server = get_parameter('server');
-            $separator = get_parameter('separator');
-
-            if (isset($_FILES['file'])) {
-                $file_status_code = get_file_upload_status('file');
-                $file_status = translate_file_upload_status($file_status_code);
-
-                if ($file_status === true) {
-                    $error_message = [];
-                    $line = -1;
-                    $file = fopen($_FILES['file']['tmp_name'], 'r');
-                    if (! empty($file)) {
-                        while (($data = fgetcsv($file, 1000, $separator)) !== false) {
-                            $result = $this->processCsvData($data, $server);
-                            $line++;
-                            if ($result === HDW_CSV_NOT_DATA || $result === HDW_CSV_DUPLICATED || $result === HDW_CSV_GROUP_EXISTS) {
-                                if ($result === HDW_CSV_NOT_DATA) {
-                                    $error_message[] = __('No data or wrong separator in line ').$line.'</br>';
-                                } else if ($result === HDW_CSV_DUPLICATED) {
-                                    $error_message[] = __('Agent ').io_safe_input($data[0]).__(' duplicated').'</br>';
-                                } else {
-                                    $error_message[] = __("Id group %s in line %s doesn't exist in %s", $data[4], $line, get_product_name()).'</br>';
-                                }
-
-                                continue;
-                            }
-
-                            ui_print_result_message(
-                                $result !== false,
-                                __('Created agent %s', $result['agent_name']),
-                                __('Could not create agent %s', $result['agent_name'])
-                            );
-                        }
-                    }
-
-                    fclose($file);
-
-                    if (empty($error_message)) {
-                        ui_print_success_message(__('File processed'));
-                    } else {
-                        foreach ($error_message as $msg) {
-                            ui_print_error_message($msg);
-                        }
-                    }
-                } else {
-                    ui_print_error_message($file_status);
-                }
-
-                @unlink($_FILES['file']['tmp_name']);
-            } else {
-                ui_print_error_message(__('No input file detected'));
-            }
-
-            echo $this->breadcrum[0];
-        }
-    }
 
 
     /**
@@ -701,12 +576,49 @@ class HostDevices extends Wizard
                 ],
             ];
 
+            // SNMP Options pack v1.
             $form['inputs'][] = [
                 'hidden'        => 1,
                 'block_id'      => 'snmp_options_v1',
                 'block_content' => [
                     [
                         'label'     => __('Community'),
+                        'arguments' => [
+                            'name'   => 'community',
+                            'type'   => 'text',
+                            'size'   => 25,
+                            'return' => true,
+
+                        ],
+                    ],
+                ],
+            ];
+
+            // SNMP Options pack v2c.
+            $form['inputs'][] = [
+                'hidden'        => 1,
+                'block_id'      => 'snmp_options_v2c',
+                'block_content' => [
+                    [
+                        'label'     => __('Community'),
+                        'arguments' => [
+                            'name'   => 'community',
+                            'type'   => 'text',
+                            'size'   => 25,
+                            'return' => true,
+
+                        ],
+                    ],
+                ],
+            ];
+
+            // SNMP Options pack v3.
+            $form['inputs'][] = [
+                'hidden'        => 1,
+                'block_id'      => 'snmp_options_v3',
+                'block_content' => [
+                    [
+                        'label'     => __(''),
                         'arguments' => [
                             'name'   => 'community',
                             'type'   => 'text',
@@ -902,64 +814,6 @@ $("select#interval_manual_defined").change(function() {
                 'msg'    => $this->msg,
             ];
         }
-    }
-
-
-    /**
-     * Process the csv of agent.
-     *
-     * @param array  $data   Data of agent.
-     * @param string $server Name of server.
-     *
-     * @return array with data porcessed.
-     */
-    private static function processCsvData($data, $server='')
-    {
-        if (empty($data) || count($data) < 5) {
-            return HDW_CSV_NOT_DATA;
-        }
-
-        $data['network_components'] = array_slice($data, 6);
-        $data['agent_name'] = io_safe_input($data[0]);
-        $data['alias'] = io_safe_input($data[0]);
-        $data['ip_address'] = $data[1];
-        $data['id_os'] = $data[2];
-        $data['interval'] = $data[3];
-        $data['id_group'] = $data[4];
-        $data['comentarios'] = io_safe_input($data[5]);
-
-        $exists = (bool) agents_get_agent_id($data['agent_name']);
-        if ($exists) {
-            return HDW_CSV_DUPLICATED;
-        }
-
-        $group_exists_in_pandora = (bool) groups_get_group_by_id($data['id_group']);
-        if (!$group_exists_in_pandora) {
-            return HDW_CSV_GROUP_EXISTS;
-        }
-
-        $data['id_agent'] = agents_create_agent(
-            $data['agent_name'],
-            $data['id_group'],
-            $data['interval'],
-            $data['ip_address'],
-            [
-                'id_os'       => $data['id_os'],
-                'server_name' => $server,
-                'modo'        => 1,
-                'alias'       => $data['alias'],
-                'comentarios' => $data['comentarios'],
-            ]
-        );
-
-        foreach ($data['network_components'] as $id_network_component) {
-            network_components_create_module_from_network_component(
-                (int) $id_network_component,
-                $data['id_agent']
-            );
-        }
-
-        return $data;
     }
 
 

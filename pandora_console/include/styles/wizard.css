@@ -1,0 +1,11 @@
+ul.wizard {
+}
+
+ul.wizard li {
+  padding: 10px;
+}
+
+ul.wizard li > label {
+  width: 250px;
+  display: inline-block;
+}

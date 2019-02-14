@@ -45,6 +45,7 @@ class Wizard
      */
     public function run()
     {
+        ui_require_css_file('wizard');
     }
 
 
@@ -214,6 +215,77 @@ class Wizard
                 ((isset($data['options']) === true) ? $data['options'] : false)
             );
 
+            case 'select':
+            return html_print_select(
+                $data['fields'],
+                $data['name'],
+                ((isset($data['selected']) === true) ? $data['selected'] : ''),
+                ((isset($data['script']) === true) ? $data['script'] : ''),
+                ((isset($data['nothing']) === true) ? $data['nothing'] : ''),
+                ((isset($data['nothing_value']) === true) ? $data['nothing_value'] : 0),
+                ((isset($data['return']) === true) ? $data['return'] : false),
+                ((isset($data['multiple']) === true) ? $data['multiple'] : false),
+                ((isset($data['sort']) === true) ? $data['sort'] : true),
+                ((isset($data['class']) === true) ? $data['class'] : ''),
+                ((isset($data['disabled']) === true) ? $data['disabled'] : false),
+                ((isset($data['style']) === true) ? $data['style'] : false),
+                ((isset($data['option_style']) === true) ? $data['option_style'] : false),
+                ((isset($data['size']) === true) ? $data['size'] : false),
+                ((isset($data['modal']) === true) ? $data['modal'] : false),
+                ((isset($data['message']) === true) ? $data['message'] : ''),
+                ((isset($data['select_all']) === true) ? $data['select_all'] : false)
+            );
+
+            case 'select_from_sql':
+            return html_print_select_from_sql(
+                $data['sql'],
+                $data['name'],
+                ((isset($data['selected']) === true) ? $data['selected'] : ''),
+                ((isset($data['script']) === true) ? $data['script'] : ''),
+                ((isset($data['nothing']) === true) ? $data['nothing'] : ''),
+                ((isset($data['nothing_value']) === true) ? $data['nothing_value'] : '0'),
+                ((isset($data['return']) === true) ? $data['return'] : false),
+                ((isset($data['multiple']) === true) ? $data['multiple'] : false),
+                ((isset($data['sort']) === true) ? $data['sort'] : true),
+                ((isset($data['disabled']) === true) ? $data['disabled'] : false),
+                ((isset($data['style']) === true) ? $data['style'] : false),
+                ((isset($data['size']) === true) ? $data['size'] : false),
+                ((isset($data['trucate_size']) === true) ? $data['trucate_size'] : GENERIC_SIZE_TEXT)
+            );
+
+            case 'select_groups':
+            return html_print_select_groups(
+                ((isset($data['id_user']) === true) ? $data['id_user'] : false),
+                ((isset($data['privilege']) === true) ? $data['privilege'] : 'AR'),
+                ((isset($data['returnAllGroup']) === true) ? $data['returnAllGroup'] : true),
+                $data['name'],
+                ((isset($data['selected']) === true) ? $data['selected'] : ''),
+                ((isset($data['script']) === true) ? $data['script'] : ''),
+                ((isset($data['nothing']) === true) ? $data['nothing'] : ''),
+                ((isset($data['nothing_value']) === true) ? $data['nothing_value'] : 0),
+                ((isset($data['return']) === true) ? $data['return'] : false),
+                ((isset($data['multiple']) === true) ? $data['multiple'] : false),
+                ((isset($data['sort']) === true) ? $data['sort'] : true),
+                ((isset($data['class']) === true) ? $data['class'] : ''),
+                ((isset($data['disabled']) === true) ? $data['disabled'] : false),
+                ((isset($data['style']) === true) ? $data['style'] : false),
+                ((isset($data['option_style']) === true) ? $data['option_style'] : false),
+                ((isset($data['id_group']) === true) ? $data['id_group'] : false),
+                ((isset($data['keys_field']) === true) ? $data['keys_field'] : 'id_grupo'),
+                ((isset($data['strict_user']) === true) ? $data['strict_user'] : false),
+                ((isset($data['delete_groups']) === true) ? $data['delete_groups'] : false),
+                ((isset($data['include_groups']) === true) ? $data['include_groups'] : false)
+            );
+
+            case 'submit':
+            return html_print_submit_button(
+                ((isset($data['label']) === true) ? $data['label'] : 'OK'),
+                ((isset($data['name']) === true) ? $data['name'] : ''),
+                ((isset($data['disabled']) === true) ? $data['disabled'] : false),
+                ((isset($data['attributes']) === true) ? $data['attributes'] : ''),
+                ((isset($data['return']) === true) ? $data['return'] : false)
+            );
+
             default:
                 // Ignore.
             break;
@@ -239,16 +311,19 @@ class Wizard
         $output = '<form action="'.$form['action'].'" method="'.$form['method'];
         $output .= '" '.$form['extra'].'>';
 
-        $ouput .= '<ul>';
+        $output .= '<ul class="wizard">';
 
         foreach ($inputs as $input) {
             $output .= '<li><label>'.$input['label'].'</label>';
-            $output .= $this->printInput($input['arguments']).'</li>';
+            $output .= $this->printInput($input['arguments']);
+            // Allow dynamic content.
+            $output .= $input['extra'];
+            $output .= '</li>';
         }
 
         $output .= '</ul>';
         $output .= '</form>';
-        $output .= $js;
+        $output .= '<script>'.$js.'</script>';
 
         if ($return === false) {
             echo $output;

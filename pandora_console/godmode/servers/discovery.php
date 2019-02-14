@@ -52,7 +52,6 @@ if ($classname_selected !== null) {
     $wiz = new $classname_selected($page);
     $wiz->run();
     // TODO: Here we'll controlle if return is a valid recon task id.
-    exit();
 }
 
 if ($classname_selected === null) {

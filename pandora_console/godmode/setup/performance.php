@@ -63,75 +63,84 @@ if ($update_config == 1 && $config['history_db_enabled'] == 1) {
         $historical_event_purge = get_parameter('historical_event_purge', 0);
         $historical_string_purge = get_parameter('historical_string_purge', 0);
 
-        $config_history = mysql_db_process_sql(
-            'SELECT * FROM tconfig',
+        $history_connect = @mysql_db_process_sql(
+            'SELECT 1 FROM tconfig',
             'affected_rows',
             $config['history_db_connection'],
             false
         );
 
-        if (!$config_history) {
-            $sql = "INSERT INTO tconfig (token, `value`) VALUES
-                    ('days_purge', ".$historical_days_purge."),
-                    ('days_compact', ".$historical_days_compact."),
-                    ('step_compact', ".$historical_step_compact."),
-                    ('event_purge', ".$historical_event_purge."),
-                    ('string_purge', ".$historical_string_purge."),
-                    ('history_db_enabled', 0)";
+        $config_history = false;
+        if ($history_connect !== false) {
+            $config_history = mysql_db_process_sql(
+                'SELECT * FROM tconfig',
+                'affected_rows',
+                $config['history_db_connection'],
+                false
+            );
 
-            mysql_db_process_sql(
-                $sql,
-                'insert_id',
-                $config['history_db_connection'],
-                false
-            );
-        } else {
-            $sql = 'UPDATE tconfig SET `value` = '.$historical_days_purge." WHERE token = 'days_purge'";
-            mysql_db_process_sql(
-                $sql,
-                'update_id',
-                $config['history_db_connection'],
-                false
-            );
-            $sql = 'UPDATE tconfig SET `value` = '.$historical_days_compact." WHERE token = 'days_compact'";
-            mysql_db_process_sql(
-                $sql,
-                'update_id',
-                $config['history_db_connection'],
-                false
-            );
-            $sql = 'UPDATE tconfig SET `value` = '.$historical_step_compact." WHERE token = 'step_compact'";
-            mysql_db_process_sql(
-                $sql,
-                'update_id',
-                $config['history_db_connection'],
-                false
-            );
-            $sql = 'UPDATE tconfig SET `value` = '.$historical_event_purge." WHERE token = 'event_purge'";
-            mysql_db_process_sql(
-                $sql,
-                'update_id',
-                $config['history_db_connection'],
-                false
-            );
-            $sql = 'UPDATE tconfig SET `value` = '.$historical_string_purge." WHERE token = 'string_purge'";
-            mysql_db_process_sql(
-                $sql,
-                'update_id',
-                $config['history_db_connection'],
-                false
-            );
-            $sql = "UPDATE tconfig SET `value` = 0 WHERE token = 'history_db_enabled'";
-            mysql_db_process_sql(
-                $sql,
-                'update_id',
-                $config['history_db_connection'],
-                false
-            );
+            if (!$config_history) {
+                $sql = "INSERT INTO tconfig (token, `value`) VALUES
+                        ('days_purge', ".$historical_days_purge."),
+                        ('days_compact', ".$historical_days_compact."),
+                        ('step_compact', ".$historical_step_compact."),
+                        ('event_purge', ".$historical_event_purge."),
+                        ('string_purge', ".$historical_string_purge."),
+                        ('history_db_enabled', 0)";
+
+                mysql_db_process_sql(
+                    $sql,
+                    'insert_id',
+                    $config['history_db_connection'],
+                    false
+                );
+            } else {
+                $sql = 'UPDATE tconfig SET `value` = '.$historical_days_purge." WHERE token = 'days_purge'";
+                mysql_db_process_sql(
+                    $sql,
+                    'update_id',
+                    $config['history_db_connection'],
+                    false
+                );
+                $sql = 'UPDATE tconfig SET `value` = '.$historical_days_compact." WHERE token = 'days_compact'";
+                mysql_db_process_sql(
+                    $sql,
+                    'update_id',
+                    $config['history_db_connection'],
+                    false
+                );
+                $sql = 'UPDATE tconfig SET `value` = '.$historical_step_compact." WHERE token = 'step_compact'";
+                mysql_db_process_sql(
+                    $sql,
+                    'update_id',
+                    $config['history_db_connection'],
+                    false
+                );
+                $sql = 'UPDATE tconfig SET `value` = '.$historical_event_purge." WHERE token = 'event_purge'";
+                mysql_db_process_sql(
+                    $sql,
+                    'update_id',
+                    $config['history_db_connection'],
+                    false
+                );
+                $sql = 'UPDATE tconfig SET `value` = '.$historical_string_purge." WHERE token = 'string_purge'";
+                mysql_db_process_sql(
+                    $sql,
+                    'update_id',
+                    $config['history_db_connection'],
+                    false
+                );
+                $sql = "UPDATE tconfig SET `value` = 0 WHERE token = 'history_db_enabled'";
+                mysql_db_process_sql(
+                    $sql,
+                    'update_id',
+                    $config['history_db_connection'],
+                    false
+                );
+            }
         }
     }
 }
-
 
 $table_status = new StdClass();
 $table_status->width = '100%';
@@ -146,6 +155,7 @@ $sql = "SELECT UNIX_TIMESTAMP(NOW()) - `value` AS updated_at
         WHERE token = 'db_maintance'";
 
 $time_pandora_db_active = db_get_sql($sql);
+
 
 if ($time_pandora_db_active < SECONDS_12HOURS) {
     $table_status->data[0][0] = html_print_image(
@@ -168,11 +178,6 @@ $table_status->data[0][0] .= human_time_description_raw(
 
 $table_status->data[0][0] .= ' '.__('ago').'.';
 
-$table_status->data[0][0] .= ui_print_help_tip(
-    __('WIP'),
-    true
-);
-
 if ($config['history_db_enabled'] == 1) {
     if (! isset($config['history_db_connection'])
         || $config['history_db_connection'] === false
@@ -187,13 +192,23 @@ if ($config['history_db_enabled'] == 1) {
         );
     }
 
-    if ($config['history_db_connection'] !== false) {
-        $time_pandora_db_history = mysql_db_process_sql(
-            $sql,
-            'insert_id',
-            $config['history_db_connection'],
-            false
-        );
+    $history_connect = @mysql_db_process_sql(
+        'SELECT 1 FROM tconfig',
+        'affected_rows',
+        $config['history_db_connection'],
+        false
+    );
+
+    $time_pandora_db_history = false;
+    if ($history_connect !== false) {
+        if ($config['history_db_connection'] !== false) {
+            $time_pandora_db_history = mysql_db_process_sql(
+                $sql,
+                'insert_id',
+                $config['history_db_connection'],
+                false
+            );
+        }
     }
 
     if ($time_pandora_db_history !== false
@@ -220,11 +235,6 @@ if ($config['history_db_enabled'] == 1) {
     } else {
         $table_status->data[1][0] .= __('not executed');
     }
-
-    $table_status->data[1][0] .= ui_print_help_tip(
-        __('WIP'),
-        true
-    );
 }
 
 
@@ -395,21 +405,33 @@ if ($config['history_db_enabled'] == 1) {
         );
     }
 
-    if ($config['history_db_connection'] != false) {
-        $config_history_array = mysql_db_process_sql(
-            'SELECT * FROM tconfig',
-            'affected_rows',
-            $config['history_db_connection'],
-            false
-        );
+    $history_connect = @mysql_db_process_sql(
+        'SELECT 1 FROM tconfig',
+        'affected_rows',
+        $config['history_db_connection'],
+        false
+    );
 
-        $config_history = false;
+    $config_history = false;
+    if ($history_connect !== false) {
+        if ($config['history_db_connection'] != false) {
+            $config_history_array = mysql_db_process_sql(
+                'SELECT * FROM tconfig',
+                'affected_rows',
+                $config['history_db_connection'],
+                false
+            );
 
-        if (isset($config_history_array) && is_array($config_history_array)) {
-            foreach ($config_history_array as $key => $value) {
-                $config_history[$value['token']] = $value['value'];
+            if (isset($config_history_array) && is_array($config_history_array)) {
+                foreach ($config_history_array as $key => $value) {
+                    $config_history[$value['token']] = $value['value'];
+                }
             }
         }
+    } else {
+        echo ui_print_error_message(
+            __('The tconfig table does not exist in the bbdd')
+        );
     }
 
     if ($config_history === false) {

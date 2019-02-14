@@ -430,7 +430,7 @@ if ($config['history_db_enabled'] == 1) {
         }
     } else {
         echo ui_print_error_message(
-            __('The tconfig table does not exist in the bbdd')
+            __('The tconfig table does not exist in the historical database')
         );
     }
 

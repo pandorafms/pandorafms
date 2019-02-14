@@ -560,17 +560,9 @@ $table_other->data[3][1] = html_print_input_text(
 );
 
 $table_other->data[5][0] = __('Use realtime statistics');
-$table_other->data[5][1] = __('Yes').'&nbsp;'.html_print_radio_button(
+$table_other->data[5][1] = html_print_checkbox_toogle_switch(
     'realtimestats',
     1,
-    '',
-    $config['realtimestats'],
-    true
-).'&nbsp;&nbsp;';
-$table_other->data[5][1] .= __('No').'&nbsp;'.html_print_radio_button(
-    'realtimestats',
-    0,
-    '',
     $config['realtimestats'],
     true
 );
@@ -589,27 +581,8 @@ $table_other->data[6][1] = html_print_input_text(
     true
 );
 
-$table_other->data[7][0] = __('Use agent access graph');
-$table_other->data[7][0] .= ui_print_help_icon(
-    'agent_access',
-    true
-);
-$table_other->data[7][1] = __('Yes').'&nbsp;';
-$table_other->data[7][1] .= html_print_radio_button(
-    'agentaccess',
-    1,
-    '',
-    $config['agentaccess'],
-    true
-).'&nbsp;&nbsp;';
-$table_other->data[7][1] .= __('No').'&nbsp;';
-$table_other->data[7][1] .= html_print_radio_button(
-    'agentaccess',
-    0,
-    '',
-    $config['agentaccess'],
-    true
-);
+$table_other->data[7][0] = __('Use agent access graph').ui_print_help_icon('agent_access', true);
+$table_other->data[7][1] = html_print_checkbox_toogle_switch('agentaccess', 1, $config['agentaccess'], true);
 
 $table_other->data[8][0] = __('Max. recommended number of files in attachment directory');
 $table_other->data[8][0] .= ui_print_help_tip(
@@ -626,21 +599,7 @@ $table_other->data[8][1] = html_print_input_text(
 );
 
 $table_other->data[9][0] = __('Delete not init modules');
-$table_other->data[9][1] = __('Yes').'&nbsp;';
-$table_other->data[9][1] .= html_print_radio_button(
-    'delete_notinit',
-    1,
-    '',
-    $config['delete_notinit'],
-    true
-).'&nbsp;&nbsp;';
-$table_other->data[9][1] .= __('No').'&nbsp;'.html_print_radio_button(
-    'delete_notinit',
-    0,
-    '',
-    $config['delete_notinit'],
-    true
-);
+$table_other->data[9][1] = html_print_checkbox_toogle_switch('delete_notinit', 1, $config['delete_notinit'], true);
 
 $table_other->data[10][0] = __('Big Operation Step to purge old data');
 $table_other->data[10][0] .= ui_print_help_tip(

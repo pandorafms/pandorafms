@@ -1,5 +1,4 @@
 <?php
-
 // Pandora FMS - http://pandorafms.com
 // ==================================================
 // Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
@@ -13,6 +12,7 @@
 // GNU General Public License for more details.
 require_once 'include/functions_messages.php';
 require_once 'include/functions_servers.php';
+require_once 'include/functions_notifications.php';
 
 // Check permissions
 // Global errors/warnings checking.
@@ -57,7 +57,7 @@ config_check();
                 $table->cellspacing = 0;
                 $table->head = [];
                 $table->data = [];
-                $table->style[0] = $table->style['clippy'] = $table->style[1] = $table->style[3] = $table->style[4] = $table->style[5] = $table->style[6] = $table->style[8] = $table->style[9] = $table->style['qr'] = $table->style['notifications'] = 'width: 22px; text-align:center; height: 22px; padding-right: 9px;padding-left: 9px;';
+                $table->style['clippy'] = $table->style[1] = $table->style[4] = $table->style[5] = $table->style[6] = $table->style[8] = $table->style[9] = $table->style['qr'] = $table->style['notifications'] = 'width: 22px; text-align:center; height: 22px; padding-right: 9px;padding-left: 9px;';
                 $table->style[7] = 'width: 20px; padding-right: 9px;';
                 $table->style['searchbar'] = 'width: 180px; min-width: 180px;';
                 $table->style[11] = 'padding-left: 10px; padding-right: 5px;width: 16px;';
@@ -110,27 +110,6 @@ config_check();
                 $table->data[0]['searchbar'] = $search_bar;
             }
 
-                // Servers check
-                $servers = [];
-                $servers['all'] = (int) db_get_value('COUNT(id_server)', 'tserver');
-                $servers['up'] = (int) servers_check_status();
-                $servers['down'] = ($servers['all'] - $servers['up']);
-            if ($servers['up'] == 0) {
-                // All Servers down or no servers at all
-                $servers_check_img = html_print_image('images/header_down.png', true, ['alt' => 'cross', 'class' => 'bot', 'title' => __('All systems').': '.__('Down')]);
-            } else if ($servers['down'] != 0) {
-                // Some servers down
-                $servers_check_img = html_print_image('images/header_warning.png', true, ['alt' => 'error', 'class' => 'bot', 'title' => $servers['down'].' '.__('servers down')]);
-            } else {
-                // All servers up
-                $servers_check_img = html_print_image('images/header_ready.png', true, ['alt' => 'ok', 'class' => 'bot', 'title' => __('All systems').': '.__('Ready')]);
-            }
-
-                unset($servers);
-            // Since this is the header, we don't like to trickle down variables.
-                $servers_link_open = '<a class="white" href="index.php?sec=gservers&amp;sec2=godmode/servers/modificar_server&amp;refr=60">';
-                $servers_link_close = '</a>';
-
             if ($config['show_qr_code_header'] == 0) {
                 $show_qr_code_header = 'display: none;';
             } else {
@@ -174,12 +153,6 @@ config_check();
                         ]
                     ).'</a>';
                 }
-
-
-                $table->data[0][0] = $servers_link_open.$servers_check_img.$servers_link_close;
-
-
-
 
                 // ======= Autorefresh code =============================
                 $autorefresh_txt = '';
@@ -256,42 +229,6 @@ config_check();
                 // ======================================================
                 $pandora_management = check_acl($config['id_user'], 0, 'PM');
 
-                echo '<div id="alert_messages" style="display: none"></div>';
-
-                if ($config['alert_cnt'] > 0) {
-                    $maintenance_link = 'javascript:';
-                    $maintenance_title = __('System alerts detected - Please fix as soon as possible');
-                    $maintenance_class = $maintenance_id = 'show_systemalert_dialog white';
-
-                    $maintenance_link_open_txt = '<a href="'.$maintenance_link.'" title="'.$maintenance_title.'" class="'.$maintenance_class.'" id="show_systemalert_dialog">';
-                    $maintenance_link_open_img = '<a href="'.$maintenance_link.'" title="'.$maintenance_title.'" class="'.$maintenance_class.'">';
-                    $maintenance_link_close = '</a>';
-                    if (!$pandora_management) {
-                        $maintenance_img = '';
-                    } else {
-                        $maintenance_img = $maintenance_link_open_img.html_print_image(
-                            'images/header_yellow.png',
-                            true,
-                            [
-                                'title' => __(
-                                    'You have %d warning(s)',
-                                    $config['alert_cnt']
-                                ),
-                                'id'    => 'yougotalert',
-                                'class' => 'bot',
-                            ]
-                        ).$maintenance_link_close;
-                    }
-                } else {
-                    if (!$pandora_management) {
-                        $maintenance_img = '';
-                    } else {
-                        $maintenance_img = html_print_image('images/header_ready.png', true, ['title' => __('There are not warnings'), 'id' => 'yougotalert', 'class' => 'bot']);
-                    }
-                }
-
-                $table->data[0][3] = $maintenance_img;
-
                 // Main help icon
                 if (!$config['disable_help']) {
                     $table->data[0][4] = '<a href="#" class="modalpopup" id="helpmodal">'.html_print_image(
@@ -304,6 +241,12 @@ config_check();
                         ]
                     ).'</a>';
                 }
+
+                $notifications_numbers = notifications_get_counters();
+                $table->data[0]['notifications'] = notifications_print_ball(
+                    $notifications_numbers['notifications'],
+                    $notifications_numbers['last_id']
+                );
 
                 // Logout
                 $table->data[0][5] = '<a class="white" href="'.ui_get_full_url('index.php?bye=bye').'">';
@@ -328,18 +271,6 @@ config_check();
                 $table->data[0][8] .= '</a>';
                 $table->data[0][8] .= '</span>';
 
-                // Messages
-                $msg_cnt = messages_get_count($config['id_user']);
-                if ($msg_cnt > 0) {
-                    echo '<div id="dialog_messages" style="display: none"></div>';
-
-                    $table->data[0][9] = '<a href="ajax.php?page=operation/messages/message_list" title="'.__('Message overview').'" id="show_messages_dialog">';
-                    $table->data[0][9] .= html_print_image('images/header_email.png', true, ['title' => __('You have %d unread message(s)', $msg_cnt), 'id' => 'yougotmail', 'class' => 'bot', 'style' => 'width:24px;']);
-                    $table->data[0][9] .= '</a>';
-                }
-
-                $table->data[0]['notifications'] = notifications_print_ball();
-
                 html_print_table($table);
 
                 unset($table);
@@ -360,6 +291,9 @@ config_check();
     </tr>
 </table>
 
+<!-- Notifications content wrapper-->
+<div id='notification-content' style='display:none;' /></div>
+
 <script type="text/javascript">
     /* <![CDATA[ */
     
@@ -368,12 +302,223 @@ config_check();
     if (isset($config['fixed_header'])) {
         $config_fixed_header = $config['fixed_header'];
     }
+
     ?>
-    
+
+    function addNotifications(event) {
+        var element = document.getElementById("notification-content");
+        if (!element) {
+            console.error('Cannot locate the notification content element.');
+            return;
+        }
+        // If notification-content is empty, retrieve the notifications.
+        if (!element.firstChild) {
+            jQuery.post ("ajax.php",
+                {
+                    "page" : "godmode/setup/setup_notifications",
+                    "get_notifications_dropdown" : 1,
+                },
+                function (data, status) {
+                    // Apppend data
+                    element.innerHTML = data;
+                    // Show the content
+                    element.style.display = "block";
+                    attatch_to_image();
+                },
+                "html"
+            );
+        } else {
+            // If there is some notifications retrieved, only show it.
+            element.style.display = "block";
+            attatch_to_image();
+        }
+    }
+
+    function attatch_to_image() {
+        var notification_elem = document.getElementById("notification-wrapper");
+        if (!notification_elem) return;
+        var image_attached =
+            document.getElementById("notification-ball-header")
+                .getBoundingClientRect()
+                .left
+        ;
+        notification_elem.style.left = image_attached - 300 + "px";
+    }
+
+    function notifications_clean_ui(action, self_id) {
+        switch(action) {
+            case 'item':
+                // Recalculate the notification ball.
+                check_new_notifications();
+                break;
+            case 'toast':
+                // Only remove the toast element.
+                document.getElementById(self_id).remove();
+                break;
+        }
+    }
+
+    function notifications_hide() {
+        var element = document.getElementById("notification-content");
+        element.style.display = "none"
+    }
+
+    function click_on_notification_toast(event) {
+        var match = /notification-(.*)-id-([0-9]+)/.exec(event.target.id);
+        if (!match) {
+            console.error(
+                "Cannot handle toast click event. Id not valid: ",
+                event.target.id
+            );
+            return;
+        }
+        jQuery.post ("ajax.php",
+            {
+                "page" : "godmode/setup/setup_notifications",
+                "mark_notification_as_read" : 1,
+                "message": match[2]
+            },
+            function (data, status) {
+                if (!data.result) {
+                    console.error("Cannot redirect to URL.");
+                    return;
+                }
+                notifications_clean_ui(match[1], event.target.id);
+            },
+            "json"
+        )
+        .fail(function(xhr, textStatus, errorThrown){
+            console.error(
+                "Failed onclik event on toast. Error: ",
+                xhr.responseText
+            );
+        });
+    }
+
+    function print_toast(title, subtitle, severity, url, id, onclick) {
+        // TODO severity.
+        severity = '';
+
+        // Start the toast.
+        var toast = document.createElement('a');
+        toast.setAttribute('onclick', onclick);
+        toast.setAttribute('href', url);
+        toast.setAttribute('target', '_blank');
+
+        // Fill toast.
+        var toast_div = document.createElement('div');
+        toast_div.className = 'snackbar ' + severity;
+        toast_div.id = id;
+        var toast_title = document.createElement('h3');
+        var toast_text = document.createElement('p');
+        toast_title.innerHTML = title;
+        toast_text.innerHTML = subtitle;
+        toast_div.appendChild(toast_title);
+        toast_div.appendChild(toast_text);
+        toast.appendChild(toast_div);
+
+        // Show and program the hide event.
+        toast_div.className = toast_div.className + ' show';
+        setTimeout(function(){
+            toast_div.className = toast_div.className.replace("show", "");
+        }, 8000);
+
+        return toast;
+    }
+
+    function check_new_notifications() {
+        var last_id = document.getElementById('notification-ball-header')
+            .getAttribute('last_id');
+        if (last_id === null) {
+            console.error('Cannot retrieve notifications ball last_id.');
+            return;
+        }
+
+        jQuery.post ("ajax.php",
+            {
+                "page" : "godmode/setup/setup_notifications",
+                "check_new_notifications" : 1,
+                "last_id": last_id
+            },
+            function (data, status) {
+                // Clean the toasts wrapper at first.
+                var toast_wrapper = document.getElementById(
+                    'notifications-toasts-wrapper'
+                );
+                if (toast_wrapper === null) {
+                    console.error('Cannot place toast notifications.');
+                    return;
+                }
+                while (toast_wrapper.firstChild) {
+                    toast_wrapper.removeChild(toast_wrapper.firstChild);
+                }
+
+                // Return if no new notification.
+                if(!data.has_new_notifications) return;
+
+                // Substitute the ball
+                var new_ball = atob(data.new_ball);
+                var ball_wrapper = document
+                    .getElementById('notification-ball-header')
+                    .parentElement;
+                if (ball_wrapper === null) {
+                    console.error('Cannot update notification ball');
+                    return;
+                }
+                // Print the new ball and clean old notifications
+                ball_wrapper.innerHTML = new_ball;
+                var not_drop = document.getElementById('notification-content');
+                while (not_drop.firstChild && not_drop) {
+                    not_drop.removeChild(not_drop.firstChild);
+                }
+
+                // Add the new toasts.
+                if (Array.isArray(data.new_notifications)) {
+                    data.new_notifications.forEach(function(ele) {
+                        toast_wrapper.appendChild(
+                            print_toast(
+                                ele.subject,
+                                ele.mensaje,
+                                ele.criticity,
+                                ele.full_url,
+                                'notification-toast-id-' + ele.id_mensaje,
+                                'click_on_notification_toast(event)'
+                            )
+                        );
+                    });
+                }
+            },
+            "json"
+        )
+        .fail(function(xhr, textStatus, errorThrown){
+            console.error(
+                "Cannot get new notifications. Error: ",
+                xhr.responseText
+            );
+        });
+    }
+
+    // Resize event
+    window.addEventListener("resize", function() {
+        attatch_to_image();
+    });
+
     var fixed_header = <?php echo json_encode((bool) $config_fixed_header); ?>;
     
     var new_chat = <?php echo (int) $_SESSION['new_chat']; ?>;
     $(document).ready (function () {
+
+        // Check new notifications on a periodic way
+        setInterval(check_new_notifications, 10000);
+
+        // Print the wrapper for notifications
+        var notifications_toasts_wrapper = document.createElement('div');
+        notifications_toasts_wrapper.id = 'notifications-toasts-wrapper';
+        document.body.insertBefore(
+            notifications_toasts_wrapper,
+            document.body.firstChild
+        );
+
         <?php
         if (($autorefresh_list !== null) && (array_search($_GET['sec2'], $autorefresh_list) !== false) && (!isset($_GET['refr']))) {
             $do_refresh = true;
@@ -425,33 +570,12 @@ config_check();
         $("#ui_close_dialog_titlebar").click(function () {
             $("#agent_access").css("display","");
         });
-        
-        function blinkmail(){
-            $("#yougotmail").delay(100).fadeTo(300,0.2).delay(100).fadeTo(300,1, blinkmail);
-        }
-        function blinkalert(){
-            $("#yougotalert").delay(100).fadeTo(300,0.2).delay(100).fadeTo(300,1, blinkalert);
-        }
+
         function blinkpubli(){
             $(".publienterprise").delay(100).fadeTo(300,0.2).delay(100).fadeTo(300,1, blinkpubli);
         }
-        <?php
-        if ($msg_cnt > 0) {
-            ?>
-            blinkmail();
-            <?php
-        }
-        ?>
-        
-        
-        <?php
-        if ($config['alert_cnt'] > 0) {
-            ?>
-            blinkalert();
-            <?php
-        }
-        ?>
-            blinkpubli();
+
+        blinkpubli();
 
         <?php
         if ($_GET['refr']) {

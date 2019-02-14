@@ -215,7 +215,6 @@ function messages_process_read(
     bool $read=true
 ) {
     global $config;
-
     // Check if user has grants to read the message.
     if (check_notification_readable($message_id) === false) {
         return false;
@@ -339,14 +338,16 @@ function messages_get_message_sent(int $message_id)
 /**
  * Counts private messages
  *
- * @param string  $user      Target user.
- * @param boolean $incl_read Whether or not to include read messages.
+ * @param string  $user          Target user.
+ * @param boolean $incl_read     Whether or not to include read messages.
+ * @param boolean $ignore_source Ignore source.
  *
  * @return integer The number of messages this user has
  */
 function messages_get_count(
     string $user='',
-    bool $incl_read=false
+    bool $incl_read=false,
+    bool $ignore_source=false
 ) {
     if (empty($user)) {
         global $config;
@@ -361,20 +362,33 @@ function messages_get_count(
         $read = 'where t.read is null';
     }
 
+    if ($ignore_source === true) {
+        $source_sql = '';
+    } else {
+        $source_sql = 'INNER JOIN tnotification_source ns
+            ON tm.id_source = ns.id
+            AND ns.enabled = 1';
+    }
+
     $sql = sprintf(
         'SELECT count(*) FROM (
-            SELECT tm.*, utimestamp_read > 0 as "read" FROM tmensajes tm 
+            SELECT DISTINCT tm.*, utimestamp_read > 0 as "read"
+            FROM tmensajes tm 
+            %s
             LEFT JOIN tnotification_user nu
                 ON tm.id_mensaje=nu.id_mensaje 
+                AND nu.id_user="%s"
             LEFT JOIN (tnotification_group ng
                 INNER JOIN tusuario_perfil up
                     ON ng.id_group=up.id_grupo
                     AND up.id_grupo=ng.id_group
             ) ON tm.id_mensaje=ng.id_mensaje 
             WHERE utimestamp_erased is null
-                AND (up.id_usuario="%s" OR nu.id_user="%s" OR ng.id_group=0)
+                AND (nu.id_user="%s" OR (up.id_usuario="%s" AND ng.id_group=0))
         ) t 
         %s',
+        $source_sql,
+        $user,
         $user,
         $user,
         $read
@@ -411,18 +425,24 @@ function messages_get_count_sent(string $user='')
 /**
  * Get message overview in array
  *
- * @param string  $order     How to order them valid:
- *                           (status (default), subject, timestamp, sender).
- * @param string  $order_dir Direction of order
- *                           (ASC = Ascending, DESC = Descending).
- * @param boolean $incl_read Include read messages in return.
+ * @param string  $order            How to order them valid:
+ *                                  (status (default), subject, timestamp, sender).
+ * @param string  $order_dir        Direction of order
+ *                                  (ASC = Ascending, DESC = Descending).
+ * @param boolean $incl_read        Include read messages in return.
+ * @param boolean $incl_source_info Include source info.
+ * @param integer $limit            Maximum number of result in the query.
+ * @param array   $other_filter     Add a filter on main query.
  *
  * @return integer The number of messages this user has
  */
 function messages_get_overview(
     string $order='status',
     string $order_dir='ASC',
-    bool $incl_read=true
+    bool $incl_read=true,
+    bool $incl_source_info=false,
+    int $limit=0,
+    array $other_filter=[]
 ) {
     global $config;
 
@@ -453,25 +473,44 @@ function messages_get_overview(
         $read = 'where t.read is null';
     }
 
+    $source_fields = '';
+    $source_join = '';
+    if ($incl_source_info) {
+        $source_fields = ', tns.*';
+        $source_join = 'INNER JOIN tnotification_source tns
+            ON tns.id=tm.id_source';
+    }
+
+    // Using distinct because could be double assignment due group/user.
     $sql = sprintf(
         'SELECT * FROM (
-            SELECT tm.*, utimestamp_read > 0 as "read" FROM tmensajes tm 
+            SELECT DISTINCT tm.*, utimestamp_read > 0 as "read" %s
+            FROM tmensajes tm 
             LEFT JOIN tnotification_user nu
                 ON tm.id_mensaje=nu.id_mensaje 
+                AND nu.id_user="%s" 
             LEFT JOIN (tnotification_group ng
                 INNER JOIN tusuario_perfil up
                     ON ng.id_group=up.id_grupo
                     AND up.id_grupo=ng.id_group
-            ) ON tm.id_mensaje=ng.id_mensaje 
+            ) ON tm.id_mensaje=ng.id_mensaje
+            %s
             WHERE utimestamp_erased is null
-                AND (up.id_usuario="%s" OR nu.id_user="%s" OR ng.id_group=0)
+                AND (nu.id_user="%s" OR (up.id_usuario="%s" AND ng.id_group=0))
         ) t 
         %s
-        ORDER BY %s',
+        %s
+        ORDER BY %s
+        %s',
+        $source_fields,
+        $config['id_user'],
+        $source_join,
         $config['id_user'],
         $config['id_user'],
         $read,
-        $order
+        db_format_array_where_clause_sql($other_filter, 'AND', ' AND '),
+        $order,
+        ($limit !== 0) ? ' LIMIT '.$limit : ''
     );
 
     return db_get_all_rows_sql($sql);
@@ -519,4 +558,29 @@ function messages_get_overview_sent(
         $config['id_user'],
         $order
     );
+}
+
+
+/**
+ * Get the URL of a message. If field in db is null, it returs a link to
+ *      messages view.
+ *
+ * @param integer $message_id Message id to get URL.
+ *
+ * @return mixed False if fails. A string with URL otherwise.
+ */
+function messages_get_url($message_id)
+{
+    $messages = messages_get_message($message_id);
+    if ($messages === false) {
+        return false;
+    }
+
+    // Return URL stored if is set in database.
+    if (isset($messages['url'])) {
+        return $messages['url'];
+    }
+
+    // Return the message direction.
+    return ui_get_full_url('index.php?sec=message_list&sec2=operation/messages/message_edit&read_message=1&id_message='.$message_id);
 }

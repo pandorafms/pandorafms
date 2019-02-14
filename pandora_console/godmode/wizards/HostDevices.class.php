@@ -70,7 +70,10 @@ class HostDevices implements Wizard
         $mode = get_parameter('mode', null);
 
         if ($mode === null) {
-            echo '<a href="'.$this->url.'&mode=importcsv" alt="importcsv">Importar csv</a>';
+            if (extensions_is_enabled_extension('csv_import')) {
+                echo '<a href="'.$this->url.'&mode=importcsv" alt="importcsv">Importar csv</a>';
+            }
+
             echo '<a href="'.$this->url.'&mode=netscan" alt="netscan">Escanear red</a>';
             return;
         }
@@ -116,50 +119,27 @@ class HostDevices implements Wizard
     public function runCSV()
     {
         global $config;
-        echo 'formulario csv';
-        if (isset($this->page) === false || $this->page === 0) {
-            $this->page = 0;
-
-            $test = get_parameter('test', null);
-
-            // Check user answers.
-            if ($test !== null) {
-                // $this->process_page_0($respuestas_usuario)
-                $this->page++;
-                header(
-                    'Location: '.$this->url.'&page='.$this->page
-                );
-            } else {
-                // Mostrar pagina 0.
-                echo 'Aqui vamos a empezar a construir el formulario.';
-                ?>
-                <form action="#" method="POST">
-                    <input name='test' type="text"/>
-                </form>
-                <?php
-            }
-        } else if ($this->page == 1) {
-            // Code...
-            $this->page++;
+        if (!check_acl($config['id_user'], 0, 'AW')
+        ) {
+            db_pandora_audit(
+                'ACL Violation',
+                'Trying to access db status'
+            );
+            include 'general/noaccess.php';
             return;
-            header('Location: index.php?class=HostDevices&page='.$this->page);
-        } else if ($this->page == 2) {
-            // Code...
-            $this->page++;
-            header('Location: index.php?class=HostDevices&page='.$this->page);
-        } else if ($this->page == 3) {
-            // Code...
-            $this->page++;
-            header('Location: /XXX/discovery/index.php?class=HostDevices&page='.$this->page);
         }
 
-        // Page 4, last.
-        return [
-            'result' => $this->result,
-            'id'     => $this->id,
-            'msg'    => $this->msg,
-        ];
+        if (!extensions_is_enabled_extension('csv_import')) {
+            ui_print_error_message(
+                [
+                    'message'  => __('Extension CSV Import is not enabled.'),
+                    'no_close' => true,
+                ]
+            );
+            return;
+        }
 
+        include_once $config['homedir'].'/enterprise/extensions/csv_import/main.php';
     }
 
 
@@ -818,8 +798,8 @@ function get_explanation_recon_script (id) {
 }
 
 </script>
-    <?php
-        return null;
+        <?php
+    return null;
         /*
             Page 4, last.
             return [

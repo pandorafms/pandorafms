@@ -95,7 +95,7 @@ class Wizard
      *
      * @return string HTML code for desired input.
      */
-    public function printInput(array $data)
+    public function printInput($data)
     {
         if (is_array($data) === false) {
             return '';
@@ -286,6 +286,20 @@ class Wizard
                 ((isset($data['return']) === true) ? $data['return'] : false)
             );
 
+            case 'checkbox':
+            return html_print_checkbox(
+                $data['name'],
+                $data['value'],
+                ((isset($data['checked']) === true) ? $data['checked'] : false),
+                ((isset($data['return']) === true) ? $data['return'] : false),
+                ((isset($data['disabled']) === true) ? $data['disabled'] : false),
+                ((isset($data['script']) === true) ? $data['script'] : ''),
+                ((isset($data['disabled_hidden']) === true) ? $data['disabled_hidden'] : false)
+            );
+
+            case 'switch':
+            return html_print_switch($data);
+
             default:
                 // Ignore.
             break;
@@ -296,9 +310,59 @@ class Wizard
 
 
     /**
+     * Print a block of inputs.
+     *
+     * @param array   $input  Definition of target block to be printed.
+     * @param boolean $return Return as string or direct output.
+     *
+     * @return string HTML content.
+     */
+    public function printBlock(array $input, bool $return=false)
+    {
+        $output = '';
+        if ($input['hidden'] == 1) {
+            $class = ' class="hidden"';
+        } else {
+            $class = '';
+        }
+
+        if (is_array($input['block_content']) === true) {
+            // Print independent block of inputs.
+            $output .= '<li id="'.$input['block_id'].'" '.$class.'>';
+            $output .= '<ul class="wizard">';
+            foreach ($input['block_content'] as $input) {
+                $output .= $this->printBlock($input, $return);
+            }
+
+            $output .= '</ul></li>';
+        } else {
+            if ($input['arguments']['type'] != 'hidden') {
+                $output .= '<li id="'.$input['id'].'" '.$class.'>';
+                $output .= '<label>'.$input['label'].'</label>';
+                $output .= $this->printInput($input['arguments']);
+                // Allow dynamic content.
+                $output .= $input['extra'];
+                $output .= '</li>';
+            } else {
+                $output .= $this->printInput($input['arguments']);
+                // Allow dynamic content.
+                $output .= $input['extra'];
+            }
+        }
+
+        if ($return === false) {
+            echo $output;
+        }
+
+        return $output;
+    }
+
+
+    /**
      * Print a form.
      *
-     * @param array $data Definition of target form to be printed.
+     * @param array   $data   Definition of target form to be printed.
+     * @param boolean $return Return as string or direct output.
      *
      * @return string HTML code.
      */
@@ -314,11 +378,7 @@ class Wizard
         $output .= '<ul class="wizard">';
 
         foreach ($inputs as $input) {
-            $output .= '<li><label>'.$input['label'].'</label>';
-            $output .= $this->printInput($input['arguments']);
-            // Allow dynamic content.
-            $output .= $input['extra'];
-            $output .= '</li>';
+            $output .= $this->printBlock($input, true);
         }
 
         $output .= '</ul>';

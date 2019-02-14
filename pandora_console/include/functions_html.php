@@ -3016,6 +3016,7 @@ function html_print_switch($attributes=[])
         'id',
         'class',
         'name',
+        'onclick',
     ];
     foreach ($valid_attrs as $va) {
         if (!isset($attributes[$va])) {

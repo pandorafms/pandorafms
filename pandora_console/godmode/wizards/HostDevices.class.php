@@ -32,13 +32,6 @@ class HostDevices extends Wizard
      *
      * @var [type]
      */
-    public $id;
-
-    /**
-     * Undocumented variable
-     *
-     * @var [type]
-     */
     public $msg;
 
     /**
@@ -69,6 +62,13 @@ class HostDevices extends Wizard
      */
     public $page;
 
+    /**
+     * Stores all needed parameters to create a recon task.
+     *
+     * @var array
+     */
+    public $task;
+
 
     /**
      * Undocumented function.
@@ -88,7 +88,7 @@ class HostDevices extends Wizard
     ) {
         $this->setBreadcrum([]);
 
-        $this->id = null;
+        $this->task = [];
         $this->msg = $msg;
         $this->icon = $icon;
         $this->label = $label;
@@ -488,21 +488,7 @@ class HostDevices extends Wizard
                     'action' => '#',
                 ];
 
-                $form['js'] = '
-    $("select#interval_manual_defined").change(function() {
-        if ($("#interval_manual_defined").val() == 1) {
-            $("#interval_manual_container").hide();
-            $("#text-interval_text").val(0);
-            $("#hidden-interval").val(0);
-        }
-        else {
-            $("#interval_manual_container").show();
-            $("#text-interval_text").val(10);
-            $("#hidden-interval").val(600);
-            $("#interval_units").val(60);
-        }
-    }).change();';
-
+                // XXX: Could be improved validating inputs before continue (JS)
                 // Print NetScan page 0.
                 $this->printForm($form);
             }
@@ -510,7 +496,268 @@ class HostDevices extends Wizard
 
         if ($this->page == 1) {
             // Page 1.
-            echo 'page 1!';
+            $form = [];
+            // Hidden, id_rt.
+            $form['inputs'][] = [
+                'arguments' => [
+                    'name'   => 'task',
+                    'value'  => $this->task['id_rt'],
+                    'type'   => 'hidden',
+                    'return' => true,
+                ],
+            ];
+
+            // Hidden, page.
+            $form['inputs'][] = [
+                'arguments' => [
+                    'name'   => 'page',
+                    'value'  => ($this->page + 1),
+                    'type'   => 'hidden',
+                    'return' => true,
+                ],
+            ];
+
+            $form['inputs'][] = [
+                'extra' => '<p>Please, configure task <b>'.io_safe_output($this->task['name']).'</b></p>',
+            ];
+
+            // Input: Module template.
+            $form['inputs'][] = [
+                'label'     => __('Module template'),
+                'arguments' => [
+                    'name'   => 'id_network_profile',
+                    'type'   => 'select_from_sql',
+                    'sql'    => 'SELECT id_np, name
+                            FROM tnetwork_profile
+                            ORDER BY name',
+                    'return' => true,
+
+                ],
+            ];
+
+            // Feature configuration.
+            // Input: Module template.
+            $form['inputs'][] = [
+                'label'     => __('SNMP enabled'),
+                'arguments' => [
+                    'name'    => 'snmp_enabled',
+                    'type'    => 'switch',
+                    'return'  => true,
+                    'onclick' => "\$('#snmp_extra').toggle();",
+
+                ],
+            ];
+
+            // SNMP CONFIGURATION.
+            $form['inputs'][] = [
+                'hidden'        => 1,
+                'block_id'      => 'snmp_extra',
+                'block_content' => [
+                    'label'     => __('SNMP version'),
+                    'arguments' => [
+                        'name'   => 'auth_strings',
+                        'fields' => [
+                            '1'  => 'v. 1',
+                            '2c' => 'v. 2c',
+                            '3'  => 'v. 3',
+                        ],
+                        'type'   => 'select',
+                        'script' => "\$('#snmp_options_v'+this.value).toggle()",
+                        'return' => true,
+                    ],
+                ],
+            ];
+
+            $form['inputs'][] = [
+                'hidden'        => 1,
+                'block_id'      => 'snmp_options_v1',
+                'block_content' => [
+                    'label'     => __('Community'),
+                    'arguments' => [
+                        'name'   => 'community',
+                        'type'   => 'text',
+                        'size'   => 25,
+                        'return' => true,
+
+                    ],
+                ],
+            ];
+
+            // Input: WMI enabled.
+            $form['inputs'][] = [
+                'label'     => __('WMI enabled'),
+                'arguments' => [
+                    'name'    => 'wmi_enabled',
+                    'type'    => 'switch',
+                    'return'  => true,
+                    'onclick' => "\$('#wmi_extra').toggle();",
+
+                ],
+            ];
+
+            // WMI CONFIGURATION.
+            $form['inputs'][] = [
+                'label'     => __('WMI Auth. strings'),
+                'hidden'    => 1,
+                'id'        => 'wmi_extra',
+                'arguments' => [
+                    'name'   => 'auth_strings',
+                    'type'   => 'text',
+                    'return' => true,
+
+                ],
+            ];
+
+            // Input: Module template.
+            $form['inputs'][] = [
+                'label'     => __('OS detection'),
+                'arguments' => [
+                    'name'   => 'os_detect',
+                    'type'   => 'switch',
+                    'return' => true,
+
+                ],
+            ];
+
+            // Input: Name resolution.
+            $form['inputs'][] = [
+                'label'     => __('Name resolution'),
+                'arguments' => [
+                    'name'   => 'resolve_names',
+                    'type'   => 'switch',
+                    'return' => true,
+                ],
+            ];
+
+            // Input: Parent detection.
+            $form['inputs'][] = [
+                'label'     => __('Parent detection'),
+                'arguments' => [
+                    'name'   => 'parent_detection',
+                    'type'   => 'switch',
+                    'return' => true,
+                ],
+            ];
+
+            // Input: VLAN enabled.
+            $form['inputs'][] = [
+                'label'     => __('VLAN enabled'),
+                'arguments' => [
+                    'name'   => 'os_detect',
+                    'type'   => 'switch',
+                    'return' => true,
+                ],
+            ];
+
+            // Submit button.
+            $form['inputs'][] = [
+                'arguments' => [
+                    'name'       => 'submit',
+                    'label'      => __('Next'),
+                    'type'       => 'submit',
+                    'attributes' => 'class="sub next"',
+                    'return'     => true,
+                ],
+            ];
+
+            $form['form'] = [
+                'method' => 'POST',
+                'action' => '#',
+            ];
+
+            $this->printForm($form);
+        }
+
+        if ($this->page == 2) {
+            // Interval and schedules.
+            $interv_manual = 0;
+            if ((int) $interval == 0) {
+                $interv_manual = 1;
+            }
+
+            $form['inputs'][] = [
+                'label'     => '<b>'.__('Interval').'</b>'.ui_print_help_tip(
+                    __('Manual interval means that it will be executed only On-demand'),
+                    true
+                ),
+                'arguments' => [
+                    'type'     => 'select',
+                    'selected' => $interv_manual,
+                    'fields'   => [
+                        0 => __('Defined'),
+                        1 => __('Manual'),
+                    ],
+                    'name'     => 'interval_manual_defined',
+                    'return'   => true,
+                ],
+                'extra'     => '<span id="interval_manual_container">'.html_print_extended_select_for_time(
+                    'interval',
+                    $interval,
+                    '',
+                    '',
+                    '0',
+                    false,
+                    true,
+                    false,
+                    false
+                ).ui_print_help_tip(
+                    __('The minimum recomended interval for Recon Task is 5 minutes'),
+                    true
+                ).'</span>',
+            ];
+
+            // Hidden, id_rt.
+            $form['inputs'][] = [
+                'arguments' => [
+                    'name'   => 'task',
+                    'value'  => $this->task['id_rt'],
+                    'type'   => 'hidden',
+                    'return' => true,
+                ],
+            ];
+
+            // Hidden, page.
+            $form['inputs'][] = [
+                'arguments' => [
+                    'name'   => 'page',
+                    'value'  => ($this->page + 1),
+                    'type'   => 'hidden',
+                    'return' => true,
+                ],
+            ];
+
+            // Submit button.
+            $form['inputs'][] = [
+                'arguments' => [
+                    'name'       => 'submit',
+                    'label'      => __('Next'),
+                    'type'       => 'submit',
+                    'attributes' => 'class="sub next"',
+                    'return'     => true,
+                ],
+            ];
+
+            $form['form'] = [
+                'method' => 'POST',
+                'action' => '#',
+            ];
+
+            $form['js'] = '
+$("select#interval_manual_defined").change(function() {
+    if ($("#interval_manual_defined").val() == 1) {
+        $("#interval_manual_container").hide();
+        $("#text-interval_text").val(0);
+        $("#hidden-interval").val(0);
+    }
+    else {
+        $("#interval_manual_container").show();
+        $("#text-interval_text").val(10);
+        $("#hidden-interval").val(600);
+        $("#interval_units").val(60);
+    }
+}).change();';
+
+            $this->printForm($form);
         }
 
         if ($this->page == 100) {

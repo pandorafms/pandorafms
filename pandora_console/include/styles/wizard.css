@@ -5,7 +5,11 @@ ul.wizard li {
   padding: 10px;
 }
 
-ul.wizard li > label {
+ul.wizard li > label:not(.p-switch) {
   width: 250px;
   display: inline-block;
+}
+
+.hidden {
+  display: none;
 }

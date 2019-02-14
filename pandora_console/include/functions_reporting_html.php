@@ -2955,7 +2955,7 @@ function reporting_html_availability_graph($table, $item, $pdf=0)
     global $config;
     $metaconsole_on = is_metaconsole();
 
-    if ($metaconsole_on) {
+    if ($metaconsole_on !== false) {
         $hack_metaconsole = '../../';
     } else {
         $hack_metaconsole = '';
@@ -2997,7 +2997,10 @@ function reporting_html_availability_graph($table, $item, $pdf=0)
                 break;
             }
 
-            $sla_value = sla_truncate($chart['sla_value'], $config['graph_precision']).'%';
+            $sla_value = sla_truncate(
+                $chart['sla_value'],
+                $config['graph_precision']
+            ).'%';
             $checks_resume = '('.$chart['checks_ok'].'/'.$chart['checks_total'].')';
         }
 
@@ -3005,7 +3008,10 @@ function reporting_html_availability_graph($table, $item, $pdf=0)
         $table1->data[0][1] = $chart['chart'];
         $table1->data[0][2] = "<span style = 'font: bold 2em Arial, Sans-serif; color: ".$color."'>".$sla_value.'</span>';
         $table1->data[0][3] = $checks_resume;
-        $tables_chart .= html_print_table($table1, true);
+        $tables_chart .= html_print_table(
+            $table1,
+            true
+        );
     }
 
     if ($item['type'] == 'availability_graph') {
@@ -3045,13 +3051,20 @@ function reporting_html_availability_graph($table, $item, $pdf=0)
         $table2->data[0][11] = '<span>'.__('Ignore time').'</span>';
     }
 
-    $table->colspan['charts']['cell'] = 2;
-    $table->data['charts']['cell'] = $tables_chart;
-    $table->colspan['legend']['cell'] = 2;
-    $table->data['legend']['cell'] = html_print_table($table2, true);
-
     if ($pdf !== 0) {
-        return $tables_chart.'<br />'.html_print_table($table2, true);
+        $tables_chart .= html_print_table(
+            $table2,
+            true
+        );
+        return $tables_chart;
+    } else {
+        $table->colspan['charts']['cell'] = 2;
+        $table->data['charts']['cell'] = $tables_chart;
+        $table->colspan['legend']['cell'] = 2;
+        $table->data['legend']['cell'] = html_print_table(
+            $table2,
+            true
+        );
     }
 }
 

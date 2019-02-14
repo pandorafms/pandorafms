@@ -2940,7 +2940,17 @@ function reporting_html_availability(&$table, $item)
 }
 
 
-function reporting_html_availability_graph(&$table, $item, $pdf=0)
+/**
+ * The availability report shows in detail the reached
+ * status of a module in a given time interval.
+ *
+ * @param string  $table Reference table in pdf a false.
+ * @param array   $item  Parameters for item pdf.
+ * @param boolean $pdf   Send pdf.
+ *
+ * @return html
+ */
+function reporting_html_availability_graph($table, $item, $pdf=0)
 {
     global $config;
     $metaconsole_on = is_metaconsole();
@@ -2999,7 +3009,7 @@ function reporting_html_availability_graph(&$table, $item, $pdf=0)
     }
 
     if ($item['type'] == 'availability_graph') {
-        // table_legend_graphs;
+        // Table_legend_graphs.
         $table2 = new stdClass();
         $table2->width = '99%';
         $table2->data = [];
@@ -3040,7 +3050,7 @@ function reporting_html_availability_graph(&$table, $item, $pdf=0)
     $table->colspan['legend']['cell'] = 2;
     $table->data['legend']['cell'] = html_print_table($table2, true);
 
-    if ($pdf) {
+    if ($pdf !== 0) {
         return $tables_chart.'<br />'.html_print_table($table2, true);
     }
 }

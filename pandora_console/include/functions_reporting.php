@@ -11334,3 +11334,27 @@ function reporting_translate_sla_status_for_graph($status)
     ];
     return $sts[$status];
 }
+
+
+/**
+ * Print header to report pdf and add page break
+ *
+ * @param string $title       Title of report.
+ * @param string $description Description of report.
+ *
+ * @return html Return table of header.
+ */
+function reporting_header_table_for_pdf(string $title='', string $description='')
+{
+    $result_pdf .= '<pagebreak>';
+    $result_pdf .= '<table class="header_table databox">';
+    $result_pdf .= '<thead class="header_tr"><tr>';
+    $result_pdf .= '<th class="th_first" colspan="2">';
+    $result_pdf .= $title;
+    $result_pdf .= '</th><th style="font-size: 15px;" align="right">';
+    $result_pdf .= '</th></tr><tr><th colspan="3" class="th_description">';
+    $result_pdf .= $description;
+    $result_pdf .= '</th></tr></thead></table>';
+
+    return $result_pdf;
+}

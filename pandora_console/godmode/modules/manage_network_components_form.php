@@ -47,7 +47,7 @@ if ($create_network_from_module) {
     $id_module_group = $data_module['id_module_group'];
     $id_plugin = $data_module['id_plugin'];
     $plugin_user = $data_module['plugin_user'];
-    $plugin_pass = $data_module['plugin_pass'];
+    $plugin_pass = io_output_password($data_module['plugin_pass']);
     $plugin_parameter = $data_module['plugin_parameter'];
     $macros = $data_module['macros'];
     $max_timeout = $data_module['max_timeout'];
@@ -104,7 +104,7 @@ if (isset($id)) {
         $id_group = $component['id_group'];
         $id_plugin = $component['id_plugin'];
         $plugin_user = $component['plugin_user'];
-        $plugin_pass = $component['plugin_pass'];
+        $plugin_pass = io_output_password($component['plugin_pass']);
         $plugin_parameter = $component['plugin_parameter'];
         $macros = $component['macros'];
         $max_timeout = $component['max_timeout'];
@@ -140,10 +140,10 @@ if (isset($id)) {
             // New support for snmp v3
             $snmp_version = $component['tcp_send'];
             $snmp3_auth_user = $component['plugin_user'];
-            $snmp3_auth_pass = $component['plugin_pass'];
+            $snmp3_auth_pass = io_output_password($component['plugin_pass']);
             $snmp3_auth_method = $component['plugin_parameter'];
             $snmp3_privacy_method = $component['custom_string_1'];
-            $snmp3_privacy_pass = $component['custom_string_2'];
+            $snmp3_privacy_pass = io_output_password($component['custom_string_2']);
             $snmp3_security_level = $component['custom_string_3'];
         }
     } else if (isset($new_component) && $new_component && !$create_network_from_snmp_browser) {

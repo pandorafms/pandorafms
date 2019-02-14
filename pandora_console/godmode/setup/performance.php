@@ -125,22 +125,19 @@ $table_other->data[3][0] = __('Default hours for event view');
 $table_other->data[3][1] = html_print_input_text('event_view_hr', $config['event_view_hr'], '', 5, 5, true);
 
 $table_other->data[5][0] = __('Use realtime statistics');
-$table_other->data[5][1] = __('Yes').'&nbsp;'.html_print_radio_button('realtimestats', 1, '', $config['realtimestats'], true).'&nbsp;&nbsp;';
-$table_other->data[5][1] .= __('No').'&nbsp;'.html_print_radio_button('realtimestats', 0, '', $config['realtimestats'], true);
+$table_other->data[5][1] = html_print_checkbox_toogle_switch('realtimestats', 1, $config['realtimestats'], true);
 
 $table_other->data[6][0] = __('Batch statistics period (secs)').ui_print_help_tip(__('If realtime statistics are disabled, statistics interval resfresh will be set here.'), true);
 $table_other->data[6][1] = html_print_input_text('stats_interval', $config['stats_interval'], '', 5, 5, true);
 
 $table_other->data[7][0] = __('Use agent access graph').ui_print_help_icon('agent_access', true);
-$table_other->data[7][1] = __('Yes').'&nbsp;'.html_print_radio_button('agentaccess', 1, '', $config['agentaccess'], true).'&nbsp;&nbsp;';
-$table_other->data[7][1] .= __('No').'&nbsp;'.html_print_radio_button('agentaccess', 0, '', $config['agentaccess'], true);
+$table_other->data[7][1] = html_print_checkbox_toogle_switch('agentaccess', 1, $config['agentaccess'], true);
 
 $table_other->data[8][0] = __('Max. recommended number of files in attachment directory').ui_print_help_tip(__('This number is the maximum number of files in attachment directory. If this number is reached then a warning message will appear in the header notification space.'), true);
 $table_other->data[8][1] = html_print_input_text('num_files_attachment', $config['num_files_attachment'], '', 5, 5, true);
 
 $table_other->data[9][0] = __('Delete not init modules');
-$table_other->data[9][1] = __('Yes').'&nbsp;'.html_print_radio_button('delete_notinit', 1, '', $config['delete_notinit'], true).'&nbsp;&nbsp;';
-$table_other->data[9][1] .= __('No').'&nbsp;'.html_print_radio_button('delete_notinit', 0, '', $config['delete_notinit'], true);
+$table_other->data[9][1] = html_print_checkbox_toogle_switch('delete_notinit', 1, $config['delete_notinit'], true);
 
 $table_other->data[10][0] = __('Big Operation Step to purge old data').ui_print_help_tip(__('The number of blocks that a time interval is split into. A bigger value means bigger blocks, which is faster but heavier on the database. Default is 100.'), true);
 $table_other->data[10][1] = html_print_input_text('big_operation_step_datos_purge', $config['big_operation_step_datos_purge'], '', 5, 5, true);

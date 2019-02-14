@@ -1858,6 +1858,19 @@ ALTER TABLE `tevento` ADD COLUMN `data` double(22,5) default NULL;
 
 ALTER TABLE `tevento` ADD COLUMN `module_status` int(4) NOT NULL default '0';
 
+-- ---------------------------------------------------------------------
+-- Table `tevent_extended`
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tevent_extended` (
+	`id` serial PRIMARY KEY,
+	`id_evento` bigint(20) unsigned NOT NULL,
+	`external_id` bigint(20) unsigned,
+	`utimestamp` bigint(20) NOT NULL default '0',
+	`description` text,
+	FOREIGN KEY `tevent_ext_fk`(`id_evento`) REFERENCES `tevento`(`id_evento`)
+    ON UPDATE CASCADE ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 -- -----------------------------------------------------
 -- Table `tgis_map_layer_groups`
 -- -----------------------------------------------------
@@ -1978,3 +1991,8 @@ CREATE TABLE `tnotification_source_group_user` (
     FOREIGN KEY (`id_group`) REFERENCES `tnotification_source_group`(`id_group`)
         ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------------------------------------------------
+-- Add alert command 'Generate notification'
+-- ----------------------------------------------------------------------
+INSERT INTO `talert_commands` (`name`, `command`, `description`, `internal`, `fields_descriptions`, `fields_values`) VALUES ('Generate&#x20;Notification','Internal&#x20;type','This&#x20;command&#x20;allows&#x20;you&#x20;to&#x20;send&#x20;an&#x20;internal&#x20;notification&#x20;to&#x20;any&#x20;user&#x20;or&#x20;group.',1,'[\"Destination&#x20;user\",\"Destination&#x20;group\",\"Title\",\"Message\",\"Link\",\"Criticity\",\"\",\"\",\"\",\"\",\"\"]','[\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\"]');

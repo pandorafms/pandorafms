@@ -115,13 +115,13 @@ if ($show_sent) {
     $messages = messages_get_overview_sent('', 'DESC');
 } else {
     // Messages received.
-    $num_messages = messages_get_count($config['id_user'], true);
+    $num_messages = messages_get_count($config['id_user'], true, true);
     if ($num_messages > 0 && !is_ajax()) {
-        $unread_messages = messages_get_count($config['id_user']);
+        $unread_messages = messages_get_count($config['id_user'], false, true);
         echo '<p>'.__('You have').' <b>'.$unread_messages.'</b> '.__('unread message(s)').'.</p>';
         $messages = messages_get_overview();
     } else {
-        $messages = messages_get_overview('status', 'ASC', false);
+        $messages = messages_get_overview('status', 'ASC');
     }
 }
 

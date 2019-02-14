@@ -1,18 +1,31 @@
 <?php
+/**
+ * Library. Notification system auxiliary functions.
+ *
+ * @category   UI file
+ * @package    Pandora FMS
+ * @subpackage Community
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
 
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation for version 2.
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-// Warning: This file may be required into the metaconsole's setup
-// Load global vars
 global $config;
 
 require_once $config['homedir'].'/include/functions_notifications.php';
@@ -26,66 +39,127 @@ if (! check_acl($config['id_user'], 0, 'PM') && ! is_user_admin($config['id_user
 }
 
 // AJAX actions.
-$source_id = get_parameter('source_id', '');
+$source = get_parameter('source', '');
 $users = get_parameter('users', '');
 $elements = get_parameter('elements', []);
-$id = empty($source_id) ? 0 : get_notification_source_id($source_id);
 $is_users = $users === 'users';
 if (get_parameter('get_selection_two_ways_form', 0)) {
-    $info_selec = $is_users ? notifications_get_user_source_not_configured($id) : notifications_get_group_source_not_configured($id);
+    $info_selec = ($is_users === true) ? notifications_get_user_source_not_configured($source) : notifications_get_group_source_not_configured($source);
 
     echo notifications_print_two_ways_select(
         $info_selec,
         $users,
-        $source_id
+        $source
     );
     return;
 }
 
 if (get_parameter('add_source_to_database', 0)) {
-    $res = $is_users ? notifications_add_users_to_source($id, $elements) : notifications_add_group_to_source($id, $elements);
+    $res = ($is_users) ? notifications_add_users_to_source($source, $elements) : notifications_add_group_to_source($source, $elements);
     $result = ['result' => $res];
     echo json_encode($result);
     return;
 }
 
 if (get_parameter('remove_source_on_database', 0)) {
-    $res = $is_users ? notifications_remove_users_from_source($id, $elements) : notifications_remove_group_from_source($id, $elements);
+    $res = ($is_users) ? notifications_remove_users_from_source($source, $elements) : notifications_remove_group_from_source($source, $elements);
     $result = ['result' => $res];
     echo json_encode($result);
     return;
 }
 
-// Form actions.
 if (get_parameter('update_config', 0)) {
-    $res_global = array_reduce(
-        notifications_get_all_sources(),
-        function ($carry, $source) {
-            $id = notifications_desc_to_id($source['description']);
-            if (empty($id)) {
-                return false;
-            }
+    $element = (string) get_parameter('element', '');
+    $value = (int) get_parameter('value', 0);
 
-            $enable_value = switch_to_int(get_parameter("enable-$id"));
-            $mail_value = (int) get_parameter("mail-{$id}", 0);
-            $user_value = (int) get_parameter("user-{$id}", 0);
-            $postpone_value = (int) get_parameter("postpone-{$id}", 0);
-            $all_users = (int) get_parameter("all-{$id}", 0);
-            $res = db_process_sql_update(
+    // Update the label value.
+    ob_clean();
+    $res = false;
+    switch ($element) {
+        // All users has other action.
+        case 'all_users':
+            $res = ($value) ? notifications_add_group_to_source($source, [0]) : notifications_remove_group_from_source($source, [0]);
+        break;
+
+        default:
+            $res = (bool) db_process_sql_update(
                 'tnotification_source',
-                [
-                    'enabled'           => $enable_value,
-                    'user_editable'     => $user_value,
-                    'also_mail'         => $mail_value,
-                    'max_postpone_time' => $postpone_value,
-                ],
-                ['id' => $source['id']]
+                [$element => $value],
+                ['id' => $source]
             );
-            $all_users_res = $all_users ? notifications_add_group_to_source($source['id'], [0]) : notifications_remove_group_from_source($source['id'], [0]);
-            return $all_users_res && $res && $carry;
-        },
-        true
+        break;
+    }
+
+    echo json_encode(['result' => $res]);
+    return;
+}
+
+if (get_parameter('check_new_notifications', 0)) {
+    $last_id_ui = (int) get_parameter('last_id', 0);
+    $counters = notifications_get_counters();
+    if ((int) $last_id_ui === (int) $counters['last_id']) {
+        echo json_encode(['has_new_notifications' => false]);
+        return;
+    }
+
+    $messages = messages_get_overview(
+        'timestamp',
+        'ASC',
+        false,
+        true,
+        0,
+        ['id_mensaje' => '>'.$last_id_ui]
     );
+    if ($messages === false) {
+        $messages = [];
+    }
+
+    // If there is new messages, get the info.
+    echo json_encode(
+        [
+            'has_new_notifications' => true,
+            'new_ball'              => base64_encode(
+                notifications_print_ball(
+                    $counters['notifications'],
+                    $counters['last_id']
+                )
+            ),
+            'new_notifications'     => array_map(
+                function ($elem) {
+                    $elem['full_url'] = messages_get_url($elem['id_mensaje']);
+                    return $elem;
+                },
+                $messages
+            ),
+        ]
+    );
+    return;
+}
+
+if (get_parameter('mark_notification_as_read', 0)) {
+    $message = (int) get_parameter('message', 0);
+    messages_process_read($message);
+    // TODO check read.
+    $url = messages_get_url($message);
+    // Return false if cannot get the URL.
+    if ($url === false) {
+        echo json_encode(['result' => false]);
+        return;
+    }
+
+    // If there is new messages, get the info.
+    echo json_encode(
+        [
+            'result' => true,
+            'url'    => $url,
+        ]
+    );
+    return;
+}
+
+if (get_parameter('get_notifications_dropdown', 0)) {
+    echo notifications_print_dropdown();
+    return;
 }
 
 // Notification table. It is just a wrapper.
@@ -96,36 +170,18 @@ $table_content->id = 'notifications-wrapper';
 $table_content->class = 'databox filters';
 $table_content->size['name'] = '30%';
 
-// Print each source configuration
+// Print each source configuration.
 $table_content->data = array_map(
     function ($source) {
         return notifications_print_global_source_configuration($source);
     },
     notifications_get_all_sources()
 );
-$table_content->data[] = html_print_submit_button(
-    __('Update'),
-    'update_button',
-    false,
-    'class="sub upd" style="display: flex; "',
-    true
-);
 
-echo '<form id="form_enable" method="post">';
-html_print_input_hidden('update_config', 1);
 html_print_table($table_content);
-echo '</form>';
 
 ?>
 <script>
-
-// Get the source id
-function notifications_get_source_id(id) {
-    var matched = id.match(/.*-(.*)/);
-    if (matched == null) return '';
-    return matched[1];
-}
-
 // Get index of two ways element dialog.
 function notifications_two_ways_element_get_dialog (id, source_id) {
     return 'global_config_notifications_dialog_add-' + id + '-' + source_id;
@@ -134,16 +190,6 @@ function notifications_two_ways_element_get_dialog (id, source_id) {
 // Get index of two ways element form.
 function notifications_two_ways_element_get_sufix (id, source_id) {
     return 'multi-' + id + '-' + source_id;
-}
-
-// Disable or enable the select seeing the checked value of notify all users
-function notifications_disable_source(event) {
-    var id = notifications_get_source_id(event.target.id);
-    var is_checked = document.getElementById(event.target.id).checked;
-    var selectors = ['groups', 'users'];
-    selectors.map(function (select) {
-        document.getElementById(notifications_two_ways_element_get_sufix(select, id)).disabled = is_checked;
-    });
 }
 
 // Open a dialog with selector of source elements.
@@ -155,7 +201,10 @@ function add_source_dialog(users, source_id) {
     if (previous_dialog !== null) previous_dialog.remove();
     // Create or recreate the content.
     var not_dialog = document.createElement('div');
-    not_dialog.setAttribute('class', 'global_config_notifications_dialog_add_wrapper');
+    not_dialog.setAttribute(
+        'class',
+        'global_config_notifications_dialog_add_wrapper'
+    );
     not_dialog.setAttribute('id', dialog_id);
     document.body.appendChild(not_dialog);
     $("#" + dialog_id).dialog({
@@ -175,7 +224,7 @@ function add_source_dialog(users, source_id) {
         {"page" : "godmode/setup/setup_notifications",
             "get_selection_two_ways_form" : 1,
             "users" : users,
-            "source_id" : source_id
+            "source" : source_id
         },
         function (data, status) {
             not_dialog.innerHTML = data
@@ -204,7 +253,8 @@ function notifications_modify_two_ways_element (id, source_id, operation) {
 
 // Add elements to database and close dialog
 function notifications_add_source_element_to_database(id, source_id) {
-    var index = 'selected-' + notifications_two_ways_element_get_sufix (id, source_id);
+    var index = 'selected-' +
+        notifications_two_ways_element_get_sufix (id, source_id);
     var select = document.getElementById(index);
     var selected = [];
     for (var i = select.options.length - 1; i >= 0; i--) {
@@ -214,7 +264,7 @@ function notifications_add_source_element_to_database(id, source_id) {
         {"page" : "godmode/setup/setup_notifications",
             "add_source_to_database" : 1,
             "users" : id,
-            "source_id" : source_id,
+            "source" : source_id,
             "elements": selected
         },
         function (data, status) {
@@ -227,7 +277,11 @@ function notifications_add_source_element_to_database(id, source_id) {
                     out_select.appendChild(select.options[i]);
                 }
                 // Close the dialog
-                $("#" + notifications_two_ways_element_get_dialog(id, source_id)).dialog("close");
+                $("#" + notifications_two_ways_element_get_dialog(
+                    id,
+                    source_id
+                ))
+                .dialog("close");
             } else {
                 console.log("Cannot update element.");
             }
@@ -252,13 +306,13 @@ function remove_source_elements(id, source_id) {
         {"page" : "godmode/setup/setup_notifications",
             "remove_source_on_database" : 1,
             "users" : id,
-            "source_id" : source_id,
+            "source" : source_id,
             "elements": selected
         },
         function (data, status) {
             if (data.result) {
                 // Append to other element
-                for (var i = selected_index.length - 1; i >= 0; i--) {
+                for (var i = 0; i < selected_index.length; i++) {
                     select.remove(selected_index[i]);
                 }
             } else {
@@ -268,4 +322,94 @@ function remove_source_elements(id, source_id) {
         "json"
     );
 }
+
+function notifications_handle_change_element(event) {
+    event.preventDefault();
+    var match = /nt-([0-9]+)-(.*)/.exec(event.target.id);
+    if (!match) {
+        console.error(
+            "Cannot handle change element. Id not valid: ", event.target.id
+        );
+        return;
+    }
+    var action = {source: match[1], bit: match[2]};
+    var element = document.getElementById(event.target.id);
+    if (element === null) {
+        console.error(
+            "Cannot get element. Id: ", event.target.id
+        );
+        return;
+    }
+
+    var value;
+    switch (action.bit) {
+        case 'enabled':
+        case 'also_mail':
+        case 'user_editable':
+        case 'all_users':
+            value = element.checked ? 1 : 0;
+            break;
+        case 'max_postpone_time':
+            value = element.value;
+            break;
+        default:
+            console.error("Unregonized action", action.bit, '.');
+            return;
+
+    }
+    jQuery.post ("ajax.php",
+        {
+            "page" : "godmode/setup/setup_notifications",
+            "update_config" : 1,
+            "source" : match[1],
+            "element" : match[2],
+            "value": value
+        },
+        function (data, status) {
+            if (!data.result) {
+                console.error("Error changing configuration in database.");
+            } else {
+                switch (action.bit) {
+                    case 'enabled':
+                    case 'also_mail':
+                    case 'user_editable':
+                    case 'all_users':
+                        element.checked = !element.checked;
+                        break;
+                    case 'max_postpone_time':
+                        value = element.value;
+                        break;
+                    default:
+                        console.error(
+                            "Unregonized action (insert on db)", action.bit, '.'
+                        );
+                        return;
+                }
+            }
+        },
+        "json"
+    )
+    .done(function(m){})
+    .fail(function(xhr, textStatus, errorThrown){
+        console.error(
+            "Cannot change configuration in database. Server error.",
+            xhr.responseText
+        );
+    });
+}
+(function(){
+    // Add listener to all componentes marked
+    var all_clickables = document.getElementsByClassName('elem-clickable');
+    for (var i = 0; i < all_clickables.length; i++) {
+        all_clickables[i].addEventListener(
+            'click', notifications_handle_change_element, false
+        );
+    }
+    var all_changes = document.getElementsByClassName('elem-changeable');
+    for (var i = 0; i < all_changes.length; i++) {
+        all_changes[i].addEventListener(
+            'change', notifications_handle_change_element, false
+        );
+    }
+})();
 </script>

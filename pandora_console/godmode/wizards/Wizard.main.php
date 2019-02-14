@@ -6,6 +6,37 @@
 class Wizard
 {
 
+    /**
+     * Breadcrum
+     *
+     * @var array.
+     */
+    public $breadcrum;
+
+
+    /**
+     * Setter for breadcrum
+     *
+     * @param array $str Breadcrum.
+     *
+     * @return void
+     */
+    public function setBreadcrum(array $str)
+    {
+        $this->breadcrum = $str;
+    }
+
+
+    /**
+     * Getter for breadcrum
+     *
+     * @return array Breadcrum.
+     */
+    public function getBreadcrum()
+    {
+        return $this->breadcrum;
+    }
+
 
     /**
      * To be overwritten.
@@ -24,6 +55,35 @@ class Wizard
      */
     public function load()
     {
+    }
+
+
+    /**
+     * Print breadcrum to follow flow.
+     *
+     * @return string Breadcrum HTML code.
+     */
+    public function printBreadcrum()
+    {
+        return '<h1>'.implode(' > ', $this->breadcrum).'</h1>';
+    }
+
+
+    /**
+     * Prints a header for current wizard.
+     *
+     * @param boolean $return Return HTML or print it.
+     *
+     * @return string HTML code for header.
+     */
+    public function printHeader(bool $return=false)
+    {
+        $output = $this->printBreadcrum();
+        if ($return === false) {
+            echo $output;
+        }
+
+        return $output;
     }
 
 
@@ -168,7 +228,7 @@ class Wizard
      *
      * @param array $data Definition of target form to be printed.
      *
-     * @return void
+     * @return string HTML code.
      */
     public function printForm(array $data)
     {

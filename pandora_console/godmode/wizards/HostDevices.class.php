@@ -68,7 +68,7 @@ class HostDevices extends Wizard
     /**
      * Undocumented function.
      *
-     * @param integer $page  Mensajito.
+     * @param integer $page  Start page, by default 0.
      * @param string  $msg   Mensajito.
      * @param string  $icon  Mensajito.
      * @param string  $label Mensajito.
@@ -81,6 +81,8 @@ class HostDevices extends Wizard
         string $icon='hostDevices.png',
         string $label='Host & Devices'
     ) {
+        $this->setBreadcrum([]);
+
         $this->id = null;
         $this->msg = $msg;
         $this->icon = $icon;
@@ -105,6 +107,8 @@ class HostDevices extends Wizard
         $mode = get_parameter('mode', null);
 
         if ($mode === null) {
+            $this->setBreadcrum(['<a href="index.php?sec=gservers&sec2=godmode/servers/discovery&wiz=hd">Host&devices</a>']);
+            $this->printHeader();
             if (extensions_is_enabled_extension('csv_import')) {
                 echo '<a href="'.$this->url.'&mode=importcsv" alt="importcsv">Importar csv</a>';
             }
@@ -114,10 +118,24 @@ class HostDevices extends Wizard
         }
 
         if ($mode == 'importcsv') {
+            $this->setBreadcrum(
+                [
+                    '<a href="index.php?sec=gservers&sec2=godmode/servers/discovery&wiz=hd">Host&devices</a>',
+                    '<a href="index.php?sec=gservers&sec2=godmode/servers/discovery&wiz=hd&mode=csv">Import CSV</a>',
+                ]
+            );
+            $this->printHeader();
             return $this->runCSV();
         }
 
         if ($mode == 'netscan') {
+            $this->setBreadcrum(
+                [
+                    '<a href="index.php?sec=gservers&sec2=godmode/servers/discovery&wiz=hd">Host&devices</a>',
+                    '<a href="index.php?sec=gservers&sec2=godmode/servers/discovery&wiz=hd&mode=netscan">Net scan</a>',
+                ]
+            );
+            $this->printHeader();
             return $this->runNetScan();
         }
 
@@ -154,6 +172,7 @@ class HostDevices extends Wizard
     public function runCSV()
     {
         global $config;
+
         if (!check_acl($config['id_user'], 0, 'AW')
         ) {
             db_pandora_audit(
@@ -187,7 +206,6 @@ class HostDevices extends Wizard
     {
         global $config;
 
-        echo 'formulario netscan';
         check_login();
 
         if (! check_acl($config['id_user'], 0, 'PM')) {
@@ -688,158 +706,12 @@ class HostDevices extends Wizard
         echo '</form>';
 
         ui_require_javascript_file('pandora_modules');
-        $javascript = `
-        <script type="text/javascript">
-        /* <![CDATA[ */
-        $(document).ready (function () {
-    
-        });
 
-        var xhrManager = function () {
-        var manager = {};
-    
-        manager.tasks = [];
-    
-        manager.addTask = function (xhr) {
-        manager.tasks.push(xhr);
-        }
-    
-        manager.stopTasks = function () {
-        while (manager.tasks.length > 0)
-            manager.tasks.pop().abort();
-        }
-    
-        return manager;
-        };
-
-        var taskManager = new xhrManager();
-
-        $('select#interval_manual_defined').change(function() {
-        if ($("#interval_manual_defined").val() == 1) {
-        $('#interval_manual_container').hide();
-        $('#text-interval_text').val(0);
-        $('#hidden-interval').val(0);
-        }
-        else {
-        $('#interval_manual_container').show();
-        $('#text-interval_text').val(10);
-        $('#hidden-interval').val(600);
-        $('#interval_units').val(60);
-        }
-        }).change();
-
-        $('select#id_recon_script').change(function() {
-        if ($('select#mode').val() == 'recon_script')
-        get_explanation_recon_script($(this).val());
-        });
-
-        $('select#snmp_version').change(function () {
-        if (this.value == "3") {
-        $(".recon_v3").show();
-        $("input[name=active_snmp_v3]").val(1);
-        $("input[name=snmp_community]").attr("disabled", true);
-        $("input[name=vlan_enabled]").removeAttr("checked");
-        $("input[name=vlan_enabled]").attr("disabled", true);
-        }
-        else {
-        $(".recon_v3").hide();
-        $("input[name=active_snmp_v3]").val(0);
-        $("input[name=snmp_community]").removeAttr('disabled');
-        $("input[name=vlan_enabled]").removeAttr('disabled');
-        }
-        });
-
-        $('select#mode').change(function() {
-        var type = $(this).val();
-        if (type == 'recon_script') {
-        $(".recon_script").show();
-        $(".network_sweep").hide();
-        
-        get_explanation_recon_script($("#id_recon_script").val());
-        }
-        else if (type == 'network_sweep') {
-        $(".recon_script").hide();
-        $(".network_sweep").show();
-        $('.macro_field').remove();
-        $('select#snmp_version').trigger('change');
-        }
-        }).change();
-
-        function get_explanation_recon_script (id) {
-        // Stop old ajax tasks
-        taskManager.stopTasks();
-    
-        // Show the spinners
-        $("#textarea_explanation").hide();
-        $("#spinner_layout").show();
-    
-        var xhr = jQuery.ajax ({
-        data: {
-            'page': 'godmode/servers/manage_recontask_form',
-            'get_explanation': 1,
-            'id': id,
-            'id_rt': `.json_encode((int) $id_rt).`
-        },
-        url: "`.$config['homeurl'].`ajax.php",
-        type: 'POST',
-        dataType: 'text',
-        complete: function (xhr, textStatus) {
-            $("#spinner_layout").hide();
-        },
-        success: function (data, textStatus, xhr) {
-            $("#textarea_explanation").val(data);
-            $("#textarea_explanation").show();
-        },
-        error: function (xhr, textStatus, errorThrown) {
-            console.log(errorThrown);
-        }
-        });
-        taskManager.addTask(xhr);
-    
-        // Delete all the macro fields
-        $('.macro_field').remove();
-        $("#spinner_recon_script").show();
-    
-        var xhr = jQuery.ajax ({
-        data: {
-            'page': 'godmode/servers/manage_recontask_form',
-            'get_recon_script_macros': 1,
-            'id': id,
-            'id_rt': `.json_encode((int) $id_rt).`
-        },
-        url: "`.$config['homeurl'].`ajax.php",
-        type: 'POST',
-        dataType: 'json',
-        complete: function (xhr, textStatus) {
-            $("#spinner_recon_script").hide();
-            forced_title_callback();
-        },
-        success: function (data, textStatus, xhr) {
-            if (data.array !== null) {
-                $('#hidden-macros').val(data.base64);
-                
-                jQuery.each (data.array, function (i, macro) {
-                    if (macro.desc != '') {
-                        add_macro_field(macro, 'table_recon-macro');
-                    }
-                });
-            }
-        },
-        error: function (xhr, textStatus, errorThrown) {
-            console.log(errorThrown);
-        }
-        });
-        taskManager.addTask(xhr);
-        }
-
-        </script>`;
-        echo $javascript;
-
-            return [
-                'result' => $this->result,
-                'id'     => $this->id,
-                'msg'    => $this->msg,
-            ];
+        return [
+            'result' => $this->result,
+            'id'     => $this->id,
+            'msg'    => $this->msg,
+        ];
     }
 
 

@@ -1,11 +1,11 @@
 <?php
 
-require_once __DIR__.'/Wizard.interface.php';
+require_once __DIR__.'/Wizard.main.php';
 
 /**
  * Undocumented class
  */
-class HostDevices implements Wizard
+class HostDevices extends Wizard
 {
 
     /**
@@ -15,18 +15,53 @@ class HostDevices implements Wizard
      */
     public $values = [];
 
+    /**
+     * Undocumented variable
+     *
+     * @var [type]
+     */
     public $result;
 
+    /**
+     * Undocumented variable
+     *
+     * @var [type]
+     */
     public $id;
 
+    /**
+     * Undocumented variable
+     *
+     * @var [type]
+     */
     public $msg;
 
+    /**
+     * Undocumented variable
+     *
+     * @var [type]
+     */
     public $icon;
 
+    /**
+     * Undocumented variable
+     *
+     * @var [type]
+     */
     public $label;
 
+    /**
+     * Undocumented variable
+     *
+     * @var [type]
+     */
     public $url;
 
+    /**
+     * Undocumented variable
+     *
+     * @var [type]
+     */
     public $page;
 
 
@@ -105,7 +140,7 @@ class HostDevices implements Wizard
     }
 
 
-    // extra methods
+    // Extra methods.
 
 
     /**
@@ -333,9 +368,9 @@ class HostDevices implements Wizard
                 $snmp3_security_level = '';
                 $id_network_profile = 0;
                 $id_os = -1;
-                // Any
+                // Any.
                 $recon_ports = '';
-                // Any
+                // Any.
                 $field1 = '';
                 $field2 = '';
                 $field3 = '';
@@ -508,7 +543,7 @@ class HostDevices implements Wizard
             true
         ).' '.ui_print_help_tip(__('Choose if the discovery of a new system creates an incident or not.'), true);
 
-        // snmp_enabled.
+        // Snmp_enabled.
         $table->data[11][0] = '<b>'.__('SNMP enabled');
         $table->data[11][1] = html_print_checkbox('snmp_enabled', 1, $snmp_enabled, true);
 
@@ -673,99 +708,99 @@ class HostDevices implements Wizard
         echo '</form>';
 
         ui_require_javascript_file('pandora_modules');
-        ?>
-<script type="text/javascript">
-/* <![CDATA[ */
-$(document).ready (function () {
+        $a = `
+        <script type="text/javascript">
+        /* <![CDATA[ */
+        $(document).ready (function () {
     
-});
+        });
 
-var xhrManager = function () {
-    var manager = {};
+        var xhrManager = function () {
+        var manager = {};
     
-    manager.tasks = [];
+        manager.tasks = [];
     
-    manager.addTask = function (xhr) {
+        manager.addTask = function (xhr) {
         manager.tasks.push(xhr);
-    }
+        }
     
-    manager.stopTasks = function () {
+        manager.stopTasks = function () {
         while (manager.tasks.length > 0)
             manager.tasks.pop().abort();
-    }
+        }
     
-    return manager;
-};
+        return manager;
+        };
 
-var taskManager = new xhrManager();
+        var taskManager = new xhrManager();
 
-$('select#interval_manual_defined').change(function() {
-    if ($("#interval_manual_defined").val() == 1) {
+        $('select#interval_manual_defined').change(function() {
+        if ($("#interval_manual_defined").val() == 1) {
         $('#interval_manual_container').hide();
         $('#text-interval_text').val(0);
         $('#hidden-interval').val(0);
-    }
-    else {
+        }
+        else {
         $('#interval_manual_container').show();
         $('#text-interval_text').val(10);
         $('#hidden-interval').val(600);
         $('#interval_units').val(60);
-    }
-}).change();
+        }
+        }).change();
 
-$('select#id_recon_script').change(function() {
-    if ($('select#mode').val() == 'recon_script')
+        $('select#id_recon_script').change(function() {
+        if ($('select#mode').val() == 'recon_script')
         get_explanation_recon_script($(this).val());
-});
+        });
 
-$('select#snmp_version').change(function () {
-    if (this.value == "3") {
+        $('select#snmp_version').change(function () {
+        if (this.value == "3") {
         $(".recon_v3").show();
         $("input[name=active_snmp_v3]").val(1);
         $("input[name=snmp_community]").attr("disabled", true);
         $("input[name=vlan_enabled]").removeAttr("checked");
         $("input[name=vlan_enabled]").attr("disabled", true);
-    }
-    else {
+        }
+        else {
         $(".recon_v3").hide();
         $("input[name=active_snmp_v3]").val(0);
         $("input[name=snmp_community]").removeAttr('disabled');
         $("input[name=vlan_enabled]").removeAttr('disabled');
-    }
-});
+        }
+        });
 
-$('select#mode').change(function() {
-    var type = $(this).val();
-    if (type == 'recon_script') {
+        $('select#mode').change(function() {
+        var type = $(this).val();
+        if (type == 'recon_script') {
         $(".recon_script").show();
         $(".network_sweep").hide();
         
         get_explanation_recon_script($("#id_recon_script").val());
-    }
-    else if (type == 'network_sweep') {
+        }
+        else if (type == 'network_sweep') {
         $(".recon_script").hide();
         $(".network_sweep").show();
         $('.macro_field').remove();
         $('select#snmp_version').trigger('change');
-    }
-}).change();
+        }
+        }).change();
 
-function get_explanation_recon_script (id) {
-    // Stop old ajax tasks
-    taskManager.stopTasks();
+        function get_explanation_recon_script (id) {
+        // Stop old ajax tasks
+        taskManager.stopTasks();
     
-    // Show the spinners
-    $("#textarea_explanation").hide();
-    $("#spinner_layout").show();
+        // Show the spinners
+        $("#textarea_explanation").hide();
+        $("#spinner_layout").show();
     
-    var xhr = jQuery.ajax ({
+        var xhr = jQuery.ajax ({
         data: {
             'page': 'godmode/servers/manage_recontask_form',
             'get_explanation': 1,
             'id': id,
-            'id_rt': <?php echo json_encode((int) $id_rt); ?>
+            'id_rt': `.json_encode((int) $id_rt).`
         },
-        url: "<?php echo $config['homeurl']; ?>ajax.php",
+        url: "`.$config['homeurl'].`ajax.php",
         type: 'POST',
         dataType: 'text',
         complete: function (xhr, textStatus) {
@@ -778,21 +813,21 @@ function get_explanation_recon_script (id) {
         error: function (xhr, textStatus, errorThrown) {
             console.log(errorThrown);
         }
-    });
-    taskManager.addTask(xhr);
+        });
+        taskManager.addTask(xhr);
     
-    // Delete all the macro fields
-    $('.macro_field').remove();
-    $("#spinner_recon_script").show();
+        // Delete all the macro fields
+        $('.macro_field').remove();
+        $("#spinner_recon_script").show();
     
-    var xhr = jQuery.ajax ({
+        var xhr = jQuery.ajax ({
         data: {
             'page': 'godmode/servers/manage_recontask_form',
             'get_recon_script_macros': 1,
             'id': id,
-            'id_rt': <?php echo json_encode((int) $id_rt); ?>
+            'id_rt': `.json_encode((int) $id_rt).`
         },
-        url: "<?php echo $config['homeurl']; ?>ajax.php",
+        url: "`.$config['homeurl'].`ajax.php",
         type: 'POST',
         dataType: 'json',
         complete: function (xhr, textStatus) {
@@ -813,22 +848,17 @@ function get_explanation_recon_script (id) {
         error: function (xhr, textStatus, errorThrown) {
             console.log(errorThrown);
         }
-    });
-    taskManager.addTask(xhr);
-}
+        });
+        taskManager.addTask(xhr);
+        }
 
-</script>
-    <?php
-        return null;
-        /*
-            Page 4, last.
-            return [
+        </script>`;
+        echo $a;
+        return [
             'result' => $this->result,
             'id'     => $this->id,
             'msg'    => $this->msg,
-            ];
-        */
-
+        ];
     }
 
 

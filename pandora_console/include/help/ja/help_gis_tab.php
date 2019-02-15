@@ -1,6 +1,7 @@
 <?php
-/* Package Include/help/ja
- */
+/*
+    Package Include/help/ja
+*/
 ?>
 <h1>エージェントの GIS 表示</h1>
 

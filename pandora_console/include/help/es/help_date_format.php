@@ -159,7 +159,7 @@
           <tr valign="middle">
            <td colspan="1" rowspan="1" align="left"><i>o</i></td>
            <td colspan="1" rowspan="1" align="left">Número de año en ISO-8601. Esto tiene el mismo valor que 
-			<i>Y</i>, excepto que si el número ISO de semana (<i>W</i>) pertenece al año anterior o siguiente, se usa ese año
+            <i>Y</i>, excepto que si el número ISO de semana (<i>W</i>) pertenece al año anterior o siguiente, se usa ese año
             en su lugar</td>
 
            <td colspan="1" rowspan="1" align="left">Ejemplo: <i>1999</i> o <i>2003</i></td>
@@ -297,7 +297,7 @@
           <tr valign="middle">
            <td colspan="1" rowspan="1" align="left"><i>Z</i></td>
            <td colspan="1" rowspan="1" align="left">Desplazamiento de la zona horaria en segundos. El desplazamiento para las zonas horarias del
-			oeste de UTC es siempre negativo, y para las del este de UTC es siempre positivo.</td>
+            oeste de UTC es siempre negativo, y para las del este de UTC es siempre positivo.</td>
            <td colspan="1" rowspan="1" align="left"><i>-43200</i> a <i>50400</i></td>
           </tr>
 

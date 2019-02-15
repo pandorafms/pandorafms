@@ -36,7 +36,7 @@ use Encode::Locale;
 Encode::Locale::decode_argv;
 
 # version: define current version
-my $version = "7.0NG.729 PS181210";
+my $version = "7.0NG.731 PS190215";
 
 # save program name for logging
 my $progname = basename($0);
@@ -103,7 +103,7 @@ sub help_screen{
 	print "Available options by category:\n\n" unless $param ne '';
 	print "Available options for $param:\n\n" unless $param eq '';
 	print "AGENTS:\n\n" unless $param ne '';
-	help_screen_line('--create_agent', "<agent_name> <operating_system> <group> <server_name> \n\t  [<address> <description> <interval>]", 'Create agent');
+	help_screen_line('--create_agent', "<agent_name> <operating_system> <group> <server_name> \n\t  [<address> <description> <interval> <alias_as_name>]", 'Create agent');
 	help_screen_line('--update_agent', '<agent_name> <field_to_change> <new_value>', "Update an agent field. The fields can be \n\t  the following: agent_name, address, description, group_name, interval, os_name, disabled (0-1), \n\t  parent_name, cascade_protection (0-1), icon_path, update_gis_data (0-1), custom_id");
 	help_screen_line('--delete_agent', '<agent_name>', 'Delete agent');
 	help_screen_line('--disable_group', '<group_name>', 'Disable agents from an entire group');
@@ -137,6 +137,7 @@ sub help_screen{
 	help_screen_line('--delete_cluster_item', '<id_item>', 'Deleting cluster item');
 	help_screen_line('--get_cluster_status', '<id_cluster>', 'Getting cluster status');
 	help_screen_line('--set_disabled_and_standby', '<id_agent> <id_node> <value>', 'Overwrite and disable and standby status');
+	help_screen_line('--reset_agent_counts', '<id_agent>', 'Resets module counts and alert counts in the agents');
 	print "\nMODULES:\n\n" unless $param ne '';
 	help_screen_line('--create_data_module', "<module_name> <module_type> <agent_name> [<description> <module_group> \n\t  <min> <max> <post_process> <interval> <warning_min> <warning_max> <critical_min> <critical_max> \n\t <history_data> <definition_file> <warning_str> <critical_str>\n\t  <unknown_events> <ff_threshold> <each_ff> <ff_threshold_normal>\n\t  <ff_threshold_warning> <ff_threshold_critical> <ff_timeout> <warning_inverse> <critical_inverse>\n\t <critical_instructions> <warning_instructions> <unknown_instructions>]", 'Add data server module to agent');
 	help_screen_line('--create_web_module', "<module_name> <module_type> <agent_name> [<description> <module_group> \n\t  <min> <max> <post_process> <interval> <warning_min> <warning_max> <critical_min> <critical_max> \n\t <history_data> <retries> <requests> <agent_browser_id> <auth_server> <auth_realm> <definition_file>\n\t <proxy_url> <proxy_auth_login> <proxy_auth_password> <warning_str> <critical_str>\n\t  <unknown_events> <ff_threshold> <each_ff> <ff_threshold_normal>\n\t  <ff_threshold_warning> <ff_threshold_critical> <ff_timeout> <warning_inverse> <critical_inverse>\n\t <critical_instructions> <warning_instructions> <unknown_instructions>].\n\t The valid data types are web_data, web_proc, web_content_data or web_content_string", 'Add web server module to agent');
@@ -144,7 +145,9 @@ sub help_screen{
 	help_screen_line('--create_snmp_module', "<module_name> <module_type> <agent_name> <module_address> <module_port>\n\t  <version> [<community> <oid> <description> <module_group> <min> <max> <post_process> <interval>\n\t   <warning_min> <warning_max> <critical_min> <critical_max> <history_data> \n\t  <snmp3_priv_method> <snmp3_priv_pass> <snmp3_sec_level> <snmp3_auth_method> \n\t  <snmp3_auth_user> <snmp3_auth_pass> <ff_threshold> <warning_str> \n\t  <critical_str> <unknown_events> <each_ff> <ff_threshold_normal>\n\t  <ff_threshold_warning> <ff_threshold_critical> <timeout> <retries>
 	\n\t <critical_instructions> <warning_instructions> <unknown_instructions>\n\t <warning_inverse> <critical_inverse>]", 'Add snmp network module to agent');
 	help_screen_line('--create_plugin_module', "<module_name> <module_type> <agent_name> <module_address> \n\t  <module_port> <plugin_name> <user> <password> <parameters> [<description> \n\t  <module_group> <min> <max> <post_process> <interval> <warning_min> <warning_max> <critical_min> \n\t  <critical_max> <history_data> <ff_threshold> <warning_str> <critical_str>\n\t  <unknown_events> <each_ff> <ff_threshold_normal> <ff_threshold_warning>\n\t  <ff_threshold_critical> <timeout> \n\t <critical_instructions> <warning_instructions> <unknown_instructions>\n\t <warning_inverse> <critical_inverse>]", 'Add plug-in module to agent');
+    help_screen_line('--get_module_group', '[<module_group_name>]', 'Dysplay all module groups');
     help_screen_line('--create_module_group', '<module_group_name>');
+    help_screen_line('--module_group_synch', "<server_name1|server_name2|server_name3...> [<return_type>]", 'Synchronize metaconsole module groups');
 	help_screen_line('--delete_module', 'Delete module from agent', '<module_name> <agent_name>');
     help_screen_line('--data_module', "<server_name> <agent_name> <module_name> \n\t  <module_type> <module_new_data> [<datetime>]", 'Insert data to module');
     help_screen_line('--get_module_data', "<agent_name> <module_name> <interval> [<csv_separator>]", "\n\t  Show the data of a module in the last X seconds (interval) in CSV format");
@@ -162,6 +165,10 @@ sub help_screen{
 	help_screen_line('--enable_alerts', '', 'Enable alerts in all groups (system wide)');
 	help_screen_line('--create_alert_template', "<template_name> <condition_type_serialized>\n\t   <time_from> <time_to> [<description> <group_name> <field1> <field2> \n\t  <field3> <priority>  <default_action> <days> <time_threshold> <min_alerts> \n\t  <max_alerts> <alert_recovery> <field2_recovery> <field3_recovery> \n\t  <condition_type_separator>]", 'Create alert template');
 	help_screen_line('--delete_alert_template', '<template_name>', 'Delete alert template');
+	help_screen_line('--create_alert_command', "<command_name> <comand> [<id_group> <description> \n\t <internal> <fields_descriptions> <fields_values>", 'Create alert command');
+	help_screen_line('--get_alert_commands', "[<command_name> <comand> <id_group> <description> \n\t <internal>]", 'Displays all alert commands');
+	help_screen_line('--get_alert_actions', '[<action_name> <separator> <return_type>]', 'get all alert actions');
+	help_screen_line('--get_alert_actions_meta', '[<server_name> <action_name> <separator> <return_type>]', 'get all alert actions in nodes');
 	help_screen_line('--update_alert_template', "<template_name> <field_to_change> \n\t  <new_value>", 'Update a field of an alert template');
 	help_screen_line('--validate_all_alerts', '', 'Validate all the alerts');
 	help_screen_line('--create_special_day', "<special_day> <same_day> <description> <group>", 'Create special day');
@@ -183,6 +190,7 @@ sub help_screen{
 	help_screen_line('--disable_eacl', '', 'Disable enterprise ACL system');
 	help_screen_line('--enable_eacl', '', 'Enable enterprise ACL system');
 	help_screen_line('--disable_double_auth', '<user_name>', 'Disable the double authentication for the specified user');
+	help_screen_line('--meta_synch_user', "<user_name1,user_name2..> <server_name> [<profile_mode> <group_name>\n\t <profile1,profile2..> <create_groups>]", 'Synchronize metaconsole users');
 	print "\nEVENTS:\n\n" unless $param ne '';
 	help_screen_line('--create_event', "<event> <event_type> <group_name> [<agent_name> <module_name>\n\t   <event_status> <severity> <template_name> <user_name> <comment> \n\t  <source> <id_extra> <tags> <critical_instructions> <warning_instructions> <unknown_instructions> \n\t <custom_data_json> <force_create_agent>]", 'Add event');
   help_screen_line('--validate_event', "<agent_name> <module_name> <datetime_min> <datetime_max>\n\t   <user_name> <criticity> <template_name>", 'Validate events');
@@ -195,6 +203,7 @@ sub help_screen{
 	help_screen_line('--apply_policy', '<policy_name>', 'Force apply a policy');
 	help_screen_line('--apply_all_policies', '', 'Force apply to all the policies');
 	help_screen_line('--add_agent_to_policy', '<agent_name> <policy_name>', 'Add an agent to a policy');
+	help_screen_line('--remove_agent_from_policy', '<policy_id> <agent_id>', 'Delete an agent to a policy');
 	help_screen_line('--delete_not_policy_modules', '', 'Delete all modules without policy from configuration file');
 	help_screen_line('--disable_policy_alerts', '<policy_name>', 'Disable all the alerts of a policy');
 	help_screen_line('--create_policy', '<policy_name> <group_name> <description>');
@@ -240,8 +249,8 @@ sub help_screen{
 ########################################################################
 # 
 ########################################################################
-sub api_call($$$;$$$) {
-	my ($pa_config, $op, $op2, $id, $id2, $other) = @_;
+sub api_call($$$;$$$$) {
+	my ($pa_config, $op, $op2, $id, $id2, $other, $return_type) = @_;
 	my $content = undef;
 	
 	eval {
@@ -255,6 +264,7 @@ sub api_call($$$;$$$) {
 		$params->{"id"} = $id;
 		$params->{"id2"} = $id2;
 		$params->{"other"} = $other;
+		$params->{"return_type"} = $return_type;
 		$params->{"other_mode"} = "url_encode_separator_|";
 		
 		# Call the API.
@@ -996,21 +1006,29 @@ sub cli_enable_group() {
 ##############################################################################
 
 sub cli_create_agent() {
-	my ($agent_name,$os_name,$group_name,$server_name,$address,$description,$interval) = @ARGV[2..8];
+	my ($agent_name,$os_name,$group_name,$server_name,$address,$description,$interval, $alias_as_name) = @ARGV[2..9];
 	
 	print_log "[INFO] Creating agent '$agent_name'\n\n";
 	
 	$address = '' unless defined ($address);
 	$description = (defined ($description) ? safe_input($description)  : '' );	# safe_input() might be better at pandora_create_agent() (when passing 'description' to db_insert())
 	$interval = 300 unless defined ($interval);
-	
+	$alias_as_name = 1 unless defined ($alias_as_name);
+	my $agent_alias = undef;
+
+	if (!$alias_as_name) {
+		$agent_alias = $agent_name;
+		$agent_name = generate_agent_name_hash($agent_alias, $conf{'dbhost'});
+	}
+
 	my $id_group = get_group_id($dbh,$group_name);
 	exist_check($id_group,'group',$group_name);
 	my $os_id = get_os_id($dbh,$os_name);
 	exist_check($id_group,'operating system',$group_name);
 	my $agent_exists = get_agent_id($dbh,$agent_name);
 	non_exist_check($agent_exists, 'agent name', $agent_name);
-	pandora_create_agent ($conf, $server_name, $agent_name, $address, $id_group, 0, $os_id, $description, $interval, $dbh);
+	pandora_create_agent ($conf, $server_name, $agent_name, $address, $id_group, 0, $os_id, $description, $interval, $dbh,
+		undef, undef, undef, undef, undef, undef, undef, undef, $agent_alias);
 }
 
 ##############################################################################
@@ -1594,6 +1612,54 @@ sub cli_create_module_group () {
 	non_exist_check($id_module_group,'group',$module_group_name);
 	
 	db_insert ($dbh, 'id_mg', 'INSERT INTO tmodule_group (name) VALUES (?)', safe_input($module_group_name));
+}
+
+##############################################################################
+# Show all the module group (without parameters) or the module groups with a filter parameters
+# Related option: --get_module_group
+##############################################################################
+
+sub cli_get_module_group() {
+	my ($module_group_name) = @ARGV[2..2];
+
+	my $condition = ' 1=1 ';
+
+	if($module_group_name ne '') {
+		$condition .= " AND name LIKE '%$module_group_name%' ";
+	}
+
+	my @module_group = get_db_rows ($dbh, "SELECT * FROM tmodule_group WHERE $condition");	
+
+	if(scalar(@module_group) == 0) {
+		print_log "[INFO] No groups found\n\n";
+		exit;
+	}
+
+	my $head_print = 0;
+	foreach my $groups (@module_group) {
+
+		if($head_print == 0) {
+			$head_print = 1;
+			print "id_module_group, group_name\n";
+		}
+		print $groups->{'id_mg'}.",".safe_output($groups->{'name'})."\n";
+	}
+
+	if($head_print == 0) {
+		print_log "[INFO] No groups found\n\n";
+	}
+
+}
+
+
+sub cli_module_group_synch() {
+	my $other = @ARGV[2];
+	my $return_type = @ARGV[3];
+	if ($return_type eq '') {
+		$return_type = 'csv';
+	}
+	my $result = api_call(\%conf,'set', 'module_group_synch', undef, undef, "$other", $return_type);
+	print "$result \n\n ";
 }
 
 ##############################################################################
@@ -3021,6 +3087,128 @@ sub cli_delete_alert_template() {
 }
 
 ##############################################################################
+# Add alert command.
+# Related option: --create_alert_command
+##############################################################################
+
+sub cli_create_alert_command() {
+	my ($command_name,$command,$group_name,$description,$internal,$fields_descriptions,$fields_values) = @ARGV[2..8];
+	
+	print_log "[INFO] Adding command '$command_name'\n\n";
+	
+	my $command_id = get_command_id($dbh,$command_name);
+	non_exist_check($command_id,'command',$command_name);
+	
+	my $id_group;
+	
+	if (! $group_name || $group_name eq "All") {
+		$id_group = 0;
+	}
+	else {
+		$id_group = get_group_id($dbh,$group_name);
+		exist_check($id_group,'group',$group_name);
+	}
+	
+	my %parameters;						
+	
+	$parameters{'name'} = $command_name;
+	$parameters{'command'} = $command;
+	$parameters{'id_group'} = $id_group;
+	$parameters{'description'} = $description;
+	$parameters{'internal'} = $internal;
+	$parameters{'fields_descriptions'} = $fields_descriptions;
+	$parameters{'fields_values'} = $fields_values;
+	
+	pandora_create_alert_command ($conf, \%parameters, $dbh);
+}
+
+##############################################################################
+# Show all the alert commands (without parameters) or the alert commands with a filter parameters
+# Related option: --get_alert_commands
+##############################################################################
+
+sub cli_get_alert_commands() {
+	my ($command_name, $command, $group_name, $description, $internal) = @ARGV[2..6];
+
+	my $id_group;
+	my $condition = ' 1=1 ';
+
+	if($command_name ne '') {
+		my $name = safe_input ($command_name);		
+		$condition .= " AND name LIKE '%$name%' ";
+	}
+	
+	if($command ne '') {
+		$condition .= " AND command LIKE '%$command%' ";
+	}
+
+	if($group_name ne '') {
+		$id_group = get_group_id($dbh, $group_name);
+		exist_check($id_group,'group',$group_name);
+		
+		$condition .= " AND id_group = $id_group ";
+	}
+	
+	if($description ne '') {
+		$condition .= " AND description LIKE '%$description%' ";
+	}
+
+	if($internal ne '') {
+		$condition .= " AND internal = $internal ";
+	}
+
+	my @alert_command = get_db_rows ($dbh, "SELECT * FROM talert_commands WHERE $condition");	
+
+	if(scalar(@alert_command) == 0) {
+		print_log "[INFO] No commands found\n\n";
+		exit;
+	}
+
+	my $head_print = 0;
+	foreach my $commands (@alert_command) {
+
+		if($head_print == 0) {
+			$head_print = 1;
+			print "id_command, command_name\n";
+		}
+		print $commands->{'id'}.",".safe_output($commands->{'name'})."\n";
+	}
+
+	if($head_print == 0) {
+		print_log "[INFO] No commands found\n\n";
+	}
+}
+
+##############################################################################
+# Get alert actions.
+# Related option: --get_alert_actions
+##############################################################################
+
+sub cli_get_alert_actions() {
+	my ($action_name,$separator,$return_type) = @ARGV[2..4];
+	if ($return_type eq '') {
+		$return_type = 'csv';
+	}
+	my $result = api_call(\%conf,'get', 'alert_actions', undef, undef, "$action_name|$separator",$return_type);
+	print "$result \n\n ";
+}
+
+##############################################################################
+# Get alert actions in nodes.
+# Related option: --get_alert_actions_meta
+##############################################################################
+
+sub cli_get_alert_actions_meta() {
+	my ($server_name,$action_name,$separator,$return_type) = @ARGV[2..5];
+	if ($return_type eq '') {
+		$return_type = 'csv';
+	}
+
+	my $result = api_call(\%conf,'get', 'alert_actions_meta', undef, undef, "$server_name|$action_name|$separator",$return_type);
+	print "$result \n\n ";
+}
+
+##############################################################################
 # Add profile.
 # Related option: --add_profile
 ##############################################################################
@@ -4093,6 +4281,19 @@ sub cli_policy_add_agent() {
 	}
 }
 
+##############################################################################
+# delete an agent to a policy
+# Related option: --remove_agent_from_policy
+##############################################################################
+
+sub cli_policy_delete_agent() {
+	my ($policy_id, $agent_id) = @ARGV[2..3];
+	
+	my $result = api_call(\%conf,'set', 'remove_agent_from_policy', $policy_id, $agent_id);
+	print "$result \n\n ";
+
+}
+
 sub cli_create_planned_downtime() {
 	my $name = @ARGV[2];
 	my @todo = @ARGV[3..21];
@@ -4435,6 +4636,18 @@ sub cli_disable_double_auth () {
 	my $result = db_do ($dbh, 'DELETE FROM tuser_double_auth WHERE id_user = ?', $user_id);
 	
 	exit;
+}
+
+###############################################################################
+# Synchronize metaconsole users
+# Related option: --meta_synch_user
+###############################################################################
+sub cli_meta_synch_user() {
+	my ($user_name,$server_name,$profile_mode,$group,$profiles,$create_groups) = @ARGV[2..7];
+
+	my $result = api_call(\%conf,'set', 'meta_synch_user', undef, undef, "$user_name|$server_name|$profile_mode|$group|$profiles|$create_groups");
+	print "$result \n\n ";
+
 }
 
 ###############################################################################
@@ -5688,6 +5901,10 @@ sub pandora_manage_main ($$$) {
 			param_check($ltotal, 1);
 			cli_disable_double_auth();
 		}
+		elsif ($param eq '--meta_synch_user') {
+			param_check($ltotal, 6, 4);
+			cli_meta_synch_user();
+		}
 		elsif ($param eq '--disable_group') {
 			param_check($ltotal, 1);
 			cli_disable_group();
@@ -5697,7 +5914,7 @@ sub pandora_manage_main ($$$) {
 			cli_enable_group();
 		}
 		elsif ($param eq '--create_agent') {
-			param_check($ltotal, 7, 3);
+			param_check($ltotal, 8, 4);
 			cli_create_agent();
 		}
 		elsif ($param eq '--delete_agent') {
@@ -5712,9 +5929,18 @@ sub pandora_manage_main ($$$) {
 			param_check($ltotal, 38, 35);
 			cli_create_web_module(0);
 		}
+
+		elsif ($param eq '--get_module_group') {
+			param_check($ltotal, 1, 1);
+			cli_get_module_group();
+		}
 		elsif ($param eq '--create_module_group') {
 			param_check($ltotal, 1, 1);
 			cli_create_module_group();
+		}
+		elsif ($param eq '--module_group_synch') {
+			param_check($ltotal, 2, 1);
+			cli_module_group_synch();
 		}
 		elsif ($param eq '--create_network_module') {
 			param_check($ltotal, 32, 20);
@@ -5828,6 +6054,10 @@ sub pandora_manage_main ($$$) {
 			param_check($ltotal, 2);
 			cli_policy_add_agent();
 		}
+		elsif ($param eq '--remove_agent_from_policy') {
+			param_check($ltotal, 2);
+			cli_policy_delete_agent();
+		}
 		elsif ($param eq '--enable_user') {
 			param_check($ltotal, 1);
 			cli_user_enable();
@@ -5885,8 +6115,24 @@ sub pandora_manage_main ($$$) {
 			cli_create_alert_template();
 		}
 		elsif ($param eq '--delete_alert_template') {
-			param_check($ltotal, 1);
+			param_check($ltotal, 7);
 			cli_delete_alert_template();
+		}
+		elsif ($param eq '--create_alert_command') {
+			param_check($ltotal, 7, 2);
+			cli_create_alert_command();
+		}
+		elsif ($param eq '--get_alert_commands') {
+			param_check($ltotal, 5, 5);
+			cli_get_alert_commands();
+		}
+		elsif ($param eq '--get_alert_actions') {
+			param_check($ltotal, 3, 3);
+			cli_get_alert_actions();
+		}
+		elsif ($param eq '--get_alert_actions_meta') {
+			param_check($ltotal, 4, 4);
+			cli_get_alert_actions_meta();
 		}
 		elsif ($param eq '--update_alert_template') {
 			param_check($ltotal, 3);
@@ -6129,6 +6375,10 @@ sub pandora_manage_main ($$$) {
 		elsif ($param eq '--set_disabled_and_standby') {
 			param_check($ltotal, 3, 1);
 			cli_set_disabled_and_standby();
+		}
+		elsif ($param eq '--reset_agent_counts') {
+			param_check($ltotal, 1, 0);
+			cli_reset_agent_counts();
 		}
 		else {
 			print_log "[ERROR] Invalid option '$param'.\n\n";
@@ -6733,4 +6983,17 @@ sub cli_set_disabled_and_standby() {
 
 	my $exit_code =  (defined($result) && "$result" eq "1") ? "1" : "0";
 	print "\n$exit_code\n";
+}
+
+##############################################################################
+# Resets module counts and alert counts in the agents.
+# Related option: --reset_agent_counts
+##############################################################################
+
+sub cli_reset_agent_counts() {
+	my $agent_id = @ARGV[2];
+
+	my $result = api_call(\%conf,'set', 'reset_agent_counts', $agent_id);
+	print "$result \n\n ";
+
 }

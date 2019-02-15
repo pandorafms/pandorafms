@@ -420,7 +420,12 @@ class HostDevices extends Wizard
             }
 
             $interval = get_parameter('interval', 0);
+            $id_os = get_parameter('id_os', 0);
+            $recon_ports = get_parameter('recon_ports', '');
+
+            $this->task['id_os'] = $id_os;
             $this->task['interval_sweep'] = $interval;
+            $this->task['recon_ports'] = $recon_ports;
 
             if ($this->task['disabled'] == 2) {
                 // Wizard finished.
@@ -640,11 +645,12 @@ class HostDevices extends Wizard
                 $form['inputs'][] = [
                     'label'     => '<b>'.__('Group').'</b>',
                     'arguments' => [
-                        'name'      => 'id_group',
-                        'privilege' => 'PM',
-                        'type'      => 'select_groups',
-                        'selected'  => $this->task['id_group'],
-                        'return'    => true,
+                        'name'           => 'id_group',
+                        'returnAllGroup' => false,
+                        'privilege'      => 'PM',
+                        'type'           => 'select_groups',
+                        'selected'       => $this->task['id_group'],
+                        'return'         => true,
                     ],
                 ];
 
@@ -724,7 +730,7 @@ class HostDevices extends Wizard
             ];
 
             // Feature configuration.
-            // Input: Module template.
+            // Input: SNMP enabled.
             $form['inputs'][] = [
                 'label'     => __('SNMP enabled'),
                 'arguments' => [
@@ -923,7 +929,7 @@ class HostDevices extends Wizard
                 ],
             ];
 
-            // Input: Module template.
+            // Input: Enforce os detection.
             $form['inputs'][] = [
                 'label'     => __('OS detection'),
                 'arguments' => [
@@ -1051,10 +1057,40 @@ $(function() {
         if ($this->page == 2) {
             // Interval and schedules.
             $interv_manual = 0;
-            if ((int) $interval == 0) {
+            if ((int) $this->task['interval_sweep'] == 0) {
                 $interv_manual = 1;
             }
 
+            // Filter: OS.
+            $form['inputs'][] = [
+                'label'     => '<b>'.__('Filter by OS').'</b>',
+                'arguments' => [
+                    'type'     => 'select_from_sql',
+                    'sql'      => 'SELECT id_os, name
+                                FROM tconfig_os
+                                ORDER BY name',
+                    'name'     => 'id_os',
+                    'return'   => 'true',
+                    'nothing'  => __('Any'),
+                    'selected' => $this->task['id_os'],
+                ],
+            ];
+
+            // Filter: Ports.
+            $form['inputs'][] = [
+                'label'     => '<b>'.__('Filter by ports').'</b>'.ui_print_help_tip(
+                    __('Ports defined like: 80 or 80,443,512 or even 0-1024 (Like Nmap command line format). If dont want to do a sweep using portscan, left it in blank'),
+                    true
+                ),
+                'arguments' => [
+                    'type'        => 'text',
+                    'name'        => 'recon_ports',
+                    'return'      => 'true',
+                    'recon_ports' => $this->task['recon_ports'],
+                ],
+            ];
+
+            // Schedule.
             $form['inputs'][] = [
                 'label'     => '<b>'.__('Interval').'</b>'.ui_print_help_tip(
                     __('Manual interval means that it will be executed only On-demand'),
@@ -1072,7 +1108,7 @@ $(function() {
                 ],
                 'extra'     => '<span id="interval_manual_container">'.html_print_extended_select_for_time(
                     'interval',
-                    $interval,
+                    $this->task['interval_sweep'],
                     '',
                     '',
                     '0',

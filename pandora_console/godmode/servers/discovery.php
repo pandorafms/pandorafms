@@ -55,8 +55,9 @@ $classname_selected = get_wiz_class($wiz_in_use);
 // Else: class not found pseudo exception.
 if ($classname_selected !== null) {
     $wiz = new $classname_selected($page);
-    $wiz->run();
+    $result = $wiz->run();
     // TODO: Here we'll controlle if return is a valid recon task id.
+    hd($result);
 }
 
 if ($classname_selected === null) {

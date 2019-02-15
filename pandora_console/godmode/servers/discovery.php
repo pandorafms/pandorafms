@@ -30,12 +30,19 @@ function get_wiz_class($str)
         case 'hd':
         return 'HostDevices';
 
+        case 'tasklist':
+        return 'DiscoveryTaskList';
+
         default:
             // Ignore.
         return null;
     }
 }
 
+
+/*
+ * CLASS LOADER.
+ */
 
 // Dynamic class loader.
 $classes = glob($config['homedir'].'/godmode/wizards/*.class.php');
@@ -76,10 +83,12 @@ if ($classname_selected === null) {
         $wiz_data = $obj->load();
         ?>
 
-    <li>
+    <li class="discovery">
         <a href="<?php echo $wiz_data['url']; ?>">
-            <img src="<?php echo 'images/wizard/csv_image.svg'; ?>" alt="<?php echo $classname; ?>" id="imagen">
-            <br><label id="text_wizard"><?php echo $wiz_data['label']; ?></label>
+            <div class="data_container">
+                <?php html_print_image($wiz_data['icon']); ?>
+                <br><label id="text_wizard"><?php echo io_safe_output($wiz_data['label']); ?></label>
+            </div>
         </a>
     </li>
 

@@ -31,56 +31,12 @@ require_once $config['homedir'].'/include/functions_users.php';
 enterprise_include('include/class/CSVImportAgents.class.php');
 
 /**
- * Undocumented class
+ * Wizard section Host&devices.
+ * Provides classic recon task creation.
+ * In enterprise environments, provides also CSV agent import features.
  */
 class HostDevices extends Wizard
 {
-    // CSV constants.
-    const HDW_CSV_NOT_DATA = 0;
-    const HDW_CSV_DUPLICATED = 0;
-    const HDW_CSV_GROUP_EXISTS = 0;
-
-    /**
-     * Undocumented variable
-     *
-     * @var array
-     */
-    public $values = [];
-
-    /**
-     * Undocumented variable
-     *
-     * @var [type]
-     */
-    public $result;
-
-    /**
-     * Undocumented variable
-     *
-     * @var [type]
-     */
-    public $msg;
-
-    /**
-     * Undocumented variable
-     *
-     * @var [type]
-     */
-    public $icon;
-
-    /**
-     * Undocumented variable
-     *
-     * @var [type]
-     */
-    public $label;
-
-    /**
-     * Undocumented variable
-     *
-     * @var [type]
-     */
-    public $url;
 
     /**
      * Stores all needed parameters to create a recon task.
@@ -91,7 +47,7 @@ class HostDevices extends Wizard
 
 
     /**
-     * Undocumented function.
+     * Constructor.
      *
      * @param integer $page  Start page, by default 0.
      * @param string  $msg   Mensajito.
@@ -103,7 +59,7 @@ class HostDevices extends Wizard
     public function __construct(
         int $page=0,
         string $msg='Default message. Not set.',
-        string $icon='hostDevices.png',
+        string $icon='images/wizard/hostdevices.svg',
         string $label='Host & Devices'
     ) {
         $this->setBreadcrum([]);
@@ -122,9 +78,9 @@ class HostDevices extends Wizard
 
 
     /**
-     * Undocumented function
+     * Run wizard manager.
      *
-     * @return void
+     * @return mixed Returns null if wizard is ongoing. Result if done.
      */
     public function run()
     {
@@ -684,6 +640,7 @@ class HostDevices extends Wizard
                 // XXX: Could be improved validating inputs before continue (JS)
                 // Print NetScan page 0.
                 $this->printForm($form);
+                $this->printGoBackButton();
             }
         }
 

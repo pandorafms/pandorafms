@@ -1496,11 +1496,12 @@ function reporting_html_agent_module($table, $item)
             $table_data .= "<td style='background-color: ".$rowcolor.";'>".$file_name.'</td>';
 
             foreach ($row['modules'] as $module_name => $module) {
-                if (is_null($module)) {
+                if ($module === null) {
                     $table_data .= "<td style='background-color: #DDD;'></td>";
                 } else {
                     $table_data .= "<td style='text-align: center; background-color: #DDD;'>";
                     switch ($module) {
+                        default:
                         case AGENT_STATUS_NORMAL:
                             $table_data .= ui_print_status_image(
                                 'module_ok.png',
@@ -1756,6 +1757,15 @@ function reporting_html_exception($table, $item, $pdf=0)
 }
 
 
+/**
+ * Function to print to HTML group report.
+ *
+ * @param object  $table Head table or false if it comes from pdf.
+ * @param array   $item  Items data.
+ * @param boolean $pdf   If it comes from pdf.
+ *
+ * @return html
+ */
 function reporting_html_group_report($table, $item, $pdf=0)
 {
     global $config;
@@ -2266,7 +2276,11 @@ function reporting_html_alert_report($table, $item, $pdf=0)
     $table1->valign  = [];
 
     if ($item['data'] == null) {
-        $table->data['alerts']['cell'] = ui_print_empty_data(__('No alerts defined'), '', true);
+        $table->data['alerts']['cell'] = ui_print_empty_data(
+            __('No alerts defined'),
+            '',
+            true
+        );
         return true;
     }
 
@@ -2298,7 +2312,7 @@ function reporting_html_alert_report($table, $item, $pdf=0)
             $row['fired']    = '';
             foreach ($alert['actions'] as $action) {
                 if ($action['name'] == '') {
-                    // Removed from retrieved hash
+                    // Removed from retrieved hash.
                     continue;
                 }
 
@@ -2315,7 +2329,7 @@ function reporting_html_alert_report($table, $item, $pdf=0)
                 $row['tfired'] .= '<div style="width: 100%;">'.$fired.'</div>'."\n";
             }
 
-            // Skip first td's to avoid repeat the agent and module names
+            // Skip first td's to avoid repeat the agent and module names.
             $table1->data[] = $row;
             if ($td > 1) {
                 for ($i = 0; $i < $td; $i++) {
@@ -2355,7 +2369,18 @@ function reporting_html_sql_graph($table, $item)
 }
 
 
-function reporting_html_monitor_report($table, $item, $mini)
+/**
+ * It shows the percentage of time a module has been
+ * right or wrong within a predefined period.
+ *
+ * @param object  $table Parameters table.
+ * @param array   $item  Items data.
+ * @param boolean $mini  True or flase.
+ * @param integer $pdf   Values 0 or 1.
+ *
+ * @return mixed
+ */
+function reporting_html_monitor_report($table, $item, $mini, $pdf=0)
 {
     global $config;
 
@@ -2377,16 +2402,50 @@ function reporting_html_monitor_report($table, $item, $mini)
         $table1->data['data']['unknown'] .= __('Unknown').'</p>';
     } else {
         $table1->data['data']['ok'] = '<p style="font: bold '.$font_size.'em Arial, Sans-serif; color: '.COL_NORMAL.';">';
-        $table1->data['data']['ok'] .= html_print_image('images/module_ok.png', true).' '.__('OK').': '.remove_right_zeros(number_format($item['data']['ok']['formated_value'], $config['graph_precision'])).' %</p>';
+        $table1->data['data']['ok'] .= html_print_image(
+            'images/module_ok.png',
+            true
+        ).' '.__('OK').': '.remove_right_zeros(
+            number_format(
+                $item['data']['ok']['formated_value'],
+                $config['graph_precision']
+            )
+        ).' %</p>';
 
         $table1->data['data']['fail'] = '<p style="font: bold '.$font_size.'em Arial, Sans-serif; color: '.COL_CRITICAL.';">';
-        $table1->data['data']['fail'] .= html_print_image('images/module_critical.png', true).' '.__('Not OK').': '.remove_right_zeros(number_format($item['data']['fail']['formated_value'], $config['graph_precision'])).' % '.'</p>';
+        $table1->data['data']['fail'] .= html_print_image(
+            'images/module_critical.png',
+            true
+        ).' '.__('Not OK').': '.remove_right_zeros(
+            number_format(
+                $item['data']['fail']['formated_value'],
+                $config['graph_precision']
+            )
+        ).' % '.'</p>';
     }
 
-    $table->data['module']['cell'] = html_print_table($table1, true);
+    if ($pdf === 0) {
+        $table->data['module']['cell'] = html_print_table(
+            $table1,
+            true
+        );
+    } else {
+        return html_print_table(
+            $table1,
+            true
+        );
+    }
 }
 
 
+/**
+ * Print report html.
+ *
+ * @param object $table Parameters table.
+ * @param array  $item  Items data.
+ *
+ * @return mixed
+ */
 function reporting_html_graph($table, $item)
 {
     $table->colspan['chart']['cell'] = 3;
@@ -2395,6 +2454,15 @@ function reporting_html_graph($table, $item)
 }
 
 
+/**
+ * Print report prediction date.
+ *
+ * @param object  $table Parameters table.
+ * @param array   $item  Items data.
+ * @param boolean $mini  True or False.
+ *
+ * @return mixed
+ */
 function reporting_html_prediction_date($table, $item, $mini)
 {
     reporting_html_value($table, $item, $mini, true);
@@ -2719,10 +2787,31 @@ function reporting_html_text(&$table, $item)
 }
 
 
-function reporting_html_availability(&$table, $item)
+/**
+ * Report availability
+ *
+ * @param string  $table Reference table in pdf a false.
+ * @param array   $item  Parameters for item pdf.
+ * @param boolean $pdf   Send pdf.
+ *
+ * @return html
+ */
+function reporting_html_availability($table, $item, $pdf=0)
 {
-    $style = db_get_value('style', 'treport_content', 'id_rc', $item['id_rc']);
-    $style = json_decode(io_safe_output($style), true);
+    $retun_pdf = '';
+
+    $style = db_get_value(
+        'style',
+        'treport_content',
+        'id_rc',
+        $item['id_rc']
+    );
+
+    $style = json_decode(
+        io_safe_output($style),
+        true
+    );
+
     $same_agent_in_resume = '';
 
     global $config;
@@ -2886,16 +2975,30 @@ function reporting_html_availability(&$table, $item)
         $table->data['error']['cell'] = __('There are no Agent/Modules defined');
     }
 
-    $table->colspan[1][0] = 2;
-    $table->colspan[2][0] = 2;
-    $data = [];
-    $data[0] = html_print_table($table1, true);
-    array_push($table->data, $data);
+    if ($pdf === 0) {
+        $table->colspan[1][0] = 2;
+        $table->colspan[2][0] = 2;
+        $data = [];
+        $data[0] = html_print_table($table1, true);
+        array_push($table->data, $data);
+    } else {
+        $table1->title = $item['title'];
+        $table1->titleclass = 'title_table_pdf';
+        $table1->titlestyle = 'text-align:left;';
+        $return_pdf .= html_print_table($table1, true);
+    }
 
     if ($item['resume']['resume']) {
-        $data2 = [];
-        $data2[0] = html_print_table($table2, true);
-        array_push($table->data, $data2);
+        if ($pdf === 0) {
+            $data2 = [];
+            $data2[0] = html_print_table($table2, true);
+            array_push($table->data, $data2);
+        } else {
+            $table2->title = $item['title'];
+            $table2->titleclass = 'title_table_pdf';
+            $table2->titlestyle = 'text-align:left;';
+            $return_pdf .= html_print_table($table2, true);
+        }
     }
 
     if ($item['resume']['resume'] && !empty($item['data'])) {
@@ -2925,17 +3028,40 @@ function reporting_html_availability(&$table, $item)
 
             $table1->data[] = [
                 'max_text' => $item['resume']['max_text'],
-                'max'      => sla_truncate($item['resume']['max'], $config['graph_precision']).'%',
+                'max'      => sla_truncate(
+                    $item['resume']['max'],
+                    $config['graph_precision']
+                ).'%',
                 'min_text' => $item['resume']['min_text'],
-                'min'      => sla_truncate($item['resume']['min'], $config['graph_precision']).'%',
+                'min'      => sla_truncate(
+                    $item['resume']['min'],
+                    $config['graph_precision']
+                ).'%',
                 'avg'      => '<span style="font-size: 1.2em; font-weight:bold;">'.sla_truncate($item['resume']['avg'], $config['graph_precision']).'%</span>',
             ];
 
-            $table->colspan[3][0] = 3;
-            $data = [];
-            $data[0] = html_print_table($table1, true);
-            array_push($table->data, $data);
+            if ($pdf === 0) {
+                $table->colspan[3][0] = 3;
+                $data = [];
+                $data[0] = html_print_table(
+                    $table1,
+                    true
+                );
+                array_push($table->data, $data);
+            } else {
+                $table1->title = $item['title'];
+                $table1->titleclass = 'title_table_pdf';
+                $table1->titlestyle = 'text-align:left;';
+                $return_pdf .= html_print_table(
+                    $table1,
+                    true
+                );
+            }
         }
+    }
+
+    if ($pdf !== 0) {
+        return $return_pdf;
     }
 }
 
@@ -3069,6 +3195,13 @@ function reporting_html_availability_graph($table, $item, $pdf=0)
 }
 
 
+/**
+ * Function for first time data agent.
+ *
+ * @param string $agent_name Agent name.
+ *
+ * @return array
+ */
 function get_agent_first_time($agent_name)
 {
     $id = agents_get_agent_id($agent_name, true);
@@ -3347,6 +3480,15 @@ function reporting_html_sql($table, $item, $pdf=0)
 }
 
 
+/**
+ * Function for stats.
+ *
+ * @param array   $data         Array item.
+ * @param integer $graph_width  Items data.
+ * @param integer $graph_height If it comes from pdf.
+ *
+ * @return html
+ */
 function reporting_get_stats_summary($data, $graph_width, $graph_height)
 {
     global $config;
@@ -3376,13 +3518,21 @@ function reporting_get_stats_summary($data, $graph_width, $graph_height)
 
         $tdata[0] = '<div style="margin: auto; width: '.$graph_width.'px;"><div id="status_pie" style="margin: auto; width: '.$graph_width.'">'.graph_agent_status(false, $graph_width, $graph_height, true, true).'</div></div>';
     } else {
-        $tdata[2] = html_print_image('images/image_problem_area_small.png', true, ['width' => $graph_width]);
+        $tdata[2] = html_print_image(
+            'images/image_problem_area_small.png',
+            true,
+            ['width' => $graph_width]
+        );
     }
 
     if ($data['monitor_alerts'] > 0) {
         $tdata[2] = '<div style="margin: auto; width: '.$graph_width.'px;">'.graph_alert_status($data['monitor_alerts'], $data['monitor_alerts_fired'], $graph_width, $graph_height, true, true).'</div>';
     } else {
-        $tdata[2] = html_print_image('images/image_problem_area_small.png', true, ['width' => $graph_width]);
+        $tdata[2] = html_print_image(
+            'images/image_problem_area_small.png',
+            true,
+            ['width' => $graph_width]
+        );
     }
 
         $table_sum->rowclass[] = '';
@@ -3401,10 +3551,11 @@ function reporting_get_stats_summary($data, $graph_width, $graph_height)
  * It construct a table object with all the events happened in a group
  * during a period of time.
  *
- * @param int Group id to get the report.
- * @param int Period of time to get the report.
- * @param int Beginning date of the report
- * @param int Flag to return or echo the report table (echo by default).
+ * @param integer $id_group Group id to get the report.
+ * @param integer $period   Period of time to get the report.
+ * @param integer $date     Beginning date of the report.
+ * @param boolean $return   Flag to return or echo the
+ *   report table (echo by default).
  *
  * @return object A table object
  */
@@ -3437,7 +3588,7 @@ function reporting_event_reporting($id_group, $period, $date=0, $return=false)
         }
 
         $data[1] = $event['evento'];
-        $data[2] = $event['id_usuario'] != '0' ? $event['id_usuario'] : '';
+        $data[2] = ($event['id_usuario'] != '0') ? $event['id_usuario'] : '';
         $data[3] = $event['timestamp'];
         array_push($table->data, $data);
     }
@@ -3453,8 +3604,9 @@ function reporting_event_reporting($id_group, $period, $date=0, $return=false)
 /**
  * Get a table report from a alerts fired array.
  *
- * @param array Alerts fired array.
- * @see   function get_alerts_fired ()
+ * @param array $alerts_fired Alerts fired array.
+ *
+ * @see function get_alerts_fired ()
  *
  * @return object A table object with a report of the fired alerts.
  */
@@ -3515,8 +3667,9 @@ function reporting_get_fired_alerts_table($alerts_fired)
 /**
  * Get a report table with all the monitors down.
  *
- * @param array  An array with all the monitors down
- * @see   function modules_get_monitors_down()
+ * @param array $monitors_down An array with all the monitors down.
+ *
+ * @see Function modules_get_monitors_down().
  *
  * @return object A table object with a monitors down report.
  */
@@ -3570,8 +3723,8 @@ function reporting_get_monitors_down_table($monitors_down)
  *
  * It shows the number of agents and no more things right now.
  *
- * @param int Group to get the report
- * @param bool Flag to return or echo the report (by default).
+ * @param integer $id_group Group to get the report.
+ * @param boolean $return   Flag to return or echo the report (by default).
  *
  * @return HTML string with group report
  */
@@ -3591,9 +3744,10 @@ function reporting_print_group_reporting($id_group, $return=false)
 /**
  * Get a report table of the fired alerts group by agents.
  *
- * @param int Agent id to generate the report.
- * @param int Period of time of the report.
- * @param int Beginning date of the report in UNIX time (current date by default).
+ * @param integer $id_agent Agent id to generate the report.
+ * @param integer $period   Period of time of the report.
+ * @param integer $date     Beginning date of the report in
+ * UNIX time (current date by default).
  *
  * @return object A table object with the alert reporting..
  */
@@ -3637,23 +3791,19 @@ function reporting_get_agent_alerts_table($id_agent, $period=0, $date=0)
             case 'equal':
             case 'not_equal':
                 $data[2] = $template['value'];
-
             break;
 
             case 'max-min':
                 $data[2] = __('Min.').': '.$template['min_value'].' ';
                 $data[2] .= __('Max.').': '.$template['max_value'].' ';
-
             break;
 
             case 'max':
                 $data[2] = $template['max_value'];
-
             break;
 
             case 'min':
                 $data[2] = $template['min_value'];
-
             break;
         }
 
@@ -3671,9 +3821,10 @@ function reporting_get_agent_alerts_table($id_agent, $period=0, $date=0)
 /**
  * Get a report of monitors in an agent.
  *
- * @param int Agent id to get the report
- * @param int Period of time of the report.
- * @param int Beginning date of the report in UNIX time (current date by default).
+ * @param integer $id_agent Agent id to get the report.
+ * @param integer $period   Period of time of the report.
+ * @param integer $date     Beginning date of the report in UNIX time
+ *         (current date by default).
  *
  * @return object A table object with the report.
  */
@@ -3722,9 +3873,10 @@ function reporting_get_agent_monitors_table($id_agent, $period=0, $date=0)
 /**
  * Get a report of all the modules in an agent.
  *
- * @param int Agent id to get the report.
- * @param int Period of time of the report
- * @param int Beginning date of the report in UNIX time (current date by default).
+ * @param integer $id_agent Agent id to get the report.
+ * @param integer $period   Period of time of the report.
+ * @param integer $date     Beginning date of the report in UNIX time
+ *         (current date by default).
  *
  * @return object
  */
@@ -3756,19 +3908,24 @@ function reporting_get_agent_modules_table($id_agent, $period=0, $date=0)
 /**
  * Get a detailed report of an agent
  *
- * @param int Agent to get the report.
- * @param int Period of time of the desired report.
- * @param int Beginning date of the report in UNIX time (current date by default).
- * @param bool Flag to return or echo the report (by default).
+ * @param integer $id_agent Agent to get the report.
+ * @param integer $period   Period of time of the desired report.
+ * @param integer $date     Beginning date of the report in UNIX time
+ * (current date by default).
+ * @param boolean $return   Flag to return or echo the report (by default).
  *
  * @return string
  */
-function reporting_get_agent_detailed($id_agent, $period=0, $date=0, $return=false)
-{
+function reporting_get_agent_detailed(
+    $id_agent,
+    $period=0,
+    $date=0,
+    $return=false
+) {
     $output = '';
     $n_a_string = __('N/A(*)');
 
-    // Show modules in agent
+    // Show modules in agent.
     $output .= '<div class="agent_reporting">';
     $output .= '<h3 style="text-decoration: underline">'.__('Agent').' - '.agents_get_alias($id_agent).'</h3>';
     $output .= '<h4>'.__('Modules').'</h3>';
@@ -3776,17 +3933,17 @@ function reporting_get_agent_detailed($id_agent, $period=0, $date=0, $return=fal
     $table_modules->width = '99%';
     $output .= html_print_table($table_modules, true);
 
-    // Show alerts in agent
+    // Show alerts in agent.
     $table_alerts = reporting_get_agent_alerts_table($id_agent, $period, $date);
     $table_alerts->width = '99%';
-    if (sizeof($table_alerts->data)) {
+    if (count($table_alerts->data)) {
         $output .= '<h4>'.__('Alerts').'</h4>';
         $output .= html_print_table($table_alerts, true);
     }
 
-    // Show monitor status in agent (if any)
+    // Show monitor status in agent (if any).
     $table_monitors = reporting_get_agent_monitors_table($id_agent, $period, $date);
-    if (sizeof($table_monitors->data) == 0) {
+    if (count($table_monitors->data) == 0) {
         $output .= '</div>';
         if (! $return) {
             echo $output;

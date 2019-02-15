@@ -276,10 +276,9 @@ class HostDevices extends Wizard
 
                 if ($task !== false) {
                     $this->task = $task;
+                    $this->msg = __('This network scan task has been already defined. Please edit it or create a new one.');
+                    return false;
                 }
-
-                $this->msg = __('This network scan task has been already defined. Please edit it or create a new one.');
-                return false;
             }
 
             if (isset($this->task['id_rt']) === false) {

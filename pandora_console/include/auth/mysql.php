@@ -1369,7 +1369,12 @@ function local_ldap_search($ldap_host, $ldap_port=389, $ldap_version=3, $dn, $ac
         $tls = ' -ZZ ';
     }
 
-    $ldap_host = ' -H '.$ldap_host.':'.$ldap_port;
+    if (stripos($ldap_host, 'ldap') !== false) {
+        $ldap_host = ' -H '.$ldap_host.':'.$ldap_port;
+    } else {
+        $ldap_host = ' -h '.$ldap_host.' -p '.$ldap_port;
+    }
+
     $ldap_version = ' -P '.$ldap_version;
     if (!empty($ldap_admin_user)) {
         $ldap_admin_user = " -D '".$ldap_admin_user."'";

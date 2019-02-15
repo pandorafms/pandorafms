@@ -102,7 +102,7 @@ class HostDevices extends Wizard
      */
     public function __construct(
         int $page=0,
-        string $msg='hola',
+        string $msg='Default message. Not set.',
         string $icon='hostDevices.png',
         string $label='Host & Devices'
     ) {
@@ -203,18 +203,67 @@ class HostDevices extends Wizard
     public function parseNetScan()
     {
         if ($this->page == 0) {
-            // Error. Must not be here.
+            // Check if we're updating a task.
+            $task_id = get_parameter('task', null);
+
+            if (isset($task_id) === true) {
+                // We're updating this task.
+                $task = db_get_row(
+                    'trecon_task',
+                    'id_rt',
+                    $task_id
+                );
+
+                if ($task !== false) {
+                    $this->task = $task;
+                }
+            }
+
             return true;
         }
 
         // Validate response from page 0. No, not a bug, we're always 1 page
         // from 'validation' page.
         if ($this->page == 1) {
+            $task_id = get_parameter('task', null);
             $taskname = get_parameter('taskname', '');
             $comment = get_parameter('comment', '');
             $server_id = get_parameter('id_recon_server', '');
-            $network = get_parameter('name', '');
+            $network = get_parameter('network', '');
             $id_group = get_parameter('id_group', '');
+
+            if (isset($task_id) === true) {
+                // We're updating this task.
+                $task = db_get_row(
+                    'trecon_task',
+                    'id_rt',
+                    $task_id
+                );
+
+                if ($task !== false) {
+                    $this->task = $task;
+                }
+            } else if (isset($taskname) === true
+                && isset($network) === true
+            ) {
+                // Avoid double creation.
+                $task = db_get_row_filter(
+                    'trecon_task',
+                    [
+                        'name'   => $taskname,
+                        'subnet' => $network,
+                    ]
+                );
+
+                if ($task !== false) {
+                    $this->task = $task;
+                }
+            }
+
+            if (isset($this->task['id_rt']) === false) {
+                // Disabled 2 Implies wizard non finished.
+                $this->task['disabled'] = 2;
+            }
 
             if ($taskname == '') {
                 $this->msg = __('You must provide a task name.');
@@ -242,12 +291,9 @@ class HostDevices extends Wizard
             $this->task['description'] = $comment;
             $this->task['subnet'] = $network;
             $this->task['id_recon_server'] = $server_id;
-            // Disabled 2 Implies wizard non finished.
-            $this->task['disabled'] = 2;
+            $this->task['id_group'] = $id_group;
 
-            $this->task['id_rt'] = 5;
-
-            if (!isset($this->task['id_rt'])) {
+            if (isset($this->task['id_rt']) === false) {
                 // Create.
                 $this->task['id_rt'] = db_process_sql_insert(
                     'trecon_task',
@@ -269,24 +315,121 @@ class HostDevices extends Wizard
         if ($this->page == 2) {
             $id_rt = get_parameter('task', -1);
 
-            $this->task = db_get_row(
+            $task = db_get_row(
                 'trecon_task',
                 'id_rt',
                 $id_rt
             );
 
-            hd($this->task);
+            if ($task !== false) {
+                $this->task = $task;
+            } else {
+                $this->msg = __('Failed to find network scan task.');
+                return false;
+            }
 
-            return false;
+            $id_network_profile = get_parameter('id_network_profile', null);
+            $snmp_enabled = get_parameter_switch('snmp_enabled');
+            $os_detect = get_parameter_switch('os_detect');
+            $parent_detection = get_parameter_switch('parent_detection');
+            $parent_recursion = get_parameter_switch('parent_recursion');
+            $vlan_enabled = get_parameter_switch('vlan_enabled');
+            $snmp_version = get_parameter('snmp_version', null);
+            $community = get_parameter('community', null);
+            $snmp_context = get_parameter('snmp_context', null);
+            $snmp_auth_user = get_parameter('snmp_auth_user', null);
+            $snmp_auth_pass = get_parameter('snmp_auth_pass', null);
+            $snmp_privacy_method = get_parameter('snmp_privacy_method', null);
+            $snmp_privacy_pass = get_parameter('snmp_privacy_pass', null);
+            $snmp_auth_method = get_parameter('snmp_auth_method', null);
+            $snmp_security_level = get_parameter('snmp_security_level', null);
+            $auth_strings = get_parameter('auth_strings', null);
+
+            if ($snmp_version == 3) {
+                $this->task['snmp_community'] = $snmp_context;
+            } else {
+                $this->task['snmp_community'] = $community;
+            }
+
+            $this->task['id_network_profile'] = $id_network_profile;
+            $this->task['snmp_enabled'] = $snmp_enabled;
+            $this->task['os_detect'] = $os_detect;
+            $this->task['parent_detection'] = $parent_detection;
+            $this->task['parent_recursion'] = $parent_recursion;
+            $this->task['vlan_enabled'] = $vlan_enabled;
+            $this->task['snmp_version'] = $snmp_version;
+            $this->task['snmp_auth_user'] = $snmp_auth_user;
+            $this->task['snmp_auth_pass'] = $snmp_auth_pass;
+            $this->task['snmp_privacy_method'] = $snmp_privacy_method;
+            $this->task['snmp_privacy_pass'] = $snmp_privacy_pass;
+            $this->task['snmp_auth_method'] = $snmp_auth_method;
+            $this->task['snmp_security_level'] = $snmp_security_level;
+            $this->task['auth_strings'] = $auth_strings;
+
+            // Update.
+            $res = db_process_sql_update(
+                'trecon_task',
+                $this->task,
+                ['id_rt' => $this->task['id_rt']]
+            );
+
+            return true;
         }
 
         if ($this->page == 3) {
             // Interval and schedules.
             // By default manual if not defined.
-            $interval = get_parameter('interval', 0);
+            $id_rt = get_parameter('task', -1);
 
+            $task = db_get_row(
+                'trecon_task',
+                'id_rt',
+                $id_rt
+            );
+
+            if ($task !== false) {
+                $this->task = $task;
+            } else {
+                $this->msg = __('Failed to find network scan task.');
+                return false;
+            }
+
+            $interval = get_parameter('interval', 0);
             $this->task['interval_sweep'] = $interval;
-            return false;
+
+            if ($this->task['disabled'] == 2) {
+                // Wizard finished.
+                $this->task['disabled'] = 0;
+            }
+
+            // Update.
+            $res = db_process_sql_update(
+                'trecon_task',
+                $this->task,
+                ['id_rt' => $this->task['id_rt']]
+            );
+
+            return true;
+        }
+
+        if ($this->page == 4) {
+            // Wizard ended. Load data and return control to Discovery.
+            $id_rt = get_parameter('task', -1);
+
+            $task = db_get_row(
+                'trecon_task',
+                'id_rt',
+                $id_rt
+            );
+
+            if ($task !== false) {
+                $this->task = $task;
+            } else {
+                $this->msg = __('Failed to find network scan task.');
+                return false;
+            }
+
+            return true;
         }
 
         return false;
@@ -326,14 +469,14 @@ class HostDevices extends Wizard
             $form = [
                 'form'   => [
                     'method' => 'POST',
-                    'action' => '#',
+                    'action' => $this->url.'&mode=netscan&page='.($this->page - 1).'&task='.$this->task['id_rt'],
                 ],
                 'inputs' => [
                     [
                         'arguments' => [
                             'type'  => 'hidden',
-                            'name'  => 'page',
-                            'value' => ($this->page - 1),
+                            'name'  => 'task',
+                            'value' => $this->task['id_rt'],
                         ],
                     ],
                     [
@@ -364,7 +507,7 @@ class HostDevices extends Wizard
             $form = [
                 'form'   => [
                     'method' => 'POST',
-                    'action' => '#',
+                    'action' => $this->url.'&mode=netscan&page=0',
                 ],
                 'inputs' => [
                     [
@@ -404,18 +547,29 @@ class HostDevices extends Wizard
                     'label'     => '<b>'.__('Task name').'</b>',
                     'arguments' => [
                         'name'  => 'taskname',
-                        'value' => '',
+                        'value' => $this->task['name'],
                         'type'  => 'text',
                         'size'  => 25,
                     ],
                 ];
+
+                if (isset($this->task['id_rt']) === true) {
+                    // Propagate id.
+                    $form['inputs'][] = [
+                        'arguments' => [
+                            'name'  => 'task',
+                            'value' => $this->task['id_rt'],
+                            'type'  => 'hidden',
+                        ],
+                    ];
+                }
 
                 // Input task name.
                 $form['inputs'][] = [
                     'label'     => '<b>'.__('Comment').'</b>',
                     'arguments' => [
                         'name'  => 'comment',
-                        'value' => '',
+                        'value' => $this->task['description'],
                         'type'  => 'text',
                         'size'  => 25,
                     ],
@@ -437,7 +591,7 @@ class HostDevices extends Wizard
                             SERVER_TYPE_DISCOVERY
                         ),
                         'name'     => 'id_recon_server',
-                        'selected' => 0,
+                        'selected' => $this->task['id_recon_server'],
                         'return'   => true,
                     ],
                 ];
@@ -450,8 +604,8 @@ class HostDevices extends Wizard
                         true
                     ),
                     'arguments' => [
-                        'name'  => 'name',
-                        'value' => '',
+                        'name'  => 'network',
+                        'value' => $this->task['subnet'],
                         'type'  => 'text',
                         'size'  => 25,
                     ],
@@ -464,25 +618,22 @@ class HostDevices extends Wizard
                         'name'      => 'id_group',
                         'privilege' => 'PM',
                         'type'      => 'select_groups',
+                        'selected'  => $this->task['id_group'],
                         'return'    => true,
                     ],
                 ];
 
-                // Hidden, page.
-                $form['inputs'][] = [
-                    'arguments' => [
-                        'name'   => 'page',
-                        'value'  => ($this->page + 1),
-                        'type'   => 'hidden',
-                        'return' => true,
-                    ],
-                ];
+                $str = __('Next');
+
+                if (isset($this->task['id_rt']) === true) {
+                    $str = __('Update and continue');
+                }
 
                 // Submit button.
                 $form['inputs'][] = [
                     'arguments' => [
                         'name'       => 'submit',
-                        'label'      => __('Next'),
+                        'label'      => $str,
                         'type'       => 'submit',
                         'attributes' => 'class="sub next"',
                         'return'     => true,
@@ -491,7 +642,7 @@ class HostDevices extends Wizard
 
                 $form['form'] = [
                     'method' => 'POST',
-                    'action' => '#',
+                    'action' => $this->url.'&mode=netscan&page='.($this->page + 1),
                 ];
 
                 // XXX: Could be improved validating inputs before continue (JS)
@@ -549,27 +700,28 @@ class HostDevices extends Wizard
                     'name'    => 'snmp_enabled',
                     'type'    => 'switch',
                     'return'  => true,
-                    'onclick' => "\$('#snmp_extra').toggle();",
+                    'value'   => 1,
+                    'onclick' => 'extraSNMP();',
 
                 ],
             ];
 
             // SNMP CONFIGURATION.
             $form['inputs'][] = [
-                'hidden'        => 1,
+                'hidden'        => 0,
                 'block_id'      => 'snmp_extra',
                 'block_content' => [
                     [
                         'label'     => __('SNMP version'),
                         'arguments' => [
-                            'name'   => 'auth_strings',
+                            'name'   => 'snmp_version',
                             'fields' => [
                                 '1'  => 'v. 1',
                                 '2c' => 'v. 2c',
                                 '3'  => 'v. 3',
                             ],
                             'type'   => 'select',
-                            'script' => "\$('#snmp_options_v'+this.value).toggle()",
+                            'script' => 'SNMPExtraShow(this.value)',
                             'return' => true,
                         ],
                     ],
@@ -579,28 +731,15 @@ class HostDevices extends Wizard
             // SNMP Options pack v1.
             $form['inputs'][] = [
                 'hidden'        => 1,
-                'block_id'      => 'snmp_options_v1',
+                'block_id'      => 'snmp_options_basic',
                 'block_content' => [
                     [
-                        'label'     => __('Community'),
-                        'arguments' => [
-                            'name'   => 'community',
-                            'type'   => 'text',
-                            'size'   => 25,
-                            'return' => true,
-
-                        ],
-                    ],
-                ],
-            ];
-
-            // SNMP Options pack v2c.
-            $form['inputs'][] = [
-                'hidden'        => 1,
-                'block_id'      => 'snmp_options_v2c',
-                'block_content' => [
-                    [
-                        'label'     => __('Community'),
+                        'label'     => '<b>'.__('SNMP Default community').'</b>'.ui_print_help_tip(
+                            __(
+                                'You can specify several values, separated by commas, for example: public,mysecret,1234'
+                            ),
+                            true
+                        ),
                         'arguments' => [
                             'name'   => 'community',
                             'type'   => 'text',
@@ -618,15 +757,99 @@ class HostDevices extends Wizard
                 'block_id'      => 'snmp_options_v3',
                 'block_content' => [
                     [
-                        'label'     => __(''),
+                        'label'     => '<b>'.__('Context').'</b>',
                         'arguments' => [
-                            'name'   => 'community',
+                            'name'   => 'snmp_context',
                             'type'   => 'text',
-                            'size'   => 25,
+                            'size'   => 15,
                             'return' => true,
 
                         ],
                     ],
+                    [
+                        'label'     => '<b>'.__('Auth user').'</b>',
+                        'arguments' => [
+                            'name'   => 'snmp_auth_user',
+                            'type'   => 'text',
+                            'size'   => 15,
+                            'return' => true,
+
+                        ],
+                    ],
+                    [
+                        'label'     => '<b>'.__('Auth password').'</b>'.ui_print_help_tip(
+                            __(
+                                'The pass length must be eight character minimum.'
+                            ),
+                            true
+                        ),
+                        'arguments' => [
+                            'name'   => 'snmp_auth_pass',
+                            'type'   => 'password',
+                            'size'   => 15,
+                            'return' => true,
+
+                        ],
+                    ],
+                    [
+                        'label'     => '<b>'.__('Privacy method').'</b>',
+                        'arguments' => [
+                            'name'   => 'snmp_privacy_method',
+                            'type'   => 'select',
+                            'fields' => [
+                                'DES' => __('DES'),
+                                'AES' => __('AES'),
+                            ],
+                            'size'   => 15,
+                            'return' => true,
+
+                        ],
+                    ],
+                    [
+                        'label'     => '<b>'.__('Privacy pass').'</b>'.ui_print_help_tip(
+                            __(
+                                'The pass length must be eight character minimum.'
+                            ),
+                            true
+                        ),
+                        'arguments' => [
+                            'name'   => 'snmp_privacy_pass',
+                            'type'   => 'password',
+                            'size'   => 15,
+                            'return' => true,
+
+                        ],
+                    ],
+                    [
+                        'label'     => '<b>'.__('Auth method').'</b>',
+                        'arguments' => [
+                            'name'   => 'snmp_auth_method',
+                            'type'   => 'select',
+                            'fields' => [
+                                'MD5' => __('MD5'),
+                                'SHA' => __('SHA'),
+                            ],
+                            'size'   => 15,
+                            'return' => true,
+
+                        ],
+                    ],
+                    [
+                        'label'     => '<b>'.__('Security level').'</b>',
+                        'arguments' => [
+                            'name'   => 'snmp_security_level',
+                            'type'   => 'select',
+                            'fields' => [
+                                'noAuthNoPriv' => __('Not auth and not privacy method'),
+                                'authNoPriv'   => __('Auth and not privacy method'),
+                                'authPriv'     => __('Auth and privacy method'),
+                            ],
+                            'size'   => 15,
+                            'return' => true,
+
+                        ],
+                    ],
+
                 ],
             ];
 
@@ -662,6 +885,7 @@ class HostDevices extends Wizard
                     'name'   => 'os_detect',
                     'type'   => 'switch',
                     'return' => true,
+                    'value'  => 1,
 
                 ],
             ];
@@ -683,6 +907,18 @@ class HostDevices extends Wizard
                     'name'   => 'parent_detection',
                     'type'   => 'switch',
                     'return' => true,
+                    'value'  => 1,
+                ],
+            ];
+
+            // Input: Parent recursion.
+            $form['inputs'][] = [
+                'label'     => __('Parent recursion'),
+                'arguments' => [
+                    'name'   => 'parent_recursion',
+                    'type'   => 'switch',
+                    'return' => true,
+                    'value'  => 1,
                 ],
             ];
 
@@ -690,9 +926,10 @@ class HostDevices extends Wizard
             $form['inputs'][] = [
                 'label'     => __('VLAN enabled'),
                 'arguments' => [
-                    'name'   => 'os_detect',
+                    'name'   => 'vlan_enabled',
                     'type'   => 'switch',
                     'return' => true,
+                    'value'  => 1,
                 ],
             ];
 
@@ -707,9 +944,49 @@ class HostDevices extends Wizard
                 ],
             ];
 
+            $form['js'] = '
+function SNMPExtraShow(target) {
+    $("#snmp_options_basic").hide();
+    $("#snmp_options_v3").hide();
+    if (target == 3) {
+        $("#snmp_options_v3").show();
+    } else {
+        $("#snmp_options_basic").show();
+    }
+
+}
+
+function extraSNMP() {
+    if (document.getElementsByName("snmp_enabled")[0].checked) {
+        SNMPExtraShow($("#snmp_version").val());
+        $("#snmp_extra").show();
+    } else {
+        // Hide unusable sections
+        $("#snmp_extra").hide();
+        $("#snmp_options_basic").hide();
+        $("#snmp_options_v3").hide();
+
+        // Disable snmp dependant checks
+        if (document.getElementsByName("parent_recursion")[0].checked)
+            $("input[name=parent_recursion]").click();
+
+        if (document.getElementsByName("parent_detection")[0].checked)
+            $("input[name=parent_detection]").click();
+
+        if (document.getElementsByName("vlan_enabled")[0].checked)
+            $("input[name=vlan_enabled]").click();
+        
+    }
+}
+
+$(function() {
+    SNMPExtraShow($("#snmp_version").val())
+});
+            ';
+
             $form['form'] = [
                 'method' => 'POST',
-                'action' => '#',
+                'action' => $this->url.'&mode=netscan&page='.($this->page + 1).'&task='.$this->task['id_rt'],
             ];
 
             $this->printForm($form);
@@ -786,7 +1063,7 @@ class HostDevices extends Wizard
 
             $form['form'] = [
                 'method' => 'POST',
-                'action' => '#',
+                'action' => $this->url.'&mode=netscan&page='.($this->page + 1).'&task='.$this->task['id_rt'],
             ];
 
             $form['js'] = '
@@ -807,10 +1084,20 @@ $("select#interval_manual_defined").change(function() {
             $this->printForm($form);
         }
 
-        if ($this->page == 100) {
+        if ($this->page == 3) {
+            if ($this->task['id_rt']) {
+                // 0 - Is OK.
+                $this->result = 0;
+                $this->msg = __('Task configured.');
+            } else {
+                // 1 - Is NOT OK.
+                $this->result = 1;
+                $this->msg = __('Wizard failed. Cannot configure task.');
+            }
+
             return [
                 'result' => $this->result,
-                'id'     => $this->id,
+                'id'     => $this->task['id_rt'],
                 'msg'    => $this->msg,
             ];
         }

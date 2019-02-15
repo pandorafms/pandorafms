@@ -21,35 +21,36 @@ Description: Forms based on fieldset and labels to improve accesibility
 */
 
 fieldset {
-	background-color:#fafafa;
-	border: 1px solid #f2f2f2;
-	padding:0.5em;
-	margin-top:0.5em;
-	margin-bottom:1em;
-	position:relative;
+  background-color: #fafafa;
+  border: 1px solid #f2f2f2;
+  padding: 0.5em;
+  margin-top: 0.5em;
+  margin-bottom: 1em;
+  position: relative;
 }
 fieldset legend {
-	font-size:1.3em;
-	font-weight:bold;
-	color:#3f4e2f;
-	top:-2em;
+  font-size: 1.3em;
+  font-weight: bold;
+  color: #3f4e2f;
+  top: -2em;
 }
 fieldset label {
-	font-weight: bold;
-	display:block;
-	margin-right:1em;
-	margin-left:1em;
-	margin-bottom:1em;
-	width:25%;
-	float:left;
+  font-weight: bold;
+  display: block;
+  margin-right: 1em;
+  margin-left: 1em;
+  margin-bottom: 1em;
+  width: 25%;
+  float: left;
 }
-fieldset select, fieldset input {
-	position:relative;
-	right:1em;
-	margin-bottom:0.5em;
+fieldset select,
+fieldset input {
+  position: relative;
+  right: 1em;
+  margin-bottom: 0.5em;
 }
 fieldset br {
-	clear:left;
+  clear: left;
 }
 
 /*.pandora_form input.sub {
@@ -61,35 +62,33 @@ fieldset br {
 
 /* Calendar background */
 table.scw {
-        background-color:  #daedae;
+  background-color: #daedae;
 }
 
 /* Week number heading */
 td.scwWeekNumberHead {
-        color: #000;
+  color: #000;
 }
 
 td.scwWeek {
-        color: #000 !important;
+  color: #000 !important;
 }
 
 /* Today selector */
 td.scwFoot {
-        background-color: #daedae;
-        color: #000;
+  background-color: #daedae;
+  color: #000;
 }
 
 td.scwFootDisabled {
-        background-color: #000;
-        color: #FFFFFF;
+  background-color: #000;
+  color: #ffffff;
 }
 
 tfoot.scwFoot {
-        color: #000;
+  color: #000;
 }
 
-.scwFoot :hover{
-        color: #FFA500 !important;
+.scwFoot :hover {
+  color: #ffa500 !important;
 }
-
-

@@ -163,6 +163,7 @@ our @EXPORT = qw(
 	pandora_add_agent_address
 	pandora_audit
 	pandora_create_agent
+	pandora_create_alert_command
 	pandora_create_group
 	pandora_create_incident
 	pandora_create_module
@@ -2682,6 +2683,23 @@ sub pandora_delete_all_template_module_actions ($$) {
 }
 
 ########################################################################
+=head2 C<< pandora_create_alert_command(I<$pa_config>, I<$parameters>, I<$dbh>) >>
+
+Create a alert command.
+
+=cut
+########################################################################
+sub pandora_create_alert_command ($$$) {
+	my ($pa_config, $parameters, $dbh) = @_;
+	
+	logger($pa_config, "Creating alert command '$parameters->{'name'}'.", 10);
+	
+	my $command_id = db_process_insert($dbh, 'id', 'talert_commands', $parameters);
+	
+	return $command_id;
+}
+
+########################################################################
 =head2 C<< pandora_update_agent_address(I<$pa_config>, I<$agent_id>, I<$address>, I<$dbh>) >>
 
 Update the address of an agent.
@@ -3060,7 +3078,8 @@ sub pandora_create_agent ($$$$$$$$$$;$$$$$$$$$) {
 	                                                 'custom_id' => $custom_id,
 	                                                 'url_address' => $url_address,
 	                                                 'timezone_offset' => $timezone_offset,
-	                                                 'alias' => $alias
+	                                                 'alias' => $alias,
+													 'update_module_count' => 1, # Force to replicate in metaconsole
 	                                                });                           
 	                                                
 	my $agent_id = db_insert ($dbh, 'id_agente', "INSERT INTO tagente $columns", @{$values});

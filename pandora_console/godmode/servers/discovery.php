@@ -13,6 +13,8 @@ if (! check_acl($config['id_user'], 0, 'AW')) {
     exit;
 }
 
+ui_require_css_file('discovery');
+
 ui_print_page_header(__('Discover'), 'wizards/hostDevices.png', false, '', true);
 
 

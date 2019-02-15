@@ -1,3 +1,33 @@
 /*
  * Discovery css global
  */
+
+#contenedor_principal {
+  height: auto;
+  position: relative;
+  margin: auto;
+}
+#contenedor_imagen_texto {
+  width: 11%;
+  height: auto;
+  position: relative;
+  display: inline-block;
+  vertical-align: top;
+  overflow: hidden;
+  margin-right: 5%;
+}
+#imagen {
+  width: 15%;
+  height: auto;
+  position: relative;
+  display: inline;
+}
+.texto {
+  height: auto;
+  text-align: center;
+}
+#text_wizard {
+  font-weight: bolder;
+  text-decoration: none;
+  font-size: 24px;
+}

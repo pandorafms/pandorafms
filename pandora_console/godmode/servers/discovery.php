@@ -15,7 +15,7 @@ if (! check_acl($config['id_user'], 0, 'AW')) {
 
 ui_require_css_file('discovery');
 
-ui_print_page_header(__('Discover'), 'wizards/hostDevices.png', false, '', true);
+ui_print_page_header(__('Discover'), '', false, '', true);
 
 
 /**
@@ -64,13 +64,12 @@ if ($classname_selected === null) {
         $classname = basename($classpath, '.class.php');
         $obj = new $classname();
         $wiz_data = $obj->load();
-
-        hd($wiz_data);
         ?>
+
     <li>
         <a href="<?php echo $wiz_data['url']; ?>">
-            <img src="<?php echo 'wizards/'.$wiz_data['icon']; ?>" alt="<?php echo $classname; ?>">
-            <br><label><?php echo $wiz_data['label']; ?></label>
+            <img src="<?php echo 'images/wizard/csv_image.svg'; ?>" alt="<?php echo $classname; ?>" id="imagen">
+            <br><label id="text_wizard"><?php echo $wiz_data['label']; ?></label>
         </a>
     </li>
 

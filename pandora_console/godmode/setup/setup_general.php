@@ -82,16 +82,17 @@ $sources['sql'] = __('Database');
 $table->data[9][1] = html_print_select($sources, 'timesource', $config['timesource'], '', '', '', true);
 
 $table->data[10][0] = __('Automatic check for updates');
-$table->data[10][1] = __('Yes').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button('autoupdate', 1, '', $config['autoupdate'], true).'&nbsp;&nbsp;';
-$table->data[10][1] .= __('No').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button('autoupdate', 0, '', $config['autoupdate'], true);
+$table->data[10][1] = html_print_checkbox_toogle_switch('autoupdate', 1, $config['autoupdate'], true);
+
+echo "<div id='dialog' title='".__('Enforce https Information')."' style='display:none;'>";
+echo "<p style='text-align: center;'>".__('If SSL is not properly configured you will lose access to ').get_product_name().__(' Console').'</p>';
+echo '</div>';
 
 $table->data[11][0] = __('Enforce https');
-$table->data[11][1] = __('Yes').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button_extended('https', 1, '', $config['https'], false, "if (! confirm ('".__('If SSL is not properly configured you will lose access to %s Console. Do you want to continue?', get_product_name())."')) return false", '', true).'&nbsp;&nbsp;';
-$table->data[11][1] .= __('No').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button('https', 0, '', $config['https'], true);
+$table->data[11][1] = html_print_checkbox_toogle_switch_extended('https', 1, $config['https'], false, '', '', true);
 
 $table->data[12][0] = __('Use cert of SSL');
-$table->data[12][1] = __('Yes').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button_extended('use_cert', 1, '', $config['use_cert'], false, '', '', true).'&nbsp;&nbsp;';
-$table->data[12][1] .= __('No').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button('use_cert', 0, '', $config['use_cert'], true);
+$table->data[12][1] = html_print_checkbox_toogle_switch_extended('use_cert', 1, $config['use_cert'], false, '', '', true);
 
 $table->rowstyle[13] = 'display: none;';
 $table->data[13][0] = __('Path of SSL Cert.').ui_print_help_tip(__('Path where you put your cert and name of this cert. Remember your cert only in .pem extension.'), true);
@@ -113,8 +114,7 @@ $table->data[16][0] = __('API password').ui_print_help_tip(__('Please be careful
 $table->data[16][1] = html_print_input_password('api_password', io_output_password($config['api_password']), '', 25, 255, true);
 
 $table->data[17][0] = __('Enable GIS features');
-$table->data[17][1] = __('Yes').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button('activate_gis', 1, '', $config['activate_gis'], true).'&nbsp;&nbsp;';
-$table->data[17][1] .= __('No').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button('activate_gis', 0, '', $config['activate_gis'], true);
+$table->data[17][1] = html_print_checkbox_toogle_switch('activate_gis', 1, $config['activate_gis'], true);
 
 $table->data[19][0] = __('Enable Netflow');
 $rbt_disabled = false;
@@ -123,8 +123,8 @@ if (strtoupper(substr(PHP_OS, 0, 3)) == 'WIN') {
     $table->data[19][0] .= ui_print_help_tip(__('Not supported in Windows systems'), true);
 }
 
-$table->data[19][1] = __('Yes').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button_extended('activate_netflow', 1, '', $config['activate_netflow'], $rbt_disabled, '', '', true).'&nbsp;&nbsp;';
-$table->data[19][1] .= __('No').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button_extended('activate_netflow', 0, '', $config['activate_netflow'], $rbt_disabled, '', '', true);
+$table->data[19][1] = html_print_checkbox_toogle_switch_extended('activate_netflow', 1, $config['activate_netflow'], $rbt_disabled, '', '', true);
+
 
 $zone_name = [
     'Africa'     => __('Africa'),
@@ -202,18 +202,15 @@ $table->data[28][1] = html_print_input_text('public_url', $config['public_url'],
 
 $table->data[29][0] = __('Referer security');
 $table->data[29][0] .= ui_print_help_tip(__("If enabled, actively checks if the user comes from %s's URL", get_product_name()), true);
-$table->data[29][1] = __('Yes').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button('referer_security', 1, '', $config['referer_security'], true).'&nbsp;&nbsp;';
-$table->data[29][1] .= __('No').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button('referer_security', 0, '', $config['referer_security'], true);
+$table->data[29][1] = html_print_checkbox_toogle_switch('referer_security', 1, $config['referer_security'], true);
 
 $table->data[30][0] = __('Event storm protection');
 $table->data[30][0] .= ui_print_help_tip(__('If set to yes no events or alerts will be generated, but agents will continue receiving data.'), true);
-$table->data[30][1] = __('Yes').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button('event_storm_protection', 1, '', $config['event_storm_protection'], true).'&nbsp;&nbsp;';
-$table->data[30][1] .= __('No').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button('event_storm_protection', 0, '', $config['event_storm_protection'], true);
+$table->data[30][1] = html_print_checkbox_toogle_switch('event_storm_protection', 1, $config['event_storm_protection'], true);
 
 
 $table->data[31][0] = __('Command Snapshot').ui_print_help_tip(__('The string modules with several lines show as command output'), true);
-$table->data[31][1] = __('Yes').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button('command_snapshot', 1, '', $config['command_snapshot'], true).'&nbsp;&nbsp;';
-$table->data[31][1] .= __('No').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button('command_snapshot', 0, '', $config['command_snapshot'], true);
+$table->data[31][1] = html_print_checkbox_toogle_switch('command_snapshot', 1, $config['command_snapshot'], true);
 
 $table->data[32][0] = __('Server logs directory').ui_print_help_tip(__('Directory where the server logs are stored.'), true);
 $table->data[32][1] = html_print_input_text(
@@ -253,8 +250,7 @@ $table->data['tutorial_mode'][1] = html_print_select(
 
 $config['past_planned_downtimes'] = isset($config['past_planned_downtimes']) ? $config['past_planned_downtimes'] : 1;
 $table->data[34][0] = __('Allow create planned downtimes in the past').ui_print_help_tip(__('The planned downtimes created in the past will affect the SLA reports'), true);
-$table->data[34][1] = __('Yes').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button('past_planned_downtimes', 1, '', $config['past_planned_downtimes'], true).'&nbsp;&nbsp;';
-$table->data[34][1] .= __('No').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button('past_planned_downtimes', 0, '', $config['past_planned_downtimes'], true);
+$table->data[34][1] = html_print_checkbox_toogle_switch('past_planned_downtimes', 1, $config['past_planned_downtimes'], true);
 
 $table->data[35][0] = __('Limit for bulk operations').ui_print_help_tip(__('Your PHP environment is set to 1000 max_input_vars. This parameter should have the same value or lower.', ini_get('max_input_vars')), true);
 $table->data[35][1] = html_print_input_text(
@@ -267,8 +263,7 @@ $table->data[35][1] = html_print_input_text(
 );
 
 $table->data[36][0] = __('Include agents manually disabled');
-$table->data[36][1] = __('Yes').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button('include_agents', 1, '', $config['include_agents'], true).'&nbsp;&nbsp;';
-$table->data[36][1] .= __('No').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button('include_agents', 0, '', $config['include_agents'], true);
+$table->data[36][1] = html_print_checkbox_toogle_switch('include_agents', 1, $config['include_agents'], true);
 
 $table->data[37][0] = __('Audit log directory').ui_print_help_tip(__('Directory where audit log is stored.'), true);
 $table->data[37][1] = html_print_input_text('auditdir', io_safe_output($config['auditdir']), '', 30, 100, true);
@@ -344,15 +339,24 @@ $(document).ready (function () {
         $("#timezone").attr("hidden", false);
     });
     $("input[name=use_cert]").change(function () {
-        if( $(this).is(":checked") ){
-            var val = $(this).val();
-            if (val == 1) {
+        if( $(this).is(":checked") )
                 $('#setup_general-13').show();
-            }
             else
                 $('#setup_general-13').hide();
-        }
+        
     });
+    $("input[name=https]").change(function (){
+        if($("input[name=https]").prop('checked')) {
+            $("#dialog").css({'display': 'inline', 'font-weight': 'bold'}).dialog({
+            modal: true,
+            buttons:{
+                "<?php echo __('Close'); ?>": function(){
+                    $(this).dialog("close");
+                }
+            }
+        });
+        }
+    })
 });
 </script>
 <?php
@@ -372,5 +376,3 @@ function get_sounds()
 
     return $return;
 }
-
-

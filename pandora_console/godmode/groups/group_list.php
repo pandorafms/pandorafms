@@ -538,17 +538,22 @@ if ($tab == 'tree') {
             $url_delete = 'index.php?sec=gagente&sec2=godmode/groups/group_list&delete_group=1&id_group='.$group['id_grupo'];
             $table->data[$key][0] = $group['id_grupo'];
             $table->data[$key][1] = "<a href='$url'>".$group['nombre'].'</a>';
-            $table->data[$key][2] = html_print_image(
-                'images/groups_small/'.$group['icon'].'.png',
-                true,
-                [
-                    'style' => '',
-                    'class' => 'bot',
-                    'alt' => $group['nombre'],
-                    'title' => $group['nombre'],
-                    false, false, false, true
-                ]
-            );
+            if ($group['icon'] != '') {
+                $table->data[$key][2] = html_print_image(
+                    'images/groups_small/'.$group['icon'].'.png',
+                    true,
+                    [
+                        'style' => '',
+                        'class' => 'bot',
+                        'alt' => $group['nombre'],
+                        'title' => $group['nombre'],
+                        false, false, false, true
+                    ]
+                );
+            } else {
+                $table->data[$key][2] = '';
+            }
+
 
             // reporting_get_group_stats
             $table->data[$key][3] = $group['disabled'] ? __('Disabled') : __('Enabled');

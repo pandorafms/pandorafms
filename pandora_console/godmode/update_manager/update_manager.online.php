@@ -140,8 +140,8 @@ if ($enterprise == ENTERPRISE_NOT_HOOK) {
 ?>
 
 <script>
-var open = "<?php echo $open; ?>";
-if(open){
+var isopen = "<?php echo $open; ?>";
+if(isopen){
     $(document).ready(function() {
     $('body').append( "<div id='opacidad' style='position:fixed;background:black;opacity:0.6;z-index:1'></div>" );
     jQuery.post ("ajax.php",
@@ -150,6 +150,7 @@ if(open){
     "message":"infomodal"},
         function (data, status) {
             $("#alert_messages").hide ()
+                .css ("opacity", 1)
                 .empty ()
                 .append (data)
                 .show ();

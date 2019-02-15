@@ -1,7 +1,7 @@
 <?php
 /*
-* @package Include/help/es/
-*/
+ * @package Include/help/es/
+ */
 ?>
 <h1>Par&aacute;metros de respuestas de eventos</h1>
 

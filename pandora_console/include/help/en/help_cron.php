@@ -9,7 +9,7 @@ Using the configuration parameter sets <b>Cron from</b> and <b>Cron to</b> makes
 it possible for a module to run only for certain periods of time. 
 The way in which it is configured is similar to the syntax of 
 <a style="font-size:14px;" href="https://en.wikipedia.org/wiki/Cron">cron</a>. 
-Just as they appear in the <?php echo get_product_name();?> console, each one of the parameters  
+Just as they appear in the <?php echo get_product_name(); ?> console, each one of the parameters  
 has three options.
 
 <h4>Cron from: any</h4>
@@ -36,10 +36,10 @@ its execution interval.
 <h2>Examples</h2>
 
 <ul>
-	<li><i>* * * * *</i>: No cron configured.</li>
-	<li><i>15 20 * * *</i>: It will run every day at 20:15.</li>
-	<li><i>* 20 * * *</i>: It will run every day during the hour 20, that is, from 20:00 to 20:59.</li>
-	<li><i>* 8-19 * * *</i>: It will run everyday from 8:00 to 19:59.</li>
-	<li><i>15-45 * 1-16 * *</i>: It will run every first 16 days of the month every hour, from quarter past to quarter to.</li>
-	<li><i>* * * 5 *</i>: It will run only in May.</li>
+    <li><i>* * * * *</i>: No cron configured.</li>
+    <li><i>15 20 * * *</i>: It will run every day at 20:15.</li>
+    <li><i>* 20 * * *</i>: It will run every day during the hour 20, that is, from 20:00 to 20:59.</li>
+    <li><i>* 8-19 * * *</i>: It will run everyday from 8:00 to 19:59.</li>
+    <li><i>15-45 * 1-16 * *</i>: It will run every first 16 days of the month every hour, from quarter past to quarter to.</li>
+    <li><i>* * * 5 *</i>: It will run only in May.</li>
 <ul>

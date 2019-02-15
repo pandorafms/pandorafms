@@ -175,13 +175,17 @@ class HostDevices extends Wizard
         }
 
         if ($mode == 'netscan') {
-            $this->setBreadcrum(
-                [
-                    '<a href="index.php?sec=gservers&sec2=godmode/servers/discovery&wiz=hd">Host&devices</a>',
-                    '<a href="index.php?sec=gservers&sec2=godmode/servers/discovery&wiz=hd&mode=netscan">Net scan</a>',
-                ]
-            );
-            $this->printHeader();
+            if ($this->page != 3) {
+                // Do not paint breadcrum in last page. Redirected.
+                $this->setBreadcrum(
+                    [
+                        '<a href="index.php?sec=gservers&sec2=godmode/servers/discovery&wiz=hd">Host&devices</a>',
+                        '<a href="index.php?sec=gservers&sec2=godmode/servers/discovery&wiz=hd&mode=netscan">Net scan</a>',
+                    ]
+                );
+                $this->printHeader();
+            }
+
             return $this->runNetScan();
         }
 
@@ -273,6 +277,9 @@ class HostDevices extends Wizard
                 if ($task !== false) {
                     $this->task = $task;
                 }
+
+                $this->msg = __('This network scan task has been already defined. Please edit it or create a new one.');
+                return false;
             }
 
             if (isset($this->task['id_rt']) === false) {
@@ -349,6 +356,8 @@ class HostDevices extends Wizard
             $parent_detection = get_parameter_switch('parent_detection');
             $parent_recursion = get_parameter_switch('parent_recursion');
             $vlan_enabled = get_parameter_switch('vlan_enabled');
+            $wmi_enabled = get_parameter_switch('wmi_enabled');
+            $resolve_names = get_parameter_switch('resolve_names');
             $snmp_version = get_parameter('snmp_version', null);
             $community = get_parameter('community', null);
             $snmp_context = get_parameter('snmp_context', null);
@@ -372,6 +381,8 @@ class HostDevices extends Wizard
             $this->task['parent_detection'] = $parent_detection;
             $this->task['parent_recursion'] = $parent_recursion;
             $this->task['vlan_enabled'] = $vlan_enabled;
+            $this->task['wmi_enabled'] = $wmi_enabled;
+            $this->task['resolve_names'] = $resolve_names;
             $this->task['snmp_version'] = $snmp_version;
             $this->task['snmp_auth_user'] = $snmp_auth_user;
             $this->task['snmp_auth_pass'] = $snmp_auth_pass;
@@ -655,9 +666,14 @@ class HostDevices extends Wizard
                     ],
                 ];
 
+                $task_url = '';
+                if (isset($this->task['id_rt'])) {
+                    $task_url = '&task='.$this->task['id_rt'];
+                }
+
                 $form['form'] = [
                     'method' => 'POST',
-                    'action' => $this->url.'&mode=netscan&page='.($this->page + 1),
+                    'action' => $this->url.'&mode=netscan&page='.($this->page + 1).$task_url,
                 ];
 
                 // XXX: Could be improved validating inputs before continue (JS)
@@ -697,12 +713,13 @@ class HostDevices extends Wizard
             $form['inputs'][] = [
                 'label'     => __('Module template'),
                 'arguments' => [
-                    'name'   => 'id_network_profile',
-                    'type'   => 'select_from_sql',
-                    'sql'    => 'SELECT id_np, name
+                    'name'     => 'id_network_profile',
+                    'type'     => 'select_from_sql',
+                    'sql'      => 'SELECT id_np, name
                             FROM tnetwork_profile
                             ORDER BY name',
-                    'return' => true,
+                    'return'   => true,
+                    'selected' => $this->task['id_network_profile'],
 
                 ],
             ];
@@ -715,7 +732,7 @@ class HostDevices extends Wizard
                     'name'    => 'snmp_enabled',
                     'type'    => 'switch',
                     'return'  => true,
-                    'value'   => 1,
+                    'value'   => (isset($this->task['snmp_enabled'])) ? $this->task['snmp_enabled'] : 1,
                     'onclick' => 'extraSNMP();',
 
                 ],
@@ -729,15 +746,16 @@ class HostDevices extends Wizard
                     [
                         'label'     => __('SNMP version'),
                         'arguments' => [
-                            'name'   => 'snmp_version',
-                            'fields' => [
+                            'name'     => 'snmp_version',
+                            'fields'   => [
                                 '1'  => 'v. 1',
                                 '2c' => 'v. 2c',
                                 '3'  => 'v. 3',
                             ],
-                            'type'   => 'select',
-                            'script' => 'SNMPExtraShow(this.value)',
-                            'return' => true,
+                            'type'     => 'select',
+                            'script'   => 'SNMPExtraShow(this.value)',
+                            'selected' => $this->task['snmp_version'],
+                            'return'   => true,
                         ],
                     ],
                 ],
@@ -758,6 +776,7 @@ class HostDevices extends Wizard
                         'arguments' => [
                             'name'   => 'community',
                             'type'   => 'text',
+                            'value'  => $this->task['snmp_community'],
                             'size'   => 25,
                             'return' => true,
 
@@ -776,6 +795,7 @@ class HostDevices extends Wizard
                         'arguments' => [
                             'name'   => 'snmp_context',
                             'type'   => 'text',
+                            'value'  => $this->task['snmp_community'],
                             'size'   => 15,
                             'return' => true,
 
@@ -786,6 +806,7 @@ class HostDevices extends Wizard
                         'arguments' => [
                             'name'   => 'snmp_auth_user',
                             'type'   => 'text',
+                            'value'  => $this->task['snmp_auth_user'],
                             'size'   => 15,
                             'return' => true,
 
@@ -801,6 +822,7 @@ class HostDevices extends Wizard
                         'arguments' => [
                             'name'   => 'snmp_auth_pass',
                             'type'   => 'password',
+                            'value'  => $this->task['snmp_auth_pass'],
                             'size'   => 15,
                             'return' => true,
 
@@ -809,14 +831,15 @@ class HostDevices extends Wizard
                     [
                         'label'     => '<b>'.__('Privacy method').'</b>',
                         'arguments' => [
-                            'name'   => 'snmp_privacy_method',
-                            'type'   => 'select',
-                            'fields' => [
+                            'name'     => 'snmp_privacy_method',
+                            'type'     => 'select',
+                            'fields'   => [
                                 'DES' => __('DES'),
                                 'AES' => __('AES'),
                             ],
-                            'size'   => 15,
-                            'return' => true,
+                            'selected' => $this->task['snmp_privacy_method'],
+                            'size'     => 15,
+                            'return'   => true,
 
                         ],
                     ],
@@ -830,6 +853,7 @@ class HostDevices extends Wizard
                         'arguments' => [
                             'name'   => 'snmp_privacy_pass',
                             'type'   => 'password',
+                            'value'  => $this->task['snmp_privacy_pass'],
                             'size'   => 15,
                             'return' => true,
 
@@ -838,29 +862,31 @@ class HostDevices extends Wizard
                     [
                         'label'     => '<b>'.__('Auth method').'</b>',
                         'arguments' => [
-                            'name'   => 'snmp_auth_method',
-                            'type'   => 'select',
-                            'fields' => [
+                            'name'     => 'snmp_auth_method',
+                            'type'     => 'select',
+                            'fields'   => [
                                 'MD5' => __('MD5'),
                                 'SHA' => __('SHA'),
                             ],
-                            'size'   => 15,
-                            'return' => true,
+                            'selected' => $this->task['snmp_auth_method'],
+                            'size'     => 15,
+                            'return'   => true,
 
                         ],
                     ],
                     [
                         'label'     => '<b>'.__('Security level').'</b>',
                         'arguments' => [
-                            'name'   => 'snmp_security_level',
-                            'type'   => 'select',
-                            'fields' => [
+                            'name'     => 'snmp_security_level',
+                            'type'     => 'select',
+                            'fields'   => [
                                 'noAuthNoPriv' => __('Not auth and not privacy method'),
                                 'authNoPriv'   => __('Auth and not privacy method'),
                                 'authPriv'     => __('Auth and privacy method'),
                             ],
-                            'size'   => 15,
-                            'return' => true,
+                            'selected' => $this->task['snmp_security_level'],
+                            'size'     => 15,
+                            'return'   => true,
 
                         ],
                     ],
@@ -874,22 +900,27 @@ class HostDevices extends Wizard
                 'arguments' => [
                     'name'    => 'wmi_enabled',
                     'type'    => 'switch',
+                    'value'   => (isset($this->task['wmi_enabled'])) ? $this->task['wmi_enabled'] : 0,
                     'return'  => true,
-                    'onclick' => "\$('#wmi_extra').toggle();",
+                    'onclick' => 'toggleWMI();',
 
                 ],
             ];
 
             // WMI CONFIGURATION.
             $form['inputs'][] = [
-                'label'     => __('WMI Auth. strings'),
-                'hidden'    => 1,
-                'id'        => 'wmi_extra',
-                'arguments' => [
-                    'name'   => 'auth_strings',
-                    'type'   => 'text',
-                    'return' => true,
-
+                'block_id'      => 'wmi_extra',
+                'hidden'        => 1,
+                'block_content' => [
+                    [
+                        'label'     => __('WMI Auth. strings'),
+                        'arguments' => [
+                            'name'   => 'auth_strings',
+                            'type'   => 'text',
+                            'value'  => $this->task['auth_strings'],
+                            'return' => true,
+                        ],
+                    ],
                 ],
             ];
 
@@ -900,7 +931,7 @@ class HostDevices extends Wizard
                     'name'   => 'os_detect',
                     'type'   => 'switch',
                     'return' => true,
-                    'value'  => 1,
+                    'value'  => (isset($this->task['os_detect'])) ? $this->task['os_detect'] : 1,
 
                 ],
             ];
@@ -912,6 +943,7 @@ class HostDevices extends Wizard
                     'name'   => 'resolve_names',
                     'type'   => 'switch',
                     'return' => true,
+                    'value'  => (isset($this->task['resolve_names'])) ? $this->task['resolve_names'] : 0,
                 ],
             ];
 
@@ -922,7 +954,7 @@ class HostDevices extends Wizard
                     'name'   => 'parent_detection',
                     'type'   => 'switch',
                     'return' => true,
-                    'value'  => 1,
+                    'value'  => (isset($this->task['parent_detection'])) ? $this->task['parent_detection'] : 1,
                 ],
             ];
 
@@ -933,7 +965,7 @@ class HostDevices extends Wizard
                     'name'   => 'parent_recursion',
                     'type'   => 'switch',
                     'return' => true,
-                    'value'  => 1,
+                    'value'  => (isset($this->task['parent_recursion'])) ? $this->task['parent_recursion'] : 1,
                 ],
             ];
 
@@ -944,7 +976,7 @@ class HostDevices extends Wizard
                     'name'   => 'vlan_enabled',
                     'type'   => 'switch',
                     'return' => true,
-                    'value'  => 1,
+                    'value'  => (isset($this->task['vlan_enabled'])) ? $this->task['vlan_enabled'] : 1,
                 ],
             ];
 
@@ -994,8 +1026,16 @@ function extraSNMP() {
     }
 }
 
+function toggleWMI() {
+    if (document.getElementsByName("wmi_enabled")[0].checked)
+        $("#wmi_extra").show();
+    else
+        $("#wmi_extra").hide();
+}
+
 $(function() {
-    SNMPExtraShow($("#snmp_version").val())
+    SNMPExtraShow($("#snmp_version").val());
+    toggleWMI();
 });
             ';
 
@@ -1097,6 +1137,7 @@ $("select#interval_manual_defined").change(function() {
 }).change();';
 
             $this->printForm($form);
+            return null;
         }
 
         if ($this->page == 3) {

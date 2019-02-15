@@ -53,8 +53,18 @@ $classname_selected = get_wiz_class($wiz_in_use);
 if ($classname_selected !== null) {
     $wiz = new $classname_selected($page);
     $result = $wiz->run();
-    // TODO: Here we'll controlle if return is a valid recon task id.
-    hd($result);
+    if (is_array($result) === true) {
+        if ($result['result'] === 0) {
+            // Success.
+            ui_print_success_message($result['msg']);
+            // TODO: Show task progress before redirect to main discovery menu.
+        } else {
+            // Failed.
+            ui_print_error_message($result['msg']);
+        }
+
+        $classname_selected = null;
+    }
 }
 
 if ($classname_selected === null) {

@@ -1,7 +1,7 @@
 #############################################################################
 # Pandora FMS Server Parameters
 # Pandora FMS, the Flexible Monitoring System.
-# Version 7.0NG.730
+# Version 7.0NG.731
 # Licensed under GPL license v2,
 # (c) 2003-2017 Artica Soluciones Tecnologicas
 # http://www.pandorafms.com
@@ -291,6 +291,11 @@ braa /usr/bin/braa
 # Number of retries before braa hands a module over to the Network Server (PANDORA FMS ENTERPRISE ONLY).
 
 braa_retries 3
+
+# Location of the pandorafsnmp binary needed by the Enterprise SNMP Server.
+# /usr/bin/pandorafsnmp by default (PANDORA FMS ENTERPRISE ONLY).
+
+fsnmp /usr/bin/pandorafsnmp
 
 # Default group id for new agents created with Pandora FMS Data Server
 # If this token is enabled and Agent is setup with a fixed group, server settings will override agent settings

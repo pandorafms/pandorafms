@@ -30,6 +30,9 @@ function get_wiz_class($str)
         case 'hd':
         return 'HostDevices';
 
+        case 'cloud':
+        return 'Cloud';
+
         default:
             // Ignore.
         return null;

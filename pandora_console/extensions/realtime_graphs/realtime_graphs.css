@@ -1,15 +1,15 @@
 #chartLegend {
-	width: 100%;
-	position: relative;
-	height: 30px;
+  width: 100%;
+  position: relative;
+  height: 30px;
 }
 
 #chartLegend table {
-	position: absolute;
-	right: 0px;
+  position: absolute;
+  right: 0px;
 }
 
 #graph_container {
-	width: 800px;
-	margin: 20px auto !important;
+  width: 800px;
+  margin: 20px auto !important;
 }

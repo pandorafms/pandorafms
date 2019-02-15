@@ -76,6 +76,13 @@ class DiscoveryTaskList extends Wizard
     {
         // Load styles.
         parent::run();
+
+        $delete = (bool) get_parameter('delete', false);
+
+        if ($delete) {
+            return $this->deleteTask();
+        }
+
         return $this->showList();
     }
 
@@ -98,6 +105,41 @@ class DiscoveryTaskList extends Wizard
 
 
     /**
+     * Delete a recon task.
+     *
+     * @return void
+     */
+    public function deleteTask()
+    {
+        global $config;
+
+        if (! check_acl($config['id_user'], 0, 'PM')) {
+            db_pandora_audit(
+                'ACL Violation',
+                'Trying to access recon task viewer'
+            );
+            include 'general/noaccess.php';
+            return;
+        }
+
+        $task = get_parameter('task', null);
+
+        if ($task !== null) {
+            db_process_sql_delete(
+                'trecon_task',
+                ['id_rt' => $task]
+            );
+        }
+
+        return [
+            'result' => 0,
+            'msg'    => __('Task successfully deleted'),
+            'id'     => false,
+        ];
+    }
+
+
+    /**
      * Show complete list of running tasks.
      *
      * @return boolean Success or not.
@@ -114,21 +156,21 @@ class DiscoveryTaskList extends Wizard
                 'Trying to access recon task viewer'
             );
             include 'general/noaccess.php';
-            return;
+            return false;
         }
 
-        // Get all recon servers
+        // Get all recon servers.
         $servers = db_get_all_rows_sql('SELECT * FROM tserver WHERE server_type = 3');
         if ($servers === false) {
             $servers = [];
             ui_print_error_message(__('Discovery Server is disabled'));
-            return;
+            return false;
         } else {
             $recon_task = db_get_all_rows_sql('SELECT * FROM trecon_task');
             if ($recon_task === false) {
                 ui_print_page_header(__('Recon View'), 'images/op_recon.png', false, '', false);
                 include_once $config['homedir'].'/general/firts_task/recon_view.php';
-                return;
+                return false;
             } else {
                 include_once $config['homedir'].'/include/functions_graph.php';
                 include_once $config['homedir'].'/include/functions_servers.php';
@@ -145,6 +187,11 @@ class DiscoveryTaskList extends Wizard
                     if (isset($_GET['force'])) {
                         $id = (int) get_parameter_get('force', 0);
                         servers_force_recon_task($id);
+                        header(
+                            'Location: '.ui_get_full_url(
+                                'index.php?sec=gservers&sec2=godmode/servers/discovery&wiz=tasklist'
+                            )
+                        );
                     }
                 }
 
@@ -153,7 +200,7 @@ class DiscoveryTaskList extends Wizard
                     $server_name = servers_get_name($id_server);
                     $recon_tasks = db_get_all_rows_field_filter('trecon_task', 'id_recon_server', $id_server);
 
-                    // Show network tasks for Recon Server
+                    // Show network tasks for Recon Server.
                     if ($recon_tasks === false) {
                         $recon_tasks = [];
                     }
@@ -195,14 +242,16 @@ class DiscoveryTaskList extends Wizard
                     $table->head[7] = __('Updated at');
                     $table->align[7] = 'left';
 
-                    $table->head[8] = __('Edit');
+                    $table->head[8] = __('Operations');
                     $table->align[8] = 'left';
 
                     foreach ($recon_tasks as $task) {
                         $data = [];
 
                         if ($task['disabled'] == 0) {
-                            $data[0] = '<a href="index.php?sec=estado&amp;sec2=operation/servers/recon_view&amp;server_id='.$id_server.'&amp;force='.$task['id_rt'].'">';
+                            $data[0] = '<a href="'.ui_get_full_url(
+                                'index.php?sec=gservers&sec2=godmode/servers/discovery&wiz=tasklist&server_id='.$id_server.'&force='.$task['id_rt']
+                            ).'">';
                             $data[0] .= html_print_image('images/target.png', true, ['title' => __('Force')]);
                             $data[0] .= '</a>';
                         } else {
@@ -226,11 +275,11 @@ class DiscoveryTaskList extends Wizard
                         }
 
                         if ($task['id_recon_script'] == 0) {
-                            // Network recon task
+                            // Network recon task.
                             $data[5] = html_print_image('images/network.png', true, ['title' => __('Network recon task')]).'&nbsp;&nbsp;';
                             $data[5] .= network_profiles_get_name($task['id_network_profile']);
                         } else {
-                            // APP recon task
+                            // APP recon task.
                             $data[5] = html_print_image('images/plugin.png', true).'&nbsp;&nbsp;';
                             $data[5] .= db_get_sql(sprintf('SELECT name FROM trecon_script WHERE id_recon_script = %d', $task['id_recon_script']));
                         }
@@ -248,6 +297,12 @@ class DiscoveryTaskList extends Wizard
                                 'index.php?sec=gservers&sec2=godmode/servers/discovery&wiz=hd&mode=netscan&page=0&task='.$task['id_rt']
                             ).'">'.html_print_image(
                                 'images/wrench_orange.png',
+                                true
+                            ).'</a>';
+                            $data[8] .= '<a href="'.ui_get_full_url(
+                                'index.php?sec=gservers&sec2=godmode/servers/discovery&wiz=tasklist&delete=1&task='.$task['id_rt']
+                            ).'">'.html_print_image(
+                                'images/cross.png',
                                 true
                             ).'</a>';
                         } else {

@@ -1501,7 +1501,7 @@ sub snmp_get_command {
 	my $command = "snmpwalk -M/dev/null -r$self->{'snmp_checks'} -t$self->{'snmp_timeout'} -v$self->{'snmp_version'} -On -Oe ";
 	if ($self->{'snmp_version'} eq "3") {
 		if ($self->{'community'}) { # Context
-			$command .= " -N $self->{'community} ";
+			$command .= " -N $self->{'community'} ";
 		}
 		$command .= " -l$self->{'snmp_security_level'} ";
 		if ($self->{'snmp_security_level'} ne "noAuthNoPriv") {

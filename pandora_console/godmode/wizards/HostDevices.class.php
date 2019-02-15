@@ -740,7 +740,7 @@ class HostDevices extends Wizard
 
             // SNMP CONFIGURATION.
             $form['inputs'][] = [
-                'hidden'        => 0,
+                'hidden'        => 1,
                 'block_id'      => 'snmp_extra',
                 'block_content' => [
                     [
@@ -995,10 +995,12 @@ class HostDevices extends Wizard
 function SNMPExtraShow(target) {
     $("#snmp_options_basic").hide();
     $("#snmp_options_v3").hide();
-    if (target == 3) {
-        $("#snmp_options_v3").show();
-    } else {
-        $("#snmp_options_basic").show();
+    if (document.getElementsByName("snmp_enabled")[0].checked) {
+        if (target == 3) {
+            $("#snmp_options_v3").show();
+        } else {
+            $("#snmp_options_basic").show();
+        }
     }
 
 }

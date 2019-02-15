@@ -9,15 +9,15 @@
 
 <table width="750px" style="display:inline">
 <tr>
-	<td class=""> If you add a new permission, you must add the corresponding text as follows:
-		<nav>
-		</nav>
-		“Profile name, Group name, [Group Name AD n1|Group Name AD n2|
-		<nav>
-		</nav>
-		Name of Group AD n3|...],[Nametag1|NameTag2|NameTagN|...]"
-		<nav>
-		</nav>
-		To separate groups and tags you must use "|" as shown in the top example above
-	</td>
+    <td class=""> If you add a new permission, you must add the corresponding text as follows:
+        <nav>
+        </nav>
+        “Profile name, Group name, [Group Name AD n1|Group Name AD n2|
+        <nav>
+        </nav>
+        Name of Group AD n3|...],[Nametag1|NameTag2|NameTagN|...]"
+        <nav>
+        </nav>
+        To separate groups and tags you must use "|" as shown in the top example above
+    </td>
 </table>

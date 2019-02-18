@@ -190,6 +190,7 @@ sub data_consumer ($$) {
 			vlan_cache_enabled => $task->{'vlan_enabled'},
 			wmi_enabled => $task->{'wmi_enabled'},
 			auth_strings_array => \@auth_strings,
+			autoconfigure_agent => $task->{'autoconfiguration_enabled'}
 			%{$pa_config}
 		);
 
@@ -445,6 +446,14 @@ sub PandoraFMS::Recon::Base::create_agent($$) {
 			$location->{'longitude'}, $location->{'latitude'}
 		);
 		return undef unless defined ($agent_id) and ($agent_id > 0);
+
+		# Autoconfigure agent
+		if (defined($self->{'autoconfiguration_enabled'}) && $self->{'autoconfiguration_enabled'} == 1) {
+			my $agent_data = PandoraFMS::DB::get_db_single_row($self->{'dbh'}, 'SELECT * FROM tagente WHERE id_agente = ?', $agent_id);
+			# Update agent configuration once, after create agent.
+			enterprise_hook('autoconfigure_agent', [$self->{'pa_config'}, $host_name, $agent_id, $agent_data, $self->{'dbh'}]);
+		}
+		
 		pandora_event($self->{'pa_config'}, "[RECON] New " . safe_output($self->get_device_type($device)) . " found (" . join(',', safe_output($self->get_addresses($device))) . ").", $self->{'group_id'}, $agent_id, 2, 0, 0, 'recon_host_detected', 0, $self->{'dbh'});
 		$agent_learning = 1;
 

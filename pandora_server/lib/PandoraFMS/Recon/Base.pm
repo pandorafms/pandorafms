@@ -166,6 +166,7 @@ sub new {
 		snmp_timeout => 2,
 		snmp_version => 1,
 		subnets => [],
+		autoconfiguration_enabled => 0,
 		@_,
 
 	};

@@ -76,24 +76,12 @@ if ($classname_selected !== null) {
 
 if ($classname_selected === null) {
     // Load classes and print selector.
-    echo '<ul>';
+    $wiz_data = [];
     foreach ($classes as $classpath) {
         $classname = basename($classpath, '.class.php');
         $obj = new $classname();
-        $wiz_data = $obj->load();
-        ?>
-
-    <li class="discovery">
-        <a href="<?php echo $wiz_data['url']; ?>">
-            <div class="data_container">
-                <?php html_print_image($wiz_data['icon']); ?>
-                <br><label id="text_wizard"><?php echo io_safe_output($wiz_data['label']); ?></label>
-            </div>
-        </a>
-    </li>
-
-        <?php
+        $wiz_data[] = $obj->load();
     }
 
-    echo '</ul>';
+    Wizard::printBigButtonsList($wiz_data);
 }

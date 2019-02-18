@@ -3,7 +3,6 @@
 // ==================================================
 // Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
-
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
 // as published by the Free Software Foundation for version 2.
@@ -11,409 +10,463 @@
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
+class Agents
+{
 
-class Agents {
-	private $correct_acl = false;
-	private $acl = "AR";
-	
-	private $default = true;
-	private $default_filters = array();
-	
-	private $group = 0;
-	private $status = -1;
-	private $free_search = '';
-	
-	private $list_status = null;
-	
-	function __construct() {
-		$system = System::getInstance();
-		
-		$this->list_status = array(
-			-1 => __('All'),
-			AGENT_MODULE_STATUS_CRITICAL_BAD => __('Critical'),
-			AGENT_MODULE_STATUS_NORMAL => __('Normal'),
-			AGENT_MODULE_STATUS_WARNING => __('Warning'),
-			AGENT_MODULE_STATUS_UNKNOWN => __('Unknown'));
-		
-		if ($system->checkACL($this->acl)) {
-			$this->correct_acl = true;
-		}
-		else {
-			$this->correct_acl = false;
-		}
-	}
-	
-	public function ajax($parameter2 = false) {
-		$system = System::getInstance();
-		
-		if (!$this->correct_acl) {
-			return;
-		}
-		else {
-			switch ($parameter2) {
-				case 'get_agents':
-					$this->getFilters();
-					$page = $system->getRequest('page', 0);
-					
-					$agents = array();
-					$end = 1;
-					
-					$listAgents = $this->getListAgents($page, true);
-					
-					if (!empty($listAgents['agents'])) {
-						$end = 0;
-						
-						$agents = array();
-						foreach ($listAgents['agents'] as $key => $agent) {
-							$agent[0] = '<b class="ui-table-cell-label">' . 
-								__('Agent') . '</b>' . $agent[0];
-							//~ $agent[1] = '<b class="ui-table-cell-label">' . 
-								//~ __('Description') . '</b>' . $agent[1];
-							$agent[2] = '<b class="ui-table-cell-label">' . 
-								__('OS') . '</b>' . $agent[2];
-							$agent[3] = '<b class="ui-table-cell-label">' . 
-								__('Group') . '</b>' . $agent[3];
-							//~ $agent[4] = '<b class="ui-table-cell-label">' . 
-								//~ __('Interval') . '</b>' . $agent[4];
-							$agent[5] = '<b class="ui-table-cell-label">' . 
-								__('Modules') . '</b>' . $agent[5];
-							$agent[6] = '<b class="ui-table-cell-label">' . 
-								__('Status') . '</b>' . $agent[6];
-							$agent[7] = '<b class="ui-table-cell-label">' . 
-								__('Alerts') . '</b>' . $agent[7];
-							$agent[8] = '<b class="ui-table-cell-label">' . 
-								__('Last contact') . '</b>' . $agent[8];
-							
-							$agents[$key] = $agent;
-						}
-					}
-					
-					echo json_encode(array('end' => $end, 'agents' => $agents));
-					break;
-			}
-		}
-	}
-	
-	private function getFilters() {
-		$system = System::getInstance();
-		$user = User::getInstance();
-		
-		// Default
-		$filters = array(
-			'free_search' => '',
-			'status' => -1,
-			'group' => 0
-		);
-		
-		$serialized_filters = (string) $system->getRequest('agents_filter');
-		if (!empty($serialized_filters)) {
-			$filters_unsafe = json_decode(base64_decode($serialized_filters, true), true);
-			if ($filters_unsafe) $filters = $system->safeInput($filters_unsafe);
-		}
-		
-		$this->default_filters['group'] = true;
-		$this->default_filters['status'] = true;
-		$this->default_filters['free_search'] = true;
-		
-		$this->free_search = $system->getRequest('free_search', $filters['free_search']);
-		if ($this->free_search != '') {
-			$this->default = false;
-			$this->default_filters['free_search'] = false;
-			$filters['free_search'] = $this->free_search;
-		}
-		
-		$this->status = $system->getRequest('status', $filters['status']);
-		if (($this->status === __("Status")) || ($this->status == -1)) {
-			$this->status = -1;
-		}
-		else {
-			$this->default = false;
-			$this->default_filters['status'] = false;
-			$filters['status'] = (int) $this->status;
-		}
-		
-		$this->group = (int)$system->getRequest('group', $filters['group']);
-		if (!$user->isInGroup($this->acl, $this->group)) {
-			$this->group = 0;
-		}
-		if (($this->group === __("Group")) || ($this->group == 0)) {
-			$this->group = 0;
-		}
-		else {
-			$this->default = false;
-			$this->default_filters['group'] = false;
-			$filters['group'] = $this->group;
-		}
-		
-		if (!empty($filters)) {
-			// Store the filter
-			$this->serializedFilters = base64_encode(json_encode($system->safeOutput($filters)));
-		}
-	}
-	
-	public function show() {
-		if (!$this->correct_acl) {
-			$this->show_fail_acl();
-		}
-		else {
-			$this->getFilters();
-			$this->show_agents();
-		}
-	}
-	
-	private function show_fail_acl() {
-		$error['type'] = 'onStart';
-		$error['title_text'] = __('You don\'t have access to this page');
-		$error['content_text'] = System::getDefaultACLFailText();
-		if (class_exists("HomeEnterprise"))
-			$home = new HomeEnterprise();
-		else
-			$home = new Home();
-		$home->show($error);
-	}
-	
-	private function show_agents() {
-		$ui = Ui::getInstance();
-		
-		$ui->createPage();
-		$ui->createDefaultHeader(__("Agents"),
-			$ui->createHeaderButton(
-				array('icon' => 'back',
-					'pos' => 'left',
-					'text' => __('Back'),
-					'href' => 'index.php?page=home')));
-		$ui->showFooter(false);
-		$ui->beginContent();
-			$filter_title = sprintf(__('Filter Agents by %s'),
-				$this->filterEventsGetString());
-			$ui->contentBeginCollapsible($filter_title);
-				$ui->beginForm("index.php?page=agents");
-					$system = System::getInstance();
-					$groups = users_get_groups_for_select(
-						$system->getConfig('id_user'), "AR", true, true, false, 'id_grupo');
-					$options = array(
-						'name' => 'group',
-						'title' => __('Group'),
-						'label' => __('Group'),
-						'items' => $groups,
-						'selected' => $this->group
-						);
-					$ui->formAddSelectBox($options);
-					
-					$options = array(
-						'name' => 'status',
-						'title' => __('Status'),
-						'label' => __('Status'),
-						'items' => $this->list_status,
-						'selected' => $this->status
-						);
-					$ui->formAddSelectBox($options);
-					
-					$options = array(
-						'name' => 'free_search',
-						'value' => $this->free_search,
-						'placeholder' => __('Free search')
-						);
-					$ui->formAddInputSearch($options);
-					
-					$options = array(
-						'icon' => 'refresh',
-						'icon_pos' => 'right',
-						'text' => __('Apply Filter')
-						);
-					$ui->formAddSubmitButton($options);
-				$html = $ui->getEndForm();
-				$ui->contentCollapsibleAddItem($html);
-			$ui->contentEndCollapsible();
-			$this->listAgentsHtml();
-		$ui->endContent();
-		$ui->showPage();
-	}
-	
-	private function getListAgents($page = 0, $ajax = false) {
-		$system = System::getInstance();
+    private $correct_acl = false;
 
-		$total = 0;
-		$agents = array();
-		
-		$search_sql = '';
-		
-		if (!empty($this->free_search)) {
-			$search_sql = " AND (
-				alias COLLATE utf8_general_ci LIKE '%" . $this->free_search . "%'
-				OR nombre COLLATE utf8_general_ci LIKE '%" . $this->free_search . "%'
-				OR direccion LIKE '%" . $this->free_search . "%'
-				OR comentarios LIKE '%" . $this->free_search . "%') ";
-		}
-		
-		if (!$system->getConfig('metaconsole')) {
-			$total = agents_get_agents(array(
-				'disabled' => 0,
-				'id_grupo' => $this->group,
-				'search' => $search_sql,
-				'status' => $this->status),
-				array ('COUNT(*) AS total'), 'AR', false);
-		}
-		else {
-			$total = agents_get_meta_agents(array(
-				'disabled' => 0,
-				'id_grupo' => $this->group,
-				'search' => $search_sql,
-				'status' => $this->status),
-				array ('COUNT(*) AS total'), 'AR', false);
-		}
-		$total = isset($total[0]['total']) ? $total[0]['total'] : 0;
-		
-		$order = array('field' => 'alias COLLATE utf8_general_ci',
-			'field2' => 'nombre COLLATE utf8_general_ci', 'order' => 'ASC');
-		if (!$system->getConfig('metaconsole')) {
-			$agents_db = agents_get_agents(array(
-				'disabled' => 0,
-				'id_grupo' => $this->group,
-				'search' => $search_sql,
-				'status' => $this->status,
-				'offset' => (int) $page * $system->getPageSize(),
-				'limit' => (int) $system->getPageSize()),
-				array ('id_agente',
-					'id_grupo',
-					'id_os',
-					'alias',
-					'ultimo_contacto',
-					'intervalo',
-					'comentarios description',
-					'quiet',
-					'normal_count',
-					'warning_count',
-					'critical_count',
-					'unknown_count',
-					'notinit_count',
-					'total_count',
-					'fired_count'),
-				'AR', $order);
-		}
-		else {
-			$agents_db = agents_get_meta_agents(array(
-				'disabled' => 0,
-				'id_grupo' => $this->group,
-				'search' => $search_sql,
-				'status' => $this->status,
-				'offset' => (int) $page * $system->getPageSize(),
-				'limit' => (int) $system->getPageSize()),
-				array ('id_agente',
-					'id_grupo',
-					'id_os',
-					'alias',
-					'ultimo_contacto',
-					'intervalo',
-					'comentarios description',
-					'quiet',
-					'normal_count',
-					'warning_count',
-					'critical_count',
-					'unknown_count',
-					'notinit_count',
-					'total_count',
-					'fired_count'),
-				'AR', $order);
-		}
-		if (empty($agents_db))
-			$agents_db = array();
-		
-		foreach ($agents_db as $agent) {
-			$row = array();
-			
-			
-			$img_status = agents_tree_view_status_img ($agent["critical_count"],
-				$agent["warning_count"], $agent["unknown_count"], $agent['total_count'], $agent['notinit_count']);
-			
-			$img_alert = agents_tree_view_alert_img ($agent["fired_count"]);
-			
-			$serialized_filters_q_param = empty($this->serializedFilters) ? '' : '&agents_filter=' . $this->serializedFilters;
-			
-			$row[0] = $row[__('Agent')] = '<span class="tiny" style="margin-right: 5px;">' . $img_status . '</span>' . 
-				'<a class="ui-link" data-ajax="false" href="index.php?page=agent&id=' . $agent['id_agente'] . $serialized_filters_q_param . '">' . ui_print_truncate_text($agent['alias'], 30, false) . '</a>';
-			//~ $row[1] = $row[__('Description')] = '<span class="small">' .
-				//~ ui_print_truncate_text($agent["description"], 'description', false, true) .
-				//~ '</span>';
-			
-			$row[2] = $row[__('OS')] = ui_print_os_icon ($agent["id_os"], false, true);
-			$row[3] = $row[__('Group')] = ui_print_group_icon ($agent["id_grupo"], true, "groups_small", '', false);
-			//~ $row[4] = $row[__('Interval')] = '<span class="show_collapside" style="vertical-align: 0%; display: none; font-weight: bolder;">&nbsp;&nbsp;' . __('I.') . ' </span>' .
-				//~ '<span style="vertical-align: 0%;">' . human_time_description_raw($agent["intervalo"]) . '</span>';
-			
-			
-			$row[5] = $row[__('Status')] = '<span class="show_collapside" style="vertical-align: 10%; display: none; font-weight: bolder;">' . __('S.') . ' </span>' .
-				$img_status;
-			$row[6] = $row[__('Alerts')] = '<span class="show_collapside" style="vertical-align: 10%; display: none; font-weight: bolder;">&nbsp;&nbsp;' . __('A.') . ' </span>' .
-				$img_alert;
-			
-			$row[7] = $row[__('Modules')] =
-				'<span class="show_collapside" style="vertical-align: 0%; display: none; font-weight: bolder;">' . __('Modules') . ' </span>' .
-				'<span class="agents_tiny_stats">' . reporting_tiny_stats($agent, true, 'agent', '&nbsp;') . ' </span>';
-			
-			$last_time = time_w_fixed_tz($agent["ultimo_contacto"]);
-			$now = get_system_time();
-			$diferencia = $now - $last_time;
-			$time = ui_print_timestamp ($last_time, true, array('style' => 'font-size: 12px; margin-left: 20px;', 'units' => 'tiny'));
-			$style = '';
-			if ($diferencia > ($agent["intervalo"] * 2))
-				$row[8] = $row[__('Last contact')] = '<b><span style="color: #ff0000;">'.$time.'</span></b>';
-			else
-				$row[8] = $row[__('Last contact')] = $time;
-			
-			$row[8] = $row[__('Last contact')] = '<span class="show_collapside" style="vertical-align: 0%; display: none; font-weight: bolder;">' . __('Last contact') . ' </span>' .
-				'<span class="agents_last_contact">' . $row[__('Last contact')] . '</span>';
-			
-			if (!$ajax) {
-				unset($row[0]);
-				unset($row[1]);
-				unset($row[2]);
-				unset($row[3]);
-				unset($row[4]);
-				unset($row[5]);
-				unset($row[6]);
-				unset($row[7]);
-				unset($row[8]);
-			}
-			
-			$agents[$agent['id_agente']] = $row;
-			
-		}
-		
-		return array('agents' => $agents, 'total' => $total);
-	}
-	
-	private function listAgentsHtml($page = 0) {
-		$system = System::getInstance();
-		$ui = Ui::getInstance();
-		
-		$listAgents = $this->getListAgents($page);
-		
-		if ($listAgents['total'] == 0) {
-			$ui->contentAddHtml('<p style="color: #ff0000;">' . __('No agents') . '</p>');
-		}
-		else {
-			$table = new Table();
-			$table->id = 'list_agents';
-			$table->importFromHash($listAgents['agents']);
-			$ui->contentAddHtml($table->getHTML());
-			
-			if ($system->getPageSize() < $listAgents['total']) {
-				$ui->contentAddHtml('<div id="loading_rows">' .
-						html_print_image('images/spinner.gif', true, false, false, false, false, true) .
-						' ' . __('Loading...') .
-					'</div>');
-				
-				$this->addJavascriptAddBottom();
-			}
-		}
-		$ui->contentAddLinkListener('list_agents');
-	}
-	
-	private function addJavascriptAddBottom() {
-		$ui = Ui::getInstance();
-		
-		$ui->contentAddHtml("<script type=\"text/javascript\">
+    private $acl = 'AR';
+
+    private $default = true;
+
+    private $default_filters = [];
+
+    private $group = 0;
+
+    private $status = -1;
+
+    private $free_search = '';
+
+    private $list_status = null;
+
+
+    function __construct()
+    {
+        $system = System::getInstance();
+
+        $this->list_status = [
+            -1                               => __('All'),
+            AGENT_MODULE_STATUS_CRITICAL_BAD => __('Critical'),
+            AGENT_MODULE_STATUS_NORMAL       => __('Normal'),
+            AGENT_MODULE_STATUS_WARNING      => __('Warning'),
+            AGENT_MODULE_STATUS_UNKNOWN      => __('Unknown'),
+        ];
+
+        if ($system->checkACL($this->acl)) {
+            $this->correct_acl = true;
+        } else {
+            $this->correct_acl = false;
+        }
+    }
+
+
+    public function ajax($parameter2=false)
+    {
+        $system = System::getInstance();
+
+        if (!$this->correct_acl) {
+            return;
+        } else {
+            switch ($parameter2) {
+                case 'get_agents':
+                    $this->getFilters();
+                    $page = $system->getRequest('page', 0);
+
+                    $agents = [];
+                    $end = 1;
+
+                    $listAgents = $this->getListAgents($page, true);
+
+                    if (!empty($listAgents['agents'])) {
+                        $end = 0;
+
+                        $agents = [];
+                        foreach ($listAgents['agents'] as $key => $agent) {
+                            $agent[0] = '<b class="ui-table-cell-label">'.__('Agent').'</b>'.$agent[0];
+                            // ~ $agent[1] = '<b class="ui-table-cell-label">' .
+                                // ~ __('Description') . '</b>' . $agent[1];
+                            $agent[2] = '<b class="ui-table-cell-label">'.__('OS').'</b>'.$agent[2];
+                            $agent[3] = '<b class="ui-table-cell-label">'.__('Group').'</b>'.$agent[3];
+                            // ~ $agent[4] = '<b class="ui-table-cell-label">' .
+                                // ~ __('Interval') . '</b>' . $agent[4];
+                            $agent[5] = '<b class="ui-table-cell-label">'.__('Modules').'</b>'.$agent[5];
+                            $agent[6] = '<b class="ui-table-cell-label">'.__('Status').'</b>'.$agent[6];
+                            $agent[7] = '<b class="ui-table-cell-label">'.__('Alerts').'</b>'.$agent[7];
+                            $agent[8] = '<b class="ui-table-cell-label">'.__('Last contact').'</b>'.$agent[8];
+
+                            $agents[$key] = $agent;
+                        }
+                    }
+
+                    echo json_encode(['end' => $end, 'agents' => $agents]);
+                break;
+            }
+        }
+    }
+
+
+    private function getFilters()
+    {
+        $system = System::getInstance();
+        $user = User::getInstance();
+
+        // Default
+        $filters = [
+            'free_search' => '',
+            'status'      => -1,
+            'group'       => 0,
+        ];
+
+        $serialized_filters = (string) $system->getRequest('agents_filter');
+        if (!empty($serialized_filters)) {
+            $filters_unsafe = json_decode(base64_decode($serialized_filters, true), true);
+            if ($filters_unsafe) {
+                $filters = $system->safeInput($filters_unsafe);
+            }
+        }
+
+        $this->default_filters['group'] = true;
+        $this->default_filters['status'] = true;
+        $this->default_filters['free_search'] = true;
+
+        $this->free_search = $system->getRequest('free_search', $filters['free_search']);
+        if ($this->free_search != '') {
+            $this->default = false;
+            $this->default_filters['free_search'] = false;
+            $filters['free_search'] = $this->free_search;
+        }
+
+        $this->status = $system->getRequest('status', $filters['status']);
+        if (($this->status === __('Status')) || ($this->status == -1)) {
+            $this->status = -1;
+        } else {
+            $this->default = false;
+            $this->default_filters['status'] = false;
+            $filters['status'] = (int) $this->status;
+        }
+
+        $this->group = (int) $system->getRequest('group', $filters['group']);
+        if (!$user->isInGroup($this->acl, $this->group)) {
+            $this->group = 0;
+        }
+
+        if (($this->group === __('Group')) || ($this->group == 0)) {
+            $this->group = 0;
+        } else {
+            $this->default = false;
+            $this->default_filters['group'] = false;
+            $filters['group'] = $this->group;
+        }
+
+        if (!empty($filters)) {
+            // Store the filter
+            $this->serializedFilters = base64_encode(json_encode($system->safeOutput($filters)));
+        }
+    }
+
+
+    public function show()
+    {
+        if (!$this->correct_acl) {
+            $this->show_fail_acl();
+        } else {
+            $this->getFilters();
+            $this->show_agents();
+        }
+    }
+
+
+    private function show_fail_acl()
+    {
+        $error['type'] = 'onStart';
+        $error['title_text'] = __('You don\'t have access to this page');
+        $error['content_text'] = System::getDefaultACLFailText();
+        if (class_exists('HomeEnterprise')) {
+            $home = new HomeEnterprise();
+        } else {
+            $home = new Home();
+        }
+
+        $home->show($error);
+    }
+
+
+    private function show_agents()
+    {
+        $ui = Ui::getInstance();
+
+        $ui->createPage();
+        $ui->createDefaultHeader(
+            __('Agents'),
+            $ui->createHeaderButton(
+                [
+                    'icon' => 'back',
+                    'pos'  => 'left',
+                    'text' => __('Back'),
+                    'href' => 'index.php?page=home',
+                ]
+            )
+        );
+        $ui->showFooter(false);
+        $ui->beginContent();
+            $filter_title = sprintf(
+                __('Filter Agents by %s'),
+                $this->filterEventsGetString()
+            );
+            $ui->contentBeginCollapsible($filter_title);
+                $ui->beginForm('index.php?page=agents');
+                    $system = System::getInstance();
+                    $groups = users_get_groups_for_select(
+                        $system->getConfig('id_user'),
+                        'AR',
+                        true,
+                        true,
+                        false,
+                        'id_grupo'
+                    );
+                    $options = [
+                        'name'     => 'group',
+                        'title'    => __('Group'),
+                        'label'    => __('Group'),
+                        'items'    => $groups,
+                        'selected' => $this->group,
+                    ];
+                    $ui->formAddSelectBox($options);
+
+                    $options = [
+                        'name'     => 'status',
+                        'title'    => __('Status'),
+                        'label'    => __('Status'),
+                        'items'    => $this->list_status,
+                        'selected' => $this->status,
+                    ];
+                    $ui->formAddSelectBox($options);
+
+                    $options = [
+                        'name'        => 'free_search',
+                        'value'       => $this->free_search,
+                        'placeholder' => __('Free search'),
+                    ];
+                    $ui->formAddInputSearch($options);
+
+                    $options = [
+                        'icon'     => 'refresh',
+                        'icon_pos' => 'right',
+                        'text'     => __('Apply Filter'),
+                    ];
+                    $ui->formAddSubmitButton($options);
+                    $html = $ui->getEndForm();
+                    $ui->contentCollapsibleAddItem($html);
+                    $ui->contentEndCollapsible();
+                    $this->listAgentsHtml();
+                    $ui->endContent();
+                    $ui->showPage();
+    }
+
+
+    private function getListAgents($page=0, $ajax=false)
+    {
+        $system = System::getInstance();
+
+        $total = 0;
+        $agents = [];
+
+        $search_sql = '';
+
+        if (!empty($this->free_search)) {
+            $search_sql = " AND (
+				alias COLLATE utf8_general_ci LIKE '%".$this->free_search."%'
+				OR nombre COLLATE utf8_general_ci LIKE '%".$this->free_search."%'
+				OR direccion LIKE '%".$this->free_search."%'
+				OR comentarios LIKE '%".$this->free_search."%') ";
+        }
+
+        if (!$system->getConfig('metaconsole')) {
+            $total = agents_get_agents(
+                [
+                    'disabled' => 0,
+                    'id_grupo' => $this->group,
+                    'search'   => $search_sql,
+                    'status'   => $this->status,
+                ],
+                ['COUNT(*) AS total'],
+                'AR',
+                false
+            );
+        } else {
+            $total = agents_get_meta_agents(
+                [
+                    'disabled' => 0,
+                    'id_grupo' => $this->group,
+                    'search'   => $search_sql,
+                    'status'   => $this->status,
+                ],
+                ['COUNT(*) AS total'],
+                'AR',
+                false
+            );
+        }
+
+        $total = isset($total[0]['total']) ? $total[0]['total'] : 0;
+
+        $order = [
+            'field'  => 'alias COLLATE utf8_general_ci',
+            'field2' => 'nombre COLLATE utf8_general_ci',
+            'order'  => 'ASC',
+        ];
+        if (!$system->getConfig('metaconsole')) {
+            $agents_db = agents_get_agents(
+                [
+                    'disabled' => 0,
+                    'id_grupo' => $this->group,
+                    'search'   => $search_sql,
+                    'status'   => $this->status,
+                    'offset'   => ((int) $page * $system->getPageSize()),
+                    'limit'    => (int) $system->getPageSize(),
+                ],
+                [
+                    'id_agente',
+                    'id_grupo',
+                    'id_os',
+                    'alias',
+                    'ultimo_contacto',
+                    'intervalo',
+                    'comentarios description',
+                    'quiet',
+                    'normal_count',
+                    'warning_count',
+                    'critical_count',
+                    'unknown_count',
+                    'notinit_count',
+                    'total_count',
+                    'fired_count',
+                ],
+                'AR',
+                $order
+            );
+        } else {
+            $agents_db = agents_get_meta_agents(
+                [
+                    'disabled' => 0,
+                    'id_grupo' => $this->group,
+                    'search'   => $search_sql,
+                    'status'   => $this->status,
+                    'offset'   => ((int) $page * $system->getPageSize()),
+                    'limit'    => (int) $system->getPageSize(),
+                ],
+                [
+                    'id_agente',
+                    'id_grupo',
+                    'id_os',
+                    'alias',
+                    'ultimo_contacto',
+                    'intervalo',
+                    'comentarios description',
+                    'quiet',
+                    'normal_count',
+                    'warning_count',
+                    'critical_count',
+                    'unknown_count',
+                    'notinit_count',
+                    'total_count',
+                    'fired_count',
+                ],
+                'AR',
+                $order
+            );
+        }
+
+        if (empty($agents_db)) {
+            $agents_db = [];
+        }
+
+        foreach ($agents_db as $agent) {
+            $row = [];
+
+            $img_status = agents_tree_view_status_img(
+                $agent['critical_count'],
+                $agent['warning_count'],
+                $agent['unknown_count'],
+                $agent['total_count'],
+                $agent['notinit_count']
+            );
+
+            $img_alert = agents_tree_view_alert_img($agent['fired_count']);
+
+            $serialized_filters_q_param = empty($this->serializedFilters) ? '' : '&agents_filter='.$this->serializedFilters;
+
+            $row[0] = $row[__('Agent')] = '<span class="tiny" style="margin-right: 5px;">'.$img_status.'</span>'.'<a class="ui-link" data-ajax="false" href="index.php?page=agent&id='.$agent['id_agente'].$serialized_filters_q_param.'">'.ui_print_truncate_text($agent['alias'], 30, false).'</a>';
+            // ~ $row[1] = $row[__('Description')] = '<span class="small">' .
+                // ~ ui_print_truncate_text($agent["description"], 'description', false, true) .
+                // ~ '</span>';
+            $row[2] = $row[__('OS')] = ui_print_os_icon($agent['id_os'], false, true);
+            $row[3] = $row[__('Group')] = ui_print_group_icon($agent['id_grupo'], true, 'groups_small', '', false);
+            // ~ $row[4] = $row[__('Interval')] = '<span class="show_collapside" style="vertical-align: 0%; display: none; font-weight: bolder;">&nbsp;&nbsp;' . __('I.') . ' </span>' .
+                // ~ '<span style="vertical-align: 0%;">' . human_time_description_raw($agent["intervalo"]) . '</span>';
+            $row[5] = $row[__('Status')] = '<span class="show_collapside" style="vertical-align: 10%; display: none; font-weight: bolder;">'.__('S.').' </span>'.$img_status;
+            $row[6] = $row[__('Alerts')] = '<span class="show_collapside" style="vertical-align: 10%; display: none; font-weight: bolder;">&nbsp;&nbsp;'.__('A.').' </span>'.$img_alert;
+
+            $row[7] = $row[__('Modules')] = '<span class="show_collapside" style="vertical-align: 0%; display: none; font-weight: bolder;">'.__('Modules').' </span>'.'<span class="agents_tiny_stats">'.reporting_tiny_stats($agent, true, 'agent', '&nbsp;').' </span>';
+
+            $last_time = time_w_fixed_tz($agent['ultimo_contacto']);
+            $now = get_system_time();
+            $diferencia = ($now - $last_time);
+            $time = ui_print_timestamp($last_time, true, ['style' => 'font-size: 12px; margin-left: 20px;', 'units' => 'tiny']);
+            $style = '';
+            if ($diferencia > ($agent['intervalo'] * 2)) {
+                $row[8] = $row[__('Last contact')] = '<b><span style="color: #ff0000;">'.$time.'</span></b>';
+            } else {
+                $row[8] = $row[__('Last contact')] = $time;
+            }
+
+            $row[8] = $row[__('Last contact')] = '<span class="show_collapside" style="vertical-align: 0%; display: none; font-weight: bolder;">'.__('Last contact').' </span>'.'<span class="agents_last_contact">'.$row[__('Last contact')].'</span>';
+
+            if (!$ajax) {
+                unset($row[0]);
+                unset($row[1]);
+                unset($row[2]);
+                unset($row[3]);
+                unset($row[4]);
+                unset($row[5]);
+                unset($row[6]);
+                unset($row[7]);
+                unset($row[8]);
+            }
+
+            $agents[$agent['id_agente']] = $row;
+        }
+
+        return [
+            'agents' => $agents,
+            'total'  => $total,
+        ];
+    }
+
+
+    private function listAgentsHtml($page=0)
+    {
+        $system = System::getInstance();
+        $ui = Ui::getInstance();
+
+        $listAgents = $this->getListAgents($page);
+
+        if ($listAgents['total'] == 0) {
+            $ui->contentAddHtml('<p style="color: #ff0000;">'.__('No agents').'</p>');
+        } else {
+            $table = new Table();
+            $table->id = 'list_agents';
+            $table->importFromHash($listAgents['agents']);
+            $ui->contentAddHtml($table->getHTML());
+
+            if ($system->getPageSize() < $listAgents['total']) {
+                $ui->contentAddHtml(
+                    '<div id="loading_rows">'.html_print_image('images/spinner.gif', true, false, false, false, false, true).' '.__('Loading...').'</div>'
+                );
+
+                $this->addJavascriptAddBottom();
+            }
+        }
+
+        $ui->contentAddLinkListener('list_agents');
+    }
+
+
+    private function addJavascriptAddBottom()
+    {
+        $ui = Ui::getInstance();
+
+        $ui->contentAddHtml(
+            "<script type=\"text/javascript\">
 				var load_more_rows = 1;
 				var page = 1;
 				
@@ -475,42 +528,51 @@ class Agents {
 						custom_scroll();
 					});
 				});
-			</script>");
-	}
-	
-	private function filterEventsGetString() {
-		if ($this->default) {
-			return __("(Default)");
-		}
-		else {
-			$filters_to_serialize = array();
-			
-			if (!$this->default_filters['group']) {
-				$filters_to_serialize[] = sprintf(__("Group: %s"),
-					groups_get_name($this->group, true));
-			}
-			if (!$this->default_filters['status']) {
-				$filters_to_serialize[] = sprintf(__("Status: %s"),
-					$this->list_status[$this->status]);
-			}
-			if (!$this->default_filters['free_search']) {
-				$filters_to_serialize[] = sprintf(__("Free Search: %s"),
-					$this->free_search);
-			}
-			
-			$string = '(' . implode(' - ', $filters_to_serialize) . ')';
-			
-			//~ $status = $this->list_status[$this->status];
-			//~ $group = groups_get_name($this->group, true);
-			//~ 
-			//~ 
-			//~ $string = sprintf(
-				//~ __("(Status: %s - Group: %s - Free Search: %s)"),
-				//~ $status, $group, $this->free_search);
-			
-			return $string;
-		}
-	}
-}
+			</script>"
+        );
+    }
 
-?>
+
+    private function filterEventsGetString()
+    {
+        if ($this->default) {
+            return __('(Default)');
+        } else {
+            $filters_to_serialize = [];
+
+            if (!$this->default_filters['group']) {
+                $filters_to_serialize[] = sprintf(
+                    __('Group: %s'),
+                    groups_get_name($this->group, true)
+                );
+            }
+
+            if (!$this->default_filters['status']) {
+                $filters_to_serialize[] = sprintf(
+                    __('Status: %s'),
+                    $this->list_status[$this->status]
+                );
+            }
+
+            if (!$this->default_filters['free_search']) {
+                $filters_to_serialize[] = sprintf(
+                    __('Free Search: %s'),
+                    $this->free_search
+                );
+            }
+
+            $string = '('.implode(' - ', $filters_to_serialize).')';
+
+            // ~ $status = $this->list_status[$this->status];
+            // ~ $group = groups_get_name($this->group, true);
+            // ~
+            // ~
+            // ~ $string = sprintf(
+                // ~ __("(Status: %s - Group: %s - Free Search: %s)"),
+                // ~ $status, $group, $this->free_search);
+            return $string;
+        }
+    }
+
+
+}

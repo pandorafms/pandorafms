@@ -1,7 +1,7 @@
 <h1>Projection graph</h1>
 
 
-<?php html_print_image("images/help/projection_periods.png", false, array('height' => '210')); ?>
+<?php html_print_image('images/help/projection_periods.png', false, ['height' => '210']); ?>
 <br>
 <p>
 Projection graphs make a projection of module data in the future. The projection is based on linear regressions.  

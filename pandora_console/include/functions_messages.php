@@ -384,7 +384,7 @@ function messages_get_count(
                     AND up.id_grupo=ng.id_group
             ) ON tm.id_mensaje=ng.id_mensaje 
             WHERE utimestamp_erased is null
-                AND (nu.id_user="%s" OR (up.id_usuario="%s" AND ng.id_group=0))
+                AND (nu.id_user="%s" OR up.id_usuario="%s" OR ng.id_group=0)
         ) t 
         %s',
         $source_sql,
@@ -496,7 +496,7 @@ function messages_get_overview(
             ) ON tm.id_mensaje=ng.id_mensaje
             %s
             WHERE utimestamp_erased is null
-                AND (nu.id_user="%s" OR (up.id_usuario="%s" AND ng.id_group=0))
+                AND (nu.id_user="%s" OR up.id_usuario="%s" OR ng.id_group=0)
         ) t 
         %s
         %s

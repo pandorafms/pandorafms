@@ -14,51 +14,8 @@
 // Load global vars
 global $config;
 
-check_login();
-
-enterprise_hook('open_meta_frame');
-
-require_once $config['homedir'].'/include/functions_profile.php';
-require_once $config['homedir'].'/include/functions_users.php';
-require_once $config['homedir'].'/include/functions_groups.php';
-require_once $config['homedir'].'/include/functions_visual_map.php';
-
-$meta = false;
-if (enterprise_installed() && defined('METACONSOLE')) {
-    $meta = true;
-}
-
-$id = get_parameter_get('id', $config['id_user']);
-// ID given as parameter
-$status = get_parameter('status', -1);
-// Flag to print action status message
-$user_info = get_user_info($id);
-$id = $user_info['id_user'];
-// This is done in case there are problems with uppercase/lowercase (MySQL auth has that problem)
-if ((!check_acl($config['id_user'], users_get_groups($id), 'UM'))
-    and ($id != $config['id_user'])
-) {
-    db_pandora_audit('ACL Violation', 'Trying to view a user without privileges');
-    include 'general/noaccess.php';
-    exit;
-}
-
-// If current user is editing himself or if the user has UM (User Management) rights on any groups the user is part of AND the authorization scheme allows for users/admins to update info
-if (($config['id_user'] == $id || check_acl($config['id_user'], users_get_groups($id), 'UM')) && $config['user_can_update_info']) {
-    $view_mode = false;
-} else {
-    $view_mode = true;
-}
-
-// Header
-if ($meta) {
-    user_meta_print_header();
-    $url = 'index.php?sec=advanced&amp;sec2=advanced/users_setup&amp;tab=user_edit';
-} else {
-    ui_print_page_header(__('User detail editor'), 'images/op_workspace.png', false, '', false, '');
-    $url = 'index.php?sec=workspace&amp;sec2=operation/users/user_edit';
-}
-
+// Load the header
+require $config['homedir'].'/operation/users/user_edit_header.php';
 
 // Update user info
 if (isset($_GET['modified']) && !$view_mode) {
@@ -535,7 +492,7 @@ $table->rowclass[] = '';
 $table->rowstyle[] = '';
 $table->data[] = $data;
 
-echo '<form name="user_mod" method="post" action="'.$url.'&amp;modified=1&amp;id='.$id.'&amp;pure='.$config['pure'].'">';
+echo '<form name="user_mod" method="post" action="'.$urls['main'].'&amp;modified=1&amp;id='.$id.'&amp;pure='.$config['pure'].'">';
 
 html_print_table($table);
 

@@ -439,9 +439,6 @@ class HostDevices extends Wizard
             return;
         }
 
-        $user_groups = users_get_groups(false, 'AW', true, false, null, 'id_grupo');
-        $user_groups = array_keys($user_groups);
-
         if ($this->parseNetScan() === false) {
             // Error.
             ui_print_error_message(
@@ -472,6 +469,17 @@ class HostDevices extends Wizard
                     ],
                 ],
             ];
+
+            // Check ACL. If user is not able to manage target task,
+            // redirect him to main page.
+            if (users_is_admin() || check_acl(
+                $config['id_usuario'],
+                $this->task['id_group'],
+                'PM'
+            ) !== true
+            ) {
+                $form['form']['action'] = $this->url.'&mode=netscan&page='.($this->page - 1);
+            }
 
             $this->printForm($form);
             return null;
@@ -954,6 +962,7 @@ function SNMPExtraShow(target) {
     $("#snmp_options_basic").hide();
     $("#snmp_options_v3").hide();
     if (document.getElementsByName("snmp_enabled")[0].checked) {
+        $("#snmp_extra").show();
         if (target == 3) {
             $("#snmp_options_v3").show();
         } else {

@@ -163,6 +163,8 @@ sub data_consumer ($$) {
 			@auth_strings = split(/,/, safe_output($task->{'auth_strings'}));
 		}
 
+		my $main_event = pandora_event($pa_config, "[Discovery] Execution summary",$task->{'id_group'}, 0, 0, 0, 0, 'system', 0, $dbh);
+
 		my $recon = new PandoraFMS::Recon::Base(
 			communities => \@communities,
 			dbh => $dbh,
@@ -190,7 +192,8 @@ sub data_consumer ($$) {
 			vlan_cache_enabled => $task->{'vlan_enabled'},
 			wmi_enabled => $task->{'wmi_enabled'},
 			auth_strings_array => \@auth_strings,
-			autoconfigure_agent => $task->{'autoconfiguration_enabled'}
+			autoconfiguration_enabled => $task->{'autoconfiguration_enabled'},
+			main_event_id => $main_event,
 			%{$pa_config}
 		);
 
@@ -451,10 +454,18 @@ sub PandoraFMS::Recon::Base::create_agent($$) {
 		if (defined($self->{'autoconfiguration_enabled'}) && $self->{'autoconfiguration_enabled'} == 1) {
 			my $agent_data = PandoraFMS::DB::get_db_single_row($self->{'dbh'}, 'SELECT * FROM tagente WHERE id_agente = ?', $agent_id);
 			# Update agent configuration once, after create agent.
-			enterprise_hook('autoconfigure_agent', [$self->{'pa_config'}, $host_name, $agent_id, $agent_data, $self->{'dbh'}]);
+			enterprise_hook('autoconfigure_agent', [$self->{'pa_config'}, $host_name, $agent_id, $agent_data, $self->{'dbh'}, $agent_id]);
 		}
 		
-		pandora_event($self->{'pa_config'}, "[RECON] New " . safe_output($self->get_device_type($device)) . " found (" . join(',', safe_output($self->get_addresses($device))) . ").", $self->{'group_id'}, $agent_id, 2, 0, 0, 'recon_host_detected', 0, $self->{'dbh'});
+		if (defined($self->{'main_event_id'})) {
+			my $addresses_str = join(',', safe_output($self->get_addresses($device)));
+			pandora_extended_event(
+				$self->{'pa_config'}, $self->{'dbh'}, $self->{'main_event_id'},
+				"[Discovery] New " . safe_output($self->get_device_type($device)) . " found " . $host_name . " (" . $addresses_str . ") Agent $agent_id."
+			);
+
+		}
+		
 		$agent_learning = 1;
 
 		# Create network profile modules for the agent

@@ -305,6 +305,9 @@ class HostDevices extends Wizard
             }
 
             $id_network_profile = get_parameter('id_network_profile', null);
+            $autoconf_enabled = get_parameter_switch(
+                'autoconfiguration_enabled'
+            );
             $snmp_enabled = get_parameter_switch('snmp_enabled');
             $os_detect = get_parameter_switch('os_detect');
             $parent_detection = get_parameter_switch('parent_detection');
@@ -329,6 +332,7 @@ class HostDevices extends Wizard
                 $this->task['snmp_community'] = $community;
             }
 
+            $this->task['autoconfiguration_enabled'] = $autoconf_enabled;
             $this->task['id_network_profile'] = $id_network_profile;
             $this->task['snmp_enabled'] = $snmp_enabled;
             $this->task['os_detect'] = $os_detect;

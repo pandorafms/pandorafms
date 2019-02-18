@@ -1408,6 +1408,7 @@ ALTER TABLE trecon_task ADD `snmp_enabled` int(2) unsigned default '0';
 ALTER TABLE trecon_task ADD `vlan_enabled` int(2) unsigned default '0';
 ALTER TABLE trecon_task ADD `wmi_enabled` tinyint(1) unsigned DEFAULT '0';
 ALTER TABLE trecon_task ADD `auth_strings` text;
+ALTER TABLE trecon_task ADD `autoconfiguration_enabled` tinyint(1) unsigned default '0';
 
 -- ---------------------------------------------------------------------
 -- Table `twidget` AND Table `twidget_dashboard`

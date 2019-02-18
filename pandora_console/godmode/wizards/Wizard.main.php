@@ -78,6 +78,22 @@ class Wizard
     {
         return $this->breadcrum;
     }
+    
+
+    /**
+     * Add an element to breadcrum array.
+     *
+     * @param string $string Element to add to breadcrum.
+     *
+     * @return void
+     */
+    protected function addBreadcrum($string) {
+        if (empty($string)) {
+            return;
+        }
+
+        array_push($this->breadcrum, $string);
+    }
 
 
     /**
@@ -507,4 +523,6 @@ class Wizard
         array_map('self::printBigButtonElement', $list_data);
         echo '</ul>';
     }
+
+
 }

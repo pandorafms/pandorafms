@@ -49,6 +49,16 @@ function get_wiz_class($str)
 
 // Dynamic class loader.
 $classes = glob($config['homedir'].'/godmode/wizards/*.class.php');
+if (enterprise_installed()) {
+    $ent_classes = glob(
+        $config['homedir'].'/enterprise/godmode/wizards/*.class.php'
+    );
+    if ($ent_classes === false) {
+        $ent_classes = [];
+    }
+    $classes = array_merge($classes, $ent_classes);
+}
+
 foreach ($classes as $classpath) {
     include_once $classpath;
 }

@@ -94,24 +94,20 @@ class HostDevices extends Wizard
         if ($mode === null) {
             $this->setBreadcrum(['<a href="index.php?sec=gservers&sec2=godmode/servers/discovery&wiz=hd">Host&devices</a>']);
             $this->printHeader();
-            echo '<div id="contenedor_principal">';
-            echo '<div id="contenedor_imagen_texto">';
-            echo '<div id="imagen">';
-            echo '<a href="'.$this->url.'&mode=importcsv" alt="importcsv"><img src="images/wizard/csv_image.svg" alt="importcsv"></a>';
-            echo '</div>';
-            echo '<div class="texto">';
-            echo '<a href="'.$this->url.'&mode=importcsv" alt="importcsv" id="text_wizard">'.__('Import CSV').'</a>';
-            echo '</div>';
-            echo '</div>';
-            echo '<div id="contenedor_imagen_texto">';
-            echo '<div id="imagen">';
-            echo '<a href="'.$this->url.'&mode=netscan" alt="netscan"><img src="images/wizard/csv_image.svg" alt="importcsv"></a>';
-            echo '</div>';
-            echo '<div class="texto">';
-            echo '<a href="'.$this->url.'&mode=netscan" alt="netscan" id="text_wizard">'.__('Escanear red').'</a>';
-            echo '</div>';
-            echo '</div>';
-            echo '</div>';
+            $this->printBigButtonsList(
+                [
+                    [
+                        'url'   => $this->url.'&mode=importcsv',
+                        'icon'  => 'images/wizard/csv_image.svg',
+                        'label' => __('Import CSV'),
+                    ],
+                    [
+                        'url'   => $this->url.'&mode=netscan',
+                        'icon'  => 'images/wizard/csv_image.svg',
+                        'label' => __('Net Scan'),
+                    ],
+                ]
+            );
 
             return;
         }

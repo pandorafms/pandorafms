@@ -20,6 +20,41 @@ class Wizard
      */
     public $page;
 
+        /**
+         * Target icon to be shown in discovery wizard list.
+         *
+         * @var string
+         */
+    public $icon;
+
+    /**
+     * Target label to be shown in discovery wizard list.
+     *
+     * @var string
+     */
+    public $label;
+
+    /**
+     * This wizard's url.
+     *
+     * @var string
+     */
+    public $url;
+
+    /**
+     * Result of wizard execution (0 - ok, 1 - not ok).
+     *
+     * @var integer
+     */
+    public $result;
+
+    /**
+     * Message to be delivered to user.
+     *
+     * @var string
+     */
+    public $msg;
+
 
     /**
      * Setter for breadcrum
@@ -285,13 +320,13 @@ class Wizard
             );
 
             case 'submit':
-            return html_print_submit_button(
+            return '<div class="action-buttons" style="width: 100%">'.html_print_submit_button(
                 ((isset($data['label']) === true) ? $data['label'] : 'OK'),
                 ((isset($data['name']) === true) ? $data['name'] : ''),
                 ((isset($data['disabled']) === true) ? $data['disabled'] : false),
                 ((isset($data['attributes']) === true) ? $data['attributes'] : ''),
                 ((isset($data['return']) === true) ? $data['return'] : false)
-            );
+            ).'</div>';
 
             case 'checkbox':
             return html_print_checkbox(
@@ -313,6 +348,37 @@ class Wizard
         }
 
         return '';
+    }
+
+
+    /**
+     * Prints a go back button redirecting to main page.
+     *
+     * @return void
+     */
+    public function printGoBackButton()
+    {
+        $form = [
+            'form'   => [
+                'method' => 'POST',
+                'action' => ui_get_full_url(
+                    'index.php?sec=gservers&sec2=godmode/servers/discovery'
+                ),
+            ],
+            'inputs' => [
+                [
+                    'arguments' => [
+                        'name'       => 'submit',
+                        'label'      => __('Go back'),
+                        'type'       => 'submit',
+                        'attributes' => 'class="sub cancel"',
+                        'return'     => true,
+                    ],
+                ],
+            ],
+        ];
+
+        $this->printForm($form);
     }
 
 

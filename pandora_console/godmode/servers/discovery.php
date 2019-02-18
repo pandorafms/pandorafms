@@ -15,7 +15,7 @@ if (! check_acl($config['id_user'], 0, 'AW')) {
 
 ui_require_css_file('discovery');
 
-ui_print_page_header(__('Discover'), 'wizards/hostDevices.png', false, '', true);
+ui_print_page_header(__('Discover'), '', false, '', true);
 
 
 /**
@@ -33,12 +33,19 @@ function get_wiz_class($str)
         case 'cloud':
         return 'Cloud';
 
+        case 'tasklist':
+        return 'DiscoveryTaskList';
+
         default:
             // Ignore.
         return null;
     }
 }
 
+
+/*
+ * CLASS LOADER.
+ */
 
 // Dynamic class loader.
 $classes = glob($config['homedir'].'/godmode/wizards/*.class.php');
@@ -56,8 +63,18 @@ $classname_selected = get_wiz_class($wiz_in_use);
 if ($classname_selected !== null) {
     $wiz = new $classname_selected($page);
     $result = $wiz->run();
-    // TODO: Here we'll controlle if return is a valid recon task id.
-    hd($result);
+    if (is_array($result) === true) {
+        if ($result['result'] === 0) {
+            // Success.
+            ui_print_success_message($result['msg']);
+            // TODO: Show task progress before redirect to main discovery menu.
+        } else {
+            // Failed.
+            ui_print_error_message($result['msg']);
+        }
+
+        $classname_selected = null;
+    }
 }
 
 if ($classname_selected === null) {
@@ -67,13 +84,14 @@ if ($classname_selected === null) {
         $classname = basename($classpath, '.class.php');
         $obj = new $classname();
         $wiz_data = $obj->load();
-
-        hd($wiz_data);
         ?>
-    <li>
+
+    <li class="discovery">
         <a href="<?php echo $wiz_data['url']; ?>">
-            <img src="<?php echo 'wizards/'.$wiz_data['icon']; ?>" alt="<?php echo $classname; ?>">
-            <br><label><?php echo $wiz_data['label']; ?></label>
+            <div class="data_container">
+                <?php html_print_image($wiz_data['icon']); ?>
+                <br><label id="text_wizard"><?php echo io_safe_output($wiz_data['label']); ?></label>
+            </div>
         </a>
     </li>
 

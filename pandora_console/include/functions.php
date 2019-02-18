@@ -862,9 +862,11 @@ function get_parameter_checkbox($name, $default='')
  */
 function get_parameter_switch($name, $default='')
 {
-    $data = get_parameter($name, 0);
+    $data = get_parameter($name, null);
 
-    if ($data == 'on') {
+    if ($data === null) {
+        return 0;
+    } else if ($data == 'on') {
         return 1;
     }
 

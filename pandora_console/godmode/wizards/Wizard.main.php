@@ -467,4 +467,44 @@ class Wizard
     }
 
 
+    /**
+     * Print a big button element (huge image, big text and link).
+     *
+     * @param array $data Element data (link, image...).
+     *
+     * @return void Only prints the element.
+     */
+    public static function printBigButtonElement($data)
+    {
+        if (isset($data['url']) === false) {
+            $data['url'] = '#';
+        }
+
+        ?>
+        <li class="discovery">
+            <a href="<?php echo $data['url']; ?>">
+                <div class="data_container">
+                    <?php html_print_image($data['icon']); ?>
+                    <br><label id="text_wizard">
+                        <?php echo io_safe_output($data['label']); ?>
+                    </label>
+                </div>
+            </a>
+        </li>
+        <?php
+    }
+
+
+    /**
+     * Print a list of big buttons elements.
+     *
+     * @param array $list_data Array of data for printBigButtonElement.
+     *
+     * @return void Print the full list.
+     */
+    public static function printBigButtonsList($list_data) {
+        echo '<ul>';
+        array_map('self::printBigButtonElement', $list_data);
+        echo '</ul>';
+    }
 }

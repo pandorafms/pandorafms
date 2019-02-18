@@ -366,23 +366,30 @@ function api_get_groups($thrash1, $thrash2, $other, $returnType, $user_in_db)
     $returnAllGroup = true;
     $returnAllColumns = false;
 
-	if (isset($other['data'][1]))
+    if (isset($other['data'][1])) {
         $returnAllGroup = ( $other['data'][1] == '1' ? true : false);
-        
-    if (isset($other['data'][2]))
-	    $returnAllColumns = ( $other['data'][2] == '1' ? true : false);
+    }
 
-    $groups = users_get_groups ($user_in_db, "IR", $returnAllGroup, $returnAllColumns);
+    if (isset($other['data'][2])) {
+        $returnAllColumns = ( $other['data'][2] == '1' ? true : false);
+    }
 
-    $data_groups = array();
-	foreach ($groups as $id => $group) {
-		$data_groups[] = array($id, $group);
-	}
+    $groups = users_get_groups($user_in_db, 'IR', $returnAllGroup, $returnAllColumns);
 
-	if (!isset($other['data'][0]))
-		$separator = ';'; // by default
-	else
-		$separator = $other['data'][0];
+    $data_groups = [];
+    foreach ($groups as $id => $group) {
+        $data_groups[] = [
+            $id,
+            $group,
+        ];
+    }
+
+    if (!isset($other['data'][0])) {
+        $separator = ';';
+        // by default
+    } else {
+        $separator = $other['data'][0];
+    }
 
     $data['type'] = 'array';
     $data['data'] = $data_groups;

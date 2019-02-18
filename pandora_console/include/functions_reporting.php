@@ -142,7 +142,6 @@ function reporting_make_reporting_data(
     enterprise_include_once('include/functions_metaconsole.php');
 
     $return = [];
-
     if (!empty($report)) {
         $contents = $report['contents'];
     } else {
@@ -6792,7 +6791,6 @@ function reporting_general($report, $content)
                     if (!is_numeric($data_res[$index])) {
                         $return['data'][$ag_name][$mod_name] = $data_res[$index];
                     } else {
-                        hd($data_res[$index], true);
                         $return['data'][$ag_name][$mod_name] = format_for_graph($data_res[$index], 2).' '.$unit;
                     }
                 }

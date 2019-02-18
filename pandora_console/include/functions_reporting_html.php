@@ -1322,15 +1322,29 @@ function reporting_html_event_report_module($table, $item, $pdf=0)
 }
 
 
-function reporting_html_inventory_changes($table, $item)
+/**
+ * Print in html inventory changes reports
+ *
+ * @param object  $table Head table or false if it comes from pdf.
+ * @param array   $item  Items data.
+ * @param boolean $pdf   Print pdf true or false.
+ *
+ * @return html
+ */
+function reporting_html_inventory_changes($table, $item, $pdf=0)
 {
+    $return_pdf = '';
     if (!empty($item['failed'])) {
-        $table->colspan['failed']['cell'] = 3;
-        $table->cellstyle['failed']['cell'] = 'text-align: center;';
-        $table->data['failed']['cell'] = $item['failed'];
+        if ($pdf === 0) {
+            $table->colspan['failed']['cell'] = 3;
+            $table->cellstyle['failed']['cell'] = 'text-align: center;';
+            $table->data['failed']['cell'] = $item['failed'];
+        } else {
+            $return_pdf .= $item['failed'];
+        }
     } else {
         foreach ($item['data'] as $module_item) {
-            $table1 = null;
+            $table1 = new stdClass();
             $table1->width = '99%';
             $table1->cellstyle = [];
 
@@ -1348,7 +1362,10 @@ function reporting_html_inventory_changes($table, $item)
             $table1->colspan[2][0] = 2;
 
             if (count($module_item['added'])) {
-                $table1->data = array_merge($table1->data, $module_item['added']);
+                $table1->data = array_merge(
+                    $table1->data,
+                    $module_item['added']
+                );
             }
 
             $table1->cellstyle[(3 + count($module_item['added']))][0] = 'background: #373737; color: #FFF; text-align: center;';
@@ -1356,25 +1373,59 @@ function reporting_html_inventory_changes($table, $item)
             $table1->colspan[(3 + count($module_item['added']))][0] = 2;
 
             if (count($module_item['deleted'])) {
-                $table1->data = array_merge($table1->data, $module_item['deleted']);
+                $table1->data = array_merge(
+                    $table1->data,
+                    $module_item['deleted']
+                );
             }
 
-            $table->colspan[$module_item['agent'].'_'.$module_item['module']]['cell'] = 3;
-            $table->data[$module_item['agent'].'_'.$module_item['module']]['cell'] = html_print_table($table1, true);
+            if ($pdf === 0) {
+                $table->colspan[$module_item['agent'].'_'.$module_item['module']]['cell'] = 3;
+                $table->data[$module_item['agent'].'_'.$module_item['module']]['cell'] = html_print_table(
+                    $table1,
+                    true
+                );
+            } else {
+                $table1->title = $item['title'];
+                $table1->titleclass = 'title_table_pdf';
+                $table1->titlestyle = 'text-align:left;';
+                $return_pdf .= html_print_table(
+                    $table1,
+                    true
+                );
+            }
         }
+    }
+
+    if ($pdf !== 0) {
+        return $return_pdf;
     }
 }
 
 
-function reporting_html_inventory($table, $item)
+/**
+ * Print in html inventory reportd
+ *
+ * @param object  $table Head table or false if it comes from pdf.
+ * @param array   $item  Items data.
+ * @param boolean $pdf   Print pdf true or false.
+ *
+ * @return html
+ */
+function reporting_html_inventory($table, $item, $pdf=0)
 {
+    $return_pdf = '';
     if (!empty($item['failed'])) {
-        $table->colspan['failed']['cell'] = 3;
-        $table->cellstyle['failed']['cell'] = 'text-align: center;';
-        $table->data['failed']['cell'] = $item['failed'];
+        if ($pdf === 0) {
+            $table->colspan['failed']['cell'] = 3;
+            $table->cellstyle['failed']['cell'] = 'text-align: center;';
+            $table->data['failed']['cell'] = $item['failed'];
+        } else {
+            $return_pdf .= $item['failed'];
+        }
     } else {
         foreach ($item['data'] as $module_item) {
-            $table1 = null;
+            $table1 = new stdClass();
             $table1->width = '99%';
 
             $first = reset($module_item['data']);
@@ -1384,12 +1435,12 @@ function reporting_html_inventory($table, $item)
             $table1->data[0][0] = $module_item['agent_name'];
             if ($count_columns == 1) {
                 $table1->colspan[0][0] = ($count_columns + 1);
-                // + columm date
             } else {
                 $table1->colspan[0][0] = $count_columns;
             }
 
-            $table1->cellstyle[1][0] = $table1->cellstyle[1][1] = 'background: #373737; color: #FFF;';
+            $table1->cellstyle[1][0] = 'background: #373737; color: #FFF;';
+            $table1->cellstyle[1][1] = 'background: #373737; color: #FFF;';
             $table1->data[1][0] = $module_item['name'];
             if (($count_columns - 1) > 0) {
                 $table1->colspan[1][0] = ($count_columns - 1);
@@ -1405,16 +1456,34 @@ function reporting_html_inventory($table, $item)
             $table1->data[2] = array_keys($first);
             if (($count_columns - 1) == 0) {
                 $table1->colspan[2][0] = ($count_columns + 1);
-                // + columm date;
             }
 
-            $table1->data = array_merge($table1->data, $module_item['data']);
+            $table1->data = array_merge(
+                $table1->data,
+                $module_item['data']
+            );
 
-            $table->colspan[$module_item['name'].'_'.$module_item['id_agente']]['cell'] = 3;
-            $table->data[$module_item['name'].'_'.$module_item['id_agente']]['cell'] = html_print_table($table1, true);
+            if ($pdf === 0) {
+                $table->colspan[$module_item['name'].'_'.$module_item['id_agente']]['cell'] = 3;
+                $table->data[$module_item['name'].'_'.$module_item['id_agente']]['cell'] = html_print_table(
+                    $table1,
+                    true
+                );
+            } else {
+                $table1->title = $item['title'];
+                $table1->titleclass = 'title_table_pdf';
+                $table1->titlestyle = 'text-align:left;';
+                $return_pdf .= html_print_table(
+                    $table1,
+                    true
+                );
+            }
         }
     }
 
+    if ($pdf !== 0) {
+        return $return_pdf;
+    }
 }
 
 

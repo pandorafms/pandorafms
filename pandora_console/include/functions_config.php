@@ -165,7 +165,7 @@ function config_update_config()
                         $error_update[] = __('Automatic check for updates');
                     }
 
-                    if (!config_update_value('cert_path', (bool) get_parameter('cert_path'))) {
+                    if (!config_update_value('cert_path', get_parameter('cert_path'))) {
                         $error_update[] = __('SSL cert path');
                     }
 

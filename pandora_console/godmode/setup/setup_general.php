@@ -338,6 +338,11 @@ $(document).ready (function () {
         $("#zone").attr("hidden", false);
         $("#timezone").attr("hidden", false);
     });
+
+	if ($("input[name=use_cert]").is(':checked')) {
+		$('#setup_general-13').show();
+	}
+
     $("input[name=use_cert]").change(function () {
         if( $(this).is(":checked") )
                 $('#setup_general-13').show();

@@ -32,12 +32,6 @@ require_once $config['homedir'].'/include/functions_notifications.php';
 
 check_login();
 
-if (! check_acl($config['id_user'], 0, 'PM') && ! is_user_admin($config['id_user'])) {
-    db_pandora_audit('ACL Violation', 'Trying to access Setup Management');
-    include 'general/noaccess.php';
-    return;
-}
-
 // AJAX actions.
 $source = get_parameter('source', '');
 $users = get_parameter('users', '');

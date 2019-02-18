@@ -144,7 +144,7 @@ function gd_histogram($width, $height, $mode, $data, $max_value, $font, $title, 
     foreach ($data as $label => $value) {
         imagefilledrectangle($image, $leftmargin, $margin_up, (($value / $size_per) + $leftmargin), ($margin_up + $rectangle_height - 1), $colors[$c]);
         if ($mode != 2) {
-            ImageTTFText($image, $fontsize, 0, 0, ($margin_up + 8), $black, $font, $label);
+            imagettftext($image, $fontsize, 0, 0, ($margin_up + 8), $black, $font, $label);
         }
 
         $margin_up += ($rectangle_height + 1);
@@ -164,9 +164,9 @@ function gd_histogram($width, $height, $mode, $data, $max_value, $font, $title, 
         imageline($image, $risk_low, 0, $risk_low, $height, $grey);
         imageline($image, $risk_med, 0, $risk_med, $height, $grey);
         imageline($image, $risk_high, 0, $risk_high, $height, $grey);
-        ImageTTFText($image, $fontsize, 0, ($risk_low - 20), $height, $grey, $font, 'Low');
-        ImageTTFText($image, $fontsize, 0, ($risk_med - 20), $height, $grey, $font, 'Med.');
-        ImageTTFText($image, $fontsize, 0, ($risk_high - 25), $height, $grey, $font, 'High');
+        imagettftext($image, $fontsize, 0, ($risk_low - 20), $height, $grey, $font, 'Low');
+        imagettftext($image, $fontsize, 0, ($risk_med - 20), $height, $grey, $font, 'Med.');
+        imagettftext($image, $fontsize, 0, ($risk_high - 25), $height, $grey, $font, 'High');
     }
 
     imagepng($image);
@@ -279,7 +279,7 @@ function gd_progress_bubble($width, $height, $progress, $title, $font, $out_of_l
 
                 // Write the value
                 $size = imagettfbbox($fontsize, 0, $font, $value_text);
-                ImageTTFText(
+                imagettftext(
                     $image,
                     $fontsize,
                     0,
@@ -409,12 +409,12 @@ function drawRating($rating, $width, $height, $font, $out_of_lim_str, $mode, $fo
 
             if ($rating > 50) {
                 if ($rating > 100) {
-                    ImageTTFText($image, ($fontsize + 2), 0, ($width / 4), (($height / 2) + ($height / 5)), $back, $font, $out_of_lim_str);
+                    imagettftext($image, ($fontsize + 2), 0, ($width / 4), (($height / 2) + ($height / 5)), $back, $font, $out_of_lim_str);
                 } else {
-                    ImageTTFText($image, $fontsize, 0, (($width / 2) - ($width / 10)), (($height / 2) + ($height / 5)), $back, $font, $value_text);
+                    imagettftext($image, $fontsize, 0, (($width / 2) - ($width / 10)), (($height / 2) + ($height / 5)), $back, $font, $value_text);
                 }
             } else {
-                ImageTTFText($image, $fontsize, 0, (($width / 2) - ($width / 10)), (($height / 2) + ($height / 5)), $text, $font, $value_text);
+                imagettftext($image, $fontsize, 0, (($width / 2) - ($width / 10)), (($height / 2) + ($height / 5)), $text, $font, $value_text);
             }
         break;
 

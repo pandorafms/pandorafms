@@ -294,6 +294,10 @@ function config_update_config()
                     if (!config_update_value('auditdir', get_parameter('auditdir'))) {
                         $error_update[] = __('Audit log directory');
                     }
+
+                    if (!config_update_value('unique_ip', get_parameter('unique_ip'))) {
+                        $error_update[] = __('unique_ip');
+                    }
                 break;
 
                 case 'enterprise':
@@ -1657,6 +1661,10 @@ function config_process_config()
         config_update_value('limit_parameters_massive', (ini_get('max_input_vars') / 2));
     }
 
+    if (!isset($config['unique_ip'])) {
+        config_update_value('unique_ip', 0);
+    }
+
     /*
      *Parse the ACL IP list for access API
      */
@@ -2843,7 +2851,7 @@ function config_check()
         );
     }
 
-    $result_ejecution = exec($config['phantomjs_bin'].'/phantomjs --version');
+    $result_ejecution = exec('"'.io_safe_output($config['phantomjs_bin']).'/phantomjs" --version');
     if (!isset($result_ejecution) || $result_ejecution == '') {
         if ($config['language'] == 'es') {
             set_pandora_error_for_header(

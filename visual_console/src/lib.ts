@@ -73,7 +73,7 @@ export function sizePropsDecoder(data: UnknownObject): Size | never {
  * @return An object representing the agent properties.
  */
 export function agentPropsDecoder(data: UnknownObject): WithAgentProps {
-  // Object destructuring: http://exploringjs.com/es6/ch_destructuring.html
+  // Object destructuring: http://es6-features.org/#ObjectMatchingShorthandNotation
   const { metaconsoleId, agentId: id, agentName: name } = data;
 
   const agentProps: WithAgentProps = {
@@ -84,7 +84,7 @@ export function agentPropsDecoder(data: UnknownObject): WithAgentProps {
   return metaconsoleId != null
     ? {
         metaconsoleId,
-        ...agentProps // Object spread: http://exploringjs.com/es6/ch_parameter-handling.html#sec_spread-operator
+        ...agentProps // Object spread: http://es6-features.org/#SpreadOperator
       }
     : agentProps;
 }
@@ -95,7 +95,7 @@ export function agentPropsDecoder(data: UnknownObject): WithAgentProps {
  * @return An object representing the module and agent properties.
  */
 export function modulePropsDecoder(data: UnknownObject): WithModuleProps {
-  // Object destructuring: http://exploringjs.com/es6/ch_destructuring.html
+  // Object destructuring: http://es6-features.org/#ObjectMatchingShorthandNotation
   const { moduleId: id, moduleName: name } = data;
 
   return {
@@ -114,7 +114,7 @@ export function modulePropsDecoder(data: UnknownObject): WithModuleProps {
 export function linkedVCPropsDecoder(
   data: UnknownObject
 ): LinkedVisualConsoleProps | never {
-  // Object destructuring: http://exploringjs.com/es6/ch_destructuring.html
+  // Object destructuring: http://es6-features.org/#ObjectMatchingShorthandNotation
   const {
     metaconsoleId,
     linkedLayoutId: id,
@@ -160,13 +160,13 @@ export function linkedVCPropsDecoder(
   const linkedLayoutBaseProps = {
     linkedLayoutId: parseIntOr(id, null),
     linkedLayoutAgentId: parseIntOr(agentId, null),
-    ...linkedLayoutStatusProps // Object spread: http://exploringjs.com/es6/ch_parameter-handling.html#sec_spread-operator
+    ...linkedLayoutStatusProps // Object spread: http://es6-features.org/#SpreadOperator
   };
 
   return metaconsoleId != null
     ? {
         metaconsoleId,
-        ...linkedLayoutBaseProps // Object spread: http://exploringjs.com/es6/ch_parameter-handling.html#sec_spread-operator
+        ...linkedLayoutBaseProps // Object spread: http://es6-features.org/#SpreadOperator
       }
     : linkedLayoutBaseProps;
 }

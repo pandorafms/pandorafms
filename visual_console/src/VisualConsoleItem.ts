@@ -7,19 +7,63 @@ import {
 } from "./lib";
 import TypedEvent, { Listener, Disposable } from "./TypedEvent";
 
+// Enum: https://www.typescriptlang.org/docs/handbook/enums.html.
+export const enum VisualConsoleItemType {
+  STATIC_GRAPH = 0,
+  MODULE_GRAPH = 1,
+  SIMPLE_VALUE = 2,
+  PERCENTILE_BAR = 3,
+  LABEL = 4,
+  ICON = 5,
+  SIMPLE_VALUE_MAX = 6,
+  SIMPLE_VALUE_MIN = 7,
+  SIMPLE_VALUE_AVG = 8,
+  PERCENTILE_BUBBLE = 9,
+  SERVICE = 10,
+  GROUP_ITEM = 11,
+  BOX_ITEM = 12,
+  LINE_ITEM = 13,
+  AUTO_SLA_GRAPH = 14,
+  CIRCULAR_PROGRESS_BAR = 15,
+  CIRCULAR_INTERIOR_PROGRESS_BAR = 16,
+  DONUT_GRAPH = 17,
+  BARS_GRAPH = 18,
+  CLOCK = 19,
+  COLOR_CLOUD = 20
+}
+
 // Base item properties. This interface should be extended by the item implementations.
 export interface VisualConsoleItemProps extends Position, Size {
   readonly id: number;
-  readonly type: number;
+  readonly type: VisualConsoleItemType;
   label: string | null;
+  labelPosition: "up" | "right" | "down" | "left";
   isLinkEnabled: boolean;
   isOnTop: boolean;
   parentId: number | null;
   aclGroupId: number | null;
 }
 
+// FIXME: Fix type compatibility.
 export type ItemClickEvent<ItemProps extends VisualConsoleItemProps> = {
-  data: ItemProps;
+  // data: ItemProps;
+  data: UnknownObject;
+};
+
+/**
+ * Extract a valid enum value from a raw label position value.
+ * @param labelPosition Raw value.
+ */
+const parseLabelPosition = (labelPosition: any) => {
+  switch (labelPosition) {
+    case "up":
+    case "right":
+    case "down":
+    case "left":
+      return labelPosition;
+    default:
+      return "down";
+  }
 };
 
 /**
@@ -31,13 +75,13 @@ export type ItemClickEvent<ItemProps extends VisualConsoleItemProps> = {
  * @throws Will throw a TypeError if some property
  * is missing from the raw object or have an invalid type.
  */
-export function itemPropsDecoder(
+export function itemBasePropsDecoder(
   data: UnknownObject
 ): VisualConsoleItemProps | never {
   if (data.id == null || isNaN(parseInt(data.id))) {
     throw new TypeError("invalid id.");
   }
-  // TODO: Check valid types.
+  // TODO: Check for valid types.
   if (data.type == null || isNaN(parseInt(data.type))) {
     throw new TypeError("invalid type.");
   }
@@ -49,6 +93,7 @@ export function itemPropsDecoder(
       typeof data.label === "string" && data.label.length > 0
         ? data.label
         : null,
+    labelPosition: parseLabelPosition(data.labelPosition),
     isLinkEnabled: parseBoolean(data.isLinkEnabled),
     isOnTop: parseBoolean(data.isOnTop),
     parentId: parseIntOr(data.parentId, null),
@@ -61,12 +106,10 @@ export function itemPropsDecoder(
 abstract class VisualConsoleItem<ItemProps extends VisualConsoleItemProps> {
   // Properties of the item.
   private itemProps: ItemProps;
-  // Reference of the DOM element which contain all the items.
-  private readonly containerRef: HTMLElement;
-  // Reference of the DOM element which contain the item box.
-  private readonly itemBoxRef: HTMLElement;
-  // Reference of the DOM element which contain the view of the item which extends this class.
-  protected readonly elementRef: HTMLElement;
+  // Reference to the DOM element which will contain the item.
+  public readonly elementRef: HTMLElement;
+  // Reference to the DOM element which will contain the view of the item which extends this class.
+  protected readonly childElementRef: HTMLElement;
   // Event manager for click events.
   private readonly clickEventManager = new TypedEvent<
     ItemClickEvent<ItemProps>
@@ -80,8 +123,7 @@ abstract class VisualConsoleItem<ItemProps extends VisualConsoleItemProps> {
    */
   abstract createDomElement(): HTMLElement;
 
-  constructor(container: HTMLElement, props: ItemProps) {
-    this.containerRef = container;
+  constructor(props: ItemProps) {
     this.itemProps = props;
 
     /*
@@ -90,30 +132,31 @@ abstract class VisualConsoleItem<ItemProps extends VisualConsoleItemProps> {
      * all the common things like click events, show a border
      * when hovered, etc.
      */
-    this.itemBoxRef = this.createItemBoxDomElement();
+    this.elementRef = this.createContainerDomElement();
 
     /*
      * Get a HTMLElement which represents the custom view
      * of the Visual Console item. This element will be
      * different depending on the item implementation.
      */
-    this.elementRef = this.createDomElement();
+    this.childElementRef = this.createDomElement();
 
-    // Insert the elements into their parents.
-    // Visual Console Container > Generic Item Box > Custom Item View.
-    this.itemBoxRef.append(this.elementRef);
-    this.containerRef.append(this.itemBoxRef);
+    // Insert the elements into the container.
+    // Visual Console Item Container > Custom Item View.
+    this.elementRef.append(this.childElementRef);
   }
 
   /**
    * To create a new box for the visual console item.
    * @return Item box.
    */
-  private createItemBoxDomElement(): HTMLElement {
+  private createContainerDomElement(): HTMLElement {
     const box: HTMLDivElement = document.createElement("div");
     box.className = "visual-console-item";
     box.style.width = `${this.props.width}px`;
     box.style.height = `${this.props.height}px`;
+    box.style.left = `${this.props.x}px`;
+    box.style.top = `${this.props.y}px`;
     box.onclick = () => this.clickEventManager.emit({ data: this.props });
     // TODO: Add label.
     return box;
@@ -161,26 +204,25 @@ abstract class VisualConsoleItem<ItemProps extends VisualConsoleItemProps> {
 
   /**
    * To recreate or update the HTMLElement which represents the item into the DOM.
-   * @param prevProps If exists it will be used to only perform
-   * perform DOM updates instead of a full replace.
+   * @param prevProps If exists it will be used to only perform DOM updates instead of a full replace.
    */
-  render(prevProps: ItemProps | null): void {
+  render(prevProps: ItemProps | null = null): void {
     // Move box.
     if (!prevProps || prevProps.x !== this.props.x) {
-      this.itemBoxRef.style.left = `${this.props.x}px`;
+      this.elementRef.style.left = `${this.props.x}px`;
     }
     if (!prevProps || prevProps.y !== this.props.y) {
-      this.itemBoxRef.style.top = `${this.props.y}px`;
+      this.elementRef.style.top = `${this.props.y}px`;
     }
     // Resize box.
     if (!prevProps || prevProps.width !== this.props.width) {
-      this.itemBoxRef.style.width = `${this.props.width}px`;
+      this.elementRef.style.width = `${this.props.width}px`;
     }
     if (!prevProps || prevProps.height !== this.props.height) {
-      this.itemBoxRef.style.height = `${this.props.height}px`;
+      this.elementRef.style.height = `${this.props.height}px`;
     }
 
-    this.elementRef.replaceWith(this.createDomElement());
+    this.childElementRef.replaceWith(this.createDomElement());
   }
 
   /**
@@ -190,9 +232,9 @@ abstract class VisualConsoleItem<ItemProps extends VisualConsoleItemProps> {
     // Event listeners.
     this.disposables.forEach(_ => _.dispose());
     // VisualConsoleItem extension DOM element.
-    this.elementRef.remove();
+    this.childElementRef.remove();
     // VisualConsoleItem DOM element.
-    this.itemBoxRef.remove();
+    this.elementRef.remove();
   }
 
   /**
@@ -207,8 +249,8 @@ abstract class VisualConsoleItem<ItemProps extends VisualConsoleItemProps> {
     this.itemProps.x = x;
     this.itemProps.y = y;
     // Move element.
-    this.itemBoxRef.style.left = `${x}px`;
-    this.itemBoxRef.style.top = `${y}px`;
+    this.elementRef.style.left = `${x}px`;
+    this.elementRef.style.top = `${y}px`;
   }
 
   /**
@@ -223,8 +265,8 @@ abstract class VisualConsoleItem<ItemProps extends VisualConsoleItemProps> {
     this.itemProps.width = width;
     this.itemProps.height = height;
     // Resize element.
-    this.itemBoxRef.style.width = `${width}px`;
-    this.itemBoxRef.style.height = `${height}px`;
+    this.elementRef.style.width = `${width}px`;
+    this.elementRef.style.height = `${height}px`;
   }
 
   /**

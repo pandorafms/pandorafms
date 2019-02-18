@@ -1,3 +1,7 @@
+.visual-console-item {
+  position: absolute;
+}
+
 .visual-console-item > * {
   width: inherit;
   height: inherit;

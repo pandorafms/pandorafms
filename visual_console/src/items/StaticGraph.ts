@@ -4,14 +4,16 @@ import {
   UnknownObject
 } from "../types";
 
-import { modulePropsDecoder } from "../lib";
+import { modulePropsDecoder, linkedVCPropsDecoder } from "../lib";
 
 import VisualConsoleItem, {
   VisualConsoleItemProps,
-  itemPropsDecoder
+  itemBasePropsDecoder,
+  VisualConsoleItemType
 } from "../VisualConsoleItem";
 
 export type StaticGraphProps = {
+  type: VisualConsoleItemType.STATIC_GRAPH;
   imageSrc: string; // URL?
   showLastValueTooltip: "default" | "enabled" | "disabled";
 } & VisualConsoleItemProps &
@@ -49,10 +51,12 @@ export function staticGraphPropsDecoder(
   }
 
   return {
+    ...itemBasePropsDecoder(data), // Object spread. It will merge the properties of the two objects.
+    type: VisualConsoleItemType.STATIC_GRAPH,
     imageSrc: data.imageSrc,
     showLastValueTooltip: parseShowLastValueTooltip(data.showLastValueTooltip),
-    ...itemPropsDecoder(data), // Object spread. It will merge the properties of the two objects.
-    ...modulePropsDecoder(data) // Object spread. It will merge the properties of the two objects.
+    ...modulePropsDecoder(data), // Object spread. It will merge the properties of the two objects.
+    ...linkedVCPropsDecoder(data) // Object spread. It will merge the properties of the two objects.
   };
 }
 
@@ -61,6 +65,8 @@ export default class StaticGraph extends VisualConsoleItem<StaticGraphProps> {
     const img: HTMLImageElement = document.createElement("img");
     img.className = "static-graph";
     img.src = this.props.imageSrc;
+
+    // TODO: Show last value in a tooltip.
 
     return img;
   }

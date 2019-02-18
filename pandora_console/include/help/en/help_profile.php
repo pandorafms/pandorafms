@@ -1,12 +1,12 @@
 <?php
 /*
-* @package Include/help/en/
-*/
+ * @package Include/help/en/
+ */
 ?>
 
 <h1>Profile</h1>
 
-<p><?php echo get_product_name();?> is a Web management tool that allows multiple users to work with different permissions in multiple defined agent groups. The permissions an user can have are defined in profiles.</p>
+<p><?php echo get_product_name(); ?> is a Web management tool that allows multiple users to work with different permissions in multiple defined agent groups. The permissions an user can have are defined in profiles.</p>
 
 <p>The following list defines what ACL control allows in each feature at the console:</p>
 
@@ -40,9 +40,9 @@
 <tr><td>SNMP Console viewing<td>AR
 <tr><td>Validating traps<td>IW
 <tr><td>Messages<td>IW
-<tr><td>Cron jobs	<td>PM
-<tr><td>Tree view	<td>AR
-<tr><td>Update Manager (operation and administration)	<td>PM
+<tr><td>Cron jobs    <td>PM
+<tr><td>Tree view    <td>AR
+<tr><td>Update Manager (operation and administration)    <td>PM
 <tr><td>Extension Module Group<td>AR
 <tr><td>Agent Management<td>AW
 <tr><td>Remote Agent Configuration Management <td>AW
@@ -51,7 +51,7 @@
 <tr><td>Group Management<td>PM
 <tr><td>Creating inventory modules<td>PM
 <tr><td>Module Management (includes all suboptions)<td>PM
-<tr><td>Bulk Management Operations	<td>AW
+<tr><td>Bulk Management Operations    <td>AW
 <tr><td>Creating agents<td>AW
 <tr><td>Duplicating remote configurations<td>AW
 <tr><td>Downtime Management<td>AW

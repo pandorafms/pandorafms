@@ -30,6 +30,10 @@ use XML::Simple;
 use POSIX qw(setsid strftime);
 use IO::Uncompress::Unzip;
 
+# Required for file names with accents
+use Encode qw(decode);
+use Encode::Locale ();
+
 # For Reverse Geocoding
 use LWP::Simple;
 
@@ -111,6 +115,7 @@ sub data_producer ($) {
 	# Do not read more than max_queue_files files
  	my $file_count = 0;
  	while (my $file = readdir (DIR)) {
+ 		$file = Encode::decode( locale_fs => $file );
 
 		# Data files must have the extension .data
 		next if ($file !~ /^.*[\._]\d+\.data$/);
@@ -396,7 +401,7 @@ sub process_xml_data ($$$$$) {
 					
 					# If it exists add the value to the agent
 					if (defined ($custom_field_info)) {
-						my $cf_value = get_tag_value ($custom_field, 'value', '');
+						my $cf_value = safe_input(get_tag_value ($custom_field, 'value', ''));
 
 						my $field_agent;
 						
@@ -482,7 +487,7 @@ sub process_xml_data ($$$$$) {
 						my $custom_field_data = get_db_single_row($dbh, 'SELECT * FROM tagent_custom_data WHERE id_field = ? AND id_agent = ?',
 											$custom_field_info->{"id_field"}, $agent->{"id_agente"});
 
-                                                my $cf_value = get_tag_value ($custom_field, 'value', '');
+                                                my $cf_value = safe_input(get_tag_value ($custom_field, 'value', ''));
 
 						#If not defined we must create if defined just updated
 						if(!defined($custom_field_data)) {
@@ -497,7 +502,7 @@ sub process_xml_data ($$$$$) {
 						} else {
 							
 							db_update ($dbh, "UPDATE tagent_custom_data SET description = ? WHERE id_field = ? AND id_agent = ?",
-									$cf_value ,$custom_field_info->{"id_field"}, $agent->{'id_agente'});
+									$cf_value, $custom_field_info->{"id_field"}, $agent->{'id_agente'});
 						}
                                         }
                                         else {
@@ -594,6 +599,9 @@ sub process_xml_data ($$$$$) {
 
 	# Process snmptrapd modules
 	enterprise_hook('process_snmptrap_data', [$pa_config, $data, $server_id, $dbh]);
+
+	# Process disovery modules
+	enterprise_hook('process_discovery_data', [$pa_config, $data, $server_id, $dbh]);
 }
 
 ##########################################################################

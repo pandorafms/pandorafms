@@ -3,25 +3,58 @@
   z-index: 999999;
   background-color: #000;
   opacity: 0;
-  background: -moz-radial-gradient(center,ellipse cover,rgba(0,0,0,0.4) 0,rgba(0,0,0,0.9) 100%);
-  background: -webkit-gradient(radial,center center,0px,center center,100%,color-stop(0%,rgba(0,0,0,0.4)),color-stop(100%,rgba(0,0,0,0.9)));
-  background: -webkit-radial-gradient(center,ellipse cover,rgba(0,0,0,0.4) 0,rgba(0,0,0,0.9) 100%);
-  background: -o-radial-gradient(center,ellipse cover,rgba(0,0,0,0.4) 0,rgba(0,0,0,0.9) 100%);
-  background: -ms-radial-gradient(center,ellipse cover,rgba(0,0,0,0.4) 0,rgba(0,0,0,0.9) 100%);
-  background: radial-gradient(center,ellipse cover,rgba(0,0,0,0.4) 0,rgba(0,0,0,0.9) 100%);
+  background: -moz-radial-gradient(
+    center,
+    ellipse cover,
+    rgba(0, 0, 0, 0.4) 0,
+    rgba(0, 0, 0, 0.9) 100%
+  );
+  background: -webkit-gradient(
+    radial,
+    center center,
+    0px,
+    center center,
+    100%,
+    color-stop(0%, rgba(0, 0, 0, 0.4)),
+    color-stop(100%, rgba(0, 0, 0, 0.9))
+  );
+  background: -webkit-radial-gradient(
+    center,
+    ellipse cover,
+    rgba(0, 0, 0, 0.4) 0,
+    rgba(0, 0, 0, 0.9) 100%
+  );
+  background: -o-radial-gradient(
+    center,
+    ellipse cover,
+    rgba(0, 0, 0, 0.4) 0,
+    rgba(0, 0, 0, 0.9) 100%
+  );
+  background: -ms-radial-gradient(
+    center,
+    ellipse cover,
+    rgba(0, 0, 0, 0.4) 0,
+    rgba(0, 0, 0, 0.9) 100%
+  );
+  background: radial-gradient(
+    center,
+    ellipse cover,
+    rgba(0, 0, 0, 0.4) 0,
+    rgba(0, 0, 0, 0.9) 100%
+  );
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#66000000',endColorstr='#e6000000',GradientType=1);
   -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=50)";
   filter: alpha(opacity=50);
   -webkit-transition: all 0.3s ease-out;
-     -moz-transition: all 0.3s ease-out;
-      -ms-transition: all 0.3s ease-out;
-       -o-transition: all 0.3s ease-out;
-          transition: all 0.3s ease-out;
+  -moz-transition: all 0.3s ease-out;
+  -ms-transition: all 0.3s ease-out;
+  -o-transition: all 0.3s ease-out;
+  transition: all 0.3s ease-out;
 }
 
 .introjs-fixParent {
   z-index: auto !important;
-  opacity: 1.0 !important;
+  opacity: 1 !important;
 }
 
 .introjs-showElement,
@@ -39,17 +72,17 @@ tr.introjs-showElement > th {
 .introjs-helperLayer {
   position: absolute;
   z-index: 9999998;
-  background-color: #FFF;
-  background-color: rgba(255,255,255,.9);
+  background-color: #fff;
+  background-color: rgba(255, 255, 255, 0.9);
   border: 1px solid #777;
-  border: 1px solid rgba(0,0,0,.5);
+  border: 1px solid rgba(0, 0, 0, 0.5);
   border-radius: 4px;
-  box-shadow: 0 2px 15px rgba(0,0,0,.4);
+  box-shadow: 0 2px 15px rgba(0, 0, 0, 0.4);
   -webkit-transition: all 0.3s ease-out;
-     -moz-transition: all 0.3s ease-out;
-      -ms-transition: all 0.3s ease-out;
-       -o-transition: all 0.3s ease-out;
-          transition: all 0.3s ease-out;
+  -moz-transition: all 0.3s ease-out;
+  -ms-transition: all 0.3s ease-out;
+  -o-transition: all 0.3s ease-out;
+  transition: all 0.3s ease-out;
 }
 
 .introjs-helperNumberLayer {
@@ -63,75 +96,89 @@ tr.introjs-showElement > th {
   font-weight: bold;
   color: white;
   text-align: center;
-  text-shadow: 1px 1px 1px rgba(0,0,0,.3);
+  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.3);
   background: #ff3019; /* Old browsers */
-  background: -webkit-linear-gradient(top, #ff3019 0%, #cf0404 100%); /* Chrome10+,Safari5.1+ */
-  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #ff3019), color-stop(100%, #cf0404)); /* Chrome,Safari4+ */
-  background:    -moz-linear-gradient(top, #ff3019 0%, #cf0404 100%); /* FF3.6+ */
-  background:     -ms-linear-gradient(top, #ff3019 0%, #cf0404 100%); /* IE10+ */
-  background:      -o-linear-gradient(top, #ff3019 0%, #cf0404 100%); /* Opera 11.10+ */
-  background:         linear-gradient(to bottom, #ff3019 0%, #cf0404 100%);  /* W3C */
+  background: -webkit-linear-gradient(
+    top,
+    #ff3019 0%,
+    #cf0404 100%
+  ); /* Chrome10+,Safari5.1+ */
+  background: -webkit-gradient(
+    linear,
+    left top,
+    left bottom,
+    color-stop(0%, #ff3019),
+    color-stop(100%, #cf0404)
+  ); /* Chrome,Safari4+ */
+  background: -moz-linear-gradient(top, #ff3019 0%, #cf0404 100%); /* FF3.6+ */
+  background: -ms-linear-gradient(top, #ff3019 0%, #cf0404 100%); /* IE10+ */
+  background: -o-linear-gradient(
+    top,
+    #ff3019 0%,
+    #cf0404 100%
+  ); /* Opera 11.10+ */
+  background: linear-gradient(to bottom, #ff3019 0%, #cf0404 100%); /* W3C */
   width: 20px;
-  height:20px;
+  height: 20px;
   line-height: 20px;
   border: 3px solid white;
   border-radius: 50%;
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff3019', endColorstr='#cf0404', GradientType=0); /* IE6-9 */
   filter: progid:DXImageTransform.Microsoft.Shadow(direction=135, strength=2, color=ff0000); /* IE10 text shadows */
-  box-shadow: 0 2px 5px rgba(0,0,0,.4);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
 }
 
 .introjs-arrow {
   border: 5px solid white;
-  content:'';
+  content: "";
   position: absolute;
 }
 .introjs-arrow.top {
   top: -10px;
-  border-top-color:transparent;
-  border-right-color:transparent;
-  border-bottom-color:white;
-  border-left-color:transparent;
+  border-top-color: transparent;
+  border-right-color: transparent;
+  border-bottom-color: white;
+  border-left-color: transparent;
 }
 .introjs-arrow.top-right {
   top: -10px;
   right: 10px;
-  border-top-color:transparent;
-  border-right-color:transparent;
-  border-bottom-color:white;
-  border-left-color:transparent;
+  border-top-color: transparent;
+  border-right-color: transparent;
+  border-bottom-color: white;
+  border-left-color: transparent;
 }
 .introjs-arrow.top-middle {
   top: -10px;
   left: 50%;
   margin-left: -5px;
-  border-top-color:transparent;
-  border-right-color:transparent;
-  border-bottom-color:white;
-  border-left-color:transparent;
+  border-top-color: transparent;
+  border-right-color: transparent;
+  border-bottom-color: white;
+  border-left-color: transparent;
 }
 .introjs-arrow.right {
   right: -10px;
   top: 10px;
-  border-top-color:transparent;
-  border-right-color:transparent;
-  border-bottom-color:transparent;
-  border-left-color:white;
+  border-top-color: transparent;
+  border-right-color: transparent;
+  border-bottom-color: transparent;
+  border-left-color: white;
 }
 .introjs-arrow.bottom {
   bottom: -10px;
-  border-top-color:white;
-  border-right-color:transparent;
-  border-bottom-color:transparent;
-  border-left-color:transparent;
+  border-top-color: white;
+  border-right-color: transparent;
+  border-bottom-color: transparent;
+  border-left-color: transparent;
 }
 .introjs-arrow.left {
   left: -10px;
   top: 10px;
-  border-top-color:transparent;
-  border-right-color:white;
-  border-bottom-color:transparent;
-  border-left-color:transparent;
+  border-top-color: transparent;
+  border-right-color: white;
+  border-bottom-color: transparent;
+  border-left-color: transparent;
 }
 
 .introjs-tooltip {
@@ -141,12 +188,12 @@ tr.introjs-showElement > th {
   min-width: 220px;
   max-width: 260px;
   border-radius: 3px;
-  box-shadow: 0 1px 10px rgba(0,0,0,.4);
+  box-shadow: 0 1px 10px rgba(0, 0, 0, 0.4);
   -webkit-transition: opacity 0.1s ease-out;
-     -moz-transition: opacity 0.1s ease-out;
-      -ms-transition: opacity 0.1s ease-out;
-       -o-transition: opacity 0.1s ease-out;
-          transition: opacity 0.1s ease-out;
+  -moz-transition: opacity 0.1s ease-out;
+  -ms-transition: opacity 0.1s ease-out;
+  -o-transition: opacity 0.1s ease-out;
+  transition: opacity 0.1s ease-out;
 }
 
 .introjs-tooltipbuttons {
@@ -166,13 +213,19 @@ tr.introjs-showElement > th {
   margin: 0;
   text-decoration: none;
   text-shadow: 1px 1px 0 #fff;
-  font: 11px/normal sans-serif;
+  font: 11px / normal sans-serif;
   color: #333;
   white-space: nowrap;
   cursor: pointer;
   outline: none;
   background-color: #ececec;
-  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#f4f4f4), to(#ececec));
+  background-image: -webkit-gradient(
+    linear,
+    0 0,
+    0 100%,
+    from(#f4f4f4),
+    to(#ececec)
+  );
   background-image: -moz-linear-gradient(#f4f4f4, #ececec);
   background-image: -o-linear-gradient(#f4f4f4, #ececec);
   background-image: linear-gradient(#f4f4f4, #ececec);
@@ -197,7 +250,13 @@ tr.introjs-showElement > th {
 
 .introjs-button:focus,
 .introjs-button:active {
-  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#ececec), to(#f4f4f4));
+  background-image: -webkit-gradient(
+    linear,
+    0 0,
+    0 100%,
+    from(#ececec),
+    to(#f4f4f4)
+  );
   background-image: -moz-linear-gradient(#ececec, #f4f4f4);
   background-image: -o-linear-gradient(#ececec, #f4f4f4);
   background-image: linear-gradient(#ececec, #f4f4f4);
@@ -227,7 +286,9 @@ tr.introjs-showElement > th {
   border-radius: 0 0.2em 0.2em 0;
 }
 
-.introjs-disabled, .introjs-disabled:hover, .introjs-disabled:focus {
+.introjs-disabled,
+.introjs-disabled:hover,
+.introjs-disabled:focus {
   color: #9a9a9a;
   border-color: #d4d4d4;
   box-shadow: none;

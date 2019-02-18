@@ -365,9 +365,16 @@ function messages_get_count(
     if ($ignore_source === true) {
         $source_sql = '';
     } else {
-        $source_sql = 'INNER JOIN tnotification_source ns
-            ON tm.id_source = ns.id
-            AND ns.enabled = 1';
+        $source_sql = sprintf(
+            'INNER JOIN tnotification_source ns
+                ON tm.id_source = ns.id
+                AND ns.enabled = 1
+            INNER JOIN tnotification_source_user nsu
+                ON nsu.id_source=ns.id
+                AND nsu.enabled = 1
+                AND nsu.id_user = "%s"',
+            $user
+        );
     }
 
     $sql = sprintf(
@@ -478,7 +485,11 @@ function messages_get_overview(
     if ($incl_source_info) {
         $source_fields = ', tns.*';
         $source_join = 'INNER JOIN tnotification_source tns
-            ON tns.id=tm.id_source';
+            ON tns.id=tm.id_source
+            INNER JOIN tnotification_source_user nsu
+                ON nsu.id_source=tns.id
+                AND nsu.enabled = 1
+                OR tns.enabled = 1';
     }
 
     // Using distinct because could be double assignment due group/user.

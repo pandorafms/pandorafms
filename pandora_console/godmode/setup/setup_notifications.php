@@ -96,6 +96,10 @@ if (get_parameter('check_new_notifications', 0)) {
         return;
     }
 
+    if (messages_get_count() == 0) {
+        return;
+    }
+
     $messages = messages_get_overview(
         'timestamp',
         'ASC',

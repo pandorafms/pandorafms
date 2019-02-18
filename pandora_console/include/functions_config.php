@@ -294,6 +294,10 @@ function config_update_config()
                     if (!config_update_value('auditdir', get_parameter('auditdir'))) {
                         $error_update[] = __('Audit log directory');
                     }
+
+                    if (!config_update_value('unique_ip', get_parameter('unique_ip'))) {
+                        $error_update[] = __('unique_ip');
+                    }
                 break;
 
                 case 'enterprise':
@@ -1655,6 +1659,10 @@ function config_process_config()
 
     if (!isset($config['limit_parameters_massive'])) {
         config_update_value('limit_parameters_massive', (ini_get('max_input_vars') / 2));
+    }
+
+    if (!isset($config['unique_ip'])) {
+        config_update_value('unique_ip', 0);
     }
 
     /*

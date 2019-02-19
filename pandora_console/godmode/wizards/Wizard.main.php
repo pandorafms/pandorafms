@@ -81,6 +81,52 @@ class Wizard
 
 
     /**
+     * Setter for label
+     *
+     * @param string $str Label.
+     *
+     * @return void
+     */
+    public function setLabel(string $str)
+    {
+        $this->label = $str;
+    }
+
+
+    /**
+     * Getter for label
+     *
+     * @return array Breadcrum.
+     */
+    public function getLabel()
+    {
+        return $this->label;
+    }
+
+
+    /**
+     * Builder for breadcrum
+     *
+     * @param array $urls Array of urls to be stored in breadcrum.
+     *
+     * @return void
+     */
+    public function prepareBreadcrum(array $urls)
+    {
+        $bc = [];
+        $i = 0;
+        foreach ($urls as $url) {
+            $bc[$i]    = '<a href="'.$url['link'].'" class="text_color">';
+            $bc[$i]   .= '<div class="arrow_box">'.$url['label'].'</div>';
+            $bc[$i++] .= '</a>';
+        }
+
+        $this->setBreadcrum($bc);
+
+    }
+
+
+    /**
      * To be overwritten.
      *
      * @return void

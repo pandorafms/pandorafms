@@ -358,6 +358,19 @@ class Wizard
             case 'switch':
             return html_print_switch($data);
 
+            case 'interval':
+            return html_print_extended_select_for_time(
+                $data['name'],
+                $data['value'],
+                ((isset($data['script']) === true) ? $data['script'] : ''),
+                ((isset($data['nothing']) === true) ? $data['nothing'] : ''),
+                ((isset($data['nothing_value']) === true) ? $data['nothing_value'] : 0),
+                ((isset($data['size']) === true) ? $data['size'] : false),
+                ((isset($data['return']) === true) ? $data['return'] : false),
+                ((isset($data['style']) === true) ? $data['selected'] : false),
+                ((isset($data['unique']) === true) ? $data['unique'] : false)
+            );
+
             default:
                 // Ignore.
             break;
@@ -518,8 +531,7 @@ class Wizard
      *
      * @return void Print the full list.
      */
-    public static function printBigButtonsList($list_data)
-    {
+    public static function printBigButtonsList($list_data){
         echo '<ul>';
         array_map('self::printBigButtonElement', $list_data);
         echo '</ul>';

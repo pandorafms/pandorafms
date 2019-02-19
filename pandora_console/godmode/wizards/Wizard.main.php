@@ -485,7 +485,7 @@ class Wizard
 
         try {
             if (isset($cb_function) === true) {
-                call_user_func(
+                call_user_func_array(
                     $cb_function,
                     (isset($cb_args) === true) ? $cb_args : []
                 );

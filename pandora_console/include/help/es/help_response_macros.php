@@ -33,6 +33,7 @@ Las macros aceptadas son las siguientes:
 <li><b>Nombre del módulo asociado al evento:</b> _module_name_</li>
 <li><b>Usuario propietario del evento:</b> _owner_user_</li>
 <li><b>Id del usuario:</b> _user_id_</li>
+<li><b>Id del usuario que ejecuta la respuesta:</b> _current_user_</li>
 </ul> 
 
 <h4>Campos personalizados</h4>

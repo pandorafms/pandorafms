@@ -785,7 +785,6 @@ CREATE TABLE IF NOT EXISTS `trecon_task` (
 	`wmi_enabled` tinyint(1) unsigned DEFAULT '0',
 	`auth_strings` text,
 	`autoconfiguration_enabled` tinyint(1) unsigned default '0',
-	`task_type` tinyint(2) NOT NULL default '0',
 	PRIMARY KEY  (`id_rt`),
 	KEY `recon_task_daemon` (`id_recon_server`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;

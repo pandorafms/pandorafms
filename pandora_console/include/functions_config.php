@@ -2676,6 +2676,11 @@ function config_check()
     if (license_free()) {
         $supervisor = new ConsoleSupervisor(false);
         $supervisor->run();
+    } else if ($config['cron_last_run'] == 0
+        || (get_system_time() - $config['cron_last_run']) > 3600
+    ) {
+        $supervisor = new ConsoleSupervisor(false);
+        $supervisor->checkCronRunning();
     }
 
 }

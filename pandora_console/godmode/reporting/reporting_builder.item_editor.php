@@ -202,7 +202,6 @@ switch ($action) {
 
             switch ($type) {
                 case 'event_report_log':
-                    hd('entra', true);
                     $period = $item['period'];
                     $description = $item['description'];
 

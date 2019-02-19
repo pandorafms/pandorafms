@@ -476,13 +476,11 @@ class Wizard
         $cb_function = $data['cb_function'];
         $cb_args = $data['cb_args'];
 
-        $output = '<form enctype="'.$form['enctype'].'" action="'.$form['action'].'" method="'.$form['method'];
-        $output .= '" '.$form['extra'].'>';
+        $output_head = '<form enctype="'.$form['enctype'].'" action="'.$form['action'].'" method="'.$form['method'];
+        $output_head .= '" '.$form['extra'].'>';
 
-        $output .= '<ul class="wizard">';
-
-        foreach ($inputs as $input) {
-            $output .= $this->printBlock($input, true);
+        if ($return === false) {
+            echo $output_head;
         }
 
         try {
@@ -496,6 +494,12 @@ class Wizard
             error_log('Error executing wizard callback: ', $e->getMessage());
         }
 
+        $output = '<ul class="wizard">';
+
+        foreach ($inputs as $input) {
+            $output .= $this->printBlock($input, true);
+        }
+
         $output .= '</ul>';
         $output .= '</form>';
         $output .= '<script>'.$js.'</script>';
@@ -504,7 +508,7 @@ class Wizard
             echo $output;
         }
 
-        return $output;
+        return $output_head.$output;
 
     }
 

@@ -454,7 +454,7 @@ sub PandoraFMS::Recon::Base::create_agent($$) {
 		if (defined($self->{'autoconfiguration_enabled'}) && $self->{'autoconfiguration_enabled'} == 1) {
 			my $agent_data = PandoraFMS::DB::get_db_single_row($self->{'dbh'}, 'SELECT * FROM tagente WHERE id_agente = ?', $agent_id);
 			# Update agent configuration once, after create agent.
-			enterprise_hook('autoconfigure_agent', [$self->{'pa_config'}, $host_name, $agent_id, $agent_data, $self->{'dbh'}, $agent_id]);
+			enterprise_hook('autoconfigure_agent', [$self->{'pa_config'}, $host_name, $agent_id, $agent_data, $self->{'dbh'}, 1]);
 		}
 		
 		if (defined($self->{'main_event_id'})) {

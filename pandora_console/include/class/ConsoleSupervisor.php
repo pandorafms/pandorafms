@@ -2101,7 +2101,7 @@ class ConsoleSupervisor
             $message_conf_cron = __('DiscoveryConsoleTasks is not running properly');
             if (strtoupper(substr(PHP_OS, 0, 3)) != 'WIN') {
                 $message_conf_cron .= __('Discovery relies on a proper setup of cron, the time-based scheduling service');
-                $message_conf_cron .= ' '.__('Please, add the following line to your crontab file:');
+                $message_conf_cron .= '. '.__('Please, add the following line to your crontab file:');
                 $message_conf_cron .= '<pre>* * * * * &lt;user&gt; wget -q -O - --no-check-certificate ';
                 $message_conf_cron .= str_replace(
                     ENTERPRISE_DIR.'/meta/',
@@ -2116,6 +2116,7 @@ class ConsoleSupervisor
             if (isset($config['cron_last_run']) === true) {
                 $message_conf_cron .= __('Last execution').': ';
                 $message_conf_cron .= date('Y/m/d H:i:s', $config['cron_last_run']);
+                $message_conf_cron .= __('Please check process is no locked.');
             }
 
             $this->notify(

@@ -108,7 +108,7 @@ class Wizard
      */
     public function printBreadcrum()
     {
-        return '<h1>'.implode(' > ', $this->breadcrum).'</h1>';
+        return '<h1>'.implode('', $this->breadcrum).'</h1>';
     }
 
 
@@ -502,9 +502,12 @@ class Wizard
      *
      * @return void Print the full list.
      */
-    public static function printBigButtonsList($list_data) {
+    public static function printBigButtonsList($list_data)
+    {
         echo '<ul>';
         array_map('self::printBigButtonElement', $list_data);
         echo '</ul>';
     }
+
+
 }

@@ -41,26 +41,6 @@ div.data_container:hover {
 /*
  * TODO: This may be at hostdevices.css
  */
-#contenedor_principal {
-  height: auto;
-  position: relative;
-  margin: auto;
-}
-#contenedor_imagen_texto {
-  width: 11%;
-  height: auto;
-  position: relative;
-  display: inline-block;
-  vertical-align: top;
-  overflow: hidden;
-  margin-right: 5%;
-}
-#imagen {
-  width: 15%;
-  height: auto;
-  position: relative;
-  display: inline;
-}
 .texto {
   height: auto;
   text-align: center;
@@ -69,4 +49,43 @@ div.data_container:hover {
   font-weight: bolder;
   text-decoration: none;
   font-size: 24px;
+}
+.text_color {
+  color: white;
+  margin-left: 25px;
+}
+.text_color:hover {
+  text-decoration: none;
+}
+.arrow_box {
+  display: inline-block;
+  position: relative;
+  background: #82b92e;
+  width: 15%;
+  padding: 1%;
+  margin-left: 20px;
+  margin-bottom: 10px;
+}
+.arrow_box:after,
+.arrow_box:before {
+  top: 50%;
+  border: solid transparent;
+  content: " ";
+  height: 0;
+  width: 0;
+  position: absolute;
+  pointer-events: none;
+}
+
+.arrow_box:after {
+  left: 0%;
+  border-left-color: white;
+  border-width: 20px;
+  margin-top: -20px;
+}
+.arrow_box:before {
+  left: 100%;
+  border-left-color: #82b92e;
+  border-width: 20px;
+  margin-top: -20px;
 }

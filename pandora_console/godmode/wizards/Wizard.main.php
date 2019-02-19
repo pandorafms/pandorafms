@@ -473,6 +473,8 @@ class Wizard
         $form = $data['form'];
         $inputs = $data['inputs'];
         $js = $data['js'];
+        $cb_function = $data['cb_function'];
+        $cb_args = $data['cb_args'];
 
         $output = '<form enctype="'.$form['enctype'].'" action="'.$form['action'].'" method="'.$form['method'];
         $output .= '" '.$form['extra'].'>';
@@ -481,6 +483,17 @@ class Wizard
 
         foreach ($inputs as $input) {
             $output .= $this->printBlock($input, true);
+        }
+
+        try {
+            if (isset($cb_function) === true) {
+                call_user_func(
+                    $cb_function,
+                    (isset($cb_args) === true) ? $cb_args : []
+                );
+            }
+        } catch (Exception $e) {
+            error_log('Error executing wizard callback: ', $e->getMessage());
         }
 
         $output .= '</ul>';

@@ -363,23 +363,18 @@ function api_get_test_event_replication_db()
 // -------------------------DEFINED OPERATIONS FUNCTIONS-----------------
 function api_get_groups($thrash1, $thrash2, $other, $returnType, $user_in_db)
 {
-    if (defined('METACONSOLE')) {
-        return;
+    $returnAllGroup = true;
+    $returnAllColumns = false;
+
+    if (isset($other['data'][1])) {
+        $returnAllGroup = ( $other['data'][1] == '1' ? true : false);
     }
 
-    if ($other['type'] == 'string') {
-        if ($other['data'] != '') {
-            returnError('error_parameter', 'Error in the parameters.');
-            return;
-        } else {
-            // Default values
-            $separator = ';';
-        }
-    } else if ($other['type'] == 'array') {
-        $separator = $other['data'][0];
+    if (isset($other['data'][2])) {
+        $returnAllColumns = ( $other['data'][2] == '1' ? true : false);
     }
 
-    $groups = users_get_groups($user_in_db, 'IR');
+    $groups = users_get_groups($user_in_db, 'IR', $returnAllGroup, $returnAllColumns);
 
     $data_groups = [];
     foreach ($groups as $id => $group) {
@@ -387,6 +382,13 @@ function api_get_groups($thrash1, $thrash2, $other, $returnType, $user_in_db)
             $id,
             $group,
         ];
+    }
+
+    if (!isset($other['data'][0])) {
+        $separator = ';';
+        // by default
+    } else {
+        $separator = $other['data'][0];
     }
 
     $data['type'] = 'array';

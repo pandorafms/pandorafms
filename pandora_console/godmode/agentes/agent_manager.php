@@ -236,7 +236,7 @@ if ($new_agent) {
 }
 
 $table->data[2][0] = __('IP Address');
-$table->data[2][1] = html_print_input_text('direccion', $direccion_agente, '', 16, 100, true);
+$table->data[2][1] = html_print_input_text('direccion', $direccion_agente, '', 16, 100, true).html_print_checkbox('unique_ip', 1, $config['unique_ip'], true).__('Unique IP').ui_print_help_tip(__('Set the primary IP address as the unique IP, preventing the same primary IP address from being used in more than one agent'), true);
 
 if ($id_agente) {
     $table->data[2][1] .= '&nbsp;&nbsp;&nbsp;&nbsp;';

@@ -1116,8 +1116,13 @@ switch ($action) {
                         $name_it = (string) get_parameter('name');
                         $values['name'] = reporting_label_macro($items_label, $name_it);
 
-                        // Added support for projection graphs, prediction date and SLA reports
-                        // 'top_n_value','top_n' and 'text' fields will be reused for these types of report
+                        /*
+                            Added support for projection graphs,
+                            prediction date and SLA reports
+                            'top_n_value','top_n' and 'text'
+                            fields will be reused for these types of report
+                        */
+
                         switch ($values['type']) {
                             case 'projection_graph':
                                 $values['period'] = get_parameter('period1');
@@ -1127,7 +1132,8 @@ switch ($action) {
                             break;
 
                             case 'event_report_log':
-                                $agents_to_report = get_parameter('id_agents2');
+
+                                $agents_to_report = get_parameter('id_agents3');
                                 $source = get_parameter('source', '');
                                 $search = get_parameter('search', '');
                                 $log_number = get_parameter('log_number', '');
@@ -1525,7 +1531,7 @@ switch ($action) {
                             break;
 
                             case 'event_report_log':
-                                $agents_to_report = get_parameter('id_agents2');
+                                $agents_to_report = get_parameter('id_agents3');
                                 $source = get_parameter('source', '');
                                 $search = get_parameter('search', '');
                                 $log_number = get_parameter('log_number', '');

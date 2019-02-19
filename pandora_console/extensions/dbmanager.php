@@ -106,7 +106,7 @@ function dbmgr_extension_main()
 
     echo '<br /><br />';
     echo "<form method='post' action=''>";
-    html_print_textarea('sql', 5, 50, html_entity_decode($sql, ENT_QUOTES));
+    html_print_textarea('sql', 5, 50, $sql);
     echo '<br />';
     echo '<div class="action-buttons" style="width: 100%">';
     echo '<br />';

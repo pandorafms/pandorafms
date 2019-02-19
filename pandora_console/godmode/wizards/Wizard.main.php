@@ -92,12 +92,20 @@ class Wizard
 
 
     /**
-     * To be overwritten.
+     * Checks if environment is ready,
+     * returns array
+     *   icon: icon to be displayed
+     *   label: label to be displayed
      *
-     * @return void
-     */
+     * @return array With data.
+     **/
     public function load()
     {
+        return [
+            'icon'  => $this->icon,
+            'label' => $this->label,
+            'url'   => $this->url,
+        ];
     }
 
 

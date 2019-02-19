@@ -145,7 +145,7 @@ function check_notification_readable(int $id_message)
                     AND up.id_grupo=ng.id_group
             ) ON tm.id_mensaje=ng.id_mensaje 
             WHERE utimestamp_erased is null
-                AND (nu.id_user="%s" OR (up.id_usuario="%s" AND ng.id_group=0))',
+                AND (nu.id_user="%s" OR up.id_usuario="%s" OR ng.id_group=0)',
         $config['id_user'],
         $id_message,
         $config['id_user'],
@@ -525,7 +525,7 @@ function notifications_build_user_enable_return($status, $enabled)
 function notifications_get_user_label_status($source, $user, $label)
 {
     // If not enabled, it cannot be modificable.
-    if (!$source['enabled'] || !$source[$label]) {
+    if (!$source['enabled']) {
         return notifications_build_user_enable_return(false, false);
     }
 
@@ -551,7 +551,10 @@ function notifications_get_user_label_status($source, $user, $label)
     );
     // No group found, return no permissions.
     $value = empty($common_groups) ? false : $source[$label];
-    return notifications_build_user_enable_return($value, false);
+    return notifications_build_user_enable_return(
+        $value,
+        false
+    );
 }
 
 
@@ -570,7 +573,6 @@ function notifications_set_user_label_status($source, $user, $label, $value)
     $source_info = notifications_get_all_sources(['id' => $source]);
     if (!isset($source_info[0])
         || !$source_info[0]['enabled']
-        || !$source_info[0][$label]
         || !$source_info[0]['user_editable']
     ) {
         return false;

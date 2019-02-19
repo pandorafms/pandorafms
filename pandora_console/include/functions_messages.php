@@ -356,42 +356,59 @@ function messages_get_count(
 
     if (!empty($incl_read)) {
         // Do not filter.
-        $read = '';
+        $read = ' 1=1 ';
     } else {
         // Retrieve only unread messages.
-        $read = 'where t.read is null';
+        $read = ' t.read is null';
     }
 
     if ($ignore_source === true) {
+        $source_select = '';
         $source_sql = '';
+        $source_extra = '';
     } else {
-        $source_sql = 'INNER JOIN tnotification_source ns
-            ON tm.id_source = ns.id
-            AND ns.enabled = 1';
+        $source_select = ',IF(ns.user_editable,nsu.enabled,ns.enabled) as enabled';
+
+        // Row in tnotification_source_user could exist or not.
+        $source_sql = sprintf(
+            'INNER JOIN (
+                tnotification_source ns
+                LEFT JOIN tnotification_source_user nsu
+                    ON ns.id=nsu.id_source
+                    AND nsu.id_user="test")
+                ON tm.id_source=ns.id',
+            $user
+        );
+        $source_extra = 'AND (t.enabled=1 OR t.enabled is null)';
     }
 
     $sql = sprintf(
-        'SELECT count(*) FROM (
-            SELECT DISTINCT tm.*, utimestamp_read > 0 as "read"
-            FROM tmensajes tm 
-            %s
-            LEFT JOIN tnotification_user nu
-                ON tm.id_mensaje=nu.id_mensaje 
-                AND nu.id_user="%s"
-            LEFT JOIN (tnotification_group ng
-                INNER JOIN tusuario_perfil up
-                    ON ng.id_group=up.id_grupo
-                    AND up.id_grupo=ng.id_group
-            ) ON tm.id_mensaje=ng.id_mensaje 
+        'SELECT count(*) as "n" FROM (
+            SELECT
+                tm.*,
+                utimestamp_read > 0 as "read"
+                %s
+            FROM tmensajes tm
+                %s
+                LEFT JOIN tnotification_user nu
+                    ON tm.id_mensaje=nu.id_mensaje
+                    AND nu.id_user="%s"
+                LEFT JOIN (tnotification_group ng
+                    INNER JOIN tusuario_perfil up
+                        ON ng.id_group=up.id_grupo
+                        AND up.id_grupo=ng.id_group)
+                    ON tm.id_mensaje=ng.id_mensaje
             WHERE utimestamp_erased is null
-                AND (nu.id_user="%s" OR (up.id_usuario="%s" AND ng.id_group=0))
-        ) t 
-        %s',
+                AND (nu.id_user="%s" OR up.id_usuario="%s" OR ng.id_group=0)
+        ) t
+        WHERE %s %s',
+        $source_select,
         $source_sql,
         $user,
         $user,
         $user,
-        $read
+        $read,
+        $source_extra
     );
 
     return (int) db_get_sql($sql);
@@ -478,7 +495,11 @@ function messages_get_overview(
     if ($incl_source_info) {
         $source_fields = ', tns.*';
         $source_join = 'INNER JOIN tnotification_source tns
-            ON tns.id=tm.id_source';
+            ON tns.id=tm.id_source
+            INNER JOIN tnotification_source_user nsu
+                ON nsu.id_source=tns.id
+                AND nsu.enabled = 1
+                OR tns.enabled = 1';
     }
 
     // Using distinct because could be double assignment due group/user.
@@ -496,7 +517,7 @@ function messages_get_overview(
             ) ON tm.id_mensaje=ng.id_mensaje
             %s
             WHERE utimestamp_erased is null
-                AND (nu.id_user="%s" OR (up.id_usuario="%s" AND ng.id_group=0))
+                AND (nu.id_user="%s" OR up.id_usuario="%s" OR ng.id_group=0)
         ) t 
         %s
         %s

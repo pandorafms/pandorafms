@@ -92,27 +92,24 @@ class HostDevices extends Wizard
         $mode = get_parameter('mode', null);
 
         if ($mode === null) {
-            $this->setBreadcrum(['<a href="index.php?sec=gservers&sec2=godmode/servers/discovery&wiz=hd">Host&devices</a>']);
+            $this->setBreadcrum(['<div class="arrow_box"><a href="index.php?sec=gservers&sec2=godmode/servers/discovery&wiz=hd" class="text_color">Host & devices</a></div>']);
             $this->printHeader();
-            echo '<div id="contenedor_principal">';
-            echo '<div id="contenedor_imagen_texto">';
-            echo '<div id="imagen">';
-            echo '<a href="'.$this->url.'&mode=importcsv" alt="importcsv"><img src="images/wizard/csv_image.svg" alt="importcsv"></a>';
-            echo '</div>';
-            echo '<div class="texto">';
-            echo '<a href="'.$this->url.'&mode=importcsv" alt="importcsv" id="text_wizard">'.__('Import CSV').'</a>';
-            echo '</div>';
-            echo '</div>';
-            echo '<div id="contenedor_imagen_texto">';
-            echo '<div id="imagen">';
-            echo '<a href="'.$this->url.'&mode=netscan" alt="netscan"><img src="images/wizard/csv_image.svg" alt="importcsv"></a>';
-            echo '</div>';
-            echo '<div class="texto">';
-            echo '<a href="'.$this->url.'&mode=netscan" alt="netscan" id="text_wizard">'.__('Escanear red').'</a>';
-            echo '</div>';
-            echo '</div>';
-            echo '</div>';
+            $this->printBigButtonsList(
+                [
+                    [
+                        'url'   => $this->url.'&mode=importcsv',
+                        'icon'  => 'images/wizard/csv_image.svg',
+                        'label' => __('Import CSV'),
+                    ],
+                    [
+                        'url'   => $this->url.'&mode=netscan',
+                        'icon'  => 'images/wizard/csv_image.svg',
+                        'label' => __('Net Scan'),
+                    ],
+                ]
+            );
 
+            $this->printGoBackButton();
             return;
         }
 
@@ -120,8 +117,8 @@ class HostDevices extends Wizard
             if ($mode == 'importcsv') {
                 $this->setBreadcrum(
                     [
-                        '<a href="index.php?sec=gservers&sec2=godmode/servers/discovery&wiz=hd">Host&devices</a>',
-                        '<a href="index.php?sec=gservers&sec2=godmode/servers/discovery&wiz=hd&mode=importcsv">Import CSV</a>',
+                        '<div class="arrow_box"><a href="index.php?sec=gservers&sec2=godmode/servers/discovery&wiz=hd" class="text_color">Host & devices</a></div>',
+                        '<div class="arrow_box"><a href="index.php?sec=gservers&sec2=godmode/servers/discovery&wiz=hd&mode=importcsv" class="text_color">Import CSV</a></div>',
                     ]
                 );
                 $this->printHeader();
@@ -135,10 +132,20 @@ class HostDevices extends Wizard
                 // Do not paint breadcrum in last page. Redirected.
                 $this->setBreadcrum(
                     [
-                        '<a href="index.php?sec=gservers&sec2=godmode/servers/discovery&wiz=hd">Host&devices</a>',
-                        '<a href="index.php?sec=gservers&sec2=godmode/servers/discovery&wiz=hd&mode=netscan">Net scan</a>',
+                        '<div class="arrow_box"><a href="index.php?sec=gservers&sec2=godmode/servers/discovery&wiz=hd"class="text_color">Host & devices</a></div>',
+                        '<div class="arrow_box"><a href="index.php?sec=gservers&sec2=godmode/servers/discovery&wiz=hd&mode=netscan" class="text_color">Net scan definition</a></div>',
                     ]
                 );
+                if ($this->page == 1) {
+                    $this->setBreadcrum(
+                        [
+                            '<div class="arrow_box"><a href="index.php?sec=gservers&sec2=godmode/servers/discovery&wiz=hd"class="text_color">Host & devices</a></div>',
+                            '<div class="arrow_box"><a href="index.php?sec=gservers&sec2=godmode/servers/discovery&wiz=hd&mode=netscan" class="text_color">Net scan definition</a></div>',
+                            '<div class="arrow_box"><a href="index.php?sec=gservers&sec2=godmode/servers/discovery&wiz=hd&mode=netscan&page=1" class="text_color">Net scan features</a></div>',
+                        ]
+                    );
+                }
+
                 $this->printHeader();
             }
 
@@ -206,6 +213,7 @@ class HostDevices extends Wizard
             $server_id = get_parameter('id_recon_server', '');
             $network = get_parameter('network', '');
             $id_group = get_parameter('id_group', '');
+            $interval = get_parameter('interval', 0);
 
             if (isset($task_id) === true) {
                 // We're updating this task.
@@ -269,6 +277,7 @@ class HostDevices extends Wizard
             $this->task['subnet'] = $network;
             $this->task['id_recon_server'] = $server_id;
             $this->task['id_group'] = $id_group;
+            $this->task['interval_sweep'] = $interval;
 
             if (isset($this->task['id_rt']) === false) {
                 // Create.
@@ -306,6 +315,9 @@ class HostDevices extends Wizard
             }
 
             $id_network_profile = get_parameter('id_network_profile', null);
+            $autoconf_enabled = get_parameter_switch(
+                'autoconfiguration_enabled'
+            );
             $snmp_enabled = get_parameter_switch('snmp_enabled');
             $os_detect = get_parameter_switch('os_detect');
             $parent_detection = get_parameter_switch('parent_detection');
@@ -330,6 +342,7 @@ class HostDevices extends Wizard
                 $this->task['snmp_community'] = $community;
             }
 
+            $this->task['autoconfiguration_enabled'] = $autoconf_enabled;
             $this->task['id_network_profile'] = $id_network_profile;
             $this->task['snmp_enabled'] = $snmp_enabled;
             $this->task['os_detect'] = $os_detect;
@@ -347,42 +360,6 @@ class HostDevices extends Wizard
             $this->task['snmp_security_level'] = $snmp_security_level;
             $this->task['auth_strings'] = $auth_strings;
 
-            // Update.
-            $res = db_process_sql_update(
-                'trecon_task',
-                $this->task,
-                ['id_rt' => $this->task['id_rt']]
-            );
-
-            return true;
-        }
-
-        if ($this->page == 3) {
-            // Interval and schedules.
-            // By default manual if not defined.
-            $id_rt = get_parameter('task', -1);
-
-            $task = db_get_row(
-                'trecon_task',
-                'id_rt',
-                $id_rt
-            );
-
-            if ($task !== false) {
-                $this->task = $task;
-            } else {
-                $this->msg = __('Failed to find network scan task.');
-                return false;
-            }
-
-            $interval = get_parameter('interval', 0);
-            $id_os = get_parameter('id_os', 0);
-            $recon_ports = get_parameter('recon_ports', '');
-
-            $this->task['id_os'] = $id_os;
-            $this->task['interval_sweep'] = $interval;
-            $this->task['recon_ports'] = $recon_ports;
-
             if ($this->task['disabled'] == 2) {
                 // Wizard finished.
                 $this->task['disabled'] = 0;
@@ -398,7 +375,7 @@ class HostDevices extends Wizard
             return true;
         }
 
-        if ($this->page == 4) {
+        if ($this->page == 3) {
             // Wizard ended. Load data and return control to Discovery.
             $id_rt = get_parameter('task', -1);
 
@@ -443,9 +420,6 @@ class HostDevices extends Wizard
             return;
         }
 
-        $user_groups = users_get_groups(false, 'AW', true, false, null, 'id_grupo');
-        $user_groups = array_keys($user_groups);
-
         if ($this->parseNetScan() === false) {
             // Error.
             ui_print_error_message(
@@ -477,11 +451,22 @@ class HostDevices extends Wizard
                 ],
             ];
 
+            // Check ACL. If user is not able to manage target task,
+            // redirect him to main page.
+            if (users_is_admin() !== true && check_acl(
+                $config['id_usuario'],
+                $this->task['id_group'],
+                'PM'
+            ) !== true
+            ) {
+                $form['form']['action'] = $this->url.'&mode=netscan&page='.($this->page - 1);
+            }
+
             $this->printForm($form);
             return null;
         }
 
-        if (isset($this->page)
+        if (isset($this->page) === true
             && $this->page != 0
             && isset($this->task['id_rt']) === false
         ) {
@@ -522,7 +507,7 @@ class HostDevices extends Wizard
         // -------------------------------.
         // Page 0. wizard starts HERE.
         // -------------------------------.
-        if (!isset($this->page) || $this->page == 0) {
+        if (isset($this->page) === true || $this->page == 0) {
             if (isset($this->page) === false
                 || $this->page == 0
             ) {
@@ -610,6 +595,44 @@ class HostDevices extends Wizard
                     ],
                 ];
 
+                // Interval and schedules.
+                $interv_manual = 0;
+                if ((int) $this->task['interval_sweep'] == 0) {
+                    $interv_manual = 1;
+                }
+
+                // Schedule.
+                $form['inputs'][] = [
+                    'label'     => '<b>'.__('Interval').'</b>'.ui_print_help_tip(
+                        __('Manual interval means that it will be executed only On-demand'),
+                        true
+                    ),
+                    'arguments' => [
+                        'type'     => 'select',
+                        'selected' => $interv_manual,
+                        'fields'   => [
+                            0 => __('Defined'),
+                            1 => __('Manual'),
+                        ],
+                        'name'     => 'interval_manual_defined',
+                        'return'   => true,
+                    ],
+                    'extra'     => '<span id="interval_manual_container">'.html_print_extended_select_for_time(
+                        'interval',
+                        $this->task['interval_sweep'],
+                        '',
+                        '',
+                        '0',
+                        false,
+                        true,
+                        false,
+                        false
+                    ).ui_print_help_tip(
+                        __('The minimum recomended interval for Recon Task is 5 minutes'),
+                        true
+                    ).'</span>',
+                ];
+
                 $str = __('Next');
 
                 if (isset($this->task['id_rt']) === true) {
@@ -636,6 +659,21 @@ class HostDevices extends Wizard
                     'method' => 'POST',
                     'action' => $this->url.'&mode=netscan&page='.($this->page + 1).$task_url,
                 ];
+
+                $form['js'] = '
+$("select#interval_manual_defined").change(function() {
+    if ($("#interval_manual_defined").val() == 1) {
+        $("#interval_manual_container").hide();
+        $("#text-interval_text").val(0);
+        $("#hidden-interval").val(0);
+    }
+    else {
+        $("#interval_manual_container").show();
+        $("#text-interval_text").val(10);
+        $("#hidden-interval").val(600);
+        $("#interval_units").val(60);
+    }
+}).change();';
 
                 // XXX: Could be improved validating inputs before continue (JS)
                 // Print NetScan page 0.
@@ -675,16 +713,37 @@ class HostDevices extends Wizard
             $form['inputs'][] = [
                 'label'     => __('Module template'),
                 'arguments' => [
-                    'name'     => 'id_network_profile',
-                    'type'     => 'select_from_sql',
-                    'sql'      => 'SELECT id_np, name
+                    'name'          => 'id_network_profile',
+                    'type'          => 'select_from_sql',
+                    'sql'           => 'SELECT id_np, name
                             FROM tnetwork_profile
                             ORDER BY name',
-                    'return'   => true,
-                    'selected' => $this->task['id_network_profile'],
+                    'return'        => true,
+                    'selected'      => $this->task['id_network_profile'],
+                    'nothing_value' => 0,
+                    'nothing'       => __('None'),
 
                 ],
             ];
+
+            if (enterprise_installed() === true) {
+                // Input: Enable auto configuration.
+                $form['inputs'][] = [
+                    'label'     => __('Apply autoconfiguration rules').ui_print_help_tip(
+                        __(
+                            'System is able to auto configure detected host & devices by applying your defined configuration rules.'
+                        ),
+                        true
+                    ),
+                    'arguments' => [
+                        'name'   => 'autoconfiguration_enabled',
+                        'type'   => 'switch',
+                        'return' => true,
+                        'value'  => (isset($this->task['autoconfiguration_enabled'])) ? $this->task['autoconfiguration_enabled'] : 0,
+
+                    ],
+                ];
+            }
 
             // Feature configuration.
             // Input: SNMP enabled.
@@ -875,7 +934,12 @@ class HostDevices extends Wizard
                 'hidden'        => 1,
                 'block_content' => [
                     [
-                        'label'     => __('WMI Auth. strings'),
+                        'label'     => '<b>'.__('WMI Auth. strings').'</b>'.ui_print_help_tip(
+                            __(
+                                'Auth strings must be defined as user%pass, comma separated as many you need.'
+                            ),
+                            true
+                        ),
                         'arguments' => [
                             'name'   => 'auth_strings',
                             'type'   => 'text',
@@ -946,7 +1010,7 @@ class HostDevices extends Wizard
             $form['inputs'][] = [
                 'arguments' => [
                     'name'       => 'submit',
-                    'label'      => __('Next'),
+                    'label'      => __('Finish'),
                     'type'       => 'submit',
                     'attributes' => 'class="sub next"',
                     'return'     => true,
@@ -958,6 +1022,7 @@ function SNMPExtraShow(target) {
     $("#snmp_options_basic").hide();
     $("#snmp_options_v3").hide();
     if (document.getElementsByName("snmp_enabled")[0].checked) {
+        $("#snmp_extra").show();
         if (target == 3) {
             $("#snmp_options_v3").show();
         } else {
@@ -1012,129 +1077,6 @@ $(function() {
         }
 
         if ($this->page == 2) {
-            // Interval and schedules.
-            $interv_manual = 0;
-            if ((int) $this->task['interval_sweep'] == 0) {
-                $interv_manual = 1;
-            }
-
-            // Filter: OS.
-            $form['inputs'][] = [
-                'label'     => '<b>'.__('Filter by OS').'</b>',
-                'arguments' => [
-                    'type'     => 'select_from_sql',
-                    'sql'      => 'SELECT id_os, name
-                                FROM tconfig_os
-                                ORDER BY name',
-                    'name'     => 'id_os',
-                    'return'   => 'true',
-                    'nothing'  => __('Any'),
-                    'selected' => $this->task['id_os'],
-                ],
-            ];
-
-            // Filter: Ports.
-            $form['inputs'][] = [
-                'label'     => '<b>'.__('Filter by ports').'</b>'.ui_print_help_tip(
-                    __('Ports defined like: 80 or 80,443,512 or even 0-1024 (Like Nmap command line format). If dont want to do a sweep using portscan, left it in blank'),
-                    true
-                ),
-                'arguments' => [
-                    'type'        => 'text',
-                    'name'        => 'recon_ports',
-                    'return'      => 'true',
-                    'recon_ports' => $this->task['recon_ports'],
-                ],
-            ];
-
-            // Schedule.
-            $form['inputs'][] = [
-                'label'     => '<b>'.__('Interval').'</b>'.ui_print_help_tip(
-                    __('Manual interval means that it will be executed only On-demand'),
-                    true
-                ),
-                'arguments' => [
-                    'type'     => 'select',
-                    'selected' => $interv_manual,
-                    'fields'   => [
-                        0 => __('Defined'),
-                        1 => __('Manual'),
-                    ],
-                    'name'     => 'interval_manual_defined',
-                    'return'   => true,
-                ],
-                'extra'     => '<span id="interval_manual_container">'.html_print_extended_select_for_time(
-                    'interval',
-                    $this->task['interval_sweep'],
-                    '',
-                    '',
-                    '0',
-                    false,
-                    true,
-                    false,
-                    false
-                ).ui_print_help_tip(
-                    __('The minimum recomended interval for Recon Task is 5 minutes'),
-                    true
-                ).'</span>',
-            ];
-
-            // Hidden, id_rt.
-            $form['inputs'][] = [
-                'arguments' => [
-                    'name'   => 'task',
-                    'value'  => $this->task['id_rt'],
-                    'type'   => 'hidden',
-                    'return' => true,
-                ],
-            ];
-
-            // Hidden, page.
-            $form['inputs'][] = [
-                'arguments' => [
-                    'name'   => 'page',
-                    'value'  => ($this->page + 1),
-                    'type'   => 'hidden',
-                    'return' => true,
-                ],
-            ];
-
-            // Submit button.
-            $form['inputs'][] = [
-                'arguments' => [
-                    'name'       => 'submit',
-                    'label'      => __('Next'),
-                    'type'       => 'submit',
-                    'attributes' => 'class="sub next"',
-                    'return'     => true,
-                ],
-            ];
-
-            $form['form'] = [
-                'method' => 'POST',
-                'action' => $this->url.'&mode=netscan&page='.($this->page + 1).'&task='.$this->task['id_rt'],
-            ];
-
-            $form['js'] = '
-$("select#interval_manual_defined").change(function() {
-    if ($("#interval_manual_defined").val() == 1) {
-        $("#interval_manual_container").hide();
-        $("#text-interval_text").val(0);
-        $("#hidden-interval").val(0);
-    }
-    else {
-        $("#interval_manual_container").show();
-        $("#text-interval_text").val(10);
-        $("#hidden-interval").val(600);
-        $("#interval_units").val(60);
-    }
-}).change();';
-
-            $this->printForm($form);
-            return null;
-        }
-
-        if ($this->page == 3) {
             if ($this->task['id_rt']) {
                 // 0 - Is OK.
                 $this->result = 0;

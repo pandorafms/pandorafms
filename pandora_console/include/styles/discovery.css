@@ -61,8 +61,7 @@ div.data_container:hover {
   display: inline-block;
   position: relative;
   background: #82b92e;
-  width: 15%;
-  padding: 1%;
+  padding: 14px;
   margin-left: 20px;
   margin-bottom: 10px;
 }

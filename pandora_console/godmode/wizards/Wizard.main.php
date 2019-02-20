@@ -78,7 +78,7 @@ class Wizard
     {
         return $this->breadcrum;
     }
-    
+
 
     /**
      * Add an element to breadcrum array.
@@ -87,12 +87,59 @@ class Wizard
      *
      * @return void
      */
-    protected function addBreadcrum($string) {
+    protected function addBreadcrum($string)
+    {
         if (empty($string)) {
             return;
         }
 
         array_push($this->breadcrum, $string);
+    }
+
+
+    /**
+     * Setter for label
+     *
+     * @param string $str Label.
+     *
+     * @return void
+     */
+    public function setLabel(string $str)
+    {
+        $this->label = $str;
+    }
+
+
+    /**
+     * Getter for label
+     *
+     * @return array Breadcrum.
+     */
+    public function getLabel()
+    {
+        return $this->label;
+    }
+
+
+    /**
+     * Builder for breadcrum
+     *
+     * @param array $urls Array of urls to be stored in breadcrum.
+     *
+     * @return void
+     */
+    public function prepareBreadcrum(array $urls)
+    {
+        $bc = [];
+        $i = 0;
+        foreach ($urls as $url) {
+            $bc[$i]    = '<a href="'.$url['link'].'" class="text_color">';
+            $bc[$i]   .= '<div class="arrow_box">'.$url['label'].'</div>';
+            $bc[$i++] .= '</a>';
+        }
+
+        $this->setBreadcrum($bc);
+
     }
 
 
@@ -371,6 +418,17 @@ class Wizard
                 ((isset($data['unique']) === true) ? $data['unique'] : false)
             );
 
+            case 'textarea':
+            return html_print_textarea(
+                $data['name'],
+                $data['rows'],
+                $data['columns'],
+                ((isset($data['value']) === true) ? $data['value'] : ''),
+                ((isset($data['attributes']) === true) ? $data['attributes'] : ''),
+                ((isset($data['return']) === true) ? $data['return'] : false),
+                ((isset($data['class']) === true) ? $data['class'] : '')
+            );
+
             default:
                 // Ignore.
             break;
@@ -385,14 +443,18 @@ class Wizard
      *
      * @return void
      */
-    public function printGoBackButton()
+    public function printGoBackButton($url=null)
     {
+        if (isset($url) === false) {
+            $url = ui_get_full_url(
+                'index.php?sec=gservers&sec2=godmode/servers/discovery'
+            );
+        }
+
         $form = [
             'form'   => [
                 'method' => 'POST',
-                'action' => ui_get_full_url(
-                    'index.php?sec=gservers&sec2=godmode/servers/discovery'
-                ),
+                'action' => $url,
             ],
             'inputs' => [
                 [
@@ -548,7 +610,8 @@ class Wizard
      *
      * @return void Print the full list.
      */
-    public static function printBigButtonsList($list_data){
+    public static function printBigButtonsList($list_data)
+    {
         echo '<ul>';
         array_map('self::printBigButtonElement', $list_data);
         echo '</ul>';

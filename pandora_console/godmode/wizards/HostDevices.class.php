@@ -92,7 +92,15 @@ class HostDevices extends Wizard
         $mode = get_parameter('mode', null);
 
         if ($mode === null) {
-            $this->setBreadcrum(['<div class="arrow_box"><a href="index.php?sec=gservers&sec2=godmode/servers/discovery&wiz=hd" class="text_color">Host & devices</a></div>']);
+            $this->prepareBreadcrum(
+                [
+                    [
+                        'link'  => $this->url.'&wiz=hd',
+                        'label' => __('&nbsp &nbsp Host & devices'),
+                    ],
+                ]
+            );
+
             $this->printHeader();
             $this->printBigButtonsList(
                 [
@@ -115,10 +123,16 @@ class HostDevices extends Wizard
 
         if (enterprise_installed()) {
             if ($mode == 'importcsv') {
-                $this->setBreadcrum(
+                $this->prepareBreadcrum(
                     [
-                        '<div class="arrow_box"><a href="index.php?sec=gservers&sec2=godmode/servers/discovery&wiz=hd" class="text_color">Host & devices</a></div>',
-                        '<div class="arrow_box"><a href="index.php?sec=gservers&sec2=godmode/servers/discovery&wiz=hd&mode=importcsv" class="text_color">Import CSV</a></div>',
+                        [
+                            'link'  => $this->url.'&wiz=hd',
+                            'label' => __('&nbsp &nbsp Host & devices'),
+                        ],
+                        [
+                            'link'  => $this->url.'&wiz=hd&mode=importcsv',
+                            'label' => __('&nbsp &nbsp &nbsp Import CSV'),
+                        ],
                     ]
                 );
                 $this->printHeader();
@@ -128,20 +142,36 @@ class HostDevices extends Wizard
         }
 
         if ($mode == 'netscan') {
-            if ($this->page != 3) {
+            if ($this->page != 2) {
                 // Do not paint breadcrum in last page. Redirected.
-                $this->setBreadcrum(
+                $this->prepareBreadcrum(
                     [
-                        '<div class="arrow_box"><a href="index.php?sec=gservers&sec2=godmode/servers/discovery&wiz=hd"class="text_color">Host & devices</a></div>',
-                        '<div class="arrow_box"><a href="index.php?sec=gservers&sec2=godmode/servers/discovery&wiz=hd&mode=netscan" class="text_color">Net scan definition</a></div>',
+                        [
+                            'link'  => $this->url.'&wiz=hd',
+                            'label' => __('&nbsp &nbsp Host & devices'),
+                        ],
+                        [
+                            'link'  => $this->url.'&wiz=hd&mode=netscan',
+                            'label' => __('&nbsp &nbsp &nbsp Net scan definition'),
+                        ],
                     ]
                 );
+
                 if ($this->page == 1) {
-                    $this->setBreadcrum(
+                    $this->prepareBreadcrum(
                         [
-                            '<div class="arrow_box"><a href="index.php?sec=gservers&sec2=godmode/servers/discovery&wiz=hd"class="text_color">Host & devices</a></div>',
-                            '<div class="arrow_box"><a href="index.php?sec=gservers&sec2=godmode/servers/discovery&wiz=hd&mode=netscan" class="text_color">Net scan definition</a></div>',
-                            '<div class="arrow_box"><a href="index.php?sec=gservers&sec2=godmode/servers/discovery&wiz=hd&mode=netscan&page=1" class="text_color">Net scan features</a></div>',
+                            [
+                                'link'  => $this->url.'&wiz=hd',
+                                'label' => __('&nbsp &nbsp Host & devices'),
+                            ],
+                            [
+                                'link'  => $this->url.'&wiz=hd&mode=netscan',
+                                'label' => __('&nbsp &nbsp &nbsp Net scan definition'),
+                            ],
+                            [
+                                'link'  => $this->url.'&wiz=hd&mode=netscan&page=1',
+                                'label' => __('&nbsp &nbsp &nbsp Net scan features'),
+                            ],
                         ]
                     );
                 }
@@ -1093,6 +1123,28 @@ $(function() {
                 'msg'    => $this->msg,
             ];
         }
+    }
+
+
+      /**
+       * Builder for breadcrum
+       *
+       * @param array $urls Array of urls to be stored in breadcrum.
+       *
+       * @return void
+       */
+    public function prepareBreadcrum(array $urls)
+    {
+        $bc = [];
+        $i = 0;
+        foreach ($urls as $url) {
+            $bc[$i]    = '<a href="'.$url['link'].'" class="text_color">';
+            $bc[$i]   .= '<div class="arrow_box">'.$url['label'].'</div>';
+            $bc[$i++] .= '</a>';
+        }
+
+        $this->setBreadcrum($bc);
+
     }
 
 

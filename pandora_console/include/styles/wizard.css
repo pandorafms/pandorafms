@@ -11,6 +11,12 @@ ul.wizard li {
 
 ul.wizard li > label:not(.p-switch) {
   width: 250px;
+  vertical-align: top;
+  display: inline-block;
+}
+
+ul.wizard li > textarea {
+  width: 250px;
   display: inline-block;
 }
 

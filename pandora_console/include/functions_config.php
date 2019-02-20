@@ -2673,9 +2673,14 @@ function config_check()
     include_once __DIR__.'/class/ConsoleSupervisor.php';
 
     // Enterprise customers launch supervisor using discovery task.
-    if (license_free()) {
+    if (enterprise_installed() === false) {
         $supervisor = new ConsoleSupervisor(false);
         $supervisor->run();
+    } else if ($config['cron_last_run'] == 0
+        || (get_system_time() - $config['cron_last_run']) > 3600
+    ) {
+        $supervisor = new ConsoleSupervisor(false);
+        $supervisor->checkCronRunning();
     }
 
 }

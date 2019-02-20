@@ -292,8 +292,13 @@ class DiscoveryTaskList extends Wizard
                         $data[7] = ui_print_timestamp($task['utimestamp'], true);
 
                         if (check_acl($config['id_user'], $task['id_group'], 'PM')) {
+                            // Check if is a H&D, Cloud or Application.
                             $data[8] = '<a href="'.ui_get_full_url(
-                                'index.php?sec=gservers&sec2=godmode/servers/discovery&wiz=hd&mode=netscan&page=0&task='.$task['id_rt']
+                                sprintf(
+                                    'index.php?sec=gservers&sec2=godmode/servers/discovery&%s&page=0&task=%d',
+                                    $this->getTargetWiz($task),
+                                    $task['id_rt']
+                                )
                             ).'">'.html_print_image(
                                 'images/wrench_orange.png',
                                 true
@@ -345,6 +350,26 @@ class DiscoveryTaskList extends Wizard
         $this->printForm($form);
 
         return true;
+    }
+
+
+    /**
+     * Return target url sub-string to edit target task.
+     *
+     * @param array $task With all data.
+     *
+     * @return string
+     */
+    public function getTargetWiz($task)
+    {
+        // TODO: Do not use description. Use recon_script ID instead.
+        switch ($task['description']) {
+            case 'Discovery.Application.VMware':
+            return 'wiz=app&mode=vmware';
+
+            default:
+            return 'wiz=hd&mode=netscan';
+        }
     }
 
 

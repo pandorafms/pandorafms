@@ -60,7 +60,7 @@ div.data_container:hover {
 .arrow_box {
   display: inline-block;
   position: relative;
-  background: #82b92e;
+  background: #ccc;
   padding: 14px;
   margin-left: 20px;
   margin-bottom: 10px;
@@ -75,6 +75,9 @@ div.data_container:hover {
   position: absolute;
   pointer-events: none;
 }
+.arrow_box.selected {
+  background: #82b92e;
+}
 
 .arrow_box:after {
   left: 0%;
@@ -84,7 +87,10 @@ div.data_container:hover {
 }
 .arrow_box:before {
   left: 100%;
-  border-left-color: #82b92e;
+  border-left-color: #ccc;
   border-width: 20px;
   margin-top: -20px;
+}
+.arrow_box.selected:before {
+  border-left-color: #82b92e;
 }

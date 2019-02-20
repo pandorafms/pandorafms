@@ -36,6 +36,9 @@ function get_wiz_class($str)
         case 'tasklist':
         return 'DiscoveryTaskList';
 
+        case 'app':
+        return 'Applications';
+
         default:
             // Ignore.
         return null;
@@ -56,6 +59,7 @@ if (enterprise_installed()) {
     if ($ent_classes === false) {
         $ent_classes = [];
     }
+
     $classes = array_merge($classes, $ent_classes);
 }
 
@@ -63,6 +67,19 @@ foreach ($classes as $classpath) {
     include_once $classpath;
 }
 
+// Load enterprise wizards.
+if (enterprise_installed() === true) {
+    $enterprise_classes = glob(
+        $config['homedir'].'/'.ENTERPRISE_DIR.'/wizards/*.class.php'
+    );
+    foreach ($enterprise_classes as $classpath) {
+        $r = enterprise_include_once(
+            'wizards/'.basename($classpath)
+        );
+    }
+}
+
+$classes = array_merge($classes, $enterprise_classes);
 
 $wiz_in_use = get_parameter('wiz', null);
 $page = get_parameter('page', 0);

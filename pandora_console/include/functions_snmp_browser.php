@@ -27,7 +27,7 @@ $nfdump_date_format = 'Y/m/d.H:i:s';
  * @param id string Level ID. Do not set, used for recursion.
  * @param depth string Branch depth. Do not set, used for recursion.
  */
-function snmp_browser_print_tree($tree, $id=0, $depth=0, $last=0, $last_array=[], $sufix=false)
+function snmp_browser_print_tree($tree, $id=0, $depth=0, $last=0, $last_array=[], $sufix=false, $checked=[])
 {
     static $url = false;
 
@@ -108,7 +108,8 @@ function snmp_browser_print_tree($tree, $id=0, $depth=0, $last=0, $last_array=[]
 
         $checkbox_name_sufix = ($sufix === true) ? '_'.$level : '';
         $checkbox_name = 'create_'.$sub_id.$checkbox_name_sufix;
-        echo html_print_checkbox($checkbox_name, 0, false, true, false, '').'&nbsp;<span>'.$level.'</span>';
+        $status = (!empty($checked) && isset($checked[$level]));
+        echo html_print_checkbox($checkbox_name, 0, $status, true, false, '').'&nbsp;<span>'.$level.'</span>';
         if (isset($sub_level['__VALUE__'])) {
             echo '<span class="value" style="display: none;">&nbsp;=&nbsp;'.$sub_level['__VALUE__'].'</span>';
         }
@@ -116,7 +117,7 @@ function snmp_browser_print_tree($tree, $id=0, $depth=0, $last=0, $last_array=[]
         echo '</li>';
 
         // Recursively print sub levels.
-        snmp_browser_print_tree($sub_level, $sub_id, ($depth + 1), ($count == $total ? 1 : 0), $last_array, $sufix);
+        snmp_browser_print_tree($sub_level, $sub_id, ($depth + 1), ($count == $total ? 1 : 0), $last_array, $sufix, $checked);
 
         $count++;
     }

@@ -475,14 +475,6 @@ function update_button_palette_callback() {
         dialog_message("#message_alert_max_height");
         return false;
       }
-      if (values["module"] == 0) {
-        dialog_message("#message_alert_no_module");
-        return false;
-      }
-      if (values["agent"] == "") {
-        dialog_message("#message_alert_no_agent");
-        return false;
-      }
       if (
         (values["image"] == "" || values["image"] == "none") &&
         values["label"] == ""
@@ -1309,14 +1301,6 @@ function create_button_palette_callback() {
         parseInt($("#hidden-background_width").val())
       ) {
         dialog_message("#message_alert_max_width");
-        validate = false;
-      }
-      if (values["module"] == 0) {
-        dialog_message("#message_alert_no_module");
-        validate = false;
-      }
-      if (values["agent"] == "") {
-        dialog_message("#message_alert_no_agent");
         validate = false;
       }
       if (

@@ -28,6 +28,7 @@ use IO::Socket::INET;
 use POSIX qw(strftime ceil);
 use JSON qw(decode_json encode_json);
 use Encode qw(encode_utf8);
+use MIME::Base64;
 
 # Default lib dir for RPM and DEB packages
 use lib '/usr/lib/perl5';
@@ -252,9 +253,20 @@ sub exec_recon_script ($$$) {
 			$macros_parameters = $macros_parameters . ' "' . $m->{"value"} . '"';
 		}
 	}
+
+	my $args = "$task->{'id_rt'} $task->{'id_group'} $task->{'create_incident'} $macros_parameters";
+
+	# Depending of the recon_script type (name) should be invoked
+	# in different ways:
+	if ($script->{'name'} =~ /Discovery.App/i) {
+		# Discovery Application recon script. Imported from heavy server plugins.
+		# Instantiate configuration file.
+
+
+	}
 	
 	if (-x $command) {
-		`$command $task->{'id_rt'} $task->{'id_group'} $task->{'create_incident'} $macros_parameters`;
+		`$command $args`;
 	} else {
 		logger ($pa_config, "Cannot execute recon task command $command.");
 	}

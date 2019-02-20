@@ -21,6 +21,21 @@ require_once 'include/functions_menu.php';
 $menu_godmode = [];
 $menu_godmode['class'] = 'godmode';
 
+
+if (check_acl($config['id_user'], 0, 'PM')) {
+    $sub = [];
+    $sub['godmode/servers/discovery']['text'] = __('Discover');
+    $sub['godmode/servers/discovery']['id'] = 'Discover';
+    $sub['godmode/servers/discovery']['subsecs'] = ['godmode/servers/discovery'];
+
+    // Add to menu.
+    $menu_godmode['discover']['text'] = __('Discovery');
+    $menu_godmode['discover']['sec2'] = 'godmode/servers/discovery';
+    $menu_godmode['discover']['id'] = 'god-discovery';
+    $menu_godmode['discover']['sub'] = $sub;
+}
+
+
 $sub = [];
 if (check_acl($config['id_user'], 0, 'AW') || check_acl($config['id_user'], 0, 'AD')) {
     $sub['godmode/agentes/modificar_agente']['text'] = __('Manage agents');
@@ -200,17 +215,11 @@ if (check_acl($config['id_user'], 0, 'AW') || check_acl($config['id_user'], 0, '
     $menu_godmode['gservers']['id'] = 'god-servers';
 
     $sub = [];
-    if (check_acl($config['id_user'], 0, 'PM')) {
-        $sub['godmode/servers/discovery']['text'] = __('Discover');
-        $sub['godmode/servers/discovery']['id'] = 'Discover';
-    }
 
     if (check_acl($config['id_user'], 0, 'AW')) {
         $sub['godmode/servers/modificar_server']['text'] = __('Manage servers');
         $sub['godmode/servers/modificar_server']['id'] = 'Manage servers';
     }
-
-
 
     // This subtabs are only for Pandora Admin
     if (check_acl($config['id_user'], 0, 'PM')) {

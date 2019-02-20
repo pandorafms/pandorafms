@@ -1356,7 +1356,7 @@ function events_print_type_description($type, $return=false)
         break;
 
         case 'recon_host_detected';
-            $output .= __('Recon server detected a new host');
+            $output .= __('Discovery server detected a new host');
         break;
 
         case 'new_agent';

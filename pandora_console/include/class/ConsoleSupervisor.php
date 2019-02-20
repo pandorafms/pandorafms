@@ -501,6 +501,7 @@ class ConsoleSupervisor
             case 'NOTIF.UPDATEMANAGER.OPENSETUP':
             case 'NOTIF.UPDATEMANAGER.UPDATE':
             case 'NOTIF.UPDATEMANAGER.MINOR':
+            case 'NOTIF.CRON.CONFIGURED':
             default:
                 // NOTIF.SERVER.STATUS.
                 // NOTIF.SERVER.STATUS.ID_SERVER.
@@ -937,57 +938,66 @@ class ConsoleSupervisor
         );
 
         $time = time();
-        foreach ($queue_state as $queue) {
-            $key = $queue['id_server'];
-            $type = $queue['server_type'];
-            $new_data[$key] = $queue['queued_modules'];
+        if (is_array($queue_state) === true) {
+            foreach ($queue_state as $queue) {
+                $key = $queue['id_server'];
+                $type = $queue['server_type'];
+                $new_data[$key] = $queue['queued_modules'];
 
-            // Compare queue increments in a not over 900 seconds.
-            if (empty($previous[$key]['modules'])
-                || ($time - $previous[$key]['utime']) > 900
-            ) {
-                $previous[$key]['modules'] = 0;
-            }
-
-            $modules_queued = ($queue['queued_modules'] - $previous[$key]['modules']);
-
-            // 50 Modules queued since last check. Or more than 1500 queued.
-            if ($modules_queued > $MAX_GROWN
-                || $queue['queued_modules'] > $MAX_QUEUE
-            ) {
-                $msg = 'Queue has grown %d modules. Total %d';
-                if ($modules_queued <= 0) {
-                    $msg = 'Queue is decreasing in %d modules. But there are %d queued.';
-                    $modules_queued *= -1;
+                // Compare queue increments in a not over 900 seconds.
+                if (empty($previous[$key]['modules'])
+                    || ($time - $previous[$key]['utime']) > 900
+                ) {
+                    $previous[$key]['modules'] = 0;
                 }
 
-                $this->notify(
-                    [
-                        'type'    => 'NOTIF.SERVER.QUEUE.'.$key,
-                        'title'   => __(
-                            '%s (%s) performance is being lacked.',
-                            servers_get_server_string_name($type),
-                            $queue['name']
-                        ),
-                        'message' => __(
-                            $msg,
-                            $modules_queued,
-                            $queue['queued_modules']
-                        ),
-                        'url'     => ui_get_full_url(
-                            'index.php?sec=gservers&sec2=godmode/servers/modificar_server&refr=60'
-                        ),
-                    ]
-                );
-            } else {
-                $this->cleanNotifications('NOTIF.SERVER.QUEUE.'.$key);
+                $modules_queued = ($queue['queued_modules'] - $previous[$key]['modules']);
+
+                // 50 Modules queued since last check. Or more than 1500 queued.
+                if ($modules_queued > $MAX_GROWN
+                    || $queue['queued_modules'] > $MAX_QUEUE
+                ) {
+                    $msg = 'Queue has grown %d modules. Total %d';
+                    if ($modules_queued <= 0) {
+                        $msg = 'Queue is decreasing in %d modules. But there are %d queued.';
+                        $modules_queued *= -1;
+                    }
+
+                    $this->notify(
+                        [
+                            'type'    => 'NOTIF.SERVER.QUEUE.'.$key,
+                            'title'   => __(
+                                '%s (%s) performance is being lacked.',
+                                servers_get_server_string_name($type),
+                                $queue['name']
+                            ),
+                            'message' => __(
+                                $msg,
+                                $modules_queued,
+                                $queue['queued_modules']
+                            ),
+                            'url'     => ui_get_full_url(
+                                'index.php?sec=gservers&sec2=godmode/servers/modificar_server&refr=60'
+                            ),
+                        ]
+                    );
+                } else {
+                    $this->cleanNotifications('NOTIF.SERVER.QUEUE.'.$key);
+                }
+
+                $new[$key]['modules'] = $queue['queued_modules'];
+                $new[$key]['utime'] = $time;
             }
 
-            $new[$key]['modules'] = $queue['queued_modules'];
-            $new[$key]['utime'] = $time;
-        }
+            // Update file content.
+            file_put_contents($idx_file, json_encode($new));
+        } else {
+            // No queue data, ignore.
+            unlink($idx_file);
 
-        file_put_contents($idx_file, json_encode($new));
+            // Clean notifications.
+            $this->cleanNotifications('NOTIF.SERVER.QUEUE.%');
+        }
     }
 
 
@@ -1370,7 +1380,10 @@ class ConsoleSupervisor
                 [
                     'type'    => 'NOTIF.PANDORADB',
                     'title'   => __('Database maintance problem'),
-                    'message' => __('Your database is not maintained correctly. It seems that more than 48hrs have passed without proper maintenance. Please review documents of %s on how to perform this maintenance process (DB Tool) and enable it as soon as possible.', get_product_name()),
+                    'message' => __(
+                        'Your database is not maintained correctly. It seems that more than 48hrs have passed without proper maintenance. Please review documents of %s on how to perform this maintenance process (DB Tool) and enable it as soon as possible.',
+                        io_safe_output(get_product_name())
+                    ),
                     'url'     => ui_get_full_url(
                         'index.php?sec=general&sec2=godmode/setup/setup&section=perf'
                     ),
@@ -2067,6 +2080,57 @@ class ConsoleSupervisor
             );
         } else {
             $this->cleanNotifications('NOTIF.UPDATEMANAGER.MINOR');
+        }
+
+    }
+
+
+    /**
+     * Check if CRON utility has been configured.
+     *
+     * @return void
+     */
+    public function checkCronRunning()
+    {
+        global $config;
+
+        // Check if DiscoveryCronTasks is running. Warn user if not.
+        if ($config['cron_last_run'] == 0
+            || (get_system_time() - $config['cron_last_run']) > 3600
+        ) {
+            $message_conf_cron = __('DiscoveryConsoleTasks is not running properly');
+            if (strtoupper(substr(PHP_OS, 0, 3)) != 'WIN') {
+                $message_conf_cron .= __('Discovery relies on a proper setup of cron, the time-based scheduling service');
+                $message_conf_cron .= '. '.__('Please, add the following line to your crontab file:');
+                $message_conf_cron .= '<pre>* * * * * &lt;user&gt; wget -q -O - --no-check-certificate ';
+                $message_conf_cron .= str_replace(
+                    ENTERPRISE_DIR.'/meta/',
+                    '',
+                    ui_get_full_url(false)
+                );
+                $message_conf_cron .= ENTERPRISE_DIR.'/'.EXTENSIONS_DIR;
+                $message_conf_cron .= '/cron/cron.php &gt;&gt; ';
+                $message_conf_cron .= $config['homedir'].'/pandora_console.log</pre>';
+            }
+
+            if (isset($config['cron_last_run']) === true) {
+                $message_conf_cron .= __('Last execution').': ';
+                $message_conf_cron .= date('Y/m/d H:i:s', $config['cron_last_run']);
+                $message_conf_cron .= __('Please check process is no locked.');
+            }
+
+            $this->notify(
+                [
+                    'type'    => 'NOTIF.CRON.CONFIGURED',
+                    'title'   => __('DiscoveryConsoleTasks is not configured.'),
+                    'message' => __($message_conf_cron),
+                    'url'     => ui_get_full_url(
+                        'index.php?extension_in_menu=gservers&sec=extensions&sec2=enterprise/extensions/cron'
+                    ),
+                ]
+            );
+        } else {
+            $this->cleanNotifications('NOTIF.CRON.CONFIGURED');
         }
 
     }

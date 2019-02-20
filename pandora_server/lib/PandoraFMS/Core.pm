@@ -179,6 +179,7 @@ our @EXPORT = qw(
 	pandora_evaluate_alert
 	pandora_evaluate_snmp_alerts
 	pandora_event
+	pandora_extended_event
 	pandora_execute_alert
 	pandora_execute_action
 	pandora_exec_forced_alerts
@@ -3270,11 +3271,11 @@ sub pandora_event ($$$$$$$$$$;$$$$$$$$$$$) {
 	
 	# Create the event
 	logger($pa_config, "Generating event '$evento' for agent ID $id_agente module ID $id_agentmodule.", 10);
-	db_do ($dbh, 'INSERT INTO ' . $event_table . ' (id_agente, id_grupo, evento, timestamp, estado, utimestamp, event_type, id_agentmodule, id_alert_am, criticity, user_comment, tags, source, id_extra, id_usuario, critical_instructions, warning_instructions, unknown_instructions, ack_utimestamp, custom_data, data, module_status)
+	my $event_id = db_insert ($dbh, 'id_evento','INSERT INTO ' . $event_table . ' (id_agente, id_grupo, evento, timestamp, estado, utimestamp, event_type, id_agentmodule, id_alert_am, criticity, user_comment, tags, source, id_extra, id_usuario, critical_instructions, warning_instructions, unknown_instructions, ack_utimestamp, custom_data, data, module_status)
 	              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', $id_agente, $id_grupo, safe_input ($evento), $timestamp, $event_status, $utimestamp, $event_type, $id_agentmodule, $id_alert_am, $severity, $comment, $module_tags, $source, $id_extra, $user_name, $critical_instructions, $warning_instructions, $unknown_instructions, $ack_utimestamp, $custom_data, $module_data, $module_status);
-	
+
 	# Do not write to the event file
-	return if ($pa_config->{'event_file'} eq '');
+	return $event_id if ($pa_config->{'event_file'} eq '');
 
 	# Add a header when the event file is created
 	my $header = undef;
@@ -3285,7 +3286,7 @@ sub pandora_event ($$$$$$$$$$;$$$$$$$$$$$) {
 	# Open the event file for writing
 	if (! open (EVENT_FILE, '>>' . $pa_config->{'event_file'})) {
 		logger($pa_config, "Error opening event file " . $pa_config->{'event_file'} . ": $!", 10);
-		return;
+		return $event_id;
 	}
 	
 	# Resolve ids
@@ -3308,6 +3309,29 @@ sub pandora_event ($$$$$$$$$$;$$$$$$$$$$$) {
 	print EVENT_FILE  "$agent_name,".safe_output($group_name)."," . safe_output ($evento) . ",$timestamp,$event_status,$utimestamp,$event_type,".safe_output($module_name).",".safe_output($alert_name).",$severity,".safe_output($comment).",".safe_output($module_tags).",$source,$id_extra,$user_name,".safe_output($critical_instructions).",".safe_output($warning_instructions).",".safe_output($unknown_instructions).",$ack_utimestamp\n";
 	
 	close (EVENT_FILE);
+
+	return $event_id;
+}
+
+##########################################################################
+=head2 C<< pandora_extended_event (I<$pa_config>, I<$dbh>, I<$event_id>, I<$description>) >> 
+
+Creates an extended event linked to an existing main event id.
+
+=cut
+##########################################################################
+sub pandora_extended_event($$$$) {
+	my ($pa_config, $dbh, $event_id, $description) = @_;
+
+	return unless defined($event_id) && "$event_id" ne "" && $event_id > 0;
+
+	return db_do(
+		$dbh,
+		'INSERT INTO tevent_extended (id_evento, utimestamp, description) VALUES (?,?,?)',
+		$event_id,
+		time(),
+		safe_input($description)
+	);
 }
 
 ##########################################################################
@@ -4544,7 +4568,7 @@ sub pandora_server_statistics ($$) {
 			$server->{"lag"} = 0;
 			$server->{"module_lag"} = 0;
 		# Recon server
-		} elsif ($server->{"server_type"} == RECONSERVER) {
+		} elsif ($server->{"server_type"} == DISCOVERYSERVER) {
 
 				# Total jobs running on this recon server
 				$server->{"modules"} = get_db_value ($dbh, "SELECT COUNT(id_rt) FROM trecon_task WHERE id_recon_server = ?", $server->{"id_server"});

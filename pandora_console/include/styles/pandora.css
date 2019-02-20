@@ -4305,6 +4305,7 @@ div#dialog_messages table th:last-child {
   position: absolute;
   width: 400px;
   margin-top: -5px;
+  border-radius: 5px;
 }
 #notification-wrapper::before {
   content: "";
@@ -4338,11 +4339,14 @@ div#dialog_messages table th:last-child {
   background: whitesmoke;
   height: 100px;
   margin: 7px;
-  border: #cccccc solid 1px;
+  border: #e4e4e4 solid 1px;
   display: flex;
   flex-flow: row nowrap;
   align-items: center;
   padding: 5px;
+}
+.notification-item:hover {
+  border: #ccc solid 1px;
 }
 .notification-item > * {
   padding-left: 15px;
@@ -4357,6 +4361,9 @@ div#dialog_messages table th:last-child {
   width: 87%;
   display: flex;
   flex-flow: column nowrap;
+  overflow: hidden;
+  max-height: 83px;
+  line-height: 1.4em;
 }
 .notification-item img {
   max-width: 100%;

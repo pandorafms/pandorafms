@@ -106,7 +106,12 @@ if ($read_message) {
         $dst_name = $message['id_usuario_destino'];
     }
 
-    echo '<h1>Conversation with '.$user_name.'</h1>';
+    if (isset($user_name) !== true || empty($user_name) === true) {
+        echo '<h1>Notification</h1>';
+    } else {
+        echo '<h1>Conversation with '.$user_name.'</h1>';
+    }
+
     echo '<h2>Subject: '.$message['subject'].'</h2>';
 
     $conversation = [];

@@ -52,13 +52,13 @@ function snmp_browser_print_tree($tree, $id=0, $depth=0, $last=0, $last_array=[]
     }
 
     foreach ($tree['__LEAVES__'] as $level => $sub_level) {
-        // Id used to expand leafs
+        // Id used to expand leafs.
         $sub_id = time().rand(0, getrandmax());
 
-        // Display the branch
+        // Display the branch.
         echo "<li id='li_$sub_id' style='margin: 0; padding: 0;'>";
 
-        // Indent sub branches
+        // Indent sub branches.
         for ($i = 1; $i <= $depth; $i++) {
             if ($last_array[$i] == 1) {
                 echo '<img src="'.$url.'/no_branch.png" style="vertical-align: middle;">';
@@ -67,7 +67,7 @@ function snmp_browser_print_tree($tree, $id=0, $depth=0, $last=0, $last_array=[]
             }
         }
 
-        // Branch
+        // Branch.
         if (! empty($sub_level['__LEAVES__'])) {
             echo "<a id='anchor_$sub_id' onfocus='javascript: this.blur();' href='javascript: toggleTreeNode(\"$sub_id\", \"$id\");'>";
             if ($depth == 0 && $count == 0) {
@@ -84,7 +84,7 @@ function snmp_browser_print_tree($tree, $id=0, $depth=0, $last=0, $last_array=[]
 
             echo '</a>';
         }
-        // Leave
+        // Leave.
         else {
             if ($depth == 0 && $count == 0) {
                 if ($count == $total) {
@@ -106,7 +106,7 @@ function snmp_browser_print_tree($tree, $id=0, $depth=0, $last=0, $last_array=[]
             echo '</a>';
         }
 
-        $checkbox_name_sufix = ($sufix) ? '' : '_'.$level;
+        $checkbox_name_sufix = ($sufix === true) ? '_'.$level : '';
         $checkbox_name = 'create_'.$sub_id.$checkbox_name_sufix;
         echo html_print_checkbox($checkbox_name, 0, false, true, false, '').'&nbsp;<span>'.$level.'</span>';
         if (isset($sub_level['__VALUE__'])) {
@@ -115,7 +115,7 @@ function snmp_browser_print_tree($tree, $id=0, $depth=0, $last=0, $last_array=[]
 
         echo '</li>';
 
-        // Recursively print sub levels
+        // Recursively print sub levels.
         snmp_browser_print_tree($sub_level, $sub_id, ($depth + 1), ($count == $total ? 1 : 0), $last_array, $sufix);
 
         $count++;

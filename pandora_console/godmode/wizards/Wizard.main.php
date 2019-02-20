@@ -105,6 +105,40 @@ class Wizard
 
 
     /**
+     * Return units associated to target interval (in seconds).
+     *
+     * @param integer $interval Target interval.
+     *
+     * @return integer Unit.
+     */
+    public function getTimeUnit($interval)
+    {
+        $units = [
+            1,
+            60,
+            3600,
+            86400,
+            604800,
+            2592000,
+            31104000,
+        ];
+
+        $size = count($units);
+        for ($i = 0; $i < $size; $i++) {
+            if ($interval < $units[$i]) {
+                if (($i - 1) < 0) {
+                    return 1;
+                }
+
+                return $units[($i - 1)];
+            }
+        }
+
+        return $units[-1];
+    }
+
+
+    /**
      * Builder for breadcrum
      *
      * @param array $urls Array of urls to be stored in breadcrum.
@@ -116,9 +150,15 @@ class Wizard
         $bc = [];
         $i = 0;
         foreach ($urls as $url) {
+            if ($url['selected'] == 1) {
+                $class = 'selected';
+            } else {
+                $class = '';
+            }
+
             $bc[$i]    = '<a href="'.$url['link'].'" class="text_color">';
-            $bc[$i]   .= '<div class="arrow_box">'.$url['label'].'</div>';
-            $bc[$i++] .= '</a>';
+            $bc[$i]   .= '<div class="arrow_box '.$class.'">'.$url['label'];
+            $bc[$i++] .= '</div></a>';
         }
 
         $this->setBreadcrum($bc);

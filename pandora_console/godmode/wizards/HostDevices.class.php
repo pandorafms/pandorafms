@@ -690,6 +690,14 @@ class HostDevices extends Wizard
                     'action' => $this->url.'&mode=netscan&page='.($this->page + 1).$task_url,
                 ];
 
+                // Default.
+                $interval = 600;
+                $unit = 60;
+                if (isset($this->task['interval_sweep']) === true) {
+                    $interval = $this->task['interval_sweep'];
+                    $unit = $this->getTimeUnit($interval);
+                }
+
                 $form['js'] = '
 $("select#interval_manual_defined").change(function() {
     if ($("#interval_manual_defined").val() == 1) {
@@ -700,8 +708,8 @@ $("select#interval_manual_defined").change(function() {
     else {
         $("#interval_manual_container").show();
         $("#text-interval_text").val(10);
-        $("#hidden-interval").val(600);
-        $("#interval_units").val(60);
+        $("#hidden-interval").val('.$interval.');
+        $("#interval_units").val('.$unit.');
     }
 }).change();';
 

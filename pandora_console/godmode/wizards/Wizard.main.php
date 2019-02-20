@@ -388,6 +388,17 @@ class Wizard
             case 'switch':
             return html_print_switch($data);
 
+            case 'textarea':
+            return html_print_textarea(
+                $data['name'],
+                $data['rows'],
+                $data['columns'],
+                ((isset($data['value']) === true) ? $data['value'] : ''),
+                ((isset($data['attributes']) === true) ? $data['attributes'] : ''),
+                ((isset($data['return']) === true) ? $data['return'] : false),
+                ((isset($data['class']) === true) ? $data['class'] : '')
+            );
+
             default:
                 // Ignore.
             break;

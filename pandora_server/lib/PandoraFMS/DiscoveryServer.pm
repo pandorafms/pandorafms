@@ -234,7 +234,13 @@ sub exec_recon_script ($$$) {
 	# \r and \n should be escaped for decode_json().
 	$macros =~ s/\n/\\n/g;
 	$macros =~ s/\r/\\r/g;
-	my $decoded_macros = decode_json (encode_utf8($macros));
+	my $decoded_macros;
+	
+	if ($macros) {
+		eval {
+			$decoded_macros = decode_json(encode_utf8($macros));
+		};
+	}
 	
 	my $macros_parameters = '';
 	
@@ -254,15 +260,12 @@ sub exec_recon_script ($$$) {
 		}
 	}
 
-	my $args = "$task->{'id_rt'} $task->{'id_group'} $task->{'create_incident'} $macros_parameters";
-
-	# Depending of the recon_script type (name) should be invoked
-	# in different ways:
-	if ($script->{'name'} =~ /Discovery.App/i) {
-		# Discovery Application recon script. Imported from heavy server plugins.
-		# Instantiate configuration file.
-
-
+	my $ent_script = 0;
+	my $args = enterprise_hook('discovery_custom_recon_scripts',[$pa_config, $dbh, $task, $script]);
+	if (!$args) {
+		$args = "$task->{'id_rt'} $task->{'id_group'} $task->{'create_incident'} $macros_parameters";
+	} else {
+		$ent_script = 1;
 	}
 	
 	if (-x $command) {
@@ -273,6 +276,10 @@ sub exec_recon_script ($$$) {
 	
 	# Only update the timestamp in case something went wrong. The script should set the status.
 	db_do ($dbh, 'UPDATE trecon_task SET utimestamp = ? WHERE id_rt = ?', time (), $task->{'id_rt'});
+
+	if ($ent_script == 1) {
+		enterprise_hook('discovery_clean_custom_recon',[$pa_config, $dbh, $task, $script]);
+	}
 	
 	logger($pa_config, 'Done executing recon script ' . safe_output($script->{'name'}), 10);
 	return 0;

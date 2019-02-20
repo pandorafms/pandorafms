@@ -142,7 +142,6 @@ function reporting_make_reporting_data(
     enterprise_include_once('include/functions_metaconsole.php');
 
     $return = [];
-
     if (!empty($report)) {
         $contents = $report['contents'];
     } else {
@@ -261,7 +260,7 @@ function reporting_make_reporting_data(
         }
 
         if (isset($content['style']['name_label'])) {
-            // Add macros name
+            // Add macros name.
             $items_label = [];
             $items_label['type'] = $content['type'];
             $items_label['id_agent'] = $content['id_agent'];
@@ -272,11 +271,10 @@ function reporting_make_reporting_data(
             $metaconsole_on = is_metaconsole();
             $server_name = $content['server_name'];
 
-            // Metaconsole connection
+            // Metaconsole connection.
             if ($metaconsole_on && $server_name != '') {
                 $connection = metaconsole_get_connection($server_name);
                 if (!metaconsole_load_external_db($connection)) {
-                    // ui_print_error_message ("Error connecting to ".$server_name);
                     continue;
                 }
             }
@@ -889,7 +887,6 @@ function reporting_SLA(
             if ($metaconsole_on && $server_name != '') {
                 $connection = metaconsole_get_connection($server_name);
                 if (!metaconsole_load_external_db($connection)) {
-                    // ui_print_error_message ("Error connecting to ".$server_name);
                     continue;
                 }
             }
@@ -898,7 +895,7 @@ function reporting_SLA(
                 || modules_is_not_init($sla['id_agent_module'])
             ) {
                 if ($metaconsole_on) {
-                    // Restore db connection
+                    // Restore db connection.
                     metaconsole_restore_db();
                 }
 
@@ -6794,7 +6791,6 @@ function reporting_general($report, $content)
                     if (!is_numeric($data_res[$index])) {
                         $return['data'][$ag_name][$mod_name] = $data_res[$index];
                     } else {
-                        hd($data_res[$index], true);
                         $return['data'][$ag_name][$mod_name] = format_for_graph($data_res[$index], 2).' '.$unit;
                     }
                 }
@@ -11335,4 +11331,28 @@ function reporting_translate_sla_status_for_graph($status)
         REPORT_STATUS_IGNORED  => 7,
     ];
     return $sts[$status];
+}
+
+
+/**
+ * Print header to report pdf and add page break
+ *
+ * @param string $title       Title of report.
+ * @param string $description Description of report.
+ *
+ * @return html Return table of header.
+ */
+function reporting_header_table_for_pdf(string $title='', string $description='')
+{
+    $result_pdf .= '<pagebreak>';
+    $result_pdf .= '<table class="header_table databox">';
+    $result_pdf .= '<thead class="header_tr"><tr>';
+    $result_pdf .= '<th class="th_first" colspan="2">';
+    $result_pdf .= $title;
+    $result_pdf .= '</th><th style="font-size: 15px;" align="right">';
+    $result_pdf .= '</th></tr><tr><th colspan="3" class="th_description">';
+    $result_pdf .= $description;
+    $result_pdf .= '</th></tr></thead></table>';
+
+    return $result_pdf;
 }

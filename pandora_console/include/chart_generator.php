@@ -88,15 +88,12 @@ if (file_exists('languages/'.$user_language.'.mo')) {
         $params['menu']       = false;
 
     if ((!isset($params['width']) || ($params['width'] <= 0))) {
-        $params['width'] = 1048;
+        $params['width'] = 650;
     }
 
         $params_combined = json_decode($_REQUEST['data_combined'], true);
         $module_list     = json_decode($_REQUEST['data_module_list'], true);
         $type_graph_pdf  = $_REQUEST['type_graph_pdf'];
-
-        $aux_font_size = $config['font_size'];
-        $config['font_size'] = ($config['font_size'] + 3);
 
         echo '<div>';
     switch ($type_graph_pdf) {
@@ -216,7 +213,6 @@ if (file_exists('languages/'.$user_language.'.mo')) {
 
         echo '</div>';
 
-        $config['font_size'] = $aux_font_size;
     ?>
 
     <script type="text/javascript">

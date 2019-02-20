@@ -856,6 +856,7 @@ function pandoraFlotSlicebar(
   }
 
   var font_size = parseInt(font_size);
+  if (font != undefined)
   var font = font
     .split("/")
     .pop()

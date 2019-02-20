@@ -410,13 +410,17 @@ class Wizard
      *
      * @return void
      */
-    public function printGoBackButton()
+    public function printGoBackButton($url)
     {
+        if (isset($url) === false) {
+            $url = 'index.php?sec=gservers&sec2=godmode/servers/discovery';
+        }
+
         $form = [
             'form'   => [
                 'method' => 'POST',
                 'action' => ui_get_full_url(
-                    'index.php?sec=gservers&sec2=godmode/servers/discovery'
+                    $url
                 ),
             ],
             'inputs' => [

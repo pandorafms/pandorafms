@@ -390,10 +390,13 @@ $table->data[] = $data;
 
 // Double auth
 $double_auth_enabled = (bool) db_get_value('id', 'tuser_double_auth', 'id_user', $config['id_user']);
-$data = [];
-$data[0] = '<span style="width:50%;float:left;">'.__('Double authentication').'</span>';
-$data[0] .= $jump;
-$data[0] .= '<span style="width:20%;float:left;line-height:20px;">'.html_print_checkbox('double_auth', 1, $double_auth_enabled, true).'</span>';
+$data = array();
+if ($config['double_auth_enabled']) {
+	$data[0] = '<span style="width:50%;float:left;">'.__('Double authentication').'</span>';
+	$data[0] .= $jump;
+	$data[0] .= '<span style="width:20%;float:left;line-height:20px;">'.html_print_checkbox('double_auth', 1, $double_auth_enabled, true).'</span>';
+}
+
 if ($double_auth_enabled) {
     $data[0] .= $jump;
     $data[0] .= html_print_button(__('Show information'), 'show_info', false, 'javascript:show_double_auth_info();', '', true);

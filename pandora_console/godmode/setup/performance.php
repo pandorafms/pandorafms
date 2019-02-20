@@ -665,6 +665,20 @@ $table_other->data[12][1] = html_print_input_text(
     true
 );
 
+$table_other->data[13][0] = __('Events response max. execution');
+$table_other->data[13][0] .= ui_print_help_tip(
+    __('Number of events that will perform the desired action at the same time'),
+    true
+);
+$table_other->data[13][1] = html_print_input_text(
+    'max_execution_event_response',
+    $config['max_execution_event_response'],
+    '',
+    5,
+    5,
+    true
+);
+
 echo '<form id="form_setup" method="post">';
 
 echo '<fieldset>';

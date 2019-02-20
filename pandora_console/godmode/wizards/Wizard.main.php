@@ -413,7 +413,7 @@ class Wizard
      *
      * @return void
      */
-    public function printGoBackButton($url)
+    public function printGoBackButton($url=null)
     {
         if (isset($url) === false) {
             $url = ui_get_full_url(

@@ -375,7 +375,7 @@ function messages_get_count(
                 tnotification_source ns
                 LEFT JOIN tnotification_source_user nsu
                     ON ns.id=nsu.id_source
-                    AND nsu.id_user="test")
+                    AND nsu.id_user="%s")
                 ON tm.id_source=ns.id',
             $user
         );

@@ -340,6 +340,14 @@ class ConsoleSupervisor
             enterprise_hook('cron_supervisor_release_lock');
         }
 
+        /*
+         * Check if CRON is running.
+         *    NOTIF.CRON.CONFIGURED
+         */
+        if (enterprise_installed()) {
+            $this->checkCronRunning();
+        }
+
     }
 
 

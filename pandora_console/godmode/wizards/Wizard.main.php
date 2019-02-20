@@ -83,17 +83,17 @@ class Wizard
     /**
      * Add an element to breadcrum array.
      *
-     * @param string $string Element to add to breadcrum.
+     * @param string $breads Elements to add to breadcrum.
      *
      * @return void
      */
-    protected function addBreadcrum($string)
+    protected function addBreadcrum($breads)
     {
-        if (empty($string)) {
+        if (empty($breads)) {
             return;
         }
 
-        array_push($this->breadcrum, $string);
+        $this->breadcrum = array_merge($this->breadcrum, $breads);
     }
 
 
@@ -124,21 +124,28 @@ class Wizard
     /**
      * Builder for breadcrum
      *
-     * @param array $urls Array of urls to be stored in breadcrum.
+     * @param array   $urls Array of urls to be stored in breadcrum.
+     * @param boolean $add  True if breadcrum should be added instead of
+     *      overwrite it.
      *
      * @return void
      */
-    public function prepareBreadcrum(array $urls)
+    public function prepareBreadcrum(array $urls, bool $add=false)
     {
         $bc = [];
         $i = 0;
         foreach ($urls as $url) {
-            $bc[$i]    = '<a href="'.$url['link'].'" class="text_color">';
+            $href = (isset($url['link']) === true) ? 'href="'.$url['link'].'"' : '';
+            $bc[$i]    = '<a '.$href.' class="text_color">';
             $bc[$i]   .= '<div class="arrow_box">'.$url['label'].'</div>';
             $bc[$i++] .= '</a>';
         }
 
-        $this->setBreadcrum($bc);
+        if ($add === true) {
+            $this->addBreadcrum($bc);
+        } else {
+            $this->setBreadcrum($bc);
+        }
 
     }
 

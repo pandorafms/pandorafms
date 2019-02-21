@@ -1,17 +1,32 @@
 <?php
+/**
+ * Extension to manage a list of gateways and the node address where they should
+ * point to.
+ *
+ * @category   Extensions
+ * @package    Pandora FMS
+ * @subpackage Community
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
 
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation for version 2.
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-// Load global vars
 global $config;
 
 check_login();
@@ -29,38 +44,54 @@ if (enterprise_installed() && defined('METACONSOLE')) {
 }
 
 $id = get_parameter_get('id', $config['id_user']);
-// ID given as parameter
+// ID given as parameter.
 $status = get_parameter('status', -1);
-// Flag to print action status message
+// Flag to print action status message.
 $user_info = get_user_info($id);
+
 $id = $user_info['id_user'];
-// This is done in case there are problems with uppercase/lowercase (MySQL auth has that problem)
+// This is done in case there are problems with uppercase/lowercase
+// (MySQL auth has that problem).
 if ((!check_acl($config['id_user'], users_get_groups($id), 'UM'))
-    and ($id != $config['id_user'])
+    && ($id != $config['id_user'])
 ) {
-    db_pandora_audit('ACL Violation', 'Trying to view a user without privileges');
+    db_pandora_audit(
+        'ACL Violation',
+        'Trying to view a user without privileges'
+    );
     include 'general/noaccess.php';
     exit;
 }
 
-// If current user is editing himself or if the user has UM (User Management) rights on any groups the user is part of AND the authorization scheme allows for users/admins to update info
-if (($config['id_user'] == $id || check_acl($config['id_user'], users_get_groups($id), 'UM')) && $config['user_can_update_info']) {
+// If current user is editing himself or if the user has UM (User Management)
+// rights on any groups the user is part of AND the authorization scheme allows
+// for users/admins to update info.
+if (($config['id_user'] == $id || check_acl($config['id_user'], users_get_groups($id), 'UM'))
+    && $config['user_can_update_info']
+) {
     $view_mode = false;
 } else {
     $view_mode = true;
 }
 
-// Header
+// Header.
 if ($meta) {
     user_meta_print_header();
     $url = 'index.php?sec=advanced&amp;sec2=advanced/users_setup&amp;tab=user_edit';
 } else {
-    ui_print_page_header(__('User detail editor'), 'images/op_workspace.png', false, '', false, '');
+    ui_print_page_header(
+        __('User detail editor'),
+        'images/op_workspace.png',
+        false,
+        '',
+        false,
+        ''
+    );
     $url = 'index.php?sec=workspace&amp;sec2=operation/users/user_edit';
 }
 
 
-// Update user info
+// Update user info.
 if (isset($_GET['modified']) && !$view_mode) {
     if (html_print_csrf_error()) {
         return;
@@ -78,7 +109,7 @@ if (isset($_GET['modified']) && !$view_mode) {
     $upd_info['language'] = get_parameter_post('language', $user_info['language']);
     $upd_info['timezone'] = get_parameter_post('timezone', '');
     $upd_info['id_skin'] = get_parameter('skin', $user_info['id_skin']);
-    $upd_info['id_filter'] = get_parameter('event_filter', null);
+    $upd_info['default_event_filter'] = get_parameter('event_filter', null);
     $upd_info['block_size'] = get_parameter('block_size', $config['block_size']);
     $upd_info['firstname'] = get_parameter('newsletter_reminder', $user_info['first_name']);
     $default_block_size = get_parameter('default_block_size', 0);
@@ -91,7 +122,7 @@ if (isset($_GET['modified']) && !$view_mode) {
     $dashboard = get_parameter('dashboard', '');
     $visual_console = get_parameter('visual_console', '');
 
-    // save autorefresh list
+    // Save autorefresh list.
     $autorefresh_list = get_parameter_post('autorefresh_list');
     if (($autorefresh_list[0] === '') || ($autorefresh_list[0] === '0')) {
         $upd_info['autorefresh_white_list'] = '';
@@ -105,7 +136,10 @@ if (isset($_GET['modified']) && !$view_mode) {
 
     $section = io_safe_output($upd_info['section']);
 
-    if (($section == 'Event list') || ($section == 'Group view') || ($section == 'Alert detail') || ($section == 'Tactical view') || ($section == 'Default')) {
+    if (($section == 'Event list') || ($section == 'Group view')
+        || ($section == 'Alert detail') || ($section == 'Tactical view')
+        || ($section == 'Default')
+    ) {
         $upd_info['data_section'] = '';
     } else if ($section == 'Dashboard') {
         $upd_info['data_section'] = $dashboard;
@@ -115,7 +149,9 @@ if (isset($_GET['modified']) && !$view_mode) {
 
     if (!empty($password_new)) {
         if ($config['user_can_update_password'] && $password_confirm == $password_new) {
-            if ((!$is_admin || $config['enable_pass_policy_admin']) && $config['enable_pass_policy']) {
+            if ((!$is_admin || $config['enable_pass_policy_admin'])
+                && $config['enable_pass_policy']
+            ) {
                 $pass_ok = login_validate_pass($password_new, $id, true);
                 if ($pass_ok != 1) {
                     ui_print_error_message($pass_ok);
@@ -124,21 +160,11 @@ if (isset($_GET['modified']) && !$view_mode) {
                     if ($return) {
                         $return2 = save_pass_history($id, $password_new);
                     }
-
-                    /*
-                        ui_print_result_message ($return,
-                        __('Password successfully updated'),
-                    __('Error updating passwords: %s', $config['auth_error']));*/
                 }
             } else {
                 $return = update_user_password($id, $password_new);
-                /*
-                    ui_print_result_message ($return,
-                    __('Password successfully updated'),
-                    __('Error updating passwords: %s', $config['auth_error']));*/
             }
         } else if ($password_new !== 'NON-INIT') {
-            // ui_print_error_message (__('Passwords didn\'t match or other problem encountered while updating passwords'));
             $error_msg = __('Passwords didn\'t match or other problem encountered while updating passwords');
         }
     } else if (empty($password_new) && empty($password_confirm)) {
@@ -147,16 +173,18 @@ if (isset($_GET['modified']) && !$view_mode) {
         $return = false;
     }
 
-    // No need to display "error" here, because when no update is needed (no changes in data)
-    // SQL function returns    0 (FALSE), but is not an error, just no change. Previous error
-    // message could be confussing to the user.
+    // No need to display "error" here, because when no update is needed
+    // (no changes in data) SQL function returns 0 (FALSE), but is not an error,
+    // just no change. Previous error message could be confussing to the user.
     if ($return) {
         if (!empty($password_new) && !empty($password_confirm)) {
             $success_msg = __('Password successfully updated');
         }
 
-        // if info is valid then proceed with update
-        if ((filter_var($upd_info['email'], FILTER_VALIDATE_EMAIL) || $upd_info['email'] == '') && (preg_match('/^[0-9- ]+$/D', $upd_info['phone']) || $upd_info['phone'] == '')) {
+        // If info is valid then proceed with update.
+        if ((filter_var($upd_info['email'], FILTER_VALIDATE_EMAIL) || $upd_info['email'] == '')
+            && (preg_match('/^[0-9- ]+$/D', $upd_info['phone']) || $upd_info['phone'] == '')
+        ) {
             $return_update_user = update_user($id, $upd_info);
 
             if ($return_update_user === false) {
@@ -172,7 +200,12 @@ if (isset($_GET['modified']) && !$view_mode) {
                 }
             }
 
-            ui_print_result_message($return, $success_msg, $error_msg, $user_auth_error);
+            ui_print_result_message(
+                $return,
+                $success_msg,
+                $error_msg,
+                $user_auth_error
+            );
         } else if (!filter_var($upd_info['email'], FILTER_VALIDATE_EMAIL)) {
             ui_print_error_message(__('Please enter a valid email'));
         } else if (!preg_match('/^[0-9- ]+$/D', $upd_info['phone'])) {
@@ -187,11 +220,16 @@ if (isset($_GET['modified']) && !$view_mode) {
 
         $user_auth_error = $config['auth_error'];
 
-        ui_print_result_message($return, $success_msg, $error_msg, $user_auth_error);
+        ui_print_result_message(
+            $return,
+            $success_msg,
+            $error_msg,
+            $user_auth_error
+        );
     }
 }
 
-// Prints action status for current message
+// Prints action status for current message.
 if ($status != -1) {
     ui_print_result_message(
         $status,
@@ -221,7 +259,20 @@ $data = [];
 $data[0] = '<span style="width:50%;float:left;"><b>'.__('User ID').'</b></span>';
 $data[0] .= $jump.'<span style="font-weight: normal;width:20%;float:left;">'.$id.'</span>';
 $data[1] = '<span style="width:40%;float:left;line-height:20px;"><b>'.__('Full (display) name').'</b></span>';
-$data[1] .= $jump.'<span style="width:20%;float:left;line-height:20px;">'.html_print_input_text_extended('fullname', $user_info['fullname'], 'fullname', '', 20, 100, $view_mode, '', 'class="input"', true).'</span>';
+$data[1] .= $jump.'<span style="width:20%;float:left;line-height:20px;">';
+$data[1] .= html_print_input_text_extended(
+    'fullname',
+    $user_info['fullname'],
+    'fullname',
+    '',
+    20,
+    100,
+    $view_mode,
+    '',
+    'class="input"',
+    true
+).'</span>';
+
 // Show "Picture" (in future versions, why not, allow users to upload it's own avatar here.
 if (is_user_admin($id)) {
     $data[2] = html_print_image('images/people_1.png', true);
@@ -368,7 +419,7 @@ if (!$meta) {
 
 
 
-    // User only can change skins if has more than one group
+    // User only can change skins if has more than one group.
     $data[1] = '';
     if (function_exists('skins_print_select')) {
         if (count($usr_groups) > 1) {
@@ -388,7 +439,7 @@ $table->rowclass[] = '';
 $table->rowstyle[] = 'font-weight: bold;';
 $table->data[] = $data;
 
-// Double auth
+// Double auth.
 $double_auth_enabled = (bool) db_get_value('id', 'tuser_double_auth', 'id_user', $config['id_user']);
 $data = array();
 if ($config['double_auth_enabled']) {
@@ -402,7 +453,7 @@ if ($double_auth_enabled) {
     $data[0] .= html_print_button(__('Show information'), 'show_info', false, 'javascript:show_double_auth_info();', '', true);
 }
 
-// Dialog
+// Dialog.
 $data[0] .= '<div id="dialog-double_auth"><div id="dialog-double_auth-container"></div></div>';
 
 if (check_acl($config['id_user'], 0, 'ER')) {
@@ -410,14 +461,13 @@ if (check_acl($config['id_user'], 0, 'ER')) {
     $data[1] .= $jump.'<span style="width:20%;float:left;line-height:20px;">'.html_print_select_from_sql(
         'SELECT id_filter, id_name FROM tevent_filter',
         'event_filter',
-        $user_info['id_filter'],
+        $user_info['default_event_filter'],
         '',
         __('None'),
         null,
         true
     ).'</span>';
-}//end if
-else if (license_free()) {
+} else if (license_free()) {
     $data[1] = __('Newsletter Subscribed').':';
     if ($user_info['middlename']) {
         $data[1] .= $jump.'<span style="font-weight:initial;">'.__('Already subscribed to %s newsletter', get_product_name()).'</span>';
@@ -468,7 +518,8 @@ if (!isset($autorefresh_list)) {
         $autorefresh_list[0] = __('None');
     } else {
         $aux = [];
-        for ($i = 0; $i < count($autorefresh_list); $i++) {
+        $count_autorefresh_list = count($autorefresh_list);
+        for ($i = 0; $i < $count_autorefresh_list; $i++) {
             $aux[$autorefresh_list[$i]] = $autorefresh_list_out[$autorefresh_list[$i]];
             unset($autorefresh_list_out[$autorefresh_list[$i]]);
             $autorefresh_list[$i] = $aux;
@@ -481,7 +532,8 @@ if (!isset($autorefresh_list)) {
         $autorefresh_list[0] = __('None');
     } else {
         $aux = [];
-        for ($i = 0; $i < count($autorefresh_list); $i++) {
+        $count_autorefresh_list = count($autorefresh_list);
+        for ($i = 0; $i < $count_autorefresh_list; $i++) {
             $aux[$autorefresh_list[$i]] = $autorefresh_list_out[$autorefresh_list[$i]];
             unset($autorefresh_list_out[$autorefresh_list[$i]]);
             $autorefresh_list[$i] = $aux;
@@ -491,10 +543,39 @@ if (!isset($autorefresh_list)) {
     }
 }
 
-$data[0] = _('Autorefresh').ui_print_help_tip(__('This will activate autorefresh in selected pages'), true);
-$select_out = html_print_select($autorefresh_list_out, 'autorefresh_list_out[]', '', '', '', '', true, true, true, '', false, 'width:200px');
+$data[0] = _('Autorefresh').ui_print_help_tip(
+    __('This will activate autorefresh in selected pages'),
+    true
+);
+$select_out = html_print_select(
+    $autorefresh_list_out,
+    'autorefresh_list_out[]',
+    '',
+    '',
+    '',
+    '',
+    true,
+    true,
+    true,
+    '',
+    false,
+    'width:200px'
+);
 $arrows = ' ';
-$select_in = html_print_select($autorefresh_list, 'autorefresh_list[]', '', '', '', '', true, true, true, '', false, 'width:200px');
+$select_in = html_print_select(
+    $autorefresh_list,
+    'autorefresh_list[]',
+    '',
+    '',
+    '',
+    '',
+    true,
+    true,
+    true,
+    '',
+    false,
+    'width:200px'
+);
 
 $table_ichanges = '<table style="position:relative;left:160px;">
 		<tr>
@@ -505,19 +586,50 @@ $table_ichanges = '<table style="position:relative;left:160px;">
 		<tr>
 			<td>'.$select_out.'</td>
 			<td>
-				<a href="javascript:">'.html_print_image('images/darrowright.png', true, ['id' => 'right_autorefreshlist', 'alt' => __('Push selected pages into autorefresh list'), 'title' => __('Push selected pages into autorefresh list')]).'</a>
+				<a href="javascript:">'.html_print_image(
+    'images/darrowright.png',
+    true,
+    [
+        'id'    => 'right_autorefreshlist',
+        'alt'   => __('Push selected pages into autorefresh list'),
+        'title' => __('Push selected pages into autorefresh list'),
+    ]
+).'</a>
 				<br><br>
-				<a href="javascript:">'.html_print_image('images/darrowleft.png', true, ['id' => 'left_autorefreshlist', 'alt' => __('Pop selected pages out of autorefresh list'), 'title' => __('Pop selected pages out of autorefresh list')]).'</a>
+				<a href="javascript:">'.html_print_image(
+    'images/darrowleft.png',
+    true,
+    [
+        'id'    => 'left_autorefreshlist',
+        'alt'   => __('Pop selected pages out of autorefresh list'),
+        'title' => __('Pop selected pages out of autorefresh list'),
+    ]
+).'</a>
 			</td>
 			<td>'.$select_in.'</td>
 		</tr>
 	</table>';
 $data[0] .= $table_ichanges;
 
-// time autorefresh
+// Time autorefresh.
 $times = get_refresh_time_array();
-$data[1] = '<span style="width:40%;float:left;">'.__('Time autorefresh').ui_print_help_tip(__('Interval of autorefresh of the elements, by default they are 30 seconds, needing to enable the autorefresh first'), true).'</span>';
-$data[1] .= $jump.'<span style="width:20%;float:left;">'.html_print_select($times, 'time_autorefresh', $user_info['time_autorefresh'], '', '', '', true, false, false).'</span>';
+$data[1] = '<span style="width:40%;float:left;">'.__('Time autorefresh');
+$data[1] .= ui_print_help_tip(
+    __('Interval of autorefresh of the elements, by default they are 30 seconds, needing to enable the autorefresh first'),
+    true
+).'</span>';
+$data[1] .= $jump.'<span style="width:20%;float:left;">';
+$data[1] .= html_print_select(
+    $times,
+    'time_autorefresh',
+    $user_info['time_autorefresh'],
+    '',
+    '',
+    '',
+    true,
+    false,
+    false
+).'</span>';
 
 $table->rowclass[] = '';
 $table->rowstyle[] = 'font-weight: bold;vertical-align: top';
@@ -531,7 +643,16 @@ $table->rowstyle[] = 'font-weight: bold;';
 $table->data[] = $data;
 
 $data = [];
-$data[0] = '<div style="width:98%">'.html_print_textarea('comments', 2, 60, $user_info['comments'], ($view_mode ? 'readonly="readonly"' : ''), true).'</div>';
+$data[0] = '<div style="width:98%">';
+$data[0] .= html_print_textarea(
+    'comments',
+    2,
+    60,
+    $user_info['comments'],
+    (($view_mode) ? 'readonly="readonly"' : ''),
+    true
+);
+$data[0] .= '</div>';
 $data[0] .= html_print_input_hidden('quick_language_change', 1, true);
 $table->colspan[count($table->data)][0] = 3;
 $table->rowclass[] = '';
@@ -597,9 +718,15 @@ if ($result === false) {
 foreach ($result as $profile) {
     $data[0] = '<b>'.profile_get_name($profile['id_perfil']).'</b>';
     if ($config['show_group_name']) {
-        $data[1] = ui_print_group_icon($profile['id_grupo'], true).'<a href="index.php?sec=estado&sec2=operation/agentes/estado_agente&refr=60&group_id='.$profile['id_grupo'].'">'.'&nbsp;'.'</a>';
+        $data[1] = ui_print_group_icon(
+            $profile['id_grupo'],
+            true
+        ).'<a href="index.php?sec=estado&sec2=operation/agentes/estado_agente&refr=60&group_id='.$profile['id_grupo'].'">&nbsp;</a>';
     } else {
-        $data[1] = ui_print_group_icon($profile['id_grupo'], true).'<a href="index.php?sec=estado&sec2=operation/agentes/estado_agente&refr=60&group_id='.$profile['id_grupo'].'">'.'&nbsp;'.ui_print_truncate_text(groups_get_name($profile['id_grupo'], true), GENERIC_SIZE_TEXT).'</a>';
+        $data[1] = ui_print_group_icon(
+            $profile['id_grupo'],
+            true
+        ).'<a href="index.php?sec=estado&sec2=operation/agentes/estado_agente&refr=60&group_id='.$profile['id_grupo'].'">&nbsp;'.ui_print_truncate_text(groups_get_name($profile['id_grupo'], true), GENERIC_SIZE_TEXT).'</a>';
     }
 
     $tags_ids = explode(',', $profile['tags']);

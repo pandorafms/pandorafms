@@ -3,6 +3,9 @@
 /**
  * Interfaz tope gama que obliga a implementar metodos.
  */
+
+define('CLOUDWIZARD_AWS_DESCRIPTION', 'Discovery.Cloud.AWS.EC2');
+
 class Wizard
 {
 

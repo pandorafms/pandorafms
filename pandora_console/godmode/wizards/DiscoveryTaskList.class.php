@@ -295,7 +295,7 @@ class DiscoveryTaskList extends Wizard
                             // Check if is a H&D, Cloud or Application.
                             $data[8] = '<a href="'.ui_get_full_url(
                                 sprintf(
-                                    'index.php?sec=gservers&sec2=godmode/servers/discovery&%s&page=0&task=%d',
+                                    'index.php?sec=gservers&sec2=godmode/servers/discovery&%s&task=%d',
                                     $this->getTargetWiz($task),
                                     $task['id_rt']
                                 )
@@ -365,7 +365,10 @@ class DiscoveryTaskList extends Wizard
         // TODO: Do not use description. Use recon_script ID instead.
         switch ($task['description']) {
             case 'Discovery.Application.VMware':
-            return 'wiz=app&mode=vmware';
+            return 'wiz=app&mode=vmware&page=0';
+
+            case CLOUDWIZARD_AWS_DESCRIPTION:
+            return 'wiz=cloud&mode=amazonws&page=1';
 
             default:
             return 'wiz=hd&mode=netscan';

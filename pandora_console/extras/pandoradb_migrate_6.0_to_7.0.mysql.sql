@@ -2003,7 +2003,7 @@ INSERT INTO `talert_commands` (`name`, `command`, `description`, `internal`, `fi
 -- ----------------------------------------------------------------------
 INSERT INTO `tnotification_source_user` (`id_source`, `id_user`, `enabled`, `also_mail`) VALUES ((SELECT `id` FROM `tnotification_source` WHERE `description`="System&#x20;status"), "admin", 1, 0);
 INSERT INTO `tnotification_source_group` ((SELECT `id` FROM `tnotification_source` WHERE `description`="Messages"),0);
-
+INSERT INTO `tnotification_user` (`id_mensaje`, `id_user`) SELECT `id_mensaje`, `id_usuario_destino` FROM `tmensajes` WHERE `id_usuario_destino` != '';
 -- ----------------------------------------------------------------------
 -- Add custom internal recon scripts
 -- ----------------------------------------------------------------------

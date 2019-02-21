@@ -53,7 +53,7 @@ UPDATE `tmensajes` SET `id_source`=(SELECT `id` FROM `tnotification_source` WHER
 ALTER TABLE `tmensajes` ADD CONSTRAINT `tsource_fk` FOREIGN KEY (`id_source`) REFERENCES `tnotification_source` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 
-CREATE TABLE `tnotification_user` (
+CREATE TABLE IF NOT EXISTS `tnotification_user` (
     `id_mensaje` INT(10) UNSIGNED NOT NULL,
     `id_user` VARCHAR(60) NOT NULL,
     `utimestamp_read` BIGINT(20),
@@ -66,7 +66,7 @@ CREATE TABLE `tnotification_user` (
         ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-CREATE TABLE `tnotification_group` (
+CREATE TABLE IF NOT EXISTS `tnotification_group` (
 	`id_mensaje` INT(10) UNSIGNED NOT NULL,
 	`id_group` mediumint(4) UNSIGNED NOT NULL,
 	PRIMARY KEY (`id_mensaje`,`id_group`),
@@ -74,7 +74,7 @@ CREATE TABLE `tnotification_group` (
 		ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-CREATE TABLE `tnotification_source_user` (
+CREATE TABLE IF NOT EXISTS `tnotification_source_user` (
     `id_source` BIGINT(20) UNSIGNED NOT NULL,
     `id_user` VARCHAR(60),
     `enabled` INT(1) DEFAULT NULL,
@@ -86,7 +86,7 @@ CREATE TABLE `tnotification_source_user` (
         ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-CREATE TABLE `tnotification_source_group` (
+CREATE TABLE IF NOT EXISTS `tnotification_source_group` (
     `id_source` BIGINT(20) UNSIGNED NOT NULL,
     `id_group` mediumint(4) unsigned NOT NULL,
     PRIMARY KEY (`id_source`,`id_group`),
@@ -95,7 +95,7 @@ CREATE TABLE `tnotification_source_group` (
         ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-CREATE TABLE `tnotification_source_group_user` (
+CREATE TABLE IF NOT EXISTS  `tnotification_source_group_user`(
     `id_source` BIGINT(20) UNSIGNED NOT NULL,
     `id_group` mediumint(4) unsigned NOT NULL,
     `id_user` VARCHAR(60),
@@ -113,7 +113,7 @@ CREATE TABLE `tnotification_source_group_user` (
 INSERT INTO `talert_commands` (`name`, `command`, `description`, `internal`, `fields_descriptions`, `fields_values`) VALUES ('Generate&#x20;Notification','Internal&#x20;type','This&#x20;command&#x20;allows&#x20;you&#x20;to&#x20;send&#x20;an&#x20;internal&#x20;notification&#x20;to&#x20;any&#x20;user&#x20;or&#x20;group.',1,'[\"Destination&#x20;user\",\"Destination&#x20;group\",\"Title\",\"Message\",\"Link\",\"Criticity\",\"\",\"\",\"\",\"\",\"\"]','[\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\"]');
 
 INSERT INTO `tnotification_source_user` (`id_source`, `id_user`, `enabled`, `also_mail`) VALUES ((SELECT `id` FROM `tnotification_source` WHERE `description`="System&#x20;status"), "admin", 1, 0);
-
 INSERT INTO `tnotification_source_group` ((SELECT `id` FROM `tnotification_source` WHERE `description`="Messages"),0);
+INSERT INTO `tnotification_user` (`id_mensaje`, `id_user`) SELECT `id_mensaje`, `id_usuario_destino` FROM `tmensajes` WHERE `id_usuario_destino` != '';
 
 COMMIT;

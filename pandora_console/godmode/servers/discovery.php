@@ -19,10 +19,11 @@ ui_print_page_header(__('Discover'), '', false, '', true);
 
 
 /**
- * Undocumented function
+ * Mask class names.
  *
- * @param  [type] $str
- * @return void
+ * @param string $str Wiz parameter.
+ *
+ * @return string Classname.
  */
 function get_wiz_class($str)
 {
@@ -39,10 +40,38 @@ function get_wiz_class($str)
         case 'app':
         return 'Applications';
 
+        case 'ctask':
+        return 'ConsoleTasks';
+
         default:
             // Ignore.
         return null;
     }
+}
+
+
+/**
+ * Aux. function to compare classpath names.
+ *
+ * @param string $a Classpath A.
+ * @param string $b Classpath B.
+ *
+ * @return string Matching one.
+ */
+function cl_load_cmp($a, $b)
+{
+    $str_a = basename($a, '.class.php');
+    $str_b = basename($b, '.class.php');
+    if ($str_a == $str_b) {
+        return 0;
+    }
+
+    if ($str_a < $str_b) {
+        return -1;
+    }
+
+    return 1;
+
 }
 
 
@@ -79,8 +108,13 @@ if (enterprise_installed() === true) {
     }
 }
 
+// Combine class paths.
 $classes = array_merge($classes, $enterprise_classes);
 
+// Sort output.
+uasort($classes, 'cl_load_cmp');
+
+// Check user action.
 $wiz_in_use = get_parameter('wiz', null);
 $page = get_parameter('page', 0);
 
@@ -110,7 +144,13 @@ if ($classname_selected === null) {
     foreach ($classes as $classpath) {
         $classname = basename($classpath, '.class.php');
         $obj = new $classname();
-        $wiz_data[] = $obj->load();
+
+        // DiscoveryTaskList must be first button.
+        if ($classname == 'DiscoveryTaskList') {
+            array_unshift($wiz_data, $obj->load());
+        } else {
+            $wiz_data[] = $obj->load();
+        }
     }
 
     Wizard::printBigButtonsList($wiz_data);

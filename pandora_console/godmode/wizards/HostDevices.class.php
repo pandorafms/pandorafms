@@ -38,6 +38,24 @@ enterprise_include('include/class/CSVImportAgents.class.php');
 class HostDevices extends Wizard
 {
 
+     /**
+      * Number of pages to control breadcrum.
+      *
+      * @var integer
+      */
+    public $maxPagesNetScan = 2;
+
+    /**
+     * Labels for breadcrum.
+     *
+     * @var array
+     */
+    public $pageLabelsNetScan = [
+        'NetScan definition',
+        'NetScan features',
+
+    ];
+
     /**
      * Stores all needed parameters to create a recon task.
      *
@@ -92,16 +110,6 @@ class HostDevices extends Wizard
         $mode = get_parameter('mode', null);
 
         if ($mode === null) {
-            $this->prepareBreadcrum(
-                [
-                    [
-                        'link'  => $this->url.'&wiz=hd',
-                        'label' => __('&nbsp &nbsp Host & devices'),
-                    ],
-                ]
-            );
-
-            $this->printHeader();
             $this->printBigButtonsList(
                 [
                     [
@@ -123,62 +131,12 @@ class HostDevices extends Wizard
 
         if (enterprise_installed()) {
             if ($mode == 'importcsv') {
-                $this->prepareBreadcrum(
-                    [
-                        [
-                            'link'  => $this->url.'&wiz=hd',
-                            'label' => __('&nbsp &nbsp Host & devices'),
-                        ],
-                        [
-                            'link'  => $this->url.'&wiz=hd&mode=importcsv',
-                            'label' => __('&nbsp &nbsp &nbsp Import CSV'),
-                        ],
-                    ]
-                );
-                $this->printHeader();
                 $csv_importer = new CSVImportAgents($this->page, $this->breadcrum);
                 return $csv_importer->runCSV();
             }
         }
 
         if ($mode == 'netscan') {
-            if ($this->page != 2) {
-                // Do not paint breadcrum in last page. Redirected.
-                $this->prepareBreadcrum(
-                    [
-                        [
-                            'link'  => $this->url.'&wiz=hd',
-                            'label' => __('&nbsp &nbsp Host & devices'),
-                        ],
-                        [
-                            'link'  => $this->url.'&wiz=hd&mode=netscan',
-                            'label' => __('&nbsp &nbsp &nbsp Net scan definition'),
-                        ],
-                    ]
-                );
-
-                if ($this->page == 1) {
-                    $this->prepareBreadcrum(
-                        [
-                            [
-                                'link'  => $this->url.'&wiz=hd',
-                                'label' => __('&nbsp &nbsp Host & devices'),
-                            ],
-                            [
-                                'link'  => $this->url.'&wiz=hd&mode=netscan',
-                                'label' => __('&nbsp &nbsp &nbsp Net scan definition'),
-                            ],
-                            [
-                                'link'  => $this->url.'&wiz=hd&mode=netscan&page=1',
-                                'label' => __('&nbsp &nbsp &nbsp Net scan features'),
-                            ],
-                        ]
-                    );
-                }
-
-                $this->printHeader();
-            }
-
             return $this->runNetScan();
         }
 
@@ -257,53 +215,77 @@ class HostDevices extends Wizard
                 }
             }
 
-            if (isset($this->task['id_rt']) === false) {
-                // Disabled 2 Implies wizard non finished.
-                $this->task['disabled'] = 2;
-            }
-
-            if ($taskname == '') {
-                $this->msg = __('You must provide a task name.');
-                return false;
-            }
-
-            if ($server_id == '') {
-                $this->msg = __('You must select a Discovery Server.');
-                return false;
-            }
-
-            if ($network == '') {
-                // XXX: Could be improved validating provided network.
-                $this->msg = __('You must provide a valid network.');
-                return false;
-            }
-
-            if ($id_group == '') {
-                $this->msg = __('You must select a valid group.');
-                return false;
-            }
-
-            // Assign fields.
-            $this->task['name'] = $taskname;
-            $this->task['description'] = $comment;
-            $this->task['subnet'] = $network;
-            $this->task['id_recon_server'] = $server_id;
-            $this->task['id_group'] = $id_group;
-            $this->task['interval_sweep'] = $interval;
-
-            if (isset($this->task['id_rt']) === false) {
-                // Create.
-                $this->task['id_rt'] = db_process_sql_insert(
-                    'trecon_task',
-                    $this->task
-                );
+            if ($task_id !== null
+                && $taskname == null
+                && $server_id == null
+                && $id_group == null
+                && $server == null
+                && $datacenter == ''
+                && $user == ''
+                && $pass == ''
+                && $encrypt == null
+                && $interval == 0
+            ) {
+                // Default values, no data received.
+                // User is accesing directly to this page.
+                if (users_is_admin() !== true && check_acl(
+                    $config['id_usuario'],
+                    $this->task['id_group'],
+                    'PM'
+                ) !== true
+                ) {
+                    $this->msg = __('You have no access to edit this task.');
+                    return false;
+                }
             } else {
-                // Update.
-                db_process_sql_update(
-                    'trecon_task',
-                    $this->task,
-                    ['id_rt' => $this->task['id_rt']]
-                );
+                if (isset($this->task['id_rt']) === false) {
+                    // Disabled 2 Implies wizard non finished.
+                    $this->task['disabled'] = 2;
+                }
+
+                if ($taskname == '') {
+                    $this->msg = __('You must provide a task name.');
+                    return false;
+                }
+
+                if ($server_id == '') {
+                    $this->msg = __('You must select a Discovery Server.');
+                    return false;
+                }
+
+                if ($network == '') {
+                    // XXX: Could be improved validating provided network.
+                    $this->msg = __('You must provide a valid network.');
+                    return false;
+                }
+
+                if ($id_group == '') {
+                    $this->msg = __('You must select a valid group.');
+                    return false;
+                }
+
+                // Assign fields.
+                $this->task['name'] = $taskname;
+                $this->task['description'] = $comment;
+                $this->task['subnet'] = $network;
+                $this->task['id_recon_server'] = $server_id;
+                $this->task['id_group'] = $id_group;
+                $this->task['interval_sweep'] = $interval;
+
+                if (isset($this->task['id_rt']) === false) {
+                    // Create.
+                    $this->task['id_rt'] = db_process_sql_insert(
+                        'trecon_task',
+                        $this->task
+                    );
+                } else {
+                    // Update.
+                    db_process_sql_update(
+                        'trecon_task',
+                        $this->task,
+                        ['id_rt' => $this->task['id_rt']]
+                    );
+                }
             }
 
             return true;
@@ -408,7 +390,6 @@ class HostDevices extends Wizard
         }
 
         return false;
-
     }
 
 
@@ -476,6 +457,25 @@ class HostDevices extends Wizard
 
             $this->printForm($form);
             return null;
+        }
+
+        $task_url = '';
+        if (isset($this->task['id_rt'])) {
+            $task_url = '&task='.$this->task['id_rt'];
+        }
+
+        for ($i = 0; $i < $this->maxPagesNetScan; $i++) {
+            $breadcrum[] = [
+                'link'     => 'index.php?sec=gservers&sec2=godmode/servers/discovery&wiz=hd&mode=netscan&page='.$i.$task_url,
+                'label'    => $this->pageLabelsNetScan[$i],
+                'selected' => (($i == $this->page) ? 1 : 0),
+            ];
+        }
+
+        if ($this->page < $this->maxPagesNetScan) {
+            // Avoid to print header out of wizard.
+            $this->prepareBreadcrum($breadcrum);
+            $this->printHeader();
         }
 
         if (isset($this->page) === true
@@ -698,7 +698,9 @@ $("select#interval_manual_defined").change(function() {
                 // XXX: Could be improved validating inputs before continue (JS)
                 // Print NetScan page 0.
                 $this->printForm($form);
-                $this->printGoBackButton();
+                $this->printGoBackButton(
+                    $this->url.'&page='.($this->page - 1).$task_url
+                );
             }
         }
 

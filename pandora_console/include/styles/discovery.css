@@ -94,3 +94,11 @@ div.data_container:hover {
 .arrow_box.selected:before {
   border-left-color: #82b92e;
 }
+.arrow_box {
+  display: inline-block;
+  position: relative;
+  padding: 14px;
+  margin-left: 20px;
+  margin-bottom: 10px;
+  padding-left: 3em;
+}

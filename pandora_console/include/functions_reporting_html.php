@@ -4800,9 +4800,6 @@ function reporting_html_nt_top_n($table, $item, $mini)
 }
 
 
-?>
-
-
 function reporting_html_planned_downtimes_table($planned_downtimes)
 {
     global $config;

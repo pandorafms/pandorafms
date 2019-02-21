@@ -3102,7 +3102,7 @@ function select_agents_for_module_group(
             'AND',
             'tagente_modulo',
             true,
-            [],
+            $filter['tags'],
             false
         );
         $sql_tags_inner = 'INNER JOIN ttag_module

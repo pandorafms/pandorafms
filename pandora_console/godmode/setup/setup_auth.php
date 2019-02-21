@@ -134,7 +134,8 @@ if (is_ajax()) {
         set_unless_defined($config['double_auth_enabled'], false);
         $row = [];
         $row['name'] = __('Double authentication').ui_print_help_tip(__('If this option is enabled, the users can use double authentication with their accounts'), true);
-        $row['control'] = html_print_checkbox_toogle_switch('double_auth_enabled', 1, $config['double_auth_enabled'], true);
+        $row['control'] = html_print_input_hidden('double_auth_enabled', 0);
+        $row['control'] .= html_print_checkbox_toogle_switch('double_auth_enabled', 1, $config['double_auth_enabled'], true);
         $table->data['double_auth_enabled'] = $row;
 
         // Session timeout

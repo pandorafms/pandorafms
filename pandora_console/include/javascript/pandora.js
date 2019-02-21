@@ -503,6 +503,14 @@ function module_changed_by_multiple_modules(event, id_module, selected) {
     selection_mode = "common";
   }
 
+  var tags_selected = [];
+
+  var tags_to_search = $("#tags").val();
+  if (tags_to_search != null) {
+    if (tags_to_search[0] != -1) {
+      tags_selected = tags_to_search;
+    }
+  }
   jQuery.post(
     "ajax.php",
     {
@@ -510,7 +518,8 @@ function module_changed_by_multiple_modules(event, id_module, selected) {
       get_agents_json_for_multiple_modules: 1,
       status_module: status_module,
       "module_name[]": idModules,
-      selection_mode: selection_mode
+      selection_mode: selection_mode,
+      tags: tags_selected
     },
     function(data) {
       $("#agents").append(

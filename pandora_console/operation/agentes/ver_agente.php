@@ -202,11 +202,14 @@ if (is_ajax()) {
         $nameModules = get_parameter('module_name');
         $selection_mode = get_parameter('selection_mode', 'common') == 'all';
         $status_modulo = (int) get_parameter('status_module', -1);
-
+        $tags_selected = (array) get_parameter('tags', []);
         $names = select_agents_for_module_group(
             $nameModules,
             $selection_mode,
-            ['status' => $status_modulo],
+            [
+                'status' => $status_modulo,
+                'tags'   => $tags_selected,
+            ],
             'AW'
         );
 

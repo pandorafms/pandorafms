@@ -1633,12 +1633,8 @@ if (!empty($result)) {
 
 		if (in_array('to_critical', $show_fields)) {
 
-			if ($row['estado'] == 1) {
-				$to_critical_timestamp = db_get_sql ('SELECT utimestamp FROM tevento WHERE id_agentmodule=' . $row['id_agente_modulo'] . ' AND event_type LIKE "going_up_critical" ORDER BY utimestamp DESC');
-				$data[11] = ui_print_timestamp ($to_critical_timestamp, true, $option);
-			} else {
-				$data[11] = '-';
-			}
+				$change_status_timestamp = db_get_sql ('SELECT utimestamp FROM tevento WHERE id_agentmodule=' . $row['id_agente_modulo'] . ' ORDER BY utimestamp DESC');
+				$data[11] = ui_print_timestamp ($change_status_timestamp, true, $option);
 
 		}
 		

@@ -8,6 +8,7 @@ li.discovery {
   width: 250px;
   height: 120px;
   margin: 15px;
+  padding-bottom: 50px;
 }
 
 li.discovery > a {

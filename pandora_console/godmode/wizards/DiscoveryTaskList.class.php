@@ -49,7 +49,7 @@ class DiscoveryTaskList extends Wizard
     public function __construct(
         int $page=0,
         string $msg='Default message. Not set.',
-        string $icon='images/wizard/tasklist.svg',
+        string $icon='images/wizard/tasklist.png',
         string $label='Task list'
     ) {
         $this->setBreadcrum([]);

@@ -77,7 +77,7 @@ class HostDevices extends Wizard
     public function __construct(
         int $page=0,
         string $msg='Default message. Not set.',
-        string $icon='images/wizard/hostdevices.svg',
+        string $icon='images/wizard/hostdevices.png',
         string $label='Host & Devices'
     ) {
         $this->setBreadcrum([]);
@@ -110,21 +110,21 @@ class HostDevices extends Wizard
         $mode = get_parameter('mode', null);
 
         if ($mode === null) {
-            $this->printBigButtonsList(
-                [
-                    [
-                        'url'   => $this->url.'&mode=importcsv',
-                        'icon'  => 'images/wizard/csv_image.svg',
-                        'label' => __('Import CSV'),
-                    ],
-                    [
-                        'url'   => $this->url.'&mode=netscan',
-                        'icon'  => 'images/wizard/csv_image.svg',
-                        'label' => __('Net Scan'),
-                    ],
-                ]
-            );
+            $buttons = [];
+            $buttons[] = [
+                'url'   => $this->url.'&mode=netscan',
+                'icon'  => 'images/wizard/netscan.png',
+                'label' => __('Net Scan'),
+            ];
+            if (enterprise_installed()) {
+                $buttons[] = [
+                    'url'   => $this->url.'&mode=importcsv',
+                    'icon'  => ENTERPRISE_DIR.'/images/wizard/csv.png',
+                    'label' => __('Import CSV'),
+                ];
+            }
 
+            $this->printBigButtonsList($buttons);
             $this->printGoBackButton();
             return;
         }

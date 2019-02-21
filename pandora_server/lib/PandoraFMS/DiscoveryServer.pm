@@ -100,7 +100,13 @@ sub run ($) {
 	my $pa_config = $self->getConfig ();
 	
 	print_message ($pa_config, " [*] Starting " . $pa_config->{'rb_product_name'} . " Discovery Server.", 1);
-	$self->setNumThreads ($pa_config->{'recon_threads'});
+	my $threads = $pa_config->{'recon_threads'};
+
+	# Use hightest value
+	if ($pa_config->{'discovery_threads'}  > $pa_config->{'recon_threads'}) {
+		$threads = $pa_config->{'discovery_threads'};
+	}
+	$self->setNumThreads($threads);
 	$self->SUPER::run (\@TaskQueue, \%PendingTasks, $Sem, $TaskSem);
 }
 

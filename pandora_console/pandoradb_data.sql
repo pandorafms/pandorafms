@@ -1285,6 +1285,6 @@ INSERT INTO `tnotification_source`(`description`, `icon`, `max_postpone_time`, `
 INSERT INTO `tnotification_source_user`(`id_source`,`id_user`,`enabled`,`also_mail`) VALUES
   ((SELECT `id` FROM `tnotification_source` WHERE `description`="System&#x20;status"), "admin",1,0);
 
-INSERT INTO `tnotification_source_group` ((SELECT `id` FROM `tnotification_source` WHERE `description`="Messages"),0);
+INSERT INTO `tnotification_source_group` SELECT `id`,0 FROM `tnotification_source` WHERE `description`="Messages";
 
   

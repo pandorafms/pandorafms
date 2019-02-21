@@ -134,7 +134,10 @@ if ($classname_selected !== null) {
             ui_print_error_message($result['msg']);
         }
 
-        $classname_selected = null;
+        // Redirect to Tasklist.
+        $classname_selected = 'DiscoveryTaskList';
+        $wiz = new $classname_selected($page);
+        $result = $wiz->run();
     }
 }
 

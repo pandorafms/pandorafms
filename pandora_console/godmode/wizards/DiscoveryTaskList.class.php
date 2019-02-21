@@ -125,17 +125,23 @@ class DiscoveryTaskList extends Wizard
         $task = get_parameter('task', null);
 
         if ($task !== null) {
-            db_process_sql_delete(
+            $result = db_process_sql_delete(
                 'trecon_task',
                 ['id_rt' => $task]
             );
+
+            if ($result == 1) {
+                return [
+                    'result' => 0,
+                    'msg'    => __('Task successfully deleted'),
+                    'id'     => false,
+                ];
+            }
+
+            // Trick to avoid double execution.
+            header('Location: '.$this->url);
         }
 
-        return [
-            'result' => 0,
-            'msg'    => __('Task successfully deleted'),
-            'id'     => false,
-        ];
     }
 
 

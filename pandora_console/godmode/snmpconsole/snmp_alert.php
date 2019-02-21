@@ -751,7 +751,7 @@ if ($create_alert || $update_alert) {
 
     // echo '<tr><td class="datos"><b>' . __('Alert filters') . ui_print_help_icon("snmp_alert_filters", true) . '</b></td></tr>';
     // OID
-    echo '<tr id="tr-oid">'.'<td class="datos2">'.__('Enterprise String').'</td>'.'<td class="datos2">';
+    echo '<tr id="tr-oid">'.'<td class="datos2">'.__('Enterprise String').ui_print_help_tip (__('Matches substrings. End the string with $ for exact matches.'), true).'</td>'.'<td class="datos2">';
     html_print_input_text('oid', $oid, '', 50, 255);
     echo '</td></tr>';
 

@@ -693,7 +693,7 @@ class ConsoleSupervisor
             while (false !== ($file = readdir($dir)) && $nitems <= $max_files) {
                 if ($file != '.' && $file != '..') {
                     if (empty($regex) === false) {
-                        if (preg_match($regex, $file) !== 1) {
+                        if (preg_match($regex, $file) === 1) {
                             $nitems++;
                             continue;
                         }
@@ -891,7 +891,7 @@ class ConsoleSupervisor
 
         $filecount = $this->countFiles(
             $config['remote_config'],
-            '/.*BADXML/',
+            '/^.*BADXML$/',
             $MAX_BADXML_FILES_DATA_IN
         );
         // If cannot open directory, count is '-1', skip.

@@ -236,6 +236,7 @@ our @EXPORT = qw(
 	pandora_self_monitoring
 	pandora_process_policy_queue
 	subst_alert_macros
+	subst_column_macros
 	locate_agent
 	get_agent
 	get_agent_from_alias
@@ -3717,11 +3718,6 @@ sub pandora_evaluate_snmp_alerts ($$$$$$$$$) {
 	}
 }
 
-
-##########################################################################
-# Utility functions, not to be exported.
-##########################################################################
-
 ##########################################################################
 # Search string for macros and substitutes them with their values.
 ##########################################################################
@@ -3757,6 +3753,19 @@ sub subst_alert_macros ($$;$$$$) {
 }
 
 ##########################################################################
+# Substitute macros if the string begins with an underscore.
+##########################################################################
+sub subst_column_macros ($$;$$$$) {
+	my ($string, $macros, $pa_config, $dbh, $agent, $module) = @_;
+	
+	# Do not attempt to substitute macros unless the string
+	# begins with an underscore.
+	return $string unless substr($string, 0, 1) eq '_';
+
+	return subst_alert_macros($string, $macros, $pa_config, $dbh, $agent, $module);
+}
+
+##########################################################################
 # Load macros that access the database on demand.
 ##########################################################################
 sub on_demand_macro($$$$$$) {
@@ -3784,9 +3793,16 @@ sub on_demand_macro($$$$$$) {
 	} elsif ($macro eq '_name_tag_') {
 		return (defined ($module)) ? pandora_get_module_tags ($pa_config, $dbh, $module->{'id_agente_modulo'}) : '';
 	} elsif ($macro =~ /_agentcustomfield_(\d+)_/) {
-		return '' unless defined ($agent);
+		my $agent_id = undef;
+		if (defined($module)) {
+			$agent_id = $module->{'id_agente'};
+		} elsif (defined($agent)) {
+			$agent_id = $agent->{'id_agente'};
+		} else {
+			return '';
+		}
 		my $field_number = $1;
-		my $field_value = get_db_value($dbh, 'SELECT description FROM tagent_custom_data WHERE id_field=? AND id_agent=?', $field_number, $agent->{'id_agente'});
+		my $field_value = get_db_value($dbh, 'SELECT description FROM tagent_custom_data WHERE id_field=? AND id_agent=?', $field_number, $agent_id);
 		return (defined($field_value)) ? $field_value : '';	
 	} elsif ($macro eq '_prevdata_') {
 		return '' unless defined ($module);
@@ -3849,6 +3865,10 @@ sub on_demand_macro($$$$$$) {
 		return(defined($field_value)) ? $field_value : '';
 	}
 }
+
+##########################################################################
+# Utility functions, not to be exported.
+##########################################################################
 
 ##########################################################################
 # Process module data.

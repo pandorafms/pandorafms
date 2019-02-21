@@ -1,6 +1,7 @@
-<?php 
-/* Package Include/help/ja
- */
+<?php
+/*
+    Package Include/help/ja
+*/
 ?>
 <h1>SNMPエクスプローラ</h1>
 

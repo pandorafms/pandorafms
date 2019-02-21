@@ -1,7 +1,7 @@
 <?php
 /*
-* @package Include/help/en
-*/
+ * @package Include/help/en
+ */
 ?>
 
 <h1>Editor</h1>
@@ -13,9 +13,9 @@ your browser support correctly the javascript languaje. As you can see
 in the screen shot, the screen is divided in two areas that are well
 defined:
 <ul style="list-style-type: disc; margin-left: 20px;">
-	<li>the button box</li>
-	<li>the work area (where you will "draw" the visual console)</li>
-	<li>the option palette ( that is not visible in this screen shot)</li>
+    <li>the button box</li>
+    <li>the work area (where you will "draw" the visual console)</li>
+    <li>the option palette ( that is not visible in this screen shot)</li>
 </ul>
 You can set the label with a rich text.
 And the item "Simple value" you can use the macros to set inner the text

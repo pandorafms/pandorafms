@@ -1,61 +1,61 @@
 <?php
 /*
-* @package Include/help/ja
-*/
+ * @package Include/help/ja
+ */
 ?>
 
 
 <style type="text/css">
 
 * {
-	font-family: 'lato-bolder';
-	font-size: 1em;
+    font-family: 'lato-bolder';
+    font-size: 1em;
 }
 
 img.hlp_graphs {
-	width: 80%;
-	max-width: 800px;
-	min-width: 400px;
-	margin: 15px auto;
-	display: block;
+    width: 80%;
+    max-width: 800px;
+    min-width: 400px;
+    margin: 15px auto;
+    display: block;
 }
 
 ul.clean {
-	list-style-type: none;
+    list-style-type: none;
 }
 
 p,u,i,b {
-	font-family: 'lato-bolder';
+    font-family: 'lato-bolder';
 }
 b {
-	font-size: 0.90em!important;
+    font-size: 0.90em!important;
 }
 dl dt {
-	margin-top: 1em;
-	font-weight: bold;
+    margin-top: 1em;
+    font-weight: bold;
 }
 dl {
-	margin-bottom: 2em;
+    margin-bottom: 2em;
 }
 
 div.img_title {
-	text-align: center;
-	font-size: 0.8em;
-	font-style: italic;
-	width: 100%;
-	margin-top: 4em;
+    text-align: center;
+    font-size: 0.8em;
+    font-style: italic;
+    width: 100%;
+    margin-top: 4em;
 }
 </style>
 
 <body class="hlp_graphs">
-<h1><?php echo get_product_name();?> におけるグラフ処理</h1>
+<h1><?php echo get_product_name(); ?> におけるグラフ処理</h1>
 
-<p><?php echo get_product_name();?>では、グラフは指定した期間においてモジュールが持つ値を表現します。</p>
-<p><?php echo get_product_name();?>には、大量のデータが保存されるため、2つの異なるタイプの機能を提供しています。</p>
+<p><?php echo get_product_name(); ?>では、グラフは指定した期間においてモジュールが持つ値を表現します。</p>
+<p><?php echo get_product_name(); ?>には、大量のデータが保存されるため、2つの異なるタイプの機能を提供しています。</p>
 
 <h2>通常グラフ</h2>
 
-<img class="hlp_graphs" src="<?php echo $config["homeurl"];?>images/help/chart_normal_sample.png" alt="regular chart sample" />
+<img class="hlp_graphs" src="<?php echo $config['homeurl']; ?>images/help/chart_normal_sample.png" alt="regular chart sample" />
 
 <h4>一般的な特性</h4>
 <p>基本的なレベルでモジュールに保存された情報を表現するグラフがあります。</p>
@@ -96,7 +96,7 @@ div.img_title {
 <dd>一番上に発生したアラートの情報をポイント表示します。</dd>
 
 <dt>パーセント表示</dt>
-<dd>グラフにパーセント表示の線を追加します。(<?php echo get_product_name();?> の表示オプションで設定できます)</dd>
+<dd>グラフにパーセント表示の線を追加します。(<?php echo get_product_name(); ?> の表示オプションで設定できます)</dd>
 
 <dt>時間比較 (重ね合わせ)</dt>
 <dd>同一のグラフを重ね合わせて表示します。ただし、選択した期間より前との重ね合わせです。例えば、期間として 1週間を選択し、このオプションをチェックすると、選択した期間の前の 1週間が重ねあわされて表示されます。</dd>
@@ -105,7 +105,7 @@ div.img_title {
 <dd>同一のグラフを表示します。ただし、選択した期間より前のグラフを別々に表示します。例えば、期間として 1週間を選択し、このオプションをチェックすると、選択した期間の前の 1週間のグラフも表示されます。</dd>
 
 <dt>不明グラフ表示</dt>
-<dd><?php echo get_product_name();?> がモジュールの状態を把握していない、データ欠損、ソフトウエアエージェントの接続断などがあった期間を、グレーの箱で表示します。</dd>
+<dd><?php echo get_product_name(); ?> がモジュールの状態を把握していない、データ欠損、ソフトウエアエージェントの接続断などがあった期間を、グレーの箱で表示します。</dd>
 
 <dt>詳細グラフ表示 (TIP)</dt>
 <dd>生成モードを "通常" から "TIP" へ切り替えます。このモードでは、グラフを近似値ではなく実データで表示します。そのため、生成にかかる時間は長くなります。このグラフでは、次に説明するより詳細の情報が参照できます。</dd>
@@ -120,7 +120,7 @@ div.img_title {
 
 
 <h2>詳細グラフ</h2>
-<img class="hlp_graphs "src="<?php echo $config["homeurl"];?>images/help/chart_tip_sample.png" alt="TIP chart sample" />
+<img class="hlp_graphs "src="<?php echo $config['homeurl']; ?>images/help/chart_tip_sample.png" alt="TIP chart sample" />
 
 <h4>一般的な特性</h4>
 <p><b>実データ</b>を表現するグラフです。</p>
@@ -130,10 +130,10 @@ div.img_title {
 <p>通常と TIP グラフで提供される表示例:</p>
 
 <div class="img_title">不明期間の通常グラフの例</div>
-<img class="hlp_graphs "src="<?php echo $config["homeurl"];?>images/help/chart_normal_detail.png" alt="Normal chart detail" />
+<img class="hlp_graphs "src="<?php echo $config['homeurl']; ?>images/help/chart_normal_detail.png" alt="Normal chart detail" />
 
 <div class="img_title">不明期間の TIP グラフの例</div>
-<img class="hlp_graphs "src="<?php echo $config["homeurl"];?>images/help/chart_tip_detail.png" alt="TIP chart detail" />
+<img class="hlp_graphs "src="<?php echo $config['homeurl']; ?>images/help/chart_tip_detail.png" alt="TIP chart detail" />
 
 <br />
 

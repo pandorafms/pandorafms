@@ -697,9 +697,9 @@ class ConsoleSupervisor
                             $nitems++;
                             continue;
                         }
+                    } else {
+                        $nitems++;
                     }
-
-                    $nitems++;
                 }
             }
 

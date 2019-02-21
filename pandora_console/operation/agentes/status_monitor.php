@@ -945,7 +945,7 @@ $sql = 'SELECT
 	LIMIT '.$offset.','.$limit_sql;
 
 // When you enter for the first time you have less than 4 query params in the url
-$first_interaction = count($_GET) > 4;
+$first_interaction = count($_GET);
 // We do not show the modules until the user searches with the filter
 if ($first_interaction) {
     if (! defined('METACONSOLE')) {
@@ -1031,6 +1031,7 @@ if (($config['dbtype'] == 'oracle') && ($result !== false)) {
         unset($result[$i]['rnum']);
     }
 }
+
 
 // Start Build List Result
 //

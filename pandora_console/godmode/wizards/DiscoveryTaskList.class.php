@@ -76,6 +76,7 @@ class DiscoveryTaskList extends Wizard
      */
     public function run()
     {
+        global $config;
         // Load styles.
         parent::run();
 
@@ -94,7 +95,14 @@ class DiscoveryTaskList extends Wizard
             return $this->deleteTask();
         }
 
-        return $this->showListConsoleTask().'</ br>'.$this->showList();
+        $ret = $this->showListConsoleTask();
+        $ret2 = $this->showList();
+
+        if ($ret === false && $ret2 === false) {
+            include_once $config['homedir'].'/general/firts_task/recon_view.php';
+        }
+
+        return $ret;
     }
 
 
@@ -255,7 +263,6 @@ class DiscoveryTaskList extends Wizard
         } else {
             $recon_task = db_get_all_rows_sql('SELECT * FROM trecon_task');
             if ($recon_task === false) {
-                include_once $config['homedir'].'/general/firts_task/recon_view.php';
                 return false;
             } else {
                 include_once $config['homedir'].'/include/functions_graph.php';
@@ -819,14 +826,18 @@ class DiscoveryTaskList extends Wizard
 
                 if ($function_name == 'cron_task_do_backup' || $function_name == 'cron_task_execute_custom_script') {
                     if ($manage_pandora) {
-                        $data[7]  = '<a href="'.$url;
-                        $data[7] .= 'edit_task=1&id='.$task['id'].'">';
+                        $data[7] = '<a href="'.ui_get_full_url(
+                            sprintf(
+                                'index.php?sec=gservers&sec2=godmode/servers/discovery&%s&task=%d',
+                                $this->getTargetWiz(['description' => 'console_task']),
+                                $task['id']
+                            )
+                        ).'">';
                         $data[7] .= html_print_image(
                             'images/config.png',
                             true,
                             ['title' => __('Edit')]
-                        );
-                        $data[7] .= '</a>';
+                        ).'</a>';
                     }
 
                     if ($manage_pandora) {
@@ -841,14 +852,18 @@ class DiscoveryTaskList extends Wizard
                     }
                 } else {
                     if ($write_perms || $manage_pandora) {
-                        $data[7] = '<a href="'.$url;
-                        $data[7] .= 'edit_task=1&id='.$task['id'].'">';
+                        $data[7] = '<a href="'.ui_get_full_url(
+                            sprintf(
+                                'index.php?sec=gservers&sec2=godmode/servers/discovery&%s&task=%d',
+                                $this->getTargetWiz(['description' => 'console_task']),
+                                $task['id']
+                            )
+                        ).'">';
                         $data[7] .= html_print_image(
                             'images/config.png',
                             true,
                             ['title' => __('Edit')]
-                        );
-                        $data[7] .= '</a>';
+                        ).'</a>';
                     }
 
                     if ($manage_perms || $manage_pandora) {
@@ -867,6 +882,8 @@ class DiscoveryTaskList extends Wizard
             }
 
             html_print_table($table);
+        } else {
+            return false;
         }
 
         return true;
@@ -889,6 +906,9 @@ class DiscoveryTaskList extends Wizard
 
             case CLOUDWIZARD_AWS_DESCRIPTION:
             return 'wiz=cloud&mode=amazonws&page=1';
+
+            case 'console_task':
+            return 'wiz=ctask';
 
             default:
             return 'wiz=hd&mode=netscan';

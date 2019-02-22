@@ -1,17 +1,32 @@
 <?php
+/**
+ * Extension to manage a list of gateways and the node address where they should
+ * point to.
+ *
+ * @category   Extensions
+ * @package    Pandora FMS
+ * @subpackage Community
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
 
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation for version 2.
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-// Load global vars
 global $config;
 
 require_once 'include/functions_gis.php';
@@ -48,16 +63,16 @@ if (is_ajax()) {
     $id_group = (int) get_parameter('id_group');
     if ($get_agents_group_json) {
         $id_group = (int) get_parameter('id_group');
-        $recursion = get_parameter('recursion');
+        $recursion = (bool) get_parameter('recursion');
         $id_os = get_parameter('id_os', '');
         $agent_name = get_parameter('name', '');
 
         $privilege = (string) get_parameter('privilege', 'AR');
-        // Is is possible add keys prefix to avoid auto sorting in js object conversion
+        // Is is possible add keys prefix to avoid auto sorting in js object conversion.
         $keys_prefix = (string) get_parameter('keys_prefix', '');
         $status_agents = (int) get_parameter('status_agents', AGENT_STATUS_ALL);
 
-        // Build filter
+        // Build filter.
         $filter = [];
 
         if (!empty($id_os)) {
@@ -104,13 +119,23 @@ if (is_ajax()) {
             }
         }
 
-        // Perform search
-        $agents = agents_get_group_agents($id_group, $filter, 'lower', false, $recursion, false, '|', $cluster_mode);
+        // Perform search.
+        $agents = agents_get_group_agents(
+            $id_group,
+            $filter,
+            'lower',
+            false,
+            $recursion,
+            false,
+            '|',
+            $cluster_mode
+        );
+
         if (empty($agents)) {
             $agents = [];
         }
 
-        // Add keys prefix
+        // Add keys prefix.
         if ($keys_prefix !== '') {
             $i = 0;
             foreach ($agents as $k => $v) {
@@ -139,7 +164,7 @@ if (is_ajax()) {
         $id_agents = get_parameter('id_agents');
         $selection = get_parameter('selection');
 
-        // No filter by module group
+        // No filter by module group.
         $modules = select_modules_for_agent_group(0, $id_agents, $selection, false, true);
         echo json_encode($modules);
         return;
@@ -314,28 +339,28 @@ if (is_ajax()) {
         }
 
         if (!empty($module_name)) {
-            $filter .= " AND t1.nombre COLLATE utf8_general_ci LIKE '%$module_name%'";
+            $filter .= " AND t1.nombre COLLATE utf8_general_ci LIKE '%".$module_name."%'";
         }
 
-        // Status selector
+        // Status selector.
         if ($status_modulo == AGENT_MODULE_STATUS_NORMAL) {
-            // Normal
+            // Normal.
             $sql_conditions .= ' estado = 0 AND utimestamp > 0 )
 			OR (t1.id_tipo_modulo IN(21,22,23,100)) ';
         } else if ($status_modulo == AGENT_MODULE_STATUS_CRITICAL_BAD) {
-            // Critical
+            // Critical.
             $sql_conditions .= ' estado = 1 AND utimestamp > 0 )';
         } else if ($status_modulo == AGENT_MODULE_STATUS_WARNING) {
-            // Warning
+            // Warning.
             $sql_conditions .= ' estado = 2 AND utimestamp > 0 )';
         } else if ($status_modulo == AGENT_MODULE_STATUS_NOT_NORMAL) {
-            // Not normal
+            // Not normal.
             $sql_conditions .= ' estado <> 0)';
         } else if ($status_modulo == AGENT_MODULE_STATUS_UNKNOWN) {
-            // Unknown
+            // Unknown.
             $sql_conditions .= ' estado = 3 AND utimestamp <> 0 )';
         } else if ($status_modulo == AGENT_MODULE_STATUS_NOT_INIT) {
-            // Not init
+            // Not init.
             $sql_conditions .= ' utimestamp = 0 )
 				AND t1.id_tipo_modulo NOT IN (21,22,23,100)';
         }
@@ -415,7 +440,7 @@ if (is_ajax()) {
 
             foreach ($array_reduced as $server_name => $id_agents) {
                 // Metaconsole db connection
-                // $server_name can be the server id (ugly hack, I know)
+                // $server_name can be the server id (ugly hack, I know).
                 if (is_numeric($server_name)) {
                     $connection = metaconsole_get_connection_by_id($server_name);
                 } else {
@@ -426,7 +451,7 @@ if (is_ajax()) {
                     continue;
                 }
 
-                // Get agent's modules
+                // Get agent's modules.
                 $sql = sprintf(
                     'SELECT t1.id_agente, t1.id_agente_modulo, t1.nombre
 								FROM tagente_modulo t1 %s
@@ -454,7 +479,7 @@ if (is_ajax()) {
 
                 $modules_aux = [];
                 foreach ($modules as $key => $module) {
-                    // Don't change this order, is used in the serialization
+                    // Don't change this order, is used in the serialization.
                     $module_data = [
                         'id_module'   => $module['id_agente_modulo'],
                         'id_agent'    => $module['id_agente'],
@@ -469,7 +494,7 @@ if (is_ajax()) {
 
                 $modules = $modules_aux;
 
-                // Build the next array using the common values
+                // Build the next array using the common values.
                 if (!empty($last_modules_set)) {
                     $modules = array_intersect_key($modules, $last_modules_set);
 
@@ -483,7 +508,7 @@ if (is_ajax()) {
 
                 $last_modules_set = $modules;
 
-                // Restore db connection
+                // Restore db connection.
                 metaconsole_restore_db();
             }
 
@@ -493,7 +518,6 @@ if (is_ajax()) {
 
                 $module_data_processed = array_map(
                     function ($item) {
-                        // data: -> id_module  |  id_agent  |  server_name;
                         return implode('|', $item);
                     },
                     $module_data
@@ -603,16 +627,16 @@ if (is_ajax()) {
     if ($get_agent_modules_json) {
         $id_agent = (int) get_parameter('id_agent');
 
-        // Use -1 as not received
+        // Use -1 as not received.
         $disabled = (int) get_parameter('disabled', -1);
         $delete_pending = (int) get_parameter('delete_pending', -1);
-        // Use 0 as not received
+        // Use 0 as not received.
         $id_tipo_modulo = (int) get_parameter('id_tipo_modulo', 0);
         $status_modulo = (int) get_parameter('status_module', -1);
 
         $tags = (array) get_parameter('tags', []);
 
-        // Filter
+        // Filter.
         $filter = [];
         if ($disabled !== -1) {
             $filter['disabled'] = $disabled;
@@ -630,30 +654,34 @@ if (is_ajax()) {
             $filter = false;
         }
 
-        $get_only_string_modules = get_parameter('get_only_string_modules', false);
+        $get_only_string_modules = get_parameter(
+            'get_only_string_modules',
+            false
+        );
+
         if ($get_only_string_modules) {
             $filter['tagente_modulo.id_tipo_modulo IN'] = '(17,23,3,10,33)';
         }
 
-        // Status selector
+        // Status selector.
         if ($status_modulo == AGENT_MODULE_STATUS_NORMAL) {
-            // Normal
-            $sql_conditions .= ' estado = 0 AND utimestamp > 0 ) 
+            // Normal.
+            $sql_conditions .= ' estado = 0 AND utimestamp > 0 )
 			OR (tagente_modulo.id_tipo_modulo IN(21,22,23,100)) ';
         } else if ($status_modulo == AGENT_MODULE_STATUS_CRITICAL_BAD) {
-            // Critical
+            // Critical.
             $sql_conditions .= ' estado = 1 AND utimestamp > 0 )';
         } else if ($status_modulo == AGENT_MODULE_STATUS_WARNING) {
-            // Warning
+            // Warning.
             $sql_conditions .= ' estado = 2 AND utimestamp > 0 )';
         } else if ($status_modulo == AGENT_MODULE_STATUS_NOT_NORMAL) {
-            // Not normal
+            // Not normal.
             $sql_conditions .= ' estado <> 0 )';
         } else if ($status_modulo == AGENT_MODULE_STATUS_UNKNOWN) {
-            // Unknown
+            // Unknown.
             $sql_conditions .= ' estado = 3 AND utimestamp <> 0 )';
         } else if ($status_modulo == AGENT_MODULE_STATUS_NOT_INIT) {
-            // Not init
+            // Not init.
             $sql_conditions .= ' utimestamp = 0 )
 				AND tagente_modulo.id_tipo_modulo NOT IN (21,22,23,100)';
         }
@@ -666,7 +694,7 @@ if (is_ajax()) {
         $get_id_and_name = (bool) get_parameter('get_id_and_name');
         $get_distinct_name = (bool) get_parameter('get_distinct_name');
 
-        // Fields
+        // Fields.
         $fields = '*';
         if ($get_id_and_name) {
             $fields = [
@@ -683,7 +711,8 @@ if (is_ajax()) {
         $agentName = (string) get_parameter('agent_name', null);
         $server_name = (string) get_parameter('server_name', null);
         $server_id = (int) get_parameter('server_id', 0);
-        // This will force to get local modules although metaconsole is active, by default get all modules from all nodes
+        // This will force to get local modules although metaconsole is active,
+        // by default get all modules from all nodes.
         $force_local_modules = (int) get_parameter('force_local_modules', 0);
 
         if ($agentName != null) {
@@ -706,7 +735,7 @@ if (is_ajax()) {
                 }
 
                 if (metaconsole_load_external_db($connection) == NOERR) {
-                    // Get all agents if no agent was given
+                    // Get all agents if no agent was given.
                     if ($id_agent == 0) {
                         $id_agent = array_keys(
                             agents_get_group_agents(
@@ -720,11 +749,11 @@ if (is_ajax()) {
                     $agent_modules = agents_get_modules($id_agent, $fields, $filter, $indexed, true, $force_tags);
                 }
 
-                // Restore db connection
+                // Restore db connection.
                 metaconsole_restore_db();
             }
         } else {
-            // Get all agents if no agent was given
+            // Get all agents if no agent was given.
             if ($id_agent == 0) {
                 $id_agent = array_keys(
                     agents_get_group_agents(
@@ -768,7 +797,7 @@ if (is_ajax()) {
         $id_agent = (int) get_parameter('id_agent');
         $metaconsole = (bool) get_parameter('metaconsole', false);
         $id_server = (int) get_parameter('id_server', 0);
-        // Metaconsole
+        // Metaconsole.
         $server = null;
         if ($metaconsole) {
             $filter = [];
@@ -805,7 +834,7 @@ if (is_ajax()) {
         echo '<strong>'.__('Last remote contact').':</strong> '.human_time_comparation($agent['ultimo_contacto_remoto']).'<br />';
 
         if (!$metaconsole) {
-            // Fix : Only show agents with module with tags of user profile
+            // Fix : Only show agents with module with tags of user profile.
             $_user_tags = tags_get_user_tags($config['id_user'], 'RR');
 
             $_sql_post = '';
@@ -842,10 +871,10 @@ if (is_ajax()) {
             if ($bad_modules === false) {
                 $size_bad_modules = 0;
             } else {
-                $size_bad_modules = sizeof($bad_modules);
+                $size_bad_modules = count($bad_modules);
             }
 
-            // Modules down
+            // Modules down.
             if ($size_bad_modules > 0) {
                 echo '<strong>'.__('Monitors down').':</strong> '.$size_bad_modules.' / '.$total_modules;
                 echo '<ul>';
@@ -858,7 +887,7 @@ if (is_ajax()) {
                 echo '</ul>';
             }
 
-            // Alerts (if present)
+            // Alerts (if present).
             $sql = sprintf(
                 'SELECT COUNT(talert_template_modules.id)
 					FROM talert_template_modules, tagente_modulo, tagente
@@ -940,8 +969,8 @@ if (is_ajax()) {
         if ($module['id_tipo_modulo'] == 18) {
             echo '<strong>'.__('Address').':</strong> ';
 
-            // Get the IP/IPs from the module description
-            // Always the IP is the last part of the description (after the last space)
+            // Get the IP/IPs from the module description Always the IP
+            // is the last part of the description (after the last space).
             $ips = explode(' ', $module['descripcion']);
             $ips = $ips[(count($ips) - 1)];
 
@@ -951,7 +980,7 @@ if (is_ajax()) {
             } else {
                 echo '<ul style="display:inline;">';
                 foreach ($ips as $ip) {
-                    echo "<li>$ip</li>";
+                    echo '<li>'.$ip.'</li>';
                 }
 
                 echo '</ul>';
@@ -1036,7 +1065,7 @@ $agent_a = check_acl($config['id_user'], 0, 'AR');
 $agent_w = check_acl($config['id_user'], 0, 'AW');
 $access = ($agent_a == true) ? 'AR' : (($agent_w == true) ? 'AW' : 'AR');
 $agent = db_get_row('tagente', 'id_agente', $id_agente);
-// get group for this id_agente
+// Get group for this id_agente.
 $id_grupo = $agent['id_grupo'];
 
 $is_extra = enterprise_hook('policies_is_agent_extra_policy', [$id_agente]);
@@ -1056,7 +1085,7 @@ if (! check_acl_one_of_groups($config['id_user'], $all_groups, 'AR') && ! check_
     return;
 }
 
-// Check for Network FLAG change request
+// Check for Network FLAG change request.
 $flag = get_parameter('flag', '');
 if ($flag !== '') {
     if ($flag == 1 && check_acl_one_of_groups($config['id_user'], $all_groups, 'AW')) {
@@ -1070,7 +1099,7 @@ if ($flag !== '') {
     }
 }
 
-// Check for Network FLAG change request
+// Check for Network FLAG change request.
 $flag_agent = get_parameter('flag_agent', '');
 if ($flag_agent !== '') {
     if ($flag_agent == 1 && check_acl_one_of_groups($config['id_user'], $all_groups, 'AW')) {
@@ -1085,10 +1114,10 @@ if ($agent['icon_path']) {
 }
 
 
-// -------------Code for the tabs in the header of agent page-----------
+// Code for the tabs in the header of agent page.
 $tab = get_parameter('tab', 'main');
 
-// Manage tab
+// Manage tab.
 $managetab = [];
 
 if (check_acl_one_of_groups($config['id_user'], $all_groups, 'AW') || $is_extra) {
@@ -1104,7 +1133,7 @@ if (check_acl_one_of_groups($config['id_user'], $all_groups, 'AW') || $is_extra)
 }
 
 
-// Main tab
+// Main tab.
 $maintab['text'] = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$id_agente.'">'.html_print_image('images/agent_mc.png', true, ['title' => __('Main')]).'</a>';
 
 if ($tab == 'main') {
@@ -1115,7 +1144,7 @@ if ($tab == 'main') {
 
 
 
-// Alert tab
+// Alert tab.
 $alerttab['text'] = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$id_agente.'&tab=alert">'.html_print_image('images/op_alerts.png', true, ['title' => __('Alerts')]).'</a>';
 
 if ($tab == 'alert') {
@@ -1124,27 +1153,27 @@ if ($tab == 'alert') {
     $alerttab['active'] = false;
 }
 
-// Inventory
+// Inventory.
 $inventorytab = enterprise_hook('inventory_tab');
 if ($inventorytab == -1) {
     $inventorytab = '';
 }
 
 
-// Collection
+// Collection.
 $collectiontab = enterprise_hook('collection_tab');
 if ($collectiontab == -1) {
     $collectiontab = '';
 }
 
 
-// Policy
+// Policy.
 $policyTab = enterprise_hook('policy_tab');
 if ($policyTab == -1) {
     $policyTab = '';
 }
 
-// WUX Console
+// WUX Console.
 $modules_wux = enterprise_hook('get_wux_modules', [$id_agente]);
 if ($modules_wux) {
     $wux_console_tab = enterprise_hook('wux_console_tab');
@@ -1161,7 +1190,7 @@ if ($url_route_analyzer) {
     }
 }
 
-// GIS tab
+// GIS tab.
 $gistab = [];
 if ($config['activate_gis']) {
     $gistab['text'] = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=gis&id_agente='.$id_agente.'">'.html_print_image('images/op_gis.png', true, [ 'title' => __('GIS data')]).'</a>';
@@ -1174,7 +1203,7 @@ if ($config['activate_gis']) {
 }
 
 
-// Incident tab
+// Incident tab.
 $total_incidents = agents_get_count_incidents($id_agente);
 if ($total_incidents > 0) {
     $incidenttab['text'] = '<a href="index.php?sec=gagente&amp;sec2=operation/agentes/ver_agente&tab=incident&id_agente='.$id_agente.'">'.html_print_image('images/book_edit.png', true, ['title' => __('Incidents')]).'</a>';
@@ -1187,7 +1216,7 @@ if ($total_incidents > 0) {
 }
 
 
-// Url address tab
+// Url address tab.
 if ($agent['url_address'] != '') {
     $urladdresstab['text'] = '<a href="index.php?sec=gagente&amp;sec2=operation/agentes/ver_agente&tab=url_address&id_agente='.$id_agente.'">'.html_print_image('images/link.png', true, ['title' => __('Url address')]).'</a>';
 }
@@ -1199,7 +1228,7 @@ if ($tab == 'url_address') {
 }
 
 
-// Custom fields tab
+// Custom fields tab.
 $custom_fields['text'] = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=custom_fields&id_agente='.$id_agente.'">'.html_print_image('images/custom_field.png', true, ['title' => __('Custom fields')]).'</a>';
 if ($tab == 'custom_fields') {
     $custom_fields['active'] = true;
@@ -1208,7 +1237,7 @@ if ($tab == 'custom_fields') {
 }
 
 
-// Graphs tab
+// Graphs tab.
 $graphs['text'] = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=graphs&id_agente='.$id_agente.'">'.html_print_image('images/chart.png', true, ['title' => __('Graphs')]).'</a>';
 if ($tab == 'graphs') {
     $graphs['active'] = true;
@@ -1217,7 +1246,7 @@ if ($tab == 'graphs') {
 }
 
 
-// Log viewer tab
+// Log viewer tab.
 if (enterprise_installed() && $config['log_collector']) {
     $is_windows = strtoupper(substr(PHP_OS, 0, 3)) == 'WIN';
     $agent_has_logs = (bool) db_get_value('id_agent', 'tagent_module_log', 'id_agent', $id_agente);
@@ -1229,7 +1258,7 @@ if (enterprise_installed() && $config['log_collector']) {
     }
 }
 
-// eHorus tab
+// EHorus tab.
 if ($config['ehorus_enabled'] && !empty($config['ehorus_custom_field'])
     && (check_acl_one_of_groups($config['id_user'], $all_groups, 'AW') || is_user_admin($config['id_user']))
 ) {
@@ -1238,7 +1267,7 @@ if ($config['ehorus_enabled'] && !empty($config['ehorus_custom_field'])
         $tab_url = 'index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=ehorus&id_agente='.$id_agente;
         $ehorus_tab['text'] = '<a href="'.$tab_url.'" class="ehorus_tab">'.html_print_image('images/ehorus/ehorus.png', true, [ 'title' => __('eHorus')]).'</a>';
 
-        // Hidden subtab layer
+        // Hidden subtab layer.
         $ehorus_tab['sub_menu'] = '<ul class="mn subsubmenu" style="float:none;">';
         $ehorus_tab['sub_menu'] .= '<a class="tab_terminal" href="'.$tab_url.'&client_tab=terminal">';
         $ehorus_tab['sub_menu'] .= '<li class="nomn tab_godmode" style="text-align: center;">'.html_print_image('images/ehorus/terminal.png', true, [ 'title' => __('Terminal')]);
@@ -1282,7 +1311,7 @@ $onheader = [
 ];
 
 // Added after it exists
-// If the agent has incidents associated
+// If the agent has incidents associated.
 if ($total_incidents) {
     $onheader['incident'] = $incidenttab;
 }
@@ -1291,23 +1320,23 @@ if ($agent['url_address'] != '') {
     $onheader['url_address'] = $urladdresstab;
 }
 
-// If the log viewer tab exists
+// If the log viewer tab exists.
 if (isset($log_viewer_tab) && !empty($log_viewer_tab)) {
     $onheader['log_viewer'] = $log_viewer_tab;
 }
 
-// If the ehorus id exists
+// If the ehorus id exists.
 if (isset($ehorus_tab) && !empty($ehorus_tab)) {
     $onheader['ehorus'] = $ehorus_tab;
 }
 
-// Tabs for extensions
+// Tabs for extensions.
 foreach ($config['extensions'] as $extension) {
     if (isset($extension['extension_ope_tab']) && !isset($extension['extension_god_tab'])) {
         if (check_acl_one_of_groups($config['id_user'], $all_groups, $extension['extension_ope_tab']['acl'])) {
-            // VMware extension is only available for VMware OS
+            // VMware extension is only available for VMware OS.
             if ($extension['extension_ope_tab']['id'] === 'vmware_manager') {
-                // Check if OS is vmware
+                // Check if OS is vmware.
                 $id_remote_field = db_get_value(
                     'id_field',
                     'tagent_custom_fields',
@@ -1329,13 +1358,13 @@ foreach ($config['extensions'] as $extension) {
                 }
             }
 
-            // RHEV extension is only available for RHEV Virtual Machines
+            // RHEV extension is only available for RHEV Virtual Machines.
             if ($extension['extension_ope_tab']['id'] === 'rhev_manager') {
-                // Get id for remote field "rhev_type"
+                // Get id for remote field "rhev_type".
                 $id_remote_field = db_get_value('id_field', 'tagent_custom_fields', 'name', 'rhev_type');
-                // Get rhev type for this agent
+                // Get rhev type for this agent.
                 $rhev_type = db_get_value_filter('description', 'tagent_custom_data', ['id_field' => $id_remote_field, 'id_agent' => $agent['id_agente']]);
-                // Check if rhev type is a vm
+                // Check if rhev type is a vm.
                 if ($rhev_type != 'vm') {
                     continue;
                 }

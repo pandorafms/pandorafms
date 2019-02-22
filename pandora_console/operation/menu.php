@@ -105,6 +105,7 @@ if (!empty($sub2)) {
 }
 
 enterprise_hook('cluster_menu');
+enterprise_hook('aws_menu');
 
 if (!empty($sub)) {
     $menu_operation['estado']['text'] = __('Monitoring');

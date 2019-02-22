@@ -278,226 +278,228 @@ enterprise_hook('close_meta_frame');
 <?php } ?>
 
 <script type="text/javascript">
-    var treeController = TreeController.getController();
-    
-    processTreeSearch();
-    
-    $("form#tree_search").submit(function(e) {
-        e.preventDefault();
-        processTreeSearch();
-    });
-    
-    function processTreeSearch () {
-        // Clear the tree
-        if (typeof treeController.recipient != 'undefined' && treeController.recipient.length > 0)
-            treeController.recipient.empty();
-        
-        $(".loading_tree").show();
-        
-        var parameters = {};
-        parameters['page'] = "include/ajax/tree.ajax";
-        parameters['getChildren'] = 1;
-        parameters['type'] = "<?php echo $tab; ?>";
-        parameters['filter'] = {};
-        parameters['filter']['searchGroup'] = $("input#text-search_group").val();
-        parameters['filter']['searchAgent'] = $("input#text-search_agent").val();
-        parameters['filter']['statusAgent'] = $("select#status_agent").val();
-        parameters['filter']['searchModule'] = $("input#text-search_module").val();
-        parameters['filter']['statusModule'] = $("select#status_module").val();
-        parameters['filter']['groupID'] = $("input#hidden-group-id").val();
-        parameters['filter']['tagID'] = $("input#hidden-tag-id").val();
-        
-        if($("#checkbox-serach_hirearchy").is(':checked')){
-            parameters['filter']['searchHirearchy'] = 1;
-        }
-        else{
-            parameters['filter']['searchHirearchy'] = 0;
-        }
-        
-        if($("#checkbox-show_not_init_agents").is(':checked')){
-            parameters['filter']['show_not_init_agents'] = 1;
-        }
-        else{
-            parameters['filter']['show_not_init_agents'] = 0;
-        }
-        
-        if($("#checkbox-show_not_init_modules").is(':checked')){
-            parameters['filter']['show_not_init_modules'] = 1;
-            $('#hidden-show_not_init_modules_hidden').val(1);
-        }
-        else{
-            parameters['filter']['show_not_init_modules'] = 0;
-            $('#hidden-show_not_init_modules_hidden').val(0);
-        }
+	var treeController = TreeController.getController();
+	
+	processTreeSearch();
+	
+	$("form#tree_search").submit(function(e) {
+		e.preventDefault();
+		processTreeSearch();
+	});
+	
+	function processTreeSearch () {
+		// Clear the tree
+		if (typeof treeController.recipient != 'undefined' && treeController.recipient.length > 0)
+			treeController.recipient.empty();
+		
+		$(".loading_tree").show();
+		
 
-        $.ajax({
-            type: "POST",
-            url: "<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",
-            data: parameters,
-            success: function(data) {
-                if (data.success) {
-                    $(".loading_tree").hide();
-                    
-                    treeController.init({
-                        recipient: $("div#tree-controller-recipient"),
-                        detailRecipient: $.fixedBottomBox({ width: 400, height: window.innerHeight * 0.9 }),
-                        page: parameters['page'],
-                        emptyMessage: "<?php echo __('No data found'); ?>",
-                        foundMessage: "<?php echo __('Found groups'); ?>",
-                        tree: data.tree,
-                        baseURL: "<?php echo ui_get_full_url(false, false, false, is_metaconsole()); ?>",
-                        ajaxURL: "<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",
-                        filter: parameters['filter'],
-                        counterTitles: {
-                            total: {
-                                agents: "<?php echo __('Total agents'); ?>",
-                                modules: "<?php echo __('Total modules'); ?>",
-                                none: "<?php echo __('Total'); ?>"
-                            },
-                            alerts: {
-                                agents: "<?php echo __('Fired alerts'); ?>",
-                                modules: "<?php echo __('Fired alerts'); ?>",
-                                none: "<?php echo __('Fired alerts'); ?>"
-                            },
-                            critical: {
-                                agents: "<?php echo __('Critical agents'); ?>",
-                                modules: "<?php echo __('Critical modules'); ?>",
-                                none: "<?php echo __('Critical'); ?>"
-                            },
-                            warning: {
-                                agents: "<?php echo __('Warning agents'); ?>",
-                                modules: "<?php echo __('Warning modules'); ?>",
-                                none: "<?php echo __('Warning'); ?>"
-                            },
-                            unknown: {
-                                agents: "<?php echo __('Unknown agents'); ?>",
-                                modules: "<?php echo __('Unknown modules'); ?>",
-                                none: "<?php echo __('Unknown'); ?>"
-                            },
-                            not_init: {
-                                agents: "<?php echo __('Not init agents'); ?>",
-                                modules: "<?php echo __('Not init modules'); ?>",
-                                none: "<?php echo __('Not init'); ?>"
-                            },
-                            ok: {
-                                agents: "<?php echo __('Normal agents'); ?>",
-                                modules: "<?php echo __('Normal modules'); ?>",
-                                none: "<?php echo __('Normal'); ?>"
-                            }
-                        }
-                    });
-                }
-            },
-            dataType: "json"
-        });
-    }
-    
-    // Show the modal window of an module
-    var moduleDetailsWindow = $("<div></div>");
-    moduleDetailsWindow
-        .hide()
-        .prop("id", "module_details_window")
-        .appendTo('body');
-    
-    function show_module_detail_dialog(module_id, id_agent, server_name, offset, period, module_name) {
-        var params = {};
-        var f = new Date();
-        period = $('#period').val();
-        
-        params.selection_mode = $('input[name=selection_mode]:checked').val();
-        if (!params.selection_mode) {
-            params.selection_mode='fromnow';
-        }
-        
-        params.date_from = $('#text-date_from').val();
-        if (!params.date_from) {
-            params.date_from = f.getFullYear() + "/" + (f.getMonth() +1) + "/" + f.getDate();
-        }
-        
-        params.time_from = $('#text-time_from').val();
-        if (!params.time_from) {
-            params.time_from = f.getHours() + ":"  + f.getMinutes();
-        }
-        
-        params.date_to = $('#text-date_to').val();
-        if (!params.date_to) {
-            params.date_to =f.getFullYear() + "/" + (f.getMonth() +1) + "/" + f.getDate();
-        }
-        
-        params.time_to = $('#text-time_to').val();
-        if (!params.time_to) {
-            params.time_to = f.getHours() + ":"  + f.getMinutes();
-        }
-        
-        params.page = "include/ajax/module";
-        params.get_module_detail = 1;
-        params.server_name = server_name;
-        params.id_agent = id_agent;
-        params.id_module = module_id;
-        params.offset = offset;
-        params.period = period;
-        title =   <?php echo "'".__('Module: ')."'"; ?> ;
-        $.ajax({
-            type: "POST",
-            url: "<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",
-            data: params,
-            dataType: "html",
-            success: function(data) {
-                $("#module_details_window").hide ()
-                    .empty ()
-                    .append (data)
-                    .dialog ({
-                        resizable: true,
-                        draggable: true,
-                        modal: true,
-                        title: title + module_name,
-                        overlay: {
-                            opacity: 0.5,
-                            background: "black"
-                        },
-                        width: 650,
-                        height: 500
-                    })
-                    .show ();
-                    refresh_pagination_callback(module_id, id_agent, server_name, module_name);
-                    datetime_picker_callback();
-                    forced_title_callback();
-            }
-        });
-    }
-    
-    function datetime_picker_callback() {
-        $("#text-time_from, #text-time_to").timepicker({
-            showSecond: true,
-            timeFormat: '<?php echo TIME_FORMAT_JS; ?>',
-            timeOnlyTitle: '<?php echo __('Choose time'); ?>',
-            timeText: '<?php echo __('Time'); ?>',
-            hourText: '<?php echo __('Hour'); ?>',
-            minuteText: '<?php echo __('Minute'); ?>',
-            secondText: '<?php echo __('Second'); ?>',
-            currentText: '<?php echo __('Now'); ?>',
-            closeText: '<?php echo __('Close'); ?>'});
-        
-        $.datepicker.setDefaults($.datepicker.regional[ "<?php echo get_user_language(); ?>"]);
-        $("#text-date_from, #text-date_to").datepicker({dateFormat: "<?php echo DATE_FORMAT_JS; ?>"});
-        
-    }
-    
-    function refresh_pagination_callback (module_id, id_agent, server_name,module_name) {
-        
-        $(".binary_dialog").click( function() {
-            
-            var classes = $(this).attr('class');
-            classes = classes.split(' ');
-            var offset_class = classes[2];
-            offset_class = offset_class.split('_');
-            var offset = offset_class[1];
-            
-            var period = $('#period').val();
-            
-            show_module_detail_dialog(module_id, id_agent, server_name, offset, period,module_name);
-            return false;
-        });
-    }
-    
+
+		var parameters = {};
+		parameters['page'] = "include/ajax/tree.ajax";
+		parameters['getChildren'] = 1;
+		parameters['type'] = "<?php echo $tab; ?>";
+		parameters['filter'] = {};
+		parameters['filter']['searchGroup'] = $("input#text-search_group").val();
+		parameters['filter']['searchAgent'] = $("input#text-search_agent").val();
+		parameters['filter']['statusAgent'] = $("select#status_agent").val();
+		parameters['filter']['searchModule'] = $("input#text-search_module").val();
+		parameters['filter']['statusModule'] = $("select#status_module").val();
+		parameters['filter']['groupID'] = $("input#hidden-group-id").val();
+		parameters['filter']['tagID'] = $("input#hidden-tag-id").val();
+		
+		if($("#checkbox-serach_hirearchy").is(':checked')){
+			parameters['filter']['searchHirearchy'] = 1;
+		}
+		else{
+			parameters['filter']['searchHirearchy'] = 0;
+		}
+		
+		if($("#checkbox-show_not_init_agents").is(':checked')){
+			parameters['filter']['show_not_init_agents'] = 1;
+		}
+		else{
+			parameters['filter']['show_not_init_agents'] = 0;
+		}
+		
+		if($("#checkbox-show_not_init_modules").is(':checked')){
+			parameters['filter']['show_not_init_modules'] = 1;
+			$('#hidden-show_not_init_modules_hidden').val(1);
+		}
+		else{
+			parameters['filter']['show_not_init_modules'] = 0;
+			$('#hidden-show_not_init_modules_hidden').val(0);
+		}
+
+		$.ajax({
+			type: "POST",
+			url: "<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",
+			data: parameters,
+			success: function(data) {
+				if (data.success) {
+					$(".loading_tree").hide();
+					
+					treeController.init({
+						recipient: $("div#tree-controller-recipient"),
+						detailRecipient: $.fixedBottomBox({ width: 400, height: window.innerHeight * 0.9 }),
+						page: parameters['page'],
+						emptyMessage: "<?php echo __('No data found'); ?>",
+						foundMessage: "<?php echo __('Found groups'); ?>",
+						tree: data.tree,
+						baseURL: "<?php echo ui_get_full_url(false, false, false, is_metaconsole()); ?>",
+						ajaxURL: "<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",
+						filter: parameters['filter'],
+						counterTitles: {
+							total: {
+								agents: "<?php echo __('Total agents'); ?>",
+								modules: "<?php echo __('Total modules'); ?>",
+								none: "<?php echo __('Total'); ?>"
+							},
+							alerts: {
+								agents: "<?php echo __('Fired alerts'); ?>",
+								modules: "<?php echo __('Fired alerts'); ?>",
+								none: "<?php echo __('Fired alerts'); ?>"
+							},
+							critical: {
+								agents: "<?php echo __('Critical agents'); ?>",
+								modules: "<?php echo __('Critical modules'); ?>",
+								none: "<?php echo __('Critical'); ?>"
+							},
+							warning: {
+								agents: "<?php echo __('Warning agents'); ?>",
+								modules: "<?php echo __('Warning modules'); ?>",
+								none: "<?php echo __('Warning'); ?>"
+							},
+							unknown: {
+								agents: "<?php echo __('Unknown agents'); ?>",
+								modules: "<?php echo __('Unknown modules'); ?>",
+								none: "<?php echo __('Unknown'); ?>"
+							},
+							not_init: {
+								agents: "<?php echo __('Not init agents'); ?>",
+								modules: "<?php echo __('Not init modules'); ?>",
+								none: "<?php echo __('Not init'); ?>"
+							},
+							ok: {
+								agents: "<?php echo __('Normal agents'); ?>",
+								modules: "<?php echo __('Normal modules'); ?>",
+								none: "<?php echo __('Normal'); ?>"
+							}
+						}
+					});
+				}
+			},
+			dataType: "json"
+		});
+	}
+	
+	// Show the modal window of an module
+	var moduleDetailsWindow = $("<div></div>");
+	moduleDetailsWindow
+		.hide()
+		.prop("id", "module_details_window")
+		.appendTo('body');
+	
+	function show_module_detail_dialog(module_id, id_agent, server_name, offset, period, module_name) {
+		var params = {};
+		var f = new Date();
+		period = $('#period').val();
+		
+		params.selection_mode = $('input[name=selection_mode]:checked').val();
+		if (!params.selection_mode) {
+			params.selection_mode='fromnow';
+		}
+		
+		params.date_from = $('#text-date_from').val();
+		if (!params.date_from) {
+			params.date_from = f.getFullYear() + "/" + (f.getMonth() +1) + "/" + f.getDate();
+		}
+		
+		params.time_from = $('#text-time_from').val();
+		if (!params.time_from) {
+			params.time_from = f.getHours() + ":"  + f.getMinutes();
+		}
+		
+		params.date_to = $('#text-date_to').val();
+		if (!params.date_to) {
+			params.date_to =f.getFullYear() + "/" + (f.getMonth() +1) + "/" + f.getDate();
+		}
+		
+		params.time_to = $('#text-time_to').val();
+		if (!params.time_to) {
+			params.time_to = f.getHours() + ":"  + f.getMinutes();
+		}
+		
+		params.page = "include/ajax/module";
+		params.get_module_detail = 1;
+		params.server_name = server_name;
+		params.id_agent = id_agent;
+		params.id_module = module_id;
+		params.offset = offset;
+		params.period = period;
+		title =   <?php echo "'" . __("Module: ") . "'" ?> ;
+		$.ajax({
+			type: "POST",
+			url: "<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",
+			data: params,
+			dataType: "html",
+			success: function(data) {
+				$("#module_details_window").hide ()
+					.empty ()
+					.append (data)
+					.dialog ({
+						resizable: true,
+						draggable: true,
+						modal: true,
+						title: title + module_name,
+						overlay: {
+							opacity: 0.5,
+							background: "black"
+						},
+						width: 650,
+						height: 500
+					})
+					.show ();
+					refresh_pagination_callback(module_id, id_agent, server_name, module_name);
+					datetime_picker_callback();
+					forced_title_callback();
+			}
+		});
+	}
+	
+	function datetime_picker_callback() {
+		$("#text-time_from, #text-time_to").timepicker({
+			showSecond: true,
+			timeFormat: '<?php echo TIME_FORMAT_JS; ?>',
+			timeOnlyTitle: '<?php echo __('Choose time');?>',
+			timeText: '<?php echo __('Time');?>',
+			hourText: '<?php echo __('Hour');?>',
+			minuteText: '<?php echo __('Minute');?>',
+			secondText: '<?php echo __('Second');?>',
+			currentText: '<?php echo __('Now');?>',
+			closeText: '<?php echo __('Close');?>'});
+		
+		$.datepicker.setDefaults($.datepicker.regional[ "<?php echo get_user_language(); ?>"]);
+		$("#text-date_from, #text-date_to").datepicker({dateFormat: "<?php echo DATE_FORMAT_JS; ?>"});
+		
+	}
+	
+	function refresh_pagination_callback (module_id, id_agent, server_name,module_name) {
+		
+		$(".binary_dialog").click( function() {
+			
+			var classes = $(this).attr('class');
+			classes = classes.split(' ');
+			var offset_class = classes[2];
+			offset_class = offset_class.split('_');
+			var offset = offset_class[1];
+			
+			var period = $('#period').val();
+			
+			show_module_detail_dialog(module_id, id_agent, server_name, offset, period,module_name);
+			return false;
+		});
+	}
+	
 </script>

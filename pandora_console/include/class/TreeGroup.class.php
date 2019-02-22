@@ -1,215 +1,193 @@
 <?php
-// Pandora FMS- http://pandorafms.com
+//Pandora FMS- http://pandorafms.com
 // ==================================================
 // Copyright (c) 2005-2018 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
+
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the  GNU Lesser General Public License
 // as published by the Free Software Foundation; version 2
+
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
+
 global $config;
 
-require_once $config['homedir'].'/include/class/Tree.class.php';
+require_once($config['homedir']."/include/class/Tree.class.php");
 
-class TreeGroup extends Tree
-{
+class TreeGroup extends Tree {
 
-    protected $propagateCounters = true;
+	protected $propagateCounters = true;
+	protected $displayAllGroups  = false;
 
-    protected $displayAllGroups = false;
+	public function  __construct($type, $rootType = '', $id = -1, $rootID = -1, $serverID = false, $childrenMethod = "on_demand", $access = 'AR') {
 
+		global $config;
 
-    public function __construct($type, $rootType='', $id=-1, $rootID=-1, $serverID=false, $childrenMethod='on_demand', $access='AR')
-    {
-        global $config;
+		parent::__construct($type, $rootType, $id, $rootID, $serverID, $childrenMethod, $access);
 
-        parent::__construct($type, $rootType, $id, $rootID, $serverID, $childrenMethod, $access);
+		$this->L1fieldName = "id_group";
+		$this->L1extraFields = array(
+			"tg.nombre AS `name`",
+			"tg.icon",
+			"tg.id_grupo AS gid"
+		);
 
-        $this->L1fieldName = 'id_group';
-        $this->L1extraFields = [
-            'tg.nombre AS `name`',
-            'tg.icon',
-            'tg.id_grupo AS gid',
-        ];
+		$this->L2conditionInside = "AND (
+			ta.id_grupo = " . $this->id . "
+			OR tasg.id_group = " . $this->id . "
+		)";
+	}
 
-        $this->L2conditionInside = 'AND (
-			ta.id_grupo = '.$this->id.'
-			OR tasg.id_group = '.$this->id.'
-		)';
-    }
+	public function setPropagateCounters($value) {
+		$this->propagateCounters = (bool)$value;
+	}
 
+	public function setDisplayAllGroups($value) {
+		$this->displayAllGroups = (bool)$value;
+	}
 
-    public function setPropagateCounters($value)
-    {
-        $this->propagateCounters = (bool) $value;
-    }
+	protected function getData() {
+		if ($this->id == -1) {
 
+			$this->getFirstLevel();
 
-    public function setDisplayAllGroups($value)
-    {
-        $this->displayAllGroups = (bool) $value;
-    }
+		} elseif ($this->type == 'group') {
+			$this->getSecondLevel();
+		} elseif ($this->type == 'agent') {
+			$this->getThirdLevel();
+		}
+	}
 
+	protected function getGroupSearchFilter() {
+		return "";
+	}
 
-    protected function getData()
-    {
-        if ($this->id == -1) {
-            $this->getFirstLevel();
-        } else if ($this->type == 'group') {
-            $this->getSecondLevel();
-        } else if ($this->type == 'agent') {
-            $this->getThirdLevel();
-        }
-    }
+	protected function getFirstLevel() {
+		$processed_items = $this->getProcessedGroups();
 
+		if (!empty($processed_items)) {
+			// Filter by group name. This should be done after rerieving the items cause we need the possible items descendants
+			if (!empty($this->filter['searchGroup'])) {
+				// Save the groups which intersect with the user groups
+				$groups = db_get_all_rows_filter('tgrupo', array('nombre' => '%' . $this->filter['searchGroup'] . '%'));
+				if ($groups == false) $groups = array();
+				$userGroupsACL = $this->userGroupsACL;
+				$ids_hash = array_reduce($groups, function ($userGroups, $group) use ($userGroupsACL) {
+					$group_id = $group['id_grupo'];
+					if (isset($userGroupsACL[$group_id])) {
+						$userGroups[$group_id] = $userGroupsACL[$group_id];
+					}
 
-    protected function getGroupSearchFilter()
-    {
-        return '';
-    }
+					return $userGroups;
+				}, array());
 
+				$result = self::extractGroupsWithIDs($processed_items, $ids_hash);
 
-    protected function getFirstLevel()
-    {
-        $processed_items = $this->getProcessedGroups();
+				$processed_items = ($result === false) ? array() : $result;
+			}
 
-        if (!empty($processed_items)) {
-            // Filter by group name. This should be done after rerieving the items cause we need the possible items descendants
-            if (!empty($this->filter['searchGroup'])) {
-                // Save the groups which intersect with the user groups
-                $groups = db_get_all_rows_filter('tgrupo', ['nombre' => '%'.$this->filter['searchGroup'].'%']);
-                if ($groups == false) {
-                    $groups = [];
-                }
+			// groupID filter. To access the view from tactical views f.e.
+			if (!empty($this->filter['groupID'])) {
+				$result = self::extractItemWithID($processed_items, $this->filter['groupID'], "group", $this->strictACL);
 
-                $userGroupsACL = $this->userGroupsACL;
-                $ids_hash = array_reduce(
-                    $groups,
-                    function ($userGroups, $group) use ($userGroupsACL) {
-                        $group_id = $group['id_grupo'];
-                        if (isset($userGroupsACL[$group_id])) {
-                            $userGroups[$group_id] = $userGroupsACL[$group_id];
-                        }
+				$processed_items = ($result === false) ? array() : array($result);
+			}
+		}
+		hd("G-GETFIRSTLEVELGETFIRSTLEVELGETFIRSTLEVELGETFIRSTLEVELGETFIRSTLEVELGETFIRSTLEVELGETFIRSTLEVELGETFIRSTLEVEL", true);
+hd($processed_items, true);
+		$this->tree = $processed_items;
+	}
 
-                        return $userGroups;
-                    },
-                    []
-                );
+	protected function getProcessedGroups () {
+		$processed_groups = array();
+		// Index and process the groups
+		$groups = $this->getGroupCounters();
 
-                $result = self::extractGroupsWithIDs($processed_items, $ids_hash);
+		// If user have not permissions in parent, set parent node to 0 (all)
+		// Avoid to do foreach for admins
+		if (!users_can_manage_group_all("AR")) {
+			foreach ($groups as $id => $group) {
+				if (!isset($this->userGroups[$groups[$id]['parent']])) {
+					$groups[$id]['parent'] = 0;
+				}
+			}
+		}
+		// Build the group hierarchy
+		foreach ($groups as $id => $group) {
+			if (isset($groups[$id]['parent']) && ($groups[$id]['parent'] != 0)) {
+				$parent = $groups[$id]['parent'];
+				// Parent exists
+				if (!isset($groups[$parent]['children'])) {
+					$groups[$parent]['children'] = array();
+				}
+				// Store a reference to the group into the parent
+				$groups[$parent]['children'][] = &$groups[$id];
+				// This group was introduced into a parent
+				$groups[$id]['have_parent'] = true;
+			}
+		}
+		// Sort the children groups
+		foreach ($groups as $id => $group) {
+			if (isset($groups[$id]['children'])) {
+				usort($groups[$id]['children'], array("Tree", "cmpSortNames"));
+			}
+		}
+		//Filter groups and eliminates the reference to children groups out of her parent
+		$groups = array_filter($groups, function ($group) {
+			return !$group['have_parent'];
+		});
+		// Propagate child counters to her parents
 
-                $processed_items = ($result === false) ? [] : $result;
-            }
+		if ($this->propagateCounters) {
+			TreeGroup::processCounters($groups);
+			// Filter groups and eliminates the reference to empty groups
+			$groups = $this->deleteEmptyGroups($groups);
+		} else {
+			$groups = $this->deleteEmptyGroupsNotPropagate($groups);
+		}
 
-            // groupID filter. To access the view from tactical views f.e.
-            if (!empty($this->filter['groupID'])) {
-                $result = self::extractItemWithID($processed_items, $this->filter['groupID'], 'group', $this->strictACL);
+		usort($groups, array("Tree", "cmpSortNames"));
 
-                $processed_items = ($result === false) ? [] : [$result];
-            }
-        }
+		return $groups;
+	}
 
-        $this->tree = $processed_items;
-    }
+	protected function getGroupCounters() {
+		$fields = $this->getFirstLevelFields();
+		$inside_fields = $this->getFirstLevelFieldsInside();
 
+		$group_acl = "";
+		$secondary_group_acl = "";
+		if (!users_can_manage_group_all("AR")) {
+			$user_groups_str = implode(",", $this->userGroupsArray);
+			$group_acl = " AND ta.id_grupo IN ($user_groups_str)";
+			$secondary_group_acl = " AND tasg.id_group IN ($user_groups_str)";
+		}
+		$agent_search_filter = $this->getAgentSearchFilter();
+		$agent_search_filter = preg_replace("/%/", "%%", $agent_search_filter);
+		$agent_status_filter = $this->getAgentStatusFilter();
+		$module_status_filter = $this->getModuleStatusFilter();
 
-    protected function getProcessedGroups()
-    {
-        $processed_groups = [];
-        // Index and process the groups
-        $groups = $this->getGroupCounters();
-
-        // If user have not permissions in parent, set parent node to 0 (all)
-        // Avoid to do foreach for admins
-        if (!users_can_manage_group_all('AR')) {
-            foreach ($groups as $id => $group) {
-                if (!isset($this->userGroups[$groups[$id]['parent']])) {
-                    $groups[$id]['parent'] = 0;
-                }
-            }
-        }
-
-        // Build the group hierarchy
-        foreach ($groups as $id => $group) {
-            if (isset($groups[$id]['parent']) && ($groups[$id]['parent'] != 0)) {
-                $parent = $groups[$id]['parent'];
-                // Parent exists
-                if (!isset($groups[$parent]['children'])) {
-                    $groups[$parent]['children'] = [];
-                }
-
-                // Store a reference to the group into the parent
-                $groups[$parent]['children'][] = &$groups[$id];
-                // This group was introduced into a parent
-                $groups[$id]['have_parent'] = true;
-            }
-        }
-
-        // Sort the children groups
-        foreach ($groups as $id => $group) {
-            if (isset($groups[$id]['children'])) {
-                usort($groups[$id]['children'], ['Tree', 'cmpSortNames']);
-            }
-        }
-
-        // Filter groups and eliminates the reference to children groups out of her parent
-        $groups = array_filter(
-            $groups,
-            function ($group) {
-                return !$group['have_parent'];
-            }
-        );
-        // Propagate child counters to her parents
-        if ($this->propagateCounters) {
-            self::processCounters($groups);
-            // Filter groups and eliminates the reference to empty groups
-            $groups = $this->deleteEmptyGroups($groups);
-        } else {
-            $groups = $this->deleteEmptyGroupsNotPropagate($groups);
-        }
-
-        usort($groups, ['Tree', 'cmpSortNames']);
-        return $groups;
-    }
-
-
-    protected function getGroupCounters()
-    {
-        $fields = $this->getFirstLevelFields();
-        $inside_fields = $this->getFirstLevelFieldsInside();
-
-        $group_acl = '';
-        $secondary_group_acl = '';
-        if (!users_can_manage_group_all('AR')) {
-            $user_groups_str = implode(',', $this->userGroupsArray);
-            $group_acl = " AND ta.id_grupo IN ($user_groups_str)";
-            $secondary_group_acl = " AND tasg.id_group IN ($user_groups_str)";
-        }
-
-        $agent_search_filter = $this->getAgentSearchFilter();
-        $agent_search_filter = preg_replace('/%/', '%%', $agent_search_filter);
-        $agent_status_filter = $this->getAgentStatusFilter();
-        $module_status_filter = $this->getModuleStatusFilter();
-
-        $module_search_inner = '';
-        $module_search_filter = '';
-        if (!empty($this->filter['searchModule'])) {
-            $module_search_inner = '
+		$module_search_inner = "";
+		$module_search_filter = "";
+		if (!empty($this->filter['searchModule'])) {
+			$module_search_inner = "
 				INNER JOIN tagente_modulo tam
 					ON ta.id_agente = tam.id_agente
 				INNER JOIN tagente_estado tae
-					ON tae.id_agente_modulo = tam.id_agente_modulo';
-            $module_search_filter = "AND tam.disabled = 0
-				AND tam.nombre LIKE '%%".$this->filter['searchModule']."%%' ".$this->getModuleStatusFilterFromTestado();
-        }
+					ON tae.id_agente_modulo = tam.id_agente_modulo";
+			$module_search_filter = "AND tam.disabled = 0
+				AND tam.nombre LIKE '%%" . $this->filter['searchModule'] . "%%' " .
+				$this->getModuleStatusFilterFromTestado()
+			;
+		}
 
-        $table = is_metaconsole() ? 'tmetaconsole_agent' : 'tagente';
-        $table_sec = is_metaconsole() ? 'tmetaconsole_agent_secondary_group' : 'tagent_secondary_group';
+		$table = is_metaconsole() ? "tmetaconsole_agent" : "tagente";
+		$table_sec = is_metaconsole() ? "tmetaconsole_agent_secondary_group" : "tagent_secondary_group";
 
-        $sql_model = "SELECT %s FROM
+		$sql_model = "SELECT %s FROM
 			(
 				SELECT COUNT(DISTINCT(ta.id_agente)) AS total, id_grupo AS g
 					FROM $table ta
@@ -236,294 +214,254 @@ class TreeGroup extends Tree
 						$secondary_group_acl
 					GROUP BY id_group
 			) x GROUP BY g";
-        $sql_array = [];
-        foreach ($inside_fields as $inside_field) {
-            $sql_array[] = sprintf(
-                $sql_model,
-                $inside_field['header'],
-                $inside_field['condition'],
-                $inside_field['condition']
-            );
-        }
-
-        $sql = "SELECT $fields FROM (".implode(' UNION ALL ', $sql_array).') x2
+		$sql_array = array();
+		foreach ($inside_fields as $inside_field) {
+			$sql_array[] = sprintf(
+				$sql_model,
+				$inside_field['header'],
+				$inside_field['condition'],
+				$inside_field['condition']
+			);
+		}
+		$sql = "SELECT $fields FROM (" . implode(" UNION ALL ", $sql_array) . ") x2
 			RIGHT JOIN tgrupo tg
 				ON x2.g = tg.id_grupo
-			GROUP BY tg.id_grupo';
-        $stats = db_get_all_rows_sql($sql);
+			GROUP BY tg.id_grupo";
+		$stats = db_get_all_rows_sql($sql);
 
-        $group_stats = [];
-        foreach ($stats as $group) {
-            $group_stats[$group['gid']]['total_count'] = (int) $group['total_count'];
-            $group_stats[$group['gid']]['total_critical_count'] = (int) $group['total_critical_count'];
-            $group_stats[$group['gid']]['total_unknown_count'] = (int) $group['total_unknown_count'];
-            $group_stats[$group['gid']]['total_warning_count'] = (int) $group['total_warning_count'];
-            $group_stats[$group['gid']]['total_not_init_count'] = (int) $group['total_not_init_count'];
-            $group_stats[$group['gid']]['total_normal_count'] = (int) $group['total_normal_count'];
-            $group_stats[$group['gid']]['total_fired_count'] = (int) $group['total_alerts_count'];
-            $group_stats[$group['gid']]['name'] = $group['name'];
-            $group_stats[$group['gid']]['parent'] = $group['parent'];
-            $group_stats[$group['gid']]['icon'] = $group['icon'];
-            $group_stats[$group['gid']]['id'] = $group['gid'];
-            $group_stats[$group['gid']] = $this->getProcessedItem($group_stats[$group['gid']]);
-        }
+		$group_stats = array();
 
-        return $group_stats;
-    }
+				hd("STATS STATS STATS STATS STATS STATS STATS STATS STATS STATS STATS STATS STATS STATS STATS STATS STATS STATS STATS STATS STATS STATS STATS STATS STATS STATS STATS STATS STATS STATS STATS STATS STATS STATS STATS STATS STATS STATS ", true);
+		hd($stats, true);
+		foreach ($stats as $group) {
+			$group_stats[$group['gid']]['total_count'] = (int)$group['total_count'];
+			$group_stats[$group['gid']]['total_critical_count'] = (int)$group['total_critical_count'];
+			$group_stats[$group['gid']]['total_unknown_count'] = (int)$group['total_unknown_count'];
+			$group_stats[$group['gid']]['total_warning_count'] = (int)$group['total_warning_count'];
+			$group_stats[$group['gid']]['total_not_init_count'] = (int)$group['total_not_init_count'];
+			$group_stats[$group['gid']]['total_normal_count'] = (int)$group['total_normal_count'];
+			$group_stats[$group['gid']]['total_fired_count'] = (int)$group['total_alerts_count'];
+			$group_stats[$group['gid']]['name'] = $group['name'];
+			$group_stats[$group['gid']]['parent'] = $group['parent'];
+			$group_stats[$group['gid']]['icon'] = $group['icon'];
+			$group_stats[$group['gid']]['id'] = $group['gid'];
+			$group_stats[$group['gid']] = $this->getProcessedItem($group_stats[$group['gid']]);
 
-
-    protected function getFirstLevelFields()
-    {
-        $fields = parent::getFirstLevelFields();
-        $parent = $this->getDisplayHierarchy() ? 'tg.parent' : '0 as parent';
-        return "$fields, $parent";
-    }
+		}
 
 
-    protected function getProcessedModules($modules_tree)
-    {
-        $groups = [];
-        foreach ($modules_tree as $group) {
-            $groups[$group['id']] = $group;
-        }
 
-        // Build the module hierarchy
-        foreach ($groups as $id => $group) {
-            if (isset($groups[$id]['parent']) && ($groups[$id]['parent'] != 0)) {
-                $parent = $groups[$id]['parent'];
-                // Parent exists
-                if (!isset($groups[$parent]['children'])) {
-                    $groups[$parent]['children'] = [];
-                }
+		return $group_stats;
+	}
 
-                // Store a reference to the group into the parent
-                $groups[$parent]['children'][] = &$groups[$id];
-                // This group was introduced into a parent
-                $groups[$id]['have_parent'] = true;
-            }
-        }
+	protected function getFirstLevelFields() {
+		$fields = parent::getFirstLevelFields();
+		$parent = $this->getDisplayHierarchy() ? 'tg.parent' : '0 as parent';
+		return "$fields, $parent";
+	}
 
-        // Sort the children groups
-        foreach ($groups as $id => $group) {
-            if (isset($groups[$id]['children'])) {
-                usort($groups[$id]['children'], ['Tree', 'cmpSortNames']);
-            }
-        }
+	protected function getProcessedModules($modules_tree) {
 
-        // Filter groups and eliminates the reference to children groups out of her parent
-        $groups = array_filter(
-            $groups,
-            function ($group) {
-                return !$group['have_parent'];
-            }
-        );
+		$groups = array();
+		foreach ($modules_tree as $group) {
+			$groups[$group["id"]] = $group;
+		}
 
-        return array_values($groups);
-    }
+		// Build the module hierarchy
+		foreach ($groups as $id => $group) {
+			if (isset($groups[$id]['parent']) && ($groups[$id]['parent'] != 0)) {
+				$parent = $groups[$id]['parent'];
+				// Parent exists
+				if (!isset($groups[$parent]['children'])) {
+					$groups[$parent]['children'] = array();
+				}
+				// Store a reference to the group into the parent
+				$groups[$parent]['children'][] = &$groups[$id];
+				// This group was introduced into a parent
+				$groups[$id]['have_parent'] = true;
+			}
+		}
 
+		// Sort the children groups
+		foreach ($groups as $id => $group) {
+			if (isset($groups[$id]['children'])) {
+				usort($groups[$id]['children'], array("Tree", "cmpSortNames"));
+			}
+		}
+		//Filter groups and eliminates the reference to children groups out of her parent
+		$groups = array_filter($groups, function ($group) {
+			return !$group['have_parent'];
+		});
 
-    // FIXME: Hierarchy lops is broken
-    protected function getProcessedModules_old($modules_tree)
-    {
-        $tree_modules = [];
-        $new_modules_root = array_filter(
-            $modules_tree,
-            function ($module) {
-                return (isset($module['parent']) && ($module['parent'] == 0));
-            }
-        );
+		return array_values($groups);
+	}
 
-        $new_modules_child = array_filter(
-            $modules_tree,
-            function ($module) {
-                return (isset($module['parent']) && ($module['parent'] != 0));
-            }
-        );
+	// FIXME: Hierarchy lops is broken
+	protected function getProcessedModules_old($modules_tree) {
 
-        $i = 0;
-        while (!empty($new_modules_child)) {
-            foreach ($new_modules_child as $i => $child) {
-                self::recursive_modules_tree_view($new_modules_root, $new_modules_child, $i, $child);
-            }
-        }
+		$tree_modules = array();
+		$new_modules_root = array_filter($modules_tree, function ($module) {
+			return (isset($module['parent']) && ($module['parent'] == 0));
+		});
 
-        foreach ($new_modules_root as $m) {
-            $tree_modules[] = $m;
-        }
+		$new_modules_child = array_filter($modules_tree, function ($module) {
+			return (isset($module['parent']) && ($module['parent'] != 0));
+		});
 
-        return $tree_modules;
-    }
+		$i = 0;
+		while (!empty($new_modules_child)) {
+			foreach ($new_modules_child as $i => $child) {
+				TreeGroup::recursive_modules_tree_view($new_modules_root, $new_modules_child, $i, $child);
+			}
+		}
 
+		foreach ($new_modules_root as $m) {
+			$tree_modules[] = $m;
+		}
+		return $tree_modules;
+	}
 
-    // FIXME with getProcessedModules_old
-    static function recursive_modules_tree_view(&$new_modules, &$new_modules_child, $i, $child)
-    {
-        foreach ($new_modules as $index => $module) {
-            if ($module['id'] == $child['parent']) {
-                $new_modules[$index]['children'][] = $child;
-                unset($new_modules_child[$i]);
-                break;
-            } else if (isset($new_modules[$index]['children'])) {
-                self::recursive_modules_tree_view($new_modules[$index]['children'], $new_modules_child, $i, $child);
-            }
-        }
-    }
+	// FIXME with getProcessedModules_old
+	static function recursive_modules_tree_view (&$new_modules, &$new_modules_child, $i, $child) {
+		foreach ($new_modules as $index => $module) {
+			if ($module['id'] == $child['parent']) {
+				$new_modules[$index]['children'][] = $child;
+				unset($new_modules_child[$i]);
+				break;
+			}
+			else if (isset($new_modules[$index]['children'])) {
+				TreeGroup::recursive_modules_tree_view ($new_modules[$index]['children'], $new_modules_child, $i, $child);
+			}
+		}
+	}
 
+	static function processCounters(&$groups) {
+		$all_counters = array();
+		foreach ($groups as $id => $group) {
+			$child_counters = array();
+			if (!empty($groups[$id]['children'])) {
+				$child_counters = TreeGroup::processCounters($groups[$id]['children']);
+			}
+			if (!empty($child_counters)) {
+				foreach($child_counters as $type => $value) {
+					$groups[$id]['counters'][$type] += $value;
+				}
+			}
+			foreach($groups[$id]['counters'] as $type => $value) {
+				$all_counters[$type] += $value;
+			}
+		}
+		return $all_counters;
+	}
 
-    static function processCounters(&$groups)
-    {
-        $all_counters = [];
-        foreach ($groups as $id => $group) {
-            $child_counters = [];
-            if (!empty($groups[$id]['children'])) {
-                $child_counters = self::processCounters($groups[$id]['children']);
-            }
+	/**
+	 * @brief Recursive function to remove the empty groups
+	 *
+	 * @param groups All groups structure
+	 *
+	 * @return new_groups A new groups structure without empty groups
+	 */
+	protected function deleteEmptyGroups ($groups) {
+		if($this->displayAllGroups) return $groups;
+		$new_groups = array();
+		foreach ($groups as $group) {
+			// If a group is empty, do not add to new_groups.
+			if (!isset($group['counters']['total']) || $group['counters']['total'] == 0) {
+				continue;
+			}
+			// Tray to remove the children groups
+			if (!empty($group['children'])) {
+				$children = $this->deleteEmptyGroups ($group['children']);
+				if (empty($children)) unset($group['children']);
+				else $group['children'] = $children;
+			}
+			$new_groups[] = $group;
+		}
+		return $new_groups;
+	}
 
-            if (!empty($child_counters)) {
-                foreach ($child_counters as $type => $value) {
-                    $groups[$id]['counters'][$type] += $value;
-                }
-            }
+	protected function deleteEmptyGroupsNotPropagate ($groups) {
+		if($this->displayAllGroups) return $groups;
+		$new_groups = array();
+		foreach ($groups as $group) {
+			// Tray to remove the children groups
+			if (!empty($group['children'])) {
+				$children = $this->deleteEmptyGroupsNotPropagate ($group['children']);
+				if (empty($children)) {
+					unset($group['children']);
+					// If a group is empty, do not add to new_groups.
+					if (isset($group['counters']['total']) && $group['counters']['total'] != 0) {
+						$new_groups[] = $group;
+					}
+				} else {
+					$group['children'] = $children;
+					$new_groups[] = $group;
+				}
+			} else {
+				// If a group is empty, do not add to new_groups.
+				if (isset($group['counters']['total']) && $group['counters']['total'] != 0) {
+					$new_groups[] = $group;
+				}
+			}
+		}
+		return $new_groups;
+	}
 
-            foreach ($groups[$id]['counters'] as $type => $value) {
-                $all_counters[$type] += $value;
-            }
-        }
+	private static function extractGroupsWithIDs ($groups, $ids_hash) {
+		$result_groups = array();
+		foreach ($groups as $group) {
+			if (isset($ids_hash[$group['id']])) {
+				$result_groups[] = $group;
+			}
+			else if (!empty($group['children'])) {
+				$result = self::extractGroupsWithIDs($group['children'], $ids_hash);
 
-        return $all_counters;
-    }
+				// Item found on children
+				if (!empty($result)) {
+					$result_groups = array_merge($result_groups, $result);
+				}
+			}
+		}
 
+		return $result_groups;
+	}
 
-    /**
-     * @brief Recursive function to remove the empty groups
-     *
-     * @param groups All groups structure
-     *
-     * @return new_groups A new groups structure without empty groups
-     */
-    protected function deleteEmptyGroups($groups)
-    {
-        if ($this->displayAllGroups) {
-            return $groups;
-        }
+	private static function extractItemWithID ($items, $item_id, $item_type = "group", $strictACL = false) {
+		foreach ($items as $item) {
+			if ($item["type"] != $item_type)
+				continue;
 
-        $new_groups = [];
-        foreach ($groups as $group) {
-            // If a group is empty, do not add to new_groups.
-            if (!isset($group['counters']['total']) || $group['counters']['total'] == 0) {
-                continue;
-            }
+			// Item found
+			if ($strictACL && is_metaconsole()) {
+				foreach ($item["id"] as $server_id => $id) {
+					if ($id == $item_id)
+						return $item;
+				}
+			}
+			else {
+				if ($item["id"] == $item_id)
+					return $item;
+			}
 
-            // Tray to remove the children groups
-            if (!empty($group['children'])) {
-                $children = $this->deleteEmptyGroups($group['children']);
-                if (empty($children)) {
-                    unset($group['children']);
-                } else {
-                    $group['children'] = $children;
-                }
-            }
+			if ($item["type"] == "group" && !empty($item["children"])) {
+				$result = self::extractItemWithID($item["children"], $item_id, $item_type, $strictACL);
 
-            $new_groups[] = $group;
-        }
+				// Item found on children
+				if ($result !== false)
+					return $result;
+			}
+		}
 
-        return $new_groups;
-    }
+		// Item not found
+		return false;
+	}
 
-
-    protected function deleteEmptyGroupsNotPropagate($groups)
-    {
-        if ($this->displayAllGroups) {
-            return $groups;
-        }
-
-        $new_groups = [];
-        foreach ($groups as $group) {
-            // Tray to remove the children groups
-            if (!empty($group['children'])) {
-                $children = $this->deleteEmptyGroupsNotPropagate($group['children']);
-                if (empty($children)) {
-                    unset($group['children']);
-                    // If a group is empty, do not add to new_groups.
-                    if (isset($group['counters']['total']) && $group['counters']['total'] != 0) {
-                        $new_groups[] = $group;
-                    }
-                } else {
-                    $group['children'] = $children;
-                    $new_groups[] = $group;
-                }
-            } else {
-                // If a group is empty, do not add to new_groups.
-                if (isset($group['counters']['total']) && $group['counters']['total'] != 0) {
-                    $new_groups[] = $group;
-                }
-            }
-        }
-
-        return $new_groups;
-    }
-
-
-    private static function extractGroupsWithIDs($groups, $ids_hash)
-    {
-        $result_groups = [];
-        foreach ($groups as $group) {
-            if (isset($ids_hash[$group['id']])) {
-                $result_groups[] = $group;
-            } else if (!empty($group['children'])) {
-                $result = self::extractGroupsWithIDs($group['children'], $ids_hash);
-
-                // Item found on children
-                if (!empty($result)) {
-                    $result_groups = array_merge($result_groups, $result);
-                }
-            }
-        }
-
-        return $result_groups;
-    }
-
-
-    private static function extractItemWithID($items, $item_id, $item_type='group', $strictACL=false)
-    {
-        foreach ($items as $item) {
-            if ($item['type'] != $item_type) {
-                continue;
-            }
-
-            // Item found
-            if ($strictACL && is_metaconsole()) {
-                foreach ($item['id'] as $server_id => $id) {
-                    if ($id == $item_id) {
-                        return $item;
-                    }
-                }
-            } else {
-                if ($item['id'] == $item_id) {
-                    return $item;
-                }
-            }
-
-            if ($item['type'] == 'group' && !empty($item['children'])) {
-                $result = self::extractItemWithID($item['children'], $item_id, $item_type, $strictACL);
-
-                // Item found on children
-                if ($result !== false) {
-                    return $result;
-                }
-            }
-        }
-
-        // Item not found
-        return false;
-    }
-
-
-    protected function getDisplayHierarchy()
-    {
-        return $this->filter['searchHirearchy'] ||
-            (empty($this->filter['searchAgent']) && empty($this->filter['searchModule']));
-    }
-
+	protected function getDisplayHierarchy() {
+		return $this->filter['searchHirearchy'] ||
+			(empty($this->filter['searchAgent']) && empty($this->filter['searchModule']));
+	}
 
 }
+
+?>
+

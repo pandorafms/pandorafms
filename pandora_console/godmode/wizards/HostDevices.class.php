@@ -124,8 +124,20 @@ class HostDevices extends Wizard
                 ];
             }
 
+            $this->prepareBreadcrum(
+                [
+                    [
+                        'link'  => ui_get_full_url(
+                            'index.php?sec=gservers&sec2=godmode/servers/discovery'
+                        ),
+                        'label' => __('Discovery'),
+                    ],
+                ]
+            );
+
+            $this->printHeader();
+
             $this->printBigButtonsList($buttons);
-            $this->printGoBackButton();
             return;
         }
 

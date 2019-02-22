@@ -13,8 +13,8 @@ li.discovery {
 
 li.discovery > a {
   text-decoration: none;
+  color: #333;
 }
-
 li.discovery > a:hover {
   color: #000;
 }
@@ -46,27 +46,33 @@ div.data_container:hover {
   height: auto;
   text-align: center;
 }
+h1.wizard {
+  padding: 0;
+  margin: 0;
+  margin-top: -1.25em;
+}
+h1.wizard a {
+  margin-left: -20px;
+}
+h1.wizard a:hover {
+  color: #fff;
+}
 #text_wizard {
   font-weight: bolder;
   text-decoration: none;
   font-size: 24px;
 }
-.text_color {
-  color: white;
-  margin-left: 25px;
-}
-.text_color:hover {
-  text-decoration: none;
-}
-.arrow_box {
+div.arrow_box {
   display: inline-block;
   position: relative;
   background: #ccc;
-  padding: 14px;
+  color: #888;
+  padding: 1.3em;
   margin-left: 20px;
   margin-bottom: 10px;
+  padding-left: 3em;
 }
-.arrow_box:after,
+
 .arrow_box:before {
   top: 50%;
   border: solid transparent;
@@ -75,9 +81,11 @@ div.data_container:hover {
   width: 0;
   position: absolute;
   pointer-events: none;
+  z-index: 1;
 }
 .arrow_box.selected {
-  background: #82b92e;
+  background: #424242;
+  color: #ccc;
 }
 
 .arrow_box:after {
@@ -86,20 +94,20 @@ div.data_container:hover {
   border-width: 20px;
   margin-top: -20px;
 }
-.arrow_box:before {
+
+div.arrow_box:before {
   left: 100%;
   border-left-color: #ccc;
   border-width: 20px;
   margin-top: -20px;
 }
 .arrow_box.selected:before {
-  border-left-color: #82b92e;
+  border-left-color: #424242;
 }
-.arrow_box {
-  display: inline-block;
-  position: relative;
-  padding: 14px;
-  margin-left: 20px;
-  margin-bottom: 10px;
-  padding-left: 3em;
+
+.arrow_box.selected:hover {
+  color: #fff;
+}
+.arrow_box:hover {
+  color: #000;
 }

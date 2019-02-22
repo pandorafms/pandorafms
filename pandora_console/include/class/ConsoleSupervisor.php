@@ -377,7 +377,7 @@ class ConsoleSupervisor
 
         $this->checkMinorRelease();
 
-        if ($this->verbose === true) {
+        if (enterprise_installed()) {
             // Release the lock.
             enterprise_hook('cron_supervisor_release_lock');
         }

@@ -228,7 +228,7 @@ class Wizard
      */
     public function printBreadcrum()
     {
-        return '<h1>'.implode('', $this->breadcrum).'</h1>';
+        return '<h1 class="wizard">'.implode('', $this->breadcrum).'</h1>';
     }
 
 

@@ -2680,7 +2680,7 @@ function config_check()
         || (get_system_time() - $config['cron_last_run']) > 3600
     ) {
         $supervisor = new ConsoleSupervisor(false);
-        $supervisor->checkCronRunning();
+        $supervisor->runBasic();
     }
 
 }

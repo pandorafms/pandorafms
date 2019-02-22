@@ -142,6 +142,48 @@ class ConsoleSupervisor
 
 
     /**
+     * Manage scheduled tasks (basic).
+     *
+     * @return void
+     */
+    public function runBasic()
+    {
+        global $config;
+
+        /*
+         * Check license.
+         *   NOTIF.LICENSE.EXPIRATION
+         */
+
+        $this->checkLicense();
+
+        /*
+         * Check component statuses (servers down - frozen).
+         *    NOTIF.SERVER.STATUS.ID_SERVER
+         */
+
+        $this->checkPandoraServers();
+
+        /*
+         * Check at least 1 server running in master mode.
+         *   NOTIF.SERVER.MASTER
+         */
+
+        $this->checkPandoraServerMasterAvailable();
+
+        /*
+         * Check if CRON is running.
+         *    NOTIF.CRON.CONFIGURED
+         */
+
+        if (enterprise_installed()) {
+            $this->checkCronRunning();
+        }
+
+    }
+
+
+    /**
      * Manage scheduled tasks.
      *
      * @return void
@@ -344,6 +386,7 @@ class ConsoleSupervisor
          * Check if CRON is running.
          *    NOTIF.CRON.CONFIGURED
          */
+
         if (enterprise_installed()) {
             $this->checkCronRunning();
         }

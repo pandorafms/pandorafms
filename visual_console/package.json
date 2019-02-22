@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "description": "Visual Console",
   "scripts": {
-    "test": "echo \"Not implemented\" && exit 1",
+    "test": "jest",
+    "test:watch": "jest --watch",
     "build": "webpack --mode=production",
     "build:dev": "webpack --mode=development",
     "build:watch": "webpack --mode=development --watch",
@@ -22,6 +23,7 @@
   },
   "homepage": "https://github.com/pandorafms/pandorafms#readme",
   "dependencies": {
+    "@types/jest": "^24.0.6",
     "@typescript-eslint/eslint-plugin": "^1.1.1",
     "@typescript-eslint/parser": "^1.1.1",
     "awesome-typescript-loader": "^5.2.1",
@@ -30,8 +32,10 @@
     "eslint-config-prettier": "^4.0.0",
     "eslint-plugin-prettier": "^3.0.1",
     "file-loader": "^3.0.1",
+    "jest": "^24.1.0",
     "prettier": "^1.16.1",
-    "typescript": "^3.2.4",
+    "ts-jest": "^24.0.0",
+    "typescript": "^3.3.3333",
     "webpack": "^4.29.0",
     "webpack-cli": "^3.2.1",
     "webpack-dev-server": "^3.1.14"

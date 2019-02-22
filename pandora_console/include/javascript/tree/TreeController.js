@@ -750,7 +750,6 @@ var TreeController = {
 					}
 
 					// Load the status counters
-					console.log(element.counters);
 					var hasCounters = _processNodeCounters($content, element.counters, element.type);
 					//Don't show empty groups
 					if (element.type == 'agent') {
@@ -871,7 +870,6 @@ var TreeController = {
 															.hide();
 														$node.append($group);
 													}
-													//console.log(data.tree);
 
 													_.each(data.tree, function(element) {
 														element.jqObject = _processNode($group, element);

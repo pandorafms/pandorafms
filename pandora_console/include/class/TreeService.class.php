@@ -114,8 +114,6 @@ class TreeService extends Tree {
 
 	protected function getProcessedServices () {
 		$fields = $this->getFirstLevelFields();
-		
-		//hd($this->userGroupsArray, true);
 
 		if (users_can_manage_group_all("AR")){
 		$groups_acl = "";
@@ -165,9 +163,6 @@ class TreeService extends Tree {
 			$services[$service['id']]['id'] = $service['id'];
 			$services[$service['id']]['serviceDetail']='http://localhost/pandora_console/index.php?sec=network&sec2=enterprise/operation/services/services&tab=service_map&id_service='.(int)$service['id'];
 		}
-
-		hd("STATS:::::::::::::::::::::::::::::: ", true);
-hd($services, true);
 
 		return $services;
 	}
@@ -226,9 +221,6 @@ hd($services, true);
 				$data_modules[$key]['eventModule'] = $module['id_agente_modulo'];	
 			}
 		}
-
-		hd("MODULESSSS::", true);
-hd($data_modules, true);
 
 		$sql = $this->getSecondLevelServicesSql();
 		$data_services = db_process_sql($sql);

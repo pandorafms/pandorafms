@@ -879,8 +879,6 @@ class Tree {
 		}
 		$data = $this->getProcessedModules($data);
 		$this->processModules($data);
-hd("MODULES: ", true);
-hd($data, true);
 		$this->tree = $data;
 	}
 

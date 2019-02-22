@@ -63,6 +63,17 @@ $sort                 = get_parameter('sort', 'none');
 $id_module             = (int) get_parameter('id_module', 0);
 $ag_custom_fields     = (array) get_parameter('ag_custom_fields', []);
 $module_option = (int) get_parameter('module_option', 1);
+$autosearch = false;
+
+// It is validated if it receives parameters different from those it has by default
+if ($ag_freestring != '' || $moduletype != '' || $datatype != ''
+    || $ag_modulename != '' || $refr != 0 || $offset != 0 || $status != 4
+    || $modulegroup != -1 || $tag_filter != 0 || $sortField != ''
+    || $sort != '' || $id_module != 0 || $ag_custom_fields != null
+    || $module_option != 1
+) {
+    $autosearch = true;
+}
 
 if (!is_metaconsole()) {
     $ag_group = (int) get_parameter('ag_group', 0);
@@ -947,7 +958,7 @@ $sql = 'SELECT
 // When you enter for the first time you have less than 4 query params in the url
 $first_interaction = count($_GET);
 // We do not show the modules until the user searches with the filter
-if ($first_interaction) {
+if ($first_interaction || $autosearch) {
     if (! defined('METACONSOLE')) {
         $result = db_get_all_rows_sql($sql);
 

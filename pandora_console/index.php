@@ -1363,4 +1363,3 @@ require 'include/php_to_js_values.php';
 if (__PAN_XHPROF__ === 1) {
     pandora_xhprof_display_result('node_index');
 }
-

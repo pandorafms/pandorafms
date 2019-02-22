@@ -126,6 +126,12 @@ if (isset($config['homedir_filemanager'])) {
     $homedir_filemanager = $config['homedir'];
 }
 
+$sec2 = get_parameter('sec2');
+if ($sec2 == 'enterprise/godmode/agentes/collections') {
+    $homedir_filemanager .= '/attachment/collection/';
+}
+
+
 $upload_file_or_zip = (bool) get_parameter('upload_file_or_zip');
 
 if ($upload_file_or_zip) {
@@ -498,12 +504,6 @@ function filemanager_file_explorer(
     if ($homedir_filemanager === false) {
         $homedir_filemanager = $config['homedir'];
     }
-
-    unset($config['homedir_filemanager']);
-    config_update_value(
-        'homedir_filemanager',
-        $homedir_filemanager
-    );
 
     $hack_metaconsole = '';
     if (defined('METACONSOLE')) {
@@ -938,4 +938,3 @@ function filemanager_list_dir($dirpath)
 
     return array_merge($dirs, $files);
 }
-

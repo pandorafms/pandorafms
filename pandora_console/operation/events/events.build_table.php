@@ -983,7 +983,11 @@ if ($group_rep == 2) {
                 html_print_button(__('Execute event response'), 'submit_event_response', false, 'execute_event_response(true);', 'class="sub next"');
                 echo "<span id='response_loading_dialog' style='display:none'>".html_print_image('images/spinner.gif', true).'</span>';
                 echo '</form>';
-                echo '<span id="max_custom_event_resp_msg" style="display:none; color:#FC4444; line-height: 200%;">'.__('A maximum of 10 event custom responses can be selected').'</span>';
+                echo '<span id="max_custom_event_resp_msg" style="display:none; color:#FC4444; line-height: 200%;">';
+                echo __(
+                    'A maximum of %s event custom responses can be selected',
+                    $config['max_execution_event_response']
+                ).'</span>';
                 echo '</div>';
             }
         }
@@ -1012,7 +1016,7 @@ if ($group_rep == 2) {
                         var total_checked = $(".chk_val:checked").length;
 
                         // Limit number of events to apply custom responses to for performance reasons
-                        if (total_checked > 10) {
+                        if (total_checked > <?php echo $config['max_execution_event_response']; ?> ) {
                             $('#max_custom_event_resp_msg').show();
                             return;
                         }
@@ -1022,18 +1026,22 @@ if ($group_rep == 2) {
                                 $('#response_loading_dialog').show(function() {
 
                                     $(".chk_val").each(function() {
-                                        
                                         if ($(this).is(":checked")) {
-                                            //var server_id = $('#hidden-server_id_'+).
                                             event_id = $(this).val();
                                             server_id = $('#hidden-server_id_'+event_id).val();
-
-                                            response['target'] = get_response_target(event_id, response_id, server_id);
-
+                                            response['target'] = get_response_target(
+                                                event_id,
+                                                response_id,
+                                                server_id
+                                            );
                                             if (total_checked-1 === counter) end=1;
-
-                                            show_massive_response_dialog(event_id, response_id, response, counter, end);
-
+                                            show_massive_response_dialog(
+                                                event_id,
+                                                response_id,
+                                                response,
+                                                counter,
+                                                end
+                                            );
                                             counter++;
                                         }
                                     });
@@ -1087,4 +1095,3 @@ if ($group_rep == 2) {
 
     echo '</div>';
 }
-

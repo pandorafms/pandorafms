@@ -142,7 +142,6 @@ function reporting_make_reporting_data(
     enterprise_include_once('include/functions_metaconsole.php');
 
     $return = [];
-
     if (!empty($report)) {
         $contents = $report['contents'];
     } else {
@@ -261,7 +260,7 @@ function reporting_make_reporting_data(
         }
 
         if (isset($content['style']['name_label'])) {
-            // Add macros name
+            // Add macros name.
             $items_label = [];
             $items_label['type'] = $content['type'];
             $items_label['id_agent'] = $content['id_agent'];
@@ -272,11 +271,10 @@ function reporting_make_reporting_data(
             $metaconsole_on = is_metaconsole();
             $server_name = $content['server_name'];
 
-            // Metaconsole connection
+            // Metaconsole connection.
             if ($metaconsole_on && $server_name != '') {
                 $connection = metaconsole_get_connection($server_name);
                 if (!metaconsole_load_external_db($connection)) {
-                    // ui_print_error_message ("Error connecting to ".$server_name);
                     continue;
                 }
             }
@@ -889,7 +887,6 @@ function reporting_SLA(
             if ($metaconsole_on && $server_name != '') {
                 $connection = metaconsole_get_connection($server_name);
                 if (!metaconsole_load_external_db($connection)) {
-                    // ui_print_error_message ("Error connecting to ".$server_name);
                     continue;
                 }
             }
@@ -898,7 +895,7 @@ function reporting_SLA(
                 || modules_is_not_init($sla['id_agent_module'])
             ) {
                 if ($metaconsole_on) {
-                    // Restore db connection
+                    // Restore db connection.
                     metaconsole_restore_db();
                 }
 
@@ -1183,12 +1180,11 @@ function reporting_SLA(
             }
         }
 
-        // SLA items sorted descending ()
         if ($content['top_n'] == 2) {
+            // SLA items sorted descending ()
             arsort($return['data']['']);
-        }
-        // SLA items sorted ascending
-        else if ($content['top_n'] == 1) {
+        } else if ($content['top_n'] == 1) {
+            // SLA items sorted ascending
             asort($sla_showed_values);
         }
 
@@ -6724,7 +6720,7 @@ function reporting_general($report, $content)
             'id_agente_modulo',
             $row['id_agent_module']
         );
-
+        $id_module_type = db_get_value('id_tipo_modulo', 'tagente_modulo', 'nombre', $mod_name);
         if ($content['period'] == 0) {
             $data_res[$index] = modules_get_last_value($row['id_agent_module']);
         } else {
@@ -6771,10 +6767,24 @@ function reporting_general($report, $content)
                 $agent_name[$index] = $ag_name;
                 $module_name[$index] = $mod_name;
                 $units[$index] = $unit;
+                $id_module_types[$index] = $id_module_type;
                 $operations[$index] = $row['operation'];
             break;
 
             case REPORT_GENERAL_GROUP_BY_AGENT:
+                $id_module_types[$index] = $id_module_type;
+                if ($id_module_types[$index] == 2 || $id_module_types[$index] == 6 || $id_module_types[$index] == 9 || $id_module_types[$index] == 18) {
+                    $data_res[$index] = round($data_res[$index], 0, PHP_ROUND_HALF_DOWN);
+                }
+
+                if ($id_module_types[$index] == 2 || $id_module_types[$index] == 6 || $id_module_types[$index] == 9 || $id_module_types[$index] == 18) {
+                    if ($data_res[$index] == 1) {
+                        $data_res[$index] = 'Up';
+                    } else if ($data_res[$index] == 0) {
+                        $data_res[$index] = 'Down';
+                    }
+                }
+
                 if ($data_res[$index] === false) {
                     $return['data'][$ag_name][$mod_name] = null;
                 } else {
@@ -6896,7 +6906,7 @@ function reporting_general($report, $content)
                 $data['module'] = $module_name[$i];
                 $data['id_agent_module'] = $id_agent_module[$i];
                 $data['id_agent'] = agents_get_agent_id_by_module_id($id_agent_module[$i]);
-
+                $data['id_module_type'] = $id_module_types[$i];
                 $data['operator'] = '';
                 if ($content['period'] != 0) {
                     switch ($operations[$i]) {
@@ -11321,4 +11331,28 @@ function reporting_translate_sla_status_for_graph($status)
         REPORT_STATUS_IGNORED  => 7,
     ];
     return $sts[$status];
+}
+
+
+/**
+ * Print header to report pdf and add page break
+ *
+ * @param string $title       Title of report.
+ * @param string $description Description of report.
+ *
+ * @return html Return table of header.
+ */
+function reporting_header_table_for_pdf(string $title='', string $description='')
+{
+    $result_pdf .= '<pagebreak>';
+    $result_pdf .= '<table class="header_table databox">';
+    $result_pdf .= '<thead class="header_tr"><tr>';
+    $result_pdf .= '<th class="th_first" colspan="2">';
+    $result_pdf .= $title;
+    $result_pdf .= '</th><th style="font-size: 15px;" align="right">';
+    $result_pdf .= '</th></tr><tr><th colspan="3" class="th_description">';
+    $result_pdf .= $description;
+    $result_pdf .= '</th></tr></thead></table>';
+
+    return $result_pdf;
 }

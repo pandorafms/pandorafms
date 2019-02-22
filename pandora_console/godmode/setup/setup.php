@@ -1,17 +1,32 @@
 <?php
+/**
+ * Extension to manage a list of gateways and the node address where they should
+ * point to.
+ *
+ * @category   Extensions
+ * @package    Pandora FMS
+ * @subpackage Community
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
 
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation for version 2.
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-// Load global vars
 global $config;
 
 check_login();
@@ -49,7 +64,7 @@ if (! check_acl($config['id_user'], 0, 'PM') && ! is_user_admin($config['id_user
     return;
 }
 
-// Load enterprise extensions
+// Load enterprise extensions.
 enterprise_include_once('include/functions_setup.php');
 enterprise_include_once('include/functions_io.php');
 enterprise_include_once('godmode/setup/setup.php');
@@ -63,12 +78,12 @@ enterprise_include_once('godmode/setup/setup.php');
     to add it there.
 */
 
-// Gets section to jump to another section
+// Gets section to jump to another section.
 $section = (string) get_parameter('section', 'general');
 
 $buttons = [];
 
-// Draws header
+// Draws header.
 $buttons['general'] = [
     'active' => false,
     'text'   => '<a href="index.php?sec=gsetup&sec2=godmode/setup/setup&amp;section=general">'.html_print_image('images/gm_setup.png', true, ['title' => __('General')]).'</a>',
@@ -120,6 +135,7 @@ if (enterprise_installed()) {
 
 switch ($section) {
     case 'general':
+    default:
         $buttons['general']['active'] = true;
         $subpage = ' &raquo '.__('General');
     break;
@@ -156,7 +172,7 @@ switch ($section) {
     break;
 }
 
-// Header
+// Header.
 ui_print_page_header(__('Configuration').$subpage, '', false, $help_header, true, $buttons);
 
 if (isset($config['error_config_update_config'])) {

@@ -105,9 +105,9 @@ if ($get_response_params) {
 }
 
 if ($get_response_target) {
-    $response_id = get_parameter('response_id');
-    $event_id = get_parameter('event_id');
-    $server_id = get_parameter('server_id', 0);
+    $response_id = (int) get_parameter('response_id');
+    $event_id = (int) get_parameter('event_id');
+    $server_id = (int) get_parameter('server_id');
 
     $event_response = db_get_row('tevent_response', 'id', $response_id);
 
@@ -116,7 +116,6 @@ if ($get_response_target) {
     }
 
     echo events_get_response_target($event_id, $response_id, $server_id);
-
     return;
 }
 

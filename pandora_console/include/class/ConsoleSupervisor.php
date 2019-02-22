@@ -151,6 +151,20 @@ class ConsoleSupervisor
         global $config;
 
         /*
+         * PHP configuration warnings:
+         *   NOTIF.PHP.SAFE_MODE
+         *   NOTIF.PHP.INPUT_TIME
+         *   NOTIF.PHP.EXECUTION_TIME
+         *   NOTIF.PHP.UPLOAD_MAX_FILESIZE
+         *   NOTIF.PHP.MEMORY_LIMIT
+         *   NOTIF.PHP.DISABLE_FUNCTIONS
+         *   NOTIF.PHP.PHANTOMJS
+         *   NOTIF.PHP.VERSION
+         */
+
+        $this->checkPHPSettings();
+
+        /*
          * Check license.
          *   NOTIF.LICENSE.EXPIRATION
          */

@@ -275,7 +275,8 @@ sub exec_recon_script ($$$) {
 	}
 	
 	if (-x $command) {
-		`$command $args`;
+		my $exec_output = `$command $args`;
+		logger ($pa_config, "Execution output: \n", $exec_output);
 	} else {
 		logger ($pa_config, "Cannot execute recon task command $command.");
 	}

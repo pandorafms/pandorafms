@@ -16,7 +16,7 @@ import {
  */
 export function parseIntOr<T>(value: any, defaultValue: T): number | T {
   if (typeof value === "number") return value;
-  if (typeof value === "string" && value.length > 0 && isNaN(parseInt(value)))
+  if (typeof value === "string" && value.length > 0 && !isNaN(parseInt(value)))
     return parseInt(value);
   else return defaultValue;
 }

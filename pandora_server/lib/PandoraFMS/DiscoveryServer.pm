@@ -276,9 +276,9 @@ sub exec_recon_script ($$$) {
 	
 	if (-x $command) {
 		my $exec_output = `$command $args`;
-		logger ($pa_config, "Execution output: \n", $exec_output);
+		logger($pa_config, "Execution output: \n". $exec_output, 10);
 	} else {
-		logger ($pa_config, "Cannot execute recon task command $command.");
+		logger($pa_config, "Cannot execute recon task command $command.", 10);
 	}
 	
 	# Only update the timestamp in case something went wrong. The script should set the status.

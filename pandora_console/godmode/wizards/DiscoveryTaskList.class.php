@@ -74,11 +74,29 @@ class DiscoveryTaskList extends Wizard
      *
      * @return mixed Returns null if wizard is ongoing. Result if done.
      */
-    public function run()
+    public function run($message='', $status=null)
     {
         global $config;
         // Load styles.
         parent::run();
+
+        $this->prepareBreadcrum(
+            [
+                [
+                    'link'  => 'index.php?sec=gservers&sec2=godmode/servers/discovery',
+                    'label' => 'Discovery',
+                ],
+            ]
+        );
+
+        $this->printHeader();
+
+        // Show redirected messages from discovery.php.
+        if ($status === 0) {
+            ui_print_success_message($message);
+        } else if ($status !== null) {
+            ui_print_error_message($message);
+        }
 
         $force_run = (bool) get_parameter('force_run');
         if ($force_run === true) {
@@ -349,7 +367,7 @@ class DiscoveryTaskList extends Wizard
                     $table->head[4] = __('Status');
                     $table->align[4] = 'left';
 
-                    $table->head[5] = __('Template');
+                    $table->head[5] = __('Task type');
                     $table->align[5] = 'left';
 
                     $table->head[6] = __('Progress');
@@ -370,15 +388,24 @@ class DiscoveryTaskList extends Wizard
                             ).'">';
                             $data[0] .= html_print_image('images/target.png', true, ['title' => __('Force')]);
                             $data[0] .= '</a>';
+                        } else if ($task['disabled'] == 2) {
+                            $data[0] = ui_print_help_tip(
+                                __('This task has not been completely defined, please edit it'),
+                                true
+                            );
                         } else {
                             $data[0] = '';
                         }
 
                         $data[1] = '<b>'.$task['name'].'</b>';
 
-                        $data[2] = human_time_description_raw(
-                            $task['interval_sweep']
-                        );
+                        if ($task['interval_sweep'] > 0) {
+                            $data[2] = human_time_description_raw(
+                                $task['interval_sweep']
+                            );
+                        } else {
+                            $data[2] = __('Manual');
+                        }
 
                         if ($task['id_recon_script'] == 0) {
                             $data[3] = $task['subnet'];
@@ -393,11 +420,11 @@ class DiscoveryTaskList extends Wizard
                         }
 
                         if ($task['id_recon_script'] == 0) {
-                            // Network recon task.
+                            // Discovery NetScan.
                             $data[5] = html_print_image(
                                 'images/network.png',
                                 true,
-                                ['title' => __('Network recon task')]
+                                ['title' => __('Discovery NetScan')]
                             ).'&nbsp;&nbsp;';
                             $data[5] .= network_profiles_get_name(
                                 $task['id_network_profile']
@@ -428,10 +455,14 @@ class DiscoveryTaskList extends Wizard
                             );
                         }
 
-                        $data[7] = ui_print_timestamp(
-                            $task['utimestamp'],
-                            true
-                        );
+                        if ($task['utimestamp'] > 0) {
+                            $data[7] = ui_print_timestamp(
+                                $task['utimestamp'],
+                                true
+                            );
+                        } else {
+                            $data[7] = __('Not executed yet');
+                        }
 
                         if (check_acl(
                             $config['id_user'],

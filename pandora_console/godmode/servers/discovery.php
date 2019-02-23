@@ -125,19 +125,10 @@ if ($classname_selected !== null) {
     $wiz = new $classname_selected($page);
     $result = $wiz->run();
     if (is_array($result) === true) {
-        if ($result['result'] === 0) {
-            // Success.
-            ui_print_success_message($result['msg']);
-            // TODO: Show task progress before redirect to main discovery menu.
-        } else {
-            // Failed.
-            ui_print_error_message($result['msg']);
-        }
-
-        // Redirect to Tasklist.
+        // Redirect control and messages to DiscoveryTasklist.
         $classname_selected = 'DiscoveryTaskList';
         $wiz = new $classname_selected($page);
-        $result = $wiz->run();
+        $result = $wiz->run($result['msg'], $result['result']);
     }
 }
 

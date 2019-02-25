@@ -1412,6 +1412,7 @@ ALTER TABLE trecon_task ADD `vlan_enabled` int(2) unsigned default '0';
 -- ---------------------------------------------------------------------
 UPDATE twidget_dashboard SET id_widget = (SELECT id FROM twidget WHERE unique_name = 'graph_module_histogram') WHERE id_widget = (SELECT id FROM twidget WHERE unique_name = 'graph_availability');
 DELETE FROM twidget WHERE unique_name = 'graph_availability';
+UPDATE `twidget` SET `unique_name`='example2' WHERE `class_name` LIKE 'WelcomeWidget';
 
 -- ---------------------------------------------------------------------
 -- Table `tbackup` (Extension table. Modify only if exists)

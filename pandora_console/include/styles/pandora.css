@@ -441,14 +441,6 @@ textarea.conf_error {
   background-position: top right;
 }
 
-input.button {
-  font-family: Arial, Sans-serif;
-  border: 4px solid #ccc;
-  background: #fff;
-  padding: 2px 3px;
-  margin: 10px 15px;
-}
-
 a.white_bold {
   color: #eee;
   text-decoration: none;
@@ -1562,9 +1554,6 @@ table.databox {
   font-weight: normal;
   color: #fff;
 }
-.databox > td {
-  #border-bottom: 1px solid #e2e2e2;
-}
 
 .databox > th * {
   color: #fff;
@@ -2192,9 +2181,6 @@ div.warn {
   min-height: 35px !important;
 }
 
-ol.steps {
-  margin-bottom: 70px;
-}
 div#steps_clean {
   display: none;
 }
@@ -2990,6 +2976,7 @@ div.nodata_container {
   position: absolute;
   top: 0;
   right: 20px;
+  background: #f9faf9;
 }
 
 #rmf_data {
@@ -4323,9 +4310,6 @@ form ul.form_flex li ul li {
 }
 
 /* snmp */
-#snmp_data {
-  background: #f9faf9;
-}
 #snmp_data .databox {
   border: 0px;
 }

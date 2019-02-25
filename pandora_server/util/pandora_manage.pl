@@ -36,7 +36,7 @@ use Encode::Locale;
 Encode::Locale::decode_argv;
 
 # version: define current version
-my $version = "7.0NG.731 PS190222";
+my $version = "7.0NG.731 PS190225";
 
 # save program name for logging
 my $progname = basename($0);
@@ -3611,7 +3611,7 @@ sub cli_apply_policy() {
 	my $policy_id = enterprise_hook('get_policy_id',[$dbh, safe_input($policy_name)]);
 	exist_check($policy_id,'policy',$policy_name);
 	
-	my $ret = enterprise_hook('pandora_add_policy_queue', [$dbh, $conf, $policy_id, 'apply']);
+	my $ret = enterprise_hook('pandora_add_policy_queue', [$dbh, $conf, $policy_id, 'apply', 0, 1]);
 	
 	if($ret == -1) {
 		print_log "[ERROR] Operation 'apply' cannot be added to policy '$policy_name' because is duplicated in queue or incompatible with others operations\n\n";
@@ -3635,7 +3635,7 @@ sub cli_apply_all_policies() {
 	
 	my $added = 0;
 	foreach my $policy (@{$policies}) {
-		my $ret = enterprise_hook('pandora_add_policy_queue', [$dbh, $conf, $policy->{'id'}, 'apply']);
+		my $ret = enterprise_hook('pandora_add_policy_queue', [$dbh, $conf, $policy->{'id'}, 'apply', 0, 1]);
 		if($ret != -1) {
 			$added++;
 			print_log "[INFO] Added operation 'apply' to policy '".safe_output($policy->{'name'})."'\n";

@@ -101,7 +101,7 @@ export function modulePropsDecoder(data: UnknownObject): WithModuleProps {
   return {
     moduleId: parseIntOr(id, null),
     moduleName: typeof name === "string" && name.length > 0 ? name : null,
-    ...agentPropsDecoder(data)
+    ...agentPropsDecoder(data) // Object spread: http://es6-features.org/#SpreadOperator
   };
 }
 

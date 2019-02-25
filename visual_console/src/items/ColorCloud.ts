@@ -7,9 +7,9 @@ import {
 import { modulePropsDecoder, linkedVCPropsDecoder } from "../lib";
 
 import VisualConsoleItem, {
-  VisualConsoleItemProps,
   itemBasePropsDecoder,
-  VisualConsoleItemType
+  VisualConsoleItemType,
+  VisualConsoleItemProps
 } from "../VisualConsoleItem";
 
 export type ColorCloudProps = {

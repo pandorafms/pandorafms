@@ -857,11 +857,11 @@ function pandoraFlotSlicebar(
 
   var font_size = parseInt(font_size);
   if (font != undefined)
-  var font = font
-    .split("/")
-    .pop()
-    .split(".")
-    .shift();
+    var font = font
+      .split("/")
+      .pop()
+      .split(".")
+      .shift();
   // Check possible adapt_keys on classes
   check_adaptions(graph_id);
 

@@ -852,6 +852,28 @@ function get_parameter_checkbox($name, $default='')
 }
 
 
+/**
+ * Transforms a swicth data (on - non present) to a int value.
+ *
+ * @param string $name    Variable, switch name.
+ * @param string $default Default value.
+ *
+ * @return integer Value, 1 on, 0 off.
+ */
+function get_parameter_switch($name, $default='')
+{
+    $data = get_parameter($name, null);
+
+    if ($data === null) {
+        return 0;
+    } else if ($data == 'on') {
+        return 1;
+    }
+
+    return 0;
+}
+
+
 function get_cookie($name, $default='')
 {
     if (isset($_COOKIE[$name])) {

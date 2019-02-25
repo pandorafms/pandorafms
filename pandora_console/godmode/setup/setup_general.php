@@ -339,9 +339,9 @@ $(document).ready (function () {
         $("#timezone").attr("hidden", false);
     });
 
-	if ($("input[name=use_cert]").is(':checked')) {
-		$('#setup_general-13').show();
-	}
+    if ($("input[name=use_cert]").is(':checked')) {
+        $('#setup_general-13').show();
+    }
 
     $("input[name=use_cert]").change(function () {
         if( $(this).is(":checked") )

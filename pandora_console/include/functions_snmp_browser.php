@@ -27,7 +27,7 @@ $nfdump_date_format = 'Y/m/d.H:i:s';
  * @param id string Level ID. Do not set, used for recursion.
  * @param depth string Branch depth. Do not set, used for recursion.
  */
-function snmp_browser_print_tree($tree, $id=0, $depth=0, $last=0, $last_array=[])
+function snmp_browser_print_tree($tree, $id=0, $depth=0, $last=0, $last_array=[], $sufix=false, $checked=[])
 {
     static $url = false;
 
@@ -52,13 +52,13 @@ function snmp_browser_print_tree($tree, $id=0, $depth=0, $last=0, $last_array=[]
     }
 
     foreach ($tree['__LEAVES__'] as $level => $sub_level) {
-        // Id used to expand leafs
+        // Id used to expand leafs.
         $sub_id = time().rand(0, getrandmax());
 
-        // Display the branch
+        // Display the branch.
         echo "<li id='li_$sub_id' style='margin: 0; padding: 0;'>";
 
-        // Indent sub branches
+        // Indent sub branches.
         for ($i = 1; $i <= $depth; $i++) {
             if ($last_array[$i] == 1) {
                 echo '<img src="'.$url.'/no_branch.png" style="vertical-align: middle;">';
@@ -67,7 +67,7 @@ function snmp_browser_print_tree($tree, $id=0, $depth=0, $last=0, $last_array=[]
             }
         }
 
-        // Branch
+        // Branch.
         if (! empty($sub_level['__LEAVES__'])) {
             echo "<a id='anchor_$sub_id' onfocus='javascript: this.blur();' href='javascript: toggleTreeNode(\"$sub_id\", \"$id\");'>";
             if ($depth == 0 && $count == 0) {
@@ -84,7 +84,7 @@ function snmp_browser_print_tree($tree, $id=0, $depth=0, $last=0, $last_array=[]
 
             echo '</a>';
         }
-        // Leave
+        // Leave.
         else {
             if ($depth == 0 && $count == 0) {
                 if ($count == $total) {
@@ -106,15 +106,18 @@ function snmp_browser_print_tree($tree, $id=0, $depth=0, $last=0, $last_array=[]
             echo '</a>';
         }
 
-        echo html_print_checkbox("create_$sub_id", 0, false, true, false, '').'&nbsp;<span>'.$level.'</span>';
+        $checkbox_name_sufix = ($sufix === true) ? '_'.$level : '';
+        $checkbox_name = 'create_'.$sub_id.$checkbox_name_sufix;
+        $status = (!empty($checked) && isset($checked[$level]));
+        echo html_print_checkbox($checkbox_name, 0, $status, true, false, '').'&nbsp;<span>'.$level.'</span>';
         if (isset($sub_level['__VALUE__'])) {
             echo '<span class="value" style="display: none;">&nbsp;=&nbsp;'.$sub_level['__VALUE__'].'</span>';
         }
 
         echo '</li>';
 
-        // Recursively print sub levels
-        snmp_browser_print_tree($sub_level, $sub_id, ($depth + 1), ($count == $total ? 1 : 0), $last_array);
+        // Recursively print sub levels.
+        snmp_browser_print_tree($sub_level, $sub_id, ($depth + 1), ($count == $total ? 1 : 0), $last_array, $sufix, $checked);
 
         $count++;
     }
@@ -838,7 +841,7 @@ function snmp_browser_print_container($return=false, $width='100%', $height='500
             if ($(this).is(':checked') ) {
                 $('input[name*=create_network_component]').show();
                 var id_input = $(this).attr("id");
-                id_input = id_input.split("checkbox-create_");
+                id_input = id_input.match("checkbox-create_([0-9]+)");
                 var checks = $('#ul_'+id_input[1]).find('input').map(function(){ 
                     if(this.id.indexOf('checkbox-create_')!=-1){
                         return this.id;
@@ -851,7 +854,7 @@ function snmp_browser_print_container($return=false, $width='100%', $height='500
             } else {
                 var id_input = $(this).attr("id");
                 
-                id_input = id_input.split("checkbox-create_");
+                id_input = id_input.match("checkbox-create_([0-9]+)");
                 var checks = $('#ul_'+id_input[1]).find('input').map(function(){ 
                     if(this.id.indexOf('checkbox-create_')!=-1){
                         return this.id;

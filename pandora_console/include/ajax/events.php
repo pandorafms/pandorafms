@@ -1,16 +1,31 @@
 <?php
+/**
+ * Manage AJAX response for event pages.
+ *
+ * @category   Ajax
+ * @package    Pandora FMS
+ * @subpackage Events
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
 
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation for version 2.
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
 require_once 'include/functions_events.php';
 require_once 'include/functions_agents.php';
 require_once 'include/functions_ui.php';
@@ -209,11 +224,14 @@ if ($dialogue_event_response) {
     $prompt = '<br>> ';
     switch ($event_response['type']) {
         case 'command':
-
-
             if ($massive) {
                 echo "<div style='text-align:left'>";
-                echo $prompt.sprintf("(Event #$event_id) ".__('Executing command: %s', $command));
+                echo $prompt.sprintf(
+                    '(Event #'.$event_id.') '.__(
+                        'Executing command: %s',
+                        $command
+                    )
+                );
                 echo '</div><br>';
 
                 echo "<div id='response_loading_command_".$out_iterator."' style='display:none'>".html_print_image('images/spinner.gif', true).'</div>';
@@ -241,7 +259,11 @@ if ($dialogue_event_response) {
 
         case 'url':
             $command = str_replace('localhost', $_SERVER['SERVER_NAME'], $command);
-            echo "<iframe src='$command' id='divframe' style='width:100%;height:90%;'></iframe>";
+            echo "<iframe src='".$command."' id='divframe' style='width:100%;height:90%;'></iframe>";
+        break;
+
+        default:
+            // Ignore.
         break;
     }
 }
@@ -318,10 +340,10 @@ if ($get_extended_event) {
             $readonly = true;
     }
 
-    // Clean url from events and store in array
+    // Clean url from events and store in array.
     $event['clean_tags'] = events_clean_tags($event['tags']);
 
-    // If the event is not found, we abort
+    // If the event is not found, we abort.
     if (empty($event)) {
         ui_print_error_message('Event not found');
         return false;
@@ -340,42 +362,62 @@ if ($get_extended_event) {
     $event['timestamp_last'] = $timestamp_last;
     $event['event_rep'] = $event_rep;
 
-    // Check ACLs
+    // Check ACLs.
     if (is_user_admin($config['id_user'])) {
-        // Do nothing if you're admin, you get full access
+        // Do nothing if you're admin, you get full access.
+        $__ignored_line = 0;
     } else if ($config['id_user'] == $event['owner_user']) {
-        // Do nothing if you're the owner user, you get access
+        // Do nothing if you're the owner user, you get access.
+        $__ignored_line = 0;
     } else if ($event['id_grupo'] == 0) {
-        // If the event has access to all groups, you get access
+        // If the event has access to all groups, you get access.
+        $__ignored_line = 0;
     } else {
-        // Get your groups
+        // Get your groups.
         $groups = users_get_groups($config['id_user'], 'ER');
 
         if (in_array($event['id_grupo'], array_keys($groups))) {
-            // If the event group is among the groups of the user, you get access
+            // If event group is among the groups of the user, you get access.
+            $__ignored_line = 0;
         } else {
-            // If all the access types fail, abort
+            // If all the access types fail, abort.
             echo 'Access denied';
             return false;
         }
     }
 
-    // Print group_rep in a hidden field to recover it from javascript
+    // Print group_rep in a hidden field to recover it from javascript.
     html_print_input_hidden('group_rep', (int) $group_rep);
 
     if ($event === false) {
         return;
     }
 
-    // Tabs
+    // Tabs.
     $tabs = "<ul style='background:#ffffff !important; border-top: 0px; border-left: 0px; border-right: 0px; border-top-left-radius: 0px; border-top-right-radius: 0px; border-bottom-right-radius: 0px; border-bottom-left-radius: 0px; border-color: #D3D3D3;'>";
     $tabs .= "<li><a href='#extended_event_general_page' id='link_general'>".html_print_image('images/lightning_go.png', true)."<span style='position:relative;top:-6px;left:5px;margin-right:10px;'>".__('General').'</span></a></li>';
+    if (events_has_extended_info($event['id_evento']) === true) {
+        $tabs .= "<li><a href='#extended_event_related_page' id='link_related'>".html_print_image('images/zoom.png', true)."<span style='position:relative;top:-6px;left:5px;margin-right:10px;'>".__('Related').'</span></a></li>';
+    }
+
     $tabs .= "<li><a href='#extended_event_details_page' id='link_details'>".html_print_image('images/zoom.png', true)."<span style='position:relative;top:-6px;left:5px;margin-right:10px;'>".__('Details').'</span></a></li>';
     $tabs .= "<li><a href='#extended_event_custom_fields_page' id='link_custom_fields'>".html_print_image('images/custom_field_col.png', true)."<span style='position:relative;top:-6px;left:5px;margin-right:10px;'>".__('Agent fields').'</span></a></li>';
     $tabs .= "<li><a href='#extended_event_comments_page' id='link_comments'>".html_print_image('images/pencil.png', true)."<span style='position:relative;top:-6px;left:5px;margin-right:10px;'>".__('Comments').'</span></a></li>';
 
     if (!$readonly
-        && ((tags_checks_event_acl($config['id_user'], $event['id_grupo'], 'EM', $event['clean_tags'], $childrens_ids)) || (tags_checks_event_acl($config['id_user'], $event['id_grupo'], 'EW', $event['clean_tags'], $childrens_ids)))
+        && ((tags_checks_event_acl(
+            $config['id_user'],
+            $event['id_grupo'],
+            'EM',
+            $event['clean_tags'],
+            $childrens_ids
+        )) || (tags_checks_event_acl(
+            $config['id_user'],
+            $event['id_grupo'],
+            'EW',
+            $event['clean_tags'],
+            $childrens_ids
+        )))
     ) {
         $tabs .= "<li><a href='#extended_event_responses_page' id='link_responses'>".html_print_image('images/event_responses_col.png', true)."<span style='position:relative;top:-6px;left:3px;margin-right:10px;'>".__('Responses').'</span></a></li>';
     }
@@ -386,7 +428,7 @@ if ($get_extended_event) {
 
     $tabs .= '</ul>';
 
-    // Get criticity image
+    // Get criticity image.
     switch ($event['criticity']) {
         default:
         case 0:
@@ -418,7 +460,19 @@ if ($get_extended_event) {
     }
 
     if (!$readonly
-        && ((tags_checks_event_acl($config['id_user'], $event['id_grupo'], 'EM', $event['clean_tags'], $childrens_ids)) || (tags_checks_event_acl($config['id_user'], $event['id_grupo'], 'EW', $event['clean_tags'], $childrens_ids)))
+        && ((tags_checks_event_acl(
+            $config['id_user'],
+            $event['id_grupo'],
+            'EM',
+            $event['clean_tags'],
+            $childrens_ids
+        )) || (tags_checks_event_acl(
+            $config['id_user'],
+            $event['id_grupo'],
+            'EW',
+            $event['clean_tags'],
+            $childrens_ids
+        )))
     ) {
         $responses = events_page_responses($event, $childrens_ids);
     } else {
@@ -426,7 +480,7 @@ if ($get_extended_event) {
     }
 
     $console_url = '';
-    // If metaconsole switch to node to get details and custom fields
+    // If metaconsole switch to node to get details and custom fields.
     if ($meta) {
         $server = metaconsole_get_connection_by_id($server_id);
         metaconsole_connect($server);
@@ -436,7 +490,12 @@ if ($get_extended_event) {
 
     $details = events_page_details($event, $server);
 
-    // Juanma (09/05/2014) Fix: Needs to reconnect to node, in previous funct node connection was lost
+    if (events_has_extended_info($event['id_evento']) === true) {
+        $related = events_page_related($event, $server);
+    }
+
+    // Juanma (09/05/2014) Fix: Needs to reconnect to node, in previous funct
+    // node connection was lost.
     if ($meta) {
         $server = metaconsole_get_connection_by_id($server_id);
             metaconsole_connect($server);
@@ -463,7 +522,7 @@ if ($get_extended_event) {
 
     $loading = '<div id="response_loading" style="display:none">'.html_print_image('images/spinner.gif', true).'</div>';
 
-    $out = '<div id="tabs" style="height:95%; overflow: auto">'.$tabs.$notifications.$loading.$general.$details.$custom_fields.$comments.$responses.$custom_data.html_print_input_hidden('id_event', $event['id_evento']).'</div>';
+    $out = '<div id="tabs" style="height:95%; overflow: auto">'.$tabs.$notifications.$loading.$general.$details.$related.$custom_fields.$comments.$responses.$custom_data.html_print_input_hidden('id_event', $event['id_evento']).'</div>';
 
     $js = '<script>
 	$(function() {
@@ -471,7 +530,7 @@ if ($get_extended_event) {
 		});
 		';
 
-    // Load the required tab
+    // Load the required tab.
     switch ($dialog_page) {
         case 'general':
             $js .= '$tabs.tabs( "option", "active", 0);';
@@ -481,26 +540,53 @@ if ($get_extended_event) {
             $js .= '$tabs.tabs( "option", "active", 1);';
         break;
 
-        case 'custom_fields':
+        case 'related':
             $js .= '$tabs.tabs( "option", "active", 2);';
         break;
 
-        case 'comments':
+        case 'custom_fields':
             $js .= '$tabs.tabs( "option", "active", 3);';
         break;
 
-        case 'responses':
+        case 'comments':
             $js .= '$tabs.tabs( "option", "active", 4);';
         break;
 
-        case 'custom_data':
+        case 'responses':
             $js .= '$tabs.tabs( "option", "active", 5);';
+        break;
+
+        case 'custom_data':
+            $js .= '$tabs.tabs( "option", "active", 6);';
+        break;
+
+        default:
+            // Ignore.
         break;
     }
 
-    $js .= '
-	});
-	</script>';
+    $js .= '});';
+
+    if (events_has_extended_info($event['id_evento']) === true) {
+        $js .= '
+        $("#link_related").click(function (){
+          $.post ({
+                url : "ajax.php",
+                data : {
+                    page: "include/ajax/events_extended",
+                    get_extended_info: 1,
+                    id_event: '.$event['id_evento'].'
+                },
+                dataType : "html",
+                success: function (data) {
+                    $("#related_data").html(data);
+                    console.log("vamos puta");
+                }
+            });
+        });';
+    }
+
+    $js .= '</script>';
 
     echo $out.$js;
 }
@@ -541,6 +627,10 @@ if ($get_events_details) {
             case 2:
                 $img = ui_get_full_url('images/hourglass.png', false, false, false);
                 $title = __('Event in process');
+            break;
+
+            default:
+                // Ignore.
             break;
         }
 
@@ -593,7 +683,8 @@ if ($table_events) {
     $id_agente = (int) get_parameter('id_agente', 0);
     $all_events_24h = (int) get_parameter('all_events_24h', 0);
 
-    // Fix: for tag functionality groups have to be all user_groups (propagate ACL funct!)
+    // Fix: for tag functionality groups have to be all user_groups
+    // (propagate ACL funct!).
     $groups = users_get_groups($config['id_user']);
 
     $tags_condition = tags_get_acl_tags(
@@ -611,7 +702,7 @@ if ($table_events) {
 
     if ($all_events_24h) {
         events_print_event_table(
-            "utimestamp > $date_subtract_day",
+            'utimestamp > '.$date_subtract_day,
             200,
             '100%',
             false,
@@ -620,7 +711,7 @@ if ($table_events) {
         );
     } else {
         events_print_event_table(
-            "estado <> 1 $tags_condition",
+            'estado <> 1 '.$tags_condition,
             200,
             '100%',
             false,

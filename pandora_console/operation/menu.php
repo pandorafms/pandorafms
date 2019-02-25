@@ -105,6 +105,7 @@ if (!empty($sub2)) {
 }
 
 enterprise_hook('cluster_menu');
+enterprise_hook('aws_menu');
 
 if (!empty($sub)) {
     $menu_operation['estado']['text'] = __('Monitoring');
@@ -374,6 +375,11 @@ $sub = [];
 $sub['operation/users/user_edit']['text'] = __('Edit my user');
 $sub['operation/users/user_edit']['id'] = 'Edit my user';
 $sub['operation/users/user_edit']['refr'] = 0;
+
+// Users
+$sub['operation/users/user_edit_notifications']['text'] = __('Configure user notifications');
+$sub['operation/users/user_edit_notifications']['id'] = 'Configure user notifications';
+$sub['operation/users/user_edit_notifications']['refr'] = 0;
 
 // ANY user can chat with other user and dogs.
 // Users

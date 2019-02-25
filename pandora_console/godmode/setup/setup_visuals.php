@@ -227,43 +227,63 @@ $table_styles->data[$row][1] = html_print_select(
 $table_styles->data[$row][1] .= '&nbsp;'.html_print_button(__('View'), 'login_background_preview', false, '', 'class="sub camera logo_preview"', true);
 $row++;
 
-$table_styles->data[$row][0] = __('Custom logo (header)').ui_print_help_icon('custom_logo', true);
-if (enterprise_installed()) {
-    $ent_files = list_files('enterprise/images/custom_logo', 'png', 1, 0);
-    $open_files = list_files('images/custom_logo', 'png', 1, 0);
 
-    $table_styles->data[$row][1] = html_print_select(
-        array_merge($ent_files, $open_files),
-        'custom_logo',
-        $config['custom_logo'],
-        '',
-        '',
-        '',
-        true,
-        false,
-        true,
-        '',
-        $open,
-        'width:240px'
-    );
-} else {
-    $table_styles->data[$row][1] = html_print_select(
-        list_files('images/custom_logo', 'png', 1, 0),
-        'custom_logo',
-        $config['custom_logo'],
-        '',
-        '',
-        '',
-        true,
-        false,
-        true,
-        '',
-        $open,
-        'width:240px'
-    );
+/**
+ * Print a select for the custom logos.
+ *
+ * @param  string $name This is the name for the select
+ * @param  string $logo This is the option in $config (path)
+ * @return string Print the select
+ */
+function logo_custom_enterprise($name, $logo)
+{
+    if (enterprise_installed()) {
+        $ent_files = list_files('enterprise/images/custom_logo', 'png', 1, 0);
+        $open_files = list_files('images/custom_logo', 'png', 1, 0);
+
+        $select = html_print_select(
+            array_merge($ent_files, $open_files),
+            $name,
+            $logo,
+            '',
+            '',
+            '',
+            true,
+            false,
+            true,
+            '',
+            $open,
+            'width:240px'
+        );
+        return $select;
+    } else {
+        $select = html_print_select(
+            list_files('images/custom_logo', 'png', 1, 0),
+            $name,
+            $logo,
+            '',
+            '',
+            '',
+            true,
+            false,
+            true,
+            '',
+            $open,
+            'width:240px'
+        );
+        return $select;
+    }
 }
 
+
+$table_styles->data[$row][0] = __('Custom logo (header)').ui_print_help_icon('custom_logo', true);
+$table_styles->data[$row][1] = logo_custom_enterprise('custom_logo', $config['custom_logo']);
 $table_styles->data[$row][1] .= '&nbsp;'.html_print_button(__('View'), 'custom_logo_preview', $open, '', 'class="sub camera logo_preview"', true, false, $open, 'visualmodal');
+$row++;
+
+$table_styles->data[$row][0] = __('Custom logo collapsed (header)').ui_print_help_icon('custom_logo_collapsed', true);
+$table_styles->data[$row][1] = logo_custom_enterprise('custom_logo_collapsed', $config['custom_logo_collapsed']);
+$table_styles->data[$row][1] .= '&nbsp;'.html_print_button(__('View'), 'custom_logo_collapsed_preview', $open, '', 'class="sub camera logo_preview"', true, false, $open, 'visualmodal');
 $row++;
 
 $table_styles->data[$row][0] = __('Custom logo (header white background)');
@@ -1234,7 +1254,7 @@ html_print_submit_button(__('Update'), 'update_button', false, 'class="sub upd"'
 echo '</div>';
 echo '</form>';
 
-ui_require_css_file('color-picker','include/styles/js/');
+ui_require_css_file('color-picker', 'include/styles/js/');
 ui_require_jquery_file('colorpicker');
 
 
@@ -1470,6 +1490,11 @@ $(".logo_preview").click (function(e) {
             icon_path = homeUrlEnt + "images/custom_logo/" + icon_name;
             options.grayed = true;
             break;
+        case 'button-custom_logo_collapsed_preview':
+            icon_name = $("select#custom_logo_collapsed option:selected").val();
+            icon_path = homeUrlEnt + "images/custom_logo/" + icon_name;
+            options.grayed = true;
+            break;            
         case 'button-custom_logo_white_bg_preview':
             icon_name = $("select#custom_logo_white_bg option:selected").val();
             icon_path = homeUrlEnt + "images/custom_logo/" + icon_name;

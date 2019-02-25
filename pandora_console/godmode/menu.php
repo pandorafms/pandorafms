@@ -54,6 +54,7 @@ if (check_acl($config['id_user'], 0, 'AW')) {
     }
 }
 
+$menu_godmode['nuevo_texto']['text'] = __('nuevo_texto');
 if (!empty($sub)) {
     $menu_godmode['gagente']['text'] = __('Resources');
     $menu_godmode['gagente']['sec2'] = 'godmode/agentes/modificar_agente';

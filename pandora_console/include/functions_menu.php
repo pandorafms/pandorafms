@@ -377,7 +377,7 @@ function menu_print_menu(&$menu)
         $length = strlen(__($main['text']));
         $padding_top = ( $length >= 18) ? 6 : 12;
 
-        $output .= '<div id="title_menu" style="color:#FFF; padding-top:'.$padding_top.'px; display:none;">'.$main['text'].'</div>';
+        $output .= '<div id="title_menu" style="padding-top:'.$padding_top.'px; display:none;">'.$main['text'].'</div>';
         // Add the notification ball if defined
         if (isset($main['notification'])) {
             $output .= '<div class="notification_ball">'.$main['notification'].'</div>';

@@ -16,6 +16,11 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
+.operation .menu_icon ul.submenu > li,
+.godmode .menu_icon ul.submenu > li {
+  background-color: #282828;
+}
+
 .menu {
   border-width: 0px 0px 0px 0px;
   border-style: none;
@@ -34,8 +39,8 @@
 }
 
 .menu li a {
-	color: #FFFFFF;
-	text-decoration:none;
+  color: #ffffff;
+  text-decoration: none;
 }
 
 li:hover ul {
@@ -43,10 +48,12 @@ li:hover ul {
 }
 
 .submenu_text {
-	padding: 10.5px;
-	margin-left: 0px;
-	width: 100%;
-	color: #fff;
+  padding: 10.5px;
+  margin-left: 0px;
+  width: 100%;
+  color: #91a2a7;
+  font-family: "Open Sans", sans-serif;
+  font-size: 10pt;
 }
 
 .menu li.subselected a {
@@ -61,7 +68,7 @@ li:hover ul {
   margin: 0px 0px 0px 0px;
   position: absolute;
   z-index: 999;
-  left: 44px;
+  /*left: 44px;*/
   min-height: 35px;
   height: 35px;
   width: 180px;
@@ -78,9 +85,10 @@ li:hover ul {
   height: 35px;
   width: 180px;
   font-weight: normal !important;
+  background-color: #202020;
 }
 .sub_subMenu.selected {
-  font-weight: bold !important;
+  font-weight: 600 !important;
 }
 
 .submenu2 li a {
@@ -117,6 +125,18 @@ li:hover ul {
   margin-bottom: 0px !important;
   box-shadow: inset 4px 0 #80ba27 !important;
 }
+.selected.submenu_selected {
+  background-color: #202020 !important;
+}
+
+li.submenu_selected.selected {
+  background-color: #202020 !important;
+  font-weight: 600;
+}
+
+li.sub_subMenu.selected {
+  background-color: #161616 !important;
+}
 
 .menu .menu_icon,
 .menu li.links {
@@ -132,21 +152,21 @@ li:hover ul {
 
 /* Icons specified here */
 #icon_oper-networkconsole {
-  background: url(../../images/op_network.menu.png) no-repeat 50% 50%;
+  background: url(../../images/op_network.menu_gray.png) no-repeat;
 }
 #icon_oper-agents {
   border-top-right-radius: 5px;
   border-right-style: solid;
   border-right-width: 0px;
-  background: url(../../images/op_monitoring.menu.png) no-repeat 50% 50%;
+  background: url(../../images/op_monitoring.menu_gray.png) no-repeat;
 }
 #icon_oper-events {
-  background: url(../../images/op_events.menu.png) no-repeat 50% 50%;
+  background: url(../../images/op_events.menu_gray.png) no-repeat;
 }
 
 /* users */
 #icon_oper-users {
-  background: url(../../images/op_workspace.menu.png) no-repeat 50% 50%;
+  background: url(../../images/op_workspace.menu_gray.png) no-repeat;
 }
 /* trap console */
 #icon_oper-snmpc,
@@ -154,7 +174,7 @@ li:hover ul {
   background: url(../../images/op_snmp.menu.png) no-repeat 50% 50%;
 }
 #icon_oper-reporting {
-  background: url(../../images/op_reporting.menu.png) no-repeat 50% 50%;
+  background: url(../../images/op_reporting.menu_gray.png) no-repeat;
 }
 #icon_oper-gismaps {
   background: url(../../images/op_gis.menu.png) no-repeat 50% 50%;
@@ -163,45 +183,43 @@ li:hover ul {
   background: url(../../images/op_netflow.menu.png) no-repeat 50% 50%;
 }
 #icon_oper-extensions {
-  background: url(../../images/extensions.menu.png) no-repeat 50% 50%;
+  background: url(../../images/extensions.menu_gray.png) no-repeat;
 }
 
 /* Godmode images */
 #icon_god-resources {
-  background: url(../../images/gm_resources.menu.png) no-repeat 50% 50%;
+  background: url(../../images/gm_resources.menu_gray.png) no-repeat;
 }
 #icon_god-configuration {
-  background: url(../../images/gm_configuration.menu.png) no-repeat 50% 50%;
+  background: url(../../images/gm_configuration.menu_gray.png) no-repeat;
 }
 #icon_god-alerts {
-  background: url(../../images/gm_alerts.menu.png) no-repeat 50% 50%;
+  background: url(../../images/gm_alerts.menu_gray.png) no-repeat;
 }
 #icon_god-users {
-  background: url(../../images/gm_users.menu.png) no-repeat 50% 50%;
+  background: url(../../images/gm_users.menu_gray.png) no-repeat;
 }
 #icon_god-reporting {
   background: url(../../images/reporting_edit.menu.png) no-repeat 50% 50%;
 }
 #icon_god-servers {
-  background: url(../../images/gm_servers.menu.png) no-repeat 50% 50%;
+  background: url(../../images/gm_servers.menu_gray.png) no-repeat;
 }
 #icon_god-setup {
-  background: url(../../images/gm_setup.menu.png) no-repeat 50% 50%;
+  background: url(../../images/gm_setup.menu_gray.png) no-repeat;
 }
 #icon_god-events {
-  background: url(../../images/gm_events.menu.png) no-repeat 50% 50%;
+  background: url(../../images/gm_events.menu_gray.png) no-repeat;
 }
 #icon_god-extensions {
-  background: url(../../images/builder.menu.png) no-repeat 50% 50%;
+  background: url(../../images/builder.menu_gray.png) no-repeat;
 }
 #icon_god-links {
-  border-top: 4px solid #777 !important;
-  border-color: #777;
-  background: url(../../images/links.menu.png) no-repeat 50% 50%;
+  background: url(../../images/links.menu_gray.png) no-repeat;
 }
 #icon_god-um_messages {
   border-color: #777;
-  background: url(../../images/um_messages.menu.png) no-repeat 50% 50%;
+  background: url(../../images/um_messages.menu_gray.png) no-repeat;
 }
 
 #menu_container {
@@ -258,95 +276,90 @@ ul li a:hover {
 } /* Hover Styles */
 /*li ul li a { padding: 2px 5px; }  Sub Menu Styles */
 
-
-
 /*
  * ---------------------------------------------------------------------
  * - MAIN LEFT MENU and SUBMENU 									-
  * ---------------------------------------------------------------------
  */
-.menu li.selected {
-	font-weight: bold;
+
+.menu_icon {
+  transition-property: background-color;
+  transition-duration: 0.5s;
+  transition-timing-function: ease-out;
+  -webkit-transition-property: background-color;
+  -webkit-transition-duration: 0.5s;
+  -webkit-transition-timing-function: ease-out;
+  -moz-transition-property: background-color;
+  -moz-transition-duration: 0.5s;
+  -moz-transition-timing-function: ease-out;
+  -o-transition-property: background-color;
+  -o-transition-duration: 0.5s;
+  -o-transition-timing-function: ease-out;
 }
 
-.menu_icon{
-	transition-property: background-color;
-	transition-duration: 0.5s;
-	transition-timing-function: ease-out;
-	-webkit-transition-property: background-color;
-	-webkit-transition-duration: 0.5s;
-	-webkit-transition-timing-function: ease-out;
-	-moz-transition-property: background-color;
-	-moz-transition-duration: 0.5s;
-	-moz-transition-timing-function: ease-out;
-	-o-transition-property: background-color;
-	-o-transition-duration: 0.5s;
-	-o-transition-timing-function: ease-out;
+.menu_icon:hover {
+  transition-property: background-color;
+  transition-duration: 0.5s;
+  transition-timing-function: ease-out;
+  -webkit-transition-property: background-color;
+  -webkit-transition-duration: 0.5s;
+  -webkit-transition-timing-function: ease-out;
+  -moz-transition-property: background-color;
+  -moz-transition-duration: 0.5s;
+  -moz-transition-timing-function: ease-out;
+  -o-transition-property: background-color;
+  -o-transition-duration: 0.5s;
+  -o-transition-timing-function: ease-out;
+  background-color: #282828 !important;
 }
-
-.menu_icon:hover{
-	transition-property: background-color;
-	transition-duration: 0.5s;
-	transition-timing-function: ease-out;
-	-webkit-transition-property: background-color;
-	-webkit-transition-duration: 0.5s;
-	-webkit-transition-timing-function: ease-out;
-	-moz-transition-property: background-color;
-	-moz-transition-duration: 0.5s;
-	-moz-transition-timing-function: ease-out;
-	-o-transition-property: background-color;
-	-o-transition-duration: 0.5s;
-	-o-transition-timing-function: ease-out;
-	background-color: #585858 !important;
+.submenu_not_selected:hover {
+  transition-property: background-color;
+  transition-duration: 0.5s;
+  transition-timing-function: ease-out;
+  -webkit-transition-property: background-color;
+  -webkit-transition-duration: 0.5s;
+  -webkit-transition-timing-function: ease-out;
+  -moz-transition-property: background-color;
+  -moz-transition-duration: 0.5s;
+  -moz-transition-timing-function: ease-out;
+  -o-transition-property: background-color;
+  -o-transition-duration: 0.5s;
+  -o-transition-timing-function: ease-out;
+  background-color: #202020 !important;
 }
-.submenu_not_selected:hover{
-	transition-property: background-color;
-	transition-duration: 0.5s;
-	transition-timing-function: ease-out;
-	-webkit-transition-property: background-color;
-	-webkit-transition-duration: 0.5s;
-	-webkit-transition-timing-function: ease-out;
-	-moz-transition-property: background-color;
-	-moz-transition-duration: 0.5s;
-	-moz-transition-timing-function: ease-out;
-	-o-transition-property: background-color;
-	-o-transition-duration: 0.5s;
-	-o-transition-timing-function: ease-out;
-	background-color: #585858 !important;
+.submenu_selected:hover {
+  background-color: #202020 !important;
 }
-.submenu_selected:hover{
-	background-color: #585858 !important;
+.sub_subMenu {
+  transition-property: background-color;
+  transition-duration: 0.5s;
+  transition-timing-function: ease-out;
+  -webkit-transition-property: background-color;
+  -webkit-transition-duration: 0.5s;
+  -webkit-transition-timing-function: ease-out;
+  -moz-transition-property: background-color;
+  -moz-transition-duration: 0.5s;
+  -moz-transition-timing-function: ease-out;
+  -o-transition-property: background-color;
+  -o-transition-duration: 0.5s;
 }
-.sub_subMenu{
-	transition-property: background-color;
-	transition-duration: 0.5s;
-	transition-timing-function: ease-out;
-	-webkit-transition-property: background-color;
-	-webkit-transition-duration: 0.5s;
-	-webkit-transition-timing-function: ease-out;
-	-moz-transition-property: background-color;
-	-moz-transition-duration: 0.5s;
-	-moz-transition-timing-function: ease-out;
-	-o-transition-property: background-color;
-	-o-transition-duration: 0.5s;
-}
-.sub_subMenu:hover{
-	transition-property: background-color;
-	transition-duration: 0.5s;
-	transition-timing-function: ease-out;
-	-webkit-transition-property: background-color;
-	-webkit-transition-duration: 0.5s;
-	-webkit-transition-timing-function: ease-out;
-	-moz-transition-property: background-color;
-	-moz-transition-duration: 0.5s;
-	-moz-transition-timing-function: ease-out;
-	-o-transition-property: background-color;
-	-o-transition-duration: 0.5s;
-	background-color: #585858 !important;
+.sub_subMenu:hover {
+  transition-property: background-color;
+  transition-duration: 0.5s;
+  transition-timing-function: ease-out;
+  -webkit-transition-property: background-color;
+  -webkit-transition-duration: 0.5s;
+  -webkit-transition-timing-function: ease-out;
+  -moz-transition-property: background-color;
+  -moz-transition-duration: 0.5s;
+  -moz-transition-timing-function: ease-out;
+  -o-transition-property: background-color;
+  -o-transition-duration: 0.5s;
+  background-color: #161616 !important;
 }
 
 .menu li.selected {
-	box-shadow: inset 4px 0 #80BA27;
+  box-shadow: inset 4px 0 #80ba27;
 }
 /* creo que no se usan
 .is_submenu2 li {
@@ -358,35 +371,192 @@ ul li a:hover {
 }
 */
 .operation {
-	background-color: #333 !important;
-	border-top-right-radius: 5px;
-	border-right-style: solid;
-	border-right-width: 0px;
+  background-color: #343434 !important;
+  border-top-right-radius: 5px;
+  border-right-style: solid;
+  border-right-width: 0px;
+  padding-top: 20px !important;
 }
 
-.operation .selected {
-	background-color: #585858 !important;
+.operation .selected,
+.godmode .selected {
+  background-color: #282828 !important;
 }
 
-.menu li, .menu .li.not_selected {
-	border-radius: 0px 0px 0px 0px;
-	display: block;
-	min-height: 35px;
-	border-bottom: 0px none #424242;
-	vertical-align: middle;
+.operation .selected #title_menu,
+.godmode .selected #title_menu {
+  color: #fff !important;
+  font-weight: 600;
 }
 
-.godmode, .menu_icon ul li{
-	background-color: #222;
-}
-.operation .menu_icon ul li{
-	background-color: #333;
+.menu li,
+.menu .li.not_selected {
+  border-radius: 0px 0px 0px 0px;
+  display: block;
+  min-height: 35px;
+  border-bottom: 0px none #424242;
+  vertical-align: middle;
 }
 
-.godmode{
-	border-top: 4px solid #777 !important;
-	padding-bottom: 4px !important;
-	border-bottom-right-radius: 5px;
-	border-right-style: solid;
-	border-right-width: 0px;
+.godmode {
+  padding-bottom: 4px !important;
+  background-color: #343434;
+}
+
+/* Menu icons active */
+.selected#icon_oper-networkconsole {
+  background: url(../../images/op_network.menu_white.png) no-repeat;
+}
+.selected#icon_oper-agents {
+  background: url(../../images/op_monitoring.menu_white.png) no-repeat;
+}
+.selected#icon_oper-events {
+  background: url(../../images/op_events.menu_white.png) no-repeat;
+}
+.selected#icon_oper-users {
+  background: url(../../images/op_workspace.menu_white.png) no-repeat;
+}
+.selected#icon_oper-reporting {
+  background: url(../../images/op_reporting.menu_white.png) no-repeat;
+}
+.selected#icon_oper-extensions {
+  background: url(../../images/extensions.menu_white.png) no-repeat;
+}
+.selected#icon_god-resources {
+  background: url(../../images/gm_resources.menu_white.png) no-repeat;
+}
+.selected#icon_god-configuration {
+  background: url(../../images/gm_configuration.menu_white.png) no-repeat;
+}
+.selected#icon_god-alerts {
+  background: url(../../images/gm_alerts.menu_white.png) no-repeat;
+}
+.selected#icon_god-users {
+  background: url(../../images/gm_users.menu_white.png) no-repeat;
+}
+.selected#icon_god-servers {
+  background: url(../../images/gm_servers.menu_white.png) no-repeat;
+}
+.selected#icon_god-setup {
+  background: url(../../images/gm_setup.menu_white.png) no-repeat;
+}
+.selected#icon_god-events {
+  background: url(../../images/gm_events.menu_white.png) no-repeat;
+}
+.selected#icon_god-extensions {
+  background: url(../../images/builder.menu_white.png) no-repeat;
+}
+.selected#icon_god-links {
+  background: url(../../images/links.menu_white.png) no-repeat;
+}
+.selected#icon_god-um_messages {
+  background: url(../../images/um_messages.menu_white.png) no-repeat;
+}
+
+#menu_full {
+  /*height: 100%; Lo he quitado para que no ocupe todo el alto y fixed */
+  width: 60px; /* It is changed for classic menu (215px)*/
+  position: absolute; /*Fixed: Lo he quitado para que no ocupe todo el alto y fixed */
+  z-index: 1;
+  top: 0;
+  left: 0;
+  background-color: #343434;
+  border-bottom: solid 5px #343434;
+  min-height: 943px;
+  /* padding-bottom: 40px; Lo he quitado para que no ocupe todo el alto y fixed */
+  /*overflow-x: hidden;*/
+}
+
+.button_collapse {
+  height: 55px;
+  background-color: #4d4d4d;
+  /* bottom: 0;        Lo he quitado para que no ocupe todo el alto y fixed
+  position: fixed;*/
+  width: 60px; /* It is changed for classic menu (215px)*/
+  text-align: center;
+  color: #fff;
+  cursor: pointer;
+  background-repeat: no-repeat;
+  background-position: center;
+  margin-top: 15px;
+}
+
+.logo_green {
+  height: 60px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.operation > li.menu_icon.no_hidden_menu,
+.godmode > li.menu_icon.no_hidden_menu {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.operation > li.menu_icon,
+.godmode > li.menu_icon {
+  padding-top: 3px;
+  padding-bottom: 3px;
+}
+
+.operation div,
+.operation a,
+.godmode div,
+.godmode a {
+  font-family: "Open Sans", sans-serif;
+}
+
+.menu_full_classic,
+.button_classic {
+  width: 215px !important;
+  background-image: url(../../images/button_collapse_menu.png);
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.menu_full_collapsed,
+.button_collapsed {
+  width: 60px !important;
+  background-image: url(../../images/button_classic_menu.png);
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+#top_btn {
+  display: none;
+  position: fixed;
+  bottom: 100px;
+  left: 0px;
+  border: none;
+  outline: none;
+  background: url("../../images/to_top_menu.png") no-repeat center;
+  background-color: #82b92e;
+  width: 60px;
+  height: 60px;
+  /* Estos borrarles despues xk sera img */
+  color: white;
+  cursor: pointer;
+  font-size: 17px;
+  border-radius: 5px;
+}
+
+#top_btn:hover {
+  background-color: #4d4d4d;
+  /*  border: 2px solid #fff;*/
+}
+
+@media screen and (max-height: 845px) {
+  .operation > li.menu_icon,
+  .godmode > li.menu_icon {
+    padding-top: 1px;
+    padding-bottom: 1px;
+  }
+  .operation {
+    padding-top: 10px !important;
+  }
+  .button_collapse {
+    margin-top: 10px;
+  }
 }

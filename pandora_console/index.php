@@ -1029,11 +1029,11 @@ if ($config['pure'] == 0) {
         echo '</div><div id="menu">';
         include 'general/main_menu.php';
         echo '</div>';
-        echo '<div style="padding-left:100px;" id="page">';
+        echo '<div id="page">';
     } else {
         echo '<div id="container"><div id="head">';
         include 'general/header.php';
-        echo '</div><div id="page" style="margin-top:20px;"><div id="menu">';
+        echo '</div><div id="page"><div id="menu">';
         include 'general/main_menu.php';
         echo '</div>';
     }
@@ -1363,4 +1363,3 @@ require 'include/php_to_js_values.php';
 if (__PAN_XHPROF__ === 1) {
     pandora_xhprof_display_result('node_index');
 }
-

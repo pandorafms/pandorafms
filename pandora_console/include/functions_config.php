@@ -836,6 +836,10 @@ function config_update_config()
                         $error_update[] = __('Custom logo');
                     }
 
+                    if (!config_update_value('custom_logo_collapsed', (string) get_parameter('custom_logo_collapsed'))) {
+                        $error_update[] = __('Custom logo collapsed');
+                    }
+
                     if (!config_update_value('custom_logo_white_bg', (string) get_parameter('custom_logo_white_bg'))) {
                         $error_update[] = __('Custom logo white background');
                     }
@@ -1750,7 +1754,11 @@ function config_process_config()
     }
 
     if (!isset($config['custom_logo'])) {
-        config_update_value('custom_logo', 'pandora_logo_head_4.png');
+        config_update_value('custom_logo', 'pandora_logo_head_green.png');
+    }
+
+    if (!isset($config['custom_logo_collapsed'])) {
+        config_update_value('custom_logo_collapsed', 'pandora_logo_green_collapsed.png');
     }
 
     if (!isset($config['custom_logo_white_bg'])) {

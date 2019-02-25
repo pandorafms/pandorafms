@@ -19,359 +19,306 @@ require_once 'include/functions_servers.php';
 config_check();
 
 ?>
-<table width="100%" cellpadding="0" cellspacing="0" style="margin:0px; padding:0px; margin-top: 0px; height: 100%" border="0">
-    <tr>
-        <td style="width:90%;">
-            <a href="index.php?sec=main">
-                <?php
-                $custom_logo = 'images/custom_logo/'.$config['custom_logo'];
 
-                if (!defined('PANDORA_ENTERPRISE')) {
-                    $logo_title = get_product_name().' Opensource';
-                    $custom_logo = 'images/custom_logo/pandora_logo_head_3.png';
+<div id="header_table"> 
+    <div id="header_table_inner">           
+        <?php
+        // ======= Alerts ===============================================
+        $check_minor_release_available = false;
+        $pandora_management = check_acl($config['id_user'], 0, 'PM');
+
+        $check_minor_release_available = db_check_minor_relase_available();
+
+        if ($check_minor_release_available) {
+            if (users_is_admin($config['id_user'])) {
+                if ($config['language'] == 'es') {
+                    set_pandora_error_for_header('Hay una o mas revisiones menores en espera para ser actualizadas. <a style="font-size:8pt;font-style:italic;" target="blank" href="http://wiki.pandorafms.com/index.php?title=Pandora:Documentation_es:Actualizacion#Versi.C3.B3n_7.0NG_.28_Rolling_Release_.29">'.__('Sobre actualización de revisión menor').'</a>', 'Revisión/es menor/es disponible/s');
                 } else {
-                    if (file_exists(ENTERPRISE_DIR.'/'.$custom_logo)) {
-                        $custom_logo = ENTERPRISE_DIR.'/'.$custom_logo;
-                    }
-
-                    $logo_title = get_product_name().' Enterprise';
+                    set_pandora_error_for_header('There are one or more minor releases waiting for update. <a style="font-size:8pt;font-style:italic;" target="blank" href="http://wiki.pandorafms.com/index.php?title=Pandora:Documentation_en:Anexo_Upgrade#Version_7.0NG_.28_Rolling_Release_.29">'.__('About minor release update').'</a>', 'minor release/s available');
                 }
-
-                    echo html_print_image(
-                        $custom_logo,
-                        true,
-                        [
-                            'alt'    => $logo_title,
-                            'border' => '0',
-                        ]
-                    );
-                    ?>
-            </a>
-        </td>
-        <td style="min-width:200px;">
-            <?php
-            $table = new stdClass();
-                $table->id = 'header_table';
-                $table->class = 'none';
-                $table->cellpadding = 0;
-                $table->cellspacing = 0;
-                $table->head = [];
-                $table->data = [];
-                $table->style[0] = $table->style['clippy'] = $table->style[1] = $table->style[3] = $table->style[4] = $table->style[5] = $table->style[6] = $table->style[8] = $table->style[9] = $table->style['qr'] = 'width: 22px; text-align:center; height: 22px; padding-right: 9px;padding-left: 9px;';
-                $table->style[7] = 'width: 20px; padding-right: 9px;';
-                $table->style['searchbar'] = 'width: 180px; min-width: 180px;';
-                $table->style[11] = 'padding-left: 10px; padding-right: 5px;width: 16px;';
-                $table->width = '100%';
-                $table->styleTable = 'margin: auto; margin-top: 0px;';
-                $table->rowclass[0] = '';
-
-                $acl_head_search = true;
-            if ($config['acl_enterprise'] == 1 && !users_is_admin()) {
-                $acl_head_search = db_get_sql(
-                    "SELECT sec FROM tusuario 
-						INNER JOIN tusuario_perfil ON tusuario.id_user = tusuario_perfil.id_usuario 
-						INNER JOIN tprofile_view ON tprofile_view.id_profile = tusuario_perfil.id_perfil 
-						WHERE tusuario.id_user = '".$config['id_user']."' AND (sec = '*' OR sec = 'head_search')"
-                );
             }
+        }
 
-            if ($acl_head_search) {
-                $table->data[0][11] = ui_print_help_tip(__('Blank characters are used as AND conditions'), true);
+        echo '<div id="alert_messages" style="display: none"></div>';
 
-                // Search bar
-                $search_bar = '<form method="get" style="display: inline;" name="quicksearch" action="">';
-                if (!isset($config['search_keywords'])) {
-                    $search_bar .= '<script type="text/javascript"> var fieldKeyWordEmpty = true; </script>';
-                } else {
-                    if (strlen($config['search_keywords']) == 0) {
-                        $search_bar .= '<script type="text/javascript"> var fieldKeyWordEmpty = true; </script>';
-                    } else {
-                        $search_bar .= '<script type="text/javascript"> var fieldKeyWordEmpty = false; </script>';
-                    }
-                }
+        if ($config['alert_cnt'] > 0) {
+            $maintenance_link = 'javascript:';
+            $maintenance_title = __('System alerts detected - Please fix as soon as possible');
+            $maintenance_class = $maintenance_id = 'show_systemalert_dialog white';
 
-                $search_bar .= '<input type="text" id="keywords" name="keywords"';
-                if (!isset($config['search_keywords'])) {
-                    $search_bar .= "value='".__('Enter keywords to search')."'";
-                } else if (strlen($config['search_keywords']) == 0) {
-                    $search_bar .= "value='".__('Enter keywords to search')."'";
-                } else {
-                    $search_bar .= "value='".$config['search_keywords']."'";
-                }
-
-                $search_bar .= 'onfocus="javascript: if (fieldKeyWordEmpty) $(\'#keywords\').val(\'\');"
-						onkeyup="javascript: fieldKeyWordEmpty = false;"
-						style="margin-top:5px;" class="search_input" />';
-
-                // $search_bar .= 'onClick="javascript: document.quicksearch.submit()"';
-                $search_bar .= "<input type='hidden' name='head_search_keywords' value='abc' />";
-                $search_bar .= '</form>';
-
-                $table->data[0]['searchbar'] = $search_bar;
-            }
-
-                // Servers check
-                $servers = [];
-                $servers['all'] = (int) db_get_value('COUNT(id_server)', 'tserver');
-                $servers['up'] = (int) servers_check_status();
-                $servers['down'] = ($servers['all'] - $servers['up']);
-            if ($servers['up'] == 0) {
-                // All Servers down or no servers at all
-                $servers_check_img = html_print_image('images/header_down.png', true, ['alt' => 'cross', 'class' => 'bot', 'title' => __('All systems').': '.__('Down')]);
-            } else if ($servers['down'] != 0) {
-                // Some servers down
-                $servers_check_img = html_print_image('images/header_warning.png', true, ['alt' => 'error', 'class' => 'bot', 'title' => $servers['down'].' '.__('servers down')]);
+            $maintenance_link_open_txt = '<a href="'.$maintenance_link.'" title="'.$maintenance_title.'" class="'.$maintenance_class.'" id="show_systemalert_dialog">';
+            $maintenance_link_open_img = '<a href="'.$maintenance_link.'" title="'.$maintenance_title.'" class="'.$maintenance_class.'">';
+            $maintenance_link_close = '</a>';
+            if (!$pandora_management) {
+                $maintenance_img = '';
             } else {
-                // All servers up
-                $servers_check_img = html_print_image('images/header_ready.png', true, ['alt' => 'ok', 'class' => 'bot', 'title' => __('All systems').': '.__('Ready')]);
-            }
-
-                unset($servers);
-            // Since this is the header, we don't like to trickle down variables.
-                $servers_link_open = '<a class="white" href="index.php?sec=gservers&amp;sec2=godmode/servers/modificar_server&amp;refr=60">';
-                $servers_link_close = '</a>';
-
-            if ($config['show_qr_code_header'] == 0) {
-                $show_qr_code_header = 'display: none;';
-            } else {
-                $show_qr_code_header = 'display: inline;';
-            }
-
-                $table->data[0]['qr'] = '<div style="'.$show_qr_code_header.'" id="qr_code_container" style="">'.'<a href="javascript: show_dialog_qrcode();">'.html_print_image(
-                    'images/qrcode_icon.png',
+                $maintenance_img = $maintenance_link_open_img.html_print_image(
+                    'images/header_alert_gray.png',
                     true,
                     [
-                        'alt'   => __('QR Code of the page'),
-                        'title' => __('QR Code of the page'),
+                        'title' => __(
+                            'You have %d warning(s)',
+                            $config['alert_cnt']
+                        ),
+                       // 'id'    => 'yougotalert',
+                        'class' => 'bot',
                     ]
-                ).'</a>'.'</div>';
+                ).'<p><span>'.$config['alert_cnt'].'</span></p>'.$maintenance_link_close;
+            }
+        } else {
+            if (!$pandora_management) {
+                $maintenance_img = '';
+            } else {
+                $maintenance_img = html_print_image('images/header_ready_gray.png', true, ['title' => __('There are not warnings'), 'id' => 'yougotalert', 'class' => 'bot']);
+            }
+        }
 
-                echo "<div style='display: none;' id='qrcode_container' title='".__('QR code of the page')."'>";
-                echo "<div id='qrcode_container_image'></div>";
-                echo '</div>';
-                ?>
-                <script type='text/javascript'>
-                    $(document).ready(function() {
-                        $( "#qrcode_container" ).dialog({
-                            autoOpen: false,
-                            modal: true
-                        });
-                    });
-                </script>
-                <?php
-                if ($config['tutorial_mode'] !== 'expert' && !$config['disable_help']) {
-                    $table->data[0]['clippy'] = '<a href="javascript: show_clippy();">'.html_print_image(
-                        'images/clippy_icon.png',
-                        true,
-                        [
-                            'id'    => 'clippy',
-                            'class' => 'clippy',
-                            'alt'   => __('%s assistant', get_product_name()),
-                            'title' => __(
-                                '%s assistant',
-                                get_product_name()
-                            ),
-                        ]
-                    ).'</a>';
-                }
+        $header_alert = '<div id="header_alert">'.$maintenance_img.'</div>';
 
 
-                $table->data[0][0] = $servers_link_open.$servers_check_img.$servers_link_close;
+        // Messages
+        $msg_cnt = messages_get_count($config['id_user']);
+        if ($msg_cnt > 0) {
+            echo '<div id="dialog_messages" style="display: none"></div>';
+
+            $header_message = '<div id="header_message"><a href="ajax.php?page=operation/messages/message_list" title="'.__('Message overview').'" id="show_messages_dialog">';
+            $header_message .= html_print_image('images/header_email.png', true, ['title' => __('You have %d unread message(s)', $msg_cnt), 'id' => 'yougotmail', 'class' => 'bot', 'style' => 'width:24px;']);
+            $header_message .= '<p><span>'.$msg_cnt.'</span></p></a></div>';
+        }
 
 
+        // Chat messages
+        $header_chat = "<div id='header_chat'><span id='icon_new_messages_chat' style='display: none;'>";
+        $header_chat .= "<a href='index.php?sec=workspace&sec2=operation/users/webchat'>";
+        $header_chat .= html_print_image('images/header_chat_gray.png', true, ['title' => __('New chat message')]);
+        $header_chat .= '</a></span></div>';
 
 
-                // ======= Autorefresh code =============================
-                $autorefresh_txt = '';
-                $autorefresh_additional = '';
+        // Search
+        $acl_head_search = true;
+        if ($config['acl_enterprise'] == 1 && !users_is_admin()) {
+            $acl_head_search = db_get_sql(
+                "SELECT sec FROM tusuario 
+                    INNER JOIN tusuario_perfil ON tusuario.id_user = tusuario_perfil.id_usuario 
+                    INNER JOIN tprofile_view ON tprofile_view.id_profile = tusuario_perfil.id_perfil 
+                    WHERE tusuario.id_user = '".$config['id_user']."' AND (sec = '*' OR sec = 'head_search')"
+            );
+        }
 
-                $ignored_params = [
-                    'agent_config' => false,
-                    'code'         => false,
-                ];
-
-                if (!isset($_GET['sec2'])) {
-                    $_GET['sec2'] = '';
-                }
-
-                if (!isset($_GET['refr'])) {
-                    $_GET['refr'] = null;
-                }
-
-                $select = db_process_sql("SELECT autorefresh_white_list,time_autorefresh FROM tusuario WHERE id_user = '".$config['id_user']."'");
-                $autorefresh_list = json_decode($select[0]['autorefresh_white_list']);
-
-                if ($autorefresh_list !== null && array_search($_GET['sec2'], $autorefresh_list) !== false) {
-                    $do_refresh = true;
-                    if ($_GET['sec2'] == 'operation/agentes/pandora_networkmap') {
-                        if ((!isset($_GET['tab'])) || ($_GET['tab'] != 'view')) {
-                            $do_refresh = false;
-                        }
-                    }
-
-                    if ($do_refresh) {
-                        $autorefresh_img = html_print_image('images/header_refresh.png', true, ['class' => 'bot', 'alt' => 'lightning', 'title' => __('Configure autorefresh')]);
-
-                        if ($_GET['refr']) {
-                            $autorefresh_txt .= ' (<span id="refrcounter">'.date('i:s', $config['refr']).'</span>)';
-                        }
-
-                        $ignored_params['refr'] = '';
-                        $values = get_refresh_time_array();
-                        $autorefresh_additional = '<span id="combo_refr" style="display: none;">';
-                        $autorefresh_additional .= html_print_select($values, 'ref', '', '', __('Select'), '0', true, false, false);
-                        $autorefresh_additional .= '</span>';
-                        unset($values);
-
-                        $autorefresh_link_open_img = '<a class="white autorefresh" href="'.ui_get_url_refresh($ignored_params).'">';
-
-                        if ($_GET['refr']) {
-                            $autorefresh_link_open_txt = '<a class="white autorefresh autorefresh_txt" href="'.ui_get_url_refresh($ignored_params).'">';
-                        } else {
-                            $autorefresh_link_open_txt = '<a>';
-                        }
-
-                        $autorefresh_link_close = '</a>';
-                    } else {
-                        $autorefresh_img = html_print_image('images/header_refresh_disabled.png', true, ['class' => 'bot autorefresh_disabled', 'alt' => 'lightning', 'title' => __('Disabled autorefresh')]);
-
-                        $ignored_params['refr'] = false;
-
-                        $autorefresh_link_open_img = '';
-                        $autorefresh_link_open_txt = '';
-                        $autorefresh_link_close = '';
-                    }
+        if ($acl_head_search) {
+            // Search bar
+            $search_bar = '<form method="get" style="display: inline;" name="quicksearch" action="">';
+            if (!isset($config['search_keywords'])) {
+                $search_bar .= '<script type="text/javascript"> var fieldKeyWordEmpty = true; </script>';
+            } else {
+                if (strlen($config['search_keywords']) == 0) {
+                    $search_bar .= '<script type="text/javascript"> var fieldKeyWordEmpty = true; </script>';
                 } else {
-                    $autorefresh_img = html_print_image('images/header_refresh_disabled.png', true, ['class' => 'bot autorefresh_disabled', 'alt' => 'lightning', 'title' => __('Disabled autorefresh')]);
-
-                    $ignored_params['refr'] = false;
-
-                    $autorefresh_link_open_img = '';
-                    $autorefresh_link_open_txt = '';
-                    $autorefresh_link_close = '';
+                    $search_bar .= '<script type="text/javascript"> var fieldKeyWordEmpty = false; </script>';
                 }
-
-                $table->data[0][1] = $autorefresh_link_open_img.$autorefresh_img.$autorefresh_link_close;
-                $table->data[0][2] = $autorefresh_link_open_txt.$autorefresh_txt.$autorefresh_link_close.$autorefresh_additional;
-                // ======================================================
-                $check_minor_release_available = false;
-                $pandora_management = check_acl($config['id_user'], 0, 'PM');
-
-                $check_minor_release_available = db_check_minor_relase_available();
-
-                if ($check_minor_release_available) {
-                    if (users_is_admin($config['id_user'])) {
-                        if ($config['language'] == 'es') {
-                            set_pandora_error_for_header('Hay una o mas revisiones menores en espera para ser actualizadas. <a style="font-size:8pt;font-style:italic;" target="blank" href="http://wiki.pandorafms.com/index.php?title=Pandora:Documentation_es:Actualizacion#Versi.C3.B3n_7.0NG_.28_Rolling_Release_.29">'.__('Sobre actualización de revisión menor').'</a>', 'Revisión/es menor/es disponible/s');
-                        } else {
-                            set_pandora_error_for_header('There are one or more minor releases waiting for update. <a style="font-size:8pt;font-style:italic;" target="blank" href="http://wiki.pandorafms.com/index.php?title=Pandora:Documentation_en:Anexo_Upgrade#Version_7.0NG_.28_Rolling_Release_.29">'.__('About minor release update').'</a>', 'minor release/s available');
-                        }
-                    }
-                }
-
-                echo '<div id="alert_messages" style="display: none"></div>';
-
-                if ($config['alert_cnt'] > 0) {
-                    $maintenance_link = 'javascript:';
-                    $maintenance_title = __('System alerts detected - Please fix as soon as possible');
-                    $maintenance_class = $maintenance_id = 'show_systemalert_dialog white';
-
-                    $maintenance_link_open_txt = '<a href="'.$maintenance_link.'" title="'.$maintenance_title.'" class="'.$maintenance_class.'" id="show_systemalert_dialog">';
-                    $maintenance_link_open_img = '<a href="'.$maintenance_link.'" title="'.$maintenance_title.'" class="'.$maintenance_class.'">';
-                    $maintenance_link_close = '</a>';
-                    if (!$pandora_management) {
-                        $maintenance_img = '';
-                    } else {
-                        $maintenance_img = $maintenance_link_open_img.html_print_image(
-                            'images/header_yellow.png',
-                            true,
-                            [
-                                'title' => __(
-                                    'You have %d warning(s)',
-                                    $config['alert_cnt']
-                                ),
-                                'id'    => 'yougotalert',
-                                'class' => 'bot',
-                            ]
-                        ).$maintenance_link_close;
-                    }
-                } else {
-                    if (!$pandora_management) {
-                        $maintenance_img = '';
-                    } else {
-                        $maintenance_img = html_print_image('images/header_ready.png', true, ['title' => __('There are not warnings'), 'id' => 'yougotalert', 'class' => 'bot']);
-                    }
-                }
-
-                $table->data[0][3] = $maintenance_img;
-
-                // Main help icon
-                if (!$config['disable_help']) {
-                    $table->data[0][4] = '<a href="#" class="modalpopup" id="helpmodal">'.html_print_image(
-                        'images/header_help.png',
-                        true,
-                        [
-                            'title' => __('Main help'),
-                            'id'    => 'helpmodal',
-                            'class' => 'modalpopup',
-                        ]
-                    ).'</a>';
-                }
-
-                // Logout
-                $table->data[0][5] = '<a class="white" href="'.ui_get_full_url('index.php?bye=bye').'">';
-                $table->data[0][5] .= html_print_image('images/header_logout.png', true, ['alt' => __('Logout'), 'class' => 'bot', 'title' => __('Logout')]);
-                $table->data[0][5] .= '</a>';
-
-                // User
-                if (is_user_admin($config['id_user']) == 1) {
-                    $table->data[0][6] = html_print_image('images/header_user_admin.png', true, ['title' => __('Edit my user'), 'class' => 'bot', 'alt' => 'user']);
-                } else {
-                    $table->data[0][6] = html_print_image('images/header_user.png', true, ['title' => __('Edit my user'), 'class' => 'bot', 'alt' => 'user']);
-                }
-
-                $table->data[0][6] = '<a href="index.php?sec=workspace&sec2=operation/users/user_edit">'.$table->data[0][6].'</a>';
-
-                $table->data[0][7] = '<a href="index.php?sec=workspace&amp;sec2=operation/users/user_edit" class="white_bold"> ('.$config['id_user'].')</a>';
-
-                // Chat messages
-                $table->data[0][8] = "<span id='icon_new_messages_chat' style='display: none;'>";
-                $table->data[0][8] .= "<a href='index.php?sec=workspace&sec2=operation/users/webchat'>";
-                $table->data[0][8] .= html_print_image('images/header_chat.png', true, ['title' => __('New chat message')]);
-                $table->data[0][8] .= '</a>';
-                $table->data[0][8] .= '</span>';
-
-                // Messages
-                $msg_cnt = messages_get_count($config['id_user']);
-                if ($msg_cnt > 0) {
-                    echo '<div id="dialog_messages" style="display: none"></div>';
-
-                    $table->data[0][9] = '<a href="ajax.php?page=operation/messages/message_list" title="'.__('Message overview').'" id="show_messages_dialog">';
-                    $table->data[0][9] .= html_print_image('images/header_email.png', true, ['title' => __('You have %d unread message(s)', $msg_cnt), 'id' => 'yougotmail', 'class' => 'bot', 'style' => 'width:24px;']);
-                    $table->data[0][9] .= '</a>';
-                }
-
-
-
-                html_print_table($table);
-
-                unset($table);
-                ?>
-        </td>
-        <!--
-        <td style="text-align:center">
-            <?php
-            echo "<a href='index.php?sec=main'>";
-            if (isset($config['custom_logo'])) {
-                echo html_print_image('images/custom_logo/'.$config['custom_logo'], true, ['height' => '60', 'width' => '139', 'alt' => 'Logo']);
             }
 
-                echo '</a>';
-            ?>
-        </td>
-        -->
-    </tr>
-</table>
+            $search_bar .= '<input type="text" id="keywords" name="keywords"';
+            if (!isset($config['search_keywords'])) {
+                $search_bar .= "value='".__('Enter keywords to search')."'";
+            } else if (strlen($config['search_keywords']) == 0) {
+                $search_bar .= "value='".__('Enter keywords to search')."'";
+            } else {
+                $search_bar .= "value='".$config['search_keywords']."'";
+            }
+
+            $search_bar .= 'onfocus="javascript: if (fieldKeyWordEmpty) $(\'#keywords\').val(\'\');"
+                    onkeyup="javascript: fieldKeyWordEmpty = false;"
+                    style="margin-top:5px;" class="search_input" />';
+
+            // $search_bar .= 'onClick="javascript: document.quicksearch.submit()"';
+            $search_bar .= "<input type='hidden' name='head_search_keywords' value='abc' />";
+            $search_bar .= '</form>';
+
+            $header_searchbar  = '<div id="header_searchbar">'.ui_print_help_tip(__('Blank characters are used as AND conditions'), true);
+            $header_searchbar .= $search_bar.'</div>';
+        }
+
+
+            // clippy
+        if ($config['tutorial_mode'] !== 'expert' && !$config['disable_help']) {
+            $header_clippy = '<div id="header_clippy"><a href="javascript: show_clippy();">'.html_print_image(
+                'images/clippy_icon_gray.png',
+                true,
+                [
+                    'id'    => 'clippy',
+                    'class' => 'clippy',
+                    'alt'   => __('%s assistant', get_product_name()),
+                    'title' => __(
+                        '%s assistant',
+                        get_product_name()
+                    ),
+                ]
+            ).'</a></div>';
+        }
+
+
+        // Servers check
+        $servers = [];
+        $servers['all'] = (int) db_get_value('COUNT(id_server)', 'tserver');
+        $servers['up'] = (int) servers_check_status();
+        $servers['down'] = ($servers['all'] - $servers['up']);
+        if ($servers['up'] == 0) {
+            // All Servers down or no servers at all
+            $servers_check_img = html_print_image('images/header_down_gray.png', true, ['alt' => 'cross', 'class' => 'bot', 'title' => __('All systems').': '.__('Down')]);
+        } else if ($servers['down'] != 0) {
+            // Some servers down
+            $servers_check_img = html_print_image('images/header_warning_gray.png', true, ['alt' => 'error', 'class' => 'bot', 'title' => $servers['down'].' '.__('servers down')]);
+        } else {
+            // All servers up
+            $servers_check_img = html_print_image('images/header_ready_gray.png', true, ['alt' => 'ok', 'class' => 'bot', 'title' => __('All systems').': '.__('Ready')]);
+        }
+
+        unset($servers);
+        // Since this is the header, we don't like to trickle down variables.
+        $servers_link_open = '<a class="white" href="index.php?sec=gservers&amp;sec2=godmode/servers/modificar_server&amp;refr=60">';
+        $servers_link_close = '</a>';
+
+        $header_server = '<div id="header_server">'.$servers_link_open.$servers_check_img.$servers_link_close.'</div>';
+
+
+        // Main help icon
+        if (!$config['disable_help']) {
+            $header_help = '<div id="header_help"><a href="#" class="modalpopup" id="helpmodal">'.html_print_image(
+                'images/header_help_gray.png',
+                true,
+                [
+                    'title' => __('Main help'),
+                    'id'    => 'helpmodal',
+                    'class' => 'modalpopup',
+                ]
+            ).'</a></div>';
+        }
+
+
+        // ======= Autorefresh code =============================
+        $autorefresh_txt = '';
+        $autorefresh_additional = '';
+
+        $ignored_params = [
+            'agent_config' => false,
+            'code'         => false,
+        ];
+
+        if (!isset($_GET['sec2'])) {
+            $_GET['sec2'] = '';
+        }
+
+        if (!isset($_GET['refr'])) {
+            $_GET['refr'] = null;
+        }
+
+        $select = db_process_sql("SELECT autorefresh_white_list,time_autorefresh FROM tusuario WHERE id_user = '".$config['id_user']."'");
+        $autorefresh_list = json_decode($select[0]['autorefresh_white_list']);
+
+        if ($autorefresh_list !== null && array_search($_GET['sec2'], $autorefresh_list) !== false) {
+            $do_refresh = true;
+            if ($_GET['sec2'] == 'operation/agentes/pandora_networkmap') {
+                if ((!isset($_GET['tab'])) || ($_GET['tab'] != 'view')) {
+                    $do_refresh = false;
+                }
+            }
+
+            if ($do_refresh) {
+                $autorefresh_img = html_print_image('images/header_refresh_gray.png', true, ['class' => 'bot', 'alt' => 'lightning', 'title' => __('Configure autorefresh')]);
+
+                if ($_GET['refr']) {
+                    $autorefresh_txt .= ' (<span id="refrcounter">'.date('i:s', $config['refr']).'</span>)';
+                }
+
+                $ignored_params['refr'] = '';
+                $values = get_refresh_time_array();
+                $autorefresh_additional = '<span id="combo_refr" style="display: none;">';
+                $autorefresh_additional .= html_print_select($values, 'ref', '', '', __('Select'), '0', true, false, false);
+                $autorefresh_additional .= '</span>';
+                unset($values);
+
+                $autorefresh_link_open_img = '<a class="white autorefresh" href="'.ui_get_url_refresh($ignored_params).'">';
+
+                if ($_GET['refr']) {
+                    $autorefresh_link_open_txt = '<a class="autorefresh autorefresh_txt" href="'.ui_get_url_refresh($ignored_params).'">';
+                } else {
+                    $autorefresh_link_open_txt = '<a>';
+                }
+
+                $autorefresh_link_close = '</a>';
+            } else {
+                $autorefresh_img = html_print_image('images/header_refresh_disabled_gray.png', true, ['class' => 'bot autorefresh_disabled', 'alt' => 'lightning', 'title' => __('Disabled autorefresh')]);
+
+                $ignored_params['refr'] = false;
+
+                $autorefresh_link_open_img = '';
+                $autorefresh_link_open_txt = '';
+                $autorefresh_link_close = '';
+            }
+        } else {
+            $autorefresh_img = html_print_image('images/header_refresh_disabled_gray.png', true, ['class' => 'bot autorefresh_disabled', 'alt' => 'lightning', 'title' => __('Disabled autorefresh')]);
+
+            $ignored_params['refr'] = false;
+
+            $autorefresh_link_open_img = '';
+            $autorefresh_link_open_txt = '';
+            $autorefresh_link_close = '';
+        }
+
+        $header_autorefresh = '<div id="header_autorefresh">'.$autorefresh_link_open_img.$autorefresh_img.$autorefresh_link_close.'</div>';
+        $header_autorefresh_counter = '<div id="header_autorefresh_counter">'.$autorefresh_link_open_txt.$autorefresh_txt.$autorefresh_link_close.$autorefresh_additional.'</div>';
+
+
+        // qr
+        if ($config['show_qr_code_header'] == 0) {
+            $show_qr_code_header = 'display: none;';
+        } else {
+            $show_qr_code_header = 'display: inline;';
+        }
+
+        $header_qr = '<div id="header_qr"><div style="'.$show_qr_code_header.'" id="qr_code_container"><a href="javascript: show_dialog_qrcode();">'.html_print_image(
+            'images/qrcode_icon_gray.png',
+            true,
+            [
+                'alt'   => __('QR Code of the page'),
+                'title' => __('QR Code of the page'),
+            ]
+        ).'</a></div></div>';
+
+        echo "<div style='display: none;' id='qrcode_container' title='".__('QR code of the page')."'>";
+        echo "<div id='qrcode_container_image'></div>";
+        echo '</div>';
+        ?>
+        <script type='text/javascript'>
+            $(document).ready(function() {
+                $( "#qrcode_container" ).dialog({
+                    autoOpen: false,
+                    modal: true
+                });
+            });
+        </script>
+        <?php
+        // User
+        if (is_user_admin($config['id_user']) == 1) {
+            $header_user = html_print_image('images/header_user_admin_green.png', true, ['title' => __('Edit my user'), 'class' => 'bot', 'alt' => 'user']);
+        } else {
+            $header_user = html_print_image('images/header_user_green.png', true, ['title' => __('Edit my user'), 'class' => 'bot', 'alt' => 'user']);
+        }
+
+        $header_user = '<div id="header_user"><a href="index.php?sec=workspace&sec2=operation/users/user_edit">'.$header_user.'<span> ('.$config['id_user'].')</span></a></div>';
+
+        // Logout
+        $header_logout = '<div id="header_logout"><a class="white" href="'.ui_get_full_url('index.php?bye=bye').'">';
+        $header_logout .= html_print_image('images/header_logout_gray.png', true, ['alt' => __('Logout'), 'class' => 'bot', 'title' => __('Logout')]);
+        $header_logout .= '</a></div>';
+
+
+        echo '<div class="header_left">'.$header_alert, $header_message, $header_chat.'</div><div class="header_center">'.$header_searchbar, $header_clippy, $header_help, $header_server, $header_autorefresh, $header_autorefresh_counter, $header_qr.'</div><div class="header_right">'.$header_user, $header_logout.'</div>';
+        ?>
+    </div>    <!--div que cierra #table_header_inner -->        
+</div>    <!--div que cierra #table_header -->
+
 
 <script type="text/javascript">
     /* <![CDATA[ */
@@ -440,7 +387,7 @@ config_check();
         });
         
         function blinkmail(){
-            $("#yougotmail").delay(100).fadeTo(300,0.2).delay(100).fadeTo(300,1, blinkmail);
+            //$("#yougotmail").delay(100).fadeTo(300,0.2).delay(100).fadeTo(300,1, blinkmail);
         }
         function blinkalert(){
             $("#yougotalert").delay(100).fadeTo(300,0.2).delay(100).fadeTo(300,1, blinkalert);

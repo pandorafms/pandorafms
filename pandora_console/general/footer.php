@@ -26,7 +26,7 @@ if (!$config['MR']) {
     $config['MR'] = 0;
 }
 
-echo '<a class="white_bold footer" target="_blank" href="'.$config['homeurl'].$license_file.'">';
+echo '<a class="footer" target="_blank" href="'.$config['homeurl'].$license_file.'">';
 
 require_once $config['homedir'].'/include/functions_update_manager.php';
 
@@ -40,9 +40,9 @@ if ($current_package == 0) {
 
 echo sprintf(__('%s %s - Build %s - MR %s', get_product_name(), $pandora_version, $build_package_version, $config['MR']));
 
-echo '</a><br />';
-echo '<a class="white footer">'.__('Page generated at').' '.date($config['date_format']);
-echo '</a><br /><span style="color:#eff">&reg; '.get_copyright_notice().'</span>';
+echo '</a> ';
+echo '<a class="footer">'.__('Page generated at').' '.date($config['date_format']);
+echo '</a><br /><span>&reg; '.get_copyright_notice().'</span>';
 
 if (isset($config['debug'])) {
     $cache_info = [];

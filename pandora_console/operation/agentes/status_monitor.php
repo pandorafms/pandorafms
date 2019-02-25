@@ -1144,7 +1144,7 @@ if (!empty($result)) {
 	}
 
 	if (in_array('to_critical', $show_fields)) {
-		$table->head[11] = __('Went to critical');
+		$table->head[11] = __('Last status change');
 	}
 
 	$id_type_web_content_string = db_get_value('id_tipo', 'ttipo_modulo',
@@ -1635,7 +1635,6 @@ if (!empty($result)) {
 
 				$change_status_timestamp = db_get_sql ('SELECT utimestamp FROM tevento WHERE id_agentmodule=' . $row['id_agente_modulo'] . ' ORDER BY utimestamp DESC');
 				$data[11] = ui_print_timestamp ($change_status_timestamp, true, $option);
-
 		}
 		
 		array_push ($table->data, $data);

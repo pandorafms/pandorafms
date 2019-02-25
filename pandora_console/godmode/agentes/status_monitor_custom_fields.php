@@ -102,7 +102,7 @@ if ($fields_selected[0]!='') {
 				$result = __('Timestamp');
 				break;
 			case 'to_critical':
-				$result = __('Went to critical');
+				$result = __('Last status change');
 				break;
 		}
 		$result_selected[$field_selected] = $result;
@@ -138,7 +138,7 @@ $fields_available['graph'] = __('Graph');
 $fields_available['warn'] = __('Warn');
 $fields_available['data'] = __('Data');
 $fields_available['timestamp'] = __('Timestamp');
-$fields_available['to_critical'] = __('Went to critical');
+$fields_available['to_critical'] = __('Last status change');
 
 //remove fields already selected
 foreach ($fields_available as $key=>$available) {

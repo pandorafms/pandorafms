@@ -119,7 +119,7 @@ class DiscoveryTaskList extends Wizard
             if ($config['cron_last_run'] == 0
                 || (get_system_time() - $config['cron_last_run']) > 3600
             ) {
-                $message_conf_cron = __('DiscoveryConsoleTasks is not running properly');
+                $message_conf_cron = __('DiscoveryConsoleTasks is not running properly').'. ';
                 if (strtoupper(substr(PHP_OS, 0, 3)) != 'WIN') {
                     $message_conf_cron .= __('Discovery relies on a proper setup of cron, the time-based scheduling service');
                     $message_conf_cron .= '. '.__('Please, add the following line to your crontab file:');

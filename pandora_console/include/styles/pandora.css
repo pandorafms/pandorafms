@@ -4488,8 +4488,8 @@ ul.ui-front li a.ui-menu-item-wrapper:hover {
 .toogle_switch {
   position: relative;
   display: inline-block;
-  width: 47px;
-  height: 24px;
+  width: 30px;
+  height: 17px;
 }
 
 .toogle_switch input {
@@ -4506,21 +4506,21 @@ ul.ui-front li a.ui-menu-item-wrapper:hover {
   right: 0;
   bottom: 0;
   background-color: #ccc;
-  -webkit-transition: 0.7s;
-  transition: 0.7s;
+  -webkit-transition: 0.4s;
+  transition: 0.4s;
   border-radius: 34px;
 }
 
 .slider:before {
   position: absolute;
   content: "";
-  height: 16px;
-  width: 16px;
-  left: 4px;
-  bottom: 4px;
+  height: 13px;
+  width: 13px;
+  left: 2px;
+  bottom: 2px;
   background-color: white;
-  -webkit-transition: 0.7s;
-  transition: 0.7s;
+  -webkit-transition: 0.4s;
+  transition: 0.4s;
   border-radius: 50%;
 }
 
@@ -4533,10 +4533,9 @@ input:focus + .slider {
 }
 
 input:checked + .slider:before {
-  -webkit-transform: translateX(26px);
-  -ms-transform: translateX(26px);
-  transform: translateX(26px);
-  background-color: rgb(197, 235, 192);
+  -webkit-transform: translateX(13px);
+  -ms-transform: translateX(13px);
+  transform: translateX(13px);
 }
 
 /* jQuery dialog */

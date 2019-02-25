@@ -1,5 +1,7 @@
 START TRANSACTION;
 
+UPDATE `twidget` SET `unique_name`='example' WHERE `class_name` LIKE 'WelcomeWidget';
+
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('status_monitor_fields', 'policy,agent,data_type,module_name,server_type,interval,status,graph,warn,data,timestamp');
 
 ALTER TABLE `trecon_task` ADD COLUMN `wmi_enabled` tinyint(1) unsigned DEFAULT '0';

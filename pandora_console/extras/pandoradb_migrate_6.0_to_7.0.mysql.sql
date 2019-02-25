@@ -1416,6 +1416,7 @@ ALTER TABLE trecon_task ADD `autoconfiguration_enabled` tinyint(1) unsigned defa
 -- ---------------------------------------------------------------------
 UPDATE twidget_dashboard SET id_widget = (SELECT id FROM twidget WHERE unique_name = 'graph_module_histogram') WHERE id_widget = (SELECT id FROM twidget WHERE unique_name = 'graph_availability');
 DELETE FROM twidget WHERE unique_name = 'graph_availability';
+UPDATE `twidget` SET `unique_name`='example' WHERE `class_name` LIKE 'WelcomeWidget';
 
 -- ---------------------------------------------------------------------
 -- Table `tbackup` (Extension table. Modify only if exists)

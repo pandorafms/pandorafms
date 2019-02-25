@@ -96,21 +96,6 @@ foreach ($classes as $classpath) {
     include_once $classpath;
 }
 
-// Load enterprise wizards.
-if (enterprise_installed() === true) {
-    $enterprise_classes = glob(
-        $config['homedir'].'/'.ENTERPRISE_DIR.'/wizards/*.class.php'
-    );
-    foreach ($enterprise_classes as $classpath) {
-        $r = enterprise_include_once(
-            'wizards/'.basename($classpath)
-        );
-    }
-}
-
-// Combine class paths.
-$classes = array_merge($classes, $enterprise_classes);
-
 // Sort output.
 uasort($classes, 'cl_load_cmp');
 

@@ -600,7 +600,7 @@ $table->rowclass[] = '';
 $table->rowstyle[] = '';
 $table->data[] = $data;
 
-echo '<form name="user_mod" method="post" action="'.$url.'&amp;modified=1&amp;id='.$id.'&amp;pure='.$config['pure'].'">';
+echo '<form name="user_mod" method="post" action="'.ui_get_full_url().'&amp;modified=1&amp;id='.$id.'&amp;pure='.$config['pure'].'">';
 
 html_print_table($table);
 

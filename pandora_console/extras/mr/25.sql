@@ -1,5 +1,7 @@
 START TRANSACTION;
 
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('status_monitor_fields', 'policy,agent,data_type,module_name,server_type,interval,status,graph,warn,data,timestamp');
+
 ALTER TABLE `trecon_task` ADD COLUMN `wmi_enabled` tinyint(1) unsigned DEFAULT '0';
 ALTER TABLE `trecon_task` ADD COLUMN `auth_strings` text;
 ALTER TABLE `trecon_task` ADD COLUMN `autoconfiguration_enabled` tinyint(1) unsigned default '0';

@@ -1206,6 +1206,7 @@ INSERT INTO `tconfig` (`token`, `value`) VALUES ('custom_logo_white_bg_preview',
 UPDATE tconfig SET value = 'https://licensing.artica.es/pandoraupdate7/server.php' WHERE token='url_update_manager';
 DELETE FROM `tconfig` WHERE `token` = 'current_package_enterprise';
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('current_package_enterprise', '731');
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('status_monitor_fields', 'policy,agent,data_type,module_name,server_type,interval,status,graph,warn,data,timestamp');
 
 -- ---------------------------------------------------------------------
 -- Table `tconfig_os`

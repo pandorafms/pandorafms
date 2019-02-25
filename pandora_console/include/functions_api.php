@@ -363,23 +363,18 @@ function api_get_test_event_replication_db()
 // -------------------------DEFINED OPERATIONS FUNCTIONS-----------------
 function api_get_groups($thrash1, $thrash2, $other, $returnType, $user_in_db)
 {
-    if (defined('METACONSOLE')) {
-        return;
+    $returnAllGroup = true;
+    $returnAllColumns = false;
+
+    if (isset($other['data'][1])) {
+        $returnAllGroup = ( $other['data'][1] == '1' ? true : false);
     }
 
-    if ($other['type'] == 'string') {
-        if ($other['data'] != '') {
-            returnError('error_parameter', 'Error in the parameters.');
-            return;
-        } else {
-            // Default values
-            $separator = ';';
-        }
-    } else if ($other['type'] == 'array') {
-        $separator = $other['data'][0];
+    if (isset($other['data'][2])) {
+        $returnAllColumns = ( $other['data'][2] == '1' ? true : false);
     }
 
-    $groups = users_get_groups($user_in_db, 'IR');
+    $groups = users_get_groups($user_in_db, 'IR', $returnAllGroup, $returnAllColumns);
 
     $data_groups = [];
     foreach ($groups as $id => $group) {
@@ -387,6 +382,13 @@ function api_get_groups($thrash1, $thrash2, $other, $returnType, $user_in_db)
             $id,
             $group,
         ];
+    }
+
+    if (!isset($other['data'][0])) {
+        $separator = ';';
+        // by default
+    } else {
+        $separator = $other['data'][0];
     }
 
     $data['type'] = 'array';
@@ -472,11 +474,12 @@ function api_get_module_last_value($idAgentModule, $trash1, $other=';', $returnT
     DB column mapping table used by tree_agents (and get module_properties)
 */
 
-// agent related field mappings (output field => column designation for 'tagente')
+/*
+ * Agent related field mappings (output field => column designation for 'tagente').
+ * agent_id is not in this list (because it is mandatory).
+ * agent_id_group is not in this list.
+ */
 $agent_field_column_mapping = [
-    /*
-        agent_id is not in this list (because it is mandatory) */
-    // agent_id_group is not in this list
     'agent_name'                      => 'nombre as agent_name',
     'agent_direction'                 => 'direccion as agent_direction',
     'agent_comentary'                 => 'comentarios as agent_comentary',
@@ -496,8 +499,8 @@ $agent_field_column_mapping = [
 ];
 
 // module related field mappings 1/2 (output field => column for 'tagente_modulo')
+// module_id_agent_modulo  is not in this list
 $module_field_column_mampping = [
-    // module_id_agent_modulo  is not in this list
     'module_id_agent'          => 'id_agente as module_id_agent',
     'module_id_module_type'    => 'id_tipo_modulo as module_id_module_type',
     'module_description'       => 'descripcion as module_description',
@@ -541,8 +544,8 @@ $module_field_column_mampping = [
 ];
 
 // module related field mappings 2/2 (output field => column for 'tagente_estado')
+// module_id_agent_modulo  is not in this list
 $estado_fields_to_columns_mapping = [
-    // module_id_agent_modulo  is not in this list
     'module_id_agent_state'     => 'id_agente_estado as module_id_agent_state',
     'module_data'               => 'datos as module_data',
     'module_timestamp'          => 'timestamp as module_timestamp',
@@ -6172,17 +6175,29 @@ function api_set_planned_downtimes_deleted($id, $thrash1, $thrash2, $returnType)
 
 /**
  * Create a new planned downtime.
+ * e.g.: api.php?op=set&op2=planned_downtimes_created&id=pepito&other=testing|08-22-2015|08-31-2015|0|1|1|1|1|1|1|1|17:06:00|19:06:00|1|31|quiet|periodically|weekly&other_mode=url_encode_separator_|
  *
  * @param $id name of planned downtime.
  * @param $thrash1 Don't use.
- * @param array                       $other it's array, $other as param is <description>;<date_from>;<date_to>;<id_group>;<monday>;
- *                        <tuesday>;<wednesday>;<thursday>;<friday>;<saturday>;<sunday>;<periodically_time_from>;<periodically_time_to>;
- *                           <periodically_day_from>;<periodically_day_to>;<type_downtime>;<type_execution>;<type_periodicity>; in this order
- *                        and separator char (after text ; ) and separator (pass in param othermode as othermode=url_encode_separator_<separator>)
- *                        example:
- *
- *                        api.php?op=set&op2=planned_downtimes_created&id=pepito&other=testing|08-22-2015|08-31-2015|0|1|1|1|1|1|1|1|17:06:00|19:06:00|1|31|quiet|periodically|weekly&other_mode=url_encode_separator_|
- *
+ * @param array                       $other Contains the following elements (in order):
+ *                       <description>
+ *                       <date_from>
+ *                       <date_to>
+ *                       <id_group>
+ *                       <monday>
+ *                       <tuesday>
+ *                       <wednesday>
+ *                       <thursday>
+ *                       <friday>
+ *                       <saturday>
+ *                       <sunday>
+ *                       <periodically_time_from>
+ *                       <periodically_time_to>
+ *                       <periodically_day_from>
+ *                       <periodically_day_to>
+ *                       <type_downtime>
+ *                       <type_execution>
+ *                       <type_periodicity>
  * @param $thrash3 Don't use.
  */
 
@@ -6246,20 +6261,16 @@ function api_set_planned_downtimes_created($id, $thrash1, $other, $thrash3)
 
 /**
  * Add new items to planned Downtime.
+ * e.g.: api.php?op=set&op2=planned_downtimes_additem&id=123&other=1;2;3;4|Status;Unkown_modules&other_mode=url_encode_separator_|
  *
  * @param $id id of planned downtime.
  * @param $thrash1 Don't use.
- * @param array                     $other it's array, $other as param is <id_agent1;id_agent2;id_agent3;....id_agentn;>;
- *                         <name_module1;name_module2;name_module3;......name_modulen;> in this order
- *                      and separator char (after text ; ) and separator (pass in param othermode as othermode=url_encode_separator_<separator>)
- *                      example:
- *
- *                      api.php?op=set&op2=planned_downtimes_additem&id=123&other=1;2;3;4|Status;Unkown_modules&other_mode=url_encode_separator_|
- *
+ * @param array                     $other
+ * The first index contains a list of agent Ids.
+ * The second index contains a list of module names.
+ * The list separator is the character ';'.
  * @param $thrash3 Don't use.
  */
-
-
 function api_set_planned_downtimes_additem($id, $thrash1, $other, $thrash3)
 {
     if (defined('METACONSOLE')) {
@@ -14606,6 +14617,70 @@ function api_get_users($thrash1, $thrash2, $other, $returnType)
         returnData($returnType, $data, $separator);
     } else {
         returnError('error_users', 'No users retrieved.');
+    }
+
+}
+
+
+/**
+ * Resets module counts and alert counts in the agents
+ *
+ * @param $id id of the agent you want to synchronize. Add "All" to synchronize all agents
+ * @param $trash1
+ * @param $trash2
+ * @param $trash3
+ *
+ * Example:
+ * api.php?op=set&op2=reset_agent_counts&apipass=1234&user=admin&pass=pandora&id=All
+ */
+function api_set_reset_agent_counts($id, $thrash1, $thrash2, $thrash3)
+{
+    global $config;
+
+    if (!check_acl($config['id_user'], 0, 'AW')) {
+        returnError('forbidden', 'string');
+        return;
+    }
+
+    if ($id == '' || !$id) {
+        returnError('error_parameter', __('Error. Agent cannot be left blank.'));
+        return;
+    }
+
+    if ($id != 'All') {
+        $agent = db_get_row_filter('tagente', ['id_agente' => $id]);
+        if (empty($agent)) {
+            returnError('error_agent', __('This agent does not exist.'));
+            return;
+        } else {
+            $return = db_process_sql_update(
+                'tagente',
+                [
+                    'update_module_count' => 1,
+                    'update_alert_count'  => 1,
+                ],
+                ['id_agente' => $id]
+            );
+        }
+    } else {
+        $return = db_process_sql_update(
+            'tagente',
+            [
+                'update_module_count' => 1,
+                'update_alert_count'  => 1,
+            ]
+        );
+    }
+
+    $data = __('Successfully updated module/alert count in id agent %d.', $id);
+    if ($id == 'All') {
+        $data = __('Successfully updated module/alert count in all agents');
+    }
+
+    if ($return === false) {
+        returnError('error_reset_agent_counts', 'Could not be updated module/alert counts in id agent %d.', $id);
+    } else {
+        returnData('string', ['type' => 'string', 'data' => $data]);
     }
 
 }

@@ -37,7 +37,7 @@ function events_get_all_fields()
     $columns['estado'] = __('Status');
     $columns['timestamp'] = __('Timestamp');
     $columns['event_type'] = __('Event type');
-    $columns['id_agentmodule'] = __('Agent module');
+    $columns['id_agentmodule'] = __('Module name');
     $columns['id_alert_am'] = __('Alert');
     $columns['criticity'] = __('Severity');
     $columns['user_comment'] = __('Comment');
@@ -166,92 +166,30 @@ function events_get_events_grouped(
         $groupby_extra = '';
     }
 
-    switch ($config['dbtype']) {
-        case 'mysql':
-            db_process_sql('SET group_concat_max_len = 9999999');
-            $event_lj = events_get_secondary_groups_left_join($table);
-            if ($total) {
-                $sql = "SELECT COUNT(*) FROM (SELECT *
-					FROM $table te $event_lj
-					WHERE 1=1 ".$sql_post.'
-					GROUP BY estado, evento, id_agente, id_agentmodule'.$groupby_extra.') AS t';
-            } else {
-                $sql = "SELECT *, MAX(id_evento) AS id_evento,
-					GROUP_CONCAT(DISTINCT user_comment SEPARATOR '<br>') AS user_comment,
-					GROUP_CONCAT(DISTINCT id_evento SEPARATOR ',') AS similar_ids,
-					COUNT(*) AS event_rep, MAX(utimestamp) AS timestamp_rep, 
-					MIN(utimestamp) AS timestamp_rep_min,
-					(SELECT owner_user FROM $table WHERE id_evento = MAX(te.id_evento)) owner_user,
-					(SELECT id_usuario FROM $table WHERE id_evento = MAX(te.id_evento)) id_usuario,
-					(SELECT id_agente FROM $table WHERE id_evento = MAX(te.id_evento)) id_agente,
-					(SELECT criticity FROM $table WHERE id_evento = MAX(te.id_evento)) AS criticity,
-					(SELECT ack_utimestamp FROM $table WHERE id_evento = MAX(te.id_evento)) AS ack_utimestamp,
-					(SELECT nombre FROM tagente_modulo WHERE id_agente_modulo = te.id_agentmodule) AS module_name
-				FROM $table te $event_lj
-				WHERE 1=1 ".$sql_post.'
-				GROUP BY estado, evento, id_agente, id_agentmodule'.$groupby_extra;
-                $sql .= ' '.events_get_sql_order($sort_field, $order, 2);
-                $sql .= ' LIMIT '.$offset.','.$pagination;
-            }
-        break;
-
-        case 'postgresql':
-            if ($total) {
-                $sql = "SELECT COUNT(*)
-					FROM $table te
-					WHERE 1=1 ".$sql_post.'
-					GROUP BY estado, evento, id_agentmodule, id_evento, id_agente, id_usuario, id_grupo, estado, timestamp, utimestamp, event_type, id_alert_am, criticity, user_comment, tags, source, id_extra'.$groupby_extra;
-            } else {
-                $sql = "SELECT *, MAX(id_evento) AS id_evento, array_to_string(array_agg(DISTINCT user_comment), '<br>') AS user_comment,
-						array_to_string(array_agg(DISTINCT id_evento), ',') AS similar_ids,
-						COUNT(*) AS event_rep, MAX(utimestamp) AS timestamp_rep, 
-						MIN(utimestamp) AS timestamp_rep_min,
-						(SELECT owner_user FROM $table WHERE id_evento = MAX(te.id_evento)) owner_user,
-						(SELECT id_usuario FROM $table WHERE id_evento = MAX(te.id_evento)) id_usuario,
-						(SELECT id_agente FROM $table WHERE id_evento = MAX(te.id_evento)) id_agente,
-						(SELECT criticity FROM $table WHERE id_evento = MAX(te.id_evento)) AS criticity,
-						(SELECT ack_utimestamp FROM $table WHERE id_evento = MAX(te.id_evento)) AS ack_utimestamp
-					FROM $table te
-					WHERE 1=1 ".$sql_post.'
-					GROUP BY estado, evento, id_agentmodule, id_evento,
-						id_agente, id_usuario, id_grupo, estado,
-						timestamp, utimestamp, event_type, id_alert_am,
-						criticity, user_comment, tags, source, id_extra,
-						te.critical_instructions,
-						te.warning_instructions,
-						te.unknown_instructions,
-						te.owner_user,
-						te.ack_utimestamp,
-						te.custom_data '.$groupby_extra.'
-					ORDER BY timestamp_rep ASC LIMIT '.$pagination.' OFFSET '.$offset;
-            }
-        break;
-
-        case 'oracle':
-            if ($total) {
-                $sql = "SELECT COUNT(*)
-						FROM $table te
-						WHERE 1=1 $sql_post
-						GROUP BY estado, to_char(evento), id_agentmodule".$groupby_extra.') b ';
-            } else {
-                $set = [];
-                $set['limit'] = $pagination;
-                $set['offset'] = $offset;
-
-                $sql = "SELECT ta.*, tb.event_rep, tb.timestamp_rep, tb.timestamp_rep_min, tb.user_comments, tb.similar_ids
-						FROM $table ta
-						INNER JOIN (SELECT MAX(id_evento) AS id_evento, COUNT(id_evento) AS event_rep,
-										MAX(utimestamp) AS timestamp_rep, MIN(utimestamp) AS timestamp_rep_min,
-										TAB_TO_STRING(CAST(COLLECT(TO_CHAR(user_comment) ORDER BY id_evento ASC) AS t_varchar2_tab), '<br>') AS user_comments,
-										TAB_TO_STRING(CAST(COLLECT(CAST(id_evento AS VARCHAR2(4000)) ORDER BY id_evento ASC) AS t_varchar2_tab)) AS similar_ids
-									FROM $table te
-									WHERE 1=1 $sql_post
-									GROUP BY estado, to_char(evento), id_agentmodule$groupby_extra) tb
-							ON ta.id_evento = tb.id_evento
-						ORDER BY tb.timestamp_rep ASC";
-                $sql = oracle_recode_query($sql, $set);
-            }
-        break;
+    db_process_sql('SET group_concat_max_len = 9999999');
+    $event_lj = events_get_secondary_groups_left_join($table);
+    if ($total) {
+        $sql = "SELECT COUNT(*) FROM (SELECT id_evento
+            FROM $table te $event_lj
+            WHERE 1=1 ".$sql_post.'
+            GROUP BY estado, evento, id_agente, id_agentmodule'.$groupby_extra.') AS t';
+    } else {
+        $sql = "SELECT *, MAX(id_evento) AS id_evento,
+            GROUP_CONCAT(DISTINCT user_comment SEPARATOR '<br>') AS user_comment,
+            GROUP_CONCAT(DISTINCT id_evento SEPARATOR ',') AS similar_ids,
+            COUNT(id_evento) AS event_rep, MAX(utimestamp) AS timestamp_rep, 
+            MIN(utimestamp) AS timestamp_rep_min,
+            (SELECT owner_user FROM $table WHERE id_evento = MAX(te.id_evento)) owner_user,
+            (SELECT id_usuario FROM $table WHERE id_evento = MAX(te.id_evento)) id_usuario,
+            (SELECT id_agente FROM $table WHERE id_evento = MAX(te.id_evento)) id_agente,
+            (SELECT criticity FROM $table WHERE id_evento = MAX(te.id_evento)) AS criticity,
+            (SELECT ack_utimestamp FROM $table WHERE id_evento = MAX(te.id_evento)) AS ack_utimestamp,
+            (SELECT nombre FROM tagente_modulo WHERE id_agente_modulo = te.id_agentmodule) AS module_name
+            FROM $table te $event_lj
+            WHERE 1=1 ".$sql_post.'
+            GROUP BY estado, evento, id_agente, id_agentmodule'.$groupby_extra;
+        $sql .= ' '.events_get_sql_order($sort_field, $order, 2);
+        $sql .= ' LIMIT '.$offset.','.$pagination;
     }
 
     // Extract the events by filter (or not) from db
@@ -260,16 +198,6 @@ function events_get_events_grouped(
     if ($total) {
         return reset($events[0]);
     } else {
-        // Override the column 'user_comment' with the column 'user_comments' when oracle
-        if (!empty($events) && $config['dbtype'] == 'oracle') {
-            array_walk(
-                $events,
-                function (&$value, $key) {
-                    set_if_defined($value['user_comment'], $value['user_comments']);
-                }
-            );
-        }
-
         return $events;
     }
 }
@@ -2161,27 +2089,34 @@ function events_page_responses($event, $childrens_ids=[])
 }
 
 
-// Replace macros in the target of a response and return it
-// If server_id > 0, is a metaconsole query
-function events_get_response_target($event_id, $response_id, $server_id, $history=false)
-{
+/**
+ * Replace macros in the target of a response and return it.
+ * If server_id > 0, it's a metaconsole query.
+ *
+ * @param integer $event_id    Event identifier.
+ * @param integer $response_id Event response identifier.
+ * @param integer $server_id   Node identifier (for metaconsole).
+ * @param boolean $history     Use the history database or not.
+ *
+ * @return string The response text with the macros applied.
+ */
+function events_get_response_target(
+    int $event_id,
+    int $response_id,
+    int $server_id=0,
+    bool $history=false
+) {
     global $config;
 
-    $event_response = db_get_row('tevent_response', 'id', $response_id);
-
-    if ($server_id > 0) {
-        $meta = true;
-    } else {
-        $meta = false;
-    }
-
+    // If server_id > 0, it's a metaconsole query.
+    $meta = $server_id > 0;
     $event_table = events_get_events_table($meta, $history);
-
     $event = db_get_row($event_table, 'id_evento', $event_id);
 
+    $event_response = db_get_row('tevent_response', 'id', $response_id);
     $target = io_safe_output($event_response['target']);
 
-    // Substitute each macro
+    // Substitute each macro.
     if (strpos($target, '_agent_address_') !== false) {
         if ($meta) {
             $agente_table_name = 'tmetaconsole_agent';
@@ -2195,7 +2130,7 @@ function events_get_response_target($event_id, $response_id, $server_id, $histor
         }
 
         $ip = db_get_value_filter('direccion', $agente_table_name, $filter);
-        // If agent has not an ip, display N/A
+        // If agent has not an IP, display N/A.
         if ($ip === false) {
             $ip = __('N/A');
         }
@@ -2360,12 +2295,17 @@ function events_get_response_target($event_id, $response_id, $server_id, $histor
         $target = str_replace('_group_custom_id_', $group_custom_id, $target);
     }
 
-    // Parse the event custom data
+    // Parse the event custom data.
     if (!empty($event['custom_data'])) {
         $custom_data = json_decode(base64_decode($event['custom_data']));
         foreach ($custom_data as $key => $value) {
             $target = str_replace('_customdata_'.$key.'_', $value, $target);
         }
+    }
+
+    // This will replace the macro with the current logged user.
+    if (strpos($target, '_current_user_') !== false) {
+        $target = str_replace('_current_user_', $config['id_user'], $target);
     }
 
     return $target;
@@ -4871,6 +4811,10 @@ function events_get_sql_order($sort_field='timestamp', $sort='DESC', $group_rep=
  */
 function events_get_secondary_groups_left_join($table)
 {
+    if (users_is_admin()) {
+        return '';
+    }
+
     if ($table == 'tevento') {
         return 'LEFT JOIN tagent_secondary_group tasg ON te.id_agente = tasg.id_agent';
     }

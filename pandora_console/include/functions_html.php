@@ -1822,35 +1822,35 @@ function html_get_predefined_table($model='transparent', $columns=4)
  * Print a nicely formatted table. Code taken from moodle.
  *
  * @param object Object with several properties:
- *    $table->head - An array of heading names.
- *    $table->head_colspan - An array of colspans of each head column.
- *    $table->headstyle - An array of styles of each head column.
- *    $table->align - An array of column alignments
- *    $table->valign - An array of column alignments
- *    $table->size - An array of column sizes
- *    $table->wrap - An array of "nowrap"s or nothing
- *    $table->style - An array of personalized style for each column.
- *    $table->rowid - An array of personalized ids of each row.
- *    $table->rowstyle - An array of personalized style of each row.
- *    $table->rowclass - An array of personalized classes of each row (odd-evens classes will be ignored).
- *    $table->colspan - An array of colspans of each column.
- *    $table->rowspan - An array of rowspans of each column.
- *    $table->data[] - An array of arrays containing the data.
- *    $table->width - A percentage of the page
- *    $table->border - Border of the table.
- *    $table->tablealign - Align the whole table (float left or right)
- *    $table->cellpadding - Padding on each cell
- *    $table->cellspacing - Spacing between cells
- *    $table->cellstyle - Style of a cell
- *    $table->cellclass - Class of a cell
- *    $table->class - CSS table class
- *    $table->id - Table ID (useful in JavaScript)
- *    $table->headclass[] - An array of classes for each heading
- *    $table->title - Title of the table is a single string that will be on top of the table in the head spanning the whole table
- *    $table->titlestyle - Title style
- *    $table->titleclass - Title class
- *    $table->styleTable - Table style
- *  $table->caption - Table title
+ * $table->head - An array of heading names.
+ * $table->head_colspan - An array of colspans of each head column.
+ * $table->headstyle - An array of styles of each head column.
+ * $table->align - An array of column alignments
+ * $table->valign - An array of column alignments
+ * $table->size - An array of column sizes
+ * $table->wrap - An array of "nowrap"s or nothing
+ * $table->style - An array of personalized style for each column.
+ * $table->rowid - An array of personalized ids of each row.
+ * $table->rowstyle - An array of personalized style of each row.
+ * $table->rowclass - An array of personalized classes of each row (odd-evens classes will be ignored).
+ * $table->colspan - An array of colspans of each column.
+ * $table->rowspan - An array of rowspans of each column.
+ * $table->data[] - An array of arrays containing the data.
+ * $table->width - A percentage of the page
+ * $table->border - Border of the table.
+ * $table->tablealign - Align the whole table (float left or right)
+ * $table->cellpadding - Padding on each cell
+ * $table->cellspacing - Spacing between cells
+ * $table->cellstyle - Style of a cell
+ * $table->cellclass - Class of a cell
+ * $table->class - CSS table class
+ * $table->id - Table ID (useful in JavaScript)
+ * $table->headclass[] - An array of classes for each heading
+ * $table->title - Title of the table is a single string that will be on top of the table in the head spanning the whole table
+ * $table->titlestyle - Title style
+ * $table->titleclass - Title class
+ * $table->styleTable - Table style
+ * $table->caption - Table title
  * @param bool Whether to return an output string or echo now
  *
  * @return string HTML code if return parameter is true.
@@ -2257,7 +2257,7 @@ function html_print_checkbox_extended($name, $value, $checked, $disabled, $scrip
     if ($id == '') {
         $output .= ' id="checkbox-'.$id_aux.'"';
     } else {
-        $output .= ' '.$id.'"';
+        $output .= ' id='.$id;
     }
 
     if ($script != '') {
@@ -2294,6 +2294,89 @@ function html_print_checkbox_extended($name, $value, $checked, $disabled, $scrip
 function html_print_checkbox($name, $value, $checked=false, $return=false, $disabled=false, $script='', $disabled_hidden=false)
 {
     $output = html_print_checkbox_extended($name, $value, (bool) $checked, $disabled, $script, '', true);
+    if (!$disabled_hidden) {
+        $output .= html_print_input_hidden($name.'_sent', 1, true);
+    }
+
+    if ($return === false) {
+        echo $output;
+    }
+
+    return $output;
+}
+
+
+/**
+ * Render a checkbox button input toogle switch type. Extended version, use html_print_checkbox_toogle_switch() to simplify.
+ *
+ * @param string Input name.
+ * @param string Input value.
+ * @param string Set the button to be marked (optional, unmarked by default).
+ * @param bool Disable the button  (optional, button enabled by default).
+ * @param string Script to execute when onClick event is triggered (optional).
+ * @param string Optional HTML attributes. It's a free string which will be
+ * @param bool Whether to return an output string or echo now (optional, echo by default).
+ *
+ * @return string HTML code if return parameter is true.
+ */
+
+
+function html_print_checkbox_toogle_switch_extended($name, $value, $checked, $disabled, $script, $attributes, $return=false, $id='')
+{
+    static $idcounter = [];
+
+    // If duplicate names exist, it will start numbering. Otherwise it won't
+    if (isset($idcounter[$name])) {
+        $idcounter[$name]++;
+    } else {
+        $idcounter[$name] = 0;
+    }
+
+    $id_aux = preg_replace('/[^a-z0-9\:\;\-\_]/i', '', $name.($idcounter[$name] ? $idcounter[$name] : ''));
+
+    $output = '<label class="toogle_switch"><input name="'.$name.'" type="checkbox" value="'.$value.'" '.($checked ? 'checked="checked"' : '');
+    if ($id == '') {
+        $output .= ' id="checkbox-'.$id_aux.'"';
+    } else {
+        $output .= ' '.$id.'"';
+    }
+
+    if ($script != '') {
+        $output .= ' onclick="'.$script.'"';
+    }
+
+    if ($disabled) {
+        $output .= ' disabled="disabled"';
+    }
+
+    $output .= ' '.$attributes;
+    $output .= ' /><span class="slider"></span></label>';
+    $output .= "\n";
+
+    if ($return === false) {
+        echo $output;
+    }
+
+    return $output;
+}
+
+
+/**
+ * Render a checkbox button input toogle switch type.
+ *
+ * @param string Input name.
+ * @param string Input value.
+ * @param string Set the button to be marked (optional, unmarked by default).
+ * @param bool Whether to return an output string or echo now (optional, echo by default).
+ * @param boolean                                                                         $disabled Disable the button (optional, button enabled by default).
+ *
+ * @return string HTML code if return parameter is true.
+ */
+
+
+function html_print_checkbox_toogle_switch($name, $value, $checked=false, $return=false, $disabled=false, $script='', $disabled_hidden=false)
+{
+    $output = html_print_checkbox_toogle_switch_extended($name, $value, (bool) $checked, $disabled, $script, '', true);
     if (!$disabled_hidden) {
         $output .= html_print_input_hidden($name.'_sent', 1, true);
     }
@@ -2990,4 +3073,3 @@ function html_print_csrf_error()
     );
     return true;
 }
-

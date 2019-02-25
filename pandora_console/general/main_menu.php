@@ -470,7 +470,6 @@ console.log(classic_menu);
     handsIn2 = 0;
 
     if(!click_display){
-        if (autohidden_menu) {
             $('.menu_icon').mouseenter(function() {
                 table_hover = $(this);
                 handsIn = 1;
@@ -490,7 +489,6 @@ console.log(classic_menu);
                     }
                 }, 2500);
             });
-        }
     }else{
         $(document).ready(function() {
             if (autohidden_menu) {

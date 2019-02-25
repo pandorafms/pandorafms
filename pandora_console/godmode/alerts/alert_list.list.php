@@ -836,7 +836,7 @@ if ($display_create && (check_acl($config['id_user'], 0, 'LW') || check_acl($con
     echo '</div>';
 }
 
-ui_require_css_file('cluetip','include/styles/js/');
+ui_require_css_file('cluetip', 'include/styles/js/');
 ui_require_jquery_file('cluetip');
 ui_require_jquery_file('pandora.controls');
 ui_require_jquery_file('bgiframe');

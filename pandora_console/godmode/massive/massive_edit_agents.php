@@ -205,6 +205,10 @@ if ($update_agents) {
                         $values['disabled'],
                     ]
                 );
+                // Validate alerts for disabled agents.
+                if ($values['disabled'] == 1) {
+                    alerts_validate_alert_agent($id_agent);
+                }
             }
 
             if ($group_old || $result) {

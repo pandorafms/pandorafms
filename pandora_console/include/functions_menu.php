@@ -372,7 +372,7 @@ function menu_print_menu(&$menu)
         }
 
         // Print out the first level
-        $output .= '<li title="'.ucwords(str_replace(['oper-', 'god-'], '', $id)).'" class="'.implode(' ', $classes).' '.$seleccionado.'" id="icon_'.$id.'">';
+        $output .= '<li title="'.$main['text'].'" class="'.implode(' ', $classes).' '.$seleccionado.'" id="icon_'.$id.'">';
                         // onclick="location.href=\'index.php?sec='.$mainsec.'&amp;sec2='.$main["sec2"].($main["refr"] ? '&amp;refr='.$main["refr"] : '').'\'">';
         $length = strlen(__($main['text']));
         $padding_top = ( $length >= 18) ? 6 : 12;

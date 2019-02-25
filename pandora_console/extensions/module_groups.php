@@ -309,7 +309,7 @@ function mainModuleGroups()
         ui_print_info_message(['no_close' => true, 'message' => __('There are no defined groups or module groups') ]);
     }
 
-    ui_require_css_file('cluetip','include/styles/js/');
+    ui_require_css_file('cluetip', 'include/styles/js/');
     ui_require_jquery_file('cluetip');
     ?>
     <script>
@@ -328,4 +328,3 @@ function mainModuleGroups()
 
 extensions_add_operation_menu_option(__('Module groups'), 'estado', 'module_groups/brick.png', 'v1r1', 'view');
 extensions_add_main_function('mainModuleGroups');
-

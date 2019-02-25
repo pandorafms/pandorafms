@@ -44,16 +44,14 @@ if (is_ajax()) {
             // Fallback to local authentication
             $row = [];
             $row['name'] = __('Fallback to local authentication').ui_print_help_tip(__('Enable this option if you want to fallback to local authentication when remote (ldap etc...) authentication failed.'), true);
-            $row['control'] = __('Yes').'&nbsp;'.html_print_radio_button('fallback_local_auth', 1, '', $config['fallback_local_auth'], true).'&nbsp;&nbsp;';
-            $row['control'] .= __('No').'&nbsp;'.html_print_radio_button('fallback_local_auth', 0, '', $config['fallback_local_auth'], true);
+            $row['control'] = html_print_checkbox_toogle_switch('fallback_local_auth', 1, $config['fallback_local_auth'], true);
             $table->data['fallback_local_auth'] = $row;
 
             if (enterprise_installed()) {
                 // Autocreate remote users
                 $row = [];
                 $row['name'] = __('Autocreate remote users');
-                $row['control'] = __('Yes').'&nbsp;'.html_print_radio_button_extended('autocreate_remote_users', 1, '', $config['autocreate_remote_users'], false, '', '', true).'&nbsp;&nbsp;';
-                $row['control'] .= __('No').'&nbsp;'.html_print_radio_button_extended('autocreate_remote_users', 0, '', $config['autocreate_remote_users'], false, '', '', true);
+                $row['control'] = html_print_checkbox_toogle_switch_extended('autocreate_remote_users', 1, $config['autocreate_remote_users'], false, '', '', true).'&nbsp;&nbsp;';
                 $table->data['autocreate_remote_users'] = $row;
 
                 add_enterprise_auth_autocreate_profiles($table, $type_auth);
@@ -91,8 +89,7 @@ if (is_ajax()) {
                 // Start TLS
                 $row = [];
                 $row['name'] = __('Start TLS');
-                $row['control'] = __('Yes').'&nbsp;'.html_print_radio_button('ldap_start_tls', 1, '', $config['ldap_start_tls'], true).'&nbsp;&nbsp;';
-                $row['control'] .= __('No').'&nbsp;'.html_print_radio_button('ldap_start_tls', 0, '', $config['ldap_start_tls'], true);
+                $row['control'] = html_print_checkbox_toogle_switch('ldap_start_tls', 1, $config['ldap_start_tls'], true);
                 $table->data['ldap_start_tls'] = $row;
 
                 // Base DN
@@ -137,11 +134,8 @@ if (is_ajax()) {
         set_unless_defined($config['double_auth_enabled'], false);
         $row = [];
         $row['name'] = __('Double authentication').ui_print_help_tip(__('If this option is enabled, the users can use double authentication with their accounts'), true);
-        $row['control'] = __('Yes').'&nbsp;';
-        $row['control'] .= html_print_radio_button('double_auth_enabled', 1, '', $config['double_auth_enabled'], true);
-        $row['control'] .= '&nbsp;&nbsp;';
-        $row['control'] .= __('No').'&nbsp;';
-        $row['control'] .= html_print_radio_button('double_auth_enabled', 0, '', $config['double_auth_enabled'], true);
+        $row['control'] = html_print_input_hidden('double_auth_enabled', 0);
+        $row['control'] .= html_print_checkbox_toogle_switch('double_auth_enabled', 1, $config['double_auth_enabled'], true);
         $table->data['double_auth_enabled'] = $row;
 
         // Session timeout

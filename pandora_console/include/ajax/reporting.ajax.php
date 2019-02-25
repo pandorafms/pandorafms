@@ -198,12 +198,7 @@ if ($get_metaconsole_hash_data) {
         $console_password = $auth_serialized['console_password'];
     }
 
-    $pwd = $auth_token;
-    // Create HASH login info
-    $user = str_rot13($config['id_user']);
-    $hashdata = $user.$pwd;
-    $hashdata = md5($hashdata);
-    $url_hash = "&loginhash=auto&loginhash_data=$hashdata&loginhash_user=$user";
+    $url_hash = metaconsole_get_servers_url_hash($server);
 
     echo $url_hash;
     return;

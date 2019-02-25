@@ -245,7 +245,9 @@ function grafico_modulo_sparse_data(
         }
     }
 
-    if ($array_data === false || (!$params['graph_combined'] && !isset($array_data['sum1']['data'][0][1]))) {
+    if ($array_data === false || (!$params['graph_combined']
+        && !isset($array_data['sum1']['data'][0][1]) && !$params['baseline'])
+    ) {
         return false;
     }
 
@@ -4918,21 +4920,19 @@ function get_baseline_data($agent_module_id, $date_array, $data_module_graph, $p
     $period = $date_array['period'];
     $date = $date_array['final_date'];
     $array_data = [];
+
     for ($i = 0; $i < 4; $i++) {
         $date_array = [];
         $date_array['period']     = $period;
-        $date_array['final_date'] = ($date - $period * $i);
-        $date_array['start_date'] = ($date - $period * ($i + 1));
-
-        $data = grafico_modulo_sparse_data(
+        $date_array['final_date'] = ($date - ($period * $i));
+        $date_array['start_date'] = ($date - ($period * ($i + 1)));
+        $array_data[] = grafico_modulo_sparse_data(
             $agent_module_id,
             $date_array,
             $data_module_graph,
             $params,
             $i
         );
-
-        $array_data[] = $data;
     }
 
     $result = [];

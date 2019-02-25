@@ -441,6 +441,14 @@ textarea.conf_error {
   background-position: top right;
 }
 
+input.button {
+  font-family: Arial, Sans-serif;
+  border: 4px solid #ccc;
+  background: #fff;
+  padding: 2px 3px;
+  margin: 10px 15px;
+}
+
 a.white_bold {
   color: #eee;
   text-decoration: none;
@@ -1553,6 +1561,9 @@ table.databox {
   padding: 9px 7px;
   font-weight: normal;
   color: #fff;
+}
+.databox > td {
+  #border-bottom: 1px solid #e2e2e2;
 }
 
 .databox > th * {

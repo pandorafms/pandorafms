@@ -163,6 +163,8 @@ sub csv_to_obj {
 	@hr_headers = map { $_ =~ s/\"//g; trim($_); } @hr_headers;
 
 	foreach my $line (@lines) {
+		next if empty($line);
+		
 		my $i = 0;
 		my %hr = map { $_ =~ s/\"//g; $hr_headers[$i++] => trim($_) } split /,/, $line;
 

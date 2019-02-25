@@ -432,6 +432,13 @@ sub pandora_purgedb ($$) {
 	
 	# Delete old tgraph_source data
 	db_do ($dbh,"DELETE FROM tgraph_source WHERE id_graph NOT IN (SELECT id_graph FROM tgraph)");
+
+	# Delete old messages
+	log_message ('PURGE', "Deleting old messages.");
+	if ($conf->{'_delete_old_messages'} > 0) {
+		my $message_limit = time() - 86400 * $conf->{'_delete_old_messages'};
+		db_do ($dbh, "DELETE FROM tmensajes WHERE timestamp < ?", $message_limit);
+	}
 }
 
 ###############################################################################
@@ -651,6 +658,7 @@ sub pandora_load_config_pdb ($) {
 	$conf->{'_history_db_delay'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'history_db_delay'");
 	$conf->{'_days_delete_unknown'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'days_delete_unknown'");
 	$conf->{'_inventory_purge'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'inventory_purge'");
+	$conf->{'_delete_old_messages'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'delete_old_messages'");
 	$conf->{'_enterprise_installed'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'enterprise_installed'");
 	$conf->{'_metaconsole'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'metaconsole'");
 	$conf->{'_metaconsole_events_history'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'metaconsole_events_history'");

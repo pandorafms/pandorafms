@@ -523,7 +523,8 @@ var TreeController = {
 								if (typeof element.eventAgent != 'undefined') {
 
 									$content.append('<form method="post" id="hiddenAgentsEventsForm-'+element.eventAgent+'" style="display: none;" action="index.php?sec=eventos&sec2=operation/events/events&refr=0&pure=&section=list&history=0"><input type="hidden" name="id_agent" value="'+element.eventAgent+'"></form>');
-									var $eventImage = $('<img src="images/tree_events.png" />');
+									var $eventImage = $('<img src="'+(controller.baseURL.length > 0 ? controller.baseURL : '')
+									+'images/tree_events.png" /> ');
 									$eventImage.addClass("agent-alerts-fired");
 									$eventImage
 										.click(function (e) {
@@ -550,7 +551,8 @@ var TreeController = {
 							}
 
 
-							var $serviceDetailImage = $('<img src="images/tree_service_map.png" />');
+							var $serviceDetailImage = $('<img src="'+(controller.baseURL.length > 0 ? controller.baseURL : '')
+									+'images/tree_service_map.png" /> ');
 
 							if (typeof element.serviceDetail != 'undefined') {
 
@@ -585,7 +587,8 @@ var TreeController = {
 								if (typeof element.eventModule != 'undefined') {
 
 									$content.append('<form method="post" id="hiddenModulesEventsForm-'+element.eventModule+'" style="display: none;" action="index.php?sec=eventos&sec2=operation/events/events&refr=0&pure=&section=list&history=0"><input type="hidden" name="module_search_hidden" value="'+element.eventModule+'"></form>');
-									var $moduleImage = $('<img src="images/tree_events.png" />');
+									var $moduleImage = $('<img src="'+(controller.baseURL.length > 0 ? controller.baseURL : '')
+									+'images/tree_events.png" /> ');
 									$moduleImage
 										.click(function (e) {
 											e.preventDefault();

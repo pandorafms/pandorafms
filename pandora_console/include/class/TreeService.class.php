@@ -161,7 +161,7 @@ class TreeService extends Tree {
 			$services[$service['id']]['counters'] = array('total_services'=>$service['total_services'], 'total_agents'=>$service['total_agents'], 'total_modules'=>$service['total_modules']);
 			$services[$service['id']]['name'] = $service['name'];
 			$services[$service['id']]['id'] = $service['id'];
-			$services[$service['id']]['serviceDetail']='http://localhost/pandora_console/index.php?sec=network&sec2=enterprise/operation/services/services&tab=service_map&id_service='.(int)$service['id'];
+			$services[$service['id']]['serviceDetail']='index.php?sec=network&sec2=enterprise/operation/services/services&tab=service_map&id_service='.(int)$service['id'];
 		}
 
 		return $services;
@@ -241,7 +241,7 @@ class TreeService extends Tree {
 			$service_stats[$service['id']]['rootType'] = $service['rootType'];
 			$service_stats[$service['id']]['type'] = 'services';
 			$service_stats[$service['id']]['children']=array();
-			$service_stats[$service['id']]['serviceDetail']='http://localhost/pandora_console/index.php?sec=network&sec2=enterprise/operation/services/services&tab=service_map&id_service='.(int)$service['id'];
+			$service_stats[$service['id']]['serviceDetail']='index.php?sec=network&sec2=enterprise/operation/services/services&tab=service_map&id_service='.(int)$service['id'];
 			$service_stats[$service['id']]['counters']=array('total_services'=>$service['total_services'], 'total_agents'=>$service['total_agents'], 'total_modules'=>$service['total_modules']);
 
 		}

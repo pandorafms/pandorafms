@@ -1820,7 +1820,30 @@ CREATE TABLE IF NOT EXISTS `tlog_graph_models` (
 INSERT INTO tlog_graph_models VALUES (1, 'Apache&#x20;log&#x20;model',
 	'^.*?&#92;s+.*&quot;.*?&#92;s&#40;&#92;/.*?&#41;&#92;?.*1.1&quot;&#92;s+&#40;.*?&#41;&#92;s+&#40;.*?&#41;&#92;s+',
 	'pagina,&#x20;html_err_code,&#x20;_tiempo_', 1);
-	
+
+INSERT INTO tlog_graph_models VALUES (2, 'Apache&#x20;accesses&#x20;per&#x20;client&#x20;and&#x20;status',
+'&#40;.*?&#41;&#92;&#x20;-.*1.1&quot;&#92;&#x20;&#40;&#92;d+&#41;&#92;&#x20;&#92;d+',
+'host,status', 1);
+
+INSERT INTO tlog_graph_models VALUES (3, 'Apache&#x20;time&#x20;per&#x20;requester&#x20;and&#x20;html&#x20;code',
+'&#40;.*?&#41;&#92;&#x20;-.*1.1&quot;&#92;&#x20;&#40;&#92;d+&#41;&#92;&#x20;&#40;&#92;d+&#41;',
+'origin,respose,_time_', 1);
+
+INSERT INTO tlog_graph_models VALUES (4, 'Count&#x20;output',
+'.*',
+'Coincidences', 0);
+
+INSERT INTO tlog_graph_models VALUES (5, 'Events&#x20;replicated&#x20;to&#x20;metaconsole',
+'.*&#x20;&#40;.*?&#41;&#x20;.*&#x20;&#40;&#92;d+&#41;&#x20;events&#x20;replicated&#x20;to&#x20;metaconsole',
+'server,_events_', 0);
+
+INSERT INTO tlog_graph_models VALUES (6, 'Pages&#x20;with&#x20;warnings',
+'PHP&#x20;Warning:.*in&#x20;&#40;.*?&#41;&#x20;on',
+'page', 0);
+
+INSERT INTO tlog_graph_models VALUES (7, 'Users&#x20;login',
+'Starting&#x20;Session&#x20;&#92;d+&#92;&#x20;of&#x20;user&#x20;&#40;.*&#41;',
+'user', 0);
 -- -----------------------------------------------------
 -- Add column in table `treport`
 -- -----------------------------------------------------

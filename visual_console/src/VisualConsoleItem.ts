@@ -45,16 +45,18 @@ export interface VisualConsoleItemProps extends Position, Size {
 }
 
 // FIXME: Fix type compatibility.
-export type ItemClickEvent<ItemProps extends VisualConsoleItemProps> = {
+export interface ItemClickEvent<ItemProps extends VisualConsoleItemProps> {
   // data: ItemProps;
   data: UnknownObject;
-};
+}
 
 /**
  * Extract a valid enum value from a raw label position value.
  * @param labelPosition Raw value.
  */
-const parseLabelPosition = (labelPosition: any) => {
+const parseLabelPosition = (
+  labelPosition: any // eslint-disable-line @typescript-eslint/no-explicit-any
+): VisualConsoleItemProps["labelPosition"] => {
   switch (labelPosition) {
     case "up":
     case "right":
@@ -123,7 +125,7 @@ abstract class VisualConsoleItem<ItemProps extends VisualConsoleItemProps> {
    */
   abstract createDomElement(): HTMLElement;
 
-  constructor(props: ItemProps) {
+  public constructor(props: ItemProps) {
     this.itemProps = props;
 
     /*
@@ -166,7 +168,7 @@ abstract class VisualConsoleItem<ItemProps extends VisualConsoleItemProps> {
    * Public accessor of the `props` property.
    * @return Properties.
    */
-  get props(): ItemProps {
+  public get props(): ItemProps {
     return this.itemProps;
   }
 
@@ -176,7 +178,7 @@ abstract class VisualConsoleItem<ItemProps extends VisualConsoleItemProps> {
    * stored props, a render would be fired.
    * @param newProps
    */
-  set props(newProps: ItemProps) {
+  public set props(newProps: ItemProps) {
     const prevProps = this.props;
     // Update the internal props.
     this.itemProps = newProps;
@@ -206,7 +208,7 @@ abstract class VisualConsoleItem<ItemProps extends VisualConsoleItemProps> {
    * To recreate or update the HTMLElement which represents the item into the DOM.
    * @param prevProps If exists it will be used to only perform DOM updates instead of a full replace.
    */
-  render(prevProps: ItemProps | null = null): void {
+  public render(prevProps: ItemProps | null = null): void {
     // Move box.
     if (!prevProps || prevProps.x !== this.props.x) {
       this.elementRef.style.left = `${this.props.x}px`;
@@ -228,7 +230,7 @@ abstract class VisualConsoleItem<ItemProps extends VisualConsoleItemProps> {
   /**
    * To remove the event listeners and the elements from the DOM.
    */
-  remove(): void {
+  public remove(): void {
     // Event listeners.
     this.disposables.forEach(_ => _.dispose());
     // VisualConsoleItem extension DOM element.
@@ -242,7 +244,7 @@ abstract class VisualConsoleItem<ItemProps extends VisualConsoleItemProps> {
    * @param x Horizontal axis position.
    * @param y Vertical axis position.
    */
-  move(x: number, y: number): void {
+  public move(x: number, y: number): void {
     // Compare position.
     if (x === this.props.x && y === this.props.y) return;
     // Update position. Change itemProps instead of props to avoid re-render.
@@ -258,7 +260,7 @@ abstract class VisualConsoleItem<ItemProps extends VisualConsoleItemProps> {
    * @param width Width.
    * @param height Height.
    */
-  resize(width: number, height: number): void {
+  public resize(width: number, height: number): void {
     // Compare size.
     if (width === this.props.width && height === this.props.height) return;
     // Update size. Change itemProps instead of props to avoid re-render.
@@ -273,7 +275,7 @@ abstract class VisualConsoleItem<ItemProps extends VisualConsoleItemProps> {
    * To add an event handler to the click of the linked visual console elements.
    * @param listener Function which is going to be executed when a linked console is clicked.
    */
-  onClick(listener: Listener<ItemClickEvent<ItemProps>>): void {
+  public onClick(listener: Listener<ItemClickEvent<ItemProps>>): void {
     /*
      * The '.on' function returns a function which will clean the event
      * listener when executed. We store all the 'dispose' functions to

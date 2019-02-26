@@ -14,6 +14,7 @@ import {
  * @param defaultValue Default value to use if we cannot extract a valid number.
  * @return A valid number or the default value.
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function parseIntOr<T>(value: any, defaultValue: T): number | T {
   if (typeof value === "number") return value;
   if (typeof value === "string" && value.length > 0 && !isNaN(parseInt(value)))
@@ -26,12 +27,49 @@ export function parseIntOr<T>(value: any, defaultValue: T): number | T {
  * @param value Raw value from which we will try to extract the boolean.
  * @return A valid boolean value. false by default.
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function parseBoolean(value: any): boolean {
   if (typeof value === "boolean") return value;
   else if (typeof value === "number") return value > 0;
   else if (typeof value === "string") return value === "1" || value === "true";
   else return false;
 }
+
+/**
+ * Pad the current string with another string (multiple times, if needed)
+ * until the resulting string reaches the given length.
+ * The padding is applied from the start (left) of the current string.
+ * @param value Text that needs to be padded.
+ * @param length Length of the returned text.
+ * @param pad Text to add.
+ * @return Padded text.
+ */
+export function padLeft(
+  value: string | number,
+  length: number,
+  pad: string | number = " "
+): string {
+  if (typeof value === "number") value = `${value}`;
+  if (typeof pad === "number") pad = `${pad}`;
+
+  const diffLength = length - value.length;
+  if (diffLength === 0) return value;
+  if (diffLength < 0) return value.substr(Math.abs(diffLength));
+
+  if (diffLength === pad.length) return `${pad}${value}`;
+  if (diffLength < pad.length) return `${pad.substring(0, diffLength)}${value}`;
+
+  const repeatTimes = Math.floor(diffLength / pad.length);
+  const restLength = diffLength - pad.length * repeatTimes;
+
+  let newPad = "";
+  for (let i = 0; i < repeatTimes; i++) newPad += pad;
+
+  if (restLength === 0) return `${newPad}${value}`;
+  return `${newPad}${pad.substring(0, restLength)}${value}`;
+}
+
+/* Decoders */
 
 /**
  * Build a valid typed object from a raw object.
@@ -125,7 +163,7 @@ export function linkedVCPropsDecoder(
     linkedLayoutStatusType: "default"
   };
   switch (data.linkedLayoutStatusType) {
-    case "weight":
+    case "weight": {
       const weight = parseIntOr(data.linkedLayoutStatusTypeWeight, null);
       if (weight == null)
         throw new TypeError("invalid status calculation properties.");
@@ -136,7 +174,8 @@ export function linkedVCPropsDecoder(
           linkedLayoutStatusTypeWeight: weight
         };
       break;
-    case "service":
+    }
+    case "service": {
       const warningThreshold = parseIntOr(
         data.linkedLayoutStatusTypeWarningThreshold,
         null
@@ -155,6 +194,7 @@ export function linkedVCPropsDecoder(
         linkedLayoutStatusTypeCriticalThreshold: criticalThreshold
       };
       break;
+    }
   }
 
   const linkedLayoutBaseProps = {

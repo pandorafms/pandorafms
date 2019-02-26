@@ -49,7 +49,7 @@ export function colorCloudPropsDecoder(
 const svgNS = "http://www.w3.org/2000/svg";
 
 export default class ColorCloud extends VisualConsoleItem<ColorCloudProps> {
-  createDomElement(): HTMLElement {
+  public createDomElement(): HTMLElement {
     const container: HTMLDivElement = document.createElement("div");
     container.className = "color-cloud";
 
@@ -59,7 +59,7 @@ export default class ColorCloud extends VisualConsoleItem<ColorCloudProps> {
     return container;
   }
 
-  createSvgElement(): SVGSVGElement {
+  public createSvgElement(): SVGSVGElement {
     const gradientId = `grad_${this.props.id}`;
     // SVG container.
     const svg = document.createElementNS(svgNS, "svg");
@@ -108,12 +108,11 @@ export default class ColorCloud extends VisualConsoleItem<ColorCloudProps> {
   /**
    * @override VisualConsoleItem.resize
    * To resize the item.
-   * @param width Width.
-   * @param height Height.
+   * @param diameter Diameter.
    */
-  resize(width: number, height: number): void {
-    // Resize parent. Use only the width, cause this element only needs a diameter.
-    super.resize(width, width);
+  public resize(diameter: number): void {
+    // Resize parent. Use the diameter as width and height.
+    super.resize(diameter, diameter);
 
     // Get SVG element.
     const svgElement = this.elementRef.getElementsByTagName("svg").item(0);

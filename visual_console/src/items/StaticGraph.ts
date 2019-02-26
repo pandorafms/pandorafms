@@ -23,7 +23,9 @@ export type StaticGraphProps = {
  * Extract a valid enum value from a raw unknown value.
  * @param showLastValueTooltip Raw value.
  */
-const parseShowLastValueTooltip = (showLastValueTooltip: any) => {
+const parseShowLastValueTooltip = (
+  showLastValueTooltip: any // eslint-disable-line @typescript-eslint/no-explicit-any
+): StaticGraphProps["showLastValueTooltip"] => {
   switch (showLastValueTooltip) {
     case "default":
     case "enabled":
@@ -61,7 +63,7 @@ export function staticGraphPropsDecoder(
 }
 
 export default class StaticGraph extends VisualConsoleItem<StaticGraphProps> {
-  createDomElement(): HTMLElement {
+  public createDomElement(): HTMLElement {
     const img: HTMLImageElement = document.createElement("img");
     img.className = "static-graph";
     img.src = this.props.imageSrc;

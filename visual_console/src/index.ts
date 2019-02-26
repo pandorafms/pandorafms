@@ -5,10 +5,7 @@
  * https://www.typescriptlang.org/
  */
 
-import VisualConsole, {
-  visualConsolePropsDecoder,
-  VisualConsoleProps
-} from "./VisualConsole";
+import VisualConsole, { visualConsolePropsDecoder } from "./VisualConsole";
 
 // declare global {
 //   interface Window {
@@ -28,7 +25,7 @@ if (container != null) {
     width: 800,
     height: 300,
     backgroundURL: null,
-    backgroundColor: "#000000",
+    backgroundColor: "rgb(154, 154, 154)",
     isFavorite: false
   };
 
@@ -62,7 +59,7 @@ if (container != null) {
   const colorCloudRawProps = {
     // Generic props.
     id: 2,
-    type: 20, // Static graph = 0
+    type: 20, // Color cloud = 20
     label: null,
     labelText: "CLOUD",
     isLinkEnabled: false,
@@ -85,11 +82,34 @@ if (container != null) {
     color: "rgb(100, 50, 245)"
   };
 
+  const digitalClockRawProps = {
+    // Generic props.
+    id: 2,
+    type: 19, // clock = 19
+    label: null,
+    isLinkEnabled: false,
+    isOnTop: false,
+    parentId: null,
+    aclGroupId: null,
+    // Position props.
+    x: 500,
+    y: 100,
+    // Size props.
+    width: 300,
+    height: 150,
+    // Custom props.
+    clockType: "digital",
+    clockFormat: "datetime",
+    clockTimezone: "Madrid",
+    clockTimezoneOffset: 60,
+    showClockTimezone: true
+  };
+
   try {
     const visualConsole = new VisualConsole(
       container,
       visualConsolePropsDecoder(rawProps),
-      [staticGraphRawProps, colorCloudRawProps]
+      [staticGraphRawProps, colorCloudRawProps, digitalClockRawProps]
     );
     console.log(visualConsole);
   } catch (error) {

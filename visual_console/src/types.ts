@@ -1,6 +1,6 @@
-export type UnknownObject = {
-  [key: string]: any;
-};
+export interface UnknownObject {
+  [key: string]: any; // eslint-disable-line @typescript-eslint/no-explicit-any
+}
 
 export interface Position {
   x: number;

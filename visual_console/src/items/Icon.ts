@@ -37,7 +37,7 @@ export function iconPropsDecoder(data: UnknownObject): IconProps | never {
 }
 
 export default class Icon extends VisualConsoleItem<IconProps> {
-  createDomElement(): HTMLElement {
+  public createDomElement(): HTMLElement {
     const img: HTMLImageElement = document.createElement("img");
     img.className = "icon";
     img.src = this.props.imageSrc;

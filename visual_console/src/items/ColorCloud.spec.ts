@@ -34,7 +34,7 @@ const linkedModuleProps = {
 };
 
 describe("Color cloud item", () => {
-  const groupInstance = new ColorCloud(
+  const colorCloudInstance = new ColorCloud(
     colorCloudPropsDecoder({
       ...genericRawProps,
       ...positionRawProps,
@@ -46,7 +46,7 @@ describe("Color cloud item", () => {
 
   it("should have the color-cloud class", () => {
     expect(
-      groupInstance.elementRef.getElementsByClassName("color-cloud").length
+      colorCloudInstance.elementRef.getElementsByClassName("color-cloud").length
     ).toBeGreaterThan(0);
   });
 });

@@ -42,7 +42,7 @@ export function groupPropsDecoder(data: UnknownObject): GroupProps | never {
 }
 
 export default class Group extends VisualConsoleItem<GroupProps> {
-  createDomElement(): HTMLElement {
+  public createDomElement(): HTMLElement {
     const img: HTMLImageElement = document.createElement("img");
     img.className = "group";
     img.src = this.props.imageSrc;

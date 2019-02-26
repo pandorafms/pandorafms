@@ -8,6 +8,7 @@ import StaticGraph, { staticGraphPropsDecoder } from "./items/StaticGraph";
 import Icon, { iconPropsDecoder } from "./items/Icon";
 import ColorCloud, { colorCloudPropsDecoder } from "./items/ColorCloud";
 import Group, { groupPropsDecoder } from "./items/Group";
+import Clock, { clockPropsDecoder } from "./items/Clock";
 
 // Base properties.
 export interface VisualConsoleProps extends Size {
@@ -69,11 +70,12 @@ export function visualConsolePropsDecoder(
 }
 
 // TODO: Document.
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 function itemInstanceFrom(data: UnknownObject) {
   const type = parseIntOr(data.type, null);
   if (type == null) throw new TypeError("missing item type.");
 
-  switch (<VisualConsoleItemType>type) {
+  switch (type as VisualConsoleItemType) {
     case VisualConsoleItemType.STATIC_GRAPH:
       return new StaticGraph(staticGraphPropsDecoder(data));
     case VisualConsoleItemType.MODULE_GRAPH:
@@ -113,7 +115,7 @@ function itemInstanceFrom(data: UnknownObject) {
     case VisualConsoleItemType.BARS_GRAPH:
       throw new TypeError("item not found");
     case VisualConsoleItemType.CLOCK:
-      throw new TypeError("item not found");
+      return new Clock(clockPropsDecoder(data));
     case VisualConsoleItemType.COLOR_CLOUD:
       return new ColorCloud(colorCloudPropsDecoder(data));
     default:
@@ -129,7 +131,7 @@ export default class VisualConsole {
   // Visual Console Item instances.
   private elements: VisualConsoleItem<VisualConsoleItemProps>[] = [];
 
-  constructor(
+  public constructor(
     container: HTMLElement,
     props: VisualConsoleProps,
     items: UnknownObject[]
@@ -167,7 +169,7 @@ export default class VisualConsole {
    * Public accessor of the `props` property.
    * @return Properties.
    */
-  get props(): VisualConsoleProps {
+  public get props(): VisualConsoleProps {
     return this._props;
   }
 
@@ -177,7 +179,7 @@ export default class VisualConsole {
    * stored props, a render would be fired.
    * @param newProps
    */
-  set props(newProps: VisualConsoleProps) {
+  public set props(newProps: VisualConsoleProps) {
     const prevProps = this.props;
     // Update the internal props.
     this._props = newProps;
@@ -192,7 +194,7 @@ export default class VisualConsole {
    * Recreate or update the HTMLElement which represents the Visual Console into the DOM.
    * @param prevProps If exists it will be used to only DOM updates instead of a full replace.
    */
-  render(prevProps: VisualConsoleProps | null = null): void {
+  public render(prevProps: VisualConsoleProps | null = null): void {
     if (prevProps) {
       if (prevProps.backgroundURL !== this.props.backgroundURL) {
         this.containerRef.style.backgroundImage = this.props.backgroundURL;
@@ -217,7 +219,7 @@ export default class VisualConsole {
    * @param newSize
    * @return Whether the size changed or not.
    */
-  sizeChanged(prevSize: Size, newSize: Size): boolean {
+  public sizeChanged(prevSize: Size, newSize: Size): boolean {
     return (
       prevSize.width !== newSize.width || prevSize.height !== newSize.height
     );
@@ -228,7 +230,7 @@ export default class VisualConsole {
    * @param width
    * @param height
    */
-  resizeElement(width: number, height: number): void {
+  public resizeElement(width: number, height: number): void {
     this.containerRef.style.width = `${width}px`;
     this.containerRef.style.height = `${height}px`;
   }
@@ -238,7 +240,7 @@ export default class VisualConsole {
    * @param width
    * @param height
    */
-  resize(width: number, height: number): void {
+  public resize(width: number, height: number): void {
     this.props = {
       ...this.props, // Object spread: http://es6-features.org/#SpreadOperator
       width,
@@ -249,7 +251,7 @@ export default class VisualConsole {
   /**
    * To remove the event listeners and the elements from the DOM.
    */
-  remove(): void {
+  public remove(): void {
     this.elements.forEach(e => e.remove()); // Arrow function.
     this.elements = [];
   }

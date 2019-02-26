@@ -1,5 +1,5 @@
 export interface Listener<T> {
-  (event: T): any;
+  (event: T): void;
 }
 
 export interface Disposable {
@@ -11,23 +11,23 @@ export default class TypedEvent<T> {
   private listeners: Listener<T>[] = [];
   private listenersOncer: Listener<T>[] = [];
 
-  on = (listener: Listener<T>): Disposable => {
+  public on = (listener: Listener<T>): Disposable => {
     this.listeners.push(listener);
     return {
       dispose: () => this.off(listener)
     };
   };
 
-  once = (listener: Listener<T>): void => {
+  public once = (listener: Listener<T>): void => {
     this.listenersOncer.push(listener);
   };
 
-  off = (listener: Listener<T>): void => {
+  public off = (listener: Listener<T>): void => {
     const callbackIndex = this.listeners.indexOf(listener);
     if (callbackIndex > -1) this.listeners.splice(callbackIndex, 1);
   };
 
-  emit = (event: T): void => {
+  public emit = (event: T): void => {
     /** Update any general listeners */
     this.listeners.forEach(listener => listener(event));
 
@@ -36,7 +36,5 @@ export default class TypedEvent<T> {
     this.listenersOncer = [];
   };
 
-  pipe = (te: TypedEvent<T>): Disposable => {
-    return this.on(e => te.emit(e));
-  };
+  public pipe = (te: TypedEvent<T>): Disposable => this.on(e => te.emit(e));
 }

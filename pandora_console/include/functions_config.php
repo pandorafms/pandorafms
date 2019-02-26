@@ -309,10 +309,6 @@ function config_update_config()
                     if (!config_update_value('auditdir', get_parameter('auditdir'))) {
                         $error_update[] = __('Audit log directory');
                     }
-
-                    if (!config_update_value('unique_ip', get_parameter('unique_ip'))) {
-                        $error_update[] = __('unique_ip');
-                    }
                 break;
 
                 case 'enterprise':
@@ -752,12 +748,16 @@ function config_update_config()
                         }
                     }
 
+                    if (!config_update_value('delete_old_messages', get_parameter('delete_old_messages'))) {
+                        $error_update[] = __('Max. days before delete old messages');
+                    }
+
                     if (!config_update_value('max_graph_container', get_parameter('max_graph_container'))) {
                         $error_update[] = __('Graph container - Max. Items');
                     }
 
                     if (!config_update_value('max_execution_event_response', get_parameter('max_execution_event_response'))) {
-                        $error_update[] = __('Max. execution event response');
+                        $error_update[] = __('Max execution event response');
                     }
                 break;
 
@@ -1545,6 +1545,10 @@ function config_process_config()
         if (!isset($config['inventory_purge'])) {
             config_update_value('inventory_purge', 21);
         }
+    }
+
+    if (!isset($config['delete_old_messages'])) {
+        config_update_value('delete_old_messages', 21);
     }
 
     if (!isset($config['max_graph_container'])) {

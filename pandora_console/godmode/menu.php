@@ -215,6 +215,7 @@ if (check_acl($config['id_user'], 0, 'AW') || check_acl($config['id_user'], 0, '
     $menu_godmode['gservers']['id'] = 'god-servers';
 
     $sub = [];
+
     if (check_acl($config['id_user'], 0, 'AW')) {
         $sub['godmode/servers/modificar_server']['text'] = __('Manage servers');
         $sub['godmode/servers/modificar_server']['id'] = 'Manage servers';

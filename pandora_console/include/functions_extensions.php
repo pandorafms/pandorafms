@@ -178,7 +178,8 @@ function extensions_get_extensions($enterprise=false, $rel_path='')
 function extensions_is_enabled_extension($name)
 {
     global $config;
-    return isset($config['extensions'][$name]);
+    return isset($config['extensions'][$name])
+        || isset($config['extensions'][$name.'.php']);
 }
 
 

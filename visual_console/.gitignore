@@ -13,7 +13,7 @@
 /dist
 
 # editor
-.vscode
+# .vscode
 
 # misc
 .DS_Store

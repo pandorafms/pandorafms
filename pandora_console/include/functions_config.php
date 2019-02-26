@@ -755,6 +755,10 @@ function config_update_config()
                     if (!config_update_value('max_graph_container', get_parameter('max_graph_container'))) {
                         $error_update[] = __('Graph container - Max. Items');
                     }
+
+                    if (!config_update_value('max_execution_event_response', get_parameter('max_execution_event_response'))) {
+                        $error_update[] = __('Max execution event response');
+                    }
                 break;
 
                 case 'vis':
@@ -1545,6 +1549,10 @@ function config_process_config()
 
     if (!isset($config['max_graph_container'])) {
         config_update_value('max_graph_container', 10);
+    }
+
+    if (!isset($config['max_execution_event_response'])) {
+        config_update_value('max_execution_event_response', 10);
     }
 
     if (!isset($config['max_macro_fields'])) {

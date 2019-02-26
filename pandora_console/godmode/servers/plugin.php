@@ -634,9 +634,8 @@ if (($create != '') || ($view != '')) {
     }
 
 
-    // Update plugin
+    // Update plugin.
     if (isset($_GET['update_plugin'])) {
-        // if modified any parameter
         $plugin_id = get_parameter('update_plugin', 0);
         $plugin_name = get_parameter('form_name', '');
         $plugin_description = get_parameter('form_description', '');
@@ -978,7 +977,10 @@ if (($create != '') || ($view != '')) {
 
             echo '<tr>';
             echo "<td class=$tdcolor>";
-            echo "<b><a href='index.php?sec=$sec&sec2=godmode/servers/plugin&view=".$row['id'].'&tab=plugins&pure='.$config['pure']."'>";
+            if ($management_allowed) {
+                echo "<b><a href='index.php?sec=$sec&sec2=godmode/servers/plugin&view=".$row['id'].'&tab=plugins&pure='.$config['pure']."'>";
+            }
+
             echo $row['name'];
             echo '</a></b></td>';
             echo "<td class=$tdcolor>";

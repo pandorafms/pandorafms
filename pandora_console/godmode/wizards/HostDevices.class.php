@@ -782,7 +782,7 @@ $("select#interval_manual_defined").change(function() {
 
             if (enterprise_installed()) {
                 // Feature configuration.
-                enterprise_require('include/hostdevices_extra.php');
+                enterprise_require_once('include/hostdevices_extra.php');
             }
 
             // Submit button.

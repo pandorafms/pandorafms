@@ -1,26 +1,39 @@
 <?php
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the  GNU Lesser General Public License
-// as published by the Free Software Foundation; version 2
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-
 /**
- * @package    Include
+ * Extension to self monitor Pandora FMS Console
+ *
+ * @category   Config
+ * @package    Pandora FMS
  * @subpackage Config
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
  */
+
+ // Config functions.
 
 
 /**
  * Creates a single config value in the database.
  *
- * @param string Config token to create.
- * @param string Value to set.
+ * @param string $token Config token to create.
+ * @param string $value Value to set.
  *
  * @return boolean Config id if success. False on failure.
  */
@@ -41,15 +54,15 @@ function config_create_value($token, $value)
  *
  * If the config token doesn't exists, it's created.
  *
- * @param string Config token to update.
- * @param string New value to set.
+ * @param string $token Config token to update.
+ * @param string $value New value to set.
  *
  * @return boolean True if success. False on failure.
  */
 function config_update_value($token, $value)
 {
     global $config;
-    // Include functions_io to can call __() function
+    // Include functions_io to can call __() function.
     include_once $config['homedir'].'/include/functions_io.php';
 
     if ($token == 'list_ACL_IPs_for_API') {
@@ -73,7 +86,7 @@ function config_update_value($token, $value)
         return (bool) config_create_value($token, io_safe_input($value));
     }
 
-    // If it has not changed
+    // If it has not changed.
     if ($config[$token] == $value) {
         return true;
     }
@@ -97,15 +110,17 @@ function config_update_value($token, $value)
 
 /**
  * Updates all config values in case setup page was invoked
+ *
+ * @return boolean
  */
 function config_update_config()
 {
     global $config;
 
-    // Include functions_io to can call __() function
+    // Include functions_io to can call __() function.
     include_once $config['homedir'].'/include/functions_io.php';
 
-    // If user is not even log it, don't try this
+    // If user is not even log it, don't try this.
     if (! isset($config['id_user'])) {
         $config['error_config_update_config'] = [];
         $config['error_config_update_config']['correct'] = false;
@@ -127,7 +142,7 @@ function config_update_config()
     if ($update_config) {
         db_pandora_audit('Setup', 'Setup has changed');
     } else {
-        // Do none
+        // Do nothing.
         return false;
     }
 
@@ -137,8 +152,8 @@ function config_update_config()
     switch ($sec2) {
         case 'godmode/setup/setup':
             $section_setup = get_parameter('section');
-            // MAIN SETUP
-            // Setup now is divided in different tabs
+            // MAIN SETUP.
+            // Setup now is divided in different tabs.
             switch ($section_setup) {
                 case 'general':
                     if (!config_update_value('language', (string) get_parameter('language'))) {
@@ -165,7 +180,7 @@ function config_update_config()
                         $error_update[] = __('Automatic check for updates');
                     }
 
-                    if (!config_update_value('cert_path', get_parameter('cert_path'))) {
+                    if (!config_update_value('cert_path', (bool) get_parameter('cert_path'))) {
                         $error_update[] = __('SSL cert path');
                     }
 
@@ -228,7 +243,7 @@ function config_update_config()
                         $error_update[] = __('Sound for Monitor warning');
                     }
 
-                    // Update of Pandora FMS license
+                    // Update of Pandora FMS license.
                     $update_manager_installed = db_get_value('value', 'tconfig', 'token', 'update_manager_installed');
 
                     if ($update_manager_installed == 1) {
@@ -472,7 +487,7 @@ function config_update_config()
                 break;
 
                 case 'auth':
-                    // AUTHENTICATION SETUP
+                    // AUTHENTICATION SETUP.
                     if (!config_update_value('auth', get_parameter('auth'))) {
                         $error_update[] = __('Authentication method');
                     }
@@ -639,9 +654,10 @@ function config_update_config()
                 break;
 
                 case 'perf':
-                    // PERFORMANCE SETUP
+                    // PERFORMANCE SETUP.
                     if (!config_update_value('event_purge', get_parameter('event_purge'))) {
-                        $error_update[] = $check_metaconsole_events_history = get_parameter('metaconsole_events_history', -1);
+                        $check_metaconsole_events_history = get_parameter('metaconsole_events_history', -1);
+                        $error_update[] = $check_metaconsole_events_history;
                     }
 
                     if ($check_metaconsole_events_history != -1) {
@@ -746,7 +762,7 @@ function config_update_config()
                 break;
 
                 case 'vis':
-                    // VISUAL STYLES SETUP
+                    // VISUAL STYLES SETUP.
                     if (!config_update_value('date_format', (string) get_parameter('date_format'))) {
                         $error_update[] = __('Date format string');
                     }
@@ -1064,12 +1080,12 @@ function config_update_config()
                         $error_update[] = __('Display text when proc modules have state critical');
                     }
 
-                    // Daniel maya 02/06/2016 Display menu with click --INI
+                    // Daniel maya 02/06/2016 Display menu with click --INI.
                     if (!config_update_value('click_display', (bool) get_parameter('click_display', false))) {
                         $error_update[] = __('Display lateral menus with left click');
                     }
 
-                    // Daniel maya 02/06/2016 Display menu with click --END
+                    // Daniel maya 02/06/2016 Display menu with click --END.
                     if (isset($config['enterprise_installed']) && $config['enterprise_installed'] == 1) {
                         if (!config_update_value('service_label_font_size', get_parameter('service_label_font_size', false))) {
                             $error_update[] = __('Service label font size');
@@ -1140,7 +1156,7 @@ function config_update_config()
                     // --------------------------------------------------
                     $interval_values = get_parameter('interval_values');
 
-                    // Add new interval value if is provided
+                    // Add new interval value if is provided.
                     $interval_value = (float) get_parameter('interval_value', 0);
 
                     if ($interval_value > 0) {
@@ -1158,7 +1174,7 @@ function config_update_config()
                         }
                     }
 
-                    // Delete interval value if is required
+                    // Delete interval value if is required.
                     $interval_to_delete = (float) get_parameter('interval_to_delete');
                     if ($interval_to_delete > 0) {
                         $interval_values_array = explode(',', $interval_values);
@@ -1180,7 +1196,7 @@ function config_update_config()
                         $error_update[] = __('Custom report info');
                     }
 
-                    // Juanma (06/05/2014) New feature: Custom front page for reports
+                    // Juanma (06/05/2014) New feature: Custom front page for reports.
                     if (!config_update_value('custom_report_front', get_parameter('custom_report_front'))) {
                         $error_update[] = __('Custom report front');
                     }
@@ -1341,7 +1357,15 @@ function config_update_config()
                         $error_update[] = __('eHorus id custom field');
                     }
                 break;
+
+                default:
+                    // Ignore.
+                break;
             }
+
+        default:
+            // Ignore.
+        break;
     }
 
     if (count($error_update) > 0) {
@@ -1363,7 +1387,9 @@ function config_update_config()
 
 
 /**
- * Process config variables
+ * Process config variables.
+ *
+ * @return void
  */
 function config_process_config()
 {
@@ -1381,7 +1407,7 @@ function config_process_config()
         $is_windows = true;
     }
 
-    // Compatibility fix
+    // Compatibility fix.
     foreach ($configs as $c) {
         $config[$c['token']] = $c['value'];
     }
@@ -1438,18 +1464,18 @@ function config_process_config()
 
     if (!isset($config['prominent_time'])) {
         // Prominent time tells us what to show prominently when a timestamp is
-        // displayed. The comparation (... days ago) or the timestamp (full date)
+        // displayed. The comparation (... days ago) or the timestamp (full date).
         config_update_value('prominent_time', 'comparation');
     }
 
     if (!isset($config['timesource'])) {
-        // Timesource says where time comes from (system or mysql)
+        // Timesource says where time comes from (system or mysql).
         config_update_value('timesource', 'system');
     }
 
     if (!isset($config['https'])) {
         // Sets whether or not we want to enforce https. We don't want to go to a
-        // potentially unexisting config by default
+        // potentially unexisting config by default.
         config_update_value('https', false);
     }
 
@@ -1458,7 +1484,7 @@ function config_process_config()
     }
 
     if (!isset($config['cert_path'])) {
-        // Sets name and path of ssl path for use in application
+        // Sets name and path of ssl path for use in application.
         config_update_value('cert_path', '/etc/ssl/certs/pandorafms.pem');
     }
 
@@ -1470,7 +1496,7 @@ function config_process_config()
         config_update_value('status_images_set', 'default');
     }
 
-    // Load user session
+    // Load user session.
     if (isset($_SESSION['id_usuario'])) {
         $config['id_user'] = $_SESSION['id_usuario'];
     }
@@ -1677,9 +1703,9 @@ function config_process_config()
         config_update_value('unique_ip', 0);
     }
 
-    /*
-     *Parse the ACL IP list for access API
-     */
+     /*
+      * Parse the ACL IP list for access API
+      */
     $temp_list_ACL_IPs_for_API = [];
     if (isset($config['list_ACL_IPs_for_API'])) {
         if (!empty($config['list_ACL_IPs_for_API'])) {
@@ -1695,7 +1721,7 @@ function config_process_config()
     // the first time make a conenction and disable itself
     // Not Managed here !
     // if (!isset ($config["autoupdate"])) {
-    // config_update_value ('autoupdate', true);
+    // config_update_value ('autoupdate', true);.
     // }
     include_once $config['homedir'].'/include/auth/mysql.php';
     include_once $config['homedir'].'/include/functions_io.php';
@@ -2295,7 +2321,7 @@ function config_process_config()
     }
 
     if (defined('METACONSOLE')) {
-        // Customizable sections (Metaconsole)
+        // Customizable sections (Metaconsole).
         enterprise_include_once('include/functions_enterprise.php');
         $customizable_sections = enterprise_hook('enterprise_get_customizable_sections');
 
@@ -2317,15 +2343,15 @@ function config_process_config()
     ) {
         $isFunctionSkins = enterprise_include_once('include/functions_skins.php');
         if ($isFunctionSkins !== ENTERPRISE_NOT_HOOK) {
-            // Try to update user table in order to refresh skin inmediatly
+            // Try to update user table in order to refresh skin inmediatly.
             $is_user_updating = get_parameter('sec2', '');
 
             if ($is_user_updating == 'operation/users/user_edit') {
                 $id = get_parameter_get('id', $config['id_user']);
-                // ID given as parameter
+                // ID given as parameter.
                 $user_info = get_user_info($id);
 
-                // If current user is editing himself or if the user has UM (User Management) rights on any groups the user is part of AND the authorization scheme allows for users/admins to update info
+                // If current user is editing himself or if the user has UM (User Management) rights on any groups the user is part of AND the authorization scheme allows for users/admins to update info.
                 if (($config['id_user'] == $id || check_acl($config['id_user'], users_get_groups($id), 'UM')) && $config['user_can_update_info']) {
                     $view_mode = false;
                 } else {
@@ -2339,7 +2365,7 @@ function config_process_config()
             }
 
             if (!is_metaconsole()) {
-                // Skins are available only in console mode
+                // Skins are available only in console mode.
                 if (isset($config['id_user'])) {
                     $relative_path = enterprise_hook('skins_set_image_skin_path', [$config['id_user']]);
                 } else {
@@ -2469,12 +2495,12 @@ function config_process_config()
         config_update_value('render_proc_fail', __('Fail'));
     }
 
-    // Daniel maya 02/06/2016 Display menu with click --INI
+    // Daniel maya 02/06/2016 Display menu with click --INI.
     if (!isset($config['click_display'])) {
         config_update_value('click_display', 1);
     }
 
-    // Daniel maya 02/06/2016 Display menu with click --END
+    // Daniel maya 02/06/2016 Display menu with click --END.
     if (isset($config['enterprise_installed']) && $config['enterprise_installed'] == 1) {
         if (!isset($config['service_label_font_size'])) {
             config_update_value('service_label_font_size', 20);
@@ -2501,7 +2527,7 @@ function config_process_config()
         config_update_value('custom_report_info', 1);
     }
 
-    // Juanma (06/05/2014) New feature: Custom front page for reports
+    // Juanma (06/05/2014) New feature: Custom front page for reports.
     if (!isset($config['custom_report_front'])) {
         config_update_value('custom_report_front', 0);
     }
@@ -2611,7 +2637,7 @@ function config_process_config()
         config_update_value('instance_registered', 0);
     }
 
-    // eHorus
+    // Ehorus.
     if (!isset($config['ehorus_enabled'])) {
         config_update_value('ehorus_enabled', 0);
     }
@@ -2646,285 +2672,77 @@ function config_process_config()
         }
     }
 
-    // Finally, check if any value was overwritten in a form
+    // Finally, check if any value was overwritten in a form.
     config_update_config();
 }
 
 
+/**
+ * Start supervisor.
+ *
+ * @return void
+ */
 function config_check()
 {
     global $config;
 
-    // At this first version I'm passing errors using session variables, because the error management
-    // is done by an AJAX request. Better solutions could be implemented in the future :-)
-    if (license_free() && users_is_admin($config['id_user'])) {
-        $login = get_parameter('login', false);
-        // Registration advice
-        if ((!isset($config['instance_registered']) || ($config['instance_registered'] != 1)) && ($login === false)) {
-            set_pandora_error_for_header(
-                __('Click <a style="font-weight:bold; text-decoration:underline" href="javascript: force_run_register();"> here</a> to start the registration process'),
-                __('This instance is not registered in the Update manager')
-            );
-        }
+    include_once __DIR__.'/class/ConsoleSupervisor.php';
 
-        // Newsletter advice
-        $newsletter = db_get_value('middlename', 'tusuario', 'id_user', $config['id_user']);
-        if ($newsletter != 1 && $login === false) {
-            set_pandora_error_for_header(
-                __('Click <a style="font-weight:bold; text-decoration:underline" href="javascript: force_run_newsletter();"> here</a> to start the newsletter subscription process'),
-                __('Not subscribed to the newsletter')
-            );
-        }
+    // Enterprise customers launch supervisor using discovery task.
+    if (enterprise_installed() === false) {
+        $supervisor = new ConsoleSupervisor(false);
+        $supervisor->run();
+    } else if ($config['cron_last_run'] == 0
+        || (get_system_time() - $config['cron_last_run']) > 3600
+    ) {
+        $supervisor = new ConsoleSupervisor(false);
+        $supervisor->runBasic();
     }
 
-    // Check default password for "admin"
-    $is_admin = db_get_value('is_admin', 'tusuario', 'id_user', $config['id_user']);
-    if ($is_admin) {
-        $hashpass = db_get_sql(
-            "SELECT password
-			FROM tusuario WHERE id_user = 'admin'"
-        );
-        if ($hashpass == '1da7ee7d45b96d0e1f45ee4ee23da560') {
-            set_pandora_error_for_header(
-                __('Default password for "Admin" user has not been changed.'),
-                __('Please change the default password because is a common vulnerability reported.')
-            );
-        }
-    }
-
-    if (isset($config['license_expired'])) {
-        set_pandora_error_for_header(
-            __('You can not get updates until you renew the license.'),
-            __('This license has expired.')
-        );
-    }
-
-    if (!is_writable('attachment')) {
-        set_pandora_error_for_header(
-            __('Please check that the web server has write rights on the {HOMEDIR}/attachment directory'),
-            __('Attachment directory is not writable by HTTP Server')
-        );
-    }
-
-    // Get remote file dir.
-    $remote_config = io_safe_output(
-        db_get_value_filter(
-            'value',
-            'tconfig',
-            ['token' => 'remote_config']
-        )
-    );
-
-    if (enterprise_installed()) {
-        if (!is_readable($remote_config)) {
-            set_pandora_error_for_header(
-                __('Remote configuration directory is not readble for the console').' - '.$remote_config
-            );
-        }
-
-        $remote_config_conf = $remote_config.'/conf';
-        if (!is_writable($remote_config_conf)) {
-            set_pandora_error_for_header(
-                __('Remote configuration directory is not writtable for the console').' - '.$remote_config.'/conf'
-            );
-        }
-
-        $remote_config_col = $remote_config.'/collections';
-        if (!is_writable($remote_config_col)) {
-            set_pandora_error_for_header(
-                __('Remote configuration directory is not writtable for the console').' - '.$remote_config.'/collections'
-            );
-        }
-    }
-
-    // Check attachment directory (too much files?)
-    $filecount = count(glob($config['homedir'].'/attachment/*'));
-    // N temporal files of trash should be enough for most people.
-    if ($filecount > $config['num_files_attachment']) {
-        set_pandora_error_for_header(
-            __('There are too much files in attachment directory. This is not fatal, but you should consider cleaning up your attachment directory manually')." ( $filecount ".__('files').' )',
-            __('Too much files in your tempora/attachment directory')
-        );
-    }
-
-    // Check database maintance
-    $db_maintance = db_get_value_filter(
-        'value',
-        'tconfig',
-        ['token' => 'db_maintance']
-    );
-
-    // If never was executed, it means we are in the first Pandora FMS execution. Set current timestamp
-    if (empty($db_maintance)) {
-        config_update_value('db_maintance', date('U'));
-    }
-
-    $last_maintance = (date('U') - $db_maintance);
-
-    // ~ about 50 hr
-    if ($last_maintance > 190000) {
-        set_pandora_error_for_header(
-            __('Your database is not maintained correctly. It seems that more than 48hrs have passed without proper maintenance. Please review documents of %s on how to perform this maintenance process (DB Tool) and enable it as soon as possible.', get_product_name()),
-            __('Database maintance problem')
-        );
-    }
-
-    $fontpath = io_safe_output(db_get_value_filter('value', 'tconfig', ['token' => 'fontpath']));
-    if (($fontpath == '') or (!file_exists($fontpath))) {
-        set_pandora_error_for_header(
-            __('Your defined font doesnt exist or is not defined. Please check font parameters in your config'),
-            __('Default font doesnt exist')
-        );
-    }
-
-    if ($config['event_storm_protection']) {
-        set_pandora_error_for_header(
-            __('You need to restart server after altering this configuration setting.'),
-            __('Event storm protection is activated. No events will be generated during this mode.')
-        );
-    }
-
-    global $develop_bypass;
-
-    if ($develop_bypass == 1) {
-        set_pandora_error_for_header(
-            __('Your %s has the "develop_bypass" mode enabled. This is a developer mode and should be disabled in a production system. This value is written in the main index.php file', get_product_name()),
-            __('Developer mode is enabled')
-        );
-    }
-
-    if (isset($_SESSION['new_update'])) {
-        if (!empty($_SESSION['return_installation_open'])) {
-            if (!$_SESSION['return_installation_open']['return']) {
-                foreach ($_SESSION['return_installation_open']['text'] as $message) {
-                    set_pandora_error_for_header(
-                        $message,
-                        __('Error first setup Open update')
-                    );
-                }
-            }
-        }
-
-        if ($_SESSION['new_update'] == 'new') {
-            set_pandora_error_for_header(
-                __('There is a new update available. Please<a style="font-weight:bold;" href="index.php?sec=gsetup&sec2=godmode/update_manager/update_manager&tab=online"> go to Administration:Setup:Update Manager</a> for more details.'),
-                __('New %s Console update', get_product_name())
-            );
-        }
-    }
-
-    // PHP configuration values
-    $PHPupload_max_filesize = config_return_in_bytes(ini_get('upload_max_filesize'));
-    $PHPmax_input_time = ini_get('max_input_time');
-    $PHPmemory_limit = config_return_in_bytes(ini_get('memory_limit'));
-    $PHPmax_execution_time = ini_get('max_execution_time');
-    $PHPsafe_mode = ini_get('safe_mode');
-    $PHPdisable_functions = ini_get('disable_functions');
-
-    if ($PHPsafe_mode === '1') {
-        set_pandora_error_for_header(
-            __('To disable, change it on your PHP configuration file (php.ini) and put safe_mode = Off (Dont forget restart apache process after changes)'),
-            sprintf(__('PHP safe mode is enabled. Some features may not properly work.'))
-        );
-    }
-
-    if ($PHPmax_input_time !== '-1') {
-        set_pandora_error_for_header(
-            sprintf(__('Recommended value is %s'), '-1 ('.__('Unlimited').')').'<br><br>'.__('Please, change it on your PHP configuration file (php.ini) or contact with administrator (Dont forget restart apache process after changes)'),
-            sprintf(__("Not recommended '%s' value in PHP configuration"), 'max_input_time')
-        );
-    }
-
-    if ($PHPmax_execution_time !== '0') {
-        set_pandora_error_for_header(
-            sprintf(__('Recommended value is: %s'), '0 ('.__('Unlimited').')').'<br><br>'.__('Please, change it on your PHP configuration file (php.ini) or contact with administrator (Dont forget restart apache process after changes)'),
-            sprintf(__("Not recommended '%s' value in PHP configuration"), 'max_execution_time')
-        );
-    }
-
-    $PHPupload_max_filesize_min = config_return_in_bytes('800M');
-
-    if ($PHPupload_max_filesize < $PHPupload_max_filesize_min) {
-        set_pandora_error_for_header(
-            sprintf(__('Recommended value is: %s'), sprintf(__('%s or greater'), '800M')).'<br><br>'.__('Please, change it on your PHP configuration file (php.ini) or contact with administrator (Dont forget restart apache process after changes)'),
-            sprintf(__("Not recommended '%s' value in PHP configuration"), 'upload_max_filesize')
-        );
-    }
-
-    $PHPmemory_limit_min = config_return_in_bytes('500M');
-
-    if ($PHPmemory_limit < $PHPmemory_limit_min && $PHPmemory_limit !== '-1') {
-        set_pandora_error_for_header(
-            sprintf(__('Recommended value is: %s'), sprintf(__('%s or greater'), '500M')).'<br><br>'.__('Please, change it on your PHP configuration file (php.ini) or contact with administrator'),
-            sprintf(__("Not recommended '%s' value in PHP configuration"), 'memory_limit')
-        );
-    }
-
-    if (preg_match('/system/', $PHPdisable_functions) or preg_match('/exec/', $PHPdisable_functions)) {
-        set_pandora_error_for_header(
-            __('Variable disable_functions containts functions system() or exec(), in PHP configuration file (php.ini)').'<br /><br />'.__('Please, change it on your PHP configuration file (php.ini) or contact with administrator (Dont forget restart apache process after changes)'),
-            __('Problems with disable functions in PHP.INI')
-        );
-    }
-
-    $result_ejecution = exec('"'.io_safe_output($config['phantomjs_bin']).'/phantomjs" --version');
-    if (!isset($result_ejecution) || $result_ejecution == '') {
-        if ($config['language'] == 'es') {
-            set_pandora_error_for_header(
-                __('To be able to create images of the graphs for PDFs, please install the phantom.js extension. For that, it is necessary to follow these steps:').'<a target="blank" href="https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_es:Configuracion#Phantomjs">Click here</a>',
-                __('phantomjs is not installed')
-            );
-        } else {
-            set_pandora_error_for_header(
-                __('To be able to create images of the graphs for PDFs, please install the phantom.js extension. For that, it is necessary to follow these steps:').'<a target="blank" href="https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_en:Configuration#Phantomjs">Click here</a>',
-                __('phantomjs is not installed')
-            );
-        }
-    }
-
-    $php_version = phpversion();
-    $php_version_array = explode('.', $php_version);
-    if ($php_version_array[0] < 7) {
-        if ($config['language'] == 'es') {
-            $url_help = 'https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_es:Instalaci%C3%B3n_y_actualizaci%C3%B3n_PHP_7';
-        } else {
-            $url_help = 'https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_en:_PHP_7';
-        }
-
-        set_pandora_error_for_header(
-            __('For a correct operation of PandoraFMS, PHP must be updated to version 7.0 or higher.').'<br>'.__('Otherwise, functionalities will be lost.').'<br>'."<ol><li style='color: #676767'>".__('Report download in PDF format').'</li>'."<li style='color: #676767'>".__('Emails Sending').'</li>'."<li style='color: #676767'>".__('Metaconsole Collections').'</li>'."<li style='color: #676767'>".'...'.'</li>'.'</ol>'.'<a target="blank" href="'.$url_help.'">'.__('Access Help').'</a>',
-            __('PHP UPDATE REQUIRED')
-        );
-    }
 }
 
 
+/**
+ * Return in bytes
+ *
+ * @param string $val Value to convert.
+ *
+ * @return integer
+ */
 function config_return_in_bytes($val)
 {
     $val = trim($val);
     $last = strtolower($val[(strlen($val) - 1)]);
     switch ($last) {
-        // The 'G' modifier is available since PHP 5.1.0
+        // The 'G' modifier is available since PHP 5.1.0.
         case 'g':
             $val *= 1024;
         case 'm':
             $val *= 1024;
         case 'k':
             $val *= 1024;
+        default:
+            // Ignore.
+        break;
     }
 
     return $val;
 }
 
 
+/**
+ * Undocumented function
+ *
+ * @return void
+ */
 function config_user_set_custom_config()
 {
     global $config;
 
     $userinfo = get_user_info($config['id_user']);
 
-    // Refresh the last_connect info in the user table
-    // if last update was more than 5 minutes ago
+    // Refresh the last_connect info in the user table.
+    // if last update was more than 5 minutes ago.
     if ($userinfo['last_connect'] < (time() - SECONDS_1MINUTE)) {
         update_user($config['id_user'], ['last_connect' => time()]);
     }
@@ -2933,7 +2751,7 @@ function config_user_set_custom_config()
         $config['block_size'] = $userinfo['block_size'];
     }
 
-    // Each user could have it's own timezone)
+    // Each user could have it's own timezone).
     if (isset($userinfo['timezone'])) {
         if ($userinfo['timezone'] != '') {
             date_default_timezone_set($userinfo['timezone']);
@@ -2946,6 +2764,11 @@ function config_user_set_custom_config()
 }
 
 
+/**
+ * Undocumented function
+ *
+ * @return void
+ */
 function config_prepare_session()
 {
     global $config;
@@ -2958,10 +2781,10 @@ function config_prepare_session()
     }
 
     if ($user_sesion_time == 0) {
-        // Change the session timeout value to session_timeout minutes  // 8*60*60 = 8 hours
+        // Change the session timeout value to session_timeout minutes  // 8*60*60 = 8 hours.
         $sessionCookieExpireTime = $config['session_timeout'];
     } else {
-        // Change the session timeout value to session_timeout minutes  // 8*60*60 = 8 hours
+        // Change the session timeout value to session_timeout minutes  // 8*60*60 = 8 hours.
         $sessionCookieExpireTime = $user_sesion_time;
     }
 
@@ -2971,7 +2794,7 @@ function config_prepare_session()
         $sessionCookieExpireTime *= 60;
     }
 
-    // Reset the expiration time upon page load //session_name() is default name of session PHPSESSID
+    // Reset the expiration time upon page load //session_name() is default name of session PHPSESSID.
     if (isset($_COOKIE[session_name()])) {
         setcookie(session_name(), $_COOKIE[session_name()], (time() + $sessionCookieExpireTime), '/');
     }

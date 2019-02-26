@@ -678,7 +678,7 @@ div#menu {
   width: 45px;
   float: left;
   z-index: 2000;
-  /*position: absolute; Lo he quitado para que no ocupe todo el alto y fixed */
+  position: absolute; /*Lo he quitado para que no ocupe todo el alto y fixed */
 }
 
 div#head {
@@ -975,6 +975,14 @@ input.group_item_min {
 }
 input.group_item_min[disabled] {
   background: #fefefe url(../../images/group_green.disabled.png) no-repeat
+    center !important;
+}
+
+input.color_cloud_min {
+  background: #fefefe url(../../images/color_cloud_item.png) no-repeat center !important;
+}
+input.color_cloud_min[disabled] {
+  background: #fefefe url(../../images/color_cloud_item.disabled.png) no-repeat
     center !important;
 }
 
@@ -1549,7 +1557,8 @@ table.databox {
 }
 
 .databox > thead > tr > th,
-.databox > tbody > tr > th {
+.databox > tbody > tr > th,
+.databox > thead > tr > th a {
   padding: 9px 7px;
   font-weight: normal;
   color: #fff;
@@ -4422,7 +4431,177 @@ div#dialog_messages table th:last-child {
   text-align: right;
 }
 
-/* checkbox type toogle switch */
+/*
+ * ---------------------------------------------------------------------
+ * - Notifications
+ * ---------------------------------------------------------------------
+ */
+
+.notification-ball {
+  border: white solid 2px;
+  border-radius: 50px;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+
+.notification-ball-no-messages {
+  background-color: #82b92e;
+  cursor: pointer;
+}
+.notification-ball-new-messages {
+  background-color: #fc4444;
+}
+
+#notification-wrapper {
+  background: white;
+  border: #a5a5a5 solid 1px;
+  z-index: 900000;
+  position: absolute;
+  width: 400px;
+  margin-top: -5px;
+  border-radius: 5px;
+}
+#notification-wrapper::before {
+  content: "";
+  display: block;
+  position: absolute;
+  width: 0px;
+  height: 0;
+  border-color: transparent;
+  border-width: 12px;
+  border-style: solid;
+  bottom: 100%;
+  left: 78%;
+  left: calc(78% - 2px);
+  margin-left: -12px;
+  border-bottom-color: white;
+}
+#notification-wrapper-inner {
+  max-height: 400px;
+  overflow: auto;
+}
+#notification-wrapper-shadow {
+  height: 100%;
+  width: 100%;
+  background: #111;
+  position: fixed;
+  z-index: 9009;
+  top: 0;
+  opacity: 0.3;
+}
+.notification-item {
+  background: whitesmoke;
+  height: 100px;
+  margin: 7px;
+  border: #e4e4e4 solid 1px;
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  padding: 5px;
+}
+.notification-item:hover {
+  border: #ccc solid 1px;
+}
+.notification-item > * {
+  padding-left: 15px;
+  pointer-events: none;
+}
+
+.notification-item:hover {
+  text-decoration: none;
+}
+
+.notification-info {
+  width: 87%;
+  display: flex;
+  flex-flow: column nowrap;
+  overflow: hidden;
+  max-height: 83px;
+  line-height: 1.4em;
+}
+.notification-item img {
+  max-width: 100%;
+  max-height: 100%;
+}
+.notification-title {
+  margin: 0;
+}
+.notification-subtitle {
+  margin: 0;
+  color: #373737;
+}
+
+.global-config-notification-title {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.global-config-notification-title h2 {
+  margin-left: 10px;
+}
+
+.global-config-notification-checkboxes :first-child {
+  font-weight: bold;
+}
+
+.global-config-notification-selectors {
+  display: flex;
+  flex-direction: row;
+  margin-bottom: 10px;
+}
+
+.global-config-notification-selectors h4 {
+  margin: 0;
+}
+
+.global-config-notification-single-selector,
+.global_config_notifications_dialog_add select {
+  display: flex;
+  width: 100%;
+  padding: 0 10px;
+}
+
+.global-config-notification-single-selector :first-child,
+.global-config-notification-single-selector :first-child select {
+  width: 99%;
+}
+
+.global-config-notification-single-selector :last-child,
+.global_config_notifications_dialog_add_wrapper {
+  flex-direction: column;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.global_config_notifications_dialog_add {
+  display: flex;
+  flex-direction: row;
+  margin: 8px;
+}
+
+.global_config_notifications_two_ways_form_arrows {
+  display: flex;
+  flex-flow: column;
+  justify-content: center;
+  margin: 0 5px;
+}
+
+.global_config_notifications_two_ways_form_arrows img {
+  margin: 15px 0;
+}
+
+/* jQuery dialog */
+.no-close .ui-dialog-titlebar-close {
+  display: none;
+}
+/* jQuery dialog */
+
+/* --- SWITCH --- */
 .toogle_switch {
   position: relative;
   display: inline-block;
@@ -4477,11 +4656,147 @@ input:checked + .slider:before {
   background-color: rgb(197, 235, 192);
 }
 
-/* jQuery dialog */
-.no-close .ui-dialog-titlebar-close {
-  display: none;
+.p-switch {
+  position: relative;
+  display: inline-block;
+  width: 30px;
+  height: 17px;
 }
-/* jQuery dialog */
+
+.p-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.p-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  -webkit-transition: 0.4s;
+  transition: 0.4s;
+  border-radius: 34px;
+}
+
+.p-slider:before {
+  position: absolute;
+  content: "";
+  height: 13px;
+  width: 13px;
+  left: 2px;
+  bottom: 2px;
+  background-color: white;
+  -webkit-transition: 0.4s;
+  transition: 0.4s;
+  border-radius: 50%;
+}
+
+input:checked + .p-slider {
+  background-color: #82b92e;
+}
+
+input:focus + .p-slider {
+  box-shadow: 0 0 1px #82b92e;
+}
+
+input:checked + .p-slider:before {
+  -webkit-transform: translateX(13px);
+  -ms-transform: translateX(13px);
+  transform: translateX(13px);
+}
+
+/* --- END SWITCH --- */
+
+/* --- TOAST --- */
+#notifications-toasts-wrapper {
+  position: fixed;
+  right: 20px;
+  top: 70px;
+  width: 270px;
+  height: 100%;
+  z-index: 6;
+  pointer-events: none;
+}
+
+.snackbar {
+  max-width: 270px;
+  background-color: #333;
+  color: #fff;
+  text-align: center;
+  /* border-radius: 2px; */
+  padding: 16px;
+  margin: 10px;
+  border-radius: 4px;
+  visibility: hidden;
+  pointer-events: all;
+}
+
+.snackbar.show {
+  visibility: visible;
+  -webkit-animation: fadein 0.5s, fadeout 0.5s 7.5s;
+  animation: fadein 0.5s, fadeout 0.5s 7.5s;
+}
+
+.snackbar p,
+.snackbar h3 {
+  text-align: left;
+  margin: 0;
+  pointer-events: none;
+}
+.snackbar h3 {
+  color: white;
+  margin-bottom: 10px;
+}
+
+@-webkit-keyframes fadein {
+  from {
+    bottom: 0;
+    opacity: 0;
+  }
+  to {
+    bottom: 30px;
+    opacity: 1;
+  }
+}
+
+@keyframes fadein {
+  from {
+    bottom: 0;
+    opacity: 0;
+  }
+  to {
+    bottom: 30px;
+    opacity: 1;
+  }
+}
+
+@-webkit-keyframes fadeout {
+  from {
+    bottom: 30px;
+    opacity: 1;
+  }
+  to {
+    bottom: 0;
+    opacity: 0;
+  }
+}
+
+@keyframes fadeout {
+  from {
+    bottom: 30px;
+    opacity: 1;
+  }
+  to {
+    bottom: 0;
+    opacity: 0;
+  }
+}
+
+/* --- END TOAST --- */
 
 /*
  * ---------------------------------------------------------------------

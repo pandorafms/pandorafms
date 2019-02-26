@@ -70,7 +70,7 @@ li:hover ul {
   z-index: 999;
   /*left: 44px;*/
   min-height: 35px;
-  height: 35px;
+  /*height: 35px;*/
   width: 180px;
 }
 
@@ -82,7 +82,7 @@ li:hover ul {
 
 .sub_subMenu {
   min-height: 35px !important;
-  height: 35px;
+  /*height: 35px;*/
   width: 180px;
   font-weight: normal !important;
   background-color: #202020;
@@ -187,6 +187,9 @@ li.sub_subMenu.selected {
 }
 
 /* Godmode images */
+#icon_god-discovery {
+  background: url(../../images/gm_discovery.menu.png) no-repeat 50% 50%;
+}
 #icon_god-resources {
   background: url(../../images/gm_resources.menu_gray.png) no-repeat;
 }
@@ -454,24 +457,24 @@ ul li a:hover {
 }
 
 #menu_full {
-  /*height: 100%; Lo he quitado para que no ocupe todo el alto y fixed */
+  /*height: 100%; /*Lo he quitado para que no ocupe todo el alto y fixed */
   width: 60px; /* It is changed for classic menu (215px)*/
-  position: absolute; /*Fixed: Lo he quitado para que no ocupe todo el alto y fixed */
+  position: fixed; /*Fixed: Lo he quitado para que no ocupe todo el alto y fixed */ /*absolute*/
   z-index: 1;
   top: 0;
   left: 0;
   background-color: #343434;
-  border-bottom: solid 5px #343434;
-  min-height: 943px;
-  /* padding-bottom: 40px; Lo he quitado para que no ocupe todo el alto y fixed */
+  border-bottom: solid 3px #343434;
+  /*min-height: 943px;*/
+  padding-bottom: 40px; /*Lo he quitado para que no ocupe todo el alto y fixed */
   /*overflow-x: hidden;*/
 }
 
 .button_collapse {
   height: 55px;
   background-color: #4d4d4d;
-  /* bottom: 0;        Lo he quitado para que no ocupe todo el alto y fixed
-  position: fixed;*/
+  /*bottom: 0; /* Lo he quitado para que no ocupe todo el alto y fixed*/
+  /*position: fixed; /*coemntar tb*/
   width: 60px; /* It is changed for classic menu (215px)*/
   text-align: center;
   color: #fff;
@@ -497,8 +500,8 @@ ul li a:hover {
 
 .operation > li.menu_icon,
 .godmode > li.menu_icon {
-  padding-top: 3px;
-  padding-bottom: 3px;
+  padding-top: 2px; /* 3px */
+  padding-bottom: 2px;
 }
 
 .operation div,
@@ -511,14 +514,21 @@ ul li a:hover {
 .menu_full_classic,
 .button_classic {
   width: 215px !important;
-  background-image: url(../../images/button_collapse_menu.png);
-  background-repeat: no-repeat;
-  background-position: center;
 }
 
 .menu_full_collapsed,
 .button_collapsed {
   width: 60px !important;
+}
+
+.button_classic {
+  width: 215px !important;
+  background-image: url(../../images/button_collapse_menu.png);
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.button_collapsed {
   background-image: url(../../images/button_classic_menu.png);
   background-repeat: no-repeat;
   background-position: center;
@@ -547,7 +557,7 @@ ul li a:hover {
   /*  border: 2px solid #fff;*/
 }
 
-@media screen and (max-height: 845px) {
+@media screen and (max-height: 600px) {
   .operation > li.menu_icon,
   .godmode > li.menu_icon {
     padding-top: 1px;
@@ -558,5 +568,61 @@ ul li a:hover {
   }
   .button_collapse {
     margin-top: 10px;
+    background-color: green;
+  }
+  .menu li,
+  .menu .li.not_selected {
+    min-height: 25px !important;
+  }
+  .button_collapse {
+    height: 45px;
+  }
+  .submenu_text {
+    /* padding: 7.5px;*/
+  }
+}
+
+@media screen and (min-height: 601px) and (max-height: 700px) {
+  .operation > li.menu_icon,
+  .godmode > li.menu_icon {
+    padding-top: 1px;
+    padding-bottom: 2px;
+  }
+  .operation {
+    padding-top: 10px !important;
+  }
+  .button_collapse {
+    margin-top: 10px;
+    background-color: red;
+  }
+  .menu li,
+  .menu .li.not_selected {
+    min-height: 25px !important;
+  }
+  .button_collapse {
+    height: 48px;
+  }
+  .submenu_text {
+    /*padding: 7.5px;*/
+  }
+}
+
+@media screen and (min-height: 701px) and (max-height: 845px) {
+  .operation {
+    padding-top: 10px !important;
+  }
+  .button_collapse {
+    margin-top: 10px;
+    background-color: blue;
+  }
+  .menu li,
+  .menu .li.not_selected {
+    min-height: 28px !important;
+  }
+  .button_collapse {
+    height: 50px;
+  }
+  .submenu_text {
+    /*padding: 7.5px;*/
   }
 }

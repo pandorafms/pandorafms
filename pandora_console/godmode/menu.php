@@ -21,6 +21,21 @@ require_once 'include/functions_menu.php';
 $menu_godmode = [];
 $menu_godmode['class'] = 'godmode';
 
+
+if (check_acl($config['id_user'], 0, 'PM')) {
+    $sub = [];
+    $sub['godmode/servers/discovery']['text'] = __('Discover');
+    $sub['godmode/servers/discovery']['id'] = 'Discover';
+    $sub['godmode/servers/discovery']['subsecs'] = ['godmode/servers/discovery'];
+
+    // Add to menu.
+    $menu_godmode['discover']['text'] = __('Discovery');
+    $menu_godmode['discover']['sec2'] = 'godmode/servers/discovery';
+    $menu_godmode['discover']['id'] = 'god-discovery';
+    $menu_godmode['discover']['sub'] = $sub;
+}
+
+
 $sub = [];
 if (check_acl($config['id_user'], 0, 'AW') || check_acl($config['id_user'], 0, 'AD')) {
     $sub['godmode/agentes/modificar_agente']['text'] = __('Manage agents');
@@ -54,7 +69,6 @@ if (check_acl($config['id_user'], 0, 'AW')) {
     }
 }
 
-$menu_godmode['nuevo_texto']['text'] = __('nuevo_texto');
 if (!empty($sub)) {
     $menu_godmode['gagente']['text'] = __('Resources');
     $menu_godmode['gagente']['sec2'] = 'godmode/agentes/modificar_agente';
@@ -269,6 +283,9 @@ if (check_acl($config['id_user'], 0, 'PM')) {
 
     $sub2['godmode/setup/setup&amp;section=ehorus']['text'] = __('eHorus');
     $sub2['godmode/setup/setup&amp;section=ehorus']['refr'] = 0;
+
+    $sub2['godmode/setup/setup&amp;section=notifications']['text'] = __('Notifications');
+    $sub2['godmode/setup/setup&amp;section=notifications']['refr'] = 0;
 
     if ($config['activate_gis']) {
         $sub2['godmode/setup/gis']['text'] = __('Map conections GIS');

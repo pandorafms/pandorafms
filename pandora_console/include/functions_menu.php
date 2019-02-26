@@ -737,12 +737,12 @@ function menu_calculate_top($level1, $level2, $level3=false)
 
     // Positionate in the middle
     if ($total > 12 && (($total < 18) || (($level1 - $comp) <= 4))) {
-        return - ( floor($comp / 2) * 35);
+        return - ( floor($comp / 2) * 39);
     }
 
     // Positionate in the bottom
     if ($total >= 18) {
-        return (- $comp * 35);
+        return (- $comp * 39);
     }
 
     // return 0 by default

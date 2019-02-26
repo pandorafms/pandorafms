@@ -23,26 +23,30 @@ if (! isset($config['id_user'])) {
     Cambiar $config['classic_menu']
     ¿¿¿donde??? ¿donde la repeticion?
  */
-
-var type_menu = "<?php echo $config['classic_menu']; ?>";
+/*
+var type_menu = "
+<?php
+// echo $config['classic_menu'];
+?>
+";
 
 if(type_menu){
     console.log('es clasico, mantenlo');
 }
 else{
-    console.log('es colapsado, mantenlo');
+    console.log('es collapsed, mantenlo');
 }
-
-//Asignar por defecto colapsado !!! IMPORTANTE!!!!!!!!!!!!!!!!!!!!!!!!!
+*/
+//Asignar por defecto collapsed !!! IMPORTANTE!!!!!!!!!!!!!!!!!!!!!!!!!
 
 $(document).ready(function(){    
-    var variable_boton = localStorage.getItem("variable");    
-    document.getElementById("menu_type").innerHTML = variable_boton;
+    var menuType_value = localStorage.getItem("menuType");    
+    document.getElementById("menu_type").innerHTML = menuType_value;
 
-    if ($('#menu_type').text() == 'colapsado' || $('#menu_type').text() == '') {
+    if ($('#menu_type').text() == 'collapsed' || $('#menu_type').text() == '') {
         if($('#menu_type').text() == ''){
-            localStorage.setItem("variable", "colapsado");
-            document.getElementById("menu_type").innerHTML = localStorage.variable;
+            localStorage.setItem("menuType", "collapsed");
+            document.getElementById("menu_type").innerHTML = localStorage.menuType;
         }
         
         $('#menu_full').removeClass('menu_full_classic').addClass('menu_full_collapsed');  
@@ -58,7 +62,7 @@ $(document).ready(function(){
         $('li.menu_icon').removeClass("no_hidden_menu").addClass('menu_icon_collapsed');//PROBLEMA Y TB SBMENU NO HIDDEN
         $('#top_btn').css('left', '0px');
     }
-    else if ($('#menu_type').text() == 'clasico') {
+    else if ($('#menu_type').text() == 'classic') {
         $('#menu_full').removeClass('menu_full_collapsed').addClass('menu_full_classic'); 
       /*  $('.logo_icon').removeClass('logo_show').addClass('logo_hide'); 
         $('.logo_full').removeClass("logo_hide").addClass("logo_show");*/
@@ -74,8 +78,8 @@ $(document).ready(function(){
     }
     else{
         console.log('else no ha elegido aun, default-else');
-        localStorage.setItem("variable", "colapsado");
-        document.getElementById("menu_type").innerHTML = localStorage.variable;
+        localStorage.setItem("menuType", "collapsed");
+        document.getElementById("menu_type").innerHTML = localStorage.menuType;
     }
     
 });
@@ -95,11 +99,11 @@ $(document).ready(function(){
     window.onscroll = function() {scrollFunction()};
 
     function scrollFunction() {
-        if (document.body.scrollTop > 400 || document.documentElement.scrollTop > 400) {
+       /* if (document.body.scrollTop > 400 || document.documentElement.scrollTop > 400) {
             document.getElementById("top_btn").style.display = "block";
         } else {
             document.getElementById("top_btn").style.display = "none";
-        }
+        }*/
     }
 
     // When the user clicks on the button, scroll to the top of the document.
@@ -189,16 +193,16 @@ $('#button_collapse').on('click', function() {
 elem.className = elem.className.replace('button_collapse', 'cambiar');
 */
     if($('#menu_full').hasClass('menu_full_classic')){
-        localStorage.setItem("variable", "colapsado");
+        localStorage.setItem("menuType", "collapsed");
         //$('#button_collapse').css('color','pink');
-        document.getElementById("menu_type").innerHTML = localStorage.variable;
+        document.getElementById("menu_type").innerHTML = localStorage.menuType;
         $('ul.submenu').css('left', '59px');//hacer que esto se haga aqui
         $('#top_btn').css('left', '0px');
     }
     else if($('#menu_full').hasClass('menu_full_collapsed')){
-        localStorage.setItem("variable", "clasico");
+        localStorage.setItem("menuType", "classic");
         //$('#button_collapse').css('color','blue');
-        document.getElementById("menu_type").innerHTML = localStorage.variable;
+        document.getElementById("menu_type").innerHTML = localStorage.menuType;
         $('ul.submenu').css('left', '214px');//hacer que esto se haga aqui
         $('#top_btn').css('left', '77.5px');
     }
@@ -220,9 +224,9 @@ elem.className = elem.className.replace('button_collapse', 'cambiar');
 
 
     console.log('entra click');
-    console.log(localStorage.variable);
+    console.log(localStorage.menuType);
 /*
-if ($('#button_collapse').text() == 'clasico') {  
+if ($('#button_collapse').text() == 'classic') {  
     classic_menu = true;
 }
 else {
@@ -249,9 +253,9 @@ var click_display = "<?php echo $config['click_display']; ?>";
 
 
 //if ((isNaN(classic_menu)) || (classic_menu == 0)) {
-//f(localStorage.variable == 'clasico'){  
+//f(localStorage.menuType == 'classic'){  
 /*
-if ($('#button_collapse').text() == 'clasico') {  
+if ($('#button_collapse').text() == 'classic') {  
     classic_menu = true;
 }
 else {
@@ -296,7 +300,7 @@ $(document).ready( function() {
 // repeticion de if
 
 var classic_menu;
-if ($('#menu_type').text() == 'clasico') {  
+if ($('#menu_type').text() == 'classic') {  
     classic_menu = true;
     <?php $config['classic_menu'] = true; ?>
 }

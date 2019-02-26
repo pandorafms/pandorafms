@@ -3,13 +3,14 @@
   "version": "1.0.0",
   "description": "Visual Console",
   "scripts": {
-    "test": "jest",
-    "test:watch": "jest --watch",
     "build": "webpack --mode=production",
     "build:dev": "webpack --mode=development",
     "build:watch": "webpack --mode=development --watch",
+    "format": "prettier",
+    "lint": "eslint \"src/**/*.ts\"",
     "start": "webpack-dev-server --color --mode=development",
-    "format": "prettier"
+    "test": "jest",
+    "test:watch": "jest --watch"
   },
   "repository": {
     "type": "git",
@@ -23,12 +24,12 @@
   },
   "homepage": "https://github.com/pandorafms/pandorafms#readme",
   "dependencies": {
-    "@types/jest": "^24.0.6",
-    "@typescript-eslint/eslint-plugin": "^1.1.1",
-    "@typescript-eslint/parser": "^1.1.1",
+    "@types/jest": "^24.0.9",
+    "@typescript-eslint/eslint-plugin": "^1.4.2",
+    "@typescript-eslint/parser": "^1.4.2",
     "awesome-typescript-loader": "^5.2.1",
     "css-loader": "^2.1.0",
-    "eslint": "^5.12.1",
+    "eslint": "^5.14.1",
     "eslint-config-prettier": "^4.0.0",
     "eslint-plugin-prettier": "^3.0.1",
     "file-loader": "^3.0.1",
@@ -36,8 +37,8 @@
     "prettier": "^1.16.1",
     "ts-jest": "^24.0.0",
     "typescript": "^3.3.3333",
-    "webpack": "^4.29.0",
-    "webpack-cli": "^3.2.1",
-    "webpack-dev-server": "^3.1.14"
+    "webpack": "^4.29.5",
+    "webpack-cli": "^3.2.3",
+    "webpack-dev-server": "^3.2.1"
   }
 }

@@ -931,12 +931,14 @@ var TreeController = {
 				}
 
 				controller.recipient.empty();
-				controller.recipient.html(
-					"<div> " +
-						controller.foundMessage +  ": " + controller.tree.length +
-					"</div>" +
-					"<br/>"
-				);
+        			if (controller.tree.length !== undefined) {
+	  				controller.recipient.html(
+	  					"<div> " +
+	  						controller.foundMessage +  ": " + controller.tree.length +
+	  					"</div>" +
+	  					"<br/>"
+	  				);
+        			}
 
 				var $children = _processGroup(this.recipient, this.tree, true);
 				$children.show();

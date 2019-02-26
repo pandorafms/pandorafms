@@ -91,20 +91,20 @@ class TreeService extends Tree {
 			switch ($status) {
 
 			    case SERVICE_STATUS_NORMAL:
-					$processed_items[$row['id']]['statusImageHTML']='<img src="http://localhost/pandora_console/images/status_sets/default/agent_ok_ball.png" data-title="NORMAL status." data-use_title_for_force_title="1" class="forced_title" alt="NORMAL status." />';
+					$processed_items[$row['id']]['statusImageHTML']='<img src="images/status_sets/default/agent_ok_ball.png" data-title="NORMAL status." data-use_title_for_force_title="1" class="forced_title" alt="NORMAL status." />';
 			    break;
 
 			    case SERVICE_STATUS_CRITICAL:
-					$processed_items[$row['id']]['statusImageHTML']='<img src="http://localhost/pandora_console/images/status_sets/default/agent_critical_ball.png" data-title="CRITICAL status." data-use_title_for_force_title="1" class="forced_title" alt="CRITICAL status." />';
+					$processed_items[$row['id']]['statusImageHTML']='<img src="images/status_sets/default/agent_critical_ball.png" data-title="CRITICAL status." data-use_title_for_force_title="1" class="forced_title" alt="CRITICAL status." />';
 			    break;
 
 			    case SERVICE_STATUS_WARNING:
-					$processed_items[$row['id']][$key]['statusImageHTML']='<img src="http://localhost/pandora_console/images/status_sets/default/agent_warning_ball.png" data-title="WARNING status." data-use_title_for_force_title="1" class="forced_title" alt="WARNING status." />';
+					$processed_items[$row['id']][$key]['statusImageHTML']='<img src="images/status_sets/default/agent_warning_ball.png" data-title="WARNING status." data-use_title_for_force_title="1" class="forced_title" alt="WARNING status." />';
 			    break;
 
 			    case SERVICE_STATUS_UNKNOWN:
 			    default:
-					$processed_items[$row['id']]['statusImageHTML']='<img src="http://localhost/pandora_console/images/status_sets/default/agent_no_data_ball.png" data-title="UNKNOWN status." data-use_title_for_force_title="1" class="forced_title" alt="UNKNOWN status." />';
+					$processed_items[$row['id']]['statusImageHTML']='<img src="images/status_sets/default/agent_no_data_ball.png" data-title="UNKNOWN status." data-use_title_for_force_title="1" class="forced_title" alt="UNKNOWN status." />';
 			    break;
 			}
 		}
@@ -201,16 +201,16 @@ class TreeService extends Tree {
 			foreach ($data_modules as $key => $module) {
 				switch ($module['estado']) {
 					case '0':
-						$data_modules[$key]['statusImageHTML'] = '<img src="http://localhost/pandora_console/images/status_sets/default/agent_ok_ball.png" data-title="NORMAL status." data-use_title_for_force_title="1" class="forced_title" alt="NORMAL status." />';
+						$data_modules[$key]['statusImageHTML'] = '<img src="images/status_sets/default/agent_ok_ball.png" data-title="NORMAL status." data-use_title_for_force_title="1" class="forced_title" alt="NORMAL status." />';
 						break;
 					case '1':
-						$data_modules[$key]['statusImageHTML'] = '<img src="http://localhost/pandora_console/images/status_sets/default/agent_critical_ball.png" data-title="NORMAL status." data-use_title_for_force_title="1" class="forced_title" alt="CRITICAL status." />';
+						$data_modules[$key]['statusImageHTML'] = '<img src="images/status_sets/default/agent_critical_ball.png" data-title="NORMAL status." data-use_title_for_force_title="1" class="forced_title" alt="CRITICAL status." />';
 						break;
 					case '2':
-						$data_modules[$key]['statusImageHTML'] = '<img src="http://localhost/pandora_console/images/status_sets/default/agent_warning_ball.png" data-title="NORMAL status." data-use_title_for_force_title="1" class="forced_title" alt="WARNING status." />';
+						$data_modules[$key]['statusImageHTML'] = '<img src="images/status_sets/default/agent_warning_ball.png" data-title="NORMAL status." data-use_title_for_force_title="1" class="forced_title" alt="WARNING status." />';
 						break;
 					case '4':
-						$data_modules[$key]['statusImageHTML'] = '<img src="http://localhost/pandora_console/images/status_sets/default/agent_no_data_ball.png" data-title="NORMAL status." data-use_title_for_force_title="1" class="forced_title" alt="UNKNOWN status." />';
+						$data_modules[$key]['statusImageHTML'] = '<img src="images/status_sets/default/agent_no_data_ball.png" data-title="NORMAL status." data-use_title_for_force_title="1" class="forced_title" alt="UNKNOWN status." />';
 						break;
 					default:
 						# code...
@@ -267,20 +267,20 @@ class TreeService extends Tree {
 			switch ($status) {
 
 			    case SERVICE_STATUS_NORMAL:
-					$service_stats[$row['id']]['statusImageHTML']='<img src="http://localhost/pandora_console/images/status_sets/default/agent_ok_ball.png" data-title="NORMAL status." data-use_title_for_force_title="1" class="forced_title" alt="NORMAL status." />';
+					$service_stats[$row['id']]['statusImageHTML']='<img src="images/status_sets/default/agent_ok_ball.png" data-title="NORMAL status." data-use_title_for_force_title="1" class="forced_title" alt="NORMAL status." />';
 			    break;
 
 			    case SERVICE_STATUS_CRITICAL:
-					$service_stats[$row['id']]['statusImageHTML']='<img src="http://localhost/pandora_console/images/status_sets/default/agent_critical_ball.png" data-title="CRITICAL status." data-use_title_for_force_title="1" class="forced_title" alt="CRITICAL status." />';
+					$service_stats[$row['id']]['statusImageHTML']='<img src="images/status_sets/default/agent_critical_ball.png" data-title="CRITICAL status." data-use_title_for_force_title="1" class="forced_title" alt="CRITICAL status." />';
 			    break;
 
 			    case SERVICE_STATUS_WARNING:
-					$service_stats[$row['id']][$key]['statusImageHTML']='<img src="http://localhost/pandora_console/images/status_sets/default/agent_warning_ball.png" data-title="WARNING status." data-use_title_for_force_title="1" class="forced_title" alt="WARNING status." />';
+					$service_stats[$row['id']][$key]['statusImageHTML']='<img src="images/status_sets/default/agent_warning_ball.png" data-title="WARNING status." data-use_title_for_force_title="1" class="forced_title" alt="WARNING status." />';
 			    break;
 
 			    case SERVICE_STATUS_UNKNOWN:
 			    default:
-					$service_stats[$row['id']]['statusImageHTML']='<img src="http://localhost/pandora_console/images/status_sets/default/agent_no_data_ball.png" data-title="UNKNOWN status." data-use_title_for_force_title="1" class="forced_title" alt="UNKNOWN status." />';
+					$service_stats[$row['id']]['statusImageHTML']='<img src="images/status_sets/default/agent_no_data_ball.png" data-title="UNKNOWN status." data-use_title_for_force_title="1" class="forced_title" alt="UNKNOWN status." />';
 			    break;
 			}
 		}

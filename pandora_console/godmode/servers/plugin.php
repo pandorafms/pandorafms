@@ -827,12 +827,12 @@ if (($create != '') || ($view != '')) {
         // recorremos todos los nodos.
         foreach ($setup as $key => $value) {
             // Obtenemos los plugins de la meta.
-            $all_plugin_meta = db_get_all_rows_in_table('tplugin');
+            $all_plugin_meta = db_get_all_rows_sql('SELECT SQL_NO_CACHE * FROM tplugin', false, false);
             // Conectamos con el nodo.
             if (metaconsole_connect($value) == NOERR) {
                 $values = [];
                 // Obtenemos los plugin del nodo.
-                $node_plugin_server = db_get_all_rows_in_table('tplugin');
+                $node_plugin_server = db_get_all_rows_sql('SELECT SQL_NO_CACHE * FROM tplugin', false, false);
                 foreach ($node_plugin_server as $key2 => $plugin) {
                     // Comprobamos si el id esta meta y nodo al mismo tiempo.
                     $key_exists = array_search($plugin['id'], array_column($all_plugin_meta, 'id'));
@@ -896,11 +896,11 @@ if (($create != '') || ($view != '')) {
             }
         }
 
-        $all_plugin_meta = db_get_all_rows_in_table('tplugin');
+        $all_plugin_meta = db_get_all_rows_sql('SELECT SQL_NO_CACHE * FROM tplugin', false, false);
 
         foreach ($setup as $key => $value) {
             if (metaconsole_connect($value) == NOERR) {
-                $all_plugin_node = db_get_all_rows_in_table('tplugin');
+                $all_plugin_node = db_get_all_rows_sql('SELECT SQL_NO_CACHE * FROM tplugin', false, false);
 
                 $array_diff = array_diff(array_column($all_plugin_meta, 'id'), array_column($all_plugin_node, 'id'));
                 foreach ($array_diff as $key2 => $pluginid) {

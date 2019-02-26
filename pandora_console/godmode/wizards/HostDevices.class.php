@@ -476,6 +476,10 @@ class HostDevices extends Wizard
             $task_url = '&task='.$this->task['id_rt'];
         }
 
+        $breadcrum[] = [
+            'link'  => 'index.php?sec=gservers&sec2=godmode/servers/discovery&wiz=hd',
+            'label' => __($this->label),
+        ];
         for ($i = 0; $i < $this->maxPagesNetScan; $i++) {
             $breadcrum[] = [
                 'link'     => 'index.php?sec=gservers&sec2=godmode/servers/discovery&wiz=hd&mode=netscan&page='.$i.$task_url,
@@ -710,9 +714,6 @@ $("select#interval_manual_defined").change(function() {
                 // XXX: Could be improved validating inputs before continue (JS)
                 // Print NetScan page 0.
                 $this->printForm($form);
-                $this->printGoBackButton(
-                    $this->url.'&page='.($this->page - 1).$task_url
-                );
             }
         }
 

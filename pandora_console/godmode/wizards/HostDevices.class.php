@@ -29,6 +29,7 @@
 require_once __DIR__.'/Wizard.main.php';
 require_once $config['homedir'].'/include/functions_users.php';
 enterprise_include('include/class/CSVImportAgents.class.php');
+enterprise_include_once('include/functions_hostdevices.php');
 
 /**
  * Wizard section Host&devices.
@@ -782,7 +783,14 @@ $("select#interval_manual_defined").change(function() {
 
             if (enterprise_installed()) {
                 // Feature configuration.
-                enterprise_require_once('include/hostdevices_extra.php');
+                $extra = enterprise_hook('hd_showextrainputs', [$this]);
+                if (is_array($extra) === true) {
+                    $form['inputs'] = array_merge(
+                        $form['inputs'],
+                        $extra['inputs']
+                    );
+                    $form['js'] = $extra['js'];
+                }
             }
 
             // Submit button.

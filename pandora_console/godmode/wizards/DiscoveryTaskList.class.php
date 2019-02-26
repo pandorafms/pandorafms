@@ -150,9 +150,9 @@ class DiscoveryTaskList extends Wizard
                     ],
                 ],
             ];
-        }
 
-        $this->printForm($form);
+            $this->printForm($form);
+        }
 
         return $ret;
     }
@@ -311,7 +311,8 @@ class DiscoveryTaskList extends Wizard
         if ($servers === false) {
             $servers = [];
             ui_print_error_message(__('Discovery Server is disabled'));
-            return false;
+            $check = db_get_all_rows_sql('SELECT * FROM trecon_task');
+            return (bool) $check;
         } else {
             include_once $config['homedir'].'/include/functions_graph.php';
             include_once $config['homedir'].'/include/functions_servers.php';
@@ -339,12 +340,7 @@ class DiscoveryTaskList extends Wizard
             foreach ($servers as $serverItem) {
                 $id_server = $serverItem['id_server'];
                 $server_name = servers_get_name($id_server);
-                $recon_tasks = db_get_all_rows_field_filter(
-                    'trecon_task',
-                    'id_recon_server',
-                    $id_server
-                );
-
+                $recon_tasks = db_get_all_rows_sql('SELECT * FROM trecon_task');
                 $user_groups = implode(',', array_keys(users_get_groups()));
                 $defined_tasks = db_get_all_rows_filter(
                     'tuser_task_scheduled',

@@ -526,6 +526,8 @@ class Wizard
     /**
      * Prints a go back button redirecting to main page.
      *
+     * @param string $url Optional target url.
+     *
      * @return void
      */
     public function printGoBackButton($url=null)

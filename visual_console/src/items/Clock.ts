@@ -104,7 +104,7 @@ export default class Clock extends VisualConsoleItem<ClockProps> {
       this.props.height * 2 < this.props.width
         ? this.props.height * 2
         : this.props.width;
-    this.props.clockTimezone = "Madrid";
+
     const baseTimeFontSize = 20; // Per 100px of width.
     const dateFontSizeMultiplier = 0.5;
     const tzFontSizeMultiplier = 6 / this.props.clockTimezone.length;

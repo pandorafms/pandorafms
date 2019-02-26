@@ -1,47 +1,57 @@
 <?php
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2012 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the  GNU Lesser General Public License
-// as published by the Free Software Foundation; version 2
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-
 /**
- * @package    Include
- * @subpackage Constants
+ * Constants definitions.
+ *
+ * @category   Library
+ * @package    Pandora FMS
+ * @subpackage Opensource
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
  */
 
-// Enterprise hook constant
+// Enterprise hook constant.
 define('ENTERPRISE_NOT_HOOK', -1);
 
-// Others
+// Others.
 define('GROUP_ALL', 0);
 
-// Date and time formats
+// Date and time formats.
 define('DATE_FORMAT', 'Y/m/d');
 define('DATE_FORMAT_JS', 'yy/mm/dd');
 define('TIME_FORMAT', 'H:i:s');
 define('TIME_FORMAT_JS', 'HH:mm:ss');
 
-// Events state constants
+// Events state constants.
 define('EVENT_NEW', 0);
 define('EVENT_VALIDATE', 1);
 define('EVENT_PROCESS', 2);
 
 
 
-// Agents disabled status
+// Agents disabled status.
 define('AGENT_ENABLED', 0);
 define('AGENT_DISABLED', 1);
 
 
 
-// Error report codes
+// Error report codes.
 define('NOERR', 11111);
 define('ERR_GENERIC', -10000);
 define('ERR_EXIST', -20000);
@@ -61,12 +71,12 @@ define('ERR_ACL', -110000);
 define('ERR_AUTH', -120000);
 define('ERR_COULDNT_RESOLVE_HOST', -130000);
 
-// Event status code
+// Event status code.
 define('EVENT_STATUS_NEW', 0);
 define('EVENT_STATUS_INPROCESS', 2);
 define('EVENT_STATUS_VALIDATED', 1);
 
-// Seconds in a time unit constants
+// Seconds in a time unit constants.
 define('SECONDS_1MINUTE', 60);
 define('SECONDS_2MINUTES', 120);
 define('SECONDS_5MINUTES', 300);
@@ -97,16 +107,16 @@ define('SECONDS_3YEARS', 93312000);
 
 
 
-// Separator constats
+// Separator constats.
 define('SEPARATOR_COLUMN', ';');
 define('SEPARATOR_ROW', chr(10));
-// chr(10) = '\n'
+// Chr(10) is \n.
 define('SEPARATOR_COLUMN_CSV', '#');
 define('SEPARATOR_ROW_CSV', "@\n");
 
 
 
-// Backup paths
+// Backup paths.
 switch ($config['dbtype']) {
     case 'mysql':
     case 'postgresql':
@@ -118,11 +128,15 @@ switch ($config['dbtype']) {
         define('BACKUP_DIR', 'DATA_PUMP_DIR');
         define('BACKUP_FULLPATH', 'DATA_PUMP_DIR');
     break;
+
+    default:
+        // Ignore.
+    break;
 }
 
 
 
-// Color constants
+// Color constants.
 define('COL_CRITICAL', '#FC4444');
 define('COL_WARNING', '#FAD403');
 define('COL_WARNING_DARK', '#FFB900');
@@ -152,14 +166,13 @@ define('COL_GRAPH12', '#F45B95');
 define('COL_GRAPH13', '#E83128');
 
 
-/*
-    The styles */
-// Size of text in characters for truncate
+// Styles.
+// Size of text in characters for truncate.
 define('GENERIC_SIZE_TEXT', 50);
 
 
 
-// Agent module status
+// Agent module status.
 define('AGENT_MODULE_STATUS_ALL', -1);
 define('AGENT_MODULE_STATUS_CRITICAL_BAD', 1);
 define('AGENT_MODULE_STATUS_CRITICAL_ALERT', 100);
@@ -172,7 +185,7 @@ define('AGENT_MODULE_STATUS_WARNING_ALERT', 200);
 define('AGENT_MODULE_STATUS_UNKNOWN', 3);
 define('AGENT_MODULE_STATUS_NOT_INIT', 5);
 
-// Agent status
+// Agent status.
 define('AGENT_STATUS_ALL', -1);
 define('AGENT_STATUS_CRITICAL', 1);
 define('AGENT_STATUS_NORMAL', 0);
@@ -183,9 +196,8 @@ define('AGENT_STATUS_ALERT_FIRED', 4);
 define('AGENT_STATUS_WARNING', 2);
 
 
-/*
-    Visual maps contants */
-// The items kind
+// Visual maps contants.
+// The items kind.
 define('STATIC_GRAPH', 0);
 define('PERCENTILE_BAR', 3);
 define('MODULE_GRAPH', 1);
@@ -208,59 +220,58 @@ define('DONUT_GRAPH', 17);
 define('BARS_GRAPH', 18);
 define('CLOCK', 19);
 define('COLOR_CLOUD', 20);
-// Some styles
+// Some styles.
 define('MIN_WIDTH', 300);
 define('MIN_HEIGHT', 120);
 define('MIN_WIDTH_CAPTION', 420);
-// The process for simple value
+// The process for simple value.
 define('PROCESS_VALUE_NONE', 0);
 define('PROCESS_VALUE_MIN', 1);
 define('PROCESS_VALUE_MAX', 2);
 define('PROCESS_VALUE_AVG', 3);
-// Status
+// Status.
 define('VISUAL_MAP_STATUS_CRITICAL_BAD', 1);
 define('VISUAL_MAP_STATUS_CRITICAL_ALERT', 4);
 define('VISUAL_MAP_STATUS_NORMAL', 0);
 define('VISUAL_MAP_STATUS_WARNING', 2);
 define('VISUAL_MAP_STATUS_UNKNOWN', 3);
 define('VISUAL_MAP_STATUS_WARNING_ALERT', 10);
-// Wizard
+// Wizard.
 define('VISUAL_MAP_WIZARD_PARENTS_NONE', 0);
 define('VISUAL_MAP_WIZARD_PARENTS_ITEM_MAP', 1);
 define('VISUAL_MAP_WIZARD_PARENTS_AGENT_RELANTIONSHIP', 2);
 
 
 
-/*
-    Service constants */
-// Status
+// Service constants.
+// Status.
 define('SERVICE_STATUS_UNKNOWN', -1);
 define('SERVICE_STATUS_NORMAL', 0);
 define('SERVICE_STATUS_CRITICAL', 1);
 define('SERVICE_STATUS_WARNING', 2);
 define('SERVICE_STATUS_ALERT', 4);
-// Default weights
+// Default weights.
 define('SERVICE_WEIGHT_CRITICAL', 1);
 define('SERVICE_WEIGHT_WARNING', 0.5);
 define('SERVICE_ELEMENT_WEIGHT_CRITICAL', 1);
 define('SERVICE_ELEMENT_WEIGHT_WARNING', 0.5);
 define('SERVICE_ELEMENT_WEIGHT_OK', 0);
 define('SERVICE_ELEMENT_WEIGHT_UNKNOWN', 0);
-// Modes
+// Modes.
 define('SERVICE_MODE_MANUAL', 0);
 define('SERVICE_MODE_AUTO', 1);
 define('SERVICE_MODE_SIMPLE', 2);
 
 
-/*
-    Status images */
-// For modules
+
+// Status images.
+// For modules.
 define('STATUS_MODULE_OK', 'module_ok.png');
 define('STATUS_MODULE_CRITICAL', 'module_critical.png');
 define('STATUS_MODULE_WARNING', 'module_warning.png');
 define('STATUS_MODULE_NO_DATA', 'module_no_data.png');
 define('STATUS_MODULE_UNKNOWN', 'module_unknown.png');
-// For agents
+// For agents.
 define('STATUS_AGENT_CRITICAL', 'agent_critical.png');
 define('STATUS_AGENT_WARNING', 'agent_warning.png');
 define('STATUS_AGENT_DOWN', 'agent_down.png');
@@ -269,24 +280,24 @@ define('STATUS_AGENT_OK', 'agent_ok.png');
 define('STATUS_AGENT_NO_DATA', 'agent_no_data.png');
 define('STATUS_AGENT_NO_MONITORS', 'agent_no_monitors.png');
 define('STATUS_AGENT_NOT_INIT', 'agent_notinit.png');
-// For alerts
+// For alerts.
 define('STATUS_ALERT_FIRED', 'alert_fired.png');
 define('STATUS_ALERT_NOT_FIRED', 'alert_not_fired.png');
 define('STATUS_ALERT_DISABLED', 'alert_disabled.png');
-// For servers
+// For servers.
 define('STATUS_SERVER_OK', 'server_ok.png');
 define('STATUS_SERVER_DOWN', 'server_down.png');
 
 
-/*
-    Status images (ball) */
-// For modules
+
+// Status images (ball).
+// For modules.
 define('STATUS_MODULE_OK_BALL', 'module_ok_ball.png');
 define('STATUS_MODULE_CRITICAL_BALL', 'module_critical_ball.png');
 define('STATUS_MODULE_WARNING_BALL', 'module_warning_ball.png');
 define('STATUS_MODULE_NO_DATA_BALL', 'module_no_data_ball.png');
 define('STATUS_MODULE_UNKNOWN_BALL', 'module_unknown_ball.png');
-// For agents
+// For agents.
 define('STATUS_AGENT_CRITICAL_BALL', 'agent_critical_ball.png');
 define('STATUS_AGENT_WARNING_BALL', 'agent_warning_ball.png');
 define('STATUS_AGENT_DOWN_BALL', 'agent_down_ball.png');
@@ -295,17 +306,17 @@ define('STATUS_AGENT_OK_BALL', 'agent_ok_ball.png');
 define('STATUS_AGENT_NO_DATA_BALL', 'agent_no_data_ball.png');
 define('STATUS_AGENT_NO_MONITORS_BALL', 'agent_no_monitors_ball.png');
 define('STATUS_AGENT_NOT_INIT_BALL', 'agent_notinit_ball.png');
-// For alerts
+// For alerts.
 define('STATUS_ALERT_FIRED_BALL', 'alert_fired_ball.png');
 define('STATUS_ALERT_NOT_FIRED_BALL', 'alert_not_fired_ball.png');
 define('STATUS_ALERT_DISABLED_BALL', 'alert_disabled_ball.png');
-// For servers
+// For servers.
 define('STATUS_SERVER_OK_BALL', 'server_ok_ball.png');
 define('STATUS_SERVER_DOWN_BALL', 'server_down_ball.png');
 
 
 
-// Events criticity
+// Events criticity.
 define('EVENT_CRIT_MAINTENANCE', 0);
 define('EVENT_CRIT_INFORMATIONAL', 1);
 define('EVENT_CRIT_NORMAL', 2);
@@ -317,7 +328,7 @@ define('EVENT_CRIT_WARNING_OR_CRITICAL', 34);
 define('EVENT_CRIT_NOT_NORMAL', 20);
 define('EVENT_CRIT_OR_NORMAL', 21);
 
-// Id Module (more use in component)
+// Id Module (more use in component).
 define('MODULE_DATA', 1);
 define('MODULE_NETWORK', 2);
 define('MODULE_SNMP', 2);
@@ -327,7 +338,7 @@ define('MODULE_WMI', 6);
 define('MODULE_WEB', 7);
 define('MODULE_WUX', 8);
 
-// Type of Modules of Prediction
+// Type of Modules of Prediction.
 define('MODULE_PREDICTION_SERVICE', 2);
 define('MODULE_PREDICTION_SYNTHETIC', 3);
 define('MODULE_PREDICTION_NETFLOW', 4);
@@ -335,7 +346,7 @@ define('MODULE_PREDICTION_CLUSTER', 5);
 define('MODULE_PREDICTION_CLUSTER_AA', 6);
 define('MODULE_PREDICTION_CLUSTER_AP', 7);
 
-// SNMP CONSTANTS
+// SNMP CONSTANTS.
 define('SNMP_DIR_MIBS', 'attachment/mibs');
 
 define('SNMP_TRAP_TYPE_NONE', -1);
@@ -346,16 +357,16 @@ define('SNMP_TRAP_TYPE_LINK_UP', 3);
 define('SNMP_TRAP_TYPE_AUTHENTICATION_FAILURE', 4);
 define('SNMP_TRAP_TYPE_OTHER', 5);
 
-// PASSWORD POLICIES
+// PASSWORD POLICIES.
 define('PASSSWORD_POLICIES_OK', 0);
 define('PASSSWORD_POLICIES_FIRST_CHANGE', 1);
 define('PASSSWORD_POLICIES_EXPIRED', 2);
 
-// SERVER TYPES
+// SERVER TYPES.
 define('SERVER_TYPE_DATA', 0);
 define('SERVER_TYPE_NETWORK', 1);
 define('SERVER_TYPE_SNMP', 2);
-define('SERVER_TYPE_RECON', 3);
+define('SERVER_TYPE_DISCOVERY', 3);
 define('SERVER_TYPE_PLUGIN', 4);
 define('SERVER_TYPE_PREDICTION', 5);
 define('SERVER_TYPE_WMI', 6);
@@ -374,7 +385,7 @@ define('SERVER_TYPE_SYSLOG', 18);
 define('SERVER_TYPE_AUTOPROVISION', 19);
 define('SERVER_TYPE_MIGRATION', 20);
 
-// REPORTS
+// REPORTS.
 define('REPORT_TOP_N_MAX', 1);
 define('REPORT_TOP_N_MIN', 2);
 define('REPORT_TOP_N_AVG', 0);
@@ -412,7 +423,7 @@ define('REPORT_GENERAL_GROUP_BY_AGENT', 1);
 
 define('REPORTING_CUSTOM_GRAPH_LEGEND_EACH_MODULE_VERTICAL_SIZE', 15);
 
-// POLICIES
+// POLICIES.
 define('POLICY_UPDATED', 0);
 define('POLICY_PENDING_DATABASE', 1);
 define('POLICY_PENDING_ALL', 2);
@@ -426,7 +437,7 @@ define('MODULE_LINKED', 1);
 define('MODULE_PENDING_UNLINK', 10);
 define('MODULE_PENDING_LINK', 11);
 
-// EVENTS
+// EVENTS.
 define('EVENTS_GOING_UNKNOWN', 'going_unknown');
 define('EVENTS_UNKNOWN', 'unknown');
 define('EVENTS_ALERT_FIRED', 'alert_fired');
@@ -445,7 +456,7 @@ define('EVENTS_GOING_DOWN_CRITICAL', 'going_down_critical');
 define('EVENTS_GOING_UP_NORMAL', 'going_up_normal');
 define('EVENTS_CONFIGURATION_CHANGE', 'configuration_change');
 
-// CUSTOM GRAPHS
+// CUSTOM GRAPHS.
 define('CUSTOM_GRAPH_AREA', 0);
 define('CUSTOM_GRAPH_STACKED_AREA', 1);
 define('CUSTOM_GRAPH_LINE', 2);
@@ -457,26 +468,26 @@ define('CUSTOM_GRAPH_VBARS', 7);
 define('CUSTOM_GRAPH_PIE', 8);
 define('CUSTOM_GRAPH_BULLET_CHART_THRESHOLD', 9);
 
-// COLLECTIONS
+// COLLECTIONS.
 define('COLLECTION_PENDING_APPLY', 0);
 define('COLLECTION_CORRECT', 1);
 define('COLLECTION_ERROR_LOST_DIRECTORY', 2);
 define('COLLECTION_UNSAVED', 3);
 
-// PAGINATION
+// PAGINATION.
 define('PAGINATION_BLOCKS_LIMIT', 15);
 
-// CHARTS
+// CHARTS.
 define('CHART_DEFAULT_WIDTH', 150);
 define('CHART_DEFAULT_HEIGHT', 110);
 
 define('CHART_DEFAULT_ALPHA', 50);
 
-// Statwin
+// Statwin.
 define('STATWIN_DEFAULT_CHART_WIDTH', 555);
 define('STATWIN_DEFAULT_CHART_HEIGHT', 245);
 
-// Dashboard
+// Dashboard.
 define('DASHBOARD_DEFAULT_COUNT_CELLS', 1);
 
 define('OPTION_TEXT', 1);
@@ -491,11 +502,11 @@ define('OPTION_AGENT_AUTOCOMPLETE', 9);
 define('OPTION_SELECT_MULTISELECTION', 10);
 define('OPTION_COLOR_PICKER', 11);
 
-// Transactional map constants
+// Transactional map constants.
 define('NODE_TYPE', 0);
 define('ARROW_TYPE', 1);
 
-// SAML attributes constants
+// SAML attributes constants.
 define('SAML_ROLE_AND_TAG', 'eduPersonEntitlement');
 define('SAML_USER_DESC', 'commonName');
 define('SAML_ID_USER_IN_PANDORA', 'eduPersonTargetedId');
@@ -503,11 +514,11 @@ define('SAML_GROUP_IN_PANDORA', 'schacHomeOrganization');
 define('SAML_MAIL_IN_PANDORA', 'mail');
 define('SAML_DEFAULT_PROFILES_AND_TAGS_FORM', 'urn:mace:rediris.es:entitlement:monitoring:');
 
-// Other constants
+// Other constants.
 define('STATUS_OK', 0);
 define('STATUS_ERROR', 1);
 
-// Maps (new networkmaps and  new visualmaps)
+// Maps (new networkmaps and  new visualmaps).
 define('MAP_TYPE_NETWORKMAP', 0);
 define('MAP_TYPE_VISUALMAP', 1);
 
@@ -530,14 +541,14 @@ define('MAP_SOURCE_IP_MASK', 1);
 define('NETWORKMAP_DEFAULT_WIDTH', 800);
 define('NETWORKMAP_DEFAULT_HEIGHT', 800);
 
-// Background options
+// Background options.
 define('CENTER', 0);
 define('MOSAIC', 1);
 define('STRECH', 2);
 define('FIT_WIDTH', 3);
 define('FIT_HEIGH', 4);
 
-// Items of maps
+// Items of maps.
 define('ITEM_TYPE_AGENT_NETWORKMAP', 0);
 define('ITEM_TYPE_MODULE_NETWORKMAP', 1);
 define('ITEM_TYPE_EDGE_NETWORKMAP', 2);
@@ -546,7 +557,7 @@ define('ITEM_TYPE_MODULEGROUP_NETWORKMAP', 4);
 define('ITEM_TYPE_GROUP_NETWORKMAP', 5);
 define('ITEM_TYPE_POLICY_NETWORKMAP', 6);
 
-// Another constants new networkmap
+// Another constants new networkmap.
 define('DEFAULT_NODE_WIDTH', 30);
 define('DEFAULT_NODE_HEIGHT', 30);
 define('DEFAULT_NODE_SHAPE', 'circle');

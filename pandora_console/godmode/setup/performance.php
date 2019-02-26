@@ -524,6 +524,18 @@ if ($config['history_db_enabled'] == 1) {
     );
 }
 
+$table->data[] = [
+    __('Max. days before delete old messages'),
+    html_print_input_text(
+        'delete_old_messages',
+        $config['delete_old_messages'],
+        '',
+        5,
+        5,
+        true
+    ),
+];
+
 $table_other = new stdClass();
 $table_other->width = '100%';
 $table_other->class = 'databox filters';

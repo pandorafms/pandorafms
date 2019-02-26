@@ -738,7 +738,12 @@ function message_check_delete_items() {
 }
 
 function added_ids_deleted_items_to_hidden_input() {
-    message_check_delete_items();
+   var success = message_check_delete_items();
+
+   if(success === false){
+    $("input.check_delete:checked").val() = false;
+       return false;
+   }
     
     var ids = '';
     var first = true;

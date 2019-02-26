@@ -510,8 +510,6 @@ function menu_add_extras(&$menu)
 
     $menu_extra['workspace']['sub']['operation/incidents/incident_detail']['text'] = __('Manage incident');
 
-    $menu_extra['reporting']['sub']['godmode/reporting/visual_console_builder']['text'] = __('Manage visual console');
-
     // Duplicate extensions as sec=extension to check it from url
     foreach ($menu as $k => $m) {
         if (!isset($m['sub'])) {
@@ -649,6 +647,7 @@ function menu_get_sec_pages($sec, $menu_hash=false)
 
 /**
  * Get the pages in a section2
+ * $menu
  *
  * @param string sec code
  * @param string menu hash. All the menu structure (For example

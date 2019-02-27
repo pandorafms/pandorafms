@@ -20,6 +20,7 @@ export type ClockProps = {
   clockTimezone: string;
   clockTimezoneOffset: number; // Offset of the timezone to UTC in seconds.
   showClockTimezone: boolean;
+  color: string | null;
 } & VisualConsoleItemProps &
   LinkedVisualConsoleProps;
 
@@ -81,6 +82,10 @@ export function clockPropsDecoder(data: UnknownObject): ClockProps | never {
     clockTimezone: data.clockTimezone,
     clockTimezoneOffset: parseIntOr(data.clockTimezoneOffset, 0),
     showClockTimezone: parseBoolean(data.showClockTimezone),
+    color:
+      typeof data.color === "string" && data.color.length > 0
+        ? data.color
+        : null,
     ...linkedVCPropsDecoder(data) // Object spread. It will merge the properties of the two objects.
   };
 }
@@ -209,6 +214,7 @@ export default class Clock extends VisualConsoleItem<ClockProps> {
       dateElem.className = "date";
       dateElem.textContent = this.getDigitalDate();
       dateElem.style.fontSize = `${dateFontSize}px`;
+      dateElem.style.color = this.props.color;
       element.append(dateElem);
     }
 
@@ -217,6 +223,7 @@ export default class Clock extends VisualConsoleItem<ClockProps> {
     timeElem.className = "time";
     timeElem.textContent = this.getDigitalTime();
     timeElem.style.fontSize = `${timeFontSize}px`;
+    timeElem.style.color = this.props.color;
     element.append(timeElem);
 
     // Timezone name.
@@ -225,6 +232,7 @@ export default class Clock extends VisualConsoleItem<ClockProps> {
       tzElem.className = "timezone";
       tzElem.textContent = this.props.clockTimezone;
       tzElem.style.fontSize = `${tzFontSize}px`;
+      tzElem.style.color = this.props.color;
       element.append(tzElem);
     }
 

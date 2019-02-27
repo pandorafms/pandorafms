@@ -25,7 +25,7 @@ if (container != null) {
     width: 800,
     height: 300,
     backgroundURL: null,
-    backgroundColor: "rgb(154, 154, 154)",
+    backgroundColor: "rgb(86, 86, 86)",
     isFavorite: false
   };
 
@@ -42,8 +42,8 @@ if (container != null) {
     x: 100,
     y: 50,
     // Size props.
-    width: 100,
-    height: 100,
+    width: 70,
+    height: 70,
     // Agent props.
     agentId: null,
     agentName: null,
@@ -52,7 +52,7 @@ if (container != null) {
     moduleName: null,
     // Custom props.
     imageSrc:
-      "https://brutus.artica.lan:8081/uploads/-/system/project/avatar/1/1.png",
+      "http://localhost/pandora_console/images/console/icons/bridge_ok.png",
     showLastValueTooltip: "default"
   };
 
@@ -85,7 +85,7 @@ if (container != null) {
   const digitalClockRawProps = {
     // Generic props.
     id: 3,
-    type: 19, // clock = 19
+    type: 19, // Clock = 19
     label: null,
     isLinkEnabled: false,
     isOnTop: false,
@@ -95,14 +95,15 @@ if (container != null) {
     x: 500,
     y: 100,
     // Size props.
-    width: 300,
-    height: 150,
+    width: 200,
+    height: 100,
     // Custom props.
     clockType: "digital",
     clockFormat: "datetime",
     clockTimezone: "Madrid",
     clockTimezoneOffset: 60,
-    showClockTimezone: true
+    showClockTimezone: true,
+    color: "#82B92E"
   };
 
   try {

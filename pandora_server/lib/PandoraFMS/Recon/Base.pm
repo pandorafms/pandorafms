@@ -216,7 +216,7 @@ sub new {
 			$self->{'snmp_security_level'} = '';
 
 			# Disable SNMP scans if no community was given.
-			if (scalar(@{$self->{'communities'}}) == 0) {
+			if (ref($self->{'communities'}) ne "ARRAY" || scalar(@{$self->{'communities'}}) == 0) {
 				$self->{'snmp_enabled'} = 0;
 				$self->call('message', "There is not any SNMP community configured.", 5);
 

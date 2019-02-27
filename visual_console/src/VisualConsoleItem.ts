@@ -224,7 +224,7 @@ abstract class VisualConsoleItem<ItemProps extends VisualConsoleItemProps> {
       this.elementRef.style.height = `${this.props.height}px`;
     }
 
-    this.childElementRef.replaceWith(this.createDomElement());
+    this.childElementRef.innerHTML = this.createDomElement().innerHTML;
   }
 
   /**

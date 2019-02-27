@@ -84,7 +84,7 @@ if (container != null) {
 
   const digitalClockRawProps = {
     // Generic props.
-    id: 2,
+    id: 3,
     type: 19, // clock = 19
     label: null,
     isLinkEnabled: false,

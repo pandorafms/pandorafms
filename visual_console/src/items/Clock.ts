@@ -86,16 +86,102 @@ export function clockPropsDecoder(data: UnknownObject): ClockProps | never {
 }
 
 export default class Clock extends VisualConsoleItem<ClockProps> {
-  public createDomElement(): HTMLElement {
+  public static readonly TICK_INTERVAL: number = 1000; // In ms.
+  private intervalRef: number | null = null;
+
+  public constructor(props: ClockProps) {
+    super(props);
+    // The item is already loaded and inserted into the DOM.
+
+    // Below you can modify the item, add event handlers, timers, etc.
+
+    /* The use of the arrow function is important here. startTick will
+     * use the function passed as an argument to call the global setInterval
+     * function. The interval, timeout or event functions, among other, are
+     * called into another execution loop and using a different context.
+     * The arrow functions, unlike the classic functions, doesn't create
+     * their own context (this), so their context at execution time will be
+     * use the current context at the declaration time.
+     * http://es6-features.org/#Lexicalthis
+     */
+    this.startTick(() => {
+      // Replace the old element with the updated date.
+      this.childElementRef.innerHTML = this.createClock().innerHTML;
+    });
+  }
+
+  /**
+   * Wrap a window.clearInterval call.
+   */
+  private stopTick(): void {
+    if (this.intervalRef !== null) {
+      window.clearInterval(this.intervalRef);
+      this.intervalRef = null;
+    }
+  }
+
+  /**
+   * Wrap a window.setInterval call.
+   */
+  private startTick(handler: TimerHandler): void {
+    this.stopTick();
+    this.intervalRef = window.setInterval(handler, Clock.TICK_INTERVAL);
+  }
+
+  /**
+   * Create a element which contains the DOM representation of the item.
+   * @return DOM Element.
+   * @override
+   */
+  public createDomElement(): HTMLElement | never {
+    return this.createClock();
+  }
+
+  /**
+   * To remove the event listeners and the elements from the DOM.
+   * @override
+   */
+  public remove(): void {
+    // Clear the interval.
+    this.stopTick();
+    // Call to the parent clean function.
+    super.remove();
+  }
+
+  /**
+   * @override VisualConsoleItem.resize
+   * To resize the item.
+   * @param width Width.
+   * @param height Height.
+   */
+  public resize(width: number, height: number): void {
+    super.resize(width, height);
+    // Re-render the item to force it calculate a new font size.
+    this.render();
+  }
+
+  /**
+   * Create a element which contains a representation of a clock.
+   * It choose between the clock types.
+   * @return DOM Element.
+   * @throws Error.
+   */
+  private createClock(): HTMLElement | never {
     switch (this.props.clockType) {
       case "analogic":
         throw new Error("not implemented.");
       case "digital":
         return this.createDigitalClock();
+      default:
+        throw new Error("invalid clock type.");
     }
   }
 
-  public createDigitalClock(): HTMLElement {
+  /**
+   * Create a element which contains a representation of a digital clock.
+   * @return DOM Element.
+   */
+  private createDigitalClock(): HTMLElement {
     const element: HTMLDivElement = document.createElement("div");
     element.className = "digital-clock";
 
@@ -105,6 +191,7 @@ export default class Clock extends VisualConsoleItem<ClockProps> {
         ? this.props.height * 2
         : this.props.width;
 
+    // Calculate font size to adapt the font to the item size.
     const baseTimeFontSize = 20; // Per 100px of width.
     const dateFontSizeMultiplier = 0.5;
     const tzFontSizeMultiplier = 6 / this.props.clockTimezone.length;
@@ -148,7 +235,7 @@ export default class Clock extends VisualConsoleItem<ClockProps> {
    * Generate the current date using the timezone offset stored into the properties.
    * @return The current date.
    */
-  public getDate(): Date {
+  private getDate(): Date {
     const d = new Date();
     const targetTZOffset = this.props.clockTimezoneOffset * 60 * 1000; // In ms.
     const localTZOffset = d.getTimezoneOffset() * 60 * 1000; // In ms.
@@ -157,6 +244,11 @@ export default class Clock extends VisualConsoleItem<ClockProps> {
     return new Date(utimestamp);
   }
 
+  /**
+   * Generate a date representation with the format 'd/m/Y'.
+   * e.g.: 24/02/2020.
+   * @return Date representation.
+   */
   public getDigitalDate(initialDate: Date | null = null): string {
     const date = initialDate || this.getDate();
     // Use getDate, getDay returns the week day.
@@ -169,6 +261,11 @@ export default class Clock extends VisualConsoleItem<ClockProps> {
     return `${day}/${month}/${year}`;
   }
 
+  /**
+   * Generate a time representation with the format 'hh:mm:ss'.
+   * e.g.: 01:34:09.
+   * @return Time representation.
+   */
   public getDigitalTime(initialDate: Date | null = null): string {
     const date = initialDate || this.getDate();
     const hours = padLeft(date.getHours(), 2, 0);

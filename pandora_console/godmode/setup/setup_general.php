@@ -269,7 +269,13 @@ $table->data[37][0] = __('Audit log directory').ui_print_help_tip(__('Directory 
 $table->data[37][1] = html_print_input_text('auditdir', io_safe_output($config['auditdir']), '', 30, 100, true);
 
 $table->data[38][0] = __('Set alias as name by default in agent creation');
-$table->data[38][1] = html_print_checkbox_toogle_switch('alias_as_name', 1, $config['alias_as_name'], true);
+$table->data[38][1] = __('Yes').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button('alias_as_name', 1, '', $config['alias_as_name'], true).'&nbsp;&nbsp;';
+$table->data[38][1] .= __('No').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button('alias_as_name', 0, '', $config['alias_as_name'], true);
+
+$table->data[39][0] = __('Unique IP').ui_print_help_tip(__('Set the primary IP address as the unique IP, preventing the same primary IP address from being used in more than one agent'), true);
+$table->data[39][1] = __('Yes').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button('unique_ip', 1, '', $config['unique_ip'], true).'&nbsp;&nbsp;';
+$table->data[39][1] .= __('No').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button('unique_ip', 0, '', $config['unique_ip'], true);
+
 echo '<form id="form_setup" method="post" action="index.php?sec=gsetup&sec2=godmode/setup/setup&amp;section=general&amp;pure='.$config['pure'].'">';
 
 echo '<fieldset>';
@@ -332,6 +338,11 @@ $(document).ready (function () {
         $("#zone").attr("hidden", false);
         $("#timezone").attr("hidden", false);
     });
+
+    if ($("input[name=use_cert]").is(':checked')) {
+        $('#setup_general-13').show();
+    }
+
     $("input[name=use_cert]").change(function () {
         if( $(this).is(":checked") )
                 $('#setup_general-13').show();

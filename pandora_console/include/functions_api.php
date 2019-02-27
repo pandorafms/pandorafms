@@ -363,23 +363,18 @@ function api_get_test_event_replication_db()
 // -------------------------DEFINED OPERATIONS FUNCTIONS-----------------
 function api_get_groups($thrash1, $thrash2, $other, $returnType, $user_in_db)
 {
-    if (defined('METACONSOLE')) {
-        return;
+    $returnAllGroup = true;
+    $returnAllColumns = false;
+
+    if (isset($other['data'][1])) {
+        $returnAllGroup = ( $other['data'][1] == '1' ? true : false);
     }
 
-    if ($other['type'] == 'string') {
-        if ($other['data'] != '') {
-            returnError('error_parameter', 'Error in the parameters.');
-            return;
-        } else {
-            // Default values
-            $separator = ';';
-        }
-    } else if ($other['type'] == 'array') {
-        $separator = $other['data'][0];
+    if (isset($other['data'][2])) {
+        $returnAllColumns = ( $other['data'][2] == '1' ? true : false);
     }
 
-    $groups = users_get_groups($user_in_db, 'IR');
+    $groups = users_get_groups($user_in_db, 'IR', $returnAllGroup, $returnAllColumns);
 
     $data_groups = [];
     foreach ($groups as $id => $group) {
@@ -387,6 +382,13 @@ function api_get_groups($thrash1, $thrash2, $other, $returnType, $user_in_db)
             $id,
             $group,
         ];
+    }
+
+    if (!isset($other['data'][0])) {
+        $separator = ';';
+        // by default
+    } else {
+        $separator = $other['data'][0];
     }
 
     $data['type'] = 'array';
@@ -6173,17 +6175,29 @@ function api_set_planned_downtimes_deleted($id, $thrash1, $thrash2, $returnType)
 
 /**
  * Create a new planned downtime.
+ * e.g.: api.php?op=set&op2=planned_downtimes_created&id=pepito&other=testing|08-22-2015|08-31-2015|0|1|1|1|1|1|1|1|17:06:00|19:06:00|1|31|quiet|periodically|weekly&other_mode=url_encode_separator_|
  *
  * @param $id name of planned downtime.
  * @param $thrash1 Don't use.
- * @param array                       $other it's array, $other as param is <description>;<date_from>;<date_to>;<id_group>;<monday>;
- *                        <tuesday>;<wednesday>;<thursday>;<friday>;<saturday>;<sunday>;<periodically_time_from>;<periodically_time_to>;
- *                           <periodically_day_from>;<periodically_day_to>;<type_downtime>;<type_execution>;<type_periodicity>; in this order
- *                        and separator char (after text ; ) and separator (pass in param othermode as othermode=url_encode_separator_<separator>)
- *                        example:
- *
- *                        api.php?op=set&op2=planned_downtimes_created&id=pepito&other=testing|08-22-2015|08-31-2015|0|1|1|1|1|1|1|1|17:06:00|19:06:00|1|31|quiet|periodically|weekly&other_mode=url_encode_separator_|
- *
+ * @param array                       $other Contains the following elements (in order):
+ *                       <description>
+ *                       <date_from>
+ *                       <date_to>
+ *                       <id_group>
+ *                       <monday>
+ *                       <tuesday>
+ *                       <wednesday>
+ *                       <thursday>
+ *                       <friday>
+ *                       <saturday>
+ *                       <sunday>
+ *                       <periodically_time_from>
+ *                       <periodically_time_to>
+ *                       <periodically_day_from>
+ *                       <periodically_day_to>
+ *                       <type_downtime>
+ *                       <type_execution>
+ *                       <type_periodicity>
  * @param $thrash3 Don't use.
  */
 
@@ -6247,20 +6261,16 @@ function api_set_planned_downtimes_created($id, $thrash1, $other, $thrash3)
 
 /**
  * Add new items to planned Downtime.
+ * e.g.: api.php?op=set&op2=planned_downtimes_additem&id=123&other=1;2;3;4|Status;Unkown_modules&other_mode=url_encode_separator_|
  *
  * @param $id id of planned downtime.
  * @param $thrash1 Don't use.
- * @param array                     $other it's array, $other as param is <id_agent1;id_agent2;id_agent3;....id_agentn;>;
- *                         <name_module1;name_module2;name_module3;......name_modulen;> in this order
- *                      and separator char (after text ; ) and separator (pass in param othermode as othermode=url_encode_separator_<separator>)
- *                      example:
- *
- *                      api.php?op=set&op2=planned_downtimes_additem&id=123&other=1;2;3;4|Status;Unkown_modules&other_mode=url_encode_separator_|
- *
+ * @param array                     $other
+ * The first index contains a list of agent Ids.
+ * The second index contains a list of module names.
+ * The list separator is the character ';'.
  * @param $thrash3 Don't use.
  */
-
-
 function api_set_planned_downtimes_additem($id, $thrash1, $other, $thrash3)
 {
     if (defined('METACONSOLE')) {

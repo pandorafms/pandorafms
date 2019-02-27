@@ -1,16 +1,18 @@
 <?php
+/**
+ * Pandora FMS - http://pandorafms.com
+ * ==================================================
+ * Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
 
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation for version 2.
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
 if (check_acl($id_user, 0, 'ER')) {
     $groups = users_get_groups($id_user, 'ER');
 } else if (check_acl($id_user, 0, 'EW')) {
@@ -212,7 +214,7 @@ if ($meta) {
     $id_agent = get_parameter('id_agent', 0);
     if ($id_agent) {
         $sql_post .= ' AND agent_name IN (SELECT nombre FROM tmetaconsole_agent WHERE
-		id_tagente ='.$id_agent." AND alias LIKE '".io_safe_input($text_agent)."')";
+		id_tagente ='.$id_agent." AND alias LIKE '".$text_agent."')";
         $filter_resume['agent'] = $text_agent;
     }
 } else {

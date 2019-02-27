@@ -33,7 +33,7 @@ use PandoraFMS::Core;
 use PandoraFMS::DataServer;
 use PandoraFMS::NetworkServer;
 use PandoraFMS::SNMPServer;
-use PandoraFMS::ReconServer;
+use PandoraFMS::DiscoveryServer;
 use PandoraFMS::WMIServer;
 use PandoraFMS::PluginServer;
 use PandoraFMS::PredictionServer;
@@ -123,7 +123,7 @@ sub pandora_startup () {
 		pandora_reset_server (\%Config, $DBH);
 		push (@Servers, new PandoraFMS::DataServer (\%Config, $DBH));
 		push (@Servers, new PandoraFMS::NetworkServer (\%Config, $DBH));
-		push (@Servers, new PandoraFMS::ReconServer (\%Config, $DBH));
+		push (@Servers, new PandoraFMS::DiscoveryServer (\%Config, $DBH));
 		push (@Servers, new PandoraFMS::SNMPServer (\%Config, $DBH));
 		push (@Servers, new PandoraFMS::WMIServer (\%Config, $DBH));
 		push (@Servers, new PandoraFMS::PluginServer (\%Config, $DBH));

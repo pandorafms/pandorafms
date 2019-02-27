@@ -245,7 +245,9 @@ function grafico_modulo_sparse_data(
         }
     }
 
-    if ($array_data === false || (!$params['graph_combined'] && !isset($array_data['sum1']['data'][0][1]))) {
+    if ($array_data === false || (!$params['graph_combined']
+        && !isset($array_data['sum1']['data'][0][1]) && !$params['baseline'])
+    ) {
         return false;
     }
 
@@ -547,12 +549,6 @@ function grafico_modulo_sparse($params)
         return false;
     }
 
-    if (!isset($params['agent_module_id'])) {
-        return false;
-    } else {
-        $agent_module_id = $params['agent_module_id'];
-    }
-
     if (!isset($params['period'])) {
         return false;
     }
@@ -706,6 +702,12 @@ function grafico_modulo_sparse($params)
 
     if (!isset($params['projection'])) {
         $params['projection'] = false;
+    }
+
+    if (!isset($params['agent_module_id'])) {
+        return graph_nodata_image($params['width'], $params['height']);
+    } else {
+        $agent_module_id = $params['agent_module_id'];
     }
 
     // XXXX Configurable
@@ -1316,6 +1318,10 @@ function graphic_combined_module(
             $array_data = [];
 
             foreach ($module_list as $key => $agent_module_id) {
+                if ((bool) $agent_module_id === false) {
+                    continue;
+                }
+
                 if (is_metaconsole() && $params_combined['type_report'] == 'automatic_graph') {
                     $server = metaconsole_get_connection_by_id($agent_module_id['server']);
                     if (metaconsole_connect($server) != NOERR) {
@@ -1390,6 +1396,15 @@ function graphic_combined_module(
                 if (is_metaconsole() && $params_combined['type_report'] == 'automatic_graph') {
                     metaconsole_restore_db();
                 }
+            }
+
+            if (empty($array_data)) {
+                if ($params_combined['return']) {
+                    return graph_nodata_image($width, $height);
+                }
+
+                echo graph_nodata_image($width, $height);
+                return false;
             }
 
             if ($params_combined['projection']) {
@@ -4918,21 +4933,19 @@ function get_baseline_data($agent_module_id, $date_array, $data_module_graph, $p
     $period = $date_array['period'];
     $date = $date_array['final_date'];
     $array_data = [];
+
     for ($i = 0; $i < 4; $i++) {
         $date_array = [];
         $date_array['period']     = $period;
-        $date_array['final_date'] = ($date - $period * $i);
-        $date_array['start_date'] = ($date - $period * ($i + 1));
-
-        $data = grafico_modulo_sparse_data(
+        $date_array['final_date'] = ($date - ($period * $i));
+        $date_array['start_date'] = ($date - ($period * ($i + 1)));
+        $array_data[] = grafico_modulo_sparse_data(
             $agent_module_id,
             $date_array,
             $data_module_graph,
             $params,
             $i
         );
-
-        $array_data[] = $data;
     }
 
     $result = [];

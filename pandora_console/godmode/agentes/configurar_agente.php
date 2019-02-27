@@ -81,6 +81,7 @@ $alias_as_name = 0;
 $direccion_agente = get_parameter('direccion', '');
 $direccion_agente = trim(io_safe_output($direccion_agente));
 $direccion_agente = io_safe_input($direccion_agente);
+$unique_ip = 0;
 $intervalo = SECONDS_5MINUTES;
 $ff_interval = 0;
 $quiet_module = 0;
@@ -158,9 +159,11 @@ $module_macros = [];
 // Create agent
 if ($create_agent) {
     $mssg_warning = 0;
-    $alias = (string) get_parameter_post('alias', '');
+    $alias_safe_output = io_safe_output(get_parameter('alias', ''));
+    $alias = io_safe_input(trim(preg_replace('/[\/\\\|%#&$-]/', '', $alias_safe_output)));
     $alias_as_name = (int) get_parameter_post('alias_as_name', 0);
     $direccion_agente = (string) get_parameter_post('direccion', '');
+    $unique_ip = (int) get_parameter_post('unique_ip', 0);
 
     // safe_output only validate ip
     $direccion_agente = trim(io_safe_output($direccion_agente));
@@ -216,7 +219,12 @@ if ($create_agent) {
             $nombre_agente = $alias;
         }
 
-        if (!$exists_alias) {
+        if ($unique_ip && $direccion_agente != '') {
+            $sql = 'SELECT direccion FROM tagente WHERE direccion = "'.$direccion_agente.'"';
+            $exists_ip  = db_get_row_sql($sql);
+        }
+
+        if (!$exists_alias && !$exists_ip) {
             $id_agente = db_process_sql_insert(
                 'tagente',
                 [
@@ -326,6 +334,8 @@ if ($create_agent) {
             $agent_creation_error = __('Could not be created');
             if ($exists_alias) {
                 $agent_creation_error = __('Could not be created, because name already exists');
+            } else if ($exists_ip) {
+                $agent_creation_error = __('Could not be created, because IP already exists');
             }
         }
     }
@@ -755,9 +765,11 @@ if ($update_agent) {
     $mssg_warning = 0;
     $id_agente = (int) get_parameter_post('id_agente');
     $nombre_agente = str_replace('`', '&lsquo;', (string) get_parameter_post('agente', ''));
-    $alias = str_replace('`', '&lsquo;', (string) get_parameter_post('alias', ''));
+    $alias_safe_output = io_safe_output(get_parameter('alias', ''));
+    $alias = io_safe_input(trim(preg_replace('/[\/\\\|%#&$-]/', '', $alias_safe_output)));
     $alias_as_name = (int) get_parameter_post('alias_as_name', 0);
     $direccion_agente = (string) get_parameter_post('direccion', '');
+    $unique_ip = (int) get_parameter_post('unique_ip', 0);
     // safe_output only validate ip
     $direccion_agente = trim(io_safe_output($direccion_agente));
 
@@ -860,8 +872,15 @@ if ($update_agent) {
         // If there is an agent with the same name, but a different ID
     }
 
+    if ($unique_ip && $direccion_agente != '') {
+        $sql = 'SELECT direccion FROM tagente WHERE direccion = "'.$direccion_agente.'"';
+        $exists_ip  = db_get_row_sql($sql);
+    }
+
     if ($grupo <= 0) {
         ui_print_error_message(__('The group id %d is incorrect.', $grupo));
+    } else if ($exists_ip) {
+        ui_print_error_message(__('Duplicate main IP address'));
     } else {
         // If different IP is specified than previous, add the IP
         if ($direccion_agente != ''
@@ -915,7 +934,7 @@ if ($update_agent) {
 
         $result = db_process_sql_update('tagente', $values, ['id_agente' => $id_agente]);
 
-        if ($result == false && $update_custom_result == false) {
+        if ($result === false && $update_custom_result == false) {
             ui_print_error_message(
                 __('There was a problem updating the agent')
             );

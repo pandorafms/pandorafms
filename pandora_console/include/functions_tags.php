@@ -748,7 +748,7 @@ function tags_get_acl_tags(
         $id_user = $config['id_user'];
     }
 
-    if (is_user_admin($id_user)) {
+    if (is_user_admin($id_user) && empty($childrens_ids)) {
         switch ($return_mode) {
             case 'data':
             return [];
@@ -797,7 +797,8 @@ function tags_get_acl_tags(
             // Return the condition of the tags for tagente_modulo table
             $condition = tags_get_acl_tags_module_condition(
                 $acltags,
-                $query_table
+                $query_table,
+                empty($childrens_ids) ? [] : $childrens_ids
             );
             if (!empty($condition)) {
                 return " $query_prefix ".$condition;
@@ -825,7 +826,7 @@ function tags_get_acl_tags(
  *
  * @return string SQL condition for tagente_module
  */
-function tags_get_acl_tags_module_condition($acltags, $modules_table='')
+function tags_get_acl_tags_module_condition($acltags, $modules_table='', $force_tags=[])
 {
     if (!empty($modules_table)) {
         $modules_table .= '.';
@@ -839,6 +840,17 @@ function tags_get_acl_tags_module_condition($acltags, $modules_table='')
     // The acltags array contains the groups with the acl propagation applied
     // after the changes done into the 'tags_get_user_groups_and_tags' function.
     foreach ($acltags as $group_id => $group_tags) {
+        if (empty($group_tags)) {
+            $group_tags = [];
+            if (!empty($force_tags)) {
+                $group_tags = $force_tags;
+            }
+        }
+
+        if (!empty($group_tags)) {
+            $group_tags = array_intersect($force_tags, $group_tags);
+        }
+
         $tag_join = '';
         if (!empty($group_tags)) {
             $tag_join = sprintf('AND ttag_module.id_tag IN (%s)', is_array($group_tags) ? implode(',', $group_tags) : $group_tags);
@@ -849,7 +861,7 @@ function tags_get_acl_tags_module_condition($acltags, $modules_table='')
             }
 
             $group_conditions[] = $agent_condition;
-        } else {
+        } else if (!empty($force_tags)) {
             $without_tags[] = $group_id;
         }
     }

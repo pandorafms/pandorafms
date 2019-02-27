@@ -3073,3 +3073,45 @@ function html_print_csrf_error()
     );
     return true;
 }
+
+
+/**
+ * Print an swith button
+ *
+ * @param  array $atributes. Valid params:
+ *         name: Usefull to handle in forms
+ *         value: If is checked or not
+ *         disabled: Disabled. Cannot be pressed.
+ *         id: Optional id for the switch.
+ *         class: Additional classes (string).
+ * @return string with HTML of button
+ */
+function html_print_switch($attributes=[])
+{
+    $html_expand = '';
+
+    // Check the load values on status.
+    $html_expand .= (bool) $attributes['value'] ? ' checked' : '';
+    $html_expand .= (bool) $attributes['disabled'] ? ' disabled' : '';
+
+    // Only load the valid attributes.
+    $valid_attrs = [
+        'id',
+        'class',
+        'name',
+        'onclick',
+    ];
+    foreach ($valid_attrs as $va) {
+        if (!isset($attributes[$va])) {
+            continue;
+        }
+
+        $html_expand .= ' '.$va.'="'.$attributes[$va].'"';
+    }
+
+    return "<label class='p-switch'>
+			<input type='checkbox' $html_expand>
+			<span class='p-slider'></span>
+		</label>";
+}
+

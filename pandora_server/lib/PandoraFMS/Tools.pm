@@ -51,7 +51,7 @@ our @EXPORT = qw(
 	DATASERVER
 	NETWORKSERVER
 	SNMPCONSOLE
-	RECONSERVER
+	DISCOVERYSERVER
 	PLUGINSERVER
 	PREDICTIONSERVER
 	WMISERVER
@@ -134,7 +134,7 @@ our @EXPORT = qw(
 use constant DATASERVER => 0;
 use constant NETWORKSERVER => 1;
 use constant SNMPCONSOLE => 2;
-use constant RECONSERVER => 3;
+use constant DISCOVERYSERVER => 3;
 use constant PLUGINSERVER => 4;
 use constant PREDICTIONSERVER => 5;
 use constant WMISERVER => 6;

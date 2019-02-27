@@ -36,7 +36,7 @@ use Encode::Locale;
 Encode::Locale::decode_argv;
 
 # version: define current version
-my $version = "7.0NG.731 PS190215";
+my $version = "7.0NG.731 PS190226";
 
 # save program name for logging
 my $progname = basename($0);
@@ -200,7 +200,7 @@ sub help_screen{
 	print "\nINCIDENTS:\n\n" unless $param ne '';
 	help_screen_line('--create_incident', "<title> <description> <origin> <status> <priority 0 for Informative, \n\t  1 for Low, 2 for Medium, 3 for Serious, 4 for Very serious or 5 for Maintenance>\n\t   <group> [<owner>]", 'Create incidents');
 	print "\nPOLICIES:\n\n" unless $param ne '';
-	help_screen_line('--apply_policy', '<id_policy> [<id_agent> <return> <name agent>]', 'Force apply a policy');
+	help_screen_line('--apply_policy', '<id_policy> [<id_agent> <name(boolean)> <id_server>]', 'Force apply a policy in an agent');
 	help_screen_line('--apply_all_policies', '', 'Force apply to all the policies');
 	help_screen_line('--add_agent_to_policy', '<agent_name> <policy_name>', 'Add an agent to a policy');
 	help_screen_line('--remove_agent_from_policy', '<policy_id> <agent_id>', 'Delete an agent to a policy');
@@ -3606,10 +3606,10 @@ sub cli_delete_data($) {
 ##############################################################################
 
 sub cli_apply_policy() {
-	my ($id_policy, $id_agent, $name, $return) = @ARGV[2..5];
+	my ($id_policy, $id_agent, $name, $id_server) = @ARGV[2..5];
 
 	# Call the API.
-	my $result = api_call(\%conf, 'set', 'apply_policy', $id_policy, $id_agent, "$name|$return");
+	my $result = api_call(\%conf, 'set', 'apply_policy', $id_policy, $id_agent, "$name|$id_server");
 	print "\n$result\n";
 }
 
@@ -3627,7 +3627,7 @@ sub cli_apply_all_policies() {
 	
 	my $added = 0;
 	foreach my $policy (@{$policies}) {
-		my $ret = enterprise_hook('pandora_add_policy_queue', [$dbh, $conf, $policy->{'id'}, 'apply']);
+		my $ret = enterprise_hook('pandora_add_policy_queue', [$dbh, $conf, $policy->{'id'}, 'apply', 0, 1]);
 		if($ret != -1) {
 			$added++;
 			print_log "[INFO] Added operation 'apply' to policy '".safe_output($policy->{'name'})."'\n";

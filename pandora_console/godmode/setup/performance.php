@@ -524,6 +524,18 @@ if ($config['history_db_enabled'] == 1) {
     );
 }
 
+$table->data[] = [
+    __('Max. days before delete old messages'),
+    html_print_input_text(
+        'delete_old_messages',
+        $config['delete_old_messages'],
+        '',
+        5,
+        5,
+        true
+    ),
+];
+
 $table_other = new stdClass();
 $table_other->width = '100%';
 $table_other->class = 'databox filters';
@@ -659,6 +671,20 @@ $table_other->data[12][0] .= ui_print_help_tip(
 $table_other->data[12][1] = html_print_input_text(
     'max_graph_container',
     $config['max_graph_container'],
+    '',
+    5,
+    5,
+    true
+);
+
+$table_other->data[13][0] = __('Events response max. execution');
+$table_other->data[13][0] .= ui_print_help_tip(
+    __('Number of events that will perform the desired action at the same time'),
+    true
+);
+$table_other->data[13][1] = html_print_input_text(
+    'max_execution_event_response',
+    $config['max_execution_event_response'],
     '',
     5,
     5,

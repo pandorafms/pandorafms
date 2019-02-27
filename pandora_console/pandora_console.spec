@@ -3,7 +3,7 @@
 #
 %define name        pandorafms_console
 %define version     7.0NG.731
-%define release     190215
+%define release     190226
 %define httpd_name      httpd
 # User and Group under which Apache is running
 %define httpd_name  apache2
@@ -29,7 +29,7 @@ BuildArch:          noarch
 AutoReq:            0
 Requires:           apache2
 Requires:           apache2-mod_php7
-Requires:           php >= 4.3.0
+Requires:           php >= 7.0
 Requires:           php-gd, php-snmp, php-json, php-gettext
 Requires:           php-mysqlnd, php-ldap, php-mbstring, php 
 Requires:           graphviz, xorg-x11-fonts-core, graphviz-gd

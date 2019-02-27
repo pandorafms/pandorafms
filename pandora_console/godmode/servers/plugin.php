@@ -112,6 +112,7 @@ $edit_file = get_parameter('edit_file', false);
 $update_file = get_parameter('update_file', false);
 $plugin_command = get_parameter('plugin_command', '');
 $tab = get_parameter('tab', '');
+$deploy_plugin = get_parameter('deploy_plugin', 0);
 
 if ($view != '') {
     $form_id = $view;
@@ -192,9 +193,8 @@ if ($filemanager) {
             // If is win compatible and the compatibility must be unix
             if ($is_win_compatible !== false && $compatibility == 'unix') {
                 $contentFile = str_replace("\r\n", "\n", $contentFile);
-            }
-            // If is unix compatible and the compatibility must be win
-            else if ($is_win_compatible === false && $compatibility == 'windows') {
+            } else if ($is_win_compatible === false && $compatibility == 'windows') {
+                // If is unix compatible and the compatibility must be win
                 $contentFile = str_replace("\n", "\r\n", $contentFile);
             }
 
@@ -268,12 +268,16 @@ if ($filemanager) {
 // =====================================================================
 $sec = 'gservers';
 
-if (($create != '') or ($view != '')) {
+if (($create != '') || ($view != '')) {
     enterprise_hook('open_meta_frame');
 
     if (defined('METACONSOLE')) {
         components_meta_print_header();
         $sec = 'advanced';
+        $management_allowed = is_management_allowed();
+        if (!$management_allowed) {
+            ui_print_warning_message(__('To manage plugin you must activate centralized management'));
+        }
     } else {
         if ($create != '') {
             ui_print_page_header(
@@ -290,6 +294,16 @@ if (($create != '') or ($view != '')) {
                 false,
                 'plugin_definition',
                 true
+            );
+        }
+
+        $management_allowed = !is_central_policies_on_node();
+        if (!$management_allowed) {
+            ui_print_warning_message(
+                __(
+                    'This console is not manager of this environment,
+        		please manage this feature from centralized manager console (Metaconsole).'
+                )
             );
         }
     }
@@ -564,8 +578,52 @@ if (($create != '') or ($view != '')) {
     if (defined('METACONSOLE')) {
         components_meta_print_header();
         $sec = 'advanced';
+        $management_allowed = is_management_allowed();
+        if (!$management_allowed) {
+            ui_print_warning_message(__('To manage plugin you must activate centralized management'));
+        }
+
+        if (!$config['metaconsole_deploy_plugin_server'] && $management_allowed) {
+            $deploy_plugin_server = true;
+
+            echo '<div id="deploy_messages" style="display: none">';
+            echo '<span>'.__('The previous configuration of plugins has been imported from the nodes. Please check that the definitions are correct.').'</br></br>'.'<b>'.__('Note:').'</b>'.__(
+                'These definitions will not be operational until you manually 
+    			copy the files from the nodes to the atachment/plugin/ directory of the meta console.'
+            ).'</br></br>'.__('You can find more information at:')."<a href='https://wiki.pandorafms.com'>https://wiki.pandorafms.com</a>".'</span>';
+            echo '</div>';
+            ?>
+            <script type="text/javascript">
+                $(document).ready(function () {
+                    $("#deploy_messages").dialog({
+                        resizable: true,
+                        draggable: true,
+                        modal: true,
+                        height: 220,
+                        title: '<?php echo __('Warning'); ?>',
+                        width: 528,
+                        overlay: {
+                            opacity: 0.5,
+                            background: "black"
+                        }
+                    });
+                });
+            </script>
+            <?php
+            config_update_value('metaconsole_deploy_plugin_server', 1);
+        }
     } else {
         ui_print_page_header(__('Plug-ins registered on %s', get_product_name()), 'images/gm_servers.png', false, '', true);
+
+        $management_allowed = !is_central_policies_on_node();
+        if (!$management_allowed) {
+            ui_print_warning_message(
+                __(
+                    'This console is not manager of this environment,
+        		please manage this feature from centralized manager console (Metaconsole).'
+                )
+            );
+        }
 
         $is_windows = strtoupper(substr(PHP_OS, 0, 3)) == 'WIN';
         if ($is_windows) {
@@ -576,9 +634,8 @@ if (($create != '') or ($view != '')) {
     }
 
 
-    // Update plugin
+    // Update plugin.
     if (isset($_GET['update_plugin'])) {
-        // if modified any parameter
         $plugin_id = get_parameter('update_plugin', 0);
         $plugin_name = get_parameter('form_name', '');
         $plugin_description = get_parameter('form_description', '');
@@ -709,11 +766,14 @@ if (($create != '') or ($view != '')) {
 
         $result = db_process_sql_delete('tplugin', ['id' => $plugin_id]);
 
-        if (! $result) {
-            ui_print_error_message(__('Problem deleting plugin'));
-        } else {
-            ui_print_success_message(__('Plugin deleted successfully'));
+        if (!is_metaconsole()) {
+            if (!$result) {
+                ui_print_error_message(__('Problem deleting plugin'));
+            } else {
+                ui_print_success_message(__('Plugin deleted successfully'));
+            }
         }
+
 
         if ($plugin_id != 0) {
             // Delete all the modules with this plugin
@@ -737,6 +797,153 @@ if (($create != '') or ($view != '')) {
                     policies_change_delete_pending_module($policies_id['id']);
                 }
             }
+
+            if (is_metaconsole()) {
+                enterprise_include_once('include/functions_plugins.php');
+                $result = plugins_delete_plugin($plugin_id);
+                if (!$result) {
+                    ui_print_error_message(__('Problem deleting plugin'));
+                } else {
+                    ui_print_success_message(__('Plugin deleted successfully'));
+                }
+            }
+        }
+    }
+
+    if ($deploy_plugin) {
+        if (is_metaconsole()) {
+            enterprise_include_once('include/functions_plugins.php');
+            $result = plugins_deploy_plugin($deploy_plugin);
+            if (!$result) {
+                ui_print_error_message(__('Problem deploying plugin'));
+            } else {
+                ui_print_success_message(__('Plugin deployed successfully'));
+            }
+        }
+    }
+
+    if ($deploy_plugin_server) {
+        $setup = db_get_all_rows_in_table('tmetaconsole_setup');
+        // recorremos todos los nodos.
+        foreach ($setup as $key => $value) {
+            // Obtenemos los plugins de la meta.
+            $all_plugin_meta = db_get_all_rows_sql('SELECT SQL_NO_CACHE * FROM tplugin', false, false);
+            // Conectamos con el nodo.
+            if (metaconsole_connect($value) == NOERR) {
+                $values = [];
+                // Obtenemos los plugin del nodo.
+                $node_plugin_server = db_get_all_rows_sql('SELECT SQL_NO_CACHE * FROM tplugin', false, false);
+                foreach ($node_plugin_server as $key2 => $plugin) {
+                    // Comprobamos si el id esta meta y nodo al mismo tiempo.
+                    $key_exists = array_search($plugin['id'], array_column($all_plugin_meta, 'id'));
+                    if ($key_exists !== false) {
+                        // Si el plugin tiene el mismo id pero diferentes datos.
+                        if ($all_plugin_meta[$key_exists] != $plugin) {
+                            $old_id = $plugin['id'];
+                            $new_id = ($plugin['id'] + (1000 * $value['id']));
+
+                            // El plugin del nodo pasa a tener otro id y otro nombre.
+                            $plugin['id'] = $new_id;
+                            $plugin['name'] = $plugin['name'].'_'.$value['server_name'];
+                            $result_update = db_process_sql_update(
+                                'tplugin',
+                                [
+                                    'id'   => $new_id,
+                                    'name' => $plugin['name'],
+                                ],
+                                ['id' => $old_id]
+                            );
+
+                            if ($result_update) {
+                                db_process_sql_update(
+                                    'tagente_modulo',
+                                    ['id_plugin' => $new_id],
+                                    ['id_plugin' => $old_id]
+                                );
+
+                                db_process_sql_update(
+                                    'tnetwork_component',
+                                    ['id_plugin' => $new_id],
+                                    ['id_plugin' => $old_id]
+                                );
+
+                                db_process_sql_update(
+                                    'tpolicy_modules',
+                                    ['id_plugin' => $new_id],
+                                    ['id_plugin' => $old_id]
+                                );
+                            }
+
+                            // New plugins to insert in the metaconsole.
+                            $values[$plugin['id']] = $plugin;
+                        }
+                    } else {
+                        // Exists in the node, but does not exist in the metaconsole.
+                        $values[$plugin['id']] = $plugin;
+                    }
+                }
+
+                // Restore to metaconsole.
+                metaconsole_restore_db();
+
+                // Insert in metaconsole.
+                if (!empty($values)) {
+                    foreach ($values as $key2 => $val) {
+                        // Insert into metaconsole.
+                        $result_insert = db_process_sql_insert('tplugin', $val);
+                    }
+                }
+            }
+        }
+
+        $all_plugin_meta = db_get_all_rows_sql('SELECT SQL_NO_CACHE * FROM tplugin', false, false);
+
+        foreach ($setup as $key => $value) {
+            if (metaconsole_connect($value) == NOERR) {
+                $all_plugin_node = db_get_all_rows_sql('SELECT SQL_NO_CACHE * FROM tplugin', false, false);
+
+                $array_diff = array_diff(array_column($all_plugin_meta, 'id'), array_column($all_plugin_node, 'id'));
+                foreach ($array_diff as $key2 => $pluginid) {
+                    $other = [];
+                    $plugin_meta = $all_plugin_meta[$key2];
+
+                    unset($plugin_meta['id']);
+                    $other['name'] = urlencode($plugin_meta['name']);
+                    $other['description'] = urlencode($plugin_meta['description']);
+                    $other['max_timeout'] = $plugin_meta['max_timeout'];
+                    $other['max_retries'] = $plugin_meta['max_retries'];
+                    $other['execute'] = urlencode($plugin_meta['execute']);
+                    $other['net_dst_opt'] = $plugin_meta['net_dst_opt'];
+                    $other['net_port_opt'] = $plugin_meta['net_port_opt'];
+                    $other['user_opt'] = $plugin_meta['user_opt'];
+                    $other['pass_opt'] = $plugin_meta['pass_opt'];
+                    $other['plugin_type'] = $plugin_meta['plugin_type'];
+                    $other['macros'] = urlencode($plugin_meta['macros']);
+                    $other['parameters'] = urlencode($plugin_meta['parameters']);
+                    $other = implode('%7C', $other);
+
+                    $auth_token = json_decode($value['auth_token']);
+                    $url = $value['server_url'].'include/api.php?op=set&op2=push_plugin'.'&id='.$pluginid.'&other_mode=url_encode_separator_%7C&other='.$other."&apipass=$auth_token->api_password"."&user=$auth_token->console_user&pass=$auth_token->console_password";
+                    $file_path = realpath($plugin_meta['execute']);
+                    $post = '';
+                    if (file_exists($file_path)) {
+                        $post = ['file' => curl_file_create($file_path)];
+                    }
+
+                    $curlObj = curl_init();
+                    curl_setopt($curlObj, CURLOPT_URL, $url);
+                    curl_setopt($curlObj, CURLOPT_POST, 1);
+                    curl_setopt($curlObj, CURLOPT_POSTFIELDS, $post);
+                    curl_setopt($curlObj, CURLOPT_RETURNTRANSFER, 1);
+                    curl_setopt($curlObj, CURLOPT_SSL_VERIFYPEER, false);
+
+                    $api_result = curl_exec($curlObj);
+                    curl_close($curlObj);
+                }
+            }
+
+            // restore to metaconsole
+            metaconsole_restore_db();
         }
     }
 
@@ -753,7 +960,10 @@ if (($create != '') or ($view != '')) {
         echo '<th>'.__('Name').'</th>';
         echo '<th>'.__('Type').'</th>';
         echo '<th>'.__('Command').'</th>';
-        echo "<th style='width: 90px;'>".'<span title="Operations">'.__('Op.').'</span>'.'</th>';
+        if ($management_allowed) {
+            echo "<th style='width: 120px;'>".'<span title="Operations">'.__('Op.').'</span>'.'</th>';
+        }
+
         $color = 0;
 
         foreach ($rows as $row) {
@@ -767,7 +977,10 @@ if (($create != '') or ($view != '')) {
 
             echo '<tr>';
             echo "<td class=$tdcolor>";
-            echo "<b><a href='index.php?sec=$sec&sec2=godmode/servers/plugin&view=".$row['id'].'&tab=plugins&pure='.$config['pure']."'>";
+            if ($management_allowed) {
+                echo "<b><a href='index.php?sec=$sec&sec2=godmode/servers/plugin&view=".$row['id'].'&tab=plugins&pure='.$config['pure']."'>";
+            }
+
             echo $row['name'];
             echo '</a></b></td>';
             echo "<td class=$tdcolor>";
@@ -780,31 +993,38 @@ if (($create != '') or ($view != '')) {
             echo "</td><td class=$tdcolor>";
             echo $row['execute'];
             echo '</td>';
-            echo "<td class='$tdcolor' align='center'>";
+            if ($management_allowed) {
+                echo "<td class='$tdcolor' align='center'>";
 
-            // Show it is locket
-            $modules_using_plugin = db_get_value_filter(
-                'count(*)',
-                'tagente_modulo',
-                [
-                    'delete_pending' => 0,
-                    'id_plugin'      => $row['id'],
-                ]
-            );
-            $components_using_plugin = db_get_value_filter(
-                'count(*)',
-                'tnetwork_component',
-                ['id_plugin' => $row['id']]
-            );
-            if (($components_using_plugin + $modules_using_plugin) > 0) {
-                echo '<a href="javascript: show_locked_dialog('.$row['id'].', \''.$row['name'].'\');">';
-                html_print_image('images/lock.png');
-                echo '</a>';
+                // Show it is locket
+                $modules_using_plugin = db_get_value_filter(
+                    'count(*)',
+                    'tagente_modulo',
+                    [
+                        'delete_pending' => 0,
+                        'id_plugin'      => $row['id'],
+                    ]
+                );
+                $components_using_plugin = db_get_value_filter(
+                    'count(*)',
+                    'tnetwork_component',
+                    ['id_plugin' => $row['id']]
+                );
+                if (($components_using_plugin + $modules_using_plugin) > 0) {
+                    echo '<a href="javascript: show_locked_dialog('.$row['id'].', \''.$row['name'].'\');">';
+                    html_print_image('images/lock.png');
+                    echo '</a>';
+                }
+
+                echo "<a href='index.php?sec=$sec&sec2=godmode/servers/plugin&tab=$tab&view=".$row['id'].'&tab=plugins&pure='.$config['pure']."'>".html_print_image('images/config.png', true, ['title' => __('Edit')]).'</a>&nbsp;&nbsp;';
+                echo "<a href='index.php?sec=$sec&sec2=godmode/servers/plugin&tab=$tab&kill_plugin=".$row['id'].'&tab=plugins&pure='.$config['pure']."' onclick='javascript: if (!confirm(\"".__('All the modules that are using this plugin will be deleted').'. '.__('Are you sure?')."\")) return false;'>".html_print_image('images/cross.png', true, ['border' => '0']).'</a>';
+                if (is_metaconsole()) {
+                    echo "&nbsp;&nbsp;&nbsp;<a href='index.php?sec=$sec&sec2=godmode/servers/plugin&tab=$tab&deploy_plugin=".$row['id'].'&tab=plugins&pure='.$config['pure']."'>".html_print_image('images/deploy.png', true, ['title' => __('Deploy'), 'width' => '21 px']).'</a>&nbsp;&nbsp;';
+                }
+
+                echo '</td>';
             }
 
-            echo "<a href='index.php?sec=$sec&sec2=godmode/servers/plugin&tab=$tab&view=".$row['id'].'&tab=plugins&pure='.$config['pure']."'>".html_print_image('images/config.png', true, ['title' => __('Edit')]).'</a>&nbsp;&nbsp;';
-            echo "<a href='index.php?sec=$sec&sec2=godmode/servers/plugin&tab=$tab&kill_plugin=".$row['id'].'&tab=plugins&pure='.$config['pure']."' onclick='javascript: if (!confirm(\"".__('All the modules that are using this plugin will be deleted').'. '.__('Are you sure?')."\")) return false;'>".html_print_image('images/cross.png', true, ['border' => '0']).'</a>';
-            echo '</td>';
             echo '</tr>';
         }
 
@@ -813,12 +1033,15 @@ if (($create != '') or ($view != '')) {
         ui_print_info_message(['no_close' => true, 'message' => __('There are no plugins in the system') ]);
     }
 
-    echo "<table width='100%'>";
+    if ($management_allowed) {
+        echo "<table width='100%'>";
 
-    echo '<tr><td align=right>';
-    echo "<form name=plugin method='post' action='index.php?sec=gservers&sec2=godmode/servers/plugin&tab=$tab&create=1&pure=".$config['pure']."'>";
-    echo "<input name='crtbutton' type='submit' class='sub next' value='".__('Add')."'>";
-    echo '</td></tr></table>';
+        echo '<tr><td align=right>';
+        echo "<form name=plugin method='post' action='index.php?sec=gservers&sec2=godmode/servers/plugin&tab=$tab&create=1&pure=".$config['pure']."'>";
+        echo "<input name='crtbutton' type='submit' class='sub next' value='".__('Add')."'>";
+        echo '</td></tr></table>';
+        echo '<div id="deploy_messages" style="display: none">';
+    }
 
     // The '%s' will be replaced in the javascript code of the function 'show_locked_dialog'
     echo "<div id='dialog_locked' title='".__('List of modules and components created by "%s" ')."' style='display: none; text-align: left;'>";
@@ -828,7 +1051,6 @@ if (($create != '') or ($view != '')) {
 }
 
 ui_require_javascript_file('pandora_modules');
-
 ?>
 
 <script type="text/javascript">

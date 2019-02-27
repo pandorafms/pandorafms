@@ -294,6 +294,9 @@ config_check();
 <!-- Notifications content wrapper-->
 <div id='notification-content' style='display:none;' /></div>
 
+<!-- Old style div wrapper -->
+<div id="alert_messages" style="display: none"></div>;
+
 <script type="text/javascript">
     /* <![CDATA[ */
     

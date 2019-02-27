@@ -741,7 +741,7 @@ function added_ids_deleted_items_to_hidden_input() {
    var success = message_check_delete_items();
 
    if(success === false){
-    $("input.check_delete:checked").val() = false;
+    $(".check_delete").prop("checked", false);
        return false;
    }
     

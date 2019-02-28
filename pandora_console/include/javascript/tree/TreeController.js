@@ -115,8 +115,21 @@ var TreeController = {
                 }
               };
 
+              var serviceCounterTitles = {
+                total_services: {
+                  totals: "Services"
+                },
+                total_agents: {
+                  totals: "Agents"
+                },
+                total_modules: {
+                  totals: "Modules"
+                }
+              };
+
               try {
                 var title = "";
+
                 switch (elementType) {
                   case "group":
                     if (
@@ -144,6 +157,9 @@ var TreeController = {
                       title = defaultCounterTitles[counterType].modules;
                     }
                     break;
+                  case "services":
+                    title = serviceCounterTitles[counterType].totals;
+                    break;
                   default:
                     if (
                       typeof controller.counterTitles != "undefined" &&
@@ -169,109 +185,227 @@ var TreeController = {
               }
             }
 
-            var $counters = $("<div></div>");
-            $counters.addClass("tree-node-counters");
-
-            if (typeof counters.total != "undefined" && counters.total >= 0) {
-              var $totalCounter = $("<div></div>");
-              $totalCounter
-                .addClass("tree-node-counter")
-                .addClass("total")
-                .html(counters.total);
-
-              _processNodeCounterTitle($totalCounter, type, "total");
-
-              // Open the parentheses
-              $counters.append(" (");
-
-              $counters.append($totalCounter);
+            if (type == "services") {
+              var $counters = $("<div></div>");
+              $counters.addClass("tree-node-counters");
 
               if (
-                typeof counters.alerts != "undefined" &&
-                counters.alerts > 0
+                counters.total_services +
+                  counters.total_agents +
+                  counters.total_modules >
+                0
               ) {
-                var $firedCounter = $("<div></div>");
-                $firedCounter
-                  .addClass("tree-node-counter")
-                  .addClass("alerts")
-                  .addClass("orange")
-                  .html(counters.alerts);
+                // Open the parentheses
+                $counters.append(" (");
 
-                _processNodeCounterTitle($firedCounter, type, "alerts");
+                if (
+                  typeof counters.total_services != "undefined" &&
+                  counters.total_services >= 0
+                ) {
+                  var $servicesCounter = $("<div></div>");
+                  $servicesCounter
+                    .addClass("tree-node-counter")
+                    .addClass("total")
+                    .html(counters.total_services);
 
-                $counters.append(" : ").append($firedCounter);
+                  _processNodeCounterTitle(
+                    $servicesCounter,
+                    type,
+                    "total_services"
+                  );
+
+                  $counters.append($servicesCounter);
+                } else {
+                  var $servicesCounter = $("<div></div>");
+                  $servicesCounter
+                    .addClass("tree-node-counter")
+                    .addClass("total")
+                    .html("0");
+
+                  _processNodeCounterTitle(
+                    $servicesCounter,
+                    type,
+                    "total_services"
+                  );
+
+                  $counters.append($servicesCounter);
+                }
+
+                if (
+                  typeof counters.total_agents != "undefined" &&
+                  counters.total_agents > 0
+                ) {
+                  var $agentsCounter = $("<div></div>");
+                  $agentsCounter
+                    .addClass("tree-node-counter")
+                    .html(counters.total_agents);
+
+                  _processNodeCounterTitle(
+                    $agentsCounter,
+                    type,
+                    "total_agents"
+                  );
+
+                  $counters.append(" : ").append($agentsCounter);
+                } else {
+                  var $agentsCounter = $("<div></div>");
+                  $agentsCounter
+                    .addClass("tree-node-counter")
+                    .addClass("total")
+                    .html("0");
+
+                  _processNodeCounterTitle(
+                    $agentsCounter,
+                    type,
+                    "total_agents"
+                  );
+
+                  $counters.append(" : ").append($agentsCounter);
+                }
+
+                if (
+                  typeof counters.total_modules != "undefined" &&
+                  counters.total_modules > 0
+                ) {
+                  var $modulesCounter = $("<div></div>");
+                  $modulesCounter
+                    .addClass("tree-node-counter")
+                    .addClass("total")
+                    .html(counters.total_modules);
+
+                  _processNodeCounterTitle(
+                    $modulesCounter,
+                    type,
+                    "total_modules"
+                  );
+
+                  $counters.append(" : ").append($modulesCounter);
+                } else {
+                  var $modulesCounter = $("<div></div>");
+                  $modulesCounter
+                    .addClass("tree-node-counter")
+                    .addClass("total")
+                    .html("0");
+
+                  _processNodeCounterTitle(
+                    $modulesCounter,
+                    type,
+                    "total_modules"
+                  );
+
+                  $counters.append(" : ").append($modulesCounter);
+                }
+
+                // Close the parentheses
+                $counters.append(")");
+
+                hasCounters = true;
               }
-              if (
-                typeof counters.critical != "undefined" &&
-                counters.critical > 0
-              ) {
-                var $criticalCounter = $("<div></div>");
-                $criticalCounter
+            } else {
+              var $counters = $("<div></div>");
+              $counters.addClass("tree-node-counters");
+
+              if (typeof counters.total != "undefined" && counters.total >= 0) {
+                var $totalCounter = $("<div></div>");
+                $totalCounter
                   .addClass("tree-node-counter")
-                  .addClass("critical")
-                  .addClass("red")
-                  .html(counters.critical);
+                  .addClass("total")
+                  .html(counters.total);
 
-                _processNodeCounterTitle($criticalCounter, type, "critical");
+                _processNodeCounterTitle($totalCounter, type, "total");
 
-                $counters.append(" : ").append($criticalCounter);
-              }
-              if (
-                typeof counters.warning != "undefined" &&
-                counters.warning > 0
-              ) {
-                var $warningCounter = $("<div></div>");
-                $warningCounter
-                  .addClass("tree-node-counter")
-                  .addClass("warning")
-                  .addClass("yellow")
-                  .html(counters.warning);
+                // Open the parentheses
+                $counters.append(" (");
 
-                _processNodeCounterTitle($warningCounter, type, "warning");
+                $counters.append($totalCounter);
 
-                $counters.append(" : ").append($warningCounter);
-              }
-              if (
-                typeof counters.unknown != "undefined" &&
-                counters.unknown > 0
-              ) {
-                var $unknownCounter = $("<div></div>");
-                $unknownCounter
-                  .addClass("tree-node-counter")
-                  .addClass("unknown")
-                  .addClass("grey")
-                  .html(counters.unknown);
+                if (
+                  typeof counters.alerts != "undefined" &&
+                  counters.alerts > 0
+                ) {
+                  var $firedCounter = $("<div></div>");
+                  $firedCounter
+                    .addClass("tree-node-counter")
+                    .addClass("alerts")
+                    .addClass("orange")
+                    .html(counters.alerts);
 
-                _processNodeCounterTitle($unknownCounter, type, "unknown");
+                  _processNodeCounterTitle($firedCounter, type, "alerts");
 
-                $counters.append(" : ").append($unknownCounter);
-              }
-              if (
-                typeof counters.not_init != "undefined" &&
-                counters.not_init > 0
-              ) {
-                var $notInitCounter = $("<div></div>");
-                $notInitCounter
-                  .addClass("tree-node-counter")
-                  .addClass("not_init")
-                  .addClass("blue")
-                  .html(counters.not_init);
+                  $counters.append(" : ").append($firedCounter);
+                }
+                if (
+                  typeof counters.critical != "undefined" &&
+                  counters.critical > 0
+                ) {
+                  var $criticalCounter = $("<div></div>");
+                  $criticalCounter
+                    .addClass("tree-node-counter")
+                    .addClass("critical")
+                    .addClass("red")
+                    .html(counters.critical);
 
-                _processNodeCounterTitle($notInitCounter, type, "not_init");
+                  _processNodeCounterTitle($criticalCounter, type, "critical");
 
-                $counters.append(" : ").append($notInitCounter);
-              }
-              if (typeof counters.ok != "undefined" && counters.ok > 0) {
-                var $okCounter = $("<div></div>");
-                $okCounter
-                  .addClass("tree-node-counter")
-                  .addClass("ok")
-                  .addClass("green")
-                  .html(counters.ok);
+                  $counters.append(" : ").append($criticalCounter);
+                }
+                if (
+                  typeof counters.warning != "undefined" &&
+                  counters.warning > 0
+                ) {
+                  var $warningCounter = $("<div></div>");
+                  $warningCounter
+                    .addClass("tree-node-counter")
+                    .addClass("warning")
+                    .addClass("yellow")
+                    .html(counters.warning);
 
-                _processNodeCounterTitle($okCounter, type, "ok");
+                  _processNodeCounterTitle($warningCounter, type, "warning");
 
-                $counters.append(" : ").append($okCounter);
+                  $counters.append(" : ").append($warningCounter);
+                }
+                if (
+                  typeof counters.unknown != "undefined" &&
+                  counters.unknown > 0
+                ) {
+                  var $unknownCounter = $("<div></div>");
+                  $unknownCounter
+                    .addClass("tree-node-counter")
+                    .addClass("unknown")
+                    .addClass("grey")
+                    .html(counters.unknown);
+
+                  _processNodeCounterTitle($unknownCounter, type, "unknown");
+
+                  $counters.append(" : ").append($unknownCounter);
+                }
+                if (
+                  typeof counters.not_init != "undefined" &&
+                  counters.not_init > 0
+                ) {
+                  var $notInitCounter = $("<div></div>");
+                  $notInitCounter
+                    .addClass("tree-node-counter")
+                    .addClass("not_init")
+                    .addClass("blue")
+                    .html(counters.not_init);
+
+                  _processNodeCounterTitle($notInitCounter, type, "not_init");
+
+                  $counters.append(" : ").append($notInitCounter);
+                }
+                if (typeof counters.ok != "undefined" && counters.ok > 0) {
+                  var $okCounter = $("<div></div>");
+                  $okCounter
+                    .addClass("tree-node-counter")
+                    .addClass("ok")
+                    .addClass("green")
+                    .html(counters.ok);
+
+                  _processNodeCounterTitle($okCounter, type, "ok");
+
+                  $counters.append(" : ").append($okCounter);
+                }
               }
 
               // Close the parentheses
@@ -436,7 +570,120 @@ var TreeController = {
 
                 $content.append($alertImage);
               }
-              $content.append(element.alias);
+
+              // Events by agent
+              if (element.showEventsBtn == 1) {
+                if (typeof element.eventAgent != "undefined") {
+                  $content.append(
+                    '<form method="post" id="hiddenAgentsEventsForm-' +
+                      element.eventAgent +
+                      '" style="display: none;" action="index.php?sec=eventos&sec2=operation/events/events&refr=0&pure=&section=list&history=0"><input type="hidden" name="id_agent" value="' +
+                      element.eventAgent +
+                      '"></form>'
+                  );
+                  var $eventImage = $(
+                    '<img src="' +
+                      (controller.baseURL.length > 0
+                        ? controller.baseURL
+                        : "") +
+                      'images/tree_events.png" /> '
+                  );
+                  $eventImage.addClass("agent-alerts-fired");
+                  $eventImage
+                    .click(function(e) {
+                      e.preventDefault();
+
+                      document
+                        .getElementById(
+                          "hiddenAgentsEventsForm-" + element.eventAgent
+                        )
+                        .submit();
+                    })
+                    .css("cursor", "pointer");
+
+                  $content.append($eventImage);
+                }
+              }
+
+              $content.append(" " + element.alias);
+              break;
+            case "services":
+              if (
+                typeof element.statusImageHTML != "undefined" &&
+                element.statusImageHTML.length > 0
+              ) {
+                var $statusImage = $(element.statusImageHTML);
+                $statusImage.addClass("agent-status");
+
+                $content.append($statusImage);
+              }
+
+              var $serviceDetailImage = $(
+                '<img src="' +
+                  (controller.baseURL.length > 0 ? controller.baseURL : "") +
+                  'images/tree_service_map.png" /> '
+              );
+
+              if (typeof element.serviceDetail != "undefined") {
+                $serviceDetailImage
+                  .click(function(e) {
+                    e.preventDefault();
+
+                    window.location.href = element.serviceDetail;
+                  })
+                  .css("cursor", "pointer");
+
+                $content.append($serviceDetailImage);
+              }
+
+              $content.append(" " + element.name);
+
+              break;
+            case "modules":
+              if (
+                typeof element.statusImageHTML != "undefined" &&
+                element.statusImageHTML.length > 0
+              ) {
+                var $statusImage = $(element.statusImageHTML);
+                $statusImage.addClass("agent-status");
+
+                $content.append($statusImage);
+              }
+
+              // Events by module
+              if (element.showEventsBtn == 1) {
+                if (typeof element.eventModule != "undefined") {
+                  $content.append(
+                    '<form method="post" id="hiddenModulesEventsForm-' +
+                      element.eventModule +
+                      '" style="display: none;" action="index.php?sec=eventos&sec2=operation/events/events&refr=0&pure=&section=list&history=0"><input type="hidden" name="module_search_hidden" value="' +
+                      element.eventModule +
+                      '"></form>'
+                  );
+                  var $moduleImage = $(
+                    '<img src="' +
+                      (controller.baseURL.length > 0
+                        ? controller.baseURL
+                        : "") +
+                      'images/tree_events.png" /> '
+                  );
+                  $moduleImage
+                    .click(function(e) {
+                      e.preventDefault();
+
+                      document
+                        .getElementById(
+                          "hiddenModulesEventsForm-" + element.eventModule
+                        )
+                        .submit();
+                    })
+                    .css("cursor", "pointer");
+
+                  $content.append($moduleImage);
+                }
+              }
+
+              $content.append(" " + element.name);
               break;
             case "module":
               // Status image
@@ -614,6 +861,19 @@ var TreeController = {
                     (controller.baseURL.length > 0 ? controller.baseURL : "") +
                     'images/tag_red.png" /> '
                 );
+              }
+              $content.append(element.name);
+              break;
+            case "services":
+              // Status image
+              if (
+                typeof element.statusImageHTML != "undefined" &&
+                element.statusImageHTML.length > 0
+              ) {
+                var $statusImage = $(element.statusImageHTML);
+                $statusImage.addClass("agent-status");
+
+                $content.append($statusImage);
               }
               $content.append(element.name);
               break;
@@ -820,14 +1080,16 @@ var TreeController = {
         }
 
         controller.recipient.empty();
-        controller.recipient.html(
-          "<div> " +
-            controller.foundMessage +
-            ": " +
-            controller.tree.length +
-            "</div>" +
-            "<br/>"
-        );
+        if (controller.tree.length !== undefined) {
+          controller.recipient.html(
+            "<div> " +
+              controller.foundMessage +
+              ": " +
+              controller.tree.length +
+              "</div>" +
+              "<br/>"
+          );
+        }
 
         var $children = _processGroup(this.recipient, this.tree, true);
         $children.show();

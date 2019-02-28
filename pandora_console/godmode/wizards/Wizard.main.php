@@ -1,11 +1,39 @@
 <?php
-
 /**
- * Interfaz tope gama que obliga a implementar metodos.
+ * Extension to schedule tasks on Pandora FMS Console
+ *
+ * @category   Wizard
+ * @package    Pandora FMS
+ * @subpackage Wizard skel
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
  */
 
 define('CLOUDWIZARD_AWS_DESCRIPTION', 'Discovery.Cloud.AWS.EC2');
 
+/**
+ * Global Wizard generic class. Needs to be inherited.
+ *
+ * Used in Hostdevices class, Applications class and others, is the core of
+ * Discovery proyect.
+ */
 class Wizard
 {
 
@@ -17,9 +45,9 @@ class Wizard
     public $breadcrum;
 
     /**
-     * Undocumented variable
+     * Current page
      *
-     * @var [type]
+     * @var integer
      */
     public $page;
 
@@ -497,6 +525,8 @@ class Wizard
 
     /**
      * Prints a go back button redirecting to main page.
+     *
+     * @param string $url Optional target url.
      *
      * @return void
      */

@@ -839,11 +839,11 @@ $(document).ready( function() {
                         // Remove delete link (if event is not grouped and there is more than one event)
                         if ($("#group_rep").val() == 1) {
                             if (parseInt($("#count_event_group_"+id).text()) <= 1) {
-                                $("#delete-"+id).replaceWith('<img alt="' + <?php echo "'".__('Is not allowed delete events in process')."'"; ?> + '" title="' + <?php echo "'".__('Is not allowed delete events in process')."'"; ?> + '" src="images/cross.disabled.png">');
+                                $("#delete-"+id).replaceWith('<img alt=" <?php echo addslashes(__('Is not allowed delete events in process')); ?>" title="<?php echo addslashes(__('Is not allowed delete events in process')); ?>"  src="images/cross.disabled.png">');
                             }
                         }
                         else { // Remove delete link (if event is not grouped)
-                            $("#delete-"+id).replaceWith('<img alt="' + <?php echo "'".__('Is not allowed delete events in process')."'"; ?> + '" title="' + <?php echo "'".__('Is not allowed delete events in process')."'"; ?> + '" src="images/cross.disabled.png">');
+                            $("#delete-"+id).replaceWith('<img alt="<?php echo addslashes(__('Is not allowed delete events in process')); ?> " title="<?php echo addslashes(__('Is not allowed delete events in process')); ?>"  src="images/cross.disabled.png">');
                         }
                         
                         // Change state image
@@ -1044,8 +1044,8 @@ function validate_event_advanced(id, new_status) {
                     $("#in-progress-"+id).remove();
                     // Format the new disabled delete icon.
                     $("#validate-"+id).parent().append("<img id='delete-" + id + "' src='" + cross_disabled_image + "' />");
-                    $("#delete-"+id).attr ("data-title", <?php echo "'".__('Is not allowed delete events in process')."'"; ?>);
-                    $("#delete-"+id).attr ("alt", <?php echo "'".__('Is not allowed delete events in process')."'"; ?>);
+                    $("#delete-"+id).attr ("data-title",  "<?php echo addslashes(__('Is not allowed delete events in process')); ?>");
+                    $("#delete-"+id).attr ("alt"," <?php echo addslashes(__('Is not allowed delete events in process')); ?>");
                     $("#delete-"+id).attr ("data-use_title_for_force_title", 1);
                     $("#delete-"+id).attr ("class", "forced_title"); 
 

@@ -34,7 +34,7 @@ use PandoraFMS::Config;
 use PandoraFMS::DB;
 
 # version: define current version
-my $version = "7.0NG.731 PS190221";
+my $version = "7.0NG.732 PS190228";
 
 # Pandora server configuration
 my %conf;
@@ -437,6 +437,13 @@ sub pandora_purgedb ($$) {
 	log_message ('PURGE', 'Deleting old network matrix data.');
 	my $matrix_limit = time() - 86400 * 7; #FIXME It should be configurable.
 	db_do ($dbh, "DELETE FROM tnetwork_matrix WHERE utimestamp < ?", $matrix_limit);
+
+	# Delete old messages
+	log_message ('PURGE', "Deleting old messages.");
+	if ($conf->{'_delete_old_messages'} > 0) {
+		my $message_limit = time() - 86400 * $conf->{'_delete_old_messages'};
+		db_do ($dbh, "DELETE FROM tmensajes WHERE timestamp < ?", $message_limit);
+	}
 }
 
 ###############################################################################
@@ -656,6 +663,7 @@ sub pandora_load_config_pdb ($) {
 	$conf->{'_history_db_delay'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'history_db_delay'");
 	$conf->{'_days_delete_unknown'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'days_delete_unknown'");
 	$conf->{'_inventory_purge'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'inventory_purge'");
+	$conf->{'_delete_old_messages'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'delete_old_messages'");
 	$conf->{'_enterprise_installed'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'enterprise_installed'");
 	$conf->{'_metaconsole'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'metaconsole'");
 	$conf->{'_metaconsole_events_history'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'metaconsole_events_history'");

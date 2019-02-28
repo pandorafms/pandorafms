@@ -54,7 +54,8 @@ AGENT_WIN_FILE="$CODEHOME/pandora_agents/win32/pandora.cc"
 AGENT_WIN_MPI_FILE="$CODEHOME/pandora_agents/win32/installer/pandora.mpi"
 AGENT_WIN_RC_FILE="$CODEHOME/pandora_agents/win32/versioninfo.rc"
 SATELLITE_FILE="$PANDHOME_ENT/satellite_server/satellite_server.pl"
-PERL_PLUGIN_FILES="$PANDHOME_ENT/pandora_server/util/plugin/vmware-plugin.pl \
+PERL_PLUGIN_FILES="$PANDHOME_ENT/pandora_server/util/recon_script/vmware-plugin.pl \
+$PANDHOME_ENT/pandora_server/util/recon_script/pcm_client.pl \
 $PANDHOME_ENT/pandora_plugins/NGINX/nginx_requests_queued.pl \
 $PANDHOME_ENT/pandora_plugins/Sybase/sybase_plugin.pl \
 $PANDHOME_ENT/pandora_plugins/SNMP/dynamic_snmp.pl \

@@ -306,7 +306,7 @@ class DiscoveryTaskList extends Wizard
             return false;
         }
 
-        // Get all recon servers.
+        // Get all discovery servers.
         $servers = db_get_all_rows_sql('SELECT * FROM tserver WHERE server_type = 3');
         if ($servers === false) {
             $servers = [];
@@ -337,9 +337,6 @@ class DiscoveryTaskList extends Wizard
                 }
             }
 
-            foreach ($servers as $serverItem) {
-                $id_server = $serverItem['id_server'];
-                $server_name = servers_get_name($id_server);
                 $recon_tasks = db_get_all_rows_sql('SELECT * FROM trecon_task');
                 $user_groups = implode(',', array_keys(users_get_groups()));
                 $defined_tasks = db_get_all_rows_filter(
@@ -347,23 +344,23 @@ class DiscoveryTaskList extends Wizard
                     'id_grupo IN ('.$user_groups.')'
                 );
 
-                if (isset($tasks_console) === true
-                    && is_array($tasks_console) === true
-                ) {
-                    foreach ($tasks_console as $key => $value) {
-                        $value['parameters'] = unserialize(
-                            $value['parameters']
-                        );
+            if (isset($tasks_console) === true
+                && is_array($tasks_console) === true
+            ) {
+                foreach ($tasks_console as $key => $value) {
+                    $value['parameters'] = unserialize(
+                        $value['parameters']
+                    );
 
-                        $value['type'] = 'Cron';
-                        array_push($recon_tasks, $value);
-                    }
+                    $value['type'] = 'Cron';
+                    array_push($recon_tasks, $value);
                 }
+            }
 
                 // Show network tasks for Recon Server.
-                if ($recon_tasks === false) {
-                    $recon_tasks = [];
-                }
+            if ($recon_tasks === false) {
+                $recon_tasks = [];
+            }
 
                 $table = new StdClass();
                 $table->cellpadding = 4;
@@ -374,9 +371,9 @@ class DiscoveryTaskList extends Wizard
                 $table->data = [];
                 $table->align = [];
                 $table->headstyle = [];
-                for ($i = 0; $i < 9; $i++) {
-                    $table->headstyle[$i] = 'text-align: left;';
-                }
+            for ($i = 0; $i < 9; $i++) {
+                $table->headstyle[$i] = 'text-align: left;';
+            }
 
                 $table->head[0] = __('Force');
                 $table->align[0] = 'left';
@@ -384,120 +381,153 @@ class DiscoveryTaskList extends Wizard
                 $table->head[1] = __('Task name');
                 $table->align[1] = 'left';
 
-                $table->head[2] = __('Interval');
+                $table->head[2] = __('Server name');
                 $table->align[2] = 'left';
 
-                $table->head[3] = __('Network');
+                $table->head[3] = __('Interval');
                 $table->align[3] = 'left';
 
-                $table->head[4] = __('Status');
+                $table->head[4] = __('Network');
                 $table->align[4] = 'left';
 
-                $table->head[5] = __('Task type');
+                $table->head[5] = __('Status');
                 $table->align[5] = 'left';
 
-                $table->head[6] = __('Progress');
+                $table->head[6] = __('Task type');
                 $table->align[6] = 'left';
 
-                $table->head[7] = __('Updated at');
+                $table->head[7] = __('Progress');
                 $table->align[7] = 'left';
 
-                $table->head[8] = __('Operations');
+                $table->head[8] = __('Updated at');
                 $table->align[8] = 'left';
 
-                foreach ($recon_tasks as $task) {
-                    $data = [];
+                $table->head[9] = __('Operations');
+                $table->align[9] = 'left';
 
-                    if ($task['disabled'] == 0) {
-                        $data[0] = '<a href="'.ui_get_full_url(
-                            'index.php?sec=gservers&sec2=godmode/servers/discovery&wiz=tasklist&server_id='.$id_server.'&force='.$task['id_rt']
-                        ).'">';
-                        $data[0] .= html_print_image('images/target.png', true, ['title' => __('Force')]);
-                        $data[0] .= '</a>';
-                    } else if ($task['disabled'] == 2) {
-                        $data[0] = ui_print_help_tip(
-                            __('This task has not been completely defined, please edit it'),
-                            true
-                        );
-                    } else {
-                        $data[0] = '';
+            foreach ($recon_tasks as $task) {
+                $data = [];
+                $server_name = servers_get_name($task['id_recon_server']);
+
+                // By default.
+                $subnet = $task['subnet'];
+
+                // Exceptions: IPAM.
+                $ipam = false;
+                if ($task['id_recon_script'] != null) {
+                    $recon_script_name = db_get_value('name', 'trecon_script', 'id_recon_script', $task['id_recon_script']);
+                    if (io_safe_output($recon_script_name) == 'IPAM Recon') {
+                        $subnet_obj = json_decode($task['macros'], true);
+                        $subnet = $subnet_obj['1']['value'];
+                        $tipam_task_id = db_get_value('id', 'tipam_network', 'id_recon_task', $task['id_rt']);
+                        $ipam = true;
                     }
+                }
 
-                    $data[1] = '<b>'.$task['name'].'</b>';
+                if ($task['disabled'] == 0 && $server_name !== '') {
+                    $data[0] = '<a href="'.ui_get_full_url(
+                        'index.php?sec=gservers&sec2=godmode/servers/discovery&wiz=tasklist&server_id='.$id_server.'&force='.$task['id_rt']
+                    ).'">';
+                    $data[0] .= html_print_image('images/target.png', true, ['title' => __('Force')]);
+                    $data[0] .= '</a>';
+                } else if ($task['disabled'] == 2) {
+                    $data[0] = ui_print_help_tip(
+                        __('This task has not been completely defined, please edit it'),
+                        true
+                    );
+                } else {
+                    $data[0] = '';
+                }
 
-                    if ($task['interval_sweep'] > 0) {
-                        $data[2] = human_time_description_raw(
-                            $task['interval_sweep']
-                        );
-                    } else {
-                        $data[2] = __('Manual');
-                    }
+                $data[1] = '<b>'.$task['name'].'</b>';
 
-                    if ($task['id_recon_script'] == 0) {
-                        $data[3] = $task['subnet'];
-                    } else {
-                        $data[3] = '-';
-                    }
+                $data[2] = $server_name;
 
-                    if ($task['status'] <= 0) {
-                        $data[4] = __('Done');
-                    } else {
-                        $data[4] = __('Pending');
-                    }
+                if ($task['interval_sweep'] > 0) {
+                    $data[3] = human_time_description_raw(
+                        $task['interval_sweep']
+                    );
+                } else {
+                    $data[3] = __('Manual');
+                }
 
-                    if ($task['id_recon_script'] == 0) {
-                        // Discovery NetScan.
-                        $data[5] = html_print_image(
-                            'images/network.png',
-                            true,
-                            ['title' => __('Discovery NetScan')]
-                        ).'&nbsp;&nbsp;';
-                        $data[5] .= network_profiles_get_name(
-                            $task['id_network_profile']
-                        );
-                    } else {
-                        // APP recon task.
-                        $data[5] = html_print_image(
-                            'images/plugin.png',
-                            true
-                        ).'&nbsp;&nbsp;';
-                        $data[5] .= db_get_sql(
+                if ($task['id_recon_script'] == 0 || $ipam === true) {
+                    $data[4] = $subnet;
+                } else {
+                    $data[4] = '-';
+                }
+
+                if ($task['status'] <= 0) {
+                    $data[5] = __('Done');
+                } else {
+                    $data[5] = __('Pending');
+                }
+
+                if ($task['id_recon_script'] == 0) {
+                    // Discovery NetScan.
+                    $data[6] = html_print_image(
+                        'images/network.png',
+                        true,
+                        ['title' => __('Discovery NetScan')]
+                    ).'&nbsp;&nbsp;';
+                    $data[6] .= network_profiles_get_name(
+                        $task['id_network_profile']
+                    );
+                } else {
+                    // APP recon task.
+                    $data[6] = html_print_image(
+                        'images/plugin.png',
+                        true
+                    ).'&nbsp;&nbsp;';
+                    $data[6] .= $recon_script_name;
+                }
+
+                if ($task['status'] <= 0 || $task['status'] > 100) {
+                    $data[7] = '-';
+                } else {
+                    $data[7] = progress_bar(
+                        $task['status'],
+                        100,
+                        20,
+                        __('Progress').':'.$task['status'].'%',
+                        1
+                    );
+                }
+
+                if ($task['utimestamp'] > 0) {
+                    $data[8] = ui_print_timestamp(
+                        $task['utimestamp'],
+                        true
+                    );
+                } else {
+                    $data[8] = __('Not executed yet');
+                }
+
+                if (check_acl(
+                    $config['id_user'],
+                    $task['id_group'],
+                    'PM'
+                )
+                ) {
+                    if ($ipam === true) {
+                        $data[9] = '<a href="'.ui_get_full_url(
                             sprintf(
-                                'SELECT name FROM trecon_script WHERE id_recon_script = %d',
-                                $task['id_recon_script']
+                                'index.php?sec=godmode/extensions&sec2=enterprise/extensions/ipam&action=edit&id=%d',
+                                $tipam_task_id
                             )
-                        );
-                    }
-
-                    if ($task['status'] <= 0 || $task['status'] > 100) {
-                        $data[6] = '-';
-                    } else {
-                        $data[6] = progress_bar(
-                            $task['status'],
-                            100,
-                            20,
-                            __('Progress').':'.$task['status'].'%',
-                            1
-                        );
-                    }
-
-                    if ($task['utimestamp'] > 0) {
-                        $data[7] = ui_print_timestamp(
-                            $task['utimestamp'],
+                        ).'">'.html_print_image(
+                            'images/config.png',
                             true
-                        );
+                        ).'</a>';
+                        $data[9] .= '<a href="'.ui_get_full_url(
+                            'index.php?sec=godmode/extensions&sec2=enterprise/extensions/ipam&action=delete&id='.$tipam_task_id
+                        ).'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">'.html_print_image(
+                            'images/cross.png',
+                            true
+                        ).'</a>';
                     } else {
-                        $data[7] = __('Not executed yet');
-                    }
-
-                    if (check_acl(
-                        $config['id_user'],
-                        $task['id_group'],
-                        'PM'
-                    )
-                    ) {
-                        // Check if is a H&D, Cloud or Application.
-                        $data[8] = '<a href="'.ui_get_full_url(
+                        // Check if is a H&D, Cloud or Application or IPAM.
+                        $data[9] = '<a href="'.ui_get_full_url(
                             sprintf(
                                 'index.php?sec=gservers&sec2=godmode/servers/discovery&%s&task=%d',
                                 $this->getTargetWiz($task),
@@ -507,29 +537,29 @@ class DiscoveryTaskList extends Wizard
                             'images/config.png',
                             true
                         ).'</a>';
-                        $data[8] .= '<a href="'.ui_get_full_url(
+                        $data[9] .= '<a href="'.ui_get_full_url(
                             'index.php?sec=gservers&sec2=godmode/servers/discovery&wiz=tasklist&delete=1&task='.$task['id_rt']
                         ).'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">'.html_print_image(
                             'images/cross.png',
                             true
                         ).'</a>';
-                    } else {
-                        $data[8] = '';
                     }
-
-                    array_push($table->data, $data);
+                } else {
+                    $data[9] = '';
                 }
+
+                array_push($table->data, $data);
+            }
 
                 echo '<h2>'.__('Server tasks').'</h2>';
-                if (empty($table->data)) {
-                    echo '<div class="nf">'.__('Server').' '.$server_name.' '.__('has no discovery tasks assigned').'</div>';
-                    return false;
-                } else {
-                    html_print_table($table);
-                }
+            if (empty($table->data)) {
+                echo '<div class="nf">'.__('Server').' '.$server_name.' '.__('has no discovery tasks assigned').'</div>';
+                return false;
+            } else {
+                html_print_table($table);
+            }
 
                 unset($table);
-            }
         }
 
         return true;

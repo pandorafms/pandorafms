@@ -215,7 +215,7 @@ function extension_db_check_tables_differences(
     $diff_tables = array_diff($tables_test, $tables_system);
 
     ui_print_result_message(
-        !empty($diff_tables),
+        empty($diff_tables),
         __('Success! %s DB contains all tables', get_product_name()),
         __(
             '%s DB could not retrieve all tables. The missing tables are (%s)',

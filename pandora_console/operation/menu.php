@@ -65,10 +65,55 @@ if (check_acl($config['id_user'], 0, 'AR')) {
 
     enterprise_hook('inventory_menu');
 
-    if ($config['activate_netflow']) {
-        $sub['operation/netflow/nf_live_view']['text'] = __('Netflow Live View');
-        $sub['operation/netflow/nf_live_view']['id'] = 'Netflow Live View';
-        $sub['operation/netflow/nf_live_view']['refr'] = 0;
+    if ($config['activate_netflow'] || $config['activate_nta']) {
+        $sub['network'] = [
+            'text'    => __('Network'),
+            'id'      => 'Network',
+            'type'    => 'direct',
+            'subtype' => 'nolink',
+            'refr'    => 0,
+        ];
+
+        // Initialize the submenu.
+        $netflow_sub = [];
+
+        if ($config['activate_netflow']) {
+            $netflow_sub = array_merge(
+                $netflow_sub,
+                [
+                    'operation/netflow/network_explorer' => [
+                        'text' => __('Netflow explorer'),
+                        'id'   => 'Netflow explorer',
+                    ],
+                    'operation/netflow/nf_live_view'     => [
+                        'text' => __('Netflow Live View'),
+                        'id'   => 'Netflow Live View',
+                    ],
+                ]
+            );
+        }
+
+        if ($config['activate_nta']) {
+            $netflow_sub = array_merge(
+                $netflow_sub,
+                [
+                    'operation/network/network_explorer'  => [
+                        'text' => __('Network explorer'),
+                        'id'   => 'Network explorer',
+                    ],
+                    'operation/network/network_usage_map' => [
+                        'text' => __('Network usage map'),
+                        'id'   => 'Network usage map',
+                    ],
+                    'operation/network/network_dashboard' => [
+                        'text' => __('Network dashboard'),
+                        'id'   => 'Network dashboard',
+                    ],
+                ]
+            );
+        }
+
+        $sub['network']['sub2'] = $netflow_sub;
     }
 
     if ($config['log_collector'] == 1) {

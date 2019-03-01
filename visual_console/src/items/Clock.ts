@@ -177,8 +177,10 @@ export default class Clock extends VisualConsoleItem<ClockProps> {
    */
   public resize(width: number, height: number): void {
     super.resize(width, height);
+    // this.childElementRef.style.width = `${width}px`;
+    // this.childElementRef.style.height = `${height}px`;
     // Re-render the item to force it calculate a new font size.
-    this.render();
+    if (this.props.clockType === "digital") this.render();
   }
 
   /**

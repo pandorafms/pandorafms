@@ -63,9 +63,8 @@ export default class ColorCloud extends VisualConsoleItem<ColorCloudProps> {
     const gradientId = `grad_${this.props.id}`;
     // SVG container.
     const svg = document.createElementNS(svgNS, "svg");
-    // Resize SVG. Use only the width, cause this element only needs a diameter.
-    svg.setAttribute("width", `${this.props.width}px`);
-    svg.setAttribute("height", `${this.props.width}px`);
+    // Auto resize SVG using the view box magic: https://css-tricks.com/scale-svg/
+    svg.setAttribute("viewBox", "0 0 100 100");
 
     // Defs.
     const defs = document.createElementNS(svgNS, "defs");
@@ -103,23 +102,5 @@ export default class ColorCloud extends VisualConsoleItem<ColorCloudProps> {
     svg.append(defs, circle);
 
     return svg;
-  }
-
-  /**
-   * @override VisualConsoleItem.resize
-   * To resize the item.
-   * @param diameter Diameter.
-   */
-  public resize(diameter: number): void {
-    // Resize parent. Use the diameter as width and height.
-    super.resize(diameter, diameter);
-
-    // Get SVG element.
-    const svgElement = this.elementRef.getElementsByTagName("svg").item(0);
-    if (svgElement === null) return;
-
-    // Resize SVG. Use only the width, cause this element only needs a diameter.
-    svgElement.setAttribute("width", `${this.props.width}px`);
-    svgElement.setAttribute("height", `${this.props.width}px`);
   }
 }

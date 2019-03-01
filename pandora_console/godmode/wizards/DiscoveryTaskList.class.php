@@ -340,7 +340,7 @@ class DiscoveryTaskList extends Wizard
             $recon_tasks = db_get_all_rows_sql('SELECT * FROM trecon_task');
             $user_groups = implode(',', array_keys(users_get_groups()));
 
-                // Show network tasks for Recon Server.
+            // Show network tasks for Recon Server.
             if ($recon_tasks === false) {
                 $recon_tasks = [];
             }
@@ -399,7 +399,9 @@ class DiscoveryTaskList extends Wizard
                 $ipam = false;
                 if ($task['id_recon_script'] != null) {
                     $recon_script_name = db_get_value('name', 'trecon_script', 'id_recon_script', $task['id_recon_script']);
-                    if (io_safe_output($recon_script_name) == 'IPAM Recon') {
+                    if (io_safe_output($recon_script_name) == 'IPAM Recon'
+                        && enterprise_installed()
+                    ) {
                         $subnet_obj = json_decode($task['macros'], true);
                         $subnet = $subnet_obj['1']['value'];
                         $tipam_task_id = db_get_value('id', 'tipam_network', 'id_recon_task', $task['id_rt']);

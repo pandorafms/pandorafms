@@ -224,6 +224,10 @@ function config_update_config()
                         $error_update[] = __('Enable Netflow');
                     }
 
+                    if (!config_update_value('activate_nta', (bool) get_parameter_switch('activate_nta'))) {
+                        $error_update[] = __('Enable Network Traffic Analyzer');
+                    }
+
                     $timezone = (string) get_parameter('timezone');
                     if ($timezone != '') {
                         if (!config_update_value('timezone', $timezone)) {
@@ -1977,6 +1981,10 @@ function config_process_config()
 
     if (!isset($config['activate_netflow'])) {
         config_update_value('activate_netflow', 0);
+    }
+
+    if (!isset($config['activate_nta'])) {
+        config_update_value('activate_nta', 0);
     }
 
     if (!isset($config['netflow_path'])) {

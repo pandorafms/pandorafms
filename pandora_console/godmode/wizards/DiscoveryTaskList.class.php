@@ -30,7 +30,8 @@ require_once __DIR__.'/Wizard.main.php';
 require_once $config['homedir'].'/include/functions_users.php';
 require_once $config['homedir'].'/include/functions_reports.php';
 require_once $config['homedir'].'/include/functions_cron.php';
-enterprise_include('include/functions_tasklist.php');
+enterprise_include_once('include/functions_tasklist.php');
+enterprise_include_once('include/functions_cron.php');
 
 /**
  * Defined as wizard to guide user to explore running tasks.
@@ -237,7 +238,7 @@ class DiscoveryTaskList extends Wizard
         $id_console_task = (int) get_parameter('id_console_task');
 
         if ($id_console_task !== null) {
-            enterprise_include('cron_task_run', $id_console_task, true);
+            enterprise_hook('cron_task_run', $id_console_task, true);
             // Trick to avoid double execution.
             header('Location: '.$this->url);
         }

@@ -31,6 +31,9 @@ INSERT INTO `talert_commands` (`id`, `name`, `command`, `description`, `internal
 
 LOCK TABLES `tconfig` WRITE;
 INSERT INTO `tconfig` (`token`, `value`) VALUES 
+('cron_extension_installed','1'),
+('cron_extension_sql_version','1'),
+('cron_last_run','0'),
 ('language','en_GB'),
 ('block_size','20'),
 ('days_purge','45'),

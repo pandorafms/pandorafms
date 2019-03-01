@@ -23,7 +23,7 @@ enterprise_include('operation/menu.php');
 $menu_operation = [];
 $menu_operation['class'] = 'operation';
 
-// Agent read, Server read
+// Agent read, Server read.
 if (check_acl($config['id_user'], 0, 'AR')) {
     // View agents
     $menu_operation['estado']['text'] = __('Monitoring');
@@ -120,10 +120,10 @@ if (check_acl($config['id_user'], 0, 'AR')) {
         enterprise_hook('log_collector_menu');
     }
 
-    // End of view agents
+    // End of view agents.
 }
 
-// SNMP Console
+// SNMP Console.
 $sub2 = [];
 if (check_acl($config['id_user'], 0, 'AR') || check_acl($config['id_user'], 0, 'AW')) {
     $sub2['operation/snmpconsole/snmp_view']['text'] = __('SNMP console');
@@ -160,10 +160,10 @@ if (!empty($sub)) {
     $menu_operation['estado']['sub'] = $sub;
 }
 
-// Start network view
+// Start network view.
 $sub = [];
 if (check_acl($config['id_user'], 0, 'MR') || check_acl($config['id_user'], 0, 'MW') || check_acl($config['id_user'], 0, 'MM')) {
-    // Network enterprise
+    // Network enterprise.
     $sub['operation/agentes/pandora_networkmap']['text'] = __('Network map');
     $sub['operation/agentes/pandora_networkmap']['id'] = 'Network map';
     $sub['operation/agentes/pandora_networkmap']['refr'] = 0;
@@ -175,17 +175,17 @@ enterprise_hook('services_menu');
 
 if (check_acl($config['id_user'], 0, 'VR') || check_acl($config['id_user'], 0, 'VW') || check_acl($config['id_user'], 0, 'VM')) {
     if (!isset($config['vc_favourite_view']) || $config['vc_favourite_view'] == 0) {
-        // Visual console
+        // Visual console.
         $sub['godmode/reporting/map_builder']['text'] = __('Visual console');
         $sub['godmode/reporting/map_builder']['id'] = 'Visual console';
     } else {
-        // Visual console favorite
+        // Visual console favorite.
         $sub['godmode/reporting/visual_console_favorite']['text'] = __('Visual console');
         $sub['godmode/reporting/visual_console_favorite']['id'] = 'Visual console';
     }
 
     if ($config['vc_menu_items'] != 0) {
-        // Set godomode path
+        // Set godomode path.
         if (!isset($config['vc_favourite_view']) || $config['vc_favourite_view'] == 0) {
             $sub['godmode/reporting/map_builder']['subsecs'] = [
                 'godmode/reporting/map_builder',
@@ -257,7 +257,7 @@ if (check_acl($config['id_user'], 0, 'VR') || check_acl($config['id_user'], 0, '
 
 
 if (check_acl($config['id_user'], 0, 'MR') || check_acl($config['id_user'], 0, 'MW') || check_acl($config['id_user'], 0, 'MM')) {
-    // INI GIS Maps
+    // INI GIS Maps.
     if ($config['activate_gis']) {
         $sub['gismaps']['text'] = __('GIS Maps');
         $sub['gismaps']['id'] = 'GIS Maps';
@@ -299,7 +299,7 @@ if (check_acl($config['id_user'], 0, 'MR') || check_acl($config['id_user'], 0, '
         $sub['gismaps']['sub2'] = $sub2;
     }
 
-    // END GIS Maps
+    // END GIS Maps.
 }
 
 if (!empty($sub)) {
@@ -310,10 +310,10 @@ if (!empty($sub)) {
     $menu_operation['network']['sub'] = $sub;
 }
 
-// End networkview
-// Reports read
+// End networkview.
+// Reports read.
 if (check_acl($config['id_user'], 0, 'RR') || check_acl($config['id_user'], 0, 'RW') || check_acl($config['id_user'], 0, 'RM')) {
-    // Reporting
+    // Reporting.
     $menu_operation['reporting']['text'] = __('Reporting');
     $menu_operation['reporting']['sec2'] = 'godmode/reporting/reporting_builder';
     $menu_operation['reporting']['id'] = 'oper-reporting';
@@ -323,7 +323,7 @@ if (check_acl($config['id_user'], 0, 'RR') || check_acl($config['id_user'], 0, '
 
     $sub['godmode/reporting/reporting_builder']['text'] = __('Custom reporting');
     $sub['godmode/reporting/reporting_builder']['id'] = 'Custom reporting';
-    // Set godomode path
+    // Set godomode path.
     $sub['godmode/reporting/reporting_builder']['subsecs'] = [
         'godmode/reporting/reporting_builder',
         'operation/reporting/reporting_viewer',
@@ -332,7 +332,7 @@ if (check_acl($config['id_user'], 0, 'RR') || check_acl($config['id_user'], 0, '
 
     $sub['godmode/reporting/graphs']['text'] = __('Custom graphs');
     $sub['godmode/reporting/graphs']['id'] = 'Custom graphs';
-    // Set godomode path
+    // Set godomode path.
     $sub['godmode/reporting/graphs']['subsecs'] = [
         'operation/reporting/graph_viewer',
         'godmode/reporting/graph_builder',
@@ -341,16 +341,16 @@ if (check_acl($config['id_user'], 0, 'RR') || check_acl($config['id_user'], 0, '
     enterprise_hook('dashboard_menu');
     enterprise_hook('reporting_godmenu');
 
-    $menu_operation['reporting']['sub'] = $sub;
-    // End reporting
+    $menu_operation['repo.rting']['sub'] = $sub;
+    // End reporting.
 }
 
-// Events reading
+// Events reading.
 if (check_acl($config['id_user'], 0, 'ER')
     || check_acl($config['id_user'], 0, 'EW')
     || check_acl($config['id_user'], 0, 'EM')
 ) {
-    // Events
+    // Events.
     $menu_operation['eventos']['text'] = __('Events');
     $menu_operation['eventos']['refr'] = 0;
     $menu_operation['eventos']['sec2'] = 'operation/events/events';
@@ -363,29 +363,29 @@ if (check_acl($config['id_user'], 0, 'ER')
     $sub['operation/events/event_statistics']['text'] = __('Statistics');
     $sub['operation/events/event_statistics']['id'] = 'Statistics';
 
-    // If ip doesn't is in list of allowed IP, isn't show this options
+    // If ip doesn't is in list of allowed IP, isn't show this options.
     include_once 'include/functions_api.php';
     if (isInACL($_SERVER['REMOTE_ADDR'])) {
         $pss = get_user_info($config['id_user']);
         $hashup = md5($config['id_user'].$pss['password']);
 
-        // RSS
+        // RSS.
         $sub['operation/events/events_rss.php?user='.$config['id_user'].'&amp;hashup='.$hashup.'&search=&event_type=&severity=-1&status=3&id_group=0&refr=0&id_agent=0&pagination=20&group_rep=1&event_view_hr=8&id_user_ack=0&tag_with=&tag_without=&filter_only_alert-1&offset=0&toogle_filter=no&filter_id=0&id_name=&id_group=0&history=0&section=list&open_filter=0&pure=']['text'] = __('RSS');
         $sub['operation/events/events_rss.php?user='.$config['id_user'].'&amp;hashup='.$hashup.'&search=&event_type=&severity=-1&status=3&id_group=0&refr=0&id_agent=0&pagination=20&group_rep=1&event_view_hr=8&id_user_ack=0&tag_with=&tag_without=&filter_only_alert-1&offset=0&toogle_filter=no&filter_id=0&id_name=&id_group=0&history=0&section=list&open_filter=0&pure=']['id'] = 'RSS';
         $sub['operation/events/events_rss.php?user='.$config['id_user'].'&amp;hashup='.$hashup.'&search=&event_type=&severity=-1&status=3&id_group=0&refr=0&id_agent=0&pagination=20&group_rep=1&event_view_hr=8&id_user_ack=0&tag_with=&tag_without=&filter_only_alert-1&offset=0&toogle_filter=no&filter_id=0&id_name=&id_group=0&history=0&section=list&open_filter=0&pure=']['type'] = 'direct';
 
-        // Marquee
+        // Marquee.
         $sub['operation/events/events_marquee.php']['text'] = __('Marquee');
         $sub['operation/events/events_marquee.php']['id'] = 'Marquee';
         $sub['operation/events/events_marquee.php']['type'] = 'direct';
     }
 
-    // CSV
+    // CSV.
     $sub['operation/events/export_csv.php?search=&event_type=&severity=-1&status=3&id_group=0&refr=0&id_agent=0&pagination=20&group_rep=1&event_view_hr=8&id_user_ack=0&tag_with=&tag_without=&filter_only_alert-1&offset=0&toogle_filter=no&filter_id=0&id_name=&id_group=0&history=0&section=list&open_filter=0&pure=']['text'] = __('CSV File');
     $sub['operation/events/export_csv.php?search=&event_type=&severity=-1&status=3&id_group=0&refr=0&id_agent=0&pagination=20&group_rep=1&event_view_hr=8&id_user_ack=0&tag_with=&tag_without=&filter_only_alert-1&offset=0&toogle_filter=no&filter_id=0&id_name=&id_group=0&history=0&section=list&open_filter=0&pure=']['id'] = 'CSV File';
     $sub['operation/events/export_csv.php?search=&event_type=&severity=-1&status=3&id_group=0&refr=0&id_agent=0&pagination=20&group_rep=1&event_view_hr=8&id_user_ack=0&tag_with=&tag_without=&filter_only_alert-1&offset=0&toogle_filter=no&filter_id=0&id_name=&id_group=0&history=0&section=list&open_filter=0&pure=']['type'] = 'direct';
 
-    // Sound Events
+    // Sound Events.
     $javascript = "javascript: window.open('operation/events/sound_events.php');";
     $javascript = 'javascript: alert(111);';
     $javascript = 'javascript: openSoundEventWindow();';
@@ -409,31 +409,31 @@ if (check_acl($config['id_user'], 0, 'ER')
     $menu_operation['eventos']['sub'] = $sub;
 }
 
-// Workspace
+// Workspace.
 $menu_operation['workspace']['text'] = __('Workspace');
 $menu_operation['workspace']['sec2'] = 'operation/users/user_edit';
 $menu_operation['workspace']['id'] = 'oper-users';
 
 // ANY user can view him/herself !
-// Users
+// Users.
 $sub = [];
 $sub['operation/users/user_edit']['text'] = __('Edit my user');
 $sub['operation/users/user_edit']['id'] = 'Edit my user';
 $sub['operation/users/user_edit']['refr'] = 0;
 
-// Users
+// Users.
 $sub['operation/users/user_edit_notifications']['text'] = __('Configure user notifications');
 $sub['operation/users/user_edit_notifications']['id'] = 'Configure user notifications';
 $sub['operation/users/user_edit_notifications']['refr'] = 0;
 
 // ANY user can chat with other user and dogs.
-// Users
+// Users.
 $sub['operation/users/webchat']['text'] = __('WebChat');
 $sub['operation/users/webchat']['id'] = 'WebChat';
 $sub['operation/users/webchat']['refr'] = 0;
 
 
-// Incidents
+// Incidents.
 if (check_acl($config['id_user'], 0, 'IR')
     || check_acl($config['id_user'], 0, 'IW')
     || check_acl($config['id_user'], 0, 'IM')
@@ -460,7 +460,7 @@ if (check_acl($config['id_user'], 0, 'IR')
 }
 
 
-// Messages
+// Messages.
 $sub['message_list']['text'] = __('Messages');
 $sub['message_list']['id'] = 'Messages';
 $sub['message_list']['refr'] = 0;
@@ -477,7 +477,7 @@ $menu_operation['workspace']['sub'] = $sub;
 // End Workspace
 // Rest of options, all with AR privilege (or should events be with incidents?)
 // ~ if (check_acl ($config['id_user'], 0, "AR")) {
-// Extensions menu additions
+// Extensions menu additions.
 if (is_array($config['extensions'])) {
     $sub = [];
     $sub2 = [];
@@ -500,12 +500,12 @@ if (is_array($config['extensions'])) {
     }
 
     foreach ($config['extensions'] as $extension) {
-        // If no operation_menu is a godmode extension
+        // If no operation_menu is a godmode extension.
         if ($extension['operation_menu'] == '') {
             continue;
         }
 
-        // Check the ACL for this user
+        // Check the ACL for this user.
         if (! check_acl($config['id_user'], 0, $extension['operation_menu']['acl'])) {
             continue;
         }
@@ -519,7 +519,7 @@ if (is_array($config['extensions'])) {
             continue;
         }
 
-        // Check if was displayed inside other menu
+        // Check if was displayed inside other menu.
         if ($extension['operation_menu']['fatherId'] == '') {
             if ($extension_menu['name'] == 'Update manager') {
                 continue;
@@ -530,7 +530,7 @@ if (is_array($config['extensions'])) {
             $sub[$extension_menu['sec2']]['refr'] = 0;
         } else {
             if (array_key_exists('fatherId', $extension_menu)) {
-                // Check that extension father ID exists previously on the menu
+                // Check that extension father ID exists previously on the menu.
                 if ((strlen($extension_menu['fatherId']) > 0)) {
                     if (array_key_exists('subfatherId', $extension_menu)) {
                         if ((strlen($extension_menu['subfatherId']) > 0)) {

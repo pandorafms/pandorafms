@@ -20,7 +20,7 @@ export type ClockProps = {
   clockTimezone: string;
   clockTimezoneOffset: number; // Offset of the timezone to UTC in seconds.
   showClockTimezone: boolean;
-  color: string | null;
+  color?: string | null;
 } & VisualConsoleItemProps &
   LinkedVisualConsoleProps;
 
@@ -222,14 +222,32 @@ export default class Clock extends VisualConsoleItem<ClockProps> {
     svg.setAttribute("viewBox", "0 0 100 100");
 
     // Clock face.
-    const clockFace = document.createElementNS(svgNS, "circle");
-    clockFace.setAttribute("cx", "50");
-    clockFace.setAttribute("cy", "50");
-    clockFace.setAttribute("r", "48");
-    clockFace.setAttribute("fill", colors.watchFace);
-    clockFace.setAttribute("stroke", colors.watchFaceBorder);
-    clockFace.setAttribute("stroke-width", "2");
-    clockFace.setAttribute("stroke-linecap", "round");
+    const clockFace = document.createElementNS(svgNS, "g");
+    clockFace.setAttribute("class", "clockface");
+    const clockFaceBackground = document.createElementNS(svgNS, "circle");
+    clockFaceBackground.setAttribute("cx", "50");
+    clockFaceBackground.setAttribute("cy", "50");
+    clockFaceBackground.setAttribute("r", "48");
+    clockFaceBackground.setAttribute("fill", colors.watchFace);
+    clockFaceBackground.setAttribute("stroke", colors.watchFaceBorder);
+    clockFaceBackground.setAttribute("stroke-width", "2");
+    clockFaceBackground.setAttribute("stroke-linecap", "round");
+    // Insert the clockface background into the clockface group.
+    clockFace.append(clockFaceBackground);
+
+    // Timezone complication.
+    if (this.props.showClockTimezone) {
+      const timezoneComplication = document.createElementNS(svgNS, "text");
+      timezoneComplication.setAttribute("text-anchor", "middle");
+      timezoneComplication.setAttribute("font-size", "8");
+      timezoneComplication.setAttribute(
+        "transform",
+        "translate(30 50) rotate(90)" // Rotate to counter the clock rotation.
+      );
+      timezoneComplication.setAttribute("fill", colors.mark);
+      timezoneComplication.textContent = this.props.clockTimezone;
+      clockFace.append(timezoneComplication);
+    }
 
     // Marks group.
     const marksGroup = document.createElementNS(svgNS, "g");
@@ -362,12 +380,15 @@ export default class Clock extends VisualConsoleItem<ClockProps> {
     pin.setAttribute("r", "0.3");
     pin.setAttribute("fill", colors.handDark);
 
-    // Set clock time.
+    // Get the hand angles.
     const date = this.getDate();
-    const hourAngle = (360 * date.getHours()) / 12 + date.getMinutes() / 2;
-    const minuteAngle = (360 * date.getMinutes()) / 60;
-    const secAngle = (360 * date.getSeconds()) / 60;
-
+    const seconds = date.getSeconds();
+    const minutes = date.getMinutes();
+    const hours = date.getHours();
+    const secAngle = (360 / 60) * seconds;
+    const minuteAngle = (360 / 60) * minutes + (360 / 60) * (seconds / 60);
+    const hourAngle = (360 / 12) * hours + (360 / 12) * (minutes / 60);
+    // Set the clock time by moving the hands.
     hourHand.setAttribute("transform", `translate(50 50) rotate(${hourAngle})`);
     minuteHand.setAttribute(
       "transform",
@@ -456,7 +477,7 @@ export default class Clock extends VisualConsoleItem<ClockProps> {
       dateElem.className = "date";
       dateElem.textContent = this.getDigitalDate();
       dateElem.style.fontSize = `${dateFontSize}px`;
-      dateElem.style.color = this.props.color;
+      if (this.props.color) dateElem.style.color = this.props.color;
       element.append(dateElem);
     }
 
@@ -465,7 +486,7 @@ export default class Clock extends VisualConsoleItem<ClockProps> {
     timeElem.className = "time";
     timeElem.textContent = this.getDigitalTime();
     timeElem.style.fontSize = `${timeFontSize}px`;
-    timeElem.style.color = this.props.color;
+    if (this.props.color) timeElem.style.color = this.props.color;
     element.append(timeElem);
 
     // Timezone name.
@@ -474,7 +495,7 @@ export default class Clock extends VisualConsoleItem<ClockProps> {
       tzElem.className = "timezone";
       tzElem.textContent = this.props.clockTimezone;
       tzElem.style.fontSize = `${tzFontSize}px`;
-      tzElem.style.color = this.props.color;
+      if (this.props.color) tzElem.style.color = this.props.color;
       element.append(tzElem);
     }
 

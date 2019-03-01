@@ -91,14 +91,17 @@ export function clockPropsDecoder(data: UnknownObject): ClockProps | never {
 }
 
 export default class Clock extends VisualConsoleItem<ClockProps> {
-  public static readonly TICK_INTERVAL: number = 1000; // In ms.
+  public static readonly TICK_INTERVAL = 1000; // In ms.
   private intervalRef: number | null = null;
 
   public constructor(props: ClockProps) {
+    // Call the superclass constructor.
     super(props);
-    // The item is already loaded and inserted into the DOM.
 
-    // Below you can modify the item, add event handlers, timers, etc.
+    /* The item is already loaded and inserted into the DOM.
+     * The class properties are now initialized.
+     * Now you can modify the item, add event handlers, timers, etc.
+     */
 
     /* The use of the arrow function is important here. startTick will
      * use the function passed as an argument to call the global setInterval
@@ -109,10 +112,17 @@ export default class Clock extends VisualConsoleItem<ClockProps> {
      * use the current context at the declaration time.
      * http://es6-features.org/#Lexicalthis
      */
-    this.startTick(() => {
-      // Replace the old element with the updated date.
-      this.childElementRef.innerHTML = this.createClock().innerHTML;
-    });
+    this.startTick(
+      () => {
+        // Replace the old element with the updated date.
+        this.childElementRef.innerHTML = this.createClock().innerHTML;
+      },
+      /* The analogic clock doesn't need to tick,
+       * but it will be refreshed every 20 seconds
+       * to avoid a desync caused by page freezes.
+       */
+      this.props.clockType === "analogic" ? 20000 : Clock.TICK_INTERVAL
+    );
   }
 
   /**
@@ -127,10 +137,16 @@ export default class Clock extends VisualConsoleItem<ClockProps> {
 
   /**
    * Wrap a window.setInterval call.
+   * @param handler Function to be called every time the interval
+   * timer is reached.
+   * @param interval Number in milliseconds for the interval timer.
    */
-  private startTick(handler: TimerHandler): void {
+  private startTick(
+    handler: TimerHandler,
+    interval: number = Clock.TICK_INTERVAL
+  ): void {
     this.stopTick();
-    this.intervalRef = window.setInterval(handler, Clock.TICK_INTERVAL);
+    this.intervalRef = window.setInterval(handler, interval);
   }
 
   /**
@@ -174,12 +190,238 @@ export default class Clock extends VisualConsoleItem<ClockProps> {
   private createClock(): HTMLElement | never {
     switch (this.props.clockType) {
       case "analogic":
-        throw new Error("not implemented.");
+        return this.createAnalogicClock();
       case "digital":
         return this.createDigitalClock();
       default:
         throw new Error("invalid clock type.");
     }
+  }
+
+  /**
+   * Create a element which contains a representation of an analogic clock.
+   * @return DOM Element.
+   */
+  private createAnalogicClock(): HTMLElement {
+    const svgNS = "http://www.w3.org/2000/svg";
+    const colors = {
+      watchFace: "#FFFFF0",
+      watchFaceBorder: "#242124",
+      mark: "#242124",
+      handDark: "#242124",
+      handLight: "#525252",
+      secondHand: "#DC143C"
+    };
+
+    const div = document.createElement("div");
+    div.className = "analogic-clock";
+
+    // SVG container.
+    const svg = document.createElementNS(svgNS, "svg");
+    // Auto resize SVG using the view box magic: https://css-tricks.com/scale-svg/
+    svg.setAttribute("viewBox", "0 0 100 100");
+
+    // Clock face.
+    const clockFace = document.createElementNS(svgNS, "circle");
+    clockFace.setAttribute("cx", "50");
+    clockFace.setAttribute("cy", "50");
+    clockFace.setAttribute("r", "48");
+    clockFace.setAttribute("fill", colors.watchFace);
+    clockFace.setAttribute("stroke", colors.watchFaceBorder);
+    clockFace.setAttribute("stroke-width", "2");
+    clockFace.setAttribute("stroke-linecap", "round");
+
+    // Marks group.
+    const marksGroup = document.createElementNS(svgNS, "g");
+    marksGroup.setAttribute("class", "marks");
+    // Build the 12 hours mark.
+    const mainMarkGroup = document.createElementNS(svgNS, "g");
+    mainMarkGroup.setAttribute("class", "mark");
+    mainMarkGroup.setAttribute("transform", "translate(50 50)");
+    const mark1a = document.createElementNS(svgNS, "line");
+    mark1a.setAttribute("x1", "36");
+    mark1a.setAttribute("y1", "0");
+    mark1a.setAttribute("x2", "46");
+    mark1a.setAttribute("y2", "0");
+    mark1a.setAttribute("stroke", colors.mark);
+    mark1a.setAttribute("stroke-width", "5");
+    const mark1b = document.createElementNS(svgNS, "line");
+    mark1b.setAttribute("x1", "36");
+    mark1b.setAttribute("y1", "0");
+    mark1b.setAttribute("x2", "46");
+    mark1b.setAttribute("y2", "0");
+    mark1b.setAttribute("stroke", colors.watchFace);
+    mark1b.setAttribute("stroke-width", "1");
+    // Insert the 12 mark lines into their group.
+    mainMarkGroup.append(mark1a, mark1b);
+    // Insert the main mark into the marks group.
+    marksGroup.append(mainMarkGroup);
+    // Build the rest of the marks.
+    for (let i = 1; i < 60; i++) {
+      const mark = document.createElementNS(svgNS, "line");
+      mark.setAttribute("y1", "0");
+      mark.setAttribute("y2", "0");
+      mark.setAttribute("stroke", colors.mark);
+      mark.setAttribute("transform", `translate(50 50) rotate(${i * 6})`);
+
+      if (i % 5 === 0) {
+        mark.setAttribute("x1", "38");
+        mark.setAttribute("x2", "46");
+        mark.setAttribute("stroke-width", i % 15 === 0 ? "2" : "1");
+      } else {
+        mark.setAttribute("x1", "42");
+        mark.setAttribute("x2", "46");
+        mark.setAttribute("stroke-width", "0.5");
+      }
+
+      // Insert the mark into the marks group.
+      marksGroup.append(mark);
+    }
+
+    /* Clock hands */
+
+    // Hour hand.
+    const hourHand = document.createElementNS(svgNS, "g");
+    hourHand.setAttribute("class", "hour-hand");
+    hourHand.setAttribute("transform", "translate(50 50)");
+    // This will go back and will act like a border.
+    const hourHandA = document.createElementNS(svgNS, "line");
+    hourHandA.setAttribute("class", "hour-hand-a");
+    hourHandA.setAttribute("x1", "0");
+    hourHandA.setAttribute("y1", "0");
+    hourHandA.setAttribute("x2", "30");
+    hourHandA.setAttribute("y2", "0");
+    hourHandA.setAttribute("stroke", colors.handLight);
+    hourHandA.setAttribute("stroke-width", "4");
+    hourHandA.setAttribute("stroke-linecap", "round");
+    // This will go in front of the previous line.
+    const hourHandB = document.createElementNS(svgNS, "line");
+    hourHandB.setAttribute("class", "hour-hand-b");
+    hourHandB.setAttribute("x1", "0");
+    hourHandB.setAttribute("y1", "0");
+    hourHandB.setAttribute("x2", "29.9");
+    hourHandB.setAttribute("y2", "0");
+    hourHandB.setAttribute("stroke", colors.handDark);
+    hourHandB.setAttribute("stroke-width", "3.1");
+    hourHandB.setAttribute("stroke-linecap", "round");
+    // Append the elements to finish the hour hand.
+    hourHand.append(hourHandA, hourHandB);
+
+    // Minute hand.
+    const minuteHand = document.createElementNS(svgNS, "g");
+    minuteHand.setAttribute("class", "minute-hand");
+    minuteHand.setAttribute("transform", "translate(50 50)");
+    // This will go back and will act like a border.
+    const minuteHandA = document.createElementNS(svgNS, "line");
+    minuteHandA.setAttribute("class", "minute-hand-a");
+    minuteHandA.setAttribute("x1", "0");
+    minuteHandA.setAttribute("y1", "0");
+    minuteHandA.setAttribute("x2", "40");
+    minuteHandA.setAttribute("y2", "0");
+    minuteHandA.setAttribute("stroke", colors.handLight);
+    minuteHandA.setAttribute("stroke-width", "2");
+    minuteHandA.setAttribute("stroke-linecap", "round");
+    // This will go in front of the previous line.
+    const minuteHandB = document.createElementNS(svgNS, "line");
+    minuteHandB.setAttribute("class", "minute-hand-b");
+    minuteHandB.setAttribute("x1", "0");
+    minuteHandB.setAttribute("y1", "0");
+    minuteHandB.setAttribute("x2", "39.9");
+    minuteHandB.setAttribute("y2", "0");
+    minuteHandB.setAttribute("stroke", colors.handDark);
+    minuteHandB.setAttribute("stroke-width", "1.5");
+    minuteHandB.setAttribute("stroke-linecap", "round");
+    const minuteHandPin = document.createElementNS(svgNS, "circle");
+    minuteHandPin.setAttribute("r", "3");
+    minuteHandPin.setAttribute("fill", colors.handDark);
+    // Append the elements to finish the minute hand.
+    minuteHand.append(minuteHandA, minuteHandB, minuteHandPin);
+
+    // Second hand.
+    const secondHand = document.createElementNS(svgNS, "g");
+    secondHand.setAttribute("class", "second-hand");
+    secondHand.setAttribute("transform", "translate(50 50)");
+    const secondHandBar = document.createElementNS(svgNS, "line");
+    secondHandBar.setAttribute("x1", "0");
+    secondHandBar.setAttribute("y1", "0");
+    secondHandBar.setAttribute("x2", "46");
+    secondHandBar.setAttribute("y2", "0");
+    secondHandBar.setAttribute("stroke", colors.secondHand);
+    secondHandBar.setAttribute("stroke-width", "1");
+    secondHandBar.setAttribute("stroke-linecap", "round");
+    const secondHandPin = document.createElementNS(svgNS, "circle");
+    secondHandPin.setAttribute("r", "2");
+    secondHandPin.setAttribute("fill", colors.secondHand);
+    // Append the elements to finish the second hand.
+    secondHand.append(secondHandBar, secondHandPin);
+
+    // Pin.
+    const pin = document.createElementNS(svgNS, "circle");
+    pin.setAttribute("cx", "50");
+    pin.setAttribute("cy", "50");
+    pin.setAttribute("r", "0.3");
+    pin.setAttribute("fill", colors.handDark);
+
+    // Set clock time.
+    const date = this.getDate();
+    const hourAngle = (360 * date.getHours()) / 12 + date.getMinutes() / 2;
+    const minuteAngle = (360 * date.getMinutes()) / 60;
+    const secAngle = (360 * date.getSeconds()) / 60;
+
+    hourHand.setAttribute("transform", `translate(50 50) rotate(${hourAngle})`);
+    minuteHand.setAttribute(
+      "transform",
+      `translate(50 50) rotate(${minuteAngle})`
+    );
+    secondHand.setAttribute(
+      "transform",
+      `translate(50 50) rotate(${secAngle})`
+    );
+
+    // Build the clock
+    svg.append(clockFace, marksGroup, hourHand, minuteHand, secondHand, pin);
+    // Rotate the clock to its normal position.
+    svg.setAttribute("transform", "rotate(-90)");
+
+    /* Add the animation declaration to the container.
+     * Since the animation keyframes need to know the
+     * start angle, this angle is dynamic (current time),
+     * and we can't edit keyframes through javascript
+     * safely and with backwards compatibility, we need
+     * to inject it.
+     */
+    div.innerHTML = `
+      <style>
+        @keyframes rotate-hour {
+          from {
+            transform: translate(50px, 50px) rotate(${hourAngle}deg);
+          }
+          to {
+            transform: translate(50px, 50px) rotate(${hourAngle + 360}deg);
+          }
+        }
+        @keyframes rotate-minute {
+          from {
+            transform: translate(50px, 50px) rotate(${minuteAngle}deg);
+          }
+          to {
+            transform: translate(50px, 50px) rotate(${minuteAngle + 360}deg);
+          }
+        }
+        @keyframes rotate-second {
+          from {
+            transform: translate(50px, 50px) rotate(${secAngle}deg);
+          }
+          to {
+            transform: translate(50px, 50px) rotate(${secAngle + 360}deg);
+          }
+        }
+      </style>
+    `;
+    // Add the clock to the container
+    div.append(svg);
+
+    return div;
   }
 
   /**

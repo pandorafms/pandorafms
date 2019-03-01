@@ -14,6 +14,8 @@
   src: url(alarm-clock.ttf);
 }
 
+/* Digital clock */
+
 .visual-console-item .digital-clock {
   display: flex;
   flex-direction: column;
@@ -34,4 +36,21 @@
 
 .visual-console-item .digital-clock > span.timezone {
   font-size: 25px;
+}
+
+/* Analog clock */
+
+.visual-console-item .analogic-clock .hour-hand {
+  -webkit-animation: rotate-hour 43200s infinite linear;
+  animation: rotate-hour 43200s infinite linear;
+}
+
+.visual-console-item .analogic-clock .minute-hand {
+  -webkit-animation: rotate-minute 3600s infinite linear;
+  animation: rotate-minute 3600s infinite linear;
+}
+
+.visual-console-item .analogic-clock .second-hand {
+  -webkit-animation: rotate-second 60s infinite linear;
+  animation: rotate-second 60s infinite linear;
 }

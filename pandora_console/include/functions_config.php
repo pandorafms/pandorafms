@@ -752,6 +752,10 @@ function config_update_config()
                         $error_update[] = __('Max. days before delete old messages');
                     }
 
+                    if (!config_update_value('delete_old_network_matrix', get_parameter('delete_old_network_matrix'))) {
+                        $error_update[] = __('Max. days before delete old network matrix data');
+                    }
+
                     if (!config_update_value('max_graph_container', get_parameter('max_graph_container'))) {
                         $error_update[] = __('Graph container - Max. Items');
                     }
@@ -1545,6 +1549,10 @@ function config_process_config()
 
     if (!isset($config['delete_old_messages'])) {
         config_update_value('delete_old_messages', 21);
+    }
+
+    if (!isset($config['delete_old_network_matrix'])) {
+        config_update_value('delete_old_network_matrix', 10);
     }
 
     if (!isset($config['max_graph_container'])) {

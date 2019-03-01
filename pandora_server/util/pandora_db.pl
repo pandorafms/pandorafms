@@ -433,10 +433,12 @@ sub pandora_purgedb ($$) {
 	# Delete old tgraph_source data
 	db_do ($dbh,"DELETE FROM tgraph_source WHERE id_graph NOT IN (SELECT id_graph FROM tgraph)");
 
-	# Delete network traffic old data
+	# Delete network traffic old data.
 	log_message ('PURGE', 'Deleting old network matrix data.');
-	my $matrix_limit = time() - 86400 * 7; #FIXME It should be configurable.
-	db_do ($dbh, "DELETE FROM tnetwork_matrix WHERE utimestamp < ?", $matrix_limit);
+	if ($conf->{'_delete_old_network_matrix'} > 0) {
+		my $matrix_limit = time() - 86400 * $conf->{'_delete_old_network_matrix'};
+		db_do ($dbh, "DELETE FROM tnetwork_matrix WHERE utimestamp < ?", $matrix_limit);
+	}
 
 	# Delete old messages
 	log_message ('PURGE', "Deleting old messages.");
@@ -664,6 +666,7 @@ sub pandora_load_config_pdb ($) {
 	$conf->{'_days_delete_unknown'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'days_delete_unknown'");
 	$conf->{'_inventory_purge'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'inventory_purge'");
 	$conf->{'_delete_old_messages'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'delete_old_messages'");
+	$conf->{'_delete_old_network_matrix'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = '_delete_old_network_matrix'");
 	$conf->{'_enterprise_installed'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'enterprise_installed'");
 	$conf->{'_metaconsole'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'metaconsole'");
 	$conf->{'_metaconsole_events_history'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'metaconsole_events_history'");

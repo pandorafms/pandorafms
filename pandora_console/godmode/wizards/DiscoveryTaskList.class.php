@@ -337,25 +337,8 @@ class DiscoveryTaskList extends Wizard
                 }
             }
 
-                $recon_tasks = db_get_all_rows_sql('SELECT * FROM trecon_task');
-                $user_groups = implode(',', array_keys(users_get_groups()));
-                $defined_tasks = db_get_all_rows_filter(
-                    'tuser_task_scheduled',
-                    'id_grupo IN ('.$user_groups.')'
-                );
-
-            if (isset($tasks_console) === true
-                && is_array($tasks_console) === true
-            ) {
-                foreach ($tasks_console as $key => $value) {
-                    $value['parameters'] = unserialize(
-                        $value['parameters']
-                    );
-
-                    $value['type'] = 'Cron';
-                    array_push($recon_tasks, $value);
-                }
-            }
+            $recon_tasks = db_get_all_rows_sql('SELECT * FROM trecon_task');
+            $user_groups = implode(',', array_keys(users_get_groups()));
 
                 // Show network tasks for Recon Server.
             if ($recon_tasks === false) {

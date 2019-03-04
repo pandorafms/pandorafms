@@ -134,12 +134,14 @@ if ($is_network) {
         $top,
         $action === 'talkers',
         $utimestamp_lower,
-        $utimestamp_greater
+        $utimestamp_greater,
+        ''
     );
 }
 
 unset($table);
 $table = new stdClass();
+$table->styleTable = 'width: 100%';
 // Print the header.
 $table->head = [];
 $table->head[] = __('IP');

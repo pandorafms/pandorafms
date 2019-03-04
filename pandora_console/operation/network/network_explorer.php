@@ -18,4 +18,9 @@
  * GNU General Public License for more details.
  */
 
-// TODOS.
+global $config;
+
+$action = get_parameter('action', 'listeners');
+$is_network = true;
+
+require $config['homedir'].'/operation/network/network_report.php';

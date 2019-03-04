@@ -52,3 +52,31 @@ function network_matrix_get_top($top, $talker, $start, $end)
 
     return ($data !== false) ? $data : [];
 }
+
+
+/**
+ * Get the possible actions on networking.
+ *
+ * @param boolean $network True if network. False if netflow.
+ *
+ * @return array With the actions to print in a select.
+ */
+function network_get_report_actions($network)
+{
+    $common_actions = [
+        'listeners' => __('Top listeners'),
+        'talkers'   => __('Top talkers'),
+    ];
+
+    if ($network) {
+        return $common_actions;
+    }
+
+    return array_merge(
+        $common_actions,
+        [
+            'tcp' => __('Top TCP protocols'),
+            'udp' => __('Top UDP protocols'),
+        ]
+    );
+}

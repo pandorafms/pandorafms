@@ -355,6 +355,8 @@ if ($new_networkmap || $save_networkmap) {
             $tab = 'r_dinamic';
             define('_activeTab_', 'radial_dynamic');
         }
+
+        header('Location: '.$_SERVER['HTTP_REFERER'].'&tab=view&id_networkmap='.$id);
     }
 }
 // The networkmap exists

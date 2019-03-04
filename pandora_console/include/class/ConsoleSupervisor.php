@@ -444,7 +444,7 @@ class ConsoleSupervisor
                             'send_email_user',
                             [
                                 $user['id_user'],
-                                io_safe_output($notification['mensaje']).'<br><hl><br>'.$notification['url'],
+                                io_safe_output($notification['mensaje']).'<br><hl><br>'.ui_get_full_url($notification['url']),
                                 io_safe_output($notification['subject']),
                             ]
                         );
@@ -478,7 +478,7 @@ class ConsoleSupervisor
                             'send_email_group',
                             [
                                 $group['id_group'],
-                                io_safe_output($notification['mensaje']).'<br><hl><br>'.$notification['url'],
+                                io_safe_output($notification['mensaje']).'<br><hl><br>'.ui_get_full_url($notification['url']),
                                 io_safe_output($notification['subject']),
                                 null,
                                 $blacklist,

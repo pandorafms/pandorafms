@@ -1083,6 +1083,8 @@ class ConsoleSupervisor
                         'url'     => $url,
                     ]
                 );
+
+                return;
             }
 
             // At this point there's no servers with issues.

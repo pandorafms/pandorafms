@@ -36,6 +36,7 @@ require_once $config['homedir'].'/include/functions_forecast.php';
 require_once $config['homedir'].'/include/functions_ui.php';
 require_once $config['homedir'].'/include/functions_netflow.php';
 require_once $config['homedir'].'/include/functions_os.php';
+require_once $config['homedir'].'/include/functions_network.php';
 
 //
 // CONSTANTS DEFINITIONS                //
@@ -11385,17 +11386,17 @@ function reporting_nt_top_n_report($period, $content, $pdf)
     // Get the data sent and received
     $return['data'] = [];
     $start_time = ($period['datetime'] - (int) $content['period']);
-    $sql = "SELECT SUM(bytes) sum_bytes, SUM(pkts) sum_pkts, %s host
-		FROM tnetwork_matrix
-		WHERE utimestamp > {$start_time} AND utimestamp < {$period['datetime']}
-		GROUP BY %s
-		ORDER BY sum_bytes DESC
-		LIMIT {$content['top_n_value']}";
-    $return['data']['send'] = db_get_all_rows_sql(
-        sprintf($sql, 'source', 'source')
+    $return['data']['send'] = network_matrix_get_top(
+        $content['top_n_value'],
+        true,
+        $start_time,
+        $period['datetime']
     );
-    $return['data']['recv'] = db_get_all_rows_sql(
-        sprintf($sql, 'destination', 'destination')
+    $return['data']['recv'] = network_matrix_get_top(
+        $content['top_n_value'],
+        false,
+        $start_time,
+        $period['datetime']
     );
     return $return;
 }

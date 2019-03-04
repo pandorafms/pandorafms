@@ -1236,7 +1236,7 @@ function networkmap_open_graph(
     if (isset($map_filter['node_sep'])) {
         $node_sep = $map_filter['node_sep'];
     } else {
-        $node_sep = 0.25;
+        $node_sep = 0.1;
     }
 
     if (isset($map_filter['rank_sep'])) {
@@ -1258,7 +1258,7 @@ function networkmap_open_graph(
     if (isset($map_filter['kval'])) {
         $kval = $map_filter['kval'];
     } else {
-        $kval = 0.3;
+        $kval = 0.1;
     }
 
     // BEWARE: graphwiz DONT use single ('), you need double (")
@@ -1653,17 +1653,6 @@ function networkmap_get_new_nodes_from_ip_mask(
         $address = [];
     }
 
-    if ($strict_user) {
-        $filter['group_by'] = 'tagente.id_agente';
-        $fields = ['tagente.id_agente'];
-        $acltags = tags_get_user_groups_and_tags($config['id_user'], 'AR', $strict_user);
-        $user_agents = tags_get_all_user_agents(false, $config['id_user'], $acltags, $filter, $fields, false, $strict_user, true);
-
-        foreach ($all_user_agents as $agent) {
-            $user_agents[$agent['id_agente']] = $agent['id_agente'];
-        }
-    }
-
     $agents = [];
     foreach ($list_address as $address) {
         foreach ($list_ip_masks as $ip_mask) {
@@ -1679,21 +1668,9 @@ function networkmap_get_new_nodes_from_ip_mask(
                 }
 
                 if (empty($fields)) {
-                    if ($strict_user) {
-                        if (array_key_exists($id_agent, $user_agents)) {
-                            $agents[] = db_get_value_filter('id_agent', 'taddress_agent', ['id_a' => $address['id_a']]);
-                        }
-                    } else {
-                        $agents[] = db_get_value_filter('id_agent', 'taddress_agent', ['id_a' => $address['id_a']]);
-                    }
+                    $agents[] = db_get_value_filter('id_agent', 'taddress_agent', ['id_a' => $address['id_a']]);
                 } else {
-                    if ($strict_user) {
-                        if (array_key_exists($id_agent, $user_agents)) {
-                            $agents[] = db_get_row('tagente', 'id_agente', $id_agent, $fields);
-                        }
-                    } else {
-                        $agents[] = db_get_row('tagente', 'id_agente', $id_agent, $fields);
-                    }
+                    $agents[] = db_get_row('tagente', 'id_agente', $id_agent, $fields);
                 }
             }
         }

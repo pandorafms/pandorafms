@@ -24,7 +24,7 @@ check_login();
 if (! check_acl($config['id_user'], 0, 'AR')) {
     db_pandora_audit(
         'ACL Violation',
-        'Trying to access Network report (Grouped)'
+        'Trying to access Network report.'
     );
     include 'general/noaccess.php';
     exit;
@@ -46,7 +46,7 @@ if (!$is_period) {
     $period = ($utimestamp_greater - $utimestamp_lower);
 }
 
-$top = get_parameter('top', 10);
+$top = (int) get_parameter('top', 10);
 $style_end = ($is_period) ? 'display: none;' : '';
 $style_period = ($is_period) ? '' : 'display: none;';
 
@@ -126,6 +126,41 @@ $table->data['1']['2'] = html_print_submit_button(
 echo '<form method="post">';
 html_print_table($table);
 echo '</form>';
+
+// Print the data.
+$data = [];
+if ($is_network) {
+    $data = network_matrix_get_top(
+        $top,
+        $action === 'talkers',
+        $utimestamp_lower,
+        $utimestamp_greater
+    );
+}
+
+unset($table);
+$table = new stdClass();
+// Print the header.
+$table->head = [];
+$table->head[] = __('IP');
+if (!$is_network) {
+    $table->head[] = __('Flows');
+}
+
+$table->head[] = __('Packets');
+$table->head[] = __('Bytes');
+
+// Print the data.
+$table->data = [];
+foreach ($data as $item) {
+    $table->data[] = [
+        $item['host'],
+        $item['sum_bytes'],
+        $item['sum_pkts'],
+    ];
+}
+
+html_print_table($table);
 
 ?>
 <script>

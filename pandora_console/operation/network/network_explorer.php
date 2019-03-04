@@ -20,6 +20,18 @@
 
 global $config;
 
+check_login();
+
+// ACL Check.
+if (! check_acl($config['id_user'], 0, 'AR')) {
+    db_pandora_audit(
+        'ACL Violation',
+        'Trying to access Network explorer'
+    );
+    include 'general/noaccess.php';
+    exit;
+}
+
 $action = get_parameter('action', 'listeners');
 $is_network = true;
 

@@ -160,7 +160,7 @@ var autohidden_menu = <?php echo $autohidden_menu; ?>;
 <?php
 // echo json_encode((bool) $config_fixed_menu);
 ?>
-;
+
 var fixed_header = <?php echo json_encode((bool) $config_fixed_header); ?>;
 var id_user = "<?php echo $config['id_user']; ?>";
 var cookie_name = id_user + '-pandora_menu_state';
@@ -170,7 +170,7 @@ var click_display = "<?php echo $config['click_display']; ?>";
 <?php
 // echo $config['classic_menu'];
 ?>
-");
+
 
 
 

@@ -580,7 +580,6 @@ if ($get_extended_event) {
                 dataType : "html",
                 success: function (data) {
                     $("#related_data").html(data);
-                    console.log("vamos puta");
                 }
             });
         });';

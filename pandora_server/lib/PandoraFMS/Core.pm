@@ -3811,7 +3811,10 @@ sub subst_alert_macros ($$;$$$$) {
 ##########################################################################
 sub subst_column_macros ($$;$$$$) {
 	my ($string, $macros, $pa_config, $dbh, $agent, $module) = @_;
-	
+
+	# Avoid to manipulate null strings
+	return $string unless defined($string);	
+
 	# Do not attempt to substitute macros unless the string
 	# begins with an underscore.
 	return $string unless substr($string, 0, 1) eq '_';

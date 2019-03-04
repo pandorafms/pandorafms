@@ -226,7 +226,7 @@ sub pandora_load_config {
 	$pa_config->{"dataserver"} = 1; # default
 	$pa_config->{"networkserver"} = 1; # default
 	$pa_config->{"snmpconsole"} = 1; # default
-	$pa_config->{"discoveryserver"} = 1; # default
+	$pa_config->{"discoveryserver"} = 0; # default
 	$pa_config->{"wmiserver"} = 1; # default
 	$pa_config->{"pluginserver"} = 1; # default
 	$pa_config->{"predictionserver"} = 1; # default

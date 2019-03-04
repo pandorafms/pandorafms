@@ -1729,6 +1729,15 @@ $class = 'databox filters';
             </td>
         </tr>
 
+        <tr id="row_extended_events" style="" class="datos">
+            <td style="font-weight:bold;"><?php echo __('Include extended events'); ?></td>
+            <td>
+                <?php
+                html_print_checkbox('include_extended_events', true, $include_extended_events);
+                ?>
+            </td>
+        </tr>
+
         <tr id="row_event_graphs" style="" class="datos">
             <td style="font-weight:bold;"><?php echo __('Event graphs'); ?></td>
             <td>
@@ -3101,6 +3110,7 @@ function chooseType() {
     $("#row_event_graph_by_user").hide();
     $("#row_event_graph_by_criticity").hide();
     $("#row_event_graph_by_validated").hide();
+    $("#row_extended_events").hide();
     $("#row_netflow_filter").hide();
     $("#row_max_values").hide();
     $("#row_resolution").hide();
@@ -3144,6 +3154,7 @@ function chooseType() {
             $("#row_event_graph_by_user").show();
             $("#row_event_graph_by_criticity").show();
             $("#row_event_graph_by_validated").show();
+            $("#row_extended_events").show();
             
             $("#row_filter_search").show();
             $("#row_historical_db_check").hide();
@@ -3444,6 +3455,7 @@ function chooseType() {
             $("#row_event_graph_by_criticity").show();
             $("#row_event_graph_by_validated").show();
             $("#row_event_type").show();
+            $("#row_extended_events").show();
             
             $("#row_filter_search").show();
             $("#row_historical_db_check").hide();
@@ -3459,7 +3471,8 @@ function chooseType() {
             $("#row_show_summary_group").show();
             $("#row_event_graphs").show();
             $("#row_event_type").show();
-            
+            $("#row_extended_events").show();
+            $("#row_extended_events").show();
             
             $("#row_event_graph_by_user").show();
             $("#row_event_graph_by_criticity").show();
@@ -3482,6 +3495,7 @@ function chooseType() {
             $("#row_show_summary_group").show();
             $("#row_event_graphs").show();
             $("#row_event_type").show();
+            $("#row_extended_events").show();
 
             $("#row_event_graph_by_user").show();
             $("#row_event_graph_by_criticity").show();

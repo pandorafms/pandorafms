@@ -1,18 +1,23 @@
 <?php
+/**
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
 
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation for version 2.
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-// Warning: This file may be required into the metaconsole's setup
-// Load global vars
 global $config;
 
 check_login();
@@ -48,8 +53,7 @@ $table_enable->style['name'] = 'font-weight: bold';
 // Enable eHorus
 $row = [];
 $row['name'] = __('Enable eHorus');
-$row['control'] = __('Enabled').'&nbsp;'.html_print_radio_button('ehorus_enabled', 1, '', $config['ehorus_enabled'], true).'&nbsp;&nbsp;';
-$row['control'] .= __('Disabled').'&nbsp;'.html_print_radio_button('ehorus_enabled', 0, '', $config['ehorus_enabled'], true);
+$row['control'] = html_print_checkbox_switch('ehorus_enabled', false, $config['ehorus_enabled'], true);
 $row['button'] = html_print_submit_button(__('Update'), 'update_button', false, 'class="sub upd"', true);
 $table_enable->data['ehorus_enabled'] = $row;
 
@@ -169,7 +173,7 @@ if ($config['ehorus_enabled']) {
         if (event.target.value == '1') showFields();
         else hideFields();
     }
-    $('input:radio[name="ehorus_enabled"]').change(handleEnable);
+    $('input:checkbox[name="ehorus_enabled"]').change(handleEnable);
     
     var handleTest = function (event) {
         var user = $('input#text-ehorus_user').val();

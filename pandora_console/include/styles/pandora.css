@@ -197,6 +197,9 @@ a:hover {
   color: #373737;
   text-decoration: underline;
 }
+:focus {
+  outline-color: #82b92e;
+}
 a:focus,
 input:focus,
 button:focus {
@@ -403,8 +406,8 @@ div#page {
   width: auto;
   margin-top: 20px !important;
   padding-left: 60px; /* It is changed for classic menu (215px)*/
-  margin-right: 30px;
-  margin-left: 30px;
+  margin-right: 35px;
+  margin-left: 35px;
 }
 
 body.pure {
@@ -657,7 +660,7 @@ div#foot a,
 div#foot span {
   font-family: "Open Sans", sans-serif;
   font-size: 8.5pt;
-  color: #91a2a7;
+  color: #9ca4a6;
 }
 
 /*
@@ -687,7 +690,7 @@ div#head {
   height: 60px;
   padding-top: 0px;
   margin: 0 auto;
-  border-bottom: 1px solid #91a2a7;
+  border-bottom: 1px solid #9ca4a6;
   min-width: 882px;
   background-color: #fff;
   color: #000;
@@ -1317,7 +1320,7 @@ div.title_line {
   margin-top: 0;
 }
 
-/* --- Submenu --- */
+/* --- Tabs Submenu --- */
 ul.subsubmenu {
   border-bottom-right-radius: 5px;
   border-bottom-left-radius: 5px;
@@ -1325,12 +1328,10 @@ ul.subsubmenu {
   -moz-border-bottom-left-radius: 5px;
   -webkit-border-bottom-right-radius: 5px;
   -webkit-border-bottom-left-radius: 5px;
-
-  background: #ececec !important;
 }
 
 ul.subsubmenu li {
-  background-color: #ececec;
+  background-color: #fff;
   font-weight: bold;
   text-decoration: none;
   font-size: 14px;
@@ -2038,8 +2039,8 @@ div#pandora_logo_header {
   margin: 0px;
   padding: 0px;
   margin-top: 0px;
-  padding-left: 90px; /* It is changed for classic menu */
-  padding-right: 30px;
+  padding-left: 95px; /* It is changed for classic menu */
+  padding-right: 35px;
 }
 
 #header_table_inner {
@@ -2143,13 +2144,6 @@ div#pandora_logo_header {
   font-family: "Open Sans", sans-serif;
 }
 
-@media screen and (max-width: 1024px) {
-  #header_user span,
-  #header_searchbar a.tip img {
-    display: none;
-  }
-}
-
 .autorefresh_disabled {
   cursor: not-allowed !important;
 }
@@ -2174,7 +2168,7 @@ div.warn {
 }
 
 .submenu_not_selected {
-  transition-property: background-color;
+  /*transition-property: background-color;
   transition-duration: 0.5s;
   transition-timing-function: ease-out;
   -webkit-transition-property: background-color;
@@ -2186,7 +2180,7 @@ div.warn {
   -o-transition-property: background-color;
   -o-transition-duration: 0.5s;
   -o-transition-timing-function: ease-out;
-  font-weight: normal !important;
+  font-weight: normal !important;*/
 }
 
 /* Submenus havent borders */
@@ -3303,7 +3297,7 @@ div.div_groups_status {
 }
 
 #title_menu {
-  color: #91a2a7;
+  color: #9ca4a6;
   float: right;
   width: 65%;
   letter-spacing: 0pt;
@@ -3319,7 +3313,7 @@ div.div_groups_status {
 
 #menu_tab li.nomn,
 #menu_tab li.nomn_high {
-  /*background-color: #ececec;*/
+  background-color: #fff;
   padding-right: 3px;
   padding-left: 3px;
   font-weight: bold;
@@ -3329,6 +3323,10 @@ div.div_groups_status {
   margin-top: 0;
   min-width: 30px;
   height: 28px;
+}
+
+#menu_tab li:hover {
+  background-color: #ececec;
 }
 
 #menu_tab li.nomn_high,
@@ -4445,10 +4443,10 @@ div#dialog_messages table th:last-child {
  */
 
 .notification-ball {
-  border: white solid 2px;
-  border-radius: 50px;
-  width: 18px;
-  height: 18px;
+  border: #343434 solid 2px;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -4804,43 +4802,25 @@ input:checked + .p-slider:before {
 
 /* --- END TOAST --- */
 
-/*
- * ---------------------------------------------------------------------
- * - STYLES TO CHANGE CLASSIC MENU AND COLLAPSED MENU                  -
- * ---------------------------------------------------------------------
- */
-.page_classic {
-  padding-left: 215px !important;
+/* Button for Go to top */
+#top_btn {
+  display: none;
+  position: fixed;
+  bottom: 100px;
+  right: 4px;
+  border: none;
+  outline: none;
+  background: url("../../images/to_top_menu.png") no-repeat center;
+  background-color: #82b92e;
+  width: 27px;
+  height: 27px;
+  background-size: 21px;
+  cursor: pointer;
+  border-radius: 5px;
 }
 
-.page_collapsed {
-  padding-left: 60px !important;
-}
-
-.header_table_classic {
-  padding-left: 245px !important;
-}
-
-.header_table_collapsed {
-  padding-left: 90px !important;
-}
-
-.title_menu_classic {
-  display: block !important;
-}
-
-.title_menu_collapsed {
-  display: none !important;
-}
-
-.logo_show {
-  display: block !important;
-}
-
-.logo_hide {
-  display: none !important;
-}
-
-.menu_icon_collapsed {
-  background-position: 50% 50% !important;
+#top_btn:hover {
+  background: url("../../images/to_top_menu_hover.png") no-repeat center;
+  background-color: #fff;
+  border: 2px solid #82b92e;
 }

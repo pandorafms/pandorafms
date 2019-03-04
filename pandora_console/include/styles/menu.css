@@ -16,16 +16,25 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
+.operation li,
+.godmode li {
+  display: flex !important;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.operation > li.menu_icon.no_hidden_menu,
+.godmode > li.menu_icon.no_hidden_menu {
+  justify-content: flex-end;
+}
+
 .operation .menu_icon ul.submenu > li,
 .godmode .menu_icon ul.submenu > li {
   background-color: #282828;
+  padding-left: 10px;
+  padding-right: 10px;
 }
 
-.menu {
-  border-width: 0px 0px 0px 0px;
-  border-style: none;
-  border-color: #777;
-}
 .menu ul {
   list-style-type: none;
   padding: 0;
@@ -33,14 +42,15 @@
 }
 .menu li.selected,
 .menu li.not_selected {
-  border: 0px none black;
-  border-bottom: 0px none #d4d4d4;
+  border: 0px none black; /* borrar?? */
+  border-bottom: 0px none #d4d4d4; /* borrar?? */
   margin: 0;
 }
 
 .menu li a {
   color: #ffffff;
   text-decoration: none;
+  width: 100%;
 }
 
 li:hover ul {
@@ -48,16 +58,16 @@ li:hover ul {
 }
 
 .submenu_text {
-  padding: 10.5px;
+  /* padding: 10.5px; eee */
   margin-left: 0px;
   width: 100%;
-  color: #91a2a7;
+  color: #9ca4a6;
   font-family: "Open Sans", sans-serif;
-  font-size: 10pt;
+  font-size: 9.4pt;
 }
 
 .menu li.subselected a {
-  background-color: grey !important;
+  background-color: grey !important; /* borrar?? */
 }
 
 .menu a:hover {
@@ -68,25 +78,23 @@ li:hover ul {
   margin: 0px 0px 0px 0px;
   position: absolute;
   z-index: 999;
-  /*left: 44px;*/
-  min-height: 35px;
-  /*height: 35px;*/
-  width: 180px;
+  width: 214px;
 }
 
 .submenu2 {
   position: absolute;
   z-index: 999;
-  left: 180px;
+  left: 214px;
+  width: 214px;
 }
 
 .sub_subMenu {
-  min-height: 35px !important;
-  /*height: 35px;*/
-  width: 180px;
   font-weight: normal !important;
   background-color: #202020;
+  padding-left: 10px;
+  padding-right: 10px;
 }
+
 .sub_subMenu.selected {
   font-weight: 600 !important;
 }
@@ -103,17 +111,14 @@ li:hover ul {
   border-left: 1px;
 }
 
-.menu li.has_submenu > a > div {
-  background: url(../../images/arrow.png) no-repeat 80% 50%;
-  z-index: 1; /* Positions it on top of the rest */
-}
-.menu li.has_submenu > .SubNoLink {
-  background: url(../../images/arrow.png) no-repeat 80% 50%;
+/*.menu li.has_submenu > a > div,*/
+.menu li.has_submenu /*> .SubNoLink*/ {
+  background: url(../../images/arrow.png) no-repeat 95% 50%;
   z-index: 1; /* Positions it on top of the rest */
 }
 
 .is_submenu2 {
-  background-color: #e4e4e4 !important;
+  background-color: #e4e4e4 !important; /* borrar?? */
 }
 
 .menu li.submenu_not_selected a,
@@ -155,9 +160,9 @@ li.sub_subMenu.selected {
   background: url(../../images/op_network.menu_gray.png) no-repeat;
 }
 #icon_oper-agents {
-  border-top-right-radius: 5px;
-  border-right-style: solid;
-  border-right-width: 0px;
+  border-top-right-radius: 5px; /* borrar?? */
+  border-right-style: solid; /* borrar?? */
+  border-right-width: 0px; /* borrar?? */
   background: url(../../images/op_monitoring.menu_gray.png) no-repeat;
 }
 #icon_oper-events {
@@ -188,7 +193,7 @@ li.sub_subMenu.selected {
 
 /* Godmode images */
 #icon_god-discovery {
-  background: url(../../images/gm_discovery.menu.png) no-repeat 50% 50%;
+  background: url(../../images/gm_discovery.menu.png) no-repeat;
 }
 #icon_god-resources {
   background: url(../../images/gm_resources.menu_gray.png) no-repeat;
@@ -221,7 +226,7 @@ li.sub_subMenu.selected {
   background: url(../../images/links.menu_gray.png) no-repeat;
 }
 #icon_god-um_messages {
-  border-color: #777;
+  border-color: #777; /* borrar?? */
   background: url(../../images/um_messages.menu_gray.png) no-repeat;
 }
 
@@ -229,7 +234,7 @@ li.sub_subMenu.selected {
   z-index: 3;
   position: absolute;
   left: -80px;
-  background-color: #aaa;
+  background-color: #aaa; /* borrar?? */
 }
 
 .notification_ball {
@@ -286,7 +291,7 @@ ul li a:hover {
  */
 
 .menu_icon {
-  transition-property: background-color;
+  /*transition-property: background-color;
   transition-duration: 0.5s;
   transition-timing-function: ease-out;
   -webkit-transition-property: background-color;
@@ -297,11 +302,11 @@ ul li a:hover {
   -moz-transition-timing-function: ease-out;
   -o-transition-property: background-color;
   -o-transition-duration: 0.5s;
-  -o-transition-timing-function: ease-out;
+  -o-transition-timing-function: ease-out;*/
 }
 
 .menu_icon:hover {
-  transition-property: background-color;
+  /*transition-property: background-color;
   transition-duration: 0.5s;
   transition-timing-function: ease-out;
   -webkit-transition-property: background-color;
@@ -312,11 +317,11 @@ ul li a:hover {
   -moz-transition-timing-function: ease-out;
   -o-transition-property: background-color;
   -o-transition-duration: 0.5s;
-  -o-transition-timing-function: ease-out;
+  -o-transition-timing-function: ease-out;*/
   background-color: #282828 !important;
 }
 .submenu_not_selected:hover {
-  transition-property: background-color;
+  /* transition-property: background-color;
   transition-duration: 0.5s;
   transition-timing-function: ease-out;
   -webkit-transition-property: background-color;
@@ -327,14 +332,14 @@ ul li a:hover {
   -moz-transition-timing-function: ease-out;
   -o-transition-property: background-color;
   -o-transition-duration: 0.5s;
-  -o-transition-timing-function: ease-out;
+  -o-transition-timing-function: ease-out;*/
   background-color: #202020 !important;
 }
 .submenu_selected:hover {
   background-color: #202020 !important;
 }
 .sub_subMenu {
-  transition-property: background-color;
+  /*transition-property: background-color;
   transition-duration: 0.5s;
   transition-timing-function: ease-out;
   -webkit-transition-property: background-color;
@@ -344,10 +349,10 @@ ul li a:hover {
   -moz-transition-duration: 0.5s;
   -moz-transition-timing-function: ease-out;
   -o-transition-property: background-color;
-  -o-transition-duration: 0.5s;
+  -o-transition-duration: 0.5s;*/
 }
 .sub_subMenu:hover {
-  transition-property: background-color;
+  /* transition-property: background-color;
   transition-duration: 0.5s;
   transition-timing-function: ease-out;
   -webkit-transition-property: background-color;
@@ -357,7 +362,7 @@ ul li a:hover {
   -moz-transition-duration: 0.5s;
   -moz-transition-timing-function: ease-out;
   -o-transition-property: background-color;
-  -o-transition-duration: 0.5s;
+  -o-transition-duration: 0.5s;*/
   background-color: #161616 !important;
 }
 
@@ -375,9 +380,9 @@ ul li a:hover {
 */
 .operation {
   background-color: #343434 !important;
-  border-top-right-radius: 5px;
-  border-right-style: solid;
-  border-right-width: 0px;
+  border-top-right-radius: 5px; /* borrar?? */
+  border-right-style: solid; /* borrar?? */
+  border-right-width: 0px; /* borrar?? */
   padding-top: 20px !important;
 }
 
@@ -393,12 +398,15 @@ ul li a:hover {
 }
 
 .menu li,
-.menu .li.not_selected {
-  border-radius: 0px 0px 0px 0px;
-  display: block;
+.menu li a,
+.menu li div {
   min-height: 35px;
-  border-bottom: 0px none #424242;
-  vertical-align: middle;
+  display: flex;
+  align-items: center;
+}
+
+.menu li div {
+  background-clip: text; /* Very important to fix a bug in Firefox */
 }
 
 .godmode {
@@ -465,14 +473,14 @@ ul li a:hover {
   left: 0;
   background-color: #343434;
   border-bottom: solid 3px #343434;
-  /*min-height: 943px;*/
-  padding-bottom: 40px; /*Lo he quitado para que no ocupe todo el alto y fixed */
+  min-height: 943px;
+  /*padding-bottom: 40px;*/ /*Lo he quitado para que no ocupe todo el alto y fixed */
   /*overflow-x: hidden;*/
 }
 
 .button_collapse {
-  height: 55px;
-  background-color: #4d4d4d;
+  height: 38px;
+  background-color: #6c6c6d;
   /*bottom: 0; /* Lo he quitado para que no ocupe todo el alto y fixed*/
   /*position: fixed; /*coemntar tb*/
   width: 60px; /* It is changed for classic menu (215px)*/
@@ -489,19 +497,6 @@ ul li a:hover {
   display: flex;
   justify-content: center;
   align-items: center;
-}
-
-.operation > li.menu_icon.no_hidden_menu,
-.godmode > li.menu_icon.no_hidden_menu {
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-}
-
-.operation > li.menu_icon,
-.godmode > li.menu_icon {
-  padding-top: 2px; /* 3px */
-  padding-bottom: 2px;
 }
 
 .operation div,
@@ -534,95 +529,57 @@ ul li a:hover {
   background-position: center;
 }
 
-#top_btn {
-  display: none;
-  position: fixed;
-  bottom: 100px;
-  left: 0px;
-  border: none;
-  outline: none;
-  background: url("../../images/to_top_menu.png") no-repeat center;
-  background-color: #82b92e;
-  width: 60px;
-  height: 60px;
-  /* Estos borrarles despues xk sera img */
-  color: white;
-  cursor: pointer;
-  font-size: 17px;
-  border-radius: 5px;
-}
-
-#top_btn:hover {
-  background-color: #4d4d4d;
-  /*  border: 2px solid #fff;*/
-}
-
-@media screen and (max-height: 600px) {
-  .operation > li.menu_icon,
-  .godmode > li.menu_icon {
-    padding-top: 1px;
-    padding-bottom: 1px;
-  }
-  .operation {
-    padding-top: 10px !important;
-  }
-  .button_collapse {
-    margin-top: 10px;
-    background-color: green;
-  }
+@media screen and (max-height: 720px) {
   .menu li,
-  .menu .li.not_selected {
-    min-height: 25px !important;
-  }
-  .button_collapse {
-    height: 45px;
-  }
-  .submenu_text {
-    /* padding: 7.5px;*/
-  }
-}
-
-@media screen and (min-height: 601px) and (max-height: 700px) {
-  .operation > li.menu_icon,
-  .godmode > li.menu_icon {
-    padding-top: 1px;
-    padding-bottom: 2px;
-  }
-  .operation {
-    padding-top: 10px !important;
-  }
-  .button_collapse {
-    margin-top: 10px;
-    background-color: red;
-  }
-  .menu li,
-  .menu .li.not_selected {
-    min-height: 25px !important;
-  }
-  .button_collapse {
-    height: 48px;
-  }
-  .submenu_text {
-    /*padding: 7.5px;*/
-  }
-}
-
-@media screen and (min-height: 701px) and (max-height: 845px) {
-  .operation {
-    padding-top: 10px !important;
-  }
-  .button_collapse {
-    margin-top: 10px;
-    background-color: blue;
-  }
-  .menu li,
-  .menu .li.not_selected {
+  .menu li a,
+  .menu li div {
     min-height: 28px !important;
   }
+}
+/*
+Medidas menu:
+601 verde y rojo
+720 azul
+735 normal
+*/
+@media screen and (max-height: 735px) {
+  .operation {
+    padding-top: 10px !important;
+  }
   .button_collapse {
-    height: 50px;
+    margin-top: 10px;
   }
-  .submenu_text {
-    /*padding: 7.5px;*/
-  }
+}
+
+/*
+ * ---------------------------------------------------------------------
+ * - STYLES TO CHANGE CLASSIC MENU AND COLLAPSED MENU                  -
+ * ---------------------------------------------------------------------
+ */
+.page_classic {
+  padding-left: 215px !important;
+}
+
+.page_collapsed {
+  padding-left: 60px !important;
+}
+
+.header_table_classic {
+  padding-left: 250px !important; /* 215 + 35 */
+}
+
+.header_table_collapsed {
+  padding-left: 95px !important; /* 60 + 35 */
+}
+
+.title_menu_classic {
+  display: flex !important;
+}
+
+.title_menu_collapsed {
+  display: none !important;
+}
+
+.menu_icon_collapsed {
+  background-position: 50% 50% !important;
 }

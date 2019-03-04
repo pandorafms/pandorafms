@@ -1032,9 +1032,10 @@ function config_update_config()
                         $error_update[] = __('Fixed header');
                     }
 
-                    if (!config_update_value('fixed_menu', get_parameter('fixed_menu'))) {
+                    /*
+                        if (!config_update_value('fixed_menu', get_parameter('fixed_menu'))) {
                         $error_update[] = __('Fixed menu');
-                    }
+                    }*/
 
                     if (!config_update_value('paginate_module', get_parameter('paginate_module'))) {
                         $error_update[] = __('Paginate module');
@@ -1116,9 +1117,10 @@ function config_update_config()
                         $error_update[] = __('Default height of the chart image');
                     }
 
-                    if (!config_update_value('classic_menu', (bool) get_parameter('classic_menu', false))) {
+                    /*
+                        if (!config_update_value('classic_menu', (bool) get_parameter('classic_menu', false))) {
                         $error_update[] = __('Classic menu mode');
-                    }
+                    }*/
 
                     // --------------------------------------------------
                     // CUSTOM VALUES POST PROCESS
@@ -1791,9 +1793,10 @@ function config_process_config()
         config_update_value('fixed_graph', false);
     }
 
-    if (!isset($config['fixed_menu'])) {
+    /*
+        if (!isset($config['fixed_menu'])) {
         config_update_value('fixed_menu', false);
-    }
+    }*/
 
     if (!isset($config['custom_favicon'])) {
         config_update_value('custom_favicon', '');
@@ -2515,9 +2518,10 @@ function config_process_config()
         }
     }
 
-    if (!isset($config['classic_menu'])) {
+    /*
+        if (!isset($config['classic_menu'])) {
         config_update_value('classic_menu', 0);
-    }
+    }*/
 
     if (!isset($config['csv_divider'])) {
         config_update_value('csv_divider', ';');

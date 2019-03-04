@@ -120,15 +120,16 @@ if (enterprise_installed()) {
     $row++;
 }
 
-$table_behaviour->data[$row][0] = __('Classic menu mode').ui_print_help_tip(__('Text menu options always visible, don\'t hide'), true);
-$table_behaviour->data[$row][1] = html_print_checkbox_toogle_switch(
+/*
+    $table_behaviour->data[$row][0] = __('Classic menu mode').ui_print_help_tip(__('Text menu options always visible, don\'t hide'), true);
+    $table_behaviour->data[$row][1] = html_print_checkbox_toogle_switch(
     'classic_menu',
     1,
     $config['classic_menu'],
     true
-);
-$row++;
-
+    );
+    $row++;
+*/
 echo '<fieldset>';
 echo '<legend>'.__('Behaviour configuration').'</legend>';
 html_print_table($table_behaviour);
@@ -543,16 +544,16 @@ $table_styles->data[$row][1] = html_print_checkbox_toogle_switch(
     true
 );
 $row++;
-
-$table_styles->data[$row][0] = __('Fixed menu');
-$table_styles->data[$row][1] = html_print_checkbox_toogle_switch(
+/*
+    $table_styles->data[$row][0] = __('Fixed menu');
+    $table_styles->data[$row][1] = html_print_checkbox_toogle_switch(
     'fixed_menu',
     1,
     $config['fixed_menu'],
     true
-);
-$row++;
-
+    );
+    $row++;
+*/
 // For 5.1 Autohidden menu feature
 $table_styles->data['autohidden'][0] = __('Autohidden menu');
 $table_styles->data['autohidden'][1] = html_print_checkbox_toogle_switch(

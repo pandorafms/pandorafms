@@ -723,6 +723,28 @@ function menu_sec3_in_sec2($sec, $sec2, $sec3)
 // 35px is the height of a menu item
 function menu_calculate_top($level1, $level2, $level3=false)
 {
+    /*
+        if(menu verde ){
+        $item_height = 28;
+        }
+        else{
+        $item_height = 35;
+        }
+    */
+
+    // $(".menu li").css("min-height");
+        // console.log( parseInt($("#icon_oper-agents").css("min-height")));
+    /*
+        $item_height=  '<script>
+        $(document).ready(function(){
+        parseInt($("#icon_oper-agents").css("min-height"));
+
+        });
+        </script>';
+    */
+    $item_height = 35;
+
+    // echo ' '.$level1.' '.$level2.' '.$level3.' ';
     $level2--;
     if ($level3 !== false) {
         // If level3 is set, the position is calculated like box is in the center.
@@ -737,12 +759,12 @@ function menu_calculate_top($level1, $level2, $level3=false)
 
     // Positionate in the middle
     if ($total > 12 && (($total < 18) || (($level1 - $comp) <= 4))) {
-        return - ( floor($comp / 2) * 39);
+        return - ( floor($comp / 2) * $item_height);
     }
 
     // Positionate in the bottom
     if ($total >= 18) {
-        return (- $comp * 39);
+        return (- $comp * $item_height);
     }
 
     // return 0 by default

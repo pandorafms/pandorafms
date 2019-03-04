@@ -16,12 +16,20 @@ require_once 'include/functions_notifications.php';
 
 // Check permissions
 // Global errors/warnings checking.
-// config_check();
+ config_check();
 ?>
 
 <div id="header_table"> 
     <div id="header_table_inner">           
         <?php
+        // ======= Notifications Discovery ===============================================
+        $notifications_numbers = notifications_get_counters();
+        $header_discovery = '<div id="header_discovery">'.notifications_print_ball(
+            $notifications_numbers['notifications'],
+            $notifications_numbers['last_id']
+        ).'</div>';
+
+
         // ======= Alerts ===============================================
         $check_minor_release_available = false;
         $pandora_management = check_acl($config['id_user'], 0, 'PM');
@@ -38,9 +46,10 @@ require_once 'include/functions_notifications.php';
             }
         }
 
-        echo '<div id="alert_messages" style="display: none"></div>';
+        /*
+            echo '<div id="alert_messages" style="display: none"></div>';
 
-        if ($config['alert_cnt'] > 0) {
+            if ($config['alert_cnt'] > 0) {
             $maintenance_link = 'javascript:';
             $maintenance_title = __('System alerts detected - Please fix as soon as possible');
             $maintenance_class = $maintenance_id = 'show_systemalert_dialog white';
@@ -64,26 +73,27 @@ require_once 'include/functions_notifications.php';
                     ]
                 ).'<p><span>'.$config['alert_cnt'].'</span></p>'.$maintenance_link_close;
             }
-        } else {
+            } else {
             if (!$pandora_management) {
                 $maintenance_img = '';
             } else {
                 $maintenance_img = html_print_image('images/header_ready_gray.png', true, ['title' => __('There are not warnings'), 'id' => 'yougotalert', 'class' => 'bot']);
             }
-        }
+            }
 
-        $header_alert = '<div id="header_alert">'.$maintenance_img.'</div>';
-
+            $header_alert = '<div id="header_alert">'.$maintenance_img.'</div>';
+        */
 
         // Messages
-        $msg_cnt = messages_get_count($config['id_user']);
-        if ($msg_cnt > 0) {
+        /*
+            $msg_cnt = messages_get_count($config['id_user']);
+            if ($msg_cnt > 0) {
             echo '<div id="dialog_messages" style="display: none"></div>';
 
             $header_message = '<div id="header_message"><a href="ajax.php?page=operation/messages/message_list" title="'.__('Message overview').'" id="show_messages_dialog">';
             $header_message .= html_print_image('images/header_email.png', true, ['title' => __('You have %d unread message(s)', $msg_cnt), 'id' => 'yougotmail', 'class' => 'bot', 'style' => 'width:24px;']);
             $header_message .= '<p><span>'.$msg_cnt.'</span></p></a></div>';
-        }
+        }*/
 
 
         // Chat messages
@@ -158,28 +168,29 @@ require_once 'include/functions_notifications.php';
 
 
         // Servers check
-        $servers = [];
-        $servers['all'] = (int) db_get_value('COUNT(id_server)', 'tserver');
-        $servers['up'] = (int) servers_check_status();
-        $servers['down'] = ($servers['all'] - $servers['up']);
-        if ($servers['up'] == 0) {
+        /*
+            $servers = [];
+            $servers['all'] = (int) db_get_value('COUNT(id_server)', 'tserver');
+            $servers['up'] = (int) servers_check_status();
+            $servers['down'] = ($servers['all'] - $servers['up']);
+            if ($servers['up'] == 0) {
             // All Servers down or no servers at all
             $servers_check_img = html_print_image('images/header_down_gray.png', true, ['alt' => 'cross', 'class' => 'bot', 'title' => __('All systems').': '.__('Down')]);
-        } else if ($servers['down'] != 0) {
+            } else if ($servers['down'] != 0) {
             // Some servers down
             $servers_check_img = html_print_image('images/header_warning_gray.png', true, ['alt' => 'error', 'class' => 'bot', 'title' => $servers['down'].' '.__('servers down')]);
-        } else {
+            } else {
             // All servers up
             $servers_check_img = html_print_image('images/header_ready_gray.png', true, ['alt' => 'ok', 'class' => 'bot', 'title' => __('All systems').': '.__('Ready')]);
-        }
+            }
 
-        unset($servers);
-        // Since this is the header, we don't like to trickle down variables.
-        $servers_link_open = '<a class="white" href="index.php?sec=gservers&amp;sec2=godmode/servers/modificar_server&amp;refr=60">';
-        $servers_link_close = '</a>';
+            unset($servers);
+            // Since this is the header, we don't like to trickle down variables.
+            $servers_link_open = '<a class="white" href="index.php?sec=gservers&amp;sec2=godmode/servers/modificar_server&amp;refr=60">';
+            $servers_link_close = '</a>';
 
-        $header_server = '<div id="header_server">'.$servers_link_open.$servers_check_img.$servers_link_close.'</div>';
-
+            $header_server = '<div id="header_server">'.$servers_link_open.$servers_check_img.$servers_link_close.'</div>';
+        */
 
         // Main help icon
         if (!$config['disable_help']) {
@@ -313,8 +324,8 @@ require_once 'include/functions_notifications.php';
         $header_logout .= '</a></div>';
 
 
-        // echo '<div class="header_left">'.$header_alert, $header_message, $header_chat.'</div><div class="header_center">'.$header_searchbar, $header_clippy, $header_help, $header_server, $header_autorefresh, $header_autorefresh_counter, $header_qr.'</div><div class="header_right">'.$header_user, $header_logout.'</div>';
-        echo '<div class="header_left">'.$header_chat.'</div><div class="header_center">'.$header_searchbar, $header_clippy, $header_help, $header_autorefresh, $header_autorefresh_counter, $header_qr.'</div><div class="header_right">'.$header_user, $header_logout.'</div>';
+         // echo '<div class="header_left">'.$header_discovery, $header_alert, $header_message, $header_chat.'</div><div class="header_center">'.$header_searchbar, $header_clippy, $header_help, $header_server, $header_autorefresh, $header_autorefresh_counter, $header_qr.'</div><div class="header_right">'.$header_user, $header_logout.'</div>';
+        echo '<div class="header_left">'.$header_autorefresh, $header_autorefresh_counter, $header_qr, $header_chat.'</div><div class="header_center">'.$header_searchbar, $header_discovery.'</div><div class="header_right">'.$header_user, $header_logout.'</div>';
         ?>
     </div>    <!--div que cierra #table_header_inner -->        
 </div>    <!--div que cierra #table_header -->
@@ -600,12 +611,6 @@ require_once 'include/functions_notifications.php';
             $("#agent_access").css("display","");
         });
         
-       /* function blinkmail(){
-            //$("#yougotmail").delay(100).fadeTo(300,0.2).delay(100).fadeTo(300,1, blinkmail);
-        }
-        function blinkalert(){
-            $("#yougotalert").delay(100).fadeTo(300,0.2).delay(100).fadeTo(300,1, blinkalert);
-        }*/
         function blinkpubli(){
             $(".publienterprise").delay(100).fadeTo(300,0.2).delay(100).fadeTo(300,1, blinkpubli);
         }

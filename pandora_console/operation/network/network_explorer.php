@@ -23,4 +23,6 @@ global $config;
 $action = get_parameter('action', 'listeners');
 $is_network = true;
 
+ui_print_page_header(__('Network explorer'));
+
 require $config['homedir'].'/operation/network/network_report.php';

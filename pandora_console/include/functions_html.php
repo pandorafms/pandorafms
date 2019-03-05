@@ -3114,3 +3114,26 @@ function html_print_switch($attributes=[])
 			<span class='p-slider'></span>
 		</label>";
 }
+
+
+/**
+ * Print a link with post params.The component is really a form with a button
+ *      with some inputs hidden.
+ *
+ * @param string $text   Text to show.
+ * @param array  $params Params to be written like inputs hidden.
+ *
+ * @return string With HTML code.
+ */
+function html_print_link_with_params($text, $params=[])
+{
+    $html = '<form method=post>';
+    $html .= html_print_submit_button($text, $text, false, 'class="button-as-link"', true);
+    foreach ($params as $param => $value) {
+        $html .= html_print_input_hidden($param, $value, true);
+    }
+
+    $html .= '</form>';
+
+    return $html;
+}

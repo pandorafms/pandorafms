@@ -47,6 +47,7 @@ if (!$is_period) {
 }
 
 $top = (int) get_parameter('top', 10);
+$main_value = get_parameter('main_value', '');
 $style_end = ($is_period) ? 'display: none;' : '';
 $style_period = ($is_period) ? '' : 'display: none;';
 
@@ -135,7 +136,7 @@ if ($is_network) {
         $action === 'talkers',
         $utimestamp_lower,
         $utimestamp_greater,
-        ''
+        $main_value
     );
 }
 
@@ -152,11 +153,25 @@ if (!$is_network) {
 $table->head['pkts'] = __('Packets');
 $table->head['bytes'] = __('Bytes');
 
+// Get the params to return the builder.
+$hidden_main_link = [
+    'time_greater' => $time_greater,
+    'date_greater' => $date_greater,
+    'is_period'    => $is_period,
+    'period'       => $period,
+    'time_lower'   => $time_lower,
+    'date_lower'   => $date_lower,
+    'top'          => $top,
+];
+
 // Print the data.
 $table->data = [];
 foreach ($data as $item) {
     $row = [];
-    $row['main'] = $item['host'];
+    $row['main'] = html_print_link_with_params(
+        $item['host'],
+        array_merge($hidden_main_link, ['main_value' => $item['host']])
+    );
     $row['pkts'] = format_for_graph($item['sum_pkts'], 2);
     $row['bytes'] = format_for_graph(
         $item['sum_bytes'],

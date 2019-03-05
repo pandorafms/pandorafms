@@ -4242,6 +4242,13 @@ tr:first-child > td > a.up_arrow {
   margin-right: 5px;
 }
 
+.button-as-link {
+  text-decoration: underline;
+  background: none !important;
+  border: none;
+  padding: 0 !important;
+}
+
 /*
  * ---------------------------------------------------------------------
  * - MESSAGE LIST POPUP 											-

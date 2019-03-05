@@ -1,4 +1,4 @@
-import Clock, { clockPropsDecoder } from "./Clock";
+import Clock, { clockPropsDecoder } from ".";
 
 const genericRawProps = {
   id: 1,
@@ -24,7 +24,9 @@ const digitalClockProps = {
   clockType: "digital",
   clockFormat: "datetime",
   clockTimezone: "Madrid",
-  clockTimezoneOffset: 60
+  clockTimezoneOffset: 60,
+  showClockTimezone: true,
+  color: "white"
 };
 
 const linkedModuleProps = {

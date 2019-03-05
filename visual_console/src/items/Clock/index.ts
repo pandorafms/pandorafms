@@ -1,17 +1,20 @@
-import { LinkedVisualConsoleProps, UnknownObject } from "../types";
+import "./Clock.css";
+
+import { LinkedVisualConsoleProps, UnknownObject } from "../../types";
 
 import {
   linkedVCPropsDecoder,
   parseIntOr,
   padLeft,
-  parseBoolean
-} from "../lib";
+  parseBoolean,
+  prefixedCssRules
+} from "../../lib";
 
 import VisualConsoleItem, {
   VisualConsoleItemProps,
   itemBasePropsDecoder,
   VisualConsoleItemType
-} from "../VisualConsoleItem";
+} from "../../VisualConsoleItem";
 
 export type ClockProps = {
   type: VisualConsoleItemType.CLOCK;
@@ -417,26 +420,44 @@ export default class Clock extends VisualConsoleItem<ClockProps> {
       <style>
         @keyframes rotate-hour {
           from {
-            transform: translate(50px, 50px) rotate(${hourAngle}deg);
+            ${prefixedCssRules(
+              "transform",
+              `translate(50px, 50px) rotate(${hourAngle}deg)`
+            ).join("\n")}
           }
           to {
-            transform: translate(50px, 50px) rotate(${hourAngle + 360}deg);
+            ${prefixedCssRules(
+              "transform",
+              `translate(50px, 50px) rotate(${hourAngle + 360}deg)`
+            ).join("\n")}
           }
         }
         @keyframes rotate-minute {
           from {
-            transform: translate(50px, 50px) rotate(${minuteAngle}deg);
+            ${prefixedCssRules(
+              "transform",
+              `translate(50px, 50px) rotate(${minuteAngle}deg)`
+            ).join("\n")}
           }
           to {
-            transform: translate(50px, 50px) rotate(${minuteAngle + 360}deg);
+            ${prefixedCssRules(
+              "transform",
+              `translate(50px, 50px) rotate(${minuteAngle + 360}deg)`
+            ).join("\n")}
           }
         }
         @keyframes rotate-second {
           from {
-            transform: translate(50px, 50px) rotate(${secAngle}deg);
+            ${prefixedCssRules(
+              "transform",
+              `translate(50px, 50px) rotate(${secAngle}deg)`
+            ).join("\n")}
           }
           to {
-            transform: translate(50px, 50px) rotate(${secAngle + 360}deg);
+            ${prefixedCssRules(
+              "transform",
+              `translate(50px, 50px) rotate(${minuteAngle + 360}deg)`
+            ).join("\n")}
           }
         }
       </style>

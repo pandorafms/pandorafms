@@ -55,9 +55,6 @@ $style_period = ($is_period) ? '' : 'display: none;';
 $table = new stdClass();
 $table->class = 'databox';
 $table->styleTable = 'width: 100%';
-$table->style[0] = 'width: 40%';
-$table->style[1] = 'width: 40%';
-$table->style[2] = 'width: 20%';
 $table->data['0']['0'] = __('Data to show').'&nbsp;&nbsp;';
 $table->data['0']['0'] .= html_print_select(
     network_get_report_actions($is_network),
@@ -106,14 +103,14 @@ $table->data['1']['0'] .= html_print_input_text('time_greater', $time_greater, '
 
 $table->data['1']['1'] = '<div id="end_date_container" style="'.$style_end.'">';
 $table->data['1']['1'] .= __('End date').'&nbsp;&nbsp;';
-$table->data['1']['1'] .= html_print_input_text('date_lower', $date_lower, '', 10, 7, true, $is_period);
+$table->data['1']['1'] .= html_print_input_text('date_lower', $date_lower, '', 10, 7, true);
 $table->data['1']['1'] .= '&nbsp;&nbsp;';
-$table->data['1']['1'] .= html_print_input_text('time_lower', $time_lower, '', 7, 8, true, $is_period);
+$table->data['1']['1'] .= html_print_input_text('time_lower', $time_lower, '', 7, 8, true);
 $table->data['1']['1'] .= '</div>';
 
 $table->data['1']['1'] .= '<div id="period_container" style="'.$style_period.'">';
 $table->data['1']['1'] .= __('Time Period').'&nbsp;&nbsp;';
-$table->data['1']['1'] .= html_print_input_text('period', $period, '', 7, 8, true, !$is_period);
+$table->data['1']['1'] .= html_print_input_text('period', $period, '', 7, 8, true);
 $table->data['1']['1'] .= '</div>';
 
 $table->data['1']['2'] = html_print_submit_button(
@@ -121,6 +118,14 @@ $table->data['1']['2'] = html_print_submit_button(
     'update',
     false,
     'class="sub upd"',
+    true
+);
+$table->data['1']['2'] .= '&nbsp;&nbsp;';
+$table->data['1']['2'] .= html_print_submit_button(
+    __('Export to CSV'),
+    'export_csv',
+    false,
+    'class="sub next"',
     true
 );
 
@@ -164,6 +169,38 @@ $hidden_main_link = [
     'top'          => $top,
 ];
 
+
+
+if (get_parameter('export_csv')) {
+    // Clean the buffer.
+    while (ob_get_level()) {
+        ob_end_clean();
+    }
+
+    // Write metadata.
+    header('Content-type: text/csv;');
+    header('Content-Disposition: attachment; filename="network_data.csv"');
+
+    $div = $config['csv_divider'];
+    $nl = "\n";
+
+    // Print the header.
+    foreach ($table->head as $head_elem) {
+        echo $head_elem.$div;
+    }
+
+    echo $nl;
+
+    // Print the data.
+    foreach ($data as $row) {
+        echo $row['host'].$div;
+        echo $row['sum_pkts'].$div;
+        echo $row['sum_bytes'].$nl;
+    }
+
+    exit;
+}
+
 // Print the data and build the chart.
 $table->data = [];
 $chart_data = [];
@@ -188,7 +225,11 @@ foreach ($data as $item) {
     $chart_data[$item['host']] = $item['sum_bytes'];
 }
 
-html_print_table($table);
+if (empty($data)) {
+    ui_print_info_message(__('No data found'));
+} else {
+    html_print_table($table);
+}
 
 // Print the graph.
 echo '<div>';
@@ -223,9 +264,5 @@ function network_report_click_period(event) {
 
     document.getElementById('period_container').style.display = !is_period ? 'none' : 'block';
     document.getElementById('end_date_container').style.display = is_period ? 'none' : 'block';
-
-    document.getElementById('text-time_lower').disabled = is_period;
-    document.getElementById('text-date_lower').disabled = is_period;
-    document.getElementById('text-period').disabled = !is_period;
 }
 </script>

@@ -164,8 +164,9 @@ $hidden_main_link = [
     'top'          => $top,
 ];
 
-// Print the data.
+// Print the data and build the chart.
 $table->data = [];
+$chart_data = [];
 foreach ($data as $item) {
     $row = [];
     $row['main'] = html_print_link_with_params(
@@ -181,11 +182,23 @@ foreach ($data as $item) {
         1024,
         'B'
     );
-
     $table->data[] = $row;
+
+    // Build the pie graph data structure.
+    $chart_data[$item['host']] = $item['sum_bytes'];
 }
 
 html_print_table($table);
+
+// Print the graph.
+echo '<div>';
+echo pie_graph(
+    $chart_data,
+    320,
+    200,
+    __('Others')
+);
+echo '<div>';
 
 ?>
 <script>

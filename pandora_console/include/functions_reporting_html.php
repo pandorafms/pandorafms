@@ -549,10 +549,6 @@ function reporting_html_SLA($table, $item, $mini, $pdf=0)
 
             foreach ($item['data'] as $sla) {
                 if (isset($sla)) {
-                    $the_first_men_time = get_agent_first_time(
-                        io_safe_output($sla['agent'])
-                    );
-
                     // First_table.
                     $row = [];
                     $row[] = $sla['agent'];
@@ -2964,10 +2960,6 @@ function reporting_html_availability($table, $item, $pdf=0)
         $table2->style[5] = 'text-align: right';
 
         foreach ($item['data'] as $row) {
-            $the_first_men_time = get_agent_first_time(
-                io_safe_output($row['agent'])
-            );
-
             $table_row = [];
             $table_row[] = $row['agent'];
             $table_row[] = $row['availability_item'];

@@ -4433,9 +4433,10 @@ div#dialog_messages table th:last-child {
   border: #a5a5a5 solid 1px;
   z-index: 900000;
   position: absolute;
-  width: 400px;
+  width: 590px;
   margin-top: -5px;
   border-radius: 5px;
+  margin-left: -146px;
 }
 #notification-wrapper::before {
   content: "";

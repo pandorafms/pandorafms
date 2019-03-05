@@ -26,7 +26,7 @@ use lib '/usr/lib/perl5';
 
 use PandoraFMS::Tools;
 use PandoraFMS::DB;
-use PandoraFMS::Core;
+
 require Exporter;
 
 our @ISA = ("Exporter");

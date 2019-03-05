@@ -3077,12 +3077,14 @@ Create a new entry in B<tagente> optionaly with position information
 
 =cut
 ##########################################################################
-sub pandora_create_agent ($$$$$$$$$$;$$$$$$$$$) {
+sub pandora_create_agent ($$$$$$$$$$;$$$$$$$$$$) {
+	# If parameter event_id is not undef, then create an extended event
+	# related to it instead launch new event.
 	my ($pa_config, $server_name, $agent_name, $address,
 		$group_id, $parent_id, $os_id,
 		$description, $interval, $dbh, $timezone_offset,
 		$longitude, $latitude, $altitude, $position_description,
-		$custom_id, $url_address, $agent_mode, $alias) = @_;
+		$custom_id, $url_address, $agent_mode, $alias, $event_id) = @_;
 	
 	logger ($pa_config, "Server '$server_name' creating agent '$agent_name' address '$address'.", 10);
 	
@@ -3125,7 +3127,11 @@ sub pandora_create_agent ($$$$$$$$$$;$$$$$$$$$) {
 	}
 	
 	logger ($pa_config, "Server '$server_name' CREATED agent '$agent_name' address '$address'.", 10);
-	pandora_event ($pa_config, "Agent [" . safe_output($alias) . "] created by $server_name", $group_id, $agent_id, 2, 0, 0, 'new_agent', 0, $dbh);
+	if (!defined($event_id)) {
+		pandora_event ($pa_config, "Agent [" . safe_output($alias) . "] created by $server_name", $group_id, $agent_id, 2, 0, 0, 'new_agent', 0, $dbh);
+	} else {
+		pandora_extended_event($pa_config, $dbh, $event_id, "Agent [" . safe_output($alias) . "][#".$agent_id."] created by $server_name");
+	}
 	return $agent_id;
 }
 

@@ -373,20 +373,7 @@ function networkmap_generate_dot(
         $agents = false;
     } else if (!empty($ip_mask)) {
         $agents = networkmap_get_new_nodes_from_ip_mask(
-            $ip_mask,
-            [
-                'id_grupo',
-                'nombre',
-                'id_os',
-                'id_parent',
-                'id_agente',
-                'normal_count',
-                'warning_count',
-                'critical_count',
-                'unknown_count',
-                'total_count',
-                'notinit_count',
-            ]
+            $ip_mask
         );
     } else {
         $agents = agents_get_agents(
@@ -454,7 +441,6 @@ function networkmap_generate_dot(
 
         // Get agent modules data
         $modules = agents_get_modules($agent['id_agente'], '*', $filter, true, true);
-
         if ($modules === false) {
             $modules = [];
         }
@@ -1654,39 +1640,45 @@ function networkmap_get_new_nodes_from_ip_mask(
 ) {
     $list_ip_masks = explode(',', $ip_mask);
 
-    $list_address = db_get_all_rows_in_table('taddress');
-    if (empty($address)) {
-        $address = [];
-    }
-
     $agents = [];
-    foreach ($list_address as $address) {
-        foreach ($list_ip_masks as $ip_mask) {
-            if (networkmap_cidr_match($address['ip'], $ip_mask)) {
-                $id_agent = db_get_value_filter(
-                    'id_agent',
-                    'taddress_agent',
-                    ['id_a' => $address['id_a']]
-                );
+    foreach ($list_ip_masks as $subnet) {
+        $net = explode('/', $subnet);
 
-                // Orphan address. Ignore.
-                if (empty($id_agent)) {
-                    continue;
-                }
+        $sql = sprintf(
+            'SELECT *
+            FROM `tagente`
+            INNER JOIN 
+                (SELECT DISTINCT `id_agent` FROM 
+                    (SELECT `id_agente` AS "id_agent", `direccion` AS "ip"
+                    FROM `tagente` 
+                    UNION
+                    SELECT ag.`id_agent`, a.`ip`
+                    FROM `taddress_agent` ag 
+                    INNER JOIN `taddress` a 
+                        ON ag.id_a=a.id_a
+                    ) t_tmp
+                WHERE (-1 << %d) & INET_ATON(t_tmp.ip) = INET_ATON("%s")
+                ) t_res
+                ON t_res.`id_agent` = `tagente`.`id_agente`',
+            (32 - $net[1]),
+            $net[0]
+        );
 
-                if (empty($fields)) {
-                    $target_agent = db_get_value_filter('id_agent', 'taddress_agent', ['id_a' => $address['id_a']]);
-                } else {
-                    $target_agent = db_get_row('tagente', 'id_agente', $id_agent, $fields);
-                }
+        $subnet_agents = db_get_all_rows_sql($sql);
 
-                // Agent exists. Add to pool.
-                if ($target_agent !== false) {
-                    $agents[$id_agent] = $target_agent;
-                }
-            }
+        if ($subnet_agents !== false) {
+            $agents = array_merge($agents, $subnet_agents);
         }
     }
+
+    $agents = array_reduce(
+        $agents,
+        function ($carry, $item) {
+            $carry[$item['id_agente']] = $item;
+            return $carry;
+        },
+        []
+    );
 
     return $agents;
 }

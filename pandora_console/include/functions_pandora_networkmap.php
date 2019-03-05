@@ -593,41 +593,43 @@ function networkmap_db_node_to_js_node($node, &$count, &$count_item_holding_area
 
 function get_status_color_networkmap($id, $color=true)
 {
-    $status = agents_get_status($id);
+    // $status = agents_get_status($id);
+    $agent_data = db_get_row_sql('SELECT * FROM tagente WHERE id_agente = '.$id);
+
+    if ($agent_data === false) {
+        return COL_UNKNOWN;
+    }
+
+    $status = agents_get_status_from_counts($agent_data);
 
     if (!$color) {
         return $status;
     }
 
-    // Set node status
-    switch ($status) {
-        case 0:
-            $status_color = COL_NORMAL;
-            // Normal monitor
-        break;
-
-        case 1:
-            $status_color = COL_CRITICAL;
-            // Critical monitor
-        break;
-
-        case 2:
-            $status_color = COL_WARNING;
-            // Warning monitor
-        break;
-
-        case 4:
-            $status_color = COL_ALERTFIRED;
-            // Alert fired
-        break;
-
-        default:
-            $status_color = COL_UNKNOWN;
-            // Unknown monitor
-        break;
+    if ($agent_data['fired_count'] > 0) {
+        return COL_ALERTFIRED;
     }
 
-    return $status_color;
+    // Select node color by checking status.
+    switch ($status) {
+        case AGENT_MODULE_STATUS_NORMAL:
+        return COL_NORMAL;
+
+        case AGENT_MODULE_STATUS_NOT_INIT:
+        return COL_NOTINIT;
+
+        case AGENT_MODULE_STATUS_CRITICAL_BAD:
+        return COL_CRITICAL;
+
+        case AGENT_MODULE_STATUS_WARNING:
+        return COL_WARNING;
+
+        case AGENT_MODULE_STATUS_UNKNOWN:
+        default:
+        return COL_UNKNOWN;
+    }
+
+    return COL_UNKNOWN;
 }
 
 
@@ -2126,5 +2128,3 @@ function show_networkmap($id=0, $user_readonly=false, $nodes_and_relations=[], $
 </div>
     <?php
 }
-
-

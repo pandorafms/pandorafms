@@ -47,7 +47,7 @@ if (!$is_period) {
 }
 
 $top = (int) get_parameter('top', 10);
-$main_value = get_parameter('main_value', '');
+$main_value = ((bool) get_parameter('remove_filter', 0)) ? '' : get_parameter('main_value', '');
 $style_end = ($is_period) ? 'display: none;' : '';
 $style_period = ($is_period) ? '' : 'display: none;';
 
@@ -130,6 +130,10 @@ $table->data['1']['2'] .= html_print_submit_button(
 );
 
 echo '<form method="post">';
+if (!empty($main_value)) {
+    html_print_input_hidden('main_value', $main_value);
+}
+
 html_print_table($table);
 echo '</form>';
 
@@ -169,8 +173,6 @@ $hidden_main_link = [
     'top'          => $top,
 ];
 
-
-
 if (get_parameter('export_csv')) {
     // Clean the buffer.
     while (ob_get_level()) {
@@ -199,6 +201,20 @@ if (get_parameter('export_csv')) {
     }
 
     exit;
+}
+
+// Print the filter remove link.
+if (!empty($main_value)) {
+    echo html_print_link_with_params(
+        __('Filtered by IP %s. Click here to remove the filter.', $main_value),
+        array_merge(
+            $hidden_main_link,
+            [
+                'main_value'    => $main_value,
+                'remove_filter' => 1,
+            ]
+        )
+    );
 }
 
 // Print the data and build the chart.

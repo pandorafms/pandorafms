@@ -1222,11 +1222,11 @@ function graphic_combined_module(
             foreach ($sources as $source) {
                 array_push($modules, $source['id_agent_module']);
                 array_push($weights, $source['weight']);
-                if ($source['label'] != '') {
+                if ($source['label'] != '' || $params_combined['labels']) {
                     $item['type']            = 'custom_graph';
                     $item['id_agent']        = agents_get_module_id($source['id_agent_module']);
                     $item['id_agent_module'] = $source['id_agent_module'];
-                    $labels[$source['id_agent_module']] = reporting_label_macro($item, $source['label']);
+                    $labels[$source['id_agent_module']] = ($source['label'] != '') ? reporting_label_macro($item, $source['label']) : reporting_label_macro($item, $params_combined['labels']);
                 }
             }
         }

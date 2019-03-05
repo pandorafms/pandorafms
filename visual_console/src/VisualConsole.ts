@@ -133,11 +133,11 @@ export default class VisualConsole {
 
   public constructor(
     container: HTMLElement,
-    props: VisualConsoleProps,
+    props: UnknownObject,
     items: UnknownObject[]
   ) {
     this.containerRef = container;
-    this._props = props;
+    this._props = visualConsolePropsDecoder(props);
 
     // Force the first render.
     this.render();
@@ -254,5 +254,6 @@ export default class VisualConsole {
   public remove(): void {
     this.elements.forEach(e => e.remove()); // Arrow function.
     this.elements = [];
+    // TODO: Clean container.
   }
 }

@@ -1900,8 +1900,6 @@ CREATE TABLE IF NOT EXISTS `tevent_extended` (
 -- -----------------------------------------------------
 -- Table `tgis_map_layer_groups`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `tgis_map_layer_groups`;
-
 CREATE TABLE `tgis_map_layer_groups` (
   `layer_id` int(11) NOT NULL,
   `group_id` mediumint(4) unsigned NOT NULL,
@@ -2021,11 +2019,6 @@ CREATE TABLE `tnotification_source_group_user` (
     FOREIGN KEY (`id_group`) REFERENCES `tnotification_source_group`(`id_group`)
         ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- ----------------------------------------------------------------------
--- Table `tuser_task_scheduled`
--- ----------------------------------------------------------------------
-ALTER TABLE `tuser_task_scheduled` ADD COLUMN `flag_delete` tinyint(1) unsigned NOT NULL DEFAULT '0';
 
 -- ----------------------------------------------------------------------
 -- Add alert command 'Generate notification'

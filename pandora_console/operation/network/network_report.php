@@ -144,22 +144,30 @@ $table = new stdClass();
 $table->styleTable = 'width: 100%';
 // Print the header.
 $table->head = [];
-$table->head[] = __('IP');
+$table->head['main'] = __('IP');
 if (!$is_network) {
-    $table->head[] = __('Flows');
+    $table->head['flows'] = __('Flows');
 }
 
-$table->head[] = __('Packets');
-$table->head[] = __('Bytes');
+$table->head['pkts'] = __('Packets');
+$table->head['bytes'] = __('Bytes');
 
 // Print the data.
 $table->data = [];
 foreach ($data as $item) {
-    $table->data[] = [
-        $item['host'],
+    $row = [];
+    $row['main'] = $item['host'];
+    $row['pkts'] = format_for_graph($item['sum_pkts'], 2);
+    $row['bytes'] = format_for_graph(
         $item['sum_bytes'],
-        $item['sum_pkts'],
-    ];
+        2,
+        '.',
+        ',',
+        1024,
+        'B'
+    );
+
+    $table->data[] = $row;
 }
 
 html_print_table($table);

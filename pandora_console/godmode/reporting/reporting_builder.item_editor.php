@@ -450,6 +450,7 @@ switch ($action) {
                 case 'event_report_agent':
                 case 'event_report_group':
                     $recursion = $item['recursion'];
+                    $include_extended_events = $item['show_extended_events'];
                 break;
 
                 case 'event_report_module':
@@ -471,6 +472,8 @@ switch ($action) {
                     $event_graph_validated_vs_unvalidated = $style['event_graph_validated_vs_unvalidated'];
 
                     $filter_search = $style['event_filter_search'];
+
+                    $include_extended_events = $item['show_extended_events'];
                 break;
 
                 case 'general':

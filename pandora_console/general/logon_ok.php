@@ -105,7 +105,7 @@ if (!empty($all_data)) {
 
 
 ?>
-<table border="0" width="100%">
+<table border="0" width="100%" cellspacing="0" cellpadding="0">
     <tr>
         
         <td width="25%" style="padding-right: 20px;" valign="top">

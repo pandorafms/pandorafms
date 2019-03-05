@@ -210,3 +210,23 @@ export function linkedVCPropsDecoder(
       }
     : linkedLayoutBaseProps;
 }
+
+/**
+ * To get a CSS rule with the most used prefixes.
+ * @param ruleName Name of the CSS rule.
+ * @param ruleValue Value of the CSS rule.
+ * @return An array of rules with the prefixes applied.
+ */
+export function prefixedCssRules(
+  ruleName: string,
+  ruleValue: string
+): string[] {
+  const rule = `${ruleName}: ${ruleValue};`;
+  return [
+    `-webkit-${rule}`,
+    `-moz-${rule}`,
+    `-ms-${rule}`,
+    `-o-${rule}`,
+    `${rule}`
+  ];
+}

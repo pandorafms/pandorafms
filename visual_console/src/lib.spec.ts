@@ -1,4 +1,4 @@
-import { parseIntOr, padLeft } from "./lib";
+import { parseIntOr, padLeft, prefixedCssRules } from "./lib";
 
 describe("function parseIntOr", () => {
   it("should retrieve valid int or a default value", () => {
@@ -24,5 +24,17 @@ describe("function padLeft", () => {
     expect(padLeft("bar", 4, "foo")).toBe("fbar");
     expect(padLeft("bar", 2, "foo")).toBe("ar");
     expect(padLeft("bar", 3, "foo")).toBe("bar");
+  });
+});
+
+describe("function prefixedCssRules", () => {
+  it("should add the prefixes to the rules", () => {
+    const rules = prefixedCssRules("transform", "rotate(0)");
+    expect(rules).toContainEqual("transform: rotate(0);");
+    expect(rules).toContainEqual("-webkit-transform: rotate(0);");
+    expect(rules).toContainEqual("-moz-transform: rotate(0);");
+    expect(rules).toContainEqual("-ms-transform: rotate(0);");
+    expect(rules).toContainEqual("-o-transform: rotate(0);");
+    expect(rules).toHaveLength(5);
   });
 });

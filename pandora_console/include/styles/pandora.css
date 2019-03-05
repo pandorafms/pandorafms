@@ -405,7 +405,7 @@ div#page {
   clear: both;
   width: auto;
   margin-top: 20px !important;
-  padding-left: 60px; /* It is changed for classic menu (215px)*/
+  padding-left: 60px; /* This is overwritten by the classic menu (215px)*/
   margin-right: 35px;
   margin-left: 35px;
 }
@@ -681,7 +681,7 @@ div#menu {
   width: 45px;
   float: left;
   z-index: 2000;
-  position: absolute; /*Lo he quitado para que no ocupe todo el alto y fixed */
+  position: absolute;
 }
 
 div#head {
@@ -980,14 +980,6 @@ input.group_item_min[disabled] {
   background: #fefefe url(../../images/group_green.disabled.png) no-repeat
     center !important;
 }
-input.color_cloud_min {
-  background: #fefefe url(../../images/color_cloud_item.png) no-repeat center !important;
-}
-input.color_cloud_min[disabled] {
-  background: #fefefe url(../../images/color_cloud_item.disabled.png) no-repeat
-    center !important;
-}
-
 input.color_cloud_min {
   background: #fefefe url(../../images/color_cloud_item.png) no-repeat center !important;
 }
@@ -2039,7 +2031,7 @@ div#pandora_logo_header {
   margin: 0px;
   padding: 0px;
   margin-top: 0px;
-  padding-left: 95px; /* It is changed for classic menu */
+  padding-left: 95px; /* This is overwritten by the classic menu */
   padding-right: 35px;
 }
 
@@ -2083,16 +2075,7 @@ div#pandora_logo_header {
   padding-left: 15px;
 }
 
-#header_table_inner > div {
-  /* border: solid 1px pink;*/
-}
-
-#header_table_inner > div > div {
-  /* border: solid 1px fuchsia;*/
-}
-
-#header_table_inner td a,
-#header_table_inner td span {
+#header_table_inner #header_user span {
   color: #777;
 }
 
@@ -2102,8 +2085,7 @@ div#pandora_logo_header {
   vertical-align: middle;
 }
 
-#header_user img,
-#header_autorefresh {
+#header_user img {
   padding-right: 5px;
 }
 
@@ -2153,10 +2135,10 @@ a.autorefresh_txt,
   color: #1c1c1c;
   font-size: 8.5pt;
 }
-
+/*
 #combo_refr select {
   margin-right: 8px;
-}
+}*/
 
 .disabled_module {
   color: #aaa;
@@ -2165,22 +2147,6 @@ div.warn {
   background: url(../../images/info.png) no-repeat;
   margin-top: 7px;
   padding: 2px 1px 6px 25px;
-}
-
-.submenu_not_selected {
-  /*transition-property: background-color;
-  transition-duration: 0.5s;
-  transition-timing-function: ease-out;
-  -webkit-transition-property: background-color;
-  -webkit-transition-duration: 0.5s;
-  -webkit-transition-timing-function: ease-out;
-  -moz-transition-property: background-color;
-  -moz-transition-duration: 0.5s;
-  -moz-transition-timing-function: ease-out;
-  -o-transition-property: background-color;
-  -o-transition-duration: 0.5s;
-  -o-transition-timing-function: ease-out;
-  font-weight: normal !important;*/
 }
 
 /* Submenus havent borders */
@@ -2908,8 +2874,9 @@ input.search_input {
   margin-left: 2px;
   padding-left: 15px;
   padding-right: 40px;
-  color: #999;
+  color: #777;
   font-family: "Open Sans", sans-serif;
+  font-size: 8.5pt;
   border-top-left-radius: 50px;
   border-bottom-left-radius: 50px;
   border-top-right-radius: 50px;
@@ -3299,16 +3266,16 @@ div.div_groups_status {
 #title_menu {
   color: #9ca4a6;
   float: right;
-  width: 65%;
+  width: 72%;
   letter-spacing: 0pt;
   font-size: 10pt;
   white-space: pre-wrap;
-  padding-top: 0 !important; /* está inline */
+  padding-top: 0 !important;
   font-family: "Open Sans", sans-serif;
 }
 
 .no_hidden_menu {
-  background-position: 18% 50% !important;
+  background-position: 11% 50% !important;
 }
 
 #menu_tab li.nomn,
@@ -4607,59 +4574,6 @@ div#dialog_messages table th:last-child {
 /* jQuery dialog */
 
 /* --- SWITCH --- */
-.toogle_switch {
-  position: relative;
-  display: inline-block;
-  width: 30px;
-  height: 17px;
-}
-
-.p-switch input {
-  opacity: 0;
-  width: 0;
-  height: 0;
-}
-
-.p-slider {
-  position: absolute;
-  cursor: pointer;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: #ccc;
-  -webkit-transition: 0.4s;
-  transition: 0.4s;
-  border-radius: 34px;
-}
-
-.p-slider:before {
-  position: absolute;
-  content: "";
-  height: 13px;
-  width: 13px;
-  left: 2px;
-  bottom: 2px;
-  background-color: white;
-  -webkit-transition: 0.4s;
-  transition: 0.4s;
-  border-radius: 50%;
-}
-
-input:checked + .p-slider {
-  background-color: #82b92e;
-}
-
-input:focus + .p-slider {
-  box-shadow: 0 0 1px #82b92e;
-}
-
-input:checked + .p-slider:before {
-  -webkit-transform: translateX(13px);
-  -ms-transform: translateX(13px);
-  transform: translateX(13px);
-}
-
 .p-switch {
   position: relative;
   display: inline-block;
@@ -4814,7 +4728,6 @@ input:checked + .p-slider:before {
   background-color: #82b92e;
   width: 27px;
   height: 27px;
-  background-size: 21px;
   cursor: pointer;
   border-radius: 5px;
 }

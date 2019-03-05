@@ -42,8 +42,6 @@
 }
 .menu li.selected,
 .menu li.not_selected {
-  border: 0px none black; /* borrar?? */
-  border-bottom: 0px none #d4d4d4; /* borrar?? */
   margin: 0;
 }
 
@@ -58,16 +56,11 @@ li:hover ul {
 }
 
 .submenu_text {
-  /* padding: 10.5px; eee */
   margin-left: 0px;
   width: 100%;
   color: #9ca4a6;
   font-family: "Open Sans", sans-serif;
   font-size: 9.4pt;
-}
-
-.menu li.subselected a {
-  background-color: grey !important; /* borrar?? */
 }
 
 .menu a:hover {
@@ -111,14 +104,9 @@ li:hover ul {
   border-left: 1px;
 }
 
-/*.menu li.has_submenu > a > div,*/
-.menu li.has_submenu /*> .SubNoLink*/ {
+.menu li.has_submenu {
   background: url(../../images/arrow.png) no-repeat 95% 50%;
   z-index: 1; /* Positions it on top of the rest */
-}
-
-.is_submenu2 {
-  background-color: #e4e4e4 !important; /* borrar?? */
 }
 
 .menu li.submenu_not_selected a,
@@ -160,9 +148,6 @@ li.sub_subMenu.selected {
   background: url(../../images/op_network.menu_gray.png) no-repeat;
 }
 #icon_oper-agents {
-  border-top-right-radius: 5px; /* borrar?? */
-  border-right-style: solid; /* borrar?? */
-  border-right-width: 0px; /* borrar?? */
   background: url(../../images/op_monitoring.menu_gray.png) no-repeat;
 }
 #icon_oper-events {
@@ -226,7 +211,6 @@ li.sub_subMenu.selected {
   background: url(../../images/links.menu_gray.png) no-repeat;
 }
 #icon_god-um_messages {
-  border-color: #777; /* borrar?? */
   background: url(../../images/um_messages.menu_gray.png) no-repeat;
 }
 
@@ -234,7 +218,6 @@ li.sub_subMenu.selected {
   z-index: 3;
   position: absolute;
   left: -80px;
-  background-color: #aaa; /* borrar?? */
 }
 
 .notification_ball {
@@ -290,99 +273,25 @@ ul li a:hover {
  * ---------------------------------------------------------------------
  */
 
-.menu_icon {
-  /*transition-property: background-color;
-  transition-duration: 0.5s;
-  transition-timing-function: ease-out;
-  -webkit-transition-property: background-color;
-  -webkit-transition-duration: 0.5s;
-  -webkit-transition-timing-function: ease-out;
-  -moz-transition-property: background-color;
-  -moz-transition-duration: 0.5s;
-  -moz-transition-timing-function: ease-out;
-  -o-transition-property: background-color;
-  -o-transition-duration: 0.5s;
-  -o-transition-timing-function: ease-out;*/
-}
-
 .menu_icon:hover {
-  /*transition-property: background-color;
-  transition-duration: 0.5s;
-  transition-timing-function: ease-out;
-  -webkit-transition-property: background-color;
-  -webkit-transition-duration: 0.5s;
-  -webkit-transition-timing-function: ease-out;
-  -moz-transition-property: background-color;
-  -moz-transition-duration: 0.5s;
-  -moz-transition-timing-function: ease-out;
-  -o-transition-property: background-color;
-  -o-transition-duration: 0.5s;
-  -o-transition-timing-function: ease-out;*/
   background-color: #282828 !important;
 }
 .submenu_not_selected:hover {
-  /* transition-property: background-color;
-  transition-duration: 0.5s;
-  transition-timing-function: ease-out;
-  -webkit-transition-property: background-color;
-  -webkit-transition-duration: 0.5s;
-  -webkit-transition-timing-function: ease-out;
-  -moz-transition-property: background-color;
-  -moz-transition-duration: 0.5s;
-  -moz-transition-timing-function: ease-out;
-  -o-transition-property: background-color;
-  -o-transition-duration: 0.5s;
-  -o-transition-timing-function: ease-out;*/
   background-color: #202020 !important;
 }
 .submenu_selected:hover {
   background-color: #202020 !important;
 }
-.sub_subMenu {
-  /*transition-property: background-color;
-  transition-duration: 0.5s;
-  transition-timing-function: ease-out;
-  -webkit-transition-property: background-color;
-  -webkit-transition-duration: 0.5s;
-  -webkit-transition-timing-function: ease-out;
-  -moz-transition-property: background-color;
-  -moz-transition-duration: 0.5s;
-  -moz-transition-timing-function: ease-out;
-  -o-transition-property: background-color;
-  -o-transition-duration: 0.5s;*/
-}
 .sub_subMenu:hover {
-  /* transition-property: background-color;
-  transition-duration: 0.5s;
-  transition-timing-function: ease-out;
-  -webkit-transition-property: background-color;
-  -webkit-transition-duration: 0.5s;
-  -webkit-transition-timing-function: ease-out;
-  -moz-transition-property: background-color;
-  -moz-transition-duration: 0.5s;
-  -moz-transition-timing-function: ease-out;
-  -o-transition-property: background-color;
-  -o-transition-duration: 0.5s;*/
   background-color: #161616 !important;
 }
 
 .menu li.selected {
   box-shadow: inset 4px 0 #80ba27;
 }
-/* creo que no se usan
-.is_submenu2 li {
-	background-color: #ff0000;
-}
 
-.is_submenu2 {
-	background-color: #222222 !important;
-}
-*/
 .operation {
   background-color: #343434 !important;
-  border-top-right-radius: 5px; /* borrar?? */
-  border-right-style: solid; /* borrar?? */
-  border-right-width: 0px; /* borrar?? */
   padding-top: 20px !important;
 }
 
@@ -433,6 +342,9 @@ ul li a:hover {
 .selected#icon_oper-extensions {
   background: url(../../images/extensions.menu_white.png) no-repeat;
 }
+.selected#icon_god-discovery {
+  background: url(../../images/gm_discovery.menu_white.png) no-repeat;
+}
 .selected#icon_god-resources {
   background: url(../../images/gm_resources.menu_white.png) no-repeat;
 }
@@ -465,25 +377,20 @@ ul li a:hover {
 }
 
 #menu_full {
-  /*height: 100%; /*Lo he quitado para que no ocupe todo el alto y fixed */
-  width: 60px; /* It is changed for classic menu (215px)*/
-  position: fixed; /*Fixed: Lo he quitado para que no ocupe todo el alto y fixed */ /*absolute*/
+  width: 60px; /* This is overwritten by the classic menu (215px) */
+  position: fixed;
   z-index: 1;
   top: 0;
   left: 0;
   background-color: #343434;
   border-bottom: solid 3px #343434;
   min-height: 943px;
-  /*padding-bottom: 40px;*/ /*Lo he quitado para que no ocupe todo el alto y fixed */
-  /*overflow-x: hidden;*/
 }
 
 .button_collapse {
   height: 38px;
   background-color: #6c6c6d;
-  /*bottom: 0; /* Lo he quitado para que no ocupe todo el alto y fixed*/
-  /*position: fixed; /*coemntar tb*/
-  width: 60px; /* It is changed for classic menu (215px)*/
+  width: 60px; /* This is overwritten by the classic menu (215px) */
   text-align: center;
   color: #fff;
   cursor: pointer;
@@ -529,6 +436,7 @@ ul li a:hover {
   background-position: center;
 }
 
+/* Menu height: 601px, 720px, 735px */
 @media screen and (max-height: 720px) {
   .menu li,
   .menu li a,
@@ -536,12 +444,7 @@ ul li a:hover {
     min-height: 28px !important;
   }
 }
-/*
-Medidas menu:
-601 verde y rojo
-720 azul
-735 normal
-*/
+
 @media screen and (max-height: 735px) {
   .operation {
     padding-top: 10px !important;

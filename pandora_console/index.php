@@ -1023,23 +1023,12 @@ if (get_parameter('login', 0) !== 0) {
 
 // Header
 if ($config['pure'] == 0) {
-    if ($config['classic_menu']) {
-        // ya no existe    BORRAR!!!
-        echo '<div id="container"><div id="head">';
-        include 'general/header.php';
-        echo '</div><div id="menu">';
-        include 'general/main_menu.php';
-        echo '</div>';
-        echo '<button onclick="topFunction()" id="top_btn" title="Go to top"></button>';
-        echo '<div id="page">';
-    } else {
-        echo '<div id="container"><div id="head">';
-        include 'general/header.php';
-        echo '</div><div id="page"><div id="menu">';
-        include 'general/main_menu.php';
-        echo '</div>';
-        echo '<button onclick="topFunction()" id="top_btn" title="Go to top"></button>';
-    }
+    echo '<div id="container"><div id="head">';
+    include 'general/header.php';
+    echo '</div><div id="page"><div id="menu">';
+    include 'general/main_menu.php';
+    echo '</div>';
+    echo '<button onclick="topFunction()" id="top_btn" title="Go to top"></button>';
 } else {
     echo '<div id="main_pure">';
     // Require menu only to build structure to use it in ACLs

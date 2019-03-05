@@ -1,15 +1,12 @@
 <?php
 /**
- * @package Include/help/en
+ * @package Include/help/es
  */
 ?>
-<h1> Logo de Cliente (Marca comunitaria de empresa)</h1>
+<h1> Logo (Marca de empresa)</h1>
 
-Esta opción se utiliza para poder desplegar su propio logo en la cabecera de <?php echo get_product_name(); ?>. Puede utilizar cualquier tipo de gráfica en formato PNG. Hay una ancho/alto para cualquier imagen desplegada aquí de 206x47 píxeles.
-
+Esta opción sirve para poder subir su propio logo, que estará visible en el menú de <?php echo get_product_name(); ?>. Este logo será visible cuando el menú esté desplegado.
 <br><br>
-
-Suba su logo de marca de empresa utilizando el directorio /images/custom_logo directory.
-
-
-
+La imagen debe tener el formato PNG y un tamaño de 215x60 pixeles.
+<br><br>
+Debe subir su logo al directorio /images/custom_logo.

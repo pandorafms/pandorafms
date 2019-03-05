@@ -120,17 +120,6 @@ if (enterprise_installed()) {
     $row++;
 }
 
-/*
-    $table_behaviour->data[$row][0] = __('Classic menu mode').ui_print_help_tip(__('Text menu options always visible, don\'t hide'), true);
-    $table_behaviour->data[$row][1] = html_print_checkbox_switch(
-    'classic_menu',
-    1,
-    $config['classic_menu'],
-    true
-    );
-    $row++;
-*/
-
 echo '<fieldset>';
 echo '<legend>'.__('Behaviour configuration').'</legend>';
 html_print_table($table_behaviour);
@@ -278,12 +267,12 @@ function logo_custom_enterprise($name, $logo)
 }
 
 
-$table_styles->data[$row][0] = __('Custom logo (header)').ui_print_help_icon('custom_logo', true);
+$table_styles->data[$row][0] = __('Custom logo (menu)').ui_print_help_icon('custom_logo', true);
 $table_styles->data[$row][1] = logo_custom_enterprise('custom_logo', $config['custom_logo']);
 $table_styles->data[$row][1] .= '&nbsp;'.html_print_button(__('View'), 'custom_logo_preview', $open, '', 'class="sub camera logo_preview"', true, false, $open, 'visualmodal');
 $row++;
 
-$table_styles->data[$row][0] = __('Custom logo collapsed (header)').ui_print_help_icon('custom_logo_collapsed', true);
+$table_styles->data[$row][0] = __('Custom logo collapsed (menu)').ui_print_help_icon('custom_logo_collapsed', true);
 $table_styles->data[$row][1] = logo_custom_enterprise('custom_logo_collapsed', $config['custom_logo_collapsed']);
 $table_styles->data[$row][1] .= '&nbsp;'.html_print_button(__('View'), 'custom_logo_collapsed_preview', $open, '', 'class="sub camera logo_preview"', true, false, $open, 'visualmodal');
 $row++;
@@ -545,16 +534,7 @@ $table_styles->data[$row][1] = html_print_checkbox_switch(
     true
 );
 $row++;
-/*
-    $table_styles->data[$row][0] = __('Fixed menu');
-    $table_styles->data[$row][1] = html_print_checkbox_switch(
-    'fixed_menu',
-    1,
-    $config['fixed_menu'],
-    true
-    );
-    $row++;
-*/
+
 
     // For 5.1 Autohidden menu feature
     $table_styles->data['autohidden'][0] = __('Autohidden menu');

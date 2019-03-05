@@ -1,7 +1,7 @@
 <?php
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -17,6 +17,7 @@ require_once 'include/functions_notifications.php';
 // Check permissions
 // Global errors/warnings checking.
  config_check();
+
 ?>
 
 <div id="header_table"> 
@@ -45,55 +46,6 @@ require_once 'include/functions_notifications.php';
                 }
             }
         }
-
-        /*
-            echo '<div id="alert_messages" style="display: none"></div>';
-
-            if ($config['alert_cnt'] > 0) {
-            $maintenance_link = 'javascript:';
-            $maintenance_title = __('System alerts detected - Please fix as soon as possible');
-            $maintenance_class = $maintenance_id = 'show_systemalert_dialog white';
-
-            $maintenance_link_open_txt = '<a href="'.$maintenance_link.'" title="'.$maintenance_title.'" class="'.$maintenance_class.'" id="show_systemalert_dialog">';
-            $maintenance_link_open_img = '<a href="'.$maintenance_link.'" title="'.$maintenance_title.'" class="'.$maintenance_class.'">';
-            $maintenance_link_close = '</a>';
-            if (!$pandora_management) {
-                $maintenance_img = '';
-            } else {
-                $maintenance_img = $maintenance_link_open_img.html_print_image(
-                    'images/header_alert_gray.png',
-                    true,
-                    [
-                        'title' => __(
-                            'You have %d warning(s)',
-                            $config['alert_cnt']
-                        ),
-                       // 'id'    => 'yougotalert',
-                        'class' => 'bot',
-                    ]
-                ).'<p><span>'.$config['alert_cnt'].'</span></p>'.$maintenance_link_close;
-            }
-            } else {
-            if (!$pandora_management) {
-                $maintenance_img = '';
-            } else {
-                $maintenance_img = html_print_image('images/header_ready_gray.png', true, ['title' => __('There are not warnings'), 'id' => 'yougotalert', 'class' => 'bot']);
-            }
-            }
-
-            $header_alert = '<div id="header_alert">'.$maintenance_img.'</div>';
-        */
-
-        // Messages
-        /*
-            $msg_cnt = messages_get_count($config['id_user']);
-            if ($msg_cnt > 0) {
-            echo '<div id="dialog_messages" style="display: none"></div>';
-
-            $header_message = '<div id="header_message"><a href="ajax.php?page=operation/messages/message_list" title="'.__('Message overview').'" id="show_messages_dialog">';
-            $header_message .= html_print_image('images/header_email.png', true, ['title' => __('You have %d unread message(s)', $msg_cnt), 'id' => 'yougotmail', 'class' => 'bot', 'style' => 'width:24px;']);
-            $header_message .= '<p><span>'.$msg_cnt.'</span></p></a></div>';
-        }*/
 
 
         // Chat messages
@@ -149,63 +101,6 @@ require_once 'include/functions_notifications.php';
         }
 
 
-            // clippy
-        if ($config['tutorial_mode'] !== 'expert' && !$config['disable_help']) {
-            $header_clippy = '<div id="header_clippy"><a href="javascript: show_clippy();">'.html_print_image(
-                'images/clippy_icon_gray.png',
-                true,
-                [
-                    'id'    => 'clippy',
-                    'class' => 'clippy',
-                    'alt'   => __('%s assistant', get_product_name()),
-                    'title' => __(
-                        '%s assistant',
-                        get_product_name()
-                    ),
-                ]
-            ).'</a></div>';
-        }
-
-
-        // Servers check
-        /*
-            $servers = [];
-            $servers['all'] = (int) db_get_value('COUNT(id_server)', 'tserver');
-            $servers['up'] = (int) servers_check_status();
-            $servers['down'] = ($servers['all'] - $servers['up']);
-            if ($servers['up'] == 0) {
-            // All Servers down or no servers at all
-            $servers_check_img = html_print_image('images/header_down_gray.png', true, ['alt' => 'cross', 'class' => 'bot', 'title' => __('All systems').': '.__('Down')]);
-            } else if ($servers['down'] != 0) {
-            // Some servers down
-            $servers_check_img = html_print_image('images/header_warning_gray.png', true, ['alt' => 'error', 'class' => 'bot', 'title' => $servers['down'].' '.__('servers down')]);
-            } else {
-            // All servers up
-            $servers_check_img = html_print_image('images/header_ready_gray.png', true, ['alt' => 'ok', 'class' => 'bot', 'title' => __('All systems').': '.__('Ready')]);
-            }
-
-            unset($servers);
-            // Since this is the header, we don't like to trickle down variables.
-            $servers_link_open = '<a class="white" href="index.php?sec=gservers&amp;sec2=godmode/servers/modificar_server&amp;refr=60">';
-            $servers_link_close = '</a>';
-
-            $header_server = '<div id="header_server">'.$servers_link_open.$servers_check_img.$servers_link_close.'</div>';
-        */
-
-        // Main help icon
-        if (!$config['disable_help']) {
-            $header_help = '<div id="header_help"><a href="#" class="modalpopup" id="helpmodal">'.html_print_image(
-                'images/header_help_gray.png',
-                true,
-                [
-                    'title' => __('Main help'),
-                    'id'    => 'helpmodal',
-                    'class' => 'modalpopup',
-                ]
-            ).'</a></div>';
-        }
-
-
         // ======= Autorefresh code =============================
         $autorefresh_txt = '';
         $autorefresh_additional = '';
@@ -257,6 +152,7 @@ require_once 'include/functions_notifications.php';
                 }
 
                 $autorefresh_link_close = '</a>';
+                $display_counter = 'display:block';
             } else {
                 $autorefresh_img = html_print_image('images/header_refresh_disabled_gray.png', true, ['class' => 'bot autorefresh_disabled', 'alt' => 'lightning', 'title' => __('Disabled autorefresh')]);
 
@@ -265,6 +161,8 @@ require_once 'include/functions_notifications.php';
                 $autorefresh_link_open_img = '';
                 $autorefresh_link_open_txt = '';
                 $autorefresh_link_close = '';
+
+                $display_counter = 'display:none';
             }
         } else {
             $autorefresh_img = html_print_image('images/header_refresh_disabled_gray.png', true, ['class' => 'bot autorefresh_disabled', 'alt' => 'lightning', 'title' => __('Disabled autorefresh')]);
@@ -274,10 +172,12 @@ require_once 'include/functions_notifications.php';
             $autorefresh_link_open_img = '';
             $autorefresh_link_open_txt = '';
             $autorefresh_link_close = '';
+
+            $display_counter = 'display:none';
         }
 
         $header_autorefresh = '<div id="header_autorefresh">'.$autorefresh_link_open_img.$autorefresh_img.$autorefresh_link_close.'</div>';
-        $header_autorefresh_counter = '<div id="header_autorefresh_counter">'.$autorefresh_link_open_txt.$autorefresh_txt.$autorefresh_link_close.$autorefresh_additional.'</div>';
+        $header_autorefresh_counter = '<div id="header_autorefresh_counter" style="'.$display_counter.'">'.$autorefresh_link_open_txt.$autorefresh_txt.$autorefresh_link_close.$autorefresh_additional.'</div>';
 
 
         // qr
@@ -287,7 +187,7 @@ require_once 'include/functions_notifications.php';
             $show_qr_code_header = 'display: inline;';
         }
 
-        $header_qr = '<div id="header_qr"><div style="'.$show_qr_code_header.'" id="qr_code_container"><a href="javascript: show_dialog_qrcode();">'.html_print_image(
+        $header_qr = '<div id="header_qr" style="'.$show_qr_code_header.'"><div id="qr_code_container"><a href="javascript: show_dialog_qrcode();">'.html_print_image(
             'images/qrcode_icon_gray.png',
             true,
             [
@@ -323,19 +223,19 @@ require_once 'include/functions_notifications.php';
         $header_logout .= html_print_image('images/header_logout_gray.png', true, ['alt' => __('Logout'), 'class' => 'bot', 'title' => __('Logout')]);
         $header_logout .= '</a></div>';
 
-
-         // echo '<div class="header_left">'.$header_discovery, $header_alert, $header_message, $header_chat.'</div><div class="header_center">'.$header_searchbar, $header_clippy, $header_help, $header_server, $header_autorefresh, $header_autorefresh_counter, $header_qr.'</div><div class="header_right">'.$header_user, $header_logout.'</div>';
-        echo '<div class="header_left">'.$header_autorefresh, $header_autorefresh_counter, $header_qr, $header_chat.'</div><div class="header_center">'.$header_searchbar, $header_discovery.'</div><div class="header_right">'.$header_user, $header_logout.'</div>';
+        echo '<div class="header_left">'.$header_autorefresh, $header_autorefresh_counter, $header_qr, $header_chat.'</div>
+            <div class="header_center">'.$header_searchbar, $header_discovery.'</div>
+            <div class="header_right">'.$header_user, $header_logout.'</div>';
         ?>
-    </div>    <!--div que cierra #table_header_inner -->        
-</div>    <!--div que cierra #table_header -->
+    </div>    <!-- Closes #table_header_inner -->        
+</div>    <!-- Closes #table_header -->
 
 
 <!-- Notifications content wrapper-->
 <div id='notification-content' style='display:none;' /></div>
 
 <!-- Old style div wrapper -->
-<div id="alert_messages" style="display: none"></div>;
+<div id="alert_messages" style="display: none"></div>
 
 <script type="text/javascript">
     /* <![CDATA[ */
@@ -581,7 +481,6 @@ require_once 'include/functions_notifications.php';
                 ?>
                 $("a.autorefresh_txt").toggle ();
                 $("#combo_refr").toggle ();
-                $("#combo_refr").css('padding-right', '9px');
                 href = $("a.autorefresh").attr ("href");
                 <?php
                 if ($select[0]['time_autorefresh']) {
@@ -623,6 +522,7 @@ require_once 'include/functions_notifications.php';
         <?php
         if ($_GET['refr']) {
             ?>
+            $("#header_autorefresh").css('padding-right', '5px');
             var refr_time = <?php echo (int) get_parameter('refr', 0); ?>;
             var t = new Date();
             t.setTime (t.getTime () +
@@ -643,7 +543,6 @@ require_once 'include/functions_notifications.php';
         $("a.autorefresh").click (function () {
             $("a.autorefresh_txt").toggle ();
             $("#combo_refr").toggle ();
-            $("#combo_refr").css('padding-right', '9px');
             $("select#ref").change (function () {
                 href = $("a.autorefresh").attr ("href");
                 $(document).attr ("location", href + this.value);

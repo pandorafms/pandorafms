@@ -386,8 +386,7 @@ function networkmap_generate_dot(
                 'unknown_count',
                 'total_count',
                 'notinit_count',
-            ],
-            $strict_user
+            ]
         );
     } else {
         $agents = agents_get_agents(
@@ -1641,10 +1640,17 @@ function networkmap_cidr_match($ip, $cidr_mask)
 }
 
 
+/**
+ * Retrieve agent list matching desired network.
+ *
+ * @param string $ip_mask Networks.
+ * @param array  $fields  Extra fields.
+ *
+ * @return array Of agents.
+ */
 function networkmap_get_new_nodes_from_ip_mask(
     $ip_mask,
-    $fields=[],
-    $strict_user=false
+    $fields=[]
 ) {
     $list_ip_masks = explode(',', $ip_mask);
 
@@ -1663,14 +1669,20 @@ function networkmap_get_new_nodes_from_ip_mask(
                     ['id_a' => $address['id_a']]
                 );
 
+                // Orphan address. Ignore.
                 if (empty($id_agent)) {
                     continue;
                 }
 
                 if (empty($fields)) {
-                    $agents[] = db_get_value_filter('id_agent', 'taddress_agent', ['id_a' => $address['id_a']]);
+                    $target_agent = db_get_value_filter('id_agent', 'taddress_agent', ['id_a' => $address['id_a']]);
                 } else {
-                    $agents[] = db_get_row('tagente', 'id_agente', $id_agent, $fields);
+                    $target_agent = db_get_row('tagente', 'id_agente', $id_agent, $fields);
+                }
+
+                // Agent exists. Add to pool.
+                if ($target_agent !== false) {
+                    $agents[$id_agent] = $target_agent;
                 }
             }
         }

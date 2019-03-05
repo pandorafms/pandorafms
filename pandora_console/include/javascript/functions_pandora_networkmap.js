@@ -2571,11 +2571,9 @@ function reset_map_from_form(new_elements) {
     type: "POST",
     url: (action = "ajax.php"),
     success: function(data) {
-      if (!data["error"]) {
-        window.location =
-          "index.php?sec=network&sec2=operation/agentes/pandora_networkmap&tab=view&id_networkmap=" +
-          networkmap_id;
-      }
+      window.location =
+        "index.php?sec=network&sec2=operation/agentes/pandora_networkmap&tab=view&id_networkmap=" +
+        networkmap_id;
     }
   });
 }

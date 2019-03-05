@@ -198,7 +198,7 @@ echo pie_graph(
     200,
     __('Others')
 );
-echo '<div>';
+echo '</div>';
 
 ?>
 <script>

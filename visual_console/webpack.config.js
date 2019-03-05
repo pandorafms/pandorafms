@@ -6,7 +6,7 @@ module.exports = {
   mode: dev ? "development" : "production",
   entry: __dirname + "/src/index.ts", // Start from this file.
   output: {
-    path: __dirname + "/dist", // The files will be created here.
+    path: __dirname + "/build", // The files will be created here.
     filename: dev
       ? "visual-console-client.min.js"
       : "visual-console-client.[hash].min.js",

@@ -1067,7 +1067,7 @@ if ($id_agente) {
         exit;
     }
 
-    $agent = db_get_row('tagente', 'id_agente', $id_agente);
+    $agent = db_get_row('tagente', 'id_agente', $id_agente, false, false);
     if (empty($agent)) {
         // Close out the page
         ui_print_error_message(__('There was a problem loading the agent'));

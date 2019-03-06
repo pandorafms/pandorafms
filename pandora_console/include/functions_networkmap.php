@@ -1636,7 +1636,7 @@ function networkmap_cidr_match($ip, $cidr_mask)
  */
 function networkmap_get_new_nodes_from_ip_mask(
     $ip_mask,
-    $fields=[]
+    $return_ids_only=false
 ) {
     $list_ip_masks = explode(',', $ip_mask);
 
@@ -1671,14 +1671,25 @@ function networkmap_get_new_nodes_from_ip_mask(
         }
     }
 
-    $agents = array_reduce(
-        $agents,
-        function ($carry, $item) {
-            $carry[$item['id_agente']] = $item;
-            return $carry;
-        },
-        []
-    );
+    if ($return_ids_only === false) {
+        $agents = array_reduce(
+            $agents,
+            function ($carry, $item) {
+                $carry[$item['id_agente']] = $item;
+                return $carry;
+            },
+            []
+        );
+    } else {
+        $agents = array_reduce(
+            $agents,
+            function ($carry, $item) {
+                $carry[$item['id_agente']] = $item['id_agente'];
+                return $carry;
+            },
+            []
+        );
+    }
 
     return $agents;
 }

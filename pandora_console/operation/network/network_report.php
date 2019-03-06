@@ -179,6 +179,7 @@ $hidden_main_link = [
     'time_lower'   => $time_lower,
     'date_lower'   => $date_lower,
     'top'          => $top,
+    'action'       => $action,
 ];
 
 if (get_parameter('export_csv')) {

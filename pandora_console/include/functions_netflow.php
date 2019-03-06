@@ -1866,3 +1866,91 @@ function netflow_check_nfdump_binary($nfdump_binary)
 
     return 2;
 }
+
+
+/**
+ * Get the netflow datas to build a netflow explorer data structure.
+ *
+ * @param integer $max        Number of result displayed.
+ * @param string  $top_action Action to do (listeners,talkers,tcp or udp).
+ * @param integer $start_date In utimestamp.
+ * @param integer $end_date   In utimestamp.
+ * @param string  $filter     Ip to filter.
+ *
+ * @return array With data (host, sum_bytes, sum_pkts and sum_flows).
+ */
+function netflow_get_top_summary(
+    $max,
+    $top_action,
+    $start_date,
+    $end_date,
+    $filter=''
+) {
+    global $nfdump_date_format;
+    $netflow_filter = [];
+    $sort = '';
+    switch ($top_action) {
+        case 'listeners':
+            if (empty(!$filter)) {
+                $netflow_filter['ip_src'] = $filter;
+            }
+
+            $sort = 'dstip';
+        break;
+
+        case 'talkers':
+            if (empty(!$filter)) {
+                $netflow_filter['ip_dst'] = $filter;
+            }
+
+            $sort = 'srcip';
+        break;
+
+        case 'tcp':
+            // Todo.
+        break;
+
+        case 'udp':
+            // Todo.
+        break;
+
+        default:
+        return [];
+    }
+
+    $command = netflow_get_command($netflow_filter);
+
+    // Execute nfdump.
+    $command .= " -q -o csv -n $max -s $sort/bytes -t ".date($nfdump_date_format, $start_date).'-'.date($nfdump_date_format, $end_date);
+    exec($command, $result);
+
+    if (! is_array($result)) {
+        return [];
+    }
+
+    // Remove first line (avoiding slow array_shift).
+    $result = array_reverse($result);
+    array_pop($result);
+    $result = array_reverse($result);
+
+    $top_info = [];
+    foreach ($result as $line) {
+        if (empty($line)) {
+            continue;
+        }
+
+        $data = explode(',', $line);
+        if (!isset($data[9])) {
+            continue;
+        }
+
+        $top_info[$data[4]] = [
+            'host'      => $data[4],
+            'sum_bytes' => $data[9],
+            'sum_pkts'  => $data[7],
+            'sum_flows' => $data[5],
+        ];
+    }
+
+    return $top_info;
+}

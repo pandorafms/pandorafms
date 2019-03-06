@@ -147,6 +147,14 @@ if ($is_network) {
         $utimestamp_greater,
         $main_value
     );
+} else {
+    $data = netflow_get_top_summary(
+        $top,
+        $action,
+        $utimestamp_lower,
+        $utimestamp_greater,
+        $main_value
+    );
 }
 
 unset($table);
@@ -226,6 +234,10 @@ foreach ($data as $item) {
         $item['host'],
         array_merge($hidden_main_link, ['main_value' => $item['host']])
     );
+    if (!$is_network) {
+        $row['flows'] = format_for_graph($item['sum_flows'], 2);
+    }
+
     $row['pkts'] = format_for_graph($item['sum_pkts'], 2);
     $row['bytes'] = format_for_graph(
         $item['sum_bytes'],

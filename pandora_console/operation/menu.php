@@ -81,7 +81,7 @@ if (check_acl($config['id_user'], 0, 'AR')) {
             $netflow_sub = array_merge(
                 $netflow_sub,
                 [
-                    'operation/netflow/network_explorer' => [
+                    'operation/netflow/netflow_explorer' => [
                         'text' => __('Netflow explorer'),
                         'id'   => 'Netflow explorer',
                     ],

@@ -5,8 +5,8 @@
 ?>
 <h1>カスタムロゴ</h1>
 
-ここに指定した画像ファイルを、オリジナルロゴとして <?php echo get_product_name(); ?> のヘッダーに表示することができます。
-表示可能な画像ファイルは PNG 形式です。
-画像サイズは、206x47ピクセルに修正されます。
+This option allows uploading your own logo, which will be visible in the <?php echo get_product_name(); ?> menu. This logo will be visible when the menu is expanded.
 <br><br>
-カスタムロゴは、ファイルマネージャを使って /images/custom_logo ディレクトリへアップロードしてください。
+The image must have PNG format and a size of 215x60 pixels.
+<br><br>
+You must upload your logo to the /images/custom_logo directory.

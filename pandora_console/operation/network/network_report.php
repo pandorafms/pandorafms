@@ -204,6 +204,10 @@ if (get_parameter('export_csv')) {
     // Print the data.
     foreach ($data as $row) {
         echo $row['host'].$div;
+        if (isset($row['sum_flows'])) {
+            echo $row['sum_flows'].$div;
+        }
+
         echo $row['sum_pkts'].$div;
         echo $row['sum_bytes'].$nl;
     }

@@ -63,6 +63,16 @@ $sort                 = get_parameter('sort', 'none');
 $id_module             = (int) get_parameter('id_module', 0);
 $ag_custom_fields     = (array) get_parameter('ag_custom_fields', []);
 $module_option = (int) get_parameter('module_option', 1);
+$autosearch = false;
+
+// It is validated if it receives parameters different from those it has by default
+if ($ag_freestring !== '' || $moduletype !== '' || $datatype !== ''
+    || $ag_modulename !== '' || $refr !== 0 || $offset !== 0 || $status !== 4
+    || $modulegroup !== -1 || $tag_filter !== 0 || $sortField !== ''
+    || $sort !== 'none' || $id_module !== 0 || $module_option !== 1
+) {
+    $autosearch = true;
+}
 
 if (!is_metaconsole()) {
     $ag_group = (int) get_parameter('ag_group', 0);
@@ -84,6 +94,7 @@ if ($id_module) {
     $status = -1;
     $ag_modulename = modules_get_agentmodule_name($id_module);
     $ag_freestring = modules_get_agentmodule_agent_alias($id_module);
+    $autosearch = false;
 }
 
 enterprise_hook('open_meta_frame');
@@ -944,23 +955,8 @@ $sql = 'SELECT
 	ORDER BY '.$order['field'].' '.$order['order'].'
 	LIMIT '.$offset.','.$limit_sql;
 
-    $automonitordetail = false;
-    $autovisualconsole = false;
-
-    // It is validated if it receives parameters different from those it has by default
-    $defaulturl = ui_get_full_url();
-if ($defaulturl !== 'http://localhost/pandora_console/index.php?sec=view&sec2=operation/agentes/status_monitor') {
-    $automonitordetail = true;
-}
-
-    $urlvisual = 'http://localhost/pandora_console/index.php?sec=view&sec2=operation/agentes/status_monitor&id_module='.$id_module;
-
-if ($urlvisual !== $defaulturl) {
-         $autovisualconsole = true;
-}
-
-    // We do not show the modules until the user searches with the filter
-if ($automonitordetail && $autovisualconsole) {
+// We do not show the modules until the user searches with the filter
+if ($autosearch) {
     if (! defined('METACONSOLE')) {
         $result = db_get_all_rows_sql($sql);
 

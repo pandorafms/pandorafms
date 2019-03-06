@@ -126,5 +126,23 @@ RUN mkdir -p /opt/phantomjs/bin && cd /opt/phantomjs/bin; \
 	chmod +x phantomjs; \
 	ln -s /opt/phantomjs/bin/phantomjs /usr/bin/;
 
+# Install debugg dependencies.
+RUN yum install -y \
+	php-devel \
+	php-pear \
+	gcc \
+	gcc-c++ \
+	autoconf \
+	automake  && \
+	pecl install Xdebug && \
+	git clone https://github.com/tideways/php-xhprof-extension && \
+	cd php-xhprof-extension && \
+	phpize && \
+	./configure && \
+	make && \
+	make install && \
+	cd .. && \
+	rm -rf php-xhprof-extension
+
 #Exposing ports for: HTTP, SNMP Traps, Tentacle protocol
 EXPOSE 80 162/udp 41121

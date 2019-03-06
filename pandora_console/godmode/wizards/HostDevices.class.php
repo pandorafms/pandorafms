@@ -28,7 +28,9 @@
 
 require_once __DIR__.'/Wizard.main.php';
 require_once $config['homedir'].'/include/functions_users.php';
-enterprise_include('include/class/CSVImportAgents.class.php');
+enterprise_include_once('include/class/CSVImportAgents.class.php');
+enterprise_include_once('include/class/CustomNetScan.class.php');
+enterprise_include_once('include/class/ManageNetScanScripts.class.php');
 enterprise_include_once('include/functions_hostdevices.php');
 
 /**
@@ -117,11 +119,24 @@ class HostDevices extends Wizard
                 'icon'  => 'images/wizard/netscan.png',
                 'label' => __('Net Scan'),
             ];
+
             if (enterprise_installed()) {
                 $buttons[] = [
                     'url'   => $this->url.'&mode=importcsv',
                     'icon'  => ENTERPRISE_DIR.'/images/wizard/csv.png',
                     'label' => __('Import CSV'),
+                ];
+
+                $buttons[] = [
+                    'url'   => $this->url.'&mode=customnetscan',
+                    'icon'  => ENTERPRISE_DIR.'/images/wizard/customnetscan.png',
+                    'label' => __('Custom NetScan'),
+                ];
+
+                $buttons[] = [
+                    'url'   => $this->url.'&mode=managenetscanscripts',
+                    'icon'  => ENTERPRISE_DIR.'/images/wizard/managenetscanscripts.png',
+                    'label' => __('Manage NetScan scripts'),
                 ];
             }
 
@@ -143,9 +158,28 @@ class HostDevices extends Wizard
         }
 
         if (enterprise_installed()) {
-            if ($mode == 'importcsv') {
-                $csv_importer = new CSVImportAgents($this->page, $this->breadcrum);
+            if ($mode === 'importcsv') {
+                $csv_importer = new CSVImportAgents(
+                    $this->page,
+                    $this->breadcrum
+                );
                 return $csv_importer->runCSV();
+            }
+
+            if ($mode === 'customnetscan') {
+                $customnetscan_importer = new CustomNetScan(
+                    $this->page,
+                    $this->breadcrum
+                );
+                return $customnetscan_importer->runCustomNetScan();
+            }
+
+            if ($mode === 'managenetscanscripts') {
+                $managenetscanscript_importer = new ManageNetScanScripts(
+                    $this->page,
+                    $this->breadcrum
+                );
+                return $managenetscanscript_importer->runManageNetScanScript();
             }
         }
 

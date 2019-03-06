@@ -572,14 +572,18 @@ class Wizard
     {
         $output = '';
         if ($input['hidden'] == 1) {
-            $class = ' class="hidden"';
+            $class = ' hidden';
         } else {
             $class = '';
         }
 
+        if (isset($input['class']) === true) {
+            $class = $input['class'].$class;
+        }
+
         if (is_array($input['block_content']) === true) {
             // Print independent block of inputs.
-            $output .= '<li id="'.$input['block_id'].'" '.$class.'>';
+            $output .= '<li id="'.$input['block_id'].'" class="'.$class.'">';
             $output .= '<ul class="wizard">';
             foreach ($input['block_content'] as $input) {
                 $output .= $this->printBlock($input, $return);
@@ -588,7 +592,7 @@ class Wizard
             $output .= '</ul></li>';
         } else {
             if ($input['arguments']['type'] != 'hidden') {
-                $output .= '<li id="'.$input['id'].'" '.$class.'>';
+                $output .= '<li id="'.$input['id'].'" class="'.$class.'">';
                 $output .= '<label>'.$input['label'].'</label>';
                 $output .= $this->printInput($input['arguments']);
                 // Allow dynamic content.

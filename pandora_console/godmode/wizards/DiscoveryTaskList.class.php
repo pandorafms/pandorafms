@@ -584,7 +584,11 @@ class DiscoveryTaskList extends Wizard
             return 'wiz=ctask';
 
             default:
-            return 'wiz=hd&mode=netscan';
+                if ($task['id_recon_script'] === null) {
+                    return 'wiz=hd&mode=netscan';
+                } else {
+                    return 'wiz=hd&mode=customnetscan';
+                }
         }
     }
 

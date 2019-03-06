@@ -1204,12 +1204,17 @@ class ConsoleSupervisor
         $php_version_array = explode('.', $php_version);
 
         if ($PHPsafe_mode === '1') {
+            $url = 'http://php.net/manual/en/features.safe-mode.php';
+            if ($config['language'] == 'es') {
+                $url = 'http://php.net/manual/es/features.safe-mode.php';
+            }
+
             $this->notify(
                 [
                     'type'    => 'NOTIF.PHP.SAFE_MODE',
                     'title'   => __('PHP safe mode is enabled. Some features may not work properly'),
                     'message' => __('To disable it, go to your PHP configuration file (php.ini) and put safe_mode = Off (Do not forget to restart apache process after changes)'),
-                    'url'     => 'index.php',
+                    'url'     => $url,
                 ]
             );
         } else {
@@ -1217,6 +1222,11 @@ class ConsoleSupervisor
         }
 
         if ($PHPmax_input_time !== '-1') {
+            $url = 'http://php.net/manual/en/info.configuration.php#ini.max-input-time';
+            if ($config['language'] == 'es') {
+                $url = 'http://php.net/manual/es/info.configuration.php#ini.max-input-time';
+            }
+
             $this->notify(
                 [
                     'type'    => 'NOTIF.PHP.INPUT_TIME',
@@ -1228,7 +1238,7 @@ class ConsoleSupervisor
                         __('Recommended value is %s'),
                         '-1 ('.__('Unlimited').')'
                     ).'<br><br>'.__('Please, change it on your PHP configuration file (php.ini) or contact with administrator (Do not forget to restart Apache process after)'),
-                    'url'     => 'index.php',
+                    'url'     => $url,
                 ]
             );
         } else {
@@ -1236,6 +1246,11 @@ class ConsoleSupervisor
         }
 
         if ($PHPmax_execution_time !== '0') {
+            $url = 'http://php.net/manual/en/info.configuration.php#ini.max-execution-time';
+            if ($config['language'] == 'es') {
+                $url = 'http://php.net/manual/es/info.configuration.php#ini.max-execution-time';
+            }
+
             $this->notify(
                 [
                     'type'    => 'NOTIF.PHP.EXECUTION_TIME',
@@ -1247,7 +1262,7 @@ class ConsoleSupervisor
                         __('Recommended value is: %s'),
                         '0 ('.__('Unlimited').')'
                     ).'<br><br>'.__('Please, change it on your PHP configuration file (php.ini) or contact with administrator (Dont forget restart apache process after changes)'),
-                    'url'     => 'index.php',
+                    'url'     => $url,
                 ]
             );
         } else {
@@ -1255,6 +1270,11 @@ class ConsoleSupervisor
         }
 
         if ($PHPupload_max_filesize < $PHPupload_max_filesize_min) {
+            $url = 'http://php.net/manual/en/ini.core.php#ini.upload-max-filesize';
+            if ($config['language'] == 'es') {
+                $url = 'http://php.net/manual/es/ini.core.php#ini.upload-max-filesize';
+            }
+
             $this->notify(
                 [
                     'type'    => 'NOTIF.PHP.UPLOAD_MAX_FILESIZE',
@@ -1266,7 +1286,7 @@ class ConsoleSupervisor
                         __('Recommended value is: %s'),
                         sprintf(__('%s or greater'), '800M')
                     ).'<br><br>'.__('Please, change it on your PHP configuration file (php.ini) or contact with administrator (Dont forget restart apache process after changes)'),
-                    'url'     => 'index.php',
+                    'url'     => $url,
                 ]
             );
         } else {
@@ -1274,6 +1294,11 @@ class ConsoleSupervisor
         }
 
         if ($PHPmemory_limit < $PHPmemory_limit_min && $PHPmemory_limit !== '-1') {
+            $url = 'http://php.net/manual/en/ini.core.php#ini.memory-limit';
+            if ($config['language'] == 'es') {
+                $url = 'http://php.net/manual/es/ini.core.php#ini.memory-limit';
+            }
+
             $this->notify(
                 [
                     'type'    => 'NOTIF.PHP.MEMORY_LIMIT',
@@ -1285,7 +1310,7 @@ class ConsoleSupervisor
                         __('Recommended value is: %s'),
                         sprintf(__('%s or greater'), '500M')
                     ).'<br><br>'.__('Please, change it on your PHP configuration file (php.ini) or contact with administrator'),
-                    'url'     => 'index.php',
+                    'url'     => $url,
                 ]
             );
         } else {
@@ -1293,12 +1318,17 @@ class ConsoleSupervisor
         }
 
         if (preg_match('/system/', $PHPdisable_functions) || preg_match('/exec/', $PHPdisable_functions)) {
+            $url = 'http://php.net/manual/en/ini.core.php#ini.disable-functions';
+            if ($config['language'] == 'es') {
+                $url = 'http://php.net/manual/es/ini.core.php#ini.disable-functions';
+            }
+
             $this->notify(
                 [
                     'type'    => 'NOTIF.PHP.DISABLE_FUNCTIONS',
                     'title'   => __('Problems with disable_functions in php.ini'),
                     'message' => __('The variable disable_functions contains functions system() or exec() in PHP configuration file (php.ini)').'<br /><br />'.__('Please, change it on your PHP configuration file (php.ini) or contact with administrator (Dont forget restart apache process after changes)'),
-                    'url'     => 'index.php',
+                    'url'     => $url,
                 ]
             );
         } else {
@@ -2090,7 +2120,7 @@ class ConsoleSupervisor
                         'There is one or more minor releases available. <a style="font-size:8pt;font-style:italic;" target="blank" href="%s">.About minor release update</a>.',
                         $url
                     ),
-                    'url'     => $url,
+                    'url'     => 'index.php?sec=messages&sec2=godmode/update_manager/update_manager&tab=online',
                 ]
             );
         } else {
@@ -2139,7 +2169,7 @@ class ConsoleSupervisor
                     'type'    => 'NOTIF.CRON.CONFIGURED',
                     'title'   => __('DiscoveryConsoleTasks is not configured.'),
                     'message' => __($message_conf_cron),
-                    'url'     => 'index.php?extension_in_menu=gservers&sec=extensions&sec2=enterprise/extensions/cron',
+                    'url'     => 'index.php?sec=gservers&sec2=godmode/servers/discovery&wiz=tasklist',
                 ]
             );
         } else {

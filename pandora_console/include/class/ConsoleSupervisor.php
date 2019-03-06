@@ -962,10 +962,12 @@ class ConsoleSupervisor
     {
         global $config;
 
+        include_once $config['homedir'].'/include/functions_servers.php';
+
         $idx_file = $config['attachment_store'].'/.cron.supervisor.servers.idx';
 
         $MAX_QUEUE = 1500;
-        $MAX_GROWN = 50;
+        $total_modules = servers_get_total_modules();
 
         $queue_state = [];
         $previous = [];
@@ -988,6 +990,13 @@ class ConsoleSupervisor
                 $key = $queue['id_server'];
                 $type = $queue['server_type'];
                 $new_data[$key] = $queue['queued_modules'];
+                $max_grown = 0;
+
+                if (is_array($total_modules)
+                    && isset($total_modules[$queue['server_type']])
+                ) {
+                    $max_grown = ($total_modules[$queue['server_type']] * 0.40);
+                }
 
                 // Compare queue increments in a not over 900 seconds.
                 if (empty($previous[$key]['modules'])
@@ -998,9 +1007,9 @@ class ConsoleSupervisor
 
                 $modules_queued = ($queue['queued_modules'] - $previous[$key]['modules']);
 
-                // 50 Modules queued since last check. Or more than 1500 queued.
-                if ($modules_queued > $MAX_GROWN
-                    || $queue['queued_modules'] > $MAX_QUEUE
+                // 40% Modules queued since last check. If any.
+                if ($max_grown > 0
+                    && $modules_queued > $max_grown
                 ) {
                     $msg = 'Queue has grown %d modules. Total %d';
                     if ($modules_queued <= 0) {

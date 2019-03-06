@@ -4411,7 +4411,7 @@ div#dialog_messages table th:last-child {
 
 div#header_discovery {
   border-radius: 50%;
-  box-shadow: 0 0 5px 1px #949494;
+  box-shadow: 0 0 15px 0px #949494;
   width: 9px;
   font-weight: bold;
   color: #fff;

@@ -1,6 +1,8 @@
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const path = require("path");
 // eslint-disable-next-line @typescript-eslint/no-var-requires
+const CleanWebpackPlugin = require("clean-webpack-plugin");
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
 const dev = process.env.NODE_ENV !== "production";
@@ -79,6 +81,9 @@ module.exports = {
     ]
   },
   plugins: [
+    // This plugin will remove all files inside Webpack's output.path directory,
+    // as well as all unused webpack assets after every successful rebuild.
+    new CleanWebpackPlugin(),
     // Options for the plugin which extract the CSS files to build a main file.
     new MiniCssExtractPlugin({
       // Options similar to the same options in webpackOptions.output

@@ -233,12 +233,20 @@ if (!empty($main_value)) {
 // Print the data and build the chart.
 $table->data = [];
 $chart_data = [];
+$hide_filter = !empty($main_value) && ($action === 'udp' || $action === 'tcp');
 foreach ($data as $item) {
     $row = [];
-    $row['main'] = html_print_link_with_params(
-        $item['host'],
-        array_merge($hidden_main_link, ['main_value' => $item['host']])
-    );
+    $row['main'] = '<div class="div-v-centered">';
+    $row['main'] .= $item['host'];
+    if (!$hide_filter) {
+        $row['main'] .= html_print_link_with_params(
+            'images/filter.png',
+            array_merge($hidden_main_link, ['main_value' => $item['host']]),
+            'image'
+        );
+    }
+
+    $row['main'] .= '</div>';
     if (!$is_network) {
         $row['flows'] = format_for_graph($item['sum_flows'], 2);
     }

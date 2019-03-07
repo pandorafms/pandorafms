@@ -4172,6 +4172,11 @@ form ul.form_flex li ul li {
   text-align: center;
 }
 
+.div-v-centered {
+  display: flex;
+  align-items: center;
+}
+
 .pandora_upper {
   text-transform: uppercase;
 }

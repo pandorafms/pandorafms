@@ -1907,11 +1907,19 @@ function netflow_get_top_summary(
         break;
 
         case 'tcp':
-            // Todo.
-        break;
-
         case 'udp':
-            // Todo.
+            $netflow_filter['proto'] = $top_action;
+            $sort = 'port';
+            if (empty(!$filter)) {
+                $netflow_filter['advanced_filter'] = sprintf(
+                    '((dst port %s) or (src port %s)) and (proto %s)',
+                    $filter,
+                    $filter,
+                    $top_action
+                );
+                // Display ips when filter is set in port.
+                $sort = 'ip';
+            }
         break;
 
         default:

@@ -249,9 +249,14 @@ foreach ($data as $item) {
     $row['main'] .= '</div>';
     if (!$is_network) {
         $row['flows'] = format_for_graph($item['sum_flows'], 2);
+        $row['flows'] .= ' ('.$item['pct_flows'].'%)';
     }
 
     $row['pkts'] = format_for_graph($item['sum_pkts'], 2);
+    if (!$is_network) {
+        $row['pkts'] .= ' ('.$item['pct_pkts'].'%)';
+    }
+
     $row['bytes'] = format_for_graph(
         $item['sum_bytes'],
         2,
@@ -260,6 +265,10 @@ foreach ($data as $item) {
         1024,
         'B'
     );
+    if (!$is_network) {
+        $row['bytes'] .= ' ('.$item['pct_bytes'].'%)';
+    }
+
     $table->data[] = $row;
 
     // Build the pie graph data structure.

@@ -1199,13 +1199,13 @@ ALTER TABLE titem MODIFY `source_data` int(10) unsigned;
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('big_operation_step_datos_purge', '100');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('small_operation_step_datos_purge', '1000');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('days_autodisable_deletion', '30');
-INSERT INTO `tconfig` (`token`, `value`) VALUES ('MR', 24);
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('MR', 25);
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('custom_docs_logo', 'default_docs.png');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('custom_support_logo', 'default_support.png');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('custom_logo_white_bg_preview', 'pandora_logo_head_white_bg.png');
 UPDATE tconfig SET value = 'https://licensing.artica.es/pandoraupdate7/server.php' WHERE token='url_update_manager';
 DELETE FROM `tconfig` WHERE `token` = 'current_package_enterprise';
-INSERT INTO `tconfig` (`token`, `value`) VALUES ('current_package_enterprise', '731');
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('current_package_enterprise', '732');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('status_monitor_fields', 'policy,agent,data_type,module_name,server_type,interval,status,graph,warn,data,timestamp');
 
 -- ---------------------------------------------------------------------
@@ -1900,14 +1900,16 @@ CREATE TABLE IF NOT EXISTS `tevent_extended` (
 -- -----------------------------------------------------
 -- Table `tgis_map_layer_groups`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `tgis_map_layer_groups` (
-	`layer_id` INT NOT NULL,
-	`group_id` MEDIUMINT(4) UNSIGNED NOT NULL,
-	`agent_id` INT(10) UNSIGNED NOT NULL COMMENT 'Used to link the position to the group',
-	PRIMARY KEY (`layer_id`, `group_id`),
-	FOREIGN KEY (`layer_id`) REFERENCES `tgis_map_layer` (`id_tmap_layer`) ON DELETE CASCADE,
-	FOREIGN KEY (`group_id`) REFERENCES `tgrupo` (`id_grupo`) ON DELETE CASCADE,
-	FOREIGN KEY (`agent_id`) REFERENCES `tagente` (`id_agente`) ON DELETE CASCADE
+CREATE TABLE `tgis_map_layer_groups` (
+  `layer_id` int(11) NOT NULL,
+  `group_id` mediumint(4) unsigned NOT NULL,
+  `agent_id` int(10) unsigned NOT NULL COMMENT 'Used to link the position to the group',
+  PRIMARY KEY (`layer_id`,`group_id`),
+  KEY `group_id` (`group_id`),
+  KEY `agent_id` (`agent_id`),
+  CONSTRAINT `tgis_map_layer_groups_ibfk_1` FOREIGN KEY (`layer_id`) REFERENCES `tgis_map_layer` (`id_tmap_layer`) ON DELETE CASCADE,
+  CONSTRAINT `tgis_map_layer_groups_ibfk_2` FOREIGN KEY (`group_id`) REFERENCES `tgrupo` (`id_grupo`) ON DELETE CASCADE,
+  CONSTRAINT `tgis_map_layer_groups_ibfk_3` FOREIGN KEY (`agent_id`) REFERENCES `tagente` (`id_agente`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- -----------------------------------------------------

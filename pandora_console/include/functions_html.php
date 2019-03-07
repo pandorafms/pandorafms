@@ -20,19 +20,19 @@
 if (!isset($config)) {
     $working_dir = getcwd();
     $working_dir = str_replace('\\', '/', $working_dir);
-    // Windows compatibility
+    // Windows compatibility.
     $levels = substr_count($working_dir, '/');
 
     for ($i = 0; $i < $levels; $i++) {
         if (file_exists(str_repeat('../', $i).'config.php')) {
             include_once str_repeat('../', $i).'config.php';
             break;
-            // Skip config.php loading after load the first one
+            // Skip config.php loading after load the first one.
         } else if (file_exists(str_repeat('../', $i).'include/config.php')) {
             // For path from the enterprise structure dirs.
             include_once str_repeat('../', $i).'include/config.php';
             break;
-            // Skip config.php loading after load the first one
+            // Skip config.php loading after load the first one.
         }
     }
 } else {
@@ -2307,7 +2307,7 @@ function html_print_checkbox($name, $value, $checked=false, $return=false, $disa
 
 
 /**
- * Render a checkbox button input toogle switch type. Extended version, use html_print_checkbox_toogle_switch() to simplify.
+ * Render a checkbox button input switch type. Extended version, use html_print_checkbox_switch() to simplify.
  *
  * @param string Input name.
  * @param string Input value.
@@ -2321,7 +2321,7 @@ function html_print_checkbox($name, $value, $checked=false, $return=false, $disa
  */
 
 
-function html_print_checkbox_toogle_switch_extended($name, $value, $checked, $disabled, $script, $attributes, $return=false, $id='')
+function html_print_checkbox_switch_extended($name, $value, $checked, $disabled, $script, $attributes, $return=false, $id='')
 {
     static $idcounter = [];
 
@@ -2334,7 +2334,7 @@ function html_print_checkbox_toogle_switch_extended($name, $value, $checked, $di
 
     $id_aux = preg_replace('/[^a-z0-9\:\;\-\_]/i', '', $name.($idcounter[$name] ? $idcounter[$name] : ''));
 
-    $output = '<label class="toogle_switch"><input name="'.$name.'" type="checkbox" value="'.$value.'" '.($checked ? 'checked="checked"' : '');
+    $output = '<label class="p-switch"><input name="'.$name.'" type="checkbox" value="'.$value.'" '.($checked ? 'checked="checked"' : '');
     if ($id == '') {
         $output .= ' id="checkbox-'.$id_aux.'"';
     } else {
@@ -2350,7 +2350,7 @@ function html_print_checkbox_toogle_switch_extended($name, $value, $checked, $di
     }
 
     $output .= ' '.$attributes;
-    $output .= ' /><span class="slider"></span></label>';
+    $output .= ' /><span class="p-slider"></span></label>';
     $output .= "\n";
 
     if ($return === false) {
@@ -2362,7 +2362,7 @@ function html_print_checkbox_toogle_switch_extended($name, $value, $checked, $di
 
 
 /**
- * Render a checkbox button input toogle switch type.
+ * Render a checkbox button input  switch type.
  *
  * @param string Input name.
  * @param string Input value.
@@ -2374,9 +2374,9 @@ function html_print_checkbox_toogle_switch_extended($name, $value, $checked, $di
  */
 
 
-function html_print_checkbox_toogle_switch($name, $value, $checked=false, $return=false, $disabled=false, $script='', $disabled_hidden=false)
+function html_print_checkbox_switch($name, $value, $checked=false, $return=false, $disabled=false, $script='', $disabled_hidden=false)
 {
-    $output = html_print_checkbox_toogle_switch_extended($name, $value, (bool) $checked, $disabled, $script, '', true);
+    $output = html_print_checkbox_switch_extended($name, $value, (bool) $checked, $disabled, $script, '', true);
     if (!$disabled_hidden) {
         $output .= html_print_input_hidden($name.'_sent', 1, true);
     }
@@ -3114,4 +3114,3 @@ function html_print_switch($attributes=[])
 			<span class='p-slider'></span>
 		</label>";
 }
-

@@ -1929,7 +1929,7 @@ function netflow_get_top_summary(
     $command = netflow_get_command($netflow_filter);
 
     // Execute nfdump.
-    $command .= " -o csv -n $max -s $sort/bytes -t ".date($nfdump_date_format, $start_date).'-'.date($nfdump_date_format, $end_date);
+    $command .= " -q -o csv -n $max -s $sort/bytes -t ".date($nfdump_date_format, $start_date).'-'.date($nfdump_date_format, $end_date);
     exec($command, $result);
 
     if (! is_array($result)) {
@@ -1940,11 +1940,6 @@ function netflow_get_top_summary(
     $result = array_reverse($result);
     array_pop($result);
     $result = array_reverse($result);
-    // Get the globals.
-    $globals = explode(',', array_pop($result));
-    // Remove globals header.
-    array_pop($result);
-    array_pop($result);
 
     $top_info = [];
     foreach ($result as $line) {
@@ -1957,14 +1952,14 @@ function netflow_get_top_summary(
             continue;
         }
 
-        $top_info[$data[4]] = [
+        $top_info[(string) $data[4]] = [
             'host'      => $data[4],
             'sum_bytes' => $data[9],
             'sum_pkts'  => $data[7],
             'sum_flows' => $data[5],
-            'pct_bytes' => number_format((($data[9] / $globals[1]) * 100), 2),
-            'pct_pkts'  => number_format((($data[7] / $globals[2]) * 100), 2),
-            'pct_flows' => number_format((($data[5] / $globals[0]) * 100), 2),
+            'pct_bytes' => $data[10],
+            'pct_pkts'  => $data[8],
+            'pct_flows' => $data[6],
         ];
     }
 

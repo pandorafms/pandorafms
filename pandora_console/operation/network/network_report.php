@@ -48,6 +48,10 @@ if (!$is_period) {
 
 $top = (int) get_parameter('top', 10);
 $main_value = ((bool) get_parameter('remove_filter', 0)) ? '' : get_parameter('main_value', '');
+if (is_numeric($main_value) && !in_array($action, ['udp', 'tcp'])) {
+    $main_value = '';
+}
+
 $style_end = ($is_period) ? 'display: none;' : '';
 $style_period = ($is_period) ? '' : 'display: none;';
 
@@ -219,7 +223,7 @@ if (get_parameter('export_csv')) {
 // Print the filter remove link.
 if (!empty($main_value)) {
     echo html_print_link_with_params(
-        __('Filtered by IP %s. Click here to remove the filter.', $main_value),
+        in_array($action, ['udp', 'tcp']) ? __('Filtered by port %s. Click here to remove the filter.', $main_value) : __('Filtered by IP %s. Click here to remove the filter.', $main_value),
         array_merge(
             $hidden_main_link,
             [

@@ -518,7 +518,7 @@ function html_print_select(
     $selected='',
     $script='',
     $nothing='',
-    $nothing_value=0,
+    $nothing_value=none,
     $return=false,
     $multiple=false,
     $sort=true,
@@ -623,8 +623,6 @@ function html_print_select(
                 $output .= 'selected ';
             }
 
-            $output .= 'value="'.$value.'"';
-
             if (is_array($selected) && in_array($value, $selected)) {
                 $output .= ' selected="selected"';
             } else if (is_numeric($value) && is_numeric($selected)
@@ -644,7 +642,7 @@ function html_print_select(
             }
 
             if ($optlabel === '') {
-                $output .= '>'.$value.'</option>';
+                $output .= '>None</option>';
             } else {
                 $output .= '>'.$optlabel.'</option>';
             }

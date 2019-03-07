@@ -96,13 +96,13 @@ $table->data['0']['2'] .= html_print_checkbox(
     'network_report_click_period(event)'
 );
 
-$table->data['1']['0'] = __('Start date').'&nbsp;&nbsp;';
+$table->data['1']['0'] = __('End date').'&nbsp;&nbsp;';
 $table->data['1']['0'] .= html_print_input_text('date_greater', $date_greater, '', 10, 7, true);
 $table->data['1']['0'] .= '&nbsp;&nbsp;';
 $table->data['1']['0'] .= html_print_input_text('time_greater', $time_greater, '', 7, 8, true);
 
 $table->data['1']['1'] = '<div id="end_date_container" style="'.$style_end.'">';
-$table->data['1']['1'] .= __('End date').'&nbsp;&nbsp;';
+$table->data['1']['1'] .= __('Start date').'&nbsp;&nbsp;';
 $table->data['1']['1'] .= html_print_input_text('date_lower', $date_lower, '', 10, 7, true);
 $table->data['1']['1'] .= '&nbsp;&nbsp;';
 $table->data['1']['1'] .= html_print_input_text('time_lower', $time_lower, '', 7, 8, true);

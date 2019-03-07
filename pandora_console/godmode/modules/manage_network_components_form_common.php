@@ -216,7 +216,7 @@ $table->data[5][1] .= html_print_input_text(
     $max_critical,
     '',
     5,
-    1024,
+    15,
     true
 ).'</span>';
 $table->data[5][1] .= '<span id="string_critical"><em>'.__('Str.').' </em>&nbsp;';
@@ -225,7 +225,7 @@ $table->data[5][1] .= html_print_input_text(
     $str_critical,
     '',
     5,
-    64,
+    1024,
     true
 ).'</span>';
 $table->data[5][1] .= '<br /><em>'.__('Inverse interval').'</em>';

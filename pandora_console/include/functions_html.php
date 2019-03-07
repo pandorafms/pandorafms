@@ -518,7 +518,7 @@ function html_print_select(
     $selected='',
     $script='',
     $nothing='',
-    $nothing_value=none,
+    $nothing_value=0,
     $return=false,
     $multiple=false,
     $sort=true,
@@ -622,6 +622,8 @@ function html_print_select(
             if ($select_all) {
                 $output .= 'selected ';
             }
+
+            $output .= 'value="'.$value.'"';
 
             if (is_array($selected) && in_array($value, $selected)) {
                 $output .= ' selected="selected"';

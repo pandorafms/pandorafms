@@ -1,16 +1,24 @@
 // eslint-disable-next-line @typescript-eslint/no-var-requires
+const path = require("path");
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+
 const dev = process.env.NODE_ENV !== "production";
+const entry = path.join(__dirname, "src", "index.ts");
+const buildPath = path.join(
+  __dirname,
+  "..",
+  process.env.BUILD_PATH && process.env.BUILD_PATH.length > 0
+    ? process.env.BUILD_PATH
+    : "build"
+);
 
 module.exports = {
   mode: dev ? "development" : "production",
-  entry: __dirname + "/src/index.ts", // Start from this file.
+  entry, // Start from this file.
   output: {
-    path: __dirname + "/build", // The files will be created here.
-    filename: dev
-      ? "visual-console-client.min.js"
-      : "visual-console-client.[hash].min.js",
-    publicPath: dev ? "" : "pandora_console/include/visual_console/"
+    path: buildPath, // The files will be created here.
+    filename: dev ? "vc.[name].min.js" : "vc.[name].[chunkhash:8].min.js"
   },
   devtool: "source-map",
   resolve: {
@@ -64,7 +72,8 @@ module.exports = {
         test: /\.(png|jpg|gif|svg|eot|ttf|woff|woff2)$/,
         loader: "url-loader",
         options: {
-          limit: 10000
+          limit: 10000,
+          name: "[name].[hash:8].[ext]"
         }
       }
     ]
@@ -74,9 +83,7 @@ module.exports = {
     new MiniCssExtractPlugin({
       // Options similar to the same options in webpackOptions.output
       // both options are optional
-      filename: dev
-        ? "visual-console-client.css"
-        : "visual-console-client.[hash].css",
+      filename: dev ? "vc.[name].css" : "vc.[name].[contenthash:8].css",
       // Disable to remove warnings about conflicting order between imports.
       orderWarning: true
     })

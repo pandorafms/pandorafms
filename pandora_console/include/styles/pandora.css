@@ -4177,6 +4177,13 @@ form ul.form_flex li ul li {
   align-items: center;
 }
 
+.div-v-centered > form > input[type="image"] {
+  margin: 0;
+  padding: 0;
+  width: 14px;
+  padding-left: 5px;
+}
+
 .pandora_upper {
   text-transform: uppercase;
 }

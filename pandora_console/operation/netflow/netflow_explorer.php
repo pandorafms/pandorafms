@@ -37,4 +37,6 @@ $is_network = false;
 
 ui_print_page_header(__('Netflow explorer'));
 
-require $config['homedir'].'/operation/network/network_report.php';
+if (netflow_print_check_version_error()) {
+    include $config['homedir'].'/operation/network/network_report.php';
+}

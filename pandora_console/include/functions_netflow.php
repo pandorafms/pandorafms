@@ -1962,3 +1962,32 @@ function netflow_get_top_summary(
 
     return $top_info;
 }
+
+
+/**
+ * Check the netflow version and print an error message if there is not correct.
+ *
+ * @return boolean True if version check is correct.
+ */
+function netflow_print_check_version_error()
+{
+    global $config;
+
+    switch (netflow_check_nfdump_binary($config['netflow_nfdump'])) {
+        case 0:
+        return true;
+
+        case 1:
+            ui_print_error_message(
+                __('nfdump binary (%s) not found!', $config['netflow_nfdump'])
+            );
+        return false;
+
+        case 2:
+        default:
+            ui_print_error_message(
+                __('Make sure nfdump version 1.6.8 or newer is installed!')
+            );
+        return false;
+    }
+}

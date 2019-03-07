@@ -1,51 +1,65 @@
 <?php
+/**
+ * Deprectated.
+ *
+ * @category   Extensions
+ * @package    Pandora FMS
+ * @subpackage VMware
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
+/*
+    global $config;
 
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2012 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation for version 2.
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-// Load global vars
-global $config;
+    check_login();
 
-check_login();
-
-if (! check_acl($config['id_user'], 0, 'PM')) {
+    if (! check_acl($config['id_user'], 0, 'PM')) {
     db_pandora_audit(
         'ACL Violation',
         'Trying to access Recon Task Management'
     );
     include 'general/noaccess.php';
     exit;
-}
+    }
 
-require_once $config['homedir'].'/include/functions_network_profiles.php';
+    require_once $config['homedir'].'/include/functions_network_profiles.php';
 
-if (check_acl($config['id_user'], 0, 'AW')) {
+    if (check_acl($config['id_user'], 0, 'AW')) {
     $options[]['text'] = "<a href='index.php?sec=estado&sec2=operation/servers/recon_view'>".html_print_image('images/operation.png', true, ['title' => __('View')]).'</a>';
-}
+    }
 
-$user_groups_w = users_get_groups(false, 'PM', true, false, null, 'id_grupo');
-$user_groups_w = array_keys($user_groups_w);
+    $user_groups_w = users_get_groups(false, 'PM', true, false, null, 'id_grupo');
+    $user_groups_w = array_keys($user_groups_w);
 
-$user_groups_r = users_get_groups(false, 'AW', true, false, null, 'id_grupo');
-$user_groups_r = array_keys($user_groups_r);
+    $user_groups_r = users_get_groups(false, 'AW', true, false, null, 'id_grupo');
+    $user_groups_r = array_keys($user_groups_r);
 
-// Headers
-// ui_print_page_header (__('Manage recontask'), "images/gm_servers.png", false, "", true);
-ui_print_page_header(__('Manage recontask'), 'images/gm_servers.png', false, '', true, $options);
+    // Headers
+    // ui_print_page_header (__('Manage recontask'), "images/gm_servers.png", false, "", true);
+    ui_print_page_header(__('Manage recontask'), 'images/gm_servers.png', false, '', true, $options);
 
 
-// --------------------------------
-// DELETE A RECON TASKs
-// --------------------------------
-if (isset($_GET['delete'])) {
+    // --------------------------------
+    // DELETE A RECON TASKs
+    // --------------------------------
+    if (isset($_GET['delete'])) {
     $id = get_parameter_get('delete');
 
     $result = db_process_sql_delete('trecon_task', ['id_rt' => $id]);
@@ -55,7 +69,7 @@ if (isset($_GET['delete'])) {
     } else {
         ui_print_error_message(__('Error deleting recon task'));
     }
-} else if (isset($_GET['disabled'])) {
+    } else if (isset($_GET['disabled'])) {
     $id = get_parameter_get('id');
     $disabled = get_parameter_get('disabled');
 
@@ -70,12 +84,12 @@ if (isset($_GET['delete'])) {
     } else {
         ui_print_error_message(__('Error updating recon task'));
     }
-}
+    }
 
-// --------------------------------
-// GET PARAMETERS IF UPDATE OR CREATE
-// --------------------------------
-if ((isset($_GET['update'])) or ((isset($_GET['create'])))) {
+    // --------------------------------
+    // GET PARAMETERS IF UPDATE OR CREATE
+    // --------------------------------
+    if ((isset($_GET['update'])) or ((isset($_GET['create'])))) {
     $name = get_parameter_post('name');
     $network = get_parameter_post('network');
     $description = get_parameter_post('description');
@@ -127,12 +141,12 @@ if ((isset($_GET['update'])) or ((isset($_GET['create'])))) {
     }
 
     $macros = io_json_mb_encode($macros);
-}
+    }
 
-// --------------------------------
-// UPDATE A RECON TASK
-// --------------------------------
-if (isset($_GET['update'])) {
+    // --------------------------------
+    // UPDATE A RECON TASK
+    // --------------------------------
+    if (isset($_GET['update'])) {
     $id = get_parameter_get('update');
 
     $values = [
@@ -210,12 +224,12 @@ if (isset($_GET['update'])) {
             include 'manage_recontask_form.php';
             return;
         }
-}
+    }
 
-// --------------------------------
-// CREATE A RECON TASK
-// --------------------------------
-if (isset($_GET['create'])) {
+    // --------------------------------
+    // CREATE A RECON TASK
+    // --------------------------------
+    if (isset($_GET['create'])) {
     $values = [
         'name'               => $name,
         'subnet'             => $network,
@@ -311,28 +325,28 @@ if (isset($_GET['create'])) {
             include 'manage_recontask_form.php';
             return;
         }
-}
+    }
 
-// --------------------------------
-// SHOW TABLE WITH ALL RECON TASKs
-// --------------------------------
-// Pandora Admin must see all columns
-if (! check_acl($config['id_user'], 0, 'PM')) {
+    // --------------------------------
+    // SHOW TABLE WITH ALL RECON TASKs
+    // --------------------------------
+    // Pandora Admin must see all columns
+    if (! check_acl($config['id_user'], 0, 'PM')) {
     $sql = sprintf(
         'SELECT *
-		FROM trecon_task RT, tusuario_perfil UP
-		WHERE 
-			UP.id_usuario = "%s" AND UP.id_grupo = RT.id_group',
+        FROM trecon_task RT, tusuario_perfil UP
+        WHERE
+            UP.id_usuario = "%s" AND UP.id_grupo = RT.id_group',
         $config['id_user']
     );
 
     $result = db_get_all_rows_sql($sql);
-} else {
+    } else {
     $result = db_get_all_rows_in_table('trecon_task');
-}
+    }
 
-$color = 1;
-if ($result !== false) {
+    $color = 1;
+    if ($result !== false) {
     $table = new StdClass();
     $table->head = [
         __('Name'),
@@ -460,12 +474,13 @@ if ($result !== false) {
 
     html_print_table($table);
     unset($table);
-} else {
+    } else {
     echo '<div class="nf">'.__('There are no recon task configured').'</div>';
-}
+    }
 
-echo '<div class="action-buttons" style="width: 99%;">';
-echo '<form method="post" action="index.php?sec=gservers&sec2=godmode/servers/manage_recontask_form&create">';
-echo html_print_submit_button(__('Create'), 'crt', false, 'class="sub next"', true);
-echo '</form>';
-echo '</div>';
+    echo '<div class="action-buttons" style="width: 99%;">';
+    echo '<form method="post" action="index.php?sec=gservers&sec2=godmode/servers/manage_recontask_form&create">';
+    echo html_print_submit_button(__('Create'), 'crt', false, 'class="sub next"', true);
+    echo '</form>';
+    echo '</div>';
+*/

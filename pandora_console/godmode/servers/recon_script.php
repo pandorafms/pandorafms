@@ -1,17 +1,33 @@
 <?php
+/**
+ * Deprectated.
+ *
+ * @category   Extensions
+ * @package    Pandora FMS
+ * @subpackage VMware
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
 
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation for version 2.
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-if (is_ajax()) {
+/*
+    if (is_ajax()) {
     $get_reconscript_description = get_parameter('get_reconscript_description');
     $id_reconscript = get_parameter('id_reconscript');
 
@@ -23,23 +39,23 @@ if (is_ajax()) {
 
     echo htmlentities(io_safe_output($description), ENT_QUOTES, 'UTF-8', true);
     return;
-}
+    }
 
-// Load global vars
-global $config;
+    // Load global vars
+    global $config;
 
-check_login();
+    check_login();
 
-if (! check_acl($config['id_user'], 0, 'LM')) {
+    if (! check_acl($config['id_user'], 0, 'LM')) {
     db_pandora_audit(
         'ACL Violation',
         'Trying to access recon script Management'
     );
     include 'general/noaccess.php';
     return;
-}
+    }
 
-/*
+    /*
  * Disabled at the moment.
     if (!check_referer()) {
     require ("general/noaccess.php");
@@ -47,29 +63,29 @@ if (! check_acl($config['id_user'], 0, 'LM')) {
     return;
     }
  */
+/*
+    $view = get_parameter('view', '');
+    $create = get_parameter('create', '');
 
-$view = get_parameter('view', '');
-$create = get_parameter('create', '');
-
-if ($view != '') {
+    if ($view != '') {
     $form_id = $view;
     $reconscript = db_get_row('trecon_script', 'id_recon_script', $form_id);
     $form_name = $reconscript['name'];
     $form_description = $reconscript['description'];
     $form_script = $reconscript['script'];
     $macros = $reconscript['macros'];
-}
+    }
 
-if ($create != '') {
+    if ($create != '') {
     $form_name = '';
     $form_description = '';
     $form_script = '';
     $macros = '';
-}
+    }
 
-// SHOW THE FORM
-// =================================================================
-if (($create != '') or ($view != '')) {
+    // SHOW THE FORM
+    // =================================================================
+    if (($create != '') or ($view != '')) {
     if ($create != '') {
         ui_print_page_header(__('Recon script creation'), 'images/gm_servers.png', false, 'reconscript_definition', true);
     } else {
@@ -229,7 +245,7 @@ if (($create != '') or ($view != '')) {
     }
 
     echo '</form></table>';
-} else {
+    } else {
     ui_print_page_header(__('Recon scripts registered on %s', get_product_name()), 'images/gm_servers.png', false, '', true);
 
     // Update reconscript
@@ -264,12 +280,12 @@ if (($create != '') or ($view != '')) {
 
         $macros = io_json_mb_encode($macros);
 
-        $sql_update = "UPDATE trecon_script SET 
-		name = '$reconscript_name',  
-		description = '$reconscript_description', 
-		script = '$reconscript_script', 
-		macros = '$macros' 
-		WHERE id_recon_script = $id_recon_script";
+        $sql_update = "UPDATE trecon_script SET
+        name = '$reconscript_name',
+        description = '$reconscript_description',
+        script = '$reconscript_script',
+        macros = '$macros'
+        WHERE id_recon_script = $id_recon_script";
         $result = false;
         if ($reconscript_name != '' && $reconscript_script != '') {
             $result = db_process_sql($sql_update);
@@ -396,6 +412,7 @@ if (($create != '') or ($view != '')) {
     echo "<form name=reconscript method='post' action='index.php?sec=gservers&sec2=godmode/servers/recon_script&create=1'>";
     echo "<input name='crtbutton' type='submit' class='sub next' value='".__('Add')."'>";
     echo '</td></tr></table>';
-}
+    }
 
-ui_require_javascript_file('pandora_modules');
+    ui_require_javascript_file('pandora_modules');
+*/

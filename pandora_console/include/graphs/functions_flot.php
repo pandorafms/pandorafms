@@ -748,7 +748,7 @@ function flot_slicesbar_graph(
         if ($widgets) {
             $return = "<div id='$graph_id' class='noresizevc graph $adapt_key' style='width: ".$width.'px; height: '.$height."px;'></div>";
         } else {
-            $return = "<div id='$graph_id' class='noresizevc graph $adapt_key' style='width: ".$width.'px; height: '.$height."px;'></div>";
+            $return = "<div id='$graph_id' class='noresizevc graph $adapt_key' style='width: ".$width.'%; height: '.$height."px;'></div>";
         }
     }
 

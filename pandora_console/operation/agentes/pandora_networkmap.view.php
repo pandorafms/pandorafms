@@ -763,11 +763,7 @@ if (is_ajax()) {
 }
 
 // --------------END AJAX------------------------------------------------
-if (_id_ != '_id_') {
-    $id = _id_;
-} else {
-    $id = (int) get_parameter('id_networkmap', 0);
-}
+$id = (int) get_parameter('id_networkmap', 0);
 
 // Print some params to handle it in js
 html_print_input_hidden('product_name', get_product_name());
@@ -886,9 +882,20 @@ if ($networkmap === false) {
         );
     }
 
-    $nodes_and_relations = networkmap_process_networkmap($id);
+    /*
+        $nodes_and_relations = networkmap_process_networkmap($id);
 
-    show_networkmap($id, $user_readonly, $nodes_and_relations, $dash_mode, $map_dash_details);
+        show_networkmap($id, $user_readonly, $nodes_and_relations, $dash_mode, $map_dash_details);
+    */
+
+
+    include_once $config['homedir'].'/include/class/NetworkMap.class.php';
+    echo 'generado por clase';
+    $map_manager = new NetworkMap(
+        [ 'id_map' => $networkmap['id']]
+    );
+
+    $map_manager->printMap();
 }
 ?>
 

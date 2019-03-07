@@ -44,6 +44,25 @@ export interface VisualConsoleItemProps extends Position, Size {
   aclGroupId: number | null;
 }
 
+interface VisualConsoleBoxItemProps extends Position, Size {
+  readonly id: number;
+  readonly type: 12;
+  isOnTop: boolean;
+  borderWidth: string;
+  borderColor: string;
+  fillColor: string;
+}
+
+interface VisualConsoleLineItemProps {
+  readonly id: number;
+  readonly type: 13;
+  isOnTop: boolean;
+  startPosition: Position;
+  endPosition: Position;
+  borderWidth: string;
+  borderColor: string;
+}
+
 // FIXME: Fix type compatibility.
 export interface ItemClickEvent<ItemProps extends VisualConsoleItemProps> {
   // data: ItemProps;
@@ -51,7 +70,7 @@ export interface ItemClickEvent<ItemProps extends VisualConsoleItemProps> {
 }
 
 /**
- * Extract a valid enum value from a raw label position value.
+ * Extract a valid enum value from a raw label positi9on value.
  * @param labelPosition Raw value.
  */
 const parseLabelPosition = (

@@ -44,6 +44,18 @@ describe("Color cloud item", () => {
     })
   );
 
+  it("should throw when using an invalid color into the props decoder", () => {
+    expect(() =>
+      colorCloudPropsDecoder({
+        ...genericRawProps,
+        ...positionRawProps,
+        ...sizeRawProps,
+        ...linkedModuleProps,
+        color: null
+      })
+    ).toThrowError(TypeError);
+  });
+
   it("should have the color-cloud class", () => {
     expect(
       colorCloudInstance.elementRef.getElementsByClassName("color-cloud").length

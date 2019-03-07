@@ -241,6 +241,7 @@ function show_massive_response_dialog(
           },
           close: function(event, ui) {
             $(".chk_val").prop("checked", false);
+            $("#event_response_command_window").dialog("close");
           },
           width: response["modal_width"],
           height: response["modal_height"]
@@ -375,7 +376,12 @@ function add_row_param(id_table, param) {
 }
 
 // Get an event response from db
-function get_response_target(event_id, response_id, server_id) {
+function get_response_target(
+  event_id,
+  response_id,
+  server_id,
+  response_command
+) {
   var ajax_file = $("#hidden-ajax_file").val();
 
   var target = "";
@@ -400,15 +406,21 @@ function get_response_target(event_id, response_id, server_id) {
     }
   });
 
-  // Replace the custom params macros
+  // Replace the custom params macros.
   var response_params = get_response_params(response_id);
-
   if (response_params.length > 1 || response_params[0] != "") {
     for (i = 0; i < response_params.length; i++) {
-      target = target.replace(
-        "_" + response_params[i] + "_",
-        $("#" + response_params[i]).val()
-      );
+      if (!response_command) {
+        target = target.replace(
+          "_" + response_params[i] + "_",
+          $("#" + response_params[i]).val()
+        );
+      } else {
+        target = target.replace(
+          "_" + response_params[i] + "_",
+          response_command[response_params[i] + "-" + i]
+        );
+      }
     }
   }
 
@@ -459,10 +471,6 @@ function perform_response_massive(target, response_id, out_iterator) {
   $("#response_loading_command_" + out_iterator).show();
   $("#response_out_" + out_iterator).html("");
 
-  var finished = 0;
-  var time = Math.round(+new Date() / 1000);
-  var timeout = time + 10;
-
   var params = [];
   params.push("page=include/ajax/events");
   params.push("perform_event_response=1");
@@ -487,7 +495,7 @@ function perform_response_massive(target, response_id, out_iterator) {
   return false;
 }
 
-// Change the status of an event to new, in process or validated
+// Change the status of an event to new, in process or validated.
 function event_change_status(event_ids) {
   var ajax_file = $("#hidden-ajax_file").val();
 
@@ -678,6 +686,56 @@ function show_events_group_agent(id_insert, id_agent, server_id) {
     success: function(data) {
       $("#" + id_insert).html(data);
       $("#" + id_insert).toggle();
+    }
+  });
+}
+
+function show_event_response_command_dialog(id, response, total_checked) {
+  var ajax_file = $("#hidden-ajax_file").val();
+
+  var params = [];
+  params.push("page=include/ajax/events");
+  params.push("get_table_response_command=1");
+  params.push("event_response_id=" + id);
+
+  jQuery.ajax({
+    data: params.join("&"),
+    type: "POST",
+    url: (action = ajax_file),
+    dataType: "html",
+    success: function(data) {
+      $("#event_response_command_window")
+        .hide()
+        .empty()
+        .append(data)
+        .dialog({
+          resizable: true,
+          draggable: true,
+          modal: false,
+          open: function() {
+            $("#response_loading_dialog").hide();
+            $("#button-submit_event_response").show();
+          },
+          width: 600,
+          height: 300
+        })
+        .show();
+
+      $("#submit-enter_command").on("click", function(e) {
+        e.preventDefault();
+        var response_command = [];
+
+        $(".response_command_input").each(function() {
+          response_command[$(this).attr("name")] = $(this).val();
+        });
+
+        check_massive_response_event(
+          id,
+          response,
+          total_checked,
+          response_command
+        );
+      });
     }
   });
 }

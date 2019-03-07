@@ -1900,14 +1900,16 @@ CREATE TABLE IF NOT EXISTS `tevent_extended` (
 -- -----------------------------------------------------
 -- Table `tgis_map_layer_groups`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `tgis_map_layer_groups` (
-	`layer_id` INT NOT NULL,
-	`group_id` MEDIUMINT(4) UNSIGNED NOT NULL,
-	`agent_id` INT(10) UNSIGNED NOT NULL COMMENT 'Used to link the position to the group',
-	PRIMARY KEY (`layer_id`, `group_id`),
-	FOREIGN KEY (`layer_id`) REFERENCES `tgis_map_layer` (`id_tmap_layer`) ON DELETE CASCADE,
-	FOREIGN KEY (`group_id`) REFERENCES `tgrupo` (`id_grupo`) ON DELETE CASCADE,
-	FOREIGN KEY (`agent_id`) REFERENCES `tagente` (`id_agente`) ON DELETE CASCADE
+CREATE TABLE `tgis_map_layer_groups` (
+  `layer_id` int(11) NOT NULL,
+  `group_id` mediumint(4) unsigned NOT NULL,
+  `agent_id` int(10) unsigned NOT NULL COMMENT 'Used to link the position to the group',
+  PRIMARY KEY (`layer_id`,`group_id`),
+  KEY `group_id` (`group_id`),
+  KEY `agent_id` (`agent_id`),
+  CONSTRAINT `tgis_map_layer_groups_ibfk_1` FOREIGN KEY (`layer_id`) REFERENCES `tgis_map_layer` (`id_tmap_layer`) ON DELETE CASCADE,
+  CONSTRAINT `tgis_map_layer_groups_ibfk_2` FOREIGN KEY (`group_id`) REFERENCES `tgrupo` (`id_grupo`) ON DELETE CASCADE,
+  CONSTRAINT `tgis_map_layer_groups_ibfk_3` FOREIGN KEY (`agent_id`) REFERENCES `tagente` (`id_agente`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- -----------------------------------------------------

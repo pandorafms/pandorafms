@@ -82,17 +82,25 @@ function agents_get_agent_id_by_alias($alias)
 
 
 /**
- * Creates an agent
+ * Creates an agent.
  *
- * @param string Agent name.
- * @param string Group to be included.
- * @param int Agent interval
- * @param string Agent IP
+ * @param string  $name          Agent name.
+ * @param string  $id_group      Group to be included.
+ * @param integer $interval      Agent interval.
+ * @param string  $ip_address    Agent IP.
+ * @param mixed   $values        Other tagente fields.
+ * @param boolean $alias_as_name True to not assign an alias as name.
  *
  * @return integer New agent id if created. False if it could not be created.
  */
-function agents_create_agent($name, $id_group, $interval, $ip_address, $values=false)
-{
+function agents_create_agent(
+    $name,
+    $id_group,
+    $interval,
+    $ip_address,
+    $values=false,
+    $alias_as_name=false
+) {
     if (empty($name)) {
         return false;
     }
@@ -101,7 +109,7 @@ function agents_create_agent($name, $id_group, $interval, $ip_address, $values=f
         return false;
     }
 
-    // Check interval greater than zero
+    // Check interval greater than zero.
     if ($interval < 0) {
         $interval = false;
     }
@@ -115,7 +123,7 @@ function agents_create_agent($name, $id_group, $interval, $ip_address, $values=f
     }
 
     $values['alias'] = $name;
-    $values['nombre'] = hash('sha256', $name.'|'.$ip_address.'|'.time().'|'.sprintf('%04d', rand(0, 10000)));
+    $values['nombre'] = ($alias_as_name === false) ? hash('sha256', $name.'|'.$ip_address.'|'.time().'|'.sprintf('%04d', rand(0, 10000))) : $name;
     $values['id_grupo'] = $id_group;
     $values['intervalo'] = $interval;
 
@@ -128,12 +136,12 @@ function agents_create_agent($name, $id_group, $interval, $ip_address, $values=f
         return false;
     }
 
-    // Create address for this agent in taddress
+    // Create address for this agent in taddress.
     if (!empty($ip_address)) {
         agents_add_address($id_agent, $ip_address);
     }
 
-    db_pandora_audit('Agent management', "New agent '$name' created");
+    db_pandora_audit('Agent management', 'New agent '.$name.' created');
 
     return $id_agent;
 }

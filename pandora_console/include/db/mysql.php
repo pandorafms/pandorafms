@@ -45,6 +45,7 @@ function mysql_connect_db($host=null, $db=null, $user=null, $pass=null, $port=nu
     if ($config['mysqli']) {
         $connect_id = mysqli_connect($host, $user, $pass, $db, $port);
         if (mysqli_connect_errno() > 0) {
+            include 'general/mysqlerr.php';
             return false;
         }
 

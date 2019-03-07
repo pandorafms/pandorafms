@@ -110,7 +110,7 @@ $table->data['1']['1'] .= '</div>';
 
 $table->data['1']['1'] .= '<div id="period_container" style="'.$style_period.'">';
 $table->data['1']['1'] .= __('Time Period').'&nbsp;&nbsp;';
-$table->data['1']['1'] .= html_print_input_text('period', $period, '', 7, 8, true);
+$table->data['1']['1'] .= html_print_extended_select_for_time('period', $period, '', '', 0, false, true);
 $table->data['1']['1'] .= '</div>';
 
 $table->data['1']['2'] = html_print_submit_button(

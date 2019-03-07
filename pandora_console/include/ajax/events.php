@@ -844,7 +844,7 @@ if ($get_table_response_command) {
     $table->style[1] = 'text-align:center;';
 
     $table->head = [];
-    $table->head[0] = __('Commands');
+    $table->head[0] = __('Parameters');
     $table->head[0] .= ui_print_help_tip(
         __('These commands will apply to all selected events'),
         true

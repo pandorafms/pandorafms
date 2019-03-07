@@ -309,6 +309,10 @@ function config_update_config()
                     if (!config_update_value('auditdir', get_parameter('auditdir'))) {
                         $error_update[] = __('Audit log directory');
                     }
+
+                    if (!config_update_value('unique_ip', get_parameter('unique_ip'))) {
+                        $error_update[] = __('unique_ip');
+                    }
                 break;
 
                 case 'enterprise':
@@ -860,6 +864,10 @@ function config_update_config()
                         $error_update[] = __('Custom logo');
                     }
 
+                    if (!config_update_value('custom_logo_collapsed', (string) get_parameter('custom_logo_collapsed'))) {
+                        $error_update[] = __('Custom logo collapsed');
+                    }
+
                     if (!config_update_value('custom_logo_white_bg', (string) get_parameter('custom_logo_white_bg'))) {
                         $error_update[] = __('Custom logo white background');
                     }
@@ -1028,10 +1036,6 @@ function config_update_config()
                         $error_update[] = __('Fixed header');
                     }
 
-                    if (!config_update_value('fixed_menu', get_parameter('fixed_menu'))) {
-                        $error_update[] = __('Fixed menu');
-                    }
-
                     if (!config_update_value('paginate_module', get_parameter('paginate_module'))) {
                         $error_update[] = __('Paginate module');
                     }
@@ -1110,10 +1114,6 @@ function config_update_config()
 
                     if (!config_update_value('graph_image_height', (int) get_parameter('graph_image_height', 280))) {
                         $error_update[] = __('Default height of the chart image');
-                    }
-
-                    if (!config_update_value('classic_menu', (bool) get_parameter('classic_menu', false))) {
-                        $error_update[] = __('Classic menu mode');
                     }
 
                     // --------------------------------------------------
@@ -1699,10 +1699,13 @@ function config_process_config()
         config_update_value('limit_parameters_massive', (ini_get('max_input_vars') / 2));
     }
 
-    /*
-     * Parse the ACL IP list for access API
-     */
+    if (!isset($config['unique_ip'])) {
+        config_update_value('unique_ip', 0);
+    }
 
+     /*
+      * Parse the ACL IP list for access API
+      */
     $temp_list_ACL_IPs_for_API = [];
     if (isset($config['list_ACL_IPs_for_API'])) {
         if (!empty($config['list_ACL_IPs_for_API'])) {
@@ -1719,6 +1722,7 @@ function config_process_config()
     // Not Managed here !
     // if (!isset ($config["autoupdate"])) {
     // config_update_value ('autoupdate', true);.
+    // }
     include_once $config['homedir'].'/include/auth/mysql.php';
     include_once $config['homedir'].'/include/functions_io.php';
 
@@ -1783,16 +1787,16 @@ function config_process_config()
         config_update_value('fixed_graph', false);
     }
 
-    if (!isset($config['fixed_menu'])) {
-        config_update_value('fixed_menu', false);
-    }
-
     if (!isset($config['custom_favicon'])) {
         config_update_value('custom_favicon', '');
     }
 
     if (!isset($config['custom_logo'])) {
-        config_update_value('custom_logo', 'pandora_logo_head_4.png');
+        config_update_value('custom_logo', 'pandora_logo_head_green.png');
+    }
+
+    if (!isset($config['custom_logo_collapsed'])) {
+        config_update_value('custom_logo_collapsed', 'pandora_logo_green_collapsed.png');
     }
 
     if (!isset($config['custom_logo_white_bg'])) {
@@ -2501,10 +2505,6 @@ function config_process_config()
         if (!isset($config['service_item_padding_size'])) {
             config_update_value('service_item_padding_size', 80);
         }
-    }
-
-    if (!isset($config['classic_menu'])) {
-        config_update_value('classic_menu', 0);
     }
 
     if (!isset($config['csv_divider'])) {

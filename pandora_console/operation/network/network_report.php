@@ -158,7 +158,8 @@ if ($is_network) {
         $action,
         $utimestamp_lower,
         $utimestamp_greater,
-        $main_value
+        $main_value,
+        $order_by
     );
 }
 

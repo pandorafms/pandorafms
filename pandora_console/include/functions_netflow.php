@@ -1876,6 +1876,7 @@ function netflow_check_nfdump_binary($nfdump_binary)
  * @param integer $start_date In utimestamp.
  * @param integer $end_date   In utimestamp.
  * @param string  $filter     Ip to filter.
+ * @param string  $order      Select one of bytes,pkts,flow.
  *
  * @return array With data (host, sum_bytes, sum_pkts and sum_flows).
  */
@@ -1884,7 +1885,8 @@ function netflow_get_top_summary(
     $top_action,
     $start_date,
     $end_date,
-    $filter=''
+    $filter='',
+    $order='bytes'
 ) {
     global $nfdump_date_format;
     $netflow_filter = [];
@@ -1929,7 +1931,23 @@ function netflow_get_top_summary(
     $command = netflow_get_command($netflow_filter);
 
     // Execute nfdump.
-    $command .= " -o csv -n $max -s $sort/bytes -t ".date($nfdump_date_format, $start_date).'-'.date($nfdump_date_format, $end_date);
+    $order_text = '';
+    switch ($order) {
+        case 'flows':
+            $order_text = 'flows';
+        break;
+
+        case 'pkts':
+            $order_text = 'packets';
+        break;
+
+        case 'bytes':
+        default:
+            $order_text = 'bytes';
+        break;
+    }
+
+    $command .= " -o csv -n $max -s $sort/$order_text -t ".date($nfdump_date_format, $start_date).'-'.date($nfdump_date_format, $end_date);
     exec($command, $result);
 
     if (! is_array($result)) {

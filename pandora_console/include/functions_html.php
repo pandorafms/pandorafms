@@ -3132,20 +3132,31 @@ function html_print_switch($attributes=[])
  * @param string $text   Text to show.
  * @param array  $params Params to be written like inputs hidden.
  * @param string $text   Text of image.
+ * @param string $style  Additional style for the element.
  *
  * @return string With HTML code.
  */
-function html_print_link_with_params($text, $params=[], $type='text')
+function html_print_link_with_params($text, $params=[], $type='text', $style='')
 {
     $html = '<form method=post>';
     switch ($type) {
         case 'image':
-            $html .= html_print_input_image($text, $text, $text, '', true);
+            $html .= html_print_input_image($text, $text, $text, $style, true);
         break;
 
         case 'text':
         default:
-            $html .= html_print_submit_button($text, $text, false, 'class="button-as-link"', true);
+            if (!empty($style)) {
+                $style = ' style="'.$style.'"';
+            }
+
+            $html .= html_print_submit_button(
+                $text,
+                $text,
+                false,
+                'class="button-as-link"'.$style,
+                true
+            );
         break;
     }
 

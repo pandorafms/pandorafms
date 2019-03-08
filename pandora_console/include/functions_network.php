@@ -89,3 +89,33 @@ function network_get_report_actions($network)
         ]
     );
 }
+
+
+/**
+ * Print the header of the network
+ *
+ * @param string $title       Title of header.
+ * @param string $order       Current ordering.
+ * @param string $selected    Selected order.
+ * @param array  $hidden_data All the data to hide into the button.
+ *
+ * @return string With HTML data.
+ */
+function network_print_explorer_header(
+    $title,
+    $order,
+    $selected,
+    $hidden_data
+) {
+    $cell = '<div style="display: flex; align-items: center;">';
+    $cell .= $title;
+    $cell .= html_print_link_with_params(
+        'images/arrow-down-white.png',
+        array_merge($hidden_data, ['order_by' => $order]),
+        'image',
+        ($selected === $order) ? 'opacity: 0.5' : ''
+    );
+    $cell .= '</div>';
+
+    return $cell;
+}

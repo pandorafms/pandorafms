@@ -36,9 +36,9 @@ class TreeGroup extends Tree
         ];
 
         $this->L2conditionInside = 'AND (
-			ta.id_grupo = '.$this->id.'
-			OR tasg.id_group = '.$this->id.'
-		)';
+            ta.id_grupo = '.$this->id.'
+            OR tasg.id_group = '.$this->id.'
+        )';
     }
 
 
@@ -198,44 +198,44 @@ class TreeGroup extends Tree
         $module_search_filter = '';
         if (!empty($this->filter['searchModule'])) {
             $module_search_inner = '
-				INNER JOIN tagente_modulo tam
-					ON ta.id_agente = tam.id_agente
-				INNER JOIN tagente_estado tae
-					ON tae.id_agente_modulo = tam.id_agente_modulo';
+                INNER JOIN tagente_modulo tam
+                    ON ta.id_agente = tam.id_agente
+                INNER JOIN tagente_estado tae
+                    ON tae.id_agente_modulo = tam.id_agente_modulo';
             $module_search_filter = "AND tam.disabled = 0
-				AND tam.nombre LIKE '%%".$this->filter['searchModule']."%%' ".$this->getModuleStatusFilterFromTestado();
+                AND tam.nombre LIKE '%%".$this->filter['searchModule']."%%' ".$this->getModuleStatusFilterFromTestado();
         }
 
         $table = is_metaconsole() ? 'tmetaconsole_agent' : 'tagente';
         $table_sec = is_metaconsole() ? 'tmetaconsole_agent_secondary_group' : 'tagent_secondary_group';
 
         $sql_model = "SELECT %s FROM
-			(
-				SELECT COUNT(DISTINCT(ta.id_agente)) AS total, id_grupo AS g
-					FROM $table ta
-					$module_search_inner
-					WHERE ta.disabled = 0
-						%s
-						$agent_search_filter
-						$agent_status_filter
-						$module_status_filter
-						$module_search_filter
-						$group_acl
-					GROUP BY id_grupo
-				UNION ALL
-				SELECT COUNT(DISTINCT(ta.id_agente)) AS total, id_group AS g
-					FROM $table ta INNER JOIN $table_sec tasg
-						ON ta.id_agente = tasg.id_agent
-					$module_search_inner
-					WHERE ta.disabled = 0
-						%s
-						$agent_search_filter
-						$agent_status_filter
-						$module_status_filter
-						$module_search_filter
-						$secondary_group_acl
-					GROUP BY id_group
-			) x GROUP BY g";
+            (
+                SELECT COUNT(DISTINCT(ta.id_agente)) AS total, id_grupo AS g
+                    FROM $table ta
+                    $module_search_inner
+                    WHERE ta.disabled = 0
+                        %s
+                        $agent_search_filter
+                        $agent_status_filter
+                        $module_status_filter
+                        $module_search_filter
+                        $group_acl
+                    GROUP BY id_grupo
+                UNION ALL
+                SELECT COUNT(DISTINCT(ta.id_agente)) AS total, id_group AS g
+                    FROM $table ta INNER JOIN $table_sec tasg
+                        ON ta.id_agente = tasg.id_agent
+                    $module_search_inner
+                    WHERE ta.disabled = 0
+                        %s
+                        $agent_search_filter
+                        $agent_status_filter
+                        $module_status_filter
+                        $module_search_filter
+                        $secondary_group_acl
+                    GROUP BY id_group
+            ) x GROUP BY g";
         $sql_array = [];
         foreach ($inside_fields as $inside_field) {
             $sql_array[] = sprintf(
@@ -247,9 +247,9 @@ class TreeGroup extends Tree
         }
 
         $sql = "SELECT $fields FROM (".implode(' UNION ALL ', $sql_array).') x2
-			RIGHT JOIN tgrupo tg
-				ON x2.g = tg.id_grupo
-			GROUP BY tg.id_grupo';
+            RIGHT JOIN tgrupo tg
+                ON x2.g = tg.id_grupo
+            GROUP BY tg.id_grupo';
         $stats = db_get_all_rows_sql($sql);
 
         $group_stats = [];

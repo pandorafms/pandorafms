@@ -534,9 +534,10 @@ function planned_downtimes_migrate_malformed_downtimes_copy_items($original_down
 /**
  * Stop a planned downtime.
  *
- * @param array Planned downtime data.
+ * @param array $downtime Planned downtime data.
  *
- * @return mixes False on error or an array with the result and a message of the operation.
+ * @return mixed False on error or an array with the result and a message of
+ *      the operation.
  */
 function planned_downtimes_stop($downtime)
 {
@@ -566,7 +567,9 @@ function planned_downtimes_stop($downtime)
         case 'periodically':
         return false;
 
-            break;
+        default:
+            // Nothing to do.
+        break;
     }
 
     $message .= ui_print_result_message(
@@ -593,7 +596,7 @@ function planned_downtimes_stop($downtime)
             true
         );
 
-        // Reenabled the Agents or Modules or alerts...depends of type
+        // Reenabled the Agents or Modules or alerts...depends of type.
         switch ($downtime['type_downtime']) {
             case 'quiet':
                 $agents = db_get_all_rows_filter(
@@ -658,7 +661,10 @@ function planned_downtimes_stop($downtime)
                 foreach ($agents as $agent) {
                     $result = db_process_sql_update(
                         'tagente',
-                        ['disabled' => 0],
+                        [
+                            'disabled'            => 0,
+                            'update_module_count' => 1,
+                        ],
                         ['id_agente' => $agent['id_agent']]
                     );
 
@@ -701,6 +707,10 @@ function planned_downtimes_stop($downtime)
                         }
                     }
                 }
+            break;
+
+            default:
+                // Nothing to do.
             break;
         }
 

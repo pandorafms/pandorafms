@@ -53,7 +53,10 @@ export default class Box extends Item<BoxProps> {
     // Border.
     if (this.props.borderWidth > 0) {
       box.style.borderStyle = "solid";
-      box.style.borderWidth = `${this.props.borderWidth}px`;
+      // Control the max width to prevent this item to expand beyond its parent.
+      const maxBorderWidth = Math.min(this.props.width, this.props.height) / 2;
+      const borderWidth = Math.min(this.props.borderWidth, maxBorderWidth);
+      box.style.borderWidth = `${borderWidth}px`;
 
       if (this.props.borderColor) {
         box.style.borderColor = this.props.borderColor;

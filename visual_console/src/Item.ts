@@ -45,16 +45,6 @@ export interface ItemProps extends Position, Size {
   aclGroupId: number | null;
 }
 
-interface VisualConsoleLineItemProps {
-  readonly id: number;
-  readonly type: 13;
-  isOnTop: boolean;
-  startPosition: Position;
-  endPosition: Position;
-  borderWidth: string;
-  borderColor: string;
-}
-
 // FIXME: Fix type compatibility.
 export interface ItemClickEvent<Props extends ItemProps> {
   // data: Props;

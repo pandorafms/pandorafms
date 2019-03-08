@@ -150,7 +150,8 @@ if ($is_network) {
         $action === 'talkers',
         $utimestamp_lower,
         $utimestamp_greater,
-        $main_value
+        $main_value,
+        $order_by !== 'pkts'
     );
 } else {
     $data = netflow_get_top_summary(

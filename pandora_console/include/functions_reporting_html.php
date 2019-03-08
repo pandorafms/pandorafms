@@ -4752,7 +4752,10 @@ function reporting_html_planned_downtimes_table($planned_downtimes)
 
     $table = new StdClass();
     $table->width = '99%';
-    $table->title = __('This SLA has been affected by the following planned downtimes');
+    $table->title = __('This SLA has been affected by the following planned downtimes').ui_print_help_tip(
+        __('If the duration of the planned downtime is less than 5 minutes it will not be represented in the graph'),
+        true
+    );
     $table->head = [];
     $table->head[0] = __('Name');
     $table->head[1] = __('Description');

@@ -143,9 +143,5 @@ INSERT INTO tlog_graph_models (`title`,`regexp`,`fields`,`average`) VALUES ('Pag
 INSERT INTO tlog_graph_models (`title`,`regexp`,`fields`,`average`) VALUES ('Users&#x20;login',
 'Starting&#x20;Session&#x20;&#92;d+&#92;&#x20;of&#x20;user&#x20;&#40;.*&#41;',
 'user', 0);
--- ----------------------------------------------------------------------
--- Add column in table `tagent_custom_fields`
--- ----------------------------------------------------------------------
-ALTER TABLE tagent_custom_fields ADD COLUMN `combo_values` VARCHAR(200) DEFAULT '';
 
 COMMIT;

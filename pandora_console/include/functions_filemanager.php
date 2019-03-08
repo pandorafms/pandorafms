@@ -127,7 +127,7 @@ if (isset($config['homedir_filemanager'])) {
 }
 
 $sec2 = get_parameter('sec2');
-if ($sec2 == 'enterprise/godmode/agentes/collections') {
+if ($sec2 == 'enterprise/godmode/agentes/collections' || $sec2 == 'advanced/collections') {
     $homedir_filemanager .= '/attachment/collection/';
 }
 

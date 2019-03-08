@@ -150,12 +150,29 @@
         showClockTimezone: true
       };
 
+      var boxRawProps = {
+        // Generic props.
+        id: 6,
+        type: 12, // Box = 12
+        // Position props.
+        x: 720,
+        y: 20,
+        // Size props.
+        width: 50,
+        height: 50,
+        // Custom props.
+        borderWidth: 10,
+        borderColor: "white",
+        fillColor: "black"
+      };
+
       var items = [
         staticGraphRawProps,
         colorCloudRawProps,
         digitalClockRawProps,
         digitalClockRawProps2,
-        analogicClockRawProps
+        analogicClockRawProps,
+        boxRawProps
       ];
 
       try {

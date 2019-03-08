@@ -1,14 +1,17 @@
 import { UnknownObject, Size } from "./types";
-import { parseBoolean, sizePropsDecoder, parseIntOr } from "./lib";
-import VisualConsoleItem, {
-  VisualConsoleItemProps,
-  VisualConsoleItemType
-} from "./VisualConsoleItem";
+import {
+  parseBoolean,
+  sizePropsDecoder,
+  parseIntOr,
+  notEmptyStringOr
+} from "./lib";
+import Item, { ItemType, ItemProps } from "./Item";
 import StaticGraph, { staticGraphPropsDecoder } from "./items/StaticGraph";
 import Icon, { iconPropsDecoder } from "./items/Icon";
 import ColorCloud, { colorCloudPropsDecoder } from "./items/ColorCloud";
 import Group, { groupPropsDecoder } from "./items/Group";
 import Clock, { clockPropsDecoder } from "./items/Clock";
+import Box, { boxPropsDecoder } from "./items/Box";
 
 // Base properties.
 export interface VisualConsoleProps extends Size {
@@ -56,14 +59,8 @@ export function visualConsolePropsDecoder(
     id: parseInt(id),
     name,
     groupId: parseInt(groupId),
-    backgroundURL:
-      typeof backgroundURL === "string" && backgroundURL.length > 0
-        ? backgroundURL
-        : null,
-    backgroundColor:
-      typeof backgroundColor === "string" && backgroundColor.length > 0
-        ? backgroundColor
-        : null,
+    backgroundURL: notEmptyStringOr(backgroundURL, null),
+    backgroundColor: notEmptyStringOr(backgroundColor, null),
     isFavorite: parseBoolean(isFavorite),
     ...sizePropsDecoder(data)
   };
@@ -75,48 +72,48 @@ function itemInstanceFrom(data: UnknownObject) {
   const type = parseIntOr(data.type, null);
   if (type == null) throw new TypeError("missing item type.");
 
-  switch (type as VisualConsoleItemType) {
-    case VisualConsoleItemType.STATIC_GRAPH:
+  switch (type as ItemType) {
+    case ItemType.STATIC_GRAPH:
       return new StaticGraph(staticGraphPropsDecoder(data));
-    case VisualConsoleItemType.MODULE_GRAPH:
+    case ItemType.MODULE_GRAPH:
       throw new TypeError("item not found");
-    case VisualConsoleItemType.SIMPLE_VALUE:
+    case ItemType.SIMPLE_VALUE:
       throw new TypeError("item not found");
-    case VisualConsoleItemType.PERCENTILE_BAR:
+    case ItemType.PERCENTILE_BAR:
       throw new TypeError("item not found");
-    case VisualConsoleItemType.LABEL:
+    case ItemType.LABEL:
       throw new TypeError("item not found");
-    case VisualConsoleItemType.ICON:
+    case ItemType.ICON:
       return new Icon(iconPropsDecoder(data));
-    case VisualConsoleItemType.SIMPLE_VALUE_MAX:
+    case ItemType.SIMPLE_VALUE_MAX:
       throw new TypeError("item not found");
-    case VisualConsoleItemType.SIMPLE_VALUE_MIN:
+    case ItemType.SIMPLE_VALUE_MIN:
       throw new TypeError("item not found");
-    case VisualConsoleItemType.SIMPLE_VALUE_AVG:
+    case ItemType.SIMPLE_VALUE_AVG:
       throw new TypeError("item not found");
-    case VisualConsoleItemType.PERCENTILE_BUBBLE:
+    case ItemType.PERCENTILE_BUBBLE:
       throw new TypeError("item not found");
-    case VisualConsoleItemType.SERVICE:
+    case ItemType.SERVICE:
       throw new TypeError("item not found");
-    case VisualConsoleItemType.GROUP_ITEM:
+    case ItemType.GROUP_ITEM:
       return new Group(groupPropsDecoder(data));
-    case VisualConsoleItemType.BOX_ITEM:
+    case ItemType.BOX_ITEM:
+      return new Box(boxPropsDecoder(data));
+    case ItemType.LINE_ITEM:
       throw new TypeError("item not found");
-    case VisualConsoleItemType.LINE_ITEM:
+    case ItemType.AUTO_SLA_GRAPH:
       throw new TypeError("item not found");
-    case VisualConsoleItemType.AUTO_SLA_GRAPH:
+    case ItemType.CIRCULAR_PROGRESS_BAR:
       throw new TypeError("item not found");
-    case VisualConsoleItemType.CIRCULAR_PROGRESS_BAR:
+    case ItemType.CIRCULAR_INTERIOR_PROGRESS_BAR:
       throw new TypeError("item not found");
-    case VisualConsoleItemType.CIRCULAR_INTERIOR_PROGRESS_BAR:
+    case ItemType.DONUT_GRAPH:
       throw new TypeError("item not found");
-    case VisualConsoleItemType.DONUT_GRAPH:
+    case ItemType.BARS_GRAPH:
       throw new TypeError("item not found");
-    case VisualConsoleItemType.BARS_GRAPH:
-      throw new TypeError("item not found");
-    case VisualConsoleItemType.CLOCK:
+    case ItemType.CLOCK:
       return new Clock(clockPropsDecoder(data));
-    case VisualConsoleItemType.COLOR_CLOUD:
+    case ItemType.COLOR_CLOUD:
       return new ColorCloud(colorCloudPropsDecoder(data));
     default:
       throw new TypeError("item not found");
@@ -129,7 +126,7 @@ export default class VisualConsole {
   // Properties.
   private _props: VisualConsoleProps;
   // Visual Console Item instances.
-  private elements: VisualConsoleItem<VisualConsoleItemProps>[] = [];
+  private elements: Item<ItemProps>[] = [];
 
   public constructor(
     container: HTMLElement,

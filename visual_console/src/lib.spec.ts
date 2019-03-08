@@ -1,4 +1,4 @@
-import { parseIntOr, padLeft, prefixedCssRules } from "./lib";
+import { parseIntOr, notEmptyStringOr, padLeft, prefixedCssRules } from "./lib";
 
 describe("function parseIntOr", () => {
   it("should retrieve valid int or a default value", () => {
@@ -9,6 +9,18 @@ describe("function parseIntOr", () => {
     expect(parseIntOr(false, null)).toBe(null);
     expect(parseIntOr(true, null)).toBe(null);
     expect(parseIntOr(1, null)).toBe(1);
+  });
+});
+
+describe("function notEmptyStringOr", () => {
+  it("should retrieve not empty string or a default value", () => {
+    expect(notEmptyStringOr("", null)).toBe(null);
+    expect(notEmptyStringOr("Foo", null)).toBe("Foo");
+    expect(notEmptyStringOr(1, 1)).toBe(1);
+    expect(notEmptyStringOr(1, 0)).toBe(0);
+    expect(notEmptyStringOr("", 0)).toBe(0);
+    expect(notEmptyStringOr("Foo", "Bar")).toBe("Foo");
+    expect(notEmptyStringOr(0, "Bar")).toBe("Bar");
   });
 });
 

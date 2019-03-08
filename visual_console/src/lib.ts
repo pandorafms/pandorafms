@@ -23,6 +23,17 @@ export function parseIntOr<T>(value: any, defaultValue: T): number | T {
 }
 
 /**
+ * Return a not empty string or a default value from a raw value.
+ * @param value Raw value from which we will try to extract a non empty string.
+ * @param defaultValue Default value to use if we cannot extract a non empty string.
+ * @return A non empty string or the default value.
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function notEmptyStringOr<T>(value: any, defaultValue: T): string | T {
+  return typeof value === "string" && value.length > 0 ? value : defaultValue;
+}
+
+/**
  * Return a boolean from a raw value.
  * @param value Raw value from which we will try to extract the boolean.
  * @return A valid boolean value. false by default.

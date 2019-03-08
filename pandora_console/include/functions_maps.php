@@ -188,3 +188,36 @@ function maps_add_node_relationship($values)
     $result_add_node_rel = db_process_sql_insert('trel_item', $values);
     return $result_add_node_rel;
 }
+
+
+function run_graphviz($filename_map, $filename_dot, $layout, $graph)
+{
+    switch (PHP_OS) {
+        case 'WIN32':
+        case 'WINNT':
+        case 'Windows':
+            $filename_plain = sys_get_temp_dir().'\\plain.txt';
+        break;
+
+        default:
+            $filename_plain = sys_get_temp_dir().'/plain.txt';
+        break;
+    }
+
+    file_put_contents($filename_dot, $graph);
+    file_put_contents($filename_dot, $graph);
+
+    $cmd = $layout.' -Tcmapx -o'.$filename_map.' -Tplain -o'.$filename_plain.' '.$filename_dot;
+
+    system($cmd);
+
+    if (file_exists($filename_map)) {
+        unlink($filename_map);
+    }
+
+    if (file_exists($filename_dot)) {
+        unlink($filename_dot);
+    }
+
+    return $filename_plain;
+}

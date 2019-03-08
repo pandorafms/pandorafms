@@ -1,30 +1,25 @@
 import "./Clock.css";
 
 import { LinkedVisualConsoleProps, UnknownObject } from "../../types";
-
 import {
   linkedVCPropsDecoder,
   parseIntOr,
   padLeft,
   parseBoolean,
-  prefixedCssRules
+  prefixedCssRules,
+  notEmptyStringOr
 } from "../../lib";
-
-import VisualConsoleItem, {
-  VisualConsoleItemProps,
-  itemBasePropsDecoder,
-  VisualConsoleItemType
-} from "../../VisualConsoleItem";
+import Item, { ItemProps, itemBasePropsDecoder, ItemType } from "../../Item";
 
 export type ClockProps = {
-  type: VisualConsoleItemType.CLOCK;
+  type: ItemType.CLOCK;
   clockType: "analogic" | "digital";
   clockFormat: "datetime" | "time";
   clockTimezone: string;
   clockTimezoneOffset: number; // Offset of the timezone to UTC in seconds.
   showClockTimezone: boolean;
   color?: string | null;
-} & VisualConsoleItemProps &
+} & ItemProps &
   LinkedVisualConsoleProps;
 
 /**
@@ -79,21 +74,18 @@ export function clockPropsDecoder(data: UnknownObject): ClockProps | never {
 
   return {
     ...itemBasePropsDecoder(data), // Object spread. It will merge the properties of the two objects.
-    type: VisualConsoleItemType.CLOCK,
+    type: ItemType.CLOCK,
     clockType: parseClockType(data.clockType),
     clockFormat: parseClockFormat(data.clockFormat),
     clockTimezone: data.clockTimezone,
     clockTimezoneOffset: parseIntOr(data.clockTimezoneOffset, 0),
     showClockTimezone: parseBoolean(data.showClockTimezone),
-    color:
-      typeof data.color === "string" && data.color.length > 0
-        ? data.color
-        : null,
+    color: notEmptyStringOr(data.color, null),
     ...linkedVCPropsDecoder(data) // Object spread. It will merge the properties of the two objects.
   };
 }
 
-export default class Clock extends VisualConsoleItem<ClockProps> {
+export default class Clock extends Item<ClockProps> {
   public static readonly TICK_INTERVAL = 1000; // In ms.
   private intervalRef: number | null = null;
 
@@ -173,7 +165,7 @@ export default class Clock extends VisualConsoleItem<ClockProps> {
   }
 
   /**
-   * @override VisualConsoleItem.resize
+   * @override Item.resize
    * To resize the item.
    * @param width Width.
    * @param height Height.

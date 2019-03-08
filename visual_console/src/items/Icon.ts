@@ -1,17 +1,11 @@
 import { LinkedVisualConsoleProps, UnknownObject } from "../types";
-
 import { linkedVCPropsDecoder } from "../lib";
-
-import VisualConsoleItem, {
-  VisualConsoleItemProps,
-  itemBasePropsDecoder,
-  VisualConsoleItemType
-} from "../VisualConsoleItem";
+import Item, { ItemType, ItemProps, itemBasePropsDecoder } from "../Item";
 
 export type IconProps = {
-  type: VisualConsoleItemType.ICON;
+  type: ItemType.ICON;
   imageSrc: string; // URL?
-} & VisualConsoleItemProps &
+} & ItemProps &
   LinkedVisualConsoleProps;
 
 /**
@@ -30,13 +24,13 @@ export function iconPropsDecoder(data: UnknownObject): IconProps | never {
 
   return {
     ...itemBasePropsDecoder(data), // Object spread. It will merge the properties of the two objects.
-    type: VisualConsoleItemType.ICON,
+    type: ItemType.ICON,
     imageSrc: data.imageSrc,
     ...linkedVCPropsDecoder(data) // Object spread. It will merge the properties of the two objects.
   };
 }
 
-export default class Icon extends VisualConsoleItem<IconProps> {
+export default class Icon extends Item<IconProps> {
   public createDomElement(): HTMLElement {
     const img: HTMLImageElement = document.createElement("img");
     img.className = "icon";

@@ -3,20 +3,14 @@ import {
   LinkedVisualConsoleProps,
   UnknownObject
 } from "../types";
-
 import { modulePropsDecoder, linkedVCPropsDecoder } from "../lib";
-
-import VisualConsoleItem, {
-  itemBasePropsDecoder,
-  VisualConsoleItemType,
-  VisualConsoleItemProps
-} from "../VisualConsoleItem";
+import Item, { itemBasePropsDecoder, ItemType, ItemProps } from "../Item";
 
 export type ColorCloudProps = {
-  type: VisualConsoleItemType.COLOR_CLOUD;
+  type: ItemType.COLOR_CLOUD;
   color: string;
   // TODO: Add the rest of the color cloud values?
-} & VisualConsoleItemProps &
+} & ItemProps &
   WithModuleProps &
   LinkedVisualConsoleProps;
 
@@ -39,7 +33,7 @@ export function colorCloudPropsDecoder(
 
   return {
     ...itemBasePropsDecoder(data), // Object spread. It will merge the properties of the two objects.
-    type: VisualConsoleItemType.COLOR_CLOUD,
+    type: ItemType.COLOR_CLOUD,
     color: data.color,
     ...modulePropsDecoder(data), // Object spread. It will merge the properties of the two objects.
     ...linkedVCPropsDecoder(data) // Object spread. It will merge the properties of the two objects.
@@ -48,7 +42,7 @@ export function colorCloudPropsDecoder(
 
 const svgNS = "http://www.w3.org/2000/svg";
 
-export default class ColorCloud extends VisualConsoleItem<ColorCloudProps> {
+export default class ColorCloud extends Item<ColorCloudProps> {
   public createDomElement(): HTMLElement {
     const container: HTMLDivElement = document.createElement("div");
     container.className = "color-cloud";

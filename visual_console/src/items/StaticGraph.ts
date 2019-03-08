@@ -5,18 +5,13 @@ import {
 } from "../types";
 
 import { modulePropsDecoder, linkedVCPropsDecoder } from "../lib";
-
-import VisualConsoleItem, {
-  VisualConsoleItemProps,
-  itemBasePropsDecoder,
-  VisualConsoleItemType
-} from "../VisualConsoleItem";
+import Item, { ItemType, ItemProps, itemBasePropsDecoder } from "../Item";
 
 export type StaticGraphProps = {
-  type: VisualConsoleItemType.STATIC_GRAPH;
+  type: ItemType.STATIC_GRAPH;
   imageSrc: string; // URL?
   showLastValueTooltip: "default" | "enabled" | "disabled";
-} & VisualConsoleItemProps &
+} & ItemProps &
   (WithModuleProps | LinkedVisualConsoleProps);
 
 /**
@@ -54,7 +49,7 @@ export function staticGraphPropsDecoder(
 
   return {
     ...itemBasePropsDecoder(data), // Object spread. It will merge the properties of the two objects.
-    type: VisualConsoleItemType.STATIC_GRAPH,
+    type: ItemType.STATIC_GRAPH,
     imageSrc: data.imageSrc,
     showLastValueTooltip: parseShowLastValueTooltip(data.showLastValueTooltip),
     ...modulePropsDecoder(data), // Object spread. It will merge the properties of the two objects.
@@ -62,7 +57,7 @@ export function staticGraphPropsDecoder(
   };
 }
 
-export default class StaticGraph extends VisualConsoleItem<StaticGraphProps> {
+export default class StaticGraph extends Item<StaticGraphProps> {
   public createDomElement(): HTMLElement {
     const img: HTMLImageElement = document.createElement("img");
     img.className = "static-graph";

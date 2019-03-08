@@ -708,6 +708,13 @@ foreach ($fields as $field) {
         __('This field allows url insertion using the BBCode\'s url tag').'.<br />'.__('The format is: [url=\'url to navigate\']\'text to show\'[/url]').'.<br /><br />'.__('e.g.: [url=google.com]Google web search[/url]'),
         true
     );
+    $combo = [];
+    $combo = $field['combo_values'];
+    $combo = explode(',', $combo);
+    $combo_values = [];
+    foreach ($combo as $value) {
+        $combo_values[$value] = $value;
+    }
 
     $custom_value = db_get_value_filter(
         'description',
@@ -747,6 +754,28 @@ foreach ($fields as $field) {
         );
     }
 
+    if ($field['combo_values'] !== '') {
+        $data[1] = html_print_select(
+            $combo_values,
+            'customvalue_'.$field['id_field'],
+            $custom_value,
+            '',
+            __('None'),
+            '',
+            true,
+            false,
+            false,
+            '',
+            false,
+            false,
+            false,
+            false,
+            false,
+            '',
+            false
+        );
+    };
+
     array_push($table->data, $data);
 }
 
@@ -757,7 +786,7 @@ if (!empty($fields)) {
 echo '<div class="action-buttons" style="width: '.$table->width.'">';
 
 
-// The context help about the learning mode
+// The context help about the learning mode.
 if ($modo == 0) {
     echo "<span id='modules_not_learning_mode_context_help' style=''>";
 } else {

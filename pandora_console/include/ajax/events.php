@@ -54,6 +54,7 @@ $table_events = get_parameter('table_events', 0);
 $total_events = (bool) get_parameter('total_events');
 $total_event_graph = (bool) get_parameter('total_event_graph');
 $graphic_event_group = (bool) get_parameter('graphic_event_group');
+$get_table_response_command = (bool) get_parameter('get_table_response_command');
 
 if ($get_event_name) {
     $event_id = get_parameter('event_id');
@@ -116,6 +117,7 @@ if ($get_response_target) {
     }
 
     echo events_get_response_target($event_id, $response_id, $server_id);
+
     return;
 }
 
@@ -129,6 +131,7 @@ if ($get_response) {
     }
 
     echo json_encode($event_response);
+
     return;
 }
 
@@ -136,6 +139,7 @@ if ($perform_event_response) {
     global $config;
 
     $command = get_parameter('target', '');
+
     $response_id = get_parameter('response_id');
 
     $event_response = db_get_row('tevent_response', 'id', $response_id);
@@ -148,7 +152,11 @@ if ($perform_event_response) {
                 'nano',
             ];
 
-            $server_data = db_get_row('tserver', 'id_server', $event_response['server_to_exec']);
+            $server_data = db_get_row(
+                'tserver',
+                'id_server',
+                $event_response['server_to_exec']
+            );
 
             if (in_array(strtolower($command), $commandExclusions)) {
                 echo 'Only stdin/stdout commands are supported';
@@ -234,13 +242,29 @@ if ($dialogue_event_response) {
                 );
                 echo '</div><br>';
 
-                echo "<div id='response_loading_command_".$out_iterator."' style='display:none'>".html_print_image('images/spinner.gif', true).'</div>';
+                echo "<div id='response_loading_command_".$out_iterator."' style='display:none'>";
+                echo html_print_image(
+                    'images/spinner.gif',
+                    true
+                );
+                echo '</div>';
                 echo "<br><div id='response_out_".$out_iterator."' style='text-align:left'></div>";
 
                 if ($end) {
                     echo "<br><div id='re_exec_command_".$out_iterator."' style='display:none;'>";
-                    html_print_button(__('Execute again'), 'btn_str', false, 'execute_event_response(false);', "class='sub next'");
-                    echo "<span id='execute_again_loading' style='display:none'>".html_print_image('images/spinner.gif', true).'</span>';
+                    html_print_button(
+                        __('Execute again'),
+                        'btn_str',
+                        false,
+                        'execute_event_response(false);',
+                        "class='sub next'"
+                    );
+                    echo "<span id='execute_again_loading' style='display:none'>";
+                    echo html_print_image(
+                        'images/spinner.gif',
+                        true
+                    );
+                    echo '</span>';
                     echo '</div>';
                 }
             } else {
@@ -794,5 +818,69 @@ if ($graphic_event_group) {
 
     $prueba = grafico_eventos_grupo(280, 150, '', false, true);
     echo $prueba;
+    return;
+}
+
+if ($get_table_response_command) {
+    global $config;
+
+    $response_id = get_parameter('event_response_id');
+    $params_string = db_get_value(
+        'params',
+        'tevent_response',
+        'id',
+        $response_id
+    );
+
+    $params = explode(',', $params_string);
+
+    $table = new stdClass;
+    $table->id = 'events_responses_table_command';
+    $table->width = '90%';
+    $table->styleTable = 'text-align:center; margin: 0 auto;';
+
+    $table->style = [];
+    $table->style[0] = 'text-align:center;';
+    $table->style[1] = 'text-align:center;';
+
+    $table->head = [];
+    $table->head[0] = __('Parameters');
+    $table->head[0] .= ui_print_help_tip(
+        __('These commands will apply to all selected events'),
+        true
+    );
+    $table->head[1] = __('Value');
+
+    if (isset($params) === true
+        && is_array($params) === true
+    ) {
+        foreach ($params as $key => $value) {
+            $table->data[$key][0] = $value;
+            $table->data[$key][1] = html_print_input_text(
+                $value.'-'.$key,
+                '',
+                '',
+                50,
+                255,
+                true,
+                false,
+                false,
+                '',
+                'response_command_input'
+            );
+        }
+    }
+
+    echo '<form id="form_response_command">';
+    echo html_print_table($table, true);
+    echo '</form>';
+    echo html_print_submit_button(
+        __('Execute'),
+        'enter_command',
+        false,
+        'class="sub next" style="float:right; margin-top:15px; margin-right:25px;"',
+        true
+    );
+
     return;
 }

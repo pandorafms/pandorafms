@@ -183,7 +183,7 @@ $hidden_main_link = [
 
 unset($table);
 $table = new stdClass();
-$table->styleTable = 'width: 70%';
+$table->styleTable = 'width: 60%';
 // Print the header.
 $table->head = [];
 $table->head['main'] = __('IP');
@@ -334,7 +334,7 @@ if (empty($data)) {
     html_print_table($table);
 
     // Print the graph.
-    echo '<div style="margin-top: 50px;">';
+    echo '<div style="margin-top: 50px; width: 40%;">';
     echo pie_graph(
         $chart_data,
         320,

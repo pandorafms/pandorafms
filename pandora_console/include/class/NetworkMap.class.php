@@ -309,11 +309,20 @@ class NetworkMap
     ////////////////////////////////////////////////////////////////////
     var url_background_grid = "'.ui_get_full_url('images/background_grid.png').'";
     var networkmap_id = '.$this->idMap.";\n";
+        if (!empty($networkmap['filter'])) {
+            if (empty($networkmap['filter']['x_offs'])) {
+                $output .= "var x_offs =null;\n";
+            } else {
+                $output .= 'var x_offs ='.$networkmap['filter']['x_offs'].";\n";
+            }
 
-        if (!empty($map_dash_details)) {
-            $output .= 'var x_offs = '.$map_dash_details['x_offs'].";\n";
-            $output .= 'var y_offs = '.$map_dash_details['y_offs'].";\n";
-            $output .= 'var z_dash = '.$map_dash_details['z_dash'].";\n";
+            if (empty($networkmap['filter']['y_offs'])) {
+                $output .= "var y_offs =null;\n";
+            } else {
+                $output .= 'var y_offs ='.$networkmap['filter']['y_offs'].";\n";
+            }
+
+            $output .= 'var z_dash = '.$networkmap['filter']['z_dash'].";\n";
         } else {
             $output .= "var x_offs = null;\n";
             $output .= "var y_offs = null;\n";

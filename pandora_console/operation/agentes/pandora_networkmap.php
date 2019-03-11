@@ -244,8 +244,8 @@ if ($new_networkmap || $save_networkmap) {
         $node_radius = (int) get_parameter('node_radius', 40);
         $description = get_parameter('description', '');
 
-        $offset_x = get_parameter('pos_x');
-        $offset_y = get_parameter('pos_y');
+        $offset_x = get_parameter('pos_x', 0);
+        $offset_y = get_parameter('pos_y', 0);
         $scale_z = get_parameter('scale_z', 0.5);
 
         $node_sep = get_parameter('node_sep', '0.25');
@@ -421,8 +421,8 @@ else if ($update_networkmap || $copy_networkmap || $delete) {
 
         $source = (string) get_parameter('source', 'group');
 
-        $offset_x = get_parameter('pos_x');
-        $offset_y = get_parameter('pos_y');
+        $offset_x = get_parameter('pos_x', 0);
+        $offset_y = get_parameter('pos_y', 0);
         $scale_z = get_parameter('scale_z', 0.5);
 
         $values = [];

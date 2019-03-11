@@ -164,6 +164,7 @@ function snmpGet(oid) {
   var snmp3_privacy_method = $("#snmp3_browser_privacy_method").val();
   var snmp3_privacy_pass = $("#password-snmp3_browser_privacy_pass").val();
   var ajax_url = $("#hidden-ajax_url").val();
+  var server_to_exec = $("#server_to_exec").val();
 
   // Check for a custom action
   var custom_action = $("#hidden-custom_action").val();
@@ -183,6 +184,7 @@ function snmpGet(oid) {
     "snmp3_browser_auth_pass=" + snmp3_auth_pass,
     "snmp3_browser_privacy_method=" + snmp3_privacy_method,
     "snmp3_browser_privacy_pass=" + snmp3_privacy_pass,
+    "server_to_exec=" + server_to_exec,
     "action=" + "snmpget",
     "custom_action=" + custom_action,
     "page=operation/snmpconsole/snmp_browser"

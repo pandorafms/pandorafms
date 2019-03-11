@@ -1674,44 +1674,6 @@ function show_networkmap($id=0, $user_readonly=false, $nodes_and_relations=[], $
     echo '</div>';
 
     ?>
-<style type="text/css">
-    .node {
-        stroke: #fff;
-        stroke-width: 1px;
-    }
-    
-    .node_over {
-        stroke: #999;
-    }
-    
-    .node_selected {
-        stroke:#343434;
-        stroke-width:5;
-    }
-    
-    .node_children {
-        stroke: #00f;
-    }
-    
-    .link {
-        stroke-opacity: .6;
-    }
-    
-    .link_over {
-        stroke: #000;
-        stroke-opacity: .6;
-    }
-    
-    .holding_area {
-        stroke: #0f0;
-        stroke-dasharray: 12,3;
-    }
-    
-    .holding_area_link {
-        stroke-dasharray: 12,3;
-    }
-</style>
-
 <script type="text/javascript">
     <?php
     networkmap_write_js_array($id, $nodes_and_relations, $map_dash_details);

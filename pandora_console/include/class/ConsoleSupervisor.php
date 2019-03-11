@@ -1100,6 +1100,13 @@ class ConsoleSupervisor
         }
 
         foreach ($servers as $server) {
+            if ($server['type'] == SERVER_TYPE_ENTERPRISE_SATELLITE) {
+                if ($server['downtime'] < ($server['keepalive'] * 2)) {
+                    // Satellite uses different keepalive mode.
+                    continue;
+                }
+            }
+
             if ($server['status'] == 1) {
                 // Fatal error. Component has die.
                 $msg = __(

@@ -26,7 +26,7 @@ if (!check_acl($config['id_user'], 0, 'PM')) {
     return;
 }
 
-// Header
+// Header.
 ui_print_page_header(__('Agents custom fields manager'), 'images/custom_field.png', false, '', true, '');
 
 $create_field = (bool) get_parameter('create_field');
@@ -36,10 +36,12 @@ $id_field = (int) get_parameter('id_field', 0);
 $name = (string) get_parameter('name', '');
 $display_on_front = (int) get_parameter('display_on_front', 0);
 $is_password_type = (int) get_parameter('is_password_type', 0);
+$combo_values = (string) get_parameter('combo_values', '');
+$combo_value_selected = (string) get_parameter('combo_value_selected', '');
 
-// Create field
+// Create field.
 if ($create_field) {
-    // Check if name field is empty
+    // Check if name field is empty.
     if ($name == '') {
         ui_print_error_message(__('The name must not be empty'));
     } else if ($name == db_get_value('name', 'tagent_custom_fields', 'name', $name)) {
@@ -51,20 +53,22 @@ if ($create_field) {
                 'name'             => $name,
                 'display_on_front' => $display_on_front,
                 'is_password_type' => $is_password_type,
+                'combo_values'     => $combo_values,
             ]
         );
         ui_print_success_message(__('Field successfully created'));
     }
 }
 
-// Update field
+// Update field.
 if ($update_field) {
-    // Check if name field is empty
+    // Check if name field is empty.
     if ($name != '') {
         $values = [
             'name'             => $name,
             'display_on_front' => $display_on_front,
             'is_password_type' => $is_password_type,
+            'combo_values'     => $combo_values,
         ];
 
         $result = db_process_sql_update('tagent_custom_fields', $values, ['id_field' => $id_field]);
@@ -79,7 +83,7 @@ if ($update_field) {
     }
 }
 
-// Delete field
+// Delete field.
 if ($delete_field) {
     $result = db_process_sql_delete(
         'tagent_custom_fields',

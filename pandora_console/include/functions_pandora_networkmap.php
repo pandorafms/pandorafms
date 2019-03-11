@@ -769,14 +769,13 @@ function networkmap_links_to_js_links($relations, $nodes_graph)
 
         $agent = 0;
         $agent2 = 0;
+        $control1 = false;
+        $control2 = false;
 
         if (($relation['parent_type'] == 1) && ($relation['child_type'] == 1)) {
-            $mod1_status = db_get_value_filter('estado', 'tagente_estado', ['id_agente_modulo' => $relation['id_parent_source_data']]);
-            $mod2_status = db_get_value_filter('estado', 'tagente_estado', ['id_agente_modulo' => $relation['id_child_source_data']]);
-
-            if (($mod1_status == AGENT_MODULE_STATUS_CRITICAL_BAD) || ($mod2_status == AGENT_MODULE_STATUS_CRITICAL_BAD)) {
+            if (($item['status_start'] == AGENT_MODULE_STATUS_CRITICAL_BAD) || ($item['status_end'] == AGENT_MODULE_STATUS_CRITICAL_BAD)) {
                 $item['link_color'] = '#FC4444';
-            } else if (($mod1_status == AGENT_MODULE_STATUS_WARNING) || ($mod2_status == AGENT_MODULE_STATUS_WARNING)) {
+            } else if (($item['status_start'] == AGENT_MODULE_STATUS_WARNING) || ($item['status_end'] == AGENT_MODULE_STATUS_WARNING)) {
                 $item['link_color'] = '#FAD403';
             }
 
@@ -786,17 +785,23 @@ function networkmap_links_to_js_links($relations, $nodes_graph)
                 if (isset($node['id_agent'])) {
                     if ($node['id_agent'] == $agent) {
                         $agent = $node['id_db'];
-                    } else if ($node['id_agent'] == $agent2) {
+                        $control1 = true;
+                    }
+
+                    if ($node['id_agent'] == $agent2) {
                         $agent2 = $node['id_db'];
+                        $control2 = true;
+                    }
+
+                    if ($control1 && $control2) {
+                        break;
                     }
                 }
             }
         } else if ($relation['child_type'] == 1) {
-            $mod1_status = db_get_value_filter('estado', 'tagente_estado', ['id_agente_modulo' => $relation['id_child_source_data']]);
-
-            if ($mod1_status == AGENT_MODULE_STATUS_CRITICAL_BAD) {
+            if ($item['status_start'] == AGENT_MODULE_STATUS_CRITICAL_BAD) {
                 $item['link_color'] = '#FC4444';
-            } else if ($mod1_status == AGENT_MODULE_STATUS_WARNING) {
+            } else if ($item['status_start'] == AGENT_MODULE_STATUS_WARNING) {
                 $item['link_color'] = '#FAD403';
             }
 
@@ -805,28 +810,41 @@ function networkmap_links_to_js_links($relations, $nodes_graph)
                 if (isset($node['id_agent'])) {
                     if ($node['id_agent'] == $relation['id_parent_source_data']) {
                         $agent = $node['id_db'];
-                    } else if ($node['id_agent'] == $agent2) {
+                        $control1 = true;
+                    }
+
+                    if ($node['id_agent'] == $agent2) {
                         $agent2 = $node['id_db'];
+                        $control2 = true;
+                    }
+
+                    if ($control1 && $control2) {
+                        break;
                     }
                 }
             }
         } else if ($relation['parent_type'] == 1) {
-            $mod1_status = db_get_value_filter('estado', 'tagente_estado', ['id_agente_modulo' => $relation['id_parent_source_data']]);
-
-            if ($mod1_status == AGENT_MODULE_STATUS_CRITICAL_BAD) {
+            if ($item['status_end'] == AGENT_MODULE_STATUS_CRITICAL_BAD) {
                 $item['link_color'] = '#FC4444';
-            } else if ($mod1_status == AGENT_MODULE_STATUS_WARNING) {
+            } else if ($item['status_end'] == AGENT_MODULE_STATUS_WARNING) {
                 $item['link_color'] = '#FAD403';
             }
 
             $agent = agents_get_agent_id_by_module_id($relation['id_parent_source_data']);
-
             foreach ($nodes_graph as $key2 => $node) {
                 if (isset($node['id_agent'])) {
                     if ($node['id_agent'] == $agent) {
                         $agent = $node['id_db'];
-                    } else if ($node['id_agent'] == $relation['id_child_source_data']) {
+                        $control1 = true;
+                    }
+
+                    if ($node['id_agent'] == $relation['id_child_source_data']) {
                         $agent2 = $node['id_db'];
+                        $control2 = true;
+                    }
+
+                    if ($control1 && $control2) {
+                        break;
                     }
                 }
             }

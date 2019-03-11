@@ -235,10 +235,13 @@ if (get_parameter('export_csv')) {
     $nl = "\n";
 
     // Print the header.
-    foreach ($table->head as $head_elem) {
-        echo $head_elem.$div;
+    echo reset($table->head).$div;
+    if (!$is_network) {
+        echo __('Flows').$div;
     }
 
+    echo __('Packets').$div;
+    echo __('Bytes').$div;
     echo $nl;
 
     // Print the data.

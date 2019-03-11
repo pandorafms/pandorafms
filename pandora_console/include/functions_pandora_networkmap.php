@@ -1393,70 +1393,76 @@ function clean_duplicate_links($relations)
     $duplicated = false;
     $index_to_del = 0;
     $index = 0;
-    foreach ($segregation_links['aa'] as $link) {
-        foreach ($segregation_links['aa'] as $link2) {
-            if ($link['id_parent'] == $link2['id_child'] && $link['id_child'] == $link2['id_parent']) {
-                if (enterprise_installed()) {
-                    delete_link($segregation_links['aa'][$index_to_del]);
+    if (is_array($segregation_links['aa'])) {
+        foreach ($segregation_links['aa'] as $link) {
+            foreach ($segregation_links['aa'] as $link2) {
+                if ($link['id_parent'] == $link2['id_child'] && $link['id_child'] == $link2['id_parent']) {
+                    if (enterprise_installed()) {
+                        delete_link($segregation_links['aa'][$index_to_del]);
+                    }
+
+                    unset($segregation_links['aa'][$index_to_del]);
                 }
 
-                unset($segregation_links['aa'][$index_to_del]);
+                $index_to_del++;
             }
 
-            $index_to_del++;
+            $final_links['aa'][$index] = $link;
+            $index++;
+
+            $duplicated = false;
+            $index_to_del = 0;
         }
-
-        $final_links['aa'][$index] = $link;
-        $index++;
-
-        $duplicated = false;
-        $index_to_del = 0;
     }
 
     $duplicated = false;
     $index_to_del = 0;
     $index2 = 0;
-    foreach ($segregation_links['mm'] as $link) {
-        foreach ($segregation_links['mm'] as $link2) {
-            if ($link['id_parent'] == $link2['id_child'] && $link['id_child'] == $link2['id_parent']) {
-                if (enterprise_installed()) {
-                    delete_link($segregation_links['mm'][$index_to_del]);
+    if (is_array($segregation_links['mm'])) {
+        foreach ($segregation_links['mm'] as $link) {
+            foreach ($segregation_links['mm'] as $link2) {
+                if ($link['id_parent'] == $link2['id_child'] && $link['id_child'] == $link2['id_parent']) {
+                    if (enterprise_installed()) {
+                        delete_link($segregation_links['mm'][$index_to_del]);
+                    }
+
+                    // unset($segregation_links['mm'][$index_to_del]);
                 }
 
-                // unset($segregation_links['mm'][$index_to_del]);
+                $index_to_del++;
             }
 
-            $index_to_del++;
+            $final_links['mm'][$index2] = $link;
+            $index2++;
+
+            $duplicated = false;
+            $index_to_del = 0;
         }
-
-        $final_links['mm'][$index2] = $link;
-        $index2++;
-
-        $duplicated = false;
-        $index_to_del = 0;
     }
 
     $duplicated = false;
     $index_to_del = 0;
     $index3 = 0;
-    foreach ($segregation_links['ff'] as $link) {
-        foreach ($segregation_links['ff'] as $link2) {
-            if ($link['id_parent'] == $link2['id_child'] && $link['id_child'] == $link2['id_parent']) {
-                if (enterprise_installed()) {
-                    delete_link($segregation_links['ff'][$index_to_del]);
+    if (is_array($segregation_links['ff'])) {
+        foreach ($segregation_links['ff'] as $link) {
+            foreach ($segregation_links['ff'] as $link2) {
+                if ($link['id_parent'] == $link2['id_child'] && $link['id_child'] == $link2['id_parent']) {
+                    if (enterprise_installed()) {
+                        delete_link($segregation_links['ff'][$index_to_del]);
+                    }
+
+                    unset($segregation_links['ff'][$index_to_del]);
                 }
 
-                unset($segregation_links['ff'][$index_to_del]);
+                $index_to_del++;
             }
 
-            $index_to_del++;
+            $final_links['ff'][$index3] = $link;
+            $index3++;
+
+            $duplicated = false;
+            $index_to_del = 0;
         }
-
-        $final_links['ff'][$index3] = $link;
-        $index3++;
-
-        $duplicated = false;
-        $index_to_del = 0;
     }
 
     $final_links['am'] = $segregation_links['am'];
@@ -1479,23 +1485,25 @@ function clean_duplicate_links($relations)
     $l3_link = [];
     $agent1 = 0;
     $agent2 = 0;
-    foreach ($final_links['mm'] as $rel_mm) {
-        $module_parent = $rel_mm['id_parent_source_data'];
-        $module_children = $rel_mm['id_child_source_data'];
-        $agent1 = (int) agents_get_agent_id_by_module_id($module_parent);
-        $agent2 = (int) agents_get_agent_id_by_module_id($module_children);
-        foreach ($final_links['aa'] as $key => $rel_aa) {
-            $l3_link = $rel_aa;
-            $id_p_source_data = (int) $rel_aa['id_parent_source_data'];
-            $id_c_source_data = (int) $rel_aa['id_child_source_data'];
-            if ((($id_p_source_data == $agent1) && ($id_c_source_data == $agent2))
-                || (($id_p_source_data == $agent2) && ($id_c_source_data == $agent1))
-            ) {
-                if (enterprise_installed()) {
-                    delete_link($final_links['aa'][$key]);
-                }
+    if (is_array($segregation_links['mm'])) {
+        foreach ($final_links['mm'] as $rel_mm) {
+            $module_parent = $rel_mm['id_parent_source_data'];
+            $module_children = $rel_mm['id_child_source_data'];
+            $agent1 = (int) agents_get_agent_id_by_module_id($module_parent);
+            $agent2 = (int) agents_get_agent_id_by_module_id($module_children);
+            foreach ($final_links['aa'] as $key => $rel_aa) {
+                $l3_link = $rel_aa;
+                $id_p_source_data = (int) $rel_aa['id_parent_source_data'];
+                $id_c_source_data = (int) $rel_aa['id_child_source_data'];
+                if ((($id_p_source_data == $agent1) && ($id_c_source_data == $agent2))
+                    || (($id_p_source_data == $agent2) && ($id_c_source_data == $agent1))
+                ) {
+                    if (enterprise_installed()) {
+                        delete_link($final_links['aa'][$key]);
+                    }
 
-                unset($final_links['aa'][$key]);
+                    unset($final_links['aa'][$key]);
+                }
             }
         }
     }
@@ -1507,14 +1515,16 @@ function clean_duplicate_links($relations)
 
     $same_m = [];
     $index = 0;
-    foreach ($final_links2['am'] as $rel_am) {
-        foreach ($final_links2['am'] as $rel_am2) {
-            if (($rel_am['id_child_source_data'] == $rel_am2['id_child_source_data'])
-                && ($rel_am['id_parent_source_data'] != $rel_am2['id_parent_source_data'])
-            ) {
-                $same_m[$index]['rel'] = $rel_am2;
-                $same_m[$index]['agent_parent'] = $rel_am['id_parent_source_data'];
-                $index++;
+    if (is_array($final_links2['am'])) {
+        foreach ($final_links2['am'] as $rel_am) {
+            foreach ($final_links2['am'] as $rel_am2) {
+                if (($rel_am['id_child_source_data'] == $rel_am2['id_child_source_data'])
+                    && ($rel_am['id_parent_source_data'] != $rel_am2['id_parent_source_data'])
+                ) {
+                    $same_m[$index]['rel'] = $rel_am2;
+                    $same_m[$index]['agent_parent'] = $rel_am['id_parent_source_data'];
+                    $index++;
+                }
             }
         }
     }
@@ -1523,19 +1533,21 @@ function clean_duplicate_links($relations)
     $index = 0;
     $l3_link = [];
     $have_l3 = false;
-    foreach ($final_links2['aa'] as $key => $rel_aa) {
-        $l3_link = $rel_aa;
-        foreach ($same_m as $rel_am) {
-            if ((($rel_aa['id_parent_source_data'] == $rel_am['parent']['id_parent_source_data'])
-                && ($rel_aa['id_child_source_data'] == $rel_am['rel']['id_parent_source_data']))
-                || (($rel_aa['id_child_source_data'] == $rel_am['parent']['id_parent_source_data'])
-                && ($rel_aa['id_parent_source_data'] == $rel_am['rel']['id_parent_source_data']))
-            ) {
-                if (enterprise_installed()) {
-                    delete_link($final_links2['aa'][$key]);
-                }
+    if (is_array($final_links2['aa'])) {
+        foreach ($final_links2['aa'] as $key => $rel_aa) {
+            $l3_link = $rel_aa;
+            foreach ($same_m as $rel_am) {
+                if ((($rel_aa['id_parent_source_data'] == $rel_am['parent']['id_parent_source_data'])
+                    && ($rel_aa['id_child_source_data'] == $rel_am['rel']['id_parent_source_data']))
+                    || (($rel_aa['id_child_source_data'] == $rel_am['parent']['id_parent_source_data'])
+                    && ($rel_aa['id_parent_source_data'] == $rel_am['rel']['id_parent_source_data']))
+                ) {
+                    if (enterprise_installed()) {
+                        delete_link($final_links2['aa'][$key]);
+                    }
 
-                unset($final_links2['aa'][$key]);
+                    unset($final_links2['aa'][$key]);
+                }
             }
         }
     }
@@ -1546,20 +1558,28 @@ function clean_duplicate_links($relations)
     $final_links3['ff'] = $final_links2['ff'];
 
     $cleaned_links = [];
-    foreach ($final_links3['aa'] as $link) {
-        $cleaned_links[] = $link;
+    if (is_array($final_links3['aa'])) {
+        foreach ($final_links3['aa'] as $link) {
+            $cleaned_links[] = $link;
+        }
     }
 
-    foreach ($final_links3['am'] as $link) {
-        $cleaned_links[] = $link;
+    if (is_array($final_links3['am'])) {
+        foreach ($final_links3['am'] as $link) {
+            $cleaned_links[] = $link;
+        }
     }
 
-    foreach ($final_links3['mm'] as $link) {
-        $cleaned_links[] = $link;
+    if (is_array($final_links3['mm'])) {
+        foreach ($final_links3['mm'] as $link) {
+            $cleaned_links[] = $link;
+        }
     }
 
-    foreach ($final_links3['ff'] as $link) {
-        $cleaned_links[] = $link;
+    if (is_array($final_links3['ff'])) {
+        foreach ($final_links3['ff'] as $link) {
+            $cleaned_links[] = $link;
+        }
     }
 
     return $cleaned_links;

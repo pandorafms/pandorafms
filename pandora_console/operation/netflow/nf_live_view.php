@@ -83,7 +83,7 @@ $filter['router_ip'] = get_parameter('router_ip');
 
 // Read chart configuration
 $chart_type = get_parameter('chart_type', 'netflow_area');
-$max_aggregates = (int) get_parameter('max_aggregates', 1);
+$max_aggregates = (int) get_parameter('max_aggregates', 10);
 $period = (int) get_parameter('period', SECONDS_1DAY);
 $update_date = (int) get_parameter('update_date', 0);
 $date = get_parameter_post('date', date(DATE_FORMAT, get_system_time()));
@@ -284,26 +284,17 @@ if (is_metaconsole()) {
     echo '<td>'.html_print_select($max_values, 'max_aggregates', $max_aggregates, '', '', 0, true).'<a id="max_values" href="#" onclick="javascript: edit_max_value();">'.html_print_image('images/pencil.png', true, ['id' => 'pencil']).'</a>';
     echo '</td>';
 
-    $onclick = "if (!confirm('".__('Warning').'. '.__('IP address resolution can take a lot of time')."')) return false;";
-    $radio_buttons = __('Yes').'&nbsp;&nbsp;'.html_print_radio_button_extended(
-        'address_resolution',
-        1,
-        '',
-        $address_resolution,
-        false,
-        $onclick,
-        '',
-        true
-    ).'&nbsp;&nbsp;&nbsp;';
-    $radio_buttons .= __('No').'&nbsp;&nbsp;'.html_print_radio_button(
-        'address_resolution',
-        0,
-        '',
-        $address_resolution,
-        true
-    );
-    echo '<td>'.'<b>'.__('IP address resolution').'</b>'.ui_print_help_tip(__('Resolve the IP addresses to get their hostnames.'), true).'</td>';
-    echo "<td>$radio_buttons</td>";
+    echo '<td>'.'<b>'.__('Aggregate by').'</b>'.ui_print_help_icon('aggregate_by', true).'</td>';
+    $aggregate_list = [];
+    $aggregate_list = [
+        'none'    => __('None'),
+        'proto'   => __('Protocol'),
+        'srcip'   => __('Src Ip Address'),
+        'dstip'   => __('Dst Ip Address'),
+        'srcport' => __('Src Port'),
+        'dstport' => __('Dst Port'),
+    ];
+    echo '<td>'.html_print_select($aggregate_list, 'aggregate', $filter['aggregate'], '', '', 0, true, false, true, '', false).'</td>';
 
     echo '</tr>';
 
@@ -333,10 +324,24 @@ if (is_metaconsole()) {
     $own_info = get_user_info($config['id_user']);
     echo '<td>'.'<span id="filter_group_color"><b>'.__('Group').'</b></span>'.'</td>';
     echo "<td colspan='2'>".html_print_select_groups($config['id_user'], 'IW', $own_info['is_admin'], 'assign_group', $filter['id_group'], '', '', -1, true, false, false).'</td>';
-
     echo '</tr>';
-    echo '<tr>';
 
+    echo '<tr id="filter_toggle">';
+    echo '<td>';
+    html_print_image(
+        'images/darrowdown.png',
+        false,
+        [
+            'onclick' => 'toggleFilters(event)',
+            'style'   => 'cursor: pointer;',
+            'id'      => 'nf-toggle-button',
+        ]
+    );
+    echo __('Advanced');
+    echo '</td>';
+    echo '</tr>';
+
+    echo '<tr class="nf_filter">';
     if ($netflow_disable_custom_lvfilters) {
         echo '<td></td>';
         echo '<td></td>';
@@ -359,10 +364,7 @@ if (is_metaconsole()) {
     echo '</td>';
     echo '</tr>';
 
-
-
-    echo "<tr class='filter_normal'>";
-
+    echo "<tr class='filter_normal nf_filter'>";
     if ($netflow_disable_custom_lvfilters) {
         echo '<td></td>';
         echo '<td></td>';
@@ -380,8 +382,8 @@ if (is_metaconsole()) {
     }
 
     echo '</tr>';
-    echo "<tr class='filter_normal'>";
 
+    echo "<tr class='filter_normal nf_filter'>";
     if ($netflow_disable_custom_lvfilters) {
         echo '<td></td>';
         echo '<td></td>';
@@ -399,8 +401,8 @@ if (is_metaconsole()) {
     }
 
     echo '</tr>';
-    echo "<tr class='filter_advance' style='display: none;'>";
 
+    echo "<tr class='filter_advance nf_filter' style='display: none;'>";
     if ($netflow_disable_custom_lvfilters) {
         echo '<td></td>';
         echo '<td></td>';
@@ -410,19 +412,28 @@ if (is_metaconsole()) {
     }
 
     echo '</tr>';
-    echo '<tr>';
+    echo '<tr class="nf_filter">';
 
-    echo '<td>'.'<b>'.__('Aggregate by').'</b>'.ui_print_help_icon('aggregate_by', true).'</td>';
-    $aggregate_list = [];
-    $aggregate_list = [
-        'none'    => __('None'),
-        'proto'   => __('Protocol'),
-        'srcip'   => __('Src Ip Address'),
-        'dstip'   => __('Dst Ip Address'),
-        'srcport' => __('Src Port'),
-        'dstport' => __('Dst Port'),
-    ];
-    echo '<td>'.html_print_select($aggregate_list, 'aggregate', $filter['aggregate'], '', '', 0, true, false, true, '', false).'</td>';
+    $onclick = "if (!confirm('".__('Warning').'. '.__('IP address resolution can take a lot of time')."')) return false;";
+    $radio_buttons = __('Yes').'&nbsp;&nbsp;'.html_print_radio_button_extended(
+        'address_resolution',
+        1,
+        '',
+        $address_resolution,
+        false,
+        $onclick,
+        '',
+        true
+    ).'&nbsp;&nbsp;&nbsp;';
+    $radio_buttons .= __('No').'&nbsp;&nbsp;'.html_print_radio_button(
+        'address_resolution',
+        0,
+        '',
+        $address_resolution,
+        true
+    );
+    echo '<td>'.'<b>'.__('IP address resolution').'</b>'.ui_print_help_tip(__('Resolve the IP addresses to get their hostnames.'), true).'</td>';
+    echo "<td>$radio_buttons</td>";
 
     echo '<td>'.'<b>'.__('Router ip').'</b>'.'</td>';
     echo '<td>'.html_print_input_text('router_ip', $filter['router_ip'], false, 30, 80, true).'</td>';
@@ -554,7 +565,22 @@ if (is_metaconsole()) {
         
         return true;
     };
-    
+
+    function toggleFilters (event) {
+        // Display or show the items.
+        var is_advanced = $("#radiobtn0001").is(':checked');
+        var class_name = is_advanced ? ".filter_advance" : ".filter_normal";
+        $(".nf_filter").not(class_name).toggle();
+
+        // Change the image.
+        $('#' + event.target.id).attr(
+            'src',
+            $(".nf_filter").not(class_name).first().is(':visible')
+                ? 'images/darrowup.png'
+                : 'images/darrowdown.png'
+        );
+    }
+
     // Display the appropriate filter
     var filter_type = <?php echo $filter_type; ?>;
     if (filter_type == 0) {
@@ -704,3 +730,8 @@ if (is_metaconsole()) {
     
     $.datepicker.regional["<?php echo get_user_language(); ?>"];
 </script>
+<style type="text/css">
+.nf_filter {
+  display: none;
+}
+</style>

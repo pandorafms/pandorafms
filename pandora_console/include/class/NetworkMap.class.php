@@ -1,6 +1,4 @@
 <?php
-
-
 /**
  * Class to manage networkmaps in Pandora FMS
  *
@@ -300,11 +298,11 @@ class NetworkMap
             500,
             500,
         ];
-        /*
-            $this->graph['relations'] = clean_duplicate_links(
+
+        $this->graph['relations'] = clean_duplicate_links(
             $this->graph['relations']
-            );
-        */
+        );
+
         $output .= '<script type="text/javascript">
     ////////////////////////////////////////////////////////////////////
     // VARS FROM THE DB
@@ -1039,8 +1037,6 @@ class NetworkMap
             $output .= $this->loadMapData();
             $output .= $this->loadController();
             $output .= $this->loadAdvanceInterface();
-        } else if (isset($this->graph)) {
-            // Build graph based on direct graph definition.
         }
 
         if ($return === false) {

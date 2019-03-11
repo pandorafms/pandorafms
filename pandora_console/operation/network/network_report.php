@@ -105,22 +105,22 @@ $table->data['0']['2'] .= html_print_checkbox(
     'network_report_click_period(event)'
 );
 
-$table->data['1']['0'] = __('End date').'&nbsp;&nbsp;';
-$table->data['1']['0'] .= html_print_input_text('date_greater', $date_greater, '', 10, 7, true);
+$table->data['1']['0'] = '<div id="end_date_container" style="'.$style_end.'">';
+$table->data['1']['0'] .= __('Start date').'&nbsp;&nbsp;';
+$table->data['1']['0'] .= html_print_input_text('date_lower', $date_lower, '', 10, 7, true);
 $table->data['1']['0'] .= '&nbsp;&nbsp;';
-$table->data['1']['0'] .= html_print_input_text('time_greater', $time_greater, '', 7, 8, true);
+$table->data['1']['0'] .= html_print_input_text('time_lower', $time_lower, '', 7, 8, true);
+$table->data['1']['0'] .= '</div>';
 
-$table->data['1']['1'] = '<div id="end_date_container" style="'.$style_end.'">';
-$table->data['1']['1'] .= __('Start date').'&nbsp;&nbsp;';
-$table->data['1']['1'] .= html_print_input_text('date_lower', $date_lower, '', 10, 7, true);
+$table->data['1']['0'] .= '<div id="period_container" style="'.$style_period.'">';
+$table->data['1']['0'] .= __('Time Period').'&nbsp;&nbsp;';
+$table->data['1']['0'] .= html_print_extended_select_for_time('period', $period, '', '', 0, false, true);
+$table->data['1']['0'] .= '</div>';
+
+$table->data['1']['1'] = __('End date').'&nbsp;&nbsp;';
+$table->data['1']['1'] .= html_print_input_text('date_greater', $date_greater, '', 10, 7, true);
 $table->data['1']['1'] .= '&nbsp;&nbsp;';
-$table->data['1']['1'] .= html_print_input_text('time_lower', $time_lower, '', 7, 8, true);
-$table->data['1']['1'] .= '</div>';
-
-$table->data['1']['1'] .= '<div id="period_container" style="'.$style_period.'">';
-$table->data['1']['1'] .= __('Time Period').'&nbsp;&nbsp;';
-$table->data['1']['1'] .= html_print_extended_select_for_time('period', $period, '', '', 0, false, true);
-$table->data['1']['1'] .= '</div>';
+$table->data['1']['1'] .= html_print_input_text('time_greater', $time_greater, '', 7, 8, true);
 
 $table->data['1']['2'] = html_print_submit_button(
     __('Update'),
@@ -182,7 +182,7 @@ $hidden_main_link = [
 
 unset($table);
 $table = new stdClass();
-$table->styleTable = 'width: 100%';
+$table->styleTable = 'width: 70%';
 // Print the header.
 $table->head = [];
 $table->head['main'] = __('IP');
@@ -307,18 +307,20 @@ foreach ($data as $item) {
 if (empty($data)) {
     ui_print_info_message(__('No data found'));
 } else {
+    echo '<div style="display: flex; margin-top: 10px;">';
     html_print_table($table);
-}
 
-// Print the graph.
-echo '<div>';
-echo pie_graph(
-    $chart_data,
-    320,
-    200,
-    __('Others')
-);
-echo '</div>';
+    // Print the graph.
+    echo '<div style="margin-top: 50px;">';
+    echo pie_graph(
+        $chart_data,
+        320,
+        200,
+        __('Others')
+    );
+    echo '</div>';
+    echo '</div>';
+}
 
 ?>
 <script>

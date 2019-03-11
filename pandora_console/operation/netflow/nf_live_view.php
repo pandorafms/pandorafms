@@ -1,16 +1,23 @@
 <?php
+/**
+ * Netflow live view
+ *
+ * @package    Pandora FMS open.
+ * @subpackage UI file.
+ *
+ * Pandora FMS - http://pandorafms.com
+ * ==================================================
+ * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; version 2
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ */
 
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; version 2
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU General Public License for more details.
 global $config;
 
 require_once $config['homedir'].'/include/functions_graph.php';
@@ -19,7 +26,7 @@ require_once $config['homedir'].'/include/functions_netflow.php';
 
 ui_require_javascript_file('calendar');
 
-// ACL
+// ACL.
 check_login();
 if (! check_acl($config['id_user'], 0, 'AR') && ! check_acl($config['id_user'], 0, 'AW')) {
     db_pandora_audit(
@@ -32,12 +39,12 @@ if (! check_acl($config['id_user'], 0, 'AR') && ! check_acl($config['id_user'], 
 
 $pure = get_parameter('pure', 0);
 
-// Ajax callbacks
+// Ajax callbacks.
 if (is_ajax()) {
     $get_filter_type = get_parameter('get_filter_type', 0);
     $get_filter_values = get_parameter('get_filter_values', 0);
 
-    // Get filter of the current netflow filter
+    // Get filter of the current netflow filter.
     if ($get_filter_type) {
         $id = get_parameter('id');
 
@@ -52,13 +59,13 @@ if (is_ajax()) {
         echo $type;
     }
 
-    // Get values of the current netflow filter
+    // Get values of the current netflow filter.
     if ($get_filter_values) {
         $id = get_parameter('id');
 
         $filter_values = db_get_row_filter('tnetflow_filter', ['id_sg' => $id]);
 
-        // Decode HTML entities
+        // Decode HTML entities.
         $filter_values['advanced_filter'] = io_safe_output($filter_values['advanced_filter']);
 
 
@@ -68,7 +75,7 @@ if (is_ajax()) {
     return;
 }
 
-// Read filter configuration
+// Read filter configuration.
 $filter_id = (int) get_parameter('filter_id', 0);
 $filter['id_name'] = get_parameter('name', '');
 $filter['id_group'] = (int) get_parameter('assign_group', 0);
@@ -81,7 +88,7 @@ $filter['src_port'] = get_parameter('src_port', '');
 $filter['advanced_filter'] = get_parameter('advanced_filter', '');
 $filter['router_ip'] = get_parameter('router_ip');
 
-// Read chart configuration
+// Read chart configuration.
 $chart_type = get_parameter('chart_type', 'netflow_area');
 $max_aggregates = (int) get_parameter('max_aggregates', 10);
 $period = (int) get_parameter('period', SECONDS_1DAY);
@@ -93,18 +100,18 @@ $interval_length = (int) get_parameter('interval_length', 300);
 $address_resolution = (int) get_parameter('address_resolution', $config['netflow_get_ip_hostname']);
 $filter_selected = (int) get_parameter('filter_selected', 0);
 
-// Read buttons
+// Read buttons.
 $draw = get_parameter('draw_button', '');
 $save = get_parameter('save_button', '');
 $update = get_parameter('update_button', '');
 
 
-// Calculate start and end dates
+// Calculate start and end dates.
 $end_date = strtotime($date.' '.$time);
 $start_date = ($end_date - $period);
 
 if (!is_metaconsole()) {
-    // Header
+    // Header.
     ui_print_page_header(
         __('Netflow live view'),
         'images/op_netflow.png',
@@ -137,9 +144,9 @@ if (!is_metaconsole()) {
     ui_meta_print_header(__('Netflow live view'));
 }
 
-// Save user defined filter
+// Save user defined filter.
 if ($save != '' && check_acl($config['id_user'], 0, 'AW')) {
-    // Save filter args
+    // Save filter args.
     $filter['filter_args'] = netflow_get_filter_arguments($filter);
 
     $filter_id = db_process_sql_insert('tnetflow_filter', $filter);
@@ -149,15 +156,14 @@ if ($save != '' && check_acl($config['id_user'], 0, 'AW')) {
     } else {
         ui_print_success_message(__('Filter created successfully'));
     }
-}
-// Update current filter
-else if ($update != '' && check_acl($config['id_user'], 0, 'AW')) {
-    // Do not update the filter name and group
+} else if ($update != '' && check_acl($config['id_user'], 0, 'AW')) {
+    // Update current filter.
+    // Do not update the filter name and group.
     $filter_copy = $filter;
     unset($filter_copy['id_name']);
     unset($filter_copy['id_group']);
 
-    // Save filter args
+    // Save filter args.
     $filter_copy['filter_args'] = netflow_get_filter_arguments($filter_copy);
 
     $result = db_process_sql_update(
@@ -173,7 +179,7 @@ else if ($update != '' && check_acl($config['id_user'], 0, 'AW')) {
 }
 
 
-// The filter name will not be needed anymore
+// The filter name will not be needed anymore.
 $filter['id_name'] = '';
 
 $netflow_disable_custom_lvfilters = false;
@@ -208,7 +214,7 @@ if (is_metaconsole()) {
     }
 
     foreach ($servers as $server) {
-        // If connection was good then retrieve all data server
+        // If connection was good then retrieve all data server.
         if (metaconsole_load_external_db($server)) {
             $connection = true;
         } else {
@@ -226,7 +232,7 @@ if (is_metaconsole()) {
     }
 
     echo '<tr>';
-    echo '<td>'.'<b>'.__('Connection').'</b>'.'</td>';
+    echo '<td><b>'.__('Connection').'</b></td>';
     echo '<td>'.html_print_select(
         $list_servers,
         'connection_name',
@@ -243,23 +249,23 @@ if (is_metaconsole()) {
 
     echo '<tr>';
 
-    echo '<td>'.'<b>'.__('Date').'</b>'.'</td>';
+    echo '<td><b>'.__('Date').'</b></td>';
     echo '<td>'.html_print_input_text('date', $date, false, 13, 10, true).html_print_image(
         'images/calendar_view_day.png',
         true,
         ['alt' => 'calendar']
     ).ui_print_help_tip(__('Date format is YY/MM/DD'), true).html_print_input_text('time', $time, false, 10, 8, true).ui_print_help_tip(__('Watch format is hours (24h):minutes:seconds'), true).'</td>';
 
-    echo '<td>'.'<b>'.__('Interval').'</b>'.'</td>';
+    echo '<td><b>'.__('Interval').'</b></td>';
     echo '<td>'.html_print_select(netflow_get_valid_intervals(), 'period', $period, '', '', 0, true, false, false).'</td>';
 
-    echo '<td>'.'<b>'.__('Resolution').ui_print_help_tip(__('The interval will be divided in chunks the length of the resolution.'), true).'</b>'.'</td>';
+    echo '<td><b>'.__('Resolution').ui_print_help_tip(__('The interval will be divided in chunks the length of the resolution.'), true).'</b></td>';
     echo '<td>'.html_print_select(netflow_get_valid_subintervals(), 'interval_length', $interval_length, '', '', 0, true, false, false).'</td>';
 
     echo '</tr>';
     echo '<tr>';
 
-    echo '<td>'.'<b>'.__('Type').'</b>'.'</td>';
+    echo '<td><b>'.__('Type').'</b></td>';
     echo '<td>'.html_print_select(
         netflow_get_chart_types(),
         'chart_type',
@@ -270,7 +276,7 @@ if (is_metaconsole()) {
         true
     ).'</td>';
 
-    echo '<td>'.'<b>'.__('Max. values').'</b>'.'</td>';
+    echo '<td><b>'.__('Max. values').'</b></td>';
     $max_values = [
         '2'             => '2',
         '5'             => '5',
@@ -284,7 +290,7 @@ if (is_metaconsole()) {
     echo '<td>'.html_print_select($max_values, 'max_aggregates', $max_aggregates, '', '', 0, true).'<a id="max_values" href="#" onclick="javascript: edit_max_value();">'.html_print_image('images/pencil.png', true, ['id' => 'pencil']).'</a>';
     echo '</td>';
 
-    echo '<td>'.'<b>'.__('Aggregate by').'</b>'.ui_print_help_icon('aggregate_by', true).'</td>';
+    echo '<td><b>'.__('Aggregate by').'</b>'.ui_print_help_icon('aggregate_by', true).'</td>';
     $aggregate_list = [];
     $aggregate_list = [
         'none'    => __('None'),
@@ -298,7 +304,7 @@ if (is_metaconsole()) {
 
     echo '</tr>';
 
-    // Read filter type
+    // Read filter type.
     if ($filter['advanced_filter'] != '') {
         $filter_type = 1;
     } else {
@@ -312,7 +318,7 @@ if (is_metaconsole()) {
     echo '</tr>';
     echo "<tr class='filter_save' style='display: none;'>";
 
-    echo '<td>'.'<span id="filter_name_color"><b>'.__('Name').'</b></span>'.'</td>';
+    echo '<td><span id="filter_name_color"><b>'.__('Name').'</b></span></td>';
     echo "<td colspan='2'>".html_print_input_text(
         'name',
         $filter['id_name'],
@@ -322,7 +328,7 @@ if (is_metaconsole()) {
         true
     ).'</td>';
     $own_info = get_user_info($config['id_user']);
-    echo '<td>'.'<span id="filter_group_color"><b>'.__('Group').'</b></span>'.'</td>';
+    echo '<td><span id="filter_group_color"><b>'.__('Group').'</b></span></td>';
     echo "<td colspan='2'>".html_print_select_groups($config['id_user'], 'IW', $own_info['is_admin'], 'assign_group', $filter['id_group'], '', '', -1, true, false, false).'</td>';
     echo '</tr>';
 
@@ -346,13 +352,13 @@ if (is_metaconsole()) {
         echo '<td></td>';
         echo '<td></td>';
     } else {
-        echo '<td>'.'<b>'.__('Filter').'</b>'.'</td>';
+        echo '<td><b>'.__('Filter').'</b></td>';
         echo '<td>'.__('Normal').' '.html_print_radio_button_extended('filter_type', 0, '', $filter_type, false, 'displayNormalFilter();', 'style="margin-right: 40px;"', true).__('Advanced').' '.html_print_radio_button_extended('filter_type', 1, '', $filter_type, false, 'displayAdvancedFilter();', 'style="margin-right: 40px;"', true).'</td>';
     }
 
 
 
-    echo '<td>'.'<b>'.__('Load filter').'</b>'.'</td>';
+    echo '<td><b>'.__('Load filter').'</b></td>';
     $user_groups = users_get_groups($config['id_user'], 'AR', $own_info['is_admin'], true);
     $user_groups[0] = 0;
     // Add all groups.
@@ -432,13 +438,13 @@ if (is_metaconsole()) {
         $address_resolution,
         true
     );
-    echo '<td>'.'<b>'.__('IP address resolution').'</b>'.ui_print_help_tip(__('Resolve the IP addresses to get their hostnames.'), true).'</td>';
-    echo "<td>$radio_buttons</td>";
+    echo '<td><b>'.__('IP address resolution').'</b>'.ui_print_help_tip(__('Resolve the IP addresses to get their hostnames.'), true).'</td>';
+    echo '<td>'.$radio_buttons.'</td>';
 
-    echo '<td>'.'<b>'.__('Router ip').'</b>'.'</td>';
+    echo '<td><b>'.__('Router ip').'</b></td>';
     echo '<td>'.html_print_input_text('router_ip', $filter['router_ip'], false, 30, 80, true).'</td>';
 
-    echo '<td>'.'<b>'.__('Output format').'</b>'.'</td>';
+    echo '<td><b>'.__('Output format').'</b></td>';
     $show_output = [
         'bytes'              => __('Bytes'),
         'bytespersecond'     => __('Bytes per second'),
@@ -469,15 +475,14 @@ if (is_metaconsole()) {
     echo '</form>';
 
     if ($draw != '') {
-        // Draw
+        // Draw.
         echo '<br/>';
 
-        // No filter selected
+        // No filter selected.
         if ($netflow_disable_custom_lvfilters && $filter_selected == 0) {
             ui_print_error_message(__('No filter selected'));
-        }
-        // Draw the netflow chart
-        else {
+        } else {
+            // Draw the netflow chart.
             echo netflow_draw_item(
                 $start_date,
                 $end_date,

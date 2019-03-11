@@ -30,6 +30,33 @@ require_once 'include/functions_notifications.php';
             $notifications_numbers['last_id']
         ).'</div>';
 
+        // ======= Servers List ===============================================
+        $servers_list = '<div id="servers_list">';
+        $servers = [];
+        $servers['all'] = (int) db_get_value('COUNT(id_server)', 'tserver');
+        if ($servers['all'] != 0) {
+            $servers['up'] = (int) servers_check_status();
+            $servers['down'] = ($servers['all'] - $servers['up']);
+            if ($servers['up'] == 0) {
+                // All Servers down or no servers at all.
+                $servers_check_img = html_print_image('images/header_down_gray.png', true, ['alt' => 'cross', 'class' => 'bot', 'title' => __('All systems').': '.__('Down')]);
+            } else if ($servers['down'] != 0) {
+                // Some servers down.
+                $servers_check_img = html_print_image('images/header_warning_gray.png', true, ['alt' => 'error', 'class' => 'bot', 'title' => $servers['down'].' '.__('servers down')]);
+            } else {
+                // All servers up.
+                $servers_check_img = html_print_image('images/header_ready_gray.png', true, ['alt' => 'ok', 'class' => 'bot', 'title' => __('All systems').': '.__('Ready')]);
+            }
+
+            unset($servers);
+            // Since this is the header, we don't like to trickle down variables.
+            $servers_check_img_link = '<a class="white" href="index.php?sec=advanced&sec2=advanced/servers&refr=60">';
+             $servers_check_img_link .= $servers_check_img;
+             $servers_check_img_link .= '</a>';
+        };
+        $servers_list .= $servers_check_img_link.'</div>';
+
+
 
         // ======= Alerts ===============================================
         $check_minor_release_available = false;
@@ -48,7 +75,7 @@ require_once 'include/functions_notifications.php';
         }
 
 
-        // Chat messages
+        // Chat messages.
         $header_chat = "<div id='header_chat'><span id='icon_new_messages_chat' style='display: none;'>";
         $header_chat .= "<a href='index.php?sec=workspace&sec2=operation/users/webchat'>";
         $header_chat .= html_print_image('images/header_chat_gray.png', true, ['title' => __('New chat message')]);
@@ -180,7 +207,7 @@ require_once 'include/functions_notifications.php';
         $header_autorefresh_counter = '<div id="header_autorefresh_counter" style="'.$display_counter.'">'.$autorefresh_link_open_txt.$autorefresh_txt.$autorefresh_link_close.$autorefresh_additional.'</div>';
 
 
-        // qr
+        // Qr.
         if ($config['show_qr_code_header'] == 0) {
             $show_qr_code_header = 'display: none;';
         } else {
@@ -209,7 +236,7 @@ require_once 'include/functions_notifications.php';
             });
         </script>
         <?php
-        // User
+        // User.
         if (is_user_admin($config['id_user']) == 1) {
             $header_user = html_print_image('images/header_user_admin_green.png', true, ['title' => __('Edit my user'), 'class' => 'bot', 'alt' => 'user']);
         } else {
@@ -218,13 +245,13 @@ require_once 'include/functions_notifications.php';
 
         $header_user = '<div id="header_user"><a href="index.php?sec=workspace&sec2=operation/users/user_edit">'.$header_user.'<span> ('.$config['id_user'].')</span></a></div>';
 
-        // Logout
+        // Logout.
         $header_logout = '<div id="header_logout"><a class="white" href="'.ui_get_full_url('index.php?bye=bye').'">';
         $header_logout .= html_print_image('images/header_logout_gray.png', true, ['alt' => __('Logout'), 'class' => 'bot', 'title' => __('Logout')]);
         $header_logout .= '</a></div>';
 
         echo '<div class="header_left">'.$header_autorefresh, $header_autorefresh_counter, $header_qr, $header_chat.'</div>
-            <div class="header_center">'.$header_searchbar, $header_discovery.'</div>
+            <div class="header_center">'.$header_searchbar, $header_discovery, $servers_list.'</div>
             <div class="header_right">'.$header_user, $header_logout.'</div>';
         ?>
     </div>    <!-- Closes #table_header_inner -->        

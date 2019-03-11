@@ -1834,7 +1834,7 @@ function graphic_combined_module(
                     $label = $params_combined['labels'][$module];
                 } else {
                     $alias = db_get_value('alias', 'tagente', 'id_agente', $module_data['id_agente']);
-                    $label = $module_data['nombre'];
+                    $label = $alias.' - '.$module_data['nombre'];
                 }
 
                 $temp[$label]['g'] = round($temp_data, 4);

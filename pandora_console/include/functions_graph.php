@@ -533,7 +533,8 @@ function grafico_modulo_sparse_data(
         'image_treshold'      => false,
         'graph_combined'      => false,
         'zoom'                => 1,
-        'server_id'           => null
+        'server_id'           => null,
+        'stacked'             => 0,
     );
 */
 function grafico_modulo_sparse($params)
@@ -708,6 +709,10 @@ function grafico_modulo_sparse($params)
         return graph_nodata_image($params['width'], $params['height']);
     } else {
         $agent_module_id = $params['agent_module_id'];
+    }
+
+    if (!isset($params['stacked'])) {
+        $params['stacked'] = 0;
     }
 
     // XXXX Configurable
@@ -4159,6 +4164,7 @@ function graph_netflow_aggregate_area($data, $period, $width, $height, $unit='',
         'font'              => $config['fontpath'],
         'font_size'         => $config['font_size'],
         'array_data_create' => $chart,
+        'stacked'           => 1,
     ];
 
     return grafico_modulo_sparse($params);

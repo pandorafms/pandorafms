@@ -139,6 +139,7 @@ $table->data['1']['2'] .= html_print_submit_button(
 );
 
 echo '<form method="post">';
+html_print_input_hidden('order_by', $order_by);
 if (!empty($main_value)) {
     html_print_input_hidden('main_value', $main_value);
 }
@@ -191,7 +192,10 @@ if (!$is_network) {
         __('Flows'),
         'flows',
         $order_by,
-        $hidden_main_link
+        array_merge(
+            $hidden_main_link,
+            ['main_value' => $main_value]
+        )
     );
 }
 
@@ -199,13 +203,19 @@ $table->head['pkts'] = network_print_explorer_header(
     __('Packets'),
     'pkts',
     $order_by,
-    $hidden_main_link
+    array_merge(
+        $hidden_main_link,
+        ['main_value' => $main_value]
+    )
 );
 $table->head['bytes'] = network_print_explorer_header(
     __('Bytes'),
     'bytes',
     $order_by,
-    $hidden_main_link
+    array_merge(
+        $hidden_main_link,
+        ['main_value' => $main_value]
+    )
 );
 
 // Add the order.
@@ -301,7 +311,20 @@ foreach ($data as $item) {
     $table->data[] = $row;
 
     // Build the pie graph data structure.
-    $chart_data[$item['host']] = $item['sum_bytes'];
+    switch ($order_by) {
+        case 'pkts':
+            $chart_data[$item['host']] = $item['sum_bytes'];
+        break;
+
+        case 'flows':
+            $chart_data[$item['host']] = $item['sum_flows'];
+        break;
+
+        case 'bytes':
+        default:
+            $chart_data[$item['host']] = $item['sum_bytes'];
+        break;
+    }
 }
 
 if (empty($data)) {

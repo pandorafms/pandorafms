@@ -28,7 +28,7 @@ if (! check_acl($config['id_user'], 0, 'PM') && ! is_user_admin($config['id_user
     return;
 }
 
-// Check custom field
+// Check custom field.
 $custom_field = db_get_value('name', 'tagent_custom_fields', 'name', $config['ehorus_custom_field']);
 $custom_field_exists = !empty($custom_field);
 $custom_field_created = null;
@@ -41,7 +41,7 @@ if ($config['ehorus_enabled'] && !$custom_field_exists) {
     $custom_field_exists = $custom_field_created = $result;
 }
 
-// Enable table
+// Enable table.
 $table_enable = new StdClass();
 $table_enable->data = [];
 $table_enable->width = '100%';
@@ -50,14 +50,13 @@ $table_enable->class = 'databox filters';
 $table_enable->size['name'] = '30%';
 $table_enable->style['name'] = 'font-weight: bold';
 
-// Enable eHorus
+// Enable eHorus.
 $row = [];
 $row['name'] = __('Enable eHorus');
-$row['control'] = html_print_checkbox_switch('ehorus_enabled', false, $config['ehorus_enabled'], true);
-$row['button'] = html_print_submit_button(__('Update'), 'update_button', false, 'class="sub upd"', true);
+$row['control'] = html_print_checkbox_switch('ehorus_enabled', 1, $config['ehorus_enabled'], true);
 $table_enable->data['ehorus_enabled'] = $row;
 
-// Remote config table
+// Remote config table.
 $table_remote = new StdClass();
 $table_remote->data = [];
 $table_remote->width = '100%';
@@ -67,40 +66,40 @@ $table_remote->class = 'databox filters';
 $table_remote->size['name'] = '30%';
 $table_remote->style['name'] = 'font-weight: bold';
 
-// User
+// User.
 $row = [];
 $row['name'] = __('User');
 $row['control'] = html_print_input_text('ehorus_user', $config['ehorus_user'], '', 30, 100, true);
 $table_remote->data['ehorus_user'] = $row;
 
-// Pass
+// Pass.
 $row = [];
 $row['name'] = __('Password');
 $row['control'] = html_print_input_password('ehorus_pass', io_output_password($config['ehorus_pass']), '', 30, 100, true);
 $table_remote->data['ehorus_pass'] = $row;
 
-// Directory hostname
+// Directory hostname.
 $row = [];
 $row['name'] = __('API Hostname');
 $row['control'] = html_print_input_text('ehorus_hostname', $config['ehorus_hostname'], '', 30, 100, true);
 $row['control'] .= ui_print_help_tip(__('Hostname of the eHorus API').'. '.__('Without protocol and port').'. '.__('e.g., portal.ehorus.com'), true);
 $table_remote->data['ehorus_hostname'] = $row;
 
-// Directory port
+// Directory port.
 $row = [];
 $row['name'] = __('API Port');
 $row['control'] = html_print_input_text('ehorus_port', $config['ehorus_port'], '', 6, 100, true);
 $row['control'] .= ui_print_help_tip(__('e.g., 18080'), true);
 $table_remote->data['ehorus_port'] = $row;
 
-// Request timeout
+// Request timeout.
 $row = [];
 $row['name'] = __('Request timeout');
 $row['control'] = html_print_input_text('ehorus_req_timeout', $config['ehorus_req_timeout'], '', 3, 10, true);
 $row['control'] .= ui_print_help_tip(__('Time in seconds to set the maximum time of the requests to the eHorus API').'. '.__('0 to disable'), true);
 $table_remote->data['ehorus_req_timeout'] = $row;
 
-// Test
+// Test.
 $row = [];
 $row['name'] = __('Test');
 $row['control'] = html_print_button(__('Start'), 'test-ehorus', false, '', 'class="sub next"', true);
@@ -110,7 +109,7 @@ $row['control'] .= '<span id="test-ehorus-failure" style="display:none;">&nbsp;'
 $row['control'] .= '&nbsp;<span id="test-ehorus-message" style="display:none;"></span>';
 $table_remote->data['ehorus_test'] = $row;
 
-// Print
+// Print.
 echo '<div style="text-align: center; padding-bottom: 20px;">';
 echo '<a target="_blank" rel="noopener noreferrer" href="http://ehorus.com">';
 html_print_image('include/ehorus/images/ehorus-logo-grey.png');
@@ -140,13 +139,13 @@ if ($config['ehorus_enabled'] && !$custom_field_exists) {
     ui_print_error_message($error_message);
 }
 
-// Form enable
+// Form enable.
 echo '<form id="form_enable" method="post">';
 html_print_input_hidden('update_config', 1);
 html_print_table($table_enable);
 echo '</form>';
 
-// Form remote
+// Form remote.
 if ($config['ehorus_enabled']) {
     echo '<form id="form_remote" method="post">';
     echo '<fieldset>';
@@ -163,6 +162,9 @@ if ($config['ehorus_enabled']) {
 ?>
 
 <script type="text/javascript">
+ $('input:checkbox[name="ehorus_enabled"]').attr('checked', false);
+ $('form#form_remote').hide();
+ $('form#form_enable').css('margin-bottom','20px');
     var showFields = function () {
         $('form#form_remote').show();
     }
@@ -170,8 +172,15 @@ if ($config['ehorus_enabled']) {
         $('form#form_remote').hide();
     }
     var handleEnable = function (event) {
-        if (event.target.value == '1') showFields();
-        else hideFields();
+        var is_checked = $('input:checkbox[name="ehorus_enabled"]').is(':checked');
+        if (event.target.value == '1' && is_checked) {
+            showFields();
+            $('input:checkbox[name="ehorus_enabled"]').attr('checked', false);
+        }
+        else {
+            hideFields();
+            $('input:checkbox[name="ehorus_enabled"]').attr('checked', true);
+        };
     }
     $('input:checkbox[name="ehorus_enabled"]').change(handleEnable);
     

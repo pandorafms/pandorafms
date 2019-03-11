@@ -50,7 +50,7 @@ require_once 'include/functions_notifications.php';
 
             unset($servers);
             // Since this is the header, we don't like to trickle down variables.
-            $servers_check_img_link = '<a class="white" href="index.php?sec=advanced&sec2=advanced/servers&refr=60">';
+            $servers_check_img_link = '<a class="white" href="index.php?sec=gservers&sec2=godmode/servers/modificar_server&refr=60">';
              $servers_check_img_link .= $servers_check_img;
              $servers_check_img_link .= '</a>';
         };

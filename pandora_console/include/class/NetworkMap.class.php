@@ -476,7 +476,7 @@ class NetworkMap
      *
      * @return string HTML code with dialogs.
      */
-    public function loadAdvanceInterface()
+    public function loadAdvancedInterface()
     {
         $list_networkmaps = get_networkmaps($this->idMap);
         if (empty($list_networkmaps)) {
@@ -494,7 +494,7 @@ class NetworkMap
         $output .= __('Edit node').'">';
         $output .= '<div style="text-align: left; width: 100%;">';
 
-        $table = null;
+        $table = new StdClass();
         $table->id = 'node_details';
         $table->width = '100%';
 
@@ -516,7 +516,7 @@ class NetworkMap
             true
         );
 
-        $table = null;
+        $table = new StdClass();
         $table->id = 'interface_information';
         $table->width = '100%';
 
@@ -541,7 +541,7 @@ class NetworkMap
             true
         );
 
-        $table = null;
+        $table = new StdClass();
         $table->id = 'node_options';
         $table->width = '100%';
 
@@ -615,7 +615,7 @@ class NetworkMap
             true
         );
 
-        $table = null;
+        $table = new StdClass();
         $table->id = 'relations_table';
         $table->width = '100%';
 
@@ -735,7 +735,7 @@ class NetworkMap
         $output .= __('Add node').'">';
         $output .= '<div style="text-align: left; width: 100%;">';
 
-        $table = null;
+        $table = new StdClass();
         $table->width = '100%';
         $table->data = [];
 
@@ -779,7 +779,7 @@ class NetworkMap
             true
         );
 
-        $table = null;
+        $table = new StdClass();
         $table->width = '100%';
         $table->data = [];
         $table->data[0][0] = __('Group');
@@ -830,7 +830,7 @@ class NetworkMap
             true
         );
 
-        $table = null;
+        $table = new StdClass();
         $table->width = '100%';
         $table->data = [];
         $table->data[0][0] = __('Name');
@@ -1036,7 +1036,7 @@ class NetworkMap
             $output .= $this->loadMapSkel();
             $output .= $this->loadMapData();
             $output .= $this->loadController();
-            $output .= $this->loadAdvanceInterface();
+            $output .= $this->loadAdvancedInterface();
         }
 
         if ($return === false) {

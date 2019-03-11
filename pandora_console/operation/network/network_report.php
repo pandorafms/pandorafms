@@ -52,6 +52,11 @@ if (is_numeric($main_value) && !in_array($action, ['udp', 'tcp'])) {
     $main_value = '';
 }
 
+$order_by = get_parameter('order_by', 'bytes');
+if (!in_array($order_by, ['bytes', 'pkts', 'flows'])) {
+    $order_by = 'bytes';
+}
+
 $style_end = ($is_period) ? 'display: none;' : '';
 $style_period = ($is_period) ? '' : 'display: none;';
 
@@ -149,7 +154,8 @@ if ($is_network) {
         $action === 'talkers',
         $utimestamp_lower,
         $utimestamp_greater,
-        $main_value
+        $main_value,
+        $order_by !== 'pkts'
     );
 } else {
     $data = netflow_get_top_summary(
@@ -157,22 +163,10 @@ if ($is_network) {
         $action,
         $utimestamp_lower,
         $utimestamp_greater,
-        $main_value
+        $main_value,
+        $order_by
     );
 }
-
-unset($table);
-$table = new stdClass();
-$table->styleTable = 'width: 100%';
-// Print the header.
-$table->head = [];
-$table->head['main'] = __('IP');
-if (!$is_network) {
-    $table->head['flows'] = __('Flows');
-}
-
-$table->head['pkts'] = __('Packets');
-$table->head['bytes'] = __('Bytes');
 
 // Get the params to return the builder.
 $hidden_main_link = [
@@ -185,6 +179,37 @@ $hidden_main_link = [
     'top'          => $top,
     'action'       => $action,
 ];
+
+unset($table);
+$table = new stdClass();
+$table->styleTable = 'width: 100%';
+// Print the header.
+$table->head = [];
+$table->head['main'] = __('IP');
+if (!$is_network) {
+    $table->head['flows'] = network_print_explorer_header(
+        __('Flows'),
+        'flows',
+        $order_by,
+        $hidden_main_link
+    );
+}
+
+$table->head['pkts'] = network_print_explorer_header(
+    __('Packets'),
+    'pkts',
+    $order_by,
+    $hidden_main_link
+);
+$table->head['bytes'] = network_print_explorer_header(
+    __('Bytes'),
+    'bytes',
+    $order_by,
+    $hidden_main_link
+);
+
+// Add the order.
+$hidden_main_link['order_by'] = $order_by;
 
 if (get_parameter('export_csv')) {
     // Clean the buffer.

@@ -341,7 +341,7 @@ if (check_acl($config['id_user'], 0, 'RR') || check_acl($config['id_user'], 0, '
     enterprise_hook('dashboard_menu');
     enterprise_hook('reporting_godmenu');
 
-    $menu_operation['repo.rting']['sub'] = $sub;
+    $menu_operation['reporting']['sub'] = $sub;
     // End reporting.
 }
 

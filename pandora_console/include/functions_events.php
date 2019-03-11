@@ -2272,35 +2272,29 @@ function events_page_responses($event, $childrens_ids=[])
 
 /**
  * Replace macros in the target of a response and return it.
- * If server_id > 0, is a metaconsole query.
+ * If server_id > 0, it's a metaconsole query.
  *
- * @param integer $event_id    Event_id.
- * @param integer $response_id Response_id.
- * @param integer $server_id   Server_id.
- * @param boolean $history     History.
+ * @param integer $event_id    Event identifier.
+ * @param integer $response_id Event response identifier.
+ * @param integer $server_id   Node identifier (for metaconsole).
+ * @param boolean $history     Use the history database or not.
  *
- * @return string Target.
+ * @return string The response text with the macros applied.
  */
 function events_get_response_target(
-    $event_id,
-    $response_id,
-    $server_id,
-    $history=false
+    int $event_id,
+    int $response_id,
+    int $server_id=0,
+    bool $history=false
 ) {
     global $config;
 
-    $event_response = db_get_row('tevent_response', 'id', $response_id);
-
-    if ($server_id > 0) {
-        $meta = true;
-    } else {
-        $meta = false;
-    }
-
+    // If server_id > 0, it's a metaconsole query.
+    $meta = $server_id > 0;
     $event_table = events_get_events_table($meta, $history);
-
     $event = db_get_row($event_table, 'id_evento', $event_id);
 
+    $event_response = db_get_row('tevent_response', 'id', $response_id);
     $target = io_safe_output($event_response['target']);
 
     // Substitute each macro.
@@ -2317,7 +2311,7 @@ function events_get_response_target(
         }
 
         $ip = db_get_value_filter('direccion', $agente_table_name, $filter);
-        // If agent has not an ip, display N/A.
+        // If agent has not an IP, display N/A.
         if ($ip === false) {
             $ip = __('N/A');
         }
@@ -2497,6 +2491,11 @@ function events_get_response_target(
         foreach ($custom_data as $key => $value) {
             $target = str_replace('_customdata_'.$key.'_', $value, $target);
         }
+    }
+
+    // This will replace the macro with the current logged user.
+    if (strpos($target, '_current_user_') !== false) {
+        $target = str_replace('_current_user_', $config['id_user'], $target);
     }
 
     return $target;

@@ -562,7 +562,7 @@ $table->data['edit1'][1] = '<table width="100%">';
                 '',
                 '',
                 5,
-                255,
+                1024,
                 true
             );
             $table->data['edit1'][1] .= '</td>';
@@ -631,7 +631,7 @@ $table->data['edit1'][1] = '<table width="100%">';
                 '',
                 '',
                 5,
-                255,
+                1024,
                 true
             );
             $table->data['edit1'][3] .= '</td>';

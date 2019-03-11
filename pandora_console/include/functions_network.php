@@ -24,17 +24,25 @@
 /**
  * Get the tnetwok_matrix summatory data.
  *
- * @param integer $top       Number of hosts to show.
- * @param boolean $talker    Talker (true) or listetener (false).
- * @param integer $start     Utimestamp of start time.
- * @param integer $end       Utimestamp of end time.
- * @param string  $ip_filter Ip to filter.
+ * @param integer $top            Number of hosts to show.
+ * @param boolean $talker         Talker (true) or listetener (false).
+ * @param integer $start          Utimestamp of start time.
+ * @param integer $end            Utimestamp of end time.
+ * @param string  $ip_filter      Ip to filter.
+ * @param boolean $order_by_bytes True by top by bytes. False by packets.
  *
  * @return array With requested data.
  */
-function network_matrix_get_top($top, $talker, $start, $end, $ip_filter='')
-{
+function network_matrix_get_top(
+    $top,
+    $talker,
+    $start,
+    $end,
+    $ip_filter='',
+    $order_by_bytes=true
+) {
     $field_to_group = ($talker === true) ? 'source' : 'destination';
+    $field_to_order = ($order_by_bytes === true) ? 'sum_bytes' : 'sum_pkts';
     $filter_sql = '';
     if (!empty($ip_filter)) {
         $filter_field = ($talker === true) ? 'destination' : 'source';
@@ -47,13 +55,14 @@ function network_matrix_get_top($top, $talker, $start, $end, $ip_filter='')
         WHERE utimestamp > %d AND utimestamp < %d
         %s
         GROUP BY %s
-        ORDER BY sum_bytes DESC
+        ORDER BY %s DESC
         LIMIT %d',
         $field_to_group,
         $start,
         $end,
         $filter_sql,
         $field_to_group,
+        $field_to_order,
         $top
     );
 
@@ -88,4 +97,34 @@ function network_get_report_actions($network)
             'udp' => __('Top UDP protocols'),
         ]
     );
+}
+
+
+/**
+ * Print the header of the network
+ *
+ * @param string $title       Title of header.
+ * @param string $order       Current ordering.
+ * @param string $selected    Selected order.
+ * @param array  $hidden_data All the data to hide into the button.
+ *
+ * @return string With HTML data.
+ */
+function network_print_explorer_header(
+    $title,
+    $order,
+    $selected,
+    $hidden_data
+) {
+    $cell = '<div style="display: flex; align-items: center;">';
+    $cell .= $title;
+    $cell .= html_print_link_with_params(
+        'images/arrow-down-white.png',
+        array_merge($hidden_data, ['order_by' => $order]),
+        'image',
+        ($selected === $order) ? 'opacity: 0.5' : ''
+    );
+    $cell .= '</div>';
+
+    return $cell;
 }

@@ -29,40 +29,10 @@ div#error_buttons a {
   width: 100%;
   z-index: -9999;
   position: absolute;
-  background-image: url("../../images/backgrounds/background_pandora_console_keys.jpg");
+  background: linear-gradient(74deg, #02020255 36%, transparent 36%),
+    url("../../images/backgrounds/background_pandora_console_keys.jpg");
   background-repeat: repeat;
 }
-
-/*@media screen and (max-width: 1024px) { /* Specific to this particular image */
-/*	#login_body {
-		left: 50%;
-		margin-left: -512px;   /* 50% */
-/*	}
-}
-@media screen and (max-width: 1100px) { /* Specific to this particular image */
-/*	#login_body {
-		background-image: url("../../images/backgrounds/background_pandora_console_keys.jpg");
-		background-repeat: repeat;
-	}
-}
-@media screen and (max-width: 1400px) { /* Specific to this particular image */
-/*	#login_body {
-		background-image: url("../../images/backgrounds/background_pandora_console_keys.jpg");
-		background-repeat: repeat;
-	}
-}
-@media screen and (max-width: 2000px) { /* Specific to this particular image */
-/*	#login_body {
-		background-image: url("../../images/backgrounds/background_pandora_console_keys.jpg");
-		background-repeat: repeat;
-	}
-}
-@media screen and (min-width: 2000px) { /* Specific to this particular image */
-/*	#login_body {
-		background-image: url("../../images/backgrounds/background_pandora_console_keys.jpg");
-		background-repeat: repeat;
-	}
-}*/
 
 p.log_in {
   color: #fff !important;
@@ -77,7 +47,6 @@ h1#log_f {
 }
 
 div#error_login {
-  text-align: center;
   margin-top: 5px;
   margin-left: 5px;
   width: 75%;
@@ -104,8 +73,11 @@ div#login_f {
   width: 100%;
   position: absolute;
   bottom: 10px;
-  color: #fff;
+  color: #878787;
   text-align: center;
+  font-family: "Open Sans", sans-serif;
+  font-weight: 700;
+  font-size: 8.5pt;
 }
 
 /*
@@ -118,23 +90,17 @@ div#login_f {
 div#header_login {
   width: 100%;
   height: 65px;
-  background-color: rgba(255, 255, 255, 0.06);
-}
-
-div#icon_custom_pandora {
-  float: left;
-  margin-top: 5px;
-  margin-left: 4%;
 }
 
 div#list_icon_docs_support {
-  float: right;
-  margin-top: 8px;
-  margin-right: 4%;
+  float: left;
+  margin-top: 25px;
+  margin-left: 5%;
 }
 
 div#list_icon_docs_support ul {
   margin-top: 5px;
+  line-height: 36px;
 }
 
 div#list_icon_docs_support ul li {
@@ -142,6 +108,11 @@ div#list_icon_docs_support ul li {
   color: white;
   vertical-align: middle;
   margin-right: 5px;
+  font-size: 10pt;
+}
+
+div#list_icon_docs_support ul li a {
+  color: #979797;
   font-size: 10pt;
 }
 
@@ -162,14 +133,6 @@ div.login_page {
   float: left;
 }
 
-div.login_page form {
-  border-right: 1px solid #868686;
-  padding-top: 30px;
-  padding-bottom: 50px;
-  min-width: 400px;
-  max-height: 600px;
-}
-
 div.login_logo_icon {
   margin-bottom: 40px;
   text-align: center;
@@ -177,7 +140,7 @@ div.login_logo_icon {
 
 div.login_logo_icon img {
   margin: 0 auto;
-  width: 150px;
+  max-width: 70%;
 }
 
 div.login_double_auth_code,
@@ -186,27 +149,36 @@ div.login_pass {
   margin: 0 auto;
   width: 70%;
   height: 40px;
-  background-color: rgba(255, 255, 255, 0.2) !important;
   margin-bottom: 25px;
   min-width: 260px;
+  background-color: #fff;
+  opacity: 0.77;
+  box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+  border-radius: 3px;
 }
 
-div.login_nick img,
-div.login_pass img {
-  vertical-align: middle;
-  margin: 3px;
+div.login_nick input {
+  background-image: url("../../images/usuario_login.png");
+}
+
+div.login_pass input {
+  background-image: url("../../images/candado_login.png");
 }
 
 div.login_nick input,
 div.login_pass input {
-  background-color: rgba(255, 255, 255, 0) !important;
   border: 0px !important;
-  color: white !important;
-  border-radius: 0px;
-  width: 89%;
+  color: #343434;
+  border-radius: 3px;
+  width: 100%;
   height: 40px;
-  font-size: 9pt;
+  font-size: 10pt;
   padding: 0px !important;
+  background-repeat: no-repeat;
+  background-size: 27px;
+  background-position: left center;
+  text-indent: 35px;
+  font-family: "Open Sans", sans-serif;
 }
 
 div.login_nick input:focus,
@@ -224,46 +196,76 @@ div.login_pass input:-webkit-autofill:focus,
 div.login_pass input:-webkit-autofill:active {
   transition: background-color 10000s ease-in-out 0s;
   -webkit-box-shadow: 0 0 0px 0px transparent inset !important;
-  -webkit-text-fill-color: white !important;
+  -webkit-text-fill-color: #343434 !important;
   border: 0px;
   width: 89%;
 }
 
 div.login_nick input::-webkit-input-placeholder,
 div.login_pass input::-webkit-input-placeholder {
-  color: white;
+  color: #343434;
 }
 
-div.login_pass img,
-div.login_nick img {
-  width: 30px;
-}
-
-div.login_pass div,
-div.login_nick div {
-  float: left;
-  width: 11%;
-}
-
-div.login_button {
+div.login_button,
+div.login_button_saml {
   margin: 0 auto;
-  width: 70%;
+  width: 40%;
   height: 40px;
-  background-color: rgb(25, 25, 25);
-  border: 1px solid white;
   min-width: 260px;
+  margin-bottom: 20px;
 }
 
 div.login_button input {
   width: 100%;
-  background-color: rgb(25, 25, 25) !important;
+  background-color: #82b92e !important;
   text-align: center;
-  border: 0px;
-  border-radius: 0px;
   height: 40px;
   padding: 0px;
-  font-size: 9pt;
-  color: white;
+  font-size: 11pt;
+  color: #fff !important;
+  border: 1px solid #82b92e;
+  border-radius: 3px;
+}
+
+div.login_button_saml input {
+  border: 1px solid #fff;
+  background-color: #fff !important;
+  color: #000 !important;
+  background-image: url("../../images/saml_login.png");
+  background-repeat: no-repeat;
+  background-position: right 5% center;
+}
+
+div.login_button input:hover {
+  background-color: #fff !important;
+  color: #000 !important;
+  border: 1px solid #fff !important;
+}
+
+div.login_button_saml input:hover {
+  background-image: url("../../images/saml_login_hover.png");
+  background-color: transparent !important;
+  color: #fff !important;
+  border: 1px solid #fff !important;
+}
+
+#remove_button input {
+  background-image: url("../../images/user_login.png") !important;
+  background-repeat: no-repeat;
+  background-position: right 5% center;
+}
+
+#remove_button input:hover {
+  background-image: url("../../images/user_login_hover.png") !important;
+}
+
+.login_back input {
+  background-image: url("../../images/back_login.png") !important;
+  background-position: left 5% center !important;
+}
+
+.login_back input:hover {
+  background-image: url("../../images/back_login_hover.png") !important;
 }
 
 div.login_data {
@@ -305,6 +307,21 @@ div.img_banner_login img {
   min-width: 70%;
   max-height: 50%;
   min-height: 50%;
+}
+
+.reset_password {
+  width: 70%;
+  height: 40px;
+  margin-right: auto;
+  margin-left: auto;
+  margin-top: 20px;
+  text-align: center;
+}
+
+.reset_password a {
+  color: #ddd !important;
+  font-family: "Open Sans", sans-serif;
+  font-size: 8.5pt;
 }
 
 @media all and (max-width: 1200px) {

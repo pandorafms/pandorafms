@@ -170,29 +170,41 @@ class NetworkMap
         ];
 
         if (is_array($options)) {
+            // Previously nodes_and_relations.
             if (isset($options['graph'])) {
                 $this->graph = $options['graph'];
             }
 
+            // String dotmap.
+            if (isset($options['dot_graph'])) {
+                $this->dotGraph = $options['dot_graph'];
+            }
+
+            // Array of nodes, agents, virtual, etc.
             if (isset($options['nodes'])) {
                 $this->nodes = $options['nodes'];
             }
 
+            // Array of relations.
             if (isset($options['relations'])) {
                 $this->relations = $options['relations'];
             }
 
+            // User interface type. Simple or advanced.
             if (isset($options['mode'])) {
                 $this->mode = $options['mode'];
             }
 
+            // Map options, check default values above.
+            // This is only used while generating new maps using
+            // (generateDotGraph).
             if (is_array($options['map_options'])) {
                 foreach ($options['map_options'] as $k => $v) {
                     $this->mapOptions[$k] = $v;
                 }
             }
 
-            // Load from Discovery task.
+            // Load from tmap.
             if ($options['id_map']) {
                 $this->idMap = $options['id_map'];
                 // Update nodes and relations.
@@ -204,6 +216,7 @@ class NetworkMap
                     $this->createMap();
                 }
             } else {
+                // Generate from group, task or network.
                 if ($options['id_group']) {
                     $this->idGroup = $options['id_group'];
                 }
@@ -238,22 +251,40 @@ class NetworkMap
      */
     public function createMap()
     {
+        // If exists, load from DB.
         if ($this->idMap) {
             $this->loadMap();
 
             return;
         }
 
-        if ($this->network) {
-            $this->nodes = networkmap_get_new_nodes_from_ip_mask(
-                $this->network
+        // Simulated map.
+        $this->idMap = uniqid();
+        // No tmap definition. Paint data.
+        if ($this->idTask) {
+            $recon_task = db_get_row_filter(
+                'trecon_task',
+                ['id_rt' => $networkmap['source_data']]
             );
+            $this->network = $recon_task['subnet'];
         }
 
-        if ($this->idTask) {
-            // Retrieve data from target task.
-            $this->loadMap();
-        }
+        // Simulate map entry.
+        $this->map = [
+            'id'                 => $this->idMap,
+            '__simulated'        => 1,
+            'background'         => '',
+            'background_options' => 0,
+            'source_period'      => 60,
+            'filter'             => $this->mapOptions['map_filter'],
+            'width'              => 900,
+            'height'             => 400,
+            'center_x'           => 450,
+            'center_y'           => 200,
+        ];
+
+        $this->graph = $this->generateNetworkMap();
+
     }
 
 
@@ -273,33 +304,6 @@ class NetworkMap
 
             // Nodes and relations.
             $this->graph = networkmap_process_networkmap($this->idMap);
-        } else {
-            // Simulated map.
-            $this->idMap = uniqid();
-            // No tmap definition. Paint data.
-            if ($this->idTask) {
-                $recon_task = db_get_row_filter(
-                    'trecon_task',
-                    ['id_rt' => $networkmap['source_data']]
-                );
-                $this->network = $recon_task['subnet'];
-            }
-
-            // Simulate map entry.
-            $this->map = [
-                'id'                 => $this->idMap,
-                '__simulated'        => 1,
-                'background'         => '',
-                'background_options' => 0,
-                'source_period'      => 60,
-                'filter'             => $this->mapOptions['map_filter'],
-                'width'              => 900,
-                'height'             => 400,
-                'center_x'           => 450,
-                'center_y'           => 200,
-            ];
-
-            $this->graph = $this->generateNetworkMap();
         }
     }
 
@@ -331,6 +335,46 @@ class NetworkMap
 
 
     /**
+     * Generate a graphviz string structure to be used later.
+     *
+     * @return void
+     */
+    public function generateDotGraph()
+    {
+        if (!isset($this->dotGraph)) {
+            // Generate dot file.
+            $this->dotGraph = networkmap_generate_dot(
+                get_product_name(),
+                $this->idGroup,
+                $this->mapOptions['simple'],
+                $this->mapOptions['font_size'],
+                $this->mapOptions['layout'],
+                $this->mapOptions['nooverlap'],
+                $this->mapOptions['zoom'],
+                $this->mapOptions['ranksep'],
+                $this->mapOptions['center'],
+                $this->mapOptions['regen'],
+                $this->mapOptions['pure'],
+                $this->mapOptions['id'],
+                $this->mapOptions['show_snmp_modules'],
+                $this->mapOptions['cut_names'],
+                $this->mapOptions['relative'],
+                $this->mapOptions['text_filter'],
+                $this->network,
+                $this->mapOptions['dont_show_subgroups'],
+                // Strict user (strict_user).
+                false,
+                // Canvas size (size_canvas).
+                null,
+                $this->mapOptions['old_mode'],
+                $this->mapOptions['map_filter']
+            );
+        }
+
+    }
+
+
+    /**
      * Generates a nodes - relationships array using graphviz dot
      * schema.
      *
@@ -338,6 +382,10 @@ class NetworkMap
      */
     public function generateNetworkMap()
     {
+        if (!isset($this->dotGraph)) {
+            $this->generateDotGraph();
+        }
+
         /*
          * Let graphviz place the nodes.
          */
@@ -349,55 +397,26 @@ class NetworkMap
             break;
 
             case 1:
-                $filter = 'dot';
-                $layout = 'flat';
+                   $filter = 'dot';
+                   $layout = 'flat';
             break;
 
             case 2:
-                $filter = 'twopi';
-                $layout = 'radial';
+                   $filter = 'twopi';
+                   $layout = 'radial';
             break;
 
             case 3:
             default:
-                $filter = 'neato';
-                $layout = 'spring1';
+                   $filter = 'neato';
+                   $layout = 'spring1';
             break;
 
             case 4:
-                $filter = 'fdp';
-                $layout = 'spring2';
+                   $filter = 'fdp';
+                   $layout = 'spring2';
             break;
         }
-
-        $nodes_and_relations = [];
-        // Generate dot file.
-        $graph = networkmap_generate_dot(
-            get_product_name(),
-            $this->idGroup,
-            $this->mapOptions['simple'],
-            $this->mapOptions['font_size'],
-            $this->mapOptions['layout'],
-            $this->mapOptions['nooverlap'],
-            $this->mapOptions['zoom'],
-            $this->mapOptions['ranksep'],
-            $this->mapOptions['center'],
-            $this->mapOptions['regen'],
-            $this->mapOptions['pure'],
-            $this->mapOptions['id'],
-            $this->mapOptions['show_snmp_modules'],
-            $this->mapOptions['cut_names'],
-            $this->mapOptions['relative'],
-            $this->mapOptions['text_filter'],
-            $this->network,
-            $this->mapOptions['dont_show_subgroups'],
-            // Strict user (strict_user).
-            false,
-            // Canvas size (size_canvas).
-            null,
-            $this->mapOptions['old_mode'],
-            $this->mapOptions['map_filter']
-        );
 
         switch (PHP_OS) {
             case 'WIN32':
@@ -421,7 +440,7 @@ class NetworkMap
 
         $filename_dot .= '_'.$this->idMap.'.dot';
 
-        file_put_contents($filename_dot, $graph);
+        file_put_contents($filename_dot, $this->dotGraph);
 
         switch (PHP_OS) {
             case 'WIN32':
@@ -449,12 +468,10 @@ class NetworkMap
             $this->idMap,
             $filename_plain,
             $relation_nodes,
-            $graph
+            $this->dotGraph
         );
 
         unlink($filename_plain);
-
-        $id = $this->idMap;
 
         /*
          * Graphviz section ends here.
@@ -485,7 +502,7 @@ class NetworkMap
         $node_center = [];
         foreach ($nodes as $key => $node) {
             $nodes_and_relations['nodes'][$index]['id'] = $node['id'];
-            $nodes_and_relations['nodes'][$index]['id_map'] = $id;
+            $nodes_and_relations['nodes'][$index]['id_map'] = $this->idMap;
 
             $children_count = 0;
             foreach ($relation_nodes as $relation) {
@@ -532,7 +549,7 @@ class NetworkMap
         $nodes_and_relations['relations'] = [];
         $index = 0;
         foreach ($relation_nodes as $relation) {
-            $nodes_and_relations['relations'][$index]['id_map'] = $id;
+            $nodes_and_relations['relations'][$index]['id_map'] = $this->idMap;
 
             if (($relation['parent_type'] == 'agent') || ($relation['parent_type'] == '')) {
                 $nodes_and_relations['relations'][$index]['id_parent'] = $relation['id_parent'];
@@ -565,34 +582,33 @@ class NetworkMap
             $index++;
         }
 
-        if ($this->idMap > 0) {
+        if ($this->idMap > 0 && (!isset($this->map['__simulated']))) {
             enterprise_hook(
                 'save_generate_nodes',
                 [
-                    $id,
+                    $this->idMap,
                     $nodes_and_relations,
                 ]
             );
 
-            $pandorafms_node = $nodes_and_relations['nodes'][0];
             $center = [
                 'x' => $node_center['x'],
                 'y' => $node_center['y'],
             ];
 
-            $networkmap['center_x'] = $center['x'];
-            $networkmap['center_y'] = $center['y'];
+            $this->map['center_x'] = $center['x'];
+            $this->map['center_y'] = $center['y'];
             db_process_sql_update(
                 'tmap',
                 [
-                    'center_x' => $networkmap['center_x'],
-                    'center_y' => $networkmap['center_y'],
+                    'center_x' => $this->map['center_x'],
+                    'center_y' => $this->map['center_y'],
                 ],
-                ['id' => $id]
+                ['id' => $this->idMap]
             );
         } else {
-            $this->map['center_x'] = $center['x'];
-            $this->map['center_y'] = $center['y'];
+            $this->map['center_x'] = $node_center['x'];
+            $this->map['center_y'] = $node_center['y'];
         }
 
         return $nodes_and_relations;
@@ -633,11 +649,14 @@ class NetworkMap
     {
         $networkmap = $this->map;
 
+        $simulate = false;
         if (!isset($networkmap['__simulated'])) {
             $networkmap['filter'] = json_decode(
                 $networkmap['filter'],
                 true
             );
+        } else {
+            $simulate = true;
         }
 
         // Hardcoded.
@@ -719,7 +738,8 @@ class NetworkMap
             $item = networkmap_db_node_to_js_node(
                 $node,
                 $count,
-                $count_item_holding_area
+                $count_item_holding_area,
+                $simulate
             );
             if ($item['deleted']) {
                 continue;
@@ -739,7 +759,11 @@ class NetworkMap
         // interfaces.
         networkmap_clean_relations_for_js($relations);
 
-        $links_js = networkmap_links_to_js_links($relations, $nodes_graph);
+        $links_js = networkmap_links_to_js_links(
+            $relations,
+            $nodes_graph,
+            $simulate
+        );
 
         $array_aux = [];
         foreach ($links_js as $link_js) {
@@ -1404,8 +1428,7 @@ class NetworkMap
             $output .= $this->loadController();
             $output .= $this->loadAdvancedInterface();
         } else {
-            // Simple mode, no tmap entries.
-            $this->idMap = '0';
+            // Simulated, no tmap entries.
             $output .= $this->loadMapSkel();
             $output .= $this->loadMapData();
             $output .= $this->loadController();

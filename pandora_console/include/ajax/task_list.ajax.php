@@ -29,6 +29,7 @@
 require_once $config['homedir'].'/include/graphs/functions_d3.php';
 
 $progress_task_discovery = (bool) get_parameter('progress_task_discovery', 0);
+$showmap = (bool) get_parameter('showmap', 0);
 
 if ($progress_task_discovery) {
     $id_task = get_parameter('id', 0);
@@ -71,4 +72,14 @@ if ($progress_task_discovery) {
     }
 
     return;
+}
+
+if ($showmap) {
+    include_once $config['homedir'].'/include/class/NetworkMap.class.php';
+    $id_task = get_parameter('id', 0);
+
+    $map = new NetworkMap(
+        ['id_task' => $id_task]
+    );
+    $map->printMap();
 }

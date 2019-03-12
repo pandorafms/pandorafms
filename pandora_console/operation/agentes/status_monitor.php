@@ -94,7 +94,6 @@ if ($id_module) {
     $status = -1;
     $ag_modulename = modules_get_agentmodule_name($id_module);
     $ag_freestring = modules_get_agentmodule_agent_alias($id_module);
-    $autosearch = false;
 }
 
 enterprise_hook('open_meta_frame');

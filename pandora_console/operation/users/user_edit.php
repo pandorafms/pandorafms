@@ -29,10 +29,10 @@
 
 global $config;
 
-// Load the header
+// Load the header.
 require $config['homedir'].'/operation/users/user_edit_header.php';
 
-// Update user info
+// Update user info.
 if (isset($_GET['modified']) && !$view_mode) {
     if (html_print_csrf_error()) {
         return;
@@ -179,29 +179,35 @@ if ($status != -1) {
     );
 }
 
-$jump = '&nbsp;&nbsp;';
-$table = new stdClass();
-$table->id = 'user_form';
-$table->width = '100%';
-$table->cellspacing = 4;
-$table->cellpadding = 4;
-$table->class = 'databox filters';
+/*
+    $jump = '&nbsp;&nbsp;';
+    $table = new stdClass();
+    $table->id = 'user_form';
+    $table->width = '100%';
+    $table->cellspacing = 4;
+    $table->cellpadding = 4;
+    $table->class = 'databox filters';
+*/
+
 if (defined('METACONSOLE')) {
     $table->head[0] = __('Edit my User');
     $table->head_colspan[0] = 5;
     $table->headstyle[0] = 'text-align: center';
 }
 
-$table->style[0] = 'min-width: 320px;width: 320px;margin-right:0px;padding-right:0px;';
-$table->style[1] = 'min-width: 280px;width: 280px;margin-right:0px;padding-right:0px;';
-$table->style[2] = 'min-width: 150px;width: 150px;margin-right:0px;margin-left:0px;padding-left:0px;padding-right:0px;';
+/*
+    $table->style[0] = 'min-width: 320px;width: 320px;margin-right:0px;padding-right:0px;';
+    $table->style[1] = 'min-width: 280px;width: 280px;margin-right:0px;padding-right:0px;';
+    $table->style[2] = 'min-width: 150px;width: 150px;margin-right:0px;margin-left:0px;padding-left:0px;padding-right:0px;';
 
-$data = [];
-$data[0] = '<span style="width:50%;float:left;"><b>'.__('User ID').'</b></span>';
-$data[0] .= $jump.'<span style="font-weight: normal;width:20%;float:left;">'.$id.'</span>';
-$data[1] = '<span style="width:40%;float:left;line-height:20px;"><b>'.__('Full (display) name').'</b></span>';
-$data[1] .= $jump.'<span style="width:20%;float:left;line-height:20px;">';
-$data[1] .= html_print_input_text_extended(
+    $data = [];
+*/
+
+$user_id = '<div><span class="edit_user_labels">'.__('User ID').': </span>';
+$user_id .= '<span>'.$id.'</span></div>';
+// $full_name = '<div><span class="edit_user_labels">'.__('Full (display) name').'</span>';
+// $full_name .= '<span>';
+$full_name = '<div>'.html_print_input_text_extended(
     'fullname',
     $user_info['fullname'],
     'fullname',
@@ -210,15 +216,18 @@ $data[1] .= html_print_input_text_extended(
     100,
     $view_mode,
     '',
-    'class="input"',
+    [
+        'class'       => 'input',
+        'placeholder' => __('Full (display) name'),
+    ],
     true
-).'</span>';
+).'</div>';
 
 // Show "Picture" (in future versions, why not, allow users to upload it's own avatar here.
 if (is_user_admin($id)) {
-    $data[2] = html_print_image('images/people_1.png', true);
+    $avatar = html_print_image('images/people_1.png', true, ['class' => 'user_avatar']);
 } else {
-    $data[2] = html_print_image('images/people_2.png', true);
+    $avatar = html_print_image('images/people_2.png', true, ['class' => 'user_avatar']);
 }
 
 if ($view_mode === false) {
@@ -227,50 +236,63 @@ if ($view_mode === false) {
     $table->rowspan[0][2] = 2;
 }
 
-$table->rowclass[] = '';
-$table->rowstyle[] = 'font-weight: bold;';
-$table->data[] = $data;
+/*
+    $table->rowclass[] = '';
+    $table->rowstyle[] = 'font-weight: bold;';
+    $table->data[] = $data;
 
-$data = [];
-$data[0] = '<span style="width:50%;float:left;">'.__('E-mail').'</span>';
-$data[0] .= $jump.'<span style="width:20%;float:left;line-height:20px;">'.html_print_input_text_extended('email', $user_info['email'], 'email', '', '25', '100', $view_mode, '', 'class="input"', true).'</span>';
-$data[1] = '<span style="width:40%;float:left;">'.__('Phone number').'</span>';
-$data[1] .= $jump.'<div style="width:20%;float:left;line-height:50px;">'.html_print_input_text_extended('phone', $user_info['phone'], 'phone', '', '20', '30', $view_mode, '', 'class="input"', true).'</div>';
-$table->rowclass[] = '';
-$table->rowstyle[] = 'font-weight: bold;';
-$table->data[] = $data;
+    $data = [];
+*/
+
+// $email = '<div><span class="edit_user_labels">'.__('E-mail').'</span>';
+$email = '<div>'.html_print_input_text_extended('email', $user_info['email'], 'email', '', '25', '100', $view_mode, '', ['class' => 'input', 'placeholder' => __('E-mail')], true).'</div>';
+$phone = '<div><span class="edit_user_labels">'.__('Phone number').'</span>';
+$phone .= html_print_input_text_extended('phone', $user_info['phone'], 'phone', '', '20', '30', $view_mode, '', 'class="input"', true).'</div>';
+
+/*
+    $table->rowclass[] = '';
+    $table->rowstyle[] = 'font-weight: bold;';
+    $table->data[] = $data;
+*/
 
 if ($view_mode === false) {
     if ($config['user_can_update_password']) {
-        $data = [];
-        $data[0] = '<span style="width:50%;float:left;">'.__('New Password').'</span>';
-        $data[0] .= $jump.'<span style="width:20%;float:left;line-height:20px;">'.html_print_input_text_extended('password_new', '', 'password_new', '', '25', '45', $view_mode, '', 'class="input"', true, true).'</span>';
-        $data[1] = '<span style="width:40%;float:left;">'.__('Password confirmation').'</span>';
-        $data[1] .= $jump.'<span style="width:20%;float:left;line-height:20px;">'.html_print_input_text_extended('password_conf', '', 'password_conf', '', '20', '45', $view_mode, '', 'class="input"', true, true).'</span>';
-        $table->rowclass[] = '';
-        $table->rowstyle[] = 'font-weight: bold;';
-        $table->data[] = $data;
+        // $data = [];
+        $new_pass = '<div><span class="edit_user_labels">'.__('New Password').'</span>';
+        $new_pass .= '<span>'.html_print_input_text_extended('password_new', '', 'password_new', '', '25', '45', $view_mode, '', 'class="input"', true, true).'</span></div>';
+        $new_pass_confirm = '<div><span class="edit_user_labels">'.__('Password confirmation').'</span>';
+        $new_pass_confirm .= '<span>'.html_print_input_text_extended('password_conf', '', 'password_conf', '', '20', '45', $view_mode, '', 'class="input"', true, true).'</span></div>';
+
+        /*
+            $table->rowclass[] = '';
+            $table->rowstyle[] = 'font-weight: bold;';
+            $table->data[] = $data;
+        */
     } else {
-        $data = [];
-        $data[0] = '<i>'.__('You cannot change your password under the current authentication scheme').'</i>';
-        $table->rowclass[] = '';
-        $table->rowstyle[] = '';
-        $table->colspan[count($table - data)][0] = 2;
-        $table->data[] = $data;
+        // $data = [];
+        $new_pass = '<i>'.__('You cannot change your password under the current authentication scheme').'</i>';
+        $new_pass_confirm = '';
+
+        /*
+            $table->rowclass[] = '';
+            $table->rowstyle[] = '';
+            $table->colspan[count($table - data)][0] = 2;
+            $table->data[] = $data;
+        */
     }
 }
 
-$data = [];
-$data[0] = '<span style="width:50%;float:left;">'.__('Block size for pagination').ui_print_help_tip(__('If checkbox is clicked then block size global configuration is used'), true).'</span>';
+// $data = [];
+$size_pagination = '<div><span class="edit_user_labels">'.__('Block size for pagination').ui_print_help_tip(__('If checkbox is clicked then block size global configuration is used'), true).'</span>';
 if ($user_info['block_size'] == 0) {
     $block_size = $config['global_block_size'];
 } else {
     $block_size = $user_info['block_size'];
 }
 
-$data[0] .= $jump.'<span style="font-weight: normal;width:15%;float:left;line-height:20px;">'.html_print_input_text('block_size', $block_size, '', 5, 5, true).'</span>';
-$data[0] .= $jump.'<span style="width:2%;float:left;line-height:20px;">'.html_print_checkbox('default_block_size', 1, $user_info['block_size'] == 0, true).'</span>';
-$data[0] .= __('Default').' ('.$config['global_block_size'].')';
+$size_pagination .= $jump.'<span>'.html_print_input_text('block_size', $block_size, '', 5, 5, true).'</span>';
+$size_pagination .= $jump.'<span>'.html_print_checkbox('default_block_size', 1, $user_info['block_size'] == 0, true).'</span>';
+$size_pagination .= __('Default').' ('.$config['global_block_size'].')</div>';
 
 $values = [
     -1 => __('Default'),
@@ -279,8 +301,8 @@ $values = [
 ];
 
 
-$data[2] = '<span style="width:30%;float:left;">'.__('Language').'</span>';
-$data[2] .= $jump.html_print_select_from_sql(
+$language = '<div><span class="edit_user_labels">'.__('Language').': </span></div>';
+$language .= '<div>'.html_print_select_from_sql(
     'SELECT id_language, name FROM tlanguage',
     'language',
     $user_info['language'],
@@ -294,11 +316,13 @@ $data[2] .= $jump.html_print_select_from_sql(
     '',
     '',
     10
-);
+).'</div>';
 
-$table->rowclass[] = '';
-$table->rowstyle[] = 'font-weight: bold;';
-$table->data[] = $data;
+/*
+    $table->rowclass[] = '';
+    $table->rowstyle[] = 'font-weight: bold;';
+    $table->data[] = $data;
+*/
 
 $own_info = get_user_info($config['id_user']);
 if ($own_info['is_admin'] || check_acl($config['id_user'], 0, 'PM')) {
@@ -311,10 +335,9 @@ $usr_groups = (users_get_groups($config['id_user'], 'AR', $display_all_group));
 $id_usr = $config['id_user'];
 
 
-$data = [];
-
+// $data = [];
 if (!$meta) {
-    $data[0] = '<span style="width:50%;float:left;">'.__('Home screen').ui_print_help_tip(__('User can customize the home page. By default, will display \'Agent Detail\'. Example: Select \'Other\' and type sec=estado&sec2=operation/agentes/estado_agente to show agent detail view'), true).'</span>';
+    $home_screen = '<div><span class="edit_user_labels">'.__('Home screen').ui_print_help_tip(__('User can customize the home page. By default, will display \'Agent Detail\'. Example: Select \'Other\' and type sec=estado&sec2=operation/agentes/estado_agente to show agent detail view'), true).'</span></div>';
     $values = [
         'Default'        => __('Default'),
         'Visual console' => __('Visual console'),
@@ -328,7 +351,7 @@ if (!$meta) {
         $values['Dashboard'] = __('Dashboard');
     }
 
-    $data[0] .= $jump.'<span style="width:20%;float:left;line-height:20px;">'.html_print_select($values, 'section', io_safe_output($user_info['section']), 'show_data_section();', '', -1, true, false, false).'</span>';
+    $home_screen .= '<div><span>'.html_print_select($values, 'section', io_safe_output($user_info['section']), 'show_data_section();', '', -1, true, false, false).'</span></div>';
 
     if (enterprise_installed()) {
         $dashboards = get_user_dashboards($config['id_user']);
@@ -342,7 +365,7 @@ if (!$meta) {
             }
         }
 
-        $data[0] .= html_print_select($dashboards_aux, 'dashboard', $user_info['data_section'], '', '', '', true);
+        $home_screen .= html_print_select($dashboards_aux, 'dashboard', $user_info['data_section'], '', '', '', true);
     }
 
     $layouts = visual_map_get_user_layouts($config['id_user'], true);
@@ -355,51 +378,51 @@ if (!$meta) {
         }
     }
 
-    $data[0] .= html_print_select($layouts_aux, 'visual_console', $user_info['data_section'], '', '', '', true);
-    $data[0] .= html_print_input_text('data_section', $user_info['data_section'], '', 60, 255, true, false);
+    $home_screen .= html_print_select($layouts_aux, 'visual_console', $user_info['data_section'], '', '', '', true);
+    $home_screen .= html_print_input_text('data_section', $user_info['data_section'], '', 60, 255, true, false);
 
 
 
     // User only can change skins if has more than one group.
-    $data[1] = '';
+    $skin = '';
     if (function_exists('skins_print_select')) {
         if (count($usr_groups) > 1) {
-            $data[1] = '<span style="width:40%;float:left;">'.__('Skin').'</span>';
-            $data[1] .= $jump.'<span style="width:20%;float:left;">'.skins_print_select($id_usr, 'skin', $user_info['id_skin'], '', __('None'), 0, true).'</span>';
+            $skin = '<div><span class="edit_user_labels">'.__('Skin').'</span></div>';
+            $skin .= $jump.'<div><span>'.skins_print_select($id_usr, 'skin', $user_info['id_skin'], '', __('None'), 0, true).'</span></div>';
         }
     }
 } else {
-    $data[0] = '';
-    $data[1] = '';
+    $home_screen = '';
+    $skin = '';
 }
 
-$data[2] = '<span style="width:30%;float:left;">'.__('Timezone').'</span>';
-$data[2] .= $jump.html_print_timezone_select('timezone', $user_info['timezone']);
+$timezone = '<span class="edit_user_labels">'.__('Timezone').'</span>';
+$timezone .= $jump.html_print_timezone_select('timezone', $user_info['timezone']);
 
-$table->rowclass[] = '';
-$table->rowstyle[] = 'font-weight: bold;';
-$table->data[] = $data;
+/*
+    $table->rowclass[] = '';
+    $table->rowstyle[] = 'font-weight: bold;';
+    $table->data[] = $data;
+*/
 
 // Double auth.
 $double_auth_enabled = (bool) db_get_value('id', 'tuser_double_auth', 'id_user', $config['id_user']);
-$data = [];
+// $data = [];
 if ($config['double_auth_enabled']) {
-    $data[0] = '<span style="width:50%;float:left;">'.__('Double authentication').'</span>';
-    $data[0] .= $jump;
-    $data[0] .= '<span style="width:20%;float:left;line-height:20px;">'.html_print_checkbox('double_auth', 1, $double_auth_enabled, true).'</span>';
+    $double_authentication = '<div><span class="edit_user_labels">'.__('Double authentication').'</span>';
+    $double_authentication .= '<span>'.html_print_checkbox('double_auth', 1, $double_auth_enabled, true).'</span>';
 }
 
 if ($double_auth_enabled) {
-    $data[0] .= $jump;
-    $data[0] .= html_print_button(__('Show information'), 'show_info', false, 'javascript:show_double_auth_info();', '', true);
+    $double_authentication .= html_print_button(__('Show information'), 'show_info', false, 'javascript:show_double_auth_info();', '', true);
 }
 
 // Dialog.
-$data[0] .= '<div id="dialog-double_auth"><div id="dialog-double_auth-container"></div></div>';
+$double_authentication .= '<div id="dialog-double_auth" style="display:none"><div id="dialog-double_auth-container"></div></div></div>';
 
 if (check_acl($config['id_user'], 0, 'ER')) {
-    $data[1] = '<span style="width:40%;float:left;">'.__('Event filter').'</span>';
-    $data[1] .= $jump.'<span style="width:20%;float:left;line-height:20px;">'.html_print_select_from_sql(
+    $event_filter = '<div><span class="edit_user_labels">'.__('Event filter').'</span></div>';
+    $event_filter .= '<div><span>'.html_print_select_from_sql(
         'SELECT id_filter, id_name FROM tevent_filter',
         'event_filter',
         $user_info['default_event_filter'],
@@ -407,29 +430,31 @@ if (check_acl($config['id_user'], 0, 'ER')) {
         __('None'),
         null,
         true
-    ).'</span>';
+    ).'</span></div>';
 } else if (license_free()) {
-    $data[1] = __('Newsletter Subscribed').':';
+    $newsletter = __('Newsletter Subscribed').':';
     if ($user_info['middlename']) {
-        $data[1] .= $jump.'<span style="font-weight:initial;">'.__('Already subscribed to %s newsletter', get_product_name()).'</span>';
+        $newsletter .= $jump.'<span>'.__('Already subscribed to %s newsletter', get_product_name()).'</span>';
     } else {
-        $data[1] .= $jump.'<span style="font-weight:initial;"><a style="text-decoration:underline;" href="javascript: force_run_newsletter();">'.__('Subscribe to our newsletter').'</a></span>';
+        $newsletter .= $jump.'<span><a href="javascript: force_run_newsletter();">'.__('Subscribe to our newsletter').'</a></span>';
     }
 
-    $data[2] = __('Newsletter Reminder').' ';
+    $newsletter_reminder = __('Newsletter Reminder').' ';
     if ($user_info['firstname'] != 0) {
         $user_info['firstname'] = 1;
     }
 
-    $data[2] .= html_print_checkbox('newsletter_reminder', 1, $user_info['firstname'], true);
+    $newsletter_reminder .= html_print_checkbox('newsletter_reminder', 1, $user_info['firstname'], true);
 } else {
-    $table->colspan[count($table->data)][0] = 3;
+    // $table->colspan[count($table->data)][0] = 3;
 }
 
-$table->rowclass[] = '';
-$table->rowstyle[] = 'font-weight: bold;';
-$table->data[] = $data;
-$data = [];
+/*
+    $table->rowclass[] = '';
+    $table->rowstyle[] = 'font-weight: bold;';
+    $table->data[] = $data;
+    $data = [];
+*/
 
 $autorefresh_list_out = [];
 if (is_metaconsole()) {
@@ -484,10 +509,10 @@ if (!isset($autorefresh_list)) {
     }
 }
 
-$data[0] = _('Autorefresh').ui_print_help_tip(
+$autorefresh_show = '<div><span class="edit_user_labels">'._('Autorefresh').ui_print_help_tip(
     __('This will activate autorefresh in selected pages'),
     true
-);
+).'</span></div>';
 $select_out = html_print_select(
     $autorefresh_list_out,
     'autorefresh_list_out[]',
@@ -518,16 +543,13 @@ $select_in = html_print_select(
     'width:200px'
 );
 
-$table_ichanges = '<table style="position:relative;left:160px;">
-		<tr>
-			<td>'.__('Full list of pages').'</td>
-			<td></td>
-			<td>'.__('List of pages with autorefresh').'</td>
-		</tr>
-		<tr>
-			<td>'.$select_out.'</td>
-			<td>
-				<a href="javascript:">'.html_print_image(
+$table_ichanges = '<div class="autorefresh_select">
+		<div class="1">
+            <span class="autorefresh_select_text">'.__('Full list of pages').': </span>
+            <div>'.$select_out.'</div>
+		</div>
+		<div class="2">
+            <a href="javascript:">'.html_print_image(
     'images/darrowright.png',
     true,
     [
@@ -536,8 +558,8 @@ $table_ichanges = '<table style="position:relative;left:160px;">
         'title' => __('Push selected pages into autorefresh list'),
     ]
 ).'</a>
-				<br><br>
-				<a href="javascript:">'.html_print_image(
+            <br/>
+            <a href="javascript:">'.html_print_image(
     'images/darrowleft.png',
     true,
     [
@@ -546,21 +568,23 @@ $table_ichanges = '<table style="position:relative;left:160px;">
         'title' => __('Pop selected pages out of autorefresh list'),
     ]
 ).'</a>
-			</td>
-			<td>'.$select_in.'</td>
-		</tr>
-	</table>';
-$data[0] .= $table_ichanges;
+        </div>    
+        <div class="3">    
+			<span class="autorefresh_select_text">'.__('List of pages with autorefresh').': </span>   
+			<div>'.$select_in.'</div>
+		</div>
+	</div>';
+$autorefresh_show .= $table_ichanges;
 
 // Time autorefresh.
-$times = get_refresh_time_array();
-$data[1] = '<span style="width:40%;float:left;">'.__('Time autorefresh');
-$data[1] .= ui_print_help_tip(
+$time_autorefresh = get_refresh_time_array();
+$time_autorefresh = '<div><span class="edit_user_labels">'.__('Time autorefresh');
+$time_autorefresh .= ui_print_help_tip(
     __('Interval of autorefresh of the elements, by default they are 30 seconds, needing to enable the autorefresh first'),
     true
-).'</span>';
-$data[1] .= $jump.'<span style="width:20%;float:left;">';
-$data[1] .= html_print_select(
+).'</span></div>';
+$time_autorefresh .= '<div><span>';
+$time_autorefresh .= html_print_select(
     $times,
     'time_autorefresh',
     $user_info['time_autorefresh'],
@@ -570,22 +594,28 @@ $data[1] .= html_print_select(
     true,
     false,
     false
-).'</span>';
+).'</span></div>';
 
-$table->rowclass[] = '';
-$table->rowstyle[] = 'font-weight: bold;vertical-align: top';
-$table->data[] = $data;
+/*
+    $table->rowclass[] = '';
+    $table->rowstyle[] = 'font-weight: bold;vertical-align: top';
+    $table->data[] = $data;
 
-$data = [];
-$data[0] = __('Comments');
-$table->colspan[count($table->data)][0] = 3;
-$table->rowclass[] = '';
-$table->rowstyle[] = 'font-weight: bold;';
-$table->data[] = $data;
+    $data = [];
+*/
 
-$data = [];
-$data[0] = '<div style="width:98%">';
-$data[0] .= html_print_textarea(
+$comments = '<span class="edit_user_labels">'.__('Comments').'</span>';
+
+/*
+    $table->colspan[count($table->data)][0] = 3;
+    $table->rowclass[] = '';
+    $table->rowstyle[] = 'font-weight: bold;';
+    $table->data[] = $data;
+
+    $data = [];
+*/
+
+$comments .= html_print_textarea(
     'comments',
     2,
     60,
@@ -593,18 +623,39 @@ $data[0] .= html_print_textarea(
     (($view_mode) ? 'readonly="readonly"' : ''),
     true
 );
-$data[0] .= '</div>';
-$data[0] .= html_print_input_hidden('quick_language_change', 1, true);
-$table->colspan[count($table->data)][0] = 3;
-$table->rowclass[] = '';
-$table->rowstyle[] = '';
-$table->data[] = $data;
+$comments .= html_print_input_hidden('quick_language_change', 1, true);
+
+/*
+    $table->colspan[count($table->data)][0] = 3;
+    $table->rowclass[] = '';
+    $table->rowstyle[] = '';
+    $table->data[] = $data;
+*/
 
 echo '<form name="user_mod" method="post" action="'.ui_get_full_url().'&amp;modified=1&amp;id='.$id.'&amp;pure='.$config['pure'].'">';
 
-html_print_table($table);
+echo '<div id="user_form">
+    <div class="user_edit_first_row">
+        <div class="edit_user_info">
+            <div class="edit_user_info_left">'.$avatar.$user_id.'</div>
+            <div class="edit_user_info_right">'.$full_name.$email.$phone.$new_pass.$new_pass_confirm.'</div>
+        </div>  
+        <div class="edit_user_autorefresh">'.$autorefresh_show.$time_autorefresh.'</div>
+    </div> 
+    <div class="user_edit_second_row">
+        <div class="edit_user_options">'.$language.$size_pagination.$skin.$event_filter.$home_screen.$double_authentication.$newsletter.$newsletter_reminder.'</div>
+        <div class="edit_user_timezone">'.$timezone.'</div>
+    </div> 
+    <div class="user_edit_third_row">
+        <div class="edit_user_comments">'.$comments.'</div>
+    </div>    
+</div>';
 
-echo '<div style="width:'.$table->width.'; text-align:right;">';
+/*
+    Borrar: html_print_table($table);
+*/
+
+echo '<div class="edit_user_button">';
 if (!$config['user_can_update_info']) {
     echo '<i>'.__('You can not change your user info under the current authentication scheme').'</i>';
 } else {
@@ -614,7 +665,9 @@ if (!$config['user_can_update_info']) {
 
 echo '</div></form>';
 
-unset($table);
+/*
+    Borrar: unset($table);
+*/
 
 if (!defined('METACONSOLE')) {
     echo '<h4>'.__('Profiles/Groups assigned to this user').'</h4>';
@@ -845,6 +898,7 @@ function show_double_auth_info () {
     });
 
     $("div#dialog-double_auth")
+        .css('display','block')
         .append($dialogContainer)
         .dialog({
             resizable: true,

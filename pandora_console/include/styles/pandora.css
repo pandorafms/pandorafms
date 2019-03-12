@@ -400,13 +400,13 @@ th {
  * ---------------------------------------------------------------------
  */
 div#page {
-  background: #fff;
+  background: #fbfbfb;
   background-image: none;
   clear: both;
   width: auto;
-  margin-top: 20px !important;
+  padding-top: 20px !important;
   padding-left: 60px; /* This is overwritten by the classic menu (215px)*/
-  margin-right: 35px;
+  padding-right: 35px;
   margin-left: 35px;
 }
 
@@ -4736,4 +4736,155 @@ input:checked + .p-slider:before {
   background: url("../../images/to_top_menu_hover.png") no-repeat center;
   background-color: #fff;
   border: 2px solid #82b92e;
+}
+
+/*
+ * ---------------------------------------------------------------------
+ * - User edit
+ * ---------------------------------------------------------------------
+ */
+
+#user_form * {
+  font-family: "Open Sans", sans-serif;
+  font-size: 10pt;
+}
+
+#user_form {
+  width: 100%;
+  font-family: "Open Sans", sans-serif;
+}
+
+.user_edit_first_row,
+.user_edit_second_row {
+  display: flex;
+}
+
+.user_edit_second_row,
+.user_edit_third_row,
+.edit_user_info,
+.edit_user_autorefresh {
+  background-color: #fff;
+  border: 1px solid #d7d9da;
+  border-radius: 10px;
+}
+
+.user_edit_first_row,
+.user_edit_second_row {
+  margin-bottom: 20px;
+}
+
+.user_edit_third_row {
+  padding: 20px 30px;
+}
+
+.edit_user_info {
+  width: 65%;
+  margin-right: 20px;
+  display: flex;
+}
+
+.edit_user_info_left {
+  width: 25%;
+  padding: 20px 30px;
+  margin-right: 20px;
+  border: 1px solid blue;
+}
+
+.edit_user_info_right {
+  width: 75%;
+  padding: 20px 30px;
+  border: 1px solid pink;
+}
+
+.edit_user_info_right input {
+  background-color: transparent !important;
+  border: none;
+  border-radius: 0 !important;
+  border-bottom: 2px solid #343434;
+  padding: 1px 3px;
+  height: 26px;
+  text-indent: 30px;
+  background-repeat: no-repeat;
+  background-position: left bottom 2px;
+  /* margin-bottom: 15px;*/
+}
+
+.edit_user_info_right #fullname {
+  background-image: url("http://172.16.0.2/pandora_console/images/header_user_admin_green.png");
+}
+
+.edit_user_info_right #email {
+  background-image: url("http://172.16.0.2/pandora_console/images/header_user_admin_green.png");
+}
+
+.edit_user_autorefresh {
+  width: 35%;
+  padding: 20px 30px;
+}
+
+.edit_user_options {
+  width: 60%;
+  margin-right: 20px;
+  padding: 20px 30px;
+  border: 1px solid blue;
+}
+
+.edit_user_timezone {
+  width: 40%;
+  padding: 20px 30px;
+  border: 1px solid pink;
+}
+
+.edit_user_comments {
+}
+
+.edit_user_comments #textarea_comments {
+  background-color: #fbfbfb !important;
+  margin-top: 10px;
+}
+
+.edit_user_button {
+  width: 100%;
+  text-align: right;
+}
+
+.edit_user_labels {
+  color: #343434;
+  font-weight: 600;
+  font-size: 10.5pt !important;
+  padding-right: 10px;
+}
+
+.user_edit_first_row .edit_user_autorefresh > div:not([class]):not([id]),
+.user_edit_first_row .edit_user_info_left > div:not([class]):not([id]),
+.user_edit_first_row .edit_user_info_right > div:not([class]):not([id]),
+.user_edit_second_row .edit_user_options > div:not([class]):not([id]) {
+  margin-bottom: 10px;
+}
+
+.user_edit_first_row .edit_user_autorefresh > div:last-child,
+.user_edit_first_row .edit_user_info_left > div:last-child,
+.user_edit_first_row .edit_user_info_right > div:last-child,
+.user_edit_second_row .edit_user_options > div:last-child {
+  margin-bottom: 0px !important;
+}
+
+.autorefresh_select {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.autorefresh_select select {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.user_avatar {
+  margin-bottom: 10px;
+}
+
+#autorefresh_list_out,
+#autorefresh_list {
+  text-align: center;
 }

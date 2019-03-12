@@ -52,6 +52,7 @@ Apart from the defined module macros, the following macros are also available:
   <li>_event_extra_id_ : (Only event alerts) Extra id.</li>
   <li>_event_id_: (Only event alerts) ID of the event that triggered the alert.</li>
   <li>_event_text_severity_: (Only event alerts) Event text severity (Maintenance, Informational, Normal Minor, Warning, Major, Critical).</li>
+  <li>_eventTimestamp_: Timestamp in which the event was created.</li>
   <li>_field1_: User defined field 1.</li>
   <li>_field2_: User defined field 2.</li>
   <li>_field3_: User defined field 3.</li>

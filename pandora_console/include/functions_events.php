@@ -701,19 +701,20 @@ function events_comment(
         $first_event = reset($id_event);
     }
 
-    $event_comments = db_get_value(
-        'user_comment',
-        $event_table,
-        'id_evento',
-        $first_event
+    $event_comments = mysql_db_process_sql(
+        'SELECT user_comment FROM '.$event_table.' WHERE id_evento = '.$first_event,
+        'affected_rows',
+        '',
+        false
     );
+
     $event_comments_array = [];
 
-    if ($event_comments == '') {
+    if ($event_comments[0]['user_comment'] == '') {
         $comments_format = 'new';
     } else {
         // If comments are not stored in json, the format is old.
-        $event_comments_array = json_decode($event_comments);
+        $event_comments_array = json_decode($event_comments[0]['user_comment']);
 
         if (empty($event_comments_array)) {
             $comments_format = 'old';

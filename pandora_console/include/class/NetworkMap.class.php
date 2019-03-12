@@ -34,6 +34,17 @@ require_once $config['homedir'].'/include/functions_pandora_networkmap.php';
 
 enterprise_include_once('include/functions_pandora_networkmap.php');
 
+define('SOURCE_GROUP', 0);
+define('SOURCE_TASK', 1);
+define('SOURCE_NETWORK', 2);
+
+define('LAYOUT_CIRCULAR', 0);
+define('LAYOUT_FLAT', 1);
+define('LAYOUT_RADIAL', 2);
+define('LAYOUT_SPRING1', 3);
+define('LAYOUT_SPRING2', 4);
+
+
 /**
  * Manage networkmaps in Pandora FMS
  */
@@ -138,13 +149,12 @@ class NetworkMap
     public function __construct($options=false)
     {
         // Default mapOptions values.
-        // Default neato.
-        $this->mapOptions['generation_method'] = 3;
+        // Defines the command to generate positions.
+        $this->mapOptions['generation_method'] = LAYOUT_SPRING1;
         $this->mapOptions['simple'] = 0;
         $this->mapOptions['font_size'] = 12;
-        $this->mapOptions['layout'] = 'spring1';
         $this->mapOptions['nooverlap'] = 1;
-        $this->mapOptions['zoom'] = 0.5;
+        $this->mapOptions['z_dash'] = 0.5;
         $this->mapOptions['ranksep'] = 0.5;
         $this->mapOptions['center'] = 0;
         $this->mapOptions['regen'] = 0;
@@ -164,7 +174,7 @@ class NetworkMap
             'y_offs'              => 0,
             'z_dash'              => 0.5,
             'node_sep'            => 0.1,
-            'rank_sep'            => 1,
+            'rank_sep'            => 0.1,
             'mindist'             => 1,
             'kval'                => 0.1,
         ];
@@ -264,7 +274,7 @@ class NetworkMap
         if ($this->idTask) {
             $recon_task = db_get_row_filter(
                 'trecon_task',
-                ['id_rt' => $networkmap['source_data']]
+                ['id_rt' => $this->idTask]
             );
             $this->network = $recon_task['subnet'];
         }
@@ -277,13 +287,14 @@ class NetworkMap
             'background_options' => 0,
             'source_period'      => 60,
             'filter'             => $this->mapOptions['map_filter'],
-            'width'              => 900,
-            'height'             => 400,
-            'center_x'           => 450,
-            'center_y'           => 200,
+            'width'              => 0,
+            'height'             => 0,
+            'center_x'           => 0,
+            'center_y'           => 0,
         ];
 
-        $this->graph = $this->generateNetworkMap();
+        // Will be stored in $this->graph.
+        $this->generateNetworkMap();
 
     }
 
@@ -295,15 +306,60 @@ class NetworkMap
      */
     public function loadMap()
     {
+        if ($this->map) {
+            // Already loaded.
+            return;
+        }
+
         if ($this->idMap) {
             $this->map = db_get_row('tmap', 'id', $this->idMap);
+
+            $this->mapOptions['map_filter'] = json_decode(
+                $this->map['filter'],
+                true
+            );
+
+            foreach ($this->map as $k => $v) {
+                $this->mapOptions[$k] = $v;
+            }
+
+            // Retrieve data origin.
+            $this->network = null;
+            $this->idTask = null;
+            $this->idGroup = $this->map['id_group'];
+
+            switch ($this->map['source']) {
+                case SOURCE_GROUP:
+                    $this->idGroup = $this->map['source_data'];
+                break;
+
+                case SOURCE_TASK:
+                    $this->idTask = $this->map['source_data'];
+                break;
+
+                case SOURCE_NETWORK:
+                    $this->network = $this->map['source_data'];
+                break;
+
+                default:
+                    // Ignore.
+                break;
+            }
+
+            if ($this->idTask) {
+                $recon_task = db_get_row_filter(
+                    'trecon_task',
+                    ['id_rt' => $networkmap['source_data']]
+                );
+                $this->network = $recon_task['subnet'];
+            }
 
             // Retrieve or update nodes and relations.
             $this->getNodes();
             $this->getRelations();
 
-            // Nodes and relations.
-            $this->graph = networkmap_process_networkmap($this->idMap);
+            // Nodes and relations will be stored in $this->graph.
+            $this->loadGraph();
         }
     }
 
@@ -335,6 +391,98 @@ class NetworkMap
 
 
     /**
+     * Return relations of current map.
+     *
+     * @return array Relations.
+     */
+    public function getRelations()
+    {
+        if ($this->relations) {
+            return $this->relations;
+        }
+
+        if ($this->idMap !== false) {
+            if (enterprise_installed()) {
+                $this->relations = enterprise_hook(
+                    'get_relations_from_db',
+                    [$this->idMap]
+                );
+            }
+        }
+
+        return $this->relations;
+
+    }
+
+
+    /**
+     * Generates or loads nodes&relations array from data load
+     * and stores it in $this->graph.
+     *
+     * @return void
+     */
+    public function loadGraph()
+    {
+        $nodes = $this->nodes;
+        $relations = $this->relations;
+
+        // Generate if there's no data in DB about nodes or relations.
+        if (empty($nodes) || empty($relations)) {
+            $this->generateNetworkMap();
+            return;
+        }
+
+        $nodes_and_relations = [];
+        $nodes_and_relations['nodes'] = [];
+        $index_nodes = 0;
+        foreach ($nodes as $node) {
+            if (!$node['deleted']) {
+                $nodes_and_relations['nodes'][$index_nodes]['id_map'] = $node['id_map'];
+                $nodes_and_relations['nodes'][$index_nodes]['x'] = $node['x'];
+                $nodes_and_relations['nodes'][$index_nodes]['y'] = $node['y'];
+                $nodes_and_relations['nodes'][$index_nodes]['source_data'] = $node['source_data'];
+                $nodes_and_relations['nodes'][$index_nodes]['type'] = $node['type'];
+
+                $style_node = json_decode($node['style'], true);
+                $style = [];
+                $style['shape'] = $style_node['shape'];
+                $style['image'] = $style_node['image'];
+                $style['width'] = $style_node['width'];
+                $style['height'] = $style_node['height'];
+                $style['label'] = $style_node['label'];
+                $style['id_networkmap'] = $style_node['networkmap'];
+                $nodes_and_relations['nodes'][$index_nodes]['style'] = json_encode($style);
+
+                if ($node['type'] == 1) {
+                    $nodes_and_relations['nodes'][$index_nodes]['id_agent'] = $style_node['id_agent'];
+                }
+
+                $nodes_and_relations['nodes'][$index_nodes]['id_in_db'] = $node['id'];
+
+                $index_nodes++;
+            }
+        }
+
+        $nodes_and_relations['relations'] = [];
+        $index_relations = 0;
+        foreach ($relations as $relation) {
+            $nodes_and_relations['relations'][$index_relations]['id_map'] = $relation['id_map'];
+            $nodes_and_relations['relations'][$index_relations]['id_parent'] = $relation['id_parent'];
+            $nodes_and_relations['relations'][$index_relations]['id_child'] = $relation['id_child'];
+            $nodes_and_relations['relations'][$index_relations]['parent_type'] = $relation['parent_type'];
+            $nodes_and_relations['relations'][$index_relations]['child_type'] = $relation['child_type'];
+            $nodes_and_relations['relations'][$index_relations]['id_parent_source_data'] = $relation['id_parent_source_data'];
+            $nodes_and_relations['relations'][$index_relations]['id_child_source_data'] = $relation['id_child_source_data'];
+
+            $index_relations++;
+        }
+
+        $this->graph = $nodes_and_relations;
+
+    }
+
+
+    /**
      * Generate a graphviz string structure to be used later.
      *
      * @return void
@@ -350,7 +498,7 @@ class NetworkMap
                 $this->mapOptions['font_size'],
                 $this->mapOptions['layout'],
                 $this->mapOptions['nooverlap'],
-                $this->mapOptions['zoom'],
+                $this->mapOptions['z_dash'],
                 $this->mapOptions['ranksep'],
                 $this->mapOptions['center'],
                 $this->mapOptions['regen'],
@@ -375,47 +523,86 @@ class NetworkMap
 
 
     /**
-     * Generates a nodes - relationships array using graphviz dot
-     * schema.
+     * Creates an empty dot graph (with only base node)
      *
-     * @return array Node - relationship calculated.
+     * @return void
+     */
+    public function generateEmptyDotGraph()
+    {
+        // Create an empty map dot structure.
+        $graph = networkmap_open_graph(
+            $this->mapOptions['layout'],
+            $this->mapOptions['nooverlap'],
+            $this->mapOptions['pure'],
+            $this->mapOptions['z_dash'],
+            $this->mapOptions['ranksep'],
+            $this->mapOptions['font_size'],
+            null
+        );
+        $graph .= networkmap_create_pandora_node(
+            get_product_name(),
+            $this->mapOptions['font_size'],
+            $this->mapOptions['simple']
+        );
+        $graph .= networkmap_close_graph();
+
+        $this->dotGraph = $graph;
+    }
+
+
+    /**
+     * Generates a nodes - relationships array using graphviz dot
+     * schema and stores nodes&relations into $this->graph.
+     *
+     * @return void
      */
     public function generateNetworkMap()
     {
-        if (!isset($this->dotGraph)) {
-            $this->generateDotGraph();
-        }
+        global $config;
+
+        include_once 'include/functions_os.php';
+
+        $map_filter = json_decode(
+            $this->map['filter'],
+            true
+        );
 
         /*
          * Let graphviz place the nodes.
          */
 
         switch ($this->mapOptions['generation_method']) {
-            case 0:
+            case LAYOUT_CIRCULAR:
                 $filter = 'circo';
-                $layout = 'circular';
+                $this->mapOptions['layout'] = 'circular';
             break;
 
-            case 1:
+            case LAYOUT_FLAT:
                    $filter = 'dot';
-                   $layout = 'flat';
+                   $this->mapOptions['layout'] = 'flat';
             break;
 
-            case 2:
+            case LAYOUT_RADIAL:
                    $filter = 'twopi';
-                   $layout = 'radial';
+                   $this->mapOptions['layout'] = 'radial';
             break;
 
-            case 3:
+            case LAYOUT_SPRING1:
             default:
                    $filter = 'neato';
-                   $layout = 'spring1';
+                   $this->mapOptions['layout'] = 'spring1';
             break;
 
-            case 4:
+            case LAYOUT_SPRING2:
                    $filter = 'fdp';
-                   $layout = 'spring2';
+                   $this->mapOptions['layout'] = 'spring2';
             break;
+        }
+
+        if ($map_filter['empty_map']) {
+            $this->generateEmptyDotGraph();
+        } else if (!isset($this->dotGraph)) {
+            $this->generateDotGraph();
         }
 
         switch (PHP_OS) {
@@ -548,6 +735,7 @@ class NetworkMap
 
         $nodes_and_relations['relations'] = [];
         $index = 0;
+
         foreach ($relation_nodes as $relation) {
             $nodes_and_relations['relations'][$index]['id_map'] = $this->idMap;
 
@@ -583,13 +771,15 @@ class NetworkMap
         }
 
         if ($this->idMap > 0 && (!isset($this->map['__simulated']))) {
-            enterprise_hook(
-                'save_generate_nodes',
-                [
-                    $this->idMap,
-                    $nodes_and_relations,
-                ]
-            );
+            if (enterprise_installed()) {
+                $nodes_and_relations = enterprise_hook(
+                    'save_generate_nodes',
+                    [
+                        $this->idMap,
+                        $nodes_and_relations,
+                    ]
+                );
+            }
 
             $center = [
                 'x' => $node_center['x'],
@@ -611,31 +801,7 @@ class NetworkMap
             $this->map['center_y'] = $node_center['y'];
         }
 
-        return $nodes_and_relations;
-    }
-
-
-    /**
-     * Return relations of current map.
-     *
-     * @return array Relations.
-     */
-    public function getRelations()
-    {
-        if ($this->relations) {
-            return $this->relations;
-        }
-
-        if ($this->idMap !== false) {
-            if (enterprise_installed()) {
-                $this->relations = enterprise_hook(
-                    'get_relations_from_db',
-                    [$this->idMap]
-                );
-            }
-        }
-
-        return $this->relations;
+        $this->graph = $nodes_and_relations;
 
     }
 
@@ -655,15 +821,19 @@ class NetworkMap
                 $networkmap['filter'],
                 true
             );
+            $networkmap['filter']['holding_area'] = [
+                500,
+                500,
+            ];
+            $holding_area_title = __('Holding Area');
         } else {
             $simulate = true;
+            $holding_area_title = '';
+            $networkmap['filter']['holding_area'] = [
+                0,
+                0,
+            ];
         }
-
-        // Hardcoded.
-        $networkmap['filter']['holding_area'] = [
-            500,
-            500,
-        ];
 
         $this->graph['relations'] = clean_duplicate_links(
             $this->graph['relations']
@@ -834,7 +1004,7 @@ class NetworkMap
 
         $output .= "var translation_none = '".__('None')."';\n";
         $output .= "var dialog_node_edit_title = '".__('Edit node %s')."';\n";
-        $output .= "var holding_area_title = '".__('Holding Area')."';\n";
+        $output .= "var holding_area_title = '".$holding_area_title."';\n";
         $output .= "var edit_menu = '".__('Show details and options')."';\n";
         $output .= "var interface_link_add = '".__('Add a interface link')."';\n";
         $output .= "var set_parent_link = '".__('Set parent interface')."';\n";
@@ -1332,9 +1502,9 @@ class NetworkMap
         ui_require_css_file('jquery.contextMenu', 'include/styles/js/');
 
         $output = '';
-        $hide_minimap = '';
-        if ($dashboard_mode) {
-            $hide_minimap = 'none';
+        $minimap_display = '';
+        if ($this->mapOptions['pure']) {
+            $minimap_display = 'none';
         }
 
         $networkmap = $this->map;
@@ -1350,7 +1520,7 @@ class NetworkMap
         $output .= '<div id="networkconsole_'.$networkmap['id'].'"';
         $output .= ' style="position: relative; overflow: hidden; background: #FAFAFA">';
 
-        $output .= '<div style="display: '.$hide_minimap.';">';
+        $output .= '<div style="display: '.$minimap_display.';">';
         $output .= '<canvas id="minimap_'.$networkmap['id'].'"';
         $output .= ' style="position: absolute; left: 0px; top: 0px; border: 1px solid #bbbbbb;">';
         $output .= '</canvas>';

@@ -772,6 +772,7 @@ html_print_input_hidden('center_logo', ui_get_full_url(ui_get_logo_to_center_net
 $dash_mode = 0;
 $map_dash_details = [];
 $networkmap = db_get_row('tmap', 'id', $id);
+
 if (enterprise_installed()) {
     include_once 'enterprise/dashboard/widgets/network_map.php';
     if ($id_networkmap) {
@@ -783,7 +784,6 @@ if (enterprise_installed()) {
         $map_dash_details['x_offs'] = $x_offs;
         $map_dash_details['y_offs'] = $y_offs;
         $map_dash_details['z_dash'] = $z_dash;
-
         $networkmap = db_get_row('tmap', 'id', $id);
     } else {
         $networkmap_filter = json_decode($networkmap['filter'], true);

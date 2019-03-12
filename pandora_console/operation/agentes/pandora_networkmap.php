@@ -126,7 +126,10 @@ if (enterprise_installed()) {
         $id = $result;
         define('_id_', $id);
 
-        $tab = 'view';
+        if ($result !== false) {
+            $tab = 'view';
+            header('Location: '.$_SERVER['HTTP_REFERER'].'&tab='.$tab.'&id_networkmap='.$id);
+        }
     } else if ($update_empty_networkmap) {
         $id_group = (int) get_parameter('id_group', 0);
 
@@ -189,9 +192,9 @@ if (enterprise_installed()) {
     }
 }
 
-$result_txt = '';
 // The networkmap doesn't exist yet
 if ($new_networkmap || $save_networkmap) {
+    $result_txt = '';
     if ($new_networkmap) {
         if ($networkmaps_write || $networkmaps_manage) {
             include 'pandora_networkmap.editor.php';
@@ -349,14 +352,15 @@ if ($new_networkmap || $save_networkmap) {
         $id = $result;
         define('_id_', $id);
 
-        $tab = 'view';
+        if ($result !== false) {
+            if ($values['generation_method'] == 6) {
+                $tab = 'r_dinamic';
+                define('_activeTab_', 'radial_dynamic');
+            }
 
-        if ($values['generation_method'] == 6) {
-            $tab = 'r_dinamic';
-            define('_activeTab_', 'radial_dynamic');
+            $tab = 'view';
+            header('Location: '.$_SERVER['HTTP_REFERER'].'&tab='.$tab.'&id_networkmap='.$id);
         }
-
-        header('Location: '.$_SERVER['HTTP_REFERER'].'&tab=view&id_networkmap='.$id);
     }
 }
 // The networkmap exists
@@ -758,4 +762,3 @@ switch ($tab) {
         }
     break;
 }
-

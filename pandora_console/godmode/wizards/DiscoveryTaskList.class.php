@@ -511,7 +511,7 @@ class DiscoveryTaskList extends Wizard
                     $data[9] .= '</a>';
                 }
 
-                if ($task['disabled'] != 2) {
+                if ($task['disabled'] != 2 && $task['utimestamp'] > 0) {
                     $data[9] .= '<a href="#" onclick="show_map('.$task['id_rt'].',\''.$task['name'].'\',\''.$url_ajax.'\')">';
                     $data[9] .= html_print_image(
                         'images/dynamic_network_icon.png',

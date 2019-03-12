@@ -300,12 +300,6 @@ class NetworkMap
             ];
 
             $this->graph = $this->generateNetworkMap();
-
-            // Direct print. Avoid extra options.
-            // $networkmap['source_period'] = 60;
-            // $networkmap['filter'] = $this->mapOptions['map_filter'];
-            // $networkmap['width'] = 1400;
-            // $networkmap['height'] = 800;
         }
     }
 

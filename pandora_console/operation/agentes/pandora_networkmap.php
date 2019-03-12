@@ -128,7 +128,11 @@ if (enterprise_installed()) {
 
         if ($result !== false) {
             $tab = 'view';
-            header('Location: '.$_SERVER['HTTP_REFERER'].'&tab='.$tab.'&id_networkmap='.$id);
+            header(
+                'Location: '.ui_get_full_url(
+                    'index.php?sec=network&sec2=operation/agentes/pandora_networkmap&tab='.$tab.'&id_networkmap='.$id
+                )
+            );
         }
     } else if ($update_empty_networkmap) {
         $id_group = (int) get_parameter('id_group', 0);
@@ -357,9 +361,20 @@ if ($new_networkmap || $save_networkmap) {
             if ($values['generation_method'] == 6) {
                 $tab = 'r_dinamic';
                 define('_activeTab_', 'radial_dynamic');
+                $url = 'index.php?sec=network&sec2=operation/agentes/networkmap.dinamic&activeTab=radial_dynamic';
+                header(
+                    'Location'.ui_get_full_url(
+                        $url.'&id_networkmap='.$id
+                    )
+                );
+            } else {
+                $url = 'index.php?sec=network&sec2=operation/agentes/pandora_networkmap';
+                header(
+                    'Location: '.ui_get_full_url(
+                        $url.'&tab='.$tab.'&id_networkmap='.$id
+                    )
+                );
             }
-
-            header('Location: '.$_SERVER['HTTP_REFERER'].'&tab='.$tab.'&id_networkmap='.$id);
         }
     }
 }

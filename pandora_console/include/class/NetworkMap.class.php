@@ -1332,7 +1332,7 @@ class NetworkMap
                 'id'         => 'error_red',
                 'style'      => 'vertical-align: bottom;display: none;',
                 'class'      => 'forced_title',
-                'alt'        => 'Esto es una prueba',
+                'alt'        => '',
                 'data-title' => 'data-use_title_for_force_title:1',
             ],
             false

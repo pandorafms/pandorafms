@@ -689,7 +689,7 @@ function networkmap_create_edge($head, $tail, $layout, $nooverlap, $pure, $zoom,
     }
 
     // edgeURL allows node navigation
-    $edge = "\n".$head.' -- '.$tail.'[color="#BDBDBD", headclip=false, tailclip=false, edgeURL=""];'."\n";
+    $edge = "\n".$head.' -- '.$tail.'[len=3, color="#BDBDBD", headclip=false, tailclip=false, edgeURL=""];'."\n";
 
     return $edge;
 }
@@ -1188,7 +1188,7 @@ function networkmap_open_graph(
     $nooverlap,
     $pure,
     $zoom,
-    $ranksep,
+    $rank_sep,
     $font_size,
     $size_canvas,
     $map_filter=[]
@@ -1250,7 +1250,7 @@ function networkmap_open_graph(
     $head = 'graph networkmap { dpi=100; bgcolor="transparent"; labeljust=l; margin=0; pad="0.75,0.75";';
     if ($nooverlap != '') {
         $head .= 'overlap="false";';
-        $head .= 'outputorder=edgesfirst;';
+        $head .= 'outputorder=first;';
     }
 
     if ($layout == 'flat' || $layout == 'spring1' || $layout == 'spring2') {
@@ -1275,12 +1275,13 @@ function networkmap_open_graph(
         $head .= "mindist=\"$mindist\";";
     }
 
-    $head .= 'ratio=fill;';
+    $head .= 'ratio="fill";';
     $head .= 'root=0;';
     $head .= "nodesep=\"$node_sep\";";
     $head .= "size=\"$size\";";
 
     $head .= "\n";
+
     return $head;
 }
 

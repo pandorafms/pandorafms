@@ -79,7 +79,10 @@ if ($showmap) {
     $id_task = get_parameter('id', 0);
 
     $map = new NetworkMap(
-        ['id_task' => $id_task]
+        [
+            'id_task' => $id_task,
+            'pure'    => 1,
+        ]
     );
     $map->printMap();
 }

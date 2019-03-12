@@ -148,10 +148,10 @@ class NetworkMap
         $this->mapOptions['font_size'] = 12;
         $this->mapOptions['nooverlap'] = 1;
         $this->mapOptions['z_dash'] = 0.5;
-        $this->mapOptions['ranksep'] = 0.5;
+        $this->mapOptions['ranksep'] = 3;
         $this->mapOptions['center'] = 0;
         $this->mapOptions['regen'] = 0;
-        $this->mapOptions['pure'] = 1;
+        $this->mapOptions['pure'] = 0;
         $this->mapOptions['show_snmp_modules'] = false;
         $this->mapOptions['cut_names'] = false;
         $this->mapOptions['relative'] = true;
@@ -196,6 +196,11 @@ class NetworkMap
             // User interface type. Simple or advanced.
             if (isset($options['mode'])) {
                 $this->mode = $options['mode'];
+            }
+
+            // Show interface elements or dashboard style.
+            if (isset($options['pure'])) {
+                $this->mapOptions['pure'] = $options['pure'];
             }
 
             // Map options, check default values above.

@@ -679,17 +679,57 @@ function networkmap_generate_dot(
 }
 
 
-// Returns an edge definition
-function networkmap_create_edge($head, $tail, $layout, $nooverlap, $pure, $zoom, $ranksep, $simple, $regen, $font_size, $group, $sec2='operation/agentes/networkmap', $tab='topology', $id_networkmap=0)
-{
+/**
+ * Returns an edge definition.
+ *
+ * @param mixed   $head          Head.
+ * @param mixed   $tail          Tail.
+ * @param string  $layout        Layout.
+ * @param string  $nooverlap     Nooverlap.
+ * @param integer $pure          Pure.
+ * @param float   $zoom          Zoom.
+ * @param float   $ranksep       Ranksep.
+ * @param integer $simple        Simple.
+ * @param integer $regen         Regen.
+ * @param integer $font_size     Font_size.
+ * @param integer $group         Group.
+ * @param string  $sec2          Sec2.
+ * @param string  $tab           Tab.
+ * @param integer $id_networkmap Id_networkmap.
+ *
+ * @return string Dot string.
+ */
+function networkmap_create_edge(
+    $head,
+    $tail,
+    $layout,
+    $nooverlap,
+    $pure,
+    $zoom,
+    $ranksep,
+    $simple,
+    $regen,
+    $font_size,
+    $group,
+    $sec2='operation/agentes/networkmap',
+    $tab='topology',
+    $id_networkmap=0
+) {
     if (defined('METACONSOLE')) {
         $url = '';
     } else {
-        $url = 'index.php?sec=estado&'.'sec2='.$sec2.'&'.'tab='.$tab.'&'.'recenter_networkmap=1&'.'center='.$head.'&'.'layout='.$layout.'&'.'nooverlap='.$nooverlap.'&'.'pure='.$pure.'&'.'zoom='.$zoom.'&'.'ranksep='.$ranksep.'&'.'simple='.$simple.'&'.'regen=1'.'&'.'font_size='.$font_size.'&'.'group='.$group.'&'.'id_networkmap='.$id_networkmap;
+        $url = 'index.php?sec=estado&sec2='.$sec2.'&tab='.$tab.'&';
+        $url .= 'recenter_networkmap=1&center='.$head.'&';
+        $url .= 'layout='.$layout.'&nooverlap='.$nooverlap.'&';
+        $url .= 'pure='.$pure.'&zoom='.$zoom.'&ranksep='.$ranksep.'&';
+        $url .= 'simple='.$simple.'&regen=1&font_size='.$font_size.'&';
+        $url .= 'group='.$group.'&id_networkmap='.$id_networkmap;
     }
 
-    // edgeURL allows node navigation
-    $edge = "\n".$head.' -- '.$tail.'[len=3, color="#BDBDBD", headclip=false, tailclip=false, edgeURL=""];'."\n";
+    // Option edgeURL allows node navigation.
+    $edge = "\n".$head.' -- '.$tail.'[len='.$ranksep;
+    $edge .= ', color="#BDBDBD", headclip=false, tailclip=false, edgeURL=""];';
+    $edge .= "\n";
 
     return $edge;
 }

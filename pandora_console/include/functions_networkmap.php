@@ -727,8 +727,8 @@ function networkmap_create_edge(
     }
 
     // Option edgeURL allows node navigation.
-    $edge = "\n".$head.' -- '.$tail.'[len='.$ranksep;
-    $edge .= ', color="#BDBDBD", headclip=false, tailclip=false, edgeURL=""];';
+    $edge = "\n".$head.' -- '.$tail;
+    $edge .= '[color="#BDBDBD", headclip=false, tailclip=false, edgeURL=""];';
     $edge .= "\n";
 
     return $edge;

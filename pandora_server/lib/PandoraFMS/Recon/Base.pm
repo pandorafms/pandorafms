@@ -123,6 +123,12 @@ sub new {
 		# Globally enable/disable SNMP scans.
 		snmp_enabled => 1,
 
+		# Globally enable/disable WMI scans.
+		wmi_enabled => 0,
+		auth_strings_array => [],
+		wmi_timeout => 3,
+		timeout_cmd => '',
+
 		# Switch to switch connections. Used to properly connect hosts
 		# that are connected to a switch wich is in turn connected to another switch,
 		# since the hosts will show up in the latter's switch AFT too.
@@ -160,6 +166,7 @@ sub new {
 		snmp_timeout => 2,
 		snmp_version => 1,
 		subnets => [],
+		autoconfiguration_enabled => 0,
 		@_,
 
 	};
@@ -209,11 +216,24 @@ sub new {
 			$self->{'snmp_security_level'} = '';
 
 			# Disable SNMP scans if no community was given.
-			if (scalar(@{$self->{'communities'}}) == 0) {
+			if (ref($self->{'communities'}) ne "ARRAY" || scalar(@{$self->{'communities'}}) == 0) {
 				$self->{'snmp_enabled'} = 0;
 				$self->call('message', "There is not any SNMP community configured.", 5);
 
 			}
+		}
+	}
+
+	# Prepare auth array.
+	# WMI could be launched with '-N' - no pass - argument.
+	if ($self->{'wmi_enabled'} == 1){
+		if (defined($self->{'auth_strings_str'})) {
+			@{$self->{'auth_strings_array'}} = split(',', $self->{'auth_strings_str'});
+		}
+
+		# Timeout available only in linux environments.
+		if ($^O =~ /lin/i && defined($self->{'plugin_exec'}) && defined($self->{'wmi_timeout'})) {
+			$self->{'timeout_cmd'} = $self->{'plugin_exec'}.' '.$self->{'wmi_timeout'}.' ';
 		}
 	}
 
@@ -1312,6 +1332,9 @@ sub scan_subnet($) {
 				$progress += $step;
 		
 				$self->snmp_discovery($host);
+
+				# Add wmi scan if enabled.
+				$self->wmi_scan($host) if ($self->{'wmi_enabled'} == 1);
 			}
 		}
 		# ping scan.
@@ -1330,6 +1353,9 @@ sub scan_subnet($) {
 				next if ($self->ping($host) == 0);
 		
 				$self->snmp_discovery($host);
+
+				# Add wmi scan if enabled.
+				$self->wmi_scan($host) if ($self->{'wmi_enabled'} == 1);
 			}
 		}
 	}
@@ -1475,6 +1501,9 @@ sub snmp_get_command {
 
 	my $command = "snmpwalk -M/dev/null -r$self->{'snmp_checks'} -t$self->{'snmp_timeout'} -v$self->{'snmp_version'} -On -Oe ";
 	if ($self->{'snmp_version'} eq "3") {
+		if ($self->{'community'}) { # Context
+			$command .= " -N $self->{'community'} ";
+		}
 		$command .= " -l$self->{'snmp_security_level'} ";
 		if ($self->{'snmp_security_level'} ne "noAuthNoPriv") {
 			$command .= " -u$self->{'snmp_auth_user'} -a$self->{'snmp_auth_method'} -A$self->{'snmp_auth_pass'} ";
@@ -1578,6 +1607,168 @@ sub traceroute_connectivity($$) {
 		$device = $parent;
 	}
 }
+
+##########################################################################
+# Returns the credentials with which the host responds to WMI queries or
+# undef if it does not respond to WMI.
+##########################################################################
+sub responds_to_wmi {
+	my ($self, $target) = @_;
+
+	foreach my $auth (@{$self->{'auth_strings_array'}}) {
+		my @output;
+		if ($auth ne '') {
+			@output = `$self->{'timeout_cmd'}$self->{'wmi_client'} -U $auth //$target "SELECT * FROM Win32_ComputerSystem" 2>&1`;
+		} else {
+			@output = `$self->{'timeout_cmd'}$self->{'wmi_client'} -N //$target "SELECT * FROM Win32_ComputerSystem" 2>&1`;
+		}
+
+		foreach my $line (@output) {
+			chomp($line);
+			return $auth if ($line =~ m/^CLASS: Win32_ComputerSystem$/);
+		}
+	}
+
+	return undef;
+}
+
+##########################################################################
+# Add wmi modules to the given host.
+##########################################################################
+sub wmi_scan {
+	my ($self, $target) = @_;
+
+	$self->call('message', "[".$target."] Checking WMI.", 5);
+
+	my $auth = $self->responds_to_wmi($target);
+	return unless defined($auth);
+
+	$self->call('message', "[".$target."] WMI available.", 10);
+	# Create the agent if it does not exist.
+	my $agent_id = $self->call('create_agent', $target);
+	next unless defined($agent_id);
+
+	# CPU.
+	my @cpus = $self->wmi_get_value_array($target, $auth, 'SELECT DeviceId FROM Win32_Processor', 0);
+	foreach my $cpu (@cpus) {
+		$self->call(
+			'wmi_module',
+			(
+				$agent_id,
+				$target,
+				"SELECT LoadPercentage FROM Win32_Processor WHERE DeviceId='$cpu'",
+				$auth,
+				1,
+				"CPU Load $cpu",
+				"Load for $cpu (%)",
+				'generic_data'
+			)
+		);
+	}
+
+	# Memory.
+	my $mem = $self->wmi_get_value($target, $auth, 'SELECT FreePhysicalMemory FROM Win32_OperatingSystem', 0);
+	if (defined($mem)) {
+		$self->call('wmi_module',
+			(
+				$agent_id,
+				$target,
+				"SELECT FreePhysicalMemory, TotalVisibleMemorySize FROM Win32_OperatingSystem",
+				$auth,
+				0,
+				'FreeMemory',
+				'Free memory',
+				'generic_data',
+				'KB'
+			)
+		);
+	}
+
+	# Disk.
+	my @units = $self->wmi_get_value_array($target, $auth, 'SELECT DeviceID FROM Win32_LogicalDisk', 0);
+	foreach my $unit (@units) {
+		$self->call(
+			'wmi_module',
+			(
+				$agent_id,
+				$target,
+				"SELECT FreeSpace FROM Win32_LogicalDisk WHERE DeviceID='$unit'",
+				$auth,
+				1,
+				"FreeDisk $unit",
+				'Available disk space in kilobytes',
+				'generic_data',
+				'KB'
+			)
+		);
+	}
+}
+
+##########################################################################
+# Extra: WMI imported methods. DO NOT EXPORT TO AVOID DOUBLE DEF.
+##########################################################################
+
+##########################################################################
+# Performs a wmi get requests and returns the response as an array.
+##########################################################################
+sub wmi_get {
+	my ($self, $target, $auth, $query) = @_;
+
+	my @output;
+	if (defined($auth) && $auth ne '') {
+		@output = `$self->{'timeout_cmd'}"$self->{'wmi_client'}" -U $auth //$target "$query" 2>&1`;
+	}else {
+		@output = `$self->{'timeout_cmd'}"$self->{'wmi_client'}" -N //$target "$query" 2>&1`;
+	}
+
+	# Something went wrong.
+	return () if ($? != 0);
+
+	return @output;
+}
+
+##########################################################################
+# Performs a WMI request and returns the requested column of the first row.
+# Returns undef on error.
+##########################################################################
+sub wmi_get_value {
+	my ($self, $target, $auth, $query, $column) = @_;
+	my @result;
+
+	my @output = $self->wmi_get($target, $auth, $query);
+	return undef unless defined($output[2]);
+
+	my $line = $output[2];
+	chomp($line);
+	my @columns = split(/\|/, $line);
+	return undef unless defined($columns[$column]);
+
+	return $columns[$column];
+}
+
+##########################################################################
+# Performs a WMI request and returns row values for the requested column
+# in an array.
+##########################################################################
+sub wmi_get_value_array {
+	my ($self, $target, $auth, $query, $column) = @_;
+	my @result;
+
+	my @output = $self->wmi_get($target, $auth, $query);
+	foreach (my $i = 2; defined($output[$i]); $i++) {
+		my $line = $output[$i];
+		chomp($line);
+		my @columns = split(/\|/, $line);
+		next unless defined($columns[$column]);
+		push(@result, $columns[$column]);
+	}
+
+	return @result;
+}
+
+##########################################################################
+# END: WMI imported methods.
+##########################################################################
 
 1;
 __END__

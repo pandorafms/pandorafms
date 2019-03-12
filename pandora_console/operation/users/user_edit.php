@@ -396,8 +396,8 @@ if (!$meta) {
     $skin = '';
 }
 
-$timezone = '<span class="edit_user_labels">'.__('Timezone').'</span>';
-$timezone .= $jump.html_print_timezone_select('timezone', $user_info['timezone']);
+$timezone = '<div><span class="edit_user_labels">'.__('Timezone').'</span></div>';
+$timezone .= '<div>'.html_print_timezone_select('timezone', $user_info['timezone']).'</div>';
 
 /*
     $table->rowclass[] = '';
@@ -418,7 +418,7 @@ if ($double_auth_enabled) {
 }
 
 // Dialog.
-$double_authentication .= '<div id="dialog-double_auth" style="display:none"><div id="dialog-double_auth-container"></div></div></div>';
+$double_authentication .= '<div id="dialog-double_auth" style="display:none"><div id="dialog-double_auth-container"></div></div>';
 
 if (check_acl($config['id_user'], 0, 'ER')) {
     $event_filter = '<div><span class="edit_user_labels">'.__('Event filter').'</span></div>';
@@ -525,7 +525,7 @@ $select_out = html_print_select(
     true,
     '',
     false,
-    'width:200px'
+    'min-width:200px; width:100%'
 );
 $arrows = ' ';
 $select_in = html_print_select(
@@ -540,15 +540,15 @@ $select_in = html_print_select(
     true,
     '',
     false,
-    'width:200px'
+    'min-width:200px; width:100%'
 );
 
 $table_ichanges = '<div class="autorefresh_select">
-		<div class="1">
+		<div class=uno>
             <span class="autorefresh_select_text">'.__('Full list of pages').': </span>
             <div>'.$select_out.'</div>
 		</div>
-		<div class="2">
+		<div class="dos">
             <a href="javascript:">'.html_print_image(
     'images/darrowright.png',
     true,
@@ -569,7 +569,7 @@ $table_ichanges = '<div class="autorefresh_select">
     ]
 ).'</a>
         </div>    
-        <div class="3">    
+        <div class="tres">    
 			<span class="autorefresh_select_text">'.__('List of pages with autorefresh').': </span>   
 			<div>'.$select_in.'</div>
 		</div>

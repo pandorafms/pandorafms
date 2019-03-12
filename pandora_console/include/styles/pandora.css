@@ -4800,7 +4800,7 @@ input:checked + .p-slider:before {
   background-color: transparent !important;
   border: none;
   border-radius: 0 !important;
-  border-bottom: 2px solid #343434;
+  border-bottom: 1px solid #343434;
   padding: 8px 0px 2px 35px;
   /* height: 28px; */
   box-sizing: border-box;
@@ -4811,23 +4811,20 @@ input:checked + .p-slider:before {
 }
 
 .edit_user_info_right #fullname {
-  background-image: url("http://172.16.0.2/pandora_console/images/header_user_admin_green.png");
+  background-image: url("../../images/user_name.png");
 }
 
 .edit_user_info_right #email {
-  background-image: url("http://172.16.0.2/pandora_console/images/header_user_admin_green.png");
+  background-image: url("../../images/user_email.png");
 }
 
 .edit_user_info_right #phone {
-  background-image: url("http://172.16.0.2/pandora_console/images/header_user_admin_green.png");
+  background-image: url("../../images/user_phone.png");
 }
 
-.edit_user_info_right #password_new {
-  background-image: url("http://172.16.0.2/pandora_console/images/header_user_admin_green.png");
-}
-
+.edit_user_info_right #password_new,
 .edit_user_info_right #password_conf {
-  background-image: url("http://172.16.0.2/pandora_console/images/header_user_admin_green.png");
+  background-image: url("../../images/user_password.png");
 }
 
 .edit_user_autorefresh {
@@ -4900,4 +4897,15 @@ input:checked + .p-slider:before {
 #autorefresh_list_out,
 #autorefresh_list {
   text-align: center;
+}
+
+.autorefresh_select .uno,
+.autorefresh_select .tres {
+  width: 46%;
+  background-color: pink;
+}
+
+.autorefresh_select .dos {
+  width: 6%;
+  background-color: green;
 }

@@ -144,11 +144,11 @@ class NetworkMap
         $this->mapOptions['font_size'] = 12;
         $this->mapOptions['layout'] = 'spring1';
         $this->mapOptions['nooverlap'] = 1;
-        $this->mapOptions['zoom'] = 1;
+        $this->mapOptions['zoom'] = 0.5;
         $this->mapOptions['ranksep'] = 0.5;
         $this->mapOptions['center'] = 0;
         $this->mapOptions['regen'] = 0;
-        $this->mapOptions['pure'] = 0;
+        $this->mapOptions['pure'] = 1;
         $this->mapOptions['show_snmp_modules'] = false;
         $this->mapOptions['cut_names'] = false;
         $this->mapOptions['relative'] = true;
@@ -158,14 +158,15 @@ class NetworkMap
         $this->mapOptions['size_canvas'] = null;
         $this->mapOptions['old_mode'] = false;
         $this->mapOptions['map_filter'] = [
-            'node_radius' => 40,
-            'x_offs'      => '',
-            'y_offs'      => '',
-            'z_dash'      => 0.31,
-            'node_sep'    => 0.1,
-            'rank_sep'    => 1,
-            'mindist'     => 1,
-            'kval'        => 0.1,
+            'dont_show_subgroups' => 0,
+            'node_radius'         => 40,
+            'x_offs'              => 0,
+            'y_offs'              => 0,
+            'z_dash'              => 0.5,
+            'node_sep'            => 0.1,
+            'rank_sep'            => 1,
+            'mindist'             => 1,
+            'kval'                => 0.1,
         ];
 
         if (is_array($options)) {
@@ -274,7 +275,7 @@ class NetworkMap
             $this->graph = networkmap_process_networkmap($this->idMap);
         } else {
             // Simulated map.
-            $this->idMap = '0';
+            $this->idMap = uniqid();
             // No tmap definition. Paint data.
             if ($this->idTask) {
                 $recon_task = db_get_row_filter(
@@ -284,10 +285,27 @@ class NetworkMap
                 $this->network = $recon_task['subnet'];
             }
 
+            // Simulate map entry.
+            $this->map = [
+                'id'                 => $this->idMap,
+                '__simulated'        => 1,
+                'background'         => '',
+                'background_options' => 0,
+                'source_period'      => 60,
+                'filter'             => $this->mapOptions['map_filter'],
+                'width'              => 900,
+                'height'             => 400,
+                'center_x'           => 450,
+                'center_y'           => 200,
+            ];
+
             $this->graph = $this->generateNetworkMap();
 
-            // Simulate map entry.
-            $this->map = ['id' => '0'];
+            // Direct print. Avoid extra options.
+            // $networkmap['source_period'] = 60;
+            // $networkmap['filter'] = $this->mapOptions['map_filter'];
+            // $networkmap['width'] = 1400;
+            // $networkmap['height'] = 800;
         }
     }
 
@@ -620,16 +638,12 @@ class NetworkMap
     public function loadMapData()
     {
         $networkmap = $this->map;
-        $networkmap['filter'] = json_decode(
-            $networkmap['filter'],
-            true
-        );
 
-        if (empty($networkmap['filter'])) {
-            // Direct print. Avoid extra options.
-            $networkmap['source_period'] = 60;
-            $networkmap['filter']['node_radius'] = 40;
-            $networkmap['filter'] = $this->mapOptions['map_filter'];
+        if (!isset($networkmap['__simulated'])) {
+            $networkmap['filter'] = json_decode(
+                $networkmap['filter'],
+                true
+            );
         }
 
         // Hardcoded.
@@ -642,13 +656,17 @@ class NetworkMap
             $this->graph['relations']
         );
 
+        // Print some params to handle it in js.
+        html_print_input_hidden('product_name', get_product_name());
+        html_print_input_hidden('center_logo', ui_get_full_url(ui_get_logo_to_center_networkmap()));
+
         $output .= '<script type="text/javascript">
     ////////////////////////////////////////////////////////////////////
     // VARS FROM THE DB
     ////////////////////////////////////////////////////////////////////
     var url_background_grid = "'.ui_get_full_url('images/background_grid.png').'";
     ';
-        $output .= 'var networkmap_id = '.$this->idMap.";\n";
+        $output .= 'var networkmap_id = "'.$this->idMap."\";\n";
 
         if (!empty($networkmap['filter'])) {
             if (empty($networkmap['filter']['x_offs'])) {

@@ -329,7 +329,7 @@ function networkmap_generate_dot(
         $filter[] = '(nombre COLLATE utf8_general_ci LIKE "%'.$text_filter.'%")';
     }
 
-    if ($group >= 1) {
+    if ($group >= 0 && empty($ip_mask)) {
         if ($dont_show_subgroups) {
             $filter['id_grupo'] = $group;
         } else {

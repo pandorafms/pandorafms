@@ -38,13 +38,6 @@ define('SOURCE_GROUP', 0);
 define('SOURCE_TASK', 1);
 define('SOURCE_NETWORK', 2);
 
-define('LAYOUT_CIRCULAR', 0);
-define('LAYOUT_FLAT', 1);
-define('LAYOUT_RADIAL', 2);
-define('LAYOUT_SPRING1', 3);
-define('LAYOUT_SPRING2', 4);
-
-
 /**
  * Manage networkmaps in Pandora FMS
  */
@@ -625,15 +618,16 @@ class NetworkMap
             $filename_dot .= '_nooverlap';
         }
 
-        $filename_dot .= '_'.$this->idMap.'.dot';
+        $filename_dot .= uniqid().'_'.$this->idMap.'.dot';
 
         file_put_contents($filename_dot, $this->dotGraph);
 
+        $plain_file = 'plain'.uniqid().'.txt';
         switch (PHP_OS) {
             case 'WIN32':
             case 'WINNT':
             case 'Windows':
-                $filename_plain = sys_get_temp_dir().'\\plain.txt';
+                $filename_plain = sys_get_temp_dir().'\\'.$plain_file;
 
                 $cmd = io_safe_output(
                     $config['graphviz_bin_dir'].'\\'.$filter.'.exe -Tplain -o '.$filename_plain.' '.$filename_dot
@@ -641,13 +635,22 @@ class NetworkMap
             break;
 
             default:
-                $filename_plain = sys_get_temp_dir().'/plain.txt';
+                $filename_plain = sys_get_temp_dir().'/'.$plain_file;
 
                 $cmd = $filter.' -Tplain -o '.$filename_plain.' '.$filename_dot;
             break;
         }
 
-        $r = system($cmd);
+        $retval = 0;
+        $r = system($cmd, $retval);
+
+        if ($retval != 0) {
+            ui_print_error_message(
+                __('Failed to generate dotmap, please select different layout schema')
+            );
+            $this->graph = networkmap_process_networkmap($this->idMap);
+            return;
+        }
 
         unlink($filename_dot);
 

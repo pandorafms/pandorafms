@@ -57,27 +57,27 @@ function networkmap_process_networkmap($id=0)
     $pure = (int) get_parameter('pure', 0);
 
     switch ($networkmap['generation_method']) {
-        case 0:
+        case LAYOUT_CIRCULAR:
             $filter = 'circo';
             $layout = 'circular';
         break;
 
-        case 1:
+        case LAYOUT_FLAT:
             $filter = 'dot';
             $layout = 'flat';
         break;
 
-        case 2:
+        case LAYOUT_RADIAL:
             $filter = 'twopi';
             $layout = 'radial';
         break;
 
-        case 3:
+        case LAYOUT_SPRING1:
             $filter = 'neato';
             $layout = 'spring1';
         break;
 
-        case 4:
+        case LAYOUT_SPRING2:
             $filter = 'fdp';
             $layout = 'spring2';
         break;

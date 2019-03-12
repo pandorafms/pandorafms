@@ -272,31 +272,31 @@ if ($new_networkmap || $save_networkmap) {
 
         switch ($method) {
             case 'twopi':
-                $values['generation_method'] = 2;
+                $values['generation_method'] = LAYOUT_RADIAL;
             break;
 
             case 'dot':
-                $values['generation_method'] = 1;
+                $values['generation_method'] = LAYOUT_FLAT;
             break;
 
             case 'circo':
-                $values['generation_method'] = 0;
+                $values['generation_method'] = LAYOUT_CIRCULAR;
             break;
 
             case 'neato':
-                $values['generation_method'] = 3;
+                $values['generation_method'] = LAYOUT_SPRING1;
             break;
 
             case 'fdp':
-                $values['generation_method'] = 4;
+                $values['generation_method'] = LAYOUT_SPRING2;
             break;
 
             case 'radial_dinamic':
-                $values['generation_method'] = 6;
+                $values['generation_method'] = LAYOUT_RADIAL_DYNAMIC;
             break;
 
             default:
-                $values['generation_method'] = 2;
+                $values['generation_method'] = LAYOUT_RADIAL;
             break;
         }
 
@@ -353,12 +353,12 @@ if ($new_networkmap || $save_networkmap) {
         define('_id_', $id);
 
         if ($result !== false) {
+            $tab = 'view';
             if ($values['generation_method'] == 6) {
                 $tab = 'r_dinamic';
                 define('_activeTab_', 'radial_dynamic');
             }
 
-            $tab = 'view';
             header('Location: '.$_SERVER['HTTP_REFERER'].'&tab='.$tab.'&id_networkmap='.$id);
         }
     }

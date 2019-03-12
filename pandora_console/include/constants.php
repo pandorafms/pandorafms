@@ -535,6 +535,20 @@ define('MAP_GENERATION_RADIAL', 2);
 define('MAP_GENERATION_SPRING1', 3);
 define('MAP_GENERATION_SPRING2', 4);
 
+// Algorithm: Circo.
+define('LAYOUT_CIRCULAR', 0);
+// Algorithm: Dot.
+define('LAYOUT_FLAT', 1);
+// Algorithm: Twopi.
+define('LAYOUT_RADIAL', 2);
+// Algorithm: Neato.
+define('LAYOUT_SPRING1', 3);
+// Algorithm: Fdp.
+define('LAYOUT_SPRING2', 4);
+// Extra: radial dynamic.
+define('LAYOUT_RADIAL_DYNAMIC', 6);
+
+
 define('MAP_SOURCE_GROUP', 0);
 define('MAP_SOURCE_IP_MASK', 1);
 

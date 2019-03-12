@@ -890,7 +890,7 @@ if ($networkmap === false) {
 
 
     include_once $config['homedir'].'/include/class/NetworkMap.class.php';
-    echo 'generado por clase';
+
     $map_manager = new NetworkMap(
         [ 'id_map' => $networkmap['id']]
     );

@@ -42,6 +42,9 @@ $( document ).ready(function() {
         if ($("#checkbox-all_delete").prop("checked")) {
             $('[id^=checkbox-massive_report_check]').parent().parent().parent().addClass('checkselected');
             $(".check_delete").prop("checked", true);
+            $('.check_delete').each(function(){
+                $('#hidden-id_report_'+$(this).val()).prop("disabled", false);    
+            });
         }
         else{
             $('[id^=checkbox-massive_report_check]').parent().parent().parent().removeClass('checkselected');

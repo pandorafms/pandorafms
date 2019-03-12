@@ -246,8 +246,8 @@ if ($view_mode === false) {
 
 // $email = '<div><span class="edit_user_labels">'.__('E-mail').'</span>';
 $email = '<div>'.html_print_input_text_extended('email', $user_info['email'], 'email', '', '25', '100', $view_mode, '', ['class' => 'input', 'placeholder' => __('E-mail')], true).'</div>';
-$phone = '<div><span class="edit_user_labels">'.__('Phone number').'</span>';
-$phone .= html_print_input_text_extended('phone', $user_info['phone'], 'phone', '', '20', '30', $view_mode, '', 'class="input"', true).'</div>';
+// $phone = '<div><span class="edit_user_labels">'.__('Phone number').'</span>';
+$phone = '<div>'.html_print_input_text_extended('phone', $user_info['phone'], 'phone', '', '20', '30', $view_mode, '', ['class' => 'input', 'placeholder' => __('Phone number')], true).'</div>';
 
 /*
     $table->rowclass[] = '';
@@ -258,10 +258,10 @@ $phone .= html_print_input_text_extended('phone', $user_info['phone'], 'phone', 
 if ($view_mode === false) {
     if ($config['user_can_update_password']) {
         // $data = [];
-        $new_pass = '<div><span class="edit_user_labels">'.__('New Password').'</span>';
-        $new_pass .= '<span>'.html_print_input_text_extended('password_new', '', 'password_new', '', '25', '45', $view_mode, '', 'class="input"', true, true).'</span></div>';
-        $new_pass_confirm = '<div><span class="edit_user_labels">'.__('Password confirmation').'</span>';
-        $new_pass_confirm .= '<span>'.html_print_input_text_extended('password_conf', '', 'password_conf', '', '20', '45', $view_mode, '', 'class="input"', true, true).'</span></div>';
+        // $new_pass = '<div><span class="edit_user_labels">'.__('New Password').'</span>';
+        $new_pass = '<div><span>'.html_print_input_text_extended('password_new', '', 'password_new', '', '25', '45', $view_mode, '', ['class' => 'input', 'placeholder' => __('New Password')], true, true).'</span></div>';
+        // $new_pass_confirm = '<div><span class="edit_user_labels">'.__('Password confirmation').'</span>';
+        $new_pass_confirm = '<div><span>'.html_print_input_text_extended('password_conf', '', 'password_conf', '', '20', '45', $view_mode, '', ['class' => 'input', 'placeholder' => __('Password confirmation')], true, true).'</span></div>';
 
         /*
             $table->rowclass[] = '';

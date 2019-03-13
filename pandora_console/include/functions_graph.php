@@ -4109,7 +4109,7 @@ function fullscale_data(
 /**
  * Print an area graph with netflow aggregated
  */
-function graph_netflow_aggregate_area($data, $period, $width, $height, $unit='', $ttl=1, $only_image=false)
+function graph_netflow_aggregate_area($data, $period, $width, $height, $unit='', $ttl=1, $only_image=false, $date=null)
 {
     global $config;
     global $graphic_type;
@@ -4165,6 +4165,7 @@ function graph_netflow_aggregate_area($data, $period, $width, $height, $unit='',
         'font_size'         => $config['font_size'],
         'array_data_create' => $chart,
         'stacked'           => 1,
+        'date'              => $date,
     ];
 
     return grafico_modulo_sparse($params);

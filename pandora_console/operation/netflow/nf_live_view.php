@@ -96,7 +96,7 @@ $update_date = (int) get_parameter('update_date', 0);
 $date = get_parameter_post('date', date(DATE_FORMAT, get_system_time()));
 $time = get_parameter_post('time', date(TIME_FORMAT, get_system_time()));
 $connection_name = get_parameter('connection_name', '');
-$interval_length = (int) get_parameter('interval_length', 300);
+$interval_length = get_parameter('interval_length', NETFLOW_RES_MEDD);
 $address_resolution = (int) get_parameter('address_resolution', $config['netflow_get_ip_hostname']);
 $filter_selected = (int) get_parameter('filter_selected', 0);
 
@@ -260,7 +260,24 @@ if (is_metaconsole()) {
     echo '<td>'.html_print_select(netflow_get_valid_intervals(), 'period', $period, '', '', 0, true, false, false).'</td>';
 
     echo '<td><b>'.__('Resolution').ui_print_help_tip(__('The interval will be divided in chunks the length of the resolution.'), true).'</b></td>';
-    echo '<td>'.html_print_select(netflow_get_valid_subintervals(), 'interval_length', $interval_length, '', '', 0, true, false, false).'</td>';
+    echo '<td>'.html_print_select(
+        [
+            NETFLOW_RES_LOWD   => __('Low'),
+            NETFLOW_RES_MEDD   => __('Medium'),
+            NETFLOW_RES_HID    => __('High'),
+            NETFLOW_RES_ULTRAD => __('Ultra High'),
+            NETFLOW_RES_HOURLY => __('Hourly'),
+            NETFLOW_RES_DAILY  => __('Daily'),
+        ],
+        'interval_length',
+        $interval_length,
+        '',
+        '',
+        0,
+        true,
+        false,
+        false
+    ).'</td>';
 
     echo '</tr>';
     echo '<tr>';

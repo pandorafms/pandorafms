@@ -17,6 +17,13 @@ require_once $config['homedir'].'/include/functions_io.php';
 enterprise_include_once($config['homedir'].'/enterprise/include/pdf_translator.php');
 enterprise_include_once($config['homedir'].'/enterprise/include/functions_metaconsole.php');
 
+define('NETFLOW_RES_LOWD', 6);
+define('NETFLOW_RES_MEDD', 12);
+define('NETFLOW_RES_HID', 24);
+define('NETFLOW_RES_ULTRAD', 30);
+define('NETFLOW_RES_HOURLY', 'hourly');
+define('NETFLOW_RES_DAILY', 'daily');
+
 // Date format for nfdump
 global $nfdump_date_format;
 $nfdump_date_format = 'Y/m/d.H:i:s';
@@ -461,21 +468,41 @@ function netflow_get_data($start_date, $end_date, $interval_length, $filter, $ag
         return json_decode($data, true);
     }
 
-    // Calculate the number of intervals
-    if ($interval_length <= 0) {
-        // $num_intervals = $config['graph_res'] * 50;
-        $num_intervals = 250;
-        $period = ($end_date - $start_date);
-        $interval_length = (int) ($period / $num_intervals);
-    } else {
-        $period = ($end_date - $start_date);
-        $num_intervals = (int) ($period / $interval_length);
+    if ($start_date > $end_date) {
+        return [];
     }
 
-    // Set a max number of intervals
-    if ($num_intervals > $config['netflow_max_resolution']) {
-        $num_intervals = $config['netflow_max_resolution'];
-        $interval_length = (int) ($period / $num_intervals);
+    // Calculate the number of intervals.
+    $multiplier_time = ($end_date - $start_date);
+    switch ($interval_length) {
+        case NETFLOW_RES_LOWD:
+        case NETFLOW_RES_MEDD:
+        case NETFLOW_RES_HID:
+        case NETFLOW_RES_ULTRAD:
+            $multiplier_time = ceil(($end_date - $start_date) / $interval_length);
+        break;
+
+        case NETFLOW_RES_HOURLY:
+            $multiplier_time = SECONDS_1HOUR;
+        break;
+
+        case NETFLOW_RES_DAILY:
+            $multiplier_time = SECONDS_1DAY;
+        break;
+
+        default:
+            $multiplier_time = ($end_date - $start_date);
+        break;
+    }
+
+    // Put all points into an array.
+    $intervals = [($start_date - $multiplier_time)];
+    while ((end($intervals) < $end_date) === true) {
+        $intervals[] = (end($intervals) + $multiplier_time);
+    }
+
+    if (end($intervals) != $end_date) {
+        $intervals[] = $end_date;
     }
 
     // If there is aggregation calculate the top n
@@ -569,13 +596,14 @@ function netflow_get_data($start_date, $end_date, $interval_length, $filter, $ag
         $values['sources'] = $sources;
     }
 
-    // Address resolution end
-    $interval_start = $start_date;
-    for ($i = 0; $i < $num_intervals; $i++, $interval_start += ($interval_length + 1)) {
-        $interval_end = ($interval_start + $interval_length);
-        if ($interval_end > $end_date) {
-            $interval_end = $end_date;
+    // Address resolution end.
+    foreach ($intervals as $k => $time) {
+        $interval_start = $time;
+        if (!isset($intervals[($k + 1)])) {
+            continue;
         }
+
+        $interval_end = $intervals[($k + 1)];
 
         if ($aggregate == 'none') {
             $data = netflow_get_summary($interval_start, $interval_end, $filter, $connection_name);
@@ -608,7 +636,7 @@ function netflow_get_data($start_date, $end_date, $interval_length, $filter, $ag
         } else {
             // Set default values
             foreach ($values['sources'] as $source => $discard) {
-                $values['data'][$interval_start][$source] = 0;
+                $values['data'][$interval_end][$source] = 0;
             }
 
             $data = netflow_get_stats(
@@ -654,7 +682,7 @@ function netflow_get_data($start_date, $end_date, $interval_length, $filter, $ag
                     continue;
                 }
 
-                $values['data'][$interval_start][$line['agg']] = $line['data'];
+                $values['data'][$interval_end][$line['agg']] = $line['data'];
             }
         }
     }
@@ -1145,36 +1173,6 @@ function netflow_get_valid_intervals()
 
 
 /**
- * Gets valid intervals for a netflow chart in the format:
- *
- * interval_length => interval_description
- *
- * @return array of valid intervals.
- */
-function netflow_get_valid_subintervals()
-{
-    return [
-        (string) SECONDS_1MINUTE   => __('1 min'),
-        (string) SECONDS_2MINUTES  => __('2 mins'),
-        (string) SECONDS_5MINUTES  => __('5 mins'),
-        (string) SECONDS_10MINUTES => __('10 mins'),
-        (string) SECONDS_15MINUTES => __('15 mins'),
-        (string) SECONDS_30MINUTES => __('30 mins'),
-        (string) SECONDS_1HOUR     => __('1 hour'),
-        (string) SECONDS_2HOUR     => __('2 hours'),
-        (string) SECONDS_5HOUR     => __('5 hours'),
-        (string) SECONDS_12HOURS   => __('12 hours'),
-        (string) SECONDS_1DAY      => __('1 day'),
-        (string) SECONDS_2DAY      => __('2 days'),
-        (string) SECONDS_5DAY      => __('5 days'),
-        (string) SECONDS_15DAYS    => __('15 days'),
-        (string) SECONDS_1WEEK     => __('1 week'),
-        (string) SECONDS_1MONTH    => __('1 month'),
-    ];
-}
-
-
-/**
  * Draw a netflow report item.
  *
  * @param string start_date Period start date.
@@ -1217,7 +1215,7 @@ function netflow_draw_item($start_date, $end_date, $interval_length, $type, $fil
                         $html .= '&nbsp;<b>'._('Resolution').":</b> $interval_length ".__('seconds');
                     }
 
-                    $html .= graph_netflow_aggregate_area($data, $interval, $width, $height, netflow_format_unit($unit));
+                    $html .= graph_netflow_aggregate_area($data, $interval, $width, $height, netflow_format_unit($unit), 1, false, $end_date);
                     return $html;
                 } else if ($output == 'PDF') {
                     $html = '<b>'.__('Unit').':</b> '.netflow_format_unit($unit);
@@ -1226,7 +1224,7 @@ function netflow_draw_item($start_date, $end_date, $interval_length, $type, $fil
                         $html .= '&nbsp;<b>'._('Resolution').":</b> $interval_length ".__('seconds');
                     }
 
-                    $html .= graph_netflow_aggregate_area($data, $interval, $width, $height, netflow_format_unit($unit), 2, true);
+                    $html .= graph_netflow_aggregate_area($data, $interval, $width, $height, netflow_format_unit($unit), 2, true, $end_date);
                     return $html;
                 } else if ($output == 'XML') {
                     $xml = "<unit>$unit</unit>\n";

@@ -357,11 +357,14 @@ function netflow_data_table($data, $start_date, $end_date, $aggregate, $unit)
         foreach ($data['data'] as $timestamp => $values) {
             $table->data[$i][0] = date($time_format, $timestamp);
             for ($j = 0; $j < $source_count; $j++) {
-                if (isset($values[$source_index[$j]])) {
-                    $table->data[$i][($j + 1)] = format_numeric($values[$source_index[$j]]).'&nbsp;'.netflow_format_unit($unit);
-                } else {
-                    $table->data[$i][($j + 1)] = (0).'&nbsp;'.netflow_format_unit($unit);
-                }
+                $table->data[$i][($j + 1)] = format_for_graph(
+                    (isset($values[$source_index[$j]])) ? $values[$source_index[$j]] : 0,
+                    2,
+                    '.',
+                    ',',
+                    1024,
+                    'B'
+                );
             }
 
             $i++;
@@ -453,11 +456,13 @@ function netflow_is_net($address)
  * @param string filter Netflow filter.
  * @param string aggregate Aggregate field.
  * @param int max Maximum number of aggregates.
- * @param string unit Unit to show.
+ * @param int max Maximum number of aggregates.
+ * @param boolean absolute True to give the absolute data and false to get
+ *      troughput.
  *
  * @return An array with netflow stats.
  */
-function netflow_get_data($start_date, $end_date, $interval_length, $filter, $aggregate, $max, $unit, $connection_name='', $address_resolution=false)
+function netflow_get_data($start_date, $end_date, $interval_length, $filter, $aggregate, $max, $absolute, $connection_name='', $address_resolution=false)
 {
     global $nfdump_date_format;
     global $config;
@@ -669,17 +674,18 @@ function netflow_get_data($start_date, $end_date, $interval_length, $filter, $ag
  * @param string filter Netflow filter.
  * @param string aggregate Aggregate field.
  * @param int max Maximum number of aggregates.
- * @param string unit Unit to show.
+ * @param boolean absolute True to give the absolute data and false to get
+ *      troughput.
  *
  * @return An array with netflow stats.
  */
-function netflow_get_stats($start_date, $end_date, $filter, $aggregate, $max, $unit, $connection_name='', $address_resolution=false)
+function netflow_get_stats($start_date, $end_date, $filter, $aggregate, $max, $absolute=true, $connection_name='', $address_resolution=false)
 {
     global $config, $nfdump_date_format;
 
     // Requesting remote data
     if (defined('METACONSOLE') && $connection_name != '') {
-        $data = metaconsole_call_remote_api($connection_name, 'netflow_get_stats', "$start_date|$end_date|".base64_encode(json_encode($filter))."|$aggregate|$max|$unit|".(int) $address_resolution);
+        $data = metaconsole_call_remote_api($connection_name, 'netflow_get_stats', "$start_date|$end_date|".base64_encode(json_encode($filter))."|$aggregate|$max|$absolute|".(int) $address_resolution);
         return json_decode($data, true);
     }
 
@@ -740,30 +746,9 @@ function netflow_get_stats($start_date, $end_date, $filter, $aggregate, $max, $u
             return [];
         }
 
-        switch ($unit) {
-            case 'megabytes':
-                $values[$i]['data'] = ($val[9] / 1048576);
-            break;
-
-            case 'megabytespersecond':
-                $values[$i]['data'] = ($val[9] / 1048576 / $interval_length);
-            break;
-
-            case 'kilobytes':
-                $values[$i]['data'] = ($val[9] / 1024);
-            break;
-
-            case 'kilobytespersecond':
-                $values[$i]['data'] = ($val[9] / 1024 / $interval_length);
-            break;
-
-            default:
-            case 'bytes':
-                $values[$i]['data'] = $val[9];
-            break;
-            case 'bytespersecond':
-                $values[$i]['data'] = ($val[9] / $interval_length);
-            break;
+        $values[$i]['data'] = $val[9];
+        if (!$absolute) {
+            $values[$i]['data'] = ($values[$i]['data'] / $interval_length);
         }
 
         $i++;
@@ -1168,28 +1153,19 @@ function netflow_draw_item($start_date, $end_date, $interval_length, $type, $fil
     switch ($type) {
         case '0':
         case 'netflow_area':
-            $data = netflow_get_data($start_date, $end_date, $interval_length, $filter, $aggregate, $max_aggregates, $unit, $connection_name, $address_resolution);
+            $data = netflow_get_data($start_date, $end_date, $interval_length, $filter, $aggregate, $max_aggregates, true, $connection_name, $address_resolution);
             if (empty($data)) {
                 break;
             }
 
-            if ($output == 'HTML') {
+            if ($output == 'HTML' || $output == 'PDF') {
                 $html = '<b>'.__('Unit').':</b> '.netflow_format_unit($unit);
                 $html .= '&nbsp;<b>'.__('Aggregate').':</b> '.netflow_format_aggregate($aggregate);
                 if ($interval_length != 0) {
-                    $html .= '&nbsp;<b>'._('Resolution').":</b> $interval_length ".__('seconds');
+                    $html .= '&nbsp;<b>'._('Resolution').':</b> '.netflow_get_resolution_name($interval_length);
                 }
 
                 $html .= graph_netflow_aggregate_area($data, $interval, $width, $height, netflow_format_unit($unit), 1, false, $end_date);
-                return $html;
-            } else if ($output == 'PDF') {
-                $html = '<b>'.__('Unit').':</b> '.netflow_format_unit($unit);
-                $html .= '&nbsp;<b>'.__('Aggregate').':</b> '.netflow_format_aggregate($aggregate);
-                if ($interval_length != 0) {
-                    $html .= '&nbsp;<b>'._('Resolution').":</b> $interval_length ".__('seconds');
-                }
-
-                $html .= graph_netflow_aggregate_area($data, $interval, $width, $height, netflow_format_unit($unit), 2, true, $end_date);
                 return $html;
             } else if ($output == 'XML') {
                 $xml = "<unit>$unit</unit>\n";
@@ -1202,7 +1178,7 @@ function netflow_draw_item($start_date, $end_date, $interval_length, $type, $fil
 
         case '2':
         case 'netflow_data':
-            $data = netflow_get_data($start_date, $end_date, $interval_length, $filter, $aggregate, $max_aggregates, $unit, $connection_name, $address_resolution);
+            $data = netflow_get_data($start_date, $end_date, $interval_length, $filter, $aggregate, $max_aggregates, false, $connection_name, $address_resolution);
 
             if (empty($data)) {
                 break;
@@ -1212,7 +1188,7 @@ function netflow_draw_item($start_date, $end_date, $interval_length, $type, $fil
                 $html = '<b>'.__('Unit').':</b> '.netflow_format_unit($unit);
                 $html .= '&nbsp;<b>'.__('Aggregate').':</b> '.netflow_format_aggregate($aggregate);
                 if ($interval_length != 0) {
-                    $html .= '&nbsp;<b>'._('Resolution').":</b> $interval_length ".__('seconds');
+                    $html .= '&nbsp;<b>'._('Resolution').':</b> '.netflow_get_resolution_name($interval_length);
                 }
 
                 $html .= "<div style='width: 100%; overflow: auto;'>";
@@ -1968,4 +1944,18 @@ function netflow_resolution_select_params()
         NETFLOW_RES_HOURLY => __('Hourly'),
         NETFLOW_RES_DAILY  => __('Daily'),
     ];
+}
+
+
+/**
+ * Get the resolution name.
+ *
+ * @param mixed $value Type.
+ *
+ * @return string Translated name. Unknown for unrecognized resolution names.
+ */
+function netflow_get_resolution_name($value)
+{
+    $resolutions = netflow_resolution_select_params();
+    return (isset($resolutions[$value])) ? $resolutions[$value] : __('Unknown');
 }

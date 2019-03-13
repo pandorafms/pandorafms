@@ -1951,3 +1951,21 @@ function netflow_print_check_version_error()
         return false;
     }
 }
+
+
+/**
+ * Returns the array for netflow resolution select.
+ *
+ * @return array With all values.
+ */
+function netflow_resolution_select_params()
+{
+    return [
+        NETFLOW_RES_LOWD   => __('Low'),
+        NETFLOW_RES_MEDD   => __('Medium'),
+        NETFLOW_RES_HID    => __('High'),
+        NETFLOW_RES_ULTRAD => __('Ultra High'),
+        NETFLOW_RES_HOURLY => __('Hourly'),
+        NETFLOW_RES_DAILY  => __('Daily'),
+    ];
+}

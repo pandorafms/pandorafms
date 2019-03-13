@@ -110,7 +110,7 @@ $event_graph_validated_vs_unvalidated = false;
 
 $netflow_filter = 0;
 $max_values = 0;
-$resolution = 0;
+$resolution = NETFLOW_RES_MEDD;
 
 $lapse_calc = 0;
 $lapse = 300;
@@ -844,7 +844,11 @@ $class = 'databox filters';
             </td>
             <td style="">
                 <?php
-                html_print_extended_select_for_time('resolution', $resolution, '', '', '0', 10);
+                html_print_select(
+                    netflow_resolution_select_params(),
+                    'resolution',
+                    $resolution
+                );
                 ?>
             </td>
         </tr>

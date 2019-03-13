@@ -261,14 +261,7 @@ if (is_metaconsole()) {
 
     echo '<td><b>'.__('Resolution').ui_print_help_tip(__('The interval will be divided in chunks the length of the resolution.'), true).'</b></td>';
     echo '<td>'.html_print_select(
-        [
-            NETFLOW_RES_LOWD   => __('Low'),
-            NETFLOW_RES_MEDD   => __('Medium'),
-            NETFLOW_RES_HID    => __('High'),
-            NETFLOW_RES_ULTRAD => __('Ultra High'),
-            NETFLOW_RES_HOURLY => __('Hourly'),
-            NETFLOW_RES_DAILY  => __('Daily'),
-        ],
+        netflow_resolution_select_params(),
         'interval_length',
         $interval_length,
         '',

@@ -1026,16 +1026,14 @@ function reporting_html_event_report_group($table, $item, $pdf=0)
             array_push($table1->data, $data);
 
             if ($show_extended_events == 1 && events_has_extended_info($event['id_evento'])) {
-
                 $extended_events = events_get_extended_events($event['id_evento']);
-                
+
                 foreach ($extended_events as $extended_event) {
                     $extended_data = [];
 
-                    $extended_data[] = "<td colspan='5'><font style='font-style: italic;'>".io_safe_output($extended_event['description'])."</font></td><td><font style='font-size: 6pt; font-style: italic;'>".date($config['date_format'], $extended_event['utimestamp'])."</font></td>";
+                    $extended_data[] = "<td colspan='5'><font style='font-style: italic;'>".io_safe_output($extended_event['description'])."</font></td><td><font style='font-size: 6pt; font-style: italic;'>".date($config['date_format'], $extended_event['utimestamp']).'</font></td>';
                     array_push($table1->data, $extended_data);
                 }
-                
             }
         }
 
@@ -1234,16 +1232,14 @@ function reporting_html_event_report_module($table, $item, $pdf=0)
                         $table1->data[] = $data;
 
                         if ($show_extended_events == 1 && events_has_extended_info($event['id_evento'])) {
-
                             $extended_events = events_get_extended_events($event['id_evento']);
 
                             foreach ($extended_events as $extended_event) {
                                 $extended_data = [];
 
-                                $extended_data[] = "<td colspan='3'><font style='font-style: italic;'>".io_safe_output($extended_event['description'])."</font></td><td><font style='font-style: italic;'>".date($config['date_format'], $extended_event['utimestamp'])."</font></td>";
+                                $extended_data[] = "<td colspan='3'><font style='font-style: italic;'>".io_safe_output($extended_event['description'])."</font></td><td><font style='font-style: italic;'>".date($config['date_format'], $extended_event['utimestamp']).'</font></td>';
                                 array_push($table1->data, $extended_data);
                             }
-                            
                         }
                     }
                 }
@@ -2025,16 +2021,14 @@ function reporting_html_event_report_agent($table, $item, $pdf=0)
             array_push($table1->data, $data);
 
             if ($show_extended_events == 1 && events_has_extended_info($event['id_evento'])) {
-
                 $extended_events = events_get_extended_events($event['id_evento']);
 
                 foreach ($extended_events as $extended_event) {
                     $extended_data = [];
 
-                    $extended_data[] = "<td colspan='4'><font style='font-style: italic;'>".io_safe_output($extended_event['description'])."</font></td><td><font style='font-size: 6pt; font-style: italic;'>".date($config['date_format'], $extended_event['utimestamp'])."</font></td>";
+                    $extended_data[] = "<td colspan='4'><font style='font-style: italic;'>".io_safe_output($extended_event['description'])."</font></td><td><font style='font-size: 6pt; font-style: italic;'>".date($config['date_format'], $extended_event['utimestamp']).'</font></td>';
                     array_push($table1->data, $extended_data);
                 }
-                
             }
         }
 
@@ -4578,7 +4572,7 @@ function reporting_get_event_histogram($events, $text_header_event=false)
             [],
             true,
             $ttl,
-            false,
+            true,
             false
         );
 
@@ -4799,7 +4793,10 @@ function reporting_html_planned_downtimes_table($planned_downtimes)
 
     $table = new StdClass();
     $table->width = '99%';
-    $table->title = __('This SLA has been affected by the following planned downtimes');
+    $table->title = __('This SLA has been affected by the following planned downtimes').ui_print_help_tip(
+        __('If the duration of the planned downtime is less than 5 minutes it will not be represented in the graph'),
+        true
+    );
     $table->head = [];
     $table->head[0] = __('Name');
     $table->head[1] = __('Description');

@@ -822,7 +822,7 @@ function reporting_SLA(
     $return['description'] = $content['description'];
     $return['date'] = reporting_get_date_text($report, $content);
 
-    // Get chart
+    // Get chart.
     reporting_set_conf_charts(
         $width,
         $height,
@@ -883,7 +883,7 @@ function reporting_SLA(
 
         foreach ($slas as $sla) {
             $server_name = $sla['server_name'];
-            // Metaconsole connection
+            // Metaconsole connection.
             if ($metaconsole_on && $server_name != '') {
                 $connection = metaconsole_get_connection($server_name);
                 if (!metaconsole_load_external_db($connection)) {
@@ -902,7 +902,7 @@ function reporting_SLA(
                 continue;
             }
 
-            // controller min and max == 0 then dinamic min and max critical
+            // Controller min and max == 0 then dinamic min and max critical.
             $dinamic_text = 0;
             if ($sla['sla_min'] == 0 && $sla['sla_max'] == 0) {
                 $sla['sla_min'] = null;
@@ -910,7 +910,7 @@ function reporting_SLA(
                 $dinamic_text = __('Dynamic');
             }
 
-            // controller inverse interval
+            // Controller inverse interval.
             $inverse_interval = 0;
             if ((isset($sla['sla_max'])) && (isset($sla['sla_min']))) {
                 if ($sla['sla_max'] < $sla['sla_min']) {
@@ -922,26 +922,25 @@ function reporting_SLA(
                 }
             }
 
-            // for graph slice for module-interval, if not slice=0;
+            // For graph slice for module-interval, if not slice=0.
             if ($show_graphs) {
-                $module_interval = modules_get_interval($sla['id_agent_module']);
+                $module_interval = modules_get_interval(
+                    $sla['id_agent_module']
+                );
                 $slice = ($content['period'] / $module_interval);
             } else {
                 $slice = 1;
             }
 
-            // call functions sla
+            // Call functions sla.
             $sla_array = [];
             $sla_array = reporting_advanced_sla(
                 $sla['id_agent_module'],
                 ($report['datetime'] - $content['period']),
                 $report['datetime'],
                 $sla['sla_min'],
-                // min_value -> dynamic
                 $sla['sla_max'],
-                // max_value -> dynamic
                 $inverse_interval,
-                // inverse_interval -> dynamic
                 [
                     '1' => $content['sunday'],
                     '2' => $content['monday'],
@@ -957,12 +956,12 @@ function reporting_SLA(
             );
 
             if ($metaconsole_on) {
-                // Restore db connection
+                // Restore db connection.
                 metaconsole_restore_db();
             }
 
             $server_name = $sla['server_name'];
-            // Metaconsole connection
+            // Metaconsole connection.
             if ($metaconsole_on && $server_name != '') {
                 $connection = metaconsole_get_connection($server_name);
                 if (metaconsole_connect($connection) != NOERR) {
@@ -971,10 +970,16 @@ function reporting_SLA(
             }
 
             if ($show_graphs) {
-                $planned_downtimes = reporting_get_planned_downtimes_intervals($sla['id_agent_module'], ($report['datetime'] - $content['period']), $report['datetime']);
+                $planned_downtimes = reporting_get_planned_downtimes_intervals(
+                    $sla['id_agent_module'],
+                    ($report['datetime'] - $content['period']),
+                    $report['datetime']
+                );
 
-                if ((is_array($planned_downtimes)) && (count($planned_downtimes) > 0)) {
-                    // Sort retrieved planned downtimes
+                if ((is_array($planned_downtimes))
+                    && (count($planned_downtimes) > 0)
+                ) {
+                    // Sort retrieved planned downtimes.
                     usort(
                         $planned_downtimes,
                         function ($a, $b) {
@@ -984,16 +989,16 @@ function reporting_SLA(
                                 return 0;
                             }
 
-                            return ($a < $b) ? -1 : 1;
+                            return ($a < $b) ? (-1) : 1;
                         }
                     );
 
-                    // Compress (overlapped) planned downtimes
+                    // Compress (overlapped) planned downtimes.
                     $npd = count($planned_downtimes);
                     for ($i = 0; $i < $npd; $i++) {
                         if (isset($planned_downtimes[($i + 1)])) {
                             if ($planned_downtimes[$i]['date_to'] >= $planned_downtimes[($i + 1)]['date_from']) {
-                                // merge
+                                // Merge.
                                 $planned_downtimes[$i]['date_to'] = $planned_downtimes[($i + 1)]['date_to'];
                                 array_splice($planned_downtimes, ($i + 1), 1);
                                 $npd--;
@@ -1006,8 +1011,17 @@ function reporting_SLA(
             }
 
             $data = [];
-            $data['agent']        = io_safe_output(modules_get_agentmodule_agent_alias($sla['id_agent_module']));
-            $data['module']       = io_safe_output(modules_get_agentmodule_name($sla['id_agent_module']));
+            $data['agent'] = io_safe_output(
+                modules_get_agentmodule_agent_alias(
+                    $sla['id_agent_module']
+                )
+            );
+            $data['module'] = io_safe_output(
+                modules_get_agentmodule_name(
+                    $sla['id_agent_module']
+                )
+            );
+
             $data['max']          = $sla['sla_max'];
             $data['min']          = $sla['sla_min'];
             $data['sla_limit']    = $sla['sla_limit'];
@@ -1041,16 +1055,17 @@ function reporting_SLA(
                     $data['checks_unknown']  += $value_sla['checks_unknown'];
                     $data['checks_not_init'] += $value_sla['checks_not_init'];
 
-                    // generate raw data for graph
+                    // Generate raw data for graph.
                     if ($value_sla['time_total'] != 0) {
                         if ($value_sla['time_error'] > 0) {
-                            // ERR
+                            // ERR.
                             $raw_graph[$i]['data'] = 3;
                         } else if ($value_sla['time_unknown'] > 0) {
-                            // UNKNOWN
+                            // UNKNOWN.
                             $raw_graph[$i]['data'] = 4;
-                        } else if ($value_sla['time_not_init'] == $value_sla['time_total']) {
-                            // NOT INIT
+                        } else if ($value_sla['time_not_init'] == $value_sla['time_total']
+                        ) {
+                            // NOT INIT.
                             $raw_graph[$i]['data'] = 6;
                         } else {
                             $raw_graph[$i]['data'] = 1;
@@ -1059,7 +1074,8 @@ function reporting_SLA(
                         $raw_graph[$i]['data'] = 7;
                     }
 
-                    $raw_graph[$i]['utimestamp'] = ($value_sla['date_to'] - $value_sla['date_from']);
+                    $raw_graph[$i]['utimestamp'] = (
+                        $value_sla['date_to'] - $value_sla['date_from']);
 
                     if (isset($planned_downtimes)) {
                         foreach ($planned_downtimes as $pd) {
@@ -1067,7 +1083,7 @@ function reporting_SLA(
                                 && ($value_sla['date_to'] <= $pd['date_to'])
                             ) {
                                 $raw_graph[$i]['data'] = 5;
-                                // in scheduled downtime
+                                // In scheduled downtime.
                                 break;
                             }
                         }
@@ -1076,10 +1092,15 @@ function reporting_SLA(
                     $i++;
                 }
 
-                $data['sla_value'] = reporting_sla_get_compliance_from_array($data);
-                $data['sla_fixed'] = sla_truncate($data['sla_value'], $config['graph_precision']);
+                $data['sla_value'] = reporting_sla_get_compliance_from_array(
+                    $data
+                );
+                $data['sla_fixed'] = sla_truncate(
+                    $data['sla_value'],
+                    $config['graph_precision']
+                );
             } else {
-                // Show only table not divider in slice for defect slice=1
+                // Show only table not divider in slice for defect slice=1.
                 $data['time_total']      = $sla_array['time_total'];
                 $data['time_ok']         = $sla_array['time_ok'];
                 $data['time_error']      = $sla_array['time_error'];
@@ -1095,7 +1116,7 @@ function reporting_SLA(
                 $data['sla_fixed']       = $sla_array['sla_fixed'];
             }
 
-            // checks whether or not it meets the SLA
+            // Checks whether or not it meets the SLA.
             if ($data['sla_value'] >= $sla['sla_limit']) {
                 $data['sla_status'] = 1;
                 $sla_failed = false;
@@ -1104,19 +1125,19 @@ function reporting_SLA(
                 $data['sla_status'] = 0;
             }
 
-            // Do not show right modules if 'only_display_wrong' is active
+            // Do not show right modules if 'only_display_wrong' is active.
             if ($content['only_display_wrong'] && $sla_failed == false) {
                 continue;
             }
 
-            // find order
+            // Find order.
             $data['order'] = $data['sla_value'];
 
             if ($show_table) {
                 $return['data'][] = $data;
             }
 
-            // Slice graphs calculation
+            // Slice graphs calculation.
             if ($show_graphs) {
                 $data_init = -1;
                 $acum = 0;
@@ -1149,8 +1170,16 @@ function reporting_SLA(
                 $array_result[$i]['real_data'] = $sum;
 
                 $dataslice = [];
-                $dataslice['agent'] = io_safe_output(modules_get_agentmodule_agent_alias($sla['id_agent_module']));
-                $dataslice['module'] = io_safe_output(modules_get_agentmodule_name($sla['id_agent_module']));
+                $dataslice['agent'] = io_safe_output(
+                    modules_get_agentmodule_agent_alias(
+                        $sla['id_agent_module']
+                    )
+                );
+                $dataslice['module'] = io_safe_output(
+                    modules_get_agentmodule_name(
+                        $sla['id_agent_module']
+                    )
+                );
                 $dataslice['sla_value'] = $data['sla_value'];
                 $dataslice['order'] = $data['sla_value'];
 
@@ -1175,24 +1204,24 @@ function reporting_SLA(
             }
 
             if ($metaconsole_on) {
-                // Restore db connection
+                // Restore db connection.
                 metaconsole_restore_db();
             }
         }
 
         if ($content['top_n'] == 2) {
-            // SLA items sorted descending ()
+            // SLA items sorted descending.
             arsort($return['data']['']);
         } else if ($content['top_n'] == 1) {
-            // SLA items sorted ascending
+            // SLA items sorted ascending.
             asort($sla_showed_values);
         }
 
-        // order data for ascending or descending
+        // Order data for ascending or descending.
         if ($content['top_n'] != 0) {
             switch ($content['top_n']) {
                 case 1:
-                    // order tables
+                    // Order tables.
                     $temp = [];
                     foreach ($return['data'] as $row) {
                         $i = 0;
@@ -1209,7 +1238,7 @@ function reporting_SLA(
 
                     $return['data'] = $temp;
 
-                    // order graphs
+                    // Order graphs.
                     $temp = [];
                     foreach ($return['charts'] as $row) {
                         $i = 0;
@@ -1229,7 +1258,7 @@ function reporting_SLA(
                 break;
 
                 case 2:
-                    // order tables
+                    // Order tables.
                     $temp = [];
                     foreach ($return['data'] as $row) {
                         $i = 0;
@@ -1246,7 +1275,7 @@ function reporting_SLA(
 
                     $return['data'] = $temp;
 
-                    // order graph
+                    // Order graph.
                     $temp = [];
                     foreach ($return['charts'] as $row) {
                         $i = 0;
@@ -4880,7 +4909,9 @@ function reporting_sql($report, $content)
     $return['date'] = reporting_get_date_text();
 
     if ($config['metaconsole']) {
-        $id_meta = metaconsole_get_id_server($content['server_name']);
+        $id_meta = metaconsole_get_id_server(
+            $content['server_name']
+        );
 
         $server = metaconsole_get_connection_by_id($id_meta);
         metaconsole_connect($server);
@@ -4889,22 +4920,40 @@ function reporting_sql($report, $content)
     if ($content['treport_custom_sql_id'] != 0) {
         switch ($config['dbtype']) {
             case 'mysql':
-                $sql = io_safe_output(db_get_value_filter('`sql`', 'treport_custom_sql', ['id' => $content['treport_custom_sql_id']]));
+                $sql = io_safe_output(
+                    db_get_value_filter(
+                        '`sql`',
+                        'treport_custom_sql',
+                        ['id' => $content['treport_custom_sql_id']]
+                    )
+                );
             break;
 
             case 'postgresql':
-                $sql = io_safe_output(db_get_value_filter('"sql"', 'treport_custom_sql', ['id' => $content['treport_custom_sql_id']]));
+                $sql = io_safe_output(
+                    db_get_value_filter(
+                        '"sql"',
+                        'treport_custom_sql',
+                        ['id' => $content['treport_custom_sql_id']]
+                    )
+                );
             break;
 
             case 'oracle':
-                $sql = io_safe_output(db_get_value_filter('sql', 'treport_custom_sql', ['id' => $content['treport_custom_sql_id']]));
+                $sql = io_safe_output(
+                    db_get_value_filter(
+                        'sql',
+                        'treport_custom_sql',
+                        ['id' => $content['treport_custom_sql_id']]
+                    )
+                );
             break;
         }
     } else {
         $sql = io_safe_output($content['external_source']);
     }
 
-    // Do a security check on SQL coming from the user
+    // Do a security check on SQL coming from the user.
     $sql = check_sql($sql);
 
     $return['sql'] = $sql;
@@ -4919,7 +4968,9 @@ function reporting_sql($report, $content)
         }
 
         if ($content['id_rc'] != null) {
-            $historical_db = db_get_value_sql('SELECT historical_db from treport_content where id_rc ='.$content['id_rc']);
+            $historical_db = db_get_value_sql(
+                'SELECT historical_db from treport_content where id_rc ='.$content['id_rc']
+            );
         } else {
             $historical_db = $content['historical_db'];
         }
@@ -4974,11 +5025,16 @@ function sla_truncate($num, $accurancy=2)
 }
 
 
-//
-// Aux: check value limits
-//
-// Returns if the data is in a valid range or not
-//
+/**
+ * SLA check value.
+ *
+ * @param integer $value            Value.
+ * @param integer $min              Treshold min SLA.
+ * @param boolean $max              Treshold max SLA.
+ * @param boolean $inverse_interval Treshold inverse SLA.
+ *
+ * @return boolean Returns the interval in downtime (false if no matches).
+ */
 function sla_check_value($value, $min, $max, $inverse_interval=0)
 {
     if (!isset($inverse_interval)) {
@@ -4986,12 +5042,12 @@ function sla_check_value($value, $min, $max, $inverse_interval=0)
     }
 
     if ((!isset($max)) && (!isset($min))) {
-        // disabled thresholds
+        // Disabled thresholds.
         return true;
     }
 
     if ($max == $min) {
-        // equal
+        // Equal.
         if ($value == $max) {
             return ($inverse_interval == 0) ? true : false;
         }
@@ -5000,7 +5056,7 @@ function sla_check_value($value, $min, $max, $inverse_interval=0)
     }
 
     if (!isset($max)) {
-        // greater or equal than min
+        // Greater or equal than min.
         if ($value >= $min) {
             return ($inverse_interval == 0) ? true : false;
         }
@@ -5009,7 +5065,7 @@ function sla_check_value($value, $min, $max, $inverse_interval=0)
     }
 
     if (!isset($min)) {
-        // smaller or equal than max
+        // Smaller or equal than max.
         if ($value <= $max) {
             return ($inverse_interval == 0) ? true : false;
         }
@@ -5026,20 +5082,25 @@ function sla_check_value($value, $min, $max, $inverse_interval=0)
 
 
 /**
- * SLA downtime worktime
+ * SLA downtime worktime.
  *
- * Check (if needed) if the range specified by wt_start and wt_end is downtime
+ * Check (if needed) if the range specified by wt_start and wt_end is downtime.
  *
- * Only used for inclusive downtimes calculation (from sla_fixed_worktime)
+ * Only used for inclusive downtimes calculation (from sla_fixed_worktime).
  *
- * @param integer $wt_start          start of the range
- * @param integer $wt_end            end of the range
- * @param hash    $planned_downtimes array with the planned downtimes (ordered and merged)
+ * @param integer $wt_start            Start of the range.
+ * @param integer $wt_end              End of the range.
+ * @param boolean $inclusive_downtimes Boolean.
+ * @param array   $planned_downtimes   Array with the planned downtimes (ordered and merged).
  *
- * @return integer                       returns the interval in downtime (false if no matches)
+ * @return integer                     Returns the interval in downtime (false if no matches).
  */
-function sla_downtime_worktime($wt_start, $wt_end, $inclusive_downtimes=1, $planned_downtimes=null)
-{
+function sla_downtime_worktime(
+    $wt_start,
+    $wt_end,
+    $inclusive_downtimes=1,
+    $planned_downtimes=null
+) {
     if ((!isset($planned_downtimes)) || (!is_array($planned_downtimes))) {
         return false;
     }
@@ -5053,6 +5114,7 @@ function sla_downtime_worktime($wt_start, $wt_end, $inclusive_downtimes=1, $plan
     }
 
     $rt = false;
+
     foreach ($planned_downtimes as $pd) {
         if (($wt_start >= $pd['date_from'])
             && ($wt_start <= $pd['date_to'])
@@ -5074,7 +5136,7 @@ function sla_downtime_worktime($wt_start, $wt_end, $inclusive_downtimes=1, $plan
             && ($wt_end > $pd['date_to'])
         ) {
             // ..[..start..]..end..
-            $rt = ($wt_end - $pd['date_to']);
+            $rt = ($pd['date_to'] - $wt_start);
             break;
         } else if (($wt_start >= $pd['date_to'])
             && ($wt_end >= $pd['date_to'])
@@ -5098,29 +5160,44 @@ function sla_downtime_worktime($wt_start, $wt_end, $inclusive_downtimes=1, $plan
  * As worktime is order (older ... newer) the idx works as flag to identify
  * last range checked, in order to improve the algorythm performance.
  *
- * @param integer $wt_start            start of the range
- * @param integer $wt_end              end of the range
- * @param hash    $worktime            hash containing the valid intervals
- * @param hash    $planned_downtimes   array with the planned downtimes (ordered and merged)
- * @param integer $inclusive_downtimes In downtime as OK (1) or ignored (0)
- * @param integer $idx                 last ranges checked
+ * @param integer $wt_start            Start of the range.
+ * @param integer $wt_end              End of the range.
+ * @param array   $worktime            Hash containing the valid intervals.
+ * @param array   $planned_downtimes   Array with the planned downtimes (ordered and merged).
+ * @param integer $inclusive_downtimes In downtime as OK (1) or ignored (0).
+ * @param integer $idx                 Last ranges checked.
+ *
+ * @return array
  */
-function sla_fixed_worktime($wt_start, $wt_end, $worktime=null, $planned_downtimes=null, $inclusive_downtimes=1, $idx=0)
-{
+function sla_fixed_worktime(
+    $wt_start,
+    $wt_end,
+    $worktime=null,
+    $planned_downtimes=null,
+    $inclusive_downtimes=1,
+    $idx=0
+) {
     $return = [];
 
-    // Accept all ranges by default
+    // Accept all ranges by default.
     $return['wt_valid'] = 1;
     $return['interval'] = ($wt_end - $wt_start);
 
-    if ((!isset($wt_start)) || (!isset($wt_end)) || ($wt_start > $wt_end) || ($wt_start > time())) {
+    if ((!isset($wt_start)) || (!isset($wt_end))
+        || ($wt_start > $wt_end) || ($wt_start > time())
+    ) {
         $return['wt_valid'] = 0;
         $return['interval'] = 0;
     }
 
-    // No exclusions defined, entire worktime is valid
+    // No exclusions defined, entire worktime is valid.
     if ((!isset($worktime) || (!is_array($worktime)))) {
-        $time_in_downtime = sla_downtime_worktime($wt_start, $wt_end, $inclusive_downtimes, $planned_downtimes);
+        $time_in_downtime = sla_downtime_worktime(
+            $wt_start,
+            $wt_end,
+            $inclusive_downtimes,
+            $planned_downtimes
+        );
         if ($time_in_downtime != false) {
             $return['wt_in_downtime']    = 1;
             $return['downtime_interval'] = $time_in_downtime;
@@ -5130,7 +5207,7 @@ function sla_fixed_worktime($wt_start, $wt_end, $worktime=null, $planned_downtim
         return $return;
     }
 
-    // Check exceptions
+    // Check exceptions.
     $total = count($worktime);
 
     $return['idx'] = $idx;
@@ -5144,10 +5221,15 @@ function sla_fixed_worktime($wt_start, $wt_end, $worktime=null, $planned_downtim
         $wt = $worktime[$i];
 
         if ($start_fixed == 1) {
-            // Intervals greater than 1 DAY
+            // Intervals greater than 1 DAY.
             if ($wt_end < $wt['date_from']) {
                 // Case G: ..end..[..]..
-                $time_in_downtime = sla_downtime_worktime($wt_start, $wt_end, $inclusive_downtimes, $planned_downtimes);
+                $time_in_downtime = sla_downtime_worktime(
+                    $wt_start,
+                    $wt_end,
+                    $inclusive_downtimes,
+                    $planned_downtimes
+                );
                 if ($time_in_downtime != false) {
                     $return['wt_in_downtime']    = 1;
                     $return['downtime_interval'] = $time_in_downtime;
@@ -5163,9 +5245,14 @@ function sla_fixed_worktime($wt_start, $wt_end, $worktime=null, $planned_downtim
                 && ($wt_end <= $wt['date_to'])
             ) {
                 // Case H: ..[..end..]..
-                // add last slice
+                // add last slice.
                 $return['interval'] += ($wt_end - $wt['date_from']);
-                $time_in_downtime = sla_downtime_worktime($wt['date_from'], $wt_end, $inclusive_downtimes, $planned_downtimes);
+                $time_in_downtime = sla_downtime_worktime(
+                    $wt['date_from'],
+                    $wt_end,
+                    $inclusive_downtimes,
+                    $planned_downtimes
+                );
                 if ($time_in_downtime != false) {
                     $return['wt_in_downtime']    = 1;
                     $return['downtime_interval'] = $time_in_downtime;
@@ -5179,9 +5266,14 @@ function sla_fixed_worktime($wt_start, $wt_end, $worktime=null, $planned_downtim
                 && ($wt_end > $wt['date_to'])
             ) {
                 // Case H: ..[..]..end..
-                // Add current slice and continue checking
+                // Add current slice and continue checking.
                 $return['interval'] += ($wt['date_to'] - $wt['date_from']);
-                $time_in_downtime = sla_downtime_worktime($wt['date_from'], $wt['date_to'], $inclusive_downtimes, $planned_downtimes);
+                $time_in_downtime = sla_downtime_worktime(
+                    $wt['date_from'],
+                    $wt['date_to'],
+                    $inclusive_downtimes,
+                    $planned_downtimes
+                );
                 if ($time_in_downtime != false) {
                     $return['wt_in_downtime']    = 1;
                     $return['downtime_interval'] = $time_in_downtime;
@@ -5205,7 +5297,12 @@ function sla_fixed_worktime($wt_start, $wt_end, $worktime=null, $planned_downtim
                 // Case B: ...start..[..end..]......
                 $return['wt_valid'] = 1;
                 $return['interval'] = ($wt_end - $wt['date_from']);
-                $time_in_downtime = sla_downtime_worktime($wt['date_from'], $wt_end, $inclusive_downtimes, $planned_downtimes);
+                $time_in_downtime = sla_downtime_worktime(
+                    $wt['date_from'],
+                    $wt_end,
+                    $inclusive_downtimes,
+                    $planned_downtimes
+                );
                 if ($time_in_downtime != false) {
                     $return['wt_in_downtime']    = 1;
                     $return['downtime_interval'] = $time_in_downtime;
@@ -5222,7 +5319,12 @@ function sla_fixed_worktime($wt_start, $wt_end, $worktime=null, $planned_downtim
             ) {
                 // Case C: ...[..start..end..]......
                 $return['wt_valid'] = 1;
-                $time_in_downtime = sla_downtime_worktime($wt_start, $wt_end, $inclusive_downtimes, $planned_downtimes);
+                $time_in_downtime = sla_downtime_worktime(
+                    $wt_start,
+                    $wt_end,
+                    $inclusive_downtimes,
+                    $planned_downtimes
+                );
                 if ($time_in_downtime != false) {
                     $return['wt_in_downtime']    = 1;
                     $return['downtime_interval'] = $time_in_downtime;
@@ -5238,7 +5340,12 @@ function sla_fixed_worktime($wt_start, $wt_end, $worktime=null, $planned_downtim
             ) {
                 // Case D: ...[..start..]...end.....
                 $return['interval'] = ($wt['date_to'] - $wt_start);
-                $time_in_downtime = sla_downtime_worktime($wt_start, $wt['date_to'], $inclusive_downtimes, $planned_downtimes);
+                $time_in_downtime = sla_downtime_worktime(
+                    $wt_start,
+                    $wt['date_to'],
+                    $inclusive_downtimes,
+                    $planned_downtimes
+                );
                 if ($time_in_downtime != false) {
                     $return['wt_in_downtime']    = 1;
                     $return['downtime_interval'] = $time_in_downtime;
@@ -5247,10 +5354,11 @@ function sla_fixed_worktime($wt_start, $wt_end, $worktime=null, $planned_downtim
 
                 $return['wt_valid'] = 1;
                 $start_fixed = 1;
-                // we must check if 'end' is greater than the next valid worktime range start time
-                // unless is the last one
+                // We must check if 'end' is greater than the next valid
+                // worktime range start time unless is the last one.
                 if (($i + 1) == $total) {
-                    // if there's no more worktime ranges to check return the accumulated
+                    // If there's no more worktime ranges
+                    // to check return the accumulated.
                     return $return;
                 }
             }
@@ -5261,7 +5369,12 @@ function sla_fixed_worktime($wt_start, $wt_end, $worktime=null, $planned_downtim
                 // Case E: ...start...[...]...end...
                 $return['wt_valid'] = 1;
                 $return['interval'] = ($wt['date_to'] - $wt['date_from']);
-                $time_in_downtime = sla_downtime_worktime($wt['date_from'], $wt['date_to'], $inclusive_downtimes, $planned_downtimes);
+                $time_in_downtime = sla_downtime_worktime(
+                    $wt['date_from'],
+                    $wt['date_to'],
+                    $inclusive_downtimes,
+                    $planned_downtimes
+                );
                 if ($time_in_downtime != false) {
                     $return['wt_in_downtime']    = 1;
                     $return['downtime_interval'] = $time_in_downtime;
@@ -5269,10 +5382,10 @@ function sla_fixed_worktime($wt_start, $wt_end, $worktime=null, $planned_downtim
                 }
 
                 if (($wt_end - $wt_start) < SECONDS_1DAY) {
-                    // Interval is less than 1 day
+                    // Interval is less than 1 day.
                     return $return;
                 } else {
-                    // Interval greater than 1 day, split valid worktimes
+                    // Interval greater than 1 day, split valid worktimes.
                     $start_fixed = 1;
                 }
             }
@@ -5281,9 +5394,9 @@ function sla_fixed_worktime($wt_start, $wt_end, $worktime=null, $planned_downtim
                 && ($wt_end > $wt['date_to'])
             ) {
                 // Case F: ...[....]..start...end...
-                // Invalid, check next worktime hole
+                // Invalid, check next worktime hole.
                 $return['wt_valid'] = 0;
-                // and remove current one
+                // And remove current one.
                 $return['idx'] = ($i + 1);
             }
         }
@@ -5298,19 +5411,19 @@ function sla_fixed_worktime($wt_start, $wt_end, $worktime=null, $planned_downtim
 /**
  * Advanced SLA result with summary
  *
- * @param integer $id_agent_module     id_agent_module
- * @param integer $time_from           Time start
- * @param integer $time_to             time end
- * @param integer $min_value           minimum value for OK status
- * @param integer $max_value           maximum value for OK status
- * @param integer $inverse_interval    inverse interval (range) for OK status
- * @param hash    $daysWeek            Days of active work times (M-T-W-T-V-S-S)
- * @param integer $timeFrom            Start of work time, in each day
- * @param integer $timeTo              End of work time, in each day
- * @param integer $slices              Number of reports (time division)
- * @param integer $inclusive_downtimes In downtime as OK (1) or ignored (0)
+ * @param integer $id_agent_module     Id_agent_module.
+ * @param integer $time_from           Time start.
+ * @param integer $time_to             Time end.
+ * @param integer $min_value           Minimum value for OK status.
+ * @param integer $max_value           Maximum value for OK status.
+ * @param integer $inverse_interval    Inverse interval (range) for OK status.
+ * @param array   $daysWeek            Days of active work times (M-T-W-T-V-S-S).
+ * @param integer $timeFrom            Start of work time, in each day.
+ * @param integer $timeTo              End of work time, in each day.
+ * @param integer $slices              Number of reports (time division).
+ * @param integer $inclusive_downtimes In downtime as OK (1) or ignored (0).
  *
- * @return array                     Returns a hash with the calculated data
+ * @return array                      Returns a hash with the calculated data.
  */
 function reporting_advanced_sla(
     $id_agent_module,
@@ -5326,9 +5439,8 @@ function reporting_advanced_sla(
     $inclusive_downtimes=1
 ) {
     // In content:
-    //
-    // [time_from, time_to] => Worktime
-    // week's days => flags to manage workdays
+    // Example: [time_from, time_to] => Worktime
+    // week's days => flags to manage workdays.
     if (!isset($id_agent_module)) {
         return false;
     }
@@ -5338,13 +5450,13 @@ function reporting_advanced_sla(
     }
 
     if ((!isset($min_value)) && (!isset($max_value))) {
-        // Infer availability range based on the critical thresholds
+        // Infer availability range based on the critical thresholds.
         $agentmodule_info = modules_get_agentmodule($id_agent_module);
 
-        // take in mind: the "inverse" critical threshold
+        // Take in mind: the "inverse" critical threshold.
         $min_value        = $agentmodule_info['min_critical'];
         $max_value        = $agentmodule_info['max_critical'];
-        $inverse_interval = $agentmodule_info['critical_inverse'] == 0 ? 1 : 0;
+        $inverse_interval = ($agentmodule_info['critical_inverse'] == 0) ? 1 : 0;
 
         if ((!isset($min_value)) || ($min_value == 0)) {
             $min_value = null;
@@ -5361,19 +5473,19 @@ function reporting_advanced_sla(
 
         if ((!isset($min_value)) && (!isset($max_value))) {
             if (($agentmodule_info['id_tipo_modulo'] == '2')
-                // generic_proc
+                // Generic_proc.
                 || ($agentmodule_info['id_tipo_modulo'] == '6')
-                // remote_icmp_proc
+                // Remote_icmp_proc.
                 || ($agentmodule_info['id_tipo_modulo'] == '9')
-                // remote_tcp_proc
+                // Remote_tcp_proc.
                 || ($agentmodule_info['id_tipo_modulo'] == '18')
-                // remote_snmp_proc
+                // Remote_snmp_proc.
                 || ($agentmodule_info['id_tipo_modulo'] == '21')
-                // async_proc
+                // Async_proc.
                 || ($agentmodule_info['id_tipo_modulo'] == '31')
             ) {
-                // web_proc
-                // Boolean values are OK if they're different from 0
+                // Web_proc
+                // boolean values are OK if they're different from 0.
                 $max_value = 0;
                 $min_value = 0;
                 $inverse_interval = 1;
@@ -5381,11 +5493,11 @@ function reporting_advanced_sla(
         }
     }
 
-    // By default show last day
+    // By default show last day.
     $datetime_to = time();
     $datetime_from = ($datetime_to - SECONDS_1DAY);
 
-    // Or apply specified range
+    // Or apply specified range.
     if ((isset($time_to) && isset($time_from)) && ($time_to > $time_from)) {
         $datetime_to   = $time_to;
         $datetime_from = $time_from;
@@ -5399,7 +5511,11 @@ function reporting_advanced_sla(
         $datetime_from = $time_from;
     }
 
-    $uncompressed_data = db_uncompress_module_data($id_agent_module, $datetime_from, $datetime_to);
+    $uncompressed_data = db_uncompress_module_data(
+        $id_agent_module,
+        $datetime_from,
+        $datetime_to
+    );
 
     if (is_array($uncompressed_data)) {
         $n_pools = count($uncompressed_data);
@@ -5408,10 +5524,14 @@ function reporting_advanced_sla(
         }
     }
 
-    $planned_downtimes = reporting_get_planned_downtimes_intervals($id_agent_module, $datetime_from, $datetime_to);
+    $planned_downtimes = reporting_get_planned_downtimes_intervals(
+        $id_agent_module,
+        $datetime_from,
+        $datetime_to
+    );
 
     if ((is_array($planned_downtimes)) && (count($planned_downtimes) > 0)) {
-        // Sort retrieved planned downtimes
+        // Sort retrieved planned downtimes.
         usort(
             $planned_downtimes,
             function ($a, $b) {
@@ -5421,16 +5541,16 @@ function reporting_advanced_sla(
                     return 0;
                 }
 
-                return ($a < $b) ? -1 : 1;
+                return ($a < $b) ? (-1) : 1;
             }
         );
 
-        // Compress (overlapped) planned downtimes
+        // Compress (overlapped) planned downtimes.
         $npd = count($planned_downtimes);
         for ($i = 0; $i < $npd; $i++) {
             if (isset($planned_downtimes[($i + 1)])) {
                 if ($planned_downtimes[$i]['date_to'] >= $planned_downtimes[($i + 1)]['date_from']) {
-                    // merge
+                    // Merge.
                     $planned_downtimes[$i]['date_to'] = $planned_downtimes[($i + 1)]['date_to'];
                     array_splice($planned_downtimes, ($i + 1), 1);
                     $npd--;
@@ -5449,9 +5569,8 @@ function reporting_advanced_sla(
     // data
     // array
     // utimestamp
-    // datos
-    //
-    // Build exceptions
+    // datos.
+    // Build exceptions.
     $worktime = null;
 
     if (((isset($daysWeek))
@@ -5462,22 +5581,22 @@ function reporting_advanced_sla(
         $n = 0;
 
         if (!isset($daysWeek)) {
-            // init
+            // Init.
             $daysWeek = [
                 '1' => 1,
-            // sunday"
+            // Sunday.
                 '2' => 1,
-            // monday
+            // Monday.
                 '3' => 1,
-            // tuesday
+            // Tuesday.
                 '4' => 1,
-            // wednesday
+            // Wednesday.
                 '5' => 1,
-            // thursday
+            // Thursday.
                 '6' => 1,
-            // friday
+            // Friday.
                 '7' => 1,
-            // saturday
+            // Saturday.
             ];
         }
 
@@ -5488,10 +5607,10 @@ function reporting_advanced_sla(
         }
 
         if (($n == count($daysWeek)) && ($timeFrom == $timeTo)) {
-            // Ignore custom ranges
+            // Ignore custom ranges.
             $worktime = null;
         } else {
-            // get only first day
+            // Get only first day.
             $date_start = strtotime(date('Y/m/d', $datetime_from));
             $date_end   = strtotime(date('Y/m/d', $datetime_to));
 
@@ -5512,25 +5631,31 @@ function reporting_advanced_sla(
                 $timeTo = '00:00:00';
             }
 
-            // timeFrom (seconds)
+            // TimeFrom (seconds).
             sscanf($timeFrom, '%d:%d:%d', $hours, $minutes, $seconds);
             $secondsFrom = ($hours * 3600 + $minutes * 60 + $seconds);
 
-            // timeTo (seconds)
+            // TimeTo (seconds).
             sscanf($timeTo, '%d:%d:%d', $hours, $minutes, $seconds);
             $secondsTo = ($hours * 3600 + $minutes * 60 + $seconds);
 
-            // Apply planned downtime exceptions (fix matrix)
+            // Apply planned downtime exceptions (fix matrix).
             while ($t_day <= $date_end) {
                 if ($daysWeek[(date('w', $t_day) + 1)] == 1) {
-                    $wt_start = strtotime(date('Y/m/d H:i:s', ($t_day + $secondsFrom)));
-                    $wt_end   = strtotime(date('Y/m/d H:i:s', ($t_day + $secondsTo)));
+                    $wt_start = strtotime(
+                        date('Y/m/d H:i:s', ($t_day + $secondsFrom))
+                    );
+                    $wt_end   = strtotime(
+                        date('Y/m/d H:i:s', ($t_day + $secondsTo))
+                    );
                     if ($timeFrom == $timeTo) {
                         $wt_end += SECONDS_1DAY;
                     }
 
-                    // Check if in planned downtime if exclusive downtimes
-                    if (($inclusive_downtimes == 0) && (is_array($planned_downtimes))) {
+                    // Check if in planned downtime if exclusive downtimes.
+                    if (($inclusive_downtimes == 0)
+                        && (is_array($planned_downtimes))
+                    ) {
                         $start_fixed = 0;
 
                         $n_planned_downtimes = count($planned_downtimes);
@@ -5539,7 +5664,8 @@ function reporting_advanced_sla(
                         $last_pd = end($planned_downtimes);
 
                         if ($wt_start > $last_pd['date_to']) {
-                            // There's no more planned downtimes, accept remaining range
+                            // There's no more planned downtimes,
+                            // accept remaining range.
                             $worktime[$i] = [];
                             $worktime[$i]['date_from'] = $wt_start;
                             $worktime[$i]['date_to']   = $wt_end;
@@ -5549,10 +5675,10 @@ function reporting_advanced_sla(
                                 $pd = $planned_downtimes[$i_planned_downtimes];
 
                                 if ($start_fixed == 1) {
-                                    // Interval greater than found planned downtime
+                                    // Interval greater than found planned downtime.
                                     if ($wt_end < $pd['date_from']) {
                                         $worktime[$i] = [];
-                                        // wt_start already fixed
+                                        // Wt_start already fixed.
                                         $worktime[$i]['date_from'] = $wt_start;
                                         $worktime[$i]['date_to']   = $wt_end;
                                         $i++;
@@ -5563,7 +5689,7 @@ function reporting_advanced_sla(
                                         && ( $wt_end <= $pd['date_to']  )
                                     ) {
                                         $worktime[$i] = [];
-                                        // wt_start already fixed
+                                        // Wt_start already fixed.
                                         $worktime[$i]['date_from'] = $wt_start;
                                         $worktime[$i]['date_to']   = $pd['date_from'];
                                         $i++;
@@ -5572,13 +5698,14 @@ function reporting_advanced_sla(
 
                                     if ($wt_end > $pd['date_to']) {
                                         $worktime[$i] = [];
-                                        // wt_start already fixed
+                                        // Wt_start already fixed.
                                         $worktime[$i]['date_from'] = $wt_start;
                                         $worktime[$i]['date_to']   = $pd['date_from'];
                                         $i++;
 
                                         $start_fixed = 0;
-                                        // Search following planned downtimes, we're still on work time!
+                                        // Search following planned downtimes,
+                                        // we're still on work time!.
                                         $wt_start = $pd['date_from'];
                                     }
                                 }
@@ -5586,7 +5713,7 @@ function reporting_advanced_sla(
                                 if (( $wt_start < $pd['date_from'])
                                     && ( $wt_end < $pd['date_from'])
                                 ) {
-                                    // Out of planned downtime: Add worktime
+                                    // Out of planned downtime: Add worktime.
                                     $worktime[$i] = [];
                                     $worktime[$i]['date_from'] = $wt_start;
                                     $worktime[$i]['date_to']   = $wt_end;
@@ -5608,7 +5735,7 @@ function reporting_advanced_sla(
                                 if (( $wt_start >= $pd['date_from'])
                                     && ( $wt_end <= $pd['date_to'])
                                 ) {
-                                    // All worktime in downtime, ignore
+                                    // All worktime in downtime, ignore.
                                     break;
                                 }
 
@@ -5635,8 +5762,11 @@ function reporting_advanced_sla(
                                     $start_fixed = 1;
                                 }
 
-                                if (($start_fixed == 1) && (($i_planned_downtimes + 1) == $n_planned_downtimes)) {
-                                    // There's no more planned downtimes, accept remaining range
+                                if (($start_fixed == 1)
+                                    && (($i_planned_downtimes + 1) == $n_planned_downtimes)
+                                ) {
+                                    // There's no more planned downtimes,
+                                    // accept remaining range.
                                     $worktime[$i] = [];
                                     $worktime[$i]['date_from'] = $wt_start;
                                     $worktime[$i]['date_to']   = $wt_end;
@@ -5646,7 +5776,7 @@ function reporting_advanced_sla(
                             }
                         }
                     } else {
-                        // No planned downtimes scheduled
+                        // No planned downtimes scheduled.
                         $worktime[$i] = [];
                         $worktime[$i]['date_from'] = $wt_start;
                         $worktime[$i]['date_to']   = $wt_end;
@@ -5655,9 +5785,9 @@ function reporting_advanced_sla(
                 }
 
                 $t_day = strtotime(' + 1 days', $t_day);
-            } //end while
-        } //end if
-    } //end if
+            }
+        }
+    }
 
     // DEBUG
     // print "<pre>Umcompressed data debug:\n";
@@ -5668,23 +5798,29 @@ function reporting_advanced_sla(
     // }
     // }
     // print "</pre>";
-    // Initialization
+    // Initialization.
     $global_return = [];
 
     $wt_check['idx'] = 0;
     $last_pool_id    = 0;
     $last_item_id    = 0;
 
-    // Support to slices
+    // Support to slices.
     $global_datetime_from = $datetime_from;
     $global_datetime_to   = $datetime_to;
     $range                = (($datetime_to - $datetime_from) / $slices);
 
-    // Analysis begins
+    // Analysis begins.
     for ($count = 0; $count < $slices; $count++) {
-        // use strtotime based on local timezone to avoid datetime conversions
-        $datetime_from = strtotime(' + '.($count * $range).' seconds', $global_datetime_from);
-        $datetime_to   = strtotime(' + '.(($count + 1) * $range).' seconds', $global_datetime_from);
+        // Use strtotime based on local timezone to avoid datetime conversions.
+        $datetime_from = strtotime(
+            ' + '.($count * $range).' seconds',
+            $global_datetime_from
+        );
+        $datetime_to = strtotime(
+            ' + '.(($count + 1) * $range).' seconds',
+            $global_datetime_from
+        );
 
         if ((!isset($datetime_from)) || ($datetime_from === false)) {
             $datetime_from = ($global_datetime_from + ($count * $range));
@@ -5695,7 +5831,7 @@ function reporting_advanced_sla(
         }
 
         $return = [];
-        // timing
+        // Timing.
         $time_total       = 0;
         $time_in_ok       = 0;
         $time_in_error    = 0;
@@ -5704,7 +5840,7 @@ function reporting_advanced_sla(
         $time_in_down     = 0;
         $time_out         = 0;
 
-        // checks
+        // Checks.
         $bad_checks       = 0;
         $ok_checks        = 0;
         $not_init_checks  = 0;
@@ -5716,7 +5852,7 @@ function reporting_advanced_sla(
             for ($pool_index = $last_pool_id; $pool_index < $n_pools; $pool_index++) {
                 $pool = $uncompressed_data[$pool_index];
 
-                // check limits
+                // Check limits.
                 if (isset($uncompressed_data[($pool_index + 1)])) {
                     $next_pool = $uncompressed_data[($pool_index + 1)];
                 } else {
@@ -5729,36 +5865,37 @@ function reporting_advanced_sla(
                     $pool['next_utimestamp'] = $global_datetime_to;
                 }
 
-                // update last pool checked: avoid repetition
+                // Update last pool checked: avoid repetition.
                 $last_pool_id = $pool_index;
 
                 if ($datetime_from > $pool['utimestamp']) {
-                    // Skip pool
+                    // Skip pool.
                     continue;
                 }
 
-                // Test if need to acquire current pool
-                if ((($datetime_from <= $pool['utimestamp']) && ($datetime_to >= $pool['next_utimestamp']))
+                // Test if need to acquire current pool.
+                if ((($datetime_from <= $pool['utimestamp'])
+                    && ($datetime_to >= $pool['next_utimestamp']))
                     || ($datetime_to > $pool['utimestamp'])
                 ) {
-                    // Acquire pool to this slice
+                    // Acquire pool to this slice.
                     $nitems_in_pool = count($pool['data']);
                     for ($i = 0; $i < $nitems_in_pool; $i++) {
                         $current_data = $pool['data'][$i];
 
                         if (($i + 1) >= $nitems_in_pool) {
-                            // if pool exceded, check next pool timestamp
+                            // If pool exceded, check next pool timestamp.
                             $next_data = $next_pool;
                         } else {
-                            // pool not exceded, check next item
+                            // Pool not exceded, check next item.
                             $next_data = $pool['data'][($i + 1)];
                         }
 
                         if (isset($next_data['utimestamp'])) {
-                            // check next mark time in current pool
+                            // Check next mark time in current pool.
                             $next_timestamp = $next_data['utimestamp'];
                         } else {
-                            // check last time -> datetime_to
+                            // Check last time -> datetime_to.
                             if (!isset($next_pool)) {
                                 $next_timestamp = $global_datetime_to;
                             } else {
@@ -5766,12 +5903,20 @@ function reporting_advanced_sla(
                             }
                         }
 
-                        // Effective time limits for current data
+                        // Effective time limits for current data.
                         $wt_start = $current_data['utimestamp'];
                         $wt_end   = $next_timestamp;
 
-                        // Remove time spent not in planning (and in planned downtime if needed)
-                        $wt_check = sla_fixed_worktime($wt_start, $wt_end, $worktime, $planned_downtimes, $inclusive_downtimes, $wt_check['idx']);
+                        // Remove time spent not in planning
+                        // (and in planned downtime if needed).
+                        $wt_check = sla_fixed_worktime(
+                            $wt_start,
+                            $wt_end,
+                            $worktime,
+                            $planned_downtimes,
+                            $inclusive_downtimes,
+                            $wt_check['idx']
+                        );
                         $time_interval = $wt_check['interval'];
 
                         if (($wt_check['wt_valid'] == 1)) {
@@ -5779,9 +5924,17 @@ function reporting_advanced_sla(
 
                             if ($time_interval > 0) {
                                 $total_checks++;
-                                if ((isset($current_data['datos'])) && ($current_data['datos'] !== false)) {
-                                    // not unknown nor not init values
-                                    if (sla_check_value($current_data['datos'], $min_value, $max_value, $inverse_interval)) {
+                                if ((isset($current_data['datos']))
+                                    && ($current_data['datos'] !== false)
+                                ) {
+                                    // Not unknown nor not init values.
+                                    if (sla_check_value(
+                                        $current_data['datos'],
+                                        $min_value,
+                                        $max_value,
+                                        $inverse_interval
+                                    )
+                                    ) {
                                         $ok_checks++;
                                         $time_in_ok += $time_interval;
                                     } else {
@@ -5801,7 +5954,8 @@ function reporting_advanced_sla(
 
                             if ($inclusive_downtimes == 1) {
                                 if ($wt_check['wt_in_downtime']) {
-                                    // Add downtime interval as OK in inclusion mode
+                                    // Add downtime interval as
+                                    // OK in inclusion mode.
                                     $total_checks++;
                                     $ok_checks++;
                                     $time_total   += $wt_check['downtime_interval'];
@@ -5814,24 +5968,23 @@ function reporting_advanced_sla(
                                 $time_out += $wt_check['downtime_interval'];
                             }
 
-                            // ignore worktime, is in an invalid period:
+                            // Ignore worktime, is in an invalid period:
                             // scheduled downtimes in exclusion mode
-                            // not 24x7 sla's
+                            // not 24x7 sla's.
                         }
-                    } //end for
-                } //end if
-                else {
+                    }
+                } else {
                     break;
                 }
-            } //end for
+            }
         } else {
-            // If monitor in not-init status => no data to show
+            // If monitor in not-init status => no data to show.
             $time_in_not_init  = ($datetime_to - $datetime_from);
             $time_total       += $time_in_not_init;
             $not_init_checks++;
         }
 
-        // Timing
+        // Timing.
         $return['time_total']      = $time_total;
         $return['time_ok']         = $time_in_ok;
         $return['time_error']      = $time_in_error;
@@ -5840,25 +5993,28 @@ function reporting_advanced_sla(
         $return['time_downtime']   = $time_in_down;
         $return['time_out']        = $time_out;
 
-        // # Checks
+        // Checks.
         $return['checks_total']    = $total_checks;
         $return['checks_ok']       = $ok_checks;
         $return['checks_error']    = $bad_checks;
         $return['checks_unknown']  = $unknown_checks;
         $return['checks_not_init'] = $not_init_checks;
 
-        // SLA
+        // SLA.
         $return['SLA'] = reporting_sla_get_compliance_from_array($return);
-        $return['SLA_fixed'] = sla_truncate($return['SLA'], $config['graph_precision']);
+        $return['SLA_fixed'] = sla_truncate(
+            $return['SLA'],
+            $config['graph_precision']
+        );
 
-        // Time ranges
+        // Time ranges.
         $return['date_from'] = $datetime_from;
         $return['date_to']   = $datetime_to;
 
         if ($slices > 1) {
             array_push($global_return, $return);
         }
-    } //end for
+    }
 
     if ($slices > 1) {
         return $global_return;

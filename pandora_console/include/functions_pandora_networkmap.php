@@ -1441,18 +1441,21 @@ function clean_duplicate_links($relations)
     }
 
     $final_links = [];
-    /*
-        ---------------------------------------------------------------- */
-    /*
-        --------------------- Clean duplicate links -------------------- */
+
+    // ----------------------------------------------------------------
+    // --------------------- Clean duplicate links --------------------
     // ----------------------------------------------------------------
     $duplicated = false;
     $index_to_del = 0;
     $index = 0;
-    if (is_array($segregation_links['aa'])) {
+    if (isset($segregation_links['aa']) === true
+        && is_array($segregation_links['aa']) === true
+    ) {
         foreach ($segregation_links['aa'] as $link) {
             foreach ($segregation_links['aa'] as $link2) {
-                if ($link['id_parent'] == $link2['id_child'] && $link['id_child'] == $link2['id_parent']) {
+                if ($link['id_parent'] == $link2['id_child']
+                    && $link['id_child'] == $link2['id_parent']
+                ) {
                     if (enterprise_installed()) {
                         delete_link($segregation_links['aa'][$index_to_del]);
                     }
@@ -1474,15 +1477,17 @@ function clean_duplicate_links($relations)
     $duplicated = false;
     $index_to_del = 0;
     $index2 = 0;
-    if (is_array($segregation_links['mm'])) {
+    if (isset($segregation_links['mm']) === true
+        && is_array($segregation_links['mm']) === true
+    ) {
         foreach ($segregation_links['mm'] as $link) {
             foreach ($segregation_links['mm'] as $link2) {
-                if ($link['id_parent'] == $link2['id_child'] && $link['id_child'] == $link2['id_parent']) {
+                if ($link['id_parent'] == $link2['id_child']
+                    && $link['id_child'] == $link2['id_parent']
+                ) {
                     if (enterprise_installed()) {
                         delete_link($segregation_links['mm'][$index_to_del]);
                     }
-
-                    // unset($segregation_links['mm'][$index_to_del]);
                 }
 
                 $index_to_del++;
@@ -1499,10 +1504,15 @@ function clean_duplicate_links($relations)
     $duplicated = false;
     $index_to_del = 0;
     $index3 = 0;
-    if (is_array($segregation_links['ff'])) {
+
+    if (isset($segregation_links['ff']) === true
+        && is_array($segregation_links['ff']) === true
+    ) {
         foreach ($segregation_links['ff'] as $link) {
             foreach ($segregation_links['ff'] as $link2) {
-                if ($link['id_parent'] == $link2['id_child'] && $link['id_child'] == $link2['id_parent']) {
+                if ($link['id_parent'] == $link2['id_child']
+                    && $link['id_child'] == $link2['id_parent']
+                ) {
                     if (enterprise_installed()) {
                         delete_link($segregation_links['ff'][$index_to_del]);
                     }
@@ -1524,24 +1534,24 @@ function clean_duplicate_links($relations)
     $final_links['am'] = $segregation_links['am'];
 
     /*
-        ---------------------------------------------------------------- */
-    /*
-        ----------------- AA, AM and MM links management --------------- */
-    /*
-        ------------------ Priority: ----------------------------------- */
-    /*
-        -------------------- 1 -> MM (module - module) ----------------- */
-    /*
-        -------------------- 2 -> AM (agent - module) ------------------ */
-    /*
-        -------------------- 3 -> AA (agent - agent) ------------------- */
-    // ----------------------------------------------------------------
+        ----------------------------------------------------------------
+        ----------------- AA, AM and MM links management ---------------
+        ------------------ Priority: -----------------------------------
+        -------------------- 1 -> MM (module - module) -----------------
+        -------------------- 2 -> AM (agent - module) ------------------
+        -------------------- 3 -> AA (agent - agent) -------------------
+        ----------------------------------------------------------------
+    */
+
     $final_links2 = [];
     $index = 0;
     $l3_link = [];
     $agent1 = 0;
     $agent2 = 0;
-    if (is_array($segregation_links['mm'])) {
+
+    if (isset($final_links['mm']) === true
+        && is_array($final_links['mm']) === true
+    ) {
         foreach ($final_links['mm'] as $rel_mm) {
             $module_parent = $rel_mm['id_parent_source_data'];
             $module_children = $rel_mm['id_child_source_data'];
@@ -1551,8 +1561,10 @@ function clean_duplicate_links($relations)
                 $l3_link = $rel_aa;
                 $id_p_source_data = (int) $rel_aa['id_parent_source_data'];
                 $id_c_source_data = (int) $rel_aa['id_child_source_data'];
-                if ((($id_p_source_data == $agent1) && ($id_c_source_data == $agent2))
-                    || (($id_p_source_data == $agent2) && ($id_c_source_data == $agent1))
+                if ((($id_p_source_data == $agent1)
+                    && ($id_c_source_data == $agent2))
+                    || (($id_p_source_data == $agent2)
+                    && ($id_c_source_data == $agent1))
                 ) {
                     if (enterprise_installed()) {
                         delete_link($final_links['aa'][$key]);
@@ -1571,7 +1583,9 @@ function clean_duplicate_links($relations)
 
     $same_m = [];
     $index = 0;
-    if (is_array($final_links2['am'])) {
+    if (isset($final_links2['am']) === true
+        && is_array($final_links2['am']) === true
+    ) {
         foreach ($final_links2['am'] as $rel_am) {
             foreach ($final_links2['am'] as $rel_am2) {
                 if (($rel_am['id_child_source_data'] == $rel_am2['id_child_source_data'])
@@ -1589,7 +1603,9 @@ function clean_duplicate_links($relations)
     $index = 0;
     $l3_link = [];
     $have_l3 = false;
-    if (is_array($final_links2['aa'])) {
+    if (isset($final_links2['aa']) === true
+        && is_array($final_links2['aa']) === true
+    ) {
         foreach ($final_links2['aa'] as $key => $rel_aa) {
             $l3_link = $rel_aa;
             foreach ($same_m as $rel_am) {
@@ -1614,25 +1630,33 @@ function clean_duplicate_links($relations)
     $final_links3['ff'] = $final_links2['ff'];
 
     $cleaned_links = [];
-    if (is_array($final_links3['aa'])) {
+    if (isset($final_links3['aa']) === true
+        && is_array($final_links3['aa']) === true
+    ) {
         foreach ($final_links3['aa'] as $link) {
             $cleaned_links[] = $link;
         }
     }
 
-    if (is_array($final_links3['am'])) {
+    if (isset($final_links3['am']) === true
+        && is_array($final_links3['am']) === true
+    ) {
         foreach ($final_links3['am'] as $link) {
             $cleaned_links[] = $link;
         }
     }
 
-    if (is_array($final_links3['mm'])) {
+    if (isset($final_links3['mm']) === true
+        && is_array($final_links3['mm']) === true
+    ) {
         foreach ($final_links3['mm'] as $link) {
             $cleaned_links[] = $link;
         }
     }
 
-    if (is_array($final_links3['ff'])) {
+    if (isset($final_links3['ff']) === true
+        && is_array($final_links3['ff']) === true
+    ) {
         foreach ($final_links3['ff'] as $link) {
             $cleaned_links[] = $link;
         }
@@ -1788,7 +1812,7 @@ function show_networkmap($id=0, $user_readonly=false, $nodes_and_relations=[], $
         init_drag_and_drop();
         init_minimap();
         function_open_minimap();
-        
+
         $(document.body).on("mouseleave",
             ".context-menu-list",
             function(e) {
@@ -1815,7 +1839,7 @@ function show_networkmap($id=0, $user_readonly=false, $nodes_and_relations=[], $
 <div id="dialog_node_edit" style="display: none;" title="<?php echo __('Edit node'); ?>">
     <div style="text-align: left; width: 100%;">
     <?php
-    $table = null;
+    $table = new stdClass();
     $table->id = 'node_details';
     $table->width = '100%';
 
@@ -1836,7 +1860,7 @@ function show_networkmap($id=0, $user_readonly=false, $nodes_and_relations=[], $
         false
     );
 
-    $table = null;
+    $table = new stdClass();
     $table->id = 'interface_information';
     $table->width = '100%';
 
@@ -1860,7 +1884,7 @@ function show_networkmap($id=0, $user_readonly=false, $nodes_and_relations=[], $
         true
     );
 
-    $table = null;
+    $table = new stdClass();
     $table->id = 'node_options';
     $table->width = '100%';
 
@@ -1878,7 +1902,24 @@ function show_networkmap($id=0, $user_readonly=false, $nodes_and_relations=[], $
         '',
         0,
         true
-    ).'&nbsp;'.'<span id="shape_icon_in_progress" style="display: none;">'.html_print_image('images/spinner.gif', true).'</span>'.'<span id="shape_icon_correct" style="display: none;">'.html_print_image('images/dot_green.png', true).'</span>'.'<span id="shape_icon_fail" style="display: none;">'.html_print_image('images/dot_red.png', true).'</span>';
+    );
+    $table->data[0][1] .= '&nbsp;<span id="shape_icon_in_progress" style="display: none;">';
+    $table->data[0][1] .= html_print_image(
+        'images/spinner.gif',
+        true
+    );
+    $table->data[0][1] .= '</span><span id="shape_icon_correct" style="display: none;">';
+    $table->data[0][1] .= html_print_image(
+        'images/dot_green.png',
+        true
+    );
+    $table->data[0][1] .= '</span><span id="shape_icon_fail" style="display: none;">';
+    $table->data[0][1] .= html_print_image(
+        'images/dot_red.png',
+        true
+    );
+    $table->data[0][1] .= '</span>';
+
     $table->data['node_name'][0] = __('Name');
     $table->data['node_name'][1] = html_print_input_text(
         'edit_name_node',
@@ -1933,7 +1974,7 @@ function show_networkmap($id=0, $user_readonly=false, $nodes_and_relations=[], $
         true
     );
 
-    $table = null;
+    $table = new stdClass();
     $table->id = 'relations_table';
     $table->width = '100%';
 
@@ -2048,7 +2089,7 @@ function show_networkmap($id=0, $user_readonly=false, $nodes_and_relations=[], $
 <div id="dialog_node_add" style="display: none;" title="<?php echo __('Add node'); ?>">
     <div style="text-align: left; width: 100%;">
         <?php
-        $table = null;
+        $table = new stdClass();
         $table->width = '100%';
         $table->data = [];
 
@@ -2091,7 +2132,7 @@ function show_networkmap($id=0, $user_readonly=false, $nodes_and_relations=[], $
             false
         );
 
-        $table = null;
+        $table = new stdClass();
         $table->width = '100%';
         $table->data = [];
         $table->data[0][0] = __('Group');
@@ -2141,7 +2182,7 @@ function show_networkmap($id=0, $user_readonly=false, $nodes_and_relations=[], $
             true
         );
 
-        $table = null;
+        $table = new stdClass();
         $table->width = '100%';
         $table->data = [];
         $table->data[0][0] = __('Name');

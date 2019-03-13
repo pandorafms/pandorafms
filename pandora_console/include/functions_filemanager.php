@@ -121,13 +121,13 @@ if (!function_exists('mime_content_type')) {
 global $config;
 
 if (isset($config['homedir_filemanager'])) {
-    $homedir_filemanager = io_safe_output($config['homedir_filemanager']);
+    $homedir_filemanager = trim(io_safe_output($config['homedir_filemanager']));
 } else {
-    $homedir_filemanager = $config['homedir'];
+    $homedir_filemanager = trim($config['homedir']);
 }
 
 $sec2 = get_parameter('sec2');
-if ($sec2 == 'enterprise/godmode/agentes/collections') {
+if ($sec2 == 'enterprise/godmode/agentes/collections' || $sec2 == 'advanced/collections') {
     $homedir_filemanager .= '/attachment/collection/';
 }
 

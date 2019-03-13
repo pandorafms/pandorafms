@@ -30,7 +30,6 @@ if (!$networkmaps_read && !$networkmaps_write && !$networkmaps_manage) {
 }
 
 require_once 'include/functions_networkmap.php';
-require_once 'include/functions_pandora_networkmap.php';
 
 $new_networkmap = (bool) get_parameter('new_networkmap', false);
 $save_networkmap = (bool) get_parameter('save_networkmap', false);

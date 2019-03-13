@@ -30,9 +30,7 @@
 global $config;
 
 require_once $config['homedir'].'/include/functions_networkmap.php';
-require_once $config['homedir'].'/include/functions_pandora_networkmap.php';
-
-enterprise_include_once('include/functions_pandora_networkmap.php');
+enterprise_include_once('include/functions_networkmap.php');
 
 define('SOURCE_GROUP', 0);
 define('SOURCE_TASK', 1);
@@ -653,7 +651,6 @@ class NetworkMap
             ui_print_error_message(
                 __('Failed to generate dotmap, please select different layout schema')
             );
-            $this->graph = networkmap_process_networkmap($this->idMap);
             return;
         }
 

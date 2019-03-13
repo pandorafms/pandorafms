@@ -383,7 +383,7 @@ function messages_get_count(
     }
 
     $sql = sprintf(
-        'SELECT count(*) as "n" FROM (
+        'SELECT count(distinct id_mensaje) as "n" FROM (
             SELECT
                 tm.*,
                 utimestamp_read > 0 as "read"

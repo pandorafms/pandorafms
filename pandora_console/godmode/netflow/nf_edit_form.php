@@ -94,7 +94,7 @@ if ($id) {
     $ip_src = '';
     $dst_port = '';
     $src_port = '';
-    $aggregate = 'none';
+    $aggregate = 'dstip';
     $output = 'bytes';
     $advanced_filter = '';
 }
@@ -142,7 +142,7 @@ if ($update) {
 if ($create) {
     $name = (string) get_parameter('name');
     $assign_group = (int) get_parameter('assign_group');
-    $aggregate = get_parameter('aggregate', 'none');
+    $aggregate = get_parameter('aggregate', 'dstip');
     $output = get_parameter('output', 'bytes');
     $ip_dst = get_parameter('ip_dst', '');
     $ip_src = get_parameter('ip_src', '');
@@ -241,7 +241,6 @@ $table->data[7][1] = html_print_textarea('advanced_filter', 4, 40, $advanced_fil
 
 $table->data[8][0] = '<b>'.__('Aggregate by').'</b>'.ui_print_help_icon('aggregate_by', true);
 $aggregate_list = [
-    'none'    => __('None'),
     'proto'   => __('Protocol'),
     'srcip'   => __('Src Ip Address'),
     'dstip'   => __('Dst Ip Address'),

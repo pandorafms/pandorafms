@@ -128,3 +128,29 @@ function network_print_explorer_header(
 
     return $cell;
 }
+
+
+/**
+ * Alias for format_for_graph to print bytes.
+ *
+ * @param integer $value Value to parse like bytes.
+ *
+ * @return string Number parsed.
+ */
+function network_format_bytes($value)
+{
+    if (!isset($value)) {
+        $value = 0;
+    }
+
+    $value = (int) $value;
+
+    return format_for_graph(
+        $value,
+        2,
+        '.',
+        ',',
+        1024,
+        'B'
+    );
+}

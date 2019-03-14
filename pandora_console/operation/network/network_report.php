@@ -299,14 +299,7 @@ foreach ($data as $item) {
         $row['pkts'] .= ' ('.$item['pct_pkts'].'%)';
     }
 
-    $row['bytes'] = format_for_graph(
-        $item['sum_bytes'],
-        2,
-        '.',
-        ',',
-        1024,
-        'B'
-    );
+    $row['bytes'] = network_format_bytes($item['sum_bytes']);
     if (!$is_network) {
         $row['bytes'] .= ' ('.$item['pct_bytes'].'%)';
     }

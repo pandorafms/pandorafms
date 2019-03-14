@@ -14,6 +14,7 @@
 require_once $config['homedir'].'/include/functions_users.php';
 require_once $config['homedir'].'/include/functions_io.php';
 require_once $config['homedir'].'/include/functions_io.php';
+require_once $config['homedir'].'/include/functions_network.php';
 enterprise_include_once($config['homedir'].'/enterprise/include/pdf_translator.php');
 enterprise_include_once($config['homedir'].'/enterprise/include/functions_metaconsole.php');
 
@@ -268,14 +269,7 @@ function netflow_stat_table($data, $start_date, $end_date, $aggregate)
         }
 
         $table->data[$x][0] = $agg;
-        $table->data[$x][1] = format_for_graph(
-            $data[$j]['data'],
-            2,
-            '.',
-            ',',
-            1024,
-            'B'
-        );
+        $table->data[$x][1] = network_format_bytes($data[$j]['data']);
 
         $j++;
         $x++;
@@ -362,13 +356,8 @@ function netflow_data_table($data, $start_date, $end_date, $aggregate, $unit)
         foreach ($data['data'] as $timestamp => $values) {
             $table->data[$i][0] = date($time_format, $timestamp);
             for ($j = 0; $j < $source_count; $j++) {
-                $table->data[$i][($j + 1)] = format_for_graph(
-                    (isset($values[$source_index[$j]])) ? $values[$source_index[$j]] : 0,
-                    2,
-                    '.',
-                    ',',
-                    1024,
-                    'B'
+                $table->data[$i][($j + 1)] = network_format_bytes(
+                    $values[$source_index[$j]]
                 );
             }
 
@@ -402,32 +391,32 @@ function netflow_summary_table($data)
 
     $row = [];
     $row[] = __('Total flows');
-    $row[] = format_numeric($data['totalflows']);
+    $row[] = format_for_graph($data['totalflows'], 2);
     $table->data[] = $row;
 
     $row = [];
     $row[] = __('Total bytes');
-    $row[] = format_numeric($data['totalbytes']);
+    $row[] = network_format_bytes($data['totalbytes']);
     $table->data[] = $row;
 
     $row = [];
     $row[] = __('Total packets');
-    $row[] = format_numeric($data['totalpackets']);
+    $row[] = format_for_graph($data['totalpackets'], 2);
     $table->data[] = $row;
 
     $row = [];
     $row[] = __('Average bits per second');
-    $row[] = format_numeric($data['avgbps']);
+    $row[] = network_format_bytes($data['avgbps']);
     $table->data[] = $row;
 
     $row = [];
     $row[] = __('Average packets per second');
-    $row[] = format_numeric($data['avgpps']);
+    $row[] = format_for_graph($data['avgpps'], 2);
     $table->data[] = $row;
 
     $row = [];
     $row[] = __('Average bytes per packet');
-    $row[] = format_numeric($data['avgbpp']);
+    $row[] = format_for_graph($data['avgbpp'], 2);
     $table->data[] = $row;
 
     $html = html_print_table($table, true);
@@ -1319,7 +1308,6 @@ function netflow_draw_item($start_date, $end_date, $interval_length, $type, $fil
                     $html .= '<tr>';
                     $html .= '<td>';
                     $html .= netflow_summary_table($data_summary);
-                    $html .= '<b>'.__('Unit').':</b> '.netflow_format_unit($unit);
                     $html .= '&nbsp;<b>'.__('Aggregate').':</b> '.netflow_format_aggregate($aggregate);
                     $html .= '</td>';
                     $html .= '<td>';

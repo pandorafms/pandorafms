@@ -361,7 +361,7 @@ if (is_metaconsole()) {
         echo '<td></td>';
     } else {
         echo '<td><b>'.__('Filter').'</b></td>';
-        echo '<td>'.__('Normal').' '.html_print_radio_button_extended('filter_type', 0, '', $filter_type, false, 'displayNormalFilter();', 'style="margin-right: 40px;"', true).__('Advanced').' '.html_print_radio_button_extended('filter_type', 1, '', $filter_type, false, 'displayAdvancedFilter();', 'style="margin-right: 40px;"', true).'</td>';
+        echo '<td colspan="2">'.__('Normal').' '.html_print_radio_button_extended('filter_type', 0, '', $filter_type, false, 'displayNormalFilter();', 'style="margin-right: 40px;"', true).__('Custom').' '.html_print_radio_button_extended('filter_type', 1, '', $filter_type, false, 'displayAdvancedFilter();', 'style="margin-right: 40px;"', true).'</td>';
     }
 
 
@@ -384,7 +384,7 @@ if (is_metaconsole()) {
         echo '<td></td>';
     } else {
         echo "<td style='font-weight:bold;'>".__('Dst Ip').ui_print_help_tip(__('Destination IP. A comma separated list of destination ip. If we leave the field blank, will show all ip. Example filter by ip:<br>25.46.157.214,160.253.135.249'), true).'</td>';
-        echo '<td>'.html_print_input_text('ip_dst', $filter['ip_dst'], false, 30, 80, true).'</td>';
+        echo '<td colspan="2">'.html_print_input_text('ip_dst', $filter['ip_dst'], false, 40, 80, true).'</td>';
     }
 
     if ($netflow_disable_custom_lvfilters) {
@@ -392,7 +392,7 @@ if (is_metaconsole()) {
         echo '<td></td>';
     } else {
         echo "<td style='font-weight:bold;'>".__('Src Ip').ui_print_help_tip(__('Source IP. A comma separated list of source ip. If we leave the field blank, will show all ip. Example filter by ip:<br>25.46.157.214,160.253.135.249'), true).'</td>';
-        echo '<td>'.html_print_input_text('ip_src', $filter['ip_src'], false, 30, 80, true).'</td>';
+        echo '<td colspan="2">'.html_print_input_text('ip_src', $filter['ip_src'], false, 40, 80, true).'</td>';
     }
 
     echo '</tr>';
@@ -403,7 +403,7 @@ if (is_metaconsole()) {
         echo '<td></td>';
     } else {
         echo "<td style='font-weight:bold;'>".__('Dst Port').ui_print_help_tip(__('Destination port. A comma separated list of destination ports. If we leave the field blank, will show all ports. Example filter by ports 80 and 22:<br>80,22'), true).'</td>';
-        echo '<td>'.html_print_input_text('dst_port', $filter['dst_port'], false, 30, 80, true).'</td>';
+        echo '<td colspan="2">'.html_print_input_text('dst_port', $filter['dst_port'], false, 40, 80, true).'</td>';
     }
 
     if ($netflow_disable_custom_lvfilters) {
@@ -411,7 +411,7 @@ if (is_metaconsole()) {
         echo '<td></td>';
     } else {
         echo "<td style='font-weight:bold;'>".__('Src Port').ui_print_help_tip(__('Source port. A comma separated list of source ports. If we leave the field blank, will show all ports. Example filter by ports 80 and 22:<br>80,22'), true).'</td>';
-        echo '<td>'.html_print_input_text('src_port', $filter['src_port'], false, 30, 80, true).'</td>';
+        echo '<td colspan="2">'.html_print_input_text('src_port', $filter['src_port'], false, 40, 80, true).'</td>';
     }
 
     echo '</tr>';
@@ -447,10 +447,10 @@ if (is_metaconsole()) {
         true
     );
     echo '<td><b>'.__('IP address resolution').'</b>'.ui_print_help_tip(__('Resolve the IP addresses to get their hostnames.'), true).'</td>';
-    echo '<td>'.$radio_buttons.'</td>';
+    echo '<td colspan="2">'.$radio_buttons.'</td>';
 
     echo '<td><b>'.__('Router ip').'</b></td>';
-    echo '<td>'.html_print_input_text('router_ip', $filter['router_ip'], false, 30, 80, true).'</td>';
+    echo '<td colspan="2">'.html_print_input_text('router_ip', $filter['router_ip'], false, 40, 80, true).'</td>';
 
     echo '</tr>';
 

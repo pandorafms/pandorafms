@@ -3920,6 +3920,18 @@ div.simple_value > a > span.text p {
   font-size: 18pt;
 }
 
+span.log_zone_line {
+  font-size: 12px;
+}
+
+span.log_zone_line_error {
+  color: red;
+}
+
+span.log_zone_line_bolder {
+  font-weight: bolder;
+}
+
 /* global */
 .readonly {
   background-color: #dedede !important;

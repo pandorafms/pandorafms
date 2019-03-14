@@ -1,16 +1,32 @@
 <?php
+/**
+ * Extension to manage a list of gateways and the node address where they should
+ * point to.
+ *
+ * @category   Update Manager Ajax
+ * @package    Pandora FMS
+ * @subpackage Community
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
 
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation for version 2.
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
 global $config;
 
 check_login();
@@ -44,6 +60,7 @@ $check_update_free_package = (bool) get_parameter('check_update_free_package');
 $install_free_package = (bool) get_parameter('install_free_package');
 $search_minor = (bool) get_parameter('search_minor');
 $unzip_free_package = (bool) get_parameter('unzip_free_package');
+$delete_desired_files = (bool) get_parameter('delete_desired_files');
 
 if ($upload_file) {
     ob_clean();
@@ -589,5 +606,149 @@ if ($install_free_package) {
 
     echo json_encode($return);
 
+    return;
+}
+
+
+/*
+ * Result info:
+ * Types of status:
+ * -1 -> Not exits file.
+ * 0 -> File or directory deleted successfully.
+ * 1 -> Problem delete file or directory.
+ * 2 -> Not found file or directory.
+ * 3 -> Don`t read file deleet_files.txt.
+ * 4 -> "deleted" folder could not be created.
+ * 5 -> "deleted" folder was created.
+ * 6 -> The "delete files" could not be the "delete" folder.
+ * 7 -> The "delete files" is moved to the "delete" folder.
+ * Type:
+ * f -> File
+ * d -> Dir.
+ * route: Path.
+ */
+
+if ($delete_desired_files === true) {
+    global $config;
+
+    // Initialize result.
+    $result = [];
+
+    // Flag exist folder "deleted".
+    $exist_deleted = true;
+
+    // Route delete_files.txt.
+    $route_delete_files = $config['homedir'];
+    $route_delete_files .= '/extras/delete_files/delete_files.txt';
+
+    // Route directory deleted.
+    $route_dir_deleted = $config['homedir'];
+    $route_dir_deleted .= '/extras/delete_files/deleted/';
+
+    // Check isset directory deleted
+    // if it does not exist, try to create it.
+    if (is_dir($route_dir_deleted) === false) {
+        $res_mkdir = mkdir($route_dir_deleted, 0777, true);
+        $res = [];
+        if ($res_mkdir !== true) {
+            $exist_deleted = false;
+            $res['status'] = 4;
+        } else {
+            $res['status'] = 5;
+        }
+
+        $res['type'] = 'd';
+        $res['route'] = $url_to_delete;
+        array_push($result, $res);
+    }
+
+    // Check isset delete_files.txt.
+    if (file_exists($route_delete_files) === true && $exist_deleted === true) {
+        // Open file.
+        $file_read = fopen($route_delete_files, 'r');
+        // Check if read delete_files.txt.
+        if ($file_read !== false) {
+            while ($file_to_delete = stream_get_line($file_read, 65535, "\n")) {
+                $file_to_delete = trim($file_to_delete);
+                $url_to_delete = $config['homedir'].'/'.$file_to_delete;
+                // Check is dir or file or not exists.
+                if (is_dir($url_to_delete) === true) {
+                    $result = rmdir_recursive(
+                        $url_to_delete,
+                        $result
+                    );
+                } else if (file_exists($url_to_delete) === true) {
+                    $unlink = unlink($url_to_delete);
+                    $res = [];
+                    if ($unlink === true) {
+                        $res['status'] = 0;
+                    } else {
+                        $res['status'] = 1;
+                    }
+
+                    $res['type'] = 'f';
+                    $res['route'] = $url_to_delete;
+                    array_push($result, $res);
+                } else {
+                    $res = [];
+                    $res['status'] = 2;
+                    $res['route'] = $url_to_delete;
+                    array_push($result, $res);
+                }
+            }
+        } else {
+            $res = [];
+            $res['status'] = 3;
+            $res['route'] = $url_to_delete;
+            array_push($result, $res);
+        }
+
+        // Close file.
+        fclose($route_delete_files);
+
+        // Move delete_files.txt to dir extras/deleted/.
+        $count_scandir = count(scandir($route_dir_deleted));
+        $route_move = $route_dir_deleted.'/delete_files_'.$count_scandir.'.txt';
+        $res_rename = rename(
+            $route_delete_files,
+            $route_move
+        );
+
+        $res = [];
+        if ($res_rename !== true) {
+            $res['status'] = 6;
+        } else {
+            $res['status'] = 7;
+        }
+
+        $res['type'] = 'f';
+        $res['route'] = $route_move;
+        array_push($result, $res);
+    } else {
+        if ($exist_deleted === true) {
+            $res = [];
+            $res['status'] = -1;
+            array_push($result, $res);
+        }
+    }
+
+    // Translate diccionary neccesary.
+    $result['translate'] = [
+        'title'            => __('Delete files'),
+        'not_file'         => __('The oum has no files to remove'),
+        'not_found'        => __('Not found'),
+        'not_deleted'      => __('Not deleted'),
+        'not_read'         => __('The file delete_file.txt can not be read'),
+        'folder_deleted_f' => __('\'deleted\' folder could not be created'),
+        'folder_deleted_t' => __('\'deleted\' folder was created'),
+        'move_file_f'      => __(
+            'The "delete files" could not be the "delete" folder'
+        ),
+        'move_file_d'      => __(
+            'The "delete files" is moved to the "delete" folder'
+        ),
+    ];
+
+    echo json_encode($result);
     return;
 }

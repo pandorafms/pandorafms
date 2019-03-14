@@ -236,11 +236,10 @@ function sort_netflow_data(&$netflow_data)
  * @param string start_date Start date.
  * @param string end_date End date.
  * @param string aggregate Aggregate field.
- * @param string unit Unit to show.
  *
  * @return The statistics table.
  */
-function netflow_stat_table($data, $start_date, $end_date, $aggregate, $unit)
+function netflow_stat_table($data, $start_date, $end_date, $aggregate)
 {
     global $nfdump_date_format;
 
@@ -256,7 +255,7 @@ function netflow_stat_table($data, $start_date, $end_date, $aggregate, $unit)
 
     $table->head = [];
     $table->head[0] = '<b>'.netflow_format_aggregate($aggregate).'</b>';
-    $table->head[1] = '<b>'.netflow_format_unit($unit).'</b>';
+    $table->head[1] = '<b>'.__('Value').'</b>';
     $table->style[0] = 'padding: 6px;';
     $table->style[1] = 'padding: 6px;';
 
@@ -264,13 +263,19 @@ function netflow_stat_table($data, $start_date, $end_date, $aggregate, $unit)
         $agg = $data[$j]['agg'];
         if (!isset($values[$agg])) {
             $values[$agg] = $data[$j]['data'];
-            $table->data[$x][0] = $agg;
-            $table->data[$x][1] = format_numeric($data[$j]['data']).'&nbsp;'.netflow_format_unit($unit);
         } else {
             $values[$agg] += $data[$j]['data'];
-            $table->data[$x][0] = $agg;
-            $table->data[$x][1] = format_numeric($data[$j]['data']).'&nbsp;'.netflow_format_unit($unit);
         }
+
+        $table->data[$x][0] = $agg;
+        $table->data[$x][1] = format_for_graph(
+            $data[$j]['data'],
+            2,
+            '.',
+            ',',
+            1024,
+            'B'
+        );
 
         $j++;
         $x++;
@@ -1214,7 +1219,7 @@ function netflow_draw_item($start_date, $end_date, $interval_length, $type, $fil
                 $filter,
                 $aggregate,
                 $max_aggregates,
-                $unit,
+                true,
                 $connection_name,
                 $address_resolution
             );
@@ -1223,7 +1228,7 @@ function netflow_draw_item($start_date, $end_date, $interval_length, $type, $fil
             }
 
             if ($output == 'HTML' || $output == 'PDF') {
-                $html = netflow_stat_table($data, $start_date, $end_date, $aggregate, $unit);
+                $html = netflow_stat_table($data, $start_date, $end_date, $aggregate);
                 return $html;
             } else if ($output == 'XML') {
                 return netflow_stat_xml($data);

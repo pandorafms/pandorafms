@@ -26,14 +26,15 @@
  * ============================================================================
  */
 
-define('CLOUDWIZARD_AWS_DESCRIPTION', 'Discovery.Cloud.AWS.EC2');
+// Begin.
 
-/**
- * Global Wizard generic class. Needs to be inherited.
- *
- * Used in Hostdevices class, Applications class and others, is the core of
- * Discovery proyect.
- */
+
+ /**
+  * Global Wizard generic class. Needs to be inherited.
+  *
+  * Used in Hostdevices class, Applications class and others, is the core of
+  * Discovery proyect.
+  */
 class Wizard
 {
 

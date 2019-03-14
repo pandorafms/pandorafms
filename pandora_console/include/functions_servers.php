@@ -1041,6 +1041,9 @@ function servers_get_server_string_name(int $server)
         case SERVER_TYPE_WUX:
         return __('WUX server');
 
+        case SERVER_TYPE_ENTERPRISE_SATELLITE:
+        return __('Satellite');
+
         default:
         return __('N/A');
     }

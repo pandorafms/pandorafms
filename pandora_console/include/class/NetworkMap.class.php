@@ -32,10 +32,6 @@ global $config;
 require_once $config['homedir'].'/include/functions_networkmap.php';
 enterprise_include_once('include/functions_networkmap.php');
 
-define('SOURCE_GROUP', 0);
-define('SOURCE_TASK', 1);
-define('SOURCE_NETWORK', 2);
-
 /**
  * Manage networkmaps in Pandora FMS
  */
@@ -217,7 +213,7 @@ class NetworkMap
                 $this->loadMap();
 
                 if (empty($this->nodes)
-                    || empty($this->relations)
+                    && empty($this->relations)
                 ) {
                     $this->createMap();
                 }
@@ -423,7 +419,7 @@ class NetworkMap
         $relations = $this->relations;
 
         // Generate if there's no data in DB about nodes or relations.
-        if (empty($nodes) || empty($relations)) {
+        if (empty($nodes) && empty($relations)) {
             $this->generateNetworkMap();
             return;
         }

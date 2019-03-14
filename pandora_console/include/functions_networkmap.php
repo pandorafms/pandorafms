@@ -305,6 +305,16 @@ function networkmap_generate_dot(
         $filter[] = '(nombre COLLATE utf8_general_ci LIKE "%'.$text_filter.'%")';
     }
 
+    /*
+     * Select data origin.
+     *   group
+     *   discovery task
+     *      - Cloud
+     *      - Application
+     *      - Standar or custom
+     *   network/mask
+     */
+
     if ($group >= 0 && empty($ip_mask)) {
         if ($dont_show_subgroups) {
             $filter['id_grupo'] = $group;

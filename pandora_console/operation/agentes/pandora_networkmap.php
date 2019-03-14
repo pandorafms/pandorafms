@@ -732,6 +732,8 @@ switch ($tab) {
                     if (($count == 0) && ($network_map['source'] != 'empty')) {
                         if ($network_map['generated']) {
                             $data['nodes'] = __('Empty map');
+                        } else if ($network_map['generation_method'] == LAYOUT_RADIAL_DYNAMIC) {
+                            $data['nodes'] = __('Dynamic');
                         } else {
                             $data['nodes'] = __('Pending to generate');
                         }

@@ -449,7 +449,7 @@ if (is_metaconsole()) {
     echo '<td><b>'.__('IP address resolution').'</b>'.ui_print_help_tip(__('Resolve the IP addresses to get their hostnames.'), true).'</td>';
     echo '<td colspan="2">'.$radio_buttons.'</td>';
 
-    echo '<td><b>'.__('Router ip').'</b></td>';
+    echo '<td><b>'.__('Source ip').'</b></td>';
     echo '<td colspan="2">'.html_print_input_text('router_ip', $filter['router_ip'], false, 40, 80, true).'</td>';
 
     echo '</tr>';

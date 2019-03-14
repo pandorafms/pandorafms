@@ -1131,7 +1131,15 @@ function netflow_draw_item($start_date, $end_date, $interval_length, $type, $fil
                     $html .= '&nbsp;<b>'._('Resolution').':</b> '.netflow_get_resolution_name($interval_length);
                 }
 
-                $html .= graph_netflow_aggregate_area($data, $interval, $width, $height, 1, false, $end_date);
+                $html .= graph_netflow_aggregate_area(
+                    $data,
+                    $interval,
+                    $width,
+                    $height,
+                    ($output === 'HTML') ? 1 : 2,
+                    ($output === 'HTML'),
+                    $end_date
+                );
                 return $html;
             } else if ($output == 'XML') {
                 $xml .= "<aggregate>$aggregate</aggregate>\n";

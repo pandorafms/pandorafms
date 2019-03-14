@@ -4166,6 +4166,8 @@ function graph_netflow_aggregate_area($data, $period, $width, $height, $ttl=1, $
         'array_data_create' => $chart,
         'stacked'           => 1,
         'date'              => $date,
+        'show_export_csv'   => false,
+        'show_overview'     => false,
     ];
 
     return grafico_modulo_sparse($params);

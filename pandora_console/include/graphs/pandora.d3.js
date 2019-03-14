@@ -20,7 +20,7 @@
 // matrix = [[0, 0, 2],     // a[a => a, a => b, a => c]
 //           [5, 0, 1],     // b[b => a, b => b, b => c]
 //           [2, 3, 0]];    // c[c => a, c => b, c => c]
-function chordDiagram(recipient, elements, matrix, unit, width) {
+function chordDiagram(recipient, elements, matrix, width) {
   d3.chart = d3.chart || {};
   d3.chart.chordWheel = function(options) {
     // Default values
@@ -206,18 +206,14 @@ function chordDiagram(recipient, elements, matrix, unit, width) {
                     " → " +
                     elements[d.target.index] +
                     ": <b>" +
-                    d.source.value.toFixed(2) +
-                    " " +
-                    unit +
+                    valueToBytes(d.source.value) +
                     "</b>" +
                     "<br>" +
                     elements[d.target.index] +
                     " → " +
                     elements[d.source.index] +
                     ": <b>" +
-                    d.target.value.toFixed(2) +
-                    " " +
-                    unit +
+                    valueToBytes(d.target.value) +
                     "</b>"
                 )
             );
@@ -227,18 +223,14 @@ function chordDiagram(recipient, elements, matrix, unit, width) {
                 " → " +
                 elements[d.target.index] +
                 ": <b>" +
-                d.source.value.toFixed(2) +
-                " " +
-                unit +
+                valueToBytes(d.source.value) +
                 "</b>" +
                 "<br>" +
                 elements[d.target.index] +
                 " → " +
                 elements[d.source.index] +
                 ": <b>" +
-                d.target.value.toFixed(2) +
-                " " +
-                unit +
+                valueToBytes(d.target.value) +
                 "</b>"
             );
           }
@@ -2743,4 +2735,18 @@ function printClockDigital1(
 
     setTimeout(tick, 1000 - (now % 1000));
   })();
+}
+
+function valueToBytes(value) {
+  var shorts = ["", "K", "M", "G", "T", "P", "E", "Z", "Y"];
+  var pos = 0;
+  while (value >= 1024) {
+    // As long as the number can be divided by divider.
+    pos++;
+    // Position in array starting with 0.
+    value = value / 1024;
+  }
+
+  // This will actually do the rounding and the decimals.
+  return value.toFixed(2) + shorts[pos] + "B";
 }

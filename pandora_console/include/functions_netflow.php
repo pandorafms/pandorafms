@@ -809,11 +809,10 @@ function netflow_get_summary($start_date, $end_date, $filter, $connection_name='
  * @param string end_date Period end date.
  * @param string filter Netflow filter.
  * @param int max Maximum number of elements.
- * @param string unit to show.
  *
  * @return An array with netflow stats.
  */
-function netflow_get_record($start_date, $end_date, $filter, $max, $unit, $address_resolution=false)
+function netflow_get_record($start_date, $end_date, $filter, $max, $address_resolution=false)
 {
     global $nfdump_date_format;
     global $config;
@@ -852,32 +851,7 @@ function netflow_get_record($start_date, $end_date, $filter, $max, $unit, $addre
         $data['source_port'] = $items[5];
         $data['destination_port'] = $items[6];
         $data['protocol'] = $items[7];
-
-        switch ($unit) {
-            case 'megabytes':
-                $data['data'] = ($items[12] / 1048576);
-            break;
-
-            case 'megabytespersecond':
-                $data['data'] = ($items[12] / 1048576 / $data['duration']);
-            break;
-
-            case 'kilobytes':
-                $data['data'] = ($items[12] / 1024);
-            break;
-
-            case 'kilobytespersecond':
-                $data['data'] = ($items[12] / 1024 / $data['duration']);
-            break;
-
-            default:
-            case 'bytes':
-                $data['data'] = $items[12];
-            break;
-            case 'bytespersecond':
-                $data['data'] = ($items[12] / $data['duration']);
-            break;
-        }
+        $data['data'] = $items[12];
 
         $values[] = $data;
     }
@@ -1329,7 +1303,7 @@ function netflow_draw_item($start_date, $end_date, $interval_length, $type, $fil
         break;
 
         case 'netflow_mesh':
-            $netflow_data = netflow_get_record($start_date, $end_date, $filter, $max_aggregates, $unit, $address_resolution);
+            $netflow_data = netflow_get_record($start_date, $end_date, $filter, $max_aggregates, $address_resolution);
 
             switch ($aggregate) {
                 case 'srcport':
@@ -1374,14 +1348,14 @@ function netflow_draw_item($start_date, $end_date, $interval_length, $type, $fil
             }
 
             $html = '<div style="text-align:center;">';
-            $html .= graph_netflow_circular_mesh($data, netflow_format_unit($unit), 700);
+            $html .= graph_netflow_circular_mesh($data, 700);
             $html .= '</div>';
 
         return $html;
 
             break;
         case 'netflow_host_treemap':
-            $netflow_data = netflow_get_record($start_date, $end_date, $filter, $max_aggregates, $unit, $address_resolution);
+            $netflow_data = netflow_get_record($start_date, $end_date, $filter, $max_aggregates, $address_resolution);
 
             switch ($aggregate) {
                 case 'srcip':
@@ -1434,7 +1408,7 @@ function netflow_draw_item($start_date, $end_date, $interval_length, $type, $fil
                         $children_data['id'] = $id++;
                         $children_data['name'] = $port;
                         $children_data['value'] = $value;
-                        $children_data['tooltip_content'] = "$port: <b>".format_numeric($value).' '.netflow_format_unit($unit).'</b>';
+                        $children_data['tooltip_content'] = $port.': <b>'.network_format_bytes($value).'</b>';
                         $children['children'][] = $children_data;
                     }
 

@@ -4289,7 +4289,7 @@ function graph_netflow_aggregate_pie($data, $aggregate, $ttl=1, $only_image=fals
 /**
  * Print a circular graph with the data transmitted between IPs
  */
-function graph_netflow_circular_mesh($data, $unit, $radius=700)
+function graph_netflow_circular_mesh($data, $radius=700)
 {
     global $config;
 
@@ -4299,7 +4299,7 @@ function graph_netflow_circular_mesh($data, $unit, $radius=700)
 
     include_once $config['homedir'].'/include/graphs/functions_d3.php';
 
-    return d3_relationship_graph($data['elements'], $data['matrix'], $unit, $radius, true);
+    return d3_relationship_graph($data['elements'], $data['matrix'], $radius, true);
 }
 
 

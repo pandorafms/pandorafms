@@ -4109,7 +4109,7 @@ function fullscale_data(
 /**
  * Print an area graph with netflow aggregated
  */
-function graph_netflow_aggregate_area($data, $period, $width, $height, $unit='', $ttl=1, $only_image=false, $date=null)
+function graph_netflow_aggregate_area($data, $period, $width, $height, $ttl=1, $only_image=false, $date=null)
 {
     global $config;
     global $graphic_type;
@@ -4155,7 +4155,7 @@ function graph_netflow_aggregate_area($data, $period, $width, $height, $unit='',
         'period'            => $period,
         'width'             => '90%',
         'height'            => 450,
-        'unit'              => $unit,
+        'unit'              => 'bytes',
         'only_image'        => $only_image,
         'homeurl'           => $homeurl,
         'menu'              => true,
@@ -4306,7 +4306,7 @@ function graph_netflow_circular_mesh($data, $radius=700)
 /**
  * Print a rectangular graph with the traffic of the ports for each IP
  */
-function graph_netflow_host_traffic($data, $unit, $width=700, $height=700)
+function graph_netflow_host_traffic($data, $width=700, $height=700)
 {
     global $config;
 

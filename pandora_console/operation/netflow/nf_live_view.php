@@ -80,7 +80,6 @@ $filter_id = (int) get_parameter('filter_id', 0);
 $filter['id_name'] = get_parameter('name', '');
 $filter['id_group'] = (int) get_parameter('assign_group', 0);
 $filter['aggregate'] = get_parameter('aggregate', '');
-$filter['output'] = get_parameter('output', 'bytes');
 $filter['ip_dst'] = get_parameter('ip_dst', '');
 $filter['ip_src'] = get_parameter('ip_src', '');
 $filter['dst_port'] = get_parameter('dst_port', '');
@@ -453,17 +452,6 @@ if (is_metaconsole()) {
     echo '<td><b>'.__('Router ip').'</b></td>';
     echo '<td>'.html_print_input_text('router_ip', $filter['router_ip'], false, 30, 80, true).'</td>';
 
-    echo '<td><b>'.__('Output format').'</b></td>';
-    $show_output = [
-        'bytes'              => __('Bytes'),
-        'bytespersecond'     => __('Bytes per second'),
-        'kilobytes'          => __('Kilobytes'),
-        'megabytes'          => __('Megabytes'),
-        'kilobytespersecond' => __('Kilobytes per second'),
-        'megabytespersecond' => __('Megabytes per second'),
-    ];
-    echo '<td>'.html_print_select($show_output, 'output', $filter['output'], '', '', 0, true, false, true, '', false).'</td>';
-
     echo '</tr>';
 
     echo '</table>';
@@ -625,7 +613,6 @@ if (is_metaconsole()) {
             $("#text-router_ip").val('');
             $("#textarea_advanced_filter").val('');
             $("#aggregate").val('');
-            $("#output").val('');
             
             // Hide update filter button
             $("#submit-update_button").hide();
@@ -694,8 +681,6 @@ if (is_metaconsole()) {
                             $("#textarea_advanced_filter").val(val);
                         if (i == 'aggregate')
                             $("#aggregate").val(val);
-                        if (i == 'output')
-                            $("#output").val(val);
                     });
                 },
                 "json");

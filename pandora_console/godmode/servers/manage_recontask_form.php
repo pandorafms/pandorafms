@@ -1,17 +1,32 @@
 <?php
+/**
+ * Extension to manage a list of gateways and the node address where they should
+ * point to.
+ *
+ * @category   Extensions
+ * @package    Pandora FMS
+ * @subpackage Community
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
 
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation for version 2.
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-// Load global vars
 global $config;
 
 check_login();
@@ -36,7 +51,12 @@ if (is_ajax()) {
     if ($get_explanation) {
         $id = (int) get_parameter('id', 0);
 
-        $explanation = db_get_value('description', 'trecon_script', 'id_recon_script', $id);
+        $explanation = db_get_value(
+            'description',
+            'trecon_script',
+            'id_recon_script',
+            $id
+        );
 
         echo io_safe_output($explanation);
 
@@ -49,17 +69,42 @@ if (is_ajax()) {
         $id_recon_task = (int) get_parameter('id_rt');
 
         if (!empty($id_recon_task) && empty($id_recon_script)) {
-            $recon_script_macros = db_get_value('macros', 'trecon_task', 'id_rt', $id_recon_task);
+            $recon_script_macros = db_get_value(
+                'macros',
+                'trecon_task',
+                'id_rt',
+                $id_recon_task
+            );
         } else if (!empty($id_recon_task)) {
-            $recon_task_id_rs = (int) db_get_value('id_recon_script', 'trecon_task', 'id_rt', $id_recon_task);
+            $recon_task_id_rs = (int) db_get_value(
+                'id_recon_script',
+                'trecon_task',
+                'id_rt',
+                $id_recon_task
+            );
 
             if ($id_recon_script == $recon_task_id_rs) {
-                $recon_script_macros = db_get_value('macros', 'trecon_task', 'id_rt', $id_recon_task);
+                $recon_script_macros = db_get_value(
+                    'macros',
+                    'trecon_task',
+                    'id_rt',
+                    $id_recon_task
+                );
             } else {
-                $recon_script_macros = db_get_value('macros', 'trecon_script', 'id_recon_script', $id_recon_script);
+                $recon_script_macros = db_get_value(
+                    'macros',
+                    'trecon_script',
+                    'id_recon_script',
+                    $id_recon_script
+                );
             }
         } else if (!empty($id_recon_script)) {
-            $recon_script_macros = db_get_value('macros', 'trecon_script', 'id_recon_script', $id_recon_script);
+            $recon_script_macros = db_get_value(
+                'macros',
+                'trecon_script',
+                'id_recon_script',
+                $id_recon_script
+            );
         } else {
             $recon_script_macros = [];
         }
@@ -75,7 +120,7 @@ if (is_ajax()) {
     return;
 }
 
-// Edit mode
+// Edit mode.
 if (isset($_GET['update']) || (isset($_GET['upd']))) {
     $update_recon = true;
     if (isset($_GET['upd'])) {
@@ -174,9 +219,7 @@ if (isset($_GET['update']) || (isset($_GET['upd']))) {
         $snmp3_security_level = '';
         $id_network_profile = 0;
         $id_os = -1;
-        // Any
         $recon_ports = '';
-        // Any
         $field1 = '';
         $field2 = '';
         $field3 = '';
@@ -200,7 +243,7 @@ if (isset($_GET['update']) || (isset($_GET['upd']))) {
 }
 
 if (!$modify) {
-    // Headers
+    // Headers.
     ui_print_page_header(__('Manage recontask'), '', false, 'recontask', true);
 }
 
@@ -244,11 +287,11 @@ $table->rowclass[14] = 'recon_script';
 $table->rowclass[15] = 'recon_script';
 $table->rowclass[16] = 'recon_script';
 $table->rowclass[17] = 'recon_script';
-// Name
+// Name.
 $table->data[0][0] = '<b>'.__('Task name').'</b>';
 $table->data[0][1] = html_print_input_text('name', $name, '', 25, 0, true);
 
-// Discovery server
+// Discovery server.
 $table->data[1][0] = '<b>'.__('Discovery server').ui_print_help_tip(
     __('You must select a Discovery Server to run the Task, otherwise the Recon Task will never run'),
     true
@@ -258,7 +301,15 @@ $sql = 'SELECT id_server, name
 		FROM tserver
 		WHERE server_type = 3
 		ORDER BY name';
-$table->data[1][1] = html_print_select_from_sql($sql, 'id_recon_server', $id_recon_server, '', '', '', true);
+$table->data[1][1] = html_print_select_from_sql(
+    $sql,
+    'id_recon_server',
+    $id_recon_server,
+    '',
+    '',
+    '',
+    true
+);
 
 $fields['network_sweep'] = __('Network sweep');
 if (!$is_windows) {
@@ -267,44 +318,94 @@ if (!$is_windows) {
 
 
 $table->data[2][0] = '<b>'.__('Mode').'</b>';
-$table->data[2][1] = html_print_select($fields, 'mode', $mode, '', '', 0, true);
+$table->data[2][1] = html_print_select(
+    $fields,
+    'mode',
+    $mode,
+    '',
+    '',
+    0,
+    true
+);
 
 
-// Network
+// Network.
 $table->data[3][0] = '<b>'.__('Network').'</b>';
-$table->data[3][0] .= ui_print_help_tip(__('You can specify several networks, separated by commas, for example: 192.168.50.0/24,192.168.60.0/24'), true);
-$table->data[3][1] = html_print_input_text('network', $network, '', 25, 0, true);
+$table->data[3][0] .= ui_print_help_tip(
+    __('You can specify several networks, separated by commas, for example: 192.168.50.0/24,192.168.60.0/24'),
+    true
+);
+$table->data[3][1] = html_print_input_text(
+    'network',
+    $network,
+    '',
+    25,
+    0,
+    true
+);
 
-// Interval
+// Interval.
 $interv_manual = 0;
 if ((int) $interval == 0) {
     $interv_manual = 1;
 }
 
 $table->data[4][0] = '<b>'.__('Interval');
-$table->data[4][0] .= ui_print_help_tip(__('Manual interval means that it will be executed only On-demand'), true);
+$table->data[4][0] .= ui_print_help_tip(
+    __('Manual interval means that it will be executed only On-demand'),
+    true
+);
 
 $values = [
     0 => __('Defined'),
     1 => __('Manual'),
 ];
-$table->data[4][1] = html_print_select($values, 'interval_manual_defined', $interv_manual, '', '', '', true);
+$table->data[4][1] = html_print_select(
+    $values,
+    'interval_manual_defined',
+    $interv_manual,
+    '',
+    '',
+    '',
+    true
+);
 
 $table->data[4][1] .= '<span id="interval_manual_container">';
-$table->data[4][1] .= html_print_extended_select_for_time('interval', $interval, '', '', '0', false, true, false, false);
-$table->data[4][1] .= ui_print_help_tip(__('The minimum recomended interval for Recon Task is 5 minutes'), true);
+$table->data[4][1] .= html_print_extended_select_for_time(
+    'interval',
+    $interval,
+    '',
+    '',
+    '0',
+    false,
+    true,
+    false,
+    false
+);
+$table->data[4][1] .= ui_print_help_tip(
+    __('The minimum recomended interval for Recon Task is 5 minutes'),
+    true
+);
 $table->data[4][1] .= '</span>';
 
 
-// Module template
+// Module template.
 $table->data[5][0] = '<b>'.__('Module template').'</b>';
 
 $sql = 'SELECT id_np, name
 		FROM tnetwork_profile
 		ORDER BY name';
-$table->data[5][1] = html_print_select_from_sql($sql, 'id_network_profile', $id_network_profile, '', __('None'), 0, true);
+$table->data[5][1] = html_print_select_from_sql(
+    $sql,
+    'id_network_profile',
+    $id_network_profile,
+    '',
+    __('None'),
+    0,
+    true
+);
 
-// Recon script
+// Recon script.
 $data[1] = '';
 $table->data[6][0] = '<b>'.__('Recon script').'</b>';
 
@@ -314,35 +415,72 @@ $sql = "SELECT id_recon_script, name
 		WHERE name <> 'IPAM Recon'
 		ORDER BY name";
 if ($name_script != 'IPAM Recon') {
-    $table->data[6][1] = html_print_select_from_sql($sql, 'id_recon_script', $id_recon_script, '', '', '', true);
+    $table->data[6][1] = html_print_select_from_sql(
+        $sql,
+        'id_recon_script',
+        $id_recon_script,
+        '',
+        '',
+        '',
+        true
+    );
     $table->data[6][1] .= "<span id='spinner_recon_script' style='display: none;'>".html_print_image('images/spinner.gif', true).'</span>';
-    $table->data[6][1] .= $data[1] .= html_print_input_hidden('macros', base64_encode($macros), true);
+    $table->data[6][1] .= $data[1] .= html_print_input_hidden(
+        'macros',
+        base64_encode($macros),
+        true
+    );
 } else {
     $table->data[6][1] = 'IPAM Recon';
 }
 
-// OS
+// OS.
 $table->data[7][0] = '<b>'.__('OS').'</b>';
 
 $sql = 'SELECT id_os, name
 		FROM tconfig_os
 		ORDER BY name';
-$table->data[7][1] = html_print_select_from_sql($sql, 'id_os', $id_os, '', __('Any'), -1, true);
+$table->data[7][1] = html_print_select_from_sql(
+    $sql,
+    'id_os',
+    $id_os,
+    '',
+    __('Any'),
+    -1,
+    true
+);
 
-// Recon ports
+// Recon ports.
 $table->data[8][0] = '<b>'.__('Ports').'</b>';
-$table->data[8][1] = html_print_input_text('recon_ports', $recon_ports, '', 25, 0, true);
+$table->data[8][1] = html_print_input_text(
+    'recon_ports',
+    $recon_ports,
+    '',
+    25,
+    0,
+    true
+);
 $table->data[8][1] .= ui_print_help_tip(
     __('Ports defined like: 80 or 80,443,512 or even 0-1024 (Like Nmap command line format). If dont want to do a sweep using portscan, left it in blank'),
     true
 );
 
-// Group
+// Group.
 $table->data[9][0] = '<b>'.__('Group');
 $groups = users_get_groups(false, 'PM', false);
-$table->data[9][1] = html_print_select_groups(false, 'PM', false, 'id_group', $id_group, '', '', 0, true);
+$table->data[9][1] = html_print_select_groups(
+    false,
+    'PM',
+    false,
+    'id_group',
+    $id_group,
+    '',
+    '',
+    0,
+    true
+);
 
-// Incident
+// Incident.
 $values = [
     0 => __('No'),
     1 => __('Yes'),
@@ -356,24 +494,50 @@ $table->data[10][1] = html_print_select(
     '',
     '',
     true
-).' '.ui_print_help_tip(__('Choose if the discovery of a new system creates an incident or not.'), true);
+).' '.ui_print_help_tip(
+    __('Choose if the discovery of a new system creates an incident or not.'),
+    true
+);
 
-// snmp_enabled
+// Snmp_enabled.
 $table->data[11][0] = '<b>'.__('SNMP enabled');
-$table->data[11][1] = html_print_checkbox('snmp_enabled', 1, $snmp_enabled, true);
+$table->data[11][1] = html_print_checkbox(
+    'snmp_enabled',
+    1,
+    $snmp_enabled,
+    true
+);
 
-// SNMP default community
+// SNMP default community.
 $table->data[12][0] = '<b>'.__('SNMP Default community');
-$table->data[12][0] .= ui_print_help_tip(__('You can specify several values, separated by commas, for example: public,mysecret,1234'), true);
-$table->data[12][1] = html_print_input_text('snmp_community', $snmp_community, '', 35, 0, true);
+$table->data[12][0] .= ui_print_help_tip(
+    __('You can specify several values, separated by commas, for example: public,mysecret,1234'),
+    true
+);
+$table->data[12][1] = html_print_input_text(
+    'snmp_community',
+    $snmp_community,
+    '',
+    35,
+    0,
+    true
+);
 
-// SNMP version
+// SNMP version.
 $snmp_versions['1'] = 'v. 1';
 $snmp_versions['2'] = 'v. 2';
 $snmp_versions['2c'] = 'v. 2c';
 $snmp_versions['3'] = 'v. 3';
 $table->data[24][0] = '<b>'._('SNMP version');
-$table->data[24][1] = html_print_select($snmp_versions, 'snmp_version', $snmp_version, '', '', 0, true);
+$table->data[24][1] = html_print_select(
+    $snmp_versions,
+    'snmp_version',
+    $snmp_version,
+    '',
+    '',
+    0,
+    true
+);
 
 $table->data[25][0] = '<b>'.__('Auth user');
 $table->data[25][1] = html_print_input_text(
@@ -400,10 +564,30 @@ $table->data[26][1] = html_print_input_password(
     false,
     ''
 );
-$table->data[26][1] .= html_print_input_hidden_extended('active_snmp_v3', 0, 'active_snmp_v3_mmen', true);
+$table->data[26][1] .= html_print_input_hidden_extended(
+    'active_snmp_v3',
+    0,
+    'active_snmp_v3_mmen',
+    true
+);
 
 $table->data[27][0] = '<b>'.__('Privacy method');
-$table->data[27][1] = html_print_select(['DES' => __('DES'), 'AES' => __('AES')], 'snmp_privacy_method', $snmp3_privacy_method, '', '', '', true, false, false, '', '');
+$table->data[27][1] = html_print_select(
+    [
+        'DES' => __('DES'),
+        'AES' => __('AES'),
+    ],
+    'snmp_privacy_method',
+    $snmp3_privacy_method,
+    '',
+    '',
+    '',
+    true,
+    false,
+    false,
+    '',
+    ''
+);
 $table->data[28][0] = '<b>'.__('Privacy pass').ui_print_help_tip(__('The pass length must be eight character minimum.'), true);
 $table->data[28][1] = html_print_input_password(
     'snmp_privacy_pass',
@@ -417,7 +601,22 @@ $table->data[28][1] = html_print_input_password(
     ''
 );
 $table->data[29][0] = '<b>'.__('Auth method');
-$table->data[29][1] = html_print_select(['MD5' => __('MD5'), 'SHA' => __('SHA')], 'snmp_auth_method', $snmp3_auth_method, '', '', '', true, false, false, '', '');
+$table->data[29][1] = html_print_select(
+    [
+        'MD5' => __('MD5'),
+        'SHA' => __('SHA'),
+    ],
+    'snmp_auth_method',
+    $snmp3_auth_method,
+    '',
+    '',
+    '',
+    true,
+    false,
+    false,
+    '',
+    ''
+);
 $table->data[30][0] = '<b>'.__('Security level');
 $table->data[30][1] = html_print_select(
     [
@@ -437,75 +636,139 @@ $table->data[30][1] = html_print_select(
     ''
 );
 
-// Explanation
-$explanation = db_get_value('description', 'trecon_script', 'id_recon_script', $id_recon_script);
+// Explanation.
+$explanation = db_get_value(
+    'description',
+    'trecon_script',
+    'id_recon_script',
+    $id_recon_script
+);
 
 $table->data[13][0] = '<b>'.__('Explanation').'</b>';
 $table->data[13][1] = "<span id='spinner_layout' style='display: none;'>".html_print_image('images/spinner.gif', true).'</span>'.html_print_textarea('explanation', 4, 60, $explanation, 'style="width: 388px;"', true);
 
-// A hidden "model row" to clone it from javascript to add fields dynamicaly
+// A hidden "model row" to clone it from javascript to add fields dynamicaly.
 $data = [];
 $data[0] = 'macro_desc';
 $data[0] .= ui_print_help_tip('macro_help', true);
-$data[1] = html_print_input_text('macro_name', 'macro_value', '', 100, 255, true);
+$data[1] = html_print_input_text(
+    'macro_name',
+    'macro_value',
+    '',
+    100,
+    255,
+    true
+);
 $table->colspan['macro_field'][1] = 3;
 $table->rowstyle['macro_field'] = 'display:none';
 $table->data['macro_field'] = $data;
 
-// If there are $macros, we create the form fields
+// If there are $macros, we create the form fields.
 if (!empty($macros)) {
     $macros = json_decode($macros, true);
 
-    foreach ($macros as $k => $m) {
-        $data = [];
-        $data[0] = '<b>'.$m['desc'].'</b>';
-        if (!empty($m['help'])) {
-            $data[0] .= ui_print_help_tip($m['help'], true);
+    if (isset($macros) === true
+        && is_array($macros) === true
+    ) {
+        foreach ($macros as $k => $m) {
+            $data = [];
+            $data[0] = '<b>'.$m['desc'].'</b>';
+            if (!empty($m['help'])) {
+                $data[0] .= ui_print_help_tip($m['help'], true);
+            }
+
+            if ($m['hide']) {
+                $data[1] = html_print_input_password(
+                    $m['macro'],
+                    $m['value'],
+                    '',
+                    100,
+                    255,
+                    true
+                );
+            } else {
+                $data[1] = html_print_input_text(
+                    $m['macro'],
+                    $m['value'],
+                    '',
+                    100,
+                    255,
+                    true
+                );
+            }
+
+            $table->colspan['macro'.$m['macro']][1] = 3;
+            $table->rowclass['macro'.$m['macro']] = 'macro_field';
+
+            $table->data['macro'.$m['macro']] = $data;
         }
-
-        if ($m['hide']) {
-            $data[1] = html_print_input_password($m['macro'], $m['value'], '', 100, 255, true);
-        } else {
-            $data[1] = html_print_input_text($m['macro'], $m['value'], '', 100, 255, true);
-        }
-
-        $table->colspan['macro'.$m['macro']][1] = 3;
-        $table->rowclass['macro'.$m['macro']] = 'macro_field';
-
-        $table->data['macro'.$m['macro']] = $data;
     }
 }
 
-// Comments
+// Comments.
 $table->data[18][0] = '<b>'.__('Comments');
-$table->data[18][1] = html_print_input_text('description', $description, '', 45, 0, true);
+$table->data[18][1] = html_print_input_text(
+    'description',
+    $description,
+    '',
+    45,
+    0,
+    true
+);
 
-// OS detection
+// OS detection.
 $table->data[19][0] = '<b>'.__('OS detection');
-$table->data[19][1] = html_print_checkbox('os_detect', 1, $os_detect, true);
+$table->data[19][1] = html_print_checkbox(
+    'os_detect',
+    1,
+    $os_detect,
+    true
+);
 
-// Name resolution
+// Name resolution.
 $table->data[20][0] = '<b>'.__('Name resolution');
-$table->data[20][1] = html_print_checkbox('resolve_names', 1, $resolve_names, true);
+$table->data[20][1] = html_print_checkbox(
+    'resolve_names',
+    1,
+    $resolve_names,
+    true
+);
 
-// Parent detection
+// Parent detection.
 $table->data[21][0] = '<b>'.__('Parent detection');
-$table->data[21][1] = html_print_checkbox('parent_detection', 1, $parent_detection, true);
+$table->data[21][1] = html_print_checkbox(
+    'parent_detection',
+    1,
+    $parent_detection,
+    true
+);
 
-// Parent recursion
+// Parent recursion.
 $table->data[22][0] = '<b>'.__('Parent recursion');
-$table->data[22][1] = html_print_input_text('parent_recursion', $parent_recursion, '', 5, 0, true).ui_print_help_tip(__('Maximum number of parent hosts that will be created if parent detection is enabled.'), true);
+$table->data[22][1] = html_print_input_text(
+    'parent_recursion',
+    $parent_recursion,
+    '',
+    5,
+    0,
+    true
+).ui_print_help_tip(
+    __('Maximum number of parent hosts that will be created if parent detection is enabled.'),
+    true
+);
 
-// vlan_enabled
+// Vlan_enabled.
 $table->data[23][0] = '<b>'.__('Vlan enabled');
-$table->data[23][1] = html_print_checkbox('vlan_enabled', 1, $vlan_enabled, true);
+$table->data[23][1] = html_print_checkbox(
+    'vlan_enabled',
+    1,
+    $vlan_enabled,
+    true
+);
 
-// Alias as name
 // NOTE: The 7.0NG Recon Server will not generate random names, since IP
 // address collisions could have other consequences.
-// $table->data[22][0] = "<b>".__('Alias as Name');
-// $table->data[22][1] =  html_print_checkbox ('alias_as_name', 1, $alias_as_name, true);
-// Different Form url if it's a create or if it's a update form
+// Different Form url if it's a create or if it's a update form.
 echo '<form name="modulo" method="post" action="index.php?sec=gservers&sec2=godmode/servers/manage_recontask&'.(($id_rt != -1) ? 'update='.$id_rt : 'create=1').'">';
 html_print_table($table);
 echo '<div class="action-buttons" style="width: '.$table->width.'">';
@@ -529,23 +792,23 @@ ui_require_javascript_file('pandora_modules');
 <script type="text/javascript">
 /* <![CDATA[ */
 $(document).ready (function () {
-    
+
 });
 
 var xhrManager = function () {
     var manager = {};
-    
+
     manager.tasks = [];
-    
+
     manager.addTask = function (xhr) {
         manager.tasks.push(xhr);
     }
-    
+
     manager.stopTasks = function () {
         while (manager.tasks.length > 0)
             manager.tasks.pop().abort();
     }
-    
+
     return manager;
 };
 
@@ -591,7 +854,7 @@ $('select#mode').change(function() {
     if (type == 'recon_script') {
         $(".recon_script").show();
         $(".network_sweep").hide();
-        
+
         get_explanation_recon_script($("#id_recon_script").val());
     }
     else if (type == 'network_sweep') {
@@ -603,13 +866,13 @@ $('select#mode').change(function() {
 }).change();
 
 function get_explanation_recon_script (id) {
-    // Stop old ajax tasks
+    // Stop old ajax tasks.
     taskManager.stopTasks();
-    
-    // Show the spinners
+
+    // Show the spinners.
     $("#textarea_explanation").hide();
     $("#spinner_layout").show();
-    
+
     var xhr = jQuery.ajax ({
         data: {
             'page': 'godmode/servers/manage_recontask_form',
@@ -632,11 +895,11 @@ function get_explanation_recon_script (id) {
         }
     });
     taskManager.addTask(xhr);
-    
-    // Delete all the macro fields
+
+    // Delete all the macro fields.
     $('.macro_field').remove();
     $("#spinner_recon_script").show();
-    
+
     var xhr = jQuery.ajax ({
         data: {
             'page': 'godmode/servers/manage_recontask_form',
@@ -654,7 +917,7 @@ function get_explanation_recon_script (id) {
         success: function (data, textStatus, xhr) {
             if (data.array !== null) {
                 $('#hidden-macros').val(data.base64);
-                
+
                 jQuery.each (data.array, function (i, macro) {
                     if (macro.desc != '') {
                         add_macro_field(macro, 'table_recon-macro');

@@ -1199,13 +1199,13 @@ ALTER TABLE titem MODIFY `source_data` int(10) unsigned;
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('big_operation_step_datos_purge', '100');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('small_operation_step_datos_purge', '1000');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('days_autodisable_deletion', '30');
-INSERT INTO `tconfig` (`token`, `value`) VALUES ('MR', 25);
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('MR', 26);
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('custom_docs_logo', 'default_docs.png');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('custom_support_logo', 'default_support.png');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('custom_logo_white_bg_preview', 'pandora_logo_head_white_bg.png');
 UPDATE tconfig SET value = 'https://licensing.artica.es/pandoraupdate7/server.php' WHERE token='url_update_manager';
 DELETE FROM `tconfig` WHERE `token` = 'current_package_enterprise';
-INSERT INTO `tconfig` (`token`, `value`) VALUES ('current_package_enterprise', '732');
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('current_package_enterprise', '733');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('status_monitor_fields', 'policy,agent,data_type,module_name,server_type,interval,status,graph,warn,data,timestamp');
 
 -- ---------------------------------------------------------------------
@@ -2050,3 +2050,7 @@ INSERT INTO `tnotification_user` (`id_mensaje`, `id_user`) SELECT `id_mensaje`, 
 -- ----------------------------------------------------------------------
 INSERT INTO `trecon_script` (`name`,`description`,`script`,`macros`) VALUES ('Discovery.Application.VMware', 'Discovery&#x20;Application&#x20;script&#x20;to&#x20;monitor&#x20;VMware&#x20;technologies&#x20;&#40;ESXi,&#x20;VCenter,&#x20;VSphere&#41;', '/usr/share/pandora_server/util/recon_scripts/vmware-plugin.pl', '{"1":{"macro":"_field1_","desc":"Configuration&#x20;file","help":"","value":"","hide":""}}');
 INSERT INTO `trecon_script` (`name`,`description`,`script`,`macros`) VALUES ('Discovery.Cloud', 'Discovery&#x20;Cloud&#x20;script&#x20;to&#x20;monitor&#x20;Cloud&#x20;technologies&#x20;&#40;AWS.EC2,&#x20;AWS.S3,&#x20;AWS.RDS,&#x20RDS,&#x20AWS.EKS&#41;', '/usr/share/pandora_server/util/recon_scripts/pcm_client.pl', '{"1":{"macro":"_field1_","desc":"Configuration&#x20;file","help":"","value":"","hide":""}}');
+-- ----------------------------------------------------------------------
+-- Add column in table `tagent_custom_fields`
+-- ----------------------------------------------------------------------
+ALTER TABLE tagent_custom_fields ADD COLUMN `combo_values` VARCHAR(255) DEFAULT '';

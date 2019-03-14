@@ -11,4 +11,9 @@ CREATE TABLE IF NOT EXISTS `tnetwork_matrix` (
     UNIQUE (`source`, `destination`, `utimestamp`)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8 ;
 
+-- ----------------------------------------------------------------------
+-- Add column in table `tagent_custom_fields`
+-- ----------------------------------------------------------------------
+ALTER TABLE tagent_custom_fields ADD COLUMN `combo_values` VARCHAR(255) DEFAULT '';
+
 COMMIT;

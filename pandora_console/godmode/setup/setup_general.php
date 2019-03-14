@@ -1,17 +1,23 @@
 <?php
+/**
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
 
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation for version 2.
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-// Load global vars
 global $config;
 
 check_login();
@@ -277,12 +283,10 @@ $table->data[37][0] = __('Audit log directory').ui_print_help_tip(__('Directory 
 $table->data[37][1] = html_print_input_text('auditdir', io_safe_output($config['auditdir']), '', 30, 100, true);
 
 $table->data[38][0] = __('Set alias as name by default in agent creation');
-$table->data[38][1] = __('Yes').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button('alias_as_name', 1, '', $config['alias_as_name'], true).'&nbsp;&nbsp;';
-$table->data[38][1] .= __('No').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button('alias_as_name', 0, '', $config['alias_as_name'], true);
+$table->data[38][1] = html_print_checkbox_switch('alias_as_name', 1, $config['alias_as_name'], true);
 
 $table->data[39][0] = __('Unique IP').ui_print_help_tip(__('Set the primary IP address as the unique IP, preventing the same primary IP address from being used in more than one agent'), true);
-$table->data[39][1] = __('Yes').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button('unique_ip', 1, '', $config['unique_ip'], true).'&nbsp;&nbsp;';
-$table->data[39][1] .= __('No').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button('unique_ip', 0, '', $config['unique_ip'], true);
+$table->data[39][1] = html_print_checkbox_switch('unique_ip', 1, $config['unique_ip'], true);
 
 echo '<form id="form_setup" method="post" action="index.php?sec=gsetup&sec2=godmode/setup/setup&amp;section=general&amp;pure='.$config['pure'].'">';
 

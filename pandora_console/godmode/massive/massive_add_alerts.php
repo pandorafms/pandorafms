@@ -1,17 +1,32 @@
 <?php
+/**
+ * Extension to manage a list of gateways and the node address where they should
+ * point to.
+ *
+ * @category   Extensions
+ * @package    Pandora FMS
+ * @subpackage Community
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
 
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation for version 2.
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-// Load global vars
 check_login();
 
 if (! check_acl($config['id_user'], 0, 'AW')) {
@@ -34,7 +49,8 @@ if (is_ajax()) {
 
     if ($get_agents) {
         $id_group = (int) get_parameter('id_group', 0);
-        // Is is possible add keys prefix to avoid auto sorting in js object conversion
+        // Is is possible add keys prefix to avoid auto
+        // sorting in js object conversion.
         $keys_prefix = (string) get_parameter('keys_prefix', '');
 
         if ($id_group == 0) {
@@ -62,7 +78,7 @@ if (is_ajax()) {
             );
         }
 
-        // Add keys prefix
+        // Add keys prefix.
         if ($keys_prefix !== '') {
             foreach ($agents as $k => $v) {
                 $agents[$keys_prefix.$k] = $v;
@@ -92,8 +108,8 @@ function process_manage_add($id_alert_template, $id_agents, $module_names)
 
     foreach ($module_names as $module) {
         foreach ($id_agents as $id_agent) {
-             $module_id = modules_get_agentmodule_id($module, $id_agent);
-             $modules_id[] = $module_id['id_agente_modulo'];
+            $module_id = modules_get_agentmodule_id($module, $id_agent);
+            $modules_id[] = $module_id['id_agente_modulo'];
         }
     }
 
@@ -148,6 +164,7 @@ if (!$own_info['is_admin'] && !check_acl($config['id_user'], 0, 'AW')) {
     $return_all_group = true;
 }
 
+$table = new stdClass();
 $table->id = 'add_table';
 $table->class = 'databox filters';
 $table->width = '100%';
@@ -251,10 +268,10 @@ html_print_submit_button(__('Add'), 'go', false, 'class="sub add"');
 echo '</div>';
 echo '</form>';
 
-// TODO: Change to iu_print_error system
+// TODO: Change to iu_print_error system.
 echo '<h3 class="error invisible" id="message"> </h3>';
 
-// Hack to translate text "none" in PHP to javascript
+// Hack to translate text "none" in PHP to javascript.
 echo '<span id ="none_text" style="display: none;">'.__('None').'</span>';
 
 ui_require_jquery_file('form');
@@ -270,42 +287,40 @@ $(document).ready (function () {
         var get_parameters_count = window.location.href.slice(
             window.location.href.indexOf('?') + 1).split('&').length;
         var post_parameters_count = $("#form_alerts").serializeArray().length;
-        
+
         var count_parameters =
             get_parameters_count + post_parameters_count;
-        
+
         if (count_parameters > limit_parameters_massive) {
             alert("<?php echo __('Unsucessful sending the data, please contact with your administrator or make with less elements.'); ?>");
             return false;
         }
     });
-    
-    
+
     $("#checkbox-recursion").click(function () {
         $("#id_group").trigger("change");
     });
-    
+
     $("#id_agents").change(agent_changed_by_multiple_agents);
-    
+
     $("#id_group").change (function () {
         var $select = $("#id_agents").enable ();
         $("#agent_loading").show ();
         $("option", $select).remove ();
-        
+
         jQuery.post ("ajax.php",
             {"page" : "godmode/massive/massive_add_alerts",
             "get_agents" : 1,
             "id_group" : this.value,
             "recursion" : $("#checkbox-recursion").is(":checked") ? 1 : 0,
-            // Add a key prefix to avoid auto sorting in js object conversion
+            // Add a key prefix to avoid auto sorting in js object conversion.
             "keys_prefix" : "_"
             },
             function (data, status) {
                 options = "";
                 jQuery.each (data, function (id, value) {
-                    // Remove keys_prefix from the index
+                    // Remove keys_prefix from the index.
                     id = id.substring(1);
-                    
                     options += "<option value=\""+id+"\">"+value+"</option>";
                 });
                 $("#id_agents").append (options);
@@ -315,40 +330,39 @@ $(document).ready (function () {
             "json"
         );
     });
-    
+
     $("#id_group").value = "0";
-    
+
     $("#id_group").click (
     function () {
         $(this).css ("width", "auto");
     });
-    
+
     $("#id_group").blur (function () {
         $(this).css ("width", "180px");
     });
-    
+
     $("#id_agents").click (
     function () {
         $(this).css ("width", "auto");
     });
-    
+
     $("#id_agents").blur (function () {
         $(this).css ("width", "180px");
     });
-    
+
     $("#module").click (
     function () {
         $(this).css ("width", "auto");
     });
-    
+
     $("#module").blur (function () {
         $(this).css ("width", "180px");
     });
-    
+
     $("#modules_selection_mode").change (function() {
         $("#id_agents").trigger('change');
     });
-    
 });
 /* ]]> */
 </script>

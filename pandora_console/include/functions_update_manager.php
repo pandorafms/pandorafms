@@ -1028,7 +1028,7 @@ function update_manger_set_deleted_message($message_id)
  * @return array Return result array with status 0 valid or 1 false and
  * type 'f' file and 'd' dir and route path file or directory.
  */
-function rmdir_recursive(string $dir, array $result)
+function rmdir_recursive(string $dir, array &$result)
 {
     foreach (scandir($dir) as $file) {
         if ('.' === $file || '..' === $file) {
@@ -1036,32 +1036,22 @@ function rmdir_recursive(string $dir, array $result)
         }
 
         if (is_dir($dir.'/'.$file) === true) {
-            rmdir_recursive($dir.'/'.$file, $result, $i);
+            rmdir_recursive($dir.'/'.$file, $result);
         } else {
             $unlink = unlink($dir.'/'.$file);
             $res = [];
-            if ($unlink === true) {
-                $res['status'] = 0;
-            } else {
-                $res['status'] = 1;
-            }
-
+            $res['status'] = ($unlink === true) ? 0 : 1;
             $res['type'] = 'f';
-            $res['route'] = $dir.'/'.$file;
+            $res['path'] = $dir.'/'.$file;
             array_push($result, $res);
         }
     }
 
     $rmdir = rmdir($dir);
     $res = [];
-    if ($rmdir === true) {
-        $res['status'] = 0;
-    } else {
-        $res['status'] = 1;
-    }
-
+    $res['status'] = ($rmdir === true) ? 0 : 1;
     $res['type'] = 'd';
-    $res['route'] = $dir;
+    $res['path'] = $dir;
     array_push($result, $res);
 
     return $result;

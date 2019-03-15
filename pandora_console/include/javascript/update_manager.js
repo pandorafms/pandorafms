@@ -2317,78 +2317,77 @@ function delete_desired_files(homeurl) {
     url: home_url + "ajax.php",
     dataType: "json",
     success: function(data) {
-      var translate = data.translate;
+      var translation = data.translation;
       // Print the deleted files.
-      // Print title
+      // Print title.
       $("#log_zone").append(
-        "</br></br><span class='log_zone_line log_zone_line_bolder';>" +
-          translate.title +
+        "</br></br><span class='log_zone_line bolder';>" +
+          translation.title +
           ": </span></br></br>"
       );
-      $.each(data, function(key, value) {
+      $.each(data.status_list, function(key, value) {
         var log_zone_line_class = "log_zone_line ";
         var msg = "";
         switch (value.status) {
           case -1:
             //Not exits file.
-            msg = translate.not_file;
+            msg = translation.not_file;
             break;
           case 0:
             //File or directory deleted successfully.
             if (value.type === "f") {
               log_zone_line_class += "";
             } else {
-              log_zone_line_class += "log_zone_line_bolder";
+              log_zone_line_class += "bolder";
             }
 
-            msg = value.route;
+            msg = value.path;
             break;
           case 1:
             //Problem delete file or directory.
             if (value.type === "f") {
               log_zone_line_class += "log_zone_line_error";
             } else {
-              log_zone_line_class += "log_zone_line_error log_zone_line_bolder";
+              log_zone_line_class += "log_zone_line_error bolder";
             }
 
-            msg = value.route + " ( " + translate.not_deleted + " ) ";
+            msg = value.path + " ( " + translation.not_deleted + " ) ";
             break;
           case 2:
             //Not found file or directory.
             if (value.type === "f") {
               log_zone_line_class += "log_zone_line_error";
             } else {
-              log_zone_line_class += "log_zone_line_error log_zone_line_bolder";
+              log_zone_line_class += "log_zone_line_error bolder";
             }
 
-            msg = value.route + " ( " + translate.not_found + " ) ";
+            msg = value.path + " ( " + translation.not_found + " ) ";
             break;
           case 3:
             //Don`t read file deleet_files.txt.
-            log_zone_line_class += "log_zone_line_error log_zone_line_bolder";
-            msg = translate.not_read;
+            log_zone_line_class += "log_zone_line_error bolder";
+            msg = translation.not_read;
             break;
           case 4:
             //"deleted" folder could not be created.
-            log_zone_line_class += "log_zone_line_error log_zone_line_bolder";
-            msg = value.route + " ( " + translate.folder_deleted_f + " ) ";
+            log_zone_line_class += "log_zone_line_error bolder";
+            msg = value.path + " ( " + translation.folder_deleted_f + " ) ";
             break;
           case 5:
             //"deleted" folder was created.
-            log_zone_line_class += "log_zone_line_bolder";
-            msg = translate.folder_deleted_t;
+            log_zone_line_class += "bolder";
+            msg = translation.folder_deleted_t;
             break;
           case 6:
             //The "delete files" could not be the "delete" folder.
-            log_zone_line_class += "log_zone_line_error log_zone_line_bolder";
-            msg = value.route + " ( " + translate.move_file_f + " ) ";
+            log_zone_line_class += "log_zone_line_error bolder";
+            msg = value.path + " ( " + translation.move_file_f + " ) ";
             break;
           case 7:
             //The "delete files" is moved to the "delete" folder.
-            log_zone_line_class += "log_zone_line_bolder";
-            msg = translate.move_file_d;
+            log_zone_line_class += "bolder";
+            msg = translation.move_file_d;
             break;
-          case "translate":
           default:
             // It can not come without state.
             break;

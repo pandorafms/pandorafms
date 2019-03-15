@@ -3925,14 +3925,14 @@ span.log_zone_line {
 }
 
 span.log_zone_line_error {
-  color: red;
-}
-
-span.log_zone_line_bolder {
-  font-weight: bolder;
+  color: #fc4444;
 }
 
 /* global */
+.bolder {
+  font-weight: bolder;
+}
+
 .readonly {
   background-color: #dedede !important;
 }

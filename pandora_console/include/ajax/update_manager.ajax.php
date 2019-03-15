@@ -633,6 +633,7 @@ if ($delete_desired_files === true) {
 
     // Initialize result.
     $result = [];
+    $result['status_list'] = [];
 
     // Flag exist folder "deleted".
     $exist_deleted = true;
@@ -658,8 +659,8 @@ if ($delete_desired_files === true) {
         }
 
         $res['type'] = 'd';
-        $res['route'] = $url_to_delete;
-        array_push($result, $res);
+        $res['path'] = $url_to_delete;
+        array_push($result['status_list'], $res);
     }
 
     // Check isset delete_files.txt.
@@ -673,34 +674,34 @@ if ($delete_desired_files === true) {
                 $url_to_delete = $config['homedir'].'/'.$file_to_delete;
                 // Check is dir or file or not exists.
                 if (is_dir($url_to_delete) === true) {
-                    $result = rmdir_recursive(
+                    $rmdir_recursive = rmdir_recursive(
                         $url_to_delete,
-                        $result
+                        $result['status_list']
+                    );
+
+                    array_push(
+                        $result['status_list'],
+                        $rmdir_recursive
                     );
                 } else if (file_exists($url_to_delete) === true) {
                     $unlink = unlink($url_to_delete);
                     $res = [];
-                    if ($unlink === true) {
-                        $res['status'] = 0;
-                    } else {
-                        $res['status'] = 1;
-                    }
-
+                    $res['status'] = ($unlink === true) ? 0 : 1;
                     $res['type'] = 'f';
-                    $res['route'] = $url_to_delete;
-                    array_push($result, $res);
+                    $res['path'] = $url_to_delete;
+                    array_push($result['status_list'], $res);
                 } else {
                     $res = [];
                     $res['status'] = 2;
-                    $res['route'] = $url_to_delete;
-                    array_push($result, $res);
+                    $res['path'] = $url_to_delete;
+                    array_push($result['status_list'], $res);
                 }
             }
         } else {
             $res = [];
             $res['status'] = 3;
-            $res['route'] = $url_to_delete;
-            array_push($result, $res);
+            $res['path'] = $url_to_delete;
+            array_push($result['status_list'], $res);
         }
 
         // Close file.
@@ -715,25 +716,20 @@ if ($delete_desired_files === true) {
         );
 
         $res = [];
-        if ($res_rename !== true) {
-            $res['status'] = 6;
-        } else {
-            $res['status'] = 7;
-        }
-
+        $res['status'] = ($res_rename === true) ? 7 : 6;
         $res['type'] = 'f';
-        $res['route'] = $route_move;
-        array_push($result, $res);
+        $res['path'] = $route_move;
+        array_push($result['status_list'], $res);
     } else {
         if ($exist_deleted === true) {
             $res = [];
             $res['status'] = -1;
-            array_push($result, $res);
+            array_push($result['status_list'], $res);
         }
     }
 
-    // Translate diccionary neccesary.
-    $result['translate'] = [
+    // Translation diccionary neccesary.
+    $result['translation'] = [
         'title'            => __('Delete files'),
         'not_file'         => __('The oum has no files to remove'),
         'not_found'        => __('Not found'),

@@ -506,6 +506,12 @@ define('OPTION_COLOR_PICKER', 11);
 define('NODE_TYPE', 0);
 define('ARROW_TYPE', 1);
 
+// Networkmap node types.
+define('NODE_AGENT', 0);
+define('NODE_MODULE', 1);
+define('NODE_PANDORA', 2);
+define('NODE_GENERIC', 3);
+
 // SAML attributes constants.
 define('SAML_ROLE_AND_TAG', 'eduPersonEntitlement');
 define('SAML_USER_DESC', 'commonName');

@@ -489,11 +489,11 @@ function networkmap_generate_dot(
 
     // Create void statistics array
     $stats = [];
-
-    $count = 0;
-    $group_nodes = 10;
-    $graph .= networkmap_create_transparent_node($count);
-    foreach (array_keys($orphans) as $node) {
+    /*
+        $count = 0;
+        $group_nodes = 10;
+        $graph .= networkmap_create_transparent_node($count);
+        foreach (array_keys($orphans) as $node) {
         if ($group_nodes == 0) {
             $count++;
             $graph .= networkmap_create_transparent_node($count);
@@ -507,7 +507,8 @@ function networkmap_generate_dot(
         );
 
         $group_nodes--;
-    }
+        }
+    */
 
     // Create nodes
     foreach ($nodes as $node_id => $node) {
@@ -714,7 +715,7 @@ function networkmap_create_edge(
 
     // Option edgeURL allows node navigation.
     $edge = "\n".$head.' -- '.$tail;
-    $edge .= '[color="#BDBDBD", headclip=false, tailclip=false, edgeURL=""];';
+    $edge .= '[len='.$ranksep.', color="#BDBDBD", headclip=false, tailclip=false, edgeURL=""];';
     $edge .= "\n";
 
     return $edge;
@@ -2306,6 +2307,7 @@ function networkmap_loadfile(
         $relations_param[] = $row;
     }
 
+    hd($networkmap_nodes);
     return $networkmap_nodes;
 }
 

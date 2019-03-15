@@ -31,6 +31,10 @@ global $config;
 
 require_once $config['homedir'].'/include/functions_networkmap.php';
 enterprise_include_once('include/functions_networkmap.php');
+enterprise_include_once('include/functions_discovery.php');
+
+// Avoid node overlapping.
+define('GRAPHVIZ_RADIUS_CONVERSION_FACTOR', 20);
 
 /**
  * Manage networkmaps in Pandora FMS
@@ -93,6 +97,13 @@ class NetworkMap
      * @var array
      */
     public $nodes;
+
+    /**
+     * Useful to translate id_node to id_agent or id_module.
+     *
+     * @var array
+     */
+    public $nodeMapping;
 
     /**
      * Relationship map.
@@ -160,8 +171,8 @@ class NetworkMap
             'x_offs'              => 0,
             'y_offs'              => 0,
             'z_dash'              => 0.5,
-            'node_sep'            => 0.1,
-            'rank_sep'            => 0.1,
+            'node_sep'            => 3,
+            'rank_sep'            => 3,
             'mindist'             => 1,
             'kval'                => 0.1,
         ];
@@ -341,7 +352,7 @@ class NetworkMap
             if ($this->idTask) {
                 $recon_task = db_get_row_filter(
                     'trecon_task',
-                    ['id_rt' => $networkmap['source_data']]
+                    ['id_rt' => $this->idTask]
                 );
                 $this->network = $recon_task['subnet'];
             }
@@ -352,6 +363,34 @@ class NetworkMap
 
             // Nodes and relations will be stored in $this->graph.
             $this->loadGraph();
+        }
+    }
+
+
+    /**
+     * Retrieves node information using id_node as mapping instead element id.
+     *
+     * @param integer $id_node Target node.
+     * @param string  $field   Field to retrieve, if null, all are return.
+     *
+     * @return mixed Array (node data) or false if error.
+     */
+    public function getNodeData(int $id_node, $field=null)
+    {
+        if (is_array($this->nodes) === false
+            || is_array($this->nodeMapping) === false
+        ) {
+            return false;
+        }
+
+        if (is_array($this->nodes[$this->nodeMapping[$id_node]]) === true) {
+            if (isset($field) === false) {
+                return $this->nodes[$this->nodeMapping[$id_node]];
+            } else {
+                return $this->nodes[$this->nodeMapping[$id_node]][$field];
+            }
+        } else {
+            return false;
         }
     }
 
@@ -404,6 +443,112 @@ class NetworkMap
 
         return $this->relations;
 
+    }
+
+
+    /**
+     * Search for nodes in current map definition.
+     *
+     * @return array Nodes detected, internal variable also updated.
+     */
+    public function calculateNodes()
+    {
+        // Calculate.
+        if (!$this->nodes) {
+            // Search.
+            if ($this->idTask) {
+                // Network map, based on discovery task.
+                $this->nodes = enterprise_hook(
+                    'get_discovery_agents',
+                    [$this->idTask]
+                );
+            }
+
+            if ($this->network) {
+                // Network map, based on direct network.
+                $this->nodes = networkmap_get_new_nodes_from_ip_mask(
+                    $this->network
+                );
+            } else if ($this->mapOptions['map_filter']['empty_map']) {
+                // Empty map returns no data.
+                $this->nodes = [];
+            } else {
+                // Group map.
+                $this->nodes = agents_get_agents(
+                    $filter,
+                    [
+                        'id_grupo',
+                        'nombre',
+                        'id_os',
+                        'id_parent',
+                        'id_agente',
+                        'normal_count',
+                        'warning_count',
+                        'critical_count',
+                        'unknown_count',
+                        'total_count',
+                        'notinit_count',
+                    ],
+                    'AR',
+                    [
+                        'field' => 'id_parent',
+                        'order' => 'ASC',
+                    ]
+                );
+            }
+        }
+
+        return $this->nodes;
+    }
+
+
+    /**
+     * Search for relations for a given node in current map definition.
+     *
+     * @param array $node      Origin.
+     * @param array $id_node   Id for source node.
+     * @param array $id_source Id for source data, agent or module.
+     *
+     * @return array Relations found for given node.
+     */
+    public function calculateRelations(
+        $node,
+        $id_node,
+        $id_source
+    ) {
+        // Calculate.
+        if (is_array($node) === false) {
+            return false;
+        }
+
+        $relations = [];
+
+        if (isset($node['id_agente_modulo'])) {
+            // Module.
+            $relations = modules_get_relations(
+                [
+                    'id_module' => $node['id_agente_modulo'],
+                ]
+            );
+        }
+
+        if (isset($node['id_agente'])) {
+            // Agent.
+            $relations = modules_get_relations(
+                [
+                    'id_agent' => $node['id_agente'],
+                ]
+            );
+            if ($relations === false) {
+                $relations = [];
+            }
+
+            // Add also parent relationship.
+            $relations[$id_node] = $node['id_parent'];
+        }
+
+        // Others.
+        return $relations;
     }
 
 
@@ -475,15 +620,271 @@ class NetworkMap
 
 
     /**
+     * Generates a graph definition (header only) for dot graph.
+     *
+     * @return string Dot graph header.
+     */
+    public function openDotFile()
+    {
+        global $config;
+
+        $overlap = 'compress';
+
+        $map_filter = $this->mapOptions['map_filter'];
+        $nooverlap = $this->mapOptions['nooverlap'];
+
+        if (isset($config['networkmap_max_width'])) {
+            $size_x = ($config['networkmap_max_width'] / 100);
+            $size_y = ($size_x * 0.8);
+        } else {
+            $size_x = 8;
+            $size_y = 5.4;
+            $size = '';
+        }
+
+        if ($zoom > 0) {
+            $size_x *= $zoom;
+            $size_y *= $zoom;
+        }
+
+        $size = $size_x.','.$size_y;
+
+        if ($size_canvas === null) {
+            $size = ($this->mapOptions['size_canvas']['x'] / 100);
+            $size .= ','.($this->mapOptions['size_canvas']['y'] / 100);
+        }
+
+        // Graphviz custom values
+        if (isset($map_filter['node_sep'])) {
+            $node_sep = $map_filter['node_sep'];
+        } else {
+            $node_sep = 0.1;
+        }
+
+        if (isset($map_filter['rank_sep'])) {
+            $rank_sep = $map_filter['rank_sep'];
+        } else {
+            if ($layout == 'radial') {
+                $rank_sep = 1.0;
+            } else {
+                $rank_sep = 0.5;
+            }
+        }
+
+        if (isset($map_filter['mindist'])) {
+            $mindist = $map_filter['mindist'];
+        } else {
+            $mindist = 1.0;
+        }
+
+        if (isset($map_filter['kval'])) {
+            $kval = $map_filter['kval'];
+        } else {
+            $kval = 0.1;
+        }
+
+        // BEWARE: graphwiz DONT use single ('), you need double (").
+        $head = 'graph networkmap { dpi=100; bgcolor="transparent"; labeljust=l; margin=0; pad="0.75,0.75";';
+        if ($nooverlap != '') {
+            $head .= 'overlap=scale;';
+            $head .= 'outputorder=first;';
+        }
+
+        if ($layout == 'flat'
+            || $layout == 'spring1'
+            || $layout == 'spring2'
+        ) {
+            if ($nooverlap != '') {
+                $head .= 'overlap="scalexy";';
+            }
+
+            if ($layout == 'flat') {
+                $head .= 'ranksep="'.$rank_sep.'";';
+            }
+
+            if ($layout == 'spring2') {
+                $head .= 'K="'.$kval.'";';
+            }
+        }
+
+        if ($layout == 'radial') {
+            $head .= 'ranksep="'.$rank_sep.'";';
+        }
+
+        if ($layout == 'circular') {
+            $head .= 'mindist="'.$mindist.'";';
+        }
+
+        $head .= 'ratio="fill";';
+        $head .= 'root=0;';
+        $head .= 'nodesep="'.$node_sep.'";';
+        $head .= 'size="'.$size.'";';
+
+        $head .= "\n";
+
+        return $head;
+    }
+
+
+    /**
+     * Creates a node in dot format.
+     * Requirements:
+     *   id_node
+     *   id_source
+     *   status => defines 'color'
+     *   label
+     *   image
+     *   url
+     *
+     * @param array $data Node definition.
+     *
+     * @return string Dot node.
+     */
+    public function createDotNode($data)
+    {
+        global $config;
+        global $hack_networkmap_mobile;
+
+        $dot_str = '';
+
+        $color = COL_NORMAL;
+        $label = $data['label'];
+        $url = 'none';
+        $parent = $data['parent'];
+        $font_size = $this->mapOptions['font_size'];
+        $radius = $this->mapOptions['map_filter']['node_radius'];
+        $radius /= GRAPHVIZ_RADIUS_CONVERSION_FACTOR;
+
+        if (strlen($label) > 16) {
+            $label = ui_print_truncate_text($label, 16, false, true, false);
+        }
+
+        // If radius is 0, set to 1 instead.
+        if ($radius <= 0) {
+            $radius = 1;
+        }
+
+        // Simple node always. This kind of node is used only to
+        // retrieve X,Y positions from graphviz no for personalization.
+        $dot_str = $data['id_node'].' [ parent="'.$data['id_parent'].'"';
+        $dot_str .= ', color="'.$color.'", fontsize='.$font_size;
+        $dot_str .= ', shape="doublecircle"'.$url_node_link;
+        $dot_str .= ', style="filled", fixedsize=true, width='.$radius.', height='.$radius;
+        $dot_str .= ', label="'.$label.'", tooltip="'.$ajax_prefix;
+        $dot_str .= 'ajax.php?page=operation/agentes/ver_agente';
+        $dot_str .= '&get_agent_status_tooltip=1&id_agent='.$data['id_agente'];
+        $dot_str .= $meta_params.'"];'."\n";
+
+        return $dot_str;
+    }
+
+
+    /**
+     * Creates an edge in dot format.
+     * Requirements:
+     *   from
+     *   to
+     *
+     * @param array $data Edge content.
+     *
+     * @return string Dot code for given edge.
+     */
+    public function createDotEdge($data)
+    {
+        if (is_array($data) === false) {
+            return '';
+        }
+
+        if (!isset($data['from']) || !isset($data['to'])) {
+            return '';
+        }
+
+        $edge = "\n".$data['from'].' -- '.$data['to'];
+        $edge .= '[len='.$this->mapOptions['map_filter']['rank_sep'];
+        $edge .= ', color="#BDBDBD", headclip=false, tailclip=false,';
+        $edge .= ' edgeURL=""];'."\n";
+
+        return $edge;
+    }
+
+
+    /**
+     * Returns dot file end string.
+     *
+     * @return string Dot file end string.
+     */
+    public function closeDotFile()
+    {
+        return '}';
+    }
+
+
+    /**
      * Generate a graphviz string structure to be used later.
      *
      * @return void
      */
     public function generateDotGraph()
     {
+        echo 'regenerar la net es: '.$this->network.'<br />';
         if (!isset($this->dotGraph)) {
             // Generate dot file.
-            $this->dotGraph = networkmap_generate_dot(
+            $nodes = [];
+            $edges = [];
+            $graph = '';
+
+            // Search for nodes.
+            $nodes = $this->calculateNodes();
+
+            // Search for relations.
+            // Build dot structure.
+            // Open Graph.
+            $graph = $this->openDotFile();
+
+            // Create dot nodes.
+            $i = 0;
+            foreach ($nodes as $k => $node) {
+                $this->nodeMapping[$i] = $k;
+                $graph .= $this->createDotNode(
+                    [
+                        'id_node'   => $i,
+                        'id_source' => $node['id_agente'],
+                        'status'    => agents_get_status_from_counts($node),
+                        'label'     => io_safe_output($node['alias']),
+                        'image'     => null,
+                        'url'       => 'none',
+                    ]
+                );
+
+                // Keep reverse reference.
+                $this->nodes[$k]['id_node'] = $i;
+
+                $edges[] = $this->calculateRelations($node, $i, $k);
+
+                // Increase for next node.
+                $i++;
+            }
+
+            hd($edges);
+            foreach ($edges as $rel) {
+                foreach ($rel as $from => $to) {
+                    $graph .= $this->createDotEdge(
+                        [
+                            'from' => $from,
+                            'to'   => $this->nodes[$to]['id_node'],
+                        ]
+                    );
+                }
+            }
+
+            // Create dot edges.
+            $graph .= $this->closeDotFile();
+
+            hd($graph);
+            $this->dotGraph = $graph;
+
+            /*
+                $this->dotGraph = networkmap_generate_dot(
                 get_product_name(),
                 $this->idGroup,
                 $this->mapOptions['simple'],
@@ -508,7 +909,8 @@ class NetworkMap
                 null,
                 $this->mapOptions['old_mode'],
                 $this->mapOptions['map_filter']
-            );
+                );
+            */
         }
 
     }
@@ -554,10 +956,7 @@ class NetworkMap
 
         include_once 'include/functions_os.php';
 
-        $map_filter = json_decode(
-            $this->map['filter'],
-            true
-        );
+        $map_filter = $this->mapOptions['map_filter'];
 
         /*
          * Let graphviz place the nodes.
@@ -692,6 +1091,55 @@ class NetworkMap
             $nodes_and_relations['nodes'][$index]['id'] = $node['id'];
             $nodes_and_relations['nodes'][$index]['id_map'] = $this->idMap;
 
+            // Retrieve properties.
+            $node['id_agent'] = $this->getNodeData(
+                $node['id'],
+                'id_agente'
+            );
+            $node['id_module'] = $this->getNodeData(
+                $node['id'],
+                'id_agente_modulo'
+            );
+
+            // Specify node type and set values.
+            if (isset($node['id_agent']) === true) {
+                if (isset($node['id_module']) === false) {
+                    // Agent.
+                    $node['type'] = 'agent';
+                    $node['source_data'] = $node['id_agent'];
+                    $node['text'] = $this->getNodeData(
+                        $node['id'],
+                        'alias'
+                    );
+
+                    $node['image'] = ui_print_os_icon(
+                        $this->getNodeData($node['id'], 'id_os'),
+                        false,
+                        true,
+                        true,
+                        true,
+                        true,
+                        true
+                    );
+                } else if (isset($node['id_module'])) {
+                    // Module.
+                    $node['type'] = 'module';
+                    $node['source_data'] = $node['id_module'];
+                    $node['text'] = $this->getNodeData(
+                        $node['id'],
+                        'nombre'
+                    );
+
+                    $node['image'] = ui_print_moduletype_icon(
+                        $this->getNodeData($node['id'], 'id_tipo_modulo'),
+                        true,
+                        true,
+                        false,
+                        true
+                    );
+                }
+            }
+
             $children_count = 0;
             foreach ($relation_nodes as $relation) {
                 if (($relation['parent_type'] == 'agent') || ($relation['parent_type'] == '')) {
@@ -705,6 +1153,7 @@ class NetworkMap
                 }
             }
 
+            // Center map over node with most children.
             if (empty($node_center) || $node_center['counter'] < $children_count) {
                 $node_center['x'] = (int) $node['coords'][0];
                 $node_center['y'] = (int) $node['coords'][1];
@@ -1509,7 +1958,9 @@ class NetworkMap
         }
 
         $networkmap = $this->map;
-        $networkmap['filter'] = json_decode($networkmap['filter'], true);
+        if (is_array($networkmap['filter']) === false) {
+            $networkmap['filter'] = json_decode($networkmap['filter'], true);
+        }
 
         $networkmap['filter']['l2_network_interfaces'] = 1;
 

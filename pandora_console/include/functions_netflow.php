@@ -494,6 +494,15 @@ function netflow_get_data($start_date, $end_date, $interval_length, $filter, $ag
         break;
     }
 
+    // Recalculate to not pass of netflow_max_resolution.
+    if ($config['netflow_max_resolution'] > 0
+        && (($end_date - $start_date) / $multiplier_time) > 50
+    ) {
+        $multiplier_time = ceil(
+            (($end_date - $start_date) / $config['netflow_max_resolution'])
+        );
+    }
+
     // Put all points into an array.
     $intervals = [($start_date - $multiplier_time)];
     while ((end($intervals) < $end_date) === true) {
@@ -1055,38 +1064,6 @@ function netflow_get_chart_types()
         'netflow_data'          => __('Data table'),
         'netflow_mesh'          => __('Circular mesh'),
         'netflow_host_treemap'  => __('Host detailed traffic'),
-    ];
-}
-
-
-/**
- * Gets valid intervals for a netflow chart in the format:
- *
- * interval_length => interval_description
- *
- * @return array of valid intervals.
- */
-function netflow_get_valid_intervals()
-{
-    return [
-        (string) SECONDS_10MINUTES => __('10 mins'),
-        (string) SECONDS_15MINUTES => __('15 mins'),
-        (string) SECONDS_30MINUTES => __('30 mins'),
-        (string) SECONDS_1HOUR     => __('1 hour'),
-        (string) SECONDS_2HOUR     => __('2 hours'),
-        (string) SECONDS_5HOUR     => __('5 hours'),
-        (string) SECONDS_12HOURS   => __('12 hours'),
-        (string) SECONDS_1DAY      => __('1 day'),
-        (string) SECONDS_2DAY      => __('2 days'),
-        (string) SECONDS_5DAY      => __('5 days'),
-        (string) SECONDS_15DAYS    => __('15 days'),
-        (string) SECONDS_1WEEK     => __('Last week'),
-        (string) SECONDS_1MONTH    => __('Last month'),
-        (string) SECONDS_2MONTHS   => __('2 months'),
-        (string) SECONDS_3MONTHS   => __('3 months'),
-        (string) SECONDS_6MONTHS   => __('6 months'),
-        (string) SECONDS_1YEAR     => __('Last year'),
-        (string) SECONDS_2YEARS    => __('2 years'),
     ];
 }
 

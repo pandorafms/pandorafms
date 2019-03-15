@@ -2018,6 +2018,12 @@ sub snmp_walk {
 		$timeout = $snmp->{timeout};
 	}
 
+	if ($^O =~ /lin/i && "`which snmpwalk`" eq "") {
+		return {
+			'error' => 'snmpwalk not found'
+		};
+	}
+
 	$snmp->{extra} = '' unless defined $snmp->{extra};
 
 	if ( defined ($snmp->{version} )
@@ -2131,6 +2137,12 @@ sub snmp_get {
 		$timeout = $snmp->{timeout};
 	}
 
+	if ($^O =~ /lin/i && "`which snmpwalk`" eq "") {
+		return {
+			'error' => 'snmpwalk not found'
+		};
+	}
+	
 	$snmp->{extra} = '' unless defined $snmp->{extra};
 
 	if ( defined ($snmp->{version} )

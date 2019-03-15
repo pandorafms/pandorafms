@@ -1060,7 +1060,7 @@ function html_print_extended_select_for_time(
             'images/pencil.png',
             true,
             [
-                'class' => $uniq_name.'_toggler',
+                'class' => $uniq_name.'_toggler '.$class,
                 'alt'   => __('Custom'),
                 'title' => __('Custom'),
                 'style' => 'width: 18px;'.$style_icon,

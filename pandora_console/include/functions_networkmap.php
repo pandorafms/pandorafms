@@ -1329,9 +1329,17 @@ function networkmap_get_new_nodes_from_ip_mask(
 ) {
     $list_ip_masks = explode(',', $ip_mask);
 
+    if (empty($list_ip_masks)) {
+        return [];
+    }
+
     $agents = [];
     foreach ($list_ip_masks as $subnet) {
         $net = explode('/', $subnet);
+
+        // Calculate real network address. Avoid user bad input.
+        $mask = ~((1 << (32 - $net[1])) - 1);
+        $network = long2ip(ip2long($net[0]) & $mask);
 
         $sql = sprintf(
             'SELECT *
@@ -1350,7 +1358,7 @@ function networkmap_get_new_nodes_from_ip_mask(
                 ) t_res
                 ON t_res.`id_agent` = `tagente`.`id_agente`',
             (32 - $net[1]),
-            $net[0]
+            $network
         );
 
         $subnet_agents = db_get_all_rows_sql($sql);
@@ -1554,6 +1562,7 @@ function networkmap_db_node_to_js_node(
     $item['raw_text'] = $node['style']['label'];
     $item['text'] = io_safe_output($node['style']['label']);
     $item['shape'] = $node['style']['shape'];
+
     switch ($node['type']) {
         case 0:
             $color = get_status_color_networkmap($node['source_data']);
@@ -1690,7 +1699,9 @@ function networkmap_links_to_js_links(
 
     $count = 0;
     foreach ($relations as $key => $relation) {
-        if (($relation['parent_type'] == 1) && ($relation['child_type'] == 1)) {
+        if (($relation['parent_type'] == NODE_MODULE)
+            && ($relation['child_type'] == NODE_MODULE)
+        ) {
             $id_target_agent = agents_get_agent_id_by_module_id(
                 $relation['id_parent_source_data']
             );
@@ -1699,16 +1710,16 @@ function networkmap_links_to_js_links(
             );
             $id_target_module = $relation['id_parent_source_data'];
             $id_source_module = $relation['id_child_source_data'];
-        } else if (($relation['parent_type'] == 1)
-            && ($relation['child_type'] == 0)
+        } else if (($relation['parent_type'] == NODE_MODULE)
+            && ($relation['child_type'] == NODE_AGENT)
         ) {
             $id_target_agent = agents_get_agent_id_by_module_id(
                 $relation['id_parent_source_data']
             );
             $id_target_module = $relation['id_parent_source_data'];
             $id_source_agent = $relation['id_child_source_data'];
-        } else if (($relation['parent_type'] == 0)
-            && ($relation['child_type'] == 1)
+        } else if (($relation['parent_type'] == NODE_AGENT)
+            && ($relation['child_type'] == NODE_MODULE)
         ) {
             $id_target_agent = $relation['id_parent_source_data'];
             $id_source_module = $relation['id_child_source_data'];
@@ -1748,10 +1759,10 @@ function networkmap_links_to_js_links(
             $item['target_id_db'] = (int) $target_and_source['target'];
             $item['source_id_db'] = (int) $target_and_source['source'];
         } else {
-            if (($relation['parent_type'] == 1) && ($relation['child_type'] == 1)) {
+            if (($relation['parent_type'] == NODE_MODULE) && ($relation['child_type'] == NODE_MODULE)) {
                 $item['target_id_db'] = $id_target_agent;
                 $item['source_id_db'] = $id_source_agent;
-            } else if (($relation['parent_type'] == 0) && ($relation['child_type'] == 0)) {
+            } else if (($relation['parent_type'] == NODE_AGENT) && ($relation['child_type'] == NODE_AGENT)) {
                 $item['target_id_db'] = (int) $relation['id_parent_source_data'];
                 $item['source_id_db'] = $id_source_agent;
             } else {
@@ -1776,7 +1787,7 @@ function networkmap_links_to_js_links(
             }
         }
 
-        if ($relation['child_type'] == 1) {
+        if ($relation['child_type'] == NODE_MODULE) {
             $item['arrow_start'] = 'module';
             $item['status_start'] = modules_get_agentmodule_status((int) $id_source_module, false, false, null);
             $item['id_module_start'] = (int) $id_source_module;
@@ -1794,7 +1805,7 @@ function networkmap_links_to_js_links(
         $control1 = false;
         $control2 = false;
 
-        if (($relation['parent_type'] == 1) && ($relation['child_type'] == 1)) {
+        if (($relation['parent_type'] == NODE_MODULE) && ($relation['child_type'] == NODE_MODULE)) {
             if (($item['status_start'] == AGENT_MODULE_STATUS_CRITICAL_BAD) || ($item['status_end'] == AGENT_MODULE_STATUS_CRITICAL_BAD)) {
                 $item['link_color'] = '#FC4444';
             } else if (($item['status_start'] == AGENT_MODULE_STATUS_WARNING) || ($item['status_end'] == AGENT_MODULE_STATUS_WARNING)) {
@@ -1824,7 +1835,7 @@ function networkmap_links_to_js_links(
                     }
                 }
             }
-        } else if ($relation['child_type'] == 1) {
+        } else if ($relation['child_type'] == NODE_MODULE) {
             if ($item['status_start'] == AGENT_MODULE_STATUS_CRITICAL_BAD) {
                 $item['link_color'] = '#FC4444';
             } else if ($item['status_start'] == AGENT_MODULE_STATUS_WARNING) {
@@ -1851,7 +1862,7 @@ function networkmap_links_to_js_links(
                     }
                 }
             }
-        } else if ($relation['parent_type'] == 1) {
+        } else if ($relation['parent_type'] == NODE_MODULE) {
             if ($item['status_end'] == AGENT_MODULE_STATUS_CRITICAL_BAD) {
                 $item['link_color'] = '#FC4444';
             } else if ($item['status_end'] == AGENT_MODULE_STATUS_WARNING) {
@@ -1878,8 +1889,8 @@ function networkmap_links_to_js_links(
                     }
                 }
             }
-        } else if (($relation['parent_type'] == 3)
-            && ($relation['child_type'] == 3)
+        } else if (($relation['parent_type'] == NODE_GENERIC)
+            && ($relation['child_type'] == NODE_GENERIC)
         ) {
             foreach ($nodes_graph as $key2 => $node) {
                 if ($relation['id_parent'] == $node['id_db']) {
@@ -1892,10 +1903,10 @@ function networkmap_links_to_js_links(
                     $agent2 = $node['id_db'];
                 }
             }
-        } else if (($relation['parent_type'] == 3)
-            || ($relation['child_type'] == 3)
+        } else if (($relation['parent_type'] == NODE_GENERIC)
+            || ($relation['child_type'] == NODE_GENERIC)
         ) {
-            if ($relation['parent_type'] == 3) {
+            if ($relation['parent_type'] == NODE_GENERIC) {
                 foreach ($nodes_graph as $key2 => $node) {
                     if ($relation['id_parent'] == $node['id_db']) {
                         $agent = $node['id_db'];
@@ -1903,7 +1914,7 @@ function networkmap_links_to_js_links(
                         $agent2 = $node['id_db'];
                     }
                 }
-            } else if ($relation['child_type'] == 3) {
+            } else if ($relation['child_type'] == NODE_GENERIC) {
                 foreach ($nodes_graph as $key2 => $node) {
                     if ($relation['id_child'] == $node['id_db']) {
                         $agent2 = $node['id_db'];
@@ -1933,8 +1944,8 @@ function networkmap_links_to_js_links(
         }
 
         if ((($item['target'] == -1) || ($item['source'] == -1))
-            && $relation['parent_type'] == 1
-            && $relation['child_type'] == 1
+            && $relation['parent_type'] == NODE_MODULE
+            && $relation['child_type'] == NODE_MODULE
         ) {
             continue;
         }
@@ -2191,10 +2202,11 @@ function networkmap_loadfile(
         if (preg_match('/^node.*$/', $line) != 0) {
             $items = explode(' ', $line);
             $node_id = $items[1];
+
+            // 200 for larger maps
             $node_x = ($items[2] * 100);
-            // 200 is for show more big
             $node_y = ($height_map - $items[3] * 100);
-            // 200 is for show more big
+            // 200 for larger maps
             $data['id'] = $node_id;
             $data['text'] = '';
             $data['image'] = '';
@@ -2307,8 +2319,10 @@ function networkmap_loadfile(
         $relations_param[] = $row;
     }
 
-    hd($networkmap_nodes);
-    return $networkmap_nodes;
+    return [
+        'nodes'     => $networkmap_nodes,
+        'relations' => $relations_param,
+    ];
 }
 
 

@@ -37,20 +37,36 @@ enterprise_include_once('include/functions_discovery.php');
 define('GRAPHVIZ_RADIUS_CONVERSION_FACTOR', 20);
 
 /**
- * Manage networkmaps in Pandora FMS
+ * Manage networkmaps in Pandora FMS.
+ *
+ * General steps:
+ *   Generate a list of nodes.
+ *   For each node, calculate relationship and add several 'module' nodes
+ *     representing interface nodes.
+ *   Once the base arrays are formed (nodes and relations), this class
+ *   calls graphviz to calculate X,Y positions for given nodes.
+ *   Translates node - relationship - positioning data into processed
+ *   'nodes_and_relations'.
+ *   When printMap is called. Several information is sent to browser:
+ *    - Base DOM items where place target map.
+ *    - JS controllers.
+ *    - Data translated to JSON format.
+ *    - Interface layer.
  */
 class NetworkMap
 {
 
     /**
-     * Target map Id.
+     * Target map Id, from tmap. If the maps is being simulated
+     * then the idMap value will be uniqid.
      *
      * @var integer
      */
     public $idMap;
 
     /**
-     * Content of tmap.
+     * Content of tmap. Map definition. If the map is being simulated
+     * then defaults to constructor received parameters.
      *
      * @var array
      */
@@ -78,7 +94,8 @@ class NetworkMap
     public $idTask;
 
     /**
-     * Graph definition
+     * Graph definition. Previously was 'nodes_and_relationships'
+     * Is the data format before be translated to JS variables.
      *
      * @var array
      */
@@ -86,6 +103,7 @@ class NetworkMap
 
     /**
      * Dot string with graph definition.
+     * Its contents will be send to graphviz to calculate node positions.
      *
      * @var string
      */
@@ -93,6 +111,8 @@ class NetworkMap
 
     /**
      * Node list.
+     * A simple list of nodes, could content information of agents, modules...
+     * Is the 'raw' information.
      *
      * @var array
      */
@@ -100,6 +120,7 @@ class NetworkMap
 
     /**
      * Useful to translate id_node to id_agent or id_module.
+     * Maps built nodes to original node information (agents, modules).
      *
      * @var array
      */
@@ -107,6 +128,13 @@ class NetworkMap
 
     /**
      * Relationship map.
+     * Each element contents:
+     *    id_parent
+     *    id_child
+     *    parent_type
+     *    child_type
+     *    id_parent_source_data (from $this->nodes)
+     *    id_child_source_data (from $this->nodes)
      *
      * @var array
      */
@@ -114,19 +142,57 @@ class NetworkMap
 
     /**
      * Mode simple or advanced.
+     * Not being used yet.
      *
      * @var integer
      */
     public $mode;
 
     /**
-     * Array of map options
-     *   height
-     *   width
+     * Array of map options. Because how is built, the structure matches
+     * with tmap definition, where map_filter is the json-extracted data.
+     * Duplicate options appears since tmap stores information in different
+     * ways (simplifies process).
+     * If an idMap is defined, map is loaded into this structure and used along
+     * the class.
+     *   generation_method
+     *   simple
+     *   font_size
+     *   nooverlap
+     *   z_dash
+     *   ranksep
+     *   center
+     *   regen
+     *   pure
+     *   show_snmp_modules
+     *   cut_names
+     *   relative
+     *   text_filter
+     *   dont_show_subgroups
+     *   strict_user
+     *   size_canvas
+     *   old_mode
+     *   map_filter (array)
+     *       dont_show_subgroups
+     *       node_radius
+     *       x_offs
+     *       y_offs
+     *       z_dash
+     *       node_sep
+     *       rank_sep
+     *       mindist
+     *       kval
      *
      * @var array
      */
     public $mapOptions;
+
+    /**
+     * Filter (command) to use to calculate node positions.
+     *
+     * @var string
+     */
+    private $filter;
 
 
     /**
@@ -149,11 +215,12 @@ class NetworkMap
         // Default mapOptions values.
         // Defines the command to generate positions.
         $this->mapOptions['generation_method'] = LAYOUT_SPRING1;
+        $this->mapOptions['width'] = 0;
+        $this->mapOptions['height'] = 0;
         $this->mapOptions['simple'] = 0;
         $this->mapOptions['font_size'] = 12;
         $this->mapOptions['nooverlap'] = 1;
         $this->mapOptions['z_dash'] = 0.5;
-        $this->mapOptions['ranksep'] = 3;
         $this->mapOptions['center'] = 0;
         $this->mapOptions['regen'] = 0;
         $this->mapOptions['pure'] = 0;
@@ -172,7 +239,7 @@ class NetworkMap
             'y_offs'              => 0,
             'z_dash'              => 0.5,
             'node_sep'            => 3,
-            'rank_sep'            => 3,
+            'rank_sep'            => 5,
             'mindist'             => 1,
             'kval'                => 0.1,
         ];
@@ -296,9 +363,59 @@ class NetworkMap
             'center_y'           => 0,
         ];
 
+        if (isset($this->mapOptions['generation_method']) === false) {
+            $this->mapOptions['generation_method'] = LAYOUT_SPRING1;
+        }
+
+        // Load filter.
+        $this->loadFilter();
+
         // Will be stored in $this->graph.
         $this->generateNetworkMap();
 
+    }
+
+
+    /**
+     * Update filter and layout based on generation_method selected.
+     *
+     * @return boolean True or false.
+     */
+    private function loadFilter()
+    {
+        if (is_array($this->mapOptions) === false) {
+            return false;
+        }
+
+        switch ($this->mapOptions['generation_method']) {
+            case LAYOUT_CIRCULAR:
+                $this->filter = 'circo';
+                $this->mapOptions['layout'] = 'circular';
+            break;
+
+            case LAYOUT_FLAT:
+                   $this->filter = 'dot';
+                   $this->mapOptions['layout'] = 'flat';
+            break;
+
+            case LAYOUT_RADIAL:
+                   $this->filter = 'twopi';
+                   $this->mapOptions['layout'] = 'radial';
+            break;
+
+            case LAYOUT_SPRING1:
+            default:
+                   $this->filter = 'neato';
+                   $this->mapOptions['layout'] = 'spring1';
+            break;
+
+            case LAYOUT_SPRING2:
+                   $this->filter = 'fdp';
+                   $this->mapOptions['layout'] = 'spring2';
+            break;
+        }
+
+        return true;
     }
 
 
@@ -325,6 +442,9 @@ class NetworkMap
             foreach ($this->map as $k => $v) {
                 $this->mapOptions[$k] = $v;
             }
+
+            // Load filter.
+            $this->loadFilter();
 
             // Retrieve data origin.
             $this->network = null;
@@ -373,14 +493,14 @@ class NetworkMap
      * @param integer $id_node Target node.
      * @param string  $field   Field to retrieve, if null, all are return.
      *
-     * @return mixed Array (node data) or false if error.
+     * @return mixed Array (node data) or null if error.
      */
     public function getNodeData(int $id_node, $field=null)
     {
         if (is_array($this->nodes) === false
             || is_array($this->nodeMapping) === false
         ) {
-            return false;
+            return null;
         }
 
         if (is_array($this->nodes[$this->nodeMapping[$id_node]]) === true) {
@@ -390,7 +510,7 @@ class NetworkMap
                 return $this->nodes[$this->nodeMapping[$id_node]][$field];
             }
         } else {
-            return false;
+            return null;
         }
     }
 
@@ -449,102 +569,193 @@ class NetworkMap
     /**
      * Search for nodes in current map definition.
      *
-     * @return array Nodes detected, internal variable also updated.
+     * @return array Nodes detected, internal variable NOT updated.
      */
     public function calculateNodes()
     {
-        // Calculate.
-        if (!$this->nodes) {
-            // Search.
-            if ($this->idTask) {
-                // Network map, based on discovery task.
-                $this->nodes = enterprise_hook(
-                    'get_discovery_agents',
-                    [$this->idTask]
-                );
-            }
+        global $config;
 
-            if ($this->network) {
-                // Network map, based on direct network.
-                $this->nodes = networkmap_get_new_nodes_from_ip_mask(
-                    $this->network
-                );
-            } else if ($this->mapOptions['map_filter']['empty_map']) {
-                // Empty map returns no data.
-                $this->nodes = [];
-            } else {
-                // Group map.
-                $this->nodes = agents_get_agents(
-                    $filter,
-                    [
-                        'id_grupo',
-                        'nombre',
-                        'id_os',
-                        'id_parent',
-                        'id_agente',
-                        'normal_count',
-                        'warning_count',
-                        'critical_count',
-                        'unknown_count',
-                        'total_count',
-                        'notinit_count',
-                    ],
-                    'AR',
-                    [
-                        'field' => 'id_parent',
-                        'order' => 'ASC',
-                    ]
-                );
-            }
+        // Calculate.
+        // Search.
+        if (enterprise_installed() && $this->idTask) {
+            // Network map, based on discovery task.
+            return enterprise_hook(
+                'get_discovery_agents',
+                [$this->idTask]
+            );
         }
 
-        return $this->nodes;
+        if ($this->network) {
+            // Network map, based on direct network.
+            $nodes = networkmap_get_new_nodes_from_ip_mask(
+                $this->network
+            );
+        } else if ($this->mapOptions['map_filter']['empty_map']) {
+            // Empty map returns no data.
+            $nodes = [];
+        } else {
+            // Group map.
+            $nodes = agents_get_agents(
+                $filter,
+                [
+                    'id_grupo',
+                    'nombre',
+                    'id_os',
+                    'id_parent',
+                    'id_agente',
+                    'normal_count',
+                    'warning_count',
+                    'critical_count',
+                    'unknown_count',
+                    'total_count',
+                    'notinit_count',
+                ],
+                'AR',
+                [
+                    'field' => 'id_parent',
+                    'order' => 'ASC',
+                ]
+            );
+        }
+
+        return $nodes;
     }
 
 
     /**
      * Search for relations for a given node in current map definition.
+     * Use id_parent in custom node definition to create an edge between
+     * two nodes.
      *
-     * @param array $node      Origin.
-     * @param array $id_node   Id for source node.
-     * @param array $id_source Id for source data, agent or module.
+     * Representation is to => from because from could be equal in multiple
+     * edges but no to (1 origin, multiple targets).
+     *
+     * @param array $id_source Id for source data, agent, module or custom.
      *
      * @return array Relations found for given node.
      */
     public function calculateRelations(
-        $node,
-        $id_node,
         $id_source
     ) {
         // Calculate.
+        $node = $this->nodes[$id_source];
         if (is_array($node) === false) {
             return false;
         }
 
         $relations = [];
+        switch ($node['node_type']) {
+            case NODE_AGENT:
+                // Search for agent parent and module relationships.
+                $module_relations = modules_get_relations(
+                    [
+                        'id_agent' => $node['id_agente'],
+                    ]
+                );
+                if ($module_relations !== false) {
+                    foreach ($module_relations as $rel) {
+                        $from = NODE_MODULE.'_'.$rel['module_a'];
+                        $from_id = $this->nodes[$from]['id_node'];
 
-        if (isset($node['id_agente_modulo'])) {
-            // Module.
-            $relations = modules_get_relations(
-                [
-                    'id_module' => $node['id_agente_modulo'],
-                ]
-            );
-        }
+                        $to = NODE_MODULE.'_'.$rel['module_b'];
+                        $to_id = $this->nodes[$to]['id_node'];
 
-        if (isset($node['id_agente'])) {
-            // Agent.
-            $relations = modules_get_relations(
-                [
-                    'id_agent' => $node['id_agente'],
-                ]
-            );
-            if ($relations === false) {
-                $relations = [];
-            }
+                        if ($from_id && $to_id) {
+                            // Both module nodes exist.
+                            $relations[$from_id] = $to_id;
+                            continue;
+                        } else if ($from_id) {
+                            // Only source module node exists.
+                            $to = NODE_AGENT.'_'.modules_get_agentmodule_agent(
+                                $rel['module_b']
+                            );
+                            $to_id = $this->nodes[$to]['id_node'];
+                        } else if ($to_id) {
+                            // Only target module node exists.
+                            $from_id = $node['id_node'];
+                        } else {
+                            // Module nodes does not exist.
+                            // Simulate node to node relationship.
+                            $to = NODE_AGENT.'_'.modules_get_agentmodule_agent(
+                                $rel['module_b']
+                            );
+                            $to_id = $this->nodes[$to]['id_node'];
+                        }
 
-            // Add also parent relationship.
-            $relations[$id_node] = $node['id_parent'];
+                        $relations[$to_id] = $from_id;
+                    }
+                }
+
+                // Add also parent relationship.
+                $parent_id = NODE_AGENT.'_'.$node['id_parent'];
+                $parent_node = $this->nodes[$parent_id]['id_node'];
+
+                // Store relationship.
+                if ($parent_node) {
+                    $relations[$parent_node] = $node['id_node'];
+                }
+            break;
+
+            case NODE_MODULE:
+                // Search for module relationships.
+                // Module.
+                $module_relations = modules_get_relations(
+                    [
+                        'id_module' => $node['id_agente_modulo'],
+                    ]
+                );
+                if ($module_relations !== false) {
+                    foreach ($module_relations as $rel) {
+                        $from = NODE_MODULE.'_'.$rel['module_a'];
+                        $from_id = $this->nodes[$from]['id_node'];
+
+                        $to = NODE_MODULE.'_'.$rel['module_b'];
+                        $to_id = $this->nodes[$to]['id_node'];
+
+                        if ($from_id && $to_id) {
+                            // Both module nodes exist.
+                            $relations[$from_id] = $to_id;
+                            continue;
+                        } else if ($from_id) {
+                            // Only source module node exists.
+                            $to = NODE_AGENT.'_'.modules_get_agentmodule_agent(
+                                $rel['module_b']
+                            );
+                            $to_id = $this->nodes[$to]['id_node'];
+                        } else if ($to_id) {
+                            // Only target module node exists.
+                            // Should not ocurr.
+                            $from_id = $node['id_node'];
+                        } else {
+                            // Module nodes does not exist.
+                            // Simulate node to node relationship.
+                            $to = NODE_AGENT.'_'.modules_get_agentmodule_agent(
+                                $rel['module_b']
+                            );
+                            $to_id = $this->nodes[$to]['id_node'];
+                        }
+
+                        $relations[$to_id] = $from_id;
+                    }
+                }
+            break;
+
+            case NODE_GENERIC:
+                // Handmade ones.
+                // Add also parent relationship.
+                $parent_id = $node['id_parent'];
+                $parent_node = $this->nodes[$parent_id]['id_node'];
+
+                // Store relationship.
+                if ($parent_node) {
+                    $relations[$parent_node] = $node['id_node'];
+                }
+            break;
+
+            case NODE_PANDORA:
+            default:
+                // Ignore.
+            break;
         }
 
         // Others.
@@ -602,16 +813,18 @@ class NetworkMap
 
         $nodes_and_relations['relations'] = [];
         $index_relations = 0;
-        foreach ($relations as $relation) {
-            $nodes_and_relations['relations'][$index_relations]['id_map'] = $relation['id_map'];
-            $nodes_and_relations['relations'][$index_relations]['id_parent'] = $relation['id_parent'];
-            $nodes_and_relations['relations'][$index_relations]['id_child'] = $relation['id_child'];
-            $nodes_and_relations['relations'][$index_relations]['parent_type'] = $relation['parent_type'];
-            $nodes_and_relations['relations'][$index_relations]['child_type'] = $relation['child_type'];
-            $nodes_and_relations['relations'][$index_relations]['id_parent_source_data'] = $relation['id_parent_source_data'];
-            $nodes_and_relations['relations'][$index_relations]['id_child_source_data'] = $relation['id_child_source_data'];
+        if (is_array($relations)) {
+            foreach ($relations as $relation) {
+                $nodes_and_relations['relations'][$index_relations]['id_map'] = $relation['id_map'];
+                $nodes_and_relations['relations'][$index_relations]['id_parent'] = $relation['id_parent'];
+                $nodes_and_relations['relations'][$index_relations]['id_child'] = $relation['id_child'];
+                $nodes_and_relations['relations'][$index_relations]['parent_type'] = $relation['parent_type'];
+                $nodes_and_relations['relations'][$index_relations]['child_type'] = $relation['child_type'];
+                $nodes_and_relations['relations'][$index_relations]['id_parent_source_data'] = $relation['id_parent_source_data'];
+                $nodes_and_relations['relations'][$index_relations]['id_child_source_data'] = $relation['id_child_source_data'];
 
-            $index_relations++;
+                $index_relations++;
+            }
         }
 
         $this->graph = $nodes_and_relations;
@@ -654,7 +867,7 @@ class NetworkMap
             $size .= ','.($this->mapOptions['size_canvas']['y'] / 100);
         }
 
-        // Graphviz custom values
+        // Graphviz custom values.
         if (isset($map_filter['node_sep'])) {
             $node_sep = $map_filter['node_sep'];
         } else {
@@ -743,7 +956,10 @@ class NetworkMap
     public function createDotNode($data)
     {
         global $config;
-        global $hack_networkmap_mobile;
+
+        if (is_array($data) === false) {
+            return '';
+        }
 
         $dot_str = '';
 
@@ -769,13 +985,257 @@ class NetworkMap
         $dot_str = $data['id_node'].' [ parent="'.$data['id_parent'].'"';
         $dot_str .= ', color="'.$color.'", fontsize='.$font_size;
         $dot_str .= ', shape="doublecircle"'.$url_node_link;
-        $dot_str .= ', style="filled", fixedsize=true, width='.$radius.', height='.$radius;
-        $dot_str .= ', label="'.$label.'", tooltip="'.$ajax_prefix;
-        $dot_str .= 'ajax.php?page=operation/agentes/ver_agente';
-        $dot_str .= '&get_agent_status_tooltip=1&id_agent='.$data['id_agente'];
-        $dot_str .= $meta_params.'"];'."\n";
+        $dot_str .= ', style="filled", fixedsize=true, width='.$radius;
+        $dot_str .= ', height='.$radius.', label="'.$label.'"]'."\n";
 
         return $dot_str;
+    }
+
+
+    /**
+     * Returns target color to be used based on the status received.
+     *
+     * @param integer $status Source information.
+     *
+     * @return string HTML tag for color.
+     */
+    public static function getColorByStatus($status)
+    {
+        if (isset($status) === false) {
+            return COL_IGNORED;
+        }
+
+        switch ($status) {
+            case AGENT_MODULE_STATUS_NORMAL:
+            case AGENT_STATUS_NORMAL:
+            return COL_NORMAL;
+
+            case AGENT_MODULE_STATUS_NOT_INIT:
+            case AGENT_STATUS_NOT_INIT:
+            return COL_NOTINIT;
+
+            case AGENT_MODULE_STATUS_CRITICAL_BAD:
+            case AGENT_STATUS_CRITICAL:
+            return COL_CRITICAL;
+
+            case AGENT_MODULE_STATUS_WARNING:
+            case AGENT_STATUS_WARNING:
+            return COL_WARNING;
+
+            case AGENT_MODULE_STATUS_CRITICAL_ALERT:
+            case AGENT_MODULE_STATUS_WARNING_ALERT:
+            case AGENT_STATUS_ALERT_FIRED:
+            return COL_ALERTFIRED;
+
+            case AGENT_MODULE_STATUS_UNKNOWN:
+            case AGENT_STATUS_UNKNOWN:
+            return COL_UNKNOWN;
+
+            default:
+                // Ignored.
+            break;
+        }
+
+        return COL_IGNORED;
+
+    }
+
+
+    /**
+     * Translates a standard node into a JS node with following attributes:
+     *
+     * @param array $node Input array (standard node structure).
+     *   id_map.
+     *   id_in_db.
+     *   type.
+     *   source_data.
+     *   x.
+     *   y.
+     *   z.
+     *   state.
+     *   deleted.
+     *   style.
+     *      shape.
+     *      image.
+     *      label.
+     *      id_agent.
+     *      id_networkmap.
+     *
+     * @return array Object ready to be dump to JS.
+     * * Output array (translated):
+     *   id.
+     *   id_db.
+     *   type.
+     *   id_agent.
+     *   id_module.
+     *   fixed.
+     *   x.
+     *   y.
+     *   px.
+     *   py.
+     *   z.
+     *   state.
+     *   deleted.
+     *   image_url.
+     *   image_width.
+     *   image_height.
+     *   raw_text.
+     *   text.
+     *   shape.
+     *   color.
+     *   map_id.
+     *   networkmap_id.
+     */
+    public function nodeToJS($node)
+    {
+        global $config;
+
+        $item = [];
+        $item['id'] = $node['id'];
+
+        // Id titem.
+        if (enterprise_installed()
+            && $this->map['__simulated'] === false
+        ) {
+            $item['id_db'] = $node['id_db'];
+        }
+
+        $source_data = $this->getNodeData($node['id']);
+
+        if (enterprise_installed() && $simulated === false) {
+            enterprise_include_once('include/functions_networkmap.php');
+            $item['id_db'] = $node['id_in_db'];
+        } else {
+            $item['id_db'] = (int) $node['id'];
+        }
+
+        $item['type'] = $node['type'];
+        $item['fixed'] = true;
+        $item['x'] = (int) $node['x'];
+        $item['y'] = (int) $node['y'];
+        $item['z'] = (int) $node['z'];
+
+        // X,Y aliases for D3.
+        $item['px'] = $item['x'];
+        $item['py'] = $item['y'];
+
+        // Status represents the status of the node (critical, warning...).
+        // State represents state of node in map (in holding_area or not).
+        $item['state'] = $node['state'];
+        $item['deleted'] = $node['deleted'];
+
+        // Node color.
+        $item['color'] = $this->getColorByStatus($source_data['status']);
+        switch ($node['type']) {
+            case NODE_AGENT:
+                $item['id_agent'] = $node['source_data'];
+            break;
+
+            case NODE_MODULE:
+                $item['id_module'] = $node['source_data'];
+            break;
+
+            case NODE_PANDORA:
+                $item['color'] = COL_IGNORED;
+                $node['style']['image'] = ui_get_logo_to_center_networkmap();
+            break;
+
+            case NODE_GENERIC:
+            default:
+                $item['color'] = $node['color'];
+            break;
+        }
+
+        // Calculate values.
+        // 40 => DEFAULT NODE RADIUS.
+        // 30 => alignment factor.
+        $holding_area_max_y = ($this->mapOptions['height'] + 30 + $this->mapOptions['map_filter']['node_radius'] * 2 - $this->mapOptions['map_filter']['holding_area'][1] + 10 * $this->mapOptions['map_filter']['node_radius']);
+
+        // Update position if node must be stored in holding_area.
+        if ($item['state'] == 'holding_area') {
+            $holding_area_x = ($this->mapOptions['width'] + 30 + $this->mapOptions['map_filter']['node_radius'] * 2 - $this->mapOptions['map_filter']['holding_area'][0] + ($count_item_holding_area % 11) * $this->mapOptions['map_filter']['node_radius']);
+            $holding_area_y = ($this->mapOptions['height'] + 30 + $this->mapOptions['map_filter']['node_radius'] * 2 - $this->mapOptions['map_filter']['holding_area'][1] + (int) (($count_item_holding_area / 11)) * $this->mapOptions['map_filter']['node_radius']);
+
+            // Keep holding area nodes in holding area.
+            if ($holding_area_max_y <= $holding_area_y) {
+                $holding_area_y = $holding_area_max_y;
+            }
+
+            $item['x'] = $holding_area_x;
+            $item['y'] = $holding_area_y;
+
+            // Increment for the next node in holding area.
+            $count_item_holding_area++;
+        }
+
+        // Node image.
+        $item['image_url'] = '';
+        $item['image_width'] = 0;
+        $item['image_height'] = 0;
+        if (empty($node['style']['image']) === false) {
+            $item['image_url'] = ui_get_full_url(
+                $node['style']['image']
+            );
+            $image_size = getimagesize(
+                $config['homedir'].'/'.$node['style']['image']
+            );
+            $item['image_width'] = (int) $image_size[0];
+            $item['image_height'] = (int) $image_size[1];
+        }
+
+        $item['raw_text'] = $node['style']['label'];
+        $item['text'] = io_safe_output($node['style']['label']);
+        $item['shape'] = $node['style']['shape'];
+        $item['map_id'] = $node['id_map'];
+        if (!isset($node['style']['id_networkmap'])
+            || $node['style']['id_networkmap'] == ''
+            || $node['style']['id_networkmap'] == 0
+        ) {
+            $item['networkmap_id'] = 0;
+        } else {
+            $item['networkmap_id'] = $node['style']['id_networkmap'];
+        }
+
+        return $item;
+    }
+
+
+    /**
+     * Transforms an edge relationship into a JS array to be dumped.
+     *
+     * @param array $edge Edge information.
+     *
+     * * Input structure:
+     *   parent_type.
+     *   child_type.
+     *   id_parent_source_data.
+     *   id_child_source_data.
+     *
+     * @return array Edge translated to JS object.
+     *
+     * * Output structure:
+     *   arrow_start.
+     *   arrow_end.
+     *   status_start.
+     *   status_end.
+     *   id_module_start.
+     *   id_agent_start.
+     *   id_module_end.
+     *   id_agent_end.
+     *   link_color.
+     *   target.
+     *   source.
+     *   deleted.
+     *   target_id_db.
+     *   source_id_db.
+     *   text_start.
+     *   text_end.
+     */
+    public function edgeToJS($edge)
+    {
+        // TODO: migrate networkmap_links_to_js_links here.
+        hd($edge);
+        return [];
     }
 
 
@@ -822,97 +1282,303 @@ class NetworkMap
     /**
      * Generate a graphviz string structure to be used later.
      *
+     * Usage:
+     *  To create a new handmade graph:
+     *    Define node struture
+     *      key => node source data (agent/module row or custom)
+     *
+     * Minimum required fields in array:
+     *      label
+     *      status
+     *      id
+     *
+     * @param array $nodes Generate dotgraph using defined nodes.
+     *
      * @return void
      */
-    public function generateDotGraph()
+    public function generateDotGraph($nodes=false)
     {
         echo 'regenerar la net es: '.$this->network.'<br />';
         if (!isset($this->dotGraph)) {
             // Generate dot file.
-            $nodes = [];
+            $this->nodes = [];
             $edges = [];
             $graph = '';
 
-            // Search for nodes.
-            $nodes = $this->calculateNodes();
+            if ($nodes === false) {
+                // Search for nodes.
+                $nodes = $this->calculateNodes();
+            }
 
             // Search for relations.
             // Build dot structure.
             // Open Graph.
             $graph = $this->openDotFile();
 
+            // Create empty pandora node to link orphans.
+            $this->nodes[0] = [
+                'label'            => get_product_name(),
+                'id_node'          => 0,
+                'id_agente'        => 0,
+                'id_agente_modulo' => 0,
+                'node_type'        => NODE_PANDORA,
+            ];
+
+            $this->nodeMapping[0] = 0;
+
+            $graph .= $this->createDotNode(
+                $this->nodes[0]
+            );
+
             // Create dot nodes.
-            $i = 0;
+            $i = 1;
+            $orphans = [];
             foreach ($nodes as $k => $node) {
-                $this->nodeMapping[$i] = $k;
+                if (isset($node['id_agente']) === true
+                    && $node['id_agente'] > 0
+                ) {
+                    // Origin is agent or module.
+                    if (isset($node['id_agente_modulo']) === true
+                        && $node['id_agente_modulo'] > 0
+                    ) {
+                        $k = NODE_MODULE.'_'.$k;
+                        // Origin is module.
+                        $id_source = $node['id_agente_modulo'];
+                        $label = io_safe_output($node['nombre']);
+                        $status = modules_get_agentmodule_status($node);
+                        $this->nodes[$k]['node_type'] = NODE_MODULE;
+
+                        $url = 'index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$node['id_agente'];
+                        $url_tooltip = 'ajax.php?page=operation/agentes/ver_agente&get_agentmodule_status_tooltip=1&id_module='.$node['id_agente_modulo'];
+                    } else {
+                        // Origin is agent.
+                        $k = NODE_AGENT.'_'.$k;
+                        $id_source = $node['id_agente'];
+                        $label = io_safe_output($node['alias']);
+                        $status = agents_get_status_from_counts($node);
+                        $this->nodes[$k]['node_type'] = NODE_AGENT;
+
+                        $url = 'index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$node['id_agente'];
+                        $url_tooltip = 'ajax.php?page=operation/agentes/ver_agente&get_agent_status_tooltip=1&id_agent='.$node['id_agente'];
+                    }
+                } else {
+                    // Handmade node.
+                    $k = NODE_GENERIC.'_'.$k;
+                    $id_source = $node['id'];
+                    $label = $node['label'];
+                    $status = $node['status'];
+                    $this->nodes[$k]['node_type'] = NODE_GENERIC;
+                    // In handmade nodes, edges are defined by using id_parent
+                    // Referencing target parent 'id'.
+                    $this->nodes[$k]['id_parent'] = $node['id_parent'];
+                }
+
+                $this->nodes[$k]['url'] = $url;
+                $this->nodes[$k]['url_tooltip'] = $url_tooltip;
+
+                // Fullfill data.
+                // If url is defined in node will be overwritten.
+                foreach ($node as $key => $value) {
+                    $this->nodes[$k][$key] = $value;
+                }
+
                 $graph .= $this->createDotNode(
                     [
                         'id_node'   => $i,
-                        'id_source' => $node['id_agente'],
-                        'status'    => agents_get_status_from_counts($node),
-                        'label'     => io_safe_output($node['alias']),
+                        'id_source' => $id_source,
+                        'status'    => $status,
+                        'label'     => $label,
                         'image'     => null,
-                        'url'       => 'none',
                     ]
                 );
 
                 // Keep reverse reference.
+                $this->nodeMapping[$i] = $k;
                 $this->nodes[$k]['id_node'] = $i;
+                $this->nodes[$k]['status'] = $status;
 
-                $edges[] = $this->calculateRelations($node, $i, $k);
+                $edges[$i] = $this->calculateRelations($k);
+
+                // Adopt orphans.
+                if (empty($edges[$i])) {
+                    $orphans[$i] = 0;
+                }
 
                 // Increase for next node.
                 $i++;
             }
 
-            hd($edges);
             foreach ($edges as $rel) {
-                foreach ($rel as $from => $to) {
+                foreach ($rel as $to => $from) {
                     $graph .= $this->createDotEdge(
                         [
                             'from' => $from,
-                            'to'   => $this->nodes[$to]['id_node'],
+                            'to'   => $to,
                         ]
                     );
+                    // Remove parents from orphans.
+                    unset($orphans[$from]);
                 }
             }
 
-            // Create dot edges.
+            // Add missed edges.
+            foreach ($orphans as $to => $from) {
+                $graph .= $this->createDotEdge(
+                    [
+                        'from' => $from,
+                        'to'   => $to,
+                    ]
+                );
+            }
+
+            // Store relationships.
+            $this->relations = $edges;
+
+            // Close dot file.
             $graph .= $this->closeDotFile();
 
-            hd($graph);
             $this->dotGraph = $graph;
-
-            /*
-                $this->dotGraph = networkmap_generate_dot(
-                get_product_name(),
-                $this->idGroup,
-                $this->mapOptions['simple'],
-                $this->mapOptions['font_size'],
-                $this->mapOptions['layout'],
-                $this->mapOptions['nooverlap'],
-                $this->mapOptions['z_dash'],
-                $this->mapOptions['ranksep'],
-                $this->mapOptions['center'],
-                $this->mapOptions['regen'],
-                $this->mapOptions['pure'],
-                $this->mapOptions['id'],
-                $this->mapOptions['show_snmp_modules'],
-                $this->mapOptions['cut_names'],
-                $this->mapOptions['relative'],
-                $this->mapOptions['text_filter'],
-                $this->network,
-                $this->mapOptions['dont_show_subgroups'],
-                // Strict user (strict_user).
-                false,
-                // Canvas size (size_canvas).
-                null,
-                $this->mapOptions['old_mode'],
-                $this->mapOptions['map_filter']
-                );
-            */
         }
 
+    }
+
+
+    /**
+     * Extracts node coordinates and relationships built by graphviz.
+     *
+     * @param string $graphviz_file Graphviz output file path.
+     *
+     * @return mixed Nodes and relations if success. False if not.
+     */
+    private function parseGraphvizMapFile($graphviz_file)
+    {
+        if (isset($graphviz_file) === false
+            || is_file($graphviz_file) === false
+        ) {
+            return false;
+        }
+
+        $content = file($graphviz_file);
+
+        $nodes = [];
+        $relations = [];
+        foreach ($content as $key => $line) {
+            // Reduce blank spaces.
+            $line = preg_replace('/\ +/', ' ', $line);
+
+            if (preg_match('/^graph.*$/', $line) != 0) {
+                // Graph definition.
+                $fields = explode(' ', $line);
+
+                $this->map['width'] = ($fields[2] * 100);
+                $this->map['height'] = ($fields[3] * 100);
+            } else if (preg_match('/^node.*$/', $line) != 0) {
+                // Node.
+                $fields = explode(' ', $line);
+                $id = $fields[1];
+                $nodes[$id]['x'] = (($fields[2] * $this->mapOptions['map_filter']['node_radius']) - $this->mapOptions['map_filter']['rank_sep'] * GRAPHVIZ_RADIUS_CONVERSION_FACTOR);
+                $nodes[$id]['y'] = (($fields[3] * $this->mapOptions['map_filter']['node_radius']) - $this->mapOptions['map_filter']['rank_sep'] * GRAPHVIZ_RADIUS_CONVERSION_FACTOR);
+            } else if (preg_match('/^edge.*$/', $line) != 0) {
+                // Edge.
+                // This is really not needed, because is already defined
+                // in $this->relations. Only for debug purposes.
+                $fields = explode(' ', $line);
+
+                if (strpos($fields[1], 'transp_') !== false
+                    || strpos($fields[2], 'transp_') !== false
+                ) {
+                    // Skip transparent nodes relationships.
+                    continue;
+                }
+
+                $relations[] = [
+                    'from' => $fields[2],
+                    'to'   => $fields[1],
+                ];
+            }
+        }
+
+        return [
+            'nodes'     => $nodes,
+            'relations' => $relations,
+        ];
+
+    }
+
+
+    /**
+     * Calculates X,Y positions foreach element defined in dotGraph.
+     *
+     * @return array Structure parsed.
+     */
+    public function calculateCoords()
+    {
+        switch (PHP_OS) {
+            case 'WIN32':
+            case 'WINNT':
+            case 'Windows':
+                $filename_dot = sys_get_temp_dir()."\\networkmap_".$filter;
+            break;
+
+            default:
+                $filename_dot = sys_get_temp_dir().'/networkmap_'.$filter;
+            break;
+        }
+
+        if ($this->mapOptions['simple']) {
+            $filename_dot .= '_simple';
+        }
+
+        if ($this->mapOptions['nooverlap']) {
+            $filename_dot .= '_nooverlap';
+        }
+
+        $filename_dot .= uniqid().'_'.$this->idMap.'.dot';
+
+        file_put_contents($filename_dot, $this->dotGraph);
+
+        $plain_file = 'plain'.uniqid().'.txt';
+        switch (PHP_OS) {
+            case 'WIN32':
+            case 'WINNT':
+            case 'Windows':
+                $filename_plain = sys_get_temp_dir().'\\'.$plain_file;
+
+                $cmd = io_safe_output(
+                    $config['graphviz_bin_dir'].'\\'.$this->filter.'.exe -Tplain -o '.$filename_plain.' '.$filename_dot
+                );
+            break;
+
+            default:
+                $filename_plain = sys_get_temp_dir().'/'.$plain_file;
+
+                $cmd = $this->filter.' -Tplain -o '.$filename_plain.' '.$filename_dot;
+            break;
+        }
+
+        $retval = 0;
+        $r = system($cmd, $retval);
+
+        if ($retval != 0) {
+            ui_print_error_message(
+                __('Failed to generate dotmap, please select different layout schema')
+            );
+            return [];
+        }
+
+        unlink($filename_dot);
+
+        $graph = $this->parseGraphvizMapFile(
+            $filename_plain
+        );
+
+        unlink($filename_plain);
+
+        /*
+         * Graphviz section ends here.
+         */
+
+        return $graph;
     }
 
 
@@ -924,23 +1590,55 @@ class NetworkMap
     public function generateEmptyDotGraph()
     {
         // Create an empty map dot structure.
-        $graph = networkmap_open_graph(
-            $this->mapOptions['layout'],
-            $this->mapOptions['nooverlap'],
-            $this->mapOptions['pure'],
-            $this->mapOptions['z_dash'],
-            $this->mapOptions['ranksep'],
-            $this->mapOptions['font_size'],
-            null
+        $graph = $this->openDotFile();
+
+        $this->nodes[0] = [
+            'label'            => get_product_name(),
+            'id_node'          => 0,
+            'id_agente'        => 0,
+            'id_agente_modulo' => 0,
+            'node_type'        => NODE_PANDORA,
+        ];
+
+        $this->nodeMapping[0] = 0;
+
+        $graph .= $this->createDotNode(
+            $this->nodes[0]
         );
-        $graph .= networkmap_create_pandora_node(
-            get_product_name(),
-            $this->mapOptions['font_size'],
-            $this->mapOptions['simple']
-        );
-        $graph .= networkmap_close_graph();
+
+        $graph .= $this->closeDotFile();
 
         $this->dotGraph = $graph;
+    }
+
+
+    /**
+     * Returns the most representative ID based on the tipe of node received.
+     *
+     * @param array $node Source data.
+     *
+     * @return integer Source id.
+     */
+    private function auxGetIdByType($node)
+    {
+        if (!is_array($node)) {
+            return 0;
+        }
+
+        switch ($to_source['node_type']) {
+            case NODE_MODULE:
+            return $node['id_agente_modulo'];
+
+            case NODE_AGENT:
+            return $node['id_agente'];
+
+            case NODE_GENERIC:
+            return $node['id_node'];
+
+            case NODE_PANDORA:
+            default:
+            return 0;
+        }
     }
 
 
@@ -962,107 +1660,27 @@ class NetworkMap
          * Let graphviz place the nodes.
          */
 
-        switch ($this->mapOptions['generation_method']) {
-            case LAYOUT_CIRCULAR:
-                $filter = 'circo';
-                $this->mapOptions['layout'] = 'circular';
-            break;
-
-            case LAYOUT_FLAT:
-                   $filter = 'dot';
-                   $this->mapOptions['layout'] = 'flat';
-            break;
-
-            case LAYOUT_RADIAL:
-                   $filter = 'twopi';
-                   $this->mapOptions['layout'] = 'radial';
-            break;
-
-            case LAYOUT_SPRING1:
-            default:
-                   $filter = 'neato';
-                   $this->mapOptions['layout'] = 'spring1';
-            break;
-
-            case LAYOUT_SPRING2:
-                   $filter = 'fdp';
-                   $this->mapOptions['layout'] = 'spring2';
-            break;
-        }
-
         if ($map_filter['empty_map']) {
             $this->generateEmptyDotGraph();
         } else if (!isset($this->dotGraph)) {
             $this->generateDotGraph();
         }
 
-        switch (PHP_OS) {
-            case 'WIN32':
-            case 'WINNT':
-            case 'Windows':
-                $filename_dot = sys_get_temp_dir()."\\networkmap_".$filter;
-            break;
+        /*
+         * Calculate X,Y positions.
+         */
 
-            default:
-                $filename_dot = sys_get_temp_dir().'/networkmap_'.$filter;
-            break;
-        }
+        $graph = $this->calculateCoords();
 
-        if ($simple) {
-            $filename_dot .= '_simple';
-        }
-
-        if ($nooverlap) {
-            $filename_dot .= '_nooverlap';
-        }
-
-        $filename_dot .= uniqid().'_'.$this->idMap.'.dot';
-
-        file_put_contents($filename_dot, $this->dotGraph);
-
-        $plain_file = 'plain'.uniqid().'.txt';
-        switch (PHP_OS) {
-            case 'WIN32':
-            case 'WINNT':
-            case 'Windows':
-                $filename_plain = sys_get_temp_dir().'\\'.$plain_file;
-
-                $cmd = io_safe_output(
-                    $config['graphviz_bin_dir'].'\\'.$filter.'.exe -Tplain -o '.$filename_plain.' '.$filename_dot
-                );
-            break;
-
-            default:
-                $filename_plain = sys_get_temp_dir().'/'.$plain_file;
-
-                $cmd = $filter.' -Tplain -o '.$filename_plain.' '.$filename_dot;
-            break;
-        }
-
-        $retval = 0;
-        $r = system($cmd, $retval);
-
-        if ($retval != 0) {
+        if (is_array($graph) === true) {
+            $nodes = $graph['nodes'];
+            $relations = $graph['relations'];
+        } else {
             ui_print_error_message(
-                __('Failed to generate dotmap, please select different layout schema')
+                __('Failed to retrieve graph data.')
             );
             return;
         }
-
-        unlink($filename_dot);
-
-        $nodes = networkmap_loadfile(
-            $this->idMap,
-            $filename_plain,
-            $relation_nodes,
-            $this->dotGraph
-        );
-
-        unlink($filename_plain);
-
-        /*
-         * Graphviz section ends here.
-         */
 
         /*
          * Calculate references.
@@ -1084,36 +1702,42 @@ class NetworkMap
             }
         }
 
-        $nodes_and_relations['nodes'] = [];
         $index = 0;
         $node_center = [];
-        foreach ($nodes as $key => $node) {
-            $nodes_and_relations['nodes'][$index]['id'] = $node['id'];
-            $nodes_and_relations['nodes'][$index]['id_map'] = $this->idMap;
 
-            // Retrieve properties.
-            $node['id_agent'] = $this->getNodeData(
-                $node['id'],
-                'id_agente'
-            );
-            $node['id_module'] = $this->getNodeData(
-                $node['id'],
-                'id_agente_modulo'
-            );
+        $graph = [];
+        $graph['nodes'] = [];
 
-            // Specify node type and set values.
-            if (isset($node['id_agent']) === true) {
-                if (isset($node['id_module']) === false) {
-                    // Agent.
-                    $node['type'] = 'agent';
-                    $node['source_data'] = $node['id_agent'];
-                    $node['text'] = $this->getNodeData(
-                        $node['id'],
-                        'alias'
-                    );
+        // Prepare graph nodes.
+        foreach ($nodes as $id => $coords) {
+            $node_tmp['id_map'] = $this->idMap;
+            $node_tmp['id'] = $id;
 
-                    $node['image'] = ui_print_os_icon(
-                        $this->getNodeData($node['id'], 'id_os'),
+            $source = $this->getNodeData($id);
+
+            $node_tmp['id_agent'] = $source['id_agente'];
+            $node_tmp['id_module'] = $source['id_module'];
+            $node_tmp['type'] = $source['node_type'];
+            $node_tmp['x'] = $coords['x'];
+            $node_tmp['y'] = $coords['y'];
+
+            $node_tmp['width'] = $this->mapOptions['map_filter']['node_radius'];
+            $node_tmp['height'] = $this->mapOptions['map_filter']['node_radius'];
+
+            if (isset($source['width'])) {
+                $node_tmp['width'] = $source['width'];
+            }
+
+            if (isset($source['height'])) {
+                $node_tmp['height'] = $source['height'];
+            }
+
+            switch ($node_tmp['type']) {
+                case NODE_AGENT:
+                    $node_tmp['source_data'] = $source['id_agente'];
+                    $node_tmp['text'] = $source['alias'];
+                    $node_tmp['image'] = ui_print_os_icon(
+                        $source['id_os'],
                         false,
                         true,
                         true,
@@ -1121,107 +1745,81 @@ class NetworkMap
                         true,
                         true
                     );
-                } else if (isset($node['id_module'])) {
-                    // Module.
-                    $node['type'] = 'module';
-                    $node['source_data'] = $node['id_module'];
-                    $node['text'] = $this->getNodeData(
-                        $node['id'],
-                        'nombre'
-                    );
+                break;
 
-                    $node['image'] = ui_print_moduletype_icon(
-                        $this->getNodeData($node['id'], 'id_tipo_modulo'),
+                case NODE_MODULE:
+                    $node_tmp['source_data'] = $source['id_agente_modulo'];
+                    $node_tmp['text'] = $source['nombre'];
+                    $node_tmp['image'] = ui_print_moduletype_icon(
+                        $this->getNodeData($id, 'id_tipo_modulo'),
                         true,
                         true,
                         false,
                         true
                     );
-                }
-            }
+                break;
 
-            $children_count = 0;
-            foreach ($relation_nodes as $relation) {
-                if (($relation['parent_type'] == 'agent') || ($relation['parent_type'] == '')) {
-                    if ($nodes[$relation['id_parent']]['id_agent'] == $node['id_agent']) {
-                        $children_count++;
-                    }
-                } else if ($relation['parent_type'] == 'module') {
-                    if ($nodes[$relation['id_parent']]['id_module'] == $node['id_module']) {
-                        $children_count++;
-                    }
-                }
-            }
+                case NODE_PANDORA:
+                    $node_tmp['text'] = $source['label'];
+                    $node_tmp['id_agent'] = $source['id_agente'];
+                    $node_tmp['id_module'] = $source['id_agente_modulo'];
+                    $node_tmp['source_data'] = 0;
+                break;
 
-            // Center map over node with most children.
-            if (empty($node_center) || $node_center['counter'] < $children_count) {
-                $node_center['x'] = (int) $node['coords'][0];
-                $node_center['y'] = (int) $node['coords'][1];
-                $node_center['counter'] = $children_count;
-            }
-
-            $nodes_and_relations['nodes'][$index]['x'] = (int) $node['coords'][0];
-            $nodes_and_relations['nodes'][$index]['y'] = (int) $node['coords'][1];
-
-            if (($node['type'] == 'agent') || ($node['type'] == '')) {
-                $nodes_and_relations['nodes'][$index]['source_data'] = $node['id_agent'];
-                $nodes_and_relations['nodes'][$index]['type'] = 0;
-            } else {
-                $nodes_and_relations['nodes'][$index]['source_data'] = $node['id_module'];
-                $nodes_and_relations['nodes'][$index]['id_agent'] = $node['id_agent'];
-                $nodes_and_relations['nodes'][$index]['type'] = 1;
+                case NODE_GENERIC:
+                default:
+                    $node_tmp['text'] = $source['label'];
+                    $node_tmp['id_agent'] = $source['id_agente'];
+                    $node_tmp['id_module'] = $source['id_agente_modulo'];
+                break;
             }
 
             $style = [];
-            $style['shape'] = 'circle';
-            $style['image'] = $node['image'];
-            $style['width'] = $node['width'];
-            $style['height'] = $node['height'];
-            $style['label'] = $node['text'];
-            $nodes_and_relations['nodes'][$index]['style'] = json_encode($style);
+            $style['shape'] = $source['shape'];
+            if (isset($style['shape']) === false) {
+                $style['shape'] = 'circle';
+            }
 
+            $style['image'] = $node_tmp['image'];
+            $style['width'] = $node_tmp['width'];
+            $style['height'] = $node_tmp['height'];
+            $style['label'] = $node_tmp['text'];
+
+            $node_tmp['style'] = json_encode($style);
+
+            $graph['nodes'][$index] = $node_tmp;
             $index++;
         }
 
-        $nodes_and_relations['relations'] = [];
-        $index = 0;
+        // Prepare graph edges.
+        $graph['relations'] = [];
 
-        foreach ($relation_nodes as $relation) {
-            $nodes_and_relations['relations'][$index]['id_map'] = $this->idMap;
+        // Edges from and to references id_nodes. Retrieve source data
+        // before link them.
+        foreach ($relations as $rel) {
+            // Parent.
+            $from_source = $this->getNodeData($rel['from']);
+            // Child.
+            $to_source = $this->getNodeData($rel['to']);
 
-            if (($relation['parent_type'] == 'agent') || ($relation['parent_type'] == '')) {
-                $nodes_and_relations['relations'][$index]['id_parent'] = $relation['id_parent'];
-                $nodes_and_relations['relations'][$index]['id_parent_source_data'] = $nodes[$relation['id_parent']]['id_agent'];
-                $nodes_and_relations['relations'][$index]['parent_type'] = 0;
-            } else if ($relation['parent_type'] == 'module') {
-                $nodes_and_relations['relations'][$index]['id_parent'] = $relation['id_parent'];
-                $nodes_and_relations['relations'][$index]['id_parent_source_data'] = $nodes[$relation['id_parent']]['id_module'];
-                $nodes_and_relations['relations'][$index]['parent_type'] = 1;
-            } else {
-                $nodes_and_relations['relations'][$index]['id_parent'] = $relation['id_parent'];
-                $nodes_and_relations['relations'][$index]['id_child_source_data'] = -2;
-                $nodes_and_relations['relations'][$index]['parent_type'] = 3;
-            }
+            $edge = [];
+            $edge['id_map'] = $this->idMap;
+            $edge['id_parent'] = $rel['from'];
+            $edge['id_child'] = $rel['to'];
+            $edge['parent_type'] = $from_source['node_type'];
+            $edge['child_type'] = $to_source['node_type'];
+            $edge['id_child_source_data'] = $this->auxGetIdByType(
+                $to_source
+            );
+            $edge['id_parent_source_data'] = $this->auxGetIdByType(
+                $from_source
+            );
 
-            if (($relation['child_type'] == 'agent') || ($relation['child_type'] == '')) {
-                $nodes_and_relations['relations'][$index]['id_child'] = $relation['id_child'];
-                $nodes_and_relations['relations'][$index]['id_child_source_data'] = $nodes[$relation['id_child']]['id_agent'];
-                $nodes_and_relations['relations'][$index]['child_type'] = 0;
-            } else if ($relation['child_type'] == 'module') {
-                $nodes_and_relations['relations'][$index]['id_child'] = $relation['id_child'];
-                $nodes_and_relations['relations'][$index]['id_child_source_data'] = $nodes[$relation['id_child']]['id_module'];
-                $nodes_and_relations['relations'][$index]['child_type'] = 1;
-            } else {
-                $nodes_and_relations['relations'][$index]['id_child'] = $relation['id_child'];
-                $nodes_and_relations['relations'][$index]['id_child_source_data'] = -2;
-                $nodes_and_relations['relations'][$index]['child_type'] = 3;
-            }
-
-            $index++;
+            $graph['relations'][] = $edge;
         }
 
         if ($this->idMap > 0 && (!isset($this->map['__simulated']))) {
-            if (enterprise_installed()) {
+            if (!enterprise_installed()) {
                 $nodes_and_relations = enterprise_hook(
                     'save_generate_nodes',
                     [
@@ -1251,7 +1849,7 @@ class NetworkMap
             $this->map['center_y'] = $node_center['y'];
         }
 
-        $this->graph = $nodes_and_relations;
+        $this->graph = $graph;
 
     }
 
@@ -1355,12 +1953,16 @@ class NetworkMap
                 $node['type'] = '';
             }
 
-            $item = networkmap_db_node_to_js_node(
-                $node,
-                $count,
-                $count_item_holding_area,
-                $simulate
+            $item = $this->nodeToJS(
+                $node
             );
+
+            /*
+             *    $count,
+             *    $count_item_holding_area,
+             *    $simulate
+             */
+
             if ($item['deleted']) {
                 continue;
             }

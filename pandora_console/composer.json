@@ -10,5 +10,15 @@
   "require": {
     "mpdf/mpdf": "^7.1",
     "swiftmailer/swiftmailer": "^6.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "Models\\": "include/rest-api/models"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Tests\\": "tests/"
+    }
   }
 }

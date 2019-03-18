@@ -196,7 +196,7 @@ function netflow_stat_table($data, $start_date, $end_date, $aggregate)
     $start_date = date($nfdump_date_format, $start_date);
     $end_date = date($nfdump_date_format, $end_date);
     $values = [];
-    $table->width = '40%';
+    $table->width = '100%';
     $table->cellspacing = 0;
     $table->class = 'databox';
     $table->data = [];
@@ -1021,8 +1021,7 @@ function netflow_get_chart_types()
 {
     return [
         'netflow_area'          => __('Area graph'),
-        'netflow_pie_summatory' => __('Pie graph and Summary table'),
-        'netflow_statistics'    => __('Statistics table'),
+        'netflow_pie_summatory' => __('Summary'),
         'netflow_data'          => __('Data table'),
         'netflow_mesh'          => __('Circular mesh'),
         'netflow_host_treemap'  => __('Host detailed traffic'),
@@ -1242,6 +1241,8 @@ function netflow_draw_item(
                     $html .= '</td>';
                     $html .= '</tr>';
                     $html .= '</table>';
+                    $html .= '</br>';
+                    $html .= netflow_stat_table($data_pie, $start_date, $end_date, $aggregate);
                 return $html;
 
                 case 'XML':

@@ -3,7 +3,6 @@ module.exports = {
   transform: {
     "^.+\\.tsx?$": "ts-jest"
   },
-  testRegex: "(/__tests__/.*|(\\.|/)(test|spec))\\.tsx?$",
   moduleFileExtensions: ["ts", "tsx", "js", "jsx", "json", "node"],
   // This configuration is used to mock the css and file imports used by Webpack.
   // https://jestjs.io/docs/en/webpack.html

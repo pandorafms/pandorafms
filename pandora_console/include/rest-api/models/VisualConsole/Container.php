@@ -9,7 +9,7 @@ final class Container extends Model
 {
 
 
-    private function validateData(array $data): void
+    protected function validateData(array $data): void
     {
         if (isset($data['id']) === false
             || \is_numeric($data['id']) === false
@@ -50,7 +50,7 @@ final class Container extends Model
     }
 
 
-    private function decode(array $data): array
+    protected function decode(array $data): array
     {
         return [
             'id'              => (int) $data['id'],

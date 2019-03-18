@@ -10,10 +10,10 @@ abstract class Model
     private $data;
 
 
-    abstract function validateData(array $data): void;
+    protected abstract function validateData(array $data): void;
 
 
-    abstract function decode(array $data): array;
+    protected abstract function decode(array $data): array;
 
 
     private function __construct(array $unknownData)

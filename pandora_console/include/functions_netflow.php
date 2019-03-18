@@ -503,19 +503,11 @@ function netflow_get_data(
         }
 
         $val = explode(',', $line);
-        if ($aggregate == 'proto') {
-            $values['sources'][$val[3]] = 1;
-        } else {
-            $values['sources'][$val[4]] = 1;
-        }
+        $values['sources'][$val[4]] = 1;
     }
 
     // Update the filter.
     switch ($aggregate) {
-        case 'proto':
-            $extra_filter = 'proto';
-        break;
-
         default:
         case 'srcip':
             $extra_filter = 'ip_src';
@@ -699,27 +691,23 @@ function netflow_get_stats(
         $datetime = $val[0];
         $end_date = strtotime($datetime);
         $values[$i]['datetime'] = $end_date;
-        if ($aggregate == 'proto') {
-            $values[$i]['agg'] = $val[3];
-        } else {
-            // Address resolution start.
-            if ($address_resolution && ($aggregate == 'srcip' || $aggregate == 'dstip')) {
-                global $hostnames;
+        // Address resolution start.
+        if ($address_resolution && ($aggregate == 'srcip' || $aggregate == 'dstip')) {
+            global $hostnames;
 
-                if (!isset($hostnames[$val[4]])) {
-                    $hostname = gethostbyaddr($val[4]);
-                    if ($hostname !== false) {
-                        $hostnames[$val[4]] = $hostname;
-                        $val[4] = $hostname;
-                    }
-                } else {
-                    $val[4] = $hostnames[$val[4]];
+            if (!isset($hostnames[$val[4]])) {
+                $hostname = gethostbyaddr($val[4]);
+                if ($hostname !== false) {
+                    $hostnames[$val[4]] = $hostname;
+                    $val[4] = $hostname;
                 }
+            } else {
+                $val[4] = $hostnames[$val[4]];
             }
-
-            // Address resolution end.
-            $values[$i]['agg'] = $val[4];
         }
+
+        // Address resolution end.
+        $values[$i]['agg'] = $val[4];
 
         if (! isset($val[9])) {
             return [];
@@ -1533,9 +1521,6 @@ function netflow_format_aggregate($aggregate)
 
         case 'dstip':
         return __('Dst IP');
-
-        case 'proto':
-        return __('Protocol');
 
         case 'srcip':
         return __('Src IP');

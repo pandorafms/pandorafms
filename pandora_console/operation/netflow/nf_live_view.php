@@ -336,7 +336,6 @@ if (is_metaconsole()) {
     echo '<td><b>'.__('Aggregate by').'</b>'.ui_print_help_icon('aggregate_by', true).'</td>';
     $aggregate_list = [];
     $aggregate_list = [
-        'proto'   => __('Protocol'),
         'srcip'   => __('Src Ip Address'),
         'dstip'   => __('Dst Ip Address'),
         'srcport' => __('Src Port'),

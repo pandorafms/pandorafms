@@ -43,9 +43,15 @@ if ($progress_task_discovery) {
             $id_task,
             90,
             460,
-            50,
-            '#EA5434'
+            30,
+            '#EA5434',
+            '%',
+            '',
+            '#FFFFFF',
+            0,
+            0
         );
+
         $result .= '</li>';
         $result .= '<li><h1>'.__('Searching devices in').' red a scanear</h1></li>';
         $result .= '<li>';
@@ -53,9 +59,15 @@ if ($progress_task_discovery) {
             $id_task.'_2',
             30,
             460,
-            50,
-            '#2751E1'
+            30,
+            '#2751E1',
+            '%',
+            '',
+            '#FFFFFF',
+            0,
+            0
         );
+
         $result .= '</li>';
         $result .= '<li><h1>'.__('Summary').'</h1></li>';
         $result .= '<li><span><b>'.__('Estimated').'</b>: total de host</span></li>';

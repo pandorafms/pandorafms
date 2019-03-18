@@ -26,173 +26,48 @@
  * ============================================================================
  */
 
-require_once __DIR__.'/Wizard.main.php';
-require_once $config['homedir'].'/include/functions_users.php';
-require_once $config['homedir'].'/include/class/CustomNetScan.class.php';
-require_once $config['homedir'].'/include/class/ManageNetScanScripts.class.php';
-
-enterprise_include_once('include/class/CSVImportAgents.class.php');
-enterprise_include_once('include/functions_hostdevices.php');
+require_once $config['homedir'].'/godmode/wizards/Wizard.main.php';
 
 /**
- * Wizard section Host&devices.
- * Provides classic recon task creation.
- * In enterprise environments, provides also CSV agent import features.
+ * CustomNetScan. Host and devices child class.
  */
-class HostDevices extends Wizard
+class CustomNetScan extends Wizard
 {
 
-     /**
-      * Number of pages to control breadcrum.
-      *
-      * @var integer
-      */
-    public $maxPagesNetScan = 2;
+    /**
+     * Number of pages to control breadcrum.
+     *
+     * @var integer
+     */
+    public $MAXPAGES = 2;
 
     /**
      * Labels for breadcrum.
      *
      * @var array
      */
-    public $pageLabelsNetScan = [
-        'NetScan definition',
-        'NetScan features',
-
+    public $pageLabels = [
+        'Netscan Custom definition',
+        'Netscan Custom script',
     ];
-
-    /**
-     * Stores all needed parameters to create a recon task.
-     *
-     * @var array
-     */
-    public $task;
 
 
     /**
      * Constructor.
      *
-     * @param integer $page  Start page, by default 0.
-     * @param string  $msg   Mensajito.
-     * @param string  $icon  Mensajito.
-     * @param string  $label Mensajito.
+     * @param integer $page      Page.
+     * @param array   $breadcrum Breadcrum.
      *
-     * @return class HostDevices
+     * @return void
      */
-    public function __construct(
-        int $page=0,
-        string $msg='Default message. Not set.',
-        string $icon='images/wizard/hostdevices.png',
-        string $label='Host & Devices'
-    ) {
-        $this->setBreadcrum([]);
-
-        $this->task = [];
-        $this->msg = $msg;
-        $this->icon = $icon;
-        $this->label = $label;
-        $this->page = $page;
+    public function __construct(int $page, array $breadcrum)
+    {
         $this->url = ui_get_full_url(
             'index.php?sec=gservers&sec2=godmode/servers/discovery&wiz=hd'
         );
-
-        return $this;
+        $this->page = $page;
+        $this->breadcrum = $breadcrum;
     }
-
-
-    /**
-     * Run wizard manager.
-     *
-     * @return mixed Returns null if wizard is ongoing. Result if done.
-     */
-    public function run()
-    {
-        global $config;
-
-        // Load styles.
-        parent::run();
-
-        $mode = get_parameter('mode', null);
-
-        if ($mode === null) {
-            $buttons = [];
-            $buttons[] = [
-                'url'   => $this->url.'&mode=netscan',
-                'icon'  => 'images/wizard/netscan.png',
-                'label' => __('Net Scan'),
-            ];
-
-            if (enterprise_installed()) {
-                $buttons[] = [
-                    'url'   => $this->url.'&mode=importcsv',
-                    'icon'  => ENTERPRISE_DIR.'/images/wizard/csv.png',
-                    'label' => __('Import CSV'),
-                ];
-            }
-
-            $buttons[] = [
-                'url'   => $this->url.'&mode=customnetscan',
-                'icon'  => '/images/wizard/customnetscan.png',
-                'label' => __('Custom NetScan'),
-            ];
-
-            $buttons[] = [
-                'url'   => $this->url.'&mode=managenetscanscripts',
-                'icon'  => '/images/wizard/managenetscanscripts.png',
-                'label' => __('Manage NetScan scripts'),
-            ];
-
-            $this->prepareBreadcrum(
-                [
-                    [
-                        'link'  => ui_get_full_url(
-                            'index.php?sec=gservers&sec2=godmode/servers/discovery'
-                        ),
-                        'label' => __('Discovery'),
-                    ],
-                ]
-            );
-
-            $this->printHeader();
-
-            $this->printBigButtonsList($buttons);
-            return;
-        }
-
-        if (enterprise_installed()) {
-            if ($mode === 'importcsv') {
-                $csv_importer = new CSVImportAgents(
-                    $this->page,
-                    $this->breadcrum
-                );
-                return $csv_importer->runCSV();
-            }
-        }
-
-        if ($mode === 'customnetscan') {
-            $customnetscan_importer = new CustomNetScan(
-                $this->page,
-                $this->breadcrum
-            );
-            return $customnetscan_importer->runCustomNetScan();
-        }
-
-        if ($mode === 'managenetscanscripts') {
-            $managenetscanscript_importer = new ManageNetScanScripts(
-                $this->page,
-                $this->breadcrum
-            );
-            return $managenetscanscript_importer->runManageNetScanScript();
-        }
-
-        if ($mode == 'netscan') {
-            return $this->runNetScan();
-        }
-
-        return null;
-    }
-
-
-    // Extra methods.
 
 
     /**
@@ -202,7 +77,7 @@ class HostDevices extends Wizard
      */
     public function parseNetScan()
     {
-        if ($this->page == 0) {
+        if (isset($this->page) === true && $this->page === 0) {
             // Check if we're updating a task.
             $task_id = get_parameter('task', null);
 
@@ -224,12 +99,11 @@ class HostDevices extends Wizard
 
         // Validate response from page 0. No, not a bug, we're always 1 page
         // from 'validation' page.
-        if ($this->page == 1) {
+        if (isset($this->page) === true && $this->page === 1) {
             $task_id = get_parameter('task', null);
             $taskname = get_parameter('taskname', '');
             $comment = get_parameter('comment', '');
             $server_id = get_parameter('id_recon_server', '');
-            $network = get_parameter('network', '');
             $id_group = get_parameter('id_group', '');
             $interval = get_parameter('interval', 0);
 
@@ -244,21 +118,16 @@ class HostDevices extends Wizard
                 if ($task !== false) {
                     $this->task = $task;
                 }
-            } else if (isset($taskname) === true
-                && isset($network) === true
-            ) {
+            } else if (isset($taskname) === true) {
                 // Avoid double creation.
                 $task = db_get_row_filter(
                     'trecon_task',
-                    [
-                        'name'   => $taskname,
-                        'subnet' => $network,
-                    ]
+                    ['name' => $taskname]
                 );
 
                 if ($task !== false) {
                     $this->task = $task;
-                    $this->msg = __('This network scan task has been already defined. Please edit it or create a new one.');
+                    $this->msg = __('This task has been already defined. Please edit it or create a new one.');
                     return false;
                 }
             }
@@ -301,12 +170,6 @@ class HostDevices extends Wizard
                     return false;
                 }
 
-                if ($network == '') {
-                    // XXX: Could be improved validating provided network.
-                    $this->msg = __('You must provide a valid network.');
-                    return false;
-                }
-
                 if ($id_group == '') {
                     $this->msg = __('You must select a valid group.');
                     return false;
@@ -315,7 +178,6 @@ class HostDevices extends Wizard
                 // Assign fields.
                 $this->task['name'] = $taskname;
                 $this->task['description'] = $comment;
-                $this->task['subnet'] = $network;
                 $this->task['id_recon_server'] = $server_id;
                 $this->task['id_group'] = $id_group;
                 $this->task['interval_sweep'] = $interval;
@@ -356,51 +218,32 @@ class HostDevices extends Wizard
                 return false;
             }
 
-            $id_network_profile = get_parameter('id_network_profile', null);
-            $autoconf_enabled = get_parameter_switch(
-                'autoconfiguration_enabled'
-            );
-            $snmp_enabled = get_parameter_switch('snmp_enabled');
-            $os_detect = get_parameter_switch('os_detect');
-            $parent_detection = get_parameter_switch('parent_detection');
-            $parent_recursion = get_parameter_switch('parent_recursion');
-            $vlan_enabled = get_parameter_switch('vlan_enabled');
-            $wmi_enabled = get_parameter_switch('wmi_enabled');
-            $resolve_names = get_parameter_switch('resolve_names');
-            $snmp_version = get_parameter('snmp_version', null);
-            $community = get_parameter('community', null);
-            $snmp_context = get_parameter('snmp_context', null);
-            $snmp_auth_user = get_parameter('snmp_auth_user', null);
-            $snmp_auth_pass = get_parameter('snmp_auth_pass', null);
-            $snmp_privacy_method = get_parameter('snmp_privacy_method', null);
-            $snmp_privacy_pass = get_parameter('snmp_privacy_pass', null);
-            $snmp_auth_method = get_parameter('snmp_auth_method', null);
-            $snmp_security_level = get_parameter('snmp_security_level', null);
-            $auth_strings = get_parameter('auth_strings', null);
+            $id_recon_script = get_parameter('id_recon_script', null);
+            $field1 = get_parameter('_field1_', '');
+            $field2 = get_parameter('_field2_', '');
+            $field3 = get_parameter('_field3_', '');
+            $field4 = get_parameter('_field4_', '');
 
-            if ($snmp_version == 3) {
-                $this->task['snmp_community'] = $snmp_context;
-            } else {
-                $this->task['snmp_community'] = $community;
+            // Get macros.
+            $macros = get_parameter('macros', null);
+
+            if (empty($macros) === false) {
+                $macros = json_decode(
+                    base64_decode($macros),
+                    true
+                );
+
+                foreach ($macros as $k => $m) {
+                    $macros[$k]['value'] = get_parameter($m['macro'], '');
+                }
             }
 
-            $this->task['autoconfiguration_enabled'] = $autoconf_enabled;
-            $this->task['id_network_profile'] = $id_network_profile;
-            $this->task['snmp_enabled'] = $snmp_enabled;
-            $this->task['os_detect'] = $os_detect;
-            $this->task['parent_detection'] = $parent_detection;
-            $this->task['parent_recursion'] = $parent_recursion;
-            $this->task['vlan_enabled'] = $vlan_enabled;
-            $this->task['wmi_enabled'] = $wmi_enabled;
-            $this->task['resolve_names'] = $resolve_names;
-            $this->task['snmp_version'] = $snmp_version;
-            $this->task['snmp_auth_user'] = $snmp_auth_user;
-            $this->task['snmp_auth_pass'] = $snmp_auth_pass;
-            $this->task['snmp_privacy_method'] = $snmp_privacy_method;
-            $this->task['snmp_privacy_pass'] = $snmp_privacy_pass;
-            $this->task['snmp_auth_method'] = $snmp_auth_method;
-            $this->task['snmp_security_level'] = $snmp_security_level;
-            $this->task['auth_strings'] = $auth_strings;
+            $this->task['id_recon_script'] = $id_recon_script;
+            $this->task['macros'] = io_json_mb_encode($macros);
+            $this->task['field1'] = $field1;
+            $this->task['field2'] = $field2;
+            $this->task['field3'] = $field3;
+            $this->task['field4'] = $field4;
 
             if ($this->task['disabled'] == 2) {
                 // Wizard finished.
@@ -417,45 +260,25 @@ class HostDevices extends Wizard
             return true;
         }
 
-        if ($this->page == 3) {
-            // Wizard ended. Load data and return control to Discovery.
-            $id_rt = get_parameter('task', -1);
-
-            $task = db_get_row(
-                'trecon_task',
-                'id_rt',
-                $id_rt
-            );
-
-            if ($task !== false) {
-                $this->task = $task;
-            } else {
-                $this->msg = __('Failed to find network scan task.');
-                return false;
-            }
-
-            return true;
-        }
-
         return false;
     }
 
 
     /**
-     * Undocumented function
+     * Run function. It will be call into HostsDevices class.
+     *      Page 0: Upload form.
+     *      Page 1: Task resume.
      *
      * @return void
      */
-    public function runNetScan()
+    public function runCustomNetScan()
     {
         global $config;
 
-        check_login();
-
-        if (! check_acl($config['id_user'], 0, 'PM')) {
+        if (!check_acl($config['id_user'], 0, 'PM')) {
             db_pandora_audit(
                 'ACL Violation',
-                'Trying to access Agent Management'
+                'Trying to access Custom Net Scan.'
             );
             include 'general/noaccess.php';
             return;
@@ -470,7 +293,7 @@ class HostDevices extends Wizard
             $form = [
                 'form'   => [
                     'method' => 'POST',
-                    'action' => $this->url.'&mode=netscan&page='.($this->page - 1).'&task='.$this->task['id_rt'],
+                    'action' => $this->url.'&mode=customnetscan&page='.($this->page - 1).'&task='.$this->task['id_rt'],
                 ],
                 'inputs' => [
                     [
@@ -500,11 +323,37 @@ class HostDevices extends Wizard
                 'PM'
             ) !== true
             ) {
-                $form['form']['action'] = $this->url.'&mode=netscan&page='.($this->page - 1);
+                $form['form']['action'] = $this->url.'&mode=customnetscan&page='.($this->page - 1);
             }
 
             $this->printForm($form);
             return null;
+        }
+
+        $run_url = 'index.php?sec=gservers&sec2=godmode/servers/discovery';
+
+        $task_url = '';
+        if (isset($this->task['id_rt']) === true) {
+            $task_url = '&task='.$this->task['id_rt'];
+        }
+
+        $breadcrum[] = [
+            'link'  => $run_url.'&wiz=hd',
+            'label' => __('Host & Devices'),
+        ];
+
+        for ($i = 0; $i < $this->MAXPAGES; $i++) {
+            $breadcrum[] = [
+                'link'     => $run_url.'&wiz=hd&mode=customnetscan&page='.$i.$task_url,
+                'label'    => __($this->pageLabels[$i]),
+                'selected' => (($i == $this->page) ? 1 : 0),
+            ];
+        }
+
+        if ($this->page < $this->MAXPAGES) {
+            // Avoid to print header out of wizard.
+            $this->prepareBreadcrum($breadcrum);
+            $this->printHeader();
         }
 
         $task_url = '';
@@ -513,12 +362,12 @@ class HostDevices extends Wizard
         }
 
         $breadcrum[] = [
-            'link'  => 'index.php?sec=gservers&sec2=godmode/servers/discovery&wiz=hd',
+            'link'  => $run_url.'&wiz=hd',
             'label' => __($this->label),
         ];
         for ($i = 0; $i < $this->maxPagesNetScan; $i++) {
             $breadcrum[] = [
-                'link'     => 'index.php?sec=gservers&sec2=godmode/servers/discovery&wiz=hd&mode=netscan&page='.$i.$task_url,
+                'link'     => $run_url.'&wiz=hd&mode=customnetscan&page='.$i.$task_url,
                 'label'    => $this->pageLabelsNetScan[$i],
                 'selected' => (($i == $this->page) ? 1 : 0),
             ];
@@ -531,7 +380,7 @@ class HostDevices extends Wizard
         }
 
         if (isset($this->page) === true
-            && $this->page != 0
+            && $this->page !== 0
             && isset($this->task['id_rt']) === false
         ) {
             // Error.
@@ -542,7 +391,7 @@ class HostDevices extends Wizard
             $form = [
                 'form'   => [
                     'method' => 'POST',
-                    'action' => $this->url.'&mode=netscan&page=0',
+                    'action' => $this->url.'&mode=customnetscan&page=0',
                 ],
                 'inputs' => [
                     [
@@ -599,7 +448,7 @@ class HostDevices extends Wizard
                     ];
                 }
 
-                // Input task name.
+                // Input task description.
                 $form['inputs'][] = [
                     'label'     => '<b>'.__('Comment').'</b>',
                     'arguments' => [
@@ -628,21 +477,6 @@ class HostDevices extends Wizard
                         'name'     => 'id_recon_server',
                         'selected' => $this->task['id_recon_server'],
                         'return'   => true,
-                    ],
-                ];
-
-                // Input Network.
-                $form['inputs'][] = [
-
-                    'label'     => '<b>'.__('Network').'</b>'.ui_print_help_tip(
-                        __('You can specify several networks, separated by commas, for example: 192.168.50.0/24,192.168.60.0/24'),
-                        true
-                    ),
-                    'arguments' => [
-                        'name'  => 'network',
-                        'value' => $this->task['subnet'],
-                        'type'  => 'text',
-                        'size'  => 25,
                     ],
                 ];
 
@@ -721,7 +555,7 @@ class HostDevices extends Wizard
 
                 $form['form'] = [
                     'method' => 'POST',
-                    'action' => $this->url.'&mode=netscan&page='.($this->page + 1).$task_url,
+                    'action' => $this->url.'&mode=customnetscan&page='.($this->page + 1).$task_url,
                 ];
 
                 // Default.
@@ -733,19 +567,20 @@ class HostDevices extends Wizard
                 }
 
                 $form['js'] = '
-$("select#interval_manual_defined").change(function() {
-    if ($("#interval_manual_defined").val() == 1) {
-        $("#interval_manual_container").hide();
-        $("#text-interval_text").val(0);
-        $("#hidden-interval").val(0);
-    }
-    else {
-        $("#interval_manual_container").show();
-        $("#text-interval_text").val(10);
-        $("#hidden-interval").val('.$interval.');
-        $("#interval_units").val('.$unit.');
-    }
-}).change();';
+                    $("select#interval_manual_defined").change(function() {
+                        if ($("#interval_manual_defined").val() == 1) {
+                            $("#interval_manual_container").hide();
+                            $("#text-interval_text").val(0);
+                            $("#hidden-interval").val(0);
+                        }
+                        else {
+                            $("#interval_manual_container").show();
+                            $("#text-interval_text").val(10);
+                            $("#hidden-interval").val('.$interval.');
+                            $("#interval_units").val('.$unit.');
+                        }
+                    }).change();
+                ';
 
                 // XXX: Could be improved validating inputs before continue (JS)
                 // Print NetScan page 0.
@@ -753,78 +588,115 @@ $("select#interval_manual_defined").change(function() {
             }
         }
 
-        if ($this->page == 1) {
-            // Page 1.
-            $form = [];
-            // Hidden, id_rt.
+        if (isset($this->page) === true && $this->page === 1) {
+            $name_ipam = 'IPAM Recon';
+            // Recon script.
             $form['inputs'][] = [
+                'label'     => '<b>'.__('Recon script').'</b>',
                 'arguments' => [
-                    'name'   => 'task',
-                    'value'  => $this->task['id_rt'],
-                    'type'   => 'hidden',
-                    'return' => true,
-                ],
-            ];
-
-            // Hidden, page.
-            $form['inputs'][] = [
-                'arguments' => [
-                    'name'   => 'page',
-                    'value'  => ($this->page + 1),
-                    'type'   => 'hidden',
-                    'return' => true,
-                ],
-            ];
-
-            $form['inputs'][] = [
-                'extra' => '<p>Please, configure task <b>'.io_safe_output($this->task['name']).'</b></p>',
-            ];
-
-            // Input: Module template.
-            $form['inputs'][] = [
-                'label'     => __('Module template'),
-                'arguments' => [
-                    'name'          => 'id_network_profile',
-                    'type'          => 'select_from_sql',
-                    'sql'           => 'SELECT id_np, name
-                            FROM tnetwork_profile
-                            ORDER BY name',
-                    'return'        => true,
-                    'selected'      => $this->task['id_network_profile'],
-                    'nothing_value' => 0,
-                    'nothing'       => __('None'),
-
-                ],
-            ];
-
-            if (enterprise_installed() === true) {
-                // Input: Enable auto configuration.
-                $form['inputs'][] = [
-                    'label'     => __('Apply autoconfiguration rules').ui_print_help_tip(
-                        __(
-                            'System is able to auto configure detected host & devices by applying your defined configuration rules.'
-                        ),
-                        true
+                    'type'     => 'select_from_sql',
+                    'sql'      => sprintf(
+                        'SELECT id_recon_script, name FROM trecon_script WHERE name <> "%s" ORDER BY name',
+                        $name_ipam
                     ),
-                    'arguments' => [
-                        'name'   => 'autoconfiguration_enabled',
-                        'type'   => 'switch',
-                        'return' => true,
-                        'value'  => (isset($this->task['autoconfiguration_enabled'])) ? $this->task['autoconfiguration_enabled'] : 0,
+                    'name'     => 'id_recon_script',
+                    'selected' => $this->task['id_recon_script'],
+                    'return'   => true,
+                ],
+            ];
 
-                    ],
-                ];
-            }
+            $form['inputs'][] = [
+                'hidden'    => 1,
+                'arguments' => [
+                    'type'  => 'hidden',
+                    'name'  => 'task',
+                    'value' => $this->task['id_rt'],
+                ],
+            ];
 
-            if (enterprise_installed()) {
-                // Feature configuration.
-                $extra = enterprise_hook('hd_showextrainputs', [$this]);
-                if (is_array($extra) === true) {
-                    $form['inputs'] = array_merge(
-                        $form['inputs'],
-                        $extra['inputs']
-                    );
-                    $form['js'] = $extra['js'];
+            $form['inputs'][] = [
+                'hidden'    => 1,
+                'arguments' => [
+                    'type'   => 'hidden_extended',
+                    'name'   => 'macros',
+                    'value'  => base64_encode($this->task['macros']),
+                    'return' => true,
+                ],
+            ];
+
+            // Explanation.
+            $explanation = db_get_value(
+                'description',
+                'trecon_script',
+                'id_recon_script',
+                $this->task['id_recon_script']
+            );
+
+            $form['inputs'][] = [
+                'label'     => '<b>'.__('Explanation').'</b><span id="spinner_recon_script" style="display: none;">'.html_print_image('images/spinner.gif', true).'</span>',
+                'arguments' => [
+                    'type'       => 'textarea',
+                    'rows'       => 4,
+                    'columns'    => 60,
+                    'name'       => 'explanation',
+                    'value'      => $explanation,
+                    'return'     => true,
+                    'attributes' => 'style="width: 388px;"',
+                ],
+            ];
+
+            $form['inputs'][] = [
+                'hidden'    => 1,
+                'id'        => 'table_recon-macro_field',
+                'label'     => '<b>'.__('macro_desc').'</b>'.ui_print_help_tip('macro_help', true),
+                'arguments' => [
+                    'name'   => 'macro_name',
+                    'value'  => 'macro_value',
+                    'type'   => 'text',
+                    'size'   => 100,
+                    'return' => true,
+                ],
+            ];
+
+            if (empty($this->task['macros']) === false) {
+                $macros = json_decode($this->task['macros'], true);
+                foreach ($macros as $k => $m) {
+                    $label_macro = '';
+                    $label_macro .= '<b>'.$m['desc'].'</b>';
+                    if (!empty($m['help'])) {
+                        $label_macro .= ui_print_help_tip(
+                            $m['help'],
+                            true
+                        );
+                    }
+
+                    if ($m['hide']) {
+                        $form['inputs'][] = [
+                            'label'     => $label_macro,
+                            'id'        => 'table_recon-macro'.$m['macro'],
+                            'class'     => 'macro_field',
+                            'arguments' => [
+                                'name'   => $m['macro'],
+                                'value'  => $m['value'],
+                                'type'   => 'password',
+                                'size'   => 100,
+                                'return' => true,
+                            ],
+                        ];
+                    } else {
+                        $form['inputs'][] = [
+                            'label'     => $label_macro,
+                            'id'        => 'table_recon-macro'.$m['macro'],
+                            'class'     => 'macro_field',
+                            'arguments' => [
+                                'name'   => $m['macro'],
+                                'value'  => $m['value'],
+                                'type'   => 'text',
+                                'size'   => 100,
+                                'return' => true,
+                            ],
+                        ];
+                    }
                 }
             }
 
@@ -841,13 +713,27 @@ $("select#interval_manual_defined").change(function() {
 
             $form['form'] = [
                 'method' => 'POST',
-                'action' => $this->url.'&mode=netscan&page='.($this->page + 1).'&task='.$this->task['id_rt'],
+                'action' => $this->url.'&mode=customnetscan&page='.($this->page + 1).'&task='.$this->task['id_rt'],
             ];
+
+            $id_task = (isset($this->task['id_rt']) === true) ? $this->task['id_rt'] : 0;
+
+            $url_ajax = $config['homeurl'].'ajax.php';
+
+            $change = '';
+            if (empty($this->task['macros']) !== false) {
+                $change = '.change();';
+            }
+
+            $form['js'] = '
+                $("select#id_recon_script").change(function() {
+                    get_explanation_recon_script($(this).val(), "'.$id_task.'", "'.$url_ajax.'");
+                })'.$change;
 
             $this->printForm($form);
         }
 
-        if ($this->page == 2) {
+        if (isset($this->page) === true && $this->page === 2) {
             if ($this->task['id_rt']) {
                 // 0 - Is OK.
                 $this->result = 0;
@@ -864,6 +750,8 @@ $("select#interval_manual_defined").change(function() {
                 'msg'    => $this->msg,
             ];
         }
+
+        ui_require_javascript_file('pandora_modules');
     }
 
 

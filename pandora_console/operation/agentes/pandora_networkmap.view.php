@@ -29,7 +29,7 @@
 
 global $config;
 
-require_once 'include/functions_pandora_networkmap.php';
+require_once 'include/functions_networkmap.php';
 enterprise_include_once('include/functions_policies.php');
 enterprise_include_once('include/functions_dashboard.php');
 require_once 'include/functions_modules.php';
@@ -865,13 +865,6 @@ if ($networkmap === false) {
             $config['item_title_size_text']
         );
     }
-
-    /*
-        $nodes_and_relations = networkmap_process_networkmap($id);
-
-        show_networkmap($id, $user_readonly, $nodes_and_relations, $dash_mode, $map_dash_details);
-    */
-
 
     include_once $config['homedir'].'/include/class/NetworkMap.class.php';
 

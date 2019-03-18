@@ -30,7 +30,6 @@ if (!$networkmaps_read && !$networkmaps_write && !$networkmaps_manage) {
 }
 
 require_once 'include/functions_networkmap.php';
-require_once 'include/functions_pandora_networkmap.php';
 
 $new_networkmap = (bool) get_parameter('new_networkmap', false);
 $save_networkmap = (bool) get_parameter('save_networkmap', false);
@@ -358,12 +357,12 @@ if ($new_networkmap || $save_networkmap) {
 
         if ($result !== false) {
             $tab = 'view';
-            if ($values['generation_method'] == 6) {
+            if ($values['generation_method'] == LAYOUT_RADIAL_DYNAMIC) {
                 $tab = 'r_dinamic';
                 define('_activeTab_', 'radial_dynamic');
                 $url = 'index.php?sec=network&sec2=operation/agentes/networkmap.dinamic&activeTab=radial_dynamic';
                 header(
-                    'Location'.ui_get_full_url(
+                    'Location: '.ui_get_full_url(
                         $url.'&id_networkmap='.$id
                     )
                 );
@@ -733,6 +732,8 @@ switch ($tab) {
                     if (($count == 0) && ($network_map['source'] != 'empty')) {
                         if ($network_map['generated']) {
                             $data['nodes'] = __('Empty map');
+                        } else if ($network_map['generation_method'] == LAYOUT_RADIAL_DYNAMIC) {
+                            $data['nodes'] = __('Dynamic');
                         } else {
                             $data['nodes'] = __('Pending to generate');
                         }

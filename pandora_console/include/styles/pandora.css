@@ -4415,6 +4415,7 @@ div#header_discovery {
   width: 9px;
   font-weight: bold;
   color: #fff;
+  margin-right: 15px;
 }
 
 div#header_discovery:hover {

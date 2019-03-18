@@ -548,12 +548,27 @@ define('LAYOUT_SPRING2', 4);
 // Extra: radial dynamic.
 define('LAYOUT_RADIAL_DYNAMIC', 6);
 
+// Map sources.
+define('SOURCE_GROUP', 0);
+define('SOURCE_TASK', 1);
+define('SOURCE_NETWORK', 2);
 
+// Backward compatibility ~ Migration.
 define('MAP_SOURCE_GROUP', 0);
 define('MAP_SOURCE_IP_MASK', 1);
 
 define('NETWORKMAP_DEFAULT_WIDTH', 800);
 define('NETWORKMAP_DEFAULT_HEIGHT', 800);
+
+// Discovery task types.
+define('DISCOVERY_HOSTDEVICES', 0);
+define('DISCOVERY_HOSTDEVICES_CUSTOM', 1);
+define('DISCOVERY_CLOUD_AWS', 10);
+define('DISCOVERY_APP_VMWARE', 100);
+
+// Discovery task descriptions.
+define('CLOUDWIZARD_AWS_DESCRIPTION', 'Discovery.Cloud.AWS.EC2');
+define('CLOUDWIZARD_VMWARE_DESCRIPTION', 'Discovery.App.VMware');
 
 // Background options.
 define('CENTER', 0);

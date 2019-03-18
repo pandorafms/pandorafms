@@ -117,6 +117,16 @@ class NetworkMap
      */
     public $mapOptions;
 
+    /**
+     * loadfile function array
+     *   file path
+     *   function name
+     *   extra parameter(cluster)
+     *
+     * @var array
+     */
+    public $loadfile;
+
 
     /**
      * Base constructor.
@@ -154,6 +164,15 @@ class NetworkMap
         $this->mapOptions['strict_user'] = false;
         $this->mapOptions['size_canvas'] = null;
         $this->mapOptions['old_mode'] = false;
+        $this->mapOptions['baseurl'] = ui_get_full_url(false, false, false, false);
+        $this->mapOptions['width'] = '100%';
+        $this->mapOptions['height'] = 600;
+        $this->mapOptions['node_radius'] = 40;
+        $this->mapOptions['id_cluster'] = null;
+        $this->mapOptions['tooltip'] = false;
+        $this->mapOptions['size_image'] = 40;
+        $this->mapOptions['page_tooltip'] = null;
+
         $this->mapOptions['map_filter'] = [
             'dont_show_subgroups' => 0,
             'node_radius'         => 40,
@@ -203,6 +222,14 @@ class NetworkMap
             if (is_array($options['map_options'])) {
                 foreach ($options['map_options'] as $k => $v) {
                     $this->mapOptions[$k] = $v;
+                }
+            }
+
+            // loadfile options
+            // This is only used while generating simple maps
+            if (is_array($options['loadfile'])) {
+                foreach ($options['loadfile'] as $k => $v) {
+                    $this->loadfile[$k] = $v;
                 }
             }
 
@@ -482,35 +509,51 @@ class NetworkMap
     public function generateDotGraph()
     {
         if (!isset($this->dotGraph)) {
-            // Generate dot file.
-            $this->dotGraph = networkmap_generate_dot(
-                get_product_name(),
-                $this->idGroup,
-                $this->mapOptions['simple'],
-                $this->mapOptions['font_size'],
-                $this->mapOptions['layout'],
-                $this->mapOptions['nooverlap'],
-                $this->mapOptions['z_dash'],
-                $this->mapOptions['ranksep'],
-                $this->mapOptions['center'],
-                $this->mapOptions['regen'],
-                $this->mapOptions['pure'],
-                $this->mapOptions['id'],
-                $this->mapOptions['show_snmp_modules'],
-                $this->mapOptions['cut_names'],
-                $this->mapOptions['relative'],
-                $this->mapOptions['text_filter'],
-                $this->network,
-                $this->mapOptions['dont_show_subgroups'],
-                // Strict user (strict_user).
-                false,
-                // Canvas size (size_canvas).
-                null,
-                $this->mapOptions['old_mode'],
-                $this->mapOptions['map_filter']
-            );
-        }
+            if (isset($this->mode) && $this->mode === 'simple') {
+                include_once $config['homedir'].'/include/functions_maps.php';
+                $graph .= open_graph();
 
+                foreach ($this->nodes as $key => $value) {
+                    $graph .= create_node($value, $this->mapOptions['font_size']);
+                }
+
+                foreach ($this->relations as $key => $relation) {
+                    $graph .= create_edge($key, $relation);
+                }
+
+                $graph .= close_graph();
+
+                $this->dotGraph = $graph;
+            } else {
+                // Generate dot file.
+                $this->dotGraph = networkmap_generate_dot(
+                    get_product_name(),
+                    $this->idGroup,
+                    $this->mapOptions['simple'],
+                    $this->mapOptions['font_size'],
+                    $this->mapOptions['layout'],
+                    $this->mapOptions['nooverlap'],
+                    $this->mapOptions['z_dash'],
+                    $this->mapOptions['ranksep'],
+                    $this->mapOptions['center'],
+                    $this->mapOptions['regen'],
+                    $this->mapOptions['pure'],
+                    $this->mapOptions['id'],
+                    $this->mapOptions['show_snmp_modules'],
+                    $this->mapOptions['cut_names'],
+                    $this->mapOptions['relative'],
+                    $this->mapOptions['text_filter'],
+                    $this->network,
+                    $this->mapOptions['dont_show_subgroups'],
+                    // Strict user (strict_user).
+                    false,
+                    // Canvas size (size_canvas).
+                    null,
+                    $this->mapOptions['old_mode'],
+                    $this->mapOptions['map_filter']
+                );
+            }
+        }
     }
 
 
@@ -652,158 +695,171 @@ class NetworkMap
 
         unlink($filename_dot);
 
-        $nodes = networkmap_loadfile(
-            $this->idMap,
-            $filename_plain,
-            $relation_nodes,
-            $this->dotGraph
-        );
+        if (isset($this->mode) && $this->mode === 'simple') {
+            if (isset($this->loadfile)) {
+                include_once $this->loadfile[0];
+                $func = $this->loadfile[1];
+                // Extra parameter. Used in clustermap.
+                if (isset($this->mapOptions['id_cluster'])) {
+                    $this->graph = $func($filename_plain, $this->dotGraph, $this->mapOptions['id_cluster']);
+                } else {
+                    $this->graph = $func($filename_plain, $this->dotGraph);
+                }
+            } else {
+            }
+        } else {
+            $nodes = networkmap_loadfile(
+                $this->idMap,
+                $filename_plain,
+                $relation_nodes,
+                $this->dotGraph
+            );
 
-        unlink($filename_plain);
+            unlink($filename_plain);
 
-        /*
-         * Graphviz section ends here.
-         */
+            /*
+             * Graphviz section ends here.
+             */
 
-        /*
-         * Calculate references.
-         */
+            /*
+             * Calculate references.
+             */
 
-        // Set the position of modules.
-        foreach ($nodes as $key => $node) {
-            if ($node['type'] == 'module') {
-                // Search the agent of this module for to get the
-                // position.
-                foreach ($nodes as $key2 => $node2) {
-                    if ($node2['id_agent'] != 0 && $node2['type'] == 'agent') {
-                        if ($node2['id_agent'] == $node['id_agent']) {
-                            $nodes[$key]['coords'][0] = ($nodes[$key2]['coords'][0] + $node['height'] / 2);
-                            $nodes[$key]['coords'][1] = ($nodes[$key2]['coords'][1] + $node['width'] / 2);
+            // Set the position of modules.
+            foreach ($nodes as $key => $node) {
+                if ($node['type'] == 'module') {
+                    // Search the agent of this module for to get the
+                    // position.
+                    foreach ($nodes as $key2 => $node2) {
+                        if ($node2['id_agent'] != 0 && $node2['type'] == 'agent') {
+                            if ($node2['id_agent'] == $node['id_agent']) {
+                                $nodes[$key]['coords'][0] = ($nodes[$key2]['coords'][0] + $node['height'] / 2);
+                                $nodes[$key]['coords'][1] = ($nodes[$key2]['coords'][1] + $node['width'] / 2);
+                            }
                         }
                     }
                 }
             }
-        }
 
-        $nodes_and_relations['nodes'] = [];
-        $index = 0;
-        $node_center = [];
-        foreach ($nodes as $key => $node) {
-            $nodes_and_relations['nodes'][$index]['id'] = $node['id'];
-            $nodes_and_relations['nodes'][$index]['id_map'] = $this->idMap;
+            $nodes_and_relations['nodes'] = [];
+            $index = 0;
+            $node_center = [];
+            foreach ($nodes as $key => $node) {
+                $nodes_and_relations['nodes'][$index]['id'] = $node['id'];
+                $nodes_and_relations['nodes'][$index]['id_map'] = $this->idMap;
 
-            $children_count = 0;
-            foreach ($relation_nodes as $relation) {
-                if (($relation['parent_type'] == 'agent') || ($relation['parent_type'] == '')) {
-                    if ($nodes[$relation['id_parent']]['id_agent'] == $node['id_agent']) {
-                        $children_count++;
-                    }
-                } else if ($relation['parent_type'] == 'module') {
-                    if ($nodes[$relation['id_parent']]['id_module'] == $node['id_module']) {
-                        $children_count++;
+                $children_count = 0;
+                foreach ($relation_nodes as $relation) {
+                    if (($relation['parent_type'] == 'agent') || ($relation['parent_type'] == '')) {
+                        if ($nodes[$relation['id_parent']]['id_agent'] == $node['id_agent']) {
+                            $children_count++;
+                        }
+                    } else if ($relation['parent_type'] == 'module') {
+                        if ($nodes[$relation['id_parent']]['id_module'] == $node['id_module']) {
+                            $children_count++;
+                        }
                     }
                 }
+
+                if (empty($node_center) || $node_center['counter'] < $children_count) {
+                    $node_center['x'] = (int) $node['coords'][0];
+                    $node_center['y'] = (int) $node['coords'][1];
+                    $node_center['counter'] = $children_count;
+                }
+
+                $nodes_and_relations['nodes'][$index]['x'] = (int) $node['coords'][0];
+                $nodes_and_relations['nodes'][$index]['y'] = (int) $node['coords'][1];
+
+                if (($node['type'] == 'agent') || ($node['type'] == '')) {
+                    $nodes_and_relations['nodes'][$index]['source_data'] = $node['id_agent'];
+                    $nodes_and_relations['nodes'][$index]['type'] = 0;
+                } else {
+                    $nodes_and_relations['nodes'][$index]['source_data'] = $node['id_module'];
+                    $nodes_and_relations['nodes'][$index]['id_agent'] = $node['id_agent'];
+                    $nodes_and_relations['nodes'][$index]['type'] = 1;
+                }
+
+                $style = [];
+                $style['shape'] = 'circle';
+                $style['image'] = $node['image'];
+                $style['width'] = $node['width'];
+                $style['height'] = $node['height'];
+                $style['label'] = $node['text'];
+                $nodes_and_relations['nodes'][$index]['style'] = json_encode($style);
+
+                $index++;
             }
 
-            if (empty($node_center) || $node_center['counter'] < $children_count) {
-                $node_center['x'] = (int) $node['coords'][0];
-                $node_center['y'] = (int) $node['coords'][1];
-                $node_center['counter'] = $children_count;
+            $nodes_and_relations['relations'] = [];
+            $index = 0;
+
+            foreach ($relation_nodes as $relation) {
+                $nodes_and_relations['relations'][$index]['id_map'] = $this->idMap;
+
+                if (($relation['parent_type'] == 'agent') || ($relation['parent_type'] == '')) {
+                    $nodes_and_relations['relations'][$index]['id_parent'] = $relation['id_parent'];
+                    $nodes_and_relations['relations'][$index]['id_parent_source_data'] = $nodes[$relation['id_parent']]['id_agent'];
+                    $nodes_and_relations['relations'][$index]['parent_type'] = 0;
+                } else if ($relation['parent_type'] == 'module') {
+                    $nodes_and_relations['relations'][$index]['id_parent'] = $relation['id_parent'];
+                    $nodes_and_relations['relations'][$index]['id_parent_source_data'] = $nodes[$relation['id_parent']]['id_module'];
+                    $nodes_and_relations['relations'][$index]['parent_type'] = 1;
+                } else {
+                    $nodes_and_relations['relations'][$index]['id_parent'] = $relation['id_parent'];
+                    $nodes_and_relations['relations'][$index]['id_child_source_data'] = -2;
+                    $nodes_and_relations['relations'][$index]['parent_type'] = 3;
+                }
+
+                if (($relation['child_type'] == 'agent') || ($relation['child_type'] == '')) {
+                    $nodes_and_relations['relations'][$index]['id_child'] = $relation['id_child'];
+                    $nodes_and_relations['relations'][$index]['id_child_source_data'] = $nodes[$relation['id_child']]['id_agent'];
+                    $nodes_and_relations['relations'][$index]['child_type'] = 0;
+                } else if ($relation['child_type'] == 'module') {
+                    $nodes_and_relations['relations'][$index]['id_child'] = $relation['id_child'];
+                    $nodes_and_relations['relations'][$index]['id_child_source_data'] = $nodes[$relation['id_child']]['id_module'];
+                    $nodes_and_relations['relations'][$index]['child_type'] = 1;
+                } else {
+                    $nodes_and_relations['relations'][$index]['id_child'] = $relation['id_child'];
+                    $nodes_and_relations['relations'][$index]['id_child_source_data'] = -2;
+                    $nodes_and_relations['relations'][$index]['child_type'] = 3;
+                }
+
+                $index++;
             }
 
-            $nodes_and_relations['nodes'][$index]['x'] = (int) $node['coords'][0];
-            $nodes_and_relations['nodes'][$index]['y'] = (int) $node['coords'][1];
+            if ($this->idMap > 0 && (!isset($this->map['__simulated']))) {
+                if (enterprise_installed()) {
+                    $nodes_and_relations = enterprise_hook(
+                        'save_generate_nodes',
+                        [
+                            $this->idMap,
+                            $nodes_and_relations,
+                        ]
+                    );
+                }
 
-            if (($node['type'] == 'agent') || ($node['type'] == '')) {
-                $nodes_and_relations['nodes'][$index]['source_data'] = $node['id_agent'];
-                $nodes_and_relations['nodes'][$index]['type'] = 0;
-            } else {
-                $nodes_and_relations['nodes'][$index]['source_data'] = $node['id_module'];
-                $nodes_and_relations['nodes'][$index]['id_agent'] = $node['id_agent'];
-                $nodes_and_relations['nodes'][$index]['type'] = 1;
-            }
+                $center = [
+                    'x' => $node_center['x'],
+                    'y' => $node_center['y'],
+                ];
 
-            $style = [];
-            $style['shape'] = 'circle';
-            $style['image'] = $node['image'];
-            $style['width'] = $node['width'];
-            $style['height'] = $node['height'];
-            $style['label'] = $node['text'];
-            $nodes_and_relations['nodes'][$index]['style'] = json_encode($style);
-
-            $index++;
-        }
-
-        $nodes_and_relations['relations'] = [];
-        $index = 0;
-
-        foreach ($relation_nodes as $relation) {
-            $nodes_and_relations['relations'][$index]['id_map'] = $this->idMap;
-
-            if (($relation['parent_type'] == 'agent') || ($relation['parent_type'] == '')) {
-                $nodes_and_relations['relations'][$index]['id_parent'] = $relation['id_parent'];
-                $nodes_and_relations['relations'][$index]['id_parent_source_data'] = $nodes[$relation['id_parent']]['id_agent'];
-                $nodes_and_relations['relations'][$index]['parent_type'] = 0;
-            } else if ($relation['parent_type'] == 'module') {
-                $nodes_and_relations['relations'][$index]['id_parent'] = $relation['id_parent'];
-                $nodes_and_relations['relations'][$index]['id_parent_source_data'] = $nodes[$relation['id_parent']]['id_module'];
-                $nodes_and_relations['relations'][$index]['parent_type'] = 1;
-            } else {
-                $nodes_and_relations['relations'][$index]['id_parent'] = $relation['id_parent'];
-                $nodes_and_relations['relations'][$index]['id_child_source_data'] = -2;
-                $nodes_and_relations['relations'][$index]['parent_type'] = 3;
-            }
-
-            if (($relation['child_type'] == 'agent') || ($relation['child_type'] == '')) {
-                $nodes_and_relations['relations'][$index]['id_child'] = $relation['id_child'];
-                $nodes_and_relations['relations'][$index]['id_child_source_data'] = $nodes[$relation['id_child']]['id_agent'];
-                $nodes_and_relations['relations'][$index]['child_type'] = 0;
-            } else if ($relation['child_type'] == 'module') {
-                $nodes_and_relations['relations'][$index]['id_child'] = $relation['id_child'];
-                $nodes_and_relations['relations'][$index]['id_child_source_data'] = $nodes[$relation['id_child']]['id_module'];
-                $nodes_and_relations['relations'][$index]['child_type'] = 1;
-            } else {
-                $nodes_and_relations['relations'][$index]['id_child'] = $relation['id_child'];
-                $nodes_and_relations['relations'][$index]['id_child_source_data'] = -2;
-                $nodes_and_relations['relations'][$index]['child_type'] = 3;
-            }
-
-            $index++;
-        }
-
-        if ($this->idMap > 0 && (!isset($this->map['__simulated']))) {
-            if (enterprise_installed()) {
-                $nodes_and_relations = enterprise_hook(
-                    'save_generate_nodes',
+                $this->map['center_x'] = $center['x'];
+                $this->map['center_y'] = $center['y'];
+                db_process_sql_update(
+                    'tmap',
                     [
-                        $this->idMap,
-                        $nodes_and_relations,
-                    ]
+                        'center_x' => $this->map['center_x'],
+                        'center_y' => $this->map['center_y'],
+                    ],
+                    ['id' => $this->idMap]
                 );
+            } else {
+                $this->map['center_x'] = $node_center['x'];
+                $this->map['center_y'] = $node_center['y'];
             }
 
-            $center = [
-                'x' => $node_center['x'],
-                'y' => $node_center['y'],
-            ];
-
-            $this->map['center_x'] = $center['x'];
-            $this->map['center_y'] = $center['y'];
-            db_process_sql_update(
-                'tmap',
-                [
-                    'center_x' => $this->map['center_x'],
-                    'center_y' => $this->map['center_y'],
-                ],
-                ['id' => $this->idMap]
-            );
-        } else {
-            $this->map['center_x'] = $node_center['x'];
-            $this->map['center_y'] = $node_center['y'];
+            $this->graph = $nodes_and_relations;
         }
-
-        $this->graph = $nodes_and_relations;
-
     }
 
 
@@ -814,221 +870,245 @@ class NetworkMap
      */
     public function loadMapData()
     {
-        $networkmap = $this->map;
+        if (isset($this->mode) && $this->mode === 'simple') {
+            $output .= '<script type="text/javascript">';
+                $output .= "var controller_map = null;\n";
+                $output .= 'var size_image ='.json_encode($this->mapOptions['size_image']).";\n";
+                $output .= 'var tooltipster ='.json_encode($this->mapOptions['tootltip']).";\n";
+                $output .= 'var nodes = '.json_encode($this->graph['nodes']).";\n";
+                $output .= 'var arrows = '.json_encode($this->graph['arrows']).";\n";
+                $output .= 'var height = '.json_encode($this->mapOptions['height']).";\n";
+                $output .= 'var node_radius ='.json_encode($this->mapOptions['node_radius']).";\n";
+                $output .= 'var font_size ='.json_encode($this->mapOptions['font_size']).";\n";
+                $output .= 'var homedir ='.json_encode($this->mapOptions['baseurl']).";\n";
+                $output .= "var custom_params = {};\n";
+                $output .= "custom_params['get_tooltip_info'] = 1;\n";
+            if ($this->mapOptions['id_cluster'] != null) {
+                $output .= "custom_params['id_cluster'] = ".$this->mapOptions['id_cluster'].";\n";
+                $output .= 'var id_cluster ='.json_encode($this->mapOptions['id_cluster']).";\n";
+            }
 
-        $simulate = false;
-        if (!isset($networkmap['__simulated'])) {
-            $networkmap['filter'] = json_decode(
-                $networkmap['filter'],
-                true
+                $output .= "custom_params['page'] = 'enterprise/include/ajax/clustermap';\n";
+            $output .= '</script>';
+
+            return $output;
+        } else {
+            $networkmap = $this->map;
+
+            $simulate = false;
+            if (!isset($networkmap['__simulated'])) {
+                $networkmap['filter'] = json_decode(
+                    $networkmap['filter'],
+                    true
+                );
+                $networkmap['filter']['holding_area'] = [
+                    500,
+                    500,
+                ];
+                $holding_area_title = __('Holding Area');
+            } else {
+                $simulate = true;
+                $holding_area_title = '';
+                $networkmap['filter']['holding_area'] = [
+                    0,
+                    0,
+                ];
+            }
+
+            $this->graph['relations'] = clean_duplicate_links(
+                $this->graph['relations']
             );
-            $networkmap['filter']['holding_area'] = [
-                500,
-                500,
-            ];
-            $holding_area_title = __('Holding Area');
-        } else {
-            $simulate = true;
-            $holding_area_title = '';
-            $networkmap['filter']['holding_area'] = [
-                0,
-                0,
-            ];
-        }
 
-        $this->graph['relations'] = clean_duplicate_links(
-            $this->graph['relations']
-        );
+            // Print some params to handle it in js.
+            html_print_input_hidden('product_name', get_product_name());
+            html_print_input_hidden('center_logo', ui_get_full_url(ui_get_logo_to_center_networkmap()));
 
-        // Print some params to handle it in js.
-        html_print_input_hidden('product_name', get_product_name());
-        html_print_input_hidden('center_logo', ui_get_full_url(ui_get_logo_to_center_networkmap()));
+            $output .= '<script type="text/javascript">
+        ////////////////////////////////////////////////////////////////////
+        // VARS FROM THE DB
+        ////////////////////////////////////////////////////////////////////
+        var url_background_grid = "'.ui_get_full_url('images/background_grid.png').'";
+        ';
+            $output .= 'var networkmap_id = "'.$this->idMap."\";\n";
 
-        $output .= '<script type="text/javascript">
-    ////////////////////////////////////////////////////////////////////
-    // VARS FROM THE DB
-    ////////////////////////////////////////////////////////////////////
-    var url_background_grid = "'.ui_get_full_url('images/background_grid.png').'";
-    ';
-        $output .= 'var networkmap_id = "'.$this->idMap."\";\n";
+            if (!empty($networkmap['filter'])) {
+                if (empty($networkmap['filter']['x_offs'])) {
+                    $output .= "var x_offs =null;\n";
+                } else {
+                    $output .= 'var x_offs ='.$networkmap['filter']['x_offs'].";\n";
+                }
 
-        if (!empty($networkmap['filter'])) {
-            if (empty($networkmap['filter']['x_offs'])) {
-                $output .= "var x_offs =null;\n";
-            } else {
-                $output .= 'var x_offs ='.$networkmap['filter']['x_offs'].";\n";
-            }
+                if (empty($networkmap['filter']['y_offs'])) {
+                    $output .= "var y_offs =null;\n";
+                } else {
+                    $output .= 'var y_offs ='.$networkmap['filter']['y_offs'].";\n";
+                }
 
-            if (empty($networkmap['filter']['y_offs'])) {
-                $output .= "var y_offs =null;\n";
-            } else {
-                $output .= 'var y_offs ='.$networkmap['filter']['y_offs'].";\n";
-            }
-
-            if (empty($networkmap['filter']['y_offs'])) {
-                $output .= "var z_dash =null;\n";
-            } else {
-                $output .= 'var z_dash = '.$networkmap['filter']['z_dash'].";\n";
-            }
-        } else {
-            $output .= "var x_offs = null;\n";
-            $output .= "var y_offs = null;\n";
-            $output .= "var z_dash = null;\n";
-        }
-
-        $output .= 'var networkmap_refresh_time = 1000 * '.$networkmap['source_period'].";\n";
-        $output .= 'var networkmap_center = [ '.$networkmap['center_x'].', '.$networkmap['center_y']."];\n";
-        $output .= 'var networkmap_dimensions = [ '.$networkmap['width'].', '.$networkmap['height']."];\n";
-        $output .= 'var enterprise_installed = '.((int) enterprise_installed()).";\n";
-        $output .= 'var node_radius = '.$networkmap['filter']['node_radius'].";\n";
-        $output .= 'var networkmap_holding_area_dimensions = '.json_encode($networkmap['filter']['holding_area']).";\n";
-        $output .= "var networkmap = {'nodes': [], 'links':  []};\n";
-        $nodes = $this->graph['nodes'];
-
-        if (empty($nodes)) {
-            $nodes = [];
-        }
-
-        $count_item_holding_area = 0;
-        $count = 0;
-        $nodes_graph = [];
-
-        foreach ($nodes as $key => $node) {
-            $style = json_decode($node['style'], true);
-            $node['style'] = json_decode($node['style'], true);
-
-            // Only agents can be show.
-            if (isset($node['type'])) {
-                if ($node['type'] == 1) {
-                    continue;
+                if (empty($networkmap['filter']['y_offs'])) {
+                    $output .= "var z_dash =null;\n";
+                } else {
+                    $output .= 'var z_dash = '.$networkmap['filter']['z_dash'].";\n";
                 }
             } else {
-                $node['type'] = '';
+                $output .= "var x_offs = null;\n";
+                $output .= "var y_offs = null;\n";
+                $output .= "var z_dash = null;\n";
             }
 
-            $item = networkmap_db_node_to_js_node(
-                $node,
-                $count,
-                $count_item_holding_area,
+            $output .= 'var networkmap_refresh_time = 1000 * '.$networkmap['source_period'].";\n";
+            $output .= 'var networkmap_center = [ '.$networkmap['center_x'].', '.$networkmap['center_y']."];\n";
+            $output .= 'var networkmap_dimensions = [ '.$networkmap['width'].', '.$networkmap['height']."];\n";
+            $output .= 'var enterprise_installed = '.((int) enterprise_installed()).";\n";
+            $output .= 'var node_radius = '.$networkmap['filter']['node_radius'].";\n";
+            $output .= 'var networkmap_holding_area_dimensions = '.json_encode($networkmap['filter']['holding_area']).";\n";
+            $output .= "var networkmap = {'nodes': [], 'links':  []};\n";
+            $nodes = $this->graph['nodes'];
+
+            if (empty($nodes)) {
+                $nodes = [];
+            }
+
+            $count_item_holding_area = 0;
+            $count = 0;
+            $nodes_graph = [];
+
+            foreach ($nodes as $key => $node) {
+                $style = json_decode($node['style'], true);
+                $node['style'] = json_decode($node['style'], true);
+
+                // Only agents can be show.
+                if (isset($node['type'])) {
+                    if ($node['type'] == 1) {
+                        continue;
+                    }
+                } else {
+                    $node['type'] = '';
+                }
+
+                $item = networkmap_db_node_to_js_node(
+                    $node,
+                    $count,
+                    $count_item_holding_area,
+                    $simulate
+                );
+                if ($item['deleted']) {
+                    continue;
+                }
+
+                $output .= 'networkmap.nodes.push('.json_encode($item).");\n";
+                $nodes_graph[$item['id']] = $item;
+            }
+
+            $relations = $this->graph['relations'];
+
+            if ($relations === false) {
+                $relations = [];
+            }
+
+            // Clean the relations and transform the module relations into
+            // interfaces.
+            networkmap_clean_relations_for_js($relations);
+
+            $links_js = networkmap_links_to_js_links(
+                $relations,
+                $nodes_graph,
                 $simulate
             );
-            if ($item['deleted']) {
-                continue;
+
+            $array_aux = [];
+            foreach ($links_js as $link_js) {
+                if ($link_js['deleted']) {
+                    unset($links_js[$link_js['id']]);
+                }
+
+                if ($link_js['target'] == -1) {
+                    unset($links_js[$link_js['id']]);
+                }
+
+                if ($link_js['source'] == -1) {
+                    unset($links_js[$link_js['id']]);
+                }
+
+                if ($link_js['target'] == $link_js['source']) {
+                    unset($links_js[$link_js['id']]);
+                }
+
+                if ($link_js['arrow_start'] == 'module' && $link_js['arrow_end'] == 'module') {
+                    $output .= 'networkmap.links.push('.json_encode($link_js).");\n";
+                    $array_aux[$link_js['id_agent_start']] = 1;
+                    unset($links_js[$link_js['id']]);
+                }
             }
 
-            $output .= 'networkmap.nodes.push('.json_encode($item).");\n";
-            $nodes_graph[$item['id']] = $item;
+            foreach ($links_js as $link_js) {
+                if (($link_js['id_agent_end'] === 0) && $array_aux[$link_js['id_agent_start']] === 1) {
+                    continue;
+                } else {
+                    $output .= 'networkmap.links.push('.json_encode($link_js).");\n";
+                }
+            }
+
+            $output .= '
+            ////////////////////////////////////////////////////////////////////
+            // INTERFACE STATUS COLORS
+            ////////////////////////////////////////////////////////////////////
+            ';
+
+            $module_color_status = [];
+            $module_color_status[] = [
+                'status_code' => AGENT_MODULE_STATUS_NORMAL,
+                'color'       => COL_NORMAL,
+            ];
+            $module_color_status[] = [
+                'status_code' => AGENT_MODULE_STATUS_CRITICAL_BAD,
+                'color'       => COL_CRITICAL,
+            ];
+            $module_color_status[] = [
+                'status_code' => AGENT_MODULE_STATUS_WARNING,
+                'color'       => COL_WARNING,
+            ];
+            $module_color_status[] = [
+                'status_code' => AGENT_STATUS_ALERT_FIRED,
+                'color'       => COL_ALERTFIRED,
+            ];
+            $module_color_status_unknown = COL_UNKNOWN;
+
+            $output .= 'var module_color_status = '.json_encode($module_color_status).";\n";
+            $output .= "var module_color_status_unknown = '".$module_color_status_unknown."';\n";
+
+            $output .= '
+            ////////////////////////////////////////////////////////////////////
+            // Other vars
+            ////////////////////////////////////////////////////////////////////
+            ';
+
+            $output .= "var translation_none = '".__('None')."';\n";
+            $output .= "var dialog_node_edit_title = '".__('Edit node %s')."';\n";
+            $output .= "var holding_area_title = '".$holding_area_title."';\n";
+            $output .= "var edit_menu = '".__('Show details and options')."';\n";
+            $output .= "var interface_link_add = '".__('Add a interface link')."';\n";
+            $output .= "var set_parent_link = '".__('Set parent interface')."';\n";
+            $output .= "var set_as_children_menu = '".__('Set as children')."';\n";
+            $output .= "var set_parent_menu = '".__('Set parent')."';\n";
+            $output .= "var abort_relationship_menu = '".__('Abort the action of set relationship')."';\n";
+            $output .= "var delete_menu = '".__('Delete')."';\n";
+            $output .= "var add_node_menu = '".__('Add node')."';\n";
+            $output .= "var set_center_menu = '".__('Set center')."';\n";
+            $output .= "var refresh_menu = '".__('Refresh')."';\n";
+            $output .= "var refresh_holding_area_menu = '".__('Refresh Holding area')."';\n";
+            $output .= "var ok_button = '".__('Proceed')."';\n";
+            $output .= "var message_to_confirm = '".__('Resetting the map will delete all customizations you have done, including manual relationships between elements, new items, etc.')."';\n";
+            $output .= "var warning_message = '".__('WARNING')."';\n";
+            $output .= "var ok_button = '".__('Proceed')."';\n";
+            $output .= "var cancel_button = '".__('Cancel')."';\n";
+            $output .= "var restart_map_menu = '".__('Restart map')."';\n";
+            $output .= "var abort_relationship_interface = '".__('Abort the interface relationship')."';\n";
+            $output .= "var abort_relationship_menu = '".__('Abort the action of set relationship')."';\n";
+
+            $output .= '</script>';
+
+            return $output;
         }
-
-        $relations = $this->graph['relations'];
-
-        if ($relations === false) {
-            $relations = [];
-        }
-
-        // Clean the relations and transform the module relations into
-        // interfaces.
-        networkmap_clean_relations_for_js($relations);
-
-        $links_js = networkmap_links_to_js_links(
-            $relations,
-            $nodes_graph,
-            $simulate
-        );
-
-        $array_aux = [];
-        foreach ($links_js as $link_js) {
-            if ($link_js['deleted']) {
-                unset($links_js[$link_js['id']]);
-            }
-
-            if ($link_js['target'] == -1) {
-                unset($links_js[$link_js['id']]);
-            }
-
-            if ($link_js['source'] == -1) {
-                unset($links_js[$link_js['id']]);
-            }
-
-            if ($link_js['target'] == $link_js['source']) {
-                unset($links_js[$link_js['id']]);
-            }
-
-            if ($link_js['arrow_start'] == 'module' && $link_js['arrow_end'] == 'module') {
-                $output .= 'networkmap.links.push('.json_encode($link_js).");\n";
-                $array_aux[$link_js['id_agent_start']] = 1;
-                unset($links_js[$link_js['id']]);
-            }
-        }
-
-        foreach ($links_js as $link_js) {
-            if (($link_js['id_agent_end'] === 0) && $array_aux[$link_js['id_agent_start']] === 1) {
-                continue;
-            } else {
-                $output .= 'networkmap.links.push('.json_encode($link_js).");\n";
-            }
-        }
-
-        $output .= '
-        ////////////////////////////////////////////////////////////////////
-        // INTERFACE STATUS COLORS
-        ////////////////////////////////////////////////////////////////////
-        ';
-
-        $module_color_status = [];
-        $module_color_status[] = [
-            'status_code' => AGENT_MODULE_STATUS_NORMAL,
-            'color'       => COL_NORMAL,
-        ];
-        $module_color_status[] = [
-            'status_code' => AGENT_MODULE_STATUS_CRITICAL_BAD,
-            'color'       => COL_CRITICAL,
-        ];
-        $module_color_status[] = [
-            'status_code' => AGENT_MODULE_STATUS_WARNING,
-            'color'       => COL_WARNING,
-        ];
-        $module_color_status[] = [
-            'status_code' => AGENT_STATUS_ALERT_FIRED,
-            'color'       => COL_ALERTFIRED,
-        ];
-        $module_color_status_unknown = COL_UNKNOWN;
-
-        $output .= 'var module_color_status = '.json_encode($module_color_status).";\n";
-        $output .= "var module_color_status_unknown = '".$module_color_status_unknown."';\n";
-
-        $output .= '
-        ////////////////////////////////////////////////////////////////////
-        // Other vars
-        ////////////////////////////////////////////////////////////////////
-        ';
-
-        $output .= "var translation_none = '".__('None')."';\n";
-        $output .= "var dialog_node_edit_title = '".__('Edit node %s')."';\n";
-        $output .= "var holding_area_title = '".$holding_area_title."';\n";
-        $output .= "var edit_menu = '".__('Show details and options')."';\n";
-        $output .= "var interface_link_add = '".__('Add a interface link')."';\n";
-        $output .= "var set_parent_link = '".__('Set parent interface')."';\n";
-        $output .= "var set_as_children_menu = '".__('Set as children')."';\n";
-        $output .= "var set_parent_menu = '".__('Set parent')."';\n";
-        $output .= "var abort_relationship_menu = '".__('Abort the action of set relationship')."';\n";
-        $output .= "var delete_menu = '".__('Delete')."';\n";
-        $output .= "var add_node_menu = '".__('Add node')."';\n";
-        $output .= "var set_center_menu = '".__('Set center')."';\n";
-        $output .= "var refresh_menu = '".__('Refresh')."';\n";
-        $output .= "var refresh_holding_area_menu = '".__('Refresh Holding area')."';\n";
-        $output .= "var ok_button = '".__('Proceed')."';\n";
-        $output .= "var message_to_confirm = '".__('Resetting the map will delete all customizations you have done, including manual relationships between elements, new items, etc.')."';\n";
-        $output .= "var warning_message = '".__('WARNING')."';\n";
-        $output .= "var ok_button = '".__('Proceed')."';\n";
-        $output .= "var cancel_button = '".__('Cancel')."';\n";
-        $output .= "var restart_map_menu = '".__('Restart map')."';\n";
-        $output .= "var abort_relationship_interface = '".__('Abort the interface relationship')."';\n";
-        $output .= "var abort_relationship_menu = '".__('Abort the action of set relationship')."';\n";
-
-        $output .= '</script>';
-
-        return $output;
     }
 
 
@@ -1446,46 +1526,57 @@ class NetworkMap
     {
         $output = '';
 
-        // Generate JS for advanced controller.
-        $output .= '
-
-<script type="text/javascript">
-    ////////////////////////////////////////////////////////////////////////
-    // document ready
-    ////////////////////////////////////////////////////////////////////////
-
-    $(document).ready(function() {
-        init_graph({
-            graph: networkmap,
-            networkmap_center: networkmap_center,
-            networkmap_dimensions: networkmap_dimensions,
-            enterprise_installed: enterprise_installed,
-            node_radius: node_radius,
-            holding_area_dimensions: networkmap_holding_area_dimensions,
-            url_background_grid: url_background_grid
-        });
-        init_drag_and_drop();
-        init_minimap();
-        function_open_minimap();
-        
-        $(document.body).on("mouseleave",
-            ".context-menu-list",
-            function(e) {
-                try {
-                    $("#networkconsole_'.$this->idMap.'").contextMenu("hide");
-                }
-                catch(err) {
-                }
-            }
-        );
-    });
-</script>';
-
-        if ($return === false) {
+        if (isset($this->mode) && $this->mode === 'simple') {
+            $output .= '<script type="text/javascript">
+                var controller = null
+                $(function() {
+                    controller = new SimpleMapController("#simple_map");
+                    controller.init_map();
+                });
+            </script>';
             echo $output;
-        }
+        } else {
+            // Generate JS for advanced controller.
+            $output .= '
 
-        return $output;
+    <script type="text/javascript">
+        ////////////////////////////////////////////////////////////////////////
+        // document ready
+        ////////////////////////////////////////////////////////////////////////
+
+        $(document).ready(function() {
+            init_graph({
+                graph: networkmap,
+                networkmap_center: networkmap_center,
+                networkmap_dimensions: networkmap_dimensions,
+                enterprise_installed: enterprise_installed,
+                node_radius: node_radius,
+                holding_area_dimensions: networkmap_holding_area_dimensions,
+                url_background_grid: url_background_grid
+            });
+            init_drag_and_drop();
+            init_minimap();
+            function_open_minimap();
+            
+            $(document.body).on("mouseleave",
+                ".context-menu-list",
+                function(e) {
+                    try {
+                        $("#networkconsole_'.$this->idMap.'").contextMenu("hide");
+                    }
+                    catch(err) {
+                    }
+                }
+            );
+        });
+    </script>';
+
+            if ($return === false) {
+                echo $output;
+            }
+
+            return $output;
+        }
 
     }
 
@@ -1499,55 +1590,73 @@ class NetworkMap
     {
         global $config;
 
-        ui_require_css_file('networkmap');
-        ui_require_css_file('jquery.contextMenu', 'include/styles/js/');
-
         $output = '';
-        $minimap_display = '';
-        if ($this->mapOptions['pure']) {
-            $minimap_display = 'none';
+
+        if (isset($this->mode) && $this->mode === 'simple') {
+            $output .= '<script type="text/javascript" src="'.$config['homeurl'].'include/javascript/d3.3.5.14.js" charset="utf-8"></script>';
+            $output .= '<script type="text/javascript" src="'.$config['homeurl'].'enterprise/include/javascript/SimpleMapController.js"></script>';
+            $output .= '<script type="text/javascript" src="'.$config['homeurl'].'enterprise/include/javascript/tooltipster.bundle.min.js"></script>';
+            $output .= '<script type="text/javascript" src="'.$config['homeurl'].'include/javascript/jquery.svg.js"></script>';
+            $output .= '<script type="text/javascript" src="'.$config['homeurl'].'include/javascript/jquery.svgdom.js"></script>';
+            $output .= '<link rel="stylesheet" type="text/css" href="'.$this->mapOptions['baseurl'].'/enterprise/include/styles/tooltipster.bundle.min.css" />'."\n";
+
+            $output .= '<div id="simple_map" data-id="<?php echo $this->name;?>" style="border: 1px #dddddd solid;">';
+                $output .= '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" pointer-events="all" width="'.$this->mapOptions['width'].'" height="'.$this->mapOptions['height'].'px">';
+
+                $output .= '</svg>';
+            $output .= '</div>';
+
+            return $output;
+        } else {
+            ui_require_css_file('networkmap');
+            ui_require_css_file('jquery.contextMenu', 'include/styles/js/');
+
+            $minimap_display = '';
+            if ($this->mapOptions['pure']) {
+                $minimap_display = 'none';
+            }
+
+            $networkmap = $this->map;
+            $networkmap['filter'] = json_decode($networkmap['filter'], true);
+
+            $networkmap['filter']['l2_network_interfaces'] = 1;
+
+            $output .= '<script type="text/javascript" src="'.$config['homeurl'].'include/javascript/d3.3.5.14.js" charset="utf-8"></script>';
+            $output .= '<script type="text/javascript" src="'.$config['homeurl'].'include/javascript/jquery.contextMenu.js"></script>';
+            $output .= '<script type="text/javascript" src="'.$config['homeurl'].'include/javascript/functions_pandora_networkmap.js"></script>';
+
+            // Open networkconsole_id div.
+            $output .= '<div id="networkconsole_'.$networkmap['id'].'"';
+            $output .= ' style="position: relative; overflow: hidden; background: #FAFAFA">';
+
+            $output .= '<div style="display: '.$minimap_display.';">';
+            $output .= '<canvas id="minimap_'.$networkmap['id'].'"';
+            $output .= ' style="position: absolute; left: 0px; top: 0px; border: 1px solid #bbbbbb;">';
+            $output .= '</canvas>';
+
+            $output .= '<div id="arrow_minimap_'.$networkmap['id'].'"';
+            $output .= ' style="position: absolute; left: 0px; top: 0px;">';
+            $output .= '<a title="'.__('Open Minimap').'" href="javascript: toggle_minimap();">';
+            $output .= '<img id="image_arrow_minimap_'.$networkmap['id'].'"';
+            $output .= ' src="images/minimap_open_arrow.png" />';
+            $output .= '</a><div></div></div>';
+
+            $output .= '<div id="hide_labels_'.$networkmap['id'].'"';
+            $output .= ' style="position: absolute; right: 10px; top: 10px;">';
+            $output .= '<a title="'.__('Hide Labels').'" href="javascript: hide_labels();">';
+            $output .= '<img id="image_hide_show_labels" src="images/icono_borrar.png" />';
+            $output .= '</a></div>';
+
+            $output .= '<div id="holding_spinner_'.$networkmap['id'].'" ';
+            $output .= ' style="display: none; position: absolute; right: 50px; top: 20px;">';
+            $output .= '<img id="image_hide_show_labels" src="images/spinner.gif" />';
+            $output .= '</div>';
+
+            // Close networkconsole_id div.
+            $output .= "</div>\n";
+
+            return $output;
         }
-
-        $networkmap = $this->map;
-        $networkmap['filter'] = json_decode($networkmap['filter'], true);
-
-        $networkmap['filter']['l2_network_interfaces'] = 1;
-
-        $output .= '<script type="text/javascript" src="'.$config['homeurl'].'include/javascript/d3.3.5.14.js" charset="utf-8"></script>';
-        $output .= '<script type="text/javascript" src="'.$config['homeurl'].'include/javascript/jquery.contextMenu.js"></script>';
-        $output .= '<script type="text/javascript" src="'.$config['homeurl'].'include/javascript/functions_pandora_networkmap.js"></script>';
-
-        // Open networkconsole_id div.
-        $output .= '<div id="networkconsole_'.$networkmap['id'].'"';
-        $output .= ' style="position: relative; overflow: hidden; background: #FAFAFA">';
-
-        $output .= '<div style="display: '.$minimap_display.';">';
-        $output .= '<canvas id="minimap_'.$networkmap['id'].'"';
-        $output .= ' style="position: absolute; left: 0px; top: 0px; border: 1px solid #bbbbbb;">';
-        $output .= '</canvas>';
-
-        $output .= '<div id="arrow_minimap_'.$networkmap['id'].'"';
-        $output .= ' style="position: absolute; left: 0px; top: 0px;">';
-        $output .= '<a title="'.__('Open Minimap').'" href="javascript: toggle_minimap();">';
-        $output .= '<img id="image_arrow_minimap_'.$networkmap['id'].'"';
-        $output .= ' src="images/minimap_open_arrow.png" />';
-        $output .= '</a><div></div></div>';
-
-        $output .= '<div id="hide_labels_'.$networkmap['id'].'"';
-        $output .= ' style="position: absolute; right: 10px; top: 10px;">';
-        $output .= '<a title="'.__('Hide Labels').'" href="javascript: hide_labels();">';
-        $output .= '<img id="image_hide_show_labels" src="images/icono_borrar.png" />';
-        $output .= '</a></div>';
-
-        $output .= '<div id="holding_spinner_'.$networkmap['id'].'" ';
-        $output .= ' style="display: none; position: absolute; right: 50px; top: 20px;">';
-        $output .= '<img id="image_hide_show_labels" src="images/spinner.gif" />';
-        $output .= '</div>';
-
-        // Close networkconsole_id div.
-        $output .= "</div>\n";
-
-        return $output;
     }
 
 

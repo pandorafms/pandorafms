@@ -3964,6 +3964,20 @@ function reporting_monitor_report($report, $content)
 }
 
 
+/**
+ * Generates the data structure to build a netflow report.
+ *
+ * @param array   $report             Global report info.
+ * @param array   $content            Report item info.
+ * @param string  $type               Report type (static, dynamic, data).
+ * @param integer $force_width_chart  Fixed width chart.
+ * @param integer $force_height_chart Fixed height chart.
+ * @param string  $type_netflow       One of netflow_area, netflow_pie,
+ *      netflow_data, netflow_statistics, netflow_summary.
+ * @param boolean $pdf                True if a pdf report is generating.
+ *
+ * @return array Report item structure.
+ */
 function reporting_netflow(
     $report,
     $content,
@@ -3995,6 +4009,10 @@ function reporting_netflow(
         case 'netflow_summary':
             $return['type'] = 'netflow_summary';
         break;
+
+        default:
+            $return['type'] = 'unknown';
+        break;
     }
 
     if (empty($content['name'])) {
@@ -4018,6 +4036,10 @@ function reporting_netflow(
             case 'netflow_summary':
                 $content['name'] = __('Netflow Summary');
             break;
+
+            default:
+                $content['name'] = __('Unknown report');
+            break;
         }
     }
 
@@ -4025,7 +4047,7 @@ function reporting_netflow(
     $return['description'] = $content['description'];
     $return['date'] = reporting_get_date_text($report, $content);
 
-    // Get chart
+    // Get chart.
     reporting_set_conf_charts(
         $width,
         $height,
@@ -4043,7 +4065,7 @@ function reporting_netflow(
         $height = $force_height_chart;
     }
 
-    // Get item filters
+    // Get item filters.
     $filter = db_get_row_sql(
         "SELECT *
 		FROM tnetflow_filter
@@ -4068,8 +4090,16 @@ function reporting_netflow(
         break;
 
         case 'data':
+        default:
+            // Nothing to do.
         break;
     }
+
+    $return['subtitle'] = netflow_generate_subtitle_report(
+        $filter['aggregate'],
+        $content['top_n'],
+        $type_netflow
+    );
 
     return reporting_check_structure_content($return);
 }

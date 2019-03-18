@@ -1099,11 +1099,6 @@ function netflow_draw_item(
             }
 
             if ($output == 'HTML' || $output == 'PDF') {
-                $html .= '&nbsp;<b>'.__('Aggregate').':</b> '.netflow_format_aggregate($aggregate);
-                if ($interval_length != 0) {
-                    $html .= '&nbsp;<b>'._('Resolution').':</b> '.netflow_get_resolution_name($interval_length);
-                }
-
                 $html .= graph_netflow_aggregate_area(
                     $data,
                     $interval,
@@ -1140,11 +1135,6 @@ function netflow_draw_item(
             }
 
             if ($output == 'HTML' || $output == 'PDF') {
-                $html .= '&nbsp;<b>'.__('Aggregate').':</b> '.netflow_format_aggregate($aggregate);
-                if ($interval_length != 0) {
-                    $html .= '&nbsp;<b>'._('Resolution').':</b> '.netflow_get_resolution_name($interval_length);
-                }
-
                 $html .= "<div style='width: 100%; overflow: auto;'>";
                 $html .= netflow_data_table($data, $start_date, $end_date, $aggregate);
                 $html .= '</div>';
@@ -1219,16 +1209,10 @@ function netflow_draw_item(
             }
 
             if ($output == 'HTML') {
-                $html .= '&nbsp;<b>'.__('Aggregate').':</b> '.netflow_format_aggregate($aggregate);
-                $html .= graph_netflow_aggregate_pie($data_pie, netflow_format_aggregate($aggregate));
                 return $html;
             } else if ($output == 'PDF') {
-                $html .= '&nbsp;<b>'.__('Aggregate').':</b> '.$aggregate;
-                $html .= graph_netflow_aggregate_pie($data_pie, netflow_format_aggregate($aggregate), 2, true);
                 return $html;
             } else if ($output == 'XML') {
-                $xml .= '<aggregate>'.$aggregate."</aggregate>\n";
-                $xml .= netflow_aggregate_pie_xml($data_pie);
                 return $xml;
             }
         break;
@@ -1264,7 +1248,6 @@ function netflow_draw_item(
                     $html .= '<tr>';
                     $html .= '<td>';
                     $html .= netflow_summary_table($data_summary);
-                    $html .= '&nbsp;<b>'.__('Aggregate').':</b> '.netflow_format_aggregate($aggregate);
                     $html .= '</td>';
                     $html .= '<td>';
                     $html .= graph_netflow_aggregate_pie($data_pie, netflow_format_aggregate($aggregate));
@@ -1788,4 +1771,33 @@ function netflow_get_resolution_name($value)
 {
     $resolutions = netflow_resolution_select_params();
     return (isset($resolutions[$value])) ? $resolutions[$value] : __('Unknown');
+}
+
+
+/**
+ * Report formatted subtitle.
+ *
+ * @param string $aggreagate Aggregate by param.
+ * @param string $resolution Netfow live view resolution.
+ * @param string $type       Type of view.
+ *
+ * @return string HTML with formatted subtitle.
+ */
+function netflow_generate_subtitle_report($aggregate, $resolution, $type)
+{
+    $subt = __(
+        'Agregate by %s',
+        netflow_format_aggregate($aggregate)
+    );
+
+    // Display the resolution only in required reports.
+    if (in_array($type, ['netflow_area', 'netflow_data']) === true) {
+        $subt .= ' - ';
+        $subt .= __(
+            'Resolution %s',
+            netflow_get_resolution_name($resolution)
+        );
+    }
+
+    return $subt;
 }

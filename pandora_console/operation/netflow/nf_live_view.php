@@ -256,27 +256,11 @@ if (is_metaconsole()) {
 
     echo '<tr>';
 
-    echo '<td><b>'.__('End date').'</b></td>';
-    echo '<td>'.html_print_input_text('date', $date, false, 13, 10, true).html_print_image(
-        'images/calendar_view_day.png',
-        true,
-        ['alt' => 'calendar']
-    ).ui_print_help_tip(__('Date format is YY/MM/DD'), true).html_print_input_text('time', $time, false, 10, 8, true).ui_print_help_tip(__('Watch format is hours (24h):minutes:seconds'), true).'</td>';
-
     $class_not_period = ($is_period) ? 'nf_hidden' : 'nf_display';
     $class_period = ($is_period) ? 'nf_display' : 'nf_hidden';
     echo '<td>';
     echo '<b class="'.$class_period.'">'.__('Interval').'</b>';
     echo '<b class="'.$class_not_period.'">'.__('Start date').'</b>';
-    echo html_print_checkbox(
-        'is_period',
-        1,
-        ($is_period === true) ? 1 : 0,
-        true,
-        false,
-        'nf_view_click_period(event)'
-    );
-    echo ui_print_help_tip(__('Select this checkbox to write interval instead a date.'), true);
     echo '</td>';
     echo '<td>';
     echo html_print_extended_select_for_time('period', $period, '', '', 0, false, true, false, true, $class_period);
@@ -289,6 +273,23 @@ if (is_metaconsole()) {
             'class' => $class_not_period,
         ]
     ).html_print_input_text('time_lower', $time_lower, false, 10, 8, true, false, false, '', $class_not_period);
+    echo html_print_checkbox(
+        'is_period',
+        1,
+        ($is_period === true) ? 1 : 0,
+        true,
+        false,
+        'nf_view_click_period(event)'
+    );
+    echo ui_print_help_tip(__('Select this checkbox to write interval instead a date.'), true);
+    echo '</td>';
+
+    echo '<td><b>'.__('End date').'</b></td>';
+    echo '<td>'.html_print_input_text('date', $date, false, 13, 10, true).html_print_image(
+        'images/calendar_view_day.png',
+        true,
+        ['alt' => 'calendar']
+    ).ui_print_help_tip(__('Date format is YY/MM/DD'), true).html_print_input_text('time', $time, false, 10, 8, true).ui_print_help_tip(__('Watch format is hours (24h):minutes:seconds'), true);
     echo '</td>';
 
     echo '<td><b>'.__('Resolution').ui_print_help_tip(__('The interval will be divided in chunks the length of the resolution.'), true).'</b></td>';

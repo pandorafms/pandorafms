@@ -35,6 +35,9 @@ enterprise_include_once('include/functions_discovery.php');
 
 // Avoid node overlapping.
 define('GRAPHVIZ_RADIUS_CONVERSION_FACTOR', 20);
+define('MAP_X_CORRECTION', 600);
+define('MAP_Y_CORRECTION', 150);
+
 
 /**
  * Manage networkmaps in Pandora FMS.
@@ -597,19 +600,7 @@ class NetworkMap
             // Group map.
             $nodes = agents_get_agents(
                 $filter,
-                [
-                    'id_grupo',
-                    'nombre',
-                    'id_os',
-                    'id_parent',
-                    'id_agente',
-                    'normal_count',
-                    'warning_count',
-                    'critical_count',
-                    'unknown_count',
-                    'total_count',
-                    'notinit_count',
-                ],
+                ['*'],
                 'AR',
                 [
                     'field' => 'id_parent',
@@ -644,45 +635,67 @@ class NetworkMap
         }
 
         $relations = [];
+        $i = 0;
+        $from_type = NODE_AGENT;
+        $to_type = NODE_AGENT;
         switch ($node['node_type']) {
             case NODE_AGENT:
                 // Search for agent parent and module relationships.
                 $module_relations = modules_get_relations(
-                    [
-                        'id_agent' => $node['id_agente'],
-                    ]
+                    ['id_agent' => $node['id_agente']]
                 );
+
                 if ($module_relations !== false) {
-                    foreach ($module_relations as $rel) {
-                        $from = NODE_MODULE.'_'.$rel['module_a'];
-                        $from_id = $this->nodes[$from]['id_node'];
+                    // Module relation exist.
+                    foreach ($module_relations as $mod_rel) {
+                        // Check if target referenced agent is defined in
+                        // current map.
+                        $agent_a = modules_get_agentmodule_agent(
+                            $mod_rel['module_a']
+                        );
+                        $module_a = $mod_rel['module_a'];
+                        $agent_b = modules_get_agentmodule_agent(
+                            $mod_rel['module_b']
+                        );
+                        $module_b = $mod_rel['module_b'];
 
-                        $to = NODE_MODULE.'_'.$rel['module_b'];
-                        $to_id = $this->nodes[$to]['id_node'];
+                        // Calculate target.
+                        $module_to = $module_a;
+                        $agent_to = $agent_a;
+                        $module_from = $module_b;
+                        $agent_from = $agent_b;
 
-                        if ($from_id && $to_id) {
-                            // Both module nodes exist.
-                            $relations[$from_id] = $to_id;
-                            continue;
-                        } else if ($from_id) {
-                            // Only source module node exists.
-                            $to = NODE_AGENT.'_'.modules_get_agentmodule_agent(
-                                $rel['module_b']
-                            );
-                            $to_id = $this->nodes[$to]['id_node'];
-                        } else if ($to_id) {
-                            // Only target module node exists.
-                            $from_id = $node['id_node'];
-                        } else {
-                            // Module nodes does not exist.
-                            // Simulate node to node relationship.
-                            $to = NODE_AGENT.'_'.modules_get_agentmodule_agent(
-                                $rel['module_b']
-                            );
-                            $to_id = $this->nodes[$to]['id_node'];
+                        // Module relations does not have from and to,
+                        // If current agent_a is current node, reverse relation.
+                        if ($agent_a == $node['id_agente']) {
+                            $module_to = $module_b;
+                            $agent_to = $agent_b;
+                            $module_from = $module_a;
+                            $agent_from = $agent_a;
                         }
 
-                        $relations[$to_id] = $from_id;
+                        $target_node = $this->nodes[NODE_AGENT.'_'.$agent_to];
+
+                        if (isset($target_node) === false) {
+                            // Agent is not present in this map.
+                            continue;
+                        }
+
+                        $rel = [];
+                        // Node reference (child).
+                        $rel['id_child'] = $node['id_node'];
+                        $rel['child_type'] = NODE_MODULE;
+                        $rel['id_child_source_data'] = $module_from;
+                        $rel['id_child_agent'] = $agent_from;
+
+                        // Node reference (parent).
+                        $rel['id_parent'] = $target_node['id_node'];
+                        $rel['parent_type'] = NODE_MODULE;
+                        $rel['id_parent_source_data'] = $module_to;
+                        $rel['id_parent_agent'] = $agent_to;
+
+                        // Store relation.
+                        $relations[] = $rel;
                     }
                 }
 
@@ -692,50 +705,80 @@ class NetworkMap
 
                 // Store relationship.
                 if ($parent_node) {
-                    $relations[$parent_node] = $node['id_node'];
+                    $rel = [];
+
+                    // Node reference (parent).
+                    $rel['id_parent'] = $parent_node;
+                    $rel['parent_type'] = NODE_AGENT;
+                    $rel['id_parent_source_data'] = $node['id_parent'];
+
+                    // Node reference (child).
+                    $rel['id_child'] = $node['id_node'];
+                    $rel['child_type'] = NODE_AGENT;
+                    $rel['id_child_source_data'] = $node['id_agente'];
+
+                    // Store relation.
+                    $relations[] = $rel;
                 }
             break;
 
             case NODE_MODULE:
                 // Search for module relationships.
-                // Module.
                 $module_relations = modules_get_relations(
-                    [
-                        'id_module' => $node['id_agente_modulo'],
-                    ]
+                    ['id_module' => $node['id_agente_modulo']]
                 );
+
                 if ($module_relations !== false) {
-                    foreach ($module_relations as $rel) {
-                        $from = NODE_MODULE.'_'.$rel['module_a'];
-                        $from_id = $this->nodes[$from]['id_node'];
+                    // Module relation exist.
+                    foreach ($module_relations as $mod_rel) {
+                        // Check if target referenced agent is defined in
+                        // current map.
+                        $agent_a = modules_get_agentmodule_agent(
+                            $mod_rel['module_a']
+                        );
+                        $module_a = $mod_rel['module_a'];
+                        $agent_b = modules_get_agentmodule_agent(
+                            $mod_rel['module_b']
+                        );
+                        $module_b = $mod_rel['module_b'];
 
-                        $to = NODE_MODULE.'_'.$rel['module_b'];
-                        $to_id = $this->nodes[$to]['id_node'];
+                        // Calculate target.
+                        $module_to = $module_a;
+                        $agent_to = $agent_a;
+                        $module_from = $module_b;
+                        $agent_from = $agent_b;
 
-                        if ($from_id && $to_id) {
-                            // Both module nodes exist.
-                            $relations[$from_id] = $to_id;
-                            continue;
-                        } else if ($from_id) {
-                            // Only source module node exists.
-                            $to = NODE_AGENT.'_'.modules_get_agentmodule_agent(
-                                $rel['module_b']
-                            );
-                            $to_id = $this->nodes[$to]['id_node'];
-                        } else if ($to_id) {
-                            // Only target module node exists.
-                            // Should not ocurr.
-                            $from_id = $node['id_node'];
-                        } else {
-                            // Module nodes does not exist.
-                            // Simulate node to node relationship.
-                            $to = NODE_AGENT.'_'.modules_get_agentmodule_agent(
-                                $rel['module_b']
-                            );
-                            $to_id = $this->nodes[$to]['id_node'];
+                        // Module relations does not have from and to,
+                        // If current agent_a is current node, reverse relation.
+                        if ($agent_a == $node['id_agente']) {
+                            $module_to = $module_b;
+                            $agent_to = $agent_b;
+                            $module_from = $module_a;
+                            $agent_from = $agent_a;
                         }
 
-                        $relations[$to_id] = $from_id;
+                        $target_node = $this->nodes[NODE_AGENT.'_'.$agent_to];
+
+                        if (isset($target_node) === false) {
+                            // Agent is not present in this map.
+                            continue;
+                        }
+
+                        $rel = [];
+                        // Node reference (child).
+                        $rel['id_child'] = $node['id_node'];
+                        $rel['child_type'] = NODE_MODULE;
+                        $rel['id_child_source_data'] = $module_from;
+                        $rel['id_child_agent'] = $agent_from;
+
+                        // Node reference (parent).
+                        $rel['id_parent'] = $target_node['id_node'];
+                        $rel['parent_type'] = NODE_MODULE;
+                        $rel['id_parent_source_data'] = $module_to;
+                        $rel['id_parent_agent'] = $agent_to;
+
+                        // Store relation.
+                        $relations[] = $rel;
                     }
                 }
             break;
@@ -963,6 +1006,8 @@ class NetworkMap
 
         $dot_str = '';
 
+        // Color is being printed by D3, not graphviz.
+        // Used only for positioning.
         $color = COL_NORMAL;
         $label = $data['label'];
         $url = 'none';
@@ -1363,6 +1408,7 @@ class NetworkMap
                     }
                 } else {
                     // Handmade node.
+                    // Store user node definitions.
                     $k = NODE_GENERIC.'_'.$k;
                     $id_source = $node['id'];
                     $label = $node['label'];
@@ -1371,6 +1417,12 @@ class NetworkMap
                     // In handmade nodes, edges are defined by using id_parent
                     // Referencing target parent 'id'.
                     $this->nodes[$k]['id_parent'] = $node['id_parent'];
+                    $this->nodes[$k]['width'] = $node['width'];
+                    $this->nodes[$k]['height'] = $node['height'];
+                    $this->nodes[$k]['id_source'] = $node['id_source'];
+                    $this->nodes[$k]['shape'] = $node['shape'];
+                    $url = $this->node['url'];
+                    $url_tooltip = $this->node['url_tooltip'];
                 }
 
                 $this->nodes[$k]['url'] = $url;
@@ -1386,7 +1438,6 @@ class NetworkMap
                     [
                         'id_node'   => $i,
                         'id_source' => $id_source,
-                        'status'    => $status,
                         'label'     => $label,
                         'image'     => null,
                     ]
@@ -1394,52 +1445,61 @@ class NetworkMap
 
                 // Keep reverse reference.
                 $this->nodeMapping[$i] = $k;
+                $this->nodes[$k]['id_source_data'] = $id_source;
                 $this->nodes[$k]['id_node'] = $i;
                 $this->nodes[$k]['status'] = $status;
-
-                $edges[$i] = $this->calculateRelations($k);
-
-                // Adopt orphans.
-                if (empty($edges[$i])) {
-                    $orphans[$i] = 0;
-                }
 
                 // Increase for next node.
                 $i++;
             }
 
-            foreach ($edges as $rel) {
-                foreach ($rel as $to => $from) {
-                    $graph .= $this->createDotEdge(
-                        [
-                            'from' => $from,
-                            'to'   => $to,
-                        ]
-                    );
-                    // Remove parents from orphans.
-                    unset($orphans[$from]);
+            // Search for relations.
+            foreach ($this->nodes as $k => $item) {
+                $target = $this->calculateRelations($k);
+
+                // Adopt orphans.
+                if (empty($target)) {
+                    $rel = [];
+                    $rel['id_parent'] = 0;
+                    $rel['id_child'] = $item['id_node'];
+                    $rel['parent_type'] = NODE_PANDORA;
+                    $rel['child_type'] = $item['node_type'];
+                    $rel['child_source_data'] = $item['id_source_data'];
+                    $orphans[] = $rel;
+                } else {
+                    // Flattern edges.
+                    foreach ($target as $rel) {
+                        $edges[] = $rel;
+                    }
                 }
             }
 
-            // Add missed edges.
-            foreach ($orphans as $to => $from) {
+            foreach ($edges as $rel) {
                 $graph .= $this->createDotEdge(
                     [
-                        'from' => $from,
-                        'to'   => $to,
+                        'to'   => $rel['id_child'],
+                        'from' => $rel['id_parent'],
+                    ]
+                );
+            }
+
+            // Add missed edges.
+            foreach ($orphans as $rel) {
+                $graph .= $this->createDotEdge(
+                    [
+                        'from' => $rel['id_child'],
+                        'to'   => $rel['id_parent'],
                     ]
                 );
             }
 
             // Store relationships.
-            $this->relations = $edges;
+            $this->relations = array_merge($edges, $orphans);
 
             // Close dot file.
             $graph .= $this->closeDotFile();
-
             $this->dotGraph = $graph;
         }
-
     }
 
 
@@ -1478,7 +1538,9 @@ class NetworkMap
                 $id = $fields[1];
                 $nodes[$id]['x'] = (($fields[2] * $this->mapOptions['map_filter']['node_radius']) - $this->mapOptions['map_filter']['rank_sep'] * GRAPHVIZ_RADIUS_CONVERSION_FACTOR);
                 $nodes[$id]['y'] = (($fields[3] * $this->mapOptions['map_filter']['node_radius']) - $this->mapOptions['map_filter']['rank_sep'] * GRAPHVIZ_RADIUS_CONVERSION_FACTOR);
-            } else if (preg_match('/^edge.*$/', $line) != 0) {
+            } else if (preg_match('/^edge.*$/', $line) != 0
+                && empty($this->relations) === true
+            ) {
                 // Edge.
                 // This is really not needed, because is already defined
                 // in $this->relations. Only for debug purposes.
@@ -1492,10 +1554,19 @@ class NetworkMap
                 }
 
                 $relations[] = [
-                    'from' => $fields[2],
-                    'to'   => $fields[1],
+                    'id_parent'             => $target_node['id_node'],
+                    'parent_type'           => NODE_GENERIC,
+                    'id_parent_source_data' => $mod_rel['module_b'],
+                    'id_child'              => $node['id_node'],
+                    'child_type'            => NODE_GENERIC,
+                    'id_child_source_data'  => $mod_rel['module_a'],
                 ];
             }
+        }
+
+        // Use current relationship definitions (if exists).
+        if (empty($this->relations) === false) {
+            $relations = $this->relations;
         }
 
         return [
@@ -1513,6 +1584,8 @@ class NetworkMap
      */
     public function calculateCoords()
     {
+        global $config;
+
         switch (PHP_OS) {
             case 'WIN32':
             case 'WINNT':
@@ -1686,22 +1759,6 @@ class NetworkMap
          * Calculate references.
          */
 
-        // Set the position of modules.
-        foreach ($nodes as $key => $node) {
-            if ($node['type'] == 'module') {
-                // Search the agent of this module for to get the
-                // position.
-                foreach ($nodes as $key2 => $node2) {
-                    if ($node2['id_agent'] != 0 && $node2['type'] == 'agent') {
-                        if ($node2['id_agent'] == $node['id_agent']) {
-                            $nodes[$key]['coords'][0] = ($nodes[$key2]['coords'][0] + $node['height'] / 2);
-                            $nodes[$key]['coords'][1] = ($nodes[$key2]['coords'][1] + $node['width'] / 2);
-                        }
-                    }
-                }
-            }
-        }
-
         $index = 0;
         $node_center = [];
 
@@ -1716,7 +1773,7 @@ class NetworkMap
             $source = $this->getNodeData($id);
 
             $node_tmp['id_agent'] = $source['id_agente'];
-            $node_tmp['id_module'] = $source['id_module'];
+            $node_tmp['id_module'] = $source['id_agente_modulo'];
             $node_tmp['type'] = $source['node_type'];
             $node_tmp['x'] = $coords['x'];
             $node_tmp['y'] = $coords['y'];
@@ -1764,6 +1821,8 @@ class NetworkMap
                     $node_tmp['id_agent'] = $source['id_agente'];
                     $node_tmp['id_module'] = $source['id_agente_modulo'];
                     $node_tmp['source_data'] = 0;
+                    $node_center['x'] = ($coords['x'] - MAP_X_CORRECTION);
+                    $node_center['y'] = ($coords['y'] - MAP_Y_CORRECTION);
                 break;
 
                 case NODE_GENERIC:
@@ -1771,6 +1830,7 @@ class NetworkMap
                     $node_tmp['text'] = $source['label'];
                     $node_tmp['id_agent'] = $source['id_agente'];
                     $node_tmp['id_module'] = $source['id_agente_modulo'];
+                    $node_tmp['source_data'] = $source['id_source'];
                 break;
             }
 
@@ -1791,34 +1851,43 @@ class NetworkMap
             $index++;
         }
 
-        // Prepare graph edges.
+        // Prepare graph edges and clean double references.
         $graph['relations'] = [];
-
-        // Edges from and to references id_nodes. Retrieve source data
-        // before link them.
+        $parents = [];
         foreach ($relations as $rel) {
-            // Parent.
-            $from_source = $this->getNodeData($rel['from']);
-            // Child.
-            $to_source = $this->getNodeData($rel['to']);
+            $tmp = [
+                'id_map'                => $this->idMap,
+                'id_parent'             => $rel['id_parent'],
+                'parent_type'           => $rel['parent_type'],
+                'id_parent_source_data' => $rel['id_parent_source_data'],
+                'id_child'              => $rel['id_child'],
+                'child_type'            => $rel['child_type'],
+                'id_child_source_data'  => $rel['id_child_source_data'],
+                'id_parent_agent'       => $rel['id_parent_agent'],
+                'id_child_agent'        => $rel['id_child_agent'],
+            ];
+            if ($rel['id_child_agent'] == 103 || $rel['id_parent_agent'] == 103) {
+                hd($tmp);
+            }
 
-            $edge = [];
-            $edge['id_map'] = $this->idMap;
-            $edge['id_parent'] = $rel['from'];
-            $edge['id_child'] = $rel['to'];
-            $edge['parent_type'] = $from_source['node_type'];
-            $edge['child_type'] = $to_source['node_type'];
-            $edge['id_child_source_data'] = $this->auxGetIdByType(
-                $to_source
-            );
-            $edge['id_parent_source_data'] = $this->auxGetIdByType(
-                $from_source
-            );
+            // Avoid child - parent - parent -child relation duplicated.
+            $found = 0;
+            foreach ($parents[$tmp['id_parent_source_data']] as $k) {
+                if ($k == $tmp['id_child_source_data']) {
+                    $found = 1;
+                }
+            }
 
-            $graph['relations'][] = $edge;
+            if ($found == 0) {
+                $parents[$tmp['id_child_source_data']][] = $tmp['id_parent_source_data'];
+                $graph['relations'][] = $tmp;
+            }
         }
 
+        hd($parents);
+
         if ($this->idMap > 0 && (!isset($this->map['__simulated']))) {
+            // TODO: REMOVE '!'.
             if (!enterprise_installed()) {
                 $nodes_and_relations = enterprise_hook(
                     'save_generate_nodes',
@@ -2646,7 +2715,9 @@ class NetworkMap
 
         $user_readonly = !$networkmap_write && !$networkmap_manage;
 
-        if (isset($this->idMap)) {
+        if (isset($this->idMap)
+            && isset($this->map['__simulated']) === false
+        ) {
             $output .= $this->loadMapSkel();
             $output .= $this->loadMapData();
             $output .= $this->loadController();
@@ -2656,6 +2727,7 @@ class NetworkMap
             $output .= $this->loadMapSkel();
             $output .= $this->loadMapData();
             $output .= $this->loadController();
+            $output .= $this->loadAdvancedInterface();
         }
 
         if ($return === false) {

@@ -1247,6 +1247,7 @@ function create_button_palette_callback() {
         dialog_message("#message_alert_max_height");
         validate = false;
       }
+
       break;
     case "group_item":
       if (values["height"] == "") {
@@ -1308,6 +1309,14 @@ function create_button_palette_callback() {
         values["label"] == false
       ) {
         dialog_message("#message_alert_no_image");
+        validate = false;
+      }
+      if (values["agent"] == "" || values["agent"] == "none") {
+        dialog_message("#message_alert_no_agent");
+        validate = false;
+      }
+      if (values["module"] == "" || values["module"] == "--") {
+        dialog_message("#message_alert_no_module");
         validate = false;
       }
 

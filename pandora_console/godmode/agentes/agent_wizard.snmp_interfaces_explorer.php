@@ -321,6 +321,8 @@ if ($create_modules) {
                         $module_type = 2;
                     } else if (preg_match('/ifAdminStatus/', $name_array[1])) {
                         $module_type = 2;
+                    } else if (preg_match('/ifOperStatus/', $name_array[1])) {
+                        $module_type = 18;
                     } else {
                         $module_type = 4;
                     }

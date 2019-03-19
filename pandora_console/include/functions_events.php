@@ -26,7 +26,7 @@
  * ============================================================================
  */
 
- require_once $config['homedir'].'/include/functions_ui.php';
+require_once $config['homedir'].'/include/functions_ui.php';
 require_once $config['homedir'].'/include/functions_tags.php';
 require_once $config['homedir'].'/include/functions.php';
 enterprise_include_once('meta/include/functions_events_meta.php');
@@ -701,19 +701,20 @@ function events_comment(
         $first_event = reset($id_event);
     }
 
-    $event_comments = db_get_value(
-        'user_comment',
-        $event_table,
-        'id_evento',
-        $first_event
+    $event_comments = mysql_db_process_sql(
+        'SELECT user_comment FROM '.$event_table.' WHERE id_evento = '.$first_event,
+        'affected_rows',
+        '',
+        false
     );
+
     $event_comments_array = [];
 
-    if ($event_comments == '') {
+    if ($event_comments[0]['user_comment'] == '') {
         $comments_format = 'new';
     } else {
         // If comments are not stored in json, the format is old.
-        $event_comments_array = json_decode($event_comments);
+        $event_comments_array = json_decode($event_comments[0]['user_comment']);
 
         if (empty($event_comments_array)) {
             $comments_format = 'old';
@@ -2513,9 +2514,8 @@ function events_page_custom_fields($event)
 {
     global $config;
 
-    //
     // Custom fields.
-    //
+    $table = new stdClass;
     $table->cellspacing = 2;
     $table->cellpadding = 2;
     $table->width = '100%';
@@ -2666,9 +2666,8 @@ function events_page_details($event, $server='')
         $serverstring = '';
     }
 
-    //
     // Details.
-    //
+    $table_details = new stdClass;
     $table_details->width = '100%';
     $table_details->data = [];
     $table_details->head = [];
@@ -3136,9 +3135,8 @@ function events_page_general($event)
 
     global $group_rep;
 
-    //
     // General.
-    //
+    $table_general = new stdClass;
     $table_general->cellspacing = 2;
     $table_general->cellpadding = 2;
     $table_general->width = '100%';
@@ -3300,11 +3298,10 @@ function events_page_general($event)
  */
 function events_page_comments($event, $childrens_ids=[])
 {
-    //
     // Comments.
-    //
     global $config;
 
+    $table_comments = new stdClass;
     $table_comments->width = '100%';
     $table_comments->data = [];
     $table_comments->head = [];
@@ -3319,7 +3316,9 @@ function events_page_comments($event, $childrens_ids=[])
     $event_comments_array = json_decode($event_comments, true);
 
     // Show the comments more recent first.
-    $event_comments_array = array_reverse($event_comments_array);
+    if (is_array($event_comments_array)) {
+        $event_comments_array = array_reverse($event_comments_array);
+    }
 
     if (empty($event_comments_array)) {
         $comments_format = 'old';
@@ -3337,11 +3336,15 @@ function events_page_comments($event, $childrens_ids=[])
                 $table_comments->data[] = $data;
             }
 
-            foreach ($event_comments_array as $c) {
-                $data[0] = '<b>'.$c['action'].' by '.$c['id_user'].'</b>';
-                $data[0] .= '<br><br><i>'.date($config['date_format'], $c['utimestamp']).'</i>';
-                $data[1] = $c['comment'];
-                $table_comments->data[] = $data;
+            if (isset($event_comments_array) === true
+                && is_array($event_comments_array) === true
+            ) {
+                foreach ($event_comments_array as $c) {
+                    $data[0] = '<b>'.$c['action'].' by '.$c['id_user'].'</b>';
+                    $data[0] .= '<br><br><i>'.date($config['date_format'], $c['utimestamp']).'</i>';
+                    $data[1] = $c['comment'];
+                    $table_comments->data[] = $data;
+                }
             }
         break;
 

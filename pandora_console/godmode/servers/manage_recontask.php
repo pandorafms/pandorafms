@@ -1,17 +1,32 @@
 <?php
+/**
+ * Extension to manage a list of gateways and the node address where they should
+ * point to.
+ *
+ * @category   Extensions
+ * @package    Pandora FMS
+ * @subpackage Community
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
 
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2012 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation for version 2.
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-// Load global vars
 global $config;
 
 check_login();
@@ -37,13 +52,19 @@ $user_groups_w = array_keys($user_groups_w);
 $user_groups_r = users_get_groups(false, 'AW', true, false, null, 'id_grupo');
 $user_groups_r = array_keys($user_groups_r);
 
-// Headers
-// ui_print_page_header (__('Manage recontask'), "images/gm_servers.png", false, "", true);
-ui_print_page_header(__('Manage recontask'), 'images/gm_servers.png', false, '', true, $options);
+// Headers.
+ui_print_page_header(
+    __('Manage recontask'),
+    'images/gm_servers.png',
+    false,
+    '',
+    true,
+    $options
+);
 
 
 // --------------------------------
-// DELETE A RECON TASKs
+// DELETE A RECON TASKs.
 // --------------------------------
 if (isset($_GET['delete'])) {
     $id = get_parameter_get('delete');
@@ -59,11 +80,15 @@ if (isset($_GET['delete'])) {
     $id = get_parameter_get('id');
     $disabled = get_parameter_get('disabled');
 
-    $result = db_process_sql_update('trecon_task', ['disabled' => $disabled], ['id_rt' => $id]);
+    $result = db_process_sql_update(
+        'trecon_task',
+        ['disabled' => $disabled],
+        ['id_rt' => $id]
+    );
 
     if ($result !== false) {
         ui_print_success_message(__('Successfully updated recon task'));
-        // If the action is enabled, we force recon_task to be queued asap
+        // If the action is enabled, we force recon_task to be queued asap.
         if ($disabled == 0) {
             servers_force_recon_task($id);
         }
@@ -73,9 +98,9 @@ if (isset($_GET['delete'])) {
 }
 
 // --------------------------------
-// GET PARAMETERS IF UPDATE OR CREATE
+// GET PARAMETERS IF UPDATE OR CREATE.
 // --------------------------------
-if ((isset($_GET['update'])) or ((isset($_GET['create'])))) {
+if ((isset($_GET['update'])) || ((isset($_GET['create'])))) {
     $name = get_parameter_post('name');
     $network = get_parameter_post('network');
     $description = get_parameter_post('description');
@@ -115,14 +140,16 @@ if ((isset($_GET['update'])) or ((isset($_GET['create'])))) {
     $alias_as_name = (int) get_parameter('alias_as_name', 0);
     $snmp_enabled = (int) get_parameter('snmp_enabled', 0);
     $vlan_enabled = (int) get_parameter('vlan_enabled', 0);
-    // Get macros
+    // Get macros.
     $macros = (string) get_parameter('macros');
 
     if (!empty($macros)) {
         $macros = json_decode(base64_decode($macros), true);
 
-        foreach ($macros as $k => $m) {
-            $macros[$k]['value'] = get_parameter($m['macro'], '');
+        if (isset($macros) === true && is_array($macros) === true) {
+            foreach ($macros as $k => $m) {
+                $macros[$k]['value'] = get_parameter($m['macro'], '');
+            }
         }
     }
 
@@ -130,7 +157,7 @@ if ((isset($_GET['update'])) or ((isset($_GET['create'])))) {
 }
 
 // --------------------------------
-// UPDATE A RECON TASK
+// UPDATE A RECON TASK.
 // --------------------------------
 if (isset($_GET['update'])) {
     $id = get_parameter_get('update');
@@ -193,10 +220,18 @@ if (isset($_GET['update'])) {
                     $reason = __('Wrong format in Subnet field');
                     $result = false;
                 } else {
-                    $result = db_process_sql_update('trecon_task', $values, $where);
+                    $result = db_process_sql_update(
+                        'trecon_task',
+                        $values,
+                        $where
+                    );
                 }
             } else {
-                $result = db_process_sql_update('trecon_task', $values, $where);
+                $result = db_process_sql_update(
+                    'trecon_task',
+                    $values,
+                    $where
+                );
             }
         } else {
             $result = false;
@@ -314,9 +349,9 @@ if (isset($_GET['create'])) {
 }
 
 // --------------------------------
-// SHOW TABLE WITH ALL RECON TASKs
+// SHOW TABLE WITH ALL RECON TASKs.
 // --------------------------------
-// Pandora Admin must see all columns
+// Pandora Admin must see all columns.
 if (! check_acl($config['id_user'], 0, 'PM')) {
     $sql = sprintf(
         'SELECT *
@@ -377,26 +412,26 @@ if ($result !== false) {
 
 
             if ($row['id_recon_script'] == 0) {
-                // Network recon task
+                // Network recon task.
                 $data[2] = html_print_image('images/network.png', true, ['title' => __('Network recon task')]).'&nbsp;&nbsp;';
                 $data[2] .= network_profiles_get_name($row['id_network_profile']);
                 $mode_name = '';
             } else {
-                // APP recon task
+                // APP recon task.
                 $data[2] = html_print_image('images/plugin.png', true).'&nbsp;&nbsp;';
                 $mode_name = db_get_sql(sprintf('SELECT name FROM trecon_script WHERE id_recon_script = %d', $row['id_recon_script']));
                 $data[2] .= $mode_name;
             }
 
 
-            // GROUP
+            // GROUP.
             if ($row['id_recon_script'] == 0) {
                 $data[3] = ui_print_group_icon($row['id_group'], true);
             } else {
                 $data[3] = '-';
             }
 
-            // SNMP VERSION
+            // SNMP VERSION.
             if ($row['snmp_version'] == '1') {
                 $data[4] = 'v. 1';
             } else if ($row['snmp_version'] == '2') {
@@ -409,31 +444,31 @@ if ($result !== false) {
 
 
 
-            // INCIDENT
+            // INCIDENT.
             $data[5] = (($row['create_incident'] == 1) ? __('Yes') : __('No'));
 
-            // OS
+            // OS.
             if ($row['id_recon_script'] == 0) {
                 $data[6] = (($row['id_os'] > 0) ? ui_print_os_icon($row['id_os'], false, true) : __('Any'));
             } else {
                 $data[6] = '-';
             }
 
-            // INTERVAL
+            // INTERVAL.
             if ($row['interval_sweep'] == 0) {
                 $data[7] = __('Manual');
             } else {
                 $data[7] = human_time_description_raw($row['interval_sweep']);
             }
 
-            // PORTS
+            // PORTS.
             if ($row['id_recon_script'] == 0) {
                 $data[8] = substr($row['recon_ports'], 0, 15);
             } else {
                 $data[8] = '-';
             }
 
-            // ACTION
+            // ACTION.
             $task_group = $row['id_group'];
 
             if (in_array($task_group, $user_groups_w)) {

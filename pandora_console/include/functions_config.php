@@ -1828,11 +1828,11 @@ function config_process_config()
     }
 
     if (!isset($config['custom_title1_login'])) {
-        config_update_value('custom_title1_login', __('WELCOME TO PANDORA FMS'));
+        config_update_value('custom_title1_login', __('PANDORA FMS'));
     }
 
     if (!isset($config['custom_title2_login'])) {
-        config_update_value('custom_title2_login', __('NEXT GENERATION'));
+        config_update_value('custom_title2_login', __('ONE TOOL TO MONITOR THEM ALL'));
     }
 
     if (!isset($config['custom_docs_url'])) {

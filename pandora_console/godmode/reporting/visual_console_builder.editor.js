@@ -1315,10 +1315,6 @@ function create_button_palette_callback() {
         dialog_message("#message_alert_no_agent");
         validate = false;
       }
-      if (values["module"] == "" || values["module"] == "--") {
-        dialog_message("#message_alert_no_module");
-        validate = false;
-      }
 
       break;
     case "auto_sla_graph":

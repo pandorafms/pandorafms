@@ -166,13 +166,33 @@
         fillColor: "black"
       };
 
+      var lineRawProps = {
+        // Generic props.
+        id: 7,
+        type: 13, // Line = 13
+        // Position props.
+        x: 720,
+        y: 20,
+        // Size props.
+        width: 50,
+        height: 50,
+        // Custom props.
+        startX: 200,
+        startY: 100,
+        endX: 350,
+        endY: 30,
+        lineWidth: 2,
+        color: "white"
+      };
+
       var items = [
         staticGraphRawProps,
         colorCloudRawProps,
         digitalClockRawProps,
         digitalClockRawProps2,
         analogicClockRawProps,
-        boxRawProps
+        boxRawProps,
+        lineRawProps
       ];
 
       try {

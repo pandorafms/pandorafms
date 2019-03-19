@@ -12,6 +12,7 @@ import ColorCloud, { colorCloudPropsDecoder } from "./items/ColorCloud";
 import Group, { groupPropsDecoder } from "./items/Group";
 import Clock, { clockPropsDecoder } from "./items/Clock";
 import Box, { boxPropsDecoder } from "./items/Box";
+import Line, { linePropsDecoder } from "./items/Line";
 
 // Base properties.
 export interface VisualConsoleProps extends Size {
@@ -100,7 +101,7 @@ function itemInstanceFrom(data: UnknownObject) {
     case ItemType.BOX_ITEM:
       return new Box(boxPropsDecoder(data));
     case ItemType.LINE_ITEM:
-      throw new TypeError("item not found");
+      return new Line(linePropsDecoder(data));
     case ItemType.AUTO_SLA_GRAPH:
       throw new TypeError("item not found");
     case ItemType.CIRCULAR_PROGRESS_BAR:

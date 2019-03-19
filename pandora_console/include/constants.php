@@ -195,6 +195,14 @@ define('AGENT_STATUS_UNKNOWN', 3);
 define('AGENT_STATUS_ALERT_FIRED', 4);
 define('AGENT_STATUS_WARNING', 2);
 
+// Pseudo criticity analysis.
+define('NO_CRIT', -1);
+define('CRIT_0', 0);
+define('CRIT_1', 1);
+define('CRIT_2', 2);
+define('CRIT_3', 3);
+define('CRIT_4', 4);
+define('CRIT_5', 5);
 
 // Visual maps contants.
 // The items kind.

@@ -1889,8 +1889,8 @@ function networkmap_links_to_js_links(
                     }
                 }
             }
-        } else if (($relation['parent_type'] == NODE_GENERIC)
-            && ($relation['child_type'] == NODE_GENERIC)
+        } else if (($relation['parent_type'] == NODE_PANDORA)
+            && ($relation['child_type'] == NODE_PANDORA)
         ) {
             foreach ($nodes_graph as $key2 => $node) {
                 if ($relation['id_parent'] == $node['id_db']) {
@@ -1903,10 +1903,10 @@ function networkmap_links_to_js_links(
                     $agent2 = $node['id_db'];
                 }
             }
-        } else if (($relation['parent_type'] == NODE_GENERIC)
-            || ($relation['child_type'] == NODE_GENERIC)
+        } else if (($relation['parent_type'] == NODE_PANDORA)
+            || ($relation['child_type'] == NODE_PANDORA)
         ) {
-            if ($relation['parent_type'] == NODE_GENERIC) {
+            if ($relation['parent_type'] == NODE_PANDORA) {
                 foreach ($nodes_graph as $key2 => $node) {
                     if ($relation['id_parent'] == $node['id_db']) {
                         $agent = $node['id_db'];
@@ -1914,7 +1914,7 @@ function networkmap_links_to_js_links(
                         $agent2 = $node['id_db'];
                     }
                 }
-            } else if ($relation['child_type'] == NODE_GENERIC) {
+            } else if ($relation['child_type'] == NODE_PANDORA) {
                 foreach ($nodes_graph as $key2 => $node) {
                     if ($relation['id_child'] == $node['id_db']) {
                         $agent2 = $node['id_db'];

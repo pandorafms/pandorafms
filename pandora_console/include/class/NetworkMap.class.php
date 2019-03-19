@@ -233,7 +233,7 @@ class NetworkMap
         $this->mapOptions['text_filter'] = '';
         $this->mapOptions['dont_show_subgroups'] = false;
         $this->mapOptions['strict_user'] = false;
-        $this->mapOptions['size_canvas'] = null;
+        $this->mapOptions['size_canvas'] = 0;
         $this->mapOptions['old_mode'] = false;
         $this->mapOptions['map_filter'] = [
             'dont_show_subgroups' => 0,
@@ -281,7 +281,9 @@ class NetworkMap
             // Map options, check default values above.
             // This is only used while generating new maps using
             // (generateDotGraph).
-            if (is_array($options['map_options'])) {
+            if (isset($options['map_options'])
+                && is_array($options['map_options'])
+            ) {
                 foreach ($options['map_options'] as $k => $v) {
                     $this->mapOptions[$k] = $v;
                 }
@@ -807,8 +809,34 @@ class NetworkMap
 
 
     /**
-     * Generates or loads nodes&relations array from data load
-     * and stores it in $this->graph.
+     * Generates or loads nodes&relations array from DB.
+     * Load, calculates statuses and leave the structure in $this->graph.
+     *
+     * * Structure generated:
+     * Nodes:
+     *   id_map.
+     *   id.
+     *   id_agent.
+     *   id_module.
+     *   type.
+     *   x.
+     *   y.
+     *   width.
+     *   height.
+     *   text.
+     *   source_data.
+     *   style (json).
+     *
+     * Relations:
+     *   id_map.
+     *   id_parent.
+     *   parent_type.
+     *   id_parent_source_data.
+     *   id_child.
+     *   child_type.
+     *   id_child_source_data.
+     *   id_parent_agent.
+     *   id_child_agent.
      *
      * @return void
      */
@@ -823,16 +851,30 @@ class NetworkMap
             return;
         }
 
-        $nodes_and_relations = [];
-        $nodes_and_relations['nodes'] = [];
-        $index_nodes = 0;
-        foreach ($nodes as $node) {
+        $graph = [];
+        $graph['nodes'] = [];
+        $node_mapping = [];
+        $i = 0;
+        foreach ($nodes as $k => $node) {
             if (!$node['deleted']) {
-                $nodes_and_relations['nodes'][$index_nodes]['id_map'] = $node['id_map'];
-                $nodes_and_relations['nodes'][$index_nodes]['x'] = $node['x'];
-                $nodes_and_relations['nodes'][$index_nodes]['y'] = $node['y'];
-                $nodes_and_relations['nodes'][$index_nodes]['source_data'] = $node['source_data'];
-                $nodes_and_relations['nodes'][$index_nodes]['type'] = $node['type'];
+                $tmp_node = [];
+                $tmp_node['id_map'] = $node['id_map'];
+                $tmp_node['id'] = $i;
+                $tmp_node['id_db'] = $node['id'];
+                $tmp_node['source_data'] = $node['source_data'];
+                $tmp_node['type'] = $node['type'];
+
+                if ($tmp_node['type'] == NODE_AGENT) {
+                    $tmp_node['id_agent'] = $tmp_node['source_data'];
+                } else if ($tmp_node['type'] == NODE_MODULE) {
+                    $tmp_node['id_module'] = $tmp_node['source_data'];
+                    $tmp_node['id_agent'] = modules_get_agentmodule_agent(
+                        $tmp_node['id_module']
+                    );
+                } else {
+                    $tmp_node['id_agent'] = 0;
+                    $tmp_node['id_module'] = 0;
+                }
 
                 $style_node = json_decode($node['style'], true);
                 $style = [];
@@ -842,35 +884,67 @@ class NetworkMap
                 $style['height'] = $style_node['height'];
                 $style['label'] = $style_node['label'];
                 $style['id_networkmap'] = $style_node['networkmap'];
-                $nodes_and_relations['nodes'][$index_nodes]['style'] = json_encode($style);
+                $tmp_node['style'] = json_encode($style);
 
-                if ($node['type'] == 1) {
-                    $nodes_and_relations['nodes'][$index_nodes]['id_agent'] = $style_node['id_agent'];
+                $tmp_node['x'] = $node['x'];
+                $tmp_node['y'] = $node['y'];
+                $tmp_node['z'] = $node['z'];
+                $tmp_node['width'] = $style['width'];
+                $tmp_node['height'] = $style['height'];
+                $tmp_node['text'] = $style['label'];
+
+                if ($tmp_node['type'] == 1) {
+                    $tmp_node['id_agent'] = $style_node['id_agent'];
                 }
 
-                $nodes_and_relations['nodes'][$index_nodes]['id_in_db'] = $node['id'];
-
-                $index_nodes++;
+                $node_mapping[$node['source_data'].'_'.$tmp_node['type']] = $i;
+                $this->nodeMapping[$i] = $i;
+                $graph['nodes'][$i++] = $tmp_node;
             }
         }
 
-        $nodes_and_relations['relations'] = [];
-        $index_relations = 0;
+        $graph['relations'] = [];
+        $i = 0;
         if (is_array($relations)) {
-            foreach ($relations as $relation) {
-                $nodes_and_relations['relations'][$index_relations]['id_map'] = $relation['id_map'];
-                $nodes_and_relations['relations'][$index_relations]['id_parent'] = $relation['id_parent'];
-                $nodes_and_relations['relations'][$index_relations]['id_child'] = $relation['id_child'];
-                $nodes_and_relations['relations'][$index_relations]['parent_type'] = $relation['parent_type'];
-                $nodes_and_relations['relations'][$index_relations]['child_type'] = $relation['child_type'];
-                $nodes_and_relations['relations'][$index_relations]['id_parent_source_data'] = $relation['id_parent_source_data'];
-                $nodes_and_relations['relations'][$index_relations]['id_child_source_data'] = $relation['id_child_source_data'];
+            foreach ($relations as $rel) {
+                $edge = [];
+                $edge['id_map'] = $rel['id_map'];
+                $edge['id_db'] = $rel['id'];
+                $edge['id'] = $rel[$i];
 
-                $index_relations++;
+                if ($rel['parent_type'] == NODE_AGENT) {
+                    $edge['id_parent_agent'] = $rel['id_parent_source_data'];
+                } else if ($rel['parent_type'] == NODE_MODULE) {
+                    $edge['id_parent_agent'] = modules_get_agentmodule_agent(
+                        $rel['id_parent_source_data']
+                    );
+                }
+
+                if ($rel['child_type'] == NODE_AGENT) {
+                    $edge['id_child_agent'] = $rel['id_child_source_data'];
+                } else if ($rel['child_type'] == NODE_MODULE) {
+                    $edge['id_child_agent'] = modules_get_agentmodule_agent(
+                        $rel['id_child_source_data']
+                    );
+                }
+
+                // Search parent.
+                $kp = $edge['id_parent_agent'].'_'.NODE_AGENT;
+                $edge['id_parent'] = $node_mapping[$kp];
+                $edge['parent_type'] = $rel['parent_type'];
+                $edge['id_parent_source_data'] = $rel['id_parent_source_data'];
+
+                // Search child.
+                $kc = $edge['id_child_agent'].'_'.NODE_AGENT;
+                $edge['id_child'] = $node_mapping[$kc];
+                $edge['child_type'] = $rel['child_type'];
+                $edge['id_child_source_data'] = $rel['id_child_source_data'];
+
+                $graph['relations'][$i++] = $edge;
             }
         }
 
-        $this->graph = $nodes_and_relations;
+        $this->graph = $graph;
 
     }
 
@@ -888,6 +962,7 @@ class NetworkMap
 
         $map_filter = $this->mapOptions['map_filter'];
         $nooverlap = $this->mapOptions['nooverlap'];
+        $zoom = $this->mapOptions['zoom'];
 
         if (isset($config['networkmap_max_width'])) {
             $size_x = ($config['networkmap_max_width'] / 100);
@@ -1038,6 +1113,357 @@ class NetworkMap
 
 
     /**
+     * Avoid multiple connections between two nodes if any of them does not
+     * add more information. Prioritize.
+     *
+     * For instance, if we have module - module relationship and agent - agent
+     * discard agent - agent relationship (module - module apports more
+     * information).
+     *
+     * @return void
+     */
+    public function cleanGraphRelations()
+    {
+        global $config;
+
+        $relations = $this->graph['relations'];
+
+        $segregation_links = [];
+        $index = 0;
+        $index2 = 0;
+        $index3 = 0;
+        $index4 = 0;
+        foreach ($relations as $rel) {
+            if (($rel['parent_type'] == NODE_AGENT) && ($rel['child_type'] == NODE_AGENT)) {
+                $segregation_links['aa'][$index] = $rel;
+                $index++;
+            } else if (($rel['parent_type'] == NODE_MODULE) && ($rel['child_type'] == NODE_MODULE)) {
+                $segregation_links['mm'][$index2] = $rel;
+                $index2++;
+            } else if (($rel['parent_type'] == NODE_GENERIC) && ($rel['child_type'] == NODE_GENERIC)) {
+                $segregation_links['ff'][$index4] = $rel;
+                $index4++;
+            } else {
+                $segregation_links['am'][$index3] = $rel;
+                $index3++;
+            }
+        }
+
+        $final_links = [];
+
+        // ----------------------------------------------------------------
+        // --------------------- Clean duplicate links --------------------
+        // ----------------------------------------------------------------
+        $duplicated = false;
+        $index_to_del = 0;
+        $index = 0;
+        if (isset($segregation_links['aa']) === true
+            && is_array($segregation_links['aa']) === true
+        ) {
+            foreach ($segregation_links['aa'] as $link) {
+                foreach ($segregation_links['aa'] as $link2) {
+                    if ($link['id_parent'] == $link2['id_child']
+                        && $link['id_child'] == $link2['id_parent']
+                    ) {
+                        /*
+                            XXX: Verify
+                         * enterprise_hook(
+                         *     'delete_link',
+                         *     [$segregation_links['aa'][$index_to_del]]
+                         * );
+                         */
+                        unset($segregation_links['aa'][$index_to_del]);
+                    }
+
+                    $index_to_del++;
+                }
+
+                $final_links['aa'][$index] = $link;
+                $index++;
+
+                $duplicated = false;
+                $index_to_del = 0;
+            }
+        }
+
+        $duplicated = false;
+        $index_to_del = 0;
+        $index2 = 0;
+        if (isset($segregation_links['mm']) === true
+            && is_array($segregation_links['mm']) === true
+        ) {
+            foreach ($segregation_links['mm'] as $link) {
+                foreach ($segregation_links['mm'] as $link2) {
+                    if ($link['id_parent'] == $link2['id_child']
+                        && $link['id_child'] == $link2['id_parent']
+                    ) {
+                        /*
+                            XXX: Verify
+                         * enterprise_hook(
+                         *     'delete_link',
+                         *     [$segregation_links['mm'][$index_to_del]]
+                         * );
+                         */
+
+                        unset($segregation_links['mm'][$index_to_del]);
+                    }
+
+                    $index_to_del++;
+                }
+
+                $final_links['mm'][$index2] = $link;
+                $index2++;
+
+                $duplicated = false;
+                $index_to_del = 0;
+            }
+        }
+
+        $duplicated = false;
+        $index_to_del = 0;
+        $index3 = 0;
+
+        if (isset($segregation_links['ff']) === true
+            && is_array($segregation_links['ff']) === true
+        ) {
+            foreach ($segregation_links['ff'] as $link) {
+                foreach ($segregation_links['ff'] as $link2) {
+                    if ($link['id_parent'] == $link2['id_child']
+                        && $link['id_child'] == $link2['id_parent']
+                    ) {
+                        /*
+                            XXX: Verify
+                         * enterprise_hook(
+                         *   'delete_link',
+                         *   [$segregation_links['ff'][$index_to_del]]
+                         * );
+                         */
+                        unset($segregation_links['ff'][$index_to_del]);
+                    }
+
+                    $index_to_del++;
+                }
+
+                $final_links['ff'][$index3] = $link;
+                $index3++;
+
+                $duplicated = false;
+                $index_to_del = 0;
+            }
+        }
+
+        $final_links['am'] = $segregation_links['am'];
+
+        /*
+            ----------------------------------------------------------------
+            ----------------- AA, AM and MM links management ---------------
+            ------------------ Priority: -----------------------------------
+            -------------------- 1 -> MM (module - module) -----------------
+            -------------------- 2 -> AM (agent - module) ------------------
+            -------------------- 3 -> AA (agent - agent) -------------------
+            ----------------------------------------------------------------
+        */
+
+        $final_links2 = [];
+        $index = 0;
+        $l3_link = [];
+        $agent1 = 0;
+        $agent2 = 0;
+
+        if (isset($final_links['mm']) === true
+            && is_array($final_links['mm']) === true
+        ) {
+            foreach ($final_links['mm'] as $rel_mm) {
+                $module_parent = $rel_mm['id_parent_source_data'];
+                $module_children = $rel_mm['id_child_source_data'];
+                $agent1 = (int) agents_get_agent_id_by_module_id(
+                    $module_parent
+                );
+                $agent2 = (int) agents_get_agent_id_by_module_id(
+                    $module_children
+                );
+                foreach ($final_links['aa'] as $key => $rel_aa) {
+                    $l3_link = $rel_aa;
+                    $id_p_source_data = (int) $rel_aa['id_parent_source_data'];
+                    $id_c_source_data = (int) $rel_aa['id_child_source_data'];
+                    if ((($id_p_source_data == $agent1)
+                        && ($id_c_source_data == $agent2))
+                        || (($id_p_source_data == $agent2)
+                        && ($id_c_source_data == $agent1))
+                    ) {
+                        enterprise_hook(
+                            'delete_link',
+                            [$final_links['aa'][$key]]
+                        );
+
+                        unset($final_links['aa'][$key]);
+                    }
+                }
+            }
+        }
+
+        $final_links2['aa'] = $final_links['aa'];
+        $final_links2['mm'] = $final_links['mm'];
+        $final_links2['am'] = $final_links['am'];
+        $final_links2['ff'] = $final_links['ff'];
+
+        $same_m = [];
+        $index = 0;
+        if (isset($final_links2['am']) === true
+            && is_array($final_links2['am']) === true
+        ) {
+            foreach ($final_links2['am'] as $rel_am) {
+                foreach ($final_links2['am'] as $rel_am2) {
+                    if (($rel_am['id_child_source_data'] == $rel_am2['id_child_source_data'])
+                        && ($rel_am['id_parent_source_data'] != $rel_am2['id_parent_source_data'])
+                    ) {
+                        $same_m[$index]['rel'] = $rel_am2;
+                        $same_m[$index]['agent_parent'] = $rel_am['id_parent_source_data'];
+                        $index++;
+                    }
+                }
+            }
+        }
+
+        $final_links3 = [];
+        $index = 0;
+        $l3_link = [];
+        $have_l3 = false;
+        if (isset($final_links2['aa']) === true
+            && is_array($final_links2['aa']) === true
+        ) {
+            foreach ($final_links2['aa'] as $key => $rel_aa) {
+                $l3_link = $rel_aa;
+                foreach ($same_m as $rel_am) {
+                    if ((($rel_aa['id_parent_source_data'] == $rel_am['parent']['id_parent_source_data'])
+                        && ($rel_aa['id_child_source_data'] == $rel_am['rel']['id_parent_source_data']))
+                        || (($rel_aa['id_child_source_data'] == $rel_am['parent']['id_parent_source_data'])
+                        && ($rel_aa['id_parent_source_data'] == $rel_am['rel']['id_parent_source_data']))
+                    ) {
+                        enterprise_hook(
+                            'delete_link',
+                            [$final_links2['aa'][$key]]
+                        );
+
+                        unset($final_links2['aa'][$key]);
+                    }
+                }
+            }
+        }
+
+        $final_links3['aa'] = $final_links2['aa'];
+        $final_links3['mm'] = $segregation_links['mm'];
+        $final_links3['am'] = $segregation_links['am'];
+        $final_links3['ff'] = $final_links2['ff'];
+
+        $cleaned_links = [];
+        if (isset($final_links3['aa']) === true
+            && is_array($final_links3['aa']) === true
+        ) {
+            foreach ($final_links3['aa'] as $link) {
+                $cleaned_links[] = $link;
+            }
+        }
+
+        if (isset($final_links3['am']) === true
+            && is_array($final_links3['am']) === true
+        ) {
+            foreach ($final_links3['am'] as $link) {
+                $cleaned_links[] = $link;
+            }
+        }
+
+        if (isset($final_links3['mm']) === true
+            && is_array($final_links3['mm']) === true
+        ) {
+            foreach ($final_links3['mm'] as $link) {
+                $cleaned_links[] = $link;
+            }
+        }
+
+        if (isset($final_links3['ff']) === true
+            && is_array($final_links3['ff']) === true
+        ) {
+            foreach ($final_links3['ff'] as $link) {
+                $cleaned_links[] = $link;
+            }
+        }
+
+        $this->graph['relations'] = $cleaned_links;
+    }
+
+
+    /**
+     * Internal method to allow developer to compare status from
+     * different origins by checking a value.
+     *
+     * Greater value implies more critical.
+     *
+     * @param integer $status Status.
+     *
+     * @return integer Criticity value.
+     */
+    private static function getStatusNumeric($status)
+    {
+        if (isset($status) === false) {
+            return NO_CRIT;
+        }
+
+        switch ($status) {
+            case AGENT_MODULE_STATUS_NORMAL:
+            case AGENT_STATUS_NORMAL:
+            return CRIT_1;
+
+            case AGENT_MODULE_STATUS_NOT_INIT:
+            case AGENT_STATUS_NOT_INIT:
+            return CRIT_0;
+
+            case AGENT_MODULE_STATUS_CRITICAL_BAD:
+            case AGENT_STATUS_CRITICAL:
+            return CRIT_4;
+
+            case AGENT_MODULE_STATUS_WARNING:
+            case AGENT_STATUS_WARNING:
+            return CRIT_3;
+
+            case AGENT_MODULE_STATUS_CRITICAL_ALERT:
+            case AGENT_MODULE_STATUS_WARNING_ALERT:
+            case AGENT_STATUS_ALERT_FIRED:
+            return CRIT_5;
+
+            case AGENT_MODULE_STATUS_UNKNOWN:
+            case AGENT_STATUS_UNKNOWN:
+            return CRIT_2;
+
+            default:
+                // Ignored.
+            break;
+        }
+
+        return NO_CRIT;
+    }
+
+
+    /**
+     * Returns worst status from two received.
+     * Agent and module statuses should be identical, unless little differences.
+     *
+     * @param integer $status_a Status A.
+     * @param integer $status_b Status B.
+     *
+     * @return integer Status A or status B, the worstest one.
+     */
+    public static function getWorstStatus($status_a, $status_b)
+    {
+        // Case agent statuses.
+        $a = self::getStatusNumeric($status_a);
+        $b = self::getStatusNumeric($status_b);
+
+        return ($a > $b) ? $status_a : $status_b;
+    }
+
+
+    /**
      * Returns target color to be used based on the status received.
      *
      * @param integer $status Source information.
@@ -1047,7 +1473,7 @@ class NetworkMap
     public static function getColorByStatus($status)
     {
         if (isset($status) === false) {
-            return COL_IGNORED;
+            return COL_UNKNOWN;
         }
 
         switch ($status) {
@@ -1089,9 +1515,9 @@ class NetworkMap
     /**
      * Translates a standard node into a JS node with following attributes:
      *
-     * @param array $node Input array (standard node structure).
+     * @param array $nodes Input array (standard nodes structure).
      *   id_map.
-     *   id_in_db.
+     *   id_db.
      *   type.
      *   source_data.
      *   x.
@@ -1131,130 +1557,145 @@ class NetworkMap
      *   map_id.
      *   networkmap_id.
      */
-    public function nodeToJS($node)
+    public function nodesToJS($nodes)
     {
         global $config;
 
-        $item = [];
-        $item['id'] = $node['id'];
+        $return = [];
+        foreach ($nodes as $node) {
+            $item = [];
+            $item['id'] = $node['id'];
 
-        // Id titem.
-        if (enterprise_installed()
-            && $this->map['__simulated'] === false
-        ) {
-            $item['id_db'] = $node['id_db'];
-        }
-
-        $source_data = $this->getNodeData($node['id']);
-
-        if (enterprise_installed() && $simulated === false) {
-            enterprise_include_once('include/functions_networkmap.php');
-            $item['id_db'] = $node['id_in_db'];
-        } else {
-            $item['id_db'] = (int) $node['id'];
-        }
-
-        $item['type'] = $node['type'];
-        $item['fixed'] = true;
-        $item['x'] = (int) $node['x'];
-        $item['y'] = (int) $node['y'];
-        $item['z'] = (int) $node['z'];
-
-        // X,Y aliases for D3.
-        $item['px'] = $item['x'];
-        $item['py'] = $item['y'];
-
-        // Status represents the status of the node (critical, warning...).
-        // State represents state of node in map (in holding_area or not).
-        $item['state'] = $node['state'];
-        $item['deleted'] = $node['deleted'];
-
-        // Node color.
-        $item['color'] = $this->getColorByStatus($source_data['status']);
-        switch ($node['type']) {
-            case NODE_AGENT:
-                $item['id_agent'] = $node['source_data'];
-            break;
-
-            case NODE_MODULE:
-                $item['id_module'] = $node['source_data'];
-            break;
-
-            case NODE_PANDORA:
-                $item['color'] = COL_IGNORED;
-                $node['style']['image'] = ui_get_logo_to_center_networkmap();
-            break;
-
-            case NODE_GENERIC:
-            default:
-                $item['color'] = $node['color'];
-            break;
-        }
-
-        // Calculate values.
-        // 40 => DEFAULT NODE RADIUS.
-        // 30 => alignment factor.
-        $holding_area_max_y = ($this->mapOptions['height'] + 30 + $this->mapOptions['map_filter']['node_radius'] * 2 - $this->mapOptions['map_filter']['holding_area'][1] + 10 * $this->mapOptions['map_filter']['node_radius']);
-
-        // Update position if node must be stored in holding_area.
-        if ($item['state'] == 'holding_area') {
-            $holding_area_x = ($this->mapOptions['width'] + 30 + $this->mapOptions['map_filter']['node_radius'] * 2 - $this->mapOptions['map_filter']['holding_area'][0] + ($count_item_holding_area % 11) * $this->mapOptions['map_filter']['node_radius']);
-            $holding_area_y = ($this->mapOptions['height'] + 30 + $this->mapOptions['map_filter']['node_radius'] * 2 - $this->mapOptions['map_filter']['holding_area'][1] + (int) (($count_item_holding_area / 11)) * $this->mapOptions['map_filter']['node_radius']);
-
-            // Keep holding area nodes in holding area.
-            if ($holding_area_max_y <= $holding_area_y) {
-                $holding_area_y = $holding_area_max_y;
+            if ($node['deleted']) {
+                // Skip deleted nodes.
+                continue;
             }
 
-            $item['x'] = $holding_area_x;
-            $item['y'] = $holding_area_y;
+            // Id titem.
+            if ($this->map['__simulated'] === false) {
+                $item['id_db'] = $node['id_db'];
+            } else {
+                $item['id_db'] = (int) $node['id'];
+            }
 
-            // Increment for the next node in holding area.
-            $count_item_holding_area++;
+            // Get source data.
+            $source_data = $this->getNodeData($node['id']);
+
+            if (is_array($node['style']) === false) {
+                $node['style'] = json_decode($node['style'], true);
+            }
+
+            $item['type'] = $node['type'];
+            $item['fixed'] = true;
+            $item['x'] = (int) $node['x'];
+            $item['y'] = (int) $node['y'];
+            $item['z'] = (int) $node['z'];
+
+            // X,Y aliases for D3.
+            $item['px'] = $item['x'];
+            $item['py'] = $item['y'];
+
+            // Status represents the status of the node (critical, warning...).
+            // State represents state of node in map (in holding_area or not).
+            $item['state'] = $node['state'];
+            $item['deleted'] = $node['deleted'];
+
+            // Node color.
+            $item['color'] = self::getColorByStatus($source_data['status']);
+            switch ($node['type']) {
+                case NODE_AGENT:
+                    $item['id_agent'] = $node['source_data'];
+                break;
+
+                case NODE_MODULE:
+                    $item['id_module'] = $node['source_data'];
+                break;
+
+                case NODE_PANDORA:
+                    $item['color'] = COL_IGNORED;
+                    $node['style']['image'] = ui_get_logo_to_center_networkmap();
+                break;
+
+                case NODE_GENERIC:
+                default:
+                    $item['color'] = $node['color'];
+                break;
+            }
+
+            // Calculate values.
+            // 40 => DEFAULT NODE RADIUS.
+            // 30 => alignment factor.
+            $holding_area_max_y = ($this->mapOptions['height'] + 30 + $this->mapOptions['map_filter']['node_radius'] * 2 - $this->mapOptions['map_filter']['holding_area'][1] + 10 * $this->mapOptions['map_filter']['node_radius']);
+
+            // Update position if node must be stored in holding_area.
+            if ($item['state'] == 'holding_area') {
+                $holding_area_x = ($this->mapOptions['width'] + 30 + $this->mapOptions['map_filter']['node_radius'] * 2 - $this->mapOptions['map_filter']['holding_area'][0] + ($count_item_holding_area % 11) * $this->mapOptions['map_filter']['node_radius']);
+                $holding_area_y = ($this->mapOptions['height'] + 30 + $this->mapOptions['map_filter']['node_radius'] * 2 - $this->mapOptions['map_filter']['holding_area'][1] + (int) (($count_item_holding_area / 11)) * $this->mapOptions['map_filter']['node_radius']);
+
+                // Keep holding area nodes in holding area.
+                if ($holding_area_max_y <= $holding_area_y) {
+                    $holding_area_y = $holding_area_max_y;
+                }
+
+                $item['x'] = $holding_area_x;
+                $item['y'] = $holding_area_y;
+
+                // Increment for the next node in holding area.
+                $count_item_holding_area++;
+            }
+
+            // Node image.
+            $item['image_url'] = '';
+            $item['image_width'] = 0;
+            $item['image_height'] = 0;
+            if (empty($node['style']['image']) === false) {
+                $item['image_url'] = ui_get_full_url(
+                    $node['style']['image']
+                );
+                $image_size = getimagesize(
+                    $config['homedir'].'/'.$node['style']['image']
+                );
+                $item['image_width'] = (int) $image_size[0];
+                $item['image_height'] = (int) $image_size[1];
+            }
+
+            $item['raw_text'] = $node['style']['label'];
+            $item['text'] = io_safe_output($node['style']['label']);
+            $item['shape'] = $node['style']['shape'];
+            $item['map_id'] = $node['id_map'];
+            if (!isset($node['style']['id_networkmap'])
+                || $node['style']['id_networkmap'] == ''
+                || $node['style']['id_networkmap'] == 0
+            ) {
+                $item['networkmap_id'] = 0;
+            } else {
+                $item['networkmap_id'] = $node['style']['id_networkmap'];
+            }
+
+            $return[] = $item;
         }
 
-        // Node image.
-        $item['image_url'] = '';
-        $item['image_width'] = 0;
-        $item['image_height'] = 0;
-        if (empty($node['style']['image']) === false) {
-            $item['image_url'] = ui_get_full_url(
-                $node['style']['image']
-            );
-            $image_size = getimagesize(
-                $config['homedir'].'/'.$node['style']['image']
-            );
-            $item['image_width'] = (int) $image_size[0];
-            $item['image_height'] = (int) $image_size[1];
-        }
-
-        $item['raw_text'] = $node['style']['label'];
-        $item['text'] = io_safe_output($node['style']['label']);
-        $item['shape'] = $node['style']['shape'];
-        $item['map_id'] = $node['id_map'];
-        if (!isset($node['style']['id_networkmap'])
-            || $node['style']['id_networkmap'] == ''
-            || $node['style']['id_networkmap'] == 0
-        ) {
-            $item['networkmap_id'] = 0;
-        } else {
-            $item['networkmap_id'] = $node['style']['id_networkmap'];
-        }
-
-        return $item;
+        return $return;
     }
 
 
     /**
      * Transforms an edge relationship into a JS array to be dumped.
+     * Sets fields like status, link color and updates some internal identifiers
+     * used  by JS frontend.
      *
-     * @param array $edge Edge information.
+     * @param array $edges Edges information in array of following items.
      *
      * * Input structure:
+     *   id_map.
+     *   id_parent.
      *   parent_type.
-     *   child_type.
      *   id_parent_source_data.
+     *   id_child.
+     *   child_type.
      *   id_child_source_data.
+     *   id_parent_agent.
+     *   id_child_agent.
      *
      * @return array Edge translated to JS object.
      *
@@ -1276,11 +1717,96 @@ class NetworkMap
      *   text_start.
      *   text_end.
      */
-    public function edgeToJS($edge)
+    public function edgeToJS($edges)
     {
-        // TODO: migrate networkmap_links_to_js_links here.
-        hd($edge);
-        return [];
+        $return = [];
+        // JS edge pseudo identificator.
+        $i = 0;
+        foreach ($edges as $rel) {
+            $item = [];
+
+            // Simulated index.
+            $item['id_db'] = $i;
+            $item['deleted'] = 0;
+
+            // Else load.
+            if (isset($this->map['__simulated']) === false) {
+                $item['id_db'] = $rel['id_db'];
+                $item['deleted'] = $rel['deleted'];
+                $item['target_id_db'] = $this->nodes[$rel['id_parent']]['id'];
+                $item['source_id_db'] = $this->nodes[$rel['id_child']]['id'];
+            }
+
+            // Set relationship as 'agent' by default.
+            // Generic and Pandora nodes simulates agent relationships.
+            $item['arrow_start'] = 'agent';
+            $item['arrow_end'] = 'agent';
+            $item['source'] = $rel['id_parent'];
+            $item['target'] = $rel['id_child'];
+            $item['id_agent_start'] = $rel['id_child_agent'];
+            $item['id_agent_end'] = $rel['id_parent_agent'];
+
+            if ($rel['parent_type'] === NODE_MODULE) {
+                $item['arrow_start'] = 'module';
+                $item['id_module_start'] = $rel['id_parent_source_data'];
+                $item['status_start'] = modules_get_agentmodule_status(
+                    $item['id_module_start']
+                );
+
+                // Extract interface name to be placed on edge.
+                $text = modules_get_agentmodule_name(
+                    (int) $item['id_module_start']
+                );
+                if (preg_match(
+                    '/(.+)_ifOperStatus$/',
+                    (string) $text,
+                    $matches
+                )
+                ) {
+                    if ($matches[1]) {
+                        $item['text_start'] = io_safe_output($matches[1]);
+                    }
+                }
+            }
+
+            if ($rel['child_type'] === NODE_MODULE) {
+                $item['arrow_end'] = 'module';
+                $item['id_module_end'] = $rel['id_child_source_data'];
+                $item['status_end'] = modules_get_agentmodule_status(
+                    $item['id_module_end']
+                );
+
+                // Extract interface name to be placed on edge.
+                $text = modules_get_agentmodule_name(
+                    (int) $item['id_module_end']
+                );
+                if (preg_match(
+                    '/(.+)_ifOperStatus$/',
+                    (string) $text,
+                    $matches
+                )
+                ) {
+                    if ($matches[1]) {
+                        $item['text_end'] = io_safe_output($matches[1]);
+                    }
+                }
+            }
+
+            // Use worst case to set link color.
+            $item['link_color'] = self::getColorByStatus(
+                self::getWorstStatus(
+                    $item['status_start'],
+                    $item['status_end']
+                )
+            );
+
+            // Set direct values.
+            $item['id'] = $i++;
+
+            $return[] = $item;
+        }
+
+        return $return;
     }
 
 
@@ -1343,7 +1869,6 @@ class NetworkMap
      */
     public function generateDotGraph($nodes=false)
     {
-        echo 'regenerar la net es: '.$this->network.'<br />';
         if (!isset($this->dotGraph)) {
             // Generate dot file.
             $this->nodes = [];
@@ -1457,8 +1982,8 @@ class NetworkMap
             foreach ($this->nodes as $k => $item) {
                 $target = $this->calculateRelations($k);
 
-                // Adopt orphans.
-                if (empty($target)) {
+                // Adopt all orphan nodes but pandora one.
+                if (empty($target) && $item['id_node'] != 0) {
                     $rel = [];
                     $rel['id_parent'] = 0;
                     $rel['id_child'] = $item['id_node'];
@@ -1530,8 +2055,8 @@ class NetworkMap
                 // Graph definition.
                 $fields = explode(' ', $line);
 
-                $this->map['width'] = ($fields[2] * 100);
-                $this->map['height'] = ($fields[3] * 100);
+                $this->map['width'] = 0;
+                $this->map['height'] = 0;
             } else if (preg_match('/^node.*$/', $line) != 0) {
                 // Node.
                 $fields = explode(' ', $line);
@@ -1866,16 +2391,18 @@ class NetworkMap
                 'id_parent_agent'       => $rel['id_parent_agent'],
                 'id_child_agent'        => $rel['id_child_agent'],
             ];
-            if ($rel['id_child_agent'] == 103 || $rel['id_parent_agent'] == 103) {
-                hd($tmp);
-            }
 
-            // Avoid child - parent - parent -child relation duplicated.
+            // Avoid [child - parent] : [parent - child] relation duplicates.
             $found = 0;
-            foreach ($parents[$tmp['id_parent_source_data']] as $k) {
-                if ($k == $tmp['id_child_source_data']) {
-                    $found = 1;
+            if (is_array($parents[$tmp['id_parent_source_data']])) {
+                foreach ($parents[$tmp['id_parent_source_data']] as $k) {
+                    if ($k == $tmp['id_child_source_data']) {
+                        $found = 1;
+                        break;
+                    }
                 }
+            } else {
+                $parents[$tmp['id_parent_source_data']] = [];
             }
 
             if ($found == 0) {
@@ -1884,16 +2411,14 @@ class NetworkMap
             }
         }
 
-        hd($parents);
-
+        // Save data.
         if ($this->idMap > 0 && (!isset($this->map['__simulated']))) {
-            // TODO: REMOVE '!'.
-            if (!enterprise_installed()) {
-                $nodes_and_relations = enterprise_hook(
+            if (enterprise_installed()) {
+                $graph = enterprise_hook(
                     'save_generate_nodes',
                     [
                         $this->idMap,
-                        $nodes_and_relations,
+                        $graph,
                     ]
                 );
             }
@@ -1919,7 +2444,6 @@ class NetworkMap
         }
 
         $this->graph = $graph;
-
     }
 
 
@@ -1952,9 +2476,8 @@ class NetworkMap
             ];
         }
 
-        $this->graph['relations'] = clean_duplicate_links(
-            $this->graph['relations']
-        );
+        // Prioritize relations between same nodes.
+        $this->cleanGraphRelations();
 
         // Print some params to handle it in js.
         html_print_input_hidden('product_name', get_product_name());
@@ -1999,95 +2522,28 @@ class NetworkMap
         $output .= 'var node_radius = '.$networkmap['filter']['node_radius'].";\n";
         $output .= 'var networkmap_holding_area_dimensions = '.json_encode($networkmap['filter']['holding_area']).";\n";
         $output .= "var networkmap = {'nodes': [], 'links':  []};\n";
-        $nodes = $this->graph['nodes'];
 
-        if (empty($nodes)) {
+        // Init.
+        $count_item_holding_area = 0;
+        $count = 0;
+
+        // Translate nodes to JS Nodes.
+        $nodes = $this->graph['nodes'];
+        if (is_array($nodes) === false) {
             $nodes = [];
         }
 
-        $count_item_holding_area = 0;
-        $count = 0;
-        $nodes_graph = [];
+        $nodes_js = $this->nodesToJS($nodes);
+        $output .= 'networkmap.nodes = ('.json_encode($nodes_js).");\n";
 
-        foreach ($nodes as $key => $node) {
-            $style = json_decode($node['style'], true);
-            $node['style'] = json_decode($node['style'], true);
-
-            // Only agents can be show.
-            if (isset($node['type'])) {
-                if ($node['type'] == 1) {
-                    continue;
-                }
-            } else {
-                $node['type'] = '';
-            }
-
-            $item = $this->nodeToJS(
-                $node
-            );
-
-            /*
-             *    $count,
-             *    $count_item_holding_area,
-             *    $simulate
-             */
-
-            if ($item['deleted']) {
-                continue;
-            }
-
-            $output .= 'networkmap.nodes.push('.json_encode($item).");\n";
-            $nodes_graph[$item['id']] = $item;
-        }
-
+        // Translate edges to js links.
         $relations = $this->graph['relations'];
-
-        if ($relations === false) {
+        if (is_array($relations) === false) {
             $relations = [];
         }
 
-        // Clean the relations and transform the module relations into
-        // interfaces.
-        networkmap_clean_relations_for_js($relations);
-
-        $links_js = networkmap_links_to_js_links(
-            $relations,
-            $nodes_graph,
-            $simulate
-        );
-
-        $array_aux = [];
-        foreach ($links_js as $link_js) {
-            if ($link_js['deleted']) {
-                unset($links_js[$link_js['id']]);
-            }
-
-            if ($link_js['target'] == -1) {
-                unset($links_js[$link_js['id']]);
-            }
-
-            if ($link_js['source'] == -1) {
-                unset($links_js[$link_js['id']]);
-            }
-
-            if ($link_js['target'] == $link_js['source']) {
-                unset($links_js[$link_js['id']]);
-            }
-
-            if ($link_js['arrow_start'] == 'module' && $link_js['arrow_end'] == 'module') {
-                $output .= 'networkmap.links.push('.json_encode($link_js).");\n";
-                $array_aux[$link_js['id_agent_start']] = 1;
-                unset($links_js[$link_js['id']]);
-            }
-        }
-
-        foreach ($links_js as $link_js) {
-            if (($link_js['id_agent_end'] === 0) && $array_aux[$link_js['id_agent_start']] === 1) {
-                continue;
-            } else {
-                $output .= 'networkmap.links.push('.json_encode($link_js).");\n";
-            }
-        }
+        $links_js = $this->edgeToJS($relations);
+        $output .= 'networkmap.links = ('.json_encode($links_js).");\n";
 
         $output .= '
         ////////////////////////////////////////////////////////////////////

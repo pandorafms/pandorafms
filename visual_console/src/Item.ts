@@ -180,7 +180,7 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
     // From this point, things which rely on this.props can access to the changes.
 
     // Check if we should re-render.
-    if (this.shouldBeUpdated(newProps)) this.render(prevProps);
+    if (this.shouldBeUpdated(prevProps, newProps)) this.render(prevProps);
   }
 
   /**
@@ -191,11 +191,12 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
    *
    * Override this function to perform a different comparision depending on the item needs.
    *
+   * @param prevProps
    * @param newProps
    * @return Whether the difference is meaningful enough to perform DOM changes or not.
    */
-  protected shouldBeUpdated(newProps: Props): boolean {
-    return this.props !== newProps;
+  protected shouldBeUpdated(prevProps: Props, newProps: Props): boolean {
+    return prevProps !== newProps;
   }
 
   /**
@@ -204,18 +205,12 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
    */
   public render(prevProps: Props | null = null): void {
     // Move box.
-    if (!prevProps || prevProps.x !== this.props.x) {
-      this.elementRef.style.left = `${this.props.x}px`;
-    }
-    if (!prevProps || prevProps.y !== this.props.y) {
-      this.elementRef.style.top = `${this.props.y}px`;
+    if (!prevProps || this.positionChanged(prevProps, this.props)) {
+      this.moveElement(this.props.x, this.props.y);
     }
     // Resize box.
-    if (!prevProps || prevProps.width !== this.props.width) {
-      this.elementRef.style.width = `${this.props.width}px`;
-    }
-    if (!prevProps || prevProps.height !== this.props.height) {
-      this.elementRef.style.height = `${this.props.height}px`;
+    if (!prevProps || this.sizeChanged(prevProps, this.props)) {
+      this.resizeElement(this.props.width, this.props.height);
     }
 
     this.childElementRef.innerHTML = this.createDomElement().innerHTML;
@@ -234,35 +229,78 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
   }
 
   /**
-   * To move the item.
+   * Compare the previous and the new position and return
+   * a boolean value in case the position changed.
+   * @param prevPosition
+   * @param newPosition
+   * @return Whether the position changed or not.
+   */
+  protected positionChanged(
+    prevPosition: Position,
+    newPosition: Position
+  ): boolean {
+    return prevPosition.x !== newPosition.x || prevPosition.y !== newPosition.y;
+  }
+
+  /**
+   * Move the DOM container.
    * @param x Horizontal axis position.
    * @param y Vertical axis position.
    */
-  public move(x: number, y: number): void {
-    // Compare position.
-    if (x === this.props.x && y === this.props.y) return;
-    // Update position. Change itemProps instead of props to avoid re-render.
-    this.itemProps.x = x;
-    this.itemProps.y = y;
-    // Move element.
+  protected moveElement(x: number, y: number): void {
     this.elementRef.style.left = `${x}px`;
     this.elementRef.style.top = `${y}px`;
   }
 
   /**
-   * To resize the item.
-   * @param width Width.
-   * @param height Height.
+   * Update the position into the properties and move the DOM container.
+   * @param x Horizontal axis position.
+   * @param y Vertical axis position.
    */
-  public resize(width: number, height: number): void {
-    // Compare size.
-    if (width === this.props.width && height === this.props.height) return;
-    // Update size. Change itemProps instead of props to avoid re-render.
-    this.itemProps.width = width;
-    this.itemProps.height = height;
-    // Resize element.
+  public move(x: number, y: number): void {
+    this.moveElement(x, y);
+    this.itemProps = {
+      ...this.props, // Object spread: http://es6-features.org/#SpreadOperator
+      x,
+      y
+    };
+  }
+
+  /**
+   * Compare the previous and the new size and return
+   * a boolean value in case the size changed.
+   * @param prevSize
+   * @param newSize
+   * @return Whether the size changed or not.
+   */
+  protected sizeChanged(prevSize: Size, newSize: Size): boolean {
+    return (
+      prevSize.width !== newSize.width || prevSize.height !== newSize.height
+    );
+  }
+
+  /**
+   * Resize the DOM container.
+   * @param width
+   * @param height
+   */
+  protected resizeElement(width: number, height: number): void {
     this.elementRef.style.width = `${width}px`;
     this.elementRef.style.height = `${height}px`;
+  }
+
+  /**
+   * Update the size into the properties and resize the DOM container.
+   * @param width
+   * @param height
+   */
+  public resize(width: number, height: number): void {
+    this.resizeElement(width, height);
+    this.itemProps = {
+      ...this.props, // Object spread: http://es6-features.org/#SpreadOperator
+      width,
+      height
+    };
   }
 
   /**

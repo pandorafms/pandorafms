@@ -271,21 +271,7 @@ function reporting_html_print_report($report, $mini=false, $report_info=1)
             break;
 
             case 'netflow_area':
-                reporting_html_graph($table, $item);
-            break;
-
-            case 'netflow_pie':
-                reporting_html_graph($table, $item);
-            break;
-
             case 'netflow_data':
-                reporting_html_graph($table, $item);
-            break;
-
-            case 'netflow_statistics':
-                reporting_html_graph($table, $item);
-            break;
-
             case 'netflow_summary':
                 reporting_html_graph($table, $item);
             break;

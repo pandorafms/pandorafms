@@ -867,17 +867,9 @@ function reports_get_report_types($template=false, $not_editor=false)
             'optgroup' => __('Netflow'),
             'name'     => __('Netflow area chart'),
         ];
-        $types['netflow_pie'] = [
-            'optgroup' => __('Netflow'),
-            'name'     => __('Netflow pie chart'),
-        ];
         $types['netflow_data'] = [
             'optgroup' => __('Netflow'),
             'name'     => __('Netflow data table'),
-        ];
-        $types['netflow_statistics'] = [
-            'optgroup' => __('Netflow'),
-            'name'     => __('Netflow statistics table'),
         ];
         $types['netflow_summary'] = [
             'optgroup' => __('Netflow'),

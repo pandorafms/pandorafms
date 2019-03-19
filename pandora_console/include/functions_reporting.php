@@ -517,16 +517,6 @@ function reporting_make_reporting_data(
                 );
             break;
 
-            case 'netflow_pie':
-                $report['contents'][] = reporting_netflow(
-                    $report,
-                    $content,
-                    $type,
-                    $force_width_chart,
-                    $force_height_chart,
-                    'netflow_pie',
-                    $pdf
-                );
             break;
 
             case 'netflow_data':
@@ -537,18 +527,6 @@ function reporting_make_reporting_data(
                     $force_width_chart,
                     $force_height_chart,
                     'netflow_data',
-                    $pdf
-                );
-            break;
-
-            case 'netflow_statistics':
-                $report['contents'][] = reporting_netflow(
-                    $report,
-                    $content,
-                    $type,
-                    $force_width_chart,
-                    $force_height_chart,
-                    'netflow_statistics',
                     $pdf
                 );
             break;
@@ -3972,8 +3950,8 @@ function reporting_monitor_report($report, $content)
  * @param string  $type               Report type (static, dynamic, data).
  * @param integer $force_width_chart  Fixed width chart.
  * @param integer $force_height_chart Fixed height chart.
- * @param string  $type_netflow       One of netflow_area, netflow_pie,
- *      netflow_data, netflow_statistics, netflow_summary.
+ * @param string  $type_netflow       One of netflow_area, netflow_data,
+ *      netflow_summary.
  * @param boolean $pdf                True if a pdf report is generating.
  *
  * @return array Report item structure.
@@ -3994,16 +3972,8 @@ function reporting_netflow(
             $return['type'] = 'netflow_area';
         break;
 
-        case 'netflow_pie':
-            $return['type'] = 'netflow_pie';
-        break;
-
         case 'netflow_data':
             $return['type'] = 'netflow_data';
-        break;
-
-        case 'netflow_statistics':
-            $return['type'] = 'netflow_statistics';
         break;
 
         case 'netflow_summary':
@@ -4021,20 +3991,12 @@ function reporting_netflow(
                 $content['name'] = __('Netflow Area');
             break;
 
-            case 'netflow_pie':
-                $content['name'] = __('Netflow Pie');
+            case 'netflow_summary':
+                $content['name'] = __('Netflow Summary');
             break;
 
             case 'netflow_data':
                 $content['name'] = __('Netflow Data');
-            break;
-
-            case 'netflow_statistics':
-                $content['name'] = __('Netflow Statistics');
-            break;
-
-            case 'netflow_summary':
-                $content['name'] = __('Netflow Summary');
             break;
 
             default:

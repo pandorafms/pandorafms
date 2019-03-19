@@ -196,6 +196,7 @@ function netflow_stat_table($data, $start_date, $end_date, $aggregate)
     $start_date = date($nfdump_date_format, $start_date);
     $end_date = date($nfdump_date_format, $end_date);
     $values = [];
+    $table = new stdClass();
     $table->width = '100%';
     $table->cellspacing = 0;
     $table->class = 'databox';
@@ -331,9 +332,10 @@ function netflow_summary_table($data)
     global $nfdump_date_format;
 
     $values = [];
-    $table->size = ['50%'];
+    $table = new stdClass();
     $table->cellspacing = 0;
     $table->class = 'databox';
+    $table->styleTable = 'width: 100%';
     $table->data = [];
 
     $table->style[0] = 'font-weight: bold; padding: 6px';
@@ -1020,11 +1022,11 @@ function netflow_get_filter_arguments($filter)
 function netflow_get_chart_types()
 {
     return [
-        'netflow_area'          => __('Area graph'),
-        'netflow_pie_summatory' => __('Summary'),
-        'netflow_data'          => __('Data table'),
-        'netflow_mesh'          => __('Circular mesh'),
-        'netflow_host_treemap'  => __('Host detailed traffic'),
+        'netflow_area'         => __('Area graph'),
+        'netflow_summary'      => __('Summary'),
+        'netflow_data'         => __('Data table'),
+        'netflow_mesh'         => __('Circular mesh'),
+        'netflow_host_treemap' => __('Host detailed traffic'),
     ];
 }
 
@@ -1068,7 +1070,6 @@ function netflow_draw_item(
 
     // Process item.
     switch ($type) {
-        case '0':
         case 'netflow_area':
             $data = netflow_get_data(
                 $start_date,
@@ -1104,7 +1105,6 @@ function netflow_draw_item(
             }
         break;
 
-        case '2':
         case 'netflow_data':
             $data = netflow_get_data(
                 $start_date,
@@ -1136,31 +1136,6 @@ function netflow_draw_item(
             }
         break;
 
-        case '3':
-        case 'netflow_statistics':
-            $data = netflow_get_stats(
-                $start_date,
-                $end_date,
-                $filter,
-                $aggregate,
-                $max_aggregates,
-                true,
-                $connection_name,
-                $address_resolution
-            );
-            if (empty($data)) {
-                break;
-            }
-
-            if ($output == 'HTML' || $output == 'PDF') {
-                $html = netflow_stat_table($data, $start_date, $end_date, $aggregate);
-                return $html;
-            } else if ($output == 'XML') {
-                return netflow_stat_xml($data);
-            }
-        break;
-
-        case '4':
         case 'netflow_summary':
             $data_summary = netflow_get_summary(
                 $start_date,
@@ -1172,15 +1147,6 @@ function netflow_draw_item(
                 break;
             }
 
-            if ($output == 'HTML' || $output == 'PDF') {
-                return netflow_summary_table($data_summary);
-            } else if ($output == 'XML') {
-                return netflow_summary_xml($data_summary);
-            }
-        break;
-
-        case '1':
-        case 'netflow_pie':
             $data_pie = netflow_get_stats(
                 $start_date,
                 $end_date,
@@ -1195,62 +1161,31 @@ function netflow_draw_item(
                 break;
             }
 
-            if ($output == 'HTML') {
+            if ($output === 'HTML' || $output === 'PDF') {
+                $html = '<table style="width: 100%">';
+                $html .= '<tr>';
+                $html .= '<td style="width: 50%">';
+                $html .= netflow_summary_table($data_summary);
+                $html .= '</td>';
+                $html .= '<td style="width: 50%">';
+                $html .= graph_netflow_aggregate_pie(
+                    $data_pie,
+                    netflow_format_aggregate($aggregate),
+                    ($output === 'HTML') ? 1 : 2,
+                    ($output === 'HTML')
+                );
+                $html .= '</td>';
+                $html .= '</tr>';
+                $html .= '</table>';
+                $html .= netflow_stat_table(
+                    $data_pie,
+                    $start_date,
+                    $end_date,
+                    $aggregate
+                );
                 return $html;
-            } else if ($output == 'PDF') {
-                return $html;
-            } else if ($output == 'XML') {
-                return $xml;
-            }
-        break;
-
-        case 'netflow_pie_summatory':
-            $data_summary = netflow_get_summary(
-                $start_date,
-                $end_date,
-                $filter,
-                $connection_name
-            );
-            if (empty($data_summary)) {
-                break;
-            }
-
-            $data_pie = netflow_get_stats(
-                $start_date,
-                $end_date,
-                $filter,
-                $aggregate,
-                $max_aggregates,
-                true,
-                $connection_name,
-                $address_resolution
-            );
-            if (empty($data_pie)) {
-                break;
-            }
-
-            switch ($output) {
-                case 'HTML':
-                    $html = '<table>';
-                    $html .= '<tr>';
-                    $html .= '<td>';
-                    $html .= netflow_summary_table($data_summary);
-                    $html .= '</td>';
-                    $html .= '<td>';
-                    $html .= graph_netflow_aggregate_pie($data_pie, netflow_format_aggregate($aggregate));
-                    $html .= '</td>';
-                    $html .= '</tr>';
-                    $html .= '</table>';
-                    $html .= '</br>';
-                    $html .= netflow_stat_table($data_pie, $start_date, $end_date, $aggregate);
-                return $html;
-
-                case 'XML':
-                return netflow_summary_xml($data_summary);
-
-                default:
-                    // Nothing to do.
-                break;
+            } else if ($output === 'XML') {
+                return netflow_summary_xml($data_summary, $data_pie);
             }
         break;
 
@@ -1409,7 +1344,7 @@ function netflow_aggregate_area_xml($data)
             echo '  <timestamp>'.$timestamp."</timestamp>\n";
             echo "  <aggregates>\n";
             foreach ($flow as $source => $data) {
-                echo "    <aggregate>$source</aggregate>\n";
+                echo '    <aggregate>'.$source."</aggregate>\n";
                 echo '    <data>'.$data."</data>\n";
             }
 
@@ -1433,74 +1368,36 @@ function netflow_aggregate_area_xml($data)
 
 
 /**
- * Render a pie chart as an XML.
- *
- * @param array $data Netflow data.
- *
- * @return void XML is echoed.
- */
-function netflow_aggregate_pie_xml($data)
-{
-    // Calculate total.
-    $total = 0;
-    foreach ($data as $flow) {
-        $total += $flow['data'];
-    }
-
-    if ($total == 0) {
-        return;
-    }
-
-    // Print percentages.
-    echo "<pie>\n";
-    foreach ($data as $flow) {
-        echo '<aggregate>'.$flow['agg']."</aggregate>\n";
-        echo '<data>'.format_numeric((100 * $flow['data'] / $total), 2)."%</data>\n";
-    }
-
-    echo "</pie>\n";
-}
-
-
-/**
- * Render a stats table as an XML.
- *
- * @param array $data Netflow data.
- *
- * @return string Wiht XML data.
- */
-function netflow_stat_xml($data)
-{
-    // Print stats.
-    $xml .= "<stats>\n";
-    foreach ($data as $flow) {
-        $xml .= '<aggregate>'.$flow['agg']."</aggregate>\n";
-        $xml .= '<data>'.$flow['data']."</data>\n";
-    }
-
-    $xml .= "</stats>\n";
-
-    return $xml;
-}
-
-
-/**
  * Render a summary table as an XML.
  *
- * @param array $data Netflow data.
+ * @param array $data      Netflow data.
+ * @param array $rows_data Table info (top N hosts).
  *
  * @return string Wiht XML data.
  */
-function netflow_summary_xml($data)
+function netflow_summary_xml($data, $rows_data)
 {
-    // Print summary
+    // Print summary.
     $xml = "<summary>\n";
-    $xml .= '  <total_flows>'.$data['totalflows']."</total_flows>\n";
-    $xml .= '  <total_bytes>'.$data['totalbytes']."</total_bytes>\n";
-    $xml .= '  <total_packets>'.$data['totalbytes']."</total_packets>\n";
-    $xml .= '  <average_bps>'.$data['avgbps']."</average_bps>\n";
-    $xml .= '  <average_pps>'.$data['avgpps']."</average_pps>\n";
-    $xml .= '  <average_bpp>'.$data['avgpps']."</average_bpp>\n";
+    $xml = "    <totals>\n";
+    $xml .= '        <total_flows>'.$data['totalflows']."</total_flows>\n";
+    $xml .= '        <total_bytes>'.$data['totalbytes']."</total_bytes>\n";
+    $xml .= '        <total_packets>'.$data['totalbytes']."</total_packets>\n";
+    $xml .= '        <average_bps>'.$data['avgbps']."</average_bps>\n";
+    $xml .= '        <average_pps>'.$data['avgpps']."</average_pps>\n";
+    $xml .= '        <average_bpp>'.$data['avgpps']."</average_bpp>\n";
+    $xml .= "    </totals>\n";
+
+    // Add the data table.
+    $xml .= "    <hostsdata>\n";
+    foreach ($rows_data as $d) {
+        $xml .= "<data>\n";
+        $xml .= '<host>'.$d['agg']."</host>\n";
+        $xml .= '<bytes>'.$d['data']."</bytes>\n";
+        $xml .= "</data>\n";
+    }
+
+    $xml .= "    </hostsdata>\n";
     $xml .= "</summary>\n";
 
     return $xml;

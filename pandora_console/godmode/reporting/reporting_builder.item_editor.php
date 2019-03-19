@@ -597,18 +597,16 @@ switch ($action) {
                 break;
 
                 case 'netflow_area':
-                case 'netflow_pie':
                 case 'netflow_data':
-                case 'netflow_statistics':
                 case 'netflow_summary':
                     $netflow_filter = $item['text'];
-                    // Filter
+                    // Filter.
                     $period = $item['period'];
                     $description = $item['description'];
                     $resolution = $item['top_n'];
-                    // Interval resolution
+                    // Interval resolution.
                     $max_values = $item['top_n_value'];
-                    // Max values
+                    // Max values.
                 break;
 
                 case 'nt_top_n':
@@ -3667,16 +3665,6 @@ function chooseType() {
             $("#row_historical_db_check").hide();
             break;
         
-        case 'netflow_pie':
-            $("#row_netflow_filter").show();
-            $("#row_description").show();
-            $("#row_period").show();
-            $("#row_max_values").show();
-            $("#row_resolution").show();
-            $("#row_servers").show();
-            $("#row_historical_db_check").hide();
-            break;
-        
         case 'netflow_data':
             $("#row_netflow_filter").show();
             $("#row_description").show();
@@ -3688,15 +3676,6 @@ function chooseType() {
             break;
         
         case 'netflow_summary':
-            $("#row_netflow_filter").show();
-            $("#row_description").show();
-            $("#row_period").show();
-            $("#row_resolution").show();
-            $("#row_servers").show();
-            $("#row_historical_db_check").hide();
-            break;
-        
-        case 'netflow_statistics':
             $("#row_netflow_filter").show();
             $("#row_description").show();
             $("#row_period").show();

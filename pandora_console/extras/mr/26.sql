@@ -11,6 +11,8 @@ CREATE TABLE IF NOT EXISTS `tnetwork_matrix` (
     UNIQUE (`source`, `destination`, `utimestamp`)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8 ;
 
+UPDATE `treport_content` SET type="netflow_summary" WHERE type="netflow_pie" OR type="netflow_statistics";
+
 -- ----------------------------------------------------------------------
 -- Add column in table `tagent_custom_fields`
 -- ----------------------------------------------------------------------

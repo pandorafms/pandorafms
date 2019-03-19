@@ -1209,9 +1209,7 @@ switch ($action) {
                             break;
 
                             case 'netflow_area':
-                            case 'netflow_pie':
                             case 'netflow_data':
-                            case 'netflow_statistics':
                             case 'netflow_summary':
                                 $values['text'] = get_parameter('netflow_filter');
                                 $values['description'] = get_parameter('description');
@@ -1583,9 +1581,7 @@ switch ($action) {
                             break;
 
                             case 'netflow_area':
-                            case 'netflow_pie':
                             case 'netflow_data':
-                            case 'netflow_statistics':
                             case 'netflow_summary':
                                 $values['text'] = get_parameter('netflow_filter');
                                 $values['description'] = get_parameter('description');

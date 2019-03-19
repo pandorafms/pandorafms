@@ -9,6 +9,12 @@ final class Container extends Model
 {
 
 
+    public static function fromArray(array $data): self
+    {
+        return new self($data);
+    }
+
+
     protected function validateData(array $data): void
     {
         if (isset($data['id']) === false
@@ -58,22 +64,23 @@ final class Container extends Model
             'groupId'         => $this->extractGroupId($data),
             'backgroundURL'   => $this->extractBackgroundUrl($data),
             'backgroundColor' => $this->extractBackgroundColor($data),
-            'isFavorite'      => Model::parseBool($data['is_favourite'])
-                || Model::parseBool($data['isFavorite']),
+            'isFavorite'      => $this->extractFavorite($data),
             'width'           => (int) $data['width'],
             'height'          => (int) $data['height'],
         ];
     }
 
 
-    private function extractGroupId(array $data): number
+    private function extractGroupId(array $data): int
     {
         if (isset($data['id_group']) === true
             && \is_numeric($data['id_group']) === true
+            && $data['id_group'] >= 0
         ) {
             return $data['id_group'];
         } else if (isset($data['groupId']) === true
             && \is_numeric($data['groupId']) === true
+            && $data['groupId'] >= 0
         ) {
             return $data['groupId'];
         }
@@ -84,35 +91,33 @@ final class Container extends Model
     }
 
 
-    private function extractBackgroundUrl(array $data): mixed
+    private function extractBackgroundUrl(array $data)
     {
-        $backgroundUrl = Model::notEmptyStringOr($data['background'], null);
-        if ($backgroundUrl !== null) {
-            return $backgroundUrl;
-        }
-
-        $backgroundUrl = Model::notEmptyStringOr($data['backgroundURL'], null);
-        if ($backgroundUrl !== null) {
-            return $backgroundUrl;
-        }
-
-        return null;
+        $background = Model::notEmptyStringOr(
+            Model::issetInArray($data, ['background', 'backgroundURL']),
+            null
+        );
+        return $background;
     }
 
 
-    private function extractBackgroundColor(array $data): mixed
+    private function extractBackgroundColor(array $data)
     {
-        $backgroundColor = Model::notEmptyStringOr($data['background_color'], null);
-        if ($backgroundColor !== null) {
-            return $backgroundColor;
-        }
+        $backgroundColor = Model::notEmptyStringOr(
+            Model::issetInArray($data, ['backgroundColor', 'background_color']),
+            null
+        );
+        return $backgroundColor;
+    }
 
-        $backgroundColor = Model::notEmptyStringOr($data['backgroundColor'], null);
-        if ($backgroundColor !== null) {
-            return $backgroundColor;
-        }
 
-        return null;
+    private function extractFavorite(array $data): bool
+    {
+        $favorite = Model::parseBool(
+            Model::issetInArray($data, ['is_favourite', 'isFavorite']),
+            null
+        );
+        return $favorite;
     }
 
 

@@ -16,16 +16,10 @@ abstract class Model
     protected abstract function decode(array $data): array;
 
 
-    private function __construct(array $unknownData)
+    protected function __construct(array $unknownData)
     {
         $this->validateData($unknownData);
         $this->data = $this->decode($unknownData);
-    }
-
-
-    public static function fromArray(array $data): self
-    {
-        return new self($data);
     }
 
 
@@ -41,7 +35,7 @@ abstract class Model
     }
 
 
-    protected static function parseBool(mixed $value): boolean
+    protected static function parseBool($value): bool
     {
         if (\is_bool($value) === true) {
             return $value;
@@ -55,9 +49,21 @@ abstract class Model
     }
 
 
-    protected static function notEmptyStringOr(mixed $val, string $def): mixed
+    protected static function notEmptyStringOr($val, $def)
     {
-        return (\is_string($val) === true && count($val) > 0) ? $val : $def;
+        return (\is_string($val) === true && strlen($val) > 0) ? $val : $def;
+    }
+
+
+    protected static function issetInArray(array $val, array $keys)
+    {
+        foreach ($keys as $key => $value) {
+            if (isset($val[$value])) {
+                return $val[$value];
+            }
+        }
+
+        return null;
     }
 
 

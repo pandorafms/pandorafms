@@ -7770,11 +7770,11 @@ function reporting_get_agents_detailed_event(
 
         foreach ($events as $eventRow) {
             foreach ($eventRow as $k => $event) {
-                // First pass along the class of this row
+                // First pass along the class of this row.
                 $table->cellclass[$k][1] = $table->cellclass[$k][2] = $table->cellclass[$k][4] = $table->cellclass[$k][5] = $table->cellclass[$k][6] = get_priority_class($event['criticity']);
 
                 $data = [];
-                // Colored box
+                // Colored box.
                 switch ($event['estado']) {
                     case 0:
                         $img_st = 'images/star.png';

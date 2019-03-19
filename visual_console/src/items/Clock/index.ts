@@ -1,4 +1,4 @@
-import "./Clock.css";
+import "./styles.css";
 
 import { LinkedVisualConsoleProps, UnknownObject } from "../../types";
 import {

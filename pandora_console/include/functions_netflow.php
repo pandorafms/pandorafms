@@ -299,10 +299,7 @@ function netflow_data_table($data, $start_date, $end_date, $aggregate)
             $table->data[$i][1] = network_format_bytes($value['data']);
             $i++;
         }
-    }
-
-    // Aggregates.
-    else {
+    } else {
         $i = 0;
         foreach ($data['data'] as $timestamp => $values) {
             $table->data[$i][0] = date($time_format, $timestamp);
@@ -1647,7 +1644,7 @@ function netflow_get_resolution_name($value)
 /**
  * Report formatted subtitle.
  *
- * @param string $aggreagate Aggregate by param.
+ * @param string $aggregate  Aggregate by param.
  * @param string $resolution Netfow live view resolution.
  * @param string $type       Type of view.
  *

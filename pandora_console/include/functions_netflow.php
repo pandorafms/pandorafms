@@ -1025,7 +1025,7 @@ function netflow_get_chart_types()
         'netflow_area'         => __('Area graph'),
         'netflow_summary'      => __('Summary'),
         'netflow_data'         => __('Data table'),
-        'netflow_mesh'         => __('Circular mesh'),
+        // 'netflow_mesh'      => __('Circular mesh'), Provisionally comented
         'netflow_host_treemap' => __('Host detailed traffic'),
     ];
 }

@@ -1246,8 +1246,16 @@ function netflow_draw_item(
         return $html;
 
         case 'netflow_host_treemap':
-            $netflow_data = netflow_get_record($start_date, $end_date, $filter, $max_aggregates, $address_resolution);
-
+            $data_stats = netflow_get_stats(
+                $start_date,
+                $end_date,
+                $filter,
+                $aggregate,
+                $max_aggregates,
+                true,
+                $connection_name,
+                $address_resolution
+            );
             switch ($aggregate) {
                 case 'srcip':
                 case 'srcport':
@@ -1265,48 +1273,27 @@ function netflow_draw_item(
                 break;
             }
 
-            $data_aux = [];
-            foreach ($netflow_data as $record) {
-                $address = $record[$address_type];
-                $port = $record[$port_type];
-
-                if (!isset($data_aux[$address])) {
-                    $data_aux[$address] = [];
-                }
-
-                if (!isset($data_aux[$address][$port])) {
-                    $data_aux[$address][$port] = 0;
-                }
-
-                $data_aux[$address][$port] += $record['data'];
-            }
-
+            $data_graph = [
+                'name'     => __('Host detailed traffic').': '.$type,
+                'children' => [],
+            ];
             $id = -1;
 
-            $data = [];
-
-            if (! empty($netflow_data)) {
-                $data['name'] = __('Host detailed traffic').': '.$type;
-                $data['children'] = [];
-
-                foreach ($data_aux as $address => $ports) {
-                    $children = [];
-                    $children['id'] = $id++;
-                    $children['name'] = $address;
-                    $children['children'] = [];
-                    foreach ($ports as $port => $value) {
-                        $children_data = [];
-                        $children_data['id'] = $id++;
-                        $children_data['name'] = $port;
-                        $children_data['value'] = $value;
-                        $children_data['tooltip_content'] = $port.': <b>'.network_format_bytes($value).'</b>';
-                        $children['children'][] = $children_data;
-                    }
-
-                    $data['children'][] = $children;
-                }
+            foreach ($data_stats as $sdata) {
+                $data_graph['children'][] = [
+                    'id'       => $i++,
+                    'name'     => $sdata['agg'],
+                    'children' => [
+                        [
+                            'id'              => $i++,
+                            'name'            => $sdata['agg'],
+                            'value'           => $sdata['data'],
+                            'tooltip_content' => network_format_bytes($sdata['data']),
+                        ],
+                    ],
+                ];
             }
-        return graph_netflow_host_traffic($data, 'auto', 400);
+        return graph_netflow_host_traffic($data_graph, 'auto', 400);
 
         default:
             // Nothing to do.

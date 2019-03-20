@@ -1072,268 +1072,127 @@ class NetworkMap
 
         $relations = $this->graph['relations'];
 
-        $segregation_links = [];
-        $index = 0;
-        $index2 = 0;
-        $index3 = 0;
-        $index4 = 0;
-        foreach ($relations as $rel) {
-            if (($rel['parent_type'] == NODE_AGENT) && ($rel['child_type'] == NODE_AGENT)) {
-                $segregation_links['aa'][$index] = $rel;
-                $index++;
-            } else if (($rel['parent_type'] == NODE_MODULE) && ($rel['child_type'] == NODE_MODULE)) {
-                $segregation_links['mm'][$index2] = $rel;
-                $index2++;
-            } else if (($rel['parent_type'] == NODE_GENERIC) && ($rel['child_type'] == NODE_GENERIC)) {
-                $segregation_links['ff'][$index4] = $rel;
-                $index4++;
-            } else {
-                $segregation_links['am'][$index3] = $rel;
-                $index3++;
-            }
-        }
-
-        $final_links = [];
-
-        // ----------------------------------------------------------------
-        // --------------------- Clean duplicate links --------------------
-        // ----------------------------------------------------------------
-        $duplicated = false;
-        $index_to_del = 0;
-        $index = 0;
-        if (isset($segregation_links['aa']) === true
-            && is_array($segregation_links['aa']) === true
-        ) {
-            foreach ($segregation_links['aa'] as $link) {
-                foreach ($segregation_links['aa'] as $link2) {
-                    if ($link['id_parent'] == $link2['id_child']
-                        && $link['id_child'] == $link2['id_parent']
-                    ) {
-                        /*
-                            XXX: Verify
-                         * enterprise_hook(
-                         *     'delete_link',
-                         *     [$segregation_links['aa'][$index_to_del]]
-                         * );
-                         */
-                        unset($segregation_links['aa'][$index_to_del]);
-                    }
-
-                    $index_to_del++;
-                }
-
-                $final_links['aa'][$index] = $link;
-                $index++;
-
-                $duplicated = false;
-                $index_to_del = 0;
-            }
-        }
-
-        $duplicated = false;
-        $index_to_del = 0;
-        $index2 = 0;
-        if (isset($segregation_links['mm']) === true
-            && is_array($segregation_links['mm']) === true
-        ) {
-            foreach ($segregation_links['mm'] as $link) {
-                foreach ($segregation_links['mm'] as $link2) {
-                    if ($link['id_parent'] == $link2['id_child']
-                        && $link['id_child'] == $link2['id_parent']
-                    ) {
-                        /*
-                            XXX: Verify
-                         * enterprise_hook(
-                         *     'delete_link',
-                         *     [$segregation_links['mm'][$index_to_del]]
-                         * );
-                         */
-
-                        unset($segregation_links['mm'][$index_to_del]);
-                    }
-
-                    $index_to_del++;
-                }
-
-                $final_links['mm'][$index2] = $link;
-                $index2++;
-
-                $duplicated = false;
-                $index_to_del = 0;
-            }
-        }
-
-        $duplicated = false;
-        $index_to_del = 0;
-        $index3 = 0;
-
-        if (isset($segregation_links['ff']) === true
-            && is_array($segregation_links['ff']) === true
-        ) {
-            foreach ($segregation_links['ff'] as $link) {
-                foreach ($segregation_links['ff'] as $link2) {
-                    if ($link['id_parent'] == $link2['id_child']
-                        && $link['id_child'] == $link2['id_parent']
-                    ) {
-                        /*
-                            XXX: Verify
-                         * enterprise_hook(
-                         *   'delete_link',
-                         *   [$segregation_links['ff'][$index_to_del]]
-                         * );
-                         */
-                        unset($segregation_links['ff'][$index_to_del]);
-                    }
-
-                    $index_to_del++;
-                }
-
-                $final_links['ff'][$index3] = $link;
-                $index3++;
-
-                $duplicated = false;
-                $index_to_del = 0;
-            }
-        }
-
-        $final_links['am'] = $segregation_links['am'];
+        $cleaned = [];
+        $rel_map = [];
 
         /*
-            ----------------------------------------------------------------
-            ----------------- AA, AM and MM links management ---------------
-            ------------------ Priority: -----------------------------------
-            -------------------- 1 -> MM (module - module) -----------------
-            -------------------- 2 -> AM (agent - module) ------------------
-            -------------------- 3 -> AA (agent - agent) -------------------
-            ----------------------------------------------------------------
-        */
+         * Relation map:
+         *   id_child.'_'.id_parent => [
+         *     'priority' (0,1)
+         *     'relation_index'
+         *   ]
+         */
 
-        $final_links2 = [];
-        $index = 0;
-        $l3_link = [];
-        $agent1 = 0;
-        $agent2 = 0;
+        foreach ($relations as $index => $rel) {
+            /*
+             *  AA, AM and MM links management
+             *  Priority:
+             *    1 -> MM (module - module)
+             *    1 -> AM (agent - module)
+             *    0 -> AA (agent - agent)
+             */
 
-        if (isset($final_links['mm']) === true
-            && is_array($final_links['mm']) === true
-        ) {
-            foreach ($final_links['mm'] as $rel_mm) {
-                $module_parent = $rel_mm['id_parent_source_data'];
-                $module_children = $rel_mm['id_child_source_data'];
-                $agent1 = (int) agents_get_agent_id_by_module_id(
-                    $module_parent
-                );
-                $agent2 = (int) agents_get_agent_id_by_module_id(
-                    $module_children
-                );
-                foreach ($final_links['aa'] as $key => $rel_aa) {
-                    $l3_link = $rel_aa;
-                    $id_p_source_data = (int) $rel_aa['id_parent_source_data'];
-                    $id_c_source_data = (int) $rel_aa['id_child_source_data'];
-                    if ((($id_p_source_data == $agent1)
-                        && ($id_c_source_data == $agent2))
-                        || (($id_p_source_data == $agent2)
-                        && ($id_c_source_data == $agent1))
-                    ) {
-                        enterprise_hook(
-                            'delete_link',
-                            [$final_links['aa'][$key]]
-                        );
+            $id_parent = $rel['id_parent'];
+            $id_child = $rel['id_child'];
+            $rel_type = $rel['child_type'].'_'.$rel['parent_type'];
 
-                        unset($final_links['aa'][$key]);
+            $valid = 0;
+            $key = -1;
+            if ($rel['parent_type'] == NODE_MODULE
+                && $rel['child_type'] == NODE_MODULE
+            ) {
+                // Module information available.
+                $priority = 1;
+                $valid = 1;
+
+                if (is_array($rel_map[$id_child.'_'.$id_parent])) {
+                    // Already defined.
+                    $key = $id_child.'_'.$id_parent;
+                    $data = $rel_map[$id_child.'_'.$id_parent];
+                    if ($priority > $data['priority']) {
+                        unset($rel[$data['index']]);
+                    } else {
+                        $valid = 0;
                     }
                 }
-            }
-        }
 
-        $final_links2['aa'] = $final_links['aa'];
-        $final_links2['mm'] = $final_links['mm'];
-        $final_links2['am'] = $final_links['am'];
-        $final_links2['ff'] = $final_links['ff'];
-
-        $same_m = [];
-        $index = 0;
-        if (isset($final_links2['am']) === true
-            && is_array($final_links2['am']) === true
-        ) {
-            foreach ($final_links2['am'] as $rel_am) {
-                foreach ($final_links2['am'] as $rel_am2) {
-                    if (($rel_am['id_child_source_data'] == $rel_am2['id_child_source_data'])
-                        && ($rel_am['id_parent_source_data'] != $rel_am2['id_parent_source_data'])
-                    ) {
-                        $same_m[$index]['rel'] = $rel_am2;
-                        $same_m[$index]['agent_parent'] = $rel_am['id_parent_source_data'];
-                        $index++;
+                if (is_array($rel_map[$id_parent.'_'.$id_child])) {
+                    // Already defined.
+                    $key = $id_parent.'_'.$id_child;
+                    $data = $rel_map[$id_parent.'_'.$id_child];
+                    if ($priority > $data['priority']) {
+                        unset($rel[$data['index']]);
+                    } else {
+                        $valid = 0;
                     }
                 }
-            }
-        }
 
-        $final_links3 = [];
-        $index = 0;
-        $l3_link = [];
-        $have_l3 = false;
-        if (isset($final_links2['aa']) === true
-            && is_array($final_links2['aa']) === true
-        ) {
-            foreach ($final_links2['aa'] as $key => $rel_aa) {
-                $l3_link = $rel_aa;
-                foreach ($same_m as $rel_am) {
-                    if ((($rel_aa['id_parent_source_data'] == $rel_am['parent']['id_parent_source_data'])
-                        && ($rel_aa['id_child_source_data'] == $rel_am['rel']['id_parent_source_data']))
-                        || (($rel_aa['id_child_source_data'] == $rel_am['parent']['id_parent_source_data'])
-                        && ($rel_aa['id_parent_source_data'] == $rel_am['rel']['id_parent_source_data']))
-                    ) {
-                        enterprise_hook(
-                            'delete_link',
-                            [$final_links2['aa'][$key]]
-                        );
+                if ($valid == 1) {
+                    $rel_map[$id_parent.'_'.$id_child] = [
+                        'index'    => $index,
+                        'priority' => $priority,
+                    ];
+                }
+            } else if ($rel['parent_type'] == NODE_AGENT
+                && $rel['child_type'] == NODE_AGENT
+            ) {
+                // Module information not available.
+                $priority = 0;
+                $valid = 1;
 
-                        unset($final_links2['aa'][$key]);
+                if (is_array($rel_map[$id_child.'_'.$id_parent])) {
+                    // Already defined.
+                    $key = $id_child.'_'.$id_parent;
+                    $data = $rel_map[$id_child.'_'.$id_parent];
+                    if ($priority > $data['priority']) {
+                        unset($rel[$data['index']]);
+                    } else {
+                        $valid = 0;
                     }
                 }
+
+                if (is_array($rel_map[$id_parent.'_'.$id_child])) {
+                    // Already defined.
+                    $key = $id_parent.'_'.$id_child;
+                    $data = $rel_map[$id_parent.'_'.$id_child];
+                    if ($priority > $data['priority']) {
+                        unset($rel[$data['index']]);
+                    } else {
+                        $valid = 0;
+                    }
+                }
+
+                if ($valid == 1) {
+                    $rel_map[$id_parent.'_'.$id_child] = [
+                        'index'    => $index,
+                        'priority' => $priority,
+                    ];
+                }
+            } else if ($rel['parent_type'] == NODE_MODULE
+                && $rel['child_type'] == NODE_AGENT
+            ) {
+                // Module information not available.
+                $priority = 1;
+
+                $valid = 1;
+            } else if ($rel['parent_type'] == NODE_AGENT
+                && $rel['child_type'] == NODE_MODULE
+            ) {
+                // Module information not available.
+                $priority = 1;
+
+                $valid = 1;
+            } else {
+                // Pandora & generic links are always accepted.
+                $valid = 1;
+            }
+
+            if ($valid === 1) {
+                $cleaned[] = $rel;
             }
         }
 
-        $final_links3['aa'] = $final_links2['aa'];
-        $final_links3['mm'] = $segregation_links['mm'];
-        $final_links3['am'] = $segregation_links['am'];
-        $final_links3['ff'] = $final_links2['ff'];
-
-        $cleaned_links = [];
-        if (isset($final_links3['aa']) === true
-            && is_array($final_links3['aa']) === true
-        ) {
-            foreach ($final_links3['aa'] as $link) {
-                $cleaned_links[] = $link;
-            }
-        }
-
-        if (isset($final_links3['am']) === true
-            && is_array($final_links3['am']) === true
-        ) {
-            foreach ($final_links3['am'] as $link) {
-                $cleaned_links[] = $link;
-            }
-        }
-
-        if (isset($final_links3['mm']) === true
-            && is_array($final_links3['mm']) === true
-        ) {
-            foreach ($final_links3['mm'] as $link) {
-                $cleaned_links[] = $link;
-            }
-        }
-
-        if (isset($final_links3['ff']) === true
-            && is_array($final_links3['ff']) === true
-        ) {
-            foreach ($final_links3['ff'] as $link) {
-                $cleaned_links[] = $link;
-            }
-        }
-
-        $this->graph['relations'] = $cleaned_links;
+        $this->graph['relations'] = $cleaned;
     }
 
 
@@ -3040,6 +2899,7 @@ class NetworkMap
         $minimap_display = '';
         if ($this->mapOptions['pure']) {
             $minimap_display = 'none';
+            $minimap_display = '';
         }
 
         $networkmap = $this->map;

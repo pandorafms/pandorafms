@@ -1284,8 +1284,10 @@ function check_install_package(package, homeurl) {
         check_install_package(package, homeurl);
       }
 
-      //Check if exist remove files.
-      delete_desired_files(homeurl);
+      if (!isInstalling) {
+        //Check if exist remove files.
+        delete_desired_files(homeurl);
+      }
     }
   });
 }

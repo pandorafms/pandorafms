@@ -260,8 +260,15 @@ if ($install_package) {
             return;
         }
 
-        update_manager_enterprise_set_version($version);
-        db_pandora_audit('Update '.get_product_name(), "Update version: $version of ".get_product_name().' by '.$config['id_user']);
+        enterprise_hook(
+            'update_manager_enterprise_set_version',
+            [$version]
+        );
+
+        db_pandora_audit(
+            'Update '.get_product_name(),
+            "Update version: $version of ".get_product_name().' by '.$config['id_user']
+        );
 
         $return['status'] = 'success';
         echo json_encode($return);

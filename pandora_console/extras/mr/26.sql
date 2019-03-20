@@ -13,6 +13,8 @@ CREATE TABLE IF NOT EXISTS `tnetwork_matrix` (
 
 UPDATE `treport_content` SET type="netflow_summary" WHERE type="netflow_pie" OR type="netflow_statistics";
 
+UPDATE `tnetflow_filter` SET aggregate="dstip" WHERE aggregate NOT IN ("dstip", "srcip", "dstport", "srcport");
+
 -- ----------------------------------------------------------------------
 -- Add column in table `tagent_custom_fields`
 -- ----------------------------------------------------------------------

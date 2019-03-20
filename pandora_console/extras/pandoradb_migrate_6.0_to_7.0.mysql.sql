@@ -1355,6 +1355,7 @@ ALTER TABLE tgraph ADD COLUMN `fullscale` tinyint(1) UNSIGNED NOT NULL default '
 -- Table `tnetflow_filter`
 -- ---------------------------------------------------------------------
 ALTER TABLE tnetflow_filter ADD COLUMN `router_ip` TEXT NOT NULL DEFAULT "";
+UPDATE `tnetflow_filter` SET aggregate="dstip" WHERE aggregate NOT IN ("dstip", "srcip", "dstport", "srcport");
 
 -- ---------------------------------------------------------------------
 -- Table `treport_custom_sql`

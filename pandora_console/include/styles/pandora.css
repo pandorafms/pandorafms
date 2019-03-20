@@ -4873,6 +4873,11 @@ input:checked + .p-slider:before {
   padding-left: 50px;
 }
 
+.edit_user_timezone #zonepicker {
+  width: 100%;
+  height: 400px;
+}
+
 .edit_user_comments #textarea_comments {
   background-color: #fbfbfb !important;
   padding-left: 10px;
@@ -4938,21 +4943,25 @@ input:checked + .p-slider:before {
   text-align: center;
 }
 
-select#autorefresh_list_out[multiple] option:checked {
+select#autorefresh_list_out[multiple] option:checked,
+select#autorefresh_list[multiple] option:checked {
   background: #82b92e linear-gradient(0deg, #82b92e 0%, #82b92e 100%);
   color: #fff !important;
 }
 
-select#autorefresh_list_out option:checked {
+select#autorefresh_list_out option:checked,
+select#autorefresh_list option:checked {
   background-color: #82b92e;
   color: #fff !important;
 }
 
-select#autorefresh_list_out > option:hover {
+select#autorefresh_list_out > option:hover,
+select#autorefresh_list > option:hover {
   background-color: #cbcbcb;
 }
 
-select#autorefresh_list_out:-internal-list-box {
+select#autorefresh_list_out:-internal-list-box,
+select#autorefresh_list:-internal-list-box {
   border: none;
 }
 

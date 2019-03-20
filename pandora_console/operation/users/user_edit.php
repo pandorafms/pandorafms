@@ -180,9 +180,7 @@ if ($status != -1) {
 }
 
 if (defined('METACONSOLE')) {
-    $table->head[0] = __('Edit my User');
-    $table->head_colspan[0] = 5;
-    $table->headstyle[0] = 'text-align: center';
+    echo '<div class="user_form_title">'.__('Edit my User').'</div>';
 }
 
 
@@ -552,11 +550,7 @@ echo '<form name="user_mod" method="post" action="'.ui_get_full_url().'&amp;modi
             </div> 
             <div class="user_edit_second_row white_box">
                 <div class="edit_user_options">'.$language.$size_pagination.$skin.$home_screen.$event_filter.$newsletter.$newsletter_reminder.$double_authentication.'</div>
-                <div class="edit_user_timezone">'.$timezone.'<div id="zonepicker" style="width: 100%; height: 400px;"></div>
-                    <div id="label"></div>
-                    <div id="pais"></div>
-                    <div id="pais_file"></div>
-                </div>
+                <div class="edit_user_timezone">'.$timezone.'<div id="zonepicker"></div></div>
             </div> 
             <div class="user_edit_third_row white_box">
                 <div class="edit_user_comments">'.$comments.'</div>
@@ -649,58 +643,65 @@ echo '</div>';
 
 enterprise_hook('close_meta_frame');
 
+if (!defined('METACONSOLE')) {
+    ?>
+
+    <style>
+        /* Styles for timezone map */
+        div.olControlZoom{
+            bottom:10px;
+            left:10px;
+        }
+        div.olControlZoom a {
+            display: block;
+            margin: 1px;
+            padding: 0;
+            color: #FFF !important;
+            font-size: 14pt !important;
+            font-weight: bold;
+            text-decoration: none;
+            text-align: center;
+            height: 22px;
+            width: 22px;
+            line-height: 19px;
+            background: #82b92e;
+        }
+        div.olControlZoom a:hover {
+            background: #76a928;
+        }
+        a.olControlZoomIn {
+            border-radius: 4px 4px 0 0;
+        }
+        a.olControlZoomOut {
+            border-radius: 0 0 4px 4px;
+        }
+    </style>
+
+    <script language="javascript" type="text/javascript">
+        var optionText = $("#timezone option:selected").val();
+        $(function() {
+            $("#zonepicker").timezonePicker({
+            initialLat: 20,
+            initialLng: 0,
+            initialZoom: 2,
+            onReady: function() {
+                $("#zonepicker").timezonePicker('selectZone', optionText);
+            },
+            mapOptions: {
+                maxZoom: 6,
+                minZoom: 2
+            },
+            useOpenLayers: true
+            }); 
+        });
+    </script>
+
+    <?php
+    // Closes no meta condition.
+}
 ?>
 
-<style>
-    /* Styles for timezone map */
-    div.olControlZoom{
-        bottom:10px;
-        left:10px;
-    }
-    div.olControlZoom a {
-        display: block;
-        margin: 1px;
-        padding: 0;
-        color: #FFF !important;
-        font-size: 14pt !important;
-        font-weight: bold;
-        text-decoration: none;
-        text-align: center;
-        height: 22px;
-        width: 22px;
-        line-height: 19px;
-        background: #82b92e;
-    }
-    div.olControlZoom a:hover {
-        background: #76a928;
-    }
-    a.olControlZoomIn {
-        border-radius: 4px 4px 0 0;
-    }
-    a.olControlZoomOut {
-        border-radius: 0 0 4px 4px;
-    }
-</style>
-
 <script language="javascript" type="text/javascript">
-
- var optionText = $("#timezone option:selected").val();
-  $(function() {
-    $("#zonepicker").timezonePicker({
-      initialLat: 20,
-      initialLng: 0,
-      initialZoom: 2,
-      onReady: function() {
-        $("#zonepicker").timezonePicker('selectZone', optionText);
-      },
-      mapOptions: {
-        maxZoom: 6,
-        minZoom: 2
-      },
-      useOpenLayers: true
-    }); 
-  });
-
 
 $(document).ready (function () {
 

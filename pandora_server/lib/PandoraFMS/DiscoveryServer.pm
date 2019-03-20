@@ -473,8 +473,7 @@ sub PandoraFMS::Recon::Base::create_agent($$) {
 			$self->{'pa_config'}, $self->{'pa_config'}->{'servername'},
 			$host_name, $device, $self->{'group_id'}, 0, $id_os,
 			'', 300, $self->{'dbh'}, undef, $location->{'longitude'},
-			$location->{'latitude'}, undef, undef, undef, undef,
-			undef, undef, $self->{'main_event_id'}
+			$location->{'latitude'}
 		);
 		return undef unless defined ($agent_id) and ($agent_id > 0);
 

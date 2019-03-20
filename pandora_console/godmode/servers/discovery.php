@@ -15,6 +15,8 @@ if (! check_acl($config['id_user'], 0, 'AW')) {
 
 ui_require_css_file('discovery');
 
+ui_print_page_header(__('Discovery'), '', false, '', true);
+
 
 /**
  * Mask class names.

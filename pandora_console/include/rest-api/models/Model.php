@@ -55,6 +55,18 @@ abstract class Model
     }
 
 
+    protected static function parseIntOr($val, $def)
+    {
+        if (\is_integer($val)) {
+            return $val;
+        } else if ((\is_string($val) && strlen($val) > 0) && ($val === '0' || (int) $val != 0)) {
+            return (int) $val;
+        } else {
+            return $def;
+        }
+    }
+
+
     protected static function issetInArray(array $val, array $keys)
     {
         foreach ($keys as $key => $value) {

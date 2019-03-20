@@ -521,6 +521,19 @@ class NetworkMap
 
 
     /**
+     * Set nodes.
+     *
+     * @param array $nodes Nodes definition.
+     *
+     * @return void
+     */
+    public function setNodes($nodes)
+    {
+        $this->nodes = $nodes;
+    }
+
+
+    /**
      * Return nodes of current map.
      *
      * @return array Nodes.
@@ -543,6 +556,19 @@ class NetworkMap
 
         return $this->nodes;
 
+    }
+
+
+    /**
+     * Set relations.
+     *
+     * @param array $relations Relations definition.
+     *
+     * @return void
+     */
+    public function setRelations($relations)
+    {
+        $this->relations = $relations;
     }
 
 
@@ -601,7 +627,7 @@ class NetworkMap
         } else {
             // Group map.
             $nodes = agents_get_agents(
-                $filter,
+                ['id_grupo' => $this->idGroup],
                 ['*'],
                 'AR',
                 [
@@ -851,97 +877,15 @@ class NetworkMap
             return;
         }
 
-        $graph = [];
-        $graph['nodes'] = [];
-        $node_mapping = [];
-        $i = 0;
-        foreach ($nodes as $k => $node) {
-            if (!$node['deleted']) {
-                $tmp_node = [];
-                $tmp_node['id_map'] = $node['id_map'];
-                $tmp_node['id'] = $i;
-                $tmp_node['id_db'] = $node['id'];
-                $tmp_node['source_data'] = $node['source_data'];
-                $tmp_node['type'] = $node['type'];
+        $graph = enterprise_hook(
+            'networkmap_load_map',
+            [$this]
+        );
 
-                if ($tmp_node['type'] == NODE_AGENT) {
-                    $tmp_node['id_agent'] = $tmp_node['source_data'];
-                } else if ($tmp_node['type'] == NODE_MODULE) {
-                    $tmp_node['id_module'] = $tmp_node['source_data'];
-                    $tmp_node['id_agent'] = modules_get_agentmodule_agent(
-                        $tmp_node['id_module']
-                    );
-                } else {
-                    $tmp_node['id_agent'] = 0;
-                    $tmp_node['id_module'] = 0;
-                }
-
-                $style_node = json_decode($node['style'], true);
-                $style = [];
-                $style['shape'] = $style_node['shape'];
-                $style['image'] = $style_node['image'];
-                $style['width'] = $style_node['width'];
-                $style['height'] = $style_node['height'];
-                $style['label'] = $style_node['label'];
-                $style['id_networkmap'] = $style_node['networkmap'];
-                $tmp_node['style'] = json_encode($style);
-
-                $tmp_node['x'] = $node['x'];
-                $tmp_node['y'] = $node['y'];
-                $tmp_node['z'] = $node['z'];
-                $tmp_node['width'] = $style['width'];
-                $tmp_node['height'] = $style['height'];
-                $tmp_node['text'] = $style['label'];
-
-                if ($tmp_node['type'] == 1) {
-                    $tmp_node['id_agent'] = $style_node['id_agent'];
-                }
-
-                $node_mapping[$node['source_data'].'_'.$tmp_node['type']] = $i;
-                $this->nodeMapping[$i] = $i;
-                $graph['nodes'][$i++] = $tmp_node;
-            }
-        }
-
-        $graph['relations'] = [];
-        $i = 0;
-        if (is_array($relations)) {
-            foreach ($relations as $rel) {
-                $edge = [];
-                $edge['id_map'] = $rel['id_map'];
-                $edge['id_db'] = $rel['id'];
-                $edge['id'] = $rel[$i];
-
-                if ($rel['parent_type'] == NODE_AGENT) {
-                    $edge['id_parent_agent'] = $rel['id_parent_source_data'];
-                } else if ($rel['parent_type'] == NODE_MODULE) {
-                    $edge['id_parent_agent'] = modules_get_agentmodule_agent(
-                        $rel['id_parent_source_data']
-                    );
-                }
-
-                if ($rel['child_type'] == NODE_AGENT) {
-                    $edge['id_child_agent'] = $rel['id_child_source_data'];
-                } else if ($rel['child_type'] == NODE_MODULE) {
-                    $edge['id_child_agent'] = modules_get_agentmodule_agent(
-                        $rel['id_child_source_data']
-                    );
-                }
-
-                // Search parent.
-                $kp = $edge['id_parent_agent'].'_'.NODE_AGENT;
-                $edge['id_parent'] = $node_mapping[$kp];
-                $edge['parent_type'] = $rel['parent_type'];
-                $edge['id_parent_source_data'] = $rel['id_parent_source_data'];
-
-                // Search child.
-                $kc = $edge['id_child_agent'].'_'.NODE_AGENT;
-                $edge['id_child'] = $node_mapping[$kc];
-                $edge['child_type'] = $rel['child_type'];
-                $edge['id_child_source_data'] = $rel['id_child_source_data'];
-
-                $graph['relations'][$i++] = $edge;
-            }
+        if ($graph === ENTERPRISE_NOT_HOOK) {
+            // Method not available, regenerate.
+            $this->generateNetworkMap();
+            return;
         }
 
         $this->graph = $graph;
@@ -1572,7 +1516,7 @@ class NetworkMap
             }
 
             // Id titem.
-            if ($this->map['__simulated'] === false) {
+            if (isset($this->map['__simulated']) === false) {
                 $item['id_db'] = $node['id_db'];
             } else {
                 $item['id_db'] = (int) $node['id'];
@@ -1733,8 +1677,19 @@ class NetworkMap
             if (isset($this->map['__simulated']) === false) {
                 $item['id_db'] = $rel['id_db'];
                 $item['deleted'] = $rel['deleted'];
-                $item['target_id_db'] = $this->nodes[$rel['id_parent']]['id'];
-                $item['source_id_db'] = $this->nodes[$rel['id_child']]['id'];
+                $item['target_id_db'] = $this->getNodeData(
+                    $rel['id_parent'],
+                    'id_db'
+                );
+                $item['source_id_db'] = $this->getNodeData(
+                    $rel['id_child'],
+                    'id_db'
+                );
+            }
+
+            if ($item['deleted']) {
+                // Relation is deleted. Avoid.
+                continue;
             }
 
             // Set relationship as 'agent' by default.
@@ -1746,7 +1701,7 @@ class NetworkMap
             $item['id_agent_start'] = $rel['id_child_agent'];
             $item['id_agent_end'] = $rel['id_parent_agent'];
 
-            if ($rel['parent_type'] === NODE_MODULE) {
+            if ($rel['parent_type'] == NODE_MODULE) {
                 $item['arrow_start'] = 'module';
                 $item['id_module_start'] = $rel['id_parent_source_data'];
                 $item['status_start'] = modules_get_agentmodule_status(
@@ -1769,7 +1724,7 @@ class NetworkMap
                 }
             }
 
-            if ($rel['child_type'] === NODE_MODULE) {
+            if ($rel['child_type'] == NODE_MODULE) {
                 $item['arrow_end'] = 'module';
                 $item['id_module_end'] = $rel['id_child_source_data'];
                 $item['status_end'] = modules_get_agentmodule_status(
@@ -1989,7 +1944,8 @@ class NetworkMap
                     $rel['id_child'] = $item['id_node'];
                     $rel['parent_type'] = NODE_PANDORA;
                     $rel['child_type'] = $item['node_type'];
-                    $rel['child_source_data'] = $item['id_source_data'];
+                    $rel['id_child_source_data'] = $item['id_source_data'];
+
                     $orphans[] = $rel;
                 } else {
                     // Flattern edges.
@@ -2392,17 +2348,19 @@ class NetworkMap
                 'id_child_agent'        => $rel['id_child_agent'],
             ];
 
-            // Avoid [child - parent] : [parent - child] relation duplicates.
             $found = 0;
-            if (is_array($parents[$tmp['id_parent_source_data']])) {
-                foreach ($parents[$tmp['id_parent_source_data']] as $k) {
-                    if ($k == $tmp['id_child_source_data']) {
-                        $found = 1;
-                        break;
+            if (isset($tmp['id_parent_source_data'])) {
+                // Avoid [child - parent] : [parent - child] relation duplicates.
+                if (is_array($parents[$tmp['id_parent_source_data']])) {
+                    foreach ($parents[$tmp['id_parent_source_data']] as $k) {
+                        if ($k === $tmp['id_child_source_data']) {
+                            $found = 1;
+                            break;
+                        }
                     }
+                } else {
+                    $parents[$tmp['id_parent_source_data']] = [];
                 }
-            } else {
-                $parents[$tmp['id_parent_source_data']] = [];
             }
 
             if ($found == 0) {
@@ -2412,7 +2370,7 @@ class NetworkMap
         }
 
         // Save data.
-        if ($this->idMap > 0 && (!isset($this->map['__simulated']))) {
+        if ($this->idMap > 0 && (isset($this->map['__simulated']) === false)) {
             if (enterprise_installed()) {
                 $graph = enterprise_hook(
                     'save_generate_nodes',
@@ -2457,7 +2415,7 @@ class NetworkMap
         $networkmap = $this->map;
 
         $simulate = false;
-        if (!isset($networkmap['__simulated'])) {
+        if (isset($networkmap['__simulated']) === false) {
             $networkmap['filter'] = json_decode(
                 $networkmap['filter'],
                 true

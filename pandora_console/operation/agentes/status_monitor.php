@@ -88,6 +88,16 @@ $sort                 = get_parameter('sort', 'none');
 $id_module             = (int) get_parameter('id_module', 0);
 $ag_custom_fields     = (array) get_parameter('ag_custom_fields', []);
 $module_option = (int) get_parameter('module_option', 1);
+$autosearch = false;
+
+// It is validated if it receives parameters different from those it has by default
+if ($ag_freestring !== '' || $moduletype !== '' || $datatype !== ''
+    || $ag_modulename !== '' || $refr !== 0 || $offset !== 0 || $status !== 4
+    || $modulegroup !== -1 || $tag_filter !== 0 || $sortField !== ''
+    || $sort !== 'none' || $id_module !== 0 || $module_option !== 1
+) {
+    $autosearch = true;
+}
 
 if (!is_metaconsole()) {
     $ag_group = (int) get_parameter('ag_group', 0);
@@ -969,10 +979,8 @@ $sql = 'SELECT
 	ORDER BY '.$order['field'].' '.$order['order'].'
 	LIMIT '.$offset.','.$limit_sql;
 
-// When you enter for the first time you have less than 4 query params in the url
-$first_interaction = count($_GET) > 4;
 // We do not show the modules until the user searches with the filter
-if ($first_interaction) {
+if ($autosearch) {
     if (! defined('METACONSOLE')) {
         $result = db_get_all_rows_sql($sql);
 
@@ -1056,6 +1064,7 @@ if (($config['dbtype'] == 'oracle') && ($result !== false)) {
         unset($result[$i]['rnum']);
     }
 }
+
 
 // Start Build List Result
 //

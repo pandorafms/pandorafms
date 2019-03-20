@@ -29,6 +29,7 @@
 require_once $config['homedir'].'/include/graphs/functions_d3.php';
 
 $progress_task_discovery = (bool) get_parameter('progress_task_discovery', 0);
+$showmap = (bool) get_parameter('showmap', 0);
 
 if ($progress_task_discovery) {
     $id_task = get_parameter('id', 0);
@@ -42,9 +43,15 @@ if ($progress_task_discovery) {
             $id_task,
             90,
             460,
-            50,
-            '#EA5434'
+            30,
+            '#EA5434',
+            '%',
+            '',
+            '#FFFFFF',
+            0,
+            0
         );
+
         $result .= '</li>';
         $result .= '<li><h1>'.__('Searching devices in').' red a scanear</h1></li>';
         $result .= '<li>';
@@ -52,9 +59,15 @@ if ($progress_task_discovery) {
             $id_task.'_2',
             30,
             460,
-            50,
-            '#2751E1'
+            30,
+            '#2751E1',
+            '%',
+            '',
+            '#FFFFFF',
+            0,
+            0
         );
+
         $result .= '</li>';
         $result .= '<li><h1>'.__('Summary').'</h1></li>';
         $result .= '<li><span><b>'.__('Estimated').'</b>: total de host</span></li>';
@@ -71,4 +84,17 @@ if ($progress_task_discovery) {
     }
 
     return;
+}
+
+if ($showmap) {
+    include_once $config['homedir'].'/include/class/NetworkMap.class.php';
+    $id_task = get_parameter('id', 0);
+
+    $map = new NetworkMap(
+        [
+            'id_task' => $id_task,
+            'pure'    => 1,
+        ]
+    );
+    $map->printMap();
 }

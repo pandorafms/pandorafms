@@ -2202,7 +2202,7 @@ function agents_delete_agent($id_agents, $disableACL=false)
 
         // Delete agent in networkmap enterprise
         if (enterprise_installed()) {
-            enterprise_include_once('include/functions_pandora_networkmap.php');
+            enterprise_include_once('include/functions_networkmap.php');
             networkmap_delete_nodes_by_agent([$id_agent]);
         }
 

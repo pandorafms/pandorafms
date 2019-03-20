@@ -240,7 +240,7 @@ class DiscoveryTaskList extends Wizard
         $id_console_task = (int) get_parameter('id_console_task');
 
         if ($id_console_task !== null) {
-            enterprise_hook('cron_task_run', $id_console_task, true);
+            enterprise_hook('cron_task_run', [$id_console_task, true]);
             // Trick to avoid double execution.
             header('Location: '.$this->url);
         }
@@ -506,6 +506,15 @@ class DiscoveryTaskList extends Wizard
                     $data[9] = '<a href="#" onclick="progress_task_list('.$task['id_rt'].',\''.$task['name'].'\',\''.$url_ajax.'\')">';
                     $data[9] .= html_print_image(
                         'images/eye.png',
+                        true
+                    );
+                    $data[9] .= '</a>';
+                }
+
+                if ($task['disabled'] != 2 && $task['utimestamp'] > 0) {
+                    $data[9] .= '<a href="#" onclick="show_map('.$task['id_rt'].',\''.$task['name'].'\',\''.$url_ajax.'\')">';
+                    $data[9] .= html_print_image(
+                        'images/dynamic_network_icon.png',
                         true
                     );
                     $data[9] .= '</a>';

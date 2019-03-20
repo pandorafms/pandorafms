@@ -106,7 +106,9 @@ function get_value_sum($arr)
 {
     foreach ($arr as $clave) {
         foreach ($clave as $valor) {
-            $result += $valor;
+            if (is_numeric($valor) === true) {
+                $result += $valor;
+            }
         }
     }
 

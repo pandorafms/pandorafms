@@ -1065,6 +1065,7 @@ class ConsoleSupervisor
                 id_server,
                 name,
                 server_type,
+                server_keepalive,
                 status,
                 unix_timestamp() - unix_timestamp(keepalive) as downtime
             FROM tserver
@@ -1100,8 +1101,8 @@ class ConsoleSupervisor
         }
 
         foreach ($servers as $server) {
-            if ($server['type'] == SERVER_TYPE_ENTERPRISE_SATELLITE) {
-                if ($server['downtime'] < ($server['keepalive'] * 2)) {
+            if ($server['server_type'] == SERVER_TYPE_ENTERPRISE_SATELLITE) {
+                if ($server['downtime'] < ($server['server_keepalive'] * 2)) {
                     // Satellite uses different keepalive mode.
                     continue;
                 }

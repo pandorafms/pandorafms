@@ -1,21 +1,41 @@
 <?php
+/**
+ * Extension to manage a list of gateways and the node address where they should
+ * point to.
+ *
+ * @category   Extensions
+ * @package    Pandora FMS
+ * @subpackage Community
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
 
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2013 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the  GNU Lesser General Public License
-// as published by the Free Software Foundation; version 2
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
 require_once $config['homedir'].'/include/functions_config.php';
-enterprise_include_once($config['homedir'].'/enterprise/include/pdf_translator.php');
-enterprise_include_once($config['homedir'].'/enterprise/include/functions_metaconsole.php');
+enterprise_include_once(
+    $config['homedir'].'/enterprise/include/pdf_translator.php'
+);
+enterprise_include_once(
+    $config['homedir'].'/enterprise/include/functions_metaconsole.php'
+);
 
-// Date format for nfdump
+// Date format for nfdump.
 global $nfdump_date_format;
 $nfdump_date_format = 'Y/m/d.H:i:s';
 
@@ -27,16 +47,23 @@ $nfdump_date_format = 'Y/m/d.H:i:s';
  * @param id string Level ID. Do not set, used for recursion.
  * @param depth string Branch depth. Do not set, used for recursion.
  */
-function snmp_browser_print_tree($tree, $id=0, $depth=0, $last=0, $last_array=[], $sufix=false, $checked=[])
-{
+function snmp_browser_print_tree(
+    $tree,
+    $id=0,
+    $depth=0,
+    $last=0,
+    $last_array=[],
+    $sufix=false,
+    $checked=[]
+) {
     static $url = false;
 
-    // Get the base URL for images
+    // Get the base URL for images.
     if ($url === false) {
         $url = ui_get_full_url('operation/tree', false, false, false);
     }
 
-    // Leaf
+    // Leaf.
     if (empty($tree['__LEAVES__'])) {
         return;
     }
@@ -134,8 +161,19 @@ function snmp_browser_print_tree($tree, $id=0, $depth=0, $last=0, $last_array=[]
  *
  * @return array The SNMP tree.
  */
-function snmp_browser_get_tree($target_ip, $community, $starting_oid='.', $version='2c', $snmp3_auth_user='', $snmp3_security_level='', $snmp3_auth_method='', $snmp3_auth_pass='', $snmp3_privacy_method='', $snmp3_privacy_pass='', $server_to_exec=0)
-{
+function snmp_browser_get_tree(
+    $target_ip,
+    $community,
+    $starting_oid='.',
+    $version='2c',
+    $snmp3_auth_user='',
+    $snmp3_security_level='',
+    $snmp3_auth_method='',
+    $snmp3_auth_pass='',
+    $snmp3_privacy_method='',
+    $snmp3_privacy_pass='',
+    $server_to_exec=0
+) {
     global $config;
 
     if ($target_ip == '') {
@@ -303,14 +341,33 @@ function snmp_browser_get_tree($target_ip, $community, $starting_oid='.', $versi
 /**
  * Retrieve data for the specified OID.
  *
- * @param target_ip string IP of the SNMP agent.
- * @param community string SNMP community to use.
- * @param target_oid SNMP OID to query.
+ * @param string  $target_ip            IP of the SNMP agent.
+ * @param string  $community            SNMP community to use.
+ * @param string  $target_oid           SNMP OID to query.
+ * @param string  $version              Version SNMP.
+ * @param string  $snmp3_auth_user      User snmp3.
+ * @param string  $snmp3_security_level Security level snmp3.
+ * @param string  $snmp3_auth_method    Method snmp3.
+ * @param string  $snmp3_auth_pass      Pass snmp3.
+ * @param string  $snmp3_privacy_method Privicy method snmp3.
+ * @param string  $snmp3_privacy_pass   Pass Method snmp3.
+ * @param integer $server_to_exec       Execute with other server.
  *
- * @return array OID data.
+ * @return mixed OID data.
  */
-function snmp_browser_get_oid($target_ip, $community, $target_oid, $version='2c', $snmp3_auth_user='', $snmp3_security_level='', $snmp3_auth_method='', $snmp3_auth_pass='', $snmp3_privacy_method='', $snmp3_privacy_pass='')
-{
+function snmp_browser_get_oid(
+    $target_ip,
+    $community,
+    $target_oid,
+    $version='2c',
+    $snmp3_auth_user='',
+    $snmp3_security_level='',
+    $snmp3_auth_method='',
+    $snmp3_auth_pass='',
+    $snmp3_privacy_method='',
+    $snmp3_privacy_pass='',
+    $server_to_exec=0
+) {
     global $config;
 
     if ($target_oid == '') {
@@ -348,10 +405,38 @@ function snmp_browser_get_oid($target_ip, $community, $target_oid, $version='2c'
         break;
     }
 
-    if ($version == '3') {
-        exec($snmpget_bin.' -m ALL -v 3 -u '.escapeshellarg($snmp3_auth_user).' -A '.escapeshellarg($snmp3_auth_pass).' -l '.escapeshellarg($snmp3_security_level).' -a '.escapeshellarg($snmp3_auth_method).' -x '.escapeshellarg($snmp3_privacy_method).' -X '.escapeshellarg($snmp3_privacy_pass).' '.escapeshellarg($target_ip).' '.escapeshellarg($target_oid).' 2> '.$error_redir_dir, $output, $rc);
+    if ($server_to_exec != 0) {
+        $sql = sprintf(
+            'SELECT ip_address FROM tserver WHERE id_server = %d',
+            $server_to_exec
+        );
+        $server_data = db_get_row_sql($sql);
+
+        if ($version == '3') {
+            $command = $snmpget_bin.' -m ALL -v 3 -u '.escapeshellarg($snmp3_auth_user).' -A '.escapeshellarg($snmp3_auth_pass).' -l '.escapeshellarg($snmp3_security_level).' -a '.escapeshellarg($snmp3_auth_method).' -x '.escapeshellarg($snmp3_privacy_method).' -X '.escapeshellarg($snmp3_privacy_pass).' '.escapeshellarg($target_ip).' '.escapeshellarg($target_oid).' 2> '.$error_redir_dir;
+        } else {
+            $command = $snmpget_bin.' -m ALL -M +'.escapeshellarg($config['homedir'].'/attachment/mibs').' -On -c '.escapeshellarg(io_safe_output($community)).' -v '.escapeshellarg($version).' '.escapeshellarg($target_ip).' '.escapeshellarg($target_oid).' 2> '.$error_redir_dir;
+        }
+
+        exec(
+            'ssh pandora_exec_proxy@'.$server_data['ip_address'].' "'.$command.'"',
+            $output,
+            $rc
+        );
     } else {
-        exec($snmpget_bin.' -m ALL -M +'.escapeshellarg($config['homedir'].'/attachment/mibs').' -On -c '.escapeshellarg(io_safe_output($community)).' -v '.escapeshellarg($version).' '.escapeshellarg($target_ip).' '.escapeshellarg($target_oid).' 2> '.$error_redir_dir, $output, $rc);
+        if ($version == '3') {
+            exec(
+                $snmpget_bin.' -m ALL -v 3 -u '.escapeshellarg($snmp3_auth_user).' -A '.escapeshellarg($snmp3_auth_pass).' -l '.escapeshellarg($snmp3_security_level).' -a '.escapeshellarg($snmp3_auth_method).' -x '.escapeshellarg($snmp3_privacy_method).' -X '.escapeshellarg($snmp3_privacy_pass).' '.escapeshellarg($target_ip).' '.escapeshellarg($target_oid).' 2> '.$error_redir_dir,
+                $output,
+                $rc
+            );
+        } else {
+            exec(
+                $snmpget_bin.' -m ALL -M +'.escapeshellarg($config['homedir'].'/attachment/mibs').' -On -c '.escapeshellarg(io_safe_output($community)).' -v '.escapeshellarg($version).' '.escapeshellarg($target_ip).' '.escapeshellarg($target_oid).' 2> '.$error_redir_dir,
+                $output,
+                $rc
+            );
+        }
     }
 
     if ($rc != 0) {
@@ -359,7 +444,7 @@ function snmp_browser_get_oid($target_ip, $community, $target_oid, $version='2c'
     }
 
     foreach ($output as $line) {
-        // Separate the OID from the value
+        // Separate the OID from the value.
         $full_oid = explode('=', $line);
         if (! isset($full_oid[1])) {
             break;
@@ -368,7 +453,7 @@ function snmp_browser_get_oid($target_ip, $community, $target_oid, $version='2c'
         $oid = trim($full_oid[0]);
         $oid_data['numeric_oid'] = $oid;
 
-        // Translate the OID
+        // Translate the OID.
         if (empty($config['snmptranslate'])) {
             switch (PHP_OS) {
                 case 'FreeBSD':
@@ -387,10 +472,20 @@ function snmp_browser_get_oid($target_ip, $community, $target_oid, $version='2c'
             $snmptranslate_bin = $config['snmptranslate'];
         }
 
-        exec(
-            $snmptranslate_bin.' -m ALL -M +'.escapeshellarg($config['homedir'].'/attachment/mibs').' -Td '.escapeshellarg($oid),
-            $translate_output
-        );
+        if ($server_to_exec != 0) {
+            $command_output = $snmptranslate_bin.' -m ALL -M +'.escapeshellarg($config['homedir'].'/attachment/mibs').' -Td '.escapeshellarg($oid);
+            exec(
+                'ssh pandora_exec_proxy@'.$server_data['ip_address'].' "'.$command_output.'"',
+                $translate_output,
+                $rc
+            );
+        } else {
+            exec(
+                $snmptranslate_bin.' -m ALL -M +'.escapeshellarg($config['homedir'].'/attachment/mibs').' -Td '.escapeshellarg($oid),
+                $translate_output
+            );
+        }
+
         foreach ($translate_output as $line) {
             if (preg_match('/SYNTAX\s+(.*)/', $line, $matches) == 1) {
                 $oid_data['syntax'] = $matches[1];
@@ -403,7 +498,7 @@ function snmp_browser_get_oid($target_ip, $community, $target_oid, $version='2c'
             }
         }
 
-        // Parse the description. First search for it in custom values
+        // Parse the description. First search for it in custom values.
         $custom_data = db_get_row('ttrap_custom_values', 'oid', $oid);
         if ($custom_data === false) {
             $translate_output = implode('', $translate_output);

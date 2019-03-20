@@ -964,7 +964,7 @@ $row++;
         __('Custom report front page. It will be applied to all reports and templates by default.'),
         true
     );
-    $table_other->data[$row][1] = html_print_checkbox(
+    $table_other->data[$row][1] = html_print_checkbox_switch(
         'custom_report_front',
         1,
         $config['custom_report_front'],
@@ -1438,12 +1438,12 @@ $(document).ready (function () {
     // Juanma (06/05/2014) New feature: Custom front page for reports  
     var custom_report = $('#checkbox-custom_report_front')
         .prop('checked');
-    display_custom_report_front(custom_report,$('#checkbox-custom_report_front').parent().parent().parent().parent().attr('id'));
+    display_custom_report_front(custom_report,$('#checkbox-custom_report_front').parent().parent().parent().parent().parent().attr('id'));
     
-    $("#checkbox-custom_report_front").click( function()  {
+    $("#checkbox-custom_report_front").change( function()  {
         var custom_report = $('#checkbox-custom_report_front')
             .prop('checked');
-        display_custom_report_front(custom_report,$(this).parent().parent().parent().parent().attr('id'));
+        display_custom_report_front(custom_report,$(this).parent().parent().parent().parent().parent().attr('id'));
     });
     $(".databox.filters").css('margin-bottom','-10px');
 });

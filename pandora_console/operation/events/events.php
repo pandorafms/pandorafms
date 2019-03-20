@@ -1068,9 +1068,6 @@ function validate_event_advanced(id, new_status) {
                                 next_row_id = row_id_name + '-' + row_id_number_next;
                                 
                                 $("#"+previous_row_id).css('display', 'none');
-                                $("#"+current_row_id).css('display', 'none');
-                                $("#"+selected_row_id).css('display', 'none');
-                                $("#"+next_row_id).css('display', 'none');
                             }
                         });
                         

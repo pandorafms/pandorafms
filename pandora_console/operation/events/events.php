@@ -611,6 +611,7 @@ if ($delete) {
 
 echo "<div id='event_details_window'></div>";
 echo "<div id='event_response_window'></div>";
+echo "<div id='event_response_command_window' title='".__('Parameters')."'></div>";
 
 ui_require_jquery_file('bgiframe');
 ui_require_javascript_file('pandora_events');

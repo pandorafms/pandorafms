@@ -689,6 +689,13 @@ foreach ($fields as $field) {
         __('This field allows url insertion using the BBCode\'s url tag').'.<br />'.__('The format is: [url=\'url to navigate\']\'text to show\'[/url]').'.<br /><br />'.__('e.g.: [url=google.com]Google web search[/url]'),
         true
     );
+    $combo = [];
+    $combo = $field['combo_values'];
+    $combo = explode(',', $combo);
+    $combo_values = [];
+    foreach ($combo as $value) {
+        $combo_values[$value] = $value;
+    }
 
     $custom_value = db_get_value_filter('description', 'tagent_custom_data', ['id_field' => $field['id_field'], 'id_agent' => $id_agente]);
 
@@ -713,6 +720,28 @@ foreach ($fields as $field) {
     } else {
         $data[1] = html_print_textarea('customvalue_'.$field['id_field'], 2, 65, $custom_value, 'style="min-height: 30px;"', true);
     }
+
+    if ($field['combo_values'] !== '') {
+        $data[1] = html_print_select(
+            $combo_values,
+            'customvalue_'.$field['id_field'],
+            $custom_value,
+            '',
+            __('No change'),
+            '',
+            true,
+            false,
+            false,
+            '',
+            false,
+            false,
+            false,
+            false,
+            false,
+            '',
+            false
+        );
+    };
 
     array_push($table->data, $data);
 }

@@ -9,12 +9,26 @@ class Item extends Model
 {
 
 
+    /**
+     * Instance the class with the input data.
+     *
+     * @param mixed $data
+     *
+     * @return self
+     */
     public static function fromArray(array $data): self
     {
         return new self($data);
     }
 
 
+    /**
+     * Validate the input data.
+     *
+     * @param mixed $data
+     *
+     * @return void
+     */
     protected function validateData(array $data): void
     {
         if (isset($data['id']) === false
@@ -53,6 +67,13 @@ class Item extends Model
     }
 
 
+    /**
+     * Returns a valid data structure.
+     *
+     * @param mixed $data
+     *
+     * @return array
+     */
     protected function decode(array $data): array
     {
         return [
@@ -72,6 +93,13 @@ class Item extends Model
     }
 
 
+    /**
+     * extractX
+     *
+     * @param mixed $data
+     *
+     * @return integer
+     */
     private function extractX(array $data): int
     {
         if (isset($data['pos_x']) === true
@@ -88,6 +116,13 @@ class Item extends Model
     }
 
 
+    /**
+     * extractY
+     *
+     * @param mixed $data
+     *
+     * @return integer
+     */
     private function extractY(array $data): int
     {
         if (isset($data['pos_y']) === true
@@ -104,6 +139,14 @@ class Item extends Model
     }
 
 
+    /**
+     * Extract the value of id_group and
+     * return a integer or null.
+     *
+     * @param mixed $data
+     *
+     * @return void
+     */
     private function extractAclGroupId(array $data)
     {
         $aclGroupId = Model::parseIntOr(
@@ -118,6 +161,14 @@ class Item extends Model
     }
 
 
+    /**
+     * Extract the value of parentId and
+     * return a integer or null.
+     *
+     * @param mixed $data
+     *
+     * @return void
+     */
     private function extractParentId(array $data)
     {
         $parentId = Model::parseIntOr(
@@ -132,6 +183,14 @@ class Item extends Model
     }
 
 
+    /**
+     * Extract the value of isOnTop and
+     * return a Boolean.
+     *
+     * @param mixed $data
+     *
+     * @return boolean
+     */
     private function extractIsOnTop(array $data): bool
     {
         $isOnTop = Model::parseBool(
@@ -142,6 +201,14 @@ class Item extends Model
     }
 
 
+    /**
+     * Extract the value of isLinkEnabled and
+     * return a Boolean.
+     *
+     * @param mixed $data
+     *
+     * @return boolean
+     */
     private function extractIsLinkEnabled(array $data): bool
     {
         $isLinkEnabled = Model::parseBool(
@@ -152,6 +219,14 @@ class Item extends Model
     }
 
 
+    /**
+     * Extract the value of label and
+     * return to not empty string or null.
+     *
+     * @param mixed $data
+     *
+     * @return void
+     */
     private function extractLabel(array $data)
     {
         $label = Model::notEmptyStringOr(
@@ -162,6 +237,14 @@ class Item extends Model
     }
 
 
+    /**
+     * Extract the value of labelPosition and
+     * return to not empty string or null.
+     *
+     * @param mixed $data
+     *
+     * @return string
+     */
     private function extractLabelPosition(array $data): string
     {
         $labelPosition = Model::notEmptyStringOr(

@@ -9,12 +9,26 @@ final class Container extends Model
 {
 
 
+    /**
+     * Instance the class with the input data.
+     *
+     * @param mixed $data
+     *
+     * @return self
+     */
     public static function fromArray(array $data): self
     {
         return new self($data);
     }
 
 
+    /**
+     * Validate the input data
+     *
+     * @param mixed $data
+     *
+     * @return void
+     */
     protected function validateData(array $data): void
     {
         if (isset($data['id']) === false
@@ -56,6 +70,13 @@ final class Container extends Model
     }
 
 
+    /**
+     * Returns a valid data structure.
+     *
+     * @param mixed $data
+     *
+     * @return array
+     */
     protected function decode(array $data): array
     {
         return [

@@ -41,11 +41,11 @@ function menu_print_menu(&$menu)
         $allsec2 = $sec2;
     }
 
-    // Open list of menu
+    // Open list of menu.
     echo '<ul'.(isset($menu['class']) ? ' class="'.$menu['class'].'"' : '').'>';
 
     // Use $config because a global var is required because normal
-    // and godmode menu are painted separately
+    // and godmode menu are painted separately.
     if (!isset($config['count_main_menu'])) {
         $config['count_main_menu'] = 0;
     }
@@ -98,7 +98,7 @@ function menu_print_menu(&$menu)
 
         if (! $submenu) {
             $main['sub'] = [];
-            // Empty array won't go through foreach
+            // Empty array won't go through foreach.
         }
 
         $submenu_output = '';
@@ -110,12 +110,12 @@ function menu_print_menu(&$menu)
         foreach ($main['sub'] as $subsec2 => $sub) {
             $count_sub++;
 
-            // Init some variables
+            // Init some variables.
             $visible = false;
             $selected = false;
 
             $subsec2 = io_safe_output($subsec2);
-            // Choose valid suboptions (sec2)
+            // Choose valid suboptions (sec2).
             $check_2 = true;
             if (isset($sub['sub2'])) {
                 $check_2 = false;
@@ -125,7 +125,7 @@ function menu_print_menu(&$menu)
                 continue;
             }
 
-            // We store the first subsection to use it if the main section has not access
+            // We store the first subsection to use it if the main section has not access.
             if ($count_sub_access == 0) {
                 $first_sub_sec2 = $subsec2;
             }
@@ -145,7 +145,7 @@ function menu_print_menu(&$menu)
                     $sec2 = ' ';
                 }
 
-                // Check if some submenu was selected to mark this (the parent) as selected
+                // Check if some submenu was selected to mark this (the parent) as selected.
                 foreach (array_keys($sub['sub2']) as $key) {
                     if (strpos($key, $sec2) !== false) {
                         $selected_submenu2 = true;
@@ -154,13 +154,13 @@ function menu_print_menu(&$menu)
                 }
             }
 
-            // Create godmode option if submenu has godmode on
+            // Create godmode option if submenu has godmode on.
             if (isset($sub['subsecs'])) {
                 // Sometimes you need to add all paths because in the
                 // same dir are code from visual console and reports
-                // for example
+                // for example.
                 if (is_array($sub['subsecs'])) {
-                    // Compare each string
+                    // Compare each string.
                     foreach ($sub['subsecs'] as $god_path) {
                         if (strpos($sec2, $god_path) !== false) {
                             $selected_submenu2 = true;
@@ -168,19 +168,19 @@ function menu_print_menu(&$menu)
                         }
                     }
                 } else {
-                    // If there is only a string just compare
+                    // If there is only a string just compare.
                     if (strpos($sec2, $sub['subsecs']) !== false) {
                         $selected_submenu2 = true;
                     }
                 }
             }
 
-            // Set class
+            // Set class.
             if (($sec2 == $subsec2 || $allsec2 == $subsec2
                 || $selected_submenu2) && isset($sub[$subsec2]['options'])
                 && (                    get_parameter_get($sub[$subsec2]['options']['name']) == $sub[$subsec2]['options']['value'])
             ) {
-                // If the subclass is selected and there are options and that options value is true
+                // If the subclass is selected and there are options and that options value is true.
                 $class .= 'submenu_selected selected';
                 $menu_selected = true;
                 $selected = true;
@@ -201,7 +201,7 @@ function menu_print_menu(&$menu)
                 $selected = true;
                 $visible = true;
             } else {
-                // Else it's not selected
+                // Else it's not selected.
                 $class .= 'submenu_not_selected';
             }
 
@@ -209,7 +209,7 @@ function menu_print_menu(&$menu)
                 $sub['refr'] = 0;
             }
 
-            // Define submenu class to draw tree image
+            // Define submenu class to draw tree image.
             if ($count_sub >= count($main['sub'])) {
                 $sub_tree_class = 'submenu_text submenu_text_last';
             } else {
@@ -217,7 +217,7 @@ function menu_print_menu(&$menu)
             }
 
             if (isset($sub['type']) && $sub['type'] == 'direct') {
-                // This is an external link
+                // This is an external link.
                 $submenu_output .= '<li title="'.$sub['id'].'" id="'.str_replace(' ', '_', $sub['id']).'" class="'.$class.'">';
 
                 if (isset($sub['subtype']) && $sub['subtype'] == 'nolink') {
@@ -228,7 +228,7 @@ function menu_print_menu(&$menu)
                     $submenu_output .= '<a href="'.$subsec2.'"><div class="'.$sub_tree_class.'">'.$sub['text'].'</div></a>';
                 }
             } else {
-                // This is an internal link
+                // This is an internal link.
                 if (isset($sub[$subsec2]['options'])) {
                     $link_add = '&amp;'.$sub[$subsec2]['options']['name'].'='.$sub[$subsec2]['options']['value'];
                 } else {
@@ -237,7 +237,7 @@ function menu_print_menu(&$menu)
 
                 $submenu_output .= '<li id="'.str_replace(' ', '_', $sub['id']).'" '.($class ? ' class="'.$class.'"' : '').'>';
 
-                // Ini Add icon extension
+                // Ini Add icon extension.
                 $secExtension = null;
                 if (array_key_exists('extension', $sub)) {
                     $secExtensionBool = $sub['extension'];
@@ -245,7 +245,7 @@ function menu_print_menu(&$menu)
                     $secExtensionBool = false;
                 }
 
-                // DISABLE SUBMENU IMAGES
+                // DISABLE SUBMENU IMAGES.
                 $secExtensionBool = false;
 
                 if ($secExtensionBool) {
@@ -298,7 +298,7 @@ function menu_print_menu(&$menu)
                 }
             }
 
-            // Print second level submenu
+            // Print second level submenu.
             if (isset($sub['sub2'])) {
                 $submenu2_list = '';
 
@@ -324,7 +324,7 @@ function menu_print_menu(&$menu)
                         $class .= ' selected';
                     }
 
-                    // Define submenu2 class to draw tree image
+                    // Define submenu2 class to draw tree image.
                     if ($count_sub2 >= count($sub['sub2'])) {
                         $sub_tree_class = 'submenu_text submenu2_text_last';
                     } else {
@@ -342,7 +342,7 @@ function menu_print_menu(&$menu)
                     $sub_title = '';
                 }
 
-                // Add submenu2 to submenu string
+                // Add submenu2 to submenu string.
                 $submenu_output .= '<ul id="sub'.str_replace(' ', '_', $sub['id']).'" class="submenu2">';
                 $submenu_output .= $submenu2_list;
                 $submenu_output .= '</ul>';
@@ -352,7 +352,7 @@ function menu_print_menu(&$menu)
             $submenu_output .= '</li>';
         }
 
-        // Choose valid section (sec)
+        // Choose valid section (sec).
         if (enterprise_hook('enterprise_acl', [$config['id_user'], $mainsec, $main['sec2']]) == false) {
             if ($count_sub_access > 0) {
                 // If any susection have access but main section not, we change main link to first subsection found
@@ -368,14 +368,14 @@ function menu_print_menu(&$menu)
             $seleccionado = '';
         }
 
-        // Print out the first level
+        // Print out the first level.
         $output .= '<li title="'.$main['text'].'" class="'.implode(' ', $classes).' '.$seleccionado.'" id="icon_'.$id.'">';
                         // onclick="location.href=\'index.php?sec='.$mainsec.'&amp;sec2='.$main["sec2"].($main["refr"] ? '&amp;refr='.$main["refr"] : '').'\'">';
         $length = strlen(__($main['text']));
         $padding_top = ( $length >= 18) ? 6 : 12;
 
         $output .= '<div id="title_menu" style="padding-top:'.$padding_top.'px; display:none;">'.$main['text'].'</div>';
-        // Add the notification ball if defined
+        // Add the notification ball if defined.
         if (isset($main['notification'])) {
             $output .= '<div class="notification_ball">'.$main['notification'].'</div>';
         }
@@ -384,7 +384,7 @@ function menu_print_menu(&$menu)
         $length = 0;
         // $output .= html_print_image("include/styles/images/toggle.png", true, array("class" => "toggle", "alt" => "toogle"));
         if ($submenu_output != '') {
-            // WARNING: IN ORDER TO MODIFY THE VISIBILITY OF MENU'S AND SUBMENU'S (eg. with cookies) YOU HAVE TO ADD TO THIS ELSEIF. DON'T MODIFY THE CSS
+            // WARNING: IN ORDER TO MODIFY THE VISIBILITY OF MENU'S AND SUBMENU'S (eg. with cookies) YOU HAVE TO ADD TO THIS ELSEIF. DON'T MODIFY THE CSS.
             if ($visible || in_array('selected', $classes)) {
                 $visible = true;
             }
@@ -404,9 +404,9 @@ function menu_print_menu(&$menu)
         $menu_selected = false;
     }
 
-    // Finish menu
+    // Finish menu.
     echo '</ul>';
-    // Invisible UL for adding border-top
+    // Invisible UL for adding border-top.
     echo '</div>';
 }
 
@@ -506,7 +506,7 @@ function menu_add_extras(&$menu)
 
     $menu_extra['workspace']['sub']['operation/incidents/incident_detail']['text'] = __('Manage incident');
 
-    // Duplicate extensions as sec=extension to check it from url
+    // Duplicate extensions as sec=extension to check it from url.
     foreach ($menu as $k => $m) {
         if (!isset($m['sub'])) {
             continue;
@@ -550,7 +550,7 @@ function menu_get_sec($with_categories=false)
         if ($with_categories) {
             if (!$in_godmode && $k[0] == 'g') {
                 // Hack to dont confuse with gis activated because godmode
-                // sec starts with g (like gismaps)
+                // sec starts with g (like gismaps).
                 if ($k != 'gismaps') {
                     $in_godmode = true;
                 }
@@ -619,17 +619,17 @@ function menu_get_sec_pages($sec, $menu_hash=false)
     $sec2_array = [];
 
     if (isset($sec)) {
-        // Get the sec2 of the main section
+        // Get the sec2 of the main section.
         $sec2_array[$menu[$sec]['sec2']] = $menu[$sec]['text'];
 
-        // Get the sec2 of the subsections
+        // Get the sec2 of the subsections.
         foreach ($menu[$sec]['sub'] as $k => $v) {
-            // Avoid special cases of standalone windows
+            // Avoid special cases of standalone windows.
             if (preg_match('/^javascript:/', $k) || preg_match('/\.php/', $k)) {
                 continue;
             }
 
-            // If this value has various parameters, we only get the first
+            // If this value has various parameters, we only get the first.
             $k = explode('&', $k);
             $k = $k[0];
 
@@ -637,6 +637,7 @@ function menu_get_sec_pages($sec, $menu_hash=false)
         }
     }
 
+    $sec2_array = array_unique($sec2_array);
     return $sec2_array;
 }
 
@@ -663,8 +664,8 @@ function menu_get_sec2_pages($sec, $sec2, $menu_hash=false)
 
     $sec3_array = [];
 
-    if (isset($menu[$sec]['sub']) and isset($menu[$sec]['sub'][$sec2]['sub2'])) {
-        // Get the sec2 of the subsections
+    if (isset($menu[$sec]['sub']) && isset($menu[$sec]['sub'][$sec2]['sub2'])) {
+        // Get the sec2 of the subsections.
         foreach ($menu[$sec]['sub'][$sec2]['sub2'] as $k => $v) {
             $sec3_array[$k] = $v['text'];
         }
@@ -686,7 +687,7 @@ function menu_sec2_in_sec($sec, $sec2)
 {
     $sec2_array = menu_get_sec_pages($sec);
 
-    // If this value has various parameters, we only get the first
+    // If this value has various parameters, we only get the first.
     $sec2 = explode('&', $sec2);
     $sec2 = $sec2[0];
 
@@ -702,7 +703,7 @@ function menu_sec3_in_sec2($sec, $sec2, $sec3)
 {
     $sec3_array = menu_get_sec2_pages($sec, $sec2, $menu_hash = false);
 
-    // If this value has various parameters, we only get the first
+    // If this value has various parameters, we only get the first.
     $sec3 = explode('&', $sec3);
     $sec3 = $sec3[0];
 

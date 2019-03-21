@@ -1,23 +1,39 @@
 <?php
+/**
+ * Extension to manage a list of gateways and the node address where they should
+ * point to.
+ *
+ * @category   Update Manager Offline
+ * @package    Pandora FMS
+ * @subpackage Community
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
 
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; version 2
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU General Public License for more details.
 global $config;
 
-// ui_require_css_file('update_manager', 'godmode/update_manager/');
 check_login();
 
-// ui_require_css_file('update_manager', 'godmode/update_manager/');
-if (! check_acl($config['id_user'], 0, 'PM') && ! is_user_admin($config['id_user'])) {
+if (! check_acl($config['id_user'], 0, 'PM')
+    && ! is_user_admin($config['id_user'])
+) {
     db_pandora_audit('ACL Violation', 'Trying to access Setup Management');
     include 'general/noaccess.php';
     return;
@@ -27,7 +43,8 @@ $baseurl = ui_get_full_url(false, false, false, false);
 
 ?>
 
-<!-- Add the stylesheet here cause somehow the 'ui_require_css_file' is not working on the metaconsole and there is no time to fix it -->
+<!-- Add the stylesheet here cause somehow the 'ui_require_css_file' 
+is not working on the metaconsole and there is no time to fix it -->
 <link rel="stylesheet" type="text/css" href="<?php echo $baseurl; ?>/godmode/update_manager/update_manager.css">
 
 <script type="text/javascript">

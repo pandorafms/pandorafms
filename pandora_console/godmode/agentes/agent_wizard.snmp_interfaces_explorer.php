@@ -369,7 +369,24 @@ if ($create_modules) {
                     if ($row['server_type'] == 13) {
                         $module_type_name = db_get_value_filter('nombre', 'ttipo_modulo', ['id_tipo' => $values['id_tipo_modulo']]);
 
-                        $new_module_configuration_data = "module_begin\nmodule_name ".io_safe_input($name)."\nmodule_description ".io_safe_output($values['descripcion'])."\nmodule_type ".$module_type_name."\nmodule_snmp\nmodule_version ".$snmp_version."\nmodule_oid ".$conf_oid."\nmodule_community ".$values['snmp_community']."\nmodule_end";
+                        $new_module_configuration_data = "module_begin\nmodule_name ".io_safe_input($name)."\nmodule_description ".io_safe_output($values['descripcion'])."\nmodule_type ".$module_type_name."\nmodule_snmp\nmodule_version ".$snmp_version."\nmodule_oid ".$conf_oid."\nmodule_community ".$values['snmp_community'];
+
+                        if ($snmp_version == '3') {
+                            $new_module_configuration_data .= "\nmodule_secname ".$snmp3_auth_user;
+                            $new_module_configuration_data .= "\nmodule_seclevel ".$snmp3_security_level;
+
+                            if ($snmp3_security_level=='authNoPriv' || $snmp3_security_level=='authPriv') {
+                                $new_module_configuration_data .= "\nmodule_authpass ".$snmp3_auth_pass;
+                                $new_module_configuration_data .= "\nmodule_authproto ".$snmp3_auth_method;
+                            }
+
+                            if ($snmp3_security_level=='authPriv') {
+                                $new_module_configuration_data .= "\nmodule_privproto ".$snmp3_privacy_method;
+                                $new_module_configuration_data .= "\nmodule_privpass ".$snmp3_privacy_pass;
+                            }
+                        }
+
+                        $new_module_configuration_data .= "\nmodule_end";
 
                         config_agents_add_module_in_conf($id_agent, $new_module_configuration_data);
                     }

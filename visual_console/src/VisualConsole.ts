@@ -79,6 +79,9 @@ function itemInstanceFrom(data: UnknownObject) {
     case ItemType.MODULE_GRAPH:
       throw new TypeError("item not found");
     case ItemType.SIMPLE_VALUE:
+    case ItemType.SIMPLE_VALUE_MAX:
+    case ItemType.SIMPLE_VALUE_MIN:
+    case ItemType.SIMPLE_VALUE_AVG:
       throw new TypeError("item not found");
     case ItemType.PERCENTILE_BAR:
       throw new TypeError("item not found");
@@ -86,12 +89,6 @@ function itemInstanceFrom(data: UnknownObject) {
       throw new TypeError("item not found");
     case ItemType.ICON:
       return new Icon(iconPropsDecoder(data));
-    case ItemType.SIMPLE_VALUE_MAX:
-      throw new TypeError("item not found");
-    case ItemType.SIMPLE_VALUE_MIN:
-      throw new TypeError("item not found");
-    case ItemType.SIMPLE_VALUE_AVG:
-      throw new TypeError("item not found");
     case ItemType.PERCENTILE_BUBBLE:
       throw new TypeError("item not found");
     case ItemType.SERVICE:

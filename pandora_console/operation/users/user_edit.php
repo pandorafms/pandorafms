@@ -345,13 +345,12 @@ $double_auth_enabled = (bool) db_get_value('id', 'tuser_double_auth', 'id_user',
 if ($config['double_auth_enabled']) {
     $double_authentication = '<div class="label_select_simple"><p class="edit_user_labels">'.__('Double authentication').'</p>';
     $double_authentication .= html_print_checkbox_switch('double_auth', 1, $double_auth_enabled, true);
+    // Dialog.
+    $double_authentication .= '<div id="dialog-double_auth" style="display:none"><div id="dialog-double_auth-container"></div></div>';
 }
 
 if ($double_auth_enabled) {
     $double_authentication .= html_print_button(__('Show information'), 'show_info', false, 'javascript:show_double_auth_info();', '', true);
-    // Dialog.
-    $double_authentication .= '<div id="dialog-double_auth" style="display:none"><div id="dialog-double_auth-container"></div></div>';
-    $double_authentication .= '</div>';
 }
 
 if (isset($double_authentication)) {
@@ -674,6 +673,10 @@ if (!defined('METACONSOLE')) {
         }
         a.olControlZoomOut {
             border-radius: 0 0 4px 4px;
+        }
+        /* Overlay the popup on the map */
+        .ui-dialog.ui-corner-all.ui-widget.ui-widget-content.ui-front.ui-draggable.ui-resizable{
+            z-index:9999 !important; 
         }
     </style>
 

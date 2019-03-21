@@ -1,5 +1,33 @@
+/* global jQuery */
+/* global $ */
+/* global context_minimap */
+/* global minimap_w */
+/* global minimap_h */
+/* global minimap_relation */
+/* global graph */
+/* global translation */
+/* global scale */
+/* global width_svg */
+/* global height_svg */
+/* global networkmap_dimensions */
+/* global node_radius */
+/* global holding_area_dimensions */
+/* global networkmap_id */
+/* global enterprise_installed */
+/* global force */
+/* global layer_graph_nodes */
+/* global layer_graph_links */
+/* global ellipsize */
+/* global d3 */
+/* global node_selected */
+
+/* exported delete_link */
+/* exported update_fictional_node */
+/* exported update_node_name */
+/* exported change_shape */
+
 function draw_minimap() {
-  //Clean the canvas
+  // Clean the canvas.
   context_minimap.clearRect(0, 0, minimap_w, minimap_h);
 
   context_minimap.beginPath();
@@ -19,6 +47,9 @@ function draw_minimap() {
   //Draw the items and lines
   jQuery.each(graph.nodes, function(key, value) {
     if (typeof value == "undefined") return;
+
+    var center_orig_x;
+    var center_orig_y;
 
     context_minimap.beginPath();
     //Paint the item
@@ -96,11 +127,11 @@ function inner_minimap_box(param_x, param_y) {
   return false;
 }
 
-function set_center(id, event) {
-  pos_x = width_svg / 2 - translation[0] / scale;
-  pos_y = height_svg / 2 - translation[1] / scale;
-
+function set_center(id) {
+  var pos_x = width_svg / 2 - translation[0] / scale;
+  var pos_y = height_svg / 2 - translation[1] / scale;
   var params = [];
+
   params.push("set_center=1");
   params.push("id=" + id);
   params.push("x=" + pos_x);
@@ -111,11 +142,7 @@ function set_center(id, event) {
     data: params.join("&"),
     dataType: "json",
     type: "POST",
-    url: (action = "ajax.php"),
-    success: function(data) {
-      if (data["correct"]) {
-      }
-    }
+    url: "ajax.php"
   });
 }
 
@@ -164,7 +191,7 @@ function delete_link(
       data: params.join("&"),
       dataType: "json",
       type: "POST",
-      url: (action = "ajax.php"),
+      url: "ajax.php",
       success: function(data) {
         if (data["correct"]) {
           var found = -1;
@@ -222,7 +249,7 @@ function update_fictional_node(id_db_node) {
       data: params.join("&"),
       dataType: "json",
       type: "POST",
-      url: (action = "ajax.php"),
+      url: "ajax.php",
       success: function(data) {
         if (data["correct"]) {
           $("#dialog_node_edit").dialog("close");
@@ -262,7 +289,7 @@ function update_node_name(id_db_node) {
       data: params.join("&"),
       dataType: "json",
       type: "POST",
-      url: (action = "ajax.php"),
+      url: "ajax.php",
       success: function(data) {
         if (data["correct"]) {
           $("#dialog_node_edit").dialog("close");
@@ -308,13 +335,13 @@ function change_shape(id_db_node) {
       data: params.join("&"),
       dataType: "json",
       type: "POST",
-      url: (action = "ajax.php"),
+      url: "ajax.php",
       success: function(data) {
         $("#shape_icon_in_progress").css("display", "none");
         if (data["correct"]) {
           $("#shape_icon_correct").css("display", "");
 
-          count = graph.nodes.length;
+          var count = graph.nodes.length;
 
           jQuery.each(graph.nodes, function(i, element) {
             if (element.id_db == id_db_node) {
@@ -364,6 +391,7 @@ function change_shape(id_db_node) {
                     return d.y - d.image_height / 2;
                   })
                   .attr("width", function(d) {
+                    console.log(d);
                     return node_radius / 0.8;
                   })
                   .attr("height", function(d) {
@@ -585,7 +613,7 @@ function update_link(row_index, id_link) {
     data: params.join("&"),
     dataType: "json",
     type: "POST",
-    url: (action = "ajax.php"),
+    url: "ajax.php",
     success: function(data) {
       $(".edit_icon_progress_" + row_index).css("display", "none");
 
@@ -607,12 +635,10 @@ function update_link(row_index, id_link) {
             "']"
         ).prop("selected", true);
 
-        var id = "";
         var index = -1;
         $.each(graph.links, function(j, link) {
           if (link["id_db"] == id_link) {
             index = j;
-            id = String(id_link);
           }
         });
 
@@ -706,7 +732,7 @@ function move_to_networkmap(node) {
     data: params.join("&"),
     dataType: "json",
     type: "POST",
-    url: (action = "ajax.php"),
+    url: "ajax.php",
     success: function(data) {
       if (data["correct"]) {
         window.location =
@@ -726,6 +752,7 @@ function edit_node(data_node, dblClick) {
 
     //Only select one node
     var selection = d3.selectAll(".node_selected");
+    var id;
 
     if (selection[0].length == 1) {
       edit_node = selection[0].pop();
@@ -746,8 +773,8 @@ function edit_node(data_node, dblClick) {
         .select(edit_node)
         .attr("id")
         .replace("id_node_", "");
-      id_networkmap_lenght = networkmap_id.toString().length;
-      id_node_length = id.length - id_networkmap_lenght;
+      var id_networkmap_lenght = networkmap_id.toString().length;
+      var id_node_length = id.length - id_networkmap_lenght;
       id = id.substring(0, id_node_length);
       node_selected = graph.nodes[id];
 

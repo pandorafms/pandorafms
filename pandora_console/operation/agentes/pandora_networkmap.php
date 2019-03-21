@@ -70,8 +70,8 @@ if (enterprise_installed()) {
         $name = (string) get_parameter('name', '');
 
         // Default size values
-        $width = 4000;
-        $height = 4000;
+        $width = $config['networkmap_max_width'];
+        $height = $config['networkmap_max_width'];
 
         $method = (string) get_parameter('method', 'fdp');
 
@@ -232,8 +232,8 @@ if ($new_networkmap || $save_networkmap) {
         $name = (string) get_parameter('name', '');
 
         // Default size values
-        $width = 4000;
-        $height = 4000;
+        $width = $config['networkmap_max_width'];
+        $height = $config['networkmap_max_width'];
 
         $method = (string) get_parameter('method', 'fdp');
 

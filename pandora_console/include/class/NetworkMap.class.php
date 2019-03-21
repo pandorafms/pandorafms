@@ -113,13 +113,20 @@ class NetworkMap
     public $dotGraph;
 
     /**
-     * Node list.
+     * Node list processed by NetworkMap class.
+     *
+     * @var array
+     */
+    public $nodes;
+
+    /**
+     * Node list RAW.
      * A simple list of nodes, could content information of agents, modules...
      * Is the 'raw' information.
      *
      * @var array
      */
-    public $nodes;
+    public $rawNodes;
 
     /**
      * Useful to translate id_node to id_agent or id_module.
@@ -215,11 +222,13 @@ class NetworkMap
      */
     public function __construct($options=false)
     {
+        global $config;
+
         // Default mapOptions values.
         // Defines the command to generate positions.
         $this->mapOptions['generation_method'] = LAYOUT_SPRING1;
-        $this->mapOptions['width'] = 0;
-        $this->mapOptions['height'] = 0;
+        $this->mapOptions['width'] = $config['networkmap_max_width'];
+        $this->mapOptions['height'] = $config['networkmap_max_width'];
         $this->mapOptions['simple'] = 0;
         $this->mapOptions['font_size'] = 12;
         $this->mapOptions['nooverlap'] = 1;
@@ -241,7 +250,7 @@ class NetworkMap
             'x_offs'              => 0,
             'y_offs'              => 0,
             'z_dash'              => 0.5,
-            'node_sep'            => 3,
+            'node_sep'            => 5,
             'rank_sep'            => 5,
             'mindist'             => 1,
             'kval'                => 0.1,
@@ -260,7 +269,7 @@ class NetworkMap
 
             // Array of nodes, agents, virtual, etc.
             if (isset($options['nodes'])) {
-                $this->nodes = $options['nodes'];
+                $this->rawNodes = $options['nodes'];
             }
 
             // Array of relations.
@@ -362,8 +371,8 @@ class NetworkMap
             'background_options' => 0,
             'source_period'      => 60,
             'filter'             => $this->mapOptions['map_filter'],
-            'width'              => 0,
-            'height'             => 0,
+            'width'              => $config['networkmap_max_width'],
+            'height'             => $config['networkmap_max_width'],
             'center_x'           => 0,
             'center_y'           => 0,
         ];
@@ -815,11 +824,16 @@ class NetworkMap
                 // Handmade ones.
                 // Add also parent relationship.
                 $parent_id = $node['id_parent'];
-                $parent_node = $this->nodes[$parent_id]['id_node'];
+                $parent_node = $this->getNodeData($parent_id, 'id_node');
 
                 // Store relationship.
                 if ($parent_node) {
-                    $relations[$parent_node] = $node['id_node'];
+                    $relations[] = [
+                        'id_parent'   => $parent_node,
+                        'parent_type' => NODE_GENERIC,
+                        'id_child'    => $node['id_node'],
+                        'child_type'  => NODE_GENERIC,
+                    ];
                 }
             break;
 
@@ -1421,7 +1435,13 @@ class NetworkMap
 
                 case NODE_GENERIC:
                 default:
-                    $item['color'] = $node['color'];
+                    foreach ($source_data as $k => $v) {
+                        $node[$k] = $v;
+                    }
+
+                    $node['style']['label'] = $node['name'];
+                    $node['style']['shape'] = 'circle';
+                    $item['color'] = self::getColorByStatus($node['status']);
                 break;
             }
 
@@ -1645,7 +1665,7 @@ class NetworkMap
         }
 
         $edge = "\n".$data['from'].' -- '.$data['to'];
-        $edge .= '[len='.$this->mapOptions['map_filter']['rank_sep'];
+        $edge .= '[len='.$this->mapOptions['map_filter']['node_sep'];
         $edge .= ', color="#BDBDBD", headclip=false, tailclip=false,';
         $edge .= ' edgeURL=""];'."\n";
 
@@ -1690,8 +1710,12 @@ class NetworkMap
             $graph = '';
 
             if ($nodes === false) {
-                // Search for nodes.
-                $nodes = $this->calculateNodes();
+                if ($this->rawNodes) {
+                    $nodes = $this->rawNodes;
+                } else {
+                    // Search for nodes.
+                    $nodes = $this->calculateNodes();
+                }
             }
 
             // Search for relations.
@@ -1718,8 +1742,10 @@ class NetworkMap
             $i = 1;
             $orphans = [];
             foreach ($nodes as $k => $node) {
-                if (isset($node['id_agente']) === true
-                    && $node['id_agente'] > 0
+                if (isset($node['type']) && $node['type'] == NODE_AGENTE
+                    || (isset($node['type']) === false
+                    && isset($node['id_agente']) === true
+                    && $node['id_agente'] > 0)
                 ) {
                     // Origin is agent or module.
                     if (isset($node['id_agente_modulo']) === true
@@ -1852,6 +1878,8 @@ class NetworkMap
      */
     private function parseGraphvizMapFile($graphviz_file)
     {
+        global $config;
+
         if (isset($graphviz_file) === false
             || is_file($graphviz_file) === false
         ) {
@@ -1869,9 +1897,16 @@ class NetworkMap
             if (preg_match('/^graph.*$/', $line) != 0) {
                 // Graph definition.
                 $fields = explode(' ', $line);
+                $this->map['width'] = ($fields[2] * 10 * GRAPHVIZ_RADIUS_CONVERSION_FACTOR);
+                $this->map['height'] = ($fields[3] * 10 * GRAPHVIZ_RADIUS_CONVERSION_FACTOR);
 
-                $this->map['width'] = 0;
-                $this->map['height'] = 0;
+                if ($this->map['width'] > $config['networkmap_max_width']) {
+                    $this->map['width'] = $config['networkmap_max_width'];
+                }
+
+                if ($this->map['height'] > $config['networkmap_max_width']) {
+                    $this->map['height'] = $config['networkmap_max_width'];
+                }
             } else if (preg_match('/^node.*$/', $line) != 0) {
                 // Node.
                 $fields = explode(' ', $line);
@@ -2426,6 +2461,49 @@ class NetworkMap
 
 
     /**
+     * Generates a simple interface to interact with nodes.
+     *
+     * @return string HTML code for simple interface.
+     */
+    public function loadSimpleInterface()
+    {
+        $output = '<div id="open_version_dialog" style="display: none;">';
+        $output .= __(
+            'In the Open version of %s can not be edited nodes or map',
+            get_product_name()
+        );
+        $output .= '</div>';
+
+        $output .= '<div id="dialog_node_edit" style="display: none;" title="';
+        $output .= __('Edit node').'">';
+        $output .= '<div style="text-align: left; width: 100%;">';
+
+        $table = new StdClass();
+        $table->id = 'node_details';
+        $table->width = '100%';
+
+        $table->data = [];
+        $table->data[0][0] = '<strong>'.__('Agent').'</strong>';
+        $table->data[0][1] = '';
+        $table->data[1][0] = '<strong>'.__('Adresses').'</strong>';
+        $table->data[1][1] = '';
+        $table->data[2][0] = '<strong>'.__('OS type').'</strong>';
+        $table->data[2][1] = '';
+        $table->data[3][0] = '<strong>'.__('Group').'</strong>';
+        $table->data[3][1] = '';
+
+        $output .= ui_toggle(
+            html_print_table($table, true),
+            __('Node Details'),
+            __('Node Details'),
+            false,
+            true
+        );
+        return $output;
+    }
+
+
+    /**
      * Show an advanced interface to manage dialogs.
      *
      * @return string HTML code with dialogs.
@@ -2899,7 +2977,6 @@ class NetworkMap
         $minimap_display = '';
         if ($this->mapOptions['pure']) {
             $minimap_display = 'none';
-            $minimap_display = '';
         }
 
         $networkmap = $this->map;
@@ -3001,7 +3078,7 @@ class NetworkMap
             $output .= $this->loadMapSkel();
             $output .= $this->loadMapData();
             $output .= $this->loadController();
-            $output .= $this->loadAdvancedInterface();
+            $output .= $this->loadSimpleInterface();
         }
 
         if ($return === false) {

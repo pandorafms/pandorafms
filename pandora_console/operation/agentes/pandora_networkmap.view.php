@@ -80,6 +80,10 @@ if (is_ajax()) {
     if ($module_get_status) {
         $id = (int) get_parameter('id', 0);
 
+        if ($id == 0) {
+            return;
+        }
+
         $return = [];
         $return['correct'] = true;
         $return['status'] = modules_get_agentmodule_status(

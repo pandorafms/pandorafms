@@ -2275,16 +2275,11 @@ class NetworkMap
                 );
             }
 
-            $center = [
-                'x' => $node_center['x'],
-                'y' => $node_center['y'],
-            ];
-
-            $this->map['center_x'] = $center['x'];
-            $this->map['center_y'] = $center['y'];
             db_process_sql_update(
                 'tmap',
                 [
+                    'width'    => $this->map['width'],
+                    'height'   => $this->map['height'],
                     'center_x' => $this->map['center_x'],
                     'center_y' => $this->map['center_y'],
                 ],
@@ -3081,6 +3076,42 @@ class NetworkMap
             $output .= $this->loadSimpleInterface();
         }
 
+        $output .= '
+<script type="text/javascript">
+(function() {
+  var hidden = "hidden";
+
+  // Standards:
+  if (hidden in document)
+    document.addEventListener("visibilitychange", onchange);
+  else if ((hidden = "mozHidden") in document)
+    document.addEventListener("mozvisibilitychange", onchange);
+  else if ((hidden = "webkitHidden") in document)
+    document.addEventListener("webkitvisibilitychange", onchange);
+  else if ((hidden = "msHidden") in document)
+    document.addEventListener("msvisibilitychange", onchange);
+  // IE 9 and lower:
+  else if ("onfocusin" in document)
+    document.onfocusin = document.onfocusout = onchange;
+  // All others:
+  else
+    window.onpageshow = window.onpagehide
+    = window.onfocus = window.onblur = onchange;
+
+  function onchange (evt) {
+    // Reset all action status variables. Window is not in focus or visible.
+    flag_multiple_selection = false
+    disabled_drag_zoom = false;
+    flag_multiple_selection_running = false;
+    selected = undefined;
+  }
+
+  // set the initial state (but only if browser supports the Page Visibility API)
+  if( document[hidden] !== undefined )
+    onchange({type: document[hidden] ? "blur" : "focus"});
+})();
+</script>
+';
         if ($return === false) {
             echo $output;
         }

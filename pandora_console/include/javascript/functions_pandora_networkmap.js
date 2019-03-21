@@ -19,12 +19,28 @@
 /* global layer_graph_links */
 /* global ellipsize */
 /* global d3 */
-/* global node_selected */
+/* global dialog_node_edit_title */
+/* global click_menu_position_svg */
+/* global show_labels:true */
+/* global show_minimap:true */
+/* global layer_graph */
+/* global zoom_obj */
+/* global disabled_drag_zoom */
+/* global scale:true */
+/* global link */
+/* global siblingCount:true */
+/* global xRotation:true */
+/* global largeArc:true */
+/* global node */
 
 /* exported delete_link */
 /* exported update_fictional_node */
 /* exported update_node_name */
 /* exported change_shape */
+/* exported add_agent_node_from_the_filter_group */
+/* exported hide_labels */
+/* exported toggle_minimap */
+/* exported over_node */
 
 function draw_minimap() {
   // Clean the canvas.
@@ -391,7 +407,6 @@ function change_shape(id_db_node) {
                     return d.y - d.image_height / 2;
                   })
                   .attr("width", function(d) {
-                    console.log(d);
                     return node_radius / 0.8;
                   })
                   .attr("height", function(d) {
@@ -776,9 +791,9 @@ function edit_node(data_node, dblClick) {
       var id_networkmap_lenght = networkmap_id.toString().length;
       var id_node_length = id.length - id_networkmap_lenght;
       id = id.substring(0, id_node_length);
-      node_selected = graph.nodes[id];
+      var node_selected = graph.nodes[id];
 
-      selected_links = get_relations(node_selected);
+      var selected_links = get_relations(node_selected);
 
       $(
         "select[name='shape'] option[value='" + node_selected.shape + "']"
@@ -806,7 +821,7 @@ function edit_node(data_node, dblClick) {
         data: params.join("&"),
         dataType: "json",
         type: "POST",
-        url: (action = "ajax.php"),
+        url: "ajax.php",
         success: function(data) {
           $("#node_details-0-1").html(
             '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=' +
@@ -822,7 +837,7 @@ function edit_node(data_node, dblClick) {
               addresses += data["adressess"][i] + "<br>";
             }
           } else {
-            for (address in data["adressess"]) {
+            for (var address in data["adressess"]) {
               addresses += address + "<br>";
             }
           }
@@ -895,7 +910,7 @@ function get_interface_data_to_table(node_selected, selected_links) {
     data: params.join("&"),
     dataType: "json",
     type: "POST",
-    url: (action = "ajax.php"),
+    url: "ajax.php",
     success: function(data) {
       if (data.length == 0) {
         $("#interface_information")
@@ -907,10 +922,11 @@ function get_interface_data_to_table(node_selected, selected_links) {
           );
       } else {
         jQuery.each(data, function(j, interface) {
+          var interf_graph;
           if (interface["graph"] == "") {
-            var interf_graph = "--";
+            interf_graph = "--";
           } else {
-            var interf_graph = interface["graph"];
+            interf_graph = interface["graph"];
           }
           $("#interface_information")
             .find("tbody")
@@ -982,7 +998,7 @@ function load_interfaces(selected_links) {
       type: "POST",
       async: true,
       cache: false,
-      url: (action = "ajax.php"),
+      url: "ajax.php",
       success: function(data) {
         if (data["correct"]) {
           $(
@@ -1102,7 +1118,7 @@ function add_node() {
 }
 
 function add_agent_node_from_the_filter_group() {
-  agents = $("select[name='agents_filter_group']").val();
+  var agents = $("select[name='agents_filter_group']").val();
 
   add_agent_node(agents);
 }
@@ -1149,7 +1165,7 @@ function add_agent_node(agents) {
         data: params.join("&"),
         dataType: "json",
         type: "POST",
-        url: (action = "ajax.php"),
+        url: "ajax.php",
         success: function(data) {
           if (data["correct"]) {
             $("#agent_name").val("");
@@ -1237,24 +1253,17 @@ function add_agent_node(agents) {
 
     var temp_node = {};
     temp_node["id"] = graph.nodes.length;
-    temp_node["id_db"] = data["id_node"];
-    temp_node["id_agent"] = data["id_agent"];
+    temp_node["id_db"] = graph.nodes.length;
+    temp_node["id_agent"] = id_agent;
     temp_node["id_module"] = "";
-    temp_node["px"] = data["x"];
-    temp_node["py"] = data["y"];
-    temp_node["x"] = data["x"];
-    temp_node["y"] = data["y"];
+    temp_node["px"] = x;
+    temp_node["py"] = y;
+    temp_node["x"] = x;
+    temp_node["y"] = y;
     temp_node["z"] = 0;
     temp_node["fixed"] = true;
     temp_node["type"] = 0;
-    temp_node["color"] = data["status"];
-    temp_node["shape"] = data["shape"];
-    temp_node["text"] = data["text"];
-    temp_node["image_url"] = data["image_url"];
-    temp_node["image_width"] = data["width"];
-    temp_node["image_height"] = data["height"];
-    temp_node["map_id"] = data["map_id"];
-    temp_node["state"] = data["state"];
+    temp_node["map_id"] = networkmap_id;
 
     graph.nodes.push(temp_node);
   }
@@ -1347,9 +1356,10 @@ function delete_nodes() {
         data: params.join("&"),
         dataType: "json",
         type: "POST",
-        url: (action = "ajax.php"),
+        url: "ajax.php",
         success: function(data) {
           if (data["correct"]) {
+            var found = -1;
             do {
               found = -1;
               jQuery.each(graph.links, function(i, element) {
@@ -1627,7 +1637,7 @@ function set_positions_graph() {
 }
 
 function over_node(d) {
-  over = d3.select("#id_node_" + d.id + networkmap_id).classed("node_over");
+  var over = d3.select("#id_node_" + d.id + networkmap_id).classed("node_over");
 
   in_a_node = !in_a_node;
 
@@ -1683,7 +1693,7 @@ function update_networkmap() {
           data: params.join("&"),
           dataType: "json",
           type: "POST",
-          url: (action = "ajax.php"),
+          url: "ajax.php",
           success: function(data) {
             d3.select(
               "#id_node_" + d.id + networkmap_id + " .node_shape"
@@ -1695,7 +1705,7 @@ function update_networkmap() {
 
     link.each(function(d) {
       if (d.id_module_start != 0 || d.id_module_end != 0) {
-        if (d.id_module_start != 0) {
+        if (d.id_module_start && d.id_module_start > 0) {
           var params = [];
           params.push("module_get_status=1");
           params.push("page=operation/agentes/pandora_networkmap.view");
@@ -1704,7 +1714,7 @@ function update_networkmap() {
             data: params.join("&"),
             dataType: "json",
             type: "POST",
-            url: (action = "ajax.php"),
+            url: "ajax.php",
             success: function(data) {
               d3.selectAll(".id_module_start_" + d.id_module_start).attr(
                 "marker-start",
@@ -1718,7 +1728,7 @@ function update_networkmap() {
           });
         }
 
-        if (d.id_module_end != 0) {
+        if (d.id_module_end && d.id_module_end > 0) {
           var params = [];
           params.push("module_get_status=1");
           params.push("page=operation/agentes/pandora_networkmap.view");
@@ -1727,7 +1737,7 @@ function update_networkmap() {
             data: params.join("&"),
             dataType: "json",
             type: "POST",
-            url: (action = "ajax.php"),
+            url: "ajax.php",
             success: function(data) {
               d3.selectAll(".id_module_end_" + d.id_module_end).attr(
                 "marker-end",
@@ -2232,7 +2242,7 @@ function add_interface_link(data_parent) {
       data: params.join("&"),
       dataType: "json",
       type: "POST",
-      url: (action = "ajax.php"),
+      url: "ajax.php",
       success: function(data) {
         var parent_name = data_parent.text;
         var child_name = child_data.text;
@@ -2299,7 +2309,7 @@ function add_interface_link_js() {
     data: params.join("&"),
     dataType: "json",
     type: "POST",
-    url: (action = "ajax.php"),
+    url: "ajax.php",
     success: function(data) {
       if (data["correct"]) {
         var temp_link = {};
@@ -2352,8 +2362,8 @@ function add_interface_link_js() {
 }
 
 function refresh_holding_area() {
-  holding_pos_x = d3.select("#holding_area_" + networkmap_id).attr("x");
-  holding_pos_y = d3.select("#holding_area_" + networkmap_id).attr("y");
+  var holding_pos_x = d3.select("#holding_area_" + networkmap_id).attr("x");
+  var holding_pos_y = d3.select("#holding_area_" + networkmap_id).attr("y");
 
   var pos_x = parseInt(holding_pos_x) + parseInt(node_radius);
   var pos_y = parseInt(holding_pos_y) + parseInt(node_radius);
@@ -2369,7 +2379,7 @@ function refresh_holding_area() {
       data: params.join("&"),
       dataType: "json",
       type: "POST",
-      url: (action = "ajax.php"),
+      url: "ajax.php",
       success: function(data) {
         if (data["correct"]) {
           window.holding_area = data["holding_area"];
@@ -2578,7 +2588,7 @@ function proceed_to_restart_map() {
     data: params.join("&"),
     dataType: "html",
     type: "POST",
-    url: (action = "ajax.php"),
+    url: "ajax.php",
     success: function(data) {
       $("#restart_map_form").html(data);
       $("#restart_map_form").dialog("open");
@@ -2596,7 +2606,7 @@ function reset_map_from_form(new_elements) {
     data: params.join("&"),
     dataType: "json",
     type: "POST",
-    url: (action = "ajax.php"),
+    url: "ajax.php",
     success: function(data) {
       window.location =
         "index.php?sec=network&sec2=operation/agentes/pandora_networkmap&tab=view&id_networkmap=" +
@@ -2661,7 +2671,7 @@ function set_parent(parent_data) {
         data: params.join("&"),
         dataType: "json",
         type: "POST",
-        url: (action = "ajax.php"),
+        url: "ajax.php",
         success: function(data) {
           if (data["correct"]) {
             //Add the relationship and paint
@@ -2752,23 +2762,25 @@ function init_drag_and_drop() {
       var selection = d3.selectAll(".node_selected");
 
       if (enterprise_installed) {
-        holding_pos_x = d3.select("#holding_area_" + networkmap_id).attr("x");
-        holding_pos_y = d3.select("#holding_area_" + networkmap_id).attr("y");
+        var holding_pos_x = d3
+          .select("#holding_area_" + networkmap_id)
+          .attr("x");
+        var holding_pos_y = d3
+          .select("#holding_area_" + networkmap_id)
+          .attr("y");
         delete d.raw_text;
         selection.each(function(d) {
-          var params = [];
-          params.push("update_node=1");
-          params.push("node=" + JSON.stringify(d));
-          params.push("x=" + holding_pos_x);
-          params.push("y=" + holding_pos_y);
-          params.push(
-            "page=enterprise/operation/agentes/pandora_networkmap.view"
-          );
           jQuery.ajax({
-            data: params.join("&"),
             dataType: "json",
             type: "POST",
-            url: (action = "ajax.php"),
+            url: "ajax.php",
+            data: {
+              node: JSON.stringify(d),
+              x: holding_pos_x,
+              y: holding_pos_y,
+              update_node: 1,
+              page: "enterprise/operation/agentes/pandora_networkmap.view"
+            },
             success: function(data) {
               if (d.state == "holding_area") {
                 //It is out the holding area
@@ -2802,7 +2814,7 @@ function init_drag_and_drop() {
           data: params.join("&"),
           dataType: "json",
           type: "POST",
-          url: (action = "ajax.php"),
+          url: "ajax.php",
           success: function(data) {
             if (data["correct"]) {
               $("#open_version_dialog").dialog();
@@ -2865,7 +2877,7 @@ function add_fictional_node() {
       data: params.join("&"),
       dataType: "json",
       type: "POST",
-      url: (action = "ajax.php"),
+      url: "ajax.php",
       success: function(data) {
         if (data["correct"]) {
           $("#dialog_node_add").dialog("close");
@@ -4016,7 +4028,7 @@ function choose_group_for_show_agents() {
         data: params.join("&"),
         dataType: "json",
         type: "POST",
-        url: (action = "ajax.php"),
+        url: "ajax.php",
         success: function(data) {
           if (data["correct"]) {
             $("#agents_filter_group").html("");
@@ -4038,162 +4050,6 @@ function choose_group_for_show_agents() {
               '<option value="-1">' + translation_none + "</option>"
             );
             $("#spinner_group").css("display", "none");
-            function show_networkmap_node(id_agent_param, refresh_state) {
-              id_agent = id_agent_param;
-
-              canvas = $("#node_info");
-              context_popup = canvas[0].getContext("2d");
-
-              dirty_popup = true;
-              self.setInterval("check_popup_modification()", 1000 / 30);
-
-              $("#node_info").mousemove(function(event) {
-                var x = event.pageX - $("#node_info").offset().left;
-                var y = event.pageY - $("#node_info").offset().top;
-
-                module_inner = inner_module(x, y);
-
-                if (module_inner != null) {
-                  document.body.style.cursor = "pointer";
-                } else {
-                  document.body.style.cursor = "default";
-                }
-              });
-
-              $("#node_info").mousedown(function(event) {
-                var x = event.pageX - $("#node_info").offset().left;
-                var y = event.pageY - $("#node_info").offset().top;
-
-                if (module_inner != null) {
-                  show_tooltip(module_inner, x, y);
-                }
-
-                event.stopPropagation();
-                return false;
-              });
-
-              $("#node_info").mouseup(function(event) {
-                var x = event.pageX - $("#node_info").offset().left;
-                var y = event.pageY - $("#node_info").offset().top;
-
-                drag = false;
-                drag_x = 0;
-                drag_y = 0;
-                dirty_popup = true;
-
-                document.body.style.cursor = "default";
-
-                module_inner = null;
-
-                event.stopPropagation();
-                return false;
-              });
-
-              $("#node_info").mouseout(function(event) {
-                var x = event.pageX - $("#node_info").offset().left;
-                var y = event.pageY - $("#node_info").offset().top;
-
-                drag = false;
-                drag_x = 0;
-                drag_y = 0;
-                dirty_popup = true;
-
-                document.body.style.cursor = "default";
-
-                module_inner = null;
-
-                event.stopPropagation();
-                return false;
-              });
-
-              $(window).resize(function() {
-                function show_networkmap_node(id_agent_param, refresh_state) {
-                  id_agent = id_agent_param;
-
-                  canvas = $("#node_info");
-                  context_popup = canvas[0].getContext("2d");
-
-                  dirty_popup = true;
-                  self.setInterval("check_popup_modification()", 1000 / 30);
-
-                  $("#node_info").mousemove(function(event) {
-                    var x = event.pageX - $("#node_info").offset().left;
-                    var y = event.pageY - $("#node_info").offset().top;
-
-                    module_inner = inner_module(x, y);
-
-                    if (module_inner != null) {
-                      document.body.style.cursor = "pointer";
-                    } else {
-                      document.body.style.cursor = "default";
-                    }
-                  });
-
-                  $("#node_info").mousedown(function(event) {
-                    var x = event.pageX - $("#node_info").offset().left;
-                    var y = event.pageY - $("#node_info").offset().top;
-
-                    if (module_inner != null) {
-                      show_tooltip(module_inner, x, y);
-                    }
-
-                    event.stopPropagation();
-                    return false;
-                  });
-
-                  $("#node_info").mouseup(function(event) {
-                    var x = event.pageX - $("#node_info").offset().left;
-                    var y = event.pageY - $("#node_info").offset().top;
-
-                    drag = false;
-                    drag_x = 0;
-                    drag_y = 0;
-                    dirty_popup = true;
-
-                    document.body.style.cursor = "default";
-
-                    module_inner = null;
-
-                    event.stopPropagation();
-                    return false;
-                  });
-
-                  $("#node_info").mouseout(function(event) {
-                    var x = event.pageX - $("#node_info").offset().left;
-                    var y = event.pageY - $("#node_info").offset().top;
-
-                    drag = false;
-                    drag_x = 0;
-                    drag_y = 0;
-                    dirty_popup = true;
-
-                    document.body.style.cursor = "default";
-
-                    module_inner = null;
-
-                    event.stopPropagation();
-                    return false;
-                  });
-
-                  $(window).resize(function() {
-                    pos_scroll = Math.floor(
-                      $("#content_node_info").width() / 2
-                    );
-
-                    $("#content_node_info").scrollLeft(pos_scroll);
-
-                    dirty_popup = true;
-                    check_popup_modification();
-                  });
-                }
-                pos_scroll = Math.floor($("#content_node_info").width() / 2);
-
-                $("#content_node_info").scrollLeft(pos_scroll);
-
-                dirty_popup = true;
-                check_popup_modification();
-              });
-            }
           }
         }
       });
@@ -4238,7 +4094,7 @@ function get_status_node() {
     data: params.join("&"),
     dataType: "json",
     type: "POST",
-    url: (action = "../../../ajax.php"),
+    url: "../../../ajax.php",
     success: function(data) {
       if (data["correct"]) {
         color_status_node = data["status_agent"];
@@ -4260,7 +4116,7 @@ function get_status_module() {
       data: params.join("&"),
       dataType: "json",
       type: "POST",
-      url: (action = "../../../ajax.php"),
+      url: "../../../ajax.php",
       success: function(data) {
         if (data["correct"]) {
           modules[data["id"]].status_color = data["status_color"];
@@ -4358,7 +4214,7 @@ function show_tooltip_content(id) {
     data: params.join("&"),
     dataType: "json",
     type: "POST",
-    url: (action = "../../../ajax.php"),
+    url: "../../../ajax.php",
     success: function(data) {
       if (data["correct"]) {
         $("#tooltip").html(data["content"]);
@@ -4378,7 +4234,7 @@ function show_tooltip(id, x, y) {
   jQuery.ajax({
     data: params1.join("&"),
     type: "POST",
-    url: (action = "../../../ajax.php"),
+    url: "../../../ajax.php",
     success: function(data) {
       $("#tooltip").html(data);
       $("#tooltip").css("display", "");

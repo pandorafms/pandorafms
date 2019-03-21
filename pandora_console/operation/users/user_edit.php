@@ -681,22 +681,45 @@ if (!defined('METACONSOLE')) {
     </style>
 
     <script language="javascript" type="text/javascript">
-        var optionText = $("#timezone option:selected").val();
-        $(function() {
-            $("#zonepicker").timezonePicker({
-            initialLat: 20,
-            initialLng: 0,
-            initialZoom: 2,
-            onReady: function() {
-                $("#zonepicker").timezonePicker('selectZone', optionText);
-            },
-            mapOptions: {
-                maxZoom: 6,
-                minZoom: 2
-            },
-            useOpenLayers: true
-            }); 
-        });
+        // Get the map
+        var map_url = "http://a.tile.openstreetmap.org";
+        // 1. Create a new XMLHttpRequest object
+        var xhr = new XMLHttpRequest();
+        // 2. Configure it: GET-request for the map_url
+        xhr.open('GET', map_url);
+        // 3. Send the request over the network
+        xhr.send();
+        // 4. This will be called after the response is received
+        xhr.onload = function() {
+            // analyze HTTP status of the response
+            if (xhr.status != 200) { 
+                var map_unavailable = false;
+            } else {
+                var map_unavailable = true;
+            }
+
+            var img_src = "<?php echo ui_get_full_url('images/edit_user_map_not_available.jpg', false, false, false, false); ?>";
+            if(map_unavailable === false){
+                $("#zonepicker").append('<img src="'+img_src+'" alt="This map is not available" title="This map is not available" style="max-width:100%"/>').css('text-align','center');
+            }else{
+                var optionText = $("#timezone option:selected").val();
+                $(function() {
+                    $("#zonepicker").timezonePicker({
+                    initialLat: 20,
+                    initialLng: 0,
+                    initialZoom: 2,
+                    onReady: function() {
+                        $("#zonepicker").timezonePicker('selectZone', optionText);
+                    },
+                    mapOptions: {
+                        maxZoom: 6,
+                        minZoom: 2
+                    },
+                    useOpenLayers: true
+                    }); 
+                });
+            }
+        };
     </script>
 
     <?php

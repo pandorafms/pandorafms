@@ -720,24 +720,22 @@ function netflow_get_summary($start_date, $end_date, $filter, $connection_name='
 
 
 /**
- * Returns a traffic record for the given period in an array.
+ * Returns a relationships data for the given period in an array.
  *
- * @param string  $start_date         Period start date.
- * @param string  $end_date           Period end date.
- * @param string  $filter             Netflow filter.
- * @param integer $max                Maximum number of elements.
- * @param string  $aggregate          One of srcip, srcport, dstip, dstport.
- * @param boolean $address_resolution True to resolve ips to hostnames.
+ * @param string  $start_date Period start date.
+ * @param string  $end_date   Period end date.
+ * @param string  $filter     Netflow filter.
+ * @param integer $max        Maximum number of elements.
+ * @param string  $aggregate  One of srcip, srcport, dstip, dstport.
  *
- * @return array With netflow record data.
+ * @return array With raw relationship data.
  */
-function netflow_get_circular_mesh_data(
+function netflow_get_relationships_raw_data(
     $start_date,
     $end_date,
     $filter,
     $max,
-    $aggregate,
-    $address_resolution=false
+    $aggregate
 ) {
     global $nfdump_date_format;
     global $config;
@@ -752,7 +750,7 @@ function netflow_get_circular_mesh_data(
 
     // Update src and dst filter (both).
     $sources_array = array_keys($max_data['sources']);
-    $is_ip = (in_array($aggregate, ['dstip', 'srcip']));
+    $is_ip = netflow_aggregate_is_ip($aggregate);
     netflow_update_second_level_filter(
         $filter,
         ($is_ip === true) ? 'dstip' : 'dstport',
@@ -782,6 +780,34 @@ function netflow_get_circular_mesh_data(
     exec($command, $result);
 
     if (! is_array($result)) {
+        return [
+            'lines'   => [],
+            'sources' => [],
+        ];
+    }
+
+    return [
+        'lines'   => $result,
+        'sources' => $sources_array,
+    ];
+}
+
+
+/**
+ * Parse the raw relationships data to be painted by circular mesh chart.
+ *
+ * @param array   $result        Lines gotten from nfdump call.
+ * @param array   $sources_array Array with sources involved in the chart.
+ * @param boolean $is_ip         Is ip or port.
+ *
+ * @return array With data to be parsed on circular mesh chart.
+ */
+function netflow_parse_relationships_for_circular_mesh(
+    $result,
+    $sources_array,
+    $is_ip
+) {
+    if (empty($result)) {
         return [];
     }
 
@@ -1171,7 +1197,7 @@ function netflow_draw_item(
         break;
 
         case 'netflow_mesh':
-            $data = netflow_get_circular_mesh_data(
+            $data = netflow_get_relationships_raw_data(
                 $start_date,
                 $end_date,
                 $filter,
@@ -1179,9 +1205,14 @@ function netflow_draw_item(
                 $aggregate,
                 $address_resolution
             );
+            $data_circular = netflow_parse_relationships_for_circular_mesh(
+                $data['lines'],
+                $data['sources'],
+                netflow_aggregate_is_ip($aggregate)
+            );
 
             $html = '<div style="text-align:center;">';
-            $html .= graph_netflow_circular_mesh($data);
+            $html .= graph_netflow_circular_mesh($data_circular);
             $html .= '</div>';
         return $html;
 
@@ -1740,4 +1771,10 @@ function netflow_address_resolution(&$values, &$get_hostnames, $aggregate)
     }
 
     $values['sources'] = $sources;
+}
+
+
+function netflow_aggregate_is_ip($aggregate)
+{
+    return in_array($aggregate, ['dstip', 'srcip']);
 }

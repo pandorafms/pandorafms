@@ -644,6 +644,15 @@ class NetworkMap
                     'order' => 'ASC',
                 ]
             );
+
+            // Remap ids.
+            $nodes = array_reduce(
+                $nodes,
+                function ($carry, $item) {
+                    $carry[$item['id_agente']] = $item;
+                    return $carry;
+                }
+            );
         }
 
         return $nodes;
@@ -741,7 +750,7 @@ class NetworkMap
                 $parent_node = $this->nodes[$parent_id]['id_node'];
 
                 // Store relationship.
-                if ($parent_node) {
+                if ($parent_node && $node['id_parent'] > 0) {
                     $rel = [];
 
                     // Node reference (parent).
@@ -1202,7 +1211,9 @@ class NetworkMap
             }
 
             if ($valid === 1) {
-                $cleaned[] = $rel;
+                if ($rel['id_parent'] != $rel['id_child']) {
+                    $cleaned[] = $rel;
+                }
             }
         }
 
@@ -2262,6 +2273,9 @@ class NetworkMap
                 $graph['relations'][] = $tmp;
             }
         }
+
+        // Prioritize relations between same nodes.
+        $this->cleanGraphRelations();
 
         // Save data.
         if ($this->idMap > 0 && (isset($this->map['__simulated']) === false)) {

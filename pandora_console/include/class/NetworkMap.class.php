@@ -1781,7 +1781,7 @@ class NetworkMap
                 }
             }
 
-            if (isset($rel['link_color'])) {
+            if (isset($rel['link_color']) && !empty($rel['link_color'])) {
                 // Direct color definition.
                 $item['link_color'] = $rel['link_color'];
             } else {
@@ -2463,6 +2463,7 @@ class NetworkMap
                 'id_child_source_data'  => $rel['id_child_source_data'],
                 'id_parent_agent'       => $rel['id_parent_agent'],
                 'id_child_agent'        => $rel['id_child_agent'],
+                'link_color'            => $rel['link_color'],
             ];
 
             $found = 0;

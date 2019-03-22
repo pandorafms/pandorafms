@@ -1781,6 +1781,16 @@ class NetworkMap
                 }
             }
 
+            if (isset($rel['text_start']) && !empty($rel['text_start'])) {
+                // Direct text_start definition.
+                $item['text_start'] = $rel['text_start'];
+            }
+
+            if (isset($rel['text_end']) && !empty($rel['text_end'])) {
+                // Direct text_end definition.
+                $item['text_end'] = $rel['text_end'];
+            }
+
             if (isset($rel['link_color']) && !empty($rel['link_color'])) {
                 // Direct color definition.
                 $item['link_color'] = $rel['link_color'];
@@ -2464,6 +2474,8 @@ class NetworkMap
                 'id_parent_agent'       => $rel['id_parent_agent'],
                 'id_child_agent'        => $rel['id_child_agent'],
                 'link_color'            => $rel['link_color'],
+                'text_start'            => $rel['text_start'],
+                'text_end'              => $rel['text_end'],
             ];
 
             $found = 0;

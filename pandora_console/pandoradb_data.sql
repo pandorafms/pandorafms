@@ -267,7 +267,6 @@ INSERT INTO `ttipo_modulo` VALUES
 (21,'async_proc', 7, 'Asyncronous proc data', 'mod_async_proc.png'), 
 (22,'async_data', 6, 'Asyncronous numeric data', 'mod_async_data.png'), 
 (23,'async_string', 8, 'Asyncronous string data', 'mod_async_string.png'),
-(24,'log4x',0,'Log4x','mod_log4x.png'),
 (25,'web_analysis', 8, 'Web analysis data', 'module-wux.png'),
 (30,'web_data',9,'Remote HTTP module to check latency','mod_web_data.png'),
 (31,'web_proc',9,'Remote HTTP module to check server response','mod_web_proc.png'),
@@ -1311,8 +1310,3 @@ INSERT INTO `tnotification_source_user`(`id_source`,`id_user`,`enabled`,`also_ma
   ((SELECT `id` FROM `tnotification_source` WHERE `description`="System&#x20;status"), "admin",1,0);
 
 INSERT INTO `tnotification_source_group` SELECT `id`,0 FROM `tnotification_source` WHERE `description`="Message";
-
---
--- Delete row in ttipo_modulo with name value 'log4x', this value dont use more in pandora
---
-DELETE FROM ttipo_modulo where nombre like 'log4x';

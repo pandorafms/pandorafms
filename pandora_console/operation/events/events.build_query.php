@@ -91,7 +91,7 @@ if ($id_group > 0 && in_array($id_group, array_keys($groups))) {
         $childrens_str = implode(',', $childrens_ids);
         $sql_post .= " AND (id_grupo IN ($childrens_str)";
 
-        if ($is_using_secondary_group === true)
+        if ($is_using_secondary_group === 1)
             $sql_post .= " OR id_group IN ($childrens_str)";
 
         $sql_post .= ")";
@@ -99,14 +99,14 @@ if ($id_group > 0 && in_array($id_group, array_keys($groups))) {
         // If a group is selected and it's in the groups allowed.
         $sql_post .= " AND (id_grupo = $id_group";
 
-        if ($is_using_secondary_group === true)
+        if ($is_using_secondary_group === 1)
             $sql_post .= " OR id_group = $id_group";
 
         $sql_post .= ")";
     }
 } else {
     if (!users_is_admin() && !users_can_manage_group_all('ER')) {
-        if ($is_using_secondary_group === true) {
+        if ($is_using_secondary_group === 1) {
             $sql_post .= sprintf(
                 ' AND (id_grupo IN (%s) OR id_group IN (%s)) ',
                 implode(',', array_keys($groups)),

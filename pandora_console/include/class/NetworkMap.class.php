@@ -860,7 +860,10 @@ class NetworkMap
 
                 // Add also parent relationship.
                 $parent_id = NODE_AGENT.'_'.$node['id_parent'];
-                $parent_node = $this->nodes[$parent_id]['id_node'];
+
+                if (is_integer($parent_id)) {
+                    $parent_node = $this->nodes[$parent_id]['id_node'];
+                }
 
                 // Store relationship.
                 if ($parent_node && $node['id_parent'] > 0) {
@@ -946,7 +949,10 @@ class NetworkMap
                 // Handmade ones.
                 // Add also parent relationship.
                 $parent_id = $node['id_parent'];
-                $parent_node = $this->getNodeData($parent_id, 'id_node');
+
+                if (is_integer($parent_id)) {
+                    $parent_node = $this->getNodeData($parent_id, 'id_node');
+                }
 
                 // Store relationship.
                 if ($parent_node) {

@@ -1901,13 +1901,15 @@ class NetworkMap
             // Create dot nodes.
             $orphans = [];
             foreach ($nodes as $k => $node) {
-                if (isset($node['type']) && $node['type'] == NODE_AGENTE
+                if (isset($node['type']) && $node['type'] == NODE_AGENT
+                    || isset($node['type']) && $node['type'] == NODE_MODULE
                     || (isset($node['type']) === false
                     && isset($node['id_agente']) === true
                     && $node['id_agente'] > 0)
                 ) {
                     // Origin is agent or module.
-                    if (isset($node['id_agente_modulo']) === true
+                    if (isset($node['type']) && $node['type'] == NODE_MODULE
+                        || isset($node['id_agente_modulo']) === true
                         && $node['id_agente_modulo'] > 0
                     ) {
                         $k = NODE_MODULE.'_'.$k;

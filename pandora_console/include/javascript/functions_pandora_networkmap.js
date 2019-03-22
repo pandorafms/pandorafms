@@ -2317,6 +2317,7 @@ function add_interface_link_js() {
     success: function(data) {
       if (data["correct"]) {
         var temp_link = {};
+        temp_link["id"] = graph.links.length;
         temp_link["status_start"] = "0";
         temp_link["status_end"] = "0";
 

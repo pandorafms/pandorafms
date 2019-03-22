@@ -867,12 +867,12 @@ class NetworkMap
                 // Add also parent relationship.
                 $parent_id = NODE_AGENT.'_'.$node['id_parent'];
 
-                if (is_integer($parent_id)) {
+                if ((int) $node['id_parent'] > 0) {
                     $parent_node = $this->nodes[$parent_id]['id_node'];
                 }
 
                 // Store relationship.
-                if ($parent_node && $node['id_parent'] > 0) {
+                if (is_integer($parent_node) && $node['id_parent'] > 0) {
                     $rel = [];
 
                     // Node reference (parent).
@@ -956,8 +956,11 @@ class NetworkMap
                 // Add also parent relationship.
                 $parent_id = $node['id_parent'];
 
-                if (is_integer($parent_id)) {
-                    $parent_node = $this->getNodeData($parent_id, 'id_node');
+                if ((int) $parent_id > 0) {
+                    $parent_node = $this->getNodeData(
+                        (int) $parent_id,
+                        'id_node'
+                    );
                 }
 
                 // Store relationship.
@@ -2061,6 +2064,8 @@ class NetworkMap
 
                 // Store relationships.
                 $this->relations = array_merge($edges, $orphans);
+            } else {
+                $this->relations = $edges;
             }
 
             // Close dot file.
@@ -3166,7 +3171,7 @@ class NetworkMap
                 var arrows = networkmap.links;
                 var width = networkmap_dimensions[0];
                 var height = networkmap_dimensions[1];
-                var font_size = 14;
+                var font_size = '.$this->mapOptions['font_size'].';
                 var custom_params = '.json_encode($this->tooltipParams).';
                 var controller = null;
                 var homedir = "'.ui_get_full_url(false).'"

@@ -407,7 +407,13 @@ class NetworkMap
                 && is_array($options['map_options'])
             ) {
                 foreach ($options['map_options'] as $k => $v) {
-                    $this->mapOptions[$k] = $v;
+                    if ($k == 'map_filter' && is_array($v)) {
+                        foreach ($v as $kc => $vc) {
+                            $this->mapOptions['map_filter'][$kc] = $vc;
+                        }
+                    } else {
+                        $this->mapOptions[$k] = $v;
+                    }
                 }
             }
 

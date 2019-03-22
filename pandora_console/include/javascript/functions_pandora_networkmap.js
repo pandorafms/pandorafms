@@ -2178,21 +2178,25 @@ function show_menu(item, data) {
         };
       }
 
-      $.contextMenu("destroy");
-      $.contextMenu({
-        disabled: false,
-        selector: "#networkconsole_" + networkmap_id,
-        // define the elements of the menu
-        items: items_list
-      });
+      if (typeof $.contextMenu == "function") {
+        $.contextMenu("destroy");
+        $.contextMenu({
+          disabled: false,
+          selector: "#networkconsole_" + networkmap_id,
+          // define the elements of the menu
+          items: items_list
+        });
+      }
       break;
   }
 
   //Force to show in the mouse position
-  $("#networkconsole_" + networkmap_id).contextMenu({
-    x: mouse[0],
-    y: mouse[1]
-  });
+  if (typeof $("#networkconsole_" + networkmap_id).contextMenu == "function") {
+    $("#networkconsole_" + networkmap_id).contextMenu({
+      x: mouse[0],
+      y: mouse[1]
+    });
+  }
 }
 
 function add_interface_link(data_parent) {

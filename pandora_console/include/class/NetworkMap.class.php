@@ -55,6 +55,47 @@ define('MAP_Y_CORRECTION', 150);
  *    - JS controllers.
  *    - Data translated to JSON format.
  *    - Interface layer.
+ *
+ * Basic parameters for NetworkMap class constructor:
+ *
+ * nodes => is really 'rawNodes' here you put an array like follows:
+ * nodes => [
+ *   'some_id' => [
+ *       'type' => NODE_GENERIC/NODE_PANDORA/NODE_MODULE/NODE_AGENT,
+ *                 behaviour and fields to be used are different depending
+ *                 on the type.
+ *       'id_agente' => 'some_id',
+ *       'status' => 'agent status',
+ *       'id_parent' => 'target parent to match in map, its no need to use the
+ *                       real parent but must match some_id'
+ *       'id_node' => incremental id (0,1,2,3...),
+ *       'image' => relative path to image to use,
+ *       'label' => label to use (in NODE_GENERIC)
+ *   ]
+ * ]
+ *
+ * Tooltipster support: Keep in mind, using tooltipster behaviour
+ * of map changes.
+ *
+ *   Sample usage:
+ *
+ * <code>
+ *
+ *    $map_manager = new NetworkMap(
+ *        [
+ *            'nodes'           => vmware_get_nodes($show_vms, $show_ds, $show_esx),
+ *            'pure'            => 1,
+ *            'use_tooltipster' => 1,
+ *            'tooltip_params'  => [
+ *                'page'           => 'operation/agentes/ver_agente',
+ *                'get_agent_json' => 1,
+ *            ],
+ *        ]
+ *    );
+ *
+ *    $map_manager->printMap();
+ *
+ * </code>
  */
 class NetworkMap
 {
@@ -151,12 +192,49 @@ class NetworkMap
     public $relations;
 
     /**
-     * Mode simple or advanced.
-     * Not being used yet.
+     * Include a Pandora (or vendor) node or not.
      *
      * @var integer
      */
-    public $mode;
+    public $noPandoraNode;
+
+    /**
+     * Use tooltipster interface instead of standard.
+     *
+     * @var boolean
+     */
+    public $useTooltipster;
+
+    /**
+     * Options used in AJAX call while using tooltipster.
+     *
+     * @var array
+     */
+    public $tooltipParams;
+
+    /**
+     * Defines a custom method to parse Graphviz output and generate Graph.
+     * Function pointer.
+     *
+     * @var string
+     */
+    public $customParser;
+
+    /**
+     * Defines arguments to be passed to $customParser.
+     * If is not defined, default arguments will be used.
+     *
+     * @var array
+     */
+    public $customParserArgs;
+
+    /**
+     * If using a custom parser, fallback to default parser while
+     * found exceptions.
+     *
+     * @var boolean
+     */
+    public $fallbackDefaultParser;
 
     /**
      * Array of map options. Because how is built, the structure matches
@@ -285,6 +363,41 @@ class NetworkMap
             // Show interface elements or dashboard style.
             if (isset($options['pure'])) {
                 $this->mapOptions['pure'] = $options['pure'];
+            }
+
+            if (isset($options['no_pandora_node'])) {
+                $this->noPandoraNode = $options['no_pandora_node'];
+            }
+
+            // Use a custom parser.
+            if (isset($options['custom_parser'])) {
+                $this->customParser = $options['custom_parser'];
+            }
+
+            // Custom parser arguments.
+            if (isset($options['custom_parser_args'])) {
+                if (is_array($options['custom_parser_args'])) {
+                    foreach ($options['custom_parser_args'] as $k) {
+                        $this->customParserArgs[] = $k;
+                    }
+                } else {
+                    $this->customParserArgs = $options['custom_parser_args'];
+                }
+            }
+
+            // Fallback to default parser.
+            if (isset($options['fallback_to_default_parser'])) {
+                $this->fallbackDefaultParser = $options['fallback_to_default_parser'];
+            }
+
+            if (isset($options['use_tooltipster'])) {
+                $this->useTooltipster = $options['use_tooltipster'];
+            }
+
+            if (is_array($options['tooltip_params'])) {
+                foreach ($options['tooltip_params'] as $k => $v) {
+                    $this->tooltipParams[$k] = $v;
+                }
             }
 
             // Map options, check default values above.
@@ -931,7 +1044,12 @@ class NetworkMap
         $nooverlap = $this->mapOptions['nooverlap'];
         $zoom = $this->mapOptions['zoom'];
 
-        if (isset($config['networkmap_max_width'])) {
+        if (isset($this->mapOptions['width'])
+            && isset($this->mapOptions['height'])
+        ) {
+            $size_x = ($this->mapOptions['width'] / 100);
+            $size_y = ($this->mapOptions['height'] / 100);
+        } else if (isset($config['networkmap_max_width'])) {
             $size_x = ($config['networkmap_max_width'] / 100);
             $size_y = ($size_x * 0.8);
         } else {
@@ -1106,115 +1224,119 @@ class NetworkMap
          *   ]
          */
 
-        foreach ($relations as $index => $rel) {
-            /*
-             *  AA, AM and MM links management
-             *  Priority:
-             *    1 -> MM (module - module)
-             *    1 -> AM (agent - module)
-             *    0 -> AA (agent - agent)
-             */
+        if (is_array($relations)) {
+            foreach ($relations as $index => $rel) {
+                /*
+                 *  AA, AM and MM links management
+                 *  Priority:
+                 *    1 -> MM (module - module)
+                 *    1 -> AM (agent - module)
+                 *    0 -> AA (agent - agent)
+                 */
 
-            $id_parent = $rel['id_parent'];
-            $id_child = $rel['id_child'];
-            $rel_type = $rel['child_type'].'_'.$rel['parent_type'];
+                $id_parent = $rel['id_parent'];
+                $id_child = $rel['id_child'];
+                $rel_type = $rel['child_type'].'_'.$rel['parent_type'];
 
-            $valid = 0;
-            $key = -1;
-            if ($rel['parent_type'] == NODE_MODULE
-                && $rel['child_type'] == NODE_MODULE
-            ) {
-                // Module information available.
-                $priority = 1;
-                $valid = 1;
+                $valid = 0;
+                $key = -1;
+                if ($rel['parent_type'] == NODE_MODULE
+                    && $rel['child_type'] == NODE_MODULE
+                ) {
+                    // Module information available.
+                    $priority = 1;
+                    $valid = 1;
 
-                if (is_array($rel_map[$id_child.'_'.$id_parent])) {
-                    // Already defined.
-                    $key = $id_child.'_'.$id_parent;
-                    $data = $rel_map[$id_child.'_'.$id_parent];
-                    if ($priority > $data['priority']) {
-                        unset($rel[$data['index']]);
-                    } else {
-                        $valid = 0;
+                    if (is_array($rel_map[$id_child.'_'.$id_parent])) {
+                        // Already defined.
+                        $key = $id_child.'_'.$id_parent;
+                        $data = $rel_map[$id_child.'_'.$id_parent];
+                        if ($priority > $data['priority']) {
+                            unset($rel[$data['index']]);
+                        } else {
+                            $valid = 0;
+                        }
+                    }
+
+                    if (is_array($rel_map[$id_parent.'_'.$id_child])) {
+                        // Already defined.
+                        $key = $id_parent.'_'.$id_child;
+                        $data = $rel_map[$id_parent.'_'.$id_child];
+                        if ($priority > $data['priority']) {
+                            unset($rel[$data['index']]);
+                        } else {
+                            $valid = 0;
+                        }
+                    }
+
+                    if ($valid == 1) {
+                        $rel_map[$id_parent.'_'.$id_child] = [
+                            'index'    => $index,
+                            'priority' => $priority,
+                        ];
+                    }
+                } else if ($rel['parent_type'] == NODE_AGENT
+                    && $rel['child_type'] == NODE_AGENT
+                ) {
+                    // Module information not available.
+                    $priority = 0;
+                    $valid = 1;
+
+                    if (is_array($rel_map[$id_child.'_'.$id_parent])) {
+                        // Already defined.
+                        $key = $id_child.'_'.$id_parent;
+                        $data = $rel_map[$id_child.'_'.$id_parent];
+                        if ($priority > $data['priority']) {
+                            unset($rel[$data['index']]);
+                        } else {
+                            $valid = 0;
+                        }
+                    }
+
+                    if (is_array($rel_map[$id_parent.'_'.$id_child])) {
+                        // Already defined.
+                        $key = $id_parent.'_'.$id_child;
+                        $data = $rel_map[$id_parent.'_'.$id_child];
+                        if ($priority > $data['priority']) {
+                            unset($rel[$data['index']]);
+                        } else {
+                            $valid = 0;
+                        }
+                    }
+
+                    if ($valid == 1) {
+                        $rel_map[$id_parent.'_'.$id_child] = [
+                            'index'    => $index,
+                            'priority' => $priority,
+                        ];
+                    }
+                } else if ($rel['parent_type'] == NODE_MODULE
+                    && $rel['child_type'] == NODE_AGENT
+                ) {
+                    // Module information not available.
+                    $priority = 1;
+
+                    $valid = 1;
+                } else if ($rel['parent_type'] == NODE_AGENT
+                    && $rel['child_type'] == NODE_MODULE
+                ) {
+                    // Module information not available.
+                    $priority = 1;
+
+                    $valid = 1;
+                } else {
+                    // Pandora & generic links are always accepted.
+                    $valid = 1;
+                }
+
+                if ($valid === 1) {
+                    if ($rel['id_parent'] != $rel['id_child']) {
+                        $cleaned[] = $rel;
                     }
                 }
-
-                if (is_array($rel_map[$id_parent.'_'.$id_child])) {
-                    // Already defined.
-                    $key = $id_parent.'_'.$id_child;
-                    $data = $rel_map[$id_parent.'_'.$id_child];
-                    if ($priority > $data['priority']) {
-                        unset($rel[$data['index']]);
-                    } else {
-                        $valid = 0;
-                    }
-                }
-
-                if ($valid == 1) {
-                    $rel_map[$id_parent.'_'.$id_child] = [
-                        'index'    => $index,
-                        'priority' => $priority,
-                    ];
-                }
-            } else if ($rel['parent_type'] == NODE_AGENT
-                && $rel['child_type'] == NODE_AGENT
-            ) {
-                // Module information not available.
-                $priority = 0;
-                $valid = 1;
-
-                if (is_array($rel_map[$id_child.'_'.$id_parent])) {
-                    // Already defined.
-                    $key = $id_child.'_'.$id_parent;
-                    $data = $rel_map[$id_child.'_'.$id_parent];
-                    if ($priority > $data['priority']) {
-                        unset($rel[$data['index']]);
-                    } else {
-                        $valid = 0;
-                    }
-                }
-
-                if (is_array($rel_map[$id_parent.'_'.$id_child])) {
-                    // Already defined.
-                    $key = $id_parent.'_'.$id_child;
-                    $data = $rel_map[$id_parent.'_'.$id_child];
-                    if ($priority > $data['priority']) {
-                        unset($rel[$data['index']]);
-                    } else {
-                        $valid = 0;
-                    }
-                }
-
-                if ($valid == 1) {
-                    $rel_map[$id_parent.'_'.$id_child] = [
-                        'index'    => $index,
-                        'priority' => $priority,
-                    ];
-                }
-            } else if ($rel['parent_type'] == NODE_MODULE
-                && $rel['child_type'] == NODE_AGENT
-            ) {
-                // Module information not available.
-                $priority = 1;
-
-                $valid = 1;
-            } else if ($rel['parent_type'] == NODE_AGENT
-                && $rel['child_type'] == NODE_MODULE
-            ) {
-                // Module information not available.
-                $priority = 1;
-
-                $valid = 1;
-            } else {
-                // Pandora & generic links are always accepted.
-                $valid = 1;
             }
-
-            if ($valid === 1) {
-                if ($rel['id_parent'] != $rel['id_child']) {
-                    $cleaned[] = $rel;
-                }
-            }
+        } else {
+            return;
         }
 
         $this->graph['relations'] = $cleaned;
@@ -1506,6 +1628,16 @@ class NetworkMap
                 $item['networkmap_id'] = $node['style']['id_networkmap'];
             }
 
+            // XXX: Compatibility with Tooltipster - Simple map controller.
+            if ($this->useTooltipster) {
+                $item['label'] = $item['text'];
+                $item['image'] = $item['image_url'];
+                $item['image_height'] = 52;
+                $item['image_width'] = 52;
+                $item['width'] = $this->mapOptions['map_filter']['node_radius'];
+                $item['height'] = $this->mapOptions['map_filter']['node_radius'];
+            }
+
             $return[] = $item;
         }
 
@@ -1645,6 +1777,12 @@ class NetworkMap
                 )
             );
 
+            // XXX: Compatibility with Tooltipster - Simple map controller.
+            if ($this->useTooltipster) {
+                $item['orig'] = $rel['id_parent'];
+                $item['dest'] = $rel['id_child'];
+            }
+
             // Set direct values.
             $item['id'] = $i++;
 
@@ -1721,7 +1859,7 @@ class NetworkMap
             $graph = '';
 
             if ($nodes === false) {
-                if ($this->rawNodes) {
+                if (isset($this->rawNodes)) {
                     $nodes = $this->rawNodes;
                 } else {
                     // Search for nodes.
@@ -1734,23 +1872,27 @@ class NetworkMap
             // Open Graph.
             $graph = $this->openDotFile();
 
-            // Create empty pandora node to link orphans.
-            $this->nodes[0] = [
-                'label'            => get_product_name(),
-                'id_node'          => 0,
-                'id_agente'        => 0,
-                'id_agente_modulo' => 0,
-                'node_type'        => NODE_PANDORA,
-            ];
+            if (!$this->noPandoraNode) {
+                // Create empty pandora node to link orphans.
+                $this->nodes[0] = [
+                    'label'            => get_product_name(),
+                    'id_node'          => 0,
+                    'id_agente'        => 0,
+                    'id_agente_modulo' => 0,
+                    'node_type'        => NODE_PANDORA,
+                ];
 
-            $this->nodeMapping[0] = 0;
+                $this->nodeMapping[0] = 0;
 
-            $graph .= $this->createDotNode(
-                $this->nodes[0]
-            );
+                $graph .= $this->createDotNode(
+                    $this->nodes[0]
+                );
+                $i = 1;
+            } else {
+                $i = 0;
+            }
 
             // Create dot nodes.
-            $i = 1;
             $orphans = [];
             foreach ($nodes as $k => $node) {
                 if (isset($node['type']) && $node['type'] == NODE_AGENTE
@@ -2027,9 +2169,41 @@ class NetworkMap
 
         unlink($filename_dot);
 
-        $graph = $this->parseGraphvizMapFile(
-            $filename_plain
-        );
+        if (function_exists($this->customParser)) {
+            try {
+                if (empty($this->customParserArgs)) {
+                    $graph = call_user_func(
+                        $this->customParser,
+                        $filename_plain,
+                        $this->dotGraph
+                    );
+                } else {
+                    $graph = call_user_func(
+                        $this->customParser,
+                        $filename_plain,
+                        $this->dotGraph,
+                        $this->customParserArgs
+                    );
+                }
+            } catch (Exception $e) {
+                // If developer is using a custom method to parse graphviz
+                // results, but want to handle using default parser
+                // or custom based on data, it is possible to launch
+                // exceptions to control internal flow.
+                if ($this->fallbackDefaultParser === true) {
+                    $graph = $this->parseGraphvizMapFile(
+                        $filename_plain
+                    );
+                } else {
+                    ui_print_error_message($e->getMessage());
+                    $graph = [];
+                }
+            }
+        } else {
+            $graph = $this->parseGraphvizMapFile(
+                $filename_plain
+            );
+        }
 
         unlink($filename_plain);
 
@@ -2302,6 +2476,13 @@ class NetworkMap
         } else {
             $this->map['center_x'] = $node_center['x'];
             $this->map['center_y'] = $node_center['y'];
+
+            if (!isset($this->map['center_x'])
+                && !isset($this->map['center_y'])
+            ) {
+                $this->map['center_x'] = ($nodes[0]['x'] - MAP_X_CORRECTION);
+                $this->map['center_y'] = ($nodes[0]['y'] - MAP_Y_CORRECTION);
+            }
         }
 
         $this->graph = $graph;
@@ -2365,7 +2546,7 @@ class NetworkMap
                 $output .= 'var y_offs ='.$networkmap['filter']['y_offs'].";\n";
             }
 
-            if (empty($networkmap['filter']['y_offs'])) {
+            if (empty($networkmap['filter']['z_dash'])) {
                 $output .= "var z_dash =null;\n";
             } else {
                 $output .= 'var z_dash = '.$networkmap['filter']['z_dash'].";\n";
@@ -2926,8 +3107,26 @@ class NetworkMap
     {
         $output = '';
 
-        // Generate JS for advanced controller.
-        $output .= '
+        if (enterprise_installed()
+            && $this->useTooltipster
+        ) {
+            $output .= '<script type="text/javascript">
+                var nodes = networkmap.nodes;
+                var arrows = networkmap.links;
+                var width = networkmap_dimensions[0];
+                var height = networkmap_dimensions[1];
+                var font_size = 14;
+                var custom_params = '.json_encode($this->tooltipParams).';
+                var controller = null;
+                var homedir = "'.ui_get_full_url(false).'"
+                $(function() {
+                    controller = new SimpleMapController("#simple_map");
+                    controller.init_map();
+                });
+            </script>';
+        } else {
+            // Generate JS for advanced controller.
+            $output .= '
 
 <script type="text/javascript">
     ////////////////////////////////////////////////////////////////////////
@@ -2960,6 +3159,7 @@ class NetworkMap
         );
     });
 </script>';
+        }
 
         if ($return === false) {
             echo $output;
@@ -2979,55 +3179,88 @@ class NetworkMap
     {
         global $config;
 
-        ui_require_css_file('networkmap');
-        ui_require_css_file('jquery.contextMenu', 'include/styles/js/');
+        if (enterprise_installed()
+            && isset($this->useTooltipster)
+            && $this->useTooltipster == true
+        ) {
+            $output .= '<script type="text/javascript" src="'.ui_get_full_url(
+                'include/javascript/d3.3.5.14.js'
+            ).'" charset="utf-8"></script>';
+            $output .= '<script type="text/javascript" src="'.ui_get_full_url(
+                'enterprise/include/javascript/SimpleMapController.js'
+            ).'"></script>';
+            $output .= '<script type="text/javascript" src="'.ui_get_full_url(
+                'enterprise/include/javascript/tooltipster.bundle.min.js'
+            ).'"></script>';
+            $output .= '<script type="text/javascript" src="'.ui_get_full_url(
+                'include/javascript/jquery.svg.js'
+            ).'"></script>';
+            $output .= '<script type="text/javascript" src="'.ui_get_full_url(
+                'include/javascript/jquery.svgdom.js'
+            ).'"></script>';
+            $output .= '<link rel="stylesheet" type="text/css" href="'.ui_get_full_url(
+                '/enterprise/include/styles/tooltipster.bundle.min.css'
+            ).'" />'."\n";
 
-        $output = '';
-        $minimap_display = '';
-        if ($this->mapOptions['pure']) {
-            $minimap_display = 'none';
+            $output .= '<div id="simple_map" data-id="'.$this->idMap.'" style="border: 1px #dddddd solid;">';
+            $output .= '<svg id="svg'.$this->idMap.'" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" pointer-events="all" width="'.$this->mapOptions['width'].'" height="'.$this->mapOptions['height'].'px">';
+            $output .= '</svg>';
+            $output .= '</div>';
+        } else {
+            // Load default interface.
+            ui_require_css_file('networkmap');
+            ui_require_css_file('jquery.contextMenu', 'include/styles/js/');
+
+            $output = '';
+            $minimap_display = '';
+            if ($this->mapOptions['pure']) {
+                $minimap_display = 'none';
+            }
+
+            $networkmap = $this->map;
+            if (is_array($networkmap['filter']) === false) {
+                $networkmap['filter'] = json_decode($networkmap['filter'], true);
+            }
+
+            $networkmap['filter']['l2_network_interfaces'] = 1;
+
+            $output .= '<script type="text/javascript" src="'.$config['homeurl'].'include/javascript/d3.3.5.14.js" charset="utf-8"></script>';
+            if (isset($this->map['__simulated']) === false) {
+                // Load context menu if manageable networkmap.
+                $output .= '<script type="text/javascript" src="'.$config['homeurl'].'include/javascript/jquery.contextMenu.js"></script>';
+            }
+
+            $output .= '<script type="text/javascript" src="'.$config['homeurl'].'include/javascript/functions_pandora_networkmap.js"></script>';
+
+            // Open networkconsole_id div.
+            $output .= '<div id="networkconsole_'.$networkmap['id'].'"';
+            $output .= ' style="width: '.$this->mapOptions['width'].'; height: '.$this->mapOptions['height'].';position: relative; overflow: hidden; background: #FAFAFA">';
+
+            $output .= '<div style="display: '.$minimap_display.';">';
+            $output .= '<canvas id="minimap_'.$networkmap['id'].'"';
+            $output .= ' style="position: absolute; left: 0px; top: 0px; border: 1px solid #bbbbbb;">';
+            $output .= '</canvas>';
+            $output .= '<div id="arrow_minimap_'.$networkmap['id'].'"';
+            $output .= ' style="position: absolute; left: 0px; top: 0px;">';
+            $output .= '<a title="'.__('Open Minimap').'" href="javascript: toggle_minimap();">';
+            $output .= '<img id="image_arrow_minimap_'.$networkmap['id'].'"';
+            $output .= ' src="images/minimap_open_arrow.png" />';
+            $output .= '</a><div></div></div>';
+
+            $output .= '<div id="hide_labels_'.$networkmap['id'].'"';
+            $output .= ' style="position: absolute; right: 10px; top: 10px;">';
+            $output .= '<a title="'.__('Hide Labels').'" href="javascript: hide_labels();">';
+            $output .= '<img id="image_hide_show_labels" src="images/icono_borrar.png" />';
+            $output .= '</a></div>';
+
+            $output .= '<div id="holding_spinner_'.$networkmap['id'].'" ';
+            $output .= ' style="display: none; position: absolute; right: 50px; top: 20px;">';
+            $output .= '<img id="image_hide_show_labels" src="images/spinner.gif" />';
+            $output .= '</div>';
+
+            // Close networkconsole_id div.
+            $output .= "</div>\n";
         }
-
-        $networkmap = $this->map;
-        if (is_array($networkmap['filter']) === false) {
-            $networkmap['filter'] = json_decode($networkmap['filter'], true);
-        }
-
-        $networkmap['filter']['l2_network_interfaces'] = 1;
-
-        $output .= '<script type="text/javascript" src="'.$config['homeurl'].'include/javascript/d3.3.5.14.js" charset="utf-8"></script>';
-        $output .= '<script type="text/javascript" src="'.$config['homeurl'].'include/javascript/jquery.contextMenu.js"></script>';
-        $output .= '<script type="text/javascript" src="'.$config['homeurl'].'include/javascript/functions_pandora_networkmap.js"></script>';
-
-        // Open networkconsole_id div.
-        $output .= '<div id="networkconsole_'.$networkmap['id'].'"';
-        $output .= ' style="position: relative; overflow: hidden; background: #FAFAFA">';
-
-        $output .= '<div style="display: '.$minimap_display.';">';
-        $output .= '<canvas id="minimap_'.$networkmap['id'].'"';
-        $output .= ' style="position: absolute; left: 0px; top: 0px; border: 1px solid #bbbbbb;">';
-        $output .= '</canvas>';
-
-        $output .= '<div id="arrow_minimap_'.$networkmap['id'].'"';
-        $output .= ' style="position: absolute; left: 0px; top: 0px;">';
-        $output .= '<a title="'.__('Open Minimap').'" href="javascript: toggle_minimap();">';
-        $output .= '<img id="image_arrow_minimap_'.$networkmap['id'].'"';
-        $output .= ' src="images/minimap_open_arrow.png" />';
-        $output .= '</a><div></div></div>';
-
-        $output .= '<div id="hide_labels_'.$networkmap['id'].'"';
-        $output .= ' style="position: absolute; right: 10px; top: 10px;">';
-        $output .= '<a title="'.__('Hide Labels').'" href="javascript: hide_labels();">';
-        $output .= '<img id="image_hide_show_labels" src="images/icono_borrar.png" />';
-        $output .= '</a></div>';
-
-        $output .= '<div id="holding_spinner_'.$networkmap['id'].'" ';
-        $output .= ' style="display: none; position: absolute; right: 50px; top: 20px;">';
-        $output .= '<img id="image_hide_show_labels" src="images/spinner.gif" />';
-        $output .= '</div>';
-
-        // Close networkconsole_id div.
-        $output .= "</div>\n";
 
         return $output;
     }
@@ -3125,6 +3358,7 @@ class NetworkMap
     onchange({type: document[hidden] ? "blur" : "focus"});
 })();
 </script>
+
 ';
         if ($return === false) {
             echo $output;

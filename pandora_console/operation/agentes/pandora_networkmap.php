@@ -44,8 +44,9 @@ $new_empty_networkmap = get_parameter('new_empty_networkmap', false);
 if (enterprise_installed()) {
     if ($new_empty_networkmap) {
         if ($networkmaps_write || $networkmaps_manage) {
-            include $config['homedir'].'/enterprise/godmode/agentes/pandora_networkmap_empty.editor.php';
-            include 'pandora_networkmap_empty.editor.php';
+            enterprise_include(
+                'godmode/agentes/pandora_networkmap_empty.editor.php'
+            );
             return;
         }
     }

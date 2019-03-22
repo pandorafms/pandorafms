@@ -681,25 +681,10 @@ if (!defined('METACONSOLE')) {
     </style>
 
     <script language="javascript" type="text/javascript">
-        // Get the map
-        var map_url = "http://a.tile.openstreetmap.org";
-        // 1. Create a new XMLHttpRequest object
-        var xhr = new XMLHttpRequest();
-        // 2. Configure it: GET-request for the map_url
-        xhr.open('GET', map_url);
-        // 3. Send the request over the network
-        xhr.send();
-        // 4. This will be called after the response is received
-        xhr.onload = function() {
-            // analyze HTTP status of the response
-            if (xhr.status != 200) { 
-                var map_unavailable = false;
-            } else {
-                var map_unavailable = true;
-            }
-
+        var map_unavailable = '';
+        function print_map(map_unavailable){
             var img_src = "<?php echo ui_get_full_url('images/edit_user_map_not_available.jpg', false, false, false, false); ?>";
-            if(map_unavailable === false){
+            if(map_unavailable !== true){
                 $("#zonepicker").append('<img src="'+img_src+'" alt="This map is not available" title="This map is not available" style="max-width:100%"/>').css('text-align','center');
             }else{
                 var optionText = $("#timezone option:selected").val();
@@ -719,6 +704,30 @@ if (!defined('METACONSOLE')) {
                     }); 
                 });
             }
+        }
+
+        // Get the map
+        var map_url = "http://a.tile.openstreetmap.org";
+        // 1. Create a new XMLHttpRequest object
+        var xhr = new XMLHttpRequest();
+        // 2. Configure it: GET-request for the map_url
+        xhr.open('GET', map_url, true);
+        // 3. Send the request over the network
+        xhr.send();
+        // 4. This will be called after the response is received
+        xhr.onload = function() {
+            // analyze HTTP status of the response
+            if (xhr.status == 200) { 
+                map_unavailable = true;
+            } else {
+                map_unavailable = false;
+            }
+            print_map(map_unavailable);
+        };
+        // 5. If no internet connection, it enter here (it doesn't enter in onload)
+        xhr.onerror = function() {
+            map_unavailable = false;
+            print_map(map_unavailable);
         };
     </script>
 

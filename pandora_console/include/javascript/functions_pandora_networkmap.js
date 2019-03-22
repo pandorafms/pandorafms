@@ -2551,28 +2551,29 @@ function proceed_to_restart_map() {
         text: ok_button,
         click: function() {
           $(this).dialog("close");
-          var new_elements = [];
-          new_elements[0] = $("#text-name").val();
-          new_elements[1] = $("#id_group").val();
-          new_elements[2] = $("#text-node_radius").val();
-          new_elements[3] = $("#textarea_description").val();
-          new_elements[4] = $("input[name=source]:checked").val();
-          if (new_elements[4] == "group") {
-            new_elements[5] = $("#checkbox-dont_show_subgroups").is(":checked");
-          } else if (new_elements[4] == "recon_task") {
-            new_elements[5] = $("#recon_task_id").val();
-          } else {
-            new_elements[5] = $("#text-ip_mask").val();
-          }
-          new_elements[6] = $("#method").val();
-          new_elements[7] = $("#text-pos_x").val();
-          new_elements[8] = $("#text-pos_y").val();
-          new_elements[9] = $("#text-scale_z").val();
-          new_elements[10] = $("#text-node_sep").val();
-          new_elements[11] = $("#text-mindist").val();
-          new_elements[12] = $("#text-rank_sep").val();
-          new_elements[13] = $("#text-kval").val();
-          reset_map_from_form(new_elements);
+          var data = {
+            params: {
+              name: $("#text-name").val(),
+              id_group: $("#id_group").val(),
+              node_radius: $("#text-node_radius").val(),
+              description: $("#textarea_description").val(),
+              source: $("input[name=source]:checked").val(),
+              dont_show_subgroups: $("#checkbox-dont_show_subgroups").is(
+                ":checked"
+              ),
+              recon_task_id: $("#recon_task_id").val(),
+              ip_mask: $("#text-ip_mask").val(),
+              generation_method: $("#method").val(),
+              pos_x: $("#text-pos_x").val(),
+              pos_y: $("#text-pos_y").val(),
+              scale_z: $("#text-scale_z").val(),
+              node_sep: $("#text-node_sep").val(),
+              mindist: $("#text-mindist").val(),
+              rank_sep: $("#text-rank_sep").val(),
+              kval: $("#text-kval").val()
+            }
+          };
+          reset_map_from_form(data);
         }
       },
       {
@@ -2601,17 +2602,16 @@ function proceed_to_restart_map() {
 }
 
 function reset_map_from_form(new_elements) {
-  var params = [];
-  params.push("reset_map=1");
-  params.push("map_id=" + networkmap_id);
-  params.push("elems[]=" + new_elements);
-  params.push("page=enterprise/operation/agentes/pandora_networkmap.view");
+  var data = new_elements;
+  data.map_id = networkmap_id;
+  data.reset_map = 1;
+  data.page = "enterprise/operation/agentes/pandora_networkmap.view";
   jQuery.ajax({
-    data: params.join("&"),
+    data: data,
     dataType: "json",
     type: "POST",
     url: "ajax.php",
-    success: function(data) {
+    success: function(d) {
       window.location =
         "index.php?sec=network&sec2=operation/agentes/pandora_networkmap&tab=view&id_networkmap=" +
         networkmap_id;

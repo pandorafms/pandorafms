@@ -753,9 +753,25 @@ class NetworkMap
             // Empty map returns no data.
             $nodes = [];
         } else {
+            if ($this->mapOptions['map_filter']['dont_show_subgroups'] == 'true') {
+                // Show only current selected group.
+                $filter['id_grupo'] = $this->idGroup;
+            } else {
+                // Show current group and children.
+                $childrens = groups_get_childrens($this->idGroup, null, true);
+                if (!empty($childrens)) {
+                    $childrens = array_keys($childrens);
+
+                    $filter['id_grupo'] = $childrens;
+                    $filter['id_grupo'][] = $this->idGroup;
+                } else {
+                    $filter['id_grupo'] = $this->idGroup;
+                }
+            }
+
             // Group map.
             $nodes = agents_get_agents(
-                ['id_grupo' => $this->idGroup],
+                $filter,
                 ['*'],
                 'AR',
                 [
@@ -764,14 +780,18 @@ class NetworkMap
                 ]
             );
 
-            // Remap ids.
-            $nodes = array_reduce(
-                $nodes,
-                function ($carry, $item) {
-                    $carry[$item['id_agente']] = $item;
-                    return $carry;
-                }
-            );
+            if (is_array($nodes)) {
+                // Remap ids.
+                $nodes = array_reduce(
+                    $nodes,
+                    function ($carry, $item) {
+                        $carry[$item['id_agente']] = $item;
+                        return $carry;
+                    }
+                );
+            } else {
+                $nodes = [];
+            }
         }
 
         return $nodes;

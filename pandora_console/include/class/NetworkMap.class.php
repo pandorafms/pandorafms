@@ -1980,41 +1980,49 @@ class NetworkMap
                 $i++;
             }
 
-            // Search for relations.
-            foreach ($this->nodes as $k => $item) {
-                $target = $this->calculateRelations($k);
+            if (!$this->relations) {
+                // Search for relations.
+                foreach ($this->nodes as $k => $item) {
+                    $target = $this->calculateRelations($k);
 
-                // Adopt all orphan nodes but pandora one.
-                if (empty($target)) {
-                    if (isset($this->noPandoraNode) === false
-                        || $this->noPandoraNode == false
-                    ) {
-                        if ($item['id_node'] != 0) {
-                            $rel = [];
-                            $rel['id_parent'] = 0;
-                            $rel['id_child'] = $item['id_node'];
-                            $rel['parent_type'] = NODE_PANDORA;
-                            $rel['child_type'] = $item['node_type'];
-                            $rel['id_child_source_data'] = $item['id_source_data'];
+                    // Adopt all orphan nodes but pandora one.
+                    if (empty($target)) {
+                        if (isset($this->noPandoraNode) === false
+                            || $this->noPandoraNode == false
+                        ) {
+                            if ($item['id_node'] != 0) {
+                                $rel = [];
+                                $rel['id_parent'] = 0;
+                                $rel['id_child'] = $item['id_node'];
+                                $rel['parent_type'] = NODE_PANDORA;
+                                $rel['child_type'] = $item['node_type'];
+                                $rel['id_child_source_data'] = $item['id_source_data'];
 
-                            $orphans[] = $rel;
+                                $orphans[] = $rel;
+                            }
+                        }
+                    } else {
+                        // Flattern edges.
+                        foreach ($target as $rel) {
+                            $edges[] = $rel;
                         }
                     }
-                } else {
-                    // Flattern edges.
-                    foreach ($target as $rel) {
-                        $edges[] = $rel;
-                    }
                 }
+            } else {
+                $edges = $this->relations;
             }
 
-            foreach ($edges as $rel) {
-                $graph .= $this->createDotEdge(
-                    [
-                        'to'   => $rel['id_child'],
-                        'from' => $rel['id_parent'],
-                    ]
-                );
+            if (is_array($edges)) {
+                foreach ($edges as $rel) {
+                    $graph .= $this->createDotEdge(
+                        [
+                            'to'   => $rel['id_child'],
+                            'from' => $rel['id_parent'],
+                        ]
+                    );
+                }
+            } else {
+                $edges = [];
             }
 
             if (isset($this->noPandoraNode) === false

@@ -1976,15 +1976,21 @@ class NetworkMap
                 $target = $this->calculateRelations($k);
 
                 // Adopt all orphan nodes but pandora one.
-                if (empty($target) && $item['id_node'] != 0) {
-                    $rel = [];
-                    $rel['id_parent'] = 0;
-                    $rel['id_child'] = $item['id_node'];
-                    $rel['parent_type'] = NODE_PANDORA;
-                    $rel['child_type'] = $item['node_type'];
-                    $rel['id_child_source_data'] = $item['id_source_data'];
+                if (empty($target)) {
+                    if (isset($this->noPandoraNode) === false
+                        || $this->noPandoraNode == false
+                    ) {
+                        if ($item['id_node'] != 0) {
+                            $rel = [];
+                            $rel['id_parent'] = 0;
+                            $rel['id_child'] = $item['id_node'];
+                            $rel['parent_type'] = NODE_PANDORA;
+                            $rel['child_type'] = $item['node_type'];
+                            $rel['id_child_source_data'] = $item['id_source_data'];
 
-                    $orphans[] = $rel;
+                            $orphans[] = $rel;
+                        }
+                    }
                 } else {
                     // Flattern edges.
                     foreach ($target as $rel) {

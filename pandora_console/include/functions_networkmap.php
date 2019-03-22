@@ -358,7 +358,7 @@ function networkmap_generate_dot(
     } else if ($group == -666) {
         $agents = false;
     } else if (!empty($ip_mask)) {
-        $agents = networkmap_get_new_nodes_from_ip_mask(
+        $agents = networkmap_get_nodes_from_ip_mask(
             $ip_mask
         );
     } else {
@@ -1323,7 +1323,7 @@ function networkmap_get_types($strict_user=false)
  *
  * @return array Of agents.
  */
-function networkmap_get_new_nodes_from_ip_mask(
+function networkmap_get_nodes_from_ip_mask(
     $ip_mask,
     $return_ids_only=false
 ) {

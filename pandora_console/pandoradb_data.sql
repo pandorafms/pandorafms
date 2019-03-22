@@ -1312,4 +1312,7 @@ INSERT INTO `tnotification_source_user`(`id_source`,`id_user`,`enabled`,`also_ma
 
 INSERT INTO `tnotification_source_group` SELECT `id`,0 FROM `tnotification_source` WHERE `description`="Message";
 
-  
+--
+-- Delete row in ttipo_modulo with name value 'log4x', this value dont use more in pandora
+--
+DELETE FROM ttipo_modulo where nombre like 'log4x';

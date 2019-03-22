@@ -2002,18 +2002,22 @@ class NetworkMap
                 );
             }
 
-            // Add missed edges.
-            foreach ($orphans as $rel) {
-                $graph .= $this->createDotEdge(
-                    [
-                        'from' => $rel['id_child'],
-                        'to'   => $rel['id_parent'],
-                    ]
-                );
-            }
+            if (isset($this->noPandoraNode) === false
+                || $this->noPandoraNode == false
+            ) {
+                // Add missed edges.
+                foreach ($orphans as $rel) {
+                    $graph .= $this->createDotEdge(
+                        [
+                            'from' => $rel['id_child'],
+                            'to'   => $rel['id_parent'],
+                        ]
+                    );
+                }
 
-            // Store relationships.
-            $this->relations = array_merge($edges, $orphans);
+                // Store relationships.
+                $this->relations = array_merge($edges, $orphans);
+            }
 
             // Close dot file.
             $graph .= $this->closeDotFile();

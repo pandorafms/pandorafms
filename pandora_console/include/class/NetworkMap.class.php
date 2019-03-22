@@ -1781,13 +1781,18 @@ class NetworkMap
                 }
             }
 
-            // Use worst case to set link color.
-            $item['link_color'] = self::getColorByStatus(
-                self::getWorstStatus(
-                    $item['status_start'],
-                    $item['status_end']
-                )
-            );
+            if (isset($rel['link_color'])) {
+                // Direct color definition.
+                $item['link_color'] = $rel['link_color'];
+            } else {
+                // Use worst case to set link color.
+                $item['link_color'] = self::getColorByStatus(
+                    self::getWorstStatus(
+                        $item['status_start'],
+                        $item['status_end']
+                    )
+                );
+            }
 
             // XXX: Compatibility with Tooltipster - Simple map controller.
             if ($this->useTooltipster) {

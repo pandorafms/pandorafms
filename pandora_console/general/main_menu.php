@@ -70,7 +70,7 @@ $custom_logo_collapsed = 'images/custom_logo/'.$config['custom_logo_collapsed'];
 
 if (!defined('PANDORA_ENTERPRISE')) {
     $logo_title = get_product_name().' Opensource';
-    $custom_logo = 'images/custom_logo/pandora_logo_head_green.png';
+    $custom_logo = 'images/custom_logo/pandora_logo_head_3.png';
     $custom_logo_collapsed = 'images/custom_logo/pandora_logo_green_collapsed.png';
 } else {
     if (file_exists(ENTERPRISE_DIR.'/'.$custom_logo)) {

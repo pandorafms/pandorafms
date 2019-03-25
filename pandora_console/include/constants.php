@@ -514,6 +514,12 @@ define('OPTION_COLOR_PICKER', 11);
 define('NODE_TYPE', 0);
 define('ARROW_TYPE', 1);
 
+// Discovery task steps.
+define('STEP_SCANNING', 1);
+define('STEP_AFT', 2);
+define('STEP_TRACEROUTE', 3);
+define('STEP_GATEWAY', 4);
+
 // Networkmap node types.
 define('NODE_AGENT', 0);
 define('NODE_MODULE', 1);

@@ -1377,6 +1377,7 @@ ALTER TABLE treport_content ADD COLUMN `lapse` int(11) default '300';
 ALTER TABLE treport_content ADD COLUMN `visual_format` tinyint(1) default '0';
 ALTER TABLE treport_content ADD COLUMN `hide_no_data` tinyint(1) default '0';
 ALTER TABLE treport_content ADD COLUMN `recursion` tinyint(1) default NULL;
+ALTER TABLE treport_content ADD COLUMN `show_extended_events` tinyint(1) default '0';
 UPDATE `treport_content` SET type="netflow_summary" WHERE type="netflow_pie" OR type="netflow_statistics";
 
 -- ---------------------------------------------------------------------

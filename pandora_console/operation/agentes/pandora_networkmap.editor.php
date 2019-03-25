@@ -49,7 +49,7 @@ if ($new_networkmap) {
     $id_group = 0;
     $node_radius = 40;
     $description = '';
-    $method = 'fdp';
+    $method = 'neato';
     $recon_task_id = 0;
     $source = 'group';
     $ip_mask = '';
@@ -57,10 +57,10 @@ if ($new_networkmap) {
     $offset_x = '';
     $offset_y = '';
     $scale_z = 0.5;
-    $node_sep = 0.25;
+    $node_sep = 0.1;
     $rank_sep = 1.0;
     $mindist = 1.0;
-    $kval = 0.3;
+    $kval = 0.1;
 }
 
 $disabled_generation_method_select = false;
@@ -348,7 +348,7 @@ if ($not_found) {
         $method,
         '',
         '',
-        'twopi',
+        'neato',
         true,
         false,
         true,

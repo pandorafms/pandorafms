@@ -1,10 +1,13 @@
-<?php
 /**
- * Deprectated.
  *
- * @category   Deprectated
+ * Name: Default theme
+ *
+ * Extension to manage a list of gateways and the node address where they should
+ * point to.
+ *
+ * @category   css
  * @package    Pandora FMS
- * @subpackage recon script
+ * @subpackage Community
  * @version    1.0.0
  * @license    See below
  *
@@ -25,3 +28,15 @@
  * GNU General Public License for more details.
  * ============================================================================
  */
+
+ul.progress_task_discovery {
+  width: 80%;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+}
+
+ul.progress_task_discovery li span {
+  font-size: 9pt;
+  margin-left: 20px;
+}

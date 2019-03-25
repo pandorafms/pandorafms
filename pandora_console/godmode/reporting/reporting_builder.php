@@ -1302,6 +1302,7 @@ switch ($action) {
                         $values['exception_condition_value'] = get_parameter('exception_condition_value');
                         $values['id_module_group'] = get_parameter('combo_modulegroup');
                         $values['id_group'] = get_parameter('combo_group');
+                        $values['show_extended_events'] = get_parameter('include_extended_events');
                         $values['server_name'] = get_parameter('server_name');
                         $server_id = (int) get_parameter('server_id');
                         if ($server_id != 0) {
@@ -1698,6 +1699,7 @@ switch ($action) {
                         $values['exception_condition_value'] = get_parameter('exception_condition_value');
                         $values['id_module_group'] = get_parameter('combo_modulegroup');
                         $values['id_group'] = get_parameter('combo_group');
+                        $values['show_extended_events'] = get_parameter('include_extended_events');
 
 
                         if ((($values['type'] == 'custom_graph') or ($values['type'] == 'automatic_custom_graph')) && ($values['id_gs'] == 0 || $values['id_gs'] == '')) {

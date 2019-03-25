@@ -20,4 +20,6 @@ UPDATE `tnetflow_filter` SET aggregate="dstip" WHERE aggregate NOT IN ("dstip", 
 -- ----------------------------------------------------------------------
 ALTER TABLE tagent_custom_fields ADD COLUMN `combo_values` VARCHAR(255) DEFAULT '';
 
+ALTER TABLE `treport_content` ADD COLUMN `show_extended_events` tinyint(1) default '0';
+
 COMMIT;

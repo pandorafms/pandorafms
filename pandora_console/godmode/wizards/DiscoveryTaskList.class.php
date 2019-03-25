@@ -30,7 +30,10 @@ require_once __DIR__.'/Wizard.main.php';
 require_once $config['homedir'].'/include/functions_users.php';
 require_once $config['homedir'].'/include/functions_reports.php';
 require_once $config['homedir'].'/include/functions_cron.php';
-enterprise_include('include/functions_tasklist.php');
+enterprise_include_once('include/functions_tasklist.php');
+enterprise_include_once('include/functions_cron.php');
+
+ui_require_css_file('task_list');
 
 /**
  * Defined as wizard to guide user to explore running tasks.
@@ -237,7 +240,7 @@ class DiscoveryTaskList extends Wizard
         $id_console_task = (int) get_parameter('id_console_task');
 
         if ($id_console_task !== null) {
-            enterprise_include('cron_task_run', $id_console_task, true);
+            enterprise_hook('cron_task_run', [$id_console_task, true]);
             // Trick to avoid double execution.
             header('Location: '.$this->url);
         }
@@ -345,6 +348,8 @@ class DiscoveryTaskList extends Wizard
                 $recon_tasks = [];
             }
 
+                $url_ajax = $config['homeurl'].'ajax.php';
+
                 $table = new StdClass();
                 $table->cellpadding = 4;
                 $table->cellspacing = 4;
@@ -424,7 +429,16 @@ class DiscoveryTaskList extends Wizard
                     $data[0] = '';
                 }
 
-                $data[1] = '<b>'.$task['name'].'</b>';
+                // Name task.
+                $data[1] = '';
+                if ($task['disabled'] != 2) {
+                    $data[1] .= '<a href="#" onclick="progress_task_list('.$task['id_rt'].',\''.$task['name'].'\',\''.$url_ajax.'\')">';
+                }
+
+                $data[1] .= '<b>'.$task['name'].'</b>';
+                if ($task['disabled'] != 2) {
+                    $data[1] .= '</a>';
+                }
 
                 $data[2] = $server_name;
 
@@ -488,6 +502,24 @@ class DiscoveryTaskList extends Wizard
                     $data[8] = __('Not executed yet');
                 }
 
+                if ($task['disabled'] != 2) {
+                    $data[9] = '<a href="#" onclick="progress_task_list('.$task['id_rt'].',\''.$task['name'].'\',\''.$url_ajax.'\')">';
+                    $data[9] .= html_print_image(
+                        'images/eye.png',
+                        true
+                    );
+                    $data[9] .= '</a>';
+                }
+
+                if ($task['disabled'] != 2 && $task['utimestamp'] > 0) {
+                    $data[9] .= '<a href="#" onclick="show_map('.$task['id_rt'].',\''.$task['name'].'\',\''.$url_ajax.'\')">';
+                    $data[9] .= html_print_image(
+                        'images/dynamic_network_icon.png',
+                        true
+                    );
+                    $data[9] .= '</a>';
+                }
+
                 if (check_acl(
                     $config['id_user'],
                     $task['id_group'],
@@ -495,7 +527,7 @@ class DiscoveryTaskList extends Wizard
                 )
                 ) {
                     if ($ipam === true) {
-                        $data[9] = '<a href="'.ui_get_full_url(
+                        $data[9] .= '<a href="'.ui_get_full_url(
                             sprintf(
                                 'index.php?sec=godmode/extensions&sec2=enterprise/extensions/ipam&action=edit&id=%d',
                                 $tipam_task_id
@@ -512,7 +544,7 @@ class DiscoveryTaskList extends Wizard
                         ).'</a>';
                     } else {
                         // Check if is a H&D, Cloud or Application or IPAM.
-                        $data[9] = '<a href="'.ui_get_full_url(
+                        $data[9] .= '<a href="'.ui_get_full_url(
                             sprintf(
                                 'index.php?sec=gservers&sec2=godmode/servers/discovery&%s&task=%d',
                                 $this->getTargetWiz($task),
@@ -544,7 +576,12 @@ class DiscoveryTaskList extends Wizard
                 html_print_table($table);
             }
 
-                unset($table);
+            // Div neccesary for modal progress task.
+            echo '<div id="progress_task" style="display:none"></div>';
+
+            unset($table);
+
+            ui_require_javascript_file('pandora_taskList');
         }
 
         return true;
@@ -583,7 +620,12 @@ class DiscoveryTaskList extends Wizard
             return 'wiz=ctask';
 
             default:
-            return 'wiz=hd&mode=netscan';
+                if ($task['id_recon_script'] === null) {
+                    return 'wiz=hd&mode=netscan';
+                } else {
+                    return 'wiz=hd&mode=customnetscan';
+                }
+            break;
         }
     }
 

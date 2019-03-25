@@ -1412,6 +1412,7 @@ CREATE TABLE IF NOT EXISTS `treport_content` (
 	`visual_format` tinyint(1) UNSIGNED NOT NULL default '0',
 	`hide_no_data` tinyint(1) default 0,
 	`recursion` tinyint(1) default NULL,
+	`show_extended_events` tinyint(1) default '0',
 	PRIMARY KEY(`id_rc`),
 	FOREIGN KEY (`id_report`) REFERENCES treport(`id_report`)
 		ON UPDATE CASCADE ON DELETE CASCADE
@@ -3502,3 +3503,30 @@ CREATE TABLE IF NOT EXISTS `tnetwork_matrix` (
 	PRIMARY KEY (`id`),
 	UNIQUE (`source`, `destination`, `utimestamp`)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8 ;
+
+-- ---------------------------------------------------------------------
+-- Table `user_task`
+-- ---------------------------------------------------------------------
+CREATE TABLE `tuser_task` (
+	`id` int(20) unsigned NOT NULL auto_increment,
+	`function_name` varchar(80) NOT NULL default '',
+	`parameters` text NOT NULL default '',
+	`name` varchar(60) NOT NULL default '',
+	PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ---------------------------------------------------------------------
+-- Table `user_task_scheduled`
+-- ---------------------------------------------------------------------
+CREATE TABLE `tuser_task_scheduled` (
+	`id` int(20) unsigned NOT NULL auto_increment,
+	`id_usuario` varchar(60) NOT NULL default '0',
+	`id_user_task` int(20) unsigned NOT NULL default '0',
+	`args` TEXT NOT NULL,
+	`scheduled` enum('no','hourly','daily','weekly','monthly','yearly','custom') default 'no',
+	`last_run` int(20) unsigned default '0',
+	`custom_data` int(10) NULL default '0',
+	`flag_delete` tinyint(1) UNSIGNED NOT NULL default 0,
+	`id_grupo` int(10) unsigned NOT NULL default 0,
+	PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;

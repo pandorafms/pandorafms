@@ -4440,8 +4440,21 @@ div#dialog_messages table th:last-child {
  * ---------------------------------------------------------------------
  */
 
+div#header_discovery {
+  border-radius: 50%;
+  box-shadow: 0 0 15px 0px #949494;
+  width: 9px;
+  font-weight: bold;
+  color: #fff;
+  margin-right: 15px;
+}
+
+div#header_discovery:hover {
+  box-shadow: 0 0 5px 2px #949494;
+}
+
 .notification-ball {
-  border: #343434 solid 2px;
+  border: #fff solid 2px;
   border-radius: 50%;
   width: 20px;
   height: 20px;
@@ -4464,9 +4477,10 @@ div#dialog_messages table th:last-child {
   border: #a5a5a5 solid 1px;
   z-index: 900000;
   position: absolute;
-  width: 400px;
+  width: 590px;
   margin-top: -5px;
   border-radius: 5px;
+  margin-left: -146px;
 }
 #notification-wrapper::before {
   content: "";

@@ -195,6 +195,14 @@ define('AGENT_STATUS_UNKNOWN', 3);
 define('AGENT_STATUS_ALERT_FIRED', 4);
 define('AGENT_STATUS_WARNING', 2);
 
+// Pseudo criticity analysis.
+define('NO_CRIT', -1);
+define('CRIT_0', 0);
+define('CRIT_1', 1);
+define('CRIT_2', 2);
+define('CRIT_3', 3);
+define('CRIT_4', 4);
+define('CRIT_5', 5);
 
 // Visual maps contants.
 // The items kind.
@@ -506,6 +514,12 @@ define('OPTION_COLOR_PICKER', 11);
 define('NODE_TYPE', 0);
 define('ARROW_TYPE', 1);
 
+// Networkmap node types.
+define('NODE_AGENT', 0);
+define('NODE_MODULE', 1);
+define('NODE_PANDORA', 2);
+define('NODE_GENERIC', 3);
+
 // SAML attributes constants.
 define('SAML_ROLE_AND_TAG', 'eduPersonEntitlement');
 define('SAML_USER_DESC', 'commonName');
@@ -535,11 +549,40 @@ define('MAP_GENERATION_RADIAL', 2);
 define('MAP_GENERATION_SPRING1', 3);
 define('MAP_GENERATION_SPRING2', 4);
 
+// Algorithm: Circo.
+define('LAYOUT_CIRCULAR', 0);
+// Algorithm: Dot.
+define('LAYOUT_FLAT', 1);
+// Algorithm: Twopi.
+define('LAYOUT_RADIAL', 2);
+// Algorithm: Neato.
+define('LAYOUT_SPRING1', 3);
+// Algorithm: Fdp.
+define('LAYOUT_SPRING2', 4);
+// Extra: radial dynamic.
+define('LAYOUT_RADIAL_DYNAMIC', 6);
+
+// Map sources.
+define('SOURCE_GROUP', 0);
+define('SOURCE_TASK', 1);
+define('SOURCE_NETWORK', 2);
+
+// Backward compatibility ~ Migration.
 define('MAP_SOURCE_GROUP', 0);
 define('MAP_SOURCE_IP_MASK', 1);
 
 define('NETWORKMAP_DEFAULT_WIDTH', 800);
 define('NETWORKMAP_DEFAULT_HEIGHT', 800);
+
+// Discovery task types.
+define('DISCOVERY_HOSTDEVICES', 0);
+define('DISCOVERY_HOSTDEVICES_CUSTOM', 1);
+define('DISCOVERY_CLOUD_AWS', 10);
+define('DISCOVERY_APP_VMWARE', 100);
+
+// Discovery task descriptions.
+define('CLOUDWIZARD_AWS_DESCRIPTION', 'Discovery.Cloud.AWS.EC2');
+define('CLOUDWIZARD_VMWARE_DESCRIPTION', 'Discovery.App.VMware');
 
 // Background options.
 define('CENTER', 0);

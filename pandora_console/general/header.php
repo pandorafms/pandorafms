@@ -18,10 +18,13 @@ require_once 'include/functions_notifications.php';
 // Global errors/warnings checking.
  config_check();
 
-?>
 
-<div id="header_table"> 
-    <div id="header_table_inner">           
+if ($_SESSION['menu_type']=='classic')
+    echo '<div id="header_table" class="header_table_classic">';
+else
+    echo '<div id="header_table" class="header_table_collapsed">';
+?>
+    <div id="header_table_inner">        
         <?php
         // ======= Notifications Discovery ===============================================
         $notifications_numbers = notifications_get_counters();

@@ -243,7 +243,7 @@ function logo_custom_enterprise($name, $logo)
             false,
             true,
             '',
-            $open,
+            false,
             'width:240px'
         );
         return $select;
@@ -259,7 +259,7 @@ function logo_custom_enterprise($name, $logo)
             false,
             true,
             '',
-            $open,
+            true,
             'width:240px'
         );
         return $select;

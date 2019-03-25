@@ -39,37 +39,6 @@ if (! check_acl($config['id_user'], 0, 'AR')) {
 // Include JS timepicker.
 ui_include_time_picker();
 
-?>
-<script>
-// Configure jQuery timepickers.
-$("#text-time_lower, #text-time_greater").timepicker({
-    showSecond: true,
-    timeFormat: '<?php echo TIME_FORMAT_JS; ?>',
-    timeOnlyTitle: '<?php echo __('Choose time'); ?>',
-    timeText: '<?php echo __('Time'); ?>',
-    hourText: '<?php echo __('Hour'); ?>',
-    minuteText: '<?php echo __('Minute'); ?>',
-    secondText: '<?php echo __('Second'); ?>',
-    currentText: '<?php echo __('Now'); ?>',
-    closeText: '<?php echo __('Close'); ?>'
-});
-
-$("#text-date_lower, #text-date_greater").datepicker({dateFormat: "<?php echo DATE_FORMAT_JS; ?>"});
-$.datepicker.setDefaults($.datepicker.regional[ "<?php echo get_user_language(); ?>"]);
-
-function network_report_click_period(event) {
-    var is_period = document.getElementById(event.target.id).checked;
-
-    document.getElementById('period_container').style.display = !is_period
-        ? 'none'
-        : 'block';
-    document.getElementById('end_date_container').style.display = is_period
-        ? 'none'
-        : 'block';
-}
-</script>
-
-<?php
 // Query params and other initializations.
 $time_greater = get_parameter('time_greater', date(TIME_FORMAT));
 $date_greater = get_parameter('date_greater', date(DATE_FORMAT));
@@ -209,4 +178,34 @@ if ($has_data === true) {
 } else {
     ui_print_info_message(__('No data retrieved'));
 }
+
+?>
+<script>
+// Configure jQuery timepickers.
+$("#text-time_lower, #text-time_greater").timepicker({
+    showSecond: true,
+    timeFormat: '<?php echo TIME_FORMAT_JS; ?>',
+    timeOnlyTitle: '<?php echo __('Choose time'); ?>',
+    timeText: '<?php echo __('Time'); ?>',
+    hourText: '<?php echo __('Hour'); ?>',
+    minuteText: '<?php echo __('Minute'); ?>',
+    secondText: '<?php echo __('Second'); ?>',
+    currentText: '<?php echo __('Now'); ?>',
+    closeText: '<?php echo __('Close'); ?>'
+});
+
+$("#text-date_lower, #text-date_greater").datepicker({dateFormat: "<?php echo DATE_FORMAT_JS; ?>"});
+$.datepicker.setDefaults($.datepicker.regional[ "<?php echo get_user_language(); ?>"]);
+
+function network_report_click_period(event) {
+    var is_period = document.getElementById(event.target.id).checked;
+
+    document.getElementById('period_container').style.display = !is_period
+        ? 'none'
+        : 'block';
+    document.getElementById('end_date_container').style.display = is_period
+        ? 'none'
+        : 'block';
+}
+</script>
 

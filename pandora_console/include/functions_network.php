@@ -92,7 +92,7 @@ function network_matrix_get_top(
  *
  * @return array With the actions to print in a select.
  */
-function network_get_report_actions($network)
+function network_get_report_actions($network=true)
 {
     $common_actions = [
         'listeners' => __('Top listeners'),
@@ -172,15 +172,16 @@ function network_format_bytes($value)
 /**
  * Build netflow data structure to network map.
  *
- * @param integer $start Time in timestamp format.
- * @param integer $end   Time in timestamp format.
- * @param integer $top   Max data to show.
+ * @param integer $start  Time in timestamp format.
+ * @param integer $end    Time in timestamp format.
+ * @param integer $top    Max data to show.
+ * @param boolean $talker True to get top tolkers. False for listeners.
  *
  * @return array With map structure.
  */
-function network_build_map_data($start, $end, $top)
+function network_build_map_data($start, $end, $top, $talker)
 {
-    $data = network_matrix_get_top($top, true, $start, $end);
+    $data = network_matrix_get_top($top, $talker, $start, $end);
 
     $hosts = array_map(
         function ($elem) {
@@ -207,7 +208,7 @@ function network_build_map_data($start, $end, $top)
     foreach ($hosts as $host) {
         $host_top = network_matrix_get_top(
             $top,
-            false,
+            !$talker,
             $start,
             $end,
             $host,

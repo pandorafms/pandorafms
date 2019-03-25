@@ -1794,10 +1794,11 @@ function netflow_aggregate_is_ip($aggregate)
  * @param integer $start_date Time in timestamp format.
  * @param integer $end_date   Time in timestamp format.
  * @param integer $top        Max data to show.
+ * @param integer $aggregate  One of dstip or srcip.
  *
  * @return array With map structure.
  */
-function netflow_build_map_data($start_date, $end_date, $top)
+function netflow_build_map_data($start_date, $end_date, $top, $aggregate)
 {
     $data = netflow_get_relationships_raw_data(
         $start_date,
@@ -1805,7 +1806,7 @@ function netflow_build_map_data($start_date, $end_date, $top)
         [
             'id_name'         => '',
             'id_group'        => 0,
-            'aggregate'       => 'srcip',
+            'aggregate'       => $aggregate,
             'id_dst'          => '',
             'ip_src'          => '',
             'dst_port'        => '',
@@ -1814,7 +1815,7 @@ function netflow_build_map_data($start_date, $end_date, $top)
             'router_ip'       => '',
         ],
         $top,
-        'srcip'
+        $aggregate
     );
 
     $nodes = array_map(

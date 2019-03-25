@@ -40,6 +40,7 @@ if (! check_acl($config['id_user'], 0, 'AR')) {
 ui_include_time_picker();
 
 // Query params and other initializations.
+$action = get_parameter('action', 'talkers');
 $time_greater = get_parameter('time_greater', date(TIME_FORMAT));
 $date_greater = get_parameter('date_greater', date(DATE_FORMAT));
 $utimestamp_greater = strtotime($date_greater.' '.$time_greater);
@@ -114,7 +115,17 @@ $table->data['0']['2'] .= html_print_select(
     true
 );
 
-$table->data['1']['0'] = '';
+
+$table->data['1']['0'] = __('Data to show').'&nbsp;&nbsp;';
+$table->data['1']['0'] .= html_print_select(
+    network_get_report_actions(),
+    'action',
+    $action,
+    '',
+    '',
+    0,
+    true
+);
 $table->data['1']['1'] = '';
 
 $netflow_button = '';
@@ -158,14 +169,16 @@ if ((bool) get_parameter('update_netflow') === true) {
     $map_data = netflow_build_map_data(
         $utimestamp_lower,
         $utimestamp_greater,
-        $top
+        $top,
+        ($action === 'talkers') ? 'srcip' : 'dstip'
     );
     $has_data = !empty($map_data['nodes']);
 } else if ((bool) get_parameter('update_nta') === true) {
     $map_data = network_build_map_data(
         $utimestamp_lower,
         $utimestamp_greater,
-        $top
+        $top,
+        $action === 'talkers'
     );
     $has_data = !empty($map_data['nodes']);
 } else {

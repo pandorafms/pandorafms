@@ -224,4 +224,9 @@ function network_report_click_period(event) {
         : 'block';
 }
 </script>
+<style type="text/css">
+    tspan {
+        font-size: 14px !important;
+    }
+</style>
 

@@ -1916,7 +1916,10 @@ function netflow_build_map_data($start_date, $end_date, $top, $aggregate)
         'no_pandora_node' => 1,
         'map_options'     => [
             'generation_method' => LAYOUT_SPRING1,
-            'map_filter'        => ['node_radius' => 40],
+            'map_filter'        => [
+                'node_radius' => 40,
+                'node_sep'    => 7,
+            ],
         ],
     ];
 }

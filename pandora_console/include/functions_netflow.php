@@ -1775,6 +1775,13 @@ function netflow_address_resolution(&$values, &$get_hostnames, $aggregate)
 }
 
 
+/**
+ * Check if is aggregate by IP or by port
+ *
+ * @param string $aggregate Aggregate tag.
+ *
+ * @return boolean True if is IP. False for port.
+ */
 function netflow_aggregate_is_ip($aggregate)
 {
     return in_array($aggregate, ['dstip', 'srcip']);

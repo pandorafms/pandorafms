@@ -30,6 +30,7 @@
  * @param integer $end            Utimestamp of end time.
  * @param string  $ip_filter      Ip to filter.
  * @param boolean $order_by_bytes True by top by bytes. False by packets.
+ * @param array   $host_filter    Host filter array.
  *
  * @return array With requested data.
  */
@@ -168,6 +169,15 @@ function network_format_bytes($value)
 }
 
 
+/**
+ * Build netflow data structure to network map.
+ *
+ * @param integer $start Time in timestamp format.
+ * @param integer $end   Time in timestamp format.
+ * @param integer $top   Max data to show.
+ *
+ * @return array With map structure.
+ */
 function network_build_map_data($start, $end, $top)
 {
     $data = network_matrix_get_top($top, true, $start, $end);
@@ -211,7 +221,7 @@ function network_build_map_data($start, $end, $top)
                 continue;
             }
 
-            $relations[$host.'-'.$sd['host']] = [
+            $relations[$src_index.'-'.$dst_index] = [
                 'id_parent'   => $inverse_hosts[$sd['host']],
                 'parent_type' => NODE_GENERIC,
                 'child_type'  => NODE_GENERIC,

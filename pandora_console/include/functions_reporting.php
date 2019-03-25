@@ -11486,24 +11486,46 @@ function reporting_sla_get_status_period_compliance(
     $sla,
     $sla_limit
 ) {
-    if ($sla['time_unknown'] == $sla['time_total']) {
-        return REPORT_STATUS_UNKNOWN;
+    global $config;
+
+    $time_compliance = (
+        $sla['time_ok'] + $sla['time_unknown'] + $sla['time_downtime']
+    );
+
+    $time_total_working = (
+        $time_compliance + $sla['time_error']
+    );
+
+    $time_compliance = ($time_compliance == 0) ? 0 : (($time_compliance / $time_total_working) * 100);
+
+    if ($sla['time_error'] > 0 && ($time_compliance < $sla_limit)) {
+        return REPORT_STATUS_ERR;
     }
 
-    if ($sla['time_not_init'] == $sla['time_total']) {
-        return REPORT_STATUS_NOT_INIT;
-    }
-
-    if ($sla['time_downtime'] == $sla['time_total']) {
-        return REPORT_STATUS_DOWNTIME;
-    }
-
-    if ($sla['SLA'] >= $sla_limit) {
+    if ($priority_mode == REPORT_PRIORITY_MODE_OK
+        && $sla['time_ok'] > 0 && ($time_compliance >= $sla_limit)
+    ) {
         return REPORT_STATUS_OK;
     }
 
-    if ($sla['SLA'] < $sla_limit) {
-        return REPORT_STATUS_ERR;
+    if ($sla['time_out'] > 0 && ($time_compliance < $sla_limit)) {
+        return REPORT_STATUS_IGNORED;
+    }
+
+    if ($sla['time_downtime'] > 0 && ($time_compliance < $sla_limit)) {
+        return REPORT_STATUS_DOWNTIME;
+    }
+
+    if ($sla['time_unknown'] > 0 && ($time_compliance < $sla_limit)) {
+        return REPORT_STATUS_UNKNOWN;
+    }
+
+    if ($sla['time_not_init'] > 0 && ($time_compliance < $sla_limit)) {
+        return REPORT_STATUS_NOT_INIT;
+    }
+
+    if ($sla['time_ok'] > 0 && ($time_compliance >= $sla_limit)) {
+        return REPORT_STATUS_OK;
     }
 
     return REPORT_STATUS_IGNORED;

@@ -63,7 +63,7 @@ if ($progress_task_discovery) {
     if ($global_progress > 0) {
         switch ($summary['step']) {
             case STEP_SCANNING:
-                $str = __('Scanning the network');
+                $str = __('Scanning network');
             break;
 
             case STEP_AFT:

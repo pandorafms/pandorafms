@@ -83,22 +83,42 @@ if (($date_from === '') && ($date_to === '')) {
     }
 }
 
+$is_using_secondary_group = enterprise_hook('agents_is_using_secondary_groups');
+
 // Group selection.
 if ($id_group > 0 && in_array($id_group, array_keys($groups))) {
     if ($propagate) {
         $childrens_str = implode(',', $childrens_ids);
-        $sql_post .= " AND (id_grupo IN ($childrens_str) OR id_group IN ($childrens_str))";
+        $sql_post .= " AND (id_grupo IN ($childrens_str)";
+
+        if ($is_using_secondary_group === 1)
+            $sql_post .= " OR id_group IN ($childrens_str)";
+
+        $sql_post .= ")";
     } else {
         // If a group is selected and it's in the groups allowed.
-        $sql_post .= " AND (id_grupo = $id_group OR id_group = $id_group)";
+        $sql_post .= " AND (id_grupo = $id_group";
+
+        if ($is_using_secondary_group === 1)
+            $sql_post .= " OR id_group = $id_group";
+
+        $sql_post .= ")";
     }
 } else {
     if (!users_is_admin() && !users_can_manage_group_all('ER')) {
-        $sql_post .= sprintf(
-            ' AND (id_grupo IN (%s) OR id_group IN (%s)) ',
-            implode(',', array_keys($groups)),
-            implode(',', array_keys($groups))
-        );
+        if ($is_using_secondary_group === 1) {
+            $sql_post .= sprintf(
+                ' AND (id_grupo IN (%s) OR id_group IN (%s)) ',
+                implode(',', array_keys($groups)),
+                implode(',', array_keys($groups))
+            );
+       }
+       else {
+            $sql_post .= sprintf(
+                ' AND (id_grupo IN (%s)) ',
+                implode(',', array_keys($groups))
+            );
+       }
     }
 }
 

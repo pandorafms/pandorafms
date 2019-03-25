@@ -389,7 +389,7 @@ ul li a:hover {
 
 .button_collapse {
   height: 38px;
-  background-color: #6c6c6d;
+  background-color: #505050;
   width: 60px; /* This is overwritten by the classic menu (215px) */
   text-align: center;
   color: #fff;

@@ -647,11 +647,10 @@ a.footer span {
 }
 
 div#foot {
-  padding-top: 8px;
-  padding-bottom: 5px;
+  padding-top: 10px;
+  padding-bottom: 10px;
   text-align: center;
   background: #343434;
-  height: 30px;
   clear: both;
   width: auto;
 }
@@ -659,7 +658,7 @@ div#foot {
 div#foot a,
 div#foot span {
   font-family: "Open Sans", sans-serif;
-  font-size: 8.5pt;
+  font-size: 8pt;
   color: #9ca4a6;
 }
 
@@ -2043,15 +2042,29 @@ div#pandora_logo_header {
   justify-content: space-between;
 }
 
+.header_title {
+  font-weight: 600;
+  font-size: 10.5pt;
+  font-family: "lato-bolder", "Open Sans", sans-serif !important;
+}
+
+.header_subtitle {
+  font-size: 10pt;
+  font-family: "lato-bolder", "Open Sans", sans-serif !important;
+}
+
 #header_table_inner a,
 #header_table_inner span {
   font-family: "Open Sans", sans-serif;
 }
 
+#header_table_inner a:hover {
+  text-decoration: none;
+}
+
 .header_left {
   display: flex;
-  justify-content: flex-start;
-  align-items: center;
+  flex-direction: column;
 }
 
 .header_center {
@@ -2066,64 +2079,40 @@ div#pandora_logo_header {
   align-items: center;
 }
 
-.header_left > div,
-.header_center > div {
-  padding-right: 15px;
-}
-
 .header_right > div {
   padding-left: 15px;
 }
-
-#header_table_inner #header_user span {
-  color: #777;
-}
-
 .header_left img,
 .header_center img,
 .header_right img {
   vertical-align: middle;
 }
 
+#header_chat {
+  padding-left: 0;
+  padding-right: 15px;
+}
+
+#header_autorefresh {
+  padding-left: 0;
+}
+
+#header_table_inner #header_user span {
+  color: #777;
+  align-self: center;
+}
+
+#header_table_inner #header_user a {
+  display: flex;
+  justify-content: center;
+}
+
 #header_user img {
   padding-right: 5px;
 }
 
-#header_alert,
-#header_message {
-  padding-right: 0px;
-}
-
-#header_alert p,
-#header_message p {
-  border-radius: 50%;
-  padding: 0;
-  margin: 0;
-  width: 15px;
-  position: relative;
-  height: 15px;
-  top: -5px;
-  text-align: center;
-  display: inline-block;
-  vertical-align: super;
-}
-
-#header_alert p {
-  background-color: #ec4e1b;
-  left: -12px;
-}
-
-#header_message p {
-  background-color: #82b92e;
-  left: -9px;
-}
-
-#header_alert span,
-#header_message span {
-  color: #fff;
-  font-size: 7pt;
-  font-weight: 600;
-  font-family: "Open Sans", sans-serif;
+div#header_autorefresh_counter {
+  padding-left: 0;
 }
 
 .autorefresh_disabled {
@@ -2135,10 +2124,24 @@ a.autorefresh_txt,
   color: #1c1c1c;
   font-size: 8.5pt;
 }
-/*
-#combo_refr select {
-  margin-right: 8px;
-}*/
+
+@media screen and (min-width: 1024px) and (max-width: 1200px) {
+  #header_searchbar input.search_input {
+    width: 135px;
+  }
+  #header_user span {
+    display: none;
+  }
+  .header_right > div {
+    padding-left: 10px;
+  }
+}
+
+@media screen and (max-width: 1300px) {
+  .header_right > div {
+    padding-left: 10px;
+  }
+}
 
 .disabled_module {
   color: #aaa;
@@ -2868,9 +2871,8 @@ input.search_input {
   background-color: #f2f6f7 !important;
   padding: 0px;
   margin: 0;
-  width: 200px;
-  height: 35px;
-  margin-bottom: 5px;
+  width: 250px;
+  height: 30px;
   margin-left: 2px;
   padding-left: 15px;
   padding-right: 40px;
@@ -4422,14 +4424,15 @@ div#dialog_messages table th:last-child {
  */
 
 .notification-ball {
-  border: #343434 solid 2px;
   border-radius: 50%;
-  width: 20px;
-  height: 20px;
+  width: 24px;
+  height: 24px;
   display: flex;
   justify-content: center;
   align-items: center;
   cursor: pointer;
+  color: #fff;
+  font-weight: bold;
 }
 
 .notification-ball-no-messages {

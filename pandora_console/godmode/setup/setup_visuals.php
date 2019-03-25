@@ -462,6 +462,20 @@ if (enterprise_installed()) {
     $row++;
 }
 
+// Title Header
+if (enterprise_installed()) {
+    $table_styles->data[$row][0] = __('Title (header)');
+    $table_styles->data[$row][1] = html_print_input_text('custom_title_header', $config['custom_title_header'], '', 50, 40, true);
+    $row++;
+}
+
+// Subtitle Header
+if (enterprise_installed()) {
+    $table_styles->data[$row][0] = __('Subtitle (header)');
+    $table_styles->data[$row][1] = html_print_input_text('custom_subtitle_header', $config['custom_subtitle_header'], '', 50, 40, true);
+    $row++;
+}
+
 // login title1
 if (enterprise_installed()) {
     $table_styles->data[$row][0] = __('Title 1 (login)');

@@ -82,7 +82,7 @@ require_once 'include/functions_notifications.php';
         $header_chat .= '</a></span></div>';
 
 
-        // Search
+        // Search.
         $acl_head_search = true;
         if ($config['acl_enterprise'] == 1 && !users_is_admin()) {
             $acl_head_search = db_get_sql(
@@ -94,7 +94,7 @@ require_once 'include/functions_notifications.php';
         }
 
         if ($acl_head_search) {
-            // Search bar
+            // Search bar.
             $search_bar = '<form method="get" style="display: inline;" name="quicksearch" action="">';
             if (!isset($config['search_keywords'])) {
                 $search_bar .= '<script type="text/javascript"> var fieldKeyWordEmpty = true; </script>';
@@ -116,15 +116,13 @@ require_once 'include/functions_notifications.php';
             }
 
             $search_bar .= 'onfocus="javascript: if (fieldKeyWordEmpty) $(\'#keywords\').val(\'\');"
-                    onkeyup="javascript: fieldKeyWordEmpty = false;"
-                    style="margin-top:5px;" class="search_input" />';
+                    onkeyup="javascript: fieldKeyWordEmpty = false;" class="search_input" />';
 
             // $search_bar .= 'onClick="javascript: document.quicksearch.submit()"';
             $search_bar .= "<input type='hidden' name='head_search_keywords' value='abc' />";
             $search_bar .= '</form>';
 
-            $header_searchbar  = '<div id="header_searchbar">'.ui_print_help_tip(__('Blank characters are used as AND conditions'), true);
-            $header_searchbar .= $search_bar.'</div>';
+            $header_searchbar = '<div id="header_searchbar">'.$search_bar.'</div>';
         }
 
 
@@ -207,35 +205,25 @@ require_once 'include/functions_notifications.php';
         $header_autorefresh_counter = '<div id="header_autorefresh_counter" style="'.$display_counter.'">'.$autorefresh_link_open_txt.$autorefresh_txt.$autorefresh_link_close.$autorefresh_additional.'</div>';
 
 
-        // Qr.
-        if ($config['show_qr_code_header'] == 0) {
-            $show_qr_code_header = 'display: none;';
+        // Support.
+        if (defined('PANDORA_ENTERPRISE')) {
+            $header_support_link = 'https://support.artica.es/';
         } else {
-            $show_qr_code_header = 'display: inline;';
+            $header_support_link = 'https://pandorafms.com/forums/';
         }
 
-        $header_qr = '<div id="header_qr" style="'.$show_qr_code_header.'"><div id="qr_code_container"><a href="javascript: show_dialog_qrcode();">'.html_print_image(
-            'images/qrcode_icon_gray.png',
-            true,
-            [
-                'alt'   => __('QR Code of the page'),
-                'title' => __('QR Code of the page'),
-            ]
-        ).'</a></div></div>';
+        $header_support = '<div id="header_support">';
+        $header_support .= '<a href="'.$header_support_link.'" target="_blank">';
+        $header_support .= html_print_image('/images/header_support.png', true, ['title' => __('Go to support'), 'class' => 'bot', 'alt' => 'user']);
+        $header_support .= '</a></div>';
 
-        echo "<div style='display: none;' id='qrcode_container' title='".__('QR code of the page')."'>";
-        echo "<div id='qrcode_container_image'></div>";
-        echo '</div>';
-        ?>
-        <script type='text/javascript'>
-            $(document).ready(function() {
-                $( "#qrcode_container" ).dialog({
-                    autoOpen: false,
-                    modal: true
-                });
-            });
-        </script>
-        <?php
+        // Documentation.
+        $header_docu = '<div id="header_support">';
+        $header_docu .= '<a href="https://wiki.pandorafms.com/index.php?title=Main_Page" target="_blank">';
+        $header_docu .= html_print_image('/images/header_docu.png', true, ['title' => __('Go to documentation'), 'class' => 'bot', 'alt' => 'user']);
+        $header_docu .= '</a></div>';
+
+
         // User.
         if (is_user_admin($config['id_user']) == 1) {
             $header_user = html_print_image('images/header_user_admin_green.png', true, ['title' => __('Edit my user'), 'class' => 'bot', 'alt' => 'user']);
@@ -250,9 +238,9 @@ require_once 'include/functions_notifications.php';
         $header_logout .= html_print_image('images/header_logout_gray.png', true, ['alt' => __('Logout'), 'class' => 'bot', 'title' => __('Logout')]);
         $header_logout .= '</a></div>';
 
-        echo '<div class="header_left">'.$header_autorefresh, $header_autorefresh_counter, $header_qr, $header_chat.'</div>
-            <div class="header_center">'.$header_searchbar, $header_discovery, $servers_list.'</div>
-            <div class="header_right">'.$header_user, $header_logout.'</div>';
+        echo '<div class="header_left"><span class="header_title">'.$config['custom_title_header'].'</span><span class="header_subtitle">'.$config['custom_subtitle_header'].'</span></div>
+            <div class="header_center">'.$header_searchbar.'</div>
+            <div class="header_right">'.$header_chat, $header_autorefresh, $header_autorefresh_counter, $header_discovery, $servers_list, $header_support, $header_docu, $header_user, $header_logout.'</div>';
         ?>
     </div>    <!-- Closes #table_header_inner -->        
 </div>    <!-- Closes #table_header -->

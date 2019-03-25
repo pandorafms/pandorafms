@@ -5,16 +5,49 @@ declare(strict_types=1);
 namespace Models\VisualConsole;
 use Models\Model;
 
+/**
+ * Model of a generic Visual Console Item.
+ */
 class Item extends Model
 {
 
+    /**
+     * Used to decide wether to fetch information about
+     * the linked agent or not.
+     *
+     * @var boolean
+     */
+    protected static $fetchLinkedAgent = false;
 
     /**
-     * Validate the input data.
+     * Used to decide wether to fetch information about
+     * the linked module or not.
      *
-     * @param mixed $data
+     * @var boolean
+     */
+    protected static $fetchLinkedModule = false;
+
+    /**
+     * Used to decide wether to fetch information about
+     * the linked visual console or not.
+     *
+     * @var boolean
+     */
+    protected static $fetchLinkedVisualConsole = false;
+
+
+    /**
+     * Validate the received data structure to ensure if we can extract the
+     * values required to build the model.
+     *
+     * @param array $data Input data.
      *
      * @return void
+     *
+     * @throws \InvalidArgumentException If any input value is considered
+     * invalid.
+     *
+     * @overrides Model::validateData.
      */
     protected function validateData(array $data): void
     {
@@ -55,11 +88,13 @@ class Item extends Model
 
 
     /**
-     * Returns a valid data structure.
+     * Returns a valid representation of the model.
      *
-     * @param mixed $data
+     * @param array $data Input data.
      *
-     * @return array
+     * @return array Data structure representing the model.
+     *
+     * @overrides Model::decode.
      */
     protected function decode(array $data): array
     {
@@ -81,161 +116,123 @@ class Item extends Model
 
 
     /**
-     * extractX
+     * Extract x y axis value.
      *
-     * @param mixed $data
+     * @param array $data Unknown input data structure.
      *
-     * @return integer
+     * @return integer Valid x axis position of the item.
      */
     private function extractX(array $data): int
     {
-        if (isset($data['pos_x']) === true
-            && \is_numeric($data['pos_x']) === true
-        ) {
-            return $data['pos_x'];
-        } else if (isset($data['x']) === true
-            && \is_numeric($data['x']) === true
-        ) {
-            return $data['x'];
-        }
-
-        return 0;
+        return static::parseIntOr(
+            static::issetInArray($data, ['x', 'pos_x']),
+            0
+        );
     }
 
 
     /**
-     * extractY
+     * Extract a y axis value.
      *
-     * @param mixed $data
+     * @param array $data Unknown input data structure.
      *
-     * @return integer
+     * @return integer Valid y axis position of the item.
      */
     private function extractY(array $data): int
     {
-        if (isset($data['pos_y']) === true
-            && \is_numeric($data['pos_y']) === true
-        ) {
-            return $data['pos_y'];
-        } else if (isset($data['y']) === true
-            && \is_numeric($data['y']) === true
-        ) {
-            return $data['y'];
-        }
-
-        return 0;
+        return static::parseIntOr(
+            static::issetInArray($data, ['y', 'pos_y']),
+            0
+        );
     }
 
 
     /**
-     * Extract the value of id_group and
-     * return a integer or null.
+     * Extract a group Id (for ACL) value.
      *
-     * @param mixed $data
+     * @param array $data Unknown input data structure.
      *
-     * @return void
+     * @return integer Valid identifier of a group.
      */
     private function extractAclGroupId(array $data)
     {
-        $aclGroupId = Model::parseIntOr(
-            Model::issetInArray($data, ['aclGroupId', 'id_group']),
+        return static::parseIntOr(
+            static::issetInArray($data, ['id_group', 'aclGroupId']),
             null
         );
-        if ($aclGroupId >= 0) {
-            return $aclGroupId;
-        } else {
-            return null;
-        }
     }
 
 
     /**
-     * Extract the value of parentId and
-     * return a integer or null.
+     * Extract a parent Id value.
      *
-     * @param mixed $data
+     * @param array $data Unknown input data structure.
      *
-     * @return void
+     * @return integer Valid identifier of the item's parent.
      */
     private function extractParentId(array $data)
     {
-        $parentId = Model::parseIntOr(
-            Model::issetInArray($data, ['parentId', 'parent_item']),
+        return static::parseIntOr(
+            static::issetInArray($data, ['parentId', 'parent_item']),
             null
         );
-        if ($parentId >= 0) {
-            return $parentId;
-        } else {
-            return null;
-        }
     }
 
 
     /**
-     * Extract the value of isOnTop and
-     * return a Boolean.
+     * Extract the "is on top" switch value.
      *
-     * @param mixed $data
+     * @param array $data Unknown input data structure.
      *
-     * @return boolean
+     * @return boolean If the item is on top or not.
      */
     private function extractIsOnTop(array $data): bool
     {
-        $isOnTop = Model::parseBool(
-            Model::issetInArray($data, ['isOnTop', 'show_on_top']),
-            null
+        return static::parseBool(
+            static::issetInArray($data, ['isOnTop', 'show_on_top'])
         );
-        return $isOnTop;
     }
 
 
     /**
-     * Extract the value of isLinkEnabled and
-     * return a Boolean.
+     * Extract the "is link enabled" switch value.
      *
-     * @param mixed $data
+     * @param array $data Unknown input data structure.
      *
-     * @return boolean
+     * @return boolean If the item has the link enabled or not.
      */
     private function extractIsLinkEnabled(array $data): bool
     {
-        $isLinkEnabled = Model::parseBool(
-            Model::issetInArray($data, ['isLinkEnabled', 'enable_link']),
-            null
+        return static::parseBool(
+            static::issetInArray($data, ['isLinkEnabled', 'enable_link'])
         );
-        return $isLinkEnabled;
     }
 
 
     /**
-     * Extract the value of label and
-     * return to not empty string or null.
+     * Extract a label value.
      *
-     * @param mixed $data
+     * @param array $data Unknown input data structure.
      *
-     * @return void
+     * @return mixed String representing the label (not empty) or null.
      */
     private function extractLabel(array $data)
     {
-        $label = Model::notEmptyStringOr(
-            Model::issetInArray($data, ['label']),
-            null
-        );
-        return $label;
+        return static::notEmptyStringOr($data['label'], null);
     }
 
 
     /**
-     * Extract the value of labelPosition and
-     * return to not empty string or null.
+     * Extract a label position value.
      *
-     * @param mixed $data
+     * @param array $data Unknown input data structure.
      *
-     * @return string
+     * @return mixed One string of up|right|left|down. down by default.
      */
     private function extractLabelPosition(array $data): string
     {
-        $labelPosition = Model::notEmptyStringOr(
-            Model::issetInArray($data, ['labelPosition', 'label_position']),
+        $labelPosition = static::notEmptyStringOr(
+            static::issetInArray($data, ['labelPosition', 'label_position']),
             null
         );
 
@@ -248,6 +245,89 @@ class Item extends Model
             default:
             return 'down';
         }
+    }
+
+
+    /**
+     * Extract the values of a linked agent.
+     *
+     * @param array $data Unknown input data structure.
+     *
+     * @return  array Data structure of the linked agent info.
+     * @example [
+     *   'metaconsole' => int | null,
+     *   'agentId'     => int | null,
+     *   'agentName'   => string | null
+     * ]
+     */
+    private function extractLinkedAgent(array $data): array
+    {
+        $agentData = [];
+
+        // We should add the metaconsole Id if we can. If not,
+        // it doesn't have to be into the structure.
+        $metaconsoleId = static::issetInArray(
+            $data,
+            [
+                'metaconsoleId',
+                'id_metaconsole',
+            ]
+        );
+        if ($metaconsoleId !== null) {
+            $metaconsoleId = static::parseIntOr($metaconsoleId, null);
+            if ($metaconsoleId !== null) {
+                $agentData['metaconsoleId'] = $metaconsoleId;
+            }
+        }
+
+        // The agent Id sohuld be a valid int or a null value.
+        $agentData['agentId'] = static::parseIntOr(
+            static::issetInArray($data, ['agentId', 'id_agent']),
+            null
+        );
+
+        // The agent name sohuld be a valid string or a null value.
+        $agentData['agentName'] = static::notEmptyStringOr(
+            static::issetInArray($data, ['agentName', 'agent_name']),
+            null
+        );
+
+        return $agentData;
+    }
+
+
+    /**
+     * Extract the values of a linked module.
+     *
+     * @param array $data Unknown input data structure.
+     *
+     * @return  array Data structure of the linked module info.
+     * @example [
+     *   'metaconsole' => int | null,
+     *   'agentId'     => int | null,
+     *   'agentName'   => string | null,
+     *   'moduleId'    => int | null,
+     *   'moduleName'  => string | null,
+     * ]
+     */
+    private function extractLinkedModule(array $data): array
+    {
+        // Initialize the data with the agent data and then expand it.
+        $moduleData = static::extractLinkedAgent($data);
+
+        // The module Id sohuld be a valid int or a null value.
+        $moduleData['moduleId'] = static::parseIntOr(
+            static::issetInArray($data, ['moduleId', 'id_agente_modulo']),
+            null
+        );
+
+        // The module name sohuld be a valid string or a null value.
+        $moduleData['moduleName'] = static::notEmptyStringOr(
+            static::issetInArray($data, ['moduleName', 'module_name']),
+            null
+        );
+
+        return $moduleData;
     }
 
 
@@ -271,7 +351,131 @@ class Item extends Model
             throw new \Exception('error fetching the data from the DB');
         }
 
+        /*
+         * Retrieve extra data.
+         */
+
+        // The linked module includes the agent data.
+        if (static::$fetchLinkedModule === true) {
+            $row = \array_merge($row, static::fetchModuleDataFromDB($row));
+        } else if (static::$fetchLinkedAgent === true) {
+            $row = \array_merge($row, static::fetchAgentDataFromDB($row));
+        }
+
+        if (static::$fetchLinkedVisualConsole === true) {
+            // TODO: Implement fetchLinkedVisualConsoleDataFromDB.
+            // $row = \array_merge(
+            // $row,
+            // static::fetchLinkedVisualConsoleDataFromDB($row)
+            // );
+        }
+
         return $row;
+    }
+
+
+    /**
+     * Obtain a data structure of an agent from the database using the
+     * vs item's data.
+     *
+     * @param array $itemData Visual Console Item's data structure.
+     *
+     * @return array The Visual Console Item data structure stored into the DB.
+     * @throws \InvalidArgumentException When the input agent Id is invalid.
+     * @throws \Exception When the data cannot be retrieved from the DB.
+     */
+    protected static function fetchAgentDataFromDB(array $itemData): array
+    {
+        $agentData = [];
+
+        // We should add the metaconsole Id if we can.
+        $metaconsoleId = static::issetInArray(
+            $itemData,
+            [
+                'metaconsoleId',
+                'id_metaconsole',
+            ]
+        );
+        if ($metaconsoleId !== null) {
+            $metaconsoleId = static::parseIntOr($metaconsoleId, null);
+        }
+
+        // Can't fetch an agent with a missing Id.
+        $agentId = static::issetInArray($itemData, ['agentId', 'id_agent']);
+        if ($agentId === null) {
+            throw new \InvalidArgumentException('missing agent Id');
+        }
+
+        // Can't fetch an agent with a invalid Id.
+        $agentId = static::parseIntOr($agentId, null);
+        if ($agentId === null) {
+            throw new \InvalidArgumentException('invalid agent Id');
+        }
+
+        // TODO: Should we make a connection to the metaconsole node?
+        // Due to this DB call, this function cannot be unit tested without
+        // a proper mock.
+        $agentName = \db_get_value('nombre', 'tagente', 'id_agente', $agentId);
+        if ($agentName === false) {
+            $agentName = static::notEmptyStringOr($agentName, null);
+        }
+
+        // The agent name sohuld be a valid string or a null value.
+        $agentData['agentName'] = $agentName;
+
+        return $agentData;
+    }
+
+
+    /**
+     * Obtain a data structure of an module from the database using the
+     * vs item's data.
+     *
+     * @param array $itemData Visual Console Item's data structure.
+     *
+     * @return array The Visual Console Item data structure stored into the DB.
+     * @throws \InvalidArgumentException When the input module Id is invalid.
+     * @throws \Exception When the data cannot be retrieved from the DB.
+     */
+    protected static function fetchModuleDataFromDB(array $itemData): array
+    {
+        // Initialize with the agent data.
+        $moduleData = static::fetchAgentDataFromDB($itemData);
+
+        // Can't fetch an module with a missing Id.
+        $moduleId = static::issetInArray(
+            $itemData,
+            [
+                'moduleId',
+                'id_agente_modulo',
+            ]
+        );
+        if ($moduleId === null) {
+            throw new \InvalidArgumentException('missing module Id');
+        }
+
+        // Can't fetch an module with a invalid Id.
+        $moduleId = static::parseIntOr($moduleId, null);
+        if ($moduleId === null) {
+            throw new \InvalidArgumentException('invalid module Id');
+        }
+
+        // TODO: Should we make a connection to the metaconsole node?
+        // Due to this DB call, this function cannot be unit tested without
+        // a proper mock.
+        $moduleName = \db_get_value(
+            'nombre',
+            'tagente_modulo',
+            'id_agente_modulo',
+            $moduleId
+        );
+        if ($moduleName === false) {
+            throw new \Exception('error fetching the data from the DB');
+        }
+
+        $moduleData['moduleName'] = $moduleName;
+
+        return $moduleData;
     }
 
 

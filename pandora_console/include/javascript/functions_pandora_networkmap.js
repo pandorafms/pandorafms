@@ -3477,7 +3477,6 @@ function draw_elements_graph() {
       }
     }),
     function(d) {
-      console.log(d);
       return (
         d.source.id +
         networkmap_id +

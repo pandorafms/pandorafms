@@ -205,6 +205,7 @@ function network_build_map_data($start, $end, $top, $talker)
     );
 
     $relations = [];
+    $orphan_relations = [];
     foreach ($hosts as $host) {
         $host_top = network_matrix_get_top(
             $top,
@@ -228,9 +229,34 @@ function network_build_map_data($start, $end, $top, $talker)
                 'child_type'  => NODE_GENERIC,
                 'id_child'    => $inverse_hosts[$host],
                 'link_color'  => '#82B92E',
-                'text_start'  => $sd['sum_bytes'],
+                'text_start'  => network_format_bytes($sd['sum_bytes']),
             ];
         }
+
+        // Put the orphans on Other node.
+        if (empty($host_top)) {
+            $other_id = (end($inverse_hosts) + 1);
+            // TODOS: Add the data.
+            $orphan_relations[$inverse_hosts[$host].'-'.$other_id] = [
+                'id_parent'   => $other_id,
+                'parent_type' => NODE_GENERIC,
+                'child_type'  => NODE_GENERIC,
+                'id_child'    => $inverse_hosts[$host],
+                'link_color'  => '#82B92E',
+            ];
+        }
+    }
+
+    // Put the Others node and their relations.
+    if (empty($orphan_relations) === false) {
+        $nodes[] = [
+            'name'   => __('Others'),
+            'type'   => NODE_GENERIC,
+            'width'  => 20,
+            'height' => 20,
+            'status' => '#82B92E',
+        ];
+        $relations = array_merge($relations, $orphan_relations);
     }
 
     return [

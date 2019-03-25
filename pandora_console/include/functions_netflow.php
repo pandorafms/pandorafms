@@ -1828,7 +1828,7 @@ function netflow_build_map_data($start_date, $end_date, $top, $aggregate)
                 'status' => '#82B92E',
             ];
         },
-        $data['sources']
+        array_merge($data['sources'], [__('Others')])
     );
 
     $relations = [];
@@ -1839,6 +1839,7 @@ function netflow_build_map_data($start_date, $end_date, $top, $aggregate)
     $is_ip = true;
     $src_key = ($is_ip === true) ? 3 : 5;
     $dst_key = ($is_ip === true) ? 4 : 6;
+    $retrieved_data = array_fill_keys($inverse_nodes, false);
 
     foreach ($data['lines'] as $line) {
         if (empty($line) === true) {
@@ -1855,9 +1856,13 @@ function netflow_build_map_data($start_date, $end_date, $top, $aggregate)
         $index_rel = $src_item.'-'.$dst_item;
 
         // Check if valid data.
-        if (!isset($value) || !isset($src_item) || !isset($dst_item)) {
+        if (!isset($value) || (!isset($src_item) && !isset($dst_item))) {
             continue;
         }
+
+        // Mark as connected source and destination.
+        $retrieved_data[$src_item] = true;
+        $retrieved_data[$dst_item] = true;
 
         if (isset($relations[$index_rel])) {
             $relations[$index_rel]['text_start'] += $value;
@@ -1874,9 +1879,39 @@ function netflow_build_map_data($start_date, $end_date, $top, $aggregate)
         }
     }
 
+    // Format the data in edges.
+    array_walk(
+        $relations,
+        function (&$elem) {
+            $elem['text_start'] = network_format_bytes($elem['text_start']);
+        }
+    );
+
+    // Search for orphan nodes.
+    $orphan_hosts = [];
+    $orphan_index = (end($inverse_nodes) + 1);
+    foreach ($retrieved_data as $position => $rd) {
+        if ($rd === true) {
+            continue;
+        }
+
+        $orphan_hosts[$position.'-'.$orphan_index] = [
+            'id_parent'   => $orphan_index,
+            'parent_type' => NODE_GENERIC,
+            'child_type'  => NODE_GENERIC,
+            'id_child'    => $position,
+            'link_color'  => '#82B92E',
+        ];
+    }
+
+    // If there is not any orphan node, delete it.
+    if (empty($orphan_hosts)) {
+        array_pop($nodes);
+    }
+
     return [
         'nodes'           => $nodes,
-        'relations'       => $relations,
+        'relations'       => array_merge($relations, $orphan_hosts),
         'pure'            => 1,
         'no_pandora_node' => 1,
         'map_options'     => [

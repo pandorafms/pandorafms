@@ -2765,6 +2765,10 @@ class NetworkMap
             false,
             true
         );
+
+        $output .= '</div>';
+        $output .= '</div>';
+
         return $output;
     }
 
@@ -3278,7 +3282,10 @@ class NetworkMap
                 '/enterprise/include/styles/tooltipster.bundle.min.css'
             ).'" />'."\n";
 
-            $output .= '<div id="simple_map" data-id="'.$this->idMap.'" style="border: 1px #dddddd solid;">';
+            $output .= '<div id="simple_map" data-id="'.$this->idMap.'" ';
+            $output .= 'style="border: 1px #ddd solid;';
+            $output .= ' width:'.$this->mapOptions['width'];
+            $output .= ' height:'.$this->mapOptions['height'].'">';
             $output .= '<svg id="svg'.$this->idMap.'" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" pointer-events="all" width="'.$this->mapOptions['width'].'" height="'.$this->mapOptions['height'].'px">';
             $output .= '</svg>';
             $output .= '</div>';

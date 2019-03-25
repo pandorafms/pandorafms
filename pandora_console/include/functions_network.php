@@ -39,7 +39,8 @@ function network_matrix_get_top(
     $start,
     $end,
     $ip_filter='',
-    $order_by_bytes=true
+    $order_by_bytes=true,
+    $host_filter=[]
 ) {
     $field_to_group = ($talker === true) ? 'source' : 'destination';
     $field_to_order = ($order_by_bytes === true) ? 'sum_bytes' : 'sum_pkts';
@@ -49,10 +50,20 @@ function network_matrix_get_top(
         $filter_sql = sprintf('AND %s="%s"', $filter_field, $ip_filter);
     }
 
+    $host_filter_sql = '';
+    if (!empty($host_filter)) {
+        $host_filter_sql = sprintf(
+            ' AND %s IN ("%s")',
+            $field_to_group,
+            implode('","', $host_filter)
+        );
+    }
+
     $sql = sprintf(
         'SELECT SUM(bytes) sum_bytes, SUM(pkts) sum_pkts, %s host
         FROM tnetwork_matrix
         WHERE utimestamp > %d AND utimestamp < %d
+        %s
         %s
         GROUP BY %s
         ORDER BY %s DESC
@@ -61,6 +72,7 @@ function network_matrix_get_top(
         $start,
         $end,
         $filter_sql,
+        $host_filter_sql,
         $field_to_group,
         $field_to_order,
         $top
@@ -153,4 +165,71 @@ function network_format_bytes($value)
         1024,
         'B'
     );
+}
+
+
+function network_build_map_data($start, $end, $top)
+{
+    $data = network_matrix_get_top($top, true, $start, $end);
+
+    $hosts = array_map(
+        function ($elem) {
+            return $elem['host'];
+        },
+        $data
+    );
+    $inverse_hosts = array_flip($hosts);
+
+    $nodes = array_map(
+        function ($elem) {
+            return [
+                'name'   => $elem,
+                'type'   => NODE_GENERIC,
+                'width'  => 20,
+                'height' => 20,
+                'status' => '#82B92E',
+            ];
+        },
+        $hosts
+    );
+
+    $relations = [];
+    foreach ($hosts as $host) {
+        $host_top = network_matrix_get_top(
+            $top,
+            false,
+            $start,
+            $end,
+            $host,
+            true,
+            $hosts
+        );
+        foreach ($host_top as $sd) {
+            $src_index = $inverse_hosts[$host];
+            $dst_index = $inverse_hosts[$sd['host']];
+            if (isset($src_index) === false || isset($dst_index) === false) {
+                continue;
+            }
+
+            $relations[$host.'-'.$sd['host']] = [
+                'id_parent'   => $inverse_hosts[$sd['host']],
+                'parent_type' => NODE_GENERIC,
+                'child_type'  => NODE_GENERIC,
+                'id_child'    => $inverse_hosts[$host],
+                'link_color'  => '#82B92E',
+                'text_start'  => $sd['sum_bytes'],
+            ];
+        }
+    }
+
+    return [
+        'nodes'           => $nodes,
+        'relations'       => $relations,
+        'pure'            => 1,
+        'no_pandora_node' => 1,
+        'map_options'     => [
+            'generation_method' => LAYOUT_SPRING1,
+            'map_filter'        => ['node_radius' => 40],
+        ],
+    ];
 }

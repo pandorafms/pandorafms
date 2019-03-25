@@ -193,8 +193,12 @@ if ((bool) get_parameter('update_netflow') === true) {
     );
     $has_data = !empty($map_data['nodes']);
 } else if ((bool) get_parameter('update_nta') === true) {
-    // TODOS.
-    $has_data = false;
+    $map_data = network_build_map_data(
+        $utimestamp_lower,
+        $utimestamp_greater,
+        $top
+    );
+    $has_data = !empty($map_data['nodes']);
 } else {
     return;
 }

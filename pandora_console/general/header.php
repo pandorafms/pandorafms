@@ -145,10 +145,19 @@ require_once 'include/functions_notifications.php';
             $_GET['refr'] = null;
         }
 
-        $select = db_process_sql("SELECT autorefresh_white_list,time_autorefresh FROM tusuario WHERE id_user = '".$config['id_user']."'");
-        $autorefresh_list = json_decode($select[0]['autorefresh_white_list']);
+        $select = db_process_sql(
+            "SELECT autorefresh_white_list,time_autorefresh 
+            FROM tusuario 
+            WHERE id_user = '".$config['id_user']."'"
+        );
 
-        if ($autorefresh_list !== null && array_search($_GET['sec2'], $autorefresh_list) !== false) {
+        $autorefresh_list = json_decode(
+            $select[0]['autorefresh_white_list']
+        );
+
+        if ($autorefresh_list !== null
+            && array_search($_GET['sec2'], $autorefresh_list) !== false
+        ) {
             $do_refresh = true;
             if ($_GET['sec2'] == 'operation/agentes/pandora_networkmap') {
                 if ((!isset($_GET['tab'])) || ($_GET['tab'] != 'view')) {
@@ -157,22 +166,56 @@ require_once 'include/functions_notifications.php';
             }
 
             if ($do_refresh) {
-                $autorefresh_img = html_print_image('images/header_refresh_gray.png', true, ['class' => 'bot', 'alt' => 'lightning', 'title' => __('Configure autorefresh')]);
+                $autorefresh_img = html_print_image(
+                    'images/header_refresh_gray.png',
+                    true,
+                    [
+                        'class' => 'bot',
+                        'alt'   => 'lightning',
+                        'title' => __('Configure autorefresh'),
+                    ]
+                );
 
-                if ($_GET['refr']) {
-                    $autorefresh_txt .= ' (<span id="refrcounter">'.date('i:s', $config['refr']).'</span>)';
+                if ((isset($select[0]['time_autorefresh']) === true)
+                    && $select[0]['time_autorefresh'] !== 0 && !$config['refr']
+                ) {
+                    $config['refr'] = $select[0]['time_autorefresh'];
+                    $autorefresh_txt .= ' (<span id="refrcounter">';
+                    $autorefresh_txt .= date(
+                        'i:s',
+                        $config['refr']
+                    );
+                    $autorefresh_txt .= '</span>)';
+                } else if ($_GET['refr']) {
+                    $autorefresh_txt .= ' (<span id="refrcounter">';
+                    $autorefresh_txt .= date('i:s', $config['refr']);
+                    $autorefresh_txt .= '</span>)';
                 }
 
                 $ignored_params['refr'] = '';
                 $values = get_refresh_time_array();
+
                 $autorefresh_additional = '<span id="combo_refr" style="display: none;">';
-                $autorefresh_additional .= html_print_select($values, 'ref', '', '', __('Select'), '0', true, false, false);
+                $autorefresh_additional .= html_print_select(
+                    $values,
+                    'ref',
+                    '',
+                    '',
+                    __('Select'),
+                    '0',
+                    true,
+                    false,
+                    false
+                );
                 $autorefresh_additional .= '</span>';
                 unset($values);
 
                 $autorefresh_link_open_img = '<a class="white autorefresh" href="'.ui_get_url_refresh($ignored_params).'">';
 
-                if ($_GET['refr']) {
+                if ($_GET['refr']
+                    || ((isset($select[0]['time_autorefresh']) === true)
+                    && $select[0]['time_autorefresh'] !== 0)
+                ) {
                     $autorefresh_link_open_txt = '<a class="autorefresh autorefresh_txt" href="'.ui_get_url_refresh($ignored_params).'">';
                 } else {
                     $autorefresh_link_open_txt = '<a>';
@@ -192,7 +235,15 @@ require_once 'include/functions_notifications.php';
                 $display_counter = 'display:none';
             }
         } else {
-            $autorefresh_img = html_print_image('images/header_refresh_disabled_gray.png', true, ['class' => 'bot autorefresh_disabled', 'alt' => 'lightning', 'title' => __('Disabled autorefresh')]);
+            $autorefresh_img = html_print_image(
+                'images/header_refresh_disabled_gray.png',
+                true,
+                [
+                    'class' => 'bot autorefresh_disabled',
+                    'alt'   => 'lightning',
+                    'title' => __('Disabled autorefresh'),
+                ]
+            );
 
             $ignored_params['refr'] = false;
 
@@ -203,8 +254,18 @@ require_once 'include/functions_notifications.php';
             $display_counter = 'display:none';
         }
 
-        $header_autorefresh = '<div id="header_autorefresh">'.$autorefresh_link_open_img.$autorefresh_img.$autorefresh_link_close.'</div>';
-        $header_autorefresh_counter = '<div id="header_autorefresh_counter" style="'.$display_counter.'">'.$autorefresh_link_open_txt.$autorefresh_txt.$autorefresh_link_close.$autorefresh_additional.'</div>';
+        $header_autorefresh = '<div id="header_autorefresh">';
+        $header_autorefresh .= $autorefresh_link_open_img;
+        $header_autorefresh .= $autorefresh_img;
+        $header_autorefresh .= $autorefresh_link_close;
+        $header_autorefresh .= '</div>';
+
+        $header_autorefresh_counter = '<div id="header_autorefresh_counter" style="'.$display_counter.'">';
+        $header_autorefresh_counter .= $autorefresh_link_open_txt;
+        $header_autorefresh_counter .= $autorefresh_txt;
+        $header_autorefresh_counter .= $autorefresh_link_close;
+        $header_autorefresh_counter .= $autorefresh_additional;
+        $header_autorefresh_counter .= '</div>';
 
 
         // Qr.
@@ -238,16 +299,40 @@ require_once 'include/functions_notifications.php';
         <?php
         // User.
         if (is_user_admin($config['id_user']) == 1) {
-            $header_user = html_print_image('images/header_user_admin_green.png', true, ['title' => __('Edit my user'), 'class' => 'bot', 'alt' => 'user']);
+            $header_user = html_print_image(
+                'images/header_user_admin_green.png',
+                true,
+                [
+                    'title' => __('Edit my user'),
+                    'class' => 'bot',
+                    'alt'   => 'user',
+                ]
+            );
         } else {
-            $header_user = html_print_image('images/header_user_green.png', true, ['title' => __('Edit my user'), 'class' => 'bot', 'alt' => 'user']);
+            $header_user = html_print_image(
+                'images/header_user_green.png',
+                true,
+                [
+                    'title' => __('Edit my user'),
+                    'class' => 'bot',
+                    'alt'   => 'user',
+                ]
+            );
         }
 
         $header_user = '<div id="header_user"><a href="index.php?sec=workspace&sec2=operation/users/user_edit">'.$header_user.'<span> ('.$config['id_user'].')</span></a></div>';
 
         // Logout.
         $header_logout = '<div id="header_logout"><a class="white" href="'.ui_get_full_url('index.php?bye=bye').'">';
-        $header_logout .= html_print_image('images/header_logout_gray.png', true, ['alt' => __('Logout'), 'class' => 'bot', 'title' => __('Logout')]);
+        $header_logout .= html_print_image(
+            'images/header_logout_gray.png',
+            true,
+            [
+                'alt'   => __('Logout'),
+                'class' => 'bot',
+                'title' => __('Logout'),
+            ]
+        );
         $header_logout .= '</a></div>';
 
         echo '<div class="header_left">'.$header_autorefresh, $header_autorefresh_counter, $header_qr, $header_chat.'</div>
@@ -490,7 +575,12 @@ require_once 'include/functions_notifications.php';
         );
 
         <?php
-        if (($autorefresh_list !== null) && (array_search($_GET['sec2'], $autorefresh_list) !== false) && (!isset($_GET['refr']))) {
+        if (($autorefresh_list !== null)
+            && (array_search(
+                $_GET['sec2'],
+                $autorefresh_list
+            ) !== false) && (!isset($_GET['refr']))
+        ) {
             $do_refresh = true;
             if ($_GET['sec2'] == 'operation/agentes/pandora_networkmap') {
                 if ((!isset($_GET['tab'])) || ($_GET['tab'] != 'view')) {
@@ -502,23 +592,6 @@ require_once 'include/functions_notifications.php';
 
             if ($_GET['sec2'] == 'enterprise/dashboard/main_dashboard' && $new_dashboard) {
                 $do_refresh = false;
-            }
-
-            if ($do_refresh) {
-                ?>
-                $("a.autorefresh_txt").toggle ();
-                $("#combo_refr").toggle ();
-                href = $("a.autorefresh").attr ("href");
-                <?php
-                if ($select[0]['time_autorefresh']) {
-                    ?>
-                    var refresh = '<?php echo $select[0]['time_autorefresh']; ?>';
-                    $(document).attr ("location", href + refresh);
-                    <?php
-                }
-                ?>
-                
-                <?php
             }
         }
         ?>
@@ -547,14 +620,14 @@ require_once 'include/functions_notifications.php';
         blinkpubli();
 
         <?php
-        if ($_GET['refr']) {
+        if ($_GET['refr'] || $do_refresh === true) {
             ?>
             $("#header_autorefresh").css('padding-right', '5px');
             var refr_time = <?php echo (int) get_parameter('refr', 0); ?>;
             var t = new Date();
-            t.setTime (t.getTime () +
-                parseInt(<?php echo ($config['refr'] * 1000); ?>));
-            $("#refrcounter").countdown ({until: t, 
+            t.setTime (t.getTime () + parseInt(<?php echo ($config['refr'] * 1000); ?>));
+            $("#refrcounter").countdown ({
+                until: t, 
                 layout: '%M%nn%M:%S%nn%S',
                 labels: ['', '', '', '', '', '', ''],
                 onExpiry: function () {

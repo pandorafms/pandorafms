@@ -4420,6 +4420,10 @@ div#dialog_messages table th:last-child {
   font-weight: bold;
 }
 
+.notification-ball.notification-ball-new-messages:hover {
+  box-shadow: 0 0 3px #888;
+}
+
 .notification-ball-no-messages {
   background-color: #82b92e;
   cursor: pointer;
@@ -4433,7 +4437,7 @@ div#dialog_messages table th:last-child {
   border: #a5a5a5 solid 1px;
   z-index: 900000;
   position: absolute;
-  width: 400px;
+  width: 550px;
   margin-top: -5px;
   border-radius: 5px;
 }
@@ -4447,8 +4451,7 @@ div#dialog_messages table th:last-child {
   border-width: 12px;
   border-style: solid;
   bottom: 100%;
-  left: 78%;
-  left: calc(78% - 2px);
+  left: calc(58% - 7px);
   margin-left: -12px;
   border-bottom-color: white;
 }

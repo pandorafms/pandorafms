@@ -142,7 +142,6 @@ $('#button_collapse').on('click', function() {
         localStorage.setItem("menuType", "classic");
         $('ul.submenu').css('left', '214px');
         var menuType_val = localStorage.getItem("menuType");
-        console.log(menuType_val);
         $.ajax({
             type: "POST",
             url: "ajax.php",

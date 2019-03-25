@@ -23,6 +23,7 @@ require_once $config['homedir'].'/include/functions_users.php';
 require_once $config['homedir'].'/include/functions_io.php';
 require_once $config['homedir'].'/include/functions_io.php';
 require_once $config['homedir'].'/include/functions_network.php';
+require_once $config['homedir'].'/include/class/NetworkMap.class.php';
 enterprise_include_once(
     $config['homedir'].'/enterprise/include/pdf_translator.php'
 );
@@ -1777,4 +1778,102 @@ function netflow_address_resolution(&$values, &$get_hostnames, $aggregate)
 function netflow_aggregate_is_ip($aggregate)
 {
     return in_array($aggregate, ['dstip', 'srcip']);
+}
+
+
+/**
+ * Build netflow data structure to network map.
+ *
+ * @param integer $start_date Time in timestamp format.
+ * @param integer $end_date   Time in timestamp format.
+ * @param integer $top        Max data to show.
+ *
+ * @return array With map structure.
+ */
+function netflow_build_map_data($start_date, $end_date, $top)
+{
+    $data = netflow_get_relationships_raw_data(
+        $start_date,
+        $end_date,
+        [
+            'id_name'         => '',
+            'id_group'        => 0,
+            'aggregate'       => 'srcip',
+            'id_dst'          => '',
+            'ip_src'          => '',
+            'dst_port'        => '',
+            'src_port'        => '',
+            'advanced_filter' => '',
+            'router_ip'       => '',
+        ],
+        $top,
+        'srcip'
+    );
+
+    $nodes = array_map(
+        function ($elem) {
+            return [
+                'name'   => $elem,
+                'type'   => NODE_GENERIC,
+                'width'  => 20,
+                'height' => 20,
+                'status' => '#82B92E',
+            ];
+        },
+        $data['sources']
+    );
+
+    $relations = [];
+
+    $inverse_nodes = array_flip($data['sources']);
+
+    // Port are situated in a different places from addreses.
+    $is_ip = true;
+    $src_key = ($is_ip === true) ? 3 : 5;
+    $dst_key = ($is_ip === true) ? 4 : 6;
+
+    foreach ($data['lines'] as $line) {
+        if (empty($line) === true) {
+            continue;
+        }
+
+        // Parse the line.
+        $items = explode(',', $line);
+
+        // Get the required data.
+        $src_item = $inverse_nodes[$items[$src_key]];
+        $dst_item = $inverse_nodes[$items[$dst_key]];
+        $value = $items[12];
+        $index_rel = $src_item.'-'.$dst_item;
+
+        // Check if valid data.
+        if (!isset($value) || !isset($src_item) || !isset($dst_item)) {
+            continue;
+        }
+
+        if (isset($relations[$index_rel])) {
+            $relations[$index_rel]['text_start'] += $value;
+        } else {
+            // Update the value.
+            $relations[$index_rel] = [
+                'id_parent'   => $src_item,
+                'parent_type' => NODE_GENERIC,
+                'child_type'  => NODE_GENERIC,
+                'id_child'    => $dst_item,
+                'link_color'  => '#82B92E',
+                'text_start'  => $value,
+            ];
+        }
+    }
+
+    return [
+        'nodes'           => $nodes,
+        'relations'       => $relations,
+        'pure'            => 1,
+        'no_pandora_node' => 1,
+        'map_options'     => [
+            'generation_method' => LAYOUT_SPRING1,
+            'map_filter'        => ['node_radius' => 40],
+        ],
+    ];
 }

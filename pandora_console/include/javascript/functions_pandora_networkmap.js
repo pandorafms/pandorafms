@@ -2599,8 +2599,9 @@ function proceed_to_restart_map() {
     type: "POST",
     url: "ajax.php",
     success: function(data) {
-      $("#restart_map_form").html(data);
-      $("#restart_map_form").dialog("open");
+      $("#restart_map_form")
+        .html(data)
+        .dialog("open");
     }
   });
 }

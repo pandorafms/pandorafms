@@ -2992,7 +2992,11 @@ class NetworkMap
 
         $table->data = [];
 
-        $table->data['interface_row']['node_source_interface'] = html_print_label('', 'node_source_interface');
+        $table->data['interface_row']['node_source_interface'] = html_print_label(
+            '',
+            'node_source_interface',
+            true
+        );
 
         $table->data['interface_row']['interface_source_select'] = html_print_select(
             [],
@@ -3016,10 +3020,11 @@ class NetworkMap
 
         $table->data['interface_row']['node_target_interface'] = html_print_label(
             '',
-            'node_target_interface'
+            'node_target_interface',
+            true
         );
 
-        $output .= 'br><br>';
+        $output .= '<br>';
 
         $table->data['interface_row']['interface_link_button'] = html_print_button(
             __('Add interface link'),

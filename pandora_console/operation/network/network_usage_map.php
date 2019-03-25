@@ -26,6 +26,8 @@ global $config;
 
 check_login();
 
+ui_print_page_header(__('Network usage map'));
+
 // ACL Check.
 if (! check_acl($config['id_user'], 0, 'AR')) {
     db_pandora_audit(

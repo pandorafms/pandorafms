@@ -97,17 +97,21 @@ if (check_acl($config['id_user'], 0, 'AR')) {
             $netflow_sub = array_merge(
                 $netflow_sub,
                 [
-                    'operation/network/network_explorer'  => [
+                    'operation/network/network_explorer' => [
                         'text' => __('Network explorer'),
                         'id'   => 'Network explorer',
                     ],
+                ]
+            );
+        }
+
+        if ($config['activate_nta'] || $config['activate_netflow']) {
+            $netflow_sub = array_merge(
+                $netflow_sub,
+                [
                     'operation/network/network_usage_map' => [
                         'text' => __('Network usage map'),
                         'id'   => 'Network usage map',
-                    ],
-                    'operation/network/network_dashboard' => [
-                        'text' => __('Network dashboard'),
-                        'id'   => 'Network dashboard',
                     ],
                 ]
             );

@@ -29,10 +29,10 @@
 
 global $config;
 
-// Load the header
+// Load the header.
 require $config['homedir'].'/operation/users/user_edit_header.php';
 
-// Update user info
+// Update user info.
 if (isset($_GET['modified']) && !$view_mode) {
     if (html_print_csrf_error()) {
         return;
@@ -179,29 +179,15 @@ if ($status != -1) {
     );
 }
 
-$jump = '&nbsp;&nbsp;';
-$table = new stdClass();
-$table->id = 'user_form';
-$table->width = '100%';
-$table->cellspacing = 4;
-$table->cellpadding = 4;
-$table->class = 'databox filters';
 if (defined('METACONSOLE')) {
-    $table->head[0] = __('Edit my User');
-    $table->head_colspan[0] = 5;
-    $table->headstyle[0] = 'text-align: center';
+    echo '<div class="user_form_title">'.__('Edit my User').'</div>';
 }
 
-$table->style[0] = 'min-width: 320px;width: 320px;margin-right:0px;padding-right:0px;';
-$table->style[1] = 'min-width: 280px;width: 280px;margin-right:0px;padding-right:0px;';
-$table->style[2] = 'min-width: 150px;width: 150px;margin-right:0px;margin-left:0px;padding-left:0px;padding-right:0px;';
 
-$data = [];
-$data[0] = '<span style="width:50%;float:left;"><b>'.__('User ID').'</b></span>';
-$data[0] .= $jump.'<span style="font-weight: normal;width:20%;float:left;">'.$id.'</span>';
-$data[1] = '<span style="width:40%;float:left;line-height:20px;"><b>'.__('Full (display) name').'</b></span>';
-$data[1] .= $jump.'<span style="width:20%;float:left;line-height:20px;">';
-$data[1] .= html_print_input_text_extended(
+$user_id = '<div class="label_select_simple"><p class="edit_user_labels">'.__('User ID').': </p>';
+$user_id .= '<span>'.$id.'</span></div>';
+
+$full_name = ' <div class="label_select_simple">'.html_print_input_text_extended(
     'fullname',
     $user_info['fullname'],
     'fullname',
@@ -210,15 +196,18 @@ $data[1] .= html_print_input_text_extended(
     100,
     $view_mode,
     '',
-    'class="input"',
+    [
+        'class'       => 'input',
+        'placeholder' => __('Full (display) name'),
+    ],
     true
-).'</span>';
+).'</div>';
 
 // Show "Picture" (in future versions, why not, allow users to upload it's own avatar here.
 if (is_user_admin($id)) {
-    $data[2] = html_print_image('images/people_1.png', true);
+    $avatar = html_print_image('images/people_1.png', true, ['class' => 'user_avatar']);
 } else {
-    $data[2] = html_print_image('images/people_2.png', true);
+    $avatar = html_print_image('images/people_2.png', true, ['class' => 'user_avatar']);
 }
 
 if ($view_mode === false) {
@@ -227,50 +216,31 @@ if ($view_mode === false) {
     $table->rowspan[0][2] = 2;
 }
 
-$table->rowclass[] = '';
-$table->rowstyle[] = 'font-weight: bold;';
-$table->data[] = $data;
 
-$data = [];
-$data[0] = '<span style="width:50%;float:left;">'.__('E-mail').'</span>';
-$data[0] .= $jump.'<span style="width:20%;float:left;line-height:20px;">'.html_print_input_text_extended('email', $user_info['email'], 'email', '', '25', '100', $view_mode, '', 'class="input"', true).'</span>';
-$data[1] = '<span style="width:40%;float:left;">'.__('Phone number').'</span>';
-$data[1] .= $jump.'<div style="width:20%;float:left;line-height:50px;">'.html_print_input_text_extended('phone', $user_info['phone'], 'phone', '', '20', '30', $view_mode, '', 'class="input"', true).'</div>';
-$table->rowclass[] = '';
-$table->rowstyle[] = 'font-weight: bold;';
-$table->data[] = $data;
+$email = '<div class="label_select_simple">'.html_print_input_text_extended('email', $user_info['email'], 'email', '', '25', '100', $view_mode, '', ['class' => 'input', 'placeholder' => __('E-mail')], true).'</div>';
+
+$phone = '<div class="label_select_simple">'.html_print_input_text_extended('phone', $user_info['phone'], 'phone', '', '20', '30', $view_mode, '', ['class' => 'input', 'placeholder' => __('Phone number')], true).'</div>';
 
 if ($view_mode === false) {
     if ($config['user_can_update_password']) {
-        $data = [];
-        $data[0] = '<span style="width:50%;float:left;">'.__('New Password').'</span>';
-        $data[0] .= $jump.'<span style="width:20%;float:left;line-height:20px;">'.html_print_input_text_extended('password_new', '', 'password_new', '', '25', '45', $view_mode, '', 'class="input"', true, true).'</span>';
-        $data[1] = '<span style="width:40%;float:left;">'.__('Password confirmation').'</span>';
-        $data[1] .= $jump.'<span style="width:20%;float:left;line-height:20px;">'.html_print_input_text_extended('password_conf', '', 'password_conf', '', '20', '45', $view_mode, '', 'class="input"', true, true).'</span>';
-        $table->rowclass[] = '';
-        $table->rowstyle[] = 'font-weight: bold;';
-        $table->data[] = $data;
+        $new_pass = '<div class="label_select_simple"><span>'.html_print_input_text_extended('password_new', '', 'password_new', '', '25', '45', $view_mode, '', ['class' => 'input', 'placeholder' => __('New Password')], true, true).'</span></div>';
+        $new_pass_confirm = '<div class="label_select_simple"><span>'.html_print_input_text_extended('password_conf', '', 'password_conf', '', '20', '45', $view_mode, '', ['class' => 'input', 'placeholder' => __('Password confirmation')], true, true).'</span></div>';
     } else {
-        $data = [];
-        $data[0] = '<i>'.__('You cannot change your password under the current authentication scheme').'</i>';
-        $table->rowclass[] = '';
-        $table->rowstyle[] = '';
-        $table->colspan[count($table - data)][0] = 2;
-        $table->data[] = $data;
+        $new_pass = '<i>'.__('You cannot change your password under the current authentication scheme').'</i>';
+        $new_pass_confirm = '';
     }
 }
 
-$data = [];
-$data[0] = '<span style="width:50%;float:left;">'.__('Block size for pagination').ui_print_help_tip(__('If checkbox is clicked then block size global configuration is used'), true).'</span>';
+$size_pagination = '<div class="label_select_simple"><p class="edit_user_labels">'.__('Block size for pagination').'</p>';
 if ($user_info['block_size'] == 0) {
     $block_size = $config['global_block_size'];
 } else {
     $block_size = $user_info['block_size'];
 }
 
-$data[0] .= $jump.'<span style="font-weight: normal;width:15%;float:left;line-height:20px;">'.html_print_input_text('block_size', $block_size, '', 5, 5, true).'</span>';
-$data[0] .= $jump.'<span style="width:2%;float:left;line-height:20px;">'.html_print_checkbox('default_block_size', 1, $user_info['block_size'] == 0, true).'</span>';
-$data[0] .= __('Default').' ('.$config['global_block_size'].')';
+$size_pagination .= html_print_input_text('block_size', $block_size, '', 5, 5, true);
+$size_pagination .= html_print_checkbox_switch('default_block_size', 1, $user_info['block_size'] == 0, true);
+$size_pagination .= '<span>'.__('Default').' ('.$config['global_block_size'].')</span>'.ui_print_help_tip(__('If checkbox is clicked then block size global configuration is used'), true).'</div>';
 
 $values = [
     -1 => __('Default'),
@@ -278,9 +248,8 @@ $values = [
     0  => __('No'),
 ];
 
-
-$data[2] = '<span style="width:30%;float:left;">'.__('Language').'</span>';
-$data[2] .= $jump.html_print_select_from_sql(
+$language = '<div class="label_select"><p class="edit_user_labels">'.__('Language').': </p>';
+$language .= html_print_select_from_sql(
     'SELECT id_language, name FROM tlanguage',
     'language',
     $user_info['language'],
@@ -294,11 +263,7 @@ $data[2] .= $jump.html_print_select_from_sql(
     '',
     '',
     10
-);
-
-$table->rowclass[] = '';
-$table->rowstyle[] = 'font-weight: bold;';
-$table->data[] = $data;
+).'</div>';
 
 $own_info = get_user_info($config['id_user']);
 if ($own_info['is_admin'] || check_acl($config['id_user'], 0, 'PM')) {
@@ -311,10 +276,8 @@ $usr_groups = (users_get_groups($config['id_user'], 'AR', $display_all_group));
 $id_usr = $config['id_user'];
 
 
-$data = [];
-
 if (!$meta) {
-    $data[0] = '<span style="width:50%;float:left;">'.__('Home screen').ui_print_help_tip(__('User can customize the home page. By default, will display \'Agent Detail\'. Example: Select \'Other\' and type sec=estado&sec2=operation/agentes/estado_agente to show agent detail view'), true).'</span>';
+    $home_screen = '<div class="label_select"><p class="edit_user_labels">'.__('Home screen').ui_print_help_tip(__('User can customize the home page. By default, will display \'Agent Detail\'. Example: Select \'Other\' and type sec=estado&sec2=operation/agentes/estado_agente to show agent detail view'), true).'</p>';
     $values = [
         'Default'        => __('Default'),
         'Visual console' => __('Visual console'),
@@ -328,7 +291,7 @@ if (!$meta) {
         $values['Dashboard'] = __('Dashboard');
     }
 
-    $data[0] .= $jump.'<span style="width:20%;float:left;line-height:20px;">'.html_print_select($values, 'section', io_safe_output($user_info['section']), 'show_data_section();', '', -1, true, false, false).'</span>';
+    $home_screen .= html_print_select($values, 'section', io_safe_output($user_info['section']), 'show_data_section();', '', -1, true, false, false).'</div>';
 
     if (enterprise_installed()) {
         $dashboards = get_user_dashboards($config['id_user']);
@@ -342,7 +305,7 @@ if (!$meta) {
             }
         }
 
-        $data[0] .= html_print_select($dashboards_aux, 'dashboard', $user_info['data_section'], '', '', '', true);
+        $home_screen .= html_print_select($dashboards_aux, 'dashboard', $user_info['data_section'], '', '', '', true);
     }
 
     $layouts = visual_map_get_user_layouts($config['id_user'], true);
@@ -355,51 +318,48 @@ if (!$meta) {
         }
     }
 
-    $data[0] .= html_print_select($layouts_aux, 'visual_console', $user_info['data_section'], '', '', '', true);
-    $data[0] .= html_print_input_text('data_section', $user_info['data_section'], '', 60, 255, true, false);
+    $home_screen .= html_print_select($layouts_aux, 'visual_console', $user_info['data_section'], '', '', '', true);
+    $home_screen .= html_print_input_text('data_section', $user_info['data_section'], '', 60, 255, true, false);
 
 
 
     // User only can change skins if has more than one group.
-    $data[1] = '';
+    $skin = '';
     if (function_exists('skins_print_select')) {
         if (count($usr_groups) > 1) {
-            $data[1] = '<span style="width:40%;float:left;">'.__('Skin').'</span>';
-            $data[1] .= $jump.'<span style="width:20%;float:left;">'.skins_print_select($id_usr, 'skin', $user_info['id_skin'], '', __('None'), 0, true).'</span>';
+            $skin = '<div class="label_select"><p class="edit_user_labels">'.__('Skin').': </p>';
+            $skin .= skins_print_select($id_usr, 'skin', $user_info['id_skin'], '', __('None'), 0, true).'</div>';
         }
     }
 } else {
-    $data[0] = '';
-    $data[1] = '';
+    $home_screen = '';
+    $skin = '';
 }
 
-$data[2] = '<span style="width:30%;float:left;">'.__('Timezone').'</span>';
-$data[2] .= $jump.html_print_timezone_select('timezone', $user_info['timezone']);
-
-$table->rowclass[] = '';
-$table->rowstyle[] = 'font-weight: bold;';
-$table->data[] = $data;
+$timezone = '<div class="label_select"><p class="edit_user_labels">'.__('Timezone').': </p>';
+$timezone .= html_print_timezone_select('timezone', $user_info['timezone']).'</div>';
 
 // Double auth.
 $double_auth_enabled = (bool) db_get_value('id', 'tuser_double_auth', 'id_user', $config['id_user']);
-$data = [];
+
 if ($config['double_auth_enabled']) {
-    $data[0] = '<span style="width:50%;float:left;">'.__('Double authentication').'</span>';
-    $data[0] .= $jump;
-    $data[0] .= '<span style="width:20%;float:left;line-height:20px;">'.html_print_checkbox('double_auth', 1, $double_auth_enabled, true).'</span>';
+    $double_authentication = '<div class="label_select_simple"><p class="edit_user_labels">'.__('Double authentication').'</p>';
+    $double_authentication .= html_print_checkbox_switch('double_auth', 1, $double_auth_enabled, true);
+    // Dialog.
+    $double_authentication .= '<div id="dialog-double_auth" style="display:none"><div id="dialog-double_auth-container"></div></div>';
 }
 
 if ($double_auth_enabled) {
-    $data[0] .= $jump;
-    $data[0] .= html_print_button(__('Show information'), 'show_info', false, 'javascript:show_double_auth_info();', '', true);
+    $double_authentication .= html_print_button(__('Show information'), 'show_info', false, 'javascript:show_double_auth_info();', '', true);
 }
 
-// Dialog.
-$data[0] .= '<div id="dialog-double_auth"><div id="dialog-double_auth-container"></div></div>';
+if (isset($double_authentication)) {
+    $double_authentication .= '</div>';
+}
 
 if (check_acl($config['id_user'], 0, 'ER')) {
-    $data[1] = '<span style="width:40%;float:left;">'.__('Event filter').'</span>';
-    $data[1] .= $jump.'<span style="width:20%;float:left;line-height:20px;">'.html_print_select_from_sql(
+    $event_filter = '<div class="label_select"><p class="edit_user_labels">'.__('Event filter').'</p>';
+    $event_filter .= html_print_select_from_sql(
         'SELECT id_filter, id_name FROM tevent_filter',
         'event_filter',
         $user_info['default_event_filter'],
@@ -407,50 +367,44 @@ if (check_acl($config['id_user'], 0, 'ER')) {
         __('None'),
         null,
         true
-    ).'</span>';
+    ).'</div>';
 } else if (license_free()) {
-    $data[1] = __('Newsletter Subscribed').':';
+    $newsletter = '<div class="label_select_simple"><p class="edit_user_labels">'.__('Newsletter Subscribed').': </p>';
     if ($user_info['middlename']) {
-        $data[1] .= $jump.'<span style="font-weight:initial;">'.__('Already subscribed to %s newsletter', get_product_name()).'</span>';
+        $newsletter .= '<span>'.__('Already subscribed to %s newsletter', get_product_name()).'</span></div>';
     } else {
-        $data[1] .= $jump.'<span style="font-weight:initial;"><a style="text-decoration:underline;" href="javascript: force_run_newsletter();">'.__('Subscribe to our newsletter').'</a></span>';
+        $newsletter .= '<span><a href="javascript: force_run_newsletter();">'.__('Subscribe to our newsletter').'</a></span></div>';
     }
 
-    $data[2] = __('Newsletter Reminder').' ';
+    $newsletter_reminder = '<div class="label_select_simple"><p class="edit_user_labels">'.__('Newsletter Reminder').': </p>';
     if ($user_info['firstname'] != 0) {
         $user_info['firstname'] = 1;
     }
 
-    $data[2] .= html_print_checkbox('newsletter_reminder', 1, $user_info['firstname'], true);
-} else {
-    $table->colspan[count($table->data)][0] = 3;
+    $newsletter_reminder .= html_print_checkbox_switch('newsletter_reminder', 1, $user_info['firstname'], true).'</div>';
 }
 
-$table->rowclass[] = '';
-$table->rowstyle[] = 'font-weight: bold;';
-$table->data[] = $data;
-$data = [];
 
 $autorefresh_list_out = [];
 if (is_metaconsole()) {
-    $autorefresh_list_out['monitoring/tactical'] = 'tactical';
-    $autorefresh_list_out['monitoring/group_view'] = 'group_view';
+    $autorefresh_list_out['monitoring/tactical'] = 'Tactical view';
+    $autorefresh_list_out['monitoring/group_view'] = 'Group view';
 } else {
-    $autorefresh_list_out['operation/agentes/tactical'] = 'tactical';
-    $autorefresh_list_out['operation/agentes/group_view'] = 'group_view';
+    $autorefresh_list_out['operation/agentes/tactical'] = 'Tactical view';
+    $autorefresh_list_out['operation/agentes/group_view'] = 'Group view';
 }
 
-$autorefresh_list_out['operation/agentes/estado_agente'] = 'agent_status';
-$autorefresh_list_out['operation/agentes/alerts_status'] = 'alerts_status';
-$autorefresh_list_out['operation/agentes/status_monitor'] = 'status_monitor';
-$autorefresh_list_out['enterprise/operation/services/services'] = 'services';
-$autorefresh_list_out['enterprise/dashboard/main_dashboard'] = 'main_dashboard';
-$autorefresh_list_out['operation/reporting/graph_viewer'] = 'graph_viewer';
-$autorefresh_list_out['operation/snmpconsole/snmp_view'] = 'snmp_view';
-$autorefresh_list_out['operation/agentes/pandora_networkmap'] = 'networkmap';
-$autorefresh_list_out['operation/visual_console/render_view'] = 'render_view';
-$autorefresh_list_out['operation/events/events'] = 'events';
-$autorefresh_list_out['enterprise/godmode/reporting/cluster_view'] = 'cluster_view';
+$autorefresh_list_out['operation/agentes/estado_agente'] = 'Agent detail';
+$autorefresh_list_out['operation/agentes/alerts_status'] = 'Alert detail';
+$autorefresh_list_out['operation/agentes/status_monitor'] = 'Monitor detail';
+$autorefresh_list_out['enterprise/operation/services/services'] = 'Services';
+$autorefresh_list_out['enterprise/dashboard/main_dashboard'] = 'Dashboard';
+$autorefresh_list_out['operation/reporting/graph_viewer'] = 'Graph Viewer';
+$autorefresh_list_out['operation/snmpconsole/snmp_view'] = 'SNMP console';
+$autorefresh_list_out['operation/agentes/pandora_networkmap'] = 'Network map';
+$autorefresh_list_out['operation/visual_console/render_view'] = 'Visual console';
+$autorefresh_list_out['operation/events/events'] = 'Events';
+$autorefresh_list_out['enterprise/godmode/reporting/cluster_view'] = 'Cluster view';
 
 if (!isset($autorefresh_list)) {
     $select = db_process_sql("SELECT autorefresh_white_list FROM tusuario WHERE id_user = '".$config['id_user']."'");
@@ -484,10 +438,10 @@ if (!isset($autorefresh_list)) {
     }
 }
 
-$data[0] = _('Autorefresh').ui_print_help_tip(
+$autorefresh_show = '<p class="edit_user_labels">'._('Autorefresh').ui_print_help_tip(
     __('This will activate autorefresh in selected pages'),
     true
-);
+).'</p>';
 $select_out = html_print_select(
     $autorefresh_list_out,
     'autorefresh_list_out[]',
@@ -500,7 +454,7 @@ $select_out = html_print_select(
     true,
     '',
     false,
-    'width:200px'
+    'width:100%'
 );
 $arrows = ' ';
 $select_in = html_print_select(
@@ -515,20 +469,17 @@ $select_in = html_print_select(
     true,
     '',
     false,
-    'width:200px'
+    'width:100%'
 );
 
-$table_ichanges = '<table style="position:relative;left:160px;">
-		<tr>
-			<td>'.__('Full list of pages').'</td>
-			<td></td>
-			<td>'.__('List of pages with autorefresh').'</td>
-		</tr>
-		<tr>
-			<td>'.$select_out.'</td>
-			<td>
-				<a href="javascript:">'.html_print_image(
-    'images/darrowright.png',
+$table_ichanges = '<div class="autorefresh_select">
+                        <div class="autorefresh_select_list_out">
+                            <p class="autorefresh_select_text">'.__('Full list of pages').': </p>
+                            <div>'.$select_out.'</div>
+                        </div>
+                        <div class="autorefresh_select_arrows">
+                            <a href="javascript:">'.html_print_image(
+    'images/darrowright_green.png',
     true,
     [
         'id'    => 'right_autorefreshlist',
@@ -536,9 +487,8 @@ $table_ichanges = '<table style="position:relative;left:160px;">
         'title' => __('Push selected pages into autorefresh list'),
     ]
 ).'</a>
-				<br><br>
-				<a href="javascript:">'.html_print_image(
-    'images/darrowleft.png',
+                            <a href="javascript:">'.html_print_image(
+    'images/darrowleft_green.png',
     true,
     [
         'id'    => 'left_autorefreshlist',
@@ -546,21 +496,23 @@ $table_ichanges = '<table style="position:relative;left:160px;">
         'title' => __('Pop selected pages out of autorefresh list'),
     ]
 ).'</a>
-			</td>
-			<td>'.$select_in.'</td>
-		</tr>
-	</table>';
-$data[0] .= $table_ichanges;
+                        </div>    
+                        <div class="autorefresh_select_list">    
+                            <p class="autorefresh_select_text">'.__('List of pages with autorefresh').': </p>   
+                            <div>'.$select_in.'</div>
+                        </div>
+                    </div>';
+
+$autorefresh_show .= $table_ichanges;
 
 // Time autorefresh.
 $times = get_refresh_time_array();
-$data[1] = '<span style="width:40%;float:left;">'.__('Time autorefresh');
-$data[1] .= ui_print_help_tip(
+$time_autorefresh = '<div class="label_select"><p class="edit_user_labels">'.__('Time autorefresh');
+$time_autorefresh .= ui_print_help_tip(
     __('Interval of autorefresh of the elements, by default they are 30 seconds, needing to enable the autorefresh first'),
     true
-).'</span>';
-$data[1] .= $jump.'<span style="width:20%;float:left;">';
-$data[1] .= html_print_select(
+).'</p>';
+$time_autorefresh .= html_print_select(
     $times,
     'time_autorefresh',
     $user_info['time_autorefresh'],
@@ -570,22 +522,11 @@ $data[1] .= html_print_select(
     true,
     false,
     false
-).'</span>';
+).'</div>';
 
-$table->rowclass[] = '';
-$table->rowstyle[] = 'font-weight: bold;vertical-align: top';
-$table->data[] = $data;
 
-$data = [];
-$data[0] = __('Comments');
-$table->colspan[count($table->data)][0] = 3;
-$table->rowclass[] = '';
-$table->rowstyle[] = 'font-weight: bold;';
-$table->data[] = $data;
-
-$data = [];
-$data[0] = '<div style="width:98%">';
-$data[0] .= html_print_textarea(
+$comments = '<p class="edit_user_labels">'.__('Comments').': </p>';
+$comments .= html_print_textarea(
     'comments',
     2,
     60,
@@ -593,18 +534,29 @@ $data[0] .= html_print_textarea(
     (($view_mode) ? 'readonly="readonly"' : ''),
     true
 );
-$data[0] .= '</div>';
-$data[0] .= html_print_input_hidden('quick_language_change', 1, true);
-$table->colspan[count($table->data)][0] = 3;
-$table->rowclass[] = '';
-$table->rowstyle[] = '';
-$table->data[] = $data;
+$comments .= html_print_input_hidden('quick_language_change', 1, true);
+
 
 echo '<form name="user_mod" method="post" action="'.ui_get_full_url().'&amp;modified=1&amp;id='.$id.'&amp;pure='.$config['pure'].'">';
 
-html_print_table($table);
+    echo '<div id="user_form">
+            <div class="user_edit_first_row">
+                <div class="edit_user_info white_box">
+                    <div class="edit_user_info_left">'.$avatar.$user_id.'</div>
+                    <div class="edit_user_info_right">'.$full_name.$email.$phone.$new_pass.$new_pass_confirm.'</div>
+                </div>  
+                <div class="edit_user_autorefresh white_box">'.$autorefresh_show.$time_autorefresh.'</div>
+            </div> 
+            <div class="user_edit_second_row white_box">
+                <div class="edit_user_options">'.$language.$size_pagination.$skin.$home_screen.$event_filter.$newsletter.$newsletter_reminder.$double_authentication.'</div>
+                <div class="edit_user_timezone">'.$timezone.'<div id="zonepicker"></div></div>
+            </div> 
+            <div class="user_edit_third_row white_box">
+                <div class="edit_user_comments">'.$comments.'</div>
+            </div>    
+        </div>';
 
-echo '<div style="width:'.$table->width.'; text-align:right;">';
+    echo '<div class="edit_user_button">';
 if (!$config['user_can_update_info']) {
     echo '<i>'.__('You can not change your user info under the current authentication scheme').'</i>';
 } else {
@@ -612,12 +564,13 @@ if (!$config['user_can_update_info']) {
     html_print_submit_button(__('Update'), 'uptbutton', $view_mode, 'class="sub upd"');
 }
 
-echo '</div></form>';
+    echo '</div>';
 
-unset($table);
+echo '</form>';
 
+echo '<div id="edit_user_profiles" class="white_box">';
 if (!defined('METACONSOLE')) {
-    echo '<h4>'.__('Profiles/Groups assigned to this user').'</h4>';
+    echo '<p class="edit_user_labels">'.__('Profiles/Groups assigned to this user').'</p>';
 }
 
 $table = new stdClass();
@@ -684,11 +637,107 @@ if (!empty($table->data)) {
     ui_print_info_message(['no_close' => true, 'message' => __('This user doesn\'t have any assigned profile/group.') ]);
 }
 
+// Close edit_user_profiles.
+echo '</div>';
+
 enterprise_hook('close_meta_frame');
 
+if (!defined('METACONSOLE')) {
+    ?>
+
+    <style>
+        /* Styles for timezone map */
+        div.olControlZoom{
+            bottom:10px;
+            left:10px;
+        }
+        div.olControlZoom a {
+            display: block;
+            margin: 1px;
+            padding: 0;
+            color: #FFF !important;
+            font-size: 14pt !important;
+            font-weight: bold;
+            text-decoration: none;
+            text-align: center;
+            height: 22px;
+            width: 22px;
+            line-height: 19px;
+            background: #82b92e;
+        }
+        div.olControlZoom a:hover {
+            background: #76a928;
+        }
+        a.olControlZoomIn {
+            border-radius: 4px 4px 0 0;
+        }
+        a.olControlZoomOut {
+            border-radius: 0 0 4px 4px;
+        }
+        /* Overlay the popup on the map */
+        .ui-dialog.ui-corner-all.ui-widget.ui-widget-content.ui-front.ui-draggable.ui-resizable{
+            z-index:9999 !important; 
+        }
+    </style>
+
+    <script language="javascript" type="text/javascript">
+        var map_unavailable = '';
+        function print_map(map_unavailable){
+            var img_src = "<?php echo ui_get_full_url('images/edit_user_map_not_available.jpg', false, false, false, false); ?>";
+            if(map_unavailable !== true){
+                $("#zonepicker").append('<img src="'+img_src+'" alt="This map is not available" title="This map is not available" style="max-width:100%; max-height: 270px;"/>').css('text-align','center');
+            }else{
+                var optionText = $("#timezone option:selected").val();
+                $(function() {
+                    $("#zonepicker").timezonePicker({
+                    initialLat: 20,
+                    initialLng: 0,
+                    initialZoom: 2,
+                    onReady: function() {
+                        $("#zonepicker").timezonePicker('selectZone', optionText);
+                    },
+                    mapOptions: {
+                        maxZoom: 6,
+                        minZoom: 2
+                    },
+                    useOpenLayers: true
+                    }); 
+                });
+            }
+        }
+
+        // Get the map
+        var map_url = "http://a.tile.openstreetmap.org";
+        // 1. Create a new XMLHttpRequest object
+        var xhr = new XMLHttpRequest();
+        // 2. Configure it: GET-request for the map_url
+        xhr.open('GET', map_url, true);
+        // 3. Send the request over the network
+        xhr.send();
+        // 4. This will be called after the response is received
+        xhr.onload = function() {
+            // analyze HTTP status of the response
+            if (xhr.status == 200) { 
+                map_unavailable = true;
+            } else {
+                map_unavailable = false;
+            }
+            print_map(map_unavailable);
+        };
+        // 5. If no internet connection, it enter here (it doesn't enter in onload)
+        xhr.onerror = function() {
+            map_unavailable = false;
+            print_map(map_unavailable);
+        };
+    </script>
+
+    <?php
+    // Closes no meta condition.
+}
 ?>
 
 <script language="javascript" type="text/javascript">
+
 $(document).ready (function () {
 
     $("#right_autorefreshlist").click (function () {
@@ -845,6 +894,7 @@ function show_double_auth_info () {
     });
 
     $("div#dialog-double_auth")
+        .css('display','block')
         .append($dialogContainer)
         .dialog({
             resizable: true,

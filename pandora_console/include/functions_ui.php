@@ -1265,7 +1265,7 @@ function ui_print_alert_template_example($id_alert_template, $return=false, $pri
  *
  * @return string The help tip
  */
-function ui_print_help_icon($help_id, $return=false, $home_url='', $image='images/help.png', $is_relative=false)
+function ui_print_help_icon($help_id, $return=false, $home_url='', $image='images/help_green.png', $is_relative=false)
 {
     global $config;
 
@@ -1736,6 +1736,10 @@ function ui_process_page_head($string, $bitfield)
     // Include countdown library
     $config['jquery']['countdown'] = 'include/javascript/jquery.countdown.js';
 
+    // Include timezone user map library
+    $config['jquery']['OpenLayers'] = 'include/javascript/OpenLayers.js';
+    $config['jquery']['jquery.timezone-picker'] = 'include/javascript/jquery.timezone-picker.js';
+
     // Then add each script as necessary
     $loaded = [''];
     foreach ($config['jquery'] as $name => $filename) {
@@ -2124,7 +2128,7 @@ function ui_print_session_action_icon($action, $return=false)
  *
  * @return string HTML code if return parameter is true.
  */
-function ui_print_help_tip($text, $return=false, $img='images/tip.png', $is_relative=false)
+function ui_print_help_tip($text, $return=false, $img='images/tip_help.png', $is_relative=false)
 {
     $output = '<a href="javascript:" class="tip" >'.html_print_image(
         $img,
@@ -2808,7 +2812,7 @@ function ui_print_page_header(
 
     if (!is_metaconsole()) {
         if ($help != '') {
-            $buffer .= "<div class='head_help' style='float: right; margin-top: -2px !important;'>".ui_print_help_icon($help, true, '', 'images/help_w.png').'</div>';
+            $buffer .= "<div class='head_help head_tip'>".ui_print_help_icon($help, true, '', 'images/help_g.png').'</div>';
         }
     }
 

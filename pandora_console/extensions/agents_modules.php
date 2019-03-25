@@ -661,7 +661,7 @@ $ignored_params['refresh'] = '';
         else {
             
             var agentes_id = $("#id_agents2").val();
-            var id_agentes = $.get("full_agents_id");
+            var id_agentes = getQueryParam("full_agents_id");
             if (agentes_id === null && id_agentes !== null) {
                 id_agentes = id_agentes.split(";")
                 id_agentes.forEach(function(element) {
@@ -799,7 +799,7 @@ $ignored_params['refresh'] = '';
                         $("#module").append (option);
                     });
                     
-                    var id_modules = $.get("full_modules_selected");
+                    var id_modules = getQueryParam("full_modules_selected");
                     if(id_modules !== null) {
                         id_modules = id_modules.split(";");
                         id_modules.forEach(function(element) {
@@ -812,20 +812,18 @@ $ignored_params['refresh'] = '';
         );
     }
 
-    (function($) {  
-        $.get = function(key)   {  
-            key = key.replace(/[[]/, '[');  
-            key = key.replace(/[]]/, ']');  
-            var pattern = "[?&]" + key + "=([^&#]*)";  
-            var regex = new RegExp(pattern);  
-            var url = unescape(window.location.href);  
-            var results = regex.exec(url);  
-            if (results === null) {  
-                return null;  
-            } else {  
-                return results[1];  
-            }  
-        }  
-    })(jQuery);
+    function getQueryParam (key) {  
+        key = key.replace(/[[]/, '[');  
+        key = key.replace(/[]]/, ']');  
+        var pattern = "[?&]" + key + "=([^&#]*)";  
+        var regex = new RegExp(pattern);
+        var url = unescape(window.location.href);
+        var results = regex.exec(url);
+        if (results === null) {  
+            return null;  
+        } else {  
+            return results[1];  
+        } 
+    }
     
 </script>

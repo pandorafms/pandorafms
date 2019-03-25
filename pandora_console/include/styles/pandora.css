@@ -400,13 +400,13 @@ th {
  * ---------------------------------------------------------------------
  */
 div#page {
-  background: #fff;
+  background: #fbfbfb;
   background-image: none;
   clear: both;
   width: auto;
-  margin-top: 20px !important;
+  padding-top: 20px !important;
   padding-left: 60px; /* This is overwritten by the classic menu (215px)*/
-  margin-right: 35px;
+  padding-right: 35px;
   margin-left: 35px;
 }
 
@@ -1254,19 +1254,26 @@ div.title_line {
  */
 #menu_tab_frame,
 #menu_tab_frame_view {
-  display: block !important;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
   border-bottom: 2px solid #82b92e;
-  max-height: 31px;
-  min-height: 31px;
+  max-height: 50px;
+  min-height: 50px;
   width: 100%;
   padding-right: 0px;
   margin-left: 0px !important;
   margin-bottom: 20px;
-  height: 31px;
+  height: 50px;
+  box-sizing: border-box;
+  background-color: #fff;
+  border-top-right-radius: 7px;
+  border-top-left-radius: 7px;
+  box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.1);
 }
 
 #menu_tab {
-  margin: 0px 0px 0px 0px !important;
+  margin-right: 10px;
 }
 
 #menu_tab .mn,
@@ -1307,7 +1314,7 @@ div.title_line {
 #menu_tab li.nomn,
 #menu_tab li.nomn_high {
   min-width: 30px;
-  height: 28px;
+  height: 29px;
   margin-top: 0;
 }
 
@@ -1366,52 +1373,33 @@ div#agent_wizard_subtabs {
  */
 /* TAB TITLE */
 #menu_tab_left {
-  margin-left: 0px !important;
+  max-width: 60%;
+  margin-right: 20px;
 }
 
 #menu_tab_left .mn,
 #menu_tab_left ul,
 #menu_tab_left .mn ul {
-  background-color: #000;
-  color: #fff;
-  font-weight: bold;
+  color: #343434;
   padding: 0px 0px 0px 0px;
   list-style: none;
   margin: 0px 0px 0px 0px;
 }
-#menu_tab_left .mn li {
-  float: left;
-  position: relative;
-  height: 26px;
-  max-height: 26px;
-}
+
 #menu_tab_left .mn li a {
   display: block;
   text-decoration: none;
 }
 #menu_tab_left li.view a {
-  color: #fff;
-  font-weight: bold;
-  font-weight: 100;
-  line-height: 18px;
+  color: #343434;
   display: none;
 }
 
 #menu_tab_left li.view {
-  background: #82b92e;
-  max-width: 60%;
-  min-width: 30%;
-  padding: 5px 5px 0px;
-  text-align: center;
-  -moz-border-top-right-radius: 3px;
-  -webkit-border-top-right-radius: 3px;
-  border-top-right-radius: 3px;
-
-  -moz-border-top-left-radius: 3px;
-  -webkit-border-top-left-radius: 3px;
-  border-top-left-radius: 3px;
   margin-left: 0px !important;
   overflow-y: hidden;
+  padding-left: 10px;
+  padding-bottom: 4px;
 }
 
 #menu_tab_left li.view img.bottom {
@@ -1421,13 +1409,8 @@ div#agent_wizard_subtabs {
 
 #menu_tab_left li a,
 #menu_tab_left li span {
-  text-transform: uppercase;
-  color: #fff;
-  font-size: 100%;
-  line-height: 20px;
-  letter-spacing: 0px;
-  font-family: verdana, sans-serif;
-  font-weight: bold;
+  color: #343434;
+  font-size: 14pt;
 }
 
 /*
@@ -2855,6 +2838,11 @@ a.tip > img {
   margin-right: 2px;
 }
 
+.head_tip {
+  display: inline;
+  margin-left: 10px;
+}
+
 /*
  * ---------------------------------------------------------------------
  * - SEARCH BOX in header											-
@@ -3282,23 +3270,23 @@ div.div_groups_status {
   background-color: #fff;
   padding-right: 3px;
   padding-left: 3px;
+  padding-top: 6px;
   font-weight: bold;
   text-decoration: none;
   font-size: 14px;
-  border-left: 2px solid #e2e2e2;
   margin-top: 0;
   min-width: 30px;
-  height: 28px;
+  height: 29px;
 }
 
 #menu_tab li:hover {
-  background-color: #ececec;
+  box-shadow: inset 0px 4px #82b92e;
 }
 
 #menu_tab li.nomn_high,
 #menu_tab li.nomn_high span {
   color: #fff;
-  background-color: #ececec;
+  box-shadow: inset 0px 4px #82b92e;
 }
 
 #menu_tab li.nomn img,
@@ -4748,4 +4736,273 @@ input:checked + .p-slider:before {
   background: url("../../images/to_top_menu_hover.png") no-repeat center;
   background-color: #fff;
   border: 2px solid #82b92e;
+}
+
+/* New white rounded boxes */
+.white_box {
+  background-color: #fff;
+  border: 1px solid #d7d9da;
+  border-radius: 10px;
+  padding: 20px 50px;
+}
+
+/*
+ * ---------------------------------------------------------------------
+ * - User edit
+ * ---------------------------------------------------------------------
+ */
+
+#user_form * {
+  color: #4d4d4d;
+}
+
+#user_form {
+  width: 100%;
+}
+
+#user_form a.tip img {
+  margin-left: 8px;
+}
+
+#edit_user_profiles {
+  margin-top: 40px;
+  margin-bottom: 30px;
+}
+
+#edit_user_profiles table {
+  margin-bottom: 0 !important;
+}
+
+.user_edit_first_row,
+.user_edit_second_row {
+  display: flex;
+}
+
+.user_edit_first_row,
+.user_edit_second_row {
+  margin-bottom: 20px;
+}
+
+.edit_user_info {
+  width: 58%;
+  margin-right: 20px;
+  display: flex;
+  align-items: center;
+}
+
+.edit_user_info_left {
+  width: 25%;
+  margin-right: 50px;
+  text-align: center;
+}
+
+.edit_user_info_right {
+  width: 75%;
+}
+
+.edit_user_info_right input {
+  background-color: transparent !important;
+  border: none;
+  border-radius: 0 !important;
+  border-bottom: 1px solid #343434;
+  padding: 10px 0px 2px 35px;
+  box-sizing: border-box;
+  background-repeat: no-repeat;
+  background-position: left bottom 2px;
+  width: 100%;
+  margin-bottom: 4px;
+}
+
+.edit_user_info_right input:focus {
+  font-weight: bold;
+}
+
+.edit_user_info_right #fullname {
+  background-image: url("../../images/user_name.png");
+}
+
+.edit_user_info_right #email {
+  background-image: url("../../images/user_email.png");
+}
+
+.edit_user_info_right #phone {
+  background-image: url("../../images/user_phone.png");
+}
+
+.edit_user_info_right #password_new,
+.edit_user_info_right #password_conf {
+  background-image: url("../../images/user_password.png");
+}
+
+.edit_user_autorefresh {
+  width: 42%;
+}
+
+.edit_user_options {
+  width: 50%;
+  margin-right: 20px;
+  padding-right: 50px;
+}
+
+.edit_user_options #text-block_size {
+  background-color: transparent !important;
+  border: none;
+  border-radius: 0 !important;
+  border-bottom: 1px solid #343434;
+  padding: 0px 0px 0px 10px;
+}
+
+.edit_user_options input#text-block_size:disabled {
+  border-bottom-color: #848484;
+  color: #848484;
+}
+
+.edit_user_timezone {
+  width: 50%;
+  padding-left: 50px;
+}
+
+.edit_user_timezone #zonepicker {
+  width: 100%;
+  height: 270px;
+}
+
+.edit_user_comments #textarea_comments {
+  background-color: #fbfbfb !important;
+  padding-left: 10px;
+}
+
+.edit_user_labels {
+  color: #343434 !important;
+  font-weight: bold;
+  padding-right: 10px;
+  margin: 0px 0px 5px 0px;
+}
+
+.label_select,
+.label_select_simple {
+  margin-bottom: 15px;
+}
+
+.label_select_simple .edit_user_labels {
+  margin-bottom: 0;
+  display: inline;
+}
+
+.edit_user_options .label_select_simple {
+  display: flex;
+  align-items: center;
+}
+
+.edit_user_options .label_select_simple .p-switch {
+  margin-right: 5px;
+  margin-left: 10px;
+}
+
+.user_edit_first_row .edit_user_autorefresh > div:last-child,
+.user_edit_first_row .edit_user_info_left > div:last-child,
+.user_edit_first_row .edit_user_info_right > div:last-child,
+.user_edit_second_row .edit_user_options > div:last-child {
+  margin-bottom: 0px !important;
+}
+
+.user_avatar {
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.autorefresh_select {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 15px;
+}
+
+.autorefresh_select_text {
+  margin: 0px 0px 5px 0px;
+}
+
+#right_autorefreshlist {
+  margin-bottom: 10px;
+}
+
+#autorefresh_list_out,
+#autorefresh_list {
+  text-align: center;
+}
+
+select#autorefresh_list_out[multiple] option:checked,
+select#autorefresh_list[multiple] option:checked {
+  background: #82b92e linear-gradient(0deg, #82b92e 0%, #82b92e 100%);
+  color: #fff !important;
+}
+
+select#autorefresh_list_out option:checked,
+select#autorefresh_list option:checked {
+  background-color: #82b92e;
+  color: #fff !important;
+}
+
+select#autorefresh_list_out > option:hover,
+select#autorefresh_list > option:hover {
+  background-color: #cbcbcb;
+}
+
+select#autorefresh_list_out:-internal-list-box,
+select#autorefresh_list:-internal-list-box {
+  border: none;
+}
+
+.autorefresh_select .autorefresh_select_list_out,
+.autorefresh_select .autorefresh_select_list {
+  width: 45%;
+}
+
+.autorefresh_select .autorefresh_select_arrows {
+  width: 10%;
+  text-align: center;
+}
+
+.autorefresh_select_arrows a {
+  display: block;
+}
+
+.edit_user_autorefresh select,
+.user_edit_second_row select {
+  width: 100%;
+}
+
+.edit_user_button {
+  margin-top: 20px;
+  width: 100%;
+  text-align: right;
+}
+
+#user-notifications-wrapper {
+  width: 100%;
+  box-sizing: border-box;
+  color: #4d4d4d;
+}
+
+/* This is to use divs like tables */
+.table_div {
+  display: table;
+}
+.table_thead,
+.table_tbody {
+  display: table-row;
+}
+.table_th {
+  font-weight: bold;
+}
+.table_th,
+.table_td {
+  display: table-cell;
+  vertical-align: middle;
+  padding: 10px;
+}
+/* Tables with 3 columns */
+.table_three_columns .table_th,
+.table_three_columns .table_td {
+  width: 33%;
 }

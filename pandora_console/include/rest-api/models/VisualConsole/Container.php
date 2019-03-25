@@ -142,7 +142,13 @@ final class Container extends Model
     private function extractBackgroundColor(array $data)
     {
         return static::notEmptyStringOr(
-            static::issetInArray($data, ['backgroundColor', 'background_color']),
+            static::issetInArray(
+                $data,
+                [
+                    'backgroundColor',
+                    'background_color',
+                ]
+            ),
             null
         );
     }
@@ -158,8 +164,7 @@ final class Container extends Model
     private function extractFavorite(array $data): bool
     {
         return static::parseBool(
-            static::issetInArray($data, ['is_favourite', 'isFavorite']),
-            null
+            static::issetInArray($data, ['is_favourite', 'isFavorite'])
         );
     }
 

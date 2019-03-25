@@ -6,12 +6,17 @@ use PHPUnit\Framework\TestCase;
 use Models\VisualConsole\Item as ItemConsole;
 
 /**
- * Test class
+ * Test for the Visual Console Item model.
  */
 class ItemTest extends TestCase
 {
 
 
+    /**
+     * Test if the instance is created using a valid data structure.
+     *
+     * @return void
+     */
     public function testCanBeCreatedFromValidUserStructure(): void
     {
         $this->assertInstanceOf(
@@ -48,6 +53,11 @@ class ItemTest extends TestCase
     }
 
 
+    /**
+     * Test if the instance is not created when using a invalid id.
+     *
+     * @return void
+     */
     public function testCannotBeCreatedWithInvalidId(): void
     {
         $this->expectException(InvalidArgumentException::class);
@@ -87,6 +97,11 @@ class ItemTest extends TestCase
     }
 
 
+    /**
+     * Test if the instance is not created when using a invalid type.
+     *
+     * @return void
+     */
     public function testCannotBeCreatedWithInvalidType(): void
     {
         $this->expectException(InvalidArgumentException::class);
@@ -126,6 +141,11 @@ class ItemTest extends TestCase
     }
 
 
+    /**
+     * Test if the instance is not created when using a invalid width.
+     *
+     * @return void
+     */
     public function testCannotBeCreatedWithInvalidWidth(): void
     {
         $this->expectException(InvalidArgumentException::class);
@@ -165,6 +185,11 @@ class ItemTest extends TestCase
     }
 
 
+    /**
+     * Test if the instance is not created when using a invalid height.
+     *
+     * @return void
+     */
     public function testCannotBeCreatedWithInvalidHeight(): void
     {
         $this->expectException(InvalidArgumentException::class);
@@ -204,6 +229,11 @@ class ItemTest extends TestCase
     }
 
 
+    /**
+     * Test if the model has a valid JSON representation.
+     *
+     * @return void
+     */
     public function testItemIsRepresentedAsJson(): void
     {
         $this->assertEquals(

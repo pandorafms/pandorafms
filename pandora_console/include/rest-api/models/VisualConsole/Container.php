@@ -142,4 +142,29 @@ final class Container extends Model
     }
 
 
+    /**
+     * Obtain a container data structure from the database using a filter.
+     *
+     * @param array $filter Filter of the Visual Console.
+     *
+     * @return self A Visual Console Container instance.
+     * @throws \Exception When the data cannot be retrieved from the DB.
+     *
+     * @override Model::fetchDataFromDB.
+     */
+    public static function fetchDataFromDB(array $filter): self
+    {
+        // Due to this DB call, this function cannot be unit tested without
+        // a proper mock.
+        $row = \db_get_row_filter('tlayout', $filter);
+
+        if ($row === false) {
+            throw new \Exception('error fetching the data from the DB');
+        }
+
+        // Return a new instance.
+        return new self($row);
+    }
+
+
 }

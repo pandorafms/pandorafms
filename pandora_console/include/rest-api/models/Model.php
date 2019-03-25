@@ -10,16 +10,55 @@ abstract class Model
     private $data;
 
 
-    protected abstract function validateData(array $data): void;
+    abstract protected function validateData(array $data): void;
 
 
-    protected abstract function decode(array $data): array;
+    abstract protected function decode(array $data): array;
 
 
     public function __construct(array $unknownData)
     {
         $this->validateData($unknownData);
         $this->data = $this->decode($unknownData);
+    }
+
+
+    /**
+     * Instance the class with the input data.
+     *
+     * @param array $data Unknown data structure.
+     *
+     * @return self
+     */
+    public static function fromArray(array $data): self
+    {
+        // The reserved word static refers to the invoked class at runtime.
+        return new static($data);
+    }
+
+
+    /**
+     * Obtain a data structure from the database using a filter.
+     *
+     * @param array $filter Filter to retrieve the modeled element.
+     *
+     * @return array The modeled element data structure stored into the DB.
+     * @throws \Exception When the data cannot be retrieved from the DB.
+     */
+    abstract protected static function fetchDataFromDB(array $filter): array;
+
+
+    /**
+     * Obtain a model's instance from the database using a filter.
+     *
+     * @param array $filter Filter to retrieve the modeled element.
+     *
+     * @return self A modeled element's instance.
+     */
+    public static function fromDB(array $filter): self
+    {
+        // The reserved word static refers to the invoked class at runtime.
+        return static::fromArray(static::fetchDataFromDB($filter));
     }
 
 
@@ -90,7 +129,7 @@ abstract class Model
      */
     protected static function parseIntOr($val, $def)
     {
-        return is_numeric($val) ? (int) $val : $def;
+        return (is_numeric($val) === true) ? (int) $val : $def;
     }
 
 
@@ -105,7 +144,7 @@ abstract class Model
     protected static function issetInArray(array $val, array $keys)
     {
         foreach ($keys as $key => $value) {
-            if (isset($val[$value])) {
+            if (isset($val[$value]) === true) {
                 return $val[$value];
             }
         }

@@ -10,19 +10,6 @@ class Item extends Model
 
 
     /**
-     * Instance the class with the input data.
-     *
-     * @param mixed $data
-     *
-     * @return self
-     */
-    public static function fromArray(array $data): self
-    {
-        return new self($data);
-    }
-
-
-    /**
      * Validate the input data.
      *
      * @param mixed $data
@@ -261,6 +248,44 @@ class Item extends Model
             default:
             return 'down';
         }
+    }
+
+
+    /**
+     * Obtain a vc item data structure from the database using a filter.
+     *
+     * @param array $filter Filter of the Visual Console Item.
+     *
+     * @return array The Visual Console Item data structure stored into the DB.
+     * @throws \Exception When the data cannot be retrieved from the DB.
+     *
+     * @override Model::fetchDataFromDB.
+     */
+    protected static function fetchDataFromDB(array $filter): array
+    {
+        // Due to this DB call, this function cannot be unit tested without
+        // a proper mock.
+        $row = \db_get_row_filter('tlayout_data', $filter);
+
+        if ($row === false) {
+            throw new \Exception('error fetching the data from the DB');
+        }
+
+        return $row;
+    }
+
+
+    /**
+     * Obtain a vc item instance from the database using an identifier.
+     *
+     * @param integer $id Identifier of the Visual Console Item.
+     *
+     * @return array The Visual Console Item data structure stored into the DB.
+     * @throws \Exception When the data cannot be retrieved from the DB.
+     */
+    protected static function fromDBWithId(int $id): array
+    {
+        return static::fromDB(['id' => $id]);
     }
 
 

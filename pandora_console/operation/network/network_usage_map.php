@@ -164,7 +164,8 @@ html_print_input_hidden('order_by', $order_by);
 html_print_table($table);
 echo '</form>';
 
-$has_data = true;
+$has_data = false;
+$first_load = true;
 if ((bool) get_parameter('update_netflow') === true) {
     $map_data = netflow_build_map_data(
         $utimestamp_lower,
@@ -173,6 +174,7 @@ if ((bool) get_parameter('update_netflow') === true) {
         ($action === 'talkers') ? 'srcip' : 'dstip'
     );
     $has_data = !empty($map_data['nodes']);
+    $first_load = false;
 } else if ((bool) get_parameter('update_nta') === true) {
     $map_data = network_build_map_data(
         $utimestamp_lower,
@@ -181,14 +183,13 @@ if ((bool) get_parameter('update_netflow') === true) {
         $action === 'talkers'
     );
     $has_data = !empty($map_data['nodes']);
-} else {
-    return;
+    $first_load = false;
 }
 
 if ($has_data === true) {
     $map_manager = new NetworkMap($map_data);
     $map_manager->printMap();
-} else {
+} else if (!$first_load) {
     ui_print_info_message(__('No data retrieved'));
 }
 

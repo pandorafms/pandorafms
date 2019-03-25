@@ -4,19 +4,56 @@ declare(strict_types=1);
 
 namespace Models;
 
+/**
+ * This class should be extended to add functionalities to
+ * fetch, validate, transform and represent data entities.
+ */
 abstract class Model
 {
 
+    /**
+     * Internal data of the model.
+     *
+     * @var array
+     */
     private $data;
 
 
+    /**
+     * Validate the received data structure to ensure if we can extract the
+     * values required to build the model.
+     *
+     * @param array $data Input data.
+     *
+     * @return void
+     *
+     * @throws \InvalidArgumentException If any input value is considered
+     * invalid.
+     *
+     * @abstract
+     */
     abstract protected function validateData(array $data): void;
 
 
+    /**
+     * Returns a valid representation of the model.
+     *
+     * @param array $data Input data.
+     *
+     * @return array Data structure representing the model.
+     *
+     * @abstract
+     */
     abstract protected function decode(array $data): array;
 
 
-    public function __construct(array $unknownData)
+    /**
+     * Constructor of the model. It won't be public. The instances
+     * will be created through factories which start with from*.
+     *
+     * @param array $unknownData Input data structure.
+     */
+    protected function __construct(array $unknownData)
     {
         $this->validateData($unknownData);
         $this->data = $this->decode($unknownData);
@@ -24,11 +61,11 @@ abstract class Model
 
 
     /**
-     * Instance the class with the input data.
+     * Instance the class with the unknown input data.
      *
      * @param array $data Unknown data structure.
      *
-     * @return self
+     * @return self Instance of the model.
      */
     public static function fromArray(array $data): self
     {
@@ -44,6 +81,8 @@ abstract class Model
      *
      * @return array The modeled element data structure stored into the DB.
      * @throws \Exception When the data cannot be retrieved from the DB.
+     *
+     * @abstract
      */
     abstract protected static function fetchDataFromDB(array $filter): array;
 
@@ -63,7 +102,7 @@ abstract class Model
 
 
     /**
-     * Returns the JSON representation of the given value.
+     * JSON representation of the model.
      *
      * @return string
      */
@@ -74,7 +113,7 @@ abstract class Model
 
 
     /**
-     * Returns the text representation of this class.
+     * Text representation of the model.
      *
      * @return string
      */
@@ -84,12 +123,19 @@ abstract class Model
     }
 
 
+    /*
+     * -------------
+     * - UTILITIES -
+     * -------------
+     */
+
+
     /**
-     * Returns a Boolean of a mixed value.
+     * From a unknown value, it will try to extract a valid boolean value.
      *
-     * @param mixed $value
+     * @param mixed $value Unknown input.
      *
-     * @return boolean
+     * @return boolean Valid boolean value.
      */
     protected static function parseBool($value): bool
     {
@@ -106,12 +152,13 @@ abstract class Model
 
 
     /**
-     * Return a not empty string or a default value from a mixed value.
+     * Return a not empty string or a default value from a unknown value.
      *
-     * @param mixed $val
-     * @param mixed $def Default value to use if we cannot extract a non empty string.
+     * @param mixed $val Input value.
+     * @param mixed $def Default value.
      *
-     * @return mixed
+     * @return mixed A valid string (not empty) extracted from the input
+     * or the default value.
      */
     protected static function notEmptyStringOr($val, $def)
     {
@@ -120,12 +167,12 @@ abstract class Model
 
 
     /**
-     * Return a integer or a default value from a mixed value.
+     * Return a valid integer or a default value from a unknown value.
      *
-     * @param mixed $val
-     * @param mixed $def
+     * @param mixed $val Input value.
+     * @param mixed $def Default value.
      *
-     * @return mixed
+     * @return mixed A valid int extracted from the input or the default value.
      */
     protected static function parseIntOr($val, $def)
     {
@@ -134,18 +181,18 @@ abstract class Model
 
 
     /**
-     * Returns the value if it exists in the array
+     * Get a value from a dictionary from a possible pool of keys.
      *
-     * @param array $val  input array
-     * @param array $keys array with the keys to search
+     * @param array $dict Input array.
+     * @param array $keys Possible keys.
      *
-     * @return mixed
+     * @return mixed The first value found with the pool of keys or null.
      */
-    protected static function issetInArray(array $val, array $keys)
+    protected static function issetInArray(array $dict, array $keys)
     {
         foreach ($keys as $key => $value) {
-            if (isset($val[$value]) === true) {
-                return $val[$value];
+            if (isset($dict[$value]) === true) {
+                return $dict[$value];
             }
         }
 

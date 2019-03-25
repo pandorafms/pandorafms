@@ -2,106 +2,83 @@
 
 declare(strict_types=1);
 
-namespace Models\VisualConsole\items;
+namespace Models\VisualConsole\Items;
 use Models\VisualConsole\Item;
-use Models\Model;
 
+/**
+ * Model of a Box item of the Visual Console.
+ */
 final class Box extends Item
 {
 
 
     /**
-     * Validate the input data.
+     * Returns a valid representation of the model.
      *
-     * @param mixed $data
+     * @param array $data Input data.
      *
-     * @return void
+     * @return array Data structure representing the model.
      *
-     * @override
-     */
-    protected function validateData(array $data): void
-    {
-        parent::validateData($data);
-    }
-
-
-    /**
-     * Returns a valid data structure.
-     *
-     * @param mixed $data
-     *
-     * @return array
-     *
-     * @override
+     * @overrides Item::decode.
      */
     protected function decode(array $data): array
     {
-        $return = parent::decode($data);
-        $return['type'] = BOX_ITEM;
-        $return['parentId'] = null;
-        $return['aclGroupId'] = null;
-        $return['borderWidth'] = $this->extractBorderWidth($data);
-        $return['borderColor'] = $this->extractBorderColor($data);
-        $return['fillColor'] = $this->extractFillColor($data);
-        return $return;
+        $boxData = parent::decode($data);
+        $boxData['type'] = BOX_ITEM;
+        $boxData['parentId'] = null;
+        $boxData['aclGroupId'] = null;
+        $boxData['borderWidth'] = $this->extractBorderWidth($data);
+        $boxData['borderColor'] = $this->extractBorderColor($data);
+        $boxData['fillColor'] = $this->extractFillColor($data);
+        return $boxData;
     }
 
 
     /**
-     * Extract the value of borderWidth and
-     * return a integer.
+     * Extract a border width value.
      *
-     * @param mixed $data
+     * @param array $data Unknown input data structure.
      *
-     * @return integer
+     * @return integer Valid border width. 0 by default.
      */
     private function extractBorderWidth(array $data): int
     {
-        $borderWidth = Model::parseIntOr(
-            Model::issetInArray($data, ['borderWidth', 'border_width']),
+        return static::parseIntOr(
+            static::issetInArray($data, ['borderWidth', 'border_width']),
             0
         );
-        if ($borderWidth >= 0) {
-            return $borderWidth;
-        } else {
-            return 0;
-        }
     }
 
 
     /**
-     * Extract the value of borderColor and
-     * return to not empty string or null.
+     * Extract a border color value.
      *
-     * @param mixed $data
+     * @param array $data Unknown input data structure.
      *
-     * @return void
+     * @return mixed String representing the border color (not empty) or null.
      */
     private function extractBorderColor(array $data)
     {
-        $borderColor = Model::notEmptyStringOr(
-            Model::issetInArray($data, ['borderColor', 'border_color']),
+        return static::notEmptyStringOr(
+            static::issetInArray($data, ['borderColor', 'border_color']),
             null
         );
-        return $borderColor;
     }
 
 
     /**
-     * Extract the value of fillColor and
-     * return to not empty string or null.
+     * Extract a fill color value.
      *
-     * @param mixed $data
+     * @param array $data Unknown input data structure.
      *
-     * @return void
+     * @return mixed String representing the fill color (not empty) or null.
      */
     private function extractFillColor(array $data)
     {
-        $borderColor = Model::notEmptyStringOr(
-            Model::issetInArray($data, ['fillColor', 'fill_color']),
+        return static::notEmptyStringOr(
+            static::issetInArray($data, ['fillColor', 'fill_color']),
             null
         );
-        return $borderColor;
     }
 
 

@@ -107,14 +107,13 @@ if ($correctLogin) {
             if ($op == 'set' && $id) {
                 switch ($op2) {
                     case 'update_agent':
-
                     case 'add_module_in_conf':
                     case 'update_module_in_conf':
                     case 'delete_module_in_conf':
 
                         $id_os = db_get_value_sql('select id_os from tagente where id_agente = '.$id);
 
-                        if ($id_os == 100) {
+                        if ($id_os === 100) {
                             returnError('not_allowed_operation_cluster', $returnType);
                             return false;
                         }
@@ -130,7 +129,7 @@ if ($correctLogin) {
 
                         $id_os = db_get_value_sql('select id_os from tagente where nombre = "'.$id.'"');
 
-                        if ($id_os == 100) {
+                        if ($id_os === 100) {
                             returnError('not_allowed_operation_cluster', $returnType);
                             return false;
                         }
@@ -143,14 +142,58 @@ if ($correctLogin) {
 
                         $id_os = db_get_value_sql('select id_os from tagente where id_agente = (select id_agente from tagente_modulo where id_agente_modulo ='.$id.')');
 
-                        if ($id_os == 100) {
+                        if ($id_os === 100) {
                             returnError('not_allowed_operation_cluster', $returnType);
                             return false;
                         }
                     break;
 
-                    default:
+                    case 'get_info_user_name':
 
+                        $id_os = get_info_user_name($user);
+
+                        if ($id_os === 100) {
+                            returnError('not_allowed_operation_cluster', $returnType);
+                            return false;
+                        }
+                    break;
+
+                    case 'get_filter_user_group':
+
+                        $id_os = get_filter_user_group($user, $group, $disable);
+
+                        if ($id_os === false) {
+                            returnError('not_allowed_operation_cluster', $returnType);
+                            return false;
+                        }
+                    break;
+
+                    case 'delete_user_profile':
+                        $id_os = delete_user_profile($user);
+
+                        if ($id_os === false) {
+                            returnError('not_allowed_operation_cluster', $returnType);
+                            return false;
+                        }
+                    break;
+
+                    case 'get_list_all_user':
+                        $id_os = get_list_all_user();
+
+                        if ($id_os === false) {
+                            returnError('not_allowed_operation_cluster', $returnType);
+                            return false;
+                        }
+
+                    case 'add_permission_user_to_group':
+                        $id_os = add_permisson_user_to_group();
+
+                        if ($id_os === false) {
+                            returnError('not_allowed_operation_cluster', $returnType);
+                            return false;
+                        }
+
+                    default:
                         // break;
                 }
             }

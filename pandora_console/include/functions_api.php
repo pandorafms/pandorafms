@@ -542,7 +542,6 @@ $module_field_column_mampping = [
     'module_critical_inverse'  => 'critical_inverse as module_critical_inverse',
     'module_warning_inverse'   => 'warning_inverse as module_warning_inverse',
 ];
-
 // module related field mappings 2/2 (output field => column for 'tagente_estado')
 // module_id_agent_modulo  is not in this list
 $estado_fields_to_columns_mapping = [
@@ -13952,7 +13951,7 @@ function api_set_update_event_filter($id_event_filter, $thrash1, $other, $thrash
                 break;
 
                 case 5:
-                    $values['status'] = (array_key_exists($other['data'][5], events_get_all_status()) || $other['data'][5] == -1) ? $other['data'][5] : -1;
+                    $values['status'] = (array_key_exists($other['data'][5], events_get_all_status()) || $db_process_sql_insertother['data'][5] == -1) ? $other['data'][5] : -1;
                 break;
 
                 case 6:
@@ -14683,4 +14682,137 @@ function api_set_reset_agent_counts($id, $thrash1, $thrash2, $thrash3)
         returnData('string', ['type' => 'string', 'data' => $data]);
     }
 
+}
+
+
+function api_get_list_all_user()
+{
+    $sql = sprintf('SELECT * FROM tusuario ORDER BY fullname');
+    $users = db_get_all_rows_sql($sql);
+
+    if ($users === false) {
+        returnError('Error_user', ' Users could not be found.');
+    } else {
+        $data = [
+            'type' => 'string',
+            'data' => $users,
+        ];
+
+        returnData('string', ['type' => 'string', 'data' => $data]);
+    }
+
+}
+
+
+function api_get_info_user_name($user)
+{
+    if ($user === null) {
+        return false;
+    }
+
+    $sql = sprintf("select * from tperfil,tusuario_perfil where tperfil.id_perfil in (select tusuario_perfil.id_perfil from tusuario_perfil where id_usuario = '$user')");
+    $user_profile = db_get_all_rows_sql($sql);
+    if ($user_profile === false) {
+        returnError('Error_user', ' User could not be found.');
+    } else {
+        $data = [
+            'type' => 'string',
+            'data' => $user_profile,
+        ];
+
+        returnData('string', ['type' => 'string', 'data' => $data]);
+    }
+}
+
+
+function api_get_filter_user_group($user, $group, $disable)
+{
+    if ($user === null && ($group === null || $disable === null)) {
+        return false;
+    }
+
+    if ($group !== null) {
+        $sql = "select * from tperfil,tusuario_perfil where tperfil.id_perfil in (select tusuario_perfil.id_perfil from tusuario_perfil where id_usuario = '$user' and id_grupo = $group) LIMIT 1";
+        $filter_user = db_get_all_rows_sql($sql);
+    }
+
+    if ($disable !== null) {
+        $sql = "select * from tperfil,tusuario_perfil where tperfil.id_perfil in (select tusuario_perfil.id_perfil from tusuario_perfil where id_usuario = '$user' and disable = $disable) LIMIT 1";
+        $filter_user = db_get_all_rows_sql($sql);
+    }
+
+    if ($filter_user === false) {
+        returnError('Error_user', ' User profile could not be found.');
+    } else {
+        $data = [
+            'type' => 'string',
+            'data' => $filter_user,
+        ];
+
+        returnData('string', ['type' => 'string', 'data' => $data]);
+    }
+}
+
+
+function api_get_delete_user_profile($id_user)
+{
+    if ($id_user === null) {
+        return false;
+    }
+
+    $sql = "delete from tusuario_perfil where id_usuario = '$id_user'";
+    $deleted_permission = db_process_sql_delete($sql);
+
+    if ($deleted_permission === false) {
+        returnError('Error_delete', ' User profile could not be deleted.');
+    } else {
+        $data = [
+            'type' => 'string',
+            'data' => $deleted_permission,
+        ];
+
+        returnData('string', ['type' => 'string', 'data' => $data]);
+    }
+}
+
+
+function api_add_permisson_user_to_group($id_user, $group, $profile, $other=';')
+{
+    if ($user === null || $group === null || $profile === null) {
+        return false;
+    }
+
+    $other[0] = $id_user;
+    $other[1] = $group;
+    $other[2] = $profile;
+    if ($id_user === null || $group === null || $profile === null) {
+        return false;
+    }
+
+    // take it up last value(id_up) for tusuario_peril and increase 1 value
+    $sql = 'select MAX(id_up) from tusuario_perfil';
+
+    $last_id_up = db_get_value_sql($sql);
+
+    $last_id_up ++;
+
+    $values = [
+        'id_up'        => $last_id_up,
+        'id_usuario'   => $other[0],
+        'id_perfil'    => $other[2],
+        'id_grupo'     => $other[1],
+        'no_hierarchy' => 0,
+        'assigned_by'  => 0,
+        'id_policy'    => 0,
+        'tags'         => '',
+
+    ];
+
+    $sucessfull_insert = db_process_sql_insert('tusuario_perfil', $values);
+
+    if ($sucessfull_insert === false) {
+        returnError('Error_insert', ' User profile could not be aviable.');
+    } else {
+        returnData('string', ['type' => 'string', 'data' => $data]);
+    }
 }

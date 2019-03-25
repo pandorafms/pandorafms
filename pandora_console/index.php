@@ -1057,6 +1057,9 @@ if ($searchPage) {
         if ($main_sec == false) {
             if ($sec == 'extensions') {
                 $main_sec = get_parameter('extension_in_menu');
+                if (empty($main_sec) === true) {
+                    $main_sec = $sec;
+                }
             } else if ($sec == 'gextensions') {
                     $main_sec = get_parameter('extension_in_menu');
             } else {

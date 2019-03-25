@@ -2129,9 +2129,6 @@ a.autorefresh_txt,
   #header_searchbar input.search_input {
     width: 135px;
   }
-  #header_user span {
-    display: none;
-  }
   .header_right > div {
     padding-left: 10px;
   }

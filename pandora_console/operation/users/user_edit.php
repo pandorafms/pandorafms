@@ -685,7 +685,7 @@ if (!defined('METACONSOLE')) {
         function print_map(map_unavailable){
             var img_src = "<?php echo ui_get_full_url('images/edit_user_map_not_available.jpg', false, false, false, false); ?>";
             if(map_unavailable !== true){
-                $("#zonepicker").append('<img src="'+img_src+'" alt="This map is not available" title="This map is not available" style="max-width:100%"/>').css('text-align','center');
+                $("#zonepicker").append('<img src="'+img_src+'" alt="This map is not available" title="This map is not available" style="max-width:100%; max-height: 270px;"/>').css('text-align','center');
             }else{
                 var optionText = $("#timezone option:selected").val();
                 $(function() {

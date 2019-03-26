@@ -404,10 +404,10 @@ div#page {
   background-image: none;
   clear: both;
   width: auto;
-  padding-top: 20px !important;
+  padding-top: 5px !important;
   padding-left: 60px; /* This is overwritten by the classic menu (215px)*/
   padding-right: 35px;
-  margin-left: 35px;
+  margin-left: 20px;
 }
 
 body.pure {
@@ -1266,38 +1266,10 @@ div.title_line {
   margin-bottom: 20px;
   height: 50px;
   box-sizing: border-box;
-  background-color: #fff;
+  background-color: #fafafa;
   border-top-right-radius: 7px;
   border-top-left-radius: 7px;
   box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.1);
-}
-
-#menu_tab_frame_view_bc {
-  display: flex;
-  justify-content: space-between;
-  border-bottom: 2px solid #82b92e;
-  max-height: 70px;
-  min-height: 50px;
-  width: 100%;
-  padding-right: 0px;
-  margin-left: 0px !important;
-  margin-bottom: 20px;
-  height: 70px;
-  box-sizing: border-box;
-  background-color: #fff;
-  border-top-right-radius: 7px;
-  border-top-left-radius: 7px;
-  box-shadow: 1px 1px 8px rgba(0, 0, 0, 0.1);
-  flex-direction: column;
-}
-
-#menu_tab_frame_view_bc .breadcrumbs_container {
-  align-self: flex-start;
-}
-
-.breadcrumbs_container {
-  padding-left: 10px;
-  padding-top: 4px;
 }
 
 #menu_tab {
@@ -1333,6 +1305,7 @@ div.title_line {
   text-decoration: none;
   padding: 0px;
   margin: 0px;
+  padding-top: 6px;
 }
 #menu_tab li.nomn:hover a,
 #menu_tab li:hover ul a:hover {
@@ -1438,7 +1411,8 @@ div#agent_wizard_subtabs {
 #menu_tab_left li a,
 #menu_tab_left li span {
   color: #343434;
-  font-size: 14pt;
+  font-size: 16pt;
+  line-height: 16pt;
 }
 
 /*
@@ -2047,6 +2021,7 @@ div#pandora_logo_header {
 
 #header_table_inner {
   height: 60px;
+  min-width: 790px;
   /*width: 100%;*/
   display: flex;
   align-items: center;
@@ -3279,7 +3254,7 @@ div.div_groups_status {
 }
 
 #title_menu {
-  color: #9ca4a6;
+  color: #b9b9b9;
   float: right;
   width: 72%;
   letter-spacing: 0pt;
@@ -3295,16 +3270,15 @@ div.div_groups_status {
 
 #menu_tab li.nomn,
 #menu_tab li.nomn_high {
-  background-color: #fff;
-  padding-right: 3px;
-  padding-left: 3px;
+  padding-right: 8px;
+  padding-left: 8px;
   padding-top: 6px;
   font-weight: bold;
   text-decoration: none;
   font-size: 14px;
   margin-top: 0;
   min-width: 30px;
-  height: 29px;
+  height: 40px;
 }
 
 #menu_tab li:hover {
@@ -3315,6 +3289,7 @@ div.div_groups_status {
 #menu_tab li.nomn_high span {
   color: #fff;
   box-shadow: inset 0px 4px #82b92e;
+  background-color: #fff;
 }
 
 #menu_tab li.nomn img,
@@ -4772,8 +4747,8 @@ input:checked + .p-slider:before {
 /* New white rounded boxes */
 .white_box {
   background-color: #fff;
-  border: 1px solid #d7d9da;
-  border-radius: 10px;
+  border: 1px solid #f3f3f3;
+  border-radius: 5px;
   padding: 20px 50px;
 }
 

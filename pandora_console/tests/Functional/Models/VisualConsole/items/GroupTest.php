@@ -62,7 +62,7 @@ class GroupTest extends TestCase
                 'x'             => -666,
                 'y'             => 76,
                 'imageSrc'      => '',
-                'id_group'      => 0,
+                'groupId'       => 0,
             ]
         );
         // Missing imageSrc.
@@ -79,7 +79,7 @@ class GroupTest extends TestCase
                 'height'        => '0',
                 'x'             => -666,
                 'y'             => 76,
-                'id_group'      => 0,
+                'id_group'      => 11,
             ]
         );
     }
@@ -129,15 +129,22 @@ class GroupTest extends TestCase
     public function testContainerIsRepresentedAsJson(): void
     {
         $this->assertEquals(
-            '{"id":1,"type"11,"label":null,"labelPosition":"down","isLinkEnabled":false,"isOnTop":false,"parentId":null,"aclGroupId":null,"width":0,"height":0,"x":0,"y":0,"imageSrc":"image.jpg","groupId":0}',
+            '{"id":7,"type":11,"label":null,"labelPosition":"up","isLinkEnabled":true,"isOnTop":false,"parentId":null,"aclGroupId":null,"width":0,"height":0,"x":-666,"y":76,"imageSrc":"image.jpg","groupId":12}',
             Group::fromArray(
                 [
-                    'id'       => 1,
-                    'type'     => GROUP_ITEM,
-                    'width'    => '0',
-                    'height'   => '0',
-                    'imageSrc' => 'image.jpg',
-                    'groupId'  => 0,
+                    'id'            => 7,
+                    'type'          => GROUP_ITEM,
+                    'label'         => null,
+                    'labelPosition' => 'up',
+                    'isLinkEnabled' => true,
+                    'isOnTop'       => false,
+                    'parentId'      => null,
+                    'width'         => '0',
+                    'height'        => '0',
+                    'x'             => -666,
+                    'y'             => 76,
+                    'imageSrc'      => 'image.jpg',
+                    'groupId'       => 12,
                 ]
             )
         );

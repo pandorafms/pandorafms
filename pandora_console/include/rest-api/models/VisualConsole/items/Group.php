@@ -70,9 +70,9 @@ final class Group extends Item
     {
         $groupId = Model::parseIntOr(
             Model::issetInArray($data, ['groupId', 'id_group']),
-            0
+            -1
         );
-        if ($groupId === null) {
+        if ($groupId < 0) {
             throw new \InvalidArgumentException(
                 'the group Id property is required and should be integer'
             );

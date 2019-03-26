@@ -1234,7 +1234,7 @@ $class = 'databox filters';
                     $all_modules = '';
                 } else {
                     $all_modules = db_get_all_rows_sql(
-                        'SELECT DISTINCT nombre, id_agente_modulo FROM 
+                        'SELECT DISTINCT nombre FROM 
 							tagente_modulo WHERE id_agente IN ('.implode(',', array_values($id_agents)).')'
                     );
                 }

@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 use PHPUnit\Framework\TestCase;
-use Models\VisualConsole\items\Box;
+use Models\VisualConsole\Items\Box;
 
 /**
  * Test class

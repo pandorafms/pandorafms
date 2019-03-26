@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Models\VisualConsole\items;
+namespace Models\VisualConsole\Items;
 use Models\Model;
 
 final class Line extends Model

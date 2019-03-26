@@ -2,9 +2,8 @@
 
 declare(strict_types=1);
 
-namespace Models\VisualConsole\items;
+namespace Models\VisualConsole\Items;
 use Models\VisualConsole\Item;
-use Models\Model;
 
 final class Group extends Item
 {

@@ -262,6 +262,7 @@ function network_general_map_configuration($nodes, $relations)
         'relations'       => $relations,
         'pure'            => 1,
         'no_pandora_node' => 1,
+        'no_popup'        => 1,
         'map_options'     => [
             'generation_method' => LAYOUT_SPRING1,
             'map_filter'        => [

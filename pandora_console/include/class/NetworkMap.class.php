@@ -282,6 +282,13 @@ class NetworkMap
      */
     private $filter;
 
+    /**
+     * Do not show the popup window.
+     *
+     * @var integer
+     */
+    private $noPopUp;
+
 
     /**
      * Base constructor.
@@ -367,6 +374,10 @@ class NetworkMap
 
             if (isset($options['no_pandora_node'])) {
                 $this->noPandoraNode = $options['no_pandora_node'];
+            }
+
+            if (isset($options['no_popup'])) {
+                $this->noPopUp = $options['no_popup'];
             }
 
             // Use a custom parser.
@@ -3390,13 +3401,17 @@ class NetworkMap
             $output .= $this->loadMapSkel();
             $output .= $this->loadMapData();
             $output .= $this->loadController();
-            $output .= $this->loadAdvancedInterface();
+            if (!$this->noPopUp) {
+                $output .= $this->loadAdvancedInterface();
+            }
         } else {
             // Simulated, no tmap entries.
             $output .= $this->loadMapSkel();
             $output .= $this->loadMapData();
             $output .= $this->loadController();
-            $output .= $this->loadSimpleInterface();
+            if (!$this->noPopUp) {
+                $output .= $this->loadSimpleInterface();
+            }
         }
 
         $output .= '

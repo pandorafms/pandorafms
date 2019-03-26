@@ -109,7 +109,7 @@ if ($progress_task_discovery) {
     $table = new StdClasS();
     $table->class = 'databox data';
     $table->width = '75%';
-    $table->styleTable = 'margin: 2em auto;border: 1px solid #ddd;background: white;';
+    $table->styleTable = 'margin: 2em auto 0;border: 1px solid #ddd;background: white;';
     $table->rowid = [];
     $table->data = [];
 

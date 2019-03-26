@@ -2956,6 +2956,10 @@ function init_graph(parameter_object) {
       $(window).height() - $("#menu_tab_frame_view").height() - 20; // 20 of margin
   }
 
+  if (typeof parameter_object.font_size != "undefined") {
+    window.font_size = parameter_object.font_size;
+  }
+
   window.refresh_period = 5 * 1000; //milliseconds
   if (typeof parameter_object.refresh_period != "undefined") {
     window.refresh_period = parameter_object.refresh_period;
@@ -3968,8 +3972,8 @@ function draw_elements_graph() {
 
   var font_size = node_radius / 1.5;
 
-  if (self.font_size) {
-    font_size = self.font_size;
+  if (typeof window.font_size != "undefined") {
+    font_size = window.font_size;
   }
 
   node_temp

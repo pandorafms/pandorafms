@@ -244,6 +244,11 @@ if (strlen($search) > 0) {
 
 // Login process
 if (! isset($config['id_user'])) {
+
+    // Clear error messages.
+    unset($_COOKIE['errormsg']);
+    setcookie('errormsg', null, -1);
+
     if (isset($_GET['login'])) {
         include_once 'include/functions_db.php';
         // Include it to use escape_string_sql function

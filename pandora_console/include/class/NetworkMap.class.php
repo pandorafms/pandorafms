@@ -751,7 +751,7 @@ class NetworkMap
             // Empty map returns no data.
             $nodes = [];
         } else {
-            if ($this->mapOptions['map_filter']['dont_show_subgroups'] == 'true'
+            if ($this->mapOptions['map_filter']['dont_show_subgroups'] === 'true'
                 || $this->mapOptions['map_filter']['dont_show_subgroups'] == 1
             ) {
                 // Show only current selected group.

@@ -218,7 +218,10 @@ class Item extends Model
      */
     private function extractLabel(array $data)
     {
-        return static::notEmptyStringOr($data['label'], null);
+        return static::notEmptyStringOr(
+            static::issetInArray($data, ['label']),
+            null
+        );
     }
 
 

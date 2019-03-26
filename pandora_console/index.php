@@ -173,8 +173,8 @@ if (!empty($config['https']) && empty($_SERVER['HTTPS'])) {
 // Pure mode (without menu, header and footer).
 $config['pure'] = (bool) get_parameter('pure');
 
-// Auto Refresh page (can now be disabled anywhere in the script)
-if (get_parameter('refr')) {
+// Auto Refresh page (can now be disabled anywhere in the script).
+if (get_parameter('refr') != null) {
     $config['refr'] = (int) get_parameter('refr');
 }
 
@@ -1031,10 +1031,11 @@ if ($config['pure'] == 0) {
     echo '<div id="container"><div id="head">';
     include 'general/header.php';
 
-    if ($_SESSION['menu_type']=='classic')
+    if ($_SESSION['menu_type'] == 'classic') {
         echo '</div><div id="page" class="page_classic"><div id="menu">';
-    else
+    } else {
         echo '</div><div id="page" class="page_collapsed"><div id="menu">';
+    }
 
     include 'general/main_menu.php';
     echo '</div>';

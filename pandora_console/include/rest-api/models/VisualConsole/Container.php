@@ -179,7 +179,7 @@ final class Container extends Model
      *
      * @override Model::fetchDataFromDB.
      */
-    public static function fetchDataFromDB(array $filter)
+    protected static function fetchDataFromDB(array $filter)
     {
         // Due to this DB call, this function cannot be unit tested without
         // a proper mock.
@@ -189,8 +189,7 @@ final class Container extends Model
             throw new \Exception('error fetching the data from the DB');
         }
 
-        // New instance.
-        return new static($row);
+        return $row;
     }
 
 

@@ -244,6 +244,10 @@ if (strlen($search) > 0) {
 
 // Login process
 if (! isset($config['id_user'])) {
+    // Clear error messages.
+    unset($_COOKIE['errormsg']);
+    setcookie('errormsg', null, -1);
+
     if (isset($_GET['login'])) {
         include_once 'include/functions_db.php';
         // Include it to use escape_string_sql function
@@ -1026,10 +1030,11 @@ if ($config['pure'] == 0) {
     echo '<div id="container"><div id="head">';
     include 'general/header.php';
 
-    if ($_SESSION['menu_type']=='classic')
+    if ($_SESSION['menu_type'] == 'classic') {
         echo '</div><div id="page" class="page_classic"><div id="menu">';
-    else
+    } else {
         echo '</div><div id="page" class="page_collapsed"><div id="menu">';
+    }
 
     include 'general/main_menu.php';
     echo '</div>';

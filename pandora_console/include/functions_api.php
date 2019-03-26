@@ -14732,14 +14732,25 @@ function api_get_filter_user_group($user, $group, $disable)
     }
 
     if ($group !== null) {
-        $sql = "select * from tperfil,tusuario_perfil where tperfil.id_perfil in (select tusuario_perfil.id_perfil from tusuario_perfil where id_usuario = '$user' and id_grupo = $group) LIMIT 1";
-        $filter_user = db_get_all_rows_sql($sql);
+        $condition = $grupo;
+        $campo = 'group';
     }
 
     if ($disable !== null) {
-        $sql = "select * from tperfil,tusuario_perfil where tperfil.id_perfil in (select tusuario_perfil.id_perfil from tusuario_perfil where id_usuario = '$user' and disable = $disable) LIMIT 1";
-        $filter_user = db_get_all_rows_sql($sql);
+        $condition = $disable;
+        $campo = 'disable';
     }
+
+    // CASO CON USUARIO DE META CONSOLE
+    /*
+        if ($user_meta !== null) {
+        $campo = 'metaconsole_assigned_server';
+        $condition = 1;
+        }
+    */
+
+    $sql = sprintf(('select * from tperfil,tusuario_perfil where tperfil.id_perfil in (select tusuario_perfil.id_perfil from tusuario_perfil where id_usuario = '$user' and %s = % d)'), $campo, $condition);
+    $filter_user = db_get_all_rows_sql($sql);
 
     if ($filter_user === false) {
         returnError('Error_user', ' User profile could not be found.');

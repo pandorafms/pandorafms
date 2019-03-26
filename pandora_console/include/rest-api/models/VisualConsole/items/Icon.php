@@ -5,33 +5,21 @@ declare(strict_types=1);
 namespace Models\VisualConsole\Items;
 use Models\VisualConsole\Item;
 
+/**
+ * Model of a group item of the Visual Console.
+ */
 final class Icon extends Item
 {
 
 
     /**
-     * Validate the input data.
+     * Returns a valid representation of the model.
      *
-     * @param mixed $data
+     * @param array $data Input data.
      *
-     * @return void
+     * @return array Data structure representing the model.
      *
-     * @override
-     */
-    protected function validateData(array $data): void
-    {
-        parent::validateData($data);
-    }
-
-
-    /**
-     * Returns a valid data structure.
-     *
-     * @param mixed $data
-     *
-     * @return array
-     *
-     * @override
+     * @overrides Item::decode.
      */
     protected function decode(array $data): array
     {
@@ -43,25 +31,28 @@ final class Icon extends Item
 
 
     /**
-     * extractBackgroundUrl
+     * Extract a image src value.
      *
-     * @param mixed $data
+     * @param array $data Unknown input data structure.
      *
-     * @return void
+     * @return mixed String representing the image url (not empty) or null.
+     *
+     * @throws \InvalidArgumentException When a valid image src can't be found.
      */
     private function extractImageSrc(array $data)
     {
-        $imageSrc = Model::notEmptyStringOr(
-            Model::issetInArray($data, ['imageSrc', 'image']),
+        $imageSrc = static::notEmptyStringOr(
+            static::issetInArray($data, ['imageSrc', 'image']),
             null
         );
-        if ($imageSrc === null) {
+
+        if ($imageSrc === null || \strlen($imageSrc) === 0) {
             throw new \InvalidArgumentException(
-                'the imageSrc property is required and should be string'
+                'the image src property is required and should be a non empty string'
             );
-        } else {
-            return $imageSrc;
         }
+
+        return $imageSrc;
     }
 
 

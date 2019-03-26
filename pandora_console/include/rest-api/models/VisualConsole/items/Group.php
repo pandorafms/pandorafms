@@ -5,33 +5,21 @@ declare(strict_types=1);
 namespace Models\VisualConsole\Items;
 use Models\VisualConsole\Item;
 
+/**
+ * Model of a group item of the Visual Console.
+ */
 final class Group extends Item
 {
 
 
     /**
-     * Validate the input data.
+     * Returns a valid representation of the model.
      *
-     * @param mixed $data
+     * @param array $data Input data.
      *
-     * @return void
+     * @return array Data structure representing the model.
      *
-     * @override
-     */
-    protected function validateData(array $data): void
-    {
-        parent::validateData($data);
-    }
-
-
-    /**
-     * Returns a valid data structure.
-     *
-     * @param mixed $data
-     *
-     * @return array
-     *
-     * @override
+     * @overrides Item::decode.
      */
     protected function decode(array $data): array
     {
@@ -44,41 +32,54 @@ final class Group extends Item
 
 
     /**
-     * extractBackgroundUrl
+     * Extract a image src value.
      *
-     * @param mixed $data
+     * @param array $data Unknown input data structure.
      *
-     * @return void
+     * @return mixed String representing the image url (not empty) or null.
+     *
+     * @throws \InvalidArgumentException When a valid image src can't be found.
      */
     private function extractImageSrc(array $data)
     {
-        $imageSrc = Model::notEmptyStringOr(
-            Model::issetInArray($data, ['imageSrc', 'image']),
+        $imageSrc = static::notEmptyStringOr(
+            static::issetInArray($data, ['imageSrc', 'image']),
             null
         );
-        if ($imageSrc === null) {
+
+        if ($imageSrc === null || \strlen($imageSrc) === 0) {
             throw new \InvalidArgumentException(
-                'the imageSrc property is required and should be string'
+                'the image src property is required and should be a non empty string'
             );
-        } else {
-            return $imageSrc;
         }
+
+        return $imageSrc;
     }
 
 
+    /**
+     * Extract a group Id value.
+     *
+     * @param array $data Unknown input data structure.
+     *
+     * @return integer Valid identifier of a group.
+     *
+     * @throws \InvalidArgumentException When a valid group Id can't be found.
+     */
     private function extractGroupId(array $data): int
     {
-        $groupId = Model::parseIntOr(
-            Model::issetInArray($data, ['groupId', 'id_group']),
-            -1
+        $groupId = static::parseIntOr(
+            static::issetInArray($data, ['groupId', 'id_group']),
+            null
         );
-        if ($groupId < 0) {
+
+        if ($groupId === null || $groupId < 0) {
             throw new \InvalidArgumentException(
                 'the group Id property is required and should be integer'
             );
-        } else {
-            return $groupId;
         }
+
+        return $groupId;
     }
 
 

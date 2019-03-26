@@ -3268,9 +3268,8 @@ function get_agent_first_time($agent_name)
     $id = agents_get_agent_id($agent_name, true);
 
     $utimestamp = db_get_all_rows_sql(
-        'SELECT utimestamp FROM tagente_datos WHERE id_agente_modulo IN 
-        (SELECT id_agente_modulo FROM tagente_modulo WHERE id_agente = '.$id.')
-        ORDER BY utimestamp ASC LIMIT 1'
+        'SELECT min(utimestamp) FROM tagente_datos WHERE id_agente_modulo IN 
+        (SELECT id_agente_modulo FROM tagente_modulo WHERE id_agente = '.$id.')'
     );
     $utimestamp = $utimestamp[0]['utimestamp'];
 

@@ -380,7 +380,15 @@ function extensions_load_extensions($process_login)
             // ~ }
         // ~ }
         // ~ else {
+        try {
             include_once $path_extension;
+        } 
+        // PHP 7
+        catch (Throwable $e) {
+        }
+        // PHP 5
+        catch (Exception $e) {
+        }
         // ~ }
     }
 }

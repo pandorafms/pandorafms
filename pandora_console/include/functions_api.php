@@ -14749,7 +14749,7 @@ function api_get_filter_user_group($user, $group, $disable)
         }
     */
 
-    $sql = sprintf(('select * from tperfil,tusuario_perfil where tperfil.id_perfil in (select tusuario_perfil.id_perfil from tusuario_perfil where id_usuario = '$user' and %s = % d)'), $campo, $condition);
+    $sql = sprintf(('select * from tperfil,tusuario_perfil where tperfil.id_perfil in (select tusuario_perfil.id_perfil from tusuario_perfil where id_usuario = '$user' and %s = %d)'), $campo, $condition);
     $filter_user = db_get_all_rows_sql($sql);
 
     if ($filter_user === false) {

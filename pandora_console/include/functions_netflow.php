@@ -264,6 +264,7 @@ function netflow_data_table($data, $start_date, $end_date, $aggregate)
     }
 
     $values = [];
+    $table = new stdClass();
     $table->size = ['100%'];
     $table->class = 'databox';
     $table->cellspacing = 0;

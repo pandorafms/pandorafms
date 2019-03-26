@@ -896,7 +896,7 @@ if ($group_rep == 2) {
                     // Checkbox
                     $data[$i] = html_print_checkbox_extended('validate_ids[]', $event['id_evento'], false, false, false, 'class="chk_val"', true);
                 } else if (isset($table->header[$i]) || true) {
-                    $data[$i] = '';
+                    $data[$i] = html_print_checkbox_extended('validate_ids[]', $event['id_evento'], false, false, false, 'class="chk_val"', true);
                 }
             }
 

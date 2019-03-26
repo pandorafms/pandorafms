@@ -35,10 +35,8 @@ function progress_task_list(id, title) {
       // TODO: Show info about the problem.
     }
 
-    if (data.status > 0) {
-      $elem.html(data.html);
-      if (!$elem.dialog("isOpen")) $elem.dialog("open");
-    }
+    $elem.html(data.html);
+    if (!$elem.dialog("isOpen")) $elem.dialog("open");
 
     if (data.status != -1) {
       timeoutRef = setTimeout(function() {

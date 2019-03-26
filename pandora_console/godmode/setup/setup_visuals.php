@@ -243,7 +243,7 @@ function logo_custom_enterprise($name, $logo)
             false,
             true,
             '',
-            $open,
+            false,
             'width:240px'
         );
         return $select;
@@ -259,7 +259,7 @@ function logo_custom_enterprise($name, $logo)
             false,
             true,
             '',
-            $open,
+            true,
             'width:240px'
         );
         return $select;
@@ -459,6 +459,20 @@ if (enterprise_installed()) {
         'width:240px'
     );
     $table_styles->data[$row][1] .= '&nbsp;'.html_print_button(__('View'), 'custom_mobile_console_logo_preview', $open, '', 'class="sub camera logo_preview"', true, false, $open, 'visualmodal');
+    $row++;
+}
+
+// Title Header
+if (enterprise_installed()) {
+    $table_styles->data[$row][0] = __('Title (header)');
+    $table_styles->data[$row][1] = html_print_input_text('custom_title_header', $config['custom_title_header'], '', 50, 40, true);
+    $row++;
+}
+
+// Subtitle Header
+if (enterprise_installed()) {
+    $table_styles->data[$row][0] = __('Subtitle (header)');
+    $table_styles->data[$row][1] = html_print_input_text('custom_subtitle_header', $config['custom_subtitle_header'], '', 50, 40, true);
     $row++;
 }
 

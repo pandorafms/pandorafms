@@ -43,7 +43,7 @@
                 maxDelta: 6,
                 interval: 50
               },
-              zoomWheelEnabled: true
+              zoomWheelEnabled: false
             }),
             new OpenLayers.Control.Zoom(),
             new OpenLayers.Control.ZoomBox()

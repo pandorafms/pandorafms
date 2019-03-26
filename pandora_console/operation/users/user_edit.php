@@ -180,9 +180,7 @@ if ($status != -1) {
 }
 
 if (defined('METACONSOLE')) {
-    $table->head[0] = __('Edit my User');
-    $table->head_colspan[0] = 5;
-    $table->headstyle[0] = 'text-align: center';
+    echo '<div class="user_form_title">'.__('Edit my User').'</div>';
 }
 
 
@@ -347,13 +345,12 @@ $double_auth_enabled = (bool) db_get_value('id', 'tuser_double_auth', 'id_user',
 if ($config['double_auth_enabled']) {
     $double_authentication = '<div class="label_select_simple"><p class="edit_user_labels">'.__('Double authentication').'</p>';
     $double_authentication .= html_print_checkbox_switch('double_auth', 1, $double_auth_enabled, true);
+    // Dialog.
+    $double_authentication .= '<div id="dialog-double_auth" style="display:none"><div id="dialog-double_auth-container"></div></div>';
 }
 
 if ($double_auth_enabled) {
     $double_authentication .= html_print_button(__('Show information'), 'show_info', false, 'javascript:show_double_auth_info();', '', true);
-    // Dialog.
-    $double_authentication .= '<div id="dialog-double_auth" style="display:none"><div id="dialog-double_auth-container"></div></div>';
-    $double_authentication .= '</div>';
 }
 
 if (isset($double_authentication)) {
@@ -552,11 +549,7 @@ echo '<form name="user_mod" method="post" action="'.ui_get_full_url().'&amp;modi
             </div> 
             <div class="user_edit_second_row white_box">
                 <div class="edit_user_options">'.$language.$size_pagination.$skin.$home_screen.$event_filter.$newsletter.$newsletter_reminder.$double_authentication.'</div>
-                <div class="edit_user_timezone">'.$timezone.'<div id="zonepicker" style="width: 100%; height: 400px;"></div>
-                    <div id="label"></div>
-                    <div id="pais"></div>
-                    <div id="pais_file"></div>
-                </div>
+                <div class="edit_user_timezone">'.$timezone.'<div id="zonepicker"></div></div>
             </div> 
             <div class="user_edit_third_row white_box">
                 <div class="edit_user_comments">'.$comments.'</div>
@@ -649,58 +642,101 @@ echo '</div>';
 
 enterprise_hook('close_meta_frame');
 
+if (!defined('METACONSOLE')) {
+    ?>
+
+    <style>
+        /* Styles for timezone map */
+        div.olControlZoom{
+            bottom:10px;
+            left:10px;
+        }
+        div.olControlZoom a {
+            display: block;
+            margin: 1px;
+            padding: 0;
+            color: #FFF !important;
+            font-size: 14pt !important;
+            font-weight: bold;
+            text-decoration: none;
+            text-align: center;
+            height: 22px;
+            width: 22px;
+            line-height: 19px;
+            background: #82b92e;
+        }
+        div.olControlZoom a:hover {
+            background: #76a928;
+        }
+        a.olControlZoomIn {
+            border-radius: 4px 4px 0 0;
+        }
+        a.olControlZoomOut {
+            border-radius: 0 0 4px 4px;
+        }
+        /* Overlay the popup on the map */
+        .ui-dialog.ui-corner-all.ui-widget.ui-widget-content.ui-front.ui-draggable.ui-resizable{
+            z-index:9999 !important; 
+        }
+    </style>
+
+    <script language="javascript" type="text/javascript">
+        var map_unavailable = '';
+        function print_map(map_unavailable){
+            var img_src = "<?php echo ui_get_full_url('images/edit_user_map_not_available.jpg', false, false, false, false); ?>";
+            if(map_unavailable !== true){
+                $("#zonepicker").append('<img src="'+img_src+'" alt="This map is not available" title="This map is not available" style="max-width:100%; max-height: 270px;"/>').css('text-align','center');
+            }else{
+                var optionText = $("#timezone option:selected").val();
+                $(function() {
+                    $("#zonepicker").timezonePicker({
+                    initialLat: 20,
+                    initialLng: 0,
+                    initialZoom: 2,
+                    onReady: function() {
+                        $("#zonepicker").timezonePicker('selectZone', optionText);
+                    },
+                    mapOptions: {
+                        maxZoom: 6,
+                        minZoom: 2
+                    },
+                    useOpenLayers: true
+                    }); 
+                });
+            }
+        }
+
+        // Get the map
+        var map_url = "http://a.tile.openstreetmap.org";
+        // 1. Create a new XMLHttpRequest object
+        var xhr = new XMLHttpRequest();
+        // 2. Configure it: GET-request for the map_url
+        xhr.open('GET', map_url, true);
+        // 3. Send the request over the network
+        xhr.send();
+        // 4. This will be called after the response is received
+        xhr.onload = function() {
+            // analyze HTTP status of the response
+            if (xhr.status == 200) { 
+                map_unavailable = true;
+            } else {
+                map_unavailable = false;
+            }
+            print_map(map_unavailable);
+        };
+        // 5. If no internet connection, it enter here (it doesn't enter in onload)
+        xhr.onerror = function() {
+            map_unavailable = false;
+            print_map(map_unavailable);
+        };
+    </script>
+
+    <?php
+    // Closes no meta condition.
+}
 ?>
 
-<style>
-    /* Styles for timezone map */
-    div.olControlZoom{
-        bottom:10px;
-        left:10px;
-    }
-    div.olControlZoom a {
-        display: block;
-        margin: 1px;
-        padding: 0;
-        color: #FFF !important;
-        font-size: 14pt !important;
-        font-weight: bold;
-        text-decoration: none;
-        text-align: center;
-        height: 22px;
-        width: 22px;
-        line-height: 19px;
-        background: #82b92e;
-    }
-    div.olControlZoom a:hover {
-        background: #76a928;
-    }
-    a.olControlZoomIn {
-        border-radius: 4px 4px 0 0;
-    }
-    a.olControlZoomOut {
-        border-radius: 0 0 4px 4px;
-    }
-</style>
-
 <script language="javascript" type="text/javascript">
-
- var optionText = $("#timezone option:selected").val();
-  $(function() {
-    $("#zonepicker").timezonePicker({
-      initialLat: 20,
-      initialLng: 0,
-      initialZoom: 2,
-      onReady: function() {
-        $("#zonepicker").timezonePicker('selectZone', optionText);
-      },
-      mapOptions: {
-        maxZoom: 6,
-        minZoom: 2
-      },
-      useOpenLayers: true
-    }); 
-  });
-
 
 $(document).ready (function () {
 

@@ -585,10 +585,6 @@ class NetworkMap
             $this->idGroup = $this->map['id_group'];
 
             switch ($this->map['source']) {
-                case SOURCE_GROUP:
-                    $this->idGroup = $this->map['source_data'];
-                break;
-
                 case SOURCE_TASK:
                     $this->idTask = $this->map['source_data'];
                 break;
@@ -597,6 +593,8 @@ class NetworkMap
                     $this->network = $this->map['source_data'];
                 break;
 
+                case SOURCE_GROUP:
+                    // Already load.
                 default:
                     // Ignore.
                 break;
@@ -753,7 +751,9 @@ class NetworkMap
             // Empty map returns no data.
             $nodes = [];
         } else {
-            if ($this->mapOptions['map_filter']['dont_show_subgroups'] == 'true') {
+            if ($this->mapOptions['map_filter']['dont_show_subgroups'] == 'true'
+                || $this->mapOptions['map_filter']['dont_show_subgroups'] == 1
+            ) {
                 // Show only current selected group.
                 $filter['id_grupo'] = $this->idGroup;
             } else {
@@ -3226,7 +3226,8 @@ class NetworkMap
             enterprise_installed: enterprise_installed,
             node_radius: node_radius,
             holding_area_dimensions: networkmap_holding_area_dimensions,
-            url_background_grid: url_background_grid
+            url_background_grid: url_background_grid,
+            font_size: '.$this->mapOptions['font_size'].'
         });
         init_drag_and_drop();
         init_minimap();

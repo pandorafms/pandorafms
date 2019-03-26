@@ -3968,6 +3968,10 @@ function draw_elements_graph() {
 
   var font_size = node_radius / 1.5;
 
+  if (self.font_size) {
+    font_size = self.font_size;
+  }
+
   node_temp
     .append("text")
     .attr("class", "node_text")

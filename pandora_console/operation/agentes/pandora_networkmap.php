@@ -76,7 +76,10 @@ if (enterprise_installed()) {
 
         $method = (string) get_parameter('method', 'fdp');
 
-        $dont_show_subgroups = 0;
+        $dont_show_subgroups = (int) get_parameter_checkbox(
+            'dont_show_subgroups',
+            0
+        );
         $node_radius = (int) get_parameter('node_radius', 40);
         $description = get_parameter('description', '');
 

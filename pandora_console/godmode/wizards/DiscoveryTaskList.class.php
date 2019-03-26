@@ -96,7 +96,8 @@ class DiscoveryTaskList extends Wizard
             ]
         );
 
-        $this->printHeader();
+        // Header
+        ui_print_page_header(__('Task list'), '', false, '', true, '', false, '', GENERIC_SIZE_TEXT, '', $this->printHeader(true));
 
         // Show redirected messages from discovery.php.
         if ($status === 0) {

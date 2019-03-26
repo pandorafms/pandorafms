@@ -152,7 +152,7 @@ class HostDevices extends Wizard
                 ]
             );
 
-            $this->printHeader();
+            ui_print_page_header(__('Host & devices'), '', false, '', true, '', false, '', GENERIC_SIZE_TEXT, '', $this->printHeader(true));
 
             $this->printBigButtonsList($buttons);
             return;
@@ -527,7 +527,7 @@ class HostDevices extends Wizard
         if ($this->page < $this->maxPagesNetScan) {
             // Avoid to print header out of wizard.
             $this->prepareBreadcrum($breadcrum);
-            $this->printHeader();
+            ui_print_page_header(__('NetScan definition'), '', false, '', true, '', false, '', GENERIC_SIZE_TEXT, '', $this->printHeader(true));
         }
 
         if (isset($this->page) === true

@@ -353,7 +353,10 @@ class CustomNetScan extends Wizard
         if ($this->page < $this->MAXPAGES) {
             // Avoid to print header out of wizard.
             $this->prepareBreadcrum($breadcrum);
-            $this->printHeader();
+
+            // Header
+            ui_print_page_header(__('NetScan Custom definition'), '', false, '', true, '', false, '', GENERIC_SIZE_TEXT, '', $this->printHeader(true));
+
         }
 
         $task_url = '';
@@ -376,7 +379,9 @@ class CustomNetScan extends Wizard
         if ($this->page < $this->maxPagesNetScan) {
             // Avoid to print header out of wizard.
             $this->prepareBreadcrum($breadcrum);
-            $this->printHeader();
+
+            // Header
+            ui_print_page_header(__('NetScan Custom definition'), '', false, '', true, '', false, '', GENERIC_SIZE_TEXT, '', $this->printHeader(true));
         }
 
         if (isset($this->page) === true

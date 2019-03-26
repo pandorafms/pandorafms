@@ -2768,7 +2768,8 @@ function ui_print_page_header(
     $modal=false,
     $message='',
     $numChars=GENERIC_SIZE_TEXT,
-    $alias=''
+    $alias='',
+    $breadcrumbs=''
 ) {
     $title = io_safe_input_html($title);
     if (($icon == '') && ($godmode == true)) {
@@ -2781,15 +2782,20 @@ function ui_print_page_header(
 
     if ($godmode == true) {
         $type = 'view';
-        $type2 = 'menu_tab_frame_view';
+        $type2 = (empty($breadcrumbs)) ? 'menu_tab_frame_view' : 'menu_tab_frame_view_bc';
         $separator_class = 'separator';
     } else {
         $type = 'view';
-        $type2 = 'menu_tab_frame_view';
+        $type2 = (empty($breadcrumbs)) ? 'menu_tab_frame_view' : 'menu_tab_frame_view_bc';
         $separator_class = 'separator_view';
     }
 
-    $buffer = '<div id="'.$type2.'" style=""><div id="menu_tab_left">';
+    $buffer = '<div id="'.$type2.'" style="">';
+
+    if (!empty($breadcrumbs))
+        $buffer .= '<div class="breadcrumbs_container">'.$breadcrumbs.'</div>';
+
+    $buffer .= '<div id="menu_tab_left">';
 
     $buffer .= '<ul class="mn"><li class="'.$type.'">';
 

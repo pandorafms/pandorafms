@@ -196,20 +196,34 @@ class Wizard
      *
      * @return void
      */
-    public function prepareBreadcrum(array $urls, bool $add=false)
+    public function prepareBreadcrum(array $urls, bool $add=false, bool $separator_beginning=false)
     {
         $bc = [];
         $i = 0;
+        $count = 0;
+        $array_size = count($urls);
+
         foreach ($urls as $url) {
+            $count++;
+
             if ($url['selected'] == 1) {
                 $class = 'selected';
             } else {
                 $class = '';
             }
 
-            $bc[$i]    = '<a href="'.$url['link'].'" class="text_color">';
-            $bc[$i]   .= '<div class="arrow_box '.$class.'">'.$url['label'];
-            $bc[$i++] .= '</div></a>';
+            $bc[$i] = '';
+
+            if ($separator_beginning === true) $bc[$i] .= '<span class="breadcrumb_link">&nbsp/&nbsp</span>';
+
+            $bc[$i]   .= '<span><a class="breadcrumb_link '.$class.'" href="'.$url['link'].'">';
+            $bc[$i]   .= $url['label'];
+            $bc[$i]   .= '</a>';
+            if ($count < $array_size) $bc[$i] .= '<span class="breadcrumb_link">&nbsp/&nbsp</span>';
+
+            $bc[$i] .= '</span>';
+
+            $i++;
         }
 
         if ($add === true) {
@@ -257,7 +271,7 @@ class Wizard
      */
     public function printBreadcrum()
     {
-        return '<h1 class="wizard">'.implode('', $this->breadcrum).'</h1>';
+        return implode('', $this->breadcrum);
     }
 
 

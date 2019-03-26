@@ -64,7 +64,6 @@ h1.wizard a:hover {
 div.arrow_box {
   display: inline-block;
   position: relative;
-  background: #ccc;
   color: #888;
   padding: 1.3em;
   margin-left: 20px;
@@ -72,16 +71,6 @@ div.arrow_box {
   padding-left: 3em;
 }
 
-.arrow_box:before {
-  top: 50%;
-  border: solid transparent;
-  content: " ";
-  height: 0;
-  width: 0;
-  position: absolute;
-  pointer-events: none;
-  z-index: 1;
-}
 .arrow_box.selected {
   background: #424242;
   color: #ccc;
@@ -110,3 +99,35 @@ div.arrow_box:before {
 .arrow_box:hover {
   color: #000;
 }
+.breadcrumb_link {
+  color: #d0d0d0;
+  font-size: 12pt !important;
+  font-family: "Open Sans", sans-serif !important;
+  text-decoration: none !important;
+}
+
+span.breadcrumb_link {
+  color: #d0d0d0;
+  font-size: 12pt !important;
+}
+
+.breadcrumb_link.selected {
+  color: #95b750;
+}
+
+.breadcrumb_link.selected:hover {
+  color: #95b750;
+}
+.breadcrumb_link:hover {
+  color: #95b750;
+}
+
+.form_grid_items {
+  overflow: hidden;
+}
+.form_grid_items .form_grid_item {
+  float: left;
+  box-sizing: border-box;
+  padding: 10px;
+}
+

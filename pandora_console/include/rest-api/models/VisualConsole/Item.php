@@ -12,28 +12,26 @@ class Item extends Model
 {
 
     /**
-     * Used to decide wether to fetch information about
-     * the linked agent or not.
+     * Used to decide wether to use information about the linked agent or not.
      *
      * @var boolean
      */
-    protected static $fetchLinkedAgent = false;
+    protected static $useLinkedAgent = false;
 
     /**
-     * Used to decide wether to fetch information about
-     * the linked module or not.
+     * Used to decide wether to use information about the linked module or not.
      *
      * @var boolean
      */
-    protected static $fetchLinkedModule = false;
+    protected static $useLinkedModule = false;
 
     /**
-     * Used to decide wether to fetch information about
+     * Used to decide wether to use information about
      * the linked visual console or not.
      *
      * @var boolean
      */
-    protected static $fetchLinkedVisualConsole = false;
+    protected static $useLinkedVisualConsole = false;
 
 
     /**
@@ -72,7 +70,7 @@ class Item extends Model
             || $data['width'] < 0
         ) {
             throw new \InvalidArgumentException(
-                'the width property is required and should greater than 0'
+                'the width property is required and should be greater than 0'
             );
         }
 
@@ -81,8 +79,74 @@ class Item extends Model
             || $data['height'] < 0
         ) {
             throw new \InvalidArgumentException(
-                'the height property is required and should greater than 0'
+                'the height property is required and should be greater than 0'
             );
+        }
+
+        // The item has a linked Visual Console.
+        if (static::$useLinkedVisualConsole === true) {
+            $linkedLayoutStatusType = static::notEmptyStringOr(
+                static::issetInArray(
+                    $data,
+                    [
+                        'linkedLayoutStatusType',
+                        'linked_layout_status_type',
+                    ]
+                ),
+                null
+            );
+
+            // The types weight and service require extra data
+            // which should be validated.
+            if ($linkedLayoutStatusType === 'weight') {
+                $weight = static::parseIntOr(
+                    static::issetInArray(
+                        $data,
+                        [
+                            'linkedLayoutStatusTypeWeight',
+                            'id_layout_linked_weight',
+                        ]
+                    ),
+                    null
+                );
+                if ($weight === null || $weight < 0) {
+                    throw new \InvalidArgumentException(
+                        'the linked layout status weight property is required and should be greater than 0'
+                    );
+                }
+            } else if ($linkedLayoutStatusType === 'service') {
+                $wThreshold = static::parseIntOr(
+                    static::issetInArray(
+                        $data,
+                        [
+                            'linkedLayoutStatusTypeWarningThreshold',
+                            'linked_layout_status_as_service_warning',
+                        ]
+                    ),
+                    null
+                );
+                if ($wThreshold === null || $wThreshold < 0) {
+                    throw new \InvalidArgumentException(
+                        'the linked layout status warning threshold property is required and should be greater than 0'
+                    );
+                }
+
+                $cThreshold = static::parseIntOr(
+                    static::issetInArray(
+                        $data,
+                        [
+                            'linkedLayoutStatusTypeCriticalThreshold',
+                            'linked_layout_status_as_service_critical',
+                        ]
+                    ),
+                    null
+                );
+                if ($cThreshold === null || $cThreshold < 0) {
+                    throw new \InvalidArgumentException(
+                        'the linked layout status critical threshold property is required and should be greater than 0'
+                    );
+                }
+            }
         }
     }
 
@@ -98,7 +162,7 @@ class Item extends Model
      */
     protected function decode(array $data): array
     {
-        return [
+        $decodedData = [
             'id'            => (int) $data['id'],
             'type'          => (int) $data['type'],
             'label'         => $this->extractLabel($data),
@@ -112,6 +176,27 @@ class Item extends Model
             'x'             => $this->extractX($data),
             'y'             => $this->extractY($data),
         ];
+
+        if (static::$useLinkedModule === true) {
+            $decodedData = array_merge(
+                $decodedData,
+                static::extractLinkedModule($data)
+            );
+        } else if (static::$useLinkedAgent === true) {
+            $decodedData = array_merge(
+                $decodedData,
+                static::extractLinkedAgent($data)
+            );
+        }
+
+        if (static::$useLinkedVisualConsole === true) {
+            $decodedData = array_merge(
+                $decodedData,
+                static::extractLinkedVisualConsole($data)
+            );
+        }
+
+        return $decodedData;
     }
 
 
@@ -256,11 +341,20 @@ class Item extends Model
      *
      * @param array $data Unknown input data structure.
      *
-     * @return  array Data structure of the linked agent info.
+     * @return array Data structure of the linked agent info.
+     *
      * @example [
-     *   'metaconsole' => int | null,
-     *   'agentId'     => int | null,
-     *   'agentName'   => string | null
+     *   'metaconsoleId' => 1,
+     *   'agentId'       => 2,
+     *   'agentName'     => 'Foo',
+     * ]
+     * @example [
+     *   'agentId'     => 20,
+     *   'agentName'   => 'Bar',
+     * ]
+     * @example [
+     *   'agentId'     => null,
+     *   'agentName'   => null,
      * ]
      */
     private function extractLinkedAgent(array $data): array
@@ -283,13 +377,13 @@ class Item extends Model
             }
         }
 
-        // The agent Id sohuld be a valid int or a null value.
+        // The agent Id should be a valid int or a null value.
         $agentData['agentId'] = static::parseIntOr(
             static::issetInArray($data, ['agentId', 'id_agent']),
             null
         );
 
-        // The agent name sohuld be a valid string or a null value.
+        // The agent name should be a valid string or a null value.
         $agentData['agentName'] = static::notEmptyStringOr(
             static::issetInArray($data, ['agentName', 'agent_name']),
             null
@@ -304,13 +398,26 @@ class Item extends Model
      *
      * @param array $data Unknown input data structure.
      *
-     * @return  array Data structure of the linked module info.
+     * @return array Data structure of the linked module info.
+     *
      * @example [
-     *   'metaconsole' => int | null,
-     *   'agentId'     => int | null,
-     *   'agentName'   => string | null,
-     *   'moduleId'    => int | null,
-     *   'moduleName'  => string | null,
+     *   'metaconsoleId' => 1,
+     *   'agentId'       => 2,
+     *   'agentName'     => 'Foo',
+     *   'moduleId'      => 1,
+     *   'moduleName'    => 'cpu',
+     * ]
+     * @example [
+     *   'agentId'    => 4,
+     *   'agentName'  => 'Bar',
+     *   'moduleId'   => null,
+     *   'moduleName' => null,
+     * ]
+     * @example [
+     *   'agentId'    => null,
+     *   'agentName'  => null,
+     *   'moduleId'   => null,
+     *   'moduleName' => null,
      * ]
      */
     private function extractLinkedModule(array $data): array
@@ -318,13 +425,13 @@ class Item extends Model
         // Initialize the data with the agent data and then expand it.
         $moduleData = static::extractLinkedAgent($data);
 
-        // The module Id sohuld be a valid int or a null value.
+        // The module Id should be a valid int or a null value.
         $moduleData['moduleId'] = static::parseIntOr(
             static::issetInArray($data, ['moduleId', 'id_agente_modulo']),
             null
         );
 
-        // The module name sohuld be a valid string or a null value.
+        // The module name should be a valid string or a null value.
         $moduleData['moduleName'] = static::notEmptyStringOr(
             static::issetInArray($data, ['moduleName', 'module_name']),
             null
@@ -335,7 +442,135 @@ class Item extends Model
 
 
     /**
-     * Obtain a vc item data structure from the database using a filter.
+     * Extract the values of a linked visual console.
+     *
+     * @param array $data Unknown input data structure.
+     *
+     * @return array Data structure of the linked visual console info.
+     *
+     * @example [
+     *   'metaconsoleId'          => 2,
+     *   'linkedLayoutId'         => 12,
+     *   'linkedLayoutAgentId'    => 48,
+     *   'linkedLayoutStatusType' => 'default',
+     * ]
+     * @example [
+     *   'linkedLayoutId'               => 11,
+     *   'linkedLayoutAgentId'          => null,
+     *   'linkedLayoutStatusType'       => 'weight',
+     *   'linkedLayoutStatusTypeWeight' => 80,
+     * ]
+     * @example [
+     *   'metaconsoleId'                           => 2,
+     *   'linkedLayoutId'                          => 10,
+     *   'linkedLayoutAgentId'                     => 48,
+     *   'linkedLayoutStatusType'                  => 'service',
+     *   'linkedLayoutStatusTypeWarningThreshold'  => 50,
+     *   'linkedLayoutStatusTypeCriticalThreshold' => 80,
+     * ]
+     */
+    private function extractLinkedVisualConsole(array $data): array
+    {
+        $vcData = [];
+
+        // We should add the metaconsole Id if we can. If not,
+        // it doesn't have to be into the structure.
+        $metaconsoleId = static::issetInArray(
+            $data,
+            [
+                'metaconsoleId',
+                'id_metaconsole',
+            ]
+        );
+        if ($metaconsoleId !== null) {
+            $metaconsoleId = static::parseIntOr($metaconsoleId, null);
+            if ($metaconsoleId !== null) {
+                $vcData['metaconsoleId'] = $metaconsoleId;
+            }
+        }
+
+        // The linked vc Id should be a valid int or a null value.
+        $vcData['linkedLayoutId'] = static::parseIntOr(
+            static::issetInArray($data, ['linkedLayoutId', 'id_layout_linked']),
+            null
+        );
+
+        // The linked vc agent Id should be a valid int or a null value.
+        $vcData['linkedLayoutAgentId'] = static::parseIntOr(
+            static::issetInArray(
+                $data,
+                [
+                    'linkedLayoutAgentId',
+                    'linked_layout_node_id',
+                ]
+            ),
+            null
+        );
+
+        // The linked vc status type should be a enum value.
+        $linkedLayoutStatusType = static::notEmptyStringOr(
+            static::issetInArray(
+                $data,
+                [
+                    'linkedLayoutStatusType',
+                    'linked_layout_status_type',
+                ]
+            ),
+            null
+        );
+
+        // Extract data for the calculation of the linked visual console status.
+        switch ($linkedLayoutStatusType) {
+            case 'default':
+            default:
+                $vcData['linkedLayoutStatusType'] = 'default';
+            break;
+
+            case 'weight':
+                $vcData['linkedLayoutStatusType'] = 'weight';
+                $vcData['linkedLayoutStatusTypeWeight'] = static::parseIntOr(
+                    static::issetInArray(
+                        $data,
+                        [
+                            'linkedLayoutStatusTypeWeight',
+                            'id_layout_linked_weight',
+                        ]
+                    ),
+                    0
+                );
+            break;
+
+            case 'service':
+                $vcData['linkedLayoutStatusType'] = 'service';
+                $vcData['linkedLayoutStatusTypeWarningThreshold'] = static::parseIntOr(
+                    static::issetInArray(
+                        $data,
+                        [
+                            'linkedLayoutStatusTypeWarningThreshold',
+                            'linked_layout_status_as_service_warning',
+                        ]
+                    ),
+                    0
+                );
+                $vcData['linkedLayoutStatusTypeCriticalThreshold'] = static::parseIntOr(
+                    static::issetInArray(
+                        $data,
+                        [
+                            'linkedLayoutStatusTypeCriticalThreshold',
+                            'linked_layout_status_as_service_critical',
+                        ]
+                    ),
+                    0
+                );
+            break;
+        }
+
+        return $vcData;
+    }
+
+
+    /**
+     * Fetch a vc item data structure from the database using a filter.
      *
      * @param array $filter Filter of the Visual Console Item.
      *
@@ -359,18 +594,10 @@ class Item extends Model
          */
 
         // The linked module includes the agent data.
-        if (static::$fetchLinkedModule === true) {
+        if (static::$useLinkedModule === true) {
             $row = \array_merge($row, static::fetchModuleDataFromDB($row));
-        } else if (static::$fetchLinkedAgent === true) {
+        } else if (static::$useLinkedAgent === true) {
             $row = \array_merge($row, static::fetchAgentDataFromDB($row));
-        }
-
-        if (static::$fetchLinkedVisualConsole === true) {
-            // TODO: Implement fetchLinkedVisualConsoleDataFromDB.
-            // $row = \array_merge(
-            // $row,
-            // static::fetchLinkedVisualConsoleDataFromDB($row)
-            // );
         }
 
         return $row;
@@ -378,12 +605,13 @@ class Item extends Model
 
 
     /**
-     * Obtain a data structure of an agent from the database using the
+     * Fetch a data structure of an agent from the database using the
      * vs item's data.
      *
      * @param array $itemData Visual Console Item's data structure.
      *
-     * @return array The Visual Console Item data structure stored into the DB.
+     * @return array The agent data structure stored into the DB.
+     *
      * @throws \InvalidArgumentException When the input agent Id is invalid.
      * @throws \Exception When the data cannot be retrieved from the DB.
      */
@@ -420,10 +648,10 @@ class Item extends Model
         // a proper mock.
         $agentName = \db_get_value('nombre', 'tagente', 'id_agente', $agentId);
         if ($agentName === false) {
-            $agentName = static::notEmptyStringOr($agentName, null);
+            throw new \Exception('error fetching the data from the DB');
         }
 
-        // The agent name sohuld be a valid string or a null value.
+        // The agent name should be a valid string or a null value.
         $agentData['agentName'] = $agentName;
 
         return $agentData;
@@ -431,17 +659,18 @@ class Item extends Model
 
 
     /**
-     * Obtain a data structure of an module from the database using the
+     * Fetch a data structure of an module from the database using the
      * vs item's data.
      *
      * @param array $itemData Visual Console Item's data structure.
      *
-     * @return array The Visual Console Item data structure stored into the DB.
+     * @return array The module data structure stored into the DB.
      * @throws \InvalidArgumentException When the input module Id is invalid.
      * @throws \Exception When the data cannot be retrieved from the DB.
      */
-    protected static function fetchModuleDataFromDB(array $itemData): array
-    {
+    protected static function fetchModuleDataFromDB(
+        array $itemData
+    ): array {
         // Initialize with the agent data.
         $moduleData = static::fetchAgentDataFromDB($itemData);
 
@@ -490,7 +719,7 @@ class Item extends Model
      * @return array The Visual Console Item data structure stored into the DB.
      * @throws \Exception When the data cannot be retrieved from the DB.
      */
-    protected static function fromDBWithId(int $id): array
+    public static function fromDBWithId(int $id): array
     {
         return static::fromDB(['id' => $id]);
     }

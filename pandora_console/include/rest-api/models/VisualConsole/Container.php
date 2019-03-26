@@ -19,6 +19,15 @@ final class Container extends Model
      * @param array $data Input data.
      *
      * @return void
+     */
+    public static function fromArray(array $data)
+    {
+        return new self($data);
+    }
+
+
+    /**
+     * Validate the input data
      *
      * @throws \InvalidArgumentException If any input value is considered
      * invalid.
@@ -179,7 +188,7 @@ final class Container extends Model
      *
      * @override Model::fetchDataFromDB.
      */
-    public static function fetchDataFromDB(array $filter): self
+    public static function fetchDataFromDB(array $filter)
     {
         // Due to this DB call, this function cannot be unit tested without
         // a proper mock.

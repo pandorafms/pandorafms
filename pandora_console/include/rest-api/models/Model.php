@@ -67,7 +67,7 @@ abstract class Model
      *
      * @return self Instance of the model.
      */
-    public static function fromArray(array $data): self
+    public static function fromArray(array $data)
     {
         // The reserved word static refers to the invoked class at runtime.
         return new static($data);
@@ -84,7 +84,7 @@ abstract class Model
      *
      * @abstract
      */
-    abstract protected static function fetchDataFromDB(array $filter): array;
+    abstract protected static function fetchDataFromDB(array $filter);
 
 
     /**

@@ -48,7 +48,7 @@ final class Group extends Item
      *
      * @throws \InvalidArgumentException When a valid image src can't be found.
      */
-    private function extractImageSrc(array $data)
+    private function extractImageSrc(array $data): string
     {
         $imageSrc = static::notEmptyStringOr(
             static::issetInArray($data, ['imageSrc', 'image']),

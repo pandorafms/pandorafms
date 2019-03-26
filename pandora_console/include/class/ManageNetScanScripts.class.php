@@ -108,9 +108,9 @@ class ManageNetScanScripts extends Wizard
         if ($this->page < $this->MAXPAGES) {
             // Avoid to print header out of wizard.
             $this->prepareBreadcrum($breadcrum);
-            
+
             // Header
-            ui_print_page_header(__('List net scan scripts'), '', false, '', true, '', false, '', GENERIC_SIZE_TEXT, '', $this->printHeader(true));
+            ui_print_page_header(__('Net scan scripts'), '', false, '', true, '', false, '', GENERIC_SIZE_TEXT, '', $this->printHeader(true));
 
         }
 

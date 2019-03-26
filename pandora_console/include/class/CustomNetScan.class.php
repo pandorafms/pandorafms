@@ -355,7 +355,7 @@ class CustomNetScan extends Wizard
             $this->prepareBreadcrum($breadcrum);
 
             // Header
-            ui_print_page_header(__('NetScan Custom definition'), '', false, '', true, '', false, '', GENERIC_SIZE_TEXT, '', $this->printHeader(true));
+            ui_print_page_header(__('NetScan Custom'), '', false, '', true, '', false, '', GENERIC_SIZE_TEXT, '', $this->printHeader(true));
 
         }
 
@@ -381,7 +381,7 @@ class CustomNetScan extends Wizard
             $this->prepareBreadcrum($breadcrum);
 
             // Header
-            ui_print_page_header(__('NetScan Custom definition'), '', false, '', true, '', false, '', GENERIC_SIZE_TEXT, '', $this->printHeader(true));
+            ui_print_page_header(__('NetScan Custom'), '', false, '', true, '', false, '', GENERIC_SIZE_TEXT, '', $this->printHeader(true));
         }
 
         if (isset($this->page) === true

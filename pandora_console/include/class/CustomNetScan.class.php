@@ -337,9 +337,15 @@ class CustomNetScan extends Wizard
             $task_url = '&task='.$this->task['id_rt'];
         }
 
-        $breadcrum[] = [
-            'link'  => $run_url.'&wiz=hd',
-            'label' => __('Host & Devices'),
+        $breadcrum = [
+            [
+                'link'  => 'index.php?sec=gservers&sec2=godmode/servers/discovery',
+                'label' => 'Discovery',
+            ],
+            [
+                'link'  => $run_url.'&wiz=hd',
+                'label' => __('Host & Devices'),
+            ],
         ];
 
         for ($i = 0; $i < $this->MAXPAGES; $i++) {
@@ -356,7 +362,6 @@ class CustomNetScan extends Wizard
 
             // Header
             ui_print_page_header(__('NetScan Custom'), '', false, '', true, '', false, '', GENERIC_SIZE_TEXT, '', $this->printHeader(true));
-
         }
 
         $task_url = '';

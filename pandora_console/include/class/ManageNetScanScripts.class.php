@@ -92,9 +92,15 @@ class ManageNetScanScripts extends Wizard
 
         $run_url = 'index.php?sec=gservers&sec2=godmode/servers/discovery';
 
-        $breadcrum[] = [
-            'link'  => $run_url.'&wiz=hd',
-            'label' => __('Host & Devices'),
+        $breadcrum = [
+            [
+                'link'  => 'index.php?sec=gservers&sec2=godmode/servers/discovery',
+                'label' => 'Discovery',
+            ],
+            [
+                'link'  => $run_url.'&wiz=hd',
+                'label' => __('Host & Devices'),
+            ],
         ];
 
         for ($i = 0; $i < $this->MAXPAGES; $i++) {
@@ -111,7 +117,6 @@ class ManageNetScanScripts extends Wizard
 
             // Header
             ui_print_page_header(__('Net scan scripts'), '', false, '', true, '', false, '', GENERIC_SIZE_TEXT, '', $this->printHeader(true));
-
         }
 
         $id_script = get_parameter('id_script', 0);

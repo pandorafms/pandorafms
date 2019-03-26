@@ -43,7 +43,7 @@ if ($progress_task_discovery) {
     $global_progress = $task['status'];
     $summary = json_decode($task['summary'], true);
 
-    $result = '';
+    $result = '<div id = progress_task_'.$id_task.'>';
     $result .= '<ul class="progress_task_discovery">';
     $result .= '<li><h1>'._('Overall Progress').'</h1></li>';
     $result .= '<li>';
@@ -56,6 +56,7 @@ if ($progress_task_discovery) {
         '%',
         '',
         '#FFFFFF',
+        0,
         0,
         0
     );
@@ -98,6 +99,7 @@ if ($progress_task_discovery) {
             '',
             '#FFFFFF',
             0,
+            0,
             0
         );
         $result .= '</li>';
@@ -139,10 +141,12 @@ if ($progress_task_discovery) {
     $table->data[$i][1] .= $summary['summary']['WMI'];
     $table->data[$i++][1] .= '</span>';
 
-    $result .= html_print_table($table, true);
+    $result .= html_print_table($table, true).'</div>';
 
-    echo $result;
+    $result_array['status'] = $global_progress;
+    $result_array['html'] = $result;
 
+    echo json_encode($result_array);
     return;
 }
 

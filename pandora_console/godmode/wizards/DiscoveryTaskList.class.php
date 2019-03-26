@@ -433,7 +433,7 @@ class DiscoveryTaskList extends Wizard
                 // Name task.
                 $data[1] = '';
                 if ($task['disabled'] != 2) {
-                    $data[1] .= '<a href="#" onclick="progress_task_list('.$task['id_rt'].',\''.$task['name'].'\',\''.$url_ajax.'\')">';
+                    $data[1] .= '<a href="#" onclick="progress_task_list('.$task['id_rt'].',\''.$task['name'].'\')">';
                 }
 
                 $data[1] .= '<b>'.$task['name'].'</b>';
@@ -504,7 +504,7 @@ class DiscoveryTaskList extends Wizard
                 }
 
                 if ($task['disabled'] != 2) {
-                    $data[9] = '<a href="#" onclick="progress_task_list('.$task['id_rt'].',\''.$task['name'].'\',\''.$url_ajax.'\')">';
+                    $data[9] = '<a href="#" onclick="progress_task_list('.$task['id_rt'].',\''.$task['name'].'\')">';
                     $data[9] .= html_print_image(
                         'images/eye.png',
                         true
@@ -513,7 +513,7 @@ class DiscoveryTaskList extends Wizard
                 }
 
                 if ($task['disabled'] != 2 && $task['utimestamp'] > 0) {
-                    $data[9] .= '<a href="#" onclick="show_map('.$task['id_rt'].',\''.$task['name'].'\',\''.$url_ajax.'\')">';
+                    $data[9] .= '<a href="#" onclick="show_map('.$task['id_rt'].',\''.$task['name'].'\')">';
                     $data[9] .= html_print_image(
                         'images/dynamic_network_icon.png',
                         true
@@ -566,6 +566,9 @@ class DiscoveryTaskList extends Wizard
                     $data[9] = '';
                 }
 
+                // Div neccesary for modal progress task.
+                echo '<div id="progress_task_'.$task['id_rt'].'" style="display:none"></div>';
+
                 array_push($table->data, $data);
             }
 
@@ -577,8 +580,8 @@ class DiscoveryTaskList extends Wizard
                 html_print_table($table);
             }
 
-            // Div neccesary for modal progress task.
-            echo '<div id="progress_task" style="display:none"></div>';
+            // Div neccesary for modal map task.
+            echo '<div id="map_task" style="display:none"></div>';
 
             unset($table);
 

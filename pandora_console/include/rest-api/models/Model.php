@@ -57,6 +57,8 @@ abstract class Model
     {
         $this->validateData($unknownData);
         $this->data = $this->decode($unknownData);
+        // Sort alphabetically.
+        ksort($this->data);
     }
 
 

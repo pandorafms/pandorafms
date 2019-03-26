@@ -237,8 +237,8 @@ class ItemTest extends TestCase
     public function testItemIsRepresentedAsJson(): void
     {
         $this->assertEquals(
-            '{"id":15,"type":3,"label":"test","labelPosition":"down","isLinkEnabled":false,"isOnTop":true,"parentId":0,"aclGroupId":12,"width":800,"height":600,"x":0,"y":0}',
-            ItemConsole::fromArray(
+            '{"aclGroupId":12,"height":600,"id":15,"isLinkEnabled":false,"isOnTop":true,"label":"test","labelPosition":"down","parentId":0,"type":3,"width":800,"x":0,"y":0}',
+            (string) ItemConsole::fromArray(
                 [
                     'id'            => 15,
                     'type'          => 3,
@@ -257,8 +257,8 @@ class ItemTest extends TestCase
         );
 
         $this->assertEquals(
-            '{"id":15,"type":3,"label":null,"labelPosition":"down","isLinkEnabled":false,"isOnTop":false,"parentId":0,"aclGroupId":12,"width":800,"height":600,"x":0,"y":0}',
-            ItemConsole::fromArray(
+            '{"aclGroupId":12,"height":600,"id":15,"isLinkEnabled":false,"isOnTop":false,"label":null,"labelPosition":"down","parentId":0,"type":3,"width":800,"x":0,"y":0}',
+            (string) ItemConsole::fromArray(
                 [
                     'id'            => 15,
                     'type'          => 3,
@@ -275,8 +275,8 @@ class ItemTest extends TestCase
         );
 
         $this->assertEquals(
-            '{"id":69,"type":20,"label":null,"labelPosition":"up","isLinkEnabled":true,"isOnTop":false,"parentId":null,"aclGroupId":null,"width":0,"height":0,"x":-666,"y":76}',
-            ItemConsole::fromArray(
+            '{"aclGroupId":null,"height":0,"id":69,"isLinkEnabled":true,"isOnTop":false,"label":null,"labelPosition":"up","parentId":null,"type":20,"width":0,"x":-666,"y":76}',
+            (string) ItemConsole::fromArray(
                 [
                     'id'            => 69,
                     'type'          => 20,

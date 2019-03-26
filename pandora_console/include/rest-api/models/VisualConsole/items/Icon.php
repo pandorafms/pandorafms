@@ -11,6 +11,14 @@ use Models\VisualConsole\Item;
 final class Icon extends Item
 {
 
+    /**
+     * Used to enable the fetching, validation and extraction of information
+     * about the linked visual console.
+     *
+     * @var boolean
+     */
+    protected static $useLinkedVisualConsole = true;
+
 
     /**
      * Returns a valid representation of the model.

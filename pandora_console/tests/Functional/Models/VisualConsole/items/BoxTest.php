@@ -6,12 +6,17 @@ use PHPUnit\Framework\TestCase;
 use Models\VisualConsole\Items\Box;
 
 /**
- * Test class
+ * Test for the Visual Console Box Item model.
  */
 class BoxTest extends TestCase
 {
 
 
+    /**
+     * Test if the instance is created using a valid data structure.
+     *
+     * @return void
+     */
     public function testCanBeCreatedFromValidUserStructure(): void
     {
         $this->assertInstanceOf(
@@ -48,11 +53,16 @@ class BoxTest extends TestCase
     }
 
 
+    /**
+     * Test if the model has a valid JSON representation.
+     *
+     * @return void
+     */
     public function testContainerIsRepresentedAsJson(): void
     {
         $this->assertEquals(
-            '{"id":7,"type":12,"label":null,"labelPosition":"up","isLinkEnabled":true,"isOnTop":false,"parentId":null,"aclGroupId":null,"width":0,"height":0,"x":-666,"y":76,"borderWidth":0,"borderColor":null,"fillColor":null}',
-            Box::fromArray(
+            '{"aclGroupId":null,"borderColor":null,"borderWidth":0,"fillColor":null,"height":0,"id":7,"isLinkEnabled":true,"isOnTop":false,"label":null,"labelPosition":"up","parentId":null,"type":12,"width":0,"x":-666,"y":76}',
+            (string) Box::fromArray(
                 [
                     'id'            => 7,
                     'type'          => 10,

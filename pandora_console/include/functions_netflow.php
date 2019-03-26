@@ -1801,6 +1801,7 @@ function netflow_aggregate_is_ip($aggregate)
  */
 function netflow_build_map_data($start_date, $end_date, $top, $aggregate)
 {
+    // Pass an empty filter data structure.
     $data = netflow_get_relationships_raw_data(
         $start_date,
         $end_date,
@@ -1821,19 +1822,12 @@ function netflow_build_map_data($start_date, $end_date, $top, $aggregate)
 
     $nodes = array_map(
         function ($elem) {
-            return [
-                'name'   => $elem,
-                'type'   => NODE_GENERIC,
-                'width'  => 20,
-                'height' => 20,
-                'status' => '#82B92E',
-            ];
+            return network_init_node_map($elem);
         },
         array_merge($data['sources'], [__('Others')])
     );
 
     $relations = [];
-
     $inverse_nodes = array_flip($data['sources']);
 
     // Port are situated in a different places from addreses.
@@ -1869,14 +1863,7 @@ function netflow_build_map_data($start_date, $end_date, $top, $aggregate)
             $relations[$index_rel]['text_start'] += $value;
         } else {
             // Update the value.
-            $relations[$index_rel] = [
-                'id_parent'   => $src_item,
-                'parent_type' => NODE_GENERIC,
-                'child_type'  => NODE_GENERIC,
-                'id_child'    => $dst_item,
-                'link_color'  => '#82B92E',
-                'text_start'  => $value,
-            ];
+            network_init_relation_map($relations, $src_item, $dst_item, $value);
         }
     }
 
@@ -1896,13 +1883,7 @@ function netflow_build_map_data($start_date, $end_date, $top, $aggregate)
             continue;
         }
 
-        $orphan_hosts[$position.'-'.$orphan_index] = [
-            'id_parent'   => $orphan_index,
-            'parent_type' => NODE_GENERIC,
-            'child_type'  => NODE_GENERIC,
-            'id_child'    => $position,
-            'link_color'  => '#82B92E',
-        ];
+        network_init_relation_map($orphan_hosts, $position, $orphan_index);
     }
 
     // If there is not any orphan node, delete it.
@@ -1910,17 +1891,8 @@ function netflow_build_map_data($start_date, $end_date, $top, $aggregate)
         array_pop($nodes);
     }
 
-    return [
-        'nodes'           => $nodes,
-        'relations'       => array_merge($relations, $orphan_hosts),
-        'pure'            => 1,
-        'no_pandora_node' => 1,
-        'map_options'     => [
-            'generation_method' => LAYOUT_SPRING1,
-            'map_filter'        => [
-                'node_radius' => 40,
-                'node_sep'    => 7,
-            ],
-        ],
-    ];
+    return network_general_map_configuration(
+        $nodes,
+        array_merge($relations, $orphan_hosts)
+    );
 }

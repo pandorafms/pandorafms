@@ -193,13 +193,7 @@ function network_build_map_data($start, $end, $top, $talker)
 
     $nodes = array_map(
         function ($elem) {
-            return [
-                'name'   => $elem,
-                'type'   => NODE_GENERIC,
-                'width'  => 20,
-                'height' => 20,
-                'status' => '#82B92E',
-            ];
+            return network_init_node_map($elem);
         },
         $hosts
     );
@@ -223,42 +217,46 @@ function network_build_map_data($start, $end, $top, $talker)
                 continue;
             }
 
-            $relations[$src_index.'-'.$dst_index] = [
-                'id_parent'   => $inverse_hosts[$sd['host']],
-                'parent_type' => NODE_GENERIC,
-                'child_type'  => NODE_GENERIC,
-                'id_child'    => $inverse_hosts[$host],
-                'link_color'  => '#82B92E',
-                'text_start'  => network_format_bytes($sd['sum_bytes']),
-            ];
+            network_init_relation_map(
+                $relations,
+                $src_index,
+                $dst_index,
+                network_format_bytes($sd['sum_bytes'])
+            );
         }
 
         // Put the orphans on Other node.
         if (empty($host_top)) {
             $other_id = (end($inverse_hosts) + 1);
             // TODOS: Add the data.
-            $orphan_relations[$inverse_hosts[$host].'-'.$other_id] = [
-                'id_parent'   => $other_id,
-                'parent_type' => NODE_GENERIC,
-                'child_type'  => NODE_GENERIC,
-                'id_child'    => $inverse_hosts[$host],
-                'link_color'  => '#82B92E',
-            ];
+            network_init_relation_map(
+                $orphan_relations,
+                $other_id,
+                $inverse_hosts[$host]
+            );
         }
     }
 
     // Put the Others node and their relations.
     if (empty($orphan_relations) === false) {
-        $nodes[] = [
-            'name'   => __('Others'),
-            'type'   => NODE_GENERIC,
-            'width'  => 20,
-            'height' => 20,
-            'status' => '#82B92E',
-        ];
+        $nodes[] = network_init_node_map(__('Others'));
         $relations = array_merge($relations, $orphan_relations);
     }
 
+    return network_general_map_configuration($nodes, $relations);
+}
+
+
+/**
+ * Return the array to pass to constructor to NetworkMap.
+ *
+ * @param array $nodes     Nodes data structure.
+ * @param array $relations Relations data structure.
+ *
+ * @return array To be passed to NetworMap class.
+ */
+function network_general_map_configuration($nodes, $relations)
+{
     return [
         'nodes'           => $nodes,
         'relations'       => $relations,
@@ -271,5 +269,51 @@ function network_build_map_data($start, $end, $top, $talker)
                 'node_sep'    => 7,
             ],
         ],
+    ];
+}
+
+
+/**
+ * Added a relation to relations array
+ *
+ * @param array   $relations Relations array (passed by reference).
+ * @param integer $parent    Parent id (numeric).
+ * @param integer $child     Child id (numeric).
+ * @param string  $text      Text to show at the end of edge (optional).
+ *
+ * @return void Relations will be modified (passed by reference).
+ */
+function network_init_relation_map(&$relations, $parent, $child, $text='')
+{
+    $index = $parent.'-'.$child;
+    $relations[$index] = [
+        'id_parent'   => $parent,
+        'parent_type' => NODE_GENERIC,
+        'child_type'  => NODE_GENERIC,
+        'id_child'    => $child,
+        'link_color'  => '#82B92E',
+    ];
+
+    if (empty($text) === false) {
+        $relations[$index]['text_start'] = $text;
+    }
+}
+
+
+/**
+ * Initialize a node structure to NetworkMap class.
+ *
+ * @param string $name Node name.
+ *
+ * @return array Node data structure.
+ */
+function network_init_node_map($name)
+{
+    return [
+        'name'   => $name,
+        'type'   => NODE_GENERIC,
+        'width'  => 20,
+        'height' => 20,
+        'status' => '#82B92E',
     ];
 }

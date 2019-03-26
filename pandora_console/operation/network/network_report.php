@@ -95,17 +95,10 @@ $table->data['0']['1'] .= html_print_select(
     true
 );
 
-$table->data['0']['2'] = __('Select period').'&nbsp;&nbsp;';
-$table->data['0']['2'] .= html_print_checkbox(
-    'is_period',
-    1,
-    ($is_period === true) ? 1 : 0,
-    true,
-    false,
-    'network_report_click_period(event)'
-);
+$table->data['0']['2'] = '';
 
-$table->data['1']['0'] = '<div id="end_date_container" style="'.$style_end.'">';
+$table->data['1']['0'] = '<div style="display: flex;">';
+$table->data['1']['0'] .= '<div id="end_date_container" style="'.$style_end.'">';
 $table->data['1']['0'] .= __('Start date').'&nbsp;&nbsp;';
 $table->data['1']['0'] .= html_print_input_text('date_lower', $date_lower, '', 10, 7, true);
 $table->data['1']['0'] .= '&nbsp;&nbsp;';
@@ -115,6 +108,19 @@ $table->data['1']['0'] .= '</div>';
 $table->data['1']['0'] .= '<div id="period_container" style="'.$style_period.'">';
 $table->data['1']['0'] .= __('Time Period').'&nbsp;&nbsp;';
 $table->data['1']['0'] .= html_print_extended_select_for_time('period', $period, '', '', 0, false, true);
+$table->data['1']['0'] .= '</div>';
+$table->data['1']['0'] .= html_print_checkbox(
+    'is_period',
+    1,
+    ($is_period === true) ? 1 : 0,
+    true,
+    false,
+    'network_report_click_period(event)'
+);
+$table->data['1']['0'] .= ui_print_help_tip(
+    __('Select this checkbox to write interval instead a date.'),
+    true
+);
 $table->data['1']['0'] .= '</div>';
 
 $table->data['1']['1'] = __('End date').'&nbsp;&nbsp;';

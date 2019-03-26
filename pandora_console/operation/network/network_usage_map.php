@@ -90,6 +90,10 @@ $table->data['0']['0'] .= html_print_checkbox(
     false,
     'network_report_click_period(event)'
 );
+$table->data['0']['0'] .= ui_print_help_tip(
+    __('Select this checkbox to write interval instead a date.'),
+    true
+);
 $table->data['0']['0'] .= '</div>';
 
 $table->data['0']['1'] = __('End date').'&nbsp;&nbsp;';

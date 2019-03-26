@@ -149,7 +149,7 @@ class GroupTest extends TestCase
     public function testContainerIsRepresentedAsJson(): void
     {
         $this->assertEquals(
-            '{"aclGroupId":null,"groupId":12,"height":0,"id":7,"imageSrc":"image.jpg","isLinkEnabled":true,"isOnTop":false,"label":null,"labelPosition":"up","parentId":null,"type":11,"width":0,"x":-666,"y":76}',
+            '{"aclGroupId":null,"groupId":12,"height":0,"id":7,"imageSrc":"image.jpg","isLinkEnabled":true,"isOnTop":false,"label":null,"labelPosition":"up","linkedLayoutAgentId":null,"linkedLayoutId":null,"linkedLayoutStatusType":"default","parentId":null,"type":11,"width":0,"x":-666,"y":76}',
             (string) Group::fromArray(
                 [
                     'id'            => 7,
@@ -165,6 +165,102 @@ class GroupTest extends TestCase
                     'y'             => 76,
                     'imageSrc'      => 'image.jpg',
                     'groupId'       => 12,
+                ]
+            )
+        );
+
+        // With a linked layout.
+        $this->assertEquals(
+            '{"aclGroupId":null,"groupId":12,"height":0,"id":7,"imageSrc":"image.jpg","isLinkEnabled":true,"isOnTop":false,"label":null,"labelPosition":"up","linkedLayoutAgentId":null,"linkedLayoutId":1,"linkedLayoutStatusType":"default","parentId":null,"type":11,"width":0,"x":-666,"y":76}',
+            (string) Group::fromArray(
+                [
+                    'id'               => 7,
+                    'type'             => GROUP_ITEM,
+                    'label'            => null,
+                    'labelPosition'    => 'up',
+                    'isLinkEnabled'    => true,
+                    'isOnTop'          => false,
+                    'parentId'         => null,
+                    'width'            => '0',
+                    'height'           => '0',
+                    'x'                => -666,
+                    'y'                => 76,
+                    'imageSrc'         => 'image.jpg',
+                    'groupId'          => 12,
+                    'id_layout_linked' => 1,
+                ]
+            )
+        );
+
+        $this->assertEquals(
+            '{"aclGroupId":null,"groupId":12,"height":0,"id":7,"imageSrc":"image.jpg","isLinkEnabled":true,"isOnTop":false,"label":null,"labelPosition":"up","linkedLayoutAgentId":3,"linkedLayoutId":2,"linkedLayoutStatusType":"default","metaconsoleId":5,"parentId":null,"type":11,"width":0,"x":-666,"y":76}',
+            (string) Group::fromArray(
+                [
+                    'id'                    => 7,
+                    'type'                  => GROUP_ITEM,
+                    'label'                 => null,
+                    'labelPosition'         => 'up',
+                    'isLinkEnabled'         => true,
+                    'isOnTop'               => false,
+                    'parentId'              => null,
+                    'width'                 => '0',
+                    'height'                => '0',
+                    'x'                     => -666,
+                    'y'                     => 76,
+                    'imageSrc'              => 'image.jpg',
+                    'groupId'               => 12,
+                    'id_metaconsole'        => 5,
+                    'linked_layout_node_id' => 3,
+                    'linkedLayoutId'        => 2,
+                ]
+            )
+        );
+        $this->assertEquals(
+            '{"aclGroupId":null,"groupId":12,"height":0,"id":7,"imageSrc":"image.jpg","isLinkEnabled":true,"isOnTop":false,"label":null,"labelPosition":"up","linkedLayoutAgentId":3,"linkedLayoutId":2,"linkedLayoutStatusType":"weight","linkedLayoutStatusTypeWeight":80,"metaconsoleId":5,"parentId":null,"type":11,"width":0,"x":-666,"y":76}',
+            (string) Group::fromArray(
+                [
+                    'id'                           => 7,
+                    'type'                         => GROUP_ITEM,
+                    'label'                        => null,
+                    'labelPosition'                => 'up',
+                    'isLinkEnabled'                => true,
+                    'isOnTop'                      => false,
+                    'parentId'                     => null,
+                    'width'                        => '0',
+                    'height'                       => '0',
+                    'x'                            => -666,
+                    'y'                            => 76,
+                    'imageSrc'                     => 'image.jpg',
+                    'groupId'                      => 12,
+                    'id_metaconsole'               => 5,
+                    'linked_layout_node_id'        => 3,
+                    'linkedLayoutId'               => 2,
+                    'linkedLayoutStatusType'       => 'weight',
+                    'linkedLayoutStatusTypeWeight' => 80,
+                ]
+            )
+        );
+        $this->assertEquals(
+            '{"aclGroupId":null,"groupId":12,"height":0,"id":7,"imageSrc":"image.jpg","isLinkEnabled":true,"isOnTop":false,"label":null,"labelPosition":"up","linkedLayoutAgentId":null,"linkedLayoutId":2,"linkedLayoutStatusType":"service","linkedLayoutStatusTypeCriticalThreshold":80,"linkedLayoutStatusTypeWarningThreshold":50,"parentId":null,"type":11,"width":0,"x":-666,"y":76}',
+            (string) Group::fromArray(
+                [
+                    'id'                                       => 7,
+                    'type'                                     => GROUP_ITEM,
+                    'label'                                    => null,
+                    'labelPosition'                            => 'up',
+                    'isLinkEnabled'                            => true,
+                    'isOnTop'                                  => false,
+                    'parentId'                                 => null,
+                    'width'                                    => '0',
+                    'height'                                   => '0',
+                    'x'                                        => -666,
+                    'y'                                        => 76,
+                    'imageSrc'                                 => 'image.jpg',
+                    'groupId'                                  => 12,
+                    'linkedLayoutId'                           => 2,
+                    'linked_layout_status_type'                => 'service',
+                    'linkedLayoutStatusTypeWarningThreshold'   => 50,
+                    'linked_layout_status_as_service_critical' => 80,
                 ]
             )
         );

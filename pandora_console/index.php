@@ -1025,7 +1025,12 @@ if (get_parameter('login', 0) !== 0) {
 if ($config['pure'] == 0) {
     echo '<div id="container"><div id="head">';
     include 'general/header.php';
-    echo '</div><div id="page"><div id="menu">';
+
+    if ($_SESSION['menu_type']=='classic')
+        echo '</div><div id="page" class="page_classic"><div id="menu">';
+    else
+        echo '</div><div id="page" class="page_collapsed"><div id="menu">';
+
     include 'general/main_menu.php';
     echo '</div>';
     echo '<button onclick="topFunction()" id="top_btn" title="Go to top"></button>';
@@ -1057,6 +1062,9 @@ if ($searchPage) {
         if ($main_sec == false) {
             if ($sec == 'extensions') {
                 $main_sec = get_parameter('extension_in_menu');
+                if (empty($main_sec) === true) {
+                    $main_sec = $sec;
+                }
             } else if ($sec == 'gextensions') {
                     $main_sec = get_parameter('extension_in_menu');
             } else {

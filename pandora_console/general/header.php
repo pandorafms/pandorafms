@@ -18,10 +18,13 @@ require_once 'include/functions_notifications.php';
 // Global errors/warnings checking.
  config_check();
 
-?>
 
-<div id="header_table"> 
-    <div id="header_table_inner">           
+if ($_SESSION['menu_type']=='classic')
+    echo '<div id="header_table" class="header_table_classic">';
+else
+    echo '<div id="header_table" class="header_table_collapsed">';
+?>
+    <div id="header_table_inner">        
         <?php
         // ======= Notifications Discovery ===============================================
         $notifications_numbers = notifications_get_counters();
@@ -82,7 +85,7 @@ require_once 'include/functions_notifications.php';
         $header_chat .= '</a></span></div>';
 
 
-        // Search
+        // Search.
         $acl_head_search = true;
         if ($config['acl_enterprise'] == 1 && !users_is_admin()) {
             $acl_head_search = db_get_sql(
@@ -94,7 +97,7 @@ require_once 'include/functions_notifications.php';
         }
 
         if ($acl_head_search) {
-            // Search bar
+            // Search bar.
             $search_bar = '<form method="get" style="display: inline;" name="quicksearch" action="">';
             if (!isset($config['search_keywords'])) {
                 $search_bar .= '<script type="text/javascript"> var fieldKeyWordEmpty = true; </script>';
@@ -116,15 +119,13 @@ require_once 'include/functions_notifications.php';
             }
 
             $search_bar .= 'onfocus="javascript: if (fieldKeyWordEmpty) $(\'#keywords\').val(\'\');"
-                    onkeyup="javascript: fieldKeyWordEmpty = false;"
-                    style="margin-top:5px;" class="search_input" />';
+                    onkeyup="javascript: fieldKeyWordEmpty = false;" class="search_input" />';
 
             // $search_bar .= 'onClick="javascript: document.quicksearch.submit()"';
             $search_bar .= "<input type='hidden' name='head_search_keywords' value='abc' />";
             $search_bar .= '</form>';
 
-            $header_searchbar  = '<div id="header_searchbar">'.ui_print_help_tip(__('Blank characters are used as AND conditions'), true);
-            $header_searchbar .= $search_bar.'</div>';
+            $header_searchbar = '<div id="header_searchbar">'.$search_bar.'</div>';
         }
 
 
@@ -145,10 +146,19 @@ require_once 'include/functions_notifications.php';
             $_GET['refr'] = null;
         }
 
-        $select = db_process_sql("SELECT autorefresh_white_list,time_autorefresh FROM tusuario WHERE id_user = '".$config['id_user']."'");
-        $autorefresh_list = json_decode($select[0]['autorefresh_white_list']);
+        $select = db_process_sql(
+            "SELECT autorefresh_white_list,time_autorefresh 
+            FROM tusuario 
+            WHERE id_user = '".$config['id_user']."'"
+        );
 
-        if ($autorefresh_list !== null && array_search($_GET['sec2'], $autorefresh_list) !== false) {
+        $autorefresh_list = json_decode(
+            $select[0]['autorefresh_white_list']
+        );
+
+        if ($autorefresh_list !== null
+            && array_search($_GET['sec2'], $autorefresh_list) !== false
+        ) {
             $do_refresh = true;
             if ($_GET['sec2'] == 'operation/agentes/pandora_networkmap') {
                 if ((!isset($_GET['tab'])) || ($_GET['tab'] != 'view')) {
@@ -157,22 +167,56 @@ require_once 'include/functions_notifications.php';
             }
 
             if ($do_refresh) {
-                $autorefresh_img = html_print_image('images/header_refresh_gray.png', true, ['class' => 'bot', 'alt' => 'lightning', 'title' => __('Configure autorefresh')]);
+                $autorefresh_img = html_print_image(
+                    'images/header_refresh_gray.png',
+                    true,
+                    [
+                        'class' => 'bot',
+                        'alt'   => 'lightning',
+                        'title' => __('Configure autorefresh'),
+                    ]
+                );
 
-                if ($_GET['refr']) {
-                    $autorefresh_txt .= ' (<span id="refrcounter">'.date('i:s', $config['refr']).'</span>)';
+                if ((isset($select[0]['time_autorefresh']) === true)
+                    && $select[0]['time_autorefresh'] !== 0 && !$config['refr']
+                ) {
+                    $config['refr'] = $select[0]['time_autorefresh'];
+                    $autorefresh_txt .= ' (<span id="refrcounter">';
+                    $autorefresh_txt .= date(
+                        'i:s',
+                        $config['refr']
+                    );
+                    $autorefresh_txt .= '</span>)';
+                } else if ($_GET['refr']) {
+                    $autorefresh_txt .= ' (<span id="refrcounter">';
+                    $autorefresh_txt .= date('i:s', $config['refr']);
+                    $autorefresh_txt .= '</span>)';
                 }
 
                 $ignored_params['refr'] = '';
                 $values = get_refresh_time_array();
+
                 $autorefresh_additional = '<span id="combo_refr" style="display: none;">';
-                $autorefresh_additional .= html_print_select($values, 'ref', '', '', __('Select'), '0', true, false, false);
+                $autorefresh_additional .= html_print_select(
+                    $values,
+                    'ref',
+                    '',
+                    '',
+                    __('Select'),
+                    '0',
+                    true,
+                    false,
+                    false
+                );
                 $autorefresh_additional .= '</span>';
                 unset($values);
 
                 $autorefresh_link_open_img = '<a class="white autorefresh" href="'.ui_get_url_refresh($ignored_params).'">';
 
-                if ($_GET['refr']) {
+                if ($_GET['refr']
+                    || ((isset($select[0]['time_autorefresh']) === true)
+                    && $select[0]['time_autorefresh'] !== 0)
+                ) {
                     $autorefresh_link_open_txt = '<a class="autorefresh autorefresh_txt" href="'.ui_get_url_refresh($ignored_params).'">';
                 } else {
                     $autorefresh_link_open_txt = '<a>';
@@ -192,7 +236,15 @@ require_once 'include/functions_notifications.php';
                 $display_counter = 'display:none';
             }
         } else {
-            $autorefresh_img = html_print_image('images/header_refresh_disabled_gray.png', true, ['class' => 'bot autorefresh_disabled', 'alt' => 'lightning', 'title' => __('Disabled autorefresh')]);
+            $autorefresh_img = html_print_image(
+                'images/header_refresh_disabled_gray.png',
+                true,
+                [
+                    'class' => 'bot autorefresh_disabled',
+                    'alt'   => 'lightning',
+                    'title' => __('Disabled autorefresh'),
+                ]
+            );
 
             $ignored_params['refr'] = false;
 
@@ -203,56 +255,80 @@ require_once 'include/functions_notifications.php';
             $display_counter = 'display:none';
         }
 
-        $header_autorefresh = '<div id="header_autorefresh">'.$autorefresh_link_open_img.$autorefresh_img.$autorefresh_link_close.'</div>';
-        $header_autorefresh_counter = '<div id="header_autorefresh_counter" style="'.$display_counter.'">'.$autorefresh_link_open_txt.$autorefresh_txt.$autorefresh_link_close.$autorefresh_additional.'</div>';
+        $header_autorefresh = '<div id="header_autorefresh">';
+        $header_autorefresh .= $autorefresh_link_open_img;
+        $header_autorefresh .= $autorefresh_img;
+        $header_autorefresh .= $autorefresh_link_close;
+        $header_autorefresh .= '</div>';
+
+        $header_autorefresh_counter = '<div id="header_autorefresh_counter" style="'.$display_counter.'">';
+        $header_autorefresh_counter .= $autorefresh_link_open_txt;
+        $header_autorefresh_counter .= $autorefresh_txt;
+        $header_autorefresh_counter .= $autorefresh_link_close;
+        $header_autorefresh_counter .= $autorefresh_additional;
+        $header_autorefresh_counter .= '</div>';
 
 
-        // Qr.
-        if ($config['show_qr_code_header'] == 0) {
-            $show_qr_code_header = 'display: none;';
+        // Support.
+        if (defined('PANDORA_ENTERPRISE')) {
+            $header_support_link = 'https://support.artica.es/';
         } else {
-            $show_qr_code_header = 'display: inline;';
+            $header_support_link = 'https://pandorafms.com/forums/';
         }
 
-        $header_qr = '<div id="header_qr" style="'.$show_qr_code_header.'"><div id="qr_code_container"><a href="javascript: show_dialog_qrcode();">'.html_print_image(
-            'images/qrcode_icon_gray.png',
-            true,
-            [
-                'alt'   => __('QR Code of the page'),
-                'title' => __('QR Code of the page'),
-            ]
-        ).'</a></div></div>';
+        $header_support = '<div id="header_support">';
+        $header_support .= '<a href="'.$header_support_link.'" target="_blank">';
+        $header_support .= html_print_image('/images/header_support.png', true, ['title' => __('Go to support'), 'class' => 'bot', 'alt' => 'user']);
+        $header_support .= '</a></div>';
 
-        echo "<div style='display: none;' id='qrcode_container' title='".__('QR code of the page')."'>";
-        echo "<div id='qrcode_container_image'></div>";
-        echo '</div>';
-        ?>
-        <script type='text/javascript'>
-            $(document).ready(function() {
-                $( "#qrcode_container" ).dialog({
-                    autoOpen: false,
-                    modal: true
-                });
-            });
-        </script>
-        <?php
+        // Documentation.
+        $header_docu = '<div id="header_support">';
+        $header_docu .= '<a href="https://wiki.pandorafms.com/index.php?title=Main_Page" target="_blank">';
+        $header_docu .= html_print_image('/images/header_docu.png', true, ['title' => __('Go to documentation'), 'class' => 'bot', 'alt' => 'user']);
+        $header_docu .= '</a></div>';
+
+
         // User.
         if (is_user_admin($config['id_user']) == 1) {
-            $header_user = html_print_image('images/header_user_admin_green.png', true, ['title' => __('Edit my user'), 'class' => 'bot', 'alt' => 'user']);
+            $header_user = html_print_image(
+                'images/header_user_admin_green.png',
+                true,
+                [
+                    'title' => __('Edit my user'),
+                    'class' => 'bot',
+                    'alt'   => 'user',
+                ]
+            );
         } else {
-            $header_user = html_print_image('images/header_user_green.png', true, ['title' => __('Edit my user'), 'class' => 'bot', 'alt' => 'user']);
+            $header_user = html_print_image(
+                'images/header_user_green.png',
+                true,
+                [
+                    'title' => __('Edit my user'),
+                    'class' => 'bot',
+                    'alt'   => 'user',
+                ]
+            );
         }
 
         $header_user = '<div id="header_user"><a href="index.php?sec=workspace&sec2=operation/users/user_edit">'.$header_user.'<span> ('.$config['id_user'].')</span></a></div>';
 
         // Logout.
         $header_logout = '<div id="header_logout"><a class="white" href="'.ui_get_full_url('index.php?bye=bye').'">';
-        $header_logout .= html_print_image('images/header_logout_gray.png', true, ['alt' => __('Logout'), 'class' => 'bot', 'title' => __('Logout')]);
+        $header_logout .= html_print_image(
+            'images/header_logout_gray.png',
+            true,
+            [
+                'alt'   => __('Logout'),
+                'class' => 'bot',
+                'title' => __('Logout'),
+            ]
+        );
         $header_logout .= '</a></div>';
 
-        echo '<div class="header_left">'.$header_autorefresh, $header_autorefresh_counter, $header_qr, $header_chat.'</div>
-            <div class="header_center">'.$header_searchbar, $header_discovery, $servers_list.'</div>
-            <div class="header_right">'.$header_user, $header_logout.'</div>';
+        echo '<div class="header_left"><span class="header_title">'.$config['custom_title_header'].'</span><span class="header_subtitle">'.$config['custom_subtitle_header'].'</span></div>
+            <div class="header_center">'.$header_searchbar.'</div>
+            <div class="header_right">'.$header_chat, $header_autorefresh, $header_autorefresh_counter, $header_discovery, $servers_list, $header_support, $header_docu, $header_user, $header_logout.'</div>';
         ?>
     </div>    <!-- Closes #table_header_inner -->        
 </div>    <!-- Closes #table_header -->
@@ -490,7 +566,12 @@ require_once 'include/functions_notifications.php';
         );
 
         <?php
-        if (($autorefresh_list !== null) && (array_search($_GET['sec2'], $autorefresh_list) !== false) && (!isset($_GET['refr']))) {
+        if (($autorefresh_list !== null)
+            && (array_search(
+                $_GET['sec2'],
+                $autorefresh_list
+            ) !== false) && (!isset($_GET['refr']))
+        ) {
             $do_refresh = true;
             if ($_GET['sec2'] == 'operation/agentes/pandora_networkmap') {
                 if ((!isset($_GET['tab'])) || ($_GET['tab'] != 'view')) {
@@ -502,23 +583,6 @@ require_once 'include/functions_notifications.php';
 
             if ($_GET['sec2'] == 'enterprise/dashboard/main_dashboard' && $new_dashboard) {
                 $do_refresh = false;
-            }
-
-            if ($do_refresh) {
-                ?>
-                $("a.autorefresh_txt").toggle ();
-                $("#combo_refr").toggle ();
-                href = $("a.autorefresh").attr ("href");
-                <?php
-                if ($select[0]['time_autorefresh']) {
-                    ?>
-                    var refresh = '<?php echo $select[0]['time_autorefresh']; ?>';
-                    $(document).attr ("location", href + refresh);
-                    <?php
-                }
-                ?>
-                
-                <?php
             }
         }
         ?>
@@ -547,14 +611,14 @@ require_once 'include/functions_notifications.php';
         blinkpubli();
 
         <?php
-        if ($_GET['refr']) {
+        if ($_GET['refr'] || $do_refresh === true) {
             ?>
             $("#header_autorefresh").css('padding-right', '5px');
             var refr_time = <?php echo (int) get_parameter('refr', 0); ?>;
             var t = new Date();
-            t.setTime (t.getTime () +
-                parseInt(<?php echo ($config['refr'] * 1000); ?>));
-            $("#refrcounter").countdown ({until: t, 
+            t.setTime (t.getTime () + parseInt(<?php echo ($config['refr'] * 1000); ?>));
+            $("#refrcounter").countdown ({
+                until: t, 
                 layout: '%M%nn%M:%S%nn%S',
                 labels: ['', '', '', '', '', '', ''],
                 onExpiry: function () {

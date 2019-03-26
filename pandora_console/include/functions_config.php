@@ -904,6 +904,14 @@ function config_update_config()
                         $error_update[] = __('Custom networkmap center logo');
                     }
 
+                    if (!config_update_value('custom_title_header', (string) get_parameter('custom_title_header'))) {
+                        $error_update[] = __('Custom title header');
+                    }
+
+                    if (!config_update_value('custom_subtitle_header', (string) get_parameter('custom_subtitle_header'))) {
+                        $error_update[] = __('Custom subtitle header');
+                    }
+
                     if (!config_update_value('custom_title1_login', (string) get_parameter('custom_title1_login'))) {
                         $error_update[] = __('Custom title1 login');
                     }
@@ -1804,7 +1812,7 @@ function config_process_config()
     }
 
     if (!isset($config['custom_logo'])) {
-        config_update_value('custom_logo', 'pandora_logo_head_green.png');
+        config_update_value('custom_logo', 'pandora_logo_head_4.png');
     }
 
     if (!isset($config['custom_logo_collapsed'])) {
@@ -1837,6 +1845,14 @@ function config_process_config()
 
     if (!isset($config['custom_mobile_console_logo'])) {
         config_update_value('custom_mobile_console_logo', '');
+    }
+
+    if (!isset($config['custom_title_header'])) {
+        config_update_value('custom_title_header', __('Pandora FMS'));
+    }
+
+    if (!isset($config['custom_subtitle_header'])) {
+        config_update_value('custom_subtitle_header', __('the Flexible Monitoring System'));
     }
 
     if (!isset($config['custom_title1_login'])) {

@@ -1,28 +1,44 @@
 <?php
+/**
+ * Extension to manage a list of gateways and the node address where they should
+ * point to.
+ *
+ * @category   Events
+ * @package    Pandora FMS
+ * @subpackage Community
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
 
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation for version 2.
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-// Load global vars
+// Load global vars.
 global $config;
 
 require_once $config['homedir'].'/include/functions.php';
 require_once $config['homedir'].'/include/functions_events.php';
-// Event processing functions
+// Event processing functions.
 require_once $config['homedir'].'/include/functions_alerts.php';
-// Alerts processing functions
+// Alerts processing functions.
 require_once $config['homedir'].'/include/functions_agents.php';
-// Agents funtions
+// Agents funtions.
 require_once $config['homedir'].'/include/functions_users.php';
-// Users functions
+// Users functions.
 require_once $config['homedir'].'/include/functions_groups.php';
 require_once $config['homedir'].'/include/functions_graph.php';
 require_once $config['homedir'].'/include/functions_tags.php';
@@ -47,7 +63,12 @@ if (!$event_a && !$event_w && !$event_m) {
     return;
 }
 
-$is_filter = db_get_value('id_filter', 'tusuario', 'id_user', $config['id_user']);
+$is_filter = db_get_value(
+    'id_filter',
+    'tusuario',
+    'id_user',
+    $config['id_user']
+);
 
 $jump = '&nbsp;&nbsp;';
 
@@ -57,7 +78,7 @@ if (is_ajax()) {
     $update_event_filter = get_parameter('update_event_filter', 0);
     $get_event_filters = get_parameter('get_event_filters', 0);
 
-    // Get db values of a single filter
+    // Get db values of a single filter.
     if ($get_filter_values) {
         $id_filter = get_parameter('id');
 
@@ -65,13 +86,17 @@ if (is_ajax()) {
 
         $event_filter['search'] = io_safe_output($event_filter['search']);
         $event_filter['id_name'] = io_safe_output($event_filter['id_name']);
-        $event_filter['tag_with'] = base64_encode(io_safe_output($event_filter['tag_with']));
-        $event_filter['tag_without'] = base64_encode(io_safe_output($event_filter['tag_without']));
+        $event_filter['tag_with'] = base64_encode(
+            io_safe_output($event_filter['tag_with'])
+        );
+        $event_filter['tag_without'] = base64_encode(
+            io_safe_output($event_filter['tag_without'])
+        );
 
         echo io_json_mb_encode($event_filter);
     }
 
-    // Saves an event filter
+    // Saves an event filter.
     if ($save_event_filter) {
         $values = [];
         $values['id_name'] = get_parameter('id_name');
@@ -88,7 +113,10 @@ if (is_ajax()) {
         $values['id_user_ack'] = get_parameter('id_user_ack');
         $values['group_rep'] = get_parameter('group_rep');
         $values['tag_with'] = get_parameter('tag_with', io_json_mb_encode([]));
-        $values['tag_without'] = get_parameter('tag_without', io_json_mb_encode([]));
+        $values['tag_without'] = get_parameter(
+            'tag_without',
+            io_json_mb_encode([])
+        );
         $values['filter_only_alert'] = get_parameter('filter_only_alert');
         $values['id_group_filter'] = get_parameter('id_group_filter');
         $values['date_from'] = get_parameter('date_from');
@@ -132,7 +160,10 @@ if (is_ajax()) {
         $values['id_user_ack'] = get_parameter('id_user_ack');
         $values['group_rep'] = get_parameter('group_rep');
         $values['tag_with'] = get_parameter('tag_with', io_json_mb_encode([]));
-        $values['tag_without'] = get_parameter('tag_without', io_json_mb_encode([]));
+        $values['tag_without'] = get_parameter(
+            'tag_without',
+            io_json_mb_encode([])
+        );
         $values['filter_only_alert'] = get_parameter('filter_only_alert');
         $values['id_group_filter'] = get_parameter('id_group_filter');
         $values['date_from'] = get_parameter('date_from');
@@ -171,9 +202,7 @@ if (is_ajax()) {
     return;
 }
 
-$strict_user = db_get_value('strict_acl', 'tusuario', 'id_user', $config['id_user']);
-
-// Get the tags where the user have permissions in Events reading tasks
+// Get the tags where the user have permissions in Events reading tasks.
 $tags = tags_get_user_tags($config['id_user'], $access);
 
 
@@ -183,18 +212,27 @@ if ($id_agent == 0 && !empty($text_agent)) {
 
 $id_name = get_parameter('id_name', '');
 
-/*
-    -------------------------------------------------------------------------- */
+// --------------------------------------------------------------------------
 // ------------------------ DEFAULT USER FILTER -----------------------------
 $user = $config['id_user'];
-$user_filter = db_get_value_filter('default_event_filter', 'tusuario', ['id_user' => $user]);
-$update_from_filter_table = (bool) get_parameter('update_from_filter_table', false);
+$user_filter = db_get_value_filter(
+    'default_event_filter',
+    'tusuario',
+    ['id_user' => $user]
+);
+$update_from_filter_table = (bool) get_parameter(
+    'update_from_filter_table',
+    false
+);
 
 if ($user_filter != 0 && empty($id_name) && !$update_from_filter_table) {
-    $user_default_filter = db_get_all_rows_filter('tevent_filter', ['id_filter' => $user_filter]);
+    $user_default_filter = db_get_all_rows_filter(
+        'tevent_filter',
+        ['id_filter' => $user_filter]
+    );
     $user_default_filter = $user_default_filter[0];
 
-    // FORM
+    // FORM.
     $id_name = $user_default_filter['id_name'];
     $id_group = $user_default_filter['id_group'];
     if ($user_default_filter['event_type'] != '') {
@@ -242,22 +280,24 @@ if ($user_filter != 0 && empty($id_name) && !$update_from_filter_table) {
         $date_to = $user_default_filter['date_to'];
     }
 
-    if (io_safe_output($user_default_filter['tag_with']) != '[]' && io_safe_output($user_default_filter['tag_with']) != '["0"]') {
+    if (io_safe_output($user_default_filter['tag_with']) != '[]'
+        && io_safe_output($user_default_filter['tag_with']) != '["0"]'
+    ) {
         $tag_with = $user_default_filter['tag_with'];
         $tag_with_clean = io_safe_output($tag_with);
         $tag_with = json_decode($tag_with_clean, true);
     }
 
-    if (io_safe_output($user_default_filter['tag_without']) != '[]' && io_safe_output($user_default_filter['tag_without']) != '["0"]') {
+    if (io_safe_output($user_default_filter['tag_without']) != '[]'
+        && io_safe_output($user_default_filter['tag_without']) != '["0"]'
+    ) {
         $tag_without = $user_default_filter['tag_without'];
         $tag_without_clear = io_safe_output($tag_without);
         $tag_without = json_decode($tag_without_clear, true);
     }
 }
 
-// --------------------------------------------------------------------------
-//
-// Build the condition of the events query
+// Build the condition of the events query.
 $sql_post = '';
 
 $id_user = $config['id_user'];
@@ -265,10 +305,10 @@ $id_user = $config['id_user'];
 $filter_resume = [];
 
 require 'events.build_query.php';
-// Now $sql_post have all the where condition
-//
+// Now $sql_post have all the where condition.
 // Trick to catch if any filter button has been pushed (don't collapse filter)
-// or the filter was open before click or autorefresh is in use (collapse filter)
+// or the filter was open before click
+// or autorefresh is in use (collapse filter).
 $update_pressed = get_parameter_post('update', '');
 $update_pressed = (int) !empty($update_pressed);
 
@@ -279,9 +319,15 @@ if ($update_pressed || $open_filter) {
 unset($table);
 
 $filters = events_get_event_filter_select();
-$user_groups_array = users_get_groups_for_select($config['id_user'], $access, true, true, false);
+$user_groups_array = users_get_groups_for_select(
+    $config['id_user'],
+    $access,
+    true,
+    true,
+    false
+);
 
-// Some translated words to be used from javascript
+// Some translated words to be used from javascript.
 html_print_div(
     [
         'hidden'  => true,
@@ -289,6 +335,7 @@ html_print_div(
         'content' => __('No filter loaded'),
     ]
 );
+
 html_print_div(
     [
         'hidden'  => true,
@@ -296,6 +343,7 @@ html_print_div(
         'content' => __('Filter loaded'),
     ]
 );
+
 html_print_div(
     [
         'hidden'  => true,
@@ -303,6 +351,7 @@ html_print_div(
         'content' => __('Save filter'),
     ]
 );
+
 html_print_div(
     [
         'hidden'  => true,
@@ -311,8 +360,10 @@ html_print_div(
     ]
 );
 
-if (check_acl($config['id_user'], 0, 'EW') || check_acl($config['id_user'], 0, 'EM')) {
-    // Save filter div for dialog
+if (check_acl($config['id_user'], 0, 'EW')
+    || check_acl($config['id_user'], 0, 'EM')
+) {
+    // Save filter div for dialog.
     echo '<div id="save_filter_layer" style="display: none">';
     $table = new StdClass;
     $table->id = 'save_filter_form';
@@ -333,8 +384,22 @@ if (check_acl($config['id_user'], 0, 'EW') || check_acl($config['id_user'], 0, '
 
     $data = [];
     $table->rowid[0] = 'update_save_selector';
-    $data[0] = html_print_radio_button('filter_mode', 'new', '', true, true).__('New filter').'';
-    $data[1] = html_print_radio_button('filter_mode', 'update', '', false, true).__('Update filter').'';
+    $data[0] = html_print_radio_button(
+        'filter_mode',
+        'new',
+        '',
+        true,
+        true
+    ).__('New filter').'';
+
+    $data[1] = html_print_radio_button(
+        'filter_mode',
+        'update',
+        '',
+        false,
+        true
+    ).__('Update filter').'';
+
     $table->data[] = $data;
     $table->rowclass[] = '';
 
@@ -373,11 +438,25 @@ if (check_acl($config['id_user'], 0, 'EW') || check_acl($config['id_user'], 0, '
     $data = [];
     $table->rowid[3] = 'update_filter_row1';
     $data[0] = __('Overwrite filter').$jump;
-    // Fix  : Only admin user can see filters of group ALL for update
+    // Fix  : Only admin user can see filters of group ALL for update.
     $_filters_update = events_get_event_filter_select(false);
 
-    $data[0] .= html_print_select($_filters_update, 'overwrite_filter', '', '', '', 0, true);
-    $data[1] = html_print_submit_button(__('Update filter'), 'update_filter', false, 'class="sub upd"', true);
+    $data[0] .= html_print_select(
+        $_filters_update,
+        'overwrite_filter',
+        '',
+        '',
+        '',
+        0,
+        true
+    );
+    $data[1] = html_print_submit_button(
+        __('Update filter'),
+        'update_filter',
+        false,
+        'class="sub upd"',
+        true
+    );
 
     $table->data[] = $data;
     $table->rowclass[] = '';
@@ -385,12 +464,18 @@ if (check_acl($config['id_user'], 0, 'EW') || check_acl($config['id_user'], 0, '
     html_print_table($table);
     unset($table);
     echo '<div>';
-        echo html_print_submit_button(__('Save filter'), 'save_filter', false, 'class="sub upd" style="float:right;"', true);
+        echo html_print_submit_button(
+            __('Save filter'),
+            'save_filter',
+            false,
+            'class="sub upd" style="float:right;"',
+            true
+        );
     echo '</div>';
     echo '</div>';
 }
 
-// Load filter div for dialog
+// Load filter div for dialog.
 echo '<div id="load_filter_layer" style="display: none">';
 $table = new StdClass;
 $table->id = 'load_filter_form';
@@ -412,8 +497,22 @@ if (!is_metaconsole()) {
 $data = [];
 $table->rowid[3] = 'update_filter_row1';
 $data[0] = __('Load filter').$jump;
-$data[0] .= html_print_select($filters, 'filter_id', '', '', __('None'), 0, true);
-$data[1] = html_print_submit_button(__('Load filter'), 'load_filter', false, 'class="sub upd"', true);
+$data[0] .= html_print_select(
+    $filters,
+    'filter_id',
+    '',
+    '',
+    __('None'),
+    0,
+    true
+);
+$data[1] = html_print_submit_button(
+    __('Load filter'),
+    'load_filter',
+    false,
+    'class="sub upd"',
+    true
+);
 $table->data[] = $data;
 $table->rowclass[] = '';
 
@@ -421,19 +520,23 @@ html_print_table($table);
 unset($table);
 echo '</div>';
 
-// TAGS
+// TAGS.
 $tags_select_with = [];
 $tags_select_without = [];
 $tag_with_temp = [];
 $tag_without_temp = [];
 foreach ($tags as $id_tag => $tag) {
-    if ((array_search($id_tag, $tag_with) === false) || (array_search($id_tag, $tag_with) === null)) {
+    if ((array_search($id_tag, $tag_with) === false)
+        || (array_search($id_tag, $tag_with) === null)
+    ) {
         $tags_select_with[$id_tag] = ui_print_truncate_text($tag, 50, true);
     } else {
         $tag_with_temp[$id_tag] = ui_print_truncate_text($tag, 50, true);
     }
 
-    if ((array_search($id_tag, $tag_without) === false) || (array_search($id_tag, $tag_without) === null)) {
+    if ((array_search($id_tag, $tag_without) === false)
+        || (array_search($id_tag, $tag_without) === null)
+    ) {
         $tags_select_without[$id_tag] = ui_print_truncate_text($tag, 50, true);
     } else {
         $tag_without_temp[$id_tag] = ui_print_truncate_text($tag, 50, true);
@@ -476,9 +579,31 @@ $data[0] = html_print_select(
     'width: 200px;'
 );
 
-$data[1] = html_print_image('images/darrowright.png', true, ['id' => 'button-add_with', 'style' => 'cursor: pointer;', 'title' => __('Add')]);
-$data[1] .= html_print_input_hidden('tag_with', $tag_with_base64, true);
-$data[1] .= '<br><br>'.html_print_image('images/darrowleft.png', true, ['id' => 'button-remove_with', 'style' => 'cursor: pointer;', 'title' => __('Remove')]);
+$data[1] = html_print_image(
+    'images/darrowright.png',
+    true,
+    [
+        'id'    => 'button-add_with',
+        'style' => 'cursor: pointer;',
+        'title' => __('Add'),
+    ]
+);
+
+$data[1] .= html_print_input_hidden(
+    'tag_with',
+    $tag_with_base64,
+    true
+);
+
+$data[1] .= '<br><br>'.html_print_image(
+    'images/darrowleft.png',
+    true,
+    [
+        'id'    => 'button-remove_with',
+        'style' => 'cursor: pointer;',
+        'title' => __('Remove'),
+    ]
+);
 
 $data[2] = html_print_select(
     $tag_with_temp,
@@ -528,9 +653,29 @@ $data[0] = html_print_select(
     false,
     'width: 200px;'
 );
-$data[1] = html_print_image('images/darrowright.png', true, ['id' => 'button-add_without', 'style' => 'cursor: pointer;', 'title' => __('Add')]);
-$data[1] .= html_print_input_hidden('tag_without', $tag_without_base64, true);
-$data[1] .= '<br><br>'.html_print_image('images/darrowleft.png', true, ['id' => 'button-remove_without', 'style' => 'cursor: pointer;', 'title' => __('Remove')]);
+$data[1] = html_print_image(
+    'images/darrowright.png',
+    true,
+    [
+        'id'    => 'button-add_without',
+        'style' => 'cursor: pointer;',
+        'title' => __('Add'),
+    ]
+);
+$data[1] .= html_print_input_hidden(
+    'tag_without',
+    $tag_without_base64,
+    true
+);
+$data[1] .= '<br><br>'.html_print_image(
+    'images/darrowleft.png',
+    true,
+    [
+        'id'    => 'button-remove_without',
+        'style' => 'cursor: pointer;',
+        'title' => __('Remove'),
+    ]
+);
 $data[2] = html_print_select(
     $tag_without_temp,
     'tag_without_temp',
@@ -549,24 +694,32 @@ $tabletags_without->data[] = $data;
 $tabletags_without->rowclass[] = '';
 
 
-// END OF TAGS
-// EVENTS FILTER
-// Table for filter controls
+// END OF TAGS.
+// EVENTS FILTER.
+// Table for filter controls.
 if (is_metaconsole()) {
-    $events_filter = '<form id="form_filter" class="filters_form" method="post" action="index.php?sec=eventos&amp;sec2=operation/events/events&amp;refr='.(int) get_parameter('refr', 0).'&amp;pure='.$config['pure'].'&amp;section='.$section.'&amp;history='.(int) $history.'">';
+    $events_filter = '<form id="form_filter" class="filters_form" method="post" action="index.php?sec=eventos&amp;sec2=operation/events/events&amp;refresh='.(int) get_parameter('refresh', 0).'&amp;pure='.$config['pure'].'&amp;section='.$section.'&amp;history='.(int) $history.'">';
 } else {
-    $events_filter = '<form id="form_filter" method="post" action="index.php?sec=eventos&amp;sec2=operation/events/events&amp;refr='.(int) get_parameter('refr', 0).'&amp;pure='.$config['pure'].'&amp;section='.$section.'&amp;history='.(int) $history.'">';
+    $events_filter = '<form id="form_filter" method="post" action="index.php?sec=eventos&amp;sec2=operation/events/events&amp;refresh='.(int) get_parameter('refresh', 0).'&amp;pure='.$config['pure'].'&amp;section='.$section.'&amp;history='.(int) $history.'">';
 }
 
-// Hidden field with the loaded filter name
+// Hidden field with the loaded filter name.
 $events_filter .= html_print_input_hidden('id_name', $id_name, true);
 
 // Hidden open filter flag
-// If autoupdate is in use collapse filter
+// If autoupdate is in use collapse filter.
 if ($open_filter) {
-    $events_filter .= html_print_input_hidden('open_filter', 'true', true);
+    $events_filter .= html_print_input_hidden(
+        'open_filter',
+        'true',
+        true
+    );
 } else {
-    $events_filter .= html_print_input_hidden('open_filter', 'false', true);
+    $events_filter .= html_print_input_hidden(
+        'open_filter',
+        'false',
+        true
+    );
 }
 
 // ----------------------------------------------------------------------
@@ -606,11 +759,11 @@ $table_advanced->rowclass[] = '';
 $data = [];
 $data[0] = __('User ack.').$jump;
 
-if ($strict_user) {
-    $user_users = [$config['id_user'] => $config['id_user']];
-} else {
-    $user_users = users_get_user_users($config['id_user'], $access, users_can_manage_group_all());
-}
+$user_users = users_get_user_users(
+    $config['id_user'],
+    $access,
+    users_can_manage_group_all()
+);
 
 $data[0] .= html_print_select(
     $user_users,
@@ -621,6 +774,7 @@ $data[0] .= html_print_select(
     0,
     true
 );
+
 if (!$meta) {
     $data[1] = __('Module search').$jump;
     $data[1] .= html_print_autocomplete_modules(
@@ -635,27 +789,15 @@ if (!$meta) {
     );
 } else {
     $data[1] = __('Server').$jump;
-    if ($strict_user) {
-        $data[1] .= html_print_select(
-            '',
-            'server_id',
-            $server_id,
-            'script',
-            __('All'),
-            '0',
-            true
-        );
-    } else {
-        $data[1] .= html_print_select_from_sql(
-            'SELECT id, server_name FROM tmetaconsole_setup',
-            'server_id',
-            $server_id,
-            'script',
-            __('All'),
-            '0',
-            true
-        );
-    }
+    $data[1] .= html_print_select_from_sql(
+        'SELECT id, server_name FROM tmetaconsole_setup',
+        'server_id',
+        $server_id,
+        'script',
+        __('All'),
+        '0',
+        true
+    );
 }
 
 $table_advanced->data[] = $data;
@@ -668,14 +810,30 @@ $alert_events_titles = [
     '0'  => __('Filter alert events'),
     '1'  => __('Only alert events'),
 ];
-$data[0] .= html_print_select($alert_events_titles, 'filter_only_alert', $filter_only_alert, '', '', '', true);
+$data[0] .= html_print_select(
+    $alert_events_titles,
+    'filter_only_alert',
+    $filter_only_alert,
+    '',
+    '',
+    '',
+    true
+);
 $data[1] = __('Block size for pagination').$jump;
 $lpagination[25] = 25;
 $lpagination[50] = 50;
 $lpagination[100] = 100;
 $lpagination[200] = 200;
 $lpagination[500] = 500;
-$data[1] .= html_print_select($lpagination, 'pagination', $pagination, '', __('Default'), $config['block_size'], true);
+$data[1] .= html_print_select(
+    $lpagination,
+    'pagination',
+    $pagination,
+    '',
+    __('Default'),
+    $config['block_size'],
+    true
+);
 $table_advanced->data[] = $data;
 $table_advanced->rowclass[] = '';
 
@@ -701,11 +859,11 @@ $table_advanced->rowclass[] = '';
 
 $data = [];
 if (defined('METACONSOLE')) {
-    $data[0] = '<fieldset class="" style="padding:0px; width: 510px;">'.'<legend style="padding:0px;">'.__('Events with following tags').'</legend>'.html_print_table($tabletags_with, true).'</fieldset>';
-    $data2[1] = '<fieldset class="" style="padding:0px; width: 310px;">'.'<legend style="padding:0px;">'.__('Events without following tags').'</legend>'.html_print_table($tabletags_without, true).'</fieldset>';
+    $data[0] = '<fieldset class="" style="padding:0px; width: 510px;"><legend style="padding:0px;">'.__('Events with following tags').'</legend>'.html_print_table($tabletags_with, true).'</fieldset>';
+    $data2[1] = '<fieldset class="" style="padding:0px; width: 310px;"><legend style="padding:0px;">'.__('Events without following tags').'</legend>'.html_print_table($tabletags_without, true).'</fieldset>';
 } else {
-    $data[0] = '<fieldset class="databox" style="padding:0px; width: 30%; ">'.'<legend>'.__('Events with following tags').'</legend>'.html_print_table($tabletags_with, true).'</fieldset>';
-    $data[1] = '<fieldset class="databox" style="padding:0px; width: 30%;">'.'<legend>'.__('Events without following tags').'</legend>'.html_print_table($tabletags_without, true).'</fieldset>';
+    $data[0] = '<fieldset class="databox" style="padding:0px; width: 30%; "><legend>'.__('Events with following tags').'</legend>'.html_print_table($tabletags_with, true).'</fieldset>';
+    $data[1] = '<fieldset class="databox" style="padding:0px; width: 30%;"><legend>'.__('Events without following tags').'</legend>'.html_print_table($tabletags_without, true).'</fieldset>';
 }
 
 $table_advanced->data[] = $data;
@@ -714,7 +872,7 @@ if (defined('METACONSOLE')) {
 }
 
 $table_advanced->rowclass[] = '';
-// - END ADVANCE FILTER -------------------------------------------------
+// END ADVANCE FILTER -------------------------------------------------.
 $table = new stdClass();
 $table->id = 'events_filter_form';
 $table->width = '100%';
@@ -748,13 +906,33 @@ $data[0] .= html_print_select(
 // **********************************************************************
 $data[1] = __('Event type').$jump;
 $types = get_event_types();
-// Expand standard array to add not_normal (not exist in the array, used only for searches)
+
+// Expand standard array to add not_normal
+// (not exist in the array, used only for searches).
 $types['not_normal'] = __('Not normal');
-$data[1] .= html_print_select($types, 'event_type', $event_type, '', __('All'), '', true);
+$data[1] .= html_print_select(
+    $types,
+    'event_type',
+    $event_type,
+    '',
+    __('All'),
+    '',
+    true
+);
 
 $data[2] = __('Severity').$jump;
 $severities = get_priorities();
-$data[2] .= html_print_select($severities, 'severity', $severity, '', __('All'), '-1', true, false, false);
+$data[2] .= html_print_select(
+    $severities,
+    'severity',
+    $severity,
+    '',
+    __('All'),
+    '-1',
+    true,
+    false,
+    false
+);
 $table->data[] = $data;
 $table->rowclass[] = '';
 
@@ -763,12 +941,27 @@ $data[0] = __('Event status').$jump;
 $fields = events_get_all_status();
 $data[0] .= html_print_select($fields, 'status', $status, '', '', '', true);
 $data[1] = __('Max. hours old').$jump;
-$data[1] .= html_print_input_text('event_view_hr', $event_view_hr, '', 5, 255, true);
+$data[1] .= html_print_input_text(
+    'event_view_hr',
+    $event_view_hr,
+    '',
+    5,
+    255,
+    true
+);
 $data[2] = __('Repeated').$jump;
 $repeated_sel[0] = __('All events');
 $repeated_sel[1] = __('Group events');
 $repeated_sel[2] = __('Group agents');
-$data[2] .= html_print_select($repeated_sel, 'group_rep', $group_rep, '', '', 0, true);
+$data[2] .= html_print_select(
+    $repeated_sel,
+    'group_rep',
+    $group_rep,
+    '',
+    '',
+    0,
+    true
+);
 $table->data[] = $data;
 $table->rowclass[] = '';
 
@@ -778,7 +971,14 @@ $data[0] .= html_print_input_text('source', $source, '', 35, 255, true);
 $data[1] = __('Extra ID').$jump;
 $data[1] .= html_print_input_text('id_extra', $id_extra, '', 11, 255, true);
 $data[2] = __('Comment').$jump;
-$data[2] .= html_print_input_text('user_comment', $user_comment, '', 35, 255, true);
+$data[2] .= html_print_input_text(
+    'user_comment',
+    $user_comment,
+    '',
+    35,
+    255,
+    true
+);
 $table->data[] = $data;
 $table->rowclass[] = '';
 
@@ -800,7 +1000,7 @@ $data = [];
 $table->data[] = $data;
 $table->rowclass[] = '';
 
-// The buttons
+// The buttons.
 $data = [];
 $data[0] = '<div style="width:100%; text-align:left">';
 if ($event_w || $event_m) {
@@ -826,13 +1026,19 @@ $events_filter .= html_print_table($table, true);
 unset($table);
 
 $botom_update = "<div style='width:100%;float:right;'>";
-$botom_update .= html_print_submit_button(__('Update'), 'update', false, 'class="sub upd"  style="float:right;"', true);
+$botom_update .= html_print_submit_button(
+    __('Update'),
+    'update',
+    false,
+    'class="sub upd"  style="float:right;"',
+    true
+);
 $botom_update .= '</div>';
 
 $events_filter .= $botom_update;
 
 $events_filter .= '</form>';
-// This is the filter div
+// This is the filter div.
 $filter_resume['title'] = empty($id_name) ? __('No filter loaded') : __('Filter loaded').': '.$id_name;
 
 if (is_metaconsole()) {
@@ -846,14 +1052,29 @@ if (is_metaconsole()) {
 }
 
 
-// Error div for ajax messages
+// Error div for ajax messages.
 echo "<div id='show_filter_error' style='display: none;'>";
-ui_print_error_message(__('Error creating filter.'), 'data-type_info_box="error_create_filter"');
-ui_print_error_message(__('Error creating filter is duplicated.'), 'data-type_info_box="duplicate_create_filter"');
-ui_print_success_message(__('Filter created.'), 'data-type_info_box="success_create_filter"');
+ui_print_error_message(
+    __('Error creating filter.'),
+    'data-type_info_box="error_create_filter"'
+);
+ui_print_error_message(
+    __('Error creating filter is duplicated.'),
+    'data-type_info_box="duplicate_create_filter"'
+);
+ui_print_success_message(
+    __('Filter created.'),
+    'data-type_info_box="success_create_filter"'
+);
 
-ui_print_success_message(__('Filter updated.'), 'data-type_info_box="success_update_filter"');
-ui_print_error_message(__('Error updating filter.'), 'data-type_info_box="error_create_filter"');
+ui_print_success_message(
+    __('Filter updated.'),
+    'data-type_info_box="success_update_filter"'
+);
+ui_print_error_message(
+    __('Error updating filter.'),
+    'data-type_info_box="error_create_filter"'
+);
 
 echo '</div>';
 ?>
@@ -877,7 +1098,7 @@ if ($group_rep == 0) {
 		WHERE 1=1 ".$sql_post."
 		$order_sql LIMIT ".$offset.','.$pagination;
 
-    // Extract the events by filter (or not) from db
+    // Extract the events by filter (or not) from db.
     $result = db_get_all_rows_sql($sql);
 } else if ($group_rep == 1) {
     $filter_resume['duplicate'] = $group_rep;
@@ -905,7 +1126,7 @@ if ($group_rep == 0) {
 
 // Active filter tag view call (only enterprise version)
 // It is required to pass some references to enterprise function
-// to translate the active filters
+// to translate the active filters.
 enterprise_hook(
     'print_event_tags_active_filters',
     [
@@ -922,8 +1143,9 @@ enterprise_hook(
 );
 
 if (!empty($result)) {
-    // ~ Checking the event tags exactly. The event query filters approximated tags to keep events
-    // ~ with several tags
+    // Checking the event tags exactly.
+    // The event query filters approximated tags to keep events
+    // with several tags.
     $acltags = tags_get_user_groups_and_tags($config['id_user'], $access, true);
 
     foreach ($result as $key => $event_data) {
@@ -936,7 +1158,7 @@ if (!empty($result)) {
 
 
 
-// Delete rnum field generated by oracle_recode_query() function
+// Delete rnum field generated by oracle_recode_query() function.
 if (($config['dbtype'] == 'oracle') && ($result !== false)) {
     for ($i = 0; $i < count($result); $i++) {
         unset($result[$i]['rnum']);
@@ -980,7 +1202,7 @@ enterprise_hook('close_meta_frame');
 
 unset($table);
 
-// Values to be used from javascript library
+// Values to be used from javascript library.
 html_print_input_hidden(
     'ajax_file',
     ui_get_full_url('ajax.php', false, false, false)
@@ -993,8 +1215,6 @@ ui_require_jquery_file('json');
 ui_include_time_picker();
 ?>
 <script language="javascript" type="text/javascript">
-/*<![CDATA[ */
-
 var select_with_tag_empty = <?php echo (int) $remove_with_tag_disabled; ?>;
 var select_without_tag_empty = <?php echo (int) $remove_without_tag_disabled; ?>;
 var origin_select_with_tag_empty = <?php echo (int) $add_with_tag_disabled; ?>;
@@ -1031,14 +1251,15 @@ $(document).ready( function() {
     
     $(id_hidden2).val(Base64.encode(jQuery.toJSON(value_store2)));
 
-    $("#text-date_from, #text-date_to").datepicker({dateFormat: "<?php echo DATE_FORMAT_JS; ?>"});
+    $("#text-date_from, #text-date_to").datepicker(
+        {dateFormat: "<?php echo DATE_FORMAT_JS; ?>"});
     
     // Don't collapse filter if update button has been pushed
     if ($("#hidden-open_filter").val() == 'true') {
         $("#event_control").toggle();
     }
     
-    // If selected is not 'none' show filter name
+    // If selected is not 'none' show filter name.
     if ( $("#filter_id").val() != 0 ) {
         $("#row_name").css('visibility', '');
         $("#submit-update_filter").css('visibility', '');

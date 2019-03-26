@@ -234,6 +234,7 @@ class ConsoleSupervisor
         /*
          * Check license.
          *   NOTIF.LICENSE.EXPIRATION
+         *   NOTIF.LICENSE.LIMITED
          */
 
         $this->checkLicense();
@@ -537,6 +538,9 @@ class ConsoleSupervisor
         }
 
         switch ($data['type']) {
+            case 'NOTIF.LICENSE.LIMITED':
+                $max_age = 0;
+				break;
             case 'NOTIF.LICENSE.EXPIRATION':
             case 'NOTIF.FILES.ATTACHMENT':
             case 'NOTIF.FILES.DATAIN':
@@ -684,11 +688,27 @@ class ConsoleSupervisor
 
         $days_to_expiry = ((strtotime($license['expiry_date']) - time()) / (60 * 60 * 24));
 
+		// Limited mode.
+        if (isset($config['limited_mode'])) {
+            // Warn user if license is going to expire in 15 days or less.
+            $this->notify(
+                [
+                    'type'    => 'NOTIF.LICENSE.LIMITED',
+                    'title'   => __('Limited mode.'),
+                    'message' => io_safe_output($config['limited_mode']),
+                    'url'     => 'index.php?sec=gsetup&sec2=godmode/setup/license',
+                ]
+            );
+        } else {
+            $this->cleanNotifications('NOTIF.LICENSE.LIMITED');
+        }
+
+		// Expiry.
         if (($days_to_expiry <= 15) && ($days_to_expiry > 0)) {
             // Warn user if license is going to expire in 15 days or less.
             $this->notify(
                 [
-                    'type'    => 'NOTIF.LICENSE_EXPIRATION',
+                    'type'    => 'NOTIF.LICENSE.EXPIRATION',
                     'title'   => __('License is going to expire.'),
                     'message' => __(
                         'Your license is going to expire in %d days. Please contact sales.',

@@ -19,15 +19,6 @@ final class Container extends Model
      * @param array $data Input data.
      *
      * @return void
-     */
-    public static function fromArray(array $data)
-    {
-        return new self($data);
-    }
-
-
-    /**
-     * Validate the input data
      *
      * @throws \InvalidArgumentException If any input value is considered
      * invalid.

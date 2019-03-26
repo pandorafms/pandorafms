@@ -171,7 +171,10 @@ if (enterprise_installed()) {
         $description = get_parameter('description', '');
         $values['description'] = $description;
 
-        $dont_show_subgroups = 0;
+        $dont_show_subgroups = (int) get_parameter_checkbox(
+            'dont_show_subgroups',
+            0
+        );
         $node_radius = (int) get_parameter('node_radius', 40);
         $row = db_get_row('tmap', 'id', $id);
         $filter = json_decode($row['filter'], true);
@@ -250,7 +253,10 @@ if ($new_networkmap || $save_networkmap) {
             ''
         );
         $source = (string) get_parameter('source', 'group');
-        $dont_show_subgroups = (int) get_parameter('dont_show_subgroups', 0);
+        $dont_show_subgroups = (int) get_parameter_checkbox(
+            'dont_show_subgroups',
+            0
+        );
         $node_radius = (int) get_parameter('node_radius', 40);
         $description = get_parameter('description', '');
 

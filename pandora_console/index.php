@@ -173,8 +173,8 @@ if (!empty($config['https']) && empty($_SERVER['HTTPS'])) {
 // Pure mode (without menu, header and footer).
 $config['pure'] = (bool) get_parameter('pure');
 
-// Auto Refresh page (can now be disabled anywhere in the script)
-if (get_parameter('refr')) {
+// Auto Refresh page (can now be disabled anywhere in the script).
+if (get_parameter('refr') != null) {
     $config['refr'] = (int) get_parameter('refr');
 }
 

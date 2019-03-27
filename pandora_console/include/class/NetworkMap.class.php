@@ -322,7 +322,7 @@ class NetworkMap
         $this->mapOptions['width'] = $config['networkmap_max_width'];
         $this->mapOptions['height'] = $config['networkmap_max_width'];
         $this->mapOptions['simple'] = 0;
-        $this->mapOptions['font_size'] = 12;
+        $this->mapOptions['font_size'] = 20;
         $this->mapOptions['nooverlap'] = 1;
         $this->mapOptions['z_dash'] = 0.5;
         $this->mapOptions['center'] = 0;

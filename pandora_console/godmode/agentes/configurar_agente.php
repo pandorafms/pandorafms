@@ -1320,6 +1320,7 @@ if ($update_module || $create_module) {
     $ff_event_normal = (int) get_parameter('ff_event_normal');
     $ff_event_warning = (int) get_parameter('ff_event_warning');
     $ff_event_critical = (int) get_parameter('ff_event_critical');
+    $ff_type = (int) get_parameter('ff_type');
     $each_ff = (int) get_parameter('each_ff');
     $ff_timeout = (int) get_parameter('ff_timeout');
     $unit = (string) get_parameter('unit_select');
@@ -1482,6 +1483,7 @@ if ($update_module) {
         'min_ff_event_normal'   => $ff_event_normal,
         'min_ff_event_warning'  => $ff_event_warning,
         'min_ff_event_critical' => $ff_event_critical,
+        'ff_type'               => $ff_type,
         'each_ff'               => $each_ff,
         'ff_timeout'            => $ff_timeout,
         'unit'                  => io_safe_output($unit),
@@ -1677,6 +1679,7 @@ if ($create_module) {
         'min_ff_event_normal'   => $ff_event_normal,
         'min_ff_event_warning'  => $ff_event_warning,
         'min_ff_event_critical' => $ff_event_critical,
+        'ff_type'               => $ff_type,
         'each_ff'               => $each_ff,
         'ff_timeout'            => $ff_timeout,
         'unit'                  => io_safe_output($unit),

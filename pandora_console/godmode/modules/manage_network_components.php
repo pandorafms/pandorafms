@@ -124,6 +124,7 @@ $pure = get_parameter('pure', 0);
 $ff_event_normal = (int) get_parameter('ff_event_normal');
 $ff_event_warning = (int) get_parameter('ff_event_warning');
 $ff_event_critical = (int) get_parameter('ff_event_critical');
+$ff_type = (int) get_parameter('ff_type');
 $each_ff = (int) get_parameter('each_ff');
 
 if (count($id_tag_selected) == 1 && empty($id_tag_selected[0])) {
@@ -261,6 +262,7 @@ if ($create_component) {
                 'min_ff_event_normal'   => $ff_event_normal,
                 'min_ff_event_warning'  => $ff_event_warning,
                 'min_ff_event_critical' => $ff_event_critical,
+                'ff_type'               => $ff_type,
                 'each_ff'               => $each_ff,
             ]
         );
@@ -355,6 +357,7 @@ if ($update_component) {
                 'min_ff_event_normal'   => $ff_event_normal,
                 'min_ff_event_warning'  => $ff_event_warning,
                 'min_ff_event_critical' => $ff_event_critical,
+                'ff_type'               => $ff_type,
                 'each_ff'               => $each_ff,
             ]
         );

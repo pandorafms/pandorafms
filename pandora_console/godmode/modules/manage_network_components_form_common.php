@@ -233,7 +233,23 @@ $table->data[5][1] .= html_print_checkbox('critical_inverse', 1, $critical_inver
 
 $table->data[6][0] = __('FF threshold').' '.ui_print_help_icon('ff_threshold', true);
 $table->colspan[6][1] = 3;
-$table->data[6][1] = html_print_radio_button('each_ff', 0, '', $each_ff, true).' '.__('All state changing').' : ';
+
+$table->data[6][1] = __('Keep counters');
+$table->data[6][1] .= html_print_checkbox(
+    'ff_type',
+    1,
+    $ff_type,
+    true
+).'<br />';
+
+$table->data[6][1] .= html_print_radio_button(
+    'each_ff',
+    0,
+    '',
+    $each_ff,
+    true
+).' '.__('All state changing').' : ';
+
 $table->data[6][1] .= html_print_input_text(
     'ff_event',
     $ff_event,
@@ -242,13 +258,40 @@ $table->data[6][1] .= html_print_input_text(
     15,
     true
 ).'<br />';
-$table->data[6][1] .= html_print_radio_button('each_ff', 1, '', $each_ff, true).' '.__('Each state changing').' : ';
+$table->data[6][1] .= html_print_radio_button(
+    'each_ff',
+    1,
+    '',
+    $each_ff,
+    true
+).' '.__('Each state changing').' : ';
 $table->data[6][1] .= __('To normal');
-$table->data[6][1] .= html_print_input_text('ff_event_normal', $ff_event_normal, '', 5, 15, true).' ';
+$table->data[6][1] .= html_print_input_text(
+    'ff_event_normal',
+    $ff_event_normal,
+    '',
+    5,
+    15,
+    true
+).' ';
 $table->data[6][1] .= __('To warning');
-$table->data[6][1] .= html_print_input_text('ff_event_warning', $ff_event_warning, '', 5, 15, true).' ';
+$table->data[6][1] .= html_print_input_text(
+    'ff_event_warning',
+    $ff_event_warning,
+    '',
+    5,
+    15,
+    true
+).' ';
 $table->data[6][1] .= __('To critical');
-$table->data[6][1] .= html_print_input_text('ff_event_critical', $ff_event_critical, '', 5, 15, true);
+$table->data[6][1] .= html_print_input_text(
+    'ff_event_critical',
+    $ff_event_critical,
+    '',
+    5,
+    15,
+    true
+);
 
 $table->data[7][0] = __('Historical data');
 $table->data[7][1] = html_print_checkbox('history_data', 1, $history_data, true);

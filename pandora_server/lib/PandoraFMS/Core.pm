@@ -1609,49 +1609,82 @@ sub pandora_process_module ($$$$$$$$$;$) {
 	my $min_ff_event = $module->{'min_ff_event'};
 	my $current_utimestamp = time ();
 	my $ff_timeout = $module->{'ff_timeout'};
+	my $ff_warning = $module->{'ff_warning'};
+	my $ff_critical = $module->{'ff_critical'};
+	my $ff_normal = $module->{'ff_normal'};
 
-	if ($module->{'each_ff'}) {
-		$min_ff_event = $module->{'min_ff_event_normal'} if ($new_status == 0);
-		$min_ff_event = $module->{'min_ff_event_critical'} if ($new_status == 1);
-		$min_ff_event = $module->{'min_ff_event_warning'} if ($new_status == 2);
-	}
-	
-	if ($last_known_status == $new_status) {
-		# Avoid overflows
-		$status_changes = $min_ff_event if ($status_changes > $min_ff_event);
+	if ($module->{'ff_type'} == 0) {
+		if ($module->{'each_ff'}) {
+			$min_ff_event = $module->{'min_ff_event_normal'} if ($new_status == 0);
+			$min_ff_event = $module->{'min_ff_event_critical'} if ($new_status == 1);
+			$min_ff_event = $module->{'min_ff_event_warning'} if ($new_status == 2);
+		}
 		
-		$status_changes++;
-		if ($module_type =~ m/async/ && $min_ff_event != 0 && $ff_timeout != 0 && ($utimestamp - $ff_start_utimestamp) > $ff_timeout) {
+		if ($last_known_status == $new_status) {
+			# Avoid overflows
+			$status_changes = $min_ff_event if ($status_changes > $min_ff_event);
+			
+			$status_changes++;
+			if ($module_type =~ m/async/ && $min_ff_event != 0 && $ff_timeout != 0 && ($utimestamp - $ff_start_utimestamp) > $ff_timeout) {
+				$status_changes = 0;
+				$ff_start_utimestamp = $utimestamp;
+			}
+		}
+		else {
 			$status_changes = 0;
-			$ff_start_utimestamp = $utimestamp;
+			$ff_start_utimestamp = $utimestamp if ($module_type =~ m/async/);
+		}
+		
+		# Active ff interval
+		if ($module->{'module_ff_interval'} != 0 && $status_changes < $min_ff_event) {
+			$current_interval = $module->{'module_ff_interval'};
+		}
+		
+		# Change status
+		if ($status_changes >= $min_ff_event && $known_status != $new_status) {
+			generate_status_event ($pa_config, $processed_data, $agent, $module, $new_status, $status, $known_status, $dbh);
+			$status = $new_status;
+
+			# Update module status count.
+			$mark_for_update = 1;
+
+			# Safe mode execution.
+			if ($agent->{'safe_mode_module'} == $module->{'id_agente_modulo'}) {
+				safe_mode($pa_config, $agent, $module, $new_status, $known_status, $dbh);
+			}
+		}
+	} else {
+		# Independent min_ff_event for all. 
+		if ($module->{'each_ff'}) {
+			$min_ff_event = $module->{'min_ff_event_normal'} if ($new_status == 0);
+			$min_ff_event = $module->{'min_ff_event_critical'} if ($new_status == 1);
+			$min_ff_event = $module->{'min_ff_event_warning'} if ($new_status == 2);
+		}
+
+		if ($last_known_status == $new_status) {
+			$ff_normal = 0;
+			$ff_critical = 0;
+			$ff_warning = 0;
+		} else {
+			# Status change.
+			$ff_critical++ if ($new_status == 1);
+			$ff_warning++  if ($new_status == 2);
+			$ff_normal++   if ($new_status == 0);
+		}
+
+		if ( ($new_status == 0 && $ff_normal >= $min_ff_event)
+		  || ($new_status == 1 && $ff_critical >= $min_ff_event)
+		  || ($new_status == 2 && $ff_warning >= $min_ff_event)) {
+			$status = $new_status;
+			$ff_normal = 0;
+			$ff_critical = 0;
+			$ff_warning = 0;
 		}
 	}
-	else {
-		$status_changes = 0;
-		$ff_start_utimestamp = $utimestamp if ($module_type =~ m/async/);
-	}
-	
-	# Active ff interval
-	if ($module->{'module_ff_interval'} != 0 && $status_changes < $min_ff_event) {
-		$current_interval = $module->{'module_ff_interval'};
-	}
-	
-	# Change status
-	if ($status_changes >= $min_ff_event && $known_status != $new_status) {
-		generate_status_event ($pa_config, $processed_data, $agent, $module, $new_status, $status, $known_status, $dbh);
-		$status = $new_status;
 
-		# Update module status count.
-		$mark_for_update = 1;
-
-		# Safe mode execution.
-		if ($agent->{'safe_mode_module'} == $module->{'id_agente_modulo'}) {
-			safe_mode($pa_config, $agent, $module, $new_status, $known_status, $dbh);
-		}
-	}
 	# Set not-init modules to normal status even if min_ff_event is not matched the first time they receive data.
 	# if critical or warning status, just pass through here and wait the time min_ff_event will be matched.
-	elsif ($status == 4) {
+	if ($status == 4) {
 		generate_status_event ($pa_config, $processed_data, $agent, $module, 0, $status, $known_status, $dbh);
 		$status = 0;
 
@@ -1692,10 +1725,11 @@ sub pandora_process_module ($$$$$$$$$;$) {
 				status_changes = ?, utimestamp = ?, timestamp = ?,
 				id_agente = ?, current_interval = ?, running_by = ?,
 				last_execution_try = ?, last_try = ?, last_error = ?,
-				ff_start_utimestamp = ?
+				ff_start_utimestamp = ?, ff_normal = ?, ff_warning = ?, ff_critical = ?
 			WHERE id_agente_modulo = ?', $processed_data, $status, $status, $new_status, $new_status, $status_changes,
 			$current_utimestamp, $timestamp, $module->{'id_agente'}, $current_interval, $server_id,
-			$utimestamp, ($save == 1) ? $timestamp : $agent_status->{'last_try'}, $last_error, $ff_start_utimestamp, $module->{'id_agente_modulo'});
+			$utimestamp, ($save == 1) ? $timestamp : $agent_status->{'last_try'}, $last_error, $ff_start_utimestamp,
+			$ff_normal, $ff_warning, $ff_critical, $module->{'id_agente_modulo'});
 	}
 
 	# Save module data. Async and log4x modules are not compressed.

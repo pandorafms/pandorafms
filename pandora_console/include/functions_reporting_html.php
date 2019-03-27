@@ -539,10 +539,6 @@ function reporting_html_SLA($table, $item, $mini, $pdf=0)
 
             foreach ($item['data'] as $sla) {
                 if (isset($sla)) {
-                    $the_first_men_time = get_agent_first_time(
-                        io_safe_output($sla['agent'])
-                    );
-
                     // First_table.
                     $row = [];
                     $row[] = $sla['agent'];
@@ -2995,10 +2991,6 @@ function reporting_html_availability($table, $item, $pdf=0)
         $table2->style[5] = 'text-align: right';
 
         foreach ($item['data'] as $row) {
-            $the_first_men_time = get_agent_first_time(
-                io_safe_output($row['agent'])
-            );
-
             $table_row = [];
             $table_row[] = $row['agent'];
             $table_row[] = $row['availability_item'];
@@ -3307,9 +3299,8 @@ function get_agent_first_time($agent_name)
     $id = agents_get_agent_id($agent_name, true);
 
     $utimestamp = db_get_all_rows_sql(
-        'SELECT utimestamp FROM tagente_datos WHERE id_agente_modulo IN 
-        (SELECT id_agente_modulo FROM tagente_modulo WHERE id_agente = '.$id.')
-        ORDER BY utimestamp ASC LIMIT 1'
+        'SELECT min(utimestamp) FROM tagente_datos WHERE id_agente_modulo IN 
+        (SELECT id_agente_modulo FROM tagente_modulo WHERE id_agente = '.$id.')'
     );
     $utimestamp = $utimestamp[0]['utimestamp'];
 

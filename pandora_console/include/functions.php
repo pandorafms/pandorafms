@@ -1444,7 +1444,13 @@ function enterprise_include($filename)
     global $config;
 
     // Load enterprise extensions
-    $filepath = realpath($config['homedir'].'/'.ENTERPRISE_DIR.'/'.$filename);
+    if (defined('DESTDIR')) {
+        $destdir = DESTDIR;
+    } else {
+        $destdir = '';
+    }
+
+    $filepath = realpath($destdir.$config['homedir'].'/'.ENTERPRISE_DIR.'/'.$filename);
 
     if ($filepath === false) {
         return ENTERPRISE_NOT_HOOK;

@@ -31,7 +31,7 @@ if ($vconsoles_write || $vconsoles_manage) {
         <?php echo html_print_image('images/firts_task/icono_grande_visualconsole.png', true, ['title' => __('Visual Console')]); ?>
     </div>
     <div class="text_task">
-        <h3> <?php echo __('Create Visual Console'); ?>        <p id="description_task"> 
+        <h3> <?php echo __('Create Visual Console'); ?></h3><p id="description_task"> 
             <?php
             echo __(
                 '%s allows users to create visual maps on which each user is able to create his or her '.'own monitoring map. The new visual console editor is much more practical, although the prior '."visual console editor had its advantages. On the new visual console, we've been successful in "."imitating the sensation and touch of a drawing application like GIMP. We've also simplified the "."editor by dividing it into several subject-divided tabs named 'Data', 'Preview', 'Wizard', 'List of "."Elements' and 'Editor'. The items the %s Visual Map was designed to handle are "."'static images', 'percentage bars', 'module graphs' and 'simple values'.",

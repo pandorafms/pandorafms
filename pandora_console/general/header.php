@@ -19,10 +19,11 @@ require_once 'include/functions_notifications.php';
  config_check();
 
 
-if ($_SESSION['menu_type']=='classic')
+if ($config['menu_type'] == 'classic') {
     echo '<div id="header_table" class="header_table_classic">';
-else
+} else {
     echo '<div id="header_table" class="header_table_collapsed">';
+}
 ?>
     <div id="header_table_inner">        
         <?php
@@ -178,7 +179,8 @@ else
                 );
 
                 if ((isset($select[0]['time_autorefresh']) === true)
-                    && $select[0]['time_autorefresh'] !== 0 && !$config['refr']
+                    && $select[0]['time_autorefresh'] !== 0
+                    && $config['refr'] === null
                 ) {
                     $config['refr'] = $select[0]['time_autorefresh'];
                     $autorefresh_txt .= ' (<span id="refrcounter">';

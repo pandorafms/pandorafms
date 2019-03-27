@@ -1210,9 +1210,7 @@ switch ($action) {
                             break;
 
                             case 'netflow_area':
-                            case 'netflow_pie':
                             case 'netflow_data':
-                            case 'netflow_statistics':
                             case 'netflow_summary':
                                 $values['text'] = get_parameter('netflow_filter');
                                 $values['description'] = get_parameter('description');
@@ -1245,6 +1243,12 @@ switch ($action) {
                                 $values['lapse_calc'] = get_parameter('lapse_calc');
                                 $values['lapse'] = get_parameter('lapse');
                                 $values['visual_format'] = get_parameter('visual_format');
+                                $good_format = true;
+                            break;
+
+                            case 'nt_top_n':
+                                $values['period'] = get_parameter('period');
+                                $values['top_n_value'] = get_parameter('quantity');
                                 $good_format = true;
                             break;
 
@@ -1299,6 +1303,7 @@ switch ($action) {
                         $values['exception_condition_value'] = get_parameter('exception_condition_value');
                         $values['id_module_group'] = get_parameter('combo_modulegroup');
                         $values['id_group'] = get_parameter('combo_group');
+                        $values['show_extended_events'] = get_parameter('include_extended_events');
                         $values['server_name'] = get_parameter('server_name');
                         $server_id = (int) get_parameter('server_id');
                         if ($server_id != 0) {
@@ -1437,6 +1442,7 @@ switch ($action) {
                             case 'MTBF':
                             case 'MTTR':
                             case 'simple_baseline_graph':
+                            case 'nt_top_n':
                                 if ($label != '') {
                                     $style['label'] = $label;
                                 } else {
@@ -1577,9 +1583,7 @@ switch ($action) {
                             break;
 
                             case 'netflow_area':
-                            case 'netflow_pie':
                             case 'netflow_data':
-                            case 'netflow_statistics':
                             case 'netflow_summary':
                                 $values['text'] = get_parameter('netflow_filter');
                                 $values['description'] = get_parameter('description');
@@ -1612,6 +1616,12 @@ switch ($action) {
                                 $values['lapse_calc'] = get_parameter('lapse_calc');
                                 $values['lapse'] = get_parameter('lapse');
                                 $values['visual_format'] = get_parameter('visual_format');
+                                $good_format = true;
+                            break;
+
+                            case 'nt_top_n':
+                                $values['top_n_value'] = get_parameter('quantity');
+                                $values['period'] = get_parameter('period');
                                 $good_format = true;
                             break;
 
@@ -1690,6 +1700,7 @@ switch ($action) {
                         $values['exception_condition_value'] = get_parameter('exception_condition_value');
                         $values['id_module_group'] = get_parameter('combo_modulegroup');
                         $values['id_group'] = get_parameter('combo_group');
+                        $values['show_extended_events'] = get_parameter('include_extended_events');
 
 
                         if ((($values['type'] == 'custom_graph') or ($values['type'] == 'automatic_custom_graph')) && ($values['id_gs'] == 0 || $values['id_gs'] == '')) {
@@ -1810,6 +1821,7 @@ switch ($action) {
                             case 'MTBF':
                             case 'MTTR':
                             case 'simple_baseline_graph':
+                            case 'nt_top_n':
                                 if ($label != '') {
                                     $style['label'] = $label;
                                 } else {

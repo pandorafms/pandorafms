@@ -26,7 +26,7 @@ use lib '/usr/lib/perl5';
 
 use PandoraFMS::Tools;
 use PandoraFMS::DB;
-use PandoraFMS::Core;
+
 require Exporter;
 
 our @ISA = ("Exporter");
@@ -44,8 +44,8 @@ our @EXPORT = qw(
 	);
 
 # version: Defines actual version of Pandora Server for this module only
-my $pandora_version = "7.0NG.732";
-my $pandora_build = "190326";
+my $pandora_version = "7.0NG.733";
+my $pandora_build = "190327";
 our $VERSION = $pandora_version." ".$pandora_build;
 
 # Setup hash
@@ -226,7 +226,7 @@ sub pandora_load_config {
 	$pa_config->{"dataserver"} = 1; # default
 	$pa_config->{"networkserver"} = 1; # default
 	$pa_config->{"snmpconsole"} = 1; # default
-	$pa_config->{"discoveryserver"} = 1; # default
+	$pa_config->{"discoveryserver"} = 0; # default
 	$pa_config->{"wmiserver"} = 1; # default
 	$pa_config->{"pluginserver"} = 1; # default
 	$pa_config->{"predictionserver"} = 1; # default

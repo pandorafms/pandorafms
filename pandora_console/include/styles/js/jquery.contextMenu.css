@@ -107,61 +107,61 @@
   background-position: 4px 2px;
 }
 .context-menu-item.icon-edit {
-  background-image: url(../../images/page_white_edit.png);
+  background-image: url(../../../images/page_white_edit.png);
 }
 .context-menu-item.icon-cut {
-  background-image: url(../../images/cut.png);
+  background-image: url(../../../images/cut.png);
 }
 .context-menu-item.icon-copy {
-  background-image: url(../../images/page_white_copy.png);
+  background-image: url(../../../images/page_white_copy.png);
 }
 .context-menu-item.icon-paste {
-  background-image: url(../../images/page_white_paste.png);
+  background-image: url(../../../images/page_white_paste.png);
 }
 .context-menu-item.icon-delete {
-  background-image: url(../../images/delete.png);
+  background-image: url(../../../images/delete.png);
 }
 .context-menu-item.icon-add {
-  background-image: url(../../images/page_white_add.png);
+  background-image: url(../../../images/page_white_add.png);
 }
 .context-menu-item.icon-quit {
-  background-image: url(../../images/door.png);
+  background-image: url(../../../images/door.png);
 }
 .context-menu-item.icon-refresh {
-  background-image: url(../../images/refresh.png);
+  background-image: url(../../../images/refresh.png);
 }
 .context-menu-item.icon-center {
-  background-image: url(../../images/set_center.png);
+  background-image: url(../../../images/set_center.png);
 }
 .context-menu-item.icon-details {
-  background-image: url(../../images/show_details.png);
+  background-image: url(../../../images/show_details.png);
 }
 .context-menu-item.icon-children {
-  background-image: url(../../images/children.png);
+  background-image: url(../../../images/children.png);
 }
 .context-menu-item.icon-cancel_set_parent {
-  background-image: url(../../images/link_delete.png);
+  background-image: url(../../../images/link_delete.png);
 }
 .context-menu-item.icon-set_parent {
-  background-image: url(../../images/father.png);
+  background-image: url(../../../images/father.png);
 }
 .context-menu-item.icon-add_node {
-  background-image: url(../../images/add.png);
+  background-image: url(../../../images/add.png);
 }
 .context-menu-item.icon-refresh_holding_area {
-  background-image: url(../../images/refresh_holding_area.png);
+  background-image: url(../../../images/refresh_holding_area.png);
 }
 .context-menu-item.icon-restart_map {
-  background-image: url(../../images/reset.png);
+  background-image: url(../../../images/reset.png);
 }
 .context-menu-item.icon-interface_link_children {
-  background-image: url(../../images/icono_link_hijo.png);
+  background-image: url(../../../images/icono_link_hijo.png);
 }
 .context-menu-item.icon-interface_link_parent {
-  background-image: url(../../images/icono_link_padre.png);
+  background-image: url(../../../images/icono_link_padre.png);
 }
 .context-menu-item.icon-interface_link_cancel {
-  background-image: url(../../images/link_abortar.png);
+  background-image: url(../../../images/link_abortar.png);
 }
 
 /* vertically align inside labels */

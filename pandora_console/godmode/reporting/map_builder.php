@@ -327,7 +327,9 @@ echo '</tr></table>';
 
 $table = new stdClass();
 $table->width = '100%';
-$table->class = 'databox data';
+$table->class = 'info_table';
+$table->cellpadding = 0;
+$table->cellspacing = 0;
 $table->data = [];
 $table->head = [];
 $table->head[0] = __('Map name');
@@ -462,6 +464,7 @@ if (!$maps && !is_metaconsole()) {
     }
 
     html_print_table($table);
+    ui_pagination($total_maps, $url, $offset, $pagination, false, 'offset', true, 'pagination-bottom');
 }
 
 if ($maps) {

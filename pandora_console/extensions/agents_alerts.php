@@ -378,7 +378,7 @@ function mainAgentsAlerts()
             'alerts_agents'
         );
 
-        echo '<table class="databox data" cellpadding="0" cellspacing="0" border="0" width=100%>';
+        echo '<table class="info_table" cellpadding="0" cellspacing="0" border="0" width=100%>';
         echo "<th width='140px' >".__('Agents').' / '.__('Alert templates').'</th>';
 
         if ($hor_offset > 0) {
@@ -478,6 +478,23 @@ function mainAgentsAlerts()
         }
 
         echo '</table>';
+
+        ui_pagination(
+            $nagents,
+            false,
+            0,
+            0,
+            false,
+            'offset',
+            true,
+            'pagination-bottom',
+            '',
+            [
+                'count'  => '',
+                'offset' => 'offset_param',
+            ],
+            'alerts_agents'
+        );
     }
 
 }

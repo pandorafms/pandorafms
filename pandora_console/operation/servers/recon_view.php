@@ -76,10 +76,10 @@ if ($servers === false) {
             }
 
             $table = new StdClass();
-            $table->cellpadding = 4;
-            $table->cellspacing = 4;
+            $table->cellpadding = 0;
+            $table->cellspacing = 0;
             $table->width = '100%';
-            $table->class = 'databox data';
+            $table->class = 'info_table';
             $table->head = [];
             $table->data = [];
             $table->align = [];

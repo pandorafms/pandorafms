@@ -631,7 +631,7 @@ $table = new stdClass();
 $table->cellpadding = 0;
 $table->cellspacing = 0;
 $table->width = '100%';
-$table->class = 'databox data';
+$table->class = 'info_table';
 
 $table->head = [];
 $table->head[0] = __('Agent').' '.'<a href="index.php?sec=view&amp;sec2=operation/agentes/estado_agente&amp;refr='.$refr.'&amp;offset='.$offset.'&amp;group_id='.$group_id.'&amp;recursion='.$recursion.'&amp;search='.$search.'&amp;status='.$status.'&amp;sort_field=name&amp;sort=up">'.html_print_image('images/sort_up.png', true, ['style' => $selectNameUp, 'alt' => 'up']).'</a>'.'<a href="index.php?sec=view&amp;sec2=operation/agentes/estado_agente&amp;refr='.$refr.'&amp;offset='.$offset.'&amp;group_id='.$group_id.'&amp;recursion='.$recursion.'&amp;search='.$search.'&amp;status='.$status.'&amp;sort_field=name&amp;sort=down">'.html_print_image('images/sort_down.png', true, ['style' => $selectNameDown, 'alt' => 'down']).'</a>';
@@ -795,14 +795,6 @@ foreach ($agents as $agent) {
 
 if (!empty($table->data)) {
     html_print_table($table);
-    if (check_acl($config['id_user'], 0, 'AW') || check_acl($config['id_user'], 0, 'AM')) {
-        echo '<div style="text-align: right; float: right;">';
-        echo '<form method="post" action="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente">';
-            html_print_input_hidden('new_agent', 1);
-            html_print_submit_button(__('Create agent'), 'crt', false, 'class="sub next"');
-        echo '</form>';
-        echo '</div>';
-    }
 
     ui_pagination(
         $total_agents,
@@ -819,8 +811,19 @@ if (!empty($table->data)) {
         0,
         false,
         'offset',
-        false
+        true,
+        'pagination-bottom'
     );
+
+    if (check_acl($config['id_user'], 0, 'AW') || check_acl($config['id_user'], 0, 'AM')) {
+        echo '<div style="text-align: right; float: right;">';
+        echo '<form method="post" action="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente">';
+            html_print_input_hidden('new_agent', 1);
+            html_print_submit_button(__('Create agent'), 'crt', false, 'class="sub next"');
+        echo '</form>';
+        echo '</div>';
+    }
+
     unset($table);
 } else {
     ui_print_info_message([ 'no_close' => true, 'message' => __('There are no defined agents') ]);

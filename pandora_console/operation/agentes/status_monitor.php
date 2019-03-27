@@ -987,7 +987,7 @@ if ($autosearch) {
         if ($result === false) {
             $result = [];
         } else {
-            ui_pagination($count, false, $offset);
+            ui_pagination($count, false, $offset, 0, false, 'offset', true);
         }
     } else {
         // For each server defined and not disabled:
@@ -1073,7 +1073,7 @@ if (!empty($result)) {
     $table->cellpadding = 0;
     $table->cellspacing = 0;
     $table->width = '100%';
-    $table->class = 'databox data';
+    $table->class = 'info_table';
     $table->head = [];
     $table->data = [];
     $table->size = [];
@@ -1659,6 +1659,8 @@ if (!empty($result)) {
     }
 
     html_print_table($table);
+
+    ui_pagination($count, false, $offset, 0, false, 'offset', true, 'pagination-bottom');
 } else {
     if ($first_interaction) {
         ui_print_info_message(['no_close' => true, 'message' => __('This group doesn\'t have any monitor')]);

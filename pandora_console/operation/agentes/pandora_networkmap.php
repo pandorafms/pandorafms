@@ -612,7 +612,9 @@ switch ($tab) {
 
         $table = new stdClass();
         $table->width = '100%';
-        $table->class = 'databox data';
+        $table->class = 'info_table';
+        $table->cellpadding = 0;
+        $table->cellspacing = 0;
         $table->headstyle['copy'] = 'text-align: center;';
         $table->headstyle['edit'] = 'text-align: center;';
 
@@ -657,9 +659,22 @@ switch ($tab) {
 
         $id_groups = array_keys(users_get_groups());
 
-        $network_maps = db_get_all_rows_filter(
+        // Prepare pagination.
+        $offset = (int) get_parameter('offset');
+        $limit = $config['block_size'];
+        $count_maps = db_get_value_filter(
+            'count(*)',
             'tmap',
             ['id_group' => $id_groups]
+        );
+
+        $network_maps = db_get_all_rows_filter(
+            'tmap',
+            [
+                'id_group' => $id_groups,
+                'limit'    => $limit,
+                'offset'   => $offset,
+            ]
         );
 
         if ($network_maps !== false) {
@@ -732,7 +747,9 @@ switch ($tab) {
                 $table->data[] = $data;
             }
 
+            ui_pagination($count_maps, false, $offset);
             html_print_table($table);
+            ui_pagination($count_maps, false, 0, 0, false, 'offset', true, 'pagination-bottom');
         } else {
             ui_print_info_message(['no_close' => true, 'message' => __('There are no maps defined.') ]);
         }
@@ -756,4 +773,3 @@ switch ($tab) {
         }
     break;
 }
-

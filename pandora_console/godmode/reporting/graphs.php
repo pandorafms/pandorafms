@@ -159,7 +159,9 @@ ui_pagination(count($graphs));
 if (!empty($graphs)) {
     $table = new stdClass();
     $table->width = '100%';
-    $table->class = 'databox data';
+    $table->class = 'info_table';
+    $table->cellpadding = 0;
+    $table->cellspacing = 0;
     $table->align = [];
     $table->head = [];
     $table->head[0] = __('Graph name');
@@ -213,6 +215,7 @@ if (!empty($graphs)) {
         echo "<form method='post' style='' action='index.php?sec=reporting&sec2=godmode/reporting/graphs'>";
             html_print_input_hidden('multiple_delete', 1);
             html_print_table($table);
+            ui_pagination(count($graphs), false, 0, 0, false, 'offset', true, 'pagination-bottom');
             echo "<div style='float: right;'>";
                 html_print_submit_button(__('Delete'), 'delete_btn', false, 'class="sub delete"');
             echo '</div>';
@@ -228,7 +231,6 @@ if (!empty($graphs)) {
     }
 
     echo '</div>';
-    ui_pagination(count($graphs));
 } else {
     include_once $config['homedir'].'/general/firts_task/custom_graphs.php';
 }

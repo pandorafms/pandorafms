@@ -212,13 +212,10 @@ if ($delete_group) {
     }
 }
 
+// Prepare pagination.
 $total_groups = db_get_num_rows('SELECT * FROM tmodule_group');
-
 $url = ui_get_url_refresh(['offset' => false]);
-
 $offset = (int) get_parameter('offset', 0);
-
-ui_pagination($total_groups, $url, $offset);
 
 
 $sql = 'SELECT *
@@ -230,7 +227,7 @@ $groups = db_get_all_rows_sql($sql);
 
 $table = new stdClass();
 $table->width = '100%';
-$table->class = 'databox data';
+$table->class = 'info_table';
 
 if (!empty($groups)) {
     $table->head = [];
@@ -257,7 +254,9 @@ if (!empty($groups)) {
         array_push($table->data, $data);
     }
 
+    ui_pagination($total_groups, $url, $offset);
     html_print_table($table);
+    ui_pagination($total_groups, $url, $offset, 0, false, 'offset', true, 'pagination-bottom');
 } else {
     ui_print_info_message(
         [

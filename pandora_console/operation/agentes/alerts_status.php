@@ -442,7 +442,7 @@ if ($print_agent) {
 
 $table = new stdClass();
 $table->width = '100%';
-$table->class = 'databox data';
+$table->class = 'info_table';
 $table->cellpadding = '0';
 $table->cellspacing = '0';
 $table->size = [];
@@ -608,6 +608,16 @@ if (!empty($table->data)) {
         'offset_simple'
     );
     html_print_table($table);
+    ui_pagination(
+        $countAlertsSimple,
+        $url,
+        $offset_simple,
+        0,
+        false,
+        'offset_simple',
+        true,
+        'pagination-bottom'
+    );
 
     if (!is_metaconsole()) {
         if (check_acl($config['id_user'], $id_group, 'AW') || check_acl($config['id_user'], $id_group, 'LM')) {

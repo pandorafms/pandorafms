@@ -36,7 +36,9 @@ if (empty($event_responses)) {
 
 $table = new stdClass();
 $table->width = '100%';
-$table->class = 'databox data';
+$table->class = 'info_table';
+$table->cellpadding = 0;
+$table->cellspacing = 0;
 
 $table->size = [];
 $table->size[0] = '200px';

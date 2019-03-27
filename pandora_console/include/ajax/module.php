@@ -758,9 +758,9 @@ if (check_login()) {
 
         $table = new stdClass();
         $table->width = '100%';
-        $table->cellpadding = 4;
-        $table->cellspacing = 4;
-        $table->class = 'databox data';
+        $table->cellpadding = 0;
+        $table->cellspacing = 0;
+        $table->class = 'info_table';
         $table->head = [];
         $table->data = [];
 
@@ -1199,7 +1199,7 @@ if (check_login()) {
                     false,
                     'offset',
                     true,
-                    '',
+                    'pagination-bottom',
                     'pagination_list_modules(offset_param)',
                     [
                         'count'  => '',

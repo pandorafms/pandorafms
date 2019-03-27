@@ -1884,7 +1884,7 @@ function ui_pagination(
         if ($print_total_items) {
             $output = "<div class='pagination $other_class' $set_id>";
             // Show the count of items
-            $output .= sprintf(__('Total items: %s'), $count);
+            $output .= '<div class="total_pages">'.sprintf(__('Total items: %s'), $count).'</div>';
             // End div and layout
             $output .= '</div>';
 
@@ -1910,9 +1910,10 @@ function ui_pagination(
 
     // Show the count of items
     if ($print_total_items) {
-        $output .= sprintf(__('Total items: %s'), $count);
-        $output .= '<br>';
+        $output .= '<div class="total_pages">'.sprintf(__('Total items: %s'), $count).'</div>';
     }
+
+    $output .= "<div class='total_number'>";
 
     // Show GOTO FIRST PAGE button
     if ($number_of_pages > $block_limit) {
@@ -1929,10 +1930,10 @@ function ui_pagination(
                 $script_modified
             );
 
-            $output .= "<a class='pagination $other_class offset_0'
-				href='javascript: $script_modified;'>".html_print_image('images/go_first.png', true, ['class' => 'bot']).'</a>&nbsp;';
+            $output .= "<a class='pagination-arrows $other_class offset_0'
+				href='javascript: $script_modified;'>".html_print_image('images/go_first.png', true, ['class' => 'bot']).'</a>';
         } else {
-            $output .= "<a class='pagination $other_class offset_0' href='$url&amp;$offset_name=0'>".html_print_image('images/go_first.png', true, ['class' => 'bot']).'</a>&nbsp;';
+            $output .= "<a class='pagination-arrows $other_class offset_0' href='$url&amp;$offset_name=0'>".html_print_image('images/go_first.png', true, ['class' => 'bot']).'</a>';
         }
     }
 
@@ -1958,10 +1959,10 @@ function ui_pagination(
                 $script_modified
             );
 
-            $output .= "<a class='pagination $other_class offset_$offset_previous_page'
+            $output .= "<a class='pagination-arrows $other_class offset_$offset_previous_page'
 				href='javacript: $script_modified;'>".html_print_image('images/go_previous.png', true, ['class' => 'bot']).'</a>';
         } else {
-            $output .= "<a class='pagination $other_class offset_$offset_previous_page' href='$url&amp;$offset_name=$offset_previous_page'>".html_print_image('images/go_previous.png', true, ['class' => 'bot']).'</a>';
+            $output .= "<a class='pagination-arrows $other_class offset_$offset_previous_page' href='$url&amp;$offset_name=$offset_previous_page'>".html_print_image('images/go_previous.png', true, ['class' => 'bot']).'</a>';
         }
     }
 
@@ -1970,9 +1971,9 @@ function ui_pagination(
         $actual_page = (int) ($offset / $pagination);
 
         if ($iterator == $actual_page) {
-            $output .= "<span style='font-weight: bold;'>";
+            $output .= "<div class='page_number page_number_active'>";
         } else {
-            $output .= '<span>';
+            $output .= "<div class='page_number'>";
         }
 
         $offset_page = ($iterator * $pagination);
@@ -1990,15 +1991,15 @@ function ui_pagination(
                 $script_modified
             );
 
-            $output .= "<a class='pagination $other_class offset_$offset_page'
+            $output .= "<a class='offset_$offset_page'
 				href='javascript: $script_modified;'>";
         } else {
-            $output .= "<a class='pagination $other_class offset_$offset_page' href='$url&amp;$offset_name=$offset_page'>";
+            $output .= "<a class='offset_$offset_page' href='$url&amp;$offset_name=$offset_page'>";
         }
 
-        $output .= "[ $iterator ]";
+        $output .= $iterator;
 
-        $output .= '</a></span>';
+        $output .= '</a></div>';
     }
 
     // Show NEXT PAGE GROUP OF PAGES
@@ -2023,10 +2024,10 @@ function ui_pagination(
                 $script_modified
             );
 
-            $output .= "<a class='pagination $other_class offset_$offset_next_page'
+            $output .= "<a class='pagination-arrows $other_class offset_$offset_next_page'
 				href='javascript: $script_modified;'>".html_print_image('images/go_next.png', true, ['class' => 'bot']).'</a>';
         } else {
-            $output .= "<a class='pagination $other_class offset_$offset_next_page' href='$url&amp;$offset_name=$offset_next_page'>".html_print_image('images/go_next.png', true, ['class' => 'bot']).'</a>';
+            $output .= "<a class='pagination-arrows $other_class offset_$offset_next_page' href='$url&amp;$offset_name=$offset_next_page'>".html_print_image('images/go_next.png', true, ['class' => 'bot']).'</a>';
         }
     }
 
@@ -2047,13 +2048,15 @@ function ui_pagination(
                 $script_modified
             );
 
-            $output .= "<a class='pagination $other_class offset_$offset_lastpage'
+            $output .= "<a class='pagination-arrows $other_class offset_$offset_lastpage'
 				href='javascript: $script_modified;'>".html_print_image('images/go_last.png', true, ['class' => 'bot']).'</a>';
         } else {
-            $output .= "<a class='pagination $other_class offset_$offset_lastpage' href='$url&amp;$offset_name=$offset_lastpage'>".html_print_image('images/go_last.png', true, ['class' => 'bot']).'</a>';
+            $output .= "<a class='pagination-arrows $other_class offset_$offset_lastpage' href='$url&amp;$offset_name=$offset_lastpage'>".html_print_image('images/go_last.png', true, ['class' => 'bot']).'</a>';
         }
     }
 
+    $output .= '</div>';
+    // total_number
     // End div and layout
     $output .= '</div>';
 

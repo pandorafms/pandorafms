@@ -646,7 +646,7 @@ switch ($action) {
             $table = new stdClass();
             $table->id = 'report_list';
             $table->width = '100%';
-            $table->class = 'databox data';
+            $table->class = 'info_table';
             $table->cellpadding = 0;
             $table->cellspacing = 0;
 
@@ -887,6 +887,7 @@ switch ($action) {
             }
 
             html_print_table($table);
+            ui_pagination($total_reports, $url, $offset, $pagination, false, 'offset', true, 'pagination-bottom');
         } else {
             ui_print_info_message([ 'no_close' => true, 'message' => __('No data found.') ]);
         }

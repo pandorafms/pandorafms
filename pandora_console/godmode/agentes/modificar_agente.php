@@ -441,7 +441,7 @@ if (($config['dbtype'] == 'oracle') && ($agents !== false)) {
 ui_pagination($total_agents, "index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id=$ag_group&recursion=$recursion&search=$search&sort_field=$sortField&sort=$sort&disabled=$disabled&os=$os", $offset);
 
 if ($agents !== false) {
-    echo "<table cellpadding='4' id='agent_list' cellspacing='4' width='100%' class='databox data'>";
+    echo "<table cellpadding='0' id='agent_list' cellspacing='0' width='100%' class='info_table'>";
     echo '<th>'.__('Agent name').' '.'<a href="index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id='.$ag_group.'&recursion='.$recursion.'&search='.$search.'&os='.$os.'&offset='.$offset.'&sort_field=name&sort=up&disabled=$disabled">'.html_print_image('images/sort_up.png', true, ['style' => $selectNameUp]).'</a>'.'<a href="index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id='.$ag_group.'&recursion='.$recursion.'&search='.$search.'&os='.$os.'&offset='.$offset.'&sort_field=name&sort=down&disabled=$disabled">'.html_print_image('images/sort_down.png', true, ['style' => $selectNameDown]).'</a>';
     echo '</th>';
     echo "<th title='".__('Remote agent configuration')."'>".__('R').' '.'<a href="index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id='.$ag_group.'&recursion='.$recursion.'&search='.$search.'&os='.$os.'&offset='.$offset.'&sort_field=remote&sort=up&disabled=$disabled">'.html_print_image('images/sort_up.png', true, ['style' => $selectRemoteUp]).'</a>'.'<a href="index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id='.$ag_group.'&recursion='.$recursion.'&search='.$search.'&os='.$os.'&offset='.$offset.'&sort_field=remote&sort=down&disabled=$disabled">'.html_print_image('images/sort_down.png', true, ['style' => $selectRemoteDown]).'</a>';
@@ -670,7 +670,7 @@ if ($agents !== false) {
     }
 
     echo '</table>';
-    ui_pagination($total_agents, "index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id=$ag_group&search=$search&sort_field=$sortField&sort=$sort&disabled=$disabled&os=$os", $offset);
+    ui_pagination($total_agents, "index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id=$ag_group&search=$search&sort_field=$sortField&sort=$sort&disabled=$disabled&os=$os", $offset, 0, false, 'offset', true, 'pagination-bottom');
     echo "<table width='100%'><tr><td align='right'>";
 } else {
     ui_print_info_message(['no_close' => true, 'message' => __('There are no defined agents') ]);

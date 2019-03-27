@@ -97,11 +97,22 @@ if ($delete_field) {
     }
 }
 
-$fields = db_get_all_fields_in_table('tagent_custom_fields');
+// Prepare pagination.
+$offset = (int) get_parameter('offset');
+$limit = $config['block_size'];
+$count_fields = db_get_value('count(*)', 'tagent_custom_fields');
+
+$fields = db_get_all_rows_filter(
+    'tagent_custom_fields',
+    [
+        'limit'  => $limit,
+        'offset' => $offset,
+    ]
+);
 
 $table = new stdClass();
 $table->width = '100%';
-$table->class = 'databox data';
+$table->class = 'info_table';
 if ($fields) {
     $table->head = [];
     $table->head[0] = __('ID');
@@ -142,7 +153,9 @@ foreach ($fields as $field) {
 }
 
 if ($fields) {
+    ui_pagination($count_fields, false, $offset);
     html_print_table($table);
+    ui_pagination($count_fields, false, $offset, 0, false, 'offset', true, 'pagination-bottom');
 }
 
 echo '<form method="post" action="index.php?sec=gagente&sec2=godmode/agentes/configure_field">';

@@ -1697,6 +1697,7 @@ function reporting_event_report_group(
     }
 
     $return['description'] = $content['description'];
+    $return['show_extended_events'] = $content['show_extended_events'];
     $return['date'] = reporting_get_date_text($report, $content);
 
     $event_filter = $content['style'];
@@ -1917,6 +1918,7 @@ function reporting_event_report_module(
     }
 
     $return['description'] = $content['description'];
+    $return['show_extended_events'] = $content['show_extended_events'];
     $return['date'] = reporting_get_date_text($report, $content);
     $return['label'] = (isset($content['style']['label'])) ? $content['style']['label'] : '';
 
@@ -2756,6 +2758,7 @@ function reporting_event_report_agent(
     $return['date']               = reporting_get_date_text($report, $content);
     $return['label']              = (isset($content['style']['label'])) ? $content['style']['label'] : '';
     $return['show_summary_group'] = $content['style']['show_summary_group'];
+    $return['show_extended_events'] = $content['show_extended_events'];
 
     $style = $content['style'];
 
@@ -7734,6 +7737,7 @@ function reporting_get_agents_detailed_event(
                         'criticity'    => $e['criticity'],
                         'validated_by' => $e['id_usuario'],
                         'timestamp'    => $e['timestamp_rep'],
+                        'id_evento'    => $e['id_evento'],
                     ];
                 } else {
                     $return_data[] = [
@@ -7743,6 +7747,7 @@ function reporting_get_agents_detailed_event(
                         'criticity'    => $e['criticity'],
                         'validated_by' => $e['id_usuario'],
                         'timestamp'    => $e['timestamp'],
+                        'id_evento'    => $e['id_evento'],
                     ];
                 }
             }

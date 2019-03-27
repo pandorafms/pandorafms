@@ -36,7 +36,7 @@ require_once $config['homedir'].'/include/functions_servers.php';
 // Enterprise includes.
 enterprise_include_once('include/functions_metaconsole.php');
 enterprise_include_once('include/functions_license.php');
-enterprise_include_once('extensions/cron/functions.php');
+enterprise_include_once('include/functions_cron.php');
 
 /**
  * Base class to run scheduled tasks in cron extension
@@ -540,7 +540,8 @@ class ConsoleSupervisor
         switch ($data['type']) {
             case 'NOTIF.LICENSE.LIMITED':
                 $max_age = 0;
-				break;
+            break;
+
             case 'NOTIF.LICENSE.EXPIRATION':
             case 'NOTIF.FILES.ATTACHMENT':
             case 'NOTIF.FILES.DATAIN':
@@ -688,7 +689,7 @@ class ConsoleSupervisor
 
         $days_to_expiry = ((strtotime($license['expiry_date']) - time()) / (60 * 60 * 24));
 
-		// Limited mode.
+        // Limited mode.
         if (isset($config['limited_mode'])) {
             // Warn user if license is going to expire in 15 days or less.
             $this->notify(
@@ -703,7 +704,7 @@ class ConsoleSupervisor
             $this->cleanNotifications('NOTIF.LICENSE.LIMITED');
         }
 
-		// Expiry.
+        // Expiry.
         if (($days_to_expiry <= 15) && ($days_to_expiry > 0)) {
             // Warn user if license is going to expire in 15 days or less.
             $this->notify(
@@ -711,7 +712,7 @@ class ConsoleSupervisor
                     'type'    => 'NOTIF.LICENSE.EXPIRATION',
                     'title'   => __('License is going to expire.'),
                     'message' => __(
-                        'Your license is going to expire in %d days. Please contact sales.',
+                        'Your license will expire in %d days. Please, contact our sales department.',
                         $days_to_expiry
                     ),
                     'url'     => 'index.php?sec=gsetup&sec2=godmode/setup/license',
@@ -722,8 +723,8 @@ class ConsoleSupervisor
             $this->notify(
                 [
                     'type'    => 'NOTIF.LICENSE.EXPIRATION',
-                    'title'   => __('License is expired.'),
-                    'message' => __('Your license has expired. Please contact sales.'),
+                    'title'   => __('Expired license'),
+                    'message' => __('Your license has expired. Please, contact our sales department.'),
                     'url'     => 'index.php?sec=gsetup&sec2=godmode/setup/license',
                 ]
             );
@@ -796,9 +797,9 @@ class ConsoleSupervisor
             $this->notify(
                 [
                     'type'    => 'NOTIF.WRITABLE.ATTACHMENT',
-                    'title'   => __('Attachment directory is not writable.'),
+                    'title'   => __('Attachment directory is not writable'),
                     'message' => __(
-                        'Directory %s is not writable. Please configure proper permissions.',
+                        'Directory %s is not writable. Please, configure corresponding permissions.',
                         $config['attachment_store']
                     ),
                     'url'     => 'index.php?sec=general&sec2=godmode/setup/setup&section=general',
@@ -818,9 +819,9 @@ class ConsoleSupervisor
             $this->notify(
                 [
                     'type'    => 'NOTIF.FILES.ATTACHMENT',
-                    'title'   => __('There are too much files in attachment directory.'),
+                    'title'   => __('There are too many files in attachment directory'),
                     'message' => __(
-                        'There are more than %d files in attachment, you should consider cleaning up your attachment directory manually.',
+                        'There are more than %d files in attachment, consider cleaning up attachment directory manually.',
                         $config['num_files_attachment']
                     ),
                     'url'     => 'index.php?sec=general&sec2=godmode/setup/setup&section=perf',
@@ -850,9 +851,9 @@ class ConsoleSupervisor
                 $this->notify(
                     [
                         'type'    => 'NOTIF.PERMISSIONS.REMOTE_CONFIG',
-                        'title'   => __('Remote configuration directory is not readable.'),
+                        'title'   => __('Remote configuration directory is not readable'),
                         'message' => __(
-                            'Remote configuration directory %s is not readable. Please configure it.',
+                            'Remote configuration directory %s is not readable. Please, adjust configuration.',
                             $config['remote_config']
                         ),
                         'url'     => 'index.php?sec=general&sec2=godmode/setup/setup&section=general',
@@ -869,9 +870,9 @@ class ConsoleSupervisor
                 $this->notify(
                     [
                         'type'    => 'NOTIF.PERMISSIONS.REMOTE_CONFIG.CONF',
-                        'title'   => __('Remote configuration directory is not writable.'),
+                        'title'   => __('Remote configuration directory is not writable'),
                         'message' => __(
-                            'Remote configuration directory %s is not writable. Please configure it.',
+                            'Remote configuration directory %s is not writable. Please, adjust configuration.',
                             $config['remote_config'].'/conf'
                         ),
                         'url'     => 'index.php?sec=general&sec2=godmode/setup/setup&section=general',
@@ -887,9 +888,9 @@ class ConsoleSupervisor
                 $this->notify(
                     [
                         'type'    => 'NOTIF.PERMISSIONS.REMOTE_CONFIG.COLLECTIONS',
-                        'title'   => __('Remote collections directory is not writable.'),
+                        'title'   => __('Remote collections directory is not writable'),
                         'message' => __(
-                            'Collections directory %s is not writable. Please configure it.',
+                            'Collections directory %s is not writable. Please, adjust configuration.',
                             $config['remote_config'].'/collections'
                         ),
                         'url'     => 'index.php?sec=general&sec2=godmode/setup/setup&section=general',
@@ -905,9 +906,9 @@ class ConsoleSupervisor
                 $this->notify(
                     [
                         'type'    => 'NOTIF.PERMISSIONS.REMOTE_CONFIG.MD5',
-                        'title'   => __('Remote md5 directory is not writable.'),
+                        'title'   => __('Remote md5 directory is not writable'),
                         'message' => __(
-                            'MD5 directory %s is not writable. Please configure it.',
+                            'MD5 directory %s is not writable. Please, adjust configuration.',
                             $config['remote_config'].'/md5'
                         ),
                         'url'     => 'index.php?sec=general&sec2=godmode/setup/setup&section=general',
@@ -937,7 +938,7 @@ class ConsoleSupervisor
                     'type'    => 'NOTIF.FILES.DATAIN',
                     'title'   => __('There are too much files in spool').'.',
                     'message' => __(
-                        'There are more than %d files in %s, you should consider checking DataServer performance',
+                        'There are more than %d files in %s. Consider checking DataServer performance',
                         $MAX_FILES_DATA_IN,
                         $config['remote_config']
                     ),
@@ -958,9 +959,9 @@ class ConsoleSupervisor
             $this->notify(
                 [
                     'type'    => 'NOTIF.FILES.DATAIN.BADXML',
-                    'title'   => __('There are too much BADXML files in spool.'),
+                    'title'   => __('There are too many BADXML files in spool'),
                     'message' => __(
-                        'There are more than %d files in %s, you should consider checking software agents.',
+                        'There are more than %d files in %s. Consider checking software agents.',
                         $MAX_BADXML_FILES_DATA_IN,
                         $config['remote_config']
                     ),
@@ -982,10 +983,12 @@ class ConsoleSupervisor
     {
         global $config;
 
+        include_once $config['homedir'].'/include/functions_servers.php';
+
         $idx_file = $config['attachment_store'].'/.cron.supervisor.servers.idx';
 
         $MAX_QUEUE = 1500;
-        $MAX_GROWN = 50;
+        $total_modules = servers_get_total_modules();
 
         $queue_state = [];
         $previous = [];
@@ -1008,6 +1011,13 @@ class ConsoleSupervisor
                 $key = $queue['id_server'];
                 $type = $queue['server_type'];
                 $new_data[$key] = $queue['queued_modules'];
+                $max_grown = 0;
+
+                if (is_array($total_modules)
+                    && isset($total_modules[$queue['server_type']])
+                ) {
+                    $max_grown = ($total_modules[$queue['server_type']] * 0.40);
+                }
 
                 // Compare queue increments in a not over 900 seconds.
                 if (empty($previous[$key]['modules'])
@@ -1018,9 +1028,9 @@ class ConsoleSupervisor
 
                 $modules_queued = ($queue['queued_modules'] - $previous[$key]['modules']);
 
-                // 50 Modules queued since last check. Or more than 1500 queued.
-                if ($modules_queued > $MAX_GROWN
-                    || $queue['queued_modules'] > $MAX_QUEUE
+                // 40% Modules queued since last check. If any.
+                if ($max_grown > 0
+                    && $modules_queued > $max_grown
                 ) {
                     $msg = 'Queue has grown %d modules. Total %d';
                     if ($modules_queued <= 0) {
@@ -1032,7 +1042,7 @@ class ConsoleSupervisor
                         [
                             'type'    => 'NOTIF.SERVER.QUEUE.'.$key,
                             'title'   => __(
-                                '%s (%s) performance is being lacked.',
+                                '%s (%s) is lacking performance.',
                                 servers_get_server_string_name($type),
                                 $queue['name']
                             ),
@@ -1076,6 +1086,7 @@ class ConsoleSupervisor
                 id_server,
                 name,
                 server_type,
+                server_keepalive,
                 status,
                 unix_timestamp() - unix_timestamp(keepalive) as downtime
             FROM tserver
@@ -1099,7 +1110,7 @@ class ConsoleSupervisor
                     [
                         'type'    => 'NOTIF.SERVER.STATUS',
                         'title'   => __('No servers available.'),
-                        'message' => __('There are no servers registered in this console, please check installation guide.'),
+                        'message' => __('There are no servers registered in this console. Please, check installation guide.'),
                         'url'     => $url,
                     ]
                 );
@@ -1111,28 +1122,35 @@ class ConsoleSupervisor
         }
 
         foreach ($servers as $server) {
+            if ($server['server_type'] == SERVER_TYPE_ENTERPRISE_SATELLITE) {
+                if ($server['downtime'] < ($server['server_keepalive'] * 2)) {
+                    // Satellite uses different keepalive mode.
+                    continue;
+                }
+            }
+
             if ($server['status'] == 1) {
                 // Fatal error. Component has die.
                 $msg = __(
-                    '%s (%s) crashed.',
+                    '%s (%s) has crashed.',
                     servers_get_server_string_name($server['server_type']),
                     $server['name']
                 );
 
                 $description = __(
-                    '%s (%s) has died, please check log files',
+                    '%s (%s) has crashed, please check log files.',
                     servers_get_server_string_name($server['server_type']),
                     $server['name']
                 );
             } else {
                 // Non-fatal error. Controlated exit. Component is not running.
                 $msg = __(
-                    '%s (%s) is stopped.',
+                    '%s (%s) is not running.',
                     servers_get_server_string_name($server['server_type']),
                     $server['name']
                 );
                 $description = __(
-                    '%s (%s) is stopped, please check configuration file or remove this server from server list.',
+                    '%s (%s) is not running. Please, check configuration file or remove this server from server list.',
                     servers_get_server_string_name($server['server_type']),
                     $server['name']
                 );
@@ -1183,7 +1201,7 @@ class ConsoleSupervisor
                 [
                     'type'    => 'NOTIF.SERVER.MASTER',
                     'title'   => __('No master servers found.'),
-                    'message' => __('You should define at last one server to run as master, please check documentation.'),
+                    'message' => __('At least one server must be defined to run as master. Please, check documentation.'),
                     'url'     => $url,
                 ]
             );
@@ -1224,12 +1242,17 @@ class ConsoleSupervisor
         $php_version_array = explode('.', $php_version);
 
         if ($PHPsafe_mode === '1') {
+            $url = 'http://php.net/manual/en/features.safe-mode.php';
+            if ($config['language'] == 'es') {
+                $url = 'http://php.net/manual/es/features.safe-mode.php';
+            }
+
             $this->notify(
                 [
                     'type'    => 'NOTIF.PHP.SAFE_MODE',
-                    'title'   => __('PHP safe mode is enabled. Some features may not properly work.'),
-                    'message' => __('To disable, change it on your PHP configuration file (php.ini) and put safe_mode = Off (Dont forget restart apache process after changes)'),
-                    'url'     => 'index.php',
+                    'title'   => __('PHP safe mode is enabled. Some features may not work properly'),
+                    'message' => __('To disable it, go to your PHP configuration file (php.ini) and put safe_mode = Off (Do not forget to restart apache process after changes)'),
+                    'url'     => $url,
                 ]
             );
         } else {
@@ -1237,18 +1260,23 @@ class ConsoleSupervisor
         }
 
         if ($PHPmax_input_time !== '-1') {
+            $url = 'http://php.net/manual/en/info.configuration.php#ini.max-input-time';
+            if ($config['language'] == 'es') {
+                $url = 'http://php.net/manual/es/info.configuration.php#ini.max-input-time';
+            }
+
             $this->notify(
                 [
                     'type'    => 'NOTIF.PHP.INPUT_TIME',
                     'title'   => sprintf(
-                        __("Not recommended '%s' value in PHP configuration"),
+                        __("'%s' value in PHP configuration is not recommended"),
                         'max_input_time'
                     ),
                     'message' => sprintf(
                         __('Recommended value is %s'),
                         '-1 ('.__('Unlimited').')'
-                    ).'<br><br>'.__('Please, change it on your PHP configuration file (php.ini) or contact with administrator (Dont forget restart apache process after changes)'),
-                    'url'     => 'index.php',
+                    ).'<br><br>'.__('Please, change it on your PHP configuration file (php.ini) or contact with administrator (Do not forget to restart Apache process after)'),
+                    'url'     => $url,
                 ]
             );
         } else {
@@ -1256,6 +1284,11 @@ class ConsoleSupervisor
         }
 
         if ($PHPmax_execution_time !== '0') {
+            $url = 'http://php.net/manual/en/info.configuration.php#ini.max-execution-time';
+            if ($config['language'] == 'es') {
+                $url = 'http://php.net/manual/es/info.configuration.php#ini.max-execution-time';
+            }
+
             $this->notify(
                 [
                     'type'    => 'NOTIF.PHP.EXECUTION_TIME',
@@ -1267,7 +1300,7 @@ class ConsoleSupervisor
                         __('Recommended value is: %s'),
                         '0 ('.__('Unlimited').')'
                     ).'<br><br>'.__('Please, change it on your PHP configuration file (php.ini) or contact with administrator (Dont forget restart apache process after changes)'),
-                    'url'     => 'index.php',
+                    'url'     => $url,
                 ]
             );
         } else {
@@ -1275,6 +1308,11 @@ class ConsoleSupervisor
         }
 
         if ($PHPupload_max_filesize < $PHPupload_max_filesize_min) {
+            $url = 'http://php.net/manual/en/ini.core.php#ini.upload-max-filesize';
+            if ($config['language'] == 'es') {
+                $url = 'http://php.net/manual/es/ini.core.php#ini.upload-max-filesize';
+            }
+
             $this->notify(
                 [
                     'type'    => 'NOTIF.PHP.UPLOAD_MAX_FILESIZE',
@@ -1286,7 +1324,7 @@ class ConsoleSupervisor
                         __('Recommended value is: %s'),
                         sprintf(__('%s or greater'), '800M')
                     ).'<br><br>'.__('Please, change it on your PHP configuration file (php.ini) or contact with administrator (Dont forget restart apache process after changes)'),
-                    'url'     => 'index.php',
+                    'url'     => $url,
                 ]
             );
         } else {
@@ -1294,6 +1332,11 @@ class ConsoleSupervisor
         }
 
         if ($PHPmemory_limit < $PHPmemory_limit_min && $PHPmemory_limit !== '-1') {
+            $url = 'http://php.net/manual/en/ini.core.php#ini.memory-limit';
+            if ($config['language'] == 'es') {
+                $url = 'http://php.net/manual/es/ini.core.php#ini.memory-limit';
+            }
+
             $this->notify(
                 [
                     'type'    => 'NOTIF.PHP.MEMORY_LIMIT',
@@ -1305,7 +1348,7 @@ class ConsoleSupervisor
                         __('Recommended value is: %s'),
                         sprintf(__('%s or greater'), '500M')
                     ).'<br><br>'.__('Please, change it on your PHP configuration file (php.ini) or contact with administrator'),
-                    'url'     => 'index.php',
+                    'url'     => $url,
                 ]
             );
         } else {
@@ -1313,12 +1356,17 @@ class ConsoleSupervisor
         }
 
         if (preg_match('/system/', $PHPdisable_functions) || preg_match('/exec/', $PHPdisable_functions)) {
+            $url = 'http://php.net/manual/en/ini.core.php#ini.disable-functions';
+            if ($config['language'] == 'es') {
+                $url = 'http://php.net/manual/es/ini.core.php#ini.disable-functions';
+            }
+
             $this->notify(
                 [
                     'type'    => 'NOTIF.PHP.DISABLE_FUNCTIONS',
-                    'title'   => __('Problems with disable functions in PHP.INI'),
-                    'message' => __('Variable disable_functions containts functions system() or exec(), in PHP configuration file (php.ini)').'<br /><br />'.__('Please, change it on your PHP configuration file (php.ini) or contact with administrator (Dont forget restart apache process after changes)'),
-                    'url'     => 'index.php',
+                    'title'   => __('Problems with disable_functions in php.ini'),
+                    'message' => __('The variable disable_functions contains functions system() or exec() in PHP configuration file (php.ini)').'<br /><br />'.__('Please, change it on your PHP configuration file (php.ini) or contact with administrator (Dont forget restart apache process after changes)'),
+                    'url'     => $url,
                 ]
             );
         } else {
@@ -1334,8 +1382,8 @@ class ConsoleSupervisor
             $this->notify(
                 [
                     'type'    => 'NOTIF.PHP.PHANTOMJS',
-                    'title'   => __('phantomjs is not installed'),
-                    'message' => __('To be able to create images of the graphs for PDFs, please install the phantom.js extension. For that, it is necessary to follow these steps:'),
+                    'title'   => __('PhantomJS is not installed'),
+                    'message' => __('To be able to create images of the graphs for PDFs, please install the PhantomJS extension. For that, it is necessary to follow these steps:'),
                     'url'     => $url,
                 ]
             );
@@ -1395,7 +1443,7 @@ class ConsoleSupervisor
                     [
                         'type'    => 'NOTIF.HISTORYDB',
                         'title'   => __('Historical database not available'),
-                        'message' => __('Historical database is enabled. But not available using given configuration. Please check it.'),
+                        'message' => __('Historical database is enabled, though not accessible with the current configuration.'),
                         'url'     => 'index.php?sec=general&sec2=godmode/setup/setup&section=hist_db',
                     ]
                 );
@@ -1438,9 +1486,9 @@ class ConsoleSupervisor
             $this->notify(
                 [
                     'type'    => 'NOTIF.PANDORADB',
-                    'title'   => __('Database maintance problem'),
+                    'title'   => __('Database maintenance problem'),
                     'message' => __(
-                        'Your database is not maintained correctly. It seems that more than 48hrs have passed without proper maintenance. Please review documents of %s on how to perform this maintenance process (DB Tool) and enable it as soon as possible.',
+                        'Your database hasn\'t been through maintenance for 48hrs. Please, check documentation on how to perform this maintenance process on %s and enable it as soon as possible.',
                         io_safe_output(get_product_name())
                     ),
                     'url'     => 'index.php?sec=general&sec2=godmode/setup/setup&section=perf',
@@ -1500,9 +1548,9 @@ class ConsoleSupervisor
                     [
                         'type'    => 'NOTIF.PANDORADB.HISTORY',
                         'title'   => __(
-                            'Historical database maintance problem.'
+                            'Historical database maintenance problem.'
                         ),
-                        'message' => __('Your historical database is not being maintained correctly. It seems that more than 48hrs have passed without proper maintenance. Please review documents of %s on how to perform this maintenance process (DB Tool) and enable it as soon as possible.', get_product_name()),
+                        'message' => __('Your historical database hasn\'t been through maintenance for 48hrs. Please, check documentation on how to perform this maintenance process on %s and enable it as soon as possible.', get_product_name()),
                         'url'     => 'index.php?sec=general&sec2=godmode/setup/setup&section=perf',
                     ]
                 );
@@ -1540,8 +1588,8 @@ class ConsoleSupervisor
                 $this->notify(
                     [
                         'type'    => 'NOTIF.HISTORYDB.MR',
-                        'title'   => __('Historical database MR missmatch'),
-                        'message' => __('Your historical database is not using the same schema of main DB. This could produce anomalyes while storing historical data.'),
+                        'title'   => __('Historical database MR mismatch'),
+                        'message' => __('Your historical database is not using the same schema as the main DB. This could produce anomalies while storing historical data.'),
                         'url'     => 'index.php?sec=general&sec2=godmode/setup/setup&section=hist_db',
                     ]
                 );
@@ -1583,7 +1631,7 @@ class ConsoleSupervisor
                     [
                         'type'    => 'NOTIF.EXT.ELASTICSEARCH',
                         'title'   => __('Log collector cannot connect to ElasticSearch'),
-                        'message' => __('ElasticSearch is not available using current configuration. Please check it.'),
+                        'message' => __('ElasticSearch is not available using current configuration.'),
                         'url'     => 'index.php?sec=general&sec2=godmode/setup/setup&section=log',
                     ]
                 );
@@ -1653,7 +1701,7 @@ class ConsoleSupervisor
                 [
                     'type'    => 'NOTIF.METACONSOLE.DB_CONNECTION',
                     'title'   => __('Metaconsole DB is not available.'),
-                    'message' => __('Cannot connect with Metaconsole DB using stored configuration. Please check it.'),
+                    'message' => __('Cannot connect with Metaconsole DB using current configuration.'),
                     'url'     => 'index.php?sec=general&sec2=godmode/setup/setup&section=enterprise',
                 ]
             );
@@ -1682,7 +1730,7 @@ class ConsoleSupervisor
                 [
                     'type'    => 'NOTIF.DOWNTIME',
                     'title'   => __('Scheduled downtime running.'),
-                    'message' => __('A scheduled downtime is running. Some monitorization data won\'t be available while downtime is taking place.'),
+                    'message' => __('A scheduled downtime is running. Some monitoring data won\'t be available while downtime is taking place.'),
                     'url'     => 'index.php?sec=gagente&sec2=godmode/agentes/planned_downtime.list',
                 ]
             );
@@ -1840,7 +1888,7 @@ class ConsoleSupervisor
                         'type'    => 'NOTIF.DOWNTIME',
                         'title'   => __('Downtime scheduled soon.'),
                         'message' => __(
-                            'A scheduled downtime is going to be executed from %s to %s. Some monitorization data won\'t be available while downtime is taking place.',
+                            'A scheduled downtime is going to be executed from %s to %s. Some monitoring data won\'t be available while downtime is taking place.',
                             date('M j, G:i:s ', $next_downtime_begin),
                             date('M j, G:i:s ', $next_downtime_end)
                         ),
@@ -1876,7 +1924,7 @@ class ConsoleSupervisor
                 $this->notify(
                     [
                         'type'    => 'NOTIF.UPDATEMANAGER.REGISTRATION',
-                        'title'   => __('This instance is not registered in the Update manager'),
+                        'title'   => __('This instance is not registered in the Update manager section'),
                         'message' => __('Click <a style="font-weight:bold; text-decoration:underline" href="javascript: force_run_register();"> here</a> to start the registration process'),
                         'url'     => 'javascript: force_run_register();',
                     ]
@@ -1915,7 +1963,7 @@ class ConsoleSupervisor
                 [
                     'type'    => 'NOTIF.NEWSLETTER.SUBSCRIPTION',
                     'title'   => __('Not subscribed to the newsletter'),
-                    'message' => __('Click <a style="font-weight:bold; text-decoration:underline" href="javascript: force_run_newsletter();"> here</a> to start the newsletter subscription process'),
+                    'message' => __('Click <a style="font-weight:bold; text-decoration:underline" href="javascript: force_run_newsletter();"> here</a> to subscribe to the newsletter'),
                     'url'     => 'javascript: force_run_newsletter();',
                 ]
             );
@@ -1947,8 +1995,8 @@ class ConsoleSupervisor
             $this->notify(
                 [
                     'type'    => 'NOTIF.SECURITY.DEFAULT_PASSWORD',
-                    'title'   => __('Default password for "Admin" user has not been changed.'),
-                    'message' => __('Please change the default password because is a common vulnerability reported.'),
+                    'title'   => __('Default password for "Admin" user has not been changed'),
+                    'message' => __('Please, change the default password since it is a commonly reported vulnerability.'),
                     'url'     => 'index.php?sec=gusuarios&sec2=godmode/users/user_list',
                 ]
             );
@@ -1973,8 +2021,8 @@ class ConsoleSupervisor
             $this->notify(
                 [
                     'type'    => 'NOTIF.MISC.FONTPATH',
-                    'title'   => __('Default font doesnt exist'),
-                    'message' => __('Your defined font doesnt exist or is not defined. Please check font parameters in your config'),
+                    'title'   => __('Default font doesn\'t exist'),
+                    'message' => __('Your defined font doesn\'t exist or is not defined. Please, check font parameters in your config'),
                     'url'     => 'index.php?sec=gsetup&sec2=godmode/setup/setup&section=vis',
                 ]
             );
@@ -1999,7 +2047,7 @@ class ConsoleSupervisor
                     'type'    => 'NOTIF.MISC.DEVELOPBYPASS',
                     'title'   => __('Developer mode is enabled'),
                     'message' => __(
-                        'Your %s has the "develop_bypass" mode enabled. This is a developer mode and should be disabled in a production system. This value is written in the main index.php file',
+                        'Your %s has the "develop_bypass" mode enabled. This is a developer mode and should be disabled in a production environment. This value is located in the main index.php file',
                         get_product_name()
                     ),
                     'url'     => 'index.php',
@@ -2023,8 +2071,8 @@ class ConsoleSupervisor
             $this->notify(
                 [
                     'type'    => 'NOTIF.MISC.EVENTSTORMPROTECTION',
-                    'title'   => __('Event storm protection is activated.'),
-                    'message' => __('You need to restart server after altering this configuration setting. No events will be generated during this mode.'),
+                    'title'   => __('Event storm protection is enabled.'),
+                    'message' => __('Some events may get lost while this mode is enabled. The server must be restarted after altering this setting.'),
                     'url'     => 'index.php?sec=gsetup&sec2=godmode/setup/setup&section=general',
                 ]
             );
@@ -2050,7 +2098,7 @@ class ConsoleSupervisor
                         $this->notify(
                             [
                                 'type'    => 'NOTIF.UPDATEMANAGER.OPENSETUP',
-                                'title'   => __('Error, first setup "Open update".'),
+                                'title'   => __('Failed to retrieve updates, please configure utility'),
                                 'message' => $message,
                                 'url'     => 'index.php?sec=gsetup&sec2=godmode/setup/setup&section=general',
                             ]
@@ -2107,10 +2155,10 @@ class ConsoleSupervisor
                     'type'    => 'NOTIF.UPDATEMANAGER.MINOR',
                     'title'   => __('Minor release/s available'),
                     'message' => __(
-                        'There are one or more minor releases waiting for update. <a style="font-size:8pt;font-style:italic;" target="blank" href="%s">.About minor release update</a>.',
+                        'There is one or more minor releases available. <a style="font-size:8pt;font-style:italic;" target="blank" href="%s">.About minor release update</a>.',
                         $url
                     ),
-                    'url'     => $url,
+                    'url'     => 'index.php?sec=messages&sec2=godmode/update_manager/update_manager&tab=online',
                 ]
             );
         } else {
@@ -2135,7 +2183,7 @@ class ConsoleSupervisor
         ) {
             $message_conf_cron = __('DiscoveryConsoleTasks is not running properly');
             if (strtoupper(substr(PHP_OS, 0, 3)) != 'WIN') {
-                $message_conf_cron .= __('Discovery relies on a proper setup of cron, the time-based scheduling service');
+                $message_conf_cron .= __('Discovery relies on an appropriate cron setup.');
                 $message_conf_cron .= '. '.__('Please, add the following line to your crontab file:');
                 $message_conf_cron .= '<pre>* * * * * &lt;user&gt; wget -q -O - --no-check-certificate ';
                 $message_conf_cron .= str_replace(
@@ -2151,7 +2199,7 @@ class ConsoleSupervisor
             if (isset($config['cron_last_run']) === true) {
                 $message_conf_cron .= __('Last execution').': ';
                 $message_conf_cron .= date('Y/m/d H:i:s', $config['cron_last_run']);
-                $message_conf_cron .= __('Please check process is no locked.');
+                $message_conf_cron .= __('Please, make sure process is not locked.');
             }
 
             $this->notify(
@@ -2159,7 +2207,7 @@ class ConsoleSupervisor
                     'type'    => 'NOTIF.CRON.CONFIGURED',
                     'title'   => __('DiscoveryConsoleTasks is not configured.'),
                     'message' => __($message_conf_cron),
-                    'url'     => 'index.php?extension_in_menu=gservers&sec=extensions&sec2=enterprise/extensions/cron',
+                    'url'     => 'index.php?sec=gservers&sec2=godmode/servers/discovery&wiz=tasklist',
                 ]
             );
         } else {

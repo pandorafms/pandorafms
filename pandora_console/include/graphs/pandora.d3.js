@@ -1782,7 +1782,10 @@ function progress_bar_d3(
   color,
   unit,
   label,
-  label_color
+  label_color,
+  radiusx,
+  radiusy,
+  transition
 ) {
   var startPercent = 0;
   var endPercent = parseInt(percentile) / 100;
@@ -1799,20 +1802,20 @@ function progress_bar_d3(
     .append("rect")
     .attr("fill", "#000000")
     .attr("fill-opacity", 0.5)
-    .attr("height", 20)
+    .attr("height", height)
     .attr("width", width)
-    .attr("rx", 10)
-    .attr("ry", 10)
+    .attr("rx", radiusx)
+    .attr("ry", radiusy)
     .attr("x", 0);
 
   var progress_front = circle
     .append("rect")
     .attr("fill", color)
     .attr("fill-opacity", 1)
-    .attr("height", 20)
+    .attr("height", height)
     .attr("width", 0)
-    .attr("rx", 10)
-    .attr("ry", 10)
+    .attr("rx", radiusx)
+    .attr("ry", radiusy)
     .attr("x", 0);
 
   var labelText = circle
@@ -1834,7 +1837,7 @@ function progress_bar_d3(
     .style("font-weight", "bold")
     .style("font-size", 14)
     .attr("text-anchor", "middle")
-    .attr("dy", "-10");
+    .attr("dy", (height - height / 2) / 4);
 
   function updateProgress(bar_progress) {
     var percent_value = Number(bar_progress * 100);
@@ -1842,17 +1845,21 @@ function progress_bar_d3(
     progress_front.attr("width", width * bar_progress);
   }
 
-  var bar_progress = startPercent;
-
-  (function loops() {
+  if (transition == 0) {
+    var bar_progress = endPercent;
     updateProgress(bar_progress);
+  } else {
+    var bar_progress = startPercent;
+    (function loops() {
+      updateProgress(bar_progress);
 
-    if (count > 0) {
-      count--;
-      bar_progress += step;
-      setTimeout(loops, 30);
-    }
-  })();
+      if (count > 0) {
+        count--;
+        bar_progress += step;
+        setTimeout(loops, 30);
+      }
+    })();
+  }
 }
 
 function progress_bubble_d3(

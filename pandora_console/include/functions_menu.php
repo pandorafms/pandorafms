@@ -19,8 +19,10 @@
 
 
 // Set session variable to store menu type (classic or collapsed) within this session
-if (!empty(get_parameter('menuType')))
-    $_SESSION['menu_type'] = get_parameter('menuType', 'collapsed');
+if (!empty(get_parameter('menuType'))) {
+    $_SESSION['menu_type'] = get_parameter('menuType', 'classic');
+}
+
 
 /**
  * Prints a complete menu structure.
@@ -80,10 +82,17 @@ function menu_print_menu(&$menu)
 
         $submenu = false;
 
-        if ($_SESSION['menu_type']=='classic')
-            $classes = ['menu_icon', 'no_hidden_menu'];
-        else 
-            $classes = ['menu_icon', 'menu_icon_collapsed'];
+        if ($_SESSION['menu_type'] == 'classic') {
+            $classes = [
+                'menu_icon',
+                'no_hidden_menu',
+            ];
+        } else {
+            $classes = [
+                'menu_icon',
+                'menu_icon_collapsed',
+            ];
+        }
 
         if (isset($main['sub'])) {
             $classes[] = '';
@@ -383,10 +392,11 @@ function menu_print_menu(&$menu)
         $length = strlen(__($main['text']));
         $padding_top = ( $length >= 18) ? 6 : 12;
 
-        if ($_SESSION['menu_type']=='classic')
+        if ($_SESSION['menu_type'] == 'classic') {
             $output .= '<div id="title_menu" class="title_menu_classic" style="padding-top:'.$padding_top.'px; display:none;">'.$main['text'].'</div>';
-        else
+        } else {
             $output .= '<div id="title_menu" class="title_menu_collapsed" style="padding-top:'.$padding_top.'px; display:none;">'.$main['text'].'</div>';
+        }
 
         // Add the notification ball if defined
         if (isset($main['notification'])) {

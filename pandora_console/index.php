@@ -244,7 +244,6 @@ if (strlen($search) > 0) {
 
 // Login process
 if (! isset($config['id_user'])) {
-
     // Clear error messages.
     unset($_COOKIE['errormsg']);
     setcookie('errormsg', null, -1);

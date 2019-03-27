@@ -910,6 +910,9 @@ function reporting_html_top_n($table, $item, $pdf=0)
 function reporting_html_event_report_group($table, $item, $pdf=0)
 {
     global $config;
+
+    $show_extended_events = $item['show_extended_events'];
+
     if ($item['total_events']) {
         $table1 = new stdClass();
         $table1->width = '99%';
@@ -1017,6 +1020,17 @@ function reporting_html_event_report_group($table, $item, $pdf=0)
             }
 
             array_push($table1->data, $data);
+
+            if ($show_extended_events == 1 && events_has_extended_info($event['id_evento'])) {
+                $extended_events = events_get_extended_events($event['id_evento']);
+
+                foreach ($extended_events as $extended_event) {
+                    $extended_data = [];
+
+                    $extended_data[] = "<td colspan='5'><font style='font-style: italic;'>".io_safe_output($extended_event['description'])."</font></td><td><font style='font-size: 6pt; font-style: italic;'>".date($config['date_format'], $extended_event['utimestamp']).'</font></td>';
+                    array_push($table1->data, $extended_data);
+                }
+            }
         }
 
         if ($pdf) {
@@ -1126,6 +1140,9 @@ function reporting_html_event_report_group($table, $item, $pdf=0)
 function reporting_html_event_report_module($table, $item, $pdf=0)
 {
     global $config;
+
+    $show_extended_events = $item['show_extended_events'];
+
     $show_summary_group = $item['show_summary_group'];
     if ($item['total_events']) {
         if (!empty($item['failed'])) {
@@ -1209,6 +1226,17 @@ function reporting_html_event_report_module($table, $item, $pdf=0)
                         }
 
                         $table1->data[] = $data;
+
+                        if ($show_extended_events == 1 && events_has_extended_info($event['id_evento'])) {
+                            $extended_events = events_get_extended_events($event['id_evento']);
+
+                            foreach ($extended_events as $extended_event) {
+                                $extended_data = [];
+
+                                $extended_data[] = "<td colspan='3'><font style='font-style: italic;'>".io_safe_output($extended_event['description'])."</font></td><td><font style='font-style: italic;'>".date($config['date_format'], $extended_event['utimestamp']).'</font></td>';
+                                array_push($table1->data, $extended_data);
+                            }
+                        }
                     }
                 }
 
@@ -1898,6 +1926,8 @@ function reporting_html_event_report_agent($table, $item, $pdf=0)
 {
     global $config;
 
+    $show_extended_events = $item['show_extended_events'];
+
     if ($item['total_events'] != 0) {
         $table1 = new stdClass();
         $table1->width = '99%';
@@ -1985,6 +2015,17 @@ function reporting_html_event_report_agent($table, $item, $pdf=0)
             }
 
             array_push($table1->data, $data);
+
+            if ($show_extended_events == 1 && events_has_extended_info($event['id_evento'])) {
+                $extended_events = events_get_extended_events($event['id_evento']);
+
+                foreach ($extended_events as $extended_event) {
+                    $extended_data = [];
+
+                    $extended_data[] = "<td colspan='4'><font style='font-style: italic;'>".io_safe_output($extended_event['description'])."</font></td><td><font style='font-size: 6pt; font-style: italic;'>".date($config['date_format'], $extended_event['utimestamp']).'</font></td>';
+                    array_push($table1->data, $extended_data);
+                }
+            }
         }
 
         if ($pdf) {

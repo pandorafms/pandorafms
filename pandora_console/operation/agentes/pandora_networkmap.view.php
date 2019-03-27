@@ -29,7 +29,7 @@
 
 global $config;
 
-require_once 'include/functions_pandora_networkmap.php';
+require_once 'include/functions_networkmap.php';
 enterprise_include_once('include/functions_policies.php');
 enterprise_include_once('include/functions_dashboard.php');
 require_once 'include/functions_modules.php';
@@ -79,6 +79,10 @@ if (is_ajax()) {
 
     if ($module_get_status) {
         $id = (int) get_parameter('id', 0);
+
+        if ($id == 0) {
+            return;
+        }
 
         $return = [];
         $return['correct'] = true;
@@ -756,6 +760,7 @@ html_print_input_hidden('center_logo', ui_get_full_url(ui_get_logo_to_center_net
 $dash_mode = 0;
 $map_dash_details = [];
 $networkmap = db_get_row('tmap', 'id', $id);
+
 if (enterprise_installed()) {
     include_once 'enterprise/dashboard/widgets/network_map.php';
     if ($id_networkmap) {
@@ -767,7 +772,6 @@ if (enterprise_installed()) {
         $map_dash_details['x_offs'] = $x_offs;
         $map_dash_details['y_offs'] = $y_offs;
         $map_dash_details['z_dash'] = $z_dash;
-
         $networkmap = db_get_row('tmap', 'id', $id);
     } else {
         $networkmap_filter = json_decode($networkmap['filter'], true);
@@ -866,9 +870,13 @@ if ($networkmap === false) {
         );
     }
 
-    $nodes_and_relations = networkmap_process_networkmap($id);
+    include_once $config['homedir'].'/include/class/NetworkMap.class.php';
 
-    show_networkmap($id, $user_readonly, $nodes_and_relations, $dash_mode, $map_dash_details);
+    $map_manager = new NetworkMap(
+        [ 'id_map' => $networkmap['id']]
+    );
+
+    $map_manager->printMap();
 }
 ?>
 

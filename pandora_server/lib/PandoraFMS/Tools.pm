@@ -1774,7 +1774,7 @@ sub api_call_url {
 	
 
 	my $ua = LWP::UserAgent->new();
-	$ua->timeout($options->{lwp_timeout});
+	$ua->timeout($pa_config->{'tcp_timeout'});
 	# Enable environmental proxy settings
 	$ua->env_proxy;
 	# Enable in-memory cookie management

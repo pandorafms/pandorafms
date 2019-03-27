@@ -36,7 +36,7 @@ require_once $config['homedir'].'/include/functions_servers.php';
 // Enterprise includes.
 enterprise_include_once('include/functions_metaconsole.php');
 enterprise_include_once('include/functions_license.php');
-enterprise_include_once('extensions/cron/functions.php');
+enterprise_include_once('include/functions_cron.php');
 
 /**
  * Base class to run scheduled tasks in cron extension

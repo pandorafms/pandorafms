@@ -306,3 +306,9 @@ switch ($config['dbtype']) {
 }
 
 // ======================================================================
+// Menu display mode.
+if ($_SESSION['menu_type']) {
+    $config['menu_type'] = $_SESSION['menu_type'];
+} else {
+    $config['menu_type'] = 'classic';
+}

@@ -213,6 +213,13 @@ class NetworkMap
     public $tooltipParams;
 
     /**
+     * Shows the map using 100% of height and width if is a widget.
+     *
+     * @var boolean
+     */
+    public $isWidget;
+
+    /**
      * Defines a custom method to parse Graphviz output and generate Graph.
      * Function pointer.
      *
@@ -367,6 +374,13 @@ class NetworkMap
 
             if (isset($options['no_pandora_node'])) {
                 $this->noPandoraNode = $options['no_pandora_node'];
+            }
+
+            // Initialize as widget?
+            if (isset($options['widget'])) {
+                $this->isWidget = (bool) $options['widget'];
+            } else {
+                $this->isWidget = true;
             }
 
             // Use a custom parser.
@@ -3323,7 +3337,11 @@ class NetworkMap
 
             // Open networkconsole_id div.
             $output .= '<div id="networkconsole_'.$networkmap['id'].'"';
-            $output .= ' style="width: '.$this->mapOptions['width'].'; height: '.$this->mapOptions['height'].';position: relative; overflow: hidden; background: #FAFAFA">';
+            if ($this->isWidget) {
+                $output .= ' style="width: 100%; height: 100%;position: relative; overflow: hidden; background: #FAFAFA">';
+            } else {
+                $output .= ' style="width: '.$this->mapOptions['width'].'px; height: '.$this->mapOptions['height'].'px;position: relative; overflow: hidden; background: #FAFAFA">';
+            }
 
             $output .= '<div style="display: '.$minimap_display.';">';
             $output .= '<canvas id="minimap_'.$networkmap['id'].'"';

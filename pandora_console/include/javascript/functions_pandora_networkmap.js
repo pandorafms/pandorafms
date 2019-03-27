@@ -2955,6 +2955,9 @@ function init_graph(parameter_object) {
     window.height_svg =
       $(window).height() - $("#menu_tab_frame_view").height() - 20; // 20 of margin
   }
+  if (!window.height_svg) {
+    window.height_svg = $("#networkconsole_" + networkmap_id).height();
+  }
 
   if (typeof parameter_object.font_size != "undefined") {
     window.font_size = parameter_object.font_size;

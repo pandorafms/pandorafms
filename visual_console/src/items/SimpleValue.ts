@@ -89,6 +89,17 @@ export function simpleValuePropsDecoder(
 
 export default class SimpleValue extends Item<SimpleValueProps> {
   public createDomElement(): HTMLElement {
-    throw new Error("not implemented");
+    const element = document.createElement("div");
+    element.className = "simple-value";
+
+    if (this.props.valueType === "image") {
+      const img = document.createElement("img");
+      img.src = this.props.value;
+      element.append(img);
+    } else {
+      element.innerHTML = this.props.label || "";
+    }
+
+    return element;
   }
 }

@@ -26,6 +26,10 @@ export function labelPropsDecoder(data: UnknownObject): LabelProps | never {
 
 export default class Label extends Item<LabelProps> {
   public createDomElement(): HTMLElement {
-    throw new Error("not implemented");
+    const element = document.createElement("div");
+    element.className = "label";
+    element.innerHTML = this.props.label || "";
+
+    return element;
   }
 }

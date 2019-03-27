@@ -110,7 +110,7 @@ $event_graph_validated_vs_unvalidated = false;
 
 $netflow_filter = 0;
 $max_values = 0;
-$resolution = 0;
+$resolution = NETFLOW_RES_MEDD;
 
 $lapse_calc = 0;
 $lapse = 300;
@@ -600,18 +600,22 @@ switch ($action) {
                 break;
 
                 case 'netflow_area':
-                case 'netflow_pie':
                 case 'netflow_data':
-                case 'netflow_statistics':
                 case 'netflow_summary':
                     $netflow_filter = $item['text'];
-                    // Filter
+                    // Filter.
                     $period = $item['period'];
                     $description = $item['description'];
                     $resolution = $item['top_n'];
-                    // Interval resolution
+                    // Interval resolution.
                     $max_values = $item['top_n_value'];
-                    // Max values
+                    // Max values.
+                break;
+
+                case 'nt_top_n':
+                    $period = $item['period'];
+                    $description = $item['description'];
+                    $top_n_value = $item['top_n_value'];
                 break;
             }
 
@@ -638,6 +642,7 @@ switch ($action) {
                 case 'simple_baseline_graph':
                 case 'event_report_log':
                 case 'increment':
+                case 'nt_top_n':
                     $label = (isset($style['label'])) ? $style['label'] : '';
                 break;
 
@@ -840,7 +845,11 @@ $class = 'databox filters';
             </td>
             <td style="">
                 <?php
-                html_print_extended_select_for_time('resolution', $resolution, '', '', '0', 10);
+                html_print_select(
+                    netflow_resolution_select_params(),
+                    'resolution',
+                    $resolution
+                );
                 ?>
             </td>
         </tr>
@@ -3673,16 +3682,6 @@ function chooseType() {
             $("#row_historical_db_check").hide();
             break;
         
-        case 'netflow_pie':
-            $("#row_netflow_filter").show();
-            $("#row_description").show();
-            $("#row_period").show();
-            $("#row_max_values").show();
-            $("#row_resolution").show();
-            $("#row_servers").show();
-            $("#row_historical_db_check").hide();
-            break;
-        
         case 'netflow_data':
             $("#row_netflow_filter").show();
             $("#row_description").show();
@@ -3697,19 +3696,16 @@ function chooseType() {
             $("#row_netflow_filter").show();
             $("#row_description").show();
             $("#row_period").show();
-            $("#row_resolution").show();
-            $("#row_servers").show();
-            $("#row_historical_db_check").hide();
-            break;
-        
-        case 'netflow_statistics':
-            $("#row_netflow_filter").show();
-            $("#row_description").show();
-            $("#row_period").show();
             $("#row_max_values").show();
             $("#row_resolution").show();
             $("#row_servers").show();
             $("#row_historical_db_check").hide();
+            break;
+
+        case 'nt_top_n':
+            $("#row_description").show();
+            $("#row_period").show();
+            $("#row_quantity").show();
             break;
     }
     switch (type) {

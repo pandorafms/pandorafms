@@ -4322,6 +4322,18 @@ form ul.form_flex li ul li {
   text-align: center;
 }
 
+.div-v-centered {
+  display: flex;
+  align-items: center;
+}
+
+.div-v-centered > form > input[type="image"] {
+  margin: 0;
+  padding: 0;
+  width: 14px;
+  padding-left: 5px;
+}
+
 .pandora_upper {
   text-transform: uppercase;
 }
@@ -4390,6 +4402,13 @@ tr:first-child > td > a.up_arrow {
   border-radius: 3px;
   float: left;
   margin-right: 5px;
+}
+
+.button-as-link {
+  text-decoration: underline;
+  background: none !important;
+  border: none;
+  padding: 0 !important;
 }
 
 /*

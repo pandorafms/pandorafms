@@ -710,7 +710,7 @@ class ConsoleSupervisor
             $this->notify(
                 [
                     'type'    => 'NOTIF.LICENSE.EXPIRATION',
-                    'title'   => __('License is going to expire.'),
+                    'title'   => __('License is about to expire'),
                     'message' => __(
                         'Your license will expire in %d days. Please, contact our sales department.',
                         $days_to_expiry

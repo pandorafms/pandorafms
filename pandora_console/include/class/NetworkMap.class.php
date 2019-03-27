@@ -289,6 +289,13 @@ class NetworkMap
      */
     private $filter;
 
+    /**
+     * Do not show the popup window.
+     *
+     * @var integer
+     */
+    private $noPopUp;
+
 
     /**
      * Base constructor.
@@ -315,7 +322,7 @@ class NetworkMap
         $this->mapOptions['width'] = $config['networkmap_max_width'];
         $this->mapOptions['height'] = $config['networkmap_max_width'];
         $this->mapOptions['simple'] = 0;
-        $this->mapOptions['font_size'] = 12;
+        $this->mapOptions['font_size'] = 20;
         $this->mapOptions['nooverlap'] = 1;
         $this->mapOptions['z_dash'] = 0.5;
         $this->mapOptions['center'] = 0;
@@ -376,10 +383,13 @@ class NetworkMap
                 $this->noPandoraNode = $options['no_pandora_node'];
             }
 
+            if (isset($options['no_popup'])) {
+                $this->noPopUp = $options['no_popup'];
+            }
+
             // Initialize as widget?
             if (isset($options['widget'])) {
                 $this->isWidget = (bool) $options['widget'];
-            } else {
                 $this->isWidget = true;
             }
 
@@ -3421,13 +3431,17 @@ class NetworkMap
             $output .= $this->loadMapSkel();
             $output .= $this->loadMapData();
             $output .= $this->loadController();
-            $output .= $this->loadAdvancedInterface();
+            if (!$this->noPopUp) {
+                $output .= $this->loadAdvancedInterface();
+            }
         } else {
             // Simulated, no tmap entries.
             $output .= $this->loadMapSkel();
             $output .= $this->loadMapData();
             $output .= $this->loadController();
-            $output .= $this->loadSimpleInterface();
+            if (!$this->noPopUp) {
+                $output .= $this->loadSimpleInterface();
+            }
         }
 
         $output .= '

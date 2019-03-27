@@ -53,7 +53,7 @@ if ($new_networkmap) {
     $recon_task_id = 0;
     $source = 'group';
     $ip_mask = '';
-    $dont_show_subgroups = false;
+    $dont_show_subgroups = 0;
     $offset_x = '';
     $offset_y = '';
     $scale_z = 0.5;
@@ -330,7 +330,13 @@ if ($not_found) {
     $table->data['source_data_ip_mask'][1] = html_print_input_text('ip_mask', $ip_mask, '', 20, 255, true, $disabled_source);
 
     $table->data['source_data_dont_show_subgroups'][0] = __('Don\'t show subgroups:');
-    $table->data['source_data_dont_show_subgroups'][1] = html_print_checkbox('dont_show_subgroups', '1', $dont_show_subgroups, true, $disabled_source);
+    $table->data['source_data_dont_show_subgroups'][1] = html_print_checkbox(
+        'dont_show_subgroups',
+        '1',
+        $dont_show_subgroups,
+        true,
+        $disabled_source
+    );
 
     $methods = [
         'twopi'          => 'radial',

@@ -384,11 +384,6 @@ if (check_acl($config['id_user'], 0, 'ER')
         $sub['operation/events/events_marquee.php']['type'] = 'direct';
     }
 
-    // CSV.
-    $sub['operation/events/export_csv.php?search=&event_type=&severity=-1&status=3&id_group=0&refr=0&id_agent=0&pagination=20&group_rep=1&event_view_hr=8&id_user_ack=0&tag_with=&tag_without=&filter_only_alert-1&offset=0&toogle_filter=no&filter_id=0&id_name=&id_group=0&history=0&section=list&open_filter=0&pure=']['text'] = __('CSV File');
-    $sub['operation/events/export_csv.php?search=&event_type=&severity=-1&status=3&id_group=0&refr=0&id_agent=0&pagination=20&group_rep=1&event_view_hr=8&id_user_ack=0&tag_with=&tag_without=&filter_only_alert-1&offset=0&toogle_filter=no&filter_id=0&id_name=&id_group=0&history=0&section=list&open_filter=0&pure=']['id'] = 'CSV File';
-    $sub['operation/events/export_csv.php?search=&event_type=&severity=-1&status=3&id_group=0&refr=0&id_agent=0&pagination=20&group_rep=1&event_view_hr=8&id_user_ack=0&tag_with=&tag_without=&filter_only_alert-1&offset=0&toogle_filter=no&filter_id=0&id_name=&id_group=0&history=0&section=list&open_filter=0&pure=']['type'] = 'direct';
-
     // Sound Events.
     $javascript = "javascript: window.open('operation/events/sound_events.php');";
     $javascript = 'javascript: alert(111);';

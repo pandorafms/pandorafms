@@ -152,7 +152,7 @@ class HostDevices extends Wizard
                 ]
             );
 
-            $this->printHeader();
+            ui_print_page_header(__('Host & devices'), '', false, '', true, '', false, '', GENERIC_SIZE_TEXT, '', $this->printHeader(true));
 
             $this->printBigButtonsList($buttons);
             return;
@@ -512,9 +512,15 @@ class HostDevices extends Wizard
             $task_url = '&task='.$this->task['id_rt'];
         }
 
-        $breadcrum[] = [
-            'link'  => 'index.php?sec=gservers&sec2=godmode/servers/discovery&wiz=hd',
-            'label' => __($this->label),
+        $breadcrum = [
+            [
+                'link'  => 'index.php?sec=gservers&sec2=godmode/servers/discovery',
+                'label' => 'Discovery',
+            ],
+            [
+                'link'  => 'index.php?sec=gservers&sec2=godmode/servers/discovery&wiz=hd',
+                'label' => __($this->label),
+            ],
         ];
         for ($i = 0; $i < $this->maxPagesNetScan; $i++) {
             $breadcrum[] = [
@@ -527,7 +533,7 @@ class HostDevices extends Wizard
         if ($this->page < $this->maxPagesNetScan) {
             // Avoid to print header out of wizard.
             $this->prepareBreadcrum($breadcrum);
-            $this->printHeader();
+            ui_print_page_header(__('NetScan'), '', false, '', true, '', false, '', GENERIC_SIZE_TEXT, '', $this->printHeader(true));
         }
 
         if (isset($this->page) === true

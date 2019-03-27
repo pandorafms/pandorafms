@@ -72,6 +72,7 @@ div.new_task_cluster > div {
 }
 #description_task {
   font-size: 12px;
+  line-height: 1.8em;
 }
 
 #fuerte {

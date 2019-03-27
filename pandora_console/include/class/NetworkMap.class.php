@@ -213,6 +213,13 @@ class NetworkMap
     public $tooltipParams;
 
     /**
+     * Shows the map using 100% of height and width if is a widget.
+     *
+     * @var boolean
+     */
+    public $isWidget;
+
+    /**
      * Defines a custom method to parse Graphviz output and generate Graph.
      * Function pointer.
      *
@@ -378,6 +385,12 @@ class NetworkMap
 
             if (isset($options['no_popup'])) {
                 $this->noPopUp = $options['no_popup'];
+            }
+
+            // Initialize as widget?
+            if (isset($options['widget'])) {
+                $this->isWidget = (bool) $options['widget'];
+                $this->isWidget = true;
             }
 
             // Use a custom parser.
@@ -596,10 +609,6 @@ class NetworkMap
             $this->idGroup = $this->map['id_group'];
 
             switch ($this->map['source']) {
-                case SOURCE_GROUP:
-                    $this->idGroup = $this->map['source_data'];
-                break;
-
                 case SOURCE_TASK:
                     $this->idTask = $this->map['source_data'];
                 break;
@@ -608,6 +617,8 @@ class NetworkMap
                     $this->network = $this->map['source_data'];
                 break;
 
+                case SOURCE_GROUP:
+                    // Already load.
                 default:
                     // Ignore.
                 break;
@@ -764,7 +775,9 @@ class NetworkMap
             // Empty map returns no data.
             $nodes = [];
         } else {
-            if ($this->mapOptions['map_filter']['dont_show_subgroups'] == 'true') {
+            if ($this->mapOptions['map_filter']['dont_show_subgroups'] === 'true'
+                || $this->mapOptions['map_filter']['dont_show_subgroups'] == 1
+            ) {
                 // Show only current selected group.
                 $filter['id_grupo'] = $this->idGroup;
             } else {
@@ -2776,6 +2789,10 @@ class NetworkMap
             false,
             true
         );
+
+        $output .= '</div>';
+        $output .= '</div>';
+
         return $output;
     }
 
@@ -2999,7 +3016,11 @@ class NetworkMap
 
         $table->data = [];
 
-        $table->data['interface_row']['node_source_interface'] = html_print_label('', 'node_source_interface');
+        $table->data['interface_row']['node_source_interface'] = html_print_label(
+            '',
+            'node_source_interface',
+            true
+        );
 
         $table->data['interface_row']['interface_source_select'] = html_print_select(
             [],
@@ -3023,10 +3044,11 @@ class NetworkMap
 
         $table->data['interface_row']['node_target_interface'] = html_print_label(
             '',
-            'node_target_interface'
+            'node_target_interface',
+            true
         );
 
-        $output .= 'br><br>';
+        $output .= '<br>';
 
         $table->data['interface_row']['interface_link_button'] = html_print_button(
             __('Add interface link'),
@@ -3228,7 +3250,8 @@ class NetworkMap
             enterprise_installed: enterprise_installed,
             node_radius: node_radius,
             holding_area_dimensions: networkmap_holding_area_dimensions,
-            url_background_grid: url_background_grid
+            url_background_grid: url_background_grid,
+            font_size: '.$this->mapOptions['font_size'].'
         });
         init_drag_and_drop();
         init_minimap();
@@ -3289,7 +3312,10 @@ class NetworkMap
                 '/enterprise/include/styles/tooltipster.bundle.min.css'
             ).'" />'."\n";
 
-            $output .= '<div id="simple_map" data-id="'.$this->idMap.'" style="border: 1px #dddddd solid;">';
+            $output .= '<div id="simple_map" data-id="'.$this->idMap.'" ';
+            $output .= 'style="border: 1px #ddd solid;';
+            $output .= ' width:'.$this->mapOptions['width'];
+            $output .= ' ;height:'.$this->mapOptions['height'].'">';
             $output .= '<svg id="svg'.$this->idMap.'" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" pointer-events="all" width="'.$this->mapOptions['width'].'" height="'.$this->mapOptions['height'].'px">';
             $output .= '</svg>';
             $output .= '</div>';
@@ -3321,7 +3347,11 @@ class NetworkMap
 
             // Open networkconsole_id div.
             $output .= '<div id="networkconsole_'.$networkmap['id'].'"';
-            $output .= ' style="width: '.$this->mapOptions['width'].'; height: '.$this->mapOptions['height'].';position: relative; overflow: hidden; background: #FAFAFA">';
+            if ($this->isWidget) {
+                $output .= ' style="width: 100%; height: 100%;position: relative; overflow: hidden; background: #FAFAFA">';
+            } else {
+                $output .= ' style="width: '.$this->mapOptions['width'].'px; height: '.$this->mapOptions['height'].'px;position: relative; overflow: hidden; background: #FAFAFA">';
+            }
 
             $output .= '<div style="display: '.$minimap_display.';">';
             $output .= '<canvas id="minimap_'.$networkmap['id'].'"';

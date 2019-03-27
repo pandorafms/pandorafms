@@ -364,7 +364,8 @@ function d3_progress_bar(
     $text='',
     $fill_color='#FFFFFF',
     $radiusx=10,
-    $radiusy=10
+    $radiusy=10,
+    $transition=1
 ) {
     global $config;
 
@@ -387,6 +388,7 @@ function d3_progress_bar(
 						'".$fill_color."',
 						".(int) $radiusx.',
 						'.(int) $radiusy.',
+						'.(int) $transition.'
 					);
 				</script>';
 

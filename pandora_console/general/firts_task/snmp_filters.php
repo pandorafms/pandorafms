@@ -22,7 +22,7 @@ ui_require_css_file('firts_task');
         <?php echo html_print_image('images/firts_task/icono_grande_reconserver.png', true, ['title' => __('SNMP Filter')]); ?>
     </div>
     <div class="text_task">
-        <h3> <?php echo __('Create SNMP Filter'); ?>        <p id="description_task"> 
+        <h3> <?php echo __('Create SNMP Filter'); ?></h3><p id="description_task"> 
             <?php
             echo __(
                 "Some systems receive a high number of traps. 

@@ -305,12 +305,12 @@ if (file_exists(ENTERPRISE_DIR.'/load_enterprise.php')) {
         echo '<div class ="img_banner_login">';
 if (file_exists(ENTERPRISE_DIR.'/load_enterprise.php')) {
     if (isset($config['custom_splash_login'])) {
-        html_print_image('enterprise/images/custom_splash_login/'.$config['custom_splash_login'], false, [ 'alt' => 'splash', 'border' => 0, 'title' => $splash_title], false, true);
+        html_print_image('enterprise/images/custom_splash_login/'.$config['custom_splash_login'], false, [ 'alt' => 'splash', 'border' => 0], false, true);
     } else {
-        html_print_image('enterprise/images/custom_splash_login/splash_image_default.png', false, ['alt' => 'logo', 'border' => 0, 'title' => $splash_title], false, true);
+        html_print_image('enterprise/images/custom_splash_login/splash_image_default.png', false, ['alt' => 'logo', 'border' => 0], false, true);
     }
 } else {
-    html_print_image('images/splash_image_default.png', false, ['alt' => 'logo', 'border' => 0, 'title' => $splash_title], false, true);
+    html_print_image('images/splash_image_default.png', false, ['alt' => 'logo', 'border' => 0], false, true);
 }
 
         echo '</div>';

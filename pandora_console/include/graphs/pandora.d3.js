@@ -1776,7 +1776,8 @@ function progress_bar_d3(
   label,
   label_color,
   radiusx,
-  radiusy
+  radiusy,
+  transition
 ) {
   var startPercent = 0;
   var endPercent = parseInt(percentile) / 100;
@@ -1836,17 +1837,21 @@ function progress_bar_d3(
     progress_front.attr("width", width * bar_progress);
   }
 
-  var bar_progress = startPercent;
-
-  (function loops() {
+  if (transition == 0) {
+    var bar_progress = endPercent;
     updateProgress(bar_progress);
+  } else {
+    var bar_progress = startPercent;
+    (function loops() {
+      updateProgress(bar_progress);
 
-    if (count > 0) {
-      count--;
-      bar_progress += step;
-      setTimeout(loops, 30);
-    }
-  })();
+      if (count > 0) {
+        count--;
+        bar_progress += step;
+        setTimeout(loops, 30);
+      }
+    })();
+  }
 }
 
 function progress_bubble_d3(

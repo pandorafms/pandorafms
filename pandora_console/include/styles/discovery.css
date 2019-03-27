@@ -64,7 +64,6 @@ h1.wizard a:hover {
 div.arrow_box {
   display: inline-block;
   position: relative;
-  background: #ccc;
   color: #888;
   padding: 1.3em;
   margin-left: 20px;
@@ -72,16 +71,6 @@ div.arrow_box {
   padding-left: 3em;
 }
 
-.arrow_box:before {
-  top: 50%;
-  border: solid transparent;
-  content: " ";
-  height: 0;
-  width: 0;
-  position: absolute;
-  pointer-events: none;
-  z-index: 1;
-}
 .arrow_box.selected {
   background: #424242;
   color: #ccc;
@@ -109,4 +98,69 @@ div.arrow_box:before {
 }
 .arrow_box:hover {
   color: #000;
+}
+
+/*
+ * Breadcrum
+ */
+
+#menu_tab_frame_view_bc {
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 2px solid #82b92e;
+  max-height: 70px;
+  min-height: 55px;
+  width: 100%;
+  padding-right: 0px;
+  margin-left: 0px !important;
+  margin-bottom: 20px;
+  height: 55px;
+  box-sizing: border-box;
+  background-color: #fafafa;
+  border-top-right-radius: 7px;
+  border-top-left-radius: 7px;
+  box-shadow: 0px 0px 2px rgba(0, 0, 0, 0.1);
+  flex-direction: column;
+}
+
+#menu_tab_frame_view_bc .breadcrumbs_container {
+  align-self: flex-start;
+}
+
+.breadcrumbs_container {
+  padding-left: 10px;
+  padding-top: 4px;
+  text-indent: 0.25em;
+}
+
+.breadcrumb_link {
+  color: #848484;
+  font-size: 10pt !important;
+  font-family: "lato-bolder", "Open Sans", sans-serif !important;
+  text-decoration: none !important;
+}
+
+span.breadcrumb_link {
+  color: #d0d0d0;
+  font-size: 12pt !important;
+}
+
+.breadcrumb_link.selected {
+  color: #95b750;
+}
+
+.breadcrumb_link.selected:hover {
+  color: #95b750;
+}
+.breadcrumb_link:hover {
+  color: #95b750;
+}
+
+.form_grid_items {
+  overflow: hidden;
+}
+.form_grid_items .form_grid_item {
+  float: left;
+  box-sizing: border-box;
+  padding: 10px;
 }

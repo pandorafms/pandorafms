@@ -83,7 +83,7 @@ function draw_minimap() {
 
     context_minimap.arc(center_orig_x, center_orig_y, 2, 0, Math.PI * 2, false);
     //Check if the pandora point
-    if (value.id_agent == -1) {
+    if (value.type == 2) {
       context_minimap.fillStyle = "#364D1F";
     } else {
       context_minimap.fillStyle = "#000";
@@ -868,7 +868,7 @@ function edit_node(data_node, dblClick) {
       ); // It doesn't eval the possible XSS so it's ok
       $("#dialog_node_edit").dialog("open");
 
-      if (node_selected.id_agent == undefined || node_selected.id_agent == -2) {
+      if (node_selected.id_agent == undefined || node_selected.type == 3) {
         //Fictional node
         $("#node_options-fictional_node_name").css("display", "");
         $("input[name='edit_name_fictional_node']").val(node_selected.text); // It doesn't eval the possible XSS so it's ok
@@ -1681,7 +1681,8 @@ function clear_selection() {
 function update_networkmap() {
   if (enterprise_installed) {
     node.each(function(d) {
-      if (d.id_agent != -1) {
+      // Do not update Pandora FMS node.
+      if (d.type != 2) {
         var params = [];
         params.push("update_node_color=1");
         params.push("id=" + d.id_db);
@@ -1896,7 +1897,7 @@ function show_menu(item, data) {
         icon: "interface_link_children",
         disabled: function() {
           if (enterprise_installed) {
-            if (data.type == 3) {
+            if (data.type == 3 || data.type == 2) {
               return true;
             } else {
               return false;
@@ -1966,7 +1967,7 @@ function show_menu(item, data) {
             icon: "interface_link_parent",
             disabled: function() {
               if (enterprise_installed) {
-                if (data.type == 3) {
+                if (data.type == 3 || data.type == 2) {
                   return true;
                 } else {
                   return false;
@@ -2052,7 +2053,8 @@ function show_menu(item, data) {
         };
       }
 
-      if (data.id_agent != -1) {
+      // Avoid deletion if Pandora FMS node.
+      if (data.type != 2) {
         items_list["delete"] = {
           name: delete_menu,
           icon: "delete",
@@ -2291,26 +2293,25 @@ function add_interface_link_js() {
   cancel_set_parent_interface();
   $("#dialog_interface_link").dialog("close");
 
-  source_value = $("#interface_source_select").val();
-  source_text = $("#interface_source_select")
+  var source_value = $("#interface_source_select").val();
+  var source_text = $("#interface_source_select")
     .find("option:selected")
     .text();
-  target_value = $("#interface_target_select").val();
-  target_text = $("#interface_target_select")
+  var target_value = $("#interface_target_select").val();
+  var target_text = $("#interface_target_select")
     .find("option:selected")
     .text();
-
-  var params = [];
-  params.push("add_interface_relation=1");
-  params.push("id=" + networkmap_id);
-  params.push("source_value=" + source_value);
-  params.push("target_value=" + target_value);
-  params.push("source_text=" + source_text);
-  params.push("target_text=" + target_text);
-  params.push("page=enterprise/operation/agentes/pandora_networkmap.view");
 
   jQuery.ajax({
-    data: params.join("&"),
+    data: {
+      page: "enterprise/operation/agentes/pandora_networkmap.view",
+      add_interface_relation: 1,
+      id: networkmap_id,
+      source_value: source_value,
+      target_value: target_value,
+      source_text: source_text,
+      target_text: target_text
+    },
     dataType: "json",
     type: "POST",
     url: "ajax.php",
@@ -2326,8 +2327,9 @@ function add_interface_link_js() {
         if (data["type_source"] == 1) {
           temp_link["arrow_start"] = "module";
           temp_link["id_module_start"] = source_value;
-          temp_link["status_start"] = data["status"];
-          temp_link["link_color"] = data["status"] == "1" ? "#FC4444" : "#999";
+          temp_link["status_start"] = data["status_start"];
+          temp_link["link_color"] =
+            data["status_start"] == "1" ? "#FC4444" : "#999";
         } else {
           temp_link["arrow_start"] = "";
           temp_link["id_agent_start"] = source_value;
@@ -2336,8 +2338,9 @@ function add_interface_link_js() {
         if (data["type_target"] == 1) {
           temp_link["arrow_end"] = "module";
           temp_link["id_module_end"] = target_value;
-          temp_link["status_end"] = data["status"];
-          temp_link["link_color"] = data["status"] == "1" ? "#FC4444" : "#999";
+          temp_link["status_end"] = data["status_end"];
+          temp_link["link_color"] =
+            data["status_end"] == "1" ? "#FC4444" : "#999";
         } else {
           temp_link["arrow_end"] = "";
           temp_link["id_agent_end"] = target_value;
@@ -2596,8 +2599,9 @@ function proceed_to_restart_map() {
     type: "POST",
     url: "ajax.php",
     success: function(data) {
-      $("#restart_map_form").html(data);
-      $("#restart_map_form").dialog("open");
+      $("#restart_map_form")
+        .html(data)
+        .dialog("open");
     }
   });
 }
@@ -2950,6 +2954,13 @@ function init_graph(parameter_object) {
     //Set the height in the pure view (fullscreen).
     window.height_svg =
       $(window).height() - $("#menu_tab_frame_view").height() - 20; // 20 of margin
+  }
+  if (!window.height_svg) {
+    window.height_svg = $("#networkconsole_" + networkmap_id).height();
+  }
+
+  if (typeof parameter_object.font_size != "undefined") {
+    window.font_size = parameter_object.font_size;
   }
 
   window.refresh_period = 5 * 1000; //milliseconds
@@ -3963,6 +3974,10 @@ function draw_elements_graph() {
     });
 
   var font_size = node_radius / 1.5;
+
+  if (typeof window.font_size != "undefined") {
+    font_size = window.font_size;
+  }
 
   node_temp
     .append("text")

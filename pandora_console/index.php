@@ -1030,7 +1030,7 @@ if ($config['pure'] == 0) {
     echo '<div id="container"><div id="head">';
     include 'general/header.php';
 
-    if ($_SESSION['menu_type'] == 'classic') {
+    if ($config['menu_type'] == 'classic') {
         echo '</div><div id="page" class="page_classic"><div id="menu">';
     } else {
         echo '</div><div id="page" class="page_collapsed"><div id="menu">';

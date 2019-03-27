@@ -19,7 +19,7 @@ require_once 'include/functions_notifications.php';
  config_check();
 
 
-if ($_SESSION['menu_type'] == 'classic') {
+if ($config['menu_type'] == 'classic') {
     echo '<div id="header_table" class="header_table_classic">';
 } else {
     echo '<div id="header_table" class="header_table_collapsed">';

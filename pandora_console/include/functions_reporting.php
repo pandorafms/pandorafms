@@ -36,6 +36,7 @@ require_once $config['homedir'].'/include/functions_forecast.php';
 require_once $config['homedir'].'/include/functions_ui.php';
 require_once $config['homedir'].'/include/functions_netflow.php';
 require_once $config['homedir'].'/include/functions_os.php';
+require_once $config['homedir'].'/include/functions_network.php';
 
 //
 // CONSTANTS DEFINITIONS                //
@@ -516,16 +517,6 @@ function reporting_make_reporting_data(
                 );
             break;
 
-            case 'netflow_pie':
-                $report['contents'][] = reporting_netflow(
-                    $report,
-                    $content,
-                    $type,
-                    $force_width_chart,
-                    $force_height_chart,
-                    'netflow_pie',
-                    $pdf
-                );
             break;
 
             case 'netflow_data':
@@ -536,18 +527,6 @@ function reporting_make_reporting_data(
                     $force_width_chart,
                     $force_height_chart,
                     'netflow_data',
-                    $pdf
-                );
-            break;
-
-            case 'netflow_statistics':
-                $report['contents'][] = reporting_netflow(
-                    $report,
-                    $content,
-                    $type,
-                    $force_width_chart,
-                    $force_height_chart,
-                    'netflow_statistics',
                     $pdf
                 );
             break;
@@ -789,6 +768,14 @@ function reporting_make_reporting_data(
 
             case 'module_histogram_graph':
                 $report['contents'][] = reporting_enterprise_module_histogram_graph(
+                    $report,
+                    $content,
+                    $pdf
+                );
+            break;
+
+            case 'nt_top_n':
+                $report['contents'][] = reporting_nt_top_n_report(
                     $report,
                     $content,
                     $pdf
@@ -3958,6 +3945,20 @@ function reporting_monitor_report($report, $content)
 }
 
 
+/**
+ * Generates the data structure to build a netflow report.
+ *
+ * @param array   $report             Global report info.
+ * @param array   $content            Report item info.
+ * @param string  $type               Report type (static, dynamic, data).
+ * @param integer $force_width_chart  Fixed width chart.
+ * @param integer $force_height_chart Fixed height chart.
+ * @param string  $type_netflow       One of netflow_area, netflow_data,
+ *      netflow_summary.
+ * @param boolean $pdf                True if a pdf report is generating.
+ *
+ * @return array Report item structure.
+ */
 function reporting_netflow(
     $report,
     $content,
@@ -3974,20 +3975,16 @@ function reporting_netflow(
             $return['type'] = 'netflow_area';
         break;
 
-        case 'netflow_pie':
-            $return['type'] = 'netflow_pie';
-        break;
-
         case 'netflow_data':
             $return['type'] = 'netflow_data';
         break;
 
-        case 'netflow_statistics':
-            $return['type'] = 'netflow_statistics';
-        break;
-
         case 'netflow_summary':
             $return['type'] = 'netflow_summary';
+        break;
+
+        default:
+            $return['type'] = 'unknown';
         break;
     }
 
@@ -3997,20 +3994,16 @@ function reporting_netflow(
                 $content['name'] = __('Netflow Area');
             break;
 
-            case 'netflow_pie':
-                $content['name'] = __('Netflow Pie');
+            case 'netflow_summary':
+                $content['name'] = __('Netflow Summary');
             break;
 
             case 'netflow_data':
                 $content['name'] = __('Netflow Data');
             break;
 
-            case 'netflow_statistics':
-                $content['name'] = __('Netflow Statistics');
-            break;
-
-            case 'netflow_summary':
-                $content['name'] = __('Netflow Summary');
+            default:
+                $content['name'] = __('Unknown report');
             break;
         }
     }
@@ -4019,7 +4012,7 @@ function reporting_netflow(
     $return['description'] = $content['description'];
     $return['date'] = reporting_get_date_text($report, $content);
 
-    // Get chart
+    // Get chart.
     reporting_set_conf_charts(
         $width,
         $height,
@@ -4037,7 +4030,7 @@ function reporting_netflow(
         $height = $force_height_chart;
     }
 
-    // Get item filters
+    // Get item filters.
     $filter = db_get_row_sql(
         "SELECT *
 		FROM tnetflow_filter
@@ -4062,8 +4055,16 @@ function reporting_netflow(
         break;
 
         case 'data':
+        default:
+            // Nothing to do.
         break;
     }
+
+    $return['subtitle'] = netflow_generate_subtitle_report(
+        $filter['aggregate'],
+        $content['top_n'],
+        $type_netflow
+    );
 
     return reporting_check_structure_content($return);
 }
@@ -11516,4 +11517,39 @@ function reporting_header_table_for_pdf(string $title='', string $description=''
     $result_pdf .= '</th></tr></thead></table>';
 
     return $result_pdf;
+}
+
+
+/**
+ * Build the required data to build network traffic top N report
+ *
+ * @param int Period (time window).
+ * @param array Information about the item of report.
+ * @param bool Pdf or not
+ *
+ * @return array With report presentation info and report data.
+ */
+function reporting_nt_top_n_report($period, $content, $pdf)
+{
+    $return = [];
+    $return['type'] = 'nt_top_n';
+    $return['title'] = $content['name'];
+    $return['description'] = $content['description'];
+
+    // Get the data sent and received
+    $return['data'] = [];
+    $start_time = ($period['datetime'] - (int) $content['period']);
+    $return['data']['send'] = network_matrix_get_top(
+        $content['top_n_value'],
+        true,
+        $start_time,
+        $period['datetime']
+    );
+    $return['data']['recv'] = network_matrix_get_top(
+        $content['top_n_value'],
+        false,
+        $start_time,
+        $period['datetime']
+    );
+    return $return;
 }

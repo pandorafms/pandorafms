@@ -214,12 +214,16 @@ class Wizard
 
             $bc[$i] = '';
 
-            if ($separator_beginning === true) $bc[$i] .= '<span class="breadcrumb_link">&nbsp/&nbsp</span>';
+            if ($separator_beginning === true) {
+                $bc[$i] .= '<span class="breadcrumb_link">&nbsp/&nbsp</span>';
+            }
 
             $bc[$i]   .= '<span><a class="breadcrumb_link '.$class.'" href="'.$url['link'].'">';
             $bc[$i]   .= $url['label'];
             $bc[$i]   .= '</a>';
-            if ($count < $array_size) $bc[$i] .= '<span class="breadcrumb_link">&nbsp/&nbsp</span>';
+            if ($count < $array_size) {
+                $bc[$i] .= '<span class="breadcrumb_link">&nbsp/&nbsp</span>';
+            }
 
             $bc[$i] .= '</span>';
 

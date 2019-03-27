@@ -2792,8 +2792,9 @@ function ui_print_page_header(
 
     $buffer = '<div id="'.$type2.'" style="">';
 
-    if (!empty($breadcrumbs))
+    if (!empty($breadcrumbs)) {
         $buffer .= '<div class="breadcrumbs_container">'.$breadcrumbs.'</div>';
+    }
 
     $buffer .= '<div id="menu_tab_left">';
 

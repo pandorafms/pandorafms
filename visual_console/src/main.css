@@ -1,3 +1,7 @@
+.visual-console-container {
+  position: relative;
+}
+
 .visual-console-item {
   position: absolute;
 }

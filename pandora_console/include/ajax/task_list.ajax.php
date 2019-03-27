@@ -167,6 +167,7 @@ if ($showmap) {
         [
             'id_task' => $id_task,
             'pure'    => 1,
+            'widget'  => true,
         ]
     );
     $map->printMap();

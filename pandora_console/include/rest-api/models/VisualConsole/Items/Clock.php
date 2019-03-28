@@ -11,6 +11,14 @@ use Models\VisualConsole\Item;
 final class Clock extends Item
 {
 
+    /**
+     * Used to enable the fetching, validation and extraction of information
+     * about the linked visual console.
+     *
+     * @var boolean
+     */
+    protected static $useLinkedVisualConsole = true;
+
 
     /**
      * Returns a valid representation of the model.
@@ -29,10 +37,13 @@ final class Clock extends Item
         $clockData['clockFormat'] = $this->extractClockFormat($data);
         $clockData['clockTimezone'] = $this->extractClockTimezone($data);
 
-        $dateTimeZoneUTC = new DateTimeZone('UTC');
-        $dateTimeZoneClock = new DateTimeZone($clockData['clockTimezone']);
-        $dateTime = new DateTime('now', $dateTimeZoneClock);
-        $clockData['clockTimezoneOffset'] = $dateTimeZoneUTC->getOffset($dateTime);
+        try {
+            $timezone = new \DateTimeZone($clockData['clockTimezone']);
+            $timezoneUTC = new \DateTimeZone('UTC');
+            $clockData['clockTimezoneOffset'] = $timezone->getOffset(new \DateTime('now', $timezoneUTC));
+        } catch (Exception $e) {
+            throw new \InvalidArgumentException($e->getMessage());
+        }
 
         $clockData['showClockTimezone'] = $this->extractShowClockTimezone($data);
         $clockData['color'] = $this->extractColor($data);

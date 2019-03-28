@@ -59,10 +59,6 @@ CREATE TABLE IF NOT EXISTS `tlocal_component` (
 ALTER TABLE `tlocal_component` ADD COLUMN `dynamic_next` bigint(20) NOT NULL default '0';
 ALTER TABLE `tlocal_component` ADD COLUMN `dynamic_two_tailed` tinyint(1) unsigned default '0';
 ALTER TABLE `tlocal_component` ADD COLUMN `ff_type` tinyint(1) unsigned default '0';
-ALTER TABLE `tlocal_component` ADD COLUMN `ff_normal` int(4) unsigned default '0';
-ALTER TABLE `tlocal_component` ADD COLUMN `ff_warning` int(4) unsigned default '0';
-ALTER TABLE `tlocal_component` ADD COLUMN `ff_critical` int(4) unsigned default '0';
-
 
 -- -----------------------------------------------------
 -- Table `tpolicy_modules`
@@ -142,9 +138,6 @@ CREATE TABLE IF NOT EXISTS `tpolicy_modules` (
 ALTER TABLE `tpolicy_modules` ADD COLUMN `dynamic_next` bigint(20) NOT NULL default '0';
 ALTER TABLE `tpolicy_modules` ADD COLUMN `dynamic_two_tailed` tinyint(1) unsigned default '0';
 ALTER TABLE `tpolicy_modules` ADD COLUMN `ff_type` tinyint(1) unsigned default '0';
-ALTER TABLE `tpolicy_modules` ADD COLUMN `ff_normal` int(4) unsigned default '0';
-ALTER TABLE `tpolicy_modules` ADD COLUMN `ff_warning` int(4) unsigned default '0';
-ALTER TABLE `tpolicy_modules` ADD COLUMN `ff_critical` int(4) unsigned default '0';
 
 -- ---------------------------------------------------------------------
 -- Table `tpolicies`
@@ -1159,6 +1152,9 @@ ALTER TABLE tagente_estado MODIFY `status_changes` tinyint(4) unsigned default 0
 ALTER TABLE tagente_estado CHANGE `last_known_status` `known_status` tinyint(4) default 0;
 ALTER TABLE tagente_estado ADD COLUMN `last_known_status` tinyint(4) default 0;
 ALTER TABLE tagente_estado ADD COLUMN last_unknown_update bigint(20) NOT NULL default 0;
+ALTER TABLE `tagente_estado` ADD COLUMN `ff_normal` int(4) unsigned default '0';
+ALTER TABLE `tagente_estado` ADD COLUMN `ff_warning` int(4) unsigned default '0';
+ALTER TABLE `tagente_estado` ADD COLUMN `ff_critical` int(4) unsigned default '0';
 
 -- ---------------------------------------------------------------------
 -- Table `talert_actions`
@@ -1293,9 +1289,6 @@ ALTER TABLE tnetwork_component ADD COLUMN `dynamic_min` int(4) default '0';
 ALTER TABLE tnetwork_component ADD COLUMN `dynamic_next` bigint(20) NOT NULL default '0';
 ALTER TABLE tnetwork_component ADD COLUMN `dynamic_two_tailed` tinyint(1) unsigned default '0';
 ALTER TABLE `tnetwork_component` ADD COLUMN `ff_type` tinyint(1) unsigned default '0';
-ALTER TABLE `tnetwork_component` ADD COLUMN `ff_normal` int(4) unsigned default '0';
-ALTER TABLE `tnetwork_component` ADD COLUMN `ff_warning` int(4) unsigned default '0';
-ALTER TABLE `tnetwork_component` ADD COLUMN `ff_critical` int(4) unsigned default '0';
 
 -- ---------------------------------------------------------------------
 -- Table `tagente`

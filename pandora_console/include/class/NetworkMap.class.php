@@ -217,7 +217,7 @@ class NetworkMap
      *
      * @var boolean
      */
-    public $isWidget;
+    public $fullSize;
 
     /**
      * Defines a custom method to parse Graphviz output and generate Graph.
@@ -389,8 +389,9 @@ class NetworkMap
 
             // Initialize as widget?
             if (isset($options['widget'])) {
-                $this->isWidget = (bool) $options['widget'];
-                $this->isWidget = true;
+                $this->fullSize = (bool) $options['widget'];
+            } else {
+                $this->fullSize = true;
             }
 
             // Use a custom parser.
@@ -3347,7 +3348,7 @@ class NetworkMap
 
             // Open networkconsole_id div.
             $output .= '<div id="networkconsole_'.$networkmap['id'].'"';
-            if ($this->isWidget) {
+            if ($this->fullSize) {
                 $output .= ' style="width: 100%; height: 100%;position: relative; overflow: hidden; background: #FAFAFA">';
             } else {
                 $output .= ' style="width: '.$this->mapOptions['width'].'px; height: '.$this->mapOptions['height'].'px;position: relative; overflow: hidden; background: #FAFAFA">';

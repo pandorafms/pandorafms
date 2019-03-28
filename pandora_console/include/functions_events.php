@@ -181,7 +181,7 @@ function events_get_events_no_grouped(
 
     $table = events_get_events_table($meta, $history);
 
-    $sql = 'SELECT * FROM '.$table.' te WHERE 1=1 '.$sql_post;
+    $sql = 'SELECT * FROM '.$table.' WHERE 1=1 '.$sql_post;
 
     $events = db_get_all_rows_sql($sql, $history_db);
 
@@ -1628,7 +1628,7 @@ function events_get_agent(
     }
 
     if (is_metaconsole() && $id_server) {
-        $sql_where .= ' AND server_id = '.$id_server;
+        $sql_where .= ' AND server_id = 0';
     }
 
     if ($show_summary_group) {
@@ -1636,7 +1636,7 @@ function events_get_agent(
             $sql_where,
             0,
             1000,
-            is_metaconsole(),
+            is_metaconsole();
             false,
             false,
             $history
@@ -1646,7 +1646,7 @@ function events_get_agent(
             $sql_where,
             0,
             1000,
-            is_metaconsole(),
+            (is_metaconsole() && $id_server) ? true : false,
             false,
             false,
             $history

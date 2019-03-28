@@ -30,7 +30,6 @@ if (!$networkmaps_read && !$networkmaps_write && !$networkmaps_manage) {
 }
 
 require_once 'include/functions_networkmap.php';
-require_once 'include/functions_pandora_networkmap.php';
 
 $new_networkmap = (bool) get_parameter('new_networkmap', false);
 $save_networkmap = (bool) get_parameter('save_networkmap', false);
@@ -45,8 +44,9 @@ $new_empty_networkmap = get_parameter('new_empty_networkmap', false);
 if (enterprise_installed()) {
     if ($new_empty_networkmap) {
         if ($networkmaps_write || $networkmaps_manage) {
-            include $config['homedir'].'/enterprise/godmode/agentes/pandora_networkmap_empty.editor.php';
-            include 'pandora_networkmap_empty.editor.php';
+            enterprise_include(
+                'godmode/agentes/pandora_networkmap_empty.editor.php'
+            );
             return;
         }
     }
@@ -71,12 +71,15 @@ if (enterprise_installed()) {
         $name = (string) get_parameter('name', '');
 
         // Default size values
-        $width = 4000;
-        $height = 4000;
+        $width = $config['networkmap_max_width'];
+        $height = $config['networkmap_max_width'];
 
         $method = (string) get_parameter('method', 'fdp');
 
-        $dont_show_subgroups = 0;
+        $dont_show_subgroups = (int) get_parameter_checkbox(
+            'dont_show_subgroups',
+            0
+        );
         $node_radius = (int) get_parameter('node_radius', 40);
         $description = get_parameter('description', '');
 
@@ -126,7 +129,14 @@ if (enterprise_installed()) {
         $id = $result;
         define('_id_', $id);
 
-        $tab = 'view';
+        if ($result !== false) {
+            $tab = 'view';
+            header(
+                'Location: '.ui_get_full_url(
+                    'index.php?sec=network&sec2=operation/agentes/pandora_networkmap&tab='.$tab.'&id_networkmap='.$id
+                )
+            );
+        }
     } else if ($update_empty_networkmap) {
         $id_group = (int) get_parameter('id_group', 0);
 
@@ -161,7 +171,10 @@ if (enterprise_installed()) {
         $description = get_parameter('description', '');
         $values['description'] = $description;
 
-        $dont_show_subgroups = 0;
+        $dont_show_subgroups = (int) get_parameter_checkbox(
+            'dont_show_subgroups',
+            0
+        );
         $node_radius = (int) get_parameter('node_radius', 40);
         $row = db_get_row('tmap', 'id', $id);
         $filter = json_decode($row['filter'], true);
@@ -189,9 +202,9 @@ if (enterprise_installed()) {
     }
 }
 
-$result_txt = '';
 // The networkmap doesn't exist yet
 if ($new_networkmap || $save_networkmap) {
+    $result_txt = '';
     if ($new_networkmap) {
         if ($networkmaps_write || $networkmaps_manage) {
             include 'pandora_networkmap.editor.php';
@@ -226,8 +239,8 @@ if ($new_networkmap || $save_networkmap) {
         $name = (string) get_parameter('name', '');
 
         // Default size values
-        $width = 4000;
-        $height = 4000;
+        $width = $config['networkmap_max_width'];
+        $height = $config['networkmap_max_width'];
 
         $method = (string) get_parameter('method', 'fdp');
 
@@ -240,12 +253,15 @@ if ($new_networkmap || $save_networkmap) {
             ''
         );
         $source = (string) get_parameter('source', 'group');
-        $dont_show_subgroups = (int) get_parameter('dont_show_subgroups', 0);
+        $dont_show_subgroups = (int) get_parameter_checkbox(
+            'dont_show_subgroups',
+            0
+        );
         $node_radius = (int) get_parameter('node_radius', 40);
         $description = get_parameter('description', '');
 
-        $offset_x = get_parameter('pos_x');
-        $offset_y = get_parameter('pos_y');
+        $offset_x = get_parameter('pos_x', 0);
+        $offset_y = get_parameter('pos_y', 0);
         $scale_z = get_parameter('scale_z', 0.5);
 
         $node_sep = get_parameter('node_sep', '0.25');
@@ -269,31 +285,31 @@ if ($new_networkmap || $save_networkmap) {
 
         switch ($method) {
             case 'twopi':
-                $values['generation_method'] = 2;
+                $values['generation_method'] = LAYOUT_RADIAL;
             break;
 
             case 'dot':
-                $values['generation_method'] = 1;
+                $values['generation_method'] = LAYOUT_FLAT;
             break;
 
             case 'circo':
-                $values['generation_method'] = 0;
+                $values['generation_method'] = LAYOUT_CIRCULAR;
             break;
 
             case 'neato':
-                $values['generation_method'] = 3;
+                $values['generation_method'] = LAYOUT_SPRING1;
             break;
 
             case 'fdp':
-                $values['generation_method'] = 4;
+                $values['generation_method'] = LAYOUT_SPRING2;
             break;
 
             case 'radial_dinamic':
-                $values['generation_method'] = 6;
+                $values['generation_method'] = LAYOUT_RADIAL_DYNAMIC;
             break;
 
             default:
-                $values['generation_method'] = 2;
+                $values['generation_method'] = LAYOUT_RADIAL;
             break;
         }
 
@@ -349,11 +365,25 @@ if ($new_networkmap || $save_networkmap) {
         $id = $result;
         define('_id_', $id);
 
-        $tab = 'view';
-
-        if ($values['generation_method'] == 6) {
-            $tab = 'r_dinamic';
-            define('_activeTab_', 'radial_dynamic');
+        if ($result !== false) {
+            $tab = 'view';
+            if ($values['generation_method'] == LAYOUT_RADIAL_DYNAMIC) {
+                $tab = 'r_dinamic';
+                define('_activeTab_', 'radial_dynamic');
+                $url = 'index.php?sec=network&sec2=operation/agentes/networkmap.dinamic&activeTab=radial_dynamic';
+                header(
+                    'Location: '.ui_get_full_url(
+                        $url.'&id_networkmap='.$id
+                    )
+                );
+            } else {
+                $url = 'index.php?sec=network&sec2=operation/agentes/pandora_networkmap';
+                header(
+                    'Location: '.ui_get_full_url(
+                        $url.'&tab='.$tab.'&id_networkmap='.$id
+                    )
+                );
+            }
         }
     }
 }
@@ -419,8 +449,8 @@ else if ($update_networkmap || $copy_networkmap || $delete) {
 
         $source = (string) get_parameter('source', 'group');
 
-        $offset_x = get_parameter('pos_x');
-        $offset_y = get_parameter('pos_y');
+        $offset_x = get_parameter('pos_x', 0);
+        $offset_y = get_parameter('pos_y', 0);
         $scale_z = get_parameter('scale_z', 0.5);
 
         $values = [];
@@ -712,6 +742,8 @@ switch ($tab) {
                     if (($count == 0) && ($network_map['source'] != 'empty')) {
                         if ($network_map['generated']) {
                             $data['nodes'] = __('Empty map');
+                        } else if ($network_map['generation_method'] == LAYOUT_RADIAL_DYNAMIC) {
+                            $data['nodes'] = __('Dynamic');
                         } else {
                             $data['nodes'] = __('Pending to generate');
                         }
@@ -756,4 +788,3 @@ switch ($tab) {
         }
     break;
 }
-

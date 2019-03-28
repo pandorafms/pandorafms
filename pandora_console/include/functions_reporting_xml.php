@@ -11,10 +11,10 @@
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-require_once 'include/functions_modules.php';
-require_once 'include/functions_events.php';
-require_once 'include/functions_groups.php';
-require_once 'include/functions_netflow.php';
+require_once __DIR__.'/functions_modules.php';
+require_once __DIR__.'/functions_events.php';
+require_once __DIR__.'/functions_groups.php';
+require_once __DIR__.'/functions_netflow.php';
 enterprise_include_once('include/functions_metaconsole.php');
 
 

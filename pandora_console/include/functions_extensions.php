@@ -178,7 +178,8 @@ function extensions_get_extensions($enterprise=false, $rel_path='')
 function extensions_is_enabled_extension($name)
 {
     global $config;
-    return isset($config['extensions'][$name]);
+    return isset($config['extensions'][$name])
+        || isset($config['extensions'][$name.'.php']);
 }
 
 
@@ -379,7 +380,18 @@ function extensions_load_extensions($process_login)
             // ~ }
         // ~ }
         // ~ else {
+        try {
             include_once $path_extension;
+        }
+
+        // PHP 7
+        catch (Throwable $e) {
+        }
+
+        // PHP 5
+        catch (Exception $e) {
+        }
+
         // ~ }
     }
 }

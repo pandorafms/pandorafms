@@ -53,6 +53,7 @@ email アクションを設定するには、_field1_ (送信先アドレス)、
     <li>_event_extra_id_: (イベントアラートのみ) 拡張 ID</li>
     <li>_event_id_ : (イベントアラートのみ) アラート発生元のイベントID</li>
     <li>_event_text_severity_ : (イベントアラートのみ) イベント(アラートの発生元)のテキストでの重要度 (Maintenance, Informational, Normal Minor, Warning, Major, Critical)</li>
+    <li>_eventTimestamp_: Timestamp in which the event was created.</li>
     <li>_field1_ : ユーザ定義フィールド1</li>
     <li>_field2_ : ユーザ定義フィールド2</li>
     <li>_field3_ : ユーザ定義フィールド3</li>

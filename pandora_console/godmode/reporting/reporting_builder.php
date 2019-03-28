@@ -1116,8 +1116,13 @@ switch ($action) {
                         $name_it = (string) get_parameter('name');
                         $values['name'] = reporting_label_macro($items_label, $name_it);
 
-                        // Added support for projection graphs, prediction date and SLA reports
-                        // 'top_n_value','top_n' and 'text' fields will be reused for these types of report
+                        /*
+                            Added support for projection graphs,
+                            prediction date and SLA reports
+                            'top_n_value','top_n' and 'text'
+                            fields will be reused for these types of report
+                        */
+
                         switch ($values['type']) {
                             case 'projection_graph':
                                 $values['period'] = get_parameter('period1');
@@ -1127,7 +1132,8 @@ switch ($action) {
                             break;
 
                             case 'event_report_log':
-                                $agents_to_report = get_parameter('id_agents2');
+
+                                $agents_to_report = get_parameter('id_agents3');
                                 $source = get_parameter('source', '');
                                 $search = get_parameter('search', '');
                                 $log_number = get_parameter('log_number', '');
@@ -1203,9 +1209,7 @@ switch ($action) {
                             break;
 
                             case 'netflow_area':
-                            case 'netflow_pie':
                             case 'netflow_data':
-                            case 'netflow_statistics':
                             case 'netflow_summary':
                                 $values['text'] = get_parameter('netflow_filter');
                                 $values['description'] = get_parameter('description');
@@ -1238,6 +1242,12 @@ switch ($action) {
                                 $values['lapse_calc'] = get_parameter('lapse_calc');
                                 $values['lapse'] = get_parameter('lapse');
                                 $values['visual_format'] = get_parameter('visual_format');
+                                $good_format = true;
+                            break;
+
+                            case 'nt_top_n':
+                                $values['period'] = get_parameter('period');
+                                $values['top_n_value'] = get_parameter('quantity');
                                 $good_format = true;
                             break;
 
@@ -1292,6 +1302,7 @@ switch ($action) {
                         $values['exception_condition_value'] = get_parameter('exception_condition_value');
                         $values['id_module_group'] = get_parameter('combo_modulegroup');
                         $values['id_group'] = get_parameter('combo_group');
+                        $values['show_extended_events'] = get_parameter('include_extended_events');
                         $values['server_name'] = get_parameter('server_name');
                         $server_id = (int) get_parameter('server_id');
                         if ($server_id != 0) {
@@ -1430,6 +1441,7 @@ switch ($action) {
                             case 'MTBF':
                             case 'MTTR':
                             case 'simple_baseline_graph':
+                            case 'nt_top_n':
                                 if ($label != '') {
                                     $style['label'] = $label;
                                 } else {
@@ -1525,7 +1537,7 @@ switch ($action) {
                             break;
 
                             case 'event_report_log':
-                                $agents_to_report = get_parameter('id_agents2');
+                                $agents_to_report = get_parameter('id_agents3');
                                 $source = get_parameter('source', '');
                                 $search = get_parameter('search', '');
                                 $log_number = get_parameter('log_number', '');
@@ -1570,9 +1582,7 @@ switch ($action) {
                             break;
 
                             case 'netflow_area':
-                            case 'netflow_pie':
                             case 'netflow_data':
-                            case 'netflow_statistics':
                             case 'netflow_summary':
                                 $values['text'] = get_parameter('netflow_filter');
                                 $values['description'] = get_parameter('description');
@@ -1608,6 +1618,12 @@ switch ($action) {
                                 $good_format = true;
                             break;
 
+                            case 'nt_top_n':
+                                $values['top_n_value'] = get_parameter('quantity');
+                                $values['period'] = get_parameter('period');
+                                $good_format = true;
+                            break;
+
                             default:
                                 $values['period'] = get_parameter('period');
                                 $values['top_n'] = get_parameter('radiobutton_max_min_avg', 0);
@@ -1631,17 +1647,6 @@ switch ($action) {
                         if ($values['server_name'] == '') {
                             $values['server_name'] = get_parameter('combo_server');
                         }
-
-
-                        if (is_metaconsole()) {
-                            // For SQL Query check if it is setted in the meta
-                            if ($values['type'] == 'sql') {
-                                if (empty($values['server_name'])) {
-                                    $good_format = false;
-                                }
-                            }
-                        }
-
 
                         $values['id_agent'] = get_parameter('id_agent');
                         $values['id_gs'] = get_parameter('id_custom_graph');
@@ -1694,6 +1699,7 @@ switch ($action) {
                         $values['exception_condition_value'] = get_parameter('exception_condition_value');
                         $values['id_module_group'] = get_parameter('combo_modulegroup');
                         $values['id_group'] = get_parameter('combo_group');
+                        $values['show_extended_events'] = get_parameter('include_extended_events');
 
 
                         if ((($values['type'] == 'custom_graph') or ($values['type'] == 'automatic_custom_graph')) && ($values['id_gs'] == 0 || $values['id_gs'] == '')) {
@@ -1814,6 +1820,7 @@ switch ($action) {
                             case 'MTBF':
                             case 'MTTR':
                             case 'simple_baseline_graph':
+                            case 'nt_top_n':
                                 if ($label != '') {
                                     $style['label'] = $label;
                                 } else {

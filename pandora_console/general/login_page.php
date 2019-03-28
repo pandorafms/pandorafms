@@ -82,42 +82,30 @@ if (!empty($page) && !empty($sec)) {
 }
 
 $login_body_style = '';
-// Overrides the default background with the defined by the user
+// Overrides the default background with the defined by the user.
 if (!empty($config['login_background'])) {
     $background_url = 'images/backgrounds/'.$config['login_background'];
-    $login_body_style = "style=\"background-image: url('$background_url');\"";
+    $login_body_style = "style=\"background:linear-gradient(74deg, #02020255 36%, transparent 36%), url('".$background_url."');\"";
 }
 
-// Get the custom icons
+// Get the custom icons.
 $docs_logo = ui_get_docs_logo();
 $support_logo = ui_get_support_logo();
 echo '<div id="login_body" '.$login_body_style.'>';
 echo '<div id="header_login">';
-    echo '<div id="icon_custom_pandora">';
 
-if (file_exists(ENTERPRISE_DIR.'/load_enterprise.php')) {
-    if (isset($config['custom_logo'])) {
-        echo '<img src="enterprise/images/custom_logo/'.$config['custom_logo'].'" alt="monitoring_console">';
-    } else {
-        echo '<img src="images/custom_logo/pandora_logo_head_4.png" alt="monitoring_console">';
-    }
-} else {
-    echo '<img src="images/custom_logo/pandora_logo_head_3.png" alt="monitoring_console">';
-}
-
-    echo '</div>';
-        echo '<div id="list_icon_docs_support"><ul style="line-height: 36px;">';
+        echo '<div id="list_icon_docs_support"><ul>';
 if ($docs_logo !== false) {
     echo '<li><a href="'.$config['custom_docs_url'].'" target="_blank"><img src="'.$docs_logo.'" alt="docs"></a></li>';
 }
 
-            echo '<li><a style="color: white; font-size:inherit;" href="'.$config['custom_docs_url'].'" target="_blank">'.__('Docs').'</li>';
+            echo '<li><a href="'.$config['custom_docs_url'].'" target="_blank">'.__('Docs').'</li>';
 if (file_exists(ENTERPRISE_DIR.'/load_enterprise.php')) {
     if ($support_logo !== false) {
         echo '<li id="li_margin_left"><a href="'.$config['custom_support_url'].'" target="_blank"><img src="'.$support_logo.'" alt="support"></a></li>';
     }
 
-    echo '<li><a style="color: white; font-size:inherit;" href="'.$config['custom_support_url'].'" target="_blank">'.__('Support').'</li>';
+    echo '<li><a href="'.$config['custom_support_url'].'" target="_blank">'.__('Support').'</li>';
 } else {
     echo '<li id="li_margin_left"><a href="https://pandorafms.com/monitoring-services/support/" target="_blank"><img src="'.$support_logo.'" alt="support"></a></li>';
     echo '<li>'.__('Support').'</li>';
@@ -151,7 +139,8 @@ if (defined('METACONSOLE')) {
         html_print_image('images/custom_logo_login/'.$config['custom_logo_login'], false, ['class' => 'login_logo', 'alt' => 'logo', 'border' => 0, 'title' => $logo_title], false, true);
     }
 
-    echo "<br><span style='font-size:120%;color:white;top:10px;position:relative;'>Community edition</span>";
+    // I comment this in case in the future we put a logo without text.
+    // echo "<br><span style='font-size:120%;color:white;top:10px;position:relative;'>Community edition</span>";.
 }
 
         echo '</a></div>';
@@ -167,9 +156,6 @@ switch ($login_screen) {
 
         if ($config['auth'] == 'saml') {
             echo '<div id="log_nick" class="login_nick" style="display: none;">';
-                echo '<div>';
-                    html_print_image('/images/usuario_login.png', false);
-                echo '</div>';
                 html_print_input_text_extended(
                     'nick',
                     '',
@@ -184,9 +170,6 @@ switch ($login_screen) {
             echo '</div>';
 
             echo '<div id="log_pass" class="login_pass" style="display: none;">';
-                echo '<div>';
-                    html_print_image('/images/candado_login.png', false);
-                echo '</div>';
                 html_print_input_text_extended(
                     'pass',
                     '',
@@ -202,54 +185,48 @@ switch ($login_screen) {
                 );
             echo '</div>';
 
-            echo '<div id="log_button" class="login_button" style="display: none; margin-bottom: 20px;">';
+            echo '<div id="log_button" class="login_button" style="display: none;">';
                 html_print_submit_button(__('Login as admin'), 'login_button', false, 'class="sub next_login"');
             echo '</div>';
 
-            echo '<div class="login_button" id="remove_button" style="margin-bottom: 20px;">';
+            echo '<div class="login_button" id="remove_button">';
                 echo '<input type="button" id="input_saml" value="Login as admin" onclick="show_normal_menu()">';
             echo '</div>';
 
-            echo '<div class="login_button">';
+            echo '<div class="login_button login_button_saml">';
                 html_print_submit_button(__('Login with SAML'), 'login_button_saml', false, '');
             echo '</div>';
         } else {
             echo '<div class="login_nick">';
-            echo '<div>';
-                html_print_image('/images/usuario_login.png', false);
-            echo '</div>';
-            html_print_input_text_extended(
-                'nick',
-                '',
-                'nick',
-                '',
-                '',
-                '',
-                false,
-                '',
-                'autocomplete="off" placeholder="'.__('User').'"'
-            );
+                html_print_input_text_extended(
+                    'nick',
+                    '',
+                    'nick',
+                    '',
+                    '',
+                    '',
+                    false,
+                    '',
+                    'autocomplete="off" placeholder="'.__('User').'"'
+                );
             echo '</div>';
             echo '<div class="login_pass">';
-            echo '<div>';
-                html_print_image('/images/candado_login.png', false);
-            echo '</div>';
-            html_print_input_text_extended(
-                'pass',
-                '',
-                'pass',
-                '',
-                '',
-                '',
-                false,
-                '',
-                'autocomplete="off" placeholder="'.__('Password').'"',
-                false,
-                true
-            );
+                html_print_input_text_extended(
+                    'pass',
+                    '',
+                    'pass',
+                    '',
+                    '',
+                    '',
+                    false,
+                    '',
+                    'autocomplete="off" placeholder="'.__('Password').'"',
+                    false,
+                    true
+                );
             echo '</div>';
             echo '<div class="login_button">';
-            html_print_submit_button(__('Login'), 'login_button', false, 'class="sub next_login"');
+                html_print_submit_button(__('Login'), 'login_button', false, 'class="sub next_login"');
             echo '</div>';
         }
     break;
@@ -289,9 +266,9 @@ switch ($login_screen) {
 if ($config['enterprise_installed']) {
     if ($config['reset_pass_option']) {
         $reset_pass_link = 'reset_pass.php';
-        // Reset password link
-        echo '<div style="width:70%; height:40px; margin-right:auto; margin-left:auto; margin-top:20px; text-align:center;">';
-        echo '<a style="color: white !important;" href="index.php?reset=true&first=true">'.__('Forgot your password?');
+        // Reset password link.
+        echo '<div class="reset_password">';
+        echo '<a href="index.php?reset=true&first=true">'.__('Forgot your password?');
         echo '</a>';
         echo '</div>';
     }
@@ -328,12 +305,12 @@ if (file_exists(ENTERPRISE_DIR.'/load_enterprise.php')) {
         echo '<div class ="img_banner_login">';
 if (file_exists(ENTERPRISE_DIR.'/load_enterprise.php')) {
     if (isset($config['custom_splash_login'])) {
-        html_print_image('enterprise/images/custom_splash_login/'.$config['custom_splash_login'], false, [ 'alt' => 'splash', 'border' => 0, 'title' => $splash_title], false, true);
+        html_print_image('enterprise/images/custom_splash_login/'.$config['custom_splash_login'], false, [ 'alt' => 'splash', 'border' => 0], false, true);
     } else {
-        html_print_image('enterprise/images/custom_splash_login/splash_image_default.png', false, ['alt' => 'logo', 'border' => 0, 'title' => $splash_title], false, true);
+        html_print_image('enterprise/images/custom_splash_login/splash_image_default.png', false, ['alt' => 'logo', 'border' => 0], false, true);
     }
 } else {
-    html_print_image('images/splash_image_default.png', false, ['alt' => 'logo', 'border' => 0, 'title' => $splash_title], false, true);
+    html_print_image('images/splash_image_default.png', false, ['alt' => 'logo', 'border' => 0], false, true);
 }
 
         echo '</div>';
@@ -544,7 +521,7 @@ ui_require_jquery_file('jquery-ui.min');
 ?>
 
 <?php
-// Hidden div to forced title
+// Hidden div to forced title.
 html_print_div(['id' => 'forced_title_layer', 'class' => 'forced_title_layer', 'hidden' => true]);
 
 // html_print_div(array('id' => 'modal_alert', 'hidden' => true));

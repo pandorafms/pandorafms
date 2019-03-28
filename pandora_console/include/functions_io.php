@@ -541,7 +541,7 @@ function io_input_password($password)
     global $config;
 
     enterprise_include_once('include/functions_crypto.php');
-    $ciphertext = enterprise_hook('openssl_encrypt_decrypt', ['encrypt', $password]);
+    $ciphertext = enterprise_hook('openssl_encrypt_decrypt', ['encrypt', io_safe_output($password)]);
     if ($ciphertext === ENTERPRISE_NOT_HOOK) {
             return $password;
     }
@@ -563,7 +563,7 @@ function io_output_password($password)
     global $config;
 
     enterprise_include_once('include/functions_crypto.php');
-    $plaintext = enterprise_hook('openssl_encrypt_decrypt', ['decrypt', $password]);
+    $plaintext = enterprise_hook('openssl_encrypt_decrypt', ['decrypt', io_safe_output($password)]);
     if ($plaintext === ENTERPRISE_NOT_HOOK) {
             return $password;
     }

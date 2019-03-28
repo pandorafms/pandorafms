@@ -54,7 +54,8 @@ AGENT_WIN_FILE="$CODEHOME/pandora_agents/win32/pandora.cc"
 AGENT_WIN_MPI_FILE="$CODEHOME/pandora_agents/win32/installer/pandora.mpi"
 AGENT_WIN_RC_FILE="$CODEHOME/pandora_agents/win32/versioninfo.rc"
 SATELLITE_FILE="$PANDHOME_ENT/satellite_server/satellite_server.pl"
-PERL_PLUGIN_FILES="$PANDHOME_ENT/pandora_server/util/plugin/vmware-plugin.pl \
+PERL_PLUGIN_FILES="$PANDHOME_ENT/pandora_server/util/recon_script/vmware-plugin.pl \
+$PANDHOME_ENT/pandora_server/util/recon_script/pcm_client.pl \
 $PANDHOME_ENT/pandora_plugins/NGINX/nginx_requests_queued.pl \
 $PANDHOME_ENT/pandora_plugins/Sybase/sybase_plugin.pl \
 $PANDHOME_ENT/pandora_plugins/SNMP/dynamic_snmp.pl \
@@ -171,8 +172,8 @@ echo "Updating Pandora Console version..."
 sed -i -e "s/\s*\$pandora_version\s*=.*/\$pandora_version = 'v$VERSION';/" "$CONSOLE_FILE"
 sed -i -e "s/\s*\$build_version\s*=.*/\$build_version = 'PC$BUILD';/" "$CONSOLE_FILE"
 echo "Updating Pandora Console installer version..."
-sed -i -e "s/\s*\$version\s*=.*/\$version = '$VERSION';/" "$CONSOLE_INSTALL_FILE"
-sed -i -e "s/\s*\$build\s*=.*/\$build = '$BUILD';/" "$CONSOLE_INSTALL_FILE"
+sed -i -e "s/\(\s*\$version\s*=\s\).*/\1'$VERSION';/" "$CONSOLE_INSTALL_FILE"
+sed -i -e "s/\(\s*\$build\s*=\s\).*/\1'$BUILD';/" "$CONSOLE_INSTALL_FILE"
 echo "Setting develop_bypass to 0..."
 sed -i -e "s/\s*if\s*(\s*[!]\s*isset\s*(\s*$develop_bypass\s*)\s*)\s*$develop_bypass\s*=.*/if ([!]isset($develop_bypass)) $develop_bypass = 0;/" "$CONSOLE_FILE"
 

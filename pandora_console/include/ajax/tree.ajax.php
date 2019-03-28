@@ -43,6 +43,7 @@ if (is_ajax()) {
     include_once $config['homedir'].'/include/class/TreeModule.class.php';
     include_once $config['homedir'].'/include/class/TreeTag.class.php';
     include_once $config['homedir'].'/include/class/TreeGroup.class.php';
+    include_once $config['homedir'].'/include/class/TreeService.class.php';
     include_once $config['homedir'].'/include/class/TreeGroupEdition.class.php';
     enterprise_include_once('include/class/TreePolicies.class.php');
     enterprise_include_once('include/class/TreeGroupMeta.class.php');
@@ -120,6 +121,10 @@ if (is_ajax()) {
                 $tree = new TreeGroupEdition($type, $rootType, $id, $rootID, $serverID, $childrenMethod, $access);
             break;
 
+            case 'services':
+                $tree = new TreeService($type, $rootType, $id, $rootID, $serverID, $childrenMethod, $access);
+            break;
+
             default:
                 // FIXME. No error handler
             return;
@@ -127,6 +132,7 @@ if (is_ajax()) {
 
         $tree->setFilter($filter);
         ob_clean();
+
         echo json_encode(['success' => 1, 'tree' => $tree->getArray()]);
         return;
     }

@@ -33,7 +33,7 @@ use PandoraFMS::Core;
 use PandoraFMS::DataServer;
 use PandoraFMS::NetworkServer;
 use PandoraFMS::SNMPServer;
-use PandoraFMS::ReconServer;
+use PandoraFMS::DiscoveryServer;
 use PandoraFMS::WMIServer;
 use PandoraFMS::PluginServer;
 use PandoraFMS::PredictionServer;
@@ -123,7 +123,7 @@ sub pandora_startup () {
 		pandora_reset_server (\%Config, $DBH);
 		push (@Servers, new PandoraFMS::DataServer (\%Config, $DBH));
 		push (@Servers, new PandoraFMS::NetworkServer (\%Config, $DBH));
-		push (@Servers, new PandoraFMS::ReconServer (\%Config, $DBH));
+		push (@Servers, new PandoraFMS::DiscoveryServer (\%Config, $DBH));
 		push (@Servers, new PandoraFMS::SNMPServer (\%Config, $DBH));
 		push (@Servers, new PandoraFMS::WMIServer (\%Config, $DBH));
 		push (@Servers, new PandoraFMS::PluginServer (\%Config, $DBH));
@@ -306,7 +306,7 @@ sub pandora_server_tasks ($) {
 			if (($counter % 30) == 0) {
 
 				# Update module status and fired alert counts
-				my @agents = get_db_rows ($dbh, 'SELECT id_agente, nombre, update_module_count, update_alert_count, update_secondary_groups FROM tagente WHERE disabled = 0 AND (update_module_count=1 OR update_alert_count=1 OR update_secondary_groups=1)');
+				my @agents = get_db_rows ($dbh, 'SELECT id_agente, nombre, update_module_count, update_alert_count, update_secondary_groups FROM tagente WHERE (update_module_count=1 OR update_alert_count=1 OR update_secondary_groups=1)');
 				foreach my $agent (@agents) {
 					logger ($pa_config, "Updating module status and fired alert counts for agent " . $agent->{'nombre'}, 10);
 					

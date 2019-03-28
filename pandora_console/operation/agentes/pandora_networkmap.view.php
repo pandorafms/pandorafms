@@ -1,27 +1,44 @@
 <?php
-// ______                 __                     _______ _______ _______
-// |   __ \.---.-.-----.--|  |.-----.----.---.-. |    ___|   |   |     __|
-// |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
-// |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
-//
-// ============================================================================
-// Copyright (c) 2007-2010 Artica Soluciones Tecnologicas, http://www.artica.es
-// This code is NOT free software. This code is NOT licenced under GPL2 licence
-// You cannnot redistribute it without written permission of copyright holder.
-// ============================================================================
-// Load global variables
+/**
+ * Extension to manage a list of gateways and the node address where they should
+ * point to.
+ *
+ * @category   Extensions
+ * @package    Pandora FMS
+ * @subpackage Community
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
+
 global $config;
 
-require_once 'include/functions_pandora_networkmap.php';
+require_once 'include/functions_networkmap.php';
 enterprise_include_once('include/functions_policies.php');
 enterprise_include_once('include/functions_dashboard.php');
 require_once 'include/functions_modules.php';
 
 $public_hash = get_parameter('hash', false);
 
-// Try to authenticate by hash on public dashboards
+// Try to authenticate by hash on public dashboards.
 if ($public_hash === false) {
-    // Login check
+    // Login check.
     check_login();
 } else {
     $validate_hash = enterprise_hook(
@@ -33,7 +50,10 @@ if ($public_hash === false) {
         ]
     );
     if ($validate_hash === false || $validate_hash === ENTERPRISE_NOT_HOOK) {
-        db_pandora_audit('Invalid public hash', 'Trying to access report builder');
+        db_pandora_audit(
+            'Invalid public hash',
+            'Trying to access report builder'
+        );
         include 'general/noaccess.php';
         exit;
     }
@@ -59,6 +79,10 @@ if (is_ajax()) {
 
     if ($module_get_status) {
         $id = (int) get_parameter('id', 0);
+
+        if ($id == 0) {
+            return;
+        }
 
         $return = [];
         $return['correct'] = true;
@@ -117,7 +141,7 @@ if (is_ajax()) {
         );
         $row['style'] = json_decode($row['style'], true);
         $row['style']['shape'] = $shape;
-        // WORK AROUND FOR THE JSON ENCODE WITH FOR EXAMPLE Ñ OR Á
+        // WORK AROUND FOR THE JSON ENCODE WITH FOR EXAMPLE Ñ OR Á.
         $row['style']['label'] = 'json_encode_crash_with_ut8_chars';
         $row['style']['color'] = $color;
         $row['style']['networkmap'] = $networkmap;
@@ -215,52 +239,17 @@ if (is_ajax()) {
     if ($get_tooltip_content) {
         $id = (int) get_parameter('id', 0);
 
-        // Get all module from agent
-        switch ($config['dbtype']) {
-            case 'mysql':
-            case 'postgresql':
-                $sql = sprintf(
-                    '
-					SELECT *
-					FROM tagente_estado, tagente_modulo
-						LEFT JOIN tmodule_group
-						ON tmodule_group.id_mg = tagente_modulo.id_module_group
-					WHERE tagente_modulo.id_agente_modulo = '.$id.'
-						AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
-						AND tagente_modulo.disabled = 0
-						AND tagente_modulo.delete_pending = 0
-						AND tagente_estado.utimestamp != 0'
-                );
-            break;
-
-            // If Dbms is Oracle then field_list in sql statement has to be recoded. See oracle_list_all_field_table()
-            case 'oracle':
-                $fields_tagente_estado = oracle_list_all_field_table(
-                    'tagente_estado',
-                    'string'
-                );
-                $fields_tagente_modulo = oracle_list_all_field_table(
-                    'tagente_modulo',
-                    'string'
-                );
-                $fields_tmodule_group = oracle_list_all_field_table(
-                    'tmodule_group',
-                    'string'
-                );
-
-                $sql = sprintf(
-                    '
-					SELECT '.$fields_tagente_estado.', '.$fields_tagente_modulo.', '.$fields_tmodule_group.' FROM tagente_estado, tagente_modulo
-						LEFT JOIN tmodule_group
-						ON tmodule_group.id_mg = tagente_modulo.id_module_group
-					WHERE tagente_modulo.id_agente_modulo = '.$id.'
-						AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
-						AND tagente_modulo.disabled = 0
-						AND tagente_modulo.delete_pending = 0
-						AND tagente_estado.utimestamp != 0'
-                );
-            break;
-        }
+        $sql = sprintf(
+            'SELECT *
+            FROM tagente_estado, tagente_modulo
+                LEFT JOIN tmodule_group
+                ON tmodule_group.id_mg = tagente_modulo.id_module_group
+            WHERE tagente_modulo.id_agente_modulo = '.$id.'
+                AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
+                AND tagente_modulo.disabled = 0
+                AND tagente_modulo.delete_pending = 0
+                AND tagente_estado.utimestamp != 0'
+        );
 
         $modules = db_get_all_rows_sql($sql);
         if (empty($modules)) {
@@ -377,7 +366,7 @@ if (is_ajax()) {
         $return['content'] .= '<b>'.__('Status: ').'</b>'.ui_print_status_image($status, $title, true).'<br />';
 
         if ($module['id_tipo_modulo'] == 24) {
-            // log4x
+            // Log4x.
             switch ($module['datos']) {
                 case 10:
                     $salida = 'TRACE';
@@ -410,7 +399,7 @@ if (is_ajax()) {
                 break;
             }
 
-            $salida = "<span style='$style'>$salida</span>";
+            $salida = "<span style='".$style."'>".$salida.'</span>';
         } else {
             if (is_numeric($module['datos'])) {
                 $salida = format_numeric($module['datos']);
@@ -513,7 +502,7 @@ if (is_ajax()) {
         include_once 'include/functions_agents.php';
 
         $id = (int) get_parameter('id', 0);
-        // q is what autocomplete plugin gives
+        // Q is what autocomplete plugin gives.
         $string = (string) get_parameter('q');
 
         $agents = db_get_all_rows_filter(
@@ -586,8 +575,7 @@ if (is_ajax()) {
 
         $filter = json_encode($array_filter);
 
-        // ACL for the network map
-        // $networkmap_read = check_acl ($config['id_user'], $networkmap['id_group'], "MR");
+        // ACL for the network map.
         $networkmap_write = check_acl($config['id_user'], $networkmap['id_group'], 'MW');
         $networkmap_manage = check_acl($config['id_user'], $networkmap['id_group'], 'MM');
 
@@ -641,7 +629,7 @@ if (is_ajax()) {
         return;
     }
 
-    // Popup
+    // Popup.
     $get_status_node = (bool) get_parameter('get_status_node', false);
     $get_status_module = (bool) get_parameter(
         'get_status_module',
@@ -763,19 +751,16 @@ if (is_ajax()) {
 }
 
 // --------------END AJAX------------------------------------------------
-if (_id_ != '_id_') {
-    $id = _id_;
-} else {
-    $id = (int) get_parameter('id_networkmap', 0);
-}
+$id = (int) get_parameter('id_networkmap', 0);
 
-// Print some params to handle it in js
+// Print some params to handle it in js.
 html_print_input_hidden('product_name', get_product_name());
 html_print_input_hidden('center_logo', ui_get_full_url(ui_get_logo_to_center_networkmap()));
 
 $dash_mode = 0;
 $map_dash_details = [];
 $networkmap = db_get_row('tmap', 'id', $id);
+
 if (enterprise_installed()) {
     include_once 'enterprise/dashboard/widgets/network_map.php';
     if ($id_networkmap) {
@@ -787,7 +772,6 @@ if (enterprise_installed()) {
         $map_dash_details['x_offs'] = $x_offs;
         $map_dash_details['y_offs'] = $y_offs;
         $map_dash_details['z_dash'] = $z_dash;
-
         $networkmap = db_get_row('tmap', 'id', $id);
     } else {
         $networkmap_filter = json_decode($networkmap['filter'], true);
@@ -823,7 +807,7 @@ if ($networkmap === false) {
 
     return;
 } else {
-    // ACL for the network map
+    // ACL for the network map.
     $networkmap_read = check_acl($config['id_user'], $networkmap['id_group'], 'MR');
     $networkmap_write = check_acl($config['id_user'], $networkmap['id_group'], 'MW');
     $networkmap_manage = check_acl($config['id_user'], $networkmap['id_group'], 'MM');
@@ -841,11 +825,11 @@ if ($networkmap === false) {
 
     $pure = (int) get_parameter('pure', 0);
 
-    // Main code
+    // Main code.
     if ($pure == 1) {
         $buttons['screen'] = [
             'active' => false,
-            'text'   => '<a href="index.php?sec=networkmapconsole&amp;'.'sec2=operation/agentes/pandora_networkmap&amp;'.'tab=view&amp;id_networkmap='.$id.'">'.html_print_image(
+            'text'   => '<a href="index.php?sec=networkmapconsole&amp;sec2=operation/agentes/pandora_networkmap&amp;tab=view&amp;id_networkmap='.$id.'">'.html_print_image(
                 'images/normal_screen.png',
                 true,
                 ['title' => __('Normal screen')]
@@ -855,7 +839,7 @@ if ($networkmap === false) {
         if (!$dash_mode) {
             $buttons['screen'] = [
                 'active' => false,
-                'text'   => '<a href="index.php?sec=networkmapconsole&amp;'.'sec2=operation/agentes/pandora_networkmap&amp;'.'pure=1&amp;tab=view&amp;id_networkmap='.$id.'">'.html_print_image(
+                'text'   => '<a href="index.php?sec=networkmapconsole&amp;sec2=operation/agentes/pandora_networkmap&amp;pure=1&amp;tab=view&amp;id_networkmap='.$id.'">'.html_print_image(
                     'images/full_screen.png',
                     true,
                     ['title' => __('Full screen')]
@@ -863,7 +847,7 @@ if ($networkmap === false) {
             ];
             $buttons['list'] = [
                 'active' => false,
-                'text'   => '<a href="index.php?sec=networkmapconsole&amp;'.'sec2=operation/agentes/pandora_networkmap">'.html_print_image(
+                'text'   => '<a href="index.php?sec=networkmapconsole&amp;sec2=operation/agentes/pandora_networkmap">'.html_print_image(
                     'images/list.png',
                     true,
                     ['title' => __('List of networkmap')]
@@ -886,30 +870,29 @@ if ($networkmap === false) {
         );
     }
 
-    $nodes_and_relations = networkmap_process_networkmap($id);
+    include_once $config['homedir'].'/include/class/NetworkMap.class.php';
 
-    show_networkmap($id, $user_readonly, $nodes_and_relations, $dash_mode, $map_dash_details);
+    $map_manager = new NetworkMap(
+        [ 'id_map' => $networkmap['id']]
+    );
+
+    $map_manager->printMap();
 }
 ?>
 
 <script>
 $(document).ready(function() {
     $("*").on("click", function(){
-            if($("[aria-describedby=dialog_node_edit]").css('display') == 'block'){
-            $('#foot').css({'top':parseInt($("[aria-describedby=dialog_node_edit]").css('height')+$("[aria-describedby=dialog_node_edit]").css('top')),'position':'relative'});    
-            
-        }
-        else{
-            $('#foot').css({'position':'','top':'0'});
-        }
-    
-    
+    if($("[aria-describedby=dialog_node_edit]").css('display') == 'block'){
+        $('#foot').css({'top':parseInt($("[aria-describedby=dialog_node_edit]").css('height')+$("[aria-describedby=dialog_node_edit]").css('top')),'position':'relative'});
+    }
+    else{
+        $('#foot').css({'position':'','top':'0'});
+    }
 });
 
 $("[aria-describedby=dialog_node_edit]").on('dialogclose', function(event) {
-    
-     $('#foot').css({'position':'','top':'0'});
-    
+    $('#foot').css({'position':'','top':'0'});
 });
 
 

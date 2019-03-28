@@ -245,7 +245,9 @@ function grafico_modulo_sparse_data(
         }
     }
 
-    if ($array_data === false || (!$params['graph_combined'] && !isset($array_data['sum1']['data'][0][1]))) {
+    if ($array_data === false || (!$params['graph_combined']
+        && !isset($array_data['sum1']['data'][0][1]) && !$params['baseline'])
+    ) {
         return false;
     }
 
@@ -531,7 +533,8 @@ function grafico_modulo_sparse_data(
         'image_treshold'      => false,
         'graph_combined'      => false,
         'zoom'                => 1,
-        'server_id'           => null
+        'server_id'           => null,
+        'stacked'             => 0,
     );
 */
 function grafico_modulo_sparse($params)
@@ -545,12 +548,6 @@ function grafico_modulo_sparse($params)
 
     if (!isset($params) || !is_array($params)) {
         return false;
-    }
-
-    if (!isset($params['agent_module_id'])) {
-        return false;
-    } else {
-        $agent_module_id = $params['agent_module_id'];
     }
 
     if (!isset($params['period'])) {
@@ -706,6 +703,16 @@ function grafico_modulo_sparse($params)
 
     if (!isset($params['projection'])) {
         $params['projection'] = false;
+    }
+
+    if (!isset($params['agent_module_id'])) {
+        return graph_nodata_image($params['width'], $params['height']);
+    } else {
+        $agent_module_id = $params['agent_module_id'];
+    }
+
+    if (!isset($params['stacked'])) {
+        $params['stacked'] = 0;
     }
 
     // XXXX Configurable
@@ -1316,6 +1323,10 @@ function graphic_combined_module(
             $array_data = [];
 
             foreach ($module_list as $key => $agent_module_id) {
+                if ((bool) $agent_module_id === false) {
+                    continue;
+                }
+
                 if (is_metaconsole() && $params_combined['type_report'] == 'automatic_graph') {
                     $server = metaconsole_get_connection_by_id($agent_module_id['server']);
                     if (metaconsole_connect($server) != NOERR) {
@@ -1390,6 +1401,15 @@ function graphic_combined_module(
                 if (is_metaconsole() && $params_combined['type_report'] == 'automatic_graph') {
                     metaconsole_restore_db();
                 }
+            }
+
+            if (empty($array_data)) {
+                if ($params_combined['return']) {
+                    return graph_nodata_image($width, $height);
+                }
+
+                echo graph_nodata_image($width, $height);
+                return false;
             }
 
             if ($params_combined['projection']) {
@@ -4089,7 +4109,7 @@ function fullscale_data(
 /**
  * Print an area graph with netflow aggregated
  */
-function graph_netflow_aggregate_area($data, $period, $width, $height, $unit='', $ttl=1, $only_image=false)
+function graph_netflow_aggregate_area($data, $period, $width, $height, $ttl=1, $only_image=false, $date=null)
 {
     global $config;
     global $graphic_type;
@@ -4135,7 +4155,7 @@ function graph_netflow_aggregate_area($data, $period, $width, $height, $unit='',
         'period'            => $period,
         'width'             => '90%',
         'height'            => 450,
-        'unit'              => $unit,
+        'unit'              => 'bytes',
         'only_image'        => $only_image,
         'homeurl'           => $homeurl,
         'menu'              => true,
@@ -4144,6 +4164,10 @@ function graph_netflow_aggregate_area($data, $period, $width, $height, $unit='',
         'font'              => $config['fontpath'],
         'font_size'         => $config['font_size'],
         'array_data_create' => $chart,
+        'stacked'           => 1,
+        'date'              => $date,
+        'show_export_csv'   => false,
+        'show_overview'     => false,
     ];
 
     return grafico_modulo_sparse($params);
@@ -4265,9 +4289,16 @@ function graph_netflow_aggregate_pie($data, $aggregate, $ttl=1, $only_image=fals
 
 
 /**
- * Print a circular graph with the data transmitted between IPs
+ * Print a circular mesh array.
+ *
+ * @param array $data Array with properly data structure. Array with two
+ *      elements required:
+ *          'elements': Non-associative array with all the relationships.
+ *          'matrix': Array of arrays with value of the relationship.
+ *
+ * @return string HTML data.
  */
-function graph_netflow_circular_mesh($data, $unit, $radius=700)
+function graph_netflow_circular_mesh($data)
 {
     global $config;
 
@@ -4277,14 +4308,14 @@ function graph_netflow_circular_mesh($data, $unit, $radius=700)
 
     include_once $config['homedir'].'/include/graphs/functions_d3.php';
 
-    return d3_relationship_graph($data['elements'], $data['matrix'], $unit, $radius, true);
+    return d3_relationship_graph($data['elements'], $data['matrix'], 700, true);
 }
 
 
 /**
  * Print a rectangular graph with the traffic of the ports for each IP
  */
-function graph_netflow_host_traffic($data, $unit, $width=700, $height=700)
+function graph_netflow_host_traffic($data, $width=700, $height=700)
 {
     global $config;
 
@@ -4918,21 +4949,19 @@ function get_baseline_data($agent_module_id, $date_array, $data_module_graph, $p
     $period = $date_array['period'];
     $date = $date_array['final_date'];
     $array_data = [];
+
     for ($i = 0; $i < 4; $i++) {
         $date_array = [];
         $date_array['period']     = $period;
-        $date_array['final_date'] = ($date - $period * $i);
-        $date_array['start_date'] = ($date - $period * ($i + 1));
-
-        $data = grafico_modulo_sparse_data(
+        $date_array['final_date'] = ($date - ($period * $i));
+        $date_array['start_date'] = ($date - ($period * ($i + 1)));
+        $array_data[] = grafico_modulo_sparse_data(
             $agent_module_id,
             $date_array,
             $data_module_graph,
             $params,
             $i
         );
-
-        $array_data[] = $data;
     }
 
     $result = [];

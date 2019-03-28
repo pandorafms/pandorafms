@@ -434,15 +434,15 @@ function agents_get_agents(
     $filter_nogroup = $filter;
 
     // Get user groups
-    $groups = array_keys(users_get_groups($config['id_user'], $access, true));
+    $groups = array_keys(users_get_groups($config['id_user'], $access, false));
 
     // If no group specified, get all user groups
-    if (isset($filter['id_grupo']) === false) {
+    if (empty($filter['id_grupo'])) {
         $all_groups = true;
         $filter['id_grupo'] = $groups;
     } else if (! is_array($filter['id_grupo'])) {
         $all_groups = false;
-        // If group is specified but not allowed, return false.
+        // If group is specified but not allowed, return false
         if (! in_array($filter['id_grupo'], $groups)) {
             return false;
         }
@@ -465,6 +465,11 @@ function agents_get_agents(
     }
 
     $filter['id_group'] = $filter['id_grupo'];
+
+    if (in_array(0, $filter['id_grupo'])) {
+        unset($filter['id_grupo']);
+        unset($filter['id_group']);
+    }
 
     if (!is_array($fields)) {
         $fields = [];

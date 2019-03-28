@@ -6,7 +6,7 @@
   position: absolute;
 }
 
-.visual-console-item > * {
+.visual-console-item-content > * {
   width: inherit;
   height: inherit;
 }

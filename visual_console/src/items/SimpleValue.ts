@@ -97,7 +97,8 @@ export default class SimpleValue extends Item<SimpleValueProps> {
       img.src = this.props.value;
       element.append(img);
     } else {
-      element.innerHTML = this.props.label || "";
+      // The content of this item is already shown into the label container.
+      // element.innerHTML = this.props.label || "";
     }
 
     return element;

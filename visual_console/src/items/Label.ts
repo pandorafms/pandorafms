@@ -28,7 +28,8 @@ export default class Label extends Item<LabelProps> {
   public createDomElement(): HTMLElement {
     const element = document.createElement("div");
     element.className = "label";
-    element.innerHTML = this.props.label || "";
+    // The content of this item is already shown into the label container.
+    // element.innerHTML = this.props.label || "";
 
     return element;
   }

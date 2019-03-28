@@ -82,7 +82,6 @@ export function itemBasePropsDecoder(data: UnknownObject): ItemProps | never {
   if (data.id == null || isNaN(parseInt(data.id))) {
     throw new TypeError("invalid id.");
   }
-  // TODO: Check for valid types.
   if (data.type == null || isNaN(parseInt(data.type))) {
     throw new TypeError("invalid type.");
   }
@@ -101,11 +100,16 @@ export function itemBasePropsDecoder(data: UnknownObject): ItemProps | never {
   };
 }
 
+/**
+ * Base class of the visual console items. Should be extended to use its capabilities.
+ */
 abstract class VisualConsoleItem<Props extends ItemProps> {
   // Properties of the item.
   private itemProps: Props;
   // Reference to the DOM element which will contain the item.
   public readonly elementRef: HTMLElement;
+  private readonly labelElementRef: HTMLElement;
+  private readonly contentElementRef: HTMLElement;
   // Reference to the DOM element which will contain the view of the item which extends this class.
   protected readonly childElementRef: HTMLElement;
   // Event manager for click events.
@@ -129,6 +133,10 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
      * when hovered, etc.
      */
     this.elementRef = this.createContainerDomElement();
+    this.contentElementRef = document.createElement("div");
+    this.contentElementRef.className = "visual-console-item-content";
+    this.labelElementRef = document.createElement("div");
+    this.labelElementRef.className = "visual-console-item-label";
 
     /*
      * Get a HTMLElement which represents the custom view
@@ -137,9 +145,14 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
      */
     this.childElementRef = this.createDomElement();
 
+    // Add the label if it exists.
+    if (this.props.label && this.props.label.length) {
+      this.labelElementRef.innerHTML = this.props.label;
+    }
+
     // Insert the elements into the container.
-    // Visual Console Item Container > Custom Item View.
-    this.elementRef.append(this.childElementRef);
+    this.contentElementRef.append(this.childElementRef);
+    this.elementRef.append(this.contentElementRef, this.labelElementRef);
   }
 
   /**
@@ -154,7 +167,7 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
     box.style.left = `${this.props.x}px`;
     box.style.top = `${this.props.y}px`;
     box.onclick = () => this.clickEventManager.emit({ data: this.props });
-    // TODO: Add label.
+
     return box;
   }
 
@@ -212,8 +225,16 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
     if (!prevProps || this.sizeChanged(prevProps, this.props)) {
       this.resizeElement(this.props.width, this.props.height);
     }
+    // Change label.
+    if (
+      this.props.label != null &&
+      (!prevProps || prevProps.label !== this.props.label)
+    ) {
+      this.labelElementRef.innerHTML = this.props.label;
+    }
 
-    this.childElementRef.innerHTML = this.createDomElement().innerHTML;
+    this.contentElementRef.childNodes.item(0).remove();
+    this.contentElementRef.append(this.createDomElement());
   }
 
   /**
@@ -222,8 +243,6 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
   public remove(): void {
     // Event listeners.
     this.disposables.forEach(_ => _.dispose());
-    // VisualConsoleItem extension DOM element.
-    this.childElementRef.remove();
     // VisualConsoleItem DOM element.
     this.elementRef.remove();
   }
@@ -280,7 +299,7 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
   }
 
   /**
-   * Resize the DOM container.
+   * Resize the DOM content container.
    * @param width
    * @param height
    */

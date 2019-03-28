@@ -1605,42 +1605,53 @@ sub pandora_process_module ($$$$$$$$$;$) {
 		$current_interval = $module->{'module_interval'};
 	}
 
-	#Update module status
+	# Update module status.
 	my $min_ff_event = $module->{'min_ff_event'};
 	my $current_utimestamp = time ();
 	my $ff_timeout = $module->{'ff_timeout'};
-	my $ff_warning = $module->{'ff_warning'};
-	my $ff_critical = $module->{'ff_critical'};
-	my $ff_normal = $module->{'ff_normal'};
 
-	if ($module->{'ff_type'} == 0) {
-		if ($module->{'each_ff'}) {
-			$min_ff_event = $module->{'min_ff_event_normal'} if ($new_status == 0);
-			$min_ff_event = $module->{'min_ff_event_critical'} if ($new_status == 1);
-			$min_ff_event = $module->{'min_ff_event_warning'} if ($new_status == 2);
-		}
+	# Counters.
+	my $ff_warning = $agent_status->{'ff_warning'};
+	my $ff_critical = $agent_status->{'ff_critical'};
+	my $ff_normal = $agent_status->{'ff_normal'};
+
+	if ($module->{'each_ff'}) {
+		$min_ff_event = $module->{'min_ff_event_normal'} if ($new_status == 0);
+		$min_ff_event = $module->{'min_ff_event_critical'} if ($new_status == 1);
+		$min_ff_event = $module->{'min_ff_event_warning'} if ($new_status == 2);
+	}
+
+	if ($last_known_status == $new_status) {
+		# Avoid overflows
+		$status_changes = $min_ff_event if ($status_changes > $min_ff_event && $module->{'ff_type'} == 0);
 		
-		if ($last_known_status == $new_status) {
-			# Avoid overflows
-			$status_changes = $min_ff_event if ($status_changes > $min_ff_event);
+		$status_changes++;
+		if ($module_type =~ m/async/ && $min_ff_event != 0 && $ff_timeout != 0 && ($utimestamp - $ff_start_utimestamp) > $ff_timeout) {
+			# Only type ff with counters.
+			$status_changes = 0 if ($module->{'ff_type'} == 0);
 			
-			$status_changes++;
-			if ($module_type =~ m/async/ && $min_ff_event != 0 && $ff_timeout != 0 && ($utimestamp - $ff_start_utimestamp) > $ff_timeout) {
-				$status_changes = 0;
-				$ff_start_utimestamp = $utimestamp;
-			}
+			$ff_start_utimestamp = $utimestamp;
+
+			# Reset counters because expired timeout.
+			$ff_normal = 0;
+			$ff_critical = 0;
+			$ff_warning = 0;
 		}
-		else {
-			$status_changes = 0;
-			$ff_start_utimestamp = $utimestamp if ($module_type =~ m/async/);
-		}
+	}
+	else {
+		# Only type ff with counters. 
+		$status_changes = 0 if ($module->{'ff_type'} == 0);
 		
-		# Active ff interval
+		$ff_start_utimestamp = $utimestamp if ($module_type =~ m/async/);
+	}
+	
+	if ($module->{'ff_type'} == 0) {
+		# Active ff interval.
 		if ($module->{'module_ff_interval'} != 0 && $status_changes < $min_ff_event) {
 			$current_interval = $module->{'module_ff_interval'};
 		}
 		
-		# Change status
+		# Change status.
 		if ($status_changes >= $min_ff_event && $known_status != $new_status) {
 			generate_status_event ($pa_config, $processed_data, $agent, $module, $new_status, $status, $known_status, $dbh);
 			$status = $new_status;
@@ -1654,31 +1665,50 @@ sub pandora_process_module ($$$$$$$$$;$) {
 			}
 		}
 	} else {
-		# Independent min_ff_event for all. 
-		if ($module->{'each_ff'}) {
-			$min_ff_event = $module->{'min_ff_event_normal'} if ($new_status == 0);
-			$min_ff_event = $module->{'min_ff_event_critical'} if ($new_status == 1);
-			$min_ff_event = $module->{'min_ff_event_warning'} if ($new_status == 2);
-		}
-
-		if ($last_known_status == $new_status) {
+		if ($status == $new_status) {
+			# If the status is equal to the previous status reset the counters.
 			$ff_normal = 0;
 			$ff_critical = 0;
 			$ff_warning = 0;
 		} else {
-			# Status change.
+			# Sequential critical and normal status are needed
+			# if don't, reset counters.
+			if ($last_known_status == 1 && $new_status != 1) {
+				$ff_critical = 0;
+			} elsif ($last_known_status == 0 && $new_status != 0) {
+				$ff_normal = 0;
+			}
+
+			# Increase counters.
 			$ff_critical++ if ($new_status == 1);
 			$ff_warning++  if ($new_status == 2);
 			$ff_normal++   if ($new_status == 0);
 		}
-
+		
 		if ( ($new_status == 0 && $ff_normal >= $min_ff_event)
 		  || ($new_status == 1 && $ff_critical >= $min_ff_event)
 		  || ($new_status == 2 && $ff_warning >= $min_ff_event)) {
+			# Change status generate event.
+			generate_status_event ($pa_config, $processed_data, $agent, $module, $new_status, $status, $known_status, $dbh);
 			$status = $new_status;
+
+			# Update module status count.
+			$mark_for_update = 1;
+
+			# Safe mode execution.
+			if ($agent->{'safe_mode_module'} == $module->{'id_agente_modulo'}) {
+				safe_mode($pa_config, $agent, $module, $new_status, $known_status, $dbh);
+			}
+
+			# Reset counters because change status.
 			$ff_normal = 0;
 			$ff_critical = 0;
 			$ff_warning = 0;
+		} else {
+			# Active ff interval
+			if ($module->{'module_ff_interval'} != 0) {
+				$current_interval = $module->{'module_ff_interval'};
+			}
 		}
 	}
 
@@ -1695,6 +1725,11 @@ sub pandora_process_module ($$$$$$$$$;$) {
 	elsif ($status == 3) {
 		generate_status_event ($pa_config, $processed_data, $agent, $module, $known_status, $status, $known_status, $dbh);
 		$status = $known_status;
+
+		# reset counters because change status.
+		$ff_normal = 0;
+		$ff_critical = 0;
+		$ff_warning = 0;
 
 		# Update module status count.
 		$mark_for_update = 1;

@@ -1,19 +1,36 @@
 <?php
+/**
+ * Extension to manage a list of gateways and the node address where they should
+ * point to.
+ *
+ * @category   API
+ * @package    Pandora FMS
+ * @subpackage Community
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
 
-// Pandora FMS- http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the  GNU Lesser General Public License
-// as published by the Free Software Foundation; version 2
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
 global $config;
 
-// Set character encoding to UTF-8 - fixes a lot of multibyte character headaches
+// Set character encoding to UTF-8
+// fixes a lot of multibyte character headaches.
 require_once 'functions_agents.php';
 require_once 'functions_modules.php';
 require_once $config['homedir'].'/include/functions_profile.php';
@@ -237,7 +254,7 @@ function returnData($returnType, $data, $separator=';')
         case 'json':
             $data = array_apply_io_safe_output($data);
             header('Content-type: application/json');
-            // Allows extra parameters to json_encode, like JSON_FORCE_OBJECT
+            // Allows extra parameters to json_encode, like JSON_FORCE_OBJECT.
             if ($separator == ';') {
                 $separator = null;
             }
@@ -3014,21 +3031,20 @@ function api_get_policy_modules($thrash1, $thrash2, $other, $thrash3)
 
 
 /**
- * Create a network module in agent. And return the id_agent_module of new module.
+ * Create a network module in agent.
+ * And return the id_agent_module of new module.
  *
- * @param string            $id    Name of agent to add the module.
- * @param $thrash1 Don't use.
- * @param array             $other it's array, $other as param is <name_module>;<disabled>;<id_module_type>;
- *              <id_module_group>;<min_warning>;<max_warning>;<str_warning>;<min_critical>;<max_critical>;<str_critical>;<ff_threshold>;
- *              <history_data>;<ip_target>;<module_port>;<snmp_community>;<snmp_oid>;<module_interval>;<post_process>;
- *              <min>;<max>;<custom_id>;<description>;<disabled_types_event>;<module_macros>;
- *              <each_ff>;<ff_threshold_normal>;<ff_threshold_warning>;<ff_threshold_critical>; in this order
- *              and separator char (after text ; ) and separator (pass in param othermode as othermode=url_encode_separator_<separator>)
- *              example:
- *
- *              api.php?op=set&op2=create_network_module&id=pepito&other=prueba|0|7|1|10|15|0|16|18|0|15|0|www.google.es|0||0|180|0|0|0|0|latency%20ping&other_mode=url_encode_separator_|
- *
- * @param $thrash3 Don't use
+ * @param    string $id      Name of agent to add the module.
+ * @param    string $thrash1 Don't use.
+ * @param    array  $other   It's array, $other as param is <name_module>;<disabled>;<id_module_type>;
+ *    <id_module_group>;<min_warning>;<max_warning>;<str_warning>;<min_critical>;<max_critical>;<str_critical>;<ff_threshold>;
+ *    <history_data>;<ip_target>;<module_port>;<snmp_community>;<snmp_oid>;<module_interval>;<post_process>;
+ *    <min>;<max>;<custom_id>;<description>;<disabled_types_event>;<module_macros>;
+ *    <each_ff>;<ff_threshold_normal>;<ff_threshold_warning>;<ff_threshold_critical>; in this order
+ *    and separator char (after text ; ) and separator (pass in param othermode as othermode=url_encode_separator_<separator>).
+ * @param    string $thrash3 Don't use.
+ * @example: api.php?op=set&op2=create_network_module&id=pepito&other=prueba|0|7|1|10|15|0|16|18|0|15|0|www.google.es|0||0|180|0|0|0|0|latency%20ping&other_mode=url_encode_separator_|*
+ * @return   mixed Return.
  */
 function api_set_create_network_module($id, $thrash1, $other, $thrash3)
 {
@@ -3090,22 +3106,23 @@ function api_set_create_network_module($id, $thrash1, $other, $thrash3)
         'min_ff_event_critical' => $other['data'][27],
         'critical_inverse'      => $other['data'][28],
         'warning_inverse'       => $other['data'][29],
+        'ff_type'               => $other['data'][30],
     ];
 
     if (! $values['descripcion']) {
         $values['descripcion'] = '';
-        // Column 'descripcion' cannot be null
+        // Column 'descripcion' cannot be null.
     }
 
     if (! $values['module_macros']) {
         $values['module_macros'] = '';
-        // Column 'module_macros' cannot be null
+        // Column 'module_macros' cannot be null.
     }
 
     $idModule = modules_create_agent_module($idAgent, $name, $values, true);
 
     if (is_error($idModule)) {
-        // TODO: Improve the error returning more info
+        // TODO: Improve the error returning more info.
         returnError('error_create_network_module', __('Error in creation network module.'));
     } else {
         returnData('string', ['type' => 'string', 'data' => $idModule]);
@@ -3222,6 +3239,7 @@ function api_set_update_network_module($id_module, $thrash1, $other, $thrash3)
         'critical_inverse',
         'warning_inverse',
         'policy_linked',
+        'ff_type',
     ];
 
     $values = [];
@@ -3326,22 +3344,23 @@ function api_set_create_plugin_module($id, $thrash1, $other, $thrash3)
         'min_ff_event_critical' => $other['data'][32],
         'critical_inverse'      => $other['data'][33],
         'warning_inverse'       => $other['data'][34],
+        'ff_type'               => $other['data'][35],
     ];
 
     if (! $values['descripcion']) {
         $values['descripcion'] = '';
-        // Column 'descripcion' cannot be null
+        // Column 'descripcion' cannot be null.
     }
 
     if (! $values['module_macros']) {
         $values['module_macros'] = '';
-        // Column 'module_macros' cannot be null
+        // Column 'module_macros' cannot be null.
     }
 
     $idModule = modules_create_agent_module($idAgent, $name, $values, true);
 
     if (is_error($idModule)) {
-        // TODO: Improve the error returning more info
+        // TODO: Improve the error returning more info.
         returnError('error_create_plugin_module', __('Error in creation plugin module.'));
     } else {
         returnData('string', ['type' => 'string', 'data' => $idModule]);
@@ -3387,7 +3406,7 @@ function api_set_update_plugin_module($id_module, $thrash1, $other, $thrash3)
         return;
     }
 
-    // If we want to change the module to a new agent
+    // If we want to change the module to a new agent.
     if ($other['data'][0] != '') {
         if (!util_api_check_agent_and_print_error($other['data'][0], 'string', 'AW')) {
             return;
@@ -3404,7 +3423,7 @@ function api_set_update_plugin_module($id_module, $thrash1, $other, $thrash3)
             }
         }
 
-        // Check if agent exists
+        // Check if agent exists.
         $check_id_agent = db_get_value('id_agente', 'tagente', 'id_agente', $other['data'][0]);
         if (!$check_id_agent) {
             returnError('error_update_data_module', __('Error updating plugin module. Id_agent doesn\'t exist.'));
@@ -3448,6 +3467,7 @@ function api_set_update_plugin_module($id_module, $thrash1, $other, $thrash3)
         'critical_inverse',
         'warning_inverse',
         'policy_linked',
+        'ff_type',
     ];
 
     $values = [];
@@ -3546,22 +3566,23 @@ function api_set_create_data_module($id, $thrash1, $other, $thrash3)
         'ff_timeout'            => $other['data'][23],
         'critical_inverse'      => $other['data'][24],
         'warning_inverse'       => $other['data'][25],
+        'ff_type'               => $other['data'][26],
     ];
 
     if (! $values['descripcion']) {
         $values['descripcion'] = '';
-        // Column 'descripcion' cannot be null
+        // Column 'descripcion' cannot be null.
     }
 
     if (! $values['module_macros']) {
         $values['module_macros'] = '';
-        // Column 'module_macros' cannot be null
+        // Column 'module_macros' cannot be null.
     }
 
     $idModule = modules_create_agent_module($idAgent, $name, $values, true);
 
     if (is_error($idModule)) {
-        // TODO: Improve the error returning more info
+        // TODO: Improve the error returning more info.
         returnError('error_create_data_module', __('Error in creation data module.'));
     } else {
         returnData('string', ['type' => 'string', 'data' => $idModule]);
@@ -3818,7 +3839,7 @@ function api_set_update_data_module($id_module, $thrash1, $other, $thrash3)
         return;
     }
 
-    // If we want to change the module to a new agent
+    // If we want to change the module to a new agent.
     if ($other['data'][0] != '') {
         if (!util_api_check_agent_and_print_error($other['data'][0], 'string', 'AW')) {
             return;
@@ -3835,7 +3856,7 @@ function api_set_update_data_module($id_module, $thrash1, $other, $thrash3)
             }
         }
 
-        // Check if agent exists
+        // Check if agent exists.
         $check_id_agent = db_get_value('id_agente', 'tagente', 'id_agente', $other['data'][0]);
         if (!$check_id_agent) {
             returnError('error_update_data_module', __('Error updating data module. Id_agent doesn\'t exist.'));
@@ -3870,6 +3891,7 @@ function api_set_update_data_module($id_module, $thrash1, $other, $thrash3)
         'critical_inverse',
         'warning_inverse',
         'policy_linked',
+        'ff_type',
     ];
 
     $values = [];
@@ -3947,7 +3969,7 @@ function api_set_create_snmp_module($id, $thrash1, $other, $thrash3)
     $disabled_types_event[EVENTS_GOING_UNKNOWN] = (int) !$other['data'][27];
     $disabled_types_event = json_encode($disabled_types_event);
 
-    // SNMP version 3
+    // SNMP version 3.
     if ($other['data'][14] == '3') {
         if ($other['data'][23] != 'AES' and $other['data'][23] != 'DES') {
             returnError('error_create_snmp_module', __('Error in creation SNMP module. snmp3_priv_method doesn\'t exist. Set it to \'AES\' or \'DES\'. '));
@@ -4000,6 +4022,7 @@ function api_set_create_snmp_module($id, $thrash1, $other, $thrash3)
             'min_ff_event_normal'   => $other['data'][31],
             'min_ff_event_warning'  => $other['data'][32],
             'min_ff_event_critical' => $other['data'][33],
+            'ff_type'               => $other['data'][34],
         ];
     } else {
         $values = [
@@ -4032,18 +4055,19 @@ function api_set_create_snmp_module($id, $thrash1, $other, $thrash3)
             'min_ff_event_normal'   => $other['data'][25],
             'min_ff_event_warning'  => $other['data'][26],
             'min_ff_event_critical' => $other['data'][27],
+            'ff_type'               => $other['data'][28],
         ];
     }
 
     if (! $values['descripcion']) {
         $values['descripcion'] = '';
-        // Column 'descripcion' cannot be null
+        // Column 'descripcion' cannot be null.
     }
 
     $idModule = modules_create_agent_module($idAgent, $name, $values, true);
 
     if (is_error($idModule)) {
-        // TODO: Improve the error returning more info
+        // TODO: Improve the error returning more info.
         returnError('error_create_snmp_module', __('Error in creation SNMP module.'));
     } else {
         returnData('string', ['type' => 'string', 'data' => $idModule]);
@@ -4091,7 +4115,7 @@ function api_set_update_snmp_module($id_module, $thrash1, $other, $thrash3)
         return;
     }
 
-    // If we want to change the module to a new agent
+    // If we want to change the module to a new agent.
     if ($other['data'][0] != '') {
         if (!util_api_check_agent_and_print_error($other['data'][0], 'string', 'AW')) {
             return;
@@ -4108,7 +4132,7 @@ function api_set_update_snmp_module($id_module, $thrash1, $other, $thrash3)
             }
         }
 
-        // Check if agent exists
+        // Check if agent exists.
         $check_id_agent = db_get_value('id_agente', 'tagente', 'id_agente', $other['data'][0]);
         if (!$check_id_agent) {
             returnError('error_update_data_module', __('Error updating snmp module. Id_agent doesn\'t exist.'));
@@ -4116,7 +4140,7 @@ function api_set_update_snmp_module($id_module, $thrash1, $other, $thrash3)
         }
     }
 
-    // SNMP version 3
+    // SNMP version 3.
     if ($other['data'][13] == '3') {
         if ($other['data'][22] != 'AES' and $other['data'][22] != 'DES') {
             returnError(
@@ -4180,6 +4204,7 @@ function api_set_update_snmp_module($id_module, $thrash1, $other, $thrash3)
             'min_ff_event_warning',
             'min_ff_event_critical',
             'policy_linked',
+            'ff_type',
         ];
     } else {
         $snmp_module_fields = [
@@ -4211,6 +4236,7 @@ function api_set_update_snmp_module($id_module, $thrash1, $other, $thrash3)
             'min_ff_event_warning',
             'min_ff_event_critical',
             'policy_linked',
+            'ff_type',
         ];
     }
 
@@ -4308,6 +4334,7 @@ function api_set_new_network_component($id, $thrash1, $other, $thrash2)
         'min_ff_event_normal'   => $other['data'][20],
         'min_ff_event_warning'  => $other['data'][21],
         'min_ff_event_critical' => $other['data'][22],
+        'ff_type'               => $other['data'][23],
     ];
 
     $name_check = db_get_value('name', 'tnetwork_component', 'name', $id);
@@ -4408,6 +4435,7 @@ function api_set_new_plugin_component($id, $thrash1, $other, $thrash2)
         'min_ff_event_normal'   => $other['data'][24],
         'min_ff_event_warning'  => $other['data'][25],
         'min_ff_event_critical' => $other['data'][26],
+        'ff_type'               => $other['data'][27],
     ];
 
     $name_check = db_get_value('name', 'tnetwork_component', 'name', $id);
@@ -4543,6 +4571,7 @@ function api_set_new_snmp_component($id, $thrash1, $other, $thrash2)
             'min_ff_event_normal'   => $other['data'][29],
             'min_ff_event_warning'  => $other['data'][30],
             'min_ff_event_critical' => $other['data'][31],
+            'ff_type'               => $other['data'][32],
         ];
     } else {
         $values = [
@@ -4574,6 +4603,7 @@ function api_set_new_snmp_component($id, $thrash1, $other, $thrash2)
             'min_ff_event_normal'   => $other['data'][25],
             'min_ff_event_warning'  => $other['data'][26],
             'min_ff_event_critical' => $other['data'][27],
+            'ff_type'               => $other['data'][28],
         ];
     }
 
@@ -4654,6 +4684,7 @@ function api_set_new_local_component($id, $thrash1, $other, $thrash2)
         'min_ff_event_warning'       => $other['data'][8],
         'min_ff_event_critical'      => $other['data'][9],
         'ff_timeout'                 => $other['data'][10],
+        'ff_type'                    => $other['data'][11],
     ];
 
     $name_check = enterprise_hook(
@@ -6409,6 +6440,7 @@ function api_set_add_data_module_policy($id, $thrash1, $other, $thrash3)
     $values['min_ff_event_warning'] = $other['data'][21];
     $values['min_ff_event_critical'] = $other['data'][22];
     $values['ff_timeout'] = $other['data'][23];
+    $values['ff_type'] = $other['data'][24];
 
     if ($name_module_policy !== false) {
         if ($name_module_policy[0]['name'] == $other['data'][0]) {
@@ -6650,6 +6682,7 @@ function api_set_add_network_module_policy($id, $thrash1, $other, $thrash3)
     $values['min_ff_event_normal'] = $other['data'][24];
     $values['min_ff_event_warning'] = $other['data'][25];
     $values['min_ff_event_critical'] = $other['data'][26];
+    $values['ff_type'] = $other['data'][27];
 
     if ($name_module_policy !== false) {
         if ($name_module_policy[0]['name'] == $other['data'][0]) {
@@ -6859,6 +6892,7 @@ function api_set_add_plugin_module_policy($id, $thrash1, $other, $thrash3)
     $values['min_ff_event_normal'] = $other['data'][29];
     $values['min_ff_event_warning'] = $other['data'][30];
     $values['min_ff_event_critical'] = $other['data'][31];
+    $values['ff_type'] = $other['data'][32];
 
     if ($name_module_policy !== false) {
         if ($name_module_policy[0]['name'] == $other['data'][0]) {
@@ -7276,6 +7310,7 @@ function api_set_add_snmp_module_policy($id, $thrash1, $other, $thrash3)
             'min_ff_event_normal'   => $other['data'][30],
             'min_ff_event_warning'  => $other['data'][31],
             'min_ff_event_critical' => $other['data'][32],
+            'ff_type'               => $other['data'][33],
         ];
     } else {
         $values = [
@@ -7305,6 +7340,7 @@ function api_set_add_snmp_module_policy($id, $thrash1, $other, $thrash3)
             'min_ff_event_normal'   => $other['data'][24],
             'min_ff_event_warning'  => $other['data'][25],
             'min_ff_event_critical' => $other['data'][26],
+            'ff_type'               => $other['data'][27],
         ];
     }
 
@@ -13268,6 +13304,7 @@ function api_set_apply_module_template($id_template, $id_agent, $thrash3, $thras
                     'min_ff_event_normal'   => $row2['min_ff_event_normal'],
                     'min_ff_event_warning'  => $row2['min_ff_event_warning'],
                     'min_ff_event_critical' => $row2['min_ff_event_critical'],
+                    'ff_type'               => $row2['ff_type'],
                 ];
 
                 $name = $row2['name'];

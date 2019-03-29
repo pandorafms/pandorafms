@@ -721,6 +721,9 @@ sub print_module {
 	if (! (empty ($data->{min_ff_event_critical}))) {
 		$xml_module .= "\t<min_ff_event_critical><![CDATA[" . $data->{min_ff_event_critical} . "]]></min_ff_event_critical>\n";
 	}
+	if (! (empty ($data->{ff_type}))) {
+		$xml_module .= "\t<ff_type><![CDATA[" . $data->{ff_type} . "]]></ff_type>\n";
+	}
 	if (! (empty ($data->{ff_timeout}))) {
 		$xml_module .= "\t<ff_timeout><![CDATA[" . $data->{ff_timeout} . "]]></ff_timeout>\n";
 	}

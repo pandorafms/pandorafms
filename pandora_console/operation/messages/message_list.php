@@ -135,9 +135,9 @@ if (empty($messages)) {
 } else {
     $table = new stdClass();
     $table->width = '100%';
-    $table->class = 'databox data';
-    $table->cellpadding = 4;
-    $table->cellspacing = 4;
+    $table->class = 'info_table';
+    $table->cellpadding = 0;
+    $table->cellspacing = 0;
     $table->head = [];
     $table->data = [];
     $table->align = [];

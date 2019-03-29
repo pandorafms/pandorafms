@@ -82,7 +82,13 @@ $filter['limit'] = (int) $config['block_size'];
 // Search action: This will filter the display category view
 $result = false;
 
-$result = categories_get_all_categories();
+$result = db_get_all_rows_filter(
+    'tcategory',
+    [
+        'limit'  => $filter['limit'],
+        'offset' => $filter['offset'],
+    ]
+);
 
 // Display categories previously filtered or not
 $rowPair = true;
@@ -94,7 +100,7 @@ if (!empty($result)) {
 
     $table = new stdClass();
     $table->width = '100%';
-    $table->class = 'databox data';
+    $table->class = 'info_table';
 
     $table->data = [];
     $table->head = [];
@@ -131,6 +137,7 @@ if (!empty($result)) {
     }
 
     html_print_table($table);
+    ui_pagination($total_categories, $url, $offset, 0, false, 'offset', true, 'pagination-bottom');
 } else {
     // No categories available or selected
     ui_print_info_message(['no_close' => true, 'message' => __('No categories found') ]);

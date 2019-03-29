@@ -221,7 +221,7 @@ if ($delete_action) {
 
 $table = new stdClass();
 $table->width = '100%';
-$table->class = 'databox data';
+$table->class = 'info_table';
 $table->data = [];
 $table->head = [];
 $table->head[0] = __('Name');

@@ -515,7 +515,7 @@ if ($tab == 'tree') {
 
         $table = new StdClass();
         $table->width = '100%';
-        $table->class = 'databox data';
+        $table->class = 'info_table';
         $table->head = [];
         $table->head[0] = __('ID');
         $table->head[1] = __('Name');
@@ -592,7 +592,7 @@ if ($tab == 'tree') {
             $block_size,
             true,
             'offset',
-            false
+            true
         );
         html_print_table($table);
         echo ui_pagination(
@@ -602,7 +602,8 @@ if ($tab == 'tree') {
             $block_size,
             true,
             'offset',
-            true
+            true,
+            'pagination-bottom'
         );
     } else {
         ui_print_info_message(['no_close' => true, 'message' => __('There are no defined groups') ]);

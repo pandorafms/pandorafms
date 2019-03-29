@@ -954,7 +954,7 @@ if (($create != '') || ($view != '')) {
         if (defined('METACONSOLE')) {
             echo '<table width="100%" cellspacing="4" cellpadding="4" class="databox data">';
         } else {
-            echo '<table width="100%" cellspacing="4" cellpadding="4" class="databox data">';
+            echo '<table width="100%" cellspacing="4" cellpadding="4" class="info_table">';
         }
 
         echo '<th>'.__('Name').'</th>';

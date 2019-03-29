@@ -407,7 +407,7 @@ $table = new stdClass();
 if (is_metaconsole()) {
     $table->class = 'alert_list databox';
 } else {
-    $table->class = 'databox data';
+    $table->class = 'info_table';
 }
 
 $table->width = '100%';
@@ -815,6 +815,11 @@ foreach ($simple_alerts as $alert) {
 
 if (isset($data)) {
     html_print_table($table);
+    if ($id_agente) {
+        ui_pagination($total, 'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=alert&id_agente='.$id_agente.$form_params.$sort_params, 0, 0, false, 'offset', true, 'pagination-bottom');
+    } else {
+        ui_pagination($total, 'index.php?sec='.$sec.'&sec2=godmode/alerts/alert_list'.$form_params.$sort_params, 0, 0, false, 'offset', true, 'pagination-bottom');
+    }
 } else {
     ui_print_info_message(['no_close' => true, 'message' => __('No alerts defined') ]);
 }

@@ -189,7 +189,20 @@ if ($export_profile) {
     exit;
 }
 
-$result = db_get_all_rows_in_table('tnetwork_profile', 'name');
+// Prepare pagination.
+$offset = (int) get_parameter('offset');
+$limit = $config['block_size'];
+$count_network_templates = db_get_value('count(*)', 'tnetwork_profile');
+
+$result = db_get_all_rows_filter(
+    'tnetwork_profile',
+    [
+        'order'  => 'name',
+        'limit'  => $limit,
+        'offset' => $offset,
+    ]
+);
+
 if ($result === false) {
     $result = [];
 }
@@ -197,7 +210,7 @@ if ($result === false) {
 $table->cellpadding = 0;
 $table->cellspacing = 0;
 $table->width = '100%';
-$table->class = 'databox data';
+$table->class = 'info_table';
 
 $table->head = [];
 $table->head[0] = __('Name');
@@ -241,7 +254,9 @@ foreach ($result as $row) {
 if (!empty($table->data)) {
     echo '<form method="post" action="index.php?sec=gmodules&amp;sec2=godmode/modules/manage_network_templates">';
     html_print_input_hidden('multiple_delete', 1);
+    ui_pagination($count_network_templates, false, $offset);
     html_print_table($table);
+    ui_pagination($count_network_templates, false, $offset, 0, false, 'offset', true, 'pagination-bottom');
     echo "<div style='padding-left: 5px; float: right; '>";
     html_print_submit_button(__('Delete'), 'delete_btn', false, 'class="sub delete"');
     echo '</div>';

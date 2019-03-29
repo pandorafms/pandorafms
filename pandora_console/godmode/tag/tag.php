@@ -191,7 +191,7 @@ if (!empty($result)) {
 
     $table = new stdClass();
     $table->width = '100%';
-    $table->class = 'databox data';
+    $table->class = 'info_table';
 
     $table->data = [];
     $table->head = [];
@@ -284,6 +284,7 @@ if (!empty($result)) {
     }
 
     html_print_table($table);
+    ui_pagination($total_tags, $url, 0, 0, false, 'offset', true, 'pagination-bottom');
 } else {
     if (is_metaconsole()) {
         ui_toggle($filter_form, __('Show Options'));

@@ -339,7 +339,7 @@ if ($templates === false) {
 
 $table = new stdClass();
 $table->width = '100%';
-$table->class = 'databox data';
+$table->class = 'info_table';
 $table->data = [];
 $table->head = [];
 $table->head[0] = __('Name');
@@ -396,6 +396,7 @@ foreach ($templates as $template) {
 ui_pagination($total_templates, $url);
 if (isset($data)) {
     html_print_table($table);
+    ui_pagination($total_templates, $url, 0, 0, false, 'offset', true, 'pagination-bottom');
 } else {
     ui_print_info_message(['no_close' => true, 'message' => __('No alert templates defined') ]);
 }

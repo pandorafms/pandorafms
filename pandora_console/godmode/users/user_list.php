@@ -304,7 +304,7 @@ $table = new stdClass();
 $table->cellpadding = 0;
 $table->cellspacing = 0;
 $table->width = '100%';
-$table->class = 'databox data';
+$table->class = 'info_table';
 
 $table->head = [];
 $table->data = [];
@@ -535,6 +535,7 @@ foreach ($info as $user_id => $user_info) {
 }
 
 html_print_table($table);
+ui_pagination(count($info), false, 0, 0, false, 'offset', true, 'pagination-bottom');
 
 echo '<div style="width: '.$table->width.'" class="action-buttons">';
 unset($table);

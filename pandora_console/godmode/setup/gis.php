@@ -63,6 +63,7 @@ switch ($action) {
     break;
 }
 
+$table->class = 'info_table';
 $table->width = '98%';
 $table->head[0] = __('Map connection name');
 $table->head[1] = __('Group');

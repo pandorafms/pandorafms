@@ -231,7 +231,7 @@ if ((isset($_GET['form_add'])) || (isset($_GET['form_edit']))) {
         ui_print_info_message(['no_close' => true, 'message' => __('There are no defined news') ]);
     } else {
         // Main list view for Links editor
-        echo "<table cellpadding='4' cellspacing='4' class='databox data' width=100%>";
+        echo "<table cellpadding='0' cellspacing='0' class='info_table' width=100%>";
         echo '<th>'.__('Subject').'</th>';
         echo '<th>'.__('Type').'</th>';
         echo '<th>'.__('Author').'</th>';

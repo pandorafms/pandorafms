@@ -183,10 +183,10 @@ if (empty($result)) {
 }
 
 $table = new stdClass();
-$table->cellpadding = 4;
-$table->cellspacing = 4;
+$table->cellpadding = 0;
+$table->cellspacing = 0;
 $table->width = '100%';
-$table->class = 'databox data';
+$table->class = 'info_table';
 $table->size = [];
 $table->data = [];
 $table->head = [];
@@ -247,6 +247,7 @@ foreach ($result as $row) {
 }
 
 html_print_table($table);
+ui_pagination($count, $url, 0, 0, false, 'offset', true, 'pagination-bottom');
 
 if ($enterprise_include !== ENTERPRISE_NOT_HOOK) {
     enterprise_hook('enterpriseAuditFooter');

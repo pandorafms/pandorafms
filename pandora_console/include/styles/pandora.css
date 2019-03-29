@@ -3958,7 +3958,7 @@ span.log_zone_line_error {
   background-color: #eee;
 }
 .checkselected {
-  background-color: #eee;
+  background-color: #eee !important;
 }
 .tag-wrapper {
   padding: 0 10px 0 0;
@@ -5040,18 +5040,22 @@ select#autorefresh_list:-internal-list-box {
 
 table.info_table {
   background-color: #fff;
-  /* margin-bottom: 20px;*/
+  margin-bottom: 10px;
   border-spacing: 0;
 }
 
-table.info_table tr:nth-child(even) {
+table.info_table tbody tr:nth-child(even) {
   background-color: #f5f5f5;
 }
 
 table.info_table tr:first-child > th {
-  background-color: #373737;
-  color: #fff;
+  /*background-color: #373737;*/
+  /*color: #fff;*/
   /*font-size: 9pt;*/
+  background-color: #fff;
+  border-top: 1px solid #e2e2e2;
+  color: #000;
+  text-align: left !important;
 }
 
 table.info_table tr:first-child > th span {
@@ -5059,19 +5063,35 @@ table.info_table tr:first-child > th span {
 }
 
 table.info_table th {
-  color: #fff;
-  background-color: #666;
+  /*color: #fff;*/
+  /*background-color: #666;*/
   font-size: 7.5pt;
   letter-spacing: 0.3pt;
+  color: #000;
+  background-color: #fff;
+}
+
+table.info_table > thead > tr > th:first-child {
+  border-left: 1px solid #e2e2e2;
+}
+
+table.info_table > thead > tr > th:last-child {
+  border-right: 1px solid #e2e2e2;
+}
+
+table.info_table tr th {
+  border-bottom: 1px solid #e2e2e2;
 }
 
 table.info_table > thead > tr:first-child > th:last-child {
-  border-right: 1px solid #373737;
+  /*border-right: 1px solid #373737;*/
+  /*border-right: 1px solid #e2e2e2;*/
   border-top-right-radius: 4px;
 }
 
 table.info_table > thead > tr:first-child > th:first-child {
-  border-left: 1px solid #373737;
+  /*border-left: 1px solid #373737;*/
+  /* border-left: 1px solid #e2e2e2;*/
   border-top-left-radius: 4px;
 }
 
@@ -5079,8 +5099,8 @@ table.info_table > thead > tr > th,
 table.info_table > tbody > tr > th,
 table.info_table > thead > tr > th a {
   padding: 9px 7px;
-  font-weight: normal;
-  color: #fff;
+  font-weight: bold;
+  color: #000;
 }
 
 table.info_table > tbody > tr > td {
@@ -5150,7 +5170,7 @@ table.info_table td:last-child img {
 
 .pagination .page_number a {
   padding: 5px;
-  width: 12px;
+  min-width: 12px;
   display: block;
 }
 
@@ -5195,6 +5215,6 @@ table.info_table td:last-child img {
 
 .pagination-bottom {
   margin-bottom: 15px;
-  margin-top: 10px;
+  margin-top: 0px;
   align-items: flex-start;
 }

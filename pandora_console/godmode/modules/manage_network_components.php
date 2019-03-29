@@ -634,7 +634,7 @@ unset($table);
 
 $table->width = '100%';
 $table->head = [];
-$table->class = 'databox data';
+$table->class = 'info_table';
 $table->head[0] = __('Module name');
 $table->head[1] = __('Type');
 $table->head[3] = __('Description');
@@ -698,6 +698,7 @@ if (isset($data)) {
     echo "<form method='post' action='index.php?sec=".$sec.'&sec2=godmode/modules/manage_network_components&search_id_group=0search_string=&pure='.$pure."'>";
     html_print_input_hidden('multiple_delete', 1);
     html_print_table($table);
+    ui_pagination($total_components, $url, 0, 0, false, 'offset', true, 'pagination-bottom');
     echo "<div style='float: right; margin-left: 5px;'>";
     html_print_submit_button(__('Delete'), 'delete_btn', false, 'class="sub delete"');
     echo '</div>';

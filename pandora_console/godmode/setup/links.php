@@ -137,7 +137,7 @@ if ((isset($_GET['form_add'])) or (isset($_GET['form_edit']))) {
     if (empty($rows)) {
         ui_print_info_message(['no_close' => true, 'message' => __("There isn't links") ]);
     } else {
-        echo "<table cellpadding='4' cellspacing='4' class='databox data' style='width:100%'>";
+        echo "<table cellpadding='0' cellspacing='0' class='info_table' style='width:100%'>";
         echo "<th width='180px'>".__('Link name').'</th>';
         echo "<th width='10px'>".__('Delete').'</th>';
 

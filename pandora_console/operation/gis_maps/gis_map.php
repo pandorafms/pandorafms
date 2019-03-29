@@ -96,7 +96,7 @@ $maps = gis_get_maps();
 
 $table = new stdClass();
 $table->width = '100%';
-$table->class = 'databox data';
+$table->class = 'info_table';
 
 $table->head = [];
 $table->head['name'] = __('Name');

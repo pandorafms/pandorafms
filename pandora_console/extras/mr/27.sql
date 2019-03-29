@@ -1,0 +1,5 @@
+START TRANSACTION;
+
+ALTER TABLE tnetflow_filter DROP COLUMN output;
+
+COMMIT;

@@ -2058,3 +2058,5 @@ INSERT INTO `trecon_script` (`name`,`description`,`script`,`macros`) VALUES ('Di
 -- Add column in table `tagent_custom_fields`
 -- ----------------------------------------------------------------------
 ALTER TABLE tagent_custom_fields ADD COLUMN `combo_values` VARCHAR(255) DEFAULT '';
+ALTER TABLE tnetflow_filter DROP COLUMN output;
+

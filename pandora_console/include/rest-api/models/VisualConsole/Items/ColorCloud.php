@@ -42,8 +42,8 @@ final class ColorCloud extends Item
         $colorCloudData = parent::decode($data);
         $colorCloudData['type'] = COLOR_CLOUD;
         $colorCloudData['color'] = $this->extractColor($data);
-        $colorCloudData['colorRanges'] = '';
-
+        $colorCloudData['colorRanges'] = $this->extractColorRanges($data);
+        $colorCloudData['label'] = null;
         return $colorCloudData;
     }
 
@@ -68,12 +68,18 @@ final class ColorCloud extends Item
                 null
             );
 
-            $color_decode = \json_decode($color);
-            if (empty($color) === true || empty($color_decode->default_color) === true) {
+            if (empty($color) === true) {
                 throw new \InvalidArgumentException(
                     'the color property is required and should be string'
                 );
             } else {
+                $color_decode = \json_decode($color);
+                if (empty($color_decode->default_color) === true) {
+                    throw new \InvalidArgumentException(
+                        'the color property is required and should be string'
+                    );
+                }
+
                 return $color_decode->default_color;
             }
         } else {
@@ -93,20 +99,32 @@ final class ColorCloud extends Item
     {
         if (isset($data['colorRanges']) && \is_array($data['colorRanges'])) {
             foreach ($data['colorRanges'] as $key => $value) {
-                if ((!isset($data['colorRanges'][$key]['fromValue']) || !\is_float($data['colorRanges'][$key]['fromValue']))
-                    || (!isset($data['colorRanges'][$key]['toValue']) || !\is_float($data['colorRanges'][$key]['toValue']))
-                    || (!isset($data['colorRanges'][$key]['color']) | !\is_string($data['colorRanges'][$key]['color']) || strlen($data['colorRanges'][$key]['color']) == 0)
+                if ((!isset($value['fromValue']) || !\is_numeric($value['fromValue']))
+                    || (!isset($value['toValue']) || !\is_numeric($value['toValue']))
+                    || (!isset($value['color']) || !\is_string($value['color'])
+                    || \strlen($value['color']) == 0)
                 ) {
-                        throw new \InvalidArgumentException(
-                            'the color property is required and should be string'
-                        );
+                    throw new \InvalidArgumentException(
+                        'the fromValue, toValue and color properties is required'
+                    );
                 }
             }
 
             return $data['colorRanges'];
         } else if (isset($data['label']) === true) {
             $colorRanges_decode = \json_decode($data['label']);
-            return $colorRanges_decode->color_ranges;
+            $array_out = [];
+            if (!empty($colorRanges_decode->color_ranges)) {
+                foreach ($colorRanges_decode->color_ranges as $key => $value) {
+                    $array_aux = [];
+                    $array_aux['fromValue'] = $value->from_value;
+                    $array_aux['toValue'] = $value->to_value;
+                    $array_aux['color'] = $value->color;
+                    array_push($array_out, $array_aux);
+                }
+            }
+
+            return $array_out;
         } else {
             return [];
         }

@@ -7,7 +7,7 @@ use Models\VisualConsole\Item;
 use Models\Model;
 
 /**
- * Model of a group item of the Visual Console.
+ * Model of a events history item of the Visual Console.
  */
 final class EventsHistory extends Item
 {

@@ -34,9 +34,9 @@ enterprise_include_once('include/functions_networkmap.php');
 enterprise_include_once('include/functions_discovery.php');
 
 // Avoid node overlapping.
-define('GRAPHVIZ_RADIUS_CONVERSION_FACTOR', 20);
-define('MAP_X_CORRECTION', 600);
-define('MAP_Y_CORRECTION', 150);
+define('GRAPHVIZ_CONVERSION_FACTOR', 30);
+define('MAP_X_CORRECTION', 0);
+define('MAP_Y_CORRECTION', 0);
 
 
 /**
@@ -319,6 +319,8 @@ class NetworkMap
         // Default mapOptions values.
         // Defines the command to generate positions.
         $this->mapOptions['generation_method'] = LAYOUT_SPRING1;
+        // Use fixed positions defined (X,Y) per node.
+        $this->mapOptions['fixed_positions'] = 0;
         $this->mapOptions['width'] = $config['networkmap_max_width'];
         $this->mapOptions['height'] = $config['networkmap_max_width'];
         $this->mapOptions['simple'] = 0;
@@ -999,23 +1001,25 @@ class NetworkMap
             case NODE_GENERIC:
                 // Handmade ones.
                 // Add also parent relationship.
-                $parent_id = $node['id_parent'];
+                if (isset($node['id_parent'])) {
+                    $parent_id = $node['id_parent'];
 
-                if ((int) $parent_id > 0) {
-                    $parent_node = $this->getNodeData(
-                        (int) $parent_id,
-                        'id_node'
-                    );
-                }
+                    if ((int) $parent_id >= 0) {
+                        $parent_node = $this->getNodeData(
+                            (int) $parent_id,
+                            'id_node'
+                        );
+                    }
 
-                // Store relationship.
-                if ($parent_node) {
-                    $relations[] = [
-                        'id_parent'   => $parent_node,
-                        'parent_type' => NODE_GENERIC,
-                        'id_child'    => $node['id_node'],
-                        'child_type'  => NODE_GENERIC,
-                    ];
+                    // Store relationship.
+                    if ($parent_node !== null) {
+                        $relations[] = [
+                            'id_parent'   => $parent_node,
+                            'parent_type' => NODE_GENERIC,
+                            'id_child'    => $node['id_node'],
+                            'child_type'  => NODE_GENERIC,
+                        ];
+                    }
                 }
             break;
 
@@ -1233,8 +1237,13 @@ class NetworkMap
         $url = 'none';
         $parent = $data['parent'];
         $font_size = $this->mapOptions['font_size'];
-        $radius = $this->mapOptions['map_filter']['node_radius'];
-        $radius /= GRAPHVIZ_RADIUS_CONVERSION_FACTOR;
+        if (isset($data['radius'])) {
+            $radius = $data['radius'];
+        } else {
+            $radius = $this->mapOptions['map_filter']['node_radius'];
+        }
+
+        $radius /= GRAPHVIZ_CONVERSION_FACTOR;
 
         if (strlen($label) > 16) {
             $label = ui_print_truncate_text($label, 16, false, true, false);
@@ -1632,7 +1641,7 @@ class NetworkMap
                         $node[$k] = $v;
                     }
 
-                    $node['style']['label'] = $node['name'];
+                    $node['style']['label'] = $node['label'];
                     $node['style']['shape'] = 'circle';
                     $item['color'] = self::getColorByStatus($node['status']);
                 break;
@@ -1660,6 +1669,11 @@ class NetworkMap
                 $count_item_holding_area++;
             }
 
+            // Propagate styles.
+            foreach ($node['style'] as $k => $v) {
+                $item[$k] = $v;
+            }
+
             // Node image.
             $item['image_url'] = '';
             $item['image_width'] = 0;
@@ -1679,6 +1693,7 @@ class NetworkMap
             $item['text'] = io_safe_output($node['style']['label']);
             $item['shape'] = $node['style']['shape'];
             $item['map_id'] = $node['id_map'];
+
             if (!isset($node['style']['id_networkmap'])
                 || $node['style']['id_networkmap'] == ''
                 || $node['style']['id_networkmap'] == 0
@@ -1694,8 +1709,6 @@ class NetworkMap
                 $item['image'] = $item['image_url'];
                 $item['image_height'] = 52;
                 $item['image_width'] = 52;
-                $item['width'] = $this->mapOptions['map_filter']['node_radius'];
-                $item['height'] = $this->mapOptions['map_filter']['node_radius'];
             }
 
             $return[] = $item;
@@ -2148,8 +2161,8 @@ class NetworkMap
             if (preg_match('/^graph.*$/', $line) != 0) {
                 // Graph definition.
                 $fields = explode(' ', $line);
-                $this->map['width'] = ($fields[2] * 10 * GRAPHVIZ_RADIUS_CONVERSION_FACTOR);
-                $this->map['height'] = ($fields[3] * 10 * GRAPHVIZ_RADIUS_CONVERSION_FACTOR);
+                $this->map['width'] = ($fields[2] * GRAPHVIZ_CONVERSION_FACTOR);
+                $this->map['height'] = ($fields[3] * GRAPHVIZ_CONVERSION_FACTOR);
 
                 if ($this->map['width'] > $config['networkmap_max_width']) {
                     $this->map['width'] = $config['networkmap_max_width'];
@@ -2162,8 +2175,8 @@ class NetworkMap
                 // Node.
                 $fields = explode(' ', $line);
                 $id = $fields[1];
-                $nodes[$id]['x'] = (($fields[2] * $this->mapOptions['map_filter']['node_radius']) - $this->mapOptions['map_filter']['rank_sep'] * GRAPHVIZ_RADIUS_CONVERSION_FACTOR);
-                $nodes[$id]['y'] = (($fields[3] * $this->mapOptions['map_filter']['node_radius']) - $this->mapOptions['map_filter']['rank_sep'] * GRAPHVIZ_RADIUS_CONVERSION_FACTOR);
+                $nodes[$id]['x'] = ($fields[2] * GRAPHVIZ_CONVERSION_FACTOR);
+                $nodes[$id]['y'] = ($fields[3] * GRAPHVIZ_CONVERSION_FACTOR);
             } else if (preg_match('/^edge.*$/', $line) != 0
                 && empty($this->relations) === true
             ) {
@@ -2401,7 +2414,14 @@ class NetworkMap
          * Calculate X,Y positions.
          */
 
-        $graph = $this->calculateCoords();
+        if (!$this->mapOptions['fixed_positions']) {
+            $graph = $this->calculateCoords();
+        } else {
+            // Set by user.
+            $graph['nodes'] = $this->rawNodes;
+            $this->map['width'] = $this->mapOptions['width'];
+            $this->map['height'] = $this->mapOptions['height'];
+        }
 
         if (is_array($graph) === true) {
             $nodes = $graph['nodes'];
@@ -2501,6 +2521,10 @@ class NetworkMap
             $style['image'] = $node_tmp['image'];
             $style['width'] = $node_tmp['width'];
             $style['height'] = $node_tmp['height'];
+            $style['radius'] = max(
+                $style['width'],
+                $style['height']
+            );
             $style['label'] = $node_tmp['text'];
 
             $node_tmp['style'] = json_encode($style);
@@ -2676,6 +2700,7 @@ class NetworkMap
             $nodes = [];
         }
 
+        $this->nodes = $nodes;
         $nodes_js = $this->nodesToJS($nodes);
         $output .= 'networkmap.nodes = ('.json_encode($nodes_js).");\n";
 
@@ -2685,6 +2710,7 @@ class NetworkMap
             $relations = [];
         }
 
+        $this->relations = $relations;
         $links_js = $this->edgeToJS($relations);
         $output .= 'networkmap.links = ('.json_encode($links_js).");\n";
 
@@ -3220,17 +3246,25 @@ class NetworkMap
         if (enterprise_installed()
             && $this->useTooltipster
         ) {
+            $nodes_js = $this->nodesToJS($this->nodes);
+            $links_js = $this->edgeToJS($this->relations);
+
             $output .= '<script type="text/javascript">
-                var nodes = networkmap.nodes;
-                var arrows = networkmap.links;
-                var width = networkmap_dimensions[0];
-                var height = networkmap_dimensions[1];
-                var font_size = '.$this->mapOptions['font_size'].';
-                var custom_params = '.json_encode($this->tooltipParams).';
-                var controller = null;
-                var homedir = "'.ui_get_full_url(false).'"
                 $(function() {
-                    controller = new SimpleMapController("#simple_map");
+                    controller = new SimpleMapController({
+                        map_width: '.$this->map['width'].',
+                        map_height: '.$this->map['height'].',
+                        id: "'.$this->idMap.'",
+                        target: "#simple_map",
+                        nodes: '.json_encode($nodes_js).',
+                        arrows: '.json_encode($links_js).',
+                        center_x: '.$this->map['center_x'].',
+                        center_y: '.$this->map['center_y'].',
+                        z_dash: '.$this->map['filter']['z_dash'].',
+                        font_size: '.$this->mapOptions['font_size'].',
+                        homedir: "'.ui_get_full_url(false).'",
+                        custom_params: '.json_encode($this->tooltipParams).'
+                    });
                     controller.init_map();
                 });
             </script>';
@@ -3315,9 +3349,17 @@ class NetworkMap
 
             $output .= '<div id="simple_map" data-id="'.$this->idMap.'" ';
             $output .= 'style="border: 1px #ddd solid;';
-            $output .= ' width:'.$this->mapOptions['width'];
-            $output .= ' ;height:'.$this->mapOptions['height'].'">';
-            $output .= '<svg id="svg'.$this->idMap.'" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" pointer-events="all" width="'.$this->mapOptions['width'].'" height="'.$this->mapOptions['height'].'px">';
+
+            if ($this->fullSize) {
+                $output .= ' width:100%';
+                $output .= ' ;height: 100%">';
+                $output .= '<svg id="svg'.$this->idMap.'" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" pointer-events="all" width="100%" height="100%">';
+            } else {
+                $output .= ' width:'.$this->mapOptions['width'].'px';
+                $output .= ' ;height:'.$this->mapOptions['height'].'px">';
+                $output .= '<svg id="svg'.$this->idMap.'" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" pointer-events="all" width="'.$this->mapOptions['width'].'" height="'.$this->mapOptions['height'].'px">';
+            }
+
             $output .= '</svg>';
             $output .= '</div>';
         } else {

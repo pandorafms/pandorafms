@@ -192,6 +192,20 @@ class NetworkMap
     public $relations;
 
     /**
+     * Private nodes converted to JS.
+     *
+     * @var array
+     */
+    private $nodesJS;
+
+    /**
+     * Private relations converted to JS.
+     *
+     * @var array
+     */
+    private $relationsJS;
+
+    /**
      * Include a Pandora (or vendor) node or not.
      *
      * @var integer
@@ -1604,6 +1618,11 @@ class NetworkMap
                 $node['style'] = json_decode($node['style'], true);
             }
 
+            // Propagate styles.
+            foreach ($node['style'] as $k => $v) {
+                $item[$k] = $v;
+            }
+
             $item['type'] = $node['type'];
             $item['fixed'] = true;
             $item['x'] = (int) $node['x'];
@@ -1643,7 +1662,13 @@ class NetworkMap
 
                     $node['style']['label'] = $node['label'];
                     $node['style']['shape'] = 'circle';
-                    $item['color'] = self::getColorByStatus($node['status']);
+                    if (isset($source_data['color'])) {
+                        $item['color'] = $source_data['color'];
+                    } else {
+                        $item['color'] = self::getColorByStatus(
+                            $node['status']
+                        );
+                    }
                 break;
             }
 
@@ -1667,11 +1692,6 @@ class NetworkMap
 
                 // Increment for the next node in holding area.
                 $count_item_holding_area++;
-            }
-
-            // Propagate styles.
-            foreach ($node['style'] as $k => $v) {
-                $item[$k] = $v;
             }
 
             // Node image.
@@ -2700,9 +2720,13 @@ class NetworkMap
             $nodes = [];
         }
 
-        $this->nodes = $nodes;
-        $nodes_js = $this->nodesToJS($nodes);
-        $output .= 'networkmap.nodes = ('.json_encode($nodes_js).");\n";
+        $this->nodesJS = $this->nodesToJS($nodes);
+        $output .= 'networkmap.nodes = ('.json_encode($this->nodesJS).");\n";
+
+        // Clean.
+        unset($this->nodes);
+        unset($this->rawNodes);
+        unset($this->nodeMapping);
 
         // Translate edges to js links.
         $relations = $this->graph['relations'];
@@ -2710,9 +2734,11 @@ class NetworkMap
             $relations = [];
         }
 
-        $this->relations = $relations;
-        $links_js = $this->edgeToJS($relations);
-        $output .= 'networkmap.links = ('.json_encode($links_js).");\n";
+        $this->relationsJS = $this->edgeToJS($relations);
+        $output .= 'networkmap.links = ('.json_encode($this->relationsJS).");\n";
+
+        // Clean.
+        unset($this->relations);
 
         $output .= '
         ////////////////////////////////////////////////////////////////////
@@ -3246,9 +3272,6 @@ class NetworkMap
         if (enterprise_installed()
             && $this->useTooltipster
         ) {
-            $nodes_js = $this->nodesToJS($this->nodes);
-            $links_js = $this->edgeToJS($this->relations);
-
             $output .= '<script type="text/javascript">
                 $(function() {
                     controller = new SimpleMapController({
@@ -3256,8 +3279,8 @@ class NetworkMap
                         map_height: '.$this->map['height'].',
                         id: "'.$this->idMap.'",
                         target: "#simple_map",
-                        nodes: '.json_encode($nodes_js).',
-                        arrows: '.json_encode($links_js).',
+                        nodes: '.json_encode($this->nodesJS).',
+                        arrows: '.json_encode($this->relationsJS).',
                         center_x: '.$this->map['center_x'].',
                         center_y: '.$this->map['center_y'].',
                         z_dash: '.$this->map['filter']['z_dash'].',

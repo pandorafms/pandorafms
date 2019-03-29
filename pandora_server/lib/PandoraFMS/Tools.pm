@@ -1359,45 +1359,22 @@ sub cron_next_execution {
 	}
 
 	# Get day of the week and month from cron config
-	my ($mday, $wday) = (split (/\s/, $cron))[2, 4];
+	my ($wday) = (split (/\s/, $cron))[4];
 
 	# Get current time and day of the week
 	my $cur_time = time();
 	my $cur_wday = (localtime ($cur_time))[6];
 
-	# Any day of the week
-	if ($wday eq '*') {
-		my $nex_time = cron_next_execution_date ($cron,  $cur_time, $interval);
-		return $nex_time - time();
-	}
-	# A range?
-	else {
-		$wday = cron_get_closest_in_range ($cur_wday, $wday);
+	my $nex_time = cron_next_execution_date ($cron, $cur_time, $interval);
+
+	# Check the day
+	while (!cron_check_interval($wday, (localtime ($nex_time))[6])) {
+		# If it does not acomplish the day of the week, go to the next day.
+		$nex_time += 86400;
+		$nex_time = cron_next_execution_date ($cron, $nex_time, 0);
 	}
 
-	# A specific day of the week
-	my $count = 0;
-	my $nex_time = $cur_time;
-	do {
-		$nex_time = cron_next_execution_date ($cron, $nex_time, $interval);
-		my $nex_time_wd = $nex_time;
-		my ($nex_mon, $nex_wday) = (localtime ($nex_time_wd))[4, 6];
-		my $nex_mon_wd;
-		do {
-			# Check the day of the week
-			if ($nex_wday == $wday) {
-				return $nex_time_wd - time();
-			}
-			
-			# Move to the next day of the month
-			$nex_time_wd += 86400;
-			($nex_mon_wd, $nex_wday) = (localtime ($nex_time_wd))[4, 6];
-		} while ($mday eq '*' && $nex_mon_wd == $nex_mon);
-		$count++;
-	} while ($count < 60);
-
-	# Something went wrong, default to 5 minutes
-	return $interval;
+	return $nex_time - time();
 }
 ###############################################################################
 # Get the number of seconds left to the next execution of the given cron entry.
@@ -1407,6 +1384,30 @@ sub cron_check_syntax ($) {
 	
 	return 0 if !defined ($cron);
 	return ($cron =~ m/^(\d|\*|-)+ (\d|\*|-)+ (\d|\*|-)+ (\d|\*|-)+ (\d|\*|-)+$/);
+}
+###############################################################################
+# Check if a value is inside an interval.
+###############################################################################
+sub cron_check_interval {
+	my ($elem_cron, $elem_curr_time) = @_;
+
+	# Return 1 if wildcard.
+	return 1 if ($elem_cron eq "*");
+
+	my ($down, $up) = cron_get_interval($elem_cron);
+	# Check if it is not a range
+	if (!defined($up)) {
+		return ($down == $elem_curr_time) ? 1 : 0;
+	}
+
+	# Check if it is on the range
+	if ($down < $up) {
+		return 0 if ($elem_curr_time < $down || $elem_curr_time > $up);
+	} else {
+		return 0 if ($elem_curr_time > $down || $elem_curr_time < $up);
+	}
+
+	return 1;
 }
 ###############################################################################
 # Get the next execution date for the given cron entry in seconds since epoch.
@@ -1560,20 +1561,9 @@ sub cron_is_in_cron {
 	#If there is no elements means that is in cron
 	return 1 unless (defined($elem_cron) || defined($elem_curr_time));
 
-	# Go to last element if current is a wild card
-	if ($elem_cron ne '*') {
-		my ($down, $up) = cron_get_interval($elem_cron);
-		# Check if there is no a range
-		return 0 if (!defined($up) && ($down != $elem_curr_time));
-		# Check if there is on the range
-		if (defined($up)) {
-			if ($down < $up) {
-				return 0 if ($elem_curr_time < $down || $elem_curr_time > $up);
-			} else {
-				return 0 if ($elem_curr_time > $down || $elem_curr_time < $up);
-			}
-		}
-	}
+	# Check the element interval
+	return 0 unless (cron_check_interval($elem_cron, $elem_curr_time));
+
 	return cron_is_in_cron(\@deref_elems_cron, \@deref_elems_curr_time);
 }
 ###############################################################################

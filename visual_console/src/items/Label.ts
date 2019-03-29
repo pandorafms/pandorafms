@@ -40,10 +40,8 @@ export default class Label extends Item<LabelProps> {
   /**
    * @override Item.resize
    * To resize the item.
-   * @param width Width.
-   * @param height Height.
    */
-  public resizeElement(width: number, height: number): void {
+  public resizeElement(): void {
     // Size to 0, as the item content is managed using the label.
     this.childElementRef.style.width = `0`;
     this.childElementRef.style.height = `0`;

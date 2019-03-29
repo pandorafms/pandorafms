@@ -20,15 +20,17 @@ function cron_update_module_interval($module_id, $cron)
 {
     // Check for a valid cron.
     if (!cron_check_syntax($cron)) {
-        return;
+        return false;
     }
 
-    if ($cron == '* * * * *') {
-        $module_interval = db_get_value_filter(
-            'module_interval',
-            'tagente_modulo',
-            ['id_agente_modulo' => $module_id]
-        );
+    $module_interval = db_get_value(
+        'module_interval',
+        'tagente_modulo',
+        'id_agente_modulo',
+        $module_id
+    );
+
+    if ($cron === '* * * * *') {
         return db_process_sql(
             'UPDATE tagente_estado SET current_interval = '.$module_interval.' WHERE id_agente_modulo = '.(int) $module_id
         );

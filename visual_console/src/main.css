@@ -4,9 +4,8 @@
 
 .visual-console-item {
   position: absolute;
-}
-
-.visual-console-item-content > * {
-  width: inherit;
-  height: inherit;
+  display: flex;
+  flex-direction: initial;
+  justify-items: center;
+  align-items: center;
 }

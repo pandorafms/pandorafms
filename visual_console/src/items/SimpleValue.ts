@@ -97,10 +97,25 @@ export default class SimpleValue extends Item<SimpleValueProps> {
       img.src = this.props.value;
       element.append(img);
     } else {
+      // Size to 0, as the item content is managed using the label.
+      element.style.width = "0";
+      element.style.height = "0";
       // The content of this item is already shown into the label container.
       // element.innerHTML = this.props.label || "";
     }
 
     return element;
+  }
+
+  /**
+   * @override Item.resize
+   * To resize the item.
+   * @param width Width.
+   * @param height Height.
+   */
+  public resizeElement(width: number, height: number): void {
+    // Size to 0, as the item content is managed using the label.
+    this.childElementRef.style.width = `0`;
+    this.childElementRef.style.height = `0`;
   }
 }

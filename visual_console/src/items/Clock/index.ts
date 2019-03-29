@@ -172,8 +172,8 @@ export default class Clock extends Item<ClockProps> {
    */
   public resize(width: number, height: number): void {
     super.resize(width, height);
-    // this.childElementRef.style.width = `${width}px`;
-    // this.childElementRef.style.height = `${height}px`;
+    this.childElementRef.style.width = `${width}px`;
+    this.childElementRef.style.height = `${height}px`;
     // Re-render the item to force it calculate a new font size.
     if (this.props.clockType === "digital") this.render();
   }
@@ -212,6 +212,8 @@ export default class Clock extends Item<ClockProps> {
 
     const div = document.createElement("div");
     div.className = "analogic-clock";
+    div.style.width = `${this.props.width}px`;
+    div.style.height = `${this.props.height}px`;
 
     // SVG container.
     const svg = document.createElementNS(svgNS, "svg");

@@ -117,10 +117,10 @@ if ($schedule_report != '') {
     $date = date(DATE_FORMAT);
     $time = date(TIME_FORMAT);
     $parameters[0] = get_parameter('id_schedule_report');
-    // $parameters[1] = db_get_value('schedule_email', 'treport', 'id_report', $id_report);
     $parameters[1] = get_parameter('schedule_email_address');
     $parameters[2] = get_parameter('schedule_subject', '');
     $parameters[3] = get_parameter('schedule_email', '');
+    $parameters[4] = get_parameter('report_type', '');
     $parameters['first_execution'] = strtotime($date.' '.$time);
 
     $values = [
@@ -141,7 +141,7 @@ if ($schedule_report != '') {
     echo '<br>';
 }
 
-// Other Checks for the edit the reports
+// Other Checks for the edit the reports.
 if ($idReport != 0) {
     $report = db_get_row_filter('treport', ['id_report' => $idReport]);
     $type_access_selected = reports_get_type_access($report);
@@ -293,7 +293,7 @@ switch ($action) {
 
                     $temp = [];
                     foreach ($items as $item) {
-                        // Remove the contents from the block to sort
+                        // Remove the contents from the block to sort.
                         if (array_search($item['id_rc'], $ids) === false) {
                             $temp[$item['order']] = $item['id_rc'];
                         }
@@ -1302,7 +1302,6 @@ switch ($action) {
                         $values['exception_condition_value'] = get_parameter('exception_condition_value');
                         $values['id_module_group'] = get_parameter('combo_modulegroup');
                         $values['id_group'] = get_parameter('combo_group');
-                        $values['show_extended_events'] = get_parameter('include_extended_events');
                         $values['server_name'] = get_parameter('server_name');
                         $server_id = (int) get_parameter('server_id');
                         if ($server_id != 0) {
@@ -1699,7 +1698,6 @@ switch ($action) {
                         $values['exception_condition_value'] = get_parameter('exception_condition_value');
                         $values['id_module_group'] = get_parameter('combo_modulegroup');
                         $values['id_group'] = get_parameter('combo_group');
-                        $values['show_extended_events'] = get_parameter('include_extended_events');
 
 
                         if ((($values['type'] == 'custom_graph') or ($values['type'] == 'automatic_custom_graph')) && ($values['id_gs'] == 0 || $values['id_gs'] == '')) {

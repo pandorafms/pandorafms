@@ -15,6 +15,9 @@ import Box, { boxPropsDecoder } from "./items/Box";
 import Line, { linePropsDecoder } from "./items/Line";
 import Label, { labelPropsDecoder } from "./items/Label";
 import SimpleValue, { simpleValuePropsDecoder } from "./items/SimpleValue";
+import EventsHistory, {
+  eventsHistoryPropsDecoder
+} from "./items/EventsHistory";
 
 // Base properties.
 export interface VisualConsoleProps extends Size {
@@ -101,7 +104,7 @@ function itemInstanceFrom(data: UnknownObject) {
     case ItemType.LINE_ITEM:
       return new Line(linePropsDecoder(data));
     case ItemType.AUTO_SLA_GRAPH:
-      throw new TypeError("item not found");
+      return new EventsHistory(eventsHistoryPropsDecoder(data));
     case ItemType.CIRCULAR_PROGRESS_BAR:
     case ItemType.CIRCULAR_INTERIOR_PROGRESS_BAR:
     case ItemType.DONUT_GRAPH:
@@ -247,6 +250,7 @@ export default class VisualConsole {
   public remove(): void {
     this.elements.forEach(e => e.remove()); // Arrow function.
     this.elements = [];
-    // TODO: Clean container.
+    // Clean container.
+    this.containerRef.innerHTML = "";
   }
 }

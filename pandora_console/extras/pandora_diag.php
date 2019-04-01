@@ -106,7 +106,9 @@ function get_value_sum($arr)
 {
     foreach ($arr as $clave) {
         foreach ($clave as $valor) {
-            $result += $valor;
+            if (is_numeric($valor) === true) {
+                $result += $valor;
+            }
         }
     }
 
@@ -137,8 +139,8 @@ function get_logs_size($file)
 function get_status_logs($path)
 {
     $status_server_log = '';
-    $size_server_log = get_logs_size($path);
-    if ($size_server_log <= 10240) {
+    $size_server_log = number_format(get_logs_size($path));
+    if ($size_server_log <= 1048576) {
         $status_server_log = "<a style ='color: green;text-decoration: none;'>Normal Status</a><a style ='text-decoration: none;'>&nbsp&nbsp You have less than 10 MB of logs</a>";
     } else {
         $status_server_log = "<a class= 'content' style= 'color: red;text-decoration: none;'>Warning Status</a><a style ='text-decoration: none;'>&nbsp&nbsp You have more than 10 MB of logs</a>";
@@ -412,11 +414,7 @@ render_info_data(
     render_info_data('SELECT COUNT(*) FROM tagente_modulo', 'Total modules');
     render_info_data('SELECT COUNT(*) FROM tgrupo', 'Total groups');
     render_info_data('SELECT COUNT(*) FROM tagente_datos', 'Total module data records');
-    // render_info_data ("SELECT COUNT(*) FROM tagente_datos_string","Total module string data records");
-    // render_info_data ("SELECT COUNT(*) FROM tagente_datos_log4x","Total module log4x data records");
     render_info_data('SELECT COUNT(*) FROM tagent_access', 'Total agent access record');
-    // render_info ("tagente_estado");
-    // render_info ("talert_template_modules");
     render_info_data('SELECT COUNT(*) FROM tevento', 'Total events');
 
     if ($config['enterprise_installed']) {
@@ -700,7 +698,7 @@ render_info_data(
     render_row(status_values($read_rnd_buffer_size_min_rec_value, $read_rnd_buffer_size), 'Read rnd-buffer size ', 'Read rnd-buffer size ');
     render_row(status_values($query_cache_min_res_unit_min_rec_value, $query_cache_min_res_unit), 'Query cache min-res-unit ', 'Query cache min-res-unit ');
     render_row(status_values($innodb_file_per_table_min_rec_value, $innodb_file_per_table), 'InnoDB file per table ', 'InnoDB file per table ');
-    echo "<tr><th style='background-color:#b1b1b1;font-weight:bold;font-style:italic;border-radius:2px;' align=center colspan='2'>".__('Tables fragmentation in the PandoraFMS database').'</th></tr>';
+    echo "<tr><th style='background-color:#b1b1b1;font-weight:bold;font-style:italic;border-radius:2px;' align=center colspan='2'>".__('Tables fragmentation in the Pandora FMS database').'</th></tr>';
 
 
 
@@ -708,14 +706,14 @@ render_info_data(
     render_row(number_format($tables_fragmentation, 2).'%', 'Tables fragmentation (current value)');
     render_row(status_fragmentation_tables($tables_fragmentation_max_rec_value, $tables_fragmentation), 'Status fragmentation tables');
 
-    echo "<tr><th style='background-color:#b1b1b1;font-weight:bold;font-style:italic;border-radius:2px;' align=center colspan='2'>".__(' PandoraFMS logs dates').'</th></tr>';
+    echo "<tr><th style='background-color:#b1b1b1;font-weight:bold;font-style:italic;border-radius:2px;' align=center colspan='2'>".__(' Pandora FMS logs dates').'</th></tr>';
 
-    render_row(number_format((get_logs_size($path_server_logs) / 1024), 2).'M', 'Size server logs (current value)');
+    render_row(number_format((get_logs_size($path_server_logs) / 1048576), 3).'M', 'Size server logs (current value)');
     render_row(get_status_logs($path_server_logs), 'Status server logs');
-    render_row(number_format((get_logs_size($path_console_logs) / 1024), 2).'M', 'Size console logs (current value)');
+    render_row(number_format((get_logs_size($path_console_logs) / 1048576), 3).'M', 'Size console logs (current value)');
     render_row(get_status_logs($path_console_logs), 'Status console logs');
 
-    echo "<tr><th style='background-color:#b1b1b1;font-weight:bold;font-style:italic;border-radius:2px;' align=center colspan='2'>".__(' PandoraFMS Licence Information').'</th></tr>';
+    echo "<tr><th style='background-color:#b1b1b1;font-weight:bold;font-style:italic;border-radius:2px;' align=center colspan='2'>".__(' Pandora FMS Licence Information').'</th></tr>';
 
     render_row(html_print_textarea('keys[customer_key]', 10, 255, $settings->customer_key, 'style="height:40px; width:450px;"', true), 'Customer key');
     render_row($license['expiry_date'], 'Expires');

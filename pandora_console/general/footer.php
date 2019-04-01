@@ -1,16 +1,19 @@
 <?php
 
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; version 2
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU General Public License for more details.
+/**
+ * Pandora FMS - http://pandorafms.com
+ * ==================================================
+ * Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; version 2
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ */
+
 if (isset($_SERVER['REQUEST_TIME'])) {
     $time = $_SERVER['REQUEST_TIME'];
 } else {
@@ -26,7 +29,7 @@ if (!$config['MR']) {
     $config['MR'] = 0;
 }
 
-echo '<a class="white_bold footer" target="_blank" href="'.$config['homeurl'].$license_file.'">';
+echo '<a class="footer" target="_blank" href="'.$config['homeurl'].$license_file.'">';
 
 require_once $config['homedir'].'/include/functions_update_manager.php';
 
@@ -40,9 +43,7 @@ if ($current_package == 0) {
 
 echo sprintf(__('%s %s - Build %s - MR %s', get_product_name(), $pandora_version, $build_package_version, $config['MR']));
 
-echo '</a><br />';
-echo '<a class="white footer">'.__('Page generated at').' '.date($config['date_format']);
-echo '</a><br /><span style="color:#eff">&reg; '.get_copyright_notice().'</span>';
+echo '</a> ';
 
 if (isset($config['debug'])) {
     $cache_info = [];

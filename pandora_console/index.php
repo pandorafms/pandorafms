@@ -173,8 +173,8 @@ if (!empty($config['https']) && empty($_SERVER['HTTPS'])) {
 // Pure mode (without menu, header and footer).
 $config['pure'] = (bool) get_parameter('pure');
 
-// Auto Refresh page (can now be disabled anywhere in the script)
-if (get_parameter('refr')) {
+// Auto Refresh page (can now be disabled anywhere in the script).
+if (get_parameter('refr') != null) {
     $config['refr'] = (int) get_parameter('refr');
 }
 
@@ -244,6 +244,10 @@ if (strlen($search) > 0) {
 
 // Login process
 if (! isset($config['id_user'])) {
+    // Clear error messages.
+    unset($_COOKIE['errormsg']);
+    setcookie('errormsg', null, -1);
+
     if (isset($_GET['login'])) {
         include_once 'include/functions_db.php';
         // Include it to use escape_string_sql function
@@ -1023,20 +1027,18 @@ if (get_parameter('login', 0) !== 0) {
 
 // Header
 if ($config['pure'] == 0) {
-    if ($config['classic_menu']) {
-        echo '<div id="container"><div id="head">';
-        include 'general/header.php';
-        echo '</div><div id="menu">';
-        include 'general/main_menu.php';
-        echo '</div>';
-        echo '<div style="padding-left:100px;" id="page">';
+    echo '<div id="container"><div id="head">';
+    include 'general/header.php';
+
+    if ($config['menu_type'] == 'classic') {
+        echo '</div><div id="page" class="page_classic"><div id="menu">';
     } else {
-        echo '<div id="container"><div id="head">';
-        include 'general/header.php';
-        echo '</div><div id="page" style="margin-top:20px;"><div id="menu">';
-        include 'general/main_menu.php';
-        echo '</div>';
+        echo '</div><div id="page" class="page_collapsed"><div id="menu">';
     }
+
+    include 'general/main_menu.php';
+    echo '</div>';
+    echo '<button onclick="topFunction()" id="top_btn" title="Go to top"></button>';
 } else {
     echo '<div id="main_pure">';
     // Require menu only to build structure to use it in ACLs
@@ -1065,6 +1067,9 @@ if ($searchPage) {
         if ($main_sec == false) {
             if ($sec == 'extensions') {
                 $main_sec = get_parameter('extension_in_menu');
+                if (empty($main_sec) === true) {
+                    $main_sec = $sec;
+                }
             } else if ($sec == 'gextensions') {
                     $main_sec = get_parameter('extension_in_menu');
             } else {
@@ -1248,6 +1253,27 @@ require 'include/php_to_js_values.php';
 ?>
 
 <script type="text/javascript" language="javascript">
+
+    // When the user scrolls down 400px from the top of the document, show the button.
+    window.onscroll = function() {scrollFunction()};
+
+    function scrollFunction() {
+        if (document.body.scrollTop > 400 || document.documentElement.scrollTop > 400) {
+            document.getElementById("top_btn").style.display = "block";
+        } else {
+            document.getElementById("top_btn").style.display = "none";
+        }
+    }
+
+    // When the user clicks on the button, scroll to the top of the document.
+    function topFunction() {
+        //document.body.scrollTop = 0; // For Safari.
+        //document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera.
+        $("HTML, BODY").animate({ scrollTop: 0 }, 500);
+    }
+
+
+
     //Initial load of page
     $(document).ready(adjustFooter);
     
@@ -1363,4 +1389,3 @@ require 'include/php_to_js_values.php';
 if (__PAN_XHPROF__ === 1) {
     pandora_xhprof_display_result('node_index');
 }
-

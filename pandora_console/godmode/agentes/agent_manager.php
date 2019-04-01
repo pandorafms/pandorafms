@@ -229,14 +229,14 @@ if (!$new_agent) {
     $table->data[0][1] .= "&nbsp;&nbsp;<span align='right'><a onClick=\"if (!confirm('".__('Are you sure?')."')) return false;\" href='index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&borrar_agente=$id_agente&search=&offset=0&sort_field=&sort=none'>".html_print_image('images/cross.png', true, ['title' => __('Delete agent')]).'</a>';
 }
 
-$table->data[1][0] = __('Alias');
+$table->data[1][0] = __('Alias').ui_print_help_tip(__('Characters /,\,|,%,#,&,$ will be ignored'), true).'</span>';
 $table->data[1][1] = html_print_input_text('alias', $alias, '', 50, 100, true);
 if ($new_agent) {
     $table->data[1][1] .= html_print_checkbox('alias_as_name', 1, $config['alias_as_name'], true).__('Use alias as name');
 }
 
 $table->data[2][0] = __('IP Address');
-$table->data[2][1] = html_print_input_text('direccion', $direccion_agente, '', 16, 100, true);
+$table->data[2][1] = html_print_input_text('direccion', $direccion_agente, '', 16, 100, true).html_print_checkbox('unique_ip', 1, $config['unique_ip'], true).__('Unique IP').ui_print_help_tip(__('Set the primary IP address as the unique IP, preventing the same primary IP address from being used in more than one agent'), true);
 
 if ($id_agente) {
     $table->data[2][1] .= '&nbsp;&nbsp;&nbsp;&nbsp;';
@@ -708,6 +708,13 @@ foreach ($fields as $field) {
         __('This field allows url insertion using the BBCode\'s url tag').'.<br />'.__('The format is: [url=\'url to navigate\']\'text to show\'[/url]').'.<br /><br />'.__('e.g.: [url=google.com]Google web search[/url]'),
         true
     );
+    $combo = [];
+    $combo = $field['combo_values'];
+    $combo = explode(',', $combo);
+    $combo_values = [];
+    foreach ($combo as $value) {
+        $combo_values[$value] = $value;
+    }
 
     $custom_value = db_get_value_filter(
         'description',
@@ -747,6 +754,28 @@ foreach ($fields as $field) {
         );
     }
 
+    if ($field['combo_values'] !== '') {
+        $data[1] = html_print_select(
+            $combo_values,
+            'customvalue_'.$field['id_field'],
+            $custom_value,
+            '',
+            __('None'),
+            '',
+            true,
+            false,
+            false,
+            '',
+            false,
+            false,
+            false,
+            false,
+            false,
+            '',
+            false
+        );
+    };
+
     array_push($table->data, $data);
 }
 
@@ -757,7 +786,7 @@ if (!empty($fields)) {
 echo '<div class="action-buttons" style="width: '.$table->width.'">';
 
 
-// The context help about the learning mode
+// The context help about the learning mode.
 if ($modo == 0) {
     echo "<span id='modules_not_learning_mode_context_help' style=''>";
 } else {

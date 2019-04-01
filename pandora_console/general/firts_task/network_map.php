@@ -26,7 +26,7 @@ $networkmap_types = networkmap_get_types($strict_user);
         <?php echo html_print_image('images/firts_task/icono_grande_reconserver.png', true, ['title' => __('Network Map')]); ?>
     </div>
     <div class="text_task">
-        <h3> <?php echo __('Create Network Map'); ?>        <p id="description_task"> 
+        <h3> <?php echo __('Create Network Map'); ?></h3><p id="description_task"> 
             <?php
             echo __(
                 'There is also an open-source version of the network map. 

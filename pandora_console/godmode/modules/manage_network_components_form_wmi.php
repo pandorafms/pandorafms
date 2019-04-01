@@ -44,9 +44,9 @@ $data[3] = html_print_input_text('tcp_send', $tcp_send, '', 25, 255, true);
 push_table_row($data, 'wmi_2');
 
 $data = [];
-$data[0] = __('Username');
+$data[0] = __('Username').ui_print_help_icon('column_macros', true);
 $data[1] = html_print_input_text('plugin_user', $plugin_user, '', 15, 255, true);
-$data[2] = __('Password');
+$data[2] = __('Password').ui_print_help_icon('column_macros', true);
 $data[3] = html_print_input_password('plugin_pass', $plugin_pass, '', 25, 255, true);
 
 push_table_row($data, 'wmi_3');

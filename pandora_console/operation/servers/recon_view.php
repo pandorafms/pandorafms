@@ -30,7 +30,7 @@ $servers = db_get_all_rows_sql('SELECT * FROM tserver WHERE server_type = 3');
 if ($servers === false) {
     $servers = [];
     ui_print_page_header(__('Recon View'), 'images/op_recon.png', false, '', false);
-    ui_print_error_message(__('Recon Server is disabled'));
+    ui_print_error_message(__('Discovery Server is disabled'));
     return;
 } else {
     $recon_task = db_get_all_rows_sql('SELECT * FROM trecon_task');

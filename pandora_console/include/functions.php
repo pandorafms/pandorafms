@@ -243,19 +243,25 @@ function format_numeric($number, $decimals=1)
 
 /**
  * Render numeric data for a graph. It adds magnitude suffix to the number
- * (M for millions, K for thousands...) base-10
+ * (M for millions, K for thousands...). Base can be modified with divider.
  *
- * TODO: base-2 multiplication
- *
- * @param float                                       $number   Number to be rendered
- * @param integer                                     $decimals Numbers after comma. Default value: 1
- * @param dec_point Decimal separator character. Default value: .
- * @param thousands_sep Thousands separator character. Default value: ,
+ * @param float   $number        Number to be rendered.
+ * @param integer $decimals      Numbers after comma (default 1).
+ * @param string  $dec_point     Decimal separator character (default .).
+ * @param string  $thousands_sep Thousands separator character (default ,).
+ * @param integer $divider       Number to divide the rendered number.
+ * @param string  $sufix         Units of the multiple.
  *
  * @return string A string with the number and the multiplier
  */
-function format_for_graph($number, $decimals=1, $dec_point='.', $thousands_sep=',')
-{
+function format_for_graph(
+    $number,
+    $decimals=1,
+    $dec_point='.',
+    $thousands_sep=',',
+    $divider=1000,
+    $sufix=''
+) {
     $shorts = [
         '',
         'K',
@@ -268,15 +274,15 @@ function format_for_graph($number, $decimals=1, $dec_point='.', $thousands_sep='
         'Y',
     ];
     $pos = 0;
-    while ($number >= 1000) {
-        // as long as the number can be divided by 1000
+    while ($number >= $divider) {
+        // As long as the number can be divided by divider.
         $pos++;
-        // Position in array starting with 0
-        $number = ($number / 1000);
+        // Position in array starting with 0.
+        $number = ($number / $divider);
     }
 
-    return remove_right_zeros(format_numeric($number, $decimals)).$shorts[$pos];
-    // This will actually do the rounding and the decimals
+    // This will actually do the rounding and the decimals.
+    return remove_right_zeros(format_numeric($number, $decimals)).$shorts[$pos].$sufix;
 }
 
 
@@ -852,6 +858,28 @@ function get_parameter_checkbox($name, $default='')
 }
 
 
+/**
+ * Transforms a swicth data (on - non present) to a int value.
+ *
+ * @param string $name    Variable, switch name.
+ * @param string $default Default value.
+ *
+ * @return integer Value, 1 on, 0 off.
+ */
+function get_parameter_switch($name, $default='')
+{
+    $data = get_parameter($name, null);
+
+    if ($data === null) {
+        return 0;
+    } else if ($data == 'on') {
+        return 1;
+    }
+
+    return 0;
+}
+
+
 function get_cookie($name, $default='')
 {
     if (isset($_COOKIE[$name])) {
@@ -1416,7 +1444,13 @@ function enterprise_include($filename)
     global $config;
 
     // Load enterprise extensions
-    $filepath = realpath($config['homedir'].'/'.ENTERPRISE_DIR.'/'.$filename);
+    if (defined('DESTDIR')) {
+        $destdir = DESTDIR;
+    } else {
+        $destdir = '';
+    }
+
+    $filepath = realpath($destdir.$config['homedir'].'/'.ENTERPRISE_DIR.'/'.$filename);
 
     if ($filepath === false) {
         return ENTERPRISE_NOT_HOOK;

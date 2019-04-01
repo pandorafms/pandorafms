@@ -1,16 +1,32 @@
 <?php
+/**
+ * Extension to manage a list of gateways and the node address where they should
+ * point to.
+ *
+ * @category   Extensions
+ * @package    Pandora FMS
+ * @subpackage Community
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
 
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2012 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public License
-// as published by the Free Software Foundation; version 2
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU General Public License for more details.
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
@@ -112,8 +128,8 @@
         </div>
         <div style='height: 10px'>
             <?php
-$version = '7.0NG.731';
-$build = '190211';
+            $version = '7.0NG.733';
+            $build = '190328';
             $banner = "v$version Build $build";
 
             error_reporting(0);
@@ -520,7 +536,7 @@ function install_step2()
         echo '<h2>Checking software dependencies</h2>';
             echo '<table border=0 width=230>';
             $res = 0;
-            $res += check_variable(phpversion(), '5.2', 'PHP version >= 5.2', 1);
+            $res += check_variable(phpversion(), '7.0', 'PHP version >= 7.0', 1);
             $res += check_extension('gd', 'PHP GD extension');
             $res += check_extension('ldap', 'PHP LDAP extension');
             $res += check_extension('snmp', 'PHP SNMP extension');
@@ -548,7 +564,6 @@ function install_step2()
 				font-size: 8.5pt;margin-top: 2px; font-weight: bolder;'>DB Engines</span>";
             echo '</td><td>';
             echo '</td></tr>';
-            check_extension('mysql', 'PHP MySQL extension');
             check_extension('mysqli', 'PHP MySQL(mysqli) extension');
             echo '</table>';
 

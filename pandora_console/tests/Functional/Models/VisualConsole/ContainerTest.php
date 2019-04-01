@@ -6,12 +6,17 @@ use PHPUnit\Framework\TestCase;
 use Models\VisualConsole\Container as VisualConsole;
 
 /**
- * Test class
+ * Test for the Visual Console Container.
  */
 class ContainerTest extends TestCase
 {
 
 
+    /**
+     * Test if the instance is created using a valid data structure.
+     *
+     * @return void
+     */
     public function testCanBeCreatedFromValidUserStructure(): void
     {
         $this->assertInstanceOf(
@@ -60,6 +65,11 @@ class ContainerTest extends TestCase
     }
 
 
+    /**
+     * Test if the instance is not created when using a invalid id.
+     *
+     * @return void
+     */
     public function testCannotBeCreatedWithInvalidId(): void
     {
         $this->expectException(InvalidArgumentException::class);
@@ -86,6 +96,11 @@ class ContainerTest extends TestCase
     }
 
 
+    /**
+     * Test if the instance is not created when using a invalid name.
+     *
+     * @return void
+     */
     public function testCannotBeCreatedWithInvalidName(): void
     {
         $this->expectException(InvalidArgumentException::class);
@@ -111,10 +126,15 @@ class ContainerTest extends TestCase
     }
 
 
+    /**
+     * Test if the instance is not created when using a invalid group id.
+     *
+     * @return void
+     */
     public function testCannotBeCreatedWithInvalidGroupId(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        // invalid group id.
+        // Invalid group id.
         VisualConsole::fromArray(
             [
                 'id'      => 1,
@@ -137,10 +157,15 @@ class ContainerTest extends TestCase
     }
 
 
+    /**
+     * Test if the instance is not created when using a invalid width.
+     *
+     * @return void
+     */
     public function testCannotBeCreatedWithInvalidWidth(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        // invalid width.
+        // Invalid width.
         VisualConsole::fromArray(
             [
                 'id'      => 1,
@@ -163,10 +188,15 @@ class ContainerTest extends TestCase
     }
 
 
+    /**
+     * Test if the instance is not created when using a invalid height.
+     *
+     * @return void
+     */
     public function testCannotBeCreatedWithInvalidHeigth(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        // invalid height.
+        // Invalid height.
         VisualConsole::fromArray(
             [
                 'id'      => 1,
@@ -189,11 +219,16 @@ class ContainerTest extends TestCase
     }
 
 
+    /**
+     * Test if the model has a valid JSON representation.
+     *
+     * @return void
+     */
     public function testContainerIsRepresentedAsJson(): void
     {
         $this->assertEquals(
-            '{"id":1,"name":"foo","groupId":0,"backgroundURL":null,"backgroundColor":null,"isFavorite":false,"width":1024,"height":768}',
-            VisualConsole::fromArray(
+            '{"backgroundColor":null,"backgroundURL":null,"groupId":0,"height":768,"id":1,"isFavorite":false,"name":"foo","width":1024}',
+            (string) VisualConsole::fromArray(
                 [
                     'id'      => 1,
                     'name'    => 'foo',

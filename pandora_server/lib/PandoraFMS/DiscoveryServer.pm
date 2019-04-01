@@ -1,6 +1,6 @@
-package PandoraFMS::ReconServer;
+package PandoraFMS::DiscoveryServer;
 ##########################################################################
-# Pandora FMS Recon Server.
+# Pandora FMS Discovery Server.
 # Pandora FMS. the Flexible Monitoring System. http://www.pandorafms.org
 ##########################################################################
 # Copyright (c) 2005-2009 Artica Soluciones Tecnologicas S.L
@@ -28,6 +28,7 @@ use IO::Socket::INET;
 use POSIX qw(strftime ceil);
 use JSON qw(decode_json encode_json);
 use Encode qw(encode_utf8);
+use MIME::Base64;
 
 # Default lib dir for RPM and DEB packages
 use lib '/usr/lib/perl5';
@@ -57,16 +58,16 @@ use constant OS_ROUTER => 17;
 use constant OS_SWITCH => 18;
 
 ########################################################################################
-# Recon Server class constructor.
+# Discovery Server class constructor.
 ########################################################################################
 sub new ($$$$$$) {
 	my ($class, $config, $dbh) = @_;
 	
-	return undef unless $config->{'reconserver'} == 1;
+	return undef unless $config->{'reconserver'} == 1 || $config->{'discoveryserver'} == 1;
 	
 	if (! -e $config->{'nmap'}) {
-		logger ($config, ' [E] ' . $config->{'nmap'} . " needed by " . $config->{'rb_product_name'} . " Recon Server not found.", 1);
-		print_message ($config, ' [E] ' . $config->{'nmap'} . " needed by " . $config->{'rb_product_name'} . " Recon Server not found.", 1);
+		logger ($config, ' [E] ' . $config->{'nmap'} . " needed by " . $config->{'rb_product_name'} . " Discovery Server not found.", 1);
+		print_message ($config, ' [E] ' . $config->{'nmap'} . " needed by " . $config->{'rb_product_name'} . " Discovery Server not found.", 1);
 		return undef;
 	}
 
@@ -78,14 +79,14 @@ sub new ($$$$$$) {
 	
 	# Restart automatic recon tasks.
 	db_do ($dbh, 'UPDATE trecon_task  SET utimestamp = 0 WHERE id_recon_server = ? AND status <> -1 AND interval_sweep > 0',
-	       get_server_id ($dbh, $config->{'servername'}, RECONSERVER));
+	       get_server_id ($dbh, $config->{'servername'}, DISCOVERYSERVER));
 
 	# Reset (but do not restart) manual recon tasks.
 	db_do ($dbh, 'UPDATE trecon_task  SET status = -1 WHERE id_recon_server = ? AND status <> -1 AND interval_sweep = 0',
-	       get_server_id ($dbh, $config->{'servername'}, RECONSERVER));
+	       get_server_id ($dbh, $config->{'servername'}, DISCOVERYSERVER));
 
 	# Call the constructor of the parent class
-	my $self = $class->SUPER::new($config, RECONSERVER, \&PandoraFMS::ReconServer::data_producer, \&PandoraFMS::ReconServer::data_consumer, $dbh);
+	my $self = $class->SUPER::new($config, DISCOVERYSERVER, \&PandoraFMS::DiscoveryServer::data_producer, \&PandoraFMS::DiscoveryServer::data_consumer, $dbh);
 	
 	bless $self, $class;
 	return $self;
@@ -98,8 +99,14 @@ sub run ($) {
 	my $self = shift;
 	my $pa_config = $self->getConfig ();
 	
-	print_message ($pa_config, " [*] Starting " . $pa_config->{'rb_product_name'} . " Recon Server.", 1);
-	$self->setNumThreads ($pa_config->{'recon_threads'});
+	print_message ($pa_config, " [*] Starting " . $pa_config->{'rb_product_name'} . " Discovery Server.", 1);
+	my $threads = $pa_config->{'recon_threads'};
+
+	# Use hightest value
+	if ($pa_config->{'discovery_threads'}  > $pa_config->{'recon_threads'}) {
+		$threads = $pa_config->{'discovery_threads'};
+	}
+	$self->setNumThreads($threads);
 	$self->SUPER::run (\@TaskQueue, \%PendingTasks, $Sem, $TaskSem);
 }
 
@@ -121,9 +128,10 @@ sub data_producer ($) {
 	# Status -1 means "done".
 	
 	my @rows = get_db_rows ($dbh, 'SELECT * FROM trecon_task 
-                                   WHERE id_recon_server = ?
-                                   AND disabled = 0
-                                   AND utimestamp = 0 OR (status = -1 AND interval_sweep > 0 AND (utimestamp + interval_sweep) < UNIX_TIMESTAMP())', $server_id);
+		WHERE id_recon_server = ?
+		AND disabled = 0
+		AND ((utimestamp = 0 AND interval_sweep != 0 OR status = 1)
+			OR (status = -1 AND interval_sweep > 0 AND (utimestamp + interval_sweep) < UNIX_TIMESTAMP()))', $server_id);
 	foreach my $row (@rows) {
 		
 		# Update task status
@@ -154,12 +162,15 @@ sub data_consumer ($$) {
 		logger($pa_config, 'Starting recon task for net ' . $task->{'subnet'} . '.', 10);
 	}
 
-	# Call nmap
-	my $nmap_args  = '-nsP -PE --max-retries '.$pa_config->{'icmp_checks'}.' --host-timeout '.$pa_config->{'networktimeout'}.'s -T'.$pa_config->{'recon_timing_template'};
-	my $np = new PandoraFMS::NmapParser;
 	eval {
 		my @subnets = split(/,/, safe_output($task->{'subnet'}));
 		my @communities = split(/,/, safe_output($task->{'snmp_community'}));
+		my @auth_strings = ();
+		if(defined($task->{'auth_strings'})) {
+			@auth_strings = split(/,/, safe_output($task->{'auth_strings'}));
+		}
+
+		my $main_event = pandora_event($pa_config, "[Discovery] Execution summary",$task->{'id_group'}, 0, 0, 0, 0, 'system', 0, $dbh);
 
 		my $recon = new PandoraFMS::Recon::Base(
 			communities => \@communities,
@@ -186,6 +197,10 @@ sub data_consumer ($$) {
 			subnets => \@subnets,
 			task_id => $task->{'id_rt'},
 			vlan_cache_enabled => $task->{'vlan_enabled'},
+			wmi_enabled => $task->{'wmi_enabled'},
+			auth_strings_array => \@auth_strings,
+			autoconfiguration_enabled => $task->{'autoconfiguration_enabled'},
+			main_event_id => $main_event,
 			%{$pa_config}
 		);
 
@@ -225,7 +240,13 @@ sub exec_recon_script ($$$) {
 	# \r and \n should be escaped for decode_json().
 	$macros =~ s/\n/\\n/g;
 	$macros =~ s/\r/\\r/g;
-	my $decoded_macros = decode_json (encode_utf8($macros));
+	my $decoded_macros;
+	
+	if ($macros) {
+		eval {
+			$decoded_macros = decode_json(encode_utf8($macros));
+		};
+	}
 	
 	my $macros_parameters = '';
 	
@@ -244,15 +265,28 @@ sub exec_recon_script ($$$) {
 			$macros_parameters = $macros_parameters . ' "' . $m->{"value"} . '"';
 		}
 	}
+
+	my $ent_script = 0;
+	my $args = enterprise_hook('discovery_custom_recon_scripts',[$pa_config, $dbh, $task, $script]);
+	if (!$args) {
+		$args = "$task->{'id_rt'} $task->{'id_group'} $task->{'create_incident'} $macros_parameters";
+	} else {
+		$ent_script = 1;
+	}
 	
 	if (-x $command) {
-		`$command $task->{'id_rt'} $task->{'id_group'} $task->{'create_incident'} $macros_parameters`;
+		my $exec_output = `$command $args`;
+		logger($pa_config, "Execution output: \n". $exec_output, 10);
 	} else {
-		logger ($pa_config, "Cannot execute recon task command $command.");
+		logger($pa_config, "Cannot execute recon task command $command.", 10);
 	}
 	
 	# Only update the timestamp in case something went wrong. The script should set the status.
 	db_do ($dbh, 'UPDATE trecon_task SET utimestamp = ? WHERE id_rt = ?', time (), $task->{'id_rt'});
+
+	if ($ent_script == 1) {
+		enterprise_hook('discovery_clean_custom_recon',[$pa_config, $dbh, $task, $script]);
+	}
 	
 	logger($pa_config, 'Done executing recon script ' . safe_output($script->{'name'}), 10);
 	return 0;
@@ -435,13 +469,30 @@ sub PandoraFMS::Recon::Base::create_agent($$) {
 		# Are we filtering hosts by TCP port?
 		return if ($self->{'recon_ports'} ne '' && $self->tcp_scan($device) == 0);
 		my $location = get_geoip_info($self->{'pa_config'}, $device);
-		$agent_id = pandora_create_agent($self->{'pa_config'}, $self->{'pa_config'}->{'servername'}, $host_name, $device,
-			$self->{'group_id'}, 0, $id_os,
-			'', 300, $self->{'dbh'}, undef,
-			$location->{'longitude'}, $location->{'latitude'}
+		$agent_id = pandora_create_agent(
+			$self->{'pa_config'}, $self->{'pa_config'}->{'servername'},
+			$host_name, $device, $self->{'group_id'}, 0, $id_os,
+			'', 300, $self->{'dbh'}, undef, $location->{'longitude'},
+			$location->{'latitude'}
 		);
 		return undef unless defined ($agent_id) and ($agent_id > 0);
-		pandora_event($self->{'pa_config'}, "[RECON] New " . safe_output($self->get_device_type($device)) . " found (" . join(',', safe_output($self->get_addresses($device))) . ").", $self->{'group_id'}, $agent_id, 2, 0, 0, 'recon_host_detected', 0, $self->{'dbh'});
+
+		# Autoconfigure agent
+		if (defined($self->{'autoconfiguration_enabled'}) && $self->{'autoconfiguration_enabled'} == 1) {
+			my $agent_data = PandoraFMS::DB::get_db_single_row($self->{'dbh'}, 'SELECT * FROM tagente WHERE id_agente = ?', $agent_id);
+			# Update agent configuration once, after create agent.
+			enterprise_hook('autoconfigure_agent', [$self->{'pa_config'}, $host_name, $agent_id, $agent_data, $self->{'dbh'}, 1]);
+		}
+		
+		if (defined($self->{'main_event_id'})) {
+			my $addresses_str = join(',', safe_output($self->get_addresses($device)));
+			pandora_extended_event(
+				$self->{'pa_config'}, $self->{'dbh'}, $self->{'main_event_id'},
+				"[Discovery] New " . safe_output($self->get_device_type($device)) . " found " . $host_name . " (" . $addresses_str . ") Agent $agent_id."
+			);
+
+		}
+		
 		$agent_learning = 1;
 
 		# Create network profile modules for the agent
@@ -749,12 +800,51 @@ sub PandoraFMS::Recon::Base::set_parent($$$) {
 }
 
 ##########################################################################
+# Create a WMI module for the given agent.
+##########################################################################
+sub PandoraFMS::Recon::Base::wmi_module {
+	my ($self, $agent_id, $target, $wmi_query, $wmi_auth, $column,
+        $module_name, $module_description, $module_type, $unit) = @_;
+
+	# Check whether the module already exists.
+	my $module_id = get_agent_module_id($self->{'dbh'}, $module_name, $agent_id);
+	return if ($module_id > 0);
+
+	my ($user, $pass) = ($wmi_auth ne '') ? split('%', $wmi_auth) : (undef, undef);
+	my %module = (
+		'descripcion' => safe_input($module_description),
+		'id_agente' => $agent_id,
+		'id_modulo' => 6,
+		'id_tipo_modulo' => get_module_id($self->{'dbh'}, $module_type),
+		'ip_target' => $target,
+		'nombre' => safe_input($module_name),
+		'plugin_pass' => defined($pass) ? $pass : '',
+		'plugin_user' => defined($user) ? $user : '',
+		'snmp_oid' => $wmi_query,
+		'tcp_port' => $column,
+		'unit' => defined($unit) ? $unit : ''
+	);
+	
+	pandora_create_module_from_hash($self->{'pa_config'}, \%module, $self->{'dbh'});
+}
+
+##########################################################################
 # Update recon task status.
 ##########################################################################
 sub PandoraFMS::Recon::Base::update_progress ($$) {
 	my ($self, $progress) = @_;
 
-	db_do ($self->{'dbh'}, 'UPDATE trecon_task SET utimestamp = ?, status = ? WHERE id_rt = ?', time (), $progress, $self->{'task_id'});
+	my $stats = {};
+	if (defined($self->{'summary'}) && $self->{'summary'} ne '') {
+		$stats->{'summary'} = $self->{'summary'};
+	}
+	$stats->{'step'} = $self->{'step'};
+	$stats->{'c_network_name'} = $self->{'c_network_name'};
+	$stats->{'c_network_percent'} = $self->{'c_network_percent'};
+
+	# Store progress, last contact and overall status.
+	db_do ($self->{'dbh'}, 'UPDATE trecon_task SET utimestamp = ?, status = ?, summary = ? WHERE id_rt = ?',
+		time (), $progress, encode_json($stats), $self->{'task_id'});
 }
 
 1;

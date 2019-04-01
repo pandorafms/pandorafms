@@ -294,6 +294,8 @@ enterprise_hook('close_meta_frame');
         
         $(".loading_tree").show();
         
+
+
         var parameters = {};
         parameters['page'] = "include/ajax/tree.ajax";
         parameters['getChildren'] = 1;

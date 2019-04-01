@@ -32,6 +32,7 @@
 <li><b>Event associated module name:</b> _module_name_</li>
 <li><b>Event owner user:</b> _owner_user_</li>
 <li><b>User ID:</b> _user_id_</li>
+<li><b>Id of the user who fires the response:</b> _current_user_</li>
 </ul> 
 
 <h4>Custom fields</h4>

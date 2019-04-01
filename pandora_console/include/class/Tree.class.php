@@ -57,6 +57,8 @@ class Tree
 
     protected $L2inner = '';
 
+    protected $avoid_condition = false;
+
     protected $L3forceTagCondition = false;
 
     const TV_DEFAULT_AGENT_STATUS = -1;
@@ -77,6 +79,7 @@ class Tree
         $this->access = $access;
 
         $userGroupsACL = users_get_groups(false, $this->access);
+
         $this->userGroupsACL = empty($userGroupsACL) ? false : $userGroupsACL;
         $this->userGroups = $this->userGroupsACL;
         $this->userGroupsArray = array_keys($this->userGroups);
@@ -947,7 +950,6 @@ class Tree
         }
 
         $this->processAgents($data);
-
         $this->tree = $data;
     }
 
@@ -1032,7 +1034,6 @@ class Tree
 
         $data = $this->getProcessedModules($data);
         $this->processModules($data);
-
         $this->tree = $data;
     }
 
@@ -1051,8 +1052,13 @@ class Tree
         $tag_condition = $this->getTagCondition();
         $tag_join = empty($tag_condition) && (!$this->L3forceTagCondition) ? '' : $this->getTagJoin();
 
-        $condition = $this->L2condition;
-        $inner = $this->L2inner;
+        if ($this->avoid_condition === true) {
+            $condition = '';
+            $inner = '';
+        } else {
+            $condition = $this->L2condition;
+            $inner = $this->L2inner;
+        }
 
         $columns = 'DISTINCT(tam.id_agente_modulo) AS id, tam.nombre AS name,
 			tam.id_tipo_modulo, tam.id_modulo, tae.estado, tae.datos,
@@ -1076,10 +1082,10 @@ class Tree
 				$group_acl
 				$agent_search_filter
 				$agent_status_filter
-				$module_status_filter
 				$module_search_filter
 				$tag_condition
 			ORDER BY tam.nombre ASC, tam.id_agente_modulo ASC";
+
         return $sql;
     }
 

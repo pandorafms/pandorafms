@@ -656,6 +656,19 @@ CREATE TABLE IF NOT EXISTS `tevento` (
 -- Criticity: 4 - Critical (red) (status 1)
 
 -- ---------------------------------------------------------------------
+-- Table `tevent_extended`
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tevent_extended` (
+	`id` serial PRIMARY KEY,
+	`id_evento` bigint(20) unsigned NOT NULL,
+	`external_id` bigint(20) unsigned,
+	`utimestamp` bigint(20) NOT NULL default '0',
+	`description` text,
+	FOREIGN KEY `tevent_ext_fk`(`id_evento`) REFERENCES `tevento`(`id_evento`)
+    ON UPDATE CASCADE ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ---------------------------------------------------------------------
 -- Table `tgrupo`
 -- ---------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tgrupo` (
@@ -719,20 +732,6 @@ CREATE TABLE IF NOT EXISTS `tlink` (
 	PRIMARY KEY  (`id_link`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- -----------------------------------------------------
--- Table `tmensajes`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `tmensajes` (
-	`id_mensaje` int(10) unsigned NOT NULL auto_increment,
-	`id_usuario_origen` varchar(60) NOT NULL default '',
-	`id_usuario_destino` varchar(60) NOT NULL default '',
-	`mensaje` text NOT NULL,
-	`timestamp` bigint (20) unsigned NOT NULL default '0',
-	`subject` varchar(255) NOT NULL default '',
-	`estado` int(4) unsigned NOT NULL default '0',
-	PRIMARY KEY  (`id_mensaje`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
 -- ----------------------------------------------------------------------
 -- Table `tmodule_group`
 -- ----------------------------------------------------------------------
@@ -783,6 +782,10 @@ CREATE TABLE IF NOT EXISTS `trecon_task` (
 	`snmp_privacy_method` varchar(25) NOT NULL default '',
 	`snmp_privacy_pass` varchar(255) NOT NULL default '',
 	`snmp_security_level` varchar(25) NOT NULL default '',
+	`wmi_enabled` tinyint(1) unsigned DEFAULT '0',
+	`auth_strings` text,
+	`autoconfiguration_enabled` tinyint(1) unsigned default '0',
+	`summary` text,
 	PRIMARY KEY  (`id_rt`),
 	KEY `recon_task_daemon` (`id_recon_server`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
@@ -1177,6 +1180,113 @@ CREATE TABLE IF NOT EXISTS `treset_pass_history` (
 	PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+-- -----------------------------------------------------
+-- Table `tnotification_source`
+-- -----------------------------------------------------
+CREATE TABLE `tnotification_source` (
+    `id` serial,
+    `description` VARCHAR(255) DEFAULT NULL,
+    `icon` text,
+    `max_postpone_time` int(11) DEFAULT NULL,
+    `enabled` int(1) DEFAULT NULL,
+    `user_editable` int(1) DEFAULT NULL,
+    `also_mail` int(1) DEFAULT NULL,
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- -----------------------------------------------------
+-- Table `tmensajes`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tmensajes` (
+	`id_mensaje` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+	`id_usuario_origen` VARCHAR(60) NOT NULL DEFAULT '',
+	`mensaje` TEXT NOT NULL,
+	`timestamp` BIGINT(20) UNSIGNED NOT NULL DEFAULT '0',
+	`subject` VARCHAR(255) NOT NULL DEFAULT '',
+	`estado` INT(4) UNSIGNED NOT NULL DEFAULT '0',
+	`url` TEXT,
+	`response_mode` VARCHAR(200) DEFAULT NULL,
+	`citicity` INT(10) UNSIGNED DEFAULT '0',
+	`id_source` BIGINT(20) UNSIGNED NOT NULL,
+	`subtype` VARCHAR(255) DEFAULT '',
+	PRIMARY KEY (`id_mensaje`),
+	UNIQUE KEY `id_mensaje` (`id_mensaje`),
+	KEY `tsource_fk` (`id_source`),
+	CONSTRAINT `tsource_fk` FOREIGN KEY (`id_source`) REFERENCES `tnotification_source` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8;
+
+-- ----------------------------------------------------------------------
+-- Table `tnotification_user`
+-- ----------------------------------------------------------------------
+CREATE TABLE `tnotification_user` (
+    `id_mensaje` INT(10) UNSIGNED NOT NULL,
+    `id_user` VARCHAR(60) NOT NULL,
+    `utimestamp_read` BIGINT(20),
+    `utimestamp_erased` BIGINT(20),
+    `postpone` INT,
+    PRIMARY KEY (`id_mensaje`,`id_user`),
+    FOREIGN KEY (`id_mensaje`) REFERENCES `tmensajes`(`id_mensaje`)
+        ON UPDATE CASCADE ON DELETE CASCADE,
+    FOREIGN KEY (`id_user`) REFERENCES `tusuario`(`id_user`)
+        ON UPDATE CASCADE ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------------------------------------------------
+-- Table `tnotification_group`
+-- ----------------------------------------------------------------------
+CREATE TABLE `tnotification_group` (
+	`id_mensaje` INT(10) UNSIGNED NOT NULL,
+	`id_group` mediumint(4) UNSIGNED NOT NULL,
+	PRIMARY KEY (`id_mensaje`,`id_group`),
+	FOREIGN KEY (`id_mensaje`) REFERENCES `tmensajes`(`id_mensaje`)
+		ON UPDATE CASCADE ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------------------------------------------------
+-- Table `tnotification_source_user`
+-- ----------------------------------------------------------------------
+CREATE TABLE `tnotification_source_user` (
+    `id_source` BIGINT(20) UNSIGNED NOT NULL,
+    `id_user` VARCHAR(60),
+    `enabled` INT(1) DEFAULT NULL,
+    `also_mail` INT(1) DEFAULT NULL,
+    PRIMARY KEY (`id_source`,`id_user`),
+    FOREIGN KEY (`id_source`) REFERENCES `tnotification_source`(`id`)
+        ON UPDATE CASCADE ON DELETE CASCADE,
+    FOREIGN KEY (`id_user`) REFERENCES `tusuario`(`id_user`)
+        ON UPDATE CASCADE ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------------------------------------------------
+-- Table `tnotification_source_group`
+-- ----------------------------------------------------------------------
+CREATE TABLE `tnotification_source_group` (
+    `id_source` BIGINT(20) UNSIGNED NOT NULL,
+    `id_group` mediumint(4) unsigned NOT NULL,
+    PRIMARY KEY (`id_source`,`id_group`),
+	INDEX (`id_group`),
+    FOREIGN KEY (`id_source`) REFERENCES `tnotification_source`(`id`)
+        ON UPDATE CASCADE ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------------------------------------------------
+-- Table `tnotification_source_user`
+-- ----------------------------------------------------------------------
+CREATE TABLE `tnotification_source_group_user` (
+    `id_source` BIGINT(20) UNSIGNED NOT NULL,
+    `id_group` mediumint(4) unsigned NOT NULL,
+    `id_user` VARCHAR(60),
+    `enabled` INT(1) DEFAULT NULL,
+    `also_mail` INT(1) DEFAULT NULL,
+    PRIMARY KEY (`id_source`,`id_user`),
+    FOREIGN KEY (`id_source`) REFERENCES `tnotification_source`(`id`)
+        ON UPDATE CASCADE ON DELETE CASCADE,
+    FOREIGN KEY (`id_user`) REFERENCES `tusuario`(`id_user`)
+        ON UPDATE CASCADE ON DELETE CASCADE,
+    FOREIGN KEY (`id_group`) REFERENCES `tnotification_source_group`(`id_group`)
+        ON UPDATE CASCADE ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 -- ----------------------------------------------------------------------
 -- Table `tnews`
 -- ----------------------------------------------------------------------
@@ -1303,6 +1413,7 @@ CREATE TABLE IF NOT EXISTS `treport_content` (
 	`visual_format` tinyint(1) UNSIGNED NOT NULL default '0',
 	`hide_no_data` tinyint(1) default 0,
 	`recursion` tinyint(1) default NULL,
+	`show_extended_events` tinyint(1) default '0',
 	PRIMARY KEY(`id_rc`),
 	FOREIGN KEY (`id_report`) REFERENCES treport(`id_report`)
 		ON UPDATE CASCADE ON DELETE CASCADE
@@ -1785,6 +1896,7 @@ CREATE TABLE IF NOT EXISTS `tagent_custom_fields` (
 	`name` varchar(45) NOT NULL default '',
 	`display_on_front` tinyint(1) NOT NULL default 0,
 	`is_password_type` tinyint(1) NOT NULL default 0,
+	`combo_values` VARCHAR(255) DEFAULT '',
 	PRIMARY KEY  (`id_field`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -3378,3 +3490,44 @@ CREATE TABLE IF NOT EXISTS `tagent_custom_fields_filter` (
 	`group_search` int(10) unsigned default '0',
 	PRIMARY KEY(`id`)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
+
+-- -----------------------------------------------------
+-- Table `tnetwork_matrix`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tnetwork_matrix` (
+	`id` int(10) unsigned NOT NULL auto_increment,
+	`source` varchar(60) default '',
+	`destination` varchar(60) default '',
+	`utimestamp` bigint(20) default 0,
+	`bytes` int(18) unsigned default 0,
+	`pkts` int(18) unsigned default 0,
+	PRIMARY KEY (`id`),
+	UNIQUE (`source`, `destination`, `utimestamp`)
+) ENGINE = InnoDB DEFAULT CHARSET=utf8 ;
+
+-- ---------------------------------------------------------------------
+-- Table `user_task`
+-- ---------------------------------------------------------------------
+CREATE TABLE `tuser_task` (
+	`id` int(20) unsigned NOT NULL auto_increment,
+	`function_name` varchar(80) NOT NULL default '',
+	`parameters` text NOT NULL default '',
+	`name` varchar(60) NOT NULL default '',
+	PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ---------------------------------------------------------------------
+-- Table `user_task_scheduled`
+-- ---------------------------------------------------------------------
+CREATE TABLE `tuser_task_scheduled` (
+	`id` int(20) unsigned NOT NULL auto_increment,
+	`id_usuario` varchar(60) NOT NULL default '0',
+	`id_user_task` int(20) unsigned NOT NULL default '0',
+	`args` TEXT NOT NULL,
+	`scheduled` enum('no','hourly','daily','weekly','monthly','yearly','custom') default 'no',
+	`last_run` int(20) unsigned default '0',
+	`custom_data` int(10) NULL default '0',
+	`flag_delete` tinyint(1) UNSIGNED NOT NULL default 0,
+	`id_grupo` int(10) unsigned NOT NULL default 0,
+	PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;

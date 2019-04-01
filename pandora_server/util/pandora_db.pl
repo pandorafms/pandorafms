@@ -34,7 +34,7 @@ use PandoraFMS::Config;
 use PandoraFMS::DB;
 
 # version: define current version
-my $version = "7.0NG.731 PS190211";
+my $version = "7.0NG.733 PS190331";
 
 # Pandora server configuration
 my %conf;
@@ -170,11 +170,6 @@ sub pandora_purgedb ($$) {
 	# String data deletion
 	if (!defined($conf->{'_string_purge'})){
 		$conf->{'_string_purge'} = 7;
-	}
-	# Update alert with last_fired older than today - time_threshold
-	my @templates = get_db_rows ($dbh, 'SELECT t1.id,t1.time_threshold FROM talert_templates t1 WHERE EXISTS ( SELECT * FROM talert_template_modules t2 WHERE t1.id = t2.id_alert_template );');
-	foreach my $template(@templates) {
-		db_do($dbh, 'UPDATE talert_template_modules SET times_fired = 0 WHERE id_alert_template = ? AND times_fired > 0 AND last_fired < (? - ?)',$template->{'id'},time(),$template->{'time_threshold'});
 	}
 
 	if ($conf->{'_string_purge'} > 0) {
@@ -345,7 +340,7 @@ sub pandora_purgedb ($$) {
 	} else {
 		my @blacklist_types = ("'SLA_services'", "'custom_graph'", "'sql_graph_vbar'", "'sql_graph_hbar'",
 			"'sql_graph_pie'", "'database_serialized'", "'sql'", "'inventory'", "'inventory_changes'",
-			"'netflow_area'", "'netflow_pie'", "'netflow_data'", "'netflow_statistics'", "'netflow_summary'");
+			"'netflow_area'", "'netflow_data'", "'netflow_summary'");
 		my $blacklist_types_str = join(',', @blacklist_types);
 		
 		# Deleted modules
@@ -434,9 +429,23 @@ sub pandora_purgedb ($$) {
 				WHERE date < CURDATE() - $conf->{'_num_past_special_days'} AND date > '0001-01-01'");
 		}
 	}
-	
+
 	# Delete old tgraph_source data
 	db_do ($dbh,"DELETE FROM tgraph_source WHERE id_graph NOT IN (SELECT id_graph FROM tgraph)");
+
+	# Delete network traffic old data.
+	log_message ('PURGE', 'Deleting old network matrix data.');
+	if ($conf->{'_delete_old_network_matrix'} > 0) {
+		my $matrix_limit = time() - 86400 * $conf->{'_delete_old_network_matrix'};
+		db_do ($dbh, "DELETE FROM tnetwork_matrix WHERE utimestamp < ?", $matrix_limit);
+	}
+
+	# Delete old messages
+	log_message ('PURGE', "Deleting old messages.");
+	if ($conf->{'_delete_old_messages'} > 0) {
+		my $message_limit = time() - 86400 * $conf->{'_delete_old_messages'};
+		db_do ($dbh, "DELETE FROM tmensajes WHERE timestamp < ?", $message_limit);
+	}
 }
 
 ###############################################################################
@@ -656,6 +665,8 @@ sub pandora_load_config_pdb ($) {
 	$conf->{'_history_db_delay'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'history_db_delay'");
 	$conf->{'_days_delete_unknown'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'days_delete_unknown'");
 	$conf->{'_inventory_purge'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'inventory_purge'");
+	$conf->{'_delete_old_messages'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'delete_old_messages'");
+	$conf->{'_delete_old_network_matrix'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'delete_old_network_matrix'");
 	$conf->{'_enterprise_installed'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'enterprise_installed'");
 	$conf->{'_metaconsole'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'metaconsole'");
 	$conf->{'_metaconsole_events_history'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'metaconsole_events_history'");

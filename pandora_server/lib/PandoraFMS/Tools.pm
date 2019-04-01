@@ -51,7 +51,7 @@ our @EXPORT = qw(
 	DATASERVER
 	NETWORKSERVER
 	SNMPCONSOLE
-	RECONSERVER
+	DISCOVERYSERVER
 	PLUGINSERVER
 	PREDICTIONSERVER
 	WMISERVER
@@ -134,7 +134,7 @@ our @EXPORT = qw(
 use constant DATASERVER => 0;
 use constant NETWORKSERVER => 1;
 use constant SNMPCONSOLE => 2;
-use constant RECONSERVER => 3;
+use constant DISCOVERYSERVER => 3;
 use constant PLUGINSERVER => 4;
 use constant PREDICTIONSERVER => 5;
 use constant WMISERVER => 6;
@@ -1774,7 +1774,7 @@ sub api_call_url {
 	
 
 	my $ua = LWP::UserAgent->new();
-	$ua->timeout($options->{lwp_timeout});
+	$ua->timeout($pa_config->{'tcp_timeout'});
 	# Enable environmental proxy settings
 	$ua->env_proxy;
 	# Enable in-memory cookie management

@@ -22,7 +22,7 @@ ui_require_css_file('firts_task');
         <?php echo html_print_image('images/firts_task/icono_grande_reconserver.png', true, ['title' => __('Fields Manager')]); ?>
     </div>
     <div class="text_task">
-        <h3> <?php echo __('Create Fields Manager'); ?>        <p id="description_task"> 
+        <h3> <?php echo __('Create Fields Manager'); ?></h3><p id="description_task"> 
             <?php
             echo __(
                 "Custom fields are an easy way to personalized agent's information.

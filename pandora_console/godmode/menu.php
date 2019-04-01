@@ -21,6 +21,21 @@ require_once 'include/functions_menu.php';
 $menu_godmode = [];
 $menu_godmode['class'] = 'godmode';
 
+
+if (check_acl($config['id_user'], 0, 'PM')) {
+    $sub = [];
+    $sub['godmode/servers/discovery']['text'] = __('Discovery');
+    $sub['godmode/servers/discovery']['id'] = 'Discovery';
+    $sub['godmode/servers/discovery']['subsecs'] = ['godmode/servers/discovery'];
+
+    // Add to menu.
+    $menu_godmode['discovery']['text'] = __('Discovery');
+    $menu_godmode['discovery']['sec2'] = 'godmode/servers/discovery';
+    $menu_godmode['discovery']['id'] = 'god-discovery';
+    $menu_godmode['discovery']['sub'] = $sub;
+}
+
+
 $sub = [];
 if (check_acl($config['id_user'], 0, 'AW') || check_acl($config['id_user'], 0, 'AD')) {
     $sub['godmode/agentes/modificar_agente']['text'] = __('Manage agents');
@@ -200,6 +215,7 @@ if (check_acl($config['id_user'], 0, 'AW') || check_acl($config['id_user'], 0, '
     $menu_godmode['gservers']['id'] = 'god-servers';
 
     $sub = [];
+
     if (check_acl($config['id_user'], 0, 'AW')) {
         $sub['godmode/servers/modificar_server']['text'] = __('Manage servers');
         $sub['godmode/servers/modificar_server']['id'] = 'Manage servers';
@@ -209,14 +225,8 @@ if (check_acl($config['id_user'], 0, 'AW') || check_acl($config['id_user'], 0, '
     if (check_acl($config['id_user'], 0, 'PM')) {
         enterprise_hook('ha_cluster');
 
-        $sub['godmode/servers/manage_recontask']['text'] = __('Recon task');
-        $sub['godmode/servers/manage_recontask']['id'] = 'Recon task';
-
         $sub['godmode/servers/plugin']['text'] = __('Plugins');
         $sub['godmode/servers/plugin']['id'] = 'Plugins';
-
-        $sub['godmode/servers/recon_script']['text'] = __('Recon script');
-        $sub['godmode/servers/recon_script']['id'] = 'Recon script';
 
         enterprise_hook('export_target_submenu');
 
@@ -268,6 +278,9 @@ if (check_acl($config['id_user'], 0, 'PM')) {
 
     $sub2['godmode/setup/setup&amp;section=ehorus']['text'] = __('eHorus');
     $sub2['godmode/setup/setup&amp;section=ehorus']['refr'] = 0;
+
+    $sub2['godmode/setup/setup&amp;section=notifications']['text'] = __('Notifications');
+    $sub2['godmode/setup/setup&amp;section=notifications']['refr'] = 0;
 
     if ($config['activate_gis']) {
         $sub2['godmode/setup/gis']['text'] = __('Map conections GIS');

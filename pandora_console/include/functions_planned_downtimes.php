@@ -534,9 +534,10 @@ function planned_downtimes_migrate_malformed_downtimes_copy_items($original_down
 /**
  * Stop a planned downtime.
  *
- * @param array Planned downtime data.
+ * @param array $downtime Planned downtime data.
  *
- * @return mixes False on error or an array with the result and a message of the operation.
+ * @return mixed False on error or an array with the result and a message of
+ *      the operation.
  */
 function planned_downtimes_stop($downtime)
 {
@@ -566,7 +567,9 @@ function planned_downtimes_stop($downtime)
         case 'periodically':
         return false;
 
-            break;
+        default:
+            // Nothing to do.
+        break;
     }
 
     $message .= ui_print_result_message(
@@ -593,7 +596,7 @@ function planned_downtimes_stop($downtime)
             true
         );
 
-        // Reenabled the Agents or Modules or alerts...depends of type
+        // Reenabled the Agents or Modules or alerts...depends of type.
         switch ($downtime['type_downtime']) {
             case 'quiet':
                 $agents = db_get_all_rows_filter(
@@ -658,7 +661,10 @@ function planned_downtimes_stop($downtime)
                 foreach ($agents as $agent) {
                     $result = db_process_sql_update(
                         'tagente',
-                        ['disabled' => 0],
+                        [
+                            'disabled'            => 0,
+                            'update_module_count' => 1,
+                        ],
                         ['id_agente' => $agent['id_agent']]
                     );
 
@@ -702,6 +708,10 @@ function planned_downtimes_stop($downtime)
                     }
                 }
             break;
+
+            default:
+                // Nothing to do.
+            break;
         }
 
         $message .= ui_print_info_message(
@@ -725,8 +735,6 @@ function planned_downtimes_created($values)
     $check_group = (bool) db_get_value('id_grupo', 'tgrupo', 'id_grupo', $values['id_group']);
     $check = (bool) db_get_value('name', 'tplanned_downtime', 'name', $values['name']);
 
-    $datetime_from = strtotime($values['once_date_from'].' '.$values['once_time_from']);
-    $datetime_to = strtotime($values['once_date_to'].' '.$values['once_time_to']);
     $now = time();
     $result = false;
 
@@ -735,15 +743,15 @@ function planned_downtimes_created($values)
             'return'  => false,
             'message' => __('Not created. Error inserting data. Start time must be higher than the current time'),
         ];
+    } else if ($values['type_execution'] == 'once' && !$config['past_planned_downtimes'] && $values['date_to'] <= $now) {
+        return [
+            'return'  => false,
+            'message' => __('Not created. Error inserting data').'. '.__('The end date must be higher than the current time'),
+        ];
     } else if ($values['type_execution'] == 'once' && $values['date_from'] >= $values['date_to']) {
         return [
             'return'  => false,
             'message' => __('Not created. Error inserting data').'. '.__('The end date must be higher than the start date'),
-        ];
-    } else if ($values['type_execution'] == 'once' && $values['date_to'] <= $now) {
-        return [
-            'return'  => false,
-            'message' => __('Not created. Error inserting data').'. '.__('The end date must be higher than the current time'),
         ];
     } else if ($values['type_execution'] == 'periodically'
         && (($values['type_periodicity'] == 'weekly' && $values['periodically_time_from'] >= $values['periodically_time_to'])

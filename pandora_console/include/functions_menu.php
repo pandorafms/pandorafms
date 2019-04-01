@@ -1,21 +1,39 @@
 <?php
-
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the  GNU Lesser General Public License
-// as published by the Free Software Foundation; version 2
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-
 /**
- * @package    Include
+ * Auxiliary functions to manage menu.
+ *
+ * @category   Include
+ * @package    Pandora FMS
  * @subpackage Menu
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
  */
+
+// Begin.
+global $config;
+
+// Set variable to store menu type (classic or collapsed).
+if (!empty(get_parameter('menuType'))) {
+    $_SESSION['menu_type'] = get_parameter('menuType', 'classic');
+    return;
+}
 
 
 /**
@@ -75,7 +93,19 @@ function menu_print_menu(&$menu)
         }
 
         $submenu = false;
-        $classes = ['menu_icon'];
+
+        if ($config['menu_type'] == 'classic') {
+            $classes = [
+                'menu_icon',
+                'no_hidden_menu',
+            ];
+        } else {
+            $classes = [
+                'menu_icon',
+                'menu_icon_collapsed',
+            ];
+        }
+
         if (isset($main['sub'])) {
             $classes[] = '';
             $submenu = true;
@@ -342,11 +372,8 @@ function menu_print_menu(&$menu)
                     $sub_title = '';
                 }
 
-                // Added a top on inline styles
-                $top = menu_calculate_top($config['count_main_menu'], $count_sub, $count_sub2);
-
                 // Add submenu2 to submenu string
-                $submenu_output .= '<ul style= top:'.$top."px;  id='sub".str_replace(' ', '_', $sub['id'])."' class=submenu2>";
+                $submenu_output .= '<ul id="sub'.str_replace(' ', '_', $sub['id']).'" class="submenu2">';
                 $submenu_output .= $submenu2_list;
                 $submenu_output .= '</ul>';
             }
@@ -377,7 +404,12 @@ function menu_print_menu(&$menu)
         $length = strlen(__($main['text']));
         $padding_top = ( $length >= 18) ? 6 : 12;
 
-        $output .= '<div id="title_menu" style="color:#FFF; padding-top:'.$padding_top.'px; display:none;">'.$main['text'].'</div>';
+        if ($config['menu_type'] == 'classic') {
+            $output .= '<div id="title_menu" class="title_menu_classic" style="padding-top:'.$padding_top.'px; display:none;">'.$main['text'].'</div>';
+        } else {
+            $output .= '<div id="title_menu" class="title_menu_collapsed" style="padding-top:'.$padding_top.'px; display:none;">'.$main['text'].'</div>';
+        }
+
         // Add the notification ball if defined
         if (isset($main['notification'])) {
             $output .= '<div class="notification_ball">'.$main['notification'].'</div>';
@@ -396,8 +428,7 @@ function menu_print_menu(&$menu)
                 $visible = false;
             }
 
-            $top = menu_calculate_top($config['count_main_menu'], $count_sub);
-            $output .= '<ul id="subicon_'.$id.'" class="submenu'.($visible ? '' : ' invisible').'" style="top: '.$top.'px">';
+            $output .= '<ul id="subicon_'.$id.'" class="submenu'.($visible ? '' : ' invisible').'">';
             $output .= $submenu_output;
             $output .= '</ul>';
         }
@@ -509,8 +540,6 @@ function menu_add_extras(&$menu)
     $menu_extra['estado']['sub']['snmpconsole']['sub2']['operation/snmpconsole/snmp_view']['text'] = __('SNMP console');
 
     $menu_extra['workspace']['sub']['operation/incidents/incident_detail']['text'] = __('Manage incident');
-
-    $menu_extra['reporting']['sub']['godmode/reporting/visual_console_builder']['text'] = __('Manage visual console');
 
     // Duplicate extensions as sec=extension to check it from url
     foreach ($menu as $k => $m) {
@@ -649,6 +678,7 @@ function menu_get_sec_pages($sec, $menu_hash=false)
 
 /**
  * Get the pages in a section2
+ * $menu
  *
  * @param string sec code
  * @param string menu hash. All the menu structure (For example
@@ -716,35 +746,4 @@ function menu_sec3_in_sec2($sec, $sec2, $sec3)
     }
 
     return false;
-}
-
-
-// Positionate the menu element. Added a negative top.
-// 35px is the height of a menu item
-function menu_calculate_top($level1, $level2, $level3=false)
-{
-    $level2--;
-    if ($level3 !== false) {
-        // If level3 is set, the position is calculated like box is in the center.
-        // wiouth considering level2 box can be moved.
-        $level3--;
-        $total = ($level1 + $level3);
-        $comp = $level3;
-    } else {
-        $total = ($level1 + $level2);
-        $comp = $level2;
-    }
-
-    // Positionate in the middle
-    if ($total > 12 && (($total < 18) || (($level1 - $comp) <= 4))) {
-        return - ( floor($comp / 2) * 35);
-    }
-
-    // Positionate in the bottom
-    if ($total >= 18) {
-        return (- $comp * 35);
-    }
-
-    // return 0 by default
-    return 0;
 }

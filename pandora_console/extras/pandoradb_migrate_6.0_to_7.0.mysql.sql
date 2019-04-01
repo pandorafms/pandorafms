@@ -1199,13 +1199,13 @@ ALTER TABLE titem MODIFY `source_data` int(10) unsigned;
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('big_operation_step_datos_purge', '100');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('small_operation_step_datos_purge', '1000');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('days_autodisable_deletion', '30');
-INSERT INTO `tconfig` (`token`, `value`) VALUES ('MR', 26);
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('MR', 27);
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('custom_docs_logo', 'default_docs.png');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('custom_support_logo', 'default_support.png');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('custom_logo_white_bg_preview', 'pandora_logo_head_white_bg.png');
 UPDATE tconfig SET value = 'https://licensing.artica.es/pandoraupdate7/server.php' WHERE token='url_update_manager';
 DELETE FROM `tconfig` WHERE `token` = 'current_package_enterprise';
-INSERT INTO `tconfig` (`token`, `value`) VALUES ('current_package_enterprise', '733');
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('current_package_enterprise', '734');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('status_monitor_fields', 'policy,agent,data_type,module_name,server_type,interval,status,graph,warn,data,timestamp');
 
 -- ---------------------------------------------------------------------
@@ -2058,3 +2058,8 @@ INSERT INTO `trecon_script` (`name`,`description`,`script`,`macros`) VALUES ('Di
 -- Add column in table `tagent_custom_fields`
 -- ----------------------------------------------------------------------
 ALTER TABLE tagent_custom_fields ADD COLUMN `combo_values` VARCHAR(255) DEFAULT '';
+
+-- ----------------------------------------------------------------------
+-- Update table `tuser_task`
+-- ----------------------------------------------------------------------
+UPDATE tuser_task set parameters = 'a:5:{i:0;a:6:{s:11:\"description\";s:28:\"Report pending to be created\";s:5:\"table\";s:7:\"treport\";s:8:\"field_id\";s:9:\"id_report\";s:10:\"field_name\";s:4:\"name\";s:4:\"type\";s:3:\"int\";s:9:\"acl_group\";s:8:\"id_group\";}i:1;a:2:{s:11:\"description\";s:46:\"Send to email addresses (separated by a comma)\";s:4:\"type\";s:4:\"text\";}i:2;a:2:{s:11:\"description\";s:7:\"Subject\";s:8:\"optional\";i:1;}i:3;a:3:{s:11:\"description\";s:7:\"Message\";s:4:\"type\";s:4:\"text\";s:8:\"optional\";i:1;}i:4;a:2:{s:11:\"description\";s:11:\"Report Type\";s:4:\"type\";s:11:\"report_type\";}}' where function_name = "cron_task_generate_report";

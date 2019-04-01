@@ -1,8 +1,11 @@
-.visual-console-item {
-  position: absolute;
+.visual-console-container {
+  position: relative;
 }
 
-.visual-console-item > * {
-  width: inherit;
-  height: inherit;
+.visual-console-item {
+  position: absolute;
+  display: flex;
+  flex-direction: initial;
+  justify-items: center;
+  align-items: center;
 }

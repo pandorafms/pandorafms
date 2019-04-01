@@ -5,16 +5,26 @@ declare(strict_types=1);
 namespace Models\VisualConsole;
 use Models\Model;
 
+/**
+ * Model of a Visual Console.
+ */
 final class Container extends Model
 {
 
 
-    public static function fromArray(array $data): self
-    {
-        return new self($data);
-    }
-
-
+    /**
+     * Validate the received data structure to ensure if we can extract the
+     * values required to build the model.
+     *
+     * @param array $data Input data.
+     *
+     * @return void
+     *
+     * @throws \InvalidArgumentException If any input value is considered
+     * invalid.
+     *
+     * @overrides Model::validateData.
+     */
     protected function validateData(array $data): void
     {
         if (isset($data['id']) === false
@@ -56,6 +66,15 @@ final class Container extends Model
     }
 
 
+    /**
+     * Returns a valid representation of the model.
+     *
+     * @param array $data Input data.
+     *
+     * @return array Data structure representing the model.
+     *
+     * @overrides Model::decode.
+     */
     protected function decode(array $data): array
     {
         return [
@@ -71,53 +90,106 @@ final class Container extends Model
     }
 
 
+    /**
+     * Extract a group Id value.
+     *
+     * @param array $data Unknown input data structure.
+     *
+     * @return integer Valid identifier of a group.
+     *
+     * @throws \InvalidArgumentException When a valid group Id can't be found.
+     */
     private function extractGroupId(array $data): int
     {
-        if (isset($data['id_group']) === true
-            && \is_numeric($data['id_group']) === true
-            && $data['id_group'] >= 0
-        ) {
-            return $data['id_group'];
-        } else if (isset($data['groupId']) === true
-            && \is_numeric($data['groupId']) === true
-            && $data['groupId'] >= 0
-        ) {
-            return $data['groupId'];
+        $groupId = static::parseIntOr(
+            static::issetInArray($data, ['id_group', 'groupId']),
+            null
+        );
+
+        if ($groupId === null || $groupId < 0) {
+            throw new \InvalidArgumentException(
+                'the group Id property is required and should be integer'
+            );
         }
 
-        throw new \InvalidArgumentException(
-            'the group Id property is required and should be integer'
-        );
+        return $groupId;
     }
 
 
+    /**
+     * Extract a image url value.
+     *
+     * @param array $data Unknown input data structure.
+     *
+     * @return mixed String representing the image url (not empty) or null.
+     */
     private function extractBackgroundUrl(array $data)
     {
-        $background = Model::notEmptyStringOr(
-            Model::issetInArray($data, ['background', 'backgroundURL']),
+        return static::notEmptyStringOr(
+            static::issetInArray($data, ['background', 'backgroundURL']),
             null
         );
-        return $background;
     }
 
 
+    /**
+     * Extract a background color value.
+     *
+     * @param array $data Unknown input data structure.
+     *
+     * @return mixed String representing the color (not empty) or null.
+     */
     private function extractBackgroundColor(array $data)
     {
-        $backgroundColor = Model::notEmptyStringOr(
-            Model::issetInArray($data, ['backgroundColor', 'background_color']),
+        return static::notEmptyStringOr(
+            static::issetInArray(
+                $data,
+                [
+                    'backgroundColor',
+                    'background_color',
+                ]
+            ),
             null
         );
-        return $backgroundColor;
     }
 
 
+    /**
+     * Extract the "is favorite" switch value.
+     *
+     * @param array $data Unknown input data structure.
+     *
+     * @return boolean If the item is favorite or not.
+     */
     private function extractFavorite(array $data): bool
     {
-        $favorite = Model::parseBool(
-            Model::issetInArray($data, ['is_favourite', 'isFavorite']),
-            null
+        return static::parseBool(
+            static::issetInArray($data, ['is_favourite', 'isFavorite'])
         );
-        return $favorite;
+    }
+
+
+    /**
+     * Obtain a container data structure from the database using a filter.
+     *
+     * @param array $filter Filter of the Visual Console.
+     *
+     * @return self A Visual Console Container instance.
+     * @throws \Exception When the data cannot be retrieved from the DB.
+     *
+     * @override Model::fetchDataFromDB.
+     */
+    protected static function fetchDataFromDB(array $filter)
+    {
+        // Due to this DB call, this function cannot be unit tested without
+        // a proper mock.
+        $row = \db_get_row_filter('tlayout', $filter);
+
+        if ($row === false) {
+            throw new \Exception('error fetching the data from the DB');
+        }
+
+        return $row;
     }
 
 

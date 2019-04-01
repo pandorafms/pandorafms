@@ -82,7 +82,6 @@ export function itemBasePropsDecoder(data: UnknownObject): ItemProps | never {
   if (data.id == null || isNaN(parseInt(data.id))) {
     throw new TypeError("invalid id.");
   }
-  // TODO: Check for valid types.
   if (data.type == null || isNaN(parseInt(data.type))) {
     throw new TypeError("invalid type.");
   }
@@ -101,11 +100,15 @@ export function itemBasePropsDecoder(data: UnknownObject): ItemProps | never {
   };
 }
 
+/**
+ * Base class of the visual console items. Should be extended to use its capabilities.
+ */
 abstract class VisualConsoleItem<Props extends ItemProps> {
   // Properties of the item.
   private itemProps: Props;
   // Reference to the DOM element which will contain the item.
   public readonly elementRef: HTMLElement;
+  private readonly labelElementRef: HTMLElement;
   // Reference to the DOM element which will contain the view of the item which extends this class.
   protected readonly childElementRef: HTMLElement;
   // Event manager for click events.
@@ -129,6 +132,8 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
      * when hovered, etc.
      */
     this.elementRef = this.createContainerDomElement();
+    this.labelElementRef = document.createElement("div");
+    this.labelElementRef.className = "visual-console-item-label";
 
     /*
      * Get a HTMLElement which represents the custom view
@@ -137,9 +142,18 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
      */
     this.childElementRef = this.createDomElement();
 
+    // Add the label if it exists.
+    if (this.props.label && this.props.label.length) {
+      this.labelElementRef.innerHTML = this.props.label;
+    }
+
     // Insert the elements into the container.
-    // Visual Console Item Container > Custom Item View.
-    this.elementRef.append(this.childElementRef);
+    this.elementRef.append(this.childElementRef, this.labelElementRef);
+
+    // Resize element.
+    this.resizeElement(props.width, props.height);
+    // Set label position.
+    this.changeLabelPosition(props.labelPosition);
   }
 
   /**
@@ -149,12 +163,12 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
   private createContainerDomElement(): HTMLElement {
     const box: HTMLDivElement = document.createElement("div");
     box.className = "visual-console-item";
-    box.style.width = `${this.props.width}px`;
-    box.style.height = `${this.props.height}px`;
+    // box.style.width = `${this.props.width}px`;
+    // box.style.height = `${this.props.height}px`;
     box.style.left = `${this.props.x}px`;
     box.style.top = `${this.props.y}px`;
     box.onclick = () => this.clickEventManager.emit({ data: this.props });
-    // TODO: Add label.
+
     return box;
   }
 
@@ -204,6 +218,8 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
    * @param prevProps If exists it will be used to only perform DOM updates instead of a full replace.
    */
   public render(prevProps: Props | null = null): void {
+    this.childElementRef.innerHTML = this.createDomElement().innerHTML;
+
     // Move box.
     if (!prevProps || this.positionChanged(prevProps, this.props)) {
       this.moveElement(this.props.x, this.props.y);
@@ -212,8 +228,15 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
     if (!prevProps || this.sizeChanged(prevProps, this.props)) {
       this.resizeElement(this.props.width, this.props.height);
     }
-
-    this.childElementRef.innerHTML = this.createDomElement().innerHTML;
+    // Change label.
+    if (!prevProps || prevProps.label !== this.props.label) {
+      this.labelElementRef.innerHTML =
+        this.props.label != null ? this.props.label : "";
+    }
+    // Change label position.
+    if (!prevProps || prevProps.labelPosition !== this.props.labelPosition) {
+      this.changeLabelPosition(this.props.labelPosition);
+    }
   }
 
   /**
@@ -222,8 +245,6 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
   public remove(): void {
     // Event listeners.
     this.disposables.forEach(_ => _.dispose());
-    // VisualConsoleItem extension DOM element.
-    this.childElementRef.remove();
     // VisualConsoleItem DOM element.
     this.elementRef.remove();
   }
@@ -240,6 +261,28 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
     newPosition: Position
   ): boolean {
     return prevPosition.x !== newPosition.x || prevPosition.y !== newPosition.y;
+  }
+
+  /**
+   * Move the label around the item content.
+   * @param position Label position.
+   */
+  protected changeLabelPosition(position: Props["labelPosition"]): void {
+    switch (position) {
+      case "up":
+        this.elementRef.style.flexDirection = "column-reverse";
+        break;
+      case "left":
+        this.elementRef.style.flexDirection = "row-reverse";
+        break;
+      case "right":
+        this.elementRef.style.flexDirection = "row";
+        break;
+      case "down":
+      default:
+        this.elementRef.style.flexDirection = "column";
+        break;
+    }
   }
 
   /**
@@ -280,13 +323,14 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
   }
 
   /**
-   * Resize the DOM container.
+   * Resize the DOM content container.
    * @param width
    * @param height
    */
   protected resizeElement(width: number, height: number): void {
-    this.elementRef.style.width = `${width}px`;
-    this.elementRef.style.height = `${height}px`;
+    // The most valuable size is the content size.
+    this.childElementRef.style.width = `${width}px`;
+    this.childElementRef.style.height = `${height}px`;
   }
 
   /**

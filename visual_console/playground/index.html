@@ -7,6 +7,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="stylesheet" type="text/css" media="screen" href="vc.main.css" />
   </head>
+  <style>
+    body {
+      margin: 0;
+    }
+  </style>
   <body>
     <div id="visual-console-container"></div>
   </body>
@@ -19,8 +24,8 @@
         id: 1,
         groupId: 0,
         name: "Test Visual Console",
-        width: 800,
-        height: 300,
+        width: 1000,
+        height: 400,
         backgroundURL: null,
         backgroundColor: "rgb(86, 86, 86)",
         isFavorite: false
@@ -131,7 +136,8 @@
         // Generic props.
         id: 5,
         type: 19, // Clock = 19
-        label: null,
+        label: "<h1>Analogic clock</h1>",
+        labelPosition: "up",
         isLinkEnabled: false,
         isOnTop: false,
         parentId: null,
@@ -185,6 +191,44 @@
         color: "white"
       };
 
+      var labelRawProps = {
+        // Generic props.
+        id: 8,
+        type: 4, // Label = 4
+        label: '<h1 style="color: #FDFD96;">I\'m a label</h1>',
+        isLinkEnabled: false,
+        isOnTop: false,
+        parentId: null,
+        aclGroupId: null,
+        // Position props.
+        x: 410,
+        y: 0,
+        // Size props.
+        width: 200,
+        height: 200
+      };
+
+      var simpleValueRawProps = {
+        // Generic props.
+        id: 9,
+        type: 2, // Simple value = 2
+        label: '<h3 style="color: #FDFD96;">Simple Value: 10</h3>',
+        isLinkEnabled: false,
+        isOnTop: false,
+        parentId: null,
+        aclGroupId: null,
+        // Position props.
+        x: 10,
+        y: 10,
+        // Size props.
+        width: 50,
+        height: 50,
+        // Custom props.
+        valueType: "string",
+        value: "10",
+        processValue: "none"
+      };
+
       var items = [
         staticGraphRawProps,
         colorCloudRawProps,
@@ -192,7 +236,9 @@
         digitalClockRawProps2,
         analogicClockRawProps,
         boxRawProps,
-        lineRawProps
+        lineRawProps,
+        labelRawProps,
+        simpleValueRawProps
       ];
 
       try {

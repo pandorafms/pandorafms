@@ -3,13 +3,19 @@ import {
   UnknownObject,
   WithModuleProps
 } from "../types";
-import { linkedVCPropsDecoder, modulePropsDecoder, parseIntOr } from "../lib";
+import {
+  linkedVCPropsDecoder,
+  modulePropsDecoder,
+  parseIntOr,
+  decodeBase64,
+  stringIsEmpty
+} from "../lib";
 import Item, { ItemType, ItemProps, itemBasePropsDecoder } from "../Item";
 
 export type EventsHistoryProps = {
   type: ItemType.AUTO_SLA_GRAPH;
   maxTime: number | null;
-  data: any[]; // eslint-disable-line @typescript-eslint/no-explicit-any
+  html: string;
 } & ItemProps &
   WithModuleProps &
   LinkedVisualConsoleProps;
@@ -26,11 +32,17 @@ export type EventsHistoryProps = {
 export function eventsHistoryPropsDecoder(
   data: UnknownObject
 ): EventsHistoryProps | never {
+  if (stringIsEmpty(data.html) || stringIsEmpty(data.encodedHtml)) {
+    throw new TypeError("missing html content.");
+  }
+
   return {
     ...itemBasePropsDecoder(data), // Object spread. It will merge the properties of the two objects.
     type: ItemType.AUTO_SLA_GRAPH,
     maxTime: parseIntOr(data.maxTime, null),
-    data: data.data instanceof Array ? data.data : [],
+    html: !stringIsEmpty(data.html)
+      ? data.html
+      : decodeBase64(data.encodedHtml),
     ...modulePropsDecoder(data), // Object spread. It will merge the properties of the two objects.
     ...linkedVCPropsDecoder(data) // Object spread. It will merge the properties of the two objects.
   };
@@ -38,6 +50,9 @@ export function eventsHistoryPropsDecoder(
 
 export default class EventsHistory extends Item<EventsHistoryProps> {
   public createDomElement(): HTMLElement {
-    throw new Error("not implemented");
+    const element = document.createElement("div");
+    element.innerHTML = this.props.html;
+
+    return element;
   }
 }

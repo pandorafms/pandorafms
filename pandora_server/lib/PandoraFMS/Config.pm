@@ -175,6 +175,7 @@ sub pandora_get_sharedconfig ($$) {
 
 	$pa_config->{"provisioning_mode"} = pandora_get_tconfig_token ($dbh, 'provisioning_mode', '');
 
+	$pa_config->{"event_storm_protection"} = pandora_get_tconfig_token ($dbh, 'event_storm_protection', 0);
 
 	if ($pa_config->{'include_agents'} eq '') {
 		$pa_config->{'include_agents'} = 0;

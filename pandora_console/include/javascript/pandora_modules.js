@@ -1,3 +1,8 @@
+/* 
+  global $ 
+  global jQuery
+*/
+
 /* Modules ids to check types */
 var id_modules_icmp = Array(6, 7);
 var id_modules_tcp = Array(8, 9, 10, 11);
@@ -412,6 +417,7 @@ function configure_modules_form() {
           "value",
           data["min_ff_event_critical"] == 0 ? 0 : data["min_ff_event_critical"]
         );
+        $("#checkbox-ff_type").prop("checked", data["ff_type"]);
 
         // Shows manual input if post_process field is setted
         if (data["post_process"] != 0) {

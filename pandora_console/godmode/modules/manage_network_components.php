@@ -499,6 +499,7 @@ $url = ui_get_url_refresh(
         'ff_event_warning'      => false,
         'ff_event_critical'     => false,
         'each_ff'               => false,
+        'ff_type'               => false,
     ]
 );
 

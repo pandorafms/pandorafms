@@ -914,11 +914,23 @@ $table->data['edit1'][1] = '<table width="100%">';
             ).'<br>';
 
             $table->data['edit7'][1] .= __('Keep counters').' ';
-            $table->data['edit7'][1] .= html_print_checkbox(
+            $table->data['edit7'][1] .= html_print_select(
+                [
+                    ''  => __('No change'),
+                    '1' => __('Active Counters'),
+                    '0' => __('Inactive Counters'),
+                ],
                 'ff_type',
-                1,
-                0,
-                true
+                '',
+                '',
+                '',
+                '',
+                true,
+                false,
+                true,
+                '',
+                false,
+                'width: 400px;'
             );
 
             $table->data['edit8'][0] = __('FF interval');

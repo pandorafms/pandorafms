@@ -1282,6 +1282,19 @@ switch ($action) {
                         $values['friday'] = get_parameter('friday', 0);
                         $values['saturday'] = get_parameter('saturday', 0);
                         $values['sunday'] = get_parameter('sunday', 0);
+                        $values['total_time'] = get_parameter('total_time', 0);
+                        $values['time_failed'] = get_parameter('time_failed', 0);
+                        $values['time_in_ok_status'] = get_parameter('time_in_ok_status', 0);
+                        $values['time_in_unknown_status'] = get_parameter('time_in_unknown_status', 0);
+                        $values['time_of_not_initialized_module'] = get_parameter('time_of_not_initialized_module', 0);
+                        $values['time_of_downtime'] = get_parameter('time_of_downtime', 0);
+                        $values['total_checks'] = get_parameter('total_checks', 0);
+                        $values['checks_failed'] = get_parameter('checks_failed', 0);
+                        $values['checks_in_ok_status'] = get_parameter('checks_in_ok_status', 0);
+                        $values['unknown_checks'] = get_parameter('unknown_checks', 0);
+                        $values['agent_max_value'] = get_parameter('agent_max_value', 0);
+                        $values['agent_min_value'] = get_parameter('agent_min_value', 0);
+
                         switch ($config['dbtype']) {
                             case 'mysql':
                             case 'postgresql':

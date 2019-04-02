@@ -160,7 +160,7 @@ $module_macros = [];
 if ($create_agent) {
     $mssg_warning = 0;
     $alias_safe_output = io_safe_output(get_parameter('alias', ''));
-    $alias = io_safe_input(trim(preg_replace('/[\/\\\|%#&$-]/', '', $alias_safe_output)));
+    $alias = io_safe_input(trim(preg_replace('/[\/\\\|%#&$]/', '', $alias_safe_output)));
     $alias_as_name = (int) get_parameter_post('alias_as_name', 0);
     $direccion_agente = (string) get_parameter_post('direccion', '');
     $unique_ip = (int) get_parameter_post('unique_ip', 0);
@@ -766,7 +766,7 @@ if ($update_agent) {
     $id_agente = (int) get_parameter_post('id_agente');
     $nombre_agente = str_replace('`', '&lsquo;', (string) get_parameter_post('agente', ''));
     $alias_safe_output = io_safe_output(get_parameter('alias', ''));
-    $alias = io_safe_input(trim(preg_replace('/[\/\\\|%#&$-]/', '', $alias_safe_output)));
+    $alias = io_safe_input(trim(preg_replace('/[\/\\\|%#&$]/', '', $alias_safe_output)));
     $alias_as_name = (int) get_parameter_post('alias_as_name', 0);
     $direccion_agente = (string) get_parameter_post('direccion', '');
     $unique_ip = (int) get_parameter_post('unique_ip', 0);

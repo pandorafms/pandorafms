@@ -70,7 +70,7 @@ class Item extends Model
             || $data['width'] < 0
         ) {
             throw new \InvalidArgumentException(
-                'the width property is required and should be greater than 0'
+                'the width property is required and should be equal or greater than 0'
             );
         }
 
@@ -79,7 +79,7 @@ class Item extends Model
             || $data['height'] < 0
         ) {
             throw new \InvalidArgumentException(
-                'the height property is required and should be greater than 0'
+                'the height property is required and should be equal or greater than 0'
             );
         }
 
@@ -357,7 +357,7 @@ class Item extends Model
      *   'agentName'   => null,
      * ]
      */
-    private function extractLinkedAgent(array $data): array
+    protected function extractLinkedAgent(array $data): array
     {
         $agentData = [];
 
@@ -420,7 +420,7 @@ class Item extends Model
      *   'moduleName' => null,
      * ]
      */
-    private function extractLinkedModule(array $data): array
+    protected function extractLinkedModule(array $data): array
     {
         // Initialize the data with the agent data and then expand it.
         $moduleData = static::extractLinkedAgent($data);

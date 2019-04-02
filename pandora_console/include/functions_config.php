@@ -81,6 +81,11 @@ function config_update_value($token, $value)
         $value = ($value);
     }
 
+    if (!isset($config[$token])) {
+        $config[$token] = $value;
+        return (bool) config_create_value($token, io_safe_input($value));
+    }
+
     // If it has not changed.
     if ($config[$token] == $value) {
         return true;
@@ -95,18 +100,10 @@ function config_update_value($token, $value)
         ['token' => $token]
     );
 
-    if ($result == 0) {
+    if ($result === 0) {
         return true;
     } else {
-        if (!isset($config[$token])) {
-            $config[$token] = $value;
-            return (bool) config_create_value(
-                $token,
-                io_safe_input($value)
-            );
-        } else {
-            return (bool) $result;
-        }
+        return (bool) $result;
     }
 }
 

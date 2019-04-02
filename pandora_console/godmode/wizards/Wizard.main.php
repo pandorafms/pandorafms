@@ -601,8 +601,13 @@ class Wizard
         }
 
         if (is_array($input['block_content']) === true) {
+            $label = '';
+            if (isset($input['label'])) {
+                $label = $input['label'];
+            }
+
             // Print independent block of inputs.
-            $output .= '<li id="'.$input['block_id'].'" class="'.$class.'">';
+            $output .= '<li id="'.$input['block_id'].'" class="'.$class.'">'.$label;
             $output .= '<ul class="wizard">';
             foreach ($input['block_content'] as $input) {
                 $output .= $this->printBlock($input, $return);

@@ -194,6 +194,8 @@ sub new {
 	# Perform some sanity checks.
 	die("No subnet was specified.") unless defined($self->{'subnets'});
 
+	$self = bless($self, $class);
+
 	# Check SNMP params id SNMP is enabled
 	if ($self->{'snmp_enabled'}) {
 
@@ -240,7 +242,7 @@ sub new {
 			# Disable SNMP scans if no community was given.
 			if (ref($self->{'communities'}) ne "ARRAY" || scalar(@{$self->{'communities'}}) == 0) {
 				$self->{'snmp_enabled'} = 0;
-				$self->call('message', "There is not any SNMP community configured.", 5);
+				$self->call('message', "There is no SNMP community configured.", 5);
 
 			}
 		}
@@ -270,7 +272,7 @@ sub new {
 		$self->{'snmp_security_level'} = '';
 	}
 
-	return bless($self, $class);
+	return $self;
 }
 
 ########################################################################################
@@ -1540,7 +1542,7 @@ sub snmp_get($$$) {
 		my %output_hash;
 		foreach my $vlan (@vlans) {
 			my $command = $self->snmp_get_command($device, $oid, $community, $vlan);
-			foreach my $line (`$vlan`) {
+			foreach my $line (`$command`) {
 				$output_hash{$line} = 1;
 			}
 		}

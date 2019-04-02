@@ -2439,6 +2439,7 @@ class NetworkMap
         } else {
             // Set by user.
             $graph['nodes'] = $this->rawNodes;
+            $graph['relations'] = $this->relations;
             $this->map['width'] = $this->mapOptions['width'];
             $this->map['height'] = $this->mapOptions['height'];
         }

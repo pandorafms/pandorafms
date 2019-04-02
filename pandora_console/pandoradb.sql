@@ -962,6 +962,7 @@ CREATE TABLE IF NOT EXISTS `trecon_script` (
 	`description` TEXT,
 	`script` varchar(250) default '',
 	`macros` TEXT,
+	`type` int NOT NULL default 0,
 	PRIMARY KEY  (`id_recon_script`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

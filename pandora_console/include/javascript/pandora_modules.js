@@ -100,6 +100,7 @@ function configure_modules_form() {
     $("#text-unit").attr("value", "");
     $("#checkbox-critical_inverse").attr("value", 0);
     $("#checkbox-warning_inverse").attr("value", 0);
+    $("#checkbox-ff_type").attr("value", 0);
     $("#textarea_critical_instructions").attr("value", "");
     $("#textarea_warning_instructions").attr("value", "");
     $("#textarea_unknown_instructions").attr("value", "");
@@ -182,6 +183,8 @@ function configure_modules_form() {
           "value",
           data["min_ff_event"] == 0 ? 0 : data["min_ff_event"]
         );
+
+        $("#checkbox-ff_type").prop("checked", data["ff_type"]);
         $("#text-post_process").attr(
           "value",
           data["post_process"] == 0 ? 0 : data["post_process"]

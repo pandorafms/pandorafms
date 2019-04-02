@@ -246,6 +246,16 @@ foreach ($result as $row) {
     }
 }
 
+foreach ($table->rowclass as $key => $value) {
+    if (strpos($value, 'limit_scroll') !== false) {
+        $table->colspan[$key] = [7];
+    } else {
+        if ($enterprise_include !== ENTERPRISE_NOT_HOOK) {
+            $table->cellclass[$key][6] = 'action_buttons';
+        }
+    }
+}
+
 html_print_table($table);
 ui_pagination($count, $url, 0, 0, false, 'offset', true, 'pagination-bottom');
 

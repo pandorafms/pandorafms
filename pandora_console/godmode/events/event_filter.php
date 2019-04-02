@@ -116,28 +116,30 @@ $table->width = '100%';
 $table->class = 'info_table';
 
 $table->head = [];
-$table->head[0] = __('Name');
-$table->head[1] = __('Group');
-$table->head[2] = __('Event type');
-$table->head[3] = __('Event status');
-$table->head[4] = __('Severity');
-$table->head[5] = __('Action').html_print_checkbox('all_delete', 0, false, true, false);
+$table->head[0] = html_print_checkbox('all_delete', 0, false, true, false);
+$table->head[1] = __('Name');
+$table->head[2] = __('Group');
+$table->head[3] = __('Event type');
+$table->head[4] = __('Event status');
+$table->head[5] = __('Severity');
+$table->head[6] = __('Action');
 $table->style = [];
-$table->style[0] = 'font-weight: bold';
+$table->style[1] = 'font-weight: bold';
 $table->align = [];
-$table->align[1] = 'left';
 $table->align[2] = 'left';
 $table->align[3] = 'left';
-
 $table->align[4] = 'left';
+
 $table->align[5] = 'left';
+$table->align[6] = 'left';
 $table->size = [];
-$table->size[0] = '50%';
-$table->size[1] = '5px';
-$table->size[2] = '80px';
+$table->size[0] = '20px';
+$table->size[1] = '50%';
+$table->size[2] = '5px';
 $table->size[3] = '80px';
 $table->size[4] = '80px';
-$table->size[5] = '40px';
+$table->size[5] = '80px';
+$table->size[6] = '40px';
 $table->data = [];
 
 $total_filters = db_get_all_rows_filter('tevent_filter', false, 'COUNT(*) AS total');
@@ -147,13 +149,14 @@ $total_filters = $total_filters[0]['total'];
 foreach ($filters as $filter) {
     $data = [];
 
-    $data[0] = '<a href="index.php?sec=geventos&sec2=godmode/events/events&section=edit_filter&id='.$filter['id_filter'].'&pure='.$config['pure'].'">'.$filter['id_name'].'</a>';
-    $data[1] = ui_print_group_icon($filter['id_group_filter'], true);
-    $data[2] = events_get_event_types($filter['event_type']);
-    $data[3] = events_get_status($filter['status']);
-    $data[4] = events_get_severity_types($filter['severity']);
-    $data[5] = "<a onclick='if(confirm(\"".__('Are you sure?')."\")) return true; else return false;' 
-		href='index.php?sec=geventos&sec2=godmode/events/events&section=filter&delete=1&id=".$filter['id_filter'].'&offset=0&pure='.$config['pure']."'>".html_print_image('images/cross.png', true, ['title' => __('Delete')]).'</a>'.html_print_checkbox_extended('delete_multiple[]', $filter['id_filter'], false, false, '', 'class="check_delete"', true);
+    $data[0] = html_print_checkbox_extended('delete_multiple[]', $filter['id_filter'], false, false, '', 'class="check_delete"', true);
+    $data[1] = '<a href="index.php?sec=geventos&sec2=godmode/events/events&section=edit_filter&id='.$filter['id_filter'].'&pure='.$config['pure'].'">'.$filter['id_name'].'</a>';
+    $data[2] = ui_print_group_icon($filter['id_group_filter'], true);
+    $data[3] = events_get_event_types($filter['event_type']);
+    $data[4] = events_get_status($filter['status']);
+    $data[5] = events_get_severity_types($filter['severity']);
+    $table->cellclass[][6] = 'action_buttons';
+    $data[6] = "<a onclick='if(confirm(\"".__('Are you sure?')."\")) return true; else return false;'href='index.php?sec=geventos&sec2=godmode/events/events&section=filter&delete=1&id=".$filter['id_filter'].'&offset=0&pure='.$config['pure']."'>".html_print_image('images/cross.png', true, ['title' => __('Delete')]).'</a>';
 
     array_push($table->data, $data);
 }
@@ -188,8 +191,6 @@ echo '</div>';
 ?>
 
 <script type="text/javascript">
-
-$("input[name=all_delete]").css("margin-left", "32px");
     
     $( document ).ready(function() {
 

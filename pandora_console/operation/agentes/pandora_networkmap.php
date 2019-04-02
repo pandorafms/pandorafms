@@ -771,6 +771,11 @@ switch ($tab) {
                 $data['groups'] = ui_print_group_icon($network_map['id_group'], true);
 
                 if ($networkmap_write || $networkmap_manage) {
+                    $table->cellclass[] = [
+                        'copy'   => 'action_buttons',
+                        'edit'   => 'action_buttons',
+                        'delete' => 'action_buttons',
+                    ];
                     $data['copy'] = '<a href="index.php?'.'sec=network&'.'sec2=operation/agentes/pandora_networkmap&amp;'.'copy_networkmap=1&'.'id_networkmap='.$network_map['id'].'" alt="'.__('Copy').'">'.html_print_image('images/copy.png', true).'</a>';
                     $data['edit'] = '<a href="index.php?'.'sec=network&'.'sec2=operation/agentes/pandora_networkmap&'.'tab=edit&'.'edit_networkmap=1&'.'id_networkmap='.$network_map['id'].'" alt="'.__('Config').'">'.html_print_image('images/config.png', true).'</a>';
                     $data['delete'] = '<a href="index.php?'.'sec=network&'.'sec2=operation/agentes/pandora_networkmap&'.'delete=1&'.'id_networkmap='.$network_map['id'].'" alt="'.__('Delete').'" onclick="javascript: if (!confirm(\''.__('Are you sure?').'\')) return false;">'.html_print_image('images/cross.png', true).'</a>';

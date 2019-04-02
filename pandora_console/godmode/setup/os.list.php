@@ -66,6 +66,8 @@ foreach ($osList as $os) {
     }
 
     $data[] = ui_print_truncate_text(io_safe_output($os['description']), 'description', true, true);
+
+    $table->cellclass[][4] = 'action_buttons';
     if ($os['id_os'] > 16) {
         if (is_metaconsole()) {
             $data[] = '<a href="index.php?sec=advanced&sec2=advanced/component_management&tab=os_manage&action=delete&tab2=list&id_os='.$os['id_os'].'">'.html_print_image('images/cross.png', true).'</a>';

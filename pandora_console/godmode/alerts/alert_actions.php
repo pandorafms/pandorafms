@@ -281,6 +281,10 @@ foreach ($actions as $action) {
     }
 
     if (check_acl($config['id_user'], $action['id_group'], 'LM')) {
+        $table->cellclass[] = [
+            2 => 'action_buttons',
+            3 => 'action_buttons',
+        ];
         $data[2] = '<a href="index.php?sec='.$sec.'&sec2=godmode/alerts/alert_actions&amp;copy_action=1&amp;id='.$action['id'].'&pure='.$pure.'"
 			onClick="if (!confirm(\''.__('Are you sure?').'\')) return false;">'.html_print_image('images/copy.png', true).'</a>';
         $data[3] = '<a href="index.php?sec='.$sec.'&sec2=godmode/alerts/alert_actions&delete_action=1&id='.$action['id'].'&pure='.$pure.'"

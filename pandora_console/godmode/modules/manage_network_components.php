@@ -635,13 +635,15 @@ unset($table);
 $table->width = '100%';
 $table->head = [];
 $table->class = 'info_table';
+$table->head['checkbox'] = html_print_checkbox('all_delete', 0, false, true, false);
 $table->head[0] = __('Module name');
 $table->head[1] = __('Type');
 $table->head[3] = __('Description');
 $table->head[4] = __('Group');
 $table->head[5] = __('Max/Min');
-$table->head[6] = __('Action').html_print_checkbox('all_delete', 0, false, true, false);
+$table->head[6] = __('Action');
 $table->size = [];
+$table->size['checkbox'] = '20px';
 $table->size[1] = '75px';
 $table->size[6] = '80px';
 $table->align[6] = 'left';
@@ -653,6 +655,8 @@ foreach ($components as $component) {
     if ($component['max'] == $component['min'] && $component['max'] == 0) {
         $component['max'] = $component['min'] = __('N/A');
     }
+
+    $data['checkbox'] = html_print_checkbox_extended('delete_multiple[]', $component['id_nc'], false, false, '', 'class="check_delete"', true);
 
     $data[0] = '<a href="index.php?sec='.$sec.'&'.'sec2=godmode/modules/manage_network_components&'.'id='.$component['id_nc'].'&pure='.$pure.'">';
     $data[0] .= io_safe_output($component['name']);
@@ -688,8 +692,9 @@ foreach ($components as $component) {
     $data[4] = network_components_get_group_name($component['id_group']);
     $data[5] = $component['max'].' / '.$component['min'];
 
+    $table->cellclass[][6] = 'action_buttons';
     $data[6] = '<a style="display: inline; float: left" href="'.$url.'&search_id_group='.$search_id_group.'search_string='.$search_string.'&duplicate_network_component=1&source_id='.$component['id_nc'].'">'.html_print_image('images/copy.png', true, ['alt' => __('Duplicate'), 'title' => __('Duplicate')]).'</a>';
-    $data[6] .= '<a href="'.$url.'&delete_component=1&id='.$component['id_nc'].'&search_id_group='.$search_id_group.'search_string='.$search_string.'" onclick="if (! confirm (\''.__('Are you sure?').'\')) return false" >'.html_print_image('images/cross.png', true, ['alt' => __('Delete'), 'title' => __('Delete')]).'</a>'.html_print_checkbox_extended('delete_multiple[]', $component['id_nc'], false, false, '', 'class="check_delete"', true);
+    $data[6] .= '<a href="'.$url.'&delete_component=1&id='.$component['id_nc'].'&search_id_group='.$search_id_group.'search_string='.$search_string.'" onclick="if (! confirm (\''.__('Are you sure?').'\')) return false" >'.html_print_image('images/cross.png', true, ['alt' => __('Delete'), 'title' => __('Delete')]).'</a>';
 
     array_push($table->data, $data);
 }

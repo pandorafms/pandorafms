@@ -824,6 +824,8 @@ switch ($action) {
 
                 if ($edit || $delete) {
                     $columnview = true;
+                    $table->cellclass[][$next] = 'action_buttons';
+
                     if (!isset($table->head[$next])) {
                         $table->head[$next] = '<span title="Operations">'.__('Op.').'</span>'.html_print_checkbox('all_delete', 0, false, true, false);
                         $table->size = [];
@@ -833,11 +835,6 @@ switch ($action) {
 
                     if ($edit) {
                         $data[$next] = '<form method="post" action="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&action=edit&pure='.$pure.'" style="display:inline">';
-                        $data[$next] .= html_print_input_hidden(
-                            'id_report',
-                            $report['id_report'],
-                            true
-                        );
                         $data[$next] .= html_print_input_image(
                             'edit',
                             'images/config.png',
@@ -846,13 +843,16 @@ switch ($action) {
                             true,
                             ['title' => __('Edit')]
                         );
+                        $data[$next] .= html_print_input_hidden(
+                            'id_report',
+                            $report['id_report'],
+                            true
+                        );
                         $data[$next] .= '</form>';
                     }
 
                     if ($delete) {
                         $data[$next] .= '<form method="post" style="display:inline;" onsubmit="if (!confirm (\''.__('Are you sure?').'\')) return false">';
-                        $data[$next] .= html_print_input_hidden('id_report', $report['id_report'], true);
-                        $data[$next] .= html_print_input_hidden('action', 'delete_report', true);
                         $data[$next] .= html_print_input_image(
                             'delete',
                             'images/cross.png',
@@ -861,6 +861,8 @@ switch ($action) {
                             true,
                             ['title' => __('Delete')]
                         );
+                        $data[$next] .= html_print_input_hidden('id_report', $report['id_report'], true);
+                        $data[$next] .= html_print_input_hidden('action', 'delete_report', true);
 
                         $data[$next] .= html_print_checkbox_extended('massive_report_check', $report['id_report'], false, false, '', 'class="check_delete"', true);
 

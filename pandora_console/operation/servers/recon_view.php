@@ -161,6 +161,7 @@ if ($servers === false) {
                 $data[7] = ui_print_timestamp($task['utimestamp'], true);
 
                 if (check_acl($config['id_user'], $task['id_group'], 'PM')) {
+                    $table->cellclass[][8] = 'action_buttons';
                     $data[8] = '<a href="index.php?sec=gservers&amp;sec2=godmode/servers/manage_recontask_form&amp;update='.$task['id_rt'].'">'.html_print_image('images/wrench_orange.png', true).'</a>';
                 } else {
                     $data[8] = '';

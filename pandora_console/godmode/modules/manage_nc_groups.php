@@ -219,17 +219,19 @@ $groups = component_groups_get_groups_tree_recursive($groups_clean, 0, 0);
 
 $table = new stdClass();
 $table->width = '100%';
-$table->class = 'databox data';
+$table->class = 'info_table';
 $table->head = [];
+$table->head['checkbox'] = html_print_checkbox('all_delete', 0, false, true, false);
 $table->head[0] = __('Name');
-$table->head[1] = __('Action').html_print_checkbox('all_delete', 0, false, true, false);
+$table->head[1] = __('Action');
 $table->style = [];
 $table->style[0] = 'font-weight: bold';
 $table->align = [];
 $table->align[1] = 'left';
 $table->size = [];
-$table->size[0] = '80%';
-$table->size[1] = '10%';
+$table->size['checkbox'] = '20px';
+// $table->size[0] = '80%';
+$table->size[1] = '60px';
 $table->data = [];
 
 $total_groups = db_get_all_rows_filter('tnetwork_component_group', false, 'COUNT(*) AS total');
@@ -239,6 +241,9 @@ $total_groups = $total_groups[0]['total'];
 foreach ($groups as $group) {
     $data = [];
 
+    $data['checkbox'] = html_print_checkbox_extended('delete_multiple[]', $group['id_sg'], false, false, '', 'class="check_delete"', true);
+
+
     $tabulation = str_repeat('&nbsp;&nbsp;&nbsp;&nbsp;', $group['deep']);
     if (defined('METACONSOLE')) {
         $data[0] = $tabulation.'<a href="index.php?sec=advanced&sec2=godmode/modules/manage_nc_groups&id='.$group['id_sg'].'">'.$group['name'].'</a>';
@@ -246,8 +251,9 @@ foreach ($groups as $group) {
         $data[0] = $tabulation.'<a href="index.php?sec=gmodules&sec2=godmode/modules/manage_nc_groups&id='.$group['id_sg'].'">'.$group['name'].'</a>';
     }
 
+    $table->cellclass[][1] = 'action_buttons';
     $data[1] = "<a onclick='if(confirm(\"".__('Are you sure?')."\")) return true; else return false;' 
-		href='index.php?sec=".$sec.'&sec2=godmode/modules/manage_nc_groups&delete=1&id='.$group['id_sg']."&offset=0'>".html_print_image('images/cross.png', true, ['title' => __('Delete')]).'</a>'.html_print_checkbox_extended('delete_multiple[]', $group['id_sg'], false, false, '', 'class="check_delete"', true);
+        href='index.php?sec=".$sec.'&sec2=godmode/modules/manage_nc_groups&delete=1&id='.$group['id_sg']."&offset=0'>".html_print_image('images/cross.png', true, ['title' => __('Delete')]).'</a>';
 
     array_push($table->data, $data);
 }

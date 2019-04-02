@@ -213,23 +213,28 @@ $table->width = '100%';
 $table->class = 'info_table';
 
 $table->head = [];
-$table->head[0] = __('Name');
-$table->head[1] = __('Description');
-$table->head[2] = '<span style="margin-right:7%;">'.__('Action').'</span>'.html_print_checkbox('all_delete', 0, false, true, false);
+$table->head[0] = html_print_checkbox('all_delete', 0, false, true, false);
+;
+$table->head[1] = __('Name');
+$table->head[2] = __('Description');
+$table->head[3] = '<span style="margin-right:7%;">'.__('Action').'</span>';
 $table->size = [];
-$table->size[1] = '65%';
-$table->size[2] = '15%';
+$table->size[0] = '20px';
+$table->size[2] = '65%';
+$table->size[3] = '15%';
 
 $table->align = [];
-$table->align[2] = 'left';
+$table->align[3] = 'left';
 
 $table->data = [];
 
 foreach ($result as $row) {
     $data = [];
-    $data[0] = '<a href="index.php?sec=gmodules&amp;sec2=godmode/modules/manage_network_templates_form&amp;id_np='.$row['id_np'].'">'.io_safe_output($row['name']).'</a>';
-    $data[1] = ui_print_truncate_text(io_safe_output($row['description']), 'description', true, true, true, '[&hellip;]');
-    $data[2] = html_print_input_image(
+    $data[0] = html_print_checkbox_extended('delete_multiple[]', $row['id_np'], false, false, '', 'class="check_delete"', true);
+    $data[1] = '<a href="index.php?sec=gmodules&amp;sec2=godmode/modules/manage_network_templates_form&amp;id_np='.$row['id_np'].'">'.io_safe_output($row['name']).'</a>';
+    $data[2] = ui_print_truncate_text(io_safe_output($row['description']), 'description', true, true, true, '[&hellip;]');
+    $table->cellclass[][3] = 'action_buttons';
+    $data[3] = html_print_input_image(
         'delete_profile',
         'images/cross.png',
         $row['id_np'],
@@ -237,7 +242,7 @@ foreach ($result as $row) {
         true,
         ['onclick' => 'if (!confirm(\''.__('Are you sure?').'\')) return false;']
     );
-    $data[2] .= html_print_input_image(
+    $data[3] .= html_print_input_image(
         'export_profile',
         'images/csv.png',
         $row['id_np'],
@@ -245,8 +250,8 @@ foreach ($result as $row) {
         true,
         ['title' => 'Export to CSV']
     );
-    $data[2] = '<a href="index.php?sec=gmodules&sec2=godmode/modules/manage_network_templates'.'&delete_profile=1&delete_profile='.$row['id_np'].'" '.'onclick="if (!confirm(\''.__('Are you sure?').'\')) return false;">'.html_print_image('images/cross.png', true, ['title' => __('Delete')]).'</a>';
-    $data[2] .= '&nbsp;&nbsp;<a href="index.php?sec=gmodules&sec2=godmode/modules/manage_network_templates'.'&export_profile='.$row['id_np'].'">'.html_print_image('images/csv.png', true, ['title' => __('Export to CSV')]).'</a>'.html_print_checkbox_extended('delete_multiple[]', $row['id_np'], false, false, '', 'class="check_delete"', true);
+    $data[3] = '<a href="index.php?sec=gmodules&sec2=godmode/modules/manage_network_templates'.'&delete_profile=1&delete_profile='.$row['id_np'].'" '.'onclick="if (!confirm(\''.__('Are you sure?').'\')) return false;">'.html_print_image('images/cross.png', true, ['title' => __('Delete')]).'</a>';
+    $data[3] .= '<a href="index.php?sec=gmodules&sec2=godmode/modules/manage_network_templates'.'&export_profile='.$row['id_np'].'">'.html_print_image('images/csv.png', true, ['title' => __('Export to CSV')]).'</a>';
 
     array_push($table->data, $data);
 }

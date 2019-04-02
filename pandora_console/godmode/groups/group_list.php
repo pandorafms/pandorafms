@@ -559,6 +559,7 @@ if ($tab == 'tree') {
             $table->data[$key][3] = $group['disabled'] ? __('Disabled') : __('Enabled');
             $table->data[$key][4] = $group['parent_name'];
             $table->data[$key][5] = $group['description'];
+            $table->cellclass[$key][6] = 'action_buttons';
             $table->data[$key][6] = "<a href='$url'>".html_print_image(
                 'images/config.png',
                 true,
@@ -574,7 +575,7 @@ if ($tab == 'tree') {
                 $confirm_message = __('The child groups will be updated to use the parent id of the deleted group').'. '.$confirm_message;
             }
 
-            $table->data[$key][6] .= '&nbsp;&nbsp;'.'<a href="'.$url_delete.'" onClick="if (!confirm(\' '.$confirm_message.'\')) return false;">'.html_print_image(
+            $table->data[$key][6] .= '<a href="'.$url_delete.'" onClick="if (!confirm(\' '.$confirm_message.'\')) return false;">'.html_print_image(
                 'images/cross.png',
                 true,
                 [

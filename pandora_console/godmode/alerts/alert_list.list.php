@@ -728,6 +728,7 @@ foreach ($simple_alerts as $alert) {
 
     $data[3] = ui_print_status_image($status, $title, true);
 
+    $table->cellclass[][4] = 'action_buttons';
     $data[4] = '<form class="disable_alert_form" action="'.$url.'" method="post" style="display: inline;">';
     if ($alert['disabled']) {
         $data[4] .= html_print_input_image('enable', 'images/lightbulb_off.png', 1, 'padding:0px', true);
@@ -742,7 +743,7 @@ foreach ($simple_alerts as $alert) {
 
     // To manage alert is necessary LW permissions in the agent group
     if (check_acl_one_of_groups($config['id_user'], $all_groups, 'LW')) {
-        $data[4] .= '&nbsp;&nbsp;<form class="standby_alert_form" action="'.$url.'" method="post" style="display: inline;">';
+        $data[4] .= '<form class="standby_alert_form" action="'.$url.'" method="post" style="display: inline;">';
         if (!$alert['standby']) {
             $data[4] .= html_print_input_image('standby_off', 'images/bell.png', 1, 'padding:0px;', true);
             $data[4] .= html_print_input_hidden('standbyon_alert', 1, true);
@@ -771,7 +772,7 @@ foreach ($simple_alerts as $alert) {
 
     // To manage alert is necessary LW permissions in the agent group
     if (check_acl_one_of_groups($config['id_user'], $all_groups, 'LW')) {
-        $data[4] .= '&nbsp;&nbsp;<form class="delete_alert_form" action="'.$url.'" method="post" style="display: inline;">';
+        $data[4] .= '<form class="delete_alert_form" action="'.$url.'" method="post" style="display: inline;">';
         $is_cluster = (bool) get_parameter('id_cluster');
         if (!$is_cluster) {
             if ($alert['disabled']) {

@@ -451,6 +451,15 @@ $table->align = [];
 
 if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
     if ($print_agent) {
+        if (!is_metaconsole()) {
+            $table->size[8] = '4%';
+            if (check_acl($config['id_user'], $id_group, 'LW') || check_acl($config['id_user'], $id_group, 'LM')) {
+                $table->head[9] = html_print_checkbox('all_validate', 0, false, true, false);
+                $table->align[9] = 'left';
+                $table->size[9] = '5%';
+            }
+        }
+
         $table->head[0] = "<span title='".__('Policy')."'>".__('P.').'</span>';
 
         $table->head[1] = "<span title='".__('Standby')."'>".__('S.').'</span>';
@@ -467,14 +476,6 @@ if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
         $table->head[6] = __('Action');
         $table->head[7] = __('Last fired');
         $table->head[8] = __('Status');
-        if (!is_metaconsole()) {
-            $table->size[8] = '4%';
-            if (check_acl($config['id_user'], $id_group, 'LW') || check_acl($config['id_user'], $id_group, 'LM')) {
-                $table->head[9] = __('Validate').html_print_checkbox('all_validate', 0, false, true, false);
-                $table->align[9] = 'center';
-                $table->size[9] = '5%';
-            }
-        }
 
         $table->align[8] = 'center';
 
@@ -485,6 +486,14 @@ if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
             $table->head[5] .= ' '.'<a href="'.$url.'&sort_field=template&sort=up">'.html_print_image('images/sort_up.png', true, ['style' => $selectTemplateUp]).'</a>'.'<a href="'.$url.'&sort_field=template&sort=down">'.html_print_image('images/sort_down.png', true, ['style' => $selectTemplateDown]).'</a>';
         }
     } else {
+        if (!is_metaconsole()) {
+            $table->size[7] = '5%';
+            if (check_acl_one_of_groups($config['id_user'], $all_groups, 'LW') || check_acl_one_of_groups($config['id_user'], $all_groups, 'LM')) {
+                $table->align[8] = 'left';
+                $table->size[8] = '5%';
+            }
+        }
+
         $table->head[0] = "<span title='".__('Policy')."'>".__('P.').'</span>';
 
         $table->head[1] = "<span title='".__('Standby')."'>".__('S.').'</span>';
@@ -500,14 +509,7 @@ if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
         $table->head[5] = __('Action');
         $table->head[6] = __('Last fired');
         $table->head[7] = __('Status');
-        if (!is_metaconsole()) {
-            $table->size[7] = '5%';
-            if (check_acl_one_of_groups($config['id_user'], $all_groups, 'LW') || check_acl_one_of_groups($config['id_user'], $all_groups, 'LM')) {
-                $table->head[8] = __('Validate');
-                $table->align[8] = 'center';
-                $table->size[8] = '5%';
-            }
-        }
+
 
         $table->align[7] = 'center';
 
@@ -519,6 +521,14 @@ if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
     }
 } else {
     if ($print_agent) {
+        if (!is_metaconsole()) {
+            $table->size[7] = '5%';
+            if (check_acl($config['id_user'], $id_group, 'LW') || check_acl($config['id_user'], $id_group, 'LM')) {
+                $table->align[8] = 'left';
+                $table->size[8] = '5%';
+            }
+        }
+
         $table->head[0] = "<span title='".__('Standby')."'>".__('S.').'</span>';
         if (!is_metaconsole()) {
             if (check_acl($config['id_user'], $id_group, 'AW') || check_acl($config['id_user'], $id_group, 'LM')) {
@@ -532,14 +542,6 @@ if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
         $table->head[5] = __('Action');
         $table->head[6] = __('Last fired');
         $table->head[7] = __('Status');
-        if (!is_metaconsole()) {
-            $table->size[7] = '5%';
-            if (check_acl($config['id_user'], $id_group, 'LW') || check_acl($config['id_user'], $id_group, 'LM')) {
-                $table->head[8] = __('Validate');
-                $table->align[8] = 'center';
-                $table->size[8] = '5%';
-            }
-        }
 
         $table->align[7] = 'center';
 
@@ -550,6 +552,14 @@ if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
             $table->head[4] .= ' '.'<a href="'.$url.'&sort_field=template&sort=up">'.html_print_image('images/sort_up.png', true, ['style' => $selectTemplateUp]).'</a>'.'<a href="'.$url.'&sort_field=template&sort=down">'.html_print_image('images/sort_down.png', true, ['style' => $selectTemplateDown]).'</a>';
         }
     } else {
+        if (!is_metaconsole()) {
+            $table->size[6] = '5%';
+            if (check_acl($config['id_user'], $id_group, 'LW') || check_acl($config['id_user'], $id_group, 'LM')) {
+                $table->align[7] = 'left';
+                $table->size[7] = '5%';
+            }
+        }
+
         $table->head[0] = "<span title='".__('Standby')."'>".__('S.').'</span>';
         if (!is_metaconsole()) {
             if (check_acl($config['id_user'], $id_group, 'AW') || check_acl($config['id_user'], $id_group, 'LM')) {
@@ -562,14 +572,6 @@ if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
         $table->head[4] = __('Action');
         $table->head[5] = __('Last fired');
         $table->head[6] = __('Status');
-        if (!is_metaconsole()) {
-            $table->size[6] = '5%';
-            if (check_acl($config['id_user'], $id_group, 'LW') || check_acl($config['id_user'], $id_group, 'LM')) {
-                $table->head[7] = __('Validate');
-                $table->align[7] = 'center';
-                $table->size[7] = '5%';
-            }
-        }
 
         $table->align[6] = 'center';
 

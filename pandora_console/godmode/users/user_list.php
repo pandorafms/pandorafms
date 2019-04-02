@@ -514,6 +514,7 @@ foreach ($info as $user_id => $user_info) {
 
     $data[5] = ui_print_string_substr($user_info['comments'], 24, true);
 
+    $table->cellclass[][6] = 'action_buttons';
     if ($user_info['disabled'] == 0) {
         $data[6] = '<a href="index.php?sec='.$sec.'&amp;sec2=godmode/users/user_list&amp;disable_user=1&pure='.$pure.'&amp;id='.$user_info['id_user'].'">'.html_print_image('images/lightbulb.png', true, ['title' => __('Disable')]).'</a>';
     } else {

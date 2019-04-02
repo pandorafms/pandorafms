@@ -350,7 +350,7 @@ $table->head[4] = __('Op.');
 $table->style = [];
 $table->style[0] = 'font-weight: bold';
 $table->size = [];
-$table->size[4] = '85px';
+$table->size[4] = '60px';
 $table->align = [];
 $table->align[1] = 'left';
 $table->align[4] = 'left';
@@ -375,6 +375,7 @@ foreach ($templates as $template) {
     $data[3] = alerts_get_alert_templates_type_name($template['type']);
 
     if (check_acl($config['id_user'], $template['id_group'], 'LM')) {
+        $table->cellclass[][4] = 'action_buttons';
         $data[4] = '<form method="post" action="index.php?sec='.$sec.'&sec2=godmode/alerts/configure_alert_template&pure='.$pure.'" style="display: inline; float: left">';
         $data[4] .= html_print_input_hidden('duplicate_template', 1, true);
         $data[4] .= html_print_input_hidden('source_id', $template['id'], true);

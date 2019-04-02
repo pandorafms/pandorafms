@@ -278,7 +278,8 @@ if (!empty($result)) {
 
         $data[5] = $output;
 
-        $data[6] = "<a href='index.php?sec=".$sec.'&sec2=godmode/tag/edit_tag&action=update&id_tag='.$tag['id_tag']."'>".html_print_image('images/config.png', true, ['title' => 'Edit']).'</a>&nbsp;&nbsp;';
+        $table->cellclass[][6] = 'action_buttons';
+        $data[6] = "<a href='index.php?sec=".$sec.'&sec2=godmode/tag/edit_tag&action=update&id_tag='.$tag['id_tag']."'>".html_print_image('images/config.png', true, ['title' => 'Edit']).'</a>';
         $data[6] .= '<a  href="index.php?sec='.$sec.'&sec2=godmode/tag/tag&delete_tag='.$tag['id_tag'].'"onclick="if (! confirm (\''.__('Are you sure?').'\')) return false">'.html_print_image('images/cross.png', true, ['title' => 'Delete']).'</a>';
         array_push($table->data, $data);
     }

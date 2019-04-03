@@ -1464,8 +1464,11 @@ sub db_scan($) {
 
 		if (!defined($dbObj)) {
 			call('message', 'Cannot connect to target ' . $target, 3);
+			$self->{'summary'}->{'not_alive'} += 1;
 			next;
 		}
+		$self->{'summary'}->{'discovered'} += 1;
+		$self->{'summary'}->{'alive'} += 1;
 
 		my @modules;
 
@@ -1503,8 +1506,6 @@ sub db_scan($) {
 			}
 		];
 
-		use Data::Dumper;
-		print Dumper($data);
 		$self->call('create_agents', $data);
 
 		# Destroy item.

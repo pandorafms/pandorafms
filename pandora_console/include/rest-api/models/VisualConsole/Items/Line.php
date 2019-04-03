@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace Models\VisualConsole\Items;
 use Models\Model;
 
+/**
+ * Model of a line item of the Visual Console.
+ */
 final class Line extends Model
 {
 
@@ -16,11 +19,10 @@ final class Line extends Model
      * @param array $data Input data.
      *
      * @return void
-     *
      * @throws \InvalidArgumentException If any input value is considered
      * invalid.
      *
-     * @overrides Model::validateData.
+     * @overrides Model->validateData.
      */
     protected function validateData(array $data): void
     {
@@ -49,7 +51,7 @@ final class Line extends Model
      *
      * @return array Data structure representing the model.
      *
-     * @overrides Model::decode.
+     * @overrides Model->decode.
      */
     protected function decode(array $data): array
     {
@@ -60,7 +62,7 @@ final class Line extends Model
             'startY'      => $this->extractStartY($data),
             'endX'        => $this->extractEndX($data),
             'endY'        => $this->extractEndY($data),
-            'isOnTop'     => $this->extractIsOnTope($data),
+            'isOnTop'     => $this->extractIsOnTop($data),
             'borderWidth' => $this->extractBorderWidth($data),
             'borderColor' => $this->extractBorderColor($data),
         ];
@@ -68,119 +70,104 @@ final class Line extends Model
 
 
     /**
-     * Extract the value of startX and
-     * return a integer.
+     * Extract a x axis value.
      *
      * @param array $data Unknown input data structure.
      *
-     * @return integer Valid x axis start position of the item.
+     * @return integer Valid x axis of the start position of the line.
      */
     private function extractStartX(array $data): int
     {
-        $startX = Model::parseIntOr(
-            Model::issetInArray($data, ['startX', 'pos_x']),
+        return static::parseIntOr(
+            static::issetInArray($data, ['startX', 'pos_x']),
             0
         );
-        return $startX;
     }
 
 
     /**
-     * Extract the value of startY and
-     * return a integer.
+     * Extract a y axis value.
      *
      * @param array $data Unknown input data structure.
      *
-     * @return integer Valid y axis start position of the item.
+     * @return integer Valid y axis of the start position of the line.
      */
     private function extractStartY(array $data): int
     {
-        $startY = Model::parseIntOr(
-            Model::issetInArray($data, ['startY', 'pos_y']),
+        return static::parseIntOr(
+            static::issetInArray($data, ['startY', 'pos_y']),
             0
         );
-        return $startY;
     }
 
 
     /**
-     * Extract the value of endX and
-     * return a integer.
+     * Extract a x axis value.
      *
      * @param array $data Unknown input data structure.
      *
-     * @return integer Valid x axis end position of the item.
+     * @return integer Valid x axis of the end position of the line.
      */
     private function extractEndX(array $data): int
     {
-        $endX = Model::parseIntOr(
-            Model::issetInArray($data, ['endX', 'width']),
+        return static::parseIntOr(
+            static::issetInArray($data, ['endX', 'width']),
             0
         );
-        return $endX;
     }
 
 
     /**
-     * Extract the value of endY and
-     * return a integer.
+     * Extract a y axis value.
      *
      * @param array $data Unknown input data structure.
      *
-     * @return integer Valid y axis end position of the item.
+     * @return integer Valid y axis of the end position of the line.
      */
     private function extractEndY(array $data): int
     {
-        $endY = Model::parseIntOr(
-            Model::issetInArray($data, ['endY', 'height']),
+        return static::parseIntOr(
+            static::issetInArray($data, ['endY', 'height']),
             0
         );
-        return $endY;
     }
 
 
     /**
-     * Extract the value of isOnTop and
-     * return a bool.
+     * Extract a conditional value which tells if the item has visual priority.
      *
      * @param array $data Unknown input data structure.
      *
      * @return boolean If the item is on top or not.
      */
-    private function extractIsOnTope(array $data): bool
+    private function extractIsOnTop(array $data): bool
     {
-        $isOnTop = Model::parseBool(
-            Model::issetInArray($data, ['isOnTop', 'show_on_top'])
+        return static::parseBool(
+            static::issetInArray($data, ['isOnTop', 'show_on_top'])
         );
-        return $isOnTop;
     }
 
 
     /**
-     * Extract the value of borderWidth and
-     * return a integer.
+     * Extract a border width value.
      *
      * @param array $data Unknown input data structure.
      *
-     * @return integer Valid border width. 0 by default.
+     * @return integer Valid border width. 0 by default and minimum value.
      */
     private function extractBorderWidth(array $data): int
     {
-        $borderWidth = Model::parseIntOr(
-            Model::issetInArray($data, ['borderWidth', 'border_width']),
+        $borderWidth = static::parseIntOr(
+            static::issetInArray($data, ['borderWidth', 'border_width']),
             0
         );
-        if ($borderWidth >= 0) {
-            return $borderWidth;
-        } else {
-            return 0;
-        }
+
+        return ($borderWidth >= 0) ? $borderWidth : 0;
     }
 
 
     /**
-     * Extract the value of borderColor and
-     * return to not empty string or null.
+     * Extract a border color value.
      *
      * @param array $data Unknown input data structure.
      *
@@ -188,11 +175,10 @@ final class Line extends Model
      */
     private function extractBorderColor(array $data)
     {
-        $borderColor = Model::notEmptyStringOr(
-            Model::issetInArray($data, ['borderColor', 'border_color']),
+        return static::notEmptyStringOr(
+            static::issetInArray($data, ['borderColor', 'border_color']),
             null
         );
-        return $borderColor;
     }
 
 

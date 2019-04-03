@@ -90,7 +90,7 @@ final class SimpleValue extends Item
             case 'avg':
             case 'max':
             case 'min':
-            return $processValue;
+            return $data['processValue'];
 
             default:
             return 'none';

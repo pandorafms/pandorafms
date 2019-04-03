@@ -357,7 +357,7 @@ class Item extends Model
      *   'agentName'   => null,
      * ]
      */
-    protected function extractLinkedAgent(array $data): array
+    protected static function extractLinkedAgent(array $data): array
     {
         $agentData = [];
 
@@ -420,7 +420,7 @@ class Item extends Model
      *   'moduleName' => null,
      * ]
      */
-    protected function extractLinkedModule(array $data): array
+    protected static function extractLinkedModule(array $data): array
     {
         // Initialize the data with the agent data and then expand it.
         $moduleData = static::extractLinkedAgent($data);

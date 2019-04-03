@@ -1488,7 +1488,7 @@ sub db_scan($) {
 				'interval' => $self->{'task_data'}->{'interval_sweep'},
 				'id_group' => $self->{'task_data'}->{'id_group'},
 				'address' => $dbObj->get_host(),
-
+				'description' => '',
 			},
 			'module_data' => \@modules,
 		}

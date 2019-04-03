@@ -494,9 +494,16 @@ sub PandoraFMS::Recon::Base::create_agents($$) {
 		# Add modules.
 		if (ref($modules) eq "ARRAY") {
 			foreach my $module (@{$modules}) {
-				pandora_process_module(
-					$pa_config, {'data' => $module->{'value'}}, $current_agent, $module,
-					$module->{'type'}, '', time(), $server_id, $dbh
+				my %data_translated = map { $_ => [ $module->{$_} ] } keys %{$module};
+
+				# Translate fields.
+				PandoraFMS::DataServer::process_module_data (
+					$pa_config, \%data_translated,
+					$server_id, $current_agent,
+					$module->{'name'}, $module->{'type'},
+					$agent->{'interval'},
+					strftime ("%Y/%m/%d %H:%M:%S", localtime()),
+					$dbh, $force_processing
 				);
 			}
 		}

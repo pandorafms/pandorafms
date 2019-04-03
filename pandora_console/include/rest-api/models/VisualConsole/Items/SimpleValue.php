@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Models\VisualConsole\Items;
 use Models\VisualConsole\Item;
-use Models\Model;
 
 /**
  * Model of a simple value item of the Visual Console.
@@ -74,41 +73,32 @@ final class SimpleValue extends Item
     {
         $return = parent::decode($data);
         $return['type'] = SIMPLE_VALUE;
-        $return['processValue'] = $this->extractProcessValue($data);
+        $return['processValue'] = static::extractProcessValue($data);
         if ($return['processValue'] !== 'none') {
-            $return['period'] = $this->extractPeriod($data);
+            $return['period'] = static::extractPeriod($data);
         }
 
-        $return['valueType'] = $this->extractValueType($data);
+        $return['valueType'] = static::extractValueType($data);
         $return['value'] = $data['value'];
         return $return;
     }
 
 
     /**
-     * Extract the value of processValue and
-     * return 'avg', 'max', 'min' or 'none'.
+     * Extract a process value.
      *
      * @param array $data Unknown input data structure.
      *
-     * @return string
+     * @return string One of 'none', 'avg', 'max' or 'min'. 'none' by default.
      */
-    private function extractProcessValue(array $data): string
+    private static function extractProcessValue(array $data): string
     {
-        $processValue = Model::notEmptyStringOr(
-            Model::issetInArray($data, ['processValue']),
-            null
-        );
-
-        switch ($processValue) {
+        switch ($data['processValue']) {
+            case 'none':
             case 'avg':
-            return 'avg';
-
             case 'max':
-            return 'max';
-
             case 'min':
-            return 'min';
+            return $processValue;
 
             default:
             return 'none';
@@ -117,49 +107,86 @@ final class SimpleValue extends Item
 
 
     /**
-     * Extract the value of period and
-     * return a integer.
+     * Extract the value of period.
      *
      * @param array $data Unknown input data structure.
      *
-     * @return integer
+     * @return integer The period in seconds. 0 is the minimum value.
      */
-    private function extractPeriod(array $data): int
+    private static function extractPeriod(array $data): int
     {
-        $period = Model::parseIntOr(
-            Model::issetInArray($data, ['period']),
-            0
-        );
-        if ($period >= 0) {
-            return $period;
-        } else {
-            return 0;
+        $period = static::parseIntOr($data['period'], 0);
+        return ($period >= 0) ? $period : 0;
+    }
+
+
+    /**
+     * Extract a value type.
+     *
+     * @param array $data Unknown input data structure.
+     *
+     * @return string One of 'string' or 'image'. 'string' by default.
+     */
+    private static function extractValueType(array $data): string
+    {
+        switch ($data['valueType']) {
+            case 'string':
+            case 'image':
+            return $data['valueType'];
+
+            default:
+            return 'string';
         }
     }
 
 
     /**
-     * Extract the value of valueType and
-     * return 'image' or 'string'.
+     * Fetch a vc item data structure from the database using a filter.
      *
-     * @param array $data Unknown input data structure.
+     * @param array $filter Filter of the Visual Console Item.
      *
-     * @return string
+     * @return array The Visual Console Item data structure stored into the DB.
+     * @throws \InvalidArgumentException When a module Id cannot be found.
+     *
+     * @override Item::fetchDataFromDB.
      */
-    private function extractValueType(array $data): string
+    protected static function fetchDataFromDB(array $filter): array
     {
-        $valueType = Model::notEmptyStringOr(
-            Model::issetInArray($data, ['valueType']),
-            null
+        // Due to this DB call, this function cannot be unit tested without
+        // a proper mock.
+        $data = parent::fetchDataFromDB($filter);
+
+        /*
+         * Retrieve extra data.
+         */
+
+        // Load side libraries.
+        global $config;
+        include_once $config['homedir'].'/include/functions_graph.php';
+
+        // Get the linked agent and module Ids.
+        $linkedModule = static::extractLinkedModule($data);
+        $moduleId = static::parseIntOr($linkedModule['moduleId'], null);
+
+        if ($moduleId === null) {
+            throw new \InvalidArgumentException('missing module Id');
+        }
+
+        // Get the formatted value.
+        $value = \visual_map_get_simple_value(
+            $data['type'],
+            $moduleId,
+            static::extractPeriod($data)
         );
 
-        switch ($valueType) {
-            case 'image':
-            return 'image';
-
-            default:
-            return 'string';
+        // Some modules are image based. Extract the base64 image if needed.
+        $matches = [];
+        if (\preg_match('/src=\"(data:image.*)"/', $value, $matches) === 1) {
+            $data['valueType'] = 'image';
+            $data['value'] = $matches[1];
         }
+
+        return $data;
     }
 
 

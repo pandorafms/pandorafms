@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Models\VisualConsole\Items;
 use Models\VisualConsole\Item;
-use Models\Model;
 
 /**
  * Model of a group item of the Visual Console.
@@ -84,14 +83,14 @@ final class StaticGraph extends Item
      */
     private function extractShowLastValueTooltip(array $data): string
     {
-        $showLastValueTooltip = Model::notEmptyStringOr(
-            Model::issetInArray($data, ['showLastValueTooltip']),
+        $showLastValueTooltip = static::notEmptyStringOr(
+            static::issetInArray($data, ['showLastValueTooltip']),
             null
         );
 
         if ($showLastValueTooltip === null) {
-            $showLastValueTooltip = Model::parseIntOr(
-                Model::issetInArray($data, ['show_last_value']),
+            $showLastValueTooltip = static::parseIntOr(
+                static::issetInArray($data, ['show_last_value']),
                 null
             );
             switch ($showLastValueTooltip) {

@@ -145,7 +145,7 @@ class ClockTest extends TestCase
     public function testContainerIsRepresentedAsJson(): void
     {
         $this->assertEquals(
-            '{"aclGroupId":null,"clockFormat":"time","clockTimezone":"Europe\/Madrid","clockTimezoneOffset":3600,"clockType":"digital","color":"white","height":0,"id":69,"isLinkEnabled":true,"isOnTop":false,"label":null,"labelPosition":"up","linkedLayoutAgentId":null,"linkedLayoutId":null,"linkedLayoutStatusType":"default","parentId":null,"showClockTimezone":false,"type":19,"width":0,"x":-666,"y":76}',
+            '{"aclGroupId":null,"clockFormat":"time","clockTimezone":"Europe\/Madrid","clockTimezoneOffset":7200,"clockType":"digital","color":"white","height":0,"id":69,"isLinkEnabled":true,"isOnTop":false,"label":null,"labelPosition":"up","linkedLayoutAgentId":null,"linkedLayoutId":null,"linkedLayoutStatusType":"default","parentId":null,"showClockTimezone":false,"type":19,"width":0,"x":-666,"y":76}',
             (string) Clock::fromArray(
                 [
                     'id'                => 69,

@@ -44,17 +44,9 @@ final class SimpleValue extends Item
     protected function validateData(array $data): void
     {
         parent::validateData($data);
-        if (isset($data['valueType']) === false
-            || \is_string($data['valueType']) === false
-        ) {
-            throw new \InvalidArgumentException(
-                'the valueType property is required and should be string'
-            );
-        }
-
         if (isset($data['value']) === false) {
             throw new \InvalidArgumentException(
-                'the value property is required'
+                'the value property is required and should be string'
             );
         }
     }

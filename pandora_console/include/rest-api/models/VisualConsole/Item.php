@@ -33,6 +33,13 @@ class Item extends Model
      */
     protected static $useLinkedVisualConsole = false;
 
+    /**
+     * Used to decide wether to validate, extract and encode HTML output or not.
+     *
+     * @var boolean
+     */
+    protected static $useHtmlOutput = false;
+
 
     /**
      * Validate the received data structure to ensure if we can extract the
@@ -148,6 +155,17 @@ class Item extends Model
                 }
             }
         }
+
+        // The item uses HTML output.
+        if (static::$useHtmlOutput === true) {
+            if (static::notEmptyStringOr($data['encodedHtml'], null) === null
+                && static::notEmptyStringOr($data['html'], null) === null
+            ) {
+                throw new \InvalidArgumentException(
+                    'the html property is required and should be a not empty string'
+                );
+            }
+        }
     }
 
 
@@ -194,6 +212,10 @@ class Item extends Model
                 $decodedData,
                 static::extractLinkedVisualConsole($data)
             );
+        }
+
+        if (static::$useHtmlOutput === true) {
+            $decodedData['encodedHtml'] = static::extractEncodedHtml($data);
         }
 
         return $decodedData;
@@ -566,6 +588,25 @@ class Item extends Model
         }
 
         return $vcData;
+    }
+
+
+    /**
+     * Extract a encoded HTML representation of the item.
+     *
+     * @param array $data Unknown input data structure.
+     *
+     * @return string The HTML representation in base64 encoding.
+     */
+    private static function extractEncodedHtml(array $data): string
+    {
+        if (isset($data['encodedHtml']) === true) {
+            return $data['encodedHtml'];
+        } else if (isset($data['html']) === true) {
+            return \base64_encode($data['html']);
+        }
+
+        return '';
     }
 
 

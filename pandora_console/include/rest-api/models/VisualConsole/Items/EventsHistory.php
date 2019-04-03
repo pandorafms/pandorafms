@@ -27,32 +27,12 @@ final class EventsHistory extends Item
      */
     protected static $useLinkedVisualConsole = true;
 
-
     /**
-     * Validate the received data structure to ensure if we can extract the
-     * values required to build the model.
+     * Used to enable validation, extraction and encodeing of the HTML output.
      *
-     * @param array $data Input data.
-     *
-     * @return void
-     *
-     * @throws \InvalidArgumentException If any input value is considered
-     * invalid.
-     *
-     * @overrides Item::validateData.
+     * @var boolean
      */
-    protected function validateData(array $data): void
-    {
-        parent::validateData($data);
-
-        if (static::notEmptyStringOr($data['encodedHtml'], null) === null
-            && static::notEmptyStringOr($data['html'], null) === null
-        ) {
-            throw new \InvalidArgumentException(
-                'the html property is required and should be string'
-            );
-        }
-    }
+    protected static $useHtmlOutput = true;
 
 
     /**
@@ -69,7 +49,6 @@ final class EventsHistory extends Item
         $return = parent::decode($data);
         $return['type'] = AUTO_SLA_GRAPH;
         $return['maxTime'] = $this->extractMaxTime($data);
-        $return['encodedHtml'] = $this->extractEncodedHtml($data);
         return $return;
     }
 
@@ -87,23 +66,6 @@ final class EventsHistory extends Item
             static::issetInArray($data, ['maxTime', 'period']),
             null
         );
-    }
-
-
-    /**
-     * Extract a encoded HTML representation of the item.
-     *
-     * @param array $data Unknown input data structure.
-     *
-     * @return string The HTML representation in base64 encoding.
-     */
-    private static function extractEncodedHtml(array $data): string
-    {
-        if (isset($data['encodedHtml']) === true) {
-            return $data['encodedHtml'];
-        } else if (isset($data['html']) === true) {
-            return \base64_encode($data['html']);
-        }
     }
 
 
@@ -153,7 +115,7 @@ final class EventsHistory extends Item
         );
         $html .= '</div>';
 
-        $data['encodedHtml'] = \base64_encode($html);
+        $data['html'] = $html;
 
         return $data;
     }

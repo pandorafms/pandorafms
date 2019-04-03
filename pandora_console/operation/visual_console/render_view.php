@@ -169,6 +169,11 @@ $options['view']['active'] = true;
 if (!is_metaconsole()) {
     if (!$config['pure']) {
         $options['pure']['text'] = '<a href="index.php?sec=network&sec2=operation/visual_console/render_view&id='.$id_layout.'&refr='.$refr.'&pure=1">'.html_print_image('images/full_screen.png', true, ['title' => __('Full screen mode')]).'</a>';
+        $options['view2']['text'] = '<a href="index.php?sec=network&sec2=operation/visual_console/visual_console_view&id='.$id_layout.'&refr='.$view_refresh.'">'.html_print_image(
+            'images/operation.png',
+            true,
+            ['title' => __('Beta View')]
+        ).'</a>';
         ui_print_page_header($layout_name, 'images/visual_console.png', false, '', false, $options);
     }
 

@@ -193,4 +193,134 @@ final class Container extends Model
     }
 
 
+    /**
+     * Obtain a container data structure from the database using layout id
+     * and returns a valid representation of the model
+     *
+     * @param integer $id_layout
+     *
+     * @return array
+     */
+    public static function getItemsFromDB(int $id_layout): array
+    {
+        $layout_items = db_get_all_rows_filter('tlayout_data', ['id_layout' => $id_layout]);
+        if (!empty($layout_items) === true) {
+            $array_items = [];
+            foreach ($layout_items as $key => $value) {
+                switch ($value['type']) {
+                    case STATIC_GRAPH:
+                        // code...
+                    break;
+
+                    case MODULE_GRAPH:
+                        // code...
+                    break;
+
+                    case SIMPLE_VALUE:
+                    case SIMPLE_VALUE_MAX:
+                    case SIMPLE_VALUE_MIN:
+                    case SIMPLE_VALUE_AVG:
+                        $value['value'] = visual_map_get_simple_value(
+                            $value['type'],
+                            $value['id_agente_modulo'],
+                            $value['period']
+                        );
+
+                        array_push(
+                            $array_items,
+                            (string) Items\SimpleValue::fromArray($value)
+                        );
+                    break;
+
+                    case PERCENTILE_BAR:
+                        // code...
+                    break;
+
+                    case LABEL:
+                        array_push(
+                            $array_items,
+                            (string) Items\Label::fromArray($value)
+                        );
+                    break;
+
+                    case ICON:
+                        array_push(
+                            $array_items,
+                            (string) Items\Icon::fromArray($value)
+                        );
+                    break;
+
+                    case PERCENTILE_BUBBLE:
+                        // code...
+                    break;
+
+                    case SERVICE:
+                        // code...
+                    break;
+
+                    case GROUP_ITEM:
+                        array_push(
+                            $array_items,
+                            (string) Items\Group::fromArray($value)
+                        );
+                    break;
+
+                    case BOX_ITEM:
+                        array_push(
+                            $array_items,
+                            (string) Items\Box::fromArray($value)
+                        );
+                    break;
+
+                    case LINE_ITEM:
+                        array_push(
+                            $array_items,
+                            (string) Items\Line::fromArray($value)
+                        );
+                    break;
+
+                    case AUTO_SLA_GRAPH:
+                        array_push(
+                            $array_items,
+                            (string) Items\EventsHistory::fromArray($value)
+                        );
+                    break;
+
+                    case CIRCULAR_PROGRESS_BAR:
+                        // code...
+                    break;
+
+                    case CIRCULAR_INTERIOR_PROGRESS_BAR:
+                        // code...
+                    break;
+
+                    case DONUT_GRAPH:
+                        // code...
+                    break;
+
+                    case BARS_GRAPH:
+                        // code...
+                    break;
+
+                    case CLOCK:
+                        array_push(
+                            $array_items,
+                            (string) Items\Clock::fromArray($value)
+                        );
+                    break;
+
+                    case COLOR_CLOUD:
+                        array_push(
+                            $array_items,
+                            (string) Items\ColorCloud::fromArray($value)
+                        );
+                    break;
+                }
+            }
+        }
+
+        return $array_items;
+    }
+
+
 }

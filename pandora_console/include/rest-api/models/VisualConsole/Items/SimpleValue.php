@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Models\VisualConsole\Items;
 use Models\VisualConsole\Item;
-use Models\Model;
 
 /**
  * Model of a simple value item of the Visual Console.
@@ -45,17 +44,9 @@ final class SimpleValue extends Item
     protected function validateData(array $data): void
     {
         parent::validateData($data);
-        if (isset($data['valueType']) === false
-            || \is_string($data['valueType']) === false
-        ) {
-            throw new \InvalidArgumentException(
-                'the valueType property is required and should be string'
-            );
-        }
-
         if (isset($data['value']) === false) {
             throw new \InvalidArgumentException(
-                'the value property is required'
+                'the value property is required and should be string'
             );
         }
     }
@@ -95,18 +86,25 @@ final class SimpleValue extends Item
      */
     private function extractProcessValue(array $data): string
     {
-        $processValue = Model::notEmptyStringOr(
-            Model::issetInArray($data, ['processValue']),
+        $processValue = static::notEmptyStringOr(
+            static::issetInArray($data, ['processValue']),
             null
         );
 
+        if ($processValue === null) {
+            $processValue = $data['type'];
+        }
+
         switch ($processValue) {
+            case SIMPLE_VALUE_AVG:
             case 'avg':
             return 'avg';
 
+            case SIMPLE_VALUE_MAX:
             case 'max':
             return 'max';
 
+            case SIMPLE_VALUE_MIN:
             case 'min':
             return 'min';
 
@@ -126,8 +124,8 @@ final class SimpleValue extends Item
      */
     private function extractPeriod(array $data): int
     {
-        $period = Model::parseIntOr(
-            Model::issetInArray($data, ['period']),
+        $period = static::parseIntOr(
+            static::issetInArray($data, ['period']),
             0
         );
         if ($period >= 0) {
@@ -148,8 +146,8 @@ final class SimpleValue extends Item
      */
     private function extractValueType(array $data): string
     {
-        $valueType = Model::notEmptyStringOr(
-            Model::issetInArray($data, ['valueType']),
+        $valueType = static::notEmptyStringOr(
+            static::issetInArray($data, ['valueType']),
             null
         );
 

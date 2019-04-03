@@ -84,7 +84,7 @@ final class EventsHistory extends Item
         include_once $config['homedir'].'/include/functions_graph.php';
 
         // Get the linked agent and module Ids.
-        $linkedModule = $this->extractLinkedModule($data);
+        $linkedModule = static::extractLinkedModule($data);
         $agentId = static::parseIntOr($linkedModule['agentId'], null);
         $moduleId = static::parseIntOr($linkedModule['moduleId'], null);
 

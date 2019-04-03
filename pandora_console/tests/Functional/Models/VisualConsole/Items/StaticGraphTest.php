@@ -6,12 +6,17 @@ use PHPUnit\Framework\TestCase;
 use Models\VisualConsole\Items\StaticGraph;
 
 /**
- * Test class
+ * Test for the Visual Console static graph Item model.
  */
-class StaticGrahpTest extends TestCase
+class StaticGraphTest extends TestCase
 {
 
 
+    /**
+     * Test if the instance is created using a valid data structure.
+     *
+     * @return void
+     */
     public function testCanBeCreatedFromValidUserStructure(): void
     {
         $this->assertInstanceOf(
@@ -19,7 +24,7 @@ class StaticGrahpTest extends TestCase
             StaticGraph::fromArray(
                 [
                     'id'                   => 345,
-                    'type'                 => 1,
+                    'type'                 => STATIC_GRAPH,
                     'label'                => null,
                     'labelPosition'        => 'up',
                     'isLinkEnabled'        => true,
@@ -40,7 +45,7 @@ class StaticGrahpTest extends TestCase
             StaticGraph::fromArray(
                 [
                     'id'              => 1000,
-                    'type'            => 0,
+                    'type'            => STATIC_GRAPH,
                     'width'           => 100,
                     'height'          => 900,
                     'image'           => 'test.jpg',
@@ -171,6 +176,11 @@ class StaticGrahpTest extends TestCase
     }
 
 
+    /**
+     * Test if the instance is not created when using a invalid image src.
+     *
+     * @return void
+     */
     public function testCannotBeCreatedWithInvalidImageSrc(): void
     {
         $this->expectException(InvalidArgumentException::class);
@@ -178,7 +188,7 @@ class StaticGrahpTest extends TestCase
         StaticGraph::fromArray(
             [
                 'id'                   => 3,
-                'type'                 => 0,
+                'type'                 => STATIC_GRAPH,
                 'label'                => null,
                 'isLinkEnabled'        => true,
                 'isOnTop'              => false,
@@ -191,11 +201,12 @@ class StaticGrahpTest extends TestCase
                 'showLastValueTooltip' => 'disabled',
             ]
         );
+
         // Missing imageSrc.
         StaticGraph::fromArray(
             [
                 'id'                   => 3,
-                'type'                 => 0,
+                'type'                 => STATIC_GRAPH,
                 'label'                => null,
                 'isLinkEnabled'        => true,
                 'isOnTop'              => false,

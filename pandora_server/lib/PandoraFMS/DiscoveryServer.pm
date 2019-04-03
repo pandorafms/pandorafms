@@ -150,6 +150,9 @@ sub data_consumer ($$) {
 	my ($self, $task_id) = @_;
 	my ($pa_config, $dbh) = ($self->getConfig (), $self->getDBH ());
 
+	# Get server id.
+	my $server_id = get_server_id($dbh, $pa_config->{'servername'}, $self->getServerType());
+
 	# Get recon task data	
 	my $task = get_db_single_row ($dbh, 'SELECT * FROM trecon_task WHERE id_rt = ?', $task_id);	
 	return -1 unless defined ($task);
@@ -201,7 +204,9 @@ sub data_consumer ($$) {
 			auth_strings_array => \@auth_strings,
 			autoconfiguration_enabled => $task->{'autoconfiguration_enabled'},
 			main_event_id => $main_event,
-			%{$pa_config}
+			server_id => $server_id,
+			%{$pa_config},
+			task_data => $task
 		);
 
 		$recon->scan();
@@ -412,6 +417,93 @@ sub PandoraFMS::Recon::Base::connect_agents($$$$$) {
 		db_do($self->{'dbh'}, 'INSERT INTO tmodule_relationship (`module_a`, `module_b`, `id_rt`) VALUES(?, ?, ?)', $module_id_1, $module_id_2, $self->{'task_id'});
 	}
 }
+
+
+##########################################################################
+# Create agents from db_scan.
+# data = [
+#	'agent_data' => {},
+#	'module_data' => []
+# ]
+##########################################################################
+sub PandoraFMS::Recon::Base::create_agents($$) {
+	my ($self, $data) = @_;
+
+	my $pa_config = $self->{'pa_config'};
+	my $dbh = $self->{'dbh'};
+	my $server_id = $self->{'server_id'};
+
+	return undef if (ref($data) ne "ARRAY");
+
+	foreach my $information (@{$data}) {
+		my $agent = $information->{'agent_data'};
+		my $modules = $information->{'module_data'};
+		my $force_processing = 0;
+
+		# Search agent
+		my $current_agent = PandoraFMS::Core::locate_agent(
+			$pa_config, $dbh, $agent->{'agent_name'}
+		);
+
+		my $parent_id;
+		if (defined($agent->{'parent_agent'})) {
+			$parent_id = PandoraFMS::Core::locate_agent(
+				$pa_config, $dbh, $agent->{'parent_agent'}
+			);
+		}
+
+		my $agent_id;
+
+		if (!$current_agent) {
+			# Create agent.
+			$agent_id = pandora_create_agent(
+				$pa_config, $pa_config->{'servername'}, $agent->{'agent_name'},
+				$agent->{'address'}, $agent->{'id_group'}, $parent_id,
+				$agent->{'os'}, $agent->{'description'}, $agent->{'interval'},
+				$dbh, $agent->{'timezone_offset'}
+			);
+
+			$current_agent = $parent_id = PandoraFMS::Core::locate_agent(
+				$pa_config, $dbh, $agent->{'agent_name'}
+			);
+
+			$force_processing = 1;
+
+		} else {
+			$agent_id = $current_agent->{'id_agente'};
+		}
+
+		if (!defined($agent_id)) {
+			return undef;
+		}
+
+		if ($agent->{'address'} ne '') {
+			pandora_add_agent_address(
+				$pa_config, $agent_id, $agent->{'agent_name'},
+				$agent->{'address'}, $dbh
+			);
+		}
+
+		# Update agent information
+		pandora_update_agent(
+			$pa_config, time(), $agent_id,
+			$agent->{'os_version'}, $agent->{'agent_version'},
+			$agent->{'interval'}, $dbh, undef, $parent_id
+		);
+
+		# Add modules.
+		if (ref($modules) eq "ARRAY") {
+			foreach my $module (@{$modules}) {
+				pandora_process_module(
+					$pa_config, {'data' => $module->{'value'}}, $current_agent, $module,
+					$module->{'type'}, '', time(), $server_id, $dbh
+				);
+			}
+		}
+	}
+
+}
+
 
 ##########################################################################
 # Create an agent for the given device. Returns the ID of the new (or

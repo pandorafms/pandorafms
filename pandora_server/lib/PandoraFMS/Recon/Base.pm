@@ -20,7 +20,16 @@ use constant {
 	STEP_SCANNING => 1,
 	STEP_AFT => 2,
 	STEP_TRACEROUTE => 3,
-	STEP_GATEWAY => 4
+	STEP_GATEWAY => 4,
+	STEP_STATISTICS => 1,
+	STEP_DATABASE_SCAN => 2,
+	STEP_CUSTOM_QUERIES => 3,
+	DISCOVERY_HOSTDEVICES => 0,
+	DISCOVERY_HOSTDEVICES_CUSTOM => 1,
+	DISCOVERY_CLOUD_AWS => 2,
+	DISCOVERY_APP_VMWARE => 3,
+	DISCOVERY_APP_MYSQL => 4,
+	DISCOVERY_APP_ORACLE => 5
 };
 
 # /dev/null
@@ -1418,6 +1427,83 @@ sub scan_subnet($) {
 }
 
 ##########################################################################
+# Perform a DB scan.
+##########################################################################
+sub db_scan($) {
+	my ($self) = @_;
+	my ($progress, $step);
+
+	my $type = '';
+
+	if ($self->{'task_data'}->{'type'} == DISCOVERY_APP_MYSQL) {
+		$type = 'MySQL';
+	} elsif ($self->{'task_data'}->{'type'} == DISCOVERY_APP_ORACLE) {
+		$type = 'Oracle';
+	} else {
+		# Unrecognized task type.
+		call('message', 'Unrecognized task type', 1);
+		$self->call('update_progress', -1);
+		return;
+	}
+
+	# Connect to target.
+	my $dbObj = PandoraFMS::Recon::Util::enterprise_new(
+		'PandoraFMS::Recon::Applications::'.$type,
+		$self->{'task_data'}
+	);
+
+	if (!defined($dbObj)) {
+		call('message', 'Cannot connect to target ' .'', 3);
+		$self->call('update_progress', -1);
+		return;
+	}
+
+	my @modules;
+
+	# Analyze.
+	$self->{'step'} = STEP_STATISTICS;
+	$self->{'c_network_name'} = $dbObj->get_host();
+	$self->call('update_progress', 10);
+
+	# Retrieve connection statistics.
+	# Retrieve uptime statistics
+	# Retrieve query stats
+	# Retrieve connections
+	# Retrieve innodb
+	# Retrieve cache
+	push @modules, $dbObj->get_statistics();
+	$self->call('update_progress', 50);
+
+
+	# Custom queries.
+	push @modules, $dbObj->execute_custom_queries();
+	$self->call('update_progress', 90);
+
+	my $data = [
+		{
+			'agent_data' => {
+				'agent_name' => $dbObj->get_agent_name(),
+				'os' => $type,
+				'os_version' => 'Discovery',
+				'interval' => $self->{'task_data'}->{'interval_sweep'},
+				'id_group' => $self->{'task_data'}->{'id_group'},
+				'address' => $dbObj->get_host(),
+
+			},
+			'module_data' => \@modules,
+		}
+	];
+
+	$self->call('create_agents', $data);
+
+	# Update progress.
+	# Done!
+	$self->{'step'} = '';
+	$self->call('update_progress', -1);
+
+}
+
+##########################################################################
 # Perform a network scan.
 ##########################################################################
 sub scan($) {
@@ -1426,6 +1512,14 @@ sub scan($) {
 
 	# 1%
 	$self->call('update_progress', 1);
+
+	if (defined($self->{'task_data'})) {
+		if ($self->{'task_data'}->{'type'} == DISCOVERY_APP_MYSQL
+		||  $self->{'task_data'}->{'type'} == DISCOVERY_APP_ORACLE) {
+			# Database scan.
+			return $self->db_scan();
+		}
+	}
 
 	# Find devices.
 	$self->call('message', "[1/5] Scanning the network...", 3);

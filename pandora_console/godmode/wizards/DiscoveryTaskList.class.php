@@ -464,15 +464,30 @@ class DiscoveryTaskList extends Wizard
                 }
 
                 if ($task['id_recon_script'] == 0) {
-                    // Discovery NetScan.
-                    $data[6] = html_print_image(
-                        'images/network.png',
-                        true,
-                        ['title' => __('Discovery NetScan')]
-                    ).'&nbsp;&nbsp;';
-                    $data[6] .= network_profiles_get_name(
-                        $task['id_network_profile']
-                    );
+                    switch ($task['type']) {
+                        case DISCOVERY_APP_MYSQL:
+                            // Discovery Applications MySQL.
+                            $data[6] = html_print_image(
+                                'images/network.png',
+                                true,
+                                ['title' => __('Discovery Applications MySQL')]
+                            ).'&nbsp;&nbsp;';
+                            $data[6] .= __('Discovery.App.MySQL');
+                        break;
+
+                        case DISCOVERY_HOSTDEVICES:
+                        default:
+                            // Discovery NetScan.
+                            $data[6] = html_print_image(
+                                'images/network.png',
+                                true,
+                                ['title' => __('Discovery NetScan')]
+                            ).'&nbsp;&nbsp;';
+                            $data[6] .= network_profiles_get_name(
+                                $task['id_network_profile']
+                            );
+                        break;
+                    }
                 } else {
                     // APP recon task.
                     $data[6] = html_print_image(
@@ -612,12 +627,14 @@ class DiscoveryTaskList extends Wizard
      */
     public function getTargetWiz($task)
     {
-        // TODO: Do not use description. Use recon_script ID instead.
-        switch ($task['description']) {
-            case 'Discovery.Application.VMware':
+        switch ($task['type']) {
+            case DISCOVERY_APP_MYSQL:
+            return 'wiz=app&mode=mysql&page=0';
+
+            case DISCOVERY_APP_VMWARE:
             return 'wiz=app&mode=vmware&page=0';
 
-            case CLOUDWIZARD_AWS_DESCRIPTION:
+            case DISCOVERY_CLOUD_AWS:
             return 'wiz=cloud&mode=amazonws&page=1';
 
             case 'console_task':

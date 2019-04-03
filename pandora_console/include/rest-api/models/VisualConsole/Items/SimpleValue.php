@@ -39,7 +39,7 @@ final class SimpleValue extends Item
      * @throws \InvalidArgumentException If any input value is considered
      * invalid.
      *
-     * @overrides Item::validateData.
+     * @overrides Item->validateData.
      */
     protected function validateData(array $data): void
     {
@@ -59,19 +59,20 @@ final class SimpleValue extends Item
      *
      * @return array Data structure representing the model.
      *
-     * @overrides Item::decode.
+     * @overrides Item->decode.
      */
     protected function decode(array $data): array
     {
         $return = parent::decode($data);
         $return['type'] = SIMPLE_VALUE;
         $return['processValue'] = static::extractProcessValue($data);
+        $return['valueType'] = static::extractValueType($data);
+        $return['value'] = $data['value'];
+
         if ($return['processValue'] !== 'none') {
             $return['period'] = static::extractPeriod($data);
         }
 
-        $return['valueType'] = static::extractValueType($data);
-        $return['value'] = $data['value'];
         return $return;
     }
 
@@ -176,6 +177,9 @@ final class SimpleValue extends Item
         if (\preg_match('/src=\"(data:image.*)"/', $value, $matches) === 1) {
             $data['valueType'] = 'image';
             $data['value'] = $matches[1];
+        } else {
+            $data['valueType'] = 'string';
+            $data['value'] = $value;
         }
 
         return $data;

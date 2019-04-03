@@ -1446,55 +1446,70 @@ sub db_scan($) {
 		return;
 	}
 
-	# Connect to target.
-	my $dbObj = PandoraFMS::Recon::Util::enterprise_new(
-		'PandoraFMS::Recon::Applications::'.$type,
-		$self->{'task_data'}
-	);
+	my @targets = split /,/, $self->{'task_data'}->{'subnet'};
 
-	if (!defined($dbObj)) {
-		call('message', 'Cannot connect to target ' .'', 3);
-		$self->call('update_progress', -1);
-		return;
-	}
+	my $i = 0;
+	foreach my $target (@targets) {
+		call('message', 'Checking target ' . $target, 10);
 
-	my @modules;
+		# Force target acquirement.
+		$self->{'task_data'}->{'dbhost'} = $target;
+		$self->{'task_data'}->{'target_index'} = $i++;
 
-	# Analyze.
-	$self->{'step'} = STEP_STATISTICS;
-	$self->{'c_network_name'} = $dbObj->get_host();
-	$self->call('update_progress', 10);
+		# Connect to target.
+		my $dbObj = PandoraFMS::Recon::Util::enterprise_new(
+			'PandoraFMS::Recon::Applications::'.$type,
+			$self->{'task_data'}
+		);
 
-	# Retrieve connection statistics.
-	# Retrieve uptime statistics
-	# Retrieve query stats
-	# Retrieve connections
-	# Retrieve innodb
-	# Retrieve cache
-	push @modules, $dbObj->get_statistics();
-	$self->call('update_progress', 50);
-
-
-	# Custom queries.
-	push @modules, $dbObj->execute_custom_queries();
-	$self->call('update_progress', 90);
-
-	my $data = [
-		{
-			'agent_data' => {
-				'agent_name' => $dbObj->get_agent_name(),
-				'os' => $type,
-				'os_version' => 'Discovery',
-				'interval' => $self->{'task_data'}->{'interval_sweep'},
-				'id_group' => $self->{'task_data'}->{'id_group'},
-				'address' => $dbObj->get_host(),
-				'description' => '',
-			},
-			'module_data' => \@modules,
+		if (!defined($dbObj)) {
+			call('message', 'Cannot connect to target ' . $target, 3);
+			next;
 		}
-	];
 
-	$self->call('create_agents', $data);
+		my @modules;
+
+		# Analyze.
+		$self->{'step'} = STEP_STATISTICS;
+		$self->{'c_network_name'} = $dbObj->get_host();
+		$self->call('update_progress', 10);
+
+		# Retrieve connection statistics.
+		# Retrieve uptime statistics
+		# Retrieve query stats
+		# Retrieve connections
+		# Retrieve innodb
+		# Retrieve cache
+		push @modules, $dbObj->get_statistics();
+		$self->call('update_progress', 50);
+
+
+		# Custom queries.
+		push @modules, $dbObj->execute_custom_queries();
+		$self->call('update_progress', 90);
+
+		my $data = [
+			{
+				'agent_data' => {
+					'agent_name' => $dbObj->get_agent_name(),
+					'os' => $type,
+					'os_version' => 'Discovery',
+					'interval' => $self->{'task_data'}->{'interval_sweep'},
+					'id_group' => $self->{'task_data'}->{'id_group'},
+					'address' => $dbObj->get_host(),
+					'description' => '',
+				},
+				'module_data' => \@modules,
+			}
+		];
+
+		use Data::Dumper;
+		print Dumper($data);
+		$self->call('create_agents', $data);
+
+		# Destroy item.
+		undef($dbObj);
+	}
 
 	# Update progress.
 	# Done!

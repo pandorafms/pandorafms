@@ -11442,33 +11442,95 @@ function reporting_sla_is_ignored_from_array($sla_array)
  *
  * @return integer Status
  */
-function reporting_sla_get_status_period($sla_times, $priority_mode=REPORT_PRIORITY_MODE_OK)
-{
-    if ($sla_times['time_error'] > 0) {
+function reporting_sla_get_status_period(
+    $sla,
+    $priority_mode=REPORT_PRIORITY_MODE_OK
+) {
+    if ($sla['time_error'] > 0) {
         return REPORT_STATUS_ERR;
     }
 
-    if ($priority_mode == REPORT_PRIORITY_MODE_OK && $sla_times['time_ok'] > 0) {
+    if ($priority_mode == REPORT_PRIORITY_MODE_OK && $sla['time_ok'] > 0) {
         return REPORT_STATUS_OK;
     }
 
-    if ($sla_times['time_out'] > 0) {
+    if ($sla['time_out'] > 0) {
         return REPORT_STATUS_IGNORED;
     }
 
-    if ($sla_times['time_downtime'] > 0) {
+    if ($sla['time_downtime'] > 0) {
         return REPORT_STATUS_DOWNTIME;
     }
 
-    if ($sla_times['time_unknown'] > 0) {
+    if ($sla['time_unknown'] > 0) {
         return REPORT_STATUS_UNKNOWN;
     }
 
-    if ($sla_times['time_not_init'] > 0) {
+    if ($sla['time_not_init'] > 0) {
         return REPORT_STATUS_NOT_INIT;
     }
 
-    if ($sla_times['time_ok'] > 0) {
+    if ($sla['time_ok'] > 0) {
+        return REPORT_STATUS_OK;
+    }
+
+    return REPORT_STATUS_IGNORED;
+}
+
+
+/**
+ * @brief Given a period, get the SLA status
+ * of the period compare with sla_limit.
+ *
+ * @param Array An array with all times to calculate the SLA.
+ * @param int Limit SLA pass for user.
+ * Only used for monthly, weekly And hourly report.
+ *
+ * @return integer Status
+ */
+function reporting_sla_get_status_period_compliance(
+    $sla,
+    $sla_limit
+) {
+    global $config;
+
+    $time_compliance = (
+        $sla['time_ok'] + $sla['time_unknown'] + $sla['time_downtime']
+    );
+
+    $time_total_working = (
+        $time_compliance + $sla['time_error']
+    );
+
+    $time_compliance = ($time_compliance == 0) ? 0 : (($time_compliance / $time_total_working) * 100);
+
+    if ($sla['time_error'] > 0 && ($time_compliance < $sla_limit)) {
+        return REPORT_STATUS_ERR;
+    }
+
+    if ($priority_mode == REPORT_PRIORITY_MODE_OK
+        && $sla['time_ok'] > 0 && ($time_compliance >= $sla_limit)
+    ) {
+        return REPORT_STATUS_OK;
+    }
+
+    if ($sla['time_out'] > 0 && ($time_compliance < $sla_limit)) {
+        return REPORT_STATUS_IGNORED;
+    }
+
+    if ($sla['time_downtime'] > 0 && ($time_compliance < $sla_limit)) {
+        return REPORT_STATUS_DOWNTIME;
+    }
+
+    if ($sla['time_unknown'] > 0 && ($time_compliance < $sla_limit)) {
+        return REPORT_STATUS_UNKNOWN;
+    }
+
+    if ($sla['time_not_init'] > 0 && ($time_compliance < $sla_limit)) {
+        return REPORT_STATUS_NOT_INIT;
+    }
+
+    if ($sla['time_ok'] > 0 && ($time_compliance >= $sla_limit)) {
         return REPORT_STATUS_OK;
     }
 

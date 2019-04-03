@@ -431,8 +431,10 @@ function cron_list_table()
                     }
 
                     $email = $args[1];
+                    $report_type = $args[4];
                     $data[2] .= '<br>- '.__('Report').": <a href='index.php?sec=reporting&sec2=operation/reporting/reporting_viewer&id=".$args[0]."'>";
                     $data[2] .= $report['name'].'</a>';
+                    $data[2] .= '<br>- '.__('Report type').': '.$report_type;
                     $data[2] .= '<br>- '.__('Email').": <a href='mailto:".$email."'>";
                     $data[2] .= ui_print_truncate_text($email, 60, false).'</a>';
                 break;

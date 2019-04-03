@@ -29,6 +29,33 @@ final class EventsHistory extends Item
 
 
     /**
+     * Validate the received data structure to ensure if we can extract the
+     * values required to build the model.
+     *
+     * @param array $data Input data.
+     *
+     * @return void
+     *
+     * @throws \InvalidArgumentException If any input value is considered
+     * invalid.
+     *
+     * @overrides Item::validateData.
+     */
+    protected function validateData(array $data): void
+    {
+        parent::validateData($data);
+
+        if (static::notEmptyStringOr($data['encodedHtml'], null) === null
+            && static::notEmptyStringOr($data['html'], null) === null
+        ) {
+            throw new \InvalidArgumentException(
+                'the html property is required and should be string'
+            );
+        }
+    }
+
+
+    /**
      * Returns a valid representation of the model.
      *
      * @param array $data Input data.
@@ -54,7 +81,7 @@ final class EventsHistory extends Item
      *
      * @return mixed The time in seconds of the graph period or null.
      */
-    private function extractMaxTime(array $data)
+    private static function extractMaxTime(array $data)
     {
         return static::parseIntOr(
             static::issetInArray($data, ['maxTime', 'period']),
@@ -69,15 +96,36 @@ final class EventsHistory extends Item
      * @param array $data Unknown input data structure.
      *
      * @return string The HTML representation in base64 encoding.
-     * @throws \InvalidArgumentException When an agent Id cannot be found.
      */
-    private function extractEncodedHtml(array $data): string
+    private static function extractEncodedHtml(array $data): string
     {
         if (isset($data['encodedHtml']) === true) {
             return $data['encodedHtml'];
         } else if (isset($data['html']) === true) {
             return \base64_encode($data['html']);
         }
+    }
+
+
+    /**
+     * Fetch a vc item data structure from the database using a filter.
+     *
+     * @param array $filter Filter of the Visual Console Item.
+     *
+     * @return array The Visual Console Item data structure stored into the DB.
+     * @throws \InvalidArgumentException When an agent Id cannot be found.
+     *
+     * @override Item::fetchDataFromDB.
+     */
+    protected static function fetchDataFromDB(array $filter): array
+    {
+        // Due to this DB call, this function cannot be unit tested without
+        // a proper mock.
+        $data = parent::fetchDataFromDB($filter);
+
+        /*
+         * Retrieve extra data.
+         */
 
         // Load side libraries.
         global $config;
@@ -99,13 +147,15 @@ final class EventsHistory extends Item
             $moduleId,
             (int) $data['width'],
             (int) $data['height'],
-            $this->extractMaxTime($data),
+            static::extractMaxTime($data),
             '',
             true
         );
         $html .= '</div>';
 
-        return \base64_encode($html);
+        $data['encodedHtml'] = \base64_encode($html);
+
+        return $data;
     }
 
 

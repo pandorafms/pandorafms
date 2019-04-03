@@ -18,6 +18,7 @@ import SimpleValue, { simpleValuePropsDecoder } from "./items/SimpleValue";
 import EventsHistory, {
   eventsHistoryPropsDecoder
 } from "./items/EventsHistory";
+import Percentile, { percentilePropsDecoder } from "./items/Percentile";
 
 // Base properties.
 export interface VisualConsoleProps extends Size {
@@ -90,7 +91,9 @@ function itemInstanceFrom(data: UnknownObject) {
       return new SimpleValue(simpleValuePropsDecoder(data));
     case ItemType.PERCENTILE_BAR:
     case ItemType.PERCENTILE_BUBBLE:
-      throw new TypeError("item not found");
+    case ItemType.CIRCULAR_PROGRESS_BAR:
+    case ItemType.CIRCULAR_INTERIOR_PROGRESS_BAR:
+      return new Percentile(percentilePropsDecoder(data));
     case ItemType.LABEL:
       return new Label(labelPropsDecoder(data));
     case ItemType.ICON:
@@ -105,8 +108,6 @@ function itemInstanceFrom(data: UnknownObject) {
       return new Line(linePropsDecoder(data));
     case ItemType.AUTO_SLA_GRAPH:
       return new EventsHistory(eventsHistoryPropsDecoder(data));
-    case ItemType.CIRCULAR_PROGRESS_BAR:
-    case ItemType.CIRCULAR_INTERIOR_PROGRESS_BAR:
     case ItemType.DONUT_GRAPH:
     case ItemType.BARS_GRAPH:
       throw new TypeError("item not found");

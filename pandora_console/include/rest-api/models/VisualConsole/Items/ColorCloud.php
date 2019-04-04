@@ -225,11 +225,17 @@ final class ColorCloud extends Item
         if (empty($dynamicData['colorRanges']) === false) {
             // Connect to node.
             $nodeConnected = false;
-            if (is_metaconsole() === true && $metaconsoleId !== null) {
-                $nodeConnected = metaconsole_connect(
+            if (\is_metaconsole() === true && $metaconsoleId !== null) {
+                $nodeConnected = \metaconsole_connect(
                     null,
                     $metaconsoleId
                 ) === NOERR;
+
+                if ($nodeConnected === false) {
+                    throw new \InvalidArgumentException(
+                        'error connecting to the node'
+                    );
+                }
             }
 
             // Fetch module value.
@@ -237,12 +243,12 @@ final class ColorCloud extends Item
             if ($metaconsoleId === null
                 || ($metaconsoleId !== null && $nodeConnected)
             ) {
-                $value = modules_get_last_value($moduleId);
+                $value = \modules_get_last_value($moduleId);
             }
 
             // Restore connection.
             if ($nodeConnected === true) {
-                metaconsole_restore_db();
+                \metaconsole_restore_db();
             }
 
             // Value found.

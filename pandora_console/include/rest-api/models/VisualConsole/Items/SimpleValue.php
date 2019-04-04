@@ -165,6 +165,7 @@ final class SimpleValue extends Item
             throw new \InvalidArgumentException('missing module Id');
         }
 
+        // TODO: Connect to a metaconsole node?
         // Get the formatted value.
         $value = \visual_map_get_simple_value(
             $data['type'],

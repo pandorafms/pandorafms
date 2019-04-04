@@ -455,7 +455,7 @@ sub PandoraFMS::Recon::Base::create_agents($$) {
 		my $agent_id;
 		my $os_id = get_os_id($dbh, $agent->{'os'});
 
-		if (!$os_id) {
+		if ($os_id < 0) {
 			$os_id = get_os_id($dbh, 'Other');
 		}
 

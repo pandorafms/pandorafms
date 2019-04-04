@@ -1475,6 +1475,8 @@ sub db_scan($) {
 			};
 
 		} else {
+			my $dbObjCfg = $dbObj->get_config();
+
 			$self->{'summary'}->{'discovered'} += 1;
 			$self->{'summary'}->{'alive'} += 1;
 
@@ -1499,10 +1501,26 @@ sub db_scan($) {
 			push @modules, $dbObj->get_statistics();
 			$self->call('update_progress', 50);
 
-
 			# Custom queries.
 			push @modules, $dbObj->execute_custom_queries();
 			$self->call('update_progress', 90);
+
+			if (defined($dbObjCfg->{'scan_databases'})
+			&& $dbObjCfg->{'scan_databases'} == 1) {
+				my $__data = $dbObj->scan_databases();
+
+				if (ref($__data) eq "ARRAY") {
+					if (defined($dbObjCfg->{'agent_per_database'})
+					&& $dbObjCfg->{'agent_per_database'} == 1) {
+						# Agent per database detected.
+						push @data, @{$__data};
+					} else {
+						# Merge modules into engine agent.
+						my @_modules = map { $_->{'module_data'} } @{$__data};
+						push @modules, @_modules;
+					}
+				}
+			}
 		}
 
 		# Put engine agent at the beginning of the list.

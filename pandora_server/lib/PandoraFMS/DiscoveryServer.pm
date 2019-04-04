@@ -459,8 +459,8 @@ sub PandoraFMS::Recon::Base::create_agents($$) {
 			$agent_id = pandora_create_agent(
 				$pa_config, $pa_config->{'servername'}, $agent->{'agent_name'},
 				$agent->{'address'}, $agent->{'id_group'}, $parent_id,
-				$agent->{'os'}, $agent->{'description'}, $agent->{'interval'},
-				$dbh, $agent->{'timezone_offset'}
+				get_os_id($dbh, $agent->{'os'}), $agent->{'description'},
+				$agent->{'interval'}, $dbh, $agent->{'timezone_offset'}
 			);
 
 			$current_agent = $parent_id = PandoraFMS::Core::locate_agent(

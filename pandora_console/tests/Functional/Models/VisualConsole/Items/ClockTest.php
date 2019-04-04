@@ -67,7 +67,7 @@ class ClockTest extends TestCase
      *
      * @return void
      */
-    public function testCannotBeCreatedWithInvalidImageSrc(): void
+    public function testCannotBeCreatedWithInvalidClockTimezone(): void
     {
         $this->expectException(Exception::class);
         // Invalid clockTimezone.

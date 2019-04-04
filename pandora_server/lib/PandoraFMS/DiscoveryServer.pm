@@ -450,6 +450,9 @@ sub PandoraFMS::Recon::Base::create_agents($$) {
 			$parent_id = PandoraFMS::Core::locate_agent(
 				$pa_config, $dbh, $agent->{'parent_agent_name'}
 			);
+			if ($parent_id) {
+				$parent_id = $parent_id->{'id_agente'};
+			}
 		}
 
 		my $agent_id;

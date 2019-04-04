@@ -1,4 +1,11 @@
-import { parseIntOr, notEmptyStringOr, padLeft, prefixedCssRules } from "./lib";
+import {
+  parseIntOr,
+  stringIsEmpty,
+  notEmptyStringOr,
+  padLeft,
+  prefixedCssRules,
+  decodeBase64
+} from "./lib";
 
 describe("function parseIntOr", () => {
   it("should retrieve valid int or a default value", () => {
@@ -9,6 +16,15 @@ describe("function parseIntOr", () => {
     expect(parseIntOr(false, null)).toBe(null);
     expect(parseIntOr(true, null)).toBe(null);
     expect(parseIntOr(1, null)).toBe(1);
+  });
+});
+
+describe("function stringIsEmpty", () => {
+  it("should check properly if a string is empry or not", () => {
+    expect(stringIsEmpty()).toBe(true);
+    expect(stringIsEmpty("")).toBe(true);
+    expect(stringIsEmpty("foo")).toBe(false);
+    expect(stringIsEmpty("bar")).toBe(false);
   });
 });
 
@@ -48,5 +64,18 @@ describe("function prefixedCssRules", () => {
     expect(rules).toContainEqual("-ms-transform: rotate(0);");
     expect(rules).toContainEqual("-o-transform: rotate(0);");
     expect(rules).toHaveLength(5);
+  });
+});
+
+describe("function decodeBase64", () => {
+  it("should decode the base64 without errors", () => {
+    expect(decodeBase64("SGkgSSdtIGRlY29kZWQ=")).toEqual("Hi I'm decoded");
+    expect(decodeBase64("Rk9PQkFSQkFa")).toEqual("FOOBARBAZ");
+    expect(decodeBase64("eyJpZCI6MSwibmFtZSI6ImZvbyJ9")).toEqual(
+      '{"id":1,"name":"foo"}'
+    );
+    expect(
+      decodeBase64("PGRpdj5Cb3ggPHA+UGFyYWdyYXBoPC9wPjxociAvPjwvZGl2Pg==")
+    ).toEqual("<div>Box <p>Paragraph</p><hr /></div>");
   });
 });

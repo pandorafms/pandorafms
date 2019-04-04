@@ -6,7 +6,7 @@ namespace Models\VisualConsole\Items;
 use Models\VisualConsole\Item;
 
 /**
- * Model of a Clock item of the Visual Console.
+ * Model of a clock item of the Visual Console.
  */
 final class Clock extends Item
 {
@@ -26,6 +26,8 @@ final class Clock extends Item
      * @param array $data Input data.
      *
      * @return array Data structure representing the model.
+     * @throws \InvalidArgumentException When there is a problem with
+     * the time management.
      *
      * @overrides Item::decode.
      */
@@ -33,20 +35,25 @@ final class Clock extends Item
     {
         $clockData = parent::decode($data);
         $clockData['type'] = CLOCK;
-        $clockData['clockType'] = $this->extractClockType($data);
-        $clockData['clockFormat'] = $this->extractClockFormat($data);
-        $clockData['clockTimezone'] = $this->extractClockTimezone($data);
+        $clockData['clockType'] = static::extractClockType($data);
+        $clockData['clockFormat'] = static::extractClockFormat($data);
+        $clockData['clockTimezone'] = static::extractClockTimezone($data);
 
         try {
             $timezone = new \DateTimeZone($clockData['clockTimezone']);
             $timezoneUTC = new \DateTimeZone('UTC');
-            $clockData['clockTimezoneOffset'] = $timezone->getOffset(new \DateTime('now', $timezoneUTC));
-        } catch (Exception $e) {
+            $dateTimeUtc = new \DateTime('now', $timezoneUTC);
+            $clockData['clockTimezoneOffset'] = $timezone->getOffset(
+                $dateTimeUtc
+            );
+        } catch (\Exception $e) {
             throw new \InvalidArgumentException($e->getMessage());
         }
 
-        $clockData['showClockTimezone'] = $this->extractShowClockTimezone($data);
-        $clockData['color'] = $this->extractColor($data);
+        $clockData['showClockTimezone'] = static::parseBool(
+            $data['showClockTimezone']
+        );
+        $clockData['color'] = static::extractColor($data);
         return $clockData;
     }
 
@@ -56,9 +63,9 @@ final class Clock extends Item
      *
      * @param array $data Unknown input data structure.
      *
-     * @return string Digital or analogic. analogic by default.
+     * @return string One of 'digital' or 'analogic'. 'analogic' by default.
      */
-    private function extractClockType(array $data): string
+    private static function extractClockType(array $data): string
     {
         $clockType = static::notEmptyStringOr(
             static::issetInArray($data, ['clockType', 'clock_animation']),
@@ -81,9 +88,9 @@ final class Clock extends Item
      *
      * @param array $data Unknown input data structure.
      *
-     * @return string Time or datetime. datetime by default.
+     * @return string One of 'time' or 'datetime'. 'datetime' by default.
      */
-    private function extractClockFormat(array $data): string
+    private static function extractClockFormat(array $data): string
     {
         $clockFormat = static::notEmptyStringOr(
             static::issetInArray($data, ['clockFormat', 'time_format']),
@@ -106,8 +113,10 @@ final class Clock extends Item
      * @param array $data Unknown input data structure.
      *
      * @return string
+     * @throws \InvalidArgumentException When a valid clock timezone cannot be
+     * extracted.
      */
-    private function extractClockTimezone(array $data): string
+    private static function extractClockTimezone(array $data): string
     {
         $clockTimezone = static::notEmptyStringOr(
             static::issetInArray($data, ['clockTimezone', 'timezone']),
@@ -118,24 +127,9 @@ final class Clock extends Item
             throw new \InvalidArgumentException(
                 'the clockTimezone property is required and should be string'
             );
-        } else {
-            return $clockTimezone;
         }
-    }
 
-
-    /**
-     * Extract a clock timezone value.
-     *
-     * @param array $data Unknown input data structure.
-     *
-     * @return boolean
-     */
-    private function extractShowClockTimezone(array $data): bool
-    {
-        return static::parseBool(
-            static::issetInArray($data, ['showClockTimezone'])
-        );
+        return $clockTimezone;
     }
 
 
@@ -144,9 +138,9 @@ final class Clock extends Item
      *
      * @param array $data Unknown input data structure.
      *
-     * @return mixed returns a color or null
+     * @return mixed returns a color or null.
      */
-    private function extractColor(array $data)
+    private static function extractColor(array $data)
     {
         return static::notEmptyStringOr(
             static::issetInArray($data, ['color', 'fill_color']),

@@ -6,27 +6,26 @@ use PHPUnit\Framework\TestCase;
 use Models\VisualConsole\Items\ColorCloud;
 
 /**
- * Test for the Visual Console color cloud Item model.
+ * Test for the Visual Console color cloud item model.
  */
 class ColorCloudTest extends TestCase
 {
 
 
-     /**
-      * Test if the instance is created using a valid data structure.
-      *
-      * @return void
-      */
+    /**
+     * Test if the instance is created using a valid data structure.
+     *
+     * @return void
+     */
     public function testCanBeCreatedFromValidUserStructure(): void
     {
         $this->assertInstanceOf(
             ColorCloud::class,
             ColorCloud::fromArray(
                 [
-                    'id'            => 69,
+                    'id'            => 345,
                     'type'          => COLOR_CLOUD,
-                    'label'         => '{"default_color":"#47b042","color_ranges":[{"from_value":20,"to_value":60,"color":"#d0da27"},{"from_value":61,"to_value":100,"color":"#ec1f1f"}]}',
-                    'labelPosition' => 'up',
+                    'label'         => null,
                     'isLinkEnabled' => true,
                     'isOnTop'       => false,
                     'parentId'      => null,
@@ -34,6 +33,8 @@ class ColorCloudTest extends TestCase
                     'height'        => '0',
                     'x'             => -666,
                     'y'             => 76,
+                    'defaultColor'  => '#FFF',
+                    'colorRanges'   => [],
                 ]
             )
         );
@@ -46,82 +47,30 @@ class ColorCloudTest extends TestCase
                     'type'        => COLOR_CLOUD,
                     'width'       => 100,
                     'height'      => 900,
-                    'color'       => '#47b042',
+                    'label'       => 'eyJkZWZhdWx0X2NvbG9yIjoiI0ZGRiIsImNvbG9yX3JhbmdlcyI6W3siY29sb3IiOiIjMDAwIiwiZnJvbV92YWx1ZSI6MTAuMDUsInRvX3ZhbHVlIjoxMDAuMH1dfQ==',
                     'colorRanges' => [
                         [
-                            'fromValue' => 50,
-                            'toValue'   => 90,
-                            'color'     => '#d0da27',
-                        ],
-                        [
-                            'fromValue' => 910,
-                            'toValue'   => 100,
-                            'color'     => '#ec1f1f',
+                            'color'     => '#000',
+                            'fromValue' => 10.05,
+                            'toValue'   => 100.0,
                         ],
                     ],
+                    'color'       => '#000',
                 ]
             )
         );
-    }
 
-
-    /**
-     * Test if the instance is not created when using a invalid color.
-     *
-     * @return void
-     */
-    public function testCannotBeCreatedWithInvalidColor(): void
-    {
-        $this->expectException(InvalidArgumentException::class);
-        // Invalid color.
-        ColorCloud::fromArray(
-            [
-                'id'            => 69,
-                'type'          => COLOR_CLOUD,
-                'label'         => null,
-                'labelPosition' => 'up',
-                'isLinkEnabled' => true,
-                'isOnTop'       => false,
-                'parentId'      => null,
-                'width'         => '0',
-                'height'        => '0',
-                'x'             => -666,
-                'y'             => 76,
-                'color'         => '',
-            ]
-        );
-
-        // Invalid color.
-        ColorCloud::fromArray(
-            [
-                'id'            => 69,
-                'type'          => COLOR_CLOUD,
-                'label'         => '{"default_col":"#47b042","color_ranges":[]}',
-                'labelPosition' => 'up',
-                'isLinkEnabled' => true,
-                'isOnTop'       => false,
-                'parentId'      => null,
-                'width'         => '0',
-                'height'        => '0',
-                'x'             => -666,
-                'y'             => 76,
-            ]
-        );
-
-        // Missing color.
-        ColorCloud::fromArray(
-            [
-                'id'            => 69,
-                'type'          => COLOR_CLOUD,
-                'labelPosition' => 'up',
-                'isLinkEnabled' => true,
-                'isOnTop'       => false,
-                'parentId'      => null,
-                'width'         => '0',
-                'height'        => '0',
-                'x'             => -666,
-                'y'             => 76,
-            ]
+        $this->assertInstanceOf(
+            ColorCloud::class,
+            ColorCloud::fromArray(
+                [
+                    'id'     => 1000,
+                    'type'   => COLOR_CLOUD,
+                    'width'  => 100,
+                    'height' => 900,
+                    'label'  => 'eyJkZWZhdWx0X2NvbG9yIjoiI0ZGRiIsImNvbG9yX3JhbmdlcyI6W3siY29sb3IiOiIjMDAwIiwiZnJvbV92YWx1ZSI6MTAuMDUsInRvX3ZhbHVlIjoxMDAuMH1dfQ==',
+                ]
+            )
         );
     }
 
@@ -134,12 +83,12 @@ class ColorCloudTest extends TestCase
     public function testContainerIsRepresentedAsJson(): void
     {
         $this->assertEquals(
-            '{"aclGroupId":null,"agentId":null,"agentName":null,"color":"#47b042","colorRanges":[{"fromValue":20,"toValue":60,"color":"#d0da27"},{"fromValue":61,"toValue":100,"color":"#ec1f1f"}],"height":0,"id":69,"isLinkEnabled":true,"isOnTop":false,"label":null,"labelPosition":"up","linkedLayoutAgentId":null,"linkedLayoutId":null,"linkedLayoutStatusType":"default","moduleId":null,"moduleName":null,"parentId":null,"type":20,"width":0,"x":-666,"y":76}',
+            '{"aclGroupId":null,"agentId":null,"agentName":null,"color":"#000","colorRanges":[{"color":"#000","fromValue":10.05,"toValue":100}],"defaultColor":"#FFF","height":0,"id":7,"isLinkEnabled":true,"isOnTop":false,"label":null,"labelPosition":"up","linkedLayoutAgentId":null,"linkedLayoutId":null,"linkedLayoutStatusType":"default","moduleId":null,"moduleName":null,"parentId":null,"type":20,"width":0,"x":-666,"y":76}',
             (string) ColorCloud::fromArray(
                 [
-                    'id'            => 69,
+                    'id'            => 7,
                     'type'          => COLOR_CLOUD,
-                    'label'         => '{"default_color":"#47b042","color_ranges":[{"from_value":20,"to_value":60,"color":"#d0da27"},{"from_value":61,"to_value":100,"color":"#ec1f1f"}]}',
+                    'label'         => null,
                     'labelPosition' => 'up',
                     'isLinkEnabled' => true,
                     'isOnTop'       => false,
@@ -148,33 +97,155 @@ class ColorCloudTest extends TestCase
                     'height'        => '0',
                     'x'             => -666,
                     'y'             => 76,
+                    'defaultColor'  => '#FFF',
+                    'colorRanges'   => [
+                        [
+                            'color'     => '#000',
+                            'fromValue' => 10.05,
+                            'toValue'   => 100.0,
+                        ],
+                    ],
+                    'color'         => '#000',
                 ]
             )
         );
 
         $this->assertEquals(
-            '{"aclGroupId":null,"agentId":null,"agentName":null,"color":"#47b042","colorRanges":[{"fromValue":50,"toValue":90,"color":"#d0da27"},{"fromValue":910,"toValue":100,"color":"#ec1f1f"}],"height":900,"id":1000,"isLinkEnabled":false,"isOnTop":false,"label":null,"labelPosition":"down","linkedLayoutAgentId":null,"linkedLayoutId":null,"linkedLayoutStatusType":"default","moduleId":null,"moduleName":null,"parentId":null,"type":20,"width":100,"x":0,"y":0}',
+            '{"aclGroupId":null,"agentId":null,"agentName":null,"color":null,"colorRanges":[],"defaultColor":"#FFF","height":0,"id":7,"isLinkEnabled":true,"isOnTop":false,"label":null,"labelPosition":"up","linkedLayoutAgentId":null,"linkedLayoutId":null,"linkedLayoutStatusType":"default","moduleId":null,"moduleName":null,"parentId":null,"type":20,"width":0,"x":-666,"y":76}',
             (string) ColorCloud::fromArray(
                 [
-                    'id'          => 1000,
-                    'type'        => COLOR_CLOUD,
-                    'width'       => 100,
-                    'height'      => 900,
-                    'color'       => '#47b042',
-                    'colorRanges' => [
-                        [
-                            'fromValue' => 50,
-                            'toValue'   => 90,
-                            'color'     => '#d0da27',
-                        ],
-                        [
-                            'fromValue' => 910,
-                            'toValue'   => 100,
-                            'color'     => '#ec1f1f',
-                        ],
-                    ],
+                    'id'            => 7,
+                    'type'          => COLOR_CLOUD,
+                    'label'         => null,
+                    'labelPosition' => 'up',
+                    'isLinkEnabled' => true,
+                    'isOnTop'       => false,
+                    'parentId'      => null,
+                    'width'         => '0',
+                    'height'        => '0',
+                    'x'             => -666,
+                    'y'             => 76,
+                    'defaultColor'  => '#FFF',
+                    'colorRanges'   => [],
                 ]
             )
+        );
+
+        $this->assertEquals(
+            '{"aclGroupId":null,"agentId":null,"agentName":null,"color":"#000","colorRanges":[{"color":"#000","fromValue":10.05,"toValue":100}],"defaultColor":"#FFF","height":0,"id":7,"isLinkEnabled":true,"isOnTop":false,"label":null,"labelPosition":"up","linkedLayoutAgentId":3,"linkedLayoutId":2,"linkedLayoutStatusType":"default","metaconsoleId":5,"moduleId":null,"moduleName":null,"parentId":null,"type":20,"width":0,"x":-666,"y":76}',
+            (string) ColorCloud::fromArray(
+                [
+                    'id'                    => 7,
+                    'type'                  => COLOR_CLOUD,
+                    'label'                 => 'eyJkZWZhdWx0X2NvbG9yIjoiI0ZGRiIsImNvbG9yX3JhbmdlcyI6W3siY29sb3IiOiIjMDAwIiwiZnJvbV92YWx1ZSI6MTAuMDUsInRvX3ZhbHVlIjoxMDAuMH1dfQ==',
+                    'labelPosition'         => 'up',
+                    'isLinkEnabled'         => true,
+                    'isOnTop'               => false,
+                    'parentId'              => null,
+                    'width'                 => '0',
+                    'height'                => '0',
+                    'x'                     => -666,
+                    'y'                     => 76,
+                    'color'                 => '#000',
+                    'id_metaconsole'        => 5,
+                    'linked_layout_node_id' => 3,
+                    'linkedLayoutId'        => 2,
+                ]
+            )
+        );
+
+        $this->assertEquals(
+            '{"aclGroupId":null,"agentId":null,"agentName":null,"color":"#000","colorRanges":[{"color":"#000","fromValue":10.05,"toValue":100}],"defaultColor":"#FFF","height":0,"id":7,"isLinkEnabled":true,"isOnTop":false,"label":null,"labelPosition":"up","linkedLayoutAgentId":null,"linkedLayoutId":1,"linkedLayoutStatusType":"default","moduleId":null,"moduleName":null,"parentId":null,"type":20,"width":0,"x":-666,"y":76}',
+            (string) ColorCloud::fromArray(
+                [
+                    'id'               => 7,
+                    'type'             => COLOR_CLOUD,
+                    'label'            => 'eyJkZWZhdWx0X2NvbG9yIjoiI0ZGRiIsImNvbG9yX3JhbmdlcyI6W3siY29sb3IiOiIjMDAwIiwiZnJvbV92YWx1ZSI6MTAuMDUsInRvX3ZhbHVlIjoxMDAuMH1dfQ==',
+                    'labelPosition'    => 'up',
+                    'isLinkEnabled'    => true,
+                    'isOnTop'          => false,
+                    'parentId'         => null,
+                    'width'            => '0',
+                    'height'           => '0',
+                    'x'                => -666,
+                    'y'                => 76,
+                    'defaultColor'     => '#FFF',
+                    'color'            => '#000',
+                    'id_layout_linked' => 1,
+                ]
+            )
+        );
+
+        $this->assertEquals(
+            '{"aclGroupId":null,"agentId":null,"agentName":null,"color":"#000","colorRanges":[{"color":"#000","fromValue":10.05,"toValue":100}],"defaultColor":"#FFF","height":0,"id":7,"isLinkEnabled":true,"isOnTop":false,"label":null,"labelPosition":"up","linkedLayoutAgentId":null,"linkedLayoutId":2,"linkedLayoutStatusType":"service","linkedLayoutStatusTypeCriticalThreshold":80,"linkedLayoutStatusTypeWarningThreshold":50,"moduleId":null,"moduleName":null,"parentId":null,"type":20,"width":0,"x":-666,"y":76}',
+            (string) ColorCloud::fromArray(
+                [
+                    'id'                                       => 7,
+                    'type'                                     => COLOR_CLOUD,
+                    'label'                                    => 'eyJkZWZhdWx0X2NvbG9yIjoiI0ZGRiIsImNvbG9yX3JhbmdlcyI6W3siY29sb3IiOiIjMDAwIiwiZnJvbV92YWx1ZSI6MTAuMDUsInRvX3ZhbHVlIjoxMDAuMH1dfQ==',
+                    'labelPosition'                            => 'up',
+                    'isLinkEnabled'                            => true,
+                    'isOnTop'                                  => false,
+                    'parentId'                                 => null,
+                    'width'                                    => '0',
+                    'height'                                   => '0',
+                    'x'                                        => -666,
+                    'y'                                        => 76,
+                    'colorRanges'                              => [
+                        [
+                            'color'     => '#000',
+                            'fromValue' => 10.05,
+                            'toValue'   => 100.0,
+                        ],
+                    ],
+                    'color'                                    => '#000',
+                    'linkedLayoutId'                           => 2,
+                    'linked_layout_status_type'                => 'service',
+                    'linkedLayoutStatusTypeWarningThreshold'   => 50,
+                    'linked_layout_status_as_service_critical' => 80,
+                ]
+            )
+        );
+    }
+
+
+    /**
+     * Test if the instance is not created when using a invalid dynamic data.
+     *
+     * @return void
+     */
+    public function testCannotBeCreatedWithInvalidDynamicData(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        // Invalid dynamic data.
+        ColorCloud::fromArray(
+            [
+                'id'            => 3,
+                'type'          => COLOR_CLOUD,
+                'label'         => null,
+                'isLinkEnabled' => true,
+                'isOnTop'       => false,
+                'parentId'      => null,
+                'width'         => '330',
+                'height'        => '0',
+                'x'             => 511,
+                'y'             => 76,
+            ]
+        );
+        // Missing dynamic data.
+        ColorCloud::fromArray(
+            [
+                'id'            => 3,
+                'type'          => COLOR_CLOUD,
+                'label'         => null,
+                'isLinkEnabled' => true,
+                'isOnTop'       => false,
+                'parentId'      => null,
+                'width'         => '330',
+                'height'        => '0',
+                'x'             => 511,
+                'y'             => 76,
+            ]
         );
     }
 

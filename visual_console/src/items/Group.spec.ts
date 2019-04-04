@@ -41,13 +41,4 @@ describe("Group item", () => {
       groupInstance.elementRef.getElementsByClassName("group").length
     ).toBeGreaterThan(0);
   });
-
-  it("should have the required size", () => {
-    expect(groupInstance.elementRef.style.width).toBe(
-      `${sizeRawProps.width}px`
-    );
-    expect(groupInstance.elementRef.style.height).toBe(
-      `${sizeRawProps.height}px`
-    );
-  });
 });

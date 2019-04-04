@@ -6,12 +6,17 @@ use PHPUnit\Framework\TestCase;
 use Models\VisualConsole\Items\StaticGraph;
 
 /**
- * Test class
+ * Test for the Visual Console static graph Item model.
  */
-class StaticGrahpTest extends TestCase
+class StaticGraphTest extends TestCase
 {
 
 
+    /**
+     * Test if the instance is created using a valid data structure.
+     *
+     * @return void
+     */
     public function testCanBeCreatedFromValidUserStructure(): void
     {
         $this->assertInstanceOf(
@@ -19,7 +24,7 @@ class StaticGrahpTest extends TestCase
             StaticGraph::fromArray(
                 [
                     'id'                   => 345,
-                    'type'                 => 1,
+                    'type'                 => STATIC_GRAPH,
                     'label'                => null,
                     'labelPosition'        => 'up',
                     'isLinkEnabled'        => true,
@@ -40,7 +45,7 @@ class StaticGrahpTest extends TestCase
             StaticGraph::fromArray(
                 [
                     'id'              => 1000,
-                    'type'            => 0,
+                    'type'            => STATIC_GRAPH,
                     'width'           => 100,
                     'height'          => 900,
                     'image'           => 'test.jpg',
@@ -59,7 +64,7 @@ class StaticGrahpTest extends TestCase
     public function testContainerIsRepresentedAsJson(): void
     {
         $this->assertEquals(
-            '{"aclGroupId":null,"agentId":null,"agentName":null,"height":0,"id":7,"imageSrc":"image.jpg","isLinkEnabled":true,"isOnTop":false,"label":null,"labelPosition":"up","linkedLayoutAgentId":null,"linkedLayoutId":null,"linkedLayoutStatusType":"default","moduleId":null,"moduleName":null,"parentId":null,"showLastValueTooltip":"default","type":0,"width":0,"x":-666,"y":76}',
+            '{"aclGroupId":null,"agentId":null,"agentName":null,"height":0,"id":7,"imageSrc":"image.jpg","isLinkEnabled":true,"isOnTop":false,"label":null,"labelPosition":"up","linkedLayoutAgentId":null,"linkedLayoutId":null,"linkedLayoutStatusType":"default","moduleId":null,"moduleName":null,"parentId":null,"showLastValueTooltip":"default","statusImageSrc":null,"type":0,"width":0,"x":-666,"y":76}',
             (string) StaticGraph::fromArray(
                 [
                     'id'            => 7,
@@ -79,7 +84,7 @@ class StaticGrahpTest extends TestCase
         );
 
         $this->assertEquals(
-            '{"aclGroupId":null,"agentId":null,"agentName":null,"height":0,"id":7,"imageSrc":"image.jpg","isLinkEnabled":true,"isOnTop":false,"label":null,"labelPosition":"up","linkedLayoutAgentId":null,"linkedLayoutId":null,"linkedLayoutStatusType":"default","moduleId":null,"moduleName":null,"parentId":null,"showLastValueTooltip":"disabled","type":0,"width":0,"x":-666,"y":76}',
+            '{"aclGroupId":null,"agentId":null,"agentName":null,"height":0,"id":7,"imageSrc":"image.jpg","isLinkEnabled":true,"isOnTop":false,"label":null,"labelPosition":"up","linkedLayoutAgentId":null,"linkedLayoutId":null,"linkedLayoutStatusType":"default","moduleId":null,"moduleName":null,"parentId":null,"showLastValueTooltip":"disabled","statusImageSrc":null,"type":0,"width":0,"x":-666,"y":76}',
             (string) StaticGraph::fromArray(
                 [
                     'id'                   => 7,
@@ -100,7 +105,7 @@ class StaticGrahpTest extends TestCase
         );
 
         $this->assertEquals(
-            '{"aclGroupId":null,"agentId":null,"agentName":null,"height":0,"id":7,"imageSrc":"image.jpg","isLinkEnabled":true,"isOnTop":false,"label":null,"labelPosition":"up","linkedLayoutAgentId":3,"linkedLayoutId":2,"linkedLayoutStatusType":"default","metaconsoleId":5,"moduleId":null,"moduleName":null,"parentId":null,"showLastValueTooltip":"default","type":0,"width":0,"x":-666,"y":76}',
+            '{"aclGroupId":null,"agentId":null,"agentName":null,"height":0,"id":7,"imageSrc":"image.jpg","isLinkEnabled":true,"isOnTop":false,"label":null,"labelPosition":"up","linkedLayoutAgentId":3,"linkedLayoutId":2,"linkedLayoutStatusType":"default","metaconsoleId":5,"moduleId":null,"moduleName":null,"parentId":null,"showLastValueTooltip":"default","statusImageSrc":"image.bad.jpg","type":0,"width":0,"x":-666,"y":76}',
             (string) StaticGraph::fromArray(
                 [
                     'id'                    => 7,
@@ -118,12 +123,13 @@ class StaticGrahpTest extends TestCase
                     'id_metaconsole'        => 5,
                     'linked_layout_node_id' => 3,
                     'linkedLayoutId'        => 2,
+                    'statusImageSrc'        => 'image.bad.jpg',
                 ]
             )
         );
 
         $this->assertEquals(
-            '{"aclGroupId":null,"agentId":null,"agentName":null,"height":0,"id":7,"imageSrc":"image.jpg","isLinkEnabled":true,"isOnTop":false,"label":null,"labelPosition":"up","linkedLayoutAgentId":null,"linkedLayoutId":1,"linkedLayoutStatusType":"default","moduleId":null,"moduleName":null,"parentId":null,"showLastValueTooltip":"default","type":0,"width":0,"x":-666,"y":76}',
+            '{"aclGroupId":null,"agentId":null,"agentName":null,"height":0,"id":7,"imageSrc":"image.jpg","isLinkEnabled":true,"isOnTop":false,"label":null,"labelPosition":"up","linkedLayoutAgentId":null,"linkedLayoutId":1,"linkedLayoutStatusType":"default","moduleId":null,"moduleName":null,"parentId":null,"showLastValueTooltip":"default","statusImageSrc":null,"type":0,"width":0,"x":-666,"y":76}',
             (string) StaticGraph::fromArray(
                 [
                     'id'               => 7,
@@ -144,7 +150,7 @@ class StaticGrahpTest extends TestCase
         );
 
         $this->assertEquals(
-            '{"aclGroupId":null,"agentId":null,"agentName":null,"height":0,"id":7,"imageSrc":"image.jpg","isLinkEnabled":true,"isOnTop":false,"label":null,"labelPosition":"up","linkedLayoutAgentId":null,"linkedLayoutId":2,"linkedLayoutStatusType":"service","linkedLayoutStatusTypeCriticalThreshold":80,"linkedLayoutStatusTypeWarningThreshold":50,"moduleId":null,"moduleName":null,"parentId":null,"showLastValueTooltip":"default","type":0,"width":0,"x":-666,"y":76}',
+            '{"aclGroupId":null,"agentId":null,"agentName":null,"height":0,"id":7,"imageSrc":"image.jpg","isLinkEnabled":true,"isOnTop":false,"label":null,"labelPosition":"up","linkedLayoutAgentId":null,"linkedLayoutId":2,"linkedLayoutStatusType":"service","linkedLayoutStatusTypeCriticalThreshold":80,"linkedLayoutStatusTypeWarningThreshold":50,"moduleId":null,"moduleName":null,"parentId":null,"showLastValueTooltip":"default","statusImageSrc":"image.bad.jpg","type":0,"width":0,"x":-666,"y":76}',
             (string) StaticGraph::fromArray(
                 [
                     'id'                                       => 7,
@@ -163,12 +169,18 @@ class StaticGrahpTest extends TestCase
                     'linked_layout_status_type'                => 'service',
                     'linkedLayoutStatusTypeWarningThreshold'   => 50,
                     'linked_layout_status_as_service_critical' => 80,
+                    'statusImageSrc'                           => 'image.bad.jpg',
                 ]
             )
         );
     }
 
 
+    /**
+     * Test if the instance is not created when using a invalid image src.
+     *
+     * @return void
+     */
     public function testCannotBeCreatedWithInvalidImageSrc(): void
     {
         $this->expectException(InvalidArgumentException::class);
@@ -176,7 +188,7 @@ class StaticGrahpTest extends TestCase
         StaticGraph::fromArray(
             [
                 'id'                   => 3,
-                'type'                 => 0,
+                'type'                 => STATIC_GRAPH,
                 'label'                => null,
                 'isLinkEnabled'        => true,
                 'isOnTop'              => false,
@@ -189,11 +201,12 @@ class StaticGrahpTest extends TestCase
                 'showLastValueTooltip' => 'disabled',
             ]
         );
+
         // Missing imageSrc.
         StaticGraph::fromArray(
             [
                 'id'                   => 3,
-                'type'                 => 0,
+                'type'                 => STATIC_GRAPH,
                 'label'                => null,
                 'isLinkEnabled'        => true,
                 'isOnTop'              => false,

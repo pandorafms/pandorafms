@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace Models\VisualConsole\Items;
 use Models\VisualConsole\Item;
-use Models\Model;
 
 /**
- * Model of a group item of the Visual Console.
+ * Model of a static graph item of the Visual Console.
  */
 final class StaticGraph extends Item
 {
@@ -36,7 +35,7 @@ final class StaticGraph extends Item
      *
      * @return array Data structure representing the model.
      *
-     * @overrides Item::decode.
+     * @overrides Item->decode.
      */
     protected function decode(array $data): array
     {
@@ -44,6 +43,11 @@ final class StaticGraph extends Item
         $return['type'] = STATIC_GRAPH;
         $return['imageSrc'] = $this->extractImageSrc($data);
         $return['showLastValueTooltip'] = $this->extractShowLastValueTooltip($data);
+        $return['statusImageSrc'] = static::notEmptyStringOr(
+            $data['statusImageSrc'],
+            null
+        );
+
         return $return;
     }
 
@@ -64,7 +68,7 @@ final class StaticGraph extends Item
             null
         );
 
-        if ($imageSrc === null || \strlen($imageSrc) === 0) {
+        if ($imageSrc === null) {
             throw new \InvalidArgumentException(
                 'the image src property is required and should be a non empty string'
             );
@@ -84,14 +88,14 @@ final class StaticGraph extends Item
      */
     private function extractShowLastValueTooltip(array $data): string
     {
-        $showLastValueTooltip = Model::notEmptyStringOr(
-            Model::issetInArray($data, ['showLastValueTooltip']),
+        $showLastValueTooltip = static::notEmptyStringOr(
+            static::issetInArray($data, ['showLastValueTooltip']),
             null
         );
 
         if ($showLastValueTooltip === null) {
-            $showLastValueTooltip = Model::parseIntOr(
-                Model::issetInArray($data, ['show_last_value']),
+            $showLastValueTooltip = static::parseIntOr(
+                static::issetInArray($data, ['show_last_value']),
                 null
             );
             switch ($showLastValueTooltip) {
@@ -116,6 +120,37 @@ final class StaticGraph extends Item
                 return 'default';
             }
         }
+    }
+
+
+    /**
+     * Fetch a vc item data structure from the database using a filter.
+     *
+     * @param array $filter Filter of the Visual Console Item.
+     *
+     * @return array The Visual Console Item data structure stored into the DB.
+     * @throws \InvalidArgumentException When an agent Id cannot be found.
+     *
+     * @override Item::fetchDataFromDB.
+     */
+    protected static function fetchDataFromDB(array $filter): array
+    {
+        // Due to this DB call, this function cannot be unit tested without
+        // a proper mock.
+        $data = parent::fetchDataFromDB($filter);
+
+        /*
+         * Retrieve extra data.
+         */
+
+        // Load side libraries.
+        global $config;
+        include_once $config['homedir'].'/include/functions_visual_map.php';
+
+        // Get the img src.
+        $data['statusImageSrc'] = \visual_map_get_image_status_element($data);
+
+        return $data;
     }
 
 

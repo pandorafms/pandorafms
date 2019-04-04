@@ -58,7 +58,7 @@ abstract class Model
         $this->validateData($unknownData);
         $this->data = $this->decode($unknownData);
         // Sort alphabetically.
-        ksort($this->data);
+        ksort($this->data, (SORT_NATURAL | SORT_FLAG_CASE));
     }
 
 

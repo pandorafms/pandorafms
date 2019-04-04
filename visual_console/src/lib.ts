@@ -23,6 +23,15 @@ export function parseIntOr<T>(value: any, defaultValue: T): number | T {
 }
 
 /**
+ * Check if a string exists and it's not empty.
+ * @param value Value to check.
+ * @return The check result.
+ */
+export function stringIsEmpty(value?: string | null): boolean {
+  return value == null || value.length === 0;
+}
+
+/**
  * Return a not empty string or a default value from a raw value.
  * @param value Raw value from which we will try to extract a non empty string.
  * @param defaultValue Default value to use if we cannot extract a non empty string.
@@ -240,4 +249,13 @@ export function prefixedCssRules(
     `-o-${rule}`,
     `${rule}`
   ];
+}
+
+/**
+ * Decode a base64 string.
+ * @param input Data encoded using base64.
+ * @return Decoded data.
+ */
+export function decodeBase64(input: string): string {
+  return decodeURIComponent(escape(window.atob(input)));
 }

@@ -35,99 +35,241 @@ final class ColorCloud extends Item
      *
      * @return array Data structure representing the model.
      *
-     * @overrides Item::decode.
+     * @overrides Item->decode.
      */
     protected function decode(array $data): array
     {
-        $colorCloudData = parent::decode($data);
-        $colorCloudData['type'] = COLOR_CLOUD;
-        $colorCloudData['color'] = $this->extractColor($data);
-        $colorCloudData['colorRanges'] = $this->extractColorRanges($data);
-        $colorCloudData['label'] = null;
-        return $colorCloudData;
+        $decodedData = parent::decode($data);
+        $decodedData['type'] = COLOR_CLOUD;
+        $decodedData['label'] = null;
+        $decodedData['defaultColor'] = static::extractDefaultColor($data);
+        $decodedData['colorRanges'] = static::extractColorRanges($data);
+        $decodedData['color'] = static::notEmptyStringOr($data['color'], null);
+
+        return $decodedData;
     }
 
 
     /**
-     * Extract a color value.
+     * Extract the default color value.
      *
      * @param array $data Unknown input data structure.
      *
-     * @return string
+     * @return string Default color.
+     * @throws \InvalidArgumentException If the default color cannot be
+     * extracted.
      */
-    private function extractColor(array $data): string
+    private static function extractDefaultColor(array $data): string
     {
-        $color = static::notEmptyStringOr(
-            static::issetInArray($data, ['color']),
-            null
-        );
-
-        if (empty($color) === true) {
-            $color = static::notEmptyStringOr(
-                static::issetInArray($data, ['label']),
+        if (isset($data['defaultColor'])) {
+            $defaultColor = static::notEmptyStringOr(
+                $data['defaultColor'],
                 null
             );
 
-            if (empty($color) === true) {
+            if ($defaultColor === null) {
                 throw new \InvalidArgumentException(
-                    'the color property is required and should be string'
+                    'the default color property is required and should be a not empty string'
                 );
-            } else {
-                $color_decode = \json_decode($color);
-                if (empty($color_decode->default_color) === true) {
-                    throw new \InvalidArgumentException(
-                        'the color property is required and should be string'
-                    );
-                }
-
-                return $color_decode->default_color;
             }
+
+            return $defaultColor;
         } else {
-            return $color;
+            $dynamicData = static::extractDynamicData($data);
+            return $dynamicData['defaultColor'];
         }
     }
 
 
     /**
-     * Extract a color ranges value.
+     * Extract a list of color ranges.
      *
      * @param array $data Unknown input data structure.
      *
-     * @return string
+     * @return array Color ranges list.
+     * @throws \InvalidArgumentException If any of the color ranges is invalid.
      */
-    private function extractColorRanges(array $data): array
+    private static function extractColorRanges(array $data): array
     {
         if (isset($data['colorRanges']) && \is_array($data['colorRanges'])) {
-            foreach ($data['colorRanges'] as $key => $value) {
-                if ((!isset($value['fromValue']) || !\is_numeric($value['fromValue']))
-                    || (!isset($value['toValue']) || !\is_numeric($value['toValue']))
-                    || (!isset($value['color']) || !\is_string($value['color'])
-                    || \strlen($value['color']) == 0)
+            // Validate the color ranges.
+            foreach ($data['colorRanges'] as $colorRange) {
+                if (\is_numeric($colorRange['fromValue']) === false
+                    || \is_numeric($colorRange['toValue']) === false
+                    || static::notEmptyStringOr($colorRange['color'], null) === null
                 ) {
-                    throw new \InvalidArgumentException(
-                        'the fromValue, toValue and color properties is required'
-                    );
+                    throw new \InvalidArgumentException('invalid color range');
                 }
             }
 
             return $data['colorRanges'];
         } else if (isset($data['label']) === true) {
-            $colorRanges_decode = \json_decode($data['label']);
-            $array_out = [];
-            if (!empty($colorRanges_decode->color_ranges)) {
-                foreach ($colorRanges_decode->color_ranges as $key => $value) {
-                    $array_aux = [];
-                    $array_aux['fromValue'] = $value->from_value;
-                    $array_aux['toValue'] = $value->to_value;
-                    $array_aux['color'] = $value->color;
-                    array_push($array_out, $array_aux);
-                }
-            }
-
-            return $array_out;
+            $dynamicData = static::extractDynamicData($data);
+            return $dynamicData['colorRanges'];
         } else {
             return [];
         }
+    }
+
+
+    /**
+     * Extract a dynamic data structure from the 'label' field.
+     *
+     * @param array $data Unknown input data structure.
+     *
+     * @return array Dynamic data structure.
+     * @throws \InvalidArgumentException If the structure cannot be built.
+     *
+     * @example [
+     *     'defaultColor' => '#FFF',
+     *     'colorRanges'  => [
+     *         [
+     *             'fromValue' => 50.0,
+     *             'toValue'   => 150.5,
+     *             'color'     => '#000',
+     *         ],
+     *         [
+     *             'fromValue' => 200.0,
+     *             'toValue'   => 300.5,
+     *             'color'     => '#F0F0F0',
+     *         ],
+     *     ]
+     * ]
+     */
+    private static function extractDynamicData(array $data): array
+    {
+        $dynamicDataEncoded = static::notEmptyStringOr($data['label'], null);
+
+        if ($dynamicDataEncoded === null) {
+            throw new \InvalidArgumentException('dynamic data not found');
+        }
+
+        $result = [];
+
+        try {
+            $dynamicData = \json_decode(
+                \base64_decode($dynamicDataEncoded),
+                true
+            );
+
+            $result['defaultColor'] = $dynamicData['default_color'];
+            $result['colorRanges'] = [];
+
+            if (\is_array($dynamicData['color_ranges']) === true) {
+                foreach ($dynamicData['color_ranges'] as $colorRange) {
+                    if (\is_numeric($colorRange['from_value']) === true
+                        && \is_numeric($colorRange['to_value']) === true
+                        && static::notEmptyStringOr(
+                            $colorRange['color'],
+                            null
+                        ) !== null
+                    ) {
+                        $result['colorRanges'][] = [
+                            'color'     => $colorRange['color'],
+                            'fromValue' => (float) $colorRange['from_value'],
+                            'toValue'   => (float) $colorRange['to_value'],
+                        ];
+                    }
+                }
+            }
+        } catch (\Exception $e) {
+            throw new \InvalidArgumentException('invalid dynamic data');
+        }
+
+        return $result;
+    }
+
+
+    /**
+     * Fetch a vc item data structure from the database using a filter.
+     *
+     * @param array $filter Filter of the Visual Console Item.
+     *
+     * @return array The Visual Console Item data structure stored into the DB.
+     * @throws \InvalidArgumentException When an agent Id cannot be found.
+     *
+     * @override Item::fetchDataFromDB.
+     */
+    protected static function fetchDataFromDB(array $filter): array
+    {
+        // Due to this DB call, this function cannot be unit tested without
+        // a proper mock.
+        $data = parent::fetchDataFromDB($filter);
+
+        /*
+         * Retrieve extra data.
+         */
+
+        // Load side libraries.
+        global $config;
+        include_once $config['homedir'].'/include/functions_graph.php';
+        include_once $config['homedir'].'/include/functions_modules.php';
+
+        // Get the linked module Id.
+        $linkedModule = static::extractLinkedModule($data);
+        $moduleId = static::parseIntOr($linkedModule['moduleId'], null);
+        $metaconsoleId = static::parseIntOr(
+            $linkedModule['metaconsoleId'],
+            null
+        );
+
+        if ($moduleId === null) {
+            throw new \InvalidArgumentException('missing module Id');
+        }
+
+        $dynamicData = static::extractDynamicData($data);
+        // Set the initial color.
+        $data['color'] = $dynamicData['defaultColor'];
+
+        // Search for a matching color range.
+        if (empty($dynamicData['colorRanges']) === false) {
+            // Connect to node.
+            $nodeConnected = false;
+            if (is_metaconsole() === true && $metaconsoleId !== null) {
+                $nodeConnected = metaconsole_connect(
+                    null,
+                    $metaconsoleId
+                ) === NOERR;
+            }
+
+            // Fetch module value.
+            $value = false;
+            if ($metaconsoleId === null
+                || ($metaconsoleId !== null && $nodeConnected)
+            ) {
+                $value = modules_get_last_value($moduleId);
+            }
+
+            // Restore connection.
+            if ($nodeConnected === true) {
+                metaconsole_restore_db();
+            }
+
+            // Value found.
+            if ($value !== false) {
+                /*
+                 * TODO: It would be ok to give support to string values in the
+                 * future?
+                 *
+                 * It can be done by matching the range value with the value
+                 * if it is a string. I think the function to retrieve the value
+                 * only supports numeric values.
+                 */
+
+                $value = (float) $value;
+                foreach ($dynamicData['colorRanges'] as $colorRange) {
+                    if ($colorRange['fromValue'] <= $value
+                        && $colorRange['toValue'] >= $value
+                    ) {
+                        // Range matched. Use the range color.
+                        $data['color'] = $colorRange['color'];
+                        break;
+                    }
+                }
+            }
+        }
+
+        return $data;
     }
 
 

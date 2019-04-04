@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Models\VisualConsole\Items;
 use Models\VisualConsole\Item;
-use Models\Model;
 
 /**
  * Model of a label item of the Visual Console.
@@ -32,14 +31,14 @@ final class Label extends Item
      * @throws \InvalidArgumentException If any input value is considered
      * invalid.
      *
-     * @overrides Item::validateData.
+     * @overrides Item->validateData.
      */
     protected function validateData(array $data): void
     {
         parent::validateData($data);
-        if (empty($data['label']) === true) {
+        if (static::notEmptyStringOr($data['label'], null) === null) {
             throw new \InvalidArgumentException(
-                'the label property is required and should be string and not null'
+                'the label property is required and should be a not empty string'
             );
         }
     }
@@ -52,7 +51,7 @@ final class Label extends Item
      *
      * @return array Data structure representing the model.
      *
-     * @overrides Item::decode.
+     * @overrides Item->decode.
      */
     protected function decode(array $data): array
     {

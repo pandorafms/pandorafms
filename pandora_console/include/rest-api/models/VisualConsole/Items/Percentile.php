@@ -43,16 +43,22 @@ final class Percentile extends Item
         $return['type'] = PERCENTILE_BAR;
         $return['percentileType'] = static::extractPercentileType($data);
         $return['valueType'] = static::extractValueType($data);
-        $return['minValue'] = static::parseFloatOr($data['minValue'], null);
+        $return['minValue'] = static::parseFloatOr(
+            static::issetInArray($data, ['minValue']),
+            null
+        );
         $return['maxValue'] = static::parseFloatOr(
             static::issetInArray($data, ['maxValue', 'height']),
             null
         );
         $return['color'] = static::extractColor($data);
         $return['labelColor'] = static::extractLabelColor($data);
-        $return['value'] = static::parseFloatOr($data['value'], null);
-        $return['displayValue'] = static::notEmptyStringOr(
-            $data['displayValue'],
+        $return['value'] = static::parseFloatOr(
+            static::issetInArray($data, ['value']),
+            null
+        );
+        $return['unit'] = static::notEmptyStringOr(
+            static::issetInArray($data, ['unit']),
             null
         );
         return $return;

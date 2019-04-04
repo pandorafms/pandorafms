@@ -158,8 +158,8 @@ class Item extends Model
 
         // The item uses HTML output.
         if (static::$useHtmlOutput === true) {
-            if (static::notEmptyStringOr($data['encodedHtml'], null) === null
-                && static::notEmptyStringOr($data['html'], null) === null
+            if (static::notEmptyStringOr(static::issetInArray($data, ['encodedHtml']), null) === null
+                && static::notEmptyStringOr(static::issetInArray($data, ['html']), null) === null
             ) {
                 throw new \InvalidArgumentException(
                     'the html property is required and should be a not empty string'

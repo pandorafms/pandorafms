@@ -44,7 +44,7 @@ final class ColorCloud extends Item
         $decodedData['label'] = null;
         $decodedData['defaultColor'] = static::extractDefaultColor($data);
         $decodedData['colorRanges'] = static::extractColorRanges($data);
-        $decodedData['color'] = static::notEmptyStringOr($data['color'], null);
+        $decodedData['color'] = static::notEmptyStringOr(static::issetInArray($data, ['color']), null);
 
         return $decodedData;
     }

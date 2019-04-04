@@ -44,7 +44,7 @@ final class StaticGraph extends Item
         $return['imageSrc'] = $this->extractImageSrc($data);
         $return['showLastValueTooltip'] = $this->extractShowLastValueTooltip($data);
         $return['statusImageSrc'] = static::notEmptyStringOr(
-            $data['statusImageSrc'],
+            static::issetInArray($data, ['statusImageSrc']),
             null
         );
 

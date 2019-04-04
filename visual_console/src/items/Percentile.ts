@@ -103,16 +103,6 @@ export default class Percentile extends Item<PercentileProps> {
   public createDomElement(): HTMLElement {
     // Progress.
     const progress = this.getProgress();
-    // Display value.
-    let displayValue: string;
-    if (this.props.valueType === "value") {
-      displayValue = this.props.unit
-        ? `${this.props.value} ${this.props.unit}`
-        : `${this.props.value}`;
-    } else {
-      displayValue = `${progress}%`;
-    }
-
     // Main element.
     const element = document.createElement("div");
 

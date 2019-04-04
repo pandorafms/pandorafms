@@ -97,23 +97,27 @@ export default class SimpleValue extends Item<SimpleValueProps> {
       img.src = this.props.value;
       element.append(img);
     } else {
-      // Size to 0, as the item content is managed using the label.
-      element.style.width = "0";
-      element.style.height = "0";
-      // The content of this item is already shown into the label container.
-      // element.innerHTML = this.props.label || "";
+      // Add the value to the label and show it.
+      let text = this.props.value;
+      if (this.props.label) {
+        text = this.props.label.replace(/\(?_VALUE_\)?/i, text);
+      }
+
+      element.innerHTML = text;
     }
 
     return element;
   }
 
   /**
-   * @override Item.resize
-   * To resize the item.
+   * @override Item.createLabelDomElement
+   * Create a new label for the visual console item.
+   * @return Item label.
    */
-  public resizeElement(): void {
-    // Size to 0, as the item content is managed using the label.
-    this.childElementRef.style.width = `0`;
-    this.childElementRef.style.height = `0`;
+  public createLabelDomElement(): HTMLElement {
+    const element = document.createElement("div");
+    element.className = "visual-console-item-label";
+    // Always return an empty label.
+    return element;
   }
 }

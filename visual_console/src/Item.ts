@@ -132,8 +132,7 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
      * when hovered, etc.
      */
     this.elementRef = this.createContainerDomElement();
-    this.labelElementRef = document.createElement("div");
-    this.labelElementRef.className = "visual-console-item-label";
+    this.labelElementRef = this.createLabelDomElement();
 
     /*
      * Get a HTMLElement which represents the custom view
@@ -141,11 +140,6 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
      * different depending on the item implementation.
      */
     this.childElementRef = this.createDomElement();
-
-    // Add the label if it exists.
-    if (this.props.label && this.props.label.length) {
-      this.labelElementRef.innerHTML = this.props.label;
-    }
 
     // Insert the elements into the container.
     this.elementRef.append(this.childElementRef, this.labelElementRef);
@@ -170,6 +164,21 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
     box.onclick = () => this.clickEventManager.emit({ data: this.props });
 
     return box;
+  }
+
+  /**
+   * To create a new label for the visual console item.
+   * @return Item label.
+   */
+  protected createLabelDomElement(): HTMLElement {
+    const element = document.createElement("div");
+    element.className = "visual-console-item-label";
+    // Add the label if it exists.
+    if (this.props.label && this.props.label.length) {
+      element.innerHTML = this.props.label;
+    }
+
+    return element;
   }
 
   /**
@@ -230,8 +239,7 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
     }
     // Change label.
     if (!prevProps || prevProps.label !== this.props.label) {
-      this.labelElementRef.innerHTML =
-        this.props.label != null ? this.props.label : "";
+      this.labelElementRef.innerHTML = this.createLabelDomElement().innerHTML;
     }
     // Change label position.
     if (!prevProps || prevProps.labelPosition !== this.props.labelPosition) {

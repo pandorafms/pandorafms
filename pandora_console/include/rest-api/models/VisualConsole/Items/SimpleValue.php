@@ -86,15 +86,31 @@ final class SimpleValue extends Item
      */
     private static function extractProcessValue(array $data): string
     {
-        switch ($data['processValue']) {
-            case 'none':
-            case 'avg':
-            case 'max':
-            case 'min':
-            return $data['processValue'];
+        if (isset($data['processValue'])) {
+            switch ($data['processValue']) {
+                case 'none':
+                case 'avg':
+                case 'max':
+                case 'min':
+                return $data['processValue'];
 
-            default:
-            return 'none';
+                default:
+                return 'none';
+            }
+        } else {
+            switch ($data['type']) {
+                case SIMPLE_VALUE_MAX:
+                return 'max';
+
+                case SIMPLE_VALUE_MIN:
+                return 'min';
+
+                case SIMPLE_VALUE_AVG:
+                return 'avg';
+
+                default:
+                return 'none';
+            }
         }
     }
 
@@ -108,7 +124,10 @@ final class SimpleValue extends Item
      */
     private static function extractPeriod(array $data): int
     {
-        $period = static::parseIntOr($data['period'], 0);
+        $period = static::parseIntOr(
+            static::issetInArray($data, ['period']),
+            0
+        );
         return ($period >= 0) ? $period : 0;
     }
 

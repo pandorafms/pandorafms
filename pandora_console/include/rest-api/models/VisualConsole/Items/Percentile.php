@@ -52,8 +52,8 @@ final class Percentile extends Item
     {
         parent::validateData($data);
 
-        if (static::notEmptyStringOr($data['encodedHtml'], null) === null
-            && static::notEmptyStringOr($data['html'], null) === null
+        if (static::notEmptyStringOr(static::issetInArray($data, ['encodedHtml']), null) === null
+            && static::notEmptyStringOr(static::issetInArray($data, ['html']), null) === null
         ) {
             throw new \InvalidArgumentException(
                 'the html property is required and should be string'
@@ -77,7 +77,7 @@ final class Percentile extends Item
         $return['type'] = PERCENTILE_BAR;
         $return['percentileType'] = static::extractPercentileType($data);
         $return['valueType'] = static::extractValueType($data);
-        $return['value'] = static::notEmptyStringOr($data['value'], null);
+        $return['value'] = static::notEmptyStringOr(static::issetInArray($data, ['value']), null);
         $return['color'] = static::extractColor($data);
         $return['labelColor'] = static::extractLabelColor($data);
         return $return;

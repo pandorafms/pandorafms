@@ -36,7 +36,7 @@ final class Label extends Item
     protected function validateData(array $data): void
     {
         parent::validateData($data);
-        if (static::notEmptyStringOr($data['label'], null) === null) {
+        if (static::notEmptyStringOr(static::issetInArray($data, ['label']), null) === null) {
             throw new \InvalidArgumentException(
                 'the label property is required and should be a not empty string'
             );

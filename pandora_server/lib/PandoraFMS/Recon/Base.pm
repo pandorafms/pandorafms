@@ -1450,6 +1450,8 @@ sub db_scan($) {
 
 	my $i = 0;
 	foreach my $target (@targets) {
+		my @data;
+		my @modules;
 		call('message', 'Checking target ' . $target, 10);
 
 		# Force target acquirement.
@@ -1462,51 +1464,62 @@ sub db_scan($) {
 			$self->{'task_data'}
 		);
 
-		if (!defined($dbObj)) {
+		if (!$dbObj->is_connected()) {
 			call('message', 'Cannot connect to target ' . $target, 3);
 			$self->{'summary'}->{'not_alive'} += 1;
-			next;
+			push @modules, {
+				name => 'mysql_connection',
+				type => 'generic_proc',
+				data => 0,
+				description => 'MySQL availability'
+			};
+
+		} else {
+			$self->{'summary'}->{'discovered'} += 1;
+			$self->{'summary'}->{'alive'} += 1;
+
+			push @modules, {
+				name => 'mysql_connection',
+				type => 'generic_proc',
+				data => 1,
+				description => 'MySQL availability'
+			};
+
+			# Analyze.
+			$self->{'step'} = STEP_STATISTICS;
+			$self->{'c_network_name'} = $dbObj->get_host();
+			$self->call('update_progress', 10);
+
+			# Retrieve connection statistics.
+			# Retrieve uptime statistics
+			# Retrieve query stats
+			# Retrieve connections
+			# Retrieve innodb
+			# Retrieve cache
+			push @modules, $dbObj->get_statistics();
+			$self->call('update_progress', 50);
+
+
+			# Custom queries.
+			push @modules, $dbObj->execute_custom_queries();
+			$self->call('update_progress', 90);
 		}
-		$self->{'summary'}->{'discovered'} += 1;
-		$self->{'summary'}->{'alive'} += 1;
 
-		my @modules;
+		# Put engine agent at the beginning of the list.
+		unshift @data,{
+			'agent_data' => {
+				'agent_name' => $dbObj->get_agent_name(),
+				'os' => $type,
+				'os_version' => 'Discovery',
+				'interval' => $self->{'task_data'}->{'interval_sweep'},
+				'id_group' => $self->{'task_data'}->{'id_group'},
+				'address' => $dbObj->get_host(),
+				'description' => '',
+			},
+			'module_data' => \@modules,
+		};
 
-		# Analyze.
-		$self->{'step'} = STEP_STATISTICS;
-		$self->{'c_network_name'} = $dbObj->get_host();
-		$self->call('update_progress', 10);
-
-		# Retrieve connection statistics.
-		# Retrieve uptime statistics
-		# Retrieve query stats
-		# Retrieve connections
-		# Retrieve innodb
-		# Retrieve cache
-		push @modules, $dbObj->get_statistics();
-		$self->call('update_progress', 50);
-
-
-		# Custom queries.
-		push @modules, $dbObj->execute_custom_queries();
-		$self->call('update_progress', 90);
-
-		my $data = [
-			{
-				'agent_data' => {
-					'agent_name' => $dbObj->get_agent_name(),
-					'os' => $type,
-					'os_version' => 'Discovery',
-					'interval' => $self->{'task_data'}->{'interval_sweep'},
-					'id_group' => $self->{'task_data'}->{'id_group'},
-					'address' => $dbObj->get_host(),
-					'description' => '',
-				},
-				'module_data' => \@modules,
-			}
-		];
-
-		$self->call('create_agents', $data);
+		$self->call('create_agents', \@data);
 
 		# Destroy item.
 		undef($dbObj);

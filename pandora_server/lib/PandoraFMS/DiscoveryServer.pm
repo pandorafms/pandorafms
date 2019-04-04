@@ -420,7 +420,7 @@ sub PandoraFMS::Recon::Base::connect_agents($$$$$) {
 
 
 ##########################################################################
-# Create agents from db_scan.
+# Create agents from db_scan. Uses DataServer methods.
 # data = [
 #	'agent_data' => {},
 #	'module_data' => []
@@ -494,9 +494,10 @@ sub PandoraFMS::Recon::Base::create_agents($$) {
 		# Add modules.
 		if (ref($modules) eq "ARRAY") {
 			foreach my $module (@{$modules}) {
+				# Translate data structure to simulate XML parser return.
 				my %data_translated = map { $_ => [ $module->{$_} ] } keys %{$module};
 
-				# Translate fields.
+				# Process modules.
 				PandoraFMS::DataServer::process_module_data (
 					$pa_config, \%data_translated,
 					$server_id, $current_agent,

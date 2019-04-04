@@ -11608,7 +11608,9 @@ function api_set_add_event_comment($id, $thrash2, $other, $thrash3)
     global $config;
 
     if (defined('METACONSOLE')) {
-        return;
+        $meta = true;
+    } else {
+        $meta = $other['data'][1];
     }
 
     if (!check_acl($config['id_user'], 0, 'EW')) {
@@ -11621,7 +11623,6 @@ function api_set_add_event_comment($id, $thrash2, $other, $thrash3)
         return;
     } else if ($other['type'] == 'array') {
         $comment = $other['data'][0];
-        $meta = $other['data'][1];
         $history = $other['data'][2];
 
         $status = events_comment(

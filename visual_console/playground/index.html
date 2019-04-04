@@ -229,6 +229,58 @@
         processValue: "none"
       };
 
+      var percentileRawProps = {
+        // Generic props.
+        id: 10,
+        type: 3, // Percentile = 3
+        label: null,
+        isLinkEnabled: false,
+        isOnTop: false,
+        parentId: null,
+        aclGroupId: null,
+        // Position props.
+        x: 790,
+        y: 10,
+        // Size props.
+        width: 200,
+        height: 40,
+        // Custom props.
+        percentileType: "progress-bar",
+        valueType: "percent",
+        minValue: 100,
+        maxValue: 500,
+        color: null,
+        labelColor: "#82B92E",
+        value: 245,
+        unit: "seconds"
+      };
+
+      var percentileBubbleRawProps = {
+        // Generic props.
+        id: 11,
+        type: 3, // Percentile = 3
+        label: null,
+        isLinkEnabled: false,
+        isOnTop: false,
+        parentId: null,
+        aclGroupId: null,
+        // Position props.
+        x: 830,
+        y: 60,
+        // Size props.
+        width: 100,
+        height: 100,
+        // Custom props.
+        percentileType: "bubble",
+        valueType: "value",
+        minValue: 100,
+        maxValue: 500,
+        color: null,
+        labelColor: "#82B92E",
+        value: 245,
+        unit: "seconds"
+      };
+
       var items = [
         staticGraphRawProps,
         colorCloudRawProps,
@@ -238,7 +290,9 @@
         boxRawProps,
         lineRawProps,
         labelRawProps,
-        simpleValueRawProps
+        simpleValueRawProps,
+        percentileRawProps,
+        percentileBubbleRawProps
       ];
 
       try {

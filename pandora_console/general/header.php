@@ -591,9 +591,7 @@ if ($config['menu_type'] == 'classic') {
 
         if (fixed_header) {
             $('div#head').addClass('fixed_header');
-            $('div#page')
-                .css('padding-top', $('div#head').innerHeight() + 'px')
-                .css('position', 'relative');
+            $('div#main').css('padding-top', $('div#head').innerHeight() + 'px');
         }
         
         check_new_chats_icon('icon_new_messages_chat');

@@ -183,6 +183,21 @@ abstract class Model
 
 
     /**
+     * Return a valid float or a default value from a unknown value.
+     *
+     * @param mixed $val Input value.
+     * @param mixed $def Default value.
+     *
+     * @return mixed A valid float extracted from the input or the
+     * default value.
+     */
+    protected static function parseFloatOr($val, $def)
+    {
+        return (is_numeric($val) === true) ? (float) $val : $def;
+    }
+
+
+    /**
      * Get a value from a dictionary from a possible pool of keys.
      *
      * @param array $dict Input array.

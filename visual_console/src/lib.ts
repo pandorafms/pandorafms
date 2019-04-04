@@ -23,6 +23,24 @@ export function parseIntOr<T>(value: any, defaultValue: T): number | T {
 }
 
 /**
+ * Return a number or a default value from a raw value.
+ * @param value Raw value from which we will try to extract a valid number.
+ * @param defaultValue Default value to use if we cannot extract a valid number.
+ * @return A valid number or the default value.
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function parseFloatOr<T>(value: any, defaultValue: T): number | T {
+  if (typeof value === "number") return value;
+  if (
+    typeof value === "string" &&
+    value.length > 0 &&
+    !isNaN(parseFloat(value))
+  )
+    return parseFloat(value);
+  else return defaultValue;
+}
+
+/**
  * Check if a string exists and it's not empty.
  * @param value Value to check.
  * @return The check result.

@@ -1446,8 +1446,7 @@ sub cron_next_execution_date {
 	my @nex_time_array = @curr_time_array;
 
 	# Update minutes
-	my ($min_down, undef) = cron_get_interval ($min);
-	$nex_time_array[0] = ($min_down eq '*') ? 0 : $min_down;
+	$nex_time_array[0] = cron_get_next_time_element($min);
 
 	$nex_time = cron_valid_date(@nex_time_array, $cur_year);
 	if ($nex_time >= $cur_time) {
@@ -1480,8 +1479,7 @@ sub cron_next_execution_date {
 	return $nex_time if cron_is_in_cron(\@cron_array, \@nex_time_array);
 
 	#Update the hour if fails
-	my ($hour_down, undef) = cron_get_interval ($hour);
-	$nex_time_array[1] = ($hour_down eq '*') ? 0 : $hour_down;
+	$nex_time_array[1] = cron_get_next_time_element($hour);
 
 	# When an overflow is passed check the hour update again
 	$nex_time = cron_valid_date(@nex_time_array, $cur_year);
@@ -1508,8 +1506,7 @@ sub cron_next_execution_date {
 	return $nex_time if cron_is_in_cron(\@cron_array, \@nex_time_array);
 	
 	#Update the day if fails
-	my ($mday_down, undef) = cron_get_interval ($mday);
-	$nex_time_array[2] = ($mday_down eq '*') ? 1 : $mday_down;
+	$nex_time_array[2] = cron_get_next_time_element($mday, 1);
 
 	# When an overflow is passed check the hour update in the next execution
 	$nex_time = cron_valid_date(@nex_time_array, $cur_year);
@@ -1531,8 +1528,7 @@ sub cron_next_execution_date {
 	return $nex_time if cron_is_in_cron(\@cron_array, \@nex_time_array);
 
 	#Update the month if fails
-	my ($mon_down, undef) = cron_get_interval ($mon);
-	$nex_time_array[3] = ($mon_down eq '*') ? 0 : $mon_down;
+	$nex_time_array[3] = cron_get_next_time_element($mon);
 
 	# When an overflow is passed check the hour update in the next execution
 	$nex_time = cron_valid_date(@nex_time_array, $cur_year);
@@ -1565,6 +1561,25 @@ sub cron_is_in_cron {
 	return 0 unless (cron_check_interval($elem_cron, $elem_curr_time));
 
 	return cron_is_in_cron(\@deref_elems_cron, \@deref_elems_curr_time);
+}
+################################################################################
+#Get the next tentative time for a cron value or interval in case of overflow.
+#Floor data is the minimum localtime data for a position. Ex: 
+#Ex:
+#     * should returns floor data.
+#     5 should returns 5.
+#     10-55 should returns 10.
+#     55-10 should retunrs floor data.
+################################################################################
+sub cron_get_next_time_element {
+	# Default floor data is 0
+	my ($curr_element, $floor_data) = @_;
+	$floor_data = 0 unless defined($floor_data);
+
+	my ($elem_down, $elem_up) = cron_get_interval ($curr_element);
+	return ($elem_down eq '*' || (defined($elem_up) && $elem_down > $elem_up))
+		? $floor_data
+		: $elem_down;
 }
 ###############################################################################
 # Returns the interval of a cron element. If there is not a range,

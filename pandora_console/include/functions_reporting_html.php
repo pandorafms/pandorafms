@@ -2907,24 +2907,6 @@ function reporting_html_availability($table, $item, $pdf=0)
         io_safe_output($style),
         true
     );
-    $sql = 'SELECT 
-     total_time,
-     time_failed,
-     time_in_ok_status,
-     time_in_unknown_status,
-     time_of_not_initialized_module,
-     time_of_downtime, 
-     total_checks,
-     checks_failed,
-     checks_in_ok_status,
-     unknown_checks,
-     agent_max_value,
-     agent_min_value
-     FROM treport_content 
-     WHERE id_rc ='.$item['id_rc'];
-    $fields = db_get_all_rows_sql(
-        $sql
-    );
     $same_agent_in_resume = '';
 
     global $config;
@@ -2944,37 +2926,37 @@ function reporting_html_availability($table, $item, $pdf=0)
             $table1->head[1] = __('Module');
         }
 
-        if ($fields[0]['total_time']) {
+        if ($item['fields']['total_time']) {
             $table1->head[2] = __('Total time');
         } else {
             $table1->head[2] = __('');
         }
 
-        if ($fields[0]['time_failed']) {
+        if ($item['fields']['time_failed']) {
             $table1->head[3] = __('Time failed');
         } else {
             $table1->head[3] = __('');
         }
 
-        if ($fields[0]['time_in_ok_status']) {
+        if ($item['fields']['time_in_ok_status']) {
             $table1->head[4] = __('Time OK');
         } else {
             $table1->head[4] = __('');
         }
 
-        if ($fields[0]['time_in_unknown_status']) {
+        if ($item['fields']['time_in_unknown_status']) {
             $table1->head[5] = __('Time Unknown');
         } else {
             $table1->head[5] = __('');
         }
 
-        if ($fields[0]['time_of_not_initialized_module']) {
+        if ($item['fields']['time_of_not_initialized_module']) {
             $table1->head[6] = __('Time Not Init Module');
         } else {
             $table1->head[6] = __('');
         }
 
-        if ($fields[0]['time_of_downtime']) {
+        if ($item['fields']['time_of_downtime']) {
             $table1->head[7] = __('Time Downtime');
         } else {
             $table1->head[7] = __('');
@@ -3017,25 +2999,25 @@ function reporting_html_availability($table, $item, $pdf=0)
             $table2->head[1] = __('Module');
         }
 
-        if ($fields[0]['total_checks']) {
+        if ($item['fields']['total_checks']) {
             $table2->head[2] = __('Total checks');
         } else {
             $table2->head[2] = __('');
         }
 
-        if ($fields[0]['checks_failed']) {
+        if ($item['fields']['checks_failed']) {
             $table2->head[3] = __('Checks failed');
         } else {
             $table2->head[3] = __('');
         }
 
-        if ($fields[0]['checks_in_ok_status']) {
+        if ($item['fields']['checks_in_ok_status']) {
             $table2->head[4] = __('Checks OK');
         } else {
             $table2->head[4] = __('');
         }
 
-        if ($fields[0]['unknown_checks']) {
+        if ($item['fields']['unknown_checks']) {
             $table2->head[5] = __('Checks Uknown');
         } else {
             $table2->head[5] = __('');
@@ -3061,67 +3043,67 @@ function reporting_html_availability($table, $item, $pdf=0)
             $table_row[] = $row['agent'];
             $table_row[] = $row['availability_item'];
 
-            if ($row['time_total'] != 0 && $fields[0]['total_time']) {
+            if ($row['time_total'] != 0 && $item['fields']['total_time']) {
                 $table_row[] = human_time_description_raw(
                     $row['time_total'],
                     true
                 );
-            } else if ($row['time_total'] == 0 && $fields[0]['total_time']) {
+            } else if ($row['time_total'] == 0 && $item['fields']['total_time']) {
                 $table_row[] = '--';
             } else {
                 $table_row[] = '';
             };
 
-            if ($row['time_error'] != 0 && $fields[0]['time_failed']) {
+            if ($row['time_error'] != 0 && $item['fields']['time_failed']) {
                 $table_row[] = human_time_description_raw(
                     $row['time_error'],
                     true
                 );
-            } else if ($row['time_error'] == 0 && $fields[0]['time_failed']) {
+            } else if ($row['time_error'] == 0 && $item['fields']['time_failed']) {
                 $table_row[] = '--';
             } else {
                 $table_row[] = '';
             };
 
-            if ($row['time_ok'] != 0 && $fields[0]['time_in_ok_status']) {
+            if ($row['time_ok'] != 0 && $item['fields']['time_in_ok_status']) {
                 $table_row[] = human_time_description_raw(
                     $row['time_ok'],
                     true
                 );
-            } else if ($row['time_ok'] == 0 && $fields[0]['time_in_ok_status']) {
+            } else if ($row['time_ok'] == 0 && $item['fields']['time_in_ok_status']) {
                 $table_row[] = '--';
             } else {
                 $table_row[] = '';
             };
 
-            if ($row['time_unknown'] != 0 && $fields[0]['time_in_unknown_status']) {
+            if ($row['time_unknown'] != 0 && $item['fields']['time_in_unknown_status']) {
                 $table_row[] = human_time_description_raw(
                     $row['time_unknown'],
                     true
                 );
-            } else if ($row['time_unknown'] == 0 && $fields[0]['time_in_unknown_status']) {
+            } else if ($row['time_unknown'] == 0 && $item['fields']['time_in_unknown_status']) {
                 $table_row[] = '--';
             } else {
                 $table_row[] = '';
             };
 
-            if ($row['time_not_init'] != 0 && $fields[0]['time_of_not_initialized_module']) {
+            if ($row['time_not_init'] != 0 && $item['fields']['time_of_not_initialized_module']) {
                 $table_row[] = human_time_description_raw(
                     $row['time_not_init'],
                     true
                 );
-            } else if ($row['time_not_init'] == 0 && $fields[0]['time_of_not_initialized_module']) {
+            } else if ($row['time_not_init'] == 0 && $item['fields']['time_of_not_initialized_module']) {
                 $table_row[] = '--';
             } else {
                 $table_row[] = '';
             };
 
-            if ($row['time_downtime'] != 0 && $fields[0]['time_of_downtime']) {
+            if ($row['time_downtime'] != 0 && $item['fields']['time_of_downtime']) {
                 $table_row[] = human_time_description_raw(
                     $row['time_downtime'],
                     true
                 );
-            } else if ($row['time_downtime'] == 0 && $fields[0]['time_of_downtime']) {
+            } else if ($row['time_downtime'] == 0 && $item['fields']['time_of_downtime']) {
                 $table_row[] = '--';
             } else {
                 $table_row[] = '';
@@ -3132,22 +3114,22 @@ function reporting_html_availability($table, $item, $pdf=0)
             $table_row2 = [];
             $table_row2[] = $row['agent'];
             $table_row2[] = $row['availability_item'];
-            if ($fields[0]['total_checks']) {
+            if ($item['fields']['total_checks']) {
                 $table_row2[] = $row['checks_total'];
             } else {
                 $table_row2[] = '';
             };
-            if ($fields[0]['checks_failed']) {
+            if ($item['fields']['checks_failed']) {
                 $table_row2[] = $row['checks_error'];
             } else {
                 $table_row2[] = '';
             };
-            if ($fields[0]['checks_in_ok_status']) {
+            if ($item['fields']['checks_in_ok_status']) {
                 $table_row2[] = $row['checks_ok'];
             } else {
                 $table_row2[] = '';
             };
-            if ($fields[0]['unknown_checks']) {
+            if ($item['fields']['unknown_checks']) {
                 $table_row2[] = $row['checks_unknown'];
             } else {
                 $table_row2[] = '';
@@ -3190,7 +3172,7 @@ function reporting_html_availability($table, $item, $pdf=0)
     if ($item['resume']['resume'] && !empty($item['data'])) {
         $table1->width = '99%';
         $table1->data = [];
-        if ((strpos($item['resume']['min_text'], $same_agent_in_resume) === false)) {
+        if (empty($same_agent_in_resume) || (strpos($item['resume']['min_text'], $same_agent_in_resume) === false)) {
             $table1->head = [];
             $table1->head['max_text'] = __('Agent max value');
             $table1->head['max']      = __('Max Value');
@@ -3225,14 +3207,14 @@ function reporting_html_availability($table, $item, $pdf=0)
                 ).'%',
                 'avg'      => '<span style="font-size: 1.2em; font-weight:bold;">'.sla_truncate($item['resume']['avg'], $config['graph_precision']).'%</span>',
             ];
-            if ($fields[0]['agent_max_value'] == 0) {
+            if ($item['fields']['agent_max_value'] == false) {
                 $table1->head['max_text'] = '';
                 $table1->data[0]['max_text'] = '';
                 $table1->head['max'] = '';
                 $table1->data[0]['max'] = '';
             }
 
-            if ($fields[0]['agent_min_value'] == 0) {
+            if ($item['fields']['agent_min_value'] == false) {
                 $table1->head['min_text'] = '';
                 $table1->data[0]['min_text'] = '';
                 $table1->head['min'] = '';

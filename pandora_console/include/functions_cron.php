@@ -48,10 +48,6 @@ function cron_next_execution($cron, $module_interval, $module_id)
 {
     // Get day of the week and month from cron config.
     $cron_array = explode(' ', $cron);
-    $minute = $cron_array[0];
-    $hour = $cron_array[1];
-    $mday = $cron_array[2];
-    $month = $cron_array[3];
     $wday = $cron_array[4];
 
     // Get last execution time.
@@ -62,51 +58,18 @@ function cron_next_execution($cron, $module_interval, $module_id)
         $module_id
     );
     $cur_time = ($last_execution !== false) ? $last_execution : time();
+    $nex_time = cron_next_execution_date($cron, $cur_time, $module_interval);
+    $nex_wday = (int) date('w', $nex_time);
 
-    // Any day of the way.
-    if ($wday == '*') {
-        $nex_time = cron_next_execution_date(
-            $cron,
-            $cur_time,
-            $module_interval
-        );
-        return ($nex_time - $cur_time);
+    // Check day of the way.
+    while (!cron_check_interval($nex_wday, $wday)) {
+        // If it does not acomplish the day of the week, go to the next day.
+        $nex_time += SECONDS_1DAY;
+        $nex_time = cron_next_execution_date($cron, $nex_time, 0);
+        $nex_wday = (int) date('w', $nex_time);
     }
 
-    // A specific day of the week.
-    $count = 0;
-    $nex_time = $cur_time;
-    do {
-        $nex_time = cron_next_execution_date(
-            $cron,
-            $nex_time,
-            $module_interval
-        );
-        $nex_time_wd = $nex_time;
-
-        $array_nex = explode(' ', date('m w', $nex_time_wd));
-        $nex_mon   = $array_nex[0];
-        $nex_wday  = $array_nex[1];
-
-        do {
-            // Check the day of the week.
-            if ($nex_wday == $wday) {
-                return ($nex_time_wd - $cur_time);
-            }
-
-            // Move to the next day of the month.
-            $nex_time_wd += SECONDS_1DAY;
-
-            $array_nex_w = explode(' ', date('m w', $nex_time_wd));
-            $nex_mon_wd  = $array_nex_w[0];
-            $nex_wday    = $array_nex_w[1];
-        } while ($mday == '*' && $nex_mon_wd == $nex_mon);
-
-        $count++;
-    } while ($count < SECONDS_1MINUTE);
-
-    // Something went wrong, default to 5 minutes.
-    return SECONDS_5MINUTES;
+    return ($nex_time - $cur_time);
 }
 
 
@@ -129,8 +92,7 @@ function cron_next_execution_date($cron, $cur_time=false, $module_interval=300)
     }
 
     // Update minutes.
-    $min_s = cron_get_interval($cron_array[0]);
-    $nex_time_array[0] = ($min_s['down'] == '*') ? 0 : $min_s['down'];
+    $nex_time_array[0] = cron_get_next_time_element($cron_array[0]);
 
     $nex_time = cron_valid_date($nex_time_array);
     if ($nex_time >= $cur_time) {
@@ -168,8 +130,7 @@ function cron_next_execution_date($cron, $cur_time=false, $module_interval=300)
     }
 
     // Update the hour if fails.
-    $hour_s = cron_get_interval($cron_array[1]);
-    $nex_time_array[1] = ($hour_s['down'] == '*') ? 0 : $hour_s['down'];
+    $nex_time_array[1] = cron_get_next_time_element($cron_array[1]);
 
     // When an overflow is passed check the hour update again.
     $nex_time = cron_valid_date($nex_time_array);
@@ -201,8 +162,7 @@ function cron_next_execution_date($cron, $cur_time=false, $module_interval=300)
     }
 
     // Update the day if fails.
-    $mday_s = cron_get_interval($cron_array[2]);
-    $nex_time_array[2] = ($mday_s['down'] == '*') ? 1 : $mday_s['down'];
+    $nex_time_array[2] = cron_get_next_time_element($cron_array[2]);
 
     // When an overflow is passed check the hour update in the next execution.
     $nex_time = cron_valid_date($nex_time_array);
@@ -228,8 +188,7 @@ function cron_next_execution_date($cron, $cur_time=false, $module_interval=300)
     }
 
     // Update the month if fails.
-    $mon_s = cron_get_interval($cron_array[3]);
-    $nex_time_array[3] = ($mon_s['down'] == '*') ? 1 : $mon_s['down'];
+    $nex_time_array[3] = cron_get_next_time_element($cron_array[3]);
 
     // When an overflow is passed check the hour update in the next execution.
     $nex_time = cron_valid_date($nex_time_array);
@@ -244,6 +203,14 @@ function cron_next_execution_date($cron, $cur_time=false, $module_interval=300)
     $nex_time = cron_valid_date($nex_time_array);
 
     return ($nex_time !== false) ? $nex_time : $module_interval;
+}
+
+
+function cron_get_next_time_element($cron_array_elem)
+{
+    $interval = cron_get_interval($cron_array_elem);
+    $value = ($interval['down'] == '*' || ($interval['up'] !== false && $interval['down'] > $interval['up'] )) ? 0 : $interval['down'];
+    return $value;
 }
 
 
@@ -277,28 +244,52 @@ function cron_is_in_cron($elems_cron, $elems_curr_time)
     }
 
     // Go to last element if current is a wild card.
-    if ($elem_cron != '*') {
-        $elem_s = cron_get_interval($elem_cron);
-        // Check if there is no a range
-        if (($elem_s['up'] === false) && ($elem_s['down'] != $elem_curr_time)) {
-            return false;
-        }
-
-        // Check if there is on the range.
-        if ($elem_s['up'] !== false) {
-            if ($elem_s['down'] < $elem_s['up']) {
-                if ($elem_curr_time < $elem_s['down'] || $elem_curr_time > $elem_s['up']) {
-                    return false;
-                }
-            } else {
-                if ($elem_curr_time > $elem_s['down'] || $elem_curr_time < $elem_s['up']) {
-                    return false;
-                }
-            }
-        }
+    if (cron_check_interval($elem_curr_time, $elem_cron) === false) {
+        return false;
     }
 
     return cron_is_in_cron($elems_cron, $elems_curr_time);
+}
+
+
+/**
+ * Check if an element is inside the cron interval or not.
+ *
+ * @param integer $elem_curr_time Integer that represents the time to check.
+ * @param string  $elem_cron      Cron interval (splitted by hypen)
+ *            or cron single value (a number).
+ *
+ * @return boolean True if is in interval.
+ */
+function cron_check_interval($elem_curr_time, $elem_cron)
+{
+    // Go to last element if current is a wild card.
+    if ($elem_cron === '*') {
+        return true;
+    }
+
+    $elem_s = cron_get_interval($elem_cron);
+    // Check if there is no a range.
+    if (($elem_s['up'] === false) && ($elem_s['down'] != $elem_curr_time)) {
+        return false;
+    }
+
+    // Check if there is on the range.
+    if ($elem_s['up'] !== false && (int) $elem_s['up'] === (int) $elem_curr_time) {
+        return true;
+    }
+
+    if ($elem_s['down'] < $elem_s['up']) {
+        if ($elem_curr_time < $elem_s['down'] || $elem_curr_time > $elem_s['up']) {
+            return false;
+        }
+    } else {
+        if ($elem_curr_time > $elem_s['down'] || $elem_curr_time < $elem_s['up']) {
+            return false;
+        }
+    }
+
+    return true;
 }
 
 

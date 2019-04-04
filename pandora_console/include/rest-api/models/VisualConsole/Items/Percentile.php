@@ -27,40 +27,6 @@ final class Percentile extends Item
      */
     protected static $useLinkedVisualConsole = true;
 
-    /**
-     * Used to enable validation, extraction and encodeing of the HTML output.
-     *
-     * @var boolean
-     */
-    protected static $useHtmlOutput = true;
-
-
-    /**
-     * Validate the received data structure to ensure if we can extract the
-     * values required to build the model.
-     *
-     * @param array $data Input data.
-     *
-     * @return void
-     *
-     * @throws \InvalidArgumentException If any input value is considered
-     * invalid.
-     *
-     * @overrides Item::validateData.
-     */
-    protected function validateData(array $data): void
-    {
-        parent::validateData($data);
-
-        if (static::notEmptyStringOr($data['encodedHtml'], null) === null
-            && static::notEmptyStringOr($data['html'], null) === null
-        ) {
-            throw new \InvalidArgumentException(
-                'the html property is required and should be string'
-            );
-        }
-    }
-
 
     /**
      * Returns a valid representation of the model.
@@ -77,9 +43,18 @@ final class Percentile extends Item
         $return['type'] = PERCENTILE_BAR;
         $return['percentileType'] = static::extractPercentileType($data);
         $return['valueType'] = static::extractValueType($data);
-        $return['value'] = static::notEmptyStringOr($data['value'], null);
+        $return['minValue'] = static::parseFloatOr($data['minValue'], null);
+        $return['maxValue'] = static::parseFloatOr(
+            static::issetInArray($data, ['maxValue', 'height']),
+            null
+        );
         $return['color'] = static::extractColor($data);
         $return['labelColor'] = static::extractLabelColor($data);
+        $return['value'] = static::parseFloatOr($data['value'], null);
+        $return['displayValue'] = static::notEmptyStringOr(
+            $data['displayValue'],
+            null
+        );
         return $return;
     }
 
@@ -201,20 +176,69 @@ final class Percentile extends Item
         // Load side libraries.
         global $config;
         include_once $config['homedir'].'/include/functions_graph.php';
+        include_once $config['homedir'].'/include/functions_modules.php';
 
-        // Get the linked agent and module Ids.
+        // Get the linked module Id.
         $linkedModule = static::extractLinkedModule($data);
-        $agentId = static::parseIntOr($linkedModule['agentId'], null);
         $moduleId = static::parseIntOr($linkedModule['moduleId'], null);
+        $metaconsoleId = static::parseIntOr(
+            $linkedModule['metaconsoleId'],
+            null
+        );
 
-        if ($agentId === null) {
-            throw new \InvalidArgumentException('missing agent Id');
+        // Get the value type.
+        $valueType = static::extractValueType($data);
+
+        if ($moduleId === null) {
+            throw new \InvalidArgumentException('missing module Id');
         }
 
-        // TODO: Use the same HTML output as the old VC.
-        $html = '';
+        // Maybe connect to node.
+        $nodeConnected = false;
+        if (\is_metaconsole() === true && $metaconsoleId !== null) {
+            $nodeConnected = \metaconsole_connect(
+                null,
+                $metaconsoleId
+            ) === NOERR;
 
-        $data['html'] = $html;
+            if ($nodeConnected === false) {
+                throw new \InvalidArgumentException(
+                    'error connecting to the node'
+                );
+            }
+        }
+
+        $moduleValue = \modules_get_last_value($moduleId);
+        if ($moduleValue === false) {
+            throw new \InvalidArgumentException(
+                'error fetching the module value'
+            );
+        }
+
+        // Cast to float.
+        $moduleValue = (float) $moduleValue;
+
+        // Store the module value.
+        $data['value'] = $moduleValue;
+
+        $unit = \modules_get_unit($moduleId);
+        if (empty($unit) === false) {
+            $data['unit'] = \io_safe_output($unit);
+        }
+
+        // TODO: Add min value to the database.
+        // Extract max value.
+        if (isset($data['maxValue']) === false) {
+            $data['maxValue'] = static::parseFloatOr(
+                static::issetInArray($data, ['height']),
+                null
+            );
+        }
+
+        // Restore connection.
+        if ($nodeConnected === true) {
+            \metaconsole_restore_db();
+        }
 
         return $data;
     }

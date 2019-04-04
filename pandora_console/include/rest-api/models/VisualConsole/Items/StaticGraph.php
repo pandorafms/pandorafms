@@ -147,8 +147,40 @@ final class StaticGraph extends Item
         global $config;
         include_once $config['homedir'].'/include/functions_visual_map.php';
 
+        // Get the linked module Id.
+        $linkedModule = static::extractLinkedModule($data);
+        $moduleId = static::parseIntOr($linkedModule['moduleId'], null);
+        $metaconsoleId = static::parseIntOr(
+            $linkedModule['metaconsoleId'],
+            null
+        );
+
+        if ($moduleId === null) {
+            throw new \InvalidArgumentException('missing module Id');
+        }
+
+        // Maybe connect to node.
+        $nodeConnected = false;
+        if (\is_metaconsole() === true && $metaconsoleId !== null) {
+            $nodeConnected = \metaconsole_connect(
+                null,
+                $metaconsoleId
+            ) === NOERR;
+
+            if ($nodeConnected === false) {
+                throw new \InvalidArgumentException(
+                    'error connecting to the node'
+                );
+            }
+        }
+
         // Get the img src.
         $data['statusImageSrc'] = \visual_map_get_image_status_element($data);
+
+        // Restore connection.
+        if ($nodeConnected === true) {
+            \metaconsole_restore_db();
+        }
 
         return $data;
     }

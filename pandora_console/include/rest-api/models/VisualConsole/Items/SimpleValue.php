@@ -176,21 +176,44 @@ final class SimpleValue extends Item
         global $config;
         include_once $config['homedir'].'/include/functions_graph.php';
 
-        // Get the linked agent and module Ids.
+        // Get the linked module Id.
         $linkedModule = static::extractLinkedModule($data);
         $moduleId = static::parseIntOr($linkedModule['moduleId'], null);
+        $metaconsoleId = static::parseIntOr(
+            $linkedModule['metaconsoleId'],
+            null
+        );
 
         if ($moduleId === null) {
             throw new \InvalidArgumentException('missing module Id');
         }
 
-        // TODO: Connect to a metaconsole node?
+        // Maybe connect to node.
+        $nodeConnected = false;
+        if (\is_metaconsole() === true && $metaconsoleId !== null) {
+            $nodeConnected = \metaconsole_connect(
+                null,
+                $metaconsoleId
+            ) === NOERR;
+
+            if ($nodeConnected === false) {
+                throw new \InvalidArgumentException(
+                    'error connecting to the node'
+                );
+            }
+        }
+
         // Get the formatted value.
         $value = \visual_map_get_simple_value(
             $data['type'],
             $moduleId,
             static::extractPeriod($data)
         );
+
+        // Restore connection.
+        if ($nodeConnected === true) {
+            \metaconsole_restore_db();
+        }
 
         // Some modules are image based. Extract the base64 image if needed.
         $matches = [];

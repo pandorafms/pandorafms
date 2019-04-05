@@ -4437,7 +4437,7 @@ function ui_get_sorting_arrows($url_up, $url_down, $selectUp, $selectDown)
     $arrow_up = 'images/sort_up_black.png';
     $arrow_down = 'images/sort_down_black.png';
 
-    // en el hover usar flechas verdes en el nodo
+    // Green arrows for the selected.
     if ($selectUp === true) {
         $arrow_up = 'images/sort_up_green.png';
     }

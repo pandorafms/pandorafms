@@ -2108,7 +2108,7 @@ a.autorefresh_txt,
   font-size: 8.5pt;
 }
 
-@media screen and (min-width: 1024px) and (max-width: 1200px) {
+@media screen and (max-width: 1200px) {
   #header_searchbar input.search_input {
     width: 135px;
   }
@@ -2168,10 +2168,6 @@ div#logo_text3 {
 	margin-left: 4px;
 	padding-top: 0px;
 }*/
-.pagination {
-  margin-top: 15px;
-  margin-bottom: 5px;
-}
 .pagination * {
   margin-left: 0px !important;
   margin-right: 0px !important;
@@ -5037,25 +5033,14 @@ table.info_table tbody > tr:nth-child(even) {
 }
 
 table.info_table tr:first-child > th {
-  /*background-color: #373737;*/
-  /*color: #fff;*/
-  /*font-size: 9pt;*/
   background-color: #fff;
   border-top: 1px solid #e2e2e2;
   color: #000;
   text-align: left;
   vertical-align: middle;
-
-  /*background-color: pink;*/
-}
-
-table.info_table tr:first-child > th span {
-  /*font-size: 9pt;*/
 }
 
 table.info_table th {
-  /*color: #fff;*/
-  /*background-color: #666;*/
   font-size: 7.5pt;
   letter-spacing: 0.3pt;
   color: #000;
@@ -5075,21 +5060,16 @@ table.info_table tr th {
 }
 
 table.info_table > thead > tr:first-child > th:last-child {
-  /*border-right: 1px solid #373737;*/
-  /*border-right: 1px solid #e2e2e2;*/
   border-top-right-radius: 4px;
 }
 
 table.info_table > thead > tr:first-child > th:first-child {
-  /*border-left: 1px solid #373737;*/
-  /* border-left: 1px solid #e2e2e2;*/
   border-top-left-radius: 4px;
 }
 
 table.info_table > thead > tr > th,
 table.info_table > tbody > tr > th,
 table.info_table > thead > tr > th a {
-  /*padding: 9px 7px;*/
   padding-left: 9px;
   padding-right: 9px;
   padding-top: 9px;
@@ -5104,7 +5084,6 @@ table.info_table > tbody > tr > td {
   -webkit-border-radius: 0px;
   border-radius: 0px;
   border: none;
-  /*padding: 9px 7px;*/
   padding-left: 9px;
   padding-right: 9px;
   padding-top: 7px;
@@ -5142,23 +5121,11 @@ table.info_table > tbody > tr:hover {
   background-color: #eee;
 }
 
-table.info_table td:last-child img {
-  border: 1px solid red;
-  background-color: pink;
-  background-color: #ffedf0;
-}
-
 .info_table.profile_list > thead > tr > th > a.tip {
   padding: 0px;
 }
 
-/* no confundir con action-buttons */
-/* esta se pa los botones de las tablas de delete etc*/
-/*para cuando solo hay un boton y puede haber iconos que no son botones al lado*/
-.action_button_img {
-  cursor: pointer;
-}
-
+/* This class is for the icons of actions and operations in the tables. */
 .action_buttons a[href] img,
 .action_buttons input[type="image"],
 .action_button_img {
@@ -5168,6 +5135,11 @@ table.info_table td:last-child img {
   box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.1);
   max-width: 21px;
   background-color: transparent !important; /*BORRAR*/
+}
+
+/* This class is for only one icon to be a button type. */
+.action_button_img {
+  cursor: pointer;
 }
 
 .action_buttons a,
@@ -5190,12 +5162,26 @@ table.info_table td:last-child img {
   background-color: #fff !important;
 }
 
-/* PAGINACION */
+/* Arrows to sort the tables. */
+.sort_arrow {
+  display: inline-grid;
+  vertical-align: middle;
+}
+.sort_arrow a {
+  padding: 0 0 0 5px !important;
+}
+
+/*
+ * ---------------------------------------------------------------------
+ * - PAGINATION
+ * ---------------------------------------------------------------------
+ */
 .pagination {
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
   margin-bottom: 10px;
+  margin-top: 15px;
 }
 
 .pagination .page_number {
@@ -5258,13 +5244,4 @@ table.info_table td:last-child img {
   margin-bottom: 15px;
   margin-top: 0px;
   align-items: flex-start;
-}
-
-/* FELCHAS ORDENACION */
-.sort_arrow {
-  display: inline-grid;
-  vertical-align: middle;
-}
-.sort_arrow a {
-  padding: 0 0 0 5px !important;
 }

@@ -48,7 +48,7 @@ final class EventsHistory extends Item
     {
         $return = parent::decode($data);
         $return['type'] = AUTO_SLA_GRAPH;
-        $return['maxTime'] = $this->extractMaxTime($data);
+        $return['maxTime'] = static::extractMaxTime($data);
         return $return;
     }
 

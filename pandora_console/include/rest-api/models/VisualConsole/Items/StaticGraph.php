@@ -149,11 +149,8 @@ final class StaticGraph extends Item
 
         // Get the linked module Id.
         $linkedModule = static::extractLinkedModule($data);
-        $moduleId = static::parseIntOr($linkedModule['moduleId'], null);
-        $metaconsoleId = static::parseIntOr(
-            $linkedModule['metaconsoleId'],
-            null
-        );
+        $moduleId = $linkedModule['moduleId'];
+        $metaconsoleId = $linkedModule['metaconsoleId'];
 
         if ($moduleId === null) {
             throw new \InvalidArgumentException('missing module Id');

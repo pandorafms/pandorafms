@@ -70,7 +70,7 @@ global $config;
 // IMPORTANT NOTE: All reporting pages are used also for metaconsole reporting functionality
 // So, it's very important to specify full url and paths to resources because metaconsole has a different
 // entry point: enterprise/meta/index.php than normal console !!!
-// Login check
+// Login check.
 check_login();
 
 enterprise_hook('open_meta_frame');
@@ -89,7 +89,7 @@ if (!$report_r && !$report_w && !$report_m) {
 
 require_once $config['homedir'].'/include/functions_reports.php';
 
-// Load enterprise extensions
+// Load enterprise extensions.
 enterprise_include('operation/reporting/custom_reporting.php');
 enterprise_include_once('include/functions_metaconsole.php');
 
@@ -98,7 +98,7 @@ if (enterprise_include_once('include/functions_reporting.php') !== ENTERPRISE_NO
     $enterpriseEnable = true;
 }
 
-// Constant with fonts directory
+// Constant with fonts directory.
 define('_MPDF_TTFONTPATH', 'include/fonts/');
 
 $activeTab = get_parameter('tab', 'main');
@@ -161,6 +161,10 @@ if ($idReport != 0) {
             ) {
                 $edit = true;
             }
+        break;
+
+        default:
+            // Default.
         break;
     }
 
@@ -227,6 +231,10 @@ switch ($action) {
 								ORDER BY "order"'
                             );
                         break;
+
+                        default:
+                            // Default.
+                        break;
                     }
 
                     if ($items === false) {
@@ -234,7 +242,7 @@ switch ($action) {
                     }
 
 
-                    // Clean the repeated order values
+                    // Clean the repeated order values.
                     $order_temp = 1;
                     foreach ($items as $item) {
                         switch ($config['dbtype']) {
@@ -253,6 +261,10 @@ switch ($action) {
                                     ['"order"' => $order_temp],
                                     ['id_rc' => $item['id_rc']]
                                 );
+                            break;
+
+                            default:
+                                // Default.
                             break;
                         }
 
@@ -280,6 +292,10 @@ switch ($action) {
 								WHERE id_report = '.$idReport.'
 								ORDER BY "order"'
                             );
+                        break;
+
+                        default:
+                            // Default.
                         break;
                     }
 
@@ -343,6 +359,10 @@ switch ($action) {
                                     ['"order"' => ($order + 1)],
                                     ['id_rc' => $id]
                                 );
+                            break;
+
+                            default:
+                                // Default.
                             break;
                         }
                     }
@@ -415,6 +435,10 @@ switch ($action) {
                         }
                     }
                 break;
+
+                default:
+                    // Default.
+                break;
             }
         }
     break;
@@ -444,9 +468,9 @@ switch ($action) {
             break;
         }
 
-        // Page header for metaconsole
-        if ($enterpriseEnable and defined('METACONSOLE')) {
-            // Bread crumbs
+        // Page header for metaconsole.
+        if ($enterpriseEnable && defined('METACONSOLE')) {
+            // Bread crumbs.
             ui_meta_add_breadcrumb(
                 [
                     'link' => 'index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&pure='.$pure,
@@ -456,10 +480,11 @@ switch ($action) {
 
             ui_meta_print_page_header($nav_bar);
 
-            // Print header
+            // Print header.
             ui_meta_print_header(__('Reporting'), '', $buttons);
         }
-        // Page header for normal console
+
+        // Page header for normal console.
         else {
             ui_print_page_header(__('Custom reporting'), 'images/op_reporting.png', false, '', false, $buttons, false, '', 60);
         }
@@ -471,7 +496,7 @@ switch ($action) {
                 case 'group_view':
                     if ($config['id_user'] == $report['id_user'] || is_user_admin($config['id_user'])) {
                         $delete = true;
-                        // owner can delete
+                        // Owner can delete.
                     } else {
                         $delete = check_acl(
                             $config['id_user'],
@@ -484,7 +509,7 @@ switch ($action) {
                 case 'group_edit':
                     if ($config['id_user'] == $report['id_user'] || is_user_admin($config['id_user'])) {
                         $delete = true;
-                        // owner can delete
+                        // Owner can delete.
                     } else {
                         $delete = check_acl(
                             $config['id_user'],
@@ -500,6 +525,10 @@ switch ($action) {
                     ) {
                         $delete = true;
                     }
+                break;
+
+                default:
+                    // Default.
                 break;
             }
 
@@ -571,7 +600,7 @@ switch ($action) {
         ui_require_jquery_file('bgiframe');
         ui_require_jquery_file('autocomplete');
 
-        // Show only selected groups
+        // Show only selected groups.
         if ($id_group > 0) {
             $group = ["$id_group" => $id_group];
         } else {
@@ -595,7 +624,7 @@ switch ($action) {
         }
 
         // Fix : group filter was not working
-        // Show only selected groups
+        // Show only selected groups.
         if ($id_group > 0) {
             $group = ["$id_group" => $id_group];
             $filter['id_group'] = $id_group;
@@ -603,8 +632,8 @@ switch ($action) {
             $group = false;
         }
 
-        // Filter normal and metaconsole reports
-        if ($config['metaconsole'] == 1 and defined('METACONSOLE')) {
+        // Filter normal and metaconsole reports.
+        if ($config['metaconsole'] == 1 && defined('METACONSOLE')) {
             $filter['metaconsole'] = 1;
         } else {
             $filter['metaconsole'] = 0;
@@ -670,12 +699,12 @@ switch ($action) {
             $table->size['csv'] = '5%';
 
             $next = 4;
-            // Calculate dinamically the number of the column
+            // Calculate dinamically the number of the column.
             if (enterprise_hook('load_custom_reporting_1') !== ENTERPRISE_NOT_HOOK) {
                 $next = 7;
             }
 
-            // Admin options only for RM flag
+            // Admin options only for RM flag.
             if (check_acl($config['id_user'], 0, 'RM')) {
                 $table->head[$next] = __('Private');
                 $table->size[$next] = '2%';
@@ -743,7 +772,7 @@ switch ($action) {
 
                 $data[1] = ui_print_truncate_text($report['description'], 70);
 
-                // Remove html and xml button if items are larger than limit
+                // Remove html and xml button if items are larger than limit.
                 $item_count = db_get_num_rows('SELECT * FROM treport_content WHERE id_report='.$report['id_report']);
                 $report['overload'] = $item_count >= $config['report_limit'];
                 if ($report['overload']) {
@@ -752,7 +781,7 @@ switch ($action) {
                 } else if (!$report['non_interactive']) {
                     $data[2] = '<a href="'.$config['homeurl'].'index.php?sec=reporting&sec2=operation/reporting/reporting_viewer&id='.$report['id_report'].'&pure='.$pure.'">'.html_print_image('images/html.png', true, ['title' => __('HTML view')]).'</a>';
                     $data[3] = '<a href="'.ui_get_full_url(false, false, false, false).'ajax.php?page='.$config['homedir'].'/operation/reporting/reporting_xml&id='.$report['id_report'].'">'.html_print_image('images/xml.png', true, ['title' => __('Export to XML')]).'</a>';
-                    // I chose ajax.php because it's supposed to give XML anyway
+                    // I chose ajax.php because it's supposed to give XML anyway.
                 } else {
                     $data[2] = html_print_image(
                         'images/html_disabled.png',
@@ -765,14 +794,14 @@ switch ($action) {
                 }
 
 
-                // Calculate dinamically the number of the column
+                // Calculate dinamically the number of the column.
                 $next = 4;
                 if (enterprise_hook('load_custom_reporting_2') !== ENTERPRISE_NOT_HOOK) {
                     $next = 7;
                 }
 
 
-                // Admin options only for RM flag
+                // Admin options only for RM flag.
                 if (check_acl($config['id_user'], 0, 'RM')) {
                     if ($report['private'] == 1) {
                         $data[$next] = __('Yes');
@@ -819,6 +848,10 @@ switch ($action) {
                             $edit = true;
                             $delete = true;
                         }
+                    break;
+
+                    default:
+                        // Default.
                     break;
                 }
 
@@ -918,7 +951,6 @@ switch ($action) {
         }
 
         enterprise_hook('close_meta_frame');
-
     return;
 
         break;
@@ -945,6 +977,10 @@ switch ($action) {
                 $reportName = $report['name'];
                 $idGroupReport = $report['id_group'];
                 $description = $report['description'];
+            break;
+
+            default:
+                // Default.
             break;
         }
     break;
@@ -978,6 +1014,10 @@ switch ($action) {
                     case 'user_edit':
                         $id_group_edit = 0;
                         $private = 1;
+                    break;
+
+                    default:
+                        // Default.
                     break;
                 }
 
@@ -1029,10 +1069,10 @@ switch ($action) {
                     $action = 'edit';
                 } else if ($action == 'save') {
                     if ($reportName != '' && $idGroupReport != '') {
-                        // This flag allow to differentiate between normal console and metaconsole reports
+                        // This flag allow to differentiate between normal console and metaconsole reports.
                         $metaconsole_report = (int) is_metaconsole();
 
-                        // Juanma (07/05/2014) New feature: Custom front page for reports
+                        // Juanma (07/05/2014) New feature: Custom front page for reports.
                         if ($config['custom_report_front']) {
                             $custom_font = $config['custom_report_front_font'];
                             $logo = $config['custom_report_front_logo'];
@@ -1101,7 +1141,6 @@ switch ($action) {
                 $good_format = false;
                 switch ($action) {
                     case 'update':
-
                         $values = [];
                         $values['id_report'] = $idReport;
                         // ---------------------------------------------------
@@ -1135,7 +1174,6 @@ switch ($action) {
                             break;
 
                             case 'event_report_log':
-
                                 $agents_to_report = get_parameter('id_agents3');
                                 $source = get_parameter('source', '');
                                 $search = get_parameter('search', '');
@@ -1157,7 +1195,7 @@ switch ($action) {
                                 $values['top_n_value'] = get_parameter('quantity');
                                 $interval_max = get_parameter('max_interval');
                                 $interval_min = get_parameter('min_interval');
-                                // Checks intervals fields
+                                // Checks intervals fields.
                                 if (preg_match('/^(\-)*[0-9]*\.?[0-9]+$/', $interval_max) and preg_match('/^(\-)*[0-9]*\.?[0-9]+$/', $interval_min)) {
                                     $good_format = true;
                                 }
@@ -1224,9 +1262,21 @@ switch ($action) {
 
                             case 'availability':
                                 // HACK it is saved in show_graph field.
-                                // Show interfaces instead the modules
+                                // Show interfaces instead the modules.
                                 $values['show_graph'] = get_parameter('checkbox_show_address_agent');
                                 $values['period'] = get_parameter('period');
+                                $values['total_time'] = get_parameter('total_time');
+                                $values['time_failed'] = get_parameter('time_failed');
+                                $values['time_in_ok_status'] = get_parameter('time_in_ok_status');
+                                $values['time_in_unknown_status'] = get_parameter('time_in_unknown_status');
+                                $values['time_of_not_initialized_module'] = get_parameter('time_of_not_initialized_module');
+                                $values['time_of_downtime'] = get_parameter('time_of_downtime');
+                                $values['total_checks'] = get_parameter('total_checks');
+                                $values['checks_failed'] = get_parameter('checks_failed');
+                                $values['checks_in_ok_status'] = get_parameter('checks_in_ok_status');
+                                $values['unknown_checks'] = get_parameter('unknown_checks');
+                                $values['agent_max_value'] = get_parameter('agent_max_value');
+                                $values['agent_min_value'] = get_parameter('agent_min_value');
                                 $good_format = true;
                             break;
 
@@ -1261,6 +1311,7 @@ switch ($action) {
                                 $values['text'] = get_parameter('text');
                                 $values['show_graph'] = get_parameter('combo_graph_options');
                                 $good_format = true;
+                            break;
                         }
 
                         $values['id_agent'] = get_parameter('id_agent');
@@ -1285,6 +1336,19 @@ switch ($action) {
                         $values['friday'] = get_parameter('friday', 0);
                         $values['saturday'] = get_parameter('saturday', 0);
                         $values['sunday'] = get_parameter('sunday', 0);
+                        $values['total_time'] = get_parameter('total_time', 0);
+                        $values['time_failed'] = get_parameter('time_failed', 0);
+                        $values['time_in_ok_status'] = get_parameter('time_in_ok_status', 0);
+                        $values['time_in_unknown_status'] = get_parameter('time_in_unknown_status', 0);
+                        $values['time_of_not_initialized_module'] = get_parameter('time_of_not_initialized_module', 0);
+                        $values['time_of_downtime'] = get_parameter('time_of_downtime', 0);
+                        $values['total_checks'] = get_parameter('total_checks', 0);
+                        $values['checks_failed'] = get_parameter('checks_failed', 0);
+                        $values['checks_in_ok_status'] = get_parameter('checks_in_ok_status', 0);
+                        $values['unknown_checks'] = get_parameter('unknown_checks', 0);
+                        $values['agent_max_value'] = get_parameter('agent_max_value', 0);
+                        $values['agent_min_value'] = get_parameter('agent_min_value', 0);
+
                         switch ($config['dbtype']) {
                             case 'mysql':
                             case 'postgresql':
@@ -1295,6 +1359,10 @@ switch ($action) {
                             case 'oracle':
                                 $values['time_from'] = '#to_date(\''.get_parameter('time_from').'\',\'hh24:mi:ss\')';
                                 $values['time_to'] = '#to_date(\''.get_parameter('time_to').'\', \'hh24:mi:ss\')';
+                            break;
+
+                            default:
+                                // Default.
                             break;
                         }
 
@@ -1316,7 +1384,7 @@ switch ($action) {
                             $values['server_name'] = get_parameter('combo_server');
                         }
 
-                        if ((($values['type'] == 'custom_graph') or ($values['type'] == 'automatic_custom_graph')) && ($values['id_gs'] == 0 || $values['id_gs'] == '')) {
+                        if ((($values['type'] == 'custom_graph') || ($values['type'] == 'automatic_custom_graph')) && ($values['id_gs'] == 0 || $values['id_gs'] == '')) {
                             $resultOperationDB = false;
                             break;
                         }
@@ -1333,7 +1401,7 @@ switch ($action) {
 
                         $event_filter_search = get_parameter('filter_search', '');
 
-                        // If metaconsole is activated
+                        // If metaconsole is activated.
                         if ($config['metaconsole'] == 1 && defined('METACONSOLE')) {
                             if (($values['type'] == 'custom_graph') or ($values['type'] == 'automatic_custom_graph')) {
                                 $id_gs = substr($values['id_gs'], 0, strpos($values['id_gs'], '|'));
@@ -1344,7 +1412,7 @@ switch ($action) {
                                 }
                             }
 
-                            // Get agent and server name
+                            // Get agent and server name.
                             $agent_name_server = io_safe_output(get_parameter('agent'));
 
                             if (isset($agent_name_server)) {
@@ -1354,7 +1422,7 @@ switch ($action) {
                                     $server_name = substr($agent_name_server, $separator_pos);
                                     $server_name = str_replace('(', '', $server_name);
                                     $server_name = str_replace(')', '', $server_name);
-                                    // Will update server_name variable
+                                    // Will update server_name variable.
                                     $values['server_name'] = trim($server_name);
                                     $agent_name = substr($agent_name_server, 0, $separator_pos);
                                 }
@@ -1450,6 +1518,10 @@ switch ($action) {
                                     $style['label'] = '';
                                 }
                             break;
+
+                            default:
+                                // Default.
+                            break;
                         }
 
                         $values['style'] = io_safe_input(json_encode($style));
@@ -1463,6 +1535,10 @@ switch ($action) {
                                         )] = $values['type'];
                                         unset($values['type']);
                                     }
+                                break;
+
+                                default:
+                                    // Default.
                                 break;
                             }
 
@@ -1485,7 +1561,7 @@ switch ($action) {
                         $values['description'] = get_parameter('description');
                         $label = get_parameter('label', '');
 
-                        // Add macros name
+                        // Add macros name.
                         $items_label = [];
                         $items_label['type'] = get_parameter('type');
                         $items_label['id_agent'] = get_parameter('id_agent');
@@ -1495,7 +1571,7 @@ switch ($action) {
                         $values['name'] = reporting_label_macro($items_label, $name_it);
 
                         // Support for projection graph, prediction date and SLA reports
-                        // 'top_n_value', 'top_n' and 'text' fields will be reused for these types of report
+                        // 'top_n_value', 'top_n' and 'text' fields will be reused for these types of report.
                         switch ($values['type']) {
                             case 'projection_graph':
                                 $values['period'] = get_parameter('period1');
@@ -1597,7 +1673,7 @@ switch ($action) {
                             case 'availability':
                                 $values['period'] = get_parameter('period');
                                 // HACK it is saved in show_graph field.
-                                // Show interfaces instead the modules
+                                // Show interfaces instead the modules.
                                 $values['show_graph'] = get_parameter('checkbox_show_address_agent');
                                 $good_format = true;
                             break;
@@ -1672,6 +1748,10 @@ switch ($action) {
                                     $values['only_display_wrong'] = $only_display_wrong_tmp;
                                 }
                             break;
+
+                            default:
+                                // Default.
+                            break;
                         }
 
                         $values['monday'] = get_parameter('monday', 0);
@@ -1681,6 +1761,18 @@ switch ($action) {
                         $values['friday'] = get_parameter('friday', 0);
                         $values['saturday'] = get_parameter('saturday', 0);
                         $values['sunday'] = get_parameter('sunday', 0);
+                        $values['total_time'] = get_parameter('total_time', 0);
+                        $values['time_failed'] = get_parameter('time_failed', 0);
+                        $values['time_in_ok_status'] = get_parameter('time_in_ok_status', 0);
+                        $values['time_in_unknown_status'] = get_parameter('time_in_unknown_status', 0);
+                        $values['time_of_not_initialized_module'] = get_parameter('time_of_not_initialized_module', 0);
+                        $values['time_of_downtime'] = get_parameter('time_of_downtime', 0);
+                        $values['total_checks'] = get_parameter('total_checks', 0);
+                        $values['checks_failed'] = get_parameter('checks_failed', 0);
+                        $values['checks_in_ok_status'] = get_parameter('checks_in_ok_status', 0);
+                        $values['unknown_checks'] = get_parameter('unknown_checks', 0);
+                        $values['agent_max_value'] = get_parameter('agent_max_value', 0);
+                        $values['agent_min_value'] = get_parameter('agent_min_value', 0);
                         switch ($config['dbtype']) {
                             case 'mysql':
                             case 'postgresql':
@@ -1691,6 +1783,10 @@ switch ($action) {
                             case 'oracle':
                                 $values['time_from'] = '#to_date(\''.get_parameter('time_from').'\',\'hh24:mi:ss\')';
                                 $values['time_to'] = '#to_date(\''.get_parameter('time_to').'\', \'hh24:mi:ss\')';
+                            break;
+
+                            default:
+                                // Default.
                             break;
                         }
 
@@ -1719,8 +1815,8 @@ switch ($action) {
                             }
                         }
 
-                        if (($values['type'] == 'sql') or ($values['type'] == 'sql_graph_hbar')
-                            or ($values['type'] == 'sql_graph_vbar') or ($values['type'] == 'sql_graph_pie')
+                        if (($values['type'] == 'sql') || ($values['type'] == 'sql_graph_hbar')
+                            || ($values['type'] == 'sql_graph_vbar') || ($values['type'] == 'sql_graph_pie')
                         ) {
                             $values['treport_custom_sql_id'] = get_parameter('id_custom');
                             if ($values['treport_custom_sql_id'] == 0) {
@@ -1762,7 +1858,7 @@ switch ($action) {
 
                                 $event_filter_search = get_parameter('filter_search', '');
 
-                                // Added for events items
+                                // Added for events items.
                                 $style['show_summary_group']    = $show_summary_group;
                                 $style['filter_event_severity'] = json_encode($filter_event_severity);
                                 $style['filter_event_type']     = json_encode($filter_event_type);
@@ -1783,6 +1879,10 @@ switch ($action) {
                                         } else {
                                             $style['label'] = '';
                                         }
+                                    break;
+
+                                    default:
+                                        // Default.
                                     break;
                                 }
                             break;
@@ -1828,6 +1928,10 @@ switch ($action) {
                                     $style['label'] = '';
                                 }
                             break;
+
+                            default:
+                                // Default.
+                            break;
                         }
 
                         $values['style'] = io_safe_input(json_encode($style));
@@ -1841,6 +1945,10 @@ switch ($action) {
                                         )] = $values['type'];
                                         unset($values['type']);
                                     }
+                                break;
+
+                                default:
+                                    // Default.
                                 break;
                             }
 
@@ -1871,6 +1979,10 @@ switch ($action) {
 											WHERE id_report = '.$idReport
                                         );
                                     break;
+
+                                    default:
+                                        // Default.
+                                    break;
                                 }
 
                                 if ($max === false) {
@@ -1896,6 +2008,10 @@ switch ($action) {
                                             ['id_rc' => $idItem]
                                         );
                                     break;
+
+                                    default:
+                                        // Default.
+                                    break;
                                 }
 
                                 $resultOperationDB = true;
@@ -1903,7 +2019,8 @@ switch ($action) {
 
                             break;
                         }
-                        // If fields dont have good format
+
+                        // If fields dont have good format.
                         else {
                             $resultOperationDB = false;
                         }
@@ -1911,7 +2028,7 @@ switch ($action) {
             break;
 
             default:
-                if ($enterpriseEnable and $activeTab != 'advanced') {
+                if ($enterpriseEnable && $activeTab != 'advanced') {
                     $resultOperationDB = reporting_enterprise_update_action();
                 }
             break;
@@ -1969,7 +2086,7 @@ switch ($action) {
             case 'agent':
             case 'type':
 
-                // Sort functionality for normal console
+                // Sort functionality for normal console.
                 if (!defined('METACONSOLE')) {
                     switch ($field) {
                         case 'module':
@@ -2003,6 +2120,10 @@ switch ($action) {
                         case 'type':
                             $sql = 'SELECT id_rc FROM treport_content WHERE %s ORDER BY type %s';
                         break;
+
+                        default:
+                            // Default.
+                        break;
                     }
 
                     $sql = sprintf($sql, 'id_report = '.$idReport, '%s');
@@ -2014,11 +2135,15 @@ switch ($action) {
                         case 'down':
                             $sql = sprintf($sql, 'DESC');
                         break;
+
+                        default:
+                            // Default.
+                        break;
                     }
 
                     $ids = db_get_all_rows_sql($sql);
                 }
-                // Sort functionality for metaconsole
+                // Sort functionality for metaconsole.
                 else if ($config['metaconsole'] == 1) {
                     switch ($field) {
                         case 'agent':
@@ -2036,14 +2161,14 @@ switch ($action) {
                                 foreach ($report_items as $report_item) {
                                     $connection = metaconsole_get_connection($report_item['server_name']);
                                     if (metaconsole_load_external_db($connection) != NOERR) {
-                                        // ui_print_error_message ("Error connecting to ".$server_name);
+                                        // ui_print_error_message ("Error connecting to ".$server_name);.
                                     }
 
                                     switch ($field) {
                                         case 'agent':
                                             $agents_name = agents_get_agents(['id_agente' => $report_item['id_agent']], 'nombre');
 
-                                            // Item without agent
+                                            // Item without agent.
                                             if (!$agents_name) {
                                                 $element_name = '';
                                             } else {
@@ -2055,12 +2180,16 @@ switch ($action) {
                                         case 'module':
                                             $module_name = modules_get_agentmodule_name($report_item['id_agent_module']);
 
-                                            // Item without module
+                                            // Item without module.
                                             if (!$module_name) {
                                                 $element_name = '';
                                             } else {
                                                 $element_name = $module_name;
                                             }
+                                        break;
+
+                                        default:
+                                            // Default.
                                         break;
                                     }
 
@@ -2069,7 +2198,7 @@ switch ($action) {
                                     $temp_sort[$report_item['id_rc']] = $element_name;
                                 }
 
-                                // Performes sorting
+                                // Performes sorting.
                                 switch ($dir) {
                                     case 'up':
                                         asort($temp_sort);
@@ -2077,6 +2206,10 @@ switch ($action) {
 
                                     case 'down':
                                         arsort($temp_sort);
+                                    break;
+
+                                    default:
+                                        // Default.
                                     break;
                                 }
 
@@ -2086,13 +2219,13 @@ switch ($action) {
                                     $i++;
                                 }
 
-                                // Free resources
+                                // Free resources.
                                 unset($temp_sort);
                                 unset($report_items);
                             }
                         break;
 
-                        // Type case only depends of local database
+                        // Type case only depends of local database.
                         case 'type':
                             $sql = 'SELECT id_rc
 								FROM treport_content
@@ -2111,10 +2244,13 @@ switch ($action) {
                                 case 'down':
                                     $sql = sprintf($sql, 'DESC');
                                 break;
+
+                                default:
+                                    // Default.
+                                break;
                             }
 
                             $ids = db_get_all_rows_sql($sql);
-
                         break;
                     }
                 }
@@ -2153,6 +2289,10 @@ switch ($action) {
 							WHERE id_rc = '.$idItem
                         );
                     break;
+
+                    default:
+                        // Default.
+                    break;
                 }
 
                 // db_get_value_filter('order', 'treport_content', array('id_rc' => $idItem));
@@ -2163,6 +2303,10 @@ switch ($action) {
 
                     case 'down':
                         $newOrder = ($oldOrder + 1);
+                    break;
+
+                    default:
+                        // Default.
                     break;
                 }
 
@@ -2201,6 +2345,10 @@ switch ($action) {
                             false
                         );
                     break;
+
+                    default:
+                        // Default.
+                    break;
                 }
 
                 if ($resultOperationDB !== false) {
@@ -2230,13 +2378,17 @@ switch ($action) {
                                 false
                             );
                         break;
+
+                        default:
+                            // Default.
+                        break;
                     }
                 }
             break;
         }
     break;
 
-    // Added for report templates
+    // Added for report templates.
     default:
         if ($enterpriseEnable) {
             $buttons = [
@@ -2260,7 +2412,7 @@ switch ($action) {
                 break;
             }
 
-            // Page header for metaconsole
+            // Page header for metaconsole.
             if ($enterpriseEnable and defined('METACONSOLE')) {
                 // Bread crumbs
                 ui_meta_add_breadcrumb(
@@ -2272,10 +2424,10 @@ switch ($action) {
 
                 ui_meta_print_page_header($nav_bar);
 
-                // Print header
+                // Print header.
                 ui_meta_print_header(__('Reporting'), '', $buttons);
             }
-            // Page header for normal console
+            // Page header for normal console.
             else {
                 ui_print_page_header($subsection, 'images/op_reporting.png', false, '', false, $buttons, false, '', 60);
             }
@@ -2338,9 +2490,9 @@ if ($idReport != 0) {
     $textReportName = __('Create Custom Report');
 }
 
-// Page header for metaconsole
+// Page header for metaconsole.
 if ($enterpriseEnable and defined('METACONSOLE')) {
-    // Bread crumbs
+    // Bread crumbs.
     ui_meta_add_breadcrumb(
         [
             'link' => 'index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&pure='.$pure,
@@ -2350,7 +2502,7 @@ if ($enterpriseEnable and defined('METACONSOLE')) {
 
     ui_meta_print_page_header($nav_bar);
 
-    // Print header
+    // Print header.
     ui_meta_print_header(__('Reporting').$textReportName, '', $buttons);
 } else {
     ui_print_page_header(

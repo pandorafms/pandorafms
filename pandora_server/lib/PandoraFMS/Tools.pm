@@ -1360,6 +1360,11 @@ sub cron_next_execution {
 
 	# Get day of the week and month from cron config
 	my ($wday) = (split (/\s/, $cron))[4];
+	# Check the wday values to avoid infinite loop
+	my ($wday_down, $wday_up) = cron_get_interval($wday);
+	if ($wday_down ne "*" && ($wday_down > 6 || (defined($wday_up) && $wday_up > 6))) {
+		$wday = "*";
+	}
 
 	# Get current time and day of the week
 	my $cur_time = time();

@@ -2102,6 +2102,12 @@ sub cron_next_execution {
 
 	# Get day of the week and month from cron config
 	my ($wday) = (split (/\s/, $cron))[4];
+	# Check the wday values to avoid infinite loop
+	my ($wday_down, $wday_up) = cron_get_interval($wday);
+	if ($wday_down ne "*" && ($wday_down > 6 || (defined($wday_up) && $wday_up > 6))) {
+		log_message('setup', "Invalid cron configuration $cron. Day of the week is out of limits.");
+		$wday = "*";
+	}
 
 	# Get current time and day of the week
 	my $cur_time = time();
@@ -2110,7 +2116,6 @@ sub cron_next_execution {
 	my $nex_time = cron_next_execution_date ($cron, $cur_time, $interval);
 
 	# Check the day
-	print localtime($nex_time)->strftime('%c') . " - OUTSIDE\n";
 	while (!cron_check_interval($wday, (localtime ($nex_time))[6])) {
 		# If it does not acomplish the day of the week, go to the next day.
 		$nex_time += 86400;

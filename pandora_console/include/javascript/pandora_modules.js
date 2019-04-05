@@ -834,12 +834,10 @@ function add_macro_field(macro, row_model_id) {
   $("#" + row_id)
     .children()
     .eq(1)
-    .children()
     .attr("id", "text-" + macro_macro);
   $("#" + row_id)
     .children()
     .eq(1)
-    .children()
     .attr("name", macro_macro);
 
   macro_field_hide = false;
@@ -859,13 +857,11 @@ function add_macro_field(macro, row_model_id) {
     $("#" + row_id)
       .children()
       .eq(1)
-      .children()
       .attr("type", "password");
   }
   $("#" + row_id)
     .children()
     .eq(1)
-    .children()
     .val(macro_value);
 
   $("#" + row_id).show();
@@ -1120,4 +1116,91 @@ function delete_macro(num) {
   }
 
   // Do not decrease the macro counter or new macros may overlap existing ones!
+}
+
+function get_explanation_recon_script(id, id_rt, url) {
+  var xhrManager = function() {
+    var manager = {};
+
+    manager.tasks = [];
+
+    manager.addTask = function(xhr) {
+      manager.tasks.push(xhr);
+    };
+
+    manager.stopTasks = function() {
+      while (manager.tasks.length > 0) manager.tasks.pop().abort();
+    };
+
+    return manager;
+  };
+
+  var taskManager = new xhrManager();
+
+  // Stop old ajax tasks.
+  taskManager.stopTasks();
+
+  // Show the spinners.
+  $("#textarea_explanation").hide();
+  $("#spinner_layout").show();
+
+  var xhr = jQuery.ajax({
+    data: {
+      page: "enterprise/include/ajax/hostDevices.ajax",
+      get_explanation: 1,
+      id: id,
+      id_rt: id_rt
+    },
+    url: url,
+    type: "POST",
+    dataType: "text",
+    complete: function(xhr, textStatus) {
+      $("#spinner_layout").hide();
+    },
+    success: function(data, textStatus, xhr) {
+      $("#textarea_explanation").val(data);
+      $("#textarea_explanation").show();
+    },
+    error: function(xhr, textStatus, errorThrown) {
+      console.log(errorThrown);
+    }
+  });
+
+  taskManager.addTask(xhr);
+
+  // Delete all the macro fields.
+  $(".macro_field").remove();
+  $("#spinner_recon_script").show();
+
+  var xhr = jQuery.ajax({
+    data: {
+      page: "enterprise/include/ajax/hostDevices.ajax",
+      get_recon_script_macros: 1,
+      id: id,
+      id_rt: id_rt
+    },
+    url: url,
+    type: "POST",
+    dataType: "json",
+    complete: function(xhr, textStatus) {
+      $("#spinner_recon_script").hide();
+      forced_title_callback();
+    },
+    success: function(data, textStatus, xhr) {
+      if (data.array !== null) {
+        $("#hidden-macros").val(data.base64);
+
+        jQuery.each(data.array, function(i, macro) {
+          if (macro.desc != "") {
+            add_macro_field(macro, "table_recon-macro");
+          }
+        });
+      }
+    },
+    error: function(xhr, textStatus, errorThrown) {
+      console.log(errorThrown);
+    }
+  });
+
+  taskManager.addTask(xhr);
 }

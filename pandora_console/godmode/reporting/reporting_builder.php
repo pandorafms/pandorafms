@@ -117,10 +117,10 @@ if ($schedule_report != '') {
     $date = date(DATE_FORMAT);
     $time = date(TIME_FORMAT);
     $parameters[0] = get_parameter('id_schedule_report');
-    // $parameters[1] = db_get_value('schedule_email', 'treport', 'id_report', $id_report);
     $parameters[1] = get_parameter('schedule_email_address');
     $parameters[2] = get_parameter('schedule_subject', '');
     $parameters[3] = get_parameter('schedule_email', '');
+    $parameters[4] = get_parameter('report_type', '');
     $parameters['first_execution'] = strtotime($date.' '.$time);
 
     $values = [
@@ -141,7 +141,7 @@ if ($schedule_report != '') {
     echo '<br>';
 }
 
-// Other Checks for the edit the reports
+// Other Checks for the edit the reports.
 if ($idReport != 0) {
     $report = db_get_row_filter('treport', ['id_report' => $idReport]);
     $type_access_selected = reports_get_type_access($report);
@@ -293,7 +293,7 @@ switch ($action) {
 
                     $temp = [];
                     foreach ($items as $item) {
-                        // Remove the contents from the block to sort
+                        // Remove the contents from the block to sort.
                         if (array_search($item['id_rc'], $ids) === false) {
                             $temp[$item['order']] = $item['id_rc'];
                         }
@@ -1209,9 +1209,7 @@ switch ($action) {
                             break;
 
                             case 'netflow_area':
-                            case 'netflow_pie':
                             case 'netflow_data':
-                            case 'netflow_statistics':
                             case 'netflow_summary':
                                 $values['text'] = get_parameter('netflow_filter');
                                 $values['description'] = get_parameter('description');
@@ -1244,6 +1242,12 @@ switch ($action) {
                                 $values['lapse_calc'] = get_parameter('lapse_calc');
                                 $values['lapse'] = get_parameter('lapse');
                                 $values['visual_format'] = get_parameter('visual_format');
+                                $good_format = true;
+                            break;
+
+                            case 'nt_top_n':
+                                $values['period'] = get_parameter('period');
+                                $values['top_n_value'] = get_parameter('quantity');
                                 $good_format = true;
                             break;
 
@@ -1436,6 +1440,7 @@ switch ($action) {
                             case 'MTBF':
                             case 'MTTR':
                             case 'simple_baseline_graph':
+                            case 'nt_top_n':
                                 if ($label != '') {
                                     $style['label'] = $label;
                                 } else {
@@ -1576,9 +1581,7 @@ switch ($action) {
                             break;
 
                             case 'netflow_area':
-                            case 'netflow_pie':
                             case 'netflow_data':
-                            case 'netflow_statistics':
                             case 'netflow_summary':
                                 $values['text'] = get_parameter('netflow_filter');
                                 $values['description'] = get_parameter('description');
@@ -1611,6 +1614,12 @@ switch ($action) {
                                 $values['lapse_calc'] = get_parameter('lapse_calc');
                                 $values['lapse'] = get_parameter('lapse');
                                 $values['visual_format'] = get_parameter('visual_format');
+                                $good_format = true;
+                            break;
+
+                            case 'nt_top_n':
+                                $values['top_n_value'] = get_parameter('quantity');
+                                $values['period'] = get_parameter('period');
                                 $good_format = true;
                             break;
 
@@ -1809,6 +1818,7 @@ switch ($action) {
                             case 'MTBF':
                             case 'MTTR':
                             case 'simple_baseline_graph':
+                            case 'nt_top_n':
                                 if ($label != '') {
                                     $style['label'] = $label;
                                 } else {

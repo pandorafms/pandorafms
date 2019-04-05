@@ -375,12 +375,12 @@ if ($create_modules) {
                             $new_module_configuration_data .= "\nmodule_secname ".$snmp3_auth_user;
                             $new_module_configuration_data .= "\nmodule_seclevel ".$snmp3_security_level;
 
-                            if ($snmp3_security_level=='authNoPriv' || $snmp3_security_level=='authPriv') {
+                            if ($snmp3_security_level == 'authNoPriv' || $snmp3_security_level == 'authPriv') {
                                 $new_module_configuration_data .= "\nmodule_authpass ".$snmp3_auth_pass;
                                 $new_module_configuration_data .= "\nmodule_authproto ".$snmp3_auth_method;
                             }
 
-                            if ($snmp3_security_level=='authPriv') {
+                            if ($snmp3_security_level == 'authPriv') {
                                 $new_module_configuration_data .= "\nmodule_privproto ".$snmp3_privacy_method;
                                 $new_module_configuration_data .= "\nmodule_privpass ".$snmp3_privacy_pass;
                             }

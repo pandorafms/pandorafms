@@ -8794,7 +8794,14 @@ function api_set_alert_actions($id, $id2, $other, $trash1)
         }
 
         $firesMin = $other['data'][2];
+        if (!$firesMin) {
+            $firesMin = 0;
+        }
+
         $firesMax = $other['data'][3];
+        if (!$firesMax) {
+            $firesMax = 0;
+        }
 
         $values = [
             'id_alert_template_module' => $idAlertTemplateModule,

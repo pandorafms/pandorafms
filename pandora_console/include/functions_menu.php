@@ -1,21 +1,39 @@
 <?php
-
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the  GNU Lesser General Public License
-// as published by the Free Software Foundation; version 2
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-
 /**
- * @package    Include
+ * Auxiliary functions to manage menu.
+ *
+ * @category   Include
+ * @package    Pandora FMS
  * @subpackage Menu
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
  */
+
+// Begin.
+global $config;
+
+// Set variable to store menu type (classic or collapsed).
+if (!empty(get_parameter('menuType'))) {
+    $_SESSION['menu_type'] = get_parameter('menuType', 'classic');
+    return;
+}
 
 
 /**
@@ -75,7 +93,19 @@ function menu_print_menu(&$menu)
         }
 
         $submenu = false;
-        $classes = ['menu_icon'];
+
+        if ($config['menu_type'] == 'classic') {
+            $classes = [
+                'menu_icon',
+                'no_hidden_menu',
+            ];
+        } else {
+            $classes = [
+                'menu_icon',
+                'menu_icon_collapsed',
+            ];
+        }
+
         if (isset($main['sub'])) {
             $classes[] = '';
             $submenu = true;
@@ -374,8 +404,13 @@ function menu_print_menu(&$menu)
         $length = strlen(__($main['text']));
         $padding_top = ( $length >= 18) ? 6 : 12;
 
-        $output .= '<div id="title_menu" style="padding-top:'.$padding_top.'px; display:none;">'.$main['text'].'</div>';
-        // Add the notification ball if defined.
+        if ($config['menu_type'] == 'classic') {
+            $output .= '<div id="title_menu" class="title_menu_classic" style="padding-top:'.$padding_top.'px; display:none;">'.$main['text'].'</div>';
+        } else {
+            $output .= '<div id="title_menu" class="title_menu_collapsed" style="padding-top:'.$padding_top.'px; display:none;">'.$main['text'].'</div>';
+        }
+
+        // Add the notification ball if defined
         if (isset($main['notification'])) {
             $output .= '<div class="notification_ball">'.$main['notification'].'</div>';
         }

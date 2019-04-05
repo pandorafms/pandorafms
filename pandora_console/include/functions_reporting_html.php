@@ -271,21 +271,7 @@ function reporting_html_print_report($report, $mini=false, $report_info=1)
             break;
 
             case 'netflow_area':
-                reporting_html_graph($table, $item);
-            break;
-
-            case 'netflow_pie':
-                reporting_html_graph($table, $item);
-            break;
-
             case 'netflow_data':
-                reporting_html_graph($table, $item);
-            break;
-
-            case 'netflow_statistics':
-                reporting_html_graph($table, $item);
-            break;
-
             case 'netflow_summary':
                 reporting_html_graph($table, $item);
             break;
@@ -365,6 +351,10 @@ function reporting_html_print_report($report, $mini=false, $report_info=1)
 
             case 'SLA_monthly':
                 reporting_enterprise_html_SLA_monthly($table, $item, $mini);
+            break;
+
+            case 'nt_top_n':
+                reporting_html_nt_top_n($table, $item, $mini);
             break;
 
             case 'SLA_weekly':
@@ -549,10 +539,6 @@ function reporting_html_SLA($table, $item, $mini, $pdf=0)
 
             foreach ($item['data'] as $sla) {
                 if (isset($sla)) {
-                    $the_first_men_time = get_agent_first_time(
-                        io_safe_output($sla['agent'])
-                    );
-
                     // First_table.
                     $row = [];
                     $row[] = $sla['agent'];
@@ -914,6 +900,9 @@ function reporting_html_top_n($table, $item, $pdf=0)
 function reporting_html_event_report_group($table, $item, $pdf=0)
 {
     global $config;
+
+    $show_extended_events = $item['show_extended_events'];
+
     if ($item['total_events']) {
         $table1 = new stdClass();
         $table1->width = '99%';
@@ -1021,6 +1010,17 @@ function reporting_html_event_report_group($table, $item, $pdf=0)
             }
 
             array_push($table1->data, $data);
+
+            if ($show_extended_events == 1 && events_has_extended_info($event['id_evento'])) {
+                $extended_events = events_get_extended_events($event['id_evento']);
+
+                foreach ($extended_events as $extended_event) {
+                    $extended_data = [];
+
+                    $extended_data[] = "<td colspan='5'><font style='font-style: italic;'>".io_safe_output($extended_event['description'])."</font></td><td><font style='font-size: 6pt; font-style: italic;'>".date($config['date_format'], $extended_event['utimestamp']).'</font></td>';
+                    array_push($table1->data, $extended_data);
+                }
+            }
         }
 
         if ($pdf) {
@@ -1130,6 +1130,9 @@ function reporting_html_event_report_group($table, $item, $pdf=0)
 function reporting_html_event_report_module($table, $item, $pdf=0)
 {
     global $config;
+
+    $show_extended_events = $item['show_extended_events'];
+
     $show_summary_group = $item['show_summary_group'];
     if ($item['total_events']) {
         if (!empty($item['failed'])) {
@@ -1213,6 +1216,17 @@ function reporting_html_event_report_module($table, $item, $pdf=0)
                         }
 
                         $table1->data[] = $data;
+
+                        if ($show_extended_events == 1 && events_has_extended_info($event['id_evento'])) {
+                            $extended_events = events_get_extended_events($event['id_evento']);
+
+                            foreach ($extended_events as $extended_event) {
+                                $extended_data = [];
+
+                                $extended_data[] = "<td colspan='3'><font style='font-style: italic;'>".io_safe_output($extended_event['description'])."</font></td><td><font style='font-style: italic;'>".date($config['date_format'], $extended_event['utimestamp']).'</font></td>';
+                                array_push($table1->data, $extended_data);
+                            }
+                        }
                     }
                 }
 
@@ -1902,6 +1916,8 @@ function reporting_html_event_report_agent($table, $item, $pdf=0)
 {
     global $config;
 
+    $show_extended_events = $item['show_extended_events'];
+
     if ($item['total_events'] != 0) {
         $table1 = new stdClass();
         $table1->width = '99%';
@@ -1989,6 +2005,17 @@ function reporting_html_event_report_agent($table, $item, $pdf=0)
             }
 
             array_push($table1->data, $data);
+
+            if ($show_extended_events == 1 && events_has_extended_info($event['id_evento'])) {
+                $extended_events = events_get_extended_events($event['id_evento']);
+
+                foreach ($extended_events as $extended_event) {
+                    $extended_data = [];
+
+                    $extended_data[] = "<td colspan='4'><font style='font-style: italic;'>".io_safe_output($extended_event['description'])."</font></td><td><font style='font-size: 6pt; font-style: italic;'>".date($config['date_format'], $extended_event['utimestamp']).'</font></td>';
+                    array_push($table1->data, $extended_data);
+                }
+            }
         }
 
         if ($pdf) {
@@ -2964,10 +2991,6 @@ function reporting_html_availability($table, $item, $pdf=0)
         $table2->style[5] = 'text-align: right';
 
         foreach ($item['data'] as $row) {
-            $the_first_men_time = get_agent_first_time(
-                io_safe_output($row['agent'])
-            );
-
             $table_row = [];
             $table_row[] = $row['agent'];
             $table_row[] = $row['availability_item'];
@@ -3276,9 +3299,8 @@ function get_agent_first_time($agent_name)
     $id = agents_get_agent_id($agent_name, true);
 
     $utimestamp = db_get_all_rows_sql(
-        'SELECT utimestamp FROM tagente_datos WHERE id_agente_modulo IN 
-        (SELECT id_agente_modulo FROM tagente_modulo WHERE id_agente = '.$id.')
-        ORDER BY utimestamp ASC LIMIT 1'
+        'SELECT min(utimestamp) FROM tagente_datos WHERE id_agente_modulo IN 
+        (SELECT id_agente_modulo FROM tagente_modulo WHERE id_agente = '.$id.')'
     );
     $utimestamp = $utimestamp[0]['utimestamp'];
 
@@ -4734,6 +4756,65 @@ function reporting_get_event_histogram_meta($width)
     }
 
     return $event_graph;
+}
+
+
+/**
+ * Print network traffic data into top n tables
+ * (one for received data and another for sent)
+ *
+ * @param stdClass Table class to paint the report
+ * @param array Associative array with info about
+ * @param bool Unused
+ */
+function reporting_html_nt_top_n($table, $item, $mini)
+{
+    // Prepare the table
+    $table_top = new stdClass();
+    $table_top->cellpadding = 0;
+    $table_top->cellspacing = 0;
+    $table_top->width = '100%';
+    $table_top->class = 'databox data';
+    $table_top->cellpadding = 0;
+    $table_top->cellspacing = 0;
+    $table_top->width = '100%';
+    $table_top->class = 'databox data';
+    $table_top->head['host'] = __('Agent');
+    $table_top->head['bytes'] = __('Kilobytes');
+    $table_top->head['pkts'] = __('Packages');
+
+    // Build the table for sent packages
+    if (empty($item['data']['send'])) {
+        $table->data['send_title'] = '<h3>'.__('No network traffic sent data').'</h3>';
+    } else {
+        foreach ($item['data']['send'] as $s_item) {
+            $table_top->data[] = [
+                'host'  => $s_item['host'],
+                'bytes' => remove_right_zeros(number_format(($s_item['sum_bytes'] / 1024), $config['graph_precision'])),
+                'pkts'  => remove_right_zeros(number_format($s_item['sum_pkts'], $config['graph_precision'])),
+            ];
+        }
+
+        $table->data['send_title'] = '<h3>'.__('Network traffic sent').'</h3>';
+        $table->data['send'] = html_print_table($table_top, true);
+    }
+
+    // Reset the table and build the table for received packages
+    $table_top->data = [];
+    if (empty($item['data']['send'])) {
+        $table->data['recv_title'] = '<h3>'.__('No network traffic received data').'</h3>';
+    } else {
+        foreach ($item['data']['recv'] as $s_item) {
+            $table_top->data[] = [
+                'host'  => $s_item['host'],
+                'bytes' => remove_right_zeros(number_format(($s_item['sum_bytes'] / 1024), $config['graph_precision'])),
+                'pkts'  => remove_right_zeros(number_format($s_item['sum_pkts'], $config['graph_precision'])),
+            ];
+        }
+
+        $table->data['recv_title'] = '<h3>'.__('Network traffic received').'</h3>';
+        $table->data['recv'] = html_print_table($table_top, true);
+    }
 }
 
 

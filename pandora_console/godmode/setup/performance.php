@@ -536,6 +536,19 @@ $table->data[] = [
     ),
 ];
 
+
+$table->data[] = [
+    __('Max. days before delete old network matrix data'),
+    html_print_input_text(
+        'delete_old_network_matrix',
+        $config['delete_old_network_matrix'],
+        '',
+        5,
+        5,
+        true
+    ),
+];
+
 $table_other = new stdClass();
 $table_other->width = '100%';
 $table_other->class = 'databox filters';

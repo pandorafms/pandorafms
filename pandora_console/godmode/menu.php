@@ -24,15 +24,15 @@ $menu_godmode['class'] = 'godmode';
 
 if (check_acl($config['id_user'], 0, 'PM')) {
     $sub = [];
-    $sub['godmode/servers/discovery']['text'] = __('Discover');
-    $sub['godmode/servers/discovery']['id'] = 'Discover';
+    $sub['godmode/servers/discovery']['text'] = __('Discovery');
+    $sub['godmode/servers/discovery']['id'] = 'Discovery';
     $sub['godmode/servers/discovery']['subsecs'] = ['godmode/servers/discovery'];
 
     // Add to menu.
-    $menu_godmode['discover']['text'] = __('Discovery');
-    $menu_godmode['discover']['sec2'] = 'godmode/servers/discovery';
-    $menu_godmode['discover']['id'] = 'god-discovery';
-    $menu_godmode['discover']['sub'] = $sub;
+    $menu_godmode['discovery']['text'] = __('Discovery');
+    $menu_godmode['discovery']['sec2'] = 'godmode/servers/discovery';
+    $menu_godmode['discovery']['id'] = 'god-discovery';
+    $menu_godmode['discovery']['sub'] = $sub;
 }
 
 
@@ -225,14 +225,8 @@ if (check_acl($config['id_user'], 0, 'AW') || check_acl($config['id_user'], 0, '
     if (check_acl($config['id_user'], 0, 'PM')) {
         enterprise_hook('ha_cluster');
 
-        $sub['godmode/servers/manage_recontask']['text'] = __('Recon task');
-        $sub['godmode/servers/manage_recontask']['id'] = 'Recon task';
-
         $sub['godmode/servers/plugin']['text'] = __('Plugins');
         $sub['godmode/servers/plugin']['id'] = 'Plugins';
-
-        $sub['godmode/servers/recon_script']['text'] = __('Recon script');
-        $sub['godmode/servers/recon_script']['id'] = 'Recon script';
 
         enterprise_hook('export_target_submenu');
 

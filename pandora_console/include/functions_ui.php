@@ -1265,7 +1265,7 @@ function ui_print_alert_template_example($id_alert_template, $return=false, $pri
  *
  * @return string The help tip
  */
-function ui_print_help_icon($help_id, $return=false, $home_url='', $image='images/help.png', $is_relative=false)
+function ui_print_help_icon($help_id, $return=false, $home_url='', $image='images/help_green.png', $is_relative=false)
 {
     global $config;
 
@@ -2124,7 +2124,7 @@ function ui_print_session_action_icon($action, $return=false)
  *
  * @return string HTML code if return parameter is true.
  */
-function ui_print_help_tip($text, $return=false, $img='images/tip.png', $is_relative=false)
+function ui_print_help_tip($text, $return=false, $img='images/tip_help.png', $is_relative=false)
 {
     $output = '<a href="javascript:" class="tip" >'.html_print_image(
         $img,
@@ -2764,7 +2764,8 @@ function ui_print_page_header(
     $modal=false,
     $message='',
     $numChars=GENERIC_SIZE_TEXT,
-    $alias=''
+    $alias='',
+    $breadcrumbs=''
 ) {
     $title = io_safe_input_html($title);
     if (($icon == '') && ($godmode == true)) {
@@ -2777,15 +2778,21 @@ function ui_print_page_header(
 
     if ($godmode == true) {
         $type = 'view';
-        $type2 = 'menu_tab_frame_view';
+        $type2 = (empty($breadcrumbs)) ? 'menu_tab_frame_view' : 'menu_tab_frame_view_bc';
         $separator_class = 'separator';
     } else {
         $type = 'view';
-        $type2 = 'menu_tab_frame_view';
+        $type2 = (empty($breadcrumbs)) ? 'menu_tab_frame_view' : 'menu_tab_frame_view_bc';
         $separator_class = 'separator_view';
     }
 
-    $buffer = '<div id="'.$type2.'" style=""><div id="menu_tab_left">';
+    $buffer = '<div id="'.$type2.'" style="">';
+
+    if (!empty($breadcrumbs)) {
+        $buffer .= '<div class="breadcrumbs_container">'.$breadcrumbs.'</div>';
+    }
+
+    $buffer .= '<div id="menu_tab_left">';
 
     $buffer .= '<ul class="mn"><li class="'.$type.'">';
 
@@ -2808,7 +2815,7 @@ function ui_print_page_header(
 
     if (!is_metaconsole()) {
         if ($help != '') {
-            $buffer .= "<div class='head_help' style='float: right; margin-top: -2px !important;'>".ui_print_help_icon($help, true, '', 'images/help_w.png').'</div>';
+            $buffer .= "<div class='head_help head_tip'>".ui_print_help_icon($help, true, '', 'images/help_g.png').'</div>';
         }
     }
 

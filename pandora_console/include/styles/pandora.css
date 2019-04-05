@@ -400,14 +400,14 @@ th {
  * ---------------------------------------------------------------------
  */
 div#page {
-  background: #fff;
+  background: #fbfbfb;
   background-image: none;
   clear: both;
   width: auto;
-  margin-top: 20px !important;
+  padding-top: 5px !important;
   padding-left: 60px; /* This is overwritten by the classic menu (215px)*/
-  margin-right: 35px;
-  margin-left: 35px;
+  padding-right: 35px;
+  margin-left: 20px;
 }
 
 body.pure {
@@ -647,11 +647,10 @@ a.footer span {
 }
 
 div#foot {
-  padding-top: 8px;
-  padding-bottom: 5px;
+  padding-top: 10px;
+  padding-bottom: 10px;
   text-align: center;
   background: #343434;
-  height: 30px;
   clear: both;
   width: auto;
 }
@@ -659,7 +658,7 @@ div#foot {
 div#foot a,
 div#foot span {
   font-family: "Open Sans", sans-serif;
-  font-size: 8.5pt;
+  font-size: 8pt;
   color: #9ca4a6;
 }
 
@@ -1255,19 +1254,26 @@ div.title_line {
  */
 #menu_tab_frame,
 #menu_tab_frame_view {
-  display: block !important;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
   border-bottom: 2px solid #82b92e;
-  max-height: 31px;
-  min-height: 31px;
+  max-height: 50px;
+  min-height: 50px;
   width: 100%;
   padding-right: 0px;
   margin-left: 0px !important;
   margin-bottom: 20px;
-  height: 31px;
+  height: 50px;
+  box-sizing: border-box;
+  background-color: #fafafa;
+  border-top-right-radius: 7px;
+  border-top-left-radius: 7px;
+  box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.1);
 }
 
 #menu_tab {
-  margin: 0px 0px 0px 0px !important;
+  margin-right: 10px;
 }
 
 #menu_tab .mn,
@@ -1299,6 +1305,7 @@ div.title_line {
   text-decoration: none;
   padding: 0px;
   margin: 0px;
+  padding-top: 6px;
 }
 #menu_tab li.nomn:hover a,
 #menu_tab li:hover ul a:hover {
@@ -1308,7 +1315,7 @@ div.title_line {
 #menu_tab li.nomn,
 #menu_tab li.nomn_high {
   min-width: 30px;
-  height: 28px;
+  height: 29px;
   margin-top: 0;
 }
 
@@ -1367,52 +1374,33 @@ div#agent_wizard_subtabs {
  */
 /* TAB TITLE */
 #menu_tab_left {
-  margin-left: 0px !important;
+  max-width: 60%;
+  margin-right: 20px;
 }
 
 #menu_tab_left .mn,
 #menu_tab_left ul,
 #menu_tab_left .mn ul {
-  background-color: #000;
-  color: #fff;
-  font-weight: bold;
+  color: #343434;
   padding: 0px 0px 0px 0px;
   list-style: none;
   margin: 0px 0px 0px 0px;
 }
-#menu_tab_left .mn li {
-  float: left;
-  position: relative;
-  height: 26px;
-  max-height: 26px;
-}
+
 #menu_tab_left .mn li a {
   display: block;
   text-decoration: none;
 }
 #menu_tab_left li.view a {
-  color: #fff;
-  font-weight: bold;
-  font-weight: 100;
-  line-height: 18px;
+  color: #343434;
   display: none;
 }
 
 #menu_tab_left li.view {
-  background: #82b92e;
-  max-width: 60%;
-  min-width: 30%;
-  padding: 5px 5px 0px;
-  text-align: center;
-  -moz-border-top-right-radius: 3px;
-  -webkit-border-top-right-radius: 3px;
-  border-top-right-radius: 3px;
-
-  -moz-border-top-left-radius: 3px;
-  -webkit-border-top-left-radius: 3px;
-  border-top-left-radius: 3px;
   margin-left: 0px !important;
   overflow-y: hidden;
+  padding-left: 10px;
+  padding-bottom: 4px;
 }
 
 #menu_tab_left li.view img.bottom {
@@ -1422,13 +1410,9 @@ div#agent_wizard_subtabs {
 
 #menu_tab_left li a,
 #menu_tab_left li span {
-  text-transform: uppercase;
-  color: #fff;
-  font-size: 100%;
-  line-height: 20px;
-  letter-spacing: 0px;
-  font-family: verdana, sans-serif;
-  font-weight: bold;
+  color: #343434;
+  font-size: 16pt;
+  line-height: 16pt;
 }
 
 /*
@@ -2037,10 +2021,22 @@ div#pandora_logo_header {
 
 #header_table_inner {
   height: 60px;
+  min-width: 790px;
   /*width: 100%;*/
   display: flex;
   align-items: center;
   justify-content: space-between;
+}
+
+.header_title {
+  font-weight: 600;
+  font-size: 10.5pt;
+  font-family: "lato-bolder", "Open Sans", sans-serif !important;
+}
+
+.header_subtitle {
+  font-size: 10pt;
+  font-family: "lato-bolder", "Open Sans", sans-serif !important;
 }
 
 #header_table_inner a,
@@ -2048,10 +2044,13 @@ div#pandora_logo_header {
   font-family: "Open Sans", sans-serif;
 }
 
+#header_table_inner a:hover {
+  text-decoration: none;
+}
+
 .header_left {
   display: flex;
-  justify-content: flex-start;
-  align-items: center;
+  flex-direction: column;
 }
 
 .header_center {
@@ -2066,64 +2065,40 @@ div#pandora_logo_header {
   align-items: center;
 }
 
-.header_left > div,
-.header_center > div {
-  padding-right: 15px;
-}
-
 .header_right > div {
   padding-left: 15px;
 }
-
-#header_table_inner #header_user span {
-  color: #777;
-}
-
 .header_left img,
 .header_center img,
 .header_right img {
   vertical-align: middle;
 }
 
+#header_chat {
+  padding-left: 0;
+  padding-right: 15px;
+}
+
+#header_autorefresh {
+  padding-left: 0;
+}
+
+#header_table_inner #header_user span {
+  color: #777;
+  align-self: center;
+}
+
+#header_table_inner #header_user a {
+  display: flex;
+  justify-content: center;
+}
+
 #header_user img {
   padding-right: 5px;
 }
 
-#header_alert,
-#header_message {
-  padding-right: 0px;
-}
-
-#header_alert p,
-#header_message p {
-  border-radius: 50%;
-  padding: 0;
-  margin: 0;
-  width: 15px;
-  position: relative;
-  height: 15px;
-  top: -5px;
-  text-align: center;
-  display: inline-block;
-  vertical-align: super;
-}
-
-#header_alert p {
-  background-color: #ec4e1b;
-  left: -12px;
-}
-
-#header_message p {
-  background-color: #82b92e;
-  left: -9px;
-}
-
-#header_alert span,
-#header_message span {
-  color: #fff;
-  font-size: 7pt;
-  font-weight: 600;
-  font-family: "Open Sans", sans-serif;
+div#header_autorefresh_counter {
+  padding-left: 0;
 }
 
 .autorefresh_disabled {
@@ -2135,10 +2110,21 @@ a.autorefresh_txt,
   color: #1c1c1c;
   font-size: 8.5pt;
 }
-/*
-#combo_refr select {
-  margin-right: 8px;
-}*/
+
+@media screen and (min-width: 1024px) and (max-width: 1200px) {
+  #header_searchbar input.search_input {
+    width: 135px;
+  }
+  .header_right > div {
+    padding-left: 10px;
+  }
+}
+
+@media screen and (max-width: 1300px) {
+  .header_right > div {
+    padding-left: 10px;
+  }
+}
 
 .disabled_module {
   color: #aaa;
@@ -2855,6 +2841,11 @@ a.tip > img {
   margin-right: 2px;
 }
 
+.head_tip {
+  display: inline;
+  margin-left: 10px;
+}
+
 /*
  * ---------------------------------------------------------------------
  * - SEARCH BOX in header											-
@@ -2868,9 +2859,8 @@ input.search_input {
   background-color: #f2f6f7 !important;
   padding: 0px;
   margin: 0;
-  width: 200px;
-  height: 35px;
-  margin-bottom: 5px;
+  width: 250px;
+  height: 30px;
   margin-left: 2px;
   padding-left: 15px;
   padding-right: 40px;
@@ -3264,7 +3254,7 @@ div.div_groups_status {
 }
 
 #title_menu {
-  color: #9ca4a6;
+  color: #b9b9b9;
   float: right;
   width: 72%;
   letter-spacing: 0pt;
@@ -3280,26 +3270,26 @@ div.div_groups_status {
 
 #menu_tab li.nomn,
 #menu_tab li.nomn_high {
-  background-color: #fff;
-  padding-right: 3px;
-  padding-left: 3px;
+  padding-right: 8px;
+  padding-left: 8px;
+  padding-top: 6px;
   font-weight: bold;
   text-decoration: none;
   font-size: 14px;
-  border-left: 2px solid #e2e2e2;
   margin-top: 0;
   min-width: 30px;
-  height: 28px;
+  height: 40px;
 }
 
 #menu_tab li:hover {
-  background-color: #ececec;
+  box-shadow: inset 0px 4px #82b92e;
 }
 
 #menu_tab li.nomn_high,
 #menu_tab li.nomn_high span {
   color: #fff;
-  background-color: #ececec;
+  box-shadow: inset 0px 4px #82b92e;
+  background-color: #fff;
 }
 
 #menu_tab li.nomn img,
@@ -4332,6 +4322,18 @@ form ul.form_flex li ul li {
   text-align: center;
 }
 
+.div-v-centered {
+  display: flex;
+  align-items: center;
+}
+
+.div-v-centered > form > input[type="image"] {
+  margin: 0;
+  padding: 0;
+  width: 14px;
+  padding-left: 5px;
+}
+
 .pandora_upper {
   text-transform: uppercase;
 }
@@ -4402,6 +4404,13 @@ tr:first-child > td > a.up_arrow {
   margin-right: 5px;
 }
 
+.button-as-link {
+  text-decoration: underline;
+  background: none !important;
+  border: none;
+  padding: 0 !important;
+}
+
 /*
  * ---------------------------------------------------------------------
  * - MESSAGE LIST POPUP 											-
@@ -4422,14 +4431,19 @@ div#dialog_messages table th:last-child {
  */
 
 .notification-ball {
-  border: #343434 solid 2px;
   border-radius: 50%;
-  width: 20px;
-  height: 20px;
+  width: 24px;
+  height: 24px;
   display: flex;
   justify-content: center;
   align-items: center;
   cursor: pointer;
+  color: #fff;
+  font-weight: bold;
+}
+
+.notification-ball.notification-ball-new-messages:hover {
+  box-shadow: 0 0 3px #888;
 }
 
 .notification-ball-no-messages {
@@ -4445,7 +4459,7 @@ div#dialog_messages table th:last-child {
   border: #a5a5a5 solid 1px;
   z-index: 900000;
   position: absolute;
-  width: 400px;
+  width: 550px;
   margin-top: -5px;
   border-radius: 5px;
 }
@@ -4459,8 +4473,7 @@ div#dialog_messages table th:last-child {
   border-width: 12px;
   border-style: solid;
   bottom: 100%;
-  left: 78%;
-  left: calc(78% - 2px);
+  left: calc(58% - 7px);
   margin-left: -12px;
   border-bottom-color: white;
 }
@@ -4748,4 +4761,273 @@ input:checked + .p-slider:before {
   background: url("../../images/to_top_menu_hover.png") no-repeat center;
   background-color: #fff;
   border: 2px solid #82b92e;
+}
+
+/* New white rounded boxes */
+.white_box {
+  background-color: #fff;
+  border: 1px solid #f3f3f3;
+  border-radius: 5px;
+  padding: 20px 50px;
+}
+
+/*
+ * ---------------------------------------------------------------------
+ * - User edit
+ * ---------------------------------------------------------------------
+ */
+
+#user_form * {
+  color: #4d4d4d;
+}
+
+#user_form {
+  width: 100%;
+}
+
+#user_form a.tip img {
+  margin-left: 8px;
+}
+
+#edit_user_profiles {
+  margin-top: 40px;
+  margin-bottom: 30px;
+}
+
+#edit_user_profiles table {
+  margin-bottom: 0 !important;
+}
+
+.user_edit_first_row,
+.user_edit_second_row {
+  display: flex;
+}
+
+.user_edit_first_row,
+.user_edit_second_row {
+  margin-bottom: 20px;
+}
+
+.edit_user_info {
+  width: 58%;
+  margin-right: 20px;
+  display: flex;
+  align-items: center;
+}
+
+.edit_user_info_left {
+  width: 25%;
+  margin-right: 50px;
+  text-align: center;
+}
+
+.edit_user_info_right {
+  width: 75%;
+}
+
+.edit_user_info_right input {
+  background-color: transparent !important;
+  border: none;
+  border-radius: 0 !important;
+  border-bottom: 1px solid #343434;
+  padding: 10px 0px 2px 35px;
+  box-sizing: border-box;
+  background-repeat: no-repeat;
+  background-position: left bottom 2px;
+  width: 100%;
+  margin-bottom: 4px;
+}
+
+.edit_user_info_right input:focus {
+  font-weight: bold;
+}
+
+.edit_user_info_right #fullname {
+  background-image: url("../../images/user_name.png");
+}
+
+.edit_user_info_right #email {
+  background-image: url("../../images/user_email.png");
+}
+
+.edit_user_info_right #phone {
+  background-image: url("../../images/user_phone.png");
+}
+
+.edit_user_info_right #password_new,
+.edit_user_info_right #password_conf {
+  background-image: url("../../images/user_password.png");
+}
+
+.edit_user_autorefresh {
+  width: 42%;
+}
+
+.edit_user_options {
+  width: 50%;
+  margin-right: 20px;
+  padding-right: 50px;
+}
+
+.edit_user_options #text-block_size {
+  background-color: transparent !important;
+  border: none;
+  border-radius: 0 !important;
+  border-bottom: 1px solid #343434;
+  padding: 0px 0px 0px 10px;
+}
+
+.edit_user_options input#text-block_size:disabled {
+  border-bottom-color: #848484;
+  color: #848484;
+}
+
+.edit_user_timezone {
+  width: 50%;
+  padding-left: 50px;
+}
+
+.edit_user_timezone #zonepicker {
+  width: 100%;
+  height: 270px;
+}
+
+.edit_user_comments #textarea_comments {
+  background-color: #fbfbfb !important;
+  padding-left: 10px;
+}
+
+.edit_user_labels {
+  color: #343434 !important;
+  font-weight: bold;
+  padding-right: 10px;
+  margin: 0px 0px 5px 0px;
+}
+
+.label_select,
+.label_select_simple {
+  margin-bottom: 15px;
+}
+
+.label_select_simple .edit_user_labels {
+  margin-bottom: 0;
+  display: inline;
+}
+
+.edit_user_options .label_select_simple {
+  display: flex;
+  align-items: center;
+}
+
+.edit_user_options .label_select_simple .p-switch {
+  margin-right: 5px;
+  margin-left: 10px;
+}
+
+.user_edit_first_row .edit_user_autorefresh > div:last-child,
+.user_edit_first_row .edit_user_info_left > div:last-child,
+.user_edit_first_row .edit_user_info_right > div:last-child,
+.user_edit_second_row .edit_user_options > div:last-child {
+  margin-bottom: 0px !important;
+}
+
+.user_avatar {
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.autorefresh_select {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 15px;
+}
+
+.autorefresh_select_text {
+  margin: 0px 0px 5px 0px;
+}
+
+#right_autorefreshlist {
+  margin-bottom: 10px;
+}
+
+#autorefresh_list_out,
+#autorefresh_list {
+  text-align: center;
+}
+
+select#autorefresh_list_out[multiple] option:checked,
+select#autorefresh_list[multiple] option:checked {
+  background: #82b92e linear-gradient(0deg, #82b92e 0%, #82b92e 100%);
+  color: #fff !important;
+}
+
+select#autorefresh_list_out option:checked,
+select#autorefresh_list option:checked {
+  background-color: #82b92e;
+  color: #fff !important;
+}
+
+select#autorefresh_list_out > option:hover,
+select#autorefresh_list > option:hover {
+  background-color: #cbcbcb;
+}
+
+select#autorefresh_list_out:-internal-list-box,
+select#autorefresh_list:-internal-list-box {
+  border: none;
+}
+
+.autorefresh_select .autorefresh_select_list_out,
+.autorefresh_select .autorefresh_select_list {
+  width: 45%;
+}
+
+.autorefresh_select .autorefresh_select_arrows {
+  width: 10%;
+  text-align: center;
+}
+
+.autorefresh_select_arrows a {
+  display: block;
+}
+
+.edit_user_autorefresh select,
+.user_edit_second_row select {
+  width: 100%;
+}
+
+.edit_user_button {
+  margin-top: 20px;
+  width: 100%;
+  text-align: right;
+}
+
+#user-notifications-wrapper {
+  width: 100%;
+  box-sizing: border-box;
+  color: #4d4d4d;
+}
+
+/* This is to use divs like tables */
+.table_div {
+  display: table;
+}
+.table_thead,
+.table_tbody {
+  display: table-row;
+}
+.table_th {
+  font-weight: bold;
+}
+.table_th,
+.table_td {
+  display: table-cell;
+  vertical-align: middle;
+  padding: 10px;
+}
+/* Tables with 3 columns */
+.table_three_columns .table_th,
+.table_three_columns .table_td {
+  width: 33%;
 }

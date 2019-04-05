@@ -469,10 +469,11 @@ sub PandoraFMS::Recon::Base::create_agent($$) {
 		# Are we filtering hosts by TCP port?
 		return if ($self->{'recon_ports'} ne '' && $self->tcp_scan($device) == 0);
 		my $location = get_geoip_info($self->{'pa_config'}, $device);
-		$agent_id = pandora_create_agent($self->{'pa_config'}, $self->{'pa_config'}->{'servername'}, $host_name, $device,
-			$self->{'group_id'}, 0, $id_os,
-			'', 300, $self->{'dbh'}, undef,
-			$location->{'longitude'}, $location->{'latitude'}
+		$agent_id = pandora_create_agent(
+			$self->{'pa_config'}, $self->{'pa_config'}->{'servername'},
+			$host_name, $device, $self->{'group_id'}, 0, $id_os,
+			'', 300, $self->{'dbh'}, undef, $location->{'longitude'},
+			$location->{'latitude'}
 		);
 		return undef unless defined ($agent_id) and ($agent_id > 0);
 
@@ -833,7 +834,17 @@ sub PandoraFMS::Recon::Base::wmi_module {
 sub PandoraFMS::Recon::Base::update_progress ($$) {
 	my ($self, $progress) = @_;
 
-	db_do ($self->{'dbh'}, 'UPDATE trecon_task SET utimestamp = ?, status = ? WHERE id_rt = ?', time (), $progress, $self->{'task_id'});
+	my $stats = {};
+	if (defined($self->{'summary'}) && $self->{'summary'} ne '') {
+		$stats->{'summary'} = $self->{'summary'};
+	}
+	$stats->{'step'} = $self->{'step'};
+	$stats->{'c_network_name'} = $self->{'c_network_name'};
+	$stats->{'c_network_percent'} = $self->{'c_network_percent'};
+
+	# Store progress, last contact and overall status.
+	db_do ($self->{'dbh'}, 'UPDATE trecon_task SET utimestamp = ?, status = ?, summary = ? WHERE id_rt = ?',
+		time (), $progress, encode_json($stats), $self->{'task_id'});
 }
 
 1;

@@ -1,23 +1,29 @@
 <?php
 
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation for version 2.
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-// Load global vars
+/**
+ * Pandora FMS - http://pandorafms.com
+ * ==================================================
+ * Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * Load global vars
+
+ * @package    category
+ * @subpackage category
+ */
+
 global $config;
 
 // Includes.
 require_once $config['homedir'].'/include/functions_notifications.php';
 
-// Load the header
+// Load the header.
 require $config['homedir'].'/operation/users/user_edit_header.php';
 
 if (get_parameter('change_label', 0)) {
@@ -41,33 +47,29 @@ if (get_parameter('change_label', 0)) {
     return;
 }
 
-// User notification table. It is just a wrapper.
-$table_content = new StdClass();
-$table_content->data = [];
-$table_content->width = '100%';
-$table_content->id = 'user-notifications-wrapper';
-$table_content->class = 'databox filters';
-$table_content->size[0] = '33%';
-$table_content->size[1] = '33%';
-$table_content->size[2] = '33%';
 
-// Print the header.
-$table_content->data[] = [
-    '',
-    __('Enable'),
-    __('Also receive an email'),
-];
+echo '<div id="user-notifications-wrapper" class="white_box table_div table_three_columns">
+        <div class="table_thead">
+            <div class="table_th"></div>
+            <div class="table_th">'.__('Enable').'</div>
+            <div class="table_th">'.__('Also receive an email').'</div>
+        </div>';
 
-$sources = notifications_get_all_sources();
+        $sources = notifications_get_all_sources();
 foreach ($sources as $source) {
-    $table_content->data[] = [
+    echo '<div class="table_tbody">';
+    $table_content = [
         $source['description'],
         notifications_print_user_switch($source, $id, 'enabled'),
         notifications_print_user_switch($source, $id, 'also_mail'),
     ];
+    echo '<div class="table_td">'.$source['description'].'</div>';
+    echo '<div class="table_td">'.notifications_print_user_switch($source, $id, 'enabled').'</div>';
+    echo '<div class="table_td">'.notifications_print_user_switch($source, $id, 'also_mail').'</div>';
+    echo '</div>';
 }
 
-html_print_table($table_content);
+echo '</div>';
 
 // Print id user to handle it on js.
 html_print_input_hidden('id_user', $id);

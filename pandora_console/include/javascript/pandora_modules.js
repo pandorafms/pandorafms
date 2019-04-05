@@ -420,7 +420,12 @@ function configure_modules_form() {
           "value",
           data["min_ff_event_critical"] == 0 ? 0 : data["min_ff_event_critical"]
         );
-        $("#checkbox-ff_type").prop("checked", data["ff_type"]);
+
+        if (data["ff_type"] != 0) {
+          $("#checkbox-ff_type").prop("checked", 1);
+        } else {
+          $("#checkbox-ff_type").prop("checked", 0);
+        }
 
         // Shows manual input if post_process field is setted
         if (data["post_process"] != 0) {

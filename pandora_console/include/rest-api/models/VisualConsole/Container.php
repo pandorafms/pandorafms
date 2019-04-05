@@ -201,7 +201,7 @@ final class Container extends Model
      *
      * @return array
      */
-    public static function getItemsFromDB(int $id_layout): array
+    public static function getItemsFromDB(int $id_layout): string
     {
         $layout_items = db_get_all_rows_filter('tlayout_data', ['id_layout' => $id_layout]);
         if (!empty($layout_items) === true) {
@@ -220,12 +220,6 @@ final class Container extends Model
                     case SIMPLE_VALUE_MAX:
                     case SIMPLE_VALUE_MIN:
                     case SIMPLE_VALUE_AVG:
-                        $value['value'] = visual_map_get_simple_value(
-                            $value['type'],
-                            $value['id_agente_modulo'],
-                            $value['period']
-                        );
-
                         array_push(
                             $array_items,
                             (string) Items\SimpleValue::fromArray($value)
@@ -319,7 +313,7 @@ final class Container extends Model
             }
         }
 
-        return $array_items;
+        return json_encode($array_items);
     }
 
 

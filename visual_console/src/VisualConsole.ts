@@ -76,6 +76,9 @@ export function visualConsolePropsDecoder(
 // TODO: Document.
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 function itemInstanceFrom(data: UnknownObject) {
+  if (typeof data === "string") {
+    data = JSON.parse(data);
+  }
   const type = parseIntOr(data.type, null);
   if (type == null) throw new TypeError("missing item type.");
 

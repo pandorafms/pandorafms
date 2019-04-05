@@ -141,8 +141,45 @@ if (!is_metaconsole()) {
 use Models\VisualConsole\Container;
 
 $container = (string) Container::fromArray($layout);
-$items = Container::getItemsFromDB($id_layout, $config['homedir']);
+$items = Container::getItemsFromDB($id_layout);
 
-hd($config['homedir']);
+echo '<div id="visual-console-container"></div>';
 
-hd($items);
+$dir = $config['homedir'].'/include/visual-console/';
+if (is_dir($dir)) {
+    $dh = opendir($dir);
+    if ($dh) {
+        while (($file = readdir($dh)) !== false) {
+            if ($file !== '.' && $file !== '..') {
+                preg_match('/.*.js$/', $file, $match_js, PREG_OFFSET_CAPTURE);
+                if (!empty($match_js)) {
+                    echo '<script type="text/javascript"
+                    src="'.ui_get_full_url(false, false, false, false).'include/visual-console/'.$match_js[0][0].'"></script>';
+                    continue;
+                }
+
+                preg_match('/.*.css$/', $file, $match_css, PREG_OFFSET_CAPTURE);
+                if (!empty($match_css)) {
+                    echo '<link rel="stylesheet" type="text/css" media="screen"
+                    href="'.ui_get_full_url(false, false, false, false).'include/visual-console/'.$match_css[0][0].'" />';
+                }
+            }
+        }
+
+        closedir($dh);
+    }
+}
+
+echo '<script type="text/javascript">';
+    echo 'var container = document.getElementById("visual-console-container");';
+    echo 'var props = '.$container.';';
+    echo 'var items = '.$items.';';
+echo '</script>';
+
+?>
+<script type="text/javascript">
+    $(document).ready(function () {
+        var visualConsole = new VisualConsole(container, props, items);
+    });
+</script>
+

@@ -1468,10 +1468,10 @@ sub db_scan($) {
 			call('message', 'Cannot connect to target ' . $target, 3);
 			$self->{'summary'}->{'not_alive'} += 1;
 			push @modules, {
-				name => 'mysql_connection',
+				name => $type . ' connection',
 				type => 'generic_proc',
 				data => 0,
-				description => 'MySQL availability'
+				description => $type . ' availability'
 			};
 
 		} else {
@@ -1481,10 +1481,10 @@ sub db_scan($) {
 			$self->{'summary'}->{'alive'} += 1;
 
 			push @modules, {
-				name => 'mysql_connection',
+				name => $type . ' connection',
 				type => 'generic_proc',
 				data => 1,
-				description => 'MySQL availability'
+				description => $type . ' availability'
 			};
 
 			# Analyze.
@@ -1527,11 +1527,12 @@ sub db_scan($) {
 		}
 
 		# Put engine agent at the beginning of the list.
+		my $version = $dbObj->get_version();
 		unshift @data,{
 			'agent_data' => {
 				'agent_name' => $dbObj->get_agent_name(),
 				'os' => $type,
-				'os_version' => 'Discovery',
+				'os_version' => (defined($version) ? $version : 'Discovery'),
 				'interval' => $self->{'task_data'}->{'interval_sweep'},
 				'id_group' => $self->{'task_data'}->{'id_group'},
 				'address' => $dbObj->get_host(),

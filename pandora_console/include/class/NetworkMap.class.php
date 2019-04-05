@@ -1616,6 +1616,16 @@ class NetworkMap
 
             if (is_array($node['style']) === false) {
                 $node['style'] = json_decode($node['style'], true);
+
+                // Add styles.
+                if (isset($source_data['style']) === true
+                    && is_array($source_data['style']) === true
+                ) {
+                    $node['style'] = array_merge(
+                        $node['style'],
+                        $source_data['style']
+                    );
+                }
             }
 
             // Propagate styles.
@@ -2722,6 +2732,7 @@ class NetworkMap
         }
 
         $this->nodesJS = $this->nodesToJS($nodes);
+
         $output .= 'networkmap.nodes = ('.json_encode($this->nodesJS).");\n";
 
         // Clean.

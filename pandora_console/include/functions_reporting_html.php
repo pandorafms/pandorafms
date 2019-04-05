@@ -2907,7 +2907,6 @@ function reporting_html_availability($table, $item, $pdf=0)
         io_safe_output($style),
         true
     );
-
     $same_agent_in_resume = '';
 
     global $config;
@@ -2927,32 +2926,62 @@ function reporting_html_availability($table, $item, $pdf=0)
             $table1->head[1] = __('Module');
         }
 
-        $table1->head[2] = __('Total time');
-        $table1->head[3] = __('Time failed');
-        $table1->head[4] = __('Time OK');
-        $table1->head[5] = __('Time Uknown');
-        $table1->head[6] = __('Time Not Init Module');
-        $table1->head[7] = __('Time Downtime');
+        if ($item['fields']['total_time']) {
+            $table1->head[2] = __('Total time');
+        } else {
+            $table1->head[2] = __('');
+        }
+
+        if ($item['fields']['time_failed']) {
+            $table1->head[3] = __('Time failed');
+        } else {
+            $table1->head[3] = __('');
+        }
+
+        if ($item['fields']['time_in_ok_status']) {
+            $table1->head[4] = __('Time OK');
+        } else {
+            $table1->head[4] = __('');
+        }
+
+        if ($item['fields']['time_in_unknown_status']) {
+            $table1->head[5] = __('Time Unknown');
+        } else {
+            $table1->head[5] = __('');
+        }
+
+        if ($item['fields']['time_of_not_initialized_module']) {
+            $table1->head[6] = __('Time Not Init Module');
+        } else {
+            $table1->head[6] = __('');
+        }
+
+        if ($item['fields']['time_of_downtime']) {
+            $table1->head[7] = __('Time Downtime');
+        } else {
+            $table1->head[7] = __('');
+        }
+
         $table1->head[8] = __('% Ok');
 
         $table1->headstyle = [];
         $table1->headstyle[0]  = 'text-align: left';
         $table1->headstyle[1]  = 'text-align: left';
-        $table1->headstyle[2]  = 'text-align: right';
-        $table1->headstyle[3]  = 'text-align: right';
-        $table1->headstyle[4]  = 'text-align: right';
-        $table1->headstyle[5]  = 'text-align: right';
-        $table1->headstyle[6]  = 'text-align: right';
+        $table1->headstyle[2]  = 'text-align: center';
+        $table1->headstyle[3]  = 'text-align: center';
+        $table1->headstyle[4]  = 'text-align: center';
+        $table1->headstyle[5]  = 'text-align: center';
+        $table1->headstyle[6]  = 'text-align: center';
         $table1->headstyle[7]  = 'text-align: right';
         $table1->headstyle[8]  = 'text-align: right';
 
         $table1->style[0]  = 'text-align: left';
         $table1->style[1]  = 'text-align: left';
-        $table1->style[2]  = 'text-align: right';
-        $table1->style[3]  = 'text-align: right';
-        $table1->style[4]  = 'text-align: right';
-        $table1->style[5]  = 'text-align: right';
-        $table1->style[6]  = 'text-align: right';
+        $table1->style[2]  = 'text-align: center';
+        $table1->style[3]  = 'text-align: center';
+        $table1->style[4]  = 'text-align: center';
+        $table1->style[5]  = 'text-align: center';
+        $table1->style[6]  = 'text-align: center';
         $table1->style[7]  = 'text-align: right';
         $table1->style[8]  = 'text-align: right';
 
@@ -2970,10 +2999,29 @@ function reporting_html_availability($table, $item, $pdf=0)
             $table2->head[1] = __('Module');
         }
 
-        $table2->head[2] = __('Total checks');
-        $table2->head[3] = __('Checks failed');
-        $table2->head[4] = __('Checks OK');
-        $table2->head[5] = __('Checks Uknown');
+        if ($item['fields']['total_checks']) {
+            $table2->head[2] = __('Total checks');
+        } else {
+            $table2->head[2] = __('');
+        }
+
+        if ($item['fields']['checks_failed']) {
+            $table2->head[3] = __('Checks failed');
+        } else {
+            $table2->head[3] = __('');
+        }
+
+        if ($item['fields']['checks_in_ok_status']) {
+            $table2->head[4] = __('Checks OK');
+        } else {
+            $table2->head[4] = __('');
+        }
+
+        if ($item['fields']['unknown_checks']) {
+            $table2->head[5] = __('Checks Uknown');
+        } else {
+            $table2->head[5] = __('');
+        }
 
         $table2->headstyle = [];
         $table2->headstyle[0] = 'text-align: left';
@@ -2995,69 +3043,97 @@ function reporting_html_availability($table, $item, $pdf=0)
             $table_row[] = $row['agent'];
             $table_row[] = $row['availability_item'];
 
-            if ($row['time_total'] != 0) {
+            if ($row['time_total'] != 0 && $item['fields']['total_time']) {
                 $table_row[] = human_time_description_raw(
                     $row['time_total'],
                     true
                 );
-            } else {
+            } else if ($row['time_total'] == 0 && $item['fields']['total_time']) {
                 $table_row[] = '--';
-            }
+            } else {
+                $table_row[] = '';
+            };
 
-            if ($row['time_error'] != 0) {
+            if ($row['time_error'] != 0 && $item['fields']['time_failed']) {
                 $table_row[] = human_time_description_raw(
                     $row['time_error'],
                     true
                 );
-            } else {
+            } else if ($row['time_error'] == 0 && $item['fields']['time_failed']) {
                 $table_row[] = '--';
-            }
+            } else {
+                $table_row[] = '';
+            };
 
-            if ($row['time_ok'] != 0) {
+            if ($row['time_ok'] != 0 && $item['fields']['time_in_ok_status']) {
                 $table_row[] = human_time_description_raw(
                     $row['time_ok'],
                     true
                 );
-            } else {
+            } else if ($row['time_ok'] == 0 && $item['fields']['time_in_ok_status']) {
                 $table_row[] = '--';
-            }
+            } else {
+                $table_row[] = '';
+            };
 
-            if ($row['time_unknown'] != 0) {
+            if ($row['time_unknown'] != 0 && $item['fields']['time_in_unknown_status']) {
                 $table_row[] = human_time_description_raw(
                     $row['time_unknown'],
                     true
                 );
-            } else {
+            } else if ($row['time_unknown'] == 0 && $item['fields']['time_in_unknown_status']) {
                 $table_row[] = '--';
-            }
+            } else {
+                $table_row[] = '';
+            };
 
-            if ($row['time_not_init'] != 0) {
+            if ($row['time_not_init'] != 0 && $item['fields']['time_of_not_initialized_module']) {
                 $table_row[] = human_time_description_raw(
                     $row['time_not_init'],
                     true
                 );
-            } else {
+            } else if ($row['time_not_init'] == 0 && $item['fields']['time_of_not_initialized_module']) {
                 $table_row[] = '--';
-            }
+            } else {
+                $table_row[] = '';
+            };
 
-            if ($row['time_downtime'] != 0) {
+            if ($row['time_downtime'] != 0 && $item['fields']['time_of_downtime']) {
                 $table_row[] = human_time_description_raw(
                     $row['time_downtime'],
                     true
                 );
-            } else {
+            } else if ($row['time_downtime'] == 0 && $item['fields']['time_of_downtime']) {
                 $table_row[] = '--';
-            }
+            } else {
+                $table_row[] = '';
+            };
 
             $table_row[] = '<span style="font-size: 1.2em; font-weight:bold;">'.sla_truncate($row['SLA'], $config['graph_precision']).'%</span>';
 
             $table_row2 = [];
             $table_row2[] = $row['agent'];
             $table_row2[] = $row['availability_item'];
-            $table_row2[] = $row['checks_total'];
-            $table_row2[] = $row['checks_error'];
-            $table_row2[] = $row['checks_ok'];
-            $table_row2[] = $row['checks_unknown'];
+            if ($item['fields']['total_checks']) {
+                $table_row2[] = $row['checks_total'];
+            } else {
+                $table_row2[] = '';
+            };
+            if ($item['fields']['checks_failed']) {
+                $table_row2[] = $row['checks_error'];
+            } else {
+                $table_row2[] = '';
+            };
+            if ($item['fields']['checks_in_ok_status']) {
+                $table_row2[] = $row['checks_ok'];
+            } else {
+                $table_row2[] = '';
+            };
+            if ($item['fields']['unknown_checks']) {
+                $table_row2[] = $row['checks_unknown'];
+            } else {
+                $table_row2[] = '';
+            };
 
             $table1->data[] = $table_row;
             $table2->data[] = $table_row2;
@@ -3096,7 +3172,7 @@ function reporting_html_availability($table, $item, $pdf=0)
     if ($item['resume']['resume'] && !empty($item['data'])) {
         $table1->width = '99%';
         $table1->data = [];
-        if ((strpos($item['resume']['min_text'], $same_agent_in_resume) === false)) {
+        if (empty($same_agent_in_resume) || (strpos($item['resume']['min_text'], $same_agent_in_resume) === false)) {
             $table1->head = [];
             $table1->head['max_text'] = __('Agent max value');
             $table1->head['max']      = __('Max Value');
@@ -3131,6 +3207,19 @@ function reporting_html_availability($table, $item, $pdf=0)
                 ).'%',
                 'avg'      => '<span style="font-size: 1.2em; font-weight:bold;">'.sla_truncate($item['resume']['avg'], $config['graph_precision']).'%</span>',
             ];
+            if ($item['fields']['agent_max_value'] == false) {
+                $table1->head['max_text'] = '';
+                $table1->data[0]['max_text'] = '';
+                $table1->head['max'] = '';
+                $table1->data[0]['max'] = '';
+            }
+
+            if ($item['fields']['agent_min_value'] == false) {
+                $table1->head['min_text'] = '';
+                $table1->data[0]['min_text'] = '';
+                $table1->head['min'] = '';
+                $table1->data[0]['min'] = '';
+            }
 
             if ($pdf === 0) {
                 $table->colspan[3][0] = 3;

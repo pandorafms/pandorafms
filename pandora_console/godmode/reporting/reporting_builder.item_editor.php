@@ -119,6 +119,20 @@ $visual_format = 0;
 // Others
 $filter_search = '';
 
+// Added for select fields.
+$total_time = true;
+$time_failed = true;
+$time_in_ok_status = true;
+$time_in_unknown_status = true;
+$time_of_not_initialized_module = true;
+$time_of_downtime = true;
+$total_checks = true;
+$checks_failed = true;
+$checks_in_ok_status = true;
+$unknown_checks = true;
+$agent_max_value = true;
+$agent_min_value = true;
+
 switch ($action) {
     case 'new':
         $actionParameter = 'save';
@@ -501,6 +515,18 @@ switch ($action) {
                     $sunday = $item['sunday'];
                     $time_from = $item['time_from'];
                     $time_to = $item['time_to'];
+                    $total_time = $item['total_time'];
+                    $time_failed = $item['time_failed'];
+                    $time_in_ok_status = $item['time_in_ok_status'];
+                    $time_in_unknown_status = $item['time_in_unknown_status'];
+                    $time_of_not_initialized_module = $item['time_of_not_initialized_module'];
+                    $time_of_downtime = $item['time_of_downtime'];
+                    $total_checks = $item['total_checks'];
+                    $checks_failed = $item['checks_failed'];
+                    $checks_in_ok_status = $item['checks_in_ok_status'];
+                    $unknown_checks = $item['unknown_checks'];
+                    $agent_max_value = $item['agent_max_value'];
+                    $agent_min_value = $item['agent_min_value'];
                 break;
 
                 case 'group_report':
@@ -1597,20 +1623,6 @@ $class = 'databox filters';
                     REPORT_EXCEPTION_CONDITION_NOT_OK     => __('Not OK'),
                 ];
                 html_print_select($list_exception_condition, 'exception_condition', $exception_condition);
-
-
-                /*
-                    echo ;
-                    html_print_radio_button ('radiobutton_exception_condition', 0, '', $exception_condition);
-                    echo __('>=');
-                    html_print_radio_button ('radiobutton_exception_condition', 1, '', $exception_condition);
-                    echo __('<');
-                    html_print_radio_button ('radiobutton_exception_condition', 2, '', $exception_condition);
-                    echo __('OK');
-                    html_print_radio_button ('radiobutton_exception_condition', 3, '', $exception_condition);
-                    echo __('Not OK');
-                    html_print_radio_button ('radiobutton_exception_condition', 4, '', $exception_condition);
-                */
                 ?>
             </td>
         </tr>
@@ -1619,6 +1631,65 @@ $class = 'databox filters';
             <td style="font-weight:bold;"><?php echo __('Show graph'); ?></td>
             <td><?php html_print_select($show_graph_options, 'combo_graph_options', $show_graph); ?></td>
             
+        </tr>
+        <tr id="row_select_fields" style="" class="datos">
+        <td style="font-weight:bold;margin-right:150px;">
+            <?php
+            echo __('Select fields to show');
+            ?>
+            </td>
+            <td>
+            <table border="0">
+            <td>
+            <p style="margin-right:30px;">
+                <?php
+                echo __('Total time');
+                html_print_checkbox('total_time', 1, $total_time);
+                ?>
+             </p>
+            </td>
+            <td>
+            <p style="margin-right:30px;">
+                <?php
+                echo __('Time failed');
+                html_print_checkbox('time_failed', 1, $time_failed);
+                ?>
+                </p>
+            </td>
+            <td>
+            <p style="margin-right:30px;">
+                <?php
+                echo __('Time in OK status');
+                html_print_checkbox('time_in_ok_status', 1, $time_in_ok_status);
+                ?>
+                </p>
+            </td>
+            <td>
+            <p style="margin-right:30px;">
+                <?php
+                echo __('Time in unknown status');
+                html_print_checkbox('time_in_unknown_status', 1, $time_in_unknown_status);
+                ?>
+                </p>
+            </td>
+            <td>
+            <p style="margin-right:30px;">
+                <?php
+                echo __('Time of not initialized module');
+                html_print_checkbox('time_of_not_initialized_module', 1, $time_of_not_initialized_module);
+                ?>
+                </p>
+            </td>
+            <td>
+            <p style="margin-right:30px;">
+                <?php
+                echo __('Time of downtime');
+                html_print_checkbox('time_of_downtime', 1, $time_of_downtime);
+                ?>
+                </p>
+            </td>
+            </table>
+            </td>
         </tr>
         
         <tr id="row_show_address_agent" style="" class="datos">
@@ -1629,7 +1700,7 @@ $class = 'databox filters';
             </td>
             <td>
                 <?php
-                html_print_checkbox(
+                html_print_checkbox_switch(
                     'checkbox_show_address_agent',
                     1,
                     $show_address_agent
@@ -1637,17 +1708,90 @@ $class = 'databox filters';
                 ?>
             </td>
         </tr>
+       
         
         <tr id="row_show_resume" style="" class="datos">
             <td style="font-weight:bold;"><?php echo __('Show resume').ui_print_help_tip(__('Show a summary chart with max, min and average number of total modules at the end of the report and Checks.'), true); ?></td>
             <td>
                 <?php
-                html_print_checkbox(
+                html_print_checkbox_switch(
                     'checkbox_show_resume',
                     1,
                     $show_resume
                 );
                 ?>
+            </td>
+        </tr>
+        <tr id="row_select_fields2" style="" class="datos">
+        <td style="font-weight:bold;margin-right:150px;">
+            <?php
+            echo __('<p style= "margin-left:15px;">Select fields to show</p>');
+            ?>
+            </td>
+            <td>
+            <table border="0">
+            <td>
+            <p style="margin-right:30px;">
+                <?php
+                echo __('Total checks');
+                html_print_checkbox('total_checks', 1, $total_checks);
+                ?>
+                </p>
+            </td>
+            <td>
+            <p style="margin-right:30px;">
+                <?php
+                echo __('Checks failed');
+                html_print_checkbox('checks_failed', 1, $checks_failed);
+                ?>
+             </p>
+            </td>
+            <td>
+            <p style="margin-right:30px;">
+                <?php
+                echo __('Checks in OK status');
+                html_print_checkbox('checks_in_ok_status', 1, $checks_in_ok_status);
+                ?>
+                </p>
+            </td>
+            <td>
+            <p style="margin-right:30px;">
+                <?php
+                echo __('Unknown checks');
+                html_print_checkbox('unknown_checks', 1, $unknown_checks);
+                ?>
+                </p>
+            </td>
+            <td>
+            </table>
+            </td>
+        </tr>
+        <tr id="row_select_fields3" style="" class="datos">
+        <td style="font-weight:bold;margin-right:150px;">
+            <?php
+            echo __('<p style= "margin-left:15px;">Select fields to show</p>');
+            ?>
+            </td>
+            <td>
+            <table border="0">
+            <td>
+            <p style="margin-right:30px;">
+                <?php
+                echo __('Agent max value');
+                html_print_checkbox('agent_max_value', 1, $agent_max_value);
+                ?>
+             </p>
+            </td>   
+            <td>
+            <p style="margin-right:30px;">
+                <?php
+                echo __('Agent min values');
+                html_print_checkbox('agent_min_value', 1, $agent_min_value);
+                ?>
+                </p>
+            </td>
+            <td>
+            </table>
             </td>
         </tr>
 
@@ -2625,6 +2769,17 @@ $(document).ready (function () {
         }
     
     });
+
+    $("#checkbox-checkbox_show_resume").change(function(){
+        if($(this).is(":checked")){
+            $("#row_select_fields2").show();
+            $("#row_select_fields3").show();
+        }
+        else{
+            $("#row_select_fields2").hide();
+            $("#row_select_fields3").hide();
+        }
+    });
     
 });
 
@@ -3139,6 +3294,9 @@ function chooseType() {
     $("#row_event_type").hide();
     $("#row_event_status").hide();
     $("#row_source").hide();
+    $('#row_select_fields').hide();
+    $("#row_select_fields2").hide();
+    $("#row_select_fields3").hide();
     
     // SLA list default state
     $("#sla_list").hide();
@@ -3547,6 +3705,15 @@ function chooseType() {
             $("#row_show_resume").show();
             $("#row_working_time").show();
             $('#row_hide_notinit_agents').show();
+            $('#row_select_fields').show();
+             if($("#checkbox-checkbox_show_resume").is(":checked")){
+                $("#row_select_fields2").show();
+                 $("#row_select_fields3").show();
+             }
+             else{
+                $("#row_select_fields2").hide();
+                 $("#row_select_fields3").hide();
+             }
             $("#row_historical_db_check").hide();
             break;
         

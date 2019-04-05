@@ -734,6 +734,10 @@ if (!defined('METACONSOLE')) {
     <?php
     // Closes no meta condition.
 }
+
+// Include OpenLayers and timezone user map library.
+echo '<script type="text/javascript" src="'.ui_get_full_url('include/javascript/OpenLayers.js').'"></script>'."\n\t";
+echo '<script type="text/javascript" src="'.ui_get_full_url('include/javascript/jquery.timezone-picker.js').'"></script>'."\n\t";
 ?>
 
 <script language="javascript" type="text/javascript">

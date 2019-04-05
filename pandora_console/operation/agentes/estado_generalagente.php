@@ -211,7 +211,7 @@ $table_contact->id = 'agent_contact_main';
 $table_contact->width = '100%';
 $table_contact->cellspacing = 0;
 $table_contact->cellpadding = 0;
-$table_contact->class = 'databox data';
+$table_contact->class = 'info_table';
 $table_contact->style[0] = 'width: 30%;height:30px;';
 $table_contact->style[1] = 'width: 70%;';
 
@@ -254,7 +254,7 @@ $table_data->width = '100%';
 $table_data->styleTable = 'height:180px';
 $table_data->cellspacing = 0;
 $table_data->cellpadding = 0;
-$table_data->class = 'databox data';
+$table_data->class = 'info_table';
 $table_data->style[0] = 'width: 30%;';
 $table_data->style[1] = 'width: 40%;';
 
@@ -416,7 +416,7 @@ if ($last_incident != false) {
     $table_incident->width = '100%';
     $table_incident->cellspacing = 0;
     $table_incident->cellpadding = 0;
-    $table_incident->class = 'databox';
+    $table_incident->class = 'info_table';
     $table_incident->style[0] = 'width: 30%;';
     $table_incident->style[1] = 'width: 70%;';
 
@@ -456,7 +456,7 @@ if (!empty($network_interfaces_by_agents) && !empty($network_interfaces_by_agent
 if (!empty($network_interfaces)) {
     $table_interface = new stdClass();
     $table_interface->id = 'agent_interface_info';
-    $table_interface->class = 'databox data';
+    $table_interface->class = 'info_table';
     $table_interface->width = '98%';
     $table_interface->style = [];
     $table_interface->style['interface_status'] = 'width: 30px;padding-top:0px;padding-bottom:0px;';
@@ -478,7 +478,7 @@ if (!empty($network_interfaces)) {
         'class' => 'closed',
         'style' => 'vertical-align:righ; cursor:pointer;',
     ];
-    $table_interface->head[0] = html_print_image('images/graphmenu_arrow.png', true, $options).'&nbsp;&nbsp;';
+    $table_interface->head[0] = html_print_image('images/go.png', true, $options).'&nbsp;&nbsp;';
     $table_interface->head[0] .= '<span style="vertical-align: middle;">'.__('Interface information').' (SNMP)</span>';
     $table_interface->head_colspan = [];
     $table_interface->head_colspan[0] = 8;
@@ -610,11 +610,11 @@ if (!empty($network_interfaces)) {
                     var arrow = $("#agent_interface_info").find("thead").find("img");
                     if (arrow.hasClass("closed")) {
                         arrow.removeClass("closed");
-                        arrow.prop("src", "images/arrow-down-white.png");
+                        arrow.prop("src", "images/down.png");
                         $("#agent_interface_info").find("tbody").show();
                     } else {
                         arrow.addClass("closed");
-                        arrow.prop("src", "images/graphmenu_arrow.png");
+                        arrow.prop("src", "images/go.png");
                         $("#agent_interface_info").find("tbody").hide();
                     }
                 })

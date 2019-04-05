@@ -38,13 +38,13 @@ $sort = get_parameter('sort', 'none');
 $tab = get_parameter('tab', 'user');
 $pure = get_parameter('pure', 0);
 
-$selected = 'border: 1px solid black;';
-$selectUserIDUp = '';
-$selectUserIDDown = '';
-$selectFullnameUp = '';
-$selectFullnameDown = '';
-$selectLastConnectUp = '';
-$selectLastConnectDown = '';
+$selected = true;
+$selectUserIDUp = false;
+$selectUserIDDown = false;
+$selectFullnameUp = false;
+$selectFullnameDown = false;
+$selectLastConnectUp = false;
+$selectLastConnectDown = false;
 $order = null;
 
 switch ($sortField) {
@@ -110,11 +110,11 @@ switch ($sortField) {
 
     default:
         $selectUserIDUp = $selected;
-        $selectUserIDDown = '';
-        $selectFullnameUp = '';
-        $selectFullnameDown = '';
-        $selectLastConnectUp = '';
-        $selectLastConnectDown = '';
+        $selectUserIDDown = false;
+        $selectFullnameUp = false;
+        $selectFullnameDown = false;
+        $selectLastConnectUp = false;
+        $selectLastConnectDown = false;
         $order = [
             'field' => 'id_user',
             'order' => 'ASC',
@@ -300,6 +300,15 @@ if (defined('METACONSOLE')) {
     ui_toggle($form_filter, __('Users control filter'), __('Toggle filter(s)'), !$search);
 }
 
+// Urls to sort the table.
+$url_up_id = '?sec='.$sec.'&sec2=godmode/users/user_list&sort_field=id_user&sort=up&pure='.$pure;
+$url_down_id = '?sec='.$sec.'&sec2=godmode/users/user_list&sort_field=id_user&sort=down&pure='.$pure;
+$url_up_name = '?sec='.$sec.'&sec2=godmode/users/user_list&sort_field=fullname&sort=up&pure='.$pure;
+$url_down_name = '?sec='.$sec.'&sec2=godmode/users/user_list&sort_field=fullname&sort=down&pure='.$pure;
+$url_up_last = '?sec='.$sec.'&sec2=godmode/users/user_list&sort_field=last_connect&sort=up&pure='.$pure;
+$url_down_last = '?sec='.$sec.'&sec2=godmode/users/user_list&sort_field=last_connect&sort=down&pure='.$pure;
+
+
 $table = new stdClass();
 $table->cellpadding = 0;
 $table->cellspacing = 0;
@@ -312,9 +321,10 @@ $table->align = [];
 $table->size = [];
 $table->valign = [];
 
-$table->head[0] = __('User ID').' '.'<a href="?sec='.$sec.'&sec2=godmode/users/user_list&sort_field=id_user&sort=up&pure='.$pure.'">'.html_print_image('images/sort_up.png', true, ['style' => $selectUserIDUp]).'</a>'.'<a href="?sec='.$sec.'&sec2=godmode/users/user_list&sort_field=id_user&sort=down&pure='.$pure.'">'.html_print_image('images/sort_down.png', true, ['style' => $selectUserIDDown]).'</a>';
-$table->head[1] = __('Name').' '.'<a href="?sec='.$sec.'&sec2=godmode/users/user_list&sort_field=fullname&sort=up&pure='.$pure.'">'.html_print_image('images/sort_up.png', true, ['style' => $selectFullnameUp ]).'</a>'.'<a href="?sec='.$sec.'&sec2=godmode/users/user_list&sort_field=fullname&sort=down&pure='.$pure.'">'.html_print_image('images/sort_down.png', true, ['style' => $selectFullnameDown]).'</a>';
-$table->head[2] = __('Last contact').' '.'<a href="?sec='.$sec.'&sec2=godmode/users/user_list&sort_field=last_connect&sort=up&pure='.$pure.'">'.html_print_image('images/sort_up.png', true, ['style' => $selectLastConnectUp ]).'</a>'.'<a href="?sec='.$sec.'&sec2=godmode/users/user_list&sort_field=last_connect&sort=down&pure='.$pure.'">'.html_print_image('images/sort_down.png', true, ['style' => $selectLastConnectDown]).'</a>';
+$table->head[0] = __('User ID').ui_get_sorting_arrows($url_up_id, $url_down_id, $selectUserIDUp, $selectUserIDDown);
+$table->head[1] = __('Name').ui_get_sorting_arrows($url_up_name, $url_down_name, $selectFullnameUp, $selectFullnameDown);
+$table->head[2] = __('Last contact').ui_get_sorting_arrows($url_up_last, $url_down_last, $selectLastConnectUp, $selectLastConnectDown);
+
 $table->head[3] = __('Admin');
 $table->head[4] = __('Profile / Group');
 $table->head[5] = __('Description');

@@ -1014,17 +1014,30 @@ div#cont {
 }
 
 td.datos3,
-td.datos3 * {
-  background-color: #666;
-  color: white !important;
+/*td.datos3 **/
+td.datos4 {
+  background-color: #fff;
+  color: #000 !important;
+  border-bottom: 2px solid #82b92e !important;
+  border-left: none !important;
+  border-right: none !important;
+  height: 30px;
+  font-size: 8.6pt;
+  font-weight: normal;
 }
 
-td.datos4,
-td.datos4 * {
+td.datos4 /*,
+td.datos4 */ {
   /*Add !important because in php the function html_print_table write style in cell and this is style head.*/
   text-align: center !important;
-  background-color: #666;
-  color: white !important;
+  /* background-color: #666;
+  color: white !important;*/
+}
+
+td.datos3 *,
+td.datos4 * {
+  font-size: 8.6pt;
+  font-weight: normal;
 }
 
 /*td.datos_id {
@@ -5031,6 +5044,9 @@ table.info_table tr:first-child > th {
   border-top: 1px solid #e2e2e2;
   color: #000;
   text-align: left;
+  vertical-align: middle;
+
+  /*background-color: pink;*/
 }
 
 table.info_table tr:first-child > th span {
@@ -5076,10 +5092,11 @@ table.info_table > thead > tr > th a {
   /*padding: 9px 7px;*/
   padding-left: 9px;
   padding-right: 9px;
-  padding-top: 7px;
-  padding-bottom: 7px;
-  font-weight: bold;
+  padding-top: 9px;
+  padding-bottom: 9px;
+  font-weight: normal;
   color: #000;
+  font-size: 8.6pt;
 }
 
 table.info_table > tbody > tr > td {
@@ -5137,8 +5154,14 @@ table.info_table td:last-child img {
 
 /* no confundir con action-buttons */
 /* esta se pa los botones de las tablas de delete etc*/
+/*para cuando solo hay un boton y puede haber iconos que no son botones al lado*/
+.action_button_img {
+  cursor: pointer;
+}
+
 .action_buttons a[href] img,
-.action_buttons input[type="image"] {
+.action_buttons input[type="image"],
+.action_button_img {
   border-radius: 4px;
   border: 1px solid #dcdcdc !important;
   padding: 1px;
@@ -5187,6 +5210,11 @@ table.info_table td:last-child img {
   display: block;
 }
 
+.pagination .page_number:hover,
+.pagination .pagination-arrows:hover {
+  background-color: #e2e2e2;
+}
+
 .pagination .total_number > *:first-child {
   border-top-left-radius: 2px;
   border-bottom-left-radius: 2px;
@@ -5230,4 +5258,13 @@ table.info_table td:last-child img {
   margin-bottom: 15px;
   margin-top: 0px;
   align-items: flex-start;
+}
+
+/* FELCHAS ORDENACION */
+.sort_arrow {
+  display: inline-grid;
+  vertical-align: middle;
+}
+.sort_arrow a {
+  padding: 0 0 0 5px !important;
 }

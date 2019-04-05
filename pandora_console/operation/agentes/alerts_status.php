@@ -220,13 +220,13 @@ if ($free_search != '') {
 
 $sortField = get_parameter('sort_field');
 $sort = get_parameter('sort', 'none');
-$selected = 'border: 1px solid black;';
-$selectAgentUp = '';
-$selectAgentDown = '';
-$selectModuleUp = '';
-$selectModuleDown = '';
-$selectTemplateUp = '';
-$selectTemplateDown = '';
+$selected = true;
+$selectAgentUp = false;
+$selectAgentDown = false;
+$selectModuleUp = false;
+$selectModuleDown = false;
+$selectTemplateUp = false;
+$selectTemplateDown = false;
 switch ($sortField) {
     case 'agent':
         switch ($sort) {
@@ -292,12 +292,12 @@ switch ($sortField) {
         if ($print_agent) {
             $selectDisabledUp = '';
             $selectDisabledDown = '';
-            $selectAgentUp = '';
-            $selectAgentDown = '';
+            $selectAgentUp = false;
+            $selectAgentDown = false;
             $selectModuleUp = $selected;
-            $selectModuleDown = '';
-            $selectTemplateUp = '';
-            $selectTemplateDown = '';
+            $selectModuleDown = false;
+            $selectTemplateUp = false;
+            $selectTemplateDown = false;
             $order = [
                 'field' => 'agent_module_name',
                 'order' => 'ASC',
@@ -305,12 +305,12 @@ switch ($sortField) {
         } else {
             $selectDisabledUp = '';
             $selectDisabledDown = '';
-            $selectAgentUp = '';
-            $selectAgentDown = '';
+            $selectAgentUp = false;
+            $selectAgentDown = false;
             $selectModuleUp = $selected;
-            $selectModuleDown = '';
-            $selectTemplateUp = '';
-            $selectTemplateDown = '';
+            $selectModuleDown = false;
+            $selectTemplateUp = false;
+            $selectTemplateDown = false;
             $order = [
                 'field' => 'agent_module_name',
                 'order' => 'ASC',
@@ -440,6 +440,14 @@ if ($print_agent) {
     }
 }
 
+// Urls to sort the table.
+$url_up_agente = $url.'&sort_field=agent&sort=up';
+$url_down_agente = $url.'&sort_field=agent&sort=down';
+$url_up_module = $url.'&sort_field=module&sort=up';
+$url_down_module = $url.'&sort_field=module&sort=down';
+$url_up_template = $url.'&sort_field=template&sort=up';
+$url_down_template = $url.'&sort_field=template&sort=down';
+
 $table = new stdClass();
 $table->width = '100%';
 $table->class = 'info_table';
@@ -481,9 +489,9 @@ if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
 
         // Sort buttons are only for normal console
         if (!is_metaconsole()) {
-            $table->head[3] .= ' '.'<a href="'.$url.'&sort_field=agent&sort=up">'.html_print_image('images/sort_up.png', true, ['style' => $selectAgentUp]).'</a>'.'<a href="'.$url.'&sort_field=agent&sort=down">'.html_print_image('images/sort_down.png', true, ['style' => $selectAgentDown]).'</a>';
-            $table->head[4] .= ' '.'<a href="'.$url.'&sort_field=module&sort=up">'.html_print_image('images/sort_up.png', true, ['style' => $selectModuleUp]).'</a>'.'<a href="'.$url.'&sort_field=module&sort=down">'.html_print_image('images/sort_down.png', true, ['style' => $selectModuleDown]).'</a>';
-            $table->head[5] .= ' '.'<a href="'.$url.'&sort_field=template&sort=up">'.html_print_image('images/sort_up.png', true, ['style' => $selectTemplateUp]).'</a>'.'<a href="'.$url.'&sort_field=template&sort=down">'.html_print_image('images/sort_down.png', true, ['style' => $selectTemplateDown]).'</a>';
+            $table->head[3] .= ui_get_sorting_arrows($url_up_agente, $url_down_agente, $selectAgentUp, $selectAgentDown);
+            $table->head[4] .= ui_get_sorting_arrows($url_up_module, $url_down_module, $selectModuleUp, $selectModuleDown);
+            $table->head[5] .= ui_get_sorting_arrows($url_up_template, $url_down_template, $selectTemplateUp, $selectTemplateDown);
         }
     } else {
         if (!is_metaconsole()) {
@@ -515,8 +523,8 @@ if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
 
         // Sort buttons are only for normal console
         if (!is_metaconsole()) {
-            $table->head[3] .= ' '.'<a href="'.$url.'&sort_field=module&sort=up">'.html_print_image('images/sort_up.png', true, ['style' => $selectModuleUp]).'</a>'.'<a href="'.$url.'&sort_field=module&sort=down">'.html_print_image('images/sort_down.png', true, ['style' => $selectModuleDown]).'</a>';
-            $table->head[4] .= ' '.'<a href="'.$url.'&sort_field=template&sort=up">'.html_print_image('images/sort_up.png', true, ['style' => $selectTemplateUp]).'</a>'.'<a href="'.$url.'&sort_field=template&sort=down">'.html_print_image('images/sort_down.png', true, ['style' => $selectTemplateDown]).'</a>';
+            $table->head[3] .= ui_get_sorting_arrows($url_up_module, $url_down_module, $selectModuleUp, $selectModuleDown);
+            $table->head[4] .= ui_get_sorting_arrows($url_up_template, $url_down_template, $selectTemplateUp, $selectTemplateDown);
         }
     }
 } else {
@@ -547,9 +555,9 @@ if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
 
         // Sort buttons are only for normal console
         if (!is_metaconsole()) {
-            $table->head[2] .= ' '.'<a href="'.$url.'&sort_field=agent&sort=up">'.html_print_image('images/sort_up.png', true, ['style' => $selectAgentUp]).'</a>'.'<a href="'.$url.'&sort_field=agent&sort=down">'.html_print_image('images/sort_down.png', true, ['style' => $selectAgentDown]).'</a>';
-            $table->head[3] .= ' '.'<a href="'.$url.'&sort_field=module&sort=up">'.html_print_image('images/sort_up.png', true, ['style' => $selectModuleUp]).'</a>'.'<a href="'.$url.'&sort_field=module&sort=down">'.html_print_image('images/sort_down.png', true, ['style' => $selectModuleDown]).'</a>';
-            $table->head[4] .= ' '.'<a href="'.$url.'&sort_field=template&sort=up">'.html_print_image('images/sort_up.png', true, ['style' => $selectTemplateUp]).'</a>'.'<a href="'.$url.'&sort_field=template&sort=down">'.html_print_image('images/sort_down.png', true, ['style' => $selectTemplateDown]).'</a>';
+            $table->head[3] .= ui_get_sorting_arrows($url_up_agente, $url_down_agente, $selectAgentUp, $selectAgentDown);
+            $table->head[4] .= ui_get_sorting_arrows($url_up_module, $url_down_module, $selectModuleUp, $selectModuleDown);
+            $table->head[5] .= ui_get_sorting_arrows($url_up_template, $url_down_template, $selectTemplateUp, $selectTemplateDown);
         }
     } else {
         if (!is_metaconsole()) {
@@ -577,8 +585,8 @@ if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
 
         // Sort buttons are only for normal console
         if (!is_metaconsole()) {
-            $table->head[2] .= ' '.'<a href="'.$url.'&sort_field=module&sort=up">'.html_print_image('images/sort_up.png', true, ['style' => $selectModuleUp]).'</a>'.'<a href="'.$url.'&sort_field=module&sort=down">'.html_print_image('images/sort_down.png', true, ['style' => $selectModuleDown]).'</a>';
-            $table->head[3] .= ' '.'<a href="'.$url.'&sort_field=template&sort=up">'.html_print_image('images/sort_up.png', true, ['style' => $selectTemplateUp]).'</a>'.'<a href="'.$url.'&sort_field=template&sort=down">'.html_print_image('images/sort_down.png', true, ['style' => $selectTemplateDown]).'</a>';
+            $table->head[2] .= ui_get_sorting_arrows($url_up_module, $url_down_module, $selectModuleUp, $selectModuleDown);
+            $table->head[3] .= ui_get_sorting_arrows($url_up_template, $url_down_template, $selectTemplateUp, $selectTemplateDown);
         }
     }
 }

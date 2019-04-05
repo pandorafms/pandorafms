@@ -1284,6 +1284,7 @@ if (!empty($result)) {
                 }
 
                 if ($show_edit_icon) {
+                    $table->cellclass[][2] = 'action_buttons';
                     $data[2] .= '<a href="'.$url_edit_module.'">'.html_print_image(
                         'images/config.png',
                         true,

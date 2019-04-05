@@ -422,7 +422,7 @@ function mainAgentsAlerts()
                 continue;
             }
 
-            echo '<th width="20px" >'.io_safe_output($tname).html_print_image('images/information_alerts.png', true, ['title' => io_safe_output($tname), 'style' => 'margin-left:5px' ]).'</th>';
+            echo '<th width="20px" >'.io_safe_output($tname).'</th>';
         }
 
         echo '</tr></thead>';
@@ -506,7 +506,7 @@ function mainAgentsAlerts()
 function print_alerts_summary_modal_window($id, $alerts)
 {
     $table->width = '98%';
-    $table->class = 'databox';
+    $table->class = 'info_table';
     $table->data = [];
 
     $table->head[0] = __('Module');

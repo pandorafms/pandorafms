@@ -4429,3 +4429,34 @@ function ui_get_favicon()
 
     return 'images/custom_favicon/'.$config['custom_favicon'];
 }
+
+
+/**
+ * Show sorting arrows for tables
+ *
+ * @return string  HTML anchor link with the arrow icon.
+ */
+function ui_get_sorting_arrows($url_up, $url_down, $selectUp, $selectDown)
+{
+    $arrow_up = 'images/sort_up_black.png';
+    $arrow_down = 'images/sort_down_black.png';
+
+    // en el hover usar flechas verdes en el nodo
+    if ($selectUp === true) {
+        $arrow_up = 'images/sort_up_green.png';
+    }
+
+    if ($selectDown === true) {
+        $arrow_down = 'images/sort_down_green.png';
+    }
+
+    if (is_metaconsole()) {
+        $arrow_up = 'images/sort_up.png';
+        $arrow_down = 'images/sort_down.png';
+    }
+
+    return '<span class="sort_arrow">
+                <a href="'.$url_up.'">'.html_print_image($arrow_up, true, ['alt' => 'up']).'</a>
+                <a href="'.$url_down.'">'.html_print_image($arrow_down, true, ['alt' => 'down']).'</a>
+            </span>';
+}

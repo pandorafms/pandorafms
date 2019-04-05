@@ -475,6 +475,16 @@ class DiscoveryTaskList extends Wizard
                             $data[6] .= __('Discovery.App.MySQL');
                         break;
 
+                        case DISCOVERY_APP_ORACLE:
+                            // Discovery Applications Oracle.
+                            $data[6] = html_print_image(
+                                'images/network.png',
+                                true,
+                                ['title' => __('Discovery Applications Oracle')]
+                            ).'&nbsp;&nbsp;';
+                            $data[6] .= __('Discovery.App.Oracle');
+                        break;
+
                         case DISCOVERY_HOSTDEVICES:
                         default:
                             // Discovery NetScan.
@@ -630,6 +640,9 @@ class DiscoveryTaskList extends Wizard
         switch ($task['type']) {
             case DISCOVERY_APP_MYSQL:
             return 'wiz=app&mode=mysql&page=0';
+
+            case DISCOVERY_APP_ORACLE:
+            return 'wiz=app&mode=oracle&page=0';
 
             case DISCOVERY_APP_VMWARE:
             return 'wiz=app&mode=vmware&page=0';

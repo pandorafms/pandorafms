@@ -1516,7 +1516,10 @@ sub db_scan($) {
 						push @data, @{$__data};
 					} else {
 						# Merge modules into engine agent.
-						my @_modules = map { $_->{'module_data'} } @{$__data};
+						my @_modules = map { 
+							map { $_ } @{$_->{'module_data'}}
+						} @{$__data};
+
 						push @modules, @_modules;
 					}
 				}

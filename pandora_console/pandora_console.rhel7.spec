@@ -26,9 +26,9 @@ BuildRoot:          %{_tmppath}/%{name}
 BuildArch:          noarch
 AutoReq:            0
 Requires:           %{httpd_name} >= 2.0.0
-Requires:           mod_php >= 7.0
-Requires:           php-gd, php-ldap, php-snmp, php-session, php-gettext
-Requires:           php-mysqlnd, php-mbstring, php-zip, php-zlib, php-curl
+Requires:           httpd24-mod_php >= 7.2
+Requires:           rh-php72-php-gd, rh-php72-php-ldap, rh-php72-php-snmp, rh-php72-php-session, rh-php72-php-gettext
+Requires:           rh-php72-php-mysqlnd, rh-php72-php-mbstring, rh-php72-php-zip, rh-php72-php-zlib, rh-php72-php-curl
 Requires:           xorg-x11-fonts-75dpi, xorg-x11-fonts-misc, php-pecl-zip
 Requires:           graphviz
 Provides:           %{name}-%{version}

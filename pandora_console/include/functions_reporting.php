@@ -41,11 +41,11 @@ require_once $config['homedir'].'/include/functions_network.php';
 //
 // CONSTANTS DEFINITIONS                //
 //
-// Priority modes
+// Priority modes.
 define('REPORT_PRIORITY_MODE_OK', 1);
 define('REPORT_PRIORITY_MODE_UNKNOWN', 2);
 
-// Status
+// Status.
 define('REPORT_STATUS_ERR', 0);
 define('REPORT_STATUS_OK', 1);
 define('REPORT_STATUS_UNKNOWN', 2);
@@ -62,7 +62,7 @@ function reporting_user_can_see_report($id_report, $id_user=null)
         $id_user = $config['id_user'];
     }
 
-    // Get Report record (to get id_group)
+    // Get Report record (to get id_group).
     $report = db_get_row('treport', 'id_report', $id_report);
 
     // Check ACL on the report to see if user has access to the report.
@@ -107,6 +107,10 @@ function reporting_get_type($content)
 
         case REPORT_OLD_TYPE_SUMATORY:
             $content['type'] = 'sumatory';
+        break;
+
+        default:
+            // Default.
         break;
     }
 
@@ -205,7 +209,7 @@ function reporting_make_reporting_data(
         $server_name = $content['server_name'];
 
         // General reports with 0 period means last value
-        // Avoid to overwrite it by template value
+        // Avoid to overwrite it by template value.
         if (!empty($period) && ($content['type'] !== 'general' && $content['period'] != 0)) {
             $content['period'] = $period;
         }
@@ -229,7 +233,7 @@ function reporting_make_reporting_data(
 
             if (in_array('label', $content['style'])) {
                 if ($content['id_agent'] == 0) {
-                    // Metaconsole connection
+                    // Metaconsole connection.
                     if ($metaconsole_on && $server_name != '') {
                         $connection = metaconsole_get_connection($server_name);
                         if (!metaconsole_load_external_db($connection)) {
@@ -240,7 +244,7 @@ function reporting_make_reporting_data(
 
                     array_push($agents_to_macro, modules_get_agentmodule_agent($graph_item['id_agent_module']));
                     if ($metaconsole_on) {
-                        // Restore db connection
+                        // Restore db connection.
                         metaconsole_restore_db();
                     }
                 }
@@ -291,7 +295,7 @@ function reporting_make_reporting_data(
             $content['name'] = reporting_label_macro($items_label, $content['style']['name_label']);
 
             if ($metaconsole_on) {
-                // Restore db connection
+                // Restore db connection.
                 metaconsole_restore_db();
             }
         }
@@ -781,6 +785,10 @@ function reporting_make_reporting_data(
                     $pdf
                 );
             break;
+
+            default:
+                // Default.
+            break;
         }
 
         $index_content++;
@@ -847,7 +855,7 @@ function reporting_SLA(
         include_once $config['homedir'].'/include/functions_planned_downtimes.php';
         $metaconsole_on = is_metaconsole();
 
-        // checking if needed to show graph or table
+        // checking if needed to show graph or table.
         if ($content['show_graph'] == 0 || $content['show_graph'] == 1) {
             $show_table = 1;
         } else {
@@ -1241,7 +1249,6 @@ function reporting_SLA(
                     }
 
                     $return['charts'] = $temp;
-
                 break;
 
                 case 2:
@@ -1278,7 +1285,10 @@ function reporting_SLA(
                     }
 
                     $return['charts'] = $temp;
+                break;
 
+                default:
+                    // Default.
                 break;
             }
         }
@@ -1317,7 +1327,7 @@ function reporting_event_top_n(
 
         case REPORT_TOP_N_AVG:
         default:
-            // If nothing is selected then it will be shown the average data
+            // If nothing is selected then it will be shown the average data.
             $type_top_n = __('Avg');
         break;
     }
@@ -1334,7 +1344,7 @@ function reporting_event_top_n(
     $return['top_n'] = $content['top_n_value'];
 
     if (empty($content['subitems'])) {
-        // Get all the related data
+        // Get all the related data.
         $sql = sprintf(
             'SELECT id_agent_module, server_name
 			FROM treport_content_item
@@ -1347,7 +1357,7 @@ function reporting_event_top_n(
         $tops = $content['subitems'];
     }
 
-    // Get chart
+    // Get chart.
     reporting_set_conf_charts(
         $width,
         $height,
@@ -1371,7 +1381,7 @@ function reporting_event_top_n(
         $data_top = [];
 
         foreach ($tops as $key => $row) {
-            // Metaconsole connection
+            // Metaconsole connection.
             $server_name = $row['server_name'];
             if (($config['metaconsole'] == 1) && $server_name != '' && defined('METACONSOLE')) {
                 $connection = metaconsole_get_connection($server_name);
@@ -1401,7 +1411,7 @@ function reporting_event_top_n(
 
                 case REPORT_TOP_N_AVG:
                 default:
-                    // If nothing is selected then it will be shown the average data
+                    // If nothing is selected then it will be shown the average data.
                     $value = reporting_get_agentmodule_data_average($row['id_agent_module'], $content['period']);
                 break;
             }
@@ -1415,7 +1425,7 @@ function reporting_event_top_n(
                 $units[$key] = $unit;
             }
 
-            // Restore dbconnection
+            // Restore dbconnection.
             if (($config['metaconsole'] == 1) && $server_name != '' && defined('METACONSOLE')) {
                 metaconsole_restore_db();
             }
@@ -1428,20 +1438,24 @@ function reporting_event_top_n(
 
             // Order to show.
             switch ($order_uptodown) {
-                // Descending
+                // Descending.
                 case 1:
                     array_multisort($data_top, SORT_DESC, $agent_name, SORT_ASC, $module_name, SORT_ASC, $id_agent_module, SORT_ASC, $units, SORT_ASC);
                 break;
 
-                // Ascending
+                // Ascending.
                 case 2:
                     array_multisort($data_top, SORT_ASC, $agent_name, SORT_ASC, $module_name, SORT_ASC, $id_agent_module, SORT_ASC, $units, SORT_ASC);
                 break;
 
-                // By agent name or without selection
+                // By agent name or without selection.
                 case 0:
                 case 3:
                     array_multisort($agent_name, SORT_ASC, $data_top, SORT_ASC, $module_name, SORT_ASC, $id_agent_module, SORT_ASC, $units, SORT_ASC);
+                break;
+
+                default:
+                    // Default.
                 break;
             }
 
@@ -1458,7 +1472,7 @@ function reporting_event_top_n(
             $data_top_values['id_agent_module'] = $id_agent_module;
             $data_top_values['units'] = $units;
 
-            // Define truncate size depends the graph width
+            // Define truncate size depends the graph width.
             $truncate_size = ($width / (4 * ($config['font_size'])) - 1);
 
             if ($order_uptodown == 1 || $order_uptodown == 2) {
@@ -1584,7 +1598,7 @@ function reporting_event_top_n(
                     $ttl
                 );
 
-                // Display bars graph
+                // Display bars graph.
                 $return['charts']['bars'] = hbar_graph(
                     $data_hbar,
                     $width,
@@ -1609,7 +1623,7 @@ function reporting_event_top_n(
             $return['resume'] = null;
 
             if ($content['show_resume'] && count($data_top_values) > 0) {
-                // Get the very first not null value
+                // Get the very first not null value.
                 $i = 0;
                 do {
                     $min = $data_top_values['data_top'][$i];
@@ -1689,14 +1703,14 @@ function reporting_event_report_group(
 
     $event_filter = $content['style'];
     $return['show_summary_group'] = $event_filter['show_summary_group'];
-    // filter
+    // Filter.
     $show_summary_group         = $event_filter['show_summary_group'];
     $filter_event_severity      = json_decode($event_filter['filter_event_severity'], true);
     $filter_event_type          = json_decode($event_filter['filter_event_type'], true);
     $filter_event_status        = json_decode($event_filter['filter_event_status'], true);
     $filter_event_filter_search = $event_filter['event_filter_search'];
 
-    // graphs
+    // Graphs.
     $event_graph_by_agent                 = $event_filter['event_graph_by_agent'];
     $event_graph_by_user_validator        = $event_filter['event_graph_by_user_validator'];
     $event_graph_by_criticity             = $event_filter['event_graph_by_criticity'];
@@ -1858,7 +1872,7 @@ function reporting_event_report_group(
         metaconsole_restore_db();
     }
 
-    // total_events
+    // total_events.
     if ($return['data'] != '') {
         $return['total_events'] = count($return['data']);
     } else {
@@ -1911,14 +1925,14 @@ function reporting_event_report_module(
 
     $event_filter = $content['style'];
     $return['show_summary_group'] = $event_filter['show_summary_group'];
-    // filter
+    // Filter.
     $show_summary_group         = $event_filter['show_summary_group'];
     $filter_event_severity      = json_decode($event_filter['filter_event_severity'], true);
     $filter_event_type          = json_decode($event_filter['filter_event_type'], true);
     $filter_event_status        = json_decode($event_filter['filter_event_status'], true);
     $filter_event_filter_search = $event_filter['event_filter_search'];
 
-    // graphs
+    // Graphs.
     $event_graph_by_user_validator        = $event_filter['event_graph_by_user_validator'];
     $event_graph_by_criticity             = $event_filter['event_graph_by_criticity'];
     $event_graph_validated_vs_unvalidated = $event_filter['event_graph_validated_vs_unvalidated'];
@@ -1930,7 +1944,7 @@ function reporting_event_report_module(
         $metaconsole_dbtable = false;
     }
 
-    // data events
+    // Data events.
     $data = reporting_get_module_detailed_event(
         $content['id_agent_module'],
         $content['period'],
@@ -1959,7 +1973,7 @@ function reporting_event_report_module(
         metaconsole_restore_db();
     }
 
-    // total_events
+    // Total_events.
     if ($return['data'][0]['data'] != '') {
         $return['total_events'] = count($return['data'][0]['data']);
     } else {
@@ -2276,6 +2290,10 @@ function reporting_exception(
             $return['subtitle'] = __('Exception - Modules at critical or warning status');
             $return['subtype'] = __('Modules at critical or warning status');
         break;
+
+        default:
+            // Default.
+        break;
     }
 
     $return['description'] = $content['description'];
@@ -2286,7 +2304,7 @@ function reporting_exception(
     $return['resume'] = [];
 
     if (empty($content['subitems'])) {
-        // Get all the related data
+        // Get all the related data.
         $sql = sprintf(
             '
 			SELECT id_agent_module, server_name, operation
@@ -2303,10 +2321,10 @@ function reporting_exception(
     if ($exceptions === false) {
         $return['failed'] = __('There are no Agent/Modules defined');
     } else {
-        // Get the very first not null value
+        // Get the very first not null value.
         $i = 0;
         do {
-            // Metaconsole connection
+            // Metaconsole connection.
             $server_name = $exceptions[$i]['server_name'];
             if (($config['metaconsole'] == 1) && $server_name != '' && defined('METACONSOLE')) {
                 $connection = metaconsole_get_connection($server_name);
@@ -2340,12 +2358,16 @@ function reporting_exception(
                             $content['period']
                         );
                     break;
+
+                    default:
+                        // Default.
+                    break;
                 }
             }
 
             $i++;
 
-            // Restore dbconnection
+            // Restore dbconnection.
             if (($config['metaconsole'] == 1) && $server_name != '' && defined('METACONSOLE')) {
                 metaconsole_restore_db();
             }
@@ -2357,7 +2379,7 @@ function reporting_exception(
 
         $i = 0;
         foreach ($exceptions as $exc) {
-            // Metaconsole connection
+            // Metaconsole connection.
             $server_name = $exc['server_name'];
             if (($config['metaconsole'] == 1) && $server_name != '' && defined('METACONSOLE')) {
                 $connection = metaconsole_get_connection($server_name);
@@ -6270,6 +6292,19 @@ function reporting_availability($report, $content, $date=false, $time=false)
     $return['resume']['avg'] = $avg;
     $return['resume']['max_text'] = $max_text;
     $return['resume']['max'] = $max;
+    $return['fields'] = [];
+    $return['fields']['total_time'] = $content['total_time'];
+    $return['fields']['time_failed'] = $content['time_failed'];
+    $return['fields']['time_in_ok_status'] = $content['time_in_ok_status'];
+    $return['fields']['time_in_unknown_status'] = $content['time_in_unknown_status'];
+    $return['fields']['time_of_not_initialized_module'] = $content['time_of_not_initialized_module'];
+    $return['fields']['time_of_downtime'] = $content['time_of_downtime'];
+    $return['fields']['total_checks'] = $content['total_checks'];
+    $return['fields']['checks_failed'] = $content['checks_failed'];
+    $return['fields']['checks_in_ok_status'] = $content['checks_in_ok_status'];
+    $return['fields']['unknown_checks'] = $content['unknown_checks'];
+    $return['fields']['agent_max_value'] = $content['agent_max_value'];
+    $return['fields']['agent_min_value'] = $content['agent_min_value'];
 
     return reporting_check_structure_content($return);
 }
@@ -7443,6 +7478,21 @@ function reporting_check_structure_content($report)
         $report['date']['to'] = '';
     }
 
+    if (!isset($report['fields'])) {
+        $return['fields']['total_time'] = '';
+        $return['fields']['time_failed'] = '';
+        $return['fields']['time_in_ok_status'] = '';
+        $return['fields']['time_in_unknown_status'] = '';
+        $return['fields']['time_of_not_initialized_module'] = '';
+        $return['fields']['time_of_downtime'] = '';
+        $return['fields']['total_checks'] = '';
+        $return['fields']['checks_failed'] = '';
+        $return['fields']['checks_in_ok_status'] = '';
+        $return['fields']['unknown_checks'] = '';
+        $return['fields']['agent_max_value'] = '';
+        $return['fields']['agent_min_value'] = '';
+    }
+
     return $report;
 }
 
@@ -7771,11 +7821,11 @@ function reporting_get_agents_detailed_event(
 
         foreach ($events as $eventRow) {
             foreach ($eventRow as $k => $event) {
-                // First pass along the class of this row
+                // First pass along the class of this row.
                 $table->cellclass[$k][1] = $table->cellclass[$k][2] = $table->cellclass[$k][4] = $table->cellclass[$k][5] = $table->cellclass[$k][6] = get_priority_class($event['criticity']);
 
                 $data = [];
-                // Colored box
+                // Colored box.
                 switch ($event['estado']) {
                     case 0:
                         $img_st = 'images/star.png';
@@ -11442,33 +11492,95 @@ function reporting_sla_is_ignored_from_array($sla_array)
  *
  * @return integer Status
  */
-function reporting_sla_get_status_period($sla_times, $priority_mode=REPORT_PRIORITY_MODE_OK)
-{
-    if ($sla_times['time_error'] > 0) {
+function reporting_sla_get_status_period(
+    $sla,
+    $priority_mode=REPORT_PRIORITY_MODE_OK
+) {
+    if ($sla['time_error'] > 0) {
         return REPORT_STATUS_ERR;
     }
 
-    if ($priority_mode == REPORT_PRIORITY_MODE_OK && $sla_times['time_ok'] > 0) {
+    if ($priority_mode == REPORT_PRIORITY_MODE_OK && $sla['time_ok'] > 0) {
         return REPORT_STATUS_OK;
     }
 
-    if ($sla_times['time_out'] > 0) {
+    if ($sla['time_out'] > 0) {
         return REPORT_STATUS_IGNORED;
     }
 
-    if ($sla_times['time_downtime'] > 0) {
+    if ($sla['time_downtime'] > 0) {
         return REPORT_STATUS_DOWNTIME;
     }
 
-    if ($sla_times['time_unknown'] > 0) {
+    if ($sla['time_unknown'] > 0) {
         return REPORT_STATUS_UNKNOWN;
     }
 
-    if ($sla_times['time_not_init'] > 0) {
+    if ($sla['time_not_init'] > 0) {
         return REPORT_STATUS_NOT_INIT;
     }
 
-    if ($sla_times['time_ok'] > 0) {
+    if ($sla['time_ok'] > 0) {
+        return REPORT_STATUS_OK;
+    }
+
+    return REPORT_STATUS_IGNORED;
+}
+
+
+/**
+ * @brief Given a period, get the SLA status
+ * of the period compare with sla_limit.
+ *
+ * @param Array An array with all times to calculate the SLA.
+ * @param int Limit SLA pass for user.
+ * Only used for monthly, weekly And hourly report.
+ *
+ * @return integer Status
+ */
+function reporting_sla_get_status_period_compliance(
+    $sla,
+    $sla_limit
+) {
+    global $config;
+
+    $time_compliance = (
+        $sla['time_ok'] + $sla['time_unknown'] + $sla['time_downtime']
+    );
+
+    $time_total_working = (
+        $time_compliance + $sla['time_error']
+    );
+
+    $time_compliance = ($time_compliance == 0) ? 0 : (($time_compliance / $time_total_working) * 100);
+
+    if ($sla['time_error'] > 0 && ($time_compliance < $sla_limit)) {
+        return REPORT_STATUS_ERR;
+    }
+
+    if ($priority_mode == REPORT_PRIORITY_MODE_OK
+        && $sla['time_ok'] > 0 && ($time_compliance >= $sla_limit)
+    ) {
+        return REPORT_STATUS_OK;
+    }
+
+    if ($sla['time_out'] > 0 && ($time_compliance < $sla_limit)) {
+        return REPORT_STATUS_IGNORED;
+    }
+
+    if ($sla['time_downtime'] > 0 && ($time_compliance < $sla_limit)) {
+        return REPORT_STATUS_DOWNTIME;
+    }
+
+    if ($sla['time_unknown'] > 0 && ($time_compliance < $sla_limit)) {
+        return REPORT_STATUS_UNKNOWN;
+    }
+
+    if ($sla['time_not_init'] > 0 && ($time_compliance < $sla_limit)) {
+        return REPORT_STATUS_NOT_INIT;
+    }
+
+    if ($sla['time_ok'] > 0 && ($time_compliance >= $sla_limit)) {
         return REPORT_STATUS_OK;
     }
 

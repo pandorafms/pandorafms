@@ -565,7 +565,7 @@ if (!empty($network_interfaces)) {
 
         $sqlLast_contact = sprintf(
             '
-			SELECT last_try
+			SELECT timestamp
 			FROM tagente_estado
 			WHERE id_agente_modulo = '.$interface['status_module_id']
         );

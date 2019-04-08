@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "description": "Visual Console",
   "scripts": {
-    "build": "BUILD_PATH=\"pandora_console/include/visual-console\" NODE_ENV=production webpack",
-    "build:dev": "BUILD_PATH=\"pandora_console/include/visual-console\" NODE_ENV=development webpack",
+    "build": "BUILD_PATH=\"pandora_console/include/visual-console-client\" NODE_ENV=production webpack",
+    "build:dev": "BUILD_PATH=\"pandora_console/include/visual-console-client\" NODE_ENV=development webpack",
     "build:watch": "npm run build -- --watch",
     "format": "prettier",
     "lint": "eslint \"src/**/*.ts\"",

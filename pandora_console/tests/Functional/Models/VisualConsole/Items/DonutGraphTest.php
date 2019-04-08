@@ -23,12 +23,12 @@ class DonutGraphTest extends TestCase
             DonutGraph::class,
             DonutGraph::fromArray(
                 [
-                    'id'     => 3,
-                    'type'   => DONUT_GRAPH,
-                    'width'  => '600',
-                    'height' => '500',
-                    'color'  => '#33CCFF',
-                    'html'   => '<h1>Foo</h1>',
+                    'id'                    => 3,
+                    'type'                  => DONUT_GRAPH,
+                    'width'                 => '600',
+                    'height'                => '500',
+                    'legendBackgroundColor' => '#33CCFF',
+                    'html'                  => '<h1>Foo</h1>',
                 ]
             )
         );
@@ -57,7 +57,7 @@ class DonutGraphTest extends TestCase
     public function testContainerIsRepresentedAsJson(): void
     {
         $this->assertEquals(
-            '{"aclGroupId":null,"agentId":null,"agentName":null,"color":"#33CCFF","encodedHtml":"PGgxPkZvbzwvaDE+","height":0,"id":7,"isLinkEnabled":true,"isOnTop":false,"label":null,"labelPosition":"up","linkedLayoutAgentId":null,"linkedLayoutId":null,"linkedLayoutStatusType":"default","moduleId":null,"moduleName":null,"parentId":null,"type":17,"width":0,"x":-666,"y":76}',
+            '{"aclGroupId":null,"agentId":null,"agentName":null,"legendBackgroundColor":"#33CCFF","encodedHtml":"PGgxPkZvbzwvaDE+","height":0,"id":7,"isLinkEnabled":true,"isOnTop":false,"label":null,"labelPosition":"up","linkedLayoutAgentId":null,"linkedLayoutId":null,"linkedLayoutStatusType":"default","moduleId":null,"moduleName":null,"parentId":null,"type":17,"width":0,"x":-666,"y":76}',
             (string) DonutGraph::fromArray(
                 [
                     'id'            => 7,
@@ -78,22 +78,22 @@ class DonutGraphTest extends TestCase
         );
 
         $this->assertEquals(
-            '{"aclGroupId":null,"agentId":null,"agentName":null,"color":"#000000","encodedHtml":"PGgxPkZvbzwvaDE+","height":0,"id":7,"isLinkEnabled":true,"isOnTop":false,"label":null,"labelPosition":"left","linkedLayoutAgentId":null,"linkedLayoutId":null,"linkedLayoutStatusType":"default","moduleId":null,"moduleName":null,"parentId":null,"type":17,"width":0,"x":-666,"y":76}',
+            '{"aclGroupId":null,"agentId":null,"agentName":null,"legendBackgroundColor":"#000000","encodedHtml":"PGgxPkZvbzwvaDE+","height":0,"id":7,"isLinkEnabled":true,"isOnTop":false,"label":null,"labelPosition":"left","linkedLayoutAgentId":null,"linkedLayoutId":null,"linkedLayoutStatusType":"default","moduleId":null,"moduleName":null,"parentId":null,"type":17,"width":0,"x":-666,"y":76}',
             (string) DonutGraph::fromArray(
                 [
-                    'id'            => 7,
-                    'type'          => DONUT_GRAPH,
-                    'label'         => null,
-                    'labelPosition' => 'left',
-                    'isLinkEnabled' => true,
-                    'isOnTop'       => false,
-                    'parentId'      => null,
-                    'width'         => '0',
-                    'height'        => '0',
-                    'x'             => -666,
-                    'y'             => 76,
-                    'color'         => '#000000',
-                    'encodedHtml'   => 'PGgxPkZvbzwvaDE+',
+                    'id'                    => 7,
+                    'type'                  => DONUT_GRAPH,
+                    'label'                 => null,
+                    'labelPosition'         => 'left',
+                    'isLinkEnabled'         => true,
+                    'isOnTop'               => false,
+                    'parentId'              => null,
+                    'width'                 => '0',
+                    'height'                => '0',
+                    'x'                     => -666,
+                    'y'                     => 76,
+                    'legendBackgroundColor' => '#000000',
+                    'encodedHtml'           => 'PGgxPkZvbzwvaDE+',
                 ]
             )
         );

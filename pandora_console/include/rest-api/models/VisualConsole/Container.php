@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Models\VisualConsole;
 use Models\Model;
+// Enterprise item. It may not exist.
+use Enterprise\Models\VisualConsole\Items\Service;
 
 /**
  * Model of a Visual Console.
@@ -227,37 +229,42 @@ final class Container extends Model
             case ICON:
             return Items\Icon::class;
 
-            case SERVICE:
-                // TODO: Instance return.
-            break;
+            // Enterprise item.
+            case SERVICE:{
+                if (\class_exists('Service') === true) {
+                    return Service::class;
+                } else {
+                    return Item::class;
+                }
+            }
 
             case GROUP_ITEM:
-            return Items\Group::class;
+                return Items\Group::class;
 
-            case BOX_ITEM:
+                case BOX_ITEM:
             return Items\Box::class;
 
-            case LINE_ITEM:
+                case LINE_ITEM:
             return Items\Line::class;
 
-            case AUTO_SLA_GRAPH:
+                case AUTO_SLA_GRAPH:
             return Items\EventsHistory::class;
 
-            case DONUT_GRAPH:
-                // TODO: Instance return.
+                case DONUT_GRAPH:
+                    // TODO: Instance return.
             break;
 
-            case BARS_GRAPH:
-                // TODO: Instance return.
+                case BARS_GRAPH:
+                    // TODO: Instance return.
             break;
 
-            case CLOCK:
+                case CLOCK:
             return Items\Clock::class;
 
-            case COLOR_CLOUD:
+                case COLOR_CLOUD:
             return Items\ColorCloud::class;
 
-            default:
+                default:
             return Item::class;
         }
     }

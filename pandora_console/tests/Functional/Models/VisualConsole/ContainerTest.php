@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 use PHPUnit\Framework\TestCase;
 use Models\VisualConsole\Container as VisualConsole;
-use Models\VisualConsole\Items\StaticGraph;
 
 /**
  * Test for the Visual Console Container.

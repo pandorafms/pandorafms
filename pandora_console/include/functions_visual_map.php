@@ -4241,7 +4241,7 @@ function visual_map_create_internal_name_item($label=null, $type, $image, $agent
 
             case 'static_graph':
             case STATIC_GRAPH:
-                $text = __('Static graph').' - '.$image;
+                $text = __('Static Image').' - '.$image;
             break;
 
             case 'simple_value':

@@ -47,7 +47,7 @@ export function linePropsDecoder(data: UnknownObject): LineProps | never {
       x: parseIntOr(data.endX, 0),
       y: parseIntOr(data.endY, 0)
     },
-    lineWidth: parseIntOr(data.lineWidth, 0),
+    lineWidth: parseIntOr(data.lineWidth, 1),
     color: notEmptyStringOr(data.color, null)
   };
 }
@@ -82,8 +82,8 @@ export default class Line extends Item<LineProps> {
     // SVG container.
     const svg = document.createElementNS(svgNS, "svg");
     // Set SVG size.
-    // svg.setAttribute("width", this.props.width.toString());
-    // svg.setAttribute("height", this.props.height.toString());
+    svg.setAttribute("width", this.props.width.toString());
+    svg.setAttribute("height", this.props.height.toString());
     const line = document.createElementNS(svgNS, "line");
     line.setAttribute("x1", `${this.props.startPosition.x - this.props.x}`);
     line.setAttribute("y1", `${this.props.startPosition.y - this.props.y}`);

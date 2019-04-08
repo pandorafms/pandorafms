@@ -1448,15 +1448,27 @@ sub db_scan($) {
 
 	my @targets = split /,/, $self->{'task_data'}->{'subnet'};
 
+	my $global_step = 100 / (scalar @targets);
+	my $global_percent = 0;
 	my $i = 0;
 	foreach my $target (@targets) {
 		my @data;
 		my @modules;
+
+		$self->{'step'} = STEP_DATABASE_SCAN;
+		$self->{'c_network_name'} = $target;
+		$self->{'c_network_percent'} = 0;
+
+		# Send message
 		call('message', 'Checking target ' . $target, 10);
 
 		# Force target acquirement.
 		$self->{'task_data'}->{'dbhost'} = $target;
 		$self->{'task_data'}->{'target_index'} = $i++;
+
+		# Update progress
+		$self->{'c_network_percent'} = 10;
+		$self->call('update_progress', $global_percent + (10 / (scalar @targets)));
 
 		# Connect to target.
 		my $dbObj = PandoraFMS::Recon::Util::enterprise_new(
@@ -1466,6 +1478,10 @@ sub db_scan($) {
 
 		if (!$dbObj->is_connected()) {
 			call('message', 'Cannot connect to target ' . $target, 3);
+			$global_percent += $global_step;
+			$self->{'c_network_percent'} = 90;
+			# Update progress
+			$self->call('update_progress', $global_percent + (90 / (scalar @targets)));
 			$self->{'summary'}->{'not_alive'} += 1;
 			push @modules, {
 				name => $type . ' connection',
@@ -1489,8 +1505,9 @@ sub db_scan($) {
 
 			# Analyze.
 			$self->{'step'} = STEP_STATISTICS;
+			$self->{'c_network_percent'} = 30;
+			$self->call('update_progress', $global_percent + (30 / (scalar @targets)));
 			$self->{'c_network_name'} = $dbObj->get_host();
-			$self->call('update_progress', 10);
 
 			# Retrieve connection statistics.
 			# Retrieve uptime statistics
@@ -1498,15 +1515,21 @@ sub db_scan($) {
 			# Retrieve connections
 			# Retrieve innodb
 			# Retrieve cache
+			$self->{'c_network_percent'} = 50;
+			$self->call('update_progress', $global_percent + (50 / (scalar @targets)));
 			push @modules, $dbObj->get_statistics();
-			$self->call('update_progress', 50);
 
 			# Custom queries.
+			$self->{'step'} = STEP_CUSTOM_QUERIES;
+			$self->{'c_network_percent'} = 80;
+			$self->call('update_progress', $global_percent + (80 / (scalar @targets)));
 			push @modules, $dbObj->execute_custom_queries();
-			$self->call('update_progress', 90);
 
 			if (defined($dbObjCfg->{'scan_databases'})
 			&& $dbObjCfg->{'scan_databases'} == 1) {
+				# Skip database scan in Oracle tasks
+				next if $self->{'type'} == DISCOVERY_APP_ORACLE;
+
 				my $__data = $dbObj->scan_databases();
 
 				if (ref($__data) eq "ARRAY") {
@@ -1545,6 +1568,10 @@ sub db_scan($) {
 
 		# Destroy item.
 		undef($dbObj);
+
+		$global_percent += $global_step;
+		$self->{'c_network_percent'} = 100;
+		$self->call('update_progress', $global_percent);
 	}
 
 	# Update progress.

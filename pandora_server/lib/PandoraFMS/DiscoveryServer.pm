@@ -494,7 +494,7 @@ sub PandoraFMS::Recon::Base::create_agents($$) {
 
 		# Update agent information
 		pandora_update_agent(
-			$pa_config, time(), $agent_id,
+			$pa_config, strftime("%Y-%m-%d %H:%M:%S", localtime()), $agent_id,
 			$agent->{'os_version'}, $agent->{'agent_version'},
 			$agent->{'interval'}, $dbh, undef, $parent_id
 		);

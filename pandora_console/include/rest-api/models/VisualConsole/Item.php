@@ -757,10 +757,10 @@ class Item extends Model
      *
      * @param integer $id Identifier of the Visual Console Item.
      *
-     * @return array The Visual Console Item data structure stored into the DB.
+     * @return mixed The Visual Console Item data structure stored into the DB.
      * @throws \Exception When the data cannot be retrieved from the DB.
      */
-    public static function fromDBWithId(int $id): array
+    public static function fromDBWithId(int $id)
     {
         return static::fromDB(['id' => $id]);
     }

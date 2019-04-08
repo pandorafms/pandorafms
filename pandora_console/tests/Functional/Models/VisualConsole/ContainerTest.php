@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use PHPUnit\Framework\TestCase;
 use Models\VisualConsole\Container as VisualConsole;
+use Models\VisualConsole\Items\StaticGraph;
 
 /**
  * Test for the Visual Console Container.
@@ -237,6 +238,30 @@ class ContainerTest extends TestCase
                     'height'  => 768,
                 ]
             )
+        );
+    }
+
+
+    /**
+     * Test if the item's instance is returned properly.
+     *
+     * @return void
+     */
+    public function testItemClassIsReturned(): void
+    {
+        $this->assertEquals(
+            VisualConsole::getItemClass(STATIC_GRAPH),
+            Models\VisualConsole\Items\StaticGraph::class
+        );
+
+        $this->assertEquals(
+            VisualConsole::getItemClass(COLOR_CLOUD),
+            Models\VisualConsole\Items\ColorCloud::class
+        );
+
+        $this->assertEquals(
+            VisualConsole::getItemClass(LABEL),
+            Models\VisualConsole\Items\Label::class
         );
     }
 

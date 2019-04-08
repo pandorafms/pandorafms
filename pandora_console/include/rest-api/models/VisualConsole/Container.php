@@ -194,126 +194,107 @@ final class Container extends Model
 
 
     /**
-     * Obtain a container data structure from the database using layout id
-     * and returns a valid representation of the model
+     * Obtain a item's class.
      *
-     * @param integer $id_layout
+     * @param integer $type Type of the item of the Visual Console.
      *
-     * @return array
+     * @return mixed A reference to the item's class.
      */
-    public static function getItemsFromDB(int $id_layout): string
+    public static function getItemClass(int $type)
     {
-        $layout_items = db_get_all_rows_filter('tlayout_data', ['id_layout' => $id_layout]);
-        if (!empty($layout_items) === true) {
-            $array_items = [];
-            foreach ($layout_items as $key => $value) {
-                switch ($value['type']) {
-                    case STATIC_GRAPH:
-                        // code...
-                    break;
+        switch ($type) {
+            case STATIC_GRAPH:
+            return Items\StaticGraph::class;
 
-                    case MODULE_GRAPH:
-                        // code...
-                    break;
+            case MODULE_GRAPH:
+            return Items\ModuleGraph::class;
 
-                    case SIMPLE_VALUE:
-                    case SIMPLE_VALUE_MAX:
-                    case SIMPLE_VALUE_MIN:
-                    case SIMPLE_VALUE_AVG:
-                        array_push(
-                            $array_items,
-                            (string) Items\SimpleValue::fromArray($value)
-                        );
-                    break;
+            case SIMPLE_VALUE:
+            case SIMPLE_VALUE_MAX:
+            case SIMPLE_VALUE_MIN:
+            case SIMPLE_VALUE_AVG:
+            return Items\SimpleValue::class;
 
-                    case PERCENTILE_BAR:
-                        // code...
-                    break;
+            case PERCENTILE_BAR:
+            case PERCENTILE_BUBBLE:
+            case CIRCULAR_PROGRESS_BAR:
+            case CIRCULAR_INTERIOR_PROGRESS_BAR:
+            return Items\Percentile::class;
 
-                    case LABEL:
-                        array_push(
-                            $array_items,
-                            (string) Items\Label::fromArray($value)
-                        );
-                    break;
+            case LABEL:
+            return Items\Label::class;
 
-                    case ICON:
-                        array_push(
-                            $array_items,
-                            (string) Items\Icon::fromArray($value)
-                        );
-                    break;
+            case ICON:
+            return Items\Icon::class;
 
-                    case PERCENTILE_BUBBLE:
-                        // code...
-                    break;
+            case SERVICE:
+                // TODO: Instance return.
+            break;
 
-                    case SERVICE:
-                        // code...
-                    break;
+            case GROUP_ITEM:
+            return Items\Group::class;
 
-                    case GROUP_ITEM:
-                        array_push(
-                            $array_items,
-                            (string) Items\Group::fromArray($value)
-                        );
-                    break;
+            case BOX_ITEM:
+            return Items\Box::class;
 
-                    case BOX_ITEM:
-                        array_push(
-                            $array_items,
-                            (string) Items\Box::fromArray($value)
-                        );
-                    break;
+            case LINE_ITEM:
+            return Items\Line::class;
 
-                    case LINE_ITEM:
-                        array_push(
-                            $array_items,
-                            (string) Items\Line::fromArray($value)
-                        );
-                    break;
+            case AUTO_SLA_GRAPH:
+            return Items\EventsHistory::class;
 
-                    case AUTO_SLA_GRAPH:
-                        array_push(
-                            $array_items,
-                            (string) Items\EventsHistory::fromArray($value)
-                        );
-                    break;
+            case DONUT_GRAPH:
+                // TODO: Instance return.
+            break;
 
-                    case CIRCULAR_PROGRESS_BAR:
-                        // code...
-                    break;
+            case BARS_GRAPH:
+                // TODO: Instance return.
+            break;
 
-                    case CIRCULAR_INTERIOR_PROGRESS_BAR:
-                        // code...
-                    break;
+            case CLOCK:
+            return Items\Clock::class;
 
-                    case DONUT_GRAPH:
-                        // code...
-                    break;
+            case COLOR_CLOUD:
+            return Items\ColorCloud::class;
 
-                    case BARS_GRAPH:
-                        // code...
-                    break;
+            default:
+            return Item::class;
+        }
+    }
 
-                    case CLOCK:
-                        array_push(
-                            $array_items,
-                            (string) Items\Clock::fromArray($value)
-                        );
-                    break;
 
-                    case COLOR_CLOUD:
-                        array_push(
-                            $array_items,
-                            (string) Items\ColorCloud::fromArray($value)
-                        );
-                    break;
-                }
-            }
+    /**
+     * Obtain a list of items which belong to the Visual Console.
+     *
+     * @param integer $layoutId Identifier of the Visual Console.
+     *
+     * @return array A list of items.
+     * @throws \Exception When the data cannot be retrieved from the DB.
+     */
+    public static function getItemsFromDB(int $layoutId): array
+    {
+        $filter = ['id_layout' => $layoutId];
+        $fields = [
+            'id',
+            'type',
+        ];
+        $rows = \db_get_all_rows_filter('tlayout_data', $filter, $fields);
+
+        if ($rows === false) {
+            $rows = [];
+            // TODO: throw new \Exception('error fetching the data from the DB');
         }
 
-        return json_encode($array_items);
+        $items = [];
+
+        foreach ($rows as $data) {
+            $itemId = (int) $data['id'];
+            $itemType = (int) $data['type'];
+            $class = static::getItemClass($itemType);
+            \array_push($items, $class::fromDBWithId($itemId));
+        }
+
+        return $items;
     }
 
 

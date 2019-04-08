@@ -230,40 +230,34 @@ final class Container extends Model
             return Items\Icon::class;
 
             // Enterprise item.
-            case SERVICE:{
-                if (\class_exists('Service') === true) {
-                    return Service::class;
-                } else {
-                    return Item::class;
-                }
-            }
+            case SERVICE:
+            return \class_exists('Service') ? Service::class : Item::class;
 
             case GROUP_ITEM:
-                return Items\Group::class;
+            return Items\Group::class;
 
-                case BOX_ITEM:
+            case BOX_ITEM:
             return Items\Box::class;
 
-                case LINE_ITEM:
+            case LINE_ITEM:
             return Items\Line::class;
 
-                case AUTO_SLA_GRAPH:
+            case AUTO_SLA_GRAPH:
             return Items\EventsHistory::class;
 
-                case DONUT_GRAPH:
+            case DONUT_GRAPH:
             return Items\DonutGraph::class;
 
-                case BARS_GRAPH:
-                    // TODO: Instance return.
-            break;
+            case BARS_GRAPH:
+            return Items\BarsGraph::class;
 
-                case CLOCK:
+            case CLOCK:
             return Items\Clock::class;
 
-                case COLOR_CLOUD:
+            case COLOR_CLOUD:
             return Items\ColorCloud::class;
 
-                default:
+            default:
             return Item::class;
         }
     }
@@ -288,7 +282,7 @@ final class Container extends Model
 
         if ($rows === false) {
             $rows = [];
-            // TODO: throw new \Exception('error fetching the data from the DB');
+            // TODO: throw new \Exception('error fetching the data from the DB');.
         }
 
         $items = [];

@@ -1242,6 +1242,11 @@ class NetworkMap
             return '';
         }
 
+        if ($this->mapOptions['fixed_positions']) {
+            // Ignore.
+            return;
+        }
+
         $dot_str = '';
 
         // Color is being printed by D3, not graphviz.
@@ -1258,6 +1263,15 @@ class NetworkMap
         }
 
         $radius /= GRAPHVIZ_CONVERSION_FACTOR;
+
+        if (is_array($label)) {
+            $label = array_reduce(
+                function ($carry, $item) {
+                    $carry .= $item;
+                    return $carry;
+                }
+            );
+        }
 
         if (strlen($label) > 16) {
             $label = ui_print_truncate_text($label, 16, false, true, false);
@@ -2079,6 +2093,10 @@ class NetworkMap
                         'id_source' => $id_source,
                         'label'     => $label,
                         'image'     => null,
+                        'radius'    => max(
+                            $node['width'],
+                            $node['height']
+                        ),
                     ]
                 );
 
@@ -2453,6 +2471,8 @@ class NetworkMap
             $this->map['width'] = $this->mapOptions['width'];
             $this->map['height'] = $this->mapOptions['height'];
         }
+
+        $this->map['filter']['z_dash'] = $this->mapOptions['z_dash'];
 
         if (is_array($graph) === true) {
             $nodes = $graph['nodes'];

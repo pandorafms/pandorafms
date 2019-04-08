@@ -51,6 +51,12 @@ export interface ItemClickEvent<Props extends ItemProps> {
   data: UnknownObject;
 }
 
+// FIXME: Fix type compatibility.
+export interface ItemRemoveEvent<Props extends ItemProps> {
+  // data: Props;
+  data: UnknownObject;
+}
+
 /**
  * Extract a valid enum value from a raw label positi9on value.
  * @param labelPosition Raw value.
@@ -113,6 +119,10 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
   protected readonly childElementRef: HTMLElement;
   // Event manager for click events.
   private readonly clickEventManager = new TypedEvent<ItemClickEvent<Props>>();
+  // Event manager for click events.
+  private readonly removeEventManager = new TypedEvent<
+    ItemRemoveEvent<Props>
+  >();
   // List of references to clean the event listeners.
   private readonly disposables: Disposable[] = [];
 
@@ -157,8 +167,7 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
   private createContainerDomElement(): HTMLElement {
     const box: HTMLDivElement = document.createElement("div");
     box.className = "visual-console-item";
-    // box.style.width = `${this.props.width}px`;
-    // box.style.height = `${this.props.height}px`;
+    box.style.zIndex = this.props.isOnTop ? "2" : "1";
     box.style.left = `${this.props.x}px`;
     box.style.top = `${this.props.y}px`;
     box.onclick = () => this.clickEventManager.emit({ data: this.props });
@@ -251,8 +260,14 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
    * To remove the event listeners and the elements from the DOM.
    */
   public remove(): void {
+    // Call the remove event.
+    this.removeEventManager.emit({ data: this.props });
     // Event listeners.
-    this.disposables.forEach(_ => _.dispose());
+    this.disposables.forEach(disposable => {
+      try {
+        disposable.dispose();
+      } catch (ignored) {} // eslint-disable-line no-empty
+    });
     // VisualConsoleItem DOM element.
     this.elementRef.remove();
   }
@@ -359,13 +374,32 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
    * To add an event handler to the click of the linked visual console elements.
    * @param listener Function which is going to be executed when a linked console is clicked.
    */
-  public onClick(listener: Listener<ItemClickEvent<Props>>): void {
+  public onClick(listener: Listener<ItemClickEvent<Props>>): Disposable {
     /*
      * The '.on' function returns a function which will clean the event
      * listener when executed. We store all the 'dispose' functions to
      * call them when the item should be cleared.
      */
-    this.disposables.push(this.clickEventManager.on(listener));
+    const disposable = this.clickEventManager.on(listener);
+    this.disposables.push(disposable);
+
+    return disposable;
+  }
+
+  /**
+   * To add an event handler to the removal of the item.
+   * @param listener Function which is going to be executed when a item is removed.
+   */
+  public onRemove(listener: Listener<ItemRemoveEvent<Props>>): Disposable {
+    /*
+     * The '.on' function returns a function which will clean the event
+     * listener when executed. We store all the 'dispose' functions to
+     * call them when the item should be cleared.
+     */
+    const disposable = this.removeEventManager.on(listener);
+    this.disposables.push(disposable);
+
+    return disposable;
   }
 }
 

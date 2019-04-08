@@ -337,8 +337,8 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
    */
   protected resizeElement(width: number, height: number): void {
     // The most valuable size is the content size.
-    this.childElementRef.style.width = `${width}px`;
-    this.childElementRef.style.height = `${height}px`;
+    this.childElementRef.style.width = width > 0 ? `${width}px` : null;
+    this.childElementRef.style.height = height > 0 ? `${height}px` : null;
   }
 
   /**

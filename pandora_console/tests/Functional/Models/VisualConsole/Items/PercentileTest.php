@@ -59,7 +59,7 @@ class PercentileTest extends TestCase
     public function testContainerIsRepresentedAsJson(): void
     {
         $this->assertEquals(
-            '{"aclGroupId":null,"agentId":null,"agentName":null,"color":null,"height":0,"id":7,"isLinkEnabled":true,"isOnTop":false,"label":null,"labelColor":null,"labelPosition":"up","linkedLayoutAgentId":null,"linkedLayoutId":null,"linkedLayoutStatusType":"default","moduleId":null,"moduleName":null,"parentId":null,"percentileType":"progress-bar","type":3,"value":null,"valueType":"percent","width":0,"x":-666,"y":76}',
+            '{"aclGroupId":null,"agentId":null,"agentName":null,"color":null,"height":0,"id":7,"isLinkEnabled":true,"isOnTop":false,"label":null,"labelColor":null,"labelPosition":"up","linkedLayoutAgentId":null,"linkedLayoutId":null,"linkedLayoutStatusType":"default","maxValue":0,"minValue":null,"moduleId":null,"moduleName":null,"parentId":null,"percentileType":"progress-bar","type":3,"unit":null,"value":null,"valueType":"percent","width":0,"x":-666,"y":76}',
             (string) Percentile::fromArray(
                 [
                     'id'            => 7,
@@ -79,7 +79,7 @@ class PercentileTest extends TestCase
         );
 
         $this->assertEquals(
-            '{"aclGroupId":null,"agentId":null,"agentName":null,"color":null,"height":0,"id":7,"isLinkEnabled":true,"isOnTop":false,"label":null,"labelColor":null,"labelPosition":"up","linkedLayoutAgentId":null,"linkedLayoutId":null,"linkedLayoutStatusType":"default","moduleId":null,"moduleName":null,"parentId":null,"percentileType":"bubble","type":3,"value":null,"valueType":"percent","width":0,"x":-666,"y":76}',
+            '{"aclGroupId":null,"agentId":null,"agentName":null,"color":null,"height":0,"id":7,"isLinkEnabled":true,"isOnTop":false,"label":null,"labelColor":null,"labelPosition":"up","linkedLayoutAgentId":null,"linkedLayoutId":null,"linkedLayoutStatusType":"default","maxValue":0,"minValue":null,"moduleId":null,"moduleName":null,"parentId":null,"percentileType":"bubble","type":3,"unit":null,"value":null,"valueType":"percent","width":0,"x":-666,"y":76}',
             (string) Percentile::fromArray(
                 [
                     'id'            => 7,
@@ -99,7 +99,7 @@ class PercentileTest extends TestCase
         );
 
         $this->assertEquals(
-            '{"aclGroupId":null,"agentId":null,"agentName":null,"color":null,"height":0,"id":7,"isLinkEnabled":true,"isOnTop":false,"label":null,"labelColor":null,"labelPosition":"up","linkedLayoutAgentId":null,"linkedLayoutId":null,"linkedLayoutStatusType":"default","moduleId":null,"moduleName":null,"parentId":null,"percentileType":"circular-progress-bar","type":3,"value":"1","valueType":"value","width":0,"x":-666,"y":76}',
+            '{"aclGroupId":null,"agentId":null,"agentName":null,"color":null,"height":0,"id":7,"isLinkEnabled":true,"isOnTop":false,"label":null,"labelColor":null,"labelPosition":"up","linkedLayoutAgentId":null,"linkedLayoutId":null,"linkedLayoutStatusType":"default","maxValue":0,"minValue":null,"moduleId":null,"moduleName":null,"parentId":null,"percentileType":"circular-progress-bar","type":3,"unit":null,"value":1,"valueType":"value","width":0,"x":-666,"y":76}',
             (string) Percentile::fromArray(
                 [
                     'id'            => 7,
@@ -121,7 +121,7 @@ class PercentileTest extends TestCase
         );
 
         $this->assertEquals(
-            '{"aclGroupId":null,"agentId":null,"agentName":null,"color":"#FFF","height":0,"id":7,"isLinkEnabled":true,"isOnTop":false,"label":null,"labelColor":"#000","labelPosition":"up","linkedLayoutAgentId":null,"linkedLayoutId":null,"linkedLayoutStatusType":"default","moduleId":null,"moduleName":null,"parentId":null,"percentileType":"circular-progress-bar","type":3,"value":"80","valueType":"percent","width":0,"x":-666,"y":76}',
+            '{"aclGroupId":null,"agentId":null,"agentName":null,"color":"#FFF","height":0,"id":7,"isLinkEnabled":true,"isOnTop":false,"label":null,"labelColor":"#000","labelPosition":"up","linkedLayoutAgentId":null,"linkedLayoutId":null,"linkedLayoutStatusType":"default","maxValue":0,"minValue":null,"moduleId":null,"moduleName":null,"parentId":null,"percentileType":"circular-progress-bar","type":3,"unit":null,"value":80,"valueType":"percent","width":0,"x":-666,"y":76}',
             (string) Percentile::fromArray(
                 [
                     'id'            => 7,

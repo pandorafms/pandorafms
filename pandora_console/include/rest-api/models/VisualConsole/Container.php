@@ -251,8 +251,7 @@ final class Container extends Model
             return Items\EventsHistory::class;
 
                 case DONUT_GRAPH:
-                    // TODO: Instance return.
-            break;
+            return Items\DonutGraph::class;
 
                 case BARS_GRAPH:
                     // TODO: Instance return.

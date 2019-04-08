@@ -179,7 +179,7 @@ if (is_dir($dir)) {
 
     if (container != null) {
         try {
-        var visualConsole = new VisualConsole(container, props, items);
+            var visualConsole = new VisualConsole(container, props, items);
             console.log(visualConsole);
         } catch (error) {
             console.log("ERROR", error.message);

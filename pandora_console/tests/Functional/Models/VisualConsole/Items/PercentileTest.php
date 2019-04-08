@@ -30,7 +30,6 @@ class PercentileTest extends TestCase
                     'maxTime'   => null,
                     'valueType' => 'value',
                     'value'     => '123ms',
-                    'html'      => '<h1>Foo</h1>',
                 ]
             )
         );
@@ -39,14 +38,13 @@ class PercentileTest extends TestCase
             Percentile::class,
             Percentile::fromArray(
                 [
-                    'id'          => 14,
-                    'type'        => PERCENTILE_BUBBLE,
-                    'width'       => '600',
-                    'height'      => '500',
-                    'maxTime'     => 12800,
-                    'valueType'   => 'image',
-                    'value'       => 'data:image;asdasoih==',
-                    'encodedHtml' => 'PGgxPkZvbzwvaDE+',
+                    'id'        => 14,
+                    'type'      => PERCENTILE_BUBBLE,
+                    'width'     => '600',
+                    'height'    => '500',
+                    'maxTime'   => 12800,
+                    'valueType' => 'image',
+                    'value'     => 'data:image;asdasoih==',
                 ]
             )
         );
@@ -61,7 +59,7 @@ class PercentileTest extends TestCase
     public function testContainerIsRepresentedAsJson(): void
     {
         $this->assertEquals(
-            '{"aclGroupId":null,"agentId":null,"agentName":null,"color":null,"encodedHtml":"PGgxPkZvbzwvaDE+","height":0,"id":7,"isLinkEnabled":true,"isOnTop":false,"label":null,"labelColor":null,"labelPosition":"up","linkedLayoutAgentId":null,"linkedLayoutId":null,"linkedLayoutStatusType":"default","moduleId":null,"moduleName":null,"parentId":null,"percentileType":"progress-bar","type":3,"value":null,"valueType":"percent","width":0,"x":-666,"y":76}',
+            '{"aclGroupId":null,"agentId":null,"agentName":null,"color":null,"height":0,"id":7,"isLinkEnabled":true,"isOnTop":false,"label":null,"labelColor":null,"labelPosition":"up","linkedLayoutAgentId":null,"linkedLayoutId":null,"linkedLayoutStatusType":"default","moduleId":null,"moduleName":null,"parentId":null,"percentileType":"progress-bar","type":3,"value":null,"valueType":"percent","width":0,"x":-666,"y":76}',
             (string) Percentile::fromArray(
                 [
                     'id'            => 7,
@@ -76,13 +74,12 @@ class PercentileTest extends TestCase
                     'x'             => -666,
                     'y'             => 76,
                     'maxTime'       => null,
-                    'html'          => '<h1>Foo</h1>',
                 ]
             )
         );
 
         $this->assertEquals(
-            '{"aclGroupId":null,"agentId":null,"agentName":null,"color":null,"encodedHtml":"PGgxPkZvbzwvaDE+","height":0,"id":7,"isLinkEnabled":true,"isOnTop":false,"label":null,"labelColor":null,"labelPosition":"up","linkedLayoutAgentId":null,"linkedLayoutId":null,"linkedLayoutStatusType":"default","moduleId":null,"moduleName":null,"parentId":null,"percentileType":"bubble","type":3,"value":null,"valueType":"percent","width":0,"x":-666,"y":76}',
+            '{"aclGroupId":null,"agentId":null,"agentName":null,"color":null,"height":0,"id":7,"isLinkEnabled":true,"isOnTop":false,"label":null,"labelColor":null,"labelPosition":"up","linkedLayoutAgentId":null,"linkedLayoutId":null,"linkedLayoutStatusType":"default","moduleId":null,"moduleName":null,"parentId":null,"percentileType":"bubble","type":3,"value":null,"valueType":"percent","width":0,"x":-666,"y":76}',
             (string) Percentile::fromArray(
                 [
                     'id'            => 7,
@@ -97,13 +94,12 @@ class PercentileTest extends TestCase
                     'x'             => -666,
                     'y'             => 76,
                     'maxTime'       => 12800,
-                    'encodedHtml'   => 'PGgxPkZvbzwvaDE+',
                 ]
             )
         );
 
         $this->assertEquals(
-            '{"aclGroupId":null,"agentId":null,"agentName":null,"color":null,"encodedHtml":"PGgxPkZvbzwvaDE+","height":0,"id":7,"isLinkEnabled":true,"isOnTop":false,"label":null,"labelColor":null,"labelPosition":"up","linkedLayoutAgentId":null,"linkedLayoutId":null,"linkedLayoutStatusType":"default","moduleId":null,"moduleName":null,"parentId":null,"percentileType":"circular-progress-bar","type":3,"value":"1","valueType":"value","width":0,"x":-666,"y":76}',
+            '{"aclGroupId":null,"agentId":null,"agentName":null,"color":null,"height":0,"id":7,"isLinkEnabled":true,"isOnTop":false,"label":null,"labelColor":null,"labelPosition":"up","linkedLayoutAgentId":null,"linkedLayoutId":null,"linkedLayoutStatusType":"default","moduleId":null,"moduleName":null,"parentId":null,"percentileType":"circular-progress-bar","type":3,"value":"1","valueType":"value","width":0,"x":-666,"y":76}',
             (string) Percentile::fromArray(
                 [
                     'id'            => 7,
@@ -118,7 +114,6 @@ class PercentileTest extends TestCase
                     'x'             => -666,
                     'y'             => 76,
                     'maxTime'       => 12800,
-                    'encodedHtml'   => 'PGgxPkZvbzwvaDE+',
                     'valueType'     => 'value',
                     'value'         => '1',
                 ]
@@ -126,7 +121,7 @@ class PercentileTest extends TestCase
         );
 
         $this->assertEquals(
-            '{"aclGroupId":null,"agentId":null,"agentName":null,"color":"#FFF","encodedHtml":"PGgxPkZvbzwvaDE+","height":0,"id":7,"isLinkEnabled":true,"isOnTop":false,"label":null,"labelColor":"#000","labelPosition":"up","linkedLayoutAgentId":null,"linkedLayoutId":null,"linkedLayoutStatusType":"default","moduleId":null,"moduleName":null,"parentId":null,"percentileType":"circular-progress-bar","type":3,"value":"80","valueType":"percent","width":0,"x":-666,"y":76}',
+            '{"aclGroupId":null,"agentId":null,"agentName":null,"color":"#FFF","height":0,"id":7,"isLinkEnabled":true,"isOnTop":false,"label":null,"labelColor":"#000","labelPosition":"up","linkedLayoutAgentId":null,"linkedLayoutId":null,"linkedLayoutStatusType":"default","moduleId":null,"moduleName":null,"parentId":null,"percentileType":"circular-progress-bar","type":3,"value":"80","valueType":"percent","width":0,"x":-666,"y":76}',
             (string) Percentile::fromArray(
                 [
                     'id'            => 7,
@@ -141,7 +136,6 @@ class PercentileTest extends TestCase
                     'x'             => -666,
                     'y'             => 76,
                     'maxTime'       => 12800,
-                    'encodedHtml'   => 'PGgxPkZvbzwvaDE+',
                     'valueType'     => 'percent',
                     'value'         => '80',
                     'color'         => '#FFF',

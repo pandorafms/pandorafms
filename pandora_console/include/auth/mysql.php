@@ -1252,9 +1252,8 @@ function check_permission_ldap(
 function fill_permissions_ldap($sr)
 {
     global $config;
-
     $permissions = [];
-    if (!$config['ldap_advanced_config']) {
+    if ($config['autocreate_remote_users'] && $config['ldap_save_profile']) {
         $permissions[0]['profile'] = $config['default_remote_profile'];
         $permissions[0]['groups'][] = $config['default_remote_group'];
         $permissions[0]['tags'] = $config['default_assign_tags'];

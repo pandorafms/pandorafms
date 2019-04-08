@@ -19,11 +19,7 @@ check_login();
 require_once $config['homedir'].'/vendor/autoload.php';
 require_once $config['homedir'].'/include/functions_visual_map.php';
 
-if (!defined('METACONSOLE')) {
-    $id_layout = (int) get_parameter('id');
-} else {
-    $id_layout = (int) get_parameter('id_visualmap');
-}
+$id_layout = (int) get_parameter(!is_metaconsole() ? 'id' : 'id_visualmap');
 
 // Get input parameter for layout id.
 if (!$id_layout) {
@@ -138,31 +134,35 @@ if (!is_metaconsole()) {
     html_print_input_hidden('metaconsole', 1);
 }
 
-use Models\VisualConsole\Container;
+use Models\VisualConsole\Container as VisualConsole;
 
-$container = (string) Container::fromArray($layout);
-$items = Container::getItemsFromDB($id_layout);
+$visualConsole = VisualConsole::fromArray($layout);
+$visualConsoleItems = VisualConsole::getItemsFromDB($id_layout);
 
 echo '<div id="visual-console-container"></div>';
 
-$dir = $config['homedir'].'/include/visual-console/';
+// TODO: Extract to a function.
+$vcClientPath = 'include/visual-console-client';
+$dir = $config['homedir'].'/'.$vcClientPath;
 if (is_dir($dir)) {
     $dh = opendir($dir);
     if ($dh) {
         while (($file = readdir($dh)) !== false) {
-            if ($file !== '.' && $file !== '..') {
-                preg_match('/.*.js$/', $file, $match_js, PREG_OFFSET_CAPTURE);
-                if (!empty($match_js)) {
-                    echo '<script type="text/javascript"
-                    src="'.ui_get_full_url(false, false, false, false).'include/visual-console/'.$match_js[0][0].'"></script>';
-                    continue;
-                }
+            if ($file === '.' || $file === '..') {
+                continue;
+            }
 
-                preg_match('/.*.css$/', $file, $match_css, PREG_OFFSET_CAPTURE);
-                if (!empty($match_css)) {
-                    echo '<link rel="stylesheet" type="text/css" media="screen"
-                    href="'.ui_get_full_url(false, false, false, false).'include/visual-console/'.$match_css[0][0].'" />';
-                }
+            preg_match('/.*.js$/', $file, $match, PREG_OFFSET_CAPTURE);
+            if (empty($match) === false) {
+                $url = ui_get_full_url(false, false, false, false).$vcClientPath.'/'.$match[0][0];
+                echo '<script type="text/javascript" src="'.$url.'"></script>';
+                continue;
+            }
+
+            preg_match('/.*.css$/', $file, $match, PREG_OFFSET_CAPTURE);
+            if (empty($match) === false) {
+                $url = ui_get_full_url(false, false, false, false).$vcClientPath.'/'.$match[0][0];
+                echo '<link rel="stylesheet" type="text/css" href="'.$url.'" />';
             }
         }
 
@@ -170,16 +170,19 @@ if (is_dir($dir)) {
     }
 }
 
-echo '<script type="text/javascript">';
-    echo 'var container = document.getElementById("visual-console-container");';
-    echo 'var props = '.$container.';';
-    echo 'var items = '.$items.';';
-echo '</script>';
-
 ?>
-<script type="text/javascript">
-    $(document).ready(function () {
-        var visualConsole = new VisualConsole(container, props, items);
-    });
-</script>
 
+<script type="text/javascript">
+    var container = document.getElementById("visual-console-container");
+    var props = <?php echo (string) $visualConsole; ?>;
+    var items = <?php echo '['.implode($visualConsoleItems, ',').']'; ?>;
+
+    if (container != null) {
+        try {
+        var visualConsole = new VisualConsole(container, props, items);
+            console.log(visualConsole);
+        } catch (error) {
+            console.log("ERROR", error.message);
+        }
+    }
+</script>

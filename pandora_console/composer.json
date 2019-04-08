@@ -13,7 +13,8 @@
   },
   "autoload": {
     "psr-4": {
-      "Models\\": "include/rest-api/models"
+      "Models\\": "include/rest-api/models",
+      "Enterprise\\Models\\": "enterprise/include/rest-api/models"
     }
   },
   "autoload-dev": {

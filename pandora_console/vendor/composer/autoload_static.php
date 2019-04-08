@@ -27,6 +27,7 @@ class ComposerStaticInitfdecadadce22e6dde51e9535fe4ad7aa
         ),
         'E' => 
         array (
+            'Enterprise\\Models\\' => 18,
             'Egulias\\EmailValidator\\' => 23,
         ),
         'D' => 
@@ -51,6 +52,10 @@ class ComposerStaticInitfdecadadce22e6dde51e9535fe4ad7aa
         'Models\\' => 
         array (
             0 => __DIR__ . '/../..' . '/include/rest-api/models',
+        ),
+        'Enterprise\\Models\\' => 
+        array (
+            0 => __DIR__ . '/../..' . '/enterprise/include/rest-api/models',
         ),
         'Egulias\\EmailValidator\\' => 
         array (

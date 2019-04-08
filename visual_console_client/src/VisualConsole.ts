@@ -125,8 +125,16 @@ export default class VisualConsole {
   private readonly containerRef: HTMLElement;
   // Properties.
   private _props: VisualConsoleProps;
-  // Visual Console Item instances.
-  private elements: Item<ItemProps>[] = [];
+  // Visual Console Item instances by their Id.
+  private elementsById: {
+    [key: number]: Item<ItemProps> | null;
+  } = {};
+  // Visual Console Item Ids.
+  private elementIds: ItemProps["id"][] = [];
+  // Dictionary which store the created lines.
+  private relations: {
+    [key: string]: Line | null;
+  } = {};
 
   public constructor(
     container: HTMLElement,
@@ -139,27 +147,57 @@ export default class VisualConsole {
     // Force the first render.
     this.render();
 
-    // TODO: Document.
+    // Sort by isOnTop, id ASC
+    items = items.sort(function(a, b) {
+      if (
+        a.isOnTop == null ||
+        b.isOnTop == null ||
+        a.id == null ||
+        b.id == null
+      ) {
+        return 0;
+      }
+
+      if (a.isOnTop && !b.isOnTop) return 1;
+      else if (!a.isOnTop && b.isOnTop) return -1;
+      else if (a.id < b.id) return 1;
+      else return -1;
+    });
+
+    // Initialize the items.
     items.forEach(item => {
       try {
         const itemInstance = itemInstanceFrom(item);
-        this.elements.push(itemInstance);
+        // Add the item to the list.
+        this.elementsById[itemInstance.props.id] = itemInstance;
+        this.elementIds.push(itemInstance.props.id);
+        // Item event handlers.
         itemInstance.onClick(e =>
           console.log(`Clicked element #${e.data.id}`, e)
         );
+        itemInstance.onRemove(e => {
+          // TODO: Remove the element from the list and its relations.
+        });
+        // Add the item to the DOM.
         this.containerRef.append(itemInstance.elementRef);
       } catch (error) {
         console.log("Error creating a new element:", error.message);
       }
     });
 
-    // Sort by isOnTop, id ASC
-    this.elements.sort(function(a, b) {
-      if (a.props.isOnTop && !b.props.isOnTop) return 1;
-      else if (!a.props.isOnTop && b.props.isOnTop) return -1;
-      else if (a.props.id < b.props.id) return 1;
-      else return -1;
-    });
+    // Create lines.
+    this.buildRelations();
+  }
+
+  /**
+   * Public accessor of the `elements` property.
+   * @return Properties.
+   */
+  public get elements(): Item<ItemProps>[] {
+    // Ensure the type cause Typescript doesn't know the filter removes null items.
+    return this.elementIds
+      .map(id => this.elementsById[id])
+      .filter(_ => _ != null) as Item<ItemProps>[];
   }
 
   /**
@@ -250,8 +288,76 @@ export default class VisualConsole {
    */
   public remove(): void {
     this.elements.forEach(e => e.remove()); // Arrow function.
-    this.elements = [];
+    this.elementsById = {};
+    this.elementIds = [];
     // Clean container.
     this.containerRef.innerHTML = "";
+  }
+
+  /**
+   * Create line elements which connect the elements with their parents.
+   */
+  private buildRelations(): void {
+    this.elements.forEach(item => {
+      if (item.props.parentId !== null) {
+        const parent = this.elementsById[item.props.parentId];
+        const child = this.elementsById[item.props.id];
+        if (parent && child) this.addRelationLine(parent, child);
+      }
+    });
+  }
+
+  /**
+   * Retrieve the line element which represent the relation between items.
+   * @param parentId Identifier of the parent item.
+   * @param childId Itentifier of the child item.
+   * @return The line element or nothing.
+   */
+  private getRelationLine(parentId: number, childId: number): Line | null {
+    const identifier = `${parentId}|${childId}`;
+    return this.relations[identifier] || null;
+  }
+
+  /**
+   * Add a new line item to represent a relation between the items.
+   * @param parent Parent item.
+   * @param child Child item.
+   * @return Whether the line was added or not.
+   */
+  private addRelationLine(
+    parent: Item<ItemProps>,
+    child: Item<ItemProps>
+  ): Line {
+    const identifier = `${parent.props.id}|${child.props.id}`;
+    if (this.relations[identifier] != null) {
+      (this.relations[identifier] as Line).remove();
+    }
+
+    // Get the items center.
+    const startX = parent.props.x + parent.elementRef.clientWidth / 2;
+    const startY = parent.props.y + parent.elementRef.clientHeight / 2;
+    const endX = child.props.x + child.elementRef.clientWidth / 2;
+    const endY = child.props.y + child.elementRef.clientHeight / 2;
+
+    const line = new Line(
+      linePropsDecoder({
+        id: 0,
+        type: ItemType.LINE_ITEM,
+        startX,
+        startY,
+        endX,
+        endY,
+        width: 0,
+        height: 0
+      })
+    );
+    // Save a reference to the line item.
+    this.relations[identifier] = line;
+
+    // Add the line to the DOM.
+    line.elementRef.style.zIndex = "0";
+    this.containerRef.append(line.elementRef);
+
+    return line;
   }
 }

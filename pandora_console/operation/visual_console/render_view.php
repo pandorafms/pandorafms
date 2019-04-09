@@ -13,7 +13,7 @@
 // GNU General Public License for more details.
 global $config;
 
-$legacy = (bool) get_parameter('legacy', false);
+$legacy = (bool) get_parameter('legacy');
 if ($legacy === false) {
     include_once $config['homedir'].'/operation/visual_console/view.php';
     return;

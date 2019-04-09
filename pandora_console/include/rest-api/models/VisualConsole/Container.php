@@ -291,7 +291,12 @@ final class Container extends Model
             $itemId = (int) $data['id'];
             $itemType = (int) $data['type'];
             $class = static::getItemClass($itemType);
-            \array_push($items, $class::fromDBWithId($itemId));
+
+            try {
+                \array_push($items, $class::fromDBWithId($itemId));
+            } catch (\Throwable $e) {
+                // TODO: Log this?
+            }
         }
 
         return $items;

@@ -898,7 +898,7 @@ class Item extends Model
                         // No autologin from the public view.
                         !$config['public_view']
                     );
-                } catch (\Exception $ignored) {
+                } catch (\Throwable $ignored) {
                     return null;
                 }
             }
@@ -1004,7 +1004,7 @@ class Item extends Model
                                 !$config['public_view']
                             );
                         }
-                    } catch (\Exception $ignored) {
+                    } catch (\Throwable $ignored) {
                         return null;
                     }
                 }
@@ -1055,7 +1055,7 @@ class Item extends Model
                             // No autologin from the public view.
                             !$config['public_view']
                         );
-                    } catch (\Exception $ignored) {
+                    } catch (\Throwable $ignored) {
                         return null;
                     }
                 }

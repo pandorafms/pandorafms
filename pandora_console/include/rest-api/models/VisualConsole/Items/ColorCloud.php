@@ -172,7 +172,7 @@ final class ColorCloud extends Item
                     }
                 }
             }
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             throw new \InvalidArgumentException('invalid dynamic data');
         }
 

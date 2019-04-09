@@ -46,7 +46,7 @@ final class Clock extends Item
             $clockData['clockTimezoneOffset'] = $timezone->getOffset(
                 $dateTimeUtc
             );
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             throw new \InvalidArgumentException($e->getMessage());
         }
 

@@ -641,7 +641,7 @@ sub process_module_data ($$$$$$$$$$) {
 	            'unknown_instructions' => '', 'tags' => '', 'critical_inverse' => 0, 'warning_inverse' => 0, 'quiet' => 0,
 				'module_ff_interval' => 0, 'alert_template' => '', 'crontab' =>	'', 'min_ff_event_normal' => 0,
 				'min_ff_event_warning' => 0, 'min_ff_event_critical' => 0, 'ff_timeout' => 0, 'each_ff' => 0, 'module_parent' => 0,
-				'module_parent_unlink' => 0, 'cron_interval' => 0};
+				'module_parent_unlink' => 0, 'cron_interval' => 0, 'ff_type' => 0};
 	
 	# Other tags will be saved here
 	$module_conf->{'extended_info'} = '';

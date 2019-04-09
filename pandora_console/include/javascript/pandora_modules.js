@@ -184,7 +184,12 @@ function configure_modules_form() {
           data["min_ff_event"] == 0 ? 0 : data["min_ff_event"]
         );
 
-        $("#checkbox-ff_type").prop("checked", data["ff_type"]);
+        if (data["ff_type"] != 0) {
+          $("#checkbox-ff_type").prop("checked", 1);
+        } else {
+          $("#checkbox-ff_type").prop("checked", 0);
+        }
+
         $("#text-post_process").attr(
           "value",
           data["post_process"] == 0 ? 0 : data["post_process"]

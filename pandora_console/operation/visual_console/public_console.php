@@ -15,6 +15,12 @@
 // The session is configured and started inside the config process.
 require_once '../../include/config.php';
 
+$legacy = (bool) get_parameter('legacy', false);
+if ($legacy === false) {
+    include_once $config['homedir'].'/operation/visual_console/public_view.php';
+    return;
+}
+
 // Set root on homedir, as defined in setup
 chdir($config['homedir']);
 

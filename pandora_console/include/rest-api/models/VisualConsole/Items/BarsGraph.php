@@ -258,18 +258,18 @@ final class BarsGraph extends Item
 
         switch ($data['label_position']) {
             case 'left':
-                $div_start = '<div style="float:left;height:15px;">';
-                $div_end = '</div>';
+                $divStart = '<div style="float:left;height:15px;">';
+                $divEnd = '</div>';
             break;
 
             case 'right':
-                $div_start = '<div style="float:right;height:15px;">';
-                $div_end = '</div>';
+                $divStart = '<div style="float:right;height:15px;">';
+                $divEnd = '</div>';
             break;
 
             default:
-                $div_start = '';
-                $div_end = '';
+                $divStart = '';
+                $divEnd = '';
             break;
         }
 
@@ -282,7 +282,7 @@ final class BarsGraph extends Item
         }
 
         if ($typeGraph === 'horizontal') {
-            $graph = $div_start.\hbar_graph(
+            $graph = $divStart.\hbar_graph(
                 $moduleData,
                 $width,
                 $height,
@@ -305,10 +305,10 @@ final class BarsGraph extends Item
                 $config['homeurl'],
                 $backGroundColor,
                 $gridColor
-            ).$div_end;
+            ).$divEnd;
         } else {
-            $graph = $div_start.\vbar_graph(
-                $module_data,
+            $graph = $divStart.\vbar_graph(
+                $moduleData,
                 $width,
                 $height,
                 $color,
@@ -332,7 +332,7 @@ final class BarsGraph extends Item
                 true,
                 false,
                 $gridColor
-            ).$div_end;
+            ).$divEnd;
         }
 
         // Restore connection.

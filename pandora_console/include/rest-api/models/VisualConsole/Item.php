@@ -376,7 +376,7 @@ class Item extends Model
     private static function extractAgentId(array $data)
     {
         return static::parseIntOr(
-            static::issetInArray($data, ['agentId', 'id_agente']),
+            static::issetInArray($data, ['agentId', 'id_agent', 'id_agente']),
             null
         );
     }
@@ -392,7 +392,14 @@ class Item extends Model
     private static function extractModuleId(array $data)
     {
         return static::parseIntOr(
-            static::issetInArray($data, ['moduleId', 'id_agente_modulo']),
+            static::issetInArray(
+                $data,
+                [
+                    'moduleId',
+                    'id_agente_modulo',
+                    'id_modulo',
+                ]
+            ),
             null
         );
     }

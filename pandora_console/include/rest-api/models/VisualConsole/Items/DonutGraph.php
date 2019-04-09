@@ -70,7 +70,7 @@ final class DonutGraph extends Item
                     'border_color',
                 ]
             ),
-            null
+            '#000000'
         );
     }
 

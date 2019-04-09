@@ -54,11 +54,11 @@ final class BarsGraph extends Item
      *
      * @return mixed String representing the grid color (not empty) or null.
      */
-    private function extractGridColor(array $data)
+    private function extractGridColor(array $data): string
     {
         return static::notEmptyStringOr(
             static::issetInArray($data, ['gridColor', 'border_color']),
-            null
+            '#000000'
         );
     }
 
@@ -104,11 +104,11 @@ final class BarsGraph extends Item
         );
 
         switch ($typeGraph) {
-            case 'vertical':
-            return 'vertical';
+            case 'horizontal':
+            return 'horizontal';
 
             default:
-            return 'horizontal';
+            return 'vertical';
         }
     }
 

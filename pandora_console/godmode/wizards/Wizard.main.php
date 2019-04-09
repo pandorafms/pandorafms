@@ -191,21 +191,20 @@ class Wizard
      * Builder for breadcrum
      *
      * @param array   $urls Array of urls to be stored in breadcrum.
-     * @param boolean $add  True if breadcrum should be added instead of
-     *      overwrite it.
+     * @param boolean $add  True if breadcrum should be added
+     *                      instead of overwrite it.
      *
      * @return void
      */
-    public function prepareBreadcrum(array $urls, bool $add=false, bool $separator_beginning=false)
-    {
+    public function prepareBreadcrum(
+        array $urls,
+        bool $add=false
+    ) {
         $bc = [];
         $i = 0;
-        $count = 0;
-        $array_size = count($urls);
+        $array_size = (count($urls) - 1);
 
         foreach ($urls as $url) {
-            $count++;
-
             if ($url['selected'] == 1) {
                 $class = 'selected';
             } else {
@@ -213,20 +212,10 @@ class Wizard
             }
 
             $bc[$i] = '';
-
-            if ($separator_beginning === true) {
-                $bc[$i] .= '<span class="breadcrumb_link">&nbsp/&nbsp</span>';
-            }
-
-            $bc[$i]   .= '<span><a class="breadcrumb_link '.$class.'" href="'.$url['link'].'">';
-            $bc[$i]   .= $url['label'];
-            $bc[$i]   .= '</a>';
-            if ($count < $array_size) {
-                $bc[$i] .= '<span class="breadcrumb_link">&nbsp/&nbsp</span>';
-            }
-
+            $bc[$i] .= '<span><a class="breadcrumb_link '.$class.'" href="'.$url['link'].'">';
+            $bc[$i] .= $url['label'];
+            $bc[$i] .= '</a>';
             $bc[$i] .= '</span>';
-
             $i++;
         }
 
@@ -235,7 +224,6 @@ class Wizard
         } else {
             $this->setBreadcrum($bc);
         }
-
     }
 
 
@@ -275,7 +263,10 @@ class Wizard
      */
     public function printBreadcrum()
     {
-        return implode('', $this->breadcrum);
+        return implode(
+            '<span class="breadcrumb_link">&nbsp/&nbsp</span>',
+            $this->breadcrum
+        );
     }
 
 

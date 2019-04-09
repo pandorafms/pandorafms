@@ -1427,9 +1427,9 @@ sub scan_subnet($) {
 }
 
 ##########################################################################
-# Perform a DB scan.
+# Perform an Application scan.
 ##########################################################################
-sub db_scan($) {
+sub app_scan($) {
 	my ($self) = @_;
 	my ($progress, $step);
 
@@ -1595,7 +1595,7 @@ sub scan($) {
 		if ($self->{'task_data'}->{'type'} == DISCOVERY_APP_MYSQL
 		||  $self->{'task_data'}->{'type'} == DISCOVERY_APP_ORACLE) {
 			# Database scan.
-			return $self->db_scan();
+			return $self->app_scan();
 		}
 	}
 

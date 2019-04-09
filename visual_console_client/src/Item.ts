@@ -40,6 +40,7 @@ export interface ItemProps extends Position, Size {
   label: string | null;
   labelPosition: "up" | "right" | "down" | "left";
   isLinkEnabled: boolean;
+  link: string | null;
   isOnTop: boolean;
   parentId: number | null;
   aclGroupId: number | null;
@@ -98,6 +99,7 @@ export function itemBasePropsDecoder(data: UnknownObject): ItemProps | never {
     label: notEmptyStringOr(data.label, null),
     labelPosition: parseLabelPosition(data.labelPosition),
     isLinkEnabled: parseBoolean(data.isLinkEnabled),
+    link: notEmptyStringOr(data.link, null),
     isOnTop: parseBoolean(data.isOnTop),
     parentId: parseIntOr(data.parentId, null),
     aclGroupId: parseIntOr(data.aclGroupId, null),
@@ -113,7 +115,7 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
   // Properties of the item.
   private itemProps: Props;
   // Reference to the DOM element which will contain the item.
-  public readonly elementRef: HTMLElement;
+  public elementRef: HTMLElement;
   private readonly labelElementRef: HTMLElement;
   // Reference to the DOM element which will contain the view of the item which extends this class.
   protected readonly childElementRef: HTMLElement;
@@ -165,7 +167,16 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
    * @return Item box.
    */
   private createContainerDomElement(): HTMLElement {
-    const box: HTMLDivElement = document.createElement("div");
+    let box;
+    if (this.props.isLinkEnabled) {
+      box = document.createElement("a");
+      box as HTMLAnchorElement;
+      if (this.props.link) box.href = this.props.link;
+    } else {
+      box = document.createElement("div");
+      box as HTMLDivElement;
+    }
+
     box.className = "visual-console-item";
     box.style.zIndex = this.props.isOnTop ? "2" : "1";
     box.style.left = `${this.props.x}px`;
@@ -249,6 +260,22 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
     // Change label.
     if (!prevProps || prevProps.label !== this.props.label) {
       this.labelElementRef.innerHTML = this.createLabelDomElement().innerHTML;
+    }
+    // Change link.
+    if (
+      prevProps &&
+      (prevProps.isLinkEnabled !== this.props.isLinkEnabled ||
+        (this.props.isLinkEnabled && prevProps.link !== this.props.link))
+    ) {
+      const container = this.createContainerDomElement();
+      container.innerHTML = this.elementRef.innerHTML;
+
+      if (this.elementRef.parentNode !== null) {
+        this.elementRef.parentNode.replaceChild(container, this.elementRef);
+      }
+
+      // Changed the reference to the main element. It's ugly, but needed.
+      this.elementRef = container;
     }
     // Change label position.
     if (!prevProps || prevProps.labelPosition !== this.props.labelPosition) {

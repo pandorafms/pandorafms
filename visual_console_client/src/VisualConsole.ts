@@ -5,7 +5,7 @@ import {
   parseIntOr,
   notEmptyStringOr
 } from "./lib";
-import Item, { ItemType, ItemProps } from "./Item";
+import Item, { ItemType, ItemProps, ItemClickEvent } from "./Item";
 import StaticGraph, { staticGraphPropsDecoder } from "./items/StaticGraph";
 import Icon, { iconPropsDecoder } from "./items/Icon";
 import ColorCloud, { colorCloudPropsDecoder } from "./items/ColorCloud";
@@ -19,6 +19,7 @@ import EventsHistory, {
   eventsHistoryPropsDecoder
 } from "./items/EventsHistory";
 import Percentile, { percentilePropsDecoder } from "./items/Percentile";
+import TypedEvent, { Disposable, Listener } from "./TypedEvent";
 
 // Base properties.
 export interface VisualConsoleProps extends Size {
@@ -135,6 +136,12 @@ export default class VisualConsole {
   private relations: {
     [key: string]: Line | null;
   } = {};
+  // Event manager for click events.
+  private readonly clickEventManager = new TypedEvent<
+    ItemClickEvent<ItemProps>
+  >();
+  // List of references to clean the event listeners.
+  private readonly disposables: Disposable[] = [];
 
   public constructor(
     container: HTMLElement,
@@ -172,9 +179,10 @@ export default class VisualConsole {
         this.elementsById[itemInstance.props.id] = itemInstance;
         this.elementIds.push(itemInstance.props.id);
         // Item event handlers.
-        itemInstance.onClick(e =>
-          console.log(`Clicked element #${e.data.id}`, e)
-        );
+        itemInstance.onClick(e => {
+          this.clickEventManager.emit(e);
+          // console.log(`Clicked element #${e.data.id}`, e);
+        });
         itemInstance.onRemove(e => {
           // TODO: Remove the element from the list and its relations.
         });
@@ -287,6 +295,7 @@ export default class VisualConsole {
    * To remove the event listeners and the elements from the DOM.
    */
   public remove(): void {
+    this.disposables.forEach(d => d.dispose()); // Arrow function.
     this.elements.forEach(e => e.remove()); // Arrow function.
     this.elementsById = {};
     this.elementIds = [];
@@ -359,5 +368,21 @@ export default class VisualConsole {
     this.containerRef.append(line.elementRef);
 
     return line;
+  }
+
+  /**
+   * Add an event handler to the click of the linked visual console elements.
+   * @param listener Function which is going to be executed when a linked console is clicked.
+   */
+  public onClick(listener: Listener<ItemClickEvent<ItemProps>>): Disposable {
+    /*
+     * The '.on' function returns a function which will clean the event
+     * listener when executed. We store all the 'dispose' functions to
+     * call them when the item should be cleared.
+     */
+    const disposable = this.clickEventManager.on(listener);
+    this.disposables.push(disposable);
+
+    return disposable;
   }
 }

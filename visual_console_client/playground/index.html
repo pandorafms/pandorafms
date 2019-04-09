@@ -299,6 +299,10 @@
       try {
         var visualConsole = new VisualConsole(container, props, items);
         console.log(visualConsole);
+
+        visualConsole.onClick(function(e) {
+          console.log("[CLICK]", e);
+        });
       } catch (error) {
         console.log("ERROR", error.message);
       }

@@ -121,7 +121,7 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
   protected readonly childElementRef: HTMLElement;
   // Event manager for click events.
   private readonly clickEventManager = new TypedEvent<ItemClickEvent<Props>>();
-  // Event manager for click events.
+  // Event manager for remove events.
   private readonly removeEventManager = new TypedEvent<
     ItemRemoveEvent<Props>
   >();

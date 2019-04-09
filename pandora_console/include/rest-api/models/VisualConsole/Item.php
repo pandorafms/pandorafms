@@ -183,16 +183,16 @@ class Item extends Model
         $decodedData = [
             'id'            => (int) $data['id'],
             'type'          => (int) $data['type'],
-            'label'         => $this->extractLabel($data),
-            'labelPosition' => $this->extractLabelPosition($data),
-            'isLinkEnabled' => $this->extractIsLinkEnabled($data),
-            'isOnTop'       => $this->extractIsOnTop($data),
-            'parentId'      => $this->extractParentId($data),
-            'aclGroupId'    => $this->extractAclGroupId($data),
+            'label'         => static::extractLabel($data),
+            'labelPosition' => static::extractLabelPosition($data),
+            'isLinkEnabled' => static::extractIsLinkEnabled($data),
+            'isOnTop'       => static::extractIsOnTop($data),
+            'parentId'      => static::extractParentId($data),
+            'aclGroupId'    => static::extractAclGroupId($data),
             'width'         => (int) $data['width'],
             'height'        => (int) $data['height'],
-            'x'             => $this->extractX($data),
-            'y'             => $this->extractY($data),
+            'x'             => static::extractX($data),
+            'y'             => static::extractY($data),
         ];
 
         if (static::$useLinkedModule === true) {
@@ -218,6 +218,14 @@ class Item extends Model
             $decodedData['encodedHtml'] = static::extractEncodedHtml($data);
         }
 
+        // Conditionally add the item link.
+        if ($decodedData['isLinkEnabled'] === true) {
+            $decodedData['link'] = static::notEmptyStringOr(
+                static::issetInArray($data, ['link']),
+                null
+            );
+        }
+
         return $decodedData;
     }
 
@@ -229,7 +237,7 @@ class Item extends Model
      *
      * @return integer Valid x axis position of the item.
      */
-    private function extractX(array $data): int
+    private static function extractX(array $data): int
     {
         return static::parseIntOr(
             static::issetInArray($data, ['x', 'pos_x']),
@@ -245,7 +253,7 @@ class Item extends Model
      *
      * @return integer Valid y axis position of the item.
      */
-    private function extractY(array $data): int
+    private static function extractY(array $data): int
     {
         return static::parseIntOr(
             static::issetInArray($data, ['y', 'pos_y']),
@@ -261,7 +269,7 @@ class Item extends Model
      *
      * @return integer Valid identifier of a group.
      */
-    private function extractAclGroupId(array $data)
+    private static function extractAclGroupId(array $data)
     {
         return static::parseIntOr(
             static::issetInArray($data, ['id_group', 'aclGroupId']),
@@ -277,7 +285,7 @@ class Item extends Model
      *
      * @return integer Valid identifier of the item's parent.
      */
-    private function extractParentId(array $data)
+    private static function extractParentId(array $data)
     {
         return static::parseIntOr(
             static::issetInArray($data, ['parentId', 'parent_item']),
@@ -293,7 +301,7 @@ class Item extends Model
      *
      * @return boolean If the item is on top or not.
      */
-    private function extractIsOnTop(array $data): bool
+    private static function extractIsOnTop(array $data): bool
     {
         return static::parseBool(
             static::issetInArray($data, ['isOnTop', 'show_on_top'])
@@ -308,7 +316,7 @@ class Item extends Model
      *
      * @return boolean If the item has the link enabled or not.
      */
-    private function extractIsLinkEnabled(array $data): bool
+    private static function extractIsLinkEnabled(array $data): bool
     {
         return static::parseBool(
             static::issetInArray($data, ['isLinkEnabled', 'enable_link'])
@@ -323,7 +331,7 @@ class Item extends Model
      *
      * @return mixed String representing the label (not empty) or null.
      */
-    private function extractLabel(array $data)
+    private static function extractLabel(array $data)
     {
         return static::notEmptyStringOr(
             static::issetInArray($data, ['label']),
@@ -339,7 +347,7 @@ class Item extends Model
      *
      * @return mixed One string of up|right|left|down. down by default.
      */
-    private function extractLabelPosition(array $data): string
+    private static function extractLabelPosition(array $data): string
     {
         $labelPosition = static::notEmptyStringOr(
             static::issetInArray($data, ['labelPosition', 'label_position']),
@@ -355,6 +363,54 @@ class Item extends Model
             default:
             return 'down';
         }
+    }
+
+
+    /**
+     * Extract an agent Id value.
+     *
+     * @param array $data Unknown input data structure.
+     *
+     * @return integer Valid identifier of an agent.
+     */
+    private static function extractAgentId(array $data)
+    {
+        return static::parseIntOr(
+            static::issetInArray($data, ['agentId', 'id_agente']),
+            null
+        );
+    }
+
+
+    /**
+     * Extract an module Id value.
+     *
+     * @param array $data Unknown input data structure.
+     *
+     * @return integer Valid identifier of a module.
+     */
+    private static function extractModuleId(array $data)
+    {
+        return static::parseIntOr(
+            static::issetInArray($data, ['moduleId', 'id_agente_modulo']),
+            null
+        );
+    }
+
+
+    /**
+     * Extract an metaconsole node Id value.
+     *
+     * @param array $data Unknown input data structure.
+     *
+     * @return integer Valid identifier of a metaconsole node.
+     */
+    private static function extractMetaconsoleId(array $data)
+    {
+        return static::parseIntOr(
+            static::issetInArray($data, ['metaconsoleId', 'id_metaconsole']),
+            null
+        );
     }
 
 
@@ -385,25 +441,13 @@ class Item extends Model
 
         // We should add the metaconsole Id if we can. If not,
         // it doesn't have to be into the structure.
-        $metaconsoleId = static::issetInArray(
-            $data,
-            [
-                'metaconsoleId',
-                'id_metaconsole',
-            ]
-        );
+        $metaconsoleId = static::extractMetaconsoleId($data);
         if ($metaconsoleId !== null) {
-            $metaconsoleId = static::parseIntOr($metaconsoleId, null);
-            if ($metaconsoleId !== null) {
-                $agentData['metaconsoleId'] = $metaconsoleId;
-            }
+            $agentData['metaconsoleId'] = $metaconsoleId;
         }
 
         // The agent Id should be a valid int or a null value.
-        $agentData['agentId'] = static::parseIntOr(
-            static::issetInArray($data, ['agentId', 'id_agent']),
-            null
-        );
+        $agentData['agentId'] = static::extractAgentId($data);
 
         // The agent name should be a valid string or a null value.
         $agentData['agentName'] = static::notEmptyStringOr(
@@ -448,10 +492,7 @@ class Item extends Model
         $moduleData = static::extractLinkedAgent($data);
 
         // The module Id should be a valid int or a null value.
-        $moduleData['moduleId'] = static::parseIntOr(
-            static::issetInArray($data, ['moduleId', 'id_agente_modulo']),
-            null
-        );
+        $moduleData['moduleId'] = static::extractModuleId($data);
 
         // The module name should be a valid string or a null value.
         $moduleData['moduleName'] = static::notEmptyStringOr(
@@ -491,24 +532,15 @@ class Item extends Model
      *   'linkedLayoutStatusTypeCriticalThreshold' => 80,
      * ]
      */
-    private function extractLinkedVisualConsole(array $data): array
+    private static function extractLinkedVisualConsole(array $data): array
     {
         $vcData = [];
 
         // We should add the metaconsole Id if we can. If not,
         // it doesn't have to be into the structure.
-        $metaconsoleId = static::issetInArray(
-            $data,
-            [
-                'metaconsoleId',
-                'id_metaconsole',
-            ]
-        );
+        $metaconsoleId = static::extractMetaconsoleId($data);
         if ($metaconsoleId !== null) {
-            $metaconsoleId = static::parseIntOr($metaconsoleId, null);
-            if ($metaconsoleId !== null) {
-                $vcData['metaconsoleId'] = $metaconsoleId;
-            }
+            $vcData['metaconsoleId'] = $metaconsoleId;
         }
 
         // The linked vc Id should be a valid int or a null value.
@@ -641,6 +673,11 @@ class Item extends Model
             $row = \array_merge($row, static::fetchAgentDataFromDB($row));
         }
 
+        // Build the item link if needed.
+        if (static::extractIsLinkEnabled($row) === true) {
+            $row['link'] = static::buildLink($row);
+        }
+
         return $row;
     }
 
@@ -661,33 +698,38 @@ class Item extends Model
         $agentData = [];
 
         // We should add the metaconsole Id if we can.
-        $metaconsoleId = static::issetInArray(
-            $itemData,
-            [
-                'metaconsoleId',
-                'id_metaconsole',
-            ]
-        );
-        if ($metaconsoleId !== null) {
-            $metaconsoleId = static::parseIntOr($metaconsoleId, null);
-        }
+        $metaconsoleId = static::extractMetaconsoleId($itemData);
 
-        // Can't fetch an agent with a missing Id.
-        $agentId = static::issetInArray($itemData, ['agentId', 'id_agent']);
-        if ($agentId === null) {
-            throw new \InvalidArgumentException('missing agent Id');
-        }
-
-        // Can't fetch an agent with a invalid Id.
-        $agentId = static::parseIntOr($agentId, null);
+        // Can't fetch an agent with an invalid Id.
+        $agentId = static::extractAgentId($itemData);
         if ($agentId === null) {
             throw new \InvalidArgumentException('invalid agent Id');
         }
 
-        // TODO: Should we make a connection to the metaconsole node?
-        // Due to this DB call, this function cannot be unit tested without
-        // a proper mock.
-        $agentName = \db_get_value('nombre', 'tagente', 'id_agente', $agentId);
+        if (\is_metaconsole() && $metaconsoleId === null) {
+            throw new \InvalidArgumentException('missing metaconsole node Id');
+        }
+
+        $agentName = false;
+
+        if (\is_metaconsole()) {
+            $agentName = \db_get_value_filter(
+                'nombre',
+                'tmetaconsole_agent',
+                [
+                    'id_agente'             => $agentId,
+                    'id_tmetaconsole_setup' => $metaconsoleId,
+                ]
+            );
+        } else {
+            $agentName = \db_get_value(
+                'nombre',
+                'tagente',
+                'id_agente',
+                $agentId
+            );
+        }
+
         if ($agentName === false) {
             throw new \Exception('error fetching the data from the DB');
         }
@@ -709,39 +751,54 @@ class Item extends Model
      * @throws \InvalidArgumentException When the input module Id is invalid.
      * @throws \Exception When the data cannot be retrieved from the DB.
      */
-    protected static function fetchModuleDataFromDB(
-        array $itemData
-    ): array {
+    protected static function fetchModuleDataFromDB(array $itemData): array
+    {
         // Initialize with the agent data.
         $moduleData = static::fetchAgentDataFromDB($itemData);
 
-        // Can't fetch an module with a missing Id.
-        $moduleId = static::issetInArray(
-            $itemData,
-            [
-                'moduleId',
-                'id_agente_modulo',
-            ]
-        );
-        if ($moduleId === null) {
-            throw new \InvalidArgumentException('missing module Id');
-        }
-
         // Can't fetch an module with a invalid Id.
-        $moduleId = static::parseIntOr($moduleId, null);
+        $moduleId = static::extractModuleId($itemData);
         if ($moduleId === null) {
             throw new \InvalidArgumentException('invalid module Id');
         }
 
-        // TODO: Should we make a connection to the metaconsole node?
-        // Due to this DB call, this function cannot be unit tested without
-        // a proper mock.
-        $moduleName = \db_get_value(
-            'nombre',
-            'tagente_modulo',
-            'id_agente_modulo',
-            $moduleId
-        );
+        // We should add the metaconsole Id if we can.
+        $metaconsoleId = static::extractMetaconsoleId($itemData);
+
+        if (\is_metaconsole() && $metaconsoleId === null) {
+            throw new \InvalidArgumentException('missing metaconsole node Id');
+        }
+
+        $moduleName = false;
+
+        if (\is_metaconsole()) {
+            // Connect to node.
+            if (\metaconsole_connect(null, $metaconsoleId) !== NOERR) {
+                throw new \InvalidArgumentException(
+                    'error connecting to the node'
+                );
+            }
+
+            $moduleName = \db_get_value_filter(
+                'nombre',
+                'tmetaconsole_agent',
+                [
+                    'id_agente'             => $agentId,
+                    'id_tmetaconsole_setup' => $metaconsoleId,
+                ]
+            );
+
+            // Restore connection.
+            \metaconsole_restore_db();
+        } else {
+            $moduleName = \db_get_value(
+                'nombre',
+                'tagente_modulo',
+                'id_agente_modulo',
+                $moduleId
+            );
+        }
+
         if ($moduleName === false) {
             throw new \Exception('error fetching the data from the DB');
         }
@@ -749,6 +806,256 @@ class Item extends Model
         $moduleData['moduleName'] = $moduleName;
 
         return $moduleData;
+    }
+
+
+    /**
+     * Generate a link to something related with the item.
+     *
+     * @param array $data Visual Console Item's data structure.
+     *
+     * @return mixed The link or a null value.
+     * @throws \Exception Not really. It's controlled.
+     */
+    protected static function buildLink(array $data)
+    {
+        global $config;
+
+        $linkedVisualConsole = static::extractLinkedVisualConsole($data);
+        $linkedModule = static::extractLinkedModule($data);
+        $linkedAgent = static::extractLinkedAgent($data);
+
+        $baseUrl = $config['homeurl'].'index.php';
+
+        // TODO: There's a feature to get the link from the label.
+        if (static::$useLinkedVisualConsole === true
+            && $linkedVisualConsole['linkedLayoutId'] !== null
+            && $linkedVisualConsole['linkedLayoutId'] > 0
+        ) {
+            // Linked Visual Console.
+            $vcId = $linkedVisualConsole['linkedLayoutId'];
+            // The layout can be from another node.
+            $metaconsoleId = $linkedVisualConsole['metaconsoleId'];
+
+            if (empty($metaconsoleId) === true && \is_metaconsole()) {
+                /*
+                 * A Visual Console from this console.
+                 * We are in a metaconsole.
+                 */
+
+                return $baseUrl.'?'.http_build_query(
+                    [
+                        'sec'          => 'screen',
+                        'sec2'         => 'screens/screens',
+                        'action'       => 'visualmap',
+                        'id_visualmap' => $vcId,
+                        'pure'         => (int) $config['pure'],
+                    ]
+                );
+            } else if (empty($metaconsoleId) === true && !\is_metaconsole()) {
+                /*
+                 * A Visual Console from this console.
+                 * We are in a regular console.
+                 */
+
+                return $baseUrl.'?'.http_build_query(
+                    [
+                        'sec'  => 'network',
+                        'sec2' => 'operation/visual_console/view',
+                        'id'   => $vcId,
+                        'pure' => (int) $config['pure'],
+                    ]
+                );
+            } else if (\is_metaconsole()) {
+                /*
+                 * A Visual Console from a meta node.
+                 * We are in a metaconsole.
+                 */
+
+                \enterprise_include_once(
+                    'include/functions_metaconsole.php'
+                );
+                \enterprise_include_once(
+                    'meta/include/functions_ui_meta.php'
+                );
+                try {
+                    $node = \metaconsole_get_connection_by_id(
+                        $metaconsoleId
+                    );
+                    return \ui_meta_get_node_url(
+                        $node,
+                        'network',
+                        // TODO: Link to a public view.
+                        'operation/visual_console/view',
+                        [],
+                        // No autologin from the public view.
+                        !$config['public_view']
+                    );
+                } catch (\Exception $ignored) {
+                    return null;
+                }
+            }
+        } else {
+            if (static::$useLinkedModule === true
+                && $linkedModule['moduleId'] !== null
+                && $linkedModule['moduleId'] > 0
+            ) {
+                // Module Id.
+                $moduleId = $linkedModule['moduleId'];
+                // The module can be from another node.
+                $metaconsoleId = $linkedModule['metaconsoleId'];
+
+                if (empty($metaconsoleId) === true) {
+                    /*
+                     * A module from this console.
+                     */
+
+                    // Check if the module is from a service.
+                    $serviceId = (int) \db_get_value_filter(
+                        'custom_integer_1',
+                        'tagente_modulo',
+                        [
+                            'id_agente_modulo'  => $moduleId,
+                            'prediction_module' => 1,
+                        ]
+                    );
+
+                    if (empty($serviceId) === false) {
+                        // A service.
+                        $queryParams = [
+                            'sec'        => 'services',
+                            'sec2'       => 'enterprise/operation/services/services',
+                            'id_service' => $serviceId,
+                        ];
+                    } else {
+                        // A regular module.
+                        $queryParams = [
+                            'sec'       => 'view',
+                            'sec2'      => 'operation/agentes/status_monitor',
+                            'id_module' => $moduleId,
+                        ];
+                    }
+
+                    return $baseUrl.'?'.http_build_query($queryParams);
+                } else if (\is_metaconsole()) {
+                    /*
+                     * A module from a meta node.
+                     * We are in a metaconsole.
+                     */
+
+                    // A Visual Console from a meta node.
+                    \enterprise_include_once(
+                        'include/functions_metaconsole.php'
+                    );
+                    \enterprise_include_once(
+                        'meta/include/functions_ui_meta.php'
+                    );
+                    try {
+                        $node = \metaconsole_get_connection_by_id(
+                            $metaconsoleId
+                        );
+
+                        // Connect to node.
+                        if (\metaconsole_connect($node) !== NOERR) {
+                            // Will be catched below.
+                            throw new \Exception(
+                                'error connecting to the node'
+                            );
+                        }
+
+                        // Check if the module is a service.
+                        $serviceId = (int) \db_get_value_filter(
+                            'custom_integer_1',
+                            'tagente_modulo',
+                            [
+                                'id_agente_modulo'  => $moduleId,
+                                'prediction_module' => 1,
+                            ]
+                        );
+
+                        // Restore connection.
+                        \metaconsole_restore_db();
+
+                        if (empty($serviceId) === false) {
+                            // A service.
+                            return \ui_meta_get_node_url(
+                                $node,
+                                'services',
+                                'enterprise/operation/services/services',
+                                ['id_service' => $serviceId],
+                                // No autologin from the public view.
+                                !$config['public_view']
+                            );
+                        } else {
+                            // A regular module.
+                            return \ui_meta_get_node_url(
+                                $node,
+                                'view',
+                                'operation/agentes/status_monitor',
+                                ['id_module' => $moduleId],
+                                // No autologin from the public view.
+                                !$config['public_view']
+                            );
+                        }
+                    } catch (\Exception $ignored) {
+                        return null;
+                    }
+                }
+            } else if (static::$useLinkedAgent === true
+                && $linkedAgent['agentId'] !== null
+                && $linkedAgent['agentId'] > 0
+            ) {
+                // Linked agent.
+                // Agent Id.
+                $agentId = $linkedAgent['agentId'];
+                // The agent can be from another node.
+                $metaconsoleId = $linkedAgent['metaconsoleId'];
+
+                if (empty($metaconsoleId) === true) {
+                    /*
+                     * An agent from this console.
+                     * We are in a regular console.
+                     */
+
+                    return $baseUrl.'?'.http_build_query(
+                        [
+                            'sec'       => 'estado',
+                            'sec2'      => 'operation/agentes/ver_agente',
+                            'id_agente' => $agentId,
+                        ]
+                    );
+                } else if (\is_metaconsole()) {
+                    /*
+                     * An agent from a meta node.
+                     * We are in a metaconsole.
+                     */
+
+                    \enterprise_include_once(
+                        'include/functions_metaconsole.php'
+                    );
+                    \enterprise_include_once(
+                        'meta/include/functions_ui_meta.php'
+                    );
+                    try {
+                        $node = \metaconsole_get_connection_by_id(
+                            $metaconsoleId
+                        );
+                        return \ui_meta_get_node_url(
+                            $node,
+                            'estado',
+                            'operation/agentes/ver_agente',
+                            ['id_agente' => $moduleId],
+                            // No autologin from the public view.
+                            !$config['public_view']
+                        );
+                    } catch (\Exception $ignored) {
+                        return null;
+                    }
+                }
+            }
+        }
+
+        return null;
     }
 
 

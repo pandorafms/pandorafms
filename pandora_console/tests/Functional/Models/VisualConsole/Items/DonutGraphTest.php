@@ -57,7 +57,7 @@ class DonutGraphTest extends TestCase
     public function testContainerIsRepresentedAsJson(): void
     {
         $this->assertEquals(
-            '{"aclGroupId":null,"agentId":null,"agentName":null,"legendBackgroundColor":"#33CCFF","encodedHtml":"PGgxPkZvbzwvaDE+","height":0,"id":7,"isLinkEnabled":true,"isOnTop":false,"label":null,"labelPosition":"up","linkedLayoutAgentId":null,"linkedLayoutId":null,"linkedLayoutStatusType":"default","moduleId":null,"moduleName":null,"parentId":null,"type":17,"width":0,"x":-666,"y":76}',
+            '{"aclGroupId":null,"agentId":null,"agentName":null,"encodedHtml":"PGgxPkZvbzwvaDE+","height":0,"id":7,"isLinkEnabled":true,"isOnTop":false,"label":null,"labelPosition":"up","legendBackgroundColor":"#33CCFF","linkedLayoutAgentId":null,"linkedLayoutId":null,"linkedLayoutStatusType":"default","moduleId":null,"moduleName":null,"parentId":null,"type":17,"width":0,"x":-666,"y":76}',
             (string) DonutGraph::fromArray(
                 [
                     'id'            => 7,
@@ -78,7 +78,7 @@ class DonutGraphTest extends TestCase
         );
 
         $this->assertEquals(
-            '{"aclGroupId":null,"agentId":null,"agentName":null,"legendBackgroundColor":"#000000","encodedHtml":"PGgxPkZvbzwvaDE+","height":0,"id":7,"isLinkEnabled":true,"isOnTop":false,"label":null,"labelPosition":"left","linkedLayoutAgentId":null,"linkedLayoutId":null,"linkedLayoutStatusType":"default","moduleId":null,"moduleName":null,"parentId":null,"type":17,"width":0,"x":-666,"y":76}',
+            '{"aclGroupId":null,"agentId":null,"agentName":null,"encodedHtml":"PGgxPkZvbzwvaDE+","height":0,"id":7,"isLinkEnabled":true,"isOnTop":false,"label":null,"labelPosition":"left","legendBackgroundColor":"#000000","linkedLayoutAgentId":null,"linkedLayoutId":null,"linkedLayoutStatusType":"default","moduleId":null,"moduleName":null,"parentId":null,"type":17,"width":0,"x":-666,"y":76}',
             (string) DonutGraph::fromArray(
                 [
                     'id'                    => 7,

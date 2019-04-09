@@ -58,13 +58,13 @@ final class Line extends Model
         return [
             'id'          => (int) $data['id'],
             'type'        => LINE_ITEM,
-            'startX'      => $this->extractStartX($data),
-            'startY'      => $this->extractStartY($data),
-            'endX'        => $this->extractEndX($data),
-            'endY'        => $this->extractEndY($data),
-            'isOnTop'     => $this->extractIsOnTop($data),
-            'borderWidth' => $this->extractBorderWidth($data),
-            'borderColor' => $this->extractBorderColor($data),
+            'startX'      => static::extractStartX($data),
+            'startY'      => static::extractStartY($data),
+            'endX'        => static::extractEndX($data),
+            'endY'        => static::extractEndY($data),
+            'isOnTop'     => static::extractIsOnTop($data),
+            'borderWidth' => static::extractBorderWidth($data),
+            'borderColor' => static::extractBorderColor($data),
         ];
     }
 
@@ -76,7 +76,7 @@ final class Line extends Model
      *
      * @return integer Valid x axis of the start position of the line.
      */
-    private function extractStartX(array $data): int
+    private static function extractStartX(array $data): int
     {
         return static::parseIntOr(
             static::issetInArray($data, ['startX', 'pos_x']),
@@ -92,7 +92,7 @@ final class Line extends Model
      *
      * @return integer Valid y axis of the start position of the line.
      */
-    private function extractStartY(array $data): int
+    private static function extractStartY(array $data): int
     {
         return static::parseIntOr(
             static::issetInArray($data, ['startY', 'pos_y']),
@@ -108,7 +108,7 @@ final class Line extends Model
      *
      * @return integer Valid x axis of the end position of the line.
      */
-    private function extractEndX(array $data): int
+    private static function extractEndX(array $data): int
     {
         return static::parseIntOr(
             static::issetInArray($data, ['endX', 'width']),
@@ -124,7 +124,7 @@ final class Line extends Model
      *
      * @return integer Valid y axis of the end position of the line.
      */
-    private function extractEndY(array $data): int
+    private static function extractEndY(array $data): int
     {
         return static::parseIntOr(
             static::issetInArray($data, ['endY', 'height']),
@@ -140,7 +140,7 @@ final class Line extends Model
      *
      * @return boolean If the item is on top or not.
      */
-    private function extractIsOnTop(array $data): bool
+    private static function extractIsOnTop(array $data): bool
     {
         return static::parseBool(
             static::issetInArray($data, ['isOnTop', 'show_on_top'])
@@ -155,7 +155,7 @@ final class Line extends Model
      *
      * @return integer Valid border width. 0 by default and minimum value.
      */
-    private function extractBorderWidth(array $data): int
+    private static function extractBorderWidth(array $data): int
     {
         $borderWidth = static::parseIntOr(
             static::issetInArray($data, ['borderWidth', 'border_width']),
@@ -173,7 +173,7 @@ final class Line extends Model
      *
      * @return mixed String representing the border color (not empty) or null.
      */
-    private function extractBorderColor(array $data)
+    private static function extractBorderColor(array $data)
     {
         return static::notEmptyStringOr(
             static::issetInArray($data, ['borderColor', 'border_color']),

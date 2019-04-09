@@ -57,13 +57,7 @@ final class BarsGraph extends Item
     private function extractGridColor(array $data)
     {
         return static::notEmptyStringOr(
-            static::issetInArray(
-                $data,
-                [
-                    'gridColor',
-                    'border_color',
-                ]
-            ),
+            static::issetInArray($data, ['gridColor', 'border_color']),
             null
         );
     }
@@ -74,18 +68,13 @@ final class BarsGraph extends Item
      *
      * @param array $data Unknown input data structure.
      *
-     * @return string One of 'white', 'black' or 'transparent'. 'white' by default.
+     * @return string One of 'white', 'black' or 'transparent'.
+     * 'white' by default.
      */
     private function extractBackgroundColor(array $data): string
     {
         $backgroundColor = static::notEmptyStringOr(
-            static::issetInArray(
-                $data,
-                [
-                    'backgroundColor',
-                    'image',
-                ]
-            ),
+            static::issetInArray($data, ['backgroundColor', 'image']),
             null
         );
 
@@ -110,13 +99,7 @@ final class BarsGraph extends Item
     private function extractTypeGraph(array $data): string
     {
         $typeGraph = static::notEmptyStringOr(
-            static::issetInArray(
-                $data,
-                [
-                    'typeGraph',
-                    'type_graph',
-                ]
-            ),
+            static::issetInArray($data, ['typeGraph', 'type_graph']),
             null
         );
 
@@ -266,9 +249,9 @@ final class BarsGraph extends Item
             }
         }
 
-        $module_data = \get_bars_module_data($moduleId);
+        $moduleData = \get_bars_module_data($moduleId);
 
-        $water_mark = [
+        $waterMark = [
             'file' => $config['homedir'].'/images/logo_vertical_water.png',
             'url'  => \ui_get_full_url(false, false, false, false).'images/logo_vertical_water.png',
         ];
@@ -300,16 +283,21 @@ final class BarsGraph extends Item
 
         if ($typeGraph === 'horizontal') {
             $graph = $div_start.\hbar_graph(
-                $module_data,
+                $moduleData,
                 $width,
                 $height,
                 $color,
                 [],
                 [],
-                \ui_get_full_url('images/image_problem_area.png', false, false, false),
+                \ui_get_full_url(
+                    'images/image_problem_area.png',
+                    false,
+                    false,
+                    false
+                ),
                 '',
                 '',
-                $water_mark,
+                $waterMark,
                 $config['fontpath'],
                 6,
                 '',
@@ -326,7 +314,12 @@ final class BarsGraph extends Item
                 $color,
                 [],
                 [],
-                \ui_get_full_url('images/image_problem_area.png', false, false, false),
+                \ui_get_full_url(
+                    'images/image_problem_area.png',
+                    false,
+                    false,
+                    false
+                ),
                 '',
                 '',
                 $water_mark,
@@ -348,6 +341,7 @@ final class BarsGraph extends Item
         }
 
         $data['html'] = $graph;
+
         return $data;
     }
 

@@ -873,7 +873,7 @@ class Item extends Model
                         'pure' => (int) $config['pure'],
                     ]
                 );
-            } else if (\is_metaconsole()) {
+            } else if (\is_metaconsole() && can_user_access_node()) {
                 /*
                  * A Visual Console from a meta node.
                  * We are in a metaconsole.
@@ -944,7 +944,7 @@ class Item extends Model
                     }
 
                     return $baseUrl.'?'.http_build_query($queryParams);
-                } else if (\is_metaconsole()) {
+                } else if (\is_metaconsole() && can_user_access_node()) {
                     /*
                      * A module from a meta node.
                      * We are in a metaconsole.
@@ -1031,7 +1031,7 @@ class Item extends Model
                             'id_agente' => $agentId,
                         ]
                     );
-                } else if (\is_metaconsole()) {
+                } else if (\is_metaconsole() && can_user_access_node()) {
                     /*
                      * An agent from a meta node.
                      * We are in a metaconsole.

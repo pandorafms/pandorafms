@@ -85,7 +85,7 @@ function process_user_login($login, $pass, $api=false)
         return process_user_login_local($login, $pass, $api);
     } else {
         $login_remote = process_user_login_remote($login, io_safe_output($pass), $api);
-        if ($login_remote == false && $config['fallback_local_auth'] == '1') {
+        if ($login_remote == false) {
             return process_user_login_local($login, $pass, $api);
         } else {
             return $login_remote;

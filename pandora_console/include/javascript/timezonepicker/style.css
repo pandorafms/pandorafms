@@ -1,0 +1,58 @@
+body {
+  text-align: center;
+  font-family: Times;
+}
+
+h1 {
+  font-family: Georgia;
+  font-size: 28px;
+  text-align: center;
+}
+
+h2 {
+  font-size: 24px;
+  font-family: Helvetica;
+}
+
+fieldset {
+  border: 1px solid #ccc;
+  width: 600px;
+  margin: 10px auto;
+}
+
+label {
+  font-weight: bold;
+}
+
+#wrapper {
+  overflow: hidden;
+}
+
+#page {
+  text-align: left;
+  max-width: 800px;
+  margin: auto;
+}
+
+#resize-form {
+  text-align: center;
+}
+
+#timezone-picker {
+  text-align: center;
+  margin: 10px -240px;
+}
+
+#timezone-picker div,
+#timezone-picker map {
+  margin: auto;
+}
+
+#content {
+}
+
+#footer {
+  font-size: 90%;
+  margin: 20px auto;
+  text-align: center;
+}

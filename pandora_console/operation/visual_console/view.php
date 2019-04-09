@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -13,67 +13,16 @@
 // GNU General Public License for more details.
 global $config;
 
-$legacy = (bool) get_parameter('legacy', false);
-if ($legacy === false) {
-    include_once $config['homedir'].'/operation/visual_console/view.php';
-    return;
-}
-
-// Login check
-require_once $config['homedir'].'/include/functions_visual_map.php';
-
+// Login check.
 check_login();
 
-if (!defined('METACONSOLE')) {
-    $id_layout = (int) get_parameter('id');
-} else {
-    $id_layout = (int) get_parameter('id_visualmap');
-}
+require_once $config['homedir'].'/vendor/autoload.php';
+require_once $config['homedir'].'/include/functions_visual_map.php';
 
-if ($id_layout) {
-    $default_action = 'edit';
-} else {
-    $default_action = 'new';
-}
+$id_layout = (int) get_parameter(!is_metaconsole() ? 'id' : 'id_visualmap');
 
-if (!defined('METACONSOLE')) {
-    $action = get_parameterBetweenListValues(
-        'action',
-        [
-            'new',
-            'save',
-            'edit',
-            'update',
-            'delete',
-        ],
-        $default_action
-    );
-} else {
-    $action = get_parameterBetweenListValues(
-        'action2',
-        [
-            'new',
-            'save',
-            'edit',
-            'update',
-            'delete',
-        ],
-        $default_action
-    );
-}
-
-$refr = (int) get_parameter('refr', $config['vc_refr']);
-$graph_javascript = (bool) get_parameter('graph_javascript', true);
-$vc_refr = false;
-
-if (isset($config['vc_refr']) and $config['vc_refr'] != 0) {
-    $view_refresh = $config['vc_refr'];
-} else {
-    $view_refresh = '300';
-}
-
-// Get input parameter for layout id
-if (! $id_layout) {
+// Get input parameter for layout id.
+if (!$id_layout) {
     db_pandora_audit(
         'ACL Violation',
         'Trying to access visual console without id layout'
@@ -84,7 +33,7 @@ if (! $id_layout) {
 
 $layout = db_get_row('tlayout', 'id', $id_layout);
 
-if (! $layout) {
+if (!$layout) {
     db_pandora_audit(
         'ACL Violation',
         'Trying to access visual console without id layout'
@@ -95,18 +44,13 @@ if (! $layout) {
 
 $id_group = $layout['id_group'];
 $layout_name = $layout['name'];
-$background = $layout['background'];
-$bwidth = $layout['width'];
-$bheight = $layout['height'];
 
-$pure_url = '&pure='.$config['pure'];
-
-// ACL
+// ACL.
 $vconsole_read = check_acl($config['id_user'], $id_group, 'VR');
 $vconsole_write = check_acl($config['id_user'], $id_group, 'VW');
 $vconsole_manage = check_acl($config['id_user'], $id_group, 'VM');
 
-if (! $vconsole_read && !$vconsole_write && !$vconsole_manage) {
+if (!$vconsole_read && !$vconsole_write && !$vconsole_manage) {
     db_pandora_audit(
         'ACL Violation',
         'Trying to access visual console without group access'
@@ -115,7 +59,17 @@ if (! $vconsole_read && !$vconsole_write && !$vconsole_manage) {
     exit;
 }
 
-// Render map
+$refr = (int) get_parameter('refr', $config['vc_refr']);
+$graph_javascript = (bool) get_parameter('graph_javascript', true);
+$vc_refr = false;
+
+if (isset($config['vc_refr']) && $config['vc_refr'] != 0) {
+    $view_refresh = $config['vc_refr'];
+} else {
+    $view_refresh = '300';
+}
+
+// Render map.
 $options = [];
 
 $options['consoles_list']['text'] = '<a href="index.php?sec=network&sec2=godmode/reporting/map_builder&refr='.$refr.'">'.html_print_image(
@@ -171,33 +125,56 @@ if ($vconsole_write || $vconsole_manage) {
 
 $options['view']['text'] = '<a href="index.php?sec=network&sec2=operation/visual_console/render_view&id='.$id_layout.'&refr='.$view_refresh.'">'.html_print_image('images/operation.png', true, ['title' => __('View')]).'</a>';
 $options['view']['active'] = true;
-
 if (!is_metaconsole()) {
     if (!$config['pure']) {
         $options['pure']['text'] = '<a href="index.php?sec=network&sec2=operation/visual_console/render_view&id='.$id_layout.'&refr='.$refr.'&pure=1">'.html_print_image('images/full_screen.png', true, ['title' => __('Full screen mode')]).'</a>';
         ui_print_page_header($layout_name, 'images/visual_console.png', false, '', false, $options);
     }
 
-    // Set the hidden value for the javascript
+    // Set the hidden value for the javascript.
     html_print_input_hidden('metaconsole', 0);
 } else {
-    // Set the hidden value for the javascript
+    // Set the hidden value for the javascript.
     html_print_input_hidden('metaconsole', 1);
 }
 
-if ($config['pure']) {
-    // Container of the visual map (ajax loaded)
-    echo '<div id="vc-container">'.visual_map_print_visual_map(
-        $id_layout,
-        true,
-        true,
-        null,
-        null,
-        '',
-        false,
-        true
-    ).'</div>';
+use Models\VisualConsole\Container as VisualConsole;
 
+$visualConsole = VisualConsole::fromArray($layout);
+$visualConsoleItems = VisualConsole::getItemsFromDB($id_layout);
+
+// TODO: Extract to a function.
+$vcClientPath = 'include/visual-console-client';
+$dir = $config['homedir'].'/'.$vcClientPath;
+if (is_dir($dir)) {
+    $dh = opendir($dir);
+    if ($dh) {
+        while (($file = readdir($dh)) !== false) {
+            if ($file === '.' || $file === '..') {
+                continue;
+            }
+
+            preg_match('/.*.js$/', $file, $match, PREG_OFFSET_CAPTURE);
+            if (empty($match) === false) {
+                $url = ui_get_full_url(false, false, false, false).$vcClientPath.'/'.$match[0][0];
+                echo '<script type="text/javascript" src="'.$url.'"></script>';
+                continue;
+            }
+
+            preg_match('/.*.css$/', $file, $match, PREG_OFFSET_CAPTURE);
+            if (empty($match) === false) {
+                $url = ui_get_full_url(false, false, false, false).$vcClientPath.'/'.$match[0][0];
+                echo '<link rel="stylesheet" type="text/css" href="'.$url.'" />';
+            }
+        }
+
+        closedir($dh);
+    }
+}
+
+echo '<div id="visual-console-container" style="margin:0px auto;position:relative;"></div>';
+
+if ($config['pure']) {
     // Floating menu - Start
     echo '<div id="vc-controls" style="z-index: 999">';
 
@@ -255,8 +232,6 @@ if ($config['pure']) {
         }
     </style>
     <?php
-} else {
-    visual_map_print_visual_map($id_layout, true, true, null, null, '', false, true, true);
 }
 
 ui_require_javascript_file('wz_jsgraphics');
@@ -264,7 +239,20 @@ ui_require_javascript_file('pandora_visual_console');
 $ignored_params['refr'] = '';
 ?>
 
-<script language="javascript" type="text/javascript">
+<script type="text/javascript">
+    var container = document.getElementById("visual-console-container");
+    var props = <?php echo (string) $visualConsole; ?>;
+    var items = <?php echo '['.implode($visualConsoleItems, ',').']'; ?>;
+
+    if (container != null) {
+        try {
+            var visualConsole = new VisualConsole(container, props, items);
+            console.log(visualConsole);
+        } catch (error) {
+            console.log("ERROR", error.message);
+        }
+    }
+
     $(document).ready (function () {
         var refr = <?php echo (int) $refr; ?>;
         var pure = <?php echo (int) $config['pure']; ?>;
@@ -322,7 +310,7 @@ $ignored_params['refr'] = '';
         $(".overlay").removeClass("overlay").addClass("overlaydisabled");
     
     });
-    
+
     $(window).on('load', function () {
         $('.item:not(.icon) img:not(.b64img)').each( function() {
             if ($(this).css('float')=='left' || $(this).css('float')=='right') {

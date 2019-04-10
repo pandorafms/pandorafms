@@ -133,6 +133,7 @@ if ($classname_selected === null) {
     // Show hints if there is no task
     if (get_parameter('discovery_hint', 0)) {
         ui_require_css_file('discovery-hint');
+        ui_print_info_message(__('You must create a task first'));
     }
 
     Wizard::printBigButtonsList($wiz_data);

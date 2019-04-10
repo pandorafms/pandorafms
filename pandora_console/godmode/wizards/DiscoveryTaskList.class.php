@@ -662,6 +662,9 @@ class DiscoveryTaskList extends Wizard
             case DISCOVERY_CLOUD_AWS:
             return 'wiz=cloud&mode=amazonws&page=1';
 
+            case DISCOVERY_CLOUD_AWS_RDS:
+            return 'wiz=cloud&mode=amazonws&sub=rds&page=0';
+
             case 'console_task':
             return 'wiz=ctask';
 

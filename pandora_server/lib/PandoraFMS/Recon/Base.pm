@@ -29,7 +29,9 @@ use constant {
 	DISCOVERY_CLOUD_AWS => 2,
 	DISCOVERY_APP_VMWARE => 3,
 	DISCOVERY_APP_MYSQL => 4,
-	DISCOVERY_APP_ORACLE => 5
+	DISCOVERY_APP_ORACLE => 5,
+	DISCOVERY_CLOUD_AWS_EC2 => 6,
+	DISCOVERY_CLOUD_AWS_RDS => 7
 };
 
 # /dev/null
@@ -1426,6 +1428,54 @@ sub scan_subnet($) {
 	}
 }
 
+
+##########################################################################
+# Perform a Cloud scan
+##########################################################################
+sub cloud_scan($) {
+	my $self = shift;
+	my ($progress, $step);
+
+	my $type = '';
+
+	if ($self->{'task_data'}->{'type'} == DISCOVERY_CLOUD_AWS_EC2
+	|| $self->{'task_data'}->{'type'} == DISCOVERY_CLOUD_AWS_RDS) {
+		$type = 'Aws';
+	} else {
+		# Unrecognized task type.
+		call('message', 'Unrecognized task type', 1);
+		$self->call('update_progress', -1);
+		return;
+	}
+
+	# Initialize cloud object.
+	my $cloudObj = PandoraFMS::Recon::Util::enterprise_new(
+		'PandoraFMS::Recon::Cloud::'.$type,
+		[
+			task_data => $self->{'task_data'},
+			aws_access_key_id => $self->{'aws_access_key_id'},
+			aws_secret_access_key => $self->{'aws_secret_access_key'},
+			cloud_util_path => $self->{'cloud_util_path'},
+			parent => $self
+		]
+
+	);
+
+	if (!$cloudObj) {
+		# Failed to initialize, check Cloud credentials or anything.
+		call('message', 'Unable to initialize PandoraFMS::Recon::Cloud::'.$type, 3);
+	} else {
+		# Let Cloud object manage scan.
+		$cloudObj->scan();
+	}
+
+	# Update progress.
+	# Done!
+	$self->{'step'} = '';
+	$self->call('update_progress', -1);
+}
+
+
 ##########################################################################
 # Perform an Application scan.
 ##########################################################################
@@ -1596,6 +1646,11 @@ sub scan($) {
 		||  $self->{'task_data'}->{'type'} == DISCOVERY_APP_ORACLE) {
 			# Database scan.
 			return $self->app_scan();
+		}
+
+		if ($self->{'task_data'}->{'type'} == DISCOVERY_CLOUD_AWS_RDS) {
+			# Cloud scan.
+			return $self->cloud_scan();
 		}
 	}
 

@@ -108,9 +108,14 @@ sub new ($$$$$$) {
 sub run ($) {
     my $self = shift;
     my $pa_config = $self->getConfig ();
+    my $dbh = $self->getDBH();
     
     print_message ($pa_config, " [*] Starting " . $pa_config->{'rb_product_name'} . " Discovery Server.", 1);
     my $threads = $pa_config->{'recon_threads'};
+
+    # Prepare some environmental variables.
+    $ENV{'AWS_ACCESS_KEY_ID'} = pandora_get_config_value($dbh, 'aws_access_key_id');
+    $ENV{'AWS_SECRET_ACCESS_KEY'} = pandora_get_config_value($dbh, 'aws_secret_access_key');
 
     # Use hightest value
     if ($pa_config->{'discovery_threads'}  > $pa_config->{'recon_threads'}) {
@@ -191,6 +196,40 @@ sub data_consumer ($$) {
             $cnf_extra{'aws_access_key_id'} = pandora_get_config_value($dbh, 'aws_access_key_id');
             $cnf_extra{'aws_secret_access_key'} = pandora_get_config_value($dbh, 'aws_secret_access_key');
             $cnf_extra{'cloud_util_path'} = pandora_get_config_value($dbh, 'cloud_util_path');
+
+            if (!defined($ENV{'AWS_ACCESS_KEY_ID'}) || !defined($ENV{'AWS_SECRET_ACCESS_KEY'})
+            || $cnf_extra{'aws_secret_access_key'} ne $ENV{'AWS_ACCESS_KEY_ID'}
+            || $cnf_extra{'cloud_util_path'} ne $ENV{'AWS_SECRET_ACCESS_KEY'}) {
+                # Environmental data is out of date. Create a tmp file to manage
+                # credentials. Perl limitation. We cannot update ENV here.
+                $cnf_extra{'cred_file'} = $pa_config->{'temporal'} . '/tmp_discovery.' . md5($task->{'id_rt'} . $task->{'name'} . time());
+                eval {
+                    open(my $__file_cfg, '> '. $cnf_extra{'cred_file'}) or die($!);
+                    print $__file_cfg $cnf_extra{'aws_secret_access_key'} . "\n";
+                    print $__file_cfg $cnf_extra{'cloud_util_path'};
+                    close($__file_cfg);
+                    set_file_permissions(
+                        $pa_config,
+                        $cnf_extra{'cred_file'},
+                        0600
+                    );
+                };
+                if ($@) {
+                    logger(
+                        $pa_config,
+                        'Cannot instantiate configuration file for task: ' . safe_output($task->{'name'}),
+                        5
+                    );
+                    # A server restart will override ENV definition (see run)
+                    logger(
+                        $pa_config,
+                        'Cannot execute Discovery task: ' . safe_output($task->{'name'}) . '. Please restart the server.',
+                        1
+                    );
+                    # Skip this task.
+                    return;
+                }
+            }
         }
 
         my $recon = new PandoraFMS::Recon::Base(
@@ -229,6 +268,12 @@ sub data_consumer ($$) {
         );
 
         $recon->scan();
+
+        # Clean tmp file.
+        if (defined($cnf_extra{'cred_file'})
+        && -f $cnf_extra{'cred_file'}) {
+			unlink($cnf_extra{'cred_file'});
+		}
     };
     if ($@) {
         update_recon_task ($dbh, $task_id, -1);

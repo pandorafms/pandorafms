@@ -1253,7 +1253,25 @@ function fill_permissions_ldap($sr)
 {
     global $config;
     $permissions = [];
-    if ($config['autocreate_remote_users'] && $config['ldap_save_profile']) {
+    $permissions_profile = [];
+    if ((bool) $config['ldap_save_profile'] === false) {
+        $result = db_get_all_rows_filter(
+            'tusuario_perfil',
+            ['id_usuario' => $sr['uid'][0]]
+        );
+        foreach ($result as $perms) {
+               $permissions_profile[] = [
+                   'profile'      => $perms['id_perfil'],
+                   'groups'       => [$perms['id_grupo']],
+                   'tags'         => $perms['tags'],
+                   'no_hierarchy' => (bool) $perms['no_hierarchy'] ? 1 : 0,
+               ];
+        }
+
+         return $permissions_profile;
+    }
+
+    if ($config['autocreate_remote_users']) {
         $permissions[0]['profile'] = $config['default_remote_profile'];
         $permissions[0]['groups'][] = $config['default_remote_group'];
         $permissions[0]['tags'] = $config['default_assign_tags'];

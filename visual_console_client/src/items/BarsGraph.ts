@@ -1,15 +1,9 @@
 import { UnknownObject, WithModuleProps } from "../types";
-import {
-  modulePropsDecoder,
-  parseIntOr,
-  decodeBase64,
-  stringIsEmpty
-} from "../lib";
+import { modulePropsDecoder, decodeBase64, stringIsEmpty } from "../lib";
 import Item, { ItemType, ItemProps, itemBasePropsDecoder } from "../Item";
 
-export type EventsHistoryProps = {
-  type: ItemType.AUTO_SLA_GRAPH;
-  maxTime: number | null;
+export type BarsGraphProps = {
+  type: ItemType.BARS_GRAPH;
   html: string;
 } & ItemProps &
   WithModuleProps;
@@ -19,21 +13,20 @@ export type EventsHistoryProps = {
  * This will allow us to ensure the type safety.
  *
  * @param data Raw object.
- * @return An object representing the events history props.
+ * @return An object representing the bars graph props.
  * @throws Will throw a TypeError if some property
  * is missing from the raw object or have an invalid type.
  */
-export function eventsHistoryPropsDecoder(
+export function barsGraphPropsDecoder(
   data: UnknownObject
-): EventsHistoryProps | never {
-  if (stringIsEmpty(data.html) || stringIsEmpty(data.encodedHtml)) {
+): BarsGraphProps | never {
+  if (stringIsEmpty(data.html) && stringIsEmpty(data.encodedHtml)) {
     throw new TypeError("missing html content.");
   }
 
   return {
     ...itemBasePropsDecoder(data), // Object spread. It will merge the properties of the two objects.
-    type: ItemType.AUTO_SLA_GRAPH,
-    maxTime: parseIntOr(data.maxTime, null),
+    type: ItemType.BARS_GRAPH,
     html: !stringIsEmpty(data.html)
       ? data.html
       : decodeBase64(data.encodedHtml),
@@ -41,7 +34,7 @@ export function eventsHistoryPropsDecoder(
   };
 }
 
-export default class EventsHistory extends Item<EventsHistoryProps> {
+export default class BarsGraph extends Item<BarsGraphProps> {
   public createDomElement(): HTMLElement {
     const element = document.createElement("div");
     element.innerHTML = this.props.html;

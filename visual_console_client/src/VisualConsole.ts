@@ -20,6 +20,9 @@ import EventsHistory, {
 } from "./items/EventsHistory";
 import Percentile, { percentilePropsDecoder } from "./items/Percentile";
 import TypedEvent, { Disposable, Listener } from "./TypedEvent";
+import DonutGraph, { donutGraphPropsDecoder } from "./items/DonutGraph";
+import BarsGraph, { barsGraphPropsDecoder } from "./items/BarsGraph";
+import ModuleGraph, { moduleGraphPropsDecoder } from "./items/ModuleGraph";
 
 // Base properties.
 export interface VisualConsoleProps extends Size {
@@ -84,7 +87,7 @@ function itemInstanceFrom(data: UnknownObject) {
     case ItemType.STATIC_GRAPH:
       return new StaticGraph(staticGraphPropsDecoder(data));
     case ItemType.MODULE_GRAPH:
-      throw new TypeError("item not found");
+      return new ModuleGraph(moduleGraphPropsDecoder(data));
     case ItemType.SIMPLE_VALUE:
     case ItemType.SIMPLE_VALUE_MAX:
     case ItemType.SIMPLE_VALUE_MIN:
@@ -110,8 +113,9 @@ function itemInstanceFrom(data: UnknownObject) {
     case ItemType.AUTO_SLA_GRAPH:
       return new EventsHistory(eventsHistoryPropsDecoder(data));
     case ItemType.DONUT_GRAPH:
+      return new DonutGraph(donutGraphPropsDecoder(data));
     case ItemType.BARS_GRAPH:
-      throw new TypeError("item not found");
+      return new BarsGraph(barsGraphPropsDecoder(data));
     case ItemType.CLOCK:
       return new Clock(clockPropsDecoder(data));
     case ItemType.COLOR_CLOUD:

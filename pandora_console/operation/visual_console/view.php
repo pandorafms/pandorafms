@@ -205,16 +205,13 @@ if ($pure === true) {
         margin: 0px;
         overflow: hidden;
         height: 100%;
-        <?php
-        echo 'background-color: '.$layout['background_color'].';';
-        ?>
+        background-color: <?php echo $layout['background_color']; ?>;
+        
     }
     div#main_pure {
         height: 100%;
         margin: 0px;
-        <?php
-        echo 'background-color: '.$layout['background_color'].';';
-        ?>
+        background-color: <?php echo $layout['background_color']; ?>;
     }
 </style>
     <?php

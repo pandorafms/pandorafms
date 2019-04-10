@@ -43,6 +43,7 @@ final class Percentile extends Item
         $return['type'] = PERCENTILE_BAR;
         $return['percentileType'] = static::extractPercentileType($data);
         $return['valueType'] = static::extractValueType($data);
+        // TODO: Add min value to the database.
         $return['minValue'] = static::parseFloatOr(
             static::issetInArray($data, ['minValue']),
             null
@@ -230,15 +231,6 @@ final class Percentile extends Item
         $unit = \modules_get_unit($moduleId);
         if (empty($unit) === false) {
             $data['unit'] = \io_safe_output($unit);
-        }
-
-        // TODO: Add min value to the database.
-        // Extract max value.
-        if (isset($data['maxValue']) === false) {
-            $data['maxValue'] = static::parseFloatOr(
-                static::issetInArray($data, ['height']),
-                null
-            );
         }
 
         // Restore connection.

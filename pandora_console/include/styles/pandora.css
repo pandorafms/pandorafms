@@ -1014,7 +1014,6 @@ div#cont {
 }
 
 td.datos3,
-/*td.datos3 **/
 td.datos4 {
   background-color: #fff;
   color: #000 !important;
@@ -1026,12 +1025,9 @@ td.datos4 {
   font-weight: normal;
 }
 
-td.datos4 /*,
-td.datos4 */ {
+td.datos4 {
   /*Add !important because in php the function html_print_table write style in cell and this is style head.*/
   text-align: center !important;
-  /* background-color: #666;
-  color: white !important;*/
 }
 
 td.datos3 *,
@@ -5160,6 +5156,186 @@ table.info_table > tbody > tr:hover {
 
 .action_buttons input[type="image"]:hover {
   background-color: #fff !important;
+}
+
+/* Tables to upload files */
+#table_filemanager tr:first-child th span {
+  font-weight: bold;
+}
+
+.file_table_buttons {
+  text-align: right;
+  margin-bottom: 10px;
+}
+
+.file_table_buttons a img {
+  border: 1px solid #e2e2e2;
+  padding: 5px;
+  border-radius: 4px;
+  margin-right: 10px;
+  box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.1);
+}
+
+#file_table_modal {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 40px;
+}
+
+#file_table_modal .create_folder,
+#file_table_modal .create_text_file,
+#file_table_modal .upload_file {
+  width: 33%;
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
+  margin-right: 2px;
+  background-color: #e6e6e6;
+}
+
+.file_table_buttons a:last-child img,
+#file_table_modal .upload_file {
+  margin-right: 0px !important;
+}
+
+#file_table_modal li a {
+  display: block;
+  padding: 5px;
+}
+
+#file_table_modal li img,
+#file_table_modal li span {
+  vertical-align: middle;
+}
+
+#file_table_modal li img {
+  margin-right: 10px;
+}
+
+#create_folder,
+#create_text_file,
+#upload_file {
+  margin-bottom: 30px;
+}
+
+#create_folder input#text-dirname,
+#create_text_file input#text-name_file {
+  width: 100%;
+  margin-right: 5px;
+  box-sizing: border-box;
+  margin-bottom: 10px;
+}
+
+#upload_file input#file-file {
+  width: 70%;
+}
+
+#create_folder input#submit-crt,
+#create_text_file input#submit-create,
+#upload_file input#submit-go {
+  float: right;
+}
+
+#upload_file input#submit-go {
+  margin-top: 10px;
+}
+
+.file_table_modal_active {
+  background-color: #fff !important;
+  border: 1px solid #e6e6e6;
+  border-bottom: none;
+}
+
+/* Inventory table */
+.inventory_table_buttons {
+  text-align: right;
+  margin-bottom: 10px;
+}
+
+.inventory_table_buttons a {
+  font-weight: bolder;
+  display: inline-block;
+  border: 1px solid #e2e2e2;
+  padding: 8px;
+  border-radius: 4px;
+  box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.1);
+}
+
+.inventory_table_buttons a img,
+.inventory_table_buttons a span {
+  vertical-align: middle;
+}
+
+.inventory_table_buttons a img {
+  padding-left: 10px;
+}
+
+.inventory_tables thead th span:first-child {
+  float: left;
+  font-weight: bold;
+}
+
+.inventory_tables thead th span {
+  font-size: 8.6pt;
+}
+
+.inventory_tables tbody > tr:first-child {
+  font-weight: bold;
+}
+
+/* Tag view */
+table.info_table.agent_info_table {
+  margin-bottom: 20px;
+}
+table.agent_info_table tr {
+  background-color: #fff !important;
+}
+
+table.agent_info_table > tbody > tr > td {
+  border-bottom: none;
+}
+
+table.agent_info_table > tbody > tr:last-child > td {
+  border-bottom: 1px solid #e2e2e2;
+}
+
+table.agent_info_table thead > tr:first-child th {
+  background-color: #f5f5f5;
+}
+
+table.agent_info_table thead > tr:first-child th span,
+table.agent_info_table thead > tr:first-child th {
+  font-weight: bold;
+  font-size: 8.6pt;
+}
+
+table.info_table.agent_info_table td {
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+table.info_table.agent_info_table table#agent_table {
+  padding-top: 15px;
+}
+
+table.info_table.agent_info_table table#module_table {
+  padding-top: 10px;
+  padding-bottom: 15px;
+}
+
+table.info_table.agent_info_table table.info_table {
+  margin-bottom: 0;
+}
+
+.agent_info_table_opened {
+  background-color: #82b92e !important;
+  color: #fff !important;
+  border-color: #82b92e !important;
+}
+
+.agent_info_table_closed {
+  background-color: #fff !important;
+  color: #000 !important;
+  border-radius: 4px;
 }
 
 /* Arrows to sort the tables. */

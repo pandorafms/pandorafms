@@ -50,6 +50,7 @@ export interface ItemProps extends Position, Size {
 export interface ItemClickEvent<Props extends ItemProps> {
   // data: Props;
   data: UnknownObject;
+  nativeEvent: Event;
 }
 
 // FIXME: Fix type compatibility.
@@ -181,7 +182,8 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
     box.style.zIndex = this.props.isOnTop ? "2" : "1";
     box.style.left = `${this.props.x}px`;
     box.style.top = `${this.props.y}px`;
-    box.onclick = () => this.clickEventManager.emit({ data: this.props });
+    box.onclick = e =>
+      this.clickEventManager.emit({ data: this.props, nativeEvent: e });
 
     return box;
   }

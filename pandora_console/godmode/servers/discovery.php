@@ -130,5 +130,10 @@ if ($classname_selected === null) {
         }
     }
 
+    // Show hints if there is no task
+    if (get_parameter('discovery_hint', 0)) {
+        ui_require_css_file('discovery-hint');
+    }
+
     Wizard::printBigButtonsList($wiz_data);
 }

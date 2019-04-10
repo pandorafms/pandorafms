@@ -206,7 +206,6 @@ if ($pure === true) {
         overflow: hidden;
         height: 100%;
         background-color: <?php echo $layout['background_color']; ?>;
-        
     }
     div#main_pure {
         height: 100%;
@@ -231,9 +230,4 @@ if ($pure === true) {
             console.log("ERROR", error.message);
         }
     }
-
-    $(document).ready(function () {
-        var controls = document.getElementById('vc-controls');
-        if (controls) autoHideElement(controls, 1000);
-    });
 </script>

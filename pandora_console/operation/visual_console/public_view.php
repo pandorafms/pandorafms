@@ -121,17 +121,6 @@ echo '<img class="vc-qr" src="../../images/qrcode_icon_2.jpg"/>';
 echo '</a>';
 echo '</li>';
 
-// Countdown.
-echo '<li class="nomn">';
-echo '<div class="vc-refr">';
-echo '<div class="vc-countdown"></div>';
-echo '<div id="vc-refr-form">';
-echo __('Refresh').':';
-echo html_print_select(get_refresh_time_array(), 'refr', $refr, '', '', 0, true, false, false);
-echo '</div>';
-echo '</div>';
-echo '</li>';
-
 // Console name.
 echo '<li class="nomn">';
 echo '<div class="vc-title">'.$layout_name.'</div>';
@@ -147,9 +136,6 @@ echo '<div style="display: none;" id="qrcode_container" title="'.__('QR code of 
 echo '<div id="qrcode_container_image"></div>';
 echo '</div>';
 
-ui_require_jquery_file('countdown');
-ui_require_javascript_file('wz_jsgraphics');
-ui_require_javascript_file('pandora_visual_console');
 $ignored_params['refr'] = '';
 ?>
 <script type="text/javascript">
@@ -165,9 +151,4 @@ $ignored_params['refr'] = '';
             console.log("ERROR", error.message);
         }
     }
-
-    $(document).ready(function () {
-        var controls = document.getElementById('vc-controls');
-        if (controls) autoHideElement(controls, 1000);
-    });
 </script>

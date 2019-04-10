@@ -322,7 +322,7 @@ final class BarsGraph extends Item
                 ),
                 '',
                 '',
-                $water_mark,
+                $waterMark,
                 $config['fontpath'],
                 6,
                 '',

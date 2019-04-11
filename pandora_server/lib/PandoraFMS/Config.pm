@@ -1200,7 +1200,7 @@ sub pandora_get_tconfig_token ($$$) {
 	my ($dbh, $token, $default_value) = @_;
 	
 	my $token_value = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = ?", $token);
-	if (defined ($token_value)) {
+	if (defined ($token_value) && $token_value ne '') {
 		return safe_output ($token_value);
 	}
 	

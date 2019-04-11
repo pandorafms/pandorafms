@@ -24,6 +24,101 @@ import DonutGraph, { donutGraphPropsDecoder } from "./items/DonutGraph";
 import BarsGraph, { barsGraphPropsDecoder } from "./items/BarsGraph";
 import ModuleGraph, { moduleGraphPropsDecoder } from "./items/ModuleGraph";
 
+// TODO: Document.
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+function itemInstanceFrom(data: UnknownObject) {
+  const type = parseIntOr(data.type, null);
+  if (type == null) throw new TypeError("missing item type.");
+
+  switch (type as ItemType) {
+    case ItemType.STATIC_GRAPH:
+      return new StaticGraph(staticGraphPropsDecoder(data));
+    case ItemType.MODULE_GRAPH:
+      return new ModuleGraph(moduleGraphPropsDecoder(data));
+    case ItemType.SIMPLE_VALUE:
+    case ItemType.SIMPLE_VALUE_MAX:
+    case ItemType.SIMPLE_VALUE_MIN:
+    case ItemType.SIMPLE_VALUE_AVG:
+      return new SimpleValue(simpleValuePropsDecoder(data));
+    case ItemType.PERCENTILE_BAR:
+    case ItemType.PERCENTILE_BUBBLE:
+    case ItemType.CIRCULAR_PROGRESS_BAR:
+    case ItemType.CIRCULAR_INTERIOR_PROGRESS_BAR:
+      return new Percentile(percentilePropsDecoder(data));
+    case ItemType.LABEL:
+      return new Label(labelPropsDecoder(data));
+    case ItemType.ICON:
+      return new Icon(iconPropsDecoder(data));
+    case ItemType.SERVICE:
+      throw new TypeError("item not found");
+    case ItemType.GROUP_ITEM:
+      return new Group(groupPropsDecoder(data));
+    case ItemType.BOX_ITEM:
+      return new Box(boxPropsDecoder(data));
+    case ItemType.LINE_ITEM:
+      return new Line(linePropsDecoder(data));
+    case ItemType.AUTO_SLA_GRAPH:
+      return new EventsHistory(eventsHistoryPropsDecoder(data));
+    case ItemType.DONUT_GRAPH:
+      return new DonutGraph(donutGraphPropsDecoder(data));
+    case ItemType.BARS_GRAPH:
+      return new BarsGraph(barsGraphPropsDecoder(data));
+    case ItemType.CLOCK:
+      return new Clock(clockPropsDecoder(data));
+    case ItemType.COLOR_CLOUD:
+      return new ColorCloud(colorCloudPropsDecoder(data));
+    default:
+      throw new TypeError("item not found");
+  }
+}
+
+// TODO: Document.
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+function decodeProps(data: UnknownObject) {
+  const type = parseIntOr(data.type, null);
+  if (type == null) throw new TypeError("missing item type.");
+
+  switch (type as ItemType) {
+    case ItemType.STATIC_GRAPH:
+      return staticGraphPropsDecoder(data);
+    case ItemType.MODULE_GRAPH:
+      throw new TypeError("decoder not found");
+    case ItemType.SIMPLE_VALUE:
+    case ItemType.SIMPLE_VALUE_MAX:
+    case ItemType.SIMPLE_VALUE_MIN:
+    case ItemType.SIMPLE_VALUE_AVG:
+      return simpleValuePropsDecoder(data);
+    case ItemType.PERCENTILE_BAR:
+    case ItemType.PERCENTILE_BUBBLE:
+    case ItemType.CIRCULAR_PROGRESS_BAR:
+    case ItemType.CIRCULAR_INTERIOR_PROGRESS_BAR:
+      return percentilePropsDecoder(data);
+    case ItemType.LABEL:
+      return labelPropsDecoder(data);
+    case ItemType.ICON:
+      return iconPropsDecoder(data);
+    case ItemType.SERVICE:
+      throw new TypeError("decoder not found");
+    case ItemType.GROUP_ITEM:
+      return groupPropsDecoder(data);
+    case ItemType.BOX_ITEM:
+      return boxPropsDecoder(data);
+    case ItemType.LINE_ITEM:
+      return linePropsDecoder(data);
+    case ItemType.AUTO_SLA_GRAPH:
+      return eventsHistoryPropsDecoder(data);
+    case ItemType.DONUT_GRAPH:
+    case ItemType.BARS_GRAPH:
+      throw new TypeError("decoder not found");
+    case ItemType.CLOCK:
+      return clockPropsDecoder(data);
+    case ItemType.COLOR_CLOUD:
+      return colorCloudPropsDecoder(data);
+    default:
+      throw new TypeError("decoder not found");
+  }
+}
+
 // Base properties.
 export interface VisualConsoleProps extends Size {
   readonly id: number;
@@ -77,54 +172,6 @@ export function visualConsolePropsDecoder(
   };
 }
 
-// TODO: Document.
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-function itemInstanceFrom(data: UnknownObject) {
-  const type = parseIntOr(data.type, null);
-  if (type == null) throw new TypeError("missing item type.");
-
-  switch (type as ItemType) {
-    case ItemType.STATIC_GRAPH:
-      return new StaticGraph(staticGraphPropsDecoder(data));
-    case ItemType.MODULE_GRAPH:
-      return new ModuleGraph(moduleGraphPropsDecoder(data));
-    case ItemType.SIMPLE_VALUE:
-    case ItemType.SIMPLE_VALUE_MAX:
-    case ItemType.SIMPLE_VALUE_MIN:
-    case ItemType.SIMPLE_VALUE_AVG:
-      return new SimpleValue(simpleValuePropsDecoder(data));
-    case ItemType.PERCENTILE_BAR:
-    case ItemType.PERCENTILE_BUBBLE:
-    case ItemType.CIRCULAR_PROGRESS_BAR:
-    case ItemType.CIRCULAR_INTERIOR_PROGRESS_BAR:
-      return new Percentile(percentilePropsDecoder(data));
-    case ItemType.LABEL:
-      return new Label(labelPropsDecoder(data));
-    case ItemType.ICON:
-      return new Icon(iconPropsDecoder(data));
-    case ItemType.SERVICE:
-      throw new TypeError("item not found");
-    case ItemType.GROUP_ITEM:
-      return new Group(groupPropsDecoder(data));
-    case ItemType.BOX_ITEM:
-      return new Box(boxPropsDecoder(data));
-    case ItemType.LINE_ITEM:
-      return new Line(linePropsDecoder(data));
-    case ItemType.AUTO_SLA_GRAPH:
-      return new EventsHistory(eventsHistoryPropsDecoder(data));
-    case ItemType.DONUT_GRAPH:
-      return new DonutGraph(donutGraphPropsDecoder(data));
-    case ItemType.BARS_GRAPH:
-      return new BarsGraph(barsGraphPropsDecoder(data));
-    case ItemType.CLOCK:
-      return new Clock(clockPropsDecoder(data));
-    case ItemType.COLOR_CLOUD:
-      return new ColorCloud(colorCloudPropsDecoder(data));
-    default:
-      throw new TypeError("item not found");
-  }
-}
-
 export default class VisualConsole {
   // Reference to the DOM element which will contain the items.
   private readonly containerRef: HTMLElement;
@@ -132,13 +179,13 @@ export default class VisualConsole {
   private _props: VisualConsoleProps;
   // Visual Console Item instances by their Id.
   private elementsById: {
-    [key: number]: Item<ItemProps> | null;
+    [key: number]: Item<ItemProps>;
   } = {};
   // Visual Console Item Ids.
   private elementIds: ItemProps["id"][] = [];
   // Dictionary which store the created lines.
   private relations: {
-    [key: string]: Line | null;
+    [key: string]: Line;
   } = {};
   // Event manager for click events.
   private readonly clickEventManager = new TypedEvent<
@@ -213,11 +260,69 @@ export default class VisualConsole {
   }
 
   /**
+   * Public setter of the `elements` property.
+   * @param items.
+   */
+  public updateElements(items: UnknownObject[]): void {
+    const itemIds = items.map(item => item.id || null).filter(id => id != null);
+    itemIds as number[]; // Tell the type system to rely on us.
+    // Get the elements we should delete.
+    const deletedIds: number[] = this.elementIds.filter(
+      id => itemIds.indexOf(id) < 0
+    );
+    // Delete the elements.
+    deletedIds.forEach(id => {
+      if (this.elementsById[id] != null) {
+        this.elementsById[id].remove();
+        delete this.elementsById[id];
+      }
+    });
+    // Replace the element ids.
+    this.elementIds = itemIds;
+
+    // Initialize the items.
+    items.forEach(item => {
+      if (item.id) {
+        if (this.elementsById[item.id] == null) {
+          // New item.
+          try {
+            const itemInstance = itemInstanceFrom(item);
+            // Add the item to the list.
+            this.elementsById[itemInstance.props.id] = itemInstance;
+            // Item event handlers.
+            itemInstance.onClick(e => {
+              this.clickEventManager.emit(e);
+              // console.log(`Clicked element #${e.data.id}`, e);
+            });
+            itemInstance.onRemove(e => {
+              // TODO: Remove the element from the list and its relations.
+            });
+            // Add the item to the DOM.
+            this.containerRef.append(itemInstance.elementRef);
+          } catch (error) {
+            console.log("Error creating a new element:", error.message);
+          }
+        } else {
+          // Update item.
+          try {
+            this.elementsById[item.id].props = decodeProps(item);
+          } catch (error) {
+            console.log("Error updating an element:", error.message);
+          }
+        }
+
+        // Re-build relations.
+        this.buildRelations();
+      }
+    });
+  }
+
+  /**
    * Public accessor of the `props` property.
    * @return Properties.
    */
   public get props(): VisualConsoleProps {
-    return this._props;
+    return { ...this._props }; // Return a copy.
   }
 
   /**
@@ -303,6 +408,7 @@ export default class VisualConsole {
     this.elements.forEach(e => e.remove()); // Arrow function.
     this.elementsById = {};
     this.elementIds = [];
+    // TODO: Clear relations.
     // Clean container.
     this.containerRef.innerHTML = "";
   }
@@ -311,6 +417,7 @@ export default class VisualConsole {
    * Create line elements which connect the elements with their parents.
    */
   private buildRelations(): void {
+    // TODO: Clear relations.
     this.elements.forEach(item => {
       if (item.props.parentId !== null) {
         const parent = this.elementsById[item.props.parentId];
@@ -343,7 +450,7 @@ export default class VisualConsole {
   ): Line {
     const identifier = `${parent.props.id}|${child.props.id}`;
     if (this.relations[identifier] != null) {
-      (this.relations[identifier] as Line).remove();
+      this.relations[identifier].remove();
     }
 
     // Get the items center.

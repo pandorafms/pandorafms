@@ -208,7 +208,7 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
    * @return Properties.
    */
   public get props(): Props {
-    return this.itemProps;
+    return { ...this.itemProps }; // Return a copy.
   }
 
   /**

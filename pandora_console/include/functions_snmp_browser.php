@@ -55,7 +55,9 @@ function snmp_browser_print_tree(
     $last_array=[],
     $sufix=false,
     $checked=[],
-    $return=false
+    $return=false,
+    $descriptive_ids=false,
+    $previous_id=''
 ) {
     static $url = false;
 
@@ -138,7 +140,13 @@ function snmp_browser_print_tree(
         }
 
         $checkbox_name_sufix = ($sufix === true) ? '_'.$level : '';
-        $checkbox_name = 'create_'.$sub_id.$checkbox_name_sufix;
+        if ($descriptive_ids === true) {
+            $checkbox_name = 'create_'.$sub_id.$previous_id.$checkbox_name_sufix;
+        } else {
+            $checkbox_name = 'create_'.$sub_id.$checkbox_name_sufix;
+        }
+
+        $previous_id = $checkbox_name_sufix;
         $status = (!empty($checked) && isset($checked[$level]));
         $output .= html_print_checkbox($checkbox_name, 0, $status, true, false, '').'&nbsp;<span>'.$level.'</span>';
         if (isset($sub_level['__VALUE__'])) {
@@ -156,7 +164,9 @@ function snmp_browser_print_tree(
             $last_array,
             $sufix,
             $checked,
-            $return
+            $return,
+            $descriptive_ids,
+            $previous_id
         );
 
         $count++;

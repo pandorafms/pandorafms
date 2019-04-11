@@ -205,13 +205,13 @@ sub data_consumer ($$) {
                 $cnf_extra{'cred_file'} = $pa_config->{'temporal'} . '/tmp_discovery.' . md5($task->{'id_rt'} . $task->{'name'} . time());
                 eval {
                     open(my $__file_cfg, '> '. $cnf_extra{'cred_file'}) or die($!);
+                    print $__file_cfg $cnf_extra{'aws_access_key_id'} . "\n";
                     print $__file_cfg $cnf_extra{'aws_secret_access_key'} . "\n";
-                    print $__file_cfg $cnf_extra{'cloud_util_path'};
                     close($__file_cfg);
                     set_file_permissions(
                         $pa_config,
                         $cnf_extra{'cred_file'},
-                        0600
+                        "0600"
                     );
                 };
                 if ($@) {

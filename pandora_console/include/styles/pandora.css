@@ -5114,7 +5114,7 @@ table.info_table > tbody > tr > td > form > a > img {
 }
 
 table.info_table > tbody > tr:hover {
-  background-color: #eee;
+  background-color: #eee !important;
 }
 
 .info_table.profile_list > thead > tr > th > a.tip {
@@ -5336,6 +5336,20 @@ table.info_table.agent_info_table table.info_table {
   background-color: #fff !important;
   color: #000 !important;
   border-radius: 4px;
+}
+
+/* Tag view */
+table.info_table.policy_table tr {
+  background-color: #fff !important;
+}
+
+table.info_table.policy_sub_table thead > tr:first-child th {
+  background-color: #f5f5f5;
+}
+
+table.info_table.policy_sub_table {
+  padding: 20px 15px;
+  margin-bottom: 0;
 }
 
 /* Arrows to sort the tables. */

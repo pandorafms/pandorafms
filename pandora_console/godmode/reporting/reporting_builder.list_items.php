@@ -330,6 +330,8 @@ if ($items) {
     if (defined('METACONSOLE')) {
         $table->width = '100%';
         $table->class = 'databox data';
+    } else {
+        $table->class = 'info_table';
     }
 
     $table->size = [];
@@ -493,6 +495,7 @@ foreach ($items as $item) {
     $row[6] = '';
 
     if (check_acl($config['id_user'], $item['id_group'], 'RM')) {
+        $table->cellclass[][6] = 'action_buttons';
         $row[6] .= '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=item_editor&action=edit&id_report='.$idReport.'&id_item='.$item['id_rc'].'">'.html_print_image('images/wrench_orange.png', true, ['title' => __('Edit')]).'</a>';
         $row[6] .= '&nbsp;';
         $row[6] .= '<a  onClick="if (!confirm (\'Are you sure?\')) return false;" href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=delete&id_report='.$idReport.'&id_item='.$item['id_rc'].$urlFilter.'">'.html_print_image('images/cross.png', true, ['title' => __('Delete')]).'</a>';

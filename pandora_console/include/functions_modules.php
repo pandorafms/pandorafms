@@ -663,10 +663,11 @@ function modules_create_agent_module(
             'estado'            => $status,
             'known_status'      => $status,
             'id_agente'         => (int) $id_agent,
-            'utimestamp'        => 0,
+            'utimestamp'        => (time() - (int) $values['interval']),
             'status_changes'    => 0,
             'last_status'       => $status,
             'last_known_status' => $status,
+            'current_interval'  => (int) $values['interval'],
         ]
     );
 

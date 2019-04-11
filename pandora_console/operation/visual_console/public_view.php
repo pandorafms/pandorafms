@@ -34,6 +34,8 @@ echo '<head>';
 
 global $vc_public_view;
 $vc_public_view = true;
+$config['public_view'] = true;
+
 // This starts the page head. In the call back function,
 // things from $page['head'] array will be processed into the head.
 ob_start('ui_process_page_head');
@@ -42,71 +44,71 @@ enterprise_include('index.php');
 
 require_once 'include/functions_visual_map.php';
 
-$hash = get_parameter('hash');
-$id_layout = (int) get_parameter('id_layout');
-$graph_javascript = (bool) get_parameter('graph_javascript');
-$config['id_user'] = get_parameter('id_user');
+$hash = (string) get_parameter('hash');
+$visualConsoleId = (int) get_parameter('id_layout');
+$config['id_user'] = (string) get_parameter('id_user');
+$refr = (int) get_parameter('refr', 0);
+$layout = db_get_row('tlayout', 'id', $visualConsoleId);
 
-$myhash = md5($config['dbpass'].$id_layout.$config['id_user']);
+if (!isset($config['pure'])) {
+    $config['pure'] = 0;
+}
+
+$myhash = md5($config['dbpass'].$visualConsoleId.$config['id_user']);
 
 // Check input hash.
 if ($myhash != $hash) {
     exit;
 }
 
-$refr = (int) get_parameter('refr', 0);
-$layout = db_get_row('tlayout', 'id', $id_layout);
-
-if (! $layout) {
-    db_pandora_audit('ACL Violation', 'Trying to access visual console without id layout');
+if (!$layout) {
+    db_pandora_audit(
+        'ACL Violation',
+        'Trying to access visual console without id layout'
+    );
     include $config['homedir'].'/general/noaccess.php';
     exit;
 }
 
-if (!isset($config['pure'])) {
-    $config['pure'] = 0;
-}
-
 use Models\VisualConsole\Container as VisualConsole;
 
-if ($layout) {
-    $id_group = $layout['id_group'];
-    $layout_name = $layout['name'];
+$visualConsoleName = $layout['name'];
 
-    $visualConsole = VisualConsole::fromArray($layout);
-    $visualConsoleItems = VisualConsole::getItemsFromDB($id_layout);
+// TODO: Show an error message when the models can't be loaded.
+$visualConsole = VisualConsole::fromArray($layout);
+$visualConsoleItems = VisualConsole::getItemsFromDB($visualConsoleId);
 
-    // TODO: Extract to a function.
-    $vcClientPath = 'include/visual-console-client';
-    $dir = $config['homedir'].'/'.$vcClientPath;
-    if (is_dir($dir)) {
-        $dh = opendir($dir);
-        if ($dh) {
-            while (($file = readdir($dh)) !== false) {
-                if ($file === '.' || $file === '..') {
-                    continue;
-                }
-
-                preg_match('/.*.js$/', $file, $match, PREG_OFFSET_CAPTURE);
-                if (empty($match) === false) {
-                    $url = ui_get_full_url(false, false, false, false).$vcClientPath.'/'.$match[0][0];
-                    echo '<script type="text/javascript" src="'.$url.'"></script>';
-                    continue;
-                }
-
-                preg_match('/.*.css$/', $file, $match, PREG_OFFSET_CAPTURE);
-                if (empty($match) === false) {
-                    $url = ui_get_full_url(false, false, false, false).$vcClientPath.'/'.$match[0][0];
-                    echo '<link rel="stylesheet" type="text/css" href="'.$url.'" />';
-                }
+// TODO: Extract to a function.
+$baseUrl = ui_get_full_url(false, false, false, false);
+$vcClientPath = 'include/visual-console-client';
+$dir = $config['homedir'].'/'.$vcClientPath;
+if (is_dir($dir)) {
+    $dh = opendir($dir);
+    if ($dh) {
+        while (($file = readdir($dh)) !== false) {
+            if ($file === '.' || $file === '..') {
+                continue;
             }
 
-            closedir($dh);
-        }
-    }
+            preg_match('/.*.js$/', $file, $match, PREG_OFFSET_CAPTURE);
+            if (empty($match) === false) {
+                $url = $baseUrl.$vcClientPath.'/'.$match[0][0];
+                echo '<script type="text/javascript" src="'.$url.'"></script>';
+                continue;
+            }
 
-    echo '<div id="visual-console-container" style="margin:0px auto;position:relative;"></div>';
+            preg_match('/.*.css$/', $file, $match, PREG_OFFSET_CAPTURE);
+            if (empty($match) === false) {
+                $url = $baseUrl.$vcClientPath.'/'.$match[0][0];
+                echo '<link type="text/css" rel="stylesheet" href="'.$url.'" />';
+            }
+        }
+
+        closedir($dh);
+    }
 }
+
+echo '<div id="visual-console-container" style="margin:0px auto;position:relative;"></div>';
 
 // Floating menu - Start.
 echo '<div id="vc-controls" style="z-index:300;">';
@@ -123,32 +125,40 @@ echo '</li>';
 
 // Console name.
 echo '<li class="nomn">';
-echo '<div class="vc-title">'.$layout_name.'</div>';
+echo '<div class="vc-title">'.$visualConsoleName.'</div>';
 echo '</li>';
 
 echo '</ul>';
 echo '</div>';
 
 echo '</div>';
-// Floating menu - End
+
 // QR code dialog.
 echo '<div style="display: none;" id="qrcode_container" title="'.__('QR code of the page').'">';
 echo '<div id="qrcode_container_image"></div>';
 echo '</div>';
 
-$ignored_params['refr'] = '';
+ui_require_javascript_file('pandora_visual_console');
 ?>
 <script type="text/javascript">
     var container = document.getElementById("visual-console-container");
     var props = <?php echo (string) $visualConsole; ?>;
     var items = <?php echo '['.implode($visualConsoleItems, ',').']'; ?>;
-
-    if (container != null) {
-        try {
-            var visualConsole = new VisualConsole(container, props, items);
-            console.log(visualConsole);
-        } catch (error) {
-            console.log("ERROR", error.message);
-        }
+    var baseUrl = "<?php echo $config['homeurl']; ?>";
+    var handleUpdate = function (prevProps, newProps) {
+        // TODO: Change the view header and links to display id or name changes.
     }
+    var visualConsole = createVisualConsole(
+        container,
+        props,
+        items,
+        baseUrl,
+        10000,
+        handleUpdate
+    );
+
+    $(document).ready(function () {
+        var controls = document.getElementById('vc-controls');
+        if (controls) autoHideElement(controls, 1000);
+    });
 </script>

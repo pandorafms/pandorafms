@@ -143,6 +143,7 @@ $visualConsole = VisualConsole::fromArray($layout);
 $visualConsoleItems = VisualConsole::getItemsFromDB($visualConsoleId);
 
 // TODO: Extract to a function.
+$baseUrl = ui_get_full_url(false, false, false, false);
 $vcClientPath = 'include/visual-console-client';
 $dir = $config['homedir'].'/'.$vcClientPath;
 if (is_dir($dir)) {
@@ -155,15 +156,15 @@ if (is_dir($dir)) {
 
             preg_match('/.*.js$/', $file, $match, PREG_OFFSET_CAPTURE);
             if (empty($match) === false) {
-                $url = ui_get_full_url(false, false, false, false).$vcClientPath.'/'.$match[0][0];
+                $url = $baseUrl.$vcClientPath.'/'.$match[0][0];
                 echo '<script type="text/javascript" src="'.$url.'"></script>';
                 continue;
             }
 
             preg_match('/.*.css$/', $file, $match, PREG_OFFSET_CAPTURE);
             if (empty($match) === false) {
-                $url = ui_get_full_url(false, false, false, false).$vcClientPath.'/'.$match[0][0];
-                echo '<link rel="stylesheet" type="text/css" href="'.$url.'" />';
+                $url = $baseUrl.$vcClientPath.'/'.$match[0][0];
+                echo '<link type="text/css" rel="stylesheet" href="'.$url.'" />';
             }
         }
 
@@ -215,19 +216,29 @@ if ($pure === true) {
 </style>
     <?php
 }
+
+ui_require_javascript_file('pandora_visual_console');
 ?>
 
 <script type="text/javascript">
     var container = document.getElementById("visual-console-container");
     var props = <?php echo (string) $visualConsole; ?>;
     var items = <?php echo '['.implode($visualConsoleItems, ',').']'; ?>;
-
-    if (container != null) {
-        try {
-            var visualConsole = new VisualConsole(container, props, items);
-            console.log(visualConsole);
-        } catch (error) {
-            console.log("ERROR", error.message);
-        }
+    var baseUrl = "<?php echo $config['homeurl']; ?>";
+    var handleUpdate = function (prevProps, newProps) {
+        // TODO: Change the view header and links to display id or name changes.
     }
+    var visualConsole = createVisualConsole(
+        container,
+        props,
+        items,
+        baseUrl,
+        10000,
+        handleUpdate
+    );
+
+    $(document).ready(function () {
+        var controls = document.getElementById('vc-controls');
+        if (controls) autoHideElement(controls, 1000);
+    });
 </script>

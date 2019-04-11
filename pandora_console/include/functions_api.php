@@ -14685,6 +14685,7 @@ function api_set_reset_agent_counts($id, $thrash1, $thrash2, $thrash3)
 }
 
 
+// Functions por get all  user to Carrefour new feature
 function api_get_list_all_user()
 {
     $sql = sprintf('SELECT * FROM tusuario ORDER BY fullname');
@@ -14704,6 +14705,7 @@ function api_get_list_all_user()
 }
 
 
+// Funtion for get all info user for Carrefour new feature
 function api_get_info_user_name($user)
 {
     if ($user === null) {
@@ -14725,6 +14727,7 @@ function api_get_info_user_name($user)
 }
 
 
+// Function for get group user to Carrefour new feature
 function api_get_filter_user_group($user, $group, $disable)
 {
     if ($user === null && ($group === null || $disable === null)) {
@@ -14749,7 +14752,7 @@ function api_get_filter_user_group($user, $group, $disable)
         }
     */
 
-    $sql = sprintf(('select * from tperfil,tusuario_perfil where tperfil.id_perfil in (select tusuario_perfil.id_perfil from tusuario_perfil where id_usuario = '$user' and %s = %d)'), $campo, $condition);
+    $sql = sprintf(('select * from tperfil,tusuario_perfil where tperfil.id_perfil in (select tusuario_perfil.id_perfil from tusuario_perfil where id_usuario = '.$user.' and %s = %d)'), $campo, $condition);
     $filter_user = db_get_all_rows_sql($sql);
 
     if ($filter_user === false) {
@@ -14765,6 +14768,7 @@ function api_get_filter_user_group($user, $group, $disable)
 }
 
 
+// Function for delete an user profile for Carrefour  new feature
 function api_get_delete_user_profile($id_user)
 {
     if ($id_user === null) {
@@ -14787,6 +14791,7 @@ function api_get_delete_user_profile($id_user)
 }
 
 
+// Function for add permission an user to a group for Carrefour new feature
 function api_add_permisson_user_to_group($id_user, $group, $profile, $other=';')
 {
     if ($user === null || $group === null || $profile === null) {

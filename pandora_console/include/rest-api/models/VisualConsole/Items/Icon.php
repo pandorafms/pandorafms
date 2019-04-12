@@ -60,7 +60,7 @@ final class Icon extends Item
             );
         }
 
-        return $imageSrc;
+        return 'images/console/icons/'.$imageSrc.'.png';
     }
 
 

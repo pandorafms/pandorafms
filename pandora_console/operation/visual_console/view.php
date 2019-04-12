@@ -66,7 +66,19 @@ $options['consoles_list']['text'] = '<a href="index.php?sec=network&sec2=godmode
 ).'</a>';
 
 if ($aclWrite || $aclManage) {
-    $url_base = 'index.php?sec=network&sec2=godmode/reporting/visual_console_builder&action=';
+    $action = get_parameterBetweenListValues(
+        is_metaconsole() ? 'action2' : 'action',
+        [
+            'new',
+            'save',
+            'edit',
+            'update',
+            'delete',
+        ],
+        'edit'
+    );
+
+    $baseUrl = 'index.php?sec=network&sec2=godmode/reporting/visual_console_builder&action='.$action;
 
     $hash = md5($config['dbpass'].$visualConsoleId.$config['id_user']);
 
@@ -79,31 +91,31 @@ if ($aclWrite || $aclManage) {
     ).'</a>';
     $options['public_link']['active'] = false;
 
-    $options['data']['text'] = '<a href="'.$url_base.$action.'&tab=data&id_visual_console='.$visualConsoleId.'">'.html_print_image(
+    $options['data']['text'] = '<a href="'.$baseUrl.'&tab=data&id_visual_console='.$visualConsoleId.'">'.html_print_image(
         'images/op_reporting.png',
         true,
         ['title' => __('Main data')]
     ).'</a>';
-    $options['list_elements']['text'] = '<a href="'.$url_base.$action.'&tab=list_elements&id_visual_console='.$visualConsoleId.'">'.html_print_image(
+    $options['list_elements']['text'] = '<a href="'.$baseUrl.'&tab=list_elements&id_visual_console='.$visualConsoleId.'">'.html_print_image(
         'images/list.png',
         true,
         ['title' => __('List elements')]
     ).'</a>';
 
     if (enterprise_installed()) {
-        $options['wizard_services']['text'] = '<a href="'.$url_base.$action.'&tab=wizard_services&id_visual_console='.$visualConsoleId.'">'.html_print_image(
+        $options['wizard_services']['text'] = '<a href="'.$baseUrl.'&tab=wizard_services&id_visual_console='.$visualConsoleId.'">'.html_print_image(
             'images/wand_services.png',
             true,
             ['title' => __('Services wizard')]
         ).'</a>';
     }
 
-    $options['wizard']['text'] = '<a href="'.$url_base.$action.'&tab=wizard&id_visual_console='.$visualConsoleId.'">'.html_print_image(
+    $options['wizard']['text'] = '<a href="'.$baseUrl.'&tab=wizard&id_visual_console='.$visualConsoleId.'">'.html_print_image(
         'images/wand.png',
         true,
         ['title' => __('Wizard')]
     ).'</a>';
-    $options['editor']['text'] = '<a href="'.$url_base.$action.'&tab=editor&id_visual_console='.$visualConsoleId.'">'.html_print_image(
+    $options['editor']['text'] = '<a href="'.$baseUrl.'&tab=editor&id_visual_console='.$visualConsoleId.'">'.html_print_image(
         'images/builder.png',
         true,
         ['title' => __('Builder')]

@@ -139,7 +139,7 @@ function get_logs_size($file)
 function get_status_logs($path)
 {
     $status_server_log = '';
-    $size_server_log = number_format(get_logs_size($path));
+    $size_server_log = get_logs_size($path);
     if ($size_server_log <= 1048576) {
         $status_server_log = "<a style ='color: green;text-decoration: none;'>Normal Status</a><a style ='text-decoration: none;'>&nbsp&nbsp You have less than 10 MB of logs</a>";
     } else {
@@ -157,9 +157,9 @@ function percentage_modules_per_agent()
     $total_modules = db_get_value_sql('SELECT count(*) FROM tagente_modulo');
     $average_modules_per_agent = ($total_modules / $total_agents);
     if ($average_modules_per_agent <= 40) {
-        $status_average_modules = "<a style ='color: green;text-decoration: none;'>Normal Status</a><a style ='text-decoration: none;'>&nbsp&nbsp The average of modules per agent is less than 40 percent</a>";
+        $status_average_modules = "<a style ='color: green;text-decoration: none;'>Normal Status</a><a style ='text-decoration: none;'>&nbsp&nbsp The average of modules per agent is less than 40</a>";
     } else {
-        $status_average_modules = "<a class= 'content' style= 'color: red;text-decoration: none;'>Warning Status</a><a style ='text-decoration: none;'>&nbsp&nbspThe average of modules per agent is more than 40 percent. You can have performance problems</a>";
+        $status_average_modules = "<a class= 'content' style= 'color: red;text-decoration: none;'>Warning Status</a><a style ='text-decoration: none;'>&nbsp&nbspThe average of modules per agent is more than 40. You can have performance problems</a>";
     }
 
     return $status_average_modules;
@@ -202,9 +202,9 @@ function interval_average_of_network_modules()
     $average_time = ((int) $total_module_interval_time / $total_network_modules);
 
     if ($average_time < 180) {
-        $status_average_modules = "<a class= 'content' style= 'color: red;text-decoration: none;'>Warning Status</a><a style ='text-decoration: none;'>&nbsp&nbsp The system has a lot of load and a very fine configuration is required</a>";
+        $status_average_modules = "<a class= 'content' style= 'color: red;text-decoration: none;'>Warning Status</a><a style ='text-decoration: none;'>&nbsp&nbsp The system has a lot of load (average time $average_time) and a very fine configuration is required</a>";
     } else {
-        $status_average_modules = "<a style ='color: green;text-decoration: none;'>Normal Status</a><a style ='text-decoration: none;'>&nbsp&nbsp The system has an acceptable charge</a>";
+        $status_average_modules = "<a style ='color: green;text-decoration: none;'>Normal Status</a><a style ='text-decoration: none;'>&nbsp&nbsp The system has an acceptable charge (average time $average_time) </a>";
     }
 
     if ($average_time == 0) {
@@ -274,6 +274,7 @@ if (strtoupper(substr(PHP_OS, 0, 3)) !== 'WIN') {
 }
 
 $path_server_logs = '/log/pandora/pandora_server.log';
+$path_err_logs = '/log/pandora/pandora_server.error';
 $path_console_logs = '/www/html/pandora_console/pandora_console.log';
 $innodb_log_file_size_min_rec_value = '64M';
 $innodb_log_buffer_size_min_rec_value = '16M';
@@ -710,6 +711,8 @@ render_info_data(
 
     render_row(number_format((get_logs_size($path_server_logs) / 1048576), 3).'M', 'Size server logs (current value)');
     render_row(get_status_logs($path_server_logs), 'Status server logs');
+    render_row(number_format((get_logs_size($path_err_logs) / 1048576), 3).'M', 'Size error logs (current value)');
+    render_row(get_status_logs($path_err_logs), 'Status error logs');
     render_row(number_format((get_logs_size($path_console_logs) / 1048576), 3).'M', 'Size console logs (current value)');
     render_row(get_status_logs($path_console_logs), 'Status console logs');
 

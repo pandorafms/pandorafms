@@ -1268,7 +1268,15 @@ function fill_permissions_ldap($sr)
                ];
         }
 
-         return $permissions_profile;
+        if (empty($permissions_profile)) {
+            $permissions[0]['profile'] = $config['default_remote_profile'];
+            $permissions[0]['groups'][] = $config['default_remote_group'];
+            $permissions[0]['tags'] = $config['default_assign_tags'];
+            $permissions[0]['no_hierarchy'] = $config['default_no_hierarchy'];
+            return $permissions;
+        } else {
+            return $permissions_profile;
+        }
     }
 
     if ($config['autocreate_remote_users']) {

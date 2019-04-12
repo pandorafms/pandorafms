@@ -4,29 +4,34 @@
 <style>
 
 #alert_messages_na{
-    -moz-border-bottom-right-radius: 5px;
-    -webkit-border-bottom-left-radius: 5px;
-    border-bottom-right-radius: 5px;
-    border-bottom-left-radius: 5px;
     z-index:2;
-    position:fixed;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    -webkit-transform: translate(-50%, -50%);   
     width:650px;
+    height: 350px;
     background:white;
+    background-image:url('images/image_problem_area.png');
+    justify-content: center;
+    display: flex;
+    flex-direction: column;
+    box-shadow:4px 5px 10px 3px rgba(0, 0, 0, 0.4);
 }
 
 .modalheade{
     text-align:center;
     width:100%;
-    height:37px;
-    left:0px;
-    background-color:#82b92e;
+    position:absolute;
+    top:0;
 }
 .modalheadertex{
-    color:white;
-    position:relative;
+    color:#000;
     font-family:Nunito;
-    font-size:13pt;
-    top:8px;
+    line-height: 40px;
+    font-size: 25pt;
+    margin-bottom:30px;
 }
 .modalclose{
     cursor:pointer;
@@ -38,49 +43,59 @@
 .modalconten{
     color:black;
     background:white;
-}
-.modalcontentim{
-    float:left;
-    margin-left:30px;
-    margin-top:30px;
-    margin-bottom:30px;
+    width:350px;
+    margin-left: 30px;
 }
 .modalcontenttex{
-    float:left;
     text-align:justify;
     color:black;
-    font-size: 9.5pt;
+    font-size: 11pt;
     line-height:13pt;
-    margin-top:30px;
-    width:430px;
-    margin-left:30px;
+    margin-bottom:30px;
 }
 .modalokbutto{
     cursor:pointer;
     text-align:center;
-    margin-right:45px;
-    float:right;
+    display: inline-block;
+    padding: 6px 45px;
     -moz-border-radius: 3px;
     -webkit-border-radius: 3px;
-    margin-bottom:30px;
-    border-radius: 3px;width:90px;height:30px;background-color:white;border: 1px solid #82b92e;
+    border-radius: 3px;
+    background-color:white;
+    border: 1px solid #82b92e;
 }
 .modalokbuttontex{
-    color:#82b92e;font-family:Nunito;font-size:10pt;position:relative;top:6px;
+    color:#82b92e;
+    font-family:Nunito;
+    font-size:13pt;
 }
 .modalgobutto{
-    cursor:pointer;text-align:center;margin-right:15px;margin-bottom:30px;float:right;-moz-border-radius: 3px;
-    -webkit-border-radius: 3px;border-radius: 3px;width:240px;height:30px;background-color:white;border: 1px solid #82b92e;
+    cursor:pointer;
+    text-align:center;
+    -moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
+    border-radius: 3px;
+    background-color:white;
+    border: 1px solid #82b92e;
 }
 .modalgobuttontex{
-color:#82b92e;font-family:Nunito;font-size:10pt;position:relative;top:6px;    
+color:#82b92e;
+font-family:Nunito;
+font-size:10pt;
 }
 
 
-#opacida{
-position:absolute;background:black;opacity:0.6;z-index:-1;left:0px;top:0px;width:100%;height:100%;
+#opacidad{
+    position:fixed;
+    background:black;
+    opacity:0.6;
+    z-index:-1;
+    left:0px;
+    top:0px;
+    width:100%;
+    height:100%;
 }
-
+/*
 .textodialog{
     margin-left: 0px;
     color:#333;
@@ -100,53 +115,50 @@ position:absolute;background:black;opacity:0.6;z-index:-1;left:0px;top:0px;width
 }
 
 .cargatextodialog p, .cargatextodialog b, .cargatextodialog a{
-    font-size:18pt;
-    
-    
+    font-size:18pt; 
 }
+*/
 </style>
 </head>
 <body>
     
-<div id="alert_messages_na">
-    
-    <div class='modalheade'>
-    <span class='modalheadertex'>
-        <?php echo __("You don't have access to this page"); ?>
-    </span>
-    <img class='modalclose cerrar' src='<?php echo $config['homeurl']; ?>images/icono_cerrar.png'>
-    
+    <div id="alert_messages_na">
+        
+        <div class='modalheade'>
+            <img class='modalclose cerrar' src='<?php echo $config['homeurl']; ?>images/input_cross.png'>  
+        </div>
+
+        <div class='modalconten'>
+            <div class='modalheadertex'>
+                <?php echo __("You don't have access to this page"); ?>
+            </div>
+
+            <div class='modalcontenttex'>
+                <?php
+                echo __('Access to this page is restricted to authorized users only, please contact system administrator if you need assistance.');
+                    echo '<br/> <br/>';
+                    echo __('Please know that all attempts to access this page are recorded in security logs of %s System Database', get_product_name());
+                ?>
+                      
+            </div>
+
+            <div class='modalokbutto cerrar'>
+                <span class='modalokbuttontex'>OK</span>
+            </div>
+        </div>
     </div>
-
-    <div class='modalconten'>
-    <img class='modalcontentim' src='<?php echo $config['homeurl']; ?>images/access_denied.png'>
-    <div class='modalcontenttex'>
-        <?php
-        echo __('Access to this page is restricted to authorized users only, please contact system administrator if you need assistance.');
-            echo '<br/> <br/>';
-            echo __('Please know that all attempts to access this page are recorded in security logs of %s System Database', get_product_name());
-        ?>
-    
-    </div>
-
-
-</div>
-
-<div class='modalokbutto cerrar'>
-<span class='modalokbuttontex'>OK</span>
-</div>
-
-</div>
-    
-    <div id="opacida" style="position:fixed;background:black;opacity:0.6;z-index:-1;left:0px;top:0px;width:100%;height:100%;"></div>
+        
+    <div id="opacidad"></div>
     
 </body>
 </html>
 
 <script>
 
-$(".cerrar").click(function(){
-  window.location=".";
-});
+    $(".cerrar").click(function(){
+    window.location=".";
+    });
+
+    $('div#page').css('background-color','#a5a5a5');
 
 </script>

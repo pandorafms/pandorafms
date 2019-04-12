@@ -44,7 +44,7 @@ if (!is_metaconsole()) {
         'living'         => 'Living Earth',
     ];
 
-    $local_file = 'include/javascript/timezonepicker/images/gray-600.png';
+    $local_file = 'include/javascript/timezonepicker/images/gray-400.png';
 
     // Dimensions must always be exact since the imagemap does not scale.
     $array_size = getimagesize($local_file);
@@ -599,10 +599,10 @@ echo '<form name="user_mod" method="post" action="'.ui_get_full_url().'&amp;modi
 
 if (!is_metaconsole()) {
     echo '<div id="timezone-picker">
-                            <img id="timezone-image" src="'.$local_file.'" width="'.$map_width.'" height="'.$map_height.'" usemap="#timezone-map" />
-                            <img class="timezone-pin" src="include/javascript/timezonepicker/images/pin.png" style="padding-top: 4px;" />
-                            <map name="timezone-map" id="timezone-map">'.$area_data_timezone_polys.$area_data_timezone_rects.'</map>
-                        </div>';
+                        <img id="timezone-image" src="'.$local_file.'" width="'.$map_width.'" height="'.$map_height.'" usemap="#timezone-map" />
+                        <img class="timezone-pin" src="include/javascript/timezonepicker/images/pin.png" style="padding-top: 4px;" />
+                        <map name="timezone-map" id="timezone-map">'.$area_data_timezone_polys.$area_data_timezone_rects.'</map>
+                    </div>';
 }
 
                 echo '</div>

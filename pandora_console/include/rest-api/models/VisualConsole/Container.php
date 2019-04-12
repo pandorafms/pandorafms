@@ -83,11 +83,12 @@ final class Container extends Model
             'id'              => (int) $data['id'],
             'name'            => $data['name'],
             'groupId'         => $this->extractGroupId($data),
-            'backgroundURL'   => $this->extractBackgroundUrl($data),
+            'backgroundImage' => $this->extractBackgroundImage($data),
             'backgroundColor' => $this->extractBackgroundColor($data),
             'isFavorite'      => $this->extractFavorite($data),
             'width'           => (int) $data['width'],
             'height'          => (int) $data['height'],
+            'backgroundURL'   => $this->extractBackgroundUrl($data),
         ];
     }
 
@@ -119,6 +120,24 @@ final class Container extends Model
 
 
     /**
+     * Extract a image name value.
+     *
+     * @param array $data Unknown input data structure.
+     *
+     * @return mixed String representing the image name (not empty) or null.
+     */
+    private function extractBackgroundImage(array $data)
+    {
+        $backgroundImage = static::notEmptyStringOr(
+            static::issetInArray($data, ['background', 'backgroundURL']),
+            null
+        );
+
+        return ($backgroundImage === 'None.png') ? null : $backgroundImage;
+    }
+
+
+    /**
      * Extract a image url value.
      *
      * @param array $data Unknown input data structure.
@@ -127,10 +146,21 @@ final class Container extends Model
      */
     private function extractBackgroundUrl(array $data)
     {
-        return static::notEmptyStringOr(
-            static::issetInArray($data, ['background', 'backgroundURL']),
+        $backgroundUrl = static::notEmptyStringOr(
+            static::issetInArray($data, ['backgroundURL']),
             null
         );
+
+        if ($backgroundUrl !== null) {
+            return $backgroundUrl;
+        }
+
+        $backgroundImage = static::extractBackgroundImage($data);
+        if ($backgroundImage === null) {
+            return null;
+        }
+
+        return 'images/console/background/'.$backgroundImage;
     }
 
 

@@ -349,7 +349,9 @@ export default class VisualConsole {
   public render(prevProps: VisualConsoleProps | null = null): void {
     if (prevProps) {
       if (prevProps.backgroundURL !== this.props.backgroundURL) {
-        this.containerRef.style.backgroundImage = this.props.backgroundURL;
+        this.containerRef.style.backgroundImage = `url(${
+          this.props.backgroundURL
+        })`;
       }
       if (prevProps.backgroundColor !== this.props.backgroundColor) {
         this.containerRef.style.backgroundColor = this.props.backgroundColor;
@@ -358,7 +360,9 @@ export default class VisualConsole {
         this.resizeElement(this.props.width, this.props.height);
       }
     } else {
-      this.containerRef.style.backgroundImage = this.props.backgroundURL;
+      this.containerRef.style.backgroundImage = `url(${
+        this.props.backgroundURL
+      })`;
       this.containerRef.style.backgroundColor = this.props.backgroundColor;
       this.resizeElement(this.props.width, this.props.height);
     }

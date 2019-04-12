@@ -120,6 +120,7 @@ our @EXPORT = qw(
 	month_have_days
 	translate_obj
 	valid_regex
+	read_file
 	set_file_permissions
 	uri_encode
 	check_server_threads
@@ -329,6 +330,28 @@ my @ServerThreads;
 
 # Keep threads running.
 our $THRRUN :shared = 1;
+
+##########################################################################
+## Reads a file and returns entire content or undef if error.
+##########################################################################
+sub read_file {
+	my $path = shift;
+
+	my $_FILE;
+	if( !open($_FILE, "<", $path) ) {
+		# failed to open, return undef
+		return undef;
+	}
+
+	# Slurp configuration file content.
+	my $content = do { local $/; <$_FILE> };
+
+	# Close file
+	close($_FILE);
+
+	return $content;
+}
+
 
 ###############################################################################
 # Sets user:group owner for the given file

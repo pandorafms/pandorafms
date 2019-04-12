@@ -12,7 +12,8 @@
     "plugin:@typescript-eslint/recommended"
   ],
   "rules": {
+    "no-console": "off",
     "@typescript-eslint/indent": "off",
-    "no-console": "off"
+    "@typescript-eslint/explicit-function-return-type": "off"
   }
 }

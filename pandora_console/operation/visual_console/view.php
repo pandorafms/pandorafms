@@ -133,35 +133,7 @@ if (!is_metaconsole()) {
     html_print_input_hidden('metaconsole', 1);
 }
 
-// TODO: Extract to a function.
-$baseUrl = ui_get_full_url(false, false, false, false);
-$vcClientPath = 'include/visual-console-client';
-$dir = $config['homedir'].'/'.$vcClientPath;
-if (is_dir($dir)) {
-    $dh = opendir($dir);
-    if ($dh) {
-        while (($file = readdir($dh)) !== false) {
-            if ($file === '.' || $file === '..') {
-                continue;
-            }
 
-            preg_match('/.*.js$/', $file, $match, PREG_OFFSET_CAPTURE);
-            if (empty($match) === false) {
-                $url = $baseUrl.$vcClientPath.'/'.$match[0][0];
-                echo '<script type="text/javascript" src="'.$url.'"></script>';
-                continue;
-            }
-
-            preg_match('/.*.css$/', $file, $match, PREG_OFFSET_CAPTURE);
-            if (empty($match) === false) {
-                $url = $baseUrl.$vcClientPath.'/'.$match[0][0];
-                echo '<link type="text/css" rel="stylesheet" href="'.$url.'" />';
-            }
-        }
-
-        closedir($dh);
-    }
-}
 
 echo '<div id="visual-console-container"></div>';
 
@@ -174,7 +146,8 @@ if ($pure === true) {
 
     // Quit fullscreen.
     echo '<li class="nomn">';
-    echo '<a href="index.php?sec=network&sec2=operation/visual_console/render_view&id='.$visualConsoleId.'">';
+    $urlNoFull = 'index.php?sec=network&sec2=operation/visual_console/render_view&id='.$visualConsoleId;
+    echo '<a class="vc-btn-no-fullscreen" href="'.$urlNoFull.'">';
     echo html_print_image('images/normal_screen.png', true, ['title' => __('Back to normal mode')]);
     echo '</a>';
     echo '</li>';
@@ -212,6 +185,7 @@ if ($pure === true) {
 $visualConsoleItems = VisualConsole::getItemsFromDB($visualConsoleId);
 
 ui_require_javascript_file('pandora_visual_console');
+visual_map_load_client_resources();
 ?>
 
 <script type="text/javascript">
@@ -220,7 +194,66 @@ ui_require_javascript_file('pandora_visual_console');
     var items = <?php echo '['.implode($visualConsoleItems, ',').']'; ?>;
     var baseUrl = "<?php echo $config['homeurl']; ?>";
     var handleUpdate = function (prevProps, newProps) {
-        // TODO: Change the view header and links to display id or name changes.
+        if (!newProps) return;
+
+        // Change the background color when the fullscreen mode is enabled.
+        if (prevProps
+            && prevProps.backgroundColor != newProps.backgroundColor
+            && <?php echo json_encode($pure); ?>
+        ) {
+            var pureBody = document.querySelector("body.pure");
+            var pureContainer = document.querySelector("div#main_pure");
+            
+            if (pureBody !== null) {
+                pureBody.style.backgroundColor = newProps.backgroundColor
+            }
+            if (pureContainer !== null) {
+                pureContainer.style.backgroundColor = newProps.backgroundColor
+            }
+        }
+
+        // Change the title.
+        if (prevProps && prevProps.name != newProps.name) {
+            // View title.
+            var title = document.querySelector(
+                "div#menu_tab_frame_view > div#menu_tab_left span"
+            );
+            if (title !== null) {
+                title.textContent = newProps.name;
+            }
+            // Fullscreen view title.
+            var fullscreenTitle = document.querySelector("div.vc-title");
+            if (fullscreenTitle !== null) {
+                fullscreenTitle.textContent = newProps.name;
+            }
+            // TODO: Change the metaconsole title.
+        }
+
+        // Change the links.
+        if (prevProps && prevProps.id !== newProps.id) {
+            var regex = /(id=|id_visual_console=|id_layout=)\d+(&?)/gi;
+            var replacement = '$1' + newProps.id + '$2';
+
+            // Tab links.
+            var menuLinks = document.querySelectorAll("div#menu_tab a");
+            if (menuLinks !== null) {
+                menuLinks.forEach(function (menuLink) {
+                    menuLink.href = menuLink.href.replace(regex, replacement);
+                });
+            }
+
+            // Go back from fullscreen button.
+            var btnNoFull = document.querySelector("a.vc-btn-no-fullscreen");
+            if (btnNoFull !== null) {
+                btnNoFull.href = btnNoFull.href.replace(regex, replacement);
+            }
+
+            // Change the URL (if the browser has support).
+            if ("history" in window) {
+                var href = window.location.href.replace(regex, replacement);
+                window.history.replaceState({}, document.title, href);
+            }
+        }
     }
     var visualConsole = createVisualConsole(
         container,

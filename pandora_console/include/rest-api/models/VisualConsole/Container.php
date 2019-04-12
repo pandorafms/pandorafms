@@ -146,21 +146,10 @@ final class Container extends Model
      */
     private function extractBackgroundUrl(array $data)
     {
-        $backgroundUrl = static::notEmptyStringOr(
+        return static::notEmptyStringOr(
             static::issetInArray($data, ['backgroundURL']),
             null
         );
-
-        if ($backgroundUrl !== null) {
-            return $backgroundUrl;
-        }
-
-        $backgroundImage = static::extractBackgroundImage($data);
-        if ($backgroundImage === null) {
-            return null;
-        }
-
-        return 'images/console/background/'.$backgroundImage;
     }
 
 
@@ -219,6 +208,32 @@ final class Container extends Model
 
         if ($row === false) {
             throw new \Exception('error fetching the data from the DB');
+        }
+
+        $backgroundUrl = static::extractBackgroundUrl($row);
+        $backgroundImage = static::extractBackgroundImage($row);
+
+        if ($backgroundUrl === null && $backgroundImage !== null) {
+            $backgroundUrl = ui_get_full_url(
+                'images/console/background/'.$backgroundImage
+            );
+
+            $width = (int) $row['width'];
+            $height = (int) $row['height'];
+
+            if ($width > 0 && $height > 0) {
+                $q = [
+                    'getFile'    => 1,
+                    'thumb'      => 1,
+                    'thumb_size' => $width.'x'.$height,
+                    'file'       => $backgroundUrl,
+                ];
+                $row['backgroundURL'] = ui_get_full_url(
+                    'include/Image/image_functions.php?'.http_build_query($q)
+                );
+            } else {
+                $row['backgroundURL'] = $backgroundUrl;
+            }
         }
 
         return $row;

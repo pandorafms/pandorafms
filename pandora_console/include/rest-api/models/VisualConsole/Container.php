@@ -210,6 +210,7 @@ final class Container extends Model
 
         // Load side libraries.
         global $config;
+        include_once $config['homedir'].'/include/functions_io.php';
         include_once $config['homedir'].'/include/functions_ui.php';
 
         $backgroundUrl = static::extractBackgroundUrl($row);
@@ -238,7 +239,7 @@ final class Container extends Model
             }
         }
 
-        return $row;
+        return \io_safe_output($row);
     }
 
 

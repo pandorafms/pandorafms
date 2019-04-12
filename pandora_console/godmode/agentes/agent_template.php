@@ -106,6 +106,7 @@ if (isset($_POST['template_id'])) {
                 'min_ff_event_normal'   => $row2['min_ff_event_normal'],
                 'min_ff_event_warning'  => $row2['min_ff_event_warning'],
                 'min_ff_event_critical' => $row2['min_ff_event_critical'],
+                'ff_type'               => $row2['ff_type'],
             ];
 
             $name = $row2['name'];

@@ -1736,10 +1736,6 @@ function ui_process_page_head($string, $bitfield)
     // Include countdown library
     $config['jquery']['countdown'] = 'include/javascript/jquery.countdown.js';
 
-    // Include timezone user map library
-    $config['jquery']['OpenLayers'] = 'include/javascript/OpenLayers.js';
-    $config['jquery']['jquery.timezone-picker'] = 'include/javascript/jquery.timezone-picker.js';
-
     // Then add each script as necessary
     $loaded = [''];
     foreach ($config['jquery'] as $name => $filename) {

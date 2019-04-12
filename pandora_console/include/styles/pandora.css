@@ -4798,9 +4798,15 @@ input:checked + .p-slider:before {
   margin-bottom: 0 !important;
 }
 
-.user_edit_first_row,
+.user_edit_first_row {
+  display: flex;
+}
+
 .user_edit_second_row {
   display: flex;
+  flex-flow: row wrap;
+  flex-direction: row;
+  justify-content: space-between;
 }
 
 .user_edit_first_row,
@@ -4865,7 +4871,6 @@ input:checked + .p-slider:before {
 
 .edit_user_options {
   width: 50%;
-  margin-right: 20px;
   padding-right: 50px;
 }
 
@@ -4883,13 +4888,11 @@ input:checked + .p-slider:before {
 }
 
 .edit_user_timezone {
-  width: 50%;
-  padding-left: 50px;
+  width: 40%;
 }
 
 .edit_user_timezone #zonepicker {
   width: 100%;
-  height: 270px;
 }
 
 .edit_user_comments #textarea_comments {

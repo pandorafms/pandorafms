@@ -210,6 +210,10 @@ final class Container extends Model
             throw new \Exception('error fetching the data from the DB');
         }
 
+        // Load side libraries.
+        global $config;
+        include_once $config['homedir'].'/include/functions_ui.php';
+
         $backgroundUrl = static::extractBackgroundUrl($row);
         $backgroundImage = static::extractBackgroundImage($row);
 

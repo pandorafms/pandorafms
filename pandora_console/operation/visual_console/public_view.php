@@ -47,8 +47,7 @@ require_once 'include/functions_visual_map.php';
 $hash = (string) get_parameter('hash');
 $visualConsoleId = (int) get_parameter('id_layout');
 $config['id_user'] = (string) get_parameter('id_user');
-$refr = (int) get_parameter('refr', 0);
-$layout = db_get_row('tlayout', 'id', $visualConsoleId);
+$refr = (int) get_parameter('refr', $config['refr']);
 
 if (!isset($config['pure'])) {
     $config['pure'] = 0;
@@ -61,22 +60,22 @@ if ($myhash != $hash) {
     exit;
 }
 
-if (!$layout) {
+// Load Visual Console.
+use Models\VisualConsole\Container as VisualConsole;
+$visualConsole = null;
+try {
+    $visualConsole = VisualConsole::fromDB(['id' => $visualConsoleId]);
+} catch (Throwable $e) {
     db_pandora_audit(
         'ACL Violation',
-        'Trying to access visual console without id layout'
+        'Trying to access visual console without Id'
     );
     include $config['homedir'].'/general/noaccess.php';
     exit;
 }
 
-use Models\VisualConsole\Container as VisualConsole;
-
-$visualConsoleName = $layout['name'];
-
-// TODO: Show an error message when the models can't be loaded.
-$visualConsole = VisualConsole::fromArray($layout);
-$visualConsoleItems = VisualConsole::getItemsFromDB($visualConsoleId);
+$visualConsoleData = $visualConsole->toArray();
+$visualConsoleName = $visualConsoleData['name'];
 
 // TODO: Extract to a function.
 $baseUrl = ui_get_full_url(false, false, false, false);
@@ -138,8 +137,12 @@ echo '<div style="display: none;" id="qrcode_container" title="'.__('QR code of 
 echo '<div id="qrcode_container_image"></div>';
 echo '</div>';
 
+// Load Visual Console Items.
+$visualConsoleItems = VisualConsole::getItemsFromDB($visualConsoleId);
+
 ui_require_javascript_file('pandora_visual_console');
 ?>
+
 <script type="text/javascript">
     var container = document.getElementById("visual-console-container");
     var props = <?php echo (string) $visualConsole; ?>;
@@ -153,7 +156,7 @@ ui_require_javascript_file('pandora_visual_console');
         props,
         items,
         baseUrl,
-        10000,
+        <?php echo ($refr * 1000); ?>,
         handleUpdate
     );
 

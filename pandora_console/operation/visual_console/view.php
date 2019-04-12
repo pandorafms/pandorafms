@@ -22,6 +22,7 @@ require_once $config['homedir'].'/include/functions_visual_map.php';
 // Query parameters.
 $visualConsoleId = (int) get_parameter(!is_metaconsole() ? 'id' : 'id_visualmap');
 $pure = (bool) get_parameter('pure', $config['pure']);
+$refr = (int) get_parameter('refr', $config['refr']);
 
 // Load Visual Console.
 use Models\VisualConsole\Container as VisualConsole;
@@ -226,7 +227,7 @@ ui_require_javascript_file('pandora_visual_console');
         props,
         items,
         baseUrl,
-        100000,
+        <?php echo ($refr * 1000); ?>,
         handleUpdate
     );
 

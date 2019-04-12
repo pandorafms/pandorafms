@@ -4889,7 +4889,6 @@ input:checked + .p-slider:before {
 
 .edit_user_timezone #zonepicker {
   width: 100%;
-  height: 270px;
 }
 
 .edit_user_comments #textarea_comments {

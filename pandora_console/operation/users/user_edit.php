@@ -566,6 +566,12 @@ $comments .= html_print_input_hidden('quick_language_change', 1, true);
 
 
 foreach ($timezones as $timezone_name => $tz) {
+    if ($timezone_name == 'America/Montreal') {
+        $timezone_name = 'America/Toronto';
+    } else if ($timezone_name == 'Asia/Chongqing') {
+        $timezone_name = 'Asia/Shanghai';
+    }
+
     $area_data_timezone_polys .= '';
     foreach ($tz['polys'] as $coords) {
         $area_data_timezone_polys .= '<area data-timezone="'.$timezone_name.'" data-country="'.$tz['country'].'" data-pin="'.implode(',', $tz['pin']).'" data-offset="'.$tz['offset'].'" shape="poly" coords="'.implode(',', $coords).'" />';
@@ -589,13 +595,17 @@ echo '<form name="user_mod" method="post" action="'.ui_get_full_url().'&amp;modi
             </div> 
             <div class="user_edit_second_row white_box">
                 <div class="edit_user_options">'.$language.$size_pagination.$skin.$home_screen.$event_filter.$newsletter.$newsletter_reminder.$double_authentication.'</div>
-                <div class="edit_user_timezone">'.$timezone.'<div id="zonepicker">
-                    <div id="timezone-picker">
-                        <img id="timezone-image" src="'.$local_file.'" width="'.$map_width.'" height="'.$map_height.'" usemap="#timezone-map" />
-                        <img class="timezone-pin" src="include/javascript/timezonepicker/images/pin.png" style="padding-top: 4px;" />
-                        <map name="timezone-map" id="timezone-map">'.$area_data_timezone_polys.$area_data_timezone_rects.'</map>
-                    </div>
-                </div></div>
+                <div class="edit_user_timezone">'.$timezone;
+
+if (!is_metaconsole()) {
+    echo '<div id="timezone-picker">
+                            <img id="timezone-image" src="'.$local_file.'" width="'.$map_width.'" height="'.$map_height.'" usemap="#timezone-map" />
+                            <img class="timezone-pin" src="include/javascript/timezonepicker/images/pin.png" style="padding-top: 4px;" />
+                            <map name="timezone-map" id="timezone-map">'.$area_data_timezone_polys.$area_data_timezone_rects.'</map>
+                        </div>';
+}
+
+                echo '</div>
             </div> 
             <div class="user_edit_third_row white_box">
                 <div class="edit_user_comments">'.$comments.'</div>
@@ -693,18 +703,31 @@ if (!defined('METACONSOLE')) {
 
     <style>
         /* Styles for timezone map */
-        .user_edit_second_row {
-            height: 350px;
+        #timezone-picker div.timezone-picker {
+            margin: 0 auto;
         }
     </style>
 
+    <script language="javascript" type="text/javascript">
+        $(document).ready (function () {
+            // Set up the picker to update target timezone and country select lists.
+            $('#timezone-image').timezonePicker({
+                target: '#timezone',
+            });
+
+            // Optionally an auto-detect button to trigger JavaScript geolocation.
+            $('#timezone-detect').click(function() {
+                $('#timezone-image').timezonePicker('detectLocation');
+            });
+        });
+    </script>
+
     <?php
+    // Include OpenLayers and timezone user map library.
+    echo '<script type="text/javascript" src="'.ui_get_full_url('include/javascript/timezonepicker/lib/jquery.timezone-picker.min.js').'"></script>'."\n\t";
+    echo '<script type="text/javascript" src="'.ui_get_full_url('include/javascript/timezonepicker/lib/jquery.maphilight.min.js').'"></script>'."\n\t";
     // Closes no meta condition.
 }
-
-// Include OpenLayers and timezone user map library.
-echo '<script type="text/javascript" src="'.ui_get_full_url('include/javascript/timezonepicker/lib/jquery.timezone-picker.min.js').'"></script>'."\n\t";
-echo '<script type="text/javascript" src="'.ui_get_full_url('include/javascript/timezonepicker/lib/jquery.maphilight.min.js').'"></script>'."\n\t";
 ?>
 
 <script language="javascript" type="text/javascript">
@@ -775,17 +798,6 @@ $(document).ready (function () {
     });
     
     show_data_section();
-
-    // Set up the picker to update target timezone and country select lists.
-    $('#timezone-image').timezonePicker({
-        target: '#timezone',
-      });
-
-      // Optionally an auto-detect button to trigger JavaScript geolocation.
-      $('#timezone-detect').click(function() {
-        $('#timezone-image').timezonePicker('detectLocation');
-      });
-
 });
 
 function show_data_section () {

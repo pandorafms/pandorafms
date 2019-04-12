@@ -14712,7 +14712,7 @@ function api_get_info_user_name($user)
         return false;
     }
 
-    $sql = sprintf("select * from tperfil p,tusuario_perfil u where p.id_perfil in (select u.id_perfil from tusuario_perfil where u.id_usuario = '$user')");
+    $sql = sprintf("select * from tperfil p,tusuario_perfil u where p.id_perfil in (select u.id_perfil from tusuario_perfil where u.id_usuario = '.$user.')");
     $user_profile = db_get_all_rows_sql($sql);
     if ($user_profile === false) {
         returnError('Error_user', ' User could not be found.');

@@ -496,10 +496,28 @@ if (modules_is_string_type($id_module_type) || $edit) {
 $table_simple->data[5][1] .= '<br /><em>'.__('Inverse interval').'</em>';
 $table_simple->data[5][1] .= html_print_checkbox('critical_inverse', 1, $critical_inverse, true, $disabledBecauseInPolicy);
 
-// FF stands for Flip-flop
-$table_simple->data[6][0] = __('FF threshold').' '.ui_print_help_icon('ff_threshold', true);
+// FF stands for Flip-flop.
+$table_simple->data[6][0] = __('FF threshold').' ';
+$table_simple->data[6][0] .= ui_print_help_icon('ff_threshold', true);
 
-$table_simple->data[6][1] = html_print_radio_button('each_ff', 0, '', $each_ff, true, $disabledBecauseInPolicy).' '.__('All state changing').' : ';
+$table_simple->data[6][1] .= __('Keep counters');
+$table_simple->data[6][1] .= html_print_checkbox(
+    'ff_type',
+    1,
+    $ff_type,
+    true,
+    $disabledBecauseInPolicy
+).'<br />';
+
+$table_simple->data[6][1] .= html_print_radio_button(
+    'each_ff',
+    0,
+    '',
+    $each_ff,
+    true,
+    $disabledBecauseInPolicy
+);
+$table_simple->data[6][1] .= ' '.__('All state changing').' : ';
 $table_simple->data[6][1] .= html_print_input_text(
     'ff_event',
     $ff_event,
@@ -512,7 +530,16 @@ $table_simple->data[6][1] .= html_print_input_text(
     '',
     $classdisabledBecauseInPolicy
 ).'<br />';
-$table_simple->data[6][1] .= html_print_radio_button('each_ff', 1, '', $each_ff, true, $disabledBecauseInPolicy).' '.__('Each state changing').' : ';
+$table_simple->data[6][1] .= html_print_radio_button(
+    'each_ff',
+    1,
+    '',
+    $each_ff,
+    true,
+    $disabledBecauseInPolicy
+);
+
+$table_simple->data[6][1] .= ' '.__('Each state changing').' : ';
 $table_simple->data[6][1] .= __('To normal');
 $table_simple->data[6][1] .= html_print_input_text(
     'ff_event_normal',
@@ -526,6 +553,7 @@ $table_simple->data[6][1] .= html_print_input_text(
     '',
     $classdisabledBecauseInPolicy
 ).' ';
+
 $table_simple->data[6][1] .= __('To warning');
 $table_simple->data[6][1] .= html_print_input_text(
     'ff_event_warning',
@@ -539,6 +567,7 @@ $table_simple->data[6][1] .= html_print_input_text(
     '',
     $classdisabledBecauseInPolicy
 ).' ';
+
 $table_simple->data[6][1] .= __('To critical');
 $table_simple->data[6][1] .= html_print_input_text(
     'ff_event_critical',
@@ -552,16 +581,31 @@ $table_simple->data[6][1] .= html_print_input_text(
     '',
     $classdisabledBecauseInPolicy
 );
+
 $table_simple->data[7][0] = __('Historical data');
 if ($disabledBecauseInPolicy) {
-    // If is disabled, we send a hidden in his place and print a false checkbox because HTML dont send disabled fields and could be disabled by error
-    $table_simple->data[7][1] = html_print_checkbox('history_data_fake', 1, $history_data, true, $disabledBecauseInPolicy);
+    // If is disabled, we send a hidden in his place and print a false
+    // checkbox because HTML dont send disabled fields
+    // and could be disabled by error.
+    $table_simple->data[7][1] = html_print_checkbox(
+        'history_data_fake',
+        1,
+        $history_data,
+        true,
+        $disabledBecauseInPolicy
+    );
     $table_simple->data[7][1] .= '<input type="hidden" name="history_data" value="'.(int) $history_data.'">';
 } else {
-    $table_simple->data[7][1] = html_print_checkbox('history_data', 1, $history_data, true, $disabledBecauseInPolicy);
+    $table_simple->data[7][1] = html_print_checkbox(
+        'history_data',
+        1,
+        $history_data,
+        true,
+        $disabledBecauseInPolicy
+    );
 }
 
-// Advanced form part
+// Advanced form part.
 $table_advanced = new stdClass();
 $table_advanced->id = 'advanced';
 $table_advanced->width = '100%';

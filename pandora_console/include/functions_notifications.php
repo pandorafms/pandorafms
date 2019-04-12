@@ -993,7 +993,7 @@ function notifications_print_dropdown_element($message_info)
         $message_info['id_mensaje'],
         messages_get_url($message_info['id_mensaje']),
         html_print_image('images/'.$message_info['icon'], true),
-        $message_info['subject'],
-        str_replace([io_safe_input('<br>')], ' ', $message_info['mensaje'])
+        io_safe_output($message_info['subject']),
+        strip_tags(io_safe_output($message_info['mensaje']), '<br><pre>')
     );
 }

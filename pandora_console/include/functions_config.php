@@ -224,6 +224,10 @@ function config_update_config()
                         $error_update[] = __('Enable Netflow');
                     }
 
+                    if (!config_update_value('activate_nta', (bool) get_parameter_switch('activate_nta'))) {
+                        $error_update[] = __('Enable Network Traffic Analyzer');
+                    }
+
                     $timezone = (string) get_parameter('timezone');
                     if ($timezone != '') {
                         if (!config_update_value('timezone', $timezone)) {
@@ -756,6 +760,10 @@ function config_update_config()
                         $error_update[] = __('Max. days before delete old messages');
                     }
 
+                    if (!config_update_value('delete_old_network_matrix', get_parameter('delete_old_network_matrix'))) {
+                        $error_update[] = __('Max. days before delete old network matrix data');
+                    }
+
                     if (!config_update_value('max_graph_container', get_parameter('max_graph_container'))) {
                         $error_update[] = __('Graph container - Max. Items');
                     }
@@ -894,6 +902,14 @@ function config_update_config()
 
                     if (!config_update_value('custom_mobile_console_logo', (string) get_parameter('custom_mobile_console_logo'))) {
                         $error_update[] = __('Custom networkmap center logo');
+                    }
+
+                    if (!config_update_value('custom_title_header', (string) get_parameter('custom_title_header'))) {
+                        $error_update[] = __('Custom title header');
+                    }
+
+                    if (!config_update_value('custom_subtitle_header', (string) get_parameter('custom_subtitle_header'))) {
+                        $error_update[] = __('Custom subtitle header');
                     }
 
                     if (!config_update_value('custom_title1_login', (string) get_parameter('custom_title1_login'))) {
@@ -1547,6 +1563,10 @@ function config_process_config()
         config_update_value('delete_old_messages', 21);
     }
 
+    if (!isset($config['delete_old_network_matrix'])) {
+        config_update_value('delete_old_network_matrix', 10);
+    }
+
     if (!isset($config['max_graph_container'])) {
         config_update_value('max_graph_container', 10);
     }
@@ -1792,7 +1812,7 @@ function config_process_config()
     }
 
     if (!isset($config['custom_logo'])) {
-        config_update_value('custom_logo', 'pandora_logo_head_green.png');
+        config_update_value('custom_logo', 'pandora_logo_head_4.png');
     }
 
     if (!isset($config['custom_logo_collapsed'])) {
@@ -1825,6 +1845,14 @@ function config_process_config()
 
     if (!isset($config['custom_mobile_console_logo'])) {
         config_update_value('custom_mobile_console_logo', '');
+    }
+
+    if (!isset($config['custom_title_header'])) {
+        config_update_value('custom_title_header', __('Pandora FMS'));
+    }
+
+    if (!isset($config['custom_subtitle_header'])) {
+        config_update_value('custom_subtitle_header', __('the Flexible Monitoring System'));
     }
 
     if (!isset($config['custom_title1_login'])) {
@@ -1973,6 +2001,10 @@ function config_process_config()
 
     if (!isset($config['activate_netflow'])) {
         config_update_value('activate_netflow', 0);
+    }
+
+    if (!isset($config['activate_nta'])) {
+        config_update_value('activate_nta', 0);
     }
 
     if (!isset($config['netflow_path'])) {
@@ -2684,9 +2716,7 @@ function config_check()
     if (enterprise_installed() === false) {
         $supervisor = new ConsoleSupervisor(false);
         $supervisor->run();
-    } else if ($config['cron_last_run'] == 0
-        || (get_system_time() - $config['cron_last_run']) > 3600
-    ) {
+    } else {
         $supervisor = new ConsoleSupervisor(false);
         $supervisor->runBasic();
     }

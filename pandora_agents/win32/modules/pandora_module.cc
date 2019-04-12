@@ -78,6 +78,7 @@ Pandora_Module::Pandora_Module (string name) {
 	this->warning_inverse = "";
 	this->quiet = "";
 	this->module_ff_interval = "";
+	this->module_ff_type = "";
 	this->module_alert_template = "";
 	this->module_crontab = "";
 }
@@ -733,6 +734,13 @@ Pandora_Module::getXml () {
 		module_xml += this->module_ff_interval;
 		module_xml += "</module_ff_interval>\n";
 	}
+
+	/* Module FF type */
+	if (this->module_ff_type != "") {
+		module_xml += "\t<ff_type>";
+		module_xml += this->module_ff_type;
+		module_xml += "</ff_type>\n";
+	}
 	
 	/* Module Alert template */
 	if (this->module_alert_template != "") {
@@ -1026,6 +1034,16 @@ Pandora_Module::setQuiet (string value) {
 void
 Pandora_Module::setModuleFFInterval (string value) {
 	this->module_ff_interval = value;
+}
+
+/** 
+ * Set the module FF type for the module.
+ *
+ * @param value module FF type value to set.
+ */
+void
+Pandora_Module::setModuleFFType (string value) {
+	this->module_ff_type = value;
 }
 
 /** 

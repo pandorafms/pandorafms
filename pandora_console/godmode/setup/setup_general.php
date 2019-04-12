@@ -131,6 +131,14 @@ if (strtoupper(substr(PHP_OS, 0, 3)) == 'WIN') {
 
 $table->data[19][1] = html_print_checkbox_switch_extended('activate_netflow', 1, $config['activate_netflow'], $rbt_disabled, '', '', true);
 
+$table->data[21][0] = __('Enable Network Traffic Analyzer');
+$table->data[21][1] = html_print_switch(
+    [
+        'name'  => 'activate_nta',
+        'value' => $config['activate_nta'],
+    ]
+);
+
 
 $zone_name = [
     'Africa'     => __('Africa'),

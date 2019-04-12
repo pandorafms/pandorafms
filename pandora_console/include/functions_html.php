@@ -1060,7 +1060,7 @@ function html_print_extended_select_for_time(
             'images/pencil.png',
             true,
             [
-                'class' => $uniq_name.'_toggler',
+                'class' => $uniq_name.'_toggler '.$class,
                 'alt'   => __('Custom'),
                 'title' => __('Custom'),
                 'style' => 'width: 18px;'.$style_icon,
@@ -2392,12 +2392,21 @@ function html_print_checkbox_switch($name, $value, $checked=false, $return=false
 /**
  * Prints an image HTML element.
  *
- * @param string  $src        Image source filename.
- * @param boolean $return     Whether to return or print
- * @param array   $options    Array with optional HTML options to set. At this moment, the
- *      following options are supported: alt, style, title, width, height, class, pos_tree.
- * @param boolean $return_src Whether to return src field of image ('images/*.*') or complete html img tag ('<img src="..." alt="...">').
- * @param boolean $relative   Whether to use relative path to image or not (i.e. $relative= true : /pandora/<img_src>).
+ * @param string  $src            Image source filename.
+ * @param boolean $return         Whether to return or print.
+ * @param array   $options        Array with optional HTML options to set.
+ *          At this moment, the following options are supported:
+ *          align, border, hspace, ismap, vspace, style, title, height,
+ *          longdesc, usemap, width, id, class, lang, xml:lang, onclick,
+ *          ondblclick, onmousedown, onmouseup, onmouseover, onmousemove,
+ *          onmouseout, onkeypress, onkeydown, onkeyup, pos_tree, alt.
+ * @param boolean $return_src     Whether to return src field of image
+ *          ('images/*.*') or complete html img tag ('<img src="..." alt="...">').
+ * @param boolean $relative       Whether to use relative path to image or not
+ *          (i.e. $relative= true : /pandora/<img_src>).
+ * @param boolean $no_in_meta     Do not show on metaconsole folder at first. Go
+ *          directly to the node.
+ * @param boolean $isExternalLink Do not shearch for images in Pandora.
  *
  * @return string HTML code if return parameter is true.
  */
@@ -2412,9 +2421,9 @@ function html_print_image(
 ) {
     global $config;
 
-    // If metaconsole is in use then don't use skins
+    // If metaconsole is in use then don't use skins.
     if (!is_metaconsole()) {
-        // Checks if user's skin is available
+        // Checks if user's skin is available.
         $isFunctionSkins = enterprise_include_once('include/functions_skins.php');
 
         if ($isFunctionSkins !== ENTERPRISE_NOT_HOOK) {
@@ -2426,11 +2435,11 @@ function html_print_image(
         }
     }
 
-    // If metaconsole is activated and image doesn't exists try to search on normal console
+    // If metaconsole is activated and image doesn't exists try to search on normal console.
     if (is_metaconsole()) {
         if (!$relative) {
             $working_dir = str_replace('\\', '/', getcwd());
-            // Windows compatibility
+            // Windows compatibility.
             if ($no_in_meta) {
                 $src = '../../'.$src;
             } else if (strstr($working_dir, 'enterprise/meta') === false) {
@@ -2468,22 +2477,22 @@ function html_print_image(
         }
     }
 
-    // Only return src field of image
+    // Only return src field of image.
     if ($return_src) {
         if (!$return) {
             echo io_safe_input($src);
-            return;
+            return null;
         }
 
         return io_safe_input($src);
     }
 
     $output = '<img src="'.$src.'" ';
-    // Dont use safe_input here or the performance will dead
+    // Dont use safe_input here or the performance will dead.
     $style = '';
 
     if (!empty($options)) {
-        // Deprecated or value-less attributes
+        // Deprecated or value-less attributes.
         if (isset($options['align'])) {
             $style .= 'align:'.$options['align'].';';
             // Align is deprecated, use styles.
@@ -2491,23 +2500,23 @@ function html_print_image(
 
         if (isset($options['border'])) {
             $style .= 'border:'.$options['border'].'px;';
-            // Border is deprecated, use styles
+            // Border is deprecated, use styles.
         }
 
         if (isset($options['hspace'])) {
             $style .= 'margin-left:'.$options['hspace'].'px;';
-            // hspace is deprecated, use styles
+            // hspace is deprecated, use styles.
             $style .= 'margin-right:'.$options['hspace'].'px;';
         }
 
         if (isset($options['ismap'])) {
             $output .= 'ismap="ismap" ';
-            // Defines the image as a server-side image map
+            // Defines the image as a server-side image map.
         }
 
         if (isset($options['vspace'])) {
             $style .= 'margin-top:'.$options['vspace'].'px;';
-            // hspace is deprecated, use styles
+            // hspace is deprecated, use styles.
             $style .= 'margin-bottom:'.$options['vspace'].'px;';
         }
 
@@ -2515,7 +2524,7 @@ function html_print_image(
             $style .= $options['style'];
         }
 
-        // If title is provided activate forced title
+        // If title is provided activate forced title.
         if (isset($options['title']) && $options['title'] != '') {
             if (isset($options['class'])) {
                 $options['class'] .= ' forced_title';
@@ -2523,12 +2532,12 @@ function html_print_image(
                 $options['class'] = 'forced_title';
             }
 
-            // New way to show the force_title (cleaner and better performance)
+            // New way to show the force_title (cleaner and better performance).
             $output .= 'data-title="'.io_safe_input_html($options['title']).'" ';
             $output .= 'data-use_title_for_force_title="1" ';
         }
 
-        // Valid attributes (invalid attributes get skipped)
+        // Valid attributes (invalid attributes get skipped).
         $attrs = [
             'height',
             'longdesc',
@@ -2562,7 +2571,7 @@ function html_print_image(
 
     if (!isset($options['alt']) && isset($options['title'])) {
         $options['alt'] = io_safe_input_html($options['title']);
-        // Set alt to title if it's not set
+        // Set alt to title if it's not set.
     }
 
     if (!empty($style)) {
@@ -2735,28 +2744,7 @@ function html_print_autocomplete_modules(
     global $config;
 
     if ($id_agents === false) {
-        $groups = [];
-        if ($ACL) {
-            $groups = users_get_groups($config['id_user'], 'AW', false);
-            $groups = array_keys($groups);
-
-            if (empty($groups)) {
-                $id_groups = 0;
-            } else {
-                $id_groups = implode(',', $groups);
-            }
-
-            $agents = db_get_all_rows_sql(
-                'SELECT id_agente
-				FROM tagente
-				WHERE id_grupo IN ('.$id_groups.')'
-            );
-        } else {
-            $agents = db_get_all_rows_sql(
-                'SELECT id_agente
-				FROM tagente'
-            );
-        }
+        $agents = agents_get_agents();
 
         if ($agents === false) {
             $agents = [];
@@ -2768,10 +2756,7 @@ function html_print_autocomplete_modules(
         }
     } else {
         if ($ACL) {
-            $groups = users_get_groups($config['id_user'], 'AW', false);
-            $groups = array_keys($groups);
-
-            $agents = db_get_all_rows_sql('SELECT id_agente FROM tagente WHERE id_grupo IN ('.implode(',', $groups).')');
+            $agents = agents_get_agents();
 
             if ($agents === false) {
                 $agents = [];
@@ -2884,121 +2869,9 @@ function html_print_autocomplete_modules(
  */
 function html_print_timezone_select($name, $selected='')
 {
-    $timezones = [
-        'Pacific/Midway'       => '(GMT-11:00) '.__('Midway Island'),
-        'US/Samoa'             => '(GMT-11:00) '.__('Samoa'),
-        'US/Hawaii'            => '(GMT-10:00) '.__('Hawaii'),
-        'US/Alaska'            => '(GMT-09:00) '.__('Alaska'),
-        'US/Pacific'           => '(GMT-08:00) '.__('Pacific Time (US & Canada)'),
-        'America/Tijuana'      => '(GMT-08:00) '.__('Tijuana'),
-        'US/Arizona'           => '(GMT-07:00) '.__('Arizona'),
-        'US/Mountain'          => '(GMT-07:00) '.__('Mountain Time (US & Canada)'),
-        'America/Chihuahua'    => '(GMT-07:00) '.__('Chihuahua'),
-        'America/Mazatlan'     => '(GMT-07:00) '.__('Mazatlan'),
-        'America/Mexico_City'  => '(GMT-06:00) '.__('Mexico City'),
-        'America/Monterrey'    => '(GMT-06:00) '.__('Monterrey'),
-        'Canada/Saskatchewan'  => '(GMT-06:00) '.__('Saskatchewan'),
-        'US/Central'           => '(GMT-06:00) '.__('Central Time (US & Canada)'),
-        'US/Eastern'           => '(GMT-05:00) '.__('Eastern Time (US & Canada)'),
-        'US/East-Indiana'      => '(GMT-05:00) '.__('Indiana (East)'),
-        'America/Bogota'       => '(GMT-05:00) '.__('Bogota'),
-        'America/Lima'         => '(GMT-05:00) '.__('Lima'),
-        'America/Caracas'      => '(GMT-04:30) '.__('Caracas'),
-        'Canada/Atlantic'      => '(GMT-04:00) '.__('Atlantic Time (Canada)'),
-        'America/La_Paz'       => '(GMT-04:00) '.__('La Paz'),
-        'America/Santiago'     => '(GMT-04:00) '.__('Santiago'),
-        'Canada/Newfoundland'  => '(GMT-03:30) '.__('Newfoundland'),
-        'America/Buenos_Aires' => '(GMT-03:00) '.__('Buenos Aires'),
-        "Greenland'"           => '(GMT-03:00) '.__('Greenland'),
-        'Atlantic/Stanley'     => '(GMT-02:00) '.__('Stanley'),
-        'Atlantic/Azores'      => '(GMT-01:00) '.__('Azores'),
-        'Atlantic/Cape_Verde'  => '(GMT-01:00) '.__('Cape Verde Is.'),
-        'Africa/Casablanca'    => '(GMT+00:00) '.__('Casablanca'),
-        'Europe/Dublin'        => '(GMT+00:00) '.__('Dublin'),
-        'Europe/Lisbon'        => '(GMT+00:00) '.__('Lisbon'),
-        'Europe/London'        => '(GMT+00:00) '.__('London'),
-        'Africa/Monrovia'      => '(GMT+00:00) '.__('Monrovia'),
-        'Europe/Amsterdam'     => '(GMT+01:00) '.__('Amsterdam'),
-        'Europe/Belgrade'      => '(GMT+01:00) '.__('Belgrade'),
-        'Europe/Berlin'        => '(GMT+01:00) '.__('Berlin'),
-        'Europe/Bratislava'    => '(GMT+01:00) '.__('Bratislava'),
-        'Europe/Brussels'      => '(GMT+01:00) '.__('Brussels'),
-        'Europe/Budapest'      => '(GMT+01:00) '.__('Budapest'),
-        'Europe/Copenhagen'    => '(GMT+01:00) '.__('Copenhagen'),
-        'Europe/Ljubljana'     => '(GMT+01:00) '.__('Ljubljana'),
-        'Europe/Madrid'        => '(GMT+01:00) '.__('Madrid'),
-        'Europe/Paris'         => '(GMT+01:00) '.__('Paris'),
-        'Europe/Prague'        => '(GMT+01:00) '.__('Prague'),
-        'Europe/Rome'          => '(GMT+01:00) '.__('Rome'),
-        'Europe/Sarajevo'      => '(GMT+01:00) '.__('Sarajevo'),
-        'Europe/Skopje'        => '(GMT+01:00) '.__('Skopje'),
-        'Europe/Stockholm'     => '(GMT+01:00) '.__('Stockholm'),
-        'Europe/Vienna'        => '(GMT+01:00) '.__('Vienna'),
-        'Europe/Warsaw'        => '(GMT+01:00) '.__('Warsaw'),
-        'Europe/Zagreb'        => '(GMT+01:00) '.__('Zagreb'),
-        'Europe/Athens'        => '(GMT+02:00) '.__('Athens'),
-        'Europe/Bucharest'     => '(GMT+02:00) '.__('Bucharest'),
-        'Africa/Cairo'         => '(GMT+02:00) '.__('Cairo'),
-        'Africa/Harare'        => '(GMT+02:00) '.__('Harare'),
-        'Europe/Helsinki'      => '(GMT+02:00) '.__('Helsinki'),
-        'Europe/Istanbul'      => '(GMT+02:00) '.__('Istanbul'),
-        'Asia/Jerusalem'       => '(GMT+02:00) '.__('Jerusalem'),
-        'Europe/Kiev'          => '(GMT+02:00) '.__('Kyiv'),
-        'Europe/Minsk'         => '(GMT+02:00) '.__('Minsk'),
-        'Europe/Riga'          => '(GMT+02:00) '.__('Riga'),
-        'Europe/Sofia'         => '(GMT+02:00) '.__('Sofia'),
-        'Europe/Tallinn'       => '(GMT+02:00) '.__('Tallinn'),
-        'Europe/Vilnius'       => '(GMT+02:00) '.__('Vilnius'),
-        'Asia/Baghdad'         => '(GMT+03:00) '.__('Baghdad'),
-        'Asia/Kuwait'          => '(GMT+03:00) '.__('Kuwait'),
-        'Africa/Nairobi'       => '(GMT+03:00) '.__('Nairobi'),
-        'Asia/Riyadh'          => '(GMT+03:00) '.__('Riyadh'),
-        'Europe/Moscow'        => '(GMT+03:00) '.__('Moscow'),
-        'Asia/Tehran'          => '(GMT+03:30) '.__('Tehran'),
-        'Asia/Baku'            => '(GMT+04:00) '.__('Baku'),
-        'Europe/Volgograd'     => '(GMT+04:00) '.__('Volgograd'),
-        'Asia/Muscat'          => '(GMT+04:00) '.__('Muscat'),
-        'Asia/Tbilisi'         => '(GMT+04:00) '.__('Tbilisi'),
-        'Asia/Yerevan'         => '(GMT+04:00) '.__('Yerevan'),
-        'Asia/Kabul'           => '(GMT+04:30) '.__('Kabul'),
-        'Asia/Karachi'         => '(GMT+05:00) '.__('Karachi'),
-        'Asia/Tashkent'        => '(GMT+05:00) '.__('Tashkent'),
-        'Asia/Kolkata'         => '(GMT+05:30) '.__('Kolkata'),
-        'Asia/Kathmandu'       => '(GMT+05:45) '.__('Kathmandu'),
-        'Asia/Yekaterinburg'   => '(GMT+06:00) '.__('Ekaterinburg'),
-        'Asia/Almaty'          => '(GMT+06:00) '.__('Almaty'),
-        'Asia/Dhaka'           => '(GMT+06:00) '.__('Dhaka'),
-        'Asia/Novosibirsk'     => '(GMT+07:00) '.__('Novosibirsk'),
-        'Asia/Bangkok'         => '(GMT+07:00) '.__('Bangkok'),
-        'Asia/Jakarta'         => '(GMT+07:00) '.__('Jakarta'),
-        'Asia/Krasnoyarsk'     => '(GMT+08:00) '.__('Krasnoyarsk'),
-        'Asia/Chongqing'       => '(GMT+08:00) '.__('Chongqing'),
-        'Asia/Hong_Kong'       => '(GMT+08:00) '.__('Hong Kong'),
-        'Asia/Kuala_Lumpur'    => '(GMT+08:00) '.__('Kuala Lumpur'),
-        'Australia/Perth'      => '(GMT+08:00) '.__('Perth'),
-        'Asia/Singapore'       => '(GMT+08:00) '.__('Singapore'),
-        'Asia/Taipei'          => '(GMT+08:00) '.__('Taipei'),
-        'Asia/Ulaanbaatar'     => '(GMT+08:00) '.__('Ulaan Bataar'),
-        'Asia/Urumqi'          => '(GMT+08:00) '.__('Urumqi'),
-        'Asia/Irkutsk'         => '(GMT+09:00) '.__('Irkutsk'),
-        'Asia/Seoul'           => '(GMT+09:00) '.__('Seoul'),
-        'Asia/Tokyo'           => '(GMT+09:00) '.__('Tokyo'),
-        'Australia/Adelaide'   => '(GMT+09:30) '.__('Adelaide'),
-        'Australia/Darwin'     => '(GMT+09:30) '.__('Darwin'),
-        'Asia/Yakutsk'         => '(GMT+10:00) '.__('Yakutsk'),
-        'Australia/Brisbane'   => '(GMT+10:00) '.__('Brisbane'),
-        'Australia/Canberra'   => '(GMT+10:00) '.__('Canberra'),
-        'Pacific/Guam'         => '(GMT+10:00) '.__('Guam'),
-        'Australia/Hobart'     => '(GMT+10:00) '.__('Hobart'),
-        'Australia/Melbourne'  => '(GMT+10:00) '.__('Melbourne'),
-        'Pacific/Port_Moresby' => '(GMT+10:00) '.__('Port Moresby'),
-        'Australia/Sydney'     => '(GMT+10:00) '.__('Sydney'),
-        'Asia/Vladivostok'     => '(GMT+11:00) '.__('Vladivostok'),
-        'Asia/Magadan'         => '(GMT+12:00) '.__('Magadan'),
-        'Pacific/Auckland'     => '(GMT+12:00) '.__('Auckland'),
-        'Pacific/Fiji'         => '(GMT+12:00) '.__('Fiji'),
-    ];
-
+    $timezones_index = timezone_identifiers_list();
+    $timezones = timezone_identifiers_list();
+    $timezones = array_combine($timezones_index, $timezones);
     return html_print_select($timezones, $name, $selected, '', __('None'), '', true, false, false);
 }
 
@@ -3113,4 +2986,49 @@ function html_print_switch($attributes=[])
 			<input type='checkbox' $html_expand>
 			<span class='p-slider'></span>
 		</label>";
+}
+
+
+/**
+ * Print a link with post params.The component is really a form with a button
+ *      with some inputs hidden.
+ *
+ * @param string $text   Text to show.
+ * @param array  $params Params to be written like inputs hidden.
+ * @param string $text   Text of image.
+ * @param string $style  Additional style for the element.
+ *
+ * @return string With HTML code.
+ */
+function html_print_link_with_params($text, $params=[], $type='text', $style='')
+{
+    $html = '<form method=post>';
+    switch ($type) {
+        case 'image':
+            $html .= html_print_input_image($text, $text, $text, $style, true);
+        break;
+
+        case 'text':
+        default:
+            if (!empty($style)) {
+                $style = ' style="'.$style.'"';
+            }
+
+            $html .= html_print_submit_button(
+                $text,
+                $text,
+                false,
+                'class="button-as-link"'.$style,
+                true
+            );
+        break;
+    }
+
+    foreach ($params as $param => $value) {
+        $html .= html_print_input_hidden($param, $value, true);
+    }
+
+    $html .= '</form>';
+
+    return $html;
 }

@@ -149,7 +149,6 @@ if ($correctLogin) {
                     break;
 
                     case 'get_info_user_name':
-
                         $id_os = get_info_user_name($user);
 
                         if ($id_os === 100) {
@@ -159,7 +158,6 @@ if ($correctLogin) {
                     break;
 
                     case 'get_filter_user_group':
-
                         $id_os = get_filter_user_group($user, $group, $disable);
 
                         if ($id_os === false) {

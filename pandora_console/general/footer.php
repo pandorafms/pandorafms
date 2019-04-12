@@ -44,8 +44,6 @@ if ($current_package == 0) {
 echo sprintf(__('%s %s - Build %s - MR %s', get_product_name(), $pandora_version, $build_package_version, $config['MR']));
 
 echo '</a> ';
-echo '<a class="footer">'.__('Page generated at').' '.date($config['date_format']);
-echo '</a><br /><span>&reg; '.get_copyright_notice().'</span>';
 
 if (isset($config['debug'])) {
     $cache_info = [];

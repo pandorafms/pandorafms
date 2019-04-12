@@ -160,7 +160,7 @@ $module_macros = [];
 if ($create_agent) {
     $mssg_warning = 0;
     $alias_safe_output = io_safe_output(get_parameter('alias', ''));
-    $alias = io_safe_input(trim(preg_replace('/[\/\\\|%#&$-]/', '', $alias_safe_output)));
+    $alias = io_safe_input(trim(preg_replace('/[\/\\\|%#&$]/', '', $alias_safe_output)));
     $alias_as_name = (int) get_parameter_post('alias_as_name', 0);
     $direccion_agente = (string) get_parameter_post('direccion', '');
     $unique_ip = (int) get_parameter_post('unique_ip', 0);
@@ -766,7 +766,7 @@ if ($update_agent) {
     $id_agente = (int) get_parameter_post('id_agente');
     $nombre_agente = str_replace('`', '&lsquo;', (string) get_parameter_post('agente', ''));
     $alias_safe_output = io_safe_output(get_parameter('alias', ''));
-    $alias = io_safe_input(trim(preg_replace('/[\/\\\|%#&$-]/', '', $alias_safe_output)));
+    $alias = io_safe_input(trim(preg_replace('/[\/\\\|%#&$]/', '', $alias_safe_output)));
     $alias_as_name = (int) get_parameter_post('alias_as_name', 0);
     $direccion_agente = (string) get_parameter_post('direccion', '');
     $unique_ip = (int) get_parameter_post('unique_ip', 0);
@@ -1320,6 +1320,7 @@ if ($update_module || $create_module) {
     $ff_event_normal = (int) get_parameter('ff_event_normal');
     $ff_event_warning = (int) get_parameter('ff_event_warning');
     $ff_event_critical = (int) get_parameter('ff_event_critical');
+    $ff_type = (int) get_parameter('ff_type');
     $each_ff = (int) get_parameter('each_ff');
     $ff_timeout = (int) get_parameter('ff_timeout');
     $unit = (string) get_parameter('unit_select');
@@ -1482,6 +1483,7 @@ if ($update_module) {
         'min_ff_event_normal'   => $ff_event_normal,
         'min_ff_event_warning'  => $ff_event_warning,
         'min_ff_event_critical' => $ff_event_critical,
+        'ff_type'               => $ff_type,
         'each_ff'               => $each_ff,
         'ff_timeout'            => $ff_timeout,
         'unit'                  => io_safe_output($unit),
@@ -1677,6 +1679,7 @@ if ($create_module) {
         'min_ff_event_normal'   => $ff_event_normal,
         'min_ff_event_warning'  => $ff_event_warning,
         'min_ff_event_critical' => $ff_event_critical,
+        'ff_type'               => $ff_type,
         'each_ff'               => $each_ff,
         'ff_timeout'            => $ff_timeout,
         'unit'                  => io_safe_output($unit),

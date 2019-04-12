@@ -1456,6 +1456,7 @@ sub cloud_scan($) {
 			aws_access_key_id => $self->{'aws_access_key_id'},
 			aws_secret_access_key => $self->{'aws_secret_access_key'},
 			cloud_util_path => $self->{'cloud_util_path'},
+			creds_file => $self->{'creds_file'},
 			parent => $self
 		]
 

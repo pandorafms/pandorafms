@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Models\VisualConsole;
 use Models\Model;
-// Enterprise item. It may not exist.
-use Enterprise\Models\VisualConsole\Items\Service;
 
 /**
  * Model of a Visual Console.
@@ -278,9 +276,9 @@ final class Container extends Model
             case ICON:
             return Items\Icon::class;
 
-            // Enterprise item.
+            // Enterprise item. It may not exist.
             case SERVICE:
-            return \class_exists('Service') ? Service::class : Item::class;
+            return \class_exists('\Enterprise\Models\VisualConsole\Items\Service') ? \Enterprise\Models\VisualConsole\Items\Service::class : Item::class;
 
             case GROUP_ITEM:
             return Items\Group::class;

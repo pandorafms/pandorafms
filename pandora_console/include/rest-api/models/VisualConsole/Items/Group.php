@@ -144,13 +144,16 @@ final class Group extends Item
         global $config;
         include_once $config['homedir'].'/include/functions_groups.php';
         include_once $config['homedir'].'/include/functions_visual_map.php';
+        include_once $config['homedir'].'/include/functions_ui.php';
 
         // Get the status img src.
         $groupId = static::extractGroupId($data);
         $status = \groups_get_status($groupId);
-        $data['statusImageSrc'] = \visual_map_get_image_status_element(
-            $data,
-            $status
+        $data['statusImageSrc'] = \ui_get_full_url(
+            \visual_map_get_image_status_element(
+                $data,
+                $status
+            )
         );
 
         return $data;

@@ -33,8 +33,35 @@ final class Icon extends Item
     {
         $return = parent::decode($data);
         $return['type'] = ICON;
-        $return['imageSrc'] = $this->extractImageSrc($data);
+        $return['image'] = static::extractImage($data);
+        $return['imageSrc'] = static::extractImageSrc($data);
         return $return;
+    }
+
+
+    /**
+     * Extract a image value.
+     *
+     * @param array $data Unknown input data structure.
+     *
+     * @return mixed String representing the image url (not empty) or null.
+     *
+     * @throws \InvalidArgumentException When a valid image can't be found.
+     */
+    private static function extractImage(array $data)
+    {
+        $image = static::notEmptyStringOr(
+            static::issetInArray($data, ['image']),
+            null
+        );
+
+        if ($image === null) {
+            throw new \InvalidArgumentException(
+                'the image property is required and should be a non empty string'
+            );
+        }
+
+        return $image;
     }
 
 
@@ -47,20 +74,49 @@ final class Icon extends Item
      *
      * @throws \InvalidArgumentException When a valid image src can't be found.
      */
-    private function extractImageSrc(array $data)
+    private static function extractImageSrc(array $data)
     {
-        $imageSrc = static::notEmptyStringOr(
-            static::issetInArray($data, ['imageSrc', 'image']),
+        return static::notEmptyStringOr(
+            static::issetInArray($data, ['imageSrc']),
             null
         );
+    }
 
-        if ($imageSrc === null || \strlen($imageSrc) === 0) {
-            throw new \InvalidArgumentException(
-                'the image src property is required and should be a non empty string'
-            );
-        }
 
-        return 'images/console/icons/'.$imageSrc.'.png';
+    // 'images/console/icons/'.$imageSrc.'.png'
+
+
+    /**
+     * Fetch a vc item data structure from the database using a filter.
+     *
+     * @param array $filter Filter of the Visual Console Item.
+     *
+     * @return array The Visual Console Item data structure stored into the DB.
+     * @throws \InvalidArgumentException When an agent Id cannot be found.
+     *
+     * @override Item::fetchDataFromDB.
+     */
+    protected static function fetchDataFromDB(array $filter): array
+    {
+        // Due to this DB call, this function cannot be unit tested without
+        // a proper mock.
+        $data = parent::fetchDataFromDB($filter);
+
+        /*
+         * Retrieve extra data.
+         */
+
+        // Load side libraries.
+        global $config;
+        include_once $config['homedir'].'/include/functions_ui.php';
+        include_once $config['homedir'].'/include/functions_visual_map.php';
+
+        // Get the img src.
+        $data['imageSrc'] = \ui_get_full_url(
+            \visual_map_get_image_status_element($data)
+        );
+
+        return $data;
     }
 
 

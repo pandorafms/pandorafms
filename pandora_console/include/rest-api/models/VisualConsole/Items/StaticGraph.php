@@ -149,6 +149,7 @@ final class StaticGraph extends Item
 
         // Load side libraries.
         global $config;
+        include_once $config['homedir'].'/include/functions_ui.php';
         include_once $config['homedir'].'/include/functions_visual_map.php';
 
         // Get the linked module Id.
@@ -176,17 +177,15 @@ final class StaticGraph extends Item
         }
 
         // Get the img src.
-        $data['statusImageSrc'] = \visual_map_get_image_status_element($data);
+        $data['statusImageSrc'] = \ui_get_full_url(
+            \visual_map_get_image_status_element($data)
+        );
 
         // Get last value.
         if (isset($data['show_last_value']) && $data['show_last_value'] !== 2) {
             $img_style_title = '';
 
-            $unit_text = \trim(
-                \io_safe_output(
-                    \modules_get_unit($moduleId)
-                )
-            );
+            $unit_text = \trim(\io_safe_output(\modules_get_unit($moduleId)));
 
             $value = \modules_get_last_value($moduleId);
 

@@ -1,5 +1,8 @@
-.visual-console-container {
+#visual-console-container {
+  margin: 0px auto;
   position: relative;
+  background-repeat: no-repeat;
+  background-size: contain;
 }
 
 .visual-console-item {

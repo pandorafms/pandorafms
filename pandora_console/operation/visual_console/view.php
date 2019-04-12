@@ -23,27 +23,23 @@ require_once $config['homedir'].'/include/functions_visual_map.php';
 $visualConsoleId = (int) get_parameter(!is_metaconsole() ? 'id' : 'id_visualmap');
 $pure = (bool) get_parameter('pure', $config['pure']);
 
-if (!$visualConsoleId) {
+// Load Visual Console.
+use Models\VisualConsole\Container as VisualConsole;
+$visualConsole = null;
+try {
+    $visualConsole = VisualConsole::fromDB(['id' => $visualConsoleId]);
+} catch (Throwable $e) {
     db_pandora_audit(
         'ACL Violation',
-        'Trying to access visual console without id layout'
+        'Trying to access visual console without Id'
     );
     include 'general/noaccess.php';
     exit;
 }
 
-$layout = db_get_row('tlayout', 'id', $visualConsoleId);
-if (!$layout) {
-    db_pandora_audit(
-        'ACL Violation',
-        'Trying to access visual console without id layout'
-    );
-    include 'general/noaccess.php';
-    exit;
-}
-
-$groupId = $layout['id_group'];
-$visualConsoleName = $layout['name'];
+$visualConsoleData = $visualConsole->toArray();
+$groupId = $visualConsoleData['groupId'];
+$visualConsoleName = $visualConsoleData['name'];
 
 // ACL.
 $aclRead = check_acl($config['id_user'], $groupId, 'VR');
@@ -136,12 +132,6 @@ if (!is_metaconsole()) {
     html_print_input_hidden('metaconsole', 1);
 }
 
-use Models\VisualConsole\Container as VisualConsole;
-
-// TODO: Show an error message when the models can't be loaded.
-$visualConsole = VisualConsole::fromArray($layout);
-$visualConsoleItems = VisualConsole::getItemsFromDB($visualConsoleId);
-
 // TODO: Extract to a function.
 $baseUrl = ui_get_full_url(false, false, false, false);
 $vcClientPath = 'include/visual-console-client';
@@ -172,7 +162,7 @@ if (is_dir($dir)) {
     }
 }
 
-echo '<div id="visual-console-container" style="margin:0px auto;position:relative;"></div>';
+echo '<div id="visual-console-container"></div>';
 
 if ($pure === true) {
     // Floating menu - Start.
@@ -206,16 +196,19 @@ if ($pure === true) {
         margin: 0px;
         overflow: hidden;
         height: 100%;
-        background-color: <?php echo $layout['background_color']; ?>;
+        background-color: <?php echo $visualConsoleData['backgroundColor']; ?>;
     }
     div#main_pure {
         height: 100%;
         margin: 0px;
-        background-color: <?php echo $layout['background_color']; ?>;
+        background-color: <?php echo $visualConsoleData['backgroundColor']; ?>;
     }
 </style>
     <?php
 }
+
+// Load Visual Console Items.
+$visualConsoleItems = VisualConsole::getItemsFromDB($visualConsoleId);
 
 ui_require_javascript_file('pandora_visual_console');
 ?>
@@ -233,7 +226,7 @@ ui_require_javascript_file('pandora_visual_console');
         props,
         items,
         baseUrl,
-        10000,
+        100000,
         handleUpdate
     );
 

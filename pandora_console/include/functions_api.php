@@ -14733,15 +14733,32 @@ function api_set_reset_agent_counts($id, $thrash1, $thrash2, $thrash3)
 // Functions por get all  user to Carrefour new feature
 function api_get_list_all_user()
 {
-    $sql = sprintf('SELECT * FROM tusuario ORDER BY fullname');
+    $sql = sprintf('select u.id_usuario, p.id_perfil, p.name, u.id_grupo from tperfil p, tusuario_perfil u where p.id_perfil in (select u.id_perfil from tusuario_perfil)');
     $users = db_get_all_rows_sql($sql);
 
-    if ($users === false) {
+    foreach ($users as $up) {
+        if ($up['id_grupo'] === 0) {
+            $group_name = 'All';
+        } else {
+            $sql = 'select nombre from tgrupo where id_grupo = '.$up['id_grupo'].'';
+            $group_name = db_get_value_sql($sql);
+        }
+
+        $values = [
+            'id_usuario'  => $users['id_usuario'],
+            'id_perfil'   => $users['id_perfil'],
+            'perfil_name' => $users['name'],
+            'id_grupo'    => $users['id_grupo'],
+            'group_name'  => $users,
+        ];
+    }
+
+    if ($values === false) {
         returnError('Error_user', ' Users could not be found.');
     } else {
         $data = [
             'type' => 'string',
-            'data' => $users,
+            'data' => $values,
         ];
 
         returnData('string', ['type' => 'string', 'data' => $data]);
@@ -14757,14 +14774,32 @@ function api_get_info_user_name($user)
         return false;
     }
 
-    $sql = sprintf("select * from tperfil p,tusuario_perfil u where p.id_perfil in (select u.id_perfil from tusuario_perfil where u.id_usuario = '.$user.')");
+    $sql = sprintf("select u.id_usuario, p.id_perfil, p.name, u.id_grupo from tperfil p, tusuario_perfil u where p.id_perfil in (select u.id_perfil from tusuario_perfil where u.id_usuario = '.$user.')");
     $user_profile = db_get_all_rows_sql($sql);
-    if ($user_profile === false) {
+
+    foreach ($user_profile as $up) {
+        if ($up['id_grupo'] === 0) {
+            $group_name = 'All';
+        } else {
+            $sql = 'select nombre from tgrupo where id_grupo = '.$up['id_grupo'].'';
+            $group_name = db_get_value_sql($sql);
+        }
+
+        $values = [
+            'id_usuario'  => $user_profile['id_usuario'],
+            'id_perfil'   => $user_profile['id_perfil'],
+            'perfil_name' => $user_profile['name'],
+            'id_grupo'    => $user_profile['id_grupo'],
+            'group_name'  => $group_name,
+        ];
+    }
+
+    if ($values === false) {
         returnError('Error_user', ' User could not be found.');
     } else {
         $data = [
             'type' => 'string',
-            'data' => $user_profile,
+            'data' => $values,
         ];
 
         returnData('string', ['type' => 'string', 'data' => $data]);
@@ -14797,15 +14832,32 @@ function api_get_filter_user_group($user, $group, $disable)
         }
     */
 
-    $sql = sprintf(('select * from tperfil,tusuario_perfil where tperfil.id_perfil in (select tusuario_perfil.id_perfil from tusuario_perfil where id_usuario = '.$user.' and %s = %d)'), $campo, $condition);
+    $sql = sprintf(('select u.id_usuario, p.id_perfil, p.name, u.id_grupo from tperfil p, tusuario_perfil u where p.id_perfil in (select u.id_perfil from tusuario_perfil where  %s = %d)'), $campo, $condition);
     $filter_user = db_get_all_rows_sql($sql);
 
-    if ($filter_user === false) {
+    foreach ($filter_user as $up) {
+        if ($up['id_grupo'] === 0) {
+            $group_name = 'All';
+        } else {
+            $sql = 'select nombre from tgrupo where id_grupo = '.$up['id_grupo'].'';
+            $group_name = db_get_value_sql($sql);
+        }
+
+        $values = [
+            'id_usuario'  => $up['id_usuario'],
+            'id_perfil'   => $up['id_perfil'],
+            'perfil_name' => $up['name'],
+            'id_grupo'    => $up['id_grupo'],
+            'group_name'  => $group_name,
+        ];
+    }
+
+    if ($values === false) {
         returnError('Error_user', ' User profile could not be found.');
     } else {
         $data = [
             'type' => 'string',
-            'data' => $filter_user,
+            'data' => $values,
         ];
 
         returnData('string', ['type' => 'string', 'data' => $data]);

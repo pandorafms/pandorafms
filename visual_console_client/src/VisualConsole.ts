@@ -5,7 +5,12 @@ import {
   parseIntOr,
   notEmptyStringOr
 } from "./lib";
-import Item, { ItemType, ItemProps, ItemClickEvent } from "./Item";
+import Item, {
+  ItemType,
+  ItemProps,
+  ItemClickEvent,
+  ItemRemoveEvent
+} from "./Item";
 import StaticGraph, { staticGraphPropsDecoder } from "./items/StaticGraph";
 import Icon, { iconPropsDecoder } from "./items/Icon";
 import ColorCloud, { colorCloudPropsDecoder } from "./items/ColorCloud";
@@ -194,6 +199,26 @@ export default class VisualConsole {
   // List of references to clean the event listeners.
   private readonly disposables: Disposable[] = [];
 
+  /**
+   * React to a click on an element.
+   * @param e Event object.
+   */
+  private handleElementClick: (e: ItemClickEvent<ItemProps>) => void = e => {
+    this.clickEventManager.emit(e);
+    // console.log(`Clicked element #${e.data.id}`, e);
+  };
+
+  /**
+   * Clear some element references.
+   * @param e Event object.
+   */
+  private handleElementRemove: (e: ItemRemoveEvent<ItemProps>) => void = e => {
+    // Remove the element from the list and its relations.
+    this.elementIds = this.elementIds.filter(id => id !== e.data.id);
+    delete this.elementsById[e.data.id];
+    this.clearRelations(e.data.id);
+  };
+
   public constructor(
     container: HTMLElement,
     props: UnknownObject,
@@ -230,13 +255,8 @@ export default class VisualConsole {
         this.elementsById[itemInstance.props.id] = itemInstance;
         this.elementIds.push(itemInstance.props.id);
         // Item event handlers.
-        itemInstance.onClick(e => {
-          this.clickEventManager.emit(e);
-          // console.log(`Clicked element #${e.data.id}`, e);
-        });
-        itemInstance.onRemove(e => {
-          // TODO: Remove the element from the list and its relations.
-        });
+        itemInstance.onClick(this.handleElementClick);
+        itemInstance.onRemove(this.handleElementRemove);
         // Add the item to the DOM.
         this.containerRef.append(itemInstance.elementRef);
       } catch (error) {
@@ -290,13 +310,8 @@ export default class VisualConsole {
             // Add the item to the list.
             this.elementsById[itemInstance.props.id] = itemInstance;
             // Item event handlers.
-            itemInstance.onClick(e => {
-              this.clickEventManager.emit(e);
-              // console.log(`Clicked element #${e.data.id}`, e);
-            });
-            itemInstance.onRemove(e => {
-              // TODO: Remove the element from the list and its relations.
-            });
+            itemInstance.onClick(this.handleElementClick);
+            itemInstance.onRemove(this.handleElementRemove);
             // Add the item to the DOM.
             this.containerRef.append(itemInstance.elementRef);
           } catch (error) {
@@ -310,11 +325,11 @@ export default class VisualConsole {
             console.log("Error updating an element:", error.message);
           }
         }
-
-        // Re-build relations.
-        this.buildRelations();
       }
     });
+
+    // Re-build relations.
+    this.buildRelations();
   }
 
   /**
@@ -412,7 +427,8 @@ export default class VisualConsole {
     this.elements.forEach(e => e.remove()); // Arrow function.
     this.elementsById = {};
     this.elementIds = [];
-    // TODO: Clear relations.
+    // Clear relations.
+    this.clearRelations();
     // Clean container.
     this.containerRef.innerHTML = "";
   }
@@ -421,7 +437,9 @@ export default class VisualConsole {
    * Create line elements which connect the elements with their parents.
    */
   private buildRelations(): void {
-    // TODO: Clear relations.
+    // Clear relations.
+    this.clearRelations();
+    // Add relations.
     this.elements.forEach(item => {
       if (item.props.parentId !== null) {
         const parent = this.elementsById[item.props.parentId];
@@ -429,6 +447,30 @@ export default class VisualConsole {
         if (parent && child) this.addRelationLine(parent, child);
       }
     });
+  }
+
+  /**
+   * @param itemId Optional identifier of a parent or child item.
+   * Remove the line elements which connect the elements with their parents.
+   */
+  private clearRelations(itemId?: number): void {
+    if (itemId != null) {
+      for (let key in this.relations) {
+        const ids = key.split("|");
+        const parentId = Number.parseInt(ids[0]);
+        const childId = Number.parseInt(ids[1]);
+
+        if (itemId === parentId || itemId === childId) {
+          this.relations[key].remove();
+          delete this.relations[key];
+        }
+      }
+    } else {
+      for (let key in this.relations) {
+        this.relations[key].remove();
+        delete this.relations[key];
+      }
+    }
   }
 
   /**

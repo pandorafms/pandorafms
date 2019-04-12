@@ -77,7 +77,7 @@ try {
 $visualConsoleData = $visualConsole->toArray();
 $visualConsoleName = $visualConsoleData['name'];
 
-echo '<div id="visual-console-container" style="margin:0px auto;position:relative;"></div>';
+echo '<div id="visual-console-container"></div>';
 
 // Floating menu - Start.
 echo '<div id="vc-controls" style="z-index:300;">';
@@ -114,13 +114,57 @@ ui_require_javascript_file('pandora_visual_console');
 visual_map_load_client_resources();
 ?>
 
+<style type="text/css">
+    body {
+        background-color: <?php echo $visualConsoleData['backgroundColor']; ?>;
+    }
+</style>
+
 <script type="text/javascript">
     var container = document.getElementById("visual-console-container");
     var props = <?php echo (string) $visualConsole; ?>;
     var items = <?php echo '['.implode($visualConsoleItems, ',').']'; ?>;
     var baseUrl = "<?php echo $config['homeurl']; ?>";
     var handleUpdate = function (prevProps, newProps) {
-        // TODO: Change the view header and links to display id or name changes.
+        if (!newProps) return;
+
+        // Change the background color when the fullscreen mode is enabled.
+        if (prevProps
+            && prevProps.backgroundColor != newProps.backgroundColor
+        ) {
+            var body = document.querySelector("body");
+            if (body !== null) {
+                body.style.backgroundColor = newProps.backgroundColor
+            }
+        }
+
+        // Change the title.
+        if (prevProps && prevProps.name != newProps.name) {
+            var title = document.querySelector("div.vc-title");
+            if (title !== null) {
+                title.textContent = newProps.name;
+            }
+        }
+
+        // Change the links.
+        if (prevProps && prevProps.id !== newProps.id) {
+            var regex = /(id=|id_visual_console=|id_layout=)\d+(&?)/gi;
+            var replacement = '$1' + newProps.id + '$2';
+
+            // Tab links.
+            var menuLinks = document.querySelectorAll("div#menu_tab a");
+            if (menuLinks !== null) {
+                menuLinks.forEach(function (menuLink) {
+                    menuLink.href = menuLink.href.replace(regex, replacement);
+                });
+            }
+
+            // Change the URL (if the browser has support).
+            if ("history" in window) {
+                var href = window.location.href.replace(regex, replacement);
+                window.history.replaceState({}, document.title, href);
+            }
+        }
     }
     var visualConsole = createVisualConsole(
         container,

@@ -4525,3 +4525,43 @@ function visual_map_get_color_cloud_element($data)
     <?php
     return ob_get_clean();
 }
+
+
+/**
+ * Load the Visual Console Client files (js & css).
+ *
+ * @return void
+ */
+function visual_map_load_client_resources()
+{
+    global $config;
+
+    $baseUrl = ui_get_full_url(false, false, false, false);
+    $vcClientPath = 'include/visual-console-client';
+    $dir = $config['homedir'].'/'.$vcClientPath;
+    if (is_dir($dir)) {
+        $dh = opendir($dir);
+        if ($dh) {
+            while (($file = readdir($dh)) !== false) {
+                if ($file === '.' || $file === '..') {
+                    continue;
+                }
+
+                preg_match('/.*.js$/', $file, $match, PREG_OFFSET_CAPTURE);
+                if (empty($match) === false) {
+                    $url = $baseUrl.$vcClientPath.'/'.$match[0][0];
+                    echo '<script type="text/javascript" src="'.$url.'"></script>';
+                    continue;
+                }
+
+                preg_match('/.*.css$/', $file, $match, PREG_OFFSET_CAPTURE);
+                if (empty($match) === false) {
+                    $url = $baseUrl.$vcClientPath.'/'.$match[0][0];
+                    echo '<link type="text/css" rel="stylesheet" href="'.$url.'" />';
+                }
+            }
+
+            closedir($dh);
+        }
+    }
+}

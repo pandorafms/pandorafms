@@ -34,7 +34,6 @@ function createVisualConsole(
 
   if (container == null || props == null || items == null) return null;
   if (baseUrl == null) baseUrl = "";
-  if (updateInterval == null) updateInterval = 30000;
 
   // Code which will be executed between intervals.
   var intervalRef = null;
@@ -42,7 +41,9 @@ function createVisualConsole(
     if (intervalRef !== null) window.clearInterval(intervalRef);
   };
   var startInterval = function() {
+    if (updateInterval == null || updateInterval <= 0) return;
     stopInterval();
+
     intervalRef = window.setInterval(function() {
       if (updateVCRequest !== null) updateVCRequest.abort();
       updateVCRequest = loadVisualConsoleData(

@@ -21,8 +21,10 @@ require_once $config['homedir'].'/include/functions_visual_map.php';
 
 // Query parameters.
 $visualConsoleId = (int) get_parameter(!is_metaconsole() ? 'id' : 'id_visualmap');
+// To hide the menus.
 $pure = (bool) get_parameter('pure', $config['pure']);
-$refr = (int) get_parameter('refr', $config['refr']);
+// Refresh interval in seconds.
+$refr = (int) get_parameter('refr', $config['vc_refr']);
 
 // Load Visual Console.
 use Models\VisualConsole\Container as VisualConsole;
@@ -122,12 +124,20 @@ if ($aclWrite || $aclManage) {
     ).'</a>';
 }
 
-$options['view']['text'] = '<a href="index.php?sec=network&sec2=operation/visual_console/render_view&id='.$visualConsoleId.'">'.html_print_image('images/operation.png', true, ['title' => __('View')]).'</a>';
+$options['view']['text'] = '<a href="index.php?sec=network&sec2=operation/visual_console/render_view&id='.$visualConsoleId.'">'.html_print_image(
+    'images/operation.png',
+    true,
+    ['title' => __('View')]
+).'</a>';
 $options['view']['active'] = true;
 
 if (!is_metaconsole()) {
     if (!$config['pure']) {
-        $options['pure']['text'] = '<a href="index.php?sec=network&sec2=operation/visual_console/render_view&id='.$visualConsoleId.'&pure=1">'.html_print_image('images/full_screen.png', true, ['title' => __('Full screen mode')]).'</a>';
+        $options['pure']['text'] = '<a href="index.php?sec=network&sec2=operation/visual_console/render_view&id='.$visualConsoleId.'&pure=1">'.html_print_image(
+            'images/full_screen.png',
+            true,
+            ['title' => __('Full screen mode')]
+        ).'</a>';
         ui_print_page_header(
             $visualConsoleName,
             'images/visual_console.png',
@@ -144,8 +154,6 @@ if (!is_metaconsole()) {
     // Set the hidden value for the javascript.
     html_print_input_hidden('metaconsole', 1);
 }
-
-
 
 echo '<div id="visual-console-container"></div>';
 

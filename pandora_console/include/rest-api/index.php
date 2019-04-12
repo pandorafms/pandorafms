@@ -14,6 +14,12 @@ $visualConsoleId = (int) get_parameter('visualConsoleId');
 $getVisualConsole = (bool) get_parameter('getVisualConsole');
 $getVisualConsoleItems = (bool) get_parameter('getVisualConsoleItems');
 
+// Check groups can access user.
+$aclUserGroups = [];
+if (!users_can_manage_group_all('AR')) {
+    $aclUserGroups = array_keys(users_get_groups(false, 'AR'));
+}
+
 ob_clean();
 
 if ($getVisualConsole === true) {
@@ -36,7 +42,7 @@ if ($getVisualConsole === true) {
 
     echo $visualConsole;
 } else if ($getVisualConsoleItems === true) {
-    echo '['.implode(VisualConsole::getItemsFromDB($visualConsoleId), ',').']';
+    echo '['.implode(VisualConsole::getItemsFromDB($visualConsoleId, $aclUserGroups), ',').']';
 }
 
 exit;

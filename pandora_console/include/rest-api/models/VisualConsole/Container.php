@@ -314,18 +314,27 @@ final class Container extends Model
     /**
      * Obtain a list of items which belong to the Visual Console.
      *
-     * @param integer $layoutId Identifier of the Visual Console.
+     * @param integer $layoutId      Identifier of the Visual Console.
+     * @param array   $aclUserGroups Groups can access user.
      *
      * @return array A list of items.
      * @throws \Exception When the data cannot be retrieved from the DB.
      */
-    public static function getItemsFromDB(int $layoutId): array
-    {
+    public static function getItemsFromDB(
+        int $layoutId,
+        array $aclUserGroups=[]
+    ): array {
         $filter = ['id_layout' => $layoutId];
+        // If is empty array user view all groups.
+        if (count($aclUserGroups) > 0) {
+            $filter['element_group'] = $aclUserGroups;
+        }
+
         $fields = [
             'id',
             'type',
         ];
+
         $rows = \db_get_all_rows_filter('tlayout_data', $filter, $fields);
 
         if ($rows === false) {

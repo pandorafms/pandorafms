@@ -16,6 +16,7 @@ export type StaticGraphProps = {
   imageSrc: string; // URL?
   showLastValueTooltip: "default" | "enabled" | "disabled";
   statusImageSrc: string | null; // URL?
+  lastValue: string | null;
 } & ItemProps &
   (WithModuleProps | LinkedVisualConsoleProps);
 
@@ -58,6 +59,7 @@ export function staticGraphPropsDecoder(
     imageSrc: data.imageSrc,
     showLastValueTooltip: parseShowLastValueTooltip(data.showLastValueTooltip),
     statusImageSrc: notEmptyStringOr(data.statusImageSrc, null),
+    lastValue: notEmptyStringOr(data.lastValue, null),
     ...modulePropsDecoder(data), // Object spread. It will merge the properties of the two objects.
     ...linkedVCPropsDecoder(data) // Object spread. It will merge the properties of the two objects.
   };
@@ -69,7 +71,16 @@ export default class StaticGraph extends Item<StaticGraphProps> {
     img.className = "static-graph";
     img.src = this.props.statusImageSrc || this.props.imageSrc;
 
-    // TODO: Show last value in a tooltip.
+    // Show last value in a tooltip.
+    if (
+      this.props.lastValue !== null &&
+      this.props.showLastValueTooltip !== "disabled"
+    ) {
+      img.className = "static-graph image forced_title";
+      img.setAttribute("data-use_title_for_force_title", "1");
+      img.setAttribute("data-title", this.props.lastValue);
+      img.alt = this.props.lastValue;
+    }
 
     return img;
   }

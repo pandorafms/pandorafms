@@ -47,6 +47,10 @@ final class StaticGraph extends Item
             static::issetInArray($data, ['statusImageSrc']),
             null
         );
+        $return['lastValue'] = static::notEmptyStringOr(
+            static::issetInArray($data, ['lastValue']),
+            null
+        );
 
         return $return;
     }
@@ -173,6 +177,35 @@ final class StaticGraph extends Item
 
         // Get the img src.
         $data['statusImageSrc'] = \visual_map_get_image_status_element($data);
+
+        // Get last value.
+        if (isset($data['show_last_value']) && $data['show_last_value'] !== 2) {
+            $img_style_title = '';
+
+            $unit_text = \trim(
+                \io_safe_output(
+                    \modules_get_unit($moduleId)
+                )
+            );
+
+            $value = \modules_get_last_value($moduleId);
+
+            if ((!\modules_is_boolean($moduleId))
+                || (\modules_is_boolean($moduleId) && $data['show_last_value'] != 0)
+            ) {
+                if (\is_numeric($value)) {
+                    $img_style_title .= __('Last value: ').remove_right_zeros($value);
+                } else {
+                    $img_style_title .= __('Last value: ').$value;
+                }
+            }
+
+            if (empty($unit_text) === false && empty($img_style_title) === false) {
+                $img_style_title .= ' '.$unit_text;
+            }
+
+            $data['lastValue'] = $img_style_title;
+        }
 
         // Restore connection.
         if ($nodeConnected === true) {

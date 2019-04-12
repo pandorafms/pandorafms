@@ -108,6 +108,17 @@ abstract class Model
      *
      * @return string
      */
+    public function toArray(): array
+    {
+        return $this->data;
+    }
+
+
+    /**
+     * JSON representation of the model.
+     *
+     * @return string
+     */
     public function toJson(): string
     {
         return \json_encode($this->data);

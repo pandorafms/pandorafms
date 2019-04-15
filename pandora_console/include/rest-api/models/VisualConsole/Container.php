@@ -324,10 +324,28 @@ final class Container extends Model
         int $layoutId,
         array $aclUserGroups=[]
     ): array {
-        $filter = ['id_layout' => $layoutId];
         // If is empty array user view all groups.
         if (count($aclUserGroups) > 0) {
-            $filter['element_group'] = $aclUserGroups;
+            // Filter group for elements groups.
+            $filterCondition = ['id_layout' => $layoutId];
+            $filterCondition['element_group'] = $aclUserGroups;
+            // Format filter mysql.
+            $filter[0] = db_format_array_where_clause_sql(
+                $filterCondition
+            );
+
+            // Filter groups for type groups.
+            // Only true condition if type is GROUP_ITEM.
+            $filterGroup = [];
+            $filterGroup['type'] = GROUP_ITEM;
+            $filterGroup['id_group'] = $aclUserGroups;
+
+            // Format filter mysql.
+            $filter[1] = '('.db_format_array_where_clause_sql(
+                $filterGroup
+            ).')';
+        } else {
+            $filter = ['id_layout' => $layoutId];
         }
 
         $fields = [
@@ -335,7 +353,12 @@ final class Container extends Model
             'type',
         ];
 
-        $rows = \db_get_all_rows_filter('tlayout_data', $filter, $fields);
+        $rows = \db_get_all_rows_filter(
+            'tlayout_data',
+            $filter,
+            $fields,
+            'OR'
+        );
 
         if ($rows === false) {
             $rows = [];

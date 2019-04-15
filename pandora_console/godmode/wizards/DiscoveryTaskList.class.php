@@ -549,7 +549,11 @@ class DiscoveryTaskList extends Wizard
                     $data[9] .= '</a>';
                 }
 
-                if ($task['disabled'] != 2 && $task['utimestamp'] > 0) {
+                if ($task['disabled'] != 2 && $task['utimestamp'] > 0
+                    && $task['type'] != DISCOVERY_APP_MYSQL
+                    && $task['type'] != DISCOVERY_APP_ORACLE
+                    && $task['type'] != DISCOVERY_CLOUD_AWS_RDS
+                ) {
                     $data[9] .= '<a href="#" onclick="show_map('.$task['id_rt'].',\''.$task['name'].'\')">';
                     $data[9] .= html_print_image(
                         'images/dynamic_network_icon.png',

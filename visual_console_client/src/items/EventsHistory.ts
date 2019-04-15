@@ -42,7 +42,7 @@ export function eventsHistoryPropsDecoder(
 }
 
 export default class EventsHistory extends Item<EventsHistoryProps> {
-  public createDomElement(): HTMLElement {
+  protected createDomElement(): HTMLElement {
     const element = document.createElement("div");
     element.innerHTML = this.props.html;
 

@@ -35,7 +35,7 @@ export function barsGraphPropsDecoder(
 }
 
 export default class BarsGraph extends Item<BarsGraphProps> {
-  public createDomElement(): HTMLElement {
+  protected createDomElement(): HTMLElement {
     const element = document.createElement("div");
     element.innerHTML = this.props.html;
 

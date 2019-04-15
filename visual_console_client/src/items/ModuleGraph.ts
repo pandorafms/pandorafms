@@ -46,7 +46,7 @@ export function moduleGraphPropsDecoder(
 }
 
 export default class ModuleGraph extends Item<ModuleGraphProps> {
-  public createDomElement(): HTMLElement {
+  protected createDomElement(): HTMLElement {
     const element = document.createElement("div");
     element.innerHTML = this.props.html;
 

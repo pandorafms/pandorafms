@@ -43,7 +43,7 @@ export function colorCloudPropsDecoder(
 const svgNS = "http://www.w3.org/2000/svg";
 
 export default class ColorCloud extends Item<ColorCloudProps> {
-  public createDomElement(): HTMLElement {
+  protected createDomElement(): HTMLElement {
     const container: HTMLDivElement = document.createElement("div");
     container.className = "color-cloud";
 

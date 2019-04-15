@@ -25,7 +25,7 @@ export function labelPropsDecoder(data: UnknownObject): LabelProps | never {
 }
 
 export default class Label extends Item<LabelProps> {
-  public createDomElement(): HTMLElement {
+  protected createDomElement(): HTMLElement {
     const element = document.createElement("div");
     element.className = "label";
     element.innerHTML = this.props.label || "";

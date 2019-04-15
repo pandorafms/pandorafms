@@ -100,7 +100,7 @@ export function percentilePropsDecoder(
 const svgNS = "http://www.w3.org/2000/svg";
 
 export default class Percentile extends Item<PercentileProps> {
-  public createDomElement(): HTMLElement {
+  protected createDomElement(): HTMLElement {
     // Progress.
     const progress = this.getProgress();
     // Main element.

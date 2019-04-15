@@ -40,7 +40,7 @@ export function boxPropsDecoder(data: UnknownObject): BoxProps | never {
 }
 
 export default class Box extends Item<BoxProps> {
-  public createDomElement(): HTMLElement {
+  protected createDomElement(): HTMLElement {
     const box: HTMLDivElement = document.createElement("div");
     box.className = "box";
     // To prevent this item to expand beyond its parent.

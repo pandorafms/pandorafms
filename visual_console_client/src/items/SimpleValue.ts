@@ -88,7 +88,7 @@ export function simpleValuePropsDecoder(
 }
 
 export default class SimpleValue extends Item<SimpleValueProps> {
-  public createDomElement(): HTMLElement {
+  protected createDomElement(): HTMLElement {
     const element = document.createElement("div");
     element.className = "simple-value";
 
@@ -114,7 +114,7 @@ export default class SimpleValue extends Item<SimpleValueProps> {
    * Create a new label for the visual console item.
    * @return Item label.
    */
-  public createLabelDomElement(): HTMLElement {
+  protected createLabelDomElement(): HTMLElement {
     const element = document.createElement("div");
     element.className = "visual-console-item-label";
     // Always return an empty label.

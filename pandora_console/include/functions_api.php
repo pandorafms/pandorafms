@@ -14730,9 +14730,15 @@ function api_set_reset_agent_counts($id, $thrash1, $thrash2, $thrash3)
 }
 
 
-// Functions por get all  user to Carrefour new feature
-function api_get_list_all_user()
+// Functions por get all  user to new feature for Carrefour 
+// It depends of type the method will return csv or json data
+function api_get_list_all_user($type)
 {
+//validate return type data
+//if return type data is not specifiqued you will return message error 
+    if($type === null){
+        returnError('no_data_to_show', 'type data return not specifiqued.');
+    }
     $sql = sprintf('select u.id_usuario, p.id_perfil, p.name, u.id_grupo from tperfil p, tusuario_perfil u where p.id_perfil in (select u.id_perfil from tusuario_perfil)');
     $users = db_get_all_rows_sql($sql);
 
@@ -14749,29 +14755,40 @@ function api_get_list_all_user()
             'id_perfil'   => $users['id_perfil'],
             'perfil_name' => $users['name'],
             'id_grupo'    => $users['id_grupo'],
-            'group_name'  => $users,
+            'group_name'  => $group_name,
         ];
     }
 
     if ($values === false) {
         returnError('Error_user', ' Users could not be found.');
-    } else {
-        $data = [
-            'type' => 'string',
-            'data' => $values,
-        ];
-
-        returnData('string', ['type' => 'string', 'data' => $data]);
     }
+    $data = [
+        'type' => 'array',
+        'data' => $values,
+    ];
 
+    switch ($type) {
+    case 'csv':
+        returnData('csv', $data, ';');
+
+    case 'json':
+        returnData('json', $data, ';');
+    }
 }
 
 
-// Funtion for get all info user for Carrefour new feature
-function api_get_info_user_name($user)
+// Funtion for get all info user to  new feature for Carrefour  
+// It depends of type the method will return csv or json data
+function api_get_info_user_name($type,$user)
 {
     if ($user === null) {
-        return false;
+        returnError('no_data_to_show', 'User not specifiqued.');
+    }
+//validate return type data
+//if return type data is not specifiqued you will return message error 
+    if($type === null){
+        returnError('no_data_to_show', 'type data return not specifiqued.');
+
     }
 
     $sql = sprintf("select u.id_usuario, p.id_perfil, p.name, u.id_grupo from tperfil p, tusuario_perfil u where p.id_perfil in (select u.id_perfil from tusuario_perfil where u.id_usuario = '.$user.')");
@@ -14796,24 +14813,36 @@ function api_get_info_user_name($user)
 
     if ($values === false) {
         returnError('Error_user', ' User could not be found.');
-    } else {
+    } 
         $data = [
-            'type' => 'string',
+            'type' => 'array',
             'data' => $values,
         ];
-
-        returnData('string', ['type' => 'string', 'data' => $data]);
-    }
+        switch ($type) {
+            case 'csv':
+                returnData('csv', $data, ';');
+        
+            case 'json':
+                returnData('json', $data, ';');
+            }
 }
 
 
-// Function for get group user to Carrefour new feature
-function api_get_filter_user_group($user, $group, $disable)
+// Function for get  user from a group  to  new feature for Carrefour.
+// It depends of type the method will return csv or json data.
+
+function api_get_filter_user_group($type,$user, $group, $disable)
 {
     if ($user === null && ($group === null || $disable === null)) {
-        return false;
+        returnError('no_data_to_show', 'User, group or is disable not specifiqued.');
     }
 
+//validate return type data
+//if return type data is not specifiqued you will return message error 
+    if($type === null){
+        returnError('no_data_to_show', 'type data return not specifiqued.');
+
+    }
     if ($group !== null) {
         $condition = $grupo;
         $campo = 'group';
@@ -14853,46 +14882,64 @@ function api_get_filter_user_group($user, $group, $disable)
     }
 
     if ($values === false) {
-        returnError('Error_user', ' User profile could not be found.');
-    } else {
+        returnError('Error_user', ' User could not be found.');
+    } 
         $data = [
-            'type' => 'string',
+            'type' => 'array',
             'data' => $values,
         ];
-
-        returnData('string', ['type' => 'string', 'data' => $data]);
-    }
+        switch ($type) {
+            case 'csv':
+                returnData('csv', $data, ';');
+        
+            case 'json':
+                returnData('json', $data, ';');
+            }
 }
 
 
 // Function for delete an user profile for Carrefour  new feature
+// The return of this function its only a message
 function api_get_delete_user_profile($id_user)
 {
     if ($id_user === null) {
         return false;
     }
 
+//validate return type data
+//if return type data is not specifiqued you will return message error 
+    if($type === null){
+        returnError('no_data_to_show', 'type data return not specifiqued.');
+
+    }
     $sql = "delete from tusuario_perfil where id_usuario = '$id_user'";
     $deleted_permission = db_process_sql_delete($sql);
 
     if ($deleted_permission === false) {
         returnError('Error_delete', ' User profile could not be deleted.');
-    } else {
-        $data = [
+    }
+    
+    $data = [
             'type' => 'string',
             'data' => $deleted_permission,
-        ];
+    ];
 
         returnData('string', ['type' => 'string', 'data' => $data]);
-    }
 }
-
-
-// Function for add permission an user to a group for Carrefour new feature
-function api_add_permisson_user_to_group($id_user, $group, $profile, $other=';')
+    
+// Function for add permission a user to a group for Carrefour new feature
+//it depends of type the method will return csv or json data
+function api_add_permisson_user_to_group($type, $id_user, $group, $profile, $other=';')
 {
     if ($user === null || $group === null || $profile === null) {
         return false;
+    }
+
+//validate return type data
+//if return type data is not specifiqued you will return message error 
+    if($type === null){
+        returnError('no_data_to_show', 'type data return not specifiqued.');
+
     }
 
     $other[0] = $id_user;
@@ -14925,7 +14972,19 @@ function api_add_permisson_user_to_group($id_user, $group, $profile, $other=';')
 
     if ($sucessfull_insert === false) {
         returnError('Error_insert', ' User profile could not be aviable.');
-    } else {
-        returnData('string', ['type' => 'string', 'data' => $data]);
     }
+    
+     $data = [
+        'type' => 'array',
+        'data' => $values,
+    ];
+    switch ($type) {
+        
+        case 'csv':
+            returnData('csv', $data, ';');
+    
+        case 'json':
+            returnData('json', $data, ';');
+        }
+    
 }

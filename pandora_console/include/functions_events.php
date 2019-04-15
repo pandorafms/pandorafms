@@ -3179,11 +3179,6 @@ function events_page_general($event)
 
     $data = [];
     $data[0] = __('Type');
-    /*
-        $data[1] = events_print_type_img(
-        $event['event_type'],
-        true
-    ).' '.events_print_type_description($event['event_type'], true);*/
     $data[1] = events_print_type_description($event['event_type'], true);
     $data[2] = events_print_type_img(
         $event['event_type'],
@@ -3209,19 +3204,6 @@ function events_page_general($event)
     $data = [];
     $data[0] = __('Severity');
     $event_criticity = get_priority_name($event['criticity']);
-    /*
-        $data[1] = html_print_image(
-        $img_sev,
-        true,
-        [
-            'class'  => 'image_status',
-            'width'  => 12,
-            'height' => 12,
-            'title'  => $event_criticity,
-        ]
-        );
-        $data[1] .= ' '.$event_criticity;
-    */
     $data[1] = $event_criticity;
     $data[2] = html_print_image(
         $img_sev,
@@ -3240,7 +3222,6 @@ function events_page_general($event)
 
     $data = [];
     $data[0] = __('Status');
-    // $data[1] = html_print_image($event_st['img'], true).' '.$event_st['title'];
     $data[1] = $event_st['title'];
     $data[2] = html_print_image($event_st['img'], true);
     $table_general->data[] = $data;

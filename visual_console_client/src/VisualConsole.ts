@@ -28,6 +28,7 @@ import TypedEvent, { Disposable, Listener } from "./TypedEvent";
 import DonutGraph, { donutGraphPropsDecoder } from "./items/DonutGraph";
 import BarsGraph, { barsGraphPropsDecoder } from "./items/BarsGraph";
 import ModuleGraph, { moduleGraphPropsDecoder } from "./items/ModuleGraph";
+import Service, { servicePropsDecoder } from "./items/Service";
 
 // TODO: Document.
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
@@ -55,7 +56,7 @@ function itemInstanceFrom(data: UnknownObject) {
     case ItemType.ICON:
       return new Icon(iconPropsDecoder(data));
     case ItemType.SERVICE:
-      throw new TypeError("item not found");
+      return new Service(servicePropsDecoder(data));
     case ItemType.GROUP_ITEM:
       return new Group(groupPropsDecoder(data));
     case ItemType.BOX_ITEM:

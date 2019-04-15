@@ -1,5 +1,7 @@
 START TRANSACTION;
 
+ALTER TABLE `tnetflow_filter` DROP COLUMN `output`;
+
 ALTER TABLE `tagente_modulo` ADD COLUMN `ff_type` tinyint(1) unsigned default '0';
 ALTER TABLE `tnetwork_component` ADD COLUMN `ff_type` tinyint(1) unsigned default '0';
 ALTER TABLE `tlocal_component` ADD COLUMN `ff_type` tinyint(1) unsigned default '0';

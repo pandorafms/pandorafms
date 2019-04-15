@@ -492,12 +492,6 @@ if (is_array($config['extensions'])) {
         $sub['godmode/agentes/planned_downtime.list']['id'] = 'Scheduled downtime';
     }
 
-    if (check_acl($config['id_user'], 0, 'AW')) {
-        $sub['operation/servers/recon_view']['text'] = __('Recon view');
-        $sub['operation/servers/recon_view']['id'] = 'Recon view';
-        $sub['operation/servers/recon_view']['refr'] = 0;
-    }
-
     foreach ($config['extensions'] as $extension) {
         // If no operation_menu is a godmode extension.
         if ($extension['operation_menu'] == '') {

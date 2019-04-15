@@ -36,7 +36,7 @@ export function groupPropsDecoder(data: UnknownObject): GroupProps | never {
 }
 
 export default class Group extends Item<GroupProps> {
-  public createDomElement(): HTMLElement {
+  protected createDomElement(): HTMLElement {
     const img: HTMLImageElement = document.createElement("img");
     img.className = "group";
     img.src = this.props.imageSrc;

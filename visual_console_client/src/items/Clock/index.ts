@@ -149,7 +149,7 @@ export default class Clock extends Item<ClockProps> {
    * @return DOM Element.
    * @override
    */
-  public createDomElement(): HTMLElement | never {
+  protected createDomElement(): HTMLElement | never {
     return this.createClock();
   }
 

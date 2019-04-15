@@ -46,7 +46,7 @@ export function donutGraphPropsDecoder(
 }
 
 export default class DonutGraph extends Item<DonutGraphProps> {
-  public createDomElement(): HTMLElement {
+  protected createDomElement(): HTMLElement {
     const element = document.createElement("div");
     element.innerHTML = this.props.html;
 

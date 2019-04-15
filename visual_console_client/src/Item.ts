@@ -133,7 +133,7 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
    * To create a new element which will be inside the item box.
    * @return Item.
    */
-  abstract createDomElement(): HTMLElement;
+  protected abstract createDomElement(): HTMLElement;
 
   public constructor(props: Props) {
     this.itemProps = props;

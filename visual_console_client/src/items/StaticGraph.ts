@@ -66,7 +66,7 @@ export function staticGraphPropsDecoder(
 }
 
 export default class StaticGraph extends Item<StaticGraphProps> {
-  public createDomElement(): HTMLElement {
+  protected createDomElement(): HTMLElement {
     const img: HTMLImageElement = document.createElement("img");
     img.className = "static-graph";
     img.src = this.props.statusImageSrc || this.props.imageSrc;

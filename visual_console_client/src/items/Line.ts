@@ -74,7 +74,7 @@ export default class Line extends Item<LineProps> {
    * To create the item's DOM representation.
    * @return Item.
    */
-  public createDomElement(): HTMLElement {
+  protected createDomElement(): HTMLElement {
     const element: HTMLDivElement = document.createElement("div");
     element.className = "line";
 

@@ -11,9 +11,10 @@
     transform: translate(-50%, -50%);
     -webkit-transform: translate(-50%, -50%);   
     width:650px;
-    height: 350px;
+    height: 400px;
     background:white;
-    background-image:url('images/image_problem_area.png');
+    background-image:url('images/imagen-no-acceso.jpg');
+    background-repeat:no-repeat;
     justify-content: center;
     display: flex;
     flex-direction: column;
@@ -30,7 +31,7 @@
     color:#000;
     font-family:Nunito;
     line-height: 40px;
-    font-size: 25pt;
+    font-size: 23pt;
     margin-bottom:30px;
 }
 .modalclose{
@@ -42,12 +43,11 @@
 }
 .modalconten{
     color:black;
-    background:white;
-    width:350px;
+    width:300px;
     margin-left: 30px;
 }
 .modalcontenttex{
-    text-align:justify;
+    text-align:left;
     color:black;
     font-size: 11pt;
     line-height:13pt;
@@ -159,6 +159,6 @@ font-size:10pt;
     window.location=".";
     });
 
-    $('div#page').css('background-color','#a5a5a5');
+    $('div#page').css('background-color','#d3d3d3');
 
 </script>

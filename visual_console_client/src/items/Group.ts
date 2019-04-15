@@ -1,11 +1,12 @@
 import { LinkedVisualConsoleProps, UnknownObject } from "../types";
-import { linkedVCPropsDecoder, parseIntOr } from "../lib";
+import { linkedVCPropsDecoder, parseIntOr, notEmptyStringOr } from "../lib";
 import Item, { ItemProps, itemBasePropsDecoder, ItemType } from "../Item";
 
 export type GroupProps = {
   type: ItemType.GROUP_ITEM;
   imageSrc: string; // URL?
   groupId: number;
+  statusImageSrc: string | null;
 } & ItemProps &
   LinkedVisualConsoleProps;
 
@@ -31,6 +32,7 @@ export function groupPropsDecoder(data: UnknownObject): GroupProps | never {
     type: ItemType.GROUP_ITEM,
     imageSrc: data.imageSrc,
     groupId: parseInt(data.groupId),
+    statusImageSrc: notEmptyStringOr(data.statusImageSrc, null),
     ...linkedVCPropsDecoder(data) // Object spread. It will merge the properties of the two objects.
   };
 }
@@ -39,7 +41,9 @@ export default class Group extends Item<GroupProps> {
   public createDomElement(): HTMLElement {
     const img: HTMLImageElement = document.createElement("img");
     img.className = "group";
-    img.src = this.props.imageSrc;
+    if (this.props.statusImageSrc != null) {
+      img.src = this.props.statusImageSrc;
+    }
 
     return img;
   }

@@ -450,7 +450,7 @@ export default class Clock extends Item<ClockProps> {
           to {
             ${prefixedCssRules(
               "transform",
-              `translate(50px, 50px) rotate(${minuteAngle + 360}deg)`
+              `translate(50px, 50px) rotate(${secAngle + 360}deg)`
             ).join("\n")}
           }
         }

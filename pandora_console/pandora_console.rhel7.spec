@@ -21,7 +21,7 @@ Source0:            %{name}-%{version}.tar.gz
 URL:                http://www.pandorafms.com
 Group:              Productivity/Networking/Web/Utilities
 Packager:           Sancho Lerena <slerena@artica.es>
-Prefix:             /opt/rh/httpd24/root/var/www/html/
+Prefix:             /opt/rh/httpd24/root/var/www/html
 BuildRoot:          %{_tmppath}/%{name}
 BuildArch:          noarch
 AutoReq:            0

@@ -14729,91 +14729,129 @@ function api_set_reset_agent_counts($id, $thrash1, $thrash2, $thrash3)
 
 }
 
+/**
+ * Functions por get all  user to new feature for Carrefour
+ * It depends of type the method will return csv or json data
+ *
+ * @param  string $type
+ * @return
+ */
 
-// Functions por get all  user to new feature for Carrefour 
-// It depends of type the method will return csv or json data
+
 function api_get_list_all_user($type)
 {
-//validate return type data
-//if return type data is not specifiqued you will return message error 
-    if($type === null){
-        returnError('no_data_to_show', 'type data return not specifiqued.');
+    if (!check_acl($config['id_user'], 0, 'AW')) {
+        returnError('forbidden', 'string');
+        return;
     }
-    $sql = sprintf('select u.id_usuario, p.id_perfil, p.name, u.id_grupo from tperfil p, tusuario_perfil u where p.id_perfil in (select u.id_perfil from tusuario_perfil)');
+
+    if ($type == null) {
+        returnError('no_data_to_show', __('Return type of data not specified.'));
+    }
+
+    $sql = 'SELECT
+                tup.id_usuario AS user_id,
+                tp.id_perfil AS profile_id,
+                tp.name AS profile_name,
+                tup.id_grupo AS group_id,
+                tg.nombre AS group_name
+            FROM tperfil tp
+            INNER JOIN tusuario_perfil tup
+                ON tp.id_perfil = tup.id_perfil
+            OUTER JOIN tgrupo tg
+                ON tup.id_grupo = tg.id_grupo';
+
     $users = db_get_all_rows_sql($sql);
 
-    foreach ($users as $up) {
-        if ($up['id_grupo'] === 0) {
+    if ($users['id_grupo'] == 0) {
             $group_name = 'All';
-        } else {
-            $sql = 'select nombre from tgrupo where id_grupo = '.$up['id_grupo'].'';
-            $group_name = db_get_value_sql($sql);
-        }
-
-        $values = [
-            'id_usuario'  => $users['id_usuario'],
-            'id_perfil'   => $users['id_perfil'],
-            'perfil_name' => $users['name'],
-            'id_grupo'    => $users['id_grupo'],
-            'group_name'  => $group_name,
-        ];
     }
+
+    $values = [
+        'id_usuario'  => $users['id_usuario'],
+        'id_perfil'   => $users['id_perfil'],
+        'perfil_name' => $users['name'],
+        'id_grupo'    => $users['id_grupo'],
+        'group_name'  => $group_name,
+    ];
 
     if ($values === false) {
-        returnError('Error_user', ' Users could not be found.');
+        returnError('Error_user', __('Users could not be found.'));
     }
+
     $data = [
         'type' => 'array',
         'data' => $values,
     ];
 
     switch ($type) {
-    case 'csv':
-        returnData('csv', $data, ';');
+        case 'csv':
+            returnData('csv', $data, ';');
+        break;
 
-    case 'json':
-        returnData('json', $data, ';');
+        case 'json':
+            returnData('json', $data, ';');
+        break;
     }
 }
 
 
-// Funtion for get all info user to  new feature for Carrefour  
-// It depends of type the method will return csv or json data
-function api_get_info_user_name($type,$user)
+/**
+ * Funtion for get all info user to  new feature for Carrefour
+ * It depends of type the method will return csv or json data
+ *
+ * @param  string $type
+ * @param  string $user
+ * @return
+ */
+
+
+function api_get_info_user_name($type, $user)
 {
-    if ($user === null) {
-        returnError('no_data_to_show', 'User not specifiqued.');
-    }
-//validate return type data
-//if return type data is not specifiqued you will return message error 
-    if($type === null){
-        returnError('no_data_to_show', 'type data return not specifiqued.');
-
+    if (!check_acl($config['id_user'], 0, 'AW')) {
+        returnError('forbidden', 'string');
+        return;
     }
 
-    $sql = sprintf("select u.id_usuario, p.id_perfil, p.name, u.id_grupo from tperfil p, tusuario_perfil u where p.id_perfil in (select u.id_perfil from tusuario_perfil where u.id_usuario = '.$user.')");
+    if ($user == null) {
+        returnError('no_data_to_show', __('User not specifiqued.'));
+    }
+
+    if ($type == null) {
+        returnError('no_data_to_show', __('Return type of data not specified.'));
+    }
+
+    $sql = sprintf(
+        'SELECT tup.id_usuario AS user_id, tp.id_perfil AS profile_id,
+                           tp.name AS profile_name, tup.id_grupo AS group_id,
+                           tg.nombre AS group_name
+                    FROM tperfil tp
+                    INNER JOIN tusuario_perfil tup
+                        ON tp.id_perfil = tup.id_perfil
+                    OUTER JOIN tgrupo tg
+                        ON tup.id_grupo = tg.id_grupo
+                    WHERE tup.id_usuario = %s',
+        $user
+    );
+
     $user_profile = db_get_all_rows_sql($sql);
 
-    foreach ($user_profile as $up) {
-        if ($up['id_grupo'] === 0) {
-            $group_name = 'All';
-        } else {
-            $sql = 'select nombre from tgrupo where id_grupo = '.$up['id_grupo'].'';
-            $group_name = db_get_value_sql($sql);
-        }
-
-        $values = [
-            'id_usuario'  => $user_profile['id_usuario'],
-            'id_perfil'   => $user_profile['id_perfil'],
-            'perfil_name' => $user_profile['name'],
-            'id_grupo'    => $user_profile['id_grupo'],
-            'group_name'  => $group_name,
-        ];
+    if ($user_profile['id_grupo'] == 0) {
+        $group_name = 'All';
     }
 
-    if ($values === false) {
-        returnError('Error_user', ' User could not be found.');
-    } 
+    $values = [
+        'id_usuario'  => $user_profile['id_usuario'],
+        'id_perfil'   => $user_profile['id_perfil'],
+        'perfil_name' => $user_profile['name'],
+        'id_grupo'    => $user_profile['id_grupo'],
+        'group_name'  => $group_name,
+    ];
+
+    if ($values == false) {
+        returnError('Error_user', __('User could not be found.'));
+    }
+
         $data = [
             'type' => 'array',
             'data' => $values,
@@ -14821,143 +14859,177 @@ function api_get_info_user_name($type,$user)
         switch ($type) {
             case 'csv':
                 returnData('csv', $data, ';');
-        
+            break;
+
             case 'json':
                 returnData('json', $data, ';');
-            }
+            break;
+        }
 }
 
 
-// Function for get  user from a group  to  new feature for Carrefour.
-// It depends of type the method will return csv or json data.
+/**
+ * Function for get  user from a group  to  new feature for Carrefour.
+ * It depends of type the method will return csv or json data.
+ *
+ * @param  string  $type
+ * @param  string  $user
+ * @param  string  $group
+ * @param  integer $disable
+ * @return
+ */
 
-function api_get_filter_user_group($type,$user, $group, $disable)
+
+function api_get_filter_user_group($type, $user, $group, $disable)
 {
-    if ($user === null && ($group === null || $disable === null)) {
-        returnError('no_data_to_show', 'User, group or is disable not specifiqued.');
+    if (!check_acl($config['id_user'], 0, 'AW')) {
+        returnError('forbidden', 'string');
+        return;
     }
 
-//validate return type data
-//if return type data is not specifiqued you will return message error 
-    if($type === null){
-        returnError('no_data_to_show', 'type data return not specifiqued.');
-
+    if ($user == null && ($group == null || $disable == null)) {
+        returnError('no_data_to_show', __('User, group or disabled status not specified.'));
     }
+
+    if ($type == null) {
+        returnError('no_data_to_show', __('Return type of data not specified.'));
+    }
+
     if ($group !== null) {
-        $condition = $grupo;
-        $campo = 'group';
+        $condition = $grup;
+        $field = 'group';
     }
 
     if ($disable !== null) {
         $condition = $disable;
-        $campo = 'disable';
+        $field = 'disable';
     }
 
-    // CASO CON USUARIO DE META CONSOLE
     /*
+        CASO CON USUARIO DE META CONSOLE
+
         if ($user_meta !== null) {
-        $campo = 'metaconsole_assigned_server';
+        $field = 'metaconsole_assigned_server';
         $condition = 1;
         }
     */
 
-    $sql = sprintf(('select u.id_usuario, p.id_perfil, p.name, u.id_grupo from tperfil p, tusuario_perfil u where p.id_perfil in (select u.id_perfil from tusuario_perfil where  %s = %d)'), $campo, $condition);
+    $sql = sprintf(
+        'SELECT
+            tup.id_usuario AS user_id,
+            tp.id_perfil AS profile_id,
+            tp.name AS profile_name,
+            tup.id_grupo AS group_id,
+            tg.nombre AS group_name
+        FROM tperfil tp
+        INNER JOIN tusuario_perfil tup
+            ON tp.id_perfil = tup.id_perfil
+        OUTER JOIN tgrupo tg
+            ON tup.id_grupo = tg.id_grupo
+        WHERE `%s` = %s',
+        $field,
+        $condition
+    );
+
     $filter_user = db_get_all_rows_sql($sql);
 
-    foreach ($filter_user as $up) {
-        if ($up['id_grupo'] === 0) {
-            $group_name = 'All';
-        } else {
-            $sql = 'select nombre from tgrupo where id_grupo = '.$up['id_grupo'].'';
-            $group_name = db_get_value_sql($sql);
-        }
-
-        $values = [
-            'id_usuario'  => $up['id_usuario'],
-            'id_perfil'   => $up['id_perfil'],
-            'perfil_name' => $up['name'],
-            'id_grupo'    => $up['id_grupo'],
-            'group_name'  => $group_name,
-        ];
+    if ($filter_user == false) {
+        returnError('Error_user', __('User could not be found.'));
     }
 
-    if ($values === false) {
-        returnError('Error_user', ' User could not be found.');
-    } 
         $data = [
             'type' => 'array',
-            'data' => $values,
+            'data' => $filter_user,
         ];
         switch ($type) {
             case 'csv':
                 returnData('csv', $data, ';');
-        
+            break;
+
             case 'json':
                 returnData('json', $data, ';');
-            }
+            break;
+        }
 }
 
 
-// Function for delete an user profile for Carrefour  new feature
-// The return of this function its only a message
+/**
+ * Function for delete an user profile for Carrefour  new feature
+ * The return of this function its only a message
+ *
+ * @param  integer $id_user
+ * @return void
+ */
+
+
 function api_get_delete_user_profile($id_user)
 {
-    if ($id_user === null) {
+    if (!check_acl($config['id_user'], 0, 'AW')) {
+        returnError('forbidden', 'string');
+        return;
+    }
+
+    if ($id_user == null) {
         return false;
     }
 
-//validate return type data
-//if return type data is not specifiqued you will return message error 
-    if($type === null){
-        returnError('no_data_to_show', 'type data return not specifiqued.');
-
+    if ($type == null) {
+        returnError('no_data_to_show', __('Return type of data not specified.'));
     }
+
     $sql = "delete from tusuario_perfil where id_usuario = '$id_user'";
     $deleted_permission = db_process_sql_delete($sql);
 
-    if ($deleted_permission === false) {
-        returnError('Error_delete', ' User profile could not be deleted.');
+    if ($deleted_permission == false) {
+        returnError('Error_delete', __('User profile could not be deleted.'));
     }
-    
+
     $data = [
-            'type' => 'string',
-            'data' => $deleted_permission,
+        'type' => 'string',
+        'data' => $deleted_permission,
     ];
 
         returnData('string', ['type' => 'string', 'data' => $data]);
 }
-    
-// Function for add permission a user to a group for Carrefour new feature
-//it depends of type the method will return csv or json data
+
+
+/**
+ * Function for add permission a user to a group for Carrefour new feature
+ * It depends of type the method will return csv or json data
+ *
+ * @param  string  $type
+ * @param  integer $id_user
+ * @param  integer $group
+ * @param  string  $profile
+ * @param  array   $other
+ * @return void
+ */
+
+
 function api_add_permisson_user_to_group($type, $id_user, $group, $profile, $other=';')
 {
-    if ($user === null || $group === null || $profile === null) {
-        return false;
+    if (!check_acl($config['id_user'], 0, 'AW')) {
+        returnError('forbidden', 'string');
+        return;
     }
 
-//validate return type data
-//if return type data is not specifiqued you will return message error 
-    if($type === null){
-        returnError('no_data_to_show', 'type data return not specifiqued.');
+    if ($user == null || $group == null || $profile == null) {
+        returnError('no_data_to_show', __('User, group or disabled status not specified.'));
+    }
 
+    if ($type == null) {
+        returnError('no_data_to_show', __('Return type of data not specified.'));
     }
 
     $other[0] = $id_user;
     $other[1] = $group;
     $other[2] = $profile;
-    if ($id_user === null || $group === null || $profile === null) {
+
+    if ($id_user == null || $group == null || $profile == null) {
         return false;
     }
 
-    // take it up last value(id_up) for tusuario_peril and increase 1 value
-    $sql = 'select MAX(id_up) from tusuario_perfil';
-
-    $last_id_up = db_get_value_sql($sql);
-
-    $last_id_up ++;
-
     $values = [
-        'id_up'        => $last_id_up,
         'id_usuario'   => $other[0],
         'id_perfil'    => $other[2],
         'id_grupo'     => $other[1],
@@ -14970,21 +15042,22 @@ function api_add_permisson_user_to_group($type, $id_user, $group, $profile, $oth
 
     $sucessfull_insert = db_process_sql_insert('tusuario_perfil', $values);
 
-    if ($sucessfull_insert === false) {
-        returnError('Error_insert', ' User profile could not be aviable.');
+    if ($sucessfull_insert == false) {
+        returnError('Error_insert', __('User profile could not be available.'));
     }
-    
+
      $data = [
-        'type' => 'array',
-        'data' => $values,
-    ];
-    switch ($type) {
-        
-        case 'csv':
-            returnData('csv', $data, ';');
-    
-        case 'json':
-            returnData('json', $data, ';');
-        }
-    
+         'type' => 'array',
+         'data' => $values,
+     ];
+     switch ($type) {
+         case 'csv':
+             returnData('csv', $data, ';');
+         break;
+
+            case 'json':
+                  returnData('json', $data, ';');
+         break;
+     }
+
 }

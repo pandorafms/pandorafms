@@ -149,7 +149,7 @@ if ($correctLogin) {
                     break;
 
                     case 'get_info_user_name':
-                        $id_os = get_info_user_name($user);
+                        $id_os = get_info_user_name($type, $user);
 
                         if ($id_os === 100) {
                             returnError('not_allowed_operation_cluster', $returnType);
@@ -158,7 +158,7 @@ if ($correctLogin) {
                     break;
 
                     case 'get_filter_user_group':
-                        $id_os = get_filter_user_group($user, $group, $disable);
+                        $id_os = get_filter_user_group($type, $user, $group, $disable);
 
                         if ($id_os === false) {
                             returnError('not_allowed_operation_cluster', $returnType);
@@ -176,7 +176,7 @@ if ($correctLogin) {
                     break;
 
                     case 'get_list_all_user':
-                        $id_os = get_list_all_user();
+                        $id_os = get_list_all_user($type);
 
                         if ($id_os === false) {
                             returnError('not_allowed_operation_cluster', $returnType);
@@ -184,7 +184,7 @@ if ($correctLogin) {
                         }
 
                     case 'add_permission_user_to_group':
-                        $id_os = add_permisson_user_to_group();
+                        $id_os = add_permisson_user_to_group($type, $id_user, $group, $profile, $other = ';');
 
                         if ($id_os === false) {
                             returnError('not_allowed_operation_cluster', $returnType);

@@ -101,11 +101,15 @@ const svgNS = "http://www.w3.org/2000/svg";
 
 export default class Percentile extends Item<PercentileProps> {
   protected createDomElement(): HTMLElement {
+    const colors = {
+      background: "#000000",
+      progress: this.props.color || "#F0F0F0",
+      text: this.props.labelColor || "#444444"
+    };
     // Progress.
     const progress = this.getProgress();
     // Main element.
     const element = document.createElement("div");
-
     // SVG container.
     const svg = document.createElementNS(svgNS, "svg");
 
@@ -113,14 +117,14 @@ export default class Percentile extends Item<PercentileProps> {
       case "progress-bar":
         {
           const backgroundRect = document.createElementNS(svgNS, "rect");
-          backgroundRect.setAttribute("fill", "#000000");
+          backgroundRect.setAttribute("fill", colors.background);
           backgroundRect.setAttribute("fill-opacity", "0.5");
           backgroundRect.setAttribute("width", "100");
           backgroundRect.setAttribute("height", "20");
           backgroundRect.setAttribute("rx", "5");
           backgroundRect.setAttribute("ry", "5");
           const progressRect = document.createElementNS(svgNS, "rect");
-          progressRect.setAttribute("fill", this.props.color || "#F0F0F0");
+          progressRect.setAttribute("fill", colors.progress);
           progressRect.setAttribute("fill-opacity", "1");
           progressRect.setAttribute("width", `${progress}`);
           progressRect.setAttribute("height", "20");
@@ -133,7 +137,7 @@ export default class Percentile extends Item<PercentileProps> {
           text.setAttribute("font-family", "arial");
           text.setAttribute("font-weight", "bold");
           text.setAttribute("transform", "translate(50 11)");
-          text.setAttribute("fill", this.props.labelColor || "#FFFFFF");
+          text.setAttribute("fill", colors.text);
 
           if (this.props.valueType === "value") {
             text.textContent = this.props.unit
@@ -154,12 +158,12 @@ export default class Percentile extends Item<PercentileProps> {
         {
           const backgroundCircle = document.createElementNS(svgNS, "circle");
           backgroundCircle.setAttribute("transform", "translate(50 50)");
-          backgroundCircle.setAttribute("fill", "#000000");
+          backgroundCircle.setAttribute("fill", colors.background);
           backgroundCircle.setAttribute("fill-opacity", "0.5");
           backgroundCircle.setAttribute("r", "50");
           const progressCircle = document.createElementNS(svgNS, "circle");
           progressCircle.setAttribute("transform", "translate(50 50)");
-          progressCircle.setAttribute("fill", this.props.color || "#F0F0F0");
+          progressCircle.setAttribute("fill", colors.progress);
           progressCircle.setAttribute("fill-opacity", "1");
           progressCircle.setAttribute("r", `${progress / 2}`);
           const text = document.createElementNS(svgNS, "text");
@@ -168,7 +172,7 @@ export default class Percentile extends Item<PercentileProps> {
           text.setAttribute("font-size", "16");
           text.setAttribute("font-family", "arial");
           text.setAttribute("font-weight", "bold");
-          text.setAttribute("fill", this.props.labelColor || "#FFFFFF");
+          text.setAttribute("fill", colors.text);
 
           if (this.props.valueType === "value") {
             if (this.props.unit && this.props.unit.length > 0) {

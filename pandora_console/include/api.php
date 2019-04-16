@@ -105,7 +105,7 @@ if ($correctLogin) {
             }
         } else {
             $function_name = 'api_'.$op.'_'.$op2;
-            $id = 1;
+
             if ($op == 'set' && $id) {
                 switch ($op2) {
                     case 'update_agent':

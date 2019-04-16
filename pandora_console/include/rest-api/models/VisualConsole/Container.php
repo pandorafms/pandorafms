@@ -78,15 +78,16 @@ final class Container extends Model
     protected function decode(array $data): array
     {
         return [
-            'id'              => (int) $data['id'],
-            'name'            => $data['name'],
-            'groupId'         => $this->extractGroupId($data),
-            'backgroundImage' => $this->extractBackgroundImage($data),
-            'backgroundColor' => $this->extractBackgroundColor($data),
-            'isFavorite'      => $this->extractFavorite($data),
-            'width'           => (int) $data['width'],
-            'height'          => (int) $data['height'],
-            'backgroundURL'   => $this->extractBackgroundUrl($data),
+            'id'                => (int) $data['id'],
+            'name'              => $data['name'],
+            'groupId'           => $this->extractGroupId($data),
+            'backgroundImage'   => $this->extractBackgroundImage($data),
+            'backgroundColor'   => $this->extractBackgroundColor($data),
+            'isFavorite'        => $this->extractFavorite($data),
+            'width'             => (int) $data['width'],
+            'height'            => (int) $data['height'],
+            'backgroundURL'     => $this->extractBackgroundUrl($data),
+            'relationLineWidth' => (int) $data['relationLineWidth'],
         ];
     }
 
@@ -215,6 +216,8 @@ final class Container extends Model
 
         // Clean HTML entities.
         $row = \io_safe_output($row);
+
+        $row['relationLineWidth'] = (int) $config['vc_line_thickness'];
 
         $backgroundUrl = static::extractBackgroundUrl($row);
         $backgroundImage = static::extractBackgroundImage($row);

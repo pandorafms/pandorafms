@@ -133,6 +133,7 @@ export interface VisualConsoleProps extends Size {
   backgroundURL: string | null; // URL?
   backgroundColor: string | null;
   isFavorite: boolean;
+  relationLineWidth: number;
 }
 
 /**
@@ -154,7 +155,8 @@ export function visualConsolePropsDecoder(
     groupId,
     backgroundURL,
     backgroundColor,
-    isFavorite
+    isFavorite,
+    relationLineWidth
   } = data;
 
   if (id == null || isNaN(parseInt(id))) {
@@ -174,6 +176,7 @@ export function visualConsolePropsDecoder(
     backgroundURL: notEmptyStringOr(backgroundURL, null),
     backgroundColor: notEmptyStringOr(backgroundColor, null),
     isFavorite: parseBoolean(isFavorite),
+    relationLineWidth: parseIntOr(relationLineWidth, 0),
     ...sizePropsDecoder(data)
   };
 }
@@ -520,7 +523,8 @@ export default class VisualConsole {
         endX,
         endY,
         width: 0,
-        height: 0
+        height: 0,
+        lineWidth: this.props.relationLineWidth
       })
     );
     // Save a reference to the line item.

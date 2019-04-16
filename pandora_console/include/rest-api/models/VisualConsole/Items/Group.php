@@ -156,6 +156,14 @@ final class Group extends Item
             )
         );
 
+        // If the width and height are equal to 0.
+        // We need to know the width and height of the image.
+        if ($data['width'] == 0 && $data['height'] == 0) {
+            $sizeImage = getimagesize($data['statusImageSrc']);
+            $data['width'] = $sizeImage[0];
+            $data['height'] = $sizeImage[1];
+        }
+
         return $data;
     }
 

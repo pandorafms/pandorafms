@@ -117,7 +117,7 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
   private itemProps: Props;
   // Reference to the DOM element which will contain the item.
   public elementRef: HTMLElement;
-  private readonly labelElementRef: HTMLElement;
+  public readonly labelElementRef: HTMLElement;
   // Reference to the DOM element which will contain the view of the item which extends this class.
   protected readonly childElementRef: HTMLElement;
   // Event manager for click events.

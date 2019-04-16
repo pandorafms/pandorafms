@@ -328,36 +328,34 @@ final class Container extends Model
      */
     public static function getItemsFromDB(
         int $layoutId,
-        array $aclUserGroups=[]
+        array $groupsFilter=[]
     ): array {
-        // If is empty array user view all groups.
-        if (count($aclUserGroups) > 0) {
-            // Filter group for elements groups.
-            $filterCondition = ['id_layout' => $layoutId];
-            $filterCondition['element_group'] = $aclUserGroups;
-            // Format filter mysql.
-            $filter[0] = db_format_array_where_clause_sql(
-                $filterCondition
-            );
-
-            // Filter groups for type groups.
-            // Only true condition if type is GROUP_ITEM.
-            $filterGroup = [];
-            $filterGroup['type'] = GROUP_ITEM;
-            $filterGroup['id_group'] = $aclUserGroups;
-
-            // Format filter mysql.
-            $filter[1] = '('.db_format_array_where_clause_sql(
-                $filterGroup
-            ).')';
-        } else {
-            $filter = ['id_layout' => $layoutId];
-        }
-
+        // Default filter.
+        $filter = ['id_layout' => $layoutId];
         $fields = [
             'id',
             'type',
         ];
+
+        // Override the filter if the groups filter is not empty.
+        if (count($groupsFilter) > 0) {
+            // Filter group for elements groups.
+            $filter[] = \db_format_array_where_clause_sql(
+                [
+                    'id_layout'     => $layoutId,
+                    'element_group' => $groupsFilter,
+                ]
+            );
+
+            // Filter groups for type groups.
+            // Only true condition if type is GROUP_ITEM.
+            $filter[] = '('.\db_format_array_where_clause_sql(
+                [
+                    'type'     => GROUP_ITEM,
+                    'id_group' => $groupsFilter,
+                ]
+            ).')';
+        }
 
         $rows = \db_get_all_rows_filter(
             'tlayout_data',
@@ -368,7 +366,6 @@ final class Container extends Model
 
         if ($rows === false) {
             $rows = [];
-            // TODO: throw new \Exception('error fetching the data from the DB');.
         }
 
         $items = [];

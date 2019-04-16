@@ -28,7 +28,7 @@ interface LineProps extends ItemProps {
 export function linePropsDecoder(data: UnknownObject): LineProps | never {
   const lineWidth = parseIntOr(data.lineWidth, 0);
 
-  return {
+  const props: LineProps = {
     ...itemBasePropsDecoder({ ...data, width: 1, height: 1 }), // Object spread. It will merge the properties of the two objects.
     type: ItemType.LINE_ITEM,
     label: null,
@@ -51,6 +51,21 @@ export function linePropsDecoder(data: UnknownObject): LineProps | never {
     },
     lineWidth: lineWidth > 0 ? lineWidth : 1,
     color: notEmptyStringOr(data.borderColor || data.color, null)
+  };
+
+  /*
+   * We need to enhance the props with the extracted size and position
+   * of the box cause there are missing at the props update. A better
+   * solution would be overriding the props setter to do it there, but
+   * the language doesn't allow it while targetting ES5.
+   * TODO: We need to figure out a more consistent solution.
+   */
+
+  return {
+    ...props,
+    // Enhance the props extracting the box size and position.
+    // eslint-disable-next-line @typescript-eslint/no-use-before-define
+    ...Line.extractBoxSizeAndPosition(props)
   };
 }
 
@@ -106,7 +121,7 @@ export default class Line extends Item<LineProps> {
    * the start and the finish of the line.
    * @param props Item properties.
    */
-  private static extractBoxSizeAndPosition(props: LineProps): Size & Position {
+  public static extractBoxSizeAndPosition(props: LineProps): Size & Position {
     return {
       width: Math.abs(props.startPosition.x - props.endPosition.x),
       height: Math.abs(props.startPosition.y - props.endPosition.y),

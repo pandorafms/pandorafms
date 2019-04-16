@@ -1,10 +1,10 @@
 <?php
 
+global $config;
+
 if (!is_ajax()) {
     return;
 }
-
-global $config;
 
 require_once $config['homedir'].'/vendor/autoload.php';
 
@@ -42,7 +42,8 @@ if ($getVisualConsole === true) {
 
     echo $visualConsole;
 } else if ($getVisualConsoleItems === true) {
-    echo '['.implode(VisualConsole::getItemsFromDB($visualConsoleId, $aclUserGroups), ',').']';
+    $vcItems = VisualConsole::getItemsFromDB($visualConsoleId, $aclUserGroups);
+    echo '['.implode($vcItems, ',').']';
 }
 
 exit;

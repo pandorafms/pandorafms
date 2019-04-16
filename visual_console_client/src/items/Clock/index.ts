@@ -604,7 +604,7 @@ export default class Clock extends Item<ClockProps> {
           width = 100; // Default value.
           height = 50; // Default value.
         }
-        console.log(width, height);
+
         return {
           width,
           height

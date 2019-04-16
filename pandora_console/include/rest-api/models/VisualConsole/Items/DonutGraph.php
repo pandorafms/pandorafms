@@ -48,7 +48,9 @@ final class DonutGraph extends Item
     {
         $return = parent::decode($data);
         $return['type'] = DONUT_GRAPH;
-        $return['legendBackgroundColor'] = $this->extractLegendBackgroundColor($data);
+        $return['legendBackgroundColor'] = static::extractLegendBackgroundColor(
+            $data
+        );
         return $return;
     }
 
@@ -60,7 +62,7 @@ final class DonutGraph extends Item
      *
      * @return mixed String representing the border color (not empty) or null.
      */
-    private function extractLegendBackgroundColor(array $data)
+    private static function extractLegendBackgroundColor(array $data)
     {
         return static::notEmptyStringOr(
             static::issetInArray(

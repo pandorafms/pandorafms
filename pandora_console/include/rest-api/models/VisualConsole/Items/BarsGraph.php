@@ -256,23 +256,6 @@ final class BarsGraph extends Item
             'url'  => \ui_get_full_url(false, false, false, false).'images/logo_vertical_water.png',
         ];
 
-        switch ($data['label_position']) {
-            case 'left':
-                $divStart = '<div style="float:left;height:15px;">';
-                $divEnd = '</div>';
-            break;
-
-            case 'right':
-                $divStart = '<div style="float:right;height:15px;">';
-                $divEnd = '</div>';
-            break;
-
-            default:
-                $divStart = '';
-                $divEnd = '';
-            break;
-        }
-
         if ((int) $data['width'] === 0 || (int) $data['height'] === 0) {
             $width = 400;
             $height = 400;
@@ -282,7 +265,7 @@ final class BarsGraph extends Item
         }
 
         if ($typeGraph === 'horizontal') {
-            $graph = $divStart.\hbar_graph(
+            $graph = \hbar_graph(
                 $moduleData,
                 $width,
                 $height,
@@ -305,9 +288,9 @@ final class BarsGraph extends Item
                 $config['homeurl'],
                 $backGroundColor,
                 $gridColor
-            ).$divEnd;
+            );
         } else {
-            $graph = $divStart.\vbar_graph(
+            $graph = \vbar_graph(
                 $moduleData,
                 $width,
                 $height,
@@ -332,7 +315,7 @@ final class BarsGraph extends Item
                 true,
                 false,
                 $gridColor
-            ).$divEnd;
+            );
         }
 
         // Restore connection.

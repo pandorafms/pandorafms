@@ -26,7 +26,7 @@ export type EventsHistoryProps = {
 export function eventsHistoryPropsDecoder(
   data: UnknownObject
 ): EventsHistoryProps | never {
-  if (stringIsEmpty(data.html) || stringIsEmpty(data.encodedHtml)) {
+  if (stringIsEmpty(data.html) && stringIsEmpty(data.encodedHtml)) {
     throw new TypeError("missing html content.");
   }
 

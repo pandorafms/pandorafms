@@ -26,8 +26,6 @@ interface LineProps extends ItemProps {
  * is missing from the raw object or have an invalid type.
  */
 export function linePropsDecoder(data: UnknownObject): LineProps | never {
-  const lineWidth = parseIntOr(data.lineWidth, 0);
-
   const props: LineProps = {
     ...itemBasePropsDecoder({ ...data, width: 1, height: 1 }), // Object spread. It will merge the properties of the two objects.
     type: ItemType.LINE_ITEM,
@@ -49,7 +47,7 @@ export function linePropsDecoder(data: UnknownObject): LineProps | never {
       x: parseIntOr(data.endX, 0),
       y: parseIntOr(data.endY, 0)
     },
-    lineWidth: lineWidth > 0 ? lineWidth : 1,
+    lineWidth: parseIntOr(data.lineWidth || data.borderWidth, 1),
     color: notEmptyStringOr(data.borderColor || data.color, null)
   };
 
@@ -99,16 +97,33 @@ export default class Line extends Item<LineProps> {
     // SVG container.
     const svg = document.createElementNS(svgNS, "svg");
     // Set SVG size.
-    svg.setAttribute("width", this.props.width.toString());
-    svg.setAttribute("height", this.props.height.toString());
+    svg.setAttribute(
+      "width",
+      (this.props.width + this.props.lineWidth).toString()
+    );
+    svg.setAttribute(
+      "height",
+      (this.props.height + this.props.lineWidth).toString()
+    );
     const line = document.createElementNS(svgNS, "line");
-    line.setAttribute("x1", `${this.props.startPosition.x - this.props.x}`);
-    line.setAttribute("y1", `${this.props.startPosition.y - this.props.y}`);
-    line.setAttribute("x2", `${this.props.endPosition.x - this.props.x}`);
-    line.setAttribute("y2", `${this.props.endPosition.y - this.props.y}`);
+    line.setAttribute(
+      "x1",
+      `${this.props.startPosition.x - this.props.x + this.props.lineWidth / 2}`
+    );
+    line.setAttribute(
+      "y1",
+      `${this.props.startPosition.y - this.props.y + this.props.lineWidth / 2}`
+    );
+    line.setAttribute(
+      "x2",
+      `${this.props.endPosition.x - this.props.x + this.props.lineWidth / 2}`
+    );
+    line.setAttribute(
+      "y2",
+      `${this.props.endPosition.y - this.props.y + this.props.lineWidth / 2}`
+    );
     line.setAttribute("stroke", this.props.color || "black");
     line.setAttribute("stroke-width", this.props.lineWidth.toString());
-    line.setAttribute("stroke-linecap", "round");
 
     svg.append(line);
     element.append(svg);

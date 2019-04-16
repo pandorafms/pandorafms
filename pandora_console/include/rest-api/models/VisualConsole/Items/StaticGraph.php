@@ -191,7 +191,7 @@ final class StaticGraph extends Item
 
         // Get last value.
         if (isset($data['show_last_value']) && $data['show_last_value'] !== 2) {
-            $img_style_title = '';
+            $imgTitle = '';
 
             $unit_text = \trim(\io_safe_output(\modules_get_unit($moduleId)));
 
@@ -201,17 +201,17 @@ final class StaticGraph extends Item
                 || (\modules_is_boolean($moduleId) && $data['show_last_value'] != 0)
             ) {
                 if (\is_numeric($value)) {
-                    $img_style_title .= __('Last value: ').remove_right_zeros($value);
+                    $imgTitle .= __('Last value: ').remove_right_zeros($value);
                 } else {
-                    $img_style_title .= __('Last value: ').$value;
+                    $imgTitle .= __('Last value: ').$value;
                 }
             }
 
-            if (empty($unit_text) === false && empty($img_style_title) === false) {
-                $img_style_title .= ' '.$unit_text;
+            if (empty($unit_text) === false && empty($imgTitle) === false) {
+                $imgTitle .= ' '.$unit_text;
             }
 
-            $data['lastValue'] = $img_style_title;
+            $data['lastValue'] = $imgTitle;
         }
 
         // Restore connection.

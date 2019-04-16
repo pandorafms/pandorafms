@@ -27,7 +27,7 @@ interface LineProps extends ItemProps {
  */
 export function linePropsDecoder(data: UnknownObject): LineProps | never {
   return {
-    ...itemBasePropsDecoder(data), // Object spread. It will merge the properties of the two objects.
+    ...itemBasePropsDecoder({ ...data, width: 1, height: 1 }), // Object spread. It will merge the properties of the two objects.
     type: ItemType.LINE_ITEM,
     label: null,
     isLinkEnabled: false,
@@ -47,8 +47,8 @@ export function linePropsDecoder(data: UnknownObject): LineProps | never {
       x: parseIntOr(data.endX, 0),
       y: parseIntOr(data.endY, 0)
     },
-    lineWidth: parseIntOr(data.lineWidth, 1),
-    color: notEmptyStringOr(data.color, null)
+    lineWidth: parseIntOr(data.borderWidth, 1),
+    color: notEmptyStringOr(data.borderColor, null)
   };
 }
 

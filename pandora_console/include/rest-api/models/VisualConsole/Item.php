@@ -1073,18 +1073,4 @@ class Item extends Model
     }
 
 
-    /**
-     * Obtain a vc item instance from the database using an identifier.
-     *
-     * @param integer $id Identifier of the Visual Console Item.
-     *
-     * @return mixed The Visual Console Item data structure stored into the DB.
-     * @throws \Exception When the data cannot be retrieved from the DB.
-     */
-    public static function fromDBWithId(int $id)
-    {
-        return static::fromDB(['id' => $id]);
-    }
-
-
 }

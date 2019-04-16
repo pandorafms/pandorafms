@@ -168,23 +168,27 @@ export default class Percentile extends Item<PercentileProps> {
           text.setAttribute("font-size", "16");
           text.setAttribute("font-family", "arial");
           text.setAttribute("font-weight", "bold");
-          text.setAttribute("transform", "translate(50 32)");
           text.setAttribute("fill", this.props.labelColor || "#FFFFFF");
 
           if (this.props.valueType === "value") {
-            const value = document.createElementNS(svgNS, "tspan");
-            value.setAttribute("x", "0");
-            value.setAttribute("dy", "1em");
-            value.textContent = `${this.props.value}`;
-            const unit = document.createElementNS(svgNS, "tspan");
-            unit.setAttribute("x", "0");
-            unit.setAttribute("dy", "1em");
-            if (this.props.unit) {
+            if (this.props.unit && this.props.unit.length > 0) {
+              const value = document.createElementNS(svgNS, "tspan");
+              value.setAttribute("x", "0");
+              value.setAttribute("dy", "1em");
+              value.textContent = `${this.props.value}`;
+              const unit = document.createElementNS(svgNS, "tspan");
+              unit.setAttribute("x", "0");
+              unit.setAttribute("dy", "1em");
               unit.textContent = `${this.props.unit}`;
+              text.append(value, unit);
+              text.setAttribute("transform", "translate(50 33)");
+            } else {
+              text.textContent = `${this.props.value}`;
+              text.setAttribute("transform", "translate(50 50)");
             }
-            text.append(value, unit);
           } else {
             text.textContent = `${progress}%`;
+            text.setAttribute("transform", "translate(50 50)");
           }
 
           // Auto resize SVG using the view box magic: https://css-tricks.com/scale-svg/

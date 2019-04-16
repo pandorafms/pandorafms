@@ -37,9 +37,11 @@ $api_password = get_parameter('apipass', '');
 $password = get_parameter('pass', '');
 $user = get_parameter('user', '');
 $info = get_parameter('info', '');
-
+$user_db = get_parameter('user_db', '');
 $other = parseOtherParameter($otherSerialize, $otherMode);
-
+$group_db = get_parameter('group_db', '');
+$disable = get_parameter('disable', '');
+$id_up = get_parameter('id_up', '');
 $apiPassword = io_output_password(db_get_value_filter('value', 'tconfig', ['token' => 'api_password']));
 
 $correctLogin = false;
@@ -103,7 +105,7 @@ if ($correctLogin) {
             }
         } else {
             $function_name = 'api_'.$op.'_'.$op2;
-
+            $id = 1;
             if ($op == 'set' && $id) {
                 switch ($op2) {
                     case 'update_agent':
@@ -148,8 +150,18 @@ if ($correctLogin) {
                         }
                     break;
 
-                    case 'get_info_user_name':
-                        $id_os = api_get_info_user_name($type, $user);
+                    case 'info_user_name':
+
+                        if ($user_db === '') {
+                            returnError(__('User not specified'), __('User not specified'));
+                            return;
+                        }
+
+                        $id_os = api_set_info_user_name($returnType, $user_db);
+
+                        if ($id_os != 100) {
+                            return;
+                        }
 
                         if ($id_os == 100) {
                             returnError('not_allowed_operation_cluster', $returnType);
@@ -157,8 +169,18 @@ if ($correctLogin) {
                         }
                     break;
 
-                    case 'get_filter_user_group':
-                        $id_os = api_get_filter_user_group($type, $user, $group, $disable);
+                    case 'filter_user_group':
+
+                        if ($user_db === '' && ( $group_db === '' || $disable === '')) {
+                            returnError(__('User, group or disabled status not specified'), __('User, group or disabled status not specified'));
+                            return;
+                        }
+
+                        $id_os = api_set_filter_user_group($returnType, $user_db, $group_db, $disable);
+
+                        if ($id_os != 100) {
+                            return;
+                        }
 
                         if ($id_os == false) {
                             returnError('not_allowed_operation_cluster', $returnType);
@@ -166,8 +188,18 @@ if ($correctLogin) {
                         }
                     break;
 
-                    case 'delete_user_profile':
-                        $id_os = api_delete_user_profile($user);
+                    case 'delete_user_profiles':
+
+                        if ($user_db === '') {
+                            returnError(__('User or group not specified'), __('User, group not specified'));
+                            return;
+                        }
+
+                        $id_os = api_set_delete_user_profiles($user_db, $group_db);
+
+                        if ($id_os != 100) {
+                            return;
+                        }
 
                         if ($id_os == false) {
                             returnError('not_allowed_operation_cluster', $returnType);
@@ -175,21 +207,34 @@ if ($correctLogin) {
                         }
                     break;
 
-                    case 'get_list_all_user':
-                        $id_os = api_get_list_all_user($type);
+                    case 'list_all_user':
 
-                        if ($id_os == false) {
+                        $id_os = api_set_list_all_user($returnType);
+
+                        if ($id_os === false) {
                             returnError('not_allowed_operation_cluster', $returnType);
                             return false;
                         }
+                    break;
 
                     case 'add_permission_user_to_group':
-                        $id_os = api_add_permisson_user_to_group($type, $id_user, $group, $profile, $other = ';');
+
+                        if ($user_db == null || $group_db == null || $id_up == null) {
+                            returnError(__('User, group or profile not specified'), __('User, group or profile status not specified'));
+                            return;
+                        }
+
+                        $id_os = api_set_add_permisson_user_to_group($returnType, $user_db, $group_db, $id_up);
+
+                        if ($id_os != 100) {
+                            return;
+                        }
 
                         if ($id_os == false) {
                             returnError('not_allowed_operation_cluster', $returnType);
                             return false;
                         }
+                    break;
 
                     default:
                         // break;

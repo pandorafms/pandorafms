@@ -1,6 +1,6 @@
 import "./styles.css";
 
-import { LinkedVisualConsoleProps, UnknownObject } from "../../types";
+import { LinkedVisualConsoleProps, UnknownObject, Size } from "../../types";
 import {
   linkedVCPropsDecoder,
   parseIntOr,
@@ -165,17 +165,22 @@ export default class Clock extends Item<ClockProps> {
   }
 
   /**
-   * @override Item.resize
-   * To resize the item.
-   * @param width Width.
-   * @param height Height.
+   * @override Item.resizeElement
+   * Resize the DOM content container.
+   * @param width
+   * @param height
    */
-  public resize(width: number, height: number): void {
-    super.resize(width, height);
-    this.childElementRef.style.width = `${width}px`;
-    this.childElementRef.style.height = `${height}px`;
+  protected resizeElement(width: number, height: number): void {
+    const { width: newWidth, height: newHeight } = this.getElementSize(
+      width,
+      height
+    ); // Destructuring assigment: http://es6-features.org/#ObjectMatchingShorthandNotation
+    super.resizeElement(newWidth, newHeight);
     // Re-render the item to force it calculate a new font size.
-    if (this.props.clockType === "digital") this.render();
+    if (this.props.clockType === "digital") {
+      // Replace the old element with the updated date.
+      this.childElementRef.innerHTML = this.createClock().innerHTML;
+    }
   }
 
   /**
@@ -210,10 +215,12 @@ export default class Clock extends Item<ClockProps> {
       secondHand: "#DC143C"
     };
 
+    const { width, height } = this.getElementSize(); // Destructuring assigment: http://es6-features.org/#ObjectMatchingShorthandNotation
+
     const div = document.createElement("div");
     div.className = "analogic-clock";
-    div.style.width = `${this.props.width}px`;
-    div.style.height = `${this.props.height}px`;
+    div.style.width = `${width}px`;
+    div.style.height = `${height}px`;
 
     // SVG container.
     const svg = document.createElementNS(svgNS, "svg");
@@ -470,11 +477,7 @@ export default class Clock extends Item<ClockProps> {
     const element: HTMLDivElement = document.createElement("div");
     element.className = "digital-clock";
 
-    // The proportion of the clock should be (height * 2 = width) aproximately.
-    const width =
-      this.props.height * 2 < this.props.width
-        ? this.props.height * 2
-        : this.props.width;
+    const { width } = this.getElementSize(); // Destructuring assigment: http://es6-features.org/#ObjectMatchingShorthandNotation
 
     // Calculate font size to adapt the font to the item size.
     const baseTimeFontSize = 20; // Per 100px of width.
@@ -534,7 +537,7 @@ export default class Clock extends Item<ClockProps> {
 
   /**
    * Generate a date representation with the format 'd/m/Y'.
-   * e.g.: 24/02/2020.
+   * @example 24/02/2020.
    * @return Date representation.
    */
   public getDigitalDate(initialDate: Date | null = null): string {
@@ -551,7 +554,7 @@ export default class Clock extends Item<ClockProps> {
 
   /**
    * Generate a time representation with the format 'hh:mm:ss'.
-   * e.g.: 01:34:09.
+   * @example 01:34:09.
    * @return Time representation.
    */
   public getDigitalTime(initialDate: Date | null = null): string {
@@ -561,5 +564,54 @@ export default class Clock extends Item<ClockProps> {
     const seconds = padLeft(date.getSeconds(), 2, 0);
 
     return `${hours}:${minutes}:${seconds}`;
+  }
+
+  /**
+   * Generate a element size using the current size and the default values.
+   * @return The size.
+   */
+  private getElementSize(
+    width: number = this.props.width,
+    height: number = this.props.height
+  ): Size {
+    switch (this.props.clockType) {
+      case "analogic": {
+        let diameter = 100; // Default value.
+
+        if (width > 0 && height > 0) {
+          diameter = Math.min(width, height);
+        } else if (width > 0) {
+          diameter = width;
+        } else if (height > 0) {
+          diameter = height;
+        }
+
+        return {
+          width: diameter,
+          height: diameter
+        };
+      }
+      case "digital": {
+        if (width > 0 && height > 0) {
+          // The proportion of the clock should be (width = height / 2) aproximately.
+          height = width / 2 < height ? width / 2 : height;
+        } else if (width > 0) {
+          height = width / 2;
+        } else if (height > 0) {
+          // The proportion of the clock should be (height * 2 = width) aproximately.
+          width = height * 2;
+        } else {
+          width = 100; // Default value.
+          height = 50; // Default value.
+        }
+        console.log(width, height);
+        return {
+          width,
+          height
+        };
+      }
+      default:
+        throw new Error("invalid clock type.");
+    }
   }
 }

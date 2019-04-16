@@ -147,10 +147,7 @@ final class ColorCloud extends Item
         $result = [];
 
         try {
-            $dynamicData = \json_decode(
-                \base64_decode($dynamicDataEncoded),
-                true
-            );
+            $dynamicData = \json_decode($dynamicDataEncoded, true);
 
             $result['defaultColor'] = $dynamicData['default_color'];
             $result['colorRanges'] = [];

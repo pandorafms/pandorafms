@@ -502,9 +502,14 @@ export default class VisualConsole {
 
     // Get the items center.
     const startX = parent.props.x + parent.elementRef.clientWidth / 2;
-    const startY = parent.props.y + parent.elementRef.clientHeight / 2;
+    const startY =
+      parent.props.y +
+      (parent.elementRef.clientHeight + parent.labelElementRef.clientHeight) /
+        2;
     const endX = child.props.x + child.elementRef.clientWidth / 2;
-    const endY = child.props.y + child.elementRef.clientHeight / 2;
+    const endY =
+      child.props.y +
+      (child.elementRef.clientHeight + child.labelElementRef.clientHeight) / 2;
 
     const line = new Line(
       linePropsDecoder({

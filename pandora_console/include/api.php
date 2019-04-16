@@ -151,7 +151,7 @@ if ($correctLogin) {
                     case 'get_info_user_name':
                         $id_os = api_get_info_user_name($type, $user);
 
-                        if ($id_os === 100) {
+                        if ($id_os == 100) {
                             returnError('not_allowed_operation_cluster', $returnType);
                             return false;
                         }
@@ -160,7 +160,7 @@ if ($correctLogin) {
                     case 'get_filter_user_group':
                         $id_os = api_get_filter_user_group($type, $user, $group, $disable);
 
-                        if ($id_os === false) {
+                        if ($id_os == false) {
                             returnError('not_allowed_operation_cluster', $returnType);
                             return false;
                         }
@@ -169,7 +169,7 @@ if ($correctLogin) {
                     case 'delete_user_profile':
                         $id_os = api_delete_user_profile($user);
 
-                        if ($id_os === false) {
+                        if ($id_os == false) {
                             returnError('not_allowed_operation_cluster', $returnType);
                             return false;
                         }
@@ -178,7 +178,7 @@ if ($correctLogin) {
                     case 'get_list_all_user':
                         $id_os = api_get_list_all_user($type);
 
-                        if ($id_os === false) {
+                        if ($id_os == false) {
                             returnError('not_allowed_operation_cluster', $returnType);
                             return false;
                         }
@@ -186,7 +186,7 @@ if ($correctLogin) {
                     case 'add_permission_user_to_group':
                         $id_os = api_add_permisson_user_to_group($type, $id_user, $group, $profile, $other = ';');
 
-                        if ($id_os === false) {
+                        if ($id_os == false) {
                             returnError('not_allowed_operation_cluster', $returnType);
                             return false;
                         }

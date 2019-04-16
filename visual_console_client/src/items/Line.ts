@@ -29,7 +29,7 @@ export function linePropsDecoder(data: UnknownObject): LineProps | never {
   const lineWidth = parseIntOr(data.lineWidth, 0);
 
   return {
-    ...itemBasePropsDecoder(data), // Object spread. It will merge the properties of the two objects.
+    ...itemBasePropsDecoder({ ...data, width: 1, height: 1 }), // Object spread. It will merge the properties of the two objects.
     type: ItemType.LINE_ITEM,
     label: null,
     isLinkEnabled: false,
@@ -50,7 +50,7 @@ export function linePropsDecoder(data: UnknownObject): LineProps | never {
       y: parseIntOr(data.endY, 0)
     },
     lineWidth: lineWidth > 0 ? lineWidth : 1,
-    color: notEmptyStringOr(data.color, null)
+    color: notEmptyStringOr(data.borderColor || data.color, null)
   };
 }
 

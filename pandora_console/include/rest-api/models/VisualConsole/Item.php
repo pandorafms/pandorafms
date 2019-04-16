@@ -669,6 +669,13 @@ class Item extends Model
             throw new \Exception('error fetching the data from the DB');
         }
 
+        // Load side libraries.
+        global $config;
+        include_once $config['homedir'].'/include/functions_io.php';
+
+        // Clean HTML entities.
+        $row = \io_safe_output($row);
+
         /*
          * Retrieve extra data.
          */

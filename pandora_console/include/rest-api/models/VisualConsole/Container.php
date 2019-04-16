@@ -213,6 +213,9 @@ final class Container extends Model
         include_once $config['homedir'].'/include/functions_io.php';
         include_once $config['homedir'].'/include/functions_ui.php';
 
+        // Clean HTML entities.
+        $row = \io_safe_output($row);
+
         $backgroundUrl = static::extractBackgroundUrl($row);
         $backgroundImage = static::extractBackgroundImage($row);
 

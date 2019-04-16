@@ -88,7 +88,7 @@ function decodeProps(data: UnknownObject) {
     case ItemType.STATIC_GRAPH:
       return staticGraphPropsDecoder(data);
     case ItemType.MODULE_GRAPH:
-      throw new TypeError("decoder not found");
+      return moduleGraphPropsDecoder(data);
     case ItemType.SIMPLE_VALUE:
     case ItemType.SIMPLE_VALUE_MAX:
     case ItemType.SIMPLE_VALUE_MIN:
@@ -104,7 +104,7 @@ function decodeProps(data: UnknownObject) {
     case ItemType.ICON:
       return iconPropsDecoder(data);
     case ItemType.SERVICE:
-      throw new TypeError("decoder not found");
+      return servicePropsDecoder(data);
     case ItemType.GROUP_ITEM:
       return groupPropsDecoder(data);
     case ItemType.BOX_ITEM:
@@ -114,8 +114,9 @@ function decodeProps(data: UnknownObject) {
     case ItemType.AUTO_SLA_GRAPH:
       return eventsHistoryPropsDecoder(data);
     case ItemType.DONUT_GRAPH:
+      return donutGraphPropsDecoder(data);
     case ItemType.BARS_GRAPH:
-      throw new TypeError("decoder not found");
+      return barsGraphPropsDecoder(data);
     case ItemType.CLOCK:
       return clockPropsDecoder(data);
     case ItemType.COLOR_CLOUD:
@@ -524,7 +525,8 @@ export default class VisualConsole {
         endY,
         width: 0,
         height: 0,
-        lineWidth: this.props.relationLineWidth
+        lineWidth: this.props.relationLineWidth,
+        color: "#CCCCCC"
       })
     );
     // Save a reference to the line item.

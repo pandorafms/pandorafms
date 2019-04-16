@@ -13996,7 +13996,7 @@ function api_set_update_event_filter($id_event_filter, $thrash1, $other, $thrash
                 break;
 
                 case 5:
-                    $values['status'] = (array_key_exists($other['data'][5], events_get_all_status()) || $db_process_sql_insertother['data'][5] == -1) ? $other['data'][5] : -1;
+                    $values['status'] = (array_key_exists($other['data'][5], events_get_all_status()) || $other['data'][5] == -1) ? $other['data'][5] : -1;
                 break;
 
                 case 6:

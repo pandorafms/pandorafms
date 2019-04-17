@@ -103,8 +103,7 @@ final class EventsHistory extends Item
         }
 
         // Use the same HTML output as the old VC.
-        $html = '<div style="width:500px;">';
-        $html .= \graph_graphic_moduleevents(
+        $html = \graph_graphic_moduleevents(
             $agentId,
             $moduleId,
             (int) $data['width'],
@@ -113,7 +112,6 @@ final class EventsHistory extends Item
             '',
             true
         );
-        $html .= '</div>';
 
         $data['html'] = $html;
 

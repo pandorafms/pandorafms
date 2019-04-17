@@ -44,8 +44,35 @@ export function eventsHistoryPropsDecoder(
 export default class EventsHistory extends Item<EventsHistoryProps> {
   protected createDomElement(): HTMLElement {
     const element = document.createElement("div");
+    element.className = "events-history";
     element.innerHTML = this.props.html;
 
+    // Hack to execute the JS after the HTML is added to the DOM.
+    const scripts = element.getElementsByTagName("script");
+    for (let i = 0; i < scripts.length; i++) {
+      if (scripts[i].src.length === 0) {
+        setTimeout(() => {
+          try {
+            eval(scripts[i].innerHTML.trim());
+          } catch (ignored) {} // eslint-disable-line no-empty
+        }, 0);
+      }
+    }
+
     return element;
+  }
+
+  protected updateDomElement(element: HTMLElement): void {
+    element.innerHTML = this.props.html;
+
+    // Hack to execute the JS after the HTML is added to the DOM.
+    const aux = document.createElement("div");
+    aux.innerHTML = this.props.html;
+    const scripts = aux.getElementsByTagName("script");
+    for (let i = 0; i < scripts.length; i++) {
+      if (scripts[i].src.length === 0) {
+        eval(scripts[i].innerHTML.trim());
+      }
+    }
   }
 }

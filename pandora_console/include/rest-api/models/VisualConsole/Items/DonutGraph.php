@@ -153,10 +153,13 @@ final class DonutGraph extends Item
         if ($isString === true) {
             $graphData = \get_donut_module_data($moduleId);
 
+            $width = (int) $data['width'] > 0 ? (int) $data['width'] : 500;
+            $height = (int) $data['height'] > 0 ? (int) $data['height'] : 500;
+
             $data['html'] = \d3_donut_graph(
                 (int) $data['id'],
-                (int) $data['width'],
-                (int) $data['width'],
+                $width,
+                $height,
                 $graphData,
                 $legendBackGroundColor
             );

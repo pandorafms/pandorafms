@@ -207,14 +207,15 @@ if (!users_can_manage_group_all('AR')) {
     $aclUserGroups = array_keys(users_get_groups(false, 'AR'));
 }
 
+ui_require_javascript_file('pandora_visual_console');
+include_javascript_d3();
+visual_map_load_client_resources();
+
 // Load Visual Console Items.
 $visualConsoleItems = VisualConsole::getItemsFromDB(
     $visualConsoleId,
     $aclUserGroups
 );
-
-ui_require_javascript_file('pandora_visual_console');
-visual_map_load_client_resources();
 ?>
 
 <script type="text/javascript">

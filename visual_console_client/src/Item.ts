@@ -204,6 +204,14 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
   }
 
   /**
+   * To update the content element.
+   * @return Item.
+   */
+  protected updateDomElement(element: HTMLElement): void {
+    element.innerHTML = this.createDomElement().innerHTML;
+  }
+
+  /**
    * Public accessor of the `props` property.
    * @return Properties.
    */
@@ -249,7 +257,7 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
    * @param prevProps If exists it will be used to only perform DOM updates instead of a full replace.
    */
   public render(prevProps: Props | null = null): void {
-    this.childElementRef.innerHTML = this.createDomElement().innerHTML;
+    this.updateDomElement(this.childElementRef);
 
     // Move box.
     if (!prevProps || this.positionChanged(prevProps, this.props)) {

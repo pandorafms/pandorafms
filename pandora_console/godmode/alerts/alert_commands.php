@@ -388,7 +388,7 @@ if ($copy_command) {
 }
 
 $table->width = '100%';
-$table->class = 'databox data';
+$table->class = 'info_table';
 
 $table->data = [];
 $table->head = [];
@@ -431,6 +431,7 @@ foreach ($commands as $command) {
         io_safe_output($command['description'])
     );
     $data['action'] = '';
+    $table->cellclass[]['action'] = 'action_buttons';
     if (! $command['internal']) {
         $data['action'] = '<span style="display: inline-flex">';
         $data['action'] .= '<a href="index.php?sec='.$sec.'&sec2=godmode/alerts/alert_commands&amp;copy_command=1&id='.$command['id'].'&pure='.$pure.'"

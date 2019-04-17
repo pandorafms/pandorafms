@@ -1254,6 +1254,11 @@ require 'include/php_to_js_values.php';
 
 <script type="text/javascript" language="javascript">
 
+    // When there are less than 5 rows, all rows must be white
+    if($('table.info_table tr').length < 5){
+        $('table.info_table tbody > tr').css('background-color', '#fff');
+    }
+
     // When the user scrolls down 400px from the top of the document, show the button.
     window.onscroll = function() {scrollFunction()};
 

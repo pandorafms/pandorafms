@@ -225,7 +225,7 @@ if ($result === false) {
 $table->width = '100%';
 $table->cellpadding = 0;
 $table->cellspacing = 0;
-$table->class = 'databox data';
+$table->class = 'info_table';
 $table->head = [];
 $table->data = [];
 $table->align = [];
@@ -253,9 +253,9 @@ foreach ($result as $row) {
 
     $data[2] = mb_substr($row['descripcion'], 0, 60);
 
-    $data[3] = '<a href="index.php?sec=gagente&tab=module&sec2=godmode/agentes/configurar_agente&tab=template&id_agente='.$id_agente.'&delete_module='.$row['id_agente_modulo'].'">'.html_print_image('images/cross.png', true, ['border' => '0', 'alt' => __('Delete'), 'onclick' => "if (!confirm('".__('Are you sure?')."')) return false;"]).'</a>&nbsp;&nbsp;';
-
-    $data[3] .= '&nbsp;&nbsp;<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&tab=module&edit_module=1&id_agent_module='.$row['id_agente_modulo'].'">'.html_print_image('images/config.png', true, ['border' => '0', 'alt' => __('Update')]).'</a>';
+    $table->cellclass[][3] = 'action_buttons';
+    $data[3] = '<a href="index.php?sec=gagente&tab=module&sec2=godmode/agentes/configurar_agente&tab=template&id_agente='.$id_agente.'&delete_module='.$row['id_agente_modulo'].'">'.html_print_image('images/cross.png', true, ['border' => '0', 'alt' => __('Delete'), 'onclick' => "if (!confirm('".__('Are you sure?')."')) return false;"]).'</a>';
+    $data[3] .= '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&tab=module&edit_module=1&id_agent_module='.$row['id_agente_modulo'].'">'.html_print_image('images/config.png', true, ['border' => '0', 'alt' => __('Update')]).'</a>';
 
     array_push($table->data, $data);
 }

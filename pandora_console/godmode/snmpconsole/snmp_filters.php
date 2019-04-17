@@ -226,13 +226,13 @@ if ($edit_filter > -2) {
     $table->cellpadding = 4;
     $table->cellspacing = 4;
     $table->width = '100%';
-    $table->class = 'databox data';
+    $table->class = 'info_table';
     $table->align = [];
 
     $table->head[0] = __('Description');
     $table->head[1] = __('Filter');
     $table->head[2] = __('Action');
-    $table->size[2] = '50px';
+    $table->size[2] = '65px';
     $table->align[2] = 'center';
 
     foreach ($aglomerate_result as $ind => $row) {
@@ -263,6 +263,7 @@ if ($edit_filter > -2) {
             $data[0] = $compose_id;
             $data[1] = implode(' AND ', $compose_filter);
             $data[2] = $compose_action;
+            $table->cellclass[][2] = 'action_buttons';
             array_push($table->data, $data);
         }
     }

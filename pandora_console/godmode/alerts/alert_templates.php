@@ -339,7 +339,7 @@ if ($templates === false) {
 
 $table = new stdClass();
 $table->width = '100%';
-$table->class = 'databox data';
+$table->class = 'info_table';
 $table->data = [];
 $table->head = [];
 $table->head[0] = __('Name');
@@ -375,6 +375,7 @@ foreach ($templates as $template) {
     $data[3] = alerts_get_alert_templates_type_name($template['type']);
 
     if (check_acl($config['id_user'], $template['id_group'], 'LM')) {
+        $table->cellclass[][4] = 'action_buttons';
         $data[4] = '<form method="post" action="index.php?sec='.$sec.'&sec2=godmode/alerts/configure_alert_template&pure='.$pure.'" style="display: inline; float: left">';
         $data[4] .= html_print_input_hidden('duplicate_template', 1, true);
         $data[4] .= html_print_input_hidden('source_id', $template['id'], true);
@@ -396,6 +397,7 @@ foreach ($templates as $template) {
 ui_pagination($total_templates, $url);
 if (isset($data)) {
     html_print_table($table);
+    ui_pagination($total_templates, $url, 0, 0, false, 'offset', true, 'pagination-bottom');
 } else {
     ui_print_info_message(['no_close' => true, 'message' => __('No alert templates defined') ]);
 }

@@ -393,7 +393,7 @@ else {
 
     // View available downtimes present in database (if any of them)
     $table = new StdClass();
-    $table->class = 'databox data';
+    $table->class = 'info_table';
     $table->width = '100%';
     $table->cellstyle = [];
 
@@ -518,9 +518,9 @@ else {
     }
 
     html_print_table($table);
+    ui_pagination($downtimes_number, "index.php?sec=estado&sec2=godmode/agentes/planned_downtime.list&$filter_params_str", $offset, 0, false, 'offset', true, 'pagination-bottom');
     echo '<div class="action-buttons" style="width: '.$table->width.'">';
 
-    echo '<br>';
     // CSV export button
     echo '<div style="display: inline;">';
         html_print_button(

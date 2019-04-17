@@ -282,6 +282,58 @@
         unit: "seconds"
       };
 
+      var percentileDonutRawProps = {
+        // Generic props.
+        id: 12,
+        type: 3, // Percentile = 3
+        label: null,
+        isLinkEnabled: true,
+        isOnTop: false,
+        parentId: 1,
+        aclGroupId: null,
+        // Position props.
+        x: 830,
+        y: 170,
+        // Size props.
+        width: 100,
+        height: 100,
+        // Custom props.
+        percentileType: "circular-progress-bar",
+        valueType: "value",
+        minValue: 100,
+        maxValue: 500,
+        color: null,
+        labelColor: "#82B92E",
+        value: 245,
+        unit: "seconds"
+      };
+
+      var percentileDonutAltRawProps = {
+        // Generic props.
+        id: 12,
+        type: 3, // Percentile = 3
+        label: null,
+        isLinkEnabled: true,
+        isOnTop: false,
+        parentId: 1,
+        aclGroupId: null,
+        // Position props.
+        x: 830,
+        y: 280,
+        // Size props.
+        width: 100,
+        height: 100,
+        // Custom props.
+        percentileType: "circular-progress-bar-alt",
+        valueType: "value",
+        minValue: 100,
+        maxValue: 500,
+        color: null,
+        labelColor: "#82B92E",
+        value: 245,
+        unit: "seconds"
+      };
+
       var items = [
         staticGraphRawProps,
         colorCloudRawProps,
@@ -293,7 +345,9 @@
         labelRawProps,
         simpleValueRawProps,
         percentileRawProps,
-        percentileBubbleRawProps
+        percentileBubbleRawProps,
+        percentileDonutRawProps,
+        percentileDonutAltRawProps
       ];
 
       try {

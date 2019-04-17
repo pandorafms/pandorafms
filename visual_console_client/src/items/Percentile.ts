@@ -1,3 +1,5 @@
+import { arc as arcFactory } from "d3-shape";
+
 import {
   LinkedVisualConsoleProps,
   UnknownObject,
@@ -153,19 +155,58 @@ export default class Percentile extends Item<PercentileProps> {
         }
         break;
       case "bubble":
-      case "circular-progress-bar": // TODO: Add this chart.
-      case "circular-progress-bar-alt": // TODO: Add this chart.
+      case "circular-progress-bar":
+      case "circular-progress-bar-alt":
         {
-          const backgroundCircle = document.createElementNS(svgNS, "circle");
-          backgroundCircle.setAttribute("transform", "translate(50 50)");
-          backgroundCircle.setAttribute("fill", colors.background);
-          backgroundCircle.setAttribute("fill-opacity", "0.5");
-          backgroundCircle.setAttribute("r", "50");
-          const progressCircle = document.createElementNS(svgNS, "circle");
-          progressCircle.setAttribute("transform", "translate(50 50)");
-          progressCircle.setAttribute("fill", colors.progress);
-          progressCircle.setAttribute("fill-opacity", "1");
-          progressCircle.setAttribute("r", `${progress / 2}`);
+          // Auto resize SVG using the view box magic: https://css-tricks.com/scale-svg/
+          svg.setAttribute("viewBox", "0 0 100 100");
+
+          if (this.props.percentileType === "bubble") {
+            // Create and append the circles.
+            const backgroundCircle = document.createElementNS(svgNS, "circle");
+            backgroundCircle.setAttribute("transform", "translate(50 50)");
+            backgroundCircle.setAttribute("fill", colors.background);
+            backgroundCircle.setAttribute("fill-opacity", "0.5");
+            backgroundCircle.setAttribute("r", "50");
+            const progressCircle = document.createElementNS(svgNS, "circle");
+            progressCircle.setAttribute("transform", "translate(50 50)");
+            progressCircle.setAttribute("fill", colors.progress);
+            progressCircle.setAttribute("fill-opacity", "1");
+            progressCircle.setAttribute("r", `${progress / 2}`);
+
+            svg.append(backgroundCircle, progressCircle);
+          } else {
+            // Create and append the circles.
+            const arcProps = {
+              innerRadius:
+                this.props.percentileType === "circular-progress-bar" ? 30 : 0,
+              outerRadius: 50,
+              startAngle: 0,
+              endAngle: Math.PI * 2
+            };
+            const arc = arcFactory();
+
+            const backgroundCircle = document.createElementNS(svgNS, "path");
+            backgroundCircle.setAttribute("transform", "translate(50 50)");
+            backgroundCircle.setAttribute("fill", colors.background);
+            backgroundCircle.setAttribute("fill-opacity", "0.5");
+            backgroundCircle.setAttribute("d", `${arc(arcProps)}`);
+            const progressCircle = document.createElementNS(svgNS, "path");
+            progressCircle.setAttribute("transform", "translate(50 50)");
+            progressCircle.setAttribute("fill", colors.progress);
+            progressCircle.setAttribute("fill-opacity", "1");
+            progressCircle.setAttribute(
+              "d",
+              `${arc({
+                ...arcProps,
+                endAngle: arcProps.endAngle * (progress / 100)
+              })}`
+            );
+
+            svg.append(backgroundCircle, progressCircle);
+          }
+
+          // Create and append the text.
           const text = document.createElementNS(svgNS, "text");
           text.setAttribute("text-anchor", "middle");
           text.setAttribute("alignment-baseline", "middle");
@@ -175,6 +216,7 @@ export default class Percentile extends Item<PercentileProps> {
           text.setAttribute("fill", colors.text);
 
           if (this.props.valueType === "value") {
+            // Show value and unit in 1 (no unit) or 2 lines.
             if (this.props.unit && this.props.unit.length > 0) {
               const value = document.createElementNS(svgNS, "tspan");
               value.setAttribute("x", "0");
@@ -191,13 +233,12 @@ export default class Percentile extends Item<PercentileProps> {
               text.setAttribute("transform", "translate(50 50)");
             }
           } else {
+            // Percentage.
             text.textContent = `${progress}%`;
             text.setAttribute("transform", "translate(50 50)");
           }
 
-          // Auto resize SVG using the view box magic: https://css-tricks.com/scale-svg/
-          svg.setAttribute("viewBox", "0 0 100 100");
-          svg.append(backgroundCircle, progressCircle, text);
+          svg.append(text);
         }
         break;
     }

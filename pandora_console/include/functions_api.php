@@ -559,7 +559,6 @@ $module_field_column_mampping = [
     'module_critical_inverse'  => 'critical_inverse as module_critical_inverse',
     'module_warning_inverse'   => 'warning_inverse as module_warning_inverse',
 ];
-
 // module related field mappings 2/2 (output field => column for 'tagente_estado')
 // module_id_agent_modulo  is not in this list
 $estado_fields_to_columns_mapping = [
@@ -14727,5 +14726,310 @@ function api_set_reset_agent_counts($id, $thrash1, $thrash2, $thrash3)
     } else {
         returnData('string', ['type' => 'string', 'data' => $data]);
     }
+
+}
+
+
+/**
+ * Functions por get all  user to new feature for Carrefour
+ * It depends of type the method will return csv or json data
+ *
+ * @param  string $returnType
+ * @return
+ */
+
+
+function api_set_list_all_user($returnType)
+{
+    global $config;
+
+    if (!check_acl($config['id_user'], 0, 'AR')) {
+        returnError('forbidden', 'string');
+        return;
+    }
+
+    $sql = 'SELECT
+                tup.id_usuario AS user_id,
+                tp.id_perfil AS profile_id,
+                tp.name AS profile_name,
+                tup.id_grupo AS group_id,
+                tgp.nombre AS group_name
+            FROM tperfil tp
+            INNER JOIN tusuario_perfil tup
+                ON tp.id_perfil = tup.id_perfil
+            LEFT OUTER JOIN tgrupo tgp
+                ON tup.id_grupo = tgp.id_grupo;';
+
+    $users = db_get_all_rows_sql($sql);
+
+    $i = 0;
+
+    foreach ($users as $up) {
+        $group_name = $up['group_name'];
+        if ($up['group_name'] === null) {
+            $group_name = 'All';
+        }
+
+        $values[$i] = [
+            'id_usuario'  => $up['user_id'],
+            'id_perfil'   => $up['profile_id'],
+            'perfil_name' => $up['profile_name'],
+            'id_grupo'    => $up['group_id'],
+            'group_name'  => $group_name,
+        ];
+        $i += 1;
+    }
+
+    if ($values === false) {
+        returnError('Error_user', __('Users could not be found.'));
+        return;
+    }
+
+    $data = [
+        'type' => 'array',
+        'data' => $values,
+    ];
+
+    returnData($returnType, $data, ';');
+}
+
+
+/**
+ * Funtion for get all info user to  new feature for Carrefour
+ * It depends of type the method will return csv or json data
+ *
+ * @param  string $returnType
+ * @param  string $user_db
+ * @return
+ */
+
+
+function api_set_info_user_name($returnType, $user_db)
+{
+    global $config;
+
+    if (!check_acl($config['id_user'], 0, 'AR')) {
+        returnError('forbidden', 'string');
+        return;
+    }
+
+    $sql = sprintf(
+        'SELECT
+                        tup.id_usuario AS user_id, tp.id_perfil AS profile_id,
+                        tp.name AS profile_name, tup.id_grupo AS group_id,
+                        tg.nombre AS group_name
+                    FROM tperfil tp
+                    INNER JOIN tusuario_perfil tup
+                        ON tp.id_perfil = tup.id_perfil
+                    LEFT OUTER JOIN tgrupo tg
+                        ON tup.id_grupo = tg.id_grupo
+                    WHERE tup.id_usuario = %s',
+        io_safe_output($user_db)
+    );
+
+    $user_profile = db_get_all_rows_sql($sql);
+
+    $i = 0;
+
+    foreach ($user_profile as $up) {
+        $group_name = $up['group_name'];
+        if ($up['group_name'] === null) {
+            $group_name = 'All';
+        }
+
+        $values[$i] = [
+            'id_usuario'  => $up['user_id'],
+            'id_perfil'   => $up['profile_id'],
+            'perfil_name' => $up['profile_name'],
+            'id_grupo'    => $up['group_id'],
+            'group_name'  => $group_name,
+        ];
+        $i += 1;
+    }
+
+        $data = [
+            'type' => 'array',
+            'data' => $values,
+        ];
+
+        returnData($returnType, $data, ';');
+}
+
+
+/**
+ * Function for get  user from a group  to  new feature for Carrefour.
+ * It depends of type the method will return csv or json data.
+ *
+ * @param  string  $returnType
+ * @param  string  $user_db
+ * @param  string  $group_db
+ * @param  integer $disable
+ * @return
+ */
+
+
+function api_set_filter_user_group($returnType, $user_db, $group_db, $disable)
+{
+    global $config;
+
+    if (!check_acl($config['id_user'], 0, 'AR')) {
+        returnError('forbidden', 'string');
+        return;
+    }
+
+    $filter_group = '';
+    if ($group_db !== null) {
+        $filter_group = 'AND tup.id_grupo = '.io_safe_output($group_db).'';
+    }
+
+    $sql_disable = '';
+    if ($disable !== null) {
+        $sql_disable = 'INNER JOIN tusuario tu
+        ON tu.disabled = '.io_safe_output($disable).'';
+    }
+
+    $sql = sprintf(
+        'SELECT DISTINCT
+            tup.id_usuario AS user_id,
+            tp.id_perfil AS profile_id,
+            tp.name AS profile_name,
+            tup.id_grupo AS group_id,
+            tg.nombre AS group_name
+        FROM tperfil tp
+        INNER JOIN tusuario_perfil tup
+            ON tp.id_perfil = tup.id_perfil
+        LEFT OUTER JOIN tgrupo tg
+            ON tup.id_grupo = tg.id_grupo
+        '.$sql_disable.'
+        WHERE tup.id_usuario = %s '.$filter_group.'',
+        io_safe_output($user_db)
+    );
+
+    $filter_user = db_get_all_rows_sql($sql);
+
+    $i = 0;
+
+    foreach ($filter_user as $up) {
+        $group_name = $up['group_name'];
+        if ($up['group_name'] === null) {
+            $group_name = 'All';
+        }
+
+        $values[$i] = [
+            'id_usuario'  => $up['user_id'],
+            'id_perfil'   => $up['profile_id'],
+            'perfil_name' => $up['profile_name'],
+            'id_grupo'    => $up['group_id'],
+            'group_name'  => $group_name,
+        ];
+        $i += 1;
+    }
+
+    $data = [
+        'type' => 'array',
+        'data' => $values,
+    ];
+
+    returnData($returnType, $data, ';');
+
+}
+
+
+/**
+ * Function for delete an user profile for Carrefour  new feature
+ * The return of this function its only a message
+ *
+ * @param  string  $user_db
+ * @param  integer $id_up
+ * @return void
+ */
+
+
+function api_set_delete_user_profiles($user_db, $id_up)
+{
+    global $config;
+
+    if (!check_acl($config['id_user'], 0, 'AW')) {
+        returnError('forbidden', 'string');
+        return;
+    }
+
+    $values = [
+        'id_usuario' => io_safe_output($user_db),
+        'id_up'      => io_safe_output($id_up),
+    ];
+    $deleted_permission = db_process_sql_delete('tusuario_perfil', $values);
+
+    if ($deleted_permission == false) {
+        returnError('Error_delete', __('User profile could not be deleted.'));
+        return;
+    }
+
+    $data = [
+        'type' => 'string',
+        'data' => $deleted_permission,
+    ];
+
+        returnData('string', ['type' => 'string', 'data' => $data]);
+}
+
+
+/**
+ * Function for add permission a user to a group for Carrefour new feature
+ * It depends of type the method will return csv or json data
+ *
+ * @param string  $returnType
+ * @param string  $user_db
+ * @param integer $group_db
+ * @param integer $id_up
+ *
+ * @return void
+ */
+
+
+function api_set_add_permission_user_to_group($returnType, $user_db, $group_db, $id_up, $id_profile)
+{
+    global $config;
+
+    if (!check_acl($config['id_user'], 0, 'AW')) {
+        returnError('forbidden', 'string');
+        return;
+    }
+
+    $sql = 'SELECT id_up 
+            FROM tusuario_perfil
+            WHERE  id_up = '.$id_profile.'';
+
+    $exist_profile = db_get_value_sql($sql);
+
+    $values = [
+        'id_usuario'   => $user_db,
+        'id_perfil'    => $id_up,
+        'id_grupo'     => $group_db,
+        'no_hierarchy' => 0,
+        'assigned_by'  => 0,
+        'id_policy'    => 0,
+        'tags'         => '',
+
+    ];
+
+    $where_id_up = ['id_up' => $id_profile];
+    if ($exist_profile == $id_profile) {
+        $sucessfull_insert = db_process_sql_update('tusuario_perfil', $values, $where_id_up);
+    } else {
+        $sucessfull_insert = db_process_sql_insert('tusuario_perfil', $values);
+    }
+
+    if ($sucessfull_insert == false) {
+        returnError('Error_insert', __('User profile could not be available.'));
+        return;
+    }
+
+     $data = [
+         'type' => 'array',
+         'data' => $values,
+     ];
+
+     returnData($returnType, $data, ';');
 
 }

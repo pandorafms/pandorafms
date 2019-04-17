@@ -97,11 +97,22 @@ if ($delete_field) {
     }
 }
 
-$fields = db_get_all_fields_in_table('tagent_custom_fields');
+// Prepare pagination.
+$offset = (int) get_parameter('offset');
+$limit = $config['block_size'];
+$count_fields = db_get_value('count(*)', 'tagent_custom_fields');
+
+$fields = db_get_all_rows_filter(
+    'tagent_custom_fields',
+    [
+        'limit'  => $limit,
+        'offset' => $offset,
+    ]
+);
 
 $table = new stdClass();
 $table->width = '100%';
-$table->class = 'databox data';
+$table->class = 'info_table';
 if ($fields) {
     $table->head = [];
     $table->head[0] = __('ID');
@@ -135,14 +146,17 @@ foreach ($fields as $field) {
         $data[2] = html_print_image('images/icono_stop.png', true, ['style' => 'width:21px;height:21px;']);
     }
 
+    $table->cellclass[][3] = 'action_buttons';
     $data[3] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/configure_field&id_field='.$field['id_field'].'">'.html_print_image('images/config.png', true, ['alt' => __('Edit'), 'title' => __('Edit'), 'border' => '0']).'</a>';
-    $data[3] .= '&nbsp;&nbsp;<a href="index.php?sec=gagente&sec2=godmode/agentes/fields_manager&delete_field=1&id_field='.$field['id_field'].'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">'.html_print_image('images/cross.png', true, ['alt' => __('Delete'), 'title' => __('Delete'), 'border' => '0']).'</a>';
+    $data[3] .= '<a href="index.php?sec=gagente&sec2=godmode/agentes/fields_manager&delete_field=1&id_field='.$field['id_field'].'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">'.html_print_image('images/cross.png', true, ['alt' => __('Delete'), 'title' => __('Delete'), 'border' => '0']).'</a>';
 
     array_push($table->data, $data);
 }
 
 if ($fields) {
+    ui_pagination($count_fields, false, $offset);
     html_print_table($table);
+    ui_pagination($count_fields, false, $offset, 0, false, 'offset', true, 'pagination-bottom');
 }
 
 echo '<form method="post" action="index.php?sec=gagente&sec2=godmode/agentes/configure_field">';

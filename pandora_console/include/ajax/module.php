@@ -527,19 +527,19 @@ if (check_login()) {
         $show_notinit = (int) get_parameter('show_notinit', 0);
         $cluster_list = (int) get_parameter('cluster_list', 0);
         $url = 'index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agent;
-        $selectTypeUp = '';
-        $selectTypeDown = '';
-        $selectNameUp = '';
-        $selectNameDown = '';
-        $selectStatusUp = '';
-        $selectStatusDown = '';
-        $selectDataUp = '';
-        $selectDataDown = '';
-        $selectLastContactUp = '';
-        $selectLastContactDown = '';
+        $selectTypeUp = false;
+        $selectTypeDown = false;
+        $selectNameUp = false;
+        $selectNameDown = false;
+        $selectStatusUp = false;
+        $selectStatusDown = false;
+        $selectDataUp = false;
+        $selectDataDown = false;
+        $selectLastContactUp = false;
+        $selectLastContactDown = false;
         $sortField = get_parameter('sort_field');
         $sort = get_parameter('sort', 'none');
-        $selected = 'border: 1px solid black;';
+        $selected = true;
 
         $order[] = [
             'field' => 'tmodule_group.name',
@@ -627,16 +627,16 @@ if (check_login()) {
             break;
 
             default:
-                $selectTypeUp = '';
-                $selectTypeDown = '';
+                $selectTypeUp = false;
+                $selectTypeDown = false;
                 $selectNameUp = $selected;
-                $selectNameDown = '';
-                $selectStatusUp = '';
-                $selectStatusDown = '';
-                $selectDataUp = '';
-                $selectDataDown = '';
-                $selectLastContactUp = '';
-                $selectLastContactDown = '';
+                $selectNameDown = false;
+                $selectStatusUp = false;
+                $selectStatusDown = false;
+                $selectDataUp = false;
+                $selectDataDown = false;
+                $selectLastContactUp = false;
+                $selectLastContactDown = false;
 
                 $order[] = [
                     'field' => 'tagente_modulo.nombre',
@@ -756,11 +756,22 @@ if (check_login()) {
             $modules = [];
         }
 
+        // Urls to sort the table.
+        $url_up_type = $url.'&sort_field=type&amp;sort=up&refr=&filter_monitors=1&status_filter_monitor='.$status_filter_monitor.' &status_text_monitor='.$status_text_monitor.'&status_module_group= '.$status_module_group;
+        $url_down_type = $url.'&sort_field=type&amp;sort=down&refr=&filter_monitors=1&status_filter_monitor='.$status_filter_monitor.' &status_text_monitor='.$status_text_monitor.'&status_module_group= '.$status_module_group;
+        $url_up_name = $url.'&sort_field=name&amp;sort=up&refr=&filter_monitors=1&status_filter_monitor='.$status_filter_monitor.' &status_text_monitor='.$status_text_monitor.'&status_module_group= '.$status_module_group;
+        $url_down_name = $url.'&sort_field=name&amp;sort=down&refr=&filter_monitors=1&status_filter_monitor='.$status_filter_monitor.' &status_text_monitor='.$status_text_monitor.'&status_module_group= '.$status_module_group;
+        $url_up_status = $url.'&sort_field=status&amp;sort=up&refr=&filter_monitors=1&status_filter_monitor='.$status_filter_monitor.' &status_text_monitor='.$status_text_monitor.'&status_module_group= '.$status_module_group;
+        $url_down_status = $url.'&sort_field=status&amp;sort=down&refr=&filter_monitors=1&status_filter_monitor='.$status_filter_monitor.' &status_text_monitor='.$status_text_monitor.'&status_module_group= '.$status_module_group;
+        $url_up_last = $url.'&sort_field=last_contact&amp;sort=up&refr=&filter_monitors=1&status_filter_monitor='.$status_filter_monitor.' &status_text_monitor='.$status_text_monitor.'&status_module_group= '.$status_module_group;
+        $url_down_last = $url.'&sort_field=last_contact&amp;sort=down&refr=&filter_monitors=1&status_filter_monitor='.$status_filter_monitor.' &status_text_monitor='.$status_text_monitor.'&status_module_group= '.$status_module_group;
+
+
         $table = new stdClass();
         $table->width = '100%';
-        $table->cellpadding = 4;
-        $table->cellspacing = 4;
-        $table->class = 'databox data';
+        $table->cellpadding = 0;
+        $table->cellspacing = 0;
+        $table->class = 'info_table';
         $table->head = [];
         $table->data = [];
 
@@ -773,17 +784,15 @@ if (check_login()) {
             $table->head[1] = "<span title='".__('Policy')."'>".__('P.').'</span>';
         }
 
-        $table->head[2] = __('Type').' '.'<a href="'.$url.'&sort_field=type&amp;sort=up&refr=&filter_monitors=1&status_filter_monitor='.$status_filter_monitor.' &status_text_monitor='.$status_text_monitor.'&status_module_group= '.$status_module_group.'">'.html_print_image('images/sort_up.png', true, ['style' => $selectTypeUp, 'alt' => 'up']).'</a>'.'<a href="'.$url.'&sort_field=type&amp;sort=down&refr=&filter_monitors=1&status_filter_monitor='.$status_filter_monitor.' &status_text_monitor='.$status_text_monitor.'&status_module_group= '.$status_module_group.'">'.html_print_image('images/sort_down.png', true, ['style' => $selectTypeDown, 'alt' => 'down']).'</a>';
-        $table->head[3] = __('Module name').' '.'<a href="'.$url.'&sort_field=name&amp;sort=up&refr=&filter_monitors=1&status_filter_monitor='.$status_filter_monitor.' &status_text_monitor='.$status_text_monitor.'&status_module_group= '.$status_module_group.'">'.html_print_image('images/sort_up.png', true, ['style' => $selectNameUp, 'alt' => 'up']).'</a>'.'<a href="'.$url.'&sort_field=name&amp;sort=down&refr=&filter_monitors=1&status_filter_monitor='.$status_filter_monitor.' &status_text_monitor='.$status_text_monitor.'&status_module_group= '.$status_module_group.'">'.html_print_image('images/sort_down.png', true, ['style' => $selectNameDown, 'alt' => 'down']).'</a>';
+        $table->head[2] = __('Type').ui_get_sorting_arrows($url_up_type, $url_down_type, $selectTypeUp, $selectTypeDown);
+        $table->head[3] = __('Module name').ui_get_sorting_arrows($url_up_name, $url_down_name, $selectNameUp, $selectNameDown);
         $table->head[4] = __('Description');
-        $table->head[5] = __('Status').' '.'<a href="'.$url.'&sort_field=status&amp;sort=up&refr=&filter_monitors=1&status_filter_monitor='.$status_filter_monitor.' &status_text_monitor='.$status_text_monitor.'&status_module_group= '.$status_module_group.'">'.html_print_image('images/sort_up.png', true, ['style' => $selectStatusUp, 'alt' => 'up']).'</a>'.'<a href="'.$url.'&sort_field=status&amp;sort=down&refr=&filter_monitors=1&status_filter_monitor='.$status_filter_monitor.' &status_text_monitor='.$status_text_monitor.'&status_module_group= '.$status_module_group.'">'.html_print_image('images/sort_down.png', true, ['style' => $selectStatusDown, 'alt' => 'down']).'</a>';
+        $table->head[5] = __('Status').ui_get_sorting_arrows($url_up_status, $url_down_status, $selectStatusUp, $selectStatusDown);
         $table->head[6] = __('Thresholds');
         $table->head[7] = __('Data');
         $table->head[8] = __('Graph');
         $table->headstyle[8] = 'min-width: 60px';
-        $table->head[9] = __('Last contact').' '.'<a href="'.$url.'&sort_field=last_contact&amp;sort=up&refr=&filter_monitors=1&status_filter_monitor='.$status_filter_monitor.' &status_text_monitor='.$status_text_monitor.'&status_module_group= '.$status_module_group.'">'.html_print_image('images/sort_up.png', true, ['style' => $selectLastContactUp, 'alt' => 'up']).'</a>'.'<a href="'.$url.'&sort_field=last_contact&amp;sort=down&refr=&filter_monitors=1&status_filter_monitor='.$status_filter_monitor.' &status_text_monitor='.$status_text_monitor.'&status_module_group= '.$status_module_group.'">'.html_print_image('images/sort_down.png', true, ['style' => $selectLastContactDown, 'alt' => 'down']).'</a>';
-
-
+        $table->head[9] = __('Last contact').ui_get_sorting_arrows($url_up_last, $url_down_last, $selectLastContactUp, $selectLastContactDown);
         $table->align = [
             'left',
             'left',
@@ -896,7 +905,7 @@ if (check_login()) {
             $data[2] = servers_show_type($module['id_modulo']).'&nbsp;';
 
             if (check_acl($config['id_user'], $id_grupo, 'AW')) {
-                $data[2] .= '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;id_agente='.$id_agente.'&amp;tab=module&amp;id_agent_module='.$module['id_agente_modulo'].'&amp;edit_module='.$module['id_modulo'].'">'.html_print_image('images/config.png', true, ['alt' => '0', 'border' => '', 'title' => __('Edit')]).'</a>';
+                $data[2] .= '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;id_agente='.$id_agente.'&amp;tab=module&amp;id_agent_module='.$module['id_agente_modulo'].'&amp;edit_module='.$module['id_modulo'].'">'.html_print_image('images/config.png', true, ['alt' => '0', 'border' => '', 'title' => __('Edit'), 'class' => 'action_button_img']).'</a>';
             }
 
 
@@ -1199,7 +1208,7 @@ if (check_login()) {
                     false,
                     'offset',
                     true,
-                    '',
+                    'pagination-bottom',
                     'pagination_list_modules(offset_param)',
                     [
                         'count'  => '',

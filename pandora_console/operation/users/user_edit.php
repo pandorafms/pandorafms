@@ -631,7 +631,7 @@ if (!defined('METACONSOLE')) {
 
 $table = new stdClass();
 $table->width = '100%';
-$table->class = 'databox data';
+$table->class = 'info_table';
 if (defined('METACONSOLE')) {
     $table->width = '100%';
     $table->class = 'databox data';

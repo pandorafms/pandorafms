@@ -389,10 +389,12 @@ class ManageNetScanScripts extends Wizard
         $rows = db_get_all_rows_in_table('trecon_script');
 
         if ($rows !== false) {
-            echo '<table width="100%" cellspacing="4" cellpadding="4" class="databox data">';
+            echo '<table width="100%" cellspacing="0" cellpadding="0" class="info_table">';
+            echo '<thead>';
             echo '<th>'.__('Name').'</th>';
             echo '<th>'.__('Description').'</th>';
             echo '<th>'.__('Delete').'</th>';
+            echo '</thead>';
             $color = 0;
             foreach ($rows as $row) {
                 if ($color == 1) {

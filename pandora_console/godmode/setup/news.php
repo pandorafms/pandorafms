@@ -231,14 +231,15 @@ if ((isset($_GET['form_add'])) || (isset($_GET['form_edit']))) {
         ui_print_info_message(['no_close' => true, 'message' => __('There are no defined news') ]);
     } else {
         // Main list view for Links editor
-        echo "<table cellpadding='4' cellspacing='4' class='databox data' width=100%>";
+        echo "<table cellpadding='0' cellspacing='0' class='info_table' width=100%>";
+        echo '<thead><tr>';
         echo '<th>'.__('Subject').'</th>';
         echo '<th>'.__('Type').'</th>';
         echo '<th>'.__('Author').'</th>';
         echo '<th>'.__('Timestamp').'</th>';
         echo '<th>'.__('Expiration').'</th>';
         echo '<th>'.__('Delete').'</th>';
-
+        echo '</tr></thead>';
 
 
         $color = 1;
@@ -276,7 +277,7 @@ if ((isset($_GET['form_add'])) || (isset($_GET['form_edit']))) {
                 echo "<td class='$tdcolor'>".__('No').'</b></td>';
             }
 
-            echo '<td class="'.$tdcolor.'"><a href="index.php?sec=gsetup&sec2=godmode/setup/news&id_news='.$row['id_news'].'&borrar='.$row['id_news'].'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">'.html_print_image('images/cross.png', true, ['border' => '0']).'</a></td></tr>';
+            echo '<td class="'.$tdcolor.' action_buttons"><a href="index.php?sec=gsetup&sec2=godmode/setup/news&id_news='.$row['id_news'].'&borrar='.$row['id_news'].'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">'.html_print_image('images/cross.png', true, ['border' => '0']).'</a></td></tr>';
         }
 
         echo '</table>';

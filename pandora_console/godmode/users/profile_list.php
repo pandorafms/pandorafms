@@ -258,7 +258,7 @@ if ($create_profile) {
 $table = new stdClass();
 $table->cellpadding = 0;
 $table->cellspacing = 0;
-$table->class = 'databox profile_list data';
+$table->class = 'info_table profile_list';
 $table->width = '100%';
 
 $table->head = [];
@@ -353,8 +353,9 @@ foreach ($profiles as $profile) {
     $data['VW'] = ($profile['vconsole_edit'] ? $img : '');
     $data['VM'] = ($profile['vconsole_management'] ? $img : '');
     $data['PM'] = ($profile['pandora_management'] ? $img : '');
+    $table->cellclass[]['operations'] = 'action_buttons';
     $data['operations'] = '<a href="index.php?sec='.$sec.'&amp;sec2=godmode/users/configure_profile&id='.$profile['id_perfil'].'&pure='.$pure.'">'.html_print_image('images/config.png', true, ['title' => __('Edit')]).'</a>';
-    $data['operations'] .= '&nbsp;&nbsp;<a href="index.php?sec='.$sec.'&sec2=godmode/users/profile_list&delete_profile=1&id='.$profile['id_perfil'].'&pure='.$pure.'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">'.html_print_image('images/cross.png', true).'</a>';
+    $data['operations'] .= '<a href="index.php?sec='.$sec.'&sec2=godmode/users/profile_list&delete_profile=1&id='.$profile['id_perfil'].'&pure='.$pure.'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">'.html_print_image('images/cross.png', true).'</a>';
     array_push($table->data, $data);
 }
 

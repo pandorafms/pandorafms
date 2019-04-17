@@ -673,8 +673,8 @@ class Item extends Model
         global $config;
         include_once $config['homedir'].'/include/functions_io.php';
 
-        // Clean HTML entities.
-        $row = \io_safe_output($row);
+        // Clean up to two levels of HTML entities.
+        $row = \io_safe_output(\io_safe_output($row));
 
         /*
          * Retrieve extra data.

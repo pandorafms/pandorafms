@@ -42,6 +42,7 @@ $other = parseOtherParameter($otherSerialize, $otherMode);
 $group_db = get_parameter('group_db', '');
 $disable = get_parameter('disable', '');
 $id_up = get_parameter('id_up', '');
+$id_profile = get_parameter('id_profile', '');
 $apiPassword = io_output_password(db_get_value_filter('value', 'tconfig', ['token' => 'api_password']));
 
 $correctLogin = false;
@@ -195,7 +196,7 @@ if ($correctLogin) {
                             return;
                         }
 
-                        $id_os = api_set_delete_user_profiles($user_db, $group_db);
+                        $id_os = api_set_delete_user_profiles($user_db, $id_up);
 
                         if ($id_os != 100) {
                             return;
@@ -224,7 +225,7 @@ if ($correctLogin) {
                             return;
                         }
 
-                        $id_os = api_set_add_permisson_user_to_group($returnType, $user_db, $group_db, $id_up);
+                        $id_os = api_set_add_permission_user_to_group($returnType, $user_db, $group_db, $id_up, $id_profile);
 
                         if ($id_os != 100) {
                             return;

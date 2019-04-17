@@ -44,7 +44,10 @@ final class ColorCloud extends Item
         $decodedData['label'] = null;
         $decodedData['defaultColor'] = static::extractDefaultColor($data);
         $decodedData['colorRanges'] = static::extractColorRanges($data);
-        $decodedData['color'] = static::notEmptyStringOr(static::issetInArray($data, ['color']), null);
+        $decodedData['color'] = static::notEmptyStringOr(
+            static::issetInArray($data, ['color']),
+            null
+        );
 
         return $decodedData;
     }
@@ -204,11 +207,8 @@ final class ColorCloud extends Item
 
         // Get the linked module Id.
         $linkedModule = static::extractLinkedModule($data);
-        $moduleId = static::parseIntOr($linkedModule['moduleId'], null);
-        $metaconsoleId = static::parseIntOr(
-            $linkedModule['metaconsoleId'],
-            null
-        );
+        $moduleId = $linkedModule['moduleId'];
+        $metaconsoleId = $linkedModule['metaconsoleId'];
 
         if ($moduleId === null) {
             throw new \InvalidArgumentException('missing module Id');

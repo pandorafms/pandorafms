@@ -446,11 +446,10 @@ class Item extends Model
     {
         $agentData = [];
 
-        // We should add the metaconsole Id if we can. If not,
-        // it doesn't have to be into the structure.
+        // We should add the metaconsole Id if we can.
         $metaconsoleId = static::extractMetaconsoleId($data);
-        if ($metaconsoleId !== null) {
-            $agentData['metaconsoleId'] = $metaconsoleId;
+        if ($metaconsoleId !== null && $metaconsoleId <= 0) {
+            $agentData['metaconsoleId'] = null;
         }
 
         // The agent Id should be a valid int or a null value.

@@ -709,7 +709,9 @@ if ($config['activate_gis']) {
     );
 }
 
-ui_toggle(html_print_table($table, true), __('Advanced options'));
+echo '<div class="ui_toggle">';
+ui_toggle(html_print_table($table, true), __('Advanced options'), '', true, false, 'white_box white_box_opened');
+echo '</div>';
 unset($table);
 
 $table = new stdClass();
@@ -730,7 +732,7 @@ if ($fields === false) {
 foreach ($fields as $field) {
     $id_custom_field = $field['id_field'];
 
-    $data[0] = '<div onclick="show_custom_field_row('.$id_custom_field.')">';
+    $data[0] = '<div class="field_title" onclick="show_custom_field_row('.$id_custom_field.')">';
     $data[0] .= '<b>'.$field['name'].'</b>';
     $data[0] .= ui_print_help_tip(
         __('This field allows url insertion using the BBCode\'s url tag').'.<br />'.__('The format is: [url=\'url to navigate\']\'text to show\'[/url]').'.<br /><br />'.__('e.g.: [url=google.com]Google web search[/url]'),
@@ -813,7 +815,9 @@ foreach ($fields as $field) {
 }
 
 if (!empty($fields)) {
-    ui_toggle(html_print_table($table, true), __('Custom fields'), '', true, false, 'white_box');
+    echo '<div class="ui_toggle">';
+    ui_toggle(html_print_table($table, true), __('Custom fields'), '', true, false, 'white_box white_box_opened');
+    echo '</div>';
 }
 
 echo '<div class="action-buttons" style="width: '.$table->width.'">';

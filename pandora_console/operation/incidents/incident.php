@@ -407,31 +407,30 @@ if ($count_total < 1) {
 
     // Show headers
     $table->width = '100%';
-    $table->class = 'databox data';
-    $table->cellpadding = 4;
-    $table->cellspacing = 4;
+    $table->class = 'info_table';
+    $table->cellpadding = 0;
+    $table->cellspacing = 0;
     $table->head = [];
     $table->data = [];
     $table->size = [];
     $table->align = [];
 
-    $table->head[0] = __('ID');
-    $table->head[1] = __('Status');
-    $table->head[2] = __('Incident');
-    $table->head[3] = __('Priority');
-    $table->head[4] = __('Group');
-    $table->head[5] = __('Updated');
-    $table->head[6] = __('Source');
-    $table->head[7] = __('Owner');
-    $table->head[8] = __('Action').html_print_checkbox('all_action', 0, false, true, false);
+    $table->head[0] = html_print_checkbox('all_action', 0, false, true, false);
+    $table->head[1] = __('ID');
+    $table->head[2] = __('Status');
+    $table->head[3] = __('Incident');
+    $table->head[4] = __('Priority');
+    $table->head[5] = __('Group');
+    $table->head[6] = __('Updated');
+    $table->head[7] = __('Source');
+    $table->head[8] = __('Owner');
 
-    $table->size[0] = 43;
-    $table->size[7] = 50;
+    $table->size[0] = '20px';
 
-    $table->align[1] = 'left';
-    $table->align[3] = 'left';
+    $table->align[0] = 'left';
+    $table->align[2] = 'left';
     $table->align[4] = 'left';
-    $table->align[8] = 'left';
+    $table->align[5] = 'left';
 
     $rowPair = true;
     $iterator = 0;
@@ -447,29 +446,29 @@ if ($count_total < 1) {
 
         $data = [];
 
-        $data[0] = '<a href="index.php?sec=workspace&amp;sec2=operation/incidents/incident_detail&amp;id='.$row['id_incidencia'].'">'.$row['id_incidencia'].'</a>';
+        if (check_acl($config['id_user'], $row['id_grupo'], 'IM') || $config['id_user'] == $row['id_usuario'] || $config['id_user'] == $row['id_creator']) {
+            $data[0] = html_print_checkbox('id_inc[]', $row['id_incidencia'], false, true);
+        } else {
+            $data[0] = '';
+        }
+
+        $data[1] = '<a href="index.php?sec=workspace&amp;sec2=operation/incidents/incident_detail&amp;id='.$row['id_incidencia'].'">'.$row['id_incidencia'].'</a>';
         $attach = incidents_get_attach($row['id_incidencia']);
 
         if (!empty($attach)) {
-            $data[0] .= '&nbsp;&nbsp;'.html_print_image('images/attachment.png', true, ['style' => 'align:middle;']);
+            $data[1] .= '&nbsp;&nbsp;'.html_print_image('images/attachment.png', true, ['style' => 'align:middle;']);
         }
 
-        $data[1] = incidents_print_status_img($row['estado'], true);
-        $data[2] = '<a href="index.php?sec=workspace&amp;sec2=operation/incidents/incident_detail&amp;id='.$row['id_incidencia'].'">'.ui_print_truncate_text(io_safe_output($row['titulo']), 'item_title').'</a>';
-        $data[3] = incidents_print_priority_img($row['prioridad'], true);
-        $data[4] = ui_print_group_icon($row['id_grupo'], true);
-        $data[5] = ui_print_timestamp($row['actualizacion'], true);
-        $data[6] = $row['origen'];
+        $data[2] = incidents_print_status_img($row['estado'], true);
+        $data[3] = '<a href="index.php?sec=workspace&amp;sec2=operation/incidents/incident_detail&amp;id='.$row['id_incidencia'].'">'.ui_print_truncate_text(io_safe_output($row['titulo']), 'item_title').'</a>';
+        $data[4] = incidents_print_priority_img($row['prioridad'], true);
+        $data[5] = ui_print_group_icon($row['id_grupo'], true);
+        $data[6] = ui_print_timestamp($row['actualizacion'], true);
+        $data[7] = $row['origen'];
         if (empty($row['id_usuario'])) {
-            $data[7] = 'SYSTEM';
+            $data[8] = 'SYSTEM';
         } else {
-            $data[7] = ui_print_username($row['id_usuario'], true);
-        }
-
-        if (check_acl($config['id_user'], $row['id_grupo'], 'IM') || $config['id_user'] == $row['id_usuario'] || $config['id_user'] == $row['id_creator']) {
-            $data[8] = html_print_checkbox('id_inc[]', $row['id_incidencia'], false, true);
-        } else {
-            $data[8] = '';
+            $data[8] = ui_print_username($row['id_usuario'], true);
         }
 
         array_push($table->data, $data);

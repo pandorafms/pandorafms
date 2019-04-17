@@ -378,7 +378,8 @@ function mainAgentsAlerts()
             'alerts_agents'
         );
 
-        echo '<table class="databox data" cellpadding="0" cellspacing="0" border="0" width=100%>';
+        echo '<table class="info_table" cellpadding="0" cellspacing="0" border="0" width=100%>';
+        echo '<thead><tr>';
         echo "<th width='140px' >".__('Agents').' / '.__('Alert templates').'</th>';
 
         if ($hor_offset > 0) {
@@ -421,9 +422,10 @@ function mainAgentsAlerts()
                 continue;
             }
 
-            echo '<th width="20px" >'.io_safe_output($tname).html_print_image('images/information_alerts.png', true, ['title' => io_safe_output($tname), 'style' => 'margin-left:5px' ]).'</th>';
+            echo '<th width="20px" >'.io_safe_output($tname).'</th>';
         }
 
+        echo '</tr></thead>';
         if (($hor_offset + $block) < $ntemplates) {
             $new_hor_offset = ($hor_offset + $block);
             echo "<th width='20px' style='' rowspan='".($nagents + 1)."'>
@@ -455,7 +457,7 @@ function mainAgentsAlerts()
                         $cellstyle = 'background:'.COL_ALERTFIRED.';';
                     }
 
-                    echo '<td style=";'.$cellstyle.'"> ';
+                    echo '<td style=";'.$cellstyle.'" class="action_buttons"> ';
 
                     $uniqid = uniqid();
                     echo '<div>';
@@ -478,6 +480,23 @@ function mainAgentsAlerts()
         }
 
         echo '</table>';
+
+        ui_pagination(
+            $nagents,
+            false,
+            0,
+            0,
+            false,
+            'offset',
+            true,
+            'pagination-bottom',
+            '',
+            [
+                'count'  => '',
+                'offset' => 'offset_param',
+            ],
+            'alerts_agents'
+        );
     }
 
 }
@@ -487,7 +506,7 @@ function mainAgentsAlerts()
 function print_alerts_summary_modal_window($id, $alerts)
 {
     $table->width = '98%';
-    $table->class = 'databox';
+    $table->class = 'info_table';
     $table->data = [];
 
     $table->head[0] = __('Module');

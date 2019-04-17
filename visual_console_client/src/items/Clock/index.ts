@@ -242,7 +242,8 @@ export default class Clock extends Item<ClockProps> {
     clockFace.append(clockFaceBackground);
 
     // Timezone complication.
-    if (this.props.showClockTimezone) {
+    const city = this.getHumanTimezone();
+    if (city.length > 0) {
       const timezoneComplication = document.createElementNS(svgNS, "text");
       timezoneComplication.setAttribute("text-anchor", "middle");
       timezoneComplication.setAttribute("font-size", "8");
@@ -251,7 +252,7 @@ export default class Clock extends Item<ClockProps> {
         "translate(30 50) rotate(90)" // Rotate to counter the clock rotation.
       );
       timezoneComplication.setAttribute("fill", colors.mark);
-      timezoneComplication.textContent = this.props.clockTimezone;
+      timezoneComplication.textContent = city;
       clockFace.append(timezoneComplication);
     }
 
@@ -509,11 +510,12 @@ export default class Clock extends Item<ClockProps> {
     if (this.props.color) timeElem.style.color = this.props.color;
     element.append(timeElem);
 
-    // Timezone name.
-    if (this.props.showClockTimezone) {
+    // City name.
+    const city = this.getHumanTimezone();
+    if (city.length > 0) {
       const tzElem: HTMLSpanElement = document.createElement("span");
       tzElem.className = "timezone";
-      tzElem.textContent = this.props.clockTimezone;
+      tzElem.textContent = city;
       tzElem.style.fontSize = `${tzFontSize}px`;
       if (this.props.color) tzElem.style.color = this.props.color;
       element.append(tzElem);
@@ -531,6 +533,7 @@ export default class Clock extends Item<ClockProps> {
     const targetTZOffset = this.props.clockTimezoneOffset * 60 * 1000; // In ms.
     const localTZOffset = d.getTimezoneOffset() * 60 * 1000; // In ms.
     const utimestamp = d.getTime() + targetTZOffset + localTZOffset;
+    console.log(targetTZOffset, localTZOffset);
 
     return new Date(utimestamp);
   }
@@ -564,6 +567,15 @@ export default class Clock extends Item<ClockProps> {
     const seconds = padLeft(date.getSeconds(), 2, 0);
 
     return `${hours}:${minutes}:${seconds}`;
+  }
+
+  /**
+   * Extract a human readable city name from the timezone text.
+   * @param timezone Timezone text.
+   */
+  public getHumanTimezone(timezone: string = this.props.clockTimezone): string {
+    const [, city = ""] = timezone.split("/");
+    return city.replace("_", " ");
   }
 
   /**

@@ -141,6 +141,12 @@ ui_require_javascript_file('pandora_visual_console');
 $ignored_params['refr'] = '';
 ?>
 
+<style type="text/css">
+    svg {
+        stroke: none;
+    }
+</style>
+
 <script language="javascript" type="text/javascript">
     $(document).ready(function () {
         var refr = <?php echo (int) $refr; ?>;

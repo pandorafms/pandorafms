@@ -72,4 +72,14 @@ describe("Clock item", () => {
       expect(digitalTime).toBe(expected);
     });
   });
+
+  describe("getHumanTimezone function", () => {
+    it("should return a better timezone", () => {
+      expect(clockInstance.getHumanTimezone("America/New_York")).toBe(
+        "New York"
+      );
+      expect(clockInstance.getHumanTimezone("Europe/Madrid")).toBe("Madrid");
+      expect(clockInstance.getHumanTimezone("Asia/Tokyo")).toBe("Tokyo");
+    });
+  });
 });

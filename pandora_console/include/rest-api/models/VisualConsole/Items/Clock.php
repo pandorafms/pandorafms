@@ -50,9 +50,11 @@ final class Clock extends Item
             throw new \InvalidArgumentException($e->getMessage());
         }
 
-        $clockData['showClockTimezone'] = static::parseBool(
-            $data['showClockTimezone']
-        );
+        // $clockData['showClockTimezone'] = static::parseBool(
+        // static::issetInArray($data, ['showClockTimezone'])
+        // );
+        // TODO: Remove the true by default when added into the editor.
+        $clockData['showClockTimezone'] = true;
         $clockData['color'] = static::extractColor($data);
         return $clockData;
     }

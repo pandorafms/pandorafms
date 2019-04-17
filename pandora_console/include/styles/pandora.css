@@ -5034,3 +5034,138 @@ select#autorefresh_list:-internal-list-box {
 .table_three_columns .table_td {
   width: 33%;
 }
+
+/*
+ * ---------------------------------------------------------------------
+ * - Create/Update Agent - agent_manager.php
+ * ---------------------------------------------------------------------
+ */
+.first_row {
+  margin-bottom: 20px;
+  display: flex;
+}
+
+.agent_info {
+  width: 85%;
+  margin-right: 20px;
+  display: flex;
+  flex-flow: row wrap;
+  flex-direction: row;
+  justify-content: space-between;
+  box-sizing: border-box;
+}
+
+.agent_info_new {
+  width: 100%;
+  margin-right: 0;
+}
+
+.agent_info_left {
+  width: 50%;
+  padding-right: 50px;
+  box-sizing: border-box;
+}
+
+.agent_info_right {
+  width: 50%;
+  box-sizing: border-box;
+}
+
+.agent_qr {
+  width: 15%;
+  text-align: center;
+  box-sizing: border-box;
+  padding: 20px 0px;
+}
+/*
+.agent_qr p {
+  text-align: left;
+}
+*/
+
+.input_label {
+  color: #343434 !important;
+  font-weight: bold;
+  padding-right: 10px;
+  margin: 0px 0px 5px 0px;
+}
+
+.agent_info_right select,
+.agent_info_right input,
+.agent_info_left select#grupo {
+  width: 95%;
+  box-sizing: border-box;
+}
+
+.agent_info_left .p-switch {
+  margin-right: 5px;
+  margin-left: 10px;
+}
+
+.agent_info_left input#text-direccion,
+.agent_info_left select#address_list,
+.agent_info_left input#text-agente,
+.agent_info_left input#text-alias {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.agent_info_agent_name > * {
+  margin-left: 5px;
+}
+
+.label_select_parent {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.label_select_child_left {
+  width: 80%;
+}
+
+.label_select_child_right {
+  width: 20%;
+  min-width: 150px;
+  align-items: center;
+  display: flex;
+}
+
+.label_select_child_icons {
+  text-align: right;
+  width: 5%;
+  min-width: 30px;
+}
+
+.custom_fields_table {
+  border-spacing: 0px;
+}
+
+.custom_fields_table tr.datos {
+  background-color: #f7f7f7;
+  display: none;
+}
+
+.custom_fields_table tr.datos2 {
+  cursor: pointer;
+}
+
+.custom_fields_table tr td {
+  border: 1px solid #e0e0e0;
+}
+
+.custom_fields_table tr.datos2 td {
+  border-radius: 4px;
+  padding: 10px;
+}
+
+.custom_fields_table tr.datos td {
+  padding: 15px 10px;
+  border-bottom-left-radius: 4px;
+  border-bottom-right-radius: 4px;
+}
+
+.custom_fields_table .custom_field_row_opened td {
+  border-bottom-left-radius: 0px !important;
+  border-bottom-right-radius: 0px !important;
+}

@@ -2433,7 +2433,7 @@ function ui_print_status_image($type, $title='', $return=false, $options=false, 
  */
 
 
-function ui_toggle($code, $name, $title='', $hidden_default=true, $return=false)
+function ui_toggle($code, $name, $title='', $hidden_default=true, $return=false, $toggle_class='')
 {
     // Generate unique Id
     $uniqid = uniqid('');
@@ -2459,7 +2459,7 @@ function ui_toggle($code, $name, $title='', $hidden_default=true, $return=false)
     // if (!defined("METACONSOLE"))
         // $output .= '<br />';
     // Code into a div
-    $output .= "<div id='tgl_div_".$uniqid."' style='".$style."'>\n";
+    $output .= "<div id='tgl_div_".$uniqid."' style='".$style."' class='".$toggle_class."'>\n";
     $output .= $code;
     $output .= '</div>';
 

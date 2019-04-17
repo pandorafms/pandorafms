@@ -720,6 +720,11 @@ class Item extends Model
             throw new \InvalidArgumentException('invalid agent Id');
         }
 
+        // Staticgraph don't need to have an agent.
+        if ($agentId === 0) {
+            return $agentData;
+        }
+
         if (\is_metaconsole() && $metaconsoleId === null) {
             throw new \InvalidArgumentException('missing metaconsole node Id');
         }
@@ -774,6 +779,11 @@ class Item extends Model
         $moduleId = static::extractModuleId($itemData);
         if ($moduleId === null) {
             throw new \InvalidArgumentException('invalid module Id');
+        }
+
+        // Staticgraph don't need to have a module.
+        if ($moduleId === 0) {
+            return $moduleData;
         }
 
         // We should add the metaconsole Id if we can.

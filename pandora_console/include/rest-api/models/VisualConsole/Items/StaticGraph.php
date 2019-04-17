@@ -190,7 +190,7 @@ final class StaticGraph extends Item
         }
 
         // Get last value.
-        if (isset($data['show_last_value']) && $data['show_last_value'] !== 2) {
+        if (isset($data['show_last_value']) && $data['show_last_value'] !== 2 && $moduleId !== 0) {
             $imgTitle = '';
 
             $unit_text = \trim(\io_safe_output(\modules_get_unit($moduleId)));

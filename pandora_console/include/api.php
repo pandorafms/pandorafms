@@ -158,7 +158,7 @@ if ($correctLogin) {
                             return;
                         }
 
-                        $id_os = api_set_delete_user_profiles($user_db, $id_up);
+                        $id_os = api_set_delete_user_profiles($thrash1, $thrash2, $other, $returnType);
 
                         if ($id_os != 100) {
                             return;
@@ -177,7 +177,7 @@ if ($correctLogin) {
                             return;
                         }
 
-                        $id_os = api_set_add_permission_user_to_group($returnType, $user_db, $group_db, $id_up, $id_profile);
+                        $id_os = api_set_add_permission_user_to_group($thrash1, $thrash2, $other, $returnType);
 
                         if ($id_os != 100) {
                             return;

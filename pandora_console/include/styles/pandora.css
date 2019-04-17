@@ -5024,7 +5024,7 @@ table.info_table {
   border-spacing: 0;
 }
 
-table.info_table tbody > tr:nth-child(even) {
+table.info_table > tbody > tr:nth-child(even) {
   background-color: #f5f5f5;
 }
 

@@ -106,7 +106,7 @@ if ($correctLogin) {
             }
         } else {
             $function_name = 'api_'.$op.'_'.$op2;
-            $id = 1;
+
             if ($op == 'set' && $id) {
                 switch ($op2) {
                     case 'update_agent':
@@ -144,39 +144,6 @@ if ($correctLogin) {
                     case 'update_snmp_module':
 
                         $id_os = db_get_value_sql('select id_os from tagente where id_agente = (select id_agente from tagente_modulo where id_agente_modulo ='.$id.')');
-
-                        if ($id_os == 100) {
-                            returnError('not_allowed_operation_cluster', $returnType);
-                            return false;
-                        }
-                    break;
-
-                    case 'filter_user_group':
-
-                        $id_os = api_set_filter_user_group($returnType, $user_db, $group_db, $disable);
-
-                        if ($id_os != 100) {
-                            return;
-                        }
-
-                        if ($id_os == 100) {
-                            returnError('not_allowed_operation_cluster', $returnType);
-                            return false;
-                        }
-                    break;
-
-                    case 'info_user_name':
-
-                        if ($user_db === '') {
-                            returnError(__('User not specified'), __('User not specified'));
-                            return;
-                        }
-
-                        $id_os = api_set_info_user_name($returnType, $user_db);
-
-                        if ($id_os != 100) {
-                            return;
-                        }
 
                         if ($id_os == 100) {
                             returnError('not_allowed_operation_cluster', $returnType);

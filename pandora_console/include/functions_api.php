@@ -14804,7 +14804,7 @@ function api_get_list_all_user($thrash1, $thrash2, $other, $returnType)
  */
 
 
-function api_set_info_user_name($returnType, $user_db)
+function api_get_info_user_name($thrash1, $thrash2, $other, $returnType)
 {
     global $config;
 
@@ -14814,17 +14814,21 @@ function api_set_info_user_name($returnType, $user_db)
     }
 
     $sql = sprintf(
-        'SELECT
-                        tup.id_usuario AS user_id, tp.id_perfil AS profile_id,
-                        tp.name AS profile_name, tup.id_grupo AS group_id,
-                        tg.nombre AS group_name
-                    FROM tperfil tp
-                    INNER JOIN tusuario_perfil tup
-                        ON tp.id_perfil = tup.id_perfil
-                    LEFT OUTER JOIN tgrupo tg
-                        ON tup.id_grupo = tg.id_grupo
-                    WHERE tup.id_usuario = %s',
-        io_safe_output($user_db)
+        'SELECT tup.id_usuario AS user_id,
+                tu.fullname AS fullname,
+                tp.id_perfil AS profile_id,
+                tp.name AS profile_name,
+                tup.id_grupo AS group_id,
+                tg.nombre AS group_name
+        FROM tperfil tp
+        INNER JOIN tusuario_perfil tup
+            ON tp.id_perfil = tup.id_perfil
+        LEFT OUTER JOIN tgrupo tg
+            ON tup.id_grupo = tg.id_grupo
+        LEFT OUTER JOIN tusuario tu
+            ON tu.id_user = tup.id_usuario
+        WHERE tup.id_usuario = "%s"',
+        io_safe_output($other['data'][0])
     );
 
     $user_profile = db_get_all_rows_sql($sql);
@@ -14839,6 +14843,7 @@ function api_set_info_user_name($returnType, $user_db)
 
         $values[$i] = [
             'id_usuario'  => $up['user_id'],
+            'fullname'    => $up['fullname'],
             'id_perfil'   => $up['profile_id'],
             'perfil_name' => $up['profile_name'],
             'id_grupo'    => $up['group_id'],
@@ -14868,7 +14873,7 @@ function api_set_info_user_name($returnType, $user_db)
  */
 
 
-function api_set_filter_user_group($returnType, $user_db, $group_db, $disable)
+function api_get_filter_user_group($thrash1, $thrash2, $other, $returnType)
 {
     global $config;
 
@@ -14878,19 +14883,20 @@ function api_set_filter_user_group($returnType, $user_db, $group_db, $disable)
     }
 
     $filter_group = '';
-    if ($group_db !== null) {
-        $filter_group = 'AND tup.id_grupo = '.io_safe_output($group_db).'';
+    if ($other['data'][1] !== null) {
+        $filter_group = 'AND tup.id_grupo = '.io_safe_output($other['data'][1]).'';
     }
 
     $sql_disable = '';
-    if ($disable !== null) {
-        $sql_disable = 'INNER JOIN tusuario tu
-        ON tu.disabled = '.io_safe_output($disable).'';
+    if ($other['data'][2] !== null) {
+        $sql_disable = 'LEFT OUTER JOIN tusuario tus
+        ON tus.disabled ='.io_safe_output($other['data'][2]).'';
     }
 
     $sql = sprintf(
         'SELECT DISTINCT
             tup.id_usuario AS user_id,
+            tu.fullname AS fullname,
             tp.id_perfil AS profile_id,
             tp.name AS profile_name,
             tup.id_grupo AS group_id,
@@ -14900,9 +14906,11 @@ function api_set_filter_user_group($returnType, $user_db, $group_db, $disable)
             ON tp.id_perfil = tup.id_perfil
         LEFT OUTER JOIN tgrupo tg
             ON tup.id_grupo = tg.id_grupo
+        LEFT OUTER JOIN tusuario tu
+            ON tu.id_user = tup.id_usuario
         '.$sql_disable.'
-        WHERE tup.id_usuario = %s '.$filter_group.'',
-        io_safe_output($user_db)
+        WHERE tup.id_usuario = "%s" '.$filter_group.'',
+        io_safe_output($other['data'][0])
     );
 
     $filter_user = db_get_all_rows_sql($sql);
@@ -14917,6 +14925,7 @@ function api_set_filter_user_group($returnType, $user_db, $group_db, $disable)
 
         $values[$i] = [
             'id_usuario'  => $up['user_id'],
+            'fullname'    => $up['fullname'],
             'id_perfil'   => $up['profile_id'],
             'perfil_name' => $up['profile_name'],
             'id_grupo'    => $up['group_id'],
@@ -14945,7 +14954,7 @@ function api_set_filter_user_group($returnType, $user_db, $group_db, $disable)
  */
 
 
-function api_set_delete_user_profiles($user_db, $id_up)
+function api_set_delete_user_profiles($thrash1, $thrash2, $other, $returnType)
 {
     global $config;
 
@@ -14954,10 +14963,17 @@ function api_set_delete_user_profiles($user_db, $id_up)
         return;
     }
 
-    $values = [
-        'id_usuario' => io_safe_output($user_db),
-        'id_up'      => io_safe_output($id_up),
-    ];
+    if ($other['data'][1] == '') {
+        $values = [
+            'id_usuario' => io_safe_output($other['data'][0]),
+        ];
+    } else {
+        $values = [
+            'id_usuario' => io_safe_output($other['data'][0]),
+            'id_up'      => io_safe_output($other['data'][1]),
+        ];
+    }
+
     $deleted_permission = db_process_sql_delete('tusuario_perfil', $values);
 
     if ($deleted_permission == false) {
@@ -14987,7 +15003,7 @@ function api_set_delete_user_profiles($user_db, $id_up)
  */
 
 
-function api_set_add_permission_user_to_group($returnType, $user_db, $group_db, $id_up, $id_profile)
+function api_set_add_permission_user_to_group($thrash1, $thrash2, $other, $returnType)
 {
     global $config;
 
@@ -14998,14 +15014,14 @@ function api_set_add_permission_user_to_group($returnType, $user_db, $group_db, 
 
     $sql = 'SELECT id_up 
             FROM tusuario_perfil
-            WHERE  id_up = '.$id_profile.'';
+            WHERE  id_up = '.$other['data'][3].'';
 
     $exist_profile = db_get_value_sql($sql);
 
     $values = [
-        'id_usuario'   => $user_db,
-        'id_perfil'    => $id_up,
-        'id_grupo'     => $group_db,
+        'id_usuario'   => $other['data'][0],
+        'id_perfil'    => $other['data'][2],
+        'id_grupo'     => $other['data'][1],
         'no_hierarchy' => 0,
         'assigned_by'  => 0,
         'id_policy'    => 0,
@@ -15013,8 +15029,8 @@ function api_set_add_permission_user_to_group($returnType, $user_db, $group_db, 
 
     ];
 
-    $where_id_up = ['id_up' => $id_profile];
-    if ($exist_profile == $id_profile) {
+    $where_id_up = ['id_up' => $other['data'][3]];
+    if ($exist_profile === $other['data'][3] && $where_id_up !== null) {
         $sucessfull_insert = db_process_sql_update('tusuario_perfil', $values, $where_id_up);
     } else {
         $sucessfull_insert = db_process_sql_insert('tusuario_perfil', $values);

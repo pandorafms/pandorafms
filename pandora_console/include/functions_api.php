@@ -14741,7 +14741,9 @@ function api_set_reset_agent_counts($id, $thrash1, $thrash2, $thrash3)
 
 function api_set_list_all_user($returnType)
 {
-    if (!check_acl($config['id_user'], 0, 'AW')) {
+    global $config;
+
+    if (!check_acl($config['id_user'], 0, 'AR')) {
         returnError('forbidden', 'string');
         return;
     }
@@ -14804,7 +14806,9 @@ function api_set_list_all_user($returnType)
 
 function api_set_info_user_name($returnType, $user_db)
 {
-    if (!check_acl($config['id_user'], 0, 'AW')) {
+    global $config;
+
+    if (!check_acl($config['id_user'], 0, 'AR')) {
         returnError('forbidden', 'string');
         return;
     }
@@ -14866,7 +14870,9 @@ function api_set_info_user_name($returnType, $user_db)
 
 function api_set_filter_user_group($returnType, $user_db, $group_db, $disable)
 {
-    if (!check_acl($config['id_user'], 0, 'AW')) {
+    global $config;
+
+    if (!check_acl($config['id_user'], 0, 'AR')) {
         returnError('forbidden', 'string');
         return;
     }
@@ -14919,11 +14925,12 @@ function api_set_filter_user_group($returnType, $user_db, $group_db, $disable)
         $i += 1;
     }
 
-        $data = [
-            'type' => 'array',
-            'data' => $values,
-        ];
-        returnData($returnType, $data, ';');
+    $data = [
+        'type' => 'array',
+        'data' => $values,
+    ];
+
+    returnData($returnType, $data, ';');
 
 }
 
@@ -14933,13 +14940,15 @@ function api_set_filter_user_group($returnType, $user_db, $group_db, $disable)
  * The return of this function its only a message
  *
  * @param  string  $user_db
- * @param  integer $group_db
+ * @param  integer $id_up
  * @return void
  */
 
 
-function api_set_delete_user_profiles($user_db, $group_db)
+function api_set_delete_user_profiles($user_db, $id_up)
 {
+    global $config;
+
     if (!check_acl($config['id_user'], 0, 'AW')) {
         returnError('forbidden', 'string');
         return;
@@ -14947,7 +14956,7 @@ function api_set_delete_user_profiles($user_db, $group_db)
 
     $values = [
         'id_usuario' => io_safe_output($user_db),
-        'id_grupo'   => io_safe_output($group_db),
+        'id_up'      => io_safe_output($id_up),
     ];
     $deleted_permission = db_process_sql_delete('tusuario_perfil', $values);
 
@@ -14978,12 +14987,20 @@ function api_set_delete_user_profiles($user_db, $group_db)
  */
 
 
-function api_set_add_permisson_user_to_group($returnType, $user_db, $group_db, $id_up)
+function api_set_add_permission_user_to_group($returnType, $user_db, $group_db, $id_up, $id_profile)
 {
+    global $config;
+
     if (!check_acl($config['id_user'], 0, 'AW')) {
         returnError('forbidden', 'string');
         return;
     }
+
+    $sql = 'SELECT id_up 
+            FROM tusuario_perfil
+            WHERE  id_up = '.$id_profile.'';
+
+    $exist_profile = db_get_value_sql($sql);
 
     $values = [
         'id_usuario'   => $user_db,
@@ -14996,7 +15013,12 @@ function api_set_add_permisson_user_to_group($returnType, $user_db, $group_db, $
 
     ];
 
-    $sucessfull_insert = db_process_sql_insert('tusuario_perfil', $values);
+    $where_id_up = ['id_up' => $id_profile];
+    if ($exist_profile == $id_profile) {
+        $sucessfull_insert = db_process_sql_update('tusuario_perfil', $values, $where_id_up);
+    } else {
+        $sucessfull_insert = db_process_sql_insert('tusuario_perfil', $values);
+    }
 
     if ($sucessfull_insert == false) {
         returnError('Error_insert', __('User profile could not be available.'));

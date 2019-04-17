@@ -340,6 +340,7 @@ final class Container extends Model
         // Override the filter if the groups filter is not empty.
         if (count($groupsFilter) > 0) {
             // Filter group for elements groups.
+            $filter = [];
             $filter[] = \db_format_array_where_clause_sql(
                 [
                     'id_layout'     => $layoutId,

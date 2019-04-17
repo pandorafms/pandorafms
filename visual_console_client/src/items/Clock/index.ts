@@ -530,10 +530,9 @@ export default class Clock extends Item<ClockProps> {
    */
   private getDate(): Date {
     const d = new Date();
-    const targetTZOffset = this.props.clockTimezoneOffset * 60 * 1000; // In ms.
+    const targetTZOffset = this.props.clockTimezoneOffset * 1000; // In ms.
     const localTZOffset = d.getTimezoneOffset() * 60 * 1000; // In ms.
     const utimestamp = d.getTime() + targetTZOffset + localTZOffset;
-    console.log(targetTZOffset, localTZOffset);
 
     return new Date(utimestamp);
   }

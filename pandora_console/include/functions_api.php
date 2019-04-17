@@ -14739,7 +14739,7 @@ function api_set_reset_agent_counts($id, $thrash1, $thrash2, $thrash3)
  */
 
 
-function api_set_list_all_user($returnType)
+function api_get_list_all_user($thrash1, $thrash2, $other, $returnType)
 {
     global $config;
 

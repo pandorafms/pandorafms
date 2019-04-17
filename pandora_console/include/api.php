@@ -106,7 +106,7 @@ if ($correctLogin) {
             }
         } else {
             $function_name = 'api_'.$op.'_'.$op2;
-
+            $id = 1;
             if ($op == 'set' && $id) {
                 switch ($op2) {
                     case 'update_agent':
@@ -151,6 +151,20 @@ if ($correctLogin) {
                         }
                     break;
 
+                    case 'filter_user_group':
+
+                        $id_os = api_set_filter_user_group($returnType, $user_db, $group_db, $disable);
+
+                        if ($id_os != 100) {
+                            return;
+                        }
+
+                        if ($id_os == 100) {
+                            returnError('not_allowed_operation_cluster', $returnType);
+                            return false;
+                        }
+                    break;
+
                     case 'info_user_name':
 
                         if ($user_db === '') {
@@ -170,25 +184,6 @@ if ($correctLogin) {
                         }
                     break;
 
-                    case 'filter_user_group':
-
-                        if ($user_db === '' && ( $group_db === '' || $disable === '')) {
-                            returnError(__('User, group or disabled status not specified'), __('User, group or disabled status not specified'));
-                            return;
-                        }
-
-                        $id_os = api_set_filter_user_group($returnType, $user_db, $group_db, $disable);
-
-                        if ($id_os != 100) {
-                            return;
-                        }
-
-                        if ($id_os == false) {
-                            returnError('not_allowed_operation_cluster', $returnType);
-                            return false;
-                        }
-                    break;
-
                     case 'delete_user_profiles':
 
                         if ($user_db === '') {
@@ -203,16 +198,6 @@ if ($correctLogin) {
                         }
 
                         if ($id_os == false) {
-                            returnError('not_allowed_operation_cluster', $returnType);
-                            return false;
-                        }
-                    break;
-
-                    case 'list_all_user':
-
-                        $id_os = api_set_list_all_user($returnType);
-
-                        if ($id_os === false) {
                             returnError('not_allowed_operation_cluster', $returnType);
                             return false;
                         }

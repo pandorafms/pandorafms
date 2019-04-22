@@ -674,6 +674,11 @@ class Item extends Model
         global $config;
         include_once $config['homedir'].'/include/functions_io.php';
 
+        if (\is_metaconsole()) {
+            \enterprise_include_once('include/functions_metaconsole.php');
+            \enterprise_include_once('meta/include/functions_ui_meta.php');
+        }
+
         // Clean up to two levels of HTML entities.
         $row = \io_safe_output(\io_safe_output($row));
 
@@ -888,18 +893,12 @@ class Item extends Model
                         'pure' => (int) $config['pure'],
                     ]
                 );
-            } else if (\is_metaconsole() && can_user_access_node()) {
+            } else if (\is_metaconsole() && \can_user_access_node()) {
                 /*
                  * A Visual Console from a meta node.
                  * We are in a metaconsole.
                  */
 
-                \enterprise_include_once(
-                    'include/functions_metaconsole.php'
-                );
-                \enterprise_include_once(
-                    'meta/include/functions_ui_meta.php'
-                );
                 try {
                     $node = \metaconsole_get_connection_by_id(
                         $metaconsoleId
@@ -959,19 +958,12 @@ class Item extends Model
                     }
 
                     return $baseUrl.'?'.http_build_query($queryParams);
-                } else if (\is_metaconsole() && can_user_access_node()) {
+                } else if (\is_metaconsole() && \can_user_access_node()) {
                     /*
                      * A module from a meta node.
                      * We are in a metaconsole.
                      */
 
-                    // A Visual Console from a meta node.
-                    \enterprise_include_once(
-                        'include/functions_metaconsole.php'
-                    );
-                    \enterprise_include_once(
-                        'meta/include/functions_ui_meta.php'
-                    );
                     try {
                         $node = \metaconsole_get_connection_by_id(
                             $metaconsoleId
@@ -1046,18 +1038,12 @@ class Item extends Model
                             'id_agente' => $agentId,
                         ]
                     );
-                } else if (\is_metaconsole() && can_user_access_node()) {
+                } else if (\is_metaconsole() && \can_user_access_node()) {
                     /*
                      * An agent from a meta node.
                      * We are in a metaconsole.
                      */
 
-                    \enterprise_include_once(
-                        'include/functions_metaconsole.php'
-                    );
-                    \enterprise_include_once(
-                        'meta/include/functions_ui_meta.php'
-                    );
                     try {
                         $node = \metaconsole_get_connection_by_id(
                             $metaconsoleId

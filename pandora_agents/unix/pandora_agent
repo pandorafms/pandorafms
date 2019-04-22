@@ -42,7 +42,7 @@ my $Sem = undef;
 my $ThreadSem = undef;
 
 use constant AGENT_VERSION => '7.0NG.733';
-use constant AGENT_BUILD => '190417';
+use constant AGENT_BUILD => '190421';
 
 # Agent log default file size maximum and instances
 use constant DEFAULT_MAX_LOG_SIZE => 600000;
@@ -1074,6 +1074,10 @@ sub send_buffered_xml_files ($;$) {
 			} else {
 				unlink ("$temporal_file/$xml_file");	
 			}
+		}
+		# Do not get stuck trying to send buffered XML files to a secondary server.
+		elsif ($flag_always == 2) {
+			last;
 		}
 	}
 	if (defined($flag_always) && ($flag_always == 2)){

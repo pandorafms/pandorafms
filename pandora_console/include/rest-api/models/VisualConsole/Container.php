@@ -224,7 +224,10 @@ final class Container extends Model
 
         if ($backgroundUrl === null && $backgroundImage !== null) {
             $backgroundUrl = ui_get_full_url(
-                'images/console/background/'.$backgroundImage
+                'images/console/background/'.$backgroundImage,
+                false,
+                false,
+                false
             );
 
             $width = (int) $row['width'];
@@ -238,7 +241,10 @@ final class Container extends Model
                     'file'       => $backgroundUrl,
                 ];
                 $row['backgroundURL'] = ui_get_full_url(
-                    'include/Image/image_functions.php?'.http_build_query($q)
+                    'include/Image/image_functions.php?'.http_build_query($q),
+                    false,
+                    false,
+                    false
                 );
             } else {
                 $row['backgroundURL'] = $backgroundUrl;

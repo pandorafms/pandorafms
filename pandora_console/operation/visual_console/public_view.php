@@ -135,7 +135,7 @@ $visualConsoleItems = VisualConsole::getItemsFromDB(
     var container = document.getElementById("visual-console-container");
     var props = <?php echo (string) $visualConsole; ?>;
     var items = <?php echo '['.implode($visualConsoleItems, ',').']'; ?>;
-    var baseUrl = "<?php echo $config['homeurl']; ?>";
+    var baseUrl = "<?php echo ui_get_full_url('/', false, false, false); ?>";
     var handleUpdate = function (prevProps, newProps) {
         if (!newProps) return;
 

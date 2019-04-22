@@ -19,6 +19,13 @@ final class Group extends Item
      */
     protected static $useLinkedVisualConsole = true;
 
+    /**
+     * Used to decide wether to validate, extract and encode HTML output or not.
+     *
+     * @var boolean
+     */
+    protected static $useHtmlOutput = true;
+
 
     /**
      * Returns a valid representation of the model.
@@ -34,7 +41,8 @@ final class Group extends Item
         $return = parent::decode($data);
         $return['type'] = GROUP_ITEM;
         $return['groupId'] = static::extractGroupId($data);
-        if (!isset($return['encodedHtml']) === true) {
+        $return['showStatistics'] = static::extractShowStatistics($data);
+        if (!$return['showStatistics']) {
             $return['imageSrc'] = static::extractImageSrc($data);
             $return['statusImageSrc'] = static::extractStatusImageSrc($data);
         }
@@ -174,6 +182,7 @@ final class Group extends Item
         $showStatistics = static::extractShowStatistics($data);
 
         if ($showStatistics) {
+            $isMetaconsole = is_metaconsole();
             // Retrieve the agent stats.
             $agentsCritical = \agents_get_agents(
                 [
@@ -185,7 +194,7 @@ final class Group extends Item
                 false,
                 false,
                 true,
-                true
+                $isMetaconsole
             );
             $numCritical = $agentsCritical[0]['total'];
             $agentsWarning = \agents_get_agents(
@@ -198,7 +207,7 @@ final class Group extends Item
                 false,
                 false,
                 true,
-                true
+                $isMetaconsole
             );
             $numWarning = $agentsWarning[0]['total'];
             $agentsUnknown = \agents_get_agents(
@@ -211,7 +220,7 @@ final class Group extends Item
                 false,
                 false,
                 true,
-                true
+                $isMetaconsole
             );
             $numUnknown = $agentsUnknown[0]['total'];
             $agentsOk = \agents_get_agents(
@@ -224,7 +233,7 @@ final class Group extends Item
                 false,
                 false,
                 true,
-                true
+                $isMetaconsole
             );
             $numNormal = $agentsOk[0]['total'];
 
@@ -243,8 +252,6 @@ final class Group extends Item
                 (int) $data['width'],
                 (int) $data['height']
             );
-            // Enable the HTML management.
-            static::$useHtmlOutput = true;
         } else {
             // Get the status img src.
             $status = \groups_get_status($groupId);
@@ -267,6 +274,8 @@ final class Group extends Item
                 $data['width'] = $sizeImage[0];
                 $data['height'] = $sizeImage[1];
             }
+
+            $data['html'] = '<table></table>';
         }
 
         return $data;

@@ -1133,6 +1133,18 @@ sub pandora_load_config {
 		elsif ($parametro =~ m/^fsnmp\s(.*)/i) {
 			$pa_config->{'fsnmp'}= clean_blank($1); 
 		}
+
+		# Pandora HA extra
+		elsif ($parametro =~ m/^ha_file\s(.*)/i) {
+			$pa_config->{'ha_file'} = clean_blank($1);
+		}
+		elsif ($parametro =~ m/^ha_pid_file\s(.*)/i) {
+			$pa_config->{'ha_pid_file'} = clean_blank($1);
+		}
+		elsif ($parametro =~ m/^pandora_service_cmd\s(.*)/i) {
+			$pa_config->{'pandora_service_cmd'} = clean_blank($1);
+		}
+		
 	} # end of loop for parameter #
 
 	# Set to RDBMS' standard port

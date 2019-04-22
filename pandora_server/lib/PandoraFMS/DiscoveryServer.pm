@@ -276,6 +276,11 @@ sub data_consumer ($$) {
 		}
     };
     if ($@) {
+        logger(
+            $pa_config,
+            'Cannot execute Discovery task: ' . safe_output($task->{'name'}) . $@,
+            10
+        );
         update_recon_task ($dbh, $task_id, -1);
         return;
     }

@@ -505,9 +505,14 @@ class DiscoveryTaskList extends Wizard
                                 true,
                                 ['title' => __('Discovery NetScan')]
                             ).'&nbsp;&nbsp;';
-                            $data[6] .= network_profiles_get_name(
+                            $str = network_profiles_get_name(
                                 $task['id_network_profile']
                             );
+                            if (!empty($str)) {
+                                $data[6] .= $str;
+                            } else {
+                                $data[6] .= __('Discovery.NetScan');
+                            }
                         break;
                     }
                 } else {

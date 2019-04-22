@@ -450,6 +450,8 @@ class Item extends Model
         $metaconsoleId = static::extractMetaconsoleId($data);
         if ($metaconsoleId !== null && $metaconsoleId <= 0) {
             $agentData['metaconsoleId'] = null;
+        } else {
+            $agentData['metaconsoleId'] = $metaconsoleId;
         }
 
         // The agent Id should be a valid int or a null value.

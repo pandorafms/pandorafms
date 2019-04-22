@@ -14734,9 +14734,12 @@ function api_set_reset_agent_counts($id, $thrash1, $thrash2, $thrash3)
  * Functions por get all  user to new feature for Carrefour
  * It depends of type the method will return csv or json data
  *
+ * @param  string           $thrash1    don't use
+ * @param  string           $thrash2    don't use
  * @param  string           $returnType
  * @param  other  don't use
- * * Example:
+ *
+ * Example:
  * api.php?op=get&op2=list_all_user&return_type=json&apipass=1234&user=admin&pass=pandora
  * @return
  */
@@ -14807,6 +14810,8 @@ function api_get_list_all_user($thrash1, $thrash2, $other, $returnType)
  * Funtion for get all info user to  new feature for Carrefour
  * It depends of type the method will return csv or json data
  *
+ * @param string $thrash1    don't use
+ * @param string $thrash2    don't use
  * @param string $returnType
  * @param array  $other      other[0] = user database
  *
@@ -14880,11 +14885,15 @@ function api_get_info_user_name($thrash1, $thrash2, $other, $returnType)
  * Function for get  user from a group  to  new feature for Carrefour.
  * It depends of type the method will return csv or json data.
  *
+ * @param string $thrash1    don't use
+ * @param string $thrash2    don't use
  * @param string $returnType
- * @param array  $other      other[0] = id group, other[1] = is disabled or not
+ * @param array  $other
+ *                  $other[0] = id group
+ *                  $other[1] = is disabled or not
  *
- *    * Example
- *    api.php?op=get&op2=filter_user_group&return_type=json&other=0|0&other_mode=url_encode_separator_|&apipass=1234&user=admin&pass=pandora
+ * Example
+ * api.php?op=get&op2=filter_user_group&return_type=json&other=0|0&other_mode=url_encode_separator_|&apipass=1234&user=admin&pass=pandora
  *
  * @return
  */
@@ -14901,16 +14910,12 @@ function api_get_filter_user_group($thrash1, $thrash2, $other, $returnType)
 
     $filter = '';
 
-    if ($other['data'][0] !== '') {
-        $filter = 'WHERE tup.id_grupo = '.$other['data'][0].'';
-    }
-
-    if ($other['data'][1] !== '') {
-        $filter = 'WHERE tu.disabled = '.$other['data'][1].'';
-    }
-
     if ($other['data'][0] !== '' && $other['data'][1] !== '') {
-        $filter = 'WHERE tg.id_grupo = '.$other['data'][0].' AND tu.disabled = '.$other['data'][1].'';
+        $filter = 'WHERE tup.id_grupo = '.$other['data'][0].' AND tu.disabled = '.$other['data'][1].'';
+    } else if ($other['data'][0] !== '') {
+        $filter = 'WHERE tup.id_grupo = '.$other['data'][0].'';
+    } else if ($other['data'][1] !== '') {
+        $filter = 'WHERE tu.disabled = '.$other['data'][1].'';
     }
 
     $sql = sprintf(
@@ -14968,11 +14973,15 @@ function api_get_filter_user_group($thrash1, $thrash2, $other, $returnType)
  * Function for delete an user profile for Carrefour  new feature
  * The return of this function its only a message
  *
+ * @param string $thrash1    don't use
+ * @param string $thrash2    don't use
  * @param string $returnType
- * @param array  $other      other[0] = id user & other[1] =  id from tusuario_perfil table (optional)
+ * @param array  $other
+ *                  $other[0] = id user
+ *                  other[1] =  id from tusuario_perfil table (optional)
  *
- *    Example
- *    api.php?op=set&op2=delete_user_profiles&return_type=json&other=usuario|2&other_mode=url_encode_separator_|&apipass=1234&user=admin&pass=pandora
+ * Example
+ * api.php?op=set&op2=delete_user_profiles&return_type=json&other=usuario|2&other_mode=url_encode_separator_|&apipass=1234&user=admin&pass=pandora
  *
  * @return void
  */
@@ -15018,12 +15027,16 @@ function api_set_delete_user_profiles($thrash1, $thrash2, $other, $returnType)
  * Function for add permission a user to a group for Carrefour new feature
  * It depends of type the method will return csv or json data
  *
+ * @param string $thrash1    don't use
+ * @param string $thrash2    don't use
  * @param string $returnType
- * @param array  $other      other[0] = user database, other[1] = id group, other[2] = id profile
- *                           & other [3] = no_hierarchy (if empty = 0) & other [4] = id from tusuario_perfil table (optional)
+ * @param array  $other      other[0] = user database, other[1] = id group
+ *                           other[2] = id profile
+ *                           other [3] = no_hierarchy (if empty = 0)
+ *                           other [4] = id from tusuario_perfil table (optional)
  *
- *     Example
- *     api.php?op=set&op2=add_permission_user_to_group&return_type=json&other=admin|0|1|1|20&other_mode=url_encode_separator_|&apipass=1234&user=admin&pass=pandora
+ * Example
+ * api.php?op=set&op2=add_permission_user_to_group&return_type=json&other=admin|0|1|1|20&other_mode=url_encode_separator_|&apipass=1234&user=admin&pass=pandora
  *
  * @return void
  */

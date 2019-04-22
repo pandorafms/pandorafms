@@ -140,6 +140,91 @@
 }
 
 #box_online {
-  background-color: #e6e6e6;
-  padding: 10px;
+  background-image: url("../../images/update_manager_background.jpg");
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-color: #fff;
+  padding: 40px 50px;
+  border: 1px solid #f3f3f3;
+  border-radius: 5px;
+  min-height: 684px;
+}
+
+div#box_online * {
+  font-size: 18pt;
+}
+
+.update_popup {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+.update_text {
+  /*border: 1px solid silver;*/
+}
+
+.update_icon {
+  /*border: 1px solid pink;*/
+  padding-left: 20px;
+}
+
+.update_text h3 {
+  font-weight: bold;
+  font-size: 12pt;
+}
+
+.update_text p {
+  font-size: 11pt;
+}
+
+.update_text a {
+  font-size: 11pt;
+  color: #82b92e;
+}
+
+.ui-dialog .ui-dialog-buttonpane .ui-dialog-buttonset {
+  float: left !important;
+  padding-left: 19px;
+}
+
+.ui-dialog-buttonset > button.ui-button.ui-corner-all.ui-widget {
+  background-color: #868686 !important;
+  border: none !important;
+  color: #fff !important;
+  border-radius: 2px !important;
+  text-transform: uppercase !important;
+  font-weight: bold !important;
+}
+
+.ui-dialog-buttonset > button.success_button.ui-button.ui-corner-all.ui-widget,
+.update_manager_button {
+  background-color: #82b92e !important;
+  color: #fff !important;
+  border-radius: 2px !important;
+  text-transform: uppercase !important;
+  font-weight: bold !important;
+}
+
+a.update_manager_button {
+  padding: 5px 10px;
+  margin-top: 10px;
+  display: inline-block;
+  font-size: 18px;
+}
+
+a.update_manager_button:after {
+  content: url(../../images/header_refresh_disabled_gray.png);
+  padding-left: 10px;
+}
+
+.progressbar {
+  margin-top: 15px;
+}
+
+.ui-draggable .ui-dialog-titlebar {
+  cursor: default !important;
 }

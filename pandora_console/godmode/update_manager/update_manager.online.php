@@ -71,21 +71,21 @@ if (is_metaconsole()) {
 if (is_metaconsole()) {
     echo "<div id='box_online' style='float:right;padding-right:400px;padding-top:40px;padding-bottom:40px;' class='cargatextodialogo'>";
 } else {
-    echo "<div id='box_online' style='padding-top:40px;padding-bottom:40px;' class='cargatextodialogo'>";
+    echo "<div id='box_online'>";
 }
 
 echo "<span class='loading' style='font-size:18pt;'>";
 echo "<img src='images/wait.gif' />";
-echo '</span><br><br>';
+echo '<br><br></span>';
 
 echo '<div><b>'.__('The latest version of package installed is:').'</b></div><br>';
-echo "<div id='pkg_version' style='color:#82b92e;font-size:40pt;font-weight:bold;'>".$current_package.'</div>';
+echo "<div id='pkg_version' style='color:#82b92e;font-size:75pt;font-weight:bold;'>".$current_package.'</div>';
 
-    echo "<div class='checking_package' style='font-size:18pt;width:100%; text-align: center; display: none;'>";
+    echo "<div class='checking_package' style='font-size:18pt;width:100%; display: none;'>";
         echo __('Checking for the newest package.');
     echo '</div>';
 
-    echo "<div class='downloading_package' style='font-size:18pt;width:100%; text-align: center; display: none;'>";
+    echo "<div class='downloading_package' style='font-size:18pt;width:100%; display: none;'>";
         echo __('Downloading for the newest package.');
     echo '</div>';
 

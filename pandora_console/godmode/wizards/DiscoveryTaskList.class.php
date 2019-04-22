@@ -96,8 +96,20 @@ class DiscoveryTaskList extends Wizard
             ]
         );
 
-        // Header
-        ui_print_page_header(__('Task list'), '', false, '', true, '', false, '', GENERIC_SIZE_TEXT, '', $this->printHeader(true));
+        // Header.
+        ui_print_page_header(
+            __('Task list'),
+            '',
+            false,
+            '',
+            true,
+            '',
+            false,
+            '',
+            GENERIC_SIZE_TEXT,
+            '',
+            $this->printHeader(true)
+        );
 
         // Show redirected messages from discovery.php.
         if ($status === 0) {
@@ -464,15 +476,45 @@ class DiscoveryTaskList extends Wizard
                 }
 
                 if ($task['id_recon_script'] == 0) {
-                    // Discovery NetScan.
-                    $data[6] = html_print_image(
-                        'images/network.png',
-                        true,
-                        ['title' => __('Discovery NetScan')]
-                    ).'&nbsp;&nbsp;';
-                    $data[6] .= network_profiles_get_name(
-                        $task['id_network_profile']
-                    );
+                    switch ($task['type']) {
+                        case DISCOVERY_APP_MYSQL:
+                            // Discovery Applications MySQL.
+                            $data[6] = html_print_image(
+                                'images/network.png',
+                                true,
+                                ['title' => __('Discovery Applications MySQL')]
+                            ).'&nbsp;&nbsp;';
+                            $data[6] .= __('Discovery.App.MySQL');
+                        break;
+
+                        case DISCOVERY_APP_ORACLE:
+                            // Discovery Applications Oracle.
+                            $data[6] = html_print_image(
+                                'images/network.png',
+                                true,
+                                ['title' => __('Discovery Applications Oracle')]
+                            ).'&nbsp;&nbsp;';
+                            $data[6] .= __('Discovery.App.Oracle');
+                        break;
+
+                        case DISCOVERY_HOSTDEVICES:
+                        default:
+                            // Discovery NetScan.
+                            $data[6] = html_print_image(
+                                'images/network.png',
+                                true,
+                                ['title' => __('Discovery NetScan')]
+                            ).'&nbsp;&nbsp;';
+                            $str = network_profiles_get_name(
+                                $task['id_network_profile']
+                            );
+                            if (!empty($str)) {
+                                $data[6] .= $str;
+                            } else {
+                                $data[6] .= __('Discovery.NetScan');
+                            }
+                        break;
+                    }
                 } else {
                     // APP recon task.
                     $data[6] = html_print_image(
@@ -512,7 +554,11 @@ class DiscoveryTaskList extends Wizard
                     $data[9] .= '</a>';
                 }
 
-                if ($task['disabled'] != 2 && $task['utimestamp'] > 0) {
+                if ($task['disabled'] != 2 && $task['utimestamp'] > 0
+                    && $task['type'] != DISCOVERY_APP_MYSQL
+                    && $task['type'] != DISCOVERY_APP_ORACLE
+                    && $task['type'] != DISCOVERY_CLOUD_AWS_RDS
+                ) {
                     $data[9] .= '<a href="#" onclick="show_map('.$task['id_rt'].',\''.$task['name'].'\')">';
                     $data[9] .= html_print_image(
                         'images/dynamic_network_icon.png',
@@ -614,19 +660,27 @@ class DiscoveryTaskList extends Wizard
      */
     public function getTargetWiz($task)
     {
-        // TODO: Do not use description. Use recon_script ID instead.
-        switch ($task['description']) {
-            case 'Discovery.Application.VMware':
+        switch ($task['type']) {
+            case DISCOVERY_APP_MYSQL:
+            return 'wiz=app&mode=mysql&page=0';
+
+            case DISCOVERY_APP_ORACLE:
+            return 'wiz=app&mode=oracle&page=0';
+
+            case DISCOVERY_APP_VMWARE:
             return 'wiz=app&mode=vmware&page=0';
 
-            case CLOUDWIZARD_AWS_DESCRIPTION:
+            case DISCOVERY_CLOUD_AWS:
             return 'wiz=cloud&mode=amazonws&page=1';
+
+            case DISCOVERY_CLOUD_AWS_RDS:
+            return 'wiz=cloud&mode=amazonws&sub=rds&page=0';
 
             case 'console_task':
             return 'wiz=ctask';
 
             default:
-                if ($task['id_recon_script'] === null) {
+                if (empty($task['id_recon_script']) === true) {
                     return 'wiz=hd&mode=netscan';
                 } else {
                     return 'wiz=hd&mode=customnetscan';

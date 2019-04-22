@@ -16,8 +16,10 @@ ul.wizard li > label:not(.p-switch) {
 }
 
 ul.wizard li > textarea {
-  width: 250px;
+  width: 600px;
+  height: 15em;
   display: inline-block;
+  font-family: monospace;
 }
 
 .hidden {

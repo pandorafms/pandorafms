@@ -72,6 +72,7 @@ if (! check_acl($config['id_user'], 0, 'AW')) {
 
 $options_policies = [];
 $policies_options = enterprise_hook('massive_policies_options');
+$policies_options = array_unique($policies_options);
 
 if ($policies_options != ENTERPRISE_NOT_HOOK) {
     $options_policies = array_merge($options_policies, $policies_options);

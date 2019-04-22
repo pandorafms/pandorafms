@@ -149,8 +149,9 @@ final class Group extends Item
         // Get the status img src.
         $groupId = static::extractGroupId($data);
         $status = \groups_get_status($groupId);
+        $imagePath = \visual_map_get_image_status_element($data, $status);
         $data['statusImageSrc'] = \ui_get_full_url(
-            \visual_map_get_image_status_element($data, $status),
+            $imagePath,
             false,
             false,
             false
@@ -159,7 +160,7 @@ final class Group extends Item
         // If the width or the height are equal to 0 we will extract them
         // from the real image size.
         if ((int) $data['width'] === 0 || (int) $data['height'] === 0) {
-            $sizeImage = getimagesize($data['statusImageSrc']);
+            $sizeImage = getimagesize($imagePath);
             $data['width'] = $sizeImage[0];
             $data['height'] = $sizeImage[1];
         }

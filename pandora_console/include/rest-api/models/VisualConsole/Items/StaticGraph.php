@@ -179,8 +179,9 @@ final class StaticGraph extends Item
         }
 
         // Get the img src.
+        $imagePath = \visual_map_get_image_status_element($data);
         $data['statusImageSrc'] = \ui_get_full_url(
-            \visual_map_get_image_status_element($data),
+            $imagePath,
             false,
             false,
             false
@@ -189,7 +190,7 @@ final class StaticGraph extends Item
         // If the width or the height are equal to 0 we will extract them
         // from the real image size.
         if ((int) $data['width'] === 0 || (int) $data['height'] === 0) {
-            $sizeImage = getimagesize($data['statusImageSrc']);
+            $sizeImage = getimagesize($imagePath);
             $data['width'] = $sizeImage[0];
             $data['height'] = $sizeImage[1];
         }

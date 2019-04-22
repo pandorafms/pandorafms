@@ -112,17 +112,13 @@ final class Icon extends Item
         include_once $config['homedir'].'/include/functions_visual_map.php';
 
         // Get the img src.
-        $data['imageSrc'] = \ui_get_full_url(
-            \visual_map_get_image_status_element($data),
-            false,
-            false,
-            false
-        );
+        $imagePath = \visual_map_get_image_status_element($data);
+        $data['imageSrc'] = \ui_get_full_url($imagePath, false, false, false);
 
         // If the width or the height are equal to 0 we will extract them
         // from the real image size.
         if ((int) $data['width'] === 0 || (int) $data['height'] === 0) {
-            $sizeImage = getimagesize($data['imageSrc']);
+            $sizeImage = getimagesize($imagePath);
             $data['width'] = $sizeImage[0];
             $data['height'] = $sizeImage[1];
         }

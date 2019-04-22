@@ -1,16 +1,22 @@
 <?php
 
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; version 2
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU General Public License for more details.
+/**
+    Pandora FMS - http://pandorafms.com
+ * ==================================================
+ * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; version 2
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * @package    category
+ * @subpackage category
+ */
+
 global $config;
 
 check_login();
@@ -61,7 +67,7 @@ if ($memory_limit < 100) {
     );
 }
 
-// Translators: Do not translade Update Manager, it's the name of the program
+// Translators: Do not translade Update Manager, it's the name of the program.
 if (is_metaconsole()) {
     echo "<style type='text/css' media='screen'>
   		@import 'styles/meta_pandora.css';
@@ -119,7 +125,8 @@ echo "<div id='pkg_version' style='color:#82b92e;font-size:75pt;font-weight:bold
         let you know this does not reflect any change in our opensource mentality of
         does the last 14 years.
 
-    ------------------------------------------------------------------------- */
+        -------------------------------------------------------------------------
+    */
 
 if ($open) {
     echo "
@@ -134,7 +141,7 @@ if ($open) {
 $enterprise = enterprise_hook('update_manager_enterprise_main');
 
 if ($enterprise == ENTERPRISE_NOT_HOOK) {
-    // Open view
+    // Open view.
     update_manager_main();
 }
 ?>

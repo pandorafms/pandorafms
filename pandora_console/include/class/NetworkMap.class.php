@@ -2733,6 +2733,10 @@ class NetworkMap
             $output .= "var z_dash = null;\n";
         }
 
+        if (empty($networkmap['filter']['node_radius']) === true) {
+            $networkmap['filter']['node_radius'] = $this->mapOptions['map_filter']['node_radius'];
+        }
+
         $output .= 'var networkmap_refresh_time = 1000 * '.$networkmap['source_period'].";\n";
         $output .= 'var networkmap_center = [ '.$networkmap['center_x'].', '.$networkmap['center_y']."];\n";
         $output .= 'var networkmap_dimensions = [ '.$networkmap['width'].', '.$networkmap['height']."];\n";

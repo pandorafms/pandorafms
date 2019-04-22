@@ -19,6 +19,13 @@ final class Group extends Item
      */
     protected static $useLinkedVisualConsole = true;
 
+    /**
+     * Used to enable validation, extraction and encodeing of the HTML output.
+     *
+     * @var boolean
+     */
+    protected static $useHtmlOutput = true;
+
 
     /**
      * Returns a valid representation of the model.
@@ -33,9 +40,14 @@ final class Group extends Item
     {
         $return = parent::decode($data);
         $return['type'] = GROUP_ITEM;
-        $return['imageSrc'] = static::extractImageSrc($data);
         $return['groupId'] = static::extractGroupId($data);
-        $return['statusImageSrc'] = static::extractStatusImageSrc($data);
+        if (!isset($return['encodedHtml']) === true) {
+            $return['imageSrc'] = static::extractImageSrc($data);
+            $return['statusImageSrc'] = static::extractStatusImageSrc($data);
+        }
+
+        global $config;
+        $return['link'] = $config['homeurl'].'index.php?sec=estado&sec2=operation/agentes/estado_agente&group_id='.$return['groupId'];
         return $return;
     }
 
@@ -121,6 +133,24 @@ final class Group extends Item
 
 
     /**
+     * Extract a show Statistics value.
+     *
+     * @param array $data Unknown input data structure.
+     *
+     * @return integer Valid identifier of a group.
+     *
+     * @throws \InvalidArgumentException When a valid group Id can't be found.
+     */
+    private static function extractShowStatistics(array $data): int
+    {
+        return static::parseIntOr(
+            static::issetInArray($data, ['showStatistics', 'show_statistics']),
+            0
+        );
+    }
+
+
+    /**
      * Fetch a vc item data structure from the database using a filter.
      *
      * @param array $filter Filter of the Visual Console Item.
@@ -148,20 +178,108 @@ final class Group extends Item
 
         // Get the status img src.
         $groupId = static::extractGroupId($data);
-        $status = \groups_get_status($groupId);
-        $data['statusImageSrc'] = \ui_get_full_url(
-            \visual_map_get_image_status_element($data, $status),
-            false,
-            false,
-            false
-        );
+        $showStatistics = static::extractShowStatistics($data);
 
-        // If the width or the height are equal to 0 we will extract them
-        // from the real image size.
-        if ((int) $data['width'] === 0 || (int) $data['height'] === 0) {
-            $sizeImage = getimagesize($data['statusImageSrc']);
-            $data['width'] = $sizeImage[0];
-            $data['height'] = $sizeImage[1];
+        if ($showStatistics) {
+            $agents_critical = \agents_get_agents(
+                [
+                    'disabled' => 0,
+                    'id_grupo' => $groupId,
+                    'status'   => AGENT_STATUS_CRITICAL,
+                ],
+                ['COUNT(*) as total'],
+                'AR',
+                false
+            );
+            $agents_warning = \agents_get_agents(
+                [
+                    'disabled' => 0,
+                    'id_grupo' => $groupId,
+                    'status'   => AGENT_STATUS_WARNING,
+                ],
+                ['COUNT(*) as total'],
+                'AR',
+                false
+            );
+            $agents_unknown = \agents_get_agents(
+                [
+                    'disabled' => 0,
+                    'id_grupo' => $groupId,
+                    'status'   => AGENT_STATUS_UNKNOWN,
+                ],
+                ['COUNT(*) as total'],
+                'AR',
+                false
+            );
+            $agents_ok = \agents_get_agents(
+                [
+                    'disabled' => 0,
+                    'id_grupo' => $groupId,
+                    'status'   => AGENT_STATUS_OK,
+                ],
+                ['COUNT(*) as total'],
+                'AR',
+                false
+            );
+            $total_agents = ($agents_critical[0]['total'] + $agents_warning[0]['total'] + $agents_unknown[0]['total'] + $agents_ok[0]['total']);
+            $stat_agent_ok = ($agents_ok[0]['total'] / $total_agents * 100);
+            $stat_agent_wa = ($agents_warning[0]['total'] / $total_agents * 100);
+            $stat_agent_cr = ($agents_critical[0]['total'] / $total_agents * 100);
+            $stat_agent_un = ($agents_unknown[0]['total'] / $total_agents * 100);
+            if ($width == 0 || $height == 0) {
+                $dyn_width = 520;
+                $dyn_height = 80;
+            } else {
+                $dyn_width = $width;
+                $dyn_height = $height;
+            }
+
+            // Print statistics table.
+            $html = '<table cellpadding="0" cellspacing="0" border="0" class="databox" style="width:'.$dyn_width.'px;height:'.$dyn_height.'px;text-align:center;';
+
+            if ($data['label_position'] === 'left') {
+                $html .= 'float:right;';
+            } else if ($data['label_position'] === 'right') {
+                $html .= 'float:left;';
+            }
+
+            $html .= '">';
+                $html .= '<tr style="height:10%;">';
+                    $html .= '<th style="text-align:center;background-color:#9d9ea0;color:black;font-weight:bold;">'.\groups_get_name($layoutData['id_group'], true).'</th>';
+                $html .= '</tr>';
+                $html .= '<tr style="background-color:whitesmoke;height:90%;">';
+                    $html .= '<td>';
+                        $html .= '<div style="margin-left:2%;color: #FFF;font-size: 12px;display:inline;background-color:#FC4444;position:relative;height:80%;width:9.4%;height:80%;border-radius:2px;text-align:center;padding:5px;">'.remove_right_zeros(number_format($stat_agent_cr, 2)).'%</div>';
+                        $html .= '<div style="background-color:white;color: black ;font-size: 12px;display:inline;position:relative;height:80%;width:9.4%;height:80%;border-radius:2px;text-align:center;padding:5px;">Critical</div>';
+                        $html .= '<div style="margin-left:2%;color: #FFF;font-size: 12px;display:inline;background-color:#f8db3f;position:relative;height:80%;width:9.4%;height:80%;border-radius:2px;text-align:center;padding:5px;">'.remove_right_zeros(number_format($stat_agent_wa, 2)).'%</div>';
+                        $html .= '<div style="background-color:white;color: black ;font-size: 12px;display:inline;position:relative;height:80%;width:9.4%;height:80%;border-radius:2px;text-align:center;padding:5px;">Warning</div>';
+                        $html .= '<div style="margin-left:2%;color: #FFF;font-size: 12px;display:inline;background-color:#84b83c;position:relative;height:80%;width:9.4%;height:80%;border-radius:2px;text-align:center;padding:5px;">'.remove_right_zeros(number_format($stat_agent_ok, 2)).'%</div>';
+                        $html .= '<div style="background-color:white;color: black ;font-size: 12px;display:inline;position:relative;height:80%;width:9.4%;height:80%;border-radius:2px;text-align:center;padding:5px;">Normal</div>';
+                        $html .= '<div style="margin-left:2%;color: #FFF;font-size: 12px;display:inline;background-color:#9d9ea0;position:relative;height:80%;width:9.4%;height:80%;border-radius:2px;text-align:center;padding:5px;">'.remove_right_zeros(number_format($stat_agent_un, 2)).'%</div>';
+                        $html .= '<div style="background-color:white;color: black ;font-size: 12px;display:inline;position:relative;height:80%;width:9.4%;height:80%;border-radius:2px;text-align:center;padding:5px;">Unknown</div>';
+                    $html .= '</td>';
+                $html .= '</tr>';
+            $html .= '</table>';
+
+            $data['html'] = $html;
+        } else {
+            $status = \groups_get_status($groupId);
+            $data['statusImageSrc'] = \ui_get_full_url(
+                \visual_map_get_image_status_element($data, $status),
+                false,
+                false,
+                false
+            );
+
+            // If the width or the height are equal to 0 we will extract them
+            // from the real image size.
+            if ((int) $data['width'] === 0 || (int) $data['height'] === 0) {
+                $sizeImage = getimagesize($data['statusImageSrc']);
+                $data['width'] = $sizeImage[0];
+                $data['height'] = $sizeImage[1];
+            }
+
+            static::$useHtmlOutput = false;
         }
 
         return $data;

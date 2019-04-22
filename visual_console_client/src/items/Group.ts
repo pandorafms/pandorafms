@@ -1,11 +1,18 @@
 import { LinkedVisualConsoleProps, UnknownObject } from "../types";
-import { linkedVCPropsDecoder, parseIntOr, notEmptyStringOr } from "../lib";
+import {
+  linkedVCPropsDecoder,
+  parseIntOr,
+  notEmptyStringOr,
+  stringIsEmpty,
+  decodeBase64
+} from "../lib";
 import Item, { ItemProps, itemBasePropsDecoder, ItemType } from "../Item";
 
 export type GroupProps = {
   type: ItemType.GROUP_ITEM;
-  imageSrc: string; // URL?
+  imageSrc: string | null; // URL?
   groupId: number;
+  html: string | null;
   statusImageSrc: string | null;
 } & ItemProps &
   LinkedVisualConsoleProps;
@@ -20,7 +27,10 @@ export type GroupProps = {
  * is missing from the raw object or have an invalid type.
  */
 export function groupPropsDecoder(data: UnknownObject): GroupProps | never {
-  if (typeof data.imageSrc !== "string" || data.imageSrc.length === 0) {
+  if (
+    (typeof data.imageSrc !== "string" || data.imageSrc.length === 0) &&
+    data.encodedHtml === null
+  ) {
     throw new TypeError("invalid image src.");
   }
   if (parseIntOr(data.groupId, null) === null) {
@@ -30,8 +40,11 @@ export function groupPropsDecoder(data: UnknownObject): GroupProps | never {
   return {
     ...itemBasePropsDecoder(data), // Object spread. It will merge the properties of the two objects.
     type: ItemType.GROUP_ITEM,
-    imageSrc: data.imageSrc,
+    imageSrc: notEmptyStringOr(data.imageSrc, null),
     groupId: parseInt(data.groupId),
+    html: !stringIsEmpty(data.encodedHtml)
+      ? decodeBase64(data.encodedHtml)
+      : null,
     statusImageSrc: notEmptyStringOr(data.statusImageSrc, null),
     ...linkedVCPropsDecoder(data) // Object spread. It will merge the properties of the two objects.
   };
@@ -39,12 +52,18 @@ export function groupPropsDecoder(data: UnknownObject): GroupProps | never {
 
 export default class Group extends Item<GroupProps> {
   protected createDomElement(): HTMLElement {
-    const img: HTMLImageElement = document.createElement("img");
-    img.className = "group";
-    if (this.props.statusImageSrc != null) {
-      img.src = this.props.statusImageSrc;
-    }
+    if (this.props.html !== null) {
+      const div = document.createElement("div");
+      div.innerHTML = this.props.html;
+      return div;
+    } else {
+      const img: HTMLImageElement = document.createElement("img");
+      img.className = "group";
+      if (this.props.statusImageSrc != null) {
+        img.src = this.props.statusImageSrc;
+      }
 
-    return img;
+      return img;
+    }
   }
 }

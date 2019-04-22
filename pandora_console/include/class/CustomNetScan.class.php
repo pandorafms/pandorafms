@@ -742,7 +742,7 @@ class CustomNetScan extends Wizard
                     get_explanation_recon_script($(this).val(), "'.$id_task.'", "'.$url_ajax.'");
                 })'.$change;
 
-            $this->printForm($form);
+            $this->printForm($form, false, true);
         }
 
         if (isset($this->page) === true && $this->page === 2) {

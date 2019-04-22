@@ -804,11 +804,8 @@ class Item extends Model
 
             $moduleName = \db_get_value_filter(
                 'nombre',
-                'tmetaconsole_agent',
-                [
-                    'id_agente'             => $agentId,
-                    'id_tmetaconsole_setup' => $metaconsoleId,
-                ]
+                'tagente_modulo',
+                ['id_agente_modulo' => $moduleId]
             );
 
             // Restore connection.

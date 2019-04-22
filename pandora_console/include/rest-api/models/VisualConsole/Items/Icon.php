@@ -113,12 +113,15 @@ final class Icon extends Item
 
         // Get the img src.
         $data['imageSrc'] = \ui_get_full_url(
-            \visual_map_get_image_status_element($data)
+            \visual_map_get_image_status_element($data),
+            false,
+            false,
+            false
         );
 
-        // If the width and height are equal to 0.
-        // We need to know the width and height of the image.
-        if ($data['width'] == 0 && $data['height'] == 0) {
+        // If the width or the height are equal to 0 we will extract them
+        // from the real image size.
+        if ((int) $data['width'] === 0 || (int) $data['height'] === 0) {
             $sizeImage = getimagesize($data['imageSrc']);
             $data['width'] = $sizeImage[0];
             $data['height'] = $sizeImage[1];

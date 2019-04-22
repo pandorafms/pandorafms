@@ -326,8 +326,8 @@ final class Container extends Model
     /**
      * Obtain a list of items which belong to the Visual Console.
      *
-     * @param integer $layoutId      Identifier of the Visual Console.
-     * @param array   $aclUserGroups Groups can access user.
+     * @param integer $layoutId     Identifier of the Visual Console.
+     * @param array   $groupsFilter Groups can access user.
      *
      * @return array A list of items.
      * @throws \Exception When the data cannot be retrieved from the DB.

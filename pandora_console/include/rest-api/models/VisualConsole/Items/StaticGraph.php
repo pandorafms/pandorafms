@@ -41,8 +41,10 @@ final class StaticGraph extends Item
     {
         $return = parent::decode($data);
         $return['type'] = STATIC_GRAPH;
-        $return['imageSrc'] = $this->extractImageSrc($data);
-        $return['showLastValueTooltip'] = $this->extractShowLastValueTooltip($data);
+        $return['imageSrc'] = static::extractImageSrc($data);
+        $return['showLastValueTooltip'] = static::extractShowLastValueTooltip(
+            $data
+        );
         $return['statusImageSrc'] = static::notEmptyStringOr(
             static::issetInArray($data, ['statusImageSrc']),
             null
@@ -65,7 +67,7 @@ final class StaticGraph extends Item
      *
      * @throws \InvalidArgumentException When a valid image src can't be found.
      */
-    private function extractImageSrc(array $data): string
+    private static function extractImageSrc(array $data): string
     {
         $imageSrc = static::notEmptyStringOr(
             static::issetInArray($data, ['imageSrc', 'image']),
@@ -90,7 +92,7 @@ final class StaticGraph extends Item
      *
      * @return string
      */
-    private function extractShowLastValueTooltip(array $data): string
+    private static function extractShowLastValueTooltip(array $data): string
     {
         $showLastValueTooltip = static::notEmptyStringOr(
             static::issetInArray($data, ['showLastValueTooltip']),
@@ -178,40 +180,44 @@ final class StaticGraph extends Item
 
         // Get the img src.
         $data['statusImageSrc'] = \ui_get_full_url(
-            \visual_map_get_image_status_element($data)
+            \visual_map_get_image_status_element($data),
+            false,
+            false,
+            false
         );
 
-        // If the width and height are equal to 0.
-        // We need to know the width and height of the image.
-        if ($data['width'] == 0 && $data['height'] == 0) {
+        // If the width or the height are equal to 0 we will extract them
+        // from the real image size.
+        if ((int) $data['width'] === 0 || (int) $data['height'] === 0) {
             $sizeImage = getimagesize($data['statusImageSrc']);
             $data['width'] = $sizeImage[0];
             $data['height'] = $sizeImage[1];
         }
 
         // Get last value.
-        if (isset($data['show_last_value']) && $data['show_last_value'] !== 2 && $moduleId !== 0) {
+        $showLastValueTooltip = static::extractShowLastValueTooltip($data);
+        if ($showLastValueTooltip !== 'disabled' && $moduleId > 0) {
             $imgTitle = '';
 
-            $unit_text = \trim(\io_safe_output(\modules_get_unit($moduleId)));
-
+            $unit = \trim(\io_safe_output(\modules_get_unit($moduleId)));
             $value = \modules_get_last_value($moduleId);
 
-            if ((!\modules_is_boolean($moduleId))
-                || (\modules_is_boolean($moduleId) && $data['show_last_value'] != 0)
+            $isBooleanModule = \modules_is_boolean($moduleId);
+            if (!$isBooleanModule
+                || ($isBooleanModule && $showLastValueTooltip !== 'default')
             ) {
                 if (\is_numeric($value)) {
                     $imgTitle .= __('Last value: ').remove_right_zeros($value);
                 } else {
                     $imgTitle .= __('Last value: ').$value;
                 }
-            }
 
-            if (empty($unit_text) === false && empty($imgTitle) === false) {
-                $imgTitle .= ' '.$unit_text;
-            }
+                if (empty($unit) === false && empty($imgTitle) === false) {
+                    $imgTitle .= ' '.$unit;
+                }
 
-            $data['lastValue'] = $imgTitle;
+                $data['lastValue'] = $imgTitle;
+            }
         }
 
         // Restore connection.

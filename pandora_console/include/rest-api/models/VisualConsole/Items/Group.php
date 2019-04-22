@@ -19,13 +19,6 @@ final class Group extends Item
      */
     protected static $useLinkedVisualConsole = true;
 
-    /**
-     * Used to enable validation, extraction and encodeing of the HTML output.
-     *
-     * @var boolean
-     */
-    protected static $useHtmlOutput = true;
-
 
     /**
      * Returns a valid representation of the model.
@@ -175,92 +168,83 @@ final class Group extends Item
         include_once $config['homedir'].'/include/functions_groups.php';
         include_once $config['homedir'].'/include/functions_visual_map.php';
         include_once $config['homedir'].'/include/functions_ui.php';
+        include_once $config['homedir'].'/include/functions_agents.php';
 
         $groupId = static::extractGroupId($data);
         $showStatistics = static::extractShowStatistics($data);
 
         if ($showStatistics) {
-            $agents_critical = \agents_get_agents(
+            // Retrieve the agent stats.
+            $agentsCritical = \agents_get_agents(
                 [
-                    'disabled' => 0,
                     'id_grupo' => $groupId,
                     'status'   => AGENT_STATUS_CRITICAL,
                 ],
-                ['COUNT(*) as total'],
+                ['COUNT(*) AS total'],
                 'AR',
-                false
+                false,
+                false,
+                true,
+                true
             );
-            $agents_warning = \agents_get_agents(
+            $numCritical = $agentsCritical[0]['total'];
+            $agentsWarning = \agents_get_agents(
                 [
-                    'disabled' => 0,
                     'id_grupo' => $groupId,
                     'status'   => AGENT_STATUS_WARNING,
                 ],
-                ['COUNT(*) as total'],
+                ['COUNT(*) AS total'],
                 'AR',
-                false
+                false,
+                false,
+                true,
+                true
             );
-            $agents_unknown = \agents_get_agents(
+            $numWarning = $agentsWarning[0]['total'];
+            $agentsUnknown = \agents_get_agents(
                 [
-                    'disabled' => 0,
                     'id_grupo' => $groupId,
                     'status'   => AGENT_STATUS_UNKNOWN,
                 ],
-                ['COUNT(*) as total'],
+                ['COUNT(*) AS total'],
                 'AR',
-                false
+                false,
+                false,
+                true,
+                true
             );
-            $agents_ok = \agents_get_agents(
+            $numUnknown = $agentsUnknown[0]['total'];
+            $agentsOk = \agents_get_agents(
                 [
-                    'disabled' => 0,
                     'id_grupo' => $groupId,
                     'status'   => AGENT_STATUS_OK,
                 ],
-                ['COUNT(*) as total'],
+                ['COUNT(*) AS total'],
                 'AR',
-                false
+                false,
+                false,
+                true,
+                true
             );
-            $total_agents = ($agents_critical[0]['total'] + $agents_warning[0]['total'] + $agents_unknown[0]['total'] + $agents_ok[0]['total']);
-            $stat_agent_ok = ($agents_ok[0]['total'] / $total_agents * 100);
-            $stat_agent_wa = ($agents_warning[0]['total'] / $total_agents * 100);
-            $stat_agent_cr = ($agents_critical[0]['total'] / $total_agents * 100);
-            $stat_agent_un = ($agents_unknown[0]['total'] / $total_agents * 100);
-            if ($width == 0 || $height == 0) {
-                $dyn_width = 520;
-                $dyn_height = 80;
-            } else {
-                $dyn_width = $width;
-                $dyn_height = $height;
-            }
+            $numNormal = $agentsOk[0]['total'];
 
-            // Print statistics table.
-            $html = '<table cellpadding="0" cellspacing="0" border="0" class="databox" style="width:'.$dyn_width.'px;height:'.$dyn_height.'px;text-align:center;';
+            $numTotal = ($numCritical + $numWarning + $numUnknown + $numNormal);
+            $agentStats = [
+                'critical' => ($numCritical / $numTotal * 100),
+                'warning'  => ($numWarning / $numTotal * 100),
+                'normal'   => ($numNormal / $numTotal * 100),
+                'unknown'  => ($numUnknown / $numTotal * 100),
+            ];
 
-            if ($data['label_position'] === 'left') {
-                $html .= 'float:right;';
-            } else if ($data['label_position'] === 'right') {
-                $html .= 'float:left;';
-            }
-
-            $html .= '">';
-                $html .= '<tr style="height:10%;">';
-                    $html .= '<th style="text-align:center;background-color:#9d9ea0;color:black;font-weight:bold;">'.\groups_get_name($layoutData['id_group'], true).'</th>';
-                $html .= '</tr>';
-                $html .= '<tr style="background-color:whitesmoke;height:90%;">';
-                    $html .= '<td>';
-                        $html .= '<div style="margin-left:2%;color: #FFF;font-size: 12px;display:inline;background-color:#FC4444;position:relative;height:80%;width:9.4%;height:80%;border-radius:2px;text-align:center;padding:5px;">'.remove_right_zeros(number_format($stat_agent_cr, 2)).'%</div>';
-                        $html .= '<div style="background-color:white;color: black ;font-size: 12px;display:inline;position:relative;height:80%;width:9.4%;height:80%;border-radius:2px;text-align:center;padding:5px;">Critical</div>';
-                        $html .= '<div style="margin-left:2%;color: #FFF;font-size: 12px;display:inline;background-color:#f8db3f;position:relative;height:80%;width:9.4%;height:80%;border-radius:2px;text-align:center;padding:5px;">'.remove_right_zeros(number_format($stat_agent_wa, 2)).'%</div>';
-                        $html .= '<div style="background-color:white;color: black ;font-size: 12px;display:inline;position:relative;height:80%;width:9.4%;height:80%;border-radius:2px;text-align:center;padding:5px;">Warning</div>';
-                        $html .= '<div style="margin-left:2%;color: #FFF;font-size: 12px;display:inline;background-color:#84b83c;position:relative;height:80%;width:9.4%;height:80%;border-radius:2px;text-align:center;padding:5px;">'.remove_right_zeros(number_format($stat_agent_ok, 2)).'%</div>';
-                        $html .= '<div style="background-color:white;color: black ;font-size: 12px;display:inline;position:relative;height:80%;width:9.4%;height:80%;border-radius:2px;text-align:center;padding:5px;">Normal</div>';
-                        $html .= '<div style="margin-left:2%;color: #FFF;font-size: 12px;display:inline;background-color:#9d9ea0;position:relative;height:80%;width:9.4%;height:80%;border-radius:2px;text-align:center;padding:5px;">'.remove_right_zeros(number_format($stat_agent_un, 2)).'%</div>';
-                        $html .= '<div style="background-color:white;color: black ;font-size: 12px;display:inline;position:relative;height:80%;width:9.4%;height:80%;border-radius:2px;text-align:center;padding:5px;">Unknown</div>';
-                    $html .= '</td>';
-                $html .= '</tr>';
-            $html .= '</table>';
-
-            $data['html'] = $html;
+            $groupName = \groups_get_name($groupId, true);
+            $data['html'] = static::printStatsTable(
+                $groupName,
+                $agentStats,
+                (int) $data['width'],
+                (int) $data['height']
+            );
+            // Enable the HTML management.
+            static::$useHtmlOutput = true;
         } else {
             // Get the status img src.
             $status = \groups_get_status($groupId);
@@ -275,15 +259,120 @@ final class Group extends Item
             // If the width or the height are equal to 0 we will extract them
             // from the real image size.
             if ((int) $data['width'] === 0 || (int) $data['height'] === 0) {
+                if (\is_metaconsole()) {
+                    $imagePath = '../../'.$imagePath;
+                }
+
                 $sizeImage = getimagesize($imagePath);
                 $data['width'] = $sizeImage[0];
                 $data['height'] = $sizeImage[1];
             }
-
-            static::$useHtmlOutput = false;
         }
 
         return $data;
+    }
+
+
+    /**
+     * HTML representation for the agent stats of a group.
+     *
+     * @param string  $groupName  Group name.
+     * @param array   $agentStats Data structure with the agent statistics.
+     * @param integer $width      Width.
+     * @param integer $height     Height.
+     *
+     * @return string HTML representation.
+     */
+    private static function printStatsTable(
+        string $groupName,
+        array $agentStats,
+        int $width=520,
+        int $height=80
+    ): string {
+        $width = ($width > 0) ? $width : 520;
+        $height = ($height > 0) ? $height : 80;
+
+        $tableStyle = \join(
+            [
+                'width:'.$width.'px;',
+                'height:'.$height.'px;',
+                'text-align:center;',
+            ]
+        );
+        $headStyle = \join(
+            [
+                'text-align:center;',
+                'background-color:#9d9ea0;',
+                'color:black;',
+                'font-weight:bold;',
+            ]
+        );
+        $valueStyle = \join(
+            [
+                'margin-left: 2%;',
+                'color: #FFF;',
+                'font-size: 12px;',
+                'display: inline;',
+                'background-color: #FC4444;',
+                'position: relative;',
+                'height: 80%;',
+                'width: 9.4%;',
+                'height: 80%;',
+                'border-radius: 2px;',
+                'text-align: center;',
+                'padding: 5px;',
+            ]
+        );
+        $nameStyle = \join(
+            [
+                'background-color: white;',
+                'color: black;',
+                'font-size: 12px;',
+                'display: inline;',
+                'display: inline;',
+                'position:relative;',
+                'width: 9.4%;',
+                'height: 80%;',
+                'border-radius: 2px;',
+                'text-align: center;',
+                'padding: 5px;',
+            ]
+        );
+
+        // $html = '<table class="databox" style="'.$tableStyle.'" cellpadding="0" cellspacing="0" border="0">';
+        $html = '<table class="databox" style="'.$tableStyle.'">';
+        $html .= '<tr style="height:10%;">';
+        $html .= '<th style="'.$headStyle.'">'.$groupName.'</th>';
+        $html .= '</tr>';
+        $html .= '<tr style="background-color:whitesmoke;height:90%;">';
+        $html .= '<td>';
+
+        // Critical.
+        $html .= '<div style="'.$valueStyle.'background-color: #FC4444;">';
+        $html .= \number_format($agentStats['critical']).'%';
+        $html .= '</div>';
+        $html .= '<div style="'.$nameStyle.'">'.__('Critical').'</div>';
+        // Warning.
+        $html .= '<div style="'.$valueStyle.'background-color: #f8db3f;">';
+        $html .= \number_format($agentStats['warning']).'%';
+        $html .= '</div>';
+        $html .= '<div style="'.$nameStyle.'">'.__('Warning').'</div>';
+        // Normal.
+        $html .= '<div style="'.$valueStyle.'background-color: #84b83c;">';
+        $html .= \number_format($agentStats['normal']).'%';
+        $html .= '</div>';
+        $html .= '<div style="'.$nameStyle.'">'.__('Normal').'</div>';
+        // Unknown.
+        $html .= '<div style="'.$valueStyle.'background-color: #9d9ea0;">';
+        $html .= \number_format($agentStats['unknown']).'%';
+        $html .= '</div>';
+        $html .= '<div style="'.$nameStyle.'">'.__('Unknown').'</div>';
+
+        $html .= '</td>';
+        $html .= '</tr>';
+        $html .= '</table>';
+
+        return $html;
     }
 
 

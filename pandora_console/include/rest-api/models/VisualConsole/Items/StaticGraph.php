@@ -190,6 +190,11 @@ final class StaticGraph extends Item
         // If the width or the height are equal to 0 we will extract them
         // from the real image size.
         if ((int) $data['width'] === 0 || (int) $data['height'] === 0) {
+            // Hack to retrieve the image from the metaconsole's index.
+            if (\is_metaconsole()) {
+                $imagePath = '../../'.$imagePath;
+            }
+
             $sizeImage = getimagesize($imagePath);
             $data['width'] = $sizeImage[0];
             $data['height'] = $sizeImage[1];

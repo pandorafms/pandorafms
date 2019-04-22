@@ -4,18 +4,26 @@ import {
   parseIntOr,
   notEmptyStringOr,
   stringIsEmpty,
-  decodeBase64
+  decodeBase64,
+  parseBoolean
 } from "../lib";
 import Item, { ItemProps, itemBasePropsDecoder, ItemType } from "../Item";
 
 export type GroupProps = {
   type: ItemType.GROUP_ITEM;
-  imageSrc: string | null; // URL?
   groupId: number;
-  html: string | null;
+  imageSrc: string | null; // URL?
   statusImageSrc: string | null;
+  showStatistics: boolean;
+  html?: string | null;
 } & ItemProps &
   LinkedVisualConsoleProps;
+
+function extractHtml(data: UnknownObject): string | null {
+  if (!stringIsEmpty(data.html)) return data.html;
+  if (!stringIsEmpty(data.encodedHtml)) return decodeBase64(data.encodedHtml);
+  return null;
+}
 
 /**
  * Build a valid typed object from a raw object.
@@ -37,29 +45,35 @@ export function groupPropsDecoder(data: UnknownObject): GroupProps | never {
     throw new TypeError("invalid group Id.");
   }
 
+  const showStatistics = parseBoolean(data.showStatistics);
+  const html = showStatistics ? extractHtml(data) : null;
+
   return {
     ...itemBasePropsDecoder(data), // Object spread. It will merge the properties of the two objects.
     type: ItemType.GROUP_ITEM,
-    imageSrc: notEmptyStringOr(data.imageSrc, null),
     groupId: parseInt(data.groupId),
-    html: !stringIsEmpty(data.encodedHtml)
-      ? decodeBase64(data.encodedHtml)
-      : null,
+    imageSrc: notEmptyStringOr(data.imageSrc, null),
     statusImageSrc: notEmptyStringOr(data.statusImageSrc, null),
+    showStatistics,
+    html,
     ...linkedVCPropsDecoder(data) // Object spread. It will merge the properties of the two objects.
   };
 }
 
 export default class Group extends Item<GroupProps> {
   protected createDomElement(): HTMLElement {
-    if (this.props.html !== null) {
+    if (this.props.showStatistics) {
       const div = document.createElement("div");
-      div.innerHTML = this.props.html;
+      div.className = "group";
+      if (this.props.html != null) {
+        div.innerHTML = this.props.html;
+      }
+
       return div;
     } else {
       const img: HTMLImageElement = document.createElement("img");
       img.className = "group";
-      if (this.props.statusImageSrc != null) {
+      if (this.props.statusImageSrc !== null) {
         img.src = this.props.statusImageSrc;
       }
 

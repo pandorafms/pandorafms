@@ -742,7 +742,7 @@ class Item extends Model
                 'nombre',
                 'tmetaconsole_agent',
                 [
-                    'id_agente'             => $agentId,
+                    'id_tagente'            => $agentId,
                     'id_tmetaconsole_setup' => $metaconsoleId,
                 ]
             );

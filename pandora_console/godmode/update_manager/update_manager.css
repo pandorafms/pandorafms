@@ -152,7 +152,8 @@
 }
 
 div#box_online * {
-  font-size: 18pt;
+  font-size: 16pt;
+  font-family: "Open Sans", sans-serif;
 }
 
 .update_popup {
@@ -183,12 +184,13 @@ div#box_online * {
 
 .update_text a {
   font-size: 11pt;
-  color: #82b92e;
+  color: #82b92e !important;
 }
 
 .ui-dialog .ui-dialog-buttonpane .ui-dialog-buttonset {
   float: left !important;
   padding-left: 19px;
+  padding-bottom: 5px;
 }
 
 .ui-dialog-buttonset > button.ui-button.ui-corner-all.ui-widget {
@@ -210,14 +212,18 @@ div#box_online * {
 }
 
 a.update_manager_button {
-  padding: 5px 10px;
+  padding: 10px 12px;
   margin-top: 10px;
-  display: inline-block;
-  font-size: 18px;
+  display: inline-flex;
+  align-items: center;
+  font-size: 16px !important;
+  border-radius: 4px !important;
+  text-decoration: none;
+  font-family: "Open Sans", sans-serif;
 }
 
 a.update_manager_button:after {
-  content: url(../../images/header_refresh_disabled_gray.png);
+  content: url(../../images/update_manager_button.png);
   padding-left: 10px;
 }
 
@@ -225,6 +231,7 @@ a.update_manager_button:after {
   margin-top: 15px;
 }
 
+.ui-draggable,
 .ui-draggable .ui-dialog-titlebar {
   cursor: default !important;
 }

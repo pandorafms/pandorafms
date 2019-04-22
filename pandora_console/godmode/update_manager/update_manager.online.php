@@ -82,9 +82,9 @@ if (is_metaconsole()) {
 
 echo "<span class='loading' style='font-size:18pt;'>";
 echo "<img src='images/wait.gif' />";
-echo '<br><br></span>';
+echo '</span>';
 
-echo '<div><b>'.__('The latest version of package installed is:').'</b></div><br>';
+echo '<p style="font-weight: 600;">'.__('The latest version of package installed is:').'</p>';
 echo "<div id='pkg_version' style='color:#82b92e;font-size:75pt;font-weight:bold;'>".$current_package.'</div>';
 
     echo "<div class='checking_package' style='font-size:18pt;width:100%; display: none;'>";

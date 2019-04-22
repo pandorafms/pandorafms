@@ -202,7 +202,6 @@ class Wizard
     ) {
         $bc = [];
         $i = 0;
-        $array_size = (count($urls) - 1);
 
         foreach ($urls as $url) {
             if ($url['selected'] == 1) {
@@ -592,13 +591,8 @@ class Wizard
         }
 
         if (is_array($input['block_content']) === true) {
-            $label = '';
-            if (isset($input['label'])) {
-                $label = $input['label'];
-            }
-
             // Print independent block of inputs.
-            $output .= '<li id="'.$input['block_id'].'" class="'.$class.'">'.$label;
+            $output .= '<li id="'.$input['block_id'].'" class="'.$class.'">';
             $output .= '<ul class="wizard">';
             foreach ($input['block_content'] as $input) {
                 $output .= $this->printBlock($input, $return);

@@ -415,7 +415,7 @@ function d3_progress_bubble($id, $percentile, $width, $height, $color, $unit='%'
 }
 
 
-function progress_circular_bar($id, $percentile, $width, $height, $color, $unit='%', $text='', $fill_color='#FFFFFF')
+function progress_circular_bar($id, $percentile, $width, $height, $color, $unit='%', $text='', $fill_color='#FFFFFF', $transition=1)
 {
     global $config;
 
@@ -427,7 +427,7 @@ function progress_circular_bar($id, $percentile, $width, $height, $color, $unit=
     $output .= '<div id='.$recipient_name." style='overflow: hidden;'></div>";
     $output .= include_javascript_d3(true);
     $output .= "<script language=\"javascript\" type=\"text/javascript\">
-					print_circular_progress_bar('".$recipient_name_to_js."', ".(int) $percentile.', '.(int) $width.', '.(int) $height.", '".$color."', '".$unit."', '".$text."', '".$fill_color."');
+					print_circular_progress_bar('".$recipient_name_to_js."', ".(int) $percentile.', '.(int) $width.', '.(int) $height.", '".$color."', '".$unit."', '".$text."', '".$fill_color."', '".$transition."');
 				</script>";
 
     return $output;

@@ -479,7 +479,8 @@ class Wizard
                 ((isset($data['keys_field']) === true) ? $data['keys_field'] : 'id_grupo'),
                 ((isset($data['strict_user']) === true) ? $data['strict_user'] : false),
                 ((isset($data['delete_groups']) === true) ? $data['delete_groups'] : false),
-                ((isset($data['include_groups']) === true) ? $data['include_groups'] : false)
+                ((isset($data['include_groups']) === true) ? $data['include_groups'] : false),
+                ((isset($data['size']) === true) ? $data['size'] : false)
             );
 
             case 'submit':
@@ -636,7 +637,7 @@ class Wizard
      *
      * @return string HTML code.
      */
-    public function printForm(array $data, bool $return=false)
+    public function printForm(array $data, bool $return=false, bool $print_white_box=false)
     {
         $form = $data['form'];
         $inputs = $data['inputs'];
@@ -662,13 +663,27 @@ class Wizard
             error_log('Error executing wizard callback: ', $e->getMessage());
         }
 
-        $output = '<ul class="wizard">';
+        $output_submit = '';
+        $output = '';
+
+        if ($print_white_box === true)
+            $output .= '<div class="white_box">';
+
+        $output .= '<ul class="wizard">';
 
         foreach ($inputs as $input) {
-            $output .= $this->printBlock($input, true);
+            if ($input['arguments']['type']!='submit')
+                $output .= $this->printBlock($input, true);
+            else
+                $output_submit .= $this->printBlock($input, true);
         }
 
         $output .= '</ul>';
+
+        if ($print_white_box === true)
+            $output .= '</div>';
+
+        $output .= '<ul class="wizard">'.$output_submit.'</ul>';
         $output .= '</form>';
         $output .= '<script>'.$js.'</script>';
 

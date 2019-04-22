@@ -45,11 +45,9 @@ if (!empty($files)) {
 
     $table = new stdClass();
     $table->width = '100%';
-    $table->class = 'databox data';
+    $table->class = 'info_table';
     $table->style = [];
     $table->style[1] = 'max-width: 200px;';
-    $table->style[2] = 'text-align: center;';
-    $table->style[3] = 'text-align: center;';
     $table->style[4] = 'text-align: center;';
     $table->head = [];
     $table->head[0] = __('Name');
@@ -81,6 +79,7 @@ if (!empty($files)) {
         // Last modification
         // Public URL
         $data[4] = '';
+        $table->cellclass[][4] = 'action_buttons';
         if (!empty($file['hash'])) {
             $public_url = ui_get_full_url(EXTENSIONS_DIR.'/files_repo/files_repo_get_file.php?file='.$file['hash']);
             $message = __('Copy to clipboard').': Ctrl+C -> Enter';
@@ -92,7 +91,7 @@ if (!empty($files)) {
         }
 
         $data[4] .= "<a href=\"$url\" target=\"_blank\">";
-        $data[4] .= html_print_image('images/download.png', true, ['title' => __('Download')]);
+        $data[4] .= html_print_image('images/download.png', true, ['title' => __('Download'), 'style' => 'padding:3px' ]);
         // Download image
         $data[4] .= '</a>';
 

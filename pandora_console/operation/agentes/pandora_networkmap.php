@@ -642,7 +642,9 @@ switch ($tab) {
 
         $table = new stdClass();
         $table->width = '100%';
-        $table->class = 'databox data';
+        $table->class = 'info_table';
+        $table->cellpadding = 0;
+        $table->cellspacing = 0;
         $table->headstyle['copy'] = 'text-align: center;';
         $table->headstyle['edit'] = 'text-align: center;';
 
@@ -687,9 +689,22 @@ switch ($tab) {
 
         $id_groups = array_keys(users_get_groups());
 
-        $network_maps = db_get_all_rows_filter(
+        // Prepare pagination.
+        $offset = (int) get_parameter('offset');
+        $limit = $config['block_size'];
+        $count_maps = db_get_value_filter(
+            'count(*)',
             'tmap',
             ['id_group' => $id_groups]
+        );
+
+        $network_maps = db_get_all_rows_filter(
+            'tmap',
+            [
+                'id_group' => $id_groups,
+                'limit'    => $limit,
+                'offset'   => $offset,
+            ]
         );
 
         if ($network_maps !== false) {
@@ -756,6 +771,11 @@ switch ($tab) {
                 $data['groups'] = ui_print_group_icon($network_map['id_group'], true);
 
                 if ($networkmap_write || $networkmap_manage) {
+                    $table->cellclass[] = [
+                        'copy'   => 'action_buttons',
+                        'edit'   => 'action_buttons',
+                        'delete' => 'action_buttons',
+                    ];
                     $data['copy'] = '<a href="index.php?'.'sec=network&'.'sec2=operation/agentes/pandora_networkmap&amp;'.'copy_networkmap=1&'.'id_networkmap='.$network_map['id'].'" alt="'.__('Copy').'">'.html_print_image('images/copy.png', true).'</a>';
                     $data['edit'] = '<a href="index.php?'.'sec=network&'.'sec2=operation/agentes/pandora_networkmap&'.'tab=edit&'.'edit_networkmap=1&'.'id_networkmap='.$network_map['id'].'" alt="'.__('Config').'">'.html_print_image('images/config.png', true).'</a>';
                     $data['delete'] = '<a href="index.php?'.'sec=network&'.'sec2=operation/agentes/pandora_networkmap&'.'delete=1&'.'id_networkmap='.$network_map['id'].'" alt="'.__('Delete').'" onclick="javascript: if (!confirm(\''.__('Are you sure?').'\')) return false;">'.html_print_image('images/cross.png', true).'</a>';
@@ -764,7 +784,9 @@ switch ($tab) {
                 $table->data[] = $data;
             }
 
+            ui_pagination($count_maps, false, $offset);
             html_print_table($table);
+            ui_pagination($count_maps, false, 0, 0, false, 'offset', true, 'pagination-bottom');
         } else {
             ui_print_info_message(['no_close' => true, 'message' => __('There are no maps defined.') ]);
         }

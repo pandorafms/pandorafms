@@ -60,7 +60,7 @@ if ($fields === false) {
 } else {
     $table = new stdClass();
     $table->width = '100%';
-    $table->class = 'databox data';
+    $table->class = 'info_table';
     $table->head = [];
     $table->head[0] = __('Field');
     $table->size[0] = '20%';

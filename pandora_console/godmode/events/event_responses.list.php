@@ -36,7 +36,9 @@ if (empty($event_responses)) {
 
 $table = new stdClass();
 $table->width = '100%';
-$table->class = 'databox data';
+$table->class = 'info_table';
+$table->cellpadding = 0;
+$table->cellspacing = 0;
 
 $table->size = [];
 $table->size[0] = '200px';
@@ -57,8 +59,9 @@ foreach ($event_responses as $response) {
     $data[0] = '<a href="index.php?sec=geventos&sec2=godmode/events/events&section=responses&mode=editor&id_response='.$response['id'].'&amp;pure='.$config['pure'].'">'.$response['name'].'</a>';
     $data[1] = $response['description'];
     $data[2] = ui_print_group_icon($response['id_group'], true);
+    $table->cellclass[][3] = 'action_buttons';
     $data[3] = '<a href="index.php?sec=geventos&sec2=godmode/events/events&section=responses&action=delete_response&id_response='.$response['id'].'&amp;pure='.$config['pure'].'">'.html_print_image('images/cross.png', true, ['title' => __('Delete')]).'</a>';
-    $data[3] .= '&nbsp;<a href="index.php?sec=geventos&sec2=godmode/events/events&section=responses&mode=editor&id_response='.$response['id'].'&amp;pure='.$config['pure'].'">'.html_print_image('images/pencil.png', true, ['title' => __('Edit')]).'</a>';
+    $data[3] .= '<a href="index.php?sec=geventos&sec2=godmode/events/events&section=responses&mode=editor&id_response='.$response['id'].'&amp;pure='.$config['pure'].'">'.html_print_image('images/pencil.png', true, ['title' => __('Edit')]).'</a>';
     $table->data[] = $data;
 }
 

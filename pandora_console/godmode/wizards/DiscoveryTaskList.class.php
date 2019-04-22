@@ -364,10 +364,10 @@ class DiscoveryTaskList extends Wizard
                 $url_ajax = $config['homeurl'].'ajax.php';
 
                 $table = new StdClass();
-                $table->cellpadding = 4;
-                $table->cellspacing = 4;
+                $table->cellpadding = 0;
+                $table->cellspacing = 0;
                 $table->width = '100%';
-                $table->class = 'databox data';
+                $table->class = 'info_table';
                 $table->head = [];
                 $table->data = [];
                 $table->align = [];
@@ -606,6 +606,8 @@ class DiscoveryTaskList extends Wizard
                 } else {
                     $data[9] = '';
                 }
+
+                $table->cellclass[][9] = 'action_buttons';
 
                 // Div neccesary for modal progress task.
                 echo '<div id="progress_task_'.$task['id_rt'].'" style="display:none"></div>';

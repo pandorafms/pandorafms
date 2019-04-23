@@ -50,7 +50,7 @@ function reporting_xml_get_report($report, $filename, $return=false)
     }
 
     // Download if marked to download.
-    if ($filename === false) {
+    if ($filename !== false) {
         header('Content-Type: application/xml; charset=UTF-8');
         header('Content-Disposition: attachment; filename="'.$filename.'.xml"');
     }

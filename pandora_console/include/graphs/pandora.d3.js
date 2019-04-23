@@ -1980,7 +1980,8 @@ function print_circular_progress_bar(
   color,
   unit,
   label,
-  label_color
+  label_color,
+  transition
 ) {
   var twoPi = Math.PI * 2;
   var radius = width / 2;
@@ -2112,15 +2113,19 @@ function print_circular_progress_bar(
 
   var progress = startPercent;
 
-  (function loops() {
-    updateProgress(progress);
+  if (transition == 0)
+    updateProgress(endPercent);
+  else {
+    (function loops() {
+      updateProgress(progress);
 
-    if (count > 0) {
-      count--;
-      progress += step;
-      setTimeout(loops, 30);
-    }
-  })();
+      if (count > 0) {
+        count--;
+        progress += step;
+        setTimeout(loops, 30);
+      }
+    })();
+  }
 }
 
 function print_interior_circular_progress_bar(

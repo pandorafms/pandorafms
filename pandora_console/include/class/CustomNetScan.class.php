@@ -438,7 +438,7 @@ class CustomNetScan extends Wizard
 
                 // Input task name.
                 $form['inputs'][] = [
-                    'label'     => '<b>'.__('Task name').'</b>',
+                    'label'     => __('Task name'),
                     'arguments' => [
                         'name'  => 'taskname',
                         'value' => $this->task['name'],
@@ -460,7 +460,7 @@ class CustomNetScan extends Wizard
 
                 // Input task description.
                 $form['inputs'][] = [
-                    'label'     => '<b>'.__('Comment').'</b>',
+                    'label'     => __('Comment'),
                     'arguments' => [
                         'name'  => 'comment',
                         'value' => $this->task['description'],
@@ -471,7 +471,7 @@ class CustomNetScan extends Wizard
 
                 // Input Discovery Server.
                 $form['inputs'][] = [
-                    'label'     => '<b>'.__('Discovery server').'</b>'.ui_print_help_tip(
+                    'label'     => __('Discovery server').ui_print_help_tip(
                         __('You must select a Discovery Server to run the Task, otherwise the Recon Task will never run'),
                         true
                     ),
@@ -492,7 +492,7 @@ class CustomNetScan extends Wizard
 
                 // Input Group.
                 $form['inputs'][] = [
-                    'label'     => '<b>'.__('Group').'</b>',
+                    'label'     => __('Group'),
                     'arguments' => [
                         'name'           => 'id_group',
                         'returnAllGroup' => false,
@@ -511,7 +511,7 @@ class CustomNetScan extends Wizard
 
                 // Schedule.
                 $form['inputs'][] = [
-                    'label'     => '<b>'.__('Interval').'</b>'.ui_print_help_tip(
+                    'label'     => __('Interval').ui_print_help_tip(
                         __('Manual interval means that it will be executed only On-demand'),
                         true
                     ),
@@ -594,7 +594,7 @@ class CustomNetScan extends Wizard
 
                 // XXX: Could be improved validating inputs before continue (JS)
                 // Print NetScan page 0.
-                $this->printForm($form);
+                $this->printForm($form, false, true);
             }
         }
 
@@ -602,7 +602,7 @@ class CustomNetScan extends Wizard
             $name_ipam = 'IPAM Recon';
             // Recon script.
             $form['inputs'][] = [
-                'label'     => '<b>'.__('Recon script').'</b>',
+                'label'     => __('Recon script'),
                 'arguments' => [
                     'type'     => 'select_from_sql',
                     'sql'      => sprintf(
@@ -643,7 +643,7 @@ class CustomNetScan extends Wizard
             );
 
             $form['inputs'][] = [
-                'label'     => '<b>'.__('Explanation').'</b><span id="spinner_recon_script" style="display: none;">'.html_print_image('images/spinner.gif', true).'</span>',
+                'label'     => __('Explanation').'<span id="spinner_recon_script" style="display: none;">'.html_print_image('images/spinner.gif', true).'</span>',
                 'arguments' => [
                     'type'       => 'textarea',
                     'rows'       => 4,
@@ -652,6 +652,7 @@ class CustomNetScan extends Wizard
                     'value'      => $explanation,
                     'return'     => true,
                     'attributes' => 'style="width: 388px;"',
+                    'class'      => 'discovery_textarea_input'
                 ],
             ];
 
@@ -663,8 +664,9 @@ class CustomNetScan extends Wizard
                     'name'   => 'macro_name',
                     'value'  => 'macro_value',
                     'type'   => 'text',
-                    'size'   => 100,
+                    'size'   => 50,
                     'return' => true,
+
                 ],
             ];
 
@@ -740,7 +742,7 @@ class CustomNetScan extends Wizard
                     get_explanation_recon_script($(this).val(), "'.$id_task.'", "'.$url_ajax.'");
                 })'.$change;
 
-            $this->printForm($form);
+            $this->printForm($form, false, true);
         }
 
         if (isset($this->page) === true && $this->page === 2) {

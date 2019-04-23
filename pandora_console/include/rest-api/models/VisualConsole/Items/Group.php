@@ -50,60 +50,6 @@ final class Group extends Item
 
 
     /**
-     * Extract a image src value.
-     *
-     * @param array $data Unknown input data structure.
-     *
-     * @return mixed String representing the image url (not empty) or null.
-     *
-     * @throws \InvalidArgumentException When a valid image src can't be found.
-     */
-    private static function extractImageSrc(array $data): string
-    {
-        $imageSrc = static::notEmptyStringOr(
-            static::issetInArray($data, ['imageSrc', 'image']),
-            null
-        );
-
-        if ($imageSrc === null) {
-            throw new \InvalidArgumentException(
-                'the image src property is required and should be a non empty string'
-            );
-        }
-
-        return $imageSrc;
-    }
-
-
-    /**
-     * Extract a status image src value.
-     *
-     * @param array $data Unknown input data structure.
-     *
-     * @return mixed String representing the status image url (not empty)
-     * or null.
-     *
-     * @throws \InvalidArgumentException When a valid status image src
-     * can't be found.
-     */
-    private static function extractStatusImageSrc(array $data): string
-    {
-        $statusImageSrc = static::notEmptyStringOr(
-            static::issetInArray($data, ['statusImageSrc']),
-            null
-        );
-
-        if ($statusImageSrc === null) {
-            throw new \InvalidArgumentException(
-                'the status image src property is required and should be a non empty string'
-            );
-        }
-
-        return $statusImageSrc;
-    }
-
-
-    /**
      * Extract a group Id value.
      *
      * @param array $data Unknown input data structure.
@@ -126,6 +72,44 @@ final class Group extends Item
         }
 
         return $groupId;
+    }
+
+
+    /**
+     * Extract a image src value.
+     *
+     * @param array $data Unknown input data structure.
+     *
+     * @return mixed String representing the image url (not empty) or null.
+     *
+     * @throws \InvalidArgumentException When a valid image src can't be found.
+     */
+    private static function extractImageSrc(array $data): string
+    {
+        return static::notEmptyStringOr(
+            static::issetInArray($data, ['imageSrc', 'image']),
+            null
+        );
+    }
+
+
+    /**
+     * Extract a status image src value.
+     *
+     * @param array $data Unknown input data structure.
+     *
+     * @return mixed String representing the status image url (not empty)
+     * or null.
+     *
+     * @throws \InvalidArgumentException When a valid status image src
+     * can't be found.
+     */
+    private static function extractStatusImageSrc(array $data): string
+    {
+        return static::notEmptyStringOr(
+            static::issetInArray($data, ['statusImageSrc']),
+            null
+        );
     }
 
 

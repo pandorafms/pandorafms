@@ -193,9 +193,8 @@ div#box_online * {
 }
 
 .ui-dialog-buttonset > button.ui-button.ui-corner-all.ui-widget {
-  background-color: #868686 !important;
+  background-color: #cecece !important;
   border: none !important;
-  color: #fff !important;
   border-radius: 2px !important;
   text-transform: uppercase !important;
   font-weight: bold !important;

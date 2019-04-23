@@ -49,8 +49,6 @@ if ($progress_task_discovery) {
         $result .= '<div style="width: 100%; text-align: center; margin-top: 40px;">';
         $result .= '<span style="font-size: 1.9em; font-family: "lato-bolder", "Open Sans", sans-serif !important;">'._('Overall Progress').'</span>';
 
-$global_progress=83;
-
         $result .= '<div style="margin-top: 25px;">';
         $result .= progress_circular_bar(
             $id_task,

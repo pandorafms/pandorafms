@@ -81,10 +81,8 @@ final class Group extends Item
      * @param array $data Unknown input data structure.
      *
      * @return mixed String representing the image url (not empty) or null.
-     *
-     * @throws \InvalidArgumentException When a valid image src can't be found.
      */
-    private static function extractImageSrc(array $data): string
+    private static function extractImageSrc(array $data)
     {
         return static::notEmptyStringOr(
             static::issetInArray($data, ['imageSrc', 'image']),
@@ -100,11 +98,8 @@ final class Group extends Item
      *
      * @return mixed String representing the status image url (not empty)
      * or null.
-     *
-     * @throws \InvalidArgumentException When a valid status image src
-     * can't be found.
      */
-    private static function extractStatusImageSrc(array $data): string
+    private static function extractStatusImageSrc(array $data)
     {
         return static::notEmptyStringOr(
             static::issetInArray($data, ['statusImageSrc']),

@@ -436,7 +436,8 @@ function html_print_select_groups(
     $keys_field='id_grupo',
     $strict_user=false,
     $delete_groups=false,
-    $include_groups=false
+    $include_groups=false,
+    $size=false
 ) {
     global $config;
 
@@ -481,7 +482,8 @@ function html_print_select_groups(
         $class,
         $disabled,
         $style,
-        $option_style
+        $option_style,
+        $size
     );
 
     if ($return) {
@@ -549,13 +551,11 @@ function html_print_select(
         $attributes .= ' onchange="'.$script.'"';
     }
 
-    if (!empty($multiple)) {
-        if ($size !== false) {
-            $attributes .= ' multiple="multiple" size="'.$size.'"';
-        } else {
-            $attributes .= ' multiple="multiple" size="10"';
-        }
-    }
+    if ($size !== false)
+        $attributes .= ' size="'.$size.'"';
+
+    if (!empty($multiple))
+        $attributes .= ' multiple="multiple"';
 
     if (!empty($class)) {
         $attributes .= ' class="'.$class.'"';
@@ -1774,7 +1774,8 @@ function html_print_button($label='OK', $name='', $disabled=false, $script='', $
  */
 function html_print_textarea($name, $rows, $columns, $value='', $attributes='', $return=false, $class='')
 {
-    $output = '<textarea id="textarea_'.$name.'" name="'.$name.'" cols="'.$columns.'" rows="'.$rows.'" '.$attributes.'" '.$class.'>';
+
+    $output = '<textarea id="textarea_'.$name.'" name="'.$name.'" cols="'.$columns.'" rows="'.$rows.'" '.$attributes.'" class="'.$class.'">';
     // $output .= io_safe_input ($value);
     $output .= ($value);
     $output .= '</textarea>';

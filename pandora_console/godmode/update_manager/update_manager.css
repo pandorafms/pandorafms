@@ -233,3 +233,29 @@ a.update_manager_button:after {
 .ui-draggable .ui-dialog-titlebar {
   cursor: default !important;
 }
+
+#box_online #pkg_version {
+  color: #82b92e;
+  font-size: 75pt;
+  font-weight: bold;
+}
+
+/* METACONSOLE */
+.box_online_meta {
+  background: none !important;
+  min-height: 400px !important;
+  text-align: center;
+  border: none !important;
+}
+
+div#box_online.box_online_meta * {
+  font-size: 14pt;
+}
+
+#box_online.box_online_meta .content {
+  max-width: 100%;
+}
+
+#box_online.box_online_meta #pkg_version {
+  font-size: 60pt;
+}

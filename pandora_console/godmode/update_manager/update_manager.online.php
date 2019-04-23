@@ -75,7 +75,9 @@ if (is_metaconsole()) {
 }
 
 if (is_metaconsole()) {
-    echo "<div id='box_online' style='float:right;padding-right:400px;padding-top:40px;padding-bottom:40px;' class='cargatextodialogo'>";
+    $baseurl = ui_get_full_url(false, false, false, false);
+    echo ' <link rel="stylesheet" type="text/css" href="'.$baseurl.'/godmode/update_manager/update_manager.css">';
+    echo "<div id='box_online' class='box_online_meta'>";
 } else {
     echo "<div id='box_online'>";
 }
@@ -85,7 +87,7 @@ echo "<img src='images/wait.gif' />";
 echo '</span>';
 
 echo '<p style="font-weight: 600;">'.__('The latest version of package installed is:').'</p>';
-echo "<div id='pkg_version' style='color:#82b92e;font-size:75pt;font-weight:bold;'>".$current_package.'</div>';
+echo "<div id='pkg_version'>".$current_package.'</div>';
 
     echo "<div class='checking_package' style='font-size:18pt;width:100%; display: none;'>";
         echo __('Checking for the newest package.');

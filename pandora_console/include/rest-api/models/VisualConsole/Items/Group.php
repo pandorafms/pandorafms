@@ -20,7 +20,7 @@ final class Group extends Item
     protected static $useLinkedVisualConsole = true;
 
     /**
-     * Used to decide wether to validate, extract and encode HTML output or not.
+     * Enable the validation, extraction and encoding of HTML output.
      *
      * @var boolean
      */
@@ -41,14 +41,10 @@ final class Group extends Item
         $return = parent::decode($data);
         $return['type'] = GROUP_ITEM;
         $return['groupId'] = static::extractGroupId($data);
+        $return['imageSrc'] = static::extractImageSrc($data);
+        $return['statusImageSrc'] = static::extractStatusImageSrc($data);
         $return['showStatistics'] = static::extractShowStatistics($data);
-        if (!$return['showStatistics']) {
-            $return['imageSrc'] = static::extractImageSrc($data);
-            $return['statusImageSrc'] = static::extractStatusImageSrc($data);
-        }
 
-        global $config;
-        $return['link'] = $config['homeurl'].'index.php?sec=estado&sec2=operation/agentes/estado_agente&group_id='.$return['groupId'];
         return $return;
     }
 
@@ -182,7 +178,7 @@ final class Group extends Item
         $showStatistics = static::extractShowStatistics($data);
 
         if ($showStatistics) {
-            $isMetaconsole = is_metaconsole();
+            $isMetaconsole = \is_metaconsole();
             // Retrieve the agent stats.
             $agentsCritical = \agents_get_agents(
                 [
@@ -275,7 +271,7 @@ final class Group extends Item
                 $data['height'] = $sizeImage[1];
             }
 
-            $data['html'] = '<table></table>';
+            $data['html'] = '<img src="'.$data['statusImageSrc'].'">';
         }
 
         return $data;
@@ -348,7 +344,6 @@ final class Group extends Item
             ]
         );
 
-        // $html = '<table class="databox" style="'.$tableStyle.'" cellpadding="0" cellspacing="0" border="0">';
         $html = '<table class="databox" style="'.$tableStyle.'">';
         $html .= '<tr style="height:10%;">';
         $html .= '<th style="'.$headStyle.'">'.$groupName.'</th>';
@@ -382,6 +377,48 @@ final class Group extends Item
         $html .= '</table>';
 
         return $html;
+    }
+
+
+    /**
+     * Generate a link to something related with the item.
+     *
+     * @param array $data Visual Console Item's data structure.
+     *
+     * @return mixed The link or a null value.
+     *
+     * @override Item::buildLink.
+     */
+    protected static function buildLink(array $data)
+    {
+        // This will return the link to a linked VC if this item has one.
+        $link = parent::buildLink($data);
+        if ($link !== null) {
+            return $link;
+        }
+
+        global $config;
+
+        $groupId = static::extractGroupId($data);
+        $baseUrl = $config['homeurl'].'index.php';
+
+        if (\is_metaconsole()) {
+            return $baseUrl.'?'.http_build_query(
+                [
+                    'sec'      => 'monitoring',
+                    'sec2'     => 'operation/tree',
+                    'group_id' => $groupId,
+                ]
+            );
+        }
+
+        return $baseUrl.'?'.http_build_query(
+            [
+                'sec'      => 'estado',
+                'sec2'     => 'operation/agentes/estado_agente',
+                'group_id' => $groupId,
+            ]
+        );
     }
 
 

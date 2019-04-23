@@ -226,20 +226,30 @@ final class Group extends Item
             );
         } else {
             if (\is_metaconsole()) {
+                $groupFilter = $groupId;
                 if ($groupId === 0) {
-                    $groupId = \implode(',', \array_keys(\users_get_groups()));
+                    $groupFilter = implode(
+                        ',',
+                        array_keys(\users_get_groups())
+                    );
                 }
 
-                $sql = 'SELECT SUM(fired_count) AS fired,
-                    SUM(critical_count) AS critical,
-                    SUM(warning_count) AS warning,
-                    SUM(unknown_count) AS unknown
+                $sql = sprintf(
+                    'SELECT
+                        SUM(fired_count) AS fired,
+                        SUM(critical_count) AS critical,
+                        SUM(warning_count) AS warning,
+                        SUM(unknown_count) AS unknown
                     FROM tmetaconsole_agent
                     LEFT JOIN tmetaconsole_agent_secondary_group tasg
-                    ON id_agente = tasg.id_agent
-                    WHERE id_grupo IN ('.$groupId.') OR tasg.id_group IN ('.$groupId.')';
+                        ON id_agente = tasg.id_agent
+                    WHERE id_grupo IN (%s)
+                        OR tasg.id_group IN (%s)',
+                    $groupFilter,
+                    $groupFilter
+                );
 
-                $countStatus = db_get_row_sql($sql);
+                $countStatus = \db_get_row_sql($sql);
 
                 if ($countStatus['fired'] > 0) {
                     $status = AGENT_STATUS_ALERT_FIRED;

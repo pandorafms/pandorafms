@@ -163,21 +163,6 @@ final class StaticGraph extends Item
             throw new \InvalidArgumentException('missing module Id');
         }
 
-        // Maybe connect to node.
-        $nodeConnected = false;
-        if (\is_metaconsole() === true && $metaconsoleId !== null) {
-            $nodeConnected = \metaconsole_connect(
-                null,
-                $metaconsoleId
-            ) === NOERR;
-
-            if ($nodeConnected === false) {
-                throw new \InvalidArgumentException(
-                    'error connecting to the node'
-                );
-            }
-        }
-
         // Get the img src.
         $imagePath = \visual_map_get_image_status_element($data);
         $data['statusImageSrc'] = \ui_get_full_url(
@@ -198,6 +183,21 @@ final class StaticGraph extends Item
         // Get last value.
         $showLastValueTooltip = static::extractShowLastValueTooltip($data);
         if ($showLastValueTooltip !== 'disabled' && $moduleId > 0) {
+            // Maybe connect to node.
+            $nodeConnected = false;
+            if (\is_metaconsole() === true && $metaconsoleId !== null) {
+                $nodeConnected = \metaconsole_connect(
+                    null,
+                    $metaconsoleId
+                ) === NOERR;
+
+                if ($nodeConnected === false) {
+                    throw new \InvalidArgumentException(
+                        'error connecting to the node'
+                    );
+                }
+            }
+
             $imgTitle = '';
 
             $unit = \trim(\io_safe_output(\modules_get_unit($moduleId)));
@@ -219,11 +219,11 @@ final class StaticGraph extends Item
 
                 $data['lastValue'] = $imgTitle;
             }
-        }
 
-        // Restore connection.
-        if ($nodeConnected === true) {
-            \metaconsole_restore_db();
+            // Restore connection.
+            if ($nodeConnected === true) {
+                \metaconsole_restore_db();
+            }
         }
 
         return $data;

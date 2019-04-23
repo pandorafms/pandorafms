@@ -120,13 +120,16 @@ final class Icon extends Item
         if ((int) $data['width'] === 0 || (int) $data['height'] === 0) {
             // TODO: This will be the default behaviour after we finish the
             // builder. Don't delete this code.
-            // $sizeImage = getimagesize($config['homedir'].'/'.$imagePath);
-            // $data['width'] = $sizeImage[0];
-            // $data['height'] = $sizeImage[1];
-            // Default value. Will be replaced by a dynamic image size
-            // calculation after the phase 3.
-            $data['width'] = 70;
-            $data['height'] = 70;
+            $sizeImage = getimagesize($config['homedir'].'/'.$imagePath);
+            if ($sizeImage[0] < 70 || $sizeImage[1] < 70) {
+                $data['width'] = $sizeImage[0];
+                $data['height'] = $sizeImage[1];
+            } else {
+                // Default value. Will be replaced by a dynamic image size
+                // calculation after the phase 3.
+                $data['width'] = 70;
+                $data['height'] = 70;
+            }
         }
 
         return $data;

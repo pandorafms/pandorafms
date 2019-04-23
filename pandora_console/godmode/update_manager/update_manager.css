@@ -156,6 +156,10 @@ div#box_online * {
   font-family: "Open Sans", sans-serif;
 }
 
+#box_online .content {
+  max-width: 60%;
+}
+
 .update_popup {
   display: flex;
   justify-content: space-between;
@@ -164,12 +168,7 @@ div#box_online * {
   padding-right: 10px;
 }
 
-.update_text {
-  /*border: 1px solid silver;*/
-}
-
 .update_icon {
-  /*border: 1px solid pink;*/
   padding-left: 20px;
 }
 

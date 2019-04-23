@@ -115,7 +115,7 @@ final class Group extends Item
      *
      * @return boolean If the statistics should be shown or not.
      */
-    private static function extractShowStatistics(array $data): boolean
+    private static function extractShowStatistics(array $data): bool
     {
         return static::parseBool(
             static::issetInArray($data, ['showStatistics', 'show_statistics'])

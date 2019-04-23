@@ -3961,38 +3961,54 @@ function visual_map_translate_module_status($module_status)
  * layouts), and makes an AND operation to be sure that all the items
  * are OK. If any of them is down, then result is down (0)
  *
- * @param int Id of the layout
- * @param array Information about the status calculation of the item
- * @param int Depth (for recursion control)
+ * @param integer $layout_id   Id of the layout.
+ * @param array   $status_data Information about the status calculation of the
+ * item.
+ * @param integer $depth       Depth (for recursion control).
  *
- * @return boolean The status of the given layout. True if it's OK, false if not.
+ * @return integer The status of the given layout.
  */
 function visual_map_get_layout_status($layout_id, $status_data=[], $depth=0)
 {
     global $config;
 
-    // TODO: Implement this limit into the setup
+    // TODO: Implement this limit into the setup.
     if ($depth > 10) {
         return VISUAL_MAP_STATUS_UNKNOWN;
     }
 
-    $layout_items = db_get_all_rows_filter('tlayout_data', ['id_layout' => $layout_id]);
+    $layout_items = db_get_all_rows_filter(
+        'tlayout_data',
+        ['id_layout' => $layout_id]
+    );
 
     if ($layout_items === false) {
         return VISUAL_MAP_STATUS_UNKNOWN;
     }
 
-    // Check for valid items to retrieve the status for
+    // Check for valid items to retrieve the status for.
     $valid_layout_items = [];
     foreach ($layout_items as $layout_item_data) {
         if (($layout_item_data['type'] == GROUP_ITEM
             && !empty($layout_item_data['id_group'])
-            && check_acl($config['id_user'], $layout_item_data['id_group'], 'VR')
-            && check_acl($config['id_user'], $layout_item_data['element_group'], 'VR'))
+            && check_acl(
+                $config['id_user'],
+                $layout_item_data['id_group'],
+                'VR'
+            )
+            && check_acl(
+                $config['id_user'],
+                $layout_item_data['element_group'],
+                'VR'
+            ))
             || ((!empty($layout_item_data['id_layout_linked'])
             || !empty($layout_item_data['id_agente_modulo'])
             || !empty($layout_item_data['id_agent']))
-            && check_acl($config['id_user'], $layout_item_data['element_group'], 'VR'))
+            && check_acl(
+                $config['id_user'],
+                $layout_item_data['element_group'],
+                'VR'
+            ))
         ) {
             $valid_layout_items[] = $layout_item_data;
         }
@@ -4002,7 +4018,7 @@ function visual_map_get_layout_status($layout_id, $status_data=[], $depth=0)
         return VISUAL_MAP_STATUS_UNKNOWN;
     }
 
-    // Sort by node id to reduce the number of connections
+    // Sort by node id to reduce the number of connections.
     if (is_metaconsole()) {
         sort_by_column($valid_layout_items, 'id_metaconsole');
     }
@@ -4021,14 +4037,14 @@ function visual_map_get_layout_status($layout_id, $status_data=[], $depth=0)
 
             if (empty($node_id) && $meta_connected_to) {
                 metaconsole_restore_db();
-                // Restore db connection
+                // Restore db connection.
                 $meta_connected_to = null;
-            } else if (!empty($node_id) && (                empty($meta_connected_to)
-                || $meta_connected_to != $node_id)
+            } else if (!empty($node_id)
+                && (empty($meta_connected_to) || $meta_connected_to != $node_id)
             ) {
                 if (!empty($meta_connected_to)) {
                     metaconsole_restore_db();
-                    // Restore db connection
+                    // Restore db connection.
                 }
 
                 $connection = metaconsole_get_connection_by_id($node_id);
@@ -4042,64 +4058,80 @@ function visual_map_get_layout_status($layout_id, $status_data=[], $depth=0)
 
         $status = VISUAL_MAP_STATUS_NORMAL;
 
-        $ent_element_status = enterprise_hook('enterprise_visual_map_get_status_element', [$layoutData]);
+        $ent_element_status = enterprise_hook(
+            'enterprise_visual_map_get_status_element',
+            [$layoutData]
+        );
         if ($ent_element_status === ENTERPRISE_NOT_HOOK) {
             $ent_element_status = false;
         }
 
-        // Enterprise element
         if ($ent_element_status !== false) {
+            // Enterprise element.
             $status = $ent_element_status;
-        }
-        // Other
-        else {
+        } else {
+            // Other.
             switch ($layout_item_data['type']) {
                 case STATIC_GRAPH:
                 case PERCENTILE_BAR:
                 case PERCENTILE_BUBBLE:
                 case CIRCULAR_PROGRESS_BAR:
                 case CIRCULAR_INTERIOR_PROGRESS_BAR:
-                    // Linked layout
                     if (!empty($layout_item_data['id_layout_linked'])) {
-                        $status = visual_map_get_layout_status($layout_item_data['id_layout_linked'], $layout_item_data, ($depth + 1));
-                    }
-                    // Module
-                    else if (!empty($layout_item_data['id_agente_modulo'])) {
-                        $module_status = modules_get_agentmodule_status($layout_item_data['id_agente_modulo']);
-                        $status = visual_map_translate_module_status($module_status);
-                    }
-                    // Agent
-                    else if (!empty($layout_item_data['id_agent'])) {
-                        $agent_status = agents_get_status($layout_item_data['id_agent'], true);
-                        $status = visual_map_translate_agent_status($agent_status);
-                    }
-                    // Unknown
-                    else {
+                        // Linked layout.
+                        $status = visual_map_get_layout_status(
+                            $layout_item_data['id_layout_linked'],
+                            $layout_item_data,
+                            ($depth + 1)
+                        );
+                    } else if (!empty($layout_item_data['id_agente_modulo'])) {
+                        // Module.
+                        $module_status = modules_get_agentmodule_status(
+                            $layout_item_data['id_agente_modulo']
+                        );
+                        $status = visual_map_translate_module_status(
+                            $module_status
+                        );
+                    } else if (!empty($layout_item_data['id_agent'])) {
+                        // Agent.
+                        $agent_status = agents_get_status(
+                            $layout_item_data['id_agent'],
+                            true
+                        );
+                        $status = visual_map_translate_agent_status(
+                            $agent_status
+                        );
+                    } else {
+                        // Unknown.
                         $status = VISUAL_MAP_STATUS_UNKNOWN;
                     }
                 break;
 
                 case GROUP_ITEM:
-                    $group_status = groups_get_status($layout_item_data['id_group']);
+                    $group_status = groups_get_status(
+                        $layout_item_data['id_group']
+                    );
                     $status = visual_map_translate_agent_status($group_status);
                 break;
 
                 default:
-                    // If it's a graph, a progress bar or a data tag, ALWAYS report status OK
-                    // (=0) to avoid confussions here.
+                    // If it's a graph, a progress bar or a data tag,
+                    // ALWAYS report status OK (=0) to avoid confussions here.
                     $status = VISUAL_MAP_STATUS_NORMAL;
                 break;
             }
         }
 
-        // When the status calculation type is 'default', only one critical element is required to
-        // set the layout status as critical, so we can return the critical status right now.
-        if ($status_data['linked_layout_status_type'] === 'default' && (            $status == VISUAL_MAP_STATUS_CRITICAL_BAD
+        // When the status calculation type is 'default', only one critical
+        // element is required to set the layout status as critical, so we can
+        // return the critical status right now.
+        if ($status_data['linked_layout_status_type'] === 'default'
+            && ($status == VISUAL_MAP_STATUS_CRITICAL_BAD
             || $status == VISUAL_MAP_STATUS_CRITICAL_ALERT)
         ) {
             if (is_metaconsole() && $meta_connected_to) {
+                // Restore db connection.
                 metaconsole_restore_db();
-                // Restore db connection
             }
 
             return $status;
@@ -4113,11 +4145,11 @@ function visual_map_get_layout_status($layout_id, $status_data=[], $depth=0)
     }
 
     if (is_metaconsole() && $meta_connected_to) {
+        // Restore db connection.
         metaconsole_restore_db();
-        // Restore db connection
     }
 
-    // Status calculation
+    // Status calculation.
     switch ($status_data['linked_layout_status_type']) {
         default:
         case 'default':
@@ -4149,7 +4181,7 @@ function visual_map_get_layout_status($layout_id, $status_data=[], $depth=0)
             if ($num_items_critical > 0
                 && ((($num_items_critical_alert + $num_items_critical) * 100) / $num_items) >= $weight
             ) {
-                return $num_items_critical_alert > 0 ? VISUAL_MAP_STATUS_CRITICAL_ALERT : VISUAL_MAP_STATUS_CRITICAL_BAD;
+                return ($num_items_critical_alert > 0) ? VISUAL_MAP_STATUS_CRITICAL_ALERT : VISUAL_MAP_STATUS_CRITICAL_BAD;
             } else if ($num_items_warning > 0
                 && (($num_items_warning * 100) / $num_items) >= $weight
             ) {

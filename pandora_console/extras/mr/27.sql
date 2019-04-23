@@ -47,4 +47,8 @@ UPDATE `trecon_script` SET `type` = 2 WHERE `name`="Discovery.Cloud";
 UPDATE `trecon_script` SET `type` = 3 WHERE `name` LIKE "IPAM%Recon";
 UPDATE `trecon_script` SET `type` = 4 WHERE `name` LIKE "IPMI%Recon";
 
+UPDATE `trecon_task` SET `type`=3 WHERE `description`="Discovery.Application.VMware";
+UPDATE `trecon_task` SET `type`=2 WHERE `description`="Discovery.Cloud";
+UPDATE `trecon_task` SET `type`=7 WHERE `description`="Discovery.Cloud.RDS";
+
 COMMIT;

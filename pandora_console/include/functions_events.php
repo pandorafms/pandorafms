@@ -3259,6 +3259,18 @@ function events_page_general($event)
     $table_general->data[] = $data;
 
     $data = [];
+    $data[0] = __('Contact');
+    $data[1] = '';
+    $contact = db_get_value('contact', 'tgrupo', 'id_grupo', $event['id_grupo']);
+    if (empty($contact)) {
+        $data[1] = '<i>'.__('N/A').'</i>';
+    } else {
+        $data[1] = $contact;
+    }
+
+    $table_general->data[] = $data;
+
+    $data = [];
     $data[0] = __('Tags');
 
     if ($event['tags'] != '') {

@@ -262,11 +262,7 @@ final class Group extends Item
             // If the width or the height are equal to 0 we will extract them
             // from the real image size.
             if ((int) $data['width'] === 0 || (int) $data['height'] === 0) {
-                if (\is_metaconsole()) {
-                    $imagePath = '../../'.$imagePath;
-                }
-
-                $sizeImage = getimagesize($imagePath);
+                $sizeImage = getimagesize($config['homedir'].'/'.$imagePath);
                 $data['width'] = $sizeImage[0];
                 $data['height'] = $sizeImage[1];
             }

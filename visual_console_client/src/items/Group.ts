@@ -62,22 +62,19 @@ export function groupPropsDecoder(data: UnknownObject): GroupProps | never {
 
 export default class Group extends Item<GroupProps> {
   protected createDomElement(): HTMLElement {
-    if (this.props.showStatistics) {
-      const div = document.createElement("div");
-      div.className = "group";
-      if (this.props.html != null) {
-        div.innerHTML = this.props.html;
-      }
+    const element = document.createElement("div");
+    element.className = "group";
 
-      return div;
-    } else {
-      const img: HTMLImageElement = document.createElement("img");
-      img.className = "group";
-      if (this.props.statusImageSrc !== null) {
-        img.src = this.props.statusImageSrc;
-      }
-
-      return img;
+    if (!this.props.showStatistics && this.props.statusImageSrc !== null) {
+      // Icon with status.
+      element.style.background = `url(${this.props.statusImageSrc}) no-repeat`;
+      element.style.backgroundSize = "contain";
+      element.style.backgroundPosition = "center";
+    } else if (this.props.showStatistics && this.props.html != null) {
+      // Stats table.
+      element.innerHTML = this.props.html;
     }
+
+    return element;
   }
 }

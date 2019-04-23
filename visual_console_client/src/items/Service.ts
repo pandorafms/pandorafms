@@ -54,17 +54,17 @@ export function servicePropsDecoder(data: UnknownObject): ServiceProps | never {
 
 export default class Service extends Item<ServiceProps> {
   public createDomElement(): HTMLElement {
-    const img: HTMLImageElement = document.createElement("img");
+    const element = document.createElement("div");
+    element.className = "service";
+
     if (this.props.statusImageSrc !== null) {
-      img.className = "icon";
-      img.src = this.props.statusImageSrc;
-    } else {
-      if (this.props.encodedTitle !== null) {
-        const element = document.createElement("div");
-        element.innerHTML = decodeBase64(this.props.encodedTitle);
-        return element;
-      }
+      element.style.background = `url(${this.props.statusImageSrc}) no-repeat`;
+      element.style.backgroundSize = "contain";
+      element.style.backgroundPosition = "center";
+    } else if (this.props.encodedTitle !== null) {
+      element.innerHTML = decodeBase64(this.props.encodedTitle);
     }
-    return img;
+
+    return element;
   }
 }

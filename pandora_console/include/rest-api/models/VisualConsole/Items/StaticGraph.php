@@ -176,18 +176,25 @@ final class StaticGraph extends Item
 
         // If the width or the height are equal to 0 we will extract them
         // from the real image size.
-        if ((int) $data['width'] === 0 || (int) $data['height'] === 0) {
+        $width = (int) $data['width'];
+        $height = (int) $data['height'];
+        if ($width === 0 || $height === 0) {
             // TODO: This will be the default behaviour after we finish the
             // builder. Don't delete this code.
+            // $sizeImage = getimagesize($config['homedir'].'/'.$imagePath);
+            // $data['width'] = $sizeImage[0];
+            // $data['height'] = $sizeImage[1];
+            // Default value. Will be replaced by a dynamic image size
+            // calculation after the phase 3.
             $sizeImage = getimagesize($config['homedir'].'/'.$imagePath);
-            if ($sizeImage[0] < 70 || $sizeImage[1] < 70) {
-                $data['width'] = $sizeImage[0];
-                $data['height'] = $sizeImage[1];
-            } else {
-                // Default value. Will be replaced by a dynamic image size
-                // calculation after the phase 3.
+            $imageHeight = $sizeImage[1];
+
+            if ($width === 0) {
                 $data['width'] = 70;
-                $data['height'] = 70;
+            }
+
+            if ($height === 0) {
+                $data['height'] = ($imageHeight > 70) ? 70 : $imageHeight;
             }
         }
 

@@ -32,10 +32,12 @@ export function iconPropsDecoder(data: UnknownObject): IconProps | never {
 
 export default class Icon extends Item<IconProps> {
   protected createDomElement(): HTMLElement {
-    const img: HTMLImageElement = document.createElement("img");
-    img.className = "icon";
-    img.src = this.props.imageSrc;
+    const element = document.createElement("div");
+    element.className = "icon";
+    element.style.background = `url(${this.props.imageSrc}) no-repeat`;
+    element.style.backgroundSize = "contain";
+    element.style.backgroundPosition = "center";
 
-    return img;
+    return element;
   }
 }

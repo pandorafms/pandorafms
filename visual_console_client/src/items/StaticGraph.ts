@@ -67,21 +67,23 @@ export function staticGraphPropsDecoder(
 
 export default class StaticGraph extends Item<StaticGraphProps> {
   protected createDomElement(): HTMLElement {
-    const img: HTMLImageElement = document.createElement("img");
-    img.className = "static-graph";
-    img.src = this.props.statusImageSrc || this.props.imageSrc;
+    const imgSrc = this.props.statusImageSrc || this.props.imageSrc;
+    const element = document.createElement("div");
+    element.className = "static-graph";
+    element.style.background = `url(${imgSrc}) no-repeat`;
+    element.style.backgroundSize = "contain";
+    element.style.backgroundPosition = "center";
 
     // Show last value in a tooltip.
     if (
       this.props.lastValue !== null &&
       this.props.showLastValueTooltip !== "disabled"
     ) {
-      img.className = "static-graph image forced_title";
-      img.setAttribute("data-use_title_for_force_title", "1");
-      img.setAttribute("data-title", this.props.lastValue);
-      img.alt = this.props.lastValue;
+      element.className = "static-graph image forced_title";
+      element.setAttribute("data-use_title_for_force_title", "1");
+      element.setAttribute("data-title", this.props.lastValue);
     }
 
-    return img;
+    return element;
   }
 }

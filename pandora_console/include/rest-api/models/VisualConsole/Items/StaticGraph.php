@@ -164,7 +164,7 @@ final class StaticGraph extends Item
         }
 
         // Get the img src.
-        // There's no need to connect to the metaconsole after searching for
+        // There's no need to connect to the metaconsole before searching for
         // the image status cause the function itself does that for us.
         $imagePath = \visual_map_get_image_status_element($data);
         $data['statusImageSrc'] = \ui_get_full_url(

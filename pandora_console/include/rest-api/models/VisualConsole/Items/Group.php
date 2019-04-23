@@ -109,19 +109,16 @@ final class Group extends Item
 
 
     /**
-     * Extract a show Statistics value.
+     * Extract the "show statistics" switch value.
      *
      * @param array $data Unknown input data structure.
      *
-     * @return integer Valid identifier of a group.
-     *
-     * @throws \InvalidArgumentException When a valid group Id can't be found.
+     * @return boolean If the statistics should be shown or not.
      */
-    private static function extractShowStatistics(array $data): int
+    private static function extractShowStatistics(array $data): boolean
     {
-        return static::parseIntOr(
-            static::issetInArray($data, ['showStatistics', 'show_statistics']),
-            0
+        return static::parseBool(
+            static::issetInArray($data, ['showStatistics', 'show_statistics'])
         );
     }
 
@@ -156,7 +153,7 @@ final class Group extends Item
         $groupId = static::extractGroupId($data);
         $showStatistics = static::extractShowStatistics($data);
 
-        if ($showStatistics) {
+        if ($showStatistics === true) {
             $isMetaconsole = \is_metaconsole();
             // Retrieve the agent stats.
             $agentsCritical = \agents_get_agents(

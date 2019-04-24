@@ -102,6 +102,12 @@ final class EventsHistory extends Item
             throw new \InvalidArgumentException('missing agent Id');
         }
 
+        // Default size.
+        if ($data['width'] == 0 || $data['height'] == 0) {
+            $data['width'] = 500;
+            $data['height'] = 50;
+        }
+
         // Use the same HTML output as the old VC.
         $html = \graph_graphic_moduleevents(
             $agentId,

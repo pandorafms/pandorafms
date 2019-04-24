@@ -390,7 +390,7 @@ if (isset($login_failed)) {
                     echo '<p>'.$config['auth_error'].'</p>';
                 echo '</div>';
                 echo '<div class="text_message_alert">';
-                    echo '<p><bold>Remaining attempts: '.$attemps.'</p><bold>';
+                    echo '<p><strong>Remaining attempts: '.$attemps.'</strong></p>';
             echo '</div>';
                 echo '<div class="button_message_alert">';
                     html_print_submit_button('Ok', 'hide-login-error', false);

@@ -46,6 +46,18 @@ export function moduleGraphPropsDecoder(
 }
 
 export default class ModuleGraph extends Item<ModuleGraphProps> {
+  /**
+   * @override Item.resizeElement.
+   * Resize the DOM content container.
+   * We need to override the resize function cause this item's height
+   * is larger than the configured and the graph is over the label.
+   * @param width
+   * @param height
+   */
+  protected resizeElement(width: number): void {
+    super.resizeElement(width, 0);
+  }
+
   protected createDomElement(): HTMLElement {
     const element = document.createElement("div");
     element.className = "module-graph";

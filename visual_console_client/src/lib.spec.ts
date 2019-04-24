@@ -2,7 +2,7 @@ import {
   parseIntOr,
   stringIsEmpty,
   notEmptyStringOr,
-  padLeft,
+  leftPad,
   prefixedCssRules,
   decodeBase64,
   humanDate,
@@ -42,18 +42,18 @@ describe("function notEmptyStringOr", () => {
   });
 });
 
-describe("function padLeft", () => {
+describe("function leftPad", () => {
   it("should pad properly", () => {
-    expect(padLeft(1, 2, 0)).toBe("01");
-    expect(padLeft(1, 4, 0)).toBe("0001");
-    expect(padLeft(1, 4, "0")).toBe("0001");
-    expect(padLeft("1", 4, "0")).toBe("0001");
-    expect(padLeft(10, 4, 0)).toBe("0010");
-    expect(padLeft("bar", 6, "foo")).toBe("foobar");
-    expect(padLeft("bar", 11, "foo")).toBe("foofoofobar");
-    expect(padLeft("bar", 4, "foo")).toBe("fbar");
-    expect(padLeft("bar", 2, "foo")).toBe("ar");
-    expect(padLeft("bar", 3, "foo")).toBe("bar");
+    expect(leftPad(1, 2, 0)).toBe("01");
+    expect(leftPad(1, 4, 0)).toBe("0001");
+    expect(leftPad(1, 4, "0")).toBe("0001");
+    expect(leftPad("1", 4, "0")).toBe("0001");
+    expect(leftPad(10, 4, 0)).toBe("0010");
+    expect(leftPad("bar", 6, "foo")).toBe("foobar");
+    expect(leftPad("bar", 11, "foo")).toBe("foofoofobar");
+    expect(leftPad("bar", 4, "foo")).toBe("fbar");
+    expect(leftPad("bar", 2, "foo")).toBe("ar");
+    expect(leftPad("bar", 3, "foo")).toBe("bar");
   });
 });
 

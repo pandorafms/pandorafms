@@ -82,7 +82,7 @@ export function parseBoolean(value: any): boolean {
  * @param pad Text to add.
  * @return Padded text.
  */
-export function padLeft(
+export function leftPad(
   value: string | number,
   length: number,
   pad: string | number = " "
@@ -287,10 +287,10 @@ export function decodeBase64(input: string): string {
 export function humanDate(initialDate: Date | null = null): string {
   const date = initialDate || new Date();
   // Use getDate, getDay returns the week day.
-  const day = padLeft(date.getDate(), 2, 0);
+  const day = leftPad(date.getDate(), 2, 0);
   // The getMonth function returns the month starting by 0.
-  const month = padLeft(date.getMonth() + 1, 2, 0);
-  const year = padLeft(date.getFullYear(), 4, 0);
+  const month = leftPad(date.getMonth() + 1, 2, 0);
+  const year = leftPad(date.getFullYear(), 4, 0);
 
   // Format: 'd/m/Y'.
   return `${day}/${month}/${year}`;
@@ -304,9 +304,9 @@ export function humanDate(initialDate: Date | null = null): string {
  */
 export function humanTime(initialDate: Date | null = null): string {
   const date = initialDate || new Date();
-  const hours = padLeft(date.getHours(), 2, 0);
-  const minutes = padLeft(date.getMinutes(), 2, 0);
-  const seconds = padLeft(date.getSeconds(), 2, 0);
+  const hours = leftPad(date.getHours(), 2, 0);
+  const minutes = leftPad(date.getMinutes(), 2, 0);
+  const seconds = leftPad(date.getSeconds(), 2, 0);
 
   return `${hours}:${minutes}:${seconds}`;
 }

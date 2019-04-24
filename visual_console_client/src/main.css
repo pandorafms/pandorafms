@@ -11,5 +11,5 @@
   flex-direction: initial;
   justify-items: center;
   align-items: center;
-  user-select: none;
+  user-select: text;
 }

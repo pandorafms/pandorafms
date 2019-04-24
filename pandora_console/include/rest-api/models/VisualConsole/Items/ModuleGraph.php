@@ -192,10 +192,6 @@ final class ModuleGraph extends Item
 
         // Custom graph.
         if (empty($customGraphId) === false) {
-            // TODO: use a custom size.
-            $width = 180;
-            $height = 480;
-
             $customGraph = \db_get_row_filter(
                 'tgraph',
                 'id_graph',
@@ -204,8 +200,8 @@ final class ModuleGraph extends Item
 
             $params = [
                 'period'          => $period,
-                'width'           => $width,
-                'height'          => $height,
+                'width'           => $data['width'],
+                'height'          => $data['height'],
                 'title'           => '',
                 'unit_name'       => null,
                 'show_alerts'     => false,
@@ -233,16 +229,12 @@ final class ModuleGraph extends Item
                 throw new \InvalidArgumentException('missing module Id');
             }
 
-            // TODO: use a custom size.
-            $width = 300;
-            $height = 180;
-
             $params = [
                 'agent_module_id' => $moduleId,
                 'period'          => $period,
                 'show_events'     => false,
-                'width'           => $width,
-                'height'          => $height,
+                'width'           => $data['width'],
+                'height'          => $data['height'],
                 'title'           => \modules_get_agentmodule_name($moduleId),
                 'unit'            => \modules_get_unit($moduleId),
                 'only_image'      => $imageOnly,

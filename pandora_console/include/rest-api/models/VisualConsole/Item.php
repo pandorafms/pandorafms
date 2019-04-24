@@ -463,6 +463,24 @@ class Item extends Model
             null
         );
 
+        // The agent alias should be a valid string or a null value.
+        $agentData['agentAlias'] = static::notEmptyStringOr(
+            static::issetInArray($data, ['agentAlias', 'agent_alias']),
+            null
+        );
+
+        // The agent description should be a valid string or a null value.
+        $agentData['agentDescription'] = static::notEmptyStringOr(
+            static::issetInArray($data, ['agentDescription', 'agent_description']),
+            null
+        );
+
+        // The agent address should be a valid string or a null value.
+        $agentData['agentAddress'] = static::notEmptyStringOr(
+            static::issetInArray($data, ['agentAddress', 'agent_address']),
+            null
+        );
+
         return $agentData;
     }
 
@@ -505,6 +523,12 @@ class Item extends Model
         // The module name should be a valid string or a null value.
         $moduleData['moduleName'] = static::notEmptyStringOr(
             static::issetInArray($data, ['moduleName', 'module_name']),
+            null
+        );
+
+        // The module description should be a valid string or a null value.
+        $moduleData['moduleDescription'] = static::notEmptyStringOr(
+            static::issetInArray($data, ['moduleDescription', 'module_description']),
             null
         );
 
@@ -735,32 +759,36 @@ class Item extends Model
             throw new \InvalidArgumentException('missing metaconsole node Id');
         }
 
-        $agentName = false;
+        $agent = false;
 
         if (\is_metaconsole()) {
-            $agentName = \db_get_value_filter(
-                'nombre',
-                'tmetaconsole_agent',
-                [
-                    'id_tagente'            => $agentId,
-                    'id_tmetaconsole_setup' => $metaconsoleId,
-                ]
+            $sql = sprintf(
+                'SELECT nombre, alias, direccion, comentarios
+                FROM tmetaconsole_agent
+                WHERE id_tagente = %s and id_tmetaconsole_setup = %s',
+                $agentId,
+                $metaconsoleId
             );
         } else {
-            $agentName = \db_get_value(
-                'nombre',
-                'tagente',
-                'id_agente',
+            $sql = sprintf(
+                'SELECT nombre, alias, direccion, comentarios
+                FROM tagente
+                WHERE id_agente = %s',
                 $agentId
             );
         }
 
-        if ($agentName === false) {
+        $agent = \db_get_row_sql($sql);
+
+        if ($agent === false) {
             throw new \Exception('error fetching the data from the DB');
         }
 
         // The agent name should be a valid string or a null value.
-        $agentData['agentName'] = $agentName;
+        $agentData['agentName'] = $agent['nombre'];
+        $agentData['agentAlias'] = $agent['alias'];
+        $agentData['agentDescription'] = $agent['comentarios'];
+        $agentData['agentAddress'] = $agent['direccion'];
 
         return $agentData;
     }
@@ -801,36 +829,33 @@ class Item extends Model
 
         $moduleName = false;
 
+        // Connect to node.
+        if (\is_metaconsole() && \metaconsole_connect(null, $metaconsoleId) !== NOERR) {
+            throw new \InvalidArgumentException(
+                'error connecting to the node'
+            );
+        }
+
+        $sql = sprintf(
+            'SELECT nombre, descripcion
+            FROM tagente_modulo
+            WHERE id_agente_modulo = %s',
+            $moduleId
+        );
+
+        $moduleName = \db_get_row_sql($sql);
+
+        // Restore connection.
         if (\is_metaconsole()) {
-            // Connect to node.
-            if (\metaconsole_connect(null, $metaconsoleId) !== NOERR) {
-                throw new \InvalidArgumentException(
-                    'error connecting to the node'
-                );
-            }
-
-            $moduleName = \db_get_value_filter(
-                'nombre',
-                'tagente_modulo',
-                ['id_agente_modulo' => $moduleId]
-            );
-
-            // Restore connection.
             \metaconsole_restore_db();
-        } else {
-            $moduleName = \db_get_value(
-                'nombre',
-                'tagente_modulo',
-                'id_agente_modulo',
-                $moduleId
-            );
         }
 
         if ($moduleName === false) {
             throw new \Exception('error fetching the data from the DB');
         }
 
-        $moduleData['moduleName'] = $moduleName;
+        $moduleData['moduleName'] = $moduleName['nombre'];
+        $moduleData['moduleDescription'] = $moduleName['descripcion'];
 
         return $moduleData;
     }

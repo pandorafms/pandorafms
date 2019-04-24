@@ -604,6 +604,10 @@ function config_update_config()
                         config_update_value('ldap_save_password', 1);
                     }
 
+                    if (!config_update_value('ldap_save_profile', get_parameter('ldap_save_profile'))) {
+                        $error_update[] = __('Save profile');
+                    }
+
                     if (!config_update_value('rpandora_server', get_parameter('rpandora_server'))) {
                         $error_update[] = __('MySQL host');
                     }

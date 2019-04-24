@@ -929,6 +929,13 @@ if ($group_rep == 2) {
         }
 
         html_print_table($table);
+        if ($allow_pagination) {
+            $params_to_paginate = $params;
+            unset($params_to_paginate['offset']);
+            $url_paginate = 'index.php?'.http_build_query($params_to_paginate, '', '&amp;');
+            ui_pagination($total_events, $url_paginate, $offset, $pagination, false, 'offset', true, 'pagination-bottom');
+        }
+
         echo '</div>';
 
         if ($allow_action) {

@@ -54,9 +54,14 @@ function snmp_browser_print_tree(
     $last=0,
     $last_array=[],
     $sufix=false,
-    $checked=[]
+    $checked=[],
+    $return=false,
+    $descriptive_ids=false,
+    $previous_id=''
 ) {
     static $url = false;
+
+    $output = '';
 
     // Get the base URL for images.
     if ($url === false) {
@@ -73,9 +78,9 @@ function snmp_browser_print_tree(
     $last_array[$depth] = $last;
 
     if ($depth > 0) {
-        echo "<ul id='ul_$id' style='margin: 0; padding: 0; display: none'>\n";
+        $output .= "<ul id='ul_$id' style='margin: 0; padding: 0; display: none'>\n";
     } else {
-        echo "<ul id='ul_$id' style='margin: 0; padding: 0;'>\n";
+        $output .= "<ul id='ul_$id' style='margin: 0; padding: 0;'>\n";
     }
 
     foreach ($tree['__LEAVES__'] as $level => $sub_level) {
@@ -83,73 +88,97 @@ function snmp_browser_print_tree(
         $sub_id = time().rand(0, getrandmax());
 
         // Display the branch.
-        echo "<li id='li_$sub_id' style='margin: 0; padding: 0;'>";
+        $output .= "<li id='li_$sub_id' style='margin: 0; padding: 0;'>";
 
         // Indent sub branches.
         for ($i = 1; $i <= $depth; $i++) {
             if ($last_array[$i] == 1) {
-                echo '<img src="'.$url.'/no_branch.png" style="vertical-align: middle;">';
+                $output .= '<img src="'.$url.'/no_branch.png" style="vertical-align: middle;">';
             } else {
-                echo '<img src="'.$url.'/branch.png" style="vertical-align: middle;">';
+                $output .= '<img src="'.$url.'/branch.png" style="vertical-align: middle;">';
             }
         }
 
         // Branch.
         if (! empty($sub_level['__LEAVES__'])) {
-            echo "<a id='anchor_$sub_id' onfocus='javascript: this.blur();' href='javascript: toggleTreeNode(\"$sub_id\", \"$id\");'>";
+            $output .= "<a id='anchor_$sub_id' onfocus='javascript: this.blur();' href='javascript: toggleTreeNode(\"$sub_id\", \"$id\");'>";
             if ($depth == 0 && $count == 0) {
                 if ($count == $total) {
-                    echo '<img src="'.$url.'/one_closed.png" style="vertical-align: middle;">';
+                    $output .= '<img src="'.$url.'/one_closed.png" style="vertical-align: middle;">';
                 } else {
-                    echo '<img src="'.$url.'/first_closed.png" style="vertical-align: middle;">';
+                    $output .= '<img src="'.$url.'/first_closed.png" style="vertical-align: middle;">';
                 }
             } else if ($count == $total) {
-                echo '<img src="'.$url.'/last_closed.png" style="vertical-align: middle;">';
+                $output .= '<img src="'.$url.'/last_closed.png" style="vertical-align: middle;">';
             } else {
-                echo '<img src="'.$url.'/closed.png" style="vertical-align: middle;">';
+                $output .= '<img src="'.$url.'/closed.png" style="vertical-align: middle;">';
             }
 
-            echo '</a>';
+            $output .= '</a>';
         }
+
         // Leave.
         else {
             if ($depth == 0 && $count == 0) {
                 if ($count == $total) {
-                    echo '<img src="'.$url.'/no_branch.png" style="vertical-align: middle;">';
+                    $output .= '<img src="'.$url.'/no_branch.png" style="vertical-align: middle;">';
                 } else {
-                    echo '<img src="'.$url.'/first_leaf.png" style="vertical-align: middle;">';
+                    $output .= '<img src="'.$url.'/first_leaf.png" style="vertical-align: middle;">';
                 }
             } else if ($count == $total) {
-                echo '<img src="'.$url.'/last_leaf.png" style="vertical-align: middle;">';
+                $output .= '<img src="'.$url.'/last_leaf.png" style="vertical-align: middle;">';
             } else {
-                echo '<img src="'.$url.'/leaf.png" style="vertical-align: middle;">';
+                $output .= '<img src="'.$url.'/leaf.png" style="vertical-align: middle;">';
             }
         }
 
         // Branch or leave with branches!
         if (isset($sub_level['__OID__'])) {
-            echo "<a onfocus='javascript: this.blur();' href='javascript: snmpGet(\"".addslashes($sub_level['__OID__'])."\");'>";
-            echo '<img src="'.$url.'/../../images/eye.png" style="vertical-align: middle;">';
-            echo '</a>';
+            $output .= "<a onfocus='javascript: this.blur();' href='javascript: snmpGet(\"".addslashes($sub_level['__OID__'])."\");'>";
+            $output .= '<img src="'.$url.'/../../images/eye.png" style="vertical-align: middle;">';
+            $output .= '</a>';
         }
 
         $checkbox_name_sufix = ($sufix === true) ? '_'.$level : '';
-        $checkbox_name = 'create_'.$sub_id.$checkbox_name_sufix;
-        $status = (!empty($checked) && isset($checked[$level]));
-        echo html_print_checkbox($checkbox_name, 0, $status, true, false, '').'&nbsp;<span>'.$level.'</span>';
-        if (isset($sub_level['__VALUE__'])) {
-            echo '<span class="value" style="display: none;">&nbsp;=&nbsp;'.$sub_level['__VALUE__'].'</span>';
+        if ($descriptive_ids === true) {
+            $checkbox_name = 'create_'.$sub_id.$previous_id.$checkbox_name_sufix;
+        } else {
+            $checkbox_name = 'create_'.$sub_id.$checkbox_name_sufix;
         }
 
-        echo '</li>';
+        $previous_id = $checkbox_name_sufix;
+        $status = (!empty($checked) && isset($checked[$level]));
+        $output .= html_print_checkbox($checkbox_name, 0, $status, true, false, '').'&nbsp;<span>'.$level.'</span>';
+        if (isset($sub_level['__VALUE__'])) {
+            $output .= '<span class="value" style="display: none;">&nbsp;=&nbsp;'.$sub_level['__VALUE__'].'</span>';
+        }
+
+        $output .= '</li>';
 
         // Recursively print sub levels.
-        snmp_browser_print_tree($sub_level, $sub_id, ($depth + 1), ($count == $total ? 1 : 0), $last_array, $sufix, $checked);
+        $output .= snmp_browser_print_tree(
+            $sub_level,
+            $sub_id,
+            ($depth + 1),
+            ($count == $total ? 1 : 0),
+            $last_array,
+            $sufix,
+            $checked,
+            $return,
+            $descriptive_ids,
+            $previous_id
+        );
 
         $count++;
     }
 
-    echo '</ul>';
+    $output .= '</ul>';
+
+    if ($return == false) {
+        echo $output;
+    }
+
+    return $output;
 }
 
 

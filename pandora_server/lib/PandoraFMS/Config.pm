@@ -44,8 +44,8 @@ our @EXPORT = qw(
 	);
 
 # version: Defines actual version of Pandora Server for this module only
-my $pandora_version = "7.0NG.733";
-my $pandora_build = "190411";
+my $pandora_version = "7.0NG.734";
+my $pandora_build = "190424";
 our $VERSION = $pandora_version." ".$pandora_build;
 
 # Setup hash
@@ -1200,7 +1200,7 @@ sub pandora_get_tconfig_token ($$$) {
 	my ($dbh, $token, $default_value) = @_;
 	
 	my $token_value = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = ?", $token);
-	if (defined ($token_value)) {
+	if (defined ($token_value) && $token_value ne '') {
 		return safe_output ($token_value);
 	}
 	

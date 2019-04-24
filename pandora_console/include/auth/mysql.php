@@ -85,7 +85,7 @@ function process_user_login($login, $pass, $api=false)
         return process_user_login_local($login, $pass, $api);
     } else {
         $login_remote = process_user_login_remote($login, io_safe_output($pass), $api);
-        if ($login_remote == false && $config['fallback_local_auth'] == '1') {
+        if ($login_remote == false) {
             return process_user_login_local($login, $pass, $api);
         } else {
             return $login_remote;
@@ -1252,9 +1252,34 @@ function check_permission_ldap(
 function fill_permissions_ldap($sr)
 {
     global $config;
-
     $permissions = [];
-    if (!$config['ldap_advanced_config']) {
+    $permissions_profile = [];
+    if ((bool) $config['ldap_save_profile'] === false) {
+        $result = db_get_all_rows_filter(
+            'tusuario_perfil',
+            ['id_usuario' => $sr['uid'][0]]
+        );
+        foreach ($result as $perms) {
+               $permissions_profile[] = [
+                   'profile'      => $perms['id_perfil'],
+                   'groups'       => [$perms['id_grupo']],
+                   'tags'         => $perms['tags'],
+                   'no_hierarchy' => (bool) $perms['no_hierarchy'] ? 1 : 0,
+               ];
+        }
+
+        if (empty($permissions_profile)) {
+            $permissions[0]['profile'] = $config['default_remote_profile'];
+            $permissions[0]['groups'][] = $config['default_remote_group'];
+            $permissions[0]['tags'] = $config['default_assign_tags'];
+            $permissions[0]['no_hierarchy'] = $config['default_no_hierarchy'];
+            return $permissions;
+        } else {
+            return $permissions_profile;
+        }
+    }
+
+    if ($config['autocreate_remote_users']) {
         $permissions[0]['profile'] = $config['default_remote_profile'];
         $permissions[0]['groups'][] = $config['default_remote_group'];
         $permissions[0]['tags'] = $config['default_assign_tags'];

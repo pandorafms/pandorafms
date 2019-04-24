@@ -46,18 +46,6 @@ export function donutGraphPropsDecoder(
 }
 
 export default class DonutGraph extends Item<DonutGraphProps> {
-  /**
-   * @override Item.resizeElement
-   * Resize the DOM content container.
-   * @param width
-   * @param height
-   */
-  protected resizeElement(width: number, height: number): void {
-    if (width <= 0) width = 200;
-    if (height <= 0) height = 200;
-    super.resizeElement(width, height);
-  }
-
   protected createDomElement(): HTMLElement {
     const element = document.createElement("div");
     element.className = "donut-graph";

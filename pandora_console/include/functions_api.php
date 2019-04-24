@@ -15074,7 +15074,7 @@ function api_set_add_permission_user_to_group($thrash1, $thrash2, $other, $retur
     if ($exist_profile === $other['data'][4] && $where_id_up !== null) {
         $sucessfull_insert = db_process_sql_update('tusuario_perfil', $values, $where_id_up);
     } else {
-        $sucessfull_insert = db_process_sql_intypesert('tusuario_perfil', $values);
+        $sucessfull_insert = db_process_sql_insert('tusuario_perfil', $values);
     }
 
     if ($sucessfull_insert == false) {

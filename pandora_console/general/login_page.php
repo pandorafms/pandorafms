@@ -685,5 +685,6 @@ html_print_div(['id' => 'forced_title_layer', 'class' => 'forced_title_layer', '
             $("#final_process_correct").dialog('close');
         });        
     });
+
     /* ]]> */
 </script>

@@ -15064,7 +15064,7 @@ function api_set_add_permission_user_to_group($thrash1, $thrash2, $other, $retur
         'id_perfil'    => $other['data'][2],
         'id_grupo'     => $other['data'][1],
         'no_hierarchy' => $other['data'][3],
-        'assigned_by'  => 0,
+        'assigned_by'  => $config['id_user'],
         'id_policy'    => 0,
         'tags'         => '',
 

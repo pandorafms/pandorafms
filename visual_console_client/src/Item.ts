@@ -211,6 +211,7 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
       cell.innerHTML = label;
       row.append(cell);
       table.append(emptyRow1, row, emptyRow2);
+      table.style.textAlign = "center";
 
       // element.innerHTML = this.props.label;
       element.append(table);

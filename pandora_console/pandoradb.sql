@@ -448,7 +448,7 @@ CREATE TABLE IF NOT EXISTS `talert_templates` (
 	`field13` text NOT NULL,
 	`field14` text NOT NULL,
 	`field15` text NOT NULL,
-	`type` ENUM ('regex', 'max_min', 'max', 'min', 'equal', 'not_equal', 'warning', 'critical', 'onchange', 'unknown', 'always'),
+	`type` ENUM ('regex', 'max_min', 'max', 'min', 'equal', 'not_equal', 'warning', 'critical', 'onchange', 'unknown', 'always', 'not_normal'),
 	`value` varchar(255) default '',
 	`matches_value` tinyint(1) default 0,
 	`max_value` double(18,2) default NULL,

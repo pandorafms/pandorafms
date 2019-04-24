@@ -480,7 +480,8 @@ class Wizard
                 ((isset($data['strict_user']) === true) ? $data['strict_user'] : false),
                 ((isset($data['delete_groups']) === true) ? $data['delete_groups'] : false),
                 ((isset($data['include_groups']) === true) ? $data['include_groups'] : false),
-                ((isset($data['size']) === true) ? $data['size'] : false)
+                ((isset($data['size']) === true) ? $data['size'] : false),
+                ((isset($data['simple_multiple_options']) === true) ? $data['simple_multiple_options'] : false)
             );
 
             case 'submit':

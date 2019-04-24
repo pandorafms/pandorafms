@@ -677,14 +677,15 @@ class HostDevices extends Wizard
                 $group_select = '<div class="label_select"><label>'.__('Group').':</label></div>';
 
                 $group_select .= $this->printInput([
-                        'name'           => 'id_group',
-                        'returnAllGroup' => false,
-                        'privilege'      => 'PM',
-                        'type'           => 'select_groups',
-                        'selected'       => $this->task['id_group'],
-                        'return'         => true,
-                        'class'          => 'discovery_list_input',
-                        'size'           => 9,
+                        'name'                    => 'id_group',
+                        'returnAllGroup'          => false,
+                        'privilege'               => 'PM',
+                        'type'                    => 'select_groups',
+                        'selected'                => $this->task['id_group'],
+                        'return'                  => true,
+                        'class'                   => 'discovery_list_input',
+                        'size'                    => 9,
+                        'simple_multiple_options' => true,
                     ]);
 
                if (isset($this->task['id_rt']) === true) {

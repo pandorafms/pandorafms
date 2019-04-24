@@ -474,7 +474,8 @@ class Wizard
                 ((isset($data['strict_user']) === true) ? $data['strict_user'] : false),
                 ((isset($data['delete_groups']) === true) ? $data['delete_groups'] : false),
                 ((isset($data['include_groups']) === true) ? $data['include_groups'] : false),
-                ((isset($data['size']) === true) ? $data['size'] : false)
+                ((isset($data['size']) === true) ? $data['size'] : false),
+                ((isset($data['simple_multiple_options']) === true) ? $data['simple_multiple_options'] : false)
             );
 
             case 'submit':
@@ -660,22 +661,25 @@ class Wizard
         $output_submit = '';
         $output = '';
 
-        if ($print_white_box === true)
+        if ($print_white_box === true) {
             $output .= '<div class="white_box">';
+        }
 
         $output .= '<ul class="wizard">';
 
         foreach ($inputs as $input) {
-            if ($input['arguments']['type']!='submit')
+            if ($input['arguments']['type'] != 'submit') {
                 $output .= $this->printBlock($input, true);
-            else
+            } else {
                 $output_submit .= $this->printBlock($input, true);
+            }
         }
 
         $output .= '</ul>';
 
-        if ($print_white_box === true)
+        if ($print_white_box === true) {
             $output .= '</div>';
+        }
 
         $output .= '<ul class="wizard">'.$output_submit.'</ul>';
         $output .= '</form>';

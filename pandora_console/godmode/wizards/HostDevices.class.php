@@ -594,11 +594,11 @@ class HostDevices extends Wizard
             if (isset($this->page) === false
                 || $this->page == 0
             ) {
-
                 // Comment input
-                $comment_input ='<div class="label_select"><label>'.__('Comment').':</label></div>';
+                $comment_input = '<div class="label_select"><label>'.__('Comment').':</label></div>';
 
-                $comment_input .= $this->printInput([
+                $comment_input .= $this->printInput(
+                    [
                         'name'    => 'comment',
                         'rows'    => 1,
                         'columns' => 1,
@@ -606,49 +606,55 @@ class HostDevices extends Wizard
                         'type'    => 'textarea',
                         'size'    => 25,
                         'class'   => 'discovery_textarea_input',
-                        'return'  => true
-                ]);
+                        'return'  => true,
+                    ]
+                );
 
                 // Task input
                 $taskname_input_label = '<div class="label_select"><label>'.__('Task name').':</label></div>';
 
-                $taskname_input = $this->printInput([
+                $taskname_input = $this->printInput(
+                    [
                         'name'  => 'taskname',
                         'value' => $this->task['name'],
                         'type'  => 'text',
                         'size'  => 25,
-                        'class' => 'discovery_full_width_input'
-                ]);
+                        'class' => 'discovery_full_width_input',
+                    ]
+                );
 
                 // Network input
                 $network_input_label .= '<div class="label_select discovery_label_hint"><label>'.__('Network').':</label>'.ui_print_help_tip(__('You can specify several networks, separated by commas, for example: 192.168.50.0/24,192.168.60.0/24'), true).'</div>';
 
-                $network_input = $this->printInput([
+                $network_input = $this->printInput(
+                    [
                         'name'  => 'network',
                         'value' => $this->task['subnet'],
                         'type'  => 'text',
                         'size'  => 25,
                         'class' => 'discovery_full_width_input',
-                ]);
-
+                    ]
+                );
 
                 // Discovery server input
                 $discovery_server_select_label = '<div class="label_select discovery_label_hint"><label>'.__('Discovery server').':</label>'.ui_print_help_tip(__('You must select a Discovery Server to run the Task, otherwise the Recon Task will never run'), true).'</div>';
 
-                $discovery_server_select = $this->printInput([
-                    'type'     => 'select_from_sql',
-                    'sql'      => sprintf(
-                        'SELECT id_server, name
+                $discovery_server_select = $this->printInput(
+                    [
+                        'type'     => 'select_from_sql',
+                        'sql'      => sprintf(
+                            'SELECT id_server, name
                                 FROM tserver
                                 WHERE server_type = %d
                                 ORDER BY name',
-                        SERVER_TYPE_DISCOVERY
-                    ),
-                    'name'     => 'id_recon_server',
-                    'selected' => $this->task['id_recon_server'],
-                    'return'   => true,
-                    'style'    => 'width: 100%',
-                ]);
+                            SERVER_TYPE_DISCOVERY
+                        ),
+                        'name'     => 'id_recon_server',
+                        'selected' => $this->task['id_recon_server'],
+                        'return'   => true,
+                        'style'    => 'width: 100%',
+                    ]
+                );
 
                 // Interval input
                 $interv_manual = 0;
@@ -658,55 +664,61 @@ class HostDevices extends Wizard
 
                 $interval_input_label = '<div class="label_select discovery_label_hint" style="padding-top: 6px;"><label>'.__('Interval').':</label>'.ui_print_help_tip(__('Manual interval means that it will run only on demand.'), true).'</div>';
 
-                $interval_input = $this->printInput([
-                    'type'     => 'select',
-                    'selected' => $interv_manual,
-                    'fields'   => [
-                        0 => __('Defined'),
-                        1 => __('Manual'),
-                    ],
-                    'name'     => 'interval_manual_defined',
-                    'return'   => true,
-                    'style'    => 'float: right;'
-                ]);
+                $interval_input = $this->printInput(
+                    [
+                        'type'     => 'select',
+                        'selected' => $interv_manual,
+                        'fields'   => [
+                            0 => __('Defined'),
+                            1 => __('Manual'),
+                        ],
+                        'name'     => 'interval_manual_defined',
+                        'return'   => true,
+                        'style'    => 'float: right;',
+                    ]
+                );
 
                 $interval_input_extra = '<span id="interval_manual_container">'.html_print_extended_select_for_time(
-                        'interval',
-                        $this->task['interval_sweep'],
-                        '',
-                        '',
-                        '0',
-                        false,
-                        true,
-                        false,
-                        false
-                    ).ui_print_help_tip(
-                        __('The minimum recomended interval for Recon Task is 5 minutes'),
-                        true
-                    ).'</span>';
-
+                    'interval',
+                    $this->task['interval_sweep'],
+                    '',
+                    '',
+                    '0',
+                    false,
+                    true,
+                    false,
+                    false
+                ).ui_print_help_tip(
+                    __('The minimum recomended interval for Recon Task is 5 minutes'),
+                    true
+                ).'</span>';
 
                 // Group select
                 $group_select = '<div class="label_select"><label>'.__('Group').':</label></div>';
 
-                $group_select .= $this->printInput([
-                        'name'           => 'id_group',
-                        'returnAllGroup' => false,
-                        'privilege'      => 'PM',
-                        'type'           => 'select_groups',
-                        'selected'       => $this->task['id_group'],
-                        'return'         => true,
-                        'class'          => 'discovery_list_input',
-                        'size'           => 9,
-                    ]);
+                $group_select .= $this->printInput(
+                    [
+                        'name'                    => 'id_group',
+                        'returnAllGroup'          => false,
+                        'privilege'               => 'PM',
+                        'type'                    => 'select_groups',
+                        'selected'                => $this->task['id_group'],
+                        'return'                  => true,
+                        'class'                   => 'discovery_list_input',
+                        'size'                    => 9,
+                        'simple_multiple_options' => true,
+                    ]
+                );
 
-               if (isset($this->task['id_rt']) === true) {
-                    //Propagate ID
-                    $task_hidden = $this->printInput([
-                        'name'       => 'task',
-                        'value'      => $this->task['id_rt'],
-                        'type'       => 'hidden'
-                    ]);
+                if (isset($this->task['id_rt']) === true) {
+                    // Propagate ID
+                    $task_hidden = $this->printInput(
+                        [
+                            'name'  => 'task',
+                            'value' => $this->task['id_rt'],
+                            'type'  => 'hidden',
+                        ]
+                    );
                 }
 
                 $task_url = '';
@@ -724,32 +736,20 @@ class HostDevices extends Wizard
 
                 // XXX: Could be improved validating inputs before continue (JS)
                 // Print NetScan page 0.
-                //$this->printForm($form);
-
+                // $this->printForm($form);
                 echo '<form action="'.$this->url.'&mode=netscan&page='.($this->page + 1).$task_url.'" method="POST">';
                 echo $task_hidden;
 
                 echo '<div class="white_box">
                     <div class="edit_discovery_info" style="margin-bottom: 15px;">
-                        <div style="width: 25%; padding: 9px;">'
-                            .'<div style="height: 50%; margin-bottom: 35px;">'.html_print_image ("images/wizard/netscan_green.png", true, array ("title" => __('Close'), "style" => 'width: 60%;'), false).'</div>'
-                            .'<div class="edit_discovery_input"><div style="display: flex;">'.$interval_input_label.'<div style="margin-left: 15 px; width: 50%;">'.$interval_input.'</div></div>'.$interval_input_extra.'</div>'
-                        .'</div>
+                        <div style="width: 25%; padding: 9px;">'.'<div style="height: 50%; margin-bottom: 35px;">'.html_print_image('images/wizard/netscan_green.png', true, ['title' => __('Close'), 'style' => 'width: 60%;'], false).'</div>'.'<div class="edit_discovery_input"><div style="display: flex;">'.$interval_input_label.'<div style="margin-left: 15 px; width: 50%;">'.$interval_input.'</div></div>'.$interval_input_extra.'</div>'.'</div>
 
                         <div style="width: 40%; padding-left: 5%; padding-right: 12%;">
-                            <div class="edit_discovery_input">'.$taskname_input_label.'<div class="discovery_text_input">'.$taskname_input.'</div></div>'
-                            .'<div class="edit_discovery_input discovery_select_input">'.$discovery_server_select_label.$discovery_server_select.'<div class="discovery_hint"></div></div>'
-                            .'<div class="edit_discovery_input">'.$network_input_label.'<div class="discovery_text_input">'.$network_input.'</div></div>'
-                        .'</div>'
-                        .'<div style="width: 35%;">'.$group_select.'</div>'
-                    .'</div>'
-
-                    .'<div class="edit_discovery_info">
+                            <div class="edit_discovery_input">'.$taskname_input_label.'<div class="discovery_text_input">'.$taskname_input.'</div></div>'.'<div class="edit_discovery_input discovery_select_input">'.$discovery_server_select_label.$discovery_server_select.'<div class="discovery_hint"></div></div>'.'<div class="edit_discovery_input">'.$network_input_label.'<div class="discovery_text_input">'.$network_input.'</div></div>'.'</div>'.'<div style="width: 35%;">'.$group_select.'</div>'.'</div>'.'<div class="edit_discovery_info">
                         <div style="width: 100%;">
                             '.$comment_input.'
                         </div>
-                    </div>'
-                .'</div>';
+                    </div>'.'</div>';
 
                 $str = __('Next');
 
@@ -777,7 +777,6 @@ class HostDevices extends Wizard
                     }).change();
 
                 </script>';
-
             }
         }
 

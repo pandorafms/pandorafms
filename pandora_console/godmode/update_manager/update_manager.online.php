@@ -87,7 +87,11 @@ echo "<img src='images/wait.gif' />";
 echo '</span>';
 
 echo '<p style="font-weight: 600;">'.__('The latest version of package installed is:').'</p>';
-echo "<div id='pkg_version'>".$current_package.'</div>';
+if ($open) {
+    echo '<div id="pkg_version" style="font-size:40pt;">'.$build_version.'</div>';
+} else {
+    echo '<div id="pkg_version">'.$current_package.'</div>';
+}
 
     echo "<div class='checking_package' style='font-size:18pt;width:100%; display: none;'>";
         echo __('Checking for the newest package.');
@@ -131,12 +135,15 @@ echo "<div id='pkg_version'>".$current_package.'</div>';
     */
 
 if ($open) {
-    echo "
-			<br><br>
-			<div id='updatemodal' class='publienterprisehide' title='Community version' style=''>
-				<img data-title='Enterprise version' class='img_help forced_title' data-use_title_for_force_title='1' src='images/icono_exclamacion_2.png'>
-			</div>
-			<br>";
+    echo "<div class='update_manager_open'>
+        <div class='update_manager_warning'>
+            <div><img src='images/icono_info.png'></div>
+        <div><p>".__('WARNING: You are just one click away from an automated update. This may result in a damaged system, including loss of data and operativity. Check you have a recent backup. OpenSource updates are automatically created packages, and there is no WARRANTY or SUPPORT. If you need professional support and warranty, please upgrade to Enterprise Version.')."</p></div>
+        </div>
+        <div style='text-align:center; margin-top:10px;'>
+            <a class='update_manager_button_open' href='https://pandorafms.com/pandora-fms-enterprise/' target='_blank'>About Enterprise</a>
+        </div>
+    </div>";
 }
 
 

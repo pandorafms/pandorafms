@@ -259,3 +259,43 @@ div#box_online.box_online_meta * {
 #box_online.box_online_meta #pkg_version {
   font-size: 60pt;
 }
+
+/* COMMUNITY */
+.update_manager_open {
+  max-width: 50%;
+  font-size: 10pt;
+  margin-top: 40px;
+  padding: 20px;
+  border: 1px solid #eaeaea;
+  border-radius: 5px;
+}
+
+.update_manager_warning {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.update_manager_warning p {
+  font-size: 10pt !important;
+}
+
+.update_manager_warning img {
+  padding-right: 20px;
+  width: 90px;
+}
+
+a.update_manager_button_open {
+  padding: 5px 10px;
+  font-size: 16px !important;
+  border-radius: 4px !important;
+  text-decoration: none;
+  border: 1px solid #82b92e;
+  color: #82b92e;
+  border-radius: 2px;
+}
+
+a.update_manager_button_open:hover {
+  color: #fff;
+  background-color: #82b92e;
+}

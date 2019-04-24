@@ -197,7 +197,34 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
     element.className = "visual-console-item-label";
     // Add the label if it exists.
     if (this.props.label && this.props.label.length) {
-      element.innerHTML = this.props.label;
+      // Ugly table we need to use to replicate the legacy style.
+      const table = document.createElement("table");
+      const row = document.createElement("tr");
+      const emptyRow1 = document.createElement("tr");
+      const emptyRow2 = document.createElement("tr");
+      const cell = document.createElement("td");
+
+      cell.innerHTML = this.props.label;
+      row.append(cell);
+      table.append(emptyRow1, row, emptyRow2);
+
+      switch (this.props.labelPosition) {
+        case "up":
+        case "down":
+          if (this.props.width > 0) {
+            table.style.width = `${this.props.width}px`;
+          }
+          break;
+        case "left":
+        case "right":
+          if (this.props.height > 0) {
+            table.style.height = `${this.props.height}px`;
+          }
+          break;
+      }
+
+      // element.innerHTML = this.props.label;
+      element.append(table);
     }
 
     return element;

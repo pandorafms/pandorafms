@@ -2,9 +2,11 @@ import {
   parseIntOr,
   stringIsEmpty,
   notEmptyStringOr,
-  padLeft,
+  leftPad,
   prefixedCssRules,
-  decodeBase64
+  decodeBase64,
+  humanDate,
+  humanTime
 } from "./lib";
 
 describe("function parseIntOr", () => {
@@ -40,18 +42,18 @@ describe("function notEmptyStringOr", () => {
   });
 });
 
-describe("function padLeft", () => {
+describe("function leftPad", () => {
   it("should pad properly", () => {
-    expect(padLeft(1, 2, 0)).toBe("01");
-    expect(padLeft(1, 4, 0)).toBe("0001");
-    expect(padLeft(1, 4, "0")).toBe("0001");
-    expect(padLeft("1", 4, "0")).toBe("0001");
-    expect(padLeft(10, 4, 0)).toBe("0010");
-    expect(padLeft("bar", 6, "foo")).toBe("foobar");
-    expect(padLeft("bar", 11, "foo")).toBe("foofoofobar");
-    expect(padLeft("bar", 4, "foo")).toBe("fbar");
-    expect(padLeft("bar", 2, "foo")).toBe("ar");
-    expect(padLeft("bar", 3, "foo")).toBe("bar");
+    expect(leftPad(1, 2, 0)).toBe("01");
+    expect(leftPad(1, 4, 0)).toBe("0001");
+    expect(leftPad(1, 4, "0")).toBe("0001");
+    expect(leftPad("1", 4, "0")).toBe("0001");
+    expect(leftPad(10, 4, 0)).toBe("0010");
+    expect(leftPad("bar", 6, "foo")).toBe("foobar");
+    expect(leftPad("bar", 11, "foo")).toBe("foofoofobar");
+    expect(leftPad("bar", 4, "foo")).toBe("fbar");
+    expect(leftPad("bar", 2, "foo")).toBe("ar");
+    expect(leftPad("bar", 3, "foo")).toBe("bar");
   });
 });
 
@@ -77,5 +79,23 @@ describe("function decodeBase64", () => {
     expect(
       decodeBase64("PGRpdj5Cb3ggPHA+UGFyYWdyYXBoPC9wPjxociAvPjwvZGl2Pg==")
     ).toEqual("<div>Box <p>Paragraph</p><hr /></div>");
+  });
+});
+
+describe("humanDate function", () => {
+  it("should return the date with padded 0's", () => {
+    const expected = "01/02/0123";
+    const date = new Date(`02/01/0123 12:00:00`);
+    const digitalDate = humanDate(date);
+    expect(digitalDate).toBe(expected);
+  });
+});
+
+describe("humanTime function", () => {
+  it("should return the time with padded 0's when hours/minutes/seconds are less than 10", () => {
+    const expected = "01:02:03";
+    const date = new Date(`01/01/1970 ${expected}`);
+    const digitalTime = humanTime(date);
+    expect(digitalTime).toBe(expected);
   });
 });

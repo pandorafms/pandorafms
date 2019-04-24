@@ -18,10 +18,10 @@
   -webkit-box-align: center;
   -ms-flex-align: center;
   align-items: center;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
 }
 
 @font-face {
@@ -86,4 +86,4 @@
   animation: rotate-second 60s infinite linear;
 }
 
-/*# sourceMappingURL=vc.main.ba23d758.css.map*/
+/*# sourceMappingURL=vc.main.402dd2b3.css.map*/

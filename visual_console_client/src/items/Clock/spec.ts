@@ -55,24 +55,6 @@ describe("Clock item", () => {
     ).toBeGreaterThan(0);
   });
 
-  describe("getDate function", () => {
-    it("should return the date with padded 0's", () => {
-      const expected = "01/02/0123";
-      const date = new Date(`02/01/0123 12:00:00`);
-      const digitalDate = clockInstance.getDigitalDate(date);
-      expect(digitalDate).toBe(expected);
-    });
-  });
-
-  describe("getTime function", () => {
-    it("should return the time with padded 0's when hours/minutes/seconds are less than 10", () => {
-      const expected = "01:02:03";
-      const date = new Date(`01/01/1970 ${expected}`);
-      const digitalTime = clockInstance.getDigitalTime(date);
-      expect(digitalTime).toBe(expected);
-    });
-  });
-
   describe("getHumanTimezone function", () => {
     it("should return a better timezone", () => {
       expect(clockInstance.getHumanTimezone("America/New_York")).toBe(

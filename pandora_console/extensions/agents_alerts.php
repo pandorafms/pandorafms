@@ -138,8 +138,15 @@ function mainAgentsAlerts()
         $onheader['combo_refr'] = $comborefr;
     }
 
-    // Header
-    ui_print_page_header(__('Agents/Alerts'), 'images/op_alerts.png', false, '', false, $updated_time);
+    // Header.
+    ui_print_page_header(
+        __('Agents/Alerts'),
+        'images/op_alerts.png',
+        false,
+        'agents_alerts_view',
+        false,
+        $updated_time
+    );
 
     // Old style table, we need a lot of special formatting,don't use table function
     // Prepare old-style table

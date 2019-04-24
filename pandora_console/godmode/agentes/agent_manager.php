@@ -334,9 +334,9 @@ $table->data[7][1] = html_print_select(
     __('None'),
     0,
     true
-).' '.ui_print_help_icon('agent_server', true);
+);
 
-// Description
+// Description.
 $table->data[8][0] = __('Description');
 $table->data[8][1] = html_print_input_text(
     'comentarios',
@@ -362,7 +362,7 @@ $table->data = [];
 
 if (enterprise_installed()) {
     $secondary_groups_selected = enterprise_hook('agents_get_secondary_groups', [$id_agente]);
-    $table->data['secondary_groups'][0] = __('Secondary groups').ui_print_help_icon('secondary_groups', true);
+    $table->data['secondary_groups'][0] = __('Secondary groups');
     $table->data['secondary_groups'][1] = html_print_select_groups(
         false,
         // Use the current user to select the groups
@@ -535,12 +535,12 @@ $params['cascade_protection'] = true;
 
 $table->data[1][1] = ui_print_agent_autocomplete_input($params);
 if (enterprise_installed()) {
-    $table->data[1][1] .= html_print_checkbox('cascade_protection', 1, $cascade_protection, true).__('Cascade protection').'&nbsp;'.ui_print_help_icon('cascade_protection', true);
+    $table->data[1][1] .= html_print_checkbox('cascade_protection', 1, $cascade_protection, true).__('Cascade protection');
 }
 
 $table->data[1][1] .= '&nbsp;&nbsp;'.__('Module').'&nbsp;'.html_print_select($modules_values, 'cascade_protection_module', $cascade_protection_module, '', '', 0, true);
 // Learn mode / Normal mode
-$table->data[3][0] = __('Module definition').ui_print_help_icon('module_definition', true);
+$table->data[3][0] = __('Module definition');
 $table->data[3][1] = __('Learning mode').' '.html_print_radio_button_extended(
     'modo',
     1,

@@ -457,6 +457,7 @@ switch ($action) {
         }
 
         $subsection = '';
+        $helpers = '';
         switch ($activeTab) {
             case 'main':
                 $buttons['list_reports']['active'] = true;
@@ -464,7 +465,14 @@ switch ($action) {
             break;
 
             default:
-                $subsection = reporting_enterprise_add_subsection_main($activeTab, $buttons);
+                $data_tab = reporting_enterprise_add_subsection_main(
+                    $activeTab,
+                    $buttons
+                );
+
+                $subsection = $data_tab['subsection'];
+                $buttons = $data_tab['buttons'];
+                $helpers = $data_tab['helpers'];
             break;
         }
 
@@ -2401,6 +2409,7 @@ switch ($action) {
             $buttons = reporting_enterprise_add_main_Tabs($buttons);
 
             $subsection = '';
+            $helpers = '';
             switch ($activeTab) {
                 case 'main':
                     $buttons['list_reports']['active'] = true;
@@ -2408,7 +2417,14 @@ switch ($action) {
                 break;
 
                 default:
-                    $subsection = reporting_enterprise_add_subsection_main($activeTab, $buttons);
+                    $data_tab = reporting_enterprise_add_subsection_main(
+                        $activeTab,
+                        $buttons
+                    );
+
+                    $subsection = $data_tab['subsection'];
+                    $buttons = $data_tab['buttons'];
+                    $helpers = $data_tab['helper'];
                 break;
             }
 
@@ -2429,7 +2445,7 @@ switch ($action) {
             }
             // Page header for normal console.
             else {
-                ui_print_page_header($subsection, 'images/op_reporting.png', false, '', false, $buttons, false, '', 60);
+                ui_print_page_header($subsection, 'images/op_reporting.png', false, $helpers, false, $buttons, false, '', 60);
             }
 
 
@@ -2505,11 +2521,21 @@ if ($enterpriseEnable and defined('METACONSOLE')) {
     // Print header.
     ui_meta_print_header(__('Reporting').$textReportName, '', $buttons);
 } else {
+    switch ($activeTab) {
+        case 'main':
+            $helpers = '';
+        break;
+
+        default:
+            $helpers = 'reporting_'.$activeTab.'_tab';
+        break;
+    }
+
     ui_print_page_header(
         $textReportName,
         'images/op_reporting.png',
         false,
-        'reporting_'.$activeTab.'_tab',
+        $helpers,
         false,
         $buttons,
         false,

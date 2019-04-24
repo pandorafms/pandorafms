@@ -574,10 +574,11 @@ if ($id_agente) {
     }
 
     $help_header = '';
-    // This add information to the header
+    // This add information to the header.
     switch ($tab) {
         case 'main':
             $tab_description = '- '.__('Setup');
+            $help_header = 'main_tab';
         break;
 
         case 'collection':

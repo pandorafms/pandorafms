@@ -181,8 +181,15 @@ function mainAgentsModules()
     // Old style table, we need a lot of special formatting,don't use table function
     // Prepare old-style table
     if ($config['pure'] == 0) {
-        // Header
-        ui_print_page_header(__('Agents/Modules'), 'images/module_mc.png', false, '', false, $updated_time);
+        // Header.
+        ui_print_page_header(
+            __('Agents/Modules'),
+            'images/module_mc.png',
+            false,
+            'agents_module_view',
+            false,
+            $updated_time
+        );
         echo '<table style="width:100%;">';
         echo '<tr>';
         echo "<td> <span style='float: right;'>".$fullscreen['text'].'</span> </td>';

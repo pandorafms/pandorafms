@@ -15,7 +15,7 @@ global $config;
 
 require_once $config['homedir'].'/include/functions_visual_map.php';
 
-// ACL for the general permission
+// ACL for the general permission.
 $vconsoles_read = check_acl($config['id_user'], 0, 'VR');
 $vconsoles_write = check_acl($config['id_user'], 0, 'VW');
 $vconsoles_manage = check_acl($config['id_user'], 0, 'VM');
@@ -84,7 +84,7 @@ if (!$is_metaconsole) {
         __('Reporting').' &raquo; '.__('Visual Console'),
         'images/op_reporting.png',
         false,
-        'map_builder',
+        'map_builder_intro',
         false,
         $buttons
     );

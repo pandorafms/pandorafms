@@ -281,19 +281,29 @@ export function decodeBase64(input: string): string {
 /**
  * Generate a date representation with the format 'd/m/Y'.
  * @param initialDate Date to be used instead of a generated one.
+ * @param locale Locale to use if localization is required and available.
  * @example 24/02/2020.
  * @return Date representation.
  */
-export function humanDate(initialDate: Date | null = null): string {
-  const date = initialDate || new Date();
-  // Use getDate, getDay returns the week day.
-  const day = leftPad(date.getDate(), 2, 0);
-  // The getMonth function returns the month starting by 0.
-  const month = leftPad(date.getMonth() + 1, 2, 0);
-  const year = leftPad(date.getFullYear(), 4, 0);
+export function humanDate(date: Date, locale: string | null = null): string {
+  if (locale && Intl && Intl.DateTimeFormat) {
+    // Format using the user locale.
+    const options: Intl.DateTimeFormatOptions = {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric"
+    };
+    return Intl.DateTimeFormat(locale, options).format(date);
+  } else {
+    // Use getDate, getDay returns the week day.
+    const day = leftPad(date.getDate(), 2, 0);
+    // The getMonth function returns the month starting by 0.
+    const month = leftPad(date.getMonth() + 1, 2, 0);
+    const year = leftPad(date.getFullYear(), 4, 0);
 
-  // Format: 'd/m/Y'.
-  return `${day}/${month}/${year}`;
+    // Format: 'd/m/Y'.
+    return `${day}/${month}/${year}`;
+  }
 }
 
 /**
@@ -302,8 +312,7 @@ export function humanDate(initialDate: Date | null = null): string {
  * @example 01:34:09.
  * @return Time representation.
  */
-export function humanTime(initialDate: Date | null = null): string {
-  const date = initialDate || new Date();
+export function humanTime(date: Date): string {
   const hours = leftPad(date.getHours(), 2, 0);
   const minutes = leftPad(date.getMinutes(), 2, 0);
   const seconds = leftPad(date.getSeconds(), 2, 0);

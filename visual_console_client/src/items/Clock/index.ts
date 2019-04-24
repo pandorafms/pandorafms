@@ -500,7 +500,7 @@ export default class Clock extends Item<ClockProps> {
     if (this.props.clockFormat === "datetime") {
       const dateElem: HTMLSpanElement = document.createElement("span");
       dateElem.className = "date";
-      dateElem.textContent = humanDate(date);
+      dateElem.textContent = humanDate(date, "default");
       dateElem.style.fontSize = `${dateFontSize}px`;
       if (this.props.color) dateElem.style.color = this.props.color;
       element.append(dateElem);

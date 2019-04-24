@@ -277,3 +277,36 @@ export function prefixedCssRules(
 export function decodeBase64(input: string): string {
   return decodeURIComponent(escape(window.atob(input)));
 }
+
+/**
+ * Generate a date representation with the format 'd/m/Y'.
+ * @param initialDate Date to be used instead of a generated one.
+ * @example 24/02/2020.
+ * @return Date representation.
+ */
+export function humanDate(initialDate: Date | null = null): string {
+  const date = initialDate || new Date();
+  // Use getDate, getDay returns the week day.
+  const day = padLeft(date.getDate(), 2, 0);
+  // The getMonth function returns the month starting by 0.
+  const month = padLeft(date.getMonth() + 1, 2, 0);
+  const year = padLeft(date.getFullYear(), 4, 0);
+
+  // Format: 'd/m/Y'.
+  return `${day}/${month}/${year}`;
+}
+
+/**
+ * Generate a time representation with the format 'hh:mm:ss'.
+ * @param initialDate Date to be used instead of a generated one.
+ * @example 01:34:09.
+ * @return Time representation.
+ */
+export function humanTime(initialDate: Date | null = null): string {
+  const date = initialDate || new Date();
+  const hours = padLeft(date.getHours(), 2, 0);
+  const minutes = padLeft(date.getMinutes(), 2, 0);
+  const seconds = padLeft(date.getSeconds(), 2, 0);
+
+  return `${hours}:${minutes}:${seconds}`;
+}

@@ -4,10 +4,11 @@ import { LinkedVisualConsoleProps, UnknownObject, Size } from "../../types";
 import {
   linkedVCPropsDecoder,
   parseIntOr,
-  padLeft,
   parseBoolean,
   prefixedCssRules,
-  notEmptyStringOr
+  notEmptyStringOr,
+  humanDate,
+  humanTime
 } from "../../lib";
 import Item, { ItemProps, itemBasePropsDecoder, ItemType } from "../../Item";
 
@@ -388,7 +389,7 @@ export default class Clock extends Item<ClockProps> {
     pin.setAttribute("fill", colors.handDark);
 
     // Get the hand angles.
-    const date = this.getDate();
+    const date = this.getOriginDate();
     const seconds = date.getSeconds();
     const minutes = date.getMinutes();
     const hours = date.getHours();
@@ -492,11 +493,14 @@ export default class Clock extends Item<ClockProps> {
       (width / 100) * 10
     );
 
+    // Date calculated using the original timezone.
+    const date = this.getOriginDate();
+
     // Date.
     if (this.props.clockFormat === "datetime") {
       const dateElem: HTMLSpanElement = document.createElement("span");
       dateElem.className = "date";
-      dateElem.textContent = this.getDigitalDate();
+      dateElem.textContent = humanDate(date);
       dateElem.style.fontSize = `${dateFontSize}px`;
       if (this.props.color) dateElem.style.color = this.props.color;
       element.append(dateElem);
@@ -505,7 +509,7 @@ export default class Clock extends Item<ClockProps> {
     // Time.
     const timeElem: HTMLSpanElement = document.createElement("span");
     timeElem.className = "time";
-    timeElem.textContent = this.getDigitalTime();
+    timeElem.textContent = humanTime(date);
     timeElem.style.fontSize = `${timeFontSize}px`;
     if (this.props.color) timeElem.style.color = this.props.color;
     element.append(timeElem);
@@ -528,44 +532,13 @@ export default class Clock extends Item<ClockProps> {
    * Generate the current date using the timezone offset stored into the properties.
    * @return The current date.
    */
-  private getDate(): Date {
-    const d = new Date();
+  private getOriginDate(initialDate: Date | null = null): Date {
+    const d = initialDate ? initialDate : new Date();
     const targetTZOffset = this.props.clockTimezoneOffset * 1000; // In ms.
     const localTZOffset = d.getTimezoneOffset() * 60 * 1000; // In ms.
     const utimestamp = d.getTime() + targetTZOffset + localTZOffset;
 
     return new Date(utimestamp);
-  }
-
-  /**
-   * Generate a date representation with the format 'd/m/Y'.
-   * @example 24/02/2020.
-   * @return Date representation.
-   */
-  public getDigitalDate(initialDate: Date | null = null): string {
-    const date = initialDate || this.getDate();
-    // Use getDate, getDay returns the week day.
-    const day = padLeft(date.getDate(), 2, 0);
-    // The getMonth function returns the month starting by 0.
-    const month = padLeft(date.getMonth() + 1, 2, 0);
-    const year = padLeft(date.getFullYear(), 4, 0);
-
-    // Format: 'd/m/Y'.
-    return `${day}/${month}/${year}`;
-  }
-
-  /**
-   * Generate a time representation with the format 'hh:mm:ss'.
-   * @example 01:34:09.
-   * @return Time representation.
-   */
-  public getDigitalTime(initialDate: Date | null = null): string {
-    const date = initialDate || this.getDate();
-    const hours = padLeft(date.getHours(), 2, 0);
-    const minutes = padLeft(date.getMinutes(), 2, 0);
-    const seconds = padLeft(date.getSeconds(), 2, 0);
-
-    return `${hours}:${minutes}:${seconds}`;
   }
 
   /**

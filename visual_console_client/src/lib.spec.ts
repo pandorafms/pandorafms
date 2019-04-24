@@ -4,7 +4,9 @@ import {
   notEmptyStringOr,
   padLeft,
   prefixedCssRules,
-  decodeBase64
+  decodeBase64,
+  humanDate,
+  humanTime
 } from "./lib";
 
 describe("function parseIntOr", () => {
@@ -77,5 +79,23 @@ describe("function decodeBase64", () => {
     expect(
       decodeBase64("PGRpdj5Cb3ggPHA+UGFyYWdyYXBoPC9wPjxociAvPjwvZGl2Pg==")
     ).toEqual("<div>Box <p>Paragraph</p><hr /></div>");
+  });
+});
+
+describe("humanDate function", () => {
+  it("should return the date with padded 0's", () => {
+    const expected = "01/02/0123";
+    const date = new Date(`02/01/0123 12:00:00`);
+    const digitalDate = humanDate(date);
+    expect(digitalDate).toBe(expected);
+  });
+});
+
+describe("humanTime function", () => {
+  it("should return the time with padded 0's when hours/minutes/seconds are less than 10", () => {
+    const expected = "01:02:03";
+    const date = new Date(`01/01/1970 ${expected}`);
+    const digitalTime = humanTime(date);
+    expect(digitalTime).toBe(expected);
   });
 });

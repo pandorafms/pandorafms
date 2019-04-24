@@ -954,15 +954,18 @@ if (($create != '') || ($view != '')) {
         if (defined('METACONSOLE')) {
             echo '<table width="100%" cellspacing="4" cellpadding="4" class="databox data">';
         } else {
-            echo '<table width="100%" cellspacing="4" cellpadding="4" class="databox data">';
+            echo '<table width="100%" cellspacing="4" cellpadding="4" class="info_table">';
         }
 
+        echo '<thead><tr>';
         echo '<th>'.__('Name').'</th>';
         echo '<th>'.__('Type').'</th>';
         echo '<th>'.__('Command').'</th>';
         if ($management_allowed) {
             echo "<th style='width: 120px;'>".'<span title="Operations">'.__('Op.').'</span>'.'</th>';
         }
+
+        echo '</tr></thead>';
 
         $color = 0;
 
@@ -1202,4 +1205,6 @@ ui_require_javascript_file('pandora_modules');
         $('.command_macro').click(macros_click_locked_event);
     }
     
+    
 </script>
+

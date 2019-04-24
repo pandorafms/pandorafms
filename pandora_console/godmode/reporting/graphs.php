@@ -159,9 +159,17 @@ ui_pagination(count($graphs));
 if (!empty($graphs)) {
     $table = new stdClass();
     $table->width = '100%';
-    $table->class = 'databox data';
+    $table->class = 'info_table';
+    $table->cellpadding = 0;
+    $table->cellspacing = 0;
     $table->align = [];
     $table->head = [];
+    if ($report_w || $report_m) {
+        $table->align[5] = 'left';
+        $table->head[5] = html_print_checkbox('all_delete', 0, false, true, false);
+        $table->size[5] = '20px';
+    }
+
     $table->head[0] = __('Graph name');
     $table->head[1] = __('Description');
     $table->head[2] = __('Number of Graphs');
@@ -175,7 +183,7 @@ if (!empty($graphs)) {
     if ($report_w || $report_m) {
         $op_column = true;
         $table->align[4] = 'left';
-        $table->head[4] = __('Op.').html_print_checkbox('all_delete', 0, false, true, false);
+        $table->head[4] = __('Op.');
         $table->size[4] = '90px';
     }
 
@@ -186,6 +194,10 @@ if (!empty($graphs)) {
     foreach ($result_graphs as $graph) {
         $data = [];
 
+        if ($report_m) {
+            $data[5] .= html_print_checkbox_extended('delete_multiple[]', $graph['id_graph'], false, false, '', 'class="check_delete" style="margin-left:2px;"', true);
+        }
+
         $data[0] = '<a href="index.php?sec=reporting&sec2=operation/reporting/graph_viewer&view_graph=1&id='.$graph['id_graph'].'">'.ui_print_truncate_text($graph['name'], 70).'</a>';
 
         $data[1] = ui_print_truncate_text($graph['description'], 70);
@@ -194,15 +206,14 @@ if (!empty($graphs)) {
         $data[3] = ui_print_group_icon($graph['id_group'], true);
 
         $data[4] = '';
+        $table->cellclass[][4] = 'action_buttons';
         if (($report_w || $report_m)) {
             $data[4] = '<a href="index.php?sec=reporting&sec2=godmode/reporting/graph_builder&edit_graph=1&id='.$graph['id_graph'].'">'.html_print_image('images/config.png', true).'</a>';
         }
 
-        $data[4] .= '&nbsp;';
-
         if ($report_m) {
             $data[4] .= '<a href="index.php?sec=reporting&sec2=godmode/reporting/graphs&delete_graph=1&id='.$graph['id_graph'].'" onClick="if (!confirm(\''.__('Are you sure?').'\'))
-					return false;">'.html_print_image('images/cross.png', true, ['alt' => __('Delete'), 'title' => __('Delete')]).'</a>'.html_print_checkbox_extended('delete_multiple[]', $graph['id_graph'], false, false, '', 'class="check_delete" style="margin-left:2px;"', true);
+                    return false;">'.html_print_image('images/cross.png', true, ['alt' => __('Delete'), 'title' => __('Delete')]).'</a>';
         }
 
         array_push($table->data, $data);
@@ -213,6 +224,7 @@ if (!empty($graphs)) {
         echo "<form method='post' style='' action='index.php?sec=reporting&sec2=godmode/reporting/graphs'>";
             html_print_input_hidden('multiple_delete', 1);
             html_print_table($table);
+            ui_pagination(count($graphs), false, 0, 0, false, 'offset', true, 'pagination-bottom');
             echo "<div style='float: right;'>";
                 html_print_submit_button(__('Delete'), 'delete_btn', false, 'class="sub delete"');
             echo '</div>';
@@ -228,7 +240,6 @@ if (!empty($graphs)) {
     }
 
     echo '</div>';
-    ui_pagination(count($graphs));
 } else {
     include_once $config['homedir'].'/general/firts_task/custom_graphs.php';
 }
@@ -236,8 +247,6 @@ if (!empty($graphs)) {
 ?>
 
 <script type="text/javascript">
-
-$("input[name=all_delete]").css("margin-left", "32px");
 
     $( document ).ready(function() {
 

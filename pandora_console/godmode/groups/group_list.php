@@ -515,7 +515,7 @@ if ($tab == 'tree') {
 
         $table = new StdClass();
         $table->width = '100%';
-        $table->class = 'databox data';
+        $table->class = 'info_table';
         $table->head = [];
         $table->head[0] = __('ID');
         $table->head[1] = __('Name');
@@ -559,6 +559,7 @@ if ($tab == 'tree') {
             $table->data[$key][3] = $group['disabled'] ? __('Disabled') : __('Enabled');
             $table->data[$key][4] = $group['parent_name'];
             $table->data[$key][5] = $group['description'];
+            $table->cellclass[$key][6] = 'action_buttons';
             $table->data[$key][6] = "<a href='$url'>".html_print_image(
                 'images/config.png',
                 true,
@@ -574,7 +575,7 @@ if ($tab == 'tree') {
                 $confirm_message = __('The child groups will be updated to use the parent id of the deleted group').'. '.$confirm_message;
             }
 
-            $table->data[$key][6] .= '&nbsp;&nbsp;'.'<a href="'.$url_delete.'" onClick="if (!confirm(\' '.$confirm_message.'\')) return false;">'.html_print_image(
+            $table->data[$key][6] .= '<a href="'.$url_delete.'" onClick="if (!confirm(\' '.$confirm_message.'\')) return false;">'.html_print_image(
                 'images/cross.png',
                 true,
                 [
@@ -592,7 +593,7 @@ if ($tab == 'tree') {
             $block_size,
             true,
             'offset',
-            false
+            true
         );
         html_print_table($table);
         echo ui_pagination(
@@ -602,7 +603,8 @@ if ($tab == 'tree') {
             $block_size,
             true,
             'offset',
-            true
+            true,
+            'pagination-bottom'
         );
     } else {
         ui_print_info_message(['no_close' => true, 'message' => __('There are no defined groups') ]);

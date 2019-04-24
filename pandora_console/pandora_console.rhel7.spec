@@ -2,8 +2,8 @@
 # Pandora FMS Console
 #
 %define name        pandorafms_console
-%define version     7.0NG.733
-%define release     190412
+%define version     7.0NG.734
+%define release     1
 
 # User and Group under which Apache is running
 %define httpd_name  httpd
@@ -21,11 +21,11 @@ Source0:            %{name}-%{version}.tar.gz
 URL:                http://www.pandorafms.com
 Group:              Productivity/Networking/Web/Utilities
 Packager:           Sancho Lerena <slerena@artica.es>
-Prefix:              /var/www/html
+Prefix:             /opt/rh/httpd24/root/var/www/html
 BuildRoot:          %{_tmppath}/%{name}
 BuildArch:          noarch
 AutoReq:            0
-Requires:           %{httpd_name} >= 2.0.0
+Requires:           httpd24-httpd
 Requires:           httpd24-mod_php >= 7.2
 Requires:           rh-php72-php-gd, rh-php72-php-ldap, rh-php72-php-snmp, rh-php72-php-session, rh-php72-php-gettext
 Requires:           rh-php72-php-mysqlnd, rh-php72-php-mbstring, rh-php72-php-zip, rh-php72-php-zlib, rh-php72-php-curl

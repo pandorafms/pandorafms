@@ -272,7 +272,9 @@ if (!empty($all_data)) {
             echo '<div id="activity">';
 
             $table = new stdClass();
-            $table->class = 'databox data';
+            $table->class = 'info_table';
+            $table->cellpadding = 0;
+            $table->cellspacing = 0;
             $table->width = '100%';
             // Don't specify px.
             $table->data = [];

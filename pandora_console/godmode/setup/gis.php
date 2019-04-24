@@ -63,14 +63,15 @@ switch ($action) {
     break;
 }
 
+$table->class = 'info_table';
 $table->width = '98%';
 $table->head[0] = __('Map connection name');
 $table->head[1] = __('Group');
 $table->head[3] = __('Delete');
 
-$table->align[1] = 'center';
-$table->align[2] = 'center';
-$table->align[3] = 'center';
+$table->align[1] = 'left';
+$table->align[2] = 'left';
+$table->align[3] = 'left';
 
 $mapsConnections = db_get_all_rows_in_table('tgis_map_connection', 'conection_name');
 
@@ -84,6 +85,7 @@ if ($mapsConnections !== false) {
             '<a href="index.php?sec=gsetup&sec2=godmode/setup/gis&amp;id_connection_map='.$mapsConnection['id_tmap_connection'].'&amp;action=delete_connection"
 				onClick="javascript: if (!confirm(\''.__('Do you wan delete this connection?').'\')) return false;">'.html_print_image('images/cross.png', true).'</a>',
         ];
+        $table->cellclass[][2] = 'action_buttons';
     }
 }
 

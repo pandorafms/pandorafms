@@ -14,7 +14,7 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 
-pandora_version="7.0NG.733-190423"
+pandora_version="7.0NG.733-190424"
 
 echo "Test if you has the tools for to make the packages."
 whereis dpkg-deb | cut -d":" -f2 | grep dpkg-deb > /dev/null

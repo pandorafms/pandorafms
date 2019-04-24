@@ -37,16 +37,10 @@ $api_password = get_parameter('apipass', '');
 $password = get_parameter('pass', '');
 $user = get_parameter('user', '');
 $info = get_parameter('info', '');
-$user_db = get_parameter('user_db', '');
 $other = parseOtherParameter($otherSerialize, $otherMode);
-$group_db = get_parameter('group_db', '');
-$disable = get_parameter('disable', '');
-$id_up = get_parameter('id_up', '');
-$id_profile = get_parameter('id_profile', '');
 $apiPassword = io_output_password(db_get_value_filter('value', 'tconfig', ['token' => 'api_password']));
 
 $correctLogin = false;
-$user_in_db = null;
 $no_login_msg = '';
 
 // Clean unwanted output
@@ -151,7 +145,7 @@ if ($correctLogin) {
                         }
                     break;
 
-                    case 'delete_user_profiles':
+                    case 'delete_user_permission':
 
                         if ($user_db === '') {
                             returnError(__('User or group not specified'), __('User, group not specified'));

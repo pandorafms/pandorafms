@@ -14732,13 +14732,12 @@ function api_set_reset_agent_counts($id, $thrash1, $thrash2, $thrash3)
 
 /**
  * Functions por get all  user to new feature for Carrefour
- * It depends of type the method will return csv or json data
+ * It depends of returnType, the method will return csv or json data
  *
- * @param  string           $thrash1    don't use
- * @param  string           $thrash2    don't use
- * @param  string           $returnType
- * @param  other  don't use
- *
+ * @param  string $thrash1 don't use
+ * @param  string $thrash2 don't use
+ * @param  array  $other   don't use
+ * *@param  string           $returnType
  * Example:
  * api.php?op=get&op2=list_all_user&return_type=json&apipass=1234&user=admin&pass=pandora
  * @return
@@ -14808,13 +14807,12 @@ function api_get_list_all_user($thrash1, $thrash2, $other, $returnType)
 
 /**
  * Funtion for get all info user to  new feature for Carrefour
- * It depends of type the method will return csv or json data
+ * It depends of returnType, the method will return csv or json data
  *
  * @param string $thrash1    don't use
  * @param string $thrash2    don't use
- * @param string $returnType
  * @param array  $other      other[0] = user database
- *
+ * @param string $returnType
  *      Example
  *      api.php?op=get&op2=info_user_name&return_type=json&other=admin&other_mode=url_encode_separator_|&apipass=1234&user=admin&pass=pandora
  *
@@ -14883,15 +14881,14 @@ function api_get_info_user_name($thrash1, $thrash2, $other, $returnType)
 
 /**
  * Function for get  user from a group  to  new feature for Carrefour.
- * It depends of type the method will return csv or json data.
+ * It depends of returnType, the method will return csv or json data.
  *
  * @param string $thrash1    don't use
  * @param string $thrash2    don't use
- * @param string $returnType
  * @param array  $other
  *                  $other[0] = id group
  *                  $other[1] = is disabled or not
- *
+ * @param string $returnType
  * Example
  * api.php?op=get&op2=filter_user_group&return_type=json&other=0|0&other_mode=url_encode_separator_|&apipass=1234&user=admin&pass=pandora
  *
@@ -14970,24 +14967,22 @@ function api_get_filter_user_group($thrash1, $thrash2, $other, $returnType)
 
 
 /**
- * Function for delete an user profile for Carrefour  new feature
+ * Function for delete an user permission for Carrefour  new feature
  * The return of this function its only a message
  *
  * @param string $thrash1    don't use
  * @param string $thrash2    don't use
- * @param string $returnType
  * @param array  $other
- *                  $other[0] = id user
- *                  other[1] =  id from tusuario_perfil table (optional)
- *
+ *                  $other[0] = id up
+ * @param string $returnType
  * Example
- * api.php?op=set&op2=delete_user_profiles&return_type=json&other=usuario|2&other_mode=url_encode_separator_|&apipass=1234&user=admin&pass=pandora
+ * api.php?op=set&op2=delete_user_permission&return_type=json&other=user|2&other_mode=url_encode_separator_|&apipass=1234&user=admin&pass=pandora
  *
  * @return void
  */
 
 
-function api_set_delete_user_profiles($thrash1, $thrash2, $other, $returnType)
+function api_set_delete_user_permission($thrash1, $thrash2, $other, $returnType)
 {
     global $config;
 
@@ -14996,15 +14991,13 @@ function api_set_delete_user_profiles($thrash1, $thrash2, $other, $returnType)
         return;
     }
 
-    if ($other['data'][1] == '' || $other['data'][1] == 0) {
+    if ($other['data'][0] != '') {
         $values = [
-            'id_usuario' => io_safe_output($other['data'][0]),
+            'id_up' => io_safe_output($other['data'][0]),
         ];
     } else {
-        $values = [
-            'id_usuario' => io_safe_output($other['data'][0]),
-            'id_up'      => io_safe_output($other['data'][1]),
-        ];
+        returnError('Error_delete', __('User profile could not be deleted.'));
+        return;
     }
 
     $deleted_permission = db_process_sql_delete('tusuario_perfil', $values);
@@ -15025,16 +15018,16 @@ function api_set_delete_user_profiles($thrash1, $thrash2, $other, $returnType)
 
 /**
  * Function for add permission a user to a group for Carrefour new feature
- * It depends of type the method will return csv or json data
+ * It depends of returnType, the method will return csv or json data
  *
- * @param string $thrash1    don't use
- * @param string $thrash2    don't use
- * @param string $returnType
- * @param array  $other      other[0] = user database, other[1] = id group
- *                           other[2] = id profile
- *                           other [3] = no_hierarchy (if empty = 0)
- *                           other [4] = id from tusuario_perfil table (optional)
- *
+ * @param string $thrash1 don't use
+ * @param string $thrash2 don't use
+ * @param array  $other   other[0] = user database
+ *                        other[1] = id group
+ *                        other[2] = id profile
+ *                        other[3] = no_hierarchy ( 0 or 1, if empty = 0)
+ *                        other[4] = id from tusuario_perfil table (optional)
+ * * @param string $returnType
  * Example
  * api.php?op=set&op2=add_permission_user_to_group&return_type=json&other=admin|0|1|1|20&other_mode=url_encode_separator_|&apipass=1234&user=admin&pass=pandora
  *
@@ -15057,6 +15050,15 @@ function api_set_add_permission_user_to_group($thrash1, $thrash2, $other, $retur
 
     $exist_profile = db_get_value_sql($sql);
 
+    if ($other['data'][3] < 0 || $other['data'][3] > 1) {
+        returnError('Error_insert', __('User profile could not be available.'));
+        return;
+    }
+
+    if ($other['data'][3] == null) {
+        $other['data'][3] = 0;
+    }
+
     $values = [
         'id_usuario'   => $other['data'][0],
         'id_perfil'    => $other['data'][2],
@@ -15072,7 +15074,7 @@ function api_set_add_permission_user_to_group($thrash1, $thrash2, $other, $retur
     if ($exist_profile === $other['data'][4] && $where_id_up !== null) {
         $sucessfull_insert = db_process_sql_update('tusuario_perfil', $values, $where_id_up);
     } else {
-        $sucessfull_insert = db_process_sql_insert('tusuario_perfil', $values);
+        $sucessfull_insert = db_process_sql_intypesert('tusuario_perfil', $values);
     }
 
     if ($sucessfull_insert == false) {

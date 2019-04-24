@@ -1205,4 +1205,6 @@ ui_require_javascript_file('pandora_modules');
         $('.command_macro').click(macros_click_locked_event);
     }
     
+    
 </script>
+

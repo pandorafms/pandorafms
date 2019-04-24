@@ -149,17 +149,17 @@ export function sizePropsDecoder(data: UnknownObject): Size | never {
  * @return An object representing the agent properties.
  */
 export function agentPropsDecoder(data: UnknownObject): WithAgentProps {
-  // Object destructuring: http://es6-features.org/#ObjectMatchingShorthandNotation
-  const { metaconsoleId, agentId: id, agentName: name } = data;
-
   const agentProps: WithAgentProps = {
-    agentId: parseIntOr(id, null),
-    agentName: typeof name === "string" && name.length > 0 ? name : null
+    agentId: parseIntOr(data.agent, null),
+    agentName: notEmptyStringOr(data.agentName, null),
+    agentAlias: notEmptyStringOr(data.agentAlias, null),
+    agentDescription: notEmptyStringOr(data.agentDescription, null),
+    agentAddress: notEmptyStringOr(data.agentAddress, null)
   };
 
-  return metaconsoleId != null
+  return data.metaconsoleId != null
     ? {
-        metaconsoleId,
+        metaconsoleId: data.metaconsoleId,
         ...agentProps // Object spread: http://es6-features.org/#SpreadOperator
       }
     : agentProps;
@@ -171,12 +171,10 @@ export function agentPropsDecoder(data: UnknownObject): WithAgentProps {
  * @return An object representing the module and agent properties.
  */
 export function modulePropsDecoder(data: UnknownObject): WithModuleProps {
-  // Object destructuring: http://es6-features.org/#ObjectMatchingShorthandNotation
-  const { moduleId: id, moduleName: name } = data;
-
   return {
-    moduleId: parseIntOr(id, null),
-    moduleName: typeof name === "string" && name.length > 0 ? name : null,
+    moduleId: parseIntOr(data.moduleId, null),
+    moduleName: notEmptyStringOr(data.moduleName, null),
+    moduleDescription: notEmptyStringOr(data.moduleDescription, null),
     ...agentPropsDecoder(data) // Object spread: http://es6-features.org/#SpreadOperator
   };
 }
@@ -318,4 +316,20 @@ export function humanTime(date: Date): string {
   const seconds = leftPad(date.getSeconds(), 2, 0);
 
   return `${hours}:${minutes}:${seconds}`;
+}
+
+interface Macro {
+  macro: string | RegExp;
+  value: string;
+}
+/**
+ * Replace the macros of a text.
+ * @param macros List of macros and their replacements.
+ * @param text Text in which we need to replace the macros.
+ */
+export function replaceMacros(macros: Macro[], text: string): string {
+  return macros.reduce(
+    (acc, { macro, value }) => acc.replace(macro, value),
+    text
+  );
 }

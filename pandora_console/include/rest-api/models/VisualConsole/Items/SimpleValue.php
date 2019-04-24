@@ -73,6 +73,10 @@ final class SimpleValue extends Item
             $return['period'] = static::extractPeriod($data);
         }
 
+        // Clear the size, as this element always have a dynamic size.
+        $return['width'] = 0;
+        $return['height'] = 0;
+
         return $return;
     }
 

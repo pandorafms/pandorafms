@@ -1,10 +1,13 @@
-import { Position, Size, UnknownObject } from "./types";
+import { Position, Size, UnknownObject, WithModuleProps } from "./types";
 import {
   sizePropsDecoder,
   positionPropsDecoder,
   parseIntOr,
   parseBoolean,
-  notEmptyStringOr
+  notEmptyStringOr,
+  replaceMacros,
+  humanDate,
+  humanTime
 } from "./lib";
 import TypedEvent, { Listener, Disposable } from "./TypedEvent";
 
@@ -196,7 +199,8 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
     const element = document.createElement("div");
     element.className = "visual-console-item-label";
     // Add the label if it exists.
-    if (this.props.label && this.props.label.length) {
+    const label = this.getLabelWithMacrosReplaced();
+    if (label.length > 0) {
       // Ugly table we need to use to replicate the legacy style.
       const table = document.createElement("table");
       const row = document.createElement("tr");
@@ -204,7 +208,7 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
       const emptyRow2 = document.createElement("tr");
       const cell = document.createElement("td");
 
-      cell.innerHTML = this.props.label;
+      cell.innerHTML = label;
       row.append(cell);
       table.append(emptyRow1, row, emptyRow2);
 
@@ -213,6 +217,48 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
     }
 
     return element;
+  }
+
+  /**
+   * Return the label stored into the props with some macros replaced.
+   */
+  protected getLabelWithMacrosReplaced(): string {
+    // We assert that the props may have some needed properties.
+    const props = this.props as Partial<WithModuleProps>;
+
+    return replaceMacros(
+      [
+        {
+          macro: "_date_",
+          value: humanDate(new Date())
+        },
+        {
+          macro: "_time_",
+          value: humanTime(new Date())
+        },
+        {
+          macro: "_agent_",
+          value: props.agentAlias != null ? props.agentAlias : ""
+        },
+        {
+          macro: "_agentdescription_",
+          value: props.agentDescription != null ? props.agentDescription : ""
+        },
+        {
+          macro: "_address_",
+          value: props.agentAddress != null ? props.agentAddress : ""
+        },
+        {
+          macro: "_module_",
+          value: props.moduleName != null ? props.moduleName : ""
+        },
+        {
+          macro: "_moduledescription_",
+          value: props.moduleDescription != null ? props.moduleDescription : ""
+        }
+      ],
+      this.props.label || ""
+    );
   }
 
   /**
@@ -280,8 +326,14 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
       this.resizeElement(this.props.width, this.props.height);
     }
     // Change label.
-    if (!prevProps || prevProps.label !== this.props.label) {
-      this.labelElementRef.innerHTML = this.createLabelDomElement().innerHTML;
+    const oldLabelHtml = this.labelElementRef.innerHTML;
+    const newLabelHtml = this.createLabelDomElement().innerHTML;
+    if (oldLabelHtml !== newLabelHtml) {
+      this.labelElementRef.innerHTML = newLabelHtml;
+    }
+    // Change label position.
+    if (!prevProps || prevProps.labelPosition !== this.props.labelPosition) {
+      this.changeLabelPosition(this.props.labelPosition);
     }
     // Change link.
     if (
@@ -298,10 +350,6 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
 
       // Changed the reference to the main element. It's ugly, but needed.
       this.elementRef = container;
-    }
-    // Change label position.
-    if (!prevProps || prevProps.labelPosition !== this.props.labelPosition) {
-      this.changeLabelPosition(this.props.labelPosition);
     }
   }
 

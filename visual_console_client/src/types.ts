@@ -16,11 +16,15 @@ export interface WithAgentProps {
   metaconsoleId?: number | null;
   agentId: number | null;
   agentName: string | null;
+  agentAlias: string | null;
+  agentDescription: string | null;
+  agentAddress: string | null;
 }
 
 export interface WithModuleProps extends WithAgentProps {
   moduleId: number | null;
   moduleName: string | null;
+  moduleDescription: string | null;
 }
 
 export type LinkedVisualConsolePropsStatus =

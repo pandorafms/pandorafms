@@ -3,7 +3,12 @@ import {
   UnknownObject,
   WithModuleProps
 } from "../types";
-import { linkedVCPropsDecoder, parseIntOr, modulePropsDecoder } from "../lib";
+import {
+  linkedVCPropsDecoder,
+  parseIntOr,
+  modulePropsDecoder,
+  replaceMacros
+} from "../lib";
 import Item, { ItemType, ItemProps, itemBasePropsDecoder } from "../Item";
 
 export type SimpleValueProps = {
@@ -99,8 +104,9 @@ export default class SimpleValue extends Item<SimpleValueProps> {
     } else {
       // Add the value to the label and show it.
       let text = this.props.value;
-      if (this.props.label) {
-        text = this.props.label.replace(/\(?_VALUE_\)?/i, text);
+      let label = this.getLabelWithMacrosReplaced();
+      if (label.length > 0) {
+        text = replaceMacros([{ macro: /\(?_VALUE_\)?/i, value: text }], label);
       }
 
       element.innerHTML = text;

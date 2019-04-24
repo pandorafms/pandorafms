@@ -6,7 +6,8 @@ import {
   prefixedCssRules,
   decodeBase64,
   humanDate,
-  humanTime
+  humanTime,
+  replaceMacros
 } from "./lib";
 
 describe("function parseIntOr", () => {
@@ -97,5 +98,23 @@ describe("humanTime function", () => {
     const date = new Date(`01/01/1970 ${expected}`);
     const digitalTime = humanTime(date);
     expect(digitalTime).toBe(expected);
+  });
+});
+
+describe("replaceMacros function", () => {
+  const macros = [
+    { macro: "_foo_", value: "foo" },
+    { macro: "_bar_", value: "bar" },
+    { macro: "_baz_", value: "baz" }
+  ];
+
+  it("should not replace anything if it doesn't find any macro", () => {
+    const text = "Lorem Ipsum";
+    expect(replaceMacros(macros, text)).toBe(text);
+  });
+
+  it("should replace the macros", () => {
+    const text = "Lorem _foo_ Ipsum _baz_";
+    expect(replaceMacros(macros, text)).toBe("Lorem foo Ipsum baz");
   });
 });

@@ -416,15 +416,30 @@ class DiscoveryTaskList extends Wizard
                 // Exceptions: IPAM.
                 $ipam = false;
                 if ($task['id_recon_script'] != null) {
-                    $recon_script_name = db_get_value('name', 'trecon_script', 'id_recon_script', $task['id_recon_script']);
-                    if (io_safe_output($recon_script_name) == 'IPAM Recon'
-                        && enterprise_installed()
-                    ) {
-                        $subnet_obj = json_decode($task['macros'], true);
-                        $subnet = $subnet_obj['1']['value'];
-                        $tipam_task_id = db_get_value('id', 'tipam_network', 'id_recon_task', $task['id_rt']);
-                        $ipam = true;
+                    $recon_script_data = db_get_row(
+                        'trecon_script',
+                        'id_recon_script',
+                        $task['id_recon_script']
+                    );
+                    if ($recon_script_data !== false) {
+                        $recon_script_name = $recon_script_data['name'];
+                        if (io_safe_output($recon_script_name) == 'IPAM Recon'
+                            && enterprise_installed()
+                        ) {
+                            $subnet_obj = json_decode($task['macros'], true);
+                            $subnet = $subnet_obj['1']['value'];
+                            $tipam_task_id = db_get_value(
+                                'id',
+                                'tipam_network',
+                                'id_recon_task',
+                                $task['id_rt']
+                            );
+                            $ipam = true;
+                        }
                     }
+                } else {
+                    $recon_script_data = false;
+                    $recon_script_name = false;
                 }
 
                 if ($task['disabled'] == 0 && $server_name !== '') {
@@ -476,6 +491,7 @@ class DiscoveryTaskList extends Wizard
                 }
 
                 if ($task['id_recon_script'] == 0) {
+                    // Internal discovery task.
                     switch ($task['type']) {
                         case DISCOVERY_APP_MYSQL:
                             // Discovery Applications MySQL.
@@ -594,7 +610,7 @@ class DiscoveryTaskList extends Wizard
                         $data[9] .= '<a href="'.ui_get_full_url(
                             sprintf(
                                 'index.php?sec=gservers&sec2=godmode/servers/discovery&%s&task=%d',
-                                $this->getTargetWiz($task),
+                                $this->getTargetWiz($task, $recon_script_data),
                                 $task['id_rt']
                             )
                         ).'">'.html_print_image(
@@ -654,12 +670,30 @@ class DiscoveryTaskList extends Wizard
     /**
      * Return target url sub-string to edit target task.
      *
-     * @param array $task With all data.
+     * @param array $task   With all data.
+     * @param array $script With all script data or false if undefined.
      *
      * @return string
      */
-    public function getTargetWiz($task)
+    public function getTargetWiz($task, $script=false)
     {
+        if ($script !== false) {
+            switch ($script['type']) {
+                case DISCOVERY_SCRIPT_CLOUD_AWS:
+                return 'wiz=cloud&mode=amazonws&page=1';
+
+                case DISCOVERY_SCRIPT_APP_VMWARE:
+                return 'wiz=app&mode=vmware&page=0';
+
+                case DISCOVERY_SCRIPT_IPAM_RECON:
+                return '';
+
+                case DISCOVERY_SCRIPT_IPMI_RECON:
+                default:
+                return 'wiz=hd&mode=customnetscan';
+            }
+        }
+
         switch ($task['type']) {
             case DISCOVERY_APP_MYSQL:
             return 'wiz=app&mode=mysql&page=0';
@@ -667,23 +701,18 @@ class DiscoveryTaskList extends Wizard
             case DISCOVERY_APP_ORACLE:
             return 'wiz=app&mode=oracle&page=0';
 
-            case DISCOVERY_APP_VMWARE:
-            return 'wiz=app&mode=vmware&page=0';
-
             case DISCOVERY_CLOUD_AWS:
+            case DISCOVERY_CLOUD_AWS_EC2:
             return 'wiz=cloud&mode=amazonws&page=1';
 
             case DISCOVERY_CLOUD_AWS_RDS:
             return 'wiz=cloud&mode=amazonws&sub=rds&page=0';
 
-            case 'console_task':
-            return 'wiz=ctask';
-
             default:
-                if (empty($task['id_recon_script']) === true) {
-                    return 'wiz=hd&mode=netscan';
+                if ($task['description'] == 'console_task') {
+                    return 'wiz=ctask';
                 } else {
-                    return 'wiz=hd&mode=customnetscan';
+                    return 'wiz=hd&mode=netscan';
                 }
             break;
         }

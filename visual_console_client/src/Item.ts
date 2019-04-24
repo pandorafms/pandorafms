@@ -208,21 +208,6 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
       row.append(cell);
       table.append(emptyRow1, row, emptyRow2);
 
-      switch (this.props.labelPosition) {
-        case "up":
-        case "down":
-          if (this.props.width > 0) {
-            table.style.width = `${this.props.width}px`;
-          }
-          break;
-        case "left":
-        case "right":
-          if (this.props.height > 0) {
-            table.style.height = `${this.props.height}px`;
-          }
-          break;
-      }
-
       // element.innerHTML = this.props.label;
       element.append(table);
     }
@@ -369,6 +354,28 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
       default:
         this.elementRef.style.flexDirection = "column";
         break;
+    }
+
+    // Ugly table to show the label as its legacy counterpart.
+    const tables = this.labelElementRef.getElementsByTagName("table");
+    const table = tables.length > 0 ? tables.item(0) : null;
+    if (table) {
+      switch (this.props.labelPosition) {
+        case "up":
+        case "down":
+          if (this.props.width > 0) {
+            table.style.width = `${this.props.width}px`;
+            table.style.height = null;
+          }
+          break;
+        case "left":
+        case "right":
+          if (this.props.height > 0) {
+            table.style.width = null;
+            table.style.height = `${this.props.height}px`;
+          }
+          break;
+      }
     }
   }
 

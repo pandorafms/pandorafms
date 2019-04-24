@@ -493,6 +493,16 @@ class DiscoveryTaskList extends Wizard
                 if ($task['id_recon_script'] == 0) {
                     // Internal discovery task.
                     switch ($task['type']) {
+                        case DISCOVERY_CLOUD_AWS_RDS:
+                            // Discovery Applications MySQL.
+                            $data[6] = html_print_image(
+                                'images/network.png',
+                                true,
+                                ['title' => __('Discovery Cloud RDS')]
+                            ).'&nbsp;&nbsp;';
+                            $data[6] .= __('Discovery.Cloud.Aws.RDS');
+                        break;
+
                         case DISCOVERY_APP_MYSQL:
                             // Discovery Applications MySQL.
                             $data[6] = html_print_image(

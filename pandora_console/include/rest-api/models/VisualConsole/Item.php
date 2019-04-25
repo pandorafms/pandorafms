@@ -880,6 +880,7 @@ class Item extends Model
         global $config;
 
         // Load side libraries.
+        include_once $config['homedir'].'/include/functions_ui.php';
         if (\is_metaconsole()) {
             \enterprise_include_once('include/functions_metaconsole.php');
             \enterprise_include_once('meta/include/functions_ui_meta.php');
@@ -889,7 +890,7 @@ class Item extends Model
         $linkedModule = static::extractLinkedModule($data);
         $linkedAgent = static::extractLinkedAgent($data);
 
-        $baseUrl = $config['homeurl'].'index.php';
+        $baseUrl = \ui_get_full_url();
 
         // TODO: There's a feature to get the link from the label.
         if (static::$useLinkedVisualConsole === true
@@ -1052,7 +1053,8 @@ class Item extends Model
                         return null;
                     }
                 }
-            } else if (static::$useLinkedAgent === true
+            } else if ((static::$useLinkedAgent === true
+                || static::$useLinkedModule === true)
                 && $linkedAgent['agentId'] !== null
                 && $linkedAgent['agentId'] > 0
             ) {

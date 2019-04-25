@@ -9,7 +9,7 @@
 .visual-console-item {
   position: absolute;
   display: flex;
-  flex-direction: initial;
+  flex-direction: column;
   justify-items: center;
   align-items: center;
   user-select: text;

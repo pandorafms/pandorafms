@@ -155,10 +155,8 @@ final class StaticGraph extends Item
         include_once $config['homedir'].'/include/functions_io.php';
         include_once $config['homedir'].'/include/functions_visual_map.php';
         include_once $config['homedir'].'/include/functions_modules.php';
-        \enterprise_include_once('godmode/agentes/module_manager.php');
         if (is_metaconsole()) {
             \enterprise_include_once('include/functions_metaconsole.php');
-            \enterprise_include_once('meta/include/functions_ui_meta.php');
         }
 
         // Get the linked module Id.
@@ -232,7 +230,7 @@ final class StaticGraph extends Item
             if (!$isBooleanModule
                 || ($isBooleanModule && $showLastValueTooltip !== 'default')
             ) {
-                if (\is_numeric($value)) {
+                if (is_numeric($value)) {
                     $imgTitle .= __('Last value: ').\remove_right_zeros($value);
                 } else {
                     $imgTitle .= __('Last value: ').$value;

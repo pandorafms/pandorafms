@@ -137,12 +137,12 @@ final class BarsGraph extends Item
         global $config;
 
         // Load side libraries.
+        include_once $config['homedir'].'/include/functions_ui.php';
         include_once $config['homedir'].'/include/functions_visual_map.php';
         include_once $config['homedir'].'/include/graphs/fgraph.php';
 
         if (is_metaconsole()) {
             \enterprise_include_once('include/functions_metaconsole.php');
-            \enterprise_include_once('meta/include/functions_ui_meta.php');
         }
 
         // Extract needed properties.
@@ -262,7 +262,12 @@ final class BarsGraph extends Item
 
         $waterMark = [
             'file' => $config['homedir'].'/images/logo_vertical_water.png',
-            'url'  => \ui_get_full_url(false, false, false, false).'images/logo_vertical_water.png',
+            'url'  => \ui_get_full_url(
+                'images/logo_vertical_water.png',
+                false,
+                false,
+                false
+            ),
         ];
 
         if ((int) $data['width'] === 0 || (int) $data['height'] === 0) {

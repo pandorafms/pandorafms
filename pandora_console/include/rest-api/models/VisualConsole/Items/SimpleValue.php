@@ -179,6 +179,9 @@ final class SimpleValue extends Item
         // Load side libraries.
         global $config;
         include_once $config['homedir'].'/include/functions_visual_map.php';
+        if (is_metaconsole()) {
+            \enterprise_include_once('include/functions_metaconsole.php');
+        }
 
         // Get the linked module Id.
         $linkedModule = static::extractLinkedModule($data);

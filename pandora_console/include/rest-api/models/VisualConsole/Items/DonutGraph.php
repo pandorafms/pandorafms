@@ -101,6 +101,9 @@ final class DonutGraph extends Item
         global $config;
         include_once $config['homedir'].'/include/functions_visual_map.php';
         include_once $config['homedir'].'/include/graphs/functions_d3.php';
+        if (is_metaconsole()) {
+            \enterprise_include_once('include/functions_metaconsole.php');
+        }
 
         // Extract needed properties.
         $legendBackGroundColor = static::extractLegendBackgroundColor($data);

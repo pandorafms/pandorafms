@@ -166,7 +166,6 @@ final class ModuleGraph extends Item
         include_once $config['homedir'].'/include/functions_modules.php';
         if (is_metaconsole()) {
             \enterprise_include_once('include/functions_metaconsole.php');
-            \enterprise_include_once('meta/include/functions_ui_meta.php');
         }
 
         $imageOnly = false;

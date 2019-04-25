@@ -873,6 +873,10 @@ class Item extends Model
     {
         global $config;
 
+        // Load side libraries.
+        \enterprise_include_once('include/functions_metaconsole.php');
+        \enterprise_include_once('meta/include/functions_ui_meta.php');
+
         $linkedVisualConsole = static::extractLinkedVisualConsole($data);
         $linkedModule = static::extractLinkedModule($data);
         $linkedAgent = static::extractLinkedAgent($data);

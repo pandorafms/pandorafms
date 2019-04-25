@@ -213,6 +213,24 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
       table.append(emptyRow1, row, emptyRow2);
       table.style.textAlign = "center";
 
+      // Change the table size depending on its position.
+      switch (this.props.labelPosition) {
+        case "up":
+        case "down":
+          if (this.props.width > 0) {
+            table.style.width = `${this.props.width}px`;
+            table.style.height = null;
+          }
+          break;
+        case "left":
+        case "right":
+          if (this.props.height > 0) {
+            table.style.width = null;
+            table.style.height = `${this.props.height}px`;
+          }
+          break;
+      }
+
       // element.innerHTML = this.props.label;
       element.append(table);
     }
@@ -408,6 +426,7 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
     // Ugly table to show the label as its legacy counterpart.
     const tables = this.labelElementRef.getElementsByTagName("table");
     const table = tables.length > 0 ? tables.item(0) : null;
+    // Change the table size depending on its position.
     if (table) {
       switch (this.props.labelPosition) {
         case "up":

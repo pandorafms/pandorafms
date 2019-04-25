@@ -68,20 +68,20 @@ final class ModuleGraph extends Item
      *
      * @param array $data Unknown input data structure.
      *
-     * @return string 'none', 'white' or 'black'. 'none' by default.
+     * @return string 'transparent', 'white' or 'black'. 'transparent' by default.
      */
     private static function extractBackgroundType(array $data): string
     {
         $value = static::issetInArray($data, ['backgroundType', 'image']);
 
         switch ($value) {
-            case 'none':
+            case 'transparent':
             case 'white':
             case 'black':
             return $value;
 
             default:
-            return 'none';
+            return 'transparent';
         }
     }
 

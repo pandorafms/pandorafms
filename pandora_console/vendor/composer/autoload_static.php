@@ -12,6 +12,10 @@ class ComposerStaticInitfdecadadce22e6dde51e9535fe4ad7aa
     );
 
     public static $prefixLengthsPsr4 = array (
+        'T' => 
+        array (
+            'Tests\\' => 6,
+        ),
         'P' => 
         array (
             'Psr\\Log\\' => 8,
@@ -19,9 +23,11 @@ class ComposerStaticInitfdecadadce22e6dde51e9535fe4ad7aa
         'M' => 
         array (
             'Mpdf\\' => 5,
+            'Models\\' => 7,
         ),
         'E' => 
         array (
+            'Enterprise\\Models\\' => 18,
             'Egulias\\EmailValidator\\' => 23,
         ),
         'D' => 
@@ -31,6 +37,10 @@ class ComposerStaticInitfdecadadce22e6dde51e9535fe4ad7aa
     );
 
     public static $prefixDirsPsr4 = array (
+        'Tests\\' => 
+        array (
+            0 => __DIR__ . '/../..' . '/tests',
+        ),
         'Psr\\Log\\' => 
         array (
             0 => __DIR__ . '/..' . '/psr/log/Psr/Log',
@@ -38,6 +48,14 @@ class ComposerStaticInitfdecadadce22e6dde51e9535fe4ad7aa
         'Mpdf\\' => 
         array (
             0 => __DIR__ . '/..' . '/mpdf/mpdf/src',
+        ),
+        'Models\\' => 
+        array (
+            0 => __DIR__ . '/../..' . '/include/rest-api/models',
+        ),
+        'Enterprise\\Models\\' => 
+        array (
+            0 => __DIR__ . '/../..' . '/enterprise/include/rest-api/models',
         ),
         'Egulias\\EmailValidator\\' => 
         array (

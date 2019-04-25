@@ -1,0 +1,15 @@
+#visual-console-container {
+  margin: 0px auto;
+  position: relative;
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+
+.visual-console-item {
+  position: absolute;
+  display: flex;
+  flex-direction: initial;
+  justify-items: center;
+  align-items: center;
+  user-select: text;
+}

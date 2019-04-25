@@ -20,7 +20,8 @@ module.exports = {
   entry, // Start from this file.
   output: {
     path: buildPath, // The files will be created here.
-    filename: dev ? "vc.[name].min.js" : "vc.[name].[chunkhash:8].min.js"
+    // filename: dev ? "vc.[name].min.js" : "vc.[name].[chunkhash:8].min.js"
+    filename: "vc.[name].min.js"
   },
   devtool: "source-map",
   resolve: {
@@ -75,7 +76,8 @@ module.exports = {
         loader: "url-loader",
         options: {
           limit: 10000,
-          name: "[name].[hash:8].[ext]"
+          // name: "[name].[hash:8].[ext]"
+          name: "[name].[ext]"
         }
       }
     ]
@@ -88,7 +90,8 @@ module.exports = {
     new MiniCssExtractPlugin({
       // Options similar to the same options in webpackOptions.output
       // both options are optional
-      filename: dev ? "vc.[name].css" : "vc.[name].[contenthash:8].css",
+      // filename: dev ? "vc.[name].css" : "vc.[name].[contenthash:8].css",
+      filename: "vc.[name].css",
       // Disable to remove warnings about conflicting order between imports.
       orderWarning: true
     })

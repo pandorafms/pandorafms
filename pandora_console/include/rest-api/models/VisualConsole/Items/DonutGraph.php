@@ -99,7 +99,7 @@ final class DonutGraph extends Item
 
         // Load side libraries.
         global $config;
-        include_once $config['homedir'].'/include/functions_graph.php';
+        include_once $config['homedir'].'/include/functions_visual_map.php';
 
         // Extract needed properties.
         $legendBackGroundColor = static::extractLegendBackgroundColor($data);

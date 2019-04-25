@@ -152,7 +152,14 @@ final class StaticGraph extends Item
         // Load side libraries.
         global $config;
         include_once $config['homedir'].'/include/functions_ui.php';
+        include_once $config['homedir'].'/include/functions_io.php';
         include_once $config['homedir'].'/include/functions_visual_map.php';
+        include_once $config['homedir'].'/include/functions_modules.php';
+        \enterprise_include_once('godmode/agentes/module_manager.php');
+        if (is_metaconsole()) {
+            \enterprise_include_once('include/functions_metaconsole.php');
+            \enterprise_include_once('meta/include/functions_ui_meta.php');
+        }
 
         // Get the linked module Id.
         $linkedModule = static::extractLinkedModule($data);
@@ -226,7 +233,7 @@ final class StaticGraph extends Item
                 || ($isBooleanModule && $showLastValueTooltip !== 'default')
             ) {
                 if (\is_numeric($value)) {
-                    $imgTitle .= __('Last value: ').remove_right_zeros($value);
+                    $imgTitle .= __('Last value: ').\remove_right_zeros($value);
                 } else {
                     $imgTitle .= __('Last value: ').$value;
                 }

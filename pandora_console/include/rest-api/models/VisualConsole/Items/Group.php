@@ -149,6 +149,11 @@ final class Group extends Item
         include_once $config['homedir'].'/include/functions_visual_map.php';
         include_once $config['homedir'].'/include/functions_ui.php';
         include_once $config['homedir'].'/include/functions_agents.php';
+        include_once $config['homedir'].'/include/functions_users.php';
+        if (is_metaconsole()) {
+            \enterprise_include_once('include/functions_metaconsole.php');
+            \enterprise_include_once('meta/include/functions_ui_meta.php');
+        }
 
         $groupId = static::extractGroupId($data);
         $showStatistics = static::extractShowStatistics($data);

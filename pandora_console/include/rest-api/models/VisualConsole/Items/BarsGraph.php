@@ -136,6 +136,15 @@ final class BarsGraph extends Item
         // Load config.
         global $config;
 
+        // Load side libraries.
+        include_once $config['homedir'].'/include/functions_visual_map.php';
+        include_once $config['homedir'].'/include/graphs/fgraph.php';
+
+        if (is_metaconsole()) {
+            \enterprise_include_once('include/functions_metaconsole.php');
+            \enterprise_include_once('meta/include/functions_ui_meta.php');
+        }
+
         // Extract needed properties.
         $gridColor = static::extractGridColor($data);
         $backGroundColor = static::extractBackgroundColor($data);

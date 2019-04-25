@@ -202,8 +202,11 @@ final class ColorCloud extends Item
 
         // Load side libraries.
         global $config;
-        include_once $config['homedir'].'/include/functions_graph.php';
         include_once $config['homedir'].'/include/functions_modules.php';
+        if (is_metaconsole()) {
+            \enterprise_include_once('include/functions_metaconsole.php');
+            \enterprise_include_once('meta/include/functions_ui_meta.php');
+        }
 
         // Get the linked module Id.
         $linkedModule = static::extractLinkedModule($data);

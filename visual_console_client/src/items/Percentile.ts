@@ -251,10 +251,10 @@ export default class Percentile extends Item<PercentileProps> {
   private getProgress(): number {
     const minValue = this.props.minValue || 0;
     const maxValue = this.props.maxValue || 100;
-    const value = this.props.value || 100;
+    const value = this.props.value == null ? 0 : this.props.value;
 
     if (value <= minValue) return 0;
     else if (value >= maxValue) return 100;
-    else return ((value - minValue) / (maxValue - minValue)) * 100;
+    else return Math.trunc(((value - minValue) / (maxValue - minValue)) * 100);
   }
 }

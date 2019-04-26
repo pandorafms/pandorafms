@@ -1987,9 +1987,9 @@ function events_page_responses($event, $childrens_ids=[])
     $table_responses->width = '100%';
     $table_responses->data = [];
     $table_responses->head = [];
-    $table_responses->style[0] = 'width:35%; font-weight: bold; text-align: left; height: 23px;';
-    $table_responses->style[1] = 'text-align: left; height: 23px; text-align: right;';
-    $table_responses->class = 'alternate rounded_cells';
+    $table_responses->style[0] = 'height:30px';
+    $table_responses->style[2] = 'text-align:right;';
+    $table_responses->class = 'events_show_more_table';
 
     if (tags_checks_event_acl($config['id_user'], $event['id_grupo'], 'EM', $event['clean_tags'], $childrens_ids)) {
         // Owner.
@@ -2056,7 +2056,7 @@ function events_page_responses($event, $childrens_ids=[])
             -1,
             true
         );
-        $data[1] .= html_print_button(
+        $data[2] .= html_print_button(
             __('Update'),
             'owner_button',
             false,
@@ -2136,7 +2136,7 @@ function events_page_responses($event, $childrens_ids=[])
     );
 
     if (!$status_blocked) {
-        $data[1] .= html_print_button(
+        $data[2] .= html_print_button(
             __('Update'),
             'status_button',
             false,
@@ -2151,7 +2151,8 @@ function events_page_responses($event, $childrens_ids=[])
     // Comments.
     $data = [];
     $data[0] = __('Comment');
-    $data[1] = html_print_button(
+    $data[1] = '';
+    $data[2] = html_print_button(
         __('Add comment'),
         'comment_button',
         false,
@@ -2173,8 +2174,9 @@ function events_page_responses($event, $childrens_ids=[])
         // Delete.
         $data = [];
         $data[0] = __('Delete event');
-        $data[1] = '<form method="post">';
-        $data[1] .= html_print_button(
+        $data[1] = '';
+        $data[2] = '<form method="post">';
+        $data[2] .= html_print_button(
             __('Delete event'),
             'delete_button',
             false,
@@ -2182,13 +2184,13 @@ function events_page_responses($event, $childrens_ids=[])
             'class="sub cancel"',
             true
         );
-        $data[1] .= html_print_input_hidden('delete', 1, true);
-        $data[1] .= html_print_input_hidden(
+        $data[2] .= html_print_input_hidden('delete', 1, true);
+        $data[2] .= html_print_input_hidden(
             'validate_ids',
             $event['id_evento'],
             true
         );
-        $data[1] .= '</form>';
+        $data[2] .= '</form>';
 
         $table_responses->data[] = $data;
     }
@@ -2229,7 +2231,7 @@ function events_page_responses($event, $childrens_ids=[])
             $server_id = 0;
         }
 
-        $data[1] .= html_print_button(
+        $data[2] .= html_print_button(
             __('Execute'),
             'custom_response_button',
             false,
@@ -2249,14 +2251,14 @@ function events_page_responses($event, $childrens_ids=[])
 				$('.params_rows').remove();
 				
 				$('#responses_table')
-					.append('<tr class=\"params_rows\"><td style=\"text-align:left; font-weight: bolder;\">".__('Description')."</td><td style=\"text-align:left;\">'+description+'</td></tr>');
+					.append('<tr class=\"params_rows\"><td>".__('Description')."</td><td style=\"text-align:left; height:30px;\" colspan=\"2\">'+description+'</td></tr>');
 				
 				if (params.length == 1 && params[0] == '') {
 					return;
 				}
 				
 				$('#responses_table')
-					.append('<tr class=\"params_rows\"><td style=\"text-align:left; padding-left:20px;\" colspan=\"2\">".__('Parameters')."</td></tr>');
+					.append('<tr class=\"params_rows\"><td style=\"text-align:left; padding-left:20px; height:30px;\" colspan=\"3\">".__('Parameters')."</td></tr>');
 				
 				for (i = 0; i < params.length; i++) {
 					add_row_param('responses_table',params[i]);
@@ -2981,9 +2983,7 @@ function events_page_custom_data($event)
     $table->width = '100%';
     $table->data = [];
     $table->head = [];
-    $table->style[0] = 'width:35%; font-weight: bold; text-align: left;';
-    $table->style[1] = 'text-align: left;';
-    $table->class = 'alternate rounded_cells';
+    $table->class = 'events_show_more_table';
 
     $json_custom_data = base64_decode($event['custom_data']);
     $custom_data = json_decode($json_custom_data);

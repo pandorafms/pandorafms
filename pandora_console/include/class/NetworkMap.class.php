@@ -1684,7 +1684,7 @@ class NetworkMap
                         $node[$k] = $v;
                     }
 
-                    $node['style']['label'] = $node['label'];
+                    $node['style']['label'] = $node['text'];
                     $node['style']['shape'] = 'circle';
                     if (isset($source_data['color'])) {
                         $item['color'] = $source_data['color'];

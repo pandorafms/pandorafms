@@ -1,16 +1,31 @@
 <?php
-
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the  GNU Lesser General Public License
-// as published by the Free Software Foundation; version 2
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
+/**
+ * Extension to manage a list of gateways and the node address where they should
+ * point to.
+ *
+ * @category   Custom fields View
+ * @package    Pandora FMS
+ * @subpackage Community
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
 
 
 /**
@@ -56,14 +71,14 @@ function get_custom_fields($custom_field_id=false, $select=true, $display_on_fro
         }
     } else {
         $metaconsole_connections = metaconsole_get_connection_names();
-        // For all nodes
+        // For all nodes.
         if (isset($metaconsole_connections) && is_array($metaconsole_connections)) {
             $result_meta = [];
             foreach ($metaconsole_connections as $metaconsole) {
-                // Get server connection data
+                // Get server connection data.
                 $server_data = metaconsole_get_connection($metaconsole);
 
-                // Establishes connection
+                // Establishes connection.
                 if (metaconsole_load_external_db($server_data) !== NOERR) {
                     continue;
                 }
@@ -82,7 +97,7 @@ function get_custom_fields($custom_field_id=false, $select=true, $display_on_fro
 
                 $result[] = db_get_all_rows_sql($sql);
 
-                // Restore connection to root node
+                // Restore connection to root node.
                 metaconsole_restore_db();
 
                 if (isset($result) && is_array($result)) {
@@ -109,7 +124,7 @@ function get_custom_fields($custom_field_id=false, $select=true, $display_on_fro
 /**
  * Returns custom field data.
  *
- * @param integer custom_field_id id.
+ * @param integer $custom_field_name Custom_field_id id.
  *
  * @return array custom fields data.
  */
@@ -141,14 +156,14 @@ function get_custom_fields_data($custom_field_name)
         }
     } else {
         $metaconsole_connections = metaconsole_get_connection_names();
-        // For all nodes
+        // For all nodes.
         if (isset($metaconsole_connections) && is_array($metaconsole_connections)) {
             $result_meta = [];
             foreach ($metaconsole_connections as $metaconsole) {
-                // Get server connection data
+                // Get server connection data.
                 $server_data = metaconsole_get_connection($metaconsole);
 
-                // Establishes connection
+                // Establishes connection.
                 if (metaconsole_load_external_db($server_data) !== NOERR) {
                     continue;
                 }
@@ -168,7 +183,7 @@ function get_custom_fields_data($custom_field_name)
 
                 $result_meta[] = db_get_all_rows_sql($sql);
 
-                // Restore connection to root node
+                // Restore connection to root node.
                 metaconsole_restore_db();
             }
 
@@ -189,9 +204,15 @@ function get_custom_fields_data($custom_field_name)
 }
 
 
+/**
+ * Function for custom field view return all conter for agents
+ *
+ * @param  array $filters Params for search.
+ * @return void False or array.
+ */
 function agent_counters_custom_fields($filters)
 {
-    // filter by status agent
+    // Filter by status agent.
     $and_status = '';
 
     $agent_state_normal = 0;
@@ -262,7 +283,7 @@ function agent_counters_custom_fields($filters)
         }
     }
 
-    // filter by status module
+    // Filter by status module.
     $empty_agents_count = "UNION ALL
 		SELECT ta.id_agente,
 			0 AS c_m_total,
@@ -314,20 +335,20 @@ function agent_counters_custom_fields($filters)
                     $and_module_status .= ' ) ';
                 }
             } else {
-                // not normal
+                // Not normal.
                 $and_module_status = 'AND tae.estado <> 0 AND tae.estado <> 300 ';
                 $empty_agents_count = '';
             }
         }
     }
 
-    // filters module
+    // Filters module.
     if ($filters['module_search']) {
         $and_module_search = 'AND tam.nombre LIKE "%'.$filters['module_search'].'%"';
         $empty_agents_count = '';
     }
 
-    // filter group and check ACL groups
+    // Filter group and check ACL groups.
     $groups_and = '';
     if (!users_can_manage_group_all('AR')) {
         if ($filters['group']) {
@@ -338,7 +359,7 @@ function agent_counters_custom_fields($filters)
     }
 
     if ($filters['group']) {
-        // recursion check acl
+        // Recursion check acl.
         if ($filters['recursion']) {
             $recursion_groups = groups_get_id_recursive($filters['group'], true);
             if (!users_can_manage_group_all('AR')) {
@@ -362,26 +383,26 @@ function agent_counters_custom_fields($filters)
         }
     }
 
-    // filter custom data
+    // Filter custom data.
     $custom_data_and = '';
     if (!in_array(-1, $filters['id_custom_fields_data'])) {
         $custom_data_array = implode("', '", $filters['id_custom_fields_data']);
         $custom_data_and = "AND tcd.description IN ('".$custom_data_array."')";
     }
 
-    // filter custom name
+    // Filter custom name.
     $custom_field_name = $filters['id_custom_fields'];
 
     if (is_metaconsole()) {
         $metaconsole_connections = metaconsole_get_connection_names();
-        // For all nodes
+        // For all nodes.
         if (isset($metaconsole_connections) && is_array($metaconsole_connections)) {
             $result_meta = [];
             $data = [];
             foreach ($metaconsole_connections as $metaconsole) {
-                // Get server connection data
+                // Get server connection data.
                 $server_data = metaconsole_get_connection($metaconsole);
-                // Establishes connection
+                // Establishes connection.
                 if (metaconsole_load_external_db($server_data) !== NOERR) {
                     continue;
                 }
@@ -470,7 +491,13 @@ function agent_counters_custom_fields($filters)
 							WHEN ta.total_count = ta.notinit_count
 								THEN 5
 							ELSE 0
-						END) AS `status`
+						END) AS `status`,
+						ta.critical_count,
+						ta.warning_count,
+						ta.unknown_count,
+						ta.notinit_count,
+						ta.normal_count,
+						ta.total_count
 					FROM tagente ta
 					LEFT JOIN tagent_secondary_group tasg
 						ON ta.id_agente = tasg.id_agent
@@ -510,7 +537,7 @@ function agent_counters_custom_fields($filters)
                 }
 
                 $data = array_merge($data, $node_result);
-                // Restore connection to root node
+                // Restore connection to root node.
                 metaconsole_restore_db();
             }
         }
@@ -519,7 +546,7 @@ function agent_counters_custom_fields($filters)
         $array_data = [];
 
         if (isset($result_meta) && is_array($result_meta)) {
-            // initialize counters
+            // Initialize counters.
             $final_result['counters_total'] = [
                 't_m_normal'   => 0,
                 't_m_critical' => 0,
@@ -538,7 +565,7 @@ function agent_counters_custom_fields($filters)
             foreach ($result_meta as $k => $nodo) {
                 if (isset($nodo) && is_array($nodo)) {
                     foreach ($nodo as $key => $value) {
-                        // Sum counters total
+                        // Sum counters total.
                         $final_result['counters_total']['t_m_normal'] += $value['m_normal'];
                         $final_result['counters_total']['t_m_critical'] += $value['m_critical'];
                         $final_result['counters_total']['t_m_warning'] += $value['m_warning'];
@@ -553,7 +580,7 @@ function agent_counters_custom_fields($filters)
                         $final_result['counters_total']['t_a_not_init'] += $value['a_not_init'];
                         $final_result['counters_total']['t_a_agents'] += $value['a_agents'];
 
-                        // Sum counters for data
+                        // Sum counters for data.
                         $array_data[$value['name_data']]['m_normal'] += $value['m_normal'];
                         $array_data[$value['name_data']]['m_critical'] += $value['m_critical'];
                         $array_data[$value['name_data']]['m_warning'] += $value['m_warning'];
@@ -576,7 +603,7 @@ function agent_counters_custom_fields($filters)
 
         $final_result['indexed_descriptions'] = $data;
     } else {
-        // TODO
+        // TODO.
         $final_result = false;
     }
 
@@ -586,7 +613,7 @@ function agent_counters_custom_fields($filters)
 
 function get_filters_custom_fields_view($id=0, $for_select=false, $name='')
 {
-    // filter group and check ACL groups
+    // Filter group and check ACL groups.
     $groups_and = '';
     if (!users_can_manage_group_all()) {
         $user_groups = array_keys(users_get_groups(false, 'AR', false));

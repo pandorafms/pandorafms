@@ -227,10 +227,10 @@ final class ModuleGraph extends Item
 
             $paramsCombined = [
                 'id_graph'       => $customGraphId,
-                'stacked'        => $graph['stacked'],
-                'summatory'      => $graph['summatory_series'],
-                'average'        => $graph['average_series'],
-                'modules_series' => $graph['modules_series'],
+                'stacked'        => $customGraph['stacked'],
+                'summatory'      => $customGraph['summatory_series'],
+                'average'        => $customGraph['average_series'],
+                'modules_series' => $customGraph['modules_series'],
             ];
 
             $data['html'] = \graphic_combined_module(

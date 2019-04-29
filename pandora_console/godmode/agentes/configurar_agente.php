@@ -583,7 +583,6 @@ if ($id_agente) {
 
         case 'collection':
             $tab_description = '- '.__('Collection');
-            $help_header = 'collection_tab';
         break;
 
         case 'inventory':
@@ -611,7 +610,6 @@ if ($id_agente) {
 
         case 'template':
             $tab_description = '- '.__('Templates');
-            $help_header = 'template_tab';
         break;
 
         case 'gis':
@@ -631,14 +629,17 @@ if ($id_agente) {
             switch (get_parameter('wizard_section')) {
                 case 'snmp_explorer':
                     $tab_description = '- '.__('SNMP Wizard');
+                    $help_header = 'agent_snmp_explorer_tab';
                 break;
 
                 case 'snmp_interfaces_explorer':
                     $tab_description = '- '.__('SNMP Interfaces wizard');
+                    $help_header = 'agent_snmp_interfaces_explorer_tab';
                 break;
 
                 case 'wmi_explorer':
                     $tab_description = '- '.__('WMI Wizard');
+                    $help_header = 'agent_snmp_wmi_explorer_tab';
                 break;
             }
         break;

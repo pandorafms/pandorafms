@@ -42,7 +42,7 @@ if (defined('METACONSOLE')) {
         __('Alerts').' &raquo; '.__('Configure alert command'),
         'images/gm_alerts.png',
         false,
-        'alerts_config',
+        'alerts_config_command_tab',
         true
     );
 }
@@ -153,7 +153,6 @@ $table->data['name'][2] = html_print_input_text('name', $name, '', 35, 255, true
 
 $table->colspan['command'][1] = 3;
 $table->data['command'][0] = __('Command');
-$table->data['command'][0] .= ui_print_help_icon('alert_macros', true);
 $table->data['command'][1] = html_print_textarea('command', 8, 30, $command, '', true);
 
 $table->colspan['group'][1] = 3;
@@ -178,11 +177,6 @@ $table->data['description'][1] = html_print_textarea('description', 10, 30, $des
 for ($i = 1; $i <= $config['max_macro_fields']; $i++) {
     $table->data['field'.$i][0] = sprintf(__('Field %s description'), $i);
 
-    // Only show help on first row
-    if ($i == 1) {
-        $table->data['field'.$i][0] .= ui_print_help_icon('alert_fields_description', true);
-    }
-
     if (!empty($fields_descriptions)) {
         $field_description = $fields_descriptions[($i - 1)];
     } else {
@@ -192,11 +186,6 @@ for ($i = 1; $i <= $config['max_macro_fields']; $i++) {
     $table->data['field'.$i][1] = html_print_input_text('field'.$i.'_description', $field_description, '', 35, 255, true);
 
     $table->data['field'.$i][2] = sprintf(__('Field %s values'), $i);
-
-    // Only show help on first row
-    if ($i == 1) {
-        $table->data['field'.$i][2] .= ui_print_help_icon('alert_fields_values', true);
-    }
 
     if (!empty($fields_values)) {
         $field_values = $fields_values[($i - 1)];

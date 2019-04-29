@@ -82,7 +82,7 @@ $table->data[2][1] = html_print_input_text('phantomjs_bin', io_safe_output($conf
 $table->data[6][0] = __('Auto login (hash) password');
 $table->data[6][1] = html_print_input_password('loginhash_pwd', io_output_password($config['loginhash_pwd']), '', 15, 15, true);
 
-$table->data[9][0] = __('Time source').ui_print_help_icon('timesource', true);
+$table->data[9][0] = __('Time source');
 $sources['system'] = __('System');
 $sources['sql'] = __('Database');
 $table->data[9][1] = html_print_select($sources, 'timesource', $config['timesource'], '', '', '', true);
@@ -107,7 +107,7 @@ $table->data[13][1] = html_print_input_text('cert_path', io_safe_output($config[
 $table->data[14][0] = __('Attachment store').ui_print_help_tip(__('Directory where temporary data is stored.'), true);
 $table->data[14][1] = html_print_input_text('attachment_store', io_safe_output($config['attachment_store']), '', 50, 255, true);
 
-$table->data[15][0] = __('IP list with API access').ui_print_help_icon('ip_api_list', true);
+$table->data[15][0] = __('IP list with API access');
 if (isset($_POST['list_ACL_IPs_for_API'])) {
     $list_ACL_IPs_for_API = get_parameter_post('list_ACL_IPs_for_API');
 } else {

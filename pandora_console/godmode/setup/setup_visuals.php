@@ -121,7 +121,7 @@ if (enterprise_installed()) {
 }
 
 echo '<fieldset>';
-echo '<legend>'.__('Behaviour configuration').'</legend>';
+echo '<legend>'.__('Behaviour configuration').' '.ui_print_help_icon('behavoir_conf_tab', true).'</legend>';
 html_print_table($table_behaviour);
 echo '</fieldset>';
 // ----------------------------------------------------------------------
@@ -267,12 +267,12 @@ function logo_custom_enterprise($name, $logo)
 }
 
 
-$table_styles->data[$row][0] = __('Custom logo (menu)').ui_print_help_icon('custom_logo', true);
+$table_styles->data[$row][0] = __('Custom logo (menu)');
 $table_styles->data[$row][1] = logo_custom_enterprise('custom_logo', $config['custom_logo']);
 $table_styles->data[$row][1] .= '&nbsp;'.html_print_button(__('View'), 'custom_logo_preview', $open, '', 'class="sub camera logo_preview"', true, false, $open, 'visualmodal');
 $row++;
 
-$table_styles->data[$row][0] = __('Custom logo collapsed (menu)').ui_print_help_icon('custom_logo_collapsed', true);
+$table_styles->data[$row][0] = __('Custom logo collapsed (menu)');
 $table_styles->data[$row][1] = logo_custom_enterprise('custom_logo_collapsed', $config['custom_logo_collapsed']);
 $table_styles->data[$row][1] .= '&nbsp;'.html_print_button(__('View'), 'custom_logo_collapsed_preview', $open, '', 'class="sub camera logo_preview"', true, false, $open, 'visualmodal');
 $row++;
@@ -316,7 +316,7 @@ if (enterprise_installed()) {
 $table_styles->data[$row][1] .= '&nbsp;'.html_print_button(__('View'), 'custom_logo_white_bg_preview', $open, '', 'class="sub camera logo_preview"', true, false, $open, 'visualmodal');
 $row++;
 
-$table_styles->data[$row][0] = __('Custom logo (login)').ui_print_help_icon('custom_logo', true);
+$table_styles->data[$row][0] = __('Custom logo (login)');
 
 if (enterprise_installed()) {
     $table_styles->data[$row][1] = html_print_select(
@@ -569,7 +569,7 @@ $row++;
 
 
     echo '<fieldset>';
-    echo '<legend>'.__('Style configuration').'</legend>';
+    echo '<legend>'.__('Style configuration').' '.ui_print_help_icon('style_conf_tab', true).'</legend>';
     html_print_table($table_styles);
     echo '</fieldset>';
     // ----------------------------------------------------------------------
@@ -612,7 +612,7 @@ $row++;
     $row++;
 
     echo '<fieldset>';
-    echo '<legend>'.__('GIS configuration').'</legend>';
+    echo '<legend>'.__('GIS configuration').' '.ui_print_help_icon('gis_conf_tab', true).'</legend>';
     html_print_table($table_gis);
     echo '</fieldset>';
     // ----------------------------------------------------------------------
@@ -706,7 +706,7 @@ $row++;
     $row++;
 
     echo '<fieldset>';
-    echo '<legend>'.__('Font and Text configuration').'</legend>';
+    echo '<legend>'.__('Font and Text configuration').' '.ui_print_help_icon('front_and_text_conf_tab', true).'</legend>';
     html_print_table($table_font);
     echo '</fieldset>';
     // ----------------------------------------------------------------------
@@ -894,7 +894,7 @@ $row++;
     */
 
     echo '<fieldset>';
-    echo '<legend>'.__('Charts configuration').'</legend>';
+    echo '<legend>'.__('Charts configuration').' '.ui_print_help_icon('charts_conf_tab', true).'</legend>';
     html_print_table($table_chars);
     echo '</fieldset>';
     // ----------------------------------------------------------------------
@@ -927,7 +927,7 @@ $row++;
 
 
     echo '<fieldset>';
-    echo '<legend>'.__('Visual consoles configuration').'</legend>';
+    echo '<legend>'.__('Visual consoles configuration').' '.ui_print_help_icon('visual_consoles_conf_tab', true).'</legend>';
     html_print_table($table_vc);
     echo '</fieldset>';
 
@@ -945,7 +945,7 @@ $row++;
     $table_ser->data['number'][1] = "<input type ='number' value=".$config['ser_menu_items']." size='5' name='ser_menu_items' min='0' max='25'>";
 
     echo '<fieldset>';
-    echo '<legend>'.__('Services configuration').'</legend>';
+    echo '<legend>'.__('Services configuration').' '.ui_print_help_icon('services_conf_tab', true).'</legend>';
     html_print_table($table_ser);
     echo '</fieldset>';
 
@@ -1124,7 +1124,7 @@ $row++;
     );
     $row++;
 
-    $table_other->data[$row][0] = __('Date format string').ui_print_help_icon('date_format', true);
+    $table_other->data[$row][0] = __('Date format string');
     $table_other->data[$row][1] = '<em>'.__('Example').'</em> '.date($config['date_format']);
     $table_other->data[$row][1] .= html_print_input_text('date_format', $config['date_format'], '', 30, 100, true);
     $row++;
@@ -1137,7 +1137,7 @@ $row++;
         $comparation = false;
     }
 
-    $table_other->data[$row][0] = __('Timestamp or time comparation').ui_print_help_icon('time_stamp-comparation', true);
+    $table_other->data[$row][0] = __('Timestamp or time comparation');
     $table_other->data[$row][1] = __('Comparation in rollover').' ';
     $table_other->data[$row][1] .= html_print_radio_button('prominent_time', 'comparation', '', $comparation, true);
     $table_other->data[$row][1] .= '<br />'.__('Timestamp in rollover').' ';
@@ -1243,7 +1243,7 @@ $row++;
 
 
     echo '<fieldset>';
-    echo '<legend>'.__('Other configuration').'</legend>';
+    echo '<legend>'.__('Other configuration').' '.ui_print_help_icon('other_conf_tab', true).'</legend>';
     html_print_table($table_other);
     echo '</fieldset>';
 

@@ -272,7 +272,13 @@ if ($update_command) {
 if (defined('METACONSOLE')) {
     alerts_meta_print_header();
 } else {
-    ui_print_page_header(__('Alerts').' &raquo; '.__('Alert commands'), 'images/gm_alerts.png', false, 'alerts_config', true);
+    ui_print_page_header(
+        __('Alerts').' &raquo; '.__('Alert commands'),
+        'images/gm_alerts.png',
+        false,
+        'alerts_command_tab',
+        true
+    );
 }
 
 if ($create_command) {

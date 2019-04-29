@@ -628,7 +628,7 @@ $table_other->data[6][1] = html_print_input_text(
     true
 );
 
-$table_other->data[7][0] = __('Use agent access graph').ui_print_help_icon('agent_access', true);
+$table_other->data[7][0] = __('Use agent access graph');
 $table_other->data[7][1] = html_print_checkbox_switch('agentaccess', 1, $config['agentaccess'], true);
 
 $table_other->data[8][0] = __('Max. recommended number of files in attachment directory');
@@ -707,24 +707,24 @@ $table_other->data[13][1] = html_print_input_text(
 echo '<form id="form_setup" method="post">';
 
 echo '<fieldset>';
-    echo '<legend>'.__('Database maintenance status').'</legend>';
+    echo '<legend>'.__('Database maintenance status').' '.ui_print_help_icon('database_maintenance_status_tab', true).'</legend>';
     html_print_table($table_status);
 echo '</fieldset>';
 
 echo '<fieldset>';
-    echo '<legend>'.__('Database maintenance options').'</legend>';
+    echo '<legend>'.__('Database maintenance options').' '.ui_print_help_icon('database_maintenance_options_tab', true).'</legend>';
     html_print_table($table);
 echo '</fieldset>';
 
 if ($config['history_db_enabled'] == 1) {
     echo '<fieldset>';
-    echo '<legend>'.__('Historical database maintenance options').'</legend>';
+    echo '<legend>'.__('Historical database maintenance options').' '.ui_print_help_icon('historical_database_maintenance_options_tab', true).'</legend>';
         html_print_table($table_historical);
     echo '</fieldset>';
 }
 
 echo '<fieldset>';
-    echo '<legend>'.__('Others').'</legend>';
+    echo '<legend>'.__('Others').' '.ui_print_help_icon('others_database_maintenance_options_tab', true).'</legend>';
     html_print_table($table_other);
 echo '</fieldset>';
 

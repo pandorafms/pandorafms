@@ -118,6 +118,7 @@ switch ($tab) {
 
     case 'massive_agents':
         $options = $options_agents;
+        $help_header = 'massive_agents_tab';
     break;
 
     case 'massive_modules':
@@ -235,7 +236,7 @@ ui_print_page_header(
     __('Bulk operations').' &raquo; '.$options[$option],
     'images/gm_massive_operations.png',
     false,
-    '',
+    $help_header,
     true,
     $onheader,
     true,

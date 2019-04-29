@@ -77,6 +77,7 @@ switch ($section) {
     case 'responses':
         $buttons['responses']['active'] = true;
         $subpage = ' - '.__('Responses');
+        $help_header = 'events_responses_tab';
     break;
 
     case 'view':
@@ -90,7 +91,14 @@ switch ($section) {
 }
 
 if (! defined('METACONSOLE')) {
-    ui_print_page_header(__('Manage events').$subpage, 'images/gm_events.png', false, '', true, $buttons);
+    ui_print_page_header(
+        __('Manage events').$subpage,
+        'images/gm_events.png',
+        false,
+        $help_header,
+        true,
+        $buttons
+    );
 } else {
     ui_meta_print_header(__('Manage events').$subpage, '', $buttons);
 }

@@ -50,7 +50,7 @@ if (defined('METACONSOLE')) {
         __('Module management').' &raquo; '.__('Network component management'),
         '',
         false,
-        'network_component',
+        'network_component_tab',
         true,
         '',
         false,

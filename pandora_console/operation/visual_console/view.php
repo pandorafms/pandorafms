@@ -133,7 +133,7 @@ $options['view']['active'] = true;
 
 if (!is_metaconsole()) {
     if (!$config['pure']) {
-        $options['pure']['text'] = '<a href="index.php?sec=network&sec2=operation/visual_console/render_view&id='.$visualConsoleId.'&pure=1">'.html_print_image(
+        $options['pure']['text'] = '<a href="index.php?sec=network&sec2=operation/visual_console/render_view&id='.$visualConsoleId.'&pure=1&refr='.$refr.'">'.html_print_image(
             'images/full_screen.png',
             true,
             ['title' => __('Full screen mode')]
@@ -172,6 +172,16 @@ if ($pure === true) {
     echo '</a>';
     echo '</li>';
 
+    // Countdown.
+    echo '<li class="nomn">';
+    echo '<div class="vc-refr">';
+    echo '<div id="vc-refr-form">';
+    echo __('Refresh').':';
+    echo html_print_select(get_refresh_time_array(), 'refr', $refr, '', '', 0, true, false, false);
+    echo '</div>';
+    echo '</div>';
+    echo '</li>';
+
     // Console name.
     echo '<li class="nomn">';
     echo '<div class="vc-title">'.$visualConsoleName.'</div>';
@@ -207,6 +217,7 @@ if (!users_can_manage_group_all('AR')) {
     $aclUserGroups = array_keys(users_get_groups(false, 'AR'));
 }
 
+$ignored_params['refr'] = '';
 ui_require_javascript_file('pandora_visual_console');
 include_javascript_d3();
 visual_map_load_client_resources();
@@ -294,8 +305,16 @@ $visualConsoleItems = VisualConsole::getItemsFromDB(
         handleUpdate
     );
 
-    $(document).ready(function () {
-        var controls = document.getElementById('vc-controls');
-        if (controls) autoHideElement(controls, 1000);
+    $(document).ready (function () {
+        var refr = <?php echo (int) $refr; ?>;
+        var pure = <?php echo (int) $config['pure']; ?>;
+        var href = "<?php echo ui_get_url_refresh($ignored_params); ?>";
+
+        if (pure) {
+            $('select#refr').change(function (event) {
+                url = js_html_entity_decode( href ) +  $('select#refr').val();
+                $(document).attr ("location", url);
+            });
+        }
     });
 </script>

@@ -658,3 +658,38 @@ function get_group_filter_custom_field_view($id)
 
     return false;
 }
+
+
+/**
+ * Function for print counters agents or modules.
+ *
+ * @param array  $status_array Array need value, image, title, color, counter.
+ * @param string $id_form      Id form default value ''.
+ * @param string $id_input     Id input default value ''.
+ *
+ * @return array Return html print div container counters.
+ */
+function print_counters_cfv(
+    array $status_array,
+    string $id_form='',
+    string $id_input=''
+) {
+    $html_result = '<form class = "cfv_status_agent" id="'.$id_form.'">';
+    foreach ($status_array as $key => $value) {
+        $checked = ($value['checked'] === 1) ? 'checked=true' : '';
+        $disabled = ($value['counter'] === 0) ? 'disabled=true' : '';
+
+        $html_result .= '<input id="lists_'.$id_input.'['.$key.']" '.$checked.' '.$disabled.' type="checkbox" name="lists_'.$id_input.'['.$key.']" />';
+        $html_result .= '<label for="lists_'.$id_input.'['.$key.']" style="background-color:'.$value['color'].';">';
+        $html_result .= html_print_image(
+            $value['image'],
+            true,
+            ['title' => $value['title']]
+        );
+        $html_result .= $value['counter'];
+        $html_result .= '</label>';
+    }
+
+    $html_result .= '</form>';
+    return $html_result;
+}

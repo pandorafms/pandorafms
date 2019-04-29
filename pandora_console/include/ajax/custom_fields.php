@@ -159,22 +159,22 @@ if (check_login()) {
                             switch ($value) {
                                 default:
                                 case AGENT_STATUS_NORMAL:
-                                    $status_module_search .= ' temp.critical_count = 0 AND temp.warning_count = 0 AND temp.unknown_count = 0 AND temp.notinit_count <> temp.total_count ) ';
+                                    $status_module_search .= ' temp.normal_count > 0) ';
                                 break;
                                 case AGENT_STATUS_CRITICAL:
                                     $status_module_search .= ' temp.critical_count > 0) ';
                                 break;
 
                                 case AGENT_STATUS_WARNING:
-                                    $status_module_search .= ' temp.critical_count = 0 AND temp.warning_count > 0) ';
+                                    $status_module_search .= ' temp.warning_count > 0) ';
                                 break;
 
                                 case AGENT_STATUS_UNKNOWN:
-                                    $status_module_search .= ' temp.critical_count = 0 AND temp.warning_count = 0 AND temp.unknown_count > 0) ';
+                                    $status_module_search .= ' temp.unknown_count > 0) ';
                                 break;
 
                                 case AGENT_STATUS_NOT_INIT:
-                                    $status_module_search .= ' temp.total_count = temp.notinit_count) ';
+                                    $status_module_search .= ' temp.notinit_count > 0) ';
                                 break;
                             }
                         }
@@ -183,7 +183,7 @@ if (check_login()) {
                     }
                 } else {
                     // Not normal.
-                    $status_module_search = ' AND NOT ( temp.critical_count = 0 AND temp.warning_count = 0 AND temp.unknown_count = 0 AND temp.notinit_count <> temp.total_count)';
+                    $status_module_search = ' AND ( temp.critical_count > 0 OR temp.warning_count > 0 OR temp.unknown_count > 0 AND temp.notinit_count > 0 )';
                 }
             }
         }

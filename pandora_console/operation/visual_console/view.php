@@ -261,7 +261,7 @@ $visualConsoleItems = VisualConsole::getItemsFromDB(
 
         // Change the links.
         if (prevProps && prevProps.id !== newProps.id) {
-            var regex = /(id=|id_visual_console=|id_layout=)\d+(&?)/gi;
+            var regex = /(id=|id_visual_console=|id_layout=|id_visualmap=)\d+(&?)/gi;
             var replacement = '$1' + newProps.id + '$2';
 
             // Tab links.

@@ -68,20 +68,20 @@ final class ModuleGraph extends Item
      *
      * @param array $data Unknown input data structure.
      *
-     * @return string 'none', 'white' or 'black'. 'none' by default.
+     * @return string 'transparent', 'white' or 'black'. 'transparent' by default.
      */
     private static function extractBackgroundType(array $data): string
     {
         $value = static::issetInArray($data, ['backgroundType', 'image']);
 
         switch ($value) {
-            case 'none':
+            case 'transparent':
             case 'white':
             case 'black':
             return $value;
 
             default:
-            return 'none';
+            return 'transparent';
         }
     }
 
@@ -193,6 +193,18 @@ final class ModuleGraph extends Item
             }
         }
 
+        /*
+         * About the 30 substraction to the graph height:
+         * The function which generates the graph doesn't respect the
+         * required height. It uses it for the canvas (the graph itself and
+         * their axes), but then it adds the legend. One item of the legend
+         * (one dataset) is about 30px, so we need to substract that height
+         * from the canvas to try to fit the element's height.
+         *
+         * PD: The custom graphs can have more datasets, but we only substract
+         * the height of one of it to replicate the legacy functionality.
+         */
+
         // Custom graph.
         if (empty($customGraphId) === false) {
             $customGraph = \db_get_row_filter(
@@ -204,7 +216,7 @@ final class ModuleGraph extends Item
             $params = [
                 'period'          => $period,
                 'width'           => $data['width'],
-                'height'          => $data['height'],
+                'height'          => ($data['height'] - 30),
                 'title'           => '',
                 'unit_name'       => null,
                 'show_alerts'     => false,
@@ -215,10 +227,10 @@ final class ModuleGraph extends Item
 
             $paramsCombined = [
                 'id_graph'       => $customGraphId,
-                'stacked'        => $graph['stacked'],
-                'summatory'      => $graph['summatory_series'],
-                'average'        => $graph['average_series'],
-                'modules_series' => $graph['modules_series'],
+                'stacked'        => $customGraph['stacked'],
+                'summatory'      => $customGraph['summatory_series'],
+                'average'        => $customGraph['average_series'],
+                'modules_series' => $customGraph['modules_series'],
             ];
 
             $data['html'] = \graphic_combined_module(
@@ -237,7 +249,7 @@ final class ModuleGraph extends Item
                 'period'          => $period,
                 'show_events'     => false,
                 'width'           => $data['width'],
-                'height'          => $data['height'],
+                'height'          => ($data['height'] - 30),
                 'title'           => \modules_get_agentmodule_name($moduleId),
                 'unit'            => \modules_get_unit($moduleId),
                 'only_image'      => $imageOnly,

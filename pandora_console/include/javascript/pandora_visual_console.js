@@ -98,7 +98,7 @@ function createVisualConsole(
         e.data.linkedLayoutId > 0 &&
         e.data.link != null &&
         e.data.link.length > 0 &&
-        (e.data.metaconsoleId == null || e.data.metaconsoleId === 0)
+        (e.data.linkedLayoutAgentId == null || e.data.linkedLayoutAgentId === 0)
       ) {
         // Stop the current link behavior.
         e.nativeEvent.preventDefault();

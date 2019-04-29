@@ -706,6 +706,9 @@ if (is_metaconsole()) {
 // Hidden field with the loaded filter name.
 $events_filter .= html_print_input_hidden('id_name', $id_name, true);
 
+// Hidden field that signals filter has been applied.
+$events_filter .= html_print_input_hidden('is_filtered', 'true', true);
+
 // Hidden open filter flag
 // If autoupdate is in use collapse filter.
 if ($open_filter) {
@@ -1039,6 +1042,20 @@ $events_filter .= $botom_update;
 
 $events_filter .= '</form>';
 // This is the filter div.
+$user_filter = db_get_value(
+    'id_filter',
+    'tusuario',
+    'id_user',
+    $config['id_user']
+);
+$user_default_filter = db_get_all_rows_filter(
+    'tevent_filter',
+    ['id_filter' => $user_filter]
+);
+$user_default_filter = $user_default_filter[0];
+
+$id_name = $user_default_filter['id_name'];
+
 $filter_resume['title'] = empty($id_name) ? __('No filter loaded') : __('Filter loaded').': '.$id_name;
 
 if (is_metaconsole()) {
@@ -1321,8 +1338,6 @@ $(document).ready( function() {
                     // Update the info with the loaded filter
                     $('#filter_loaded_span').html($('#filter_loaded_text').html() + ': ' + $("#hidden-id_name").val());
 
-                    // Update the view with the loaded filter
-                    $('#submit-update').trigger('click');
                 },
                 "json"
             );

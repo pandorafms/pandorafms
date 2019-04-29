@@ -125,4 +125,37 @@ final class EventsHistory extends Item
     }
 
 
+    /**
+     * Generate a link to something related with the item.
+     *
+     * @param array $data Visual Console Item's data structure.
+     *
+     * @return mixed The link or a null value.
+     *
+     * @override Item::buildLink.
+     */
+    protected static function buildLink(array $data)
+    {
+        global $config;
+
+        // Get the linked agent and module Ids.
+        $linkedModule = static::extractLinkedModule($data);
+        $agentId = static::parseIntOr($linkedModule['agentId'], null);
+        $moduleId = static::parseIntOr($linkedModule['moduleId'], null);
+
+        $baseUrl = $config['homeurl'].'index.php';
+
+        return $baseUrl.'?'.http_build_query(
+            [
+                'sec'                  => 'eventos',
+                'sec2'                 => 'operation/events/events',
+                'id_agent'             => $agentId,
+                'module_search_hidden' => $moduleId,
+                'event_view_hr'        => (static::extractMaxTime($data) / 3600),
+                'status'               => -1,
+            ]
+        );
+    }
+
+
 }

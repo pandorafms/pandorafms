@@ -890,7 +890,7 @@ class Item extends Model
         $linkedModule = static::extractLinkedModule($data);
         $linkedAgent = static::extractLinkedAgent($data);
 
-        $baseUrl = \ui_get_full_url();
+        $baseUrl = \ui_get_full_url('index.php');
 
         // TODO: There's a feature to get the link from the label.
         if (static::$useLinkedVisualConsole === true
@@ -900,9 +900,9 @@ class Item extends Model
             // Linked Visual Console.
             $vcId = $linkedVisualConsole['linkedLayoutId'];
             // The layout can be from another node.
-            $metaconsoleId = $linkedVisualConsole['metaconsoleId'];
+            $linkedLayoutAgentId = $linkedVisualConsole['linkedLayoutAgentId'];
 
-            if (empty($metaconsoleId) === true && \is_metaconsole()) {
+            if (empty($linkedLayoutAgentId) === true && \is_metaconsole()) {
                 /*
                  * A Visual Console from this console.
                  * We are in a metaconsole.
@@ -917,7 +917,9 @@ class Item extends Model
                         'pure'         => (int) $config['pure'],
                     ]
                 );
-            } else if (empty($metaconsoleId) === true && !\is_metaconsole()) {
+            } else if (empty($linkedLayoutAgentId) === true
+                && !\is_metaconsole()
+            ) {
                 /*
                  * A Visual Console from this console.
                  * We are in a regular console.
@@ -939,7 +941,7 @@ class Item extends Model
 
                 try {
                     $node = \metaconsole_get_connection_by_id(
-                        $metaconsoleId
+                        $linkedLayoutAgentId
                     );
                     return \ui_meta_get_node_url(
                         $node,

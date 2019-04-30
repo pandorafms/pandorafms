@@ -600,6 +600,8 @@ if ($id_agente) {
             $tab_description = '- '.__('Modules');
             if ($type_module_t == 'webux') {
                 $help_header = 'wux_console';
+            } else {
+                $help_header = 'local_module_tab';
             }
         break;
 

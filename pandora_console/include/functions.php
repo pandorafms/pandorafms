@@ -4176,36 +4176,12 @@ function get_help_info($section_name)
             }
         break;
 
-        case 'alert_template':
-
-        break;
-
-        case 'alert_type':
-
-        break;
-
-        case 'autocreate_blacklist':
-
-        break;
-
-        case 'categories':
-
-        break;
-
         case 'collections':
             if ($es) {
                 $result .= 'Politicas&printable=yes#Colecciones_de_ficheros';
             } else {
                 $result .= 'Policy&printable=yes#File_Collections';
             }
-        break;
-
-        case 'collection_tab':
-
-        break;
-
-        case 'column_macros':
-            // XXX
         break;
 
         case 'component_groups':
@@ -5503,11 +5479,19 @@ function get_help_info($section_name)
             }
         break;
 
-        case 'visual_console_tab':
+        case 'sound_console_tab':
             if ($es) {
-                $result .= '';
+                $result .= 'Eventos&printable=yes#Uso';
             } else {
-                $result .= '';
+                $result .= 'Events&printable=yes#Use';
+            }
+        break;
+
+        case 'local_module_tab':
+            if ($es) {
+                $result .= 'Operacion&printable=yes#Tipos_de_m.C3.B3dulos';
+            } else {
+                $result .= 'Operations&printable=yes#Types_of_Modules';
             }
         break;
 

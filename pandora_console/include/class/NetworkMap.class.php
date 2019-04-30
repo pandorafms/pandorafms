@@ -1684,7 +1684,12 @@ class NetworkMap
                         $node[$k] = $v;
                     }
 
-                    $node['style']['label'] = $node['text'];
+                    if (!empty($node['text'])) {
+                        $node['style']['label'] = $node['text'];
+                    } else {
+                        $node['style']['label'] = $node['name'];
+                    }
+
                     $node['style']['shape'] = 'circle';
                     if (isset($source_data['color'])) {
                         $item['color'] = $source_data['color'];

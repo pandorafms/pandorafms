@@ -379,22 +379,22 @@ final class Group extends Item
 
         // Critical.
         $html .= '<div style="'.$valueStyle.'background-color: #FC4444;">';
-        $html .= \number_format($agentStats['critical']).'%';
+        $html .= \number_format($agentStats['critical'], 2).'%';
         $html .= '</div>';
         $html .= '<div style="'.$nameStyle.'">'.__('Critical').'</div>';
         // Warning.
         $html .= '<div style="'.$valueStyle.'background-color: #f8db3f;">';
-        $html .= \number_format($agentStats['warning']).'%';
+        $html .= \number_format($agentStats['warning'], 2).'%';
         $html .= '</div>';
         $html .= '<div style="'.$nameStyle.'">'.__('Warning').'</div>';
         // Normal.
         $html .= '<div style="'.$valueStyle.'background-color: #84b83c;">';
-        $html .= \number_format($agentStats['normal']).'%';
+        $html .= \number_format($agentStats['normal'], 2).'%';
         $html .= '</div>';
         $html .= '<div style="'.$nameStyle.'">'.__('Normal').'</div>';
         // Unknown.
         $html .= '<div style="'.$valueStyle.'background-color: #9d9ea0;">';
-        $html .= \number_format($agentStats['unknown']).'%';
+        $html .= \number_format($agentStats['unknown'], 2).'%';
         $html .= '</div>';
         $html .= '<div style="'.$nameStyle.'">'.__('Unknown').'</div>';
 

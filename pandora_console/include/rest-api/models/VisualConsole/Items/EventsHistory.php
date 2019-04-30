@@ -136,14 +136,12 @@ final class EventsHistory extends Item
      */
     protected static function buildLink(array $data)
     {
-        global $config;
-
         // Get the linked agent and module Ids.
         $linkedModule = static::extractLinkedModule($data);
         $agentId = static::parseIntOr($linkedModule['agentId'], null);
         $moduleId = static::parseIntOr($linkedModule['moduleId'], null);
 
-        $baseUrl = $config['homeurl'].'index.php';
+        $baseUrl = \ui_get_full_url('index.php');
 
         return $baseUrl.'?'.http_build_query(
             [

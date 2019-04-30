@@ -34,7 +34,13 @@ $pure = get_parameter('pure', 0);
 
 // Header
 if (! defined('METACONSOLE')) {
-    ui_print_page_header(__('Manage Netflow Filter'), 'images/gm_netflow.png', false, '', true);
+    ui_print_page_header(
+        __('Manage Netflow Filter'),
+        'images/gm_netflow.png',
+        false,
+        'pcap_filter',
+        true
+    );
 
     $is_windows = strtoupper(substr(PHP_OS, 0, 3)) == 'WIN';
     if ($is_windows) {

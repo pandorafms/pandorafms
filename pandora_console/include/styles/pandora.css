@@ -266,6 +266,38 @@ th {
   letter-spacing: 0.3pt;
 }
 
+/* Remove background when autocomplete */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus textarea:-webkit-autofill,
+textarea:-webkit-autofill:hover textarea:-webkit-autofill:focus,
+select:-webkit-autofill,
+select:-webkit-autofill:hover,
+select:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0px 1000px #ffffff inset !important;
+}
+
+/* All select type multiple */
+select[multiple] option:checked,
+select[multiple] option:checked {
+  background: #82b92e linear-gradient(0deg, #82b92e 0%, #82b92e 100%);
+  color: #fff !important;
+}
+
+select option:checked,
+select option:checked {
+  background-color: #82b92e;
+  color: #fff !important;
+}
+
+select > option:hover {
+  background-color: #cbcbcb;
+}
+
+select:-internal-list-box {
+  border: none;
+}
+
 /* --- Font ttf --- */
 @font-face {
   font-family: "DejaVuSerif-BoldFont";
@@ -4939,28 +4971,6 @@ input:checked + .p-slider:before {
   text-align: center;
 }
 
-select#autorefresh_list_out[multiple] option:checked,
-select#autorefresh_list[multiple] option:checked {
-  background: #82b92e linear-gradient(0deg, #82b92e 0%, #82b92e 100%);
-  color: #fff !important;
-}
-
-select#autorefresh_list_out option:checked,
-select#autorefresh_list option:checked {
-  background-color: #82b92e;
-  color: #fff !important;
-}
-
-select#autorefresh_list_out > option:hover,
-select#autorefresh_list > option:hover {
-  background-color: #cbcbcb;
-}
-
-select#autorefresh_list_out:-internal-list-box,
-select#autorefresh_list:-internal-list-box {
-  border: none;
-}
-
 .autorefresh_select .autorefresh_select_list_out,
 .autorefresh_select .autorefresh_select_list {
   width: 45%;
@@ -5441,7 +5451,7 @@ table.info_table.policy_sub_table {
 
 /*
  * ---------------------------------------------------------------------
- * - Create/Update Agent - agent_manager.php
+ * - Layout for the new forms
  * ---------------------------------------------------------------------
  */
 .first_row {
@@ -5449,43 +5459,20 @@ table.info_table.policy_sub_table {
   display: flex;
 }
 
-.agent_info {
-  width: 85%;
-  margin-right: 20px;
+.label_simple_one_item {
   display: flex;
-  flex-flow: row wrap;
-  flex-direction: row;
-  justify-content: space-between;
-  box-sizing: border-box;
+  align-items: flex-end;
 }
 
-.agent_info_new {
-  width: 100%;
-  margin-right: 0;
+.label_simple_items {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
 }
 
-.agent_info_left {
-  width: 50%;
-  padding-right: 50px;
-  box-sizing: border-box;
+.label_simple_items > * {
+  margin-right: 5px;
 }
-
-.agent_info_right {
-  width: 50%;
-  box-sizing: border-box;
-}
-
-.agent_qr {
-  width: 15%;
-  text-align: center;
-  box-sizing: border-box;
-  padding: 20px 0px;
-}
-/*
-.agent_qr p {
-  text-align: left;
-}
-*/
 
 .input_label {
   color: #343434 !important;
@@ -5494,28 +5481,10 @@ table.info_table.policy_sub_table {
   margin: 0px 0px 5px 0px;
 }
 
-.agent_info_right select,
-.agent_info_right input,
-.agent_info_left select#grupo {
-  width: 95%;
-  box-sizing: border-box;
-}
-
-.agent_info_left .p-switch {
-  margin-right: 5px;
-  margin-left: 10px;
-}
-
-.agent_info_left input#text-direccion,
-.agent_info_left select#address_list,
-.agent_info_left input#text-agente,
-.agent_info_left input#text-alias {
-  width: 100%;
-  box-sizing: border-box;
-}
-
-.agent_info_agent_name > * {
-  margin-left: 5px;
+.input_label_simple {
+  margin-bottom: 0;
+  margin-top: 0;
+  display: inline;
 }
 
 .label_select_parent {
@@ -5526,11 +5495,12 @@ table.info_table.policy_sub_table {
 
 .label_select_child_left {
   width: 80%;
+  min-width: 100px;
 }
 
 .label_select_child_right {
   width: 20%;
-  min-width: 150px;
+  min-width: 140px;
   align-items: center;
   display: flex;
 }
@@ -5539,6 +5509,88 @@ table.info_table.policy_sub_table {
   text-align: right;
   width: 5%;
   min-width: 30px;
+}
+
+/* Inputs type text shown as a black line */
+.agent_options input[type="text"] {
+  background-color: transparent !important;
+  border: none;
+  border-radius: 0 !important;
+  border-bottom: 1px solid #343434;
+  padding: 2px 5px;
+  box-sizing: border-box;
+  background-repeat: no-repeat;
+  background-position: left bottom 2px;
+  margin-bottom: 4px;
+}
+
+/*
+ * ---------------------------------------------------------------------
+ * - Create/Update Agent - agent_manager.php
+ * ---------------------------------------------------------------------
+ */
+.agent_options {
+  width: 100%;
+  margin-right: 0px;
+  display: flex;
+  flex-flow: row wrap;
+  flex-direction: row;
+  justify-content: space-between;
+  box-sizing: border-box;
+}
+
+.agent_options_update {
+  width: 85%;
+  margin-right: 20px;
+}
+
+.agent_options_column_left,
+.agent_options_column_right {
+  width: 50%;
+  box-sizing: border-box;
+}
+
+.agent_options_column_left {
+  padding-right: 50px;
+}
+
+.agent_qr {
+  width: 15%;
+  text-align: center;
+  box-sizing: border-box;
+  padding: 20px 0px;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  min-width: 150px;
+}
+
+a#qr_code_agent_view {
+  margin-top: 5px;
+}
+
+.first_row .agent_options_column_right select,
+.first_row .agent_options_column_right input,
+.first_row .agent_options_column_left select#grupo {
+  width: 95%;
+  box-sizing: border-box;
+}
+
+.first_row .agent_options_column_left .p-switch {
+  margin-right: 5px;
+  margin-left: 10px;
+}
+
+.agent_options_column_left input#text-direccion,
+.agent_options_column_left select#address_list,
+.agent_options_column_left input#text-agente,
+.agent_options_column_left input#text-alias {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.agent_options_agent_name > * {
+  margin-left: 5px;
 }
 
 .custom_fields_table {
@@ -5578,6 +5630,53 @@ table.info_table.policy_sub_table {
   border-bottom-right-radius: 0px !important;
 }
 
+.secondary_groups_select {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 15px;
+}
+
+.secondary_groups_select .secondary_groups_select_arrows input {
+  display: grid;
+  margin: 0 auto;
+}
+
+.secondary_groups_select .secondary_groups_list_left {
+  text-align: right;
+  width: 50%;
+}
+
+.secondary_groups_select .secondary_groups_list_right {
+  text-align: left;
+  width: 50%;
+}
+
+.secondary_groups_select .secondary_groups_select_arrows {
+  padding: 0 50px;
+}
+
+.secondary_groups_select_arrows a {
+  display: block;
+}
+
+.agent_options_adv .agent_options_column_right .label_select select,
+.agent_options_adv .agent_options_column_right .label_select input[type="text"],
+.agent_options_adv #text-custom_id,
+.agent_options_adv #cps {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.agent_options_adv .label_select_simple.label_simple_one_item .p-switch {
+  margin-right: 5px;
+}
+
+/*
+ * ---------------------------------------------------------------------
+ * - CLASSES FOR THE NEW TOGGLES                     								-
+ * ---------------------------------------------------------------------
+ */
 .ui_toggle {
   margin-bottom: 20px;
 }
@@ -5594,4 +5693,49 @@ table.info_table.policy_sub_table {
 .white_box_opened {
   border-top-left-radius: 0px;
   border-top-right-radius: 0px;
+}
+
+/*
+ * ---------------------------------------------------------------------
+ * - SWITCH RADIO BUTTONS                           								-
+ * ---------------------------------------------------------------------
+ */
+.switch_radio_button {
+  display: flex;
+  overflow: hidden;
+}
+
+.switch_radio_button input {
+  position: absolute !important;
+  clip: rect(0, 0, 0, 0);
+  height: 1px;
+  width: 1px;
+  border: 0;
+  overflow: hidden;
+}
+
+.switch_radio_button label {
+  background-color: #fff;
+  color: rgba(0, 0, 0, 0.6);
+  line-height: 1;
+  text-align: center;
+  padding: 7px 14px;
+  margin-right: -1px;
+  border: 1px solid #cbcbcb;
+  border-radius: 4px;
+  transition: all 0.1s ease-in-out;
+}
+
+.switch_radio_button label:hover {
+  cursor: pointer;
+}
+
+.switch_radio_button input:checked + label {
+  background-color: #82b92e;
+  box-shadow: none;
+  color: #fff;
+}
+
+.switch_radio_button label:last-child {
+  margin-right: 0px;
 }

@@ -1424,11 +1424,21 @@ if ($update_module || $create_module) {
     $module_in_policy = enterprise_hook('policies_is_module_in_policy', [$id_agent_module]);
     $module_linked = enterprise_hook('policies_is_module_linked', [$id_agent_module]);
 
-    if ((!$module_in_policy && !$module_linked )
-        || ( $module_in_policy && !$module_linked )
+    if ((!$module_in_policy && !$module_linked && $update_module)
+        || ( $module_in_policy && !$module_linked && $update_module)
     ) {
         enterprise_hook(
             'config_agents_update_module_in_conf',
+            [
+                $id_agente,
+                io_safe_output($old_configuration_data),
+                io_safe_output($configuration_data),
+                $disabled,
+            ]
+        );
+    } else {
+        enterprise_hook(
+            'config_agents_write_module_in_conf',
             [
                 $id_agente,
                 io_safe_output($old_configuration_data),

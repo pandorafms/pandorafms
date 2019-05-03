@@ -378,6 +378,7 @@ CREATE TABLE  IF NOT EXISTS `talert_commands` (
 	`internal` tinyint(1) default 0,
 	`fields_descriptions` TEXT,
 	`fields_values` TEXT,
+	`fields_hidden` TEXT,
 	PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

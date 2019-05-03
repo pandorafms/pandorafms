@@ -63,6 +63,8 @@ if (is_ajax()) {
         $fields_descriptions = empty($command['fields_descriptions']) ? '' : json_decode(io_safe_output($command['fields_descriptions']), true);
         // Fields values are stored in json
         $fields_values = empty($command['fields_values']) ? '' : io_safe_output(json_decode($command['fields_values'], true));
+        // Fields hidden conditions are stored in json
+        $fields_hidden_checked = empty($command['fields_hidden']) ? '' : io_safe_output(json_decode($command['fields_hidden'], true));
 
         $fields_rows = [];
         for ($i = 1; $i <= $config['max_macro_fields']; $i++) {
@@ -72,6 +74,8 @@ if (is_ajax()) {
 
             $field_description = $fields_descriptions[($i - 1)];
             $field_value = $fields_values[($i - 1)];
+            $field_hidden = $fields_hidden_checked[($i - 1)];
+
 
             if (!empty($field_description)) {
                 // If the value is 5,  this because severity in snmp alerts is not permit to show
@@ -106,6 +110,8 @@ if (is_ajax()) {
                     }
                 }
             }
+
+            $style = ((int) $field_hidden === 1) ? '-webkit-text-security: disc;' : '';
 
             if (!empty($field_value)) {
                 $field_value = io_safe_output($field_value);
@@ -200,7 +206,7 @@ if (is_ajax()) {
                             1,
                             1,
                             $fv[0],
-                            'style="min-height:40px" class="fields"',
+                            'style="min-height:40px; '.$style.'" class="fields"',
                             true
                         );
                         $rfield = html_print_textarea(
@@ -208,7 +214,7 @@ if (is_ajax()) {
                             1,
                             1,
                             $fv[0],
-                            'style="min-height:40px" class="fields_recovery"',
+                            'style="min-height:40px; '.$style.'" class="fields_recovery',
                             true
                         );
                     }
@@ -219,7 +225,7 @@ if (is_ajax()) {
                     1,
                     1,
                     '',
-                    'style="min-height:40px" class="fields"',
+                    'style="min-height:40px; '.$style.'" class="fields"',
                     true
                 );
                 $rfield = html_print_textarea(
@@ -227,7 +233,7 @@ if (is_ajax()) {
                     1,
                     1,
                     '',
-                    'style="min-height:40px" class="fields_recovery"',
+                    'style="min-height:40px; '.$style.'" class="fields_recovery"',
                     true
                 );
             }
@@ -283,16 +289,19 @@ if ($create_command) {
 
     $fields_descriptions = [];
     $fields_values = [];
+    $fields_hidden = [];
     $info_fields = '';
     $values = [];
     for ($i = 1; $i <= $config['max_macro_fields']; $i++) {
         $fields_descriptions[] = (string) get_parameter('field'.$i.'_description');
         $fields_values[] = (string) get_parameter('field'.$i.'_values');
+        $fields_hidden[] = get_parameter('field'.$i.'_hide');
         $info_fields .= ' Field'.$i.': '.$fields_values[($i - 1)];
     }
 
     $values['fields_values'] = io_json_mb_encode($fields_values);
     $values['fields_descriptions'] = io_json_mb_encode($fields_descriptions);
+    $values['fields_hidden'] = io_json_mb_encode($fields_hidden);
     $values['description'] = $description;
     $values['id_group'] = $id_group;
 

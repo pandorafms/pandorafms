@@ -11,7 +11,7 @@
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-// Load global vars
+// Load global vars.
 global $config;
 
 require_once $config['homedir'].'/include/functions_alerts.php';
@@ -34,7 +34,7 @@ $update_command = (bool) get_parameter('update_command');
 $id = (int) get_parameter('id');
 $pure = get_parameter('pure', 0);
 
-// Header
+// Header.
 if (defined('METACONSOLE')) {
     alerts_meta_print_header();
 } else {
@@ -187,7 +187,7 @@ $table->data['description'][1] = html_print_textarea('description', 10, 30, $des
 for ($i = 1; $i <= $config['max_macro_fields']; $i++) {
     $table->data['field'.$i][0] = sprintf(__('Field %s description'), $i);
 
-    // Only show help on first row
+    // Only show help on first row.
     if ($i == 1) {
         $table->data['field'.$i][0] .= ui_print_help_icon('alert_fields_description', true);
     }
@@ -202,7 +202,7 @@ for ($i = 1; $i <= $config['max_macro_fields']; $i++) {
 
     $table->data['field'.$i][2] = sprintf(__('Field %s values'), $i);
 
-    // Only show help on first row
+    // Only show help on first row.
     if ($i == 1) {
         $table->data['field'.$i][2] .= ui_print_help_icon('alert_fields_values', true);
     }

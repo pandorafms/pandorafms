@@ -112,6 +112,8 @@ $sla_sorted_by = 0;
 $id_agents = '';
 $inventory_modules = [];
 $date = null;
+$current_month = true;
+
 // Only avg is selected by default for the simple graphs.
 $fullscale = false;
 $percentil = false;
@@ -311,6 +313,7 @@ switch ($action) {
                     // 'top_n' filed will be reused for SLA sort option.
                     $sla_sorted_by = $item['top_n'];
                     $period = $item['period'];
+                    $current_month = $item['current_month'];
                 break;
 
                 case 'module_histogram_graph':
@@ -1050,6 +1053,17 @@ $class = 'databox filters';
                 ?>
             </td>
         </tr>
+
+        <tr id="row_current_month">
+            <td style="font-weight:bold;">
+                <?php echo __('Current month'); ?>
+            </td>
+
+            <td style="font-weight:bold;">
+                <?php html_print_checkbox('current_month', 1, $current_month); ?>
+            </td>
+        </tr>
+
         <tr id="row_working_time">
             <td style="font-weight:bold;">
                 <?php echo __('Working time'); ?>
@@ -4161,6 +4175,7 @@ function chooseType() {
     $("#row_line_separator").hide();
     $("#row_custom_example").hide();
     $("#row_group").hide();
+    $("#row_current_month").hide();
     $("#row_working_time").hide();
     $("#row_only_display_wrong").hide();
     $("#row_combo_module").hide();
@@ -4342,6 +4357,7 @@ function chooseType() {
         case 'SLA_hourly':
             $("#row_description").show();
             $("#sla_list").show();
+            $("#row_current_month").show();
             $("#row_working_time").show();
             $("#row_sort").show();
             $("#row_priority_mode").show();

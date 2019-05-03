@@ -1840,6 +1840,8 @@ switch ($action) {
                         $values['column_separator'] = get_parameter('field');
                         $values['line_separator'] = get_parameter('line');
 
+                        $values['current_month'] = get_parameter('current_month');
+
                         $style = [];
                         $style['show_in_same_row'] = get_parameter(
                             'show_in_same_row',
@@ -2374,6 +2376,8 @@ switch ($action) {
                         $values['header_definition'] = get_parameter('header');
                         $values['column_separator'] = get_parameter('field');
                         $values['line_separator'] = get_parameter('line');
+
+                        $values['current_month'] = get_parameter('current_month');
 
                         $style = [];
                         $style['show_in_same_row'] = get_parameter(

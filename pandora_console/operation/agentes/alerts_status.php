@@ -497,6 +497,7 @@ if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
         if (!is_metaconsole()) {
             $table->size[7] = '5%';
             if (check_acl_one_of_groups($config['id_user'], $all_groups, 'LW') || check_acl_one_of_groups($config['id_user'], $all_groups, 'LM')) {
+                $table->head[8] = __('Validate');
                 $table->align[8] = 'left';
                 $table->size[8] = '5%';
             }
@@ -532,6 +533,7 @@ if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
         if (!is_metaconsole()) {
             $table->size[7] = '5%';
             if (check_acl($config['id_user'], $id_group, 'LW') || check_acl($config['id_user'], $id_group, 'LM')) {
+                $table->head[8] = __('Validate');
                 $table->align[8] = 'left';
                 $table->size[8] = '5%';
             }
@@ -563,6 +565,7 @@ if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
         if (!is_metaconsole()) {
             $table->size[6] = '5%';
             if (check_acl($config['id_user'], $id_group, 'LW') || check_acl($config['id_user'], $id_group, 'LM')) {
+                $table->head[7] = __('Validate');
                 $table->align[7] = 'left';
                 $table->size[7] = '5%';
             }

@@ -45,22 +45,24 @@ if ($progress_task_discovery) {
 
     $result = '<div id = progress_task_'.$id_task.'>';
     if ($task['utimestamp']) {
-        $result .= '<ul class="progress_task_discovery">';
-        $result .= '<li><h1>'._('Overall Progress').'</h1></li>';
-        $result .= '<li>';
-        $result .= d3_progress_bar(
+        $result .= '<div style="display: flex;">';
+        $result .= '<div style="width: 100%; text-align: center; margin-top: 40px;">';
+        $result .= '<span style="font-size: 1.9em; font-family: "lato-bolder", "Open Sans", sans-serif !important;">'._('Overall Progress').'</span>';
+
+        $result .= '<div style="margin-top: 25px;">';
+        $result .= progress_circular_bar(
             $id_task,
             ($global_progress < 0) ? 100 : $global_progress,
-            460,
-            30,
-            '#EA5434',
+            200,
+            200,
+            '#7eb641',
             '%',
             '',
-            '#FFFFFF',
-            0,
-            0,
+            '#3A3A3A',
             0
         );
+
+        $result .= '</div>';
 
         if ($global_progress > 0) {
             switch ($summary['step']) {
@@ -85,28 +87,28 @@ if ($progress_task_discovery) {
                 break;
             }
 
-            $result .= '</li>';
-            $result .= '<li><h1>'.$str.' ';
+            $result .= '</div>';
+            $result .= '<div style="width: 100%; text-align: center; margin-top: 40px;">';
+            $result .= '<span style="font-size: 1.9em; font-family: "lato-bolder", "Open Sans", sans-serif !important;">'.$str.' ';
             $result .= $summary['c_network_name'];
-            $result .= '</h1></li>';
-            $result .= '<li>';
-            $result .= d3_progress_bar(
+            $result .= '</span>';
+
+            $result .= '<div style="margin-top: 25px;">';
+            $result .= progress_circular_bar(
                 $id_task.'_detail',
                 $summary['c_network_percent'],
-                460,
-                30,
-                '#2751E1',
+                200,
+                200,
+                '#7eb641',
                 '%',
                 '',
-                '#FFFFFF',
-                0,
-                0,
+                '#3A3A3A',
                 0
             );
-            $result .= '</li>';
+            $result .= '</div></div>';
         }
 
-        $result .= '</ul>';
+        $result .= '</div></div>';
 
         $i = 0;
         $table = new StdClasS();
@@ -142,6 +144,7 @@ if ($progress_task_discovery) {
         $table->data[$i][1] .= $summary['summary']['WMI'];
         $table->data[$i++][1] .= '</span>';
 
+        $result .= '<div style="margin-top: 40px; text-align: center;"><span style="font-size: 1.9em; font-family: "lato-bolder", "Open Sans", sans-serif !important;">'.__('Summary').'</span></div>';
         $result .= html_print_table($table, true).'</div>';
     } else {
         $global_progress = -1;

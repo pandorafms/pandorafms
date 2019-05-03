@@ -1090,10 +1090,11 @@ function readFields() {
   var text = tinymce.get("text-label").getContent();
   values["label"] = text;
 
+  values["percentile_label_color"] = $(
+    "input[name=percentile_label_color]"
+  ).val();
+
   if ($("input[name=percentile_label]").val().length > 0) {
-    values["percentile_label_color"] = $(
-      "input[name=percentile_label_color]"
-    ).val();
     values["label"] =
       "<span style='color:" +
       values["percentile_label_color"] +

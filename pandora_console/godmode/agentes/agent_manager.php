@@ -377,7 +377,7 @@ echo '</div>';
 
 if (enterprise_installed()) {
     $secondary_groups_selected = enterprise_hook('agents_get_secondary_groups', [$id_agente]);
-    $table_adv_secondary_groups = '<div class="label_select"><p class="input_label">'.__('Secondary groups').ui_print_help_icon('secondary_groups', true).'</p></div>';
+    $table_adv_secondary_groups = '<div class="label_select"><p class="input_label">'.__('Secondary groups').': '.ui_print_help_icon('secondary_groups', true).'</p></div>';
     $table_adv_secondary_groups_left = html_print_select_groups(
         false,
         // Use the current user to select the groups
@@ -482,7 +482,7 @@ if (enterprise_installed()) {
             $safe_mode_modules[$m['id_module']] = $m['name'];
         }
 
-        $table_adv_safe = '<div class="label_select_simple label_simple_items"><p class="input_label input_label_simple">'.__('Safe operation mode').ui_print_help_tip(
+        $table_adv_safe = '<div class="label_select_simple label_simple_items"><p class="input_label input_label_simple">'.__('Safe operation mode').': '.ui_print_help_tip(
             __(
                 'This mode allow %s to disable all modules 
 		of this agent while the selected module is on CRITICAL status',
@@ -495,7 +495,7 @@ if (enterprise_installed()) {
     }
 
     // Remote configuration
-    $table_adv_remote = '<div class="label_select"><p class="input_label">'.__('Remote configuration').'</p>';
+    $table_adv_remote = '<div class="label_select"><p class="input_label">'.__('Remote configuration').': </p>';
 
     if (!$new_agent) {
         $table_adv_remote .= '<em>'.__('Not available').'</em>';
@@ -536,16 +536,16 @@ if (enterprise_installed()) {
         $cps_array[$cps_inc] = __('Enabled');
     }
 
-    $table_adv_cascade = '<div class="label_select"><p class="input_label">'.__('Cascade protection services');
+    $table_adv_cascade = '<div class="label_select"><p class="input_label">'.__('Cascade protection services').': ';
     $table_adv_cascade .= ui_print_help_tip(__('Disable the alerts and events of the elements that belong to this service'), true).'</p>';
     $table_adv_cascade .= html_print_select($cps_array, 'cps', $cps, '', '', 0, true).'</div>';
 }
 
 // Custom ID
-$table_adv_custom_id = '<div class="label_select"><p class="input_label">'.__('Custom ID').'</p>';
+$table_adv_custom_id = '<div class="label_select"><p class="input_label">'.__('Custom ID').': </p>';
 $table_adv_custom_id .= html_print_input_text('custom_id', $custom_id, '', 16, 255, true).'</div>';
 
-$table_adv_parent = '<div class="label_select"><p class="input_label">'.__('Parent').'</p>';
+$table_adv_parent = '<div class="label_select"><p class="input_label">'.__('Parent').': </p>';
 $params = [];
 $params['return'] = true;
 $params['show_helptip'] = true;
@@ -566,7 +566,7 @@ if (enterprise_installed()) {
 $table_adv_parent .= __('Module').'&nbsp;'.html_print_select($modules_values, 'cascade_protection_module', $cascade_protection_module, '', '', 0, true).'</div></div>';
 
 // Learn mode / Normal mode
-$table_adv_module_mode = '<div class="label_select"><p class="input_label">'.__('Module definition').ui_print_help_icon('module_definition', true).'</p>';
+$table_adv_module_mode = '<div class="label_select"><p class="input_label">'.__('Module definition').': '.ui_print_help_icon('module_definition', true).'</p>';
 $table_adv_module_mode .= '<div class="switch_radio_button">';
 $table_adv_module_mode .= html_print_radio_button_extended(
     'modo',
@@ -601,12 +601,12 @@ $table_adv_module_mode .= html_print_radio_button_extended(
 $table_adv_module_mode .= '</div></div>';
 
 // Status (Disabled / Enabled)
-$table_adv_status = '<div class="label_select_simple label_simple_one_item"><p class="input_label input_label_simple">'.__('Disabled').ui_print_help_tip(__('If the remote configuration is enabled, it will also go into standby mode when disabling it.'), true).'</p>';
+$table_adv_status = '<div class="label_select_simple label_simple_one_item"><p class="input_label input_label_simple">'.__('Disabled').': '.ui_print_help_tip(__('If the remote configuration is enabled, it will also go into standby mode when disabling it.'), true).'</p>';
 $table_adv_status .= html_print_checkbox_switch('disabled', 1, $disabled, true).'</div>';
 
 // Url address.
 if (enterprise_installed()) {
-    $table_adv_url = '<div class="label_select"><p class="input_label">'.__('Url address').ui_print_help_tip(__('URL address must be complete, for example: https://pandorafms.com/'), true).'</p>';
+    $table_adv_url = '<div class="label_select"><p class="input_label">'.__('Url address').': '.ui_print_help_tip(__('URL address must be complete, for example: https://pandorafms.com/'), true).'</p>';
     $table_adv_url .= html_print_input_text(
         'url_description',
         $url_description,
@@ -616,7 +616,7 @@ if (enterprise_installed()) {
         true
     ).'</div>';
 } else {
-    $table_adv_url = '<div class="label_select"><p class="input_label">'.__('Url address').'</p></div>';
+    $table_adv_url = '<div class="label_select"><p class="input_label">'.__('Url address').': </p></div>';
     $table_adv_url .= html_print_input_text(
         'url_description',
         $url_description,
@@ -627,7 +627,7 @@ if (enterprise_installed()) {
     ).'</div>';
 }
 
-$table_adv_quiet = '<div class="label_select_simple label_simple_one_item"><p class="input_label input_label_simple">'.__('Quiet');
+$table_adv_quiet = '<div class="label_select_simple label_simple_one_item"><p class="input_label input_label_simple">'.__('Quiet').': ';
 $table_adv_quiet .= ui_print_help_tip(__('The agent still runs but the alerts and events will be stop'), true).'</p>';
 $table_adv_quiet .= html_print_checkbox_switch('quiet', 1, $quiet, true).'</div>';
 
@@ -640,7 +640,7 @@ foreach ($listIcons as $index => $value) {
 
 $path = 'images/gis_map/icons/';
 // TODO set better method the path
-$table_adv_agent_icon = '<div class="label_select"><p class="input_label">'.__('Agent icon').ui_print_help_tip(__('Agent icon for GIS Maps.'), true).'</p>';
+$table_adv_agent_icon = '<div class="label_select"><p class="input_label">'.__('Agent icon').': '.ui_print_help_tip(__('Agent icon for GIS Maps.'), true).'</p>';
 if ($icon_path == '') {
     $display_icons = 'none';
     // Hack to show no icon. Use any given image to fix not found image errors

@@ -190,16 +190,11 @@ if (!$new_agent && $alias != '') {
     }
 
     $agent_options_update = 'agent_options_update';
-}
 
-// Delete link from here.
-if (!$new_agent) {
+    // Delete link from here.
     $table_agent_name .= "<a onClick=\"if (!confirm('".__('Are you sure?')."')) return false;\" href='index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&borrar_agente=$id_agente&search=&offset=0&sort_field=&sort=none'>".html_print_image('images/cross.png', true, ['title' => __('Delete agent')]).'</a>';
-}
 
-
-// Remote configuration available.
-if (!$new_agent) {
+    // Remote configuration available.
     if (isset($filename)) {
         if (file_exists($filename['md5'])) {
             $agent_name = agents_get_name($id_agente);
@@ -221,9 +216,7 @@ if (!$new_agent) {
             );
         }
     }
-}
 
-if (!$new_agent) {
     $table_agent_name .= '</div></div></div>';
 }
 
@@ -264,11 +257,9 @@ if ($id_agente) {
     }
 </style>
 <?php
-if (!$new_agent) {
+if (!$new_agent && $alias != '') {
     if ($id_agente) {
         $table_qr_code .= "<a id='qr_code_agent_view' href='javascript: show_dialog_qrcode(null, \"".ui_get_full_url('mobile/index.php?page=agent&id='.$id_agente)."\" );'></a>";
-    } else {
-        $table_qr_code .= __('Only it is show when<br />the agent is saved.');
     }
 
     $table_qr_code .= '</div>';
@@ -369,7 +360,7 @@ echo '<div class="first_row">
             <div class="agent_options_column_left">'.$table_agent_name.$table_alias.$table_ip.$table_primary_group.'</div>
             <div class="agent_options_column_right">'.$table_interval.$table_os.$table_server.$table_description.'</div>
         </div>';
-if (!$new_agent) {
+if (!$new_agent && $alias != '') {
     echo $table_qr_code;
 }
 

@@ -4288,10 +4288,6 @@ function get_help_info($section_name)
 
         break;
 
-        case 'gis_setup_map_connection':
-
-        break;
-
         case 'gis_tab':
             if ($es) {
                 $result .= 'Pandora_GIS&printable=yes#Configuraci.C3.B3n_del_Agent_GIS';
@@ -5391,6 +5387,22 @@ function get_help_info($section_name)
             }
         break;
 
+        case 'massive_modules_tab':
+            if ($es) {
+                $result .= 'Operaciones_Masivas&printable=yes#Edici.C3.B3n_masiva_de_m.C3.B3dulos';
+            } else {
+                $result .= 'Massive_Operations&printable=yes#Modules_massive_edition';
+            }
+        break;
+
+        case 'massive_policies_tab':
+            if ($es) {
+                $result .= 'Operaciones_Masivas&printable=yes#Editar_m.C3.B3dulos_de_pol.C3.ADticas_masivamente';
+            } else {
+                $result .= 'Massive_Operations&printable=yes#Edit_policy_modules_massively';
+            }
+        break;
+
         case 'alert_templates_tab':
             if ($es) {
                 $result .= 'Alertas&printable=yes#Introducci.C3.B3n_4';
@@ -5492,6 +5504,22 @@ function get_help_info($section_name)
                 $result .= 'Operacion&printable=yes#Tipos_de_m.C3.B3dulos';
             } else {
                 $result .= 'Operations&printable=yes#Types_of_Modules';
+            }
+        break;
+
+        case 'gis_basic_configurations_tab':
+            if ($es) {
+                $result .= 'Pandora_GIS&printable=yes#Configuraci.C3.B3n_B.C3.A1sica';
+            } else {
+                $result .= 'GIS&printable=yes#Basic_Configuration';
+            }
+        break;
+
+        case 'gis_map_connection_tab':
+            if ($es) {
+                $result .= 'Pandora_GIS&printable=yes#Mapas_Open_Street';
+            } else {
+                $result .= 'GIS&printable=yes#Open_Street_Maps';
             }
         break;
 

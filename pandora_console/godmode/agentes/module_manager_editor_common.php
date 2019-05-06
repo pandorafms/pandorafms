@@ -1167,8 +1167,13 @@ foreach ($module_relations as $key => $module_relation) {
 }
 
 html_print_input_hidden('module_relations_count', $relations_count);
-
+ui_require_jquery_file('ui');
+ui_require_jquery_file('form');
+ui_require_jquery_file('pandora');
+ui_require_jquery_file('pandora.controls');
 ui_require_jquery_file('json');
+ui_require_javascript_file('pandora_modules');
+
 
 ?>
 
@@ -1362,7 +1367,7 @@ function disabled_two_tailed (disabledBecauseInPolicy) {
 //Dynamic_options_advance;
 function advanced_option_dynamic() {
     if($('.hide_dinamic').is(":visible")){
-        $('.hide_dinamic').hide();
+        
         
     } else {
         $('.hide_dinamic').show();

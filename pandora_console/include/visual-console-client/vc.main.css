@@ -86,4 +86,8 @@
   animation: rotate-second 60s infinite linear;
 }
 
+.visual-console-item .analogic-clock {
+  text-align: center;
+}
+
 /*# sourceMappingURL=vc.main.css.map*/

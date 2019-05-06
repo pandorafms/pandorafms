@@ -50,6 +50,5 @@ UPDATE `trecon_script` SET `type` = 4 WHERE `name` LIKE "IPMI%Recon";
 UPDATE `trecon_task` SET `type`=3 WHERE `description`="Discovery.Application.VMware";
 UPDATE `trecon_task` SET `type`=2 WHERE `description`="Discovery.Cloud";
 UPDATE `trecon_task` SET `type`=7 WHERE `description`="Discovery.Cloud.RDS";
-DELETE FROM 'tevent_response' WHERE 'name' LIKE 'Create&#x20;Integria&#x20;IMS&#x20;incident&#x20;from&#x20;event';
 
 COMMIT;

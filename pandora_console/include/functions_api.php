@@ -4613,7 +4613,7 @@ function api_set_new_snmp_component($id, $thrash1, $other, $thrash2)
         return;
     }
 
-    $id = network_components_create_network_component($id, $other['data'][0], $other['data'][25], $values);
+    $id = network_components_create_network_component($id, $other['data'][0], $other['data'][26], $values);
 
     if (!$id) {
         returnError('error_set_new_snmp_component', 'Error creating SNMP component.');

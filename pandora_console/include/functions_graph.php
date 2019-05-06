@@ -1358,7 +1358,7 @@ function graphic_combined_module(
                 $data_module_graph['c_inv']          = $module_data['critical_inverse'];
                 $data_module_graph['module_id']      = $agent_module_id;
 
-                // stract data
+                // Stract data.
                 $array_data_module = grafico_modulo_sparse_data(
                     $agent_module_id,
                     $date_array,
@@ -1369,12 +1369,14 @@ function graphic_combined_module(
 
                 $series_suffix = $i;
 
-                // convert to array graph and weight
+                // Convert to array graph and weight.
                 foreach ($array_data_module as $key => $value) {
                     $array_data[$key] = $value;
-                    if ($params_combined['weight_list'][$i] > 1) {
+                    if ($params_combined['weight_list'][$i] != 1) {
                         foreach ($value['data'] as $k => $v) {
-                            $array_data[$key]['data'][$k][1] = ($v[1] * $params_combined['weight_list'][$i]);
+                            if ($v[1] != false) {
+                                $array_data[$key]['data'][$k][1] = ($v[1] * $params_combined['weight_list'][$i]);
+                            }
                         }
                     }
                 }

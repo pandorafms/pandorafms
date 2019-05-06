@@ -3546,9 +3546,11 @@ function series_type_graph_array($data, $show_elements_graph)
                     && (count($show_elements_graph['labels']) > 0)
                 ) {
                     if ($show_elements_graph['unit']) {
-                        $name_legend = $data_return['legend'][$key] = $value['agent_alias'].' / '.$value['module_name'].' / '.__('Unit ').' '.$show_elements_graph['unit'].': ';
+                        $name_legend = $show_elements_graph['labels'][$value['agent_module_id']].' / '.__('Unit ').' '.$show_elements_graph['unit'].': ';
+                        $data_return['legend'][$key] = $show_elements_graph['labels'][$value['agent_module_id']].' / '.__('Unit ').' '.$show_elements_graph['unit'].': ';
                     } else {
-                        $name_legend = $data_return['legend'][$key] = $value['agent_alias'].' / '.$value['module_name'].': ';
+                        $name_legend = $show_elements_graph['labels'][$value['agent_module_id']].': ';
+                        $data_return['legend'][$key] = $show_elements_graph['labels'][$value['agent_module_id']].': ';
                     }
                 } else {
                     if (strpos($key, 'baseline') !== false) {

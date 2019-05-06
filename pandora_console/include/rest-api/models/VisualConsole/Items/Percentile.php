@@ -222,12 +222,8 @@ final class Percentile extends Item
             );
         }
 
-        // Cast to float.
-        $moduleValue = (float) $moduleValue;
-
         // Store the module value.
-        $data['value'] = $moduleValue;
-
+        $data['value'] = (float) \number_format((float) $moduleValue, (int) $config['graph_precision'], '.', '');
         $unit = \modules_get_unit($moduleId);
         if (empty($unit) === false) {
             $data['unit'] = \io_safe_output($unit);

@@ -34,6 +34,18 @@ function winopeng_var(url, wid, width, height) {
 }
 
 function open_help(url) {
+  if (!navigator.onLine) {
+    alert(
+      "The help system could not be started. Please, check your network connection."
+    );
+    return;
+  }
+  if (url == "") {
+    alert(
+      "The help system is currently under maintenance. Sorry for the inconvenience."
+    );
+    return;
+  }
   open(
     url,
     "pandorahelp",

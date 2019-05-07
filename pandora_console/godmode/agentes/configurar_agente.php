@@ -657,6 +657,7 @@ if ($id_agente) {
         break;
 
         default:
+            // Default.
         break;
     }
 

@@ -5501,9 +5501,9 @@ function get_help_info($section_name)
 
         case 'local_module_tab':
             if ($es) {
-                $result .= 'Operacion&printable=yes#Tipos_de_m.C3.B3dulos';
+                $result .= 'Intro_Monitorizacion&printable=yes#Par.C3.A1metros_comunes';
             } else {
-                $result .= 'Operations&printable=yes#Types_of_Modules';
+                $result .= 'Intro_Monitoring&printable=yes#Common_Parameters';
             }
         break;
 

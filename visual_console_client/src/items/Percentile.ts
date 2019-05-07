@@ -141,10 +141,12 @@ export default class Percentile extends Item<PercentileProps> {
           text.setAttribute("transform", "translate(50 11)");
           text.setAttribute("fill", colors.text);
 
-          if (this.props.valueType === "value") {
+          if (this.props.valueType === "value" && this.props.value != null) {
+            text.style.fontSize = "6pt";
+            var value = new Intl.NumberFormat("en-EN").format(this.props.value);
             text.textContent = this.props.unit
-              ? `${this.props.value} ${this.props.unit}`
-              : `${this.props.value}`;
+              ? `${value} ${this.props.unit}`
+              : `${value}`;
           } else {
             text.textContent = `${progress}%`;
           }
@@ -215,21 +217,28 @@ export default class Percentile extends Item<PercentileProps> {
           text.setAttribute("font-weight", "bold");
           text.setAttribute("fill", colors.text);
 
-          if (this.props.valueType === "value") {
+          if (this.props.valueType === "value" && this.props.value != null) {
             // Show value and unit in 1 (no unit) or 2 lines.
             if (this.props.unit && this.props.unit.length > 0) {
               const value = document.createElementNS(svgNS, "tspan");
               value.setAttribute("x", "0");
               value.setAttribute("dy", "1em");
-              value.textContent = `${this.props.value}`;
+              value.textContent = `${new Intl.NumberFormat("en-EN").format(
+                this.props.value
+              )}`;
+              value.style.fontSize = "8pt";
               const unit = document.createElementNS(svgNS, "tspan");
               unit.setAttribute("x", "0");
               unit.setAttribute("dy", "1em");
               unit.textContent = `${this.props.unit}`;
+              unit.style.fontSize = "8pt";
               text.append(value, unit);
               text.setAttribute("transform", "translate(50 33)");
             } else {
-              text.textContent = `${this.props.value}`;
+              text.textContent = `${new Intl.NumberFormat("en-EN").format(
+                this.props.value
+              )}`;
+              text.style.fontSize = "8pt";
               text.setAttribute("transform", "translate(50 50)");
             }
           } else {

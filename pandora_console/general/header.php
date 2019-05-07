@@ -284,7 +284,7 @@ if ($config['menu_type'] == 'classic') {
         $header_support .= '</a></div>';
 
         // Documentation.
-        $header_docu = '<div id="header_support">';
+        $header_docu = '<div id="header_docu">';
         $header_docu .= '<a href="https://wiki.pandorafms.com/index.php?title=Main_Page" target="_blank">';
         $header_docu .= html_print_image('/images/header_docu.png', true, ['title' => __('Go to documentation'), 'class' => 'bot', 'alt' => 'user']);
         $header_docu .= '</a></div>';
@@ -591,9 +591,7 @@ if ($config['menu_type'] == 'classic') {
 
         if (fixed_header) {
             $('div#head').addClass('fixed_header');
-            $('div#page')
-                .css('padding-top', $('div#head').innerHeight() + 'px')
-                .css('position', 'relative');
+            $('div#main').css('padding-top', $('div#head').innerHeight() + 'px');
         }
         
         check_new_chats_icon('icon_new_messages_chat');

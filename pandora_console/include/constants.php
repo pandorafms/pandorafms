@@ -583,8 +583,22 @@ define('NETWORKMAP_DEFAULT_HEIGHT', 800);
 // Discovery task types.
 define('DISCOVERY_HOSTDEVICES', 0);
 define('DISCOVERY_HOSTDEVICES_CUSTOM', 1);
-define('DISCOVERY_CLOUD_AWS', 10);
-define('DISCOVERY_APP_VMWARE', 100);
+define('DISCOVERY_CLOUD_AWS', 2);
+define('DISCOVERY_APP_VMWARE', 3);
+define('DISCOVERY_APP_MYSQL', 4);
+define('DISCOVERY_APP_ORACLE', 5);
+define('DISCOVERY_CLOUD_AWS_EC2', 6);
+define('DISCOVERY_CLOUD_AWS_RDS', 7);
+
+
+// Discovery types matching definition.
+define('DISCOVERY_SCRIPT_HOSTDEVICES_CUSTOM', 0);
+// Standard applications.
+define('DISCOVERY_SCRIPT_APP_VMWARE', 1);
+// Cloud environments.
+define('DISCOVERY_SCRIPT_CLOUD_AWS', 2);
+define('DISCOVERY_SCRIPT_IPAM_RECON', 3);
+define('DISCOVERY_SCRIPT_IPMI_RECON', 4);
 
 // Discovery task descriptions.
 define('CLOUDWIZARD_AWS_DESCRIPTION', 'Discovery.Cloud.AWS.EC2');

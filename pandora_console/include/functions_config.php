@@ -604,6 +604,10 @@ function config_update_config()
                         config_update_value('ldap_save_password', 1);
                     }
 
+                    if (!config_update_value('ldap_save_profile', get_parameter('ldap_save_profile'))) {
+                        $error_update[] = __('Save profile');
+                    }
+
                     if (!config_update_value('rpandora_server', get_parameter('rpandora_server'))) {
                         $error_update[] = __('MySQL host');
                     }
@@ -976,7 +980,11 @@ function config_update_config()
                         $error_update[] = __('Custom support url');
                     }
 
-                    if (!config_update_value('vc_refr', get_parameter('vc_refr'))) {
+                    if (!config_update_value('legacy_vc', (int) get_parameter('legacy_vc'))) {
+                        $error_update[] = __('Use the legacy Visual Console');
+                    }
+
+                    if (!config_update_value('vc_refr', (int) get_parameter('vc_refr'))) {
                         $error_update[] = __('Default interval for refresh on Visual Console');
                     }
 
@@ -2411,8 +2419,16 @@ function config_process_config()
         config_update_value('dbtype', 'mysql');
     }
 
+    if (!isset($config['legacy_vc'])) {
+        config_update_value('legacy_vc', 1);
+    }
+
     if (!isset($config['vc_refr'])) {
         config_update_value('vc_refr', 300);
+    }
+
+    if (!isset($config['vc_line_thickness'])) {
+        config_update_value('vc_line_thickness', 2);
     }
 
     if (!isset($config['agent_size_text_small'])) {

@@ -436,7 +436,9 @@ function html_print_select_groups(
     $keys_field='id_grupo',
     $strict_user=false,
     $delete_groups=false,
-    $include_groups=false
+    $include_groups=false,
+    $size=false,
+    $simple_multiple_options=false
 ) {
     global $config;
 
@@ -481,7 +483,12 @@ function html_print_select_groups(
         $class,
         $disabled,
         $style,
-        $option_style
+        $option_style,
+        $size,
+        false,
+        '',
+        false,
+        $simple_multiple_options
     );
 
     if ($return) {
@@ -529,7 +536,8 @@ function html_print_select(
     $size=false,
     $modal=false,
     $message='',
-    $select_all=false
+    $select_all=false,
+    $simple_multiple_options=false
 ) {
     $output = "\n";
 
@@ -554,6 +562,14 @@ function html_print_select(
             $attributes .= ' multiple="multiple" size="'.$size.'"';
         } else {
             $attributes .= ' multiple="multiple" size="10"';
+        }
+    }
+
+    if ($simple_multiple_options === true) {
+        if ($size !== false) {
+            $attributes .= ' size="'.$size.'"';
+        } else {
+            $attributes .= ' size="10"';
         }
     }
 
@@ -1774,7 +1790,8 @@ function html_print_button($label='OK', $name='', $disabled=false, $script='', $
  */
 function html_print_textarea($name, $rows, $columns, $value='', $attributes='', $return=false, $class='')
 {
-    $output = '<textarea id="textarea_'.$name.'" name="'.$name.'" cols="'.$columns.'" rows="'.$rows.'" '.$attributes.'" '.$class.'>';
+
+    $output = '<textarea id="textarea_'.$name.'" name="'.$name.'" cols="'.$columns.'" rows="'.$rows.'" '.$attributes.'" class="'.$class.'">';
     // $output .= io_safe_input ($value);
     $output .= ($value);
     $output .= '</textarea>';
@@ -2744,28 +2761,7 @@ function html_print_autocomplete_modules(
     global $config;
 
     if ($id_agents === false) {
-        $groups = [];
-        if ($ACL) {
-            $groups = users_get_groups($config['id_user'], 'AW', false);
-            $groups = array_keys($groups);
-
-            if (empty($groups)) {
-                $id_groups = 0;
-            } else {
-                $id_groups = implode(',', $groups);
-            }
-
-            $agents = db_get_all_rows_sql(
-                'SELECT id_agente
-				FROM tagente
-				WHERE id_grupo IN ('.$id_groups.')'
-            );
-        } else {
-            $agents = db_get_all_rows_sql(
-                'SELECT id_agente
-				FROM tagente'
-            );
-        }
+        $agents = agents_get_agents();
 
         if ($agents === false) {
             $agents = [];
@@ -2777,10 +2773,7 @@ function html_print_autocomplete_modules(
         }
     } else {
         if ($ACL) {
-            $groups = users_get_groups($config['id_user'], 'AW', false);
-            $groups = array_keys($groups);
-
-            $agents = db_get_all_rows_sql('SELECT id_agente FROM tagente WHERE id_grupo IN ('.implode(',', $groups).')');
+            $agents = agents_get_agents();
 
             if ($agents === false) {
                 $agents = [];

@@ -31,7 +31,7 @@ function reporting_xml_get_report($report, $filename, $return=false)
     unset($report['private']);
     unset($report['custom_logo']);
     // ----------------------------------------------------------------------
-    // change agent name
+    // change agent name.
     if (count($report['contents']) > 0) {
         for ($i = 0; $i < count($report['contents']); $i++) {
             $aux = explode('-', $report['contents'][$i]['subtitle']);
@@ -44,16 +44,18 @@ function reporting_xml_get_report($report, $filename, $return=false)
     $xml = preg_replace('/(<[^>]+>)(<[^>]+>)(<[^>]+>)/', "$1\n$2\n$3", $xml);
     $xml = preg_replace('/(<[^>]+>)(<[^>]+>)/', "$1\n$2", $xml);
 
-    // Return if is marked to return
+    // Return if is marked to return.
     if ($return) {
         return $xml;
     }
 
-    // Download if marked to download
-    header('Content-Type: application/xml; charset=UTF-8');
-    header('Content-Disposition: attachment; filename="'.$filename.'.xml"');
+    // Download if marked to download.
+    if ($filename !== false) {
+        header('Content-Type: application/xml; charset=UTF-8');
+        header('Content-Disposition: attachment; filename="'.$filename.'.xml"');
+    }
 
-    // Clean the output buffer
+    // Clean the output buffer.
     ob_clean();
 
     echo $xml;

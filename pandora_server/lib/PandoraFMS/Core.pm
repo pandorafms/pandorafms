@@ -1605,53 +1605,116 @@ sub pandora_process_module ($$$$$$$$$;$) {
 		$current_interval = $module->{'module_interval'};
 	}
 
-	#Update module status
+	# Update module status.
 	my $min_ff_event = $module->{'min_ff_event'};
 	my $current_utimestamp = time ();
 	my $ff_timeout = $module->{'ff_timeout'};
+
+	# Counters.
+	my $ff_warning = $agent_status->{'ff_warning'};
+	my $ff_critical = $agent_status->{'ff_critical'};
+	my $ff_normal = $agent_status->{'ff_normal'};
 
 	if ($module->{'each_ff'}) {
 		$min_ff_event = $module->{'min_ff_event_normal'} if ($new_status == 0);
 		$min_ff_event = $module->{'min_ff_event_critical'} if ($new_status == 1);
 		$min_ff_event = $module->{'min_ff_event_warning'} if ($new_status == 2);
 	}
-	
+
 	if ($last_known_status == $new_status) {
 		# Avoid overflows
-		$status_changes = $min_ff_event if ($status_changes > $min_ff_event);
+		$status_changes = $min_ff_event if ($status_changes > $min_ff_event && $module->{'ff_type'} == 0);
 		
 		$status_changes++;
 		if ($module_type =~ m/async/ && $min_ff_event != 0 && $ff_timeout != 0 && ($utimestamp - $ff_start_utimestamp) > $ff_timeout) {
-			$status_changes = 0;
+			# Only type ff with counters.
+			$status_changes = 0 if ($module->{'ff_type'} == 0);
+			
 			$ff_start_utimestamp = $utimestamp;
+
+			# Reset counters because expired timeout.
+			$ff_normal = 0;
+			$ff_critical = 0;
+			$ff_warning = 0;
 		}
 	}
 	else {
-		$status_changes = 0;
+		# Only type ff with counters. 
+		$status_changes = 0 if ($module->{'ff_type'} == 0);
+		
 		$ff_start_utimestamp = $utimestamp if ($module_type =~ m/async/);
 	}
 	
-	# Active ff interval
-	if ($module->{'module_ff_interval'} != 0 && $status_changes < $min_ff_event) {
-		$current_interval = $module->{'module_ff_interval'};
-	}
-	
-	# Change status
-	if ($status_changes >= $min_ff_event && $known_status != $new_status) {
-		generate_status_event ($pa_config, $processed_data, $agent, $module, $new_status, $status, $known_status, $dbh);
-		$status = $new_status;
+	if ($module->{'ff_type'} == 0) {
+		# Active ff interval.
+		if ($module->{'module_ff_interval'} != 0 && $status_changes < $min_ff_event) {
+			$current_interval = $module->{'module_ff_interval'};
+		}
+		
+		# Change status.
+		if ($status_changes >= $min_ff_event && $known_status != $new_status) {
+			generate_status_event ($pa_config, $processed_data, $agent, $module, $new_status, $status, $known_status, $dbh);
+			$status = $new_status;
 
-		# Update module status count.
-		$mark_for_update = 1;
+			# Update module status count.
+			$mark_for_update = 1;
 
-		# Safe mode execution.
-		if ($agent->{'safe_mode_module'} == $module->{'id_agente_modulo'}) {
-			safe_mode($pa_config, $agent, $module, $new_status, $known_status, $dbh);
+			# Safe mode execution.
+			if ($agent->{'safe_mode_module'} == $module->{'id_agente_modulo'}) {
+				safe_mode($pa_config, $agent, $module, $new_status, $known_status, $dbh);
+			}
+		}
+	} else {
+		if ($status == $new_status) {
+			# If the status is equal to the previous status reset the counters.
+			$ff_normal = 0;
+			$ff_critical = 0;
+			$ff_warning = 0;
+		} else {
+			# Sequential critical and normal status are needed
+			# if don't, reset counters.
+			if ($last_known_status == 1 && $new_status != 1) {
+				$ff_critical = 0;
+			} elsif ($last_known_status == 0 && $new_status != 0) {
+				$ff_normal = 0;
+			}
+
+			# Increase counters.
+			$ff_critical++ if ($new_status == 1);
+			$ff_warning++  if ($new_status == 2);
+			$ff_normal++   if ($new_status == 0);
+		}
+		
+		if ( ($new_status == 0 && $ff_normal >= $min_ff_event)
+		  || ($new_status == 1 && $ff_critical >= $min_ff_event)
+		  || ($new_status == 2 && $ff_warning >= $min_ff_event)) {
+			# Change status generate event.
+			generate_status_event ($pa_config, $processed_data, $agent, $module, $new_status, $status, $known_status, $dbh);
+			$status = $new_status;
+
+			# Update module status count.
+			$mark_for_update = 1;
+
+			# Safe mode execution.
+			if ($agent->{'safe_mode_module'} == $module->{'id_agente_modulo'}) {
+				safe_mode($pa_config, $agent, $module, $new_status, $known_status, $dbh);
+			}
+
+			# Reset counters because change status.
+			$ff_normal = 0;
+			$ff_critical = 0;
+			$ff_warning = 0;
+		} else {
+			# Active ff interval
+			if ($module->{'module_ff_interval'} != 0) {
+				$current_interval = $module->{'module_ff_interval'};
+			}
 		}
 	}
+
 	# Set not-init modules to normal status even if min_ff_event is not matched the first time they receive data.
 	# if critical or warning status, just pass through here and wait the time min_ff_event will be matched.
-	elsif ($status == 4) {
+	if ($status == 4) {
 		generate_status_event ($pa_config, $processed_data, $agent, $module, 0, $status, $known_status, $dbh);
 		$status = 0;
 
@@ -1662,6 +1725,11 @@ sub pandora_process_module ($$$$$$$$$;$) {
 	elsif ($status == 3) {
 		generate_status_event ($pa_config, $processed_data, $agent, $module, $known_status, $status, $known_status, $dbh);
 		$status = $known_status;
+
+		# reset counters because change status.
+		$ff_normal = 0;
+		$ff_critical = 0;
+		$ff_warning = 0;
 
 		# Update module status count.
 		$mark_for_update = 1;
@@ -1692,10 +1760,11 @@ sub pandora_process_module ($$$$$$$$$;$) {
 				status_changes = ?, utimestamp = ?, timestamp = ?,
 				id_agente = ?, current_interval = ?, running_by = ?,
 				last_execution_try = ?, last_try = ?, last_error = ?,
-				ff_start_utimestamp = ?
+				ff_start_utimestamp = ?, ff_normal = ?, ff_warning = ?, ff_critical = ?
 			WHERE id_agente_modulo = ?', $processed_data, $status, $status, $new_status, $new_status, $status_changes,
 			$current_utimestamp, $timestamp, $module->{'id_agente'}, $current_interval, $server_id,
-			$utimestamp, ($save == 1) ? $timestamp : $agent_status->{'last_try'}, $last_error, $ff_start_utimestamp, $module->{'id_agente_modulo'});
+			$utimestamp, ($save == 1) ? $timestamp : $agent_status->{'last_try'}, $last_error, $ff_start_utimestamp,
+			$ff_normal, $ff_warning, $ff_critical, $module->{'id_agente_modulo'});
 	}
 
 	# Save module data. Async and log4x modules are not compressed.

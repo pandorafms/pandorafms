@@ -61,10 +61,14 @@ function tags_search_tag($tag_name_description=false, $filter=false, $only_names
                 $filter[] = '(UPPER(name) LIKE UPPER (\'%'.$tag_name_description.'%\') OR
 						UPPER(dbms_lob.substr(description, 4000, 1)) LIKE UPPER (\'%'.$tag_name_description.'%\'))';
             break;
+
+            default:
+                // Default.
+            break;
         }
     }
 
-    // Default order
+    // Default order.
     set_unless_defined($filter['order'], 'name');
 
     $fields = '*';
@@ -75,7 +79,7 @@ function tags_search_tag($tag_name_description=false, $filter=false, $only_names
         ];
     }
 
-    // It will return the count
+    // It will return the count.
     if ($count) {
         unset($filter['order']);
         unset($filter['limit']);
@@ -120,7 +124,7 @@ function tags_create_tag($values)
         return false;
     }
 
-    // No create tag if the tag exists
+    // No create tag if the tag exists.
     if (tags_get_id($values['name'])) {
         return false;
     }
@@ -365,7 +369,7 @@ function tags_insert_module_tag($id_agent_module, $tags)
     }
 
     foreach ($tags as $tag) {
-        // Protect against default insert
+        // Protect against default insert.
         if (empty($tag)) {
             continue;
         }
@@ -396,7 +400,7 @@ function tags_insert_policy_module_tag($id_agent_module, $tags)
 
     $values = [];
     foreach ($tags as $tag) {
-        // Protect against default insert
+        // Protect against default insert.
         if (empty($tag)) {
             continue;
         }
@@ -439,7 +443,7 @@ function tags_update_module_tag(
     }
 
     if ($update_policy_tags) {
-        // First delete module tag entries
+        // First delete module tag entries.
         $result_tag = db_process_sql_delete(
             'ttag_module',
             ['id_agente_modulo' => $id_agent_module]
@@ -456,7 +460,7 @@ function tags_update_module_tag(
 
     $values = [];
     foreach ($tags as $tag) {
-        // Protect against default insert
+        // Protect against default insert.
         if (empty($tag)) {
             continue;
         }
@@ -494,7 +498,7 @@ function tags_update_policy_module_tag($id_policy_module, $tags, $autocommit=fal
 
     $values = [];
     foreach ($tags as $tag) {
-        // Protect against default insert
+        // Protect against default insert.
         if (empty($tag)) {
             continue;
         }
@@ -759,11 +763,14 @@ function tags_get_acl_tags(
             return '';
 
                 break;
+            default:
+                // Default.
+            break;
         }
     }
 
     if ($id_group == 0) {
-        // Don't filter
+        // Don't filter.
         $id_group = [];
     } else if (empty($id_group)) {
         return ERR_WRONG_PARAMETERS;
@@ -789,12 +796,12 @@ function tags_get_acl_tags(
 
     switch ($return_mode) {
         case 'data':
-            // Stop here and return the array
+            // Stop here and return the array.
         return $acltags;
 
             break;
         case 'module_condition':
-            // Return the condition of the tags for tagente_modulo table
+            // Return the condition of the tags for tagente_modulo table.
             $condition = tags_get_acl_tags_module_condition(
                 $acltags,
                 $query_table,
@@ -806,12 +813,16 @@ function tags_get_acl_tags(
         break;
 
         case 'event_condition':
-            // Return the condition of the tags for tevento table
+            // Return the condition of the tags for tevento table.
             $condition = tags_get_acl_tags_event_condition($acltags, $meta, $force_group_and_tag);
 
             if (!empty($condition)) {
                 return " $query_prefix ".'('.$condition.')';
             }
+        break;
+
+        default:
+            // Default.
         break;
     }
 
@@ -847,7 +858,7 @@ function tags_get_acl_tags_module_condition($acltags, $modules_table='', $force_
             }
         }
 
-        if (!empty($group_tags)) {
+        if (!empty($group_tags) && !empty($force_tags)) {
             $group_tags = array_intersect($force_tags, $group_tags);
         }
 
@@ -899,27 +910,27 @@ function tags_get_acl_tags_event_condition($acltags, $meta=false, $force_group_a
     global $config;
     $condition = [];
 
-    // Get all tags of the system
+    // Get all tags of the system.
     $all_tags = tags_get_all_tags(false);
 
     $without_tags = [];
     foreach ($acltags as $group_id => $group_tags) {
-        // NO check if there is not tag associated with groups
+        // NO check if there is not tag associated with groups.
         if (empty($group_tags)) {
             $without_tags[] = $group_id;
             continue;
         }
 
         // Group condition (The module belongs to an agent of the group X)
-        // $group_condition = sprintf('id_grupo IN (%s)', implode(',', array_values(groups_get_id_recursive($group_id, true))));
+        // $group_condition = sprintf('id_grupo IN (%s)', implode(',', array_values(groups_get_id_recursive($group_id, true))));.
         $group_condition = "(id_grupo = $group_id OR id_group = $group_id)";
 
-        // Tags condition (The module has at least one of the restricted tags)
+        // Tags condition (The module has at least one of the restricted tags).
         $tags_condition = '';
         $tags_condition_array = [];
 
         foreach ($group_tags as $tag) {
-            // If the tag ID doesnt exist, ignore
+            // If the tag ID doesnt exist, ignore.
             if (!isset($all_tags[$tag])) {
                 continue;
             }
@@ -927,7 +938,7 @@ function tags_get_acl_tags_event_condition($acltags, $meta=false, $force_group_a
             $tags_condition_array[] = $force_equal ? sprintf('tags = "%s"', io_safe_input($all_tags[$tag])) : "tags LIKE '%".io_safe_input($all_tags[$tag])."%'";
         }
 
-        // If there is not tag currently in Pandora, block the group info
+        // If there is not tag currently in Pandora, block the group info.
         if (empty($tags_condition_array)) {
             $tags_condition_array[] = '1=0';
         }
@@ -1000,16 +1011,16 @@ function tags_get_user_tags($id_user=false, $access='AR', $return_tag_any=false)
 {
     global $config;
 
-    // users_is_strict_acl
+    // users_is_strict_acl.
     if ($id_user === false) {
         $id_user = $config['id_user'];
     }
 
-    // Get all tags to have the name of all of them
+    // Get all tags to have the name of all of them.
     $all_tags = tags_get_all_tags();
 
     // If at least one of the profiles of this access flag hasent
-    // tags restrictions, the user can see all tags
+    // tags restrictions, the user can see all tags.
     $acl_column = get_acl_column($access);
 
     if (empty($acl_column)) {
@@ -1044,6 +1055,10 @@ function tags_get_user_tags($id_user=false, $access='AR', $return_tag_any=false)
                 $id_user,
                 $acl_column
             );
+        break;
+
+        default:
+            // Default.
         break;
     }
 
@@ -1068,14 +1083,14 @@ function tags_get_user_tags($id_user=false, $access='AR', $return_tag_any=false)
         }
     }
 
-    // Get the tags of the required access flag for each group
+    // Get the tags of the required access flag for each group.
     $tags = tags_get_acl_tags($id_user, 0, $access, 'data');
-    // If there are wrong parameters or fail ACL check, return false
+    // If there are wrong parameters or fail ACL check, return false.
     if ($tags_user === ERR_WRONG_PARAMETERS || $tags_user === ERR_ACL) {
         return [];
     }
 
-    // Merge the tags to get an array with all of them
+    // Merge the tags to get an array with all of them.
     $user_tags_id = [];
 
     foreach ($tags as $t) {
@@ -1086,7 +1101,7 @@ function tags_get_user_tags($id_user=false, $access='AR', $return_tag_any=false)
         }
     }
 
-    // Set the format id=>name to tags
+    // Set the format id=>name to tags.
     $user_tags = [];
     foreach ($user_tags_id as $id) {
         if (!isset($all_tags[$id])) {
@@ -1104,16 +1119,16 @@ function tags_get_tags_for_module_search($id_user=false, $access='AR')
 {
     global $config;
 
-    // users_is_strict_acl
+    // users_is_strict_acl.
     if ($id_user === false) {
         $id_user = $config['id_user'];
     }
 
-    // Get all tags to have the name of all of them
+    // Get all tags to have the name of all of them.
     $all_tags = tags_get_all_tags();
 
     // If at least one of the profiles of this access flag hasent
-    // tags restrictions, the user can see all tags
+    // tags restrictions, the user can see all tags.
     $acl_column = get_acl_column($access);
 
     if (empty($acl_column)) {
@@ -1149,6 +1164,10 @@ function tags_get_tags_for_module_search($id_user=false, $access='AR')
                 $acl_column
             );
         break;
+
+        default:
+            // Default.
+        break;
     }
 
     $profiles_without_tags = db_get_value_sql($query);
@@ -1164,14 +1183,14 @@ function tags_get_tags_for_module_search($id_user=false, $access='AR')
         return false;
     }
 
-    // Get the tags of the required access flag for each group
+    // Get the tags of the required access flag for each group.
     $tags = tags_get_acl_tags($id_user, 0, $access, 'data');
-    // If there are wrong parameters or fail ACL check, return false
+    // If there are wrong parameters or fail ACL check, return false.
     if ($tags_user === ERR_WRONG_PARAMETERS || $tags_user === ERR_ACL) {
         return [];
     }
 
-    // Merge the tags to get an array with all of them
+    // Merge the tags to get an array with all of them.
     $user_tags_id = [];
 
     foreach ($tags as $t) {
@@ -1182,7 +1201,7 @@ function tags_get_tags_for_module_search($id_user=false, $access='AR')
         }
     }
 
-    // Set the format id=>name to tags
+    // Set the format id=>name to tags.
     $user_tags = [];
     foreach ($user_tags_id as $id) {
         if (!isset($all_tags[$id])) {
@@ -1217,12 +1236,12 @@ function tags_check_acl_by_module(
 
     $acl_column = get_acl_column($access);
     foreach ($groups as $group) {
-        // If user has not permission for this group,go to next group
+        // If user has not permission for this group,go to next group.
         if (!isset($user_groups[$group])) {
             continue;
         }
 
-        // No tags means user can see all tags for this group
+        // No tags means user can see all tags for this group.
         if (empty($user_groups[$group]['tags'][$acl_column])) {
             return true;
         }
@@ -1238,7 +1257,7 @@ function tags_check_acl_by_module(
 }
 
 
-// This function checks event ACLs
+// This function checks event ACLs.
 function tags_checks_event_acl($id_user, $id_group, $access, $tags=[], $childrens_ids=[])
 {
     global $config;
@@ -1252,12 +1271,12 @@ function tags_checks_event_acl($id_user, $id_group, $access, $tags=[], $children
     }
 
     $tags_user = tags_get_acl_tags($id_user, $id_group, $access, 'data', '', '', true, $childrens_ids, true);
-    // If there are wrong parameters or fail ACL check, return false
+    // If there are wrong parameters or fail ACL check, return false.
     if ($tags_user === ERR_WRONG_PARAMETERS || $tags_user === ERR_ACL) {
         return false;
     }
 
-    // check user without tags
+    // check user without tags.
     $sql = "SELECT id_usuario FROM tusuario_perfil
 		WHERE id_usuario = '".$config['id_user']."' AND tags = ''
 			AND id_perfil IN (
@@ -1362,7 +1381,7 @@ function tags_checks_event_acl($id_user, $id_group, $access, $tags=[], $children
  */
 function tags_get_agents_counter($id_tag, $groups_and_tags=[], $agent_filter=[], $module_filter=[], $realtime=true)
 {
-    // Avoid mysql error
+    // Avoid mysql error.
     if (empty($id_tag)) {
         return false;
     }
@@ -1392,12 +1411,12 @@ function tags_get_agents_counter($id_tag, $groups_and_tags=[], $agent_filter=[],
     $agent_name_filter = '';
     $agent_status = AGENT_STATUS_ALL;
     if (!empty($agent_filter)) {
-        // Name
+        // Name.
         if (isset($agent_filter['name']) && !empty($agent_filter['name'])) {
             $agent_name_filter = "AND ta.nombre LIKE '%".$agent_filter['name']."%'";
         }
 
-        // Status
+        // Status.
         if (isset($agent_filter['status'])) {
             if (is_array($agent_filter['status'])) {
                 $agent_status = array_unique($agent_filter['status']);
@@ -1411,15 +1430,15 @@ function tags_get_agents_counter($id_tag, $groups_and_tags=[], $agent_filter=[],
     $module_status_filter = '';
     $module_status_array = [];
     if (!empty($module_filter)) {
-        // IMPORTANT: The module filters will force the realtime search
+        // IMPORTANT: The module filters will force the realtime search.
         $realtime = true;
 
-        // Name
+        // Name.
         if (isset($module_filter['name']) && !empty($module_filter['name'])) {
             $module_name_filter = "AND tam.nombre LIKE '%".$module_filter['name']."%'";
         }
 
-        // Status
+        // Status.
         if (isset($module_filter['status'])) {
             $module_status = $module_filter['status'];
             if (is_array($module_status)) {
@@ -1469,6 +1488,10 @@ function tags_get_agents_counter($id_tag, $groups_and_tags=[], $agent_filter=[],
                         $module_status_array[] = AGENT_MODULE_STATUS_NORMAL_ALERT;
                         $module_status_array[] = AGENT_MODULE_STATUS_NORMAL;
                     break;
+
+                    default:
+                        // Default.
+                    break;
                 }
             }
 
@@ -1517,7 +1540,7 @@ function tags_get_agents_counter($id_tag, $groups_and_tags=[], $agent_filter=[],
             $unknown = 0;
             $not_init = 0;
             $normal = 0;
-            // Without module filter
+            // Without module filter.
             if (empty($module_status_array)) {
                 $total = (int) tags_get_total_monitors($id_tag, $groups_and_tags, $agent_filter, $module_filter);
                 $critical = (int) tags_get_critical_monitors($id_tag, $groups_and_tags, $agent_filter, $module_filter);
@@ -1526,7 +1549,8 @@ function tags_get_agents_counter($id_tag, $groups_and_tags=[], $agent_filter=[],
                 $not_init = (int) tags_get_not_init_monitors($id_tag, $groups_and_tags, $agent_filter, $module_filter);
                 $normal = (int) tags_get_normal_monitors($id_tag, $groups_and_tags, $agent_filter, $module_filter);
             }
-            // With module filter
+
+            // With module filter.
             else {
                 foreach ($module_status_array as $status) {
                     switch ($status) {
@@ -1552,6 +1576,10 @@ function tags_get_agents_counter($id_tag, $groups_and_tags=[], $agent_filter=[],
                         case AGENT_MODULE_STATUS_NORMAL_ALERT:
                         case AGENT_MODULE_STATUS_NORMAL:
                             $normal = (int) tags_get_normal_monitors($id_tag, $groups_and_tags, $agent_filter, $module_filter);
+                        break;
+
+                        default:
+                            // Default.
                         break;
                     }
                 }
@@ -1592,7 +1620,7 @@ function tags_get_agents_counter($id_tag, $groups_and_tags=[], $agent_filter=[],
                     break;
 
                     default:
-                        // The status doesn't exist
+                        // The status doesn't exist.
                     return 0;
                 }
             } else {
@@ -1617,7 +1645,7 @@ function tags_get_agents_counter($id_tag, $groups_and_tags=[], $agent_filter=[],
                         $count ++;
                     }
                 }
-                // Invalid status
+                // Invalid status.
                 else {
                     return 0;
                 }
@@ -1625,12 +1653,12 @@ function tags_get_agents_counter($id_tag, $groups_and_tags=[], $agent_filter=[],
         }
     } else {
         $status_filter = '';
-        // Transform the element into a one element array
+        // Transform the element into a one element array.
         if (!is_array($agent_status)) {
             $agent_status = [$agent_status];
         }
 
-        // Support for multiple status. It counts the agents for each status and sum the result
+        // Support for multiple status. It counts the agents for each status and sum the result.
         foreach ($agent_status as $status) {
             switch ($agent_status) {
                 case AGENT_STATUS_ALL:
@@ -1666,7 +1694,7 @@ function tags_get_agents_counter($id_tag, $groups_and_tags=[], $agent_filter=[],
                 break;
 
                 default:
-                    // The type doesn't exist
+                    // The type doesn't exist.
                 return 0;
             }
 
@@ -1711,7 +1739,7 @@ function tags_get_agents_counter($id_tag, $groups_and_tags=[], $agent_filter=[],
  */
 function tags_get_total_agents($id_tag, $groups_and_tags=[], $agent_filter=[], $module_filter=[], $realtime=true)
 {
-    // Always modify the agent status filter
+    // Always modify the agent status filter.
     $agent_filter['status'] = AGENT_STATUS_ALL;
     return tags_get_agents_counter($id_tag, $groups_and_tags, $agent_filter, $module_filter, $realtime);
 }
@@ -1735,7 +1763,7 @@ function tags_get_total_agents($id_tag, $groups_and_tags=[], $agent_filter=[], $
  */
 function tags_get_normal_agents($id_tag, $groups_and_tags=[], $agent_filter=[], $module_filter=[], $realtime=true)
 {
-    // Always modify the agent status filter
+    // Always modify the agent status filter.
     $agent_filter['status'] = AGENT_STATUS_NORMAL;
     return tags_get_agents_counter($id_tag, $groups_and_tags, $agent_filter, $module_filter, $realtime);
 }
@@ -1759,7 +1787,7 @@ function tags_get_normal_agents($id_tag, $groups_and_tags=[], $agent_filter=[], 
  */
 function tags_get_warning_agents($id_tag, $groups_and_tags=[], $agent_filter=[], $module_filter=[], $realtime=true)
 {
-    // Always modify the agent status filter
+    // Always modify the agent status filter.
     $agent_filter['status'] = AGENT_STATUS_WARNING;
     return tags_get_agents_counter($id_tag, $groups_and_tags, $agent_filter, $module_filter, $realtime);
 }
@@ -1783,7 +1811,7 @@ function tags_get_warning_agents($id_tag, $groups_and_tags=[], $agent_filter=[],
  */
 function tags_get_critical_agents($id_tag, $groups_and_tags=[], $agent_filter=[], $module_filter=[], $realtime=true)
 {
-    // Always modify the agent status filter
+    // Always modify the agent status filter.
     $agent_filter['status'] = AGENT_STATUS_CRITICAL;
     return tags_get_agents_counter($id_tag, $groups_and_tags, $agent_filter, $module_filter, $realtime);
 }
@@ -1807,7 +1835,7 @@ function tags_get_critical_agents($id_tag, $groups_and_tags=[], $agent_filter=[]
  */
 function tags_get_unknown_agents($id_tag, $groups_and_tags=[], $agent_filter=[], $module_filter=[], $realtime=true)
 {
-    // Always modify the agent status filter
+    // Always modify the agent status filter.
     $agent_filter['status'] = AGENT_STATUS_UNKNOWN;
     return tags_get_agents_counter($id_tag, $groups_and_tags, $agent_filter, $module_filter, $realtime);
 }
@@ -1831,7 +1859,7 @@ function tags_get_unknown_agents($id_tag, $groups_and_tags=[], $agent_filter=[],
  */
 function tags_get_not_init_agents($id_tag, $groups_and_tags=[], $agent_filter=[], $module_filter=[], $realtime=true)
 {
-    // Always modify the agent status filter
+    // Always modify the agent status filter.
     $agent_filter['status'] = AGENT_STATUS_NOT_INIT;
     return tags_get_agents_counter($id_tag, $groups_and_tags, $agent_filter, $module_filter, $realtime);
 }
@@ -1855,7 +1883,7 @@ function tags_get_not_init_agents($id_tag, $groups_and_tags=[], $agent_filter=[]
  */
 function tags_get_monitors_counter($id_tag, $groups_and_tags=[], $agent_filter=[], $module_filter=[])
 {
-    // Avoid mysql error
+    // Avoid mysql error.
     if (empty($id_tag)) {
         return false;
     }
@@ -1885,12 +1913,12 @@ function tags_get_monitors_counter($id_tag, $groups_and_tags=[], $agent_filter=[
     $agent_name_filter = '';
     $agents_clause = '';
     if (!empty($agent_filter)) {
-        // Name
+        // Name.
         if (isset($agent_filter['name']) && !empty($agent_filter['name'])) {
             $agent_name_filter = "AND ta.nombre LIKE '%".$agent_filter['name']."%'";
         }
 
-        // ID
+        // ID.
         if (isset($agent_filter['id'])) {
             if (is_array($agent_filter['id'])) {
                 $agents = array_unique($agent_filter['id']);
@@ -1907,12 +1935,12 @@ function tags_get_monitors_counter($id_tag, $groups_and_tags=[], $agent_filter=[
     $module_status_array = '';
     $modules_clause = '';
     if (!empty($module_filter)) {
-        // Name
+        // Name.
         if (isset($module_filter['name']) && !empty($module_filter['name'])) {
             $module_name_filter = "AND tam.nombre LIKE '%".$module_filter['name']."%'";
         }
 
-        // Status
+        // Status.
         if (isset($module_filter['status'])) {
             $module_status = $module_filter['status'];
             if (is_array($module_status)) {
@@ -1965,7 +1993,7 @@ function tags_get_monitors_counter($id_tag, $groups_and_tags=[], $agent_filter=[
                     break;
 
                     default:
-                        // The status doesn't exist
+                        // The status doesn't exist.
                     return false;
                 }
             }
@@ -2019,7 +2047,7 @@ function tags_get_monitors_counter($id_tag, $groups_and_tags=[], $agent_filter=[
  */
 function tags_get_total_monitors($id_tag, $groups_and_tags=[], $agent_filter=[], $module_filter=[])
 {
-    // Always modify the module status filter
+    // Always modify the module status filter.
     $module_filter['status'] = AGENT_MODULE_STATUS_ALL;
     return tags_get_monitors_counter($id_tag, $groups_and_tags, $agent_filter, $module_filter);
 }
@@ -2042,7 +2070,7 @@ function tags_get_total_monitors($id_tag, $groups_and_tags=[], $agent_filter=[],
  */
 function tags_get_normal_monitors($id_tag, $groups_and_tags=[], $agent_filter=[], $module_filter=[])
 {
-    // Always modify the module status filter
+    // Always modify the module status filter.
     $module_filter['status'] = AGENT_MODULE_STATUS_NORMAL;
     return tags_get_monitors_counter($id_tag, $groups_and_tags, $agent_filter, $module_filter);
 }
@@ -2065,7 +2093,7 @@ function tags_get_normal_monitors($id_tag, $groups_and_tags=[], $agent_filter=[]
  */
 function tags_get_critical_monitors($id_tag, $groups_and_tags=[], $agent_filter=[], $module_filter=[])
 {
-    // Always modify the module status filter
+    // Always modify the module status filter.
     $module_filter['status'] = AGENT_MODULE_STATUS_CRITICAL_BAD;
     return tags_get_monitors_counter($id_tag, $groups_and_tags, $agent_filter, $module_filter);
 }
@@ -2088,7 +2116,7 @@ function tags_get_critical_monitors($id_tag, $groups_and_tags=[], $agent_filter=
  */
 function tags_get_warning_monitors($id_tag, $groups_and_tags=[], $agent_filter=[], $module_filter=[])
 {
-    // Always modify the module status filter
+    // Always modify the module status filter.
     $module_filter['status'] = AGENT_MODULE_STATUS_WARNING;
     return tags_get_monitors_counter($id_tag, $groups_and_tags, $agent_filter, $module_filter);
 }
@@ -2111,7 +2139,7 @@ function tags_get_warning_monitors($id_tag, $groups_and_tags=[], $agent_filter=[
  */
 function tags_get_not_init_monitors($id_tag, $groups_and_tags=[], $agent_filter=[], $module_filter=[])
 {
-    // Always modify the module status filter
+    // Always modify the module status filter.
     $module_filter['status'] = AGENT_MODULE_STATUS_NOT_INIT;
     return tags_get_monitors_counter($id_tag, $groups_and_tags, $agent_filter, $module_filter);
 }
@@ -2134,7 +2162,7 @@ function tags_get_not_init_monitors($id_tag, $groups_and_tags=[], $agent_filter=
  */
 function tags_get_unknown_monitors($id_tag, $groups_and_tags=[], $agent_filter=[], $module_filter=[])
 {
-    // Always modify the module status filter
+    // Always modify the module status filter.
     $module_filter['status'] = AGENT_MODULE_STATUS_UNKNOWN;
     return tags_get_monitors_counter($id_tag, $groups_and_tags, $agent_filter, $module_filter);
 }
@@ -2151,7 +2179,7 @@ function tags_get_unknown_monitors($id_tag, $groups_and_tags=[], $agent_filter=[
  */
 function tags_monitors_fired_alerts($id_tag, $groups_and_tags=[], $id_agente=false)
 {
-    // Avoid mysql error
+    // Avoid mysql error.
     if (empty($id_tag)) {
         return;
     }
@@ -2215,7 +2243,7 @@ function tags_monitors_fired_alerts($id_tag, $groups_and_tags=[], $id_agente=fal
  */
 function tags_get_monitors_alerts($id_tag, $groups_and_tags=[], $id_agente=false)
 {
-    // Avoid mysql error
+    // Avoid mysql error.
     if (empty($id_tag)) {
         return;
     }
@@ -2270,20 +2298,20 @@ function tags_get_monitors_alerts($id_tag, $groups_and_tags=[], $id_agente=false
 function __add_acltags(&$acltags, $group_id, $tags_str)
 {
     if (!isset($acltags[$group_id])) {
-        // Add the new element
+        // Add the new element.
         $acltags[$group_id] = $tags_str;
     } else {
-        // Add the tags. The empty tags have priority cause mean more permissions
+        // Add the tags. The empty tags have priority cause mean more permissions.
         $existing_tags = $acltags[$group_id];
 
         if (!empty($existing_tags)) {
             $existing_tags_array = explode(',', $existing_tags);
 
-            // Store the empty tags
+            // Store the empty tags.
             if (empty($tags_str)) {
                 $acltags[$group_id] = '';
             }
-            // Merge the old and new tabs
+            // Merge the old and new tabs.
             else {
                 $new_tags_array = explode(',', $tags_str);
 
@@ -2297,7 +2325,7 @@ function __add_acltags(&$acltags, $group_id, $tags_str)
         }
     }
 
-    // Propagation
+    // Propagation.
     $propagate = (bool) db_get_value('propagate', 'tgrupo', 'id_grupo', $group_id);
     if ($propagate) {
         $sql = "SELECT id_grupo FROM tgrupo WHERE parent = $group_id";
@@ -2308,14 +2336,14 @@ function __add_acltags(&$acltags, $group_id, $tags_str)
         }
 
         foreach ($children as $children_group) {
-            // Add the tags to the children (recursive)
+            // Add the tags to the children (recursive).
             __add_acltags($acltags, $children_group['id_grupo'], $tags_str);
         }
     }
 }
 
 
-// Return array with groups and their tags
+// Return array with groups and their tags.
 function tags_get_user_groups_and_tags($id_user=false, $access='AR', $strict_user=false)
 {
     global $config;
@@ -2499,7 +2527,7 @@ function tags_get_agent_modules($id_agent, $id_tag=false, $groups_and_tags=[], $
 {
     global $config;
 
-    // Avoid mysql error
+    // Avoid mysql error.
     if (empty($id_agent)) {
         return false;
     }

@@ -44,8 +44,8 @@ our @EXPORT = qw(
 	);
 
 # version: Defines actual version of Pandora Server for this module only
-my $pandora_version = "7.0NG.733";
-my $pandora_build = "190328";
+my $pandora_version = "7.0NG.734";
+my $pandora_build = "190507";
 our $VERSION = $pandora_version." ".$pandora_build;
 
 # Setup hash
@@ -175,6 +175,7 @@ sub pandora_get_sharedconfig ($$) {
 
 	$pa_config->{"provisioning_mode"} = pandora_get_tconfig_token ($dbh, 'provisioning_mode', '');
 
+	$pa_config->{"event_storm_protection"} = pandora_get_tconfig_token ($dbh, 'event_storm_protection', 0);
 
 	if ($pa_config->{'include_agents'} eq '') {
 		$pa_config->{'include_agents'} = 0;
@@ -1199,7 +1200,7 @@ sub pandora_get_tconfig_token ($$$) {
 	my ($dbh, $token, $default_value) = @_;
 	
 	my $token_value = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = ?", $token);
-	if (defined ($token_value)) {
+	if (defined ($token_value) && $token_value ne '') {
 		return safe_output ($token_value);
 	}
 	

@@ -133,20 +133,22 @@ if ($filters === false) {
 
 $table = new stdClass();
 $table->width = '100%';
-$table->class = 'databox data';
+$table->class = 'info_table';
 
 $table->head = [];
-$table->head[0] = __('Name');
-$table->head[1] = __('Group');
-$table->head[2] = __('Action').html_print_checkbox('all_delete', 0, false, true, false);
+$table->head[0] = html_print_checkbox('all_delete', 0, false, true, false);
+$table->head[1] = __('Name');
+$table->head[2] = __('Group');
+$table->head[3] = __('Action');
 $table->style = [];
-$table->style[0] = 'font-weight: bold';
+$table->style[1] = 'font-weight: bold';
 $table->align = [];
 
 $table->size = [];
-$table->size[0] = '60%';
-$table->size[1] = '30%';
-$table->size[2] = '80px';
+$table->size[0] = '10px';
+$table->size[1] = '60%';
+$table->size[2] = '30%';
+$table->size[3] = '80px';
 $table->data = [];
 
 $total_filters = db_get_all_rows_filter('tnetflow_filter', false, 'COUNT(*) AS total');
@@ -156,10 +158,12 @@ $total_filters = $total_filters[0]['total'];
 foreach ($filters as $filter) {
     $data = [];
 
-    $data[0] = '<a href="'.$config['homeurl'].'index.php?sec=netf&sec2=godmode/netflow/nf_edit_form&id='.$filter['id_sg'].'&pure='.$pure.'">'.$filter['id_name'].'</a>';
-    $data[1] = ui_print_group_icon($filter['id_group'], true, 'groups_small', '', !defined('METACONSOLE'));
-    $data[2] = "<a onclick='if(confirm(\"".__('Are you sure?')."\")) return true; else return false;' 
-		href='".$config['homeurl'].'index.php?sec=netf&sec2=godmode/netflow/nf_edit&delete=1&id='.$filter['id_sg']."&offset=0&pure=$pure'>".html_print_image('images/cross.png', true, ['title' => __('Delete')]).'</a>'.html_print_checkbox_extended('delete_multiple[]', $filter['id_sg'], false, false, '', 'class="check_delete"', true);
+    $data[0] = html_print_checkbox_extended('delete_multiple[]', $filter['id_sg'], false, false, '', 'class="check_delete"', true);
+    $data[1] = '<a href="'.$config['homeurl'].'index.php?sec=netf&sec2=godmode/netflow/nf_edit_form&id='.$filter['id_sg'].'&pure='.$pure.'">'.$filter['id_name'].'</a>';
+    $data[2] = ui_print_group_icon($filter['id_group'], true, 'groups_small', '', !defined('METACONSOLE'));
+    $table->cellclass[][3] = 'action_buttons';
+    $data[3] = "<a onclick='if(confirm(\"".__('Are you sure?')."\")) return true; else return false;' 
+        href='".$config['homeurl'].'index.php?sec=netf&sec2=godmode/netflow/nf_edit&delete=1&id='.$filter['id_sg']."&offset=0&pure=$pure'>".html_print_image('images/cross.png', true, ['title' => __('Delete')]).'</a>';
 
     array_push($table->data, $data);
 }

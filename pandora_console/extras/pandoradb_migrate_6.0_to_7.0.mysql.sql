@@ -58,6 +58,7 @@ CREATE TABLE IF NOT EXISTS `tlocal_component` (
 
 ALTER TABLE `tlocal_component` ADD COLUMN `dynamic_next` bigint(20) NOT NULL default '0';
 ALTER TABLE `tlocal_component` ADD COLUMN `dynamic_two_tailed` tinyint(1) unsigned default '0';
+ALTER TABLE `tlocal_component` ADD COLUMN `ff_type` tinyint(1) unsigned default '0';
 
 -- -----------------------------------------------------
 -- Table `tpolicy_modules`
@@ -136,6 +137,7 @@ CREATE TABLE IF NOT EXISTS `tpolicy_modules` (
 
 ALTER TABLE `tpolicy_modules` ADD COLUMN `dynamic_next` bigint(20) NOT NULL default '0';
 ALTER TABLE `tpolicy_modules` ADD COLUMN `dynamic_two_tailed` tinyint(1) unsigned default '0';
+ALTER TABLE `tpolicy_modules` ADD COLUMN `ff_type` tinyint(1) unsigned default '0';
 
 -- ---------------------------------------------------------------------
 -- Table `tpolicies`
@@ -1162,6 +1164,9 @@ ALTER TABLE tagente_estado MODIFY `status_changes` tinyint(4) unsigned default 0
 ALTER TABLE tagente_estado CHANGE `last_known_status` `known_status` tinyint(4) default 0;
 ALTER TABLE tagente_estado ADD COLUMN `last_known_status` tinyint(4) default 0;
 ALTER TABLE tagente_estado ADD COLUMN last_unknown_update bigint(20) NOT NULL default 0;
+ALTER TABLE `tagente_estado` ADD COLUMN `ff_normal` int(4) unsigned default '0';
+ALTER TABLE `tagente_estado` ADD COLUMN `ff_warning` int(4) unsigned default '0';
+ALTER TABLE `tagente_estado` ADD COLUMN `ff_critical` int(4) unsigned default '0';
 
 -- ---------------------------------------------------------------------
 -- Table `talert_actions`
@@ -1272,6 +1277,10 @@ ALTER TABLE tagente_modulo ADD COLUMN `dynamic_next` bigint(20) NOT NULL default
 ALTER TABLE tagente_modulo ADD COLUMN `dynamic_two_tailed` tinyint(1) unsigned default '0';
 ALTER TABLE tagente_modulo ADD COLUMN `parent_module_id` int(10) unsigned NOT NULL default 0;
 ALTER TABLE `tagente_modulo` ADD COLUMN `cps` int NOT NULL default 0;
+ALTER TABLE `tagente_modulo` ADD COLUMN `ff_type` tinyint(1) unsigned default '0';
+ALTER TABLE `tagente_modulo` ADD COLUMN `ff_normal` int(4) unsigned default '0';
+ALTER TABLE `tagente_modulo` ADD COLUMN `ff_warning` int(4) unsigned default '0';
+ALTER TABLE `tagente_modulo` ADD COLUMN `ff_critical` int(4) unsigned default '0';
 
 -- ---------------------------------------------------------------------
 -- Table `tagente_datos`
@@ -1291,6 +1300,7 @@ ALTER TABLE tnetwork_component ADD COLUMN `dynamic_max` int(4) default '0';
 ALTER TABLE tnetwork_component ADD COLUMN `dynamic_min` int(4) default '0';
 ALTER TABLE tnetwork_component ADD COLUMN `dynamic_next` bigint(20) NOT NULL default '0';
 ALTER TABLE tnetwork_component ADD COLUMN `dynamic_two_tailed` tinyint(1) unsigned default '0';
+ALTER TABLE `tnetwork_component` ADD COLUMN `ff_type` tinyint(1) unsigned default '0';
 
 -- ---------------------------------------------------------------------
 -- Table `tagente`
@@ -2082,6 +2092,12 @@ INSERT INTO `trecon_script` (`name`,`description`,`script`,`macros`) VALUES ('Di
 -- Add column in table `tagent_custom_fields`
 -- ----------------------------------------------------------------------
 ALTER TABLE tagent_custom_fields ADD COLUMN `combo_values` VARCHAR(255) DEFAULT '';
+
+-- ----------------------------------------------------------------------
+-- Add column in table `tnetflow_filter`
+-- ----------------------------------------------------------------------
+ALTER TABLE `tnetflow_filter` DROP COLUMN `output`;
+
 
 -- ----------------------------------------------------------------------
 -- Update table `tuser_task`

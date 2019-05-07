@@ -1,3 +1,268 @@
+// TODO: Add Artica ST header.
+/* globals jQuery, VisualConsole */
+
+/*
+ * *********************
+ * * New VC functions. *
+ * *********************
+ */
+
+/**
+ * Generate a Visual Console client.
+ * @param {HTMLElement} container Node which will be used to contain the VC.
+ * @param {object} props VC container properties.
+ * @param {object[]} items List of item definitions.
+ * @param {string | null} baseUrl Base URL to perform API requests.
+ * @param {number | null} updateInterval Time in milliseconds between VC updates.
+ * @param {function | null} onUpdate Callback which will be execuded when the Visual Console.
+ * is updated. It will receive two arguments with the old and the new Visual Console's
+ * data structure.
+ * @return {VisualConsole | null} The Visual Console instance or a null value.
+ */
+// eslint-disable-next-line no-unused-vars
+function createVisualConsole(
+  container,
+  props,
+  items,
+  baseUrl,
+  updateInterval,
+  onUpdate
+) {
+  var visualConsole = null;
+  var linkedVCRequest = null;
+  var updateVCRequest = null;
+
+  if (container == null || props == null || items == null) return null;
+  if (baseUrl == null) baseUrl = "";
+
+  // Code which will be executed between intervals.
+  var intervalRef = null;
+  var stopInterval = function() {
+    if (intervalRef !== null) window.clearInterval(intervalRef);
+  };
+  var startInterval = function() {
+    if (updateInterval == null || updateInterval <= 0) return;
+    stopInterval();
+
+    intervalRef = window.setInterval(function() {
+      if (updateVCRequest !== null) updateVCRequest.abort();
+      updateVCRequest = loadVisualConsoleData(
+        baseUrl,
+        visualConsole.props.id,
+        function(error, data) {
+          if (error) {
+            console.log(
+              "[ERROR]",
+              "[VISUAL-CONSOLE-CLIENT]",
+              "[API]",
+              error.message
+            );
+            return;
+          }
+
+          // Replace Visual Console.
+          if (data != null && data.props != null && data.items != null) {
+            try {
+              var props =
+                typeof data.props === "string"
+                  ? JSON.parse(data.props)
+                  : data.props;
+              var items =
+                typeof data.items === "string"
+                  ? JSON.parse(data.items)
+                  : data.items;
+
+              var prevProps = visualConsole.props;
+              // Update the data structure.
+              visualConsole.props = props;
+              // Update the items.
+              visualConsole.updateElements(items);
+              // Emit the VC update event.
+              if (onUpdate) onUpdate(prevProps, visualConsole.props);
+            } catch (ignored) {} // eslint-disable-line no-empty
+          }
+        }
+      );
+    }, updateInterval);
+  };
+
+  // Initialize the Visual Console.
+  try {
+    visualConsole = new VisualConsole(container, props, items);
+    // VC Item clicked.
+    visualConsole.onClick(function(e) {
+      // Override the link to another VC if it isn't on remote console.
+      if (
+        e.data &&
+        e.data.linkedLayoutId != null &&
+        e.data.linkedLayoutId > 0 &&
+        e.data.link != null &&
+        e.data.link.length > 0 &&
+        (e.data.linkedLayoutAgentId == null || e.data.linkedLayoutAgentId === 0)
+      ) {
+        // Stop the current link behavior.
+        e.nativeEvent.preventDefault();
+
+        // Fetch and update the old VC with the new.
+        if (linkedVCRequest !== null) linkedVCRequest.abort();
+        linkedVCRequest = loadVisualConsoleData(
+          baseUrl,
+          e.data.linkedLayoutId,
+          function(error, data) {
+            if (error) {
+              console.log(
+                "[ERROR]",
+                "[VISUAL-CONSOLE-CLIENT]",
+                "[API]",
+                error.message
+              );
+              return;
+            }
+
+            // Replace Visual Console.
+            if (data != null && data.props != null && data.items != null) {
+              // Cancel the old VC updates.
+              stopInterval();
+
+              try {
+                var props =
+                  typeof data.props === "string"
+                    ? JSON.parse(data.props)
+                    : data.props;
+                var items =
+                  typeof data.items === "string"
+                    ? JSON.parse(data.items)
+                    : data.items;
+
+                if (updateVCRequest !== null) updateVCRequest.abort();
+                // Save the old props.
+                var prevProps = visualConsole.props;
+                // Update the data structure.
+                visualConsole.props = props;
+                // Update the items.
+                visualConsole.updateElements(items);
+                // Emit the VC update event.
+                if (onUpdate) onUpdate(prevProps, visualConsole.props);
+              } catch (ignored) {} // eslint-disable-line no-empty
+
+              // Restart the updates.
+              startInterval();
+            }
+          }
+        );
+      }
+    });
+
+    // Start an interval to update the Visual Console.
+    startInterval();
+  } catch (error) {
+    console.log("[ERROR]", "[VISUAL-CONSOLE-CLIENT]", error.message);
+  }
+
+  return visualConsole;
+}
+
+/**
+ * Fetch a Visual Console's structure and its items.
+ * @param {string} baseUrl Base URL to build the API path.
+ * @param {number} vcId Identifier of the Visual Console.
+ * @param {function} callback Function to be executed on request success or fail.
+ * On success, the function will receive an object with the next properties:
+ * - `props`: object with the Visual Console's data structure.
+ * - `items`: array of data structures of the Visual Console's items.
+ * @return {Object} Cancellable. Object which include and .abort([statusText]) function.
+ */
+// eslint-disable-next-line no-unused-vars
+function loadVisualConsoleData(baseUrl, vcId, callback) {
+  // var apiPath = baseUrl + "/include/rest-api";
+  var apiPath = baseUrl + "/ajax.php";
+  var vcJqXHR = null;
+  var itemsJqXHR = null;
+
+  // Initialize the final result.
+  var result = {
+    props: null,
+    items: null
+  };
+
+  // Cancel the ajax requests.
+  var abort = function(textStatus) {
+    if (textStatus == null) textStatus = "abort";
+
+    // -- XMLHttpRequest.readyState --
+    // Value	State	  Description
+    // 0	    UNSENT	Client has been created. open() not called yet.
+    // 4	    DONE   	The operation is complete.
+
+    if (vcJqXHR.readyState !== 0 && vcJqXHR.readyState !== 4)
+      vcJqXHR.abort(textStatus);
+    if (itemsJqXHR.readyState !== 0 && itemsJqXHR.readyState !== 4)
+      itemsJqXHR.abort(textStatus);
+  };
+
+  // Check if the required data is complete.
+  var checkResult = function() {
+    return result.props !== null && result.items !== null;
+  };
+
+  // Failed request handler.
+  var handleFail = function(jqXHR, textStatus, errorThrown) {
+    abort();
+    // Manually aborted or not.
+    if (textStatus === "abort") {
+      callback();
+    } else {
+      var error = new Error(errorThrown);
+      error.request = jqXHR;
+      callback(error);
+    }
+  };
+
+  // Curried function which handle success.
+  var handleSuccess = function(key) {
+    // Actual request handler.
+    return function(data) {
+      result[key] = data;
+      if (checkResult()) callback(null, result);
+    };
+  };
+
+  // Visual Console container request.
+  vcJqXHR = jQuery
+    // .get(apiPath + "/visual-consoles/" + vcId, null, "json")
+    .get(
+      apiPath,
+      {
+        page: "include/rest-api/index",
+        getVisualConsole: 1,
+        visualConsoleId: vcId
+      },
+      "json"
+    )
+    .done(handleSuccess("props"))
+    .fail(handleFail);
+  // Visual Console items request.
+  itemsJqXHR = jQuery
+    // .get(apiPath + "/visual-consoles/" + vcId + "/items", null, "json")
+    .get(
+      apiPath,
+      {
+        page: "include/rest-api/index",
+        getVisualConsoleItems: 1,
+        visualConsoleId: vcId
+      },
+      "json"
+    )
+    .done(handleSuccess("items"))
+    .fail(handleFail);
+
+  // Abortable.
+  return {
+    abort: abort
+  };
+}
+
+// TODO: Delete the functions below when you can.
 /**************************************
  These functions require jQuery library
  **************************************/

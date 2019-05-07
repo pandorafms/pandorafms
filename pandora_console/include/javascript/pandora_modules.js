@@ -1,3 +1,8 @@
+/* 
+  global $ 
+  global jQuery
+*/
+
 /* Modules ids to check types */
 var id_modules_icmp = Array(6, 7);
 var id_modules_tcp = Array(8, 9, 10, 11);
@@ -95,6 +100,7 @@ function configure_modules_form() {
     $("#text-unit").attr("value", "");
     $("#checkbox-critical_inverse").attr("value", 0);
     $("#checkbox-warning_inverse").attr("value", 0);
+    $("#checkbox-ff_type").attr("value", 0);
     $("#textarea_critical_instructions").attr("value", "");
     $("#textarea_warning_instructions").attr("value", "");
     $("#textarea_unknown_instructions").attr("value", "");
@@ -177,6 +183,13 @@ function configure_modules_form() {
           "value",
           data["min_ff_event"] == 0 ? 0 : data["min_ff_event"]
         );
+
+        if (data["ff_type"] != 0) {
+          $("#checkbox-ff_type").prop("checked", 1);
+        } else {
+          $("#checkbox-ff_type").prop("checked", 0);
+        }
+
         $("#text-post_process").attr(
           "value",
           data["post_process"] == 0 ? 0 : data["post_process"]
@@ -412,6 +425,12 @@ function configure_modules_form() {
           "value",
           data["min_ff_event_critical"] == 0 ? 0 : data["min_ff_event_critical"]
         );
+
+        if (data["ff_type"] != 0) {
+          $("#checkbox-ff_type").prop("checked", 1);
+        } else {
+          $("#checkbox-ff_type").prop("checked", 0);
+        }
 
         // Shows manual input if post_process field is setted
         if (data["post_process"] != 0) {

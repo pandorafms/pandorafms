@@ -37,13 +37,10 @@ $api_password = get_parameter('apipass', '');
 $password = get_parameter('pass', '');
 $user = get_parameter('user', '');
 $info = get_parameter('info', '');
-
 $other = parseOtherParameter($otherSerialize, $otherMode);
-
 $apiPassword = io_output_password(db_get_value_filter('value', 'tconfig', ['token' => 'api_password']));
 
 $correctLogin = false;
-$user_in_db = null;
 $no_login_msg = '';
 
 // Clean unwanted output
@@ -107,7 +104,6 @@ if ($correctLogin) {
             if ($op == 'set' && $id) {
                 switch ($op2) {
                     case 'update_agent':
-
                     case 'add_module_in_conf':
                     case 'update_module_in_conf':
                     case 'delete_module_in_conf':
@@ -149,8 +145,45 @@ if ($correctLogin) {
                         }
                     break;
 
-                    default:
+                    case 'delete_user_permission':
 
+                        if ($user_db === '') {
+                            returnError(__('User or group not specified'), __('User, group not specified'));
+                            return;
+                        }
+
+                        $id_os = api_set_delete_user_profiles($thrash1, $thrash2, $other, $returnType);
+
+                        if ($id_os != 100) {
+                            return;
+                        }
+
+                        if ($id_os == false) {
+                            returnError('not_allowed_operation_cluster', $returnType);
+                            return false;
+                        }
+                    break;
+
+                    case 'add_permission_user_to_group':
+
+                        if ($user_db == null || $group_db == null || $id_up == null) {
+                            returnError(__('User, group or profile not specified'), __('User, group or profile status not specified'));
+                            return;
+                        }
+
+                        $id_os = api_set_add_permission_user_to_group($thrash1, $thrash2, $other, $returnType);
+
+                        if ($id_os != 100) {
+                            return;
+                        }
+
+                        if ($id_os == false) {
+                            returnError('not_allowed_operation_cluster', $returnType);
+                            return false;
+                        }
+                    break;
+
+                    default:
                         // break;
                 }
             }

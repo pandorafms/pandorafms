@@ -1,34 +1,51 @@
 <?php
+/**
+ * PHP Linux cron functions.
+ *
+ * @package    Linux cron functions.
+ * @subpackage Backend functions.
+ *
+ * Pandora FMS- http://pandorafms.com
+ * ==================================================
+ * Copyright (c) 20012 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the  GNU Lesser General Public License
+ * as published by the Free Software Foundation; version 2
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
 
-// Pandora FMS- http://pandorafms.com
-// ==================================================
-// Copyright (c) 20012 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the  GNU Lesser General Public License
-// as published by the Free Software Foundation; version 2
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
 global $config;
 
 require_once $config['homedir'].'/include/functions_db.php';
 
-// Update the execution interval of the given module.
+
+/**
+ * Update the execution interval of the given module
+ *
+ * @param integer $module_id Id of module to update.
+ * @param string  $cron      String with the Linux cron configuration.
+ *
+ * @return boolean Return number of rows affected.
+ */
 function cron_update_module_interval($module_id, $cron)
 {
     // Check for a valid cron.
     if (!cron_check_syntax($cron)) {
-        return;
+        return false;
     }
 
-    if ($cron == '* * * * *') {
-        $module_interval = db_get_value_filter(
-            'module_interval',
-            'tagente_modulo',
-            ['id_agente_modulo' => $module_id]
-        );
+    $module_interval = db_get_value(
+        'module_interval',
+        'tagente_modulo',
+        'id_agente_modulo',
+        $module_id
+    );
+
+    if ($cron === '* * * * *') {
         return db_process_sql(
             'UPDATE tagente_estado SET current_interval = '.$module_interval.' WHERE id_agente_modulo = '.(int) $module_id
         );
@@ -41,15 +58,19 @@ function cron_update_module_interval($module_id, $cron)
 }
 
 
-// Get the number of seconds left to the next execution of the given cron entry.
+/**
+ * Get the number of seconds left to the next execution of the given cron entry.
+ *
+ * @param string  $cron            String with the Linux cron configuration.
+ * @param integer $module_interval Module interval. Minimum increased time.
+ * @param integer $module_id       Module id.
+ *
+ * @return integer Time to next execution time.
+ */
 function cron_next_execution($cron, $module_interval, $module_id)
 {
     // Get day of the week and month from cron config.
     $cron_array = explode(' ', $cron);
-    $minute = $cron_array[0];
-    $hour = $cron_array[1];
-    $mday = $cron_array[2];
-    $month = $cron_array[3];
     $wday = $cron_array[4];
 
     // Get last execution time.
@@ -60,55 +81,35 @@ function cron_next_execution($cron, $module_interval, $module_id)
         $module_id
     );
     $cur_time = ($last_execution !== false) ? $last_execution : time();
-
-    // Any day of the way.
-    if ($wday == '*') {
-        $nex_time = cron_next_execution_date(
-            $cron,
-            $cur_time,
-            $module_interval
-        );
-        return ($nex_time - $cur_time);
+    $nex_time = cron_next_execution_date($cron, $cur_time, $module_interval);
+    $nex_wday = (int) date('w', $nex_time);
+    // Check the wday values to avoid infinite loop.
+    $wday_int = cron_get_interval($wday);
+    if ($wday_int['down'] !== '*' && ($wday_int['down'] > 6 || ($wday_int['up'] !== false && $wday_int['up'] > 6))) {
+        $wday = '*';
     }
 
-    // A specific day of the week.
-    $count = 0;
-    $nex_time = $cur_time;
-    do {
-        $nex_time = cron_next_execution_date(
-            $cron,
-            $nex_time,
-            $module_interval
-        );
-        $nex_time_wd = $nex_time;
+    // Check day of the way.
+    while (!cron_check_interval($nex_wday, $wday)) {
+        // If it does not acomplish the day of the week, go to the next day.
+        $nex_time += SECONDS_1DAY;
+        $nex_time = cron_next_execution_date($cron, $nex_time, 0);
+        $nex_wday = (int) date('w', $nex_time);
+    }
 
-        $array_nex = explode(' ', date('m w', $nex_time_wd));
-        $nex_mon   = $array_nex[0];
-        $nex_wday  = $array_nex[1];
-
-        do {
-            // Check the day of the week.
-            if ($nex_wday == $wday) {
-                return ($nex_time_wd - $cur_time);
-            }
-
-            // Move to the next day of the month.
-            $nex_time_wd += SECONDS_1DAY;
-
-            $array_nex_w = explode(' ', date('m w', $nex_time_wd));
-            $nex_mon_wd  = $array_nex_w[0];
-            $nex_wday    = $array_nex_w[1];
-        } while ($mday == '*' && $nex_mon_wd == $nex_mon);
-
-        $count++;
-    } while ($count < SECONDS_1MINUTE);
-
-    // Something went wrong, default to 5 minutes.
-    return SECONDS_5MINUTES;
+    return ($nex_time - $cur_time);
 }
 
 
-// Get the next execution date for the given cron entry in seconds since epoch.
+/**
+ * Get the next execution date for the given cron entry in seconds since epoch.
+ *
+ * @param string  $cron            String with the Linux cron configuration.
+ * @param integer $cur_time        Current time in utimestamp.
+ * @param integer $module_interval Module interval. Minimum increased time.
+ *
+ * @return integer Next execution timestamp seing the cron configuration.
+ */
 function cron_next_execution_date($cron, $cur_time=false, $module_interval=300)
 {
     // Get cron configuration.
@@ -127,8 +128,7 @@ function cron_next_execution_date($cron, $cur_time=false, $module_interval=300)
     }
 
     // Update minutes.
-    $min_s = cron_get_interval($cron_array[0]);
-    $nex_time_array[0] = ($min_s['down'] == '*') ? 0 : $min_s['down'];
+    $nex_time_array[0] = cron_get_next_time_element($cron_array[0]);
 
     $nex_time = cron_valid_date($nex_time_array);
     if ($nex_time >= $cur_time) {
@@ -166,8 +166,7 @@ function cron_next_execution_date($cron, $cur_time=false, $module_interval=300)
     }
 
     // Update the hour if fails.
-    $hour_s = cron_get_interval($cron_array[1]);
-    $nex_time_array[1] = ($hour_s['down'] == '*') ? 0 : $hour_s['down'];
+    $nex_time_array[1] = cron_get_next_time_element($cron_array[1]);
 
     // When an overflow is passed check the hour update again.
     $nex_time = cron_valid_date($nex_time_array);
@@ -199,8 +198,7 @@ function cron_next_execution_date($cron, $cur_time=false, $module_interval=300)
     }
 
     // Update the day if fails.
-    $mday_s = cron_get_interval($cron_array[2]);
-    $nex_time_array[2] = ($mday_s['down'] == '*') ? 1 : $mday_s['down'];
+    $nex_time_array[2] = cron_get_next_time_element($cron_array[2]);
 
     // When an overflow is passed check the hour update in the next execution.
     $nex_time = cron_valid_date($nex_time_array);
@@ -226,8 +224,7 @@ function cron_next_execution_date($cron, $cur_time=false, $module_interval=300)
     }
 
     // Update the month if fails.
-    $mon_s = cron_get_interval($cron_array[3]);
-    $nex_time_array[3] = ($mon_s['down'] == '*') ? 1 : $mon_s['down'];
+    $nex_time_array[3] = cron_get_next_time_element($cron_array[3]);
 
     // When an overflow is passed check the hour update in the next execution.
     $nex_time = cron_valid_date($nex_time_array);
@@ -245,7 +242,33 @@ function cron_next_execution_date($cron, $cur_time=false, $module_interval=300)
 }
 
 
-// Get an array with the cron interval.
+/**
+ * Get the next tentative time for a cron value or interval in case of overflow.
+ *
+ * @param string $cron_array_elem Cron element.
+ *
+ * @return integer The tentative time. Ex:
+ *      * shold returns 0.
+ *      5 should returns 5.
+ *      10-55 should returns 10.
+ *      55-10 should retunrs 0.
+ */
+function cron_get_next_time_element($cron_array_elem)
+{
+    $interval = cron_get_interval($cron_array_elem);
+    $value = ($interval['down'] == '*' || ($interval['up'] !== false && $interval['down'] > $interval['up'] )) ? 0 : $interval['down'];
+    return $value;
+}
+
+
+/**
+ * Get an array with the cron interval.
+ *
+ * @param string $element String with the elemen cron configuration.
+ *
+ * @return array With up and down elements.
+ *      If there is not an interval, up element will be false.
+ */
 function cron_get_interval($element)
 {
     // Not a range.
@@ -263,7 +286,14 @@ function cron_get_interval($element)
 }
 
 
-// Returns if a date is in a cron. Recursive.
+/**
+ * Returns if a date is in a cron. Recursive.
+ *
+ * @param array   $elems_cron      Cron configuration in array format.
+ * @param integer $elems_curr_time Time to check if is in cron.
+ *
+ * @return boolean Returns true if is in cron. False if it is outside.
+ */
 function cron_is_in_cron($elems_cron, $elems_curr_time)
 {
     $elem_cron = array_shift($elems_cron);
@@ -275,31 +305,62 @@ function cron_is_in_cron($elems_cron, $elems_curr_time)
     }
 
     // Go to last element if current is a wild card.
-    if ($elem_cron != '*') {
-        $elem_s = cron_get_interval($elem_cron);
-        // Check if there is no a range
-        if (($elem_s['up'] === false) && ($elem_s['down'] != $elem_curr_time)) {
-            return false;
-        }
-
-        // Check if there is on the range.
-        if ($elem_s['up'] !== false) {
-            if ($elem_s['down'] < $elem_s['up']) {
-                if ($elem_curr_time < $elem_s['down'] || $elem_curr_time > $elem_s['up']) {
-                    return false;
-                }
-            } else {
-                if ($elem_curr_time > $elem_s['down'] || $elem_curr_time < $elem_s['up']) {
-                    return false;
-                }
-            }
-        }
+    if (cron_check_interval($elem_curr_time, $elem_cron) === false) {
+        return false;
     }
 
     return cron_is_in_cron($elems_cron, $elems_curr_time);
 }
 
 
+/**
+ * Check if an element is inside the cron interval or not.
+ *
+ * @param integer $elem_curr_time Integer that represents the time to check.
+ * @param string  $elem_cron      Cron interval (splitted by hypen)
+ *            or cron single value (a number).
+ *
+ * @return boolean True if is in interval.
+ */
+function cron_check_interval($elem_curr_time, $elem_cron)
+{
+    // Go to last element if current is a wild card.
+    if ($elem_cron === '*') {
+        return true;
+    }
+
+    $elem_s = cron_get_interval($elem_cron);
+    // Check if there is no a range.
+    if (($elem_s['up'] === false) && ($elem_s['down'] != $elem_curr_time)) {
+        return false;
+    }
+
+    // Check if there is on the range.
+    if ($elem_s['up'] !== false && (int) $elem_s['up'] === (int) $elem_curr_time) {
+        return true;
+    }
+
+    if ($elem_s['down'] < $elem_s['up']) {
+        if ($elem_curr_time < $elem_s['down'] || $elem_curr_time > $elem_s['up']) {
+            return false;
+        }
+    } else {
+        if ($elem_curr_time > $elem_s['down'] || $elem_curr_time < $elem_s['up']) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+
+/**
+ * Check if a date is correct or not.
+ *
+ * @param array $da Date in array format [year, month, day, hour, minutes].
+ *
+ * @return integer Utimestamp. False if date is incorrect.
+ */
 function cron_valid_date($da)
 {
     $st = sprintf(
@@ -315,7 +376,13 @@ function cron_valid_date($da)
 }
 
 
-// Check if cron is properly constructed.
+/**
+ * Check if cron is properly constructed.
+ *
+ * @param string $cron String with the Linux cron configuration.
+ *
+ * @return boolean True if is well formed. False otherwise.
+ */
 function cron_check_syntax($cron)
 {
     return preg_match(
@@ -325,6 +392,11 @@ function cron_check_syntax($cron)
 }
 
 
+/**
+ * Cron list table.
+ *
+ * @return void It prints the HTML table.
+ */
 function cron_list_table()
 {
     global $config;

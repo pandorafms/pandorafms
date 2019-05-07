@@ -36481,8 +36481,8 @@ msgstr ""
 #: ../../enterprise/load_enterprise.php:584
 #, php-format
 msgid ""
-"<strong style=\"font-size: 11pt\">License out of limits</strong> <br><br> "
-"This node has a metaconsole license and it allows %d agents and you have %d "
+"<strong style=\"font-size: 11pt\">Out of license limits</strong> <br><br> "
+"This node has a Metaconsole license that allows %d agents, and you have %d "
 "agents cached."
 msgstr ""
 "<strong style=\"font-size: 11pt\">License expired</strong> <br><br> This "
@@ -36492,20 +36492,21 @@ msgstr ""
 #: ../../enterprise/load_enterprise.php:592
 #, php-format
 msgid ""
-"<strong style=\"font-size: 11pt\">License out of limits</strong> <br><br> "
-"This license allows %d agents and you have %d agents configured."
+"<strong style=\"font-size: 11pt\">Out of license limits</strong> <br><br> "
+"This node has a Metaconsole license that allows %d agents, and you have %d "
+"agents configured."
 msgstr ""
 "<strong style=\"font-size: 11pt\">License expired</strong> <br><br> This "
-"license allows %d agents and you have %d agents configured."
+"license allows %d agents, and you have %d agents configured."
 
 #: ../../enterprise/load_enterprise.php:597
 #, php-format
 msgid ""
-"<strong style=\"font-size: 11pt\">License out of limits</strong> <br><br> "
+"<strong style=\"font-size: 11pt\">Out of license limits</strong> <br><br> "
 "This license allows %d modules and you have %d modules configured."
 msgstr ""
-"<strong style=\"font-size: 11pt\">License expired</strong> <br><br> This "
-"license allows %d modules and you have %d modules configured."
+"<strong style=\"font-size: 11pt\">Out of license limits</strong> <br><br> This "
+"license allows %d modules, and you have %d modules configured."
 
 #: ../../enterprise/load_enterprise.php:604
 msgid ""

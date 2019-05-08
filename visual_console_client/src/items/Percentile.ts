@@ -115,6 +115,15 @@ export default class Percentile extends Item<PercentileProps> {
     // SVG container.
     const svg = document.createElementNS(svgNS, "svg");
 
+    var formatValue;
+    if (this.props.value != null) {
+      if (Intl) {
+        formatValue = Intl.NumberFormat("en-EN").format(this.props.value);
+      } else {
+        formatValue = this.props.value;
+      }
+    }
+
     switch (this.props.percentileType) {
       case "progress-bar":
         {
@@ -141,12 +150,12 @@ export default class Percentile extends Item<PercentileProps> {
           text.setAttribute("transform", "translate(50 11)");
           text.setAttribute("fill", colors.text);
 
-          if (this.props.valueType === "value" && this.props.value != null) {
+          if (this.props.valueType === "value") {
             text.style.fontSize = "6pt";
-            var value = new Intl.NumberFormat("en-EN").format(this.props.value);
+
             text.textContent = this.props.unit
-              ? `${value} ${this.props.unit}`
-              : `${value}`;
+              ? `${formatValue} ${this.props.unit}`
+              : `${formatValue}`;
           } else {
             text.textContent = `${progress}%`;
           }
@@ -223,9 +232,7 @@ export default class Percentile extends Item<PercentileProps> {
               const value = document.createElementNS(svgNS, "tspan");
               value.setAttribute("x", "0");
               value.setAttribute("dy", "1em");
-              value.textContent = `${new Intl.NumberFormat("en-EN").format(
-                this.props.value
-              )}`;
+              value.textContent = `${formatValue}`;
               value.style.fontSize = "8pt";
               const unit = document.createElementNS(svgNS, "tspan");
               unit.setAttribute("x", "0");
@@ -235,9 +242,7 @@ export default class Percentile extends Item<PercentileProps> {
               text.append(value, unit);
               text.setAttribute("transform", "translate(50 33)");
             } else {
-              text.textContent = `${new Intl.NumberFormat("en-EN").format(
-                this.props.value
-              )}`;
+              text.textContent = `${formatValue}`;
               text.style.fontSize = "8pt";
               text.setAttribute("transform", "translate(50 50)");
             }

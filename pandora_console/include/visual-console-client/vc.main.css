@@ -71,6 +71,10 @@
 
 /* Analog clock */
 
+.visual-console-item .analogic-clock {
+  text-align: center;
+}
+
 .visual-console-item .analogic-clock .hour-hand {
   -webkit-animation: rotate-hour 43200s infinite linear;
   animation: rotate-hour 43200s infinite linear;
@@ -84,10 +88,6 @@
 .visual-console-item .analogic-clock .second-hand {
   -webkit-animation: rotate-second 60s infinite linear;
   animation: rotate-second 60s infinite linear;
-}
-
-.visual-console-item .analogic-clock {
-  text-align: center;
 }
 
 /*# sourceMappingURL=vc.main.css.map*/

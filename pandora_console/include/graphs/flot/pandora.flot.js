@@ -2133,7 +2133,7 @@ function pandoraFlotArea(
   var plot = $.plot($("#" + graph_id), datas, options);
 
   // Re-calculate the graph height with the legend height
-  if (dashboard || vconsole) {
+  if (dashboard) {
     $acum = 0;
     if (dashboard) $acum = 35;
     var hDiff =

@@ -1760,7 +1760,9 @@ function round_with_decimals(value, multiplier) {
   if (typeof multiplier === "undefined") multiplier = 1;
 
   // Return non numeric types without modification
-  if (typeof value !== "number") return value;
+  if (typeof value !== "number" || Number.isNaN(value)) {
+    return value;
+  }
 
   if (value * multiplier == 0) return 0;
   if (Math.abs(value) * multiplier >= 1) {

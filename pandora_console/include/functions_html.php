@@ -437,7 +437,8 @@ function html_print_select_groups(
     $strict_user=false,
     $delete_groups=false,
     $include_groups=false,
-    $size=false
+    $size=false,
+    $simple_multiple_options=false
 ) {
     global $config;
 
@@ -483,7 +484,11 @@ function html_print_select_groups(
         $disabled,
         $style,
         $option_style,
-        $size
+        $size,
+        false,
+        '',
+        false,
+        $simple_multiple_options
     );
 
     if ($return) {
@@ -531,7 +536,8 @@ function html_print_select(
     $size=false,
     $modal=false,
     $message='',
-    $select_all=false
+    $select_all=false,
+    $simple_multiple_options=false
 ) {
     $output = "\n";
 
@@ -551,11 +557,21 @@ function html_print_select(
         $attributes .= ' onchange="'.$script.'"';
     }
 
-    if ($size !== false)
-        $attributes .= ' size="'.$size.'"';
+    if (!empty($multiple)) {
+        if ($size !== false) {
+            $attributes .= ' multiple="multiple" size="'.$size.'"';
+        } else {
+            $attributes .= ' multiple="multiple" size="10"';
+        }
+    }
 
-    if (!empty($multiple))
-        $attributes .= ' multiple="multiple"';
+    if ($simple_multiple_options === true) {
+        if ($size !== false) {
+            $attributes .= ' size="'.$size.'"';
+        } else {
+            $attributes .= ' size="10"';
+        }
+    }
 
     if (!empty($class)) {
         $attributes .= ' class="'.$class.'"';

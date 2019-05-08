@@ -1990,10 +1990,10 @@ function ui_pagination(
                 $script_modified
             );
 
-            $output .= "<a class='offset_$offset_page'
+            $output .= "<a class='pagination $other_class offset_$offset_page'
 				href='javascript: $script_modified;'>";
         } else {
-            $output .= "<a class='offset_$offset_page' href='$url&amp;$offset_name=$offset_page'>";
+            $output .= "<a class='pagination $other_class offset_$offset_page' href='$url&amp;$offset_name=$offset_page'>";
         }
 
         $output .= $iterator;

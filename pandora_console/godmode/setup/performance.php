@@ -200,8 +200,8 @@ if ($config['history_db_enabled'] == 1) {
     );
 
     $time_pandora_db_history = false;
-    if ($history_connect !== false) {
-        if ($config['history_db_connection'] !== false) {
+    if ($history_connect) {
+        if ($config['history_db_connection']) {
             $time_pandora_db_history = mysql_db_process_sql(
                 $sql,
                 'insert_id',
@@ -405,16 +405,16 @@ if ($config['history_db_enabled'] == 1) {
         );
     }
 
-    $history_connect = @mysql_db_process_sql(
-        'SELECT 1 FROM tconfig',
-        'affected_rows',
-        $config['history_db_connection'],
-        false
-    );
-
     $config_history = false;
-    if ($history_connect !== false) {
-        if ($config['history_db_connection'] != false) {
+    if ($config['history_db_connection']) {
+        $history_connect = @mysql_db_process_sql(
+            'SELECT 1 FROM tconfig',
+            'affected_rows',
+            $config['history_db_connection'],
+            false
+        );
+
+        if ($history_connect !== false) {
             $config_history_array = mysql_db_process_sql(
                 'SELECT * FROM tconfig',
                 'affected_rows',
@@ -427,11 +427,11 @@ if ($config['history_db_enabled'] == 1) {
                     $config_history[$value['token']] = $value['value'];
                 }
             }
+        } else {
+            echo ui_print_error_message(
+                __('The tconfig table does not exist in the historical database')
+            );
         }
-    } else {
-        echo ui_print_error_message(
-            __('The tconfig table does not exist in the historical database')
-        );
     }
 
     if ($config_history === false) {

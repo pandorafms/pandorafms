@@ -176,26 +176,7 @@ $alias    = db_get_value('alias', 'tagente', 'id_agente', $id_agent);
         $unit = db_get_value('unit', 'tagente_modulo', 'id_agente_modulo', $id);
 
 
-
-       // MENU
-       $menu_form = "<form method='get' action='stat_win.php'>".html_print_input_hidden('id', $id, true).html_print_input_hidden('label', $label, true);
-
-       if (!empty($server_id)) {
-           $menu_form .= html_print_input_hidden('server', $server_id, true);
-       }
-
-       if (isset($_GET['type'])) {
-           $type = get_parameter_get('type');
-           $menu_form .= html_print_input_hidden('type', $type, true);
-       }
-
-       echo $menu_form;
-
-       echo '<div class="print_menu"></div>';
-
-       echo '</form>';
-
-
+        // Graph.
         echo '<div style="padding-top: 60px;">';
         $width  = '90%';
         $height = '450';
@@ -250,7 +231,7 @@ $alias    = db_get_value('alias', 'tagente', 'id_agente', $id_agent);
 
 
 
-        // FORM TABLE
+        // FORM TABLE.
         $table = html_get_predefined_table('transparent', 2);
         $table->width = '100%';
         $table->id = 'stat_win_form_div';
@@ -405,15 +386,28 @@ $alias    = db_get_value('alias', 'tagente', 'id_agente', $id_agent);
         ).'</div>';
 
 
+        // Menu.
+        $menu_form = "<form method='get' action='stat_win.php'>".html_print_input_hidden('id', $id, true).html_print_input_hidden('label', $label, true);
 
-       echo '<div class="module_graph_menu_dropdown">
+        if (!empty($server_id)) {
+            $menu_form .= html_print_input_hidden('server', $server_id, true);
+        }
+
+        if (isset($_GET['type'])) {
+            $type = get_parameter_get('type');
+            $menu_form .= html_print_input_hidden('type', $type, true);
+        }
+
+        echo $menu_form;
+        echo '<div class="module_graph_menu_dropdown">
                 <div id="module_graph_menu_header" class="module_graph_menu_header">
-                    <img src="'.$urlImage.'images/arrow_down_green.png" class="imagen" style="float:left" alt="show/hide"/>
+                    '.html_print_image('images/arrow_down_green.png', true, ['class' => 'module_graph_menu_arrow', 'float' => 'left'], false, false, true).'
                     <span>'.__('Graph configuration menu').ui_print_help_icon('graphs', true, $config['homeurl'], 'images/help_g.png', true).'</span>
-                    <img src="'.$urlImage.'images/config.png" style="float:right;" alt="Manage">
+                    '.html_print_image('images/config.png', true, ['float' => 'right'], false, false, true).'
                 </div>
                 <div class="module_graph_menu_content module_graph_menu_content_closed" style="display:none;">'.$form_table.'</div>
             </div>';
+        echo '</form>';
 
         // Hidden div to forced title
         html_print_div(
@@ -462,24 +456,18 @@ ui_include_time_picker(true);
 
     $.datepicker.setDefaults($.datepicker.regional["<?php echo $custom_user_language; ?>"]);
 
-//$(window).ready(function() {
-    $('.print_menu').append($('.module_graph_menu_dropdown'));
-//});
-
-
+    // Menu.
     $('#module_graph_menu_header').on('click', function(){
         if( $('.module_graph_menu_content').hasClass('module_graph_menu_content_closed')){
             $('.module_graph_menu_content').show();
             $('.module_graph_menu_content').removeClass('module_graph_menu_content_closed');          
-            $('#module_graph_menu_header .imagen').attr('src',$('#module_graph_menu_header .imagen').attr('src').replace('arrow_down_green','arrow_up_green'))
+            $('#module_graph_menu_header .module_graph_menu_arrow').attr('src',$('#module_graph_menu_header .module_graph_menu_arrow').attr('src').replace('arrow_down_green','arrow_up_green'))
         }
         else{
             $('.module_graph_menu_content').hide();
             $('.module_graph_menu_content').addClass('module_graph_menu_content_closed'); 
-            $('#module_graph_menu_header .imagen').attr('src',$('#module_graph_menu_header .imagen').attr('src').replace('arrow_up_green','arrow_down_green'))
+            $('#module_graph_menu_header .module_graph_menu_arrow').attr('src',$('#module_graph_menu_header .module_graph_menu_arrow').attr('src').replace('arrow_up_green','arrow_down_green'))
         }
-    
-        
     });
 
 </script>

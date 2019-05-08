@@ -365,9 +365,9 @@ function get_event_name(event_id, meta, history) {
 
 function add_row_param(id_table, param) {
   $("#" + id_table).append(
-    '<tr class="params_rows"><td style="text-align:left; padding-left:40px;">' +
+    '<tr class="params_rows"><td style="text-align:left; padding-left:40px; font-weight: normal; font-style: italic;">' +
       param +
-      '</td><td style="text-align:left"><input type="text" name="' +
+      '</td><td style="text-align:left" colspan="2"><input type="text" name="' +
       param +
       '" id="' +
       param +

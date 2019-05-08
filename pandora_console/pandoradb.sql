@@ -164,6 +164,9 @@ CREATE TABLE IF NOT EXISTS `tagente_estado` (
 	`last_known_status` tinyint(4) default 0,
 	`last_error` int(4) NOT NULL default '0',
 	`ff_start_utimestamp` bigint(20) default 0,
+	`ff_normal` int(4) unsigned default '0',
+	`ff_warning` int(4) unsigned default '0',
+	`ff_critical` int(4) unsigned default '0',
 	`last_dynamic_update` bigint(20) NOT NULL default '0',
 	`last_unknown_update` bigint(20) NOT NULL default '0',
 	PRIMARY KEY  (`id_agente_estado`),
@@ -249,6 +252,7 @@ CREATE TABLE IF NOT EXISTS `tagente_modulo` (
 	`min_ff_event_normal` int(4) unsigned default '0',
 	`min_ff_event_warning` int(4) unsigned default '0',
 	`min_ff_event_critical` int(4) unsigned default '0',
+	`ff_type` tinyint(1) unsigned default '0',
 	`each_ff` tinyint(1) unsigned default '0',
 	`ff_timeout` int(4) unsigned default '0',
 	`dynamic_interval` int(4) unsigned default '0',
@@ -785,6 +789,8 @@ CREATE TABLE IF NOT EXISTS `trecon_task` (
 	`wmi_enabled` tinyint(1) unsigned DEFAULT '0',
 	`auth_strings` text,
 	`autoconfiguration_enabled` tinyint(1) unsigned default '0',
+	`summary` text,
+	`type` int NOT NULL default 0,
 	PRIMARY KEY  (`id_rt`),
 	KEY `recon_task_daemon` (`id_recon_server`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
@@ -862,6 +868,7 @@ CREATE TABLE IF NOT EXISTS `tnetwork_component` (
 	`min_ff_event_normal` int(4) unsigned default '0',
 	`min_ff_event_warning` int(4) unsigned default '0',
 	`min_ff_event_critical` int(4) unsigned default '0',
+	`ff_type` tinyint(1) unsigned default '0',
 	`each_ff` tinyint(1) unsigned default '0',
 	`dynamic_interval` int(4) unsigned default '0',
 	`dynamic_max` int(4) default '0',
@@ -961,6 +968,7 @@ CREATE TABLE IF NOT EXISTS `trecon_script` (
 	`description` TEXT,
 	`script` varchar(250) default '',
 	`macros` TEXT,
+	`type` int NOT NULL default 0,
 	PRIMARY KEY  (`id_recon_script`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -1412,6 +1420,19 @@ CREATE TABLE IF NOT EXISTS `treport_content` (
 	`visual_format` tinyint(1) UNSIGNED NOT NULL default '0',
 	`hide_no_data` tinyint(1) default 0,
 	`recursion` tinyint(1) default NULL,
+	`show_extended_events` tinyint(1) default '0',
+	`total_time` TINYINT(1) DEFAULT '1',
+	`time_failed` TINYINT(1) DEFAULT '1',
+	`time_in_ok_status` TINYINT(1) DEFAULT '1',
+	`time_in_unknown_status` TINYINT(1) DEFAULT '1',
+	`time_of_not_initialized_module` TINYINT(1) DEFAULT '1',
+	`time_of_downtime` TINYINT(1) DEFAULT '1',
+	`total_checks` TINYINT(1) DEFAULT '1',
+	`checks_failed` TINYINT(1) DEFAULT '1',
+	`checks_in_ok_status` TINYINT(1) DEFAULT '1',
+	`unknown_checks` TINYINT(1) DEFAULT '1',
+	`agent_max_value` TINYINT(1) DEFAULT '1',
+	`agent_min_value` TINYINT(1) DEFAULT '1',
 	PRIMARY KEY(`id_rc`),
 	FOREIGN KEY (`id_report`) REFERENCES treport(`id_report`)
 		ON UPDATE CASCADE ON DELETE CASCADE
@@ -1961,7 +1982,6 @@ CREATE TABLE IF NOT EXISTS `tnetflow_filter` (
 	`advanced_filter` TEXT NOT NULL,
 	`filter_args` TEXT NOT NULL,
 	`aggregate` varchar(60),
-	`output` varchar(60),
 	PRIMARY KEY  (`id_sg`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -2220,6 +2240,7 @@ CREATE TABLE IF NOT EXISTS `tlocal_component` (
 	`min_ff_event_normal` int(4) unsigned default '0',
 	`min_ff_event_warning` int(4) unsigned default '0',
 	`min_ff_event_critical` int(4) unsigned default '0',
+	`ff_type` tinyint(1) unsigned default '0',
 	`each_ff` tinyint(1) unsigned default '0',
 	`ff_timeout` int(4) unsigned default '0',
 	`dynamic_interval` int(4) unsigned default '0',
@@ -2298,6 +2319,7 @@ CREATE TABLE IF NOT EXISTS `tpolicy_modules` (
 	`min_ff_event_normal` int(4) unsigned default '0',
 	`min_ff_event_warning` int(4) unsigned default '0',
 	`min_ff_event_critical` int(4) unsigned default '0',
+	`ff_type` tinyint(1) unsigned default '0',
 	`each_ff` tinyint(1) unsigned default '0',
 	`ff_timeout` int(4) unsigned default '0',
 	`dynamic_interval` int(4) unsigned default '0',
@@ -2938,6 +2960,18 @@ CREATE TABLE IF NOT EXISTS `treport_content_template` (
 	`lapse` int(11) UNSIGNED NOT NULL default '300',
 	`visual_format` tinyint(1) UNSIGNED NOT NULL default '0',
 	`hide_no_data` tinyint(1) default 0,
+	`total_time` TINYINT(1) DEFAULT '1',
+	`time_failed` TINYINT(1) DEFAULT '1',
+	`time_in_ok_status` TINYINT(1) DEFAULT '1',
+	`time_in_unknown_status` TINYINT(1) DEFAULT '1',
+	`time_of_not_initialized_module` TINYINT(1) DEFAULT '1',
+	`time_of_downtime` TINYINT(1) DEFAULT '1',
+	`total_checks` TINYINT(1) DEFAULT '1',
+	`checks_failed` TINYINT(1) DEFAULT '1',
+	`checks_in_ok_status` TINYINT(1) DEFAULT '1',
+	`unknown_checks` TINYINT(1) DEFAULT '1',
+	`agent_max_value` TINYINT(1) DEFAULT '1',
+	`agent_min_value` TINYINT(1) DEFAULT '1',
 	PRIMARY KEY(`id_rc`)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
@@ -3488,3 +3522,44 @@ CREATE TABLE IF NOT EXISTS `tagent_custom_fields_filter` (
 	`group_search` int(10) unsigned default '0',
 	PRIMARY KEY(`id`)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
+
+-- -----------------------------------------------------
+-- Table `tnetwork_matrix`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tnetwork_matrix` (
+	`id` int(10) unsigned NOT NULL auto_increment,
+	`source` varchar(60) default '',
+	`destination` varchar(60) default '',
+	`utimestamp` bigint(20) default 0,
+	`bytes` int(18) unsigned default 0,
+	`pkts` int(18) unsigned default 0,
+	PRIMARY KEY (`id`),
+	UNIQUE (`source`, `destination`, `utimestamp`)
+) ENGINE = InnoDB DEFAULT CHARSET=utf8 ;
+
+-- ---------------------------------------------------------------------
+-- Table `user_task`
+-- ---------------------------------------------------------------------
+CREATE TABLE `tuser_task` (
+	`id` int(20) unsigned NOT NULL auto_increment,
+	`function_name` varchar(80) NOT NULL default '',
+	`parameters` text NOT NULL default '',
+	`name` varchar(60) NOT NULL default '',
+	PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ---------------------------------------------------------------------
+-- Table `user_task_scheduled`
+-- ---------------------------------------------------------------------
+CREATE TABLE `tuser_task_scheduled` (
+	`id` int(20) unsigned NOT NULL auto_increment,
+	`id_usuario` varchar(60) NOT NULL default '0',
+	`id_user_task` int(20) unsigned NOT NULL default '0',
+	`args` TEXT NOT NULL,
+	`scheduled` enum('no','hourly','daily','weekly','monthly','yearly','custom') default 'no',
+	`last_run` int(20) unsigned default '0',
+	`custom_data` int(10) NULL default '0',
+	`flag_delete` tinyint(1) UNSIGNED NOT NULL default 0,
+	`id_grupo` int(10) unsigned NOT NULL default 0,
+	PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;

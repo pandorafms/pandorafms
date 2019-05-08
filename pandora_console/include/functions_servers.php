@@ -89,6 +89,58 @@ function servers_force_recon_task($id_recon_task)
 
 
 /**
+ * Retrieves total number of modules per server.
+ *
+ * @return array Modules per server (total).
+ */
+function servers_get_total_modules()
+{
+    $modules = [];
+
+    $modules_from_monitors = db_get_all_rows_sql(
+        'SELECT
+          tserver.server_type,
+          count(tagente_estado.id_agente_modulo) as modules_assigned
+        FROM tserver, tagente_estado, tagente_modulo, tagente
+        WHERE tagente.disabled=0
+          AND tagente_modulo.id_agente = tagente.id_agente
+          AND tagente_modulo.disabled = 0
+          AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
+          AND tagente_estado.running_by = tserver.id_server
+        GROUP BY tserver.server_type;'
+    );
+
+    if ($modules_from_monitors !== false) {
+        $modules = array_reduce(
+            $modules_from_monitors,
+            function ($carry, $item) {
+                $carry[$item['server_type']] = $item['modules_assigned'];
+                return $carry;
+            }
+        );
+    }
+
+    $modules[SERVER_TYPE_INVENTORY] = db_get_sql(
+        'SELECT COUNT(tagent_module_inventory.id_agent_module_inventory)
+        FROM tagente, tagent_module_inventory
+        WHERE tagente.disabled=0
+          AND tagent_module_inventory.id_agente = tagente.id_agente'
+    );
+
+    $modules[SERVER_TYPE_EXPORT] = db_get_sql(
+        'SELECT COUNT(tagente_modulo.id_agente_modulo)
+        FROM tagente, tagente_modulo
+        WHERE tagente.disabled=0
+          AND tagente_modulo.id_agente = tagente.id_agente
+          AND tagente_modulo.id_export != 0'
+    );
+
+    return $modules;
+
+}
+
+
+/**
  * This function will get several metrics from the database to get info about server performance
  *
  * @return array with several data
@@ -988,6 +1040,9 @@ function servers_get_server_string_name(int $server)
 
         case SERVER_TYPE_WUX:
         return __('WUX server');
+
+        case SERVER_TYPE_ENTERPRISE_SATELLITE:
+        return __('Satellite');
 
         default:
         return __('N/A');

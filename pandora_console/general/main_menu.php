@@ -20,31 +20,13 @@ if (! isset($config['id_user'])) {
 <script type="text/javascript" language="javascript">
 
 $(document).ready(function(){    
-    var menuType_value = localStorage.getItem("menuType");    
+    var menuType_value = "<?php echo $config['menu_type']; ?>";
+
     if (menuType_value == 'classic') {
-        $('#menu_full').removeClass('menu_full_collapsed').addClass('menu_full_classic'); 
-        $('.logo_icon').css('display','none');
-        $('.logo_full').css('display','block');
-        $('div#title_menu').removeClass('title_menu_collapsed').addClass('title_menu_classic');
-        $('div#page').removeClass('page_collapsed').addClass('page_classic');
-        $('#header_table').removeClass('header_table_collapsed').addClass('header_table_classic');
-        $('#button_collapse').removeClass('button_collapsed').addClass('button_classic');
         $('ul.submenu').css('left', '214px');    
-        $('li.menu_icon').removeClass('menu_icon_collapsed').addClass("no_hidden_menu");
     }
     else{
-        if(menuType_value != 'collapsed'){    
-            localStorage.setItem("menuType", "collapsed");
-        }
-        $('#menu_full').removeClass('menu_full_classic').addClass('menu_full_collapsed'); 
-        $('.logo_full').css('display','none');
-        $('.logo_icon').css('display','block');
-        $('div#title_menu').removeClass('title_menu_classic').addClass('title_menu_collapsed');
-        $('div#page').removeClass('page_classic').addClass('page_collapsed');
-        $('#header_table').removeClass('header_table_classic').addClass('header_table_collapsed');
-        $('#button_collapse').removeClass('button_classic').addClass('button_collapsed');      
         $('ul.submenu').css('left', '59px');
-        $('li.menu_icon').removeClass("no_hidden_menu").addClass('menu_icon_collapsed');
     }
 });
 
@@ -63,7 +45,11 @@ if (isset($config['autohidden_menu']) && $config['autohidden_menu']) {
 }
 
 // Menu container prepared to autohide menu
-echo '<div id="menu_full">';
+if ($config['menu_type'] == 'classic') {
+    echo '<div id="menu_full" class="menu_full_classic">';
+} else {
+    echo '<div id="menu_full" class="menu_full_collapsed">';
+}
 
 $custom_logo = 'images/custom_logo/'.$config['custom_logo'];
 $custom_logo_collapsed = 'images/custom_logo/'.$config['custom_logo_collapsed'];
@@ -82,11 +68,19 @@ if (!defined('PANDORA_ENTERPRISE')) {
 
 echo '<div class="logo_green"><a href="index.php?sec=main">';
 if (isset($config['custom_logo'])) {
-    echo html_print_image($custom_logo, true, ['border' => '0', 'width' => '215', 'alt' => $logo_title, 'class' => 'logo_full', 'style' => 'display:none']);
+    if ($config['menu_type'] == 'classic') {
+        echo html_print_image($custom_logo, true, ['border' => '0', 'width' => '215', 'alt' => $logo_title, 'class' => 'logo_full', 'style' => 'display:block']);
+    } else {
+        echo html_print_image($custom_logo, true, ['border' => '0', 'width' => '215', 'alt' => $logo_title, 'class' => 'logo_full', 'style' => 'display:none']);
+    }
 }
 
 if (isset($config['custom_logo_collapsed'])) {
-    echo html_print_image($custom_logo_collapsed, true, ['border' => '0', 'width' => '60', 'alt' => $logo_title, 'class' => 'logo_icon', 'style' => 'display:block']);
+    if ($config['menu_type'] == 'classic') {
+        echo html_print_image($custom_logo_collapsed, true, ['border' => '0', 'width' => '60', 'alt' => $logo_title, 'class' => 'logo_icon', 'style' => 'display:none']);
+    } else {
+        echo html_print_image($custom_logo_collapsed, true, ['border' => '0', 'width' => '60', 'alt' => $logo_title, 'class' => 'logo_icon', 'style' => 'display:block']);
+    }
 }
 
 echo '</a></div>';
@@ -109,8 +103,11 @@ if (check_acl($config['id_user'], 0, 'AW')
 
 require 'godmode/menu.php';
 
-echo '<div id="button_collapse" class="button_collapse"></div>';
-
+if ($config['menu_type'] == 'classic') {
+    echo '<div id="button_collapse" class="button_classic button_collapse"></div>';
+} else {
+    echo '<div id="button_collapse" class="button_collapsed button_collapse"></div>';
+}
 
 // require ("links_menu.php");
 echo '</div>';
@@ -131,10 +128,30 @@ $('#button_collapse').on('click', function() {
     if($('#menu_full').hasClass('menu_full_classic')){
         localStorage.setItem("menuType", "collapsed");
         $('ul.submenu').css('left', '59px');
+        var menuType_val = localStorage.getItem("menuType");
+        $.ajax({
+            type: "POST",
+            url: "ajax.php",
+            data: {
+                menuType: menuType_val,
+                page: "include/functions_menu"
+            },
+            dataType: "json"
+        });
     }
     else if($('#menu_full').hasClass('menu_full_collapsed')){
         localStorage.setItem("menuType", "classic");
         $('ul.submenu').css('left', '214px');
+        var menuType_val = localStorage.getItem("menuType");
+        $.ajax({
+            type: "POST",
+            url: "ajax.php",
+            data: {
+                menuType: menuType_val,
+                page: "include/functions_menu"
+            },
+            dataType: "json"
+        });
     }
 
     $('.logo_full').toggle();

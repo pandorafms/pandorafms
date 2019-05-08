@@ -436,7 +436,9 @@ function html_print_select_groups(
     $keys_field='id_grupo',
     $strict_user=false,
     $delete_groups=false,
-    $include_groups=false
+    $include_groups=false,
+    $size=false,
+    $simple_multiple_options=false
 ) {
     global $config;
 
@@ -481,7 +483,12 @@ function html_print_select_groups(
         $class,
         $disabled,
         $style,
-        $option_style
+        $option_style,
+        $size,
+        false,
+        '',
+        false,
+        $simple_multiple_options
     );
 
     if ($return) {
@@ -529,7 +536,8 @@ function html_print_select(
     $size=false,
     $modal=false,
     $message='',
-    $select_all=false
+    $select_all=false,
+    $simple_multiple_options=false
 ) {
     $output = "\n";
 
@@ -554,6 +562,14 @@ function html_print_select(
             $attributes .= ' multiple="multiple" size="'.$size.'"';
         } else {
             $attributes .= ' multiple="multiple" size="10"';
+        }
+    }
+
+    if ($simple_multiple_options === true) {
+        if ($size !== false) {
+            $attributes .= ' size="'.$size.'"';
+        } else {
+            $attributes .= ' size="10"';
         }
     }
 
@@ -1060,7 +1076,7 @@ function html_print_extended_select_for_time(
             'images/pencil.png',
             true,
             [
-                'class' => $uniq_name.'_toggler',
+                'class' => $uniq_name.'_toggler '.$class,
                 'alt'   => __('Custom'),
                 'title' => __('Custom'),
                 'style' => 'width: 18px;'.$style_icon,
@@ -1774,7 +1790,8 @@ function html_print_button($label='OK', $name='', $disabled=false, $script='', $
  */
 function html_print_textarea($name, $rows, $columns, $value='', $attributes='', $return=false, $class='')
 {
-    $output = '<textarea id="textarea_'.$name.'" name="'.$name.'" cols="'.$columns.'" rows="'.$rows.'" '.$attributes.'" '.$class.'>';
+
+    $output = '<textarea id="textarea_'.$name.'" name="'.$name.'" cols="'.$columns.'" rows="'.$rows.'" '.$attributes.'" class="'.$class.'">';
     // $output .= io_safe_input ($value);
     $output .= ($value);
     $output .= '</textarea>';
@@ -2392,12 +2409,21 @@ function html_print_checkbox_switch($name, $value, $checked=false, $return=false
 /**
  * Prints an image HTML element.
  *
- * @param string  $src        Image source filename.
- * @param boolean $return     Whether to return or print
- * @param array   $options    Array with optional HTML options to set. At this moment, the
- *      following options are supported: alt, style, title, width, height, class, pos_tree.
- * @param boolean $return_src Whether to return src field of image ('images/*.*') or complete html img tag ('<img src="..." alt="...">').
- * @param boolean $relative   Whether to use relative path to image or not (i.e. $relative= true : /pandora/<img_src>).
+ * @param string  $src            Image source filename.
+ * @param boolean $return         Whether to return or print.
+ * @param array   $options        Array with optional HTML options to set.
+ *          At this moment, the following options are supported:
+ *          align, border, hspace, ismap, vspace, style, title, height,
+ *          longdesc, usemap, width, id, class, lang, xml:lang, onclick,
+ *          ondblclick, onmousedown, onmouseup, onmouseover, onmousemove,
+ *          onmouseout, onkeypress, onkeydown, onkeyup, pos_tree, alt.
+ * @param boolean $return_src     Whether to return src field of image
+ *          ('images/*.*') or complete html img tag ('<img src="..." alt="...">').
+ * @param boolean $relative       Whether to use relative path to image or not
+ *          (i.e. $relative= true : /pandora/<img_src>).
+ * @param boolean $no_in_meta     Do not show on metaconsole folder at first. Go
+ *          directly to the node.
+ * @param boolean $isExternalLink Do not shearch for images in Pandora.
  *
  * @return string HTML code if return parameter is true.
  */
@@ -2412,9 +2438,9 @@ function html_print_image(
 ) {
     global $config;
 
-    // If metaconsole is in use then don't use skins
+    // If metaconsole is in use then don't use skins.
     if (!is_metaconsole()) {
-        // Checks if user's skin is available
+        // Checks if user's skin is available.
         $isFunctionSkins = enterprise_include_once('include/functions_skins.php');
 
         if ($isFunctionSkins !== ENTERPRISE_NOT_HOOK) {
@@ -2426,11 +2452,11 @@ function html_print_image(
         }
     }
 
-    // If metaconsole is activated and image doesn't exists try to search on normal console
+    // If metaconsole is activated and image doesn't exists try to search on normal console.
     if (is_metaconsole()) {
         if (!$relative) {
             $working_dir = str_replace('\\', '/', getcwd());
-            // Windows compatibility
+            // Windows compatibility.
             if ($no_in_meta) {
                 $src = '../../'.$src;
             } else if (strstr($working_dir, 'enterprise/meta') === false) {
@@ -2468,22 +2494,22 @@ function html_print_image(
         }
     }
 
-    // Only return src field of image
+    // Only return src field of image.
     if ($return_src) {
         if (!$return) {
             echo io_safe_input($src);
-            return;
+            return null;
         }
 
         return io_safe_input($src);
     }
 
     $output = '<img src="'.$src.'" ';
-    // Dont use safe_input here or the performance will dead
+    // Dont use safe_input here or the performance will dead.
     $style = '';
 
     if (!empty($options)) {
-        // Deprecated or value-less attributes
+        // Deprecated or value-less attributes.
         if (isset($options['align'])) {
             $style .= 'align:'.$options['align'].';';
             // Align is deprecated, use styles.
@@ -2491,23 +2517,23 @@ function html_print_image(
 
         if (isset($options['border'])) {
             $style .= 'border:'.$options['border'].'px;';
-            // Border is deprecated, use styles
+            // Border is deprecated, use styles.
         }
 
         if (isset($options['hspace'])) {
             $style .= 'margin-left:'.$options['hspace'].'px;';
-            // hspace is deprecated, use styles
+            // hspace is deprecated, use styles.
             $style .= 'margin-right:'.$options['hspace'].'px;';
         }
 
         if (isset($options['ismap'])) {
             $output .= 'ismap="ismap" ';
-            // Defines the image as a server-side image map
+            // Defines the image as a server-side image map.
         }
 
         if (isset($options['vspace'])) {
             $style .= 'margin-top:'.$options['vspace'].'px;';
-            // hspace is deprecated, use styles
+            // hspace is deprecated, use styles.
             $style .= 'margin-bottom:'.$options['vspace'].'px;';
         }
 
@@ -2515,7 +2541,7 @@ function html_print_image(
             $style .= $options['style'];
         }
 
-        // If title is provided activate forced title
+        // If title is provided activate forced title.
         if (isset($options['title']) && $options['title'] != '') {
             if (isset($options['class'])) {
                 $options['class'] .= ' forced_title';
@@ -2523,12 +2549,12 @@ function html_print_image(
                 $options['class'] = 'forced_title';
             }
 
-            // New way to show the force_title (cleaner and better performance)
+            // New way to show the force_title (cleaner and better performance).
             $output .= 'data-title="'.io_safe_input_html($options['title']).'" ';
             $output .= 'data-use_title_for_force_title="1" ';
         }
 
-        // Valid attributes (invalid attributes get skipped)
+        // Valid attributes (invalid attributes get skipped).
         $attrs = [
             'height',
             'longdesc',
@@ -2562,7 +2588,7 @@ function html_print_image(
 
     if (!isset($options['alt']) && isset($options['title'])) {
         $options['alt'] = io_safe_input_html($options['title']);
-        // Set alt to title if it's not set
+        // Set alt to title if it's not set.
     }
 
     if (!empty($style)) {
@@ -2735,28 +2761,7 @@ function html_print_autocomplete_modules(
     global $config;
 
     if ($id_agents === false) {
-        $groups = [];
-        if ($ACL) {
-            $groups = users_get_groups($config['id_user'], 'AW', false);
-            $groups = array_keys($groups);
-
-            if (empty($groups)) {
-                $id_groups = 0;
-            } else {
-                $id_groups = implode(',', $groups);
-            }
-
-            $agents = db_get_all_rows_sql(
-                'SELECT id_agente
-				FROM tagente
-				WHERE id_grupo IN ('.$id_groups.')'
-            );
-        } else {
-            $agents = db_get_all_rows_sql(
-                'SELECT id_agente
-				FROM tagente'
-            );
-        }
+        $agents = agents_get_agents();
 
         if ($agents === false) {
             $agents = [];
@@ -2768,10 +2773,7 @@ function html_print_autocomplete_modules(
         }
     } else {
         if ($ACL) {
-            $groups = users_get_groups($config['id_user'], 'AW', false);
-            $groups = array_keys($groups);
-
-            $agents = db_get_all_rows_sql('SELECT id_agente FROM tagente WHERE id_grupo IN ('.implode(',', $groups).')');
+            $agents = agents_get_agents();
 
             if ($agents === false) {
                 $agents = [];
@@ -3001,4 +3003,49 @@ function html_print_switch($attributes=[])
 			<input type='checkbox' $html_expand>
 			<span class='p-slider'></span>
 		</label>";
+}
+
+
+/**
+ * Print a link with post params.The component is really a form with a button
+ *      with some inputs hidden.
+ *
+ * @param string $text   Text to show.
+ * @param array  $params Params to be written like inputs hidden.
+ * @param string $text   Text of image.
+ * @param string $style  Additional style for the element.
+ *
+ * @return string With HTML code.
+ */
+function html_print_link_with_params($text, $params=[], $type='text', $style='')
+{
+    $html = '<form method=post>';
+    switch ($type) {
+        case 'image':
+            $html .= html_print_input_image($text, $text, $text, $style, true);
+        break;
+
+        case 'text':
+        default:
+            if (!empty($style)) {
+                $style = ' style="'.$style.'"';
+            }
+
+            $html .= html_print_submit_button(
+                $text,
+                $text,
+                false,
+                'class="button-as-link"'.$style,
+                true
+            );
+        break;
+    }
+
+    foreach ($params as $param => $value) {
+        $html .= html_print_input_hidden($param, $value, true);
+    }
+
+    $html .= '</form>';
+
+    return $html;
 }

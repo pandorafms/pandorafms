@@ -18,10 +18,14 @@ require_once 'include/functions_notifications.php';
 // Global errors/warnings checking.
  config_check();
 
-?>
 
-<div id="header_table"> 
-    <div id="header_table_inner">           
+if ($config['menu_type'] == 'classic') {
+    echo '<div id="header_table" class="header_table_classic">';
+} else {
+    echo '<div id="header_table" class="header_table_collapsed">';
+}
+?>
+    <div id="header_table_inner">        
         <?php
         // ======= Notifications Discovery ===============================================
         $notifications_numbers = notifications_get_counters();
@@ -175,7 +179,8 @@ require_once 'include/functions_notifications.php';
                 );
 
                 if ((isset($select[0]['time_autorefresh']) === true)
-                    && $select[0]['time_autorefresh'] !== 0 && !$config['refr']
+                    && $select[0]['time_autorefresh'] !== 0
+                    && $config['refr'] === null
                 ) {
                     $config['refr'] = $select[0]['time_autorefresh'];
                     $autorefresh_txt .= ' (<span id="refrcounter">';
@@ -279,7 +284,7 @@ require_once 'include/functions_notifications.php';
         $header_support .= '</a></div>';
 
         // Documentation.
-        $header_docu = '<div id="header_support">';
+        $header_docu = '<div id="header_docu">';
         $header_docu .= '<a href="https://wiki.pandorafms.com/index.php?title=Main_Page" target="_blank">';
         $header_docu .= html_print_image('/images/header_docu.png', true, ['title' => __('Go to documentation'), 'class' => 'bot', 'alt' => 'user']);
         $header_docu .= '</a></div>';
@@ -586,9 +591,7 @@ require_once 'include/functions_notifications.php';
 
         if (fixed_header) {
             $('div#head').addClass('fixed_header');
-            $('div#page')
-                .css('padding-top', $('div#head').innerHeight() + 'px')
-                .css('position', 'relative');
+            $('div#main').css('padding-top', $('div#head').innerHeight() + 'px');
         }
         
         check_new_chats_icon('icon_new_messages_chat');

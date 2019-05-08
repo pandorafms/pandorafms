@@ -972,6 +972,23 @@ function ui_format_alert_row($alert, $agent=true, $url='', $agent_style=false)
 
     $data = [];
 
+    // Validate checkbox
+    if (!defined('METACONSOLE')) {
+        if (check_acl($config['id_user'], $id_group, 'LW') || check_acl($config['id_user'], $id_group, 'LM')) {
+            $data[$index['validate']] = '';
+
+            $data[$index['validate']] .= html_print_checkbox(
+                'validate[]',
+                $alert['id'],
+                false,
+                true,
+                false,
+                '',
+                true
+            );
+        }
+    }
+
     if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
         if (is_metaconsole()) {
             $node = metaconsole_get_connection_by_id($alert['server_data']['id']);
@@ -1101,22 +1118,6 @@ function ui_format_alert_row($alert, $agent=true, $url='', $agent_style=false)
     }
 
     $data[$index['status']] = ui_print_status_image($status, $title, true);
-
-    if (!defined('METACONSOLE')) {
-        if (check_acl($config['id_user'], $id_group, 'LW') || check_acl($config['id_user'], $id_group, 'LM')) {
-            $data[$index['validate']] = '';
-
-            $data[$index['validate']] .= html_print_checkbox(
-                'validate[]',
-                $alert['id'],
-                false,
-                true,
-                false,
-                '',
-                true
-            );
-        }
-    }
 
     return $data;
 }
@@ -1736,10 +1737,6 @@ function ui_process_page_head($string, $bitfield)
     // Include countdown library
     $config['jquery']['countdown'] = 'include/javascript/jquery.countdown.js';
 
-    // Include timezone user map library
-    $config['jquery']['OpenLayers'] = 'include/javascript/OpenLayers.js';
-    $config['jquery']['jquery.timezone-picker'] = 'include/javascript/jquery.timezone-picker.js';
-
     // Then add each script as necessary
     $loaded = [''];
     foreach ($config['jquery'] as $name => $filename) {
@@ -1884,7 +1881,7 @@ function ui_pagination(
         if ($print_total_items) {
             $output = "<div class='pagination $other_class' $set_id>";
             // Show the count of items
-            $output .= sprintf(__('Total items: %s'), $count);
+            $output .= '<div class="total_pages">'.sprintf(__('Total items: %s'), $count).'</div>';
             // End div and layout
             $output .= '</div>';
 
@@ -1910,9 +1907,10 @@ function ui_pagination(
 
     // Show the count of items
     if ($print_total_items) {
-        $output .= sprintf(__('Total items: %s'), $count);
-        $output .= '<br>';
+        $output .= '<div class="total_pages">'.sprintf(__('Total items: %s'), $count).'</div>';
     }
+
+    $output .= "<div class='total_number'>";
 
     // Show GOTO FIRST PAGE button
     if ($number_of_pages > $block_limit) {
@@ -1929,10 +1927,10 @@ function ui_pagination(
                 $script_modified
             );
 
-            $output .= "<a class='pagination $other_class offset_0'
-				href='javascript: $script_modified;'>".html_print_image('images/go_first.png', true, ['class' => 'bot']).'</a>&nbsp;';
+            $output .= "<a class='pagination-arrows $other_class offset_0'
+				href='javascript: $script_modified;'>".html_print_image('images/go_first_g.png', true, ['class' => 'bot']).'</a>';
         } else {
-            $output .= "<a class='pagination $other_class offset_0' href='$url&amp;$offset_name=0'>".html_print_image('images/go_first.png', true, ['class' => 'bot']).'</a>&nbsp;';
+            $output .= "<a class='pagination-arrows $other_class offset_0' href='$url&amp;$offset_name=0'>".html_print_image('images/go_first_g.png', true, ['class' => 'bot']).'</a>';
         }
     }
 
@@ -1958,10 +1956,10 @@ function ui_pagination(
                 $script_modified
             );
 
-            $output .= "<a class='pagination $other_class offset_$offset_previous_page'
-				href='javacript: $script_modified;'>".html_print_image('images/go_previous.png', true, ['class' => 'bot']).'</a>';
+            $output .= "<a class='pagination-arrows $other_class offset_$offset_previous_page'
+				href='javacript: $script_modified;'>".html_print_image('images/go_previous_g.png', true, ['class' => 'bot']).'</a>';
         } else {
-            $output .= "<a class='pagination $other_class offset_$offset_previous_page' href='$url&amp;$offset_name=$offset_previous_page'>".html_print_image('images/go_previous.png', true, ['class' => 'bot']).'</a>';
+            $output .= "<a class='pagination-arrows $other_class offset_$offset_previous_page' href='$url&amp;$offset_name=$offset_previous_page'>".html_print_image('images/go_previous_g.png', true, ['class' => 'bot']).'</a>';
         }
     }
 
@@ -1970,9 +1968,9 @@ function ui_pagination(
         $actual_page = (int) ($offset / $pagination);
 
         if ($iterator == $actual_page) {
-            $output .= "<span style='font-weight: bold;'>";
+            $output .= "<div class='page_number page_number_active'>";
         } else {
-            $output .= '<span>';
+            $output .= "<div class='page_number'>";
         }
 
         $offset_page = ($iterator * $pagination);
@@ -1996,9 +1994,9 @@ function ui_pagination(
             $output .= "<a class='pagination $other_class offset_$offset_page' href='$url&amp;$offset_name=$offset_page'>";
         }
 
-        $output .= "[ $iterator ]";
+        $output .= $iterator;
 
-        $output .= '</a></span>';
+        $output .= '</a></div>';
     }
 
     // Show NEXT PAGE GROUP OF PAGES
@@ -2023,10 +2021,10 @@ function ui_pagination(
                 $script_modified
             );
 
-            $output .= "<a class='pagination $other_class offset_$offset_next_page'
-				href='javascript: $script_modified;'>".html_print_image('images/go_next.png', true, ['class' => 'bot']).'</a>';
+            $output .= "<a class='pagination-arrows $other_class offset_$offset_next_page'
+				href='javascript: $script_modified;'>".html_print_image('images/go_next_g.png', true, ['class' => 'bot']).'</a>';
         } else {
-            $output .= "<a class='pagination $other_class offset_$offset_next_page' href='$url&amp;$offset_name=$offset_next_page'>".html_print_image('images/go_next.png', true, ['class' => 'bot']).'</a>';
+            $output .= "<a class='pagination-arrows $other_class offset_$offset_next_page' href='$url&amp;$offset_name=$offset_next_page'>".html_print_image('images/go_next_g.png', true, ['class' => 'bot']).'</a>';
         }
     }
 
@@ -2047,13 +2045,15 @@ function ui_pagination(
                 $script_modified
             );
 
-            $output .= "<a class='pagination $other_class offset_$offset_lastpage'
-				href='javascript: $script_modified;'>".html_print_image('images/go_last.png', true, ['class' => 'bot']).'</a>';
+            $output .= "<a class='pagination-arrows $other_class offset_$offset_lastpage'
+				href='javascript: $script_modified;'>".html_print_image('images/go_last_g.png', true, ['class' => 'bot']).'</a>';
         } else {
-            $output .= "<a class='pagination $other_class offset_$offset_lastpage' href='$url&amp;$offset_name=$offset_lastpage'>".html_print_image('images/go_last.png', true, ['class' => 'bot']).'</a>';
+            $output .= "<a class='pagination-arrows $other_class offset_$offset_lastpage' href='$url&amp;$offset_name=$offset_lastpage'>".html_print_image('images/go_last_g.png', true, ['class' => 'bot']).'</a>';
         }
     }
 
+    $output .= '</div>';
+    // total_number
     // End div and layout
     $output .= '</div>';
 
@@ -2768,7 +2768,8 @@ function ui_print_page_header(
     $modal=false,
     $message='',
     $numChars=GENERIC_SIZE_TEXT,
-    $alias=''
+    $alias='',
+    $breadcrumbs=''
 ) {
     $title = io_safe_input_html($title);
     if (($icon == '') && ($godmode == true)) {
@@ -2781,15 +2782,21 @@ function ui_print_page_header(
 
     if ($godmode == true) {
         $type = 'view';
-        $type2 = 'menu_tab_frame_view';
+        $type2 = (empty($breadcrumbs)) ? 'menu_tab_frame_view' : 'menu_tab_frame_view_bc';
         $separator_class = 'separator';
     } else {
         $type = 'view';
-        $type2 = 'menu_tab_frame_view';
+        $type2 = (empty($breadcrumbs)) ? 'menu_tab_frame_view' : 'menu_tab_frame_view_bc';
         $separator_class = 'separator_view';
     }
 
-    $buffer = '<div id="'.$type2.'" style=""><div id="menu_tab_left">';
+    $buffer = '<div id="'.$type2.'" style="">';
+
+    if (!empty($breadcrumbs)) {
+        $buffer .= '<div class="breadcrumbs_container">'.$breadcrumbs.'</div>';
+    }
+
+    $buffer .= '<div id="menu_tab_left">';
 
     $buffer .= '<ul class="mn"><li class="'.$type.'">';
 
@@ -4417,4 +4424,35 @@ function ui_get_favicon()
     }
 
     return 'images/custom_favicon/'.$config['custom_favicon'];
+}
+
+
+/**
+ * Show sorting arrows for tables
+ *
+ * @return string  HTML anchor link with the arrow icon.
+ */
+function ui_get_sorting_arrows($url_up, $url_down, $selectUp, $selectDown)
+{
+    $arrow_up = 'images/sort_up_black.png';
+    $arrow_down = 'images/sort_down_black.png';
+
+    // Green arrows for the selected.
+    if ($selectUp === true) {
+        $arrow_up = 'images/sort_up_green.png';
+    }
+
+    if ($selectDown === true) {
+        $arrow_down = 'images/sort_down_green.png';
+    }
+
+    if (is_metaconsole()) {
+        $arrow_up = 'images/sort_up.png';
+        $arrow_down = 'images/sort_down.png';
+    }
+
+    return '<span class="sort_arrow">
+                <a href="'.$url_up.'">'.html_print_image($arrow_up, true, ['alt' => 'up']).'</a>
+                <a href="'.$url_down.'">'.html_print_image($arrow_down, true, ['alt' => 'down']).'</a>
+            </span>';
 }

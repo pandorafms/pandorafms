@@ -20,7 +20,7 @@
 // matrix = [[0, 0, 2],     // a[a => a, a => b, a => c]
 //           [5, 0, 1],     // b[b => a, b => b, b => c]
 //           [2, 3, 0]];    // c[c => a, c => b, c => c]
-function chordDiagram(recipient, elements, matrix, unit, width) {
+function chordDiagram(recipient, elements, matrix, width) {
   d3.chart = d3.chart || {};
   d3.chart.chordWheel = function(options) {
     // Default values
@@ -206,18 +206,14 @@ function chordDiagram(recipient, elements, matrix, unit, width) {
                     " → " +
                     elements[d.target.index] +
                     ": <b>" +
-                    d.source.value.toFixed(2) +
-                    " " +
-                    unit +
+                    valueToBytes(d.source.value) +
                     "</b>" +
                     "<br>" +
                     elements[d.target.index] +
                     " → " +
                     elements[d.source.index] +
                     ": <b>" +
-                    d.target.value.toFixed(2) +
-                    " " +
-                    unit +
+                    valueToBytes(d.target.value) +
                     "</b>"
                 )
             );
@@ -227,18 +223,14 @@ function chordDiagram(recipient, elements, matrix, unit, width) {
                 " → " +
                 elements[d.target.index] +
                 ": <b>" +
-                d.source.value.toFixed(2) +
-                " " +
-                unit +
+                valueToBytes(d.source.value) +
                 "</b>" +
                 "<br>" +
                 elements[d.target.index] +
                 " → " +
                 elements[d.source.index] +
                 ": <b>" +
-                d.target.value.toFixed(2) +
-                " " +
-                unit +
+                valueToBytes(d.target.value) +
                 "</b>"
             );
           }
@@ -1782,7 +1774,10 @@ function progress_bar_d3(
   color,
   unit,
   label,
-  label_color
+  label_color,
+  radiusx,
+  radiusy,
+  transition
 ) {
   var startPercent = 0;
   var endPercent = parseInt(percentile) / 100;
@@ -1799,20 +1794,20 @@ function progress_bar_d3(
     .append("rect")
     .attr("fill", "#000000")
     .attr("fill-opacity", 0.5)
-    .attr("height", 20)
+    .attr("height", height)
     .attr("width", width)
-    .attr("rx", 10)
-    .attr("ry", 10)
+    .attr("rx", radiusx)
+    .attr("ry", radiusy)
     .attr("x", 0);
 
   var progress_front = circle
     .append("rect")
     .attr("fill", color)
     .attr("fill-opacity", 1)
-    .attr("height", 20)
+    .attr("height", height)
     .attr("width", 0)
-    .attr("rx", 10)
-    .attr("ry", 10)
+    .attr("rx", radiusx)
+    .attr("ry", radiusy)
     .attr("x", 0);
 
   var labelText = circle
@@ -1834,7 +1829,7 @@ function progress_bar_d3(
     .style("font-weight", "bold")
     .style("font-size", 14)
     .attr("text-anchor", "middle")
-    .attr("dy", "-10");
+    .attr("dy", (height - height / 2) / 4);
 
   function updateProgress(bar_progress) {
     var percent_value = Number(bar_progress * 100);
@@ -1842,17 +1837,21 @@ function progress_bar_d3(
     progress_front.attr("width", width * bar_progress);
   }
 
-  var bar_progress = startPercent;
-
-  (function loops() {
+  if (transition == 0) {
+    var bar_progress = endPercent;
     updateProgress(bar_progress);
+  } else {
+    var bar_progress = startPercent;
+    (function loops() {
+      updateProgress(bar_progress);
 
-    if (count > 0) {
-      count--;
-      bar_progress += step;
-      setTimeout(loops, 30);
-    }
-  })();
+      if (count > 0) {
+        count--;
+        bar_progress += step;
+        setTimeout(loops, 30);
+      }
+    })();
+  }
 }
 
 function progress_bubble_d3(
@@ -1981,7 +1980,8 @@ function print_circular_progress_bar(
   color,
   unit,
   label,
-  label_color
+  label_color,
+  transition
 ) {
   var twoPi = Math.PI * 2;
   var radius = width / 2;
@@ -2113,15 +2113,19 @@ function print_circular_progress_bar(
 
   var progress = startPercent;
 
-  (function loops() {
-    updateProgress(progress);
+  if (transition == 0)
+    updateProgress(endPercent);
+  else {
+    (function loops() {
+      updateProgress(progress);
 
-    if (count > 0) {
-      count--;
-      progress += step;
-      setTimeout(loops, 30);
-    }
-  })();
+      if (count > 0) {
+        count--;
+        progress += step;
+        setTimeout(loops, 30);
+      }
+    })();
+  }
 }
 
 function print_interior_circular_progress_bar(
@@ -2743,4 +2747,18 @@ function printClockDigital1(
 
     setTimeout(tick, 1000 - (now % 1000));
   })();
+}
+
+function valueToBytes(value) {
+  var shorts = ["", "K", "M", "G", "T", "P", "E", "Z", "Y"];
+  var pos = 0;
+  while (value >= 1024) {
+    // As long as the number can be divided by divider.
+    pos++;
+    // Position in array starting with 0.
+    value = value / 1024;
+  }
+
+  // This will actually do the rounding and the decimals.
+  return value.toFixed(2) + shorts[pos] + "B";
 }

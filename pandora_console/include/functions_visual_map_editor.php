@@ -688,7 +688,7 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background)
                 'percentile_item',
                 'datos',
             ];
-            $form_items['percentile_item_row_6']['html'] = '<td align="left">'.__('Label color').'</td>
+            $form_items['percentile_item_row_6']['html'] = '<td align="left">'.__('Value color').'</td>
 				<td align="left">'.html_print_input_text_extended(
                 'percentile_label_color',
                 '#ffffff',
@@ -1394,6 +1394,9 @@ function visual_map_editor_print_hack_translate_strings()
 <script type="text/javascript">
 $(document).ready (function () {
     $("#map_linked").change(function () {
+        $("option[value=" + this.value + "]", this)
+        .attr("selected", true).siblings()
+        .removeAttr("selected")
         $("#text-agent").val("");
         $("input[name=id_agent]").val(0);
         $("#module").empty();

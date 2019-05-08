@@ -214,7 +214,7 @@ int Cron::getResetValue (int position) {
     int default_value = 0;
     // Days start in 1
     if (position == 2) default_value = 1;
-    return isWildCard(position)
+    return (isWildCard(position) || !isNormalInterval(position))
         ? default_value
         : this->params[position][CRDOWN];
 }

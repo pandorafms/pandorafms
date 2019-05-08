@@ -58,6 +58,7 @@ CREATE TABLE IF NOT EXISTS `tlocal_component` (
 
 ALTER TABLE `tlocal_component` ADD COLUMN `dynamic_next` bigint(20) NOT NULL default '0';
 ALTER TABLE `tlocal_component` ADD COLUMN `dynamic_two_tailed` tinyint(1) unsigned default '0';
+ALTER TABLE `tlocal_component` ADD COLUMN `ff_type` tinyint(1) unsigned default '0';
 
 -- -----------------------------------------------------
 -- Table `tpolicy_modules`
@@ -136,6 +137,7 @@ CREATE TABLE IF NOT EXISTS `tpolicy_modules` (
 
 ALTER TABLE `tpolicy_modules` ADD COLUMN `dynamic_next` bigint(20) NOT NULL default '0';
 ALTER TABLE `tpolicy_modules` ADD COLUMN `dynamic_two_tailed` tinyint(1) unsigned default '0';
+ALTER TABLE `tpolicy_modules` ADD COLUMN `ff_type` tinyint(1) unsigned default '0';
 
 -- ---------------------------------------------------------------------
 -- Table `tpolicies`
@@ -764,6 +766,18 @@ ALTER TABLE treport_content_template ADD COLUMN `lapse_calc` tinyint(1) default 
 ALTER TABLE treport_content_template ADD COLUMN `lapse` int(11) default '300';
 ALTER TABLE treport_content_template ADD COLUMN `visual_format` tinyint(1) default '0';
 ALTER TABLE treport_content_template ADD COLUMN `hide_no_data` tinyint(1) default '0';
+ALTER TABLE `treport_content_template` ADD COLUMN `total_time` TINYINT(1) DEFAULT '1';
+ALTER TABLE `treport_content_template` ADD COLUMN `time_failed` TINYINT(1) DEFAULT '1';
+ALTER TABLE `treport_content_template` ADD COLUMN `time_in_ok_status` TINYINT(1) DEFAULT '1';
+ALTER TABLE `treport_content_template` ADD COLUMN `time_in_unknown_status` TINYINT(1) DEFAULT '1';
+ALTER TABLE `treport_content_template` ADD COLUMN `time_of_not_initialized_module` TINYINT(1) DEFAULT '1';
+ALTER TABLE `treport_content_template` ADD COLUMN `time_of_downtime` TINYINT(1) DEFAULT '1';
+ALTER TABLE `treport_content_template` ADD COLUMN `total_checks` TINYINT(1) DEFAULT '1';
+ALTER TABLE `treport_content_template` ADD COLUMN `checks_failed` TINYINT(1) DEFAULT '1';
+ALTER TABLE `treport_content_template` ADD COLUMN `checks_in_ok_status` TINYINT(1) DEFAULT '1';
+ALTER TABLE `treport_content_template` ADD COLUMN `unknown_checks` TINYINT(1) DEFAULT '1';
+ALTER TABLE `treport_content_template` ADD COLUMN `agent_max_value` TINYINT(1) DEFAULT '1';
+ALTER TABLE `treport_content_template` ADD COLUMN `agent_min_value` TINYINT(1) DEFAULT '1';
 
 -- -----------------------------------------------------
 -- Table `treport_content_sla_com_temp` (treport_content_sla_combined_template)
@@ -1150,6 +1164,9 @@ ALTER TABLE tagente_estado MODIFY `status_changes` tinyint(4) unsigned default 0
 ALTER TABLE tagente_estado CHANGE `last_known_status` `known_status` tinyint(4) default 0;
 ALTER TABLE tagente_estado ADD COLUMN `last_known_status` tinyint(4) default 0;
 ALTER TABLE tagente_estado ADD COLUMN last_unknown_update bigint(20) NOT NULL default 0;
+ALTER TABLE `tagente_estado` ADD COLUMN `ff_normal` int(4) unsigned default '0';
+ALTER TABLE `tagente_estado` ADD COLUMN `ff_warning` int(4) unsigned default '0';
+ALTER TABLE `tagente_estado` ADD COLUMN `ff_critical` int(4) unsigned default '0';
 
 -- ---------------------------------------------------------------------
 -- Table `talert_actions`
@@ -1199,13 +1216,13 @@ ALTER TABLE titem MODIFY `source_data` int(10) unsigned;
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('big_operation_step_datos_purge', '100');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('small_operation_step_datos_purge', '1000');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('days_autodisable_deletion', '30');
-INSERT INTO `tconfig` (`token`, `value`) VALUES ('MR', 26);
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('MR', 27);
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('custom_docs_logo', 'default_docs.png');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('custom_support_logo', 'default_support.png');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('custom_logo_white_bg_preview', 'pandora_logo_head_white_bg.png');
 UPDATE tconfig SET value = 'https://licensing.artica.es/pandoraupdate7/server.php' WHERE token='url_update_manager';
 DELETE FROM `tconfig` WHERE `token` = 'current_package_enterprise';
-INSERT INTO `tconfig` (`token`, `value`) VALUES ('current_package_enterprise', '733');
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('current_package_enterprise', '734');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('status_monitor_fields', 'policy,agent,data_type,module_name,server_type,interval,status,graph,warn,data,timestamp');
 
 -- ---------------------------------------------------------------------
@@ -1260,6 +1277,10 @@ ALTER TABLE tagente_modulo ADD COLUMN `dynamic_next` bigint(20) NOT NULL default
 ALTER TABLE tagente_modulo ADD COLUMN `dynamic_two_tailed` tinyint(1) unsigned default '0';
 ALTER TABLE tagente_modulo ADD COLUMN `parent_module_id` int(10) unsigned NOT NULL default 0;
 ALTER TABLE `tagente_modulo` ADD COLUMN `cps` int NOT NULL default 0;
+ALTER TABLE `tagente_modulo` ADD COLUMN `ff_type` tinyint(1) unsigned default '0';
+ALTER TABLE `tagente_modulo` ADD COLUMN `ff_normal` int(4) unsigned default '0';
+ALTER TABLE `tagente_modulo` ADD COLUMN `ff_warning` int(4) unsigned default '0';
+ALTER TABLE `tagente_modulo` ADD COLUMN `ff_critical` int(4) unsigned default '0';
 
 -- ---------------------------------------------------------------------
 -- Table `tagente_datos`
@@ -1279,6 +1300,7 @@ ALTER TABLE tnetwork_component ADD COLUMN `dynamic_max` int(4) default '0';
 ALTER TABLE tnetwork_component ADD COLUMN `dynamic_min` int(4) default '0';
 ALTER TABLE tnetwork_component ADD COLUMN `dynamic_next` bigint(20) NOT NULL default '0';
 ALTER TABLE tnetwork_component ADD COLUMN `dynamic_two_tailed` tinyint(1) unsigned default '0';
+ALTER TABLE `tnetwork_component` ADD COLUMN `ff_type` tinyint(1) unsigned default '0';
 
 -- ---------------------------------------------------------------------
 -- Table `tagente`
@@ -1355,6 +1377,7 @@ ALTER TABLE tgraph ADD COLUMN `fullscale` tinyint(1) UNSIGNED NOT NULL default '
 -- Table `tnetflow_filter`
 -- ---------------------------------------------------------------------
 ALTER TABLE tnetflow_filter ADD COLUMN `router_ip` TEXT NOT NULL DEFAULT "";
+UPDATE `tnetflow_filter` SET aggregate="dstip" WHERE aggregate NOT IN ("dstip", "srcip", "dstport", "srcport");
 
 -- ---------------------------------------------------------------------
 -- Table `treport_custom_sql`
@@ -1376,6 +1399,20 @@ ALTER TABLE treport_content ADD COLUMN `lapse` int(11) default '300';
 ALTER TABLE treport_content ADD COLUMN `visual_format` tinyint(1) default '0';
 ALTER TABLE treport_content ADD COLUMN `hide_no_data` tinyint(1) default '0';
 ALTER TABLE treport_content ADD COLUMN `recursion` tinyint(1) default NULL;
+ALTER TABLE treport_content ADD COLUMN `show_extended_events` tinyint(1) default '0';
+UPDATE `treport_content` SET type="netflow_summary" WHERE type="netflow_pie" OR type="netflow_statistics";
+ALTER TABLE `treport_content` ADD COLUMN `total_time` TINYINT(1) DEFAULT '1';
+ALTER TABLE `treport_content` ADD COLUMN `time_failed` TINYINT(1) DEFAULT '1';
+ALTER TABLE `treport_content` ADD COLUMN `time_in_ok_status` TINYINT(1) DEFAULT '1';
+ALTER TABLE `treport_content` ADD COLUMN `time_in_unknown_status` TINYINT(1) DEFAULT '1';
+ALTER TABLE `treport_content` ADD COLUMN `time_of_not_initialized_module` TINYINT(1) DEFAULT '1';
+ALTER TABLE `treport_content` ADD COLUMN `time_of_downtime` TINYINT(1) DEFAULT '1';
+ALTER TABLE `treport_content` ADD COLUMN `total_checks` TINYINT(1) DEFAULT '1';
+ALTER TABLE `treport_content` ADD COLUMN `checks_failed` TINYINT(1) DEFAULT '1';
+ALTER TABLE `treport_content` ADD COLUMN `checks_in_ok_status` TINYINT(1) DEFAULT '1';
+ALTER TABLE `treport_content` ADD COLUMN `unknown_checks` TINYINT(1) DEFAULT '1';
+ALTER TABLE `treport_content` ADD COLUMN `agent_max_value` TINYINT(1) DEFAULT '1';
+ALTER TABLE `treport_content` ADD COLUMN `agent_min_value` TINYINT(1) DEFAULT '1';
 
 -- ---------------------------------------------------------------------
 -- Table `tmodule_relationship`
@@ -1410,6 +1447,7 @@ ALTER TABLE trecon_task ADD `vlan_enabled` int(2) unsigned default '0';
 ALTER TABLE trecon_task ADD `wmi_enabled` tinyint(1) unsigned DEFAULT '0';
 ALTER TABLE trecon_task ADD `auth_strings` text;
 ALTER TABLE trecon_task ADD `autoconfiguration_enabled` tinyint(1) unsigned default '0';
+ALTER TABLE trecon_task ADD `summary` text;
 
 -- ---------------------------------------------------------------------
 -- Table `twidget` AND Table `twidget_dashboard`
@@ -1913,6 +1951,20 @@ CREATE TABLE `tgis_map_layer_groups` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- -----------------------------------------------------
+-- Table `tnetwork_matrix`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tnetwork_matrix` (
+	`id` int(10) unsigned NOT NULL auto_increment,
+	`source` varchar(60) default '',
+	`destination` varchar(60) default '',
+	`utimestamp` bigint(20) default 0,
+	`bytes` int(18) unsigned default 0,
+	`pkts` int(18) unsigned default 0,
+	PRIMARY KEY (`id`),
+	UNIQUE (`source`, `destination`, `utimestamp`)
+) ENGINE = InnoDB DEFAULT CHARSET=utf8 ;
+
+-- -----------------------------------------------------
 -- Table `tnotification_source`
 -- -----------------------------------------------------
 CREATE TABLE `tnotification_source` (
@@ -2040,3 +2092,14 @@ INSERT INTO `trecon_script` (`name`,`description`,`script`,`macros`) VALUES ('Di
 -- Add column in table `tagent_custom_fields`
 -- ----------------------------------------------------------------------
 ALTER TABLE tagent_custom_fields ADD COLUMN `combo_values` VARCHAR(255) DEFAULT '';
+
+-- ----------------------------------------------------------------------
+-- Add column in table `tnetflow_filter`
+-- ----------------------------------------------------------------------
+ALTER TABLE `tnetflow_filter` DROP COLUMN `output`;
+
+
+-- ----------------------------------------------------------------------
+-- Update table `tuser_task`
+-- ----------------------------------------------------------------------
+UPDATE tuser_task set parameters = 'a:5:{i:0;a:6:{s:11:\"description\";s:28:\"Report pending to be created\";s:5:\"table\";s:7:\"treport\";s:8:\"field_id\";s:9:\"id_report\";s:10:\"field_name\";s:4:\"name\";s:4:\"type\";s:3:\"int\";s:9:\"acl_group\";s:8:\"id_group\";}i:1;a:2:{s:11:\"description\";s:46:\"Send to email addresses (separated by a comma)\";s:4:\"type\";s:4:\"text\";}i:2;a:2:{s:11:\"description\";s:7:\"Subject\";s:8:\"optional\";i:1;}i:3;a:3:{s:11:\"description\";s:7:\"Message\";s:4:\"type\";s:4:\"text\";s:8:\"optional\";i:1;}i:4;a:2:{s:11:\"description\";s:11:\"Report Type\";s:4:\"type\";s:11:\"report_type\";}}' where function_name = "cron_task_generate_report";

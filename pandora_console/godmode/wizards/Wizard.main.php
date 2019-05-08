@@ -26,14 +26,15 @@
  * ============================================================================
  */
 
-define('CLOUDWIZARD_AWS_DESCRIPTION', 'Discovery.Cloud.AWS.EC2');
+// Begin.
 
-/**
- * Global Wizard generic class. Needs to be inherited.
- *
- * Used in Hostdevices class, Applications class and others, is the core of
- * Discovery proyect.
- */
+
+ /**
+  * Global Wizard generic class. Needs to be inherited.
+  *
+  * Used in Hostdevices class, Applications class and others, is the core of
+  * Discovery proyect.
+  */
 class Wizard
 {
 
@@ -190,15 +191,18 @@ class Wizard
      * Builder for breadcrum
      *
      * @param array   $urls Array of urls to be stored in breadcrum.
-     * @param boolean $add  True if breadcrum should be added instead of
-     *      overwrite it.
+     * @param boolean $add  True if breadcrum should be added
+     *                      instead of overwrite it.
      *
      * @return void
      */
-    public function prepareBreadcrum(array $urls, bool $add=false)
-    {
+    public function prepareBreadcrum(
+        array $urls,
+        bool $add=false
+    ) {
         $bc = [];
         $i = 0;
+
         foreach ($urls as $url) {
             if ($url['selected'] == 1) {
                 $class = 'selected';
@@ -206,9 +210,12 @@ class Wizard
                 $class = '';
             }
 
-            $bc[$i]    = '<a href="'.$url['link'].'" class="text_color">';
-            $bc[$i]   .= '<div class="arrow_box '.$class.'">'.$url['label'];
-            $bc[$i++] .= '</div></a>';
+            $bc[$i] = '';
+            $bc[$i] .= '<span><a class="breadcrumb_link '.$class.'" href="'.$url['link'].'">';
+            $bc[$i] .= $url['label'];
+            $bc[$i] .= '</a>';
+            $bc[$i] .= '</span>';
+            $i++;
         }
 
         if ($add === true) {
@@ -216,7 +223,6 @@ class Wizard
         } else {
             $this->setBreadcrum($bc);
         }
-
     }
 
 
@@ -256,7 +262,10 @@ class Wizard
      */
     public function printBreadcrum()
     {
-        return '<h1 class="wizard">'.implode('', $this->breadcrum).'</h1>';
+        return implode(
+            '<span class="breadcrumb_link">&nbsp/&nbsp</span>',
+            $this->breadcrum
+        );
     }
 
 
@@ -464,7 +473,9 @@ class Wizard
                 ((isset($data['keys_field']) === true) ? $data['keys_field'] : 'id_grupo'),
                 ((isset($data['strict_user']) === true) ? $data['strict_user'] : false),
                 ((isset($data['delete_groups']) === true) ? $data['delete_groups'] : false),
-                ((isset($data['include_groups']) === true) ? $data['include_groups'] : false)
+                ((isset($data['include_groups']) === true) ? $data['include_groups'] : false),
+                ((isset($data['size']) === true) ? $data['size'] : false),
+                ((isset($data['simple_multiple_options']) === true) ? $data['simple_multiple_options'] : false)
             );
 
             case 'submit':
@@ -572,14 +583,18 @@ class Wizard
     {
         $output = '';
         if ($input['hidden'] == 1) {
-            $class = ' class="hidden"';
+            $class = ' hidden';
         } else {
             $class = '';
         }
 
+        if (isset($input['class']) === true) {
+            $class = $input['class'].$class;
+        }
+
         if (is_array($input['block_content']) === true) {
             // Print independent block of inputs.
-            $output .= '<li id="'.$input['block_id'].'" '.$class.'>';
+            $output .= '<li id="'.$input['block_id'].'" class="'.$class.'">';
             $output .= '<ul class="wizard">';
             foreach ($input['block_content'] as $input) {
                 $output .= $this->printBlock($input, $return);
@@ -588,7 +603,7 @@ class Wizard
             $output .= '</ul></li>';
         } else {
             if ($input['arguments']['type'] != 'hidden') {
-                $output .= '<li id="'.$input['id'].'" '.$class.'>';
+                $output .= '<li id="'.$input['id'].'" class="'.$class.'">';
                 $output .= '<label>'.$input['label'].'</label>';
                 $output .= $this->printInput($input['arguments']);
                 // Allow dynamic content.
@@ -617,7 +632,7 @@ class Wizard
      *
      * @return string HTML code.
      */
-    public function printForm(array $data, bool $return=false)
+    public function printForm(array $data, bool $return=false, bool $print_white_box=false)
     {
         $form = $data['form'];
         $inputs = $data['inputs'];
@@ -643,13 +658,27 @@ class Wizard
             error_log('Error executing wizard callback: ', $e->getMessage());
         }
 
-        $output = '<ul class="wizard">';
+        $output_submit = '';
+        $output = '';
+
+        if ($print_white_box === true)
+            $output .= '<div class="white_box">';
+
+        $output .= '<ul class="wizard">';
 
         foreach ($inputs as $input) {
-            $output .= $this->printBlock($input, true);
+            if ($input['arguments']['type']!='submit')
+                $output .= $this->printBlock($input, true);
+            else
+                $output_submit .= $this->printBlock($input, true);
         }
 
         $output .= '</ul>';
+
+        if ($print_white_box === true)
+            $output .= '</div>';
+
+        $output .= '<ul class="wizard">'.$output_submit.'</ul>';
         $output .= '</form>';
         $output .= '<script>'.$js.'</script>';
 

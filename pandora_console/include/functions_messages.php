@@ -583,6 +583,56 @@ function messages_get_overview_sent(
 
 
 /**
+ * Get a message interpreted as a conversation.
+ *
+ * @param mixed $data Complete message or message id.
+ *
+ * @return mixed False if fails. A string array with the conversation.
+ */
+function messages_get_conversation($data)
+{
+    if (is_array($data)) {
+        $message = $data;
+    } else {
+        $message = messages_get_message($data);
+    }
+
+    if (!isset($message) || !is_array($message)) {
+        return [];
+    }
+
+    $conversation = [];
+    $target_str = $message['mensaje'];
+
+    while (preg_match_all(
+        '/(.*)On(.*)wrote:(.*)/',
+        $target_str,
+        $decoded,
+        PREG_PATTERN_ORDER
+    ) !== false && empty($target_str) !== true) {
+        if (empty($decoded[2]) !== true) {
+            array_push(
+                $conversation,
+                [
+                    'message' => array_pop($decoded)[0],
+                    'date'    => array_pop($decoded)[0],
+                ]
+            );
+        } else {
+            array_push(
+                $conversation,
+                ['message' => $target_str]
+            );
+        }
+
+        $target_str = $decoded[1][0];
+    }
+
+    return $conversation;
+}
+
+
+/**
  * Get the URL of a message. If field in db is null, it returs a link to
  *      messages view.
  *

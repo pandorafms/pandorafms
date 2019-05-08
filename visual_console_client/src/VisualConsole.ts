@@ -248,7 +248,7 @@ export default class VisualConsole {
 
       if (a.isOnTop && !b.isOnTop) return 1;
       else if (!a.isOnTop && b.isOnTop) return -1;
-      else if (a.id < b.id) return 1;
+      else if (a.id > b.id) return 1;
       else return -1;
     });
 

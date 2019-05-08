@@ -9340,15 +9340,34 @@ function reporting_get_agent_module_info($id_agent)
 
     $return = [];
     $return['last_contact'] = 0;
-    // Last agent contact
+    // Last agent contact.
     $return['status'] = STATUS_AGENT_NO_DATA;
-    $return['status_img'] = ui_print_status_image(STATUS_AGENT_NO_DATA, __('Agent without data'), true);
+    $return['status_img'] = ui_print_status_image(
+        STATUS_AGENT_NO_DATA,
+        __('Agent without data'),
+        true
+    );
     $return['alert_status'] = 'notfired';
     $return['alert_value'] = STATUS_ALERT_NOT_FIRED;
-    $return['alert_img'] = ui_print_status_image(STATUS_ALERT_NOT_FIRED, __('Alert not fired'), true);
-    $return['agent_group'] = agents_get_agent_group($id_agent);
+    $return['alert_img'] = ui_print_status_image(
+        STATUS_ALERT_NOT_FIRED,
+        __('Alert not fired'),
+        true
+    );
 
-    if (!check_acl($config['id_user'], $return['agent_group'], 'AR')) {
+    $return['agent_group'] = '';
+    // Important agents_get_all_groups_agent check secondary groups.
+    $id_all_groups = agents_get_all_groups_agent($id_agent);
+    if (isset($id_all_groups) && is_array($id_all_groups)) {
+        foreach ($id_all_groups as $value) {
+            if (check_acl($config['id_user'], $value, 'AR')) {
+                $return['agent_group'] = $value;
+            }
+        }
+    }
+
+    // If $return['agent_group'] is empty no access.
+    if ($return['agent_group'] == '') {
         return $return;
     }
 
@@ -9361,7 +9380,7 @@ function reporting_get_agent_module_info($id_agent)
 
     $now = get_system_time();
 
-    // Get modules status for this agent
+    // Get modules status for this agent.
     $agent = db_get_row('tagente', 'id_agente', $id_agent);
 
     $return['total_count'] = $agent['total_count'];
@@ -9375,28 +9394,52 @@ function reporting_get_agent_module_info($id_agent)
     if ($return['total_count'] > 0) {
         if ($return['critical_count'] > 0) {
             $return['status'] = STATUS_AGENT_CRITICAL;
-            $return['status_img'] = ui_print_status_image(STATUS_AGENT_CRITICAL, __('At least one module in CRITICAL status'), true);
+            $return['status_img'] = ui_print_status_image(
+                STATUS_AGENT_CRITICAL,
+                __('At least one module in CRITICAL status'),
+                true
+            );
         } else if ($return['warning_count'] > 0) {
             $return['status'] = STATUS_AGENT_WARNING;
-            $return['status_img'] = ui_print_status_image(STATUS_AGENT_WARNING, __('At least one module in WARNING status'), true);
+            $return['status_img'] = ui_print_status_image(
+                STATUS_AGENT_WARNING,
+                __('At least one module in WARNING status'),
+                true
+            );
         } else if ($return['unknown_count'] > 0) {
             $return['status'] = STATUS_AGENT_DOWN;
-            $return['status_img'] = ui_print_status_image(STATUS_AGENT_DOWN, __('At least one module is in UKNOWN status'), true);
+            $return['status_img'] = ui_print_status_image(
+                STATUS_AGENT_DOWN,
+                __('At least one module is in UKNOWN status'),
+                true
+            );
         } else {
             $return['status'] = STATUS_AGENT_OK;
-            $return['status_img'] = ui_print_status_image(STATUS_AGENT_OK, __('All Monitors OK'), true);
+            $return['status_img'] = ui_print_status_image(
+                STATUS_AGENT_OK,
+                __('All Monitors OK'),
+                true
+            );
         }
     }
 
-    // Alert not fired is by default
+    // Alert not fired is by default.
     if ($return['fired_count'] > 0) {
         $return['alert_status'] = 'fired';
-        $return['alert_img'] = ui_print_status_image(STATUS_ALERT_FIRED, __('Alert fired'), true);
+        $return['alert_img'] = ui_print_status_image(
+            STATUS_ALERT_FIRED,
+            __('Alert fired'),
+            true
+        );
         $return['alert_value'] = STATUS_ALERT_FIRED;
     } else if (groups_give_disabled_group($return['agent_group'])) {
         $return['alert_status'] = 'disabled';
         $return['alert_value'] = STATUS_ALERT_DISABLED;
-        $return['alert_img'] = ui_print_status_image(STATUS_ALERT_DISABLED, __('Alert disabled'), true);
+        $return['alert_img'] = ui_print_status_image(
+            STATUS_ALERT_DISABLED,
+            __('Alert disabled'),
+            true
+        );
     }
 
     return $return;

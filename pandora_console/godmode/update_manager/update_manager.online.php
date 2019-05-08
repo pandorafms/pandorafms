@@ -1,16 +1,22 @@
 <?php
 
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; version 2
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU General Public License for more details.
+/**
+    Pandora FMS - http://pandorafms.com
+ * ==================================================
+ * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; version 2
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * @package    category
+ * @subpackage category
+ */
+
 global $config;
 
 check_login();
@@ -61,7 +67,7 @@ if ($memory_limit < 100) {
     );
 }
 
-// Translators: Do not translade Update Manager, it's the name of the program
+// Translators: Do not translade Update Manager, it's the name of the program.
 if (is_metaconsole()) {
     echo "<style type='text/css' media='screen'>
   		@import 'styles/meta_pandora.css';
@@ -69,23 +75,29 @@ if (is_metaconsole()) {
 }
 
 if (is_metaconsole()) {
-    echo "<div id='box_online' style='float:right;padding-right:400px;padding-top:40px;padding-bottom:40px;' class='cargatextodialogo'>";
+    $baseurl = ui_get_full_url(false, false, false, false);
+    echo ' <link rel="stylesheet" type="text/css" href="'.$baseurl.'/godmode/update_manager/update_manager.css">';
+    echo "<div id='box_online' class='box_online_meta'>";
 } else {
-    echo "<div id='box_online' style='padding-top:40px;padding-bottom:40px;' class='cargatextodialogo'>";
+    echo "<div id='box_online'>";
 }
 
 echo "<span class='loading' style='font-size:18pt;'>";
 echo "<img src='images/wait.gif' />";
-echo '</span><br><br>';
+echo '</span>';
 
-echo '<div><b>'.__('The latest version of package installed is:').'</b></div><br>';
-echo "<div id='pkg_version' style='color:#82b92e;font-size:40pt;font-weight:bold;'>".$current_package.'</div>';
+echo '<p style="font-weight: 600;">'.__('The latest version of package installed is:').'</p>';
+if ($open) {
+    echo '<div id="pkg_version" style="font-size:40pt;">'.$build_version.'</div>';
+} else {
+    echo '<div id="pkg_version">'.$current_package.'</div>';
+}
 
-    echo "<div class='checking_package' style='font-size:18pt;width:100%; text-align: center; display: none;'>";
+    echo "<div class='checking_package' style='font-size:18pt;width:100%; display: none;'>";
         echo __('Checking for the newest package.');
     echo '</div>';
 
-    echo "<div class='downloading_package' style='font-size:18pt;width:100%; text-align: center; display: none;'>";
+    echo "<div class='downloading_package' style='font-size:18pt;width:100%; display: none;'>";
         echo __('Downloading for the newest package.');
     echo '</div>';
 
@@ -119,22 +131,26 @@ echo "<div id='pkg_version' style='color:#82b92e;font-size:40pt;font-weight:bold
         let you know this does not reflect any change in our opensource mentality of
         does the last 14 years.
 
-    ------------------------------------------------------------------------- */
+        -------------------------------------------------------------------------
+    */
 
 if ($open) {
-    echo "
-			<br><br>
-			<div id='updatemodal' class='publienterprisehide' title='Community version' style=''>
-				<img data-title='Enterprise version' class='img_help forced_title' data-use_title_for_force_title='1' src='images/icono_exclamacion_2.png'>
-			</div>
-			<br>";
+    echo "<div class='update_manager_open'>
+        <div class='update_manager_warning'>
+            <div><img src='images/icono_info.png'></div>
+        <div><p>".__('WARNING: You are just one click away from an automated update. This may result in a damaged system, including loss of data and operativity. Check you have a recent backup. OpenSource updates are automatically created packages, and there is no WARRANTY or SUPPORT. If you need professional support and warranty, please upgrade to Enterprise Version.')."</p></div>
+        </div>
+        <div style='text-align:center; margin-top:10px;'>
+            <a class='update_manager_button_open' href='https://pandorafms.com/pandora-fms-enterprise/' target='_blank'>About Enterprise</a>
+        </div>
+    </div>";
 }
 
 
 $enterprise = enterprise_hook('update_manager_enterprise_main');
 
 if ($enterprise == ENTERPRISE_NOT_HOOK) {
-    // Open view
+    // Open view.
     update_manager_main();
 }
 ?>

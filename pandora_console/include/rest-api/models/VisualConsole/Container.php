@@ -223,32 +223,12 @@ final class Container extends Model
         $backgroundImage = static::extractBackgroundImage($row);
 
         if ($backgroundUrl === null && $backgroundImage !== null) {
-            $backgroundPath = 'images/console/background/'.$backgroundImage;
-
-            $width = (int) $row['width'];
-            $height = (int) $row['height'];
-
-            if ($width > 0 && $height > 0) {
-                $q = [
-                    'getFile'    => 1,
-                    'thumb'      => 1,
-                    'thumb_size' => $width.'x'.$height,
-                    'file'       => '../../'.$backgroundPath,
-                ];
-                $row['backgroundURL'] = ui_get_full_url(
-                    'include/Image/image_functions.php?'.http_build_query($q),
-                    false,
-                    false,
-                    false
-                );
-            } else {
-                $row['backgroundURL'] = ui_get_full_url(
-                    $backgroundPath,
-                    false,
-                    false,
-                    false
-                );
-            }
+            $row['backgroundURL'] = ui_get_full_url(
+                'images/console/background/'.$backgroundImage,
+                false,
+                false,
+                false
+            );
         }
 
         return \io_safe_output($row);

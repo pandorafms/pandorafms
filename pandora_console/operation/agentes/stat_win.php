@@ -458,15 +458,18 @@ ui_include_time_picker(true);
 
     // Menu.
     $('#module_graph_menu_header').on('click', function(){
+        var arrow = $('#module_graph_menu_header .module_graph_menu_arrow');
+        var arrow_up = 'arrow_up_green';
+        var arrow_down = 'arrow_down_green';
         if( $('.module_graph_menu_content').hasClass('module_graph_menu_content_closed')){
             $('.module_graph_menu_content').show();
             $('.module_graph_menu_content').removeClass('module_graph_menu_content_closed');          
-            $('#module_graph_menu_header .module_graph_menu_arrow').attr('src',$('#module_graph_menu_header .module_graph_menu_arrow').attr('src').replace('arrow_down_green','arrow_up_green'))
+            arrow.attr('src',arrow.attr('src').replace(arrow_down, arrow_up));
         }
         else{
             $('.module_graph_menu_content').hide();
             $('.module_graph_menu_content').addClass('module_graph_menu_content_closed'); 
-            $('#module_graph_menu_header .module_graph_menu_arrow').attr('src',$('#module_graph_menu_header .module_graph_menu_arrow').attr('src').replace('arrow_up_green','arrow_down_green'))
+            arrow.attr('src',arrow.attr('src').replace(arrow_up, arrow_down));
         }
     });
 

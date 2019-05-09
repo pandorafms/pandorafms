@@ -52,8 +52,9 @@ $table_enable->style['name'] = 'font-weight: bold';
 
 // Enable eHorus.
 $row = [];
-$row['name'] = __('Enable eHorus');
+$row['name'] = ('Enable eHorus');
 $row['control'] = html_print_checkbox_switch('ehorus_enabled', 1, $config['ehorus_enabled'], true);
+$row['button'] = html_print_submit_button(__('Update'), 'update_button', false, 'class="sub upd"', true);
 $table_enable->data['ehorus_enabled'] = $row;
 
 // Remote config table.
@@ -66,6 +67,12 @@ $table_remote->class = 'databox filters';
 $table_remote->size['name'] = '30%';
 $table_remote->style['name'] = 'font-weight: bold';
 
+
+// Enable eHorus user configuration.
+$row = [];
+$row['name'] = ('Enable eHorus user configuration');
+$row['control'] = html_print_checkbox_switch('ehorus-user-login', 1, $config['ehorus-user-login'], true);
+$table_remote->data['ehorus-user-login'] = $row;
 // User.
 $row = [];
 $row['name'] = __('User');
@@ -108,7 +115,6 @@ $row['control'] .= '<span id="test-ehorus-success" style="display:none;">&nbsp;'
 $row['control'] .= '<span id="test-ehorus-failure" style="display:none;">&nbsp;'.html_print_image('images/status_sets/default/severity_critical.png', true).'</span>';
 $row['control'] .= '&nbsp;<span id="test-ehorus-message" style="display:none;"></span>';
 $table_remote->data['ehorus_test'] = $row;
-
 // Print.
 echo '<div style="text-align: center; padding-bottom: 20px;">';
 echo '<a target="_blank" rel="noopener noreferrer" href="http://ehorus.com">';
@@ -162,8 +168,6 @@ if ($config['ehorus_enabled']) {
 ?>
 
 <script type="text/javascript">
- $('input:checkbox[name="ehorus_enabled"]').attr('checked', false);
- $('form#form_remote').hide();
  $('form#form_enable').css('margin-bottom','20px');
     var showFields = function () {
         $('form#form_remote').show();
@@ -175,13 +179,14 @@ if ($config['ehorus_enabled']) {
         var is_checked = $('input:checkbox[name="ehorus_enabled"]').is(':checked');
         if (event.target.value == '1' && is_checked) {
             showFields();
-            $('input:checkbox[name="ehorus_enabled"]').attr('checked', false);
+            $('input:checkbox[name="ehorus_enabled"]').attr('checked', true);
         }
         else {
             hideFields();
-            $('input:checkbox[name="ehorus_enabled"]').attr('checked', true);
+            $('input:checkbox[name="ehorus_enabled"]').attr('checked', false);
         };
     }
+    
     $('input:checkbox[name="ehorus_enabled"]').change(handleEnable);
     
     var handleTest = function (event) {

@@ -1349,8 +1349,12 @@ function config_update_config()
                 break;
 
                 case 'ehorus':
-                    if (!config_update_value('ehorus_enabled', (int) get_parameter('ehorus_enabled', $config['ehorus_enabled']))) {
+                    if (!config_update_value('ehorus_enabled', (int) get_parameter('ehorus_enabled', 0))) {
                         $error_update[] = __('Enable eHorus');
+                    }
+
+                    if (!config_update_value('ehorus-user-login', (int) get_parameter('ehorus-user-login', 0))) {
+                        $error_update[] = __('eHorus user login');
                     }
 
                     if (!config_update_value('ehorus_user', (string) get_parameter('ehorus_user', $config['ehorus_user']))) {

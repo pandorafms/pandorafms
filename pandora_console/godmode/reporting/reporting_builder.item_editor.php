@@ -3889,8 +3889,6 @@ function chooseType() {
         case 'min_value':
         case 'max_value':
         case 'avg_value':
-        case 'projection_graph':
-        case 'prediction_date':
         case 'TTRT':
         case 'TTO':
         case 'MTBF':

@@ -1178,6 +1178,7 @@ function readFields() {
   values["timezone"] = $("select[name=timezone]").val();
   values["clock_animation"] = $("select[name=clock_animation]").val();
   values["show_last_value"] = $("select[name=last_value]").val();
+  values["cache_expiration"] = $("select[name=cache_expiration]").val();
 
   // Color Cloud values
   if (selectedItem == "color_cloud" || creationItem == "color_cloud") {
@@ -1221,7 +1222,6 @@ function readFields() {
 
 function create_button_palette_callback() {
   var values = readFields();
-
   //VALIDATE DATA
   var validate = true;
   switch (creationItem) {
@@ -2207,6 +2207,10 @@ function loadFieldsFromDB(item) {
               });
             }
           });
+        }
+
+        if (key == "cache_expiration") {
+          $("select[name=cache_expiration]").val(val);
         }
 
         if (key == "value_show") {

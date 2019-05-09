@@ -1128,7 +1128,35 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background)
                 true
             ).'</td>';
 
-            // Insert and modify before the buttons to create or update.
+    $interval = [];
+    $interval[0] = __('No cache');
+    $interval[10] = '10 '.__('seconds');
+    $interval[30] = '30 '.__('seconds');
+    $interval[60] = '1 '.__('minutes');
+    $interval[300] = '5 '.__('minutes');
+    $interval[900] = '15 '.__('minutes');
+    $interval[1800] = '30 '.__('minutes');
+    $interval[3600] = '1 '.__('hour');
+
+    $form_items_advance['cache_expiration_row'] = [];
+    $form_items_advance['cache_expiration_row']['items'] = [
+        'group_item',
+        'static_graph',
+        'percentile_bar',
+        'percentile_item',
+        'module_graph',
+        'simple_value',
+        'label',
+        'icon',
+        'datos',
+        'auto_sla_graph',
+        'bars_graph',
+        'donut_graph',
+    ];
+    $form_items_advance['cache_expiration_row']['html'] = '<td align="left">'.__('Cache expiration').'</td>
+        <td align="left">'.html_print_select($interval, 'cache_expiration', $jeje, '', '', '0', 10, false, false, false).'</td>';
+
+    // Insert and modify before the buttons to create or update.
     if (enterprise_installed()) {
         enterprise_visual_map_editor_modify_form_items_advance_palette($form_items_advance);
     }

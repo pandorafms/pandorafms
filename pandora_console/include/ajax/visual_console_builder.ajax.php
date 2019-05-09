@@ -176,6 +176,7 @@ $default_color = get_parameter('default_color', '#FFFFFF');
 $color_range_from_values = get_parameter('color_range_from_values', []);
 $color_range_to_values = get_parameter('color_range_to_values', []);
 $color_range_colors = get_parameter('color_range_colors', []);
+$cache_expiration = get_parameter('cache_expiration', 0);
 
 switch ($action) {
     case 'get_font':
@@ -580,6 +581,7 @@ switch ($action) {
 
         $values['label_position'] = $label_position;
         $values['show_on_top'] = $show_on_top;
+        $values['cache_expiration'] = $cache_expiration;
 
         // In Graphs, background color is stored in column image (sorry)
         if ($type == 'module_graph') {
@@ -997,6 +999,7 @@ switch ($action) {
                     unset($values['id_layout_linked']);
                     unset($values['element_group']);
                     unset($values['id_layout_linked_weight']);
+                    unset($values['cache_expiration']);
                     // Don't change background color in graphs when move
                     switch ($type) {
                         case 'group_item':
@@ -1406,6 +1409,7 @@ switch ($action) {
         $values['type_graph'] = $type_graph;
 
         $values['id_custom_graph'] = $id_custom_graph;
+        $values['cache_expiration'] = $cache_expiration;
 
         switch ($type) {
             case 'line_item':

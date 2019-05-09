@@ -1421,6 +1421,18 @@ CREATE TABLE IF NOT EXISTS `treport_content` (
 	`hide_no_data` tinyint(1) default 0,
 	`recursion` tinyint(1) default NULL,
 	`show_extended_events` tinyint(1) default '0',
+	`total_time` TINYINT(1) DEFAULT '1',
+	`time_failed` TINYINT(1) DEFAULT '1',
+	`time_in_ok_status` TINYINT(1) DEFAULT '1',
+	`time_in_unknown_status` TINYINT(1) DEFAULT '1',
+	`time_of_not_initialized_module` TINYINT(1) DEFAULT '1',
+	`time_of_downtime` TINYINT(1) DEFAULT '1',
+	`total_checks` TINYINT(1) DEFAULT '1',
+	`checks_failed` TINYINT(1) DEFAULT '1',
+	`checks_in_ok_status` TINYINT(1) DEFAULT '1',
+	`unknown_checks` TINYINT(1) DEFAULT '1',
+	`agent_max_value` TINYINT(1) DEFAULT '1',
+	`agent_min_value` TINYINT(1) DEFAULT '1',
 	PRIMARY KEY(`id_rc`),
 	FOREIGN KEY (`id_report`) REFERENCES treport(`id_report`)
 		ON UPDATE CASCADE ON DELETE CASCADE
@@ -2948,6 +2960,18 @@ CREATE TABLE IF NOT EXISTS `treport_content_template` (
 	`lapse` int(11) UNSIGNED NOT NULL default '300',
 	`visual_format` tinyint(1) UNSIGNED NOT NULL default '0',
 	`hide_no_data` tinyint(1) default 0,
+	`total_time` TINYINT(1) DEFAULT '1',
+	`time_failed` TINYINT(1) DEFAULT '1',
+	`time_in_ok_status` TINYINT(1) DEFAULT '1',
+	`time_in_unknown_status` TINYINT(1) DEFAULT '1',
+	`time_of_not_initialized_module` TINYINT(1) DEFAULT '1',
+	`time_of_downtime` TINYINT(1) DEFAULT '1',
+	`total_checks` TINYINT(1) DEFAULT '1',
+	`checks_failed` TINYINT(1) DEFAULT '1',
+	`checks_in_ok_status` TINYINT(1) DEFAULT '1',
+	`unknown_checks` TINYINT(1) DEFAULT '1',
+	`agent_max_value` TINYINT(1) DEFAULT '1',
+	`agent_min_value` TINYINT(1) DEFAULT '1',
 	PRIMARY KEY(`id_rc`)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 

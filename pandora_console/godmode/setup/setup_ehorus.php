@@ -52,8 +52,9 @@ $table_enable->style['name'] = 'font-weight: bold';
 
 // Enable eHorus.
 $row = [];
-$row['name'] = __('Enable eHorus');
+$row['name'] = ('Enable eHorus');
 $row['control'] = html_print_checkbox_switch('ehorus_enabled', 1, $config['ehorus_enabled'], true);
+$row['button'] = html_print_submit_button(('Update'), 'update_button', false, 'class="sub upd"', true);
 $table_enable->data['ehorus_enabled'] = $row;
 
 // Remote config table.

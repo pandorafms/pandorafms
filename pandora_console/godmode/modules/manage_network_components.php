@@ -46,11 +46,22 @@ if (defined('METACONSOLE')) {
 
     */
 
+    $id_modulo = (int) get_parameter('id_component_type');
+    $new_component = (bool) get_parameter('new_component');
+    if ($id_modulo == 2 || $id_modulo == 4 || $id_modulo == 6) {
+        $help_header = 'local_module_tab';
+    } else if (!$new_component) {
+        $help_header = 'network_component_tab';
+    } else {
+        $help_header = 'network_component_tab';
+    }
+
+
     ui_print_page_header(
         __('Module management').' &raquo; '.__('Network component management'),
         '',
         false,
-        'network_component_tab',
+        $help_header,
         true,
         '',
         false,
@@ -90,7 +101,6 @@ if (!empty($macros)) {
 
 $max_timeout = (int) get_parameter('max_timeout');
 $max_retries = (int) get_parameter('max_retries');
-$id_modulo = (int) get_parameter('id_component_type');
 $id_plugin = (int) get_parameter('id_plugin');
 $dynamic_interval = (int) get_parameter('dynamic_interval');
 $dynamic_max = (int) get_parameter('dynamic_max');
@@ -150,7 +160,6 @@ $disabled_types_event = json_encode($disabled_types_event);
 $create_component = (bool) get_parameter('create_component');
 $update_component = (bool) get_parameter('update_component');
 $delete_component = (bool) get_parameter('delete_component');
-$new_component = (bool) get_parameter('new_component');
 $duplicate_network_component = (bool) get_parameter('duplicate_network_component');
 $delete_multiple = (bool) get_parameter('delete_multiple');
 $multiple_delete = (bool) get_parameter('multiple_delete', 0);

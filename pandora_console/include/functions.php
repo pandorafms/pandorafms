@@ -3945,8 +3945,7 @@ function mask2cidr($mask)
 function get_help_info($section_name)
 {
     global $config;
-    hd($section_name);
-
+    // hd($section_name);
     $user_language = get_user_language($id_user);
 
     $es = false;
@@ -3957,14 +3956,6 @@ function get_help_info($section_name)
     }
 
     switch ($section_name) {
-        case 'action_threshold':
-            if ($es) {
-                $result .= '';
-            } else {
-                $result .= '';
-            }
-        break;
-
         case 'tactical_view':
             if ($es) {
                 $result .= 'Presentacion_datos/visualizacion&printable=yes#Vista_t.C3.A1ctica';
@@ -4061,14 +4052,6 @@ function get_help_info($section_name)
             }
         break;
 
-        case 'ad_advanced_permision':
-
-        break;
-
-        case 'agent_access':
-
-        break;
-
         case 'agent_status':
             if ($es) {
                 $result .= 'Presentacion_datos/visualizacion&printable=yes#Detalles_del_agente';
@@ -4085,41 +4068,6 @@ function get_help_info($section_name)
             }
         break;
 
-        case 'agent_module_tab':
-            if ($es) {
-                $result = 3866;
-                $result['section'][] = 'Par.C3.A1metros_comunes';
-                $result['section'][] = 'Monitorizaci.C3.B3n_de_estados';
-            } else {
-                $result = 3867;
-                $result['section'][] = 'Common_Parameters';
-                $result['section'][] = 'Status_Monitoring';
-            }
-        break;
-
-        case 'agent_wux_console':
-            // XXX
-            if ($es) {
-                $result = '';
-                $result['section'][] = '';
-            } else {
-                $result = '';
-                $result['section'][] = '';
-            }
-        break;
-
-        case 'aggregate_by':
-
-        break;
-
-        case 'alert_action':
-
-        break;
-
-        case 'alert_command':
-
-        break;
-
         case 'alert_config':
             if ($es) {
                 $result .= 'Alertas&printable=yes#Creaci.C3.B3n_de_una_Acci.C3.B3n';
@@ -4128,28 +4076,12 @@ function get_help_info($section_name)
             }
         break;
 
-        case 'alert_fields_description':
-
-        break;
-
-        case 'alert_fields_values':
-
-        break;
-
         case 'alert_macros':
             if ($es) {
                 $result .= 'Alertas&printable=yes#Macros_sustituibles_en_los_campos_Field1.2C_Field2.2C_Field3..._Field10';
             } else {
                 $result .= 'Alerts&printable=yes#Replaceable_Macros_within_Field_1_through_Field_10';
             }
-        break;
-
-        case 'alert-matches':
-            // XXX
-        break;
-
-        case 'alert_recovery':
-
         break;
 
         case 'alerts_config':
@@ -4192,10 +4124,6 @@ function get_help_info($section_name)
             }
         break;
 
-        case 'conf_alert_template':
-
-        break;
-
         case 'configure_gis_map':
             if ($es) {
                 $result .= 'Pandora_GIS&printable=yes#Introducci.C3.B3n';
@@ -4212,48 +4140,12 @@ function get_help_info($section_name)
             }
         break;
 
-        case 'context_module_unknow':
-
-        break;
-
-        case 'context_pandora_server_email':
-            // XXX Aparece al principio de la pagina
-        break;
-
-        case 'create_agent':
-
-        break;
-
-        case 'custom_logo_collapsed':
-
-        break;
-
-        case 'custom_logo':
-
-        break;
-
-        case 'date_format':
-
-        break;
-
-        case 'duplicateconfig':
-
-        break;
-
         case 'event_alert':
             if ($es) {
                 $result .= 'Eventos&printable=yes#Introducci.C3.B3n_2';
             } else {
                 $result .= 'Events&printable=yes#Introduction_2';
             }
-        break;
-
-        case 'events_history':
-
-        break;
-
-        case 'events_replication':
-
         break;
 
         case 'eventview':
@@ -4278,14 +4170,6 @@ function get_help_info($section_name)
             } else {
                 $result .= 'Policy&printable=yes#External_Alerts';
             }
-        break;
-
-        case 'field_match_snmp':
-
-        break;
-
-        case 'gis_map_builder':
-
         break;
 
         case 'gis_tab':
@@ -4320,24 +4204,12 @@ function get_help_info($section_name)
             }
         break;
 
-        case 'graphs':
-
-        break;
-
-        case 'graph_view':
-
-        break;
-
         case 'history_database':
             if ($es) {
                 $result .= 'Configuracion_Consola&printable=yes#Base_de_datos_hist.C3.B3rica';
             } else {
                 $result .= 'Console_Setup&printable=yes#The_History_Database';
             }
-        break;
-
-        case 'integria_url':
-
         break;
 
         case 'inventory_tab':
@@ -4348,17 +4220,6 @@ function get_help_info($section_name)
             }
         break;
 
-        case 'info_agent':
-            if ($es) {
-                $result = 3866;
-                $result['section'][] = 'Visualizaci.C3.B3n_del_agente';
-            } else {
-                $result = 3867;
-                $result['section'][] = 'Agent_configuration_in_the_console_2';
-            }
-        break;
-
-        case 'ipam_create_tab':
         case 'ipam_list_tab':
             if ($es) {
                 $result .= 'IPAM&printable=yes#Introducci.C3.B3n';
@@ -4449,26 +4310,6 @@ function get_help_info($section_name)
             }
         break;
 
-        case 'ip_api_list':
-
-        break;
-
-        case 'linked_map_weight':
-
-        break;
-
-        case 'local_component':
-
-        break;
-
-        case 'log_viewer':
-
-        break;
-
-        case 'macros':
-
-        break;
-
         case 'macros_visual_maps':
             if ($es) {
                 $result .= 'Presentacion_datos/Mapas_visuales&printable=yes#Macros_en_las_consolas_visuales';
@@ -4483,10 +4324,6 @@ function get_help_info($section_name)
             } else {
                 $result .= 'Data_Presentation/Visual_Maps&printable=yes#Associated_Map';
             }
-        break;
-
-        case 'main_help':
-
         break;
 
         case 'main_tab':
@@ -4511,14 +4348,6 @@ function get_help_info($section_name)
             } else {
                 $result .= 'Alerts&printable=yes#Scaling_Alerts';
             }
-        break;
-
-        case 'manage_alerts':
-
-        break;
-
-        case 'manageconfig':
-
         break;
 
         case 'map_builder_intro':
@@ -4553,28 +4382,12 @@ function get_help_info($section_name)
             }
         break;
 
-        case 'meta_access':
-
-        break;
-
-        case 'metaconsole_agent_cache':
-
-        break;
-
         case 'module_linking':
             if ($es) {
                 $result .= 'Politicas&printable=yes#Tipos_de_m.C3.B3dulos';
             } else {
                 $result .= 'Policy&printable=yes#Types_of_Modules';
             }
-        break;
-
-        case 'module_tokens':
-
-        break;
-
-        case 'network_component':
-
         break;
 
         case 'network_map_enterprise_edit':
@@ -4617,24 +4430,12 @@ function get_help_info($section_name)
             }
         break;
 
-        case 'no_hierarchy':
-
-        break;
-
-        case 'operation_visual_console':
-
-        break;
-
         case 'pcap_filter':
             if ($es) {
                 $result .= 'Netflow&printable=yes#Creaci.C3.B3n_del_filtro';
             } else {
                 $result .= 'Netflow&printable=yes#Filter_creation';
             }
-        break;
-
-        case 'performance':
-
         break;
 
         case 'planned_downtime':
@@ -4669,10 +4470,6 @@ function get_help_info($section_name)
             }
         break;
 
-        case 'plugin_parameters':
-
-        break;
-
         case 'plugin_policy':
             if ($es) {
                 $result .= 'Politicas&printable=yes#Plugins_de_agente';
@@ -4681,20 +4478,12 @@ function get_help_info($section_name)
             }
         break;
 
-        case 'policy_agent':
-
-        break;
-
         case 'policy_queue':
             if ($es) {
                 $result .= 'Politicas&printable=yes#Gesti.C3.B3n_de_la_cola_de_pol.C3.ADticas';
             } else {
                 $result .= 'Policy&printable=yes#Policy_Queues_Management';
             }
-        break;
-
-        case 'prediction_date':
-
         break;
 
         case 'prediction_source_module':
@@ -4711,26 +4500,6 @@ function get_help_info($section_name)
             } else {
                 $result .= 'Remote_Monitoring&printable=yes#Windows_Remote_Monitoring_with_WMI';
             }
-        break;
-
-        case 'profile':
-
-        break;
-
-        case 'projection_graph':
-
-        break;
-
-        case 'propagate_acl':
-
-        break;
-
-        case 'reconscript_definition':
-
-        break;
-
-        case 'recontask':
-
         break;
 
         case 'template_reporting_tab':
@@ -4797,14 +4566,6 @@ function get_help_info($section_name)
             }
         break;
 
-        case 'reporting_preview_tab':
-            // XXX
-        break;
-
-        case 'reporting_time_lapse':
-            // XXX
-        break;
-
         case 'reporting_wizard_sla_tab':
             if ($es) {
                 $result .= 'Presentacion_datos/Informes&printable=yes#Wizard_SLA';
@@ -4819,10 +4580,6 @@ function get_help_info($section_name)
             } else {
                 $result .= 'Data_Presentation/Reports&printable=yes#The_Wizard_Tab';
             }
-        break;
-
-        case 'reports_label_field':
-            // XXX
         break;
 
         case 'response_macros':
@@ -4841,112 +4598,12 @@ function get_help_info($section_name)
             }
         break;
 
-        case 'serverlag':
-
-        break;
-
         case 'servers':
             if ($es) {
                 $result .= 'Interfaz&printable=yes#Gesti.C3.B3n_de_servidores';
             } else {
                 $result .= 'Interface&printable=yes#Server_management';
             }
-        break;
-
-        case 'service_elements_management':
-
-        break;
-
-        case 'service_management_edit':
-
-        break;
-
-        case 'services_management':
-
-        break;
-
-        case 'setup_gis_index':
-
-        break;
-
-        case 'snmp_alert_configuration':
-
-        break;
-
-        case 'snmp_alert_custom':
-
-        break;
-
-        case 'snmp_alert_field1':
-
-        break;
-
-        case 'snmp_alert_filters':
-
-        break;
-
-        case 'snmp_alert':
-
-        break;
-
-        case 'snmp_alert_position':
-
-        break;
-
-        case 'snmpcommunity':
-
-        break;
-
-        case 'snmp_explorer':
-
-        break;
-
-        case 'snmp_explorer_tab':
-            if ($es) {
-                $result = 3840;
-                $result['section'][] = 'Wizard_SNMP';
-            } else {
-                $result = 3841;
-                $result['section'][] = 'SNMP_Wizard';
-            }
-        break;
-
-        case 'snmp_interfaces_explorer_tab':
-            if ($es) {
-                $result = 3840;
-                $result['section'][] = 'SNMP_Interfaces_wizard';
-            } else {
-                $result = 3841;
-                $result['section'][] = 'SNMP_Interface_Wizard';
-            }
-        break;
-
-        case 'snmp_interfaces_explorer_tab':
-            if ($es) {
-                $result = 3840;
-                $result['section'][] = 'SNMP_Interfaces_wizard';
-            } else {
-                $result = 3841;
-                $result['section'][] = 'SNMP_Interface_Wizard';
-            }
-        break;
-
-        case 'wmi_explorer_tab':
-            if ($es) {
-                $result = 3840;
-                $result['section'][] = 'Wizard_WMI';
-            } else {
-                $result = 3841;
-                $result['section'][] = 'WMI_Wizard';
-            }
-        break;
-
-        case 'snmpoid':
-
-        break;
-
-        case 'snmp_trap_types':
-
         break;
 
         case 'snmpwalk':
@@ -4963,18 +4620,6 @@ function get_help_info($section_name)
             } else {
                 $result .= 'Managing_and_Administration&printable=yes#Permission_system_extended_by_tags';
             }
-        break;
-
-        case 'tcp_send':
-
-        break;
-
-        case 'timesource':
-
-        break;
-
-        case 'time_st-comparation':
-
         break;
 
         case 'transactional_map_phases':
@@ -5007,10 +4652,6 @@ function get_help_info($section_name)
             } else {
                 $result .= 'Managing_and_Administration&printable=yes#Notification_configuration';
             }
-        break;
-
-        case 'view_services_detail':
-
         break;
 
         case 'view_services':
@@ -5519,7 +5160,7 @@ function get_help_info($section_name)
 
         case 'local_module':
             if ($es) {
-                $result .= 'Documentation_es:Operacion&printable=yes#Tipos_de_m.C3.B3dulos';
+                $result .= 'Operacion&printable=yes#Tipos_de_m.C3.B3dulos';
             } else {
                 $result .= 'Operations&printable=yes#Types_of_Modules';
             }
@@ -5597,27 +5238,23 @@ function get_help_info($section_name)
             }
         break;
 
-        case 'web_checks':
-
+        case 'wmi_query_tab':
+            if ($es) {
+                $result .= 'Monitorizacion_remota&printable=yes#Monitorizaci.C3.B3n_de_Windows_remotos_con_WMI';
+            } else {
+                $result .= 'Remote_Monitoring&printable=yes#Windows_Remote_Monitoring_with_WMI';
+            }
         break;
 
-        case 'wmifield':
-
-        break;
-
-        case 'wmikey':
-
-        break;
-
-        case 'wmiquery':
-
-        break;
-
-        default:
-
+        case 'module_type_tab':
+            if ($es) {
+                $result .= 'Operacion&printable=yes#Tipos_de_m.C3.B3dulos';
+            } else {
+                $result .= '';
+            }
         break;
     }
 
-    hd($result);
+    // hd($result);
     return $result;
 }

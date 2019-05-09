@@ -11663,7 +11663,7 @@ function reporting_translate_sla_status_for_graph($status)
  *
  * @return html Return table of header.
  */
-function reporting_header_table_for_pdf(string $title='', string $description='')
+function reporting_header_table_for_pdf($title='', $description='')
 {
     $result_pdf .= '<pagebreak>';
     $result_pdf .= '<table class="header_table databox">';

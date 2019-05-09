@@ -4573,16 +4573,6 @@ function get_help_info($section_name)
 
         break;
 
-        case 'module_type':
-            if ($es) {
-                $result = 2042;
-                $result['section'][] = 'Tipos_de_m.C3.B3dulos';
-            } else {
-                $result = 2681;
-                $result['section'][] = 'Types_of_Modules';
-            }
-        break;
-
         case 'network_component':
 
         break;
@@ -4672,7 +4662,11 @@ function get_help_info($section_name)
         break;
 
         case 'plugin_macros':
-
+            if ($es) {
+                $result .= 'Monitorizacion_remota&printable=yes#Macros_internas';
+            } else {
+                $result .= 'Remote_Monitoring&printable=yes#Internal_Macros';
+            }
         break;
 
         case 'plugin_parameters':
@@ -4704,7 +4698,19 @@ function get_help_info($section_name)
         break;
 
         case 'prediction_source_module':
+            if ($es) {
+                $result .= 'Monitorizacion_otra&printable=yes#Tipos_de_monitorizaci.C3.B3n_predictiva';
+            } else {
+                $result .= 'Other_Monitoring&printable=yes#Types_of_predictive_monitoring';
+            }
+        break;
 
+        case 'wmi_module_tab':
+            if ($es) {
+                $result .= 'Monitorizacion_remota&printable=yes#Monitorizaci.C3.B3n_de_Windows_remotos_con_WMI';
+            } else {
+                $result .= 'Remote_Monitoring&printable=yes#Windows_Remote_Monitoring_with_WMI';
+            }
         break;
 
         case 'profile':
@@ -4944,7 +4950,11 @@ function get_help_info($section_name)
         break;
 
         case 'snmpwalk':
-
+            if ($es) {
+                $result .= 'Monitorizacion_remota&printable=yes#Navegador_SNMP_de_Pandora_FMS';
+            } else {
+                $result .= 'Remote_Monitoring&printable=yes#Pandora_FMS_SNMP_MIB_Browser';
+            }
         break;
 
         case 'tags_config':
@@ -5507,6 +5517,38 @@ function get_help_info($section_name)
             }
         break;
 
+        case 'local_module':
+            if ($es) {
+                $result .= 'Documentation_es:Operacion&printable=yes#Tipos_de_m.C3.B3dulos';
+            } else {
+                $result .= 'Operations&printable=yes#Types_of_Modules';
+            }
+        break;
+
+        case 'data_server_module_tab':
+            if ($es) {
+                $result .= 'Operacion&printable=yes#Tipos_de_m.C3.B3dulos';
+            } else {
+                $result .= 'Operations&printable=yes#Types_of_Modules';
+            }
+        break;
+
+        case 'network_module_tab':
+            if ($es) {
+                $result .= 'Monitorizacion_remota&printable=yes#Monitorizaci.C3.B3n_ICMP';
+            } else {
+                $result .= 'Remote_Monitoring&printable=yes#ICMP_Monitoring';
+            }
+        break;
+
+        case 'wux_console':
+            if ($es) {
+                $result .= 'Monitorizacion_Usuario&printable=yes#Crear_un_m.C3.B3dulo_de_an.C3.A1lisis_web_en_Pandora_FMS_Console';
+            } else {
+                $result .= 'User_Monitorization&printable=yes#Creating_a_Web_Analytics_module_in_Pandora_FMS_Console';
+            }
+        break;
+
         case 'gis_basic_configurations_tab':
             if ($es) {
                 $result .= 'Pandora_GIS&printable=yes#Configuraci.C3.B3n_B.C3.A1sica';
@@ -5520,6 +5562,38 @@ function get_help_info($section_name)
                 $result .= 'Pandora_GIS&printable=yes#Mapas_Open_Street';
             } else {
                 $result .= 'GIS&printable=yes#Open_Street_Maps';
+            }
+        break;
+
+        case 'icmp_module_tab':
+            if ($es) {
+                $result .= 'Monitorizacion_remota&printable=yes#Monitorizaci.C3.B3n_ICMP';
+            } else {
+                $result .= 'Remote_Monitoring&printable=yes#ICMP_Monitoring';
+            }
+        break;
+
+        case 'snmp_module_tab':
+            if ($es) {
+                $result .= 'Monitorizacion_remota&printable=yes#Monitorizando_con_m.C3.B3dulos_de_red_tipo_SNMP';
+            } else {
+                $result .= 'Remote_Monitoring&printable=yes#Monitoring_by_Network_Modules_with_SNMP';
+            }
+        break;
+
+        case 'tcp_module_tab':
+            if ($es) {
+                $result .= 'Monitorizacion_remota&printable=yes#Monitorizaci.C3.B3n_TCP';
+            } else {
+                $result .= 'Remote_Monitoring&printable=yes#TCP_Monitoring';
+            }
+        break;
+
+        case 'webserver_module_tab':
+            if ($es) {
+                $result .= 'Monitorizacion_web&printable=yes#Creaci.C3.B3n_de_m.C3.B3dulos_web';
+            } else {
+                $result .= 'Web_Monitoring&printable=yes#Creating_Web_Modules';
             }
         break;
 

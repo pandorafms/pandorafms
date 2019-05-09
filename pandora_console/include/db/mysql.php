@@ -205,7 +205,7 @@ function mysql_db_get_value($field, $table, $field_search=1, $condition=1, $sear
  *
  * @return mixed The first row of a database query or false.
  */
-function mysql_db_get_row($table, $field_search, $condition, $fields=false)
+function mysql_db_get_row($table, $field_search, $condition, $fields=false, $cache=true)
 {
     if (empty($fields)) {
         $fields = '*';
@@ -243,7 +243,7 @@ function mysql_db_get_row($table, $field_search, $condition, $fields=false)
         );
     }
 
-    $result = db_get_all_rows_sql($sql);
+    $result = db_get_all_rows_sql($sql, false, $cache);
 
     if ($result === false) {
         return false;

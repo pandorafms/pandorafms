@@ -418,15 +418,15 @@ if ($get_extended_event) {
     }
 
     // Tabs.
-    $tabs = "<ul style='background:#ffffff !important; border-top: 0px; border-left: 0px; border-right: 0px; border-top-left-radius: 0px; border-top-right-radius: 0px; border-bottom-right-radius: 0px; border-bottom-left-radius: 0px; border-color: #D3D3D3;'>";
-    $tabs .= "<li><a href='#extended_event_general_page' id='link_general'>".html_print_image('images/lightning_go.png', true)."<span style='position:relative;top:-6px;left:5px;margin-right:10px;'>".__('General').'</span></a></li>';
+    $tabs = "<ul class='events_tabs'>";
+    $tabs .= "<li><a href='#extended_event_general_page' id='link_general'>".html_print_image('images/lightning_go.png', true).'<span>'.__('General').'</span></a></li>';
     if (events_has_extended_info($event['id_evento']) === true) {
-        $tabs .= "<li><a href='#extended_event_related_page' id='link_related'>".html_print_image('images/zoom.png', true)."<span style='position:relative;top:-6px;left:5px;margin-right:10px;'>".__('Related').'</span></a></li>';
+        $tabs .= "<li><a href='#extended_event_related_page' id='link_related'>".html_print_image('images/zoom.png', true).'<span>'.__('Related').'</span></a></li>';
     }
 
-    $tabs .= "<li><a href='#extended_event_details_page' id='link_details'>".html_print_image('images/zoom.png', true)."<span style='position:relative;top:-6px;left:5px;margin-right:10px;'>".__('Details').'</span></a></li>';
-    $tabs .= "<li><a href='#extended_event_custom_fields_page' id='link_custom_fields'>".html_print_image('images/custom_field_col.png', true)."<span style='position:relative;top:-6px;left:5px;margin-right:10px;'>".__('Agent fields').'</span></a></li>';
-    $tabs .= "<li><a href='#extended_event_comments_page' id='link_comments'>".html_print_image('images/pencil.png', true)."<span style='position:relative;top:-6px;left:5px;margin-right:10px;'>".__('Comments').'</span></a></li>';
+    $tabs .= "<li><a href='#extended_event_details_page' id='link_details'>".html_print_image('images/zoom.png', true).'<span>'.__('Details').'</span></a></li>';
+    $tabs .= "<li><a href='#extended_event_custom_fields_page' id='link_custom_fields'>".html_print_image('images/custom_field_col.png', true).'<span>'.__('Agent fields').'</span></a></li>';
+    $tabs .= "<li><a href='#extended_event_comments_page' id='link_comments'>".html_print_image('images/pencil.png', true).'<span>'.__('Comments').'</span></a></li>';
 
     if (!$readonly
         && ((tags_checks_event_acl(
@@ -546,7 +546,7 @@ if ($get_extended_event) {
 
     $loading = '<div id="response_loading" style="display:none">'.html_print_image('images/spinner.gif', true).'</div>';
 
-    $out = '<div id="tabs" style="height:95%; overflow: auto">'.$tabs.$notifications.$loading.$general.$details.$related.$custom_fields.$comments.$responses.$custom_data.html_print_input_hidden('id_event', $event['id_evento']).'</div>';
+    $out = '<div id="tabs">'.$tabs.$notifications.$loading.$general.$details.$related.$custom_fields.$comments.$responses.$custom_data.html_print_input_hidden('id_event', $event['id_evento']).'</div>';
 
     $js = '<script>
 	$(function() {

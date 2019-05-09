@@ -421,13 +421,13 @@ function db_get_row_sql($sql, $search_history_db=false)
  *
  * @return mixed The first row of a database query or false.
  */
-function db_get_row($table, $field_search, $condition, $fields=false)
+function db_get_row($table, $field_search, $condition, $fields=false, $cache=true)
 {
     global $config;
 
     switch ($config['dbtype']) {
         case 'mysql':
-        return mysql_db_get_row($table, $field_search, $condition, $fields);
+        return mysql_db_get_row($table, $field_search, $condition, $fields, $cache);
 
             break;
         case 'postgresql':

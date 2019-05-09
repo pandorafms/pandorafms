@@ -1351,6 +1351,7 @@ ALTER TABLE `tlayout_data` ADD COLUMN `linked_layout_status_type` ENUM ('default
 ALTER TABLE `tlayout_data` ADD COLUMN `linked_layout_status_as_service_warning` FLOAT(20, 3) NOT NULL default 0;
 ALTER TABLE `tlayout_data` ADD COLUMN `linked_layout_status_as_service_critical` FLOAT(20, 3) NOT NULL default 0;
 ALTER TABLE `tlayout_data` ADD COLUMN `linked_layout_node_id` INT(10) NOT NULL default 0;
+ALTER TABLE `tlayout_data` ADD COLUMN `cache_expiration` INTEGER UNSIGNED NOT NULL DEFAULT 0;
 
 -- ---------------------------------------------------------------------
 -- Table `tagent_custom_fields`

@@ -1532,7 +1532,7 @@ CREATE TABLE IF NOT EXISTS `tlayout_data` (
 	`time_format` varchar(60) NOT NULL default "time",
 	`timezone` varchar(60) NOT NULL default "Europe/Madrid",
 	`show_last_value` tinyint(1) UNSIGNED NULL default '0',
-	
+	`cache_expiration` INTEGER UNSIGNED NOT NULL default 0,
 	PRIMARY KEY(`id`)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 

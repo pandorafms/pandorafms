@@ -176,11 +176,11 @@ if ($config['ehorus_enabled']) {
         var is_checked = $('input:checkbox[name="ehorus_enabled"]').is(':checked');
         if (event.target.value == '1' && is_checked) {
             showFields();
-            $('input:checkbox[name="ehorus_enabled"]').attr('checked', false);
+            $('input:checkbox[name="ehorus_enabled"]').attr('checked', true);
         }
         else {
             hideFields();
-            $('input:checkbox[name="ehorus_enabled"]').attr('checked', true);
+            $('input:checkbox[name="ehorus_enabled"]').attr('checked', false);
         };
     }
     $('input:checkbox[name="ehorus_enabled"]').change(handleEnable);

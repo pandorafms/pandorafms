@@ -120,17 +120,12 @@ if (!function_exists('mime_content_type')) {
 
 global $config;
 
-if (isset($config['homedir_filemanager'])) {
-    $homedir_filemanager = trim(io_safe_output($config['homedir_filemanager']));
-} else {
-    $homedir_filemanager = trim($config['homedir']);
-}
 
+$homedir_filemanager = trim($config['homedir']);
 $sec2 = get_parameter('sec2');
 if ($sec2 == 'enterprise/godmode/agentes/collections' || $sec2 == 'advanced/collections') {
     $homedir_filemanager .= '/attachment/collection/';
 }
-
 
 $upload_file_or_zip = (bool) get_parameter('upload_file_or_zip');
 
@@ -738,6 +733,7 @@ function filemanager_file_explorer(
             $data[4] .= html_print_input_hidden('delete_file', 1, true);
 
             $relative_dir = str_replace($homedir_filemanager, '', str_replace('\\', '/', dirname($fileinfo['realpath'])));
+
             if ($relative_dir[0] == '/') {
                 $relative_dir = substr($relative_dir, 1);
             }

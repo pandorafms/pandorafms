@@ -4094,10 +4094,8 @@ function visual_map_get_layout_status($layout_id, $status_data=[], $depth=0)
                         );
                     } else if (!empty($layout_item_data['id_agent'])) {
                         // Agent.
-                        $agent_status = agents_get_status(
-                            $layout_item_data['id_agent'],
-                            true
-                        );
+                        $agent = db_get_row('tagente', 'id_agente', $layout_item_data['id_agent']);
+                        $agent_status = agents_get_status_from_counts($agent);
                         $status = visual_map_translate_agent_status(
                             $agent_status
                         );

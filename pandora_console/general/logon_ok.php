@@ -197,9 +197,9 @@ if (!empty($all_data)) {
                 }
 
                 foreach ($news as $article) {
-                    $text = io_safe_output($article['text']);
-
-
+                    $text_bbdd = io_safe_output($article['text']);
+                    $text = html_entity_decode($text_bbdd);
+                    hd($text, true);
                     echo '<tr><th class="green_title">'.$article['subject'].'</th></tr>';
                     echo '<tr><td>'.__('by').' <b>'.$article['author'].'</b> <i>'.ui_print_timestamp($article['timestamp'], true).'</i> '.$comparation_suffix.'</td></tr>';
                     echo '<tr><td class="datos">';

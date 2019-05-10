@@ -747,9 +747,11 @@ var TreeController = {
                       }
                     } else {
                       try {
-                        winopeng(
+                        winopeng_var(
                           element.moduleGraph.url,
-                          element.moduleGraph.handle
+                          element.moduleGraph.handle,
+                          1000,
+                          650
                         );
                       } catch (error) {
                         // console.log(error);

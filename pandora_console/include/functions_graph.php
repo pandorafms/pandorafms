@@ -256,6 +256,7 @@ function grafico_modulo_sparse_data(
     $array_data['sum'.$series_suffix]['agent_name']     = $data_module_graph['agent_name'];
     $array_data['sum'.$series_suffix]['module_name']    = $data_module_graph['module_name'];
     $array_data['sum'.$series_suffix]['agent_alias']    = $data_module_graph['agent_alias'];
+    $array_data['sum'.$series_suffix]['unit']    = $data_module_graph['unit'];
 
     // This is for a specific type of report that consists in passing an interval and doing the average sum and avg.
     if ($params['force_interval'] != '') {
@@ -759,6 +760,7 @@ function grafico_modulo_sparse($params)
         $data_module_graph['c_min']             = $module_data['min_critical'];
         $data_module_graph['c_max']             = $module_data['max_critical'];
         $data_module_graph['c_inv']             = $module_data['critical_inverse'];
+        $data_module_graph['unit']              = $module_data['unit'];
     } else {
         $data_module_graph = false;
     }
@@ -1225,11 +1227,11 @@ function graphic_combined_module(
             foreach ($sources as $source) {
                 array_push($modules, $source['id_agent_module']);
                 array_push($weights, $source['weight']);
-                if ($source['label'] != '') {
+                if ($source['label'] != '' || $params_combined['labels']) {
                     $item['type']            = 'custom_graph';
                     $item['id_agent']        = agents_get_module_id($source['id_agent_module']);
                     $item['id_agent_module'] = $source['id_agent_module'];
-                    $labels[$source['id_agent_module']] = reporting_label_macro($item, $source['label']);
+                    $labels[$source['id_agent_module']] = ($source['label'] != '') ? reporting_label_macro($item, $source['label']) : reporting_label_macro($item, $params_combined['labels']);
                 }
             }
         }
@@ -1357,6 +1359,7 @@ function graphic_combined_module(
                 $data_module_graph['c_max']          = $module_data['max_critical'];
                 $data_module_graph['c_inv']          = $module_data['critical_inverse'];
                 $data_module_graph['module_id']      = $agent_module_id;
+                $data_module_graph['unit']           = $module_data['unit'];
 
                 // stract data
                 $array_data_module = grafico_modulo_sparse_data(

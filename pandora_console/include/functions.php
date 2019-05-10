@@ -3541,25 +3541,21 @@ function series_type_graph_array($data, $show_elements_graph)
                     break;
                 }
 
-                if (isset($show_elements_graph['labels'])
+                if (isset($show_elements_graph['labels'][$value['agent_module_id']])
                     && is_array($show_elements_graph['labels'])
                     && (count($show_elements_graph['labels']) > 0)
                 ) {
-                    if ($show_elements_graph['unit']) {
-                        $name_legend = $data_return['legend'][$key] = $value['agent_alias'].' / '.$value['module_name'].' / '.__('Unit ').' '.$show_elements_graph['unit'].': ';
-                    } else {
-                        $name_legend = $data_return['legend'][$key] = $value['agent_alias'].' / '.$value['module_name'].': ';
-                    }
+                    $name_legend = $data_return['legend'][$key] = $show_elements_graph['labels'][$value['agent_module_id']].' ';
                 } else {
                     if (strpos($key, 'baseline') !== false) {
-                        if ($show_elements_graph['unit']) {
-                            $name_legend = $data_return['legend'][$key] = $value['agent_alias'].' / '.$value['module_name'].' / '.__('Unit ').' '.$show_elements_graph['unit'].'Baseline ';
+                        if ($value['unit']) {
+                            $name_legend = $data_return['legend'][$key] = $value['agent_alias'].' / '.$value['module_name'].' / '.__('Unit ').' '.$value['unit'].'Baseline ';
                         } else {
                             $name_legend = $data_return['legend'][$key] = $value['agent_alias'].' / '.$value['module_name'].'Baseline ';
                         }
                     } else {
-                        if ($show_elements_graph['unit']) {
-                            $name_legend = $data_return['legend'][$key] = $value['agent_alias'].' / '.$value['module_name'].' / '.__('Unit ').' '.$show_elements_graph['unit'].': ';
+                        if ($value['unit']) {
+                            $name_legend = $data_return['legend'][$key] = $value['agent_alias'].' / '.$value['module_name'].' / '.__('Unit ').' '.$value['unit'].': ';
                         } else {
                             $name_legend = $data_return['legend'][$key] = $value['agent_alias'].' / '.$value['module_name'].': ';
                         }

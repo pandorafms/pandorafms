@@ -4439,6 +4439,9 @@ function reporting_value($report, $content, $type, $pdf=false)
     $return['description'] = $content['description'];
     $return['date'] = reporting_get_date_text($report, $content);
     $return['label'] = (isset($content['style']['label'])) ? $content['style']['label'] : '';
+    $return['agents'] = [$content['id_agent']];
+    $return['id_agent'] = $content['id_agent'];
+    $return['id_agent_module'] = $content['id_agent_module'];
 
     $return['agent_name'] = $agent_name;
     $return['module_name'] = $module_name;
@@ -7267,6 +7270,7 @@ function reporting_custom_graph(
                 'modules_series' => $graphs[0]['modules_series'],
                 'id_graph'       => $id_graph,
                 'type_report'    => $type_report,
+                'labels'         => $content['style']['label'],
             ];
 
             $return['chart'] = graphic_combined_module(
@@ -11659,7 +11663,7 @@ function reporting_translate_sla_status_for_graph($status)
  *
  * @return html Return table of header.
  */
-function reporting_header_table_for_pdf(string $title='', string $description='')
+function reporting_header_table_for_pdf($title='', $description='')
 {
     $result_pdf .= '<pagebreak>';
     $result_pdf .= '<table class="header_table databox">';

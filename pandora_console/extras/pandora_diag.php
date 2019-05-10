@@ -122,7 +122,7 @@ function execution_time()
     if ($times[0]['datos'] > ($times[1]['datos'] * 1.2)) {
         return "<a class= 'content' style= 'color: red;'>Warning Status</a><a>&nbsp&nbsp The execution time could be degrading. For a more extensive information of this data consult the  Execution Time graph</a>";
     } else {
-        return "<a style ='color: green;'>Normal Status</a><a>&nbsp&nbsp The execution time is correct. For a more extensive information of this data consult the  Execution Time graph</a>";
+        return "<a style ='color: green;'>Normal Status</a><a>&nbsp&nbsp The execution time is correct. For more information about this data, check the Execution Time graph</a>";
     }
 }
 
@@ -173,9 +173,9 @@ function license_capacity()
     $status_license_capacity = '';
         $current_count = db_get_value_sql('SELECT count(*) FROM tagente');
     if ($current_count > ($license_limit * 90 / 100)) {
-        $status_license_capacity = "<a class= 'content' style= 'color: red;text-decoration: none;'>Warning Status</a><a style ='text-decoration: none;'>&nbsp&nbsp The license capacity is more than 90 percent</a>";
+        $status_license_capacity = "<a class= 'content' style= 'color: red;text-decoration: none;'>Warning Status</a><a style ='text-decoration: none;'>&nbsp&nbsp License capacity exceeds 90 percent</a>";
     } else {
-        $status_license_capacity = "<a  style= 'color: green;text-decoration: none;'>Normal Status</a><a style ='text-decoration: none;'>&nbsp&nbsp The license capacity is less than 90 percent</a>";
+        $status_license_capacity = "<a  style= 'color: green;text-decoration: none;'>Normal Status</a><a style ='text-decoration: none;'>&nbsp&nbsp License capacity is less than 90 percent</a>";
     }
 
     return $status_license_capacity;
@@ -202,9 +202,9 @@ function interval_average_of_network_modules()
     $average_time = ((int) $total_module_interval_time / $total_network_modules);
 
     if ($average_time < 180) {
-        $status_average_modules = "<a class= 'content' style= 'color: red;text-decoration: none;'>Warning Status</a><a style ='text-decoration: none;'>&nbsp&nbsp The system has a lot of load (average time $average_time) and a very fine configuration is required</a>";
+        $status_average_modules = "<a class= 'content' style= 'color: red;text-decoration: none;'>Warning Status</a><a style ='text-decoration: none;'>&nbsp&nbsp The system is overloaded (average time $average_time) and a very fine configuration is required</a>";
     } else {
-        $status_average_modules = "<a style ='color: green;text-decoration: none;'>Normal Status</a><a style ='text-decoration: none;'>&nbsp&nbsp The system has an acceptable charge (average time $average_time) </a>";
+        $status_average_modules = "<a style ='color: green;text-decoration: none;'>Normal Status</a><a style ='text-decoration: none;'>&nbsp&nbsp The system is not overloaded (average time $average_time) </a>";
     }
 
     if ($average_time == 0) {
@@ -221,9 +221,9 @@ $attachment_total_files = count(glob($config['homedir'].'/attachment/{*.*}', GLO
 function files_attachment_folder($total_files)
 {
     if ($total_files <= 700) {
-        $status_total_files = "<a style ='color: green;text-decoration: none;'>Normal Status</a><a style ='text-decoration: none;'>&nbsp&nbsp The attachment folder has less than 700 files.</a>";
+        $status_total_files = "<a style ='color: green;text-decoration: none;'>Normal Status</a><a style ='text-decoration: none;'>&nbsp&nbsp The attached folder contains less than 700 files.</a>";
     } else {
-        $status_total_files = "<a class= 'content' style= 'color: red;text-decoration: none;'>Warning Status</a><a style ='text-decoration: none;'>&nbsp&nbsp The attachment folder has more than 700 files.</a>";
+        $status_total_files = "<a class= 'content' style= 'color: red;text-decoration: none;'>Warning Status</a><a style ='text-decoration: none;'>&nbsp&nbsp The attached folder contains more than 700 files.</a>";
     }
 
     return $status_total_files;
@@ -236,9 +236,9 @@ $tagente_datos_size = db_get_value_sql('SELECT COUNT(*) FROM tagente_datos');
 function status_tagente_datos($tagente_datos_size)
 {
     if ($tagente_datos_size <= 3000000) {
-        $tagente_datos_size = "<a style ='color: green;text-decoration: none;'>Normal Status</a><a style ='text-decoration: none;'>&nbsp&nbsp The tagente_datos table has an acceptable amount of data.</a>";
+        $tagente_datos_size = "<a style ='color: green;text-decoration: none;'>Normal Status</a><a style ='text-decoration: none;'>&nbsp&nbsp The tagente_datos table contains an acceptable amount of data.</a>";
     } else {
-        $tagente_datos_size = "<a class= 'content' style ='color: red;text-decoration: none;'>Warning Status</a><a>&nbsp&nbsp The tagente_datos table has too much data. A historical database is recommended.</a>";
+        $tagente_datos_size = "<a class= 'content' style ='color: red;text-decoration: none;'>Warning Status</a><a>&nbsp&nbsp The tagente_datos table contains too much data. A historical database is recommended.</a>";
     }
 
     return $tagente_datos_size;
@@ -302,9 +302,9 @@ function status_fragmentation_tables($tables_fragmentation_max_rec_value, $table
 {
     $status_tables_frag = '';
     if ($tables_fragmentation > $tables_fragmentation_max_rec_value) {
-        $status_tables_frag = "<a class= 'content' style ='color: red; text-decoration: none;'>Warning Status</a><a style ='text-decoration: none;'>&nbsp&nbsp The fragmentation tables is higher than recommended. You should defragment them.</a>";
+        $status_tables_frag = "<a class= 'content' style ='color: red; text-decoration: none;'>Warning Status</a><a style ='text-decoration: none;'>&nbsp&nbsp Table fragmentation is higher than recommended. They should be defragmented.</a>";
     } else {
-        $status_tables_frag = "<a style ='color: green; text-decoration: none;'>Normal Status</a><a style ='text-decoration: none;'>&nbsp&nbsp The fragmentation tables is correct.</a>";
+        $status_tables_frag = "<a style ='color: green; text-decoration: none;'>Normal Status</a><a style ='text-decoration: none;'>&nbsp&nbsp Table fragmentation is correct.</a>";
     }
 
             return $status_tables_frag;
@@ -320,9 +320,9 @@ if ($console_mode == 1) {
     echo "\nPandora FMS PHP diagnostic tool v3.2 (c) Artica ST 2009-2010 \n";
 
     if ($argc == 1 || in_array($argv[1], ['--help', '-help', '-h', '-?'])) {
-        echo "\nThis command line script gives information about Pandora FMS database. 
-This program only can be executed from console, and need a parameter, the
-full path to Pandora FMS 'config.php' file.
+        echo "\nThis command line script contains information about Pandora FMS database. 
+        This program can only be executed from the console, and it needs a parameter, the
+        full path to Pandora FMS 'config.php' file.
 
   Usage:
   php pandora_diag.php path_to_pandora_console
@@ -705,7 +705,7 @@ render_info_data(
 
     render_row($tables_fragmentation_max_rec_value.'%', 'Tables fragmentation (maximum recommended value)');
     render_row(number_format($tables_fragmentation, 2).'%', 'Tables fragmentation (current value)');
-    render_row(status_fragmentation_tables($tables_fragmentation_max_rec_value, $tables_fragmentation), 'Status fragmentation tables');
+    render_row(status_fragmentation_tables($tables_fragmentation_max_rec_value, $tables_fragmentation), 'Table fragmentation status');
 
     echo "<tr><th style='background-color:#b1b1b1;font-weight:bold;font-style:italic;border-radius:2px;' align=center colspan='2'>".__(' Pandora FMS logs dates').'</th></tr>';
 
@@ -734,14 +734,14 @@ render_info_data(
 
     echo "<tr><th style='background-color:#b1b1b1;font-weight:bold;font-style:italic;border-radius:2px;' align=center colspan='2'>".__(' Status of the attachment folder').'</th></tr>';
 
-    render_row($attachment_total_files, 'Total files in the attachment folder');
+    render_row($attachment_total_files, 'Total files in the attached folder');
     render_row(files_attachment_folder($attachment_total_files), 'Status of the attachment folder');
 
     echo "<tr><th style='background-color:#b1b1b1;font-weight:bold;font-style:italic;border-radius:2px;' align=center colspan='2'>".__(' Information from the tagente_datos table').'</th></tr>';
 
-    render_row($tagente_datos_size, 'Total data in the tagente_datos table');
-    render_row(status_tagente_datos($tagente_datos_size), 'Status of the tagente_datos table');
-    render_row(execution_time(), 'Degradation of the execution time when executing a count');
+    render_row($tagente_datos_size, 'Total data in tagente_datos table');
+    render_row(status_tagente_datos($tagente_datos_size), 'Tangente_datos table status');
+    render_row(execution_time(), 'Execution time degradation when executing a count');
 
     echo "<tr><th style='background-color:#b1b1b1;font-weight:bold;font-style:italic;border-radius:2px;' align=center colspan='2'>".__(' Pandora FMS server threads').'</th></tr>';
 
@@ -784,6 +784,6 @@ render_info_data(
     echo "<hr color='#b1b1b1' size=1 width=1000 align=left>";
 
     echo '<span>'.__(
-        '(*) Please check your Pandora Server setup and be sure that database maintenance daemon is running. It\' very important to 
-keep up-to-date database to get the best performance and results in Pandora'
+        '(*) Please check your Pandora Server setup and make sure that the database maintenance daemon is running. It\' is very important to 
+        keep the database up-to-date to get the best performance and results in Pandora'
     ).'</span><br><br><br>';

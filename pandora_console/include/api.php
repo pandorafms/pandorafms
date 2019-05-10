@@ -37,6 +37,9 @@ $api_password = get_parameter('apipass', '');
 $password = get_parameter('pass', '');
 $user = get_parameter('user', '');
 $info = get_parameter('info', '');
+
+$other = parseOtherParameter($otherSerialize, $otherMode);
+
 $other = parseOtherParameter($otherSerialize, $otherMode);
 $apiPassword = io_output_password(db_get_value_filter('value', 'tconfig', ['token' => 'api_password']));
 
@@ -104,6 +107,7 @@ if ($correctLogin) {
             if ($op == 'set' && $id) {
                 switch ($op2) {
                     case 'update_agent':
+
                     case 'add_module_in_conf':
                     case 'update_module_in_conf':
                     case 'delete_module_in_conf':
@@ -184,6 +188,7 @@ if ($correctLogin) {
                     break;
 
                     default:
+
                         // break;
                 }
             }

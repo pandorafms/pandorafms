@@ -291,6 +291,8 @@ if ($update_user) {
     $values['timezone'] = (string) get_parameter('timezone');
     $values['default_event_filter'] = (int) get_parameter('default_event_filter');
     $values['default_custom_view'] = (int) get_parameter('default_custom_view');
+    $values['ehorus_user_login_user'] = get_parameter('ehorus_user_login_user', $user_info['ehorus_user_login_user']);
+    $values['ehorus_user_login_pass'] = get_parameter('ehorus_user_login_pass', $user_info['ehorus_user_login_pass']);
     $dashboard = get_parameter('dashboard', '');
     $visual_console = get_parameter('visual_console', '');
 

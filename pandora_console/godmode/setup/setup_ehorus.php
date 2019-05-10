@@ -54,7 +54,6 @@ $table_enable->style['name'] = 'font-weight: bold';
 $row = [];
 $row['name'] = ('Enable eHorus');
 $row['control'] = html_print_checkbox_switch('ehorus_enabled', 1, $config['ehorus_enabled'], true);
-$row['button'] = html_print_submit_button(__('Update'), 'update_button', false, 'class="sub upd"', true);
 $table_enable->data['ehorus_enabled'] = $row;
 
 // Remote config table.
@@ -71,8 +70,8 @@ $table_remote->style['name'] = 'font-weight: bold';
 // Enable eHorus user configuration.
 $row = [];
 $row['name'] = ('Enable eHorus user configuration');
-$row['control'] = html_print_checkbox_switch('ehorus-user-login', 1, $config['ehorus-user-login'], true);
-$table_remote->data['ehorus-user-login'] = $row;
+$row['control'] = html_print_checkbox_switch('ehorus_user_login', 1, $config['ehorus_user_login'], true);
+$table_remote->data['ehorus_user_login'] = $row;
 // User.
 $row = [];
 $row['name'] = __('User');
@@ -145,35 +144,40 @@ if ($config['ehorus_enabled'] && !$custom_field_exists) {
     ui_print_error_message($error_message);
 }
 
+
+hd($_POST);
+echo '<form id="conf_ehorus" method="post">';
+
 // Form enable.
-echo '<form id="form_enable" method="post">';
+echo '<div id="conf_enable">';
 html_print_input_hidden('update_config', 1);
 html_print_table($table_enable);
-echo '</form>';
+echo '</div>';
 
 // Form remote.
-if ($config['ehorus_enabled']) {
-    echo '<form id="form_remote" method="post">';
+    echo '<div id="conf_remote">';
     echo '<fieldset>';
     echo '<legend>'.__('eHorus API').'</legend>';
     html_print_input_hidden('update_config', 1);
     html_print_table($table_remote);
+    echo '</div>';
+    echo '</fieldset>';
     echo '<div class="action-buttons" style="width: '.$table_remote->width.'">';
     html_print_submit_button(__('Update'), 'update_button', false, 'class="sub upd"');
     echo '</div>';
-    echo '</fieldset>';
+
+
     echo '</form>';
-}
 
 ?>
 
 <script type="text/javascript">
- $('form#form_enable').css('margin-bottom','20px');
+ $('#conf_enable').css('margin-bottom','20px');
     var showFields = function () {
-        $('form#form_remote').show();
+        $('#conf_remote').show();
     }
     var hideFields = function () {
-        $('form#form_remote').hide();
+        $('#conf_remote').hide();
     }
     var handleEnable = function (event) {
         var is_checked = $('input:checkbox[name="ehorus_enabled"]').is(':checked');
@@ -186,6 +190,15 @@ if ($config['ehorus_enabled']) {
             $('input:checkbox[name="ehorus_enabled"]').attr('checked', false);
         };
     }
+
+    if($('input:checkbox[name="ehorus_enabled"]').is(':checked'))
+    {
+        showFields();
+    }else
+    {
+        hideFields();
+    }
+    
     
     $('input:checkbox[name="ehorus_enabled"]').change(handleEnable);
     

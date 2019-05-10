@@ -32,6 +32,7 @@ global $config;
 // Load the header.
 require $config['homedir'].'/operation/users/user_edit_header.php';
 
+hd($_POST);
 if (!is_metaconsole()) {
     date_default_timezone_set('UTC');
     include 'include/javascript/timezonepicker/includes/parser.inc';
@@ -101,6 +102,9 @@ if (isset($_GET['modified']) && !$view_mode) {
     }
 
     $upd_info['time_autorefresh'] = (int) get_parameter('time_autorefresh', 0);
+    $upd_info['ehorus_user_login_user'] = get_parameter('ehorus_user_login_user', $user_info['ehorus_user_login_user']);
+    $upd_info['ehorus_user_login_pass'] = get_parameter('ehorus_user_login_pass', $user_info['ehorus_user_login_pass']);
+
 
     $is_admin = db_get_value('is_admin', 'tusuario', 'id_user', $id);
 
@@ -614,8 +618,46 @@ if (!is_metaconsole()) {
                 <div class="edit_user_comments">'.$comments.'</div>
             </div>    
         </div>';
-if ($config['ehorus_enabled'] && $config['ehorus-user-login']) {
-    ehorus_user_login_conf();
+if ($config['ehorus_enabled'] && $config['ehorus_user_login']) {
+    // eHorus user login
+    $table_remote = new StdClass();
+    $table_remote->data = [];
+    $table_remote->width = '100%';
+    $table_remote->styleTable = 'margin-bottom: 10px;';
+    $table_remote->id = 'ehorus_user_login';
+    $table_remote->class = 'ehorus_user_login white_box';
+    $table_remote->size['name'] = '30%';
+    $table_remote->style['name'] = 'font-weight: bold';
+
+    // User.
+    $row = [];
+    $row['name'] = __('User');
+    $row['control'] = html_print_input_text('ehorus_user_login_user', $user_info['ehorus_user_login_user'], '', 30, 100, true);
+    $table_remote->data['ehorus_user_login_user'] = $row;
+
+    // Pass.
+    $row = [];
+    $row['name'] = __('Password');
+    $row['control'] = html_print_input_password('ehorus_user_login_pass', io_output_password($user_info['ehorus_user_login_pass']), '', 30, 100, true);
+    $table_remote->data['ehorus_user_login_pass'] = $row;
+
+    // Test.
+    $ehorus_port = db_get_value('value', 'tconfig', 'token', 'ehorus_port');
+    $ehorus_host = db_get_value('value', 'tconfig', 'token', 'ehorus_hostname');
+
+    $row = [];
+    $row['name'] = __('Test');
+    $row['control'] = html_print_button(__('Start'), 'test-ehorus', false, 'ehorus_connection_test(&quot;'.$ehorus_host.'&quot;,'.$ehorus_port.')', 'class="sub next"', true);
+    $row['control'] .= '<span id="test-ehorus-spinner" style="display:none;">&nbsp;'.html_print_image('images/spinner.gif', true).'</span>';
+    $row['control'] .= '<span id="test-ehorus-success" style="display:none;">&nbsp;'.html_print_image('images/status_sets/default/severity_normal.png', true).'</span>';
+    $row['control'] .= '<span id="test-ehorus-failure" style="display:none;">&nbsp;'.html_print_image('images/status_sets/default/severity_critical.png', true).'</span>';
+    $row['control'] .= '<span id="test-ehorus-message" style="display:none;"></span>';
+    $table_remote->data['ehorus_test'] = $row;
+
+    echo '<div class="ehorus_user_acces white_box">';
+    html_print_input_hidden('update_config', 1);
+    html_print_table($table_remote);
+    echo '</div>';
 }
 
 
@@ -727,58 +769,16 @@ if (!defined('METACONSOLE')) {
             });
         });
     </script>
-
     <?php
     // Include OpenLayers and timezone user map library.
     echo '<script type="text/javascript" src="'.ui_get_full_url('include/javascript/timezonepicker/lib/jquery.timezone-picker.min.js').'"></script>'."\n\t";
     echo '<script type="text/javascript" src="'.ui_get_full_url('include/javascript/timezonepicker/lib/jquery.maphilight.min.js').'"></script>'."\n\t";
     // Closes no meta condition.
-}function ehorus_user_login_conf()
+}
+
+
+function ehorus_user_login_conf()
 {
-    // eHorus user login
-    $table_remote = new StdClass();
-    $table_remote->data = [];
-    $table_remote->width = '100%';
-    $table_remote->styleTable = 'margin-bottom: 10px;';
-    $table_remote->id = 'ehorus-user-login';
-    $table_remote->class = 'ehorus-user-login white_box';
-    $table_remote->size['name'] = '30%';
-    $table_remote->style['name'] = 'font-weight: bold';
-
-    // User.
-    $row = [];
-    $row['name'] = __('User');
-    $row['control'] = html_print_input_text('ehorus_user', $config['ehorus_user'], '', 30, 100, true);
-    $table_remote->data['ehorus_user'] = $row;
-
-    // Pass.
-    $row = [];
-    $row['name'] = __('Password');
-    $row['control'] = html_print_input_password('ehorus_pass', io_output_password($config['ehorus_pass']), '', 30, 100, true);
-    $table_remote->data['ehorus_pass'] = $row;
-
-    // Test.
-    $ehorus_port = db_get_value('value', 'tconfig', 'token', 'ehorus_port');
-    $ehorus_host = db_get_value('value', 'tconfig', 'token', 'ehorus_hostname');
-
-    $row = [];
-    $row['name'] = __('Test');
-    $row['control'] = html_print_button(__('Start'), 'test-ehorus', false, 'ehorus_connection_test('.$ehorus_host.','.$ehorus_port.')', 'class="sub next"', true);
-    $row['control'] .= '<span id="test-ehorus-spinner" style="display:none;">&nbsp;'.html_print_image('images/spinner.gif', true).'</span>';
-    $row['control'] .= '<span id="test-ehorus-success" style="display:none;">&nbsp;'.html_print_image('images/status_sets/default/severity_normal.png', true).'</span>';
-    $row['control'] .= '<span id="test-ehorus-failure" style="display:none;">&nbsp;'.html_print_image('images/status_sets/default/severity_critical.png', true).'</span>';
-    $row['control'] .= '&nbsp;<span id="test-ehorus-message" style="display:none;"></span>';
-    $table_remote->data['ehorus_test'] = $row;
-
-    echo '                <div class="ehorus-userlogin white_box">
-
-<p class="edit_user_labels">'._('eHorus login').ui_print_help_tip(
-        __('This will activate autorefresh in selected pages'),
-        true
-    ).'</p>';
-    html_print_input_hidden('update_config', 1);
-    html_print_table($table_remote);
-    echo '</div>';
 
 }
 
@@ -1108,41 +1108,41 @@ function show_double_auth_deactivation () {
         .show();
 }
 
-function ehorus_connection_test (host, port) {
-        var user = $('input#text-ehorus_user').val();
-        var pass = $('input#password-ehorus_pass').val();
+function ehorus_connection_test(host, port) {
+        var user = $('input#text-ehorus_user_login_user').val();
+        var pass = $('input#password-ehorus_user_login_pass').val();
     
-    
+        debugger;
         var badRequestMessage = '<?php echo __('Empty user or password'); ?>';
         var notFoundMessage = '<?php echo __('User not found'); ?>';
         var invalidPassMessage = '<?php echo __('Invalid password'); ?>';
         
         var hideLoadingImage = function () {
-            $('span#test-ehorus-spinner').hide();
+            $('#test-ehorus-spinner').hide();
         }
         var showLoadingImage = function () {
-            $('span#test-ehorus-spinner').show();
+            $('#test-ehorus-spinner').show();
         }
         var hideSuccessImage = function () {
-            $('span#test-ehorus-success').hide();
+            $('#test-ehorus-success').hide();
         }
         var showSuccessImage = function () {
-            $('span#test-ehorus-success').show();
+            $('#test-ehorus-success').show();
         }
         var hideFailureImage = function () {
-            $('span#test-ehorus-failure').hide();
+            $('#test-ehorus-failure').hide();
         }
         var showFailureImage = function () {
-            $('span#test-ehorus-failure').show();
+            $('#test-ehorus-failure').show();
         }
         var hideMessage = function () {
-            $('span#test-ehorus-message').hide();
+            $('#test-ehorus-message').hide();
         }
         var showMessage = function () {
-            $('span#test-ehorus-message').show();
+            $('#test-ehorus-message').show();
         }
         var changeTestMessage = function (message) {
-            $('span#test-ehorus-message').text(message);
+            $('#test-ehorus-message').text(message);
         }
         
         hideSuccessImage();
@@ -1154,7 +1154,6 @@ function ehorus_connection_test (host, port) {
             url: 'https://' + host + ':' + port + '/login',
             type: 'POST',
             dataType: 'json',
-            timeout: timeout ? timeout * 1000 : 0,
             data: {
                 user: user,
                 pass: pass
@@ -1187,5 +1186,4 @@ function ehorus_connection_test (host, port) {
             hideLoadingImage();
         });
     }
-    $('input#button-test-ehorus').click(handleTest);
 </script>

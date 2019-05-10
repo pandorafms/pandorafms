@@ -140,15 +140,15 @@ if ($config['ehorus_enabled'] && !$custom_field_exists) {
     ui_print_error_message($error_message);
 }
 
+echo "<form method='post'>";
 // Form enable.
-echo '<form id="form_enable" method="post">';
+echo '<div id="form_enable">';
 html_print_input_hidden('update_config', 1);
 html_print_table($table_enable);
-echo '</form>';
+echo '</div>';
 
 // Form remote.
-if ($config['ehorus_enabled']) {
-    echo '<form id="form_remote" method="post">';
+    echo '<div id="form_remote">';
     echo '<fieldset>';
     echo '<legend>'.__('eHorus API').'</legend>';
     html_print_input_hidden('update_config', 1);
@@ -157,20 +157,21 @@ if ($config['ehorus_enabled']) {
     html_print_submit_button(__('Update'), 'update_button', false, 'class="sub upd"');
     echo '</div>';
     echo '</fieldset>';
+    echo '</div>';
     echo '</form>';
-}
 
 ?>
 
 <script type="text/javascript">
- $('input:checkbox[name="ehorus_enabled"]').attr('checked', false);
- $('form#form_remote').hide();
- $('form#form_enable').css('margin-bottom','20px');
+if(!$('input:checkbox[name="ehorus_enabled"]').is(':checked')){
+ $('#form_remote').hide();
+}
+ $('#form_enable').css('margin-bottom','20px');
     var showFields = function () {
-        $('form#form_remote').show();
+        $('#form_remote').show();
     }
     var hideFields = function () {
-        $('form#form_remote').hide();
+        $('#form_remote').hide();
     }
     var handleEnable = function (event) {
         var is_checked = $('input:checkbox[name="ehorus_enabled"]').is(':checked');

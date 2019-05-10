@@ -242,7 +242,6 @@ if ($filemanager) {
             $chunck_url = '&create=1';
         }
 
-        $homedir_filemanager = isset($config['homedir_filemanager']) ? $config['homedir_filemanager'] : false;
         filemanager_file_explorer(
             $real_directory,
             $directory,
@@ -253,7 +252,7 @@ if ($filemanager) {
             'index.php?sec=gservers&sec2=godmode/servers/plugin'.$chunck_url.'&plugin_command=[FILE_FULLPATH]&id_plugin='.$id_plugin,
             true,
             0775,
-            $homedir_filemanager
+            false
         );
     }
 
@@ -1205,4 +1204,6 @@ ui_require_javascript_file('pandora_modules');
         $('.command_macro').click(macros_click_locked_event);
     }
     
+    
 </script>
+

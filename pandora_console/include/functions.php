@@ -3541,25 +3541,21 @@ function series_type_graph_array($data, $show_elements_graph)
                     break;
                 }
 
-                if (isset($show_elements_graph['labels'])
+                if (isset($show_elements_graph['labels'][$value['agent_module_id']])
                     && is_array($show_elements_graph['labels'])
                     && (count($show_elements_graph['labels']) > 0)
                 ) {
-                    if ($show_elements_graph['unit']) {
-                        $name_legend = $data_return['legend'][$key] = $value['agent_alias'].' / '.$value['module_name'].' / '.__('Unit ').' '.$show_elements_graph['unit'].': ';
-                    } else {
-                        $name_legend = $data_return['legend'][$key] = $value['agent_alias'].' / '.$value['module_name'].': ';
-                    }
+                    $name_legend = $data_return['legend'][$key] = $show_elements_graph['labels'][$value['agent_module_id']].' ';
                 } else {
                     if (strpos($key, 'baseline') !== false) {
-                        if ($show_elements_graph['unit']) {
-                            $name_legend = $data_return['legend'][$key] = $value['agent_alias'].' / '.$value['module_name'].' / '.__('Unit ').' '.$show_elements_graph['unit'].'Baseline ';
+                        if ($value['unit']) {
+                            $name_legend = $data_return['legend'][$key] = $value['agent_alias'].' / '.$value['module_name'].' / '.__('Unit ').' '.$value['unit'].'Baseline ';
                         } else {
                             $name_legend = $data_return['legend'][$key] = $value['agent_alias'].' / '.$value['module_name'].'Baseline ';
                         }
                     } else {
-                        if ($show_elements_graph['unit']) {
-                            $name_legend = $data_return['legend'][$key] = $value['agent_alias'].' / '.$value['module_name'].' / '.__('Unit ').' '.$show_elements_graph['unit'].': ';
+                        if ($value['unit']) {
+                            $name_legend = $data_return['legend'][$key] = $value['agent_alias'].' / '.$value['module_name'].' / '.__('Unit ').' '.$value['unit'].': ';
                         } else {
                             $name_legend = $data_return['legend'][$key] = $value['agent_alias'].' / '.$value['module_name'].': ';
                         }
@@ -3853,9 +3849,10 @@ function pandora_xhprof_display_result($key='', $method='link')
 /**
  * From a network with a mask remove the smallest ip and the highest
  *
- * @param  string address to identify the network.
- * @param  string mask to identify the mask network
- * @return array or false with smallest ip and highest ip
+ * @param string $address Identify the network.
+ * @param string $mask    Identify the mask network.
+ *
+ * @return array or false with smallest ip and highest ip.
  */
 function range_ips_for_network($address, $mask)
 {
@@ -3863,15 +3860,15 @@ function range_ips_for_network($address, $mask)
         return false;
     }
 
-    // convert ip addresses to long form
+    // Convert ip addresses to long form.
     $address_long = ip2long($address);
     $mask_long = ip2long($mask);
 
-    // caculate first usable address
+    // Calculate first usable address.
     $ip_host_first = ((~$mask_long) & $address_long);
-    $ip_first = (($address_long ^ $ip_host_first) + 1);
+    $ip_first = (($address_long ^ $ip_host_first));
 
-    // caculate last usable address
+    // Calculate last usable address.
     $ip_broadcast_invert = ~$mask_long;
     $ip_last = (($address_long | $ip_broadcast_invert) - 1);
 
@@ -3887,9 +3884,10 @@ function range_ips_for_network($address, $mask)
 /**
  * from two ips find out if there is such an ip
  *
- * @param  string ip ip wont validate
- * @param  string ip_lower
- * @param  string ip_upper
+ * @param string ip ip wont validate
+ * @param string ip_lower
+ * @param string ip_upper
+ *
  * @return boolean true or false if the ip is between the two ips
  */
 function is_in_network($ip, $ip_lower, $ip_upper)

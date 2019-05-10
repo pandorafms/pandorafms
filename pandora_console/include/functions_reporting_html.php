@@ -1026,11 +1026,9 @@ function reporting_html_event_report_group($table, $item, $pdf=0)
         if ($pdf) {
             $table0 = new stdClass();
             $table0->width = '99%';
-            $table0->class = 'table-beauty';
             $table0->data['count_row']['count'] = 'Total events: '.$item['total_events'];
             $pdf_export = html_print_table($table0, true);
 
-            $table1->class = 'table-beauty';
             $pdf_export .= html_print_table($table1, true);
             $pdf_export .= '<br>';
         } else {
@@ -1046,7 +1044,6 @@ function reporting_html_event_report_group($table, $item, $pdf=0)
             $table1->data[0][0] = $item['chart']['by_agent'];
 
             if ($pdf) {
-                $table1->class = 'table-beauty';
                 $pdf_export .= html_print_table($table1, true);
                 $pdf_export .= '<br>';
             } else {
@@ -1064,7 +1061,6 @@ function reporting_html_event_report_group($table, $item, $pdf=0)
             $table1->data[0][0] = $item['chart']['by_user_validator'];
 
             if ($pdf) {
-                $table1->class = 'table-beauty';
                 $pdf_export .= html_print_table($table1, true);
                 $pdf_export .= '<br>';
             } else {
@@ -1082,7 +1078,6 @@ function reporting_html_event_report_group($table, $item, $pdf=0)
             $table1->data[0][0] = $item['chart']['by_criticity'];
 
             if ($pdf) {
-                $table1->class = 'table-beauty';
                 $pdf_export .= html_print_table($table1, true);
                 $pdf_export .= '<br>';
             } else {
@@ -1100,7 +1095,6 @@ function reporting_html_event_report_group($table, $item, $pdf=0)
             $table1->data[0][0] = $item['chart']['validated_vs_unvalidated'];
 
             if ($pdf) {
-                $table1->class = 'table-beauty';
                 $pdf_export .= html_print_table($table1, true);
                 $pdf_export .= '<br>';
             } else {
@@ -1117,7 +1111,6 @@ function reporting_html_event_report_group($table, $item, $pdf=0)
         if ($pdf) {
             $table0 = new stdClass();
             $table0->width = '99%';
-            $table0->class = 'table-beauty';
             $table0->data['count_row']['count'] = 'Total events: '.$item['total_events'];
             $pdf_export = html_print_table($table0, true);
 
@@ -1233,11 +1226,9 @@ function reporting_html_event_report_module($table, $item, $pdf=0)
                 if ($pdf) {
                     $table0 = new stdClass();
                     $table0->width = '99%';
-                    $table0->class = 'table-beauty';
                     $table0->data['count_row']['count'] = 'Total events: '.$item['total_events'];
                     $pdf_export = html_print_table($table0, true);
 
-                    $table1->class = 'table-beauty';
                     $pdf_export .= html_print_table($table1, true);
                     $pdf_export .= '<br>';
                 } else {
@@ -1253,7 +1244,6 @@ function reporting_html_event_report_module($table, $item, $pdf=0)
                     $table1->data[0][0] = $item['chart']['by_agent'];
 
                     if ($pdf) {
-                        $table1->class = 'table-beauty';
                         $pdf_export .= html_print_table($table1, true);
                         $pdf_export .= '<br>';
                     } else {
@@ -1271,7 +1261,6 @@ function reporting_html_event_report_module($table, $item, $pdf=0)
                     $table1->data[0][0] = $item['chart']['by_user_validator'];
 
                     if ($pdf) {
-                        $table1->class = 'table-beauty';
                         $pdf_export .= html_print_table($table1, true);
                         $pdf_export .= '<br>';
                     } else {
@@ -1289,7 +1278,6 @@ function reporting_html_event_report_module($table, $item, $pdf=0)
                     $table1->data[0][0] = $item['chart']['by_criticity'];
 
                     if ($pdf) {
-                        $table1->class = 'table-beauty';
                         $pdf_export .= html_print_table($table1, true);
                         $pdf_export .= '<br>';
                     } else {
@@ -1307,7 +1295,6 @@ function reporting_html_event_report_module($table, $item, $pdf=0)
                     $table1->data[0][0] = $item['chart']['validated_vs_unvalidated'];
 
                     if ($pdf) {
-                        $table1->class = 'table-beauty';
                         $pdf_export .= html_print_table($table1, true);
                         $pdf_export .= '<br>';
                     } else {
@@ -1326,7 +1313,6 @@ function reporting_html_event_report_module($table, $item, $pdf=0)
         if ($pdf) {
             $table0 = new stdClass();
             $table0->width = '99%';
-            $table0->class = 'table-beauty';
             $table0->data['count_row']['count'] = 'Total events: '.$item['total_events'];
             $pdf_export = html_print_table($table0, true);
 
@@ -2021,11 +2007,9 @@ function reporting_html_event_report_agent($table, $item, $pdf=0)
         if ($pdf) {
             $table0 = new stdClass();
             $table0->width = '99%';
-            $table0->class = 'table-beauty';
             $table0->data['count_row']['count'] = 'Total events: '.$item['total_events'];
             $pdf_export = html_print_table($table0, true);
 
-            $table1->class = 'table-beauty';
             $pdf_export .= html_print_table($table1, true);
             $pdf_export .= '<br>';
         } else {
@@ -2042,7 +2026,6 @@ function reporting_html_event_report_agent($table, $item, $pdf=0)
             $table1->data[0][0] = $item['chart']['by_user_validator'];
 
             if ($pdf) {
-                $table1->class = 'table-beauty';
                 $pdf_export .= html_print_table($table1, true);
                 $pdf_export .= '<br>';
             } else {
@@ -2060,7 +2043,6 @@ function reporting_html_event_report_agent($table, $item, $pdf=0)
             $table1->data[0][0] = $item['chart']['by_criticity'];
 
             if ($pdf) {
-                $table1->class = 'table-beauty';
                 $pdf_export .= html_print_table($table1, true);
                 $pdf_export .= '<br>';
             } else {
@@ -2078,7 +2060,6 @@ function reporting_html_event_report_agent($table, $item, $pdf=0)
             $table1->data[0][0] = $item['chart']['validated_vs_unvalidated'];
 
             if ($pdf) {
-                $table1->class = 'table-beauty';
                 $pdf_export .= html_print_table($table1, true);
                 $pdf_export .= '<br>';
             } else {
@@ -2095,7 +2076,6 @@ function reporting_html_event_report_agent($table, $item, $pdf=0)
         if ($pdf) {
             $table0 = new stdClass();
             $table0->width = '99%';
-            $table0->class = 'table-beauty';
             $table0->data['count_row']['count'] = 'Total events: '.$item['total_events'];
             $pdf_export = html_print_table($table0, true);
 
@@ -2438,7 +2418,7 @@ function reporting_html_alert_report($table, $item, $pdf=0)
 
     $table->data['alerts']['cell'] = html_print_table($table1, true);
     if ($pdf) {
-        $table1->class = 'table-beauty pdf_alert_table';
+        $table1->class = 'pdf_alert_table';
         return html_print_table($table1, true);
     }
 }
@@ -4937,7 +4917,7 @@ function reporting_html_planned_downtimes_table($planned_downtimes)
 
     if ($for_pdf) {
         $table->titlestyle = 'background: #373737; color: #FFF; display: table-cell; font-size: 12px; border: 1px solid grey';
-        $table->class = 'table_sla table_beauty';
+        $table->class = 'table_sla';
 
         for ($i = 0; $i < count($table->head); $i++) {
             $table->headstyle[$i] = 'background: #666; color: #FFF; display: table-cell; font-size: 11px; border: 1px solid grey';

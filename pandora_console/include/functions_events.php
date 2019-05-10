@@ -1987,9 +1987,9 @@ function events_page_responses($event, $childrens_ids=[])
     $table_responses->width = '100%';
     $table_responses->data = [];
     $table_responses->head = [];
-    $table_responses->style[0] = 'width:35%; font-weight: bold; text-align: left; height: 23px;';
-    $table_responses->style[1] = 'text-align: left; height: 23px; text-align: right;';
-    $table_responses->class = 'alternate rounded_cells';
+    $table_responses->style[0] = 'height:30px';
+    $table_responses->style[2] = 'text-align:right;';
+    $table_responses->class = 'events_show_more_table';
 
     if (tags_checks_event_acl($config['id_user'], $event['id_grupo'], 'EM', $event['clean_tags'], $childrens_ids)) {
         // Owner.
@@ -2056,7 +2056,7 @@ function events_page_responses($event, $childrens_ids=[])
             -1,
             true
         );
-        $data[1] .= html_print_button(
+        $data[2] .= html_print_button(
             __('Update'),
             'owner_button',
             false,
@@ -2136,7 +2136,7 @@ function events_page_responses($event, $childrens_ids=[])
     );
 
     if (!$status_blocked) {
-        $data[1] .= html_print_button(
+        $data[2] .= html_print_button(
             __('Update'),
             'status_button',
             false,
@@ -2151,7 +2151,8 @@ function events_page_responses($event, $childrens_ids=[])
     // Comments.
     $data = [];
     $data[0] = __('Comment');
-    $data[1] = html_print_button(
+    $data[1] = '';
+    $data[2] = html_print_button(
         __('Add comment'),
         'comment_button',
         false,
@@ -2173,8 +2174,9 @@ function events_page_responses($event, $childrens_ids=[])
         // Delete.
         $data = [];
         $data[0] = __('Delete event');
-        $data[1] = '<form method="post">';
-        $data[1] .= html_print_button(
+        $data[1] = '';
+        $data[2] = '<form method="post">';
+        $data[2] .= html_print_button(
             __('Delete event'),
             'delete_button',
             false,
@@ -2182,13 +2184,13 @@ function events_page_responses($event, $childrens_ids=[])
             'class="sub cancel"',
             true
         );
-        $data[1] .= html_print_input_hidden('delete', 1, true);
-        $data[1] .= html_print_input_hidden(
+        $data[2] .= html_print_input_hidden('delete', 1, true);
+        $data[2] .= html_print_input_hidden(
             'validate_ids',
             $event['id_evento'],
             true
         );
-        $data[1] .= '</form>';
+        $data[2] .= '</form>';
 
         $table_responses->data[] = $data;
     }
@@ -2229,7 +2231,7 @@ function events_page_responses($event, $childrens_ids=[])
             $server_id = 0;
         }
 
-        $data[1] .= html_print_button(
+        $data[2] .= html_print_button(
             __('Execute'),
             'custom_response_button',
             false,
@@ -2249,14 +2251,14 @@ function events_page_responses($event, $childrens_ids=[])
 				$('.params_rows').remove();
 				
 				$('#responses_table')
-					.append('<tr class=\"params_rows\"><td style=\"text-align:left; font-weight: bolder;\">".__('Description')."</td><td style=\"text-align:left;\">'+description+'</td></tr>');
+					.append('<tr class=\"params_rows\"><td>".__('Description')."</td><td style=\"text-align:left; height:30px;\" colspan=\"2\">'+description+'</td></tr>');
 				
 				if (params.length == 1 && params[0] == '') {
 					return;
 				}
 				
 				$('#responses_table')
-					.append('<tr class=\"params_rows\"><td style=\"text-align:left; padding-left:20px;\" colspan=\"2\">".__('Parameters')."</td></tr>');
+					.append('<tr class=\"params_rows\"><td style=\"text-align:left; padding-left:20px; height:30px;\" colspan=\"3\">".__('Parameters')."</td></tr>');
 				
 				for (i = 0; i < params.length; i++) {
 					add_row_param('responses_table',params[i]);
@@ -2521,9 +2523,7 @@ function events_page_custom_fields($event)
     $table->width = '100%';
     $table->data = [];
     $table->head = [];
-    $table->style[0] = 'width:35%; font-weight: bold; text-align: left; height: 23px;';
-    $table->style[1] = 'text-align: left; height: 23px;';
-    $table->class = 'alternate rounded_cells';
+    $table->class = 'events_show_more_table';
 
     $all_customs_fields = (bool) check_acl(
         $config['id_user'],
@@ -2671,11 +2671,9 @@ function events_page_details($event, $server='')
     $table_details->width = '100%';
     $table_details->data = [];
     $table_details->head = [];
-    $table_details->cellspacing = 2;
-    $table_details->cellpadding = 2;
-    $table_details->style[0] = 'width:35%; font-weight: bold; text-align: left; height: 23px;';
-    $table_details->style[1] = 'text-align: left; height: 23px;';
-    $table_details->class = 'alternate rounded_cells';
+    $table_details->cellspacing = 0;
+    $table_details->cellpadding = 0;
+    $table_details->class = 'events_show_more_table';
 
     /*
      * Useless switch.
@@ -2985,9 +2983,7 @@ function events_page_custom_data($event)
     $table->width = '100%';
     $table->data = [];
     $table->head = [];
-    $table->style[0] = 'width:35%; font-weight: bold; text-align: left;';
-    $table->style[1] = 'text-align: left;';
-    $table->class = 'alternate rounded_cells';
+    $table->class = 'events_show_more_table';
 
     $json_custom_data = base64_decode($event['custom_data']);
     $custom_data = json_decode($json_custom_data);
@@ -3137,14 +3133,12 @@ function events_page_general($event)
 
     // General.
     $table_general = new stdClass;
-    $table_general->cellspacing = 2;
-    $table_general->cellpadding = 2;
+    $table_general->cellspacing = 0;
+    $table_general->cellpadding = 0;
     $table_general->width = '100%';
     $table_general->data = [];
     $table_general->head = [];
-    $table_general->style[0] = 'width:35%; font-weight: bold; text-align: left; height: 23px;';
-    $table_general->style[1] = 'text-align: left; height: 23px;';
-    $table_general->class = 'alternate rounded_cells';
+    $table_general->class = 'events_show_more_table';
 
     $data = [];
     $data[0] = __('Event ID');
@@ -3185,10 +3179,12 @@ function events_page_general($event)
 
     $data = [];
     $data[0] = __('Type');
-    $data[1] = events_print_type_img(
+    $data[1] = events_print_type_description($event['event_type'], true);
+    $data[2] = events_print_type_img(
         $event['event_type'],
         true
-    ).' '.events_print_type_description($event['event_type'], true);
+    );
+
     $table_general->data[] = $data;
 
     $data = [];
@@ -3208,8 +3204,8 @@ function events_page_general($event)
     $data = [];
     $data[0] = __('Severity');
     $event_criticity = get_priority_name($event['criticity']);
-
-    $data[1] = html_print_image(
+    $data[1] = $event_criticity;
+    $data[2] = html_print_image(
         $img_sev,
         true,
         [
@@ -3219,7 +3215,6 @@ function events_page_general($event)
             'title'  => $event_criticity,
         ]
     );
-    $data[1] .= ' '.$event_criticity;
     $table_general->data[] = $data;
 
     // Get Status.
@@ -3227,7 +3222,8 @@ function events_page_general($event)
 
     $data = [];
     $data[0] = __('Status');
-    $data[1] = html_print_image($event_st['img'], true).' '.$event_st['title'];
+    $data[1] = $event_st['title'];
+    $data[2] = html_print_image($event_st['img'], true);
     $table_general->data[] = $data;
 
     // If event is validated, show who and when acknowleded it.
@@ -3250,12 +3246,23 @@ function events_page_general($event)
 
     $data = [];
     $data[0] = __('Group');
-    $data[1] = '';
+    $data[1] = groups_get_name($event['id_grupo']);
     if (!$config['show_group_name']) {
-        $data[1] = ui_print_group_icon($event['id_grupo'], true);
+        $data[2] = ui_print_group_icon($event['id_grupo'], true);
     }
 
-    $data[1] .= groups_get_name($event['id_grupo']);
+    $table_general->data[] = $data;
+
+    $data = [];
+    $data[0] = __('Contact');
+    $data[1] = '';
+    $contact = db_get_value('contact', 'tgrupo', 'id_grupo', $event['id_grupo']);
+    if (empty($contact)) {
+        $data[1] = '<i>'.__('N/A').'</i>';
+    } else {
+        $data[1] = $contact;
+    }
+
     $table_general->data[] = $data;
 
     $data = [];
@@ -3281,6 +3288,16 @@ function events_page_general($event)
 
     $table_general->data[] = $data;
 
+    $table_data = $table_general->data;
+    $table_data_total = count($table_data);
+
+    for ($i = 0; $i <= $table_data_total; $i++) {
+        if (count($table_data[$i]) == 2) {
+            $table_general->colspan[$i][1] = 2;
+            $table_general->style[2] = 'text-align:center; width:10%;';
+        }
+    }
+
     $general = '<div id="extended_event_general_page" class="extended_event_pages">'.html_print_table($table_general, true).'</div>';
 
     return $general;
@@ -3304,9 +3321,7 @@ function events_page_comments($event, $childrens_ids=[])
     $table_comments->width = '100%';
     $table_comments->data = [];
     $table_comments->head = [];
-    $table_comments->style[0] = 'width:35%; vertical-align: top; text-align: left;';
-    $table_comments->style[1] = 'text-align: left;';
-    $table_comments->class = 'alternate rounded_cells';
+    $table_comments->class = 'events_show_more_table';
 
     $event_comments = $event['user_comment'];
     $event_comments = str_replace(["\n", '&#x0a;'], '<br>', $event_comments);
@@ -3411,9 +3426,9 @@ function events_page_comments($event, $childrens_ids=[])
         $childrens_ids
     ))) && $config['show_events_in_local'] == false || $config['event_replication'] == false
     ) {
-        $comments_form = '<br><div id="comments_form" style="width:98%;">'.html_print_textarea('comment', 3, 10, '', 'style="min-height: 15px; width: 100%; disabled"', true);
+        $comments_form = '<br><div id="comments_form" style="width:98%;">'.html_print_textarea('comment', 3, 10, '', 'style="min-height: 15px; padding:0; width: 100%; disabled"', true);
 
-        $comments_form .= '<br><div style="text-align:right;">'.html_print_button(__('Add comment'), 'comment_button', false, 'event_comment();', 'class="sub next"', true).'</div><br></div>';
+        $comments_form .= '<br><div style="text-align:right; margin-top:10px;">'.html_print_button(__('Add comment'), 'comment_button', false, 'event_comment();', 'class="sub next"', true).'</div><br></div>';
     } else {
         $comments_form = ui_print_message(
             __('If event replication is ongoing, it won\'t be possible to enter comments here. This option is only to allow local pandora users to see comments, but not to operate with them. The operation, when event replication is enabled, must be done only in the Metaconsole.')

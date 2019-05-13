@@ -488,8 +488,7 @@ if (enterprise_installed()) {
     // Remote configuration
     $table_adv_remote = '<div class="label_select"><p class="input_label">'.__('Remote configuration').': </p>';
 
-    if (!$new_agent && isset($filename)) {
-        if (file_exists($filename['md5'])) {
+    if (!$new_agent && isset($filename) && file_exists($filename['md5'])) {
             $table_adv_remote .= date('F d Y H:i:s', fileatime($filename['md5']));
             // Delete remote configuration
             $table_adv_remote .= '<a href="index.php?'.'sec=gagente&amp;'.'sec2=godmode/agentes/configurar_agente&amp;'.'tab=main&amp;'.'disk_conf_delete=1&amp;'.'id_agente='.$id_agente.'">';
@@ -505,24 +504,24 @@ if (enterprise_installed()) {
                 __('Delete this conf file implies that for restore you must reactive remote config in the local agent.'),
                 true
             );
-        }
-    } else {
-        $table_adv_remote .= '<em>'.__('Not available').'</em>';
     }
+} else {
+    $table_adv_remote .= '<em>'.__('Not available').'</em>';
+}
 
     $table_adv_remote .= '</div>';
 
     $cps_array[-1] = __('Disabled');
-    if ($cps > 0) {
-        $cps_array[$cps] = __('Enabled');
-    } else {
-        $cps_inc = 0;
-        if ($id_agente) {
-            $cps_inc = service_agents_cps($id_agente);
-        }
-
-        $cps_array[$cps_inc] = __('Enabled');
+if ($cps > 0) {
+    $cps_array[$cps] = __('Enabled');
+} else {
+    $cps_inc = 0;
+    if ($id_agente) {
+        $cps_inc = service_agents_cps($id_agente);
     }
+
+    $cps_array[$cps_inc] = __('Enabled');
+}
 
     $table_adv_cascade = '<div class="label_select"><p class="input_label">'.__('Cascade protection services').': ';
     $table_adv_cascade .= ui_print_help_tip(__('Disable the alerts and events of the elements that belong to this service'), true).'</p>';

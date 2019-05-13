@@ -986,31 +986,9 @@ if ($old_global_counter_chat != $now_global_counter_chat) {
     }
 }
 
-// Pop-ups display order:
-// 1) login_required (timezone and email)
-// 2) identification (newsletter and register)
-// 3) last_message   (update manager message popup
-// 4) login_help     (online help, enterpirse version, forums, documentation)
-if (is_user_admin($config['id_user'])
-    && (!isset($config['initial_wizard']) || $config['initial_wizard'] != 1)
-) {
-    include_once 'general/login_required.php';
-}
+require_once 'general/register.php';
 
 if (get_parameter('login', 0) !== 0) {
-    // Display news dialog
-    include_once 'general/news_dialog.php';
-
-    // Display login help info dialog
-    // If it's configured to not skip this
-    $display_previous_popup = false;
-    if (license_free() && is_user_admin($config['id_user']) && $config['initial_wizard'] == 1) {
-        $display_previous_popup = include_once 'general/login_identification_wizard.php';
-        if ($display_previous_popup === false) {
-            $display_previous_popup = include_once 'general/last_message.php';
-        }
-    }
-
     if ((!isset($config['skip_login_help_dialog']) || $config['skip_login_help_dialog'] == 0)
         && $display_previous_popup === false
         && $config['initial_wizard'] == 1

@@ -27,6 +27,894 @@
  * ============================================================================
  */
 
+/*
+ *
+ * Registration functions - Start.
+ *
+ */
+
+
+/**
+ * Parses responses from configuration wizard.
+ *
+ * @return void
+ */
+function config_wiz_process()
+{
+    $email = get_parameter('email', false);
+    $timezone = get_parameter('timezone', false);
+    $language = get_parameter('language', false);
+
+    if ($email !== false) {
+        config_update_value('language', $language);
+    }
+
+    if ($timezone !== false) {
+        config_update_value('timezone', $timezone);
+    }
+
+    if ($email !== false) {
+        db_process_sql_update(
+            'tusuario',
+            ['email' => $email],
+            ['id_user' => $config['id_user']]
+        );
+    }
+
+    // Update the alert action Mail to XXX/Administrator
+    // if it is set to default.
+    $mail_check = 'yourmail@domain.es';
+    $mail_alert = alerts_get_alert_action_field1(1);
+    if ($mail_check === $mail_alert && $email !== false) {
+        alerts_update_alert_action(
+            1,
+            [
+                'field1'          => $email,
+                'field1_recovery' => $email,
+            ]
+        );
+    }
+
+    config_update_value('initial_wizard', 1);
+}
+
+
+/**
+ * Generates base code to print main configuration modal.
+ *
+ * Asks for timezone, mail.
+ *
+ * @param boolean $return   Print output or not.
+ * @param boolean $launch   Process JS modal.
+ * @param string  $callback Call to JS function at end.
+ *
+ * @return string HTML.
+ */
+function config_wiz_modal(
+    $return=false,
+    $launch=true,
+    $callback=false
+) {
+    global $config;
+
+    $email = db_get_value('email', 'tusuario', 'id_user', $config['id_user']);
+    // Avoid to show default email.
+    if ($email == 'admin@example.com') {
+        $email = '';
+    }
+
+    $output = '';
+
+    // Prints first step pandora registration.
+    $output .= '<div id="configuration_wizard" title="'.__('%s configuration wizard', get_product_name()).'" style="display: none;">';
+
+    $output .= '<div style="font-size: 10pt; margin: 20px;">';
+    $output .= __('Please fill the following information in order to configure your %s instance successfully', get_product_name()).'.';
+    $output .= '</div>';
+
+    $output .= '<div style="">';
+    $table = new StdClass();
+    $table->class = 'databox filters';
+    $table->width = '100%';
+    $table->data = [];
+    $table->size = [];
+    $table->size[0] = '40%';
+    $table->style[0] = 'font-weight:bold';
+    $table->size[1] = '60%';
+    $table->border = '5px solid';
+
+    $table->data[0][0] = __('Language code');
+    $table->data[0][1] = html_print_select_from_sql(
+        'SELECT id_language, name FROM tlanguage',
+        'language',
+        $config['language'],
+        '',
+        '',
+        '',
+        true
+    );
+
+    $zone_name = [
+        'Africa'     => __('Africa'),
+        'America'    => __('America'),
+        'Antarctica' => __('Antarctica'),
+        'Arctic'     => __('Arctic'),
+        'Asia'       => __('Asia'),
+        'Atlantic'   => __('Atlantic'),
+        'Australia'  => __('Australia'),
+        'Europe'     => __('Europe'),
+        'Indian'     => __('Indian'),
+        'Pacific'    => __('Pacific'),
+        'UTC'        => __('UTC'),
+    ];
+
+    if ($zone_selected == '') {
+        if ($config['timezone'] != '') {
+            $zone_array = explode('/', $config['timezone']);
+            $zone_selected = $zone_array[0];
+        } else {
+            $zone_selected = 'Europe';
+        }
+    }
+
+    $timezones = timezone_identifiers_list();
+    foreach ($timezones as $timezone) {
+        if (strpos($timezone, $zone_selected) !== false) {
+            $timezone_country = preg_replace('/^.*\//', '', $timezone);
+            $timezone_n[$timezone] = $timezone_country;
+        }
+    }
+
+    $table->data[2][0] = __('Timezone setup').' '.ui_print_help_tip(
+        __('Must have the same time zone as the system or database to avoid mismatches of time.'),
+        true
+    );
+    $table->data[2][1] = html_print_select($zone_name, 'zone', $zone_selected, 'show_timezone()', '', '', true);
+    $table->data[2][1] .= '&nbsp;&nbsp;'.html_print_select($timezone_n, 'timezone', $config['timezone'], '', '', '', true);
+
+    $table->data[4][0] = __('E-mail for receiving alerts');
+    $table->data[4][1] = html_print_input_text('email', $email, '', 50, 255, true);
+
+    $output .= html_print_table($table, true);
+    $output .= '</div>';
+
+    $output .= '<div style="float: left">';
+    $output .= html_print_submit_button(
+        __('Cancel'),
+        'cancel',
+        false,
+        'class="ui-widget ui-state-default ui-corner-all ui-button-text-only sub cancel submit-cancel" style="width:100px;"',
+        true
+    );
+    $output .= '</div>';
+    $output .= '<div style="float: right">';
+    $output .= html_print_submit_button(
+        __('Continue'),
+        'register-next',
+        false,
+        'class="ui-widget ui-state-default ui-corner-all ui-button-text-only sub ok submit-next" style="width:100px;"',
+        true
+    );
+    $output .= '</div>';
+    $output .= '<div id="all-required" style="clear:both; float: right; margin-right: 30px; display: none; color: red;">';
+    $output .= __('All fields required');
+    $output .= '</div>';
+    $output .= '</div>';
+
+    $output .= '</div>';
+
+    // Verification modal.
+    $output .= '<div id="wiz_ensure_cancel" title="Confirmation Required" style="display: none;">';
+    $output .= '<div style="font-size: 12pt; margin: 20px;">';
+    $output .= __('Are you sure you don\'t want to configure a base email?');
+    $output .= '<p>';
+    $output .= __('You could change this options later in "alert actions" and setting your account.');
+    $output .= '</p>';
+    $output .= '</div>';
+    $output .= '</div>';
+
+    ob_start();
+    ?>
+
+<script type="text/javascript">
+function show_timezone () {
+    zone = $("#zone").val();
+
+    $.ajax({
+        type: "POST",
+        url: "ajax.php",
+        data: "page=godmode/setup/setup&select_timezone=1&zone=" + zone,
+        dataType: "json",
+        success: function(data) {
+            $("#timezone").empty();
+            jQuery.each (data, function (id, value) {
+                timezone = value;
+                var timezone_country = timezone.replace (/^.*\//g, "");
+                $("select[name='timezone']")
+                .append(
+                    $("<option>")
+                    .val(timezone)
+                    .html(timezone_country)
+                );
+            });
+        }
+    });
+}
+
+$("#language").click(function () {
+    var change_language = $("#language").val();
+
+    if (change_language === default_language_displayed) return;
+    jQuery.post (
+        "ajax.php",
+        {
+            "page": "general/register",
+            "change_language": change_language
+        },
+        function (data) {}
+    ).done(function () {
+        location.reload();
+    });
+});
+
+function show_configuration_wizard() {
+    $("#configuration_wizard").dialog({
+        resizable: true,
+        draggable: true,
+        modal: true,
+        width: 630,
+        overlay: {
+                opacity: 0.5,
+                background: "black"
+            },
+        closeOnEscape: false,
+        open: function(event, ui) { $(".ui-dialog-titlebar-close").hide(); }
+    });
+
+    default_language_displayed = $("#language").val();
+
+    $(".ui-widget-overlay").css("background", "#000");
+    $(".ui-widget-overlay").css("opacity", 0.6);
+    $(".ui-draggable").css("cursor", "inherit");
+
+
+    // CLICK EVENTS: Cancel and Registration
+    $("#submit-cancel").click (function (e) {
+        e.preventDefault();
+        $("#wiz_ensure_cancel").dialog({
+            buttons: [
+                {
+                    "text": "No",
+                    "class": 'submit-cancel',
+                    "click" : function() {
+                        $(this).dialog("close");
+                    }
+                },
+                {
+                    "text": "Yes",
+                    "class": 'submit-next',
+                    "click" : function() {
+                        jQuery.post (
+                            "ajax.php",
+                            {
+                                "page": "general/register",
+                                "cancel_wizard": 1
+                            },
+                            function (data) {}
+                        );
+                        $(this).dialog("close");
+                        $("#configuration_wizard" ).dialog('close');
+                    }
+                }
+            ]
+        });
+
+        $("#wiz_ensure_cancel").dialog('open');
+    });
+
+    $("#submit-register-next").click (function () {
+        // All fields are required.
+        if ($("#text-email").val() == '') {
+            $("#all-required").show();
+        } else {
+            var timezone = $("#timezone").val();
+            var language = $("#language").val();
+            var email_identification = $("#text-email").val();
+
+            jQuery.post (
+                "ajax.php",
+                {
+                    "page": "general/register",
+                    "save_required_wizard": 1,
+                    "email": email_identification,
+                    "language": language,
+                    "timezone": timezone
+                },
+                function (data) {
+                    <?php
+                    if (isset($callback) && $callback != '') {
+                        echo $callback;
+                    }
+                    ?>
+                }
+            );
+
+            $("#configuration_wizard").dialog('close');
+        }
+    });
+}
+
+    <?php
+    if ($launch === true) {
+        ?>
+$(document).ready (function () {
+    show_configuration_wizard();
+});
+    <?php
+    }
+    ?>
+
+</script>
+
+    <?php
+    // Add js.
+    $output .= ob_get_clean();
+
+    if ($return === false) {
+        echo $output;
+    }
+
+    return $output;
+
+}
+
+
+/**
+ * Parse registration wiz.
+ *
+ * @return array Status feedback.
+ */
+function registration_wiz_process()
+{
+    global $config;
+
+    $register_pandora = get_parameter('register_pandora', 0);
+    $next_check = (time() + 1 * SECONDS_1DAY);
+    $ui_feedback = [
+        'status'  => true,
+        'message' => '',
+    ];
+
+    // Pandora register update.
+    $um_message = update_manager_register_instance();
+    $ui_feedback['message'] .= $um_message['message'].'<br><br>';
+    $ui_feedback['status'] = $um_message['success'] && $ui_feedback['status'];
+
+    if ($ui_feedback['status']) {
+        // Store next identification reminder.
+        config_update_value(
+            'identification_reminder_timestamp',
+            $next_check
+        );
+    }
+
+    return $ui_feedback;
+}
+
+
+/**
+ * Shows a modal to register current console in UpdateManager.
+ *
+ * @param boolean $return   Return or show html.
+ * @param boolean $launch   Execute wizard.
+ * @param string  $callback Call function when done.
+ *
+ * @return string HTML code.
+ */
+function registration_wiz_modal(
+    $return=false,
+    $launch=true,
+    $callback=false
+) {
+    global $config;
+    $output = '';
+
+    $product_name = get_product_name();
+
+    $output .= '<div id="registration_wizard" title="';
+    $output .= __('Register to Update Manager');
+    $output .= '" style="display: none;">';
+    $output .= '<div style="margin: 5px 0 10px; float: left; padding-left: 15px;">';
+    $output .= html_print_image('images/pandora_circle_big.png', true);
+    $output .= '</div>';
+
+    $output .= '<div style="font-size: 12pt; margin: 5px 20px; float: left; padding-top: 23px;">';
+    $output .= __(
+        'Keep this %s console up to date with latest updates.',
+        $product_name
+    );
+    $output .= '</div>';
+
+    $output .= '<div class="license_text" style="clear:both;">';
+    $output .= '<p>';
+    $output .= __('When you subscribe to the %s Update Manager service, you accept that we register your %s instance as an identifier on a database owned by %s. This data will solely be used to provide you with information about %s and will not be conceded to third parties. You can unregister from said database at any time from the Update Manager options.', $product_name, $product_name, $product_name, $product_name);
+    $output .= '</p>';
+    $output .= '</div>';
+
+    $output .= '<div class="submit_buttons_container">';
+    $output .= '<div style="float: left;">';
+    $output .= html_print_submit_button(
+        __('Cancel'),
+        'cancel_registration',
+        false,
+        'class="ui-widget ui-state-default ui-corner-all ui-button-text-only sub upd submit-cancel" style="color: red; width:100px;"',
+        true
+    );
+    $output .= '</div>';
+    $output .= '<div style="float: right;">';
+    $output .= html_print_submit_button(
+        __('OK!'),
+        'register',
+        false,
+        'class="ui-widget ui-state-default ui-corner-all ui-button-text-only sub ok submit-next" style="width:100px;"',
+        true
+    );
+    $output .= '</div>';
+    $output .= '</div>';
+
+    $output .= '<div style="clear:both"></div>';
+    $output .= '<br/>';
+    $output .= '</div>';
+
+    // Verification modal.
+    $output .= '<div id="reg_ensure_cancel" title="Confirmation Required" style="display: none;">';
+    $output .= '<div style="font-size: 12pt; margin: 20px;">';
+    $output .= __('Are you sure you don\'t want to use update manager?');
+    $output .= '<p>';
+    $output .= __('You will need to update your system manually, through source code or RPM packages to be up to date with latest updates.');
+    $output .= '</p>';
+    $output .= '</div>';
+    $output .= '</div>';
+
+    // Results modal.
+    $output .= '<div id="reg_result" title="Registration process result" style="display: none;">';
+    $output .= '<div id="reg_result_content" style="font-size: 12pt; margin: 20px;">';
+    $output .= '</div>';
+    $output .= '</div>';
+
+    ob_start();
+    ?>
+<script type="text/javascript">
+
+function show_registration_wizard() {
+    $("#registration_wizard").dialog({
+        resizable: true,
+        draggable: true,
+        modal: true,
+        width: 630,
+        overlay: {
+                opacity: 0.5,
+                background: "black"
+            },
+        closeOnEscape: false,
+        open: function(event, ui) { $(".ui-dialog-titlebar-close").hide(); }
+    });
+
+    default_language_displayed = $("#language").val();
+
+    $(".ui-widget-overlay").css("background", "#000");
+    $(".ui-widget-overlay").css("opacity", 0.6);
+    $(".ui-draggable").css("cursor", "inherit");
+
+
+    // CLICK EVENTS: Cancel and Registration
+    $("#submit-cancel_registration").click (function (e) {
+        e.preventDefault();
+        $("#reg_ensure_cancel").dialog({
+            buttons: [
+                {
+                    "text": "No",
+                    "class": 'submit-cancel',
+                    "click" : function() {
+                        $(this).dialog("close");
+                    }
+                },
+                {
+                    "text": "Yes",
+                    "class": 'submit-next',
+                    "click" : function() {
+                        jQuery.post (
+                            "ajax.php",
+                            {
+                                "page": "general/register",
+                                "cancel_registration": 1
+                            },
+                            function (data) {}
+                        );
+                        $(this).dialog("close");
+                        $("#registration_wizard" ).dialog('close');
+                    }
+                }
+            ]
+        });
+
+        $("#reg_ensure_cancel").dialog('open');
+    });
+
+    $("#submit-register").click (function () {
+        // All fields are required.
+        if ($("#text-email").val() == '') {
+            $("#all-required").show();
+        } else {
+            var timezone = $("#timezone").val();
+            var language = $("#language").val();
+            var email_identification = $("#text-email").val();
+
+            jQuery.post (
+                "ajax.php",
+                {
+                    "page": "general/register",
+                    "register_console": 1
+                },
+                function (data) {
+                    cl = '';
+                    msg = 'no response';
+
+                    try {
+                        json = JSON.parse(data);
+                        cl = json.status
+                        msg = json.message;
+
+                    } catch (error) {
+                        msg = 'Failed: ' + error;
+                        cl = 'error';
+                    }
+
+                    if (!cl || cl == 'error') {
+                        cl = 'error';
+                    } else {
+                        // Success.
+                    }
+
+                    $('#reg_result_content').html(msg);
+                    $('#reg_result').addClass(cl);
+                    $('#reg_result').dialog({
+                        buttons: [
+                            {
+                                "text": "OK",
+                                "class": "submit-next",
+                                "click": function() {
+                                    $(this).dialog('close');
+                                    $("#registration_wizard").dialog('close');
+                                    <?php
+                                    if (isset($callback) && $callback != '') {
+                                        echo $callback;
+                                    }
+                                    ?>
+                                }
+                            }
+                        ]
+                    });
+                }
+            );
+        }
+    });
+}
+
+    <?php
+    if ($launch === true) {
+        ?>
+$(document).ready (function () {
+    show_registration_wizard();
+});
+    <?php
+    }
+    ?>
+
+
+</script>
+
+    <?php
+    // Add js.
+    $output .= ob_get_clean();
+
+    if ($return === false) {
+        echo $output;
+    }
+
+    return $output;
+}
+
+
+/**
+ * Parse newsletter wiz.
+ *
+ * @return array Status feedback.
+ */
+function newsletter_wiz_process()
+{
+    global $config;
+
+    $email = get_parameter('email', '');
+
+    // Pandora newsletter update.
+    $um_message = update_manager_insert_newsletter($email);
+
+    $ui_feedback['message'] = $um_message['message'];
+
+    if ($um_message['success']) {
+        // Success or already registered.
+        db_process_sql_update(
+            'tusuario',
+            ['middlename' => 1],
+            ['id_user' => $config['id_user']]
+        );
+        $ui_feedback['status'] = $um_message['success'];
+    } else {
+        $ui_feedback['status'] = false;
+    }
+
+    return $ui_feedback;
+}
+
+
+/**
+ * Show a modal allowing the user register into newsletter.
+ *
+ * @param boolean $return   Print content o return it.
+ * @param boolean $launch   Launch directly on load or not.
+ * @param string  $callback Call function when done.
+ *
+ * @return string HTML code.
+ */
+function newsletter_wiz_modal(
+    $return=false,
+    $launch=true,
+    $callback=false
+) {
+    global $config;
+
+    $output = '';
+
+    $product_name = get_product_name();
+    $email = db_get_value(
+        'email',
+        'tusuario',
+        'id_user',
+        $config['id_user']
+    );
+
+    // Avoid to show default email.
+    if ($email == 'admin@example.com') {
+        $email = '';
+    }
+
+    $output .= '<div id="newsletter_wizard" title="';
+    $output .= __('Wanna be up to date?');
+    $output .= '" style="display: none;">';
+    $output .= '<div style="margin: 5px 0 10px; float: left; padding-left: 15px;">';
+    $output .= html_print_image('images/pandora_circle_big.png', true);
+    $output .= '</div>';
+
+    $output .= '<div style="font-size: 12pt; margin: 5px 20px; float: left; padding-top: 23px;">';
+    $output .= __(
+        'Keep this %s up to date with latest updates.',
+        $product_name
+    );
+    $output .= '</div>';
+
+    $output .= '<div class="license_text" style="clear:both;">';
+    $output .= '<p>';
+    $output .= __('In the same fashion, when subscribed to the newsletter you accept that your email will pass on to a database property of %s. This data will solely be used to provide you with information about %s and will not be conceded to third parties. You can unregister from said database at any time from the newsletter subscription options.', $product_name, $product_name);
+    $output .= '</p>';
+
+    $output .= '</div>';
+    // Show regiter to newsletter state.
+    $show_newsletter = ($display_newsletter !== true) ? 'inline-block' : 'none';
+
+    $output .= '<div style="margin-left: 4em;">';
+    $output .= '<div id="box_newsletter">';
+    $output .= '<span id="label-email-newsletter">'.__('Email').' </span>';
+    $output .= html_print_input_text_extended(
+        'email-newsletter',
+        $email,
+        'text-email-newsletter',
+        '',
+        30,
+        255,
+        false,
+        '',
+        ['style' => 'display:'.$show_newsletter.'; width: 200px;'],
+        true
+    );
+    $output .= '</div><br /><br />';
+
+    $output .= '<div class="submit_buttons_container">';
+    $output .= '<div style="float: left;">';
+    $output .= html_print_submit_button(
+        __('Cancel'),
+        'cancel_newsletter',
+        false,
+        'class="ui-widget ui-state-default ui-corner-all ui-button-text-only sub upd submit-cancel" style="color: red; width:100px;"',
+        true
+    );
+    $output .= '</div>';
+    $output .= '<div style="float: right;">';
+    $output .= html_print_submit_button(
+        __('OK!'),
+        'newsletter',
+        false,
+        'class="ui-widget ui-state-default ui-corner-all ui-button-text-only sub ok submit-next" style="width:100px;"',
+        true
+    );
+    $output .= '</div>';
+    $output .= '</div>';
+
+    $output .= '<div style="clear:both"></div>';
+    $output .= '<br/>';
+    $output .= '</div>';
+    $output .= '</div>';
+
+    // Verification modal.
+    $output .= '<div id="news_ensure_cancel" title="Confirmation Required" style="display: none;">';
+    $output .= '<div style="font-size: 12pt; margin: 20px;">';
+    $output .= __('Are you sure you don\'t want to subscribe?');
+    $output .= '<p>';
+    $output .= __('You will miss all news about amazing features and fixes!');
+    $output .= '</p>';
+    $output .= '</div>';
+    $output .= '</div>';
+
+    // Results modal.
+    $output .= '<div id="news_result" title="Subscription process result" style="display: none;">';
+    $output .= '<div id="news_result_content" style="font-size: 12pt; margin: 20px;">';
+    $output .= '</div>';
+    $output .= '</div>';
+
+    ob_start();
+    ?>
+<script type="text/javascript">
+
+function show_newsletter_wizard() {
+    $("#newsletter_wizard").dialog({
+        resizable: true,
+        draggable: true,
+        modal: true,
+        width: 630,
+        overlay: {
+                opacity: 0.5,
+                background: "black"
+            },
+        closeOnEscape: false,
+        open: function(event, ui) { $(".ui-dialog-titlebar-close").hide(); }
+    });
+
+    default_language_displayed = $("#language").val();
+
+    $(".ui-widget-overlay").css("background", "#000");
+    $(".ui-widget-overlay").css("opacity", 0.6);
+    $(".ui-draggable").css("cursor", "inherit");
+
+
+    // CLICK EVENTS: Cancel and Registration
+    $("#submit-cancel_newsletter").click (function (e) {
+        e.preventDefault();
+        $("#news_ensure_cancel").dialog({
+            buttons: [
+                {
+                    text: "No",
+                    "class": 'submit-cancel',
+                    click : function() {
+                        $(this).dialog('close');
+                    }
+                },
+                {
+                    text: "Yes",
+                    "class": 'submit-next',
+                    click : function() {
+                        jQuery.post ("ajax.php",
+                            {
+                                "page": "general/register",
+                                "cancel_newsletter": 1
+                            },
+                            function (data) {}
+                        );
+                        $(this).dialog("close");
+                        $("#newsletter_wizard" ).dialog('close');
+                    }
+                }
+            ]
+        });
+
+        $("#news_ensure_cancel").dialog('open');
+    });
+
+    $("#submit-newsletter").click (function () {
+        // All fields are required.
+        if ($("#text-email").val() == '') {
+            $("#all-required").show();
+        } else {
+            var timezone = $("#timezone").val();
+            var language = $("#language").val();
+            var email_identification = $("#text-email-newsletter").val();
+
+            jQuery.post (
+                "ajax.php",
+                {
+                    "page": "general/register",
+                    "register_newsletter": 1,
+                    "email": email_identification
+                },
+                function (data) {
+                    cl = '';
+                    msg = 'no response';
+
+                    try {
+                        json = JSON.parse(data);
+                        cl = json.status
+                        msg = json.message;
+
+                    } catch (error) {
+                        msg = 'Failed: ' + error;
+                        cl = 'error';
+                    }
+
+                    if (!cl || cl == 'error') {
+                        cl = 'error';
+                    } else {
+                        // Success.
+                    }
+
+                    $('#news_result_content').html(msg);
+                    $('#news_result').addClass(cl);
+                    $('#news_result').dialog({
+                        buttons: {
+                            'Ok': function() {
+                                $(this).dialog('close');
+                                $("#newsletter_wizard").dialog('close');
+                                <?php
+                                if (isset($callback) && $callback != '') {
+                                    echo $callback;
+                                }
+                                ?>
+                            }
+                        }
+                    });
+                }
+            );
+        }
+    });
+}
+
+    <?php
+    if ($launch === true) {
+        ?>
+$(document).ready (function () {
+    show_newsletter_wizard();
+});
+    <?php
+    }
+    ?>
+
+
+</script>
+
+    <?php
+    $output .= ob_get_clean();
+
+    if (!$return) {
+        echo $output;
+    }
+
+    return $output;
+}
+
+
+/*
+ *
+ * Registration functions - End.
+ *
+ */
 
 function update_manager_get_config_values()
 {
@@ -210,7 +1098,6 @@ function update_manager_install_package_step2()
 function update_manager_main()
 {
     global $config;
-
     ?>
     <script type="text/javascript">
         <?php
@@ -221,7 +1108,7 @@ function update_manager_main()
     <script type="text/javascript">
         var version_update = "";
         var stop_check_progress = 0;
-        
+
         $(document).ready(function() {
             check_online_free_packages();
         });
@@ -500,6 +1387,13 @@ function update_manager_curl_request($action, $additional_params=false)
 }
 
 
+/**
+ * Subscribes an email account into newsletter.
+ *
+ * @param string $email E-mail.
+ *
+ * @return array With success [true/false], message [string].
+ */
 function update_manager_insert_newsletter($email)
 {
     global $config;
@@ -511,6 +1405,11 @@ function update_manager_insert_newsletter($email)
     $params = [
         'email'    => $email,
         'language' => $config['language'],
+        'license'  => db_get_value_filter(
+            'value',
+            'tupdate_settings',
+            ['key' => 'customer_key']
+        ),
     ];
 
     $result = update_manager_curl_request('new_newsletter', $params);
@@ -530,22 +1429,27 @@ function update_manager_insert_newsletter($email)
                     'success' => true,
                     'message' => __('E-mail successfully subscribed to newsletter.'),
                 ];
+            } else {
+                return [
+                    'success' => true,
+                    'message' => __('E-mail has already subscribed to newsletter.'),
+                ];
             }
-        return [
-            'success' => false,
-            'message' => __('E-mail has already subscribed to newsletter.'),
-        ];
 
         default:
         return [
             'success' => false,
             'message' => __('Update manager returns error code: ').$result['http_status'].'.',
         ];
-            break;
     }
 }
 
 
+/**
+ * Registers this console into UpdateManager.
+ *
+ * @return array With success [true/false], message [string].
+ */
 function update_manager_register_instance()
 {
     global $config;
@@ -555,6 +1459,11 @@ function update_manager_register_instance()
         'language' => $config['language'],
         'timezone' => $config['timezone'],
         'email'    => $email,
+        'license'  => db_get_value_filter(
+            'value',
+            'tupdate_settings',
+            ['key' => 'customer_key']
+        ),
     ];
 
     $result = update_manager_curl_request('new_register', $params);
@@ -562,7 +1471,7 @@ function update_manager_register_instance()
     if (!$result['success']) {
         return [
             'success' => false,
-            'message' => __('Remote server error on newsletter request'),
+            'message' => __('Error while registering console.').'<br/>'.$result['update_message'],
         ];
     }
 
@@ -584,19 +1493,18 @@ function update_manager_register_instance()
                     'success' => true,
                     'message' => __('Pandora successfully subscribed with UID: ').$puid.'.',
                 ];
+            } else {
+                return [
+                    'success' => false,
+                    'message' => __('Unsuccessful subscription.'),
+                ];
             }
-        return [
-            'success' => false,
-            'message' => __('Unsuccessful subscription.'),
-        ];
 
-            break;
         default:
         return [
             'success' => false,
             'message' => __('Update manager returns error code: ').$result['http_status'].'.',
         ];
-            break;
     }
 }
 

@@ -331,7 +331,7 @@ ui_require_javascript_file('tiny_mce', 'include/javascript/tiny_mce/');
             theme : "advanced",
             theme_advanced_toolbar_location : "top",
             theme_advanced_toolbar_align : "left",
-            theme_advanced_buttons1 : "bold,italic, |, image, link, |, cut, copy, paste, |, undo, redo, |, forecolor, |, fontsizeselect, |, justifyleft, justifycenter, justifyright",
+            theme_advanced_buttons1 : "bold,italic, |, image, link, |, cut, copy, paste, |, undo, redo, |, forecolor, |, fontsizeselect, |, justifyleft, justifycenter, justifyright, | ,code",
             theme_advanced_buttons2 : "",
             theme_advanced_buttons3 : "",
             convert_urls : false,

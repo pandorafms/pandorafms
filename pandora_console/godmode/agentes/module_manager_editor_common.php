@@ -1200,6 +1200,7 @@ html_print_input_hidden('module_relations_count', $relations_count);
 
 ui_require_jquery_file('json');
 
+
 ?>
 
 <script type="text/javascript">
@@ -1510,7 +1511,7 @@ function disabled_two_tailed (disabledBecauseInPolicy) {
 function advanced_option_dynamic() {
     if($('.hide_dinamic').is(":visible")){
         $('.hide_dinamic').hide();
-        
+
     } else {
         $('.hide_dinamic').show();
         

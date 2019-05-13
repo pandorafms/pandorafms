@@ -443,7 +443,7 @@ class CustomNetScan extends Wizard
                         'name'  => 'taskname',
                         'value' => $this->task['name'],
                         'type'  => 'text',
-                        'size'  => 25,
+                        'size'  => 50,
                     ],
                 ];
 
@@ -465,7 +465,7 @@ class CustomNetScan extends Wizard
                         'name'  => 'comment',
                         'value' => $this->task['description'],
                         'type'  => 'text',
-                        'size'  => 25,
+                        'size'  => 50,
                     ],
                 ];
 
@@ -652,7 +652,7 @@ class CustomNetScan extends Wizard
                     'value'      => $explanation,
                     'return'     => true,
                     'attributes' => 'style="width: 388px;"',
-                    'class'      => 'discovery_textarea_input'
+                    'class'      => 'discovery_textarea_input',
                 ],
             ];
 

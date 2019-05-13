@@ -33,6 +33,7 @@ if (! check_acl($config['id_user'], 0, 'LM')) {
 $update_command = (bool) get_parameter('update_command');
 $id = (int) get_parameter('id');
 $pure = get_parameter('pure', 0);
+$alert = [];
 
 // Header
 if (defined('METACONSOLE')) {
@@ -86,7 +87,15 @@ if ($update_command) {
         $result = '';
     } else {
         $result = alerts_update_alert_command($id, $values);
-        $info = '{"Name":"'.$name.'","Command":"'.$command.'","Description":"'.$description.' '.$info_fields.'"}';
+        if ($result) {
+            $info = '{"Name":"'.$name.'","Command":"'.$command.'","Description":"'.$description.' '.$info_fields.'"}';
+            $alert['fields_values'] = io_json_mb_encode($fields_values);
+            $alert['fields_descriptions'] = io_json_mb_encode($fields_descriptions);
+            $alert['name'] = $name;
+            $alert['command'] = $command;
+            $alert['description'] = $description;
+            $alert['id_group'] = $id_group;
+        }
     }
 
     if ($result) {
@@ -110,7 +119,10 @@ $fields_descriptions = '';
 $fields_values = '';
 $id_group = 0;
 if ($id) {
-    $alert = alerts_get_alert_command($id);
+    if (!$result) {
+        $alert = alerts_get_alert_command($id);
+    }
+
     $name = $alert['name'];
     $command = $alert['command'];
     $description = $alert['description'];

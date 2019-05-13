@@ -6,7 +6,8 @@ ul.wizard {
 }
 
 ul.wizard li {
-  padding: 10px;
+  padding-bottom: 10px;
+  padding-top: 10px;
 }
 
 ul.wizard li > label:not(.p-switch) {

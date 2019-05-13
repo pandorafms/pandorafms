@@ -52,7 +52,7 @@ $table_enable->style['name'] = 'font-weight: bold';
 
 // Enable eHorus.
 $row = [];
-$row['name'] = ('Enable eHorus');
+$row['name'] = __('Enable eHorus');
 $row['control'] = html_print_checkbox_switch('ehorus_enabled', 1, $config['ehorus_enabled'], true);
 $table_enable->data['ehorus_enabled'] = $row;
 
@@ -66,12 +66,6 @@ $table_remote->class = 'databox filters';
 $table_remote->size['name'] = '30%';
 $table_remote->style['name'] = 'font-weight: bold';
 
-
-// Enable eHorus user configuration.
-$row = [];
-$row['name'] = ('Enable eHorus user configuration');
-$row['control'] = html_print_checkbox_switch('ehorus_user_login', 1, $config['ehorus_user_login'], true);
-$table_remote->data['ehorus_user_login'] = $row;
 // User.
 $row = [];
 $row['name'] = __('User');
@@ -114,6 +108,7 @@ $row['control'] .= '<span id="test-ehorus-success" style="display:none;">&nbsp;'
 $row['control'] .= '<span id="test-ehorus-failure" style="display:none;">&nbsp;'.html_print_image('images/status_sets/default/severity_critical.png', true).'</span>';
 $row['control'] .= '&nbsp;<span id="test-ehorus-message" style="display:none;"></span>';
 $table_remote->data['ehorus_test'] = $row;
+
 // Print.
 echo '<div style="text-align: center; padding-bottom: 20px;">';
 echo '<a target="_blank" rel="noopener noreferrer" href="http://ehorus.com">';
@@ -144,62 +139,49 @@ if ($config['ehorus_enabled'] && !$custom_field_exists) {
     ui_print_error_message($error_message);
 }
 
-
-hd($_POST);
-echo '<form id="conf_ehorus" method="post">';
-
 // Form enable.
-echo '<div id="conf_enable">';
+echo '<form id="form_enable" method="post">';
 html_print_input_hidden('update_config', 1);
 html_print_table($table_enable);
-echo '</div>';
+echo '</form>';
 
 // Form remote.
-    echo '<div id="conf_remote">';
+if ($config['ehorus_enabled']) {
+    echo '<form id="form_remote" method="post">';
     echo '<fieldset>';
     echo '<legend>'.__('eHorus API').'</legend>';
     html_print_input_hidden('update_config', 1);
     html_print_table($table_remote);
-    echo '</div>';
-    echo '</fieldset>';
     echo '<div class="action-buttons" style="width: '.$table_remote->width.'">';
     html_print_submit_button(__('Update'), 'update_button', false, 'class="sub upd"');
     echo '</div>';
-
-
+    echo '</fieldset>';
     echo '</form>';
+}
 
 ?>
 
 <script type="text/javascript">
- $('#conf_enable').css('margin-bottom','20px');
+ $('input:checkbox[name="ehorus_enabled"]').attr('checked', false);
+ $('form#form_remote').hide();
+ $('form#form_enable').css('margin-bottom','20px');
     var showFields = function () {
-        $('#conf_remote').show();
+        $('form#form_remote').show();
     }
     var hideFields = function () {
-        $('#conf_remote').hide();
+        $('form#form_remote').hide();
     }
     var handleEnable = function (event) {
         var is_checked = $('input:checkbox[name="ehorus_enabled"]').is(':checked');
         if (event.target.value == '1' && is_checked) {
             showFields();
-            $('input:checkbox[name="ehorus_enabled"]').attr('checked', true);
+            $('input:checkbox[name="ehorus_enabled"]').attr('checked', false);
         }
         else {
             hideFields();
-            $('input:checkbox[name="ehorus_enabled"]').attr('checked', false);
+            $('input:checkbox[name="ehorus_enabled"]').attr('checked', true);
         };
     }
-
-    if($('input:checkbox[name="ehorus_enabled"]').is(':checked'))
-    {
-        showFields();
-    }else
-    {
-        hideFields();
-    }
-    
-    
     $('input:checkbox[name="ehorus_enabled"]').change(handleEnable);
     
     var handleTest = function (event) {
@@ -246,7 +228,6 @@ echo '</div>';
         hideFailureImage();
         hideMessage();
         showLoadingImage();
-
         $.ajax({
             url: 'https://' + host + ':' + port + '/login',
             type: 'POST',

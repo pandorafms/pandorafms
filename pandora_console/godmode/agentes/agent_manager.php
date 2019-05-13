@@ -488,26 +488,23 @@ if (enterprise_installed()) {
     // Remote configuration
     $table_adv_remote = '<div class="label_select"><p class="input_label">'.__('Remote configuration').': </p>';
 
-    if (!$new_agent) {
-        $table_adv_remote .= '<em>'.__('Not available').'</em>';
-        if (isset($filename)) {
-            if (file_exists($filename['md5'])) {
-                $table_adv_remote .= date('F d Y H:i:s', fileatime($filename['md5']));
-                // Delete remote configuration
-                $table_adv_remote .= '<a href="index.php?'.'sec=gagente&amp;'.'sec2=godmode/agentes/configurar_agente&amp;'.'tab=main&amp;'.'disk_conf_delete=1&amp;'.'id_agente='.$id_agente.'">';
-                $table_adv_remote .= html_print_image(
-                    'images/cross.png',
-                    true,
-                    [
-                        'title' => __('Delete remote configuration file'),
-                        'style' => 'vertical-align: middle;',
-                    ]
-                ).'</a>';
-                $table_adv_remote .= '</a>'.ui_print_help_tip(
-                    __('Delete this conf file implies that for restore you must reactive remote config in the local agent.'),
-                    true
-                );
-            }
+    if (!$new_agent && isset($filename)) {
+        if (file_exists($filename['md5'])) {
+            $table_adv_remote .= date('F d Y H:i:s', fileatime($filename['md5']));
+            // Delete remote configuration
+            $table_adv_remote .= '<a href="index.php?'.'sec=gagente&amp;'.'sec2=godmode/agentes/configurar_agente&amp;'.'tab=main&amp;'.'disk_conf_delete=1&amp;'.'id_agente='.$id_agente.'">';
+            $table_adv_remote .= html_print_image(
+                'images/cross.png',
+                true,
+                [
+                    'title' => __('Delete remote configuration file'),
+                    'style' => 'vertical-align: middle;',
+                ]
+            ).'</a>';
+            $table_adv_remote .= '</a>'.ui_print_help_tip(
+                __('Delete this conf file implies that for restore you must reactive remote config in the local agent.'),
+                true
+            );
         }
     } else {
         $table_adv_remote .= '<em>'.__('Not available').'</em>';

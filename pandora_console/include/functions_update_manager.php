@@ -690,7 +690,7 @@ function newsletter_wiz_modal(
     }
 
     $output .= '<div id="newsletter_wizard" title="';
-    $output .= __('Wanna be up to date?');
+    $output .= __('Do you want to be up to date?');
     $output .= '" style="display: none;">';
     $output .= '<div style="margin: 5px 0 10px; float: left; padding-left: 15px;">';
     $output .= html_print_image('images/pandora_circle_big.png', true);
@@ -698,14 +698,20 @@ function newsletter_wiz_modal(
 
     $output .= '<div style="font-size: 12pt; margin: 5px 20px; float: left; padding-top: 23px;">';
     $output .= __(
-        'Keep this %s up to date with latest updates.',
+        'Subscribe to our newsletter',
         $product_name
     );
     $output .= '</div>';
 
     $output .= '<div class="license_text" style="clear:both;">';
+    $output .= '<p>Stay up to date with updates, upgrades and promotions by subscribing to our newsletter.</p>';
     $output .= '<p>';
-    $output .= __('In the same fashion, when subscribed to the newsletter you accept that your email will pass on to a database property of %s. This data will solely be used to provide you with information about %s and will not be conceded to third parties. You can unregister from said database at any time from the newsletter subscription options.', $product_name, $product_name);
+    $output .= __(
+        'By subscribing to the newsletter, you accept that your email will be transferred to a database owned by %s. These data will be used only to provide you with information about %s and will not be given to third parties. You can unsubscribe from this database at any time from the newsletter subscription options.',
+        $product_name, 
+        $product_name
+    );
+
     $output .= '</p>';
 
     $output .= '</div>';

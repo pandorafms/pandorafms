@@ -32,7 +32,6 @@ global $config;
 // Load the header.
 require $config['homedir'].'/operation/users/user_edit_header.php';
 
-hd($_POST);
 if (!is_metaconsole()) {
     date_default_timezone_set('UTC');
     include 'include/javascript/timezonepicker/includes/parser.inc';
@@ -618,16 +617,17 @@ if (!is_metaconsole()) {
                 <div class="edit_user_comments">'.$comments.'</div>
             </div>    
         </div>';
+
 if ($config['ehorus_enabled'] && $config['ehorus_user_login']) {
-    // eHorus user login
+    // eHorus user remote login
     $table_remote = new StdClass();
     $table_remote->data = [];
     $table_remote->width = '100%';
-    $table_remote->styleTable = 'margin-bottom: 10px;';
-    $table_remote->id = 'ehorus_user_login';
-    $table_remote->class = 'ehorus_user_login white_box';
+    $table_remote->id = 'ehorus-remote-setup';
+    $table_remote->class = 'white_box';
     $table_remote->size['name'] = '30%';
     $table_remote->style['name'] = 'font-weight: bold';
+
 
     // User.
     $row = [];
@@ -648,21 +648,18 @@ if ($config['ehorus_enabled'] && $config['ehorus_user_login']) {
     $row = [];
     $row['name'] = __('Test');
     $row['control'] = html_print_button(__('Start'), 'test-ehorus', false, 'ehorus_connection_test(&quot;'.$ehorus_host.'&quot;,'.$ehorus_port.')', 'class="sub next"', true);
-    $row['control'] .= '<span id="test-ehorus-spinner" style="display:none;">&nbsp;'.html_print_image('images/spinner.gif', true).'</span>';
-    $row['control'] .= '<span id="test-ehorus-success" style="display:none;">&nbsp;'.html_print_image('images/status_sets/default/severity_normal.png', true).'</span>';
-    $row['control'] .= '<span id="test-ehorus-failure" style="display:none;">&nbsp;'.html_print_image('images/status_sets/default/severity_critical.png', true).'</span>';
+    $row['control'] .= '&nbsp;<span id="test-ehorus-spinner" style="display:none;">&nbsp;'.html_print_image('images/spinner.gif', true).'</span>';
+    $row['control'] .= '&nbsp;<span id="test-ehorus-success" style="display:none;">&nbsp;'.html_print_image('images/status_sets/default/severity_normal.png', true).'</span>';
+    $row['control'] .= '&nbsp;<span id="test-ehorus-failure" style="display:none;">&nbsp;'.html_print_image('images/status_sets/default/severity_critical.png', true).'</span>';
     $row['control'] .= '<span id="test-ehorus-message" style="display:none;"></span>';
     $table_remote->data['ehorus_test'] = $row;
 
-    echo '<div class="ehorus_user_acces white_box">';
-    html_print_input_hidden('update_config', 1);
+
     html_print_table($table_remote);
-    echo '</div>';
 }
 
 
-
-    echo '<div class="edit_user_button">';
+echo '<div class="edit_user_button">';
 if (!$config['user_can_update_info']) {
     echo '<i>'.__('You can not change your user info under the current authentication scheme').'</i>';
 } else {
@@ -671,6 +668,7 @@ if (!$config['user_can_update_info']) {
 }
 
     echo '</div>';
+    echo '</form>';
 
 echo '<div id="edit_user_profiles" class="white_box">';
 if (!defined('METACONSOLE')) {

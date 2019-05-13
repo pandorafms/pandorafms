@@ -667,7 +667,7 @@ class Item extends Model
         if (isset($data['encodedHtml']) === true) {
             return $data['encodedHtml'];
         } else if (isset($data['html']) === true) {
-            return \base64_encode($data['html']);
+            return base64_encode($data['html']);
         }
 
         return '';
@@ -686,6 +686,10 @@ class Item extends Model
      */
     protected static function fetchDataFromDB(array $filter): array
     {
+        // Load side libraries.
+        global $config;
+        include_once $config['homedir'].'/include/functions_io.php';
+
         // Due to this DB call, this function cannot be unit tested without
         // a proper mock.
         $row = \db_get_row_filter('tlayout_data', $filter);
@@ -698,11 +702,6 @@ class Item extends Model
         global $config;
         include_once $config['homedir'].'/include/functions_io.php';
 
-        if (\is_metaconsole()) {
-            \enterprise_include_once('include/functions_metaconsole.php');
-            \enterprise_include_once('meta/include/functions_ui_meta.php');
-        }
-
         // Clean up to two levels of HTML entities.
         $row = \io_safe_output(\io_safe_output($row));
 
@@ -712,9 +711,9 @@ class Item extends Model
 
         // The linked module includes the agent data.
         if (static::$useLinkedModule === true) {
-            $row = \array_merge($row, static::fetchModuleDataFromDB($row));
+            $row = array_merge($row, static::fetchModuleDataFromDB($row));
         } else if (static::$useLinkedAgent === true) {
-            $row = \array_merge($row, static::fetchAgentDataFromDB($row));
+            $row = array_merge($row, static::fetchAgentDataFromDB($row));
         }
 
         // Build the item link if needed.
@@ -806,6 +805,11 @@ class Item extends Model
      */
     protected static function fetchModuleDataFromDB(array $itemData): array
     {
+        // Load side libraries.
+        if (\is_metaconsole()) {
+            \enterprise_include_once('include/functions_metaconsole.php');
+        }
+
         // Initialize with the agent data.
         $moduleData = static::fetchAgentDataFromDB($itemData);
 
@@ -830,7 +834,9 @@ class Item extends Model
         $moduleName = false;
 
         // Connect to node.
-        if (\is_metaconsole() && \metaconsole_connect(null, $metaconsoleId) !== NOERR) {
+        if (\is_metaconsole()
+            && \metaconsole_connect(null, $metaconsoleId) !== NOERR
+        ) {
             throw new \InvalidArgumentException(
                 'error connecting to the node'
             );
@@ -874,14 +880,17 @@ class Item extends Model
         global $config;
 
         // Load side libraries.
-        \enterprise_include_once('include/functions_metaconsole.php');
-        \enterprise_include_once('meta/include/functions_ui_meta.php');
+        include_once $config['homedir'].'/include/functions_ui.php';
+        if (\is_metaconsole()) {
+            \enterprise_include_once('include/functions_metaconsole.php');
+            \enterprise_include_once('meta/include/functions_ui_meta.php');
+        }
 
         $linkedVisualConsole = static::extractLinkedVisualConsole($data);
         $linkedModule = static::extractLinkedModule($data);
         $linkedAgent = static::extractLinkedAgent($data);
 
-        $baseUrl = $config['homeurl'].'index.php';
+        $baseUrl = \ui_get_full_url('index.php');
 
         // TODO: There's a feature to get the link from the label.
         if (static::$useLinkedVisualConsole === true
@@ -891,9 +900,9 @@ class Item extends Model
             // Linked Visual Console.
             $vcId = $linkedVisualConsole['linkedLayoutId'];
             // The layout can be from another node.
-            $metaconsoleId = $linkedVisualConsole['metaconsoleId'];
+            $linkedLayoutAgentId = $linkedVisualConsole['linkedLayoutAgentId'];
 
-            if (empty($metaconsoleId) === true && \is_metaconsole()) {
+            if (empty($linkedLayoutAgentId) === true && \is_metaconsole()) {
                 /*
                  * A Visual Console from this console.
                  * We are in a metaconsole.
@@ -908,7 +917,9 @@ class Item extends Model
                         'pure'         => (int) $config['pure'],
                     ]
                 );
-            } else if (empty($metaconsoleId) === true && !\is_metaconsole()) {
+            } else if (empty($linkedLayoutAgentId) === true
+                && !\is_metaconsole()
+            ) {
                 /*
                  * A Visual Console from this console.
                  * We are in a regular console.
@@ -930,7 +941,7 @@ class Item extends Model
 
                 try {
                     $node = \metaconsole_get_connection_by_id(
-                        $metaconsoleId
+                        $linkedLayoutAgentId
                     );
                     return \ui_meta_get_node_url(
                         $node,
@@ -1044,7 +1055,8 @@ class Item extends Model
                         return null;
                     }
                 }
-            } else if (static::$useLinkedAgent === true
+            } else if ((static::$useLinkedAgent === true
+                || static::$useLinkedModule === true)
                 && $linkedAgent['agentId'] !== null
                 && $linkedAgent['agentId'] > 0
             ) {

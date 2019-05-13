@@ -184,6 +184,10 @@ final class Percentile extends Item
         global $config;
         include_once $config['homedir'].'/include/functions_graph.php';
         include_once $config['homedir'].'/include/functions_modules.php';
+        include_once $config['homedir'].'/include/functions_io.php';
+        if (is_metaconsole()) {
+            \enterprise_include_once('include/functions_metaconsole.php');
+        }
 
         // Get the linked module Id.
         $linkedModule = static::extractLinkedModule($data);

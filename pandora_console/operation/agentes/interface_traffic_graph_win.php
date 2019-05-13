@@ -96,7 +96,7 @@ if ($refresh > 0) {
             -->
         </script>
     </head>
-    <body bgcolor="#ffffff" style='background:#ffffff;'>
+    <body style='background:#ffffff;'>
 <?php
 // ACL
         $all_groups = agents_get_all_groups_agent($agent_id);
@@ -136,7 +136,8 @@ if ($date > $now) {
 
         $urlImage = ui_get_full_url(false);
 
-        echo '<div style="margin-left: 70px; padding-top: 10px;">';
+        // Graph.
+        echo '<div style="padding-top:80px;">';
 
         $height = 400;
         $width  = '90%';
@@ -177,27 +178,14 @@ if ($date > $now) {
 
         echo '</div>';
 
-        //
-        // SIDE MENU
-        //
-        $side_layer_params = [];
-        // TOP TEXT
-        $side_layer_params['top_text'] = "<div style='color: white; width: 100%; text-align: center; font-weight: bold; vertical-align: top;'>".html_print_image('/images/config.disabled.png', true, ['width' => '16px'], false, false, false, true).' '.__('Graph configuration menu').'</div>';
-        $side_layer_params['body_text'] = "<div class='menu_sidebar_outer'>";
-        $side_layer_params['body_text'] .= __('Please, make your changes and apply with the <i>Reload</i> button');
-
-        // MENU
-        $side_layer_params['body_text'] .= '<form method="get" action="interface_traffic_graph_win.php">';
-        $side_layer_params['body_text'] .= html_print_input_hidden('params', base64_encode($params_json), true);
-
         // FORM TABLE
         $table = html_get_predefined_table('transparent', 2);
-        $table->width = '98%';
+        $table->width = '100%';
         $table->id = 'stat_win_form_div';
-        $table->style[0] = 'text-align:left; padding: 7px;';
+        $table->style[0] = 'text-align:left;';
         $table->style[1] = 'text-align:left;';
-        $table->styleTable = 'border-spacing: 4px;';
-        $table->class = 'alternate';
+        $table->styleTable = 'margin-bottom: 20px;';
+        $table->class = 'events_show_more_table';
 
         $data = [];
         $data[0] = __('Refresh time');
@@ -255,40 +243,32 @@ if ($date > $now) {
         $table->rowclass[] = '';
 
         $form_table = html_print_table($table, true);
+        $form_table .= '<div style="width:100%; text-align:right;">'.html_print_submit_button(
+            __('Reload'),
+            'submit',
+            false,
+            'class="sub upd"',
+            true
+        ).'</div>';
 
-        unset($table);
 
-        $table->id = 'stat_win_form';
-        $table->width = '100%';
-        $table->cellspacing = 2;
-        $table->cellpadding = 2;
-        $table->class = 'databox';
+        // Menu.
+        $menu_form = "<form method='get' action='interface_traffic_graph_win.php'>".html_print_input_hidden('params', base64_encode($params_json), true);
 
-        $data = [];
-        $data[0] = html_print_div(['content' => $form_table, 'style' => 'overflow: auto; height: 220px'], true);
-        $table->data[] = $data;
-        $table->rowclass[] = '';
+        if (!empty($server_id)) {
+            $menu_form .= html_print_input_hidden('server', $server_id, true);
+        }
 
-        $data = [];
-        $data[0] = '<div style="width:100%; text-align:right;">'.html_print_submit_button(__('Reload'), 'submit', false, 'class="sub upd"', true).'</div>';
-        $table->data[] = $data;
-        $table->rowclass[] = '';
-
-        $side_layer_params['body_text'] .= html_print_table($table, true);
-        $side_layer_params['body_text'] .= '</form>';
-        $side_layer_params['body_text'] .= '</div>';
-        // outer
-        // ICONS
-        $side_layer_params['icon_closed'] = '/images/graphmenu_arrow_hide.png';
-        $side_layer_params['icon_open'] = '/images/graphmenu_arrow.png';
-
-        // SIZE
-        $side_layer_params['width'] = 500;
-
-        // POSITION
-        $side_layer_params['position'] = 'left';
-
-        html_print_side_layer($side_layer_params);
+        echo $menu_form;
+        echo '<div class="module_graph_menu_dropdown">
+                <div id="module_graph_menu_header" class="module_graph_menu_header">
+                    '.html_print_image('images/arrow_down_green.png', true, ['class' => 'module_graph_menu_arrow', 'float' => 'left'], false, false, true).'
+                    <span>'.__('Graph configuration menu').ui_print_help_icon('graphs', true, $config['homeurl'], 'images/help_g.png', true).'</span>
+                    '.html_print_image('images/config.png', true, ['float' => 'right'], false, false, true).'
+                </div>
+                <div class="module_graph_menu_content module_graph_menu_content_closed" style="display:none;">'.$form_table.'</div>
+            </div>';
+        echo '</form>';
 
         // Hidden div to forced title
         html_print_div(['id' => 'forced_title_layer', 'class' => 'forced_title_layer', 'hidden' => true]);
@@ -341,4 +321,22 @@ ui_include_time_picker(true);
     $.datepicker.setDefaults($.datepicker.regional["<?php echo $custom_user_language; ?>"]);
 
     forced_title_callback();
+
+    // Menu.
+    $('#module_graph_menu_header').on('click', function(){
+        var arrow = $('#module_graph_menu_header .module_graph_menu_arrow');
+        var arrow_up = 'arrow_up_green';
+        var arrow_down = 'arrow_down_green';
+        if( $('.module_graph_menu_content').hasClass('module_graph_menu_content_closed')){
+            $('.module_graph_menu_content').show();
+            $('.module_graph_menu_content').removeClass('module_graph_menu_content_closed');          
+            arrow.attr('src',arrow.attr('src').replace(arrow_down, arrow_up));
+        }
+        else{
+            $('.module_graph_menu_content').hide();
+            $('.module_graph_menu_content').addClass('module_graph_menu_content_closed'); 
+            arrow.attr('src',arrow.attr('src').replace(arrow_up, arrow_down));
+        }
+    });
+
 </script>

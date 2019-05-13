@@ -361,8 +361,16 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
         (this.props.isLinkEnabled && prevProps.link !== this.props.link))
     ) {
       const container = this.createContainerDomElement();
+      // Add the children of the old element.
       container.innerHTML = this.elementRef.innerHTML;
-
+      // Copy the attributes.
+      const attrs = this.elementRef.attributes;
+      for (let i = 0; i < attrs.length; i++) {
+        if (attrs[i].nodeName !== "id") {
+          container.setAttributeNode(attrs[i]);
+        }
+      }
+      // Replace the reference.
       if (this.elementRef.parentNode !== null) {
         this.elementRef.parentNode.replaceChild(container, this.elementRef);
       }

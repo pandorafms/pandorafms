@@ -62,7 +62,7 @@ final class Container extends Model
             );
         }
 
-        $this->extractGroupId($data);
+        static::extractGroupId($data);
     }
 
 
@@ -80,13 +80,13 @@ final class Container extends Model
         return [
             'id'                => (int) $data['id'],
             'name'              => $data['name'],
-            'groupId'           => $this->extractGroupId($data),
-            'backgroundImage'   => $this->extractBackgroundImage($data),
-            'backgroundColor'   => $this->extractBackgroundColor($data),
-            'isFavorite'        => $this->extractFavorite($data),
+            'groupId'           => static::extractGroupId($data),
+            'backgroundImage'   => static::extractBackgroundImage($data),
+            'backgroundColor'   => static::extractBackgroundColor($data),
+            'isFavorite'        => static::extractFavorite($data),
             'width'             => (int) $data['width'],
             'height'            => (int) $data['height'],
-            'backgroundURL'     => $this->extractBackgroundUrl($data),
+            'backgroundURL'     => static::extractBackgroundUrl($data),
             'relationLineWidth' => (int) $data['relationLineWidth'],
         ];
     }
@@ -101,7 +101,7 @@ final class Container extends Model
      *
      * @throws \InvalidArgumentException When a valid group Id can't be found.
      */
-    private function extractGroupId(array $data): int
+    private static function extractGroupId(array $data): int
     {
         $groupId = static::parseIntOr(
             static::issetInArray($data, ['id_group', 'groupId']),
@@ -125,7 +125,7 @@ final class Container extends Model
      *
      * @return mixed String representing the image name (not empty) or null.
      */
-    private function extractBackgroundImage(array $data)
+    private static function extractBackgroundImage(array $data)
     {
         $backgroundImage = static::notEmptyStringOr(
             static::issetInArray($data, ['background', 'backgroundURL']),
@@ -143,7 +143,7 @@ final class Container extends Model
      *
      * @return mixed String representing the image url (not empty) or null.
      */
-    private function extractBackgroundUrl(array $data)
+    private static function extractBackgroundUrl(array $data)
     {
         return static::notEmptyStringOr(
             static::issetInArray($data, ['backgroundURL']),
@@ -159,7 +159,7 @@ final class Container extends Model
      *
      * @return mixed String representing the color (not empty) or null.
      */
-    private function extractBackgroundColor(array $data)
+    private static function extractBackgroundColor(array $data)
     {
         return static::notEmptyStringOr(
             static::issetInArray(
@@ -181,7 +181,7 @@ final class Container extends Model
      *
      * @return boolean If the item is favorite or not.
      */
-    private function extractFavorite(array $data): bool
+    private static function extractFavorite(array $data): bool
     {
         return static::parseBool(
             static::issetInArray($data, ['is_favourite', 'isFavorite'])
@@ -223,32 +223,12 @@ final class Container extends Model
         $backgroundImage = static::extractBackgroundImage($row);
 
         if ($backgroundUrl === null && $backgroundImage !== null) {
-            $backgroundPath = 'images/console/background/'.$backgroundImage;
-
-            $width = (int) $row['width'];
-            $height = (int) $row['height'];
-
-            if ($width > 0 && $height > 0) {
-                $q = [
-                    'getFile'    => 1,
-                    'thumb'      => 1,
-                    'thumb_size' => $width.'x'.$height,
-                    'file'       => '../../'.$backgroundPath,
-                ];
-                $row['backgroundURL'] = ui_get_full_url(
-                    'include/Image/image_functions.php?'.http_build_query($q),
-                    false,
-                    false,
-                    false
-                );
-            } else {
-                $row['backgroundURL'] = ui_get_full_url(
-                    $backgroundPath,
-                    false,
-                    false,
-                    false
-                );
-            }
+            $row['backgroundURL'] = ui_get_full_url(
+                'images/console/background/'.$backgroundImage,
+                false,
+                false,
+                false
+            );
         }
 
         return \io_safe_output($row);
@@ -383,7 +363,7 @@ final class Container extends Model
             $class = static::getItemClass($itemType);
 
             try {
-                \array_push($items, $class::fromDB(['id' => $itemId]));
+                array_push($items, $class::fromDB(['id' => $itemId]));
             } catch (\Throwable $e) {
                 // TODO: Log this?
             }

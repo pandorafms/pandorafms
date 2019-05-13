@@ -92,6 +92,16 @@ echo '<img class="vc-qr" src="../../images/qrcode_icon_2.jpg"/>';
 echo '</a>';
 echo '</li>';
 
+// Countdown.
+echo '<li class="nomn">';
+echo '<div class="vc-refr">';
+echo '<div id="vc-refr-form">';
+echo __('Refresh').':';
+echo html_print_select(get_refresh_time_array(), 'refr', $refr, '', '', 0, true, false, false);
+echo '</div>';
+echo '</div>';
+echo '</li>';
+
 // Console name.
 echo '<li class="nomn">';
 echo '<div class="vc-title">'.$visualConsoleName.'</div>';
@@ -113,6 +123,7 @@ if (!users_can_manage_group_all('AR')) {
     $aclUserGroups = array_keys(users_get_groups(false, 'AR'));
 }
 
+$ignored_params['refr'] = '';
 ui_require_javascript_file('pandora_visual_console');
 include_javascript_d3();
 visual_map_load_client_resources();
@@ -159,7 +170,7 @@ $visualConsoleItems = VisualConsole::getItemsFromDB(
 
         // Change the links.
         if (prevProps && prevProps.id !== newProps.id) {
-            var regex = /(id=|id_visual_console=|id_layout=)\d+(&?)/gi;
+            var regex = /(id=|id_visual_console=|id_layout=|id_visualmap=)\d+(&?)/gi;
             var replacement = '$1' + newProps.id + '$2';
 
             // Tab links.
@@ -186,8 +197,13 @@ $visualConsoleItems = VisualConsole::getItemsFromDB(
         handleUpdate
     );
 
-    $(document).ready(function () {
-        var controls = document.getElementById('vc-controls');
-        if (controls) autoHideElement(controls, 1000);
+    $(document).ready (function () {
+        var refr = <?php echo (int) $refr; ?>;
+        var href = "<?php echo ui_get_url_refresh($ignored_params); ?>";
+
+        $('select#refr').change(function (event) {
+            url = js_html_entity_decode( href ) +  $('select#refr').val();
+            $(document).attr ("location", url);
+        });
     });
 </script>

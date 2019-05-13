@@ -391,7 +391,11 @@ sub pandora_generate_alerts ($$$$$$$$;$$$) {
 	}
 
 	# Get enabled alerts associated with this module
-	my $alert_type_filter = defined ($alert_type) ? " AND type = '$alert_type'" : '';
+	my $alert_type_filter = '';
+	if (defined($alert_type)) {
+		# not_normal includes unknown!
+		$alert_type_filter = $alert_type eq 'unknown' ? " AND (type = 'unknown' OR type = 'not_normal')" : " AND type = '$alert_type'"; 
+	}
 	my @alerts = get_db_rows ($dbh, '
 		SELECT talert_template_modules.id as id_template_module,
 			talert_template_modules.*, talert_templates.*

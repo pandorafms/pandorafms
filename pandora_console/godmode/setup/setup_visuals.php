@@ -70,10 +70,6 @@ $values[SECONDS_5MINUTES] = human_time_description_raw(SECONDS_5MINUTES);
 $values[SECONDS_10MINUTES] = human_time_description_raw(SECONDS_10MINUTES);
 $values[SECONDS_30MINUTES] = human_time_description_raw(SECONDS_30MINUTES);
 
-$table_behaviour->data[$row][0] = __('Default interval for refresh on Visual Console').ui_print_help_tip(__('This interval will affect to Visual Console pages'), true);
-$table_behaviour->data[$row][1] = html_print_select($values, 'vc_refr', $config['vc_refr'], '', 'N/A', 0, true, false, false);
-$row++;
-
 $table_behaviour->data[$row][0] = __('Paginated module view');
 $table_behaviour->data[$row][1] = html_print_checkbox_switch(
     'paginate_module',
@@ -908,6 +904,24 @@ $row++;
     $table_vc->size[0] = '50%';
     $table_vc->data = [];
 
+    // Remove when the new view reaches rock solid stability.
+    $table_vc->data[$row][0] = __('Legacy Visual Console View');
+    $table_vc->data[$row][0] .= ui_print_help_tip(
+        __('To use the old view when using the Visual Console visor'),
+        true
+    );
+    $table_vc->data[$row][1] = html_print_checkbox_switch(
+        'legacy_vc',
+        1,
+        (bool) $config['legacy_vc'],
+        true
+    );
+    $row++;
+
+    $table_vc->data[$row][0] = __('Default interval for refresh on Visual Console').ui_print_help_tip(__('This interval will affect to Visual Console pages'), true);
+    $table_vc->data[$row][1] = html_print_select($values, 'vc_refr', (int) $config['vc_refr'], '', 'N/A', 0, true, false, false);
+    $row++;
+
     $vc_favourite_view_array[0] = __('Classic view');
     $vc_favourite_view_array[1] = __('View of favorites');
     $table_vc->data[$row][0] = __('Type of view of visual consoles').ui_print_help_tip(__('Allows you to directly display the list of favorite visual consoles'), true);
@@ -918,12 +932,8 @@ $row++;
     $table_vc->data[$row][1] = "<input type ='number' value=".$config['vc_menu_items']." size='5' name='vc_menu_items' min='0' max='25'>";
     $row++;
 
-    if (empty($config['vc_line_thickness'])) {
-        $config['vc_line_thickness'] = 2;
-    }
-
     $table_vc->data[$row][0] = __('Default line thickness for the Visual Console').ui_print_help_tip(__('This interval will affect to the lines between elements on the Visual Console'), true);
-    $table_vc->data[$row][1] = html_print_input_text('vc_line_thickness', $config['vc_line_thickness'], '', 5, 5, true);
+    $table_vc->data[$row][1] = html_print_input_text('vc_line_thickness', (int) $config['vc_line_thickness'], '', 5, 5, true);
 
 
     echo '<fieldset>';

@@ -1790,7 +1790,6 @@ function html_print_button($label='OK', $name='', $disabled=false, $script='', $
  */
 function html_print_textarea($name, $rows, $columns, $value='', $attributes='', $return=false, $class='')
 {
-
     $output = '<textarea id="textarea_'.$name.'" name="'.$name.'" cols="'.$columns.'" rows="'.$rows.'" '.$attributes.'" class="'.$class.'">';
     // $output .= io_safe_input ($value);
     $output .= ($value);

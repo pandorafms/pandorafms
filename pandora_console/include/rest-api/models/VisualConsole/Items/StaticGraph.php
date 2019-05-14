@@ -230,8 +230,8 @@ final class StaticGraph extends Item
             if (!$isBooleanModule
                 || ($isBooleanModule && $showLastValueTooltip !== 'default')
             ) {
-                if (is_numeric($value)) {
-                    $imgTitle .= __('Last value: ').\remove_right_zeros($value);
+                if (\is_numeric($value)) {
+                    $imgTitle .= __('Last value: ').\remove_right_zeros(\number_format((float) $value, (int) $config['graph_precision']));
                 } else {
                     $imgTitle .= __('Last value: ').$value;
                 }

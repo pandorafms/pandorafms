@@ -1646,7 +1646,7 @@ function events_get_agent(
             $sql_where,
             0,
             1000,
-            is_metaconsole(),
+            (is_metaconsole() && $id_server) ? true : false,
             false,
             false,
             $history

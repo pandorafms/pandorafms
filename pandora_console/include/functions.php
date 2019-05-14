@@ -4451,9 +4451,9 @@ function get_help_info($section_name)
 
         case 'planned_downtime':
             if ($es) {
-                $result .= 'Gestion_y_Administracion&printable=yes#Creaci.C3.B3n_parada_planificada';
+                $result .= 'Gestion_y_Administracion&printable=yes#Introducci.C3.B3n_4';
             } else {
-                $result .= 'Managing_and_Administration&printable=yes#Create_a_scheduled_downtime';
+                $result .= 'Managing_and_Administration&printable=yes#Introduction_4';
             }
         break;
 
@@ -5262,6 +5262,14 @@ function get_help_info($section_name)
                 $result .= 'Operacion&printable=yes#Tipos_de_m.C3.B3dulos';
             } else {
                 $result .= '';
+            }
+        break;
+
+        case 'render_view_tab':
+            if ($es) {
+                $result .= 'Pandora_GIS&printable=yes#Operaci.C3.B3n';
+            } else {
+                $result .= 'GIS&printable=yes#Operation';
             }
         break;
     }

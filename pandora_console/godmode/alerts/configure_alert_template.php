@@ -679,7 +679,7 @@ if ($step == 2) {
         'type',
         $type,
         '',
-        __('Select'),
+        __('None'),
         0,
         true,
         false,
@@ -1018,6 +1018,7 @@ var onchange_msg = <?php echo '"'.__('The alert would fire when the module value
 var onchange_not = <?php echo '"'.__('The alert would fire when the module value does not change').'"'; ?>;
 var unknown = <?php echo "'".__('The alert would fire when the module is in unknown status')."'"; ?>;
 var error_message_min_max_zero = <?php echo "'".__('The alert template cannot have the same value for min and max thresholds.')."'"; ?>;
+var not_normal = <?php echo "'".__('The alert would fire when the module is in not normal status')."'"; ?>;
 
 function check_fields_step2() {
     var correct = true;
@@ -1173,6 +1174,13 @@ if ($step == 2) {
             
             /* Show example */
             $("span#example").empty ().append (critical);
+            break;
+        case "not_normal":
+            $("#template-value, #template-max, span#matches_value, #template-min").hide ();
+            $("#template-example").show ();
+            
+            /* Show example */
+            $("span#example").empty ().append (not_normal);
             break;
         case "onchange":
             $("#template-value, #template-max, #template-min").hide ();

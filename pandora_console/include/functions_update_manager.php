@@ -35,6 +35,27 @@
 
 
 /**
+ * Verifies registration state.
+ *
+ * @return boolean Status.
+ */
+function update_manager_verify_registration()
+{
+    global $config;
+
+    if (isset($config['pandora_uid']) === true
+        && $config['pandora_uid'] != ''
+        && $config['pandora_uid'] != 'OFFLINE'
+    ) {
+        // Verify with UpdateManager.
+        return true;
+    }
+
+    return false;
+}
+
+
+/**
  * Parses responses from configuration wizard.
  *
  * @return void
@@ -347,10 +368,10 @@ function show_configuration_wizard() {
     <?php
     if ($launch === true) {
         ?>
-$(document).ready (function () {
-    show_configuration_wizard();
-});
-    <?php
+        $(document).ready (function () {
+            show_configuration_wizard();
+        });
+        <?php
     }
     ?>
 
@@ -604,10 +625,10 @@ function show_registration_wizard() {
     <?php
     if ($launch === true) {
         ?>
-$(document).ready (function () {
-    show_registration_wizard();
-});
-    <?php
+        $(document).ready (function () {
+            show_registration_wizard();
+        });
+        <?php
     }
     ?>
 
@@ -708,7 +729,7 @@ function newsletter_wiz_modal(
     $output .= '<p>';
     $output .= __(
         'By subscribing to the newsletter, you accept that your email will be transferred to a database owned by %s. These data will be used only to provide you with information about %s and will not be given to third parties. You can unsubscribe from this database at any time from the newsletter subscription options.',
-        $product_name, 
+        $product_name,
         $product_name
     );
 
@@ -895,10 +916,10 @@ function show_newsletter_wizard() {
     <?php
     if ($launch === true) {
         ?>
-$(document).ready (function () {
-    show_newsletter_wizard();
-});
-    <?php
+        $(document).ready (function () {
+            show_newsletter_wizard();
+        });
+        <?php
     }
     ?>
 
@@ -922,6 +943,12 @@ $(document).ready (function () {
  *
  */
 
+
+/**
+ * Prepare configuration values.
+ *
+ * @return array UM Configuration tokens.
+ */
 function update_manager_get_config_values()
 {
     global $config;
@@ -943,11 +970,18 @@ function update_manager_get_config_values()
         'limit_count'    => $limit_count,
         'build'          => $build_version,
         'version'        => $pandora_version,
+        'puid'           => $config['pandora_uid'],
     ];
 }
 
 
-// Function to remove dir and files inside
+/**
+ * Function to remove dir and files inside.
+ *
+ * @param string $dir Path to dir.
+ *
+ * @return void
+ */
 function rrmdir($dir)
 {
     if (is_dir($dir)) {
@@ -971,6 +1005,11 @@ function rrmdir($dir)
 }
 
 
+/**
+ * Install updates step2.
+ *
+ * @return void
+ */
 function update_manager_install_package_step2()
 {
     global $config;
@@ -984,9 +1023,9 @@ function update_manager_install_package_step2()
 
     $path = sys_get_temp_dir().'/pandora_oum/'.$package;
 
-    // All files extracted
+    // All files extracted.
     $files_total = $path.'/files.txt';
-    // Files copied
+    // Files copied.
     $files_copied = $path.'/files.copied.txt';
     $return = [];
 
@@ -995,93 +1034,109 @@ function update_manager_install_package_step2()
     }
 
     if (file_exists($path)) {
-        if ($files_h = fopen($files_total, 'r')) {
-            while ($line = stream_get_line($files_h, 65535, "\n")) {
-                $line = trim($line);
-
-                // Tries to move the old file to the directory backup inside the extracted package
-                if (file_exists($config['homedir'].'/'.$line)) {
-                    rename($config['homedir'].'/'.$line, $path.'/backup/'.$line);
-                }
-
-                // Tries to move the new file to the Integria directory
-                $dirname = dirname($line);
-                if (!file_exists($config['homedir'].'/'.$dirname)) {
-                    $dir_array = explode('/', $dirname);
-                    $temp_dir = '';
-                    foreach ($dir_array as $dir) {
-                        $temp_dir .= '/'.$dir;
-                        if (!file_exists($config['homedir'].$temp_dir)) {
-                            mkdir($config['homedir'].$temp_dir);
-                        }
-                    }
-                }
-
-                if (is_dir($path.'/'.$line)) {
-                    if (!file_exists($config['homedir'].'/'.$line)) {
-                        mkdir($config['homedir'].'/'.$line);
-                        file_put_contents($files_copied, $line."\n", (FILE_APPEND | LOCK_EX));
-                    }
-                } else {
-                    // Copy the new file
-                    if (rename($path.'/'.$line, $config['homedir'].'/'.$line)) {
-                        // Append the moved file to the copied files txt
-                        if (!file_put_contents($files_copied, $line."\n", (FILE_APPEND | LOCK_EX))) {
-                            // If the copy process fail, this code tries to restore the files backed up before
-                            if ($files_copied_h = fopen($files_copied, 'r')) {
-                                while ($line_c = stream_get_line($files_copied_h, 65535, "\n")) {
-                                    $line_c = trim($line_c);
-                                    if (!rename($path.'/backup/'.$line, $config['homedir'].'/'.$line_c)) {
-                                        $backup_status = __('Some of your files might not be recovered.');
-                                    }
-                                }
-
-                                if (!rename($path.'/backup/'.$line, $config['homedir'].'/'.$line)) {
-                                    $backup_status = __('Some of your files might not be recovered.');
-                                }
-
-                                fclose($files_copied_h);
-                            } else {
-                                $backup_status = __('Some of your old files might not be recovered.');
-                            }
-
-                            fclose($files_h);
-                            $return['status'] = 'error';
-                            $return['message'] = __("Line '$line' not copied to the progress file.").'&nbsp;'.$backup_status;
-                            echo json_encode($return);
-                            return;
-                        }
-                    } else {
-                        // If the copy process fail, this code tries to restore the files backed up before
-                        if ($files_copied_h = fopen($files_copied, 'r')) {
-                            while ($line_c = stream_get_line($files_copied_h, 65535, "\n")) {
-                                $line_c = trim($line_c);
-                                if (!rename($path.'/backup/'.$line, $config['homedir'].'/'.$line)) {
-                                    $backup_status = __('Some of your old files might not be recovered.');
-                                }
-                            }
-
-                            fclose($files_copied_h);
-                        } else {
-                            $backup_status = __('Some of your files might not be recovered.');
-                        }
-
-                        fclose($files_h);
-                        $return['status'] = 'error';
-                        $return['message'] = __("File '$line' not copied.").'&nbsp;'.$backup_status;
-                        echo json_encode($return);
-                        return;
-                    }
-                }
-            }
-
-            fclose($files_h);
-        } else {
+        $files_h = fopen($files_total, 'r');
+        if ($files_h === false) {
             $return['status'] = 'error';
             $return['message'] = __('An error ocurred while reading a file.');
             echo json_encode($return);
             return;
         }
+
+        while ($line = stream_get_line($files_h, 65535, "\n")) {
+            $line = trim($line);
+
+            // Tries to move the old file to the directory backup
+            // inside the extracted package.
+            if (file_exists($config['homedir'].'/'.$line)) {
+                rename($config['homedir'].'/'.$line, $path.'/backup/'.$line);
+            }
+
+            // Tries to move the new file to the Integria directory.
+            $dirname = dirname($line);
+            if (!file_exists($config['homedir'].'/'.$dirname)) {
+                $dir_array = explode('/', $dirname);
+                $temp_dir = '';
+                foreach ($dir_array as $dir) {
+                    $temp_dir .= '/'.$dir;
+                    if (!file_exists($config['homedir'].$temp_dir)) {
+                        mkdir($config['homedir'].$temp_dir);
+                    }
+                }
+            }
+
+            if (is_dir($path.'/'.$line)) {
+                if (!file_exists($config['homedir'].'/'.$line)) {
+                    mkdir($config['homedir'].'/'.$line);
+                    file_put_contents($files_copied, $line."\n", (FILE_APPEND | LOCK_EX));
+                }
+            } else {
+                // Copy the new file.
+                if (rename($path.'/'.$line, $config['homedir'].'/'.$line)) {
+                    // Append the moved file to the copied files txt.
+                    if (!file_put_contents($files_copied, $line."\n", (FILE_APPEND | LOCK_EX))) {
+                        // If the copy process fail, this code tries to
+                        // restore the files backed up before.
+                        $files_copied_h = fopen($files_copied, 'r');
+                        if ($files_copied_h === false) {
+                            $backup_status = __('Some of your old files might not be recovered.');
+                        } else {
+                            while ($line_c = stream_get_line($files_copied_h, 65535, "\n")) {
+                                $line_c = trim($line_c);
+                                if (!rename($path.'/backup/'.$line, $config['homedir'].'/'.$line_c)) {
+                                    $backup_status = __('Some of your files might not be recovered.');
+                                }
+                            }
+
+                            if (!rename($path.'/backup/'.$line, $config['homedir'].'/'.$line)) {
+                                $backup_status = __('Some of your files might not be recovered.');
+                            }
+
+                            fclose($files_copied_h);
+                        }
+
+                        fclose($files_h);
+                        $return['status'] = 'error';
+                        $return['message'] = __(
+                            'Line "%s" not copied to the progress file.',
+                            $line
+                        ).'&nbsp;'.$backup_status;
+                        echo json_encode($return);
+                        return;
+                    }
+                } else {
+                    // If the copy process fail, this code tries to restore
+                    // the files backed up before.
+                    $files_copied_h = fopen($files_copied, 'r');
+                    if ($files_copied_h === false) {
+                        $backup_status = __('Some of your files might not be recovered.');
+                    } else {
+                        while ($line_c = stream_get_line($files_copied_h, 65535, "\n")) {
+                            $line_c = trim($line_c);
+                            if (!rename(
+                                $path.'/backup/'.$line,
+                                $config['homedir'].'/'.$line
+                            )
+                            ) {
+                                $backup_status = __('Some of your old files might not be recovered.');
+                            }
+                        }
+
+                        fclose($files_copied_h);
+                    }
+
+                    fclose($files_h);
+                    $return['status'] = 'error';
+                    $return['message'] = __(
+                        'Line "%s" not copied to the progress file.',
+                        $line
+                    ).'&nbsp;'.$backup_status;
+                    echo json_encode($return);
+                    return;
+                }
+            }
+        }
+
+        fclose($files_h);
     } else {
         $return['status'] = 'error';
         $return['message'] = __('The package does not exist');
@@ -1091,16 +1146,25 @@ function update_manager_install_package_step2()
 
     update_manager_enterprise_set_version($version);
     $product_name = get_product_name();
-    db_pandora_audit("Update $product_name", "Update version: $version of $product_name by ".$config['id_user']);
+
+    // Generate audit entry.
+    db_pandora_audit(
+        'Update '.$product_name,
+        'Update version: '.$version.' of '.$product_name.' by '.$config['id_user']
+    );
 
     $return['status'] = 'success';
     $return['message'] = __('The package is installed.');
     echo json_encode($return);
 
-    return;
 }
 
 
+/**
+ * Launch update manager client.
+ *
+ * @return void
+ */
 function update_manager_main()
 {
     global $config;
@@ -1123,6 +1187,11 @@ function update_manager_main()
 }
 
 
+/**
+ * Check updates available (opensource).
+ *
+ * @return boolean Packages available or not.
+ */
 function update_manager_check_online_free_packages_available()
 {
     global $config;
@@ -1138,6 +1207,7 @@ function update_manager_check_online_free_packages_available()
         'current_package' => $um_config_values['current_update'],
         'version'         => $um_config_values['version'],
         'build'           => $um_config_values['build'],
+        'puid'            => $um_config_values['puid'],
     ];
 
     $curlObj = curl_init();
@@ -1182,6 +1252,13 @@ function update_manager_check_online_free_packages_available()
 }
 
 
+/**
+ * Update process, online packages.
+ *
+ * @param boolean $is_ajax Is ajax call o direct call.
+ *
+ * @return string HTML update message.
+ */
 function update_manager_check_online_free_packages($is_ajax=true)
 {
     global $config;
@@ -1197,12 +1274,15 @@ function update_manager_check_online_free_packages($is_ajax=true)
         'current_package' => $um_config_values['current_update'],
         'version'         => $um_config_values['version'],
         'build'           => $um_config_values['build'],
+        'puid'            => $um_config_values['puid'],
     ];
 
-    // For to test in the shell
     /*
-        wget https://artica.es/pandoraupdate7/server.php -O- --no-check-certificate --post-data "action=newest_package&license=PANDORA_FREE&limit_count=1&current_package=1&version=v5.1RC1&build=PC140625"
-    */
+     * To test using shell execute:
+     * wget https://artica.es/pandoraupdate7/server.php -O- \
+     * --no-check-certificate --post-data \
+     * "action=newest_package&license=PANDORA_FREE&limit_count=1&current_package=1&version=v5.1RC1&build=PC140625"
+     */
 
     $curlObj = curl_init();
     curl_setopt($curlObj, CURLOPT_URL, $config['url_update_manager']);
@@ -1211,15 +1291,27 @@ function update_manager_check_online_free_packages($is_ajax=true)
     curl_setopt($curlObj, CURLOPT_POSTFIELDS, $params);
     curl_setopt($curlObj, CURLOPT_SSL_VERIFYPEER, false);
     if (isset($config['update_manager_proxy_server'])) {
-        curl_setopt($curlObj, CURLOPT_PROXY, $config['update_manager_proxy_server']);
+        curl_setopt(
+            $curlObj,
+            CURLOPT_PROXY,
+            $config['update_manager_proxy_server']
+        );
     }
 
     if (isset($config['update_manager_proxy_port'])) {
-        curl_setopt($curlObj, CURLOPT_PROXYPORT, $config['update_manager_proxy_port']);
+        curl_setopt(
+            $curlObj,
+            CURLOPT_PROXYPORT,
+            $config['update_manager_proxy_port']
+        );
     }
 
     if (isset($config['update_manager_proxy_user'])) {
-        curl_setopt($curlObj, CURLOPT_PROXYUSERPWD, $config['update_manager_proxy_user'].':'.$config['update_manager_proxy_password']);
+        curl_setopt(
+            $curlObj,
+            CURLOPT_PROXYUSERPWD,
+            $config['update_manager_proxy_user'].':'.$config['update_manager_proxy_password']
+        );
     }
 
     $result = curl_exec($curlObj);
@@ -1295,7 +1387,7 @@ function update_manager_check_online_free_packages($is_ajax=true)
                 echo __('There is no update available.');
             }
 
-            return;
+            return $update_message;
         } else {
             if (!empty($result)) {
                 $result = json_decode($result, true);
@@ -1309,6 +1401,14 @@ function update_manager_check_online_free_packages($is_ajax=true)
 }
 
 
+/**
+ * Executes an action against UpdateManager.
+ *
+ * @param string  $action            Action to perform.
+ * @param boolean $additional_params Extra parameters (optional).
+ *
+ * @return array With UM response.
+ */
 function update_manager_curl_request($action, $additional_params=false)
 {
     global $config;
@@ -1327,6 +1427,7 @@ function update_manager_curl_request($action, $additional_params=false)
         'current_package' => $um_config_values['current_update'],
         'version'         => $um_config_values['version'],
         'build'           => $um_config_values['build'],
+        'puid'            => $um_config_values['puid'],
     ];
     if ($additional_params !== false) {
         $params = array_merge($params, $additional_params);
@@ -1483,18 +1584,30 @@ function update_manager_register_instance()
 
     switch ($result['http_status']) {
         case 200:
-            // Retrieve the PUID
+            // Retrieve the PUID.
             $message = json_decode($result['update_message'], true);
 
             if ($message['success'] == 1) {
                 $puid = $message['pandora_uid'];
                 config_update_value('pandora_uid', $puid);
 
-                // The tupdate table is reused to display messages. A specific entry to tupdate_package is required.
-                // Then, this tupdate_package id is saved in tconfig
-                db_process_sql_insert('tupdate_package', ['description' => '__UMMESSAGES__']);
-                $id_um_package_messages = db_get_value('id', 'tupdate_package', 'description', '__UMMESSAGES__');
-                config_update_value('id_um_package_messages', $id_um_package_messages);
+                // The tupdate table is reused to display messages.
+                // A specific entry to tupdate_package is required.
+                // Then, this tupdate_package id is saved in tconfig.
+                db_process_sql_insert(
+                    'tupdate_package',
+                    ['description' => '__UMMESSAGES__']
+                );
+                $id_um_package_messages = db_get_value(
+                    'id',
+                    'tupdate_package',
+                    'description',
+                    '__UMMESSAGES__'
+                );
+                config_update_value(
+                    'id_um_package_messages',
+                    $id_um_package_messages
+                );
                 return [
                     'success' => true,
                     'message' => __('Pandora successfully subscribed with UID: ').$puid.'.',
@@ -1515,6 +1628,11 @@ function update_manager_register_instance()
 }
 
 
+/**
+ * Deprecated? study.
+ *
+ * @return void
+ */
 function update_manager_download_messages()
 {
     include_once 'include/functions_io.php';
@@ -1524,13 +1642,16 @@ function update_manager_download_messages()
         return;
     }
 
-    // Do not ask in next 2 hours
+    // Do not ask in next 2 hours.
     $future = (time() + 2 * SECONDS_1HOUR);
     config_update_value('last_um_check', $future);
 
-    // Delete old messages
-    // db_get_sql('DELETE FROM tupdate WHERE UNIX_TIMESTAMP(filename) < UNIX_TIMESTAMP(NOW())');
-    // Build the curl request
+    /*
+     * Delete old messages
+     * db_get_sql('DELETE FROM tupdate WHERE UNIX_TIMESTAMP(filename) < UNIX_TIMESTAMP(NOW())');
+     * Build the curl request
+     */
+
     $params = [
         'pandora_uid' => $config['pandora_uid'],
         'timezone'    => $config['timezone'],
@@ -1549,32 +1670,55 @@ function update_manager_download_messages()
 
             if ($message['success'] == 1) {
                 foreach ($message['messages'] as $single_message) {
-                    // Convert subject -> db_field_value; message_html -> data; expiration -> filename; message_id -> svn_version
-                    $single_message['db_field_value'] = io_safe_input($single_message['subject']);
+                    // Convert subject -> db_field_value;.
+                    // message_html -> data;
+                    // expiration -> filename;
+                    // message_id -> svn_version;.
+                    $single_message['db_field_value'] = io_safe_input(
+                        $single_message['subject']
+                    );
                     unset($single_message['subject']);
-                    $single_message['data'] = io_safe_input_html($single_message['message_html']);
-                    // It is mandatory to prepend a backslash to all single quotes
-                    $single_message['data'] = preg_replace('/\'/', '\\\'', $single_message['data']);
+                    $single_message['data'] = io_safe_input_html(
+                        $single_message['message_html']
+                    );
+                    // It is mandatory to prepend a backslash to all
+                    // single quotes.
+                    $single_message['data'] = preg_replace(
+                        '/\'/',
+                        '\\\'',
+                        $single_message['data']
+                    );
                     unset($single_message['message_html']);
                     $single_message['filename'] = $single_message['expiration'];
                     unset($single_message['expiration']);
                     $single_message['svn_version'] = $single_message['message_id'];
                     unset($single_message['message_id']);
 
-                    // Add common tconfig id_update_package
+                    // Add common tconfig id_update_package.
                     $single_message['id_update_package'] = $config['id_um_package_messages'];
 
-                    $result = db_process_sql_insert('tupdate', $single_message);
+                    $result = db_process_sql_insert(
+                        'tupdate',
+                        $single_message
+                    );
                 }
             }
         break;
 
         default:
+            // Ignore.
         break;
     }
 }
 
 
+/**
+ * Deprecated? review.
+ *
+ * @param integer $id_message Message id.
+ *
+ * @return boolean Result.
+ */
 function update_manager_remote_read_messages($id_message)
 {
     global $config;
@@ -1590,6 +1734,11 @@ function update_manager_remote_read_messages($id_message)
 }
 
 
+/**
+ * Extracts OUM package.
+ *
+ * @return boolean Success or not.
+ */
 function update_manager_extract_package()
 {
     global $config;
@@ -1600,16 +1749,23 @@ function update_manager_extract_package()
 
     if (!defined('PHP_VERSION_ID')) {
         $version = explode('.', PHP_VERSION);
-        define('PHP_VERSION_ID', ($version[0] * 10000 + $version[1] * 100 + $version[2]));
+        define(
+            'PHP_VERSION_ID',
+            ($version[0] * 10000 + $version[1] * 100 + $version[2])
+        );
     }
 
     $extracted = false;
 
-    // Phar and exception working fine in 5.5.0 or higher
+    // Phar and exception working fine in 5.5.0 or higher.
     if (PHP_VERSION_ID >= 50505) {
         $phar = new PharData($path_package);
         try {
-            $result = $phar->extractTo($config['attachment_store'].'/downloads/', null, true);
+            $result = $phar->extractTo(
+                $config['attachment_store'].'/downloads/',
+                null,
+                true
+            );
             $extracted = true;
         } catch (Exception $e) {
             echo ' There\'s a problem ... -> '.$e->getMessage();
@@ -1620,10 +1776,11 @@ function update_manager_extract_package()
     $return = true;
 
     if ($extracted === false) {
+        // Phar extraction failed. Fallback to OS extraction.
         $return = false;
 
         if (strtoupper(substr(PHP_OS, 0, 3)) == 'WIN') {
-            // unsupported OS
+            // Unsupported OS.
             echo 'This OS ['.PHP_OS.'] does not support direct extraction of tgz files. Upgrade PHP version to be > 5.5.0';
         } else {
             $return = true;
@@ -1663,8 +1820,11 @@ function update_manager_extract_package()
 
 
 /**
- * The update copy entirire the tgz or fail (leave some parts copies and some part not).
- * This does make any thing with the BD.
+ * The update copy entire tgz or fail (leaving some parts copied
+ * and others not).
+ * This does not make changes on DB.
+ *
+ * @return boolean Success or not.
  */
 function update_manager_starting_update()
 {
@@ -1721,6 +1881,15 @@ function update_manager_starting_update()
 }
 
 
+/**
+ * Copies recursively extracted package updates to target path.
+ *
+ * @param string $src        Path.
+ * @param string $dst        Path.
+ * @param string $black_list Path.
+ *
+ * @return boolean Success or not.
+ */
 function update_manager_recurse_copy($src, $dst, $black_list)
 {
     $dir = opendir($src);
@@ -1730,7 +1899,12 @@ function update_manager_recurse_copy($src, $dst, $black_list)
     while (false !== ( $file = readdir($dir))) {
         if (( $file != '.' ) && ( $file != '..' ) && (!in_array($file, $black_list))) {
             if (is_dir($src.'/'.$file)) {
-                if (!update_manager_recurse_copy($src.'/'.$file, $dst.'/'.$file, $black_list)) {
+                if (!update_manager_recurse_copy(
+                    $src.'/'.$file,
+                    $dst.'/'.$file,
+                    $black_list
+                )
+                ) {
                     return false;
                 }
             } else {
@@ -1750,6 +1924,13 @@ function update_manager_recurse_copy($src, $dst, $black_list)
 }
 
 
+/**
+ * Updates current update (DB).
+ *
+ * @param string $current_package Current package.
+ *
+ * @return void
+ */
 function update_manager_set_current_package($current_package)
 {
     if (enterprise_installed()) {
@@ -1786,6 +1967,11 @@ function update_manager_set_current_package($current_package)
 }
 
 
+/**
+ * Retrieves current update from DB.
+ *
+ * @return string Current update.
+ */
 function update_manager_get_current_package()
 {
     global $config;
@@ -1814,32 +2000,64 @@ function update_manager_get_current_package()
 }
 
 
-// Set the read or not read status message of current user
+/**
+ * Deprecated? verify.
+ * Set the read or not read status message of current user.
+ *
+ * @param integer $message_id Message id.
+ * @param string  $status     Status.
+ *
+ * @return void
+ */
 function update_manger_set_read_message($message_id, $status)
 {
     global $config;
 
-    $rollback = db_get_value('data_rollback', 'tupdate', 'svn_version', $message_id);
+    $rollback = db_get_value(
+        'data_rollback',
+        'tupdate',
+        'svn_version',
+        $message_id
+    );
     $users_read = json_decode($rollback, true);
     $users_read[$config['id_user']] = $status;
 
     $rollback = json_encode($users_read);
-    db_process_sql_update('tupdate', ['data_rollback' => $rollback], ['svn_version' => $message_id]);
+    db_process_sql_update(
+        'tupdate',
+        ['data_rollback' => $rollback],
+        ['svn_version' => $message_id]
+    );
 }
 
 
-// Get the read or not read status message
+/**
+ * Deprecated? verify.
+ * Get the read or not read status message
+ *
+ * @param integer $message_id Message id.
+ * @param boolean $rollback   Rollback or not.
+ *
+ * @return boolean Success or not.
+ */
 function update_manger_get_read_message($message_id, $rollback=false)
 {
     global $config;
 
     if ($rollback === false) {
-        $rollback = db_get_value('data_rollback', 'tupdate', 'svn_version', $message_id);
+        $rollback = db_get_value(
+            'data_rollback',
+            'tupdate',
+            'svn_version',
+            $message_id
+        );
     }
 
     $users_read = json_decode($rollback, true);
 
-    if (isset($users_read[$config['id_user']]) && ($users_read[$config['id_user']] == 1)) {
+    if (isset($users_read[$config['id_user']])
+        && ($users_read[$config['id_user']] == 1)
+    ) {
         return true;
     }
 
@@ -1847,7 +2065,12 @@ function update_manger_get_read_message($message_id, $rollback=false)
 }
 
 
-// Get the last message
+/**
+ * Deprecated? verify.
+ * Get the last message.
+ *
+ * @return array Latest message.
+ */
 function update_manger_get_last_message()
 {
     global $config;
@@ -1862,7 +2085,14 @@ function update_manger_get_last_message()
 }
 
 
-// Get the a single message message
+/**
+ * Deprecated? verify.
+ * Get the a single message message.
+ *
+ * @param integer $message_id Message id.
+ *
+ * @return array Target message.
+ */
 function update_manger_get_single_message($message_id)
 {
     global $config;
@@ -1875,6 +2105,12 @@ function update_manger_get_single_message($message_id)
 }
 
 
+/**
+ * Deprecated? verify.
+ * Count messages (local).
+ *
+ * @return integer Count.
+ */
 function update_manager_get_total_messages()
 {
     global $config;
@@ -1884,6 +2120,12 @@ function update_manager_get_total_messages()
 }
 
 
+/**
+ * Deprecated? verify.
+ * Retrieves unread messages count.
+ *
+ * @return integer Pending read messages.
+ */
 function update_manager_get_unread_messages()
 {
     global $config;
@@ -1896,6 +2138,12 @@ function update_manager_get_unread_messages()
 }
 
 
+/**
+ * Deprecated? verify.
+ * Retrieves some messages count.
+ *
+ * @return integer Pending read messages.
+ */
 function update_manager_get_not_deleted_messages()
 {
     global $config;
@@ -1908,6 +2156,14 @@ function update_manager_get_not_deleted_messages()
 }
 
 
+/**
+ * Deprecated? verify.
+ * Deletes message.
+ *
+ * @param integer $message_id Message id.
+ *
+ * @return void
+ */
 function update_manger_set_deleted_message($message_id)
 {
     global $config;

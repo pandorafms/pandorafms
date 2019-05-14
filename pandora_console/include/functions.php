@@ -1762,16 +1762,22 @@ function array_key_to_offset($array, $key)
 /**
  * Make a snmpwalk and return it.
  *
- * @param string  $ip_target             The target address.
- * @param string  $snmp_version          Version of the snmp: 1,2,2c or 3.
- * @param string  $snmp_community.
- * @param string  $snmp3_auth_user.
- * @param string  $snmp3_security_level.
- * @param string  $snmp3_auth_method.
- * @param string  $snmp3_auth_pass.
- * @param string  $snmp3_privacy_method.
- * @param string  $snmp3_privacy_pass.
- * @param integer $quick_print           0 for all details, 1 for only value.
+ * @param string  $ip_target            The target address.
+ * @param string  $snmp_version         Version of the snmp: 1,2,2c or 3.
+ * @param string  $snmp_community       Snmp_community.
+ * @param string  $snmp3_auth_user      Snmp3_auth_user.
+ * @param string  $snmp3_security_level Snmp3_security_level.
+ * @param string  $snmp3_auth_method    Snmp3_auth_method.
+ * @param string  $snmp3_auth_pass      Snmp3_auth_pass.
+ * @param string  $snmp3_privacy_method Snmp3_privacy_method.
+ * @param string  $snmp3_privacy_pass   Snmp3_privacy_pass.
+ * @param integer $quick_print          To get all details 0, 1: only value.
+ * @param string  $base_oid             Base_oid.
+ * @param string  $snmp_port            Snmp_port.
+ * @param integer $server_to_exec       Server_to_exec.
+ * @param string  $extra_arguments      Extra_arguments.
+ * @param string  $format               Format to apply, for instance, to
+ *                                      retrieve hex-dumps: --hexOutputLength.
  *
  * @return array SNMP result.
  */
@@ -1789,7 +1795,8 @@ function get_snmpwalk(
     $base_oid='',
     $snmp_port='',
     $server_to_exec=0,
-    $extra_arguments=''
+    $extra_arguments='',
+    $format='-Oa'
 ) {
     global $config;
 
@@ -1840,15 +1847,15 @@ function get_snmpwalk(
         case '3':
             switch ($snmp3_security_level) {
                 case 'authNoPriv':
-                    $command_str = $snmpwalk_bin.' -m ALL -Oa '.$extra_arguments.' -v 3'.' -u '.escapeshellarg($snmp3_auth_user).' -A '.escapeshellarg($snmp3_auth_pass).' -l '.escapeshellarg($snmp3_security_level).' -a '.escapeshellarg($snmp3_auth_method).' '.escapeshellarg($ip_target).' '.$base_oid.' 2> '.$error_redir_dir;
+                    $command_str = $snmpwalk_bin.' -m ALL '.$format.' '.$extra_arguments.' -v 3'.' -u '.escapeshellarg($snmp3_auth_user).' -A '.escapeshellarg($snmp3_auth_pass).' -l '.escapeshellarg($snmp3_security_level).' -a '.escapeshellarg($snmp3_auth_method).' '.escapeshellarg($ip_target).' '.$base_oid.' 2> '.$error_redir_dir;
                 break;
 
                 case 'noAuthNoPriv':
-                    $command_str = $snmpwalk_bin.' -m ALL -Oa '.$extra_arguments.' -v 3'.' -u '.escapeshellarg($snmp3_auth_user).' -l '.escapeshellarg($snmp3_security_level).' '.escapeshellarg($ip_target).' '.$base_oid.' 2> '.$error_redir_dir;
+                    $command_str = $snmpwalk_bin.' -m ALL '.$format.' '.$extra_arguments.' -v 3'.' -u '.escapeshellarg($snmp3_auth_user).' -l '.escapeshellarg($snmp3_security_level).' '.escapeshellarg($ip_target).' '.$base_oid.' 2> '.$error_redir_dir;
                 break;
 
                 default:
-                    $command_str = $snmpwalk_bin.' -m ALL -Oa '.$extra_arguments.' -v 3'.' -u '.escapeshellarg($snmp3_auth_user).' -A '.escapeshellarg($snmp3_auth_pass).' -l '.escapeshellarg($snmp3_security_level).' -a '.escapeshellarg($snmp3_auth_method).' -x '.escapeshellarg($snmp3_privacy_method).' -X '.escapeshellarg($snmp3_privacy_pass).' '.escapeshellarg($ip_target).' '.$base_oid.' 2> '.$error_redir_dir;
+                    $command_str = $snmpwalk_bin.' -m ALL '.$format.' '.$extra_arguments.' -v 3'.' -u '.escapeshellarg($snmp3_auth_user).' -A '.escapeshellarg($snmp3_auth_pass).' -l '.escapeshellarg($snmp3_security_level).' -a '.escapeshellarg($snmp3_auth_method).' -x '.escapeshellarg($snmp3_privacy_method).' -X '.escapeshellarg($snmp3_privacy_pass).' '.escapeshellarg($ip_target).' '.$base_oid.' 2> '.$error_redir_dir;
                 break;
             }
         break;
@@ -1857,7 +1864,7 @@ function get_snmpwalk(
         case '2c':
         case '1':
         default:
-            $command_str = $snmpwalk_bin.' -m ALL '.$extra_arguments.' -Oa -v '.escapeshellarg($snmp_version).' -c '.escapeshellarg(io_safe_output($snmp_community)).' '.escapeshellarg($ip_target).' '.$base_oid.' 2> '.$error_redir_dir;
+            $command_str = $snmpwalk_bin.' -m ALL '.$extra_arguments.' '.$format.' -v '.escapeshellarg($snmp_version).' -c '.escapeshellarg(io_safe_output($snmp_community)).' '.escapeshellarg($ip_target).' '.$base_oid.' 2> '.$error_redir_dir;
         break;
     }
 

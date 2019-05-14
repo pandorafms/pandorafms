@@ -206,9 +206,7 @@ class ConsoleSupervisor
          *     NOTIF.UPDATEMANAGER.MESSAGES
          */
 
-        if (update_manager_verify_registration()) {
-            $this->getUMMessages();
-        }
+        $this->getUMMessages();
 
     }
 
@@ -434,9 +432,8 @@ class ConsoleSupervisor
          *     NOTIF.UPDATEMANAGER.MESSAGES
          */
 
-        if (update_manager_verify_registration()) {
-            $this->getUMMessages();
-        }
+        $this->getUMMessages();
+
     }
 
 
@@ -2248,6 +2245,22 @@ class ConsoleSupervisor
     {
         global $config;
 
+        if (update_manager_verify_registration() === false) {
+            // Console not subscribed.
+            return;
+        }
+
+        // Avoid contact for messages too much often.
+        if (isset($config['last_um_check'])
+            && time() < $config['last_um_check']
+        ) {
+            return;
+        }
+
+        // Only ask for messages once a day.
+        $future = (time() + 24 * SECONDS_1HOUR);
+        config_update_value('last_um_check', $future);
+
         include_once $config['homedir'].'/include/functions_update_manager.php';
 
         $params = [
@@ -2272,13 +2285,12 @@ class ConsoleSupervisor
             );
             foreach ($messages as $message) {
                 if (!isset($message['url'])) {
-                    // Avoid log messges.
-                    $message['url'] = null;
+                    $message['url'] = '#';
                 }
 
                 $this->notify(
                     [
-                        'type'    => 'NOTIF.UPDATEMANAGER.MESSAGES',
+                        'type'    => 'NOTIF.UPDATEMANAGER.MESSAGES.'.$message['id'],
                         'title'   => $message['subject'],
                         'message' => base64_decode($message['message_html']),
                         'url'     => $message['url'],

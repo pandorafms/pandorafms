@@ -215,7 +215,19 @@ if (!empty($all_data)) {
                 // END OF NEWS BOARD.
             }
 
-            $nots = messages_get_overview('utimestamp', 'DESC', false);
+            $nots = messages_get_overview(
+                'utimestamp',
+                'DESC',
+                false,
+                true,
+                0,
+                [
+                    'description' => [
+                        'messages',
+                        'System&#x20;status',
+                    ],
+                ]
+            );
             if (!empty($nots)) {
                 // Notifications board.
                 echo '<div id="notifications_board">';

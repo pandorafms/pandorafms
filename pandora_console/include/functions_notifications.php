@@ -972,13 +972,32 @@ function notifications_print_dropdown()
  */
 function notifications_print_dropdown_element($message_info)
 {
+    $action = '';
+
+    switch ($message_info['description']) {
+        case 'Official&#x20;communication':
+            $action = 'show_modal(this.id);';
+            $target = '';
+            $body_preview = io_safe_output($message_info['mensaje']);
+        break;
+
+        default:
+            $action = '';
+            $target = '_blank';
+            $body_preview = strip_tags(
+                io_safe_output($message_info['mensaje']),
+                '<br><pre>'
+            );
+        break;
+    }
+
     return sprintf(
         "<a
             class='notification-item'
-            onclick='click_on_notification_toast(event)'
+            onclick='%s'
             id='notification-item-id-%s'
             href='%s'
-            target='_blank'
+            target='%s'
         >
             %s
             <div class='notification-info'>
@@ -990,10 +1009,12 @@ function notifications_print_dropdown_element($message_info)
                 </p>
             </div>
         </a>",
+        $action.';click_on_notification_toast(event)',
         $message_info['id_mensaje'],
         messages_get_url($message_info['id_mensaje']),
+        $target,
         html_print_image('images/'.$message_info['icon'], true),
         io_safe_output($message_info['subject']),
-        strip_tags(io_safe_output($message_info['mensaje']), '<br><pre>')
+        $body_preview
     );
 }

@@ -160,6 +160,19 @@ if (get_parameter('get_notifications_dropdown', 0)) {
     return;
 }
 
+if (get_parameter('get_notification', 0)) {
+    $msg_id = get_parameter('id', 0);
+
+    if ($msg_id > 0) {
+        $msg = messages_get_message($msg_id);
+
+        $msg['mensaje'] = io_safe_output($msg['mensaje']);
+        echo json_encode($msg);
+    }
+
+    return;
+}
+
 // Notification table. It is just a wrapper.
 $table_content = new StdClass();
 $table_content->data = [];

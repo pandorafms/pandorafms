@@ -128,12 +128,12 @@ ui_require_css_file('register');
 $initial = isset($config['initial_wizard']) !== true
     || $config['initial_wizard'] != '1';
 
-$newsletter = !db_get_value(
+$newsletter = db_get_value(
     'middlename',
     'tusuario',
     'id_user',
     $config['id_user']
-);
+) === null;
 
 $registration = isset($config['pandora_uid']) !== true
     || $config['pandora_uid'] == '';

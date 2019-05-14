@@ -902,15 +902,6 @@ clear_pandora_error_for_header();
 $config['logged'] = false;
 extensions_load_extensions($process_login);
 
-// Check for update manager messages
-if (license_free() && is_user_admin($config['id_user'])
-    && (($config['last_um_check'] < time())
-    || (!isset($config['last_um_check'])))
-) {
-    include_once 'include/functions_update_manager.php';
-    update_manager_download_messages();
-}
-
 if ($process_login) {
      // Call all extensions login function
     extensions_call_login_function();
@@ -1204,6 +1195,8 @@ if ($config['pure'] == 0) {
 echo '<div id="wiz_container">';
 echo '</div>';
 
+echo '<div id="um_msg_receiver">';
+echo '</div>';
 
 if ($config['pure'] == 0) {
     echo '</div>';
@@ -1257,8 +1250,6 @@ require 'include/php_to_js_values.php';
         //document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera.
         $("HTML, BODY").animate({ scrollTop: 0 }, 500);
     }
-
-
 
     //Initial load of page
     $(document).ready(adjustFooter);
@@ -1329,57 +1320,64 @@ require 'include/php_to_js_values.php';
 
     }
 
-    var times_fired_register_wizard = 0;
-
-    function run_identification_wizard (register, newsletter , return_button) {
-        if (times_fired_register_wizard) {
-            $(".ui-dialog-titlebar-close").show();
-            
-            //Reset some values                
-            $("#label-email-newsletter").hide();
-            $("#text-email-newsletter").hide();
-            $("#required-email-newsletter").hide();
-            $("#checkbox-register").removeAttr('checked');
-            $("#checkbox-newsletter").removeAttr('checked');
-            
-            // Hide or show parts
-            if (register == 1) {
-                $("#checkbox-register").show();
-                $("#label-register").show ();
-            }
-            if (register == 0) {
-                $("#checkbox-register").attr ('style', 'display: none !important');
-                $("#label-register").hide ();
-            }
-            if (newsletter == 1) {
-                $("#checkbox-newsletter").show();
-                $("#label-newsletter").show ();
-            }
-            if (newsletter == 0) {
-                $("#checkbox-newsletter").attr ('style', 'display: none !important');
-                $("#label-newsletter").hide ();
-            }
-            $("#login_accept_register").dialog('open');
-        }
-        else {
-            $(".ui-dialog-titlebar-close").show();
-            $("#container").append('<div class="id_wizard"></div>');
-            jQuery.post ("ajax.php",
-                {"page": "general/login_identification_wizard",
-                 "not_return": 1,
-                 "force_register": register,
-                 "force_newsletter": newsletter,
-                 "return_button": return_button},
-                function (data) {
-                    $(".id_wizard").hide ()
-                        .empty ()
-                        .append (data);
-                },
-                "html"
+    function show_modal(id) {
+        var match = /notification-(.*)-id-([0-9]+)/.exec(id);
+        if (!match) {
+            console.error(
+                "Cannot handle toast click event. Id not valid: ",
+                event.target.id
             );
+            return;
         }
-        times_fired_register_wizard++;
-        return false;
+        jQuery.post ("ajax.php",
+            {
+                "page": "godmode/setup/setup_notifications",
+                "get_notification": 1,
+                "id": match[2]
+            },
+            function (data) {
+                notifications_hide();
+                try {
+                    var json = JSON.parse(data);
+                    $('#um_msg_receiver')
+                        .empty ()
+                        .html (json.mensaje);
+
+                    $('#um_msg_receiver').prop('title', json.subject);
+                    
+                    // Launch modal.
+                    $("#um_msg_receiver").dialog({
+                        resizable: true,
+                        draggable: true,
+                        modal: true,
+                        width: 800,
+                        buttons: [
+                            {
+                                text: "OK",
+                                click: function() {
+                                    $( this ).dialog( "close" );
+                                }
+                            }
+                        ],
+                        overlay: {
+                                opacity: 0.5,
+                                background: "black"
+                            },
+                        closeOnEscape: false,
+                        open: function(event, ui) { $(".ui-dialog-titlebar-close").hide(); }
+                    });
+
+                    $(".ui-widget-overlay").css("background", "#000");
+                    $(".ui-widget-overlay").css("opacity", 0.6);
+                    $(".ui-draggable").css("cursor", "inherit");
+
+                } catch (error) {
+                    console.log(error);
+                }
+
+            },
+            "html"
+        );
     }
 
     //Dynamically assign footer position and width.

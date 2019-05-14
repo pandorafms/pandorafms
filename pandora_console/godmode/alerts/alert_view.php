@@ -186,6 +186,10 @@ switch ($template['type']) {
         $condition = __('The alert would fire when the module is in critical status');
     break;
 
+    case 'not_normal':
+        $condition = __('The alert would fire when the module is in not normal status');
+    break;
+
     case 'unknown':
         $condition = __('The alert would fire when the module is in unknown status');
     break;

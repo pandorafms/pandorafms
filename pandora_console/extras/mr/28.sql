@@ -1,5 +1,9 @@
 START TRANSACTION;
 
+ALTER TABLE `treport_content` ADD COLUMN `current_month` TINYINT(1) DEFAULT '1';
+
+ALTER TABLE `treport_content_template` ADD COLUMN `current_month` TINYINT(1) DEFAULT '1';
+
 ALTER TABLE `talert_commands` ADD COLUMN `fields_hidden` text;
 
 ALTER TABLE `talert_templates` MODIFY COLUMN `type` ENUM('regex','max_min','max','min','equal','not_equal','warning','critical','onchange','unknown','always','not_normal');

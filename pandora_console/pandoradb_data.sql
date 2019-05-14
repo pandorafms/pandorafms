@@ -1304,7 +1304,7 @@ INSERT INTO `tnotification_source`(`description`, `icon`, `max_postpone_time`, `
   ("Message", "icono_info_mr.png", 86400, 1, 1, 0),
   ("Pending&#x20;task", "icono_info_mr.png", 86400, 1, 1, 0),
   ("Advertisement", "icono_info_mr.png", 86400, 1, 1, 0),
-  ("Official&#x20;communication", "icono_info_mr.png", 86400, 1, 1, 0),
+  ("Official&#x20;communication", "icono_logo_pandora.png", 86400, 1, 1, 0),
   ("Sugerence", "icono_info_mr.png", 86400, 1, 1, 0);
 
 -- 

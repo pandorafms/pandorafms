@@ -1011,8 +1011,6 @@ function process_upload_xml($xml)
         $centralized_management = !is_central_policies_on_node();
         if ($centralized_management) {
             process_upload_xml_policy($xml, $group_filter);
-        } else {
-            ui_print_error_message(__('This node is configured with centralized mode. Go to metaconsole to create a policy.'));
         }
     }
 
@@ -1041,6 +1039,11 @@ function resource_registration_extension_main()
         ui_print_error_message(_('Error, please install the PHP libXML in the system.'));
 
         return;
+    }
+
+    $centralized_management = !is_central_policies_on_node();
+    if (!$centralized_management) {
+        ui_print_warning_message(__('This node is configured with centralized mode. Go to metaconsole to create a policy.'));
     }
 
     echo '<div class=notify>';

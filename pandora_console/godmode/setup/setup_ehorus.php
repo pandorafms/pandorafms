@@ -52,9 +52,8 @@ $table_enable->style['name'] = 'font-weight: bold';
 
 // Enable eHorus.
 $row = [];
-$row['name'] = ('Enable eHorus');
+$row['name'] = __('Enable eHorus');
 $row['control'] = html_print_checkbox_switch('ehorus_enabled', 1, $config['ehorus_enabled'], true);
-$row['button'] = html_print_submit_button(('Update'), 'update_button', false, 'class="sub upd"', true);
 $table_enable->data['ehorus_enabled'] = $row;
 
 // Remote config table.
@@ -153,10 +152,11 @@ echo '</div>';
     echo '<legend>'.__('eHorus API').'</legend>';
     html_print_input_hidden('update_config', 1);
     html_print_table($table_remote);
-    echo '<div class="action-buttons" style="width: '.$table_remote->width.'">';
-    html_print_submit_button(__('Update'), 'update_button', false, 'class="sub upd"');
-    echo '</div>';
+
     echo '</fieldset>';
+    echo '</div>';
+     echo '<div class="action-buttons" style="width: '.$table_remote->width.'">';
+    html_print_submit_button(__('Update'), 'update_button', false, 'class="sub upd"');
     echo '</div>';
     echo '</form>';
 

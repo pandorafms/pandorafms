@@ -422,6 +422,21 @@ class ConsoleSupervisor
             $this->checkCronRunning();
         }
 
+        /*
+         * Check if instance is registered.
+         *     NOTIF.UPDATEMANAGER.REGISTRATION
+         */
+
+        $this->checkUpdateManagerRegistration();
+
+        /*
+         * Check if there're new messages in UM.
+         *     NOTIF.UPDATEMANAGER.MESSAGES
+         */
+
+        if (update_manager_verify_registration()) {
+            $this->getUMMessages();
+        }
     }
 
 

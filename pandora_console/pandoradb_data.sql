@@ -1320,4 +1320,5 @@ INSERT INTO `tnotification_source_user` (`id_source`, `id_user`, `enabled`, `als
 
 INSERT INTO `tnotification_source_group` SELECT `id`,0 FROM `tnotification_source` WHERE `description`="Official&#x20;communication";
 
+UPDATE `tnotification_source` SET `enabled`=1 WHERE `description` = 'System&#x20;status' OR `description` = 'Official&#x20;communication';
   

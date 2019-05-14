@@ -35,6 +35,10 @@
 
 /* Analog clock */
 
+.visual-console-item .analogic-clock {
+  text-align: center;
+}
+
 .visual-console-item .analogic-clock .hour-hand {
   animation: rotate-hour 43200s infinite linear;
 }

@@ -46,7 +46,34 @@ if (is_ajax()) {
     $cancel_newsletter = get_parameter('cancel_newsletter', 0);
     $register_newsletter = get_parameter('register_newsletter', 0);
 
+    // Load wizards.
+    $load_wizards = get_parameter('load_wizards', '');
+
     $feedback = [];
+
+    // Load wizards.
+    if ($load_wizards != '') {
+        switch ($load_wizards) {
+            case 'initial':
+            return config_wiz_modal(false, false);
+
+            case 'registration':
+            return registration_wiz_modal(false, false);
+
+            case 'newsletter':
+            return newsletter_wiz_modal(false, false);
+
+            case 'all':
+                config_wiz_modal(false, false);
+                registration_wiz_modal(false, false);
+                newsletter_wiz_modal(false, false);
+            return;
+
+            default:
+                // Ignore.
+            break;
+        }
+    }
 
     // Configuration wizard process.
     if ($configuration_wizard) {
@@ -121,7 +148,6 @@ if ($initial) {
         (($registration === true) ? 'show_registration_wizard()' : null)
     );
 }
-
 
 if ($registration) {
     // Prepare registration wizard, not launch. leave control to flow.

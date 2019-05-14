@@ -1201,6 +1201,9 @@ if ($config['pure'] == 0) {
     // main_pure
 }
 
+echo '<div id="wiz_container">';
+echo '</div>';
+
 
 if ($config['pure'] == 0) {
     echo '</div>';
@@ -1281,13 +1284,49 @@ require 'include/php_to_js_values.php';
     })();
     
     function force_run_register () {
-        run_identification_wizard (1, 0, 0);
+        jQuery.post ("ajax.php",
+            {
+                "page": "general/register",
+                "load_wizards": 'registration'
+            },
+            function (data) {
+                $('#wiz_container').empty ()
+                    .html (data);
+                show_registration_wizard();
+            },
+            "html"
+        );
     }
+
     function force_run_newsletter () {
-        run_identification_wizard (0, 1, 0);
+        jQuery.post ("ajax.php",
+            {
+                "page": "general/register",
+                "load_wizards": 'newsletter'
+            },
+            function (data) {
+                $('#wiz_container').empty ()
+                    .html (data);
+                show_newsletter_wizard ();
+            },
+            "html"
+        );
     }
+
     function first_time_identification () {
-        run_identification_wizard (-1, -1, 1);
+        jQuery.post ("ajax.php",
+            {
+                "page": "general/register",
+                "load_wizards": 'initial'
+            },
+            function (data) {
+                $('#wiz_container').empty ()
+                    .html (data);
+                run_configuration_wizard ();
+            },
+            "html"
+        );
+
     }
 
     var times_fired_register_wizard = 0;

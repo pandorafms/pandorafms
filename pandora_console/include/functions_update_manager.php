@@ -1,7 +1,6 @@
 <?php
 /**
- * Extension to manage a list of gateways and the node address where they should
- * point to.
+ * Update manager client library.
  *
  * @category   Functions Update Manager
  * @package    Pandora FMS

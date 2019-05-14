@@ -243,7 +243,9 @@ $url = ui_get_url_refresh(
         'offset'        => false,
         'search_string' => $search_string,
         'search_type'   => $search_type,
-    ]
+    ],
+    true,
+    false
 );
 
 $table = new stdClass();

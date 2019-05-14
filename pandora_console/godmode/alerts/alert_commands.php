@@ -11,7 +11,7 @@
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-// Load global vars
+// Load global vars.
 global $config;
 
 require_once $config['homedir'].'/include/functions_alerts.php';
@@ -46,7 +46,7 @@ if (is_ajax()) {
         $id = (int) get_parameter('id', 0);
         $get_recovery_fields = (int) get_parameter('get_recovery_fields', 1);
 
-        // If command ID is not provided, check for action id
+        // If command ID is not provided, check for action id.
         if ($id == 0) {
             $id_action = (int) get_parameter('id_action');
             $id = alerts_get_alert_action_alert_command_id($id_action);
@@ -59,10 +59,12 @@ if (is_ajax()) {
             $command['description'] = io_safe_input(str_replace("\r\n", '<br>', io_safe_output($command['description'])));
         }
 
-        // Descriptions are stored in json
+        // Descriptions are stored in json.
         $fields_descriptions = empty($command['fields_descriptions']) ? '' : json_decode(io_safe_output($command['fields_descriptions']), true);
-        // Fields values are stored in json
+        // Fields values are stored in json.
         $fields_values = empty($command['fields_values']) ? '' : io_safe_output(json_decode($command['fields_values'], true));
+        // Fields hidden conditions are stored in json.
+        $fields_hidden_checked = empty($command['fields_hidden']) ? '' : io_safe_output(json_decode($command['fields_hidden'], true));
 
         $fields_rows = [];
         for ($i = 1; $i <= $config['max_macro_fields']; $i++) {
@@ -72,18 +74,20 @@ if (is_ajax()) {
 
             $field_description = $fields_descriptions[($i - 1)];
             $field_value = $fields_values[($i - 1)];
+            $field_hidden = $fields_hidden_checked[($i - 1)];
+
 
             if (!empty($field_description)) {
-                // If the value is 5,  this because severity in snmp alerts is not permit to show
+                // If the value is 5,  this because severity in snmp alerts is not permit to show.
                 if (($i > 5) && ($command['id'] == 3)) {
                     $fdesc = $field_description.' <br><span style="font-size:xx-small; font-weight:normal;">'.sprintf(__('Field %s'), ($i - 1)).'</span>';
                 } else {
                     $fdesc = $field_description.' <br><span style="font-size:xx-small; font-weight:normal;">'.sprintf(__('Field %s'), $i).'</span>';
                 }
 
-                // If the field is the number one, print the help message
+                // If the field is the number one, print the help message.
                 if ($i == 1) {
-                    // If our context is snmpconsole, show snmp_alert helps
+                    // If our context is snmpconsole, show snmp_alert helps.
                     if ((isset($_SERVER['HTTP_REFERER'])) && ( preg_match('/snmp_alert/', $_SERVER['HTTP_REFERER']) > 0 )) {
                         $fdesc .= ui_print_help_icon('snmp_alert_field1', true);
                     } else {
@@ -91,7 +95,7 @@ if (is_ajax()) {
                     }
                 }
             } else {
-                // If the macro hasn't description and doesnt appear in command, set with empty description to dont show it
+                // If the macro hasn't description and doesnt appear in command, set with empty description to dont show it.
                 if (($i > 5) && ($command['id'] == 3)) {
                     if (substr_count($command['command'], '_field'.($i - 1).'_') > 0) {
                         $fdesc = sprintf(__('Field %s'), ($i - 1));
@@ -107,9 +111,11 @@ if (is_ajax()) {
                 }
             }
 
+            $style = ((int) $field_hidden === 1) ? '-webkit-text-security: disc;' : '';
+
             if (!empty($field_value)) {
                 $field_value = io_safe_output($field_value);
-                // HTML type
+                // HTML type.
                 if (preg_match('/^_html_editor_$/i', $field_value)) {
                     $editor_type_chkbx = '<div style="padding: 4px 0px;"><b><small>';
                     $editor_type_chkbx .= __('Basic').ui_print_help_tip(__('For sending emails, text must be HTML format, if you want to use plain text, type it between the following labels: <pre></pre>'), true);
@@ -148,7 +154,7 @@ if (is_ajax()) {
                     $editor_type_chkbx .= html_print_radio_button_extended('field'.$i.'_recovery_value', 'text/html', '', 'text/html', false, '', '', true);
                     $editor_type_chkbx .= '</small></b></div>';
                     $rfield = $editor_type_chkbx;
-                    // Select type
+                    // Select type.
                 } else {
                     $fields_value_select = [];
                     $fv = explode(';', $field_value);
@@ -200,7 +206,7 @@ if (is_ajax()) {
                             1,
                             1,
                             $fv[0],
-                            'style="min-height:40px" class="fields"',
+                            'style="min-height:40px; '.$style.'" class="fields"',
                             true
                         );
                         $rfield = html_print_textarea(
@@ -208,7 +214,7 @@ if (is_ajax()) {
                             1,
                             1,
                             $fv[0],
-                            'style="min-height:40px" class="fields_recovery"',
+                            'style="min-height:40px; '.$style.'" class="fields_recovery',
                             true
                         );
                     }
@@ -219,7 +225,7 @@ if (is_ajax()) {
                     1,
                     1,
                     '',
-                    'style="min-height:40px" class="fields"',
+                    'style="min-height:40px; '.$style.'" class="fields"',
                     true
                 );
                 $rfield = html_print_textarea(
@@ -227,13 +233,13 @@ if (is_ajax()) {
                     1,
                     1,
                     '',
-                    'style="min-height:40px" class="fields_recovery"',
+                    'style="min-height:40px; '.$style.'" class="fields_recovery"',
                     true
                 );
             }
 
 
-            // The empty descriptions will be ignored
+            // The empty descriptions will be ignored.
             if ($fdesc == '') {
                 $fields_rows[$i] = '';
             } else {
@@ -248,7 +254,7 @@ if (is_ajax()) {
             }
         }
 
-        // If command is PandoraFMS event, field 5 must be empty because "severity" must be set by the alert
+        // If command is PandoraFMS event, field 5 must be empty because "severity" must be set by the alert.
         if ($command['id'] == 3) {
             $fields_rows[5] = '';
         }
@@ -268,7 +274,7 @@ if ($update_command) {
     return;
 }
 
-// Header
+// Header.
 if (defined('METACONSOLE')) {
     alerts_meta_print_header();
 } else {
@@ -283,16 +289,19 @@ if ($create_command) {
 
     $fields_descriptions = [];
     $fields_values = [];
+    $fields_hidden = [];
     $info_fields = '';
     $values = [];
     for ($i = 1; $i <= $config['max_macro_fields']; $i++) {
         $fields_descriptions[] = (string) get_parameter('field'.$i.'_description');
         $fields_values[] = (string) get_parameter('field'.$i.'_values');
+        $fields_hidden[] = get_parameter('field'.$i.'_hide');
         $info_fields .= ' Field'.$i.': '.$fields_values[($i - 1)];
     }
 
     $values['fields_values'] = io_json_mb_encode($fields_values);
     $values['fields_descriptions'] = io_json_mb_encode($fields_descriptions);
+    $values['fields_hidden'] = io_json_mb_encode($fields_hidden);
     $values['description'] = $description;
     $values['id_group'] = $id_group;
 
@@ -316,7 +325,7 @@ if ($create_command) {
         db_pandora_audit('Command management', 'Fail try to create alert command', false, false);
     }
 
-    // Show errors
+    // Show errors.
     if (!isset($messageAction)) {
         $messageAction = __('Could not be created');
     }
@@ -340,7 +349,7 @@ if ($create_command) {
 if ($delete_command) {
     $id = (int) get_parameter('id');
 
-    // Internal commands cannot be deleted
+    // Internal commands cannot be deleted.
     if (alerts_get_alert_command_internal($id)) {
         db_pandora_audit(
             'ACL Violation',
@@ -368,17 +377,17 @@ if ($delete_command) {
 if ($copy_command) {
     $id = (int) get_parameter('id');
 
-    // Get the info from the source command
+    // Get the info from the source command.
     $command_to_copy = db_get_row('talert_commands', 'id', $id);
     if ($command_to_copy === false) {
         ui_print_error_message(__("Command with id $id does not found."));
     } else {
-        // Prepare to insert the copy with same values
+        // Prepare to insert the copy with same values.
         unset($command_to_copy['id']);
         $command_to_copy['name'] .= __(' (copy)');
         $result = db_process_sql_insert('talert_commands', $command_to_copy);
 
-        // Print the result
+        // Print the result.
         ui_print_result_message(
             $result,
             __('Successfully copied'),

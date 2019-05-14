@@ -1762,16 +1762,22 @@ function array_key_to_offset($array, $key)
 /**
  * Make a snmpwalk and return it.
  *
- * @param string  $ip_target             The target address.
- * @param string  $snmp_version          Version of the snmp: 1,2,2c or 3.
- * @param string  $snmp_community.
- * @param string  $snmp3_auth_user.
- * @param string  $snmp3_security_level.
- * @param string  $snmp3_auth_method.
- * @param string  $snmp3_auth_pass.
- * @param string  $snmp3_privacy_method.
- * @param string  $snmp3_privacy_pass.
- * @param integer $quick_print           0 for all details, 1 for only value.
+ * @param string  $ip_target            The target address.
+ * @param string  $snmp_version         Version of the snmp: 1,2,2c or 3.
+ * @param string  $snmp_community       Snmp_community.
+ * @param string  $snmp3_auth_user      Snmp3_auth_user.
+ * @param string  $snmp3_security_level Snmp3_security_level.
+ * @param string  $snmp3_auth_method    Snmp3_auth_method.
+ * @param string  $snmp3_auth_pass      Snmp3_auth_pass.
+ * @param string  $snmp3_privacy_method Snmp3_privacy_method.
+ * @param string  $snmp3_privacy_pass   Snmp3_privacy_pass.
+ * @param integer $quick_print          To get all details 0, 1: only value.
+ * @param string  $base_oid             Base_oid.
+ * @param string  $snmp_port            Snmp_port.
+ * @param integer $server_to_exec       Server_to_exec.
+ * @param string  $extra_arguments      Extra_arguments.
+ * @param string  $format               Format to apply, for instance, to
+ *                                      retrieve hex-dumps: --hexOutputLength.
  *
  * @return array SNMP result.
  */
@@ -1789,7 +1795,8 @@ function get_snmpwalk(
     $base_oid='',
     $snmp_port='',
     $server_to_exec=0,
-    $extra_arguments=''
+    $extra_arguments='',
+    $format='-Oa'
 ) {
     global $config;
 
@@ -1840,15 +1847,15 @@ function get_snmpwalk(
         case '3':
             switch ($snmp3_security_level) {
                 case 'authNoPriv':
-                    $command_str = $snmpwalk_bin.' -m ALL -Oa '.$extra_arguments.' -v 3'.' -u '.escapeshellarg($snmp3_auth_user).' -A '.escapeshellarg($snmp3_auth_pass).' -l '.escapeshellarg($snmp3_security_level).' -a '.escapeshellarg($snmp3_auth_method).' '.escapeshellarg($ip_target).' '.$base_oid.' 2> '.$error_redir_dir;
+                    $command_str = $snmpwalk_bin.' -m ALL '.$format.' '.$extra_arguments.' -v 3'.' -u '.escapeshellarg($snmp3_auth_user).' -A '.escapeshellarg($snmp3_auth_pass).' -l '.escapeshellarg($snmp3_security_level).' -a '.escapeshellarg($snmp3_auth_method).' '.escapeshellarg($ip_target).' '.$base_oid.' 2> '.$error_redir_dir;
                 break;
 
                 case 'noAuthNoPriv':
-                    $command_str = $snmpwalk_bin.' -m ALL -Oa '.$extra_arguments.' -v 3'.' -u '.escapeshellarg($snmp3_auth_user).' -l '.escapeshellarg($snmp3_security_level).' '.escapeshellarg($ip_target).' '.$base_oid.' 2> '.$error_redir_dir;
+                    $command_str = $snmpwalk_bin.' -m ALL '.$format.' '.$extra_arguments.' -v 3'.' -u '.escapeshellarg($snmp3_auth_user).' -l '.escapeshellarg($snmp3_security_level).' '.escapeshellarg($ip_target).' '.$base_oid.' 2> '.$error_redir_dir;
                 break;
 
                 default:
-                    $command_str = $snmpwalk_bin.' -m ALL -Oa '.$extra_arguments.' -v 3'.' -u '.escapeshellarg($snmp3_auth_user).' -A '.escapeshellarg($snmp3_auth_pass).' -l '.escapeshellarg($snmp3_security_level).' -a '.escapeshellarg($snmp3_auth_method).' -x '.escapeshellarg($snmp3_privacy_method).' -X '.escapeshellarg($snmp3_privacy_pass).' '.escapeshellarg($ip_target).' '.$base_oid.' 2> '.$error_redir_dir;
+                    $command_str = $snmpwalk_bin.' -m ALL '.$format.' '.$extra_arguments.' -v 3'.' -u '.escapeshellarg($snmp3_auth_user).' -A '.escapeshellarg($snmp3_auth_pass).' -l '.escapeshellarg($snmp3_security_level).' -a '.escapeshellarg($snmp3_auth_method).' -x '.escapeshellarg($snmp3_privacy_method).' -X '.escapeshellarg($snmp3_privacy_pass).' '.escapeshellarg($ip_target).' '.$base_oid.' 2> '.$error_redir_dir;
                 break;
             }
         break;
@@ -1857,7 +1864,7 @@ function get_snmpwalk(
         case '2c':
         case '1':
         default:
-            $command_str = $snmpwalk_bin.' -m ALL '.$extra_arguments.' -Oa -v '.escapeshellarg($snmp_version).' -c '.escapeshellarg(io_safe_output($snmp_community)).' '.escapeshellarg($ip_target).' '.$base_oid.' 2> '.$error_redir_dir;
+            $command_str = $snmpwalk_bin.' -m ALL '.$extra_arguments.' '.$format.' -v '.escapeshellarg($snmp_version).' -c '.escapeshellarg(io_safe_output($snmp_community)).' '.escapeshellarg($ip_target).' '.$base_oid.' 2> '.$error_redir_dir;
         break;
     }
 
@@ -3541,25 +3548,27 @@ function series_type_graph_array($data, $show_elements_graph)
                     break;
                 }
 
-                if (isset($show_elements_graph['labels'])
+                if (isset($show_elements_graph['labels'][$value['agent_module_id']])
                     && is_array($show_elements_graph['labels'])
                     && (count($show_elements_graph['labels']) > 0)
                 ) {
                     if ($show_elements_graph['unit']) {
-                        $name_legend = $data_return['legend'][$key] = $value['agent_alias'].' / '.$value['module_name'].' / '.__('Unit ').' '.$show_elements_graph['unit'].': ';
+                        $name_legend = $show_elements_graph['labels'][$value['agent_module_id']].' / '.__('Unit ').' '.$show_elements_graph['unit'].': ';
+                        $data_return['legend'][$key] = $show_elements_graph['labels'][$value['agent_module_id']].' / '.__('Unit ').' '.$show_elements_graph['unit'].': ';
                     } else {
-                        $name_legend = $data_return['legend'][$key] = $value['agent_alias'].' / '.$value['module_name'].': ';
+                        $name_legend = $show_elements_graph['labels'][$value['agent_module_id']].': ';
+                        $data_return['legend'][$key] = $show_elements_graph['labels'][$value['agent_module_id']].': ';
                     }
                 } else {
                     if (strpos($key, 'baseline') !== false) {
-                        if ($show_elements_graph['unit']) {
-                            $name_legend = $data_return['legend'][$key] = $value['agent_alias'].' / '.$value['module_name'].' / '.__('Unit ').' '.$show_elements_graph['unit'].'Baseline ';
+                        if ($value['unit']) {
+                            $name_legend = $data_return['legend'][$key] = $value['agent_alias'].' / '.$value['module_name'].' / '.__('Unit ').' '.$value['unit'].'Baseline ';
                         } else {
                             $name_legend = $data_return['legend'][$key] = $value['agent_alias'].' / '.$value['module_name'].'Baseline ';
                         }
                     } else {
-                        if ($show_elements_graph['unit']) {
-                            $name_legend = $data_return['legend'][$key] = $value['agent_alias'].' / '.$value['module_name'].' / '.__('Unit ').' '.$show_elements_graph['unit'].': ';
+                        if ($value['unit']) {
+                            $name_legend = $data_return['legend'][$key] = $value['agent_alias'].' / '.$value['module_name'].' / '.__('Unit ').' '.$value['unit'].': ';
                         } else {
                             $name_legend = $data_return['legend'][$key] = $value['agent_alias'].' / '.$value['module_name'].': ';
                         }
@@ -3853,9 +3862,10 @@ function pandora_xhprof_display_result($key='', $method='link')
 /**
  * From a network with a mask remove the smallest ip and the highest
  *
- * @param  string address to identify the network.
- * @param  string mask to identify the mask network
- * @return array or false with smallest ip and highest ip
+ * @param string $address Identify the network.
+ * @param string $mask    Identify the mask network.
+ *
+ * @return array or false with smallest ip and highest ip.
  */
 function range_ips_for_network($address, $mask)
 {
@@ -3863,15 +3873,15 @@ function range_ips_for_network($address, $mask)
         return false;
     }
 
-    // convert ip addresses to long form
+    // Convert ip addresses to long form.
     $address_long = ip2long($address);
     $mask_long = ip2long($mask);
 
-    // caculate first usable address
+    // Calculate first usable address.
     $ip_host_first = ((~$mask_long) & $address_long);
-    $ip_first = (($address_long ^ $ip_host_first) + 1);
+    $ip_first = (($address_long ^ $ip_host_first));
 
-    // caculate last usable address
+    // Calculate last usable address.
     $ip_broadcast_invert = ~$mask_long;
     $ip_last = (($address_long | $ip_broadcast_invert) - 1);
 
@@ -3887,9 +3897,10 @@ function range_ips_for_network($address, $mask)
 /**
  * from two ips find out if there is such an ip
  *
- * @param  string ip ip wont validate
- * @param  string ip_lower
- * @param  string ip_upper
+ * @param string ip ip wont validate
+ * @param string ip_lower
+ * @param string ip_upper
+ *
  * @return boolean true or false if the ip is between the two ips
  */
 function is_in_network($ip, $ip_lower, $ip_upper)

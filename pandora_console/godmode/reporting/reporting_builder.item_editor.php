@@ -3109,7 +3109,7 @@ function addSLARow() {
             });
     }
     else {
-        alert('<?php echo __('Could not be created'); ?>');
+        alert("<?php echo __('Could not be created'); ?>");
     }
 }
 

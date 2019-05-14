@@ -226,7 +226,7 @@ unset($table);
                 url: "ajax.php",
                 success: function (data) {
                     if (data.correct == 0) {
-                        alert('<?php echo __('There was error on setup the default map.'); ?>');
+                        alert("<?php echo __('There was error on setup the default map.'); ?>");
                     }
                 }
             });

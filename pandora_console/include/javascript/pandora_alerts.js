@@ -19,8 +19,14 @@ function parse_alert_command(command, classs) {
 
     var regex = new RegExp(field, "gi");
 
-    command = command.replace(regex, $(this).val());
+    if ($(this).css("-webkit-text-security") == "disc") {
+      var hidden_character = "*";
+      var hidden_string = hidden_character.repeat($(this).val().length);
 
+      command = command.replace(regex, hidden_string);
+    } else {
+      command = command.replace(regex, $(this).val());
+    }
     nfield++;
   });
 

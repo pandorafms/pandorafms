@@ -89,7 +89,7 @@ $alias    = db_get_value('alias', 'tagente', 'id_agente', $id_agent);
             };
         </script>
     </head>
-    <body bgcolor="#ffffff" style='background:#ffffff;'>
+    <body style='background:#ffffff;'>
     
         <?php
         echo "<div id='dialog' title='".__('CSV Export Information')."' style='visibility:hidden;'>";
@@ -175,8 +175,9 @@ $alias    = db_get_value('alias', 'tagente', 'id_agente', $id_agent);
 
         $unit = db_get_value('unit', 'tagente_modulo', 'id_agente_modulo', $id);
 
-        echo '<div style="margin-left: 65px; padding-top: 10px;">';
 
+        // Graph.
+        echo '<div style="padding-top: 60px;">';
         $width  = '90%';
         $height = '450';
 
@@ -228,39 +229,16 @@ $alias    = db_get_value('alias', 'tagente', 'id_agente', $id_agent);
 
         echo '</div>';
 
-        //
-        // SIDE MENU
-        //
-        $params = [];
-        // TOP TEXT
-        // Use the no_meta parameter because this image is only in the base console
-        $params['top_text'] = "<div style='color: white; width: 100%; text-align: center; font-weight: bold; vertical-align: top;'>".html_print_image('images/wrench_blanco.png', true, ['width' => '16px'], false, false, true).' '.__('Graph configuration menu').ui_print_help_icon('graphs', true, $config['homeurl'], 'images/help_w.png', true).'</div>';
-        $params['body_text'] = "<div class='menu_sidebar_outer'>";
-        $params['body_text'] .= __('Please, make your changes and apply with the <i>Reload</i> button');
 
-        // MENU
-        $params['body_text'] .= '<form method="get" action="stat_win.php">';
-        $params['body_text'] .= html_print_input_hidden('id', $id, true);
-        $params['body_text'] .= html_print_input_hidden('label', $label, true);
 
-        if (!empty($server_id)) {
-            $params['body_text'] .= html_print_input_hidden('server', $server_id, true);
-        }
-
-        if (isset($_GET['type'])) {
-            $type = get_parameter_get('type');
-            $params['body_text'] .= html_print_input_hidden('type', $type, true);
-        }
-
-        // FORM TABLE
+        // FORM TABLE.
         $table = html_get_predefined_table('transparent', 2);
-        $table->width = '98%';
+        $table->width = '100%';
         $table->id = 'stat_win_form_div';
-        $table->style[0] = 'text-align:left; padding: 7px;';
+        $table->style[0] = 'text-align:left;';
         $table->style[1] = 'text-align:left;';
-        // $table->size[0] = '50%';
-        $table->styleTable = 'border-spacing: 4px;';
-        $table->class = 'alternate';
+        $table->styleTable = 'margin-bottom: 20px;';
+        $table->class = 'events_show_more_table';
 
         $data = [];
         $data[0] = __('Refresh time');
@@ -407,42 +385,29 @@ $alias    = db_get_value('alias', 'tagente', 'id_agente', $id_agent);
             true
         ).'</div>';
 
-        unset($table);
 
-        $table = new stdClass();
-        $table->id = 'stat_win_form';
-        $table->width = '100%';
-        $table->cellspacing = 2;
-        $table->cellpadding = 2;
-        $table->class = 'databox';
+        // Menu.
+        $menu_form = "<form method='get' action='stat_win.php'>".html_print_input_hidden('id', $id, true).html_print_input_hidden('label', $label, true);
 
-        $data = [];
-        $data[0] = html_print_div(
-            [
-                'id'      => 'field_list',
-                'content' => $form_table,
-                'style'   => 'overflow: auto; height: 220px',
-            ],
-            true
-        );
-        $table->data[] = $data;
-        $table->rowclass[] = '';
+        if (!empty($server_id)) {
+            $menu_form .= html_print_input_hidden('server', $server_id, true);
+        }
 
-        $params['body_text'] .= html_print_table($table, true);
-        $params['body_text'] .= '</form>';
-        $params['body_text'] .= '</div>';
-        // outer
-        // ICONS
-        $params['icon_closed'] = '/images/graphmenu_arrow_hide.png';
-        $params['icon_open'] = '/images/graphmenu_arrow.png';
+        if (isset($_GET['type'])) {
+            $type = get_parameter_get('type');
+            $menu_form .= html_print_input_hidden('type', $type, true);
+        }
 
-        // SIZE
-        $params['width'] = 500;
-
-        // POSITION
-        $params['position'] = 'left';
-
-        html_print_side_layer($params);
+        echo $menu_form;
+        echo '<div class="module_graph_menu_dropdown">
+                <div id="module_graph_menu_header" class="module_graph_menu_header">
+                    '.html_print_image('images/arrow_down_green.png', true, ['class' => 'module_graph_menu_arrow', 'float' => 'left'], false, false, true).'
+                    <span>'.__('Graph configuration menu').ui_print_help_icon('graphs', true, $config['homeurl'], 'images/help_g.png', true).'</span>
+                    '.html_print_image('images/config.png', true, ['float' => 'right'], false, false, true).'
+                </div>
+                <div class="module_graph_menu_content module_graph_menu_content_closed" style="display:none;">'.$form_table.'</div>
+            </div>';
+        echo '</form>';
 
         // Hidden div to forced title
         html_print_div(
@@ -491,11 +456,21 @@ ui_include_time_picker(true);
 
     $.datepicker.setDefaults($.datepicker.regional["<?php echo $custom_user_language; ?>"]);
 
-    $(window).ready(function() {
-        $("#field_list").css('height', ($(window).height() - 160) + 'px');
+    // Menu.
+    $('#module_graph_menu_header').on('click', function(){
+        var arrow = $('#module_graph_menu_header .module_graph_menu_arrow');
+        var arrow_up = 'arrow_up_green';
+        var arrow_down = 'arrow_down_green';
+        if( $('.module_graph_menu_content').hasClass('module_graph_menu_content_closed')){
+            $('.module_graph_menu_content').show();
+            $('.module_graph_menu_content').removeClass('module_graph_menu_content_closed');          
+            arrow.attr('src',arrow.attr('src').replace(arrow_down, arrow_up));
+        }
+        else{
+            $('.module_graph_menu_content').hide();
+            $('.module_graph_menu_content').addClass('module_graph_menu_content_closed'); 
+            arrow.attr('src',arrow.attr('src').replace(arrow_up, arrow_down));
+        }
     });
 
-    $(window).resize(function() {
-        $("#field_list").css('height', ($(document).height() - 160) + 'px');
-    });
 </script>

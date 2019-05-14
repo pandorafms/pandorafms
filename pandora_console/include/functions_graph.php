@@ -1436,9 +1436,11 @@ function graphic_combined_module(
                 // Convert to array graph and weight.
                 foreach ($array_data_module as $key => $value) {
                     $array_data[$key] = $value;
-                    if ($params_combined['weight_list'][$i] > 1) {
+                    if ($params_combined['weight_list'][$i] != 1) {
                         foreach ($value['data'] as $k => $v) {
-                            $array_data[$key]['data'][$k][1] = ($v[1] * $params_combined['weight_list'][$i]);
+                            if ($v[1] != false) {
+                                $array_data[$key]['data'][$k][1] = ($v[1] * $params_combined['weight_list'][$i]);
+                            }
                         }
                     }
                 }

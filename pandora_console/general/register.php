@@ -102,7 +102,7 @@ if (is_ajax()) {
     if ($cancel_newsletter) {
         db_process_sql_update(
             'tusuario',
-            ['middlename' => 0],
+            ['middlename' => -1],
             ['id_user' => $config['id_user']]
         );
 
@@ -133,7 +133,8 @@ $newsletter = db_get_value(
     'tusuario',
     'id_user',
     $config['id_user']
-) === null;
+);
+$show_newsletter = $newsletter == '0' || $newsletter == '';
 
 $registration = isset($config['pandora_uid']) !== true
     || $config['pandora_uid'] == '';
@@ -155,11 +156,11 @@ if ($registration) {
         false,
         // Launch only if not being launch from 'initial'.
         !$initial,
-        (($newsletter === true) ? 'show_newsletter_wizard()' : null)
+        (($show_newsletter === true) ? 'show_newsletter_wizard()' : null)
     );
 }
 
-if ($newsletter) {
+if ($show_newsletter) {
     // Show newsletter wizard for current user.
     newsletter_wiz_modal(
         false,

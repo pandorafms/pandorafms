@@ -2258,7 +2258,7 @@ class ConsoleSupervisor
         }
 
         // Only ask for messages once a day.
-        $future = (time() + 24 * SECONDS_1HOUR);
+        $future = (time() + 2 * SECONDS_1HOUR);
         config_update_value('last_um_check', $future);
 
         include_once $config['homedir'].'/include/functions_update_manager.php';

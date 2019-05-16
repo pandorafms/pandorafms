@@ -594,7 +594,7 @@ class CustomNetScan extends Wizard
 
                 // XXX: Could be improved validating inputs before continue (JS)
                 // Print NetScan page 0.
-                $this->printForm($form, false, true);
+                $this->printFormAsList($form);
             }
         }
 
@@ -742,7 +742,7 @@ class CustomNetScan extends Wizard
                     get_explanation_recon_script($(this).val(), "'.$id_task.'", "'.$url_ajax.'");
                 })'.$change;
 
-            $this->printForm($form, false, true);
+            $this->printFormAsList($form);
         }
 
         if (isset($this->page) === true && $this->page === 2) {

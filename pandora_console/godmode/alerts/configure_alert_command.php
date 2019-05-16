@@ -11,7 +11,7 @@
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-// Load global vars
+// Load global vars.
 global $config;
 
 require_once $config['homedir'].'/include/functions_alerts.php';
@@ -35,7 +35,7 @@ $id = (int) get_parameter('id');
 $pure = get_parameter('pure', 0);
 $alert = [];
 
-// Header
+// Header.
 if (defined('METACONSOLE')) {
     alerts_meta_print_header();
 } else {
@@ -65,16 +65,19 @@ if ($update_command) {
 
     $fields_descriptions = [];
     $fields_values = [];
+    $fields_hidden = [];
     $info_fields = '';
     $values = [];
     for ($i = 1; $i <= $config['max_macro_fields']; $i++) {
         $fields_descriptions[] = (string) get_parameter('field'.$i.'_description');
         $fields_values[] = (string) get_parameter('field'.$i.'_values');
+        $fields_hidden[] = get_parameter('field'.$i.'_hide');
         $info_fields .= ' Field'.$i.': '.$fields_values[($i - 1)];
     }
 
     $values['fields_values'] = io_json_mb_encode($fields_values);
     $values['fields_descriptions'] = io_json_mb_encode($fields_descriptions);
+    $values['fields_hidden'] = io_json_mb_encode($fields_hidden);
 
     $values['name'] = $name;
     $values['command'] = $command;
@@ -129,6 +132,7 @@ if ($id) {
     $id_group = $alert['id_group'];
     $fields_descriptions = $alert['fields_descriptions'];
     $fields_values = $alert['fields_values'];
+    $fields_hidden = $alert['fields_hidden'];
 }
 
 if (!empty($fields_descriptions)) {
@@ -137,6 +141,10 @@ if (!empty($fields_descriptions)) {
 
 if (!empty($fields_values)) {
     $fields_values = json_decode($fields_values, true);
+}
+
+if (!empty($fields_hidden)) {
+    $fields_hidden = json_decode($fields_hidden, true);
 }
 
 $table = new stdClass();
@@ -153,6 +161,7 @@ $table->style = [];
 if (!defined('METACONSOLE')) {
     $table->style[0] = 'font-weight: bold';
     $table->style[2] = 'font-weight: bold';
+    $table->style[4] = 'font-weight: bold';
 }
 
 $table->size = [];
@@ -190,7 +199,7 @@ $table->data['description'][1] = html_print_textarea('description', 10, 30, $des
 for ($i = 1; $i <= $config['max_macro_fields']; $i++) {
     $table->data['field'.$i][0] = sprintf(__('Field %s description'), $i);
 
-    // Only show help on first row
+    // Only show help on first row.
     if ($i == 1) {
         $table->data['field'.$i][0] .= ui_print_help_icon('alert_fields_description', true);
     }
@@ -201,11 +210,11 @@ for ($i = 1; $i <= $config['max_macro_fields']; $i++) {
         $field_description = '';
     }
 
-    $table->data['field'.$i][1] = html_print_input_text('field'.$i.'_description', $field_description, '', 35, 255, true);
+    $table->data['field'.$i][1] = html_print_input_text('field'.$i.'_description', $field_description, '', 30, 255, true);
 
     $table->data['field'.$i][2] = sprintf(__('Field %s values'), $i);
 
-    // Only show help on first row
+    // Only show help on first row.
     if ($i == 1) {
         $table->data['field'.$i][2] .= ui_print_help_icon('alert_fields_values', true);
     }
@@ -216,7 +225,17 @@ for ($i = 1; $i <= $config['max_macro_fields']; $i++) {
         $field_values = '';
     }
 
-    $table->data['field'.$i][3] = html_print_input_text('field'.$i.'_values', $field_values, '', 65, 255, true);
+    if (!empty($fields_hidden)) {
+        $selected = (bool) $fields_hidden[($i - 1)];
+    } else {
+        $selected = false;
+    }
+
+    $table->data['field'.$i][3] = html_print_input_text('field'.$i.'_values', $field_values, '', 55, 255, true, false, false, '', 'field_value');
+
+    $table->data['field'.$i][4] = __('Hide');
+
+    $table->data['field'.$i][5] = html_print_checkbox_extended('field'.$i.'_hide', 1, $selected, false, 'cursor: \'pointer\'', 'class="hide_inputs"', true);
 }
 
 echo '<form method="post" action="index.php?sec=galertas&sec2=godmode/alerts/alert_commands&pure='.$pure.'">';
@@ -236,3 +255,27 @@ echo '</div>';
 echo '</form>';
 
 enterprise_hook('close_meta_frame');
+?>
+
+<script type="text/javascript">
+$(document).ready (function () {
+
+    $(".hide_inputs").each(function(index) {
+        var $input_in_row = $(this).closest('tr').find('.field_value');
+        if($(this).is(':checked')) {  
+            $input_in_row.prop('style', '-webkit-text-security: disc;');
+        } else {  
+            $input_in_row.prop('style', '');
+        }
+    });
+
+    $(".hide_inputs").click(function() {
+        var $input_in_row = $(this).closest('tr').find('.field_value');
+        if($(this).is(':checked')) {  
+            $input_in_row.prop('style', '-webkit-text-security: disc;');
+        } else {  
+            $input_in_row.prop('style', '');
+        }  
+    });
+});
+</script>

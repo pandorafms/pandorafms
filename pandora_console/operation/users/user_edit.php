@@ -629,6 +629,11 @@ if ($config['ehorus_enabled'] && $config['ehorus_user_login']) {
     $table_remote->style['name'] = 'font-weight: bold';
 
 
+    // Title
+    $row = [];
+    $row['control'] = '<p class="edit_user_labels">'.__('eHorus user configuration').': </p>';
+    $table_remote->data['ehorus_user_login'] = $row;
+
     // User.
     $row = [];
     $row['name'] = __('User');
@@ -654,8 +659,10 @@ if ($config['ehorus_enabled'] && $config['ehorus_user_login']) {
     $row['control'] .= '<span id="test-ehorus-message" style="display:none;"></span>';
     $table_remote->data['ehorus_test'] = $row;
 
+    echo '<div class="ehorus_user_conf">';
 
     html_print_table($table_remote);
+     echo '</div>';
 }
 
 

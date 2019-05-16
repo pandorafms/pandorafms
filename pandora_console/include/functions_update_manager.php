@@ -61,6 +61,7 @@ function update_manager_verify_registration()
  */
 function config_wiz_process()
 {
+    global $config;
     $email = get_parameter('email', false);
     $timezone = get_parameter('timezone', false);
     $language = get_parameter('language', false);

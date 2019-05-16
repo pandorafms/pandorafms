@@ -156,17 +156,17 @@ if ($registration) {
         false,
         // Launch only if not being launch from 'initial'.
         !$initial,
-        (($show_newsletter === true) ? 'show_newsletter_wizard()' : null)
+        (($show_newsletter === true) ? 'force_run_newsletter()' : null)
     );
-}
-
-if ($show_newsletter) {
-    // Show newsletter wizard for current user.
-    newsletter_wiz_modal(
-        false,
-        // Launch only if not being call from 'registration'.
-        !$registration && !$initial
-    );
+} else {
+    if ($show_newsletter) {
+        // Show newsletter wizard for current user.
+        newsletter_wiz_modal(
+            false,
+            // Launch only if not being call from 'registration'.
+            !$registration && !$initial
+        );
+    }
 }
 
 ?>

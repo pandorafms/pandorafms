@@ -68,10 +68,6 @@ if (is_ajax()) {
 
         $fields_rows = [];
         for ($i = 1; $i <= $config['max_macro_fields']; $i++) {
-            if (($i == 5) && ($command['id'] == 3)) {
-                continue;
-            }
-
             $field_description = $fields_descriptions[($i - 1)];
             $field_value = $fields_values[($i - 1)];
             $field_hidden = $fields_hidden_checked[($i - 1)];
@@ -255,10 +251,6 @@ if (is_ajax()) {
         }
 
         // If command is PandoraFMS event, field 5 must be empty because "severity" must be set by the alert.
-        if ($command['id'] == 3) {
-            $fields_rows[5] = '';
-        }
-
         $command['fields_rows'] = $fields_rows;
 
         echo json_encode($command);

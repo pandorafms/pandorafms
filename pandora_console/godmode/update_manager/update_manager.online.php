@@ -53,8 +53,8 @@ $post_max_size_min = '800M';
 $upload_max_filesize_min = '800M';
 
 $PHPmemory_limit_min = config_return_in_bytes($memory_limit_min);
-$PHPpost_max_size_min = config_return_in_bytes($upload_max_filesize_min);
-$PHPupload_max_filesize_min = config_return_in_bytes($post_max_size);
+$PHPpost_max_size_min = config_return_in_bytes($post_max_size);
+$PHPupload_max_filesize_min = config_return_in_bytes($upload_max_filesize_min);
 
 $php_settings_fine = 0;
 $PHP_SETTINGS_REQUIRED = 3;

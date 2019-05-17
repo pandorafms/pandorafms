@@ -709,7 +709,7 @@ class HostDevices extends Wizard
                     ],
                 ];
 
-                // Group select (custom for this section)
+                // Group select (custom for this section).
                 $group_select = '<div class="label_select"><label>'.__('Group').':</label></div>';
 
                 $group_select .= $this->printInput(

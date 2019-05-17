@@ -270,7 +270,7 @@ function config_update_config()
                         $error_update[] = __('Referer security');
                     }
 
-                    if (!config_update_value('event_storm_protection', get_parameter('event_storm_protection'))) {
+                    if (!config_update_value('event_storm_protection', get_parameter('event_storm_protection', 0))) {
                         $error_update[] = __('Event storm protection');
                     }
 

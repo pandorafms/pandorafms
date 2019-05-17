@@ -608,6 +608,8 @@ class HostDevices extends Wizard
                     $interv_manual = 1;
                 }
 
+                $form['rows'][0]['new_form_block'] = true;
+
                 $form['rows'][0]['columns'][0] = [
                     'width'  => '30%',
                     'style'  => 'padding: 9px;',
@@ -799,7 +801,6 @@ class HostDevices extends Wizard
                 ],
             ];
 
-            // Hidden, page.
             $form['inputs'][] = [
                 'arguments' => [
                     'name'   => 'page',
@@ -813,7 +814,6 @@ class HostDevices extends Wizard
                 'extra' => '<p><h3>Please, configure task <b>'.io_safe_output($this->task['name']).'</b></h3></p>',
             ];
 
-            // Input: Module template.
             $form['inputs'][] = [
                 'label'     => __('Module template'),
                 'arguments' => [

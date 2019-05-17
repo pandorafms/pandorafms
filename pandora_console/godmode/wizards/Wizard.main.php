@@ -567,7 +567,7 @@ class Wizard
             ],
         ];
 
-        $this->printForm($form);
+        $this->printFormAsList($form);
     }
 
 
@@ -603,14 +603,55 @@ class Wizard
             $output .= '</ul></li>';
         } else {
             if ($input['arguments']['type'] != 'hidden') {
-                $output .= '<div class="edit_discovery_input">';
+                if ($input['arguments']['inline'] != 'true') {
+                    $output .= '<div class="edit_discovery_input">';
+                } else {
+                    $output .= '<div style="display: flex; margin-bottom: 25px;">';
+                    if (!isset($input['extra'])) {
+                        $output .= '<div style="width: 50%;">';
+                    }
+
+                    if (isset($input['extra'])) {
+                        $output .= '<div style="width: 50%; display: flex;">';
+                    }
+                }
+
+                if ($input['arguments']['inline'] == 'true' && isset($input['extra'])) {
+                    $output .= '<div style="width: 50%">';
+                }
+
                 $output .= '<div class="label_select">';
                 $output .= $input['label'];
                 $output .= '</div>';
-                if ($input['arguments']['type'] == 'text') {
+
+                if ($input['arguments']['inline'] == 'true' && isset($input['extra'])) {
+                    $output .= '</div>';
+                }
+
+                if ($input['arguments']['inline'] == 'true' && !isset($input['extra'])) {
+                    $output .= '</div>';
+                }
+
+                if ($input['arguments']['type'] == 'text' || $input['arguments']['type'] == 'text_extended') {
                     $output .= '<div class="discovery_text_input">';
                     $output .= $this->printInput($input['arguments']);
                     $output .= '</div>';
+                } else if ($input['arguments']['inline'] == 'true') {
+                    $output .= '<div style="width: 50%;">';
+
+                    if (isset($input['extra'])) {
+                        $output .= '<div style="float: center;">';
+                    } else {
+                        $output .= '<div style="float: right;">';
+                    }
+
+                    $output .= $this->printInput($input['arguments']);
+                    $output .= '</div>';
+                    $output .= '</div>';
+
+                    if (isset($input['extra'])) {
+                        $output .= '</div>';
+                    }
                 } else {
                     $output .= $this->printInput($input['arguments']);
                 }
@@ -725,9 +766,21 @@ class Wizard
         $output_submit = '';
         $output = '';
 
-        $output .= '<div class="white_box">';
+        $first_block_printed = false;
 
         foreach ($rows as $row) {
+            if ($row['new_form_block'] == true) {
+                if ($first_block_printed === true) {
+                    // If first form block has been placed, then close it before starting a new one.
+                    $output .= '</div>';
+                    $output .= '<div class="white_box" style="margin-top: 30px;">';
+                } else {
+                    $output .= '<div class="white_box">';
+                }
+
+                $first_block_printed = true;
+            }
+
             $output .= '<div class="edit_discovery_info" style="'.$row['style'].'">';
 
             foreach ($row['columns'] as $column) {

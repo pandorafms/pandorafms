@@ -1254,11 +1254,19 @@ function fill_permissions_ldap($sr)
     global $config;
     $permissions = [];
     $permissions_profile = [];
-    if ((bool) $config['ldap_save_profile'] === false && $config['ldap_advanced_config'] == 1) {
+    if ((bool) $config['ldap_save_profile'] === false && $config['ldap_advanced_config'] == '') {
         $result = db_get_all_rows_filter(
             'tusuario_perfil',
             ['id_usuario' => $sr['uid'][0]]
         );
+        if ($result == false) {
+            $permissions[0]['profile'] = $config['default_remote_profile'];
+            $permissions[0]['groups'][] = $config['default_remote_group'];
+            $permissions[0]['tags'] = $config['default_assign_tags'];
+            $permissions[0]['no_hierarchy'] = $config['default_no_hierarchy'];
+            return $permissions;
+        }
+
         foreach ($result as $perms) {
                $permissions_profile[] = [
                    'profile'      => $perms['id_perfil'],
@@ -1267,17 +1275,11 @@ function fill_permissions_ldap($sr)
                    'no_hierarchy' => (bool) $perms['no_hierarchy'] ? 1 : 0,
                ];
         }
+
+        return $permissions_profile;
     }
 
-    if ($config['autocreate_remote_users'] && $config['ldap_advanced_config'] == '') {
-        $permissions[0]['profile'] = $config['default_remote_profile'];
-        $permissions[0]['groups'][] = $config['default_remote_group'];
-        $permissions[0]['tags'] = $config['default_assign_tags'];
-        $permissions[0]['no_hierarchy'] = $config['default_no_hierarchy'];
-        return $permissions;
-    }
-
-    if ($config['ldap_advanced_config'] == 1 && $config['ldap_save_profile'] == '') {
+    if ($config['ldap_advanced_config'] == 1 && $config['ldap_save_profile'] == 1) {
         $ldap_adv_perms = json_decode(io_safe_output($config['ldap_adv_perms']), true);
         foreach ($ldap_adv_perms as $ldap_adv_perm) {
             $permissions[] = [
@@ -1291,7 +1293,7 @@ function fill_permissions_ldap($sr)
         return $permissions;
     }
 
-    if ($config['ldap_advanced_config'] == 1 && $config['ldap_save_profile'] == 1) {
+    if ($config['ldap_advanced_config'] == 1 && $config['ldap_save_profile'] == '') {
         $result = db_get_all_rows_filter(
             'tusuario_perfil',
             ['id_usuario' => $sr['uid'][0]]
@@ -1319,6 +1321,14 @@ function fill_permissions_ldap($sr)
         };
 
         return $permissions_profile;
+    }
+
+    if ($config['autocreate_remote_users'] && $config['ldap_save_profile'] == 1) {
+        $permissions[0]['profile'] = $config['default_remote_profile'];
+        $permissions[0]['groups'][] = $config['default_remote_group'];
+        $permissions[0]['tags'] = $config['default_assign_tags'];
+        $permissions[0]['no_hierarchy'] = $config['default_no_hierarchy'];
+        return $permissions;
     }
 
     // Decode permissions in advanced mode

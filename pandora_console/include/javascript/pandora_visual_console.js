@@ -34,7 +34,9 @@ function createVisualConsole(
   var visualConsole = null;
   var asyncTaskManager = new AsyncTaskManager();
 
-  function updateVisualConsole(visualConsoleId, updateInterval) {
+  function updateVisualConsole(visualConsoleId, updateInterval, tts) {
+    if (tts == null) tts = 0; // Time to start.
+
     asyncTaskManager.add(
       "visual-console",
       function(done) {
@@ -88,7 +90,26 @@ function createVisualConsole(
       updateInterval
     );
 
-    asyncTaskManager.init("visual-console");
+    asyncTaskManager.add("visual-console-start", function(done) {
+      var ref = setTimeout(function() {
+        asyncTaskManager.init("visual-console");
+        done();
+      }, tts);
+
+      return {
+        cancel: function() {
+          clearTimeout(ref);
+        }
+      };
+    });
+
+    if (tts > 0) {
+      // Wait to start the fetch interval.
+      asyncTaskManager.init("visual-console-start");
+    } else {
+      // Start the fetch interval immediately.
+      asyncTaskManager.init("visual-console");
+    }
   }
 
   // Initialize the Visual Console.
@@ -112,8 +133,10 @@ function createVisualConsole(
       }
     });
 
-    // Start an interval to update the Visual Console.
-    updateVisualConsole(props.id, updateInterval);
+    if (updateInterval != null && updateInterval > 0) {
+      // Start an interval to update the Visual Console.
+      updateVisualConsole(props.id, updateInterval, updateInterval);
+    }
   } catch (error) {
     console.log("[ERROR]", "[VISUAL-CONSOLE-CLIENT]", error.message);
   }
@@ -121,7 +144,17 @@ function createVisualConsole(
   return {
     visualConsole: visualConsole,
     changeUpdateInterval: function(updateInterval) {
-      updateVisualConsole(visualConsole.props.id, updateInterval);
+      if (updateInterval != null && updateInterval > 0) {
+        updateVisualConsole(
+          visualConsole.props.id,
+          updateInterval,
+          updateInterval
+        );
+      } else {
+        // Update interval disabled. Cancel possible pending tasks.
+        asyncTaskManager.cancel("visual-console");
+        asyncTaskManager.cancel("visual-console-start");
+      }
     }
   };
 }

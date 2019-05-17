@@ -127,14 +127,14 @@ export default class AsyncTaskManager {
   public add(
     identifier: string,
     taskInitiator: AsyncTaskInitiator,
-    period: number | null = null
+    period: number = 0
   ): AsyncTask {
     if (this.tasks[identifier] && this.tasks[identifier].status === "started") {
       this.tasks[identifier].cancel();
     }
 
     const asyncTask =
-      period !== null
+      period > 0
         ? asyncPeriodic(new AsyncTask(taskInitiator), period)
         : new AsyncTask(taskInitiator);
 
@@ -149,7 +149,12 @@ export default class AsyncTaskManager {
    * @param identifier Unique identifier.
    */
   public init(identifier: string) {
-    if (this.tasks[identifier] && this.tasks[identifier].status === "waiting") {
+    if (
+      this.tasks[identifier] &&
+      (this.tasks[identifier].status === "waiting" ||
+        this.tasks[identifier].status === "cancelled" ||
+        this.tasks[identifier].status === "finished")
+    ) {
       this.tasks[identifier].init();
     }
   }

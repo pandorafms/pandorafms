@@ -674,12 +674,17 @@ function update_button_palette_callback() {
           return false;
         }
       }
-      if (values["module"] == 0) {
+      var radio_value = $("input[name='radio_choice']:checked").val();
+      if (values["agent"] == "" && radio_value == "module_graph") {
+        dialog_message("#message_alert_no_agent");
+        return false;
+      }
+      if (values["module"] == 0 && radio_value == "module_graph") {
         dialog_message("#message_alert_no_module");
         return false;
       }
-      if (values["agent"] == "") {
-        dialog_message("#message_alert_no_agent");
+      if (values["id_custom_graph"] == 0 && radio_value == "custom_graph") {
+        dialog_message("#message_alert_no_custom_graph");
         return false;
       }
       if ($("input[name=width_module_graph]").val() == "") {
@@ -1425,11 +1430,12 @@ function create_button_palette_callback() {
 
       break;
     case "module_graph":
-      if (values["module"] == 0) {
+      var radio_value = $("input[name='radio_choice']:checked").val();
+      if (values["module"] == 0 && radio_value == "module_graph") {
         dialog_message("#message_alert_no_module");
         validate = false;
       }
-      if (values["id_custom_graph"] == 0) {
+      if (values["id_custom_graph"] == 0 && radio_value == "module_graph") {
         if (values["agent"] == "") {
           dialog_message("#message_alert_no_agent");
           validate = false;
@@ -1438,6 +1444,10 @@ function create_button_palette_callback() {
           dialog_message("#message_alert_no_period");
           validate = false;
         }
+      }
+      if (values["id_custom_graph"] == 0 && radio_value == "custom_graph") {
+        dialog_message("#message_alert_no_custom_graph");
+        validate = false;
       }
       if (
         values["height_module_graph"] == "" ||

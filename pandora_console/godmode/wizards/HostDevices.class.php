@@ -742,7 +742,7 @@ class HostDevices extends Wizard
 
                 echo '<div class="white_box">
                     <div class="edit_discovery_info" style="margin-bottom: 15px;">
-                        <div style="width: 25%; padding: 9px;">'.'<div style="height: 50%; margin-bottom: 35px;">'.html_print_image('images/wizard/netscan_green.png', true, ['title' => __('Close'), 'style' => 'width: 60%;'], false).'</div>'.'<div class="edit_discovery_input"><div style="display: flex;">'.$interval_input_label.'<div style="margin-left: 15 px; width: 50%;">'.$interval_input.'</div></div>'.$interval_input_extra.'</div>'.'</div>
+                        <div style="width: 25%; padding: 9px;">'.'<div style="height: 50%; margin-bottom: 35px;">'.html_print_image('images/wizard/netscan_green.png', true, ['title' => __('Close')], false).'</div>'.'<div class="edit_discovery_input"><div style="display: flex;">'.$interval_input_label.'<div style="margin-left: 15 px; width: 50%;">'.$interval_input.'</div></div>'.$interval_input_extra.'</div>'.'</div>
 
                         <div style="width: 40%; padding-left: 5%; padding-right: 12%;">
                             <div class="edit_discovery_input">'.$taskname_input_label.'<div class="discovery_text_input">'.$taskname_input.'</div></div>'.'<div class="edit_discovery_input discovery_select_input">'.$discovery_server_select_label.$discovery_server_select.'<div class="discovery_hint"></div></div>'.'<div class="edit_discovery_input">'.$network_input_label.'<div class="discovery_text_input">'.$network_input.'</div></div>'.'</div>'.'<div style="width: 35%;">'.$group_select.'</div>'.'</div>'.'<div class="edit_discovery_info">

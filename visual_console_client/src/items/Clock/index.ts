@@ -213,6 +213,12 @@ export default class Clock extends Item<ClockProps> {
 
     const { width, height } = this.getElementSize(); // Destructuring assigment: http://es6-features.org/#ObjectMatchingShorthandNotation
 
+    // Calculate font size to adapt the font to the item size.
+    const baseTimeFontSize = 20; // Per 100px of width.
+    const dateFontSizeMultiplier = 0.5;
+    const dateFontSize =
+      (baseTimeFontSize * dateFontSizeMultiplier * width) / 100;
+
     const div = document.createElement("div");
     div.className = "analogic-clock";
     div.style.width = `${width}px`;
@@ -462,6 +468,16 @@ export default class Clock extends Item<ClockProps> {
     `;
     // Add the clock to the container
     div.append(svg);
+
+    // Date.
+    if (this.props.clockFormat === "datetime") {
+      const dateElem: HTMLSpanElement = document.createElement("span");
+      dateElem.className = "date";
+      dateElem.textContent = humanDate(date, "default");
+      dateElem.style.fontSize = `${dateFontSize}px`;
+      if (this.props.color) dateElem.style.color = this.props.color;
+      div.append(dateElem);
+    }
 
     return div;
   }

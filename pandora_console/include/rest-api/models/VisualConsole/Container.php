@@ -321,6 +321,8 @@ final class Container extends Model
         $fields = [
             'id',
             'type',
+            'cache_expiration',
+            'id_layout',
         ];
 
         // Override the filter if the groups filter is not empty.
@@ -359,11 +361,10 @@ final class Container extends Model
 
         foreach ($rows as $data) {
             $itemId = (int) $data['id'];
-            $itemType = (int) $data['type'];
-            $class = static::getItemClass($itemType);
+            $class = static::getItemClass((int) $data['type']);
 
             try {
-                array_push($items, $class::fromDB(['id' => $itemId]));
+                array_push($items, $class::fromDB($data));
             } catch (\Throwable $e) {
                 // TODO: Log this?
             }

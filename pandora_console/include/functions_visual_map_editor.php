@@ -1141,14 +1141,7 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background)
     $form_items_advance['cache_expiration_row'] = [];
     $form_items_advance['cache_expiration_row']['items'] = [
         'group_item',
-        'static_graph',
-        'percentile_bar',
-        'percentile_item',
         'module_graph',
-        'simple_value',
-        'label',
-        'icon',
-        'datos',
         'auto_sla_graph',
         'bars_graph',
         'donut_graph',

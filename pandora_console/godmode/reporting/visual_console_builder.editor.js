@@ -2589,6 +2589,9 @@ function hiddenFields(item) {
   $("#line_case").css("display", "none");
   $("#line_case." + item).css("display", "");
 
+  $("#cache_expiration_row").css("display", "none");
+  $("#cache_expiration_row." + item).css("display", "");
+
   // Color cloud rows
   $("#color_cloud_diameter_row").hide();
   $("#color_cloud_diameter_row." + item).show();

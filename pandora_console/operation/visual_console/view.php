@@ -124,7 +124,7 @@ if ($aclWrite || $aclManage) {
     ).'</a>';
 }
 
-$options['view']['text'] = '<a href="index.php?sec=network&sec2=operation/visual_console/render_view&id='.$visualConsoleId.'">'.html_print_image(
+$options['view']['text'] = '<a href="index.php?sec=network&sec2=operation/visual_console/render_view&id='.$visualConsoleId.'&refr='.$refr.'">'.html_print_image(
     'images/operation.png',
     true,
     ['title' => __('View')]
@@ -166,7 +166,7 @@ if ($pure === true) {
 
     // Quit fullscreen.
     echo '<li class="nomn">';
-    $urlNoFull = 'index.php?sec=network&sec2=operation/visual_console/render_view&id='.$visualConsoleId;
+    $urlNoFull = 'index.php?sec=network&sec2=operation/visual_console/render_view&id='.$visualConsoleId.'&refr='.$refr;
     echo '<a class="vc-btn-no-fullscreen" href="'.$urlNoFull.'">';
     echo html_print_image('images/normal_screen.png', true, ['title' => __('Back to normal mode')]);
     echo '</a>';

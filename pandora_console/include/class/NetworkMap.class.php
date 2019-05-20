@@ -3467,19 +3467,18 @@ class NetworkMap
             $output .= '<div id="arrow_minimap_'.$networkmap['id'].'"';
             $output .= ' style="position: absolute; left: 0px; top: 0px;">';
             $output .= '<a title="'.__('Open Minimap').'" href="javascript: toggle_minimap();">';
-            $output .= '<img id="image_arrow_minimap_'.$networkmap['id'].'"';
-            $output .= ' src="images/minimap_open_arrow.png" />';
+            $output .= html_print_image('/images/minimap_open_arrow.png', true, ['id' => 'arrow_minimap_'.$networkmap['id']]);
             $output .= '</a><div></div></div>';
 
             $output .= '<div id="hide_labels_'.$networkmap['id'].'"';
             $output .= ' style="position: absolute; right: 10px; top: 10px;">';
             $output .= '<a title="'.__('Hide Labels').'" href="javascript: hide_labels();">';
-            $output .= '<img id="image_hide_show_labels" src="images/icono_borrar.png" />';
+            $output .= html_print_image('/images/icono_borrar.png', true, ['id' => 'image_hide_show_labels']);
             $output .= '</a></div>';
 
             $output .= '<div id="holding_spinner_'.$networkmap['id'].'" ';
             $output .= ' style="display: none; position: absolute; right: 50px; top: 20px;">';
-            $output .= '<img id="image_hide_show_labels" src="images/spinner.gif" />';
+            $output .= html_print_image('/images/spinner.png', true, ['id' => 'image_hide_show_labels']);
             $output .= '</div>';
 
             // Close networkconsole_id div.

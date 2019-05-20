@@ -1349,7 +1349,7 @@ function config_update_config()
                 break;
 
                 case 'ehorus':
-                    if (!config_update_value('ehorus_enabled', (int) get_parameter('ehorus_enabled', $config['ehorus_enabled']))) {
+                    if (!config_update_value('ehorus_enabled', (int) get_parameter('ehorus_enabled', 0))) {
                         $error_update[] = __('Enable eHorus');
                     }
 

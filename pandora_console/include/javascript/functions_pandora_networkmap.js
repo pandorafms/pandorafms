@@ -1284,7 +1284,7 @@ function hide_labels_function() {
   $("#hide_labels_" + networkmap_id + " > a").attr("title", "Show Labels");
   $("#hide_labels_" + networkmap_id + " > a > img").attr(
     "src",
-    "images/icono_pintar.png"
+    window.location.origin + "/pandora_console/images/icono_pintar.png"
   );
 
   d3.selectAll(".node_text").style("display", "none");
@@ -1297,7 +1297,7 @@ function show_labels_function() {
   $("#hide_labels_" + networkmap_id + " > a").attr("title", "Hide Labels");
   $("#hide_labels_" + networkmap_id + " > a > img").attr(
     "src",
-    "images/icono_borrar.png"
+    window.location.origin + "/pandora_console/images//icono_borrar.png"
   );
 
   d3.selectAll(".node_text").style("display", "");

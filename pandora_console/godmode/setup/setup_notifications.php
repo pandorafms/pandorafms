@@ -167,6 +167,7 @@ if (get_parameter('get_notification', 0)) {
         $msg = messages_get_message($msg_id);
 
         $msg['mensaje'] = io_safe_output($msg['mensaje']);
+        $msg['subject'] = io_safe_output($msg['subject']);
         echo json_encode($msg);
     }
 

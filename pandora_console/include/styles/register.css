@@ -19,7 +19,8 @@ button.submit-cancel:hover {
 }
 
 input[type="submit"].submit-next,
-button.submit-next {
+button.submit-next,
+input[type="button"].submit-next {
   color: #82b92e !important;
   border: 1px solid #82b92e !important;
   background: #fff !important;
@@ -29,11 +30,11 @@ button.submit-next {
   cursor: pointer !important;
   text-align: center !important;
   height: 30px !important;
-  width: 90px !important;
 }
 
 input[type="submit"].submit-next:hover,
-button.submit-next:hover {
+button.submit-next:hover,
+input[type="button"].submit-next:hover {
   color: #fff !important;
   background: #82b92e !important;
 }

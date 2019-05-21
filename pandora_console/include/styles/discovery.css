@@ -230,8 +230,8 @@ li > input[type="password"],
   height: 100px;
   max-height: 100px;
   max-width: 100%;
-  -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
-  -moz-box-sizing: border-box; /* Firefox, other Gecko */
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
   box-sizing: border-box;
   resize: none;
 }

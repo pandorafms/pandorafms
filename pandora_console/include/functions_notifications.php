@@ -978,7 +978,7 @@ function notifications_print_dropdown_element($message_info)
         case 'Official&#x20;communication':
             $action = 'show_modal(this.id);';
             $target = '';
-            $body_preview = io_safe_output($message_info['mensaje']);
+            $body_preview = __('Click here to get more information');
         break;
 
         default:

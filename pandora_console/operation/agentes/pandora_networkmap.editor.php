@@ -198,7 +198,7 @@ ui_print_page_header(
     __('Networkmap'),
     'images/bricks.png',
     false,
-    'network_map_enterprise',
+    'network_map_enterprise_edit',
     false
 );
 

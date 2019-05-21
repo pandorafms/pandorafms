@@ -25,7 +25,7 @@ function extension_db_status()
         __('DB Schema check'),
         'images/extensions.png',
         false,
-        '',
+        'db_status_tab',
         true,
         ''
     );

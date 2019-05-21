@@ -56,14 +56,20 @@ if ($a_template !== false) {
         if (defined('METACONSOLE')) {
             alerts_meta_print_header();
         } else {
-            // ~ ui_print_page_header (__('Alerts') .
-                // ~ ' &raquo; ' . __('Configure alert template'), "",
-                // ~ false, "alerts_config", true);
+            $step = (int) get_parameter('step', 1);
+            if ($step == 1) {
+                $help_header = 'configure_alert_template_step_1';
+            } else if ($step == 2) {
+                $help_header = 'configure_alert_template_step_2';
+            } else if ($step == 3) {
+                $help_header = 'configure_alert_template_step_3';
+            }
+
             ui_print_page_header(
                 __('Alerts').' &raquo; '.__('Configure alert template'),
                 '',
                 false,
-                '',
+                $help_header,
                 true
             );
         }
@@ -83,7 +89,13 @@ if ($a_template !== false) {
             if (defined('METACONSOLE')) {
                 alerts_meta_print_header();
             } else {
-                ui_print_page_header(__('Alerts').' &raquo; '.__('Configure alert template'), 'images/gm_alerts.png', false, 'conf_alert_template', true);
+                ui_print_page_header(
+                    __('Alerts').' &raquo; '.__('Configure alert template'),
+                    'images/gm_alerts.png',
+                    false,
+                    'conf_alert_template',
+                    true
+                );
             }
         } else {
             db_pandora_audit(
@@ -101,7 +113,22 @@ if ($a_template !== false) {
     if (defined('METACONSOLE')) {
         alerts_meta_print_header();
     } else {
-        ui_print_page_header(__('Alerts').' &raquo; '.__('Configure alert template'), 'images/gm_alerts.png', false, 'conf_alert_template', true);
+        $step = (int) get_parameter('step', 1);
+        if ($step == 1) {
+            $help_header = 'configure_alert_template_step_1';
+        } else if ($step == 2) {
+            $help_header = 'configure_alert_template_step_2';
+        } else if ($step == 3) {
+            $help_header = 'configure_alert_template_step_3';
+        }
+
+        ui_print_page_header(
+            __('Alerts').' &raquo; '.__('Configure alert template'),
+            'images/gm_alerts.png',
+            false,
+            $help_header,
+            true
+        );
     }
 }
 

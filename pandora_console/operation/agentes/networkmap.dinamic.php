@@ -127,7 +127,7 @@ ui_print_page_header(
     io_safe_output($networkmap['name']),
     'images/bricks.png',
     false,
-    'network_map_enterprise',
+    'network_map_enterprise_list',
     false,
     $buttons,
     false,

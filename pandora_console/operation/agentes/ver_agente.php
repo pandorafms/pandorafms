@@ -1394,10 +1394,18 @@ foreach ($config['extensions'] as $extension) {
     }
 }
 
-if ($tab == 'wux_console_tab') {
-    $help_header = 'wux_console';
-} else {
-    $help_header = '';
+switch ($tab) {
+    case 'wux_console_tab':
+        $help_header = 'wux_console_tab';
+    break;
+
+    case 'main':
+        $help_header = 'agent_'.$tab.'_tab';
+    break;
+
+    default:
+        $help_header = '';
+    break;
 }
 
 ui_print_page_header(

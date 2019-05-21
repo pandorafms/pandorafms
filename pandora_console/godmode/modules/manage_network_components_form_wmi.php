@@ -28,7 +28,7 @@ if (! check_acl($config['id_user'], 0, 'PM')) {
 require_once $config['homedir'].'/include/functions_modules.php';
 
 $data = [];
-$data[0] = __('WMI query');
+$data[0] = __('WMI query').' '.ui_print_help_icon('wmi_query_tab', true);
 $data[1] = html_print_input_text('snmp_oid', $snmp_oid, '', 25, 255, true);
 $data[2] = __('Key string').' '.ui_print_help_icon('wmikey', true, ui_get_full_url(false, false, false, false));
 $data[3] = html_print_input_text('snmp_community', $snmp_community, '', 25, 255, true);

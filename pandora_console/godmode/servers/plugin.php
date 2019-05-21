@@ -403,7 +403,7 @@ if (($create != '') || ($view != '')) {
     $table->data['plugin_command'] = $data;
 
     $data = [];
-    $data[0] = __('Plug-in parameters').ui_print_help_icon('plugin_parameters', true);
+    $data[0] = __('Plug-in parameters');
     $data[1] = '<input type="text" name="form_parameters" id="form_parameters" class="command_component command_advanced_conf" size=100 value="'.$parameters.'" '.$disabled.'>';
     if ($locked) {
         $data[1] .= html_print_image('images/lock.png', true, ['class' => 'command_advanced_conf lock']);
@@ -549,7 +549,7 @@ if (($create != '') || ($view != '')) {
         $table->headstyle[0] = 'text-align: center';
         html_print_table($table);
     } else {
-        echo '<fieldset>'.'<legend>'.__('Parameters macros').ui_print_help_icon('macros', true).'</legend>';
+        echo '<fieldset>'.'<legend>'.__('Parameters macros').'</legend>';
         html_print_table($table);
         echo '</fieldset>';
     }
@@ -612,7 +612,16 @@ if (($create != '') || ($view != '')) {
             config_update_value('metaconsole_deploy_plugin_server', 1);
         }
     } else {
-        ui_print_page_header(__('Plug-ins registered on %s', get_product_name()), 'images/gm_servers.png', false, '', true);
+        ui_print_page_header(
+            __(
+                'Plug-ins registered on %s',
+                get_product_name()
+            ),
+            'images/gm_servers.png',
+            false,
+            '',
+            true
+        );
 
         $management_allowed = !is_central_policies_on_node();
         if (!$management_allowed) {

@@ -59,10 +59,12 @@ switch ($tab) {
 
     case 'offline':
         $title = __('Update manager » Offline');
+        $help_header = 'update_manager_offline_tab';
     break;
 
     case 'online':
         $title = __('Update manager » Online');
+        $help_header = 'update_manager_online_tab';
     break;
 
     case 'messages':
@@ -74,7 +76,7 @@ ui_print_page_header(
     $title,
     'images/gm_setup.png',
     false,
-    '',
+    $help_header,
     true,
     $buttons
 );

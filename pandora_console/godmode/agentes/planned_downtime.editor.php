@@ -1232,7 +1232,7 @@ ui_require_jquery_file('ui.datepicker-'.get_user_language(), 'include/javascript
     }
     
     function show_executing_alert () {
-        alert('<?php echo __('This elements cannot be modified while the downtime is being executed'); ?>');
+        alert("<?php echo __('This elements cannot be modified while the downtime is being executed'); ?>");
     }
     
     function show_editor_module(id_agent) {
@@ -1362,7 +1362,7 @@ ui_require_jquery_file('ui.datepicker-'.get_user_language(), 'include/javascript
         var module_sel = $("#modules", $('#module_editor_' + id_agent)).val();
         
         if (module_sel == 0) {
-            alert('<?php echo __('Please select a module.'); ?>');
+            alert("<?php echo __('Please select a module.'); ?>");
         }
         else {
             action_in_progress = true;

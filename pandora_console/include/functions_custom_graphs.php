@@ -161,3 +161,35 @@ function custom_graphs_get_user($id_user=0, $only_names=false, $returnAllGroup=t
 
     return $graphs;
 }
+
+
+function custom_graphs_search($id_group, $search)
+{
+    if ($id_group != '' && $search != '') {
+        $all_graphs = db_get_all_rows_sql('select * from tgraph where id_group = '.$id_group.' AND name LIKE "%'.$search.'%"');
+    } else if ($id_group != '') {
+        $all_graphs = db_get_all_rows_sql('select * from tgraph where id_group = '.$id_group.'');
+    } else {
+        $all_graphs = db_get_all_rows_sql('select * from tgraph where name LIKE "%'.$search.'%"');
+    }
+
+    if ($all_graphs === false) {
+        return [];
+    }
+
+    $graphs = [];
+    foreach ($all_graphs as $graph) {
+        $graphsCount = db_get_value_sql(
+            'SELECT COUNT(id_gs)
+                        FROM tgraph_source
+                        WHERE id_graph = '.$graph['id_graph'].''
+        );
+
+        $graphs[$graph['id_graph']]['graphs_count'] = $graphsCount;
+        $graphs[$graph['id_graph']]['name'] = $graph['name'];
+        $graphs[$graph['id_graph']]['description'] = $graph['description'];
+        $graphs[$graph['id_graph']]['id_group'] = $graph['id_group'];
+    }
+
+    return $graphs;
+}

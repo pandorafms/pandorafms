@@ -14,7 +14,7 @@
 -- along with this program; if not, write to the Free Software
 -- Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
--- PLEASE NO NOT USE MULTILINE COMMENTS 
+-- PLEASE NO NOT USE MULTILINE COMMENTS
 -- Because Pandora Installer don't understand them
 -- and fails creating database !!!
 
@@ -1434,6 +1434,7 @@ CREATE TABLE IF NOT EXISTS `treport_content` (
 	`unknown_checks` TINYINT(1) DEFAULT '1',
 	`agent_max_value` TINYINT(1) DEFAULT '1',
 	`agent_min_value` TINYINT(1) DEFAULT '1',
+	`current_month` TINYINT(1) DEFAULT '1',
 	PRIMARY KEY(`id_rc`),
 	FOREIGN KEY (`id_report`) REFERENCES treport(`id_report`)
 		ON UPDATE CASCADE ON DELETE CASCADE
@@ -2973,6 +2974,7 @@ CREATE TABLE IF NOT EXISTS `treport_content_template` (
 	`unknown_checks` TINYINT(1) DEFAULT '1',
 	`agent_max_value` TINYINT(1) DEFAULT '1',
 	`agent_min_value` TINYINT(1) DEFAULT '1',
+	`current_month` TINYINT(1) DEFAULT '1',
 	PRIMARY KEY(`id_rc`)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 

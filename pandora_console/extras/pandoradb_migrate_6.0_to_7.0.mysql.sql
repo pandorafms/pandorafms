@@ -761,6 +761,23 @@ CREATE TABLE IF NOT EXISTS `treport_content_template` (
 	PRIMARY KEY(`id_rc`)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
+-- ----------------------------------------------------------------------
+-- Table `tnews`
+-- ----------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tnews` (
+	`id_news` INTEGER UNSIGNED NOT NULL  AUTO_INCREMENT,
+	`author` varchar(255)  NOT NULL DEFAULT '',
+	`subject` varchar(255)  NOT NULL DEFAULT '',
+	`text` TEXT NOT NULL,
+	`timestamp` DATETIME  NOT NULL DEFAULT 0,
+	`id_group` int(10) NOT NULL default 0,
+	`modal` tinyint(1) DEFAULT 0,
+	`expire` tinyint(1) DEFAULT 0,
+	`expire_timestamp` DATETIME  NOT NULL DEFAULT 0,
+	PRIMARY KEY(`id_news`)
+) ENGINE = InnoDB DEFAULT CHARSET=utf8;
+
+
 ALTER TABLE treport_content_template ADD COLUMN `historical_db` tinyint(1) NOT NULL DEFAULT '0';
 ALTER TABLE treport_content_template ADD COLUMN `lapse_calc` tinyint(1) default '0';
 ALTER TABLE treport_content_template ADD COLUMN `lapse` int(11) default '300';
@@ -778,6 +795,7 @@ ALTER TABLE `treport_content_template` ADD COLUMN `checks_in_ok_status` TINYINT(
 ALTER TABLE `treport_content_template` ADD COLUMN `unknown_checks` TINYINT(1) DEFAULT '1';
 ALTER TABLE `treport_content_template` ADD COLUMN `agent_max_value` TINYINT(1) DEFAULT '1';
 ALTER TABLE `treport_content_template` ADD COLUMN `agent_min_value` TINYINT(1) DEFAULT '1';
+ALTER TABLE `treport_content_template` ADD COLUMN `current_month` TINYINT(1) DEFAULT '1';
 
 -- -----------------------------------------------------
 -- Table `treport_content_sla_com_temp` (treport_content_sla_combined_template)
@@ -1393,7 +1411,6 @@ UPDATE treport_custom_sql SET `sql` = 'select&#x20;t1.alias&#x20;as&#x20;agent_n
 -- ----------------------------------------------------------------------
 -- Table `treport_content`
 -- ---------------------------------------------------------------------
-	
 ALTER TABLE treport_content ADD COLUMN `historical_db` tinyint(1) NOT NULL DEFAULT '0';
 ALTER TABLE treport_content ADD COLUMN `lapse_calc` tinyint(1) default '0';
 ALTER TABLE treport_content ADD COLUMN `lapse` int(11) default '300';
@@ -1414,6 +1431,7 @@ ALTER TABLE `treport_content` ADD COLUMN `checks_in_ok_status` TINYINT(1) DEFAUL
 ALTER TABLE `treport_content` ADD COLUMN `unknown_checks` TINYINT(1) DEFAULT '1';
 ALTER TABLE `treport_content` ADD COLUMN `agent_max_value` TINYINT(1) DEFAULT '1';
 ALTER TABLE `treport_content` ADD COLUMN `agent_min_value` TINYINT(1) DEFAULT '1';
+ALTER TABLE `treport_content` ADD COLUMN `current_month` TINYINT(1) DEFAULT '1';
 
 -- ---------------------------------------------------------------------
 -- Table `tmodule_relationship`
@@ -2105,8 +2123,15 @@ ALTER TABLE `tnetflow_filter` DROP COLUMN `output`;
 -- ----------------------------------------------------------------------
 UPDATE tuser_task set parameters = 'a:5:{i:0;a:6:{s:11:\"description\";s:28:\"Report pending to be created\";s:5:\"table\";s:7:\"treport\";s:8:\"field_id\";s:9:\"id_report\";s:10:\"field_name\";s:4:\"name\";s:4:\"type\";s:3:\"int\";s:9:\"acl_group\";s:8:\"id_group\";}i:1;a:2:{s:11:\"description\";s:46:\"Send to email addresses (separated by a comma)\";s:4:\"type\";s:4:\"text\";}i:2;a:2:{s:11:\"description\";s:7:\"Subject\";s:8:\"optional\";i:1;}i:3;a:3:{s:11:\"description\";s:7:\"Message\";s:4:\"type\";s:4:\"text\";s:8:\"optional\";i:1;}i:4;a:2:{s:11:\"description\";s:11:\"Report Type\";s:4:\"type\";s:11:\"report_type\";}}' where function_name = "cron_task_generate_report";
 
+------------------------------------------------------------------------
+------ ADD message in table 'tnews'
+------------------------------------------------------------------------
+
+INSERT INTO `tnews` (`id_news`, `author`, `subject`, `text`, `timestamp`) VALUES (1,'admin','Welcome&#x20;to&#x20;Pandora&#x20;FMS&#x20;Console', '&amp;lt;p&#x20;style=&quot;text-align:&#x20;center;&#x20;font-size:&#x20;13px;&quot;&amp;gt;Hello,&#x20;congratulations,&#x20;if&#x20;you&apos;ve&#x20;arrived&#x20;here&#x20;you&#x20;already&#x20;have&#x20;an&#x20;operational&#x20;monitoring&#x20;console.&#x20;Remember&#x20;that&#x20;our&#x20;forums&#x20;and&#x20;online&#x20;documentation&#x20;are&#x20;available&#x20;24x7&#x20;to&#x20;get&#x20;you&#x20;out&#x20;of&#x20;any&#x20;trouble.&#x20;You&#x20;can&#x20;replace&#x20;this&#x20;message&#x20;with&#x20;a&#x20;personalized&#x20;one&#x20;at&#x20;Admin&#x20;tools&#x20;-&amp;amp;gt;&#x20;Site&#x20;news.&amp;lt;/p&amp;gt;&#x20;',NOW());
+
 -- ----------------------------------------------------------------------
 -- Alter table `talert_templates`
 -- ----------------------------------------------------------------------
 
  ALTER TABLE `talert_templates` MODIFY COLUMN `type` ENUM('regex','max_min','max','min','equal','not_equal','warning','critical','onchange','unknown','always','not_normal');
+

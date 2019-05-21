@@ -1198,13 +1198,13 @@ ui_require_javascript_file('pandora_modules');
                 }
             }
             else {
-                alert('<?php echo __('The plugin command cannot be updated because some modules or components are using the plugin.'); ?>');
+                alert("<?php echo __('The plugin command cannot be updated because some modules or components are using the plugin.'); ?>");
             }
         }
     }
     
     var macros_click_locked_event = function (event) {
-        alert('<?php echo __('The plugin macros cannot be updated because some modules or components are using the plugin'); ?>');
+        alert("<?php echo __('The plugin macros cannot be updated because some modules or components are using the plugin'); ?>");
     }
     
     if (locked) {

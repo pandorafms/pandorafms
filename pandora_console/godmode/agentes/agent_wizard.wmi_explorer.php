@@ -570,7 +570,7 @@ $(document).ready (function () {
                     $("select[name='module[]']").append($("<option></option>").val(id).html(name));
                 }
                 else {
-                    alert('<?php echo __('Repeated'); ?>');
+                    alert("<?php echo __('Repeated'); ?>");
                 }
                 $("#module").find("option[value='0']").remove();
             }
@@ -586,7 +586,7 @@ $(document).ready (function () {
                     $("select[name='module[]']").append($("<option></option>").val(id).html(name));
                 }
                 else {
-                    alert('<?php echo __('Repeated'); ?>');
+                    alert("<?php echo __('Repeated'); ?>");
                 }
                 $("#module").find("option[value='0']").remove();
             }
@@ -602,7 +602,7 @@ $(document).ready (function () {
                     $("select[name='module[]']").append($("<option></option>").val(id).html(name));
                 }
                 else {
-                    alert('<?php echo __('Repeated'); ?>');
+                    alert("<?php echo __('Repeated'); ?>");
                 }
                 $("#module").find("option[value='0']").remove();
             }
@@ -618,7 +618,7 @@ $(document).ready (function () {
                     $("select[name='module[]']").append($("<option></option>").val(id).html(name));
                 }
                 else {
-                    alert('<?php echo __('Repeated'); ?>');
+                    alert("<?php echo __('Repeated'); ?>");
                 }
                 $("#module").find("option[value='0']").remove();
             }
@@ -640,7 +640,7 @@ $(document).ready (function () {
     
     $("#submit-create_modules_btn").click(function () {
         if($("#module option").length == 0 || ($("#module option").length == 1 && $("#module option").eq(0).val() == 0)) {
-            alert('<?php echo __('Modules list is empty'); ?>');
+            alert("<?php echo __('Modules list is empty'); ?>");
             return false;
         }
         $('#module option').map(function() {

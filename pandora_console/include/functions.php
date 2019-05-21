@@ -2675,7 +2675,7 @@ function get_news($arguments)
         case 'mysql':
         case 'postgresql':
             $sql = sprintf(
-                "SELECT subject,timestamp,text,author
+                "SELECT id_news,subject,timestamp,text,author
 				FROM tnews WHERE id_group IN (%s) AND 
 								modal = %s AND 
 								(expire = 0 OR (expire = 1 AND expire_timestamp > '%s'))

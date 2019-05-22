@@ -102,30 +102,37 @@ if (enterprise_installed()) {
     echo '</div>';
 }
 
-echo '</form>';
-echo '<div id="code_license_dialog" style="display: none; text-align: left;" title="'.__('Request new license').'">';
-echo '<div id="logo">';
-html_print_image(ui_get_custom_header_logo(true));
-echo '</div>';
-echo ''.__('To get your <b>%s Enterprise License</b>:', get_product_name()).'<br />';
-echo '<ul>';
-echo '<li>';
-echo ''.sprintf(__('Go to %s'), '<a target="_blank" href="https://licensing.artica.es/pandoraupdate7/index.php?section=generate_key_client">https://licensing.artica.es/pandoraupdate7/index.php?section=generate_key_client</a>');
-echo '</li>';
-echo '<li>';
-echo ''.__('Enter the <b>auth key</b> and the following <b>request key</b>:');
-echo '</li>';
-echo '</ul>';
-echo '<div id="code"></div>';
-echo '<ul>';
-echo '<li>';
-echo ''.__('Enter your name (or a company name) and a contact email address.');
-echo '</li>';
-echo '<li>';
-echo ''.__('Click on <b>Generate</b>.');
-echo '</li>';
-echo '<li>';
-echo ''.__('Click <a href="javascript: close_code_license_dialog();">here</a>, enter the generated license key and click on <b>Validate</b>.');
-echo '</li>';
-echo '</ul>';
-echo '</div>';
+if (enterprise_installed()) {
+    echo '<link rel="stylesheet" href="'.ui_get_full_url(false, false, false, false).'include/styles/pandora.css" type="text/css">';
+    echo '<link rel="stylesheet" href="'.ui_get_full_url(false, false, false, false).'enterprise/include/styles/pandora_enterprise.css" type="text/css">';
+}
+
+if (enterprise_hook('print_activate_licence_dialog') == ENTERPRISE_NOT_HOOK) {
+    echo '</form>';
+    echo '<div id="code_license_dialog" style="display: none; text-align: left;" title="'.__('Request new license').'">';
+    echo '<div id="logo">';
+    html_print_image(ui_get_custom_header_logo(true));
+    echo '</div>';
+    echo ''.__('To get your <b>%s Enterprise License</b>:', get_product_name()).'<br />';
+    echo '<ul>';
+    echo '<li>';
+    echo ''.sprintf(__('Go to %s'), '<a target="_blank" href="https://licensing.artica.es/pandoraupdate7/index.php?section=generate_key_client">https://licensing.artica.es/pandoraupdate7/index.php?section=generate_key_client</a>');
+    echo '</li>';
+    echo '<li>';
+    echo ''.__('Enter the <b>auth key</b> and the following <b>request key</b>:');
+    echo '</li>';
+    echo '</ul>';
+    echo '<div id="code"></div>';
+    echo '<ul>';
+    echo '<li>';
+    echo ''.__('Enter your name (or a company name) and a contact email address.');
+    echo '</li>';
+    echo '<li>';
+    echo ''.__('Click on <b>Generate</b>.');
+    echo '</li>';
+    echo '<li>';
+    echo ''.__('Click <a href="javascript: close_code_license_dialog();">here</a>, enter the generated license key and click on <b>Validate</b>.');
+    echo '</li>';
+    echo '</ul>';
+    echo '</div>';
+}

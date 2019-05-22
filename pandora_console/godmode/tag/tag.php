@@ -117,7 +117,14 @@ if (is_metaconsole()) {
     // ui_meta_print_header(__('Tags'), "", $buttons);
 } else {
     // Header
-    ui_print_page_header(__('Tags configuration'), 'images/tag.png', false, 'tags_config', true, $buttons);
+    ui_print_page_header(
+        __('Tags configuration'),
+        'images/tag.png',
+        false,
+        'tags_config',
+        true,
+        $buttons
+    );
 }
 
 // Two actions can performed in this page: search and delete tags

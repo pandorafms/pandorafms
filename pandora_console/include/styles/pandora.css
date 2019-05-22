@@ -4586,14 +4586,14 @@ div#dialog_messages table th:last-child {
 }
 .notification-item:hover {
   border: #ccc solid 1px;
+  text-decoration: none;
 }
 .notification-item > * {
   padding-left: 15px;
   pointer-events: none;
 }
-
-.notification-item:hover {
-  text-decoration: none;
+.notification-item > img {
+  width: 75px;
 }
 
 .notification-info {

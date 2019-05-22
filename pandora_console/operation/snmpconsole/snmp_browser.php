@@ -172,7 +172,7 @@ ui_print_page_header(
     __('SNMP Browser'),
     'images/op_snmp.png',
     false,
-    '',
+    'snmp_browser_view',
     false,
     [$link]
 );

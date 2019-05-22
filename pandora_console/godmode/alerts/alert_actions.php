@@ -62,7 +62,7 @@ if ((!$copy_action) && (!$delete_action)) {
     if (defined('METACONSOLE')) {
         alerts_meta_print_header();
     } else {
-        ui_print_page_header(__('Alerts').' &raquo; '.__('Alert actions'), 'images/gm_alerts.png', false, 'alerts_config', true);
+        ui_print_page_header(__('Alerts').' &raquo; '.__('Alert actions'), 'images/gm_alerts.png', false, 'alerts_action', true);
     }
 }
 

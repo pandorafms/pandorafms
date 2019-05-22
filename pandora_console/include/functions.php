@@ -1469,11 +1469,20 @@ function enterprise_include($filename)
 }
 
 
+/**
+ * Includes a file from enterprise section.
+ *
+ * @param string $filename Target file.
+ *
+ * @return mixed Result code.
+ */
 function enterprise_include_once($filename)
 {
     global $config;
 
-    // Load enterprise extensions
+    defined('ENTERPRISE_DIR') || define('ENTERPRISE_DIR', 'enterprise');
+
+    // Load enterprise extensions.
     $filepath = realpath($config['homedir'].'/'.ENTERPRISE_DIR.'/'.$filename);
 
     if ($filepath === false) {
@@ -1573,10 +1582,27 @@ function safe_sql_string($string)
 }
 
 
+/**
+ * Verifies if current Pandora FMS installation is a Metaconsole.
+ *
+ * @return boolean True metaconsole installation, false if not.
+ */
 function is_metaconsole()
 {
     global $config;
     return (bool) $config['metaconsole'];
+}
+
+
+/**
+ * Check if current Pandora FMS installation has joined a Metaconsole env.
+ *
+ * @return boolean True joined, false if not.
+ */
+function has_metaconsole()
+{
+    global $config;
+    return (bool) $config['node_metaconsole'] && (bool) $config['metaconsole_node_id'];
 }
 
 

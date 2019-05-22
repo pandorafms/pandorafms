@@ -295,7 +295,7 @@ $key_buffer_size_min_rec_value = 256;
 $read_buffer_size_min_rec_value = 32;
 $read_rnd_buffer_size_min_rec_value = 32;
 $query_cache_min_res_unit_min_rec_value = 2;
-$innodb_file_per_table_min_rec_value = 0;
+$innodb_file_per_table_min_rec_value = 1;
 
 
 function status_fragmentation_tables($tables_fragmentation_max_rec_value, $tables_fragmentation)

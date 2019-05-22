@@ -8,7 +8,7 @@ import {
   humanDate,
   humanTime,
   replaceMacros
-} from "./lib";
+} from ".";
 
 describe("function parseIntOr", () => {
   it("should retrieve valid int or a default value", () => {

@@ -38,15 +38,11 @@ if (! check_acl($config['id_user'], 0, 'PM') && ! is_user_admin($config['id_user
 }
 
 ui_require_css_file('update_manager', 'godmode/update_manager/');
-if (!is_metaconsole()) {
-    include_once 'include/functions_update_manager.php';
-} else {
-    include_once '../../include/functions_update_manager.php';
-}
+require_once __DIR__.'/../../include/functions_update_manager.php';
 
 enterprise_include_once('include/functions_update_manager.php');
 
-require_once 'include/functions_config.php';
+require_once __DIR__.'/../../include/functions_config.php';
 
 $memory_limit_min = '500M';
 $post_max_size_min = '800M';

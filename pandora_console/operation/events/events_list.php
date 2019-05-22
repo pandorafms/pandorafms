@@ -48,6 +48,9 @@ check_login();
 
 $sort_field = get_parameter('sort_field', 'timestamp');
 $sort_order = get_parameter('sort', 'down');
+if (is_metaconsole()) {
+    $id_source_event = get_parameter('id_source_event');
+}
 
 $event_a = check_acl($config['id_user'], 0, 'ER');
 $event_w = check_acl($config['id_user'], 0, 'EW');
@@ -125,6 +128,10 @@ if (is_ajax()) {
         $values['id_extra'] = get_parameter('id_extra');
         $values['user_comment'] = get_parameter('user_comment');
 
+        if (is_metaconsole()) {
+            $values['id_source_event'] = get_parameter('id_source_event');
+        }
+
         $exists = (bool) db_get_value_filter(
             'id_filter',
             'tevent_filter',
@@ -171,6 +178,10 @@ if (is_ajax()) {
         $values['source'] = get_parameter('source');
         $values['id_extra'] = get_parameter('id_extra');
         $values['user_comment'] = get_parameter('user_comment');
+
+        if (is_metaconsole()) {
+            $values['id_source_event'] = get_parameter('id_source_event');
+        }
 
         if (io_safe_output($values['tag_with']) == '["0"]') {
             $values['tag_with'] = '[]';
@@ -247,6 +258,10 @@ if ($user_filter != 0 && empty($id_name) && !$update_from_filter_table) {
         $id_extra = $user_default_filter['id_extra'];
         $user_comment = $user_default_filter['user_comment'];
         $source = $user_default_filter['source'];
+
+        if (is_metaconsole()) {
+            $id_source_event = $user_default_filter['id_source_event'];
+        }
 
         if ($user_default_filter['search'] != '') {
             $search = $user_default_filter['search'];
@@ -984,8 +999,12 @@ $data[2] .= html_print_input_text(
     255,
     true
 );
-$table->data[] = $data;
-$table->rowclass[] = '';
+if (is_metaconsole()) {
+    $data[3] = __('Id source event').$jump;
+    $data[3] .= html_print_input_text('id_source_event', $id_source_event, '', 11, 255, true);
+    $table->data[] = $data;
+    $table->rowclass[] = '';
+}
 
 $data = [];
 $data[0] = ui_toggle(
@@ -1335,6 +1354,8 @@ $(document).ready( function() {
                             $("#text-id_extra").val(val);
                         if (i == 'user_comment')
                             $("#text-user_comment").val(val);
+                        if (i == 'id_source_event')
+                            $("#text-id_source_event").val(val);
                     });
                     reorder_tags_inputs();
                     // Update the info with the loaded filter
@@ -1374,7 +1395,10 @@ $(document).ready( function() {
             $("#text-source").val('');
             $("#text-id_extra").val('');
             $("#text-user_comment").val('');
-            
+
+            if(is_metaconsole()){
+            $("#text-id_source_event").val('');
+            }
             clear_tags_inputs();
             
             // Update the view of filter load with no loaded filters message
@@ -1448,6 +1472,10 @@ $(document).ready( function() {
                             $("#text-id_extra").val(val);
                         if (i == 'user_comment')
                             $("#text-user_comment").val(val);
+                        
+                        if(is_metaconsole()){if (i == 'id_source_event')
+                            $("#text-id_source_event").val(val);
+                        }
                     });
                     reorder_tags_inputs();
                     // Update the info with the loaded filter
@@ -1516,7 +1544,9 @@ $(document).ready( function() {
                 "date_to": $("#text-date_to").val(),
                 "source": $("#text-source").val(),
                 "id_extra": $("#text-id_extra").val(),
-                "user_comment": $("#text-user_comment").val()
+                "user_comment": $("#text-user_comment").val(),
+                "id_source_event": $("#text-id_extra").val()
+
             },
             function (data) {
                 $(".info_box").hide();
@@ -1616,7 +1646,9 @@ $(document).ready( function() {
             "date_to": $("#text-date_to").val(),
             "source": $("#text-source").val(),
             "id_extra": $("#text-id_extra").val(),
-            "user_comment": $("#text-user_comment").val()
+            "user_comment": $("#text-user_comment").val(),
+            "id_source_event": $("#text-id_source_event").val()
+            
             },
             function (data) {
                 $(".info_box").hide();

@@ -32,6 +32,9 @@ require_once $config['homedir'].'/include/functions.php';
 enterprise_include_once('meta/include/functions_events_meta.php');
 enterprise_include_once('meta/include/functions_agents_meta.php');
 enterprise_include_once('meta/include/functions_modules_meta.php');
+if (is_metaconsole()) {
+    $id_source_event = get_parameter('id_source_event');
+}
 
 
 /**
@@ -228,11 +231,25 @@ function events_get_events_grouped(
     db_process_sql('SET group_concat_max_len = 9999999');
     $event_lj = events_get_secondary_groups_left_join($table);
     if ($total) {
+        if (is_metaconsole()) {
+            $id_source_event = get_parameter('id_source_event');
+            if ($id_source_event != '') {
+                $sql_post .= "AND id_source_event = $id_source_event";
+            }
+        }
+
         $sql = "SELECT COUNT(*) FROM (SELECT id_evento
             FROM $table te $event_lj
             WHERE 1=1 ".$sql_post.'
             GROUP BY estado, evento, id_agente, id_agentmodule'.$groupby_extra.') AS t';
     } else {
+        if (is_metaconsole()) {
+            $id_source_event = get_parameter('id_source_event');
+            if ($id_source_event != '') {
+                $sql_post .= "AND id_source_event = $id_source_event";
+            }
+        }
+
         $sql = "SELECT *, MAX(id_evento) AS id_evento,
             GROUP_CONCAT(DISTINCT user_comment SEPARATOR '<br>') AS user_comment,
             GROUP_CONCAT(DISTINCT id_evento SEPARATOR ',') AS similar_ids,

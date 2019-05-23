@@ -3878,7 +3878,6 @@ function chooseType() {
     switch (type) {
         case 'event_report_agent':
         case 'simple_graph':
-        case 'agent_configuration':
         case 'event_report_module':
         case 'alert_report_agent':
         case 'alert_report_module':

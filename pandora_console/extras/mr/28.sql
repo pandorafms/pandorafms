@@ -12,6 +12,7 @@ CREATE TABLE IF NOT EXISTS `tvisual_console_elements_cache` (
     `user_id` VARCHAR(60) DEFAULT NULL,
     `data` TEXT NOT NULL,
     `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `expiration` INTEGER UNSIGNED NOT NULL COMMENT 'Seconds to expire',
     PRIMARY KEY(`id`),
     FOREIGN KEY(`vc_id`) REFERENCES `tlayout`(`id`)
         ON DELETE CASCADE,

@@ -743,14 +743,13 @@ class Item extends CacheModel
             WHERE vc_item_id = '.$filter['id'].' 
             AND vc_id = '.$filter['id_layout'].' 
             AND user_id LIKE "'.$config['id_user'].'" 
-            AND (UNIX_TIMESTAMP(`created_at`) +'.$filter['cache_expiration'].') > UNIX_TIMESTAMP()'
+            AND (UNIX_TIMESTAMP(`created_at`) + `expiration`) > UNIX_TIMESTAMP()'
         );
+
         if ($row === false) {
             return null;
         }
 
-        // $fecha = \date_create();
-        // $fecha = \date_timestamp_get($fecha);
         $row = \io_safe_output(\io_safe_output($row));
 
         return $row;
@@ -762,14 +761,14 @@ class Item extends CacheModel
      *
      * @param array $filter Filter to retrieve the modeled element.
      *
-     * @return array The modeled element data structure stored into the DB.
+     * @return boolean The modeled element data structure stored into the DB.
      * @throws \Exception When the data cannot be retrieved from the DB.
      *
      * @override CacheModel::saveCachedData.
      */
     protected static function saveCachedData(array $filter, array $data): bool
     {
-        db_process_sql_insert(
+        $result = \db_process_sql_insert(
             'tvisual_console_elements_cache',
             [
                 'vc_id'      => $filter['vc_id'],
@@ -779,7 +778,8 @@ class Item extends CacheModel
                 'expiration' => $filter['expiration'],
             ]
         );
-        return false;
+
+        return ($result > 0) ? true : false;
     }
 
 
@@ -795,7 +795,6 @@ class Item extends CacheModel
      */
     protected static function clearCachedData(array $filter): int
     {
-        hd($filter);
         return \db_process_sql_delete('tvisual_console_elements_cache', $filter);
     }
 

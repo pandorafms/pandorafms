@@ -955,6 +955,8 @@ function update_manager_get_config_values()
     global $build_version;
     global $pandora_version;
 
+    enterprise_include_once('include/functions_license.php');
+
     $license = db_get_value(
         db_escape_key_identifier('value'),
         'tupdate_settings',

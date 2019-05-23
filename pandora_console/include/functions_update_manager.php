@@ -964,7 +964,7 @@ function update_manager_get_config_values()
         'customer_key'
     );
 
-    $data = enterprise_hook('license_get_info', [true]);
+    $data = enterprise_hook('license_get_info');
 
     if ($data === ENTERPRISE_NOT_HOOK) {
         $limit_count = db_get_value_sql('SELECT count(*) FROM tagente');

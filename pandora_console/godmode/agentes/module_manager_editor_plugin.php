@@ -79,7 +79,7 @@ push_table_simple($data, 'plugin_1');
 $data = [];
 $data[0] = 'macro_desc';
 $data[0] .= ui_print_help_tip('macro_help', true);
-$data[1] = html_print_input_text('macro_name', 'macro_value', '', 100, 1024, true);
+$data[1] = html_print_input_text('macro_name[]', 'macro_value', '', 100, 1024, true);
 $table_simple->colspan['macro_field'][1] = 3;
 $table_simple->rowstyle['macro_field'] = 'display:none';
 

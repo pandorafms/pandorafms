@@ -2741,6 +2741,31 @@ function config_check()
 
 
 /**
+ * Retrieves base url stored for Update Manager.
+ *
+ * @return string URL.
+ */
+function get_um_url()
+{
+    global $config;
+
+    if (isset($config['url_update_manager'])) {
+        $url = $config['url_update_manager'];
+        $url = substr($url, 0, (strlen($url) - strpos(strrev($url), '/')));
+    } else {
+        $url = 'https://licensing.artica.es/pandoraupdate7/';
+        config_update_value(
+            'url_update_manager',
+            'https://licensing.artica.es/pandoraupdate7/server.php'
+        );
+    }
+
+    return $url;
+
+}
+
+
+/**
  * Return in bytes
  *
  * @param string $val Value to convert.

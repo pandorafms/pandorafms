@@ -80,10 +80,32 @@ if (isset($_GET['modified']) && !$view_mode) {
     $upd_info['id_skin'] = get_parameter('skin', $user_info['id_skin']);
     $upd_info['default_event_filter'] = get_parameter('event_filter', null);
     $upd_info['block_size'] = get_parameter('block_size', $config['block_size']);
-    $upd_info['firstname'] = get_parameter('newsletter_reminder', $user_info['first_name']);
+    $upd_info['middlename'] = get_parameter_switch('newsletter_reminder', $user_info['middlename']);
     $default_block_size = get_parameter('default_block_size', 0);
     if ($default_block_size) {
         $upd_info['block_size'] = 0;
+    }
+
+    if ($upd_info['middlename'] == 1) {
+        // User wants to enable newsletter reminders.
+        if ($user_info['middlename'] > 0) {
+            // User has already registered!. No sense.
+            $upd_info['middlename'] = $user_info['middlename'];
+        } else {
+            // Force subscription reminder.
+            $upd_info['middlename'] = 0;
+        }
+    }
+
+    if ($upd_info['middlename'] == 0 || $upd_info['middlename'] == 0) {
+        // Switch is ON. user had not registered.
+        $newsletter_reminder_value = 1;
+    } else if ($upd_info['middlename'] < 1) {
+        // Switch is OFF. User do not want to register.
+        $newsletter_reminder_value = 0;
+    } else if ($upd_info['middlename'] > 0) {
+        // Switc is OFF. User is already registered!
+        $newsletter_reminder_value = 0;
     }
 
     $upd_info['section'] = get_parameter('section', $user_info['section']);
@@ -398,19 +420,23 @@ if (check_acl($config['id_user'], 0, 'ER')) {
     ).'</div>';
 }
 
+
 $newsletter = '<div class="label_select_simple"><p class="edit_user_labels">'.__('Newsletter Subscribed').': </p>';
 if ($user_info['middlename'] > 0) {
-    $newsletter .= '<span>'.__('Already subscribed to %s newsletter', get_product_name()).'</span></div>';
+    $newsletter .= '<span>'.__('Already subscribed to %s newsletter', get_product_name()).'</span>';
 } else {
     $newsletter .= '<span><a href="javascript: force_run_newsletter();">'.__('Subscribe to our newsletter').'</a></span></div>';
+    $newsletter_reminder = '<div class="label_select_simple"><p class="edit_user_labels">'.__('Newsletter Reminder').': </p>';
+    $newsletter_reminder .= html_print_switch(
+        [
+            'name'     => 'newsletter_reminder',
+            'value'    => $newsletter_reminder_value,
+            'disabled' => false,
+        ]
+    );
 }
 
-$newsletter_reminder = '<div class="label_select_simple"><p class="edit_user_labels">'.__('Newsletter Reminder').': </p>';
-if ($user_info['firstname'] != 0) {
-    $user_info['firstname'] = 1;
-}
-
-$newsletter_reminder .= html_print_checkbox_switch('newsletter_reminder', 1, $user_info['firstname'], true).'</div>';
+$newsletter_reminder .= '</div>';
 
 
 

@@ -391,7 +391,11 @@ sub pandora_generate_alerts ($$$$$$$$;$$$) {
 	}
 
 	# Get enabled alerts associated with this module
-	my $alert_type_filter = defined ($alert_type) ? " AND type = '$alert_type'" : '';
+	my $alert_type_filter = '';
+	if (defined($alert_type)) {
+		# not_normal includes unknown!
+		$alert_type_filter = $alert_type eq 'unknown' ? " AND (type = 'unknown' OR type = 'not_normal')" : " AND type = '$alert_type'"; 
+	}
 	my @alerts = get_db_rows ($dbh, '
 		SELECT talert_template_modules.id as id_template_module,
 			talert_template_modules.*, talert_templates.*
@@ -566,6 +570,7 @@ sub pandora_evaluate_alert ($$$$$$$;$$$) {
 		return $status if ($last_status != 1 && $alert->{'type'} eq 'critical');
 		return $status if ($last_status != 2 && $alert->{'type'} eq 'warning');
 		return $status if ($last_status != 3 && $alert->{'type'} eq 'unknown');
+		return $status if ($last_status == 0 && $alert->{'type'} eq 'not_normal');
 	}
 	# Event alert
 	else {
@@ -4238,7 +4243,7 @@ sub get_module_status ($$$) {
 	$critical_str = (defined ($critical_str) && valid_regex ($critical_str) == 1) ? safe_output($critical_str) : '';
 	$warning_str = (defined ($warning_str) && valid_regex ($warning_str) == 1) ? safe_output($warning_str) : '';
 	
-	if ($module_type =~ m/_proc$/ && ($critical_min eq $critical_max)) {
+	if (($module_type =~ m/_proc$/ || $module_type =~ /web_analysis/) && ($critical_min eq $critical_max)) {
 		($critical_min, $critical_max) = (0, 1);
 	}
 	elsif ($module_type =~ m/keep_alive/ && ($critical_min eq $critical_max)) {

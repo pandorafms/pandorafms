@@ -6,7 +6,7 @@ import {
   WithModuleProps,
   LinkedVisualConsoleProps,
   LinkedVisualConsolePropsStatus
-} from "./types";
+} from "../types";
 
 /**
  * Return a number or a default value from a raw value.
@@ -14,8 +14,7 @@ import {
  * @param defaultValue Default value to use if we cannot extract a valid number.
  * @return A valid number or the default value.
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function parseIntOr<T>(value: any, defaultValue: T): number | T {
+export function parseIntOr<T>(value: unknown, defaultValue: T): number | T {
   if (typeof value === "number") return value;
   if (typeof value === "string" && value.length > 0 && !isNaN(parseInt(value)))
     return parseInt(value);
@@ -28,8 +27,7 @@ export function parseIntOr<T>(value: any, defaultValue: T): number | T {
  * @param defaultValue Default value to use if we cannot extract a valid number.
  * @return A valid number or the default value.
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function parseFloatOr<T>(value: any, defaultValue: T): number | T {
+export function parseFloatOr<T>(value: unknown, defaultValue: T): number | T {
   if (typeof value === "number") return value;
   if (
     typeof value === "string" &&
@@ -55,8 +53,10 @@ export function stringIsEmpty(value?: string | null): boolean {
  * @param defaultValue Default value to use if we cannot extract a non empty string.
  * @return A non empty string or the default value.
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function notEmptyStringOr<T>(value: any, defaultValue: T): string | T {
+export function notEmptyStringOr<T>(
+  value: unknown,
+  defaultValue: T
+): string | T {
   return typeof value === "string" && value.length > 0 ? value : defaultValue;
 }
 
@@ -65,8 +65,7 @@ export function notEmptyStringOr<T>(value: any, defaultValue: T): string | T {
  * @param value Raw value from which we will try to extract the boolean.
  * @return A valid boolean value. false by default.
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function parseBoolean(value: any): boolean {
+export function parseBoolean(value: unknown): boolean {
   if (typeof value === "boolean") return value;
   else if (typeof value === "number") return value > 0;
   else if (typeof value === "string") return value === "1" || value === "true";

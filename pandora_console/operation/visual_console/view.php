@@ -177,7 +177,17 @@ if ($pure === true) {
     echo '<div class="vc-refr">';
     echo '<div id="vc-refr-form">';
     echo __('Refresh').':';
-    echo html_print_select(get_refresh_time_array(), 'refr', $refr, '', '', 0, true, false, false);
+    echo html_print_select(
+        get_refresh_time_array(),
+        'vc-refr',
+        $refr,
+        '',
+        '',
+        0,
+        true,
+        false,
+        false
+    );
     echo '</div>';
     echo '</div>';
     echo '</li>';
@@ -296,7 +306,7 @@ $visualConsoleItems = VisualConsole::getItemsFromDB(
             }
         }
     }
-    var visualConsole = createVisualConsole(
+    var visualConsoleManager = createVisualConsole(
         container,
         props,
         items,
@@ -305,16 +315,20 @@ $visualConsoleItems = VisualConsole::getItemsFromDB(
         handleUpdate
     );
 
-    $(document).ready (function () {
-        var refr = <?php echo (int) $refr; ?>;
-        var pure = <?php echo (int) $config['pure']; ?>;
-        var href = "<?php echo ui_get_url_refresh($ignored_params); ?>";
+    // Update the data fetch interval.
+    $('select#vc-refr').change(function(event) {
+        var refr = Number.parseInt(event.target.value);
 
-        if (pure) {
-            $('select#refr').change(function (event) {
-                url = js_html_entity_decode( href ) +  $('select#refr').val();
-                $(document).attr ("location", url);
-            });
+        if (!Number.isNaN(refr)) {
+            visualConsoleManager.changeUpdateInterval(refr * 1000); // To ms.
+
+            // Change the URL (if the browser has support).
+            if ("history" in window) {
+                var regex = /(refr=)\d+(&?)/gi;
+                var replacement = '$1' + refr + '$2';
+                var href = window.location.href.replace(regex, replacement);
+                window.history.replaceState({}, document.title, href);
+            }
         }
     });
 </script>

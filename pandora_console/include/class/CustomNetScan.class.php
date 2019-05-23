@@ -360,7 +360,7 @@ class CustomNetScan extends Wizard
             // Avoid to print header out of wizard.
             $this->prepareBreadcrum($breadcrum);
 
-            // Header
+            // Header.
             ui_print_page_header(__('NetScan Custom'), '', false, '', true, '', false, '', GENERIC_SIZE_TEXT, '', $this->printHeader(true));
         }
 
@@ -385,7 +385,7 @@ class CustomNetScan extends Wizard
             // Avoid to print header out of wizard.
             $this->prepareBreadcrum($breadcrum);
 
-            // Header
+            // Header.
             ui_print_page_header(__('NetScan Custom'), '', false, '', true, '', false, '', GENERIC_SIZE_TEXT, '', $this->printHeader(true));
         }
 
@@ -443,7 +443,7 @@ class CustomNetScan extends Wizard
                         'name'  => 'taskname',
                         'value' => $this->task['name'],
                         'type'  => 'text',
-                        'size'  => 25,
+                        'size'  => 50,
                     ],
                 ];
 
@@ -465,7 +465,7 @@ class CustomNetScan extends Wizard
                         'name'  => 'comment',
                         'value' => $this->task['description'],
                         'type'  => 'text',
-                        'size'  => 25,
+                        'size'  => 50,
                     ],
                 ];
 
@@ -594,7 +594,7 @@ class CustomNetScan extends Wizard
 
                 // XXX: Could be improved validating inputs before continue (JS)
                 // Print NetScan page 0.
-                $this->printForm($form, false, true);
+                $this->printFormAsList($form);
             }
         }
 
@@ -652,7 +652,7 @@ class CustomNetScan extends Wizard
                     'value'      => $explanation,
                     'return'     => true,
                     'attributes' => 'style="width: 388px;"',
-                    'class'      => 'discovery_textarea_input'
+                    'class'      => 'discovery_textarea_input',
                 ],
             ];
 
@@ -742,7 +742,7 @@ class CustomNetScan extends Wizard
                     get_explanation_recon_script($(this).val(), "'.$id_task.'", "'.$url_ajax.'");
                 })'.$change;
 
-            $this->printForm($form, false, true);
+            $this->printFormAsList($form);
         }
 
         if (isset($this->page) === true && $this->page === 2) {

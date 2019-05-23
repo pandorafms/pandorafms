@@ -28,7 +28,7 @@ $action_update_url_update_manager = (bool) get_parameter(
 );
 
 if (!$action_update_url_update_manager) {
-    $url_update_manager = get_parameter('url_update_manager', $config['url_update_manager']);
+    $url_update_manager = get_parameter('url_update_manager', get_um_url());
     $update_manager_proxy_server = get_parameter('update_manager_proxy_server', $config['update_manager_proxy_server']);
     $update_manager_proxy_port = get_parameter('update_manager_proxy_port', $config['update_manager_proxy_port']);
     $update_manager_proxy_user = get_parameter('update_manager_proxy_user', $config['update_manager_proxy_user']);

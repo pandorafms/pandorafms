@@ -1266,11 +1266,11 @@ function ui_print_alert_template_example($id_alert_template, $return=false, $pri
  *
  * @return string The help tip
  */
-function ui_print_help_icon($help_id, $return=false, $home_url='', $image='images/help_green.png', $is_relative=false)
+function ui_print_help_icon($help_id, $return=false, $home_url='', $image='images/help_green.png', $is_relative=false, $id='')
 {
     global $config;
 
-    // Do not display the help icon if help is disabled
+    // Do not display the help icon if help is disabled.
     if ($config['disable_help']) {
         return '';
     }
@@ -1283,13 +1283,16 @@ function ui_print_help_icon($help_id, $return=false, $home_url='', $image='image
         $home_url = '../../'.$home_url;
     }
 
+    $url = get_help_info($help_id);
+
     $output = html_print_image(
         $image,
         true,
         [
             'class'   => 'img_help',
             'title'   => __('Help'),
-            'onclick' => "open_help ('".$help_id."','".$home_url."','".$config['id_user']."')",
+            'onclick' => "open_help ('".$url."')",
+            'id'      => $id,
         ],
         false,
         $is_relative && is_metaconsole()
@@ -2437,7 +2440,7 @@ function ui_print_status_image($type, $title='', $return=false, $options=false, 
  */
 
 
-function ui_toggle($code, $name, $title='', $hidden_default=true, $return=false)
+function ui_toggle($code, $name, $title='', $hidden_default=true, $return=false, $toggle_class='')
 {
     // Generate unique Id
     $uniqid = uniqid('');
@@ -2458,12 +2461,11 @@ function ui_toggle($code, $name, $title='', $hidden_default=true, $return=false)
     // Link to toggle
     $output = '';
     $output .= '<a href="javascript:" id="tgl_ctrl_'.$uniqid.'">'.html_print_image($original, true, ['title' => $title, 'id' => 'image_'.$uniqid]).'&nbsp;&nbsp;<b>'.$name.'</b></a>';
-    $output .= '<br />';
-
+    // $output .= '<br />';
     // if (!defined("METACONSOLE"))
         // $output .= '<br />';
     // Code into a div
-    $output .= "<div id='tgl_div_".$uniqid."' style='".$style."'>\n";
+    $output .= "<div id='tgl_div_".$uniqid."' style='".$style."' class='".$toggle_class."'>\n";
     $output .= $code;
     $output .= '</div>';
 

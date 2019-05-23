@@ -67,7 +67,7 @@ export interface ItemRemoveEvent<Props extends ItemProps> {
  * @param labelPosition Raw value.
  */
 const parseLabelPosition = (
-  labelPosition: any // eslint-disable-line @typescript-eslint/no-explicit-any
+  labelPosition: unknown
 ): ItemProps["labelPosition"] => {
   switch (labelPosition) {
     case "up":

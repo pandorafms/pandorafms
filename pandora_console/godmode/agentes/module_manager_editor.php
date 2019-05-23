@@ -591,7 +591,7 @@ ui_toggle(
 );
 ui_toggle(
     html_print_table($table_macros, true),
-    __('Custom macros').ui_print_help_icon('module_macros', true)
+    __('Custom macros')
 );
 
 if ($moduletype != 13) {

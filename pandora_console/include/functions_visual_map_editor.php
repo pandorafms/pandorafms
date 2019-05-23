@@ -1407,6 +1407,10 @@ function visual_map_editor_print_hack_translate_strings()
     echo "<p style='text-align: center;font-weight: bold;'>".__('Could not be save.').'</p>';
     echo '</div>';
 
+    echo "<div id='message_alert_no_custom_graph'  title='".__('Visual Console Builder Information')."' style='display:none;'>";
+    echo "<p style='text-align: center;font-weight: bold;'>".__('No custom graph defined.').'</p>';
+    echo '</div>';
+
 }
 
 

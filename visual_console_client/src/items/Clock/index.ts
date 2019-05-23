@@ -27,9 +27,7 @@ export type ClockProps = {
  * Extract a valid enum value from a raw unknown value.
  * @param clockType Raw value.
  */
-const parseClockType = (
-  clockType: any // eslint-disable-line @typescript-eslint/no-explicit-any
-): ClockProps["clockType"] => {
+const parseClockType = (clockType: unknown): ClockProps["clockType"] => {
   switch (clockType) {
     case "analogic":
     case "digital":
@@ -43,12 +41,9 @@ const parseClockType = (
  * Extract a valid enum value from a raw unknown value.
  * @param clockFormat Raw value.
  */
-const parseClockFormat = (
-  clockFormat: any // eslint-disable-line @typescript-eslint/no-explicit-any
-): ClockProps["clockFormat"] => {
+const parseClockFormat = (clockFormat: unknown): ClockProps["clockFormat"] => {
   switch (clockFormat) {
     case "datetime":
-    case "date":
     case "time":
       return clockFormat;
     default:
@@ -217,6 +212,12 @@ export default class Clock extends Item<ClockProps> {
     };
 
     const { width, height } = this.getElementSize(); // Destructuring assigment: http://es6-features.org/#ObjectMatchingShorthandNotation
+
+    // Calculate font size to adapt the font to the item size.
+    const baseTimeFontSize = 20; // Per 100px of width.
+    const dateFontSizeMultiplier = 0.5;
+    const dateFontSize =
+      (baseTimeFontSize * dateFontSizeMultiplier * width) / 100;
 
     const div = document.createElement("div");
     div.className = "analogic-clock";
@@ -467,6 +468,16 @@ export default class Clock extends Item<ClockProps> {
     `;
     // Add the clock to the container
     div.append(svg);
+
+    // Date.
+    if (this.props.clockFormat === "datetime") {
+      const dateElem: HTMLSpanElement = document.createElement("span");
+      dateElem.className = "date";
+      dateElem.textContent = humanDate(date, "default");
+      dateElem.style.fontSize = `${dateFontSize}px`;
+      if (this.props.color) dateElem.style.color = this.props.color;
+      div.append(dateElem);
+    }
 
     return div;
   }

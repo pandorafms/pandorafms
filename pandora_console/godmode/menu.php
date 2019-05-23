@@ -457,19 +457,6 @@ if (check_acl($config['id_user'], 0, 'PM') && $config['enable_update_manager']) 
     $sub['godmode/update_manager/update_manager&tab=setup']['text'] = __('Update Manager options');
     $sub['godmode/update_manager/update_manager&tab=setup']['id'] = 'Options';
 
-    if (license_free() && is_user_admin($config['id_user'])) {
-        include_once 'include/functions_update_manager.php';
-        // If there are unread messages, display the notification icon
-        $number_total_messages;
-        $number_unread_messages = update_manager_get_unread_messages();
-        if ($number_unread_messages > 0) {
-            $menu_godmode['messages']['notification'] = $number_unread_messages;
-        }
-
-        $sub['godmode/update_manager/update_manager&tab=messages']['text'] = __('Messages');
-        $sub['godmode/update_manager/update_manager&tab=messages']['id'] = 'Messages';
-    }
-
     $menu_godmode['messages']['sub'] = $sub;
 }
 

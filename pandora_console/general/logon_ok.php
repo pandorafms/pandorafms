@@ -197,12 +197,15 @@ if (!empty($all_data)) {
                 }
 
                 foreach ($news as $article) {
-                    $text = io_safe_output($article['text']);
-
-
+                    $text_bbdd = io_safe_output($article['text']);
+                    $text = html_entity_decode($text_bbdd);
                     echo '<tr><th class="green_title">'.$article['subject'].'</th></tr>';
                     echo '<tr><td>'.__('by').' <b>'.$article['author'].'</b> <i>'.ui_print_timestamp($article['timestamp'], true).'</i> '.$comparation_suffix.'</td></tr>';
                     echo '<tr><td class="datos">';
+                    if ($article['id_news'] == 1) {
+                        echo '<center><img src="./images/welcome_image.png" alt="img colabora con nosotros - Support" width="191" height="207"></center>';
+                    }
+
                     echo nl2br($text);
                     echo '</td></tr>';
                 }
@@ -213,58 +216,6 @@ if (!empty($all_data)) {
                 echo '<br><br>';
 
                 // END OF NEWS BOARD.
-            }
-
-            $nots = messages_get_overview('utimestamp', 'DESC', false);
-            if (!empty($nots)) {
-                // Notifications board.
-                echo '<div id="notifications_board">';
-
-                echo '<table cellpadding="0" width=100% cellspacing="0" class="databox filters">';
-                echo '<tr><th style="text-align:center;"><span >'.__('Pending notifications').'</span></th></tr>';
-                if ($config['prominent_time'] == 'timestamp') {
-                    $comparation_suffix = '';
-                } else {
-                    $comparation_suffix = __('ago');
-                }
-
-                foreach ($nots as $msg) {
-                    $conversation = io_safe_output(
-                        messages_get_conversation($msg)
-                    );
-
-                    if (is_array($conversation)) {
-                        $text = array_pop($conversation)['message'];
-                    } else {
-                        // Skip empty message.
-                        continue;
-                    }
-
-                    $url = ui_get_full_url(
-                        'index.php?sec=message_list&sec2=operation/messages/message_edit&read_message=1&id_message='.$msg['id_mensaje']
-                    );
-                    if ($msg['url'] != '') {
-                        $url = $msg['url'];
-                    }
-
-                    echo '<tr><th class="green_title">'.$msg['subject'].'</th></tr>';
-                    echo '<tr><td><a href="'.$url.'">';
-                    if ($msg['id_usuario_origen'] != '') {
-                        echo '<b>'.get_user_fullname($msg['id_usuario_origen']).'</b> ';
-                    }
-
-                    echo '<i>'.ui_print_timestamp($msg['timestamp'], true).'</i> '.$comparation_suffix.'</a></td></tr>';
-                    echo '<tr><td class="datos">';
-                    echo nl2br($text);
-                    echo '</td></tr>';
-                }
-
-                echo '</table>';
-                echo '</div>';
-
-                echo '<br><br>';
-
-                // EO Notifications board.
             }
 
             // LAST ACTIVITY.

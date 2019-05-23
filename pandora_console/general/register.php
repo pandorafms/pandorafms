@@ -169,6 +169,9 @@ if ($registration) {
     }
 }
 
+
+$newsletter = null;
+
 ?>
 <script type="text/javascript">
 

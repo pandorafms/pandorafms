@@ -396,21 +396,22 @@ if (check_acl($config['id_user'], 0, 'ER')) {
         null,
         true
     ).'</div>';
-} else if (license_free()) {
-    $newsletter = '<div class="label_select_simple"><p class="edit_user_labels">'.__('Newsletter Subscribed').': </p>';
-    if ($user_info['middlename']) {
-        $newsletter .= '<span>'.__('Already subscribed to %s newsletter', get_product_name()).'</span></div>';
-    } else {
-        $newsletter .= '<span><a href="javascript: force_run_newsletter();">'.__('Subscribe to our newsletter').'</a></span></div>';
-    }
-
-    $newsletter_reminder = '<div class="label_select_simple"><p class="edit_user_labels">'.__('Newsletter Reminder').': </p>';
-    if ($user_info['firstname'] != 0) {
-        $user_info['firstname'] = 1;
-    }
-
-    $newsletter_reminder .= html_print_checkbox_switch('newsletter_reminder', 1, $user_info['firstname'], true).'</div>';
 }
+
+$newsletter = '<div class="label_select_simple"><p class="edit_user_labels">'.__('Newsletter Subscribed').': </p>';
+if ($user_info['middlename']) {
+    $newsletter .= '<span>'.__('Already subscribed to %s newsletter', get_product_name()).'</span></div>';
+} else {
+    $newsletter .= '<span><a href="javascript: force_run_newsletter();">'.__('Subscribe to our newsletter').'</a></span></div>';
+}
+
+$newsletter_reminder = '<div class="label_select_simple"><p class="edit_user_labels">'.__('Newsletter Reminder').': </p>';
+if ($user_info['firstname'] != 0) {
+    $user_info['firstname'] = 1;
+}
+
+$newsletter_reminder .= html_print_checkbox_switch('newsletter_reminder', 1, $user_info['firstname'], true).'</div>';
+
 
 
 $autorefresh_list_out = [];

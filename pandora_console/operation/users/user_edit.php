@@ -399,7 +399,7 @@ if (check_acl($config['id_user'], 0, 'ER')) {
 }
 
 $newsletter = '<div class="label_select_simple"><p class="edit_user_labels">'.__('Newsletter Subscribed').': </p>';
-if ($user_info['middlename']) {
+if ($user_info['middlename'] > 0) {
     $newsletter .= '<span>'.__('Already subscribed to %s newsletter', get_product_name()).'</span></div>';
 } else {
     $newsletter .= '<span><a href="javascript: force_run_newsletter();">'.__('Subscribe to our newsletter').'</a></span></div>';

@@ -1211,7 +1211,7 @@ function update_manager_check_online_free_packages_available()
     ];
 
     $curlObj = curl_init();
-    curl_setopt($curlObj, CURLOPT_URL, $config['url_update_manager']);
+    curl_setopt($curlObj, CURLOPT_URL, get_um_url());
     curl_setopt($curlObj, CURLOPT_RETURNTRANSFER, 1);
     curl_setopt($curlObj, CURLOPT_POST, true);
     curl_setopt($curlObj, CURLOPT_POSTFIELDS, $params);
@@ -1285,7 +1285,7 @@ function update_manager_check_online_free_packages($is_ajax=true)
      */
 
     $curlObj = curl_init();
-    curl_setopt($curlObj, CURLOPT_URL, $config['url_update_manager']);
+    curl_setopt($curlObj, CURLOPT_URL, get_um_url());
     curl_setopt($curlObj, CURLOPT_RETURNTRANSFER, 1);
     curl_setopt($curlObj, CURLOPT_POST, true);
     curl_setopt($curlObj, CURLOPT_POSTFIELDS, $params);
@@ -1436,7 +1436,7 @@ function update_manager_curl_request($action, $additional_params=false)
     $params['action'] = $action;
 
     $curlObj = curl_init();
-    curl_setopt($curlObj, CURLOPT_URL, $config['url_update_manager']);
+    curl_setopt($curlObj, CURLOPT_URL, get_um_url());
     curl_setopt($curlObj, CURLOPT_RETURNTRANSFER, 1);
     curl_setopt($curlObj, CURLOPT_POST, true);
     curl_setopt($curlObj, CURLOPT_POSTFIELDS, $params);

@@ -49,8 +49,15 @@ if ($config['realtimestats'] == 0) {
         $updated_info = '';
 }
 
-// Header
-ui_print_page_header(__('Tactical view'), '', false, '', false, $updated_time);
+// Header.
+ui_print_page_header(
+    __('Tactical view'),
+    '',
+    false,
+    'tactical_view',
+    false,
+    $updated_time
+);
 
 // Currently this function makes loading this page is impossible. Change
 // and create new function.
@@ -226,4 +233,4 @@ echo '</tr></table>';
             }
         });
     });
-</script>    
+</script>

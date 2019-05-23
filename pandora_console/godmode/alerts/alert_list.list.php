@@ -700,20 +700,41 @@ foreach ($simple_alerts as $alert) {
                     $data[2] .= '</tr>';
                     $data[2] .= '<tr class="datos">';
                         $data[2] .= '<td class="datos" style="font-weight:bold;padding:6px;">';
-                            $data[2] .= __('Number of alerts match from').'&nbsp;'.ui_print_help_icon('alert-matches', true, ui_get_full_url(false, false, false, false));
+                            $data[2] .= __('Number of alerts match from');
                         $data[2] .= '</td>';
                         $data[2] .= '<td class="datos">';
-                            $data[2] .= html_print_input_text('fires_min', 0, '', 4, 10, true);
+                            $data[2] .= html_print_input_text(
+                                'fires_min',
+                                0,
+                                '',
+                                4,
+                                10,
+                                true
+                            );
                             $data[2] .= ' '.__('to').' ';
-                            $data[2] .= html_print_input_text('fires_max', 0, '', 4, 10, true);
+                            $data[2] .= html_print_input_text(
+                                'fires_max',
+                                0,
+                                '',
+                                4,
+                                10,
+                                true
+                            );
                         $data[2] .= '</td>';
                     $data[2] .= '</tr>';
                     $data[2] .= '<tr class="datos2">';
                         $data[2] .= '<td class="datos2" style="font-weight:bold;padding:6px;">';
-                            $data[2] .= __('Threshold').'&nbsp;'.ui_print_help_icon('action_threshold', true, ui_get_full_url(false, false, false, false));
+                            $data[2] .= __('Threshold');
                         $data[2] .= '</td>';
                         $data[2] .= '<td class="datos2">';
-                            $data[2] .= html_print_input_text('module_action_threshold', '', '', 4, 10, true);
+                            $data[2] .= html_print_input_text(
+                                'module_action_threshold',
+                                '',
+                                '',
+                                4,
+                                10,
+                                true
+                            );
                         $data[2] .= '</td>';
                     $data[2] .= '</tr>';
                 $data[2] .= '</table>';

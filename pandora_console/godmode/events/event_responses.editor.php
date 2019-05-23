@@ -124,7 +124,7 @@ $data[3] .= '<span class="size">'.html_print_input_text('modal_height', $event_r
 $table->data[2] = $data;
 
 $data = [];
-$data[0] = __('Parameters').ui_print_help_icon('response_parameters', true);
+$data[0] = __('Parameters');
 $data[1] = html_print_input_text(
     'params',
     $event_response['params'],

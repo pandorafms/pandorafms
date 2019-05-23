@@ -35,7 +35,16 @@ if (! check_acl($config['id_user'], 0, 'PM')) {
 
 */
 
-ui_print_page_header(__('Module management').' &raquo; '.__('Module template management'), 'images/gm_modules.png', false, 'template_tab', true, '', true, 'modulemodal');
+ui_print_page_header(
+    __('Module management').' &raquo; '.__('Module template management'),
+    'images/gm_modules.png',
+    false,
+    'module_template_tab',
+    true,
+    '',
+    true,
+    'modulemodal'
+);
 
 
 require_once 'include/functions_network_profiles.php';

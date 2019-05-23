@@ -54,7 +54,14 @@ if (! defined('METACONSOLE')) {
 
     $buttons['add']['text'] = '<a href="index.php?sec=netf&sec2=godmode/netflow/nf_edit_form">'.html_print_image('images/add_mc.png', true, ['title' => __('Add filter')]).'</a>';
 
-    ui_print_page_header(__('Netflow Filter'), 'images/gm_netflow.png', false, '', true, $buttons);
+    ui_print_page_header(
+        __('Netflow Filter'),
+        'images/gm_netflow.png',
+        false,
+        'pcap_filter',
+        true,
+        $buttons
+    );
 } else {
     $nav_bar = [
         [
@@ -230,10 +237,9 @@ $table->data[5][1] = html_print_input_text('dst_port', $dst_port, false, 40, 80,
 $table->data[6][0] = __('Src Port').ui_print_help_tip(__('Source port. A comma separated list of source ports. If we leave the field blank, will show all ports. Example filter by ports 80 and 22:<br>80,22'), true);
 $table->data[6][1] = html_print_input_text('src_port', $src_port, false, 40, 80, true);
 
-$table->data[7][0] = ui_print_help_icon('pcap_filter', true);
 $table->data[7][1] = html_print_textarea('advanced_filter', 4, 40, $advanced_filter, '', true);
 
-$table->data[8][0] = '<b>'.__('Aggregate by').'</b>'.ui_print_help_icon('aggregate_by', true);
+$table->data[8][0] = '<b>'.__('Aggregate by').'</b>';
 $aggregate_list = [
     'srcip'   => __('Src Ip Address'),
     'dstip'   => __('Dst Ip Address'),

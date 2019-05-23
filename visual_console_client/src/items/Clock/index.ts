@@ -27,9 +27,7 @@ export type ClockProps = {
  * Extract a valid enum value from a raw unknown value.
  * @param clockType Raw value.
  */
-const parseClockType = (
-  clockType: any // eslint-disable-line @typescript-eslint/no-explicit-any
-): ClockProps["clockType"] => {
+const parseClockType = (clockType: unknown): ClockProps["clockType"] => {
   switch (clockType) {
     case "analogic":
     case "digital":
@@ -43,12 +41,9 @@ const parseClockType = (
  * Extract a valid enum value from a raw unknown value.
  * @param clockFormat Raw value.
  */
-const parseClockFormat = (
-  clockFormat: any // eslint-disable-line @typescript-eslint/no-explicit-any
-): ClockProps["clockFormat"] => {
+const parseClockFormat = (clockFormat: unknown): ClockProps["clockFormat"] => {
   switch (clockFormat) {
     case "datetime":
-    case "date":
     case "time":
       return clockFormat;
     default:

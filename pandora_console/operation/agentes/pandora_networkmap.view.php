@@ -800,7 +800,7 @@ if ($networkmap === false) {
         __('Networkmap'),
         'images/bricks.png',
         false,
-        'network_map_enterprise',
+        'network_map_enterprise_view',
         false
     );
     ui_print_error_message(__('Not found networkmap.'));
@@ -861,7 +861,7 @@ if ($networkmap === false) {
             $networkmap['name'],
             'images/bricks.png',
             false,
-            'network_map_enterprise',
+            'network_map_enterprise_view',
             false,
             $buttons,
             false,

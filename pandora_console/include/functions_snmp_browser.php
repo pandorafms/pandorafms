@@ -41,13 +41,24 @@ $nfdump_date_format = 'Y/m/d.H:i:s';
 
 
 /**
- * Selects all netflow filters (array (id_name => id_name)) or filters filtered
+ * Generates a Tree with given $tree information.
  *
- * @param tree string SNMP tree returned by snmp_broser_get_tree.
- * @param id string Level ID. Do not set, used for recursion.
- * @param depth string Branch depth. Do not set, used for recursion.
+ * Selects all netflow filters (array (id_name => id_name)) or filters filtered
+ * Used also in Cloud Wizard.
+ *
+ * @param string  $tree            SNMP tree returned by snmp_broser_get_tree.
+ * @param string  $id              Level ID. Do not set, used for recursion.
+ * @param string  $depth           Branch depth. Do not set, used for recursion.
+ * @param integer $last            Last.
+ * @param array   $last_array      Last_array.
+ * @param string  $sufix           Sufix.
+ * @param array   $checked         Checked.
+ * @param boolean $descriptive_ids Descriptive_ids.
+ * @param string  $previous_id     Previous_id.
+ *
+ * @return string HTML code with complete tree.
  */
-function snmp_browser_print_tree(
+function snmp_browser_get_html_tree(
     $tree,
     $id=0,
     $depth=0,
@@ -55,7 +66,6 @@ function snmp_browser_print_tree(
     $last_array=[],
     $sufix=false,
     $checked=[],
-    $return=false,
     $descriptive_ids=false,
     $previous_id=''
 ) {
@@ -70,17 +80,17 @@ function snmp_browser_print_tree(
 
     // Leaf.
     if (empty($tree['__LEAVES__'])) {
-        return;
+        return '';
     }
 
     $count = 0;
-    $total = (sizeof(array_keys($tree['__LEAVES__'])) - 1);
+    $total = (count(array_keys($tree['__LEAVES__'])) - 1);
     $last_array[$depth] = $last;
 
     if ($depth > 0) {
-        $output .= "<ul id='ul_$id' style='margin: 0; padding: 0; display: none'>\n";
+        $output .= '<ul id="ul_'.$id.'" style="margin: 0; padding: 0; display: none;">';
     } else {
-        $output .= "<ul id='ul_$id' style='margin: 0; padding: 0;'>\n";
+        $output .= '<ul id="ul_'.$id.'" style="margin: 0; padding: 0;">';
     }
 
     foreach ($tree['__LEAVES__'] as $level => $sub_level) {
@@ -88,7 +98,7 @@ function snmp_browser_print_tree(
         $sub_id = time().rand(0, getrandmax());
 
         // Display the branch.
-        $output .= "<li id='li_$sub_id' style='margin: 0; padding: 0;'>";
+        $output .= '<li id="li_'.$sub_id.'" style="margin: 0; padding: 0;">';
 
         // Indent sub branches.
         for ($i = 1; $i <= $depth; $i++) {
@@ -156,11 +166,11 @@ function snmp_browser_print_tree(
         $output .= '</li>';
 
         // Recursively print sub levels.
-        $output .= snmp_browser_print_tree(
+        $output .= snmp_browser_get_html_tree(
             $sub_level,
             $sub_id,
             ($depth + 1),
-            ($count == $total ? 1 : 0),
+            (($count == $total) ? 1 : 0),
             $last_array,
             $sufix,
             $checked,
@@ -174,11 +184,57 @@ function snmp_browser_print_tree(
 
     $output .= '</ul>';
 
-    if ($return == false) {
-        echo $output;
+    return $output;
+}
+
+
+/**
+ * Selects all netflow filters (array (id_name => id_name)) or filters filtered
+ * This function is also being used while painting instances in AWS Cloud wiz.
+ *
+ * @param string  $tree            SNMP tree returned by snmp_broser_get_tree.
+ * @param string  $id              Level ID. Do not set, used for recursion.
+ * @param string  $depth           Branch depth. Do not set, used for recursion.
+ * @param integer $last            Last.
+ * @param array   $last_array      Last_array.
+ * @param string  $sufix           Sufix.
+ * @param array   $checked         Checked.
+ * @param boolean $return          Return.
+ * @param boolean $descriptive_ids Descriptive_ids.
+ * @param string  $previous_id     Previous_id.
+ *
+ * @return string HTML code with complete tree.
+ */
+function snmp_browser_print_tree(
+    $tree,
+    $id=0,
+    $depth=0,
+    $last=0,
+    $last_array=[],
+    $sufix=false,
+    $checked=[],
+    $return=false,
+    $descriptive_ids=false,
+    $previous_id=''
+) {
+    $str = snmp_browser_get_html_tree(
+        $tree,
+        $id,
+        $depth,
+        $last,
+        $last_array,
+        $sufix,
+        $checked,
+        $return,
+        $descriptive_ids,
+        $previous_id
+    );
+
+    if ($return === false) {
+        echo $str;
     }
 
-    return $output;
+    return $str;
 }
 
 
@@ -695,11 +751,32 @@ function snmp_browser_print_container($return=false, $width='100%', $height='500
     $table->data = [];
 
     $table->data[0][0] = '<strong>'.__('Target IP').'</strong> &nbsp;&nbsp;';
-    $table->data[0][0] .= html_print_input_text('target_ip', '', '', 25, 0, true);
+    $table->data[0][0] .= html_print_input_text(
+        'target_ip',
+        get_parameter('target_ip', ''),
+        '',
+        25,
+        0,
+        true
+    );
     $table->data[0][1] = '<strong>'.__('Community').'</strong> &nbsp;&nbsp;';
-    $table->data[0][1] .= html_print_input_text('community', '', '', 25, 0, true);
+    $table->data[0][1] .= html_print_input_text(
+        'community',
+        get_parameter('community', ''),
+        '',
+        25,
+        0,
+        true
+    );
     $table->data[0][2] = '<strong>'.__('Starting OID').'</strong> &nbsp;&nbsp;';
-    $table->data[0][2] .= html_print_input_text('starting_oid', '.1.3.6.1.2', '', 25, 0, true);
+    $table->data[0][2] .= html_print_input_text(
+        'starting_oid',
+        get_parameter('starting_oid', '.1.3.6.1.2'),
+        '',
+        25,
+        0,
+        true
+    );
 
     $table->data[1][0] = '<strong>'.__('Version').'</strong> &nbsp;&nbsp;';
     $table->data[1][0] .= html_print_select(
@@ -710,7 +787,7 @@ function snmp_browser_print_container($return=false, $width='100%', $height='500
             '3'  => 'v. 3',
         ],
         'snmp_browser_version',
-        '',
+        get_parameter('snmp_browser_version', '2c'),
         'checkSNMPVersion();',
         '',
         '',

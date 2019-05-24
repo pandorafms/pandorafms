@@ -341,7 +341,7 @@ $table_server .= html_print_select(
     __('None'),
     0,
     true
-).'<div class="label_select_child_icons">'.ui_print_help_icon('agent_server', true).'</div></div></div>';
+).'<div class="label_select_child_icons"></div></div></div>';
 
 // Description.
 $table_description = '<div class="label_select"><p class="input_label">'.__('Description').': </p>';
@@ -368,7 +368,7 @@ echo '</div>';
 
 if (enterprise_installed()) {
     $secondary_groups_selected = enterprise_hook('agents_get_secondary_groups', [$id_agente]);
-    $table_adv_secondary_groups = '<div class="label_select"><p class="input_label">'.__('Secondary groups').': '.ui_print_help_icon('secondary_groups', true).'</p></div>';
+    $table_adv_secondary_groups = '<div class="label_select"><p class="input_label">'.__('Secondary groups').':</p></div>';
     $table_adv_secondary_groups_left = html_print_select_groups(
         false,
         // Use the current user to select the groups
@@ -546,13 +546,13 @@ $params['cascade_protection'] = true;
 $table_adv_parent .= '<div class="label_simple_items">';
 $table_adv_parent .= ui_print_agent_autocomplete_input($params);
 if (enterprise_installed()) {
-    $table_adv_parent .= html_print_checkbox_switch('cascade_protection', 1, $cascade_protection, true).__('Cascade protection').'&nbsp;'.ui_print_help_icon('cascade_protection', true);
+    $table_adv_parent .= html_print_checkbox_switch('cascade_protection', 1, $cascade_protection, true).__('Cascade protection').'&nbsp;';
 }
 
 $table_adv_parent .= __('Module').'&nbsp;'.html_print_select($modules_values, 'cascade_protection_module', $cascade_protection_module, '', '', 0, true).'</div></div>';
 
 // Learn mode / Normal mode
-$table_adv_module_mode = '<div class="label_select"><p class="input_label">'.__('Module definition').': '.ui_print_help_icon('module_definition', true).'</p>';
+$table_adv_module_mode = '<div class="label_select"><p class="input_label">'.__('Module definition').':</p>';
 $table_adv_module_mode .= '<div class="switch_radio_button">';
 $table_adv_module_mode .= html_print_radio_button_extended(
     'modo',

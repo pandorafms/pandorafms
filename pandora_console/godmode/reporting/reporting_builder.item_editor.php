@@ -877,7 +877,7 @@ $class = 'databox filters';
         <tr id="row_label" style="" class="datos">
             <td style="font-weight:bold;">
                 <?php
-                echo __('Label').ui_print_help_icon('reports_label_field', true);
+                echo __('Label');
                 ?>
             </td>
             <td style="">
@@ -981,11 +981,6 @@ $class = 'databox filters';
             <td style="font-weight:bold;">
                 <?php
                 echo __('Period');
-                if ($type == 'projection_graph') {
-                    echo ui_print_help_icon('projection_graph', true);
-                } else {
-                    echo ui_print_help_icon('prediction_date', true);
-                }
                 ?>
             </td>
             <td style="">
@@ -1004,10 +999,7 @@ $class = 'databox filters';
         <tr id="row_estimate" style="" class="datos">
             <td style="font-weight:bold;">
                 <?php
-                echo __('Projection period').ui_print_help_icon(
-                    'projection_graph',
-                    true
-                );
+                echo __('Projection period');
                 ?>
             </td>
             <td style="">
@@ -1026,10 +1018,7 @@ $class = 'databox filters';
         <tr id="row_interval" style="" class="datos">
             <td style="font-weight:bold;">
             <?php
-            echo __('Data range').ui_print_help_icon(
-                'prediction_date',
-                true
-            );
+            echo __('Data range');
             ?>
             </td>
             <td>

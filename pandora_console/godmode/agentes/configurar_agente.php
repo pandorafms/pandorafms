@@ -1428,31 +1428,10 @@ if ($update_module || $create_module) {
 
     $module_in_policy = enterprise_hook('policies_is_module_in_policy', [$id_agent_module]);
     $module_linked = enterprise_hook('policies_is_module_linked', [$id_agent_module]);
-
-    if ((!$module_in_policy && !$module_linked && $update_module)
-        || ( $module_in_policy && !$module_linked && $update_module)
-    ) {
-        enterprise_hook(
-            'config_agents_update_module_in_conf',
-            [
-                $id_agente,
-                io_safe_output($old_configuration_data),
-                io_safe_output($configuration_data),
-                $disabled,
-            ]
-        );
-    } else {
-        enterprise_hook(
-            'config_agents_write_module_in_conf',
-            [
-                $id_agente,
-                io_safe_output($old_configuration_data),
-                io_safe_output($configuration_data),
-                $disabled,
-            ]
-        );
-    }
 }
+
+// Initialize result of the action (insert or update).
+$success_action = NOERR;
 
 // MODULE UPDATE.
 if ($update_module) {
@@ -1589,6 +1568,8 @@ if ($update_module) {
             break;
         }
 
+        // I save the result of the action (insert or update).
+        $success_action = $result;
         $result = false;
         ui_print_error_message($msg);
 
@@ -1630,6 +1611,9 @@ if ($update_module) {
 
 // MODULE INSERT.
 if ($create_module) {
+    // Old configuration data must always be empty in case of creation.
+    $old_configuration_data = '';
+
     if (isset($_POST['combo_snmp_oid'])) {
         $combo_snmp_oid = get_parameter_post('combo_snmp_oid');
     }
@@ -1639,12 +1623,6 @@ if ($create_module) {
     }
 
     $id_module = (int) get_parameter('id_module');
-    // Commented because can't create prediction modules
-    /*
-        if ($id_module == 5) {
-        $prediction_module = 1;
-        }
-    */
 
     switch ($config['dbtype']) {
         case 'oracle':
@@ -1768,17 +1746,26 @@ if ($create_module) {
             break;
         }
 
+        // I save the result of the action (insert or update).
+        $success_action = $id_agent_module;
+
         $id_agent_module = false;
         ui_print_error_message($msg);
         $edit_module = true;
         $moduletype = $id_module;
         db_pandora_audit(
             'Agent management',
-            "Fail to try added module '$name' for agent ".$agent['alias']
+            'Fail to try added module '.$name.' for agent '.$agent['alias']
         );
     } else {
         if ($prediction_module == 3) {
-            enterprise_hook('modules_create_synthetic_operations', [$id_agent_module, $serialize_ops]);
+            enterprise_hook(
+                'modules_create_synthetic_operations',
+                [
+                    $id_agent_module,
+                    $serialize_ops,
+                ]
+            );
         }
 
         // Update the module interval.
@@ -1798,6 +1785,26 @@ if ($create_module) {
             true,
             io_json_mb_encode($values)
         );
+    }
+}
+
+// Fix to stop the module from being added to the agent's conf
+// when an error occurred while updating or inserting.
+if ($update_module || $create_module) {
+    if ((!$module_in_policy && !$module_linked)
+        || ($module_in_policy && !$module_linked)
+    ) {
+        if ($success_action > 0) {
+            enterprise_hook(
+                'config_agents_write_module_in_conf',
+                [
+                    $id_agente,
+                    io_safe_output($old_configuration_data),
+                    io_safe_output($configuration_data),
+                    $disabled,
+                ]
+            );
+        }
     }
 }
 

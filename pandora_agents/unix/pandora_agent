@@ -536,6 +536,12 @@ sub parse_conf_modules($) {
 			# Check for invalid modules
 			next unless (($module->{'name'} ne '' && $module->{'func'} != 0) || $module->{'func'} == \&module_plugin);
 
+			# Skip disabled modules.
+			if (defined($module->{'disabled'}) && $module->{'disabled'} == 1) {
+				log_message('setup', 'Skipping disabled module "' . $module->{'name'} . '"');
+				next;
+			}
+
 			# Set the intensive interval
 			if ($module->{'is_intensive'} == 1) {				
 				$module->{'intensive_interval'} = $module->{'interval'};

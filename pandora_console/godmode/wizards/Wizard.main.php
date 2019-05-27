@@ -783,13 +783,17 @@ class Wizard
     /**
      * Print a form.
      *
-     * @param array   $data   Definition of target form to be printed.
-     * @param boolean $return Return as string or direct output.
+     * @param array   $data            Definition of target form to be printed.
+     * @param boolean $return          Return as string or direct output.
+     * @param boolean $print_white_box Print a white box.
      *
      * @return string HTML code.
      */
-    public function printForm(array $data, bool $return=false, bool $print_white_box=false)
-    {
+    public function printForm(
+        array $data,
+        bool $return=false,
+        bool $print_white_box=false
+    ) {
         $form = $data['form'];
         $inputs = $data['inputs'];
         $js = $data['js'];

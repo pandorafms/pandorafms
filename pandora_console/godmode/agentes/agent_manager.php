@@ -322,7 +322,21 @@ $table_primary_group .= '</span></div></div></div>';
 
 $table_interval = '<div class="label_select"><p class="input_label">'.__('Interval').': </p>';
 $table_interval .= '<div class="label_select_parent">';
-$table_interval .= html_print_extended_select_for_time('intervalo', $intervalo, '', '', '0', 10, true);
+$table_interval .= html_print_extended_select_for_time(
+    'intervalo',
+    $intervalo,
+    '',
+    '',
+    '0',
+    10,
+    true,
+    false,
+    true,
+    'w40p'
+);
+
+
+
 if ($intervalo < SECONDS_5MINUTES) {
     $table_interval .= clippy_context_help('interval_agent_min');
 }

@@ -431,6 +431,30 @@ select:-internal-list-box {
  * - GLOBAL STYLES                           									-
  * ---------------------------------------------------------------------
  */
+.w10p {
+  max-width: 10%;
+}
+
+.w20p {
+  max-width: 20%;
+}
+
+.w30p {
+  max-width: 30%;
+}
+
+.w40p {
+  max-width: 40%;
+}
+
+.w50p {
+  max-width: 50%;
+}
+
+.w100p {
+  max-width: 100%;
+}
+
 div#page {
   background: #fbfbfb;
   background-image: none;
@@ -1436,8 +1460,8 @@ div#agent_wizard_subtabs {
 #menu_tab_left li span {
   color: #343434;
   font-family: "lato-bolder", "Open Sans", sans-serif !important;
-  font-size: 20pt;
-  line-height: 20pt;
+  font-size: 18pt;
+  line-height: 18pt;
 }
 
 /*
@@ -2862,6 +2886,7 @@ a.tip {
 a.tip > img {
   margin-left: 2px;
   margin-right: 2px;
+  margin-bottom: -0.3em;
 }
 
 .head_tip {
@@ -5544,6 +5569,10 @@ table.info_table.policy_sub_table {
   flex-wrap: wrap;
 }
 
+.label_simple_items a.tip > img {
+  margin-bottom: 0px;
+}
+
 .label_simple_items > * {
   margin-right: 5px;
 }
@@ -5553,6 +5582,8 @@ table.info_table.policy_sub_table {
   font-weight: bold;
   padding-right: 10px;
   margin: 0px 0px 5px 0px;
+  padding-top: 0.5em;
+  padding-bottom: 0.5em;
 }
 
 .input_label_simple {

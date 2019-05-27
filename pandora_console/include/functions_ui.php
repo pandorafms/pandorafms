@@ -2795,7 +2795,31 @@ function ui_print_page_header(
     $buffer = '<div id="'.$type2.'" style="">';
 
     if (!empty($breadcrumbs)) {
-        $buffer .= '<div class="breadcrumbs_container">'.$breadcrumbs.'</div>';
+        if (is_array($breadcrumbs)) {
+            $bc = [];
+            $i = 0;
+            foreach ($breadcrumbs as $content) {
+                if ($content['selected'] == 1) {
+                        $class = 'selected';
+                } else {
+                    $class = '';
+                }
+
+                $bc[$i] = '';
+                $bc[$i] .= '<span><a class="breadcrumb_link '.$class.'" href="'.$content['link'].'">';
+                $bc[$i] .= $content['label'];
+                $bc[$i] .= '</a>';
+                $bc[$i] .= '</span>';
+                $i++;
+            }
+
+            $buffer .= implode(
+                '<span class="breadcrumb_link">&nbsp/&nbsp</span>',
+                $this->breadcrum
+            );
+        } else {
+            $buffer .= '<div class="breadcrumbs_container">'.$breadcrumbs.'</div>';
+        }
     }
 
     $buffer .= '<div id="menu_tab_left">';

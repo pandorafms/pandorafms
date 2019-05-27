@@ -1079,7 +1079,7 @@ function html_print_extended_select_for_time(
                 'class' => $uniq_name.'_toggler '.$class,
                 'alt'   => __('Custom'),
                 'title' => __('Custom'),
-                'style' => 'width: 18px;'.$style_icon,
+                'style' => 'width: 18px; margin-bottom: -5px;'.$style_icon,
             ],
             false,
             false,
@@ -1114,7 +1114,7 @@ function html_print_extended_select_for_time(
                 'class' => $uniq_name.'_toggler',
                 'alt'   => __('List'),
                 'title' => __('List'),
-                'style' => 'width: 18px;'.$style_icon,
+                'style' => 'width: 18px;margin-bottom: -5px;'.$style_icon,
             ]
         ).'</a>';
     echo '</div>';

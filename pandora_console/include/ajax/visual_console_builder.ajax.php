@@ -1073,6 +1073,16 @@ switch ($action) {
                     ['id' => $id_element]
                 );
 
+                // Invalidate the item's cache.
+                if ($result !== false && $result > 0) {
+                    db_process_sql_delete(
+                        'tvisual_console_elements_cache',
+                        [
+                            'vc_item_id' => (int) $id_element,
+                        ]
+                    );
+                }
+
                 $return_val = [];
                 $return_val['correct'] = (int) $result;
                 $return_val['new_line'] = $new_line;

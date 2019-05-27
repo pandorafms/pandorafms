@@ -5588,7 +5588,7 @@ table.info_table.policy_sub_table {
   background-color: transparent !important;
   border: none;
   border-radius: 0 !important;
-  border-bottom: 1px solid #888;
+  border-bottom: 1px solid #ccc;
   font-family: "lato-bolder", "Open Sans", sans-serif !important;
   font-size: 10pt;
   padding: 2px 5px;
@@ -5746,6 +5746,15 @@ a#qr_code_agent_view {
   margin-right: 5px;
 }
 
+#text-comentarios,
+.agent_custom_id {
+  padding-bottom: 2em;
+  background: #ececec !important;
+  display: inline-block;
+  border-radius: 5px !important;
+  border: 1px solid #ccc;
+}
+
 /*
  * ---------------------------------------------------------------------
  * - CLASSES FOR THE NEW TOGGLES                     								-
@@ -5760,6 +5769,7 @@ a#qr_code_agent_view {
   border: 1px solid #f3f3f3;
   border-top-left-radius: 4px;
   border-top-right-radius: 4px;
+  margin-bottom: -1px;
   padding: 5px;
   display: block;
 }

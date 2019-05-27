@@ -167,13 +167,41 @@ if ($disk_conf_delete) {
 
 echo '<form name="conf_agent" method="post" action="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente">';
 
+// Custom ID.
+$custom_id_div = '<div class="label_select">';
+$custom_id_div .= '<p class="input_label">'.__('Custom ID').': </p>';
+$custom_id_div .= html_print_input_text(
+    'custom_id',
+    $custom_id,
+    '',
+    16,
+    255,
+    true,
+    false,
+    false,
+    '',
+    'agent_custom_id'
+).'</div>';
+
 if (!$new_agent && $alias != '') {
     $table_agent_name = '<div class="label_select"><p class="input_label">'.__('Agent name').': '.ui_print_help_tip(__("The agent's name must be the same as the one defined at the console"), true).'</p>';
     $table_agent_name .= '<div class="label_select_parent">';
     $table_agent_name .= '<div class="label_select_child_left">'.html_print_input_text('agente', $nombre_agente, '', 50, 100, true).'</div>';
     $table_agent_name .= '<div class="label_select_child_right agent_options_agent_name">';
 
-    $table_qr_code = '<div class="agent_qr white_box"><p class="input_label">'.__('QR Code Agent view').': </p>';
+    // QR code div.
+    $table_qr_code = '<div class="agent_qr white_box">';
+    $table_qr_code .= '<p class="input_label">'.__('QR Code Agent view').': </p>';
+    $table_qr_code .= '<div id="qr_container_image"></div>';
+    if ($id_agente) {
+        $table_qr_code .= "<a id='qr_code_agent_view' href='javascript: show_dialog_qrcode(null, \"".ui_get_full_url('mobile/index.php?page=agent&id='.$id_agente)."\" );'></a>";
+    }
+
+    // Add Custom id div.
+    $table_qr_code .= '<br />';
+    $table_qr_code .= $custom_id_div;
+    $table_qr_code .= '</div>';
+
 
     if ($id_agente) {
         $table_agent_name .= '<span>'.__('ID').' '.$id_agente.'</span>';
@@ -257,14 +285,6 @@ if ($id_agente) {
     }
 </style>
 <?php
-if (!$new_agent && $alias != '') {
-    if ($id_agente) {
-        $table_qr_code .= "<a id='qr_code_agent_view' href='javascript: show_dialog_qrcode(null, \"".ui_get_full_url('mobile/index.php?page=agent&id='.$id_agente)."\" );'></a>";
-    }
-
-    $table_qr_code .= '</div>';
-}
-
 $groups = users_get_groups($config['id_user'], 'AR', false);
 
 $modules = db_get_all_rows_sql(
@@ -354,7 +374,7 @@ $table_description .= html_print_input_text(
     true
 ).'</div>';
 
-
+// QR code.
 echo '<div class="first_row">
         <div class="agent_options '.$agent_options_update.' white_box">
             <div class="agent_options_column_left">'.$table_agent_name.$table_alias.$table_ip.$table_primary_group.'</div>
@@ -533,9 +553,6 @@ if (enterprise_installed()) {
     $table_adv_cascade .= $cps_html;
 }
 
-// Custom ID
-$table_adv_custom_id = '<div class="label_select"><p class="input_label">'.__('Custom ID').': </p>';
-$table_adv_custom_id .= html_print_input_text('custom_id', $custom_id, '', 16, 255, true).'</div>';
 
 $table_adv_parent = '<div class="label_select"><p class="input_label">'.__('Parent').': </p>';
 $params = [];
@@ -692,6 +709,7 @@ if ($config['activate_gis']) {
 
 
 
+// General display distribution.
 $table_adv_options = $table_adv_secondary_groups.'<div class="secondary_groups_select" style="margin-bottom:30px;">
         <div class="secondary_groups_list_left">
             '.$table_adv_secondary_groups_left.'
@@ -704,7 +722,14 @@ $table_adv_options = $table_adv_secondary_groups.'<div class="secondary_groups_s
         </div>
     </div>
     <div class="agent_options agent_options_adv">
-        <div class="agent_options_column_left" >'.$table_adv_parent.$table_adv_custom_id.$table_adv_module_mode.$table_adv_cascade.$table_adv_gis.'</div>
+        <div class="agent_options_column_left" >'.$table_adv_parent.$table_adv_module_mode.$table_adv_cascade;
+
+if ($new_agent) {
+    // If agent is new, show custom id as old style format.
+    $table_adv_options .= $custom_id_div;
+}
+
+$table_adv_options .= $table_adv_gis.'</div>
         <div class="agent_options_column_right" >'.$table_adv_agent_icon.$table_adv_url.$table_adv_quiet.$table_adv_status.$table_adv_remote.$table_adv_safe.'</div>
     </div>';
 

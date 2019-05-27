@@ -154,7 +154,7 @@ $table->data[2][1] = html_print_select(
 $table->data[2][2] = __('Interval');
 $table->data[2][3] = html_print_extended_select_for_time('module_interval', $module_interval, '', '', '0', false, true);
 
-$table->data[3][0] = __('Dynamic Interval').' '.ui_print_help_icon('dynamic_threshold', true);
+$table->data[3][0] = __('Dynamic Interval');
 $table->data[3][1] = html_print_extended_select_for_time('dynamic_interval', $dynamic_interval, '', 'None', '0', 10, true, 'width:150px', false);
 $table->data[3][1] .= '<a onclick=advanced_option_dynamic()>'.html_print_image('images/cog.png', true, ['title' => __('Advanced options Dynamic Threshold')]).'</a>';
 
@@ -165,7 +165,7 @@ $table->data[3][2] .= html_print_input_text('dynamic_max', $dynamic_max, '', 10,
 $table->data[3][3] = '<span><em>'.__('Dynamic Two Tailed: ').'</em>';
 $table->data[3][3] .= html_print_checkbox('dynamic_two_tailed', 1, $dynamic_two_tailed, true);
 
-$table->data[4][0] = __('Warning status').' '.ui_print_help_icon('warning_status', true);
+$table->data[4][0] = __('Warning status');
 $table->data[4][1] = '<span id="minmax_warning"><em>'.__('Min.').'&nbsp;</em>&nbsp;';
 $table->data[4][1] .= html_print_input_text(
     'min_warning',
@@ -200,7 +200,7 @@ $table->data[4][2] = '<svg id="svg_dinamic" width="500" height="300"> </svg>';
 $table->colspan[4][2] = 2;
 $table->rowspan[4][2] = 3;
 
-$table->data[5][0] = __('Critical status').' '.ui_print_help_icon('critical_status', true);
+$table->data[5][0] = __('Critical status');
 $table->data[5][1] = '<span id="minmax_critical"><em>'.__('Min.').'&nbsp;</em>&nbsp;';
 $table->data[5][1] .= html_print_input_text(
     'min_critical',
@@ -231,7 +231,7 @@ $table->data[5][1] .= html_print_input_text(
 $table->data[5][1] .= '<br /><em>'.__('Inverse interval').'</em>';
 $table->data[5][1] .= html_print_checkbox('critical_inverse', 1, $critical_inverse, true);
 
-$table->data[6][0] = __('FF threshold').' '.ui_print_help_icon('ff_threshold', true);
+$table->data[6][0] = __('FF threshold');
 $table->colspan[6][1] = 3;
 
 $table->data[6][1] = __('Keep counters');

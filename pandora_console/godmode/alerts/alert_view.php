@@ -386,7 +386,7 @@ if (count($actions) == 1 && isset($actions[0])) {
             $table->data[$kaction][($k + 1)] = human_time_description_raw($action_threshold, true, 'tiny');
         }
 
-        $table->head[($k + 1)] = __('Threshold').'<span style="float: right;">'.ui_print_help_icon('action_threshold', true, '', 'images/header_help.png').'</span>';
+        $table->head[($k + 1)] = __('Threshold');
     }
 }
 

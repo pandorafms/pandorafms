@@ -1989,7 +1989,7 @@ function events_page_responses($event, $childrens_ids=[])
     $table_responses->head = [];
     $table_responses->style[0] = 'height:30px';
     $table_responses->style[2] = 'text-align:right;';
-    $table_responses->class = 'events_show_more_table';
+    $table_responses->class = 'table_modal_alternate';
 
     if (tags_checks_event_acl($config['id_user'], $event['id_grupo'], 'EM', $event['clean_tags'], $childrens_ids)) {
         // Owner.
@@ -2523,7 +2523,7 @@ function events_page_custom_fields($event)
     $table->width = '100%';
     $table->data = [];
     $table->head = [];
-    $table->class = 'events_show_more_table';
+    $table->class = 'table_modal_alternate';
 
     $all_customs_fields = (bool) check_acl(
         $config['id_user'],
@@ -2673,7 +2673,7 @@ function events_page_details($event, $server='')
     $table_details->head = [];
     $table_details->cellspacing = 0;
     $table_details->cellpadding = 0;
-    $table_details->class = 'events_show_more_table';
+    $table_details->class = 'table_modal_alternate';
 
     /*
      * Useless switch.
@@ -2984,7 +2984,7 @@ function events_page_custom_data($event)
     $table->width = '100%';
     $table->data = [];
     $table->head = [];
-    $table->class = 'events_show_more_table';
+    $table->class = 'table_modal_alternate';
 
     $json_custom_data = base64_decode($event['custom_data']);
     $custom_data = json_decode($json_custom_data);
@@ -3139,7 +3139,7 @@ function events_page_general($event)
     $table_general->width = '100%';
     $table_general->data = [];
     $table_general->head = [];
-    $table_general->class = 'events_show_more_table';
+    $table_general->class = 'table_modal_alternate';
 
     $data = [];
     $data[0] = __('Event ID');
@@ -3322,7 +3322,7 @@ function events_page_comments($event, $childrens_ids=[])
     $table_comments->width = '100%';
     $table_comments->data = [];
     $table_comments->head = [];
-    $table_comments->class = 'events_show_more_table';
+    $table_comments->class = 'table_modal_alternate';
 
     $event_comments = $event['user_comment'];
     $event_comments = str_replace(["\n", '&#x0a;'], '<br>', $event_comments);

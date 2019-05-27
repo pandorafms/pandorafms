@@ -6001,6 +6001,10 @@ div#bullets_modules div {
   min-width: 500px;
 }
 
+.agent_details_col.agent_details_col_left {
+  width: 50%;
+}
+
 .agent_details_content .agent_details_bullets {
   position: relative;
   left: -20%;
@@ -6010,6 +6014,10 @@ div#bullets_modules div {
   width: 62%;
   margin-left: 20px;
   min-width: 670px;
+}
+
+.agent_details_col.agent_details_col_right {
+  width: 50%;
 }
 
 .buttons_agent_view {

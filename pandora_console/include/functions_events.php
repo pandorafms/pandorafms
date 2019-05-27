@@ -997,7 +997,7 @@ function events_print_event_table(
         $table->cellpadding = 0;
         $table->cellspacing = 0;
         $table->width = $width;
-        $table->class = 'databox data';
+        $table->class = 'info_table';
         if (!$tactical_view) {
             $table->title = __('Latest events');
         }

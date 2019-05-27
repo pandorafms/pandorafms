@@ -2473,7 +2473,7 @@ function ui_print_status_image($type, $title='', $return=false, $options=false, 
 function ui_progress(
     $progress,
     $width='100%',
-    $height='2em',
+    $height='2.5em',
     $color='#80ba27',
     $return=true
 ) {
@@ -2490,7 +2490,7 @@ function ui_progress(
     }
 
     ui_require_css_file('progress');
-    $output .= '<div class="progress_main">';
+    $output .= '<div class="progress_main" style="width: '.$width.'; height: '.$height.';">';
     $output .= '<span class="progress_text">'.$progress.'%</span>';
     $output .= '<div class="progress" style="width: '.$progress.'%;"></div>';
     $output .= '</div>';

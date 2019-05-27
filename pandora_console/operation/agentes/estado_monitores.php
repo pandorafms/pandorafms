@@ -139,7 +139,13 @@ echo ui_print_help_tip(
     true
 );
 echo '<span>'.__('Full list of monitors').'</span>';
-echo reporting_tiny_stats($agent, true, 'modules');
+echo reporting_tiny_stats(
+    $agent,
+    true,
+    'modules',
+    ':',
+    true
+);
 
 $modules_not_init = agents_monitor_notinit($id_agente);
 if (!empty($modules_not_init)) {
@@ -207,6 +213,7 @@ ui_toggle(
             $("#status_module_group").enable();
             $("#status_filter_monitor").enable();
         }
+        filter_modules();
     }
 
     function order_module_list(sort_field_param, sort_rows_param) {
@@ -495,7 +502,17 @@ function print_form_filter_monitors(
 
     $table->data[0][3] = html_print_input_text('status_text_monitor', $status_text_monitor, '', 30, 100, true);
     $table->data[0][4] = __('Module group');
-    $rows = db_get_all_rows_sql("SELECT * FROM tmodule_group where id_mg in (SELECT id_module_group from tagente_modulo where id_agente = $id_agent )  ORDER BY name");
+    $rows = db_get_all_rows_sql(
+        sprintf(
+            'SELECT * 
+         FROM tmodule_group 
+         WHERE id_mg IN (SELECT id_module_group
+                         FROM tagente_modulo 
+                        WHERE id_agente = %d )
+         ORDER BY name',
+            $id_agent
+        )
+    );
 
     $rows_select[-1] = __('All');
     if (!empty($rows)) {
@@ -504,11 +521,43 @@ function print_form_filter_monitors(
         }
     }
 
-    $table->data[0][5] = html_print_select($rows_select, 'status_module_group', $status_module_group, '', '', 0, true);
-    $table->data[0][6] = __('Show in hierachy mode');
-    $table->data[0][6] .= html_print_checkbox('status_hierachy_mode', '', false, true, false, 'onChange=change_module_filter();');
-    $table->data[0][7] = html_print_button(__('Filter'), 'filter', false, 'filter_modules();', 'class="sub search"', true);
-    $table->data[0][8] = '&nbsp;'.html_print_button(__('Reset'), 'filter', false, 'reset_filter_modules();', 'class="sub upd" style="margin-top:0px;"', true);
+    $table->data[0][5] = html_print_select(
+        $rows_select,
+        'status_module_group',
+        $status_module_group,
+        '',
+        '',
+        0,
+        true
+    );
+    $table->data[0][6] = '<div style="display: flex;align-content: center;">';
+    $table->data[0][6] .= __('Show in hierachy mode');
+    $table->data[0][6] .= html_print_switch(
+        [
+            'name'     => 'status_hierachy_mode',
+            'value'    => $all_events_24h,
+            'onchange' => 'change_module_filter()',
+            'id'       => 'checkbox-status_hierachy_mode',
+            'style'    => 'margin-left: 1em;',
+        ]
+    );
+    $table->data[0][6] .= '</div>';
+    $table->data[0][7] = html_print_button(
+        __('Filter'),
+        'filter',
+        false,
+        'filter_modules();',
+        'class="sub search"',
+        true
+    );
+    $table->data[0][8] = '&nbsp;'.html_print_button(
+        __('Reset'),
+        'filter',
+        false,
+        'reset_filter_modules();',
+        'class="sub upd" style="margin-top:0px;"',
+        true
+    );
     $form_text .= html_print_table($table, true);
 
     $filter_hidden = false;

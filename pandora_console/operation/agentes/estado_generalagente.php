@@ -213,7 +213,15 @@ $table_agent_description .= '<span style="vertical-align:top; display: inline-bl
 $table_agent_description .= empty($agent['comentarios']) ? '<em>'.__('N/A').'</em>' : $agent['comentarios'];
 $table_agent_description .= '</span></p>';
 
-$table_agent_count_modules = reporting_tiny_stats($agent, true);
+$table_agent_count_modules = reporting_tiny_stats(
+    $agent,
+    true,
+    'agent',
+    // Useless.
+    ':',
+    true
+);
+
 // $table_agent_count_modules .= ui_print_help_tip(__('Agent statuses are re-calculated by the server, they are not  shown in real time.'), true);
 $table_agent = '<div class="agent_details_header">'.$table_agent_header.'</div>
                 <div class="agent_details_content">
@@ -280,7 +288,7 @@ $table_contact->data[] = $data;
 
 $data = [];
 $table_contact->colspan[3][0] = 2;
-$data[0] = ui_progress($progress);
+$data[0] = ui_progress($progress, '80%');
 
 if ($progress > 100) {
     $data[0] .= clippy_context_help('agent_out_of_limits');

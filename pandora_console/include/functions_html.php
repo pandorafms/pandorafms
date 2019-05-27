@@ -2989,6 +2989,7 @@ function html_print_switch($attributes=[])
         'class',
         'name',
         'onclick',
+        'onchange',
     ];
     foreach ($valid_attrs as $va) {
         if (!isset($attributes[$va])) {
@@ -2998,7 +2999,11 @@ function html_print_switch($attributes=[])
         $html_expand .= ' '.$va.'="'.$attributes[$va].'"';
     }
 
-    return "<label class='p-switch'>
+    if (!isset($attributes['style'])) {
+        $attributes['style'] = '';
+    }
+
+    return "<label class='p-switch' style='".$attributes['style']."'>
 			<input type='checkbox' $html_expand>
 			<span class='p-slider'></span>
 		</label>";

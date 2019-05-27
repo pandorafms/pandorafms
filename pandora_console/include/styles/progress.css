@@ -2,6 +2,7 @@ span.progress_text {
   position: absolute;
   font-family: "lato-bolder", "Open Sans", sans-serif;
   font-size: 2em;
+  margin-left: -0.5em;
 }
 
 div.progress_main {

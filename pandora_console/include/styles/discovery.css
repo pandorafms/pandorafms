@@ -27,6 +27,11 @@ li.discovery > a label {
   cursor: pointer;
 }
 
+div.data_container > label {
+  font-family: "lato-bolder", "Open Sans", sans-serif !important;
+  font-weight: lighter;
+}
+
 div.data_container {
   width: 100%;
   height: 100%;
@@ -160,6 +165,10 @@ span.breadcrumb_link {
  * Discovery forms structure
  */
 
+form.discovery * {
+  font-size: 10pt;
+}
+
 .edit_discovery_info {
   display: flex;
   align-items: flex-start;
@@ -196,7 +205,9 @@ li > input[type="password"],
   background-color: transparent !important;
   border: none;
   border-radius: 0 !important;
-  border-bottom: 1px solid #343434;
+  border-bottom: 1px solid #ccc;
+  font-family: "lato-bolder", "Open Sans", sans-serif !important;
+  font-weight: lighter;
   padding: 0px 0px 2px 0px;
   box-sizing: border-box;
   margin-bottom: 4px;
@@ -215,7 +226,7 @@ li > input[type="password"],
 }
 
 .discovery_list_input option {
-  text-align: center;
+  text-align: left;
 }
 
 .discovery_list_input option:checked {

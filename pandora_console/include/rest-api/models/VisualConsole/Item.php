@@ -3,12 +3,12 @@
 declare(strict_types=1);
 
 namespace Models\VisualConsole;
-use Models\CacheModel;
+use Models\CachedModel;
 
 /**
  * Model of a generic Visual Console Item.
  */
-class Item extends CacheModel
+class Item extends CachedModel
 {
 
     /**
@@ -698,9 +698,6 @@ class Item extends CacheModel
             throw new \Exception('error fetching the data from the DB');
         }
 
-        // Load side libraries.
-        include_once $config['homedir'].'/include/functions_io.php';
-
         // Clean up to two levels of HTML entities.
         $row = \io_safe_output(\io_safe_output($row));
 
@@ -732,54 +729,56 @@ class Item extends CacheModel
      * @return array The Visual Console Item data structure stored into the DB.
      * @throws \Exception When the data cannot be retrieved from the DB.
      *
-     * @override CacheModel::fetchCachedData.
+     * @override CachedModel::fetchCachedData.
      */
     protected static function fetchCachedData(array $filter)
     {
         global $config;
 
-        $row = \db_get_row_sql(
-            'SELECT * FROM tvisual_console_elements_cache 
-            WHERE vc_item_id = '.$filter['id'].' 
-            AND vc_id = '.$filter['id_layout'].' 
-            AND user_id LIKE "'.$config['id_user'].'" 
-            AND (UNIX_TIMESTAMP(`created_at`) + `expiration`) > UNIX_TIMESTAMP()'
+        $sql = sprintf(
+            'SELECT `data`
+            FROM `tvisual_console_elements_cache`
+            WHERE `vc_item_id` = %d
+            AND `vc_id` = %d
+            AND `user_id` LIKE \'%s\' 
+            AND (UNIX_TIMESTAMP(`created_at`) + `expiration`) > UNIX_TIMESTAMP()',
+            $filter['id'],
+            $filter['id_layout'],
+            $config['id_user']
         );
+        $data = \db_get_value_sql($sql);
 
-        if ($row === false) {
+        if ($data === false) {
             return null;
         }
 
-        $row = \io_safe_output(\io_safe_output($row));
-
-        return $row;
+        return json_decode(base64_decode($data), true);
     }
 
 
     /**
      * Stores the data structure obtained.
      *
-     * @param array $filter Filter to retrieve the modeled element.
+     * @param array $filter Filter to save the modeled element.
+     * @param array $data   Modeled element to save.
      *
      * @return boolean The modeled element data structure stored into the DB.
      * @throws \Exception When the data cannot be retrieved from the DB.
      *
-     * @override CacheModel::saveCachedData.
+     * @override CachedModel::saveCachedData.
      */
     protected static function saveCachedData(array $filter, array $data): bool
     {
-        $result = \db_process_sql_insert(
+        return \db_process_sql_insert(
             'tvisual_console_elements_cache',
             [
                 'vc_id'      => $filter['vc_id'],
                 'vc_item_id' => $filter['vc_item_id'],
                 'user_id'    => $filter['user_id'],
-                'data'       => \base64_encode(\json_encode(\io_safe_input($data))),
+                'data'       => base64_encode(json_encode($data)),
                 'expiration' => $filter['expiration'],
             ]
-        );
-
-        return ($result > 0) ? true : false;
+        ) > 0;
     }
 
 
@@ -791,11 +790,14 @@ class Item extends CacheModel
      * @return array The modeled element data structure stored into the DB.
      * @throws \Exception When the data cannot be retrieved from the DB.
      *
-     * @override CacheModel::clearCachedData.
+     * @override CachedModel::clearCachedData.
      */
     protected static function clearCachedData(array $filter): int
     {
-        return \db_process_sql_delete('tvisual_console_elements_cache', $filter);
+        return \db_process_sql_delete(
+            'tvisual_console_elements_cache',
+            $filter
+        );
     }
 
 

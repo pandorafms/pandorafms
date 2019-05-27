@@ -9,7 +9,7 @@ use Models\Model;
  * This class should be extended to add functionalities to
  * fetch, clear and save item cache.
  */
-abstract class CacheModel extends Model
+abstract class CachedModel extends Model
 {
 
 
@@ -37,7 +37,10 @@ abstract class CacheModel extends Model
      *
      * @abstract
      */
-    abstract protected static function saveCachedData(array $filter, array $data): bool;
+    abstract protected static function saveCachedData(
+        array $filter,
+        array $data
+    ): bool;
 
 
     /**
@@ -66,10 +69,10 @@ abstract class CacheModel extends Model
     {
         global $config;
 
-        if ($filter['cache_expiration'] != 0) {
+        if ($filter['cache_expiration'] > 0) {
             // Obtain the item's data from cache.
-            $cacheData = static::fetchCachedData($filter);
-            if ($cacheData === null) {
+            $cachedData = static::fetchCachedData($filter);
+            if ($cachedData === null) {
                 // Delete expired data cache.
                 static::clearCachedData(
                     [
@@ -91,7 +94,7 @@ abstract class CacheModel extends Model
                     $data
                 );
             } else {
-                $data = \io_safe_output(\json_decode(\base64_decode($cacheData['data']), true));
+                $data = $cachedData;
             }
         } else {
             $data = static::fetchDataFromDB($filter);

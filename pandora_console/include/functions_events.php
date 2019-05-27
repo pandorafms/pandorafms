@@ -2874,7 +2874,7 @@ function events_page_details($event, $server='')
     $data[1] = ($event['id_alert_am'] == 0) ? '<i>'.__('N/A').'</i>' : '';
     $table_details->data[] = $data;
 
-    if ($event['id_alert_am'] == 0) {
+    if ($event['id_alert_am'] != 0) {
         $data = [];
         $data[0] = '<div style="font-weight:normal; margin-left: 20px;">'.__('Source').'</div>';
         $data[1] = '<a href="'.$serverstring.'index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$event['id_agente'].'&amp;tab=alert'.$hashstring.'">';

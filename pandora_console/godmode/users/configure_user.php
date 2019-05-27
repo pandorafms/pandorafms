@@ -90,7 +90,14 @@ if ($meta) {
 
     $buttons[$tab]['active'] = true;
 
-    ui_print_page_header(__('User detail editor'), 'images/gm_users.png', false, '', true, $buttons);
+    ui_print_page_header(
+        __('User detail editor'),
+        'images/gm_users.png',
+        false,
+        'profile_tab',
+        true,
+        $buttons
+    );
     $sec = 'gusuarios';
 }
 

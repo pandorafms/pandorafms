@@ -11,7 +11,7 @@
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-// Load global vars
+// Load global vars.
 check_login();
 
 if (! check_acl($config['id_user'], 0, 'AW')) {
@@ -72,6 +72,7 @@ if (! check_acl($config['id_user'], 0, 'AW')) {
 
 $options_policies = [];
 $policies_options = enterprise_hook('massive_policies_options');
+$policies_options = array_unique($policies_options);
 
 if ($policies_options != ENTERPRISE_NOT_HOOK) {
     $options_policies = array_merge($options_policies, $policies_options);
@@ -118,10 +119,12 @@ switch ($tab) {
 
     case 'massive_agents':
         $options = $options_agents;
+        $help_header = 'massive_agents_tab';
     break;
 
     case 'massive_modules':
         $options = $options_modules;
+        $help_header = 'massive_modules_tab';
     break;
 
     case 'massive_users':
@@ -130,6 +133,7 @@ switch ($tab) {
 
     case 'massive_policies':
         $options = $options_policies;
+        $help_header = 'massive_policies_tab';
     break;
 
     case 'massive_snmp':
@@ -143,9 +147,13 @@ switch ($tab) {
     case 'massive_plugins':
         $options = $options_plugins;
     break;
+
+    default:
+        // Default.
+    break;
 }
 
-// Set the default option of the category
+// Set the default option of the category.
 if ($option == '') {
     $option = array_shift(array_keys($options));
 }
@@ -235,16 +243,16 @@ ui_print_page_header(
     __('Bulk operations').' &raquo; '.$options[$option],
     'images/gm_massive_operations.png',
     false,
-    '',
+    $help_header,
     true,
     $onheader,
     true,
     'massivemodal'
 );
 
-// Checks if the PHP configuration is correctly
+// Checks if the PHP configuration is correctly.
 if ((get_cfg_var('max_execution_time') != 0)
-    or (get_cfg_var('max_input_time') != -1)
+    || (get_cfg_var('max_input_time') != -1)
 ) {
     echo '<div id="notify_conf" class="notify">';
     echo __('In order to perform massive operations, PHP needs a correct configuration in timeout parameters. Please, open your PHP configuration file (php.ini) for example: <i>sudo vi /etc/php5/apache2/php.ini;</i><br> And set your timeout parameters to a correct value: <br><i> max_execution_time = 0</i> and <i>max_input_time = -1</i>');
@@ -256,7 +264,7 @@ if ($tab == 'massive_policies' && is_central_policies_on_node()) {
     return;
 }
 
-// Catch all submit operations in this view to display Wait banner
+// Catch all submit operations in this view to display Wait banner.
 $submit_action = get_parameter('go');
 $submit_update = get_parameter('updbutton');
 $submit_del = get_parameter('del');

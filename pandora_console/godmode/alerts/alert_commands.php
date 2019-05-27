@@ -68,10 +68,6 @@ if (is_ajax()) {
 
         $fields_rows = [];
         for ($i = 1; $i <= $config['max_macro_fields']; $i++) {
-            if (($i == 5) && ($command['id'] == 3)) {
-                continue;
-            }
-
             $field_description = $fields_descriptions[($i - 1)];
             $field_value = $fields_values[($i - 1)];
             $field_hidden = $fields_hidden_checked[($i - 1)];
@@ -88,9 +84,7 @@ if (is_ajax()) {
                 // If the field is the number one, print the help message.
                 if ($i == 1) {
                     // If our context is snmpconsole, show snmp_alert helps.
-                    if ((isset($_SERVER['HTTP_REFERER'])) && ( preg_match('/snmp_alert/', $_SERVER['HTTP_REFERER']) > 0 )) {
-                        $fdesc .= ui_print_help_icon('snmp_alert_field1', true);
-                    } else {
+                    if ((!isset($_SERVER['HTTP_REFERER'])) && ( preg_match('/snmp_alert/', $_SERVER['HTTP_REFERER']) > 0 )) {
                         $fdesc .= ui_print_help_icon('alert_config', true);
                     }
                 }
@@ -255,10 +249,6 @@ if (is_ajax()) {
         }
 
         // If command is PandoraFMS event, field 5 must be empty because "severity" must be set by the alert.
-        if ($command['id'] == 3) {
-            $fields_rows[5] = '';
-        }
-
         $command['fields_rows'] = $fields_rows;
 
         echo json_encode($command);
@@ -278,7 +268,13 @@ if ($update_command) {
 if (defined('METACONSOLE')) {
     alerts_meta_print_header();
 } else {
-    ui_print_page_header(__('Alerts').' &raquo; '.__('Alert commands'), 'images/gm_alerts.png', false, 'alerts_config', true);
+    ui_print_page_header(
+        __('Alerts').' &raquo; '.__('Alert commands'),
+        'images/gm_alerts.png',
+        false,
+        'alerts_command_tab',
+        true
+    );
 }
 
 if ($create_command) {

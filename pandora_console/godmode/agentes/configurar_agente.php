@@ -579,11 +579,11 @@ if ($id_agente) {
     switch ($tab) {
         case 'main':
             $tab_description = '- '.__('Setup');
+            $help_header = 'main_tab';
         break;
 
         case 'collection':
             $tab_description = '- '.__('Collection');
-            $help_header = 'collection_tab';
         break;
 
         case 'inventory':
@@ -601,6 +601,8 @@ if ($id_agente) {
             $tab_description = '- '.__('Modules');
             if ($type_module_t == 'webux') {
                 $help_header = 'wux_console';
+            } else {
+                $help_header = 'local_module_tab';
             }
         break;
 
@@ -611,7 +613,6 @@ if ($id_agente) {
 
         case 'template':
             $tab_description = '- '.__('Templates');
-            $help_header = 'template_tab';
         break;
 
         case 'gis':
@@ -631,14 +632,17 @@ if ($id_agente) {
             switch (get_parameter('wizard_section')) {
                 case 'snmp_explorer':
                     $tab_description = '- '.__('SNMP Wizard');
+                    $help_header = 'agent_snmp_explorer_tab';
                 break;
 
                 case 'snmp_interfaces_explorer':
                     $tab_description = '- '.__('SNMP Interfaces wizard');
+                    $help_header = 'agent_snmp_interfaces_explorer_tab';
                 break;
 
                 case 'wmi_explorer':
                     $tab_description = '- '.__('WMI Wizard');
+                    $help_header = 'agent_snmp_wmi_explorer_tab';
                 break;
 
                 default:
@@ -1216,6 +1220,7 @@ if ($update_module || $create_module) {
 
     // Get macros.
     $macros = (string) get_parameter('macros');
+    $macros_names = (array) get_parameter('macro_name', []);
 
     if (!empty($macros)) {
         $macros = json_decode(base64_decode($macros), true);
@@ -1226,10 +1231,18 @@ if ($update_module || $create_module) {
                 $m_hide = $m['hide'];
             }
 
-            if ($m_hide == '1') {
-                $macros[$k]['value'] = io_input_password(get_parameter($m['macro'], ''));
+            if ($update_module) {
+                if ($m_hide == '1') {
+                    $macros[$k]['value'] = io_input_password(get_parameter($m['macro'], ''));
+                } else {
+                    $macros[$k]['value'] = get_parameter($m['macro'], '');
+                }
             } else {
-                $macros[$k]['value'] = get_parameter($m['macro'], '');
+                if ($m_hide == '1') {
+                    $macros[$k]['value'] = io_input_password($macros_names[$k]);
+                } else {
+                    $macros[$k]['value'] = $macros_names[$k];
+                }
             }
         }
 

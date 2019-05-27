@@ -19,10 +19,13 @@ function progress_task_list(id, title) {
     .empty()
     .dialog({
       title: title,
-      draggable: true,
+      autoOpen: false,
       modal: false,
-      width: 600,
-      height: 420,
+      resizable: false,
+      draggable: false,
+      closeOnEscape: true,
+      width: 800,
+      height: 600,
       close: function() {
         if (xhr != null) xhr.abort();
         if (timeoutRef != null) clearTimeout(timeoutRef);

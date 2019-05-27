@@ -44,8 +44,8 @@ our @EXPORT = qw(
 	);
 
 # version: Defines actual version of Pandora Server for this module only
-my $pandora_version = "7.0NG.734";
-my $pandora_build = "190516";
+my $pandora_version = "7.0NG.735";
+my $pandora_build = "190527";
 our $VERSION = $pandora_version." ".$pandora_build;
 
 # Setup hash
@@ -1133,6 +1133,18 @@ sub pandora_load_config {
 		elsif ($parametro =~ m/^fsnmp\s(.*)/i) {
 			$pa_config->{'fsnmp'}= clean_blank($1); 
 		}
+
+		# Pandora HA extra
+		elsif ($parametro =~ m/^ha_file\s(.*)/i) {
+			$pa_config->{'ha_file'} = clean_blank($1);
+		}
+		elsif ($parametro =~ m/^ha_pid_file\s(.*)/i) {
+			$pa_config->{'ha_pid_file'} = clean_blank($1);
+		}
+		elsif ($parametro =~ m/^pandora_service_cmd\s(.*)/i) {
+			$pa_config->{'pandora_service_cmd'} = clean_blank($1);
+		}
+		
 	} # end of loop for parameter #
 
 	# Set to RDBMS' standard port

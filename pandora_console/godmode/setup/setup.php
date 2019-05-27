@@ -135,9 +135,9 @@ if (enterprise_installed()) {
 
 switch ($section) {
     case 'general':
-    default:
         $buttons['general']['active'] = true;
         $subpage = ' &raquo '.__('General');
+        $help_header = 'setup_general_tab';
     break;
 
     case 'auth':
@@ -148,7 +148,7 @@ switch ($section) {
     case 'perf':
         $buttons['perf']['active'] = true;
         $subpage = ' &raquo '.__('Performance');
-        $help_header = 'performance';
+        $help_header = '';
     break;
 
     case 'vis':
@@ -164,16 +164,34 @@ switch ($section) {
     case 'ehorus':
         $buttons['ehorus']['active'] = true;
         $subpage = ' &raquo '.__('eHorus');
+        $help_header = 'setup_ehorus_tab';
     break;
 
     case 'notifications':
         $buttons['notifications']['active'] = true;
         $subpage = ' &raquo '.__('Notifications');
     break;
+
+    case 'enterprise':
+        $buttons['enterprise']['active'] = true;
+        $subpage = ' &raquo '.__('Enterprise');
+        $help_header = 'setup_enterprise_tab';
+    break;
+
+    default:
+        // Default.
+    break;
 }
 
 // Header.
-ui_print_page_header(__('Configuration').$subpage, '', false, $help_header, true, $buttons);
+ui_print_page_header(
+    __('Configuration').$subpage,
+    '',
+    false,
+    $help_header,
+    true,
+    $buttons
+);
 
 if (isset($config['error_config_update_config'])) {
     if ($config['error_config_update_config']['correct'] == false) {

@@ -25,7 +25,7 @@ export type StaticGraphProps = {
  * @param showLastValueTooltip Raw value.
  */
 const parseShowLastValueTooltip = (
-  showLastValueTooltip: any // eslint-disable-line @typescript-eslint/no-explicit-any
+  showLastValueTooltip: unknown
 ): StaticGraphProps["showLastValueTooltip"] => {
   switch (showLastValueTooltip) {
     case "default":

@@ -1283,7 +1283,6 @@ div.title_line {
   align-items: flex-end;
   justify-content: space-between;
   border-bottom: 2px solid #82b92e;
-  max-height: 50px;
   min-height: 50px;
   width: 100%;
   padding-right: 0px;
@@ -1436,8 +1435,9 @@ div#agent_wizard_subtabs {
 #menu_tab_left li a,
 #menu_tab_left li span {
   color: #343434;
-  font-size: 16pt;
-  line-height: 16pt;
+  font-family: "lato-bolder", "Open Sans", sans-serif !important;
+  font-size: 20pt;
+  line-height: 20pt;
 }
 
 /*
@@ -2422,6 +2422,8 @@ select {
   -moz-border-radius: 3px;
   -webkit-border-radius: 3px;
   border-radius: 3px;
+  font-family: "lato-bolder", "Open Sans", sans-serif;
+  font-size: 10pt;
 }
 
 /* plugins */
@@ -5622,6 +5624,7 @@ table.info_table.policy_sub_table {
 .agent_options_column_right {
   width: 50%;
   box-sizing: border-box;
+  min-width: 400px;
 }
 
 .agent_options_column_left {
@@ -5746,10 +5749,12 @@ a#qr_code_agent_view {
   margin-right: 5px;
 }
 
-#text-comentarios,
+.agent_description {
+  min-height: 4.8em !important;
+}
 .agent_custom_id {
-  padding-bottom: 2em;
-  background: #ececec !important;
+  padding-bottom: 0.7em;
+  padding-top: 0.5em;
   display: inline-block;
   border-radius: 5px !important;
   border: 1px solid #ccc;

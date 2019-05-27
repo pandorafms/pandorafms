@@ -165,7 +165,7 @@ if ($disk_conf_delete) {
     @unlink($filename['conf']);
 }
 
-echo '<form name="conf_agent" method="post" action="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente">';
+echo '<form name="conf_agent" method="post" action="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente">';
 
 // Custom ID.
 $custom_id_div = '<div class="label_select">';
@@ -186,26 +186,12 @@ $custom_id_div .= html_print_input_text(
 if (!$new_agent && $alias != '') {
     $table_agent_name = '<div class="label_select"><p class="input_label">'.__('Agent name').': '.ui_print_help_tip(__("The agent's name must be the same as the one defined at the console"), true).'</p>';
     $table_agent_name .= '<div class="label_select_parent">';
-    $table_agent_name .= '<div class="label_select_child_left">'.html_print_input_text('agente', $nombre_agente, '', 50, 100, true).'</div>';
-    $table_agent_name .= '<div class="label_select_child_right agent_options_agent_name">';
-
-    // QR code div.
-    $table_qr_code = '<div class="agent_qr white_box">';
-    $table_qr_code .= '<p class="input_label">'.__('QR Code Agent view').': </p>';
-    $table_qr_code .= '<div id="qr_container_image"></div>';
-    if ($id_agente) {
-        $table_qr_code .= "<a id='qr_code_agent_view' href='javascript: show_dialog_qrcode(null, \"".ui_get_full_url('mobile/index.php?page=agent&id='.$id_agente)."\" );'></a>";
-    }
-
-    // Add Custom id div.
-    $table_qr_code .= '<br />';
-    $table_qr_code .= $custom_id_div;
-    $table_qr_code .= '</div>';
-
+    $table_agent_name .= '<div class="label_select_child_left" style="width: 60%;">'.html_print_input_text('agente', $nombre_agente, '', 50, 100, true).'</div>';
+    $table_agent_name .= '<div class="label_select_child_right agent_options_agent_name" style="width: 40%;">';
 
     if ($id_agente) {
-        $table_agent_name .= '<span>'.__('ID').' '.$id_agente.'</span>';
-        $table_agent_name .= '<a href="index.php?sec=gagente&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agente.'">';
+        $table_agent_name .= '<label>'.__('ID').'</label><input style="width: 50%;" type="text" disabled="true" value="'.$id_agente.'" />';
+        $table_agent_name .= '<a href="index.php?sec=gagente&sec2=operation/agentes/ver_agente&id_agente='.$id_agente.'">';
         $table_agent_name .= html_print_image(
             'images/zoom.png',
             true,
@@ -222,6 +208,14 @@ if (!$new_agent && $alias != '') {
     // Delete link from here.
     $table_agent_name .= "<a onClick=\"if (!confirm('".__('Are you sure?')."')) return false;\" href='index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&borrar_agente=$id_agente&search=&offset=0&sort_field=&sort=none'>".html_print_image('images/cross.png', true, ['title' => __('Delete agent')]).'</a>';
 
+    // Help link.
+    $table_agent_name .= ui_print_help_icon(
+        $help_header,
+        true,
+        '',
+        'images/help_g.png'
+    );
+
     // Remote configuration available.
     if (isset($filename)) {
         if (file_exists($filename['md5'])) {
@@ -229,7 +223,7 @@ if (!$new_agent && $alias != '') {
             $agent_name = io_safe_output($agent_name);
             $agent_md5 = md5($agent_name, false);
 
-            $table_agent_name .= '<a href="index.php?'.'sec=gagente&amp;'.'sec2=godmode/agentes/configurar_agente&amp;'.'tab=remote_configuration&amp;'.'id_agente='.$id_agente.'&amp;'.'disk_conf='.$agent_md5.'">';
+            $table_agent_name .= '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=remote_configuration&id_agente='.$id_agente.'&disk_conf='.$agent_md5.'">';
             $table_agent_name .= html_print_image(
                 'images/application_edit.png',
                 true,
@@ -246,6 +240,19 @@ if (!$new_agent && $alias != '') {
     }
 
     $table_agent_name .= '</div></div></div>';
+
+    // QR code div.
+    $table_qr_code = '<div class="agent_qr white_box">';
+    $table_qr_code .= '<p class="input_label">'.__('QR Code Agent view').': </p>';
+    $table_qr_code .= '<div id="qr_container_image"></div>';
+    if ($id_agente) {
+        $table_qr_code .= "<a id='qr_code_agent_view' href='javascript: show_dialog_qrcode(null, \"".ui_get_full_url('mobile/index.php?page=agent&id='.$id_agente)."\" );'></a>";
+    }
+
+    // Add Custom id div.
+    $table_qr_code .= '<br />';
+    $table_qr_code .= $custom_id_div;
+    $table_qr_code .= '</div>';
 }
 
 if ($new_agent) {
@@ -365,13 +372,14 @@ $table_server .= html_print_select(
 
 // Description.
 $table_description = '<div class="label_select"><p class="input_label">'.__('Description').': </p>';
-$table_description .= html_print_input_text(
+$table_description .= html_print_textarea(
     'comentarios',
+    3,
+    10,
     $comentarios,
     '',
-    45,
-    200,
-    true
+    true,
+    'agent_description'
 ).'</div>';
 
 // QR code.
@@ -511,7 +519,7 @@ if (enterprise_installed()) {
     if (!$new_agent && isset($filename) && file_exists($filename['md5'])) {
         $table_adv_remote .= date('F d Y H:i:s', fileatime($filename['md5']));
         // Delete remote configuration
-        $table_adv_remote .= '<a href="index.php?'.'sec=gagente&amp;'.'sec2=godmode/agentes/configurar_agente&amp;'.'tab=main&amp;'.'disk_conf_delete=1&amp;'.'id_agente='.$id_agente.'">';
+        $table_adv_remote .= '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=main&disk_conf_delete=1&id_agente='.$id_agente.'">';
         $table_adv_remote .= html_print_image(
             'images/cross.png',
             true,

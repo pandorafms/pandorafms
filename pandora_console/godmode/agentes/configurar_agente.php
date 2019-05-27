@@ -674,12 +674,15 @@ if ($id_agente) {
         agents_get_alias($id_agente),
         'images/setup.png',
         false,
-        $help_header,
+        // Previous: $help_header.
+        '',
         true,
         $onheader,
         false,
         '',
-        $config['item_title_size_text']
+        $config['item_title_size_text'],
+        '',
+        ''
     );
 } else {
     // Create agent.

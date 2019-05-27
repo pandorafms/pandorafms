@@ -1146,8 +1146,9 @@ CREATE TABLE IF NOT EXISTS `tusuario` (
 	`autorefresh_white_list` text not null default '',
 	`time_autorefresh` int(5) unsigned NOT NULL default '30',
 	`default_custom_view` int(10) unsigned NULL default '0',
-	`ehorus_user_login_user` VARCHAR(60),
-	`ehorus_user_login_pass` VARCHAR(45),
+	`ehorus_user_level_user` VARCHAR(60),
+	`ehorus_user_level_pass` VARCHAR(45),
+	`ehorus_user_acces` TINYINT(1),
 	CONSTRAINT `fk_filter_id` FOREIGN KEY (`id_filter`) REFERENCES tevent_filter (`id_filter`) ON DELETE SET NULL,
 	UNIQUE KEY `id_user` (`id_user`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

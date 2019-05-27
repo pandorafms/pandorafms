@@ -1435,6 +1435,7 @@ switch ($tab) {
     break;
 
     case 'main':
+    default:
         include 'estado_generalagente.php';
         echo "<a name='monitors'></a>";
         include 'estado_monitores.php';

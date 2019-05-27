@@ -5588,7 +5588,9 @@ table.info_table.policy_sub_table {
   background-color: transparent !important;
   border: none;
   border-radius: 0 !important;
-  border-bottom: 1px solid #343434;
+  border-bottom: 1px solid #888;
+  font-family: "lato-bolder", "Open Sans", sans-serif !important;
+  font-size: 10pt;
   padding: 2px 5px;
   box-sizing: border-box;
   background-repeat: no-repeat;

@@ -396,7 +396,7 @@ if (enterprise_installed()) {
         // CSS classnames (default)
         false,
         // Not disabled (default)
-        'width:50%; min-width:170px; text-align:center',
+        'width:50%; min-width:170px;',
         // Inline styles (default)
         false,
         // Option style select (default)
@@ -457,7 +457,7 @@ if (enterprise_installed()) {
         // Class
         false,
         // Disabled
-        'width:50%; min-width:170px; text-align:center'
+        'width:50%; min-width:170px;'
         // Style
     );
 
@@ -510,21 +510,27 @@ if (enterprise_installed()) {
 
     $table_adv_remote .= '</div>';
 
-    $cps_array[-1] = __('Disabled');
-    if ($cps > 0) {
-        $cps_array[$cps] = __('Enabled');
-    } else {
-        $cps_inc = 0;
-        if ($id_agente) {
-            $cps_inc = service_agents_cps($id_agente);
-        }
 
-        $cps_array[$cps_inc] = __('Enabled');
+    // Calculate cps value - agents.
+    if ($id_agente) {
+        $cps_val = service_agents_cps($id_agente);
+    } else {
+        // No agent defined, use received cps as base value.
+        if ($cps >= 0) {
+            $cps_val = $cps;
+        }
     }
 
-    $table_adv_cascade = '<div class="label_select"><p class="input_label">'.__('Cascade protection services').': ';
-    $table_adv_cascade .= ui_print_help_tip(__('Disable the alerts and events of the elements that belong to this service'), true).'</p>';
-    $table_adv_cascade .= html_print_select($cps_array, 'cps', $cps, '', '', 0, true).'</div>';
+    $cps_html = '<div class="label_select"><div class="label_simple_items">';
+    $cps_html .= html_print_checkbox_switch('cps', $cps_val, ($cps >= 0), true);
+    $cps_html .= __('Cascade protection services').'&nbsp;'.ui_print_help_icon('cascade_protection', true);
+    $cps_html .= ui_print_help_tip(
+        __('Alerts and events will be managed by the service joined by this agent.'),
+        true
+    );
+    $cps_html .= '</div></div>';
+
+    $table_adv_cascade .= $cps_html;
 }
 
 // Custom ID

@@ -1226,7 +1226,7 @@ function paint_qrcode(text, where, width, height) {
     text: text,
     width: width,
     height: height,
-    colorDark: "#3B6941",
+    colorDark: "#343434",
     colorLight: "#ffffff",
     correctLevel: QRCode.CorrectLevel.M
   });

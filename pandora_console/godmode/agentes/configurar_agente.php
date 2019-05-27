@@ -194,7 +194,7 @@ if ($create_agent) {
     $update_gis_data = (int) get_parameter_post('update_gis_data', 0);
     $url_description = (string) get_parameter('url_description');
     $quiet = (int) get_parameter('quiet', 0);
-    $cps = (int) get_parameter('cps', 0);
+    $cps = (int) get_parameter_switch('cps', -1);
 
     $secondary_groups = (string) get_parameter('secondary_hidden', '');
     $fields = db_get_all_fields_in_table('tagent_custom_fields');
@@ -829,8 +829,7 @@ if ($update_agent) {
     $update_gis_data = (int) get_parameter_post('update_gis_data', 0);
     $url_description = (string) get_parameter('url_description');
     $quiet = (int) get_parameter('quiet', 0);
-    $cps = (int) get_parameter('cps', 0);
-
+    $cps = get_parameter_switch('cps', -1);
     $old_values = db_get_row('tagente', 'id_agente', $id_agente);
     $fields = db_get_all_fields_in_table('tagent_custom_fields');
 

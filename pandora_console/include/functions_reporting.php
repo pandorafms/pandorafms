@@ -1914,6 +1914,11 @@ function reporting_event_report_module(
     $return['title'] = $content['name'];
     $return['subtitle'] = agents_get_alias($content['id_agent']).' - '.io_safe_output(modules_get_agentmodule_name($content['id_agent_module']));
 
+    $return['label'] = (isset($content['style']['label'])) ? $content['style']['label'] : '';
+    if ($return['label'] != '') {
+        $return['label'] = reporting_label_macro($content, $return['label']);
+    }
+
     if (is_metaconsole()) {
         metaconsole_restore_db();
     }
@@ -1921,7 +1926,6 @@ function reporting_event_report_module(
     $return['description'] = $content['description'];
     $return['show_extended_events'] = $content['show_extended_events'];
     $return['date'] = reporting_get_date_text($report, $content);
-    $return['label'] = (isset($content['style']['label'])) ? $content['style']['label'] : '';
 
     $event_filter = $content['style'];
     $return['show_summary_group'] = $event_filter['show_summary_group'];
@@ -2741,6 +2745,17 @@ function reporting_group_report($report, $content)
 }
 
 
+/**
+ * Create data report event agent.
+ *
+ * @param array   $report             Data report.
+ * @param array   $content            Content report.
+ * @param string  $type               Type report.
+ * @param integer $force_width_chart  Force width.
+ * @param integer $force_height_chart Force height.
+ *
+ * @return array Data.
+ */
 function reporting_event_report_agent(
     $report,
     $content,
@@ -2761,26 +2776,26 @@ function reporting_event_report_agent(
         $history = true;
     }
 
-    $return['title']              = $content['name'];
-    $return['subtitle']           = agents_get_alias($content['id_agent']);
-    $return['description']        = $content['description'];
-    $return['date']               = reporting_get_date_text($report, $content);
-    $return['label']              = (isset($content['style']['label'])) ? $content['style']['label'] : '';
+    $return['title'] = $content['name'];
+    $return['subtitle'] = agents_get_alias($content['id_agent']);
+    $return['description'] = $content['description'];
+    $return['date'] = reporting_get_date_text($report, $content);
+
     $return['show_summary_group'] = $content['style']['show_summary_group'];
     $return['show_extended_events'] = $content['show_extended_events'];
 
     $style = $content['style'];
 
-    // filter
-    $show_summary_group         = $style['show_summary_group'];
-    $filter_event_severity      = json_decode($style['filter_event_severity'], true);
-    $filter_event_type          = json_decode($style['filter_event_type'], true);
-    $filter_event_status        = json_decode($style['filter_event_status'], true);
+    // Filter.
+    $show_summary_group = $style['show_summary_group'];
+    $filter_event_severity = json_decode($style['filter_event_severity'], true);
+    $filter_event_type = json_decode($style['filter_event_type'], true);
+    $filter_event_status = json_decode($style['filter_event_status'], true);
     $filter_event_filter_search = $style['event_filter_search'];
 
-    // graph
-    $event_graph_by_user_validator        = $style['event_graph_by_user_validator'];
-    $event_graph_by_criticity             = $style['event_graph_by_criticity'];
+    // Graph.
+    $event_graph_by_user_validator = $style['event_graph_by_user_validator'];
+    $event_graph_by_criticity = $style['event_graph_by_criticity'];
     $event_graph_validated_vs_unvalidated = $style['event_graph_validated_vs_unvalidated'];
 
     $return['data'] = reporting_get_agents_detailed_event(
@@ -2824,6 +2839,12 @@ function reporting_event_report_agent(
     } else {
         $metaconsole_dbtable = false;
     }
+
+    $label = (isset($content['style']['label'])) ? $content['style']['label'] : '';
+    if ($label != '') {
+        $label = reporting_label_macro($content, $label);
+    }
+    $return['label'] = $label;
 
     if ($event_graph_by_user_validator) {
         $data_graph = events_get_count_events_validated_by_user(
@@ -2908,7 +2929,7 @@ function reporting_event_report_agent(
         metaconsole_restore_db();
     }
 
-    // total_events
+    // Total events.
     if ($return['data'] != '') {
         $return['total_events'] = count($return['data']);
     } else {
@@ -2941,7 +2962,11 @@ function reporting_historical_data($report, $content)
     $return['subtitle'] = $agent_name.' - '.$module_name;
     $return['description'] = $content['description'];
     $return['date'] = reporting_get_date_text($report, $content);
+
     $return['label'] = (isset($content['style']['label'])) ? $content['style']['label'] : '';
+    if ($return['label'] != '') {
+        $return['label'] = reporting_label_macro($content, $return['label']);
+    }
 
     $return['keys'] = [
         __('Date'),
@@ -3017,7 +3042,6 @@ function reporting_database_serialized($report, $content)
     $return['subtitle'] = $agent_name.' - '.$module_name;
     $return['description'] = $content['description'];
     $return['date'] = reporting_get_date_text($report, $content);
-    $return['label'] = (isset($content['style']['label'])) ? $content['style']['label'] : '';
 
     $keys = [];
     if (isset($content['header_definition']) && ($content['header_definition'] != '')) {
@@ -3041,6 +3065,11 @@ function reporting_database_serialized($report, $content)
 
         $server = metaconsole_get_connection_by_id($id_meta);
         metaconsole_connect($server);
+    }
+
+    $return['label'] = (isset($content['style']['label'])) ? $content['style']['label'] : '';
+    if ($return['label'] != '') {
+        $return['label'] = reporting_label_macro($content, $return['label']);
     }
 
     $datelimit = ($report['datetime'] - $content['period']);
@@ -3589,7 +3618,12 @@ function reporting_alert_report_agent($report, $content)
     $return['subtitle'] = $agent_name;
     $return['description'] = $content['description'];
     $return['date'] = reporting_get_date_text($report, $content);
+
     $return['label'] = (isset($content['style']['label'])) ? $content['style']['label'] : '';
+    if ($return['label'] != '') {
+        $return['label'] = reporting_label_macro($content, $return['label']);
+    }
+
     $module_list = agents_get_modules($content['id_agent']);
 
     $data = [];
@@ -3721,6 +3755,9 @@ function reporting_alert_report_module($report, $content)
     $return['description'] = $content['description'];
     $return['date'] = reporting_get_date_text($report, $content);
     $return['label'] = (isset($content['style']['label'])) ? $content['style']['label'] : '';
+    if ($return['label'] != '') {
+        $return['label'] = reporting_label_macro($content, $return['label']);
+    }
 
     $data_row = [];
 
@@ -3923,13 +3960,17 @@ function reporting_monitor_report($report, $content)
     $return['subtitle'] = $agent_name.' - '.$module_name;
     $return['description'] = $content['description'];
     $return['date'] = reporting_get_date_text($report, $content);
-    $return['label'] = (isset($content['style']['label'])) ? $content['style']['label'] : '';
 
     if ($config['metaconsole']) {
         $id_meta = metaconsole_get_id_server($content['server_name']);
 
         $server = metaconsole_get_connection_by_id($id_meta);
         metaconsole_connect($server);
+    }
+
+    $return['label'] = (isset($content['style']['label'])) ? $content['style']['label'] : '';
+    if ($return['label'] != '') {
+        $return['label'] = reporting_label_macro($content, $return['label']);
     }
 
     $module_name = io_safe_output(
@@ -7335,6 +7376,7 @@ function reporting_simple_graph(
         $report,
         $content
     );
+
     $label = (isset($content['style']['label'])) ? $content['style']['label'] : '';
     if ($label != '') {
         $label = reporting_label_macro($content, $label);
@@ -7346,7 +7388,7 @@ function reporting_simple_graph(
 
     $return['chart'] = '';
 
-    // Get chart
+    // Get chart.
     reporting_set_conf_charts($width, $height, $only_image, $type, $content, $ttl);
 
     if (!empty($force_width_chart)) {

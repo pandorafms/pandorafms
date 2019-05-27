@@ -2459,6 +2459,51 @@ function ui_print_status_image($type, $title='', $return=false, $options=false, 
 
 
 /**
+ * Generates a progress bar CSS based.
+ * Requires css progress.css
+ *
+ * @param integer $progress Progress.
+ * @param string  $width    Width.
+ * @param string  $height   Height.
+ * @param string  $color    Color.
+ * @param boolean $return   Return or paint (if false).
+ *
+ * @return string HTML code.
+ */
+function ui_progress(
+    $progress,
+    $width='100%',
+    $height='2em',
+    $color='#80ba27',
+    $return=true
+) {
+    if (!$progress) {
+        $progress = 0;
+    }
+
+    if ($progress > 100) {
+        $progress = 100;
+    }
+
+    if ($progress < 0) {
+        $progress = 0;
+    }
+
+    ui_require_css_file('progress');
+    $output .= '<div class="progress_main">';
+    $output .= '<span class="progress_text">'.$progress.'%</span>';
+    $output .= '<div class="progress" style="width: '.$progress.'%;"></div>';
+    $output .= '</div>';
+
+    if (!$return) {
+        echo $output;
+    }
+
+    return $output;
+}
+
+
+/**
  * Print a code into a DIV and enable a toggle to show and hide it
  *
  * @param string html code

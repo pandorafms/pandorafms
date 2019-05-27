@@ -89,7 +89,7 @@ if (is_ajax()) {
         $out = false;
         foreach ($idSNMP as $id) {
             foreach ($snmp[$id] as $key => $value) {
-                // Check if it has "ifXXXX" syntax and skip it
+                // Check if it has "ifXXXX" syntax and skip it.
                 if (! preg_match('/if/', $key)) {
                     continue;
                 }
@@ -109,7 +109,7 @@ if (is_ajax()) {
         echo io_json_mb_encode($out);
     }
 
-    // And and remove groups use the same function
+    // And and remove groups use the same function.
     $add_secondary_groups = get_parameter('add_secondary_groups');
     $remove_secondary_groups = get_parameter('remove_secondary_groups');
     if ($add_secondary_groups || $remove_secondary_groups) {
@@ -125,12 +125,12 @@ if (is_ajax()) {
                 'agents_update_secondary_groups',
                 [
                     $id_agent,
-                    $add_secondary_groups ? $groups_to_add : [],
-                    $remove_secondary_groups ? $groups_to_add : [],
+                    ($add_secondary_groups) ? $groups_to_add : [],
+                    ($remove_secondary_groups) ? $groups_to_add : [],
                 ]
             );
             // Echo 0 in case of error. 0 Otherwise.
-            echo $ret ? 1 : 0;
+            echo ($ret) ? 1 : 0;
         }
     }
 
@@ -160,7 +160,7 @@ if ($new_agent) {
 }
 
 if (!$new_agent) {
-    // Agent remote configuration editor
+    // Agent remote configuration editor.
     enterprise_include_once('include/functions_config_agents.php');
     if (enterprise_installed()) {
         $filename = config_agents_get_agent_config_filenames($id_agente);
@@ -168,10 +168,10 @@ if (!$new_agent) {
 }
 
 $disk_conf_delete = (bool) get_parameter('disk_conf_delete');
-// Agent remote configuration DELETE
+// Agent remote configuration DELETE.
 if ($disk_conf_delete) {
     // TODO: Get this working on computers where the Pandora server(s) are not on the webserver
-    // TODO: Get a remote_config editor working in the open version
+    // TODO: Get a remote_config editor working in the open version.
     @unlink($filename['md5']);
     @unlink($filename['conf']);
 }
@@ -217,7 +217,7 @@ if (!$new_agent && $alias != '') {
     $agent_options_update = 'agent_options_update';
 
     // Delete link from here.
-    $table_agent_name .= "<a onClick=\"if (!confirm('".__('Are you sure?')."')) return false;\" href='index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&borrar_agente=$id_agente&search=&offset=0&sort_field=&sort=none'>".html_print_image('images/cross.png', true, ['title' => __('Delete agent')]).'</a>';
+    $table_agent_name .= "<a onClick=\"if (!confirm('".__('Are you sure?')."')) return false;\" href='index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&borrar_agente=".$id_agente."&search=&offset=0&sort_field=&sort=none'>".html_print_image('images/cross.png', true, ['title' => __('Delete agent')]).'</a>';
 
     // Help link.
     $table_agent_name .= ui_print_help_icon(
@@ -424,43 +424,43 @@ if (enterprise_installed()) {
     $table_adv_secondary_groups = '<div class="label_select"><p class="input_label">'.__('Secondary groups').': '.ui_print_help_icon('secondary_groups', true).'</p></div>';
     $table_adv_secondary_groups_left = html_print_select_groups(
         false,
-        // Use the current user to select the groups
+        // Use the current user to select the groups.
         'AR',
-        // ACL permission
+        // ACL permission.
         false,
-        // Not all group
+        // Not all group.
         'secondary_groups',
-        // HTML id
+        // HTML id.
         '',
-        // No select any by default
+        // No select any by default.
         '',
-        // Javascript onChange code
+        // Javascript onChange code.
         '',
-        // Do not user no selected value
+        // Do not user no selected value.
         0,
-        // Do not use no selected value
+        // Do not use no selected value.
         true,
-        // Return HTML (not echo)
+        // Return HTML (not echo).
         true,
-        // Multiple selection
+        // Multiple selection.
         true,
-        // Sorting by default
+        // Sorting by default.
         '',
-        // CSS classnames (default)
+        // CSS classnames (default).
         false,
-        // Not disabled (default)
+        // Not disabled (default).
         'width:50%; min-width:170px;',
-        // Inline styles (default)
+        // Inline styles (default).
         false,
-        // Option style select (default)
+        // Option style select (default).
         false,
-        // Do not truncate the users tree (default)
+        // Do not truncate the users tree (default).
         'id_grupo',
-        // Key to get as value (default)
+        // Key to get as value (default).
         false,
-        // Not strict user (default)
+        // Not strict user (default).
         $secondary_groups_selected['plain']
-        // Do not show the primary group in this selection
+        // Do not show the primary group in this selection.
     );
 
     $table_adv_secondary_groups_arrows = html_print_input_image(
@@ -489,32 +489,32 @@ if (enterprise_installed()) {
 
     $table_adv_secondary_groups_right .= html_print_select(
         $secondary_groups_selected['for_select'],
-        // Values
+        // Values.
         'secondary_groups_selected',
-        // HTML id
+        // HTML id.
         '',
-        // Selected
+        // Selected.
         '',
-        // Javascript onChange code
+        // Javascript onChange code.
         '',
-        // Nothing selected
+        // Nothing selected.
         0,
-        // Nothing selected
+        // Nothing selected.
         true,
-        // Return HTML (not echo)
+        // Return HTML (not echo).
         true,
-        // Multiple selection
+        // Multiple selection.
         true,
-        // Sort
+        // Sort.
         '',
-        // Class
+        // Class.
         false,
-        // Disabled
+        // Disabled.
         'width:50%; min-width:170px;'
-        // Style
+        // Style.
     );
 
-    // safe operation mode
+    // Safe operation mode.
     if ($id_agente) {
         $sql_modules = db_get_all_rows_sql(
             'SELECT id_agente_modulo as id_module, nombre as name FROM tagente_modulo 
@@ -538,12 +538,12 @@ if (enterprise_installed()) {
         $table_adv_safe .= __('Module').'&nbsp;'.html_print_select($safe_mode_modules, 'safe_mode_module', $safe_mode_module, '', '', 0, true).'</div>';
     }
 
-    // Remote configuration
+    // Remote configuration.
     $table_adv_remote = '<div class="label_select"><p class="input_label">'.__('Remote configuration').': </p>';
 
     if (!$new_agent && isset($filename) && file_exists($filename['md5'])) {
         $table_adv_remote .= date('F d Y H:i:s', fileatime($filename['md5']));
-        // Delete remote configuration
+        // Delete remote configuration.
         $table_adv_remote .= '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=main&disk_conf_delete=1&id_agente='.$id_agente.'">';
         $table_adv_remote .= html_print_image(
             'images/cross.png',
@@ -602,12 +602,25 @@ $params['cascade_protection'] = true;
 $table_adv_parent .= '<div class="label_simple_items">';
 $table_adv_parent .= ui_print_agent_autocomplete_input($params);
 if (enterprise_installed()) {
-    $table_adv_parent .= html_print_checkbox_switch('cascade_protection', 1, $cascade_protection, true).__('Cascade protection').'&nbsp;'.ui_print_help_icon('cascade_protection', true);
+    $table_adv_parent .= html_print_checkbox_switch(
+        'cascade_protection',
+        1,
+        $cascade_protection,
+        true
+    ).__('Cascade protection').'&nbsp;'.ui_print_help_icon('cascade_protection', true);
 }
 
-$table_adv_parent .= __('Module').'&nbsp;'.html_print_select($modules_values, 'cascade_protection_module', $cascade_protection_module, '', '', 0, true).'</div></div>';
+$table_adv_parent .= __('Module').'&nbsp;'.html_print_select(
+    $modules_values,
+    'cascade_protection_module',
+    $cascade_protection_module,
+    '',
+    '',
+    0,
+    true
+).'</div></div>';
 
-// Learn mode / Normal mode
+// Learn mode / Normal mode.
 $table_adv_module_mode = '<div class="label_select"><p class="input_label">'.__('Module definition').': '.ui_print_help_icon('module_definition', true).'</p>';
 $table_adv_module_mode .= '<div class="switch_radio_button">';
 $table_adv_module_mode .= html_print_radio_button_extended(
@@ -642,9 +655,14 @@ $table_adv_module_mode .= html_print_radio_button_extended(
 );
 $table_adv_module_mode .= '</div></div>';
 
-// Status (Disabled / Enabled)
+// Status (Disabled / Enabled).
 $table_adv_status = '<div class="label_select_simple label_simple_one_item"><p class="input_label input_label_simple">'.__('Disabled').': '.ui_print_help_tip(__('If the remote configuration is enabled, it will also go into standby mode when disabling it.'), true).'</p>';
-$table_adv_status .= html_print_checkbox_switch('disabled', 1, $disabled, true).'</div>';
+$table_adv_status .= html_print_checkbox_switch(
+    'disabled',
+    1,
+    $disabled,
+    true
+).'</div>';
 
 // Url address.
 if (enterprise_installed()) {
@@ -681,11 +699,11 @@ foreach ($listIcons as $index => $value) {
 }
 
 $path = 'images/gis_map/icons/';
-// TODO set better method the path
+// TODO set better method the path.
 $table_adv_agent_icon = '<div class="label_select"><p class="input_label">'.__('Agent icon').': '.ui_print_help_tip(__('Agent icon for GIS Maps.'), true).'</p>';
 if ($icon_path == '') {
     $display_icons = 'none';
-    // Hack to show no icon. Use any given image to fix not found image errors
+    // Hack to show no icon. Use any given image to fix not found image errors.
     $path_without = 'images/spinner.png';
     $path_default = 'images/spinner.png';
     $path_ok = 'images/spinner.png';

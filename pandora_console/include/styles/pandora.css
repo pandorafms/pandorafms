@@ -5945,6 +5945,43 @@ a#qr_code_agent_view {
  * ---------------------------------------------------------------------
  */
 
+.bullet_modules {
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  margin-right: 5px;
+  margin-top: -2px;
+}
+
+div#bullets_modules {
+  display: inline-block;
+  margin-left: 2em;
+}
+
+div#bullets_modules div {
+  display: inline-block;
+  margin: 0 0.5em;
+}
+
+.orange_background {
+  background: #ffa631;
+}
+.red_background {
+  background: #fc4444;
+}
+.yellow_background {
+  background: #fad403;
+}
+.grey_background {
+  background: #b2b2b2;
+}
+.blue_background {
+  background: #3ba0ff;
+}
+.green_background {
+  background: #80ba27;
+}
+
 /* First row in agent view */
 #agent_details_first_row {
   display: flex;
@@ -5960,12 +5997,19 @@ a#qr_code_agent_view {
 }
 
 .agent_details_col_left {
-  width: 38%;
+  width: 40%;
+  min-width: 500px;
+}
+
+.agent_details_content .agent_details_bullets {
+  position: relative;
+  left: -20%;
 }
 
 .agent_details_col_right {
   width: 62%;
   margin-left: 20px;
+  min-width: 670px;
 }
 
 .buttons_agent_view {
@@ -5985,7 +6029,7 @@ a#qr_code_agent_view {
 /* Agent details in agent view */
 .agent_details_header {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   align-items: center;
   border-bottom: 1px solid #e2e2e2;
   padding: 6px 20px;
@@ -6005,6 +6049,7 @@ a#qr_code_agent_view {
 .agent_details_graph {
   width: 205px;
   text-align: center;
+  margin: 0 auto;
 }
 
 .agent_details_info {

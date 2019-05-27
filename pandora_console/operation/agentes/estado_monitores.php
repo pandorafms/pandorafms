@@ -134,7 +134,12 @@ $sort = get_parameter('sort', 'up');
 
 echo "<h4 style='padding-top:0px !important;'>";
 
-echo ui_print_help_tip(__('To see the list of modules paginated, enable this option in the Styles Configuration.'), true).__('Full list of monitors').'&nbsp;'.reporting_tiny_stats($agent, true, 'modules');
+echo ui_print_help_tip(
+    __('To see the list of modules paginated, enable this option in the Styles Configuration.'),
+    true
+);
+echo '<span>'.__('Full list of monitors').'</span>';
+echo reporting_tiny_stats($agent, true, 'modules');
 
 $modules_not_init = agents_monitor_notinit($id_agente);
 if (!empty($modules_not_init)) {
@@ -514,4 +519,3 @@ function print_form_filter_monitors(
 
     echo $form_text;
 }
-

@@ -2474,17 +2474,15 @@ function ui_toggle($code, $name, $title='', $hidden_default=true, $return=false,
     // Generate unique Id
     $uniqid = uniqid('');
 
+    $image_a = html_print_image('images/arrow_down_green.png', true, false, true);
+    $image_b = html_print_image('images/arrow_right_green.png', true, false, true);
     // Options
     if ($hidden_default) {
         $style = 'display:none';
-        $image_a = html_print_image('images/down.png', true, false, true);
-        $image_b = html_print_image('images/go.png', true, false, true);
-        $original = 'images/go.png';
+        $original = 'images/arrow_right_green.png';
     } else {
         $style = '';
-        $image_a = html_print_image('images/down.png', true, false, true);
-        $image_b = html_print_image('images/go.png', true, false, true);
-        $original = 'images/down.png';
+        $original = 'images/arrow_down_green.png';
     }
 
     // Link to toggle

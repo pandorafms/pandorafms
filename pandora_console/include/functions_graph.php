@@ -2479,7 +2479,7 @@ function truncate_negatives(&$element)
  * @param bool return or echo flag
  * @param bool show_not_init flag
  */
-function graph_agent_status($id_agent=false, $width=300, $height=200, $return=false, $show_not_init=false, $data_agents=false)
+function graph_agent_status($id_agent=false, $width=300, $height=200, $return=false, $show_not_init=false, $data_agents=false, $donut_narrow_graph=false)
 {
     global $config;
 
@@ -2545,25 +2545,37 @@ function graph_agent_status($id_agent=false, $width=300, $height=200, $return=fa
         $data = [];
     }
 
-    $out = pie_graph(
-        $data,
-        $width,
-        $height,
-        __('other'),
-        ui_get_full_url(false, false, false, false),
-        '',
-        $config['fontpath'],
-        $config['font_size'],
-        1,
-        'hidden',
-        $colors,
-        0
-    );
-
-    if ($return) {
+    if ($donut_narrow_graph == true) {
+        $data_total = array_sum($data);
+        $out = print_donut_narrow_graph(
+            $colors,
+            $width,
+            $height,
+            $data,
+            $data_total
+        );
         return $out;
     } else {
-        echo $out;
+        $out = pie_graph(
+            $data,
+            $width,
+            $height,
+            __('other'),
+            ui_get_full_url(false, false, false, false),
+            '',
+            $config['fontpath'],
+            $config['font_size'],
+            1,
+            'hidden',
+            $colors,
+            0
+        );
+
+        if ($return) {
+            return $out;
+        } else {
+            echo $out;
+        }
     }
 }
 

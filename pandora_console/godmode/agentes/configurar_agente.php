@@ -575,20 +575,24 @@ if ($id_agente) {
     }
 
     $help_header = '';
+    $tab_name = '';
     // This add information to the header.
     switch ($tab) {
         case 'main':
             $tab_description = '- '.__('Setup');
             $help_header = 'main_tab';
+            $tab_name = 'Setup';
         break;
 
         case 'collection':
             $tab_description = '- '.__('Collection');
+            $tab_name = 'Collection';
         break;
 
         case 'inventory':
             $tab_description = '- '.__('Inventory');
             $help_header = 'inventory_tab';
+            $tab_name = 'Inventory';
         break;
 
         case 'plugins':
@@ -599,6 +603,7 @@ if ($id_agente) {
         case 'module':
             $type_module_t = get_parameter('moduletype', '');
             $tab_description = '- '.__('Modules');
+            $tab_name = 'Modules';
             if ($type_module_t == 'webux') {
                 $help_header = 'wux_console';
             } else {
@@ -609,10 +614,12 @@ if ($id_agente) {
         case 'alert':
             $tab_description = '- '.__('Alert');
             $help_header = 'manage_alert_list';
+            $tab_name = 'Alerts';
         break;
 
         case 'template':
             $tab_description = '- '.__('Templates');
+            $tab_name = 'Module templates';
         break;
 
         case 'gis':
@@ -633,16 +640,19 @@ if ($id_agente) {
                 case 'snmp_explorer':
                     $tab_description = '- '.__('SNMP Wizard');
                     $help_header = 'agent_snmp_explorer_tab';
+                    $tab_name = 'SNMP Wizard';
                 break;
 
                 case 'snmp_interfaces_explorer':
                     $tab_description = '- '.__('SNMP Interfaces wizard');
                     $help_header = 'agent_snmp_interfaces_explorer_tab';
+                    $tab_name = 'SNMP Interfaces wizard';
                 break;
 
                 case 'wmi_explorer':
                     $tab_description = '- '.__('WMI Wizard');
                     $help_header = 'agent_snmp_wmi_explorer_tab';
+                    $tab_name = 'WMI Wizard';
                 break;
 
                 default:
@@ -682,7 +692,7 @@ if ($id_agente) {
         '',
         $config['item_title_size_text'],
         '',
-        ''
+        __('Resources').ui_print_breadcrums($tab_name)
     );
 } else {
     // Create agent.
@@ -691,7 +701,13 @@ if ($id_agente) {
         'images/bricks.png',
         false,
         'create_agent',
-        true
+        true,
+        '',
+        false,
+        '',
+        GENERIC_SIZE_TEXT,
+        '',
+        __('Resources').ui_print_breadcrums('Create agent')
     );
 }
 
@@ -1222,7 +1238,6 @@ if ($update_module || $create_module) {
 
     // Get macros.
     $macros = (string) get_parameter('macros');
-    $macros_names = (array) get_parameter('macro_name', []);
 
     if (!empty($macros)) {
         $macros = json_decode(base64_decode($macros), true);
@@ -1233,18 +1248,10 @@ if ($update_module || $create_module) {
                 $m_hide = $m['hide'];
             }
 
-            if ($update_module) {
-                if ($m_hide == '1') {
-                    $macros[$k]['value'] = io_input_password(get_parameter($m['macro'], ''));
-                } else {
-                    $macros[$k]['value'] = get_parameter($m['macro'], '');
-                }
+            if ($m_hide == '1') {
+                $macros[$k]['value'] = io_input_password(get_parameter($m['macro'], ''));
             } else {
-                if ($m_hide == '1') {
-                    $macros[$k]['value'] = io_input_password($macros_names[$k]);
-                } else {
-                    $macros[$k]['value'] = $macros_names[$k];
-                }
+                $macros[$k]['value'] = get_parameter($m['macro'], '');
             }
         }
 

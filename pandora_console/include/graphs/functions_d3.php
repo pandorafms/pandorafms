@@ -720,3 +720,35 @@ function print_clock_digital_1($time_format, $timezone, $clock_animation, $width
                 return $output;
 
 }
+
+
+function print_donut_narrow_graph($colors, $width, $height, $data, $data_total)
+{
+    if (empty($data)) {
+        return graph_nodata_image($width, $height, 'pie');
+    }
+
+    $data = json_encode($data);
+    $data = json_decode(json_encode($data));
+
+    $colors = json_encode($colors);
+    $colors = json_decode(json_encode($colors));
+
+    $series = count($data);
+    if (($series != count($colors)) || ($series == 0)) {
+        return;
+    }
+
+    $graph_id = uniqid('graph_');
+
+    $out = "<div id='$graph_id'></div>";
+    $out .= include_javascript_d3(true);
+    $out .= "<script type='text/javascript'>
+						donutNarrowGraph($colors, $width, $height, $data_total)
+						.donutbody(d3.select($graph_id))
+						.data($data)
+						.render();	
+			</script>";
+
+    return $out;
+}

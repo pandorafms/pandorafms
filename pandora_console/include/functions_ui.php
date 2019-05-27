@@ -2408,8 +2408,37 @@ function ui_get_status_images_path()
  *
  * @return string HTML code if return parameter is true.
  */
-function ui_print_status_image($type, $title='', $return=false, $options=false, $path=false)
+function ui_print_status_image($type, $title='', $return=false, $options=false, $path=false, $rounded_image=false)
 {
+    // This is for the List of Modules in Agent View
+    if ($rounded_image === true) {
+        switch ($type) {
+            case 'module_ok.png':
+                $type = 'module_ok_rounded.png';
+            break;
+
+            case 'module_critical.png':
+                $type = 'module_critical_rounded.png';
+            break;
+
+            case 'module_warning.png':
+                $type = 'module_warning_rounded.png';
+            break;
+
+            case 'module_no_data.png':
+                $type = 'module_no_data_rounded.png';
+            break;
+
+            case 'module_unknown.png':
+                $type = 'module_unknown_rounded.png';
+            break;
+
+            default:
+                $type = $type;
+            break;
+        }
+    }
+
     if ($path === false) {
         $imagepath_array = ui_get_status_images_path();
         $imagepath = $imagepath_array[0];
@@ -2750,16 +2779,21 @@ function ui_get_full_url($url='', $no_proxy=false, $add_name_php_file=false, $me
 /**
  * Return a standard page header (Pandora FMS 3.1 version)
  *
- * @param  string Title
- * @param  string Icon path
- * @param  boolean Return (false will print using a echo)
- * @param  boolean help (Help ID to print the Help link)
- * @param  boolean Godmode (false = operation mode).
- * @param  string Options (HTML code for make tabs or just a brief info string
+ * @param string  $title       Title.
+ * @param string  $icon        Icon path.
+ * @param boolean $return      Return (false will print using a echo).
+ * @param boolean $help        Help (Help ID to print the Help link).
+ * @param boolean $godmode     Godmode (false = operation mode).
+ * @param string  $options     Options (HTML code for make tabs or just a brief
+ * info string.
+ * @param mixed   $modal       Modal.
+ * @param mixed   $message     Message.
+ * @param mixed   $numChars    NumChars.
+ * @param mixed   $alias       Alias.
+ * @param mixed   $breadcrumbs Breadcrumbs.
+ *
  * @return string Header HTML
  */
-
-
 function ui_print_page_header(
     $title,
     $icon='',
@@ -2795,31 +2829,8 @@ function ui_print_page_header(
     $buffer = '<div id="'.$type2.'" style="">';
 
     if (!empty($breadcrumbs)) {
-        if (is_array($breadcrumbs)) {
-            $bc = [];
-            $i = 0;
-            foreach ($breadcrumbs as $content) {
-                if ($content['selected'] == 1) {
-                        $class = 'selected';
-                } else {
-                    $class = '';
-                }
-
-                $bc[$i] = '';
-                $bc[$i] .= '<span><a class="breadcrumb_link '.$class.'" href="'.$content['link'].'">';
-                $bc[$i] .= $content['label'];
-                $bc[$i] .= '</a>';
-                $bc[$i] .= '</span>';
-                $i++;
-            }
-
-            $buffer .= implode(
-                '<span class="breadcrumb_link">&nbsp/&nbsp</span>',
-                $this->breadcrum
-            );
-        } else {
-            $buffer .= '<div class="breadcrumbs_container">'.$breadcrumbs.'</div>';
-        }
+        $buffer .= '<div class="menu_tab_left_bc">';
+        $buffer .= '<div class="breadcrumbs_container">'.$breadcrumbs.'</div>';
     }
 
     $buffer .= '<div id="menu_tab_left">';
@@ -2858,6 +2869,10 @@ function ui_print_page_header(
     }
 
     $buffer .= '</li></ul></div>';
+
+    if (!empty($breadcrumbs)) {
+        $buffer .= '</div>';
+    }
 
     if (is_array($options)) {
         $buffer .= '<div id="menu_tab"><ul class="mn">';
@@ -4481,4 +4496,21 @@ function ui_get_sorting_arrows($url_up, $url_down, $selectUp, $selectDown)
                 <a href="'.$url_up.'">'.html_print_image($arrow_up, true, ['alt' => 'up']).'</a>
                 <a href="'.$url_down.'">'.html_print_image($arrow_down, true, ['alt' => 'down']).'</a>
             </span>';
+}
+
+
+/**
+ * Show breadcrums in the page titles
+ *
+ * @return string  HTML anchor with the name of the section.
+ */
+function ui_print_breadcrums($tab_name)
+{
+    if ($tab_name != '') {
+        $section = str_replace('_', ' ', $tab_name);
+        $section = ucwords($section);
+        $section = ' / <span class="breadcrumb_active">'.___($section).'</span>';
+    }
+
+    return $section;
 }

@@ -99,10 +99,12 @@ if (is_metaconsole()) {
             ).'</a>',
         ],
     ];
+    $tab_name = 'User Management';
 
     $helpers = '';
     if ($_GET['sec2'] === 'operation/users/user_edit_notifications') {
         $helpers = 'user_edit_notifications';
+        $tab_name = 'User Notifications';
     }
 
     ui_print_page_header(
@@ -111,6 +113,11 @@ if (is_metaconsole()) {
         false,
         $helpers,
         false,
-        $buttons
+        $buttons,
+        false,
+        '',
+        GENERIC_SIZE_TEXT,
+        '',
+        __('Workspace').ui_print_breadcrums($tab_name)
     );
 }

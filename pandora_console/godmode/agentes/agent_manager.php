@@ -1,17 +1,32 @@
 <?php
+/**
+ * Extension to schedule tasks on Pandora FMS Console
+ *
+ * @category   Agent editor/ builder.
+ * @package    Pandora FMS
+ * @subpackage Classic agent management view.
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
 
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation for version 2.
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-// Load global vars
+// Begin.
 enterprise_include('godmode/agentes/agent_manager.php');
 
 require_once 'include/functions_clippy.php';
@@ -30,23 +45,19 @@ if (is_ajax()) {
 
         $id_agent = (int) get_parameter('id_agent');
         $string = (string) get_parameter('q');
-        // q is what autocomplete plugin gives
+        // Field q is what autocomplete plugin gives.
         $filter = [];
-
-        switch ($config['dbtype']) {
-            case 'mysql':
-            case 'postgresql':
-                $filter[] = '(nombre COLLATE utf8_general_ci LIKE "%'.$string.'%" OR direccion LIKE "%'.$string.'%" OR comentarios LIKE "%'.$string.'%" OR alias LIKE "%'.$string.'%")';
-            break;
-
-            case 'oracle':
-                $filter[] = '(upper(nombre) LIKE upper(\'%'.$string.'%\') OR upper(direccion) LIKE upper(\'%'.$string.'%\') OR upper(comentarios) LIKE upper(\'%'.$string.'%\') OR upper(alias) LIKE upper(\'%'.$string.'%\'))';
-            break;
-        }
-
+        $filter[] = '(nombre COLLATE utf8_general_ci LIKE "%'.$string.'%" OR direccion LIKE "%'.$string.'%" OR comentarios LIKE "%'.$string.'%" OR alias LIKE "%'.$string.'%")';
         $filter[] = 'id_agente != '.$id_agent;
 
-        $agents = agents_get_agents($filter, ['id_agente', 'nombre', 'direccion']);
+        $agents = agents_get_agents(
+            $filter,
+            [
+                'id_agente',
+                'nombre',
+                'direccion',
+            ]
+        );
         if ($agents === false) {
             $agents = [];
         }
@@ -768,6 +779,7 @@ $table->head = [];
 $table->style = [];
 $table->style[0] = 'font-weight: bold;';
 $table->data = [];
+$table->rowstyle = [];
 
 $fields = db_get_all_fields_in_table('tagent_custom_fields');
 
@@ -775,6 +787,7 @@ if ($fields === false) {
     $fields = [];
 }
 
+$i = 0;
 foreach ($fields as $field) {
     $id_custom_field = $field['id_field'];
 
@@ -804,6 +817,10 @@ foreach ($fields as $field) {
 
     if ($custom_value === false) {
         $custom_value = '';
+    }
+
+    if (!empty($custom_value)) {
+        $table->rowstyle[($i + 1)] = 'display: table-row;';
     }
 
     if ($field['is_password_type']) {
@@ -853,16 +870,24 @@ foreach ($fields as $field) {
         );
     };
 
-    $table->rowid[] = 'name_field-'.$id_custom_field;
-    array_push($table->data, $data);
+    $table->rowid[] = 'name_field-'.$i;
+    $table->data[] = $data;
 
-    $table->rowid[] = 'field-'.$id_custom_field;
-    array_push($table->data, $data_field);
+    $table->rowid[] = 'field-'.($i + 1);
+    $table->data[] = $data_field;
+    $i += 2;
 }
 
 if (!empty($fields)) {
     echo '<div class="ui_toggle">';
-            ui_toggle(html_print_table($table, true), __('Custom fields'), '', true, false, 'white_box white_box_opened');
+            ui_toggle(
+                html_print_table($table, true),
+                __('Custom fields'),
+                '',
+                true,
+                false,
+                'white_box white_box_opened'
+            );
     echo '</div>';
 }
 

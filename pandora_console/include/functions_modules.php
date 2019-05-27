@@ -2322,7 +2322,7 @@ function modules_get_status($id_agent_module, $db_status, $data, &$status, &$tit
         $status = STATUS_MODULE_OK;
         $title = __('NORMAL');
     } else if ($db_status == AGENT_MODULE_STATUS_UNKNOWN) {
-        $status = STATUS_AGENT_DOWN;
+        $status = STATUS_MODULE_UNKNOWN;
         $last_status = modules_get_agentmodule_last_status($id_agent_module);
         switch ($last_status) {
             case AGENT_STATUS_NORMAL:

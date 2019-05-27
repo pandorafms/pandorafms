@@ -1302,7 +1302,8 @@ div.title_line {
  * ---------------------------------------------------------------------
  */
 #menu_tab_frame,
-#menu_tab_frame_view {
+#menu_tab_frame_view,
+#menu_tab_frame_view_bc {
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
@@ -1320,8 +1321,43 @@ div.title_line {
   box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.1);
 }
 
+/* Breadcrum */
+#menu_tab_frame_view_bc {
+  min-height: 55px;
+  align-items: unset;
+}
+
+#menu_tab_frame_view_bc .breadcrumbs_container {
+  align-self: flex-start;
+}
+
+.menu_tab_left_bc {
+  flex-direction: column;
+  display: flex;
+  justify-content: space-between;
+  margin-right: 20px;
+  overflow: hidden;
+}
+
+.breadcrumbs_container {
+  padding-left: 10px;
+  padding-top: 4px;
+  text-indent: 0.25em;
+  color: #848484;
+  font-size: 10pt !important;
+  font-family: "lato-bolder", "Open Sans", sans-serif !important;
+}
+
+.breadcrumb_active {
+  color: #82b92e;
+  font-size: 10pt !important;
+  font-family: "lato-bolder", "Open Sans", sans-serif !important;
+}
+/* End - Breadcrum */
+
 #menu_tab {
   margin-right: 10px;
+  min-width: 510px;
 }
 
 #menu_tab .mn,
@@ -1446,9 +1482,9 @@ div#agent_wizard_subtabs {
 
 #menu_tab_left li.view {
   margin-left: 0px !important;
-  overflow-y: hidden;
   padding-left: 10px;
   padding-bottom: 4px;
+  white-space: nowrap;
 }
 
 #menu_tab_left li.view img.bottom {
@@ -3320,13 +3356,18 @@ div.div_groups_status {
 #menu_tab li.nomn_high {
   padding-right: 8px;
   padding-left: 8px;
-  padding-top: 6px;
   font-weight: bold;
   text-decoration: none;
   font-size: 14px;
   margin-top: 0;
   min-width: 30px;
-  height: 40px;
+  min-height: 50px;
+  max-height: 53px;
+}
+
+#menu_tab_frame_view_bc #menu_tab li.nomn,
+#menu_tab_frame_view_bc #menu_tab li.nomn_high {
+  min-height: 53px;
 }
 
 #menu_tab li:hover {
@@ -3342,7 +3383,7 @@ div.div_groups_status {
 
 #menu_tab li.nomn img,
 #menu_tab li img {
-  margin-top: 3px;
+  margin-top: 10px;
   margin-left: 3px;
 }
 
@@ -3698,7 +3739,7 @@ ul.events_tabs:after {
 
 ul.events_tabs > li {
   margin: 0 !important;
-  width: 20%;
+  width: 100%;
   text-align: center;
   float: none !important;
   outline-width: 0;
@@ -3707,7 +3748,7 @@ ul.events_tabs > li {
 ul.events_tabs > li.ui-state-default {
   background: #fff !important;
   border: none !important;
-  border-bottom: 2px solid black !important;
+  border-bottom: 2px solid #cacaca !important;
 }
 
 ul.events_tabs > li a {
@@ -4877,7 +4918,7 @@ input:checked + .p-slider:before {
 /* New white rounded boxes */
 .white_box {
   background-color: #fff;
-  border: 1px solid #f3f3f3;
+  border: 1px solid #e1e1e1;
   border-radius: 5px;
   padding: 20px 50px;
 }
@@ -5569,10 +5610,6 @@ table.info_table.policy_sub_table {
   flex-wrap: wrap;
 }
 
-.label_simple_items a.tip > img {
-  margin-bottom: 0px;
-}
-
 .label_simple_items > * {
   margin-right: 5px;
 }
@@ -5582,8 +5619,6 @@ table.info_table.policy_sub_table {
   font-weight: bold;
   padding-right: 10px;
   margin: 0px 0px 5px 0px;
-  padding-top: 0.5em;
-  padding-bottom: 0.5em;
 }
 
 .input_label_simple {
@@ -5655,7 +5690,6 @@ table.info_table.policy_sub_table {
 .agent_options_column_right {
   width: 50%;
   box-sizing: border-box;
-  min-width: 400px;
 }
 
 .agent_options_column_left {
@@ -5802,7 +5836,7 @@ a#qr_code_agent_view {
 
 .ui_toggle > a:first-child {
   background-color: #fff;
-  border: 1px solid #f3f3f3;
+  border: 1px solid #e1e1e1;
   border-top-left-radius: 4px;
   border-top-right-radius: 4px;
   margin-bottom: -1px;
@@ -5903,4 +5937,202 @@ a#qr_code_agent_view {
   border-bottom-right-radius: 4px;
   padding: 15px;
   border-top: none;
+}
+
+/*
+ * ---------------------------------------------------------------------
+ * - AGENT VIEW
+ * ---------------------------------------------------------------------
+ */
+
+/* First row in agent view */
+#agent_details_first_row {
+  display: flex;
+  margin-bottom: 20px;
+  width: 100%;
+}
+
+.agent_details_col {
+  display: table-cell;
+  background-color: #fff;
+  border: 1px solid #e2e2e2;
+  border-radius: 5px;
+}
+
+.agent_details_col_left {
+  width: 38%;
+}
+
+.agent_details_col_right {
+  width: 62%;
+  margin-left: 20px;
+}
+
+.buttons_agent_view {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.buttons_agent_view a img {
+  border: 1px solid #dcdcdc;
+  border-radius: 4px;
+  padding: 1px;
+  box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.1);
+  max-width: 21px;
+  margin-left: 5px;
+}
+
+/* Agent details in agent view */
+.agent_details_header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #e2e2e2;
+  padding: 6px 20px;
+}
+
+.agent_details_content {
+  display: flex;
+  align-items: center;
+  padding: 20px;
+}
+
+.agent_details_agent_name {
+  display: flex;
+  align-items: center;
+}
+
+.agent_details_graph {
+  width: 205px;
+  text-align: center;
+}
+
+.agent_details_info {
+  display: flex;
+  justify-content: space-around;
+}
+
+.agent_details_info p {
+  display: flex;
+  align-items: center;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+.agent_details_info img {
+  padding-right: 5px;
+}
+
+.agent_details_bullets #bullets_modules {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.agent_details_bullets #bullets_modules > div {
+  display: flex;
+  align-items: center;
+  padding-bottom: 20px;
+}
+
+.agent_details_bullets #bullets_modules > div:last-child {
+  padding-bottom: 0px;
+}
+
+#agent_contact_main tr td img {
+  max-width: 100%;
+}
+
+/* White tables to show graphs */
+.white_table_graph {
+  margin-bottom: 20px;
+  display: grid;
+  grid-template-rows: max-content;
+}
+
+.white_table_graph_header {
+  padding: 10px 20px;
+  background-color: #fff;
+  color: #000;
+  border: 1px solid #e2e2e2;
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
+  font-weight: bold;
+}
+
+.white_table_graph_header img,
+.white_table_graph_header span {
+  vertical-align: middle;
+}
+
+.white_table_graph_header span {
+  padding-left: 10px;
+}
+
+.white_table_graph_content {
+  border: 1px solid #e2e2e2;
+  border-top: none;
+  background-color: #fff;
+  padding: 20px;
+  border-bottom-left-radius: 4px;
+  border-bottom-right-radius: 4px;
+  display: flex;
+  align-items: center;
+}
+
+/* White tables */
+.white_table,
+.white_table tr:first-child > th {
+  background-color: #fff;
+  color: #000;
+}
+
+.white_table {
+  border: 1px solid #e2e2e2;
+  border-radius: 4px;
+  margin-bottom: 20px;
+}
+
+.white_table thead tr:first-child > th {
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
+}
+
+.white_table tbody tr:first-child > td {
+  border-top: 1px solid #e2e2e2;
+}
+
+.white_table tbody tr:first-child td {
+  padding-top: 25px;
+}
+
+.white_table tbody tr:last-child td {
+  padding-bottom: 25px;
+}
+
+.white_table tr td:first-child,
+.white_table tr th:first-child {
+  padding-left: 50px;
+}
+
+.white_table tr td:last-child,
+.white_table tr th:last-child {
+  padding-right: 50px;
+}
+
+.white_table th,
+.white_table td {
+  padding: 10px 20px;
+}
+
+.white_table_droppable > thead > tr > th > img {
+  vertical-align: middle;
+}
+
+.white_table_droppable tr th:first-child {
+  padding-left: 20px;
+}
+
+.white_table_no_border {
+  border: none !important;
 }

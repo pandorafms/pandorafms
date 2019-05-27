@@ -955,6 +955,8 @@ function update_manager_get_config_values()
     global $build_version;
     global $pandora_version;
 
+    enterprise_include_once('include/functions_license.php');
+
     $license = db_get_value(
         db_escape_key_identifier('value'),
         'tupdate_settings',
@@ -962,7 +964,13 @@ function update_manager_get_config_values()
         'customer_key'
     );
 
-    $limit_count = db_get_value_sql('SELECT count(*) FROM tagente');
+    $data = enterprise_hook('license_get_info');
+
+    if ($data === ENTERPRISE_NOT_HOOK) {
+        $limit_count = db_get_value_sql('SELECT count(*) FROM tagente');
+    } else {
+        $limit_count = $data['count_enabled'];
+    }
 
     return [
         'license'        => $license,
@@ -1211,7 +1219,7 @@ function update_manager_check_online_free_packages_available()
     ];
 
     $curlObj = curl_init();
-    curl_setopt($curlObj, CURLOPT_URL, get_um_url());
+    curl_setopt($curlObj, CURLOPT_URL, get_um_url().'server.php');
     curl_setopt($curlObj, CURLOPT_RETURNTRANSFER, 1);
     curl_setopt($curlObj, CURLOPT_POST, true);
     curl_setopt($curlObj, CURLOPT_POSTFIELDS, $params);
@@ -1285,7 +1293,7 @@ function update_manager_check_online_free_packages($is_ajax=true)
      */
 
     $curlObj = curl_init();
-    curl_setopt($curlObj, CURLOPT_URL, get_um_url());
+    curl_setopt($curlObj, CURLOPT_URL, get_um_url().'server.php');
     curl_setopt($curlObj, CURLOPT_RETURNTRANSFER, 1);
     curl_setopt($curlObj, CURLOPT_POST, true);
     curl_setopt($curlObj, CURLOPT_POSTFIELDS, $params);
@@ -1436,7 +1444,7 @@ function update_manager_curl_request($action, $additional_params=false)
     $params['action'] = $action;
 
     $curlObj = curl_init();
-    curl_setopt($curlObj, CURLOPT_URL, get_um_url());
+    curl_setopt($curlObj, CURLOPT_URL, get_um_url().'server.php');
     curl_setopt($curlObj, CURLOPT_RETURNTRANSFER, 1);
     curl_setopt($curlObj, CURLOPT_POST, true);
     curl_setopt($curlObj, CURLOPT_POSTFIELDS, $params);

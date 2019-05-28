@@ -722,22 +722,35 @@ function print_clock_digital_1($time_format, $timezone, $clock_animation, $width
 }
 
 
-function print_donut_narrow_graph($colors, $width, $height, $data, $data_total)
-{
+/**
+ * Print dougnhnut.
+ *
+ * @param array   $colors     Colors.
+ * @param integer $width      Width.
+ * @param integer $height     Height.
+ * @param array   $data       Data.
+ * @param mixed   $data_total Data_total.
+ *
+ * @return string HTML.
+ */
+function print_donut_narrow_graph(
+    array $colors,
+    $width,
+    $height,
+    array $data,
+    $data_total
+) {
     if (empty($data)) {
         return graph_nodata_image($width, $height, 'pie');
     }
 
-    $data = json_encode($data);
-    $data = json_decode(json_encode($data));
-
-    $colors = json_encode($colors);
-    $colors = json_decode(json_encode($colors));
-
     $series = count($data);
     if (($series != count($colors)) || ($series == 0)) {
-        return;
+        return '';
     }
+
+    $data = json_encode($data);
+    $colors = json_encode($colors);
 
     $graph_id = uniqid('graph_');
 

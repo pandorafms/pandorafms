@@ -2648,6 +2648,62 @@ function ui_print_status_image(
 
 
 /**
+ * Prints an image representing a status.
+ *
+ * @param string  $status        Module status.
+ * @param string  $title         Title.
+ * @param boolean $return        Whether to return an output string or echo now (optional, echo by default).
+ * @param array   $options       Options to set image attributes: I.E.: style.
+ * @param boolean $rounded_image Round.
+ *
+ * @return string HTML.
+ */
+function ui_print_module_status(
+    $status,
+    $title='',
+    $return=false,
+    $options=false,
+    $rounded_image=false
+) {
+    global $config;
+
+    if ($options === false) {
+        $options = [];
+    }
+
+    $options['style'] .= 'width: 50px;';
+    $options['style'] .= 'height: 2em;';
+
+    include_once __DIR__.'/functions_modules.php';
+    $options['style'] .= 'background: '.modules_get_color_status($status).';';
+
+    if ($rounded_image === true) {
+        $options['style'] .= 'border-radius: 5px;';
+    }
+
+    $options['title'] = $title;
+    $options['data-title'] = $title;
+    $options['data-use_title_for_force_title'] = 1;
+    $options['class'] = 'forced_title';
+
+    $output = '<div ';
+    foreach ($options as $k => $v) {
+        $output .= $k.'="'.$v.'"';
+    }
+
+    $output .= '>';
+    $output .= '</div>';
+
+    if ($return === false) {
+        echo $output;
+    }
+
+    return $output;
+
+}
+
+
+/**
  * Generates a progress bar CSS based.
  * Requires css progress.css
  *

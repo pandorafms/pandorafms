@@ -2295,6 +2295,54 @@ function modules_get_modulegroup_name($modulegroup_id)
 
 
 /**
+ * Returns target color to be used based on the status received.
+ *
+ * @param integer $status Source information.
+ *
+ * @return string HTML tag for color.
+ */
+function modules_get_color_status($status)
+{
+    if (isset($status) === false) {
+        return COL_UNKNOWN;
+    }
+
+    switch ($status) {
+        case AGENT_MODULE_STATUS_NORMAL:
+        case AGENT_STATUS_NORMAL:
+        return COL_NORMAL;
+
+        case AGENT_MODULE_STATUS_NOT_INIT:
+        case AGENT_STATUS_NOT_INIT:
+        return COL_NOTINIT;
+
+        case AGENT_MODULE_STATUS_CRITICAL_BAD:
+        case AGENT_STATUS_CRITICAL:
+        return COL_CRITICAL;
+
+        case AGENT_MODULE_STATUS_WARNING:
+        case AGENT_STATUS_WARNING:
+        return COL_WARNING;
+
+        case AGENT_MODULE_STATUS_CRITICAL_ALERT:
+        case AGENT_MODULE_STATUS_WARNING_ALERT:
+        case AGENT_STATUS_ALERT_FIRED:
+        return COL_ALERTFIRED;
+
+        case AGENT_MODULE_STATUS_UNKNOWN:
+        case AGENT_STATUS_UNKNOWN:
+        return COL_UNKNOWN;
+
+        default:
+            // Ignored.
+        break;
+    }
+
+    return COL_IGNORED;
+}
+
+
+/**
  * Gets a module status an modify the status and title reference variables
  *
  * @param mixed The module data (Necessary $module['datos'] and $module['estado']

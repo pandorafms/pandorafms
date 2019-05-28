@@ -562,7 +562,7 @@ class DiscoveryTaskList extends Wizard
                 if ($task['status'] <= 0 || $task['status'] > 100) {
                     $data[7] = '-';
                 } else {
-                    $data[7] = ui_progress($task['status'], '100%', 1.5, '#333');
+                    $data[7] = ui_progress($task['status'], '100%', 1.5);
                 }
 
                 if ($task['utimestamp'] > 0) {

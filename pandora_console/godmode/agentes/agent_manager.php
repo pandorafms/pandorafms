@@ -888,10 +888,10 @@ foreach ($fields as $field) {
         );
     };
 
-    $table->rowid[] = 'name_field-'.$i;
+    $table->rowid[] = 'name_field-'.$id_custom_field;
     $table->data[] = $data;
 
-    $table->rowid[] = 'field-'.($i + 1);
+    $table->rowid[] = 'field-'.$id_custom_field;
     $table->data[] = $data_field;
     $i += 2;
 }

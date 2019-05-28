@@ -3630,28 +3630,29 @@ div.simple_value > a > span.text p {
   cursor: pointer;
 }
 
-.events_show_more_table {
+.table_modal_alternate {
   border-spacing: 0px;
   text-align: left;
 }
 
 /* Modal window - Show More */
-table.events_show_more_table tr:nth-child(odd) td {
+table.table_modal_alternate tr:nth-child(odd) td {
   background-color: #ffffff;
 }
-table.events_show_more_table tr:nth-child(even) td {
+
+table.table_modal_alternate tr:nth-child(even) td {
   background-color: #f9f9f9;
   border-top: 1px solid #e0e0e0;
   border-bottom: 1px solid #e0e0e0;
 }
 
-table.events_show_more_table tr td {
+table.table_modal_alternate tr td {
   height: 33px;
   max-height: 33px;
   min-height: 33px;
 }
 
-table.events_show_more_table tr td:first-child {
+table.table_modal_alternate tr td:first-child {
   width: 35%;
   font-weight: bold;
   padding-left: 20px;

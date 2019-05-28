@@ -318,16 +318,11 @@ if ($update_user) {
     $values['default_event_filter'] = (int) get_parameter('default_event_filter');
     $values['default_custom_view'] = (int) get_parameter('default_custom_view');
     // eHorus user level conf
-    if ($config['ehorus_user_level_conf']) {
-        $values['ehorus_user_level_enabled'] = (bool) get_parameter('ehorus_user_level_enabled', false);
-        if ($values['ehorus_user_level_enabled'] === true) {
-            $values['ehorus_user_level_user'] = (string) get_parameter('ehorus_user_level_user');
-            $values['ehorus_user_level_pass'] = (string) get_parameter('ehorus_user_level_pass');
-        } else {
-            $values['ehorus_user_level_user'] = null;
-            $values['ehorus_user_level_pass'] = null;
-        }
-    }
+    $values['ehorus_user_level_enabled'] = (bool) get_parameter('ehorus_user_level_enabled', false);
+    $values['ehorus_user_level_user'] = (string) get_parameter('ehorus_user_level_user');
+    $values['ehorus_user_level_pass'] = (string) get_parameter('ehorus_user_level_pass');
+
+
 
     $dashboard = get_parameter('dashboard', '');
     $visual_console = get_parameter('visual_console', '');
@@ -875,7 +870,7 @@ $table->data[16][0] = __('Default event filter');
 $table->data[16][1] = html_print_select($event_filter, 'default_event_filter', $user_info['default_event_filter'], '', '', __('None'), true, false, false);
 
 if ($config['ehorus_user_level_conf']) {
-    $table->data[17][0] = __('Ehorus configuration at user level');
+    $table->data[17][0] = __('eHorus user acces enabled');
     $table->data[17][1] = html_print_checkbox('ehorus_user_level_enabled', 1, $user_info['ehorus_user_level_enabled'], true);
     $table->data[18][0] = __('eHorus user');
     $table->data[19][0] = __('eHorus password');

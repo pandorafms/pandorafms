@@ -68,7 +68,7 @@ $table_remote->style['name'] = 'font-weight: bold';
 
 // Enable eHorus user configuration.
 $row = [];
-$row['name'] = ('Enable eHorus user configuration');
+$row['name'] = ('eHorus configuration at user level');
 $row['control'] = html_print_checkbox_switch('ehorus_user_level_conf', 1, $config['ehorus_user_level_conf'], true);
 $table_remote->data['ehorus_user_level_conf'] = $row;
 
@@ -169,9 +169,19 @@ echo '</div>';
 ?>
 
 <script type="text/javascript">
-if(!$('input:checkbox[name="ehorus_enabled"]').is(':checked')){
- $('#form_remote').hide();
+
+if(!$('input:checkbox[name="ehorus_enabled"]').is(':checked'))
+{
+    $('#form_remote').hide();
 }
+
+if($('input:checkbox[name="ehorus_user_level_conf"]').is(':checked'))
+{
+    $('#ehorus-remote-setup-ehorus_user').hide();
+    $('#ehorus-remote-setup-ehorus_pass').hide()
+}
+
+
  $('#form_enable').css('margin-bottom','20px');
     var showFields = function () {
         $('#form_remote').show();
@@ -179,6 +189,17 @@ if(!$('input:checkbox[name="ehorus_enabled"]').is(':checked')){
     var hideFields = function () {
         $('#form_remote').hide();
     }
+
+    var hideUserPass = function () {
+        $('#ehorus-remote-setup-ehorus_user').hide();
+        $('#ehorus-remote-setup-ehorus_pass').hide();
+    }
+
+    var showUserPass = function () {
+        $('#ehorus-remote-setup-ehorus_user').show();
+        $('#ehorus-remote-setup-ehorus_pass').show();
+    }
+
     var handleEnable = function (event) {
         var is_checked = $('input:checkbox[name="ehorus_enabled"]').is(':checked');
         if (event.target.value == '1' && is_checked) {
@@ -190,15 +211,32 @@ if(!$('input:checkbox[name="ehorus_enabled"]').is(':checked')){
             $('input:checkbox[name="ehorus_enabled"]').attr('checked', false);
         };
     }
+
+    var handleUserLevel = function(event) {
+        var is_checked = $('input:checkbox[name="ehorus_enabled"]').is(':checked');
+        var is_checked_userlevel = $('input:checkbox[name="ehorus_user_level_conf"]').is(':checked');
+        
+        if (event.target.value == '1' && is_checked && !is_checked_userlevel) {
+            showUserPass();
+            $('input:checkbox[name="ehorus_user_level_conf"]').attr('checked', true);
+        }
+        else {
+            hideUserPass();
+            $('input:checkbox[name="ehorus_user_level_conf"]').attr('checked', false);
+        };
+    }
+
     $('input:checkbox[name="ehorus_enabled"]').change(handleEnable);
-    
+    $('input:checkbox[name="ehorus_user_level_conf"]').change(handleUserLevel);
+
     var handleTest = function (event) {
         var user = $('input#text-ehorus_user').val();
         var pass = $('input#password-ehorus_pass').val();
         var host = $('input#text-ehorus_hostname').val();
         var port = $('input#text-ehorus_port').val();
         var timeout = Number.parseInt($('input#text-ehorus_req_timeout').val(), 10);
-        
+        var is_checked_user_level = $('input:checkbox[name="ehorus_user_level_conf"]').is(':checked');
+    
         var timeoutMessage = '<?php echo __('Connection timeout'); ?>';
         var badRequestMessage = '<?php echo __('Empty user or password'); ?>';
         var notFoundMessage = '<?php echo __('User not found'); ?>';
@@ -236,6 +274,7 @@ if(!$('input:checkbox[name="ehorus_enabled"]').is(':checked')){
         hideFailureImage();
         hideMessage();
         showLoadingImage();
+       
         $.ajax({
             url: 'https://' + host + ':' + port + '/login',
             type: 'POST',
@@ -250,9 +289,11 @@ if(!$('input:checkbox[name="ehorus_enabled"]').is(':checked')){
             showSuccessImage();
         })
         .fail(function(xhr, textStatus, errorThrown) {
-            showFailureImage();
-            
-            if (xhr.status === 400) {
+            if((xhr.status === 400 || xhr.status === 403) && is_checked_user_level)
+            {
+                showSuccessImage();
+                return;
+            }else if (xhr.status === 400) {
                 changeTestMessage(badRequestMessage);
             }
             else if (xhr.status === 401 || xhr.status === 403) {
@@ -267,6 +308,8 @@ if(!$('input:checkbox[name="ehorus_enabled"]').is(':checked')){
             else {
                 changeTestMessage(errorThrown);
             }
+                        
+            showFailureImage();
             showMessage();
         })
         .always(function(xhr, textStatus) {
@@ -274,4 +317,7 @@ if(!$('input:checkbox[name="ehorus_enabled"]').is(':checked')){
         });
     }
     $('input#button-test-ehorus').click(handleTest);
+    
+
+
 </script>

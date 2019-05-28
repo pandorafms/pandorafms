@@ -125,6 +125,8 @@ if (isset($_GET['modified']) && !$view_mode) {
     $upd_info['time_autorefresh'] = (int) get_parameter('time_autorefresh', 0);
     $upd_info['ehorus_user_level_user'] = get_parameter('ehorus_user_level_user');
     $upd_info['ehorus_user_level_pass'] = get_parameter('ehorus_user_level_pass');
+    $upd_info['ehorus_user_level_enabled'] = get_parameter('ehorus_user_level_enabled', 0);
+
 
 
     $is_admin = db_get_value('is_admin', 'tusuario', 'id_user', $id);
@@ -660,6 +662,12 @@ if ($config['ehorus_enabled'] && $config['ehorus_user_level_conf']) {
     $row = [];
     $row['control'] = '<p class="edit_user_labels">'.__('eHorus user configuration').': </p>';
     $table_remote->data['ehorus_user_level_conf'] = $row;
+
+    // Enable/disable eHorus for this user
+    $row = [];
+    $row['name'] = __('eHorus user acces enabled');
+    $row['control'] = html_print_checkbox_switch('ehorus_user_level_enabled', 1, $user_info['ehorus_user_level_enabled'], true)cd;
+    $table_remote->data['ehorus_user_level_enabled'] = $row;
 
     // User.
     $row = [];

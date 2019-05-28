@@ -666,7 +666,7 @@ if ($config['ehorus_enabled'] && $config['ehorus_user_level_conf']) {
     // Enable/disable eHorus for this user
     $row = [];
     $row['name'] = __('eHorus user acces enabled');
-    $row['control'] = html_print_checkbox_switch('ehorus_user_level_enabled', 1, $user_info['ehorus_user_level_enabled'], true)cd;
+    $row['control'] = html_print_checkbox_switch('ehorus_user_level_enabled', 1, $user_info['ehorus_user_level_enabled'], true);
     $table_remote->data['ehorus_user_level_enabled'] = $row;
 
     // User.

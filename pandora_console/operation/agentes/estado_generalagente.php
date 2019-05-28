@@ -242,14 +242,14 @@ $table_agent = '
         <div class="agent_details_content">
             <div class="agent_details_graph">
                 '.$table_agent_graph.'
+                <div class="agent_details_bullets">
+                    '.$table_agent_count_modules.'
+                </div>
             </div>
             <div class="agent_details_info">
                 '.$table_agent_os.$table_agent_ip.$table_agent_version.$table_agent_description.$remote_cfg.'
             </div>
-        </div>
-    <div class="agent_details_bullets">
-        '.$table_agent_count_modules.'
-    </div>';
+        </div>';
 
 /*
  * END: TABLE AGENT BUILD.

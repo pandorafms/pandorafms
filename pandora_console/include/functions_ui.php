@@ -2784,7 +2784,7 @@ function ui_toggle(
 
     // Link to toggle.
     $output = '<div class="white_table_graph">';
-    $output .= '<div class="white_table_graph_header" id="tgl_ctrl_'.$uniqid.'">'.html_print_image(
+    $output .= '<div class="white_table_graph_header" style="cursor: pointer;" id="tgl_ctrl_'.$uniqid.'">'.html_print_image(
         $original,
         true,
         [
@@ -2796,7 +2796,7 @@ function ui_toggle(
     // if (!defined("METACONSOLE"))
         // $output .= '<br />';
     // Code into a div
-    $output .= "<div id='tgl_div_".$uniqid."' style='".$style."' class='".$toggle_class."'>\n";
+    $output .= "<div id='tgl_div_".$uniqid."' style='".$style.";margin-top: -1px;' class='".$toggle_class."'>\n";
     $output .= $code;
     $output .= '</div>';
 

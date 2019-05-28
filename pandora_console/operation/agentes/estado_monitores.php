@@ -1,17 +1,32 @@
 <?php
+/**
+ * Monitors status - general overview.
+ *
+ * @category   Agent view monitor statuses.
+ * @package    Pandora FMS
+ * @subpackage Classic agent management view.
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
 
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation for version 2.
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-// Load globar vars
+// Begin.
 global $config;
 
 // Ajax tooltip to deploy modules's tag info.
@@ -102,7 +117,7 @@ if (is_ajax()) {
             $data[1] = ui_print_agent_name($id_agent, true);
             $data[2] = __('Module');
             $data[3] = "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente
-				&id_agente=$id_agent&tab=module&edit_module=1&id_agent_module=$id_module'>".ui_print_truncate_text(modules_get_agentmodule_name($id_module), 'module_medium', true, true, true, '[&hellip;]').'</a>';
+				&id_agente=".$id_agent.'&tab=module&edit_module=1&id_agent_module='.$id_module."'>".ui_print_truncate_text(modules_get_agentmodule_name($id_module), 'module_medium', true, true, true, '[&hellip;]').'</a>';
             $table_relations->data[] = $data;
         }
 
@@ -458,6 +473,17 @@ ui_require_jquery_file('ui.datepicker-'.get_user_language(), 'include/javascript
 /* ]]> */
 </script>
 <?php
+/**
+ * Print form filter monitors.
+ *
+ * @param integer $id_agent              Id_agent.
+ * @param integer $status_filter_monitor Status_filter_monitor.
+ * @param string  $status_text_monitor   Status_text_monitor.
+ * @param integer $status_module_group   Status_module_group.
+ * @param integer $status_hierachy_mode  Status_hierachy_mode.
+ *
+ * @return void
+ */
 function print_form_filter_monitors(
     $id_agent,
     $status_filter_monitor=-1,

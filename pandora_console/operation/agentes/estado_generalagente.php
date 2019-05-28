@@ -784,10 +784,7 @@ if (!empty($network_interfaces)) {
         });
     </script>
 <?php
-/*
- * EVENTS.
- */
-
+// EVENTS.
 $table_events = '<div class="white_table_graph" id="table_events">
             <div class="white_table_graph_header">'.html_print_image(
     'images/arrow_down_green.png',

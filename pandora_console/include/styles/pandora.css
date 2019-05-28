@@ -278,13 +278,11 @@ select:-webkit-autofill:focus {
 }
 
 /* All select type multiple */
-select[multiple] option:checked,
 select[multiple] option:checked {
   background: #82b92e linear-gradient(0deg, #82b92e 0%, #82b92e 100%);
   color: #fff !important;
 }
 
-select option:checked,
 select option:checked {
   background-color: #82b92e;
   color: #fff !important;
@@ -305,7 +303,7 @@ select:-internal-list-box {
 }
 
 .DejaVuSerif-Bold {
-  font-family: DejaVuSerif-BoldFont;
+  font-family: DejaVuSerif-BoldFont, sans-serif;
 }
 
 @font-face {
@@ -314,7 +312,7 @@ select:-internal-list-box {
 }
 
 .DejaVuSerif-BoldItalic {
-  font-family: DejaVuSerif-BoldItalicFont;
+  font-family: DejaVuSerif-BoldItalicFont, sans-serif;
 }
 
 @font-face {
@@ -323,7 +321,7 @@ select:-internal-list-box {
 }
 
 .DejaVuSerif-Italic {
-  font-family: DejaVuSerif-ItalicFont;
+  font-family: DejaVuSerif-ItalicFont, sans-serif;
 }
 
 @font-face {
@@ -332,7 +330,7 @@ select:-internal-list-box {
 }
 
 .DejaVuSerif {
-  font-family: DejaVuSerifFont;
+  font-family: DejaVuSerifFont, sans-serif;
 }
 
 @font-face {
@@ -341,7 +339,7 @@ select:-internal-list-box {
 }
 
 .DejaVuSerifCondensed-Bold {
-  font-family: DejaVuSerifCondensed-BoldFont;
+  font-family: DejaVuSerifCondensed-BoldFont, sans-serif;
 }
 
 @font-face {
@@ -350,7 +348,7 @@ select:-internal-list-box {
 }
 
 .DejaVuSerifCondensed-BoldItalic {
-  font-family: DejaVuSerifCondensed-BoldItalicFont;
+  font-family: DejaVuSerifCondensed-BoldItalicFont, sans-serif;
 }
 
 @font-face {
@@ -359,7 +357,7 @@ select:-internal-list-box {
 }
 
 .DejaVuSerifCondensed-Italic {
-  font-family: DejaVuSerifCondensed-ItalicFont;
+  font-family: DejaVuSerifCondensed-ItalicFont, sans-serif;
 }
 
 @font-face {
@@ -368,7 +366,7 @@ select:-internal-list-box {
 }
 
 .DejaVuSerifCondensed {
-  font-family: DejaVuSerifCondensedFont;
+  font-family: DejaVuSerifCondensedFont, sans-serif;
 }
 
 @font-face {
@@ -377,7 +375,7 @@ select:-internal-list-box {
 }
 
 .FreeSans {
-  font-family: FreeSansFont;
+  font-family: FreeSansFont, sans-serif;
 }
 
 @font-face {
@@ -386,7 +384,7 @@ select:-internal-list-box {
 }
 
 .FreeSansBold {
-  font-family: FreeSansBoldFont;
+  font-family: FreeSansBoldFont, sans-serif;
 }
 
 @font-face {
@@ -395,7 +393,7 @@ select:-internal-list-box {
 }
 
 .smallfont {
-  font-family: smallfontFont;
+  font-family: smallfontFont, sans-serif;
 }
 
 @font-face {
@@ -423,7 +421,7 @@ select:-internal-list-box {
   src: url("../../fonts/leaguegothic.woff") format("woff");
 }
 .unicode {
-  font-family: unicodeFont;
+  font-family: unicodeFont, sans-serif;
 }
 
 /*
@@ -1394,13 +1392,6 @@ div.title_line {
 #menu_tab li.nomn:hover a,
 #menu_tab li:hover ul a:hover {
   color: #fff;
-}
-
-#menu_tab li.nomn,
-#menu_tab li.nomn_high {
-  min-width: 30px;
-  height: 29px;
-  margin-top: 0;
 }
 
 /* --- Tabs Submenu --- */
@@ -5564,9 +5555,6 @@ table.info_table.policy_sub_table {
 
 .pagination .page_number_active a {
   color: #fff;
-}
-
-.pagination .total_pages {
 }
 
 .pagination .total_number {

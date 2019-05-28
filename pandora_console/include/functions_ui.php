@@ -1181,7 +1181,12 @@ function ui_format_alert_row(
         $actionText .= '</ul></div>';
     } else {
         if ($actionDefault != '') {
-            $actionText = db_get_sql("SELECT name FROM talert_actions WHERE id = $actionDefault").' <i>('.__('Default').')</i>';
+            $actionText = db_get_sql(
+                sprintf(
+                    'SELECT name FROM talert_actions WHERE id = %d',
+                    $actionDefault
+                )
+            ).' <i>('.__('Default').')</i>';
         }
     }
 
@@ -1212,12 +1217,12 @@ function ui_format_alert_row(
 /**
  * Prints a substracted string, length specified by cutoff, the full string will be in a rollover.
  *
- * @param string The string to be cut
- * @param int At how much characters to cut
- * @param bool Whether to return or print it out
- * @param int Size font (fixed) in px, applyed as CSS style (optional)
+ * @param string  $string   The string to be cut..
+ * @param integer $cutoff   At how much characters to cut.
+ * @param boolean $return   Whether to return or print it out.
+ * @param integer $fontsize Size font (fixed) in px, applyed as CSS style (optional).
  *
- * @return An HTML string
+ * @return string HTML string.
  */
 function ui_print_string_substr($string, $cutoff=16, $return=false, $fontsize=0)
 {
@@ -1238,7 +1243,8 @@ function ui_print_string_substr($string, $cutoff=16, $return=false, $fontsize=0)
         $font_size_mod = "style='font-size: ".$fontsize."pt'";
     }
 
-    $string = '<span '.$font_size_mod.' title="'.io_safe_input($string2).'">'.mb_substr($string2, 0, $cutoff, 'UTF-8').$string3.'</span>';
+    $string = '<span '.$font_size_mod.' title="'.io_safe_input($string2).'">';
+    $string .= mb_substr($string2, 0, $cutoff, 'UTF-8').$string3.'</span>';
 
     if ($return === false) {
         echo $string;
@@ -1252,9 +1258,9 @@ function ui_print_string_substr($string, $cutoff=16, $return=false, $fontsize=0)
  * Gets a helper text explaining the requirement needs for an alert template
  * to get it fired.
  *
- * @param int Alert template id.
- * @param bool Wheter to return or print it out.
- * @param bool Wheter to put the values in the string or not.
+ * @param integer $id_alert_template Alert template id.
+ * @param boolean $return            Wheter to return or print it out.
+ * @param boolean $print_values      Wheter to put the values in the string or not.
  *
  * @return An HTML string if return was true.
  */
@@ -1268,21 +1274,21 @@ function ui_print_alert_template_example($id_alert_template, $return=false, $pri
 
     switch ($template['type']) {
         case 'equal':
-            // Do not translate the HTML attributes
+            // Do not translate the HTML attributes.
             $output .= __('The alert would fire when the value is <span id="value"></span>');
         break;
 
         case 'not_equal':
-            // Do not translate the HTML attributes
+            // Do not translate the HTML attributes.
             $output .= __('The alert would fire when the value is not <span id="value"></span>');
         break;
 
         case 'regex':
             if ($template['matches_value']) {
-                // Do not translate the HTML attributes
+                // Do not translate the HTML attributes.
                 $output .= __('The alert would fire when the value matches <span id="value"></span>');
             } else {
-                // end if
+                // End if.
                 $output .= __('The alert would fire when the value doesn\'t match <span id="value"></span>');
             }
 
@@ -1291,42 +1297,46 @@ function ui_print_alert_template_example($id_alert_template, $return=false, $pri
 
         case 'max_min':
             if ($template['matches_value']) {
-                // Do not translate the HTML attributes
+                // Do not translate the HTML attributes.
                 $output .= __('The alert would fire when the value is between <span id="min"></span> and <span id="max"></span>');
             } else {
-                // end if
+                // End if.
                 $output .= __('The alert would fire when the value is not between <span id="min"></span> and <span id="max"></span>');
             }
         break;
 
         case 'max':
-            // Do not translate the HTML attributes
+            // Do not translate the HTML attributes.
             $output .= __('The alert would fire when the value is over <span id="max"></span>');
-
         break;
 
         case 'min':
-            // Do not translate the HTML attributes
+            // Do not translate the HTML attributes.
             $output .= __('The alert would fire when the value is under <span id="min"></span>');
-
         break;
 
         case 'warning':
-            // Do not translate the HTML attributes
+            // Do not translate the HTML attributes.
             $output .= __('The alert would fire when the module is in warning status');
-
         break;
 
         case 'critical':
-            // Do not translate the HTML attributes
+            // Do not translate the HTML attributes.
             $output .= __('The alert would fire when the module is in critical status');
+        break;
+
+        default:
+            // Do nothing.
+            $output .= __('Unknown option.');
         break;
     }
 
     if ($print_values) {
         /*
-            Replace span elements with real values. This is done in such way to avoid
-         duplicating strings and make it easily modificable via Javascript. */
+         *   Replace span elements with real values. This is done in such way to avoid
+         * duplicating strings and make it easily modificable via Javascript.
+         */
+
         $output = str_replace('<span id="value"></span>', $template['value'], $output);
         $output = str_replace('<span id="max"></span>', $template['max_value'], $output);
         $output = str_replace('<span id="min"></span>', $template['min_value'], $output);
@@ -1344,16 +1354,23 @@ function ui_print_alert_template_example($id_alert_template, $return=false, $pri
 /**
  * Prints a help tip icon.
  *
- * @param string Id of the help article
- * @param bool Whether to return or output the result
- * @param string Home url if its necessary
- * @param string Image path
- * @param bool Route is relative or not
+ * @param string  $help_id     Id of the help article.
+ * @param boolean $return      Whether to return or output the result.
+ * @param string  $home_url    Home url if its necessary.
+ * @param string  $image       Image path.
+ * @param boolean $is_relative Route is relative or not.
+ * @param string  $id          Target id.
  *
  * @return string The help tip
  */
-function ui_print_help_icon($help_id, $return=false, $home_url='', $image='images/help_green.png', $is_relative=false, $id='')
-{
+function ui_print_help_icon(
+    $help_id,
+    $return=false,
+    $home_url='',
+    $image='images/help_green.png',
+    $is_relative=false,
+    $id=''
+) {
     global $config;
 
     // Do not display the help icon if help is disabled.
@@ -1398,12 +1415,13 @@ function ui_print_help_icon($help_id, $return=false, $home_url='', $image='image
  * file name should be like "name.css". The "name" would be the value
  * needed to pass to this function.
  *
- * @param string Script name to add without the "jquery." prefix and the ".js"
+ * @param string $name Script name to add without the "jquery." prefix and the ".js"
  * suffix. Example:
  * <code>
  * ui_require_css_file ('pandora');
  * // Would include include/styles/pandora.js
- * </code>
+ * </code>.
+ * @param string $path Path where script is placed.
  *
  * @return boolean True if the file was added. False if the file doesn't exist.
  */
@@ -1440,13 +1458,14 @@ function ui_require_css_file($name, $path='include/styles/')
  * file name should be like "name.js". The "name" would be the value
  * needed to pass to this function.
  *
- * @param string Script name to add without the "jquery." prefix and the ".js"
- * suffix. Example:
- * <code>
- * ui_require_javascript_file ('pandora');
- * // Would include include/javascript/pandora.js
- * </code>
- * @param bool Just echo the script tag of the file.
+ * @param string  $name     Script name to add without the "jquery." prefix and the ".js"
+ *      suffix. Example:
+ *      <code>
+ *      ui_require_javascript_file ('pandora');
+ *      // Would include include/javascript/pandora.js
+ *      </code>.
+ * @param string  $path     Path where script is placed.
+ * @param boolean $echo_tag Just echo the script tag of the file.
  *
  * @return boolean True if the file was added. False if the file doesn't exist.
  */
@@ -1458,7 +1477,7 @@ function ui_require_javascript_file($name, $path='include/javascript/', $echo_ta
 
     if ($echo_tag) {
         echo '<script type="text/javascript" src="'.ui_get_full_url(false, false, false, false).$filename.'"></script>';
-        return;
+        return null;
     }
 
     if (! isset($config['js'])) {
@@ -1469,7 +1488,7 @@ function ui_require_javascript_file($name, $path='include/javascript/', $echo_ta
         return true;
     }
 
-    // We checks two paths because it may fails on enterprise
+    // We checks two paths because it may fails on enterprise.
     if (! file_exists($filename) && ! file_exists($config['homedir'].'/'.$filename)) {
         return false;
     }
@@ -1491,12 +1510,14 @@ function ui_require_javascript_file($name, $path='include/javascript/', $echo_ta
  * file name should be like "name.js". The "name" would be the value
  * needed to pass to this function.
  *
- * @param string Script name to add without the "jquery." prefix and the ".js"
- * suffix. Example:
- * <code>
- * ui_require_javascript_file ('pandora');
- * // Would include include/javascript/pandora.js
- * </code>
+ * @param string  $name                 Script name to add without the "jquery."
+ *                                      prefix and the ".js"
+ *                  suffix. Example:
+ *                  <code>
+ *                  ui_require_javascript_file ('pandora');
+ *                  // Would include include/javascript/pandora.js
+ *                  </code>.
+ * @param boolean $disabled_metaconsole Disabled metaconsole.
  *
  * @return boolean True if the file was added. False if the file doesn't exist.
  */
@@ -1519,7 +1540,7 @@ function ui_require_javascript_file_enterprise($name, $disabled_metaconsole=fals
         return true;
     }
 
-    // We checks two paths because it may fails on enterprise
+    // We checks two paths because it may fails on enterprise.
     if (!file_exists($filename)
         && !file_exists($config['homedir'].'/'.$filename)
     ) {
@@ -1540,13 +1561,14 @@ function ui_require_javascript_file_enterprise($name, $disabled_metaconsole=fals
  * needed to pass to this function. Notice that this function does not manage
  * jQuery denpendencies.
  *
- * @param string Script name to add without the "jquery." prefix and the ".js"
- * suffix. Example:
- * <code>
- * ui_require_jquery_file ('form');
- * // Would include include/javascript/jquery.form.js
- * </code>
- * @param bool Just echo the script tag of the file.
+ * @param string  $name     Script name to add without the "jquery." prefix and the ".js"
+ *      suffix. Example:
+ *      <code>
+ *      ui_require_jquery_file ('form');
+ *      // Would include include/javascript/jquery.form.js
+ *      </code>.
+ * @param string  $path     Path where script is placed.
+ * @param boolean $echo_tag Just echo the script tag of the file.
  *
  * @return boolean True if the file was added. False if the file doesn't exist.
  */
@@ -1558,7 +1580,7 @@ function ui_require_jquery_file($name, $path='include/javascript/', $echo_tag=fa
 
     if ($echo_tag) {
         echo '<script type="text/javascript" src="'.ui_get_full_url(false, false, false, false).$filename.'"></script>';
-        return;
+        return null;
     }
 
     if (! isset($config['jquery'])) {
@@ -1569,8 +1591,10 @@ function ui_require_jquery_file($name, $path='include/javascript/', $echo_tag=fa
         return true;
     }
 
-    // We checks two paths because it may fails on enterprise
-    if (! file_exists($filename) && ! file_exists($config['homedir'].'/'.$filename)) {
+    // We checks two paths because it may fails on enterprise.
+    if (! file_exists($filename)
+        && ! file_exists($config['homedir'].'/'.$filename)
+    ) {
         return false;
     }
 
@@ -1589,8 +1613,8 @@ function ui_require_jquery_file($name, $path='include/javascript/', $echo_tag=fa
  * To add css just put them in include/styles and then add them to the
  * $config['css'] array
  *
- * @param string Callback will fill this with the current buffer.
- * @param bitfield Callback will fill this with a bitfield (see ob_start)
+ * @param string $string   Callback will fill this with the current buffer.
+ * @param mixed  $bitfield Callback will fill this with a bitfield (see ob_start).
  *
  * @return string String to return to the browser
  */
@@ -1600,7 +1624,7 @@ function ui_process_page_head($string, $bitfield)
     global $vc_public_view;
 
     if (isset($config['ignore_callback']) && $config['ignore_callback'] == true) {
-        return;
+        return '';
     }
 
     $output = '';
@@ -1610,7 +1634,7 @@ function ui_process_page_head($string, $bitfield)
         $config_refr = $config['refr'];
     }
 
-    // If user is logged or displayed view is the public view of visual console
+    // If user is logged or displayed view is the public view of visual console.
     if ($config_refr > 0
         && (isset($config['id_user']) || $vc_public_view == 1)
     ) {
@@ -1623,8 +1647,13 @@ function ui_process_page_head($string, $bitfield)
             || $_GET['sec2'] == 'enterprise/dashboard/main_dashboard'
         ) {
             $query = ui_get_url_refresh(false, false);
-            // $output .= '<meta http-equiv="refresh" content="' .
-                // $config_refr . '; URL=' . $query . '" />';
+
+            /*
+             * $output .= '<meta http-equiv="refresh" content="' .
+             * $config_refr . '; URL=' . $query . '" />';
+             */
+
+            // End.
         }
     }
 
@@ -1644,7 +1673,8 @@ function ui_process_page_head($string, $bitfield)
 		<link rel="alternate" href="operation/events/events_rss.php" title="Pandora RSS Feed" type="application/rss+xml" />';
 
     if ($config['language'] != 'en') {
-        // Load translated strings - load them last so they overload all the objects
+        // Load translated strings - load them last so they overload all
+        // the objects.
         ui_require_javascript_file('time_'.$config['language']);
         ui_require_javascript_file('date'.$config['language']);
         ui_require_javascript_file('countdown_'.$config['language']);
@@ -1652,27 +1682,32 @@ function ui_process_page_head($string, $bitfield)
 
     $output .= "\n\t";
 
-    //
-    // Load CSS
-    //
+    /*
+     * Load CSS
+     */
+
     if (empty($config['css'])) {
         $config['css'] = [];
     }
 
     $login_ok = true;
     if (! isset($config['id_user']) && isset($_GET['login'])) {
-        if (isset($_POST['nick']) and isset($_POST['pass'])) {
+        if (isset($_POST['nick']) && isset($_POST['pass'])) {
             $nick = get_parameter_post('nick');
-            // This is the variable with the login
+            // This is the variable with the login.
             $pass = get_parameter_post('pass');
-            // This is the variable with the password
+            // This is the variable with the password.
             $nick = db_escape_string_sql($nick);
             $pass = db_escape_string_sql($pass);
 
-            // process_user_login is a virtual function which should be defined in each auth file.
-            // It accepts username and password. The rest should be internal to the auth file.
-            // The auth file can set $config["auth_error"] to an informative error output or reference their internal error messages to it
-            // process_user_login should return false in case of errors or invalid login, the nickname if correct
+            // Process_user_login is a virtual function which should be defined
+            // in each auth file.
+            // It accepts username and password. The rest should be internal to
+            // the auth file.
+            // The auth file can set $config["auth_error"] to an informative
+            // error output or reference their internal error messages to it
+            // process_user_login should return false in case of errors or
+            // invalid login, the nickname if correct.
             $nick_in_db = process_user_login($nick, $pass);
 
             if ($nick_in_db === false) {
@@ -1682,7 +1717,7 @@ function ui_process_page_head($string, $bitfield)
     }
 
     // First, if user has assigned a skin then try to use css files of
-    // skin subdirectory
+    // skin subdirectory.
     $isFunctionSkins = enterprise_include_once('include/functions_skins.php');
     if (!$login_ok) {
         if ($isFunctionSkins !== ENTERPRISE_NOT_HOOK) {
@@ -1691,8 +1726,8 @@ function ui_process_page_head($string, $bitfield)
     }
 
     $exists_css = false;
-    if ($login_ok and $isFunctionSkins !== ENTERPRISE_NOT_HOOK) {
-        // Checks if user's skin is available
+    if ($login_ok && $isFunctionSkins !== ENTERPRISE_NOT_HOOK) {
+        // Checks if user's skin is available.
         $exists_skin = enterprise_hook('skins_is_path_set');
         if ($exists_skin) {
             $skin_path = enterprise_hook('skins_get_skin_path');
@@ -1701,23 +1736,22 @@ function ui_process_page_head($string, $bitfield)
         }
     }
 
-    // Add the jquery UI styles CSS
+    // Add the jquery UI styles CSS.
     $config['css']['jquery-UI'] = 'include/styles/js/jquery-ui.min.css';
-    // Add the dialog styles CSS
+    // Add the dialog styles CSS.
     $config['css']['dialog'] = 'include/styles/dialog.css';
-    // Add the dialog styles CSS
+    // Add the dialog styles CSS.
     $config['css']['dialog'] = 'include/styles/js/introjs.css';
 
-    // If skin's css files exists then add them
+    // If skin's css files exists then add them.
     if ($exists_css) {
         foreach ($skin_styles as $filename => $name) {
             $style = substr($filename, 0, (strlen($filename) - 4));
             $config['css'][$style] = $skin_path.'include/styles/'.$filename;
         }
-    }
-    // Otherwise assign default and user's css
-    else {
-        // User style should go last so it can rewrite common styles
+    } else {
+        // Otherwise assign default and user's css.
+        // User style should go last so it can rewrite common styles.
         $config['css'] = array_merge(
             [
                 'common'         => 'include/styles/common.css',
@@ -1728,7 +1762,7 @@ function ui_process_page_head($string, $bitfield)
         );
     }
 
-    // We can't load empty and we loaded (conditionally) ie
+    // We can't load empty and we loaded (conditionally) ie.
     $loaded = [
         '',
         'ie',
@@ -1745,33 +1779,35 @@ function ui_process_page_head($string, $bitfield)
         $output .= '<link rel="stylesheet" href="'.$url_css.'" type="text/css" />'."\n\t";
     }
 
-    //
-    // End load CSS
-    //
-    //
-    // Load JS
-    //
+    /*
+     * End load CSS
+     */
+
+    /*
+     * Load JS
+     */
+
     if (empty($config['js'])) {
         $config['js'] = [];
-        // If it's empty, false or not init set array to empty just in case
+        // If it's empty, false or not init set array to empty just in case.
     }
 
-    // Pandora specific JavaScript should go first
+    // Pandora specific JavaScript should go first.
     $config['js'] = array_merge(['pandora' => 'include/javascript/pandora.js'], $config['js']);
-    // Load base64 javascript library
+    // Load base64 javascript library.
     $config['js']['base64'] = 'include/javascript/encode_decode_base64.js';
-    // Load webchat javascript library
+    // Load webchat javascript library.
     $config['js']['webchat'] = 'include/javascript/webchat.js';
-    // Load qrcode library
+    // Load qrcode library.
     $config['js']['qrcode'] = 'include/javascript/qrcode.js';
-    // Load intro.js library (for bubbles and clippy)
+    // Load intro.js library (for bubbles and clippy).
     $config['js']['intro'] = 'include/javascript/intro.js';
     $config['js']['clippy'] = 'include/javascript/clippy.js';
-    // Load Underscore.js library
+    // Load Underscore.js library.
     $config['js']['underscore'] = 'include/javascript/underscore-min.js';
 
-    // Load other javascript
-    // We can't load empty
+    // Load other javascript.
+    // We can't load empty.
     $loaded = [''];
     foreach ($config['js'] as $name => $filename) {
         if (in_array($name, $loaded)) {
@@ -1784,18 +1820,20 @@ function ui_process_page_head($string, $bitfield)
         $output .= '<script type="text/javascript" src="'.$url_js.'"></script>'."\n\t";
     }
 
-    //
-    // End load JS
-    //
-    //
-    // Load jQuery
-    //
+    /*
+     * End load JS
+     */
+
+    /*
+     * Load jQuery
+     */
+
     if (empty($config['jquery'])) {
         $config['jquery'] = [];
-        // If it's empty, false or not init set array to empty just in case
+        // If it's empty, false or not init set array to empty just in case.
     }
 
-    // Pandora specific jquery should go first
+    // Pandora specific jquery should go first.
     $black_list_pages_old_jquery = ['operation/gis_maps/index'];
     if (in_array(get_parameter('sec2'), $black_list_pages_old_jquery)) {
         $config['jquery'] = array_merge(
@@ -1818,15 +1856,15 @@ function ui_process_page_head($string, $bitfield)
         );
     }
 
-    // Include the datapicker language if exists
+    // Include the datapicker language if exists.
     if (file_exists('include/languages/datepicker/jquery.ui.datepicker-'.$config['language'].'.js')) {
         $config['jquery']['datepicker_language'] = 'include/languages/datepicker/jquery.ui.datepicker-'.$config['language'].'.js';
     }
 
-    // Include countdown library
+    // Include countdown library.
     $config['jquery']['countdown'] = 'include/javascript/jquery.countdown.js';
 
-    // Then add each script as necessary
+    // Then add each script as necessary.
     $loaded = [''];
     foreach ($config['jquery'] as $name => $filename) {
         if (in_array($name, $loaded)) {
@@ -1839,9 +1877,10 @@ function ui_process_page_head($string, $bitfield)
         $output .= '<script type="text/javascript" src="'.$url_js.'"></script>'."\n\t";
     }
 
-    //
-    // End load JQuery
-    //
+    /*
+     * End load JQuery
+     */
+
     include_once __DIR__.'/graphs/functions_flot.php';
     $output .= include_javascript_dependencies_flot_graph(true);
 
@@ -1858,8 +1897,8 @@ function ui_process_page_head($string, $bitfield)
 /**
  * Callback function to add stuff to the body
  *
- * @param string Callback will fill this with the current buffer.
- * @param bitfield Callback will fill this with a bitfield (see ob_start)
+ * @param string $string   Callback will fill this with the current buffer.
+ * @param mixed  $bitfield Callback will fill this with a bitfield (see ob_start).
  *
  * @return string String to return to the browser
  */
@@ -1870,11 +1909,11 @@ function ui_process_page_body($string, $bitfield)
     if (isset($config['ignore_callback'])
         && $config['ignore_callback'] == true
     ) {
-        return;
+        return null;
     }
 
-    // Show custom background
-    $output = '<body'.($config['pure'] ? ' class="pure"' : '').'>';
+    // Show custom background.
+    $output = '<body'.(($config['pure']) ? ' class="pure"' : '').'>';
 
     $output .= $string;
 
@@ -1891,12 +1930,15 @@ function ui_process_page_body($string, $bitfield)
  * @param string  $url               URL of the pagination links. It must include all form
  *                values as GET form.
  * @param integer $offset            Current offset for the pagination. Default value would be
- *                taken from $_REQUEST['offset']
+ *                taken from $_REQUEST['offset'].
  * @param integer $pagination        Current pagination size. If a user requests a larger
- *            pagination than config["block_size"]
- * @param boolean $return            Whether to return or print this
+ *            pagination than config["block_size"].
+ * @param boolean $return            Whether to return or print this.
  * @param string  $offset_name       The name of parameter for the offset.
  * @param boolean $print_total_items Show the text with the total items. By default true.
+ * @param mixed   $other_class       Other_class.
+ * @param mixed   $script            Script.
+ * @param mixed   $parameter_script  Parameter_script.
  * @param string  $set_id            Set id of div.
  *
  * @return string The pagination div or nothing if no pagination needs to be done
@@ -1937,10 +1979,12 @@ function ui_pagination(
     }
 
     if (!empty($set_id)) {
-        $set_id = " id = '$set_id'";
+        $set_id = " id = '".$set_id."'";
     }
 
-    // Pagination links for users include delete, create and other params, now not use these params, and not retry the previous action when go to pagination link.
+    // Pagination links for users include delete, create and other params,
+    // now not use these params, and not retry the previous action when go to
+    // pagination link.
     $remove = [
         'user_del',
         'disable_user',
@@ -1950,7 +1994,10 @@ function ui_pagination(
 
     $finalUrl = [];
     foreach ($url as $key => $value) {
-        if (strpos($value, $remove[0]) === false && strpos($value, $remove[1]) === false && strpos($value, $remove[2]) === false) {
+        if (strpos($value, $remove[0]) === false
+            && strpos($value, $remove[1]) === false
+            && strpos($value, $remove[2]) === false
+        ) {
             array_push($finalUrl, $value);
         }
     }
@@ -1964,14 +2011,15 @@ function ui_pagination(
         Pagination needs $url to build the base URL to render links, its a base url, like
         " http://pandora/index.php?sec=godmode&sec2=godmode/admin_access_logs "
     */
+
     $block_limit = PAGINATION_BLOCKS_LIMIT;
-    // Visualize only $block_limit blocks
+    // Visualize only $block_limit blocks.
     if ($count <= $pagination) {
         if ($print_total_items) {
-            $output = "<div class='pagination $other_class' $set_id>";
-            // Show the count of items
+            $output = "<div class='pagination ".$other_class."' ".$set_id.'>';
+            // Show the count of items.
             $output .= '<div class="total_pages">'.sprintf(__('Total items: %s'), $count).'</div>';
-            // End div and layout
+            // End div and layout.
             $output .= '</div>';
 
             if ($return === false) {
@@ -1992,16 +2040,16 @@ function ui_pagination(
         $end_page = ($number_of_pages - 1);
     }
 
-    $output = "<div class='pagination $other_class' $set_id>";
+    $output = "<div class='pagination ".$other_class."' ".$set_id.'>';
 
-    // Show the count of items
+    // Show the count of items.
     if ($print_total_items) {
         $output .= '<div class="total_pages">'.sprintf(__('Total items: %s'), $count).'</div>';
     }
 
     $output .= "<div class='total_number'>";
 
-    // Show GOTO FIRST PAGE button
+    // Show GOTO FIRST PAGE button.
     if ($number_of_pages > $block_limit) {
         if (!empty($script)) {
             $script_modified = $script;
@@ -2016,19 +2064,22 @@ function ui_pagination(
                 $script_modified
             );
 
-            $output .= "<a class='pagination-arrows $other_class offset_0'
-				href='javascript: $script_modified;'>".html_print_image('images/go_first_g.png', true, ['class' => 'bot']).'</a>';
+            $output .= "<a class='pagination-arrows ".$other_class." offset_0'
+				href='javascript: ".$script_modified.";'>".html_print_image('images/go_first_g.png', true, ['class' => 'bot']).'</a>';
         } else {
-            $output .= "<a class='pagination-arrows $other_class offset_0' href='$url&amp;$offset_name=0'>".html_print_image('images/go_first_g.png', true, ['class' => 'bot']).'</a>';
+            $output .= "<a class='pagination-arrows ".$other_class." offset_0' href='".$url.'&amp;'.$offset_name."=0'>".html_print_image('images/go_first_g.png', true, ['class' => 'bot']).'</a>';
         }
     }
 
-    // Show PREVIOUS PAGE GROUP OF PAGES
-    // For example
-    // You are in the 12 page with a block of 5 pages
-    // << < 10 - 11 - [12] - 13 - 14 > >>
-    // Click in <
-    // Result << < 5 - 6 - 7 - 8 - [9] > >>
+    /*
+     * Show PREVIOUS PAGE GROUP OF PAGES
+     * For example
+     * You are in the 12 page with a block of 5 pages
+     * << < 10 - 11 - [12] - 13 - 14 > >>
+     * Click in <
+     * Result << < 5 - 6 - 7 - 8 - [9] > >>
+     */
+
     if ($ini_page >= $block_limit) {
         $offset_previous_page = (($ini_page - 1) * $pagination);
 
@@ -2045,14 +2096,14 @@ function ui_pagination(
                 $script_modified
             );
 
-            $output .= "<a class='pagination-arrows $other_class offset_$offset_previous_page'
-				href='javacript: $script_modified;'>".html_print_image('images/go_previous_g.png', true, ['class' => 'bot']).'</a>';
+            $output .= "<a class='pagination-arrows ".$other_class.' offset_'.$offset_previous_page."'
+				href='javacript: ".$script_modified.";'>".html_print_image('images/go_previous_g.png', true, ['class' => 'bot']).'</a>';
         } else {
-            $output .= "<a class='pagination-arrows $other_class offset_$offset_previous_page' href='$url&amp;$offset_name=$offset_previous_page'>".html_print_image('images/go_previous_g.png', true, ['class' => 'bot']).'</a>';
+            $output .= "<a class='pagination-arrows ".$other_class.' offset_'.$offset_previous_page."' href='".$url.'&amp;'.$offset_name.'='.$offset_previous_page."'>".html_print_image('images/go_previous_g.png', true, ['class' => 'bot']).'</a>';
         }
     }
 
-    // Show pages
+    // Show pages.
     for ($iterator = $ini_page; $iterator <= $end_page; $iterator++) {
         $actual_page = (int) ($offset / $pagination);
 
@@ -2077,10 +2128,10 @@ function ui_pagination(
                 $script_modified
             );
 
-            $output .= "<a class='pagination $other_class offset_$offset_page'
-				href='javascript: $script_modified;'>";
+            $output .= "<a class='pagination ".$other_class.' offset_'.$offset_page."'
+				href='javascript: ".$script_modified.";'>";
         } else {
-            $output .= "<a class='pagination $other_class offset_$offset_page' href='$url&amp;$offset_name=$offset_page'>";
+            $output .= "<a class='pagination ".$other_class.' offset_'.$offset_page."' href='".$url.'&amp;'.$offset_name.'='.$offset_page."'>";
         }
 
         $output .= $iterator;
@@ -2088,12 +2139,15 @@ function ui_pagination(
         $output .= '</a></div>';
     }
 
-    // Show NEXT PAGE GROUP OF PAGES
-    // For example
-    // You are in the 12 page with a block of 5 pages
-    // << < 10 - 11 - [12] - 13 - 14 > >>
-    // Click in >
-    // Result << < [15] - 16 - 17 - 18 - 19 > >>
+    /*
+     * Show NEXT PAGE GROUP OF PAGES
+     * For example
+     * You are in the 12 page with a block of 5 pages
+     * << < 10 - 11 - [12] - 13 - 14 > >>
+     * Click in >
+     * Result << < [15] - 16 - 17 - 18 - 19 > >>
+     */
+
     if (($number_of_pages - $ini_page) > $block_limit) {
         $offset_next_page = (($end_page + 1) * $pagination);
 
@@ -2110,14 +2164,14 @@ function ui_pagination(
                 $script_modified
             );
 
-            $output .= "<a class='pagination-arrows $other_class offset_$offset_next_page'
-				href='javascript: $script_modified;'>".html_print_image('images/go_next_g.png', true, ['class' => 'bot']).'</a>';
+            $output .= "<a class='pagination-arrows ".$other_class.' offset_'.$offset_next_page."'
+				href='javascript: ".$script_modified.";'>".html_print_image('images/go_next_g.png', true, ['class' => 'bot']).'</a>';
         } else {
-            $output .= "<a class='pagination-arrows $other_class offset_$offset_next_page' href='$url&amp;$offset_name=$offset_next_page'>".html_print_image('images/go_next_g.png', true, ['class' => 'bot']).'</a>';
+            $output .= "<a class='pagination-arrows ".$other_class.' offset_'.$offset_next_page."' href='".$url.'&amp;'.$offset_name.'='.$offset_next_page."'>".html_print_image('images/go_next_g.png', true, ['class' => 'bot']).'</a>';
         }
     }
 
-    // Show GOTO LAST PAGE button
+    // Show GOTO LAST PAGE button.
     if ($number_of_pages > $block_limit) {
         $offset_lastpage = (($number_of_pages - 1) * $pagination);
 
@@ -2134,16 +2188,16 @@ function ui_pagination(
                 $script_modified
             );
 
-            $output .= "<a class='pagination-arrows $other_class offset_$offset_lastpage'
-				href='javascript: $script_modified;'>".html_print_image('images/go_last_g.png', true, ['class' => 'bot']).'</a>';
+            $output .= "<a class='pagination-arrows ".$other_class.' offset_'.$offset_lastpage."'
+				href='javascript: ".$script_modified.";'>".html_print_image('images/go_last_g.png', true, ['class' => 'bot']).'</a>';
         } else {
-            $output .= "<a class='pagination-arrows $other_class offset_$offset_lastpage' href='$url&amp;$offset_name=$offset_lastpage'>".html_print_image('images/go_last_g.png', true, ['class' => 'bot']).'</a>';
+            $output .= "<a class='pagination-arrows ".$other_class.' offset_'.$offset_lastpage."' href='".$url.'&amp;'.$offset_name.'='.$offset_lastpage."'>".html_print_image('images/go_last_g.png', true, ['class' => 'bot']).'</a>';
         }
     }
 
     $output .= '</div>';
-    // total_number
     // End div and layout
+    // total_number.
     $output .= '</div>';
 
     if ($return === false) {
@@ -2157,9 +2211,8 @@ function ui_pagination(
 /**
  * Prints only a tip button which shows a text when the user puts the mouse over it.
  *
- * @param string Complete text to show in the tip
- * @param bool whether to return an output string or echo now
- * @param img displayed image
+ * @param string  $action Complete text to show in the tip.
+ * @param boolean $return Whether to return an output string or echo now.
  *
  * @return string HTML code if return parameter is true.
  */
@@ -2210,15 +2263,19 @@ function ui_print_session_action_icon($action, $return=false)
 /**
  * Prints only a tip button which shows a text when the user puts the mouse over it.
  *
- * @param string Complete text to show in the tip
- * @param bool whether to return an output string or echo now
- * @param img displayed image
- * @param bool Print image in relative way
+ * @param string  $text        Complete text to show in the tip.
+ * @param boolean $return      Whether to return an output string or echo now.
+ * @param string  $img         Displayed image.
+ * @param boolean $is_relative Print image in relative way.
  *
  * @return string HTML code if return parameter is true.
  */
-function ui_print_help_tip($text, $return=false, $img='images/tip_help.png', $is_relative=false)
-{
+function ui_print_help_tip(
+    $text,
+    $return=false,
+    $img='images/tip_help.png',
+    $is_relative=false
+) {
     $output = '<a href="javascript:" class="tip" >'.html_print_image(
         $img,
         true,
@@ -2235,8 +2292,22 @@ function ui_print_help_tip($text, $return=false, $img='images/tip_help.png', $is
 }
 
 
-function ui_print_help_tip_border($text, $return=false, $img='images/tip_border.png', $is_relative=false)
-{
+/**
+ * Prints link to show something.
+ *
+ * @param string  $text        Complete text to show in the tip.
+ * @param boolean $return      Whether to return an output string or echo now.
+ * @param string  $img         Displayed image.
+ * @param boolean $is_relative Print image in relative way.
+ *
+ * @return string HTML.
+ */
+function ui_print_help_tip_border(
+    $text,
+    $return=false,
+    $img='images/tip_border.png',
+    $is_relative=false
+) {
     $output = '<a href="javascript:" class="tip" >'.html_print_image(
         $img,
         true,
@@ -2258,8 +2329,8 @@ function ui_print_help_tip_border($text, $return=false, $img='images/tip_border.
  *
  * This functions need to have active $config['debug'] variable to work.
  *
- * @param mixed Variable name to debug
- * @param bool Wheter to print the backtrace or not.
+ * @param mixed   $var       Variable name to debug.
+ * @param boolean $backtrace Wheter to print the backtrace or not.
  *
  * @return boolean Tru if the debug was actived. False if not.
  */
@@ -2281,14 +2352,16 @@ function ui_debug($var, $backtrace=true)
         echo '<div id="trace-'.$id.'" class="backtrace invisible">';
         echo '<ol>';
         $traces = debug_backtrace();
-        // Ignore debug function
+        // Ignore debug function.
         unset($traces[0]);
         foreach ($traces as $trace) {
             $trace_id++;
 
             /*
-                Many classes are used to allow better customization.
-            Please, do not remove them */
+             *   Many classes are used to allow better customization.
+             * Please, do not remove them
+             */
+
             echo '<li>';
             if (isset($trace['class'])) {
                 echo '<span class="class">'.$trace['class'].'</span>';
@@ -2327,7 +2400,7 @@ function ui_debug($var, $backtrace=true)
         echo '</div></div>';
     }
 
-    // Actually print the variable given
+    // Actually print the variable given.
     echo '<pre class="debug">';
     print_r($var);
     echo '</pre>';
@@ -2339,18 +2412,32 @@ function ui_debug($var, $backtrace=true)
 /**
  * Prints icon of a module type
  *
- * @param int Module Type ID
- * @param bool Whether to return or print
- * @param boolean                         $relative Whether to use relative path to image or not (i.e. $relative= true : /pandora/<img_src>).
- * @param boolean                         $options  Whether to use image options like style, border or title on the icon.
+ * @param integer $id_moduletype Module Type ID.
+ * @param boolean $return        Whether to return or print.
+ * @param boolean $relative      Whether to use relative path to image or not (i.e. $relative= true : /pandora/<img_src>).
+ * @param boolean $options       Whether to use image options like style, border or title on the icon.
+ * @param boolean $src           Src.
  *
  * @return string An HTML string with the icon. Printed if return is false
  */
-function ui_print_moduletype_icon($id_moduletype, $return=false, $relative=false, $options=true, $src=false)
-{
+function ui_print_moduletype_icon(
+    $id_moduletype,
+    $return=false,
+    $relative=false,
+    $options=true,
+    $src=false
+) {
     global $config;
 
-    $type = db_get_row('ttipo_modulo', 'id_tipo', (int) $id_moduletype, ['descripcion', 'icon']);
+    $type = db_get_row(
+        'ttipo_modulo',
+        'id_tipo',
+        (int) $id_moduletype,
+        [
+            'descripcion',
+            'icon',
+        ]
+    );
     if ($type === false) {
         $type = [];
         $type['descripcion'] = __('Unknown type');
@@ -2392,15 +2479,23 @@ function ui_print_moduletype_icon($id_moduletype, $return=false, $relative=false
 /**
  * Print module max/min values for warning/critical state
  *
- * @param float Max value for warning state
- * @param float Min value for warning state
- * @param float Max value for critical state
- * @param float Min value for critical state
+ * @param float  $max_warning  Max value for warning state.
+ * @param float  $min_warning  Min value for warning state.
+ * @param string $str_warning  String warning state.
+ * @param float  $max_critical Max value for critical state.
+ * @param float  $min_critical Min value for critical state.
+ * @param string $str_critical String for critical state.
  *
  * @return string HTML string
  */
-function ui_print_module_warn_value($max_warning, $min_warning, $str_warning, $max_critical, $min_critical, $str_critical)
-{
+function ui_print_module_warn_value(
+    $max_warning,
+    $min_warning,
+    $str_warning,
+    $max_critical,
+    $min_critical,
+    $str_critical
+) {
     $data = "<span title='".__('Warning').': '.__('Max').$max_warning.'/'.__('Min').$min_warning.' - '.__('Critical').': '.__('Max').$max_critical.'/'.__('Min').$min_critical."'>";
 
     if ($max_warning != $min_warning) {
@@ -2425,7 +2520,8 @@ function ui_print_module_warn_value($max_warning, $min_warning, $str_warning, $m
 /**
  * Format a file size from bytes to a human readable meassure.
  *
- * @param  int File size in bytes
+ * @param integer $bytes File size in bytes.
+ *
  * @return string Bytes converted to a human readable meassure.
  */
 function ui_format_filesize($bytes)
@@ -2486,17 +2582,24 @@ function ui_get_status_images_path()
 /**
  * Prints an image representing a status.
  *
- * @param string
- * @param string
- * @param bool Whether to return an output string or echo now (optional, echo by default).
- * @param array options to set image attributes: I.E.: style
- * @param Path of the image, if not provided use the status path
+ * @param string  $type          Type.
+ * @param string  $title         Title.
+ * @param boolean $return        Whether to return an output string or echo now (optional, echo by default).
+ * @param array   $options       Options to set image attributes: I.E.: style.
+ * @param string  $path          Path of the image, if not provided use the status path.
+ * @param boolean $rounded_image Round.
  *
  * @return string HTML code if return parameter is true.
  */
-function ui_print_status_image($type, $title='', $return=false, $options=false, $path=false, $rounded_image=false)
-{
-    // This is for the List of Modules in Agent View
+function ui_print_status_image(
+    $type,
+    $title='',
+    $return=false,
+    $options=false,
+    $path=false,
+    $rounded_image=false
+) {
+    // This is for the List of Modules in Agent View.
     if ($rounded_image === true) {
         switch ($type) {
             case 'module_ok.png':
@@ -2590,24 +2693,31 @@ function ui_progress(
 
 
 /**
- * Print a code into a DIV and enable a toggle to show and hide it
+ * Print a code into a DIV and enable a toggle to show and hide it.
  *
- * @param string html code
- * @param string name of the link
- * @param string title of the link
- * @param bool if the div will be hidden by default (default: true)
- * @param bool Whether to return an output string or echo now (default: true)
+ * @param string  $code           Html code.
+ * @param string  $name           Name of the link.
+ * @param string  $title          Title of the link.
+ * @param boolean $hidden_default If the div will be hidden by default (default: true).
+ * @param boolean $return         Whether to return an output string or echo now (default: true).
+ * @param string  $toggle_class   Toggle class.
+ *
+ * @return string HTML.
  */
-
-
-function ui_toggle($code, $name, $title='', $hidden_default=true, $return=false, $toggle_class='')
-{
-    // Generate unique Id
+function ui_toggle(
+    $code,
+    $name,
+    $title='',
+    $hidden_default=true,
+    $return=false,
+    $toggle_class=''
+) {
+    // Generate unique Id.
     $uniqid = uniqid('');
 
     $image_a = html_print_image('images/arrow_down_green.png', true, false, true);
     $image_b = html_print_image('images/arrow_right_green.png', true, false, true);
-    // Options
+    // Options.
     if ($hidden_default) {
         $style = 'display:none';
         $original = 'images/arrow_right_green.png';
@@ -2616,7 +2726,7 @@ function ui_toggle($code, $name, $title='', $hidden_default=true, $return=false,
         $original = 'images/arrow_down_green.png';
     }
 
-    // Link to toggle
+    // Link to toggle.
     $output = '';
     $output .= '<a href="javascript:" id="tgl_ctrl_'.$uniqid.'">'.html_print_image($original, true, ['title' => $title, 'id' => 'image_'.$uniqid]).'&nbsp;&nbsp;<b>'.$name.'</b></a>';
     // $output .= '<br />';
@@ -2627,7 +2737,7 @@ function ui_toggle($code, $name, $title='', $hidden_default=true, $return=false,
     $output .= $code;
     $output .= '</div>';
 
-    // JQuery Toggle
+    // JQuery Toggle.
     $output .= '<script type="text/javascript">'."\n";
     $output .= '	var hide_tgl_ctrl_'.$uniqid.' = '.(int) $hidden_default.";\n";
     $output .= '	/* <![CDATA[ */'."\n";
@@ -2659,26 +2769,28 @@ function ui_toggle($code, $name, $title='', $hidden_default=true, $return=false,
 /**
  * Construct and return the URL to be used in order to refresh the current page correctly.
  *
- * @param array Extra parameters to be added to the URL. It has prevalence over
- * GET and POST. False values will be ignored.
- * @param bool Whether to return the relative URL or the absolute URL. Returns
- * relative by default
- * @param bool Whether to add POST values to the URL.
+ * @param array   $params   Extra parameters to be added to the URL. It has prevalence over
+ *     GET and POST. False values will be ignored.
+ * @param boolean $relative Whether to return the relative URL or the absolute URL. Returns
+ *    relative by default.
+ * @param boolean $add_post Whether to add POST values to the URL.
+ *
+ * @return string Url.
  */
 function ui_get_url_refresh($params=false, $relative=true, $add_post=true)
 {
-    // Agent selection filters and refresh
+    // Agent selection filters and refresh.
     global $config;
 
-    // slerena, 8/Ene/2015 - Need to put index.php on URL which have it.
+    // Slerena, 8/Ene/2015 - Need to put index.php on URL which have it.
     if (strpos($_SERVER['REQUEST_URI'], 'index.php') === false) {
         $url = '';
     } else {
         $url = 'index.php';
     }
 
-    if (sizeof($_REQUEST)) {
-        // Some (old) browsers don't like the ?&key=var
+    if (count($_REQUEST)) {
+        // Some (old) browsers don't like the ?&key=var.
         $url .= '?';
     }
 
@@ -2686,12 +2798,12 @@ function ui_get_url_refresh($params=false, $relative=true, $add_post=true)
         $params = [];
     }
 
-    // Avoid showing login info
+    // Avoid showing login info.
     $params['pass'] = false;
     $params['nick'] = false;
     $params['unnamed'] = false;
 
-    // We don't clean these variables up as they're only being passed along
+    // We don't clean these variables up as they're only being passed along.
     foreach ($_GET as $key => $value) {
         if (isset($params[$key])) {
             continue;
@@ -2768,7 +2880,7 @@ function ui_get_url_refresh($params=false, $relative=true, $add_post=true)
         }
     }
 
-    // Removes final &
+    // Removes final &.
     $pos = strrpos($url, '&', 0);
     if ($pos) {
         $url = substr_replace($url, '', $pos, 5);
@@ -2789,9 +2901,10 @@ function ui_get_url_refresh($params=false, $relative=true, $add_post=true)
  *
  * An example of full URL is http:/localhost/pandora_console/index.php?sec=gsetup&sec2=godmode/setup/setup
  *
- * @param mixed   $url              If provided, it will be added after the index.php, but it is false boolean value, put the homeurl in the url.
- * @param boolean $no_proxy         To avoid the proxy checks, by default it is false.
- * @param boolean $metaconsole_root Set the root to the metaconsole dir if the metaconsole is enabled, true by default.
+ * @param mixed   $url               If provided, it will be added after the index.php, but it is false boolean value, put the homeurl in the url.
+ * @param boolean $no_proxy          To avoid the proxy checks, by default it is false.
+ * @param boolean $add_name_php_file Something.
+ * @param boolean $metaconsole_root  Set the root to the metaconsole dir if the metaconsole is enabled, true by default.
  *
  * @return string A full URL in Pandora.
  */
@@ -2800,7 +2913,7 @@ function ui_get_full_url($url='', $no_proxy=false, $add_name_php_file=false, $me
     global $config;
 
     $port = null;
-    // null means 'use the starndard port'
+    // Null means 'use the starndard port'.
     $proxy = false;
     // By default Pandora FMS doesn't run across proxy.
     if (isset($_SERVER['HTTP_X_FORWARDED_PROTO'])
@@ -2818,7 +2931,7 @@ function ui_get_full_url($url='', $no_proxy=false, $add_name_php_file=false, $me
             $port = $_SERVER['SERVER_PORT'];
         }
     } else if ($config['https']) {
-        // When $config["https"] is set, enforce https
+        // When $config["https"] is set, enforce https.
         $protocol = 'https';
     } else {
         $protocol = 'http';
@@ -2831,7 +2944,7 @@ function ui_get_full_url($url='', $no_proxy=false, $add_name_php_file=false, $me
     if (!$no_proxy) {
         // Check if the PandoraFMS runs across the proxy like as
         // mod_proxy of Apache
-        // and check if public_url is setted
+        // and check if public_url is set.
         if (!empty($config['public_url'])
             && (!empty($_SERVER['HTTP_X_FORWARDED_HOST']))
         ) {
@@ -2844,9 +2957,9 @@ function ui_get_full_url($url='', $no_proxy=false, $add_name_php_file=false, $me
         $fullurl = $protocol.'://'.$_SERVER['SERVER_NAME'];
     }
 
-    // using a different port than the standard
+    // Using a different port than the standard.
     if (!$proxy) {
-        // using a different port than the standard
+        // Using a different port than the standard.
         if ($port != null) {
             $fullurl .= ':'.$port;
         }
@@ -2862,7 +2975,7 @@ function ui_get_full_url($url='', $no_proxy=false, $add_name_php_file=false, $me
         if ($proxy) {
             $url = '';
         } else {
-            // Only add the home url
+            // Only add the home url.
             $url = $config['homeurl_static'].'/';
         }
 
@@ -3021,13 +3134,13 @@ function ui_print_page_header(
                         }
                     }
 
-                    // Tabs forced to other styles
+                    // Tabs forced to other styles.
                     if (isset($option['godmode']) && $option['godmode']) {
                         $class .= ' tab_godmode';
                     } else if (isset($option['operation']) && ($option['operation'])) {
                         $class .= ' tab_operation';
                     } else {
-                        $class .= $godmode ? ' tab_godmode' : ' tab_operation';
+                        $class .= ($godmode) ? ' tab_godmode' : ' tab_operation';
                     }
 
                     $buffer .= '<li class="'.$class.'">';
@@ -3071,212 +3184,212 @@ function ui_print_page_header(
  *
  * This generate a lot of lines of html and javascript code.
  *
- * @parameters array Array with several properties:
- *  - $parameters['return'] boolean, by default is false
- *    true  - return as html string the code (html and js)
- *    false - print the code.
+ * @param array $parameters Array with several properties:
+ * - $parameters['return'] boolean, by default is false
+ *   true  - return as html string the code (html and js)
+ *   false - print the code.
  *
- *  - $parameters['input_name'] the input name (needs to get the value)
- *    string  - The name.
- *    default - "agent_autocomplete_<aleatory_uniq_raw_letters/numbers>"
+ * - $parameters['input_name'] the input name (needs to get the value)
+ *   string  - The name.
+ *   default - "agent_autocomplete_<aleatory_uniq_raw_letters/numbers>"
  *
- *  - $parameters['input_id'] the input id (needs to get the value)
- *    string  - The ID.
- *    default - "text-<input_name>"
+ * - $parameters['input_id'] the input id (needs to get the value)
+ *   string  - The ID.
+ *   default - "text-<input_name>"
  *
- *  - $parameters['selectbox_group'] the id of selectbox with the group
- *    string  - The ID of selectbox.
- *    default - "" empty string
+ * - $parameters['selectbox_group'] the id of selectbox with the group
+ *   string  - The ID of selectbox.
+ *   default - "" empty string
  *
- *  - $parameters['icon_image'] the small icon to show into the input in
- *    the right side.
- *    string  - The url for the image.
- *    default - "images/lightning.png"
+ * - $parameters['icon_image'] the small icon to show into the input in
+ *   the right side.
+ *   string  - The url for the image.
+ *   default - "images/lightning.png"
  *
- *  - $parameters['value'] The initial value to set the input.
- *    string  - The value.
- *    default - "" emtpy string
+ * - $parameters['value'] The initial value to set the input.
+ *   string  - The value.
+ *   default - "" emtpy string
  *
- *  - $parameters['show_helptip'] boolean, by  default is false
- *    true  - print the icon out the field in side right the tiny star
- *            for tip.
- *    false - does not print
+ * - $parameters['show_helptip'] boolean, by  default is false
+ *   true  - print the icon out the field in side right the tiny star
+ *           for tip.
+ *   false - does not print
  *
- *  - $parameters['helptip_text'] The text to show in the tooltip.
- *    string  - The text to show into the tooltip.
- *    default - "Type at least two characters to search." (translate)
+ * - $parameters['helptip_text'] The text to show in the tooltip.
+ *   string  - The text to show into the tooltip.
+ *   default - "Type at least two characters to search." (translate)
  *
- *  - $parameters['use_hidden_input_idagent'] boolean, Use a field for
- *    store the id of agent from the ajax query. By default is false.
- *    true  - Use the field for id agent and the sourcecode work with
- *            this.
- *    false - Doesn't use the field (maybe this doesn't exist outer)
+ * - $parameters['use_hidden_input_idagent'] boolean, Use a field for
+ *   store the id of agent from the ajax query. By default is false.
+ *   true  - Use the field for id agent and the sourcecode work with
+ *           this.
+ *   false - Doesn't use the field (maybe this doesn't exist outer)
  *
- *  - $parameters['print_hidden_input_idagent'] boolean, Print a field
- *    for store the id of agent from the ajax query. By default is
- *    false.
- *    true  - Print the field for id agent and the sourcecode work with
- *            this.
- *    false - Doesn't print the field (maybe this doesn't exist outer)
+ * - $parameters['print_hidden_input_idagent'] boolean, Print a field
+ *   for store the id of agent from the ajax query. By default is
+ *   false.
+ *   true  - Print the field for id agent and the sourcecode work with
+ *           this.
+ *   false - Doesn't print the field (maybe this doesn't exist outer)
  *
- *  - $parameters['hidden_input_idagent_name'] The name of hidden input
- *    for to store the id agent.
- *    string  - The name of hidden input.
- *    default - "agent_autocomplete_idagent_<aleatory_uniq_raw_letters/numbers>"
+ * - $parameters['hidden_input_idagent_name'] The name of hidden input
+ *   for to store the id agent.
+ *   string  - The name of hidden input.
+ *   default - "agent_autocomplete_idagent_<aleatory_uniq_raw_letters/numbers>"
  *
- *  - $parameters['hidden_input_idagent_id'] The id of hidden input
- *    for to store the id agent.
- *    string  - The id of hidden input.
- *    default - "hidden-<hidden_input_idagent_name>"
+ * - $parameters['hidden_input_idagent_id'] The id of hidden input
+ *   for to store the id agent.
+ *   string  - The id of hidden input.
+ *   default - "hidden-<hidden_input_idagent_name>"
  *
- *  - $parameters['hidden_input_idagent_value'] The initial value to set
- *    the input id agent for store the id agent.
- *    string  - The value.
- *    default - 0
+ * - $parameters['hidden_input_idagent_value'] The initial value to set
+ *   the input id agent for store the id agent.
+ *   string  - The value.
+ *   default - 0
  *
- *  - $parameters['size'] The size in characters for the input of agent.
- *    string  - A number of characters.
- *    default - 30
+ * - $parameters['size'] The size in characters for the input of agent.
+ *   string  - A number of characters.
+ *   default - 30
  *
- *  - $parameters['maxlength'] The max characters that can store the
- *    input of agent.
- *    string  - A number of characters max to store
- *    default - 100
+ * - $parameters['maxlength'] The max characters that can store the
+ *   input of agent.
+ *   string  - A number of characters max to store
+ *   default - 100
  *
- *  - $parameters['disabled'] Set as disabled the input of agent. By
- *    default is false
- *    true  - Set disabled the input of agent.
- *    false - Set enabled the input of agent.
+ * - $parameters['disabled'] Set as disabled the input of agent. By
+ *   default is false
+ *   true  - Set disabled the input of agent.
+ *   false - Set enabled the input of agent.
  *
- *  - $parameters['selectbox_id'] The id of select box that stores the
- *    list of modules of agent select.
- *    string - The id of select box.
- *    default - "id_agent_module"
+ * - $parameters['selectbox_id'] The id of select box that stores the
+ *   list of modules of agent select.
+ *   string - The id of select box.
+ *   default - "id_agent_module"
  *
- *  - $parameters['add_none_module'] Boolean, add the list of modules
- *    the "none" entry, with value 0. By default is true
- *    true  - add the none entry.
- *    false - does not add the none entry.
+ * - $parameters['add_none_module'] Boolean, add the list of modules
+ *   the "none" entry, with value 0. By default is true
+ *   true  - add the none entry.
+ *   false - does not add the none entry.
  *
- *  - $parameters['none_module_text'] Boolean, add the list of modules
- *    the "none" entry, with value 0.
- *    string  - The text to put for none module for example "select a
- *              module"
- *    default - "none" (translate)
+ * - $parameters['none_module_text'] Boolean, add the list of modules
+ *   the "none" entry, with value 0.
+ *   string  - The text to put for none module for example "select a
+ *             module"
+ *   default - "none" (translate)
  *
- *  - $parameters['print_input_server'] Boolean, print the hidden field
- *    to store the server (metaconsole). By default false.
- *    true  - Print the hidden input for the server.
- *    false - Does not print.
+ * - $parameters['print_input_server'] Boolean, print the hidden field
+ *   to store the server (metaconsole). By default false.
+ *   true  - Print the hidden input for the server.
+ *   false - Does not print.
  *
- *  - $parameters['use_input_server'] Boolean, use the hidden field
- *    to store the server (metaconsole). By default false.
- *    true  - Use the hidden input for the server.
- *    false - Does not print.
+ * - $parameters['use_input_server'] Boolean, use the hidden field
+ *   to store the server (metaconsole). By default false.
+ *   true  - Use the hidden input for the server.
+ *   false - Does not print.
  *
- *  - $parameters['input_server_name'] The name for hidden field to
- *    store the server.
- *    string  - The name of field for server.
- *    default - "server_<aleatory_uniq_raw_letters/numbers>"
+ * - $parameters['input_server_name'] The name for hidden field to
+ *   store the server.
+ *   string  - The name of field for server.
+ *   default - "server_<aleatory_uniq_raw_letters/numbers>"
  *
- *  - $parameters['input_server_id'] The id for hidden field to store
- *    the server.
- *    string  - The id of field for server.
- *    default - "hidden-<input_server_name>"
+ * - $parameters['input_server_id'] The id for hidden field to store
+ *   the server.
+ *   string  - The id of field for server.
+ *   default - "hidden-<input_server_name>"
  *
- *  - $parameters['input_server_value'] The value to store into the
- *    field server.
- *    string  - The name of server.
- *    default - "" empty string
+ * - $parameters['input_server_value'] The value to store into the
+ *   field server.
+ *   string  - The name of server.
+ *   default - "" empty string
  *
- *  - $parameters['metaconsole_enabled'] Boolean, set the sourcecode for
- *    to make some others things that run of without metaconsole. By
- *    default false.
- *    true  - Set the gears for metaconsole.
- *    false - Run as without metaconsole.
+ * - $parameters['metaconsole_enabled'] Boolean, set the sourcecode for
+ *   to make some others things that run of without metaconsole. By
+ *   default false.
+ *   true  - Set the gears for metaconsole.
+ *   false - Run as without metaconsole.
  *
- *  - $parameters['javascript_ajax_page'] The page to send the ajax
- *    queries.
- *    string  - The url to ajax page, remember the url must be into your
- *              domain (ajax security).
- *    default - "ajax.php"
+ * - $parameters['javascript_ajax_page'] The page to send the ajax
+ *   queries.
+ *   string  - The url to ajax page, remember the url must be into your
+ *             domain (ajax security).
+ *   default - "ajax.php"
  *
- *  - $parameters['javascript_function_action_after_select'] The name of
- *    function to call after the user select a agent into the list in
- *    the autocomplete field.
- *    string  - The name of function.
- *    default - ""
+ * - $parameters['javascript_function_action_after_select'] The name of
+ *   function to call after the user select a agent into the list in
+ *   the autocomplete field.
+ *   string  - The name of function.
+ *   default - ""
  *
- *  - $parameters['javascript_function_action_after_select_js_call'] The
- *    call of this function to call after user select a agent into the
- *    list in the autocomplete field. Instead the
- *    $parameters['javascript_function_action_after_select'], this is
- *    overwrite the previous element. And this is necesary when you need
- *    to set some params in your custom function.
- *    string  - The call line as javascript code.
- *    default - ""
+ * - $parameters['javascript_function_action_after_select_js_call'] The
+ *   call of this function to call after user select a agent into the
+ *   list in the autocomplete field. Instead the
+ *   $parameters['javascript_function_action_after_select'], this is
+ *   overwrite the previous element. And this is necesary when you need
+ *   to set some params in your custom function.
+ *   string  - The call line as javascript code.
+ *   default - ""
  *
- *  - $parameters['javascript_function_action_into_source'] The source
- *    code as block string to call when the autocomplete starts to get
- *    the data from ajax.
- *    string  - A huge string with your function as javascript.
- *    default - ""
+ * - $parameters['javascript_function_action_into_source'] The source
+ *   code as block string to call when the autocomplete starts to get
+ *   the data from ajax.
+ *   string  - A huge string with your function as javascript.
+ *   default - ""
  *
- *  - $parameters['javascript'] Boolean, set the autocomplete agent to
- *    use javascript or enabled javascript. By default true.
- *    true  - Enabled the javascript.
- *    false - Disabled the javascript.
+ * - $parameters['javascript'] Boolean, set the autocomplete agent to
+ *   use javascript or enabled javascript. By default true.
+ *   true  - Enabled the javascript.
+ *   false - Disabled the javascript.
  *
- *  - $parameters['javascript_is_function_select'] Boolean, set to
- *    enable to call a function when user select a agent in the
- *    autocomplete list. By default false.
- *    true  - Enabled this feature.
- *    false - Disabled this feature.
+ * - $parameters['javascript_is_function_select'] Boolean, set to
+ *   enable to call a function when user select a agent in the
+ *   autocomplete list. By default false.
+ *   true  - Enabled this feature.
+ *   false - Disabled this feature.
  *
- *  - $parameters['javascript_code_function_select'] The name of
- *    function to call when user select a agent in the autocomplete
- *    list.
- *    string  - The name of function but remembers this function pass
- *              the parameter agent_name.
- *    default - "function_select_<input_name>"
+ * - $parameters['javascript_code_function_select'] The name of
+ *   function to call when user select a agent in the autocomplete
+ *   list.
+ *   string  - The name of function but remembers this function pass
+ *             the parameter agent_name.
+ *   default - "function_select_<input_name>"
  *
- *  - $parameters['javascript_name_function_select'] The source
- *    code as block string to call when user select a agent into the
- *    list in the autocomplete field. Althought use this element, you
- *    need use the previous parameter to set name of your custom
- *    function or call line.
- *    string  - A huge string with your function as javascript.
- *    default - A lot of lines of source code into a string, please this
- *              lines you can read in the source code of function.
+ * - $parameters['javascript_name_function_select'] The source
+ *   code as block string to call when user select a agent into the
+ *   list in the autocomplete field. Althought use this element, you
+ *   need use the previous parameter to set name of your custom
+ *   function or call line.
+ *   string  - A huge string with your function as javascript.
+ *   default - A lot of lines of source code into a string, please this
+ *             lines you can read in the source code of function.
  *
- *  - $parameters['javascript_change_ajax_params'] The params to pass in
- *    the ajax query for the list of agents.
- *    array   - The associative array with the key and value to pass in
- *              the ajax query.
- *    default - A lot of lines of source code into a string, please this
- *              lines you can read in the source code of function.
+ * - $parameters['javascript_change_ajax_params'] The params to pass in
+ *   the ajax query for the list of agents.
+ *   array   - The associative array with the key and value to pass in
+ *             the ajax query.
+ *   default - A lot of lines of source code into a string, please this
+ *             lines you can read in the source code of function.
  *
- *  - $parameters['javascript_function_change'] The source code as block
- *    string with all javascript code to run autocomplete field.
- *    string - The source code javascript into a string.
- *    default - A lot of lines of source code into a string, please this
- *              lines you can read in the source code of function.
+ * - $parameters['javascript_function_change'] The source code as block
+ *   string with all javascript code to run autocomplete field.
+ *   string - The source code javascript into a string.
+ *   default - A lot of lines of source code into a string, please this
+ *             lines you can read in the source code of function.
  *
- *  - $parameters['javascript_document_ready'] Boolean, set the
- *    javascript sourcecode to run with the document is ready. By
- *    default is true.
- *    true  - Set to run when document is ready.
- *    false - Not set to run.
+ * - $parameters['javascript_document_ready'] Boolean, set the
+ *   javascript sourcecode to run with the document is ready. By
+ *   default is true.
+ *   true  - Set to run when document is ready.
+ *   false - Not set to run.
  *
- *  - $parameters['javascript_tags'] Boolean, print the html tags for
- *    javascript. By default is true.
- *    true  - Print the javascript tags.
- *    false - Doesn't print the tags.
+ * - $parameters['javascript_tags'] Boolean, print the html tags for
+ *   javascript. By default is true.
+ *   true  - Print the javascript tags.
+ *   false - Doesn't print the tags.
  *
- *  - $parameters['javascript_tags'] Boolean, print the html tags for
- *    javascript. By default is true.
- *    true  - Print the javascript tags.
- *    false - Doesn't print the tags.
+ * - $parameters['javascript_tags'] Boolean, print the html tags for
+ *   javascript. By default is true.
+ *   true  - Print the javascript tags.
+ *   false - Doesn't print the tags.
  *
  * @return string HTML code if return parameter is true.
  */
@@ -3285,205 +3398,205 @@ function ui_print_agent_autocomplete_input($parameters)
     global $config;
 
     // Normalize and extract the data from $parameters
-    // ------------------------------------------------------------------
+    // ------------------------------------------------------------------.
     $return = false;
-    // Default value
+    // Default value.
     if (isset($parameters['return'])) {
         $return = $parameters['return'];
     }
 
     $input_name = uniqid('agent_autocomplete_');
-    // Default value
+    // Default value.
     if (isset($parameters['input_name'])) {
         $input_name = $parameters['input_name'];
     }
 
     $input_id = 'text-'.$input_name;
-    // Default value
+    // Default value.
     if (isset($parameters['input_id'])) {
         $input_id = $parameters['input_id'];
     }
 
     $selectbox_group = '';
-    // Default value
+    // Default value.
     if (isset($parameters['selectbox_group'])) {
         $selectbox_group = $parameters['selectbox_group'];
     }
 
-    // Default value
+    // Default value.
     $icon_image = html_print_image('images/search_agent.png', true, false, true);
     if (isset($parameters['icon_image'])) {
         $icon_image = $parameters['icon_image'];
     }
 
     $value = '';
-    // Default value
+    // Default value.
     if (isset($parameters['value'])) {
         $value = $parameters['value'];
     }
 
     $show_helptip = true;
-    // Default value
+    // Default value.
     if (isset($parameters['show_helptip'])) {
         $show_helptip = $parameters['show_helptip'];
     }
 
     $helptip_text = __('Type at least two characters to search.');
-    // Default value
+    // Default value.
     if (isset($parameters['helptip_text'])) {
         $helptip_text = $parameters['helptip_text'];
     }
 
     $use_hidden_input_idagent = false;
-    // Default value
+    // Default value.
     if (isset($parameters['use_hidden_input_idagent'])) {
         $use_hidden_input_idagent = $parameters['use_hidden_input_idagent'];
     }
 
     $print_hidden_input_idagent = false;
-    // Default value
+    // Default value.
     if (isset($parameters['print_hidden_input_idagent'])) {
         $print_hidden_input_idagent = $parameters['print_hidden_input_idagent'];
     }
 
     $hidden_input_idagent_name = uniqid('agent_autocomplete_idagent_');
-    // Default value
+    // Default value.
     if (isset($parameters['hidden_input_idagent_name'])) {
         $hidden_input_idagent_name = $parameters['hidden_input_idagent_name'];
     }
 
     $hidden_input_idagent_id = 'hidden-'.$input_name;
-    // Default value
+    // Default value.
     if (isset($parameters['hidden_input_idagent_id'])) {
         $hidden_input_idagent_id = $parameters['hidden_input_idagent_id'];
     }
 
     $hidden_input_idagent_value = (int) get_parameter($hidden_input_idagent_name, 0);
-    // Default value
+    // Default value.
     if (isset($parameters['hidden_input_idagent_value'])) {
         $hidden_input_idagent_value = $parameters['hidden_input_idagent_value'];
     }
 
     $size = 30;
-    // Default value
+    // Default value.
     if (isset($parameters['size'])) {
         $size = $parameters['size'];
     }
 
     $maxlength = 100;
-    // Default value
+    // Default value.
     if (isset($parameters['maxlength'])) {
         $maxlength = $parameters['maxlength'];
     }
 
     $disabled = false;
-    // Default value
+    // Default value.
     if (isset($parameters['disabled'])) {
         $disabled = $parameters['disabled'];
     }
 
     $selectbox_id = 'id_agent_module';
-    // Default value
+    // Default value.
     if (isset($parameters['selectbox_id'])) {
         $selectbox_id = $parameters['selectbox_id'];
     }
 
     $add_none_module = true;
-    // Default value
+    // Default value.
     if (isset($parameters['add_none_module'])) {
         $add_none_module = $parameters['add_none_module'];
     }
 
     $none_module_text = '--';
-    // Default value
+    // Default value.
     if (isset($parameters['none_module_text'])) {
         $none_module_text = $parameters['none_module_text'];
     }
 
     $print_input_server = false;
-    // Default value
+    // Default value.
     if (isset($parameters['print_input_server'])) {
         $print_input_server = $parameters['print_input_server'];
     }
 
     $print_input_id_server = false;
-    // Default value
+    // Default value.
     if (isset($parameters['print_input_id_server'])) {
         $print_input_id_server = $parameters['print_input_id_server'];
     }
 
     $use_input_server = false;
-    // Default value
+    // Default value.
     if (isset($parameters['use_input_server'])) {
         $use_input_server = $parameters['use_input_server'];
     }
 
     $use_input_id_server = false;
-    // Default value
+    // Default value.
     if (isset($parameters['use_input_id_server'])) {
         $use_input_id_server = $parameters['use_input_id_server'];
     }
 
     $input_server_name = uniqid('server_');
-    // Default value
+    // Default value.
     if (isset($parameters['input_server_name'])) {
         $input_server_name = $parameters['input_server_name'];
     }
 
     $input_id_server_name = uniqid('server_');
-    // Default value
+    // Default value.
     if (isset($parameters['input_id_server_name'])) {
         $input_id_server_name = $parameters['input_id_server_name'];
     }
 
     $input_server_id = 'hidden-'.$input_server_name;
-    // Default value
+    // Default value.
     if (isset($parameters['input_server_id'])) {
         $input_server_id = $parameters['input_server_id'];
     }
 
     $input_id_server_id = 'hidden-'.$input_id_server_name;
-    // Default value
+    // Default value.
     if (isset($parameters['input_id_server_id'])) {
         $input_id_server_id = $parameters['input_id_server_id'];
     }
 
     $input_server_value = '';
-    // Default value
+    // Default value.
     if (isset($parameters['input_server_value'])) {
         $input_server_value = $parameters['input_server_value'];
     }
 
     $input_id_server_value = '';
-    // Default value
+    // Default value.
     if (isset($parameters['input_id_server_value'])) {
         $input_id_server_value = $parameters['input_id_server_value'];
     }
 
     $from_ux_transaction = '';
-    // Default value
+    // Default value.
     if (isset($parameters['from_ux'])) {
         $from_ux_transaction = $parameters['from_ux'];
     }
 
     $from_wux_transaction = '';
-    // Default value
+    // Default value.
     if (isset($parameters['from_wux'])) {
         $from_wux_transaction = $parameters['from_wux'];
     }
 
     $cascade_protection = false;
-    // Default value
+    // Default value.
     if (isset($parameters['cascade_protection'])) {
         $cascade_protection = $parameters['cascade_protection'];
     }
 
     $metaconsole_enabled = false;
-    // Default value
+    // Default value.
     if (isset($parameters['metaconsole_enabled'])) {
         $metaconsole_enabled = $parameters['metaconsole_enabled'];
     } else {
-        // If metaconsole_enabled param is not setted then pick source configuration
+        // If metaconsole_enabled param is not setted then pick source configuration.
         if (defined('METACONSOLE')) {
             $metaconsole_enabled = true;
         } else {
@@ -3502,17 +3615,17 @@ function ui_print_agent_autocomplete_input($parameters)
     }
 
     // Javascript configurations
-    // ------------------------------------------------------------------
+    // ------------------------------------------------------------------.
     $javascript_ajax_page = ui_get_full_url('ajax.php', false, false, false, false);
-    // Default value
+    // Default value.
     if (isset($parameters['javascript_ajax_page'])) {
         $javascript_ajax_page = $parameters['javascript_ajax_page'];
     }
 
     $javascript_function_action_after_select = '';
-    // Default value
+    // Default value.
     $javascript_function_action_after_select_js_call = '';
-    // Default value
+    // Default value.
     if (isset($parameters['javascript_function_action_after_select'])) {
         $javascript_function_action_after_select = $parameters['javascript_function_action_after_select'];
         $javascript_function_action_after_select_js_call = $javascript_function_action_after_select.'();';
@@ -3526,9 +3639,9 @@ function ui_print_agent_autocomplete_input($parameters)
     }
 
     $javascript_function_action_into_source = '';
-    // Default value
+    // Default value.
     $javascript_function_action_into_source_js_call = '';
-    // Default value
+    // Default value.
     if (isset($parameters['javascript_function_action_into_source'])) {
         $javascript_function_action_into_source = $parameters['javascript_function_action_into_source'];
         $javascript_function_action_into_source_js_call = $javascript_function_action_into_source.'();';
@@ -3542,7 +3655,7 @@ function ui_print_agent_autocomplete_input($parameters)
     }
 
     $javascript = true;
-    // Default value
+    // Default value.
     if (isset($parameters['javascript'])) {
         $javascript = $parameters['javascript'];
     }
@@ -3553,13 +3666,13 @@ function ui_print_agent_autocomplete_input($parameters)
     }
 
     $javascript_is_function_select = false;
-    // Default value
+    // Default value.
     if (isset($parameters['javascript_is_function_select'])) {
         $javascript_is_function_select = $parameters['javascript_is_function_select'];
     }
 
     $javascript_name_function_select = 'function_select_'.$input_name;
-    // Default value
+    // Default value.
     if (isset($parameters['javascript_name_function_select'])) {
         $javascript_name_function_select = $parameters['javascript_name_function_select'];
     }
@@ -3698,7 +3811,7 @@ function ui_print_agent_autocomplete_input($parameters)
     }
 
     // ============ INIT javascript_change_ajax_params ==================
-    // Default value
+    // Default value.
     $javascript_page = 'include/ajax/agent';
     if (isset($parameters['javascript_page'])) {
         $javascript_page = $parameters['javascript_page'];
@@ -3762,7 +3875,7 @@ function ui_print_agent_autocomplete_input($parameters)
     $javascript_change_ajax_params_text .= '};';
     // ============ END javascript_change_ajax_params ===================
     $javascript_function_change = '';
-    // Default value
+    // Default value.
     $javascript_function_change .= '
 		function set_functions_change_autocomplete_'.$input_name.'() {
 			var cache_'.$input_name.' = {};
@@ -3802,7 +3915,7 @@ function ui_print_agent_autocomplete_input($parameters)
 					else {
 						//Check if other terms cached start with same
 						//letters.
-						//TODO: At the moment DISABLED CODE
+						//TODO: At the moment DISABLED CODE.
 						/*
 						for (i = 1; i < term.length; i++) {
 							var term_match = term.substr(0, term.length - i);
@@ -3978,36 +4091,36 @@ function ui_print_agent_autocomplete_input($parameters)
     }
 
     $javascript_document_ready = true;
-    // Default value
+    // Default value.
     if (isset($parameters['javascript_document_ready'])) {
         $javascript_document_ready = $parameters['javascript_document_ready'];
     }
 
     $javascript_tags = true;
-    // Default value
+    // Default value.
     if (isset($parameters['javascript_tags'])) {
         $javascript_tags = $parameters['javascript_tags'];
     }
 
     $disabled_javascript_on_blur_function = false;
-    // Default value
+    // Default value.
     if (isset($parameters['disabled_javascript_on_blur_function'])) {
         $disabled_javascript_on_blur_function = $parameters['disabled_javascript_on_blur_function'];
     }
 
     $javascript_on_blur_function_name = 'function_on_blur_'.$input_name;
-    // Default value
+    // Default value.
     if (isset($parameters['javascript_on_blur_function_name'])) {
         $javascript_on_blur_function_name = $parameters['javascript_on_blur_function_name'];
     }
 
     $check_only_empty_javascript_on_blur_function = false;
-    // Default value
+    // Default value.
     if (isset($parameters['check_only_empty_javascript_on_blur_function'])) {
         $check_only_empty_javascript_on_blur_function = $parameters['check_only_empty_javascript_on_blur_function'];
     }
 
-    // Default value
+    // Default value.
     $javascript_on_blur = '
 		/*
 		This function is a callback when the autocomplete agent
@@ -4134,7 +4247,7 @@ function ui_print_agent_autocomplete_input($parameters)
         $javascript_on_blur = $parameters['javascript_on_blur'];
     }
 
-    // ------------------------------------------------------------------
+    // ------------------------------------------------------------------.
     $html = '';
 
     $attrs = [];
@@ -4187,7 +4300,7 @@ function ui_print_agent_autocomplete_input($parameters)
         );
     }
 
-    // Write the javascript
+    // Write the javascript.
     if ($javascript) {
         if ($javascript_tags) {
             $html .= '<script type="text/javascript">
@@ -4226,11 +4339,13 @@ function ui_print_agent_autocomplete_input($parameters)
 /**
  * Return error strings (title and message) for each error code
  *
- * @param string error code
+ * @param string $error_code Error code.
+ *
+ * @return array.
  */
 function ui_get_error($error_code='')
 {
-    // FIXME: Deprecated. Pandora shouldn't go inside this
+    // XXX: Deprecated. Pandora shouldn't go inside this.
     return [
         'title'   => __('Unhandled error'),
         'message' => __('An unhandled error occurs'),
@@ -4238,6 +4353,13 @@ function ui_get_error($error_code='')
 }
 
 
+/**
+ * Include time picker.
+ *
+ * @param boolean $echo_tags Tags.
+ *
+ * @return void
+ */
 function ui_include_time_picker($echo_tags=false)
 {
     if (is_ajax() || $echo_tags) {
@@ -4252,6 +4374,16 @@ function ui_include_time_picker($echo_tags=false)
 }
 
 
+/**
+ * Print string value.
+ *
+ * @param string  $value            Value.
+ * @param integer $id_agente_module Id_agente_module.
+ * @param integer $current_interval Current_interval.
+ * @param string  $module_name      Module_name.
+ *
+ * @return string HTML.
+ */
 function ui_print_module_string_value(
     $value,
     $id_agente_module,
@@ -4260,7 +4392,7 @@ function ui_print_module_string_value(
 ) {
     global $config;
 
-    if (is_null($module_name)) {
+    if ($module_name == null) {
         $module_name = modules_get_agentmodule_name($id_agente_module);
     }
 
@@ -4281,7 +4413,7 @@ function ui_print_module_string_value(
     );
 
     // Fixed the goliat sends the strings from web
-    // without HTML entities
+    // without HTML entities.
     if ($is_web_content_string) {
         $value = io_safe_input($value);
     }
@@ -4314,11 +4446,11 @@ function ui_print_module_string_value(
             }
         } else {
             // Fixed the goliat sends the strings from web
-            // without HTML entities
+            // without HTML entities.
             if ($is_web_content_string) {
                 $sub_string = substr($value, 0, 12);
             } else {
-                // Fixed the data from Selenium Plugin
+                // Fixed the data from Selenium Plugin.
                 if ($value != strip_tags($value)) {
                     $value = io_safe_input($value);
                     $sub_string = substr($value, 0, 12);
@@ -4348,7 +4480,12 @@ function ui_print_module_string_value(
 
 
 /**
- * Displays a tag list
+ * Displays a tag list.
+ *
+ * @param string $title Title.
+ * @param array  $tags  Tags.
+ *
+ * @return void
  */
 function ui_print_tags_view($title='', $tags=[])
 {
@@ -4377,33 +4514,35 @@ function ui_print_tags_view($title='', $tags=[])
 
 
 /**
- * @brief Get the link to open a snapshot into a new page
+ * Gets the link to open a snapshot into a new page.
  *
- * @param Array Params to build the link (see  $default_params)
- * @param bool Flag to choose de return value:
- *         true: Get the four params required in the function of pandora.js winopen_var (js use)
- *         false: Get an inline winopen_var function call (php user)
+ * @param array   $params      Params to build the link (see  $default_params).
+ * @param boolean $only_params Flag to choose de return value:
+ *            true: Get the four params required in the function of pandora.js winopen_var (js use)
+ *            false: Get an inline winopen_var function call (php user).
+ *
+ * @return string Link.
  */
 function ui_get_snapshot_link($params, $only_params=false)
 {
     global $config;
 
     $default_params = [
+        // Id_agente_modulo.
         'id_module'   => 0,
-    // id_agente_modulo
         'module_name' => '',
         'interval'    => 300,
         'timestamp'   => 0,
         'id_node'     => 0,
     ];
 
-    // Merge default params with passed params
+    // Merge default params with passed params.
     $params = array_merge($default_params, $params);
 
-    // First parameter of js winopeng_var
+    // First parameter of js winopeng_var.
     $page = $config['homeurl_static'].'/operation/agentes/snapshot_view.php';
 
-    $url = "$page?".'id='.$params['id_module'].'&label='.rawurlencode(urlencode(io_safe_output($params['module_name']))).'&id_node='.$params['id_node'];
+    $url = $page.'?id='.$params['id_module'].'&label='.rawurlencode(urlencode(io_safe_output($params['module_name']))).'&id_node='.$params['id_node'];
 
     if ($params['timestamp'] != 0) {
         $url .= '&timestamp='.$params['timestamp'];
@@ -4413,7 +4552,7 @@ function ui_get_snapshot_link($params, $only_params=false)
         $url .= '&refr='.$params['interval'];
     }
 
-    // Second parameter of js winopeng_var
+    // Second parameter of js winopeng_var.
     $win_handle = dechex(crc32('snapshot_'.$params['id_module']));
 
     $link_parts = [
@@ -4423,30 +4562,30 @@ function ui_get_snapshot_link($params, $only_params=false)
         480,
     ];
 
-    // Return only the params to js execution
+    // Return only the params to js execution.
     if ($only_params) {
         return $link_parts;
     }
 
-    // Return the function call to inline js execution
+    // Return the function call to inline js execution.
     return "winopeng_var('".implode("', '", $link_parts)."')";
 }
 
 
 /**
- * @brief Get the snapshot image with the link to open a snapshot into a new page
+ * Get the snapshot image with the link to open a snapshot into a new page
  *
- * @param string Built link
- * @param bool Picture image or list image
+ * @param string  $link     Built link.
+ * @param boolean $is_image Picture image or list image.
  *
- * @return string HTML anchor link with image
+ * @return string HTML anchor link with image.
  */
 function ui_get_snapshot_image($link, $is_image)
 {
-    $image_name = $is_image ? 'photo.png' : 'default_list.png';
+    $image_name = ($is_image) ? 'photo.png' : 'default_list.png';
 
     $link = '<a href="javascript:'.$link.'">'.html_print_image(
-        "images/$image_name",
+        'images/'.$image_name,
         true,
         [
             'border' => '0',
@@ -4459,6 +4598,14 @@ function ui_get_snapshot_image($link, $is_image)
 }
 
 
+/**
+ * Show warning timezone missmatch.
+ *
+ * @param string  $tag    Tag.
+ * @param boolean $return Return.
+ *
+ * @return string HTML.
+ */
 function ui_get_using_system_timezone_warning($tag='h3', $return=true)
 {
     global $config;
@@ -4470,7 +4617,7 @@ function ui_get_using_system_timezone_warning($tag='h3', $return=true)
             __('These controls are using the timezone of the system (%s) instead of yours (%s). The difference with your time zone in hours is %s.'),
             $config['timezone'],
             date_default_timezone_get(),
-            $user_offset > 0 ? '+'.$user_offset : $user_offset
+            ($user_offset > 0) ? '+'.$user_offset : $user_offset
         );
         return ui_print_info_message($message, '', $return, $tag);
     } else {
@@ -4483,13 +4630,13 @@ function ui_get_using_system_timezone_warning($tag='h3', $return=true)
 /**
  * Get the custom docs logo
  *
- * @return string with the path to logo. False if it should not be displayed
+ * @return string with the path to logo. False if it should not be displayed.
  */
 function ui_get_docs_logo()
 {
     global $config;
 
-    // Default logo to open version (enterprise_installed function only works in login status)
+    // Default logo to open version (enterprise_installed function only works in login status).
     if (!file_exists(ENTERPRISE_DIR.'/load_enterprise.php')) {
         return 'images/icono_docs.png';
     }
@@ -4505,13 +4652,13 @@ function ui_get_docs_logo()
 /**
  * Get the custom support logo
  *
- * @return string with the path to logo. False if it should not be displayed
+ * @return string with the path to logo. False if it should not be displayed.
  */
 function ui_get_support_logo()
 {
     global $config;
 
-    // Default logo to open version (enterprise_installed function only works in login status)
+    // Default logo to open version (enterprise_installed function only works in login status).
     if (!file_exists(ENTERPRISE_DIR.'/load_enterprise.php')) {
         return 'images/icono_support.png';
     }
@@ -4527,7 +4674,9 @@ function ui_get_support_logo()
 /**
  * Get the custom header logo
  *
- * @return string with the path to logo. If it is not set, return the default value
+ * @param boolean $white_bg Using white bg or not.
+ *
+ * @return string with the path to logo. If it is not set, return the default value.
  */
 function ui_get_custom_header_logo($white_bg=false)
 {
@@ -4537,7 +4686,7 @@ function ui_get_custom_header_logo($white_bg=false)
         return 'images/pandora_tinylogo_open.png';
     }
 
-    $stored_logo = is_metaconsole() ? ($white_bg ? $config['meta_custom_logo_white_bg'] : $config['meta_custom_logo']) : ($white_bg ? $config['custom_logo_white_bg'] : $config['custom_logo']);
+    $stored_logo = (is_metaconsole()) ? (($white_bg) ? $config['meta_custom_logo_white_bg'] : $config['meta_custom_logo']) : (($white_bg) ? $config['custom_logo_white_bg'] : $config['custom_logo']);
     if (empty($stored_logo)) {
         return 'images/pandora_tinylogo.png';
     }
@@ -4590,7 +4739,7 @@ function ui_get_favicon()
     global $config;
 
     if (empty($config['custom_favicon'])) {
-        return !is_metaconsole() ? 'images/pandora.ico' : 'enterprise/meta/images/favicon_meta.ico';
+        return (!is_metaconsole()) ? 'images/pandora.ico' : 'enterprise/meta/images/favicon_meta.ico';
     }
 
     return 'images/custom_favicon/'.$config['custom_favicon'];
@@ -4599,6 +4748,11 @@ function ui_get_favicon()
 
 /**
  * Show sorting arrows for tables
+ *
+ * @param string $url_up     Url_up.
+ * @param string $url_down   Url_down.
+ * @param string $selectUp   SelectUp.
+ * @param string $selectDown SelectDown.
  *
  * @return string  HTML anchor link with the arrow icon.
  */
@@ -4630,6 +4784,8 @@ function ui_get_sorting_arrows($url_up, $url_down, $selectUp, $selectDown)
 
 /**
  * Show breadcrums in the page titles
+ *
+ * @param string $tab_name Tab name.
  *
  * @return string  HTML anchor with the name of the section.
  */

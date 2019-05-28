@@ -5987,6 +5987,9 @@ div#bullets_modules div {
   display: flex;
   margin-bottom: 20px;
   width: 100%;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-between;
 }
 
 .agent_details_col {
@@ -5994,30 +5997,27 @@ div#bullets_modules div {
   background-color: #fff;
   border: 1px solid #e2e2e2;
   border-radius: 5px;
+  flex: 0 1 auto;
+  margin: 5px auto;
 }
 
 .agent_details_col_left {
-  width: 40%;
-  min-width: 500px;
+  width: 49.5%;
+  min-width: 455px;
 }
-
-.agent_details_col.agent_details_col_left {
-  width: 50%;
+.agent_details_col_right {
+  width: 49.5%;
+  min-width: 455px;
+}
+@media screen and (max-width: 1200px) {
+  .agent_details_col {
+    flex: 1 1 auto;
+  }
 }
 
 .agent_details_content .agent_details_bullets {
   position: relative;
   left: -20%;
-}
-
-.agent_details_col_right {
-  width: 62%;
-  margin-left: 20px;
-  min-width: 670px;
-}
-
-.agent_details_col.agent_details_col_right {
-  width: 50%;
 }
 
 .buttons_agent_view {

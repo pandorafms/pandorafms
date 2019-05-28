@@ -1,23 +1,33 @@
 <?php
-
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the  GNU Lesser General Public License
-// as published by the Free Software Foundation; version 2
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-
 /**
- * @package    Include
- * @subpackage UI
+ * Library. User interface functions.
+ *
+ * @category   Library.
+ * @package    Pandora FMS
+ * @subpackage User interface.
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
  */
 
-// Check to avoid error when load this library in error screen situations
+// Begin.
+// Check to avoid error when load this library in error screen situations.
 if (isset($config['homedir'])) {
     include_once $config['homedir'].'/include/functions_agents.php';
     include_once $config['homedir'].'/include/functions_modules.php';
@@ -28,6 +38,14 @@ if (isset($config['homedir'])) {
 }
 
 
+/**
+ * Transform bbcode to HTML.
+ *
+ * @param string $text         Text.
+ * @param array  $allowed_tags Allowed_tags.
+ *
+ * @return string HTML.
+ */
 function ui_bbcode_to_html($text, $allowed_tags=['[url]'])
 {
     $return = $text;
@@ -129,7 +147,7 @@ function ui_print_truncate_text($text, $numChars=GENERIC_SIZE_TEXT, $showTextInA
             'UTF-8'
         );
 
-        // Recover the html entities to avoid XSS attacks
+        // Recover the html entities to avoid XSS attacks.
         $truncateText = ($text_has_entities) ? io_safe_input($truncateText).$suffix.io_safe_input($truncateText2) : $truncateText.$suffix.$truncateText2;
 
         if ($showTextInTitle) {
@@ -170,6 +188,8 @@ function ui_print_truncate_text($text, $numChars=GENERIC_SIZE_TEXT, $showTextInA
  *
  * @param string  $string String to be display with a smaller font.
  * @param boolean $return Flag to return as string or not.
+ *
+ * @return string HTML.
  */
 function printSmallFont($string, $return=true)
 {
@@ -199,12 +219,13 @@ function printSmallFont($string, $return=true)
 /**
  * Prints a generic message between tags.
  *
- * @param mixed The string message or array ('title', 'message', 'icon', 'no_close', 'force_style')  to be displayed
- * @param string the class to user
- * @param string Any other attributes to be set for the tag.
- * @param bool Whether to output the string or return it
- * @param string What tag to use (you could specify something else than
- * h3 like div or h2)
+ * @param mixed   $message    The string message or array [
+ *      'title', 'message', 'icon', 'no_close', 'force_style'] to be displayed.
+ * @param string  $class      The class to be used.
+ * @param string  $attributes Any other attributes to be set for the tag.
+ * @param boolean $return     Whether to output the string or return it.
+ * @param string  $tag        What tag to use (you could specify something else
+ *      than h3 like div or h2).
  *
  * @return string HTML code if return parameter is true.
  */
@@ -285,7 +306,7 @@ function ui_print_message($message, $class='', $attributes='', $return=false, $t
 
     $id = 'info_box_'.uniqid();
 
-    // Use the no_meta parameter because this image is only in the base console
+    // Use the no_meta parameter because this image is only in the base console.
     $output = '<table cellspacing="0" cellpadding="0" id="'.$id.'" '.$attributes.'
 		class="info_box '.$id.' '.$class.' textodialogo" style="'.$force_style.'">
 		<tr>
@@ -293,7 +314,8 @@ function ui_print_message($message, $class='', $attributes='', $return=false, $t
 			<td class="title" style="text-transform: uppercase; padding-top: 10px;"><b>'.$text_title.'</b></td>
 			<td class="icon" style="text-align: right; padding-right: 3px;">';
     if (!$no_close_bool) {
-        // Use the no_meta parameter because this image is only in the base console
+        // Use the no_meta parameter because this image is only in
+        // the base console.
         $output .= '<a href="javascript: close_info_box(\''.$id.'\')">'.html_print_image('images/blade.png', true, false, false, false, true).'</a>';
     }
 
@@ -330,11 +352,12 @@ function ui_print_message($message, $class='', $attributes='', $return=false, $t
 /**
  * Prints an error message.
  *
- * @param mixed The string error message or array ('title', 'message', 'icon', 'no_close') to be displayed
- * @param string Any other attributes to be set for the tag.
- * @param bool Whether to output the string or return it
- * @param string What tag to use (you could specify something else than
- * h3 like div or h2)
+ * @param mixed   $message    The string error message or array
+ *         ('title', 'message', 'icon', 'no_close') to be displayed.
+ * @param string  $attributes Any other attributes to be set for the tag.
+ * @param boolean $return     Whether to output the string or return it.
+ * @param string  $tag        What tag to use (you could specify something else
+ *         than h3 like div or h2).
  *
  * @return string HTML code if return parameter is true.
  */
@@ -347,11 +370,12 @@ function ui_print_error_message($message, $attributes='', $return=false, $tag='h
 /**
  * Prints an operation success message.
  *
- * @param mixed The string message or array ('title', 'message', 'icon', 'no_close') to be displayed
- * @param string Any other attributes to be set for the tag.
- * @param bool Whether to output the string or return it
- * @param string What tag to use (you could specify something else than
- * h3 like div or h2)
+ * @param mixed   $message    The string message or array
+ *         ('title', 'message', 'icon', 'no_close') to be displayed.
+ * @param string  $attributes Any other attributes to be set for the tag.
+ * @param boolean $return     Whether to output the string or return it.
+ * @param string  $tag        What tag to use (you could specify something else
+ *         than h3 like div or h2).
  *
  * @return string HTML code if return parameter is true.
  */
@@ -364,11 +388,12 @@ function ui_print_success_message($message, $attributes='', $return=false, $tag=
 /**
  * Prints an operation info message.
  *
- * @param mixed The string message or array ('title', 'message', 'icon', 'no_close') to be displayed
- * @param string Any other attributes to be set for the tag.
- * @param bool Whether to output the string or return it
- * @param string What tag to use (you could specify something else than
- * h3 like div or h2)
+ * @param mixed   $message    The string message or array
+ *         ('title', 'message', 'icon', 'no_close') to be displayed.
+ * @param string  $attributes Any other attributes to be set for the tag.
+ * @param boolean $return     Whether to output the string or return it.
+ * @param string  $tag        What tag to use (you could specify something else
+ *         than h3 like div or h2).
  *
  * @return string HTML code if return parameter is true.
  */
@@ -378,6 +403,18 @@ function ui_print_info_message($message, $attributes='', $return=false, $tag='h3
 }
 
 
+/**
+ * Prints an operation info message - empty data.
+ *
+ * @param mixed   $message    The string message or array
+ *         ('title', 'message', 'icon', 'no_close') to be displayed.
+ * @param string  $attributes Any other attributes to be set for the tag.
+ * @param boolean $return     Whether to output the string or return it.
+ * @param string  $tag        What tag to use (you could specify something else
+ *         than h3 like div or h2).
+ *
+ * @return string HTML code if return parameter is true.
+ */
 function ui_print_empty_data($message, $attributes='', $return=false, $tag='h3')
 {
     return ui_print_message($message, 'info', $attributes, $return, $tag);
@@ -387,14 +424,16 @@ function ui_print_empty_data($message, $attributes='', $return=false, $tag='h3')
 /**
  * Evaluates a result using empty() and then prints an error or success message
  *
- * @param mixed The results to evaluate. 0, NULL, false, '' or
- * array() is bad, the rest is good
- * @param mixed The string or array ('title', 'message') to be displayed if the result was good
- * @param mixed The string or array ('title', 'message') to be displayed if the result was bad
- * @param string Any other attributes to be set for the h3
- * @param bool Whether to output the string or return it
- * @param string What tag to use (you could specify something else than
- * h3 like div or h2)
+ * @param mixed   $result     The results to evaluate. 0, NULL, false, '' or
+ *                            array() is bad, the rest is good.
+ * @param mixed   $good       The string or array ('title', 'message') to be
+ *                            displayed if the result was good.
+ * @param mixed   $bad        The string or array ('title', 'message') to be
+ *                            displayed if the result was bad.
+ * @param string  $attributes Any other attributes to be set for the h3.
+ * @param boolean $return     Whether to output the string or return it.
+ * @param string  $tag        What tag to use (you could specify something else
+ *                            than h3 like div or h2).
  *
  * @return string HTML code if return parameter is true.
  */
@@ -419,11 +458,12 @@ function ui_print_result_message($result, $good='', $bad='', $attributes='', $re
 /**
  * Prints an warning message.
  *
- * @param mixed The string warning message or array ('title', 'message', 'icon', 'no_close') to be displayed
- * @param string Any other attributes to be set for the tag.
- * @param bool Whether to output the string or return it
- * @param string What tag to use (you could specify something else than
- * h3 like div or h2)
+ * @param mixed   $message    The string message or array
+ *         ('title', 'message', 'icon', 'no_close') to be displayed.
+ * @param string  $attributes Any other attributes to be set for the tag.
+ * @param boolean $return     Whether to output the string or return it.
+ * @param string  $tag        What tag to use (you could specify something else
+ *         than h3 like div or h2).
  *
  * @return string HTML code if return parameter is true.
  */
@@ -438,13 +478,13 @@ function ui_print_warning_message($message, $attributes='', $return=false, $tag=
  * with as title the correctly formatted full timestamp and a time comparation
  * in the tag
  *
- * @param int Any type of timestamp really, but we prefer unixtime
- * @param bool Whether to output the string or return it
- * @param array An array with different options for this function
- *    Key html_attr: which html attributes to add (defaults to none)
- *    Key tag: Which html tag to use (defaults to span)
- *    Key prominent: Overrides user preference and display "comparation" or "timestamp"
- *    key units: The type of units.
+ * @param integer $unixtime Any type of timestamp really, but we prefer unixtime.
+ * @param boolean $return   Whether to output the string or return it.
+ * @param array   $option   An array with different options for this function
+ *        Key html_attr: which html attributes to add (defaults to none)
+ *        Key tag: Which html tag to use (defaults to span)
+ *        Key prominent: Overrides user preference and display "comparation" or "timestamp"
+ *        key units: The type of units.
  *
  * @return string HTML code if return parameter is true.
  */
@@ -452,7 +492,8 @@ function ui_print_timestamp($unixtime, $return=false, $option=[])
 {
     global $config;
 
-    // TODO: Add/use a javascript timer for the seconds so it automatically updates as time passes by
+    // TODO: Add/use a javascript timer for the seconds so it automatically
+    // updates as time passes by.
     if (isset($option['html_attr'])) {
         $attributes = $option['html_attr'];
     } else {
@@ -481,7 +522,7 @@ function ui_print_timestamp($unixtime, $return=false, $option=[])
         $unixtime = time_w_fixed_tz($unixtime);
     }
 
-    // prominent_time is either timestamp or comparation
+    // Prominent_time is either timestamp or comparation.
     if ($unixtime <= 0) {
         $title = __('Unknown').'/'.__('Never');
         $data = __('Unknown');
@@ -507,13 +548,13 @@ function ui_print_timestamp($unixtime, $return=false, $option=[])
     switch ($tag) {
         default:
             // Usually tags have title attributes, so by default we add,
-            // then fall through to add attributes and data
+            // then fall through to add attributes and data.
             $output .= ' title="'.$title.'" '.$style.'>'.$data.'</'.$tag.'>';
         break;
         case 'h1':
         case 'h2':
         case 'h3':
-            // Above tags don't have title attributes
+            // Above tags don't have title attributes.
             $output .= ' '.$attributes.' '.$style.'>'.$data.'</'.$tag.'>';
         break;
     }
@@ -529,8 +570,8 @@ function ui_print_timestamp($unixtime, $return=false, $option=[])
 /**
  * Prints a username with real name, link to the user_edit page etc.
  *
- * @param string The username to render
- * @param bool Whether to return or print
+ * @param string  $username The username to render.
+ * @param boolean $return   Whether to return or print.
  *
  * @return string HTML code if return parameter is true.
  */
@@ -546,6 +587,13 @@ function ui_print_username($username, $return=false)
 }
 
 
+/**
+ * Show a notification.
+ *
+ * @param boolean $return Return or direct echo.
+ *
+ * @return string HTML.
+ */
 function ui_print_tags_warning($return=false)
 {
     $msg = '<div id="notify_conf" class="notify">';
@@ -563,11 +611,14 @@ function ui_print_tags_warning($return=false)
 /**
  * Print group icon within a link
  *
- * @param int Group id
- * @param bool Whether to return or print
- * @param string What path to use (relative to images/). Defaults to groups_small
- * @param string Style for group image
- * @param bool Whether the group have link or not
+ * @param integer $id_group         Group id.
+ * @param boolean $return           Whether to return or print.
+ * @param string  $path             What path to use (relative to images/).
+ *                                  Defaults to groups_small.
+ * @param string  $style            Style for group image.
+ * @param boolean $link             Whether the group have link or not.
+ * @param boolean $force_show_image Force show image.
+ * @param boolean $show_as_image    Show as image.
  *
  * @return string HTML code if return parameter is true.
  */
@@ -583,7 +634,7 @@ function ui_print_group_icon($id_group, $return=false, $path='groups_small', $st
 
     $output = '';
 
-    // Don't show link in metaconsole
+    // Don't show link in metaconsole.
     if (defined('METACONSOLE')) {
         $link = false;
     }
@@ -630,9 +681,12 @@ function ui_print_group_icon($id_group, $return=false, $path='groups_small', $st
 /**
  * Print group icon within a link. Other version.
  *
- * @param int Group id
- * @param bool Whether to return or print
- * @param string What path to use (relative to images/). Defaults to groups_small
+ * @param integer $id_group Group id.
+ * @param boolean $return   Whether to return or print.
+ * @param string  $path     What path to use (relative to images/).
+ *                          Defaults to groups_small.
+ * @param string  $style    Extra styles.
+ * @param boolean $link     Add anchor.
  *
  * @return string HTML code if return parameter is true.
  */
@@ -674,10 +728,15 @@ function ui_print_group_icon_path($id_group, $return=false, $path='images/groups
 /**
  * Get the icon of an operating system.
  *
- * @param int Operating system id
- * @param bool Whether to also append the name of the OS after the icon
- * @param bool Whether to return or echo the result
- * @param bool Whether to apply skin or not
+ * @param integer $id_os      Operating system id.
+ * @param boolean $name       Whether to also append the name of OS after icon.
+ * @param boolean $return     Whether to return or echo the result.
+ * @param boolean $apply_skin Whether to apply skin or not.
+ * @param boolean $networkmap Networkmap.
+ * @param boolean $only_src   Only_src.
+ * @param boolean $relative   Relative.
+ * @param boolean $options    Options.
+ * @param boolean $big_icons  Big_icons.
  *
  * @return string HTML with icon of the OS
  */
@@ -744,6 +803,18 @@ function ui_print_os_icon(
 }
 
 
+/**
+ * Print type agent icon.
+ *
+ * @param boolean $id_os          Id_os.
+ * @param boolean $remote_contact Remote_contact.
+ * @param boolean $contact        Contact.
+ * @param boolean $return         Return.
+ * @param integer $remote         Remote.
+ * @param string  $version        Version.
+ *
+ * @return string HTML.
+ */
 function ui_print_type_agent_icon(
     $id_os=false,
     $remote_contact=false,
@@ -753,15 +824,15 @@ function ui_print_type_agent_icon(
     $version=''
 ) {
     if ($id_os == 19) {
-        // Satellite
+        // Satellite.
         $options['title'] = __('Satellite');
         $output = html_print_image('images/op_satellite.png', true, $options, false, false, false, true);
     } else if ($remote_contact == $contact && $remote == 0 && $version == '') {
-        // Network
+        // Network.
         $options['title'] = __('Network');
         $output = html_print_image('images/network.png', true, $options, false, false, false, true);
     } else {
-        // Software
+        // Software.
         $options['title'] = __('Software');
         $output = html_print_image('images/data.png', true, $options, false, false, false, true);
     }
@@ -773,20 +844,31 @@ function ui_print_type_agent_icon(
 /**
  * Prints an agent name with the correct link
  *
- * @param int Agent id
- * @param bool Whether to return the string or echo it too
- * @param int Now uses styles to accomplish this
- * @param string Style of name in css.
- * @param string server url to concatenate at the begin of the link
- * @param string extra parameters to concatenate in the link
- * @param string name of the agent to avoid the query in some cases
- * @param bool if the agent will provided with link or not
- * @param bool use the agent alias or the name
+ * @param integer $id_agent         Agent id.
+ * @param boolean $return           Whether to return the string or echo it too.
+ * @param integer $cutoff           Now uses styles to accomplish this.
+ * @param string  $style            Style of name in css.
+ * @param boolean $cutname          Cut names.
+ * @param string  $server_url       Server url to concatenate at the begin of the link.
+ * @param string  $extra_params     Extra parameters to concatenate in the link.
+ * @param string  $known_agent_name Name of the agent to avoid the query in some cases.
+ * @param boolean $link             If the agent will provided with link or not.
+ * @param boolean $alias            Use the agent alias or the name.
  *
  * @return string HTML with agent name and link
  */
-function ui_print_agent_name($id_agent, $return=false, $cutoff='agent_medium', $style='', $cutname=false, $server_url='', $extra_params='', $known_agent_name=false, $link=true, $alias=true)
-{
+function ui_print_agent_name(
+    $id_agent,
+    $return=false,
+    $cutoff='agent_medium',
+    $style='',
+    $cutname=false,
+    $server_url='',
+    $extra_params='',
+    $known_agent_name=false,
+    $link=true,
+    $alias=true
+) {
     if ($known_agent_name === false) {
         if ($alias) {
             $agent_name = (string) agents_get_alias($id_agent);
@@ -808,14 +890,14 @@ function ui_print_agent_name($id_agent, $return=false, $cutoff='agent_medium', $
     }
 
     if ($link) {
-        $url = $server_url.'index.php?sec=estado&amp;'.'sec2=operation/agentes/ver_agente&amp;'.'id_agente='.$id_agent.$extra_params;
+        $url = $server_url.'index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agent.$extra_params;
 
-        $output = '<a style="'.$style.'"'.' href="'.$url.'"'.' title="'.$agent_name_full.'"><b><span style="'.$style.'">'.$agent_name.'</span></b></a>';
+        $output = '<a style="'.$style.'" href="'.$url.'" title="'.$agent_name_full.'"><b><span style="'.$style.'">'.$agent_name.'</span></b></a>';
     } else {
         $output = '<b><span style="'.$style.'">'.$agent_name.'</span></b>';
     }
 
-    // TODO: Add a pretty javascript (using jQuery) popup-box with agent details
+    // TODO: Add a pretty javascript (using jQuery) popup-box with agent details.
     if ($return) {
         return $output;
     }
@@ -827,16 +909,19 @@ function ui_print_agent_name($id_agent, $return=false, $cutoff='agent_medium', $
 /**
  * Formats a row from the alert table and returns an array usable in the table function
  *
- * @param array A valid (non empty) row from the alert table
- * @param bool Whether or not this is a combined alert
- * @param bool Whether to print the agent information with the module information
- * @param string Tab where the function was called from (used for urls)
- * @param mixed Style for agent name or default (false)
+ * @param array   $alert       A valid (non empty) row from the alert table.
+ * @param boolean $agent       Whether or not this is a combined alert.
+ * @param string  $url         Tab where the function was called from (used for urls).
+ * @param mixed   $agent_style Style for agent name or default (false).
  *
  * @return array A formatted array with proper html for use in $table->data (6 columns)
  */
-function ui_format_alert_row($alert, $agent=true, $url='', $agent_style=false)
-{
+function ui_format_alert_row(
+    $alert,
+    $agent=true,
+    $url='',
+    $agent_style=false
+) {
     global $config;
 
     if (!isset($alert['server_data'])) {
@@ -856,7 +941,7 @@ function ui_format_alert_row($alert, $agent=true, $url='', $agent_style=false)
     include_once $config['homedir'].'/include/functions_alerts.php';
     $isFunctionPolicies = enterprise_include_once('include/functions_policies.php');
     $id_group = (int) get_parameter('ag_group', 0);
-    // 0 is the All group (selects all groups)
+    // 0 is the All group (selects all groups).
     if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
         if ($agent) {
             $index = [
@@ -956,13 +1041,13 @@ function ui_format_alert_row($alert, $agent=true, $url='', $agent_style=false)
         $server = db_get_row('tmetaconsole_setup', 'id', $alert['server_data']['id']);
 
         if (metaconsole_connect($server) == NOERR) {
-            // Get agent data from node
+            // Get agent data from node.
             $agente = db_get_row('tagente', 'id_agente', $alert['id_agent']);
 
             metaconsole_restore_db();
         }
     } else {
-        // Get agent id
+        // Get agent id.
         $id_agent = modules_get_agentmodule_agent($alert['id_agent_module']);
         $agente = db_get_row('tagente', 'id_agente', $id_agent);
     }
@@ -972,9 +1057,11 @@ function ui_format_alert_row($alert, $agent=true, $url='', $agent_style=false)
 
     $data = [];
 
-    // Validate checkbox
+    // Validate checkbox.
     if (!defined('METACONSOLE')) {
-        if (check_acl($config['id_user'], $id_group, 'LW') || check_acl($config['id_user'], $id_group, 'LM')) {
+        if (check_acl($config['id_user'], $id_group, 'LW')
+            || check_acl($config['id_user'], $id_group, 'LM')
+        ) {
             $data[$index['validate']] = '';
 
             $data[$index['validate']] .= html_print_checkbox(
@@ -996,7 +1083,6 @@ function ui_format_alert_row($alert, $agent=true, $url='', $agent_style=false)
                 // Restore the default connection.
                 metaconsole_restore_db();
                 $errors++;
-                // break; It does not work in the php7 version remplace for:
                 return false;
             }
         }
@@ -1018,14 +1104,14 @@ function ui_format_alert_row($alert, $agent=true, $url='', $agent_style=false)
         }
     }
 
-    // Standby
+    // Standby.
     $data[$index['standby']] = '';
     if (isset($alert['standby']) && $alert['standby'] == 1) {
         $data[$index['standby']] = html_print_image('images/bell_pause.png', true, ['title' => __('Standby on')]);
     }
 
     if (!defined('METACONSOLE')) {
-        // Force alert execution
+        // Force alert execution.
         if (check_acl($config['id_user'], $id_group, 'AW') || check_acl($config['id_user'], $id_group, 'LM')) {
             if ($alert['force_execution'] == 0) {
                 $data[$index['force_execution']] = '<a href="'.$url.'&amp;id_alert='.$alert['id'].'&amp;force_execution=1&refr=60">'.html_print_image('images/target.png', true, ['border' => '0', 'title' => __('Force')]).'</a>';
@@ -2464,7 +2550,7 @@ function ui_print_status_image($type, $title='', $return=false, $options=false, 
  *
  * @param integer $progress Progress.
  * @param string  $width    Width.
- * @param string  $height   Height.
+ * @param integer $height   Height in 'em'.
  * @param string  $color    Color.
  * @param boolean $return   Return or paint (if false).
  *
@@ -2473,7 +2559,7 @@ function ui_print_status_image($type, $title='', $return=false, $options=false, 
 function ui_progress(
     $progress,
     $width='100%',
-    $height='2.5em',
+    $height='2.5',
     $color='#80ba27',
     $return=true
 ) {
@@ -2490,8 +2576,8 @@ function ui_progress(
     }
 
     ui_require_css_file('progress');
-    $output .= '<div class="progress_main" style="width: '.$width.'; height: '.$height.';">';
-    $output .= '<span class="progress_text">'.$progress.'%</span>';
+    $output .= '<div class="progress_main" style="width: '.$width.'; height: '.$height.'em;">';
+    $output .= '<span class="progress_text" style="font-size:'.($height - 0.5).'em;">'.$progress.'%</span>';
     $output .= '<div class="progress" style="width: '.$progress.'%;"></div>';
     $output .= '</div>';
 
@@ -4155,7 +4241,7 @@ function ui_get_error($error_code='')
 function ui_include_time_picker($echo_tags=false)
 {
     if (is_ajax() || $echo_tags) {
-        echo '<script type="text/javascript" src="'.ui_get_full_url(false, false, false, false).'include/javascript/jquery.ui-timepicker-addon.js'.'"></script>';
+        echo '<script type="text/javascript" src="'.ui_get_full_url(false, false, false, false).'include/javascript/jquery.ui-timepicker-addon.js"></script>';
     } else {
         ui_require_jquery_file('ui-timepicker-addon');
     }
@@ -4251,8 +4337,8 @@ function ui_print_module_string_value(
 
                 $title_dialog = modules_get_agentmodule_agent_alias($id_agente_module).' / '.$module_name;
                 $salida = '<div '."id='hidden_value_module_".$id_agente_module."'
-					style='display: none; width: 100%; height: 100%; overflow: auto; padding: 10px; font-size: 14px; line-height: 16px; font-family: mono,monospace; text-align: left' title='".$title_dialog."'>".$value.'</div>'.'<span '."id='value_module_".$id_agente_module."'
-					style='white-space: nowrap;'>".'<span id="value_module_text_'.$id_agente_module.'">'.$sub_string.'</span> '."<a href='javascript: toggle_full_value(".$id_agente_module.")'>".html_print_image('images/zoom.png', true).'</a>'.'</span>';
+					style='display: none; width: 100%; height: 100%; overflow: auto; padding: 10px; font-size: 14px; line-height: 16px; font-family: mono,monospace; text-align: left' title='".$title_dialog."'>".$value.'</div><span '."id='value_module_".$id_agente_module."'
+					style='white-space: nowrap;'>".'<span id="value_module_text_'.$id_agente_module.'">'.$sub_string.'</span> '."<a href='javascript: toggle_full_value(".$id_agente_module.")'>".html_print_image('images/zoom.png', true).'</a></span>';
             }
         }
     }

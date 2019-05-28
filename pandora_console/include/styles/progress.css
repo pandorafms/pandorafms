@@ -6,6 +6,7 @@ span.progress_text {
 }
 
 div.progress_main {
+  display: inline-block;
   text-align: center;
   height: 2.5em;
   border: 1px solid #80ba27;

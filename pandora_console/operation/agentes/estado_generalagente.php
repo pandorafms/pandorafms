@@ -1,6 +1,6 @@
 <?php
 /**
- * Extension to schedule tasks on Pandora FMS Console
+ * Agent status - general overview.
  *
  * @category   Agent view status.
  * @package    Pandora FMS
@@ -409,7 +409,7 @@ if (!empty($addresses)) {
     // $data_opcional = [];
     $data_opcional[] = '<b>'.__('Other IP addresses').'</b>';
     if (!empty($addresses)) {
-        $data_opcional[] = '<div style="max-height: 30px; overflow-y: scroll; height:30px;">'.implode('<br>', $addresses).'</div>';
+        $data_opcional[] = '<div style="overflow-y: scroll;">'.implode('<br>', $addresses).'</div>';
     }
 
      array_push($data_opcional);

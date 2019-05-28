@@ -298,7 +298,7 @@ function mainAgentsAlerts()
 
             $table2->data[2][0] = __('Threshold');
             $table2->data[2][1] = html_print_input_text('module_action_threshold', '0', '', 5, 7, true);
-            $table2->data[2][1] .= ' '.__('seconds').ui_print_help_icon('action_threshold', true);
+            $table2->data[2][1] .= ' '.__('seconds');
 
             $content2 = '<form class="add_alert_form" method="post">';
             $content2 .= html_print_table($table2, true);

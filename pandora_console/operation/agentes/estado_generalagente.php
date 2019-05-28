@@ -499,7 +499,7 @@ if (!empty($network_interfaces)) {
                 $params_json = json_encode($params);
                 $params_encoded = base64_encode($params_json);
                 $win_handle = dechex(crc32($interface['status_module_id'].$interface_name));
-                $graph_link = "<a href=\"javascript:winopeng('operation/agentes/interface_traffic_graph_win.php?params=$params_encoded','$win_handle')\">".html_print_image('images/chart_curve.png', true, ['title' => __('Interface traffic')]).'</a>';
+                $graph_link = "<a href=\"javascript:winopeng_var('operation/agentes/interface_traffic_graph_win.php?params=$params_encoded','$win_handle', 1000, 650)\">".html_print_image('images/chart_curve.png', true, ['title' => __('Interface traffic')]).'</a>';
             } else {
                 $graph_link = '';
             }

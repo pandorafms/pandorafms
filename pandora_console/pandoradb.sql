@@ -1148,7 +1148,7 @@ CREATE TABLE IF NOT EXISTS `tusuario` (
 	`default_custom_view` int(10) unsigned NULL default '0',
 	`ehorus_user_level_user` VARCHAR(60),
 	`ehorus_user_level_pass` VARCHAR(45),
-	`ehorus_user_acces` TINYINT(1),
+	`ehorus_user_level_enabled` TINYINT(1),
 	CONSTRAINT `fk_filter_id` FOREIGN KEY (`id_filter`) REFERENCES tevent_filter (`id_filter`) ON DELETE SET NULL,
 	UNIQUE KEY `id_user` (`id_user`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

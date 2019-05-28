@@ -18,7 +18,7 @@ UPDATE `tnotification_source` SET `icon`="icono_logo_pandora.png" WHERE `descrip
 
 ALTER TABLE `tusuario` ADD COLUMN `ehorus_user_level_user` VARCHAR(60);
 ALTER TABLE `tusuario` ADD COLUMN `ehorus_user_level_pass` VARCHAR(45);
-ALTER TABLE `tusuario` ADD COLUMN `ehorus_user_acces` TINYINT(1) DEFAULT '1';
+ALTER TABLE `tusuario` ADD COLUMN `ehorus_user_level_enabled` TINYINT(1) DEFAULT '1';
 
 
 

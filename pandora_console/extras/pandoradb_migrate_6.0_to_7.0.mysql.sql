@@ -1290,7 +1290,7 @@ ALTER TABLE `tusuario` DROP COLUMN `flash_chart`;
 ALTER TABLE `tusuario` ADD COLUMN `default_custom_view` int(10) unsigned NULL default '0';
 ALTER TABLE `tusuario` ADD COLUMN `ehorus_user_level_user` VARCHAR(60);
 ALTER TABLE `tusuario` ADD COLUMN `ehorus_user_level_pass` VARCHAR(45);
-ALTER TABLE `tusuario` ADD COLUMN `ehorus_user_acces` TINYINT(1);
+ALTER TABLE `tusuario` ADD COLUMN `ehorus_user_level_enabled` TINYINT(1);
 
 
 

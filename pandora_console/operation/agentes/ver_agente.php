@@ -1267,7 +1267,7 @@ if ($config['ehorus_enabled'] && !empty($config['ehorus_custom_field'])
     ) || is_user_admin($config['id_user']))
 ) {
     $user_info = users_get_user_by_id($config['id_user']);
-    if ($config['ehorus_user_login'] && !$user_info['ehorus_user_login_user'] && !$user_info['ehorus_user_login_pass']) {
+    if ($config['ehorus_user_level_conf'] && !$user_info['ehorus_user_level_user'] && !$user_info['ehorus_user_level_pass']) {
         // If ehorus user configuration is enabled, and no password provided, do nothing.
     } else {
         $ehorus_agent_id = agents_get_agent_custom_field($id_agente, $config['ehorus_custom_field']);

@@ -123,8 +123,8 @@ if (isset($_GET['modified']) && !$view_mode) {
     }
 
     $upd_info['time_autorefresh'] = (int) get_parameter('time_autorefresh', 0);
-    $upd_info['ehorus_user_login_user'] = get_parameter('ehorus_user_login_user', $user_info['ehorus_user_login_user']);
-    $upd_info['ehorus_user_login_pass'] = get_parameter('ehorus_user_login_pass', $user_info['ehorus_user_login_pass']);
+    $upd_info['ehorus_user_level_user'] = get_parameter('ehorus_user_level_user');
+    $upd_info['ehorus_user_level_pass'] = get_parameter('ehorus_user_level_pass');
 
 
     $is_admin = db_get_value('is_admin', 'tusuario', 'id_user', $id);
@@ -645,7 +645,7 @@ if (!is_metaconsole()) {
             </div>    
         </div>';
 
-if ($config['ehorus_enabled'] && $config['ehorus_user_login']) {
+if ($config['ehorus_enabled'] && $config['ehorus_user_level_conf']) {
     // eHorus user remote login
     $table_remote = new StdClass();
     $table_remote->data = [];
@@ -659,19 +659,19 @@ if ($config['ehorus_enabled'] && $config['ehorus_user_login']) {
     // Title
     $row = [];
     $row['control'] = '<p class="edit_user_labels">'.__('eHorus user configuration').': </p>';
-    $table_remote->data['ehorus_user_login'] = $row;
+    $table_remote->data['ehorus_user_level_conf'] = $row;
 
     // User.
     $row = [];
     $row['name'] = __('User');
-    $row['control'] = html_print_input_text('ehorus_user_login_user', $user_info['ehorus_user_login_user'], '', 30, 100, true);
-    $table_remote->data['ehorus_user_login_user'] = $row;
+    $row['control'] = html_print_input_text('ehorus_user_level_user', $user_info['ehorus_user_level_user'], '', 30, 100, true);
+    $table_remote->data['ehorus_user_level_user'] = $row;
 
     // Pass.
     $row = [];
     $row['name'] = __('Password');
-    $row['control'] = html_print_input_password('ehorus_user_login_pass', io_output_password($user_info['ehorus_user_login_pass']), '', 30, 100, true);
-    $table_remote->data['ehorus_user_login_pass'] = $row;
+    $row['control'] = html_print_input_password('ehorus_user_level_pass', io_output_password($user_info['ehorus_user_level_pass']), '', 30, 100, true);
+    $table_remote->data['ehorus_user_level_pass'] = $row;
 
     // Test.
     $ehorus_port = db_get_value('value', 'tconfig', 'token', 'ehorus_port');
@@ -807,13 +807,6 @@ if (!defined('METACONSOLE')) {
     echo '<script type="text/javascript" src="'.ui_get_full_url('include/javascript/timezonepicker/lib/jquery.maphilight.min.js').'"></script>'."\n\t";
     // Closes no meta condition.
 }
-
-
-function ehorus_user_login_conf()
-{
-
-}
-
 
 ?>
 
@@ -1141,8 +1134,8 @@ function show_double_auth_deactivation () {
 }
 
 function ehorus_connection_test(host, port) {
-        var user = $('input#text-ehorus_user_login_user').val();
-        var pass = $('input#password-ehorus_user_login_pass').val();
+        var user = $('input#text-ehorus_user_level_user').val();
+        var pass = $('input#password-ehorus_user_level_pass').val();
     
         debugger;
         var badRequestMessage = '<?php echo __('Empty user or password'); ?>';

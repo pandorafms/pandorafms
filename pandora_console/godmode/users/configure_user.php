@@ -155,6 +155,7 @@ if ($new_user && $config['admin_can_add_user']) {
     if ($config['ehorus_user_level_conf']) {
         $user_info['ehorus_user_level_user'] = '';
         $user_info['ehorus_user_level_pass'] = '';
+        $user_info['ehorus_user_level_enabled'] = true;
     }
 }
 
@@ -222,10 +223,16 @@ if ($create_user) {
 
     // eHorus user level conf
     if ($config['ehorus_user_level_conf']) {
-        $values['ehorus_user_acces'] = (bool) get_parameter('ehorus_user_acces', true);
-        $values['ehorus_user_level_user'] = (string) get_parameter('ehorus_user_level_user', '');
-        $values['ehorus_user_level_pass'] = (string) get_parameter('ehorus_user_level_pass', '');
+        $values['ehorus_user_level_enabled'] = (bool) get_parameter('ehorus_user_level_enabled', false);
+        if ($values['ehorus_user_level_enabled'] === true) {
+            $values['ehorus_user_level_user'] = (string) get_parameter('ehorus_user_level_user');
+            $values['ehorus_user_level_pass'] = (string) get_parameter('ehorus_user_level_pass');
+        } else {
+            $values['ehorus_user_level_user'] = null;
+            $values['ehorus_user_level_pass'] = null;
+        }
     }
+
 
     if ($id == '') {
         ui_print_error_message(__('User ID cannot be empty'));
@@ -310,8 +317,18 @@ if ($update_user) {
     $values['timezone'] = (string) get_parameter('timezone');
     $values['default_event_filter'] = (int) get_parameter('default_event_filter');
     $values['default_custom_view'] = (int) get_parameter('default_custom_view');
-    $values['ehorus_user_login_user'] = get_parameter('ehorus_user_login_user', $user_info['ehorus_user_login_user']);
-    $values['ehorus_user_login_pass'] = get_parameter(io_input_password((string) get_parameter('ehorus_user_login_pass', $user_info['ehorus_user_login_pass'])));
+    // eHorus user level conf
+    if ($config['ehorus_user_level_conf']) {
+        $values['ehorus_user_level_enabled'] = (bool) get_parameter('ehorus_user_level_enabled', false);
+        if ($values['ehorus_user_level_enabled'] === true) {
+            $values['ehorus_user_level_user'] = (string) get_parameter('ehorus_user_level_user');
+            $values['ehorus_user_level_pass'] = (string) get_parameter('ehorus_user_level_pass');
+        } else {
+            $values['ehorus_user_level_user'] = null;
+            $values['ehorus_user_level_pass'] = null;
+        }
+    }
+
     $dashboard = get_parameter('dashboard', '');
     $visual_console = get_parameter('visual_console', '');
 
@@ -859,9 +876,9 @@ $table->data[16][1] = html_print_select($event_filter, 'default_event_filter', $
 
 if ($config['ehorus_user_level_conf']) {
     $table->data[17][0] = __('Ehorus configuration at user level');
-    $table->data[17][1] = html_print_checkbox('ehorus_user_acces', 1, $config['ehorus_user_level_conf'], true);
+    $table->data[17][1] = html_print_checkbox('ehorus_user_level_enabled', 1, $user_info['ehorus_user_level_enabled'], true);
     $table->data[18][0] = __('eHorus user');
-    $table->data[19][0] = __('eHorys password');
+    $table->data[19][0] = __('eHorus password');
     $table->data[18][1] = html_print_input_text('ehorus_user_level_user', $user_info['ehorus_user_level_user'], '', 15, 45, true);
     $table->data[19][1] = html_print_input_password('ehorus_user_level_pass', io_output_password($user_info['ehorus_user_level_pass']), '', 15, 45, true);
 }
@@ -958,10 +975,10 @@ $(document).ready (function () {
     $('#checkbox-metaconsole_agents_manager').trigger('change');
     
     show_data_section();
-    $('#checkbox-ehorus_user_acces').change(function () {
+    $('#checkbox-ehorus_user_level_enabled').change(function () {
         switch_ehorus_conf();
     });
-    $('#checkbox-ehorus_user_acces').trigger('change');
+    $('#checkbox-ehorus_user_level_enabled').trigger('change');
 
 });
 
@@ -1019,7 +1036,7 @@ function show_data_section () {
 
 function switch_ehorus_conf()
 {
-    if(!$('#checkbox-ehorus_user_acces').prop('checked')) 
+    if(!$('#checkbox-ehorus_user_level_enabled').prop('checked')) 
     {
         $("#user_configuration_table-18").hide();
         $("#user_configuration_table-19").hide();

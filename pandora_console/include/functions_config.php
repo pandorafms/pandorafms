@@ -1353,7 +1353,7 @@ function config_update_config()
                         $error_update[] = __('Enable eHorus');
                     }
 
-                    if (!config_update_value('ehorus_user_login', (int) get_parameter('ehorus_user_login', 0))) {
+                    if (!config_update_value('ehorus_user_level_conf', (int) get_parameter('ehorus_user_level_conf', 0))) {
                         $error_update[] = __('eHorus user login');
                     }
 

@@ -69,8 +69,8 @@ $table_remote->style['name'] = 'font-weight: bold';
 // Enable eHorus user configuration.
 $row = [];
 $row['name'] = ('Enable eHorus user configuration');
-$row['control'] = html_print_checkbox_switch('ehorus_user_login', 1, $config['ehorus_user_login'], true);
-$table_remote->data['ehorus_user_login'] = $row;
+$row['control'] = html_print_checkbox_switch('ehorus_user_level_conf', 1, $config['ehorus_user_level_conf'], true);
+$table_remote->data['ehorus_user_level_conf'] = $row;
 
 // User.
 $row = [];

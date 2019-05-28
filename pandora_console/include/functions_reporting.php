@@ -2844,7 +2844,6 @@ function reporting_event_report_agent(
     if ($label != '') {
         $label = reporting_label_macro($content, $label);
     }
-
     $return['label'] = $label;
 
     if ($event_graph_by_user_validator) {

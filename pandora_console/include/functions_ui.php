@@ -2783,15 +2783,15 @@ function ui_toggle(
     }
 
     // Link to toggle.
-    $output = '';
-    $output .= '<a href="javascript:" id="tgl_ctrl_'.$uniqid.'">'.html_print_image(
+    $output = '<div class="white_table_graph">';
+    $output .= '<div class="white_table_graph_header" id="tgl_ctrl_'.$uniqid.'">'.html_print_image(
         $original,
         true,
         [
             'title' => $title,
             'id'    => 'image_'.$uniqid,
         ]
-    ).'&nbsp;&nbsp;<b>'.$name.'</b></a>';
+    ).'&nbsp;&nbsp;<b>'.$name.'</b></div>';
     // $output .= '<br />';
     // if (!defined("METACONSOLE"))
         // $output .= '<br />';
@@ -2820,6 +2820,7 @@ function ui_toggle(
     $output .= "	});\n";
     $output .= '/* ]]> */';
     $output .= '</script>';
+    $output .= '</div>';
 
     if (!$return) {
         echo $output;

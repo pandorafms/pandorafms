@@ -800,6 +800,7 @@ if (check_login()) {
 
         $table = new stdClass();
         $table->width = '100%';
+        $table->styleTable = 'border: 0;border-radius: 0;';
         $table->cellpadding = 0;
         $table->cellspacing = 0;
         $table->class = 'info_table';

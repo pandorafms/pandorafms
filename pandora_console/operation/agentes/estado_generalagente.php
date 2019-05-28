@@ -406,8 +406,6 @@ if ($agent['url_address'] != '') {
     if ($agent['url_address'] != '') {
         $data_opcional[] = '<a href='.$agent['url_address'].'>'.$agent['url_address'].'</a>';
     }
-
-        array_push($data_opcional);
 }
 
 
@@ -418,8 +416,6 @@ if (!empty($addresses)) {
     if (!empty($addresses)) {
         $data_opcional[] = '<div style="overflow-y: scroll;">'.implode('<br>', $addresses).'</div>';
     }
-
-     array_push($data_opcional);
 }
 
 // Timezone Offset.
@@ -428,8 +424,6 @@ if ($agent['timezone_offset'] != 0) {
     if ($agent['timezone_offset'] != 0) {
         $data_opcional[] = $agent['timezone_offset'];
     }
-
-    array_push($data_opcional);
 }
 
 

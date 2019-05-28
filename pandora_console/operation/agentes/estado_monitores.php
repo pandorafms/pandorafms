@@ -147,43 +147,41 @@ $sort_field = get_parameter('sort_field', 'name');
 $sort = get_parameter('sort', 'up');
 
 
-echo "<h4 style='padding-top:0px !important;'>";
-
-echo ui_print_help_tip(
-    __('To see the list of modules paginated, enable this option in the Styles Configuration.'),
-    true
-);
-echo '<span>'.__('Full list of monitors').'</span>';
-echo reporting_tiny_stats(
-    $agent,
-    true,
-    'modules',
-    ':',
-    true
-);
-
 $modules_not_init = agents_monitor_notinit($id_agente);
 if (!empty($modules_not_init)) {
     echo clippy_context_help('modules_not_init');
 }
 
-echo '</h4>';
-
-
 ob_start();
 
-print_form_filter_monitors($id_agente, $status_filter_monitor, $status_text_monitor, $status_hierachy_mode);
+print_form_filter_monitors(
+    $id_agente,
+    $status_filter_monitor,
+    $status_text_monitor,
+    $status_hierachy_mode
+);
 
-echo "<div id='module_list_loading'>".html_print_image('images/spinner.gif', true).'</div>';
-echo "<div id='module_list'>".'</div>';
+echo '<div class="white_table_graph_content" id="module_list_loading">'.html_print_image('images/spinner.gif', true).'</div>';
+echo '<div class="white_table_graph_content" style="padding: 0;" id="module_list"></div>';
 
 $html_toggle = ob_get_clean();
+
 ui_toggle(
     $html_toggle,
-    __('List of modules'),
+    __('List of modules').ui_print_help_tip(
+        __('To see the list of modules paginated, enable this option in the Styles Configuration.'),
+        true
+    ).reporting_tiny_stats(
+        $agent,
+        true,
+        'modules',
+        ':',
+        true
+    ),
     'status_monitor_agent',
     false
 );
+
 
 ?>
 <script type="text/javascript">
@@ -493,7 +491,8 @@ function print_form_filter_monitors(
 ) {
     $form_text = '';
     $table = new stdClass();
-    $table->class = 'databox filters';
+    $table->class = 'info_table';
+    $table->styleTable = 'width: 100%;border-radius: 0;padding: 0;margin: 0;margin-top: -1px;';
     $table->width = '100%';
     $table->style[0] = 'font-weight: bold;';
     $table->style[2] = 'font-weight: bold;';

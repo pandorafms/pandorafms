@@ -1,3 +1,5 @@
+/* globals $ */
+
 // Pandora FMS - http://pandorafms.com
 // ==================================================
 // Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
@@ -30,6 +32,8 @@ var SIZE_GRID = 16; //Const the size (for width and height) of grid.
 
 var img_handler_start;
 var img_handler_end;
+
+var default_cache_expiration = null;
 
 function toggle_advance_options_palette(close) {
   if ($("#advance_options").css("display") == "none") {
@@ -1183,7 +1187,10 @@ function readFields() {
   values["timezone"] = $("select[name=timezone]").val();
   values["clock_animation"] = $("select[name=clock_animation]").val();
   values["show_last_value"] = $("select[name=last_value]").val();
-  values["cache_expiration"] = $("select[name=cache_expiration]").val();
+  values["cache_expiration"] =
+    typeof $("#hidden-cache_expiration").val() !== "undefined"
+      ? $("#hidden-cache_expiration").val()
+      : $("#cache_expiration").val();
 
   // Color Cloud values
   if (selectedItem == "color_cloud" || creationItem == "color_cloud") {
@@ -2220,7 +2227,23 @@ function loadFieldsFromDB(item) {
         }
 
         if (key == "cache_expiration") {
-          $("select[name=cache_expiration]").val(val);
+          var intoCacheExpSelect = false;
+          var cacheExpId = $("#hidden-cache_expiration").attr("class");
+          $("#" + cacheExpId + "_select option").each(function() {
+            if ($(this).val() == val) {
+              $(this).prop("selected", true);
+              $(this).trigger("change");
+              intoCacheExpSelect = true;
+            }
+          });
+          if (intoCacheExpSelect == false) {
+            $("#" + cacheExpId + "_select").val(0);
+            $("#" + cacheExpId + "_units").val(1);
+            $("#hidden-cache_expiration").val(val);
+            $("#text-" + cacheExpId + "_text").val(val);
+            $("#" + cacheExpId + "_default").hide();
+            $("#" + cacheExpId + "_manual").show();
+          }
         }
 
         if (key == "value_show") {
@@ -2674,6 +2697,44 @@ function cleanFields(item) {
   $("table.color-range-creation input[type=text]").val("");
   $("table.color-range-creation input[type=color]").val("#FFFFFF");
   $("table.color-range:not(table.color-range-creation)").remove();
+
+  // Clean the cache expiration selection.
+  if (default_cache_expiration === null) {
+    var cacheExpVal = $("#hidden-cache_expiration").val();
+    if (!Number.isNaN(Number.parseInt(cacheExpVal))) {
+      cacheExpVal = Number.parseInt(cacheExpVal);
+    } else {
+      cacheExpVal = 0;
+    }
+
+    default_cache_expiration = cacheExpVal;
+  }
+  var cacheExpId = $("#hidden-cache_expiration").attr("class");
+  $("#hidden-cache_expiration").val(default_cache_expiration);
+
+  var intoCacheExpSelect = false;
+  $("#" + cacheExpId + "_select option").each(function() {
+    if ($(this).val() == default_cache_expiration) {
+      $(this).prop("selected", true);
+      $(this).trigger("change");
+      intoCacheExpSelect = true;
+    }
+  });
+  if (!intoCacheExpSelect) {
+    // Show input.
+    $("#" + cacheExpId + "_select").val(0);
+    $("#" + cacheExpId + "_units").val(1);
+    $("#text-" + cacheExpId + "_text").val(default_cache_expiration);
+    $("#" + cacheExpId + "_default").hide();
+    $("#" + cacheExpId + "_manual").show();
+  } else {
+    // Show select.
+    $("#" + cacheExpId + "_select").val(default_cache_expiration);
+    $("#" + cacheExpId + "_units").val(0);
+    $("#text-" + cacheExpId + "_text").val("");
+    $("#" + cacheExpId + "_default").show();
+    $("#" + cacheExpId + "_manual").hide();
+  }
 
   $("#preview").empty();
 

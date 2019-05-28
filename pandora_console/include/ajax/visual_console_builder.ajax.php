@@ -176,7 +176,7 @@ $default_color = get_parameter('default_color', '#FFFFFF');
 $color_range_from_values = get_parameter('color_range_from_values', []);
 $color_range_to_values = get_parameter('color_range_to_values', []);
 $color_range_colors = get_parameter('color_range_colors', []);
-$cache_expiration = get_parameter('cache_expiration', 0);
+$cache_expiration = (int) get_parameter('cache_expiration');
 
 switch ($action) {
     case 'get_font':

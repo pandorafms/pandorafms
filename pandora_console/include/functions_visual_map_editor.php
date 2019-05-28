@@ -1128,30 +1128,58 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background)
                 true
             ).'</td>';
 
-    $interval = [];
-    $interval[0] = __('No cache');
-    $interval[10] = '10 '.__('seconds');
-    $interval[30] = '30 '.__('seconds');
-    $interval[60] = '1 '.__('minutes');
-    $interval[300] = '5 '.__('minutes');
-    $interval[900] = '15 '.__('minutes');
-    $interval[1800] = '30 '.__('minutes');
-    $interval[3600] = '1 '.__('hour');
+    if (!$config['legacy_vc']) {
+        $intervals = [
+            10   => '10 '.__('seconds'),
+            30   => '30 '.__('seconds'),
+            60   => '1 '.__('minutes'),
+            300  => '5 '.__('minutes'),
+            900  => '15 '.__('minutes'),
+            1800 => '30 '.__('minutes'),
+            3600 => '1 '.__('hour'),
+        ];
 
-    $form_items_advance['cache_expiration_row'] = [];
-    $form_items_advance['cache_expiration_row']['items'] = [
-        'group_item',
-        'module_graph',
-        'auto_sla_graph',
-        'bars_graph',
-        'donut_graph',
-    ];
-    $form_items_advance['cache_expiration_row']['html'] = '<td align="left">'.__('Cache expiration').'</td>
-        <td align="left">'.html_print_select($interval, 'cache_expiration', $jeje, '', '', '0', 10, false, false, false).'</td>';
+        $form_items_advance['cache_expiration_row'] = [];
+        $form_items_advance['cache_expiration_row']['items'] = [
+            'static_graph',
+            'percentile_bar',
+            'percentile_item',
+            'module_graph',
+            'simple_value',
+            'label',
+            'datos',
+            'auto_sla_graph',
+            'bars_graph',
+            'donut_graph',
+            'color_cloud',
+            'service',
+        ];
+        $form_items_advance['cache_expiration_row']['html'] = '<td align="left">';
+        $form_items_advance['cache_expiration_row']['html'] .= __('Cache expiration');
+        $form_items_advance['cache_expiration_row']['html'] .= '</td>';
+        $form_items_advance['cache_expiration_row']['html'] .= '<td align="left">';
+        $form_items_advance['cache_expiration_row']['html'] .= html_print_extended_select_for_time(
+            'cache_expiration',
+            $config['vc_default_cache_expiration'],
+            '',
+            __('No cache'),
+            0,
+            false,
+            true,
+            false,
+            true,
+            '',
+            false,
+            $intervals
+        );
+        $form_items_advance['cache_expiration_row']['html'] .= '</td>';
+    }
 
     // Insert and modify before the buttons to create or update.
     if (enterprise_installed()) {
-        enterprise_visual_map_editor_modify_form_items_advance_palette($form_items_advance);
+        enterprise_visual_map_editor_modify_form_items_advance_palette(
+            $form_items_advance
+        );
     }
 
     foreach ($form_items_advance as $item => $item_options) {

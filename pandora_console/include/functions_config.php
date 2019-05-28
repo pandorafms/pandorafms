@@ -984,6 +984,10 @@ function config_update_config()
                         $error_update[] = __('Use the legacy Visual Console');
                     }
 
+                    if (!config_update_value('vc_default_cache_expiration', (int) get_parameter('vc_default_cache_expiration'))) {
+                        $error_update[] = __("Default expiration of the Visual Console item's cache");
+                    }
+
                     if (!config_update_value('vc_refr', (int) get_parameter('vc_refr'))) {
                         $error_update[] = __('Default interval for refresh on Visual Console');
                     }
@@ -2421,6 +2425,10 @@ function config_process_config()
 
     if (!isset($config['legacy_vc'])) {
         config_update_value('legacy_vc', 1);
+    }
+
+    if (!isset($config['vc_default_cache_expiration'])) {
+        config_update_value('vc_default_cache_expiration', 60);
     }
 
     if (!isset($config['vc_refr'])) {

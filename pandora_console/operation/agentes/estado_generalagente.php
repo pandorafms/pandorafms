@@ -817,7 +817,7 @@ echo '<div id="agent_details_first_row">
 
 // Show both graphs, events and access rate.
 if ($table_access_rate) {
-    echo '<div style="display:grid; grid-template-columns: 1fr 1fr; grid-column-gap: 20px;">'.$table_access_rate.$table_events.'</div>';
+    echo '<div class="agent_access_rate_events">'.$table_access_rate.$table_events.'</div>';
 } else {
     echo '<div style="width: 100%">'.$table_events.'</div>';
 }

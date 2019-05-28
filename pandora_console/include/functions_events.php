@@ -959,6 +959,8 @@ function events_print_event_table(
 ) {
     global $config;
 
+    ui_require_css_file('events');
+
     if ($agent_id == 0) {
         $agent_condition = '';
     } else {
@@ -1011,7 +1013,7 @@ function events_print_event_table(
         $table->data = [];
         $table->align = [];
         $table->style[0] = 'width:25px;';
-        $table->style[1] = 'width:25px;';
+        $table->style[1] = 'width:25px;padding: 0;';
         $table->style[2] = 'width:25px;';
         if ($agent_id == 0) {
             $table->style[3] = 'word-break: break-all;';
@@ -1040,6 +1042,11 @@ function events_print_event_table(
         $table->headclass[5] = 'datos3 f9';
         $table->align[5] = 'left';
         $table->size[5] = '15%';
+
+        $table->head[6] = __('Status');
+        $table->headclass[6] = 'datos3 f9';
+        $table->align[6] = 'left';
+        $table->size[6] = '13%';
 
         $all_groups = [];
         if ($agent_id != 0) {
@@ -1109,16 +1116,7 @@ function events_print_event_table(
                 break;
             }
 
-            $data[1] = html_print_image(
-                $img,
-                true,
-                [
-                    'class'  => 'image_status',
-                    'width'  => 12,
-                    'height' => 12,
-                    'title'  => get_priority_name($event['criticity']),
-                ]
-            );
+            $data[1] = ui_print_event_priority($event['criticity'], true, true);
 
             // Event type.
             $data[2] = events_print_type_img($event['event_type'], true);
@@ -1135,9 +1133,7 @@ function events_print_event_table(
                 if ($event['id_agente'] > 0) {
                     // Agent name.
                     // Get class name, for the link color, etc.
-                    $myclass = get_priority_class($event['criticity']);
-
-                    $data[4] = "<a class='".$myclass."' href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=".$event['id_agente']."'>".agents_get_alias($event['id_agente']).'</A>';
+                    $data[4] = "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=".$event['id_agente']."'>".agents_get_alias($event['id_agente']).'</A>';
                     // For System or SNMP generated alerts.
                 } else if ($event['event_type'] == 'system') {
                     $data[4] = __('System');
@@ -1149,12 +1145,17 @@ function events_print_event_table(
             // Timestamp.
             $data[5] = ui_print_timestamp($event['timestamp'], true, ['style' => 'font-size: 7.5pt; letter-spacing: 0.3pt;']);
 
-            $class = get_priority_class($event['criticity']);
-            $cell_classes[3] = $class;
-            $cell_classes[4] = $class;
-            $cell_classes[5] = $class;
+            // Status.
+            $data[6] = ui_print_event_priority($event['criticity'], true);
 
-            array_push($table->cellclass, $cell_classes);
+            /*
+                $class = get_priority_class($event['criticity']);
+                $cell_classes[3] = $class;
+                $cell_classes[4] = $class;
+                $cell_classes[5] = $class;
+
+                array_push($table->cellclass, $cell_classes);
+            */
 
             /*
                 Commented out (old).

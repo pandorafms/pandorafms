@@ -453,6 +453,16 @@ select:-internal-list-box {
   max-width: 100%;
 }
 
+.no-padding {
+  padding: 0;
+}
+.no-padding-imp {
+  padding: 0 !important;
+}
+.no-margin {
+  margin: 0;
+}
+
 div#page {
   background: #fbfbfb;
   background-image: none;
@@ -5985,15 +5995,37 @@ div#bullets_modules div {
 
 .agent_details_col_left {
   width: 35%;
-  min-width: 470px;
+  min-width: 300px;
 }
 .agent_details_col_right {
   width: 64%;
-  min-width: 455px;
+  min-width: 480px;
 }
-@media screen and (max-width: 1600px) {
+
+.agent_access_rate_events {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.white_table_graph#table_access_rate {
+  flex: 1 1 auto;
+  min-width: 450px;
+  margin-right: 1%;
+}
+
+.white_table_graph#table_events {
+  flex: 1 1 auto;
+  min-width: 450px;
+}
+
+@media screen and (max-width: 1150px) {
   .agent_details_col {
     flex: 1 1 auto;
+  }
+  .white_table_graph#table_access_rate {
+    margin-right: 0;
   }
 }
 
@@ -6083,8 +6115,6 @@ div#status_pie {
 /* White tables to show graphs */
 .white_table_graph {
   margin-bottom: 20px;
-  display: grid;
-  grid-template-rows: max-content;
 }
 
 .white_table_graph_header {
@@ -6121,9 +6151,12 @@ div#status_pie {
   flex-wrap: wrap;
 }
 
-div.white_table_graph_content div.pagination {
+.white_table_graph_content div.pagination {
   width: 100%;
   padding: 0 1em;
+}
+.white_table_graph_content div.action-buttons {
+  padding: 10px;
 }
 
 /* White tables */

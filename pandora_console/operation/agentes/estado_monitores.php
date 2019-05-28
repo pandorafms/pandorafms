@@ -492,11 +492,13 @@ function print_form_filter_monitors(
     $form_text = '';
     $table = new stdClass();
     $table->class = 'info_table';
-    $table->styleTable = 'width: 100%;border-radius: 0;padding: 0;margin: 0;margin-top: -1px;';
+    $table->styleTable = 'border-radius: 0;padding: 0;margin: 0;margin-top: -1px;';
     $table->width = '100%';
     $table->style[0] = 'font-weight: bold;';
     $table->style[2] = 'font-weight: bold;';
     $table->style[4] = 'font-weight: bold;';
+    $table->style[6] = 'font-weight: bold;';
+    $table->style[6] = 'min-width: 150px;';
     $table->data[0][0] = html_print_input_hidden('filter_monitors', 1, true);
     $table->data[0][0] .= html_print_input_hidden('monitors_change_filter', 1, true);
     $table->data[0][0] .= __('Status:');
@@ -525,7 +527,14 @@ function print_form_filter_monitors(
         true
     );
 
-    $table->data[0][3] = html_print_input_text('status_text_monitor', $status_text_monitor, '', 30, 100, true);
+    $table->data[0][3] = html_print_input_text(
+        'status_text_monitor',
+        $status_text_monitor,
+        '',
+        '',
+        100,
+        true
+    );
     $table->data[0][4] = __('Module group');
     $rows = db_get_all_rows_sql(
         sprintf(
@@ -575,7 +584,7 @@ function print_form_filter_monitors(
         'class="sub search"',
         true
     );
-    $table->data[0][8] = '&nbsp;'.html_print_button(
+    $table->data[0][8] = html_print_button(
         __('Reset'),
         'filter',
         false,

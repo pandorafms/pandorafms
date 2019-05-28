@@ -2749,6 +2749,80 @@ function ui_progress(
 
 
 /**
+ * Returns a div wich represents the priority received.
+ *
+ * Requires ui_require_css_file('events');.
+ *
+ * @param integer $priority priority level.
+ * @param boolean $return   Or print.
+ * @param boolean $min      Show mini div.
+ *
+ * @return string HTML.
+ */
+function ui_print_event_priority(
+    $priority,
+    $return=false,
+    $mini=false
+) {
+    global $config;
+
+    $output = '';
+    switch ($priority) {
+        case EVENT_CRIT_MAINTENANCE:
+            $color = COL_MAINTENANCE;
+            $criticity = __('MAINTENANCE');
+        break;
+
+        case EVENT_CRIT_INFORMATIONAL:
+            $color = COL_INFORMATIONAL;
+            $criticity = __('INFORMATIONAL');
+        break;
+
+        case EVENT_CRIT_NORMAL:
+            $color = COL_NORMAL;
+            $criticity = __('NORMAL');
+        break;
+
+        case EVENT_CRIT_WARNING:
+            $color = COL_WARNING;
+            $criticity = __('WARNING');
+        break;
+
+        case EVENT_CRIT_CRITICAL:
+            $color = COL_CRITICAL;
+            $criticity = __('CRITICAL');
+        break;
+
+        case EVENT_CRIT_MINOR:
+            $color = COL_MINOR;
+            $criticity = __('MINOR');
+        break;
+
+        case EVENT_CRIT_MAJOR:
+            $color = COL_MAJOR;
+            $criticity = __('MAJOR');
+        break;
+
+        default:
+            $color = COL_UNKNOWN;
+            $criticity = __('UNKNOWN');
+        break;
+    }
+
+    if ($mini === false) {
+        $output = '<div class="criticity" style="background: '.$color.'">';
+        $output .= $criticity;
+        $output .= '</div>';
+    } else {
+        $output = '<div class="mini-criticity" style="background: '.$color.'">';
+        $output .= '</div>';
+    }
+
+    return $output;
+}
+
+
+/**
  * Print a code into a DIV and enable a toggle to show and hide it.
  *
  * @param string  $code           Html code.

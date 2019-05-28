@@ -214,7 +214,7 @@ if ($date > $now) {
 
         $data = [];
         $data[0] = __('Show percentil');
-        $data[1] = html_print_checkbox('show_percentil', 1, (bool) $show_percentil, true);
+        $data[1] = html_print_checkbox_switch('show_percentil', 1, (bool) $show_percentil, true);
         $table->data[] = $data;
         $table->rowclass[] = '';
 
@@ -225,7 +225,7 @@ if ($date > $now) {
             'images/tip.png',
             true
         );
-        $data[1] = html_print_checkbox('fullscale', 1, (bool) $fullscale, true);
+        $data[1] = html_print_checkbox_switch('fullscale', 1, (bool) $fullscale, true);
         $table->data[] = $data;
         $table->rowclass[] = '';
 

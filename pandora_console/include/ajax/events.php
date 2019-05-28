@@ -456,30 +456,30 @@ if ($get_extended_event) {
     switch ($event['criticity']) {
         default:
         case 0:
-            $img_sev = 'images/status_sets/default/severity_maintenance.png';
+            $img_sev = 'images/status_sets/default/severity_maintenance_rounded.png';
         break;
         case 1:
-            $img_sev = 'images/status_sets/default/severity_informational.png';
+            $img_sev = 'images/status_sets/default/severity_informational_rounded.png';
         break;
 
         case 2:
-            $img_sev = 'images/status_sets/default/severity_normal.png';
+            $img_sev = 'images/status_sets/default/severity_normal_rounded.png';
         break;
 
         case 3:
-            $img_sev = 'images/status_sets/default/severity_warning.png';
+            $img_sev = 'images/status_sets/default/severity_warning_rounded.png';
         break;
 
         case 4:
-            $img_sev = 'images/status_sets/default/severity_critical.png';
+            $img_sev = 'images/status_sets/default/severity_critical_rounded.png';
         break;
 
         case 5:
-            $img_sev = 'images/status_sets/default/severity_minor.png';
+            $img_sev = 'images/status_sets/default/severity_minor_rounded.png';
         break;
 
         case 6:
-            $img_sev = 'images/status_sets/default/severity_major.png';
+            $img_sev = 'images/status_sets/default/severity_major_rounded.png';
         break;
     }
 

@@ -222,13 +222,34 @@ $table_agent_count_modules = reporting_tiny_stats(
     true
 );
 
+$has_remote_conf = enterprise_hook(
+    'config_agents_has_remote_configuration',
+    [$agent['id_agente']]
+);
+
+if ($has_remote_conf) {
+    $remote_cfg = '<p>'.html_print_image('images/remote_configuration.png', true);
+    $remote_cfg .= __('Remote configuration enabled').'</p>';
+} else {
+    $remote_cfg = '';
+}
+
+
+
 // $table_agent_count_modules .= ui_print_help_tip(__('Agent statuses are re-calculated by the server, they are not  shown in real time.'), true);
-$table_agent = '<div class="agent_details_header">'.$table_agent_header.'</div>
-                <div class="agent_details_content">
-                    <div class="agent_details_graph">'.$table_agent_graph.'</div>
-                    <div class="agent_details_bullets">'.$table_agent_count_modules.'</div>
-                </div>
-                <div class="agent_details_info">'.$table_agent_os.$table_agent_ip.$table_agent_version.$table_agent_description.'</div>';
+$table_agent = '
+    <div class="agent_details_header">'.$table_agent_header.'</div>
+        <div class="agent_details_content">
+            <div class="agent_details_graph">
+                '.$table_agent_graph.'
+            </div>
+            <div class="agent_details_info">
+                '.$table_agent_os.$table_agent_ip.$table_agent_version.$table_agent_description.$remote_cfg.'
+            </div>
+        </div>
+    <div class="agent_details_bullets">
+        '.$table_agent_count_modules.'
+    </div>';
 
 /*
  * END: TABLE AGENT BUILD.
@@ -317,6 +338,18 @@ if (!$secondary_groups) {
 
 $table_contact->data[] = $data;
 
+if (enterprise_installed()) {
+    $data = [];
+    $data[0] = '<b>'.__('Parent').'</b>';
+    if ($agent['id_parent'] == 0) {
+        $data[1] = '<em>'.__('N/A').'</em>';
+    } else {
+        $data[1] = '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$agent['id_parent'].'">'.agents_get_alias($agent['id_parent']).'</a>';
+    }
+
+    $table_contact->data[] = $data;
+}
+
 /*
  * END: TABLE CONTACT BUILD
  */
@@ -340,32 +373,6 @@ $table_data->head[0] = html_print_image(
 );
 $table_data->head[0] .= ' <span style="vertical-align: middle; font-weight:bold; padding-left:20px">'.__('Agent info').'</span>';
 $table_data->head_colspan[0] = 4;
-
-$has_remote_conf = enterprise_hook(
-    'config_agents_has_remote_configuration',
-    [$agent['id_agente']]
-);
-
-if (enterprise_installed()) {
-    $data = [];
-
-    $data[0] = '<b>'.__('Parent').'</b>';
-    if ($agent['id_parent'] == 0) {
-        $data[1] = '<em>'.__('N/A').'</em>';
-    } else {
-        $data[1] = '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$agent['id_parent'].'">'.agents_get_alias($agent['id_parent']).'</a>';
-    }
-
-
-    $data[2] = '<b>'.__('Remote configuration').'</b>';
-    if (!$has_remote_conf) {
-        $data[3] = __('Disabled');
-    } else {
-        $data[3] = __('Enabled');
-    }
-
-    $table_data->data[] = $data;
-}
 
 // Gis and url address.
 $data_opcional = [];
@@ -431,7 +438,6 @@ foreach ($data_opcional as $key => $value) {
     $table_data->data[] = $data_opcional[$key];
 }
 
-
 // Custom fields.
 $fields = db_get_all_rows_filter(
     'tagent_custom_fields',
@@ -466,8 +472,7 @@ foreach ($fields as $field) {
 }
 
 $custom_fields_count = count($custom_fields);
-
-for ($i = 0; $i <= $custom_fields_count; $i++) {
+for ($i = 0; $i < $custom_fields_count; $i++) {
     $first_column = $custom_fields[$i];
     $j = ($i + 1);
     $second_column = $custom_fields[$j];

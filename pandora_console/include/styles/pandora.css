@@ -5990,22 +5990,21 @@ div#bullets_modules div {
 }
 
 .agent_details_col_left {
-  width: 49.5%;
-  min-width: 455px;
+  width: 35%;
+  min-width: 390px;
 }
 .agent_details_col_right {
-  width: 49.5%;
+  width: 64%;
   min-width: 455px;
 }
-@media screen and (max-width: 1200px) {
+@media screen and (max-width: 1400px) {
   .agent_details_col {
     flex: 1 1 auto;
   }
 }
 
-.agent_details_content .agent_details_bullets {
-  position: relative;
-  left: -20%;
+.agent_details_bullets {
+  padding-bottom: 2em;
 }
 
 .buttons_agent_view {
@@ -6023,6 +6022,10 @@ div#bullets_modules div {
 }
 
 /* Agent details in agent view */
+div#status_pie path {
+  stroke-width: 15px !important;
+}
+
 .agent_details_header {
   display: flex;
   justify-content: flex-end;
@@ -6042,15 +6045,17 @@ div#bullets_modules div {
   align-items: center;
 }
 
+.agent_details_remote_cfg {
+  align-self: flex-start;
+}
+
 .agent_details_graph {
-  width: 205px;
   text-align: center;
   margin: 0 auto;
 }
 
 .agent_details_info {
-  display: flex;
-  justify-content: space-around;
+  max-width: 45%;
 }
 
 .agent_details_info p {
@@ -6066,18 +6071,13 @@ div#bullets_modules div {
 
 .agent_details_bullets #bullets_modules {
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
+  justify-content: flex-start;
 }
 
 .agent_details_bullets #bullets_modules > div {
   display: flex;
   align-items: center;
   padding-bottom: 20px;
-}
-
-.agent_details_bullets #bullets_modules > div:last-child {
-  padding-bottom: 0px;
 }
 
 #agent_contact_main tr td img {

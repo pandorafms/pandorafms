@@ -793,7 +793,13 @@ $table = new stdClass();
 $table->width = '100%';
 $table->class = 'custom_fields_table';
 
-$table->head = [];
+$table->head = [
+    0 => __('Click to display').ui_print_help_tip(
+        __('This field allows url insertion using the BBCode\'s url tag').'.<br />'.__('The format is: [url=\'url to navigate\']\'text to show\'[/url]').'.<br /><br />'.__('e.g.: [url=google.com]Google web search[/url]'),
+        true
+    ),
+];
+$table->class = 'info_table';
 $table->style = [];
 $table->style[0] = 'font-weight: bold;';
 $table->data = [];
@@ -811,10 +817,6 @@ foreach ($fields as $field) {
 
     $data[0] = '<div class="field_title" onclick="show_custom_field_row('.$id_custom_field.')">';
     $data[0] .= '<b>'.$field['name'].'</b>';
-    $data[0] .= ui_print_help_tip(
-        __('This field allows url insertion using the BBCode\'s url tag').'.<br />'.__('The format is: [url=\'url to navigate\']\'text to show\'[/url]').'.<br /><br />'.__('e.g.: [url=google.com]Google web search[/url]'),
-        true
-    );
     $data[0] .= '</div>';
     $combo = [];
     $combo = $field['combo_values'];
@@ -837,8 +839,11 @@ foreach ($fields as $field) {
         $custom_value = '';
     }
 
+    $table->rowstyle[$i] = 'cursor: pointer;';
     if (!empty($custom_value)) {
         $table->rowstyle[($i + 1)] = 'display: table-row;';
+    } else {
+        $table->rowstyle[($i + 1)] = 'display: none;';
     }
 
     if ($field['is_password_type']) {
@@ -910,7 +915,6 @@ if (!empty($fields)) {
 }
 
 echo '<div class="action-buttons" style="display: flex; justify-content: flex-end; align-items: center; width: '.$table->width.'">';
-
 
 // The context help about the learning mode.
 if ($modo == 0) {

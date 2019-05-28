@@ -2784,7 +2784,14 @@ function ui_toggle(
 
     // Link to toggle.
     $output = '';
-    $output .= '<a href="javascript:" id="tgl_ctrl_'.$uniqid.'">'.html_print_image($original, true, ['title' => $title, 'id' => 'image_'.$uniqid]).'&nbsp;&nbsp;<b>'.$name.'</b></a>';
+    $output .= '<a href="javascript:" id="tgl_ctrl_'.$uniqid.'">'.html_print_image(
+        $original,
+        true,
+        [
+            'title' => $title,
+            'id'    => 'image_'.$uniqid,
+        ]
+    ).'&nbsp;&nbsp;<b>'.$name.'</b></a>';
     // $output .= '<br />';
     // if (!defined("METACONSOLE"))
         // $output .= '<br />';

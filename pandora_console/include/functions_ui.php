@@ -2679,9 +2679,9 @@ function ui_progress(
     }
 
     ui_require_css_file('progress');
-    $output .= '<div class="progress_main" style="width: '.$width.'; height: '.$height.'em;">';
+    $output .= '<div class="progress_main" style="width: '.$width.'; height: '.$height.'em; border: 1px solid '.$color.'">';
     $output .= '<span class="progress_text" style="font-size:'.($height - 0.5).'em;">'.$progress.'%</span>';
-    $output .= '<div class="progress" style="width: '.$progress.'%;"></div>';
+    $output .= '<div class="progress" style="width: '.$progress.'%; background: '.$color.'"></div>';
     $output .= '</div>';
 
     if (!$return) {

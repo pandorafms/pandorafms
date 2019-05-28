@@ -361,50 +361,59 @@ class DiscoveryTaskList extends Wizard
                 $recon_tasks = [];
             }
 
-                $url_ajax = $config['homeurl'].'ajax.php';
+            $url_ajax = $config['homeurl'].'ajax.php';
 
-                $table = new StdClass();
-                $table->cellpadding = 0;
-                $table->cellspacing = 0;
-                $table->width = '100%';
-                $table->class = 'info_table';
-                $table->head = [];
-                $table->data = [];
-                $table->align = [];
-                $table->headstyle = [];
+            $table = new StdClass();
+            $table->cellpadding = 0;
+            $table->cellspacing = 0;
+            $table->width = '100%';
+            $table->class = 'info_table';
+            $table->head = [];
+            $table->data = [];
+            $table->align = [];
+            $table->headstyle = [];
             for ($i = 0; $i < 9; $i++) {
                 $table->headstyle[$i] = 'text-align: left;';
             }
 
-                $table->head[0] = __('Force');
-                $table->align[0] = 'left';
+            // Status.
+            $table->headstyle[5] .= 'width: 100px';
+            // Progress.
+            $table->headstyle[7] .= 'width: 150px';
+            // Updated at.
+            $table->headstyle[8] .= 'width: 150px';
+            // Operations.
+            $table->headstyle[9] .= 'width: 150px';
 
-                $table->head[1] = __('Task name');
-                $table->align[1] = 'left';
+            $table->head[0] = __('Force');
+            $table->align[0] = 'left';
 
-                $table->head[2] = __('Server name');
-                $table->align[2] = 'left';
+            $table->head[1] = __('Task name');
+            $table->align[1] = 'left';
 
-                $table->head[3] = __('Interval');
-                $table->align[3] = 'left';
+            $table->head[2] = __('Server name');
+            $table->align[2] = 'left';
 
-                $table->head[4] = __('Network');
-                $table->align[4] = 'left';
+            $table->head[3] = __('Interval');
+            $table->align[3] = 'left';
 
-                $table->head[5] = __('Status');
-                $table->align[5] = 'left';
+            $table->head[4] = __('Network');
+            $table->align[4] = 'left';
 
-                $table->head[6] = __('Task type');
-                $table->align[6] = 'left';
+            $table->head[5] = __('Status');
+            $table->align[5] = 'left';
 
-                $table->head[7] = __('Progress');
-                $table->align[7] = 'left';
+            $table->head[6] = __('Task type');
+            $table->align[6] = 'left';
 
-                $table->head[8] = __('Updated at');
-                $table->align[8] = 'left';
+            $table->head[7] = __('Progress');
+            $table->align[7] = 'left';
 
-                $table->head[9] = __('Operations');
-                $table->align[9] = 'left';
+            $table->head[8] = __('Updated at');
+            $table->align[8] = 'left';
+
+            $table->head[9] = __('Operations');
+            $table->align[9] = 'left';
 
             foreach ($recon_tasks as $task) {
                 $data = [];
@@ -553,13 +562,7 @@ class DiscoveryTaskList extends Wizard
                 if ($task['status'] <= 0 || $task['status'] > 100) {
                     $data[7] = '-';
                 } else {
-                    $data[7] = progress_bar(
-                        $task['status'],
-                        100,
-                        20,
-                        __('Progress').':'.$task['status'].'%',
-                        1
-                    );
+                    $data[7] = ui_progress($task['status'], '100%', 1.5, '#333');
                 }
 
                 if ($task['utimestamp'] > 0) {

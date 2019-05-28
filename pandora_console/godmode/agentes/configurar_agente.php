@@ -1788,12 +1788,99 @@ if ($create_module) {
     }
 }
 
+// MODULE ENABLE/DISABLE
+// =====================.
+if ($enable_module) {
+    $result = modules_change_disabled($enable_module, 0);
+    $module_name = modules_get_agentmodule_name($enable_module);
+
+    // Write for conf disable if remote_config.
+    $configuration_data = enterprise_hook(
+        'config_agents_get_module_from_conf',
+        [
+            $id_agente,
+            io_safe_output($module_name),
+        ]
+    );
+    // Force disable.
+    $disabled = 0;
+
+    // Force Update when disabled for save disabled in conf.
+    $old_configuration_data = $configuration_data;
+
+    // Successfull action.
+    $success_action = $result;
+
+    $success_action = $result;
+    if ($result === NOERR) {
+        db_pandora_audit(
+            'Module management',
+            'Enable #'.$enable_module.' | '.$module_name.' | '.$agent['alias']
+        );
+    } else {
+        db_pandora_audit(
+            'Module management',
+            'Fail to enable #'.$enable_module.' | '.$module_name.' | '.$agent['alias']
+        );
+    }
+
+    ui_print_result_message(
+        $result,
+        __('Successfully enabled'),
+        __('Could not be enabled')
+    );
+}
+
+if ($disable_module) {
+    $result = modules_change_disabled($disable_module, 1);
+    $module_name = modules_get_agentmodule_name($disable_module);
+
+    // Write for conf disable if remote_config.
+    $configuration_data = enterprise_hook(
+        'config_agents_get_module_from_conf',
+        [
+            $id_agente,
+            io_safe_output($module_name),
+        ]
+    );
+    // Force disable.
+    $disabled = 1;
+
+    // Force Update when disabled for save disabled in conf.
+    $old_configuration_data = $configuration_data;
+
+    // Successfull action.
+    $success_action = $result;
+
+
+    if ($result === NOERR) {
+        db_pandora_audit(
+            'Module management',
+            'Disable #'.$disable_module.' | '.$module_name.' | '.$agent['alias']
+        );
+    } else {
+        db_pandora_audit(
+            'Module management',
+            'Fail to disable #'.$disable_module.' | '.$module_name.' | '.$agent['alias']
+        );
+    }
+
+    ui_print_result_message(
+        $result,
+        __('Successfully disabled'),
+        __('Could not be disabled')
+    );
+}
+
 // Fix to stop the module from being added to the agent's conf
-// when an error occurred while updating or inserting.
-if ($update_module || $create_module) {
+// when an error occurred while updating or inserting. or enable disable module.
+if ($update_module || $create_module
+    || $enable_module || $disable_module
+) {
     if ((!$module_in_policy && !$module_linked)
         || ($module_in_policy && !$module_linked)
     ) {
+        hd($success_action);
         if ($success_action > 0) {
             enterprise_hook(
                 'config_agents_write_module_in_conf',
@@ -2005,46 +2092,6 @@ if (!empty($duplicate_module)) {
             "Fail to try duplicate module '".$id_duplicate_module."' for agent ".$agent['alias']
         );
     }
-}
-
-// MODULE ENABLE/DISABLE
-// =====================.
-if ($enable_module) {
-    $result = modules_change_disabled($enable_module, 0);
-    $modulo_nombre = db_get_row_sql('SELECT nombre FROM tagente_modulo WHERE id_agente_modulo = '.$enable_module.'');
-    $modulo_nombre = $modulo_nombre['nombre'];
-
-    if ($result === NOERR) {
-        enterprise_hook('config_agents_enable_module_conf', [$id_agente, $enable_module]);
-        db_pandora_audit('Module management', 'Enable #'.$enable_module.' | '.$modulo_nombre.' | '.$agent['alias']);
-    } else {
-        db_pandora_audit('Module management', 'Fail to enable #'.$enable_module.' | '.$modulo_nombre.' | '.$agent['alias']);
-    }
-
-    ui_print_result_message(
-        $result,
-        __('Successfully enabled'),
-        __('Could not be enabled')
-    );
-}
-
-if ($disable_module) {
-    $result = modules_change_disabled($disable_module, 1);
-    $modulo_nombre = db_get_row_sql('SELECT nombre FROM tagente_modulo WHERE id_agente_modulo = '.$disable_module.'');
-    $modulo_nombre = $modulo_nombre['nombre'];
-
-    if ($result === NOERR) {
-        enterprise_hook('config_agents_disable_module_conf', [$id_agente, $disable_module]);
-        db_pandora_audit('Module management', 'Disable #'.$disable_module.' | '.$modulo_nombre.' | '.$agent['alias']);
-    } else {
-        db_pandora_audit('Module management', 'Fail to disable #'.$disable_module.' | '.$modulo_nombre.' | '.$agent['alias']);
-    }
-
-    ui_print_result_message(
-        $result,
-        __('Successfully disabled'),
-        __('Could not be disabled')
-    );
 }
 
 // UPDATE GIS

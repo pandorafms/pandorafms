@@ -735,18 +735,21 @@ class Item extends CachedModel
     {
         global $config;
 
-        $sql = sprintf(
-            'SELECT `data`
-            FROM `tvisual_console_elements_cache`
-            WHERE `vc_item_id` = %d
-            AND `vc_id` = %d
-            AND `user_id` LIKE \'%s\' 
-            AND (UNIX_TIMESTAMP(`created_at`) + `expiration`) > UNIX_TIMESTAMP()',
-            $filter['id'],
-            $filter['id_layout'],
-            $config['id_user']
+        $filter = [
+            'vc_id'      => (int) $filter['id_layout'],
+            'vc_item_id' => (int) $filter['id'],
+            '(UNIX_TIMESTAMP(`created_at`) + `expiration`) > UNIX_TIMESTAMP()'
+        ];
+
+        if (static::$indexCacheByUser === true) {
+            $filter['user_id'] = $config['id_user'];
+        }
+
+        $data = \db_get_value_filter(
+            'data',
+            'tvisual_console_elements_cache',
+            $filter
         );
-        $data = \db_get_value_sql($sql);
 
         if ($data === false) {
             return null;

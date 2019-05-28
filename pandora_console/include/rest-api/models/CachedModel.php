@@ -12,6 +12,13 @@ use Models\Model;
 abstract class CachedModel extends Model
 {
 
+    /**
+     * Used to decide if the cache should also be indexed by user or not.
+     *
+     * @var boolean
+     */
+    protected static $indexCacheByUser = false;
+
 
     /**
      * Obtain a data structure from the database using a filter.
@@ -73,12 +80,14 @@ abstract class CachedModel extends Model
             // Obtain the item's data from cache.
             $cachedData = static::fetchCachedData($filter);
             if ($cachedData === null) {
+                $userId = (static::$indexCacheByUser === true) ? $config['id_user'] : null;
+
                 // Delete expired data cache.
                 static::clearCachedData(
                     [
                         'vc_item_id' => $filter['id'],
                         'vc_id'      => $filter['id_layout'],
-                        'user_id'    => $config['id_user'],
+                        'user_id'    => $userId,
                     ]
                 );
                 // Obtain the item's data from the database.
@@ -88,7 +97,7 @@ abstract class CachedModel extends Model
                     [
                         'vc_item_id' => $filter['id'],
                         'vc_id'      => $filter['id_layout'],
-                        'user_id'    => $config['id_user'],
+                        'user_id'    => $userId,
                         'expiration' => $filter['cache_expiration'],
                     ],
                     $data

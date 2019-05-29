@@ -27,12 +27,36 @@ $action_update_url_update_manager = (bool) get_parameter(
     0
 );
 
+$update_manager_disconnect = get_parameter(
+    'um_disconnect_console',
+    0
+);
+
+if ($update_manager_disconnect) {
+    config_update_value(
+        'pandora_uid',
+        'OFFLINE'
+    );
+}
+
 if (!$action_update_url_update_manager) {
     $url_update_manager = get_parameter('url_update_manager', $config['url_update_manager']);
-    $update_manager_proxy_server = get_parameter('update_manager_proxy_server', $config['update_manager_proxy_server']);
-    $update_manager_proxy_port = get_parameter('update_manager_proxy_port', $config['update_manager_proxy_port']);
-    $update_manager_proxy_user = get_parameter('update_manager_proxy_user', $config['update_manager_proxy_user']);
-    $update_manager_proxy_password = get_parameter('update_manager_proxy_password', $config['update_manager_proxy_password']);
+    $update_manager_proxy_server = get_parameter(
+        'update_manager_proxy_server',
+        $config['update_manager_proxy_server']
+    );
+    $update_manager_proxy_port = get_parameter(
+        'update_manager_proxy_port',
+        $config['update_manager_proxy_port']
+    );
+    $update_manager_proxy_user = get_parameter(
+        'update_manager_proxy_user',
+        $config['update_manager_proxy_user']
+    );
+    $update_manager_proxy_password = get_parameter(
+        'update_manager_proxy_password',
+        $config['update_manager_proxy_password']
+    );
 
 
     if ($action_update_url_update_manager) {
@@ -69,7 +93,10 @@ if (!$action_update_url_update_manager) {
         }
 
         if ($result && license_free()) {
-            $result = config_update_value('identification_reminder', $identification_reminder);
+            $result = config_update_value(
+                'identification_reminder',
+                $identification_reminder
+            );
         }
 
         ui_print_result_message(
@@ -189,11 +216,26 @@ $table->data[4][1] = html_print_input_password(
     true
 );
 
+
+$table->data[5][0] = __('Registration ID:');
+$table->data[5][1] = '<i>'.$config['pandora_uid'].'</i>';
+
+if (update_manager_verify_registration() === true) {
+    $table->data[6][0] = __('Cancel registration:');
+    $table->data[6][1] = '<a href="';
+    $table->data[6][1] .= ui_get_full_url(
+        'index.php?sec=messages&sec2=godmode/update_manager/update_manager&tab=setup&um_disconnect_console=1'
+    );
+    $table->data[6][1] .= '" onclick="if(confirm(\'Are you sure?\')) {return true;} else { return false; }">'.__('Unregister').'</a>';
+}
+
+
+
 if (license_free()) {
     $config['identification_reminder'] = isset($config['identification_reminder']) ? $config['identification_reminder'] : 1;
-    $table->data[6][0] = __('Pandora FMS community reminder').ui_print_help_tip(__('Every 8 days, a message is displayed to admin users to remember to register this Pandora instance'), true);
-    $table->data[6][1] = __('Yes').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button('identification_reminder', 1, '', $config['identification_reminder'], true).'&nbsp;&nbsp;';
-    $table->data[6][1] .= __('No').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button('identification_reminder', 0, '', $config['identification_reminder'], true);
+    $table->data[7][0] = __('Pandora FMS community reminder').ui_print_help_tip(__('Every 8 days, a message is displayed to admin users to remember to register this Pandora instance'), true);
+    $table->data[7][1] = __('Yes').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button('identification_reminder', 1, '', $config['identification_reminder'], true).'&nbsp;&nbsp;';
+    $table->data[7][1] .= __('No').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button('identification_reminder', 0, '', $config['identification_reminder'], true);
 }
 
 html_print_input_hidden('action_update_url_update_manager', 1);

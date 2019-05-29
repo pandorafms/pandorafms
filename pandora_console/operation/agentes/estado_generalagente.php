@@ -511,7 +511,7 @@ $access_agent = db_get_value_sql(
 );
 
 if ($config['agentaccess'] && $access_agent > 0) {
-    $table_access_rate = '<div class="white_table_graph" id="table_access_rate">
+    $table_access_rate = '<div class="box-shadow white_table_graph" id="table_access_rate">
                             <div class="white_table_graph_header">'.html_print_image(
         'images/arrow_down_green.png',
         true
@@ -810,7 +810,7 @@ if ($config['agentaccess'] && $access_agent > 0) {
     $extra_class = '';
 }
 
-$table_events = '<div class="white_table_graph" id="table_events">
+$table_events = '<div class="box-shadow white_table_graph" id="table_events">
             <div class="white_table_graph_header">'.html_print_image(
     'images/arrow_down_green.png',
     true
@@ -838,8 +838,8 @@ $agent_info = empty($table_data->data) ? '' : html_print_table($table_data, true
 $agent_incidents = !isset($table_incident) ? '' : html_print_table($table_incident, true);
 
 echo '<div id="agent_details_first_row">
-    <div class="agent_details_col agent_details_col_left">'.$table_agent.'</div>
-    <div class="agent_details_col agent_details_col_right">'.$agent_contact.'</div>
+    <div class="box-shadow agent_details_col agent_details_col_left">'.$table_agent.'</div>
+    <div class="box-shadow agent_details_col agent_details_col_right">'.$agent_contact.'</div>
     </div>'.$agent_info;
 
 // Show both graphs, events and access rate.

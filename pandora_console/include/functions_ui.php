@@ -2947,7 +2947,7 @@ function ui_toggle(
     }
 
     // Link to toggle.
-    $output = '<div class="white_table_graph">';
+    $output = '<div class="box-shadow white_table_graph">';
     $output .= '<div class="white_table_graph_header" style="cursor: pointer;" id="tgl_ctrl_'.$uniqid.'">'.html_print_image(
         $original,
         true,

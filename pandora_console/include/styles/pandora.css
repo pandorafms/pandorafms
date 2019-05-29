@@ -462,6 +462,9 @@ select:-internal-list-box {
 .no-margin {
   margin: 0;
 }
+.box-shadow {
+  box-shadow: 0px 0px 15px -4px #dadada;
+}
 
 div#page {
   background: #fbfbfb;
@@ -5838,11 +5841,11 @@ div#bullets_modules div {
 }
 
 .agent_details_col_left {
-  width: 35%;
+  width: 40%;
   min-width: 300px;
 }
 .agent_details_col_right {
-  width: 64%;
+  width: 59%;
   min-width: 480px;
 }
 
@@ -5927,6 +5930,7 @@ div#status_pie {
 .agent_details_info {
   max-width: 45%;
   overflow: hidden;
+  min-width: 220px;
 }
 .agent_details_info span {
   text-overflow: ellipsis;

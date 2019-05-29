@@ -1880,7 +1880,6 @@ if ($update_module || $create_module
     if ((!$module_in_policy && !$module_linked)
         || ($module_in_policy && !$module_linked)
     ) {
-        hd($success_action);
         if ($success_action > 0) {
             enterprise_hook(
                 'config_agents_write_module_in_conf',

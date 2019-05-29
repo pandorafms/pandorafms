@@ -50,6 +50,12 @@ function menu_print_menu(&$menu)
 
     $sec = (string) get_parameter('sec');
     $sec2 = (string) get_parameter('sec2');
+    if ($sec2 == 'operation/agentes/ver_agente') {
+        $sec2 = 'godmode/agentes/configurar_agente';
+    } else {
+        $sec2 = (string) get_parameter('sec2');
+    }
+
     $menu_selected = false;
 
     $allsec2 = explode('sec2=', $_SERVER['REQUEST_URI']);

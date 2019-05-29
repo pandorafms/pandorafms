@@ -169,10 +169,10 @@ $html_toggle = ob_get_clean();
 
 ui_toggle(
     $html_toggle,
-    __('List of modules').ui_print_help_tip(
+    __('List of modules').$help_not_init.ui_print_help_tip(
         __('To see the list of modules paginated, enable this option in the Styles Configuration.'),
         true
-    ).$help_not_init.reporting_tiny_stats(
+    ).reporting_tiny_stats(
         $agent,
         true,
         'modules',

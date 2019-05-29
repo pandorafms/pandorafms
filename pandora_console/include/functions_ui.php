@@ -2673,6 +2673,7 @@ function ui_print_module_status(
 
     $options['style'] .= 'width: 50px;';
     $options['style'] .= 'height: 2em;';
+    $options['style'] .= 'display: inline-block;';
 
     include_once __DIR__.'/functions_modules.php';
     $options['style'] .= 'background: '.modules_get_color_status($status).';';

@@ -379,7 +379,7 @@ class DiscoveryTaskList extends Wizard
             // Status.
             $table->headstyle[5] .= 'min-width: 100px; width: 100px;';
             // Task type.
-            $table->headstyle[6] .= 'min-width: 150px; width: 150px;';
+            $table->headstyle[6] .= 'min-width: 200px; width: 150px;';
             // Progress.
             $table->headstyle[7] .= 'min-width: 150px; width: 150px;';
             // Updated at.

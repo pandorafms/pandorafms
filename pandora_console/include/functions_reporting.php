@@ -5559,7 +5559,6 @@ function reporting_advanced_sla(
             } else if ($agentmodule_info['id_tipo_modulo'] == '100') {
                 $max_value = 0.9;
                 $min_value = 0;
-                $inverse_interval = 1;
             }
         }
     }

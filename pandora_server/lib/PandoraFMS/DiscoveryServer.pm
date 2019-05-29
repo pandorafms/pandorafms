@@ -597,6 +597,9 @@ sub PandoraFMS::Recon::Base::create_agents($$) {
 sub PandoraFMS::Recon::Base::create_agent($$) {
     my ($self, $device) = @_;
 
+    # Clean name.
+    $device = clean_blank($device);
+
     my @agents = get_db_rows($self->{'dbh'},
         'SELECT * FROM taddress, taddress_agent, tagente
          WHERE tagente.id_agente = taddress_agent.id_agent
@@ -732,21 +735,22 @@ sub PandoraFMS::Recon::Base::create_agent($$) {
         my $if_name = $self->snmp_get_value($device, "$PandoraFMS::Recon::Base::IFNAME.$if_index");
         $if_name = "if$if_index" unless defined ($if_name);
         $if_name =~ s/"//g;
+        $if_name = clean_blank($if_name);
 
         # Check whether the module already exists.
-        my $module_id = get_agent_module_id($self->{'dbh'}, "${if_name}_ifOperStatus", $agent_id);
+        my $module_id = get_agent_module_id($self->{'dbh'}, $if_name.'_ifOperStatus', $agent_id);
+
         next if ($module_id > 0 && !$agent_learning);
     
         # Encode problematic characters.
-        $if_name = safe_input($if_name);
         $if_desc = safe_input($if_desc);
 
         # Interface status module.
-        $module_id = get_agent_module_id($self->{'dbh'}, "${if_name}_ifOperStatus", $agent_id);
+        $module_id = get_agent_module_id($self->{'dbh'}, $if_name.'_ifOperStatus', $agent_id);
         if ($module_id <= 0) {
             my %module = ('id_tipo_modulo' => 18,
                 'id_modulo' => 2,
-                'nombre' => "${if_name}_ifOperStatus",
+                'nombre' => safe_input($if_name)."_ifOperStatus",
                 'descripcion' => $if_desc,
                 'id_agente' => $agent_id,
                 'ip_target' => $device,
@@ -781,11 +785,11 @@ sub PandoraFMS::Recon::Base::create_agent($$) {
         # Incoming traffic module.
         my $if_hc_in_octets = $self->snmp_get_value($device, "$PandoraFMS::Recon::Base::IFHCINOCTECTS.$if_index");
         if (defined($if_hc_in_octets)) {
-            $module_id = get_agent_module_id($self->{'dbh'}, "${if_name}_ifHCInOctets", $agent_id);
+            $module_id = get_agent_module_id($self->{'dbh'}, $if_name.'_ifHCInOctets', $agent_id);
             if ($module_id <= 0) {
                 my %module = ('id_tipo_modulo' => 16,
                            'id_modulo' => 2,
-                           'nombre' => "${if_name}_ifHCInOctets",
+                           'nombre' => safe_input($if_name)."_ifHCInOctets",
                            'descripcion' => 'The total number of octets received on the interface, including framing characters. This object is a 64-bit version of ifInOctets.',
                            'id_agente' => $agent_id,
                            'ip_target' => $device,
@@ -816,11 +820,11 @@ sub PandoraFMS::Recon::Base::create_agent($$) {
         }
         # ifInOctets
         elsif (defined($self->snmp_get_value($device, "$PandoraFMS::Recon::Base::IFINOCTECTS.$if_index"))) {
-            $module_id = get_agent_module_id($self->{'dbh'}, "${if_name}_ifInOctets", $agent_id);
+            $module_id = get_agent_module_id($self->{'dbh'}, $if_name.'_ifInOctets', $agent_id);
             if ($module_id <= 0) {
                 my %module = ('id_tipo_modulo' => 16,
                            'id_modulo' => 2,
-                           'nombre' => "${if_name}_ifInOctets",
+                           'nombre' => safe_input($if_name)."_ifInOctets",
                            'descripcion' => 'The total number of octets received on the interface, including framing characters.',
                            'id_agente' => $agent_id,
                            'ip_target' => $device,
@@ -853,11 +857,11 @@ sub PandoraFMS::Recon::Base::create_agent($$) {
         # Outgoing traffic module.
         my $if_hc_out_octets = $self->snmp_get_value($device, "$PandoraFMS::Recon::Base::IFHCOUTOCTECTS.$if_index");
         if (defined($if_hc_out_octets)) {
-            $module_id = get_agent_module_id($self->{'dbh'}, "${if_name}_ifHCOutOctets", $agent_id);
+            $module_id = get_agent_module_id($self->{'dbh'}, $if_name.'_ifHCOutOctets', $agent_id);
             if ($module_id <= 0) {
                 my %module = ('id_tipo_modulo' => 16,
                            'id_modulo' => 2,
-                           'nombre' => "${if_name}_ifHCOutOctets",
+                           'nombre' => safe_input($if_name)."_ifHCOutOctets",
                            'descripcion' => 'The total number of octets received on the interface, including framing characters. This object is a 64-bit version of ifOutOctets.',
                            'id_agente' => $agent_id,
                            'ip_target' => $device,
@@ -893,7 +897,7 @@ sub PandoraFMS::Recon::Base::create_agent($$) {
             if ($module_id <= 0) {
                 my %module = ('id_tipo_modulo' => 16,
                            'id_modulo' => 2,
-                           'nombre' => "${if_name}_ifOutOctets",
+                           'nombre' => safe_input($if_name)."_ifOutOctets",
                            'descripcion' => 'The total number of octets received on the interface, including framing characters.',
                            'id_agente' => $agent_id,
                            'ip_target' => $device,

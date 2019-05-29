@@ -29,12 +29,11 @@ CREATE TABLE IF NOT EXISTS `tvisual_console_elements_cache` (
     `expiration` INTEGER UNSIGNED NOT NULL COMMENT 'Seconds to expire',
     PRIMARY KEY(`id`),
     FOREIGN KEY(`vc_id`) REFERENCES `tlayout`(`id`)
-        ON DELETE CASCADE,
+    ON DELETE CASCADE,
     FOREIGN KEY(`vc_item_id`) REFERENCES `tlayout_data`(`id`)
-        ON DELETE CASCADE,
+    ON DELETE CASCADE,
     FOREIGN KEY (`user_id`) REFERENCES `tusuario`(`id_user`)
-        ON DELETE CASCADE
-        ON UPDATE CASCADE
+    ON DELETE CASCADE ON UPDATE CASCADE
 ) engine=InnoDB DEFAULT CHARSET=utf8;
 
 ALTER TABLE `tlayout_data` ADD COLUMN `cache_expiration` INTEGER UNSIGNED NOT NULL DEFAULT 0;

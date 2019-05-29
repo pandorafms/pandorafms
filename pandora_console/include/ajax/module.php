@@ -823,7 +823,6 @@ if (check_login()) {
         $table->head[6] = __('Thresholds');
         $table->head[7] = __('Data');
         $table->head[8] = __('Graph');
-        $table->headstyle[8] = 'min-width: 60px';
         $table->head[9] = __('Last contact').ui_get_sorting_arrows($url_up_last, $url_down_last, $selectLastContactUp, $selectLastContactDown);
         $table->align = [
             'left',
@@ -836,6 +835,12 @@ if (check_login()) {
             'left',
             'left',
         ];
+
+        $table->headstyle[2] = 'min-width: 60px';
+        $table->headstyle[3] = 'min-width: 100px';
+        $table->headstyle[5] = 'min-width: 60px';
+        $table->headstyle[8] = 'min-width: 85px';
+        $table->headstyle[9] = 'min-width: 100px';
 
         $last_modulegroup = 0;
         $rowIndex = 0;

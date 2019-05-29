@@ -149,7 +149,9 @@ $sort = get_parameter('sort', 'up');
 
 $modules_not_init = agents_monitor_notinit($id_agente);
 if (!empty($modules_not_init)) {
-    echo clippy_context_help('modules_not_init');
+    $help_not_init = clippy_context_help('modules_not_init');
+} else {
+    $help_not_init = '';
 }
 
 ob_start();
@@ -161,7 +163,6 @@ print_form_filter_monitors(
     $status_hierachy_mode
 );
 
-echo '<div class="white_table_graph_content" id="module_list_loading">'.html_print_image('images/spinner.gif', true).'</div>';
 echo '<div class="white_table_graph_content" style="padding: 0;" id="module_list"></div>';
 
 $html_toggle = ob_get_clean();
@@ -171,7 +172,7 @@ ui_toggle(
     __('List of modules').ui_print_help_tip(
         __('To see the list of modules paginated, enable this option in the Styles Configuration.'),
         true
-    ).reporting_tiny_stats(
+    ).$help_not_init.reporting_tiny_stats(
         $agent,
         true,
         'modules',

@@ -5994,6 +5994,18 @@ div#status_pie {
   flex-wrap: wrap;
 }
 
+.white_table_graph_content.min-height-100 {
+  min-height: 100px;
+}
+
+.white_table_graph_content.min-height-50 {
+  min-height: 50px;
+}
+
+.white_table_graph_content.min-height-200 {
+  min-height: 200px;
+}
+
 .white_table_graph_content div.pagination {
   width: 100%;
   padding: 0 1em;

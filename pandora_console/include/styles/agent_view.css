@@ -5,3 +5,15 @@ text.text-tooltip {
 div#bullets_modules span {
   font-family: "lato-bolder", "Open Sans", sans-serif !important;
 }
+
+table#agent_interface_info .noresizevc.graph {
+  width: 500px !important;
+}
+
+div.agent_details_agent_alias {
+  flex: 1;
+}
+
+div.agent_details_agent_alias * {
+  font-family: "lato-bolder", "Open Sans", sans-serif !important;
+}

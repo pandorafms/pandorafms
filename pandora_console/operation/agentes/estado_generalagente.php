@@ -101,7 +101,6 @@ $in_planned_downtime = db_get_sql(
 	WHERE tplanned_downtime_agents.id_agent = '.$agent['id_agente'].' AND tplanned_downtime.executed = 1'
 );
 
-
 if ($agent['disabled']) {
     if ($in_planned_downtime) {
         $agent_name = '<em>'.$agent_name.ui_print_help_tip(__('Disabled'), true);
@@ -134,7 +133,10 @@ if ($in_planned_downtime && !$agent['disabled'] && !$agent['quiet']) {
     ).'</em>';
 }
 
-$table_agent_header = '<div class="agent_details_agent_name">';
+$table_agent_header = '<div class="agent_details_agent_alias">';
+$table_agent_header .= $agent_name;
+$table_agent_header .= '</div>';
+$table_agent_header .= '<div class="agent_details_agent_name">';
 if (!$config['show_group_name']) {
     $table_agent_header .= ui_print_group_icon(
         $agent['id_grupo'],
@@ -239,18 +241,20 @@ if ($has_remote_conf) {
 
 // $table_agent_count_modules .= ui_print_help_tip(__('Agent statuses are re-calculated by the server, they are not  shown in real time.'), true);
 $table_agent = '
-    <div class="agent_details_header">'.$table_agent_header.'</div>
-        <div class="agent_details_content">
-            <div class="agent_details_graph">
-                '.$table_agent_graph.'
-                <div class="agent_details_bullets">
-                    '.$table_agent_count_modules.'
-                </div>
+    <div class="agent_details_header">
+        '.$table_agent_header.'
+    </div>
+    <div class="agent_details_content">
+        <div class="agent_details_graph">
+            '.$table_agent_graph.'
+            <div class="agent_details_bullets">
+                '.$table_agent_count_modules.'
             </div>
-            <div class="agent_details_info">
-                '.$table_agent_os.$table_agent_ip.$table_agent_version.$table_agent_description.$remote_cfg.'
-            </div>
-        </div>';
+        </div>
+        <div class="agent_details_info">
+            '.$table_agent_os.$table_agent_ip.$table_agent_version.$table_agent_description.$remote_cfg.'
+        </div>
+    </div>';
 
 /*
  * END: TABLE AGENT BUILD.
@@ -505,7 +509,8 @@ if ($config['agentaccess'] && $access_agent > 0) {
         'images/arrow_down_green.png',
         true
     ).'<span>'.__('Agent access rate (24h)').'</span></div>
-                            <div class="white_table_graph_content">'.graphic_agentaccess(
+    <div class="white_table_graph_content min-height-100">
+'.graphic_agentaccess(
         $id_agente,
         '95%',
         100,
@@ -624,7 +629,14 @@ if (!empty($network_interfaces)) {
                 $params_json = json_encode($params);
                 $params_encoded = base64_encode($params_json);
                 $win_handle = dechex(crc32($interface['status_module_id'].$interface_name));
-                $graph_link = "<a href=\"javascript:winopeng_var('operation/agentes/interface_traffic_graph_win.php?params=$params_encoded','$win_handle', 1000, 650)\">".html_print_image('images/chart_curve.png', true, ['title' => __('Interface traffic')]).'</a>';
+                $graph_link = "<a href=\"javascript:winopeng_var('operation/agentes/interface_traffic_graph_win.php?params=";
+                $graph_link .= $params_encoded."','";
+                $graph_link .= $win_handle."', 1000, 650)\">";
+                $graph_link .= html_print_image(
+                    'images/chart_curve.png',
+                    true,
+                    ['title' => __('Interface traffic')]
+                ).'</a>';
             } else {
                 $graph_link = '';
             }
@@ -785,12 +797,19 @@ if (!empty($network_interfaces)) {
     </script>
 <?php
 // EVENTS.
+if ($config['agentaccess'] && $access_agent > 0) {
+    $extra_class = 'min-height-100';
+} else {
+    $extra_class = '';
+}
+
 $table_events = '<div class="white_table_graph" id="table_events">
             <div class="white_table_graph_header">'.html_print_image(
     'images/arrow_down_green.png',
     true
 ).'<span>'.__('Events (24h)').'</span></div>
-            <div class="white_table_graph_content">'.graph_graphic_agentevents(
+            <div class="white_table_graph_content '.$extra_class.'">
+'.graph_graphic_agentevents(
     $id_agente,
     100,
     45,

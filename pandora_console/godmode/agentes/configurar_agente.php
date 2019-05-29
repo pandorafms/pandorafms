@@ -35,6 +35,7 @@ enterprise_include_once('include/functions_modules.php');
 require_once $config['homedir'].'/include/functions_agents.php';
 require_once $config['homedir'].'/include/functions_cron.php';
 ui_require_javascript_file('encode_decode_base64');
+ui_require_css_file('agent_manager');
 
 check_login();
 

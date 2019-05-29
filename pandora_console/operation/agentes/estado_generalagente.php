@@ -82,6 +82,7 @@ if (! check_acl_one_of_groups($config['id_user'], $all_groups, 'AR')
     return;
 }
 
+
 /*
  * START: TABLE AGENT BUILD.
  */

@@ -2749,13 +2749,89 @@ function ui_progress(
 
 
 /**
+ * Returns a div wich represents the type received.
+ *
+ * Requires ui_require_css_file('events');.
+ *
+ * @param integer $type   Event type.
+ * @param boolean $return Or print.
+ * @param boolean $mini   Show mini div.
+ *
+ * @return string HTML.
+ */
+function ui_print_event_type(
+    $type,
+    $return=false,
+    $mini=false
+) {
+    global $config;
+
+    $output = '';
+    switch ($type) {
+        case EVENTS_ALERT_FIRED:
+        case EVENTS_ALERT_RECOVERED:
+        case EVENTS_ALERT_CEASED:
+        case EVENTS_ALERT_MANUAL_VALIDATION:
+            $text = __('ALERT');
+            $color = COL_ALERTFIRED;
+        break;
+
+        case EVENTS_RECON_HOST_DETECTED:
+        case EVENTS_SYSTEM:
+        case EVENTS_ERROR:
+        case EVENTS_NEW_AGENT:
+        case EVENTS_CONFIGURATION_CHANGE:
+            $text = __('SYSTEM');
+            $color = COL_MAINTENANCE;
+        break;
+
+        case EVENTS_GOING_UP_WARNING:
+        case EVENTS_GOING_DOWN_WARNING:
+            $color = COL_WARNING;
+            $text = __('WARNING');
+        break;
+
+        case EVENTS_GOING_DOWN_NORMAL:
+        case EVENTS_GOING_UP_NORMAL:
+            $color = COL_NORMAL;
+            $text = __('NORMAL');
+        break;
+
+        case EVENTS_GOING_DOWN_CRITICAL:
+        case EVENTS_GOING_UP_CRITICAL:
+            $color = COL_CRITICAL;
+            $text = __('CRITICAL');
+        break;
+
+        case EVENTS_UNKNOWN:
+        case EVENTS_GOING_UNKNOWN:
+        default:
+            $color = COL_UNKNOWN;
+            $text = __('UNKNOWN');
+        break;
+    }
+
+    if ($mini === false) {
+        $output = '<div class="criticity" style="background: '.$color.'">';
+        $output .= $text;
+        $output .= '</div>';
+    } else {
+        $output = '<div class="mini-criticity" style="background: '.$color.'">';
+        $output .= '</div>';
+    }
+
+    return $output;
+}
+
+
+/**
  * Returns a div wich represents the priority received.
  *
  * Requires ui_require_css_file('events');.
  *
- * @param integer $priority priority level.
+ * @param integer $priority Priority level.
  * @param boolean $return   Or print.
- * @param boolean $min      Show mini div.
+ * @param boolean $mini     Show mini div.
  *
  * @return string HTML.
  */

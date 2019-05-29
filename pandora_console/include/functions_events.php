@@ -1146,7 +1146,7 @@ function events_print_event_table(
             $data[5] = ui_print_timestamp($event['timestamp'], true, ['style' => 'font-size: 7.5pt; letter-spacing: 0.3pt;']);
 
             // Status.
-            $data[6] = ui_print_event_priority($event['criticity'], true);
+            $data[6] = ui_print_event_type($event['event_type'], true);
 
             /*
                 $class = get_priority_class($event['criticity']);

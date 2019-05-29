@@ -37,6 +37,7 @@ require_once $config['homedir'].'/include/functions_users.php';
 enterprise_include_once('include/functions_metaconsole.php');
 
 ui_require_javascript_file('openlayers.pandora');
+ui_require_css_file('agent_view');
 
 enterprise_include_once('operation/agentes/ver_agente.php');
 

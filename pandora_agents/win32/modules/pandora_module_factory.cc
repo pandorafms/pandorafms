@@ -1117,6 +1117,12 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 		}
 	}
 
+	/* Skip disabled modules */
+	if (module_disabled == "1") {
+		pandoraLog ("Skipping disabled module \"%s\"", module_name.c_str ());
+		return NULL;
+	}
+
 	/* Create module objects */
 	if (module_exec != "") {
 		module = new Pandora_Module_Exec (module_name,

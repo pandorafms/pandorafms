@@ -42,7 +42,7 @@ my $Sem = undef;
 my $ThreadSem = undef;
 
 use constant AGENT_VERSION => '7.0NG.735';
-use constant AGENT_BUILD => '190528';
+use constant AGENT_BUILD => '190529';
 
 # Agent log default file size maximum and instances
 use constant DEFAULT_MAX_LOG_SIZE => 600000;
@@ -535,6 +535,12 @@ sub parse_conf_modules($) {
 			
 			# Check for invalid modules
 			next unless (($module->{'name'} ne '' && $module->{'func'} != 0) || $module->{'func'} == \&module_plugin);
+
+			# Skip disabled modules.
+			if (defined($module->{'disabled'}) && $module->{'disabled'} == 1) {
+				log_message('setup', 'Skipping disabled module "' . $module->{'name'} . '"');
+				next;
+			}
 
 			# Set the intensive interval
 			if ($module->{'is_intensive'} == 1) {				

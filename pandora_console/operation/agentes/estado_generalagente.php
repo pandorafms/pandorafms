@@ -605,14 +605,6 @@ if (!empty($network_interfaces)) {
         'class' => 'closed',
         'style' => 'cursor:pointer;',
     ];
-    $table_interface->head[0] = html_print_image(
-        'images/arrow_down_green.png',
-        true,
-        $options
-    ).'&nbsp;&nbsp;';
-    $table_interface->head[0] .= '<span style="vertical-align: middle; font-weight:bold;">'.__('Interface information').' (SNMP)</span>';
-    $table_interface->head_colspan = [];
-    $table_interface->head_colspan[0] = 8;
     $table_interface->data = [];
     $event_text_cont = 0;
 
@@ -747,12 +739,6 @@ if (!empty($network_interfaces)) {
 ?>
     <script type="text/javascript">
         $(document).ready (function () {
-            $("#agent_interface_info").find("tbody").hide();
-            $("#agent_interface_info").find("thead").click (function () {
-                close_table('#agent_interface_info');
-            })
-            .css('cursor', 'pointer');
-
             $("#agent_data_main").find("thead").click (function () {
                 close_table('#agent_data_main');
             })
@@ -846,5 +832,8 @@ if ($table_access_rate) {
 echo $agent_incidents;
 
 if (isset($table_interface)) {
-    echo html_print_table($table_interface, true);
+    ui_toggle(
+        '<div class="white_table_graph_content">'.html_print_table($table_interface, true).'</div>',
+        '<b>'.__('Interface information (SNMP)').'</b>'
+    );
 }

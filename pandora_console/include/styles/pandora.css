@@ -2939,7 +2939,6 @@ a.tip {
 a.tip > img {
   margin-left: 2px;
   margin-right: 2px;
-  position: absolute;
   margin-top: -3px;
 }
 

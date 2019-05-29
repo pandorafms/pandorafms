@@ -2267,6 +2267,7 @@ function ui_print_session_action_icon($action, $return=false)
  * @param boolean $return      Whether to return an output string or echo now.
  * @param string  $img         Displayed image.
  * @param boolean $is_relative Print image in relative way.
+ * @param string  $style       Specific style.
  *
  * @return string HTML code if return parameter is true.
  */
@@ -2274,9 +2275,11 @@ function ui_print_help_tip(
     $text,
     $return=false,
     $img='images/tip_help.png',
-    $is_relative=false
+    $is_relative=false,
+    $style=''
 ) {
-    $output = '<a href="javascript:" class="tip" >'.html_print_image(
+    $output = '<a href="javascript:" class="tip" style="'.$style.'" >';
+    $output .= html_print_image(
         $img,
         true,
         ['title' => $text],

@@ -717,9 +717,15 @@ if ($table_events) {
         'event_condition',
         'AND'
     );
-    echo '<div id="div_all_events_24h">';
-        echo '<label><b>'.__('Show all Events 24h').'</b></label>';
-        echo html_print_checkbox('all_events_24h', $all_events_24h, $all_events_24h, true, false, '', true);
+    echo '<div style="display: flex;" id="div_all_events_24h">';
+        echo '<label style="margin-right: 1em;"><b>'.__('Show all Events 24h').'</b></label>';
+        echo html_print_switch(
+            [
+                'name'  => 'all_events_24h',
+                'value' => $all_events_24h,
+                'id'    => 'checkbox-all_events_24h',
+            ]
+        );
     echo '</div>';
     $date_subtract_day = (time() - (24 * 60 * 60));
 

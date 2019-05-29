@@ -650,8 +650,10 @@ if (!empty($table->data)) {
     }
 
     echo '</form>';
+    $alerts_defined = true;
 } else {
     ui_print_info_message(['no_close' => true, 'message' => __('No alerts found') ]);
+    $alerts_defined = false;
 }
 
 $html_content = ob_get_clean();
@@ -662,7 +664,10 @@ if ($agent_view_page === true) {
         $html_content,
         __('Full list of alerts'),
         'status_monitor_agent',
-        false
+        !$alerts_defined,
+        false,
+        '',
+        'white_table_graph_content no-padding-imp'
     );
 } else {
     // Dump entire content.

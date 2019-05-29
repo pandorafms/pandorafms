@@ -180,7 +180,10 @@ ui_toggle(
         true
     ),
     'status_monitor_agent',
-    false
+    false,
+    false,
+    '',
+    'white_table_graph_content no-padding-imp'
 );
 
 

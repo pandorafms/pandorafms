@@ -2934,7 +2934,8 @@ function ui_toggle(
     $title='',
     $hidden_default=true,
     $return=false,
-    $toggle_class=''
+    $toggle_class='',
+    $container_class='white-box-content'
 ) {
     // Generate unique Id.
     $uniqid = uniqid('');
@@ -2965,7 +2966,7 @@ function ui_toggle(
         // $output .= '<br />';
     // Code into a div
     $output .= "<div id='tgl_div_".$uniqid."' style='".$style.";margin-top: -1px;' class='".$toggle_class."'>\n";
-    $output .= '<div class="box-shadow white_table_graph_content no-padding-imp">';
+    $output .= '<div class="'.$container_class.'">';
     $output .= $code;
     $output .= '</div>';
     $output .= '</div>';

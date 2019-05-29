@@ -569,12 +569,13 @@ input.sub {
   -webkit-border-radius: 2px;
   border-radius: 2px;
   font-size: 8pt;
-  background-color: #333 !important;
-  background-repeat: no-repeat !important;
-  background-position: 92% 3px !important;
-  color: white !important;
+  background-color: #fff;
+  background-repeat: no-repeat;
+  background-position: 92% 3px;
+  color: #000;
   padding: 3px 3px 5px 12px;
-  border-color: #333;
+  border-color: #888;
+  font-family: "lato", "Open Sans", sans-serif !important;
 }
 
 input.sub[disabled] {
@@ -5200,11 +5201,6 @@ table.info_table {
   border-radius: 5px;
 }
 
-table.info_table tr,
-table.info_table th,
-table.info_table td {
-  border: 1px solid #e2e2e2;
-}
 table.info_table > tbody > tr:nth-child(even) {
   background-color: #f5f5f5;
 }
@@ -5526,6 +5522,9 @@ table.info_table.policy_sub_table {
 }
 .sort_arrow a {
   padding: 0 0 0 5px !important;
+}
+.sort_arrow img {
+  width: 0.8em;
 }
 
 /*

@@ -774,12 +774,17 @@ switch ($action) {
             $table->size[0] = '20%';
             $table->size[1] = '30%';
             $table->size[2] = '2%';
+            $table->headstyle[2] = 'min-width: 35px;';
             $table->size[3] = '2%';
+            $table->headstyle[3] = 'min-width: 35px;';
             $table->size[4] = '2%';
+            $table->headstyle[4] = 'min-width: 35px;';
             $table->size[5] = '2%';
+            $table->headstyle[5] = 'min-width: 35px;';
             $table->size[6] = '2%';
+            $table->headstyle[6] = 'min-width: 35px;';
             $table->size[7] = '5%';
-            $table->headstyle[7] = 'min-width: 30px;';
+            $table->headstyle['csv'] = 'min-width: 65px;';
             $table->style[7] = 'text-align: center;';
 
             $next = 4;

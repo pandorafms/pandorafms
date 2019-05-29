@@ -581,9 +581,22 @@ switch ($action) {
 
         $values['label_position'] = $label_position;
         $values['show_on_top'] = $show_on_top;
-        $values['cache_expiration'] = $cache_expiration;
 
-        // In Graphs, background color is stored in column image (sorry)
+        switch ($type) {
+            case 'line_item':
+            case 'box_item':
+            case 'clock':
+            case 'icon':
+            case 'label':
+                $values['cache_expiration'] = 0;
+            break;
+
+            default:
+                $values['cache_expiration'] = $cache_expiration;
+            break;
+        }
+
+        // In Graphs, background color is stored in column image (sorry).
         if ($type == 'module_graph') {
             $values['image'] = $background_color;
             $values['type_graph'] = $type_graph;
@@ -1417,9 +1430,21 @@ switch ($action) {
         $values['show_on_top'] = $show_on_top;
         $values['image'] = $background_color;
         $values['type_graph'] = $type_graph;
-
         $values['id_custom_graph'] = $id_custom_graph;
-        $values['cache_expiration'] = $cache_expiration;
+
+        switch ($type) {
+            case 'line_item':
+            case 'box_item':
+            case 'clock':
+            case 'icon':
+            case 'label':
+                $values['cache_expiration'] = 0;
+            break;
+
+            default:
+                $values['cache_expiration'] = $cache_expiration;
+            break;
+        }
 
         switch ($type) {
             case 'line_item':

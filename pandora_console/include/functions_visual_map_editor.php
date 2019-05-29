@@ -1149,6 +1149,7 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background)
             'label',
             'datos',
             'auto_sla_graph',
+            'group_item',
             'bars_graph',
             'donut_graph',
             'color_cloud',

@@ -446,6 +446,10 @@ sub pandora_purgedb ($$) {
 		my $message_limit = time() - 86400 * $conf->{'_delete_old_messages'};
 		db_do ($dbh, "DELETE FROM tmensajes WHERE timestamp < ?", $message_limit);
 	}
+
+	# Delete old cache data
+	log_message ('PURGE', "Deleting old cache data.");
+	db_do ($dbh, "DELETE FROM `tvisual_console_elements_cache` WHERE (UNIX_TIMESTAMP(`created_at`) + `expiration`) < UNIX_TIMESTAMP()");
 }
 
 ###############################################################################

@@ -3,12 +3,12 @@
 declare(strict_types=1);
 
 namespace Models\VisualConsole;
-use Models\Model;
+use Models\CachedModel;
 
 /**
  * Model of a generic Visual Console Item.
  */
-class Item extends Model
+class Item extends CachedModel
 {
 
     /**
@@ -698,10 +698,6 @@ class Item extends Model
             throw new \Exception('error fetching the data from the DB');
         }
 
-        // Load side libraries.
-        global $config;
-        include_once $config['homedir'].'/include/functions_io.php';
-
         // Clean up to two levels of HTML entities.
         $row = \io_safe_output(\io_safe_output($row));
 
@@ -722,6 +718,89 @@ class Item extends Model
         }
 
         return $row;
+    }
+
+
+    /**
+     * Fetch a cache item data structure from the database using a filter.
+     *
+     * @param array $filter Filter of the Visual Console Item.
+     *
+     * @return array The Visual Console Item data structure stored into the DB.
+     * @throws \Exception When the data cannot be retrieved from the DB.
+     *
+     * @override CachedModel::fetchCachedData.
+     */
+    protected static function fetchCachedData(array $filter)
+    {
+        global $config;
+
+        $filter = [
+            'vc_id'      => (int) $filter['id_layout'],
+            'vc_item_id' => (int) $filter['id'],
+            '(UNIX_TIMESTAMP(`created_at`) + `expiration`) > UNIX_TIMESTAMP()'
+        ];
+
+        if (static::$indexCacheByUser === true) {
+            $filter['user_id'] = $config['id_user'];
+        }
+
+        $data = \db_get_value_filter(
+            'data',
+            'tvisual_console_elements_cache',
+            $filter
+        );
+
+        if ($data === false) {
+            return null;
+        }
+
+        return json_decode(base64_decode($data), true);
+    }
+
+
+    /**
+     * Stores the data structure obtained.
+     *
+     * @param array $filter Filter to save the modeled element.
+     * @param array $data   Modeled element to save.
+     *
+     * @return boolean The modeled element data structure stored into the DB.
+     * @throws \Exception When the data cannot be retrieved from the DB.
+     *
+     * @override CachedModel::saveCachedData.
+     */
+    protected static function saveCachedData(array $filter, array $data): bool
+    {
+        return \db_process_sql_insert(
+            'tvisual_console_elements_cache',
+            [
+                'vc_id'      => $filter['vc_id'],
+                'vc_item_id' => $filter['vc_item_id'],
+                'user_id'    => $filter['user_id'],
+                'data'       => base64_encode(json_encode($data)),
+                'expiration' => $filter['expiration'],
+            ]
+        ) > 0;
+    }
+
+
+    /**
+     * Deletes previous data that are not useful.
+     *
+     * @param array $filter Filter to retrieve the modeled element.
+     *
+     * @return array The modeled element data structure stored into the DB.
+     * @throws \Exception When the data cannot be retrieved from the DB.
+     *
+     * @override CachedModel::clearCachedData.
+     */
+    protected static function clearCachedData(array $filter): int
+    {
+        return \db_process_sql_delete(
+            'tvisual_console_elements_cache',
+            $filter
+        );
     }
 
 

@@ -1375,6 +1375,7 @@ ALTER TABLE `tlayout_data` ADD COLUMN `linked_layout_status_type` ENUM ('default
 ALTER TABLE `tlayout_data` ADD COLUMN `linked_layout_status_as_service_warning` FLOAT(20, 3) NOT NULL default 0;
 ALTER TABLE `tlayout_data` ADD COLUMN `linked_layout_status_as_service_critical` FLOAT(20, 3) NOT NULL default 0;
 ALTER TABLE `tlayout_data` ADD COLUMN `linked_layout_node_id` INT(10) NOT NULL default 0;
+ALTER TABLE `tlayout_data` ADD COLUMN `cache_expiration` INTEGER UNSIGNED NOT NULL DEFAULT 0;
 
 -- ---------------------------------------------------------------------
 -- Table `tagent_custom_fields`
@@ -2142,4 +2143,25 @@ INSERT INTO `tnews` (`id_news`, `author`, `subject`, `text`, `timestamp`) VALUES
 -- ----------------------------------------------------------------------
 
  ALTER TABLE `talert_templates` MODIFY COLUMN `type` ENUM('regex','max_min','max','min','equal','not_equal','warning','critical','onchange','unknown','always','not_normal');
+
+-- ---------------------------------------------------------------------
+-- Table `tvisual_console_items_cache`
+-- ---------------------------------------------------------------------
+CREATE TABLE `tvisual_console_elements_cache` (
+    `id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+    `vc_id` INTEGER UNSIGNED NOT NULL,
+    `vc_item_id` INTEGER UNSIGNED NOT NULL,
+    `user_id` VARCHAR(60) DEFAULT NULL,
+    `data` TEXT NOT NULL,
+    `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	`expiration` INTEGER UNSIGNED NOT NULL COMMENT 'Seconds to expire',
+    PRIMARY KEY(`id`),
+    FOREIGN KEY(`vc_id`) REFERENCES `tlayout`(`id`)
+        ON DELETE CASCADE,
+    FOREIGN KEY(`vc_item_id`) REFERENCES `tlayout_data`(`id`)
+        ON DELETE CASCADE,
+    FOREIGN KEY (`user_id`) REFERENCES `tusuario`(`id_user`)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
+) engine=InnoDB DEFAULT CHARSET=utf8;
 

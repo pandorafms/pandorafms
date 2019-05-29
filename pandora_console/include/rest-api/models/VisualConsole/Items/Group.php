@@ -26,6 +26,13 @@ final class Group extends Item
      */
     protected static $useHtmlOutput = true;
 
+    /**
+     * Enable the cache index by user id.
+     *
+     * @var boolean
+     */
+    protected static $indexCacheByUser = true;
+
 
     /**
      * Returns a valid representation of the model.

@@ -16,10 +16,31 @@ INSERT INTO `tnotification_source_user` (`id_source`, `id_user`, `enabled`, `als
 UPDATE `tnotification_source` SET `enabled`=1 WHERE `description` = 'System&#x20;status' OR `description` = 'Official&#x20;communication';
 UPDATE `tnotification_source` SET `icon`="icono_logo_pandora.png" WHERE `description` = 'Official&#x20;communication';
 
+-- ---------------------------------------------------------------------
+-- Table `tvisual_console_items_cache`
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tvisual_console_elements_cache` (
+    `id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+    `vc_id` INTEGER UNSIGNED NOT NULL,
+    `vc_item_id` INTEGER UNSIGNED NOT NULL,
+    `user_id` VARCHAR(60) DEFAULT NULL,
+    `data` TEXT NOT NULL,
+    `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `expiration` INTEGER UNSIGNED NOT NULL COMMENT 'Seconds to expire',
+    PRIMARY KEY(`id`),
+    FOREIGN KEY(`vc_id`) REFERENCES `tlayout`(`id`)
+        ON DELETE CASCADE,
+    FOREIGN KEY(`vc_item_id`) REFERENCES `tlayout_data`(`id`)
+        ON DELETE CASCADE,
+    FOREIGN KEY (`user_id`) REFERENCES `tusuario`(`id_user`)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
+) engine=InnoDB DEFAULT CHARSET=utf8;
+
+ALTER TABLE `tlayout_data` ADD COLUMN `cache_expiration` INTEGER UNSIGNED NOT NULL DEFAULT 0;
+
 ALTER TABLE `tusuario` ADD COLUMN `ehorus_user_level_user` VARCHAR(60);
 ALTER TABLE `tusuario` ADD COLUMN `ehorus_user_level_pass` VARCHAR(45);
 ALTER TABLE `tusuario` ADD COLUMN `ehorus_user_level_enabled` TINYINT(1) DEFAULT '1';
-
-
 
 COMMIT;

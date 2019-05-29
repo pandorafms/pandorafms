@@ -1498,7 +1498,13 @@ ui_print_page_header(
     '',
     $config['item_title_size_text'],
     '',
-    __('Resources').ui_print_breadcrums($tab_name)
+    ui_print_breadcrums(
+        [
+            __('Monitoring'),
+            __('View'),
+            '<span class="breadcrumb_active">'.$tab_name.'</span>',
+        ]
+    )
 );
 
 

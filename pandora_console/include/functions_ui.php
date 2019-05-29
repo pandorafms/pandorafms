@@ -5020,10 +5020,12 @@ function ui_get_sorting_arrows($url_up, $url_down, $selectUp, $selectDown)
  */
 function ui_print_breadcrums($tab_name)
 {
-    if ($tab_name != '') {
+    if (is_array($tab_name)) {
+        return join(' / ', $tab_name);
+    } else if ($tab_name != '') {
         $section = str_replace('_', ' ', $tab_name);
         $section = ucwords($section);
-        $section = ' / <span class="breadcrumb_active">'.___($section).'</span>';
+        $section = ' / '.___($section);
     }
 
     return $section;

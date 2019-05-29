@@ -708,7 +708,13 @@ if ($id_agente) {
         '',
         $config['item_title_size_text'],
         '',
-        __('Resources').ui_print_breadcrums($tab_name)
+        ui_print_breadcrums(
+            [
+                __('Resources'),
+                __('Manage agents'),
+                '<span class="breadcrumb_active">'.$tab_name.'</span>',
+            ]
+        )
     );
 } else {
     // Create agent.
@@ -723,7 +729,13 @@ if ($id_agente) {
         '',
         GENERIC_SIZE_TEXT,
         '',
-        __('Resources').ui_print_breadcrums('Create agent')
+        ui_print_breadcrums(
+            [
+                __('Resources'),
+                __('Manage agents'),
+                '<span class="breadcrumb_active">'.__('Create agent').'</span>',
+            ]
+        )
     );
 }
 

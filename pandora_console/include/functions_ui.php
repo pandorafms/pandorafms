@@ -2712,6 +2712,7 @@ function ui_print_module_status(
  * @param integer $height   Height in 'em'.
  * @param string  $color    Color.
  * @param boolean $return   Return or paint (if false).
+ * @param boolean $text     Text to be displayed,by default progress %.
  *
  * @return string HTML code.
  */
@@ -2720,7 +2721,8 @@ function ui_progress(
     $width='100%',
     $height='2.5',
     $color='#80ba27',
-    $return=true
+    $return=true,
+    $text=''
 ) {
     if (!$progress) {
         $progress = 0;
@@ -2734,9 +2736,13 @@ function ui_progress(
         $progress = 0;
     }
 
+    if (empty($text)) {
+        $text = $progress.'%';
+    }
+
     ui_require_css_file('progress');
     $output .= '<div class="progress_main" style="width: '.$width.'; height: '.$height.'em; border: 1px solid '.$color.'">';
-    $output .= '<span class="progress_text" style="font-size:'.($height - 0.5).'em;">'.$progress.'%</span>';
+    $output .= '<span class="progress_text" style="font-size:'.($height - 0.5).'em;">'.$text.'</span>';
     $output .= '<div class="progress" style="width: '.$progress.'%; background: '.$color.'"></div>';
     $output .= '</div>';
 

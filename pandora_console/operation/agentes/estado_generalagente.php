@@ -314,7 +314,14 @@ $table_contact->data[] = $data;
 
 $data = [];
 $table_contact->colspan[3][0] = 2;
-$data[0] = ui_progress($progress, '80%');
+$data[0] = ui_progress(
+    $progress,
+    '60%',
+    2,
+    '#BBB',
+    true,
+    ($agent['intervalo'] * (100 - $progress) / 100).' s'
+);
 
 if ($progress > 100) {
     $data[0] .= clippy_context_help('agent_out_of_limits');

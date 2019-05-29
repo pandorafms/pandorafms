@@ -187,7 +187,12 @@ if (check_acl($config['id_user'], 0, 'ER')) {
     }
 
     $events = events_print_event_table($event_filter, 10, '100%', true, false, true);
-    ui_toggle($events, __('Latest events'), false, false);
+    ui_toggle(
+        $events,
+        __('Latest events'),
+        false,
+        false
+    );
 }
 
 // ---------------------------------------------------------------------

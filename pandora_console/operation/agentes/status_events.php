@@ -22,7 +22,7 @@ if (!isset($id_agente)) {
 require_once 'include/functions_events.php';
 ui_require_css_file('events');
 ui_toggle(
-    "<div class='white_table_graph_content' id='event_list'>".html_print_image('images/spinner.gif', true).'</div>',
+    "<div style='width: 100%;' id='event_list'>".html_print_image('images/spinner.gif', true).'</div>',
     __('Latest events for this agent'),
     __('Latest events for this agent'),
     false

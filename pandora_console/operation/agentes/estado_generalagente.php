@@ -833,7 +833,7 @@ echo $agent_incidents;
 
 if (isset($table_interface)) {
     ui_toggle(
-        '<div class="white_table_graph_content">'.html_print_table($table_interface, true).'</div>',
+        html_print_table($table_interface, true),
         '<b>'.__('Interface information (SNMP)').'</b>'
     );
 }

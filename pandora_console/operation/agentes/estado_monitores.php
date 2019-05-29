@@ -163,7 +163,7 @@ print_form_filter_monitors(
     $status_hierachy_mode
 );
 
-echo '<div class="box-shadow white_table_graph_content" style="padding: 0;" id="module_list"></div>';
+echo '<div id="module_list"></div>';
 
 $html_toggle = ob_get_clean();
 

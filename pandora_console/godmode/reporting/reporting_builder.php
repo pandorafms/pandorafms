@@ -787,6 +787,9 @@ switch ($action) {
             $table->headstyle['csv'] = 'min-width: 65px;';
             $table->style[7] = 'text-align: center;';
 
+            $table->headstyle[9] = 'min-width: 100px;';
+            $table->style[9] = 'text-align: center;';
+
             $next = 4;
             // Calculate dinamically the number of the column.
             if (enterprise_hook('load_custom_reporting_1') !== ENTERPRISE_NOT_HOOK) {

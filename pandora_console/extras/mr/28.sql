@@ -16,4 +16,10 @@ INSERT INTO `tnotification_source_user` (`id_source`, `id_user`, `enabled`, `als
 UPDATE `tnotification_source` SET `enabled`=1 WHERE `description` = 'System&#x20;status' OR `description` = 'Official&#x20;communication';
 UPDATE `tnotification_source` SET `icon`="icono_logo_pandora.png" WHERE `description` = 'Official&#x20;communication';
 
+ALTER TABLE `tusuario` ADD COLUMN `ehorus_user_level_user` VARCHAR(60);
+ALTER TABLE `tusuario` ADD COLUMN `ehorus_user_level_pass` VARCHAR(45);
+ALTER TABLE `tusuario` ADD COLUMN `ehorus_user_level_enabled` TINYINT(1) DEFAULT '1';
+
+
+
 COMMIT;

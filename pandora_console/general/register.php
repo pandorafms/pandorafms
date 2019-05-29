@@ -140,7 +140,7 @@ $registration = isset($config['pandora_uid']) !== true
     || $config['pandora_uid'] == '';
 
 
-if ($initial) {
+if ($initial && users_is_admin()) {
     // Show all forms in order.
     // 1- Ask for email, timezone, etc. Fullfill alerts and user mail.
     config_wiz_modal(
@@ -150,7 +150,7 @@ if ($initial) {
     );
 }
 
-if ($registration) {
+if ($registration && users_is_admin()) {
     // Prepare registration wizard, not launch. leave control to flow.
     registration_wiz_modal(
         false,

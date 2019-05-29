@@ -1261,38 +1261,47 @@ if (enterprise_installed() && $config['log_collector']) {
 
 // EHorus tab.
 if ($config['ehorus_enabled'] && !empty($config['ehorus_custom_field'])
-    && (check_acl_one_of_groups($config['id_user'], $all_groups, 'AW') || is_user_admin($config['id_user']))
+    && (check_acl_one_of_groups(
+        $config['id_user'],
+        $all_groups,
+        'AW'
+    ) || is_user_admin($config['id_user']))
 ) {
-    $ehorus_agent_id = agents_get_agent_custom_field($id_agente, $config['ehorus_custom_field']);
-    if (!empty($ehorus_agent_id)) {
-        $tab_url = 'index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=ehorus&id_agente='.$id_agente;
-        $ehorus_tab['text'] = '<a href="'.$tab_url.'" class="ehorus_tab">'.html_print_image('images/ehorus/ehorus.png', true, [ 'title' => __('eHorus')]).'</a>';
+    $user_info = users_get_user_by_id($config['id_user']);
+    if ($config['ehorus_user_level_conf'] && !$user_info['ehorus_user_level_enabled']) {
+        // If ehorus user configuration is enabled, and userr acces level is disabled do not show eHorus tab.
+    } else {
+        $ehorus_agent_id = agents_get_agent_custom_field($id_agente, $config['ehorus_custom_field']);
+        if (!empty($ehorus_agent_id)) {
+            $tab_url = 'index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=ehorus&id_agente='.$id_agente;
+            $ehorus_tab['text'] = '<a href="'.$tab_url.'" class="ehorus_tab">'.html_print_image('images/ehorus/ehorus.png', true, [ 'title' => __('eHorus')]).'</a>';
 
-        // Hidden subtab layer.
-        $ehorus_tab['sub_menu'] = '<ul class="mn subsubmenu" style="float:none;">';
-        $ehorus_tab['sub_menu'] .= '<a class="tab_terminal" href="'.$tab_url.'&client_tab=terminal">';
-        $ehorus_tab['sub_menu'] .= '<li class="nomn tab_godmode" style="text-align: center;">'.html_print_image('images/ehorus/terminal.png', true, [ 'title' => __('Terminal')]);
-        $ehorus_tab['sub_menu'] .= '</li>';
-        $ehorus_tab['sub_menu'] .= '</a>';
-        $ehorus_tab['sub_menu'] .= '<a class="tab_display" href="'.$tab_url.'&client_tab=display">';
-        $ehorus_tab['sub_menu'] .= '<li class="nomn tab_godmode" style="text-align: center;">'.html_print_image('images/ehorus/vnc.png', true, [ 'title' => __('Display')]);
-        $ehorus_tab['sub_menu'] .= '</li>';
-        $ehorus_tab['sub_menu'] .= '</a>';
-        $ehorus_tab['sub_menu'] .= '<a class="tab_processes" href="'.$tab_url.'&client_tab=processes">';
-        $ehorus_tab['sub_menu'] .= '<li class="nomn tab_godmode" style="text-align: center;">'.html_print_image('images/ehorus/processes.png', true, [ 'title' => __('Processes')]);
-        $ehorus_tab['sub_menu'] .= '</li>';
-        $ehorus_tab['sub_menu'] .= '</a>';
-        $ehorus_tab['sub_menu'] .= '<a class="tab_services" href="'.$tab_url.'&client_tab=services">';
-        $ehorus_tab['sub_menu'] .= '<li class="nomn tab_godmode" style="text-align: center;">'.html_print_image('images/ehorus/services.png', true, [ 'title' => __('Services')]);
-        $ehorus_tab['sub_menu'] .= '</li>';
-        $ehorus_tab['sub_menu'] .= '</a>';
-        $ehorus_tab['sub_menu'] .= '<a class="tab_files" href="'.$tab_url.'&client_tab=files">';
-        $ehorus_tab['sub_menu'] .= '<li class="nomn tab_godmode" style="text-align: center;">'.html_print_image('images/ehorus/files.png', true, [ 'title' => __('Files')]);
-        $ehorus_tab['sub_menu'] .= '</li>';
-        $ehorus_tab['sub_menu'] .= '</a>';
-        $ehorus_tab['sub_menu'] .= '</ul>';
+            // Hidden subtab layer.
+            $ehorus_tab['sub_menu'] = '<ul class="mn subsubmenu" style="float:none;">';
+            $ehorus_tab['sub_menu'] .= '<a class="tab_terminal" href="'.$tab_url.'&client_tab=terminal">';
+            $ehorus_tab['sub_menu'] .= '<li class="nomn tab_godmode" style="text-align: center;">'.html_print_image('images/ehorus/terminal.png', true, [ 'title' => __('Terminal')]);
+            $ehorus_tab['sub_menu'] .= '</li>';
+            $ehorus_tab['sub_menu'] .= '</a>';
+            $ehorus_tab['sub_menu'] .= '<a class="tab_display" href="'.$tab_url.'&client_tab=display">';
+            $ehorus_tab['sub_menu'] .= '<li class="nomn tab_godmode" style="text-align: center;">'.html_print_image('images/ehorus/vnc.png', true, [ 'title' => __('Display')]);
+            $ehorus_tab['sub_menu'] .= '</li>';
+            $ehorus_tab['sub_menu'] .= '</a>';
+            $ehorus_tab['sub_menu'] .= '<a class="tab_processes" href="'.$tab_url.'&client_tab=processes">';
+            $ehorus_tab['sub_menu'] .= '<li class="nomn tab_godmode" style="text-align: center;">'.html_print_image('images/ehorus/processes.png', true, [ 'title' => __('Processes')]);
+            $ehorus_tab['sub_menu'] .= '</li>';
+            $ehorus_tab['sub_menu'] .= '</a>';
+            $ehorus_tab['sub_menu'] .= '<a class="tab_services" href="'.$tab_url.'&client_tab=services">';
+            $ehorus_tab['sub_menu'] .= '<li class="nomn tab_godmode" style="text-align: center;">'.html_print_image('images/ehorus/services.png', true, [ 'title' => __('Services')]);
+            $ehorus_tab['sub_menu'] .= '</li>';
+            $ehorus_tab['sub_menu'] .= '</a>';
+            $ehorus_tab['sub_menu'] .= '<a class="tab_files" href="'.$tab_url.'&client_tab=files">';
+            $ehorus_tab['sub_menu'] .= '<li class="nomn tab_godmode" style="text-align: center;">'.html_print_image('images/ehorus/files.png', true, [ 'title' => __('Files')]);
+            $ehorus_tab['sub_menu'] .= '</li>';
+            $ehorus_tab['sub_menu'] .= '</a>';
+            $ehorus_tab['sub_menu'] .= '</ul>';
 
-        $ehorus_tab['active'] = $tab == 'ehorus';
+            $ehorus_tab['active'] = $tab == 'ehorus';
+        }
     }
 }
 

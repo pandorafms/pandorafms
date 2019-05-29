@@ -4965,7 +4965,8 @@ input:checked + .p-slider:before {
 }
 
 .user_edit_first_row,
-.user_edit_second_row {
+.user_edit_second_row,
+.user_edit_third_row {
   margin-bottom: 20px;
 }
 

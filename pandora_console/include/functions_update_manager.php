@@ -865,50 +865,63 @@ function show_newsletter_wizard() {
             var language = $("#language").val();
             var email_identification = $("#text-email-newsletter").val();
 
-            jQuery.post (
-                "ajax.php",
-                {
-                    "page": "general/register",
-                    "register_newsletter": 1,
-                    "email": email_identification
-                },
-                function (data) {
-                    cl = '';
-                    msg = 'no response';
-
-                    try {
-                        json = JSON.parse(data);
-                        cl = json.status
-                        msg = json.message;
-
-                    } catch (error) {
-                        msg = 'Failed: ' + error;
-                        cl = 'error';
-                    }
-
-                    if (!cl || cl == 'error') {
-                        cl = 'error';
-                    } else {
-                        // Success.
-                    }
-
-                    $('#news_result_content').html(msg);
-                    $('#news_result').addClass(cl);
-                    $('#news_result').dialog({
-                        buttons: {
-                            'Ok': function() {
-                                $(this).dialog('close');
-                                $("#newsletter_wizard").dialog('close');
-                                <?php
-                                if (isset($callback) && $callback != '') {
-                                    echo $callback;
-                                }
-                                ?>
-                            }
+            if (email_identification == '') {
+                msg = '<?php echo __('You must specify an email'); ?>';
+                $('#news_result_content').html(msg);
+                $('#news_result').dialog({
+                    buttons: {
+                        'Ok': function() {
+                            $(this).dialog('close');
                         }
-                    });
-                }
-            );
+                    }
+                });
+            } else {
+
+                jQuery.post (
+                    "ajax.php",
+                    {
+                        "page": "general/register",
+                        "register_newsletter": 1,
+                        "email": email_identification
+                    },
+                    function (data) {
+                        cl = '';
+                        msg = 'no response';
+
+                        try {
+                            json = JSON.parse(data);
+                            cl = json.status
+                            msg = json.message;
+
+                        } catch (error) {
+                            msg = 'Failed: ' + error;
+                            cl = 'error';
+                        }
+
+                        if (!cl || cl == 'error') {
+                            cl = 'error';
+                        } else {
+                            // Success.
+                        }
+
+                        $('#news_result_content').html(msg);
+                        $('#news_result').addClass(cl);
+                        $('#news_result').dialog({
+                            buttons: {
+                                'Ok': function() {
+                                    $(this).dialog('close');
+                                    $("#newsletter_wizard").dialog('close');
+                                    <?php
+                                    if (isset($callback) && $callback != '') {
+                                        echo $callback;
+                                    }
+                                    ?>
+                                }
+                            }
+                        });
+                    }
+                );
+            }
         }
     });
 }
@@ -1570,15 +1583,20 @@ function update_manager_register_instance()
     global $config;
 
     $email = db_get_value('email', 'tusuario', 'id_user', $config['id_user']);
+
+    $um_config_values = update_manager_get_config_values();
+
     $params = [
-        'language' => $config['language'],
-        'timezone' => $config['timezone'],
-        'email'    => $email,
-        'license'  => db_get_value_filter(
-            'value',
-            'tupdate_settings',
-            ['key' => 'customer_key']
-        ),
+        'action'          => 'newest_package',
+        'license'         => $um_config_values['license'],
+        'limit_count'     => $um_config_values['limit_count'],
+        'current_package' => $um_config_values['current_update'],
+        'version'         => $um_config_values['version'],
+        'build'           => $um_config_values['build'],
+        'puid'            => $um_config_values['puid'],
+        'email'           => $email,
+        'language'        => $config['language'],
+        'timezone'        => $config['timezone'],
     ];
 
     $result = update_manager_curl_request('new_register', $params);

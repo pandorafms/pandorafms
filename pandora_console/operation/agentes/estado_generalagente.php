@@ -375,7 +375,7 @@ $table_data->id = 'agent_data_main';
 $table_data->width = '100%';
 $table_data->cellspacing = 0;
 $table_data->cellpadding = 0;
-$table_data->class = 'white_table white_table_droppable';
+$table_data->class = 'white_table white_table_droppable align-top';
 $table_data->style = array_fill(0, 3, 'width: 25%;');
 
 $table_data->head[0] = html_print_image(

@@ -29,6 +29,8 @@
 // Begin.
 global $config;
 
+require_once __DIR__.'/../../include/functions_users.php';
+
 check_login();
 
 if (! check_acl($config['id_user'], 0, 'PM') && ! is_user_admin($config['id_user'])) {
@@ -43,16 +45,18 @@ $action_update_url_update_manager = (bool) get_parameter(
     0
 );
 
-$update_manager_disconnect = get_parameter(
-    'um_disconnect_console',
-    0
-);
-
-if ($update_manager_disconnect) {
-    config_update_value(
-        'pandora_uid',
-        'OFFLINE'
+if (users_is_admin()) {
+    $update_manager_disconnect = get_parameter(
+        'um_disconnect_console',
+        0
     );
+
+    if ($update_manager_disconnect) {
+        config_update_value(
+            'pandora_uid',
+            'OFFLINE'
+        );
+    }
 }
 
 if (!$action_update_url_update_manager) {
@@ -236,7 +240,7 @@ $table->data[4][1] = html_print_input_password(
 $table->data[5][0] = __('Registration ID:');
 $table->data[5][1] = '<i>'.$config['pandora_uid'].'</i>';
 
-if (update_manager_verify_registration() === true) {
+if (update_manager_verify_registration() === true && users_is_admin()) {
     $table->data[6][0] = __('Cancel registration:');
     $table->data[6][1] = '<a href="';
     $table->data[6][1] .= ui_get_full_url(

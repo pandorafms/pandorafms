@@ -2816,7 +2816,11 @@ function ui_print_event_type(
         $output .= $text;
         $output .= '</div>';
     } else {
-        $output = '<div class="mini-criticity" style="background: '.$color.'">';
+        $output = '<div data-title="';
+        $output .= $text;
+        $output .= '" data-use_title_for_force_title="1" ';
+        $output .= 'class="forced_title mini-criticity" ';
+        $output .= 'style="background: '.$color.'">';
         $output .= '</div>';
     }
 
@@ -2890,7 +2894,11 @@ function ui_print_event_priority(
         $output .= $criticity;
         $output .= '</div>';
     } else {
-        $output = '<div class="mini-criticity" style="background: '.$color.'">';
+        $output = '<div data-title="';
+        $output .= $criticity;
+        $output .= '" data-use_title_for_force_title="1" ';
+        $output .= 'class="forced_title mini-criticity" ';
+        $output .= 'style="background: '.$color.'">';
         $output .= '</div>';
     }
 

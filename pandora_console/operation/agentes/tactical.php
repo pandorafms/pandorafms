@@ -122,7 +122,7 @@ echo '<td style="vertical-align: top; min-width: 180px; width:25%; padding-right
 // ---------------------------------------------------------------------
 $table = new stdClass();
 $table->width = '100%';
-$table->class = '';
+$table->class = 'info_table no-td-borders';
 $table->cellpadding = 2;
 $table->cellspacing = 2;
 $table->border = 0;
@@ -130,7 +130,7 @@ $table->head = [];
 $table->data = [];
 $table->style = [];
 
-$table->head[0] = '<span>'.__('Report of State').'</span>';
+$table->head[0] = '<b><span>'.__('Report of State').'</span></b>';
 $stats = reporting_get_stats_indicators($data, 120, 10, false);
 $status = '<table class="status_tactical">';
 foreach ($stats as $stat) {

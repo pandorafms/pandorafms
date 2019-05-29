@@ -306,18 +306,12 @@ $table_contact->data[] = $data;
 
 
 $data = [];
-$table_contact->colspan[2][0] = 2;
 $data[0] = '<b>'.__('Next contact').'</b>';
 $progress = agents_get_next_contact($id_agente);
-$table_contact->data[] = $data;
-
-
-$data = [];
-$table_contact->colspan[3][0] = 2;
-$data[0] = ui_progress(
+$data[1] = ui_progress(
     $progress,
-    '60%',
-    2,
+    '100%',
+    1.8,
     '#BBB',
     true,
     ($agent['intervalo'] * (100 - $progress) / 100).' s'

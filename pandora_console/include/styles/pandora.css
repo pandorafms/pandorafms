@@ -468,6 +468,12 @@ select:-internal-list-box {
 .align-top td {
   vertical-align: top;
 }
+.no-td-borders td {
+  border: none !important;
+}
+.no-td-padding td {
+  padding: 0 !important;
+}
 
 div#page {
   background: #fbfbfb;
@@ -1809,12 +1815,14 @@ div#main_pure {
 /* big_data is used in tactical and logon_ok */
 .big_data {
   text-decoration: none;
-  font: bold 2em Arial, Sans-serif;
+  font-family: "lato", "Open Sans", sans-serif;
+  font-size: 2em;
 }
 
 .med_data {
   text-decoration: none;
-  font: bold 1.5em Arial, Sans-serif;
+  font-family: "lato", "Open Sans", sans-serif;
+  font-size: 1.5em;
 }
 
 .notify {
@@ -2361,6 +2369,7 @@ td.cellBig {
 tr.group_view_data,
 .group_view_data {
   color: #3f3f3f;
+  font-family: "lato", "Open Sans", sans-serif;
 }
 
 tr.group_view_crit,
@@ -3292,7 +3301,8 @@ table#policy_modules td * {
   color: #fff;
   margin: 2px;
   padding: 10px 30px;
-  font-size: 15px;
+  font-size: 16px;
+  font-family: "lato-bolder", "Open Sans", sans-serif;
   font-weight: bold;
   border-radius: 2px;
 }
@@ -5913,7 +5923,7 @@ div#status_pie {
   display: flex;
   align-items: center;
   padding: 20px;
-  padding-bottom: 10px;
+  padding-bottom: 0;
 }
 
 .agent_details_agent_name {
@@ -6038,13 +6048,10 @@ div#status_pie {
 .white_table thead tr:first-child > th {
   border-top-left-radius: 4px;
   border-top-right-radius: 4px;
+  border-bottom: 1px solid #e2e2e2;
 }
 
 .white_table tbody tr:first-child > td {
-  border-top: 1px solid #e2e2e2;
-}
-
-.white_table tbody tr:first-child td {
   padding-top: 25px;
 }
 

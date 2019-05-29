@@ -1146,7 +1146,6 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background)
             'percentile_item',
             'module_graph',
             'simple_value',
-            'label',
             'datos',
             'auto_sla_graph',
             'group_item',

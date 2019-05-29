@@ -6043,6 +6043,7 @@ div#status_pie {
   border: 1px solid #e2e2e2;
   border-radius: 4px;
   margin-bottom: 20px;
+  padding-bottom: 10px;
 }
 
 .white_table thead tr:first-child > th {

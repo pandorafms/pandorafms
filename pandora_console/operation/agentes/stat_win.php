@@ -238,7 +238,7 @@ $alias    = db_get_value('alias', 'tagente', 'id_agente', $id_agent);
         $table->style[0] = 'text-align:left;';
         $table->style[1] = 'text-align:left;';
         $table->styleTable = 'margin-bottom: 20px;';
-        $table->class = 'events_show_more_table';
+        $table->class = 'table_modal_alternate';
 
         $data = [];
         $data[0] = __('Refresh time');

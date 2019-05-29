@@ -760,6 +760,9 @@ switch ($action) {
 
             $table->head = [];
             $table->align = [];
+            $table->headstyle = [];
+            $table->style = [];
+
             $table->align[2] = 'left';
             $table->align[3] = 'left';
             $table->align[4] = 'left';
@@ -775,7 +778,9 @@ switch ($action) {
             $table->size[4] = '2%';
             $table->size[5] = '2%';
             $table->size[6] = '2%';
-            $table->size['csv'] = '5%';
+            $table->size[7] = '5%';
+            $table->headstyle[7] = 'min-width: 30px;';
+            $table->style[7] = 'text-align: center;';
 
             $next = 4;
             // Calculate dinamically the number of the column.
@@ -814,7 +819,6 @@ switch ($action) {
                 // $table->size = array ();
                 $table->size[$next] = '10%';
                 $table->align[$next] = 'left';
-                $table->headstyle[$next] = 'text-align:left;';
             }
 
             $columnview = false;
@@ -996,7 +1000,6 @@ switch ($action) {
                         $table->head[$next] = '<span title="Operations">'.__('Op.').'</span>'.html_print_checkbox('all_delete', 0, false, true, false);
                         $table->size = [];
                         // $table->size[$next] = '80px';
-                        $table->style[$next] = 'text-align:left;';
                     }
 
                     if ($edit) {

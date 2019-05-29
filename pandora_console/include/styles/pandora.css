@@ -5111,7 +5111,7 @@ input:checked + .p-slider:before {
 
 #autorefresh_list_out,
 #autorefresh_list {
-  text-align: center;
+  text-align: left;
 }
 
 .autorefresh_select .autorefresh_select_list_out,

@@ -567,7 +567,6 @@ input.sub {
   font-weight: normal;
   -moz-border-radius: 2px;
   -webkit-border-radius: 2px;
-  height: auto !important;
   border-radius: 2px;
   font-size: 1.2em;
   background-color: #fff;
@@ -843,7 +842,6 @@ input.filter,
 input.pdf,
 input.spinn {
   padding-right: 30px;
-  height: 23px;
 }
 
 input.next {

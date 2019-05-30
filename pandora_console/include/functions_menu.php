@@ -87,7 +87,7 @@ function menu_print_menu(&$menu)
         // ~ if (enterprise_hook ('enterprise_acl', array ($config['id_user'], $mainsec)) == false)
             // ~ continue;
         if (! isset($main['id'])) {
-            $id = 'menu_'.++$idcounter;
+            $id = 'menu_'.(++$idcounter);
         } else {
             $id = $main['id'];
         }
@@ -405,9 +405,9 @@ function menu_print_menu(&$menu)
         $padding_top = ( $length >= 18) ? 6 : 12;
 
         if ($config['menu_type'] == 'classic') {
-            $output .= '<div id="title_menu" class="title_menu_classic" style="padding-top:'.$padding_top.'px; display:none;">'.$main['text'].'</div>';
+            $output .= '<div id="title_menu" class="title_menu_classic">'.$main['text'].'</div>';
         } else {
-            $output .= '<div id="title_menu" class="title_menu_collapsed" style="padding-top:'.$padding_top.'px; display:none;">'.$main['text'].'</div>';
+            $output .= '<div id="title_menu" class="title_menu_collapsed">'.$main['text'].'</div>';
         }
 
         // Add the notification ball if defined

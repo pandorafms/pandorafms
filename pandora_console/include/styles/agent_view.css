@@ -1,13 +1,13 @@
 text.text-tooltip {
-  font-family: "lato-bolder", "Open Sans", sans-serif !important;
+  font-family: "lato-bolder", "Open Sans", sans-serif;
 }
 
 div#bullets_modules span {
-  font-family: "lato-bolder", "Open Sans", sans-serif !important;
+  font-family: "lato-bolder", "Open Sans", sans-serif;
 }
 
 table#agent_interface_info .noresizevc.graph {
-  width: 500px !important;
+  width: 500px;
 }
 
 div.agent_details_agent_alias {
@@ -15,5 +15,5 @@ div.agent_details_agent_alias {
 }
 
 div.agent_details_agent_alias * {
-  font-family: "lato-bolder", "Open Sans", sans-serif !important;
+  font-family: "lato-bolder", "Open Sans", sans-serif;
 }

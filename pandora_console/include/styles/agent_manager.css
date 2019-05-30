@@ -100,8 +100,8 @@ a#qr_code_agent_view {
 }
 
 .custom_fields_table .custom_field_row_opened td {
-  border-bottom-left-radius: 0px !important;
-  border-bottom-right-radius: 0px !important;
+  border-bottom-left-radius: 0px;
+  border-bottom-right-radius: 0px;
 }
 
 .secondary_groups_select {
@@ -147,12 +147,12 @@ a#qr_code_agent_view {
 }
 
 .agent_description {
-  min-height: 4.8em !important;
+  min-height: 4.8em;
 }
 .agent_custom_id {
   padding-bottom: 0.7em;
   padding-top: 0.5em;
   display: inline-block;
-  border-radius: 5px !important;
+  border-radius: 5px;
   border: 1px solid #ccc;
 }

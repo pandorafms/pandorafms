@@ -3295,11 +3295,11 @@ function ui_print_page_header(
 
     if ($godmode == true) {
         $type = 'view';
-        $type2 = (empty($breadcrumbs)) ? 'menu_tab_frame_view' : 'menu_tab_frame_view_bc';
+        $type2 = 'menu_tab_frame_view';
         $separator_class = 'separator';
     } else {
         $type = 'view';
-        $type2 = (empty($breadcrumbs)) ? 'menu_tab_frame_view' : 'menu_tab_frame_view_bc';
+        $type2 = 'menu_tab_frame_view';
         $separator_class = 'separator_view';
     }
 

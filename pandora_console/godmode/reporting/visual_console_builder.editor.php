@@ -25,6 +25,8 @@ if (empty($visualConsole)) {
     exit;
 }
 
+ui_require_css_file('visual_maps');
+
 // ACL for the existing visual console
 // if (!isset($vconsole_read))
 // $vconsole_read = check_acl ($config['id_user'], $visualConsole['id_group'], "VR");

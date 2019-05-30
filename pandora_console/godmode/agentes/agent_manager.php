@@ -219,14 +219,6 @@ if (!$new_agent && $alias != '') {
     // Delete link from here.
     $table_agent_name .= "<a onClick=\"if (!confirm('".__('Are you sure?')."')) return false;\" href='index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&borrar_agente=".$id_agente."&search=&offset=0&sort_field=&sort=none'>".html_print_image('images/cross.png', true, ['title' => __('Delete agent')]).'</a>';
 
-    // Help link.
-    $table_agent_name .= ui_print_help_icon(
-        $help_header,
-        true,
-        '',
-        'images/help_g.png'
-    );
-
     // Remote configuration available.
     if (isset($filename)) {
         if (file_exists($filename['md5'])) {
@@ -393,7 +385,7 @@ $table_server .= html_print_select(
     __('None'),
     0,
     true
-).'<div class="label_select_child_icons">'.ui_print_help_icon('agent_server', true).'</div></div></div>';
+).'<div class="label_select_child_icons"></div></div></div>';
 
 // Description.
 $table_description = '<div class="label_select"><p class="input_label">'.__('Description').': </p>';
@@ -421,7 +413,7 @@ echo '</div>';
 
 if (enterprise_installed()) {
     $secondary_groups_selected = enterprise_hook('agents_get_secondary_groups', [$id_agente]);
-    $table_adv_secondary_groups = '<div class="label_select"><p class="input_label">'.__('Secondary groups').': '.ui_print_help_icon('secondary_groups', true).'</p></div>';
+    $table_adv_secondary_groups = '<div class="label_select"><p class="input_label">'.__('Secondary groups').': </p></div>';
     $table_adv_secondary_groups_left = html_print_select_groups(
         false,
         // Use the current user to select the groups.
@@ -576,7 +568,7 @@ if (enterprise_installed()) {
 
     $cps_html = '<div class="label_select"><div class="label_simple_items">';
     $cps_html .= html_print_checkbox_switch('cps', $cps_val, ($cps >= 0), true);
-    $cps_html .= __('Cascade protection services').'&nbsp;'.ui_print_help_icon('cascade_protection', true);
+    $cps_html .= __('Cascade protection services').'&nbsp;';
     $cps_html .= ui_print_help_tip(
         __('Alerts and events will be managed by the service joined by this agent.'),
         true
@@ -607,7 +599,7 @@ if (enterprise_installed()) {
         1,
         $cascade_protection,
         true
-    ).__('Cascade protection').'&nbsp;'.ui_print_help_icon('cascade_protection', true);
+    ).__('Cascade protection').'&nbsp;';
 }
 
 $table_adv_parent .= __('Module').'&nbsp;'.html_print_select(
@@ -621,7 +613,7 @@ $table_adv_parent .= __('Module').'&nbsp;'.html_print_select(
 ).'</div></div>';
 
 // Learn mode / Normal mode.
-$table_adv_module_mode = '<div class="label_select"><p class="input_label">'.__('Module definition').': '.ui_print_help_icon('module_definition', true).'</p>';
+$table_adv_module_mode = '<div class="label_select"><p class="input_label">'.__('Module definition').': </p>';
 $table_adv_module_mode .= '<div class="switch_radio_button">';
 $table_adv_module_mode .= html_print_radio_button_extended(
     'modo',

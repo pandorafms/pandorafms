@@ -196,10 +196,10 @@ function configure_modules_form() {
         );
         $("#text-unit").attr("value", data["unit"] == "" ? "" : data["unit"]);
         $("#checkbox-critical_inverse").prop(
-          "checked",
+          "uncheck",
           data["critical_inverse"]
         );
-        $("#checkbox-warning_inverse").prop("checked", data["warning_inverse"]);
+        $("#checkbox-warning_inverse").prop("uncheck", data["warning_inverse"]);
         $("#component_loading").hide();
         $("#id_module_type").change();
         if ($("#id_category").is("select")) {

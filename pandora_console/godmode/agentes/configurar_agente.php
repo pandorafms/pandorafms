@@ -700,8 +700,7 @@ if ($id_agente) {
         agents_get_alias($id_agente),
         'images/setup.png',
         false,
-        // Previous: $help_header.
-        '',
+        $help_header,
         true,
         $onheader,
         false,

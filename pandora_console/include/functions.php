@@ -4946,6 +4946,14 @@ function get_help_info($section_name)
             }
         break;
 
+        case 'create_agent':
+            if ($es) {
+                $result .= 'Intro_Monitorizacion&printable=yes#Configuraci.C3.B3n_del_agente_en_consola';
+            } else {
+                $result .= 'Intro_Monitoring&printable=yes#Agent_configuration_in_the_console';
+            }
+        break;
+
         case 'agent_snmp_explorer_tab':
             if ($es) {
                 $result .= 'Monitorizacion_remota&printable=yes#Wizard_SNMP';

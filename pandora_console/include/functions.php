@@ -871,12 +871,13 @@ function get_parameter_switch($name, $default='')
     $data = get_parameter($name, null);
 
     if ($data === null) {
-        return 0;
+        return (isset($default) ? $default : 0);
     } else if ($data == 'on') {
         return 1;
     }
 
-    return 0;
+    // Return value assigned to switch.
+    return $data;
 }
 
 

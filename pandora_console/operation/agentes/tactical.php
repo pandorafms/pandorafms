@@ -122,7 +122,7 @@ echo '<td style="vertical-align: top; min-width: 180px; width:25%; padding-right
 // ---------------------------------------------------------------------
 $table = new stdClass();
 $table->width = '100%';
-$table->class = 'info_table no-td-borders';
+$table->class = 'info_table no-td-borders td-bg-white';
 $table->cellpadding = 2;
 $table->cellspacing = 2;
 $table->border = 0;
@@ -130,7 +130,6 @@ $table->head = [];
 $table->data = [];
 $table->style = [];
 
-$table->head[0] = '<b><span>'.__('Report of State').'</span></b>';
 $stats = reporting_get_stats_indicators($data, 120, 10, false);
 $status = '<table class="status_tactical">';
 foreach ($stats as $stat) {
@@ -166,7 +165,12 @@ if ($is_admin) {
     $table->rowclass[] = '';
 }
 
-html_print_table($table);
+ui_toggle(
+    html_print_table($table, true),
+    __('Report of State'),
+    true,
+    false
+);
 
 echo '</td>';
 // Left column
@@ -210,7 +214,14 @@ $out = '<table cellpadding=0 cellspacing=0 class="databox pies"  style="margin-t
     $out .= '<fieldset class="databox tactical_set" id="graphic_event_group">
 			<legend>'.__('Event graph by agent').'</legend>'.html_print_image('images/spinner.gif', true, ['id' => 'spinner_graphic_event_group']).'</fieldset>';
     $out .= '</td></tr></table>';
-echo $out;
+
+
+ui_toggle(
+    $out,
+    __('Event graphs'),
+    true,
+    false
+);
 
 echo '</td>';
 echo '</tr></table>';

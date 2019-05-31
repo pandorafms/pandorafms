@@ -119,6 +119,7 @@
   font-family: verdana, sans-serif;
   letter-spacing: 0.03pt;
   font-size: 8pt;
+  box-sizing: border-box;
 }
 svg * {
   font-size: 11pt;
@@ -459,6 +460,16 @@ select:-internal-list-box {
   max-width: 100%;
 }
 
+.padding-2 {
+  padding: 2em;
+}
+.padding-4 {
+  padding: 4em;
+}
+.padding-6 {
+  padding: 6em;
+}
+
 .no-padding {
   padding: 0;
 }
@@ -479,6 +490,9 @@ select:-internal-list-box {
 }
 .no-td-padding td {
   padding: 0;
+}
+.td-bg-white td {
+  background: #fff;
 }
 
 div#page {
@@ -1186,9 +1200,12 @@ div#agent_wizard_subtabs {
   margin-right: 20px;
 }
 
+#menu_tab_left span {
+  padding-left: 1em;
+}
+
 #menu_tab_left .mn,
-#menu_tab_left ul,
-#menu_tab_left .mn ul {
+#menu_tab_left ul {
   color: #343434;
   padding: 0px 0px 0px 0px;
   list-style: none;
@@ -1941,15 +1958,6 @@ div#pandora_logo_header {
 .header_subtitle {
   font-size: 10pt;
   font-family: "lato-bolder", "Open Sans", sans-serif;
-}
-
-#header_table_inner a,
-#header_table_inner span {
-  font-family: "Open Sans", sans-serif;
-}
-
-#header_table_inner a:hover {
-  text-decoration: none;
 }
 
 .header_left {
@@ -3146,8 +3154,8 @@ div.div_groups_status {
 }
 
 .databox.pies fieldset.tactical_set {
-  width: 70%;
-  height: 285px;
+  width: 100%;
+  min-height: 285px;
 }
 
 .difference {
@@ -5045,13 +5053,11 @@ table.info_table > tbody > tr:last-child > td:last-child {
 table.info_table > thead > tr > th,
 table.info_table > tbody > tr > th,
 table.info_table > thead > tr > th a {
-  padding-left: 9px;
-  padding-right: 9px;
-  padding-top: 9px;
-  padding-bottom: 9px;
+  padding: 0.1em;
   font-weight: normal;
   color: #000;
-  font-size: 8.6pt;
+  font-size: 1.2em;
+  margin-left: 0.5em;
 }
 
 table.info_table > tbody > tr {
@@ -5806,6 +5812,8 @@ div#status_pie {
   width: 100%;
   height: 100%;
   background-color: #fff;
+  box-sizing: border-box;
+  border: 1px solid #e2e2e2;
   display: flex;
   align-items: center;
   flex-wrap: wrap;
@@ -5815,7 +5823,7 @@ div#status_pie {
   border: 1px solid #e2e2e2;
   border-top: none;
   background-color: #fff;
-  padding: 20px;
+  padding: 5px;
   border-bottom-left-radius: 4px;
   border-bottom-right-radius: 4px;
   align-items: center;
@@ -5844,6 +5852,12 @@ div#status_pie {
 }
 .white_table_graph_content div.action-buttons {
   padding: 10px;
+}
+
+.white-box-content form {
+  width: 100%;
+  margin-bottom: 2em;
+  padding: 2em;
 }
 
 /* White tables */

@@ -245,7 +245,7 @@ if (!$new_agent && $alias != '') {
     $table_agent_name .= '</div></div></div>';
 
     // QR code div.
-    $table_qr_code = '<div class="agent_qr white_box">';
+    $table_qr_code = '<div class="box-shadow agent_qr white_box">';
     $table_qr_code .= '<p class="input_label">'.__('QR Code Agent view').': </p>';
     $table_qr_code .= '<div id="qr_container_image"></div>';
     if ($id_agente) {
@@ -401,7 +401,7 @@ $table_description .= html_print_textarea(
 
 // QR code.
 echo '<div class="first_row">
-        <div class="agent_options '.$agent_options_update.' white_box">
+        <div class="box-shadow agent_options '.$agent_options_update.' white_box">
             <div class="agent_options_column_left">'.$table_agent_name.$table_alias.$table_ip.$table_primary_group.'</div>
             <div class="agent_options_column_right">'.$table_interval.$table_os.$table_server.$table_description.'</div>
         </div>';
@@ -777,7 +777,15 @@ $table_adv_options .= $table_adv_gis.'</div>
     </div>';
 
 echo '<div class="ui_toggle">';
-        ui_toggle($table_adv_options, __('Advanced options'), '', true, false, 'white_box white_box_opened');
+ui_toggle(
+    $table_adv_options,
+    __('Advanced options'),
+    '',
+    true,
+    false,
+    '',
+    'padding-4'
+);
 echo '</div>';
 
 
@@ -895,14 +903,14 @@ foreach ($fields as $field) {
 
 if (!empty($fields)) {
     echo '<div class="ui_toggle">';
-            ui_toggle(
-                html_print_table($table, true),
-                __('Custom fields'),
-                '',
-                true,
-                false,
-                'white_box white_box_opened'
-            );
+    ui_toggle(
+        html_print_table($table, true),
+        __('Custom fields'),
+        '',
+        true,
+        false,
+        'white_box white_box_opened'
+    );
     echo '</div>';
 }
 

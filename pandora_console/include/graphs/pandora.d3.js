@@ -2849,7 +2849,6 @@ function donutNarrowGraph(colores, width, height, total) {
         })
         .attr("d", arc)
         .attr("stroke", "white")
-        .style("stroke-width", 2)
         .style("fill", function(d) {
           return color(d.data.key);
         });

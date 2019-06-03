@@ -1337,8 +1337,9 @@ function fill_permissions_ldap($sr)
                     'tags'         => implode(',', $ldap_adv_perm['tags']),
                     'no_hierarchy' => (bool) $ldap_adv_perm['no_hierarchy'] ? 1 : 0,
                 ];
-                return $permissions;
             }
+
+            return $permissions;
         }
 
         foreach ($result as $perms) {

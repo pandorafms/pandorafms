@@ -26,7 +26,7 @@
   width: 33%;
 }
 
-table.info_table {
+.info_table {
   background-color: #fff;
   margin-bottom: 10px;
   border-spacing: 0;
@@ -35,48 +35,48 @@ table.info_table {
   border-radius: 5px;
 }
 
-table.info_table > tbody > tr:nth-child(even) {
+.info_table > tbody > tr:nth-child(even) {
   background-color: #f5f5f5;
 }
 
-table.info_table tr:first-child > th {
+.info_table tr:first-child > th {
   background-color: #fff;
   color: #000;
   text-align: left;
   vertical-align: middle;
 }
 
-table.info_table th {
+.info_table th {
   font-size: 7.5pt;
   letter-spacing: 0.3pt;
   color: #000;
   background-color: #fff;
 }
 
-table.info_table tr th {
+.info_table tr th {
   border-bottom: 1px solid #e2e2e2;
 }
 
 /* Radius top */
-table.info_table > thead > tr:first-child > th:first-child {
+.info_table > thead > tr:first-child > th:first-child {
   border-top-left-radius: 4px;
 }
-table.info_table > thead > tr:first-child > th:last-child {
+.info_table > thead > tr:first-child > th:last-child {
   border-top-right-radius: 4px;
 }
 
 /* Radius bottom */
-table.info_table > tbody > tr:last-child > td:first-child {
+.info_table > tbody > tr:last-child > td:first-child {
   border-top-left-radius: 4px;
 }
-table.info_table > tbody > tr:last-child > td:last-child {
+.info_table > tbody > tr:last-child > td:last-child {
   border-top-right-radius: 4px;
 }
 
-table.info_table > thead > tr > th,
-table.info_table > tbody > tr > th,
-table.info_table > thead > tr > th a,
-table.info_table > thead > tr > th > span {
+.info_table > thead > tr > th,
+.info_table > tbody > tr > th,
+.info_table > thead > tr > th a,
+.info_table > thead > tr > th > span {
   padding: 0.1em;
   font-weight: normal;
   color: #000;
@@ -84,11 +84,11 @@ table.info_table > thead > tr > th > span {
   margin-left: 0.5em;
 }
 
-table.info_table > tbody > tr {
+.info_table > tbody > tr {
   border-bottom: 1px solid #e2e2e2;
 }
 
-table.info_table > tbody > tr > td {
+.info_table > tbody > tr > td {
   -moz-border-radius: 0px;
   -webkit-border-radius: 0px;
   border-radius: 0px;
@@ -99,26 +99,28 @@ table.info_table > tbody > tr > td {
   padding-bottom: 7px;
 }
 
-table.info_table > tbody > tr > td > img,
-table.info_table > thead > tr > th > img,
-table.info_table > tbody > tr > td > div > a > img,
-table.info_table > tbody > tr > td > span > img,
-table.info_table > tbody > tr > td > span > a > img,
-table.info_table > tbody > tr > td > a > img,
-table.info_table > tbody > tr > td > form > a > img {
+.info_table > tbody > tr > td > img,
+.info_table > thead > tr > th > img,
+.info_table > tbody > tr > td > div > a > img,
+.info_table > tbody > tr > td > span > img,
+.info_table > tbody > tr > td > span > a > img,
+.info_table > tbody > tr > td > a > img,
+.info_table > tbody > tr > td > form > a > img {
   vertical-align: middle;
 }
 
-table.info_table > tbody > tr:hover {
+.info_table > tbody > tr:hover {
   background-color: #eee;
 }
 
-.info_table.profile_list > thead > tr > th > a.tip {
+.info_.profile_list > thead > tr > th > a.tip {
   padding: 0px;
 }
 
-td.datos3,
-td.datos4 {
+.info_table .datos3,
+.datos3,
+.info_table .datos4,
+.datos4 {
   background-color: #fff;
   color: #000;
   border-bottom: 2px solid #82b92e;
@@ -129,13 +131,15 @@ td.datos4 {
   font-weight: normal;
 }
 
-td.datos4 {
+.datos4 {
   /*Add because in php the function html_print_table write style in cell and this is style head.*/
   text-align: center;
 }
 
-td.datos3 *,
-td.datos4 * {
+.datos3 *,
+.datos4 *,
+.info_table .datos3 *,
+.info_table .datos4 * {
   font-size: 8.6pt;
   font-weight: normal;
 }

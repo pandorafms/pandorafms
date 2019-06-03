@@ -2343,14 +2343,21 @@ function graphic_agentaccess(
     $date = get_system_time();
     $datelimit = ($date - $period);
     $data_array = [];
+    $interval = agents_get_interval($id_agent);
 
     $data = db_get_all_rows_sql(
-        "SELECT count(*) as data, min(utimestamp) as utimestamp
-        FROM tagent_access
-        WHERE id_agent = $id_agent
-        AND utimestamp > $datelimit
-        AND utimestamp < $date
-        GROUP by ROUND(utimestamp / 1800)"
+        sprintf(
+            'SELECT utimestamp, count(*) as data
+             FROM tagent_access
+             WHERE id_agent = %d
+             AND utimestamp > %d
+             AND utimestamp < %d
+             GROUP BY ROUND(utimestamp/%d)',
+            $id_agent,
+            $datelimit,
+            $date,
+            $interval
+        )
     );
 
     if (isset($data) && is_array($data)) {

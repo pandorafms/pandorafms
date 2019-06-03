@@ -437,27 +437,27 @@ select:-internal-list-box {
  * ---------------------------------------------------------------------
  */
 .w10p {
-  max-width: 10%;
+  width: 10%;
 }
 
 .w20p {
-  max-width: 20%;
+  width: 20%;
 }
 
 .w30p {
-  max-width: 30%;
+  width: 30%;
 }
 
 .w40p {
-  max-width: 40%;
+  width: 40%;
 }
 
 .w50p {
-  max-width: 50%;
+  width: 50%;
 }
 
 .w100p {
-  max-width: 100%;
+  width: 100%;
 }
 
 .padding-2 {

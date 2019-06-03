@@ -192,23 +192,6 @@ div#box_online * {
   padding-bottom: 5px;
 }
 
-.ui-dialog-buttonset > button.ui-button.ui-corner-all.ui-widget {
-  background-color: #cecece;
-  border: none;
-  border-radius: 2px;
-  text-transform: uppercase;
-  font-weight: bold;
-}
-
-.ui-dialog-buttonset > button.success_button.ui-button.ui-corner-all.ui-widget,
-.update_manager_button {
-  background-color: #82b92e;
-  color: #fff;
-  border-radius: 2px;
-  text-transform: uppercase;
-  font-weight: bold;
-}
-
 a.update_manager_button {
   padding: 10px 12px;
   margin-top: 10px;

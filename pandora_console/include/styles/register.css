@@ -1,4 +1,5 @@
 input[type="submit"].submit-cancel,
+button.submit-cancel.ui-button.ui-corner-all.ui-widget,
 button.submit-cancel {
   color: #fb4444;
   border: 1px solid #fb4444;
@@ -13,13 +14,14 @@ button.submit-cancel {
 }
 
 input[type="submit"].submit-cancel:hover,
+button.submit-cancel.ui-button.ui-corner-all.ui-widget:hover,
 button.submit-cancel:hover {
   color: #fff;
   background: #fb4444;
 }
 
 input[type="submit"].submit-next,
-button.submit-next,
+button.submit-next.ui-button.ui-corner-all.ui-widget,
 input[type="button"].submit-next {
   color: #82b92e;
   border: 1px solid #82b92e;
@@ -33,7 +35,7 @@ input[type="button"].submit-next {
 }
 
 input[type="submit"].submit-next:hover,
-button.submit-next:hover,
+button.submit-next.ui-button.ui-corner-all.ui-widget:hover,
 input[type="button"].submit-next:hover {
   color: #fff;
   background: #82b92e;

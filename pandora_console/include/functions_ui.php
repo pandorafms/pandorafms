@@ -1738,6 +1738,7 @@ function ui_process_page_head($string, $bitfield)
 
     // Add the jquery UI styles CSS.
     $config['css']['jquery-UI'] = 'include/styles/js/jquery-ui.min.css';
+    $config['css']['jquery-UI-custom'] = 'include/styles/js/jquery-ui_custom.css';
     // Add the dialog styles CSS.
     $config['css']['dialog'] = 'include/styles/dialog.css';
     // Add the dialog styles CSS.

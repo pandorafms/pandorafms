@@ -518,6 +518,7 @@ if ($login_screen == 'error_authconfig' || $login_screen == 'error_emptyconfig' 
 ui_require_css_file('dialog');
 ui_require_css_file('jquery-ui.min', 'include/styles/js/');
 ui_require_jquery_file('jquery-ui.min');
+ui_require_jquery_file('jquery-ui_custom');
 ?>
 
 <?php

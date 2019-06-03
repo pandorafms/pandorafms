@@ -1,15 +1,32 @@
 <?php
-// Pandora FMS- http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation for version 2.
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-// Load global vars
+/**
+ * License form.
+ *
+ * @category   Form
+ * @package    Pandora FMS
+ * @subpackage Enterprise
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
+
+// File begin.
 global $config;
 
 check_login();
@@ -22,22 +39,38 @@ if (! check_acl($config['id_user'], 0, 'PM')) {
 
 $update_settings = (bool) get_parameter_post('update_settings');
 
-ui_print_page_header(__('License management'), 'images/extensions.png', false, '', true);
+if (is_metaconsole()) {
+    // Metaconsole.
+    ui_require_javascript_file_enterprise('load_enterprise', true);
+    enterprise_include_once('include/functions_license.php');
+} else {
+    ui_print_page_header(
+        __('License management'),
+        'images/extensions.png',
+        false,
+        '',
+        true
+    );
 
-if ($update_settings) {
-    foreach ($_POST['keys'] as $key => $value) {
-        db_process_sql_update(
-            'tupdate_settings',
-            [db_escape_key_identifier('value') => $value],
-            [db_escape_key_identifier('key') => $key]
-        );
-    }
-
-    ui_print_success_message(__('License updated'));
+    ui_require_javascript_file_enterprise('load_enterprise');
+    enterprise_include_once('include/functions_license.php');
 }
 
-ui_require_javascript_file_enterprise('load_enterprise');
-enterprise_include_once('include/functions_license.php');
+if ($update_settings) {
+    if (!is_metaconsole()) {
+        // Node.
+        foreach ($_POST['keys'] as $key => $value) {
+            db_process_sql_update(
+                'tupdate_settings',
+                [db_escape_key_identifier('value') => $value],
+                [db_escape_key_identifier('key') => $key]
+            );
+        }
+
+        ui_print_success_message(__('License updated'));
+    }
+}
+
 $license = enterprise_hook('license_get_info');
 
 $rows = db_get_all_rows_in_table('tupdate_settings');
@@ -55,10 +88,19 @@ if (enterprise_installed()) {
 echo '</script>';
 
 echo '<form method="post">';
+// Retrieve UM url configured (or default).
+$url = get_um_url();
 
 $table = new stdClass();
 $table->width = '100%';
 $table->class = 'databox filters';
+
+if (is_metaconsole()) {
+    $table->head[0] = __('Licence');
+    $table->head_colspan[0] = 3;
+    $table->headstyle[0] = 'text-align: center';
+    $table->style[0] = 'font-weight: bold;';
+}
 
 $table->data = [];
 
@@ -98,13 +140,17 @@ if (enterprise_installed()) {
     html_print_input_hidden('update_settings', 1);
     html_print_submit_button(__('Validate'), 'update_button', false, 'class="sub upd"');
     echo '&nbsp;&nbsp;';
-    html_print_button(__('Request new license'), '', false, 'generate_request_code()', 'class="ui-button-dialog ui-widget ui-state-default ui-corner-all ui-button-text-only sub next"');
+    html_print_button(__('Request new license'), '', false, 'generate_request_code()', 'class="sub next"');
     echo '</div>';
 }
 
-if (enterprise_installed()) {
-    echo '<link rel="stylesheet" href="'.ui_get_full_url(false, false, false, false).'include/styles/pandora.css" type="text/css">';
-    echo '<link rel="stylesheet" href="'.ui_get_full_url(false, false, false, false).'enterprise/include/styles/pandora_enterprise.css" type="text/css">';
+if (is_metaconsole()) {
+    ui_require_css_file('pandora_enterprise', '../../'.ENTERPRISE_DIR.'/include/styles/');
+    ui_require_css_file('register', '../../include/styles/');
+} else {
+    ui_require_css_file('pandora');
+    ui_require_css_file('pandora_enterprise', ENTERPRISE_DIR.'/include/styles/');
+    ui_require_css_file('register');
 }
 
 if (enterprise_hook('print_activate_licence_dialog') == ENTERPRISE_NOT_HOOK) {
@@ -116,7 +162,7 @@ if (enterprise_hook('print_activate_licence_dialog') == ENTERPRISE_NOT_HOOK) {
     echo ''.__('To get your <b>%s Enterprise License</b>:', get_product_name()).'<br />';
     echo '<ul>';
     echo '<li>';
-    echo ''.sprintf(__('Go to %s'), '<a target="_blank" href="https://licensing.artica.es/pandoraupdate7/index.php?section=generate_key_client">https://licensing.artica.es/pandoraupdate7/index.php?section=generate_key_client</a>');
+    echo ''.sprintf(__('Go to %s'), '<a target="_blank" href="'.$url.'/index.php?section=generate_key_client">'.$url.'index.php?section=generate_key_client</a>');
     echo '</li>';
     echo '<li>';
     echo ''.__('Enter the <b>auth key</b> and the following <b>request key</b>:');

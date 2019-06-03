@@ -720,3 +720,48 @@ function print_clock_digital_1($time_format, $timezone, $clock_animation, $width
                 return $output;
 
 }
+
+
+/**
+ * Print dougnhnut.
+ *
+ * @param array   $colors     Colors.
+ * @param integer $width      Width.
+ * @param integer $height     Height.
+ * @param array   $data       Data.
+ * @param mixed   $data_total Data_total.
+ *
+ * @return string HTML.
+ */
+function print_donut_narrow_graph(
+    array $colors,
+    $width,
+    $height,
+    array $data,
+    $data_total
+) {
+    if (empty($data)) {
+        return graph_nodata_image($width, $height, 'pie');
+    }
+
+    $series = count($data);
+    if (($series != count($colors)) || ($series == 0)) {
+        return '';
+    }
+
+    $data = json_encode($data);
+    $colors = json_encode($colors);
+
+    $graph_id = uniqid('graph_');
+
+    $out = "<div id='$graph_id'></div>";
+    $out .= include_javascript_d3(true);
+    $out .= "<script type='text/javascript'>
+						donutNarrowGraph($colors, $width, $height, $data_total)
+						.donutbody(d3.select($graph_id))
+						.data($data)
+						.render();	
+			</script>";
+
+    return $out;
+}

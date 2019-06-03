@@ -984,6 +984,10 @@ function config_update_config()
                         $error_update[] = __('Use the legacy Visual Console');
                     }
 
+                    if (!config_update_value('vc_default_cache_expiration', (int) get_parameter('vc_default_cache_expiration'))) {
+                        $error_update[] = __("Default expiration of the Visual Console item's cache");
+                    }
+
                     if (!config_update_value('vc_refr', (int) get_parameter('vc_refr'))) {
                         $error_update[] = __('Default interval for refresh on Visual Console');
                     }
@@ -1351,6 +1355,10 @@ function config_update_config()
                 case 'ehorus':
                     if (!config_update_value('ehorus_enabled', (int) get_parameter('ehorus_enabled', 0))) {
                         $error_update[] = __('Enable eHorus');
+                    }
+
+                    if (!config_update_value('ehorus_user_level_conf', (int) get_parameter('ehorus_user_level_conf', 0))) {
+                        $error_update[] = __('eHorus user login');
                     }
 
                     if (!config_update_value('ehorus_user', (string) get_parameter('ehorus_user', $config['ehorus_user']))) {
@@ -2423,6 +2431,10 @@ function config_process_config()
         config_update_value('legacy_vc', 1);
     }
 
+    if (!isset($config['vc_default_cache_expiration'])) {
+        config_update_value('vc_default_cache_expiration', 60);
+    }
+
     if (!isset($config['vc_refr'])) {
         config_update_value('vc_refr', 300);
     }
@@ -2736,6 +2748,31 @@ function config_check()
         $supervisor = new ConsoleSupervisor(false);
         $supervisor->runBasic();
     }
+
+}
+
+
+/**
+ * Retrieves base url stored for Update Manager.
+ *
+ * @return string URL.
+ */
+function get_um_url()
+{
+    global $config;
+
+    if (isset($config['url_update_manager'])) {
+        $url = $config['url_update_manager'];
+        $url = substr($url, 0, (strlen($url) - strpos(strrev($url), '/')));
+    } else {
+        $url = 'https://licensing.artica.es/pandoraupdate7/';
+        config_update_value(
+            'url_update_manager',
+            'https://licensing.artica.es/pandoraupdate7/server.php'
+        );
+    }
+
+    return $url;
 
 }
 

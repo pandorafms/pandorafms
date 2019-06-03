@@ -760,6 +760,9 @@ switch ($action) {
 
             $table->head = [];
             $table->align = [];
+            $table->headstyle = [];
+            $table->style = [];
+
             $table->align[2] = 'left';
             $table->align[3] = 'left';
             $table->align[4] = 'left';
@@ -771,11 +774,21 @@ switch ($action) {
             $table->size[0] = '20%';
             $table->size[1] = '30%';
             $table->size[2] = '2%';
+            $table->headstyle[2] = 'min-width: 35px;';
             $table->size[3] = '2%';
+            $table->headstyle[3] = 'min-width: 35px;';
             $table->size[4] = '2%';
+            $table->headstyle[4] = 'min-width: 35px;';
             $table->size[5] = '2%';
+            $table->headstyle[5] = 'min-width: 35px;';
             $table->size[6] = '2%';
-            $table->size['csv'] = '5%';
+            $table->headstyle[6] = 'min-width: 35px;';
+            $table->size[7] = '5%';
+            $table->headstyle['csv'] = 'min-width: 65px;';
+            $table->style[7] = 'text-align: center;';
+
+            $table->headstyle[9] = 'min-width: 100px;';
+            $table->style[9] = 'text-align: center;';
 
             $next = 4;
             // Calculate dinamically the number of the column.
@@ -814,7 +827,6 @@ switch ($action) {
                 // $table->size = array ();
                 $table->size[$next] = '10%';
                 $table->align[$next] = 'left';
-                $table->headstyle[$next] = 'text-align:left;';
             }
 
             $columnview = false;
@@ -996,7 +1008,6 @@ switch ($action) {
                         $table->head[$next] = '<span title="Operations">'.__('Op.').'</span>'.html_print_checkbox('all_delete', 0, false, true, false);
                         $table->size = [];
                         // $table->size[$next] = '80px';
-                        $table->style[$next] = 'text-align:left;';
                     }
 
                     if ($edit) {

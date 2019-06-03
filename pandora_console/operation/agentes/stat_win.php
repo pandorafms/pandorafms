@@ -238,7 +238,7 @@ $alias    = db_get_value('alias', 'tagente', 'id_agente', $id_agent);
         $table->style[0] = 'text-align:left;';
         $table->style[1] = 'text-align:left;';
         $table->styleTable = 'margin-bottom: 20px;';
-        $table->class = 'events_show_more_table';
+        $table->class = 'table_modal_alternate';
 
         $data = [];
         $data[0] = __('Refresh time');
@@ -304,7 +304,7 @@ $alias    = db_get_value('alias', 'tagente', 'id_agente', $id_agent);
             }
         }
 
-        $data[1] = html_print_checkbox(
+        $data[1] = html_print_checkbox_switch(
             'draw_events',
             1,
             (bool) $draw_events,
@@ -323,14 +323,14 @@ $alias    = db_get_value('alias', 'tagente', 'id_agente', $id_agent);
 
         $data = [];
         $data[0] = __('Show alerts');
-        $data[1] = html_print_checkbox('draw_alerts', 1, (bool) $draw_alerts, true);
+        $data[1] = html_print_checkbox_switch('draw_alerts', 1, (bool) $draw_alerts, true);
         $table->data[] = $data;
         $table->rowclass[] = '';
 
         /*
             $data = array();
             $data[0] = __('Show event graph');
-            $data[1] = html_print_checkbox ("show_events_graph", 1, (bool) $show_events_graph, true);
+            $data[1] = html_print_checkbox_switch ("show_events_graph", 1, (bool) $show_events_graph, true);
             $table->data[] = $data;
             $table->rowclass[] = '';
         */
@@ -340,25 +340,25 @@ $alias    = db_get_value('alias', 'tagente', 'id_agente', $id_agent);
             case 'sparse':
                 $data = [];
                 $data[0] = __('Show percentil');
-                $data[1] = html_print_checkbox('show_percentil', 1, (bool) $show_percentil, true);
+                $data[1] = html_print_checkbox_switch('show_percentil', 1, (bool) $show_percentil, true);
                 $table->data[] = $data;
                 $table->rowclass[] = '';
 
                 $data = [];
                 $data[0] = __('Time compare (Overlapped)');
-                $data[1] = html_print_checkbox('time_compare_overlapped', 1, (bool) $time_compare_overlapped, true);
+                $data[1] = html_print_checkbox_switch('time_compare_overlapped', 1, (bool) $time_compare_overlapped, true);
                 $table->data[] = $data;
                 $table->rowclass[] = '';
 
                 $data = [];
                 $data[0] = __('Time compare (Separated)');
-                $data[1] = html_print_checkbox('time_compare_separated', 1, (bool) $time_compare_separated, true);
+                $data[1] = html_print_checkbox_switch('time_compare_separated', 1, (bool) $time_compare_separated, true);
                 $table->data[] = $data;
                 $table->rowclass[] = '';
 
                 $data = [];
                 $data[0] = __('Show unknown graph');
-                $data[1] = html_print_checkbox('unknown_graph', 1, (bool) $unknown_graph, true);
+                $data[1] = html_print_checkbox_switch('unknown_graph', 1, (bool) $unknown_graph, true);
                 $table->data[] = $data;
                 $table->rowclass[] = '';
             break;
@@ -366,7 +366,7 @@ $alias    = db_get_value('alias', 'tagente', 'id_agente', $id_agent);
 
         $data = [];
         $data[0] = __('Show full scale graph (TIP)');
-        $data[1] = html_print_checkbox(
+        $data[1] = html_print_checkbox_switch(
             'fullscale',
             1,
             (bool) $fullscale,

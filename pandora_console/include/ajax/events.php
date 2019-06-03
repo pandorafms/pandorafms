@@ -456,30 +456,30 @@ if ($get_extended_event) {
     switch ($event['criticity']) {
         default:
         case 0:
-            $img_sev = 'images/status_sets/default/severity_maintenance.png';
+            $img_sev = 'images/status_sets/default/severity_maintenance_rounded.png';
         break;
         case 1:
-            $img_sev = 'images/status_sets/default/severity_informational.png';
+            $img_sev = 'images/status_sets/default/severity_informational_rounded.png';
         break;
 
         case 2:
-            $img_sev = 'images/status_sets/default/severity_normal.png';
+            $img_sev = 'images/status_sets/default/severity_normal_rounded.png';
         break;
 
         case 3:
-            $img_sev = 'images/status_sets/default/severity_warning.png';
+            $img_sev = 'images/status_sets/default/severity_warning_rounded.png';
         break;
 
         case 4:
-            $img_sev = 'images/status_sets/default/severity_critical.png';
+            $img_sev = 'images/status_sets/default/severity_critical_rounded.png';
         break;
 
         case 5:
-            $img_sev = 'images/status_sets/default/severity_minor.png';
+            $img_sev = 'images/status_sets/default/severity_minor_rounded.png';
         break;
 
         case 6:
-            $img_sev = 'images/status_sets/default/severity_major.png';
+            $img_sev = 'images/status_sets/default/severity_major_rounded.png';
         break;
     }
 
@@ -717,9 +717,15 @@ if ($table_events) {
         'event_condition',
         'AND'
     );
-    echo '<div id="div_all_events_24h">';
-        echo '<label><b>'.__('Show all Events 24h').'</b></label>';
-        echo html_print_checkbox('all_events_24h', $all_events_24h, $all_events_24h, true, false, '', true);
+    echo '<div style="display: flex;" id="div_all_events_24h">';
+        echo '<label style="margin-right: 1em;"><b>'.__('Show all Events 24h').'</b></label>';
+        echo html_print_switch(
+            [
+                'name'  => 'all_events_24h',
+                'value' => $all_events_24h,
+                'id'    => 'checkbox-all_events_24h',
+            ]
+        );
     echo '</div>';
     $date_subtract_day = (time() - (24 * 60 * 60));
 

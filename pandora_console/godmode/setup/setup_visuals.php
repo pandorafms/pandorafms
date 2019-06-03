@@ -918,6 +918,32 @@ $row++;
     );
     $row++;
 
+    $intervals = [
+        10   => '10 '.__('seconds'),
+        30   => '30 '.__('seconds'),
+        60   => '1 '.__('minutes'),
+        300  => '5 '.__('minutes'),
+        900  => '15 '.__('minutes'),
+        1800 => '30 '.__('minutes'),
+        3600 => '1 '.__('hour'),
+    ];
+    $table_vc->data[$row][0] = __('Default cache expiration');
+    $table_vc->data[$row][1] = html_print_extended_select_for_time(
+        'vc_default_cache_expiration',
+        $config['vc_default_cache_expiration'],
+        '',
+        __('No cache'),
+        0,
+        false,
+        true,
+        false,
+        false,
+        '',
+        false,
+        $intervals
+    );
+    $row++;
+
     $table_vc->data[$row][0] = __('Default interval for refresh on Visual Console').ui_print_help_tip(__('This interval will affect to Visual Console pages'), true);
     $table_vc->data[$row][1] = html_print_select($values, 'vc_refr', (int) $config['vc_refr'], '', 'N/A', 0, true, false, false);
     $row++;
@@ -1394,6 +1420,15 @@ tinyMCE.init({
 });
 
 $(document).ready (function () {
+
+    // Show the cache expiration conf or not.
+    $("input[name=legacy_vc]").change(function (e) {
+        if ($(this).prop("checked") === true) {
+            $("select#vc_default_cache_expiration_select").closest("tr").hide();
+        } else {
+            $("select#vc_default_cache_expiration_select").closest("tr").show();
+        }
+    }).change();
     
     var comfort = 0;
     

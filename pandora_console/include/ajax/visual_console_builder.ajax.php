@@ -176,6 +176,7 @@ $default_color = get_parameter('default_color', '#FFFFFF');
 $color_range_from_values = get_parameter('color_range_from_values', []);
 $color_range_to_values = get_parameter('color_range_to_values', []);
 $color_range_colors = get_parameter('color_range_colors', []);
+$cache_expiration = (int) get_parameter('cache_expiration');
 
 switch ($action) {
     case 'get_font':
@@ -581,7 +582,21 @@ switch ($action) {
         $values['label_position'] = $label_position;
         $values['show_on_top'] = $show_on_top;
 
-        // In Graphs, background color is stored in column image (sorry)
+        switch ($type) {
+            case 'line_item':
+            case 'box_item':
+            case 'clock':
+            case 'icon':
+            case 'label':
+                $values['cache_expiration'] = 0;
+            break;
+
+            default:
+                $values['cache_expiration'] = $cache_expiration;
+            break;
+        }
+
+        // In Graphs, background color is stored in column image (sorry).
         if ($type == 'module_graph') {
             $values['image'] = $background_color;
             $values['type_graph'] = $type_graph;
@@ -997,6 +1012,7 @@ switch ($action) {
                     unset($values['id_layout_linked']);
                     unset($values['element_group']);
                     unset($values['id_layout_linked_weight']);
+                    unset($values['cache_expiration']);
                     // Don't change background color in graphs when move
                     switch ($type) {
                         case 'group_item':
@@ -1069,6 +1085,16 @@ switch ($action) {
                     $values,
                     ['id' => $id_element]
                 );
+
+                // Invalidate the item's cache.
+                if ($result !== false && $result > 0) {
+                    db_process_sql_delete(
+                        'tvisual_console_elements_cache',
+                        [
+                            'vc_item_id' => (int) $id_element,
+                        ]
+                    );
+                }
 
                 $return_val = [];
                 $return_val['correct'] = (int) $result;
@@ -1404,8 +1430,21 @@ switch ($action) {
         $values['show_on_top'] = $show_on_top;
         $values['image'] = $background_color;
         $values['type_graph'] = $type_graph;
-
         $values['id_custom_graph'] = $id_custom_graph;
+
+        switch ($type) {
+            case 'line_item':
+            case 'box_item':
+            case 'clock':
+            case 'icon':
+            case 'label':
+                $values['cache_expiration'] = 0;
+            break;
+
+            default:
+                $values['cache_expiration'] = $cache_expiration;
+            break;
+        }
 
         switch ($type) {
             case 'line_item':

@@ -469,7 +469,9 @@ select:-internal-list-box {
 .padding-6 {
   padding: 6em;
 }
-
+.no-border {
+  border: none;
+}
 .no-padding {
   padding: 0;
 }
@@ -1169,7 +1171,7 @@ div#agent_wizard_subtabs {
 }
 
 #menu_tab_left span {
-  padding-left: 1em;
+  padding-left: 0.9em;
 }
 
 #menu_tab_left .mn,

@@ -839,7 +839,7 @@ foreach ($fields as $field) {
         $custom_value = '';
     }
 
-    $table->rowstyle[$i] = 'cursor: pointer;';
+    $table->rowstyle[$i] = 'cursor: pointer;user-select: none;';
     if (!empty($custom_value)) {
         $table->rowstyle[($i + 1)] = 'display: table-row;';
     } else {
@@ -909,7 +909,8 @@ if (!empty($fields)) {
         '',
         true,
         false,
-        'white_box white_box_opened'
+        'white_box white_box_opened',
+        'no-border'
     );
     echo '</div>';
 }

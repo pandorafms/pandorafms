@@ -62,6 +62,31 @@ if (is_ajax()) {
     $agent_alias = get_parameter('alias', '');
     $agents_inserted = get_parameter('agents_inserted', []);
     $id_group = (int) get_parameter('id_group');
+
+    $refresh_contact = get_parameter('refresh_contact', 0);
+
+    if ($refresh_contact) {
+        $id_agente = get_parameter('id_agente', 0);
+        if ($id_agente > 0) {
+            $d = db_get_row(
+                'tagente',
+                'id_agente',
+                $id_agente
+            );
+
+            $progress = agents_get_next_contact($id_agente);
+
+            echo json_encode(
+                [
+                    'progress'     => $progress,
+                    'last_contact' => ($d['intervalo'] * (100 - $progress) / 100),
+                ]
+            );
+        }
+
+        return;
+    }
+
     if ($get_agents_group_json) {
         $id_group = (int) get_parameter('id_group');
         $recursion = (bool) get_parameter('recursion');

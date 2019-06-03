@@ -739,6 +739,41 @@ if (!empty($network_interfaces)) {
 ?>
     <script type="text/javascript">
         $(document).ready (function () {
+            setInterval(() => {
+                last = $('.progress_text').text().split(' ')[0]*1;
+                width = $(".progress").width() / $('.progress').parent().width() * 100;
+                width_interval = <?php echo (100 / $agent['intervalo']); ?>;
+                if (last % 10 == 0) {
+                    $.post({
+                        url: "ajax.php",
+                        data: {
+                            page: 'operation/agentes/ver_agente',
+                            id_agente: <?php echo $id_agente; ?>,
+                            refresh_contact: 1
+                        },
+                        success: function(data) {
+                            try {
+                                val = JSON.parse(data);
+                                $('.progress_text').text(val['last_contact']+' s');
+                                $('.progress').width(val['progress']+"%");
+                            } catch (e) {
+                                console.error(e);
+                                $('.progress_text').text((last -1) + " s");
+                                if (width < 100) {
+                                    $('.progress').width((width+width_interval) + "%");
+                                }
+                            }
+                        }
+                    });
+                } else {
+                    $('.progress_text').text((last -1) + " s");
+                    if (width < 100) {
+                        $('.progress').width((width+width_interval) + "%");
+                    }
+                }
+            }, 1000);
+
+
             $("#agent_data_main").find("thead").click (function () {
                 close_table('#agent_data_main');
             })

@@ -360,15 +360,12 @@ sub pandora_generate_alerts ($$$$$$$$;$$$) {
 	my ($pa_config, $data, $status, $agent, $module, $utimestamp, $dbh, $timestamp, $extra_macros, $last_data_value, $alert_type) = @_;
 
 	# No alerts when event storm protection is enabled
-	if(isnumber $EventStormProtection ){
-		if ($EventStormProtection == 1)
-		{
+	
+	if ($EventStormProtection == 1)
+	{
 		return;
-		}
-	}else{
-		$EventStormProtection = 0;
-		return;
-	}   
+	}
+ 
 
 	# Warmup interval for alerts.
 	if ($pa_config->{'warmup_alert_on'} == 1) {

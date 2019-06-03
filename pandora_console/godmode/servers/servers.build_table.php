@@ -51,11 +51,11 @@ $table->style[0] = 'font-weight: bold';
 $table->align = [];
 $table->align[1] = 'center';
 $table->align[3] = 'center';
-$table->align[8] = 'center';
+$table->align[8] = 'right';
 
 $table->headstyle[1] = 'text-align:center';
 $table->headstyle[3] = 'text-align:center';
-$table->headstyle[8] = 'text-align:center';
+$table->headstyle[8] = 'text-align:right';
 
 // $table->title = __('Tactical server information');
 $table->titleclass = 'tabletitle';

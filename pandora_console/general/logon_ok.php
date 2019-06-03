@@ -235,9 +235,12 @@ if (!empty($all_data)) {
             // Don't specify px.
             $table->data = [];
             $table->size = [];
+            $table->headstyle = [];
             $table->size[0] = '5%';
             $table->size[1] = '15%';
-            $table->size[2] = '15%';
+            $table->headstyle[1] = 'min-width: 12em;';
+            $table->size[2] = '5%';
+            $table->headstyle[2] = 'min-width: 65px;';
             $table->size[3] = '10%';
             $table->size[4] = '25%';
             $table->head = [];

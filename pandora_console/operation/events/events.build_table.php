@@ -29,7 +29,7 @@ $table->id = 'eventtable';
 $table->cellpadding = 4;
 $table->cellspacing = 4;
 if (!isset($table->class)) {
-    $table->class = 'databox data';
+    $table->class = 'info_table';
 }
 
 $table->head = [];

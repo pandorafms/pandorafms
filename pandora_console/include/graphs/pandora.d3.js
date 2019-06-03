@@ -2872,8 +2872,6 @@ function donutNarrowGraph(colores, width, height, total) {
         .attr("y", 0 + radius / 10)
         .attr("class", "text-tooltip")
         .style("text-anchor", "middle")
-        .attr("font-weight", "bold")
-        .style("font-family", "Arial, Verdana")
         //.attr("fill", "#82b92e")
         .style("font-size", function(d) {
           if (normal_status) {

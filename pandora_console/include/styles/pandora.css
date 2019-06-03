@@ -116,7 +116,7 @@
   src: url("../../fonts/Lato-Regular.ttf");
 }
 * {
-  font-family: verdana, sans-serif;
+  font-family: "lato-lighter", "Open Sans", sans-serif;
   letter-spacing: 0.03pt;
   font-size: 8pt;
   box-sizing: border-box;
@@ -458,6 +458,34 @@ select:-internal-list-box {
 
 .w100p {
   width: 100%;
+}
+
+.h10p {
+  height: 10%;
+}
+
+.h20p {
+  height: 20%;
+}
+
+.h30p {
+  height: 30%;
+}
+
+.h40p {
+  height: 40%;
+}
+
+.h50p {
+  height: 50%;
+}
+
+.h80p {
+  height: 80%;
+}
+
+.h100p {
+  height: 100%;
 }
 
 .padding-2 {

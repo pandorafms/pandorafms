@@ -73,8 +73,8 @@
   border-top-right-radius: 4px;
 }
 
-.info_table > thead > tr > th,
 .info_table > tbody > tr > th,
+.info_table > thead > tr > th,
 .info_table > thead > tr > th a,
 .info_table > thead > tr > th > span {
   padding: 0.1em;
@@ -142,6 +142,7 @@
 .info_table .datos4 * {
   font-size: 8.6pt;
   font-weight: normal;
+  padding: 1.3em 0;
 }
 
 /*td.datos_id {

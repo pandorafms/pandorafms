@@ -1,5 +1,6 @@
 text.text-tooltip {
   font-family: "lato-bolder", "Open Sans", sans-serif;
+  font-weight: bold;
 }
 
 div#bullets_modules span {
@@ -16,4 +17,13 @@ div.agent_details_agent_alias {
 
 div.agent_details_agent_alias * {
   font-family: "lato-bolder", "Open Sans", sans-serif;
+}
+
+#module_filter_agent_view tr td {
+  padding-bottom: 3em;
+}
+
+#div_all_events_24h {
+  border-bottom: 1px solid #ebebeb;
+  padding-bottom: 3em;
 }

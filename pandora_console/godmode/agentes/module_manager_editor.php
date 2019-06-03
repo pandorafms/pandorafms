@@ -583,7 +583,12 @@ echo '<h3 id="message" class="error invisible"></h3>';
 // TODO: Change to the ui_print_error system
 echo '<form method="post" id="module_form">';
 
-html_print_table($table_simple);
+ui_toggle(
+    html_print_table($table_simple, true),
+    __('Base options'),
+    true,
+    false
+);
 
 ui_toggle(
     html_print_table($table_advanced, true),

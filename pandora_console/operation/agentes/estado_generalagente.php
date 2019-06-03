@@ -505,12 +505,12 @@ $access_agent = db_get_value_sql(
 );
 
 if ($config['agentaccess'] && $access_agent > 0) {
-    $table_access_rate = '<div class="box-shadow white_table_graph" id="table_access_rate">
+    $table_access_rate = '<div class="white_table_graph" id="table_access_rate">
                             <div class="white_table_graph_header">'.html_print_image(
         'images/arrow_down_green.png',
         true
     ).'<span>'.__('Agent access rate (24h)').'</span></div>
-    <div class="white_table_graph_content min-height-100">
+    <div class="white_table_graph_content h80p">
 '.graphic_agentaccess(
         $id_agente,
         '95%',
@@ -820,12 +820,12 @@ if (!empty($network_interfaces)) {
 <?php
 // EVENTS.
 if ($config['agentaccess'] && $access_agent > 0) {
-    $extra_class = 'min-height-100';
+    $extra_class = 'h80p';
 } else {
     $extra_class = '';
 }
 
-$table_events = '<div class="box-shadow white_table_graph" id="table_events">
+$table_events = '<div class="white_table_graph" id="table_events">
             <div class="white_table_graph_header">'.html_print_image(
     'images/arrow_down_green.png',
     true

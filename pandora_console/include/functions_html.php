@@ -2932,7 +2932,10 @@ function html_print_sort_arrows($params, $order_tag, $up='up', $down='down')
     $url_down = 'index.php?'.http_build_query($params, '', '&amp;');
 
     // Build the links
-    return '&nbsp;'.'<a href="'.$url_up.'">'.html_print_image('images/sort_up.png', true).'</a>'.'<a href="'.$url_down.'">'.html_print_image('images/sort_down.png', true).'</a>';
+    $out = '&nbsp;<a href="'.$url_up.'">';
+    $out .= html_print_image('images/sort_up_black.png', true);
+    $out .= '</a><a href="'.$url_down.'">';
+    $out .= html_print_image('images/sort_down_black.png', true).'</a>';
 }
 
 

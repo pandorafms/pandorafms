@@ -825,7 +825,7 @@ if (check_login()) {
         $table->head[8] = __('Graph');
         $table->head[9] = __('Last contact').ui_get_sorting_arrows($url_up_last, $url_down_last, $selectLastContactUp, $selectLastContactDown);
         $table->align = [];
-        $table->align[0] = 'left';
+        $table->align[0] = 'center';
         $table->align[1] = 'left';
         $table->align[2] = 'left';
         $table->align[3] = 'left';

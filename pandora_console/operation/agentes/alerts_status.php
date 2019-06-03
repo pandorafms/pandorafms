@@ -614,7 +614,7 @@ foreach ($alerts['alerts_simple'] as $alert) {
 if (!empty($table->data)) {
     $class = '';
     if ($agent_view_page === true) {
-        $class = 'white_table_graph_content w100p no-padding-imp';
+        $class = 'w100p no-padding-imp';
     }
 
     echo '<form class="'.$class.'" method="post" action="'.$url.'">';

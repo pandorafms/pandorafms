@@ -1130,10 +1130,10 @@ function events_print_event_table(
         }
 
         $events_table = html_print_table($table, true);
-        $out = '<table width="100%"><tr><td style="width: 90%; vertical-align: top; padding-top: 0px;">';
-        $out .= $events_table;
+        $out = $events_table;
 
         if (!$tactical_view) {
+            $out .= '<table width="100%"><tr><td style="width: 90%; vertical-align: top; padding-top: 0px;">';
             if ($agent_id != 0) {
                 $out .= '</td><td style="width: 200px; vertical-align: top;">';
                 $out .= '<table cellpadding=0 cellspacing=0 class="databox"><tr><td>';
@@ -1149,9 +1149,9 @@ function events_print_event_table(
 						<legend>'.__('Event graph by agent').'</legend>'.grafico_eventos_grupo(180, 60).'</fieldset>';
                 $out .= '</td></tr></table>';
             }
-        }
 
-        $out .= '</td></tr></table>';
+            $out .= '</td></tr></table>';
+        }
 
         unset($table);
 

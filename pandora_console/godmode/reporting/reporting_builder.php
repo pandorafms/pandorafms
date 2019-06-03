@@ -771,30 +771,27 @@ switch ($action) {
             $table->head[1] = __('Description');
             $table->head[2] = __('HTML');
             $table->head[3] = __('XML');
-            $table->size[0] = '20%';
-            $table->size[1] = '30%';
+            $table->size[0] = '60%';
+            $table->size[1] = '20%';
             $table->size[2] = '2%';
-            $table->headstyle[2] = 'min-width: 35px;';
+            $table->headstyle[2] = 'min-width: 35px;text-align: center;';
             $table->size[3] = '2%';
-            $table->headstyle[3] = 'min-width: 35px;';
+            $table->headstyle[3] = 'min-width: 35px;text-align: center;';
             $table->size[4] = '2%';
-            $table->headstyle[4] = 'min-width: 35px;';
-            $table->size[5] = '2%';
-            $table->headstyle[5] = 'min-width: 35px;';
-            $table->size[6] = '2%';
-            $table->headstyle[6] = 'min-width: 35px;';
-            $table->size[7] = '5%';
-            $table->headstyle['csv'] = 'min-width: 65px;';
-            $table->style[7] = 'text-align: center;';
-
-            $table->headstyle[9] = 'min-width: 100px;';
-            $table->style[9] = 'text-align: center;';
+            $table->headstyle[4] = 'min-width: 35px;text-align: center;';
 
             $next = 4;
             // Calculate dinamically the number of the column.
-            if (enterprise_hook('load_custom_reporting_1') !== ENTERPRISE_NOT_HOOK) {
+            if (enterprise_hook('load_custom_reporting_1', [$table]) !== ENTERPRISE_NOT_HOOK) {
                 $next = 7;
             }
+
+            $table->size[$next] = '2%';
+            $table->style[$next] = 'text-align: center;';
+
+            $table->headstyle[($next + 2)] = 'min-width: 100px;';
+            $table->style[($next + 2)] = 'text-align: center;';
+
 
             // Admin options only for RM flag.
             if (check_acl($config['id_user'], 0, 'RM')) {

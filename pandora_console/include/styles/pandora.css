@@ -814,38 +814,6 @@ input.datos {
   border: #ccc outset 3px;
 }
 
-td.datos3,
-td.datos4 {
-  background-color: #fff;
-  color: #000;
-  border-bottom: 2px solid #82b92e;
-  border-left: none;
-  border-right: none;
-  height: 30px;
-  font-size: 8.6pt;
-  font-weight: normal;
-}
-
-td.datos4 {
-  /*Add because in php the function html_print_table write style in cell and this is style head.*/
-  text-align: center;
-}
-
-td.datos3 *,
-td.datos4 * {
-  font-size: 8.6pt;
-  font-weight: normal;
-}
-
-/*td.datos_id {
-	color: #1a313a;
-}*/
-
-/* user list php */
-tr.disabled_row_user * {
-  color: grey;
-}
-
 /* global syles */
 .bg {
   /* op menu */
@@ -1085,7 +1053,7 @@ div.title_line {
 }
 
 .breadcrumbs_container {
-  padding-left: 10px;
+  padding-left: 2.5em;
   padding-top: 4px;
   text-indent: 0.25em;
   color: #848484;
@@ -4893,6 +4861,7 @@ input:checked + .p-slider:before {
 
 .label_select,
 .label_select_simple {
+  font-family: "lato-bolder", "Open Sans", sans-serif;
   margin-bottom: 15px;
 }
 
@@ -4972,125 +4941,6 @@ input:checked + .p-slider:before {
   width: 100%;
   box-sizing: border-box;
   color: #4d4d4d;
-}
-
-/* This is to use divs like tables */
-.table_div {
-  display: table;
-}
-.table_thead,
-.table_tbody {
-  display: table-row;
-}
-.table_th {
-  font-weight: bold;
-}
-.table_th,
-.table_td {
-  display: table-cell;
-  vertical-align: middle;
-  padding: 10px;
-}
-/* Tables with 3 columns */
-.table_three_columns .table_th,
-.table_three_columns .table_td {
-  width: 33%;
-}
-
-/*
- * ---------------------------------------------------------------------
- * - TABLES TO SHOW INFORMATION
- * ---------------------------------------------------------------------
- */
-
-table.info_table {
-  background-color: #fff;
-  margin-bottom: 10px;
-  border-spacing: 0;
-  border-collapse: collapse;
-  overflow: hidden;
-  border-radius: 5px;
-}
-
-table.info_table > tbody > tr:nth-child(even) {
-  background-color: #f5f5f5;
-}
-
-table.info_table tr:first-child > th {
-  background-color: #fff;
-  color: #000;
-  text-align: left;
-  vertical-align: middle;
-}
-
-table.info_table th {
-  font-size: 7.5pt;
-  letter-spacing: 0.3pt;
-  color: #000;
-  background-color: #fff;
-}
-
-table.info_table tr th {
-  border-bottom: 1px solid #e2e2e2;
-}
-
-/* Radius top */
-table.info_table > thead > tr:first-child > th:first-child {
-  border-top-left-radius: 4px;
-}
-table.info_table > thead > tr:first-child > th:last-child {
-  border-top-right-radius: 4px;
-}
-
-/* Radius bottom */
-table.info_table > tbody > tr:last-child > td:first-child {
-  border-top-left-radius: 4px;
-}
-table.info_table > tbody > tr:last-child > td:last-child {
-  border-top-right-radius: 4px;
-}
-
-table.info_table > thead > tr > th,
-table.info_table > tbody > tr > th,
-table.info_table > thead > tr > th a {
-  padding: 0.1em;
-  font-weight: normal;
-  color: #000;
-  font-size: 1.2em;
-  margin-left: 0.5em;
-}
-
-table.info_table > tbody > tr {
-  border-bottom: 1px solid #e2e2e2;
-}
-
-table.info_table > tbody > tr > td {
-  -moz-border-radius: 0px;
-  -webkit-border-radius: 0px;
-  border-radius: 0px;
-  border: none;
-  padding-left: 9px;
-  padding-right: 9px;
-  padding-top: 7px;
-  padding-bottom: 7px;
-}
-
-table.info_table > tbody > tr > td > img,
-table.info_table > thead > tr > th > img,
-table.info_table > tbody > tr > td > div > a > img,
-table.info_table > tbody > tr > td > span > img,
-table.info_table > tbody > tr > td > span > a > img,
-table.info_table > tbody > tr > td > a > img,
-table.info_table > tbody > tr > td > form > a > img {
-  vertical-align: middle;
-}
-
-table.info_table > tbody > tr:hover {
-  background-color: #eee;
-}
-
-.info_table.profile_list > thead > tr > th > a.tip {
-  padding: 0px;
 }
 
 /* This class is for the icons of actions and operations in the tables. */
@@ -5817,6 +5667,7 @@ div#status_pie {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
+  padding: 0 1em 0;
 }
 
 .white_table_graph_content {

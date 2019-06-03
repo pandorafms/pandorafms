@@ -282,38 +282,41 @@ function process_user_login_remote($login, $pass, $api=false)
                 }
             }
         } else if ($config['auth'] === 'ldap') {
-            if ($config['ldap_save_password']) {
-                $update_credentials = change_local_user_pass_ldap($login, $pass);
+            // Check if autocreate  remote users is active.
+            if ($config['autocreate_remote_users'] == 1) {
+                if ($config['ldap_save_password']) {
+                    $update_credentials = change_local_user_pass_ldap($login, $pass);
 
-                if ($update_credentials) {
-                    $config['auth_error'] = __('Your permissions have changed. Please, login again.');
-                    return false;
-                }
-            } else {
-                delete_user_pass_ldap($login);
-            }
-
-            $permissions = fill_permissions_ldap($sr);
-            if (empty($permissions)) {
-                $config['auth_error'] = __('User not found in database or incorrect password');
-                return false;
-            } else {
-                // check permissions
-                $result = check_permission_ad(
-                    $login,
-                    $pass,
-                    false,
-                    $permissions,
-                    defined('METACONSOLE')
-                );
-
-                if ($return === 'error_permissions') {
-                    $config['auth_error'] = __('Problems with configuration permissions. Please contact with Administrator');
-                    return false;
-                } else {
-                    if ($return === 'permissions_changed') {
+                    if ($update_credentials) {
                         $config['auth_error'] = __('Your permissions have changed. Please, login again.');
                         return false;
+                    }
+                } else {
+                    delete_user_pass_ldap($login);
+                }
+
+                $permissions = fill_permissions_ldap($sr);
+                if (empty($permissions)) {
+                    $config['auth_error'] = __('User not found in database or incorrect password');
+                    return false;
+                } else {
+                    // check permissions
+                    $result = check_permission_ad(
+                        $login,
+                        $pass,
+                        false,
+                        $permissions,
+                        defined('METACONSOLE')
+                    );
+
+                    if ($return === 'error_permissions') {
+                        $config['auth_error'] = __('Problems with configuration permissions. Please contact with Administrator');
+                        return false;
+                    } else {
+                        if ($return === 'permissions_changed') {
+                            $config['auth_error'] = __('Your permissions have changed. Please, login again.');
+                            return false;
+                        }
                     }
                 }
             }

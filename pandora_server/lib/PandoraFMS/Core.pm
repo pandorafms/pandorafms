@@ -362,6 +362,7 @@ sub pandora_generate_alerts ($$$$$$$$;$$$) {
 	# No alerts when event storm protection is enabled
 	
 	if ($EventStormProtection == 1)	{
+		
 		return;
 	}
  

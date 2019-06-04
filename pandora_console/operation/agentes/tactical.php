@@ -116,7 +116,7 @@ if (!empty($all_data)) {
 }
 
 echo '<table border=0 style="width:100%;"><tr>';
-echo '<td style="vertical-align: top; min-width: 180px; width:25%; padding-right: 20px; vertical-align: top; padding-top: 0px;" id="leftcolumn">';
+echo '<td style="vertical-align: top; min-width: 30em; width:25%; padding-right: 20px; vertical-align: top; padding-top: 0px;" id="leftcolumn">';
 // ---------------------------------------------------------------------
 // The status horizontal bars (Global health, Monitor sanity...
 // ---------------------------------------------------------------------

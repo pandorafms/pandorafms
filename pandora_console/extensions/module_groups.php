@@ -248,16 +248,16 @@ function mainModuleGroups()
                             $color = '#FFA631';
                             // Orange when the cell for this model group and agent has at least one alert fired.
                         } else if ($array_data[$key][$k]['critical_module_count'] != 0) {
-                            $color = '#FC4444';
+                            $color = '#e63c52';
                             // Red when the cell for this model group and agent has at least one module in critical state and the rest in any state.
                         } else if ($array_data[$key][$k]['warning_module_count'] != 0) {
-                            $color = '#FAD403';
+                            $color = '#f3b200';
                             // Yellow when the cell for this model group and agent has at least one in warning state and the rest in green state.
                         } else if ($array_data[$key][$k]['unknown_module_count'] != 0) {
                             $color = '#B2B2B2 ';
                             // Grey when the cell for this model group and agent has at least one module in unknown state and the rest in any state.
                         } else if ($array_data[$key][$k]['normal_module_count'] != 0) {
-                            $color = '#80BA27';
+                            $color = '#82b92e';
                             // Green when the cell for this model group and agent has OK state all modules.
                         } else if ($array_data[$key][$k]['notInit_module_count'] != 0) {
                             $color = '#5BB6E5';

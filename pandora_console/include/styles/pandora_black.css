@@ -1119,7 +1119,7 @@ td.datos2f9 {
 }
 
 .warning * {
-  color: #fad403;
+  color: #f3b200;
 }
 
 .help {
@@ -2261,7 +2261,7 @@ div.cellUnknown {
 div.cellNotInit {
   width: 100%;
   height: 100%;
-  background: #3ba0ff;
+  background: #4a83f3;
   color: #ffffff;
 }
 
@@ -2324,7 +2324,7 @@ tr.group_view_data,
 
 tr.group_view_crit,
 .group_view_crit {
-  background-color: #fc4444;
+  background-color: #e63c52;
   color: #fff;
 }
 
@@ -2353,12 +2353,12 @@ tr.group_view_warn,
 tr.group_view_warn.a,
 a.group_view_warn,
 tr.a.group_view_warn {
-  background-color: #fad403;
+  background-color: #f3b200;
   color: #3f3f3f;
 }
 
 a.group_view_warn {
-  color: #fad403;
+  color: #f3b200;
 }
 
 tr.group_view_alrm,
@@ -2387,14 +2387,14 @@ tr.group_view_unk,
 .datos_red a,
 .datos_redf9 a,
 .datos_red * {
-  background-color: #fc4444;
+  background-color: #e63c52;
   color: #fff;
 }
 
 .datos_yellow,
 .datos_yellowf9,
 .datos_yellow * {
-  background-color: #fad403;
+  background-color: #f3b200;
   color: #111;
 }
 

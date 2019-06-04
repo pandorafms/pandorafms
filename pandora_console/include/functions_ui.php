@@ -2726,7 +2726,7 @@ function ui_progress(
     $progress,
     $width='100%',
     $height='2.5',
-    $color='#80ba27',
+    $color='#82b92e',
     $return=true,
     $text=''
 ) {

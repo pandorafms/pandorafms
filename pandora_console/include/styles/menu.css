@@ -114,7 +114,7 @@ li:hover ul {
 
 .submenu_selected {
   margin-bottom: 0px;
-  box-shadow: inset 4px 0 #80ba27;
+  box-shadow: inset 4px 0 #82b92e;
 }
 .selected.submenu_selected {
   background-color: #202020;
@@ -279,7 +279,7 @@ ul li {
 }
 
 .menu li.selected {
-  box-shadow: inset 4px 0 #80ba27;
+  box-shadow: inset 4px 0 #82b92e;
 }
 
 .operation {

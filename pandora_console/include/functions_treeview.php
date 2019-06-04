@@ -641,7 +641,7 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
         $progress,
         '100%',
         '1.5',
-        '#80ba27',
+        '#82b92e',
         true
     );
     $table->data['next_contact'] = $row;

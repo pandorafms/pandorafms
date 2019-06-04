@@ -961,7 +961,7 @@ div#cont {
 }
 
 .termframe {
-  background-color: #80ba27;
+  background-color: #82b92e;
 }
 
 table,
@@ -1121,7 +1121,7 @@ td.datos2f9 {
 }
 
 .warning * {
-  color: #fad403;
+  color: #f3b200;
 }
 
 .help {
@@ -1242,7 +1242,7 @@ div.title_line {
 #menu_tab_frame,
 #menu_tab_frame_view {
   display: block;
-  border-bottom: 1px solid #80ba27;
+  border-bottom: 1px solid #82b92e;
   /*	float:left; */
   margin-left: 0px;
   max-height: 42px;
@@ -2254,7 +2254,7 @@ div.cellUnknown {
 div.cellNotInit {
   width: 100%;
   height: 100%;
-  background: #3ba0ff;
+  background: #4a83f3;
   color: #ffffff;
 }
 
@@ -2317,7 +2317,7 @@ tr.group_view_data,
 
 tr.group_view_crit,
 .group_view_crit {
-  background-color: #fc4444;
+  background-color: #e63c52;
   color: #fff;
 }
 
@@ -2329,7 +2329,7 @@ tr.group_view_normal,
 }
 tr.group_view_ok,
 .group_view_ok {
-  background-color: #80ba27;
+  background-color: #82b92e;
   color: #fff;
 }
 
@@ -2346,12 +2346,12 @@ tr.group_view_warn,
 tr.group_view_warn.a,
 a.group_view_warn,
 tr.a.group_view_warn {
-  background-color: #fad403;
+  background-color: #f3b200;
   color: #3f3f3f;
 }
 
 a.group_view_warn {
-  color: #fad403;
+  color: #f3b200;
 }
 
 tr.group_view_alrm,
@@ -2372,7 +2372,7 @@ tr.group_view_unk,
 .datos_green a,
 .datos_greenf9 a,
 .datos_green * {
-  background-color: #80ba27;
+  background-color: #82b92e;
   color: #fff;
 }
 .datos_red,
@@ -2380,14 +2380,14 @@ tr.group_view_unk,
 .datos_red a,
 .datos_redf9 a,
 .datos_red * {
-  background-color: #fc4444;
+  background-color: #e63c52;
   color: #fff;
 }
 
 .datos_yellow,
 .datos_yellowf9,
 .datos_yellow * {
-  background-color: #fad403;
+  background-color: #f3b200;
   color: #111;
 }
 

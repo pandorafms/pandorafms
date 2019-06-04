@@ -1614,9 +1614,9 @@ function print_phases_donut(recipient, phases) {
       .insert("path")
       .style("fill", function(d) {
         if (d.data.value == 0) {
-          return "#80BA27";
+          return "#82b92e";
         } else {
-          return "#FC4444";
+          return "#e63c52";
         }
       })
       .attr("class", "slice");

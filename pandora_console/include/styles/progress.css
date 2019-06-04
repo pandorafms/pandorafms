@@ -9,12 +9,12 @@ div.progress_main {
   display: inline-block;
   text-align: center;
   height: 2.5em;
-  border: 1px solid #80ba27;
+  border: 1px solid #82b92e;
 }
 
 div.progress {
   width: 0%;
-  background: #80ba27;
+  background: #82b92e;
   height: 100%;
   float: left;
 }

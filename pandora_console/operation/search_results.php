@@ -255,5 +255,6 @@ switch ($searchTab) {
     case 'policies':
         include_once 'search_policies.getdata.php';
         include_once 'search_policies.php';
+
     break;
 }

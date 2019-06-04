@@ -177,6 +177,7 @@ if ($searchpolicies == 0) {
 				    ORDER BY ".$order['field'].' '.$order['order'];
 }
 
+
         $sql .= ' LIMIT '.$config['block_size'].' OFFSET '.get_parameter('offset', 0);
 
 

@@ -10980,10 +10980,10 @@ function reporting_get_stats_servers()
 
     $tdata = [];
     '<span class="big_data">'.format_numeric($server_performance['total_local_modules']).'</span>';
-    $tdata[0] = html_print_image('images/module.png', true, ['title' => __('Total running modules'), 'width' => '25px']);
+    $tdata[0] = html_print_image('images/module.png', true, ['title' => __('Total running modules')]);
     $tdata[1] = '<span class="big_data">'.format_numeric($server_performance['total_modules']).'</span>';
     $tdata[2] = '<span class="med_data">'.format_numeric($server_performance['total_modules_rate'], 2).'</span>';
-    $tdata[3] = html_print_image('images/module.png', true, ['title' => __('Ratio').': '.__('Modules by second'), 'width' => '16px']).'/sec </span>';
+    $tdata[3] = html_print_image('images/module.png', true, ['title' => __('Ratio').': '.__('Modules by second')]).'/sec </span>';
 
     $table_srv->rowclass[] = '';
     $table_srv->data[] = $tdata;
@@ -10995,22 +10995,22 @@ function reporting_get_stats_servers()
     $table_srv->data[] = $tdata;
 
     $tdata = [];
-    $tdata[0] = html_print_image('images/database.png', true, ['title' => __('Local modules'), 'width' => '25px']);
+    $tdata[0] = html_print_image('images/database.png', true, ['title' => __('Local modules')]);
     $tdata[1] = '<span class="big_data">'.format_numeric($server_performance['total_local_modules']).'</span>';
     $tdata[2] = '<span class="med_data">'.format_numeric($server_performance['local_modules_rate'], 2).'</span>';
-    $tdata[3] = html_print_image('images/module.png', true, ['title' => __('Ratio').': '.__('Modules by second'), 'width' => '16px']).'/sec </span>';
+    $tdata[3] = html_print_image('images/module.png', true, ['title' => __('Ratio').': '.__('Modules by second')]).'/sec </span>';
 
     $table_srv->rowclass[] = '';
     $table_srv->data[] = $tdata;
 
     if (isset($server_performance['total_network_modules'])) {
         $tdata = [];
-        $tdata[0] = html_print_image('images/network.png', true, ['title' => __('Network modules'), 'width' => '25px']);
+        $tdata[0] = html_print_image('images/network.png', true, ['title' => __('Network modules')]);
         $tdata[1] = '<span class="big_data">'.format_numeric($server_performance['total_network_modules']).'</span>';
 
         $tdata[2] = '<span class="med_data">'.format_numeric($server_performance['network_modules_rate'], 2).'</span>';
 
-        $tdata[3] = html_print_image('images/module.png', true, ['title' => __('Ratio').': '.__('Modules by second'), 'width' => '16px']).'/sec </span>';
+        $tdata[3] = html_print_image('images/module.png', true, ['title' => __('Ratio').': '.__('Modules by second')]).'/sec </span>';
 
         if ($server_performance['total_remote_modules'] > 10000 && !enterprise_installed()) {
             $tdata[4] = "<div id='remotemodulesmodal' class='publienterprise' title='Community version' style='text-align:left;'><img data-title='Enterprise version' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>";
@@ -11024,11 +11024,11 @@ function reporting_get_stats_servers()
 
     if (isset($server_performance['total_plugin_modules'])) {
         $tdata = [];
-        $tdata[0] = html_print_image('images/plugin.png', true, ['title' => __('Plugin modules'), 'width' => '25px']);
+        $tdata[0] = html_print_image('images/plugin.png', true, ['title' => __('Plugin modules')]);
         $tdata[1] = '<span class="big_data">'.format_numeric($server_performance['total_plugin_modules']).'</span>';
 
         $tdata[2] = '<span class="med_data">'.format_numeric($server_performance['plugin_modules_rate'], 2).'</span>';
-        $tdata[3] = html_print_image('images/module.png', true, ['title' => __('Ratio').': '.__('Modules by second'), 'width' => '16px']).'/sec </span>';
+        $tdata[3] = html_print_image('images/module.png', true, ['title' => __('Ratio').': '.__('Modules by second')]).'/sec </span>';
 
         $table_srv->rowclass[] = '';
         $table_srv->data[] = $tdata;
@@ -11036,11 +11036,11 @@ function reporting_get_stats_servers()
 
     if (isset($server_performance['total_prediction_modules'])) {
         $tdata = [];
-        $tdata[0] = html_print_image('images/chart_bar.png', true, ['title' => __('Prediction modules'), 'width' => '25px']);
+        $tdata[0] = html_print_image('images/chart_bar.png', true, ['title' => __('Prediction modules')]);
         $tdata[1] = '<span class="big_data">'.format_numeric($server_performance['total_prediction_modules']).'</span>';
 
         $tdata[2] = '<span class="med_data">'.format_numeric($server_performance['prediction_modules_rate'], 2).'</span>';
-        $tdata[3] = html_print_image('images/module.png', true, ['title' => __('Ratio').': '.__('Modules by second'), 'width' => '16px']).'/sec </span>';
+        $tdata[3] = html_print_image('images/module.png', true, ['title' => __('Ratio').': '.__('Modules by second')]).'/sec </span>';
 
         $table_srv->rowclass[] = '';
         $table_srv->data[] = $tdata;
@@ -11048,11 +11048,11 @@ function reporting_get_stats_servers()
 
     if (isset($server_performance['total_wmi_modules'])) {
         $tdata = [];
-        $tdata[0] = html_print_image('images/wmi.png', true, ['title' => __('WMI modules'), 'width' => '25px']);
+        $tdata[0] = html_print_image('images/wmi.png', true, ['title' => __('WMI modules')]);
         $tdata[1] = '<span class="big_data">'.format_numeric($server_performance['total_wmi_modules']).'</span>';
 
         $tdata[2] = '<span class="med_data">'.format_numeric($server_performance['wmi_modules_rate'], 2).'</span>';
-        $tdata[3] = html_print_image('images/module.png', true, ['title' => __('Ratio').': '.__('Modules by second'), 'width' => '16px']).'/sec </span>';
+        $tdata[3] = html_print_image('images/module.png', true, ['title' => __('Ratio').': '.__('Modules by second')]).'/sec </span>';
 
         $table_srv->rowclass[] = '';
         $table_srv->data[] = $tdata;
@@ -11060,11 +11060,11 @@ function reporting_get_stats_servers()
 
     if (isset($server_performance['total_web_modules'])) {
         $tdata = [];
-        $tdata[0] = html_print_image('images/world.png', true, ['title' => __('Web modules'), 'width' => '25px']);
+        $tdata[0] = html_print_image('images/world.png', true, ['title' => __('Web modules')]);
         $tdata[1] = '<span class="big_data">'.format_numeric($server_performance['total_web_modules']).'</span>';
 
         $tdata[2] = '<span class="med_data">'.format_numeric($server_performance['web_modules_rate'], 2).'</span>';
-        $tdata[3] = html_print_image('images/module.png', true, ['title' => __('Ratio').': '.__('Modules by second'), 'width' => '16px']).'/sec </span>';
+        $tdata[3] = html_print_image('images/module.png', true, ['title' => __('Ratio').': '.__('Modules by second')]).'/sec </span>';
 
         $table_srv->rowclass[] = '';
         $table_srv->data[] = $tdata;
@@ -11082,7 +11082,6 @@ function reporting_get_stats_servers()
         true,
         [
             'title' => __('Total events'),
-            'width' => '25px',
         ]
     );
     $tdata[1] = '<span class="big_data" id="total_events">'.html_print_image('images/spinner.gif', true).'</span>';

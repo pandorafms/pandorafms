@@ -20,6 +20,7 @@ $searchGraphs = check_acl($config['id_user'], 0, 'RR');
 $searchMaps = check_acl($config['id_user'], 0, 'RR');
 $searchReports = check_acl($config['id_user'], 0, 'RR');
 $searchUsers = check_acl($config['id_user'], 0, 'UM');
+$searchPolicies = check_acl($config['id_user'], 0, 'UM');
 $searchHelps = true;
 
 echo '<br><div style="margin:auto; width:90%; padding: 10px; background: #fff">';
@@ -44,7 +45,11 @@ $table->style[9] = 'font-weight: bold; text-align: center;';
 $table->style[10] = 'font-weight: bold; text-align: center;';
 $table->style[11] = 'font-weight: bold; text-align: center;';
 $table->style[13] = 'font-weight: bold; text-align: center;';
+$table->style[14] = 'font-weight: bold; text-align: center;';
 $table->style[15] = 'font-weight: bold; text-align: center;';
+
+
+
 
 $table->data[0][0] = html_print_image('images/agent.png', true, ['title' => __('Agents found')]);
 $table->data[0][1] = "<a href='index.php?search_category=agents&keywords=".$config['search_keywords']."&head_search_keywords=Search'>".sprintf(__('%s Found'), $totalAgents).'</a>';
@@ -64,8 +69,10 @@ $table->data[0][10] = html_print_image('images/reporting.png', true, ['title' =>
 $table->data[0][11] = "<a href='index.php?search_category=reports&keywords=".$config['search_keywords']."&head_search_keywords=Search'>".sprintf(__('%s Found'), $totalReports).'</a>';
 $table->data[0][12] = html_print_image('images/visual_console_green.png', true, ['title' => __('Maps found')]);
 $table->data[0][13] = "<a href='index.php?search_category=maps&keywords=".$config['search_keywords']."&head_search_keywords=Search'>".sprintf(__('%s Found'), $totalMaps).'</a>';
-$table->data[0][14] = html_print_image('images/help.png', true, ['title' => __('Helps found')]);
-$table->data[0][15] = "<a href='index.php?search_category=helps&keywords=".$config['search_keywords']."&head_search_keywords=Search'>".sprintf(__('%s Found'), $totalHelps).'</a>';
+if (file_exists(ENTERPRISE_DIR.'/load_enterprise.php')) {
+    $table->data[0][14] = html_print_image('images/policies.png', true, ['title' => __('Policies')]);
+    $table->data[0][15] = "<a href='index.php?search_category=policies&keywords=".$config['search_keywords']."&head_search_keywords=Search'>".sprintf(__('%s Found'), $totalPolicies).'</a>';
+}
 
 html_print_table($table);
 

@@ -155,13 +155,15 @@ if (!is_metaconsole()) {
     html_print_input_hidden('metaconsole', 1);
 }
 
-echo '<div class="visual-console-edit-controls">';
-echo '<span>'.__('Move and resize mode').'</span>';
-echo '<span>';
-echo html_print_checkbox_switch('edit-mode', 1, false, true);
-echo '</span>';
-echo '</div>';
-echo '<br />';
+if ($pure === false) {
+    echo '<div class="visual-console-edit-controls">';
+    echo '<span>'.__('Move and resize mode').'</span>';
+    echo '<span>';
+    echo html_print_checkbox_switch('edit-mode', 1, false, true);
+    echo '</span>';
+    echo '</div>';
+    echo '<br />';
+}
 
 echo '<div id="visual-console-container"></div>';
 
@@ -335,8 +337,10 @@ $visualConsoleItems = VisualConsole::getItemsFromDB(
     $('input[name=edit-mode]').change(function(event) {
         if ($(this).prop('checked')) {
             visualConsoleManager.visualConsole.enableEditMode();
+            visualConsoleManager.changeUpdateInterval(0);
         } else {
             visualConsoleManager.visualConsole.disableEditMode();
+            visualConsoleManager.changeUpdateInterval(<?php echo ($refr * 1000); ?>); // To ms.
         }
     });
 

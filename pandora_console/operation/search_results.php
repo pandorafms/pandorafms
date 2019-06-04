@@ -213,6 +213,7 @@ switch ($searchTab) {
         include_once 'search_maps.getdata.php';
         include_once 'search_modules.getdata.php';
         include_once 'search_helps.getdata.php';
+        include_once 'search_policies.getdata.php';
 
         include_once 'search_main.php';
     break;

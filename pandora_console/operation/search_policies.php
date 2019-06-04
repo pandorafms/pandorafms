@@ -14,7 +14,7 @@
 global $config;
 
 // require_once $config['homedir'].'/include/functions_status.php';
-require_once $config['homedir'].'/enterprise/include/functions_policies.php';
+enterprise_include_once('include/functions_policies.php');
 require_once $config['homedir'].'/enterprise/include/functions_groups.php';
 
 $searchpolicies = check_acl($config['id_user'], 0, 'UM');

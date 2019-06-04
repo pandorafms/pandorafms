@@ -13,8 +13,7 @@
 // GNU General Public License for more details.
 global $config;
 
-
-require_once $config['homedir'].'/enterprise/include/functions_policies.php';
+enterprise_include_once('include/functions_policies.php');
 
 
 $searchpolicies = check_acl($config['id'], 0, 'UM');
@@ -193,8 +192,7 @@ if ($policies !== false) {
 					  description LIKE '%".$stringSearchSQL."%'";
 
 
-    // q$totalPolicies = db_get_value_sql($sql);
-    $totalPolicies = count($policies);
+    $totalPolicies = db_get_value_sql($sql);
 } else {
     $totalPolicies = 0;
 }

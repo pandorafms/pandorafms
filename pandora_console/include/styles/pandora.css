@@ -3218,6 +3218,12 @@ div.div_groups_status {
   margin-top: 10px;
   margin-left: 3px;
 }
+#menu_tab li.nomn.tab_operation img,
+#menu_tab li.nomn.tab_godmode img,
+#menu_tab li.nomn_high.tab_operation img,
+#menu_tab li.nomn_high.tab_godmode img {
+  margin: 10px auto;
+}
 
 #menu_tab li.tab_operation a,
 #menu_tab a.tab_operation {

@@ -155,6 +155,14 @@ if (!is_metaconsole()) {
     html_print_input_hidden('metaconsole', 1);
 }
 
+echo '<div class="visual-console-edit-controls">';
+echo '<span>'.__('Move and resize mode').'</span>';
+echo '<span>';
+echo html_print_checkbox_switch('edit-mode', 1, false, true);
+echo '</span>';
+echo '</div>';
+echo '<br />';
+
 echo '<div id="visual-console-container"></div>';
 
 if ($pure === true) {
@@ -306,6 +314,14 @@ $visualConsoleItems = VisualConsole::getItemsFromDB(
             }
         }
     }
+
+    // Add the datetime when the item was received.
+    var receivedAt = new Date();
+    items.map(function(item) {
+        item["receivedAt"] = receivedAt;
+        return item;
+    });
+
     var visualConsoleManager = createVisualConsole(
         container,
         props,
@@ -314,6 +330,15 @@ $visualConsoleItems = VisualConsole::getItemsFromDB(
         <?php echo ($refr * 1000); ?>,
         handleUpdate
     );
+
+    // Enable/disable the edition mode.
+    $('input[name=edit-mode]').change(function(event) {
+        if ($(this).prop('checked')) {
+            visualConsoleManager.visualConsole.enableEditMode();
+        } else {
+            visualConsoleManager.visualConsole.disableEditMode();
+        }
+    });
 
     // Update the data fetch interval.
     $('select#vc-refr').change(function(event) {

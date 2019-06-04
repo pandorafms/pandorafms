@@ -813,6 +813,15 @@ input.datos {
  * - VISUAL MAPS 													-
  * ---------------------------------------------------------------------
  */
+.visual-console-edit-controls {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.visual-console-edit-controls > span {
+  margin: 4px;
+}
+
 input.vs_button_ghost {
   background-color: transparent !important;
   border: 1px solid #82b92e;

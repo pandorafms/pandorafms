@@ -195,8 +195,12 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
     box.style.left = `${this.props.x}px`;
     box.style.top = `${this.props.y}px`;
     box.addEventListener("click", e => {
-      if (!this.meta.editMode)
+      if (this.meta.editMode) {
+        e.preventDefault();
+        e.stopPropagation();
+      } else {
         this.clickEventManager.emit({ data: this.props, nativeEvent: e });
+      }
     });
 
     return box;

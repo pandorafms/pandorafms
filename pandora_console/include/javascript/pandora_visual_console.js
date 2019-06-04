@@ -67,6 +67,13 @@ function createVisualConsole(
                     ? JSON.parse(data.items)
                     : data.items;
 
+                // Add the datetime when the item was received.
+                var receivedAt = new Date();
+                items.map(function(item) {
+                  item["receivedAt"] = receivedAt;
+                  return item;
+                });
+
                 var prevProps = visualConsole.props;
                 // Update the data structure.
                 visualConsole.props = props;

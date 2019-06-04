@@ -563,4 +563,22 @@ export default class VisualConsole {
 
     return disposable;
   }
+
+  /**
+   * Enable the edition mode.
+   */
+  public enableEditMode(): void {
+    this.elements.forEach(item => {
+      item.meta = { ...item.meta, editMode: true };
+    });
+  }
+
+  /**
+   * Disable the edition mode.
+   */
+  public disableEditMode(): void {
+    this.elements.forEach(item => {
+      item.meta = { ...item.meta, editMode: false };
+    });
+  }
 }

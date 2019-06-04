@@ -11519,7 +11519,7 @@ function api_set_create_event($id, $trash1, $other, $returnType)
 
         if ($other['data'][18] != '') {
             $values['id_extra'] = $other['data'][18];
-            $sql_validation = 'SELECT id_evento FROM tevento where estado=0 and id_extra ="'.$other['data'][18].'";';
+            $sql_validation = 'SELECT id_evento FROM tevento where estado not in (1) and id_extra ="'.$other['data'][18].'";';
             $validation = db_get_all_rows_sql($sql_validation);
             if ($validation) {
                 foreach ($validation as $val) {

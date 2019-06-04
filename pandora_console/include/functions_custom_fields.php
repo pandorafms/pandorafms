@@ -188,10 +188,16 @@ function get_custom_fields_data($custom_field_name)
             }
 
             $array_result = [];
-            if (isset($result_meta) && is_array($result_meta)) {
+            if (isset($result_meta) === true
+                && is_array($result_meta) === true
+            ) {
                 foreach ($result_meta as $result) {
-                    foreach ($result as $k => $v) {
-                        $array_result[$v['description']] = $v['description'];
+                    if (isset($result) === true
+                        && is_array($result) === true
+                    ) {
+                        foreach ($result as $k => $v) {
+                            $array_result[$v['description']] = $v['description'];
+                        }
                     }
                 }
             }
@@ -385,9 +391,13 @@ function agent_counters_custom_fields($filters)
 
     // Filter custom data.
     $custom_data_and = '';
-    if (!in_array(-1, $filters['id_custom_fields_data'])) {
-        $custom_data_array = implode("', '", $filters['id_custom_fields_data']);
-        $custom_data_and = "AND tcd.description IN ('".$custom_data_array."')";
+    if (isset($filters['id_custom_fields_data']) === true
+        && is_array($filters['id_custom_fields_data']) === true
+    ) {
+        if (!in_array(-1, $filters['id_custom_fields_data'])) {
+            $custom_data_array = implode("', '", $filters['id_custom_fields_data']);
+            $custom_data_and = "AND tcd.description IN ('".$custom_data_array."')";
+        }
     }
 
     // Filter custom name.
@@ -692,4 +702,64 @@ function print_counters_cfv(
 
     $html_result .= '</form>';
     return $html_result;
+}
+
+
+/**
+ * Undocumented function
+ *
+ * @param  [type] $filters
+ * @return void
+ */
+function export_custom_fields_csv($filters)
+{
+    $data = agent_counters_custom_fields($filters);
+    $indexed_descriptions = $data['indexed_descriptions'];
+
+    // Table temporary for save array in table
+    // by order and search custom_field data.
+    $table_temporary = 'CREATE TEMPORARY TABLE temp_custom_fields (
+        id_server int(10),
+        id_agent int(10),
+        name_custom_fields varchar(2048),
+        critical_count int,
+        warning_count int,
+        unknown_count int,
+        notinit_count int,
+        normal_count int,
+        total_count int,
+        `status` int(2),
+        KEY `data_index_temp_1` (`id_server`, `id_agent`)
+    )';
+    db_process_sql($table_temporary);
+
+    // Insert values array in table temporary.
+    $values_insert = [];
+    foreach ($indexed_descriptions as $key => $value) {
+        $values_insert[] = '('.$value['id_server'].', '.$value['id_agente'].", '".$value['description']."', '".$value['critical_count']."', '".$value['warning_count']."', '".$value['unknown_count']."', '".$value['notinit_count']."', '".$value['normal_count']."', '".$value['total_count']."', ".$value['status'].')';
+    }
+
+    $values_insert_implode = implode(',', $values_insert);
+    $query_insert = 'INSERT INTO temp_custom_fields VALUES '.$values_insert_implode;
+    db_process_sql($query_insert);
+
+    // Query all fields result.
+    $query = sprintf(
+        'SELECT
+        tma.id_agente,
+        tma.id_tagente,
+        tma.id_tmetaconsole_setup,
+        tma.alias,
+        tma.direccion,
+        tma.server_name,
+        temp.name_custom_fields,
+        temp.status
+    FROM tmetaconsole_agent tma
+    INNER JOIN temp_custom_fields temp
+        ON temp.id_agent = tma.id_tagente
+        AND temp.id_server = tma.id_tmetaconsole_setup'
+    );
+
+    $result = db_get_all_rows_sql($query);
+    return $result;
 }

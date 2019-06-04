@@ -844,7 +844,7 @@ if (check_login()) {
         $table->headstyle[5] = 'min-width: 85px';
         $table->headstyle[6] = 'min-width: 125px; text-align: center;';
         $table->headstyle[7] = 'min-width: 125px;';
-        $table->headstyle[8] = 'min-width: 85px; text-align: center;';
+        $table->headstyle[8] = 'min-width: 100px; text-align: center;';
         $table->headstyle[9] = 'min-width: 120px; text-align: right;';
 
         $last_modulegroup = 0;

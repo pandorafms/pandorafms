@@ -101,6 +101,15 @@
   background-color: #f5f5f5;
 }
 
+.info_table tr > td:first-child,
+.info_table tr > th:first-child {
+  padding-left: 5px;
+}
+.info_table tr > td:last-child,
+.info_table tr > th:last-child {
+  padding-right: 5px;
+}
+
 .info_table tr:first-child > th {
   background-color: #fff;
   color: #000;
@@ -147,7 +156,6 @@
   padding: 0.1em;
   font-weight: normal;
   color: #000;
-  font-size: 1.2em;
   margin-left: 0.5em;
 }
 

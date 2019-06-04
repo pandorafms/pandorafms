@@ -718,7 +718,7 @@ if ($table_events) {
         'AND'
     );
     echo '<div style="display: flex;" id="div_all_events_24h">';
-        echo '<label style="margin-right: 1em;"><b>'.__('Show all Events 24h').'</b></label>';
+        echo '<label style="margin: 0 1em 0 2em;"><b>'.__('Show all Events 24h').'</b></label>';
         echo html_print_switch(
             [
                 'name'  => 'all_events_24h',

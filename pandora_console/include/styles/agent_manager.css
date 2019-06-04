@@ -16,6 +16,7 @@
 .agent_options_update {
   width: 85%;
   margin-right: 20px;
+  min-width: 640px;
 }
 
 .agent_options_column_left,
@@ -41,6 +42,20 @@
 
 a#qr_code_agent_view {
   margin-top: 5px;
+}
+
+.p-switch {
+  margin-right: 1em;
+}
+
+.sg_source,
+.sg_target {
+  width: 35%;
+}
+
+.sg_source select,
+.sg_target select {
+  width: 100%;
 }
 
 .first_row .agent_options_column_right select,
@@ -104,34 +119,40 @@ a#qr_code_agent_view {
   border-bottom-right-radius: 0px;
 }
 
-.secondary_groups_select {
+.adv_right,
+.adv_left,
+.secondary_groups_list {
+  flex: 1;
+}
+.secondary_groups_list {
   display: flex;
+  flex-direction: row;
   align-items: center;
   justify-content: center;
-  margin-bottom: 15px;
+  flex-wrap: wrap;
+  min-width: 640px;
+}
+.secondary_group_arrows {
+  display: flex;
+  flex-direction: column;
+  padding: 0 2em;
 }
 
-.secondary_groups_select .secondary_groups_select_arrows input {
-  display: grid;
-  margin: 0 auto;
+.no-border.flex {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: start;
+  align-items: start;
 }
 
-.secondary_groups_select .secondary_groups_list_left {
-  text-align: right;
-  width: 50%;
+.no-border.flex > div {
+  margin: 1em;
 }
 
-.secondary_groups_select .secondary_groups_list_right {
-  text-align: left;
-  width: 50%;
-}
-
-.secondary_groups_select .secondary_groups_select_arrows {
-  padding: 0 50px;
-}
-
-.secondary_groups_select_arrows a {
-  display: block;
+.adv_left input,
+.adv_left select {
+  width: 100%;
 }
 
 .agent_options_adv .agent_options_column_right .label_select select,
@@ -155,4 +176,8 @@ a#qr_code_agent_view {
   display: inline-block;
   border-radius: 5px;
   border: 1px solid #ccc;
+}
+
+#safe_mode_module {
+  margin-top: 0.6em;
 }

@@ -2770,7 +2770,7 @@ input.search_input {
   background-color: #f2f6f7;
   padding: 0px;
   margin: 0;
-  width: 250px;
+  width: 300px;
   height: 30px;
   margin-left: 2px;
   padding-left: 15px;
@@ -5621,6 +5621,13 @@ div#status_pie {
   border-top-left-radius: 4px;
   border-top-right-radius: 4px;
   font-weight: bold;
+  display: flex;
+  min-width: fit-content;
+}
+
+.white_table_graph_header b {
+  font-size: 10pt;
+  font-weight: 600;
 }
 
 .white_table_graph_header div#bullets_modules {
@@ -5649,7 +5656,8 @@ div#status_pie {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  padding: 0 1em 0;
+  padding: 1em;
+  min-width: fit-content;
 }
 
 .white_table_graph_content {
@@ -5691,6 +5699,7 @@ div#status_pie {
   width: 100%;
   margin-bottom: 2em;
   padding: 2em;
+  min-width: fit-content;
 }
 
 /* White tables */

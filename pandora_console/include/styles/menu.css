@@ -58,7 +58,7 @@ li:hover ul {
   margin-left: 0px;
   width: 100%;
   color: #b9b9b9;
-  font-family: "Open Sans", sans-serif;
+  font-family: "lato", "Open Sans", sans-serif;
   font-size: 9.4pt;
 }
 
@@ -381,7 +381,6 @@ ul li {
   top: 0;
   left: 0;
   background-color: #343434;
-  border-bottom: solid 3px #343434;
 }
 
 .button_collapse {
@@ -406,7 +405,7 @@ ul li {
 .operation a,
 .godmode div,
 .godmode a {
-  font-family: "Open Sans", sans-serif;
+  font-family: "lato", "Open Sans", sans-serif;
 }
 
 .menu_full_classic,

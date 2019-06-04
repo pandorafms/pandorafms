@@ -176,7 +176,7 @@ if ($disk_conf_delete) {
     @unlink($filename['conf']);
 }
 
-echo '<form name="conf_agent" method="post" action="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente">';
+echo '<form autocomplete="off" name="conf_agent" method="post" action="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente">';
 
 // Custom ID.
 $custom_id_div = '<div class="label_select">';
@@ -413,8 +413,8 @@ echo '</div>';
 
 if (enterprise_installed()) {
     $secondary_groups_selected = enterprise_hook('agents_get_secondary_groups', [$id_agente]);
-    $table_adv_secondary_groups = '<div class="label_select"><p class="input_label">'.__('Secondary groups').': </p></div>';
-    $table_adv_secondary_groups_left = html_print_select_groups(
+    $adv_secondary_groups_label = '<div class="label_select"><p class="input_label">'.__('Secondary groups').': </p></div>';
+    $adv_secondary_groups_left = html_print_select_groups(
         false,
         // Use the current user to select the groups.
         'AR',
@@ -441,7 +441,7 @@ if (enterprise_installed()) {
         // CSS classnames (default).
         false,
         // Not disabled (default).
-        'width:50%; min-width:170px;',
+        'min-width:170px;',
         // Inline styles (default).
         false,
         // Option style select (default).
@@ -455,7 +455,7 @@ if (enterprise_installed()) {
         // Do not show the primary group in this selection.
     );
 
-    $table_adv_secondary_groups_arrows = html_print_input_image(
+    $adv_secondary_groups_arrows = html_print_input_image(
         'add_secondary',
         'images/darrowright_green.png',
         1,
@@ -479,7 +479,7 @@ if (enterprise_installed()) {
         ]
     );
 
-    $table_adv_secondary_groups_right .= html_print_select(
+    $adv_secondary_groups_right .= html_print_select(
         $secondary_groups_selected['for_select'],
         // Values.
         'secondary_groups_selected',
@@ -502,7 +502,7 @@ if (enterprise_installed()) {
         // Class.
         false,
         // Disabled.
-        'width:50%; min-width:170px;'
+        'min-width:170px;'
         // Style.
     );
 
@@ -579,7 +579,7 @@ if (enterprise_installed()) {
 }
 
 
-$table_adv_parent = '<div class="label_select"><p class="input_label">'.__('Parent').': </p>';
+$table_adv_parent = '<div class="label_select"><label class="input_label">'.__('Parent').': </label>';
 $params = [];
 $params['return'] = true;
 $params['show_helptip'] = true;
@@ -648,13 +648,15 @@ $table_adv_module_mode .= html_print_radio_button_extended(
 $table_adv_module_mode .= '</div></div>';
 
 // Status (Disabled / Enabled).
-$table_adv_status = '<div class="label_select_simple label_simple_one_item"><p class="input_label input_label_simple">'.__('Disabled').': '.ui_print_help_tip(__('If the remote configuration is enabled, it will also go into standby mode when disabling it.'), true).'</p>';
+$table_adv_status = '<div class="label_select_simple label_simple_one_item">';
 $table_adv_status .= html_print_checkbox_switch(
     'disabled',
     1,
     $disabled,
     true
-).'</div>';
+);
+$table_adv_status .= '<p class="input_label input_label_simple">'.__('Disabled').': '.ui_print_help_tip(__('If the remote configuration is enabled, it will also go into standby mode when disabling it.'), true).'</p>';
+$table_adv_status .= '</div>';
 
 // Url address.
 if (enterprise_installed()) {
@@ -665,7 +667,14 @@ if (enterprise_installed()) {
         '',
         45,
         255,
-        true
+        true,
+        false,
+        false,
+        '',
+        '',
+        '',
+        // Autocomplete.
+        'off'
     ).'</div>';
 } else {
     $table_adv_url = '<div class="label_select"><p class="input_label">'.__('Url address').': </p></div>';
@@ -679,9 +688,11 @@ if (enterprise_installed()) {
     ).'</div>';
 }
 
-$table_adv_quiet = '<div class="label_select_simple label_simple_one_item"><p class="input_label input_label_simple">'.__('Quiet').': ';
+$table_adv_quiet = '<div class="label_select_simple label_simple_one_item">';
+$table_adv_quiet .= html_print_checkbox_switch('quiet', 1, $quiet, true);
+$table_adv_quiet .= '<p class="input_label input_label_simple">'.__('Quiet').': ';
 $table_adv_quiet .= ui_print_help_tip(__('The agent still runs but the alerts and events will be stop'), true).'</p>';
-$table_adv_quiet .= html_print_checkbox_switch('quiet', 1, $quiet, true).'</div>';
+$table_adv_quiet .= '</div>';
 
 $listIcons = gis_get_array_list_icons();
 
@@ -753,28 +764,34 @@ if ($config['activate_gis']) {
 
 
 // General display distribution.
-$table_adv_options = $table_adv_secondary_groups.'<div class="secondary_groups_select" style="margin-bottom:30px;">
-        <div class="secondary_groups_list_left">
-            '.$table_adv_secondary_groups_left.'
+$table_adv_options = '
+        <div class="secondary_groups_list">
+           '.$adv_secondary_groups_label.'
+            <div class="sg_source">
+                '.$adv_secondary_groups_left.'
+            </div>
+            <div class="secondary_group_arrows">
+                '.$adv_secondary_groups_arrows.'
+            </div>
+            <div class="sg_target">      
+                '.$adv_secondary_groups_right.'
+            </div>
         </div>
-        <div class="secondary_groups_select_arrows">
-            '.$table_adv_secondary_groups_arrows.'
-        </div>    
-        <div class="secondary_groups_list_right">      
-            '.$table_adv_secondary_groups_right.'
-        </div>
-    </div>
-    <div class="agent_options agent_options_adv">
-        <div class="agent_options_column_left" >'.$table_adv_parent.$table_adv_module_mode.$table_adv_cascade;
+<div class="adv_right" >
+        '.$table_adv_parent.$table_adv_module_mode.$table_adv_cascade;
 
 if ($new_agent) {
     // If agent is new, show custom id as old style format.
     $table_adv_options .= $custom_id_div;
 }
 
-$table_adv_options .= $table_adv_gis.'</div>
-        <div class="agent_options_column_right" >'.$table_adv_agent_icon.$table_adv_url.$table_adv_quiet.$table_adv_status.$table_adv_remote.$table_adv_safe.'</div>
-    </div>';
+$table_adv_options .= '</div>';
+
+$table_adv_options .= '
+        <div class="adv_left" >
+        '.$table_adv_gis.$table_adv_agent_icon.$table_adv_url.$table_adv_quiet.$table_adv_status.$table_adv_remote.$table_adv_safe.'
+        </div>';
+
 
 echo '<div class="ui_toggle">';
 ui_toggle(
@@ -782,9 +799,10 @@ ui_toggle(
     __('Advanced options'),
     '',
     '',
+    true,
     false,
-    '',
-    'padding-4'
+    'white_box white_box_opened',
+    'no-border flex'
 );
 echo '</div>';
 
@@ -908,6 +926,7 @@ if (!empty($fields)) {
         __('Custom fields'),
         '',
         '',
+        true,
         false,
         'white_box white_box_opened',
         'no-border'

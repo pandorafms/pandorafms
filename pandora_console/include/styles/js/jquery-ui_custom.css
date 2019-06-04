@@ -13,15 +13,16 @@
   background-color: #82b92e;
   border-radius: 0;
   margin: 0;
-  padding: 0;
+  display: inherit;
+  text-align: center;
+  padding: 0.4em 0em;
+  height: 30px;
+  position: relative;
 }
 
 /*center ui dialog center*/
-.ui-dialog-titlebar .ui-icon-closethick {
-  margin-top: -5px;
-}
 .ui-button-text-only .ui-button-text {
-  font-family: nunito;
+  font-family: "lato", "Open Sans", sans-serif;
   font-size: 9pt;
   color: #82b92e;
 }
@@ -33,23 +34,14 @@
 .ui-datepicker .ui-datepicker-title option {
   color: #111;
 }
-.ui-dialog .ui-dialog-titlebar {
-  display: inherit;
-  text-align: center;
-  padding: 0.4em 1em;
-  height: 30px;
-  position: relative;
-}
 .ui-dialog .ui-dialog-title {
-  font-family: Nunito, sans-serif;
-  margin: 0.1em 0;
+  font-family: "lato-bolder", "Open Sans", sans-serif;
   white-space: nowrap;
   width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
-  font-size: 11pt;
   position: relative;
-  float: none;
+  font-size: 12pt;
 }
 .ui-dialog .ui-dialog-titlebar-close {
   position: absolute;
@@ -147,6 +139,7 @@
 }
 .ui-dialog .ui-widget-header {
   background-color: #82b92e;
+  margin: -1px;
 }
 .ui_tpicker_hour,
 .ui_tpicker_minute,
@@ -185,6 +178,12 @@
   border: 0px;
 }
 .ui-dialog-titlebar .ui-icon-closethick {
+  margin-top: -5px;
+  background-image: url("../../../images/icono_cerrar.png");
+  top: 20%;
+  left: 70%;
+}
+.ui-dialog-titlebar.ui-icon-closethick:hover {
   background-image: url("../../../images/icono_cerrar.png");
 }
 .ui-dialog-title {
@@ -195,7 +194,7 @@
 .ui-widget select,
 .ui-widget textarea,
 .ui-widget button {
-  font-family: Verdana, Arial, sans-serif;
+  font-family: "lato", "Open Sans", sans-serif;
 }
 
 a.ui-button:active,

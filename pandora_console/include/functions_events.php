@@ -1034,7 +1034,7 @@ function events_print_event_table(
         }
 
         $table->head[$i] = __('Timestamp');
-        $table->headstyle[$i] = 'width: 120px;';
+        $table->headstyle[$i] = 'width: 150px;';
         $table->style[$i++] = 'word-break: break-word;';
 
         $table->head[$i] = __('Status');

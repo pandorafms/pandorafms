@@ -168,7 +168,8 @@ if ($is_admin) {
 ui_toggle(
     html_print_table($table, true),
     __('Report of State'),
-    true,
+    '',
+    '',
     false
 );
 
@@ -194,7 +195,8 @@ if (check_acl($config['id_user'], 0, 'ER')) {
     ui_toggle(
         $events,
         __('Latest events'),
-        false,
+        '',
+        '',
         false
     );
 }
@@ -219,7 +221,8 @@ $out = '<table cellpadding=0 cellspacing=0 class="databox pies"  style="margin-t
 ui_toggle(
     $out,
     __('Event graphs'),
-    true,
+    '',
+    '',
     false
 );
 

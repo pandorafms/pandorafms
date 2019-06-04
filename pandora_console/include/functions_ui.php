@@ -2921,12 +2921,15 @@ function ui_print_event_priority(
 /**
  * Print a code into a DIV and enable a toggle to show and hide it.
  *
- * @param string  $code           Html code.
- * @param string  $name           Name of the link.
- * @param string  $title          Title of the link.
- * @param boolean $hidden_default If the div will be hidden by default (default: true).
- * @param boolean $return         Whether to return an output string or echo now (default: true).
- * @param string  $toggle_class   Toggle class.
+ * @param string  $code            Html code.
+ * @param string  $name            Name of the link.
+ * @param string  $title           Title of the link.
+ * @param string  $id              Block id.
+ * @param boolean $hidden_default  If the div will be hidden by default (default: true).
+ * @param boolean $return          Whether to return an output string or echo now (default: true).
+ * @param string  $toggle_class    Toggle class.
+ * @param string  $container_class Container class.
+ * @param string  $main_class      Main object class.
  *
  * @return string HTML.
  */
@@ -2934,10 +2937,12 @@ function ui_toggle(
     $code,
     $name,
     $title='',
+    $id='',
     $hidden_default=true,
     $return=false,
     $toggle_class='',
-    $container_class='white-box-content'
+    $container_class='white-box-content',
+    $main_class='box-shadow white_table_graph'
 ) {
     // Generate unique Id.
     $uniqid = uniqid('');
@@ -2954,7 +2959,7 @@ function ui_toggle(
     }
 
     // Link to toggle.
-    $output = '<div class="box-shadow white_table_graph">';
+    $output = '<div class="'.$main_class.'" id="'.$id.'">';
     $output .= '<div class="white_table_graph_header" style="cursor: pointer;" id="tgl_ctrl_'.$uniqid.'">'.html_print_image(
         $original,
         true,

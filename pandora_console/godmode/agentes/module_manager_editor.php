@@ -586,7 +586,8 @@ echo '<form method="post" id="module_form">';
 ui_toggle(
     html_print_table($table_simple, true),
     __('Base options'),
-    true,
+    '',
+    '',
     false
 );
 

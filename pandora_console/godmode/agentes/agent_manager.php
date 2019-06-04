@@ -781,7 +781,7 @@ ui_toggle(
     $table_adv_options,
     __('Advanced options'),
     '',
-    true,
+    '',
     false,
     '',
     'padding-4'
@@ -907,7 +907,7 @@ if (!empty($fields)) {
         html_print_table($table, true),
         __('Custom fields'),
         '',
-        true,
+        '',
         false,
         'white_box white_box_opened',
         'no-border'

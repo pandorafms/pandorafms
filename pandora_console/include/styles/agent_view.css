@@ -19,6 +19,10 @@ div.agent_details_agent_alias * {
   font-family: "lato-bolder", "Open Sans", sans-serif;
 }
 
+#module_list {
+  width: 100%;
+}
+
 #module_filter_agent_view tr td {
   padding-bottom: 3em;
 }

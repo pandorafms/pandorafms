@@ -421,7 +421,7 @@ if (!is_metaconsole()) {
 
 $table->data[0][5] = html_print_select($rows_select, 'modulegroup', $modulegroup, '', __('All'), -1, true, false, true, '', false, 'width: 120px;');
 
-$table->rowspan[0][6] = 2;
+$table->rowspan[0][6] = 3;
 $table->data[0][6] = html_print_submit_button(
     __('Show'),
     'uptbutton',
@@ -705,13 +705,14 @@ if (is_metaconsole()) {
         html_print_table($table_custom_fields, true),
         __('Advanced Options'),
         '',
+        '',
         true,
         true
     );
 
     $filters .= html_print_table($table, true);
     $filters .= '</form>';
-    ui_toggle($filters, __('Show Options'), '', false);
+    ui_toggle($filters, __('Show Options'), '', '', false);
 } else {
     $table->colspan[3][0] = 7;
     $table->cellstyle[3][0] = 'padding-left: 10px;';
@@ -722,8 +723,12 @@ if (is_metaconsole()) {
         ),
         __('Agent custom fields'),
         '',
+        '',
         true,
-        true
+        true,
+        '',
+        'white-box-content',
+        'white_table_graph'
     );
 
     $filters .= html_print_table($table, true);

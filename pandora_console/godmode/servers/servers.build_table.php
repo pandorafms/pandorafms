@@ -234,7 +234,8 @@ if ($tiny) {
     ui_toggle(
         html_print_table($table, true),
         __('Tactical server information'),
-        false,
+        '',
+        '',
         $hidden_toggle
     );
 } else {

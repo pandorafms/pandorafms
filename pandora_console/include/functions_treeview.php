@@ -670,7 +670,7 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
     $agent_table .= '<br>';
 
     // print agent data toggle
-    ui_toggle($agent_table, __('Agent data'), '', false);
+    ui_toggle($agent_table, __('Agent data'), '', '', false);
 
     // Advanced data
     $table = new StdClass();

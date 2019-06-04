@@ -2145,7 +2145,8 @@ td.cellBig {
 }
 
 .info_box {
-  background: #f9faf9;
+  background: #fff;
+  box-shadow: 0px 0px 15px -10px #888;
   margin-top: 10px;
   margin-bottom: 10px;
   padding: 0px 5px 5px 10px;
@@ -3151,6 +3152,10 @@ div.div_groups_status {
   border-radius: 100px;
 }
 
+.databox.pies {
+  border: none;
+}
+
 .databox.pies fieldset.tactical_set {
   width: 100%;
   min-height: 285px;
@@ -3225,61 +3230,6 @@ div.div_groups_status {
 }
 .agents_modules_table td {
   border: 1px solid #e2e2e2;
-}
-
-.databox.filters,
-.databox.data {
-  margin-bottom: 20px;
-}
-
-.databox.filters > tbody > tr > td {
-  padding: 10px;
-  padding-left: 20px;
-}
-
-.databox.filters > tbody > tr > td > img,
-.databox.filters > tbody > tr > td > div > a > img,
-.databox.filters > tbody > tr > td > span > img,
-.databox.filters > tbody > tr > td > span > a > img,
-.databox.filters > tbody > tr > td > a > img {
-  vertical-align: middle;
-  margin-left: 5px;
-}
-.databox.data > tbody > tr > td > img,
-.databox.data > thead > tr > th > img,
-.databox.data > tbody > tr > td > div > a > img,
-.databox.data > tbody > tr > td > span > img,
-.databox.data > tbody > tr > td > span > a > img,
-.databox.data > tbody > tr > td > a > img,
-.databox.data > tbody > tr > td > form > a > img {
-  vertical-align: middle;
-}
-
-.databox.filters > tbody > tr > td > a > img {
-  vertical-align: middle;
-}
-
-.databox.data > tbody > tr > td > input[type="checkbox"] {
-  margin: 0px;
-}
-
-.databox_color > tbody > tr > td {
-  padding-left: 10px;
-}
-
-.databox.agente > tbody > tr > td > div > canvas {
-  width: 100%;
-  text-align: left;
-}
-.databox.agente > tbody > tr > td > div.graph {
-  width: 100%;
-  text-align: left;
-}
-
-.green_title {
-  background-color: #82b92e;
-  font-weight: normal;
-  text-align: center;
 }
 
 .dashboard {
@@ -3933,9 +3883,6 @@ span.log_zone_line_error {
 
 .rowPair:hover,
 .rowOdd:hover {
-  background-color: #eee;
-}
-.databox.data > tbody > tr:hover {
   background-color: #eee;
 }
 .checkselected {
@@ -5686,6 +5633,11 @@ div#status_pie {
 
 .white_table_graph_header span {
   padding-left: 10px;
+}
+
+.white-box-content.padded {
+  padding-top: 2em;
+  padding-bottom: 2em;
 }
 
 .white-box-content {

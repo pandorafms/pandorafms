@@ -2845,8 +2845,9 @@ class NetworkMap
             html_print_table($table, true),
             __('Node Details'),
             __('Node Details'),
+            '',
             false,
-            true
+            false
         );
 
         $output .= '</div>';
@@ -2897,6 +2898,7 @@ class NetworkMap
             html_print_table($table, true),
             __('Node Details'),
             __('Node Details'),
+            '',
             false,
             true
         );
@@ -2922,6 +2924,7 @@ class NetworkMap
             html_print_table($table, true),
             __('Interface Information (SNMP)'),
             __('Interface Information (SNMP)'),
+            '',
             true,
             true
         );
@@ -2996,6 +2999,7 @@ class NetworkMap
             html_print_table($table, true),
             __('Node options'),
             __('Node options'),
+            '',
             true,
             true
         );
@@ -3056,6 +3060,7 @@ class NetworkMap
             html_print_table($table, true),
             __('Relations'),
             __('Relations'),
+            '',
             true,
             true
         );
@@ -3165,6 +3170,7 @@ class NetworkMap
             $add_agent_node_html,
             __('Add agent node'),
             __('Add agent node'),
+            '',
             false,
             true
         );
@@ -3216,6 +3222,7 @@ class NetworkMap
             $add_agent_node_html,
             __('Add agent node (filter by group)'),
             __('Add agent node'),
+            '',
             true,
             true
         );
@@ -3256,6 +3263,7 @@ class NetworkMap
             $add_agent_node_html,
             __('Add fictional point'),
             __('Add agent node'),
+            '',
             true,
             true
         );

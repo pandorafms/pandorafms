@@ -447,9 +447,9 @@ function snmp_browser_get_oid(
             $oid_data['description'] = $custom_data['description'];
         }
 
-        $full_value = explode(':', trim($full_oid[1]));
+        $full_value = explode(':', trim($value));
         if (! isset($full_value[1])) {
-            $oid_data['value'] = trim($full_oid[1]);
+            $oid_data['value'] = trim($value);
         } else {
             $oid_data['type'] = trim($full_value[0]);
             $oid_data['value'] = trim($full_value[1]);

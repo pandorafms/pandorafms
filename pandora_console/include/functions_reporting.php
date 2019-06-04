@@ -2844,6 +2844,7 @@ function reporting_event_report_agent(
     if ($label != '') {
         $label = reporting_label_macro($content, $label);
     }
+
     $return['label'] = $label;
 
     if ($event_graph_by_user_validator) {
@@ -9498,13 +9499,23 @@ function reporting_get_agent_module_info($id_agent)
 /**
  * Print tiny statistics of the status of one agent, group, etc.
  *
- * @param mixed Array with the counts of the total modules, normal modules, critical modules, warning modules, unknown modules and fired alerts
- * @param bool return or echo flag
+ * @param mixed   $counts_info Array with the counts of the total modules,
+ * normal modules, critical modules, warning modules, unknown modules and
+ * fired alerts.
+ * @param boolean $return      Return or echo flag.
+ * @param string  $type        agent or modules or ??.
+ * @param string  $separator   Sepearator (classic view).
+ * @param boolean $modern      Use modern interfaces or old one.
  *
- * @return string html formatted tiny stats of modules/alerts of an agent
+ * @return string HTML formatted tiny stats of modules/alerts of an agent.
  */
-function reporting_tiny_stats($counts_info, $return=false, $type='agent', $separator=':', $strict_user=false)
-{
+function reporting_tiny_stats(
+    $counts_info,
+    $return=false,
+    $type='agent',
+    $separator=':',
+    $modern=false
+) {
     global $config;
 
     $out = '';
@@ -9621,37 +9632,74 @@ function reporting_tiny_stats($counts_info, $return=false, $type='agent', $separ
         $out .= html_print_div($params, true);
     }
 
-    // If total count is less than 0, is an error. Never show negative numbers
+    // If total count is less than 0, is an error. Never show negative numbers.
     if ($total_count < 0) {
         $total_count = 0;
     }
 
-    $out .= '<b>'.'<span id="total_count_'.$uniq_id.'" class="forced_title" style="font-size: 7pt">'.$total_count.'</span>';
-    if (isset($fired_count) && $fired_count > 0) {
-        $out .= ' '.$separator.' <span class="orange forced_title" id="fired_count_'.$uniq_id.'" style="font-size: 7pt">'.$fired_count.'</span>';
-    }
+    if ($modern === true) {
+        $out .= '<div id="bullets_modules">';
+        // $out .='<span id="total_count_'.$uniq_id.'" class="forced_title" style="font-size: 13pt">'.$total_count.$separator.'</span>';
+        if (isset($fired_count) && $fired_count > 0) {
+            $out .= '<div><div id="fired_count_'.$uniq_id.'" class="forced_title bullet_modules orange_background"></div>';
+            $out .= '<span style="font-size: 12pt">'.$fired_count.'</span></div>';
+        }
 
-    if (isset($critical_count) && $critical_count > 0) {
-        $out .= ' '.$separator.' <span class="red forced_title" id="critical_count_'.$uniq_id.'" style="font-size: 7pt">'.$critical_count.'</span>';
-    }
+        if (isset($critical_count) && $critical_count > 0) {
+            $out .= '<div><div id="critical_count_'.$uniq_id.'" class="forced_title bullet_modules red_background"></div>';
+            $out .= '<span style="font-size: 12pt">'.$critical_count.'</span></div>';
+        }
 
-    if (isset($warning_count) && $warning_count > 0) {
-        $out .= ' '.$separator.' <span class="yellow forced_title" id="warning_count_'.$uniq_id.'" style="font-size: 7pt">'.$warning_count.'</span>';
-    }
+        if (isset($warning_count) && $warning_count > 0) {
+            $out .= '<div><div id="warning_count_'.$uniq_id.'" class="forced_title bullet_modules yellow_background"></div>';
+            $out .= '<span style="font-size: 12pt">'.$warning_count.'</span></div>';
+        }
 
-    if (isset($unknown_count) && $unknown_count > 0) {
-        $out .= ' '.$separator.' <span class="grey forced_title" id="unknown_count_'.$uniq_id.'" style="font-size: 7pt">'.$unknown_count.'</span>';
-    }
+        if (isset($unknown_count) && $unknown_count > 0) {
+            $out .= '<div><div id="unknown_count_'.$uniq_id.'" class="forced_title bullet_modules grey_background"></div>';
+            $out .= '<span style="font-size: 12pt">'.$unknown_count.'</span></div>';
+        }
 
-    if (isset($not_init_count) && $not_init_count > 0) {
-        $out .= ' '.$separator.' <span class="blue forced_title" id="not_init_count_'.$uniq_id.'" style="font-size: 7pt">'.$not_init_count.'</span>';
-    }
+        if (isset($not_init_count) && $not_init_count > 0) {
+            $out .= '<div><div id="not_init_count_'.$uniq_id.'" class="forced_title bullet_modules blue_background"></div>';
+            $out .= '<span style="font-size: 12pt">'.$not_init_count.'</span></div>';
+        }
 
-    if (isset($normal_count) && $normal_count > 0) {
-        $out .= ' '.$separator.' <span class="green forced_title" id="normal_count_'.$uniq_id.'" style="font-size: 7pt">'.$normal_count.'</span>';
-    }
+        if (isset($normal_count) && $normal_count > 0) {
+            $out .= '<div><div id="normal_count_'.$uniq_id.'" class="forced_title bullet_modules green_background"></div>';
+            $out .= '<span style="font-size: 12pt">'.$normal_count.'</span></div>';
+        }
 
-    $out .= '</b>';
+        $out .= '</div>';
+    } else {
+        // Classic ones.
+        $out .= '<b><span id="total_count_'.$uniq_id.'" class="forced_title" style="font-size: 7pt">'.$total_count.'</span>';
+        if (isset($fired_count) && $fired_count > 0) {
+            $out .= ' '.$separator.' <span class="orange forced_title" id="fired_count_'.$uniq_id.'" style="font-size: 7pt">'.$fired_count.'</span>';
+        }
+
+        if (isset($critical_count) && $critical_count > 0) {
+            $out .= ' '.$separator.' <span class="red forced_title" id="critical_count_'.$uniq_id.'" style="font-size: 7pt">'.$critical_count.'</span>';
+        }
+
+        if (isset($warning_count) && $warning_count > 0) {
+            $out .= ' '.$separator.' <span class="yellow forced_title" id="warning_count_'.$uniq_id.'" style="font-size: 7pt">'.$warning_count.'</span>';
+        }
+
+        if (isset($unknown_count) && $unknown_count > 0) {
+            $out .= ' '.$separator.' <span class="grey forced_title" id="unknown_count_'.$uniq_id.'" style="font-size: 7pt">'.$unknown_count.'</span>';
+        }
+
+        if (isset($not_init_count) && $not_init_count > 0) {
+            $out .= ' '.$separator.' <span class="blue forced_title" id="not_init_count_'.$uniq_id.'" style="font-size: 7pt">'.$not_init_count.'</span>';
+        }
+
+        if (isset($normal_count) && $normal_count > 0) {
+            $out .= ' '.$separator.' <span class="green forced_title" id="normal_count_'.$uniq_id.'" style="font-size: 7pt">'.$normal_count.'</span>';
+        }
+
+        $out .= '</b>';
+    }
 
     if ($return) {
         return $out;

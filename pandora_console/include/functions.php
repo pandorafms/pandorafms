@@ -871,12 +871,13 @@ function get_parameter_switch($name, $default='')
     $data = get_parameter($name, null);
 
     if ($data === null) {
-        return 0;
+        return (isset($default) ? $default : 0);
     } else if ($data == 'on') {
         return 1;
     }
 
-    return 0;
+    // Return value assigned to switch.
+    return $data;
 }
 
 
@@ -4942,6 +4943,14 @@ function get_help_info($section_name)
                 $result .= 'Anexo_Agent_Plugins&printable=yes#Caracter.C3.ADsticas_b.C3.A1sicas_de_plugin_de_agente';
             } else {
                 $result .= 'Anexo_Agent_Plugins&printable=yes#Basic_Features_of_the_Agent_Plugin';
+            }
+        break;
+
+        case 'create_agent':
+            if ($es) {
+                $result .= 'Intro_Monitorizacion&printable=yes#Configuraci.C3.B3n_del_agente_en_consola';
+            } else {
+                $result .= 'Intro_Monitoring&printable=yes#Agent_configuration_in_the_console';
             }
         break;
 

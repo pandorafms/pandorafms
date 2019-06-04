@@ -959,6 +959,8 @@ function events_print_event_table(
 ) {
     global $config;
 
+    ui_require_css_file('events');
+
     if ($agent_id == 0) {
         $agent_condition = '';
     } else {
@@ -997,7 +999,7 @@ function events_print_event_table(
         $table->cellpadding = 0;
         $table->cellspacing = 0;
         $table->width = $width;
-        $table->class = 'databox data';
+        $table->class = 'info_table no-td-padding';
         if (!$tactical_view) {
             $table->title = __('Latest events');
         }
@@ -1010,36 +1012,38 @@ function events_print_event_table(
         $table->cellclass = [];
         $table->data = [];
         $table->align = [];
-        $table->style[0] = 'width:25px;';
-        $table->style[1] = 'width:25px;';
-        $table->style[2] = 'width:25px;';
-        if ($agent_id == 0) {
-            $table->style[3] = 'word-break: break-all;';
-        }
+        $table->style = [];
 
-        $table->style[4] = 'width:120px; word-break: break-all;';
+        $i = 0;
+        $table->head[$i] = "<span title='".__('Severity')."'>".__('S.').'</span>';
+        $table->headstyle[$i] = 'width: 1%;text-align: center;';
+        $table->style[$i++] = 'text-align: center;';
 
-        $table->head[0] = "<span title='".__('Validated')."'>".__('V.').'</span>';
-        $table->align[0] = 'center';
+        $table->head[$i] = __('Type');
+        $table->headstyle[$i] = 'width: 3%;text-align: center;';
+        $table->style[$i++] = 'text-align: center;';
 
-        $table->head[1] = "<span title='".__('Severity')."'>".__('S.').'</span>';
-        $table->align[1] = 'center';
-
-        $table->head[2] = __('Type');
-        $table->headclass[2] = 'datos3 f9';
-        $table->align[2] = 'center';
-
-        $table->head[3] = __('Event name');
+        $table->head[$i] = __('Event name');
+        $table->headstyle[$i] = '';
+        $table->style[$i++] = 'word-break: break-word;';
 
         if ($agent_id == 0) {
-            $table->head[4] = __('Agent name');
-            $table->size[4] = '15%';
+            $table->head[$i] = __('Agent name');
+            $table->headstyle[$i] = '';
+            $table->style[$i++] = 'word-break: break-all;';
         }
 
-        $table->head[5] = __('Timestamp');
-        $table->headclass[5] = 'datos3 f9';
-        $table->align[5] = 'left';
-        $table->size[5] = '15%';
+        $table->head[$i] = __('Timestamp');
+        $table->headstyle[$i] = 'width: 120px;';
+        $table->style[$i++] = 'word-break: break-word;';
+
+        $table->head[$i] = __('Status');
+        $table->headstyle[$i] = 'width: 150px;text-align: center;';
+        $table->style[$i++] = 'text-align: center;';
+
+        $table->head[$i] = "<span title='".__('Validated')."'>".__('V.').'</span>';
+        $table->headstyle[$i] = 'width: 1%;text-align: center;';
+        $table->style[$i++] = 'text-align: center;';
 
         $all_groups = [];
         if ($agent_id != 0) {
@@ -1078,53 +1082,15 @@ function events_print_event_table(
                 break;
             }
 
-            $data[0] = html_print_image(
-                $img,
-                true,
-                [
-                    'class' => 'image_status',
-                    'title' => $title,
-                ]
-            );
-
-            switch ($event['criticity']) {
-                default:
-                case EVENT_CRIT_MAINTENANCE:
-                    $img = 'images/status_sets/default/severity_maintenance.png';
-                break;
-                case EVENT_CRIT_INFORMATIONAL:
-                    $img = 'images/status_sets/default/severity_informational.png';
-                break;
-
-                case EVENT_CRIT_NORMAL:
-                    $img = 'images/status_sets/default/severity_normal.png';
-                break;
-
-                case EVENT_CRIT_WARNING:
-                    $img = 'images/status_sets/default/severity_warning.png';
-                break;
-
-                case EVENT_CRIT_CRITICAL:
-                    $img = 'images/status_sets/default/severity_critical.png';
-                break;
-            }
-
-            $data[1] = html_print_image(
-                $img,
-                true,
-                [
-                    'class'  => 'image_status',
-                    'width'  => 12,
-                    'height' => 12,
-                    'title'  => get_priority_name($event['criticity']),
-                ]
-            );
+            $i = 0;
+            // Criticity.
+            $data[$i++] = ui_print_event_priority($event['criticity'], true, true);
 
             // Event type.
-            $data[2] = events_print_type_img($event['event_type'], true);
+            $data[$i++] = events_print_type_img($event['event_type'], true);
 
             // Event text.
-            $data[3] = ui_print_string_substr(
+            $data[$i++] = ui_print_string_substr(
                 strip_tags(io_safe_output($event['evento'])),
                 75,
                 true,
@@ -1135,33 +1101,32 @@ function events_print_event_table(
                 if ($event['id_agente'] > 0) {
                     // Agent name.
                     // Get class name, for the link color, etc.
-                    $myclass = get_priority_class($event['criticity']);
-
-                    $data[4] = "<a class='".$myclass."' href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=".$event['id_agente']."'>".agents_get_alias($event['id_agente']).'</A>';
+                    $data[$i] = "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=".$event['id_agente']."'>".agents_get_alias($event['id_agente']).'</A>';
                     // For System or SNMP generated alerts.
                 } else if ($event['event_type'] == 'system') {
-                    $data[4] = __('System');
+                    $data[$i] = __('System');
                 } else {
-                    $data[4] = __('Alert').'SNMP';
+                    $data[$i] = __('Alert').'SNMP';
                 }
+
+                $i++;
             }
 
             // Timestamp.
-            $data[5] = ui_print_timestamp($event['timestamp'], true, ['style' => 'font-size: 7.5pt; letter-spacing: 0.3pt;']);
+            $data[$i++] = ui_print_timestamp($event['timestamp'], true, ['style' => 'font-size: 7.5pt; letter-spacing: 0.3pt;']);
 
-            $class = get_priority_class($event['criticity']);
-            $cell_classes[3] = $class;
-            $cell_classes[4] = $class;
-            $cell_classes[5] = $class;
+            // Status.
+            $data[$i++] = ui_print_event_type($event['event_type'], true);
 
-            array_push($table->cellclass, $cell_classes);
-
-            /*
-                Commented out (old).
-                // array_push ($table->rowclass, get_priority_class ($event["criticity"]));
-            */
-
-            array_push($table->data, $data);
+            $data[$i++] = html_print_image(
+                $img,
+                true,
+                [
+                    'class' => 'image_status',
+                    'title' => $title,
+                ]
+            );
+            $table->data[] = $data;
         }
 
         $events_table = html_print_table($table, true);
@@ -2293,7 +2258,7 @@ function events_get_response_target(
     global $config;
 
     // If server_id > 0, it's a metaconsole query.
-    $meta = $server_id > 0;
+    $meta = $server_id > 0 || is_metaconsole();
     $event_table = events_get_events_table($meta, $history);
     $event = db_get_row($event_table, 'id_evento', $event_id);
 

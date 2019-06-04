@@ -1,0 +1,20 @@
+span.progress_text {
+  position: absolute;
+  font-family: "lato-bolder", "Open Sans", sans-serif;
+  font-size: 2em;
+  margin-left: -0.5em;
+}
+
+div.progress_main {
+  display: inline-block;
+  text-align: center;
+  height: 2.5em;
+  border: 1px solid #80ba27;
+}
+
+div.progress {
+  width: 0%;
+  background: #80ba27;
+  height: 100%;
+  float: left;
+}

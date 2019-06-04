@@ -1,17 +1,32 @@
 <?php
+/**
+ * Monitors status - general overview.
+ *
+ * @category   Agent view monitor statuses.
+ * @package    Pandora FMS
+ * @subpackage Classic agent management view.
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
 
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation for version 2.
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-// Load globar vars
+// Begin.
 global $config;
 
 // Ajax tooltip to deploy modules's tag info.
@@ -102,7 +117,7 @@ if (is_ajax()) {
             $data[1] = ui_print_agent_name($id_agent, true);
             $data[2] = __('Module');
             $data[3] = "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente
-				&id_agente=$id_agent&tab=module&edit_module=1&id_agent_module=$id_module'>".ui_print_truncate_text(modules_get_agentmodule_name($id_module), 'module_medium', true, true, true, '[&hellip;]').'</a>';
+				&id_agente=".$id_agent.'&tab=module&edit_module=1&id_agent_module='.$id_module."'>".ui_print_truncate_text(modules_get_agentmodule_name($id_module), 'module_medium', true, true, true, '[&hellip;]').'</a>';
             $table_relations->data[] = $data;
         }
 
@@ -132,32 +147,45 @@ $sort_field = get_parameter('sort_field', 'name');
 $sort = get_parameter('sort', 'up');
 
 
-echo "<h4 style='padding-top:0px !important;'>";
-
-echo ui_print_help_tip(__('To see the list of modules paginated, enable this option in the Styles Configuration.'), true).__('Full list of monitors').'&nbsp;'.reporting_tiny_stats($agent, true, 'modules');
-
 $modules_not_init = agents_monitor_notinit($id_agente);
 if (!empty($modules_not_init)) {
-    echo clippy_context_help('modules_not_init');
+    $help_not_init = clippy_context_help('modules_not_init');
+} else {
+    $help_not_init = '';
 }
-
-echo '</h4>';
-
 
 ob_start();
 
-print_form_filter_monitors($id_agente, $status_filter_monitor, $status_text_monitor, $status_hierachy_mode);
+print_form_filter_monitors(
+    $id_agente,
+    $status_filter_monitor,
+    $status_text_monitor,
+    $status_hierachy_mode
+);
 
-echo "<div id='module_list_loading'>".html_print_image('images/spinner.gif', true).'</div>';
-echo "<div id='module_list'>".'</div>';
+echo '<div id="module_list"></div>';
 
 $html_toggle = ob_get_clean();
+
 ui_toggle(
     $html_toggle,
-    __('List of modules'),
+    __('List of modules').$help_not_init.ui_print_help_tip(
+        __('To see the list of modules paginated, enable this option in the Styles Configuration.'),
+        true
+    ).reporting_tiny_stats(
+        $agent,
+        true,
+        'modules',
+        ':',
+        true
+    ),
     'status_monitor_agent',
-    false
+    false,
+    false,
+    '',
+    'white_table_graph_content no-padding-imp'
 );
+
 
 ?>
 <script type="text/javascript">
@@ -202,6 +230,7 @@ ui_toggle(
             $("#status_module_group").enable();
             $("#status_filter_monitor").enable();
         }
+        filter_modules();
     }
 
     function order_module_list(sort_field_param, sort_rows_param) {
@@ -446,6 +475,17 @@ ui_require_jquery_file('ui.datepicker-'.get_user_language(), 'include/javascript
 /* ]]> */
 </script>
 <?php
+/**
+ * Print form filter monitors.
+ *
+ * @param integer $id_agent              Id_agent.
+ * @param integer $status_filter_monitor Status_filter_monitor.
+ * @param string  $status_text_monitor   Status_text_monitor.
+ * @param integer $status_module_group   Status_module_group.
+ * @param integer $status_hierachy_mode  Status_hierachy_mode.
+ *
+ * @return void
+ */
 function print_form_filter_monitors(
     $id_agent,
     $status_filter_monitor=-1,
@@ -455,11 +495,14 @@ function print_form_filter_monitors(
 ) {
     $form_text = '';
     $table = new stdClass();
-    $table->class = 'databox filters';
+    $table->class = 'info_table';
+    $table->styleTable = 'border: 1px solid #ebebeb;border-radius: 0;padding: 0;margin: 0;margin-top: -1px;';
     $table->width = '100%';
     $table->style[0] = 'font-weight: bold;';
     $table->style[2] = 'font-weight: bold;';
     $table->style[4] = 'font-weight: bold;';
+    $table->style[6] = 'font-weight: bold;';
+    $table->style[6] = 'min-width: 150px;';
     $table->data[0][0] = html_print_input_hidden('filter_monitors', 1, true);
     $table->data[0][0] .= html_print_input_hidden('monitors_change_filter', 1, true);
     $table->data[0][0] .= __('Status:');
@@ -488,9 +531,26 @@ function print_form_filter_monitors(
         true
     );
 
-    $table->data[0][3] = html_print_input_text('status_text_monitor', $status_text_monitor, '', 30, 100, true);
+    $table->data[0][3] = html_print_input_text(
+        'status_text_monitor',
+        $status_text_monitor,
+        '',
+        '',
+        100,
+        true
+    );
     $table->data[0][4] = __('Module group');
-    $rows = db_get_all_rows_sql("SELECT * FROM tmodule_group where id_mg in (SELECT id_module_group from tagente_modulo where id_agente = $id_agent )  ORDER BY name");
+    $rows = db_get_all_rows_sql(
+        sprintf(
+            'SELECT * 
+         FROM tmodule_group 
+         WHERE id_mg IN (SELECT id_module_group
+                         FROM tagente_modulo 
+                        WHERE id_agente = %d )
+         ORDER BY name',
+            $id_agent
+        )
+    );
 
     $rows_select[-1] = __('All');
     if (!empty($rows)) {
@@ -499,11 +559,43 @@ function print_form_filter_monitors(
         }
     }
 
-    $table->data[0][5] = html_print_select($rows_select, 'status_module_group', $status_module_group, '', '', 0, true);
-    $table->data[0][6] = __('Show in hierachy mode');
-    $table->data[0][6] .= html_print_checkbox('status_hierachy_mode', '', false, true, false, 'onChange=change_module_filter();');
-    $table->data[0][7] = html_print_button(__('Filter'), 'filter', false, 'filter_modules();', 'class="sub search"', true);
-    $table->data[0][8] = '&nbsp;'.html_print_button(__('Reset'), 'filter', false, 'reset_filter_modules();', 'class="sub upd" style="margin-top:0px;"', true);
+    $table->data[0][5] = html_print_select(
+        $rows_select,
+        'status_module_group',
+        $status_module_group,
+        '',
+        '',
+        0,
+        true
+    );
+    $table->data[0][6] = '<div style="display: flex;align-content: center;">';
+    $table->data[0][6] .= __('Show in hierachy mode');
+    $table->data[0][6] .= html_print_switch(
+        [
+            'name'     => 'status_hierachy_mode',
+            'value'    => $all_events_24h,
+            'onchange' => 'change_module_filter()',
+            'id'       => 'checkbox-status_hierachy_mode',
+            'style'    => 'margin-left: 1em;',
+        ]
+    );
+    $table->data[0][6] .= '</div>';
+    $table->data[0][7] = html_print_button(
+        __('Filter'),
+        'filter',
+        false,
+        'filter_modules();',
+        'class="sub search"',
+        true
+    );
+    $table->data[0][8] = html_print_button(
+        __('Reset'),
+        'filter',
+        false,
+        'reset_filter_modules();',
+        'class="sub upd" style="margin-top:0px;"',
+        true
+    );
     $form_text .= html_print_table($table, true);
 
     $filter_hidden = false;
@@ -514,4 +606,3 @@ function print_form_filter_monitors(
 
     echo $form_text;
 }
-

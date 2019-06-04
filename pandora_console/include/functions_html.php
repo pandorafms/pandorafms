@@ -660,7 +660,7 @@ function html_print_select(
             }
 
             if ($optlabel === '') {
-                $output .= '>'.$value.'</option>';
+                $output .= '>None</option>';
             } else {
                 $output .= '>'.$optlabel.'</option>';
             }
@@ -1079,7 +1079,7 @@ function html_print_extended_select_for_time(
                 'class' => $uniq_name.'_toggler '.$class,
                 'alt'   => __('Custom'),
                 'title' => __('Custom'),
-                'style' => 'width: 18px;'.$style_icon,
+                'style' => 'width: 18px; margin-bottom: -5px;'.$style_icon,
             ],
             false,
             false,
@@ -1114,7 +1114,7 @@ function html_print_extended_select_for_time(
                 'class' => $uniq_name.'_toggler',
                 'alt'   => __('List'),
                 'title' => __('List'),
-                'style' => 'width: 18px;'.$style_icon,
+                'style' => 'width: 18px;margin-bottom: -5px;'.$style_icon,
             ]
         ).'</a>';
     echo '</div>';
@@ -2989,6 +2989,7 @@ function html_print_switch($attributes=[])
         'class',
         'name',
         'onclick',
+        'onchange',
     ];
     foreach ($valid_attrs as $va) {
         if (!isset($attributes[$va])) {
@@ -2998,7 +2999,11 @@ function html_print_switch($attributes=[])
         $html_expand .= ' '.$va.'="'.$attributes[$va].'"';
     }
 
-    return "<label class='p-switch'>
+    if (!isset($attributes['style'])) {
+        $attributes['style'] = '';
+    }
+
+    return "<label class='p-switch' style='".$attributes['style']."'>
 			<input type='checkbox' $html_expand>
 			<span class='p-slider'></span>
 		</label>";

@@ -37,6 +37,7 @@ require_once $config['homedir'].'/include/functions_users.php';
 enterprise_include_once('include/functions_metaconsole.php');
 
 ui_require_javascript_file('openlayers.pandora');
+ui_require_css_file('agent_view');
 
 enterprise_include_once('operation/agentes/ver_agente.php');
 
@@ -1340,6 +1341,7 @@ if (isset($ehorus_tab) && !empty($ehorus_tab)) {
 }
 
 // Tabs for extensions.
+$tab_name_extensions = '';
 foreach ($config['extensions'] as $extension) {
     if (isset($extension['extension_ope_tab']) && !isset($extension['extension_god_tab'])) {
         if (check_acl_one_of_groups($config['id_user'], $all_groups, $extension['extension_ope_tab']['acl'])) {
@@ -1382,6 +1384,7 @@ foreach ($config['extensions'] as $extension) {
             $image = $extension['extension_ope_tab']['icon'];
             $name = $extension['extension_ope_tab']['name'];
             $id = $extension['extension_ope_tab']['id'];
+            $tab_name_extensions = $name;
 
             $id_extension = get_parameter('id_extension', '');
 
@@ -1404,15 +1407,82 @@ foreach ($config['extensions'] as $extension) {
 }
 
 switch ($tab) {
-    case 'wux_console_tab':
-        $help_header = 'wux_console_tab';
+    case 'custom_fields':
+        $tab_name = 'Custom fields';
+    break;
+
+    case 'gis':
+        $tab_name = 'GIS data';
+    break;
+
+    case 'manage':
+        $tab_name = 'Manage';
     break;
 
     case 'main':
+        $tab_name = 'Main';
         $help_header = 'agent_'.$tab.'_tab';
     break;
 
+    case 'data_view':
+        $tab_name = '';
+    break;
+
+    case 'alert':
+        $tab_name = 'Alerts';
+    break;
+
+    case 'inventory':
+        $tab_name = 'Inventory';
+    break;
+
+    case 'collection':
+        $tab_name = 'Collection';
+    break;
+
+    case 'policy':
+        $tab_name = 'Policies';
+    break;
+
+    case 'ux_console_tab':
+        $tab_name = 'UX Console';
+    break;
+
+    case 'wux_console_tab':
+        $tab_name = 'WUX Console';
+        $help_header = 'wux_console_tab';
+    break;
+
+    case 'url_route_analyzer_tab':
+        $tab_name = 'URL Route Analyzer';
+    break;
+
+    case 'graphs';
+        $tab_name = 'Graphs';
+    break;
+
+    case 'incident':
+        $tab_name = 'Incidents';
+    break;
+
+    case 'url_address':
+        $tab_name = 'Url address';
+    break;
+
+    case 'log_viewer':
+        $tab_name = 'Log viewer';
+    break;
+
+    case 'ehorus':
+        $tab_name = 'eHorus';
+    break;
+
+    case 'extension':
+        $tab_name = $tab_name_extensions;
+    break;
+
     default:
+        $tab_name = '';
         $help_header = '';
     break;
 }
@@ -1426,7 +1496,15 @@ ui_print_page_header(
     $onheader,
     false,
     '',
-    $config['item_title_size_text']
+    $config['item_title_size_text'],
+    '',
+    ui_print_breadcrums(
+        [
+            __('Monitoring'),
+            __('View'),
+            '<span class="breadcrumb_active">'.$tab_name.'</span>',
+        ]
+    )
 );
 
 
@@ -1444,6 +1522,7 @@ switch ($tab) {
     break;
 
     case 'main':
+    default:
         include 'estado_generalagente.php';
         echo "<a name='monitors'></a>";
         include 'estado_monitores.php';

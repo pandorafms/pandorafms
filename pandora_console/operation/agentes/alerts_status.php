@@ -140,8 +140,10 @@ if ($idAgent != 0) {
 
     $tab = get_parameter('tab', 'main');
 
+    ob_start();
+
     if ($tab == 'main') {
-        echo "<h4 style='padding-top:0px !important;'>".__('Full list of alerts').'</h4>';
+        $agent_view_page = true;
     }
 } else {
     $agent_a = check_acl($config['id_user'], 0, 'AR');
@@ -610,7 +612,12 @@ foreach ($alerts['alerts_simple'] as $alert) {
 }
 
 if (!empty($table->data)) {
-    echo '<form method="post" action="'.$url.'">';
+    $class = '';
+    if ($agent_view_page === true) {
+        $class = 'white_table_graph_content w100p no-padding-imp';
+    }
+
+    echo '<form class="'.$class.'" method="post" action="'.$url.'">';
 
     ui_pagination(
         $countAlertsSimple,
@@ -643,9 +650,30 @@ if (!empty($table->data)) {
     }
 
     echo '</form>';
+    $alerts_defined = true;
 } else {
     ui_print_info_message(['no_close' => true, 'message' => __('No alerts found') ]);
+    $alerts_defined = false;
 }
+
+$html_content = ob_get_clean();
+
+if ($agent_view_page === true) {
+    // Create controlled toggle content.
+    ui_toggle(
+        $html_content,
+        __('Full list of alerts'),
+        'status_monitor_agent',
+        !$alerts_defined,
+        false,
+        '',
+        'white_table_graph_content no-padding-imp'
+    );
+} else {
+    // Dump entire content.
+    echo $html_content;
+}
+
 
 // strict user hidden
 echo '<div id="strict_hidden" style="display:none;">';

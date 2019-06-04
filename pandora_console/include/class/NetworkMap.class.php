@@ -1519,43 +1519,8 @@ class NetworkMap
      */
     public static function getColorByStatus($status)
     {
-        if (isset($status) === false) {
-            return COL_UNKNOWN;
-        }
-
-        switch ($status) {
-            case AGENT_MODULE_STATUS_NORMAL:
-            case AGENT_STATUS_NORMAL:
-            return COL_NORMAL;
-
-            case AGENT_MODULE_STATUS_NOT_INIT:
-            case AGENT_STATUS_NOT_INIT:
-            return COL_NOTINIT;
-
-            case AGENT_MODULE_STATUS_CRITICAL_BAD:
-            case AGENT_STATUS_CRITICAL:
-            return COL_CRITICAL;
-
-            case AGENT_MODULE_STATUS_WARNING:
-            case AGENT_STATUS_WARNING:
-            return COL_WARNING;
-
-            case AGENT_MODULE_STATUS_CRITICAL_ALERT:
-            case AGENT_MODULE_STATUS_WARNING_ALERT:
-            case AGENT_STATUS_ALERT_FIRED:
-            return COL_ALERTFIRED;
-
-            case AGENT_MODULE_STATUS_UNKNOWN:
-            case AGENT_STATUS_UNKNOWN:
-            return COL_UNKNOWN;
-
-            default:
-                // Ignored.
-            break;
-        }
-
-        return COL_IGNORED;
-
+        include_once __DIR__.'/../functions_modules.php';
+        return modules_get_color_status($status);
     }
 
 

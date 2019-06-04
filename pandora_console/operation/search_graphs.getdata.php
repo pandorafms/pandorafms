@@ -47,7 +47,7 @@ if ($searchGraphs) {
         $filter['limit'] = $config['block_size'];
         $filter['offset'] = (int) get_parameter('offset');
         $graphs = db_get_all_rows_filter('tgraph', $filter, $columns);
+    } else {
+        $totalGraphs = 0;
     }
-
-    $totalGraphs = 0;
 }

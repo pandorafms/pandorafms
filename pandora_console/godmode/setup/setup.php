@@ -122,6 +122,12 @@ $buttons['ehorus'] = [
     'text'   => '<a href="index.php?sec=gsetup&sec2=godmode/setup/setup&section=ehorus">'.html_print_image('images/ehorus/ehorus.png', true, ['title' => __('eHorus')]).'</a>',
 ];
 
+// FIXME: Not definitive icon
+$buttons['notifications'] = [
+    'active' => false,
+    'text'   => '<a href="index.php?sec=gsetup&sec2=godmode/setup/setup&section=notifications">'.html_print_image('images/alerts_template.png', true, ['title' => __('Notifications')]).'</a>',
+];
+
 $help_header = '';
 if (enterprise_installed()) {
     $subpage = setup_enterprise_add_subsection_main($section, $buttons, $help_header);
@@ -129,9 +135,9 @@ if (enterprise_installed()) {
 
 switch ($section) {
     case 'general':
-    default:
         $buttons['general']['active'] = true;
         $subpage = ' &raquo '.__('General');
+        $help_header = 'setup_general_tab';
     break;
 
     case 'auth':
@@ -142,7 +148,7 @@ switch ($section) {
     case 'perf':
         $buttons['perf']['active'] = true;
         $subpage = ' &raquo '.__('Performance');
-        $help_header = 'performance';
+        $help_header = '';
     break;
 
     case 'vis':
@@ -158,11 +164,34 @@ switch ($section) {
     case 'ehorus':
         $buttons['ehorus']['active'] = true;
         $subpage = ' &raquo '.__('eHorus');
+        $help_header = 'setup_ehorus_tab';
+    break;
+
+    case 'notifications':
+        $buttons['notifications']['active'] = true;
+        $subpage = ' &raquo '.__('Notifications');
+    break;
+
+    case 'enterprise':
+        $buttons['enterprise']['active'] = true;
+        $subpage = ' &raquo '.__('Enterprise');
+        $help_header = 'setup_enterprise_tab';
+    break;
+
+    default:
+        // Default.
     break;
 }
 
 // Header.
-ui_print_page_header(__('Configuration').$subpage, '', false, $help_header, true, $buttons);
+ui_print_page_header(
+    __('Configuration').$subpage,
+    '',
+    false,
+    $help_header,
+    true,
+    $buttons
+);
 
 if (isset($config['error_config_update_config'])) {
     if ($config['error_config_update_config']['correct'] == false) {
@@ -197,6 +226,10 @@ switch ($section) {
 
     case 'ehorus':
         include_once $config['homedir'].'/godmode/setup/setup_ehorus.php';
+    break;
+
+    case 'notifications':
+        include_once $config['homedir'].'/godmode/setup/setup_notifications.php';
     break;
 
     default:

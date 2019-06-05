@@ -1,26 +1,39 @@
 <?php
+/**
+ * Extension to self monitor Pandora FMS Console
+ *
+ * @category   Main page
+ * @package    Pandora FMS
+ * @subpackage Introduction
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
 
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; version 2
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU General Public License for more details.
+ // Config functions.
 require_once 'include/config.php';
 
-// This solves problems in enterprise load
+// This solves problems in enterprise load.
 global $config;
 
 check_login();
 
-/*
-    Call all extensions login function */
-// extensions_call_login_function ();
 require_once 'include/functions_reporting.php';
 require_once 'include/functions_tactical.php';
 require_once $config['homedir'].'/include/functions_graph.php';
@@ -29,8 +42,18 @@ if (tags_has_user_acl_tags()) {
     ui_print_tags_warning();
 }
 
-$user_strict = (bool) db_get_value('strict_acl', 'tusuario', 'id_user', $config['id_user']);
-$all_data = tactical_status_modules_agents($config['id_user'], $user_strict, 'AR', $user_strict);
+$user_strict = (bool) db_get_value(
+    'strict_acl',
+    'tusuario',
+    'id_user',
+    $config['id_user']
+);
+$all_data = tactical_status_modules_agents(
+    $config['id_user'],
+    $user_strict,
+    'AR',
+    $user_strict
+);
 $data = [];
 
 $data['monitor_not_init'] = (int) $all_data['_monitors_not_init_'];
@@ -79,8 +102,10 @@ if (!empty($all_data)) {
 
     $data['server_sanity'] = format_numeric((100 - $data['module_sanity']), 1);
 }
+
+
 ?>
-<table border="0" width="100%">
+<table border="0" width="100%" cellspacing="0" cellpadding="0">
     <tr>
         
         <td width="25%" style="padding-right: 20px;" valign="top">
@@ -88,7 +113,7 @@ if (!empty($all_data)) {
             
             <?php
             //
-            // Overview Table
+            // Overview Table.
             //
             $table = new stdClass();
             $table->class = 'databox';
@@ -101,12 +126,12 @@ if (!empty($all_data)) {
             $table->head[0] = '<span>'.__('%s Overview', get_product_name()).'</span>';
             $table->head_colspan[0] = 4;
 
-            // Indicators
+            // Indicators.
             $tdata = [];
             $stats = reporting_get_stats_indicators($data, 120, 10, false);
             $status = '<table class="status_tactical">';
             foreach ($stats as $stat) {
-                $status .= '<tr><td><b>'.$stat['title'].'</b>'.'</td><td>'.$stat['graph'].'</td></tr>';
+                $status .= '<tr><td><b>'.$stat['title'].'</b></td><td>'.$stat['graph'].'</td></tr>';
             }
 
             $status .= '</table>';
@@ -115,25 +140,25 @@ if (!empty($all_data)) {
 
             $table->data[] = $tdata;
 
-            // Alerts
+            // Alerts.
             $tdata = [];
             $tdata[0] = reporting_get_stats_alerts($data);
             $table->rowclass[] = '';
             $table->data[] = $tdata;
 
-            // Modules by status
+            // Modules by status.
             $tdata = [];
             $tdata[0] = reporting_get_stats_modules_status($data, 180, 100);
             $table->rowclass[] = '';
             $table->data[] = $tdata;
 
-            // Total agents and modules
+            // Total agents and modules.
             $tdata = [];
             $tdata[0] = reporting_get_stats_agents_monitors($data);
             $table->rowclass[] = '';
             $table->data[] = $tdata;
 
-            // Users
+            // Users.
             if (users_is_admin()) {
                 $tdata = [];
                 $tdata[0] = reporting_get_stats_users($data);
@@ -160,7 +185,7 @@ if (!empty($all_data)) {
 
 
             if (!empty($news)) {
-                // NEWS BOARD/////////////////////////////
+                // NEWS BOARD.
                 echo '<div id="news_board">';
 
                 echo '<table cellpadding="0" width=100% cellspacing="0" class="databox filters">';
@@ -172,32 +197,42 @@ if (!empty($all_data)) {
                 }
 
                 foreach ($news as $article) {
-                    $text = io_safe_output($article['text']);
+                    $image = false;
+                    if ($article['text'] == '&amp;lt;p&#x20;style=&quot;text-align:&#x20;center;&#x20;font-size:&#x20;13px;&quot;&amp;gt;Hello,&#x20;congratulations,&#x20;if&#x20;you&apos;ve&#x20;arrived&#x20;here&#x20;you&#x20;already&#x20;have&#x20;an&#x20;operational&#x20;monitoring&#x20;console.&#x20;Remember&#x20;that&#x20;our&#x20;forums&#x20;and&#x20;online&#x20;documentation&#x20;are&#x20;available&#x20;24x7&#x20;to&#x20;get&#x20;you&#x20;out&#x20;of&#x20;any&#x20;trouble.&#x20;You&#x20;can&#x20;replace&#x20;this&#x20;message&#x20;with&#x20;a&#x20;personalized&#x20;one&#x20;at&#x20;Admin&#x20;tools&#x20;-&amp;amp;gt;&#x20;Site&#x20;news.&amp;lt;/p&amp;gt;&#x20;') {
+                        $image = true;
+                    }
 
-
+                    $text_bbdd = io_safe_output($article['text']);
+                    $text = html_entity_decode($text_bbdd);
                     echo '<tr><th class="green_title">'.$article['subject'].'</th></tr>';
                     echo '<tr><td>'.__('by').' <b>'.$article['author'].'</b> <i>'.ui_print_timestamp($article['timestamp'], true).'</i> '.$comparation_suffix.'</td></tr>';
                     echo '<tr><td class="datos">';
+                    if ($image) {
+                        echo '<center><img src="./images/welcome_image.png" alt="img colabora con nosotros - Support" width="191" height="207"></center>';
+                    }
+
                     echo nl2br($text);
                     echo '</td></tr>';
                 }
 
                 echo '</table>';
                 echo '</div>';
-                // News board
+                // News board.
                 echo '<br><br>';
 
-                // END OF NEWS BOARD/////////////////////////////
+                // END OF NEWS BOARD.
             }
 
-            // LAST ACTIVITY/////////////////////////////
-            // Show last activity from this user
+            // LAST ACTIVITY.
+            // Show last activity from this user.
             echo '<div id="activity">';
 
             $table = new stdClass();
-            $table->class = 'databox data';
+            $table->class = 'info_table';
+            $table->cellpadding = 0;
+            $table->cellspacing = 0;
             $table->width = '100%';
-            // Don't specify px
+            // Don't specify px.
             $table->data = [];
             $table->size = [];
             $table->size[0] = '5%';
@@ -212,38 +247,14 @@ if (!empty($all_data)) {
             $table->head[3] = __('Source IP');
             $table->head[4] = __('Comments');
             $table->title = '<span>'.__('This is your last activity performed on the %s console', get_product_name()).'</span>';
-
-            switch ($config['dbtype']) {
-                case 'mysql':
-                    $sql = sprintf(
-                        'SELECT id_usuario,accion, ip_origen,descripcion,utimestamp
+            $sql = sprintf(
+                'SELECT id_usuario,accion, ip_origen,descripcion,utimestamp
 						FROM tsesion
 						WHERE (`utimestamp` > UNIX_TIMESTAMP(NOW()) - '.SECONDS_1WEEK.") 
 							AND `id_usuario` = '%s' ORDER BY `utimestamp` DESC LIMIT 10",
-                        $config['id_user']
-                    );
-                break;
+                $config['id_user']
+            );
 
-                case 'postgresql':
-                    $sql = sprintf(
-                        "SELECT \"id_usuario\", accion, \"ip_origen\", descripcion, utimestamp
-						FROM tsesion
-						WHERE (\"utimestamp\" > ceil(date_part('epoch', CURRENT_TIMESTAMP)) - ".SECONDS_1WEEK.") 
-							AND \"id_usuario\" = '%s' ORDER BY \"utimestamp\" DESC LIMIT 10",
-                        $config['id_user']
-                    );
-                break;
-
-                case 'oracle':
-                    $sql = sprintf(
-                        "SELECT id_usuario, accion, ip_origen, descripcion, utimestamp
-						FROM tsesion
-						WHERE ((utimestamp > ceil((sysdate - to_date('19700101000000','YYYYMMDDHH24MISS')) * (".SECONDS_1DAY.')) - '.SECONDS_1WEEK.") 
-							AND id_usuario = '%s') AND rownum <= 10 ORDER BY utimestamp DESC",
-                        $config['id_user']
-                    );
-                break;
-            }
 
             $sessions = db_get_all_rows_sql($sql);
 
@@ -253,24 +264,17 @@ if (!empty($all_data)) {
 
             foreach ($sessions as $session) {
                 $data = [];
+                $session_id_usuario = $session['id_usuario'];
+                $session_ip_origen = $session['ip_origen'];
 
-                switch ($config['dbtype']) {
-                    case 'mysql':
-                    case 'oracle':
-                        $session_id_usuario = $session['id_usuario'];
-                        $session_ip_origen = $session['ip_origen'];
-                    break;
-
-                    case 'postgresql':
-                        $session_id_usuario = $session['id_usuario'];
-                        $session_ip_origen = $session['ip_origen'];
-                    break;
-                }
 
 
                 $data[0] = '<strong>'.$session_id_usuario.'</strong>';
                 $data[1] = ui_print_session_action_icon($session['accion'], true).' '.$session['accion'];
-                $data[2] = ui_print_help_tip(date($config['date_format'], $session['utimestamp']), true).human_time_comparation($session['utimestamp'], 'tiny');
+                $data[2] = ui_print_help_tip(
+                    date($config['date_format'], $session['utimestamp']),
+                    true
+                ).human_time_comparation($session['utimestamp'], 'tiny');
                 $data[3] = $session_ip_origen;
                 $description = str_replace([',', ', '], ', ', $session['descripcion']);
                 if (strlen($description) > 100) {
@@ -287,8 +291,7 @@ if (!empty($all_data)) {
             unset($table);
             echo '</div>';
             echo '</div>';
-            // activity
-            // END OF LAST ACTIVIYY/////////////////////////////
+            // END OF LAST ACTIVIYY.
             ?>
             
             

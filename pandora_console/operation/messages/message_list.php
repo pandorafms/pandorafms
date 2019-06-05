@@ -1,16 +1,32 @@
 <?php
+/**
+ * Extension to manage a list of gateways and the node address where they should
+ * point to.
+ *
+ * @category   Extensions
+ * @package    Pandora FMS
+ * @subpackage Community
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
 
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation for version 2.
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
 require_once 'include/functions_messages.php';
 
 $delete_msg = get_parameter('delete_message', 0);
@@ -20,7 +36,7 @@ $mark_unread = get_parameter('mark_unread', 0);
 
 $active_list = true;
 $active_sent = false;
-if ($show_sent) {
+if ($show_sent !== 0) {
     $active_list = false;
     $active_sent = true;
 }
@@ -37,11 +53,22 @@ $buttons['sent_messages'] = [
 
 $buttons['create_message'] = [
     'active' => false,
-    'text'   => '<a href="index.php?sec=message_list&sec2=operation/messages/message_edit">'.html_print_image('images/new_message.png', true, ['title' => __('Create message')]).'</a>',
+    'text'   => '<a href="index.php?sec=message_list&sec2=operation/messages/message_edit">'.html_print_image(
+        'images/new_message.png',
+        true,
+        ['title' => __('Create message')]
+    ).'</a>',
 ];
 
 if (!is_ajax()) {
-    ui_print_page_header(__('Messages'), 'images/email_mc.png', false, '', false, $buttons);
+    ui_print_page_header(
+        __('Messages'),
+        'images/email_mc.png',
+        false,
+        '',
+        false,
+        $buttons
+    );
 }
 
 if ($mark_unread) {
@@ -52,7 +79,7 @@ if ($mark_unread) {
 if ($delete_msg) {
     $id = (int) get_parameter('id');
     $result = messages_delete_message($id);
-    // Delete message function will actually check the credentials
+    // Delete message function will actually check the credentials.
     ui_print_result_message(
         $result,
         __('Successfully deleted'),
@@ -61,13 +88,10 @@ if ($delete_msg) {
 }
 
 if ($multiple_delete) {
-    $ids = (array) get_parameter('delete_multiple', []);
+    $ids = (array) get_parameter('delete_multiple_messages', []);
 
     foreach ($ids as $id) {
-        $result = db_process_sql_delete(
-            'tmensajes',
-            ['id_mensaje' => $id]
-        );
+        $result = messages_delete_message($id);
 
         if ($result === false) {
             break;
@@ -82,21 +106,23 @@ if ($multiple_delete) {
 }
 
 if ($show_sent) {
-    // sent view
+    // Sent view.
     $num_messages = messages_get_count_sent($config['id_user']);
     if ($num_messages > 0 && !is_ajax()) {
-        echo '<p>'.__('You have').' <b>'.$num_messages.'</b> '.' '.__('sent message(s)').'.</p>';
+        echo '<p>'.__('You have').' <b>'.$num_messages.'</b> '.__('sent message(s)').'.</p>';
     }
 
     $messages = messages_get_overview_sent('', 'DESC');
 } else {
-    // messages received
-    $num_messages = messages_get_count($config['id_user']);
+    // Messages received.
+    $num_messages = messages_get_count($config['id_user'], true, true);
     if ($num_messages > 0 && !is_ajax()) {
-        echo '<p>'.__('You have').' <b>'.$num_messages.'</b> '.' '.__('unread message(s)').'.</p>';
+        $unread_messages = messages_get_count($config['id_user'], false, true);
+        echo '<p>'.__('You have').' <b>'.$unread_messages.'</b> '.__('unread message(s)').'.</p>';
+        $messages = messages_get_overview();
+    } else {
+        $messages = messages_get_overview('status', 'ASC');
     }
-
-    $messages = messages_get_overview();
 }
 
 if (empty($messages)) {
@@ -109,25 +135,28 @@ if (empty($messages)) {
 } else {
     $table = new stdClass();
     $table->width = '100%';
-    $table->class = 'databox data';
-    $table->cellpadding = 4;
-    $table->cellspacing = 4;
+    $table->class = 'info_table';
+    $table->cellpadding = 0;
+    $table->cellspacing = 0;
     $table->head = [];
     $table->data = [];
     $table->align = [];
     $table->size = [];
 
+    $table->align[5] = 'left';
     $table->align[0] = 'left';
     $table->align[1] = 'left';
     $table->align[2] = 'left';
     $table->align[3] = 'left';
     $table->align[4] = 'right';
 
+    $table->size[5] = '20px';
     $table->size[0] = '20px';
     $table->size[1] = '100px';
     $table->size[3] = '80px';
     $table->size[4] = '60px';
 
+    $table->head[5] = html_print_checkbox('all_delete_messages', 0, false, true, false);
     $table->head[0] = __('Status');
     if ($show_sent) {
         $table->head[1] = __('Destination');
@@ -137,12 +166,17 @@ if (empty($messages)) {
 
     $table->head[2] = __('Subject');
     $table->head[3] = __('Timestamp');
-    $table->head[4] = __('Delete').html_print_checkbox('all_delete_messages', 0, false, true, false);
+    $table->head[4] = __('Delete');
 
-    foreach ($messages as $message_id => $message) {
+
+    foreach ($messages as $message) {
+        $message_id = $message['id_mensaje'];
         $data = [];
+
+        $data[5] = html_print_checkbox_extended('delete_multiple_messages[]', $message_id, false, false, '', 'class="check_delete_messages"', true);
+
         $data[0] = '';
-        if ($message['status'] == 1) {
+        if ($message['read'] == 1) {
             if ($show_sent) {
                 $data[0] .= '<a href="index.php?sec=message_list&amp;sec2=operation/messages/message_edit&read_message=1&amp;show_sent=1&amp;id_message='.$message_id.'">';
                 $data[0] .= html_print_image('images/email_open.png', true, ['border' => 0, 'title' => __('Click to read')]);
@@ -200,12 +234,13 @@ if (empty($messages)) {
             ['prominent' => 'timestamp']
         );
 
+        $table->cellclass[][4] = 'action_buttons';
         if ($show_sent) {
             $data[4] = '<a href="index.php?sec=message_list&amp;sec2=operation/messages/message_list&show_sent=1&delete_message=1&id='.$message_id.'"
-				onClick="javascript:if (!confirm(\''.__('Are you sure?').'\')) return false;">'.html_print_image('images/cross.png', true, ['title' => __('Delete')]).'</a>'.html_print_checkbox_extended('delete_multiple_messages[]', $message_id, false, false, '', 'class="check_delete_messages"', true);
+                onClick="javascript:if (!confirm(\''.__('Are you sure?').'\')) return false;">'.html_print_image('images/cross.png', true, ['title' => __('Delete')]).'</a>';
         } else {
             $data[4] = '<a href="index.php?sec=message_list&amp;sec2=operation/messages/message_list&delete_message=1&id='.$message_id.'"
-				onClick="javascript:if (!confirm(\''.__('Are you sure?').'\')) return false;">'.html_print_image('images/cross.png', true, ['title' => __('Delete')]).'</a>'.html_print_checkbox_extended('delete_multiple_messages[]', $message_id, false, false, '', 'class="check_delete_messages"', true);
+                onClick="javascript:if (!confirm(\''.__('Are you sure?').'\')) return false;">'.html_print_image('images/cross.png', true, ['title' => __('Delete')]).'</a>';
         }
 
         array_push($table->data, $data);

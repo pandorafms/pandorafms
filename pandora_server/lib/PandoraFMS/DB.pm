@@ -20,6 +20,8 @@ package PandoraFMS::DB;
 use strict;
 use warnings;
 use DBI;
+
+use lib '/usr/lib/perl5';
 use PandoraFMS::Tools;
 
 #use Data::Dumper;

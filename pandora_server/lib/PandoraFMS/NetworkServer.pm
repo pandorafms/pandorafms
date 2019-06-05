@@ -344,14 +344,20 @@ sub pandora_snmp_get_command ($$$$$$$$$$$) {
 sub pandora_query_snmp ($$$$) {
 	my ($pa_config, $module, $ip_target, $dbh) = @_;
 
+	# Initialize macros.
+	my %macros = (
+		'_agentcustomfield_\d+_' => undef,
+	);
+
+	
 	my $snmp_version = $module->{"tcp_send"}; # (1, 2, 2c or 3)
 	my $snmp3_privacy_method = $module->{"custom_string_1"}; # DES/AES
-	my $snmp3_privacy_pass = safe_output(pandora_output_password($pa_config, $module->{"custom_string_2"}));
+	my $snmp3_privacy_pass = safe_output(pandora_output_password($pa_config, subst_column_macros($module->{"custom_string_2"}, \%macros, $pa_config, $dbh, undef, $module)));
 	my $snmp3_security_level = $module->{"custom_string_3"}; # noAuthNoPriv|authNoPriv|authPriv
-	my $snmp3_auth_user = safe_output($module->{"plugin_user"});
-	my $snmp3_auth_pass = safe_output(pandora_output_password($pa_config, $module->{"plugin_pass"}));
+	my $snmp3_auth_user = safe_output(subst_column_macros($module->{"plugin_user"}, \%macros, $pa_config, $dbh, undef, $module));
+	my $snmp3_auth_pass = safe_output(pandora_output_password($pa_config, subst_column_macros($module->{"plugin_pass"}, \%macros, $pa_config, $dbh, undef, $module)));
 	my $snmp3_auth_method = $module->{"plugin_parameter"}; #MD5/SHA1
-	my $snmp_community = $module->{"snmp_community"};
+	my $snmp_community = safe_output(subst_column_macros($module->{"snmp_community"}, \%macros, $pa_config, $dbh, undef, $module));
 	my $snmp_target = $ip_target;
 	my $snmp_oid = $module->{"snmp_oid"};
 	my $snmp_port = $module->{"tcp_port"};

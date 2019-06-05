@@ -277,7 +277,7 @@ ui_print_page_header(
     __('GIS Maps builder'),
     'images/gm_gis.png',
     false,
-    'configure_gis_map',
+    'configure_gis_map_edit',
     true,
     $buttons
 );
@@ -357,7 +357,7 @@ function addConnectionMap() {
     for (var index in connectionMaps) {
         if (isInt(index)) {
             if (connectionMaps[index] == idConnectionMap) {
-                alert('<?php echo __('The connection'); ?> "' + connectionMapName + '" <?php echo __('just added previously.'); ?>');
+                alert("<?php echo __('The connection'); ?> "' + connectionMapName + '" <?php echo __('just added previously.'); ?>");
                 
                 return;
             }

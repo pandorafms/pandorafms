@@ -276,19 +276,30 @@ if (isset($name)) {
     $head .= ' - '.$name;
 }
 
-// Header
+// Header.
 $tab = get_parameter('tab', '');
 switch ($tab) {
+    default:
     case 'main':
-        ui_print_page_header($head, 'images/chart.png', false, 'graph_builder', false, $buttons);
+        ui_print_page_header(
+            $head,
+            'images/chart.png',
+            false,
+            'graph_builder',
+            false,
+            $buttons
+        );
     break;
 
     case 'graph_editor':
-        ui_print_page_header($head, 'images/chart.png', false, 'graph_editor', false, $buttons);
-    break;
-
-    default:
-        ui_print_page_header($head, 'images/chart.png', false, 'graph_builder', false, $buttons);
+        ui_print_page_header(
+            $head,
+            'images/chart.png',
+            false,
+            'graph_editor',
+            false,
+            $buttons
+        );
     break;
 }
 

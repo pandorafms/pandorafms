@@ -363,23 +363,18 @@ function api_get_test_event_replication_db()
 // -------------------------DEFINED OPERATIONS FUNCTIONS-----------------
 function api_get_groups($thrash1, $thrash2, $other, $returnType, $user_in_db)
 {
-    if (defined('METACONSOLE')) {
-        return;
+    $returnAllGroup = true;
+    $returnAllColumns = false;
+
+    if (isset($other['data'][1])) {
+        $returnAllGroup = ( $other['data'][1] == '1' ? true : false);
     }
 
-    if ($other['type'] == 'string') {
-        if ($other['data'] != '') {
-            returnError('error_parameter', 'Error in the parameters.');
-            return;
-        } else {
-            // Default values
-            $separator = ';';
-        }
-    } else if ($other['type'] == 'array') {
-        $separator = $other['data'][0];
+    if (isset($other['data'][2])) {
+        $returnAllColumns = ( $other['data'][2] == '1' ? true : false);
     }
 
-    $groups = users_get_groups($user_in_db, 'IR');
+    $groups = users_get_groups($user_in_db, 'IR', $returnAllGroup, $returnAllColumns);
 
     $data_groups = [];
     foreach ($groups as $id => $group) {
@@ -387,6 +382,13 @@ function api_get_groups($thrash1, $thrash2, $other, $returnType, $user_in_db)
             $id,
             $group,
         ];
+    }
+
+    if (!isset($other['data'][0])) {
+        $separator = ';';
+        // by default
+    } else {
+        $separator = $other['data'][0];
     }
 
     $data['type'] = 'array';
@@ -4582,7 +4584,7 @@ function api_set_new_snmp_component($id, $thrash1, $other, $thrash2)
         return;
     }
 
-    $id = network_components_create_network_component($id, $other['data'][0], $other['data'][25], $values);
+    $id = network_components_create_network_component($id, $other['data'][0], $other['data'][26], $values);
 
     if (!$id) {
         returnError('error_set_new_snmp_component', 'Error creating SNMP component.');
@@ -6173,17 +6175,29 @@ function api_set_planned_downtimes_deleted($id, $thrash1, $thrash2, $returnType)
 
 /**
  * Create a new planned downtime.
+ * e.g.: api.php?op=set&op2=planned_downtimes_created&id=pepito&other=testing|08-22-2015|08-31-2015|0|1|1|1|1|1|1|1|17:06:00|19:06:00|1|31|quiet|periodically|weekly&other_mode=url_encode_separator_|
  *
  * @param $id name of planned downtime.
  * @param $thrash1 Don't use.
- * @param array                       $other it's array, $other as param is <description>;<date_from>;<date_to>;<id_group>;<monday>;
- *                        <tuesday>;<wednesday>;<thursday>;<friday>;<saturday>;<sunday>;<periodically_time_from>;<periodically_time_to>;
- *                           <periodically_day_from>;<periodically_day_to>;<type_downtime>;<type_execution>;<type_periodicity>; in this order
- *                        and separator char (after text ; ) and separator (pass in param othermode as othermode=url_encode_separator_<separator>)
- *                        example:
- *
- *                        api.php?op=set&op2=planned_downtimes_created&id=pepito&other=testing|08-22-2015|08-31-2015|0|1|1|1|1|1|1|1|17:06:00|19:06:00|1|31|quiet|periodically|weekly&other_mode=url_encode_separator_|
- *
+ * @param array                       $other Contains the following elements (in order):
+ *                       <description>
+ *                       <date_from>
+ *                       <date_to>
+ *                       <id_group>
+ *                       <monday>
+ *                       <tuesday>
+ *                       <wednesday>
+ *                       <thursday>
+ *                       <friday>
+ *                       <saturday>
+ *                       <sunday>
+ *                       <periodically_time_from>
+ *                       <periodically_time_to>
+ *                       <periodically_day_from>
+ *                       <periodically_day_to>
+ *                       <type_downtime>
+ *                       <type_execution>
+ *                       <type_periodicity>
  * @param $thrash3 Don't use.
  */
 
@@ -6247,20 +6261,16 @@ function api_set_planned_downtimes_created($id, $thrash1, $other, $thrash3)
 
 /**
  * Add new items to planned Downtime.
+ * e.g.: api.php?op=set&op2=planned_downtimes_additem&id=123&other=1;2;3;4|Status;Unkown_modules&other_mode=url_encode_separator_|
  *
  * @param $id id of planned downtime.
  * @param $thrash1 Don't use.
- * @param array                     $other it's array, $other as param is <id_agent1;id_agent2;id_agent3;....id_agentn;>;
- *                         <name_module1;name_module2;name_module3;......name_modulen;> in this order
- *                      and separator char (after text ; ) and separator (pass in param othermode as othermode=url_encode_separator_<separator>)
- *                      example:
- *
- *                      api.php?op=set&op2=planned_downtimes_additem&id=123&other=1;2;3;4|Status;Unkown_modules&other_mode=url_encode_separator_|
- *
+ * @param array                     $other
+ * The first index contains a list of agent Ids.
+ * The second index contains a list of module names.
+ * The list separator is the character ';'.
  * @param $thrash3 Don't use.
  */
-
-
 function api_set_planned_downtimes_additem($id, $thrash1, $other, $thrash3)
 {
     if (defined('METACONSOLE')) {
@@ -11598,7 +11608,9 @@ function api_set_add_event_comment($id, $thrash2, $other, $thrash3)
     global $config;
 
     if (defined('METACONSOLE')) {
-        return;
+        $meta = true;
+    } else {
+        $meta = $other['data'][1];
     }
 
     if (!check_acl($config['id_user'], 0, 'EW')) {
@@ -11610,8 +11622,7 @@ function api_set_add_event_comment($id, $thrash2, $other, $thrash3)
         returnError('error_parameter', 'Error in the parameters.');
         return;
     } else if ($other['type'] == 'array') {
-        $comment = io_safe_input($other['data'][0]);
-        $meta = $other['data'][1];
+        $comment = $other['data'][0];
         $history = $other['data'][2];
 
         $status = events_comment(
@@ -14672,5 +14683,367 @@ function api_set_reset_agent_counts($id, $thrash1, $thrash2, $thrash3)
     } else {
         returnData('string', ['type' => 'string', 'data' => $data]);
     }
+
+}
+
+
+/**
+ * Functions por get all  user to new feature for Carrefour
+ * It depends of returnType, the method will return csv or json data
+ *
+ * @param  string $thrash1 don't use
+ * @param  string $thrash2 don't use
+ * @param  array  $other   don't use
+ * *@param  string           $returnType
+ * Example:
+ * api.php?op=get&op2=list_all_user&return_type=json&apipass=1234&user=admin&pass=pandora
+ * @return
+ */
+
+
+function api_get_list_all_user($thrash1, $thrash2, $other, $returnType)
+{
+    global $config;
+
+    if (!check_acl($config['id_user'], 0, 'AR')) {
+        returnError('forbidden', 'string');
+        return;
+    }
+
+    $sql = 'SELECT
+                tup.id_usuario AS user_id,
+                tu.fullname AS fullname,
+                tp.id_perfil AS profile_id,
+                tup.id_up AS id_up,
+                tp.name AS profile_name,
+                tup.id_grupo AS group_id,
+                tgp.nombre AS group_name
+            FROM tperfil tp
+            INNER JOIN tusuario_perfil tup
+                ON tp.id_perfil = tup.id_perfil
+            LEFT OUTER JOIN tgrupo tgp
+                ON tup.id_grupo = tgp.id_grupo
+                LEFT OUTER JOIN tusuario tu
+            ON tu.id_user = tup.id_usuario';
+
+    $users = db_get_all_rows_sql($sql);
+
+    $i = 0;
+
+    foreach ($users as $up) {
+        $group_name = $up['group_name'];
+        if ($up['group_name'] === null) {
+            $group_name = 'All';
+        }
+
+        $values[$i] = [
+            'id_usuario'  => $up['user_id'],
+            'fullname'    => $up['fullname'],
+            'id_up'       => $up['id_up'],
+            'id_perfil'   => $up['profile_id'],
+            'perfil_name' => $up['profile_name'],
+            'id_grupo'    => $up['group_id'],
+            'group_name'  => $group_name,
+        ];
+        $i += 1;
+    }
+
+    if ($values === false) {
+        returnError('Error_user', __('Users could not be found.'));
+        return;
+    }
+
+    $data = [
+        'type' => 'array',
+        'data' => $values,
+    ];
+
+    returnData($returnType, $data, ';');
+}
+
+
+/**
+ * Funtion for get all info user to  new feature for Carrefour
+ * It depends of returnType, the method will return csv or json data
+ *
+ * @param string $thrash1    don't use
+ * @param string $thrash2    don't use
+ * @param array  $other      other[0] = user database
+ * @param string $returnType
+ *      Example
+ *      api.php?op=get&op2=info_user_name&return_type=json&other=admin&other_mode=url_encode_separator_|&apipass=1234&user=admin&pass=pandora
+ *
+ * @return
+ */
+
+
+function api_get_info_user_name($thrash1, $thrash2, $other, $returnType)
+{
+    global $config;
+
+    if (!check_acl($config['id_user'], 0, 'AR')) {
+        returnError('forbidden', 'string');
+        return;
+    }
+
+    $sql = sprintf(
+        'SELECT tup.id_usuario AS user_id,
+                tu.fullname AS fullname,
+                tup.id_up AS id_up,
+                tp.id_perfil AS profile_id,
+                tp.name AS profile_name,
+                tup.id_grupo AS group_id,
+                tg.nombre AS group_name
+        FROM tperfil tp
+        INNER JOIN tusuario_perfil tup
+            ON tp.id_perfil = tup.id_perfil
+        LEFT OUTER JOIN tgrupo tg
+            ON tup.id_grupo = tg.id_grupo
+        LEFT OUTER JOIN tusuario tu
+            ON tu.id_user = tup.id_usuario
+        WHERE tup.id_usuario = "%s"',
+        io_safe_output($other['data'][0])
+    );
+
+    $user_profile = db_get_all_rows_sql($sql);
+
+    $i = 0;
+
+    foreach ($user_profile as $up) {
+        $group_name = $up['group_name'];
+        if ($up['group_name'] === null) {
+            $group_name = 'All';
+        }
+
+        $values[$i] = [
+            'id_usuario'  => $up['user_id'],
+            'fullname'    => $up['fullname'],
+            'id_up'       => $up['id_up'],
+            'id_perfil'   => $up['profile_id'],
+            'perfil_name' => $up['profile_name'],
+            'id_grupo'    => $up['group_id'],
+            'group_name'  => $group_name,
+        ];
+        $i += 1;
+    }
+
+        $data = [
+            'type' => 'array',
+            'data' => $values,
+        ];
+
+        returnData($returnType, $data, ';');
+}
+
+
+/**
+ * Function for get  user from a group  to  new feature for Carrefour.
+ * It depends of returnType, the method will return csv or json data.
+ *
+ * @param string $thrash1    don't use
+ * @param string $thrash2    don't use
+ * @param array  $other
+ *                  $other[0] = id group
+ *                  $other[1] = is disabled or not
+ * @param string $returnType
+ * Example
+ * api.php?op=get&op2=filter_user_group&return_type=json&other=0|0&other_mode=url_encode_separator_|&apipass=1234&user=admin&pass=pandora
+ *
+ * @return
+ */
+
+
+function api_get_filter_user_group($thrash1, $thrash2, $other, $returnType)
+{
+    global $config;
+
+    if (!check_acl($config['id_user'], 0, 'AR')) {
+        returnError('forbidden', 'string');
+        return;
+    }
+
+    $filter = '';
+
+    if ($other['data'][0] !== '' && $other['data'][1] !== '') {
+        $filter = 'WHERE tup.id_grupo = '.$other['data'][0].' AND tu.disabled = '.$other['data'][1].'';
+    } else if ($other['data'][0] !== '') {
+        $filter = 'WHERE tup.id_grupo = '.$other['data'][0].'';
+    } else if ($other['data'][1] !== '') {
+        $filter = 'WHERE tu.disabled = '.$other['data'][1].'';
+    }
+
+    $sql = sprintf(
+        'SELECT DISTINCT
+            tup.id_usuario AS user_id,
+            tu.fullname AS fullname,
+            tup.id_up AS id_up,
+            tp.id_perfil AS profile_id,
+            tp.name AS profile_name,
+            tup.id_grupo AS group_id,
+            tg.nombre AS group_name
+        FROM tperfil tp
+        INNER JOIN tusuario_perfil tup
+            ON tp.id_perfil = tup.id_perfil
+        LEFT OUTER JOIN tgrupo tg
+            ON tup.id_grupo = tg.id_grupo
+        LEFT OUTER JOIN tusuario tu
+            ON tu.id_user = tup.id_usuario
+       '.$filter.''
+    );
+
+    $filter_user = db_get_all_rows_sql($sql);
+
+    $i = 0;
+
+    foreach ($filter_user as $up) {
+        $group_name = $up['group_name'];
+        if ($up['group_name'] === null) {
+            $group_name = 'All';
+        }
+
+        $values[$i] = [
+            'id_usuario'  => $up['user_id'],
+            'fullname'    => $up['fullname'],
+            'id_up'       => $up['id_up'],
+            'id_perfil'   => $up['profile_id'],
+            'perfil_name' => $up['profile_name'],
+            'id_grupo'    => $up['group_id'],
+            'group_name'  => $group_name,
+        ];
+        $i += 1;
+    }
+
+    $data = [
+        'type' => 'array',
+        'data' => $values,
+    ];
+
+    returnData($returnType, $data, ';');
+
+}
+
+
+/**
+ * Function for delete an user permission for Carrefour  new feature
+ * The return of this function its only a message
+ *
+ * @param string $thrash1    don't use
+ * @param string $thrash2    don't use
+ * @param array  $other
+ *                  $other[0] = id up
+ * @param string $returnType
+ * Example
+ * api.php?op=set&op2=delete_user_permission&return_type=json&other=user|2&other_mode=url_encode_separator_|&apipass=1234&user=admin&pass=pandora
+ *
+ * @return void
+ */
+
+
+function api_set_delete_user_permission($thrash1, $thrash2, $other, $returnType)
+{
+    global $config;
+
+    if (!check_acl($config['id_user'], 0, 'AW')) {
+        returnError('forbidden', 'string');
+        return;
+    }
+
+    if ($other['data'][0] != '') {
+        $values = [
+            'id_up' => io_safe_output($other['data'][0]),
+        ];
+    } else {
+        returnError('Error_delete', __('User profile could not be deleted.'));
+        return;
+    }
+
+    $deleted_permission = db_process_sql_delete('tusuario_perfil', $values);
+
+    if ($deleted_permission == false) {
+        returnError('Error_delete', __('User profile could not be deleted.'));
+        return;
+    }
+
+    $data = [
+        'type' => 'string',
+        'data' => $deleted_permission,
+    ];
+
+        returnData('string', ['type' => 'string', 'data' => $data]);
+}
+
+
+/**
+ * Function for add permission a user to a group for Carrefour new feature
+ * It depends of returnType, the method will return csv or json data
+ *
+ * @param string $thrash1 don't use
+ * @param string $thrash2 don't use
+ * @param array  $other   other[0] = user database
+ *                        other[1] = id group
+ *                        other[2] = id profile
+ *                        other[3] = no_hierarchy ( 0 or 1, if empty = 0)
+ *                        other[4] = id from tusuario_perfil table (optional)
+ * * @param string $returnType
+ * Example
+ * api.php?op=set&op2=add_permission_user_to_group&return_type=json&other=admin|0|1|1|20&other_mode=url_encode_separator_|&apipass=1234&user=admin&pass=pandora
+ *
+ * @return void
+ */
+
+
+function api_set_add_permission_user_to_group($thrash1, $thrash2, $other, $returnType)
+{
+    global $config;
+
+    if (!check_acl($config['id_user'], 0, 'AW')) {
+        returnError('forbidden', 'string');
+        return;
+    }
+
+    $sql = 'SELECT id_up 
+            FROM tusuario_perfil
+            WHERE  id_up = '.$other['data'][4].'';
+
+    $exist_profile = db_get_value_sql($sql);
+
+    if ($other['data'][3] < 0 || $other['data'][3] > 1) {
+        returnError('Error_insert', __('User profile could not be available.'));
+        return;
+    }
+
+    if ($other['data'][3] == null) {
+        $other['data'][3] = 0;
+    }
+
+    $values = [
+        'id_usuario'   => $other['data'][0],
+        'id_perfil'    => $other['data'][2],
+        'id_grupo'     => $other['data'][1],
+        'no_hierarchy' => $other['data'][3],
+        'assigned_by'  => $config['id_user'],
+        'id_policy'    => 0,
+        'tags'         => '',
+
+    ];
+
+    $where_id_up = ['id_up' => $other['data'][4]];
+    if ($exist_profile === $other['data'][4] && $where_id_up !== null) {
+        $sucessfull_insert = db_process_sql_update('tusuario_perfil', $values, $where_id_up);
+    } else {
+        $sucessfull_insert = db_process_sql_insert('tusuario_perfil', $values);
+    }
+
+    if ($sucessfull_insert == false) {
+        returnError('Error_insert', __('User profile could not be available.'));
+        return;
+    }
+
+     $data = [
+         'type' => 'array',
+         'data' => $values,
+     ];
+
+     returnData($returnType, $data, ';');
 
 }

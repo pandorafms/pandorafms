@@ -896,7 +896,7 @@ if ($group_rep == 2) {
                     // Checkbox
                     $data[$i] = html_print_checkbox_extended('validate_ids[]', $event['id_evento'], false, false, false, 'class="chk_val"', true);
                 } else if (isset($table->header[$i]) || true) {
-                    $data[$i] = '';
+                    $data[$i] = html_print_checkbox_extended('validate_ids[]', $event['id_evento'], false, false, false, 'class="chk_val"', true);
                 }
             }
 
@@ -929,6 +929,13 @@ if ($group_rep == 2) {
         }
 
         html_print_table($table);
+        if ($allow_pagination) {
+            $params_to_paginate = $params;
+            unset($params_to_paginate['offset']);
+            $url_paginate = 'index.php?'.http_build_query($params_to_paginate, '', '&amp;');
+            ui_pagination($total_events, $url_paginate, $offset, $pagination, false, 'offset', true, 'pagination-bottom');
+        }
+
         echo '</div>';
 
         if ($allow_action) {
@@ -983,7 +990,15 @@ if ($group_rep == 2) {
                 html_print_button(__('Execute event response'), 'submit_event_response', false, 'execute_event_response(true);', 'class="sub next"');
                 echo "<span id='response_loading_dialog' style='display:none'>".html_print_image('images/spinner.gif', true).'</span>';
                 echo '</form>';
-                echo '<span id="max_custom_event_resp_msg" style="display:none; color:#FC4444; line-height: 200%;">'.__('A maximum of 10 event custom responses can be selected').'</span>';
+                echo '<span id="max_custom_event_resp_msg" style="display:none; color:#FC4444; line-height: 200%;">';
+                echo __(
+                    'A maximum of %s event custom responses can be selected',
+                    $config['max_execution_event_response']
+                ).'</span>';
+                echo '<span id="max_custom_selected" style="display:none; color:#FC4444; line-height: 200%;">';
+                echo __(
+                    'Please, select an event'
+                ).'</span>';
                 echo '</div>';
             }
         }
@@ -991,11 +1006,13 @@ if ($group_rep == 2) {
         ?>
             <script type="text/javascript">
 
-                function execute_event_response(event_list_btn) { 
+                function execute_event_response(event_list_btn) {
 
                     $('#max_custom_event_resp_msg').hide();
+                    $('#max_custom_selected').hide();
 
                     var response_id = $('select[name=response_id]').val();
+
 
                     if (!isNaN(response_id)) { // It is a custom response
 
@@ -1011,55 +1028,58 @@ if ($group_rep == 2) {
 
                         var total_checked = $(".chk_val:checked").length;
 
-                        // Limit number of events to apply custom responses to for performance reasons
-                        if (total_checked > 10) {
+                        // Check select an event.
+                        if(total_checked == 0){
+                            $('#max_custom_selected').show();
+                            return;
+                        }
+
+                        // Limit number of events to apply custom responses
+                        // to for performance reasons.
+                        if (total_checked > <?php echo $config['max_execution_event_response']; ?> ) {
                             $('#max_custom_event_resp_msg').show();
                             return;
                         }
 
+                        var response_command = [];
+                        $(".response_command_input").each(function() {
+                            response_command[$(this).attr("name")] = $(this).val();
+                        });
+
                         if (event_list_btn) {
                             $('#button-submit_event_response').hide(function() {
                                 $('#response_loading_dialog').show(function() {
+                                    var check_params = get_response_params(
+                                        response_id
+                                    );
 
-                                    $(".chk_val").each(function() {
-                                        
-                                        if ($(this).is(":checked")) {
-                                            //var server_id = $('#hidden-server_id_'+).
-                                            event_id = $(this).val();
-                                            server_id = $('#hidden-server_id_'+event_id).val();
-
-                                            response['target'] = get_response_target(event_id, response_id, server_id);
-
-                                            if (total_checked-1 === counter) end=1;
-
-                                            show_massive_response_dialog(event_id, response_id, response, counter, end);
-
-                                            counter++;
-                                        }
-                                    });
+                                    if(check_params[0] !== ''){
+                                        show_event_response_command_dialog(
+                                            response_id,
+                                            response,
+                                            total_checked
+                                        );
+                                    }
+                                    else{
+                                        check_massive_response_event(
+                                            response_id,
+                                            response,
+                                            total_checked,
+                                            response_command
+                                        );
+                                    }
                                 });
                             });
                         }
                         else {
                             $('#button-btn_str').hide(function() {
                                 $('#execute_again_loading').show(function() {
-
-                                    $(".chk_val").each(function() {
-                                        
-                                        if ($(this).is(":checked")) {
-                                            //var server_id = $('#hidden-server_id_'+).
-                                            event_id = $(this).val();
-                                            server_id = $('#hidden-server_id_'+event_id).val();
-
-                                            response['target'] = get_response_target(event_id, response_id, server_id);
-
-                                            if (total_checked-1 === counter) end=1;
-
-                                            show_massive_response_dialog(event_id, response_id, response, counter, end);
-
-                                            counter++;
-                                        }
-                                    });
+                                    check_massive_response_event(
+                                        response_id,
+                                        response,
+                                        total_checked,
+                                        response_command
+                                    );
                                 });
                             });
                         }
@@ -1079,6 +1099,42 @@ if ($group_rep == 2) {
                         }
                     }
                 }
+
+                function check_massive_response_event(
+                    response_id,
+                    response,
+                    total_checked,
+                    response_command
+                ){
+                    var counter=0;
+                    var end=0;
+
+                    $(".chk_val").each(function() {
+                        if ($(this).is(":checked")) {
+                            event_id = $(this).val();
+                            server_id = $('#hidden-server_id_'+event_id).val();
+                            response['target'] = get_response_target(
+                                event_id,
+                                response_id,
+                                server_id,
+                                response_command
+                            );
+
+                            if (total_checked-1 === counter)
+                                end=1;
+
+                            show_massive_response_dialog(
+                                event_id,
+                                response_id,
+                                response,
+                                counter,
+                                end
+                            );
+
+                            counter++;
+                        }
+                    });
+                }
             </script>
         <?php
     } else {
@@ -1087,4 +1143,3 @@ if ($group_rep == 2) {
 
     echo '</div>';
 }
-

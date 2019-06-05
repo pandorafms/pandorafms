@@ -1,16 +1,18 @@
 <?php
+/**
+ * Pandora FMS - http://pandorafms.com
+ * ==================================================
+ * Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
 
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation for version 2.
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
 if (check_acl($id_user, 0, 'ER')) {
     $groups = users_get_groups($id_user, 'ER');
 } else if (check_acl($id_user, 0, 'EW')) {
@@ -81,22 +83,43 @@ if (($date_from === '') && ($date_to === '')) {
     }
 }
 
+$is_using_secondary_group = enterprise_hook('agents_is_using_secondary_groups');
+
 // Group selection.
 if ($id_group > 0 && in_array($id_group, array_keys($groups))) {
     if ($propagate) {
         $childrens_str = implode(',', $childrens_ids);
-        $sql_post .= " AND (id_grupo IN ($childrens_str) OR id_group IN ($childrens_str))";
+        $sql_post .= " AND (id_grupo IN ($childrens_str)";
+
+        if ($is_using_secondary_group === 1) {
+            $sql_post .= " OR id_group IN ($childrens_str)";
+        }
+
+        $sql_post .= ')';
     } else {
         // If a group is selected and it's in the groups allowed.
-        $sql_post .= " AND (id_grupo = $id_group OR id_group = $id_group)";
+        $sql_post .= " AND (id_grupo = $id_group";
+
+        if ($is_using_secondary_group === 1) {
+            $sql_post .= " OR id_group = $id_group";
+        }
+
+        $sql_post .= ')';
     }
 } else {
     if (!users_is_admin() && !users_can_manage_group_all('ER')) {
-        $sql_post .= sprintf(
-            ' AND (id_grupo IN (%s) OR id_group IN (%s)) ',
-            implode(',', array_keys($groups)),
-            implode(',', array_keys($groups))
-        );
+        if ($is_using_secondary_group === 1) {
+            $sql_post .= sprintf(
+                ' AND (id_grupo IN (%s) OR id_group IN (%s)) ',
+                implode(',', array_keys($groups)),
+                implode(',', array_keys($groups))
+            );
+        } else {
+            $sql_post .= sprintf(
+                ' AND (id_grupo IN (%s)) ',
+                implode(',', array_keys($groups))
+            );
+        }
     }
 }
 
@@ -212,7 +235,7 @@ if ($meta) {
     $id_agent = get_parameter('id_agent', 0);
     if ($id_agent) {
         $sql_post .= ' AND agent_name IN (SELECT nombre FROM tmetaconsole_agent WHERE
-		id_tagente ='.$id_agent." AND alias LIKE '".io_safe_input($text_agent)."')";
+		id_tagente ='.$id_agent." AND alias LIKE '".$text_agent."')";
         $filter_resume['agent'] = $text_agent;
     }
 } else {

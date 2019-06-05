@@ -200,8 +200,8 @@ if ($config['history_db_enabled'] == 1) {
     );
 
     $time_pandora_db_history = false;
-    if ($history_connect !== false) {
-        if ($config['history_db_connection'] !== false) {
+    if ($history_connect) {
+        if ($config['history_db_connection']) {
             $time_pandora_db_history = mysql_db_process_sql(
                 $sql,
                 'insert_id',
@@ -247,8 +247,7 @@ $table->style[0] = 'font-weight: bold';
 $table->size[0] = '70%';
 $table->size[1] = '30%';
 
-enterprise_hook('enterprise_warnings_history_days');
-
+// enterprise_hook('enterprise_warnings_history_days');
 $table->data[1][0] = __('Max. days before delete events');
 $table->data[1][0] .= ui_print_help_tip(
     __('If the compaction or purge of the data is more frequent than the events deletion, anomalies in module graphs could appear'),
@@ -405,16 +404,16 @@ if ($config['history_db_enabled'] == 1) {
         );
     }
 
-    $history_connect = @mysql_db_process_sql(
-        'SELECT 1 FROM tconfig',
-        'affected_rows',
-        $config['history_db_connection'],
-        false
-    );
-
     $config_history = false;
-    if ($history_connect !== false) {
-        if ($config['history_db_connection'] != false) {
+    if ($config['history_db_connection']) {
+        $history_connect = @mysql_db_process_sql(
+            'SELECT 1 FROM tconfig',
+            'affected_rows',
+            $config['history_db_connection'],
+            false
+        );
+
+        if ($history_connect !== false) {
             $config_history_array = mysql_db_process_sql(
                 'SELECT * FROM tconfig',
                 'affected_rows',
@@ -427,11 +426,11 @@ if ($config['history_db_enabled'] == 1) {
                     $config_history[$value['token']] = $value['value'];
                 }
             }
+        } else {
+            echo ui_print_error_message(
+                __('The tconfig table does not exist in the historical database')
+            );
         }
-    } else {
-        echo ui_print_error_message(
-            __('The tconfig table does not exist in the historical database')
-        );
     }
 
     if ($config_history === false) {
@@ -524,6 +523,31 @@ if ($config['history_db_enabled'] == 1) {
     );
 }
 
+$table->data[] = [
+    __('Max. days before delete old messages'),
+    html_print_input_text(
+        'delete_old_messages',
+        $config['delete_old_messages'],
+        '',
+        5,
+        5,
+        true
+    ),
+];
+
+
+$table->data[] = [
+    __('Max. days before delete old network matrix data'),
+    html_print_input_text(
+        'delete_old_network_matrix',
+        $config['delete_old_network_matrix'],
+        '',
+        5,
+        5,
+        true
+    ),
+];
+
 $table_other = new stdClass();
 $table_other->width = '100%';
 $table_other->class = 'databox filters';
@@ -582,7 +606,7 @@ $table_other->data[3][1] = html_print_input_text(
 );
 
 $table_other->data[5][0] = __('Use realtime statistics');
-$table_other->data[5][1] = html_print_checkbox_toogle_switch(
+$table_other->data[5][1] = html_print_checkbox_switch(
     'realtimestats',
     1,
     $config['realtimestats'],
@@ -603,8 +627,8 @@ $table_other->data[6][1] = html_print_input_text(
     true
 );
 
-$table_other->data[7][0] = __('Use agent access graph').ui_print_help_icon('agent_access', true);
-$table_other->data[7][1] = html_print_checkbox_toogle_switch('agentaccess', 1, $config['agentaccess'], true);
+$table_other->data[7][0] = __('Use agent access graph');
+$table_other->data[7][1] = html_print_checkbox_switch('agentaccess', 1, $config['agentaccess'], true);
 
 $table_other->data[8][0] = __('Max. recommended number of files in attachment directory');
 $table_other->data[8][0] .= ui_print_help_tip(
@@ -621,7 +645,7 @@ $table_other->data[8][1] = html_print_input_text(
 );
 
 $table_other->data[9][0] = __('Delete not init modules');
-$table_other->data[9][1] = html_print_checkbox_toogle_switch('delete_notinit', 1, $config['delete_notinit'], true);
+$table_other->data[9][1] = html_print_checkbox_switch('delete_notinit', 1, $config['delete_notinit'], true);
 
 $table_other->data[10][0] = __('Big Operation Step to purge old data');
 $table_other->data[10][0] .= ui_print_help_tip(
@@ -665,27 +689,41 @@ $table_other->data[12][1] = html_print_input_text(
     true
 );
 
+$table_other->data[13][0] = __('Events response max. execution');
+$table_other->data[13][0] .= ui_print_help_tip(
+    __('Number of events that will perform the desired action at the same time'),
+    true
+);
+$table_other->data[13][1] = html_print_input_text(
+    'max_execution_event_response',
+    $config['max_execution_event_response'],
+    '',
+    5,
+    5,
+    true
+);
+
 echo '<form id="form_setup" method="post">';
 
 echo '<fieldset>';
-    echo '<legend>'.__('Database maintenance status').'</legend>';
+    echo '<legend>'.__('Database maintenance status').' '.ui_print_help_icon('database_maintenance_status_tab', true).'</legend>';
     html_print_table($table_status);
 echo '</fieldset>';
 
 echo '<fieldset>';
-    echo '<legend>'.__('Database maintenance options').'</legend>';
+    echo '<legend>'.__('Database maintenance options').' '.ui_print_help_icon('database_maintenance_options_tab', true).'</legend>';
     html_print_table($table);
 echo '</fieldset>';
 
 if ($config['history_db_enabled'] == 1) {
     echo '<fieldset>';
-    echo '<legend>'.__('Historical database maintenance options').'</legend>';
+    echo '<legend>'.__('Historical database maintenance options').' '.ui_print_help_icon('historical_database_maintenance_options_tab', true).'</legend>';
         html_print_table($table_historical);
     echo '</fieldset>';
 }
 
 echo '<fieldset>';
-    echo '<legend>'.__('Others').'</legend>';
+    echo '<legend>'.__('Others').' '.ui_print_help_icon('others_database_maintenance_options_tab', true).'</legend>';
     html_print_table($table_other);
 echo '</fieldset>';
 

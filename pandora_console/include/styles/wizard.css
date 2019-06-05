@@ -1,0 +1,28 @@
+/*
+ * Discovery > Wizard css global style
+ */
+
+ul.wizard {
+}
+
+ul.wizard li {
+  padding-bottom: 10px;
+  padding-top: 10px;
+}
+
+ul.wizard li > label:not(.p-switch) {
+  width: 250px;
+  vertical-align: top;
+  display: inline-block;
+}
+
+ul.wizard li > textarea {
+  width: 600px;
+  height: 15em;
+  display: inline-block;
+  font-family: monospace;
+}
+
+.hidden {
+  display: none;
+}

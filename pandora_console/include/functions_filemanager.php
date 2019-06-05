@@ -120,10 +120,11 @@ if (!function_exists('mime_content_type')) {
 
 global $config;
 
-if (isset($config['homedir_filemanager'])) {
-    $homedir_filemanager = io_safe_output($config['homedir_filemanager']);
-} else {
-    $homedir_filemanager = $config['homedir'];
+
+$homedir_filemanager = trim($config['homedir']);
+$sec2 = get_parameter('sec2');
+if ($sec2 == 'enterprise/godmode/agentes/collections' || $sec2 == 'advanced/collections') {
+    $homedir_filemanager .= '/attachment/collection/';
 }
 
 $upload_file_or_zip = (bool) get_parameter('upload_file_or_zip');
@@ -499,12 +500,6 @@ function filemanager_file_explorer(
         $homedir_filemanager = $config['homedir'];
     }
 
-    unset($config['homedir_filemanager']);
-    config_update_value(
-        'homedir_filemanager',
-        $homedir_filemanager
-    );
-
     $hack_metaconsole = '';
     if (defined('METACONSOLE')) {
         $hack_metaconsole = '../../';
@@ -513,34 +508,81 @@ function filemanager_file_explorer(
     ?>
     <script type="text/javascript">
         function show_form_create_folder() {
-            show_main_buttons_folder()
-            $("#table_filemanager-1").css('display', '');
-            
-            $("#main_buttons").css("display", "none");
-            $("#create_folder").css("display", "");
-        }
-        
-        function show_upload_file() {
-            show_main_buttons_folder()
-            $("#table_filemanager-1").css('display', '');
-            
-            $("#main_buttons").css("display", "none");
-            $("#upload_file").css("display", "");
-        }
-    
+            actions_dialog('create_folder');
+            $("#create_folder").css("display", "block");
+            check_opened_dialog('create_folder');
+        }      
+
         function show_create_text_file() {
-            show_main_buttons_folder()
-            $("#table_filemanager-1").css('display', '');
-        
-            $("#main_buttons").css("display", "none");
-            $("#create_text_file").css("display", "");
+            actions_dialog('create_text_file');
+            $("#create_text_file").css("display", "block");
+            check_opened_dialog('create_text_file');
         }
-    
-        function show_main_buttons_folder() {
-            $("#table_filemanager-1").css('display', 'none');
-            $("#create_folder").css("display", "none");
-            $("#upload_file").css("display", "none");
-            $("#create_text_file").css("display", "none");
+
+        function show_upload_file() {
+            actions_dialog('upload_file');
+            $("#upload_file").css("display", "block");
+            check_opened_dialog('upload_file');
+        }   
+
+        function check_opened_dialog(check_opened){
+            if(check_opened !== 'create_folder'){
+                if (($("#create_folder").hasClass("ui-dialog-content") && $('#create_folder').dialog('isOpen') === true)) {
+                    $('#create_folder').dialog('close');
+                }
+            }
+
+            if(check_opened !== 'create_text_file'){
+                if (($("#create_text_file").hasClass("ui-dialog-content") && $('#create_text_file').dialog('isOpen') === true)) {
+                    $('#create_text_file').dialog('close');
+                }
+            }
+            if(check_opened !== 'upload_file'){
+                if (($("#upload_file").hasClass("ui-dialog-content") && $('#upload_file').dialog('isOpen')) === true) {
+                    $('#upload_file').dialog('close');
+                }
+            }
+        }
+
+        function actions_dialog(action){
+            $('.'+action).addClass('file_table_modal_active');
+            var title_action ='';
+            switch (action) {
+                case 'create_folder':
+                title_action = "<?php echo __('Create a Directory'); ?>";
+                    break;
+
+                case 'create_text_file':
+                title_action = "<?php echo __('Create a Text'); ?>";
+                    break;
+
+                case 'upload_file':
+                title_action = "<?php echo __('Upload Files'); ?>";
+                    break;
+                                    
+                default:
+                    break;
+            }
+         
+            $('#'+action)
+            .dialog({
+                title: title_action,
+                resizable: true,
+                draggable: true,
+                modal: true,
+                overlay: {
+                    opacity: 0.5,
+                    background: "black"
+                },
+                width: 500,
+                minWidth: 500,
+                minHeight: 210,
+                maxWidth: 800,
+                maxHeight: 300,
+                close: function () {
+                    $('.'+action).removeClass('file_table_modal_active');
+                }
+            }).show();
         }
     </script>
     <?php
@@ -556,13 +598,13 @@ function filemanager_file_explorer(
     $table->width = '100%';
     $table->id = 'table_filemanager';
     if (!defined('METACONSOLE')) {
-        $table->class = 'databox data';
+        $table->class = 'info_table';
         $table->title = '<span>'.__('Index of %s', $relative_directory).'</span>';
     }
 
     if (defined('METACONSOLE')) {
         $table->class = 'databox_tactical';
-        $table->title = '<span>'.__('Index of images').'</span>';
+        $table->title = '<span>'.__('Index of %s', $relative_directory).'</span>';
     }
 
     $table->colspan = [];
@@ -582,13 +624,6 @@ function filemanager_file_explorer(
     $table->head[2] = __('Last modification');
     $table->head[3] = __('Size');
     $table->head[4] = __('Actions');
-    if (!defined('METACONSOLE')) {
-        $table->headstyle[0] = 'background-color:#82B92E';
-        $table->headstyle[1] = 'background-color:#82B92E';
-        $table->headstyle[2] = 'background-color:#82B92E';
-        $table->headstyle[3] = 'background-color:#82B92E';
-        $table->headstyle[4] = 'background-color:#82B92E';
-    }
 
     $prev_dir = explode('/', $relative_directory);
     $prev_dir_str = '';
@@ -606,85 +641,6 @@ function filemanager_file_explorer(
         $table->data[0][1] .= '</a>';
 
         $table->colspan[0][1] = 5;
-    }
-
-    if (is_writable($real_directory)) {
-        $table->rowstyle[1] = 'display: none;';
-        $table->data[1][0] = '';
-        $table->data[1][1] = '';
-
-        $table->data[1][1] .= '<div id="create_folder" style="display: none;">';
-        $table->data[1][1] .= '<form method="post" action="'.$url.'">';
-        $table->data[1][1] .= html_print_input_text('dirname', '', '', 30, 255, true);
-        $table->data[1][1] .= '&nbsp;&nbsp;'.html_print_submit_button(__('Create'), 'crt', false, 'class="sub next"', true);
-
-        $table->data[1][1] .= '&nbsp;&nbsp;'.html_print_button(
-            __('Close'),
-            'close',
-            false,
-            'show_main_buttons_folder();',
-            "class='sub cancel'",
-            true
-        );
-
-        $table->data[1][1] .= html_print_input_hidden('directory', $relative_directory, true);
-        $table->data[1][1] .= html_print_input_hidden('create_dir', 1, true);
-        $table->data[1][1] .= html_print_input_hidden('hash', md5($relative_directory.$config['dbpass']), true);
-        $table->data[1][1] .= html_print_input_hidden('hash2', md5($relative_directory.$config['dbpass']), true);
-        $table->data[1][1] .= '</form>';
-        $table->data[1][1] .= '</div>';
-
-        $table->data[1][1] .= '<div id="upload_file" style="display: none;">';
-
-        $table->data[1][1] .= '<form method="post" action="'.$url.'" enctype="multipart/form-data">';
-        $table->data[1][1] .= ui_print_help_tip(__('The zip upload in this dir, easy to upload multiple files.'), true);
-        $table->data[1][1] .= html_print_input_file('file', true, false);
-        $table->data[1][1] .= html_print_input_hidden('umask', $umask, true);
-        $table->data[1][1] .= html_print_checkbox('decompress', 1, false, true);
-        $table->data[1][1] .= __('Decompress');
-        $table->data[1][1] .= '&nbsp;&nbsp;&nbsp;';
-        $table->data[1][1] .= '&nbsp;&nbsp;'.html_print_submit_button(__('Go'), 'go', false, 'class="sub next"', true);
-
-        $table->data[1][1] .= '&nbsp;&nbsp;'.html_print_button(
-            __('Close'),
-            'close',
-            false,
-            'show_main_buttons_folder();',
-            "class='sub cancel'",
-            true
-        );
-
-        $table->data[1][1] .= html_print_input_hidden('real_directory', $real_directory, true);
-        $table->data[1][1] .= html_print_input_hidden('directory', $relative_directory, true);
-        $table->data[1][1] .= html_print_input_hidden('hash', md5($real_directory.$relative_directory.$config['dbpass']), true);
-        $table->data[1][1] .= html_print_input_hidden('hash2', md5($relative_directory.$config['dbpass']), true);
-        $table->data[1][1] .= html_print_input_hidden('upload_file_or_zip', 1, true);
-        $table->data[1][1] .= '</form>';
-        $table->data[1][1] .= '</div>';
-
-        $table->data[1][1] .= '<div id="create_text_file" style="display: none;">';
-        $table->data[1][1] .= '<form method="post" action="'.$url.'">';
-        $table->data[1][1] .= html_print_input_text('name_file', '', '', 30, 50, true);
-        $table->data[1][1] .= '&nbsp;&nbsp;'.html_print_submit_button(__('Create'), 'create', false, 'class="sub next"', true);
-
-        $table->data[1][1] .= '&nbsp;&nbsp;'.html_print_button(
-            __('Close'),
-            'close',
-            false,
-            'show_main_buttons_folder();',
-            "class='sub cancel'",
-            true
-        );
-
-        $table->data[1][1] .= html_print_input_hidden('real_directory', $real_directory, true);
-        $table->data[1][1] .= html_print_input_hidden('directory', $relative_directory, true);
-        $table->data[1][1] .= html_print_input_hidden('hash', md5($real_directory.$relative_directory.$config['dbpass']), true);
-        $table->data[1][1] .= html_print_input_hidden('umask', $umask, true);
-        $table->data[1][1] .= html_print_input_hidden('create_text_file', 1, true);
-        $table->data[1][1] .= '</form>';
-        $table->data[1][1] .= '</div>';
-
-        $table->colspan[1][1] = 5;
     }
 
     foreach ($files as $fileinfo) {
@@ -777,6 +733,7 @@ function filemanager_file_explorer(
             $data[4] .= html_print_input_hidden('delete_file', 1, true);
 
             $relative_dir = str_replace($homedir_filemanager, '', str_replace('\\', '/', dirname($fileinfo['realpath'])));
+
             if ($relative_dir[0] == '/') {
                 $relative_dir = substr($relative_dir, 1);
             }
@@ -812,13 +769,44 @@ function filemanager_file_explorer(
     if (!$readOnly) {
         if (is_writable($real_directory)) {
             // The buttons to make actions
-            if (defined('METACONSOLE')) {
-                echo "<div style='text-align: left; width: ".$table->width.";'>";
-            } else {
-                echo "<div style='text-align: right; width: ".$table->width."; margin-bottom:5px;'>";
-            }
+            $tabs_dialog = '<ul id="file_table_modal">
+            <li class="create_folder">
+                <a href="javascript: show_form_create_folder();">'.html_print_image(
+                'images/create_directory.png',
+                true,
+                ['title' => __('Create directory')]
+            ).'<span>'.__('Create a Directory').'</span>
+                </a>
+            </li>
+            <li class="create_text_file">
+                <a href="javascript: show_create_text_file();">'.html_print_image(
+                'images/create_file.png',
+                true,
+                ['title' => __('Create a Text')]
+            ).'<span>'.__('Create a Text').'</span>
+                </a>
+            </li>
+            <li class="upload_file">
+                <a href="javascript: show_upload_file();">'.html_print_image(
+                'images/upload_file.png',
+                true,
+                ['title' => __('Upload Files')]
+            ).'<span>'.__('Upload Files').'</span>
+                </a>
+            </li></ul>';
 
-            echo "<a href='javascript: show_form_create_folder();' style='margin-right: 3px; margin-bottom: 5px;'>";
+            echo '<div id="create_folder" style="display: none;">'.$tabs_dialog.'
+            <form method="post" action="'.$url.'">'.html_print_input_text('dirname', '', '', 30, 255, true).html_print_submit_button(__('Create'), 'crt', false, 'class="sub next"', true).html_print_input_hidden('directory', $relative_directory, true).html_print_input_hidden('create_dir', 1, true).html_print_input_hidden('hash', md5($relative_directory.$config['dbpass']), true).html_print_input_hidden('hash2', md5($relative_directory.$config['dbpass']), true).'</form></div>';
+
+            echo '<div id="upload_file" style="display: none;"> '.$tabs_dialog.'
+            <form method="post" action="'.$url.'" enctype="multipart/form-data">'.ui_print_help_tip(__('The zip upload in this dir, easy to upload multiple files.'), true).html_print_input_file('file', true, false).html_print_input_hidden('umask', $umask, true).html_print_checkbox('decompress', 1, false, true).__('Decompress').html_print_submit_button(__('Go'), 'go', false, 'class="sub next"', true).html_print_input_hidden('real_directory', $real_directory, true).html_print_input_hidden('directory', $relative_directory, true).html_print_input_hidden('hash', md5($real_directory.$relative_directory.$config['dbpass']), true).html_print_input_hidden('hash2', md5($relative_directory.$config['dbpass']), true).html_print_input_hidden('upload_file_or_zip', 1, true).'</form></div>';
+
+            echo ' <div id="create_text_file" style="display: none;">'.$tabs_dialog.'
+            <form method="post" action="'.$url.'">'.html_print_input_text('name_file', '', '', 30, 50, true).html_print_submit_button(__('Create'), 'create', false, 'class="sub next"', true).html_print_input_hidden('real_directory', $real_directory, true).html_print_input_hidden('directory', $relative_directory, true).html_print_input_hidden('hash', md5($real_directory.$relative_directory.$config['dbpass']), true).html_print_input_hidden('umask', $umask, true).html_print_input_hidden('create_text_file', 1, true).'</form></div>';
+
+            echo "<div style='width: ".$table->width.";' class='file_table_buttons'>";
+
+            echo "<a href='javascript: show_form_create_folder();'>";
             echo html_print_image(
                 'images/create_directory.png',
                 true,
@@ -826,7 +814,7 @@ function filemanager_file_explorer(
             );
             echo '</a>';
 
-            echo "<a href='javascript: show_create_text_file();' style='margin-right: 3px; margin-bottom: 5px;'>";
+            echo "<a href='javascript: show_create_text_file();'>";
             echo html_print_image(
                 'images/create_file.png',
                 true,
@@ -844,7 +832,7 @@ function filemanager_file_explorer(
 
             echo '</div>';
         } else {
-            echo "<div style='text-align: right; width: ".$table->width."; color:#AC4444;'>";
+            echo "<div style='text-align: right; width: ".$table->width."; color:#AC4444; margin-bottom:10px;'>";
             echo "<image src='images/info.png' />".__('The directory is read-only');
             echo '</div>';
         }
@@ -938,4 +926,3 @@ function filemanager_list_dir($dirpath)
 
     return array_merge($dirs, $files);
 }
-

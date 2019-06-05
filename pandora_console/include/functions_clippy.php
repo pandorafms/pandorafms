@@ -1,23 +1,31 @@
 <?php
-
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the  GNU Lesser General Public License
-// as published by the Free Software Foundation; version 2
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-
 /**
+ * Pandora FMS - http://pandorafms.com
+ * ==================================================
+ * Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the  GNU Lesser General Public License
+ * as published by the Free Software Foundation; version 2
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
  * @package    Include
  * @subpackage Clippy
  */
 
+// Begin.
 
+
+/**
+ * Starts clippy.
+ *
+ * @param string $sec2 Section.
+
+ * @return void
+ */
 function clippy_start($sec2)
 {
     global $config;
@@ -28,7 +36,7 @@ function clippy_start($sec2)
 
     $sec2 = str_replace('/', '_', $sec2);
 
-    // Avoid some case the other parameters in the url
+    // Avoid some case the other parameters in the url.
     if (strstr($sec2, '&') !== false) {
         $chunks = explode('&', $sec2);
         $sec2 = $chunks[0];
@@ -42,7 +50,7 @@ function clippy_start($sec2)
             clippy_write_javascript_helps_steps($tours);
         }
 
-        // Add homepage for all pages for to show the "task sugestions"
+        // Add homepage for all pages for to show the "task sugestions".
         include 'include/help/clippy/homepage.php';
 
         $tours = clippy_start_page_homepage();
@@ -56,12 +64,24 @@ function clippy_start($sec2)
 }
 
 
+/**
+ * Undocumented function
+ *
+ * @return void
+ */
 function clippy_clean_help()
 {
     set_cookie('clippy', null);
 }
 
 
+/**
+ * Undocumented function
+ *
+ * @param something $tours Tour.
+ *
+ * @return void
+ */
 function clippy_write_javascript_helps_steps($tours)
 {
     global $config;
@@ -71,7 +91,7 @@ function clippy_write_javascript_helps_steps($tours)
         $first_step_by_default = $tours['first_step_by_default'];
     }
 
-    // For the help context instead the clippy
+    // For the help context instead the clippy.
     $help_context = false;
     if (isset($tours['help_context'])) {
         $help_context = $tours['help_context'];
@@ -86,7 +106,7 @@ function clippy_write_javascript_helps_steps($tours)
     $clippy = get_cookie('clippy', false);
     set_cookie('clippy', null);
 
-    // Get the help steps from a task
+    // Get the help steps from a task.
     $steps = null;
     if (isset($tours['tours'][$clippy])) {
         $steps = $tours['tours'][$clippy]['steps'];
@@ -94,7 +114,7 @@ function clippy_write_javascript_helps_steps($tours)
 
     if ($first_step_by_default) {
         if (empty($steps)) {
-            // Get the first by default
+            // Get the first by default.
             $temp = reset($tours['tours']);
             $steps = $temp['steps'];
         }
@@ -121,7 +141,7 @@ function clippy_write_javascript_helps_steps($tours)
 
     if ($first_step_by_default) {
         if (empty($conf)) {
-            // Get the first by default
+            // Get the first by default.
             $temp = reset($tours['tours']);
             $conf = $temp['conf'];
         }
@@ -137,7 +157,7 @@ function clippy_write_javascript_helps_steps($tours)
         }
 
         $autostart = true;
-        if (!is_null($conf['autostart'])) {
+        if (isset($conf['autostart'])) {
             $autostart = $conf['autostart'];
         }
 
@@ -185,9 +205,25 @@ function clippy_write_javascript_helps_steps($tours)
                 <?php echo $name_obj_js_tour; ?> = introJs();
                 
                 <?php echo $name_obj_js_tour; ?>.setOptions({
-                    steps: <?php echo json_encode((bool) $steps); ?>,
-                    showBullets: <?php echo json_encode((bool) $show_bullets); ?>,
-                    showStepNumbers: <?php echo json_encode((bool) $show_step_numbers); ?>,
+                    steps: <?php echo json_encode($steps); ?>,
+                    showBullets: 
+        <?php
+        if ($show_bullets) {
+            echo 'true';
+        } else {
+            echo 'false';
+        }
+        ?>
+     ,
+                    showStepNumbers: 
+        <?php
+        if ($show_step_numbers) {
+            echo 'true';
+        } else {
+            echo 'false';
+        }
+        ?>
+     ,
                     nextLabel: "<?php echo __('Next &rarr;'); ?>",
                     prevLabel: "<?php echo __('&larr; Back'); ?>",
                     skipLabel: "<?php echo $skipLabel; ?>",
@@ -205,13 +241,22 @@ function clippy_write_javascript_helps_steps($tours)
                     return exit;
                 });
                 
-                if (<?php echo json_encode(!empty($conf['next_help'])); ?>) {
+                <?php
+                if (!empty($conf['next_help'])) {
+                    ?>
                     clippy_set_help('<?php echo $conf['next_help']; ?>');
+                    <?php
                 }
+                ?>
                 
-                if (<?php echo json_encode((bool) $autostart); ?>) {
-                    <?php echo $name_obj_js_tour; ?>.start();
+                <?php
+                if ($autostart) {
+                    echo $name_obj_js_tour;
+                    ?>
+                    .start();
+                    <?php
                 }
+                ?>
             });
             
             <?php echo $other_js; ?>
@@ -221,6 +266,13 @@ function clippy_write_javascript_helps_steps($tours)
 }
 
 
+/**
+ * Undocumented function
+ *
+ * @param string $help Help.
+ *
+ * @return void
+ */
 function clippy_context_help($help=null)
 {
     global $config;
@@ -244,10 +296,10 @@ function clippy_context_help($help=null)
     $code = str_replace('{clippy}', '#'.$id, $code);
     $code = str_replace('{clippy_obj}', 'intro_'.$id, $code);
 
-    $return = $code.'<div id="'.$id.'" style="display: inline;">'.'<a onclick="show_'.$id.'();" href="javascript: void(0);" >'.html_print_image(
+    $return = $code.'<div id="'.$id.'" style="display: inline-block;"><a onclick="show_'.$id.'();" href="javascript: void(0);" >'.html_print_image(
         'images/clippy_icon.png',
         true
-    ).'</a>'.'</div>
+    ).'</a></div>
         <script type="text/javascript">
         
         function show_'.$id.'() {

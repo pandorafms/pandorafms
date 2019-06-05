@@ -76,7 +76,7 @@ if ($update_alert || $modify_alert) {
         __('SNMP Console').' &raquo; '.__('Update alert'),
         'images/op_snmp.png',
         false,
-        'snmp_alert',
+        'snmp_alert_update_tab',
         false
     );
 } else if ($create_alert || $save_alert) {
@@ -84,7 +84,7 @@ if ($update_alert || $modify_alert) {
         __('SNMP Console').' &raquo; '.__('Create alert'),
         'images/op_snmp.png',
         false,
-        'snmp_alert',
+        'snmp_alert_overview_tab',
         false
     );
 } else {
@@ -92,7 +92,7 @@ if ($update_alert || $modify_alert) {
         __('SNMP Console').' &raquo; '.__('Alert overview'),
         'images/op_snmp.png',
         false,
-        'snmp_alert',
+        'snmp_alert_overview_tab',
         false
     );
 }
@@ -751,13 +751,12 @@ if ($create_alert || $update_alert) {
 
     // echo '<tr><td class="datos"><b>' . __('Alert filters') . ui_print_help_icon("snmp_alert_filters", true) . '</b></td></tr>';
     // OID
-    echo '<tr id="tr-oid">'.'<td class="datos2">'.__('Enterprise String').'</td>'.'<td class="datos2">';
+    echo '<tr id="tr-oid">'.'<td class="datos2">'.__('Enterprise String').ui_print_help_tip(__('Matches substrings. End the string with $ for exact matches.'), true).'</td>'.'<td class="datos2">';
     html_print_input_text('oid', $oid, '', 50, 255);
     echo '</td></tr>';
 
     // Custom
     echo '<tr id="tr-custom_value"><td class="datos"  valign="top">'.__('Custom Value/OID');
-    echo ui_print_help_icon('snmp_alert_custom', true);
 
     echo '</td><td class="datos">';
     html_print_textarea('custom_value', 2, 2, $custom_value, 'style="width:400px;"');
@@ -804,7 +803,7 @@ if ($create_alert || $update_alert) {
     echo '</td></tr>';
 
     // Variable bindings/Data #1
-    echo '<tr id="tr-custom_value">'.'<td class="datos"  valign="top">'.__('Variable bindings/Data').ui_print_help_icon('field_match_snmp', true).'</td>'.'<td class="datos">';
+    echo '<tr id="tr-custom_value">'.'<td class="datos"  valign="top">'.__('Variable bindings/Data').'</td><td class="datos">';
     echo '#';
     html_print_input_text('order_1', $order_1, '', 4);
     html_print_input_text('custom_oid_data_1', $custom_oid_data_1, '', 60);
@@ -1077,7 +1076,7 @@ if ($create_alert || $update_alert) {
     }
 
     echo '</td></tr>';
-    echo '<tr><td class="datos">'.__('Position').ui_print_help_icon('snmp_alert_position', true).'</td><td class="datos">';
+    echo '<tr><td class="datos">'.__('Position').'</td><td class="datos">';
 
     html_print_input_text('position', $position, '', 3);
     echo '</td></tr>';

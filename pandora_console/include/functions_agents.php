@@ -82,17 +82,25 @@ function agents_get_agent_id_by_alias($alias)
 
 
 /**
- * Creates an agent
+ * Creates an agent.
  *
- * @param string Agent name.
- * @param string Group to be included.
- * @param int Agent interval
- * @param string Agent IP
+ * @param string  $name          Agent name.
+ * @param string  $id_group      Group to be included.
+ * @param integer $interval      Agent interval.
+ * @param string  $ip_address    Agent IP.
+ * @param mixed   $values        Other tagente fields.
+ * @param boolean $alias_as_name True to not assign an alias as name.
  *
  * @return integer New agent id if created. False if it could not be created.
  */
-function agents_create_agent($name, $id_group, $interval, $ip_address, $values=false)
-{
+function agents_create_agent(
+    $name,
+    $id_group,
+    $interval,
+    $ip_address,
+    $values=false,
+    $alias_as_name=false
+) {
     if (empty($name)) {
         return false;
     }
@@ -101,7 +109,7 @@ function agents_create_agent($name, $id_group, $interval, $ip_address, $values=f
         return false;
     }
 
-    // Check interval greater than zero
+    // Check interval greater than zero.
     if ($interval < 0) {
         $interval = false;
     }
@@ -115,7 +123,7 @@ function agents_create_agent($name, $id_group, $interval, $ip_address, $values=f
     }
 
     $values['alias'] = $name;
-    $values['nombre'] = hash('sha256', $name.'|'.$ip_address.'|'.time().'|'.sprintf('%04d', rand(0, 10000)));
+    $values['nombre'] = ($alias_as_name === false) ? hash('sha256', $name.'|'.$ip_address.'|'.time().'|'.sprintf('%04d', rand(0, 10000))) : $name;
     $values['id_grupo'] = $id_group;
     $values['intervalo'] = $interval;
 
@@ -128,12 +136,12 @@ function agents_create_agent($name, $id_group, $interval, $ip_address, $values=f
         return false;
     }
 
-    // Create address for this agent in taddress
+    // Create address for this agent in taddress.
     if (!empty($ip_address)) {
         agents_add_address($id_agent, $ip_address);
     }
 
-    db_pandora_audit('Agent management', "New agent '$name' created");
+    db_pandora_audit('Agent management', 'New agent '.$name.' created');
 
     return $id_agent;
 }
@@ -320,14 +328,21 @@ function agents_get_alerts_simple($id_agent=false, $filter='', $options=false, $
  *
  * By default, it will return all the agents where the user has reading access.
  *
- * @param array filter options in an indexed array. See
- * db_format_array_where_clause_sql()
- * @param array Fields to get.
- * @param string Access needed in the agents groups.
- * @param array                                     $order  The order of agents, by default is upward for field nombre.
- * @param boolean                                   $return Whether to return array with agents or false, or sql string statement
+ * @param array   $filter         Filter options in an indexed array.
+ * See db_format_array_where_clause_sql().
+ * @param array   $fields         DB fields to get.
+ * @param string  $access         ACL level needed in the agents groups.
+ * @param array   $order          The order of agents, by default is upward
+ *            for field nombre.
+ * @param boolean $return         Whether to return array with agents or
+ * the sql string statement.
+ * @param boolean $disabled_agent Whether to return only the enabled agents
+ * or not.
+ * @param boolean $use_meta_table Whether to use the regular or the meta table
+ * to retrieve the agents.
  *
- * @return mixed An array with all alerts defined for an agent or false in case no allowed groups are specified.
+ * @return mixed An array with all alerts defined for an agent
+ * or false in case no allowed groups are specified.
  */
 function agents_get_agents(
     $filter=false,
@@ -338,7 +353,8 @@ function agents_get_agents(
         'order' => 'ASC',
     ],
     $return=false,
-    $disabled_agent=0
+    $disabled_agent=0,
+    $use_meta_table=false
 ) {
     global $config;
 
@@ -555,11 +571,15 @@ function agents_get_agents(
         );
     }
 
+    $table_name = ($use_meta_table === true) ? 'tmetaconsole_agent' : 'tagente';
     $sql = sprintf(
         'SELECT DISTINCT %s
-		FROM tagente LEFT JOIN tagent_secondary_group ON tagent_secondary_group.id_agent=tagente.id_agente
+		FROM `%s` tagente
+        LEFT JOIN tagent_secondary_group
+            ON tagent_secondary_group.id_agent=tagente.id_agente
 		WHERE %s %s',
         implode(',', $fields),
+        $table_name,
         $where,
         $order
     );
@@ -570,6 +590,7 @@ function agents_get_agents(
     }
 
     $sql = sprintf('%s %s', $sql, $limit_sql);
+
     if ($return) {
         return $sql;
     } else {
@@ -949,11 +970,11 @@ function agents_get_group_agents(
 
     $filter = [];
 
-    // check available groups for target user only if asking for 'All' group
+    // Check available groups for target user only if asking for 'All' group.
     if (!$noACL && $id_group == 0) {
-        $id_group = $id_group == 0 ? array_keys(users_get_groups(false, 'AR', false)) : groups_safe_acl($config['id_user'], $id_group, 'AR');
+        $id_group = ($id_group == 0) ? array_keys(users_get_groups(false, 'AR', false)) : groups_safe_acl($config['id_user'], $id_group, 'AR');
         if (empty($id_group)) {
-            // An empty array means the user doesn't have access
+            // An empty array means the user doesn't have access.
             return [];
         }
     }
@@ -970,7 +991,7 @@ function agents_get_group_agents(
             $id_group = groups_get_id_recursive($id_group, true);
         }
 
-        // check available groups for target user only if asking for 'All' group
+        // Check available groups for target user only if asking for 'All' group.
         if (!$noACL && $id_group == 0) {
             $id_group = array_keys(
                 users_get_groups(false, 'AR', true, false, (array) $id_group)
@@ -978,7 +999,7 @@ function agents_get_group_agents(
         }
     }
 
-    // Search for primary and secondary groups
+    // Search for primary and secondary groups.
     if (!empty($id_group)) {
         $filter[] = '('.db_format_array_where_clause_sql(
             [
@@ -990,7 +1011,7 @@ function agents_get_group_agents(
     }
 
     if ($search === true) {
-        // No added search. Show both disabled and non-disabled
+        // No added search. Show both disabled and non-disabled.
     } else if (is_array($search)) {
         if (!$search['all_agents']) {
             $filter['disabled'] = 0;
@@ -2194,7 +2215,7 @@ function agents_delete_agent($id_agents, $disableACL=false)
 
         // Delete agent in networkmap enterprise
         if (enterprise_installed()) {
-            enterprise_include_once('include/functions_pandora_networkmap.php');
+            enterprise_include_once('include/functions_networkmap.php');
             networkmap_delete_nodes_by_agent([$id_agent]);
         }
 
@@ -3102,7 +3123,7 @@ function select_agents_for_module_group(
             'AND',
             'tagente_modulo',
             true,
-            [],
+            $filter['tags'],
             false
         );
         $sql_tags_inner = 'INNER JOIN ttag_module

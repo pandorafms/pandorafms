@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>Visual Console Sandbox</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" type="text/css" media="screen" href="vc.main.css" />
+  </head>
+  <style>
+    body {
+      margin: 0;
+    }
+  </style>
+  <body>
+    <div id="visual-console-container"></div>
+  </body>
+  <script src="vc.main.min.js"></script>
+  <script>
+    var container = document.getElementById("visual-console-container");
+
+    if (container != null) {
+      var props = {
+        id: 1,
+        groupId: 0,
+        name: "Test Visual Console",
+        width: 1000,
+        height: 400,
+        backgroundURL: null,
+        backgroundColor: "rgb(86, 86, 86)",
+        isFavorite: false
+      };
+
+      var staticGraphRawProps = {
+        // Generic props.
+        id: 1,
+        type: 0, // Static graph = 0
+        label: null,
+        isLinkEnabled: false,
+        isOnTop: false,
+        parentId: null,
+        aclGroupId: null,
+        // Position props.
+        x: 100,
+        y: 50,
+        // Size props.
+        width: 70,
+        height: 70,
+        // Agent props.
+        agentId: null,
+        agentName: null,
+        // Module props.
+        moduleId: null,
+        moduleName: null,
+        // Custom props.
+        imageSrc:
+          "http://localhost/pandora_console/images/console/icons/bridge_ok.png",
+        showLastValueTooltip: "default"
+      };
+
+      var colorCloudRawProps = {
+        // Generic props.
+        id: 2,
+        type: 20, // Color cloud = 20
+        label: null,
+        labelText: "CLOUD",
+        isLinkEnabled: true,
+        isOnTop: false,
+        parentId: 10,
+        aclGroupId: null,
+        link: "https://google.es",
+        // Position props.
+        x: 300,
+        y: 50,
+        // Size props.
+        width: 150,
+        height: 150,
+        // Agent props.
+        agentId: null,
+        agentName: null,
+        // Module props.
+        moduleId: null,
+        moduleName: null,
+        // Custom props.
+        color: "rgb(100, 50, 245)"
+      };
+
+      var digitalClockRawProps = {
+        // Generic props.
+        id: 3,
+        type: 19, // Clock = 19
+        label: null,
+        isLinkEnabled: false,
+        isOnTop: false,
+        parentId: null,
+        aclGroupId: null,
+        // Position props.
+        x: 60,
+        y: 150,
+        // Size props.
+        width: 300,
+        height: 150,
+        // Custom props.
+        clockType: "digital",
+        clockFormat: "datetime",
+        clockTimezone: "Madrid",
+        clockTimezoneOffset: 60,
+        showClockTimezone: true,
+        color: "white"
+      };
+
+      var digitalClockRawProps2 = {
+        // Generic props.
+        id: 4,
+        type: 19, // Clock = 19
+        label: null,
+        isLinkEnabled: false,
+        isOnTop: false,
+        parentId: null,
+        aclGroupId: null,
+        // Position props.
+        x: 10,
+        y: 250,
+        // Size props.
+        width: 100,
+        height: 50,
+        // Custom props.
+        clockType: "digital",
+        clockFormat: "datetime",
+        clockTimezone: "Madrid",
+        clockTimezoneOffset: 60,
+        showClockTimezone: true,
+        color: "#82B92E"
+      };
+
+      var analogicClockRawProps = {
+        // Generic props.
+        id: 5,
+        type: 19, // Clock = 19
+        label: "<h1>Analogic clock</h1>",
+        labelPosition: "up",
+        isLinkEnabled: false,
+        isOnTop: false,
+        parentId: null,
+        aclGroupId: null,
+        // Position props.
+        x: 500,
+        y: 50,
+        // Size props.
+        width: 200,
+        height: 200,
+        // Custom props.
+        clockType: "analogic",
+        clockFormat: "datetime",
+        clockTimezone: "Copenhagen",
+        clockTimezoneOffset: 60,
+        showClockTimezone: true
+      };
+
+      var boxRawProps = {
+        // Generic props.
+        id: 6,
+        type: 12, // Box = 12
+        // Position props.
+        x: 720,
+        y: 20,
+        // Size props.
+        width: 50,
+        height: 50,
+        // Custom props.
+        borderWidth: 10,
+        borderColor: "white",
+        fillColor: "black"
+      };
+
+      var lineRawProps = {
+        // Generic props.
+        id: 7,
+        type: 13, // Line = 13
+        // Position props.
+        x: 720,
+        y: 20,
+        // Size props.
+        width: 50,
+        height: 50,
+        // Custom props.
+        startX: 200,
+        startY: 100,
+        endX: 350,
+        endY: 30,
+        lineWidth: 2,
+        color: "white"
+      };
+
+      var labelRawProps = {
+        // Generic props.
+        id: 8,
+        type: 4, // Label = 4
+        label: '<h1 style="color: #FDFD96;">I\'m a label</h1>',
+        isLinkEnabled: false,
+        isOnTop: false,
+        parentId: null,
+        aclGroupId: null,
+        // Position props.
+        x: 410,
+        y: 0,
+        // Size props.
+        width: 200,
+        height: 200
+      };
+
+      var simpleValueRawProps = {
+        // Generic props.
+        id: 9,
+        type: 2, // Simple value = 2
+        label: '<h3 style="color: #FDFD96;">Simple Value: (_VALUE_)</h3>',
+        isLinkEnabled: false,
+        isOnTop: false,
+        parentId: null,
+        aclGroupId: null,
+        // Position props.
+        x: 10,
+        y: 10,
+        // Size props.
+        width: 50,
+        height: 50,
+        // Custom props.
+        valueType: "string",
+        value: "10",
+        processValue: "none"
+      };
+
+      var percentileRawProps = {
+        // Generic props.
+        id: 10,
+        type: 3, // Percentile = 3
+        label: null,
+        isLinkEnabled: false,
+        isOnTop: false,
+        parentId: null,
+        aclGroupId: null,
+        // Position props.
+        x: 790,
+        y: 10,
+        // Size props.
+        width: 200,
+        height: 40,
+        // Custom props.
+        percentileType: "progress-bar",
+        valueType: "percent",
+        minValue: 100,
+        maxValue: 500,
+        color: null,
+        labelColor: "#82B92E",
+        value: 245,
+        unit: "seconds"
+      };
+
+      var percentileBubbleRawProps = {
+        // Generic props.
+        id: 11,
+        type: 3, // Percentile = 3
+        label: null,
+        isLinkEnabled: true,
+        isOnTop: false,
+        parentId: 1,
+        aclGroupId: null,
+        // Position props.
+        x: 830,
+        y: 60,
+        // Size props.
+        width: 100,
+        height: 100,
+        // Custom props.
+        percentileType: "bubble",
+        valueType: "value",
+        minValue: 100,
+        maxValue: 500,
+        color: null,
+        labelColor: "#82B92E",
+        value: 245,
+        unit: "seconds"
+      };
+
+      var percentileDonutRawProps = {
+        // Generic props.
+        id: 12,
+        type: 3, // Percentile = 3
+        label: null,
+        isLinkEnabled: true,
+        isOnTop: false,
+        parentId: 1,
+        aclGroupId: null,
+        // Position props.
+        x: 830,
+        y: 170,
+        // Size props.
+        width: 100,
+        height: 100,
+        // Custom props.
+        percentileType: "circular-progress-bar",
+        valueType: "value",
+        minValue: 100,
+        maxValue: 500,
+        color: null,
+        labelColor: "#82B92E",
+        value: 245,
+        unit: "seconds"
+      };
+
+      var percentileDonutAltRawProps = {
+        // Generic props.
+        id: 12,
+        type: 3, // Percentile = 3
+        label: null,
+        isLinkEnabled: true,
+        isOnTop: false,
+        parentId: 1,
+        aclGroupId: null,
+        // Position props.
+        x: 830,
+        y: 280,
+        // Size props.
+        width: 100,
+        height: 100,
+        // Custom props.
+        percentileType: "circular-progress-bar-alt",
+        valueType: "value",
+        minValue: 100,
+        maxValue: 500,
+        color: null,
+        labelColor: "#82B92E",
+        value: 245,
+        unit: "seconds"
+      };
+
+      var items = [
+        staticGraphRawProps,
+        colorCloudRawProps,
+        digitalClockRawProps,
+        digitalClockRawProps2,
+        analogicClockRawProps,
+        boxRawProps,
+        lineRawProps,
+        labelRawProps,
+        simpleValueRawProps,
+        percentileRawProps,
+        percentileBubbleRawProps,
+        percentileDonutRawProps,
+        percentileDonutAltRawProps
+      ];
+
+      try {
+        var visualConsole = new VisualConsole(container, props, items);
+        console.log(visualConsole);
+
+        visualConsole.onClick(function(e) {
+          console.log("[CLICK]", e);
+        });
+      } catch (error) {
+        console.log("ERROR", error.message);
+      }
+    }
+  </script>
+</html>

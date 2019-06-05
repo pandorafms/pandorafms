@@ -1,18 +1,35 @@
 <?php
-// ______                 __                     _______ _______ _______
-// |   __ \.---.-.-----.--|  |.-----.----.---.-. |    ___|   |   |     __|
-// |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
-// |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
-//
-// ============================================================================
-// Copyright (c) 2007-2010 Artica Soluciones Tecnologicas, http://www.artica.es
-// This code is NOT free software. This code is NOT licenced under GPL2 licence
-// You cannnot redistribute it without written permission of copyright holder.
-// ============================================================================
-// Load global variables
+/**
+ * Extension to manage a list of gateways and the node address where they should
+ * point to.
+ *
+ * @category   Extensions
+ * @package    Pandora FMS
+ * @subpackage Community
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
+
 global $config;
 
-// Check user credentials
+// Check user credentials.
 check_login();
 
 $id = (int) get_parameter('id_networkmap', 0);
@@ -32,18 +49,18 @@ if ($new_networkmap) {
     $id_group = 0;
     $node_radius = 40;
     $description = '';
-    $method = 'fdp';
+    $method = 'neato';
     $recon_task_id = 0;
     $source = 'group';
     $ip_mask = '';
-    $dont_show_subgroups = false;
+    $dont_show_subgroups = 0;
     $offset_x = '';
     $offset_y = '';
     $scale_z = 0.5;
-    $node_sep = 0.25;
+    $node_sep = 0.1;
     $rank_sep = 1.0;
     $mindist = 1.0;
-    $kval = 0.3;
+    $kval = 0.1;
 }
 
 $disabled_generation_method_select = false;
@@ -63,8 +80,7 @@ if ($edit_networkmap) {
     } else {
         $id_group = $values['id_group'];
 
-        // ACL for the network map
-        // $networkmap_read = check_acl ($config['id_user'], $id_group, "MR");
+        // ACL for the network map.
         $networkmap_write = check_acl($config['id_user'], $id_group, 'MW');
         $networkmap_manage = check_acl($config['id_user'], $id_group, 'MM');
 
@@ -182,7 +198,7 @@ ui_print_page_header(
     __('Networkmap'),
     'images/bricks.png',
     false,
-    'network_map_enterprise',
+    'network_map_enterprise_edit',
     false
 );
 
@@ -221,7 +237,7 @@ if (!empty($result)) {
 if ($not_found) {
     ui_print_error_message(__('Not found networkmap.'));
 } else {
-    $table = null;
+    $table = new stdClass();
     $table->id = 'form_editor';
 
     $table->width = '98%';
@@ -314,7 +330,13 @@ if ($not_found) {
     $table->data['source_data_ip_mask'][1] = html_print_input_text('ip_mask', $ip_mask, '', 20, 255, true, $disabled_source);
 
     $table->data['source_data_dont_show_subgroups'][0] = __('Don\'t show subgroups:');
-    $table->data['source_data_dont_show_subgroups'][1] = html_print_checkbox('dont_show_subgroups', '1', $dont_show_subgroups, true, $disabled_source);
+    $table->data['source_data_dont_show_subgroups'][1] = html_print_checkbox(
+        'dont_show_subgroups',
+        '1',
+        $dont_show_subgroups,
+        true,
+        $disabled_source
+    );
 
     $methods = [
         'twopi'          => 'radial',
@@ -332,7 +354,7 @@ if ($not_found) {
         $method,
         '',
         '',
-        'twopi',
+        'neato',
         true,
         false,
         true,

@@ -2,8 +2,8 @@
 # Pandora FMS Console
 #
 %define name        pandorafms_console
-%define version     7.0NG.731
-%define release     190215
+%define version     7.0NG.735
+%define release     190605
 
 # User and Group under which Apache is running
 %define httpd_name  httpd
@@ -26,7 +26,7 @@ BuildRoot:          %{_tmppath}/%{name}
 BuildArch:          noarch
 AutoReq:            0
 Requires:           %{httpd_name} >= 2.0.0
-Requires:           mod_php >= 5.2.0
+Requires:           mod_php >= 7.0
 Requires:           php-gd, php-ldap, php-snmp, php-session, php-gettext
 Requires:           php-mysqlnd, php-mbstring, php-zip, php-zlib, php-curl
 Requires:           xorg-x11-fonts-75dpi, xorg-x11-fonts-misc, php-pecl-zip

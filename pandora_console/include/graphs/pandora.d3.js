@@ -20,7 +20,7 @@
 // matrix = [[0, 0, 2],     // a[a => a, a => b, a => c]
 //           [5, 0, 1],     // b[b => a, b => b, b => c]
 //           [2, 3, 0]];    // c[c => a, c => b, c => c]
-function chordDiagram(recipient, elements, matrix, unit, width) {
+function chordDiagram(recipient, elements, matrix, width) {
   d3.chart = d3.chart || {};
   d3.chart.chordWheel = function(options) {
     // Default values
@@ -206,18 +206,14 @@ function chordDiagram(recipient, elements, matrix, unit, width) {
                     " → " +
                     elements[d.target.index] +
                     ": <b>" +
-                    d.source.value.toFixed(2) +
-                    " " +
-                    unit +
+                    valueToBytes(d.source.value) +
                     "</b>" +
                     "<br>" +
                     elements[d.target.index] +
                     " → " +
                     elements[d.source.index] +
                     ": <b>" +
-                    d.target.value.toFixed(2) +
-                    " " +
-                    unit +
+                    valueToBytes(d.target.value) +
                     "</b>"
                 )
             );
@@ -227,18 +223,14 @@ function chordDiagram(recipient, elements, matrix, unit, width) {
                 " → " +
                 elements[d.target.index] +
                 ": <b>" +
-                d.source.value.toFixed(2) +
-                " " +
-                unit +
+                valueToBytes(d.source.value) +
                 "</b>" +
                 "<br>" +
                 elements[d.target.index] +
                 " → " +
                 elements[d.source.index] +
                 ": <b>" +
-                d.target.value.toFixed(2) +
-                " " +
-                unit +
+                valueToBytes(d.target.value) +
                 "</b>"
             );
           }
@@ -1782,7 +1774,10 @@ function progress_bar_d3(
   color,
   unit,
   label,
-  label_color
+  label_color,
+  radiusx,
+  radiusy,
+  transition
 ) {
   var startPercent = 0;
   var endPercent = parseInt(percentile) / 100;
@@ -1799,20 +1794,20 @@ function progress_bar_d3(
     .append("rect")
     .attr("fill", "#000000")
     .attr("fill-opacity", 0.5)
-    .attr("height", 20)
+    .attr("height", height)
     .attr("width", width)
-    .attr("rx", 10)
-    .attr("ry", 10)
+    .attr("rx", radiusx)
+    .attr("ry", radiusy)
     .attr("x", 0);
 
   var progress_front = circle
     .append("rect")
     .attr("fill", color)
     .attr("fill-opacity", 1)
-    .attr("height", 20)
+    .attr("height", height)
     .attr("width", 0)
-    .attr("rx", 10)
-    .attr("ry", 10)
+    .attr("rx", radiusx)
+    .attr("ry", radiusy)
     .attr("x", 0);
 
   var labelText = circle
@@ -1834,7 +1829,7 @@ function progress_bar_d3(
     .style("font-weight", "bold")
     .style("font-size", 14)
     .attr("text-anchor", "middle")
-    .attr("dy", "-10");
+    .attr("dy", (height - height / 2) / 4);
 
   function updateProgress(bar_progress) {
     var percent_value = Number(bar_progress * 100);
@@ -1842,17 +1837,21 @@ function progress_bar_d3(
     progress_front.attr("width", width * bar_progress);
   }
 
-  var bar_progress = startPercent;
-
-  (function loops() {
+  if (transition == 0) {
+    var bar_progress = endPercent;
     updateProgress(bar_progress);
+  } else {
+    var bar_progress = startPercent;
+    (function loops() {
+      updateProgress(bar_progress);
 
-    if (count > 0) {
-      count--;
-      bar_progress += step;
-      setTimeout(loops, 30);
-    }
-  })();
+      if (count > 0) {
+        count--;
+        bar_progress += step;
+        setTimeout(loops, 30);
+      }
+    })();
+  }
 }
 
 function progress_bubble_d3(
@@ -1981,7 +1980,8 @@ function print_circular_progress_bar(
   color,
   unit,
   label,
-  label_color
+  label_color,
+  transition
 ) {
   var twoPi = Math.PI * 2;
   var radius = width / 2;
@@ -2113,15 +2113,18 @@ function print_circular_progress_bar(
 
   var progress = startPercent;
 
-  (function loops() {
-    updateProgress(progress);
+  if (transition == 0) updateProgress(endPercent);
+  else {
+    (function loops() {
+      updateProgress(progress);
 
-    if (count > 0) {
-      count--;
-      progress += step;
-      setTimeout(loops, 30);
-    }
-  })();
+      if (count > 0) {
+        count--;
+        progress += step;
+        setTimeout(loops, 30);
+      }
+    })();
+  }
 }
 
 function print_interior_circular_progress_bar(
@@ -2743,4 +2746,239 @@ function printClockDigital1(
 
     setTimeout(tick, 1000 - (now % 1000));
   })();
+}
+
+function valueToBytes(value) {
+  var shorts = ["", "K", "M", "G", "T", "P", "E", "Z", "Y"];
+  var pos = 0;
+  while (value >= 1024) {
+    // As long as the number can be divided by divider.
+    pos++;
+    // Position in array starting with 0.
+    value = value / 1024;
+  }
+
+  // This will actually do the rounding and the decimals.
+  return value.toFixed(2) + shorts[pos] + "B";
+}
+
+function donutNarrowGraph(colores, width, height, total) {
+  // Default settings
+  var donutbody = d3.select("body");
+  var data = {};
+  // var showTitle = true;
+
+  if (width == "") {
+    width = 180;
+  }
+
+  if (height == "") {
+    height = 180;
+  }
+
+  var radius = Math.min(width, height) / 2;
+
+  var currentVal;
+  //var color = d3.scale.category20();
+
+  var colores_index = [];
+  var colores_value = [];
+
+  $.each(colores, function(index, value) {
+    colores_index.push(index);
+    colores_value.push(value);
+  });
+
+  var color = d3.scale
+    .ordinal()
+    .domain(colores_index)
+    .range(colores_value);
+
+  var pie = d3.layout
+    .pie()
+    .sort(null)
+    .value(function(d) {
+      return d.value;
+    });
+
+  var svg, g, arc;
+
+  var object = {};
+
+  // Method for render/refresh graph
+  object.render = function() {
+    if (!svg) {
+      // Show normal status by default. This variable must be initialized here, before clearing data.
+      var normal_status = data.Normal;
+
+      // Don't draw 0 or invalid values. console.log(data);
+      var data_map = $.map(data, function(value, index) {
+        if (value == 0 || isNaN(value)) {
+          return index;
+        }
+      });
+
+      $.each(data_map, function(i, val) {
+        delete data[val];
+      });
+      //New data: console.log(data);
+
+      arc = d3.svg
+        .arc()
+        .outerRadius(radius)
+        .innerRadius(radius - radius / 2.5);
+
+      svg = donutbody
+        .append("svg")
+        .attr("width", width)
+        .attr("height", height)
+        .append("g")
+        .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+
+      g = svg
+        .selectAll(".arc")
+        .data(pie(d3.entries(data)))
+        .enter()
+        .append("g")
+        .attr("class", "arc");
+
+      g.append("path")
+        // Attach current value to g so that we can use it for animation
+        .each(function(d) {
+          this._current = d;
+        })
+        .attr("d", arc)
+        .attr("stroke", "white")
+        .style("stroke-width", 2)
+        .style("fill", function(d) {
+          return color(d.data.key);
+        });
+      // This is to show labels on the graph
+      /* g.append("text")
+        .attr("transform", function(d) {
+          return "translate(" + arc.centroid(d) + ")";
+        })
+        .attr("dy", ".35em")
+        .style("text-anchor", "middle");
+      g.select("text").text(function(d) {
+        return d.data.key;
+      });*/
+
+      // Show normal status by default.
+      var percentage_normal;
+      svg
+        .append("text")
+        .datum(data)
+        .attr("x", 0)
+        .attr("y", 0 + radius / 10)
+        .attr("class", "text-tooltip")
+        .style("text-anchor", "middle")
+        .attr("font-weight", "bold")
+        .style("font-family", "Arial, Verdana")
+        //.attr("fill", "#82b92e")
+        .style("font-size", function(d) {
+          if (normal_status) {
+            percentage_normal = (normal_status * 100) / total;
+            if (Number.isInteger(percentage_normal)) {
+              percentage_normal = percentage_normal.toFixed(0);
+              return radius / 3 + "px";
+            } else {
+              percentage_normal = percentage_normal.toFixed(1);
+              return radius / 3.5 + "px";
+            }
+          }
+        })
+        .text(function(d) {
+          if (normal_status) {
+            return percentage_normal + "%";
+          } else {
+            return "0%";
+          }
+        });
+
+      g.on("mouseover", function(obj) {
+        //console.log(obj);
+        var percentage;
+        svg
+          .select("text.text-tooltip")
+          // This is to paint the text of the corresponding color.
+          /* .attr("fill", function(d) {
+            return color(obj.data.key);
+          })*/
+          .style("font-size", function(d) {
+            percentage = (d[obj.data.key] * 100) / total;
+            if (Number.isInteger(percentage)) {
+              percentage = percentage.toFixed(0);
+              return radius / 3 + "px";
+            } else {
+              percentage = percentage.toFixed(1);
+              return radius / 3.5 + "px";
+            }
+          })
+          .text(percentage + "%");
+      });
+
+      g.on("mouseout", function(obj) {
+        svg.select("text.text-tooltip").text(function(d) {
+          if (normal_status) {
+            return percentage_normal + "%";
+          } else {
+            return "0%";
+          }
+        });
+        // .attr("fill", "#82b92e");
+      });
+    } else {
+      g.data(pie(d3.entries(data)))
+        .exit()
+        .remove();
+
+      g.select("path")
+        .transition()
+        .duration(200)
+        .attrTween("d", function(a) {
+          var i = d3.interpolate(this._current, a);
+          this._current = i(0);
+          return function(t) {
+            return arc(i(t));
+          };
+        });
+
+      g.select("text").attr("transform", function(d) {
+        return "translate(" + arc.centroid(d) + ")";
+      });
+
+      svg.select("text.text-tooltip").datum(data);
+    }
+    return object;
+  };
+
+  // Getter and setter methods
+  object.data = function(value) {
+    if (!arguments.length) return data;
+    data = value;
+    return object;
+  };
+
+  object.donutbody = function(value) {
+    if (!arguments.length) return donutbody;
+    donutbody = value;
+    return object;
+  };
+
+  object.width = function(value) {
+    if (!arguments.length) return width;
+    width = value;
+    radius = Math.min(width, height) / 2;
+    return object;
+  };
+
+  object.height = function(value) {
+    if (!arguments.length) return height;
+    height = value;
+    radius = Math.min(width, height) / 2;
+    return object;
+  };
+
+  return object;
 }

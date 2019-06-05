@@ -45,6 +45,7 @@ function mysql_connect_db($host=null, $db=null, $user=null, $pass=null, $port=nu
     if ($config['mysqli']) {
         $connect_id = mysqli_connect($host, $user, $pass, $db, $port);
         if (mysqli_connect_errno() > 0) {
+            include 'general/mysqlerr.php';
             return false;
         }
 
@@ -204,7 +205,7 @@ function mysql_db_get_value($field, $table, $field_search=1, $condition=1, $sear
  *
  * @return mixed The first row of a database query or false.
  */
-function mysql_db_get_row($table, $field_search, $condition, $fields=false)
+function mysql_db_get_row($table, $field_search, $condition, $fields=false, $cache=true)
 {
     if (empty($fields)) {
         $fields = '*';
@@ -242,7 +243,7 @@ function mysql_db_get_row($table, $field_search, $condition, $fields=false)
         );
     }
 
-    $result = db_get_all_rows_sql($sql);
+    $result = db_get_all_rows_sql($sql, false, $cache);
 
     if ($result === false) {
         return false;
@@ -706,6 +707,7 @@ function mysql_db_format_array_where_clause_sql($values, $join='AND', $prefix=fa
     $i = 1;
     $max = count($values);
     foreach ($values as $field => $value) {
+        $negative = false;
         if (is_numeric($field)) {
             // User provide the exact operation to do
             $query .= $value;
@@ -716,6 +718,11 @@ function mysql_db_format_array_where_clause_sql($values, $join='AND', $prefix=fa
 
             $i++;
             continue;
+        }
+
+        if ($field[0] == '!') {
+            $negative = true;
+            $field = substr($field, 1);
         }
 
         if ($field[0] != '`') {
@@ -732,7 +739,8 @@ function mysql_db_format_array_where_clause_sql($values, $join='AND', $prefix=fa
         } else if (is_float($value) || is_double($value)) {
             $query .= sprintf('%s = %f', $field, $value);
         } else if (is_array($value)) {
-            $query .= sprintf('%s IN ("%s")', $field, implode('", "', $value));
+            $not = $negative ? ' NOT ' : '';
+            $query .= sprintf('%s %sIN ("%s")', $field, $not, implode('", "', $value));
         } else {
             if ($value === '') {
                 // Search empty string

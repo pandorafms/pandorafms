@@ -1,0 +1,259 @@
+/*
+ * Discovery css global
+ */
+
+li.discovery {
+  display: inline-block;
+  float: left;
+  width: 250px;
+  height: 120px;
+  margin: 15px;
+  padding-bottom: 50px;
+}
+
+li.discovery > a {
+  text-decoration: none;
+  color: #333;
+}
+li.discovery > a:hover {
+  color: #000;
+}
+
+li.discovery img {
+  height: 90px;
+}
+
+li.discovery > a label {
+  cursor: pointer;
+}
+
+div.data_container > label {
+  font-family: "lato-bolder", "Open Sans", sans-serif !important;
+  font-weight: lighter;
+}
+
+div.data_container {
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  padding-top: 30px;
+  padding-bottom: 30px;
+}
+
+div.data_container:hover {
+  box-shadow: 2px 2px 10px #ddd;
+}
+
+/*
+ * TODO: This may be at hostdevices.css
+ */
+.texto {
+  height: auto;
+  text-align: center;
+}
+h1.wizard {
+  padding: 0;
+  margin: 0;
+}
+h1.wizard a {
+  margin-left: -20px;
+}
+h1.wizard a:hover {
+  color: #fff;
+}
+#text_wizard {
+  font-weight: bolder;
+  text-decoration: none;
+  font-size: 24px;
+}
+div.arrow_box {
+  display: inline-block;
+  position: relative;
+  color: #888;
+  padding: 1.3em;
+  margin-left: 20px;
+  margin-bottom: 10px;
+  padding-left: 3em;
+}
+
+.arrow_box.selected {
+  background: #424242;
+  color: #ccc;
+}
+
+.arrow_box:after {
+  left: 0%;
+  border-left-color: white;
+  border-width: 20px;
+  margin-top: -20px;
+}
+
+div.arrow_box:before {
+  left: 100%;
+  border-left-color: #ccc;
+  border-width: 20px;
+  margin-top: -20px;
+}
+.arrow_box.selected:before {
+  border-left-color: #424242;
+}
+
+.arrow_box.selected:hover {
+  color: #fff;
+}
+.arrow_box:hover {
+  color: #000;
+}
+
+/*
+ * Breadcrum
+ */
+
+#menu_tab_frame_view_bc {
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 2px solid #82b92e;
+  max-height: 70px;
+  min-height: 55px;
+  width: 100%;
+  padding-right: 0px;
+  margin-left: 0px !important;
+  margin-bottom: 20px;
+  height: 55px;
+  box-sizing: border-box;
+  background-color: #fafafa;
+  border-top-right-radius: 7px;
+  border-top-left-radius: 7px;
+  box-shadow: 0px 0px 2px rgba(0, 0, 0, 0.1);
+}
+
+#menu_tab_frame_view_bc .breadcrumbs_container {
+  align-self: flex-start;
+}
+
+.breadcrumbs_container {
+  padding-left: 10px;
+  padding-top: 4px;
+  text-indent: 0.25em;
+}
+
+.breadcrumb_link {
+  color: #848484;
+  font-size: 10pt !important;
+  font-family: "lato-bolder", "Open Sans", sans-serif !important;
+  text-decoration: none !important;
+}
+
+span.breadcrumb_link {
+  color: #d0d0d0;
+  font-size: 12pt !important;
+}
+
+.breadcrumb_link.selected {
+  color: #95b750;
+}
+
+.breadcrumb_link.selected:hover {
+  color: #95b750;
+}
+.breadcrumb_link:hover {
+  color: #95b750;
+}
+
+/*
+ * Discovery forms structure
+ */
+
+form.discovery * {
+  font-size: 10pt;
+}
+
+.edit_discovery_info {
+  display: flex;
+  align-items: flex-start;
+  padding-top: 25px;
+}
+
+.edit_discovery_input {
+  align-items: center;
+  margin-bottom: 25px;
+}
+
+/*
+ * Discovery text inputs
+ */
+
+.discovery_label_hint {
+  display: flex;
+}
+
+label {
+  color: #343434 !important;
+  font-weight: bold;
+}
+
+.discovery_full_width_input {
+  width: 100%;
+}
+
+li > input[type="text"],
+li > input[type="password"],
+.discovery_text_input > input[type="password"],
+.discovery_text_input > input[type="text"],
+#interval_manual > input[type="text"] {
+  background-color: transparent !important;
+  border: none;
+  border-radius: 0 !important;
+  border-bottom: 1px solid #ccc;
+  font-family: "lato-bolder", "Open Sans", sans-serif !important;
+  font-weight: lighter;
+  padding: 0px 0px 2px 0px;
+  box-sizing: border-box;
+  margin-bottom: 4px;
+}
+
+#interval_manual > input[type="text"] {
+  width: 50px;
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
+.discovery_list_input {
+  width: 100%;
+  border: 1px solid #cbcbcb;
+  overflow-y: auto;
+}
+
+.discovery_list_input option {
+  text-align: left;
+}
+
+.discovery_list_input option:checked {
+  background: #1aab8e -webkit-linear-gradient(bottom, #7db742 0%, #7db742 100%);
+  color: #fff;
+}
+
+.discovery_textarea_input {
+  background-color: #fbfbfb !important;
+  padding-left: 10px;
+  width: 100%;
+  height: 100px;
+  max-height: 100px;
+  max-width: 100%;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  resize: none;
+}
+
+a.tip {
+  margin-left: 8px;
+}
+
+.inline_switch > label {
+  float: right;
+}
+
+.discovery_interval_select_width {
+  width: 90%;
+}

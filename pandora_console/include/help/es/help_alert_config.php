@@ -54,6 +54,7 @@ Además de las macros de módulo definidas, las siguientes macros están disponi
   <li>_event_extra_id_ : (Solo alertas de evento) Id extra.</li>
   <li>_event_id_: (Solo alertas de evento) Id del evento que disparó la alerta.</li>
   <li>_event_text_severity_: (Solo alertas de evento) Prioridad en texto de el evento que dispara la alerta (Maintenance, Informational, Normal Minor, Warning, Major, Critical).</li>
+  <li>_eventTimestamp_: Timestamp en el que se creo el evento.</li>
   <li>_field1_: Campo 1 definido por el usuario.</li>
   <li>_field2_: Campo 2 definido por el usuario.</li>
   <li>_field3_: Campo 3 definido por el usuario.</li>

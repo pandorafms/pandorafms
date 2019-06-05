@@ -30,7 +30,7 @@ $servers = db_get_all_rows_sql('SELECT * FROM tserver WHERE server_type = 3');
 if ($servers === false) {
     $servers = [];
     ui_print_page_header(__('Recon View'), 'images/op_recon.png', false, '', false);
-    ui_print_error_message(__('Recon Server is disabled'));
+    ui_print_error_message(__('Discovery Server is disabled'));
     return;
 } else {
     $recon_task = db_get_all_rows_sql('SELECT * FROM trecon_task');
@@ -76,10 +76,10 @@ if ($servers === false) {
             }
 
             $table = new StdClass();
-            $table->cellpadding = 4;
-            $table->cellspacing = 4;
+            $table->cellpadding = 0;
+            $table->cellspacing = 0;
             $table->width = '100%';
-            $table->class = 'databox data';
+            $table->class = 'info_table';
             $table->head = [];
             $table->data = [];
             $table->align = [];
@@ -161,6 +161,7 @@ if ($servers === false) {
                 $data[7] = ui_print_timestamp($task['utimestamp'], true);
 
                 if (check_acl($config['id_user'], $task['id_group'], 'PM')) {
+                    $table->cellclass[][8] = 'action_buttons';
                     $data[8] = '<a href="index.php?sec=gservers&amp;sec2=godmode/servers/manage_recontask_form&amp;update='.$task['id_rt'].'">'.html_print_image('images/wrench_orange.png', true).'</a>';
                 } else {
                     $data[8] = '';

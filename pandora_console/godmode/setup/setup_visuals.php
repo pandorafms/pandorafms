@@ -70,12 +70,8 @@ $values[SECONDS_5MINUTES] = human_time_description_raw(SECONDS_5MINUTES);
 $values[SECONDS_10MINUTES] = human_time_description_raw(SECONDS_10MINUTES);
 $values[SECONDS_30MINUTES] = human_time_description_raw(SECONDS_30MINUTES);
 
-$table_behaviour->data[$row][0] = __('Default interval for refresh on Visual Console').ui_print_help_tip(__('This interval will affect to Visual Console pages'), true);
-$table_behaviour->data[$row][1] = html_print_select($values, 'vc_refr', $config['vc_refr'], '', 'N/A', 0, true, false, false);
-$row++;
-
 $table_behaviour->data[$row][0] = __('Paginated module view');
-$table_behaviour->data[$row][1] = html_print_checkbox_toogle_switch(
+$table_behaviour->data[$row][1] = html_print_checkbox_switch(
     'paginate_module',
     1,
     $config['paginate_module'],
@@ -84,7 +80,7 @@ $table_behaviour->data[$row][1] = html_print_checkbox_toogle_switch(
 $row++;
 
 $table_behaviour->data[$row][0] = __('Display data of proc modules in other format');
-$table_behaviour->data[$row][1] = html_print_checkbox_toogle_switch(
+$table_behaviour->data[$row][1] = html_print_checkbox_switch(
     'render_proc',
     1,
     $config['render_proc'],
@@ -102,7 +98,7 @@ $row++;
 
 // Daniel maya 02/06/2016 Display menu with click --INI
 $table_behaviour->data[$row][0] = __('Click to display lateral menus').ui_print_help_tip(__('When enabled, the lateral menus are shown when left clicking them, instead of hovering over them'), true);
-$table_behaviour->data[$row][1] = html_print_checkbox_toogle_switch(
+$table_behaviour->data[$row][1] = html_print_checkbox_switch(
     'click_display',
     1,
     $config['click_display'],
@@ -120,17 +116,8 @@ if (enterprise_installed()) {
     $row++;
 }
 
-$table_behaviour->data[$row][0] = __('Classic menu mode').ui_print_help_tip(__('Text menu options always visible, don\'t hide'), true);
-$table_behaviour->data[$row][1] = html_print_checkbox_toogle_switch(
-    'classic_menu',
-    1,
-    $config['classic_menu'],
-    true
-);
-$row++;
-
 echo '<fieldset>';
-echo '<legend>'.__('Behaviour configuration').'</legend>';
+echo '<legend>'.__('Behaviour configuration').' '.ui_print_help_icon('behavoir_conf_tab', true).'</legend>';
 html_print_table($table_behaviour);
 echo '</fieldset>';
 // ----------------------------------------------------------------------
@@ -227,43 +214,63 @@ $table_styles->data[$row][1] = html_print_select(
 $table_styles->data[$row][1] .= '&nbsp;'.html_print_button(__('View'), 'login_background_preview', false, '', 'class="sub camera logo_preview"', true);
 $row++;
 
-$table_styles->data[$row][0] = __('Custom logo (header)').ui_print_help_icon('custom_logo', true);
-if (enterprise_installed()) {
-    $ent_files = list_files('enterprise/images/custom_logo', 'png', 1, 0);
-    $open_files = list_files('images/custom_logo', 'png', 1, 0);
 
-    $table_styles->data[$row][1] = html_print_select(
-        array_merge($ent_files, $open_files),
-        'custom_logo',
-        $config['custom_logo'],
-        '',
-        '',
-        '',
-        true,
-        false,
-        true,
-        '',
-        $open,
-        'width:240px'
-    );
-} else {
-    $table_styles->data[$row][1] = html_print_select(
-        list_files('images/custom_logo', 'png', 1, 0),
-        'custom_logo',
-        $config['custom_logo'],
-        '',
-        '',
-        '',
-        true,
-        false,
-        true,
-        '',
-        $open,
-        'width:240px'
-    );
+/**
+ * Print a select for the custom logos.
+ *
+ * @param  string $name This is the name for the select
+ * @param  string $logo This is the option in $config (path)
+ * @return string Print the select
+ */
+function logo_custom_enterprise($name, $logo)
+{
+    if (enterprise_installed()) {
+        $ent_files = list_files('enterprise/images/custom_logo', 'png', 1, 0);
+        $open_files = list_files('images/custom_logo', 'png', 1, 0);
+
+        $select = html_print_select(
+            array_merge($ent_files, $open_files),
+            $name,
+            $logo,
+            '',
+            '',
+            '',
+            true,
+            false,
+            true,
+            '',
+            false,
+            'width:240px'
+        );
+        return $select;
+    } else {
+        $select = html_print_select(
+            list_files('images/custom_logo', 'png', 1, 0),
+            $name,
+            $logo,
+            '',
+            '',
+            '',
+            true,
+            false,
+            true,
+            '',
+            true,
+            'width:240px'
+        );
+        return $select;
+    }
 }
 
+
+$table_styles->data[$row][0] = __('Custom logo (menu)');
+$table_styles->data[$row][1] = logo_custom_enterprise('custom_logo', $config['custom_logo']);
 $table_styles->data[$row][1] .= '&nbsp;'.html_print_button(__('View'), 'custom_logo_preview', $open, '', 'class="sub camera logo_preview"', true, false, $open, 'visualmodal');
+$row++;
+
+$table_styles->data[$row][0] = __('Custom logo collapsed (menu)');
+$table_styles->data[$row][1] = logo_custom_enterprise('custom_logo_collapsed', $config['custom_logo_collapsed']);
+$table_styles->data[$row][1] .= '&nbsp;'.html_print_button(__('View'), 'custom_logo_collapsed_preview', $open, '', 'class="sub camera logo_preview"', true, false, $open, 'visualmodal');
 $row++;
 
 $table_styles->data[$row][0] = __('Custom logo (header white background)');
@@ -305,7 +312,7 @@ if (enterprise_installed()) {
 $table_styles->data[$row][1] .= '&nbsp;'.html_print_button(__('View'), 'custom_logo_white_bg_preview', $open, '', 'class="sub camera logo_preview"', true, false, $open, 'visualmodal');
 $row++;
 
-$table_styles->data[$row][0] = __('Custom logo (login)').ui_print_help_icon('custom_logo', true);
+$table_styles->data[$row][0] = __('Custom logo (login)');
 
 if (enterprise_installed()) {
     $table_styles->data[$row][1] = html_print_select(
@@ -451,6 +458,20 @@ if (enterprise_installed()) {
     $row++;
 }
 
+// Title Header
+if (enterprise_installed()) {
+    $table_styles->data[$row][0] = __('Title (header)');
+    $table_styles->data[$row][1] = html_print_input_text('custom_title_header', $config['custom_title_header'], '', 50, 40, true);
+    $row++;
+}
+
+// Subtitle Header
+if (enterprise_installed()) {
+    $table_styles->data[$row][0] = __('Subtitle (header)');
+    $table_styles->data[$row][1] = html_print_input_text('custom_subtitle_header', $config['custom_subtitle_header'], '', 50, 40, true);
+    $row++;
+}
+
 // login title1
 if (enterprise_installed()) {
     $table_styles->data[$row][0] = __('Title 1 (login)');
@@ -491,7 +512,7 @@ if (enterprise_installed()) {
 
 if (enterprise_installed()) {
     $table_styles->data[$row][0] = __('Disable logo in graphs');
-    $table_styles->data[$row][1] = html_print_checkbox_toogle_switch(
+    $table_styles->data[$row][1] = html_print_checkbox_switch(
         'fixed_graph',
         1,
         $config['fixed_graph'],
@@ -507,7 +528,7 @@ if (enterprise_installed()) {
     */
 
 $table_styles->data[$row][0] = __('Disable helps');
-$table_styles->data[$row][1] = html_print_checkbox_toogle_switch(
+$table_styles->data[$row][1] = html_print_checkbox_switch(
     'disable_help',
     1,
     $config['disable_help'],
@@ -516,7 +537,7 @@ $table_styles->data[$row][1] = html_print_checkbox_toogle_switch(
 $row++;
 
 $table_styles->data[$row][0] = __('Fixed header');
-$table_styles->data[$row][1] = html_print_checkbox_toogle_switch(
+$table_styles->data[$row][1] = html_print_checkbox_switch(
     'fixed_header',
     1,
     $config['fixed_header'],
@@ -524,745 +545,777 @@ $table_styles->data[$row][1] = html_print_checkbox_toogle_switch(
 );
 $row++;
 
-$table_styles->data[$row][0] = __('Fixed menu');
-$table_styles->data[$row][1] = html_print_checkbox_toogle_switch(
-    'fixed_menu',
-    1,
-    $config['fixed_menu'],
-    true
-);
-$row++;
 
-// For 5.1 Autohidden menu feature
-$table_styles->data['autohidden'][0] = __('Autohidden menu');
-$table_styles->data['autohidden'][1] = html_print_checkbox_toogle_switch(
-    'autohidden_menu',
-    1,
-    $config['autohidden_menu'],
-    true
-);
+    // For 5.1 Autohidden menu feature
+    $table_styles->data['autohidden'][0] = __('Autohidden menu');
+    $table_styles->data['autohidden'][1] = html_print_checkbox_switch(
+        'autohidden_menu',
+        1,
+        $config['autohidden_menu'],
+        true
+    );
 
-$table_styles->data[$row][0] = __('Visual effects and animation');
-$table_styles->data[$row][1] = html_print_checkbox_toogle_switch(
-    'visual_animation',
-    1,
-    $config['visual_animation'],
-    true
-);
+    $table_styles->data[$row][0] = __('Visual effects and animation');
+    $table_styles->data[$row][1] = html_print_checkbox_switch(
+        'visual_animation',
+        1,
+        $config['visual_animation'],
+        true
+    );
 
 
-echo '<fieldset>';
-echo '<legend>'.__('Style configuration').'</legend>';
-html_print_table($table_styles);
-echo '</fieldset>';
-// ----------------------------------------------------------------------
-// ----------------------------------------------------------------------
-// GIS CONFIGURATION
-// ----------------------------------------------------------------------
-$table_gis = new stdClass();
-$table_gis->width = '100%';
-$table_gis->class = 'databox filters';
-$table_gis->style[0] = 'font-weight: bold;';
-$table_gis->size[0] = '50%';
-$table_gis->data = [];
+    echo '<fieldset>';
+    echo '<legend>'.__('Style configuration').' '.ui_print_help_icon('style_conf_tab', true).'</legend>';
+    html_print_table($table_styles);
+    echo '</fieldset>';
+    // ----------------------------------------------------------------------
+    // ----------------------------------------------------------------------
+    // GIS CONFIGURATION
+    // ----------------------------------------------------------------------
+    $table_gis = new stdClass();
+    $table_gis->width = '100%';
+    $table_gis->class = 'databox filters';
+    $table_gis->style[0] = 'font-weight: bold;';
+    $table_gis->size[0] = '50%';
+    $table_gis->data = [];
 
-$table_gis->data[$row][0] = __('GIS Labels').ui_print_help_tip(__('This enabling this, you get a label with agent name in GIS maps. If you have lots of agents in the map, will be unreadable. Disabled by default.'), true);
-$table_gis->data[$row][1] = html_print_checkbox_toogle_switch(
-    'gis_label',
-    1,
-    $config['gis_label'],
-    true
-);
-$row++;
+    $table_gis->data[$row][0] = __('GIS Labels').ui_print_help_tip(__('This enabling this, you get a label with agent name in GIS maps. If you have lots of agents in the map, will be unreadable. Disabled by default.'), true);
+    $table_gis->data[$row][1] = html_print_checkbox_switch(
+        'gis_label',
+        1,
+        $config['gis_label'],
+        true
+    );
+    $row++;
 
-$listIcons = gis_get_array_list_icons();
-$arraySelectIcon = [];
-foreach ($listIcons as $index => $value) {
-    $arraySelectIcon[$index] = $index;
-}
+    $listIcons = gis_get_array_list_icons();
+    $arraySelectIcon = [];
+    foreach ($listIcons as $index => $value) {
+        $arraySelectIcon[$index] = $index;
+    }
 
-$table_gis->data[$row][0] = __('Default icon in GIS').ui_print_help_tip(__('Agent icon for GIS Maps. If set to "none", group icon will be used'), true);
-$table_gis->data[$row][1] = html_print_select(
-    $arraySelectIcon,
-    'gis_default_icon',
-    $config['gis_default_icon'],
-    '',
-    __('Agent icon group'),
-    '',
-    true
-);
-$table_gis->data[$row][1] .= '&nbsp;'.html_print_button(__('View'), 'gis_icon_preview', false, '', 'class="sub camera logo_preview"', true);
-$row++;
+    $table_gis->data[$row][0] = __('Default icon in GIS').ui_print_help_tip(__('Agent icon for GIS Maps. If set to "none", group icon will be used'), true);
+    $table_gis->data[$row][1] = html_print_select(
+        $arraySelectIcon,
+        'gis_default_icon',
+        $config['gis_default_icon'],
+        '',
+        __('Agent icon group'),
+        '',
+        true
+    );
+    $table_gis->data[$row][1] .= '&nbsp;'.html_print_button(__('View'), 'gis_icon_preview', false, '', 'class="sub camera logo_preview"', true);
+    $row++;
 
-echo '<fieldset>';
-echo '<legend>'.__('GIS configuration').'</legend>';
-html_print_table($table_gis);
-echo '</fieldset>';
-// ----------------------------------------------------------------------
-// ----------------------------------------------------------------------
-// FONT AND TEXT CONFIGURATION
-// ----------------------------------------------------------------------
-$table_font = new stdClass();
-$table_font->width = '100%';
-$table_font->class = 'databox filters';
-$table_font->style[0] = 'font-weight: bold;';
-$table_font->size[0] = '50%';
-$table_font->data = [];
+    echo '<fieldset>';
+    echo '<legend>'.__('GIS configuration').' '.ui_print_help_icon('gis_conf_tab', true).'</legend>';
+    html_print_table($table_gis);
+    echo '</fieldset>';
+    // ----------------------------------------------------------------------
+    // ----------------------------------------------------------------------
+    // FONT AND TEXT CONFIGURATION
+    // ----------------------------------------------------------------------
+    $table_font = new stdClass();
+    $table_font->width = '100%';
+    $table_font->class = 'databox filters';
+    $table_font->style[0] = 'font-weight: bold;';
+    $table_font->size[0] = '50%';
+    $table_font->data = [];
 
-$table_font->data[$row][0] = __('Font path');
-$fonts = load_fonts();
-$table_font->data[$row][1] = html_print_select(
-    $fonts,
-    'fontpath',
-    io_safe_output($config['fontpath']),
-    '',
-    '',
-    0,
-    true
-);
-
-$row++;
-
-$table_font->data[$row][0] = __('Font size');
-
-$font_size_array = [
-    1  => 1,
-    2  => 2,
-    3  => 3,
-    4  => 4,
-    5  => 5,
-    6  => 6,
-    7  => 7,
-    8  => 8,
-    9  => 9,
-    10 => 10,
-    11 => 11,
-    12 => 12,
-    13 => 13,
-    14 => 14,
-    15 => 15,
-];
-
-$table_font->data[$row][1] = html_print_select(
-    $font_size_array,
-    'font_size',
-    $config['font_size'],
-    '',
-    '',
-    0,
-    true
-);
-$row++;
-
-$table_font->data[$row][0] = __('Agent size text').ui_print_help_tip(__('When the agent name has a lot of characters, it is needed to truncate it into N characters in some sections in %s Console', get_product_name()), true);
-$table_font->data[$row][1] = __('Small:').html_print_input_text('agent_size_text_small', $config['agent_size_text_small'], '', 3, 3, true);
-$table_font->data[$row][1] .= ' '.__('Normal:').html_print_input_text('agent_size_text_medium', $config['agent_size_text_medium'], '', 3, 3, true);
-$row++;
-
-$table_font->data[$row][0] = __('Module size text').ui_print_help_tip(__('When the module name has a lot of characters, it is needed to truncate it into N characters in some sections in %s Console', get_product_name()), true);
-$table_font->data[$row][1] = __('Small:').html_print_input_text('module_size_text_small', $config['module_size_text_small'], '', 3, 3, true);
-$table_font->data[$row][1] .= ' '.__('Normal:').html_print_input_text('module_size_text_medium', $config['module_size_text_medium'], '', 3, 3, true);
-$row++;
-
-$table_font->data[$row][0] = __('Description size text').ui_print_help_tip(__('If the description name has a lot of characters, in some places in %s Console it is necessary to truncate it to N characters.', get_product_name()), true);
-$table_font->data[$row][1] = html_print_input_text('description_size_text', $config['description_size_text'], '', 3, 3, true);
-$row++;
-
-$table_font->data[$row][0] = __('Item title size text').ui_print_help_tip(__('When the item title name has a lot of characters, it is needed to truncate it into N characters in some sections in %s Console.', get_product_name()), true);
-$table_font->data[$row][1] = html_print_input_text(
-    'item_title_size_text',
-    $config['item_title_size_text'],
-    '',
-    3,
-    3,
-    true
-);
-$row++;
-
-$table_font->data[$row][0] = __('Show unit along with value in reports').ui_print_help_tip(__('This enabling this, max, min and avg values will be shown with units.'), true);
-$table_font->data[$row][1] = html_print_checkbox_toogle_switch(
-    'simple_module_value',
-    1,
-    $config['simple_module_value'],
-    true
-);
-$row++;
-
-echo '<fieldset>';
-echo '<legend>'.__('Font and Text configuration').'</legend>';
-html_print_table($table_font);
-echo '</fieldset>';
-// ----------------------------------------------------------------------
-// ----------------------------------------------------------------------
-// CHARS CONFIGURATION
-// ----------------------------------------------------------------------
-$table_chars = new stdClass();
-$table_chars->width = '100%';
-$table_chars->class = 'databox filters';
-$table_chars->style[0] = 'font-weight: bold;';
-$table_chars->size[0] = '50%';
-$table_chars->data = [];
-
-$table_chars->data[$row][0] = __('Graph color #1');
-$table_chars->data[$row][1] = html_print_input_text('graph_color1', $config['graph_color1'], '', 8, 8, true);
-$row++;
-
-$table_chars->data[$row][0] = __('Graph color #2');
-$table_chars->data[$row][1] = html_print_input_text('graph_color2', $config['graph_color2'], '', 8, 8, true);
-$row++;
-
-$table_chars->data[$row][0] = __('Graph color #3');
-$table_chars->data[$row][1] = html_print_input_text('graph_color3', $config['graph_color3'], '', 8, 8, true);
-$row++;
-
-$table_chars->data[$row][0] = __('Graph color #4');
-$table_chars->data[$row][1] = html_print_input_text('graph_color4', $config['graph_color4'], '', 8, 8, true);
-$row++;
-
-$table_chars->data[$row][0] = __('Graph color #5');
-$table_chars->data[$row][1] = html_print_input_text('graph_color5', $config['graph_color5'], '', 8, 8, true);
-$row++;
-
-$table_chars->data[$row][0] = __('Graph color #6');
-$table_chars->data[$row][1] = html_print_input_text('graph_color6', $config['graph_color6'], '', 8, 8, true);
-$row++;
-
-$table_chars->data[$row][0] = __('Graph color #7');
-$table_chars->data[$row][1] = html_print_input_text('graph_color7', $config['graph_color7'], '', 8, 8, true);
-$row++;
-
-$table_chars->data[$row][0] = __('Graph color #8');
-$table_chars->data[$row][1] = html_print_input_text('graph_color8', $config['graph_color8'], '', 8, 8, true);
-$row++;
-
-$table_chars->data[$row][0] = __('Graph color #9');
-$table_chars->data[$row][1] = html_print_input_text('graph_color9', $config['graph_color9'], '', 8, 8, true);
-$row++;
-
-$table_chars->data[$row][0] = __('Graph color #10');
-$table_chars->data[$row][1] = html_print_input_text('graph_color10', $config['graph_color10'], '', 8, 8, true);
-$row++;
-
-$table_chars->data[$row][0] = __('Value to interface graphics');
-$table_chars->data[$row][1] = html_print_input_text('interface_unit', $config['interface_unit'], '', 20, 20, true);
-$row++;
-
-$disabled_graph_precision = false;
-if (!enterprise_installed()) {
-    $disabled_graph_precision = true;
-}
-
-$table_chars->data[$row][0] = __('Data precision');
-$table_chars->data[$row][0] .= ui_print_help_tip(__('Number of decimals shown. It must be a number between 0 and 5, except in graphs.'), true);
-$table_chars->data[$row][1] = html_print_input_text('graph_precision', $config['graph_precision'], '', 5, 5, true, $disabled_graph_precision, false, 'onChange="change_precision()"');
-$row++;
-
-if (!isset($config['short_module_graph_data'])) {
-    $config['short_module_graph_data'] = true;
-}
-
-$table_chars->data[$row][0] = __('Data precision in graphs');
-$table_chars->data[$row][0] .= ui_print_help_tip(__('Number of decimals shown. If the field is empty, it will show all the decimals'), true);
-$table_chars->data[$row][1] = html_print_input_text('short_module_graph_data', $config['short_module_graph_data'], '', 5, 5, true, $disabled_graph_precision, false, 'onChange="change_precision()"');
-$row++;
-
-$table_chars->data[$row][0] = __('Default line thickness for the Custom Graph.');
-$table_chars->data[$row][1] = html_print_input_text(
-    'custom_graph_width',
-    $config['custom_graph_width'],
-    '',
-    5,
-    5,
-    true
-);
-$row++;
-
-$table_chars->data[$row][0] = __('Use round corners');
-$table_chars->data[$row][1] = html_print_checkbox_toogle_switch(
-    'round_corner',
-    1,
-    $config['round_corner'],
-    true
-);
-$row++;
-
-$table_chars->data[$row][0] = __('Type of module charts');
-$table_chars->data[$row][1] = __('Area').'&nbsp;'.html_print_radio_button(
-    'type_module_charts',
-    'area',
-    '',
-    $config['type_module_charts'] == 'area',
-    true
-).'&nbsp;&nbsp;';
-$table_chars->data[$row][1] .= __('Line').'&nbsp;'.html_print_radio_button(
-    'type_module_charts',
-    'line',
-    '',
-    $config['type_module_charts'] != 'area',
-    true
-);
-$row++;
-
-$table_chars->data[$row][0] = __('Type of interface charts');
-$table_chars->data[$row][1] = __('Area').'&nbsp;'.html_print_radio_button(
-    'type_interface_charts',
-    'area',
-    '',
-    $config['type_interface_charts'] == 'area',
-    true
-).'&nbsp;&nbsp;';
-$table_chars->data[$row][1] .= __('Line').'&nbsp;'.html_print_radio_button(
-    'type_interface_charts',
-    'line',
-    '',
-    $config['type_interface_charts'] != 'area',
-    true
-);
-$row++;
-
-$table_chars->data[$row][0] = __('Percentile');
-$table_chars->data[$row][0] .= ui_print_help_tip(__('Show percentile 95 in graphs'), true);
-$table_chars->data[$row][1] = html_print_input_text('percentil', $config['percentil'], '', 20, 20, true);
-$row++;
-
-$table_chars->data[$row][0] = __('Graph TIP view:');
-$table_chars->data[$row][0] .= ui_print_help_tip(__('This option may cause performance issues'), true);
-
-$options_full_escale    = [];
-$options_full_escale[0] = __('None');
-$options_full_escale[1] = __('All');
-$options_full_escale[2] = __('On Boolean graphs');
-
-$table_chars->data[$row][1] = html_print_select($options_full_escale, 'full_scale_option', $config['full_scale_option'], '', '', 0, true, false, false);
-$row++;
-
-
-$table_chars->data[$row][0] = __('Show only average');
-$table_chars->data[$row][0] .= ui_print_help_tip(__('If enabled, the module graphs will only show the average value, otherwise it will show three sets of data showing maximums, averages and minimums.'), true);
-
-$options_soft_graphs    = [];
-$options_soft_graphs[0] = __('Standard mode');
-$options_soft_graphs[1] = __('Classic mode');
-
-$table_chars->data[$row][1] = html_print_select($options_soft_graphs, 'type_mode_graph', $config['type_mode_graph'], '', '', 0, true, false, false);
-$row++;
-
-$table_chars->data[$row][0] = __('Zoom graphs:');
-
-$options_zoom_graphs    = [];
-$options_zoom_graphs[1] = 'x1';
-$options_zoom_graphs[2] = 'x2';
-$options_zoom_graphs[3] = 'x3';
-$options_zoom_graphs[4] = 'x4';
-$options_zoom_graphs[5] = 'x5';
-
-$table_chars->data[$row][1] = html_print_select($options_zoom_graphs, 'zoom_graph', $config['zoom_graph'], '', '', 0, true, false, false);
-$row++;
-
-$table_chars->data[$row][0] = __('Graph image height');
-$table_chars->data[$row][0] .= ui_print_help_tip(
-    __('This is the height in pixels of the module graph or custom graph in the reports (both: HTML and PDF)'),
-    true
-);
-$table_chars->data[$row][1] = html_print_input_text('graph_image_height', $config['graph_image_height'], '', 20, 20, true);
-$row++;
-
-/*
     $table_font->data[$row][0] = __('Font path');
     $fonts = load_fonts();
-    $table_font->data[$row][1] = html_print_select($fonts, 'fontpath',
-    io_safe_output($config["fontpath"]), '', '', 0, true);
+    $table_font->data[$row][1] = html_print_select(
+        $fonts,
+        'fontpath',
+        io_safe_output($config['fontpath']),
+        '',
+        '',
+        0,
+        true
+    );
 
     $row++;
-*/
 
-echo '<fieldset>';
-echo '<legend>'.__('Charts configuration').'</legend>';
-html_print_table($table_chars);
-echo '</fieldset>';
-// ----------------------------------------------------------------------
-// ----------------------------------------------------------------------
-// Visual Consoles
-// ----------------------------------------------------------------------
-$table_vc = new stdClass();
-$table_vc->width = '100%';
-$table_vc->class = 'databox filters';
-$table_vc->style[0] = 'font-weight: bold';
-$table_vc->size[0] = '50%';
-$table_vc->data = [];
+    $table_font->data[$row][0] = __('Font size');
 
-$vc_favourite_view_array[0] = __('Classic view');
-$vc_favourite_view_array[1] = __('View of favorites');
-$table_vc->data[$row][0] = __('Type of view of visual consoles').ui_print_help_tip(__('Allows you to directly display the list of favorite visual consoles'), true);
-$table_vc->data[$row][1] = html_print_select($vc_favourite_view_array, 'vc_favourite_view', $config['vc_favourite_view'], '', '', 0, true);
-$row++;
+    $font_size_array = [
+        1  => 1,
+        2  => 2,
+        3  => 3,
+        4  => 4,
+        5  => 5,
+        6  => 6,
+        7  => 7,
+        8  => 8,
+        9  => 9,
+        10 => 10,
+        11 => 11,
+        12 => 12,
+        13 => 13,
+        14 => 14,
+        15 => 15,
+    ];
 
-$table_vc->data[$row][0] = __('Number of favorite visual consoles to show in the menu').ui_print_help_tip(__('If the number is 0 it will not show the pull-down menu and maximum 25 favorite consoles'), true);
-$table_vc->data[$row][1] = "<input type ='number' value=".$config['vc_menu_items']." size='5' name='vc_menu_items' min='0' max='25'>";
-$row++;
+    $table_font->data[$row][1] = html_print_select(
+        $font_size_array,
+        'font_size',
+        $config['font_size'],
+        '',
+        '',
+        0,
+        true
+    );
+    $row++;
 
-if (empty($config['vc_line_thickness'])) {
-    $config['vc_line_thickness'] = 2;
-}
+    $table_font->data[$row][0] = __('Agent size text').ui_print_help_tip(__('When the agent name has a lot of characters, it is needed to truncate it into N characters in some sections in %s Console', get_product_name()), true);
+    $table_font->data[$row][1] = __('Small:').html_print_input_text('agent_size_text_small', $config['agent_size_text_small'], '', 3, 3, true);
+    $table_font->data[$row][1] .= ' '.__('Normal:').html_print_input_text('agent_size_text_medium', $config['agent_size_text_medium'], '', 3, 3, true);
+    $row++;
 
-$table_vc->data[$row][0] = __('Default line thickness for the Visual Console').ui_print_help_tip(__('This interval will affect to the lines between elements on the Visual Console'), true);
-$table_vc->data[$row][1] = html_print_input_text('vc_line_thickness', $config['vc_line_thickness'], '', 5, 5, true);
+    $table_font->data[$row][0] = __('Module size text').ui_print_help_tip(__('When the module name has a lot of characters, it is needed to truncate it into N characters in some sections in %s Console', get_product_name()), true);
+    $table_font->data[$row][1] = __('Small:').html_print_input_text('module_size_text_small', $config['module_size_text_small'], '', 3, 3, true);
+    $table_font->data[$row][1] .= ' '.__('Normal:').html_print_input_text('module_size_text_medium', $config['module_size_text_medium'], '', 3, 3, true);
+    $row++;
+
+    $table_font->data[$row][0] = __('Description size text').ui_print_help_tip(__('If the description name has a lot of characters, in some places in %s Console it is necessary to truncate it to N characters.', get_product_name()), true);
+    $table_font->data[$row][1] = html_print_input_text('description_size_text', $config['description_size_text'], '', 3, 3, true);
+    $row++;
+
+    $table_font->data[$row][0] = __('Item title size text').ui_print_help_tip(__('When the item title name has a lot of characters, it is needed to truncate it into N characters in some sections in %s Console.', get_product_name()), true);
+    $table_font->data[$row][1] = html_print_input_text(
+        'item_title_size_text',
+        $config['item_title_size_text'],
+        '',
+        3,
+        3,
+        true
+    );
+    $row++;
+
+    $table_font->data[$row][0] = __('Show unit along with value in reports').ui_print_help_tip(__('This enabling this, max, min and avg values will be shown with units.'), true);
+    $table_font->data[$row][1] = html_print_checkbox_switch(
+        'simple_module_value',
+        1,
+        $config['simple_module_value'],
+        true
+    );
+    $row++;
+
+    echo '<fieldset>';
+    echo '<legend>'.__('Font and Text configuration').' '.ui_print_help_icon('front_and_text_conf_tab', true).'</legend>';
+    html_print_table($table_font);
+    echo '</fieldset>';
+    // ----------------------------------------------------------------------
+    // ----------------------------------------------------------------------
+    // CHARS CONFIGURATION
+    // ----------------------------------------------------------------------
+    $table_chars = new stdClass();
+    $table_chars->width = '100%';
+    $table_chars->class = 'databox filters';
+    $table_chars->style[0] = 'font-weight: bold;';
+    $table_chars->size[0] = '50%';
+    $table_chars->data = [];
+
+    $table_chars->data[$row][0] = __('Graph color #1');
+    $table_chars->data[$row][1] = html_print_input_text('graph_color1', $config['graph_color1'], '', 8, 8, true);
+    $row++;
+
+    $table_chars->data[$row][0] = __('Graph color #2');
+    $table_chars->data[$row][1] = html_print_input_text('graph_color2', $config['graph_color2'], '', 8, 8, true);
+    $row++;
+
+    $table_chars->data[$row][0] = __('Graph color #3');
+    $table_chars->data[$row][1] = html_print_input_text('graph_color3', $config['graph_color3'], '', 8, 8, true);
+    $row++;
+
+    $table_chars->data[$row][0] = __('Graph color #4');
+    $table_chars->data[$row][1] = html_print_input_text('graph_color4', $config['graph_color4'], '', 8, 8, true);
+    $row++;
+
+    $table_chars->data[$row][0] = __('Graph color #5');
+    $table_chars->data[$row][1] = html_print_input_text('graph_color5', $config['graph_color5'], '', 8, 8, true);
+    $row++;
+
+    $table_chars->data[$row][0] = __('Graph color #6');
+    $table_chars->data[$row][1] = html_print_input_text('graph_color6', $config['graph_color6'], '', 8, 8, true);
+    $row++;
+
+    $table_chars->data[$row][0] = __('Graph color #7');
+    $table_chars->data[$row][1] = html_print_input_text('graph_color7', $config['graph_color7'], '', 8, 8, true);
+    $row++;
+
+    $table_chars->data[$row][0] = __('Graph color #8');
+    $table_chars->data[$row][1] = html_print_input_text('graph_color8', $config['graph_color8'], '', 8, 8, true);
+    $row++;
+
+    $table_chars->data[$row][0] = __('Graph color #9');
+    $table_chars->data[$row][1] = html_print_input_text('graph_color9', $config['graph_color9'], '', 8, 8, true);
+    $row++;
+
+    $table_chars->data[$row][0] = __('Graph color #10');
+    $table_chars->data[$row][1] = html_print_input_text('graph_color10', $config['graph_color10'], '', 8, 8, true);
+    $row++;
+
+    $table_chars->data[$row][0] = __('Value to interface graphics');
+    $table_chars->data[$row][1] = html_print_input_text('interface_unit', $config['interface_unit'], '', 20, 20, true);
+    $row++;
+
+    $disabled_graph_precision = false;
+    if (!enterprise_installed()) {
+        $disabled_graph_precision = true;
+    }
+
+    $table_chars->data[$row][0] = __('Data precision');
+    $table_chars->data[$row][0] .= ui_print_help_tip(__('Number of decimals shown. It must be a number between 0 and 5, except in graphs.'), true);
+    $table_chars->data[$row][1] = html_print_input_text('graph_precision', $config['graph_precision'], '', 5, 5, true, $disabled_graph_precision, false, 'onChange="change_precision()"');
+    $row++;
+
+    if (!isset($config['short_module_graph_data'])) {
+        $config['short_module_graph_data'] = true;
+    }
+
+    $table_chars->data[$row][0] = __('Data precision in graphs');
+    $table_chars->data[$row][0] .= ui_print_help_tip(__('Number of decimals shown. If the field is empty, it will show all the decimals'), true);
+    $table_chars->data[$row][1] = html_print_input_text('short_module_graph_data', $config['short_module_graph_data'], '', 5, 5, true, $disabled_graph_precision, false, 'onChange="change_precision()"');
+    $row++;
+
+    $table_chars->data[$row][0] = __('Default line thickness for the Custom Graph.');
+    $table_chars->data[$row][1] = html_print_input_text(
+        'custom_graph_width',
+        $config['custom_graph_width'],
+        '',
+        5,
+        5,
+        true
+    );
+    $row++;
+
+    $table_chars->data[$row][0] = __('Use round corners');
+    $table_chars->data[$row][1] = html_print_checkbox_switch(
+        'round_corner',
+        1,
+        $config['round_corner'],
+        true
+    );
+    $row++;
+
+    $table_chars->data[$row][0] = __('Type of module charts');
+    $table_chars->data[$row][1] = __('Area').'&nbsp;'.html_print_radio_button(
+        'type_module_charts',
+        'area',
+        '',
+        $config['type_module_charts'] == 'area',
+        true
+    ).'&nbsp;&nbsp;';
+    $table_chars->data[$row][1] .= __('Line').'&nbsp;'.html_print_radio_button(
+        'type_module_charts',
+        'line',
+        '',
+        $config['type_module_charts'] != 'area',
+        true
+    );
+    $row++;
+
+    $table_chars->data[$row][0] = __('Type of interface charts');
+    $table_chars->data[$row][1] = __('Area').'&nbsp;'.html_print_radio_button(
+        'type_interface_charts',
+        'area',
+        '',
+        $config['type_interface_charts'] == 'area',
+        true
+    ).'&nbsp;&nbsp;';
+    $table_chars->data[$row][1] .= __('Line').'&nbsp;'.html_print_radio_button(
+        'type_interface_charts',
+        'line',
+        '',
+        $config['type_interface_charts'] != 'area',
+        true
+    );
+    $row++;
+
+    $table_chars->data[$row][0] = __('Percentile');
+    $table_chars->data[$row][0] .= ui_print_help_tip(__('Show percentile 95 in graphs'), true);
+    $table_chars->data[$row][1] = html_print_input_text('percentil', $config['percentil'], '', 20, 20, true);
+    $row++;
+
+    $table_chars->data[$row][0] = __('Graph TIP view:');
+    $table_chars->data[$row][0] .= ui_print_help_tip(__('This option may cause performance issues'), true);
+
+    $options_full_escale    = [];
+    $options_full_escale[0] = __('None');
+    $options_full_escale[1] = __('All');
+    $options_full_escale[2] = __('On Boolean graphs');
+
+    $table_chars->data[$row][1] = html_print_select($options_full_escale, 'full_scale_option', $config['full_scale_option'], '', '', 0, true, false, false);
+    $row++;
 
 
-echo '<fieldset>';
-echo '<legend>'.__('Visual consoles configuration').'</legend>';
+    $table_chars->data[$row][0] = __('Show only average');
+    $table_chars->data[$row][0] .= ui_print_help_tip(__('If enabled, the module graphs will only show the average value, otherwise it will show three sets of data showing maximums, averages and minimums.'), true);
+
+    $options_soft_graphs    = [];
+    $options_soft_graphs[0] = __('Standard mode');
+    $options_soft_graphs[1] = __('Classic mode');
+
+    $table_chars->data[$row][1] = html_print_select($options_soft_graphs, 'type_mode_graph', $config['type_mode_graph'], '', '', 0, true, false, false);
+    $row++;
+
+    $table_chars->data[$row][0] = __('Zoom graphs:');
+
+    $options_zoom_graphs    = [];
+    $options_zoom_graphs[1] = 'x1';
+    $options_zoom_graphs[2] = 'x2';
+    $options_zoom_graphs[3] = 'x3';
+    $options_zoom_graphs[4] = 'x4';
+    $options_zoom_graphs[5] = 'x5';
+
+    $table_chars->data[$row][1] = html_print_select($options_zoom_graphs, 'zoom_graph', $config['zoom_graph'], '', '', 0, true, false, false);
+    $row++;
+
+    $table_chars->data[$row][0] = __('Graph image height');
+    $table_chars->data[$row][0] .= ui_print_help_tip(
+        __('This is the height in pixels of the module graph or custom graph in the reports (both: HTML and PDF)'),
+        true
+    );
+    $table_chars->data[$row][1] = html_print_input_text('graph_image_height', $config['graph_image_height'], '', 20, 20, true);
+    $row++;
+
+    /*
+        $table_font->data[$row][0] = __('Font path');
+        $fonts = load_fonts();
+        $table_font->data[$row][1] = html_print_select($fonts, 'fontpath',
+        io_safe_output($config["fontpath"]), '', '', 0, true);
+
+        $row++;
+    */
+
+    echo '<fieldset>';
+    echo '<legend>'.__('Charts configuration').' '.ui_print_help_icon('charts_conf_tab', true).'</legend>';
+    html_print_table($table_chars);
+    echo '</fieldset>';
+    // ----------------------------------------------------------------------
+    // ----------------------------------------------------------------------
+    // Visual Consoles
+    // ----------------------------------------------------------------------
+    $table_vc = new stdClass();
+    $table_vc->width = '100%';
+    $table_vc->class = 'databox filters';
+    $table_vc->style[0] = 'font-weight: bold';
+    $table_vc->size[0] = '50%';
+    $table_vc->data = [];
+
+    // Remove when the new view reaches rock solid stability.
+    $table_vc->data[$row][0] = __('Legacy Visual Console View');
+    $table_vc->data[$row][0] .= ui_print_help_tip(
+        __('To use the old view when using the Visual Console visor'),
+        true
+    );
+    $table_vc->data[$row][1] = html_print_checkbox_switch(
+        'legacy_vc',
+        1,
+        (bool) $config['legacy_vc'],
+        true
+    );
+    $row++;
+
+    $intervals = [
+        10   => '10 '.__('seconds'),
+        30   => '30 '.__('seconds'),
+        60   => '1 '.__('minutes'),
+        300  => '5 '.__('minutes'),
+        900  => '15 '.__('minutes'),
+        1800 => '30 '.__('minutes'),
+        3600 => '1 '.__('hour'),
+    ];
+    $table_vc->data[$row][0] = __('Default cache expiration');
+    $table_vc->data[$row][1] = html_print_extended_select_for_time(
+        'vc_default_cache_expiration',
+        $config['vc_default_cache_expiration'],
+        '',
+        __('No cache'),
+        0,
+        false,
+        true,
+        false,
+        false,
+        '',
+        false,
+        $intervals
+    );
+    $row++;
+
+    $table_vc->data[$row][0] = __('Default interval for refresh on Visual Console').ui_print_help_tip(__('This interval will affect to Visual Console pages'), true);
+    $table_vc->data[$row][1] = html_print_select($values, 'vc_refr', (int) $config['vc_refr'], '', 'N/A', 0, true, false, false);
+    $row++;
+
+    $vc_favourite_view_array[0] = __('Classic view');
+    $vc_favourite_view_array[1] = __('View of favorites');
+    $table_vc->data[$row][0] = __('Type of view of visual consoles').ui_print_help_tip(__('Allows you to directly display the list of favorite visual consoles'), true);
+    $table_vc->data[$row][1] = html_print_select($vc_favourite_view_array, 'vc_favourite_view', $config['vc_favourite_view'], '', '', 0, true);
+    $row++;
+
+    $table_vc->data[$row][0] = __('Number of favorite visual consoles to show in the menu').ui_print_help_tip(__('If the number is 0 it will not show the pull-down menu and maximum 25 favorite consoles'), true);
+    $table_vc->data[$row][1] = "<input type ='number' value=".$config['vc_menu_items']." size='5' name='vc_menu_items' min='0' max='25'>";
+    $row++;
+
+    $table_vc->data[$row][0] = __('Default line thickness for the Visual Console').ui_print_help_tip(__('This interval will affect to the lines between elements on the Visual Console'), true);
+    $table_vc->data[$row][1] = html_print_input_text('vc_line_thickness', (int) $config['vc_line_thickness'], '', 5, 5, true);
+
+
+    echo '<fieldset>';
+    echo '<legend>'.__('Visual consoles configuration').' '.ui_print_help_icon('visual_consoles_conf_tab', true).'</legend>';
     html_print_table($table_vc);
-echo '</fieldset>';
+    echo '</fieldset>';
 
-// ----------------------------------------------------------------------
-// Services
-// ----------------------------------------------------------------------
-$table_ser = new stdClass();
-$table_ser->width = '100%';
-$table_ser->class = 'databox filters';
-$table_ser->style[0] = 'font-weight: bold';
-$table_ser->size[0] = '50%';
-$table_ser->data = [];
+    // ----------------------------------------------------------------------
+    // Services
+    // ----------------------------------------------------------------------
+    $table_ser = new stdClass();
+    $table_ser->width = '100%';
+    $table_ser->class = 'databox filters';
+    $table_ser->style[0] = 'font-weight: bold';
+    $table_ser->size[0] = '50%';
+    $table_ser->data = [];
 
-$table_ser->data['number'][0] = __('Number of favorite services to show in the menu').ui_print_help_tip(__('If the number is 0 it will not show the pull-down menu and maximum 25 favorite services'), true);
-$table_ser->data['number'][1] = "<input type ='number' value=".$config['ser_menu_items']." size='5' name='ser_menu_items' min='0' max='25'>";
+    $table_ser->data['number'][0] = __('Number of favorite services to show in the menu').ui_print_help_tip(__('If the number is 0 it will not show the pull-down menu and maximum 25 favorite services'), true);
+    $table_ser->data['number'][1] = "<input type ='number' value=".$config['ser_menu_items']." size='5' name='ser_menu_items' min='0' max='25'>";
 
-echo '<fieldset>';
-echo '<legend>'.__('Services configuration').'</legend>';
+    echo '<fieldset>';
+    echo '<legend>'.__('Services configuration').' '.ui_print_help_icon('services_conf_tab', true).'</legend>';
     html_print_table($table_ser);
-echo '</fieldset>';
+    echo '</fieldset>';
 
-// ----------------------------------------------------------------------
-// OTHER CONFIGURATION
-// ----------------------------------------------------------------------
-$table_other = new stdClass();
-$table_other->width = '100%';
-$table_other->class = 'databox filters';
-$table_other->style[0] = 'font-weight: bold;';
-$table_other->size[0] = '50%';
-$table_other->data = [];
+    // ----------------------------------------------------------------------
+    // OTHER CONFIGURATION
+    // ----------------------------------------------------------------------
+    $table_other = new stdClass();
+    $table_other->width = '100%';
+    $table_other->class = 'databox filters';
+    $table_other->style[0] = 'font-weight: bold;';
+    $table_other->size[0] = '50%';
+    $table_other->data = [];
 
-// Enrique (27/01/2017) New feature: Show report info on top of reports
-$table_other->data[$row][0] = __('Show report info with description').ui_print_help_tip(
-    __('Custom report description info. It will be applied to all reports and templates by default.'),
-    true
-);
-$table_other->data[$row][1] = html_print_checkbox_toogle_switch(
-    'custom_report_info',
-    1,
-    $config['custom_report_info'],
-    true
-);
-$row++;
+    // Enrique (27/01/2017) New feature: Show report info on top of reports
+    $table_other->data[$row][0] = __('Show report info with description').ui_print_help_tip(
+        __('Custom report description info. It will be applied to all reports and templates by default.'),
+        true
+    );
+    $table_other->data[$row][1] = html_print_checkbox_switch(
+        'custom_report_info',
+        1,
+        $config['custom_report_info'],
+        true
+    );
+    $row++;
 
-// ----------------------------------------------------------------------
-// Juanma (07/05/2014) New feature: Table for custom front page for reports
-$table_other->data[$row][0] = __('Custom report front page').ui_print_help_tip(
-    __('Custom report front page. It will be applied to all reports and templates by default.'),
-    true
-);
-$table_other->data[$row][1] = html_print_checkbox(
-    'custom_report_front',
-    1,
-    $config['custom_report_front'],
-    true
-);
+    // ----------------------------------------------------------------------
+    // Juanma (07/05/2014) New feature: Table for custom front page for reports
+    $table_other->data[$row][0] = __('Custom report front page').ui_print_help_tip(
+        __('Custom report front page. It will be applied to all reports and templates by default.'),
+        true
+    );
+    $table_other->data[$row][1] = html_print_checkbox_switch(
+        'custom_report_front',
+        1,
+        $config['custom_report_front'],
+        true
+    );
 
-$row++;
-// ----------------------------------------------------------------------
-$dirItems = scandir($config['homedir'].'/images/custom_logo');
-foreach ($dirItems as $entryDir) {
-    if (strstr($entryDir, '.jpg') !== false || strstr($entryDir, '.png') !== false) {
-        $customLogos['images/custom_logo/'.$entryDir] = $entryDir;
-    }
-}
-
-$_fonts = [];
-$dirFonts = scandir(_MPDF_TTFONTPATH);
-foreach ($dirFonts as $entryDir) {
-    if (strstr($entryDir, '.ttf') !== false) {
-        $_fonts[$entryDir] = $entryDir;
-    }
-}
-
-// Font
-$table_other->data['custom_report_front-font'][0] = __('Custom report front').' - '.__('Font family');
-$table_other->data['custom_report_front-font'][1] = html_print_select(
-    $_fonts,
-    'custom_report_front_font',
-    $config['custom_report_front_font'],
-    false,
-    __('Default'),
-    '',
-    true
-);
-
-// Logo
-$table_other->data['custom_report_front-logo'][0] = __('Custom report front').' - '.__('Custom logo').ui_print_help_tip(
-    __("The dir of custom logos is in your www Console in 'images/custom_logo'. You can upload more files (ONLY JPEG AND PNG) in upload tool in console."),
-    true
-);
-$table_other->data['custom_report_front-logo'][1] = html_print_select(
-    $customLogos,
-    'custom_report_front_logo',
-    io_safe_output($config['custom_report_front_logo']),
-    'showPreview()',
-    __('Default'),
-    '',
-    true
-);
-// Preview
-$table_other->data['custom_report_front-preview'][0] = __('Custom report front').' - '.'Preview';
-if (empty($config['custom_report_front_logo'])) {
-    $config['custom_report_front_logo'] = 'images/pandora_logo_white.jpg';
-}
-
-$table_other->data['custom_report_front-preview'][1] = '<span id="preview_image">'.html_print_image($config['custom_report_front_logo'], true).'</span>';
-
-// Header
-$table_other->data['custom_report_front-header'][0] = __('Custom report front').' - '.__('Header');
-$table_other->data['custom_report_front-header'][1] = html_print_textarea(
-    'custom_report_front_header',
-    5,
-    15,
-    $config['custom_report_front_header'],
-    'style="width: 38em;"',
-    true
-);
-
-// First page
-$table_other->data['custom_report_front-first_page'][0] = __('Custom report front').' - '.__('First page');
-$custom_report_front_firstpage = str_replace(
-    '(_URLIMAGE_)',
-    ui_get_full_url(false, true, false, false),
-    $config['custom_report_front_firstpage']
-);
-$table_other->data['custom_report_front-first_page'][1] = html_print_textarea(
-    'custom_report_front_firstpage',
-    15,
-    15,
-    $custom_report_front_firstpage,
-    'style="width: 38em; height: 20em;"',
-    true
-);
-
-// Footer
-$table_other->data['custom_report_front-footer'][0] = __('Custom report front').' - '.__('Footer');
-$table_other->data['custom_report_front-footer'][1] = html_print_textarea(
-    'custom_report_front_footer',
-    5,
-    15,
-    $config['custom_report_front_footer'],
-    'style="width: 38em;"',
-    true
-);
-
-
-
-
-$table_other->data[$row][0] = __('Show QR Code icon in the header');
-$table_other->data[$row][1] = html_print_checkbox_toogle_switch(
-    'show_qr_code_header',
-    1,
-    $config['show_qr_code_header'],
-    true
-);
-$row++;
-
-$table_other->data[$row][0] = __('Custom graphviz directory').ui_print_help_tip(__('Custom directory where the graphviz binaries are stored.'), true);
-$table_other->data[$row][1] = html_print_input_text(
-    'graphviz_bin_dir',
-    $config['graphviz_bin_dir'],
-    '',
-    50,
-    255,
-    true
-);
-
-$row++;
-
-$table_other->data[$row][0] = __('Networkmap max width');
-$table_other->data[$row][1] = html_print_input_text(
-    'networkmap_max_width',
-    $config['networkmap_max_width'],
-    '',
-    10,
-    20,
-    true
-);
-$row++;
-
-
-
-$table_other->data[$row][0] = __('Show only the group name');
-$table_other->data[$row][0] .= ui_print_help_tip(
-    __('Show the group name instead the group icon.'),
-    true
-);
-$table_other->data[$row][1] = html_print_checkbox_toogle_switch(
-    'show_group_name',
-    1,
-    $config['show_group_name'],
-    true
-);
-$row++;
-
-$table_other->data[$row][0] = __('Date format string').ui_print_help_icon('date_format', true);
-$table_other->data[$row][1] = '<em>'.__('Example').'</em> '.date($config['date_format']);
-$table_other->data[$row][1] .= html_print_input_text('date_format', $config['date_format'], '', 30, 100, true);
-$row++;
-
-if ($config['prominent_time'] == 'comparation') {
-    $timestamp = false;
-    $comparation = true;
-} else if ($config['prominent_time'] == 'timestamp') {
-    $timestamp = true;
-    $comparation = false;
-}
-
-$table_other->data[$row][0] = __('Timestamp or time comparation').ui_print_help_icon('time_stamp-comparation', true);
-$table_other->data[$row][1] = __('Comparation in rollover').' ';
-$table_other->data[$row][1] .= html_print_radio_button('prominent_time', 'comparation', '', $comparation, true);
-$table_other->data[$row][1] .= '<br />'.__('Timestamp in rollover').' ';
-$table_other->data[$row][1] .= html_print_radio_button('prominent_time', 'timestamp', '', $timestamp, true);
-
-$row++;
-
-// ----------------------------------------------------------------------
-// CUSTOM VALUES POST PROCESS
-// ----------------------------------------------------------------------
-$table_other->data[$row][0] = __('Custom values post process');
-$table_other->data[$row][1] = '<table>';
-$table_other->data[$row][1] .= __('Value').':&nbsp;'.html_print_input_text('custom_value', '', '', 25, 50, true);
-$table_other->data[$row][1] .= '&nbsp;'.__('Text').':&nbsp;'.html_print_input_text('custom_text', '', '', 25, 50, true);
-$table_other->data[$row][1] .= '&nbsp;';
-$table_other->data[$row][1] .= html_print_input_hidden(
-    'custom_value_add',
-    '',
-    true
-);
-$table_other->data[$row][1] .= html_print_button(
-    __('Add'),
-    'custom_value_add_btn',
-    false,
-    '',
-    'class="sub next"',
-    true
-);
-
-$table_other->data[$row][1] .= '<br /><br />';
-
-$table_other->data[$row][1] .= __('Delete custom values').': ';
-$table_other->data[$row][1] .= html_print_select(
-    post_process_get_custom_values(),
-    'custom_values',
-    '',
-    '',
-    '',
-    '',
-    true
-);
-$count_custom_postprocess = post_process_get_custom_values();
-$table_other->data[$row][1] .= html_print_button(
-    __('Delete'),
-    'custom_values_del_btn',
-    empty($count_custom_postprocess),
-    '',
-    'class="sub cancel"',
-    true
-);
-// This hidden field will be filled from jQuery before submit
-$table_other->data[$row][1] .= html_print_input_hidden(
-    'custom_value_to_delete',
-    '',
-    true
-);
-$table_other->data[$row][1] .= '</table>';
-// ----------------------------------------------------------------------
-// ----------------------------------------------------------------------
-// CUSTOM INTERVAL VALUES
-// ----------------------------------------------------------------------
-$row++;
-$table_other->data[$row][0] = __('Interval values');
-$units = [
-    1               => __('seconds'),
-    SECONDS_1MINUTE => __('minutes'),
-    SECONDS_1HOUR   => __('hours'),
-    SECONDS_1DAY    => __('days'),
-    SECONDS_1MONTH  => __('months'),
-    SECONDS_1YEAR   => __('years'),
-];
-$table_other->data[$row][1] = __('Add new custom value to intervals').': ';
-$table_other->data[$row][1] .= html_print_input_text('interval_value', '', '', 5, 5, true);
-$table_other->data[$row][1] .= html_print_select($units, 'interval_unit', 1, '', '', '', true, false, false);
-$table_other->data[$row][1] .= html_print_button(__('Add'), 'interval_add_btn', false, '', 'class="sub next"', true);
-$table_other->data[$row][1] .= '<br><br>';
-
-$table_other->data[$row][1] .= __('Delete interval').': ';
-$table_other->data[$row][1] .= html_print_select(get_periods(false, false), 'intervals', '', '', '', '', true);
-$table_other->data[$row][1] .= html_print_button(__('Delete'), 'interval_del_btn', empty($config['interval_values']), '', 'class="sub cancel"', true);
-
-$table_other->data[$row][1] .= html_print_input_hidden('interval_values', $config['interval_values'], true);
-// This hidden field will be filled from jQuery before submit
-$table_other->data[$row][1] .= html_print_input_hidden('interval_to_delete', '', true);
-// ----------------------------------------------------------------------
-$row++;
-
-$common_dividers = [
-    ';' => ';',
-    ',' => ',',
-    '|' => '|',
-];
-$table_other->data[$row][0] = __('CSV divider');
-if ($config['csv_divider'] != ';' && $config['csv_divider'] != ',' && $config['csv_divider'] != '|') {
-    $table_other->data[$row][1] = html_print_input_text('csv_divider', $config['csv_divider'], '', 20, 255, true);
-    $table_other->data[$row][1] .= '<a id="csv_divider_custom" onclick="javascript: edit_csv_divider();">'.html_print_image('images/default_list.png', true, ['id' => 'select']).'</a>';
-} else {
-    $table_other->data[$row][1] = html_print_select($common_dividers, 'csv_divider', $config['csv_divider'], '', '', '', true, false, false);
-    $table_other->data[$row][1] .= '<a id="csv_divider_custom" onclick="javascript: edit_csv_divider();">'.html_print_image('images/pencil.png', true, ['id' => 'pencil']).'</a>';
-}
-
-$row++;
-
-
-echo '<fieldset>';
-echo '<legend>'.__('Other configuration').'</legend>';
-html_print_table($table_other);
-echo '</fieldset>';
-
-
-echo '<div class="action-buttons" style="width: '.$table_other->width.'">';
-html_print_submit_button(__('Update'), 'update_button', false, 'class="sub upd"');
-echo '</div>';
-echo '</form>';
-
-ui_require_css_file('color-picker', 'include/styles/js/');
-ui_require_jquery_file('colorpicker');
-
-
-function load_fonts()
-{
-    global $config;
-
-    $home = str_replace('\\', '/', $config['homedir']);
-    $dir = scandir($home.'/include/fonts/');
-
-    $fonts = [];
-
-    foreach ($dir as $file) {
-        if (strstr($file, '.ttf') !== false) {
-            $fonts[$home.'/include/fonts/'.$file] = $file;
+    $row++;
+    // ----------------------------------------------------------------------
+    $dirItems = scandir($config['homedir'].'/images/custom_logo');
+    foreach ($dirItems as $entryDir) {
+        if (strstr($entryDir, '.jpg') !== false || strstr($entryDir, '.png') !== false) {
+            $customLogos['images/custom_logo/'.$entryDir] = $entryDir;
         }
     }
 
-    return $fonts;
-}
+    $_fonts = [];
+    $dirFonts = scandir(_MPDF_TTFONTPATH);
+    foreach ($dirFonts as $entryDir) {
+        if (strstr($entryDir, '.ttf') !== false) {
+            $_fonts[$entryDir] = $entryDir;
+        }
+    }
+
+    // Font
+    $table_other->data['custom_report_front-font'][0] = __('Custom report front').' - '.__('Font family');
+    $table_other->data['custom_report_front-font'][1] = html_print_select(
+        $_fonts,
+        'custom_report_front_font',
+        $config['custom_report_front_font'],
+        false,
+        __('Default'),
+        '',
+        true
+    );
+
+    // Logo
+    $table_other->data['custom_report_front-logo'][0] = __('Custom report front').' - '.__('Custom logo').ui_print_help_tip(
+        __("The dir of custom logos is in your www Console in 'images/custom_logo'. You can upload more files (ONLY JPEG AND PNG) in upload tool in console."),
+        true
+    );
+    $table_other->data['custom_report_front-logo'][1] = html_print_select(
+        $customLogos,
+        'custom_report_front_logo',
+        io_safe_output($config['custom_report_front_logo']),
+        'showPreview()',
+        __('Default'),
+        '',
+        true
+    );
+    // Preview
+    $table_other->data['custom_report_front-preview'][0] = __('Custom report front').' - '.'Preview';
+    if (empty($config['custom_report_front_logo'])) {
+        $config['custom_report_front_logo'] = 'images/pandora_logo_white.jpg';
+    }
+
+    $table_other->data['custom_report_front-preview'][1] = '<span id="preview_image">'.html_print_image($config['custom_report_front_logo'], true).'</span>';
+
+    // Header
+    $table_other->data['custom_report_front-header'][0] = __('Custom report front').' - '.__('Header');
+    $table_other->data['custom_report_front-header'][1] = html_print_textarea(
+        'custom_report_front_header',
+        5,
+        15,
+        $config['custom_report_front_header'],
+        'style="width: 38em;"',
+        true
+    );
+
+    // First page
+    $table_other->data['custom_report_front-first_page'][0] = __('Custom report front').' - '.__('First page');
+    $custom_report_front_firstpage = str_replace(
+        '(_URLIMAGE_)',
+        ui_get_full_url(false, true, false, false),
+        $config['custom_report_front_firstpage']
+    );
+    $table_other->data['custom_report_front-first_page'][1] = html_print_textarea(
+        'custom_report_front_firstpage',
+        15,
+        15,
+        $custom_report_front_firstpage,
+        'style="width: 38em; height: 20em;"',
+        true
+    );
+
+    // Footer
+    $table_other->data['custom_report_front-footer'][0] = __('Custom report front').' - '.__('Footer');
+    $table_other->data['custom_report_front-footer'][1] = html_print_textarea(
+        'custom_report_front_footer',
+        5,
+        15,
+        $config['custom_report_front_footer'],
+        'style="width: 38em;"',
+        true
+    );
 
 
-ui_require_javascript_file('tiny_mce', 'include/javascript/tiny_mce/');
-ui_require_javascript_file('pandora');
 
-?>
+
+    $table_other->data[$row][0] = __('Show QR Code icon in the header');
+    $table_other->data[$row][1] = html_print_checkbox_switch(
+        'show_qr_code_header',
+        1,
+        $config['show_qr_code_header'],
+        true
+    );
+    $row++;
+
+    $table_other->data[$row][0] = __('Custom graphviz directory').ui_print_help_tip(__('Custom directory where the graphviz binaries are stored.'), true);
+    $table_other->data[$row][1] = html_print_input_text(
+        'graphviz_bin_dir',
+        $config['graphviz_bin_dir'],
+        '',
+        50,
+        255,
+        true
+    );
+
+    $row++;
+
+    $table_other->data[$row][0] = __('Networkmap max width');
+    $table_other->data[$row][1] = html_print_input_text(
+        'networkmap_max_width',
+        $config['networkmap_max_width'],
+        '',
+        10,
+        20,
+        true
+    );
+    $row++;
+
+
+
+    $table_other->data[$row][0] = __('Show only the group name');
+    $table_other->data[$row][0] .= ui_print_help_tip(
+        __('Show the group name instead the group icon.'),
+        true
+    );
+    $table_other->data[$row][1] = html_print_checkbox_switch(
+        'show_group_name',
+        1,
+        $config['show_group_name'],
+        true
+    );
+    $row++;
+
+    $table_other->data[$row][0] = __('Date format string');
+    $table_other->data[$row][1] = '<em>'.__('Example').'</em> '.date($config['date_format']);
+    $table_other->data[$row][1] .= html_print_input_text('date_format', $config['date_format'], '', 30, 100, true);
+    $row++;
+
+    if ($config['prominent_time'] == 'comparation') {
+        $timestamp = false;
+        $comparation = true;
+    } else if ($config['prominent_time'] == 'timestamp') {
+        $timestamp = true;
+        $comparation = false;
+    }
+
+    $table_other->data[$row][0] = __('Timestamp or time comparation');
+    $table_other->data[$row][1] = __('Comparation in rollover').' ';
+    $table_other->data[$row][1] .= html_print_radio_button('prominent_time', 'comparation', '', $comparation, true);
+    $table_other->data[$row][1] .= '<br />'.__('Timestamp in rollover').' ';
+    $table_other->data[$row][1] .= html_print_radio_button('prominent_time', 'timestamp', '', $timestamp, true);
+
+    $row++;
+
+    // ----------------------------------------------------------------------
+    // CUSTOM VALUES POST PROCESS
+    // ----------------------------------------------------------------------
+    $table_other->data[$row][0] = __('Custom values post process');
+    $table_other->data[$row][1] = '<table>';
+    $table_other->data[$row][1] .= __('Value').':&nbsp;'.html_print_input_text('custom_value', '', '', 25, 50, true);
+    $table_other->data[$row][1] .= '&nbsp;'.__('Text').':&nbsp;'.html_print_input_text('custom_text', '', '', 25, 50, true);
+    $table_other->data[$row][1] .= '&nbsp;';
+    $table_other->data[$row][1] .= html_print_input_hidden(
+        'custom_value_add',
+        '',
+        true
+    );
+    $table_other->data[$row][1] .= html_print_button(
+        __('Add'),
+        'custom_value_add_btn',
+        false,
+        '',
+        'class="sub next"',
+        true
+    );
+
+    $table_other->data[$row][1] .= '<br /><br />';
+
+    $table_other->data[$row][1] .= __('Delete custom values').': ';
+    $table_other->data[$row][1] .= html_print_select(
+        post_process_get_custom_values(),
+        'custom_values',
+        '',
+        '',
+        '',
+        '',
+        true
+    );
+    $count_custom_postprocess = post_process_get_custom_values();
+    $table_other->data[$row][1] .= html_print_button(
+        __('Delete'),
+        'custom_values_del_btn',
+        empty($count_custom_postprocess),
+        '',
+        'class="sub cancel"',
+        true
+    );
+    // This hidden field will be filled from jQuery before submit
+    $table_other->data[$row][1] .= html_print_input_hidden(
+        'custom_value_to_delete',
+        '',
+        true
+    );
+    $table_other->data[$row][1] .= '</table>';
+    // ----------------------------------------------------------------------
+    // ----------------------------------------------------------------------
+    // CUSTOM INTERVAL VALUES
+    // ----------------------------------------------------------------------
+    $row++;
+    $table_other->data[$row][0] = __('Interval values');
+    $units = [
+        1               => __('seconds'),
+        SECONDS_1MINUTE => __('minutes'),
+        SECONDS_1HOUR   => __('hours'),
+        SECONDS_1DAY    => __('days'),
+        SECONDS_1MONTH  => __('months'),
+        SECONDS_1YEAR   => __('years'),
+    ];
+    $table_other->data[$row][1] = __('Add new custom value to intervals').': ';
+    $table_other->data[$row][1] .= html_print_input_text('interval_value', '', '', 5, 5, true);
+    $table_other->data[$row][1] .= html_print_select($units, 'interval_unit', 1, '', '', '', true, false, false);
+    $table_other->data[$row][1] .= html_print_button(__('Add'), 'interval_add_btn', false, '', 'class="sub next"', true);
+    $table_other->data[$row][1] .= '<br><br>';
+
+    $table_other->data[$row][1] .= __('Delete interval').': ';
+    $table_other->data[$row][1] .= html_print_select(get_periods(false, false), 'intervals', '', '', '', '', true);
+    $table_other->data[$row][1] .= html_print_button(__('Delete'), 'interval_del_btn', empty($config['interval_values']), '', 'class="sub cancel"', true);
+
+    $table_other->data[$row][1] .= html_print_input_hidden('interval_values', $config['interval_values'], true);
+    // This hidden field will be filled from jQuery before submit
+    $table_other->data[$row][1] .= html_print_input_hidden('interval_to_delete', '', true);
+    // ----------------------------------------------------------------------
+    $row++;
+
+    $common_dividers = [
+        ';' => ';',
+        ',' => ',',
+        '|' => '|',
+    ];
+    $table_other->data[$row][0] = __('CSV divider');
+    if ($config['csv_divider'] != ';' && $config['csv_divider'] != ',' && $config['csv_divider'] != '|') {
+        $table_other->data[$row][1] = html_print_input_text('csv_divider', $config['csv_divider'], '', 20, 255, true);
+        $table_other->data[$row][1] .= '<a id="csv_divider_custom" onclick="javascript: edit_csv_divider();">'.html_print_image('images/default_list.png', true, ['id' => 'select']).'</a>';
+    } else {
+        $table_other->data[$row][1] = html_print_select($common_dividers, 'csv_divider', $config['csv_divider'], '', '', '', true, false, false);
+        $table_other->data[$row][1] .= '<a id="csv_divider_custom" onclick="javascript: edit_csv_divider();">'.html_print_image('images/pencil.png', true, ['id' => 'pencil']).'</a>';
+    }
+
+    $row++;
+
+
+    echo '<fieldset>';
+    echo '<legend>'.__('Other configuration').' '.ui_print_help_icon('other_conf_tab', true).'</legend>';
+    html_print_table($table_other);
+    echo '</fieldset>';
+
+
+    echo '<div class="action-buttons" style="width: '.$table_other->width.'">';
+    html_print_submit_button(__('Update'), 'update_button', false, 'class="sub upd"');
+    echo '</div>';
+    echo '</form>';
+
+    ui_require_css_file('color-picker', 'include/styles/js/');
+    ui_require_jquery_file('colorpicker');
+
+
+    function load_fonts()
+    {
+        global $config;
+
+        $home = str_replace('\\', '/', $config['homedir']);
+        $dir = scandir($home.'/include/fonts/');
+
+        $fonts = [];
+
+        foreach ($dir as $file) {
+            if (strstr($file, '.ttf') !== false) {
+                $fonts[$home.'/include/fonts/'.$file] = $file;
+            }
+        }
+
+        return $fonts;
+    }
+
+
+    ui_require_javascript_file('tiny_mce', 'include/javascript/tiny_mce/');
+    ui_require_javascript_file('pandora');
+
+    ?>
 <script language="javascript" type="text/javascript">
 
 function edit_csv_divider () {
@@ -1367,6 +1420,15 @@ tinyMCE.init({
 });
 
 $(document).ready (function () {
+
+    // Show the cache expiration conf or not.
+    $("input[name=legacy_vc]").change(function (e) {
+        if ($(this).prop("checked") === true) {
+            $("select#vc_default_cache_expiration_select").closest("tr").hide();
+        } else {
+            $("select#vc_default_cache_expiration_select").closest("tr").show();
+        }
+    }).change();
     
     var comfort = 0;
     
@@ -1435,12 +1497,12 @@ $(document).ready (function () {
     // Juanma (06/05/2014) New feature: Custom front page for reports  
     var custom_report = $('#checkbox-custom_report_front')
         .prop('checked');
-    display_custom_report_front(custom_report,$('#checkbox-custom_report_front').parent().parent().parent().parent().attr('id'));
+    display_custom_report_front(custom_report,$('#checkbox-custom_report_front').parent().parent().parent().parent().parent().attr('id'));
     
-    $("#checkbox-custom_report_front").click( function()  {
+    $("#checkbox-custom_report_front").change( function()  {
         var custom_report = $('#checkbox-custom_report_front')
             .prop('checked');
-        display_custom_report_front(custom_report,$(this).parent().parent().parent().parent().attr('id'));
+        display_custom_report_front(custom_report,$(this).parent().parent().parent().parent().parent().attr('id'));
     });
     $(".databox.filters").css('margin-bottom','-10px');
 });
@@ -1473,6 +1535,11 @@ $(".logo_preview").click (function(e) {
             icon_path = homeUrlEnt + "images/custom_logo/" + icon_name;
             options.grayed = true;
             break;
+        case 'button-custom_logo_collapsed_preview':
+            icon_name = $("select#custom_logo_collapsed option:selected").val();
+            icon_path = homeUrlEnt + "images/custom_logo/" + icon_name;
+            options.grayed = true;
+            break;            
         case 'button-custom_logo_white_bg_preview':
             icon_name = $("select#custom_logo_white_bg option:selected").val();
             icon_path = homeUrlEnt + "images/custom_logo/" + icon_name;

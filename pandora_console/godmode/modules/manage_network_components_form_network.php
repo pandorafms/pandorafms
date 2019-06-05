@@ -98,7 +98,7 @@ $data[3] = html_print_select(
 push_table_row($data, 'field_snmpv3_row3');
 
 $data = [];
-$data[0] = __('Post process').' '.ui_print_help_icon('postprocess', true);
+$data[0] = __('Post process');
 $data[1] = html_print_extended_select_for_post_process(
     'post_process',
     $post_process,
@@ -117,7 +117,7 @@ push_table_row($data, 'field_process');
 
 // Advanced stuff
 $data = [];
-$data[0] = __('TCP send').' '.ui_print_help_icon('tcp_send', true);
+$data[0] = __('TCP send');
 $data[1] = html_print_textarea('tcp_send', 2, 65, $tcp_send, '', true);
 $table->colspan['tcp_send'][1] = 3;
 

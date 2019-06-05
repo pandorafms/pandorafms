@@ -33,9 +33,21 @@ function winopeng_var(url, wid, width, height) {
   status = wid;
 }
 
-function open_help(help_id, home_url, id_user) {
+function open_help(url) {
+  if (!navigator.onLine) {
+    alert(
+      "The help system could not be started. Please, check your network connection."
+    );
+    return;
+  }
+  if (url == "") {
+    alert(
+      "The help system is currently under maintenance. Sorry for the inconvenience."
+    );
+    return;
+  }
   open(
-    home_url + "general/pandora_help.php?id=" + help_id + "&id_user=" + id_user,
+    url,
     "pandorahelp",
     "width=650,height=500,status=0,toolbar=0,menubar=0,scrollbars=1,location=0"
   );
@@ -503,6 +515,14 @@ function module_changed_by_multiple_modules(event, id_module, selected) {
     selection_mode = "common";
   }
 
+  var tags_selected = [];
+
+  var tags_to_search = $("#tags").val();
+  if (tags_to_search != null) {
+    if (tags_to_search[0] != -1) {
+      tags_selected = tags_to_search;
+    }
+  }
   jQuery.post(
     "ajax.php",
     {
@@ -510,7 +530,8 @@ function module_changed_by_multiple_modules(event, id_module, selected) {
       get_agents_json_for_multiple_modules: 1,
       status_module: status_module,
       "module_name[]": idModules,
-      selection_mode: selection_mode
+      selection_mode: selection_mode,
+      tags: tags_selected
     },
     function(data) {
       $("#agents").append(
@@ -1205,7 +1226,7 @@ function paint_qrcode(text, where, width, height) {
     text: text,
     width: width,
     height: height,
-    colorDark: "#3B6941",
+    colorDark: "#343434",
     colorLight: "#ffffff",
     correctLevel: QRCode.CorrectLevel.M
   });
@@ -1739,7 +1760,9 @@ function round_with_decimals(value, multiplier) {
   if (typeof multiplier === "undefined") multiplier = 1;
 
   // Return non numeric types without modification
-  if (typeof value !== "number") return value;
+  if (typeof value !== "number" || Number.isNaN(value)) {
+    return value;
+  }
 
   if (value * multiplier == 0) return 0;
   if (Math.abs(value) * multiplier >= 1) {

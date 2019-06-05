@@ -54,7 +54,14 @@ if (! defined('METACONSOLE')) {
 
     $buttons['add']['text'] = '<a href="index.php?sec=netf&sec2=godmode/netflow/nf_edit_form">'.html_print_image('images/add_mc.png', true, ['title' => __('Add filter')]).'</a>';
 
-    ui_print_page_header(__('Netflow Filter'), 'images/gm_netflow.png', false, '', true, $buttons);
+    ui_print_page_header(
+        __('Netflow Filter'),
+        'images/gm_netflow.png',
+        false,
+        'pcap_filter',
+        true,
+        $buttons
+    );
 } else {
     $nav_bar = [
         [
@@ -85,7 +92,6 @@ if ($id) {
     $dst_port = $filter['dst_port'];
     $src_port = $filter['src_port'];
     $aggregate = $filter['aggregate'];
-    $output = $filter['output'];
     $advanced_filter = $filter['advanced_filter'];
 } else {
     $name = '';
@@ -94,8 +100,7 @@ if ($id) {
     $ip_src = '';
     $dst_port = '';
     $src_port = '';
-    $aggregate = 'none';
-    $output = 'bytes';
+    $aggregate = 'dstip';
     $advanced_filter = '';
 }
 
@@ -103,7 +108,6 @@ if ($update) {
     $name = (string) get_parameter('name');
     $assign_group = (int) get_parameter('assign_group');
     $aggregate = get_parameter('aggregate', '');
-    $output = get_parameter('output', 'bytes');
     $ip_dst = get_parameter('ip_dst', '');
     $ip_src = get_parameter('ip_src', '');
     $dst_port = get_parameter('dst_port', '');
@@ -123,7 +127,6 @@ if ($update) {
             'dst_port'        => $dst_port,
             'src_port'        => $src_port,
             'advanced_filter' => $advanced_filter,
-            'output'          => $output,
         ];
 
         // Save filter args
@@ -142,8 +145,7 @@ if ($update) {
 if ($create) {
     $name = (string) get_parameter('name');
     $assign_group = (int) get_parameter('assign_group');
-    $aggregate = get_parameter('aggregate', 'none');
-    $output = get_parameter('output', 'bytes');
+    $aggregate = get_parameter('aggregate', 'dstip');
     $ip_dst = get_parameter('ip_dst', '');
     $ip_src = get_parameter('ip_src', '');
     $dst_port = get_parameter('dst_port', '');
@@ -159,7 +161,6 @@ if ($create) {
         'src_port'        => $src_port,
         'aggregate'       => $aggregate,
         'advanced_filter' => $advanced_filter,
-        'output'          => $output,
     ];
 
     // Save filter args
@@ -236,13 +237,10 @@ $table->data[5][1] = html_print_input_text('dst_port', $dst_port, false, 40, 80,
 $table->data[6][0] = __('Src Port').ui_print_help_tip(__('Source port. A comma separated list of source ports. If we leave the field blank, will show all ports. Example filter by ports 80 and 22:<br>80,22'), true);
 $table->data[6][1] = html_print_input_text('src_port', $src_port, false, 40, 80, true);
 
-$table->data[7][0] = ui_print_help_icon('pcap_filter', true);
 $table->data[7][1] = html_print_textarea('advanced_filter', 4, 40, $advanced_filter, '', true);
 
-$table->data[8][0] = '<b>'.__('Aggregate by').'</b>'.ui_print_help_icon('aggregate_by', true);
+$table->data[8][0] = '<b>'.__('Aggregate by').'</b>';
 $aggregate_list = [
-    'none'    => __('None'),
-    'proto'   => __('Protocol'),
     'srcip'   => __('Src Ip Address'),
     'dstip'   => __('Dst Ip Address'),
     'srcport' => __('Src Port'),
@@ -250,15 +248,6 @@ $aggregate_list = [
 ];
 
 $table->data[8][1] = html_print_select($aggregate_list, 'aggregate', $aggregate, '', '', 0, true, false, true, '', false);
-
-$table->data[9][0] = '<b>'.__('Output format').'</b>';
-$show_output = [
-    'kilobytes'          => __('Kilobytes'),
-    'megabytes'          => __('Megabytes'),
-    'kilobytespersecond' => __('Kilobytes per second'),
-    'megabytespersecond' => __('Megabytes per second'),
-];
-$table->data[9][1] = html_print_select($show_output, 'output', $output, '', '', 0, true, false, true, '', false);
 
 echo '<form method="post" action="'.$config['homeurl'].'index.php?sec=netf&sec2=godmode/netflow/nf_edit_form&pure='.$pure.'">';
 html_print_table($table);

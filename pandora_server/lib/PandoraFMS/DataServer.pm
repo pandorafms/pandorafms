@@ -29,6 +29,8 @@ use XML::Parser::Expat;
 use XML::Simple;
 use POSIX qw(setsid strftime);
 use IO::Uncompress::Unzip;
+use JSON qw(decode_json);
+use MIME::Base64;
 
 # Required for file names with accents
 use Encode qw(decode);
@@ -222,6 +224,10 @@ sub data_consumer ($$) {
 			process_xml_server ($self->getConfig (), $file_name, $xml_data, $self->getDBH ());
 		} elsif (defined($xml_data->{'connection_source'})) {
 			enterprise_hook('process_xml_connections', [$self->getConfig (), $file_name, $xml_data, $self->getDBH ()]);
+		} elsif (defined($xml_data->{'network_matrix'})){
+			process_xml_matrix_network(
+				$self->getConfig(), $xml_data, $self->getDBH()
+			);
 		} else {
 			process_xml_data ($self->getConfig (), $file_name, $xml_data, $self->getServerID (), $self->getDBH ());
 		}
@@ -326,6 +332,7 @@ sub process_xml_data ($$$$$) {
 	
 	# Get agent id
 	my $agent_id = get_agent_id ($dbh, $agent_name);
+	my $group_id = 0;
 	if ($agent_id < 1) {
 		if ($pa_config->{'autocreate'} == 0) {
 			logger($pa_config, "ERROR: There is no agent defined with name $agent_name", 3);
@@ -334,7 +341,7 @@ sub process_xml_data ($$$$$) {
 		
 		# Get OS, group and description
 		my $os = pandora_get_os ($dbh, $data->{'os_name'});
-		my $group_id = $pa_config->{'autocreate_group'};
+		$group_id = $pa_config->{'autocreate_group'};
 		if (! defined (get_group_name ($dbh, $group_id))) {
 			if (defined ($data->{'group_id'}) && $data->{'group_id'} ne '') {
 				$group_id = $data->{'group_id'};
@@ -600,6 +607,9 @@ sub process_xml_data ($$$$$) {
 	# Process snmptrapd modules
 	enterprise_hook('process_snmptrap_data', [$pa_config, $data, $server_id, $dbh]);
 
+	# Process events
+	process_events_dataserver($pa_config, $data, $agent_id, $group_id, $dbh);
+
 	# Process disovery modules
 	enterprise_hook('process_discovery_data', [$pa_config, $data, $server_id, $dbh]);
 }
@@ -631,7 +641,7 @@ sub process_module_data ($$$$$$$$$$) {
 	            'unknown_instructions' => '', 'tags' => '', 'critical_inverse' => 0, 'warning_inverse' => 0, 'quiet' => 0,
 				'module_ff_interval' => 0, 'alert_template' => '', 'crontab' =>	'', 'min_ff_event_normal' => 0,
 				'min_ff_event_warning' => 0, 'min_ff_event_critical' => 0, 'ff_timeout' => 0, 'each_ff' => 0, 'module_parent' => 0,
-				'module_parent_unlink' => 0, 'cron_interval' => 0};
+				'module_parent_unlink' => 0, 'cron_interval' => 0, 'ff_type' => 0};
 	
 	# Other tags will be saved here
 	$module_conf->{'extended_info'} = '';
@@ -968,6 +978,85 @@ sub unlink_modules {
 	# Link them.
     logger($pa_config, "Unlinking parent from module $child_name agent ID $agent_id", 10);
 	db_do($dbh, "UPDATE tagente_modulo SET parent_module_id = 0 WHERE id_agente_modulo = ?", $child_id);
+}
+
+##########################################################################
+# Process events in the XML.
+##########################################################################
+sub process_events_dataserver {
+	my ($pa_config, $data, $agent_id, $group_id, $dbh) = @_;
+
+	return unless defined($data->{'events'}->[0]->{'event'});
+
+	foreach my $event (@{$data->{'events'}->[0]->{'event'}}) {
+		next unless defined($event);
+
+		# Try to decode the base64 inside
+		my $event_info;
+		eval {
+			$event_info = decode_json(decode_base64($event));
+		};
+
+		if ($@) {
+			logger($pa_config, "Error processing base64 event data '$event'.", 5);
+			next;
+		}
+		next unless defined($event_info->{'data'});
+
+		pandora_event(
+			$pa_config,
+			$event_info->{'data'},
+			$group_id,
+			$agent_id,
+			defined($event_info->{'severity'}) ? $event_info->{'severity'} : 0,
+			0,
+			0,
+			'system',
+			0,
+			$dbh
+		);
+	}
+
+	return;
+}
+
+
+##########################################################################
+# Process events in the XML.
+##########################################################################
+sub process_xml_matrix_network {
+	my ($pa_config, $data, $dbh)  = @_;
+
+	my $utimestamp = $data->{'network_matrix'}->[0]->{'utimestamp'};
+	my $content = $data->{'network_matrix'}->[0]->{'content'};
+	return unless defined($utimestamp) && defined($content);
+
+	# Try to decode the base64 inside
+	my $matrix_info;
+	eval {
+		$matrix_info = decode_json(decode_base64($content));
+	};
+
+	if ($@) {
+		logger($pa_config, "Error processing base64 matrix data '$content'.", 5);
+		return;
+	}
+	foreach my $source (keys %$matrix_info) {
+		foreach my $destination (keys %{$matrix_info->{$source}}) {
+			my $matrix_single_data = $matrix_info->{$source}->{$destination};
+			$matrix_single_data->{'source'} = $source;
+			$matrix_single_data->{'destination'} = $destination;
+			$matrix_single_data->{'utimestamp'} = $utimestamp;
+			eval {
+				db_process_insert($dbh, 'id', 'tnetwork_matrix', $matrix_single_data);
+			};
+			if ($@) {
+				logger($pa_config, "Error inserted matrix data. Source: $source, destination: $destination, utimestamp: $utimestamp.", 5);
+			}
+		}
+	}
+
+	return;
 }
 
 1;

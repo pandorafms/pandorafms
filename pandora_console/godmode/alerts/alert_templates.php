@@ -132,7 +132,13 @@ if (!$delete_template) {
         alerts_meta_print_header();
     } else {
         // ~ ui_print_page_header (__('Alerts')." &raquo; ". __('Alert templates'), "images/gm_alerts.png", false, "alerts_config", true);
-        ui_print_page_header(__('Alerts').' &raquo; '.__('Alert templates'), 'images/gm_alerts.png', false, '', true);
+        ui_print_page_header(
+            __('Alerts').' &raquo; '.__('Alert templates'),
+            'images/gm_alerts.png',
+            false,
+            'alert_templates_tab',
+            true
+        );
     }
 }
 
@@ -201,7 +207,13 @@ if ($delete_template) {
                 if (defined('METACONSOLE')) {
                     alerts_meta_print_header();
                 } else {
-                    ui_print_page_header(__('Alerts').' &raquo; '.__('Alert templates'), 'images/gm_alerts.png', false, 'alerts_config', true);
+                    ui_print_page_header(
+                        __('Alerts').' &raquo; '.__('Alert templates'),
+                        'images/gm_alerts.png',
+                        false,
+                        'alerts_config',
+                        true
+                    );
                 }
             } else {
                 db_pandora_audit(
@@ -216,7 +228,13 @@ if ($delete_template) {
         if (defined('METACONSOLE')) {
             alerts_meta_print_header();
         } else {
-            ui_print_page_header(__('Alerts').' &raquo; '.__('Alert templates'), 'images/gm_alerts.png', false, 'alerts_config', true);
+            ui_print_page_header(
+                __('Alerts').' &raquo; '.__('Alert templates'),
+                'images/gm_alerts.png',
+                false,
+                'alerts_config',
+                true
+            );
         }
     }
 
@@ -243,7 +261,9 @@ $url = ui_get_url_refresh(
         'offset'        => false,
         'search_string' => $search_string,
         'search_type'   => $search_type,
-    ]
+    ],
+    true,
+    false
 );
 
 $table = new stdClass();
@@ -339,7 +359,7 @@ if ($templates === false) {
 
 $table = new stdClass();
 $table->width = '100%';
-$table->class = 'databox data';
+$table->class = 'info_table';
 $table->data = [];
 $table->head = [];
 $table->head[0] = __('Name');
@@ -375,6 +395,7 @@ foreach ($templates as $template) {
     $data[3] = alerts_get_alert_templates_type_name($template['type']);
 
     if (check_acl($config['id_user'], $template['id_group'], 'LM')) {
+        $table->cellclass[][4] = 'action_buttons';
         $data[4] = '<form method="post" action="index.php?sec='.$sec.'&sec2=godmode/alerts/configure_alert_template&pure='.$pure.'" style="display: inline; float: left">';
         $data[4] .= html_print_input_hidden('duplicate_template', 1, true);
         $data[4] .= html_print_input_hidden('source_id', $template['id'], true);
@@ -396,6 +417,7 @@ foreach ($templates as $template) {
 ui_pagination($total_templates, $url);
 if (isset($data)) {
     html_print_table($table);
+    ui_pagination($total_templates, $url, 0, 0, false, 'offset', true, 'pagination-bottom');
 } else {
     ui_print_info_message(['no_close' => true, 'message' => __('No alert templates defined') ]);
 }

@@ -20,14 +20,12 @@ if (! isset($config['id_user'])) {
 <script type="text/javascript" language="javascript">
 
 $(document).ready(function(){    
-    var menuType_value = localStorage.getItem("menuType");
+    var menuType_value = "<?php echo $config['menu_type']; ?>";
+
     if (menuType_value == 'classic') {
         $('ul.submenu').css('left', '214px');    
     }
     else{
-        if(menuType_value != 'collapsed'){    
-            localStorage.setItem("menuType", "collapsed");
-        }  
         $('ul.submenu').css('left', '59px');
     }
 });
@@ -47,18 +45,18 @@ if (isset($config['autohidden_menu']) && $config['autohidden_menu']) {
 }
 
 // Menu container prepared to autohide menu
-
-if ($_SESSION['menu_type']=='classic')
+if ($config['menu_type'] == 'classic') {
     echo '<div id="menu_full" class="menu_full_classic">';
-else
+} else {
     echo '<div id="menu_full" class="menu_full_collapsed">';
+}
 
 $custom_logo = 'images/custom_logo/'.$config['custom_logo'];
 $custom_logo_collapsed = 'images/custom_logo/'.$config['custom_logo_collapsed'];
 
 if (!defined('PANDORA_ENTERPRISE')) {
     $logo_title = get_product_name().' Opensource';
-    $custom_logo = 'images/custom_logo/pandora_logo_head_green.png';
+    $custom_logo = 'images/custom_logo/pandora_logo_head_3.png';
     $custom_logo_collapsed = 'images/custom_logo/pandora_logo_green_collapsed.png';
 } else {
     if (file_exists(ENTERPRISE_DIR.'/'.$custom_logo)) {
@@ -70,17 +68,19 @@ if (!defined('PANDORA_ENTERPRISE')) {
 
 echo '<div class="logo_green"><a href="index.php?sec=main">';
 if (isset($config['custom_logo'])) {
-    if ($_SESSION['menu_type']=='classic')
+    if ($config['menu_type'] == 'classic') {
         echo html_print_image($custom_logo, true, ['border' => '0', 'width' => '215', 'alt' => $logo_title, 'class' => 'logo_full', 'style' => 'display:block']);
-    else
+    } else {
         echo html_print_image($custom_logo, true, ['border' => '0', 'width' => '215', 'alt' => $logo_title, 'class' => 'logo_full', 'style' => 'display:none']);
+    }
 }
 
 if (isset($config['custom_logo_collapsed'])) {
-    if ($_SESSION['menu_type']=='classic')
+    if ($config['menu_type'] == 'classic') {
         echo html_print_image($custom_logo_collapsed, true, ['border' => '0', 'width' => '60', 'alt' => $logo_title, 'class' => 'logo_icon', 'style' => 'display:none']);
-    else
+    } else {
         echo html_print_image($custom_logo_collapsed, true, ['border' => '0', 'width' => '60', 'alt' => $logo_title, 'class' => 'logo_icon', 'style' => 'display:block']);
+    }
 }
 
 echo '</a></div>';
@@ -103,10 +103,11 @@ if (check_acl($config['id_user'], 0, 'AW')
 
 require 'godmode/menu.php';
 
-if ($_SESSION['menu_type']=='classic')
+if ($config['menu_type'] == 'classic') {
     echo '<div id="button_collapse" class="button_classic button_collapse"></div>';
-else
+} else {
     echo '<div id="button_collapse" class="button_collapsed button_collapse"></div>';
+}
 
 // require ("links_menu.php");
 echo '</div>';

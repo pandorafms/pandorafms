@@ -47,7 +47,14 @@ if (!is_metaconsole()) {
 
     $buttons[$tab]['active'] = true;
 
-    ui_print_page_header(__('User management').' &raquo; '.__('Profiles defined on %s', get_product_name()), 'images/gm_users.png', false, '', true, $buttons);
+    ui_print_page_header(
+        __('User management').' &raquo; '.__('Profiles defined on %s', get_product_name()),
+        'images/gm_users.png',
+        false,
+        'configure_profiles_tab',
+        true,
+        $buttons
+    );
     $sec2 = 'gusuarios';
 } else {
     user_meta_print_header();

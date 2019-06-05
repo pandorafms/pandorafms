@@ -120,6 +120,7 @@ our @EXPORT = qw(
 	month_have_days
 	translate_obj
 	valid_regex
+	read_file
 	set_file_permissions
 	uri_encode
 	check_server_threads
@@ -329,6 +330,28 @@ my @ServerThreads;
 
 # Keep threads running.
 our $THRRUN :shared = 1;
+
+##########################################################################
+## Reads a file and returns entire content or undef if error.
+##########################################################################
+sub read_file {
+	my $path = shift;
+
+	my $_FILE;
+	if( !open($_FILE, "<", $path) ) {
+		# failed to open, return undef
+		return undef;
+	}
+
+	# Slurp configuration file content.
+	my $content = do { local $/; <$_FILE> };
+
+	# Close file
+	close($_FILE);
+
+	return $content;
+}
+
 
 ###############################################################################
 # Sets user:group owner for the given file
@@ -1359,45 +1382,27 @@ sub cron_next_execution {
 	}
 
 	# Get day of the week and month from cron config
-	my ($mday, $wday) = (split (/\s/, $cron))[2, 4];
+	my ($wday) = (split (/\s/, $cron))[4];
+	# Check the wday values to avoid infinite loop
+	my ($wday_down, $wday_up) = cron_get_interval($wday);
+	if ($wday_down ne "*" && ($wday_down > 6 || (defined($wday_up) && $wday_up > 6))) {
+		$wday = "*";
+	}
 
 	# Get current time and day of the week
 	my $cur_time = time();
 	my $cur_wday = (localtime ($cur_time))[6];
 
-	# Any day of the week
-	if ($wday eq '*') {
-		my $nex_time = cron_next_execution_date ($cron,  $cur_time, $interval);
-		return $nex_time - time();
-	}
-	# A range?
-	else {
-		$wday = cron_get_closest_in_range ($cur_wday, $wday);
+	my $nex_time = cron_next_execution_date ($cron, $cur_time, $interval);
+
+	# Check the day
+	while (!cron_check_interval($wday, (localtime ($nex_time))[6])) {
+		# If it does not acomplish the day of the week, go to the next day.
+		$nex_time += 86400;
+		$nex_time = cron_next_execution_date ($cron, $nex_time, 0);
 	}
 
-	# A specific day of the week
-	my $count = 0;
-	my $nex_time = $cur_time;
-	do {
-		$nex_time = cron_next_execution_date ($cron, $nex_time, $interval);
-		my $nex_time_wd = $nex_time;
-		my ($nex_mon, $nex_wday) = (localtime ($nex_time_wd))[4, 6];
-		my $nex_mon_wd;
-		do {
-			# Check the day of the week
-			if ($nex_wday == $wday) {
-				return $nex_time_wd - time();
-			}
-			
-			# Move to the next day of the month
-			$nex_time_wd += 86400;
-			($nex_mon_wd, $nex_wday) = (localtime ($nex_time_wd))[4, 6];
-		} while ($mday eq '*' && $nex_mon_wd == $nex_mon);
-		$count++;
-	} while ($count < 60);
-
-	# Something went wrong, default to 5 minutes
-	return $interval;
+	return $nex_time - time();
 }
 ###############################################################################
 # Get the number of seconds left to the next execution of the given cron entry.
@@ -1407,6 +1412,30 @@ sub cron_check_syntax ($) {
 	
 	return 0 if !defined ($cron);
 	return ($cron =~ m/^(\d|\*|-)+ (\d|\*|-)+ (\d|\*|-)+ (\d|\*|-)+ (\d|\*|-)+$/);
+}
+###############################################################################
+# Check if a value is inside an interval.
+###############################################################################
+sub cron_check_interval {
+	my ($elem_cron, $elem_curr_time) = @_;
+
+	# Return 1 if wildcard.
+	return 1 if ($elem_cron eq "*");
+
+	my ($down, $up) = cron_get_interval($elem_cron);
+	# Check if it is not a range
+	if (!defined($up)) {
+		return ($down == $elem_curr_time) ? 1 : 0;
+	}
+
+	# Check if it is on the range
+	if ($down < $up) {
+		return 0 if ($elem_curr_time < $down || $elem_curr_time > $up);
+	} else {
+		return 0 if ($elem_curr_time > $down || $elem_curr_time < $up);
+	}
+
+	return 1;
 }
 ###############################################################################
 # Get the next execution date for the given cron entry in seconds since epoch.
@@ -1445,8 +1474,7 @@ sub cron_next_execution_date {
 	my @nex_time_array = @curr_time_array;
 
 	# Update minutes
-	my ($min_down, undef) = cron_get_interval ($min);
-	$nex_time_array[0] = ($min_down eq '*') ? 0 : $min_down;
+	$nex_time_array[0] = cron_get_next_time_element($min);
 
 	$nex_time = cron_valid_date(@nex_time_array, $cur_year);
 	if ($nex_time >= $cur_time) {
@@ -1479,8 +1507,7 @@ sub cron_next_execution_date {
 	return $nex_time if cron_is_in_cron(\@cron_array, \@nex_time_array);
 
 	#Update the hour if fails
-	my ($hour_down, undef) = cron_get_interval ($hour);
-	$nex_time_array[1] = ($hour_down eq '*') ? 0 : $hour_down;
+	$nex_time_array[1] = cron_get_next_time_element($hour);
 
 	# When an overflow is passed check the hour update again
 	$nex_time = cron_valid_date(@nex_time_array, $cur_year);
@@ -1507,8 +1534,7 @@ sub cron_next_execution_date {
 	return $nex_time if cron_is_in_cron(\@cron_array, \@nex_time_array);
 	
 	#Update the day if fails
-	my ($mday_down, undef) = cron_get_interval ($mday);
-	$nex_time_array[2] = ($mday_down eq '*') ? 1 : $mday_down;
+	$nex_time_array[2] = cron_get_next_time_element($mday, 1);
 
 	# When an overflow is passed check the hour update in the next execution
 	$nex_time = cron_valid_date(@nex_time_array, $cur_year);
@@ -1530,8 +1556,7 @@ sub cron_next_execution_date {
 	return $nex_time if cron_is_in_cron(\@cron_array, \@nex_time_array);
 
 	#Update the month if fails
-	my ($mon_down, undef) = cron_get_interval ($mon);
-	$nex_time_array[3] = ($mon_down eq '*') ? 0 : $mon_down;
+	$nex_time_array[3] = cron_get_next_time_element($mon);
 
 	# When an overflow is passed check the hour update in the next execution
 	$nex_time = cron_valid_date(@nex_time_array, $cur_year);
@@ -1560,21 +1585,29 @@ sub cron_is_in_cron {
 	#If there is no elements means that is in cron
 	return 1 unless (defined($elem_cron) || defined($elem_curr_time));
 
-	# Go to last element if current is a wild card
-	if ($elem_cron ne '*') {
-		my ($down, $up) = cron_get_interval($elem_cron);
-		# Check if there is no a range
-		return 0 if (!defined($up) && ($down != $elem_curr_time));
-		# Check if there is on the range
-		if (defined($up)) {
-			if ($down < $up) {
-				return 0 if ($elem_curr_time < $down || $elem_curr_time > $up);
-			} else {
-				return 0 if ($elem_curr_time > $down || $elem_curr_time < $up);
-			}
-		}
-	}
+	# Check the element interval
+	return 0 unless (cron_check_interval($elem_cron, $elem_curr_time));
+
 	return cron_is_in_cron(\@deref_elems_cron, \@deref_elems_curr_time);
+}
+################################################################################
+#Get the next tentative time for a cron value or interval in case of overflow.
+#Floor data is the minimum localtime data for a position. Ex: 
+#Ex:
+#     * should returns floor data.
+#     5 should returns 5.
+#     10-55 should returns 10.
+#     55-10 should retunrs floor data.
+################################################################################
+sub cron_get_next_time_element {
+	# Default floor data is 0
+	my ($curr_element, $floor_data) = @_;
+	$floor_data = 0 unless defined($floor_data);
+
+	my ($elem_down, $elem_up) = cron_get_interval ($curr_element);
+	return ($elem_down eq '*' || (defined($elem_up) && $elem_down > $elem_up))
+		? $floor_data
+		: $elem_down;
 }
 ###############################################################################
 # Returns the interval of a cron element. If there is not a range,
@@ -1774,7 +1807,7 @@ sub api_call_url {
 	
 
 	my $ua = LWP::UserAgent->new();
-	$ua->timeout($options->{lwp_timeout});
+	$ua->timeout($pa_config->{'tcp_timeout'});
 	# Enable environmental proxy settings
 	$ua->env_proxy;
 	# Enable in-memory cookie management

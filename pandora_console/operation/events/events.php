@@ -285,8 +285,38 @@ if (!$meta) {
     }
 }
 
+$id_filter = db_get_value(
+    'id_filter',
+    'tusuario',
+    'id_user',
+    $config['id_user']
+);
+
+// If user has event filter retrieve filter values.
+if (!empty($id_filter)) {
+    $apply_filter = true;
+
+    $event_filter = events_get_event_filter($id_filter);
+
+    $event_filter['search'] = io_safe_output($event_filter['search']);
+    $event_filter['id_name'] = io_safe_output($event_filter['id_name']);
+    $event_filter['tag_with'] = base64_encode(
+        io_safe_output($event_filter['tag_with'])
+    );
+    $event_filter['tag_without'] = base64_encode(
+        io_safe_output($event_filter['tag_without'])
+    );
+}
+
+$is_filtered = get_parameter('is_filtered', false);
 $offset = (int) get_parameter('offset', 0);
+
+if ($event_filter['id_group'] == '') {
+    $event_filter['id_group'] = 0;
+}
+
 $id_group = (int) get_parameter('id_group', 0);
+
 // 0 all
 // **********************************************************************
 // TODO
@@ -297,38 +327,59 @@ $id_group = (int) get_parameter('id_group', 0);
 // **********************************************************************
 $recursion = (bool) get_parameter('recursion', true);
 // Flag show in child groups.
-$event_type = get_parameter('event_type', '');
+if (empty($event_filter['event_type'])) {
+    $event_filter['event_type'] = '';
+}
+
+$event_type = ($apply_filter === true && $is_filtered === false) ? $event_filter['event_type'] : get_parameter('event_type', '');
+
 // 0 all.
-$severity = (int) get_parameter('severity', -1);
+$severity = ($apply_filter === true && $is_filtered === false) ? (int) $event_filter['severity'] : (int) get_parameter('severity', -1);
 // -1 all.
-$status = (int) get_parameter('status', 3);
+if ($event_filter['status'] == -1) {
+    $event_filter['status'] = 3;
+}
+
+$status = ($apply_filter === true && $is_filtered === false) ? (int) $event_filter['status'] : (int) get_parameter('status', 3);
 // -1 all, 0 only new, 1 only validated,
 // 2 only in process, 3 only not validated.
-$id_agent = (int) get_parameter('id_agent', 0);
-$pagination = (int) get_parameter('pagination', $config['block_size']);
-$event_view_hr = (int) get_parameter(
+$id_agent = ($apply_filter === true && $is_filtered === false) ? (int) $event_filter['id_agent'] : (int) get_parameter('id_agent', 0);
+$pagination = ($apply_filter === true && $is_filtered === false) ? (int) $event_filter['pagination'] : (int) get_parameter('pagination', $config['block_size']);
+
+if (empty($event_filter['event_view_hr'])) {
+    $event_filter['event_view_hr'] = ($history) ? 0 : $config['event_view_hr'];
+}
+
+$event_view_hr = ($apply_filter === true && $is_filtered === false) ? (int) $event_filter['event_view_hr'] : (int) get_parameter(
     'event_view_hr',
     ($history) ? 0 : $config['event_view_hr']
 );
-$id_user_ack = get_parameter('id_user_ack', 0);
-$group_rep = (int) get_parameter('group_rep', 1);
+
+
+$id_user_ack = ($apply_filter === true && $is_filtered === false) ? $event_filter['id_user_ack'] : get_parameter('id_user_ack', 0);
+$group_rep = ($apply_filter === true && $is_filtered === false) ? (int) $event_filter['group_rep'] : (int) get_parameter('group_rep', 1);
 $delete = (bool) get_parameter('delete');
 $validate = (bool) get_parameter('validate', 0);
 $section = (string) get_parameter('section', 'list');
-$filter_only_alert = (int) get_parameter('filter_only_alert', -1);
+$filter_only_alert = ($apply_filter === true && $is_filtered === false) ? (int) $event_filter['filter_only_alert'] : (int) get_parameter('filter_only_alert', -1);
 $filter_id = (int) get_parameter('filter_id', 0);
-$id_name = (string) get_parameter('id_name', '');
+
+if (empty($event_filter['id_name'])) {
+    $event_filter['id_name'] = '';
+}
+
+$id_name = ($apply_filter === true && $is_filtered === false) ? (string) $event_filter['id_name'] : (string) get_parameter('id_name', '');
 $open_filter = (int) get_parameter('open_filter', 0);
-$date_from = (string) get_parameter('date_from', '');
-$date_to = (string) get_parameter('date_to', '');
+$date_from = ($apply_filter === true && $is_filtered === false) ? (string) $event_filter['date_from'] : (string) get_parameter('date_from', '');
+$date_to = ($apply_filter === true && $is_filtered === false) ? (string) $event_filter['date_to'] : (string) get_parameter('date_to', '');
 $time_from = (string) get_parameter('time_from', '');
 $time_to = (string) get_parameter('time_to', '');
 $server_id = (int) get_parameter('server_id', 0);
-$text_agent = (string) get_parameter('text_agent');
+$text_agent = ($apply_filter === true && $is_filtered === false) ? (string) $event_filter['text_agent'] : (string) get_parameter('text_agent');
 $refr = (int) get_parameter('refresh');
-$id_extra = (string) get_parameter('id_extra');
-$user_comment = (string) get_parameter('user_comment');
-$source = (string) get_parameter('source');
+$id_extra = ($apply_filter === true && $is_filtered === false) ? (string) $event_filter['id_extra'] : (string) get_parameter('id_extra');
+$user_comment = ($apply_filter === true && $is_filtered === false) ? (string) $event_filter['user_comment'] : (string) get_parameter('user_comment');
+$source = ($apply_filter === true && $is_filtered === false) ? (string) $event_filter['source'] : (string) get_parameter('source');
 
 if ($id_agent != 0) {
     $text_agent = agents_get_alias($id_agent);
@@ -343,7 +394,7 @@ if ($id_agent != 0) {
 }
 
 $text_module = (string) get_parameter('module_search', '');
-$id_agent_module = get_parameter(
+$id_agent_module = ($apply_filter === true && $is_filtered === false) ? $event_filter['id_agent_module'] : get_parameter(
     'module_search_hidden',
     get_parameter('id_agent_module', 0)
 );
@@ -363,7 +414,7 @@ if ($id_agent_module != 0) {
 
 
 
-$tag_with_json = base64_decode(get_parameter('tag_with', ''));
+$tag_with_json = ($apply_filter === true && $is_filtered === false) ? base64_decode($event_filter['tag_with']) : base64_decode(get_parameter('tag_with', ''));
 $tag_with_json_clean = io_safe_output($tag_with_json);
 $tag_with_base64 = base64_encode($tag_with_json_clean);
 $tag_with = json_decode($tag_with_json_clean, true);
@@ -373,7 +424,7 @@ if (empty($tag_with)) {
 
 $tag_with = array_diff($tag_with, [0 => 0]);
 
-$tag_without_json = base64_decode(get_parameter('tag_without', ''));
+$tag_without_json = ($apply_filter === true && $is_filtered === false) ? base64_decode($event_filter['tag_without']) : base64_decode(get_parameter('tag_without', ''));
 $tag_without_json_clean = io_safe_output($tag_without_json);
 $tag_without_base64 = base64_encode($tag_without_json_clean);
 $tag_without = json_decode($tag_without_json_clean, true);
@@ -886,11 +937,11 @@ $(document).ready( function() {
                         // Remove delete link (if event is not grouped and there is more than one event)
                         if ($("#group_rep").val() == 1) {
                             if (parseInt($("#count_event_group_"+id).text()) <= 1) {
-                                $("#delete-"+id).replaceWith('<img alt="' + <?php echo "'".__('Is not allowed delete events in process')."'"; ?> + '" title="' + <?php echo "'".__('Is not allowed delete events in process')."'"; ?> + '" src="images/cross.disabled.png">');
+                                $("#delete-"+id).replaceWith('<img alt=" <?php echo addslashes(__('Is not allowed delete events in process')); ?>" title="<?php echo addslashes(__('Is not allowed delete events in process')); ?>"  src="images/cross.disabled.png">');
                             }
                         }
                         else { // Remove delete link (if event is not grouped)
-                            $("#delete-"+id).replaceWith('<img alt="' + <?php echo "'".__('Is not allowed delete events in process')."'"; ?> + '" title="' + <?php echo "'".__('Is not allowed delete events in process')."'"; ?> + '" src="images/cross.disabled.png">');
+                            $("#delete-"+id).replaceWith('<img alt="<?php echo addslashes(__('Is not allowed delete events in process')); ?> " title="<?php echo addslashes(__('Is not allowed delete events in process')); ?>"  src="images/cross.disabled.png">');
                         }
                         
                         // Change state image
@@ -1091,10 +1142,10 @@ function validate_event_advanced(id, new_status) {
                     $("#in-progress-"+id).remove();
                     // Format the new disabled delete icon.
                     $("#validate-"+id).parent().append("<img id='delete-" + id + "' src='" + cross_disabled_image + "' />");
-                    $("#delete-"+id).attr ("data-title", <?php echo "'".__('Is not allowed delete events in process')."'"; ?>);
-                    $("#delete-"+id).attr ("alt", <?php echo "'".__('Is not allowed delete events in process')."'"; ?>);
+                    $("#delete-"+id).attr ("data-title",  "<?php echo addslashes(__('Is not allowed delete events in process')); ?>");
+                    $("#delete-"+id).attr ("alt"," <?php echo addslashes(__('Is not allowed delete events in process')); ?>");
                     $("#delete-"+id).attr ("data-use_title_for_force_title", 1);
-                    $("#delete-"+id).attr ("class", "forced_title");
+                    $("#delete-"+id).attr ("class", "forced_title"); 
 
                     // Remove row due to new state
                     if (($("#status").val() == 0)

@@ -32,6 +32,34 @@ global $config;
 // Load the header.
 require $config['homedir'].'/operation/users/user_edit_header.php';
 
+if (!is_metaconsole()) {
+    date_default_timezone_set('UTC');
+    include 'include/javascript/timezonepicker/includes/parser.inc';
+
+    // Read in options for map builder.
+    $bases = [
+        'gray'           => 'Gray',
+        'blue-marble'    => 'Blue marble',
+        'night-electric' => 'Night Electric',
+        'living'         => 'Living Earth',
+    ];
+
+    $local_file = 'include/javascript/timezonepicker/images/gray-400.png';
+
+    // Dimensions must always be exact since the imagemap does not scale.
+    $array_size = getimagesize($local_file);
+
+    $map_width = $array_size[0];
+    $map_height = $array_size[1];
+
+    $timezones = timezone_picker_parse_files(
+        $map_width,
+        $map_height,
+        'include/javascript/timezonepicker/tz_world.txt',
+        'include/javascript/timezonepicker/tz_islands.txt'
+    );
+}
+
 // Update user info.
 if (isset($_GET['modified']) && !$view_mode) {
     if (html_print_csrf_error()) {
@@ -52,16 +80,39 @@ if (isset($_GET['modified']) && !$view_mode) {
     $upd_info['id_skin'] = get_parameter('skin', $user_info['id_skin']);
     $upd_info['default_event_filter'] = get_parameter('event_filter', null);
     $upd_info['block_size'] = get_parameter('block_size', $config['block_size']);
-    $upd_info['firstname'] = get_parameter('newsletter_reminder', $user_info['first_name']);
+    $upd_info['middlename'] = get_parameter_switch('newsletter_reminder', $user_info['middlename']);
     $default_block_size = get_parameter('default_block_size', 0);
     if ($default_block_size) {
         $upd_info['block_size'] = 0;
+    }
+
+    if ($upd_info['middlename'] == 1) {
+        // User wants to enable newsletter reminders.
+        if ($user_info['middlename'] > 0) {
+            // User has already registered!. No sense.
+            $upd_info['middlename'] = $user_info['middlename'];
+        } else {
+            // Force subscription reminder.
+            $upd_info['middlename'] = 0;
+        }
+    }
+
+    if ($upd_info['middlename'] == 0 || $upd_info['middlename'] == 0) {
+        // Switch is ON. user had not registered.
+        $newsletter_reminder_value = 1;
+    } else if ($upd_info['middlename'] < 1) {
+        // Switch is OFF. User do not want to register.
+        $newsletter_reminder_value = 0;
+    } else if ($upd_info['middlename'] > 0) {
+        // Switc is OFF. User is already registered!
+        $newsletter_reminder_value = 0;
     }
 
     $upd_info['section'] = get_parameter('section', $user_info['section']);
     $upd_info['data_section'] = get_parameter('data_section', '');
     $dashboard = get_parameter('dashboard', '');
     $visual_console = get_parameter('visual_console', '');
+
 
     // Save autorefresh list.
     $autorefresh_list = get_parameter_post('autorefresh_list');
@@ -72,6 +123,11 @@ if (isset($_GET['modified']) && !$view_mode) {
     }
 
     $upd_info['time_autorefresh'] = (int) get_parameter('time_autorefresh', 0);
+    $upd_info['ehorus_user_level_user'] = get_parameter('ehorus_user_level_user');
+    $upd_info['ehorus_user_level_pass'] = get_parameter('ehorus_user_level_pass');
+    $upd_info['ehorus_user_level_enabled'] = get_parameter('ehorus_user_level_enabled', 0);
+
+
 
     $is_admin = db_get_value('is_admin', 'tusuario', 'id_user', $id);
 
@@ -368,21 +424,26 @@ if (check_acl($config['id_user'], 0, 'ER')) {
         null,
         true
     ).'</div>';
-} else if (license_free()) {
-    $newsletter = '<div class="label_select_simple"><p class="edit_user_labels">'.__('Newsletter Subscribed').': </p>';
-    if ($user_info['middlename']) {
-        $newsletter .= '<span>'.__('Already subscribed to %s newsletter', get_product_name()).'</span></div>';
-    } else {
-        $newsletter .= '<span><a href="javascript: force_run_newsletter();">'.__('Subscribe to our newsletter').'</a></span></div>';
-    }
-
-    $newsletter_reminder = '<div class="label_select_simple"><p class="edit_user_labels">'.__('Newsletter Reminder').': </p>';
-    if ($user_info['firstname'] != 0) {
-        $user_info['firstname'] = 1;
-    }
-
-    $newsletter_reminder .= html_print_checkbox_switch('newsletter_reminder', 1, $user_info['firstname'], true).'</div>';
 }
+
+
+$newsletter = '<div class="label_select_simple"><p class="edit_user_labels">'.__('Newsletter Subscribed').': </p>';
+if ($user_info['middlename'] > 0) {
+    $newsletter .= '<span>'.__('Already subscribed to %s newsletter', get_product_name()).'</span>';
+} else {
+    $newsletter .= '<span><a href="javascript: force_run_newsletter();">'.__('Subscribe to our newsletter').'</a></span></div>';
+    $newsletter_reminder = '<div class="label_select_simple"><p class="edit_user_labels">'.__('Newsletter Reminder').': </p>';
+    $newsletter_reminder .= html_print_switch(
+        [
+            'name'     => 'newsletter_reminder',
+            'value'    => $newsletter_reminder_value,
+            'disabled' => false,
+        ]
+    );
+}
+
+$newsletter_reminder .= '</div>';
+
 
 
 $autorefresh_list_out = [];
@@ -537,7 +598,25 @@ $comments .= html_print_textarea(
 $comments .= html_print_input_hidden('quick_language_change', 1, true);
 
 
-echo '<form name="user_mod" method="post" action="'.ui_get_full_url().'&amp;modified=1&amp;id='.$id.'&amp;pure='.$config['pure'].'">';
+foreach ($timezones as $timezone_name => $tz) {
+    if ($timezone_name == 'America/Montreal') {
+        $timezone_name = 'America/Toronto';
+    } else if ($timezone_name == 'Asia/Chongqing') {
+        $timezone_name = 'Asia/Shanghai';
+    }
+
+    $area_data_timezone_polys .= '';
+    foreach ($tz['polys'] as $coords) {
+        $area_data_timezone_polys .= '<area data-timezone="'.$timezone_name.'" data-country="'.$tz['country'].'" data-pin="'.implode(',', $tz['pin']).'" data-offset="'.$tz['offset'].'" shape="poly" coords="'.implode(',', $coords).'" />';
+    }
+
+    $area_data_timezone_rects .= '';
+    foreach ($tz['rects'] as $coords) {
+        $area_data_timezone_rects .= '<area data-timezone="'.$timezone_name.'" data-country="'.$tz['country'].'" data-pin="'.implode(',', $tz['pin']).'" data-offset="'.$tz['offset'].'" shape="rect" coords="'.implode(',', $coords).'" />';
+    }
+}
+
+echo '<form name="user_mod" method="post" action="'.ui_get_full_url('index.php?sec=workspace&sec2=operation/users/user_edit').'&amp;modified=1&amp;id='.$id.'&amp;pure='.$config['pure'].'">';
 
     echo '<div id="user_form">
             <div class="user_edit_first_row">
@@ -549,14 +628,80 @@ echo '<form name="user_mod" method="post" action="'.ui_get_full_url().'&amp;modi
             </div> 
             <div class="user_edit_second_row white_box">
                 <div class="edit_user_options">'.$language.$size_pagination.$skin.$home_screen.$event_filter.$newsletter.$newsletter_reminder.$double_authentication.'</div>
-                <div class="edit_user_timezone">'.$timezone.'<div id="zonepicker"></div></div>
+                <div class="edit_user_timezone">'.$timezone;
+
+
+
+if (!is_metaconsole()) {
+    echo '<div id="timezone-picker">
+                        <img id="timezone-image" src="'.$local_file.'" width="'.$map_width.'" height="'.$map_height.'" usemap="#timezone-map" />
+                        <img class="timezone-pin" src="include/javascript/timezonepicker/images/pin.png" style="padding-top: 4px;" />
+                        <map name="timezone-map" id="timezone-map">'.$area_data_timezone_polys.$area_data_timezone_rects.'</map>
+                    </div>';
+}
+
+                echo '</div>
             </div> 
             <div class="user_edit_third_row white_box">
                 <div class="edit_user_comments">'.$comments.'</div>
             </div>    
         </div>';
 
-    echo '<div class="edit_user_button">';
+if ($config['ehorus_enabled'] && $config['ehorus_user_level_conf']) {
+    // eHorus user remote login
+    $table_remote = new StdClass();
+    $table_remote->data = [];
+    $table_remote->width = '100%';
+    $table_remote->id = 'ehorus-remote-setup';
+    $table_remote->class = 'white_box';
+    $table_remote->size['name'] = '30%';
+    $table_remote->style['name'] = 'font-weight: bold';
+
+
+    // Title
+    $row = [];
+    $row['control'] = '<p class="edit_user_labels">'.__('eHorus user configuration').': </p>';
+    $table_remote->data['ehorus_user_level_conf'] = $row;
+
+    // Enable/disable eHorus for this user
+    $row = [];
+    $row['name'] = __('eHorus user acces enabled');
+    $row['control'] = html_print_checkbox_switch('ehorus_user_level_enabled', 1, $user_info['ehorus_user_level_enabled'], true);
+    $table_remote->data['ehorus_user_level_enabled'] = $row;
+
+    // User.
+    $row = [];
+    $row['name'] = __('User');
+    $row['control'] = html_print_input_text('ehorus_user_level_user', $user_info['ehorus_user_level_user'], '', 30, 100, true);
+    $table_remote->data['ehorus_user_level_user'] = $row;
+
+    // Pass.
+    $row = [];
+    $row['name'] = __('Password');
+    $row['control'] = html_print_input_password('ehorus_user_level_pass', io_output_password($user_info['ehorus_user_level_pass']), '', 30, 100, true);
+    $table_remote->data['ehorus_user_level_pass'] = $row;
+
+    // Test.
+    $ehorus_port = db_get_value('value', 'tconfig', 'token', 'ehorus_port');
+    $ehorus_host = db_get_value('value', 'tconfig', 'token', 'ehorus_hostname');
+
+    $row = [];
+    $row['name'] = __('Test');
+    $row['control'] = html_print_button(__('Start'), 'test-ehorus', false, 'ehorus_connection_test(&quot;'.$ehorus_host.'&quot;,'.$ehorus_port.')', 'class="sub next"', true);
+    $row['control'] .= '&nbsp;<span id="test-ehorus-spinner" style="display:none;">&nbsp;'.html_print_image('images/spinner.gif', true).'</span>';
+    $row['control'] .= '&nbsp;<span id="test-ehorus-success" style="display:none;">&nbsp;'.html_print_image('images/status_sets/default/severity_normal.png', true).'</span>';
+    $row['control'] .= '&nbsp;<span id="test-ehorus-failure" style="display:none;">&nbsp;'.html_print_image('images/status_sets/default/severity_critical.png', true).'</span>';
+    $row['control'] .= '<span id="test-ehorus-message" style="display:none;"></span>';
+    $table_remote->data['ehorus_test'] = $row;
+
+    echo '<div class="ehorus_user_conf">';
+
+    html_print_table($table_remote);
+     echo '</div>';
+}
+
+
+echo '<div class="edit_user_button">';
 if (!$config['user_can_update_info']) {
     echo '<i>'.__('You can not change your user info under the current authentication scheme').'</i>';
 } else {
@@ -565,8 +710,7 @@ if (!$config['user_can_update_info']) {
 }
 
     echo '</div>';
-
-echo '</form>';
+    echo '</form>';
 
 echo '<div id="edit_user_profiles" class="white_box">';
 if (!defined('METACONSOLE')) {
@@ -575,7 +719,7 @@ if (!defined('METACONSOLE')) {
 
 $table = new stdClass();
 $table->width = '100%';
-$table->class = 'databox data';
+$table->class = 'info_table';
 if (defined('METACONSOLE')) {
     $table->width = '100%';
     $table->class = 'databox data';
@@ -647,93 +791,31 @@ if (!defined('METACONSOLE')) {
 
     <style>
         /* Styles for timezone map */
-        div.olControlZoom{
-            bottom:10px;
-            left:10px;
-        }
-        div.olControlZoom a {
-            display: block;
-            margin: 1px;
-            padding: 0;
-            color: #FFF !important;
-            font-size: 14pt !important;
-            font-weight: bold;
-            text-decoration: none;
-            text-align: center;
-            height: 22px;
-            width: 22px;
-            line-height: 19px;
-            background: #82b92e;
-        }
-        div.olControlZoom a:hover {
-            background: #76a928;
-        }
-        a.olControlZoomIn {
-            border-radius: 4px 4px 0 0;
-        }
-        a.olControlZoomOut {
-            border-radius: 0 0 4px 4px;
-        }
-        /* Overlay the popup on the map */
-        .ui-dialog.ui-corner-all.ui-widget.ui-widget-content.ui-front.ui-draggable.ui-resizable{
-            z-index:9999 !important; 
+        #timezone-picker div.timezone-picker {
+            margin: 0 auto;
         }
     </style>
 
     <script language="javascript" type="text/javascript">
-        var map_unavailable = '';
-        function print_map(map_unavailable){
-            var img_src = "<?php echo ui_get_full_url('images/edit_user_map_not_available.jpg', false, false, false, false); ?>";
-            if(map_unavailable !== true){
-                $("#zonepicker").append('<img src="'+img_src+'" alt="This map is not available" title="This map is not available" style="max-width:100%; max-height: 270px;"/>').css('text-align','center');
-            }else{
-                var optionText = $("#timezone option:selected").val();
-                $(function() {
-                    $("#zonepicker").timezonePicker({
-                    initialLat: 20,
-                    initialLng: 0,
-                    initialZoom: 2,
-                    onReady: function() {
-                        $("#zonepicker").timezonePicker('selectZone', optionText);
-                    },
-                    mapOptions: {
-                        maxZoom: 6,
-                        minZoom: 2
-                    },
-                    useOpenLayers: true
-                    }); 
-                });
-            }
-        }
+        $(document).ready (function () {
+            // Set up the picker to update target timezone and country select lists.
+            $('#timezone-image').timezonePicker({
+                target: '#timezone',
+            });
 
-        // Get the map
-        var map_url = "http://a.tile.openstreetmap.org";
-        // 1. Create a new XMLHttpRequest object
-        var xhr = new XMLHttpRequest();
-        // 2. Configure it: GET-request for the map_url
-        xhr.open('GET', map_url, true);
-        // 3. Send the request over the network
-        xhr.send();
-        // 4. This will be called after the response is received
-        xhr.onload = function() {
-            // analyze HTTP status of the response
-            if (xhr.status == 200) { 
-                map_unavailable = true;
-            } else {
-                map_unavailable = false;
-            }
-            print_map(map_unavailable);
-        };
-        // 5. If no internet connection, it enter here (it doesn't enter in onload)
-        xhr.onerror = function() {
-            map_unavailable = false;
-            print_map(map_unavailable);
-        };
+            // Optionally an auto-detect button to trigger JavaScript geolocation.
+            $('#timezone-detect').click(function() {
+                $('#timezone-image').timezonePicker('detectLocation');
+            });
+        });
     </script>
-
     <?php
+    // Include OpenLayers and timezone user map library.
+    echo '<script type="text/javascript" src="'.ui_get_full_url('include/javascript/timezonepicker/lib/jquery.timezone-picker.min.js').'"></script>'."\n\t";
+    echo '<script type="text/javascript" src="'.ui_get_full_url('include/javascript/timezonepicker/lib/jquery.maphilight.min.js').'"></script>'."\n\t";
     // Closes no meta condition.
 }
+
 ?>
 
 <script language="javascript" type="text/javascript">
@@ -1058,4 +1140,83 @@ function show_double_auth_deactivation () {
         })
         .show();
 }
+
+function ehorus_connection_test(host, port) {
+        var user = $('input#text-ehorus_user_level_user').val();
+        var pass = $('input#password-ehorus_user_level_pass').val();
+    
+        debugger;
+        var badRequestMessage = '<?php echo __('Empty user or password'); ?>';
+        var notFoundMessage = '<?php echo __('User not found'); ?>';
+        var invalidPassMessage = '<?php echo __('Invalid password'); ?>';
+        
+        var hideLoadingImage = function () {
+            $('#test-ehorus-spinner').hide();
+        }
+        var showLoadingImage = function () {
+            $('#test-ehorus-spinner').show();
+        }
+        var hideSuccessImage = function () {
+            $('#test-ehorus-success').hide();
+        }
+        var showSuccessImage = function () {
+            $('#test-ehorus-success').show();
+        }
+        var hideFailureImage = function () {
+            $('#test-ehorus-failure').hide();
+        }
+        var showFailureImage = function () {
+            $('#test-ehorus-failure').show();
+        }
+        var hideMessage = function () {
+            $('#test-ehorus-message').hide();
+        }
+        var showMessage = function () {
+            $('#test-ehorus-message').show();
+        }
+        var changeTestMessage = function (message) {
+            $('#test-ehorus-message').text(message);
+        }
+        
+        hideSuccessImage();
+        hideFailureImage();
+        hideMessage();
+        showLoadingImage();
+
+        $.ajax({
+            url: 'https://' + host + ':' + port + '/login',
+            type: 'POST',
+            dataType: 'json',
+            data: {
+                user: user,
+                pass: pass
+            }
+        })
+        .done(function(data, textStatus, xhr) {
+            showSuccessImage();
+        })
+        .fail(function(xhr, textStatus, errorThrown) {
+            showFailureImage();
+            
+            if (xhr.status === 400) {
+                changeTestMessage(badRequestMessage);
+            }
+            else if (xhr.status === 401 || xhr.status === 403) {
+                changeTestMessage(invalidPassMessage);
+            }
+            else if (xhr.status === 404) {
+                changeTestMessage(notFoundMessage);
+            }
+            else if (errorThrown === 'timeout') {
+                changeTestMessage(timeoutMessage);
+            }
+            else {
+                changeTestMessage(errorThrown);
+            }
+            showMessage();
+        })
+        .always(function(xhr, textStatus) {
+            hideLoadingImage();
+        });
+    }
 </script>

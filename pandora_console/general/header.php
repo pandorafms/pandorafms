@@ -19,7 +19,7 @@ require_once 'include/functions_notifications.php';
  config_check();
 
 
-if ($_SESSION['menu_type'] == 'classic') {
+if ($config['menu_type'] == 'classic') {
     echo '<div id="header_table" class="header_table_classic">';
 } else {
     echo '<div id="header_table" class="header_table_collapsed">';
@@ -143,6 +143,57 @@ if ($_SESSION['menu_type'] == 'classic') {
             $_GET['sec2'] = '';
         }
 
+        if ($_GET['sec'] == 'main' || !isset($_GET['sec'])) {
+            // home screen chosen by the user
+            $home_page = '';
+            if (isset($config['id_user'])) {
+                $user_info = users_get_user_by_id($config['id_user']);
+                $home_page = io_safe_output($user_info['section']);
+                $home_url = $user_info['data_section'];
+            }
+
+            if ($home_page != '') {
+                switch ($home_page) {
+                    case 'Event list':
+                        $_GET['sec2'] = 'operation/events/events';
+                    break;
+
+                    case 'Group view':
+                        $_GET['sec2'] = 'operation/agentes/group_view';
+                    break;
+
+                    case 'Alert detail':
+                        $_GET['sec2'] = 'operation/agentes/alerts_status';
+                    break;
+
+                    case 'Tactical view':
+                        $_GET['sec2'] = 'operation/agentes/tactical';
+                    break;
+
+                    case 'Default':
+                        $_GET['sec2'] = 'general/logon_ok';
+                    break;
+
+                    case 'Dashboard':
+                        $_GET['sec2'] = 'enterprise/dashboard/main_dashboard';
+                    break;
+
+                    case 'Visual console':
+                        $_GET['sec2'] = 'operation/visual_console/render_view';
+                    break;
+
+                    case 'Other':
+                        $home_url = io_safe_output($home_url);
+                        $url_array = parse_url($home_url);
+                        parse_str($url_array['query'], $res);
+                        foreach ($res as $key => $param) {
+                            $_GET[$key] = $param;
+                        }
+                    break;
+                }
+            }
+        }
+
         if (!isset($_GET['refr'])) {
             $_GET['refr'] = null;
         }
@@ -212,14 +263,21 @@ if ($_SESSION['menu_type'] == 'classic') {
                 );
                 $autorefresh_additional .= '</span>';
                 unset($values);
-
-                $autorefresh_link_open_img = '<a class="white autorefresh" href="'.ui_get_url_refresh($ignored_params).'">';
+                if ($home_page != '') {
+                    $autorefresh_link_open_img = '<a class="white autorefresh" href="index.php?refr=">';
+                } else {
+                    $autorefresh_link_open_img = '<a class="white autorefresh" href="'.ui_get_url_refresh($ignored_params).'">';
+                }
 
                 if ($_GET['refr']
                     || ((isset($select[0]['time_autorefresh']) === true)
                     && $select[0]['time_autorefresh'] !== 0)
                 ) {
-                    $autorefresh_link_open_txt = '<a class="autorefresh autorefresh_txt" href="'.ui_get_url_refresh($ignored_params).'">';
+                    if ($home_page != '') {
+                        $autorefresh_link_open_txt = '<a class="autorefresh autorefresh_txt" href="index.php?refr=">';
+                    } else {
+                        $autorefresh_link_open_txt = '<a class="autorefresh autorefresh_txt" href="'.ui_get_url_refresh($ignored_params).'">';
+                    }
                 } else {
                     $autorefresh_link_open_txt = '<a>';
                 }
@@ -284,7 +342,7 @@ if ($_SESSION['menu_type'] == 'classic') {
         $header_support .= '</a></div>';
 
         // Documentation.
-        $header_docu = '<div id="header_support">';
+        $header_docu = '<div id="header_docu">';
         $header_docu .= '<a href="https://wiki.pandorafms.com/index.php?title=Main_Page" target="_blank">';
         $header_docu .= html_print_image('/images/header_docu.png', true, ['title' => __('Go to documentation'), 'class' => 'bot', 'alt' => 'user']);
         $header_docu .= '</a></div>';
@@ -591,9 +649,7 @@ if ($_SESSION['menu_type'] == 'classic') {
 
         if (fixed_header) {
             $('div#head').addClass('fixed_header');
-            $('div#page')
-                .css('padding-top', $('div#head').innerHeight() + 'px')
-                .css('position', 'relative');
+            $('div#main').css('padding-top', $('div#head').innerHeight() + 'px');
         }
         
         check_new_chats_icon('icon_new_messages_chat');
@@ -616,7 +672,7 @@ if ($_SESSION['menu_type'] == 'classic') {
         if ($_GET['refr'] || $do_refresh === true) {
             ?>
             $("#header_autorefresh").css('padding-right', '5px');
-            var refr_time = <?php echo (int) get_parameter('refr', 0); ?>;
+            var refr_time = <?php echo (int) get_parameter('refr', $config['refr']); ?>;
             var t = new Date();
             t.setTime (t.getTime () + parseInt(<?php echo ($config['refr'] * 1000); ?>));
             $("#refrcounter").countdown ({

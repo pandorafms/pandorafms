@@ -29,7 +29,14 @@ function pandora_realtime_graphs()
 
     $hide_header = get_parameter('hide_header', 0);
     if (!$hide_header) {
-        ui_print_page_header(__('Realtime graphs'), 'images/extensions.png', false, '', false, $onheader);
+        ui_print_page_header(
+            __('Realtime graphs'),
+            'images/extensions.png',
+            false,
+            'real_time_view',
+            false,
+            $onheader
+        );
     }
 
     $chart[time()]['graph'] = '0';

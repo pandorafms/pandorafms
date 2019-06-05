@@ -185,7 +185,14 @@ function mainAgentsModules()
 
     if ($config['pure'] == 0) {
         // Header.
-        ui_print_page_header(__('Agents/Modules'), 'images/module_mc.png', false, '', false, $updated_time);
+        ui_print_page_header(
+            __('Agents/Modules'),
+            'images/module_mc.png',
+            false,
+            'agents_module_view',
+            false,
+            $updated_time
+        );
         echo '<table style="width:100%;">';
         echo '<tr>';
         echo "<td> <span style='float: right;'>".$fullscreen['text'].'</span> </td>';

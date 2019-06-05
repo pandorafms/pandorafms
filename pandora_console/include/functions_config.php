@@ -224,6 +224,10 @@ function config_update_config()
                         $error_update[] = __('Enable Netflow');
                     }
 
+                    if (!config_update_value('activate_nta', (bool) get_parameter_switch('activate_nta'))) {
+                        $error_update[] = __('Enable Network Traffic Analyzer');
+                    }
+
                     $timezone = (string) get_parameter('timezone');
                     if ($timezone != '') {
                         if (!config_update_value('timezone', $timezone)) {
@@ -266,7 +270,7 @@ function config_update_config()
                         $error_update[] = __('Referer security');
                     }
 
-                    if (!config_update_value('event_storm_protection', get_parameter('event_storm_protection'))) {
+                    if (!config_update_value('event_storm_protection', get_parameter('event_storm_protection', 0))) {
                         $error_update[] = __('Event storm protection');
                     }
 
@@ -600,6 +604,10 @@ function config_update_config()
                         config_update_value('ldap_save_password', 1);
                     }
 
+                    if (!config_update_value('ldap_save_profile', get_parameter('ldap_save_profile'))) {
+                        $error_update[] = __('Save profile');
+                    }
+
                     if (!config_update_value('rpandora_server', get_parameter('rpandora_server'))) {
                         $error_update[] = __('MySQL host');
                     }
@@ -754,6 +762,10 @@ function config_update_config()
 
                     if (!config_update_value('delete_old_messages', get_parameter('delete_old_messages'))) {
                         $error_update[] = __('Max. days before delete old messages');
+                    }
+
+                    if (!config_update_value('delete_old_network_matrix', get_parameter('delete_old_network_matrix'))) {
+                        $error_update[] = __('Max. days before delete old network matrix data');
                     }
 
                     if (!config_update_value('max_graph_container', get_parameter('max_graph_container'))) {
@@ -968,7 +980,15 @@ function config_update_config()
                         $error_update[] = __('Custom support url');
                     }
 
-                    if (!config_update_value('vc_refr', get_parameter('vc_refr'))) {
+                    if (!config_update_value('legacy_vc', (int) get_parameter('legacy_vc'))) {
+                        $error_update[] = __('Use the legacy Visual Console');
+                    }
+
+                    if (!config_update_value('vc_default_cache_expiration', (int) get_parameter('vc_default_cache_expiration'))) {
+                        $error_update[] = __("Default expiration of the Visual Console item's cache");
+                    }
+
+                    if (!config_update_value('vc_refr', (int) get_parameter('vc_refr'))) {
                         $error_update[] = __('Default interval for refresh on Visual Console');
                     }
 
@@ -1333,8 +1353,12 @@ function config_update_config()
                 break;
 
                 case 'ehorus':
-                    if (!config_update_value('ehorus_enabled', (int) get_parameter('ehorus_enabled', $config['ehorus_enabled']))) {
+                    if (!config_update_value('ehorus_enabled', (int) get_parameter('ehorus_enabled', 0))) {
                         $error_update[] = __('Enable eHorus');
+                    }
+
+                    if (!config_update_value('ehorus_user_level_conf', (int) get_parameter('ehorus_user_level_conf', 0))) {
+                        $error_update[] = __('eHorus user login');
                     }
 
                     if (!config_update_value('ehorus_user', (string) get_parameter('ehorus_user', $config['ehorus_user']))) {
@@ -1553,6 +1577,10 @@ function config_process_config()
 
     if (!isset($config['delete_old_messages'])) {
         config_update_value('delete_old_messages', 21);
+    }
+
+    if (!isset($config['delete_old_network_matrix'])) {
+        config_update_value('delete_old_network_matrix', 10);
     }
 
     if (!isset($config['max_graph_container'])) {
@@ -1991,6 +2019,10 @@ function config_process_config()
         config_update_value('activate_netflow', 0);
     }
 
+    if (!isset($config['activate_nta'])) {
+        config_update_value('activate_nta', 0);
+    }
+
     if (!isset($config['netflow_path'])) {
         if ($is_windows) {
             $default = 'C:\\PandoraFMS\\Pandora_Server\\data_in\\netflow';
@@ -2395,8 +2427,20 @@ function config_process_config()
         config_update_value('dbtype', 'mysql');
     }
 
+    if (!isset($config['legacy_vc'])) {
+        config_update_value('legacy_vc', 1);
+    }
+
+    if (!isset($config['vc_default_cache_expiration'])) {
+        config_update_value('vc_default_cache_expiration', 60);
+    }
+
     if (!isset($config['vc_refr'])) {
         config_update_value('vc_refr', 300);
+    }
+
+    if (!isset($config['vc_line_thickness'])) {
+        config_update_value('vc_line_thickness', 2);
     }
 
     if (!isset($config['agent_size_text_small'])) {
@@ -2700,12 +2744,35 @@ function config_check()
     if (enterprise_installed() === false) {
         $supervisor = new ConsoleSupervisor(false);
         $supervisor->run();
-    } else if ($config['cron_last_run'] == 0
-        || (get_system_time() - $config['cron_last_run']) > 3600
-    ) {
+    } else {
         $supervisor = new ConsoleSupervisor(false);
         $supervisor->runBasic();
     }
+
+}
+
+
+/**
+ * Retrieves base url stored for Update Manager.
+ *
+ * @return string URL.
+ */
+function get_um_url()
+{
+    global $config;
+
+    if (isset($config['url_update_manager'])) {
+        $url = $config['url_update_manager'];
+        $url = substr($url, 0, (strlen($url) - strpos(strrev($url), '/')));
+    } else {
+        $url = 'https://licensing.artica.es/pandoraupdate7/';
+        config_update_value(
+            'url_update_manager',
+            'https://licensing.artica.es/pandoraupdate7/server.php'
+        );
+    }
+
+    return $url;
 
 }
 

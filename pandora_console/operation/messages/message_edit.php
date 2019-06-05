@@ -114,32 +114,7 @@ if ($read_message) {
 
     echo '<h2>Subject: '.$message['subject'].'</h2>';
 
-    $conversation = [];
-    $target_str = $message['mensaje'];
-
-    while (preg_match_all(
-        '/(.*)On(.*)wrote:(.*)/',
-        $target_str,
-        $decoded,
-        PREG_PATTERN_ORDER
-    ) !== false && empty($target_str) !== true) {
-        if (empty($decoded[2]) !== true) {
-            array_push(
-                $conversation,
-                [
-                    'message' => array_pop($decoded)[0],
-                    'date'    => array_pop($decoded)[0],
-                ]
-            );
-        } else {
-            array_push(
-                $conversation,
-                ['message' => $target_str]
-            );
-        }
-
-        $target_str = $decoded[1][0];
-    }
+    $conversation = messages_get_conversation($message);
 
     ui_require_css_file('message_edit');
     foreach ($conversation as $row) {

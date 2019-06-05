@@ -135,25 +135,28 @@ if (empty($messages)) {
 } else {
     $table = new stdClass();
     $table->width = '100%';
-    $table->class = 'databox data';
-    $table->cellpadding = 4;
-    $table->cellspacing = 4;
+    $table->class = 'info_table';
+    $table->cellpadding = 0;
+    $table->cellspacing = 0;
     $table->head = [];
     $table->data = [];
     $table->align = [];
     $table->size = [];
 
+    $table->align[5] = 'left';
     $table->align[0] = 'left';
     $table->align[1] = 'left';
     $table->align[2] = 'left';
     $table->align[3] = 'left';
     $table->align[4] = 'right';
 
+    $table->size[5] = '20px';
     $table->size[0] = '20px';
     $table->size[1] = '100px';
     $table->size[3] = '80px';
     $table->size[4] = '60px';
 
+    $table->head[5] = html_print_checkbox('all_delete_messages', 0, false, true, false);
     $table->head[0] = __('Status');
     if ($show_sent) {
         $table->head[1] = __('Destination');
@@ -163,12 +166,15 @@ if (empty($messages)) {
 
     $table->head[2] = __('Subject');
     $table->head[3] = __('Timestamp');
-    $table->head[4] = __('Delete').html_print_checkbox('all_delete_messages', 0, false, true, false);
+    $table->head[4] = __('Delete');
 
 
     foreach ($messages as $message) {
         $message_id = $message['id_mensaje'];
         $data = [];
+
+        $data[5] = html_print_checkbox_extended('delete_multiple_messages[]', $message_id, false, false, '', 'class="check_delete_messages"', true);
+
         $data[0] = '';
         if ($message['read'] == 1) {
             if ($show_sent) {
@@ -228,12 +234,13 @@ if (empty($messages)) {
             ['prominent' => 'timestamp']
         );
 
+        $table->cellclass[][4] = 'action_buttons';
         if ($show_sent) {
             $data[4] = '<a href="index.php?sec=message_list&amp;sec2=operation/messages/message_list&show_sent=1&delete_message=1&id='.$message_id.'"
-                onClick="javascript:if (!confirm(\''.__('Are you sure?').'\')) return false;">'.html_print_image('images/cross.png', true, ['title' => __('Delete')]).'</a>'.html_print_checkbox_extended('delete_multiple_messages[]', $message_id, false, false, '', 'class="check_delete_messages"', true);
+                onClick="javascript:if (!confirm(\''.__('Are you sure?').'\')) return false;">'.html_print_image('images/cross.png', true, ['title' => __('Delete')]).'</a>';
         } else {
             $data[4] = '<a href="index.php?sec=message_list&amp;sec2=operation/messages/message_list&delete_message=1&id='.$message_id.'"
-                onClick="javascript:if (!confirm(\''.__('Are you sure?').'\')) return false;">'.html_print_image('images/cross.png', true, ['title' => __('Delete')]).'</a>'.html_print_checkbox_extended('delete_multiple_messages[]', $message_id, false, false, '', 'class="check_delete_messages"', true);
+                onClick="javascript:if (!confirm(\''.__('Are you sure?').'\')) return false;">'.html_print_image('images/cross.png', true, ['title' => __('Delete')]).'</a>';
         }
 
         array_push($table->data, $data);

@@ -69,7 +69,7 @@ $table->data[0][10] = html_print_image('images/reporting.png', true, ['title' =>
 $table->data[0][11] = "<a href='index.php?search_category=reports&keywords=".$config['search_keywords']."&head_search_keywords=Search'>".sprintf(__('%s Found'), $totalReports).'</a>';
 $table->data[0][12] = html_print_image('images/visual_console_green.png', true, ['title' => __('Maps found')]);
 $table->data[0][13] = "<a href='index.php?search_category=maps&keywords=".$config['search_keywords']."&head_search_keywords=Search'>".sprintf(__('%s Found'), $totalMaps).'</a>';
-if (file_exists(ENTERPRISE_DIR.'/load_enterprise.php')) {
+if (enterprise_installed()) {
     $table->data[0][14] = html_print_image('images/policies.png', true, ['title' => __('Policies')]);
     $table->data[0][15] = "<a href='index.php?search_category=policies&keywords=".$config['search_keywords']."&head_search_keywords=Search'>".sprintf(__('%s Found'), $totalPolicies).'</a>';
 }

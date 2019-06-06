@@ -563,6 +563,7 @@ switch ($action) {
                     $event_graph_by_user_validator = $style['event_graph_by_user_validator'];
                     $event_graph_by_criticity = $style['event_graph_by_criticity'];
                     $event_graph_validated_vs_unvalidated = $style['event_graph_validated_vs_unvalidated'];
+                    $include_extended_events = $item['show_extended_events'];
 
                     $filter_search = $style['event_filter_search'];
 

@@ -706,12 +706,15 @@ function print_counters_cfv(
 
 
 /**
- * Undocumented function
+ * Function for export a csv file from Custom Fields View
  *
- * @param  [type] $filters
- * @return void
+ * @param array $filters       Status counters for agents and modules.
+ * @param array $id_status     Agent status.
+ * @param array $module_status Module status.
+ *
+ * @return array Returns the data that will be saved in the csv file
  */
-function export_custom_fields_csv($filters)
+function export_custom_fields_csv($filters, $id_status, $module_status)
 {
     $data = agent_counters_custom_fields($filters);
     $indexed_descriptions = $data['indexed_descriptions'];
@@ -743,21 +746,78 @@ function export_custom_fields_csv($filters)
     $query_insert = 'INSERT INTO temp_custom_fields VALUES '.$values_insert_implode;
     db_process_sql($query_insert);
 
+    // Search for status module.
+    $status_agent_search = '';
+    if (isset($id_status) === true && is_array($id_status) === true) {
+        if (in_array(-1, $id_status) === false) {
+            if (in_array(AGENT_MODULE_STATUS_NOT_NORMAL, $id_status) === false) {
+                $status_agent_search = ' AND temp.status IN ('.implode(',', $id_status).')';
+            } else {
+                // Not normal statuses.
+                $status_agent_search = ' AND temp.status IN (1,2,3,4,5)';
+            }
+        }
+    }
+
+    // Search for status module.
+    $status_module_search = '';
+    if (isset($module_status) === true && is_array($module_status) === true) {
+        if (in_array(-1, $module_status) === false) {
+            if (in_array(AGENT_MODULE_STATUS_NOT_NORMAL, $module_status) === false) {
+                if (count($module_status) > 0) {
+                    $status_module_search = ' AND ( ';
+                    foreach ($module_status as $key => $value) {
+                        $status_module_search .= ($key != 0) ? ' OR (' : ' (';
+                        switch ($value) {
+                            default:
+                            case AGENT_STATUS_NORMAL:
+                                $status_module_search .= ' temp.normal_count > 0) ';
+                            break;
+                            case AGENT_STATUS_CRITICAL:
+                                $status_module_search .= ' temp.critical_count > 0) ';
+                            break;
+
+                            case AGENT_STATUS_WARNING:
+                                $status_module_search .= ' temp.warning_count > 0) ';
+                            break;
+
+                            case AGENT_STATUS_UNKNOWN:
+                                $status_module_search .= ' temp.unknown_count > 0) ';
+                            break;
+
+                            case AGENT_STATUS_NOT_INIT:
+                                $status_module_search .= ' temp.notinit_count > 0) ';
+                            break;
+                        }
+                    }
+
+                    $status_module_search .= ' ) ';
+                }
+            } else {
+                // Not normal.
+                $status_module_search = ' AND ( temp.critical_count > 0 OR temp.warning_count > 0 OR temp.unknown_count > 0 AND temp.notinit_count > 0 )';
+            }
+        }
+    }
+
     // Query all fields result.
     $query = sprintf(
         'SELECT
-        tma.id_agente,
-        tma.id_tagente,
-        tma.id_tmetaconsole_setup,
+        temp.name_custom_fields,
         tma.alias,
         tma.direccion,
         tma.server_name,
-        temp.name_custom_fields,
         temp.status
     FROM tmetaconsole_agent tma
     INNER JOIN temp_custom_fields temp
         ON temp.id_agent = tma.id_tagente
-        AND temp.id_server = tma.id_tmetaconsole_setup'
+        AND temp.id_server = tma.id_tmetaconsole_setup
+    WHERE tma.disabled = 0
+    %s
+    %s
+    ',
+        $status_agent_search,
+        $status_module_search
     );
 
     $result = db_get_all_rows_sql($query);

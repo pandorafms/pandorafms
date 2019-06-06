@@ -1208,11 +1208,12 @@ if ($config['pure'] == 0) {
     include 'general/footer.php';
 }
 
-// Clippy function
+// Clippy function.
 require_once 'include/functions_clippy.php';
 clippy_start($sec2);
 
 while (@ob_end_flush()) {
+    // Dump.
 }
 
 db_print_database_debug();

@@ -18,3 +18,30 @@ div.mini-criticity {
   margin: 0;
   display: inline-block;
 }
+
+form.flex-row > div.filter_input,
+form.flex-row > ul {
+  width: 30%;
+  min-width: 300px;
+  display: flex;
+  flex-direction: row;
+  align-items: baseline;
+  flex-wrap: wrap;
+  align-content: center;
+  flex: 1;
+
+  margin: 1em 0.3em;
+}
+form.flex-row > ul,
+form.flex-row > ul > li,
+form.flex-row > .box-shadow.white_table_graph {
+  width: 100%;
+}
+
+form.flex-row > ul input[type="submit"] {
+  float: right;
+}
+
+form.flex-row > div > label {
+  margin-right: 1em;
+}

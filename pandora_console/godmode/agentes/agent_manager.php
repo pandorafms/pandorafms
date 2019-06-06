@@ -176,7 +176,7 @@ if ($disk_conf_delete) {
     @unlink($filename['conf']);
 }
 
-echo '<form autocomplete="off" name="conf_agent" method="post" action="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente">';
+echo '<form autocomplete="new-password" name="conf_agent" method="post" action="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente">';
 
 // Custom ID.
 $custom_id_div = '<div class="label_select">';
@@ -674,7 +674,7 @@ if (enterprise_installed()) {
         '',
         '',
         // Autocomplete.
-        'off'
+        'new-password'
     ).'</div>';
 } else {
     $table_adv_url = '<div class="label_select"><p class="input_label">'.__('Url address').': </p></div>';

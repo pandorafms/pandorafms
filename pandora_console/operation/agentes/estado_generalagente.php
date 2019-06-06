@@ -314,7 +314,7 @@ $data[1] = ui_progress(
     1.8,
     '#BBB',
     true,
-    ($agent['intervalo'] * (100 - $progress) / 100).' s'
+    floor(($agent['intervalo'] * (100 - $progress) / 100)).' s'
 );
 
 if ($progress > 100) {

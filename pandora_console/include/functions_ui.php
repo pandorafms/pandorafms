@@ -1786,47 +1786,6 @@ function ui_process_page_head($string, $bitfield)
      */
 
     /*
-     * Load JS
-     */
-
-    if (empty($config['js'])) {
-        $config['js'] = [];
-        // If it's empty, false or not init set array to empty just in case.
-    }
-
-    // Pandora specific JavaScript should go first.
-    $config['js'] = array_merge(['pandora' => 'include/javascript/pandora.js'], $config['js']);
-    // Load base64 javascript library.
-    $config['js']['base64'] = 'include/javascript/encode_decode_base64.js';
-    // Load webchat javascript library.
-    $config['js']['webchat'] = 'include/javascript/webchat.js';
-    // Load qrcode library.
-    $config['js']['qrcode'] = 'include/javascript/qrcode.js';
-    // Load intro.js library (for bubbles and clippy).
-    $config['js']['intro'] = 'include/javascript/intro.js';
-    $config['js']['clippy'] = 'include/javascript/clippy.js';
-    // Load Underscore.js library.
-    $config['js']['underscore'] = 'include/javascript/underscore-min.js';
-
-    // Load other javascript.
-    // We can't load empty.
-    $loaded = [''];
-    foreach ($config['js'] as $name => $filename) {
-        if (in_array($name, $loaded)) {
-            continue;
-        }
-
-        array_push($loaded, $name);
-
-        $url_js = ui_get_full_url($filename);
-        $output .= '<script type="text/javascript" src="'.$url_js.'"></script>'."\n\t";
-    }
-
-    /*
-     * End load JS
-     */
-
-    /*
      * Load jQuery
      */
 
@@ -1881,6 +1840,47 @@ function ui_process_page_head($string, $bitfield)
 
     /*
      * End load JQuery
+     */
+
+    /*
+     * Load JS
+     */
+
+    if (empty($config['js'])) {
+        $config['js'] = [];
+        // If it's empty, false or not init set array to empty just in case.
+    }
+
+    // Pandora specific JavaScript should go first.
+    $config['js'] = array_merge(['pandora' => 'include/javascript/pandora.js'], $config['js']);
+    // Load base64 javascript library.
+    $config['js']['base64'] = 'include/javascript/encode_decode_base64.js';
+    // Load webchat javascript library.
+    $config['js']['webchat'] = 'include/javascript/webchat.js';
+    // Load qrcode library.
+    $config['js']['qrcode'] = 'include/javascript/qrcode.js';
+    // Load intro.js library (for bubbles and clippy).
+    $config['js']['intro'] = 'include/javascript/intro.js';
+    $config['js']['clippy'] = 'include/javascript/clippy.js';
+    // Load Underscore.js library.
+    $config['js']['underscore'] = 'include/javascript/underscore-min.js';
+
+    // Load other javascript.
+    // We can't load empty.
+    $loaded = [''];
+    foreach ($config['js'] as $name => $filename) {
+        if (in_array($name, $loaded)) {
+            continue;
+        }
+
+        array_push($loaded, $name);
+
+        $url_js = ui_get_full_url($filename);
+        $output .= '<script type="text/javascript" src="'.$url_js.'"></script>'."\n\t";
+    }
+
+    /*
+     * End load JS
      */
 
     include_once __DIR__.'/graphs/functions_flot.php';
@@ -2753,6 +2753,346 @@ function ui_progress(
     $output .= '</div>';
 
     if (!$return) {
+        echo $output;
+    }
+
+    return $output;
+}
+
+
+/**
+ * Generate needed code to print a datatables jquery plugin.
+ *
+ * @param array $parameters All desired data using following format:
+ * [
+ *   'print' => true (by default printed)
+ *   'id' => datatable id.
+ *   'class' => datatable class.
+ *   'style' => datatable style.
+ *   'order' => '9, "desc"'. Column index (starting by 1) and sort direction.
+ *   'ajax_url' => 'include/ajax.php'  ajax_url.
+ *   'ajax_postprocess' => a javscript function to postprocess data received
+ *                         by ajax call. It is applied foreach row and must
+ *                         use following format:
+ * * [code]
+ * * function (item) {
+ * *       // Process received item, for instance, name:
+ * *       tmp = '<span class=label>' + item.name + '</span>';
+ * *       item.name = tmp;
+ * *   }
+ * * [/code]
+ *   'columns' => [
+ *      'column1'  :: Used as th text. Direct text entry. It could be array:
+ *      OR
+ *      [
+ *        'id' => th id.
+ *        'class' => th class.
+ *        'style' => th style.
+ *        'text' => 'column1'.
+ *      ]
+ *   ],
+ *   'datacolumns' => [
+ *      'column1',
+ *      'column2',
+ *      ...
+ *   ],
+ *   'form' => [
+ *      'html' => 'html code' a directly defined inputs in HTML.
+ *      'search_button_class' => search button class.
+ *      'class' => form class.
+ *      'id' => form id.
+ *      'style' => form style.
+ *      'js' => optional extra actions onsubmit.
+ *      'inputs' => [
+ *          'label' => Input label.
+ *          'type' => Input type.
+ *          'value' => Input value.
+ *          'name' => Input name.
+ *          'id' => Input id.
+ *          'options' => [
+ *             'option1'
+ *             'option2'
+ *             ...
+ *          ]
+ *      ]
+ *   ],
+ * ]
+ * End.
+ *
+ * @return string HTML code with datatable.
+ * @throws Exception On error.
+ */
+function ui_print_datatable(array $parameters)
+{
+    if (isset($parameters['id'])) {
+        $table_id = $parameters['id'];
+    } else {
+        $table_id = uniqid('datatable_');
+    }
+
+    if (!isset($parameters['order'])) {
+        $parameters['order'] = '0, "asc"';
+    }
+
+    if (!isset($parameters['ajax_url'])) {
+        throw new Exception('Parameter ajax_url is required');
+    }
+
+    if (!isset($parameters['ajax_data'])) {
+        $parameters['ajax_data'] = '';
+    }
+
+    $search_button_class = 'sub search';
+    if (isset($parameters['search_button_class'])) {
+        $search_button_class = $parameters['search_button_class'];
+    }
+
+    if (isset($parameters['pagination_options'])) {
+        $pagination_options = $parameters['pagination_options'];
+    } else {
+        $pagination_options = [
+            [
+                10,
+                25,
+                100,
+                200,
+                500,
+                1000,
+                -1,
+            ],
+            [
+                10,
+                25,
+                100,
+                200,
+                500,
+                1000,
+                'All',
+            ],
+        ];
+    }
+
+    if (!is_array($parameters['datacolumns'])) {
+        $parameters['datacolumns'] = $parameters['columns'];
+    }
+
+    // Datatable filter.
+    if (isset($parameters['form']) && is_array($parameters['form'])) {
+        if (isset($parameters['form']['id'])) {
+            $form_id = $parameters['form']['id'];
+        } else {
+            $form_id = uniqid('datatable_filter_');
+        }
+
+        if (isset($parameters['form']['class'])) {
+            $form_class = $parameters['form']['class'];
+        } else {
+            $form_class = '';
+        }
+
+        if (isset($parameters['form']['style'])) {
+            $form_style = $parameters['form']['style'];
+        } else {
+            $form_style = '';
+        }
+
+        if (isset($parameters['form']['js'])) {
+            $form_js = $parameters['form']['js'];
+        } else {
+            $form_js = '';
+        }
+
+        $filter = '<form class="'.$form_class.'" ';
+        $filter .= ' id="'.$form_id.'" ';
+        $filter .= ' style="'.$form_style.'" ';
+        $filter .= ' onsubmit="'.$form_js.';return false;">';
+
+        if (isset($parameters['form']['html'])) {
+            $filter .= $parameters['form']['html'];
+        }
+
+        $filter .= '<ul class="content">';
+
+        foreach ($parameters['form']['inputs'] as $input) {
+            $filter .= '<li>';
+            $filter .= '<label>'.$input['label'].'</label>';
+            if ($input['type'] != 'select') {
+                $filter .= '<input type="'.$input['type'].'" ';
+                $filter .= ' value="'.$input['value'].'" ';
+                $filter .= ' name="'.$input['name'].'" id="'.$input['id'].'" />';
+            } else {
+                // Select.
+                $filter .= '<select name="'.$input['name'].'" ';
+                $filter .= 'id="'.$input['id'].'">';
+
+                foreach ($input['options'] as $opt => $selected) {
+                    $filter .= '<option value="'.$opt['value'].'"';
+                    if ($selected) {
+                        $filter .= ' selected="yes" >';
+                    }
+
+                    $filter .= __($opt['text']).'</option>';
+                }
+
+                $filter .= '</select>';
+            }
+
+            $filter .= '</li>';
+        }
+
+        // Search button.
+        $filter .= '<li>';
+        $filter .= '<input type="submit" class="'.$search_button_class.'" ';
+        $filter .= ' id="'.$form_id.'_search_bt" value="'.__('Filter').'"/>';
+        $filter .= '</li>';
+
+        $filter .= '</ul></form>';
+        $filter = ui_toggle(
+            $filter,
+            __('Filter'),
+            '',
+            '',
+            true,
+            false,
+            'white_box white_box_opened',
+            'no-border'
+        );
+    } else if (isset($parameters['form_html'])) {
+        $filter = ui_toggle(
+            $parameters['form_html'],
+            __('Filter'),
+            '',
+            '',
+            true,
+            false,
+            'white_box white_box_opened',
+            'no-border'
+        );
+    }
+
+    if (!isset($parameters['columns']) || !is_array($parameters['columns'])) {
+        throw new Exception('[ui_print_datatable]: You must define columns for datatable');
+    }
+
+    // Base table.
+    $table = '<table id="'.$table_id.'" ';
+    $table .= 'class="'.$parameters['class'].'"';
+    $table .= 'style="'.$parameters['style'].'">';
+    $table .= '<thead><tr>';
+    if (!is_array($parameters['columns'])) {
+        throw new Exception('[ui_print_datatable]: Parameter columns is required.');
+    }
+
+    foreach ($parameters['columns'] as $column) {
+        if (is_array($column)) {
+            $table .= '<th id="'.$column['id'].'" class="'.$column['class'].'" ';
+            $table .= ' style="'.$column['style'].'">'.__($column['text']);
+            $table .= '</th>';
+        } else {
+            $table .= '<th>'.__($column).'</th>';
+        }
+    }
+
+    $table .= '</tr></thead>';
+    $table .= '</table>';
+
+    // Javascript controller.
+    $js = '<script type="text/javascript">
+    $(document).ready(function(){
+        $.fn.dataTable.ext.errMode = "none";
+        dt_'.$table_id.' = $("#'.$table_id.'").DataTable({
+            processing: true,
+            serverSide: true,
+            paging: true,
+            pageLength: 10,
+            searching: false,
+            responsive: true,
+            dom: "lBfrtip",
+            buttons: [
+                {
+                    extend: "csv",
+                    text : "'.__('Export current page to CSV').'",
+                    exportOptions : {
+                        modifier : {
+                            // DataTables core
+                            order : "current",
+                            page : "All",
+                            search : "applied"
+                        }
+                    }
+                }
+            ],
+            lengthMenu: '.json_encode($pagination_options).',
+            ajax: {
+                url: "'.ui_get_full_url('ajax.php').'",
+                type: "POST",
+                dataSrc: function (json) {
+                    if (json.error) {
+                        console.log(error);
+                        alert(error);
+                    } else {';
+    if (isset($parameters['ajax_postprocess'])) {
+        $js .= 'json.data.forEach('.$parameters['ajax_postprocess'].');';
+    }
+
+    $js .= '
+                        return json.data;
+                    }
+                },
+                data: function (data) {
+                    inputs = $("#'.$form_id.' :input");
+
+                    values = {};
+                    inputs.each(function() {
+                        values[this.name] = $(this).val();
+                    })
+
+                    $.extend(data, {
+                        filter: values,'."\n";
+
+    foreach ($parameters['ajax_data'] as $k => $v) {
+        $js .= $k.':'.json_encode($v).",\n";
+    }
+
+    $js .= 'page: "'.$parameters['ajax_url'].'"
+                    });
+
+                    return data;
+                }
+            },
+            "columnDefs": [
+                { className: "no-class", targets: "_all" }
+            ],
+            columns: [';
+
+    foreach ($parameters['datacolumns'] as $data) {
+        $js .= '{data : "'.$data.'",className: "no-class"},';
+    }
+
+            $js .= '
+            ],
+            order: [[ '.$parameters['order'].' ]]
+        });
+
+        $("#'.$form_id.'_search_bt").click(function (){
+            dt_'.$table_id.'.draw().page(0)
+        });
+    });
+</script>';
+
+    $output = $filter.$table.$js;
+
+    ui_require_css_file('datatables.min', 'include/styles/js/');
+    ui_require_javascript_file('datatables.min');
+    ui_require_javascript_file('buttons.dataTables.min');
+    ui_require_javascript_file('dataTables.buttons.min');
+    ui_require_javascript_file('buttons.html5.min');
+    ui_require_javascript_file('buttons.print.min');
+
+    $output = $include.$output;
+
+    // Print datatable if needed.
+    if (!(isset($parameters['print']) && $parameters['print'] === false)) {
         echo $output;
     }
 

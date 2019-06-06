@@ -2539,13 +2539,13 @@ function graph_agent_status($id_agent=false, $width=300, $height=200, $return=fa
     }
 
     // $colors = array(COL_CRITICAL, COL_WARNING, COL_NORMAL, COL_UNKNOWN);
-    $colors[__('Critical')] = COL_CRITICAL;
-    $colors[__('Warning')] = COL_WARNING;
-    $colors[__('Normal')] = COL_NORMAL;
-    $colors[__('Unknown')] = COL_UNKNOWN;
+    $colors['Critical'] = COL_CRITICAL;
+    $colors['Warning'] = COL_WARNING;
+    $colors['Normal'] = COL_NORMAL;
+    $colors['Unknown'] = COL_UNKNOWN;
 
     if ($show_not_init) {
-        $colors[__('Not init')] = COL_NOTINIT;
+        $colors['Not init'] = COL_NOTINIT;
     }
 
     if (array_sum($data) == 0) {

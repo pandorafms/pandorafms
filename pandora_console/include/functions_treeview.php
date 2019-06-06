@@ -327,7 +327,7 @@ function treeview_printModuleTable($id_module, $server_data=false, $no_head=fals
 
     if ($user_access_node && check_acl($config['id_user'], $id_group, 'AW')) {
         // Actions table
-        echo '<div style="width:100%; text-align: right; min-width: 300px;">';
+        echo '<div style="width:100%; text-align: right; min-width: 300px;padding-right: 1em;">';
         echo '<a target=_blank href="'.$console_url.'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$module['id_agente'].'&tab=module&edit_module=1&id_agent_module='.$module['id_agente_modulo'].$url_hash.'">';
             html_print_submit_button(__('Go to module edition'), 'upd_button', false, 'class="sub config"');
         echo '</a>';

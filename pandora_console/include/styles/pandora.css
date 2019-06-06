@@ -488,6 +488,22 @@ select:-internal-list-box {
   height: 100%;
 }
 
+.flex-column {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-content: center;
+}
+
+.flex-row {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-content: center;
+}
+
 .padding-2 {
   padding: 2em;
 }

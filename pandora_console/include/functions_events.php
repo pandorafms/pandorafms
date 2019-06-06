@@ -192,7 +192,7 @@ function events_get_events_no_grouped(
 /**
  * Return all events matching sql_post grouped.
  *
- * @param [type]  $sql_post   Sql_post.
+ * @param string  $sql_post   Sql_post.
  * @param integer $offset     Offset.
  * @param integer $pagination Pagination.
  * @param boolean $meta       Meta.
@@ -213,7 +213,7 @@ function events_get_events_grouped(
     $total=false,
     $history_db=false,
     $order='down',
-    $sort_field='timestamp'
+    $sort_field='utimestamp'
 ) {
     global $config;
 
@@ -228,30 +228,48 @@ function events_get_events_grouped(
     db_process_sql('SET group_concat_max_len = 9999999');
     $event_lj = events_get_secondary_groups_left_join($table);
     if ($total) {
-        $sql = "SELECT COUNT(*) FROM (SELECT id_evento
-            FROM $table te $event_lj
-            WHERE 1=1 ".$sql_post.'
-            GROUP BY estado, evento, id_agente, id_agentmodule'.$groupby_extra.') AS t';
+        $sql = sprintf(
+            'SELECT COUNT(*) FROM (SELECT id_evento
+             FROM %s te %s
+             WHERE 1=1 %s 
+             GROUP BY estado, evento, id_agente, id_agentmodule %s) AS t ',
+            $table,
+            $event_lj,
+            $sql_post,
+            $groupby_extra
+        );
     } else {
-        $sql = "SELECT *, MAX(id_evento) AS id_evento,
-            GROUP_CONCAT(DISTINCT user_comment SEPARATOR '<br>') AS user_comment,
-            GROUP_CONCAT(DISTINCT id_evento SEPARATOR ',') AS similar_ids,
+        $sql = sprintf(
+            'SELECT *, MAX(id_evento) AS id_evento,
+            GROUP_CONCAT(DISTINCT user_comment SEPARATOR "<br>") AS user_comment,
+            GROUP_CONCAT(DISTINCT id_evento SEPARATOR ",") AS similar_ids,
             COUNT(id_evento) AS event_rep, MAX(utimestamp) AS timestamp_rep, 
             MIN(utimestamp) AS timestamp_rep_min,
-            (SELECT owner_user FROM $table WHERE id_evento = MAX(te.id_evento)) owner_user,
-            (SELECT id_usuario FROM $table WHERE id_evento = MAX(te.id_evento)) id_usuario,
-            (SELECT id_agente FROM $table WHERE id_evento = MAX(te.id_evento)) id_agente,
-            (SELECT criticity FROM $table WHERE id_evento = MAX(te.id_evento)) AS criticity,
-            (SELECT ack_utimestamp FROM $table WHERE id_evento = MAX(te.id_evento)) AS ack_utimestamp,
-            (SELECT nombre FROM tagente_modulo WHERE id_agente_modulo = te.id_agentmodule) AS module_name
-            FROM $table te $event_lj
-            WHERE 1=1 ".$sql_post.'
-            GROUP BY estado, evento, id_agente, id_agentmodule'.$groupby_extra;
+            (SELECT owner_user FROM %s WHERE id_evento = MAX(te.id_evento)) owner_user,
+            (SELECT id_usuario FROM %s WHERE id_evento = MAX(te.id_evento)) id_usuario,
+            (SELECT id_agente FROM %s WHERE id_evento = MAX(te.id_evento)) id_agente,
+            (SELECT criticity FROM %s WHERE id_evento = MAX(te.id_evento)) AS criticity,
+            (SELECT ack_utimestamp FROM %s WHERE id_evento = MAX(te.id_evento)) AS ack_utimestamp,
+            (SELECT nombre FROM tagente_modulo WHERE id_agente_modulo = te.id_agentmodule) AS module_name,
+            (SELECT alias FROM tagente WHERE id_agente = te.id_agente) agent_name
+            FROM %s te %s
+            WHERE 1=1 %s
+            GROUP BY estado, evento, id_agente, id_agentmodule %s ',
+            $table,
+            $table,
+            $table,
+            $table,
+            $table,
+            $table,
+            $event_lj,
+            $sql_post,
+            $groupby_extra
+        );
         $sql .= ' '.events_get_sql_order($sort_field, $order, 2);
         $sql .= ' LIMIT '.$offset.','.$pagination;
     }
 
-    // Extract the events by filter (or not) from db
+    // Extract the events by filter (or not) from db.
     $events = db_get_all_rows_sql($sql, $history_db);
 
     if ($total) {

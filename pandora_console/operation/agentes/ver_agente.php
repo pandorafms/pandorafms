@@ -75,7 +75,7 @@ if (is_ajax()) {
             );
 
             $progress = agents_get_next_contact($id_agente);
-            $last_contact = ($d['intervalo'] * (100 - $progress) / 100);
+            $last_contact = floor(($d['intervalo'] * (100 - $progress) / 100));
 
             if ($progress < 0 || $progress > 100) {
                 $progress = 100;

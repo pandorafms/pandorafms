@@ -6096,3 +6096,30 @@ div#status_pie {
 .white_table_no_border {
   border: none !important;
 }
+
+/*
+ * ---------------------------------------------------------------------
+ * - SERVICES TABLE VIEW
+ * ---------------------------------------------------------------------
+ */
+#table_services {
+  display: grid;
+  grid-gap: 20px;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  grid-template-rows: 1fr;
+  margin-bottom: 30px;
+}
+
+.table_services_item_link {
+  font-size: 16px;
+  display: grid;
+  min-height: 80px;
+  box-sizing: border-box;
+  padding: 10px 10px 10px 0;
+}
+
+.table_services_item {
+  display: grid;
+  align-items: center;
+  grid-template-columns: 50px auto;
+}

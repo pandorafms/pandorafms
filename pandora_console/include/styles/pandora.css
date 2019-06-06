@@ -6105,7 +6105,7 @@ div#status_pie {
 #table_services {
   display: grid;
   grid-gap: 20px;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
   grid-template-rows: 1fr;
   margin-bottom: 30px;
 }

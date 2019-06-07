@@ -13,7 +13,7 @@
  * GNU General Public License for more details.
  */
 
-// Load global vars
+// Load global vars.
 global $config;
 
 check_login();
@@ -35,8 +35,14 @@ echo '<form action="index.php?sec=gsetup&sec2=godmode/setup/gis_step_2" method="
 
 switch ($action) {
     case 'create_connection_map':
-        // Header
-        ui_print_page_header(__('Create new map connection'), '', false, 'gis_setup_map_connection', true);
+        // Header.
+        ui_print_page_header(
+            __('Create new map connection'),
+            '',
+            false,
+            '',
+            true
+        );
 
         $mapConnection_name = '';
         $mapConnection_group = '';
@@ -55,8 +61,14 @@ switch ($action) {
     break;
 
     case 'edit_connection_map':
-        // Header
-        ui_print_page_header(__('Edit map connection'), '', false, 'gis_setup_map_connection', true);
+        // Header.
+        ui_print_page_header(
+            __('Edit map connection'),
+            '',
+            false,
+            '',
+            true
+        );
 
         $idConnectionMap = get_parameter('id_connection_map');
         $mapConnection = db_get_row_sql('SELECT * FROM tgis_map_connection WHERE id_tmap_connection = '.$idConnectionMap);
@@ -142,9 +154,13 @@ switch ($action) {
                     'layers' => $layers,
                 ];
             break;
+
+            default:
+                // Default.
+            break;
         }
 
-        // TODO VALIDATE PARAMETERS
+        // TODO VALIDATE PARAMETERS.
         if ($mapConnection_name != '' && $mapConnection_type != '') {
             gis_save_map_connection(
                 $mapConnection_name,
@@ -170,6 +186,9 @@ switch ($action) {
     return;
 
         break;
+    default:
+        // Default.
+    break;
 }
 
 $table->width = '90%';
@@ -188,7 +207,7 @@ $table->data[2][1] = html_print_input_text('num_levels_zoom', $mapConnection_num
 $table->data[3][0] = __('Default zoom level').ui_print_help_tip(__('Zoom level used when the map is opened'), true).':';
 $table->data[3][1] = html_print_input_text('initial_zoom', $mapConnection_defaultZoom, '', 4, 10, true);
 
-echo '<h4>'.__('Basic configuration').'</h4>';
+echo '<h4>'.__('Basic configuration').' '.ui_print_help_icon('gis_basic_configurations_tab', true).'</h4>';
 html_print_table($table);
 
 $table->width = '60%';
@@ -200,7 +219,7 @@ $types['WMS'] = __('WMS Server');
 $table->data[0][0] = __('Type').':';
 $table->data[0][1] = html_print_select($types, 'sel_type', $mapConnection_type, 'selMapConnectionType();', __('Please select the connection type'), 0, true);
 
-echo '<h4>'.__('Map connection type').'</h4>';
+echo '<h4>'.__('Map connection type').' '.ui_print_help_icon('gis_map_connection_tab', true).'</h4>';
 html_print_table($table);
 
 $optionsConnectionTypeTable = '';
@@ -239,22 +258,26 @@ if ($mapConnectionData != null) {
             $mapConnectionDataUrl = $mapConnectionData['url'];
             $layers = $mapConnectionData['layers'];
         break;
+
+        default:
+            // Default.
+        break;
     }
 }
 
-// Open Street Map Connection
+// Open Street Map Connection.
 $optionsConnectionOSMTable = '<table class="databox" border="0" cellpadding="4" cellspacing="4" width="50%">'.'<tr class="row_0">'.'<td>'.htmlentities(__('Tile Server URL'), ENT_QUOTES, 'UTF-8').':</td>'.'<td><input id="type" type="hidden" name="type" value="OSM" />'.html_print_input_text('url', $mapConnectionDataUrl, '', 45, 90, true).'</td>'.'</tr>'.'</table>';
 
-// Google Maps Connection
+// Google Maps Connection.
 $gmaps_types['G_PHYSICAL_MAP'] = __('Google Physical');
 $gmaps_types['G_HYBRID_MAP'] = __('Google Hybrid');
 $gmaps_types['G_SATELITE_MAP'] = __('Google Satelite');
 // TODO: Use label tags for the forms.
 $optionsConnectionGmapTable = '<table class="databox" border="0" cellpadding="4" cellspacing="4" width="90%">'.'<tr class="row_0">'.'<td>'.__('Google Map Type').':</td>'.'<td><input id="type" type="hidden" name="type" value="Gmap" />'.trim(html_print_select($gmaps_types, 'gmap_type', $gmap_type, '', '', 0, true)).'</td>'.'</tr>'.'<tr class="row_2">'.'<td>'.__('Google Maps Key').':</td>'.'</tr>'.'<tr class="row_3">'.'<td colspan="2">'.html_print_input_text('gmap_key', $gmap_key, '', 90, 128, true).'</td>'.'</tr>'.'</table>';
-// Image Map Connection
+// Image Map Connection.
 $optionsConnectionImageTable = '<table class="databox" border="0" cellpadding="4" cellspacing="4" width="50%">'.'<tr class="row_0">'.'<td>'.__('Image URL').':</td>'.'<td colspan="3"><input id="type" type="hidden" name="type" value="Static_Image" />'.html_print_input_text('url', $mapConnectionDataUrl, '', 45, 90, true).'</td>'.'</tr>'.'<tr class="row_1">'.'<td colspan="4"><strong>'.__('Corners of the area of the image').':</strong></td>'.'</tr>'.'<tr class="row_2">'.'<td>'.__('Left').':</td>'.'<td>'.html_print_input_text('bb_left', $bb_left, '', 25, 25, true).'</td>'.'<td>'.__('Bottom').':</td>'.'<td>'.html_print_input_text('bb_bottom', $bb_bottom, '', 25, 25, true).'</td>'.'</tr>'.'<tr class="row_3">'.'<td>'.__('Right').':</td>'.'<td>'.html_print_input_text('bb_right', $bb_right, '', 25, 25, true).'</td>'.'<td>'.__('Top').':</td>'.'<td>'.html_print_input_text('bb_top', $bb_top, '', 25, 25, true).'</td>'.'</tr>'.'<tr class="row_4">'.'<td colspan="4"><strong>'.__('Image Size').':</strong></td>'.'</tr>'.'<tr class="row_5">'.'<td>'.__('Width').':</td>'.'<td>'.html_print_input_text('image_width', $image_width, '', 25, 25, true).'</td>'.'<td>'.__('Height').':</td>'.'<td>'.html_print_input_text('image_height', $image_height, '', 25, 25, true).'</td>'.'</tr>'.'</table>';
 
-// WMS Server Connection
+// WMS Server Connection.
 $optionsConnectionWMSTable = '<table class="databox" border="0" cellpadding="4" cellspacing="4" width="50%">'.'<tr class="row_0">'.'<td>'.__('WMS Server URL').'</td>'.'<td>'.'<input id="type" type="hidden" name="type" value="WMS" />'.html_print_input_text('url', $mapConnectionDataUrl, '', 90, 255, true).'</td>'.'</tr>'.'<tr class="row_1">'.'<td>'.__('Layers').ui_print_help_tip(__('Enter a single element or a comma separated list'), true).'</td>'.'<td>'.html_print_input_text('layers', $layers, '', 90, 255, true).'</td>'.'</tr>'.'</table>';
 
 if ($mapConnectionData != null) {
@@ -273,6 +296,10 @@ if ($mapConnectionData != null) {
 
         case 'WMS':
             $optionsConnectionTypeTable = $optionsConnectionWMSTable;
+        break;
+
+        default:
+            // Default.
         break;
     }
 }

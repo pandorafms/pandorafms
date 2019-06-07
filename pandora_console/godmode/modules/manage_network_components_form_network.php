@@ -57,16 +57,16 @@ $data = [];
 $data[0] = __('SNMP Enterprise String');
 $data[1] = html_print_input_text('snmp_oid', $snmp_oid, '', 30, 400, true);
 // $table->colspan['snmp_2'][1] = 3;
-$data[2] = __('SNMP community').ui_print_help_icon('column_macros', true);
+$data[2] = __('SNMP community');
 $data[3] = html_print_input_text('snmp_community', $snmp_community, '', 15, 60, true);
 
 push_table_row($data, 'snmp_2');
 
 
 $data = [];
-$data[0] = __('Auth user').ui_print_help_icon('column_macros', true);
+$data[0] = __('Auth user');
 $data[1] = html_print_input_text('snmp3_auth_user', $snmp3_auth_user, '', 15, 60, true);
-$data[2] = __('Auth password').ui_print_help_icon('column_macros', true);
+$data[2] = __('Auth password');
 $data[3] = html_print_input_password('snmp3_auth_pass', $snmp3_auth_pass, '', 15, 60, true);
 $data[3] .= html_print_input_hidden_extended('active_snmp_v3', 0, 'active_snmp_v3_mncfn', true);
 push_table_row($data, 'field_snmpv3_row1');
@@ -74,7 +74,7 @@ push_table_row($data, 'field_snmpv3_row1');
 $data = [];
 $data[0] = __('Privacy method');
 $data[1] = html_print_select(['DES' => __('DES'), 'AES' => __('AES')], 'snmp3_privacy_method', $snmp3_privacy_method, '', '', '', true);
-$data[2] = __('Privacy pass').ui_print_help_icon('column_macros', true);
+$data[2] = __('Privacy pass');
 $data[3] = html_print_input_password('snmp3_privacy_pass', $snmp3_privacy_pass, '', 15, 60, true);
 push_table_row($data, 'field_snmpv3_row2');
 
@@ -98,7 +98,7 @@ $data[3] = html_print_select(
 push_table_row($data, 'field_snmpv3_row3');
 
 $data = [];
-$data[0] = __('Post process').' '.ui_print_help_icon('postprocess', true);
+$data[0] = __('Post process');
 $data[1] = html_print_extended_select_for_post_process(
     'post_process',
     $post_process,
@@ -117,7 +117,7 @@ push_table_row($data, 'field_process');
 
 // Advanced stuff
 $data = [];
-$data[0] = __('TCP send').' '.ui_print_help_icon('tcp_send', true);
+$data[0] = __('TCP send');
 $data[1] = html_print_textarea('tcp_send', 2, 65, $tcp_send, '', true);
 $table->colspan['tcp_send'][1] = 3;
 

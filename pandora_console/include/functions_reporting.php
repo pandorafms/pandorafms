@@ -36,15 +36,16 @@ require_once $config['homedir'].'/include/functions_forecast.php';
 require_once $config['homedir'].'/include/functions_ui.php';
 require_once $config['homedir'].'/include/functions_netflow.php';
 require_once $config['homedir'].'/include/functions_os.php';
+require_once $config['homedir'].'/include/functions_network.php';
 
 //
 // CONSTANTS DEFINITIONS                //
 //
-// Priority modes
+// Priority modes.
 define('REPORT_PRIORITY_MODE_OK', 1);
 define('REPORT_PRIORITY_MODE_UNKNOWN', 2);
 
-// Status
+// Status.
 define('REPORT_STATUS_ERR', 0);
 define('REPORT_STATUS_OK', 1);
 define('REPORT_STATUS_UNKNOWN', 2);
@@ -61,7 +62,7 @@ function reporting_user_can_see_report($id_report, $id_user=null)
         $id_user = $config['id_user'];
     }
 
-    // Get Report record (to get id_group)
+    // Get Report record (to get id_group).
     $report = db_get_row('treport', 'id_report', $id_report);
 
     // Check ACL on the report to see if user has access to the report.
@@ -106,6 +107,10 @@ function reporting_get_type($content)
 
         case REPORT_OLD_TYPE_SUMATORY:
             $content['type'] = 'sumatory';
+        break;
+
+        default:
+            // Default.
         break;
     }
 
@@ -204,7 +209,7 @@ function reporting_make_reporting_data(
         $server_name = $content['server_name'];
 
         // General reports with 0 period means last value
-        // Avoid to overwrite it by template value
+        // Avoid to overwrite it by template value.
         if (!empty($period) && ($content['type'] !== 'general' && $content['period'] != 0)) {
             $content['period'] = $period;
         }
@@ -228,7 +233,7 @@ function reporting_make_reporting_data(
 
             if (in_array('label', $content['style'])) {
                 if ($content['id_agent'] == 0) {
-                    // Metaconsole connection
+                    // Metaconsole connection.
                     if ($metaconsole_on && $server_name != '') {
                         $connection = metaconsole_get_connection($server_name);
                         if (!metaconsole_load_external_db($connection)) {
@@ -239,7 +244,7 @@ function reporting_make_reporting_data(
 
                     array_push($agents_to_macro, modules_get_agentmodule_agent($graph_item['id_agent_module']));
                     if ($metaconsole_on) {
-                        // Restore db connection
+                        // Restore db connection.
                         metaconsole_restore_db();
                     }
                 }
@@ -290,7 +295,7 @@ function reporting_make_reporting_data(
             $content['name'] = reporting_label_macro($items_label, $content['style']['name_label']);
 
             if ($metaconsole_on) {
-                // Restore db connection
+                // Restore db connection.
                 metaconsole_restore_db();
             }
         }
@@ -516,16 +521,6 @@ function reporting_make_reporting_data(
                 );
             break;
 
-            case 'netflow_pie':
-                $report['contents'][] = reporting_netflow(
-                    $report,
-                    $content,
-                    $type,
-                    $force_width_chart,
-                    $force_height_chart,
-                    'netflow_pie',
-                    $pdf
-                );
             break;
 
             case 'netflow_data':
@@ -536,18 +531,6 @@ function reporting_make_reporting_data(
                     $force_width_chart,
                     $force_height_chart,
                     'netflow_data',
-                    $pdf
-                );
-            break;
-
-            case 'netflow_statistics':
-                $report['contents'][] = reporting_netflow(
-                    $report,
-                    $content,
-                    $type,
-                    $force_width_chart,
-                    $force_height_chart,
-                    'netflow_statistics',
                     $pdf
                 );
             break;
@@ -794,6 +777,18 @@ function reporting_make_reporting_data(
                     $pdf
                 );
             break;
+
+            case 'nt_top_n':
+                $report['contents'][] = reporting_nt_top_n_report(
+                    $report,
+                    $content,
+                    $pdf
+                );
+            break;
+
+            default:
+                // Default.
+            break;
         }
 
         $index_content++;
@@ -860,7 +855,7 @@ function reporting_SLA(
         include_once $config['homedir'].'/include/functions_planned_downtimes.php';
         $metaconsole_on = is_metaconsole();
 
-        // checking if needed to show graph or table
+        // checking if needed to show graph or table.
         if ($content['show_graph'] == 0 || $content['show_graph'] == 1) {
             $show_table = 1;
         } else {
@@ -1254,7 +1249,6 @@ function reporting_SLA(
                     }
 
                     $return['charts'] = $temp;
-
                 break;
 
                 case 2:
@@ -1291,7 +1285,10 @@ function reporting_SLA(
                     }
 
                     $return['charts'] = $temp;
+                break;
 
+                default:
+                    // Default.
                 break;
             }
         }
@@ -1330,7 +1327,7 @@ function reporting_event_top_n(
 
         case REPORT_TOP_N_AVG:
         default:
-            // If nothing is selected then it will be shown the average data
+            // If nothing is selected then it will be shown the average data.
             $type_top_n = __('Avg');
         break;
     }
@@ -1347,7 +1344,7 @@ function reporting_event_top_n(
     $return['top_n'] = $content['top_n_value'];
 
     if (empty($content['subitems'])) {
-        // Get all the related data
+        // Get all the related data.
         $sql = sprintf(
             'SELECT id_agent_module, server_name
 			FROM treport_content_item
@@ -1360,7 +1357,7 @@ function reporting_event_top_n(
         $tops = $content['subitems'];
     }
 
-    // Get chart
+    // Get chart.
     reporting_set_conf_charts(
         $width,
         $height,
@@ -1384,7 +1381,7 @@ function reporting_event_top_n(
         $data_top = [];
 
         foreach ($tops as $key => $row) {
-            // Metaconsole connection
+            // Metaconsole connection.
             $server_name = $row['server_name'];
             if (($config['metaconsole'] == 1) && $server_name != '' && defined('METACONSOLE')) {
                 $connection = metaconsole_get_connection($server_name);
@@ -1414,7 +1411,7 @@ function reporting_event_top_n(
 
                 case REPORT_TOP_N_AVG:
                 default:
-                    // If nothing is selected then it will be shown the average data
+                    // If nothing is selected then it will be shown the average data.
                     $value = reporting_get_agentmodule_data_average($row['id_agent_module'], $content['period']);
                 break;
             }
@@ -1428,7 +1425,7 @@ function reporting_event_top_n(
                 $units[$key] = $unit;
             }
 
-            // Restore dbconnection
+            // Restore dbconnection.
             if (($config['metaconsole'] == 1) && $server_name != '' && defined('METACONSOLE')) {
                 metaconsole_restore_db();
             }
@@ -1441,20 +1438,24 @@ function reporting_event_top_n(
 
             // Order to show.
             switch ($order_uptodown) {
-                // Descending
+                // Descending.
                 case 1:
                     array_multisort($data_top, SORT_DESC, $agent_name, SORT_ASC, $module_name, SORT_ASC, $id_agent_module, SORT_ASC, $units, SORT_ASC);
                 break;
 
-                // Ascending
+                // Ascending.
                 case 2:
                     array_multisort($data_top, SORT_ASC, $agent_name, SORT_ASC, $module_name, SORT_ASC, $id_agent_module, SORT_ASC, $units, SORT_ASC);
                 break;
 
-                // By agent name or without selection
+                // By agent name or without selection.
                 case 0:
                 case 3:
                     array_multisort($agent_name, SORT_ASC, $data_top, SORT_ASC, $module_name, SORT_ASC, $id_agent_module, SORT_ASC, $units, SORT_ASC);
+                break;
+
+                default:
+                    // Default.
                 break;
             }
 
@@ -1471,7 +1472,7 @@ function reporting_event_top_n(
             $data_top_values['id_agent_module'] = $id_agent_module;
             $data_top_values['units'] = $units;
 
-            // Define truncate size depends the graph width
+            // Define truncate size depends the graph width.
             $truncate_size = ($width / (4 * ($config['font_size'])) - 1);
 
             if ($order_uptodown == 1 || $order_uptodown == 2) {
@@ -1597,7 +1598,7 @@ function reporting_event_top_n(
                     $ttl
                 );
 
-                // Display bars graph
+                // Display bars graph.
                 $return['charts']['bars'] = hbar_graph(
                     $data_hbar,
                     $width,
@@ -1622,7 +1623,7 @@ function reporting_event_top_n(
             $return['resume'] = null;
 
             if ($content['show_resume'] && count($data_top_values) > 0) {
-                // Get the very first not null value
+                // Get the very first not null value.
                 $i = 0;
                 do {
                     $min = $data_top_values['data_top'][$i];
@@ -1697,18 +1698,19 @@ function reporting_event_report_group(
     }
 
     $return['description'] = $content['description'];
+    $return['show_extended_events'] = $content['show_extended_events'];
     $return['date'] = reporting_get_date_text($report, $content);
 
     $event_filter = $content['style'];
     $return['show_summary_group'] = $event_filter['show_summary_group'];
-    // filter
+    // Filter.
     $show_summary_group         = $event_filter['show_summary_group'];
     $filter_event_severity      = json_decode($event_filter['filter_event_severity'], true);
     $filter_event_type          = json_decode($event_filter['filter_event_type'], true);
     $filter_event_status        = json_decode($event_filter['filter_event_status'], true);
     $filter_event_filter_search = $event_filter['event_filter_search'];
 
-    // graphs
+    // Graphs.
     $event_graph_by_agent                 = $event_filter['event_graph_by_agent'];
     $event_graph_by_user_validator        = $event_filter['event_graph_by_user_validator'];
     $event_graph_by_criticity             = $event_filter['event_graph_by_criticity'];
@@ -1870,7 +1872,7 @@ function reporting_event_report_group(
         metaconsole_restore_db();
     }
 
-    // total_events
+    // total_events.
     if ($return['data'] != '') {
         $return['total_events'] = count($return['data']);
     } else {
@@ -1912,24 +1914,29 @@ function reporting_event_report_module(
     $return['title'] = $content['name'];
     $return['subtitle'] = agents_get_alias($content['id_agent']).' - '.io_safe_output(modules_get_agentmodule_name($content['id_agent_module']));
 
+    $return['label'] = (isset($content['style']['label'])) ? $content['style']['label'] : '';
+    if ($return['label'] != '') {
+        $return['label'] = reporting_label_macro($content, $return['label']);
+    }
+
     if (is_metaconsole()) {
         metaconsole_restore_db();
     }
 
     $return['description'] = $content['description'];
+    $return['show_extended_events'] = $content['show_extended_events'];
     $return['date'] = reporting_get_date_text($report, $content);
-    $return['label'] = (isset($content['style']['label'])) ? $content['style']['label'] : '';
 
     $event_filter = $content['style'];
     $return['show_summary_group'] = $event_filter['show_summary_group'];
-    // filter
+    // Filter.
     $show_summary_group         = $event_filter['show_summary_group'];
     $filter_event_severity      = json_decode($event_filter['filter_event_severity'], true);
     $filter_event_type          = json_decode($event_filter['filter_event_type'], true);
     $filter_event_status        = json_decode($event_filter['filter_event_status'], true);
     $filter_event_filter_search = $event_filter['event_filter_search'];
 
-    // graphs
+    // Graphs.
     $event_graph_by_user_validator        = $event_filter['event_graph_by_user_validator'];
     $event_graph_by_criticity             = $event_filter['event_graph_by_criticity'];
     $event_graph_validated_vs_unvalidated = $event_filter['event_graph_validated_vs_unvalidated'];
@@ -1941,7 +1948,7 @@ function reporting_event_report_module(
         $metaconsole_dbtable = false;
     }
 
-    // data events
+    // Data events.
     $data = reporting_get_module_detailed_event(
         $content['id_agent_module'],
         $content['period'],
@@ -1970,7 +1977,7 @@ function reporting_event_report_module(
         metaconsole_restore_db();
     }
 
-    // total_events
+    // Total_events.
     if ($return['data'][0]['data'] != '') {
         $return['total_events'] = count($return['data'][0]['data']);
     } else {
@@ -2287,6 +2294,10 @@ function reporting_exception(
             $return['subtitle'] = __('Exception - Modules at critical or warning status');
             $return['subtype'] = __('Modules at critical or warning status');
         break;
+
+        default:
+            // Default.
+        break;
     }
 
     $return['description'] = $content['description'];
@@ -2297,7 +2308,7 @@ function reporting_exception(
     $return['resume'] = [];
 
     if (empty($content['subitems'])) {
-        // Get all the related data
+        // Get all the related data.
         $sql = sprintf(
             '
 			SELECT id_agent_module, server_name, operation
@@ -2314,10 +2325,10 @@ function reporting_exception(
     if ($exceptions === false) {
         $return['failed'] = __('There are no Agent/Modules defined');
     } else {
-        // Get the very first not null value
+        // Get the very first not null value.
         $i = 0;
         do {
-            // Metaconsole connection
+            // Metaconsole connection.
             $server_name = $exceptions[$i]['server_name'];
             if (($config['metaconsole'] == 1) && $server_name != '' && defined('METACONSOLE')) {
                 $connection = metaconsole_get_connection($server_name);
@@ -2351,12 +2362,16 @@ function reporting_exception(
                             $content['period']
                         );
                     break;
+
+                    default:
+                        // Default.
+                    break;
                 }
             }
 
             $i++;
 
-            // Restore dbconnection
+            // Restore dbconnection.
             if (($config['metaconsole'] == 1) && $server_name != '' && defined('METACONSOLE')) {
                 metaconsole_restore_db();
             }
@@ -2368,7 +2383,7 @@ function reporting_exception(
 
         $i = 0;
         foreach ($exceptions as $exc) {
-            // Metaconsole connection
+            // Metaconsole connection.
             $server_name = $exc['server_name'];
             if (($config['metaconsole'] == 1) && $server_name != '' && defined('METACONSOLE')) {
                 $connection = metaconsole_get_connection($server_name);
@@ -2730,6 +2745,17 @@ function reporting_group_report($report, $content)
 }
 
 
+/**
+ * Create data report event agent.
+ *
+ * @param array   $report             Data report.
+ * @param array   $content            Content report.
+ * @param string  $type               Type report.
+ * @param integer $force_width_chart  Force width.
+ * @param integer $force_height_chart Force height.
+ *
+ * @return array Data.
+ */
 function reporting_event_report_agent(
     $report,
     $content,
@@ -2750,25 +2776,26 @@ function reporting_event_report_agent(
         $history = true;
     }
 
-    $return['title']              = $content['name'];
-    $return['subtitle']           = agents_get_alias($content['id_agent']);
-    $return['description']        = $content['description'];
-    $return['date']               = reporting_get_date_text($report, $content);
-    $return['label']              = (isset($content['style']['label'])) ? $content['style']['label'] : '';
+    $return['title'] = $content['name'];
+    $return['subtitle'] = agents_get_alias($content['id_agent']);
+    $return['description'] = $content['description'];
+    $return['date'] = reporting_get_date_text($report, $content);
+
     $return['show_summary_group'] = $content['style']['show_summary_group'];
+    $return['show_extended_events'] = $content['show_extended_events'];
 
     $style = $content['style'];
 
-    // filter
-    $show_summary_group         = $style['show_summary_group'];
-    $filter_event_severity      = json_decode($style['filter_event_severity'], true);
-    $filter_event_type          = json_decode($style['filter_event_type'], true);
-    $filter_event_status        = json_decode($style['filter_event_status'], true);
+    // Filter.
+    $show_summary_group = $style['show_summary_group'];
+    $filter_event_severity = json_decode($style['filter_event_severity'], true);
+    $filter_event_type = json_decode($style['filter_event_type'], true);
+    $filter_event_status = json_decode($style['filter_event_status'], true);
     $filter_event_filter_search = $style['event_filter_search'];
 
-    // graph
-    $event_graph_by_user_validator        = $style['event_graph_by_user_validator'];
-    $event_graph_by_criticity             = $style['event_graph_by_criticity'];
+    // Graph.
+    $event_graph_by_user_validator = $style['event_graph_by_user_validator'];
+    $event_graph_by_criticity = $style['event_graph_by_criticity'];
     $event_graph_validated_vs_unvalidated = $style['event_graph_validated_vs_unvalidated'];
 
     $return['data'] = reporting_get_agents_detailed_event(
@@ -2812,6 +2839,13 @@ function reporting_event_report_agent(
     } else {
         $metaconsole_dbtable = false;
     }
+
+    $label = (isset($content['style']['label'])) ? $content['style']['label'] : '';
+    if ($label != '') {
+        $label = reporting_label_macro($content, $label);
+    }
+
+    $return['label'] = $label;
 
     if ($event_graph_by_user_validator) {
         $data_graph = events_get_count_events_validated_by_user(
@@ -2896,7 +2930,7 @@ function reporting_event_report_agent(
         metaconsole_restore_db();
     }
 
-    // total_events
+    // Total events.
     if ($return['data'] != '') {
         $return['total_events'] = count($return['data']);
     } else {
@@ -2929,7 +2963,11 @@ function reporting_historical_data($report, $content)
     $return['subtitle'] = $agent_name.' - '.$module_name;
     $return['description'] = $content['description'];
     $return['date'] = reporting_get_date_text($report, $content);
+
     $return['label'] = (isset($content['style']['label'])) ? $content['style']['label'] : '';
+    if ($return['label'] != '') {
+        $return['label'] = reporting_label_macro($content, $return['label']);
+    }
 
     $return['keys'] = [
         __('Date'),
@@ -3005,7 +3043,6 @@ function reporting_database_serialized($report, $content)
     $return['subtitle'] = $agent_name.' - '.$module_name;
     $return['description'] = $content['description'];
     $return['date'] = reporting_get_date_text($report, $content);
-    $return['label'] = (isset($content['style']['label'])) ? $content['style']['label'] : '';
 
     $keys = [];
     if (isset($content['header_definition']) && ($content['header_definition'] != '')) {
@@ -3029,6 +3066,11 @@ function reporting_database_serialized($report, $content)
 
         $server = metaconsole_get_connection_by_id($id_meta);
         metaconsole_connect($server);
+    }
+
+    $return['label'] = (isset($content['style']['label'])) ? $content['style']['label'] : '';
+    if ($return['label'] != '') {
+        $return['label'] = reporting_label_macro($content, $return['label']);
     }
 
     $datelimit = ($report['datetime'] - $content['period']);
@@ -3577,7 +3619,12 @@ function reporting_alert_report_agent($report, $content)
     $return['subtitle'] = $agent_name;
     $return['description'] = $content['description'];
     $return['date'] = reporting_get_date_text($report, $content);
+
     $return['label'] = (isset($content['style']['label'])) ? $content['style']['label'] : '';
+    if ($return['label'] != '') {
+        $return['label'] = reporting_label_macro($content, $return['label']);
+    }
+
     $module_list = agents_get_modules($content['id_agent']);
 
     $data = [];
@@ -3709,6 +3756,9 @@ function reporting_alert_report_module($report, $content)
     $return['description'] = $content['description'];
     $return['date'] = reporting_get_date_text($report, $content);
     $return['label'] = (isset($content['style']['label'])) ? $content['style']['label'] : '';
+    if ($return['label'] != '') {
+        $return['label'] = reporting_label_macro($content, $return['label']);
+    }
 
     $data_row = [];
 
@@ -3911,13 +3961,17 @@ function reporting_monitor_report($report, $content)
     $return['subtitle'] = $agent_name.' - '.$module_name;
     $return['description'] = $content['description'];
     $return['date'] = reporting_get_date_text($report, $content);
-    $return['label'] = (isset($content['style']['label'])) ? $content['style']['label'] : '';
 
     if ($config['metaconsole']) {
         $id_meta = metaconsole_get_id_server($content['server_name']);
 
         $server = metaconsole_get_connection_by_id($id_meta);
         metaconsole_connect($server);
+    }
+
+    $return['label'] = (isset($content['style']['label'])) ? $content['style']['label'] : '';
+    if ($return['label'] != '') {
+        $return['label'] = reporting_label_macro($content, $return['label']);
     }
 
     $module_name = io_safe_output(
@@ -3955,6 +4009,20 @@ function reporting_monitor_report($report, $content)
 }
 
 
+/**
+ * Generates the data structure to build a netflow report.
+ *
+ * @param array   $report             Global report info.
+ * @param array   $content            Report item info.
+ * @param string  $type               Report type (static, dynamic, data).
+ * @param integer $force_width_chart  Fixed width chart.
+ * @param integer $force_height_chart Fixed height chart.
+ * @param string  $type_netflow       One of netflow_area, netflow_data,
+ *      netflow_summary.
+ * @param boolean $pdf                True if a pdf report is generating.
+ *
+ * @return array Report item structure.
+ */
 function reporting_netflow(
     $report,
     $content,
@@ -3971,20 +4039,16 @@ function reporting_netflow(
             $return['type'] = 'netflow_area';
         break;
 
-        case 'netflow_pie':
-            $return['type'] = 'netflow_pie';
-        break;
-
         case 'netflow_data':
             $return['type'] = 'netflow_data';
         break;
 
-        case 'netflow_statistics':
-            $return['type'] = 'netflow_statistics';
-        break;
-
         case 'netflow_summary':
             $return['type'] = 'netflow_summary';
+        break;
+
+        default:
+            $return['type'] = 'unknown';
         break;
     }
 
@@ -3994,20 +4058,16 @@ function reporting_netflow(
                 $content['name'] = __('Netflow Area');
             break;
 
-            case 'netflow_pie':
-                $content['name'] = __('Netflow Pie');
+            case 'netflow_summary':
+                $content['name'] = __('Netflow Summary');
             break;
 
             case 'netflow_data':
                 $content['name'] = __('Netflow Data');
             break;
 
-            case 'netflow_statistics':
-                $content['name'] = __('Netflow Statistics');
-            break;
-
-            case 'netflow_summary':
-                $content['name'] = __('Netflow Summary');
+            default:
+                $content['name'] = __('Unknown report');
             break;
         }
     }
@@ -4016,7 +4076,7 @@ function reporting_netflow(
     $return['description'] = $content['description'];
     $return['date'] = reporting_get_date_text($report, $content);
 
-    // Get chart
+    // Get chart.
     reporting_set_conf_charts(
         $width,
         $height,
@@ -4034,7 +4094,7 @@ function reporting_netflow(
         $height = $force_height_chart;
     }
 
-    // Get item filters
+    // Get item filters.
     $filter = db_get_row_sql(
         "SELECT *
 		FROM tnetflow_filter
@@ -4059,8 +4119,16 @@ function reporting_netflow(
         break;
 
         case 'data':
+        default:
+            // Nothing to do.
         break;
     }
+
+    $return['subtitle'] = netflow_generate_subtitle_report(
+        $filter['aggregate'],
+        $content['top_n'],
+        $type_netflow
+    );
 
     return reporting_check_structure_content($return);
 }
@@ -4413,6 +4481,9 @@ function reporting_value($report, $content, $type, $pdf=false)
     $return['description'] = $content['description'];
     $return['date'] = reporting_get_date_text($report, $content);
     $return['label'] = (isset($content['style']['label'])) ? $content['style']['label'] : '';
+    $return['agents'] = [$content['id_agent']];
+    $return['id_agent'] = $content['id_agent'];
+    $return['id_agent_module'] = $content['id_agent_module'];
 
     $return['agent_name'] = $agent_name;
     $return['module_name'] = $module_name;
@@ -5486,6 +5557,9 @@ function reporting_advanced_sla(
                 $max_value = 0;
                 $min_value = 0;
                 $inverse_interval = 1;
+            } else if ($agentmodule_info['id_tipo_modulo'] == '100') {
+                $max_value = 0.9;
+                $min_value = 0;
             }
         }
     }
@@ -6266,6 +6340,19 @@ function reporting_availability($report, $content, $date=false, $time=false)
     $return['resume']['avg'] = $avg;
     $return['resume']['max_text'] = $max_text;
     $return['resume']['max'] = $max;
+    $return['fields'] = [];
+    $return['fields']['total_time'] = $content['total_time'];
+    $return['fields']['time_failed'] = $content['time_failed'];
+    $return['fields']['time_in_ok_status'] = $content['time_in_ok_status'];
+    $return['fields']['time_in_unknown_status'] = $content['time_in_unknown_status'];
+    $return['fields']['time_of_not_initialized_module'] = $content['time_of_not_initialized_module'];
+    $return['fields']['time_of_downtime'] = $content['time_of_downtime'];
+    $return['fields']['total_checks'] = $content['total_checks'];
+    $return['fields']['checks_failed'] = $content['checks_failed'];
+    $return['fields']['checks_in_ok_status'] = $content['checks_in_ok_status'];
+    $return['fields']['unknown_checks'] = $content['unknown_checks'];
+    $return['fields']['agent_max_value'] = $content['agent_max_value'];
+    $return['fields']['agent_min_value'] = $content['agent_min_value'];
 
     return reporting_check_structure_content($return);
 }
@@ -7228,6 +7315,7 @@ function reporting_custom_graph(
                 'modules_series' => $graphs[0]['modules_series'],
                 'id_graph'       => $id_graph,
                 'type_report'    => $type_report,
+                'labels'         => $content['style']['label'],
             ];
 
             $return['chart'] = graphic_combined_module(
@@ -7288,6 +7376,7 @@ function reporting_simple_graph(
         $report,
         $content
     );
+
     $label = (isset($content['style']['label'])) ? $content['style']['label'] : '';
     if ($label != '') {
         $label = reporting_label_macro($content, $label);
@@ -7299,7 +7388,7 @@ function reporting_simple_graph(
 
     $return['chart'] = '';
 
-    // Get chart
+    // Get chart.
     reporting_set_conf_charts($width, $height, $only_image, $type, $content, $ttl);
 
     if (!empty($force_width_chart)) {
@@ -7437,6 +7526,21 @@ function reporting_check_structure_content($report)
         $report['date']['period'] = '';
         $report['date']['from'] = '';
         $report['date']['to'] = '';
+    }
+
+    if (!isset($report['fields'])) {
+        $return['fields']['total_time'] = '';
+        $return['fields']['time_failed'] = '';
+        $return['fields']['time_in_ok_status'] = '';
+        $return['fields']['time_in_unknown_status'] = '';
+        $return['fields']['time_of_not_initialized_module'] = '';
+        $return['fields']['time_of_downtime'] = '';
+        $return['fields']['total_checks'] = '';
+        $return['fields']['checks_failed'] = '';
+        $return['fields']['checks_in_ok_status'] = '';
+        $return['fields']['unknown_checks'] = '';
+        $return['fields']['agent_max_value'] = '';
+        $return['fields']['agent_min_value'] = '';
     }
 
     return $report;
@@ -7734,6 +7838,7 @@ function reporting_get_agents_detailed_event(
                         'criticity'    => $e['criticity'],
                         'validated_by' => $e['id_usuario'],
                         'timestamp'    => $e['timestamp_rep'],
+                        'id_evento'    => $e['id_evento'],
                     ];
                 } else {
                     $return_data[] = [
@@ -7743,6 +7848,7 @@ function reporting_get_agents_detailed_event(
                         'criticity'    => $e['criticity'],
                         'validated_by' => $e['id_usuario'],
                         'timestamp'    => $e['timestamp'],
+                        'id_evento'    => $e['id_evento'],
                     ];
                 }
             }
@@ -7765,11 +7871,11 @@ function reporting_get_agents_detailed_event(
 
         foreach ($events as $eventRow) {
             foreach ($eventRow as $k => $event) {
-                // First pass along the class of this row
+                // First pass along the class of this row.
                 $table->cellclass[$k][1] = $table->cellclass[$k][2] = $table->cellclass[$k][4] = $table->cellclass[$k][5] = $table->cellclass[$k][6] = get_priority_class($event['criticity']);
 
                 $data = [];
-                // Colored box
+                // Colored box.
                 switch ($event['estado']) {
                     case 0:
                         $img_st = 'images/star.png';
@@ -9284,15 +9390,34 @@ function reporting_get_agent_module_info($id_agent)
 
     $return = [];
     $return['last_contact'] = 0;
-    // Last agent contact
+    // Last agent contact.
     $return['status'] = STATUS_AGENT_NO_DATA;
-    $return['status_img'] = ui_print_status_image(STATUS_AGENT_NO_DATA, __('Agent without data'), true);
+    $return['status_img'] = ui_print_status_image(
+        STATUS_AGENT_NO_DATA,
+        __('Agent without data'),
+        true
+    );
     $return['alert_status'] = 'notfired';
     $return['alert_value'] = STATUS_ALERT_NOT_FIRED;
-    $return['alert_img'] = ui_print_status_image(STATUS_ALERT_NOT_FIRED, __('Alert not fired'), true);
-    $return['agent_group'] = agents_get_agent_group($id_agent);
+    $return['alert_img'] = ui_print_status_image(
+        STATUS_ALERT_NOT_FIRED,
+        __('Alert not fired'),
+        true
+    );
 
-    if (!check_acl($config['id_user'], $return['agent_group'], 'AR')) {
+    $return['agent_group'] = '';
+    // Important agents_get_all_groups_agent check secondary groups.
+    $id_all_groups = agents_get_all_groups_agent($id_agent);
+    if (isset($id_all_groups) && is_array($id_all_groups)) {
+        foreach ($id_all_groups as $value) {
+            if (check_acl($config['id_user'], $value, 'AR')) {
+                $return['agent_group'] = $value;
+            }
+        }
+    }
+
+    // If $return['agent_group'] is empty no access.
+    if ($return['agent_group'] == '') {
         return $return;
     }
 
@@ -9305,7 +9430,7 @@ function reporting_get_agent_module_info($id_agent)
 
     $now = get_system_time();
 
-    // Get modules status for this agent
+    // Get modules status for this agent.
     $agent = db_get_row('tagente', 'id_agente', $id_agent);
 
     $return['total_count'] = $agent['total_count'];
@@ -9319,28 +9444,52 @@ function reporting_get_agent_module_info($id_agent)
     if ($return['total_count'] > 0) {
         if ($return['critical_count'] > 0) {
             $return['status'] = STATUS_AGENT_CRITICAL;
-            $return['status_img'] = ui_print_status_image(STATUS_AGENT_CRITICAL, __('At least one module in CRITICAL status'), true);
+            $return['status_img'] = ui_print_status_image(
+                STATUS_AGENT_CRITICAL,
+                __('At least one module in CRITICAL status'),
+                true
+            );
         } else if ($return['warning_count'] > 0) {
             $return['status'] = STATUS_AGENT_WARNING;
-            $return['status_img'] = ui_print_status_image(STATUS_AGENT_WARNING, __('At least one module in WARNING status'), true);
+            $return['status_img'] = ui_print_status_image(
+                STATUS_AGENT_WARNING,
+                __('At least one module in WARNING status'),
+                true
+            );
         } else if ($return['unknown_count'] > 0) {
             $return['status'] = STATUS_AGENT_DOWN;
-            $return['status_img'] = ui_print_status_image(STATUS_AGENT_DOWN, __('At least one module is in UKNOWN status'), true);
+            $return['status_img'] = ui_print_status_image(
+                STATUS_AGENT_DOWN,
+                __('At least one module is in UKNOWN status'),
+                true
+            );
         } else {
             $return['status'] = STATUS_AGENT_OK;
-            $return['status_img'] = ui_print_status_image(STATUS_AGENT_OK, __('All Monitors OK'), true);
+            $return['status_img'] = ui_print_status_image(
+                STATUS_AGENT_OK,
+                __('All Monitors OK'),
+                true
+            );
         }
     }
 
-    // Alert not fired is by default
+    // Alert not fired is by default.
     if ($return['fired_count'] > 0) {
         $return['alert_status'] = 'fired';
-        $return['alert_img'] = ui_print_status_image(STATUS_ALERT_FIRED, __('Alert fired'), true);
+        $return['alert_img'] = ui_print_status_image(
+            STATUS_ALERT_FIRED,
+            __('Alert fired'),
+            true
+        );
         $return['alert_value'] = STATUS_ALERT_FIRED;
     } else if (groups_give_disabled_group($return['agent_group'])) {
         $return['alert_status'] = 'disabled';
         $return['alert_value'] = STATUS_ALERT_DISABLED;
-        $return['alert_img'] = ui_print_status_image(STATUS_ALERT_DISABLED, __('Alert disabled'), true);
+        $return['alert_img'] = ui_print_status_image(
+            STATUS_ALERT_DISABLED,
+            __('Alert disabled'),
+            true
+        );
     }
 
     return $return;
@@ -9350,13 +9499,23 @@ function reporting_get_agent_module_info($id_agent)
 /**
  * Print tiny statistics of the status of one agent, group, etc.
  *
- * @param mixed Array with the counts of the total modules, normal modules, critical modules, warning modules, unknown modules and fired alerts
- * @param bool return or echo flag
+ * @param mixed   $counts_info Array with the counts of the total modules,
+ * normal modules, critical modules, warning modules, unknown modules and
+ * fired alerts.
+ * @param boolean $return      Return or echo flag.
+ * @param string  $type        agent or modules or ??.
+ * @param string  $separator   Sepearator (classic view).
+ * @param boolean $modern      Use modern interfaces or old one.
  *
- * @return string html formatted tiny stats of modules/alerts of an agent
+ * @return string HTML formatted tiny stats of modules/alerts of an agent.
  */
-function reporting_tiny_stats($counts_info, $return=false, $type='agent', $separator=':', $strict_user=false)
-{
+function reporting_tiny_stats(
+    $counts_info,
+    $return=false,
+    $type='agent',
+    $separator=':',
+    $modern=false
+) {
     global $config;
 
     $out = '';
@@ -9473,37 +9632,74 @@ function reporting_tiny_stats($counts_info, $return=false, $type='agent', $separ
         $out .= html_print_div($params, true);
     }
 
-    // If total count is less than 0, is an error. Never show negative numbers
+    // If total count is less than 0, is an error. Never show negative numbers.
     if ($total_count < 0) {
         $total_count = 0;
     }
 
-    $out .= '<b>'.'<span id="total_count_'.$uniq_id.'" class="forced_title" style="font-size: 7pt">'.$total_count.'</span>';
-    if (isset($fired_count) && $fired_count > 0) {
-        $out .= ' '.$separator.' <span class="orange forced_title" id="fired_count_'.$uniq_id.'" style="font-size: 7pt">'.$fired_count.'</span>';
-    }
+    if ($modern === true) {
+        $out .= '<div id="bullets_modules">';
+        // $out .='<span id="total_count_'.$uniq_id.'" class="forced_title" style="font-size: 13pt">'.$total_count.$separator.'</span>';
+        if (isset($fired_count) && $fired_count > 0) {
+            $out .= '<div><div id="fired_count_'.$uniq_id.'" class="forced_title bullet_modules orange_background"></div>';
+            $out .= '<span style="font-size: 12pt">'.$fired_count.'</span></div>';
+        }
 
-    if (isset($critical_count) && $critical_count > 0) {
-        $out .= ' '.$separator.' <span class="red forced_title" id="critical_count_'.$uniq_id.'" style="font-size: 7pt">'.$critical_count.'</span>';
-    }
+        if (isset($critical_count) && $critical_count > 0) {
+            $out .= '<div><div id="critical_count_'.$uniq_id.'" class="forced_title bullet_modules red_background"></div>';
+            $out .= '<span style="font-size: 12pt">'.$critical_count.'</span></div>';
+        }
 
-    if (isset($warning_count) && $warning_count > 0) {
-        $out .= ' '.$separator.' <span class="yellow forced_title" id="warning_count_'.$uniq_id.'" style="font-size: 7pt">'.$warning_count.'</span>';
-    }
+        if (isset($warning_count) && $warning_count > 0) {
+            $out .= '<div><div id="warning_count_'.$uniq_id.'" class="forced_title bullet_modules yellow_background"></div>';
+            $out .= '<span style="font-size: 12pt">'.$warning_count.'</span></div>';
+        }
 
-    if (isset($unknown_count) && $unknown_count > 0) {
-        $out .= ' '.$separator.' <span class="grey forced_title" id="unknown_count_'.$uniq_id.'" style="font-size: 7pt">'.$unknown_count.'</span>';
-    }
+        if (isset($unknown_count) && $unknown_count > 0) {
+            $out .= '<div><div id="unknown_count_'.$uniq_id.'" class="forced_title bullet_modules grey_background"></div>';
+            $out .= '<span style="font-size: 12pt">'.$unknown_count.'</span></div>';
+        }
 
-    if (isset($not_init_count) && $not_init_count > 0) {
-        $out .= ' '.$separator.' <span class="blue forced_title" id="not_init_count_'.$uniq_id.'" style="font-size: 7pt">'.$not_init_count.'</span>';
-    }
+        if (isset($not_init_count) && $not_init_count > 0) {
+            $out .= '<div><div id="not_init_count_'.$uniq_id.'" class="forced_title bullet_modules blue_background"></div>';
+            $out .= '<span style="font-size: 12pt">'.$not_init_count.'</span></div>';
+        }
 
-    if (isset($normal_count) && $normal_count > 0) {
-        $out .= ' '.$separator.' <span class="green forced_title" id="normal_count_'.$uniq_id.'" style="font-size: 7pt">'.$normal_count.'</span>';
-    }
+        if (isset($normal_count) && $normal_count > 0) {
+            $out .= '<div><div id="normal_count_'.$uniq_id.'" class="forced_title bullet_modules green_background"></div>';
+            $out .= '<span style="font-size: 12pt">'.$normal_count.'</span></div>';
+        }
 
-    $out .= '</b>';
+        $out .= '</div>';
+    } else {
+        // Classic ones.
+        $out .= '<b><span id="total_count_'.$uniq_id.'" class="forced_title" style="font-size: 7pt">'.$total_count.'</span>';
+        if (isset($fired_count) && $fired_count > 0) {
+            $out .= ' '.$separator.' <span class="orange forced_title" id="fired_count_'.$uniq_id.'" style="font-size: 7pt">'.$fired_count.'</span>';
+        }
+
+        if (isset($critical_count) && $critical_count > 0) {
+            $out .= ' '.$separator.' <span class="red forced_title" id="critical_count_'.$uniq_id.'" style="font-size: 7pt">'.$critical_count.'</span>';
+        }
+
+        if (isset($warning_count) && $warning_count > 0) {
+            $out .= ' '.$separator.' <span class="yellow forced_title" id="warning_count_'.$uniq_id.'" style="font-size: 7pt">'.$warning_count.'</span>';
+        }
+
+        if (isset($unknown_count) && $unknown_count > 0) {
+            $out .= ' '.$separator.' <span class="grey forced_title" id="unknown_count_'.$uniq_id.'" style="font-size: 7pt">'.$unknown_count.'</span>';
+        }
+
+        if (isset($not_init_count) && $not_init_count > 0) {
+            $out .= ' '.$separator.' <span class="blue forced_title" id="not_init_count_'.$uniq_id.'" style="font-size: 7pt">'.$not_init_count.'</span>';
+        }
+
+        if (isset($normal_count) && $normal_count > 0) {
+            $out .= ' '.$separator.' <span class="green forced_title" id="normal_count_'.$uniq_id.'" style="font-size: 7pt">'.$normal_count.'</span>';
+        }
+
+        $out .= '</b>';
+    }
 
     if ($return) {
         return $out;
@@ -11436,33 +11632,95 @@ function reporting_sla_is_ignored_from_array($sla_array)
  *
  * @return integer Status
  */
-function reporting_sla_get_status_period($sla_times, $priority_mode=REPORT_PRIORITY_MODE_OK)
-{
-    if ($sla_times['time_error'] > 0) {
+function reporting_sla_get_status_period(
+    $sla,
+    $priority_mode=REPORT_PRIORITY_MODE_OK
+) {
+    if ($sla['time_error'] > 0) {
         return REPORT_STATUS_ERR;
     }
 
-    if ($priority_mode == REPORT_PRIORITY_MODE_OK && $sla_times['time_ok'] > 0) {
+    if ($priority_mode == REPORT_PRIORITY_MODE_OK && $sla['time_ok'] > 0) {
         return REPORT_STATUS_OK;
     }
 
-    if ($sla_times['time_out'] > 0) {
+    if ($sla['time_out'] > 0) {
         return REPORT_STATUS_IGNORED;
     }
 
-    if ($sla_times['time_downtime'] > 0) {
+    if ($sla['time_downtime'] > 0) {
         return REPORT_STATUS_DOWNTIME;
     }
 
-    if ($sla_times['time_unknown'] > 0) {
+    if ($sla['time_unknown'] > 0) {
         return REPORT_STATUS_UNKNOWN;
     }
 
-    if ($sla_times['time_not_init'] > 0) {
+    if ($sla['time_not_init'] > 0) {
         return REPORT_STATUS_NOT_INIT;
     }
 
-    if ($sla_times['time_ok'] > 0) {
+    if ($sla['time_ok'] > 0) {
+        return REPORT_STATUS_OK;
+    }
+
+    return REPORT_STATUS_IGNORED;
+}
+
+
+/**
+ * @brief Given a period, get the SLA status
+ * of the period compare with sla_limit.
+ *
+ * @param Array An array with all times to calculate the SLA.
+ * @param int Limit SLA pass for user.
+ * Only used for monthly, weekly And hourly report.
+ *
+ * @return integer Status
+ */
+function reporting_sla_get_status_period_compliance(
+    $sla,
+    $sla_limit
+) {
+    global $config;
+
+    $time_compliance = (
+        $sla['time_ok'] + $sla['time_unknown'] + $sla['time_downtime']
+    );
+
+    $time_total_working = (
+        $time_compliance + $sla['time_error']
+    );
+
+    $time_compliance = ($time_compliance == 0) ? 0 : (($time_compliance / $time_total_working) * 100);
+
+    if ($sla['time_error'] > 0 && ($time_compliance < $sla_limit)) {
+        return REPORT_STATUS_ERR;
+    }
+
+    if ($priority_mode == REPORT_PRIORITY_MODE_OK
+        && $sla['time_ok'] > 0 && ($time_compliance >= $sla_limit)
+    ) {
+        return REPORT_STATUS_OK;
+    }
+
+    if ($sla['time_out'] > 0 && ($time_compliance < $sla_limit)) {
+        return REPORT_STATUS_IGNORED;
+    }
+
+    if ($sla['time_downtime'] > 0 && ($time_compliance < $sla_limit)) {
+        return REPORT_STATUS_DOWNTIME;
+    }
+
+    if ($sla['time_unknown'] > 0 && ($time_compliance < $sla_limit)) {
+        return REPORT_STATUS_UNKNOWN;
+    }
+
+    if ($sla['time_not_init'] > 0 && ($time_compliance < $sla_limit)) {
+        return REPORT_STATUS_NOT_INIT;
+    }
+
+    if ($sla['time_ok'] > 0 && ($time_compliance >= $sla_limit)) {
         return REPORT_STATUS_OK;
     }
 
@@ -11498,7 +11756,7 @@ function reporting_translate_sla_status_for_graph($status)
  *
  * @return html Return table of header.
  */
-function reporting_header_table_for_pdf(string $title='', string $description='')
+function reporting_header_table_for_pdf($title='', $description='')
 {
     $result_pdf .= '<pagebreak>';
     $result_pdf .= '<table class="header_table databox">';
@@ -11511,4 +11769,39 @@ function reporting_header_table_for_pdf(string $title='', string $description=''
     $result_pdf .= '</th></tr></thead></table>';
 
     return $result_pdf;
+}
+
+
+/**
+ * Build the required data to build network traffic top N report
+ *
+ * @param int Period (time window).
+ * @param array Information about the item of report.
+ * @param bool Pdf or not
+ *
+ * @return array With report presentation info and report data.
+ */
+function reporting_nt_top_n_report($period, $content, $pdf)
+{
+    $return = [];
+    $return['type'] = 'nt_top_n';
+    $return['title'] = $content['name'];
+    $return['description'] = $content['description'];
+
+    // Get the data sent and received
+    $return['data'] = [];
+    $start_time = ($period['datetime'] - (int) $content['period']);
+    $return['data']['send'] = network_matrix_get_top(
+        $content['top_n_value'],
+        true,
+        $start_time,
+        $period['datetime']
+    );
+    $return['data']['recv'] = network_matrix_get_top(
+        $content['top_n_value'],
+        false,
+        $start_time,
+        $period['datetime']
+    );
+    return $return;
 }

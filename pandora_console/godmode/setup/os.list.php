@@ -25,7 +25,7 @@ if (! check_acl($config['id_user'], 0, 'PM') && ! is_user_admin($config['id_user
 $table = new stdClass();
 
 $table->width = '100%';
-$table->class = 'databox data';
+$table->class = 'info_table';
 
 $table->head[0] = '';
 $table->head[1] = __('ID');
@@ -37,7 +37,19 @@ $table->align[4] = 'center';
 $table->size[0] = '20px';
 $table->size[4] = '20px';
 
-$osList = db_get_all_rows_in_table('tconfig_os');
+// Prepare pagination.
+$offset = (int) get_parameter('offset');
+$limit = $config['block_size'];
+$count_osList = db_get_value('count(*)', 'tconfig_os');
+
+$osList = db_get_all_rows_filter(
+    'tconfig_os',
+    [
+        'offset' => $offset,
+        'limit'  => $limit,
+    ]
+);
+
 if ($osList === false) {
     $osList = [];
 }
@@ -54,6 +66,8 @@ foreach ($osList as $os) {
     }
 
     $data[] = ui_print_truncate_text(io_safe_output($os['description']), 'description', true, true);
+
+    $table->cellclass[][4] = 'action_buttons';
     if ($os['id_os'] > 16) {
         if (is_metaconsole()) {
             $data[] = '<a href="index.php?sec=advanced&sec2=advanced/component_management&tab=os_manage&action=delete&tab2=list&id_os='.$os['id_os'].'">'.html_print_image('images/cross.png', true).'</a>';
@@ -69,7 +83,9 @@ foreach ($osList as $os) {
 }
 
 if (isset($data)) {
+    ui_pagination($count_osList, false, $offset);
     html_print_table($table);
+    ui_pagination($count_osList, false, $offset, 0, false, 'offset', true, 'pagination-bottom');
 } else {
     ui_print_info_message(['no_close' => true, 'message' => __('There are no defined operating systems') ]);
 }

@@ -108,6 +108,12 @@ if (!$modules || !$searchModules) {
                 __('WARNING').': '.modules_get_last_value($module['id_agente_modulo']),
                 true
             );
+        } else if ($status_sql['estado'] == 3) {
+            $statusCell = ui_print_status_image(
+                STATUS_MODULE_UNKNOWN,
+                __('UNKNOWN').': '.modules_get_last_value($module['id_agente_modulo']),
+                true
+            );
         } else {
             $last_status = modules_get_agentmodule_last_status($module['id_agente_modulo']);
             switch ($last_status) {

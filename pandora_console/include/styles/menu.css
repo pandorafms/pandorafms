@@ -31,8 +31,7 @@
 .operation .menu_icon ul.submenu > li,
 .godmode .menu_icon ul.submenu > li {
   background-color: #282828;
-  padding-left: 10px;
-  padding-right: 10px;
+  padding-left: 1.5em;
 }
 
 .menu ul {
@@ -58,7 +57,7 @@ li:hover ul {
 .submenu_text {
   margin-left: 0px;
   width: 100%;
-  color: #9ca4a6;
+  color: #b9b9b9;
   font-family: "Open Sans", sans-serif;
   font-size: 9.4pt;
 }
@@ -71,21 +70,20 @@ li:hover ul {
   margin: 0px 0px 0px 0px;
   position: absolute;
   z-index: 999;
-  width: 214px;
+  width: 240px;
 }
 
 .submenu2 {
   position: absolute;
   z-index: 999;
-  left: 214px;
-  width: 214px;
+  left: 240px;
+  width: 240px;
 }
 
 .sub_subMenu {
   font-weight: normal !important;
   background-color: #202020;
-  padding-left: 10px;
-  padding-right: 10px;
+  padding-left: 1.5em;
 }
 
 .sub_subMenu.selected {
@@ -262,11 +260,6 @@ ul li {
 }
 /* End */
 
-ul li a:hover {
-  color: #e2144a;
-} /* Hover Styles */
-/*li ul li a { padding: 2px 5px; }  Sub Menu Styles */
-
 /*
  * ---------------------------------------------------------------------
  * - MAIN LEFT MENU and SUBMENU 									-
@@ -291,7 +284,7 @@ ul li a:hover {
 }
 
 .operation {
-  background-color: #343434 !important;
+  background-color: #3d3d3d !important;
   padding-top: 20px !important;
 }
 
@@ -389,7 +382,7 @@ ul li a:hover {
 
 .button_collapse {
   height: 38px;
-  background-color: #6c6c6d;
+  background-color: #505050;
   width: 60px; /* This is overwritten by the classic menu (215px) */
   text-align: center;
   color: #fff;
@@ -468,11 +461,11 @@ ul li a:hover {
 }
 
 .header_table_classic {
-  padding-left: 250px !important; /* 215 + 35 */
+  padding-left: 235px !important; /* 215 + 35 */
 }
 
 .header_table_collapsed {
-  padding-left: 95px !important; /* 60 + 35 */
+  padding-left: 80px !important; /* 60 + 35 */
 }
 
 .title_menu_classic {

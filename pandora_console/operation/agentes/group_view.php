@@ -65,8 +65,15 @@ if ($config['realtimestats'] == 0) {
         $updated_info = '';
 }
 
-// Header
-ui_print_page_header(__('Group view'), 'images/group.png', false, '', false, $updated_time);
+// Header.
+ui_print_page_header(
+    __('Group view'),
+    'images/group.png',
+    false,
+    'group_view',
+    false,
+    $updated_time
+);
 
 $total_agentes = 0;
 $monitor_ok = 0;

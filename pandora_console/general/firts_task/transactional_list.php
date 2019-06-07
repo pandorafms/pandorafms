@@ -28,7 +28,7 @@ if ($networkmaps_write || $networkmaps_manage) {
         <?php echo html_print_image('images/firts_task/icono_grande_topology.png', true, ['title' => __('Transactions')]); ?>
     </div>
     <div class="text_task">
-        <h3> <?php echo __('Create Transactions'); ?>        <p id="description_task"> 
+        <h3> <?php echo __('Create Transactions'); ?></h3><p id="description_task"> 
             <?php
             echo __(
                 'The new transactional server allows you to execute tasks dependent on the others following a user-defined design. This means that it is possible to coordinate several executions to check a target at a given time.

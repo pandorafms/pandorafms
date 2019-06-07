@@ -1,3 +1,3 @@
-/godmode/servers/recorn_script.php
-/godmode/servers/manage_recontask_form.php
-/godmode/servers/manage_recontask.php
+/general/login_identification_wizard.php
+/general/login_required.php
+/godmode/update_manager/update_manager.messages.php

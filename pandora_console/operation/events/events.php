@@ -79,8 +79,8 @@ $pagination = get_parameter('filter[pagination]');
 $event_view_hr = get_parameter('filter[event_view_hr]', 8);
 $id_user_ack = get_parameter('filter[id_user_ack]');
 $group_rep = get_parameter('filter[group_rep]');
-$tag_with = get_parameter('filter[tag_with]', io_json_mb_encode([]));
-$tag_without = get_parameter('filter[tag_without]', io_json_mb_encode([]));
+$tag_with = get_parameter('filter[tag_with]', []);
+$tag_without = get_parameter('filter[tag_without]', []);
 $filter_only_alert = get_parameter('filter[filter_only_alert]');
 $id_group_filter = get_parameter('filter[id_group_filter]');
 $date_from = get_parameter('filter[date_from]');
@@ -91,6 +91,9 @@ $user_comment = get_parameter('filter[user_comment]');
 
 
 // TAGS.
+// Get the tags where the user have permissions in Events reading tasks.
+$tags = tags_get_user_tags($config['id_user'], $access);
+
 $tags_select_with = [];
 $tags_select_without = [];
 $tag_with_temp = [];
@@ -125,7 +128,7 @@ $tabletags_with->cellspacing = 4;
 $tabletags_with->cellpadding = 4;
 $tabletags_with->class = 'noshadow';
 $tabletags_with->styleTable = 'border: 0px;';
-if (defined('METACONSOLE')) {
+if (is_metaconsole()) {
     $tabletags_with->class = 'nobady';
     $tabletags_with->cellspacing = 0;
     $tabletags_with->cellpadding = 0;
@@ -200,7 +203,7 @@ $tabletags_without->width = '100%';
 $tabletags_without->cellspacing = 4;
 $tabletags_without->cellpadding = 4;
 $tabletags_without->class = 'noshadow';
-if (defined('METACONSOLE')) {
+if (is_metaconsole()) {
     $tabletags_without->class = 'nobady';
     $tabletags_without->cellspacing = 0;
     $tabletags_without->cellpadding = 0;
@@ -263,12 +266,6 @@ $data[2] = html_print_select(
 $tabletags_without->data[] = $data;
 $tabletags_without->rowclass[] = '';
 
-
-// END OF TAGS.
-// Datatables offset, limit.
-$start = get_parameter('start', 0);
-$length = get_parameter('length', $config['block_size']);
-
 if (io_safe_output($tag_with) == '["0"]') {
     $tag_with = '[]';
 }
@@ -276,6 +273,11 @@ if (io_safe_output($tag_with) == '["0"]') {
 if (io_safe_output($tag_without) == '["0"]') {
     $tag_without = '[]';
 }
+
+/*
+ * END OF TAGS.
+ */
+
 
 // Ajax responses.
 if (is_ajax()) {
@@ -285,31 +287,36 @@ if (is_ajax()) {
     $get_event_filters = get_parameter('get_event_filters', 0);
     $get_events = get_parameter('get_events', 0);
     $filter = get_parameter('filter', []);
+    // Datatables offset, limit.
+    $start = get_parameter('start', 0);
+    $length = get_parameter('length', $config['block_size']);
 
     if ($get_events) {
         $order = get_datatable_order(true);
 
-        $sql_post = ' AND te.utimestamp > UNIX_TIMESTAMP(now() - INTERVAL '.$event_view_hr.' hour)';
-        $events = events_get_events_grouped(
-            // Sql_post.
-            $sql_post,
+        $events = events_get_all(
+            [
+                'te.*',
+                'ta.alias as agent_name',
+            ],
+            $filter,
             // Offset.
             $start,
-            // Pagination.
+            // Limit.
             $length,
-            // Meta.
-            false,
-            // History.
-            false,
-            // Total.
-            false,
-            // History db.
-            false,
             // Order.
             $order['direction'],
             // Sort field.
             $order['field']
         );
+        $count = events_get_all(
+            'count',
+            $filter
+        );
+
+        if ($count !== false) {
+            $count = $count['0']['nitems'];
+        }
 
         if ($events) {
             $data = array_reduce(
@@ -320,21 +327,6 @@ if (is_ajax()) {
                 }
             );
         }
-
-        $count = events_get_events_grouped(
-            // Sql_post.
-            $sql_post,
-            // Offset.
-            $start,
-            // Pagination.
-            $length,
-            // Meta.
-            false,
-            // History.
-            false,
-            // Total.
-            true
-        );
 
         // RecordsTotal && recordsfiltered resultados totales.
         echo json_encode(
@@ -652,9 +644,9 @@ $inputs[] = $in;
 // Duplicates group { events | agents }.
 $data = html_print_select(
     [
-        __('All events'),
-        __('Group events'),
-        __('Group agents'),
+        0 => __('All events'),
+        1 => __('Group events'),
+        2 => __('Group agents'),
     ],
     'group_rep',
     $group_rep,
@@ -1115,8 +1107,6 @@ try {
             item.event_type = \'<div class="criticity" style="background: \';
             item.event_type += color + \'">\' + text + "</div>";
 
-            console.log(item);
-
             if (item.id_agente > 0) {
                 item.agent_name = \'<a href="'.ui_get_full_url('index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=').'\'+item.id_agente+\'">\' + item.agent_name + \'</a>\';
             }
@@ -1140,8 +1130,736 @@ ui_require_jquery_file(
     'ui.datepicker-'.get_user_language(),
     'include/javascript/i18n/'
 );
+
+// End. Load required JS.
 ?>
 <script type="text/javascript">
+
+var select_with_tag_empty = <?php echo (int) $remove_with_tag_disabled; ?>;
+var select_without_tag_empty = <?php echo (int) $remove_without_tag_disabled; ?>;
+var origin_select_with_tag_empty = <?php echo (int) $add_with_tag_disabled; ?>;
+var origin_select_without_tag_empty = <?php echo (int) $add_without_tag_disabled; ?>;
+
+var val_none = 0;
+var text_none = "<?php echo __('None'); ?>";
+var group_agents_id = false;
+
+$(document).ready( function() {
+    id_select_destiny = "#tag_with_temp";
+    id_hidden = "#hidden-tag_with";
+
+    value_store = [];
+    
+    jQuery.each($(id_select_destiny + " option"), function(key, element) {
+        val = $(element).val();
+        
+        value_store.push(val);
+    });
+    
+    $(id_hidden).val(Base64.encode(JSON.stringify(value_store)));
+    
+    id_select_destiny2 = "#tag_without_temp";
+    id_hidden2 = "#hidden-tag_without";
+    
+    value_store2 = [];
+    
+    jQuery.each($(id_select_destiny2 + " option"), function(key, element) {
+        val = $(element).val();
+        
+        value_store2.push(val);
+    });
+    
+    $(id_hidden2).val(Base64.encode(JSON.stringify(value_store2)));
+
+    $("#text-date_from, #text-date_to").datepicker(
+        {dateFormat: "<?php echo DATE_FORMAT_JS; ?>"});
+    
+    // Don't collapse filter if update button has been pushed
+    if ($("#hidden-open_filter").val() == 'true') {
+        $("#event_control").toggle();
+    }
+    
+    // If selected is not 'none' show filter name.
+    if ( $("#filter_id").val() != 0 ) {
+        $("#row_name").css('visibility', '');
+        $("#submit-update_filter").css('visibility', '');
+    }
+
+    if ($("#hidden-id_name").val() == ''){
+        if($("#hidden-filterid").val() != ''){
+            $('#row_name').css('visibility', '');
+            $("#submit-update_filter").css('visibility', '');
+            jQuery.post ("<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",
+                {"page" : "operation/events/events_list",
+                "get_filter_values" : 1,
+                "id" : $('#hidden-filterid').val()
+                },
+                function (data) {
+                    jQuery.each (data, function (i, val) {
+                        if (i == 'id_name')
+                            $("#hidden-id_name").val(val);
+                        if (i == 'id_group')
+                            $("#id_group").val(val);
+                        if (i == 'event_type')
+                            $("#event_type").val(val);
+                        if (i == 'severity')
+                            $("#severity").val(val);
+                        if (i == 'status')
+                            $("#status").val(val);
+                        if (i == 'search')
+                            $("#text-search").val(val);
+                        if (i == 'text_agent')
+                            $("#text_id_agent").val(val);
+                        if (i == 'id_agent')
+                            $('input:hidden[name=id_agent]').val(val);
+                        if (i == 'id_agent_module')
+                            $('input:hidden[name=module_search_hidden]').val(val);
+                        if (i == 'pagination')
+                            $("#pagination").val(val);
+                        if (i == 'event_view_hr')
+                            $("#text-event_view_hr").val(val);
+                        if (i == 'id_user_ack')
+                            $("#id_user_ack").val(val);
+                        if (i == 'group_rep')
+                            $("#group_rep").val(val);
+                        if (i == 'tag_with')
+                            $("#hidden-tag_with").val(val);
+                        if (i == 'tag_without')
+                            $("#hidden-tag_without").val(val);
+                        if (i == 'filter_only_alert')
+                            $("#filter_only_alert").val(val);
+                        if (i == 'id_group_filter')
+                            $("#id_group_filter").val(val);
+                        if (i == 'source')
+                            $("#text-source").val(val);
+                        if (i == 'id_extra')
+                            $("#text-id_extra").val(val);
+                        if (i == 'user_comment')
+                            $("#text-user_comment").val(val);
+                    });
+                    reorder_tags_inputs();
+                    // Update the info with the loaded filter
+                    $('#filter_loaded_span').html($('#filter_loaded_text').html() + ': ' + $("#hidden-id_name").val());
+
+                },
+                "json"
+            );
+        }
+    }
+
+    $("#submit-load_filter").click(function () {
+        // If selected 'none' flush filter
+        if ( $("#filter_id").val() == 0 ) {
+            $("#hidden-id_name").val('');
+            $("#id_group").val(0);
+            $("#event_type").val('');
+            $("#severity").val(-1);
+            $("#status").val(3);
+            $("#text-search").val('');
+            $('input:hidden[name=id_agent]').val("");
+            $('input:hidden[name=module_search_hidden]').val();
+            $("#pagination").val(25);
+            $("#text-event_view_hr").val(8);
+            $("#id_user_ack").val(0);
+            $("#group_rep").val(1);
+            $("#tag").val('');
+            $("#filter_only_alert").val(-1);
+            $("#row_name").css('visibility', 'hidden');
+            $("#submit-update_filter").css('visibility', 'hidden');
+            $("#id_group").val(0);
+            $("#text-date_from").val('');
+            $("#text-date_to").val('');
+            $("#pagination").val(20);
+            $("#update_from_filter_table").val(1);
+            $("#text_id_agent").val("");
+            $("#text-source").val('');
+            $("#text-id_extra").val('');
+            $("#text-user_comment").val('');
+            
+            clear_tags_inputs();
+            
+            // Update the view of filter load with no loaded filters message
+            $('#filter_loaded_span').html($('#not_filter_loaded_text').html());
+
+            // Update the view with the loaded filter
+            $('#submit-update').trigger('click');
+        }
+        // If filter selected then load filter
+        else {
+            $('#row_name').css('visibility', '');
+            $("#submit-update_filter").css('visibility', '');
+            jQuery.post ("<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",
+                {"page" : "operation/events/events_list",
+                "get_filter_values" : 1,
+                "id" : $('#filter_id').val()
+                },
+                function (data) {
+                    jQuery.each (data, function (i, val) {
+                        if (i == 'id_name')
+                            $("#hidden-id_name").val(val);
+                        if (i == 'id_group')
+                            $("#id_group").val(val);
+                        if (i == 'event_type')
+                            $("#event_type").val(val);
+                        if (i == 'severity')
+                            $("#severity").val(val);
+                        if (i == 'status')
+                            $("#status").val(val);
+                        if (i == 'search')
+                            $("#text-search").val(val);
+                        if (i == 'text_agent')
+                            $("#text_id_agent").val(val);
+                        if (i == 'id_agent')
+                            $('input:hidden[name=id_agent]').val(val);
+                        if (i == 'id_agent_module')
+                            $('input:hidden[name=module_search_hidden]').val(val);
+                        if (i == 'pagination')
+                            $("#pagination").val(val);
+                        if (i == 'event_view_hr')
+                            $("#text-event_view_hr").val(val);
+                        if (i == 'id_user_ack')
+                            $("#id_user_ack").val(val);
+                        if (i == 'group_rep')
+                            $("#group_rep").val(val);
+                        if (i == 'tag_with')
+                            $("#hidden-tag_with").val(val);
+                        if (i == 'tag_without')
+                            $("#hidden-tag_without").val(val);
+                        if (i == 'filter_only_alert')
+                            $("#filter_only_alert").val(val);
+                        if (i == 'id_group_filter')
+                            $("#id_group_filter").val(val);
+                        if (i == 'date_from'){
+                            if((val == '0000-00-00') || (val == null)) {
+                                $("#text-date_from").val('');
+                            } else {
+                                $("#text-date_from").val(val.replace(/\-/g,"/"));
+                            }
+                        }
+                        if (i == 'date_to'){
+                            if((val == '0000-00-00') || (val == null)) {
+                                $("#text-date_to").val('');
+                            } else {
+                                $("#text-date_to").val(val.replace(/\-/g,"/"));
+                            }
+                        }
+                        if (i == 'source')
+                            $("#text-source").val(val);
+                        if (i == 'id_extra')
+                            $("#text-id_extra").val(val);
+                        if (i == 'user_comment')
+                            $("#text-user_comment").val(val);
+                    });
+                    reorder_tags_inputs();
+                    // Update the info with the loaded filter
+                    $('#filter_loaded_span').html($('#filter_loaded_text').html() + ': ' + $("#hidden-id_name").val());
+                    
+                    // Update the view with the loaded filter
+                    $('#submit-update').trigger('click');
+                },
+                "json"
+            );
+        }
+        
+        // Close dialog
+        $('.ui-dialog-titlebar-close').trigger('click');
+    });
+    
+    // Filter save mode selector
+    $("[name='filter_mode']").click(function() {
+        if ($(this).val() == 'new') {
+            $('#save_filter_row1').show();
+            $('#save_filter_row2').show();
+            $('#update_filter_row1').hide();
+        }
+        else {
+            $('#save_filter_row1').hide();
+            $('#save_filter_row2').hide();
+            $('#update_filter_row1').show();
+        }
+    });
+    
+    // This saves an event filter
+    $("#submit-save_filter").click(function () {
+        // If the filter name is blank show error
+        if ($('#text-id_name').val() == '') {
+            $('#show_filter_error').html("<h3 class='error'><?php echo __('Filter name cannot be left blank'); ?></h3>");
+            
+            // Close dialog
+            $('.ui-dialog-titlebar-close').trigger('click');
+            return false;
+        }
+        
+        var id_filter_save;
+        
+        jQuery.post ("<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",
+            {
+                "page" : "operation/events/events_list",
+                "save_event_filter" : 1,
+                "id_name" : $("#text-id_name").val(),
+                "id_group" : $("select#id_group").val(),
+                "event_type" : $("#event_type").val(),
+                "severity" : $("#severity").val(),
+                "status" : $("#status").val(),
+                "search" : $("#text-search").val(),
+                "text_agent" : $("#text_id_agent").val(),
+                "id_agent" : $('input:hidden[name=id_agent]').val(),
+                "id_agent_module" : $('input:hidden[name=module_search_hidden]').val(),
+                "pagination" : $("#pagination").val(),
+                "event_view_hr" : $("#text-event_view_hr").val(),
+                "id_user_ack" : $("#id_user_ack").val(),
+                "group_rep" : $("#group_rep").val(),
+                "tag_with": Base64.decode($("#hidden-tag_with").val()),
+                "tag_without": Base64.decode($("#hidden-tag_without").val()),
+                "filter_only_alert" : $("#filter_only_alert").val(),
+                "id_group_filter": $("#id_group_filter").val(),
+                "date_from": $("#text-date_from").val(),
+                "date_to": $("#text-date_to").val(),
+                "source": $("#text-source").val(),
+                "id_extra": $("#text-id_extra").val(),
+                "user_comment": $("#text-user_comment").val()
+            },
+            function (data) {
+                $(".info_box").hide();
+                if (data == 'error') {
+                    $(".info_box").filter(function(i, item) {
+                        if ($(item).data('type_info_box') == "error_create_filter") {
+                            return true;
+                        }
+                        else
+                            return false;
+                    }).show();
+                }
+                else  if (data == 'duplicate') {
+                    $(".info_box").filter(function(i, item) {
+                        if ($(item).data('type_info_box') == "duplicate_create_filter") {
+                            return true;
+                        }
+                        else
+                            return false;
+                    }).show();
+                }
+                else {
+                    id_filter_save = data;
+                    
+                    $(".info_box").filter(function(i, item) {
+                        if ($(item).data('type_info_box') == "success_create_filter") {
+                            return true;
+                        }
+                        else
+                            return false;
+                    }).show();
+                }
+            });
+        
+        // First remove all options of filters select
+        $('#filter_id').find('option').remove().end();
+        // Add 'none' option the first
+        $('#filter_id').append ($('<option></option>').html ( <?php echo "'".__('none')."'"; ?> ).attr ("value", 0));    
+        // Reload filters select
+        jQuery.post ("<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",
+            {
+                "page" : "operation/events/events_list",
+                "get_event_filters" : 1
+            },
+            function (data) {
+                jQuery.each (data, function (i, val) {
+                    s = js_html_entity_decode(val);
+                    
+                    if (i == id_filter_save) {
+                        $('#filter_id').append ($('<option selected="selected"></option>').html (s).attr ("value", i));
+                    }
+                    else {
+                        $('#filter_id').append ($('<option></option>').html (s).attr ("value", i));      
+                    }
+                });
+            },
+            "json"
+            );
+        $("#submit-update_filter").css('visibility', '');
+        
+        // Close dialog
+        $('.ui-dialog-titlebar-close').trigger('click');
+        
+        // Update the info with the loaded filter
+        $("#hidden-id_name").val($('#text-id_name').val());
+        $('#filter_loaded_span').html($('#filter_loaded_text').html() + ': ' + $('#text-id_name').val());
+        
+        return false;
+    });
+    
+    // This updates an event filter
+    $("#submit-update_filter").click(function () {
+        var id_filter_update =  $("#overwrite_filter").val();
+        var name_filter_update = $("#overwrite_filter option[value='"+id_filter_update+"']").text();
+        
+        jQuery.post ("<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",
+            {"page" : "operation/events/events_list",
+            "update_event_filter" : 1,
+            "id" : $("#overwrite_filter").val(),
+            "id_group" : $("select#id_group").val(),
+            "event_type" : $("#event_type").val(),
+            "severity" : $("#severity").val(),
+            "status" : $("#status").val(),
+            "search" : $("#text-search").val(),
+            "text_agent" : $("#text_id_agent").val(),
+            "id_agent" : $('input:hidden[name=id_agent]').val(),
+            "id_agent_module" : $('input:hidden[name=module_search_hidden]').val(),
+            "pagination" : $("#pagination").val(),
+            "event_view_hr" : $("#text-event_view_hr").val(),
+            "id_user_ack" : $("#id_user_ack").val(),
+            "group_rep" : $("#group_rep").val(),
+            "tag_with" : Base64.decode($("#hidden-tag_with").val()),
+            "tag_without" : Base64.decode($("#hidden-tag_without").val()),
+            "filter_only_alert" : $("#filter_only_alert").val(),
+            "id_group_filter": $("#id_group_filter").val(),
+            "date_from": $("#text-date_from").val(),
+            "date_to": $("#text-date_to").val(),
+            "source": $("#text-source").val(),
+            "id_extra": $("#text-id_extra").val(),
+            "user_comment": $("#text-user_comment").val()
+            },
+            function (data) {
+                $(".info_box").hide();
+                if (data == 'ok') {
+                    $(".info_box").filter(function(i, item) {
+                        if ($(item).data('type_info_box') == "success_update_filter") {
+                            return true;
+                        }
+                        else
+                            return false;
+                    }).show();
+                }
+                else {
+                    $(".info_box").filter(function(i, item) {
+                        if ($(item).data('type_info_box') == "error_create_filter") {
+                            return true;
+                        }
+                        else
+                            return false;
+                    }).show();
+                }
+            });
+            
+            // First remove all options of filters select
+            $('#filter_id').find('option').remove().end();
+            // Add 'none' option the first
+            $('#filter_id').append ($('<option></option>').html ( <?php echo "'".__('none')."'"; ?> ).attr ("value", 0));    
+            // Reload filters select
+            jQuery.post ("<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",
+                {"page" : "operation/events/events_list",
+                    "get_event_filters" : 1
+                },
+                function (data) {
+                    jQuery.each (data, function (i, val) {
+                        s = js_html_entity_decode(val);
+                        if (i == id_filter_update) {
+                            $('#filter_id').append ($('<option selected="selected"></option>').html (s).attr ("value", i));
+                        }
+                        else {
+                            $('#filter_id').append ($('<option></option>').html (s).attr ("value", i));
+                        }
+                    });
+                },
+                "json"
+                );
+                
+            // Close dialog
+            $('.ui-dialog-titlebar-close').trigger('click');
+            
+            // Update the info with the loaded filter
+            $("#hidden-id_name").val($('#text-id_name').val());
+            $('#filter_loaded_span').html($('#filter_loaded_text').html() + ': ' + name_filter_update);
+            return false;
+    });
+    
+    // Change toggle arrow when it's clicked
+    $("#tgl_event_control").click(function() {
+        if ($("#toggle_arrow").attr("src").match(/[^\.]+down\.png/) == null) {
+            var params = [];
+            params.push("get_image_path=1");
+            params.push("img_src=images/down.png");
+            params.push("page=include/ajax/skins.ajax");
+            params.push("only_src=1");
+            jQuery.ajax ({
+                data: params.join ("&"),
+                type: 'POST',
+                url: action="<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",
+                success: function (data) {
+                    $("#toggle_arrow").attr('src', data);
+                }
+            });
+        }
+        else {
+            var params = [];
+            params.push("get_image_path=1");
+            params.push("img_src=images/go.png");
+            params.push("page=include/ajax/skins.ajax");
+            params.push("only_src=1");
+            jQuery.ajax ({
+                data: params.join ("&"),
+                type: 'POST',
+                url: action="<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",
+                success: function (data) {
+                    $("#toggle_arrow").attr('src', data);
+                }
+            });
+        }
+    });
+    
+    $("#button-add_with").click(function() {
+        click_button_add_tag("with");
+        });
+    
+    $("#button-add_without").click(function() {
+        click_button_add_tag("without");
+        });
+    
+    $("#button-remove_with").click(function() {
+        click_button_remove_tag("with");
+    });
+    
+    $("#button-remove_without").click(function() {
+        click_button_remove_tag("without");
+    });
+    
+});
+
+function click_button_remove_tag(what_button) {
+    if (what_button == "with") {
+        id_select_origin = "#select_with";
+        id_select_destiny = "#tag_with_temp";
+        id_button_remove = "#button-remove_with";
+        id_button_add = "#button-add_with";
+        
+        select_origin_empty = origin_select_with_tag_empty;
+    }
+    else { //without
+        id_select_origin = "#select_without";
+        id_select_destiny = "#tag_without_temp";
+        id_button_remove = "#button-remove_without";
+        id_button_add = "#button-add_without";
+        
+        select_origin_empty = origin_select_without_tag_empty;
+    }
+    
+    if ($(id_select_destiny + " option:selected").length == 0) {
+        return; //Do nothing
+    }
+    
+    if (select_origin_empty) {
+        $(id_select_origin + " option").remove();
+        
+        if (what_button == "with") {
+            origin_select_with_tag_empty = false;
+        }
+        else { //without
+            origin_select_without_tag_empty = false;
+        }
+        
+        $(id_button_add).removeAttr('disabled');
+    }
+    
+    //Foreach because maybe the user select several items in
+    //the select.
+    jQuery.each($(id_select_destiny + " option:selected"), function(key, element) {
+        val = $(element).val();
+        text = $(element).text();
+        
+        $(id_select_origin).append($("<option value='" + val + "'>" + text + "</option>"));
+    });
+    
+    $(id_select_destiny + " option:selected").remove();
+    
+    if ($(id_select_destiny + " option").length == 0) {
+        $(id_select_destiny).append($("<option value='" + val_none + "'>" + text_none + "</option>"));
+        $(id_button_remove).attr('disabled', 'true');
+        
+        if (what_button == 'with') {
+            select_with_tag_empty = true;
+        }
+        else { //without
+            select_without_tag_empty = true;
+        }
+    }
+    
+    replace_hidden_tags(what_button);
+}
+
+function click_button_add_tag(what_button) {
+    if (what_button == 'with') {
+        id_select_origin = "#select_with";
+        id_select_destiny = "#tag_with_temp";
+        id_button_remove = "#button-remove_with";
+        id_button_add = "#button-add_with";
+    }
+    else { //without
+        id_select_origin = "#select_without";
+        id_select_destiny = "#tag_without_temp";
+        id_button_remove = "#button-remove_without";
+        id_button_add = "#button-add_without";
+    }
+    
+    $(id_select_origin + " option:selected").each(function() {
+        if (what_button == 'with') {
+            select_destiny_empty = select_with_tag_empty;
+        }
+        else { //without
+            select_destiny_empty = select_without_tag_empty;
+        }
+        
+        
+        without_val = $(this).val();
+        if(without_val == null) {
+            next;
+        }
+        without_text = $(this).text();
+                
+        if (select_destiny_empty) {
+            $(id_select_destiny).empty();
+            
+            if (what_button == 'with') {
+                select_with_tag_empty = false;
+            }
+            else { //without
+                select_without_tag_empty = false;
+            }
+        }
+        
+        $(id_select_destiny).append($("<option value='" + without_val + "'>" + without_text + "</option>"));
+        $(id_select_origin + " option:selected").remove();
+        $(id_button_remove).removeAttr('disabled');
+        
+        if ($(id_select_origin + " option").length == 0) {
+            $(id_select_origin).append($("<option value='" + val_none + "'>" + text_none + "</option>"));
+            $(id_button_add).attr('disabled', 'true');
+            
+            if (what_button == 'with') {
+                origin_select_with_tag_empty = true;
+            }
+            else { //without
+                origin_select_without_tag_empty = true;
+            }
+        }
+            
+        replace_hidden_tags(what_button);
+    });
+    
+}
+
+function replace_hidden_tags(what_button) {
+    if (what_button == 'with') {
+        id_select_destiny = "#tag_with_temp";
+        id_hidden = "#hidden-tag_with";
+    }
+    else { //without
+        id_select_destiny = "#tag_without_temp";
+        id_hidden = "#hidden-tag_without";
+    }
+    
+    value_store = [];
+    
+    jQuery.each($(id_select_destiny + " option"), function(key, element) {
+        val = $(element).val();
+        
+        value_store.push(val);
+    });
+    
+    $(id_hidden).val(Base64.encode(JSON.stringify(value_store)));
+}
+
+function clear_tags_inputs() {
+    $("#hidden-tag_with").val(Base64.encode(JSON.stringify([])));
+    $("#hidden-tag_without").val(Base64.encode(JSON.stringify([])));
+    reorder_tags_inputs();
+}
+
+function reorder_tags_inputs() {
+    $('#select_with option[value="' + val_none + '"]').remove();
+    jQuery.each($("#tag_with_temp option"), function(key, element) {
+        val = $(element).val();
+        text = $(element).text();
+        
+        if (val == val_none)
+            return;
+        
+        $("#select_with").append($("<option value='" + val + "'>" + text + "</option>"));
+    });
+    $("#tag_with_temp option").remove();
+    
+    
+    $('#select_without option[value="' + val_none + '"]').remove();
+    jQuery.each($("#tag_without_temp option"), function(key, element) {
+        val = $(element).val();
+        text = $(element).text();
+        
+        if (val == val_none)
+            return;
+        
+        $("#select_without").append($("<option value='" + val + "'>" + text + "</option>"));
+    });
+    $("#tag_without_temp option").remove();
+    
+    
+    tags_base64 = $("#hidden-tag_with").val();
+    tags = jQuery.parseJSON(Base64.decode(tags_base64));
+    jQuery.each(tags, function(key, element) {
+        if ($("#select_with option[value='" + element + "']").length == 1) {
+            text = $("#select_with option[value='" + element + "']").text();
+            val = $("#select_with option[value='" + element + "']").val();
+            $("#tag_with_temp").append($("<option value='" + val + "'>" + text + "</option>"));
+            $("#select_with option[value='" + element + "']").remove();
+        }
+    });
+    if ($("#select_with option").length == 0) {
+        origin_select_with_tag_empty = true;
+        $("#button-add_with").attr('disabled', 'true');
+        $("#select_with").append($("<option value='" + val_none + "'>" + text_none + "</option>"));
+    }
+    else {
+        origin_select_with_tag_empty = false;
+        $("#button-add_with").removeAttr('disabled');
+    }
+    if ($("#tag_with_temp option").length == 0) {
+        select_with_tag_empty = true;
+        $("#button-remove_with").attr('disabled', 'true');
+        $("#tag_with_temp").append($("<option value='" + val_none + "'>" + text_none + "</option>"));
+    }
+    else {
+        select_with_tag_empty = false;
+        $("#button-remove_with").removeAttr('disabled');
+    }
+    
+    tags_base64 = $("#hidden-tag_without").val();
+    tags = jQuery.parseJSON(Base64.decode(tags_base64));
+    jQuery.each(tags, function(key, element) {
+        if ($("#select_without option[value='" + element + "']").length == 1) {
+            text = $("#select_without option[value='" + element + "']").text();
+            val = $("#select_without option[value='" + element + "']").val();
+            $("#tag_without_temp").append($("<option value='" + val + "'>" + text + "</option>"));
+            $("#select_without option[value='" + element + "']").remove();
+        }
+    });
+    if ($("#select_without option").length == 0) {
+        origin_select_without_tag_empty = true;
+        $("#button-add_without").attr('disabled', 'true');
+        $("#select_without").append($("<option value='" + val_none + "'>" + text_none + "</option>"));
+    }
+    else {
+        origin_select_without_tag_empty = false;
+        $("#button-add_without").removeAttr('disabled');
+    }
+    if ($("#tag_without_temp option").length == 0) {
+        select_without_tag_empty = true;
+        $("#button-remove_without").attr('disabled', 'true');
+        $("#tag_without_temp").append($("<option value='" + val_none + "'>" + text_none + "</option>"));
+    }
+    else {
+        select_without_tag_empty = false;
+        $("#button-remove_without").removeAttr('disabled');
+    }
+}
+
 function datetime_picker_callback() {
     $("#text-time_from, #text-time_to").timepicker({
         showSecond: true,

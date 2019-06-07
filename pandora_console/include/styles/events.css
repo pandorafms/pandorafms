@@ -52,7 +52,7 @@ div.filter_input_little {
 
 form.flex-row div.filter_input.large {
   flex: 1;
-  min-width: 650px;
+  min-width: 470px;
 }
 
 div.filter_input > label,

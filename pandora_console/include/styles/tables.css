@@ -245,3 +245,8 @@
 tr.disabled_row_user * {
   color: grey;
 }
+
+/* Disable datatables border */
+table.dataTable.info_table.no-footer {
+  border-bottom: none;
+}

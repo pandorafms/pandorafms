@@ -86,6 +86,145 @@ function events_sql_db_filter($filter)
 
 
 /**
+ * Retrieve all events filtered.
+ *
+ * @param array   $fields Fields to retrieve.
+ * @param array   $filter Filters to be applied.
+ * @param integer $limit  Limit (pagination).
+ * @param integer $offset Offset (pagination).
+ *
+ * @return array Events.
+ * @throws Exception On error.
+ */
+function events_get_all(
+    $fields,
+    array $filter,
+    $offset=null,
+    $limit=null,
+    $order=null,
+    $sort_field=null
+) {
+    global $config;
+
+    if (!is_array($filter)) {
+        throw new Exception('[events_get_all] Filter must be an array.');
+    }
+
+    $count = false;
+    if (!is_array($fields) && $fields == 'count') {
+        $fields = ['te.*'];
+        $count = true;
+    } else if (!is_array($fields)) {
+        throw new Exception('[events_get_all] Fields must be an array or "count".');
+    }
+
+    $hour_filter = '';
+    if (isset($filter['event_view_hr'])) {
+        $hour_filter = sprintf(
+            ' AND utimestamp > UNIX_TIMESTAMP(now() - INTERVAL %d HOUR) ',
+            $filter['event_view_hr']
+        );
+    }
+
+    $agent_id_filter = '';
+    if (isset($filter['id_agent']) && $filter['id_agent'] > 0) {
+        $agent_id_filter = sprintf(
+            ' AND id_agente = %d ',
+            $filter['id_agent']
+        );
+    }
+
+    $table = events_get_events_table($meta, $history);
+
+    $tevento = sprintf(
+        '(SELECT *
+         FROM %s
+         WHERE 1=1 %s %s) te',
+        $table,
+        $hour_filter,
+        $agent_id_filter
+    );
+
+    $agent_name_filter = '';
+    if (!empty($filter['agent_alias'])) {
+        $agent_name_filter = sprintf(
+            ' AND ta.alias = "%s" ',
+            $filter['agent_alias']
+        );
+    }
+
+    $order_by = '';
+    if (isset($order, $sort_field)) {
+        $order_by = events_get_sql_order($sort_field, $order);
+    }
+
+    $pagination = '';
+    if (isset($limit, $offset)) {
+        $pagination = sprintf(' LIMIT %d OFFSET %d', $limit, $offset);
+    }
+
+    $extra = '';
+    if (is_metaconsole()) {
+        $extra = ', server_id';
+    }
+
+    $group_by = 'GROUP BY ';
+    $tagente_join = 'LEFT';
+    switch ($filter['group_rep']) {
+        case '0':
+        default:
+            // All events.
+            $group_by = '';
+        break;
+
+        case '1':
+            // Group by events.
+            $group_by .= 'estado, evento, id_agente, id_agentmodule';
+            $group_by .= $extra;
+        break;
+
+        case '2':
+            // Group by agents.
+            $tagente_join = 'INNER';
+            $group_by .= 'te.id_agente, te.event_type';
+            $group_by .= $extra;
+        break;
+    }
+
+    // Secondary groups.
+    db_process_sql('SET group_concat_max_len = 9999999');
+    $event_lj = events_get_secondary_groups_left_join($table);
+
+    $sql = sprintf(
+        'SELECT %s
+         FROM %s
+         %s JOIN tagente ta
+           ON ta.id_agente = te.id_agente
+         %s
+         %s
+         WHERE 1=1
+         %s
+         %s
+         %s
+         ',
+        join(',', $fields),
+        $tevento,
+        $tagente_join,
+        $event_lj,
+        $filter_extra_agents,
+        $group_by,
+        $order_by,
+        $pagination
+    );
+    if ($count) {
+        $sql = 'SELECT count(*) as nitems FROM ('.$sql.') tt';
+    }
+
+    return db_get_all_rows_sql($sql);
+}
+
+
+/**
  * Get all rows of events from the database, that
  * pass the filter, and can get only some fields.
  *
@@ -244,49 +383,30 @@ function events_get_events_grouped(
     db_process_sql('SET group_concat_max_len = 9999999');
     $event_lj = events_get_secondary_groups_left_join($table);
     if ($total) {
-        $sql = sprintf(
-            'SELECT COUNT(*) FROM (SELECT id_evento
-             FROM %s te %s
-             WHERE 1=1 %s 
-             GROUP BY estado, evento, id_agente, id_agentmodule %s) AS t ',
-            $table,
-            $event_lj,
-            $sql_post,
-            $groupby_extra
-        );
+        $sql = "SELECT COUNT(*) FROM (SELECT id_evento
+            FROM $table te $event_lj
+            WHERE 1=1 ".$sql_post.'
+            GROUP BY estado, evento, id_agente, id_agentmodule'.$groupby_extra.') AS t';
     } else {
-        $sql = sprintf(
-            'SELECT *, MAX(id_evento) AS id_evento,
-            GROUP_CONCAT(DISTINCT user_comment SEPARATOR "<br>") AS user_comment,
-            GROUP_CONCAT(DISTINCT id_evento SEPARATOR ",") AS similar_ids,
+        $sql = "SELECT *, MAX(id_evento) AS id_evento,
+            GROUP_CONCAT(DISTINCT user_comment SEPARATOR '<br>') AS user_comment,
+            GROUP_CONCAT(DISTINCT id_evento SEPARATOR ',') AS similar_ids,
             COUNT(id_evento) AS event_rep, MAX(utimestamp) AS timestamp_rep, 
             MIN(utimestamp) AS timestamp_rep_min,
-            (SELECT owner_user FROM %s WHERE id_evento = MAX(te.id_evento)) owner_user,
-            (SELECT id_usuario FROM %s WHERE id_evento = MAX(te.id_evento)) id_usuario,
-            (SELECT id_agente FROM %s WHERE id_evento = MAX(te.id_evento)) id_agente,
-            (SELECT criticity FROM %s WHERE id_evento = MAX(te.id_evento)) AS criticity,
-            (SELECT ack_utimestamp FROM %s WHERE id_evento = MAX(te.id_evento)) AS ack_utimestamp,
-            (SELECT nombre FROM tagente_modulo WHERE id_agente_modulo = te.id_agentmodule) AS module_name,
-            (SELECT alias FROM tagente WHERE id_agente = te.id_agente) agent_name,
-            te.id_agente
-            FROM %s te %s
-            WHERE 1=1 %s
-            GROUP BY estado, evento, id_agente, id_agentmodule %s ',
-            $table,
-            $table,
-            $table,
-            $table,
-            $table,
-            $table,
-            $event_lj,
-            $sql_post,
-            $groupby_extra
-        );
+            (SELECT owner_user FROM $table WHERE id_evento = MAX(te.id_evento)) owner_user,
+            (SELECT id_usuario FROM $table WHERE id_evento = MAX(te.id_evento)) id_usuario,
+            (SELECT id_agente FROM $table WHERE id_evento = MAX(te.id_evento)) id_agente,
+            (SELECT criticity FROM $table WHERE id_evento = MAX(te.id_evento)) AS criticity,
+            (SELECT ack_utimestamp FROM $table WHERE id_evento = MAX(te.id_evento)) AS ack_utimestamp,
+            (SELECT nombre FROM tagente_modulo WHERE id_agente_modulo = te.id_agentmodule) AS module_name
+            FROM $table te $event_lj
+            WHERE 1=1 ".$sql_post.'
+            GROUP BY estado, evento, id_agente, id_agentmodule'.$groupby_extra;
         $sql .= ' '.events_get_sql_order($sort_field, $order, 2);
         $sql .= ' LIMIT '.$offset.','.$pagination;
     }
 
-    // Extract the events by filter (or not) from db.
+    // Extract the events by filter (or not) from db
     $events = db_get_all_rows_sql($sql, $history_db);
 
     if ($total) {

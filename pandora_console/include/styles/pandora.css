@@ -504,6 +504,10 @@ select:-internal-list-box {
   align-content: center;
 }
 
+.nowrap {
+  flex-wrap: nowrap;
+}
+
 .padding-2 {
   padding: 2em;
 }

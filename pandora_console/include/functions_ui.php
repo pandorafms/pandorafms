@@ -2769,8 +2769,13 @@ function ui_progress(
  *   'id' => datatable id.
  *   'class' => datatable class.
  *   'style' => datatable style.
- *   'order' => '9, "desc"'. Column index (starting by 1) and sort direction.
+ *   'order' => [
+ *      'field' => column name
+ *      'direction' => asc or desc
+ *    ],
+ *   'default_pagination' => integer, default pagination is set to block_size
  *   'ajax_url' => 'include/ajax.php'  ajax_url.
+ *   'ajax_data' => [ operation => 1 ] extra info to be sent.
  *   'ajax_postprocess' => a javscript function to postprocess data received
  *                         by ajax call. It is applied foreach row and must
  *                         use following format:
@@ -2781,7 +2786,7 @@ function ui_progress(
  * *       item.name = tmp;
  * *   }
  * * [/code]
- *   'columns' => [
+ *   'columns_names' => [
  *      'column1'  :: Used as th text. Direct text entry. It could be array:
  *      OR
  *      [
@@ -2791,7 +2796,7 @@ function ui_progress(
  *        'text' => 'column1'.
  *      ]
  *   ],
- *   'datacolumns' => [
+ *   'columns' => [
  *      'column1',
  *      'column2',
  *      ...
@@ -2824,18 +2829,43 @@ function ui_progress(
  */
 function ui_print_datatable(array $parameters)
 {
+    global $config;
+
     if (isset($parameters['id'])) {
         $table_id = $parameters['id'];
     } else {
         $table_id = uniqid('datatable_');
     }
 
-    if (!isset($parameters['order'])) {
-        $parameters['order'] = '0, "asc"';
+    if (!isset($parameters['columns']) || !is_array($parameters['columns'])) {
+        throw new Exception('[ui_print_datatable]: You must define columns for datatable');
     }
 
     if (!isset($parameters['ajax_url'])) {
-        throw new Exception('Parameter ajax_url is required');
+        throw new Exception('[ui_print_datatable]: Parameter ajax_url is required');
+    }
+
+    if (!isset($parameters['default_pagination'])) {
+        $parameters['default_pagination'] = $config['block_size'];
+    }
+
+    if (!is_array($parameters['order'])) {
+        $order = '0, "asc"';
+    } else {
+        if (!isset($parameters['order']['direction'])) {
+            $direction = 'asc';
+        }
+
+        if (!isset($parameters['order']['field'])) {
+            $order = 1;
+        } else {
+            $order = array_search(
+                $parameters['order']['field'],
+                $parameters['columns']
+            );
+        }
+
+        $order .= ', "'.$parameters['order']['direction'].'"';
     }
 
     if (!isset($parameters['ajax_data'])) {
@@ -2852,6 +2882,7 @@ function ui_print_datatable(array $parameters)
     } else {
         $pagination_options = [
             [
+                $parameters['default_pagination'],
                 10,
                 25,
                 100,
@@ -2861,6 +2892,7 @@ function ui_print_datatable(array $parameters)
                 -1,
             ],
             [
+                $parameters['default_pagination'],
                 10,
                 25,
                 100,
@@ -2970,20 +3002,21 @@ function ui_print_datatable(array $parameters)
         );
     }
 
-    if (!isset($parameters['columns']) || !is_array($parameters['columns'])) {
-        throw new Exception('[ui_print_datatable]: You must define columns for datatable');
-    }
-
     // Base table.
     $table = '<table id="'.$table_id.'" ';
     $table .= 'class="'.$parameters['class'].'"';
     $table .= 'style="'.$parameters['style'].'">';
     $table .= '<thead><tr>';
-    if (!is_array($parameters['columns'])) {
-        throw new Exception('[ui_print_datatable]: Parameter columns is required.');
+
+    if (isset($parameters['column_names'])
+        && is_array($parameters['column_names'])
+    ) {
+        $names = $parameters['column_names'];
+    } else {
+        $names = $parameters['columns'];
     }
 
-    foreach ($parameters['columns'] as $column) {
+    foreach ($names as $column) {
         if (is_array($column)) {
             $table .= '<th id="'.$column['id'].'" class="'.$column['class'].'" ';
             $table .= ' style="'.$column['style'].'">'.__($column['text']);
@@ -3004,7 +3037,7 @@ function ui_print_datatable(array $parameters)
             processing: true,
             serverSide: true,
             paging: true,
-            pageLength: 10,
+            pageLength: '.$parameters['default_pagination'].',
             searching: false,
             responsive: true,
             dom: "lBfrtip",
@@ -3071,7 +3104,7 @@ function ui_print_datatable(array $parameters)
 
             $js .= '
             ],
-            order: [[ '.$parameters['order'].' ]]
+            order: [[ '.$order.' ]]
         });
 
         $("#'.$form_id.'_search_bt").click(function (){

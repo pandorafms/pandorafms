@@ -70,6 +70,22 @@ function events_get_all_fields()
 
 
 /**
+ * Creates SQL from filter (array) options.
+ *
+ * @param array $filter Filters.
+ *
+ * @return string DB sql filter for where clause.
+ */
+function events_sql_db_filter($filter)
+{
+    if (!isset($filter) || is_array($filter)) {
+        return '';
+    }
+
+}
+
+
+/**
  * Get all rows of events from the database, that
  * pass the filter, and can get only some fields.
  *
@@ -251,7 +267,8 @@ function events_get_events_grouped(
             (SELECT criticity FROM %s WHERE id_evento = MAX(te.id_evento)) AS criticity,
             (SELECT ack_utimestamp FROM %s WHERE id_evento = MAX(te.id_evento)) AS ack_utimestamp,
             (SELECT nombre FROM tagente_modulo WHERE id_agente_modulo = te.id_agentmodule) AS module_name,
-            (SELECT alias FROM tagente WHERE id_agente = te.id_agente) agent_name
+            (SELECT alias FROM tagente WHERE id_agente = te.id_agente) agent_name,
+            te.id_agente
             FROM %s te %s
             WHERE 1=1 %s
             GROUP BY estado, evento, id_agente, id_agentmodule %s ',
@@ -5321,11 +5338,15 @@ function events_get_sql_order($sort_field='timestamp', $sort='DESC', $group_rep=
         break;
 
         default:
-            // Ignore.
+            $sort_field_translated = $sort_field;
         break;
     }
 
-    $dir = ($sort == 'up') ? 'ASC' : 'DESC';
+    if (strtolower($sort) != 'asc' && strtolower($sort) != 'desc') {
+        $dir = ($sort == 'up') ? 'ASC' : 'DESC';
+    } else {
+        $dir = $sort;
+    }
 
     return 'ORDER BY '.$sort_field_translated.' '.$dir;
 }

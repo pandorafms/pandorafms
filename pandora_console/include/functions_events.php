@@ -88,10 +88,12 @@ function events_sql_db_filter($filter)
 /**
  * Retrieve all events filtered.
  *
- * @param array   $fields Fields to retrieve.
- * @param array   $filter Filters to be applied.
- * @param integer $limit  Limit (pagination).
- * @param integer $offset Offset (pagination).
+ * @param array   $fields     Fields to retrieve.
+ * @param array   $filter     Filters to be applied.
+ * @param integer $offset     Offset (pagination).
+ * @param integer $limit      Limit (pagination).
+ * @param string  $order      Sort order.
+ * @param string  $sort_field Sort field.
  *
  * @return array Events.
  * @throws Exception On error.
@@ -107,6 +109,7 @@ function events_get_all(
     global $config;
 
     if (!is_array($filter)) {
+        error_log('[events_get_all] Filter must be an array.');
         throw new Exception('[events_get_all] Filter must be an array.');
     }
 
@@ -115,39 +118,61 @@ function events_get_all(
         $fields = ['te.*'];
         $count = true;
     } else if (!is_array($fields)) {
+        error_log('[events_get_all] Fields must be an array or "count".');
         throw new Exception('[events_get_all] Fields must be an array or "count".');
     }
 
-    $hour_filter = '';
+    $sql_filters = [];
     if (isset($filter['event_view_hr'])) {
-        $hour_filter = sprintf(
+        $sql_filters[] = sprintf(
             ' AND utimestamp > UNIX_TIMESTAMP(now() - INTERVAL %d HOUR) ',
             $filter['event_view_hr']
         );
     }
 
-    $agent_id_filter = '';
     if (isset($filter['id_agent']) && $filter['id_agent'] > 0) {
-        $agent_id_filter = sprintf(
+        $sql_filters[] = sprintf(
             ' AND id_agente = %d ',
             $filter['id_agent']
         );
     }
 
-    $table = events_get_events_table($meta, $history);
+    if (!empty($filter['event_type']) && $filter['event_type'] != 'all') {
+        if ($filter['event_type'] == 'warning'
+            || $filter['event_type'] == 'critical'
+            || $filter['event_type'] == 'normal'
+        ) {
+            $sql_filters[] = ' AND event_type LIKE "%'.$filter['event_type'].'%"';
+        } else if ($filter['event_type'] == 'not_normal') {
+            $sql_filters[] = ' AND (event_type LIKE "%warning%"
+              OR event_type LIKE "%critical%"
+              OR event_type LIKE "%unknown%")';
+        } else {
+            $sql_filters[] = ' AND event_type = "'.$filter['event_type'].'"';
+        }
+    }
 
+    if (isset($filter['severity']) && $filter['severity'] > 0) {
+        $sql_filters[] = sprintf(
+            ' AND criticity = %d ',
+            $filter['severity']
+        );
+    }
+
+    $table = events_get_events_table($meta, $history);
     $tevento = sprintf(
         '(SELECT *
          FROM %s
-         WHERE 1=1 %s %s) te',
+         WHERE 1=1 %s) te',
         $table,
-        $hour_filter,
-        $agent_id_filter
+        join(' ', $sql_filters)
     );
 
-    $agent_name_filter = '';
+    // Reset array sql filters.
+    $sql_filters = [];
+
     if (!empty($filter['agent_alias'])) {
-        $agent_name_filter = sprintf(
+        $sql_filters[] = sprintf(
             ' AND ta.alias = "%s" ',
             $filter['agent_alias']
         );
@@ -203,7 +228,7 @@ function events_get_all(
          %s
          %s
          WHERE 1=1
-         %s
+         '.join(' ', $sql_filters).'
          %s
          %s
          ',

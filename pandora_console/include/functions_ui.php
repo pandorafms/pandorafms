@@ -3065,7 +3065,12 @@ function ui_print_datatable(array $parameters)
                         alert(error);
                     } else {';
     if (isset($parameters['ajax_postprocess'])) {
-        $js .= 'json.data.forEach('.$parameters['ajax_postprocess'].');';
+        $js .= '
+                    if (json.data) {
+                        json.data.forEach('.$parameters['ajax_postprocess'].');
+                    } else {
+                        json.data = {};
+                    }';
     }
 
     $js .= '

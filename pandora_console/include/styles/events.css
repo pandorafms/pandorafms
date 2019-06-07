@@ -124,6 +124,7 @@ table.dataTable tbody td {
   padding-left: 5px;
   padding-top: 0;
   vertical-align: middle;
+  width: 40%;
   padding-bottom: 0;
 }
 
@@ -140,4 +141,8 @@ table.dataTable tbody td {
 
 fieldset {
   margin: 0 auto;
+}
+
+.event.flex-row.h100p.nowrap div {
+  max-width: 98%;
 }

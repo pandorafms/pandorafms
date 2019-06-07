@@ -89,6 +89,69 @@ $source = get_parameter('filter[source]');
 $id_extra = get_parameter('filter[id_extra]');
 $user_comment = get_parameter('filter[user_comment]');
 
+// Ajax responses.
+if (is_ajax()) {
+    $get_filter_values = get_parameter('get_filter_values', 0);
+    $save_event_filter = get_parameter('save_event_filter', 0);
+    $update_event_filter = get_parameter('update_event_filter', 0);
+    $get_event_filters = get_parameter('get_event_filters', 0);
+    $get_events = get_parameter('get_events', 0);
+    $filter = get_parameter('filter', []);
+    // Datatables offset, limit.
+    $start = get_parameter('start', 0);
+    $length = get_parameter('length', $config['block_size']);
+
+    if ($get_events) {
+        $order = get_datatable_order(true);
+
+        $events = events_get_all(
+            [
+                'te.*',
+                'ta.alias as agent_name',
+            ],
+            $filter,
+            // Offset.
+            $start,
+            // Limit.
+            $length,
+            // Order.
+            $order['direction'],
+            // Sort field.
+            $order['field']
+        );
+        $count = events_get_all(
+            'count',
+            $filter
+        );
+
+        if ($count !== false) {
+            $count = $count['0']['nitems'];
+        }
+
+        if ($events) {
+            $data = array_reduce(
+                $events,
+                function ($carry, $item) {
+                    $carry[] = (object) $item;
+                    return $carry;
+                }
+            );
+        }
+
+        // RecordsTotal && recordsfiltered resultados totales.
+        echo json_encode(
+            [
+                'data'            => $data,
+                'recordsTotal'    => $count,
+                'recordsFiltered' => $count,
+            ]
+        );
+    }
+
+    // AJAX section ends.
+    exit;
+}
+
 
 // TAGS.
 // Get the tags where the user have permissions in Events reading tasks.
@@ -277,71 +340,6 @@ if (io_safe_output($tag_without) == '["0"]') {
 /*
  * END OF TAGS.
  */
-
-
-// Ajax responses.
-if (is_ajax()) {
-    $get_filter_values = get_parameter('get_filter_values', 0);
-    $save_event_filter = get_parameter('save_event_filter', 0);
-    $update_event_filter = get_parameter('update_event_filter', 0);
-    $get_event_filters = get_parameter('get_event_filters', 0);
-    $get_events = get_parameter('get_events', 0);
-    $filter = get_parameter('filter', []);
-    // Datatables offset, limit.
-    $start = get_parameter('start', 0);
-    $length = get_parameter('length', $config['block_size']);
-
-    if ($get_events) {
-        $order = get_datatable_order(true);
-
-        $events = events_get_all(
-            [
-                'te.*',
-                'ta.alias as agent_name',
-            ],
-            $filter,
-            // Offset.
-            $start,
-            // Limit.
-            $length,
-            // Order.
-            $order['direction'],
-            // Sort field.
-            $order['field']
-        );
-        $count = events_get_all(
-            'count',
-            $filter
-        );
-
-        if ($count !== false) {
-            $count = $count['0']['nitems'];
-        }
-
-        if ($events) {
-            $data = array_reduce(
-                $events,
-                function ($carry, $item) {
-                    $carry[] = (object) $item;
-                    return $carry;
-                }
-            );
-        }
-
-        // RecordsTotal && recordsfiltered resultados totales.
-        echo json_encode(
-            [
-                'data'            => $data,
-                'recordsTotal'    => $count,
-                'recordsFiltered' => $count,
-            ]
-        );
-    }
-
-    // AJAX section ends.
-    exit;
-}
-
 
 // View.
 $pure = get_parameter('pure', 0);

@@ -228,7 +228,7 @@ function events_get_all(
          %s
          %s
          WHERE 1=1
-         '.join(' ', $sql_filters).'
+         %s
          %s
          %s
          ',
@@ -236,7 +236,7 @@ function events_get_all(
         $tevento,
         $tagente_join,
         $event_lj,
-        $filter_extra_agents,
+        join(' ', $sql_filters),
         $group_by,
         $order_by,
         $pagination

@@ -39,10 +39,11 @@ define('TIME_FORMAT', 'H:i:s');
 define('TIME_FORMAT_JS', 'HH:mm:ss');
 
 // Events state constants.
+define('EVENT_ALL', -1);
 define('EVENT_NEW', 0);
 define('EVENT_VALIDATE', 1);
 define('EVENT_PROCESS', 2);
-
+define('EVENT_NO_VALIDATED', 3);
 
 
 // Agents disabled status.

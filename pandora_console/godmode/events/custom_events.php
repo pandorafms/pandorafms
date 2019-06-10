@@ -60,96 +60,12 @@ $fields_selected = explode(',', $config['event_fields']);
 
 $result_selected = [];
 
-// show list of fields selected.
+// Show list of fields selected.
 if ($fields_selected[0] != '') {
     foreach ($fields_selected as $field_selected) {
-        switch ($field_selected) {
-            case 'id_evento':
-                $result = __('Event Id');
-            break;
-
-            case 'evento':
-                $result = __('Event Name');
-            break;
-
-            case 'id_agente':
-                $result = __('Agent Name');
-            break;
-
-            case 'id_usuario':
-                $result = __('User');
-            break;
-
-            case 'id_grupo':
-                $result = __('Group');
-            break;
-
-            case 'estado':
-                $result = __('Status');
-            break;
-
-            case 'timestamp':
-                $result = __('Timestamp');
-            break;
-
-            case 'event_type':
-                $result = __('Event Type');
-            break;
-
-            case 'id_agentmodule':
-                $result = __('Module Name');
-            break;
-
-            case 'id_alert_am':
-                $result = __('Alert');
-            break;
-
-            case 'criticity':
-                $result = __('Severity');
-            break;
-
-            case 'user_comment':
-                $result = __('Comment');
-            break;
-
-            case 'tags':
-                $result = __('Tags');
-            break;
-
-            case 'source':
-                $result = __('Source');
-            break;
-
-            case 'id_extra':
-                $result = __('Extra Id');
-            break;
-
-            case 'owner_user':
-                $result = __('Owner');
-            break;
-
-            case 'ack_utimestamp':
-                $result = __('ACK Timestamp');
-            break;
-
-            case 'instructions':
-                $result = __('Instructions');
-            break;
-
-            case 'server_name':
-                $result = __('Server Name');
-            break;
-
-            case 'data':
-                $result = __('Data');
-            break;
-
-            case 'module_status':
-                $result = __('Module Status');
-            break;
-        }
-
-        $result_selected[$field_selected] = $result;
+        $result_selected[$field_selected] = events_get_column_name(
+            $field_selected
+        );
     }
 }
 
@@ -177,7 +93,8 @@ $fields_available = [];
 
 $fields_available['id_evento'] = __('Event Id');
 $fields_available['evento'] = __('Event Name');
-$fields_available['id_agente'] = __('Agent Name');
+$fields_available['id_agente'] = __('Agent ID');
+$fields_available['agent_name'] = __('Agent Name');
 $fields_available['id_usuario'] = __('User');
 $fields_available['id_grupo'] = __('Group');
 $fields_available['estado'] = __('Status');

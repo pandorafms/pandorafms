@@ -70,17 +70,112 @@ function events_get_all_fields()
 
 
 /**
- * Creates SQL from filter (array) options.
+ * Same as events_get_column_names but retrieving only one result.
  *
- * @param array $filter Filters.
+ * @param string $field Raw field name.
  *
- * @return string DB sql filter for where clause.
+ * @return string Traduction.
  */
-function events_sql_db_filter($filter)
+function events_get_column_name($field)
 {
-    if (!isset($filter) || is_array($filter)) {
-        return '';
+    switch ($field) {
+        case 'id_evento':
+        return __('Event Id');
+
+        case 'evento':
+        return __('Event Name');
+
+        case 'id_agente':
+        return __('Agent ID');
+
+        case 'agent_name':
+        return __('Agent name');
+
+        case 'agent_alias':
+        return __('Agent alias');
+
+        case 'id_usuario':
+        return __('User');
+
+        case 'id_grupo':
+        return __('Group');
+
+        case 'estado':
+        return __('Status');
+
+        case 'timestamp':
+        return __('Timestamp');
+
+        case 'event_type':
+        return __('Event Type');
+
+        case 'id_agentmodule':
+        return __('Module Name');
+
+        case 'id_alert_am':
+        return __('Alert');
+
+        case 'criticity':
+        return __('Severity');
+
+        case 'user_comment':
+        return __('Comment');
+
+        case 'tags':
+        return __('Tags');
+
+        case 'source':
+        return __('Source');
+
+        case 'id_extra':
+        return __('Extra Id');
+
+        case 'owner_user':
+        return __('Owner');
+
+        case 'ack_utimestamp':
+        return __('ACK Timestamp');
+
+        case 'instructions':
+        return __('Instructions');
+
+        case 'server_name':
+        return __('Server Name');
+
+        case 'data':
+        return __('Data');
+
+        case 'module_status':
+        return __('Module Status');
+
+        case 'options':
+        return __('Options');
+
+        default:
+        return __($field);
     }
+}
+
+
+/**
+ * Return column names from fields selected.
+ *
+ * @param array $fields Array of fields.
+ *
+ * @return array Names array.
+ */
+function events_get_column_names($fields)
+{
+    if (!isset($fields) || !is_array($fields)) {
+        return [];
+    }
+
+    $names = [];
+    foreach ($fields as $f) {
+        $names[] = events_get_column_name($f);
+    }
+
+    return $names;
 
 }
 
@@ -123,7 +218,7 @@ function events_get_all(
     }
 
     $sql_filters = [];
-    if (isset($filter['event_view_hr'])) {
+    if (isset($filter['event_view_hr']) && ($filter['event_view_hr'] > 0)) {
         $sql_filters[] = sprintf(
             ' AND utimestamp > UNIX_TIMESTAMP(now() - INTERVAL %d HOUR) ',
             $filter['event_view_hr']
@@ -153,10 +248,77 @@ function events_get_all(
     }
 
     if (isset($filter['severity']) && $filter['severity'] > 0) {
+        switch ($filter['severity']) {
+            case EVENT_CRIT_MAINTENANCE:
+            case EVENT_CRIT_INFORMATIONAL:
+            case EVENT_CRIT_NORMAL:
+            case EVENT_CRIT_MINOR:
+            case EVENT_CRIT_WARNING:
+            case EVENT_CRIT_MAJOR:
+            case EVENT_CRIT_CRITICAL:
+            default:
+                $sql_filters[] = sprintf(
+                    ' AND criticity = %d ',
+                    $filter['severity']
+                );
+            break;
+
+            case EVENT_CRIT_WARNING_OR_CRITICAL:
+                $sql_filters[] = sprintf(
+                    ' AND (criticity = %d OR criticity = %d)',
+                    EVENT_CRIT_WARNING,
+                    EVENT_CRIT_CRITICAL
+                );
+            break;
+
+            case EVENT_CRIT_NOT_NORMAL:
+                $sql_filters[] = sprintf(
+                    ' AND criticity != %d',
+                    EVENT_CRIT_NORMAL
+                );
+            break;
+
+            case EVENT_CRIT_OR_NORMAL:
+                $sql_filters[] = sprintf(
+                    ' AND (criticity = %d OR criticity = %d)',
+                    EVENT_CRIT_NORMAL,
+                    EVENT_CRIT_CRITICAL
+                );
+            break;
+        }
+    }
+
+    if (isset($filter['id_group']) && $filter['id_group'] > 0) {
         $sql_filters[] = sprintf(
-            ' AND criticity = %d ',
-            $filter['severity']
+            ' AND id_group = %d ',
+            $filter['id_group']
         );
+    }
+
+    if (isset($filter['status'])) {
+        switch ($filter['status']) {
+            case EVENT_ALL:
+            default:
+                // Do not filter.
+            break;
+
+            case EVENT_NEW:
+            case EVENT_VALIDATE:
+            case EVENT_PROCESS:
+                $sql_filters[] = sprintf(
+                    ' AND estado = %d',
+                    $filter['status']
+                );
+            break;
+
+            case EVENT_NO_VALIDATED:
+                $sql_filters[] = sprintf(
+                    ' AND (estado = %d OR estado = %d)',
+                    EVENT_NEW,
+                    EVENT_PROCESS
+                );
+            break;
+        }
     }
 
     $table = events_get_events_table($meta, $history);
@@ -170,11 +332,25 @@ function events_get_all(
 
     // Reset array sql filters.
     $sql_filters = [];
+    $agent_join_filters = [];
 
     if (!empty($filter['agent_alias'])) {
-        $sql_filters[] = sprintf(
+        $agent_join_filters[] = sprintf(
             ' AND ta.alias = "%s" ',
             $filter['agent_alias']
+        );
+    }
+
+    if (!empty($filter['search'])) {
+        $sql_filters[] = sprintf(
+            ' AND (lower(ta.alias) like lower("%%%s%%")
+                OR lower(te.evento) like lower("%%%s%%")
+                OR lower(te.user_comment) like lower("%%%s%%")
+                OR lower(te.id_extra) like lower("%%%s%%")
+                OR lower(te.source) like lower("%%%s%%") )',
+            $filter['search'],
+            $filter['search'],
+            $filter['search']
         );
     }
 
@@ -216,6 +392,15 @@ function events_get_all(
         break;
     }
 
+    $tgrupo_join = 'LEFT';
+    if (isset($filter['id_group_filter']) && $filter['id_group_filter'] > 0) {
+        $tgrupo_join = 'INNER';
+        $tgrupo_join_filters[] = sprintf(
+            ' AND tg.id_grupo = %s',
+            $filter['id_group_filter']
+        );
+    }
+
     // Secondary groups.
     db_process_sql('SET group_concat_max_len = 9999999');
     $event_lj = events_get_secondary_groups_left_join($table);
@@ -223,19 +408,26 @@ function events_get_all(
     $sql = sprintf(
         'SELECT %s
          FROM %s
+         %s
          %s JOIN tagente ta
            ON ta.id_agente = te.id_agente
-         %s
-         %s
+           %s
+         %s JOIN tgrupo tg
+           ON te.id_grupo = tg.id_grupo
+           %s
          WHERE 1=1
+         %s
          %s
          %s
          %s
          ',
         join(',', $fields),
         $tevento,
-        $tagente_join,
         $event_lj,
+        $tagente_join,
+        join(' ', $agent_join_filters),
+        $tgrupo_join,
+        join(' ', $tgrupo_join_filters),
         join(' ', $sql_filters),
         $group_by,
         $order_by,

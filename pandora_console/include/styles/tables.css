@@ -250,3 +250,14 @@ tr.disabled_row_user * {
 table.dataTable.info_table.no-footer {
   border-bottom: none;
 }
+
+/* Datatables pagination */
+.dataTables_paginate.paging_simple_numbers {
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button.current,
+.dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
+  color: #fff;
+  background-color: #82b92e;
+  border-color: #82b92e;
+}

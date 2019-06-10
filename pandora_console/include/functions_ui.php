@@ -2821,6 +2821,7 @@ function ui_progress(
  *          ]
  *      ]
  *   ],
+ *   'extra_html' => HTML content to be placed after 'filter' section.
  * ]
  * End.
  *
@@ -2863,6 +2864,10 @@ function ui_print_datatable(array $parameters)
                 $parameters['order']['field'],
                 $parameters['columns']
             );
+
+            if (empty($order)) {
+                $order = 1;
+            }
         }
 
         $order .= ', "'.$parameters['order']['direction'].'"';
@@ -3002,6 +3007,12 @@ function ui_print_datatable(array $parameters)
         );
     }
 
+    // Extra html.
+    $extra = '';
+    if (isset($parameters['extra_html']) && !empty($parameters['extra_html'])) {
+        $extra = $parameters['extra_html'];
+    }
+
     // Base table.
     $table = '<table id="'.$table_id.'" ';
     $table .= 'class="'.$parameters['class'].'"';
@@ -3118,7 +3129,8 @@ function ui_print_datatable(array $parameters)
     });
 </script>';
 
-    $output = $filter.$table.$js;
+    // Order.
+    $output = $filter.$extra.$table.$js;
 
     ui_require_css_file('datatables.min', 'include/styles/js/');
     ui_require_javascript_file('datatables.min');

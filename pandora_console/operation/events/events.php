@@ -66,17 +66,20 @@ $access = ($event_a == true) ? 'ER' : (($event_w == true) ? 'EW' : (($event_m ==
 // Load specific stylesheet.
 ui_require_css_file('events');
 
+// Load extra javascript.
+ui_require_javascript_file('pandora_events');
+
 // Get requests.
 $id_group = get_parameter('filter[id_group]');
 $event_type = get_parameter('filter[event_type]');
 $severity = get_parameter('filter[severity]');
-$status = get_parameter('filter[status]');
+$status = get_parameter('filter[status]', EVENT_NO_VALIDATED);
 $search = get_parameter('filter[search]');
 $text_agent = get_parameter('filter[text_agent]');
 $id_agent = get_parameter('filter[id_agent]');
 $id_agent_module = get_parameter('filter[id_agent_module]');
 $pagination = get_parameter('filter[pagination]');
-$event_view_hr = get_parameter('filter[event_view_hr]', 8);
+$event_view_hr = get_parameter('filter[event_view_hr]', 1);
 $id_user_ack = get_parameter('filter[id_user_ack]');
 $group_rep = get_parameter('filter[group_rep]');
 $tag_with = get_parameter('filter[tag_with]', []);
@@ -108,6 +111,7 @@ if (is_ajax()) {
             [
                 'te.*',
                 'ta.alias as agent_name',
+                'tg.nombre as group_name',
             ],
             $filter,
             // Offset.
@@ -920,15 +924,7 @@ $filter .= ui_toggle(
 );
 
 try {
-    $column_names = [
-        __('Event'),
-        __('Event ID'),
-        __('Agent name'),
-        __('Timestamp'),
-        __('Severity'),
-        __('Options'),
-    ];
-    $fields = [
+    $default_fields = [
         'evento',
         'id_evento',
             // 'id_agente',
@@ -961,6 +957,86 @@ try {
             // 'module_name',
         'options',
     ];
+    $fields = explode(',', $config['event_fields']);
+
+    // Always check something is shown.
+    if (empty($fields)) {
+        $fields = $default_fields;
+    }
+
+    // Always add options column.
+    $fields = array_merge($fields, ['options']);
+
+    // Get column names.
+    $column_names = events_get_column_names($fields);
+
+    // Open current filter quick reference.
+    $active_filters_div = '<div class="filter_summary">';
+    // Event status.
+    $active_filters_div .= '<div>';
+    $active_filters_div .= '<div class="label box-shadow">'.__('Event status').'</div>';
+    $active_filters_div .= '<div id="summary_status" class="content">';
+    switch ($status) {
+        case EVENT_ALL:
+        default:
+            $active_filters_div .= __('Any status.');
+        break;
+
+        case EVENT_NEW:
+            $active_filters_div .= __('New events.');
+        break;
+
+        case EVENT_VALIDATE:
+            $active_filters_div .= __('Validated.');
+        break;
+
+        case EVENT_PROCESS:
+            $active_filters_div .= __('In proccess.');
+        break;
+
+        case EVENT_NO_VALIDATED:
+            $active_filters_div .= __('Not validated.');
+        break;
+    }
+
+    $active_filters_div .= '</div>';
+    $active_filters_div .= '</div>';
+
+    // Max. hours old.
+    $active_filters_div .= '<div>';
+    $active_filters_div .= '<div class="label box-shadow">'.__('Max. hours old').'</div>';
+    $active_filters_div .= '<div id="summary_hours" class="content">';
+    if ($event_view_hr == 0) {
+        $active_filters_div .= __('Any time.');
+    } else if ($event_view_hr == 1) {
+        $active_filters_div .= __('Last hour.');
+    } else if ($event_view_hr == 2) {
+        $active_filters_div .= __('Last %d hours.', $event_view_hr);
+    }
+
+    $active_filters_div .= '</div>';
+    $active_filters_div .= '</div>';
+
+    // Duplicates.
+    $active_filters_div .= '<div>';
+    $active_filters_div .= '<div class="label box-shadow">'.__('Duplicated').'</div>';
+    $active_filters_div .= '<div id="summary_duplicates" class="content">';
+    if ($group_rep == 0) {
+        $active_filters_div .= __('All events.');
+    } else if ($group_rep == 1) {
+        $active_filters_div .= __('Group events');
+    } else if ($group_rep == 2) {
+        $active_filters_div .= __('Group agents.');
+    }
+
+    $active_filters_div .= '</div>';
+    $active_filters_div .= '</div>';
+
+    // Close.
+    $active_filters_div .= '</div>';
+
+
+    // Print datatable.
     ui_print_datatable(
         [
             'id'                 => 'events',
@@ -968,6 +1044,12 @@ try {
             'style'              => 'width: 100%;',
             'ajax_url'           => 'operation/events/events',
             'ajax_data'          => ['get_events' => 1],
+            'form'               => [
+                'class'  => 'flex-row',
+                'html'   => $filter,
+                'inputs' => [],
+            ],
+            'extra_html'         => $active_filters_div,
             'pagination_options' => [
                 [
                     $config['block_size'],
@@ -990,11 +1072,6 @@ try {
                     'All',
                 ],
             ],
-            'form'               => [
-                'class'  => 'flex-row',
-                'html'   => $filter,
-                'inputs' => [],
-            ],
             'order'              => [
                 'field'     => 'timestamp',
                 'direction' => 'desc',
@@ -1003,7 +1080,6 @@ try {
             'columns'            => $fields,
             'ajax_postprocess'   => '
         function (item) {
-            item.id_evento = "#"+item.id_evento;
             var color = "'.COL_UNKNOWN.'";
             var text = "UNKNOWN";
             switch (item.criticity) {
@@ -1050,11 +1126,15 @@ try {
             output += \'</div>\';
 
             evn = \'<div class="event flex-row h100p nowrap">\';
-            evn += \'<div>\'+item.evento+\'</div>\';
+            evn += \'<div><a href="javascript:" onclick="show_event_dialog(\';
+            evn += item.id_evento+\');">\';
+            evn += item.evento+\'</a></div>\';
             evn += output;
             evn += \'</div>\'
 
             item.evento = evn;
+            item.criticity = \'<div class="criticity" style="background: \';
+            item.criticity += color + \'">\' + text + "</div>";
 
 
             // Event type.
@@ -1108,9 +1188,19 @@ try {
             if (item.id_agente > 0) {
                 item.agent_name = \'<a href="'.ui_get_full_url('index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=').'\'+item.id_agente+\'">\' + item.agent_name + \'</a>\';
             }
-            
+
+            if (item.id_agente > 0) {
+                item.id_agente = \'<a href="'.ui_get_full_url('index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=').'\'+item.id_agente+\'">\' + item.id_agente + \'</a>\';
+            }
+
+            if (item.id_grupo == "0") {
+                item.id_grupo = "'.__('All').'";
+            } else {
+                item.id_grupo = item.group_name;
+            }
 
             item.options = \'<a href="#">button</a>\';
+            item.id_evento = "#"+item.id_evento;
         }',
         ]
     );
@@ -1130,6 +1220,18 @@ ui_require_jquery_file(
 );
 
 // End. Load required JS.
+html_print_input_hidden('meta', (int) is_metaconsole());
+html_print_input_hidden('history', (int) $history);
+html_print_input_hidden('filterid', $is_filter);
+html_print_input_hidden(
+    'ajax_file',
+    ui_get_full_url('ajax.php', false, false, false)
+);
+
+// AJAX call options responses.
+echo "<div id='event_details_window'></div>";
+echo "<div id='event_response_window'></div>";
+echo "<div id='event_response_command_window' title='".__('Parameters')."'></div>";
 ?>
 <script type="text/javascript">
 
@@ -1143,6 +1245,28 @@ var text_none = "<?php echo __('None'); ?>";
 var group_agents_id = false;
 
 $(document).ready( function() {
+    /* Update summary */
+    $("#status").on("change",function(){
+        $('#summary_status').html($("#status option:selected").text());
+    });
+
+    $("#text-event_view_hr").on("keyup",function(){
+        hours = $('#text-event_view_hr').val();
+        if (hours == '' || hours == 0 ) {
+            $('#summary_hours').html('<?php echo __('Any'); ?>');
+        } else if (hours == 1) {
+            $('#summary_hours').html('<?php echo __('Last hour.'); ?>');
+        } else {
+            $('#summary_hours').html(hours + '<?php echo ' '.__('hours.'); ?>');
+        }
+    });
+
+    $('#group_rep').on("change", function(){
+        $('#summary_duplicates').html($("#group_rep option:selected").text());
+    });
+
+    /* Summary updates end. */
+
     id_select_destiny = "#tag_with_temp";
     id_hidden = "#hidden-tag_with";
 

@@ -146,3 +146,41 @@ fieldset {
 .event.flex-row.h100p.nowrap div {
   max-width: 98%;
 }
+
+.filter_summary {
+  margin-bottom: 3em;
+  height: 3em;
+}
+
+.filter_summary div.label {
+  background: #878787;
+  color: #fff;
+  font-weight: bolder;
+  border-radius: 5px;
+  padding: 0.5em;
+}
+.filter_summary div.content {
+  padding: 0.5em;
+}
+
+.filter_summary > div {
+  border: 1px solid #eee;
+  border-radius: 5px;
+}
+
+.filter_summary div {
+  float: left;
+  margin-right: 2em;
+  text-align: center;
+  background: #fff;
+}
+
+#events_processing {
+  background: #dedede;
+  font-size: 3em;
+  height: auto;
+  padding: 2em;
+  color: #777;
+  border: none;
+  margin-top: -2em;
+}

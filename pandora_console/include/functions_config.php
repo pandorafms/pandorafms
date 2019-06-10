@@ -317,6 +317,34 @@ function config_update_config()
                     if (!config_update_value('unique_ip', get_parameter('unique_ip'))) {
                         $error_update[] = __('unique_ip');
                     }
+
+                    if (!config_update_value('email_smtpServer', get_parameter('email_smtpServer'))) {
+                        $error_update[] = __('Server SMTP');
+                    }
+
+                    if (!config_update_value('email_from_dir', get_parameter('email_from_dir'))) {
+                        $error_update[] = __('From dir');
+                    }
+
+                    if (!config_update_value('email_from_name', get_parameter('email_from_name'))) {
+                        $error_update[] = __('From name');
+                    }
+
+                    if (!config_update_value('email_smtpPort', (int) get_parameter('email_smtpPort'))) {
+                        $error_update[] = __('Port SMTP');
+                    }
+
+                    if (!config_update_value('email_encryption', get_parameter('email_encryption'))) {
+                        $error_update[] = __('Encryption');
+                    }
+
+                    if (!config_update_value('email_username', get_parameter('email_username'))) {
+                        $error_update[] = __('Email user');
+                    }
+
+                    if (!config_update_value('email_password', get_parameter('email_password'))) {
+                        $error_update[] = __('Email password');
+                    }
                 break;
 
                 case 'enterprise':
@@ -406,34 +434,6 @@ function config_update_config()
                         $inventory_changes_blacklist = get_parameter('inventory_changes_blacklist', []);
                         if (!config_update_value('inventory_changes_blacklist', implode(',', $inventory_changes_blacklist))) {
                             $error_update[] = __('Inventory changes blacklist');
-                        }
-
-                        if (!config_update_value('email_from_dir', get_parameter('email_from_dir'))) {
-                            $error_update[] = __('From dir');
-                        }
-
-                        if (!config_update_value('email_from_name', get_parameter('email_from_name'))) {
-                            $error_update[] = __('From name');
-                        }
-
-                        if (!config_update_value('email_smtpServer', get_parameter('email_smtpServer'))) {
-                            $error_update[] = __('Server SMTP');
-                        }
-
-                        if (!config_update_value('email_smtpPort', (int) get_parameter('email_smtpPort'))) {
-                            $error_update[] = __('Port SMTP');
-                        }
-
-                        if (!config_update_value('email_encryption', get_parameter('email_encryption'))) {
-                            $error_update[] = __('Encryption');
-                        }
-
-                        if (!config_update_value('email_username', get_parameter('email_username'))) {
-                            $error_update[] = __('Email user');
-                        }
-
-                        if (!config_update_value('email_password', get_parameter('email_password'))) {
-                            $error_update[] = __('Email password');
                         }
                     }
                 break;

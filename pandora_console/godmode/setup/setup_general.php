@@ -32,6 +32,12 @@ $table->size[0] = '30%';
 $table->style[0] = 'font-weight:bold';
 $table->size[1] = '70%';
 
+$table_mail_conf = new stdClass();
+$table_mail_conf->width = '100%';
+$table_mail_conf->class = 'databox filters';
+$table_mail_conf->data = [];
+$table_mail_conf->style[0] = 'font-weight: bold';
+
 // Current config["language"] could be set by user, not taken from global setup !
 switch ($config['dbtype']) {
     case 'mysql':
@@ -295,6 +301,42 @@ echo '<legend>'.__('General options').'</legend>';
 
     html_print_input_hidden('update_config', 1);
     html_print_table($table);
+
+$encryption = [
+    'ssl'   => 'SSL/TLS',
+    'sslv2' => 'SSLv2',
+    'sslv3' => 'SSLv3',
+    'tls'   => 'STARTTLS',
+];
+
+echo '</fieldset>';
+
+echo '<fieldset>';
+echo '<legend>'.__('Mail configuration').'</legend>';
+
+$table_mail_conf->data[0][0] = __('From dir');
+$table_mail_conf->data[0][1] = html_print_input_text('email_from_dir', $config['email_from_dir'], '', 30, 100, true);
+
+$table_mail_conf->data[1][0] = __('From name');
+$table_mail_conf->data[1][2] = html_print_input_text('email_from_name', $config['email_from_name'], '', 30, 100, true);
+
+$table_mail_conf->data[2][0] = __('Server SMTP');
+$table_mail_conf->data[2][1] = html_print_input_text('email_smtpServer', $config['email_smtpServer'], '', 30, 100, true);
+
+$table_mail_conf->data[3][0] = __('Port SMTP');
+$table_mail_conf->data[3][1] = html_print_input_text('email_smtpPort', $config['email_smtpPort'], '', 30, 100, true);
+
+$table_mail_conf->data[4][0] = __('Encryption');
+$table_mail_conf->data[4][1] = html_print_select($encryption, 'email_encryption', $config['email_encryption'], '', __('none'), 0, true);
+
+$table_mail_conf->data[5][0] = __('Email user');
+$table_mail_conf->data[5][1] = html_print_input_text('email_username', $config['email_username'], '', 30, 100, true);
+
+$table_mail_conf->data[6][0] = __('Email password');
+$table_mail_conf->data[6][1] = html_print_input_password('email_password', io_output_password($config['email_password']), '', 30, 100, true);
+
+html_print_input_hidden('update_config', 1);
+html_print_table($table_mail_conf);
 
 echo '</fieldset>';
 

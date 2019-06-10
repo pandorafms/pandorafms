@@ -249,6 +249,7 @@ if ($id_agent_module) {
     $ff_event_normal = $module['min_ff_event_normal'];
     $ff_event_warning = $module['min_ff_event_warning'];
     $ff_event_critical = $module['min_ff_event_critical'];
+    $ff_type = $module['ff_type'];
     $each_ff = $module['each_ff'];
     $ff_timeout = $module['ff_timeout'];
     // Select tag info.
@@ -393,6 +394,7 @@ if ($id_agent_module) {
         $ff_event_normal = '';
         $ff_event_warning = '';
         $ff_event_critical = '';
+        $ff_type = 0;
 
         $id_category = 0;
 
@@ -589,7 +591,7 @@ ui_toggle(
 );
 ui_toggle(
     html_print_table($table_macros, true),
-    __('Custom macros').ui_print_help_icon('module_macros', true)
+    __('Custom macros')
 );
 
 if ($moduletype != 13) {

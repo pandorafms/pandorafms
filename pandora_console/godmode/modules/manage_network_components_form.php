@@ -76,6 +76,7 @@ if ($create_network_from_module) {
     $ff_event_normal = $data_module['min_ff_event_normal'];
     $ff_event_warning = $data_module['min_ff_event_warning'];
     $ff_event_critical = $data_module['min_ff_event_critical'];
+    $ff_type = $data_module['ff_type'];
     $each_ff = $data_module['each_ff'];
 }
 
@@ -134,6 +135,7 @@ if (isset($id)) {
         $ff_event_normal = $component['min_ff_event_normal'];
         $ff_event_warning = $component['min_ff_event_warning'];
         $ff_event_critical = $component['min_ff_event_critical'];
+        $ff_type = $component['ff_type'];
         $each_ff = $component['each_ff'];
 
         if ($type >= 15 && $type <= 18) {
@@ -192,6 +194,7 @@ if (isset($id)) {
         $ff_event_normal = 0;
         $ff_event_warning = 0;
         $ff_event_critical = 0;
+        $ff_type = 0;
         $each_ff = 0;
 
         $snmp_version = 1;

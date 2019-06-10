@@ -25,7 +25,7 @@ ui_require_css_file('firts_task');
             <?php echo html_print_image('images/firts_task/icono_grande_servicios.png', true, ['title' => __('Services')]); ?>
         </div>
         <div class="text_task">
-            <h3> <?php echo __('Create Services'); ?>            <p id="description_task"> 
+            <h3> <?php echo __('Create Services'); ?></h3><p id="description_task"> 
                 <?php
                 echo __(
                     "A service is a way to group your IT resources based on their functionalities. 

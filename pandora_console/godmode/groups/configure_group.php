@@ -87,7 +87,14 @@ if (defined('METACONSOLE')) {
         $title_in_header = __('Create group');
     }
 
-    ui_print_page_header($title_in_header, 'images/group.png', false, '', true, '');
+    ui_print_page_header(
+        $title_in_header,
+        'images/group.png',
+        false,
+        'create_group_tab',
+        true,
+        ''
+    );
     $sec = 'gagente';
 }
 
@@ -175,11 +182,11 @@ if ($config['enterprise_installed']) {
 }
 
 $table->data[$i][0] = __('Alerts');
-$table->data[$i][1] = html_print_checkbox('alerts_enabled', 1, ! $alerts_disabled, true);
+$table->data[$i][1] = html_print_checkbox_switch('alerts_enabled', 1, ! $alerts_disabled, true);
 $i++;
 
 $table->data[$i][0] = __('Propagate ACL').ui_print_help_tip(__('Propagate the same ACL security into the child subgroups.'), true);
-$table->data[$i][1] = html_print_checkbox('propagate', 1, $propagate, true).ui_print_help_icon('propagate_acl', true);
+$table->data[$i][1] = html_print_checkbox_switch('propagate', 1, $propagate, true);
 $i++;
 
 $table->data[$i][0] = __('Custom ID');

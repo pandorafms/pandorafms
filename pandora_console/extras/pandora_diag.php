@@ -140,6 +140,7 @@ function get_status_logs($path)
 {
     $status_server_log = '';
     $size_server_log = number_format(get_logs_size($path));
+    $size_server_log = ($size_server_log / 1024);
     if ($size_server_log <= 10.485760) {
         $status_server_log = "<a style ='color: green;text-decoration: none;'>Normal Status</a><a style ='text-decoration: none;'>&nbsp&nbsp You have less than 10 MB of logs</a>";
     } else {

@@ -70,13 +70,13 @@
   float: right;
 }
 .ui-dialog .ui-dialog-buttonpane button {
-  margin: 0.5em 1em 0.5em 0 !important;
-  cursor: pointer !important;
-  background: white !important;
-  background-color: white !important;
-  border: 1px solid #82b92e !important;
-  height: 30px !important;
-  width: 90px !important;
+  margin: 0.5em 1em 0.5em 0;
+  cursor: pointer;
+  background: white;
+  background-color: white;
+  border: 1px solid #82b92e;
+  height: 30px;
+  width: 90px;
 }
 .ui-widget-header .ui-icon {
   background-image: url(../images/ui-icons_444444_256x240.png) !important;

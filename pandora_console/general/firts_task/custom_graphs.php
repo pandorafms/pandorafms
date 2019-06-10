@@ -24,7 +24,7 @@ ui_print_info_message(['no_close' => true, 'message' => __('There are no custom 
         <?php echo html_print_image('images/firts_task/icono_grande_custom_reporting.png', true, ['title' => __('Custom Graphs')]); ?>
     </div>
     <div class="text_task">
-        <h3> <?php echo __('Create Custom Graph'); ?>        <p id="description_task"> 
+        <h3> <?php echo __('Create Custom Graph'); ?></h3><p id="description_task"> 
             <?php
             echo __(
                 "Graphs are designed to show the data collected by %s in a temporary scale defined by the user.

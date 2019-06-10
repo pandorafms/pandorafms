@@ -442,14 +442,15 @@ function messages_get_count_sent(string $user='')
 /**
  * Get message overview in array
  *
- * @param string  $order            How to order them valid:
- *                                  (status (default), subject, timestamp, sender).
- * @param string  $order_dir        Direction of order
- *                                  (ASC = Ascending, DESC = Descending).
- * @param boolean $incl_read        Include read messages in return.
- * @param boolean $incl_source_info Include source info.
- * @param integer $limit            Maximum number of result in the query.
- * @param array   $other_filter     Add a filter on main query.
+ * @param string  $order             How to order them valid:
+ *                                   (status (default), subject, timestamp, sender).
+ * @param string  $order_dir         Direction of order
+ *                                   (ASC = Ascending, DESC = Descending).
+ * @param boolean $incl_read         Include read messages in return.
+ * @param boolean $incl_source_info  Include source info.
+ * @param integer $limit             Maximum number of result in the query.
+ * @param array   $other_filter      Add a filter on main query.
+ * @param string  $join_other_filter How to join filter on main query.
  *
  * @return integer The number of messages this user has
  */
@@ -459,7 +460,8 @@ function messages_get_overview(
     bool $incl_read=true,
     bool $incl_source_info=false,
     int $limit=0,
-    array $other_filter=[]
+    array $other_filter=[],
+    string $join_other_filter='AND'
 ) {
     global $config;
 
@@ -529,7 +531,11 @@ function messages_get_overview(
         $config['id_user'],
         $config['id_user'],
         $read,
-        db_format_array_where_clause_sql($other_filter, 'AND', ' AND '),
+        db_format_array_where_clause_sql(
+            $other_filter,
+            $join_other_filter,
+            ' AND '
+        ),
         $order,
         ($limit !== 0) ? ' LIMIT '.$limit : ''
     );
@@ -579,6 +585,56 @@ function messages_get_overview_sent(
         $config['id_user'],
         $order
     );
+}
+
+
+/**
+ * Get a message interpreted as a conversation.
+ *
+ * @param mixed $data Complete message or message id.
+ *
+ * @return mixed False if fails. A string array with the conversation.
+ */
+function messages_get_conversation($data)
+{
+    if (is_array($data)) {
+        $message = $data;
+    } else {
+        $message = messages_get_message($data);
+    }
+
+    if (!isset($message) || !is_array($message)) {
+        return [];
+    }
+
+    $conversation = [];
+    $target_str = $message['mensaje'];
+
+    while (preg_match_all(
+        '/(.*)On(.*)wrote:(.*)/',
+        $target_str,
+        $decoded,
+        PREG_PATTERN_ORDER
+    ) !== false && empty($target_str) !== true) {
+        if (empty($decoded[2]) !== true) {
+            array_push(
+                $conversation,
+                [
+                    'message' => array_pop($decoded)[0],
+                    'date'    => array_pop($decoded)[0],
+                ]
+            );
+        } else {
+            array_push(
+                $conversation,
+                ['message' => $target_str]
+            );
+        }
+
+        $target_str = $decoded[1][0];
+    }
+
+    return $conversation;
 }
 
 

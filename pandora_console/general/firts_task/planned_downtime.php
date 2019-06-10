@@ -22,7 +22,7 @@ ui_require_css_file('firts_task');
         <?php echo html_print_image('images/firts_task/icono_grande_visualconsole.png', true, ['title' => __('Planned Downtime')]); ?>
     </div>
     <div class="text_task">
-        <h3> <?php echo __('Create Planned Downtime'); ?>        <p id="description_task"> 
+        <h3> <?php echo __('Create Planned Downtime'); ?></h3><p id="description_task"> 
             <?php
             echo __(
                 "%s contains a scheduled downtime management system.

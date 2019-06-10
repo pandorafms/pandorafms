@@ -391,7 +391,7 @@ $(document).ready (function () {
         });
         
         if($('#module')[0].childElementCount == 1 && ($('#module')[0].value == "" || $('#module')[0].value == "0")) {
-            alert('<?php echo __('Please, select a module'); ?>');
+            alert("<?php echo __('Please, select a module'); ?>");
             return false;
         }
     });

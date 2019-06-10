@@ -4,23 +4,44 @@
 # Copyright (c) 2009  Artica Soluciones Tecnologicas S.L.
 #
 # inventory	Generate a hardware/software inventory.
-# 
+#
 # Sample usage:	./inventory <interval in days> [cpu] [ram] [video] [nic] [hd] [cdrom] [software] [init_services] [filesystem] [process] [users]
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; version 2 of the License.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.	
+# GNU General Public License for more details.
 #
 ###############################################################################
 
 use strict;
 use constant TSTAMP_FILE => '/tmp/pandora_inventory.tstamp';
+use Scalar::Util qw(looks_like_number);
+use Data::Dumper;
 
+# Set environment language to English
+$ENV{"LANG"} = "en_US";
+
+# Check AIX system
+my $AIX=0;
+my $system = `uname -a | awk '{print $1}'`;
+if ($system =~ 'AIX') {
+    $AIX=1;
+}
+
+sub is_enabled {
+    my $value = shift;
+    if ((defined ($value)) && looks_like_number($value) && ($value > 0)){
+        # return true
+        return 1;
+    }
+    #return false
+    return 0;
+}
 # Operation mode (LSHW or HWINFO)
 my $Mode;
 
@@ -31,12 +52,12 @@ my $Separator;
 sub get_module_data ($$$$) {
 	my ($name, $hwinfo, $keys, $modules) = @_;
 	my %module;
-		
-	# Store keys	
+	$Separator='\s+\*\-';
+	# Store keys
 	foreach my $key (@{$keys}) {
 		push (@{$module{'_keys'}}, $key);
 	}
-		
+
 	# Parse module data
 	while (my $line = shift (@{$hwinfo})) {
 		if ($line =~ /$Separator/) {
@@ -46,7 +67,7 @@ sub get_module_data ($$$$) {
 		foreach my $key (@{$keys}) {
 			if ($line =~ /$key:\s+(.+)/) {
 				$module{$key} = $1;
-				# Replace semicolon by comma to avoid parse errors 
+				# Replace semicolon by comma to avoid parse errors
 				$module{$key} =~ s/;/,/g;
 			}
 		}
@@ -58,12 +79,65 @@ sub get_module_data ($$$$) {
 
 	push (@{$modules->{$name}}, \%module);
 }
+sub test_contain ($$) {
+	my ($value, $array)=@_;
+	if ( grep( /$value/, @{$array} ) ) {
+  		return 1;
+	}
+}
+sub get_module_data_aix_ram_cpu ($$$$) {
+	my ($name, $hwinfo, $keys, $modules) = @_;
+	my %module;
+	# Store keys
+	foreach my $key (@{$keys}) {
+		push (@{$module{'_keys'}}, $key);
+	}
+	# Parse module data
+	foreach my $line (@{$hwinfo}) {
+		foreach my $key (@{$keys}) {
+			if ($line =~ /$key:\s+(.+)/) {
+				$module{$key} = $1;
+				$module{$key} =~ s/,/ /g;
+			}
+		}
+	}
+
+	# No data found
+	#my @data = keys (%module);
+	#return unless ($#data >= 0);
+
+	push (@{$modules->{$name}}, \%module);
+}
+sub get_module_data_aix ($$$$) {
+        my ($name,$hwinfo,$regex,$modules) = @_;
+        my %module;
+        foreach my $line (@{$hwinfo}) {
+                $line =~ s/\s{2,}/;/g;
+		$line =~ s/\+ //g;
+		$line =~ s/\* //g;
+        }
+        foreach my $line (@{$hwinfo}) {
+            if ($line =~ /$regex/){
+                my ($var1, $var2, $var3) = split /;/, $line;
+        		my %module;
+        		$module{'device'} = $var1;
+                $module{'serial'} = $var2;
+        		$module{'description'}=$var3;
+                $module{'_keys'} = ['device','serial','description'];
+        		push (@{$modules->{$name}}, \%module);
+            }
+        }
+}
 
 # Get a list of information file system in machine
 sub get_file_system($$) {
 	my ($name, $modules) = @_;
-
-	my @fileSystems = `df -hP | tail -n +2`; #remove the titles of columns
+    my @fileSystems;
+    if (is_enabled $AIX){
+        @fileSystems = `df -gP | tail -n +2`;
+    } else {
+        @fileSystems = `df -hP | tail -n +2`; #remove the titles of columns
+    }
 
 	foreach my $row (@fileSystems) {
 		next unless ($row =~ /^(\S+)\s+\S+\s+(\S+)\s+(\S+)\s+\S+\s+(\S+)/);
@@ -73,94 +147,110 @@ sub get_file_system($$) {
 		$module{'used'} = $2;
 		$module{'avail'} = $3;
 		$module{'mount'} = $4;
-                $module{'_keys'} = ['filesystem', 'used','avail', 'mount'];
-                push (@{$modules->{$name}}, \%module);
-        }
+        $module{'_keys'} = ['filesystem', 'used','avail', 'mount'];
+        push (@{$modules->{$name}}, \%module);
+    }
 }
 
 # Get a list of services init in machine
 sub get_servicies_init_machine($$) {
 	my ($name, $modules) = @_;
-	my $runlevel = `who -r | awk '{print \$2}'`;
+    my $runlevel;
+    if (is_enabled $AIX) {
+        $runlevel = `who -r | awk '{print \$3}'`;
+    } else {
+        $runlevel = `who -r | awk '{print \$2}'`;
+    }
 
 	#ini trim($runlevel)
 		$runlevel =~ s/^\s*//; #ltrim
 		$runlevel =~ s/\s*$//; #rtrim
 	#end trim($runlevel)
 
-	my $script = "";
-	
+	my $script;
+
 	if (-e "/etc/rc" . $runlevel .".d/") {
-		$script = "ls /etc/rc" . $runlevel .".d/ -l | grep \"^l.*\" | awk \"{print \\\$NF}\" | sed -e \"s/\\.\\.\\///g\" | sed -e \"s/.*init\\.d\\///g\"";
+		$script = "ls -l  /etc/rc" . $runlevel .".d/ | grep \"^l.*\" | awk \"{print \\\$NF}\" | sed -e \"s/\\.\\.\\///g\" | sed -e \"s/.*init\\.d\\///g\"";
 	}
 	else {
-		$script = "ls /etc/rc.d/rc" . $runlevel .".d/ -l | grep \"^l.*\" | grep \" S.* \" | awk \"{print \\\$NF}\" | sed -e \"s/\\.\\.\\///g\" | sed -e \"s/.*init\\.d\\///g\"";
-
+		$script = "ls -l /etc/rc.d/rc" . $runlevel .".d/ | grep \"^l.*\" | grep \" S.* \" | awk \"{print \\\$NF}\" | sed -e \"s/\\.\\.\\///g\" | sed -e \"s/.*init\\.d\\///g\"";
 	}
-	
+
 	my @services = `$script`;
 	foreach my $row (@services) {
-                
 		my %module;
-				$row =~ s/\n//;
-                $module{'service'} = $row;
-                $module{'_keys'} = ['service'];
-                push (@{$modules->{$name}}, \%module);
+		$row =~ s/\n//;
+        $module{'service'} = $row;
+        $module{'_keys'} = ['service'];
+        push (@{$modules->{$name}}, \%module);
 	}
 }
 
 # Get a list of running processes
 sub get_processes ($$) {
 	my ($name, $modules) = @_;
+	my $script;
+    if (is_enabled $AIX) {
+        $script = "ps -eo args | tail -n +2";
+    } else {
+        $script = "ps -eo command | tail -n +2";
+    }
 
-	my $script = "ps -eo command";
-
-        my @services = `$script`;
-        foreach my $row (@services) {
-                my %module;
-				# Remove carriage returns				
-				$row =~ s/[\n\l\f]//g;
-				# Replace semicolon by comma to avoid parse errors 
-				$row =~ s/;/,/g;
-                $module{'service'} = $row;
-                $module{'_keys'} = ['service'];
-                push (@{$modules->{$name}}, \%module);
-        }
+    my @services = `$script`;
+    foreach my $row (@services) {
+        my %module;
+		# Remove carriage returns
+		$row =~ s/[\n\l\f]//g;
+		# Replace semicolon by comma to avoid parse errors
+		$row =~ s/;/,/g;
+        $module{'service'} = $row;
+        $module{'_keys'} = ['service'];
+        push (@{$modules->{$name}}, \%module);
+    }
 }
 
 # Get a list of valid users in the system
 sub get_users ($$) {
-        my ($name, $modules) = @_;
-
-        my $script = "cat /etc/passwd";
+    my ($name, $modules) = @_;
+    my $script = "cat /etc/passwd";
 	my $user = "";
 	my $estado = "";
 
-        my @services = `$script`;
-        foreach my $row (@services) {
-                my %module;
+    my @services = `$script`;
+    foreach my $row (@services) {
+            my %module;
 
-		next unless ($row =~ /^([A-Za-z0-9\-\_]*)/);
-
-                $user = $1;
-                $script = `passwd -S $user`;
-                if ( $script =~ /^(\S+)\sP./){
-	                $module{'user'} = $user;
-                	$module{'_keys'} = ['user'];
-                	push (@{$modules->{$name}}, \%module);
+	next unless ($row =~ /^([A-Za-z0-9\-\_]*)/);
+        if (is_enabled $AIX) {
+            $user = $1;
+            $script = `lsuser $user`;
+            if ( $script =~ /^(\S+)\sid./){
+                $module{'user'} = $user;
+                $module{'_keys'} = ['user'];
+                push (@{$modules->{$name}}, \%module);
+            }
+        } else {
+            $user = $1;
+            $script = `passwd -S $user`;
+            if ( $script =~ /^(\S+)\sP./){
+                $module{'user'} = $user;
+                $module{'_keys'} = ['user'];
+                push (@{$modules->{$name}}, \%module);
 		}
         }
+
+    }
 }
 
 # Show Kernel Information
 sub get_kernel_info ($$) {
-        my ($name, $modules) = @_;
-        my $script = `uname -a | tr -d \";\"`;
-        my %module;
+    my ($name, $modules) = @_;
+    my $script = `uname -a | tr -d \";\"`;
+    my %module;
 
-        $module{'Kernel'} = $script;
-        $module{'_keys'} = ['Kernel'];
-        push (@{$modules->{$name}}, \%module);
+    $module{'Kernel'} = $script;
+    $module{'_keys'} = ['Kernel'];
+    push (@{$modules->{$name}}, \%module);
 }
 
 
@@ -171,11 +261,13 @@ sub get_software_module_data ($$) {
 	# Guess the current distribution
 	my $distrib_id = "";
 
-	if ( -e "/etc/SuSE-release"){
+    if (is_enabled $AIX) {
+       $distrib_id = "AIX";
+    }elsif ( -e "/etc/SuSE-release"){
 		$distrib_id = "SUSE";
-	} elsif ( -e "/etc/redhat-release"){
+	}elsif ( -e "/etc/redhat-release"){
 		$distrib_id = "REDHAT";
-	} else {
+	}else {
 		$distrib_id = "DEBIAN";
 	}
 
@@ -183,7 +275,9 @@ sub get_software_module_data ($$) {
 	my @soft;
 	if ($distrib_id eq 'DEBIAN') {
 		@soft = `dpkg -l | grep ii`;
-	} else {
+	}elsif ($distrib_id eq 'AIX') {
+        @soft = `lslpp -Lcq | awk -F: '{print "ii "\$1" "\$3" "\$8}'`;
+    }else {
 		# Sometimes rpm return data splitted in two lines, and with dupes. Thats bad for our inventory system
 		@soft = `rpm -q -a --qf "ii %{NAME} %{VERSION} %{SUMMARY}\n" | grep "^ii" | sort -u`;
 	}
@@ -197,7 +291,7 @@ sub get_software_module_data ($$) {
 		$module{'program'} = $1;
 		$module{'version'} = $2;
 		$module{'description'} = $3;
-		# Replace semicolon by comma to avoid parse errors 
+		# Replace semicolon by comma to avoid parse errors
 		$module{'program'} =~ s/;/,/g;
 		$module{'version'} =~ s/;/,/g;
 		$module{'description'} =~ s/;/,/g;
@@ -211,67 +305,95 @@ sub get_software_module_data ($$) {
 #Get the list of interfaces with the ip assigned
 sub get_ips ($$) {
 	my ($name, $modules) = @_;
+    my @interfaces;
+    my $ifconfig;
+    if (is_enabled $AIX) {
+        $ifconfig = `ifconfig -a`;
+    } else {
+        $ifconfig = `ifconfig`;
+    }
 
-	my $ifconfig = `ifconfig`;
-		
-	my @ifconfig_array = split("\n", $ifconfig);
-	
-	for(my $i = 0; $i<$#ifconfig_array; $i++) {		
-	
-		#Check for an interface
-		if ($ifconfig_array[$i] =~ /Link/) {
-			my %info;
-			
-			my @line_split = split(" ", $ifconfig_array[$i]);
-			
-			#Get interface name
-			$info{'interface'} = $line_split[0];
 
-			#Get IP address
-			my $line = $ifconfig_array[$i+1];
-	
-			$line =~ s/\s+//g;
+    my @ifconfig_array = split("\n", $ifconfig);
 
-			@line_split = split(":", $line);
-			
-			if($line_split[1] =~ /(\d+\.\d+\.\d+\.\d+).+/) {
-				$info{'ip'} = $1;
-			}
-			
-			$info{'_keys'} = ['interface', 'ip'];
-			push (@{$modules->{$name}}, \%info);
-			
-		}		
+    foreach (@ifconfig_array){
+        if ($_=~/(.*)flags/){
+            my $match;
+            ($match)=$_=~/^(.*?)\: flags/;
+            $match=~s/://;
+            push @interfaces,$match;
+        }
+    }
+    foreach (@interfaces) {
+            my $ifconfig_item=`ifconfig $_`;
+            my $interface=$_;
+            my @ip_array = split("\n", $ifconfig_item);
+            foreach (@ip_array) {
+                if ($_=~/(?<=inet )(.*)(?= netmask)/){
+                        my $ip;
+                        ($ip)=$_=~/inet (.*) netmask/;
+                        my %info;
+                        $info{'interface'} = $interface;
+                        $info{'ip'} = $ip;
+                        $info{'_keys'} = ['interface','ip'];
+                        push (@{$modules->{$name}}, \%info);
+                }
+		    }
 	}
 }
 
 #Get route table
 sub get_route_table ($$) {
-	my ($name, $modules) = @_;
-	
-	my $route_table = `route`;
-	
-	my @table_split = split("\n", $route_table);
-	
-	for (my $i=2; $i<=$#table_split; $i++) {
-		
-		my @split = split(" ", $table_split[$i]);
-			
-		my %info;
-		
-		$info{'destination'} = $split[0];
-		$info{'gateway'} = $split[1];
-		$info{'mask'} = $split[2];
-		$info{'flags'} = $split[3];
-		$info{'metric'} = $split[4];
-		$info{'ref'} = $split[5];
-		$info{'use'} = $split[6];
-		$info{'interface'} = $split[7];
-				
-		$info{'_keys'} = ['destination', 'gateway', 'mask', 'flags', 'metric', 'use', 'interface'];
-		
-		push (@{$modules->{$name}}, \%info);
-	}
+    	my ($name, $modules) = @_;
+        my $route_table;
+        my @table_split;
+    if (is_enabled $AIX) {
+        $route_table = `netstat -rn`;
+        @table_split = split("\n", $route_table);
+        my $length=scalar @table_split;
+        for (my $i=4; $i<=$length-4; $i++) {
+
+            my @split = split(" ", $table_split[$i]);
+
+            my %info;
+
+            $info{'destination'} = $split[0];
+            $info{'gateway'} = $split[1];
+            $info{'mask'} = $split[2];
+            $info{'flags'} = $split[3];
+            $info{'metric'} = $split[4];
+            $info{'ref'} = $split[5];
+            $info{'use'} = $split[6];
+            $info{'interface'} = $split[7];
+
+            $info{'_keys'} = ['destination', 'gateway', 'mask', 'flags', 'metric', 'use', 'interface'];
+
+            push (@{$modules->{$name}}, \%info);
+        }
+    } else {
+        $route_table = `route`;
+        my @table_split = split("\n", $route_table);
+
+        for (my $i=2; $i<=$#table_split; $i++) {
+
+            my @split = split(" ", $table_split[$i]);
+
+            my %info;
+
+            $info{'destination'} = $split[0];
+            $info{'gateway'} = $split[1];
+            $info{'mask'} = $split[2];
+            $info{'flags'} = $split[3];
+            $info{'metric'} = $split[4];
+            $info{'ref'} = $split[5];
+            $info{'use'} = $split[6];
+            $info{'interface'} = $split[7];
+
+            $info{'_keys'} = ['destination', 'gateway', 'mask', 'flags', 'metric', 'use', 'interface'];
+
+            push (@{$modules->{$name}}, \%info);
+        }
+    }
 }
 # Print module data
 sub print_module ($$) {
@@ -309,14 +431,18 @@ my $enable_all = 0;
 
 $interval = $ARGV[0];
 if ($#ARGV == 0){
-	$enable_all = 1;
+    $enable_all = 1;
+}
+if ($interval!=/[:alpha:]/){
+    splice @ARGV,0,1;
 }
 
-foreach my $module (@ARGV) { 
+foreach my $module (@ARGV) {
 	if ($module eq "all"){
-		$enable_all = 1;
-	}
-	$enabled{$module} = 1;
+	    $enable_all = 1;
+	}else {
+	    $enabled{$module} = 1;
+    }
 }
 
 # Check execution interval
@@ -333,76 +459,107 @@ close (FILE);
 # Retrieve hardware information
 $Mode = 'LSHW';
 $Separator = '\s+\*\-';
-my @hwinfo = `lshw 2>/dev/null`;
-if ($? != 0) {
-	$Mode = 'HWINFO';
-	$Separator = 'Hardware Class:';
-	@hwinfo = `hwinfo --cpu --memory --gfxcard --netcard --cdrom --disk 2>/dev/null`;
+my @hwinfo;
+if (is_enabled $AIX) {
+    $Separator = '^\s*$';
+    @hwinfo=`prtconf 2>/dev/null`;
+} else {
+    @hwinfo = `lshw 2>/dev/null`;
+    if ($? != 0) {
+    	$Mode = 'HWINFO';
+    	$Separator = 'Hardware Class:';
+    	@hwinfo = `hwinfo --cpu --memory --gfxcard --netcard --cdrom --disk 2>/dev/null`;
+    }
 }
 
-# Parse hardware information
 my %modules;
-while (my $line = shift (@hwinfo)) {
+
+    if (is_enabled $AIX) {
+        #CPU
+        # VIDEO
+        ### Not avilable in AIX ###
+        # NIC
+        ### Not relevant in AIX ###
+        if ((test_contain('ent',\@hwinfo)) && ($enable_all == 1 || $enabled{'nic'} == 1)) {
+        	get_module_data_aix ('NIC',\@hwinfo,'^ent',\%modules);
+        }
+        if ((test_contain('hdisk',\@hwinfo)) && ($enable_all == 1 || $enabled{'hd'} == 1)) {
+        	get_module_data_aix ('HD',\@hwinfo,'^hdisk',\%modules);
+        }
+
+    	foreach my $line (@hwinfo) {
+    		chomp ($line);
+    	        #CPU
+    	    if (($line =~ /^Memory Size:/) && ($enable_all == 1 || $enabled{'ram'} == 1)) {
+    			get_module_data_aix_ram_cpu ('RAM', \@hwinfo, ['Memory Size','Good Memory Size'], \%modules);
+    		}
+
+    	    if (($line =~ /^System Model/) && ($enable_all == 1 || $enabled{'cpu'} == 1)) {
+    	        get_module_data_aix_ram_cpu ('CPU', \@hwinfo, ['System Model', 'Processor Implementation Mode', 'Number Of Processors'], \%modules);
+    		}
+        }
+} else {
+	# Parse hardware information
+	while (my $line= shift  (@hwinfo)) {
 	chomp ($line);
+    	# CPU
+    	if (($line =~ /\*\-cpu/ || $line =~ /Hardware Class: cpu/) && ($enable_all == 1 || $enabled{'cpu'} == 1)) {
+    		if ($Mode eq 'LSHW') {
+        			get_module_data ('CPU', \@hwinfo, ['product', 'vendor', 'capacity'], \%modules);
+            } else {
+        			get_module_data ('CPU', \@hwinfo, ['Model', 'Vendor', 'Clock'], \%modules);
+        	}
+        	}
 
-	# CPU
-	if (($line =~ /\*\-cpu/ || $line =~ /Hardware Class: cpu/) && ($enable_all == 1 || $enabled{'cpu'} == 1)) {
-		if ($Mode eq 'LSHW') {
-			get_module_data ('CPU', \@hwinfo, ['product', 'vendor', 'capacity'], \%modules);
-		} else {
-			get_module_data ('CPU', \@hwinfo, ['Model', 'Vendor', 'Clock'], \%modules);
-		}
-	}
+    	# RAM
+    	if (($line =~ /\*\-bank/ || $line =~ /\*\-memory/ || $line =~ /Hardware Class: memory/) && ($enable_all == 1 || $enabled{'ram'} == 1)) {
+    		if ($Mode eq 'LSHW') {
+    			get_module_data ('RAM', \@hwinfo, ['description', 'size'], \%modules);
+    		} else {
+    			get_module_data ('RAM', \@hwinfo, ['Model', 'Memory Size'], \%modules);
+    		}
+    	}
 
-	# RAM
-	if (($line =~ /\*\-bank/ || $line =~ /Hardware Class: memory/) && ($enable_all == 1 || $enabled{'ram'} == 1)) {
-		if ($Mode eq 'LSHW') {
-			get_module_data ('RAM', \@hwinfo, ['description', 'size'], \%modules);
-		} else {
-			get_module_data ('RAM', \@hwinfo, ['Model', 'Memory Size'], \%modules);
-		}
-	}
+    	# VIDEO
+    	if (($line =~ /\*\-display/ || $line =~ /Hardware Class: graphics card/) && ($enable_all == 1 || $enabled{'video'} == 1)) {
+    		if ($Mode eq 'LSHW') {
+    			get_module_data ('VIDEO', \@hwinfo, ['product', 'description', 'vendor'], \%modules);
+    		} else {
+    			# Spaces before Device and Vendor are intentional to avoid matching SubDevice and SubVendor
+    			get_module_data ('VIDEO', \@hwinfo, ['Model', ' Device', ' Vendor'], \%modules);
+    		}
+    	}
 
-	# VIDEO
-	if (($line =~ /\*\-display/ || $line =~ /Hardware Class: graphics card/) && ($enable_all == 1 || $enabled{'video'} == 1)) {
-		if ($Mode eq 'LSHW') {
-			get_module_data ('VIDEO', \@hwinfo, ['product', 'description', 'vendor'], \%modules);
-		} else {
-			# Spaces before Device and Vendor are intentional to avoid matching SubDevice and SubVendor
-			get_module_data ('VIDEO', \@hwinfo, ['Model', ' Device', ' Vendor'], \%modules);
-		}
-	}
+    	# NIC
+    	if (($line =~ /\*\-network/ || $line =~ /Hardware Class: network/) && ($enable_all == 1 || $enabled{'nic'} == 1)) {
+    		if ($Mode eq 'LSHW') {
+    			get_module_data ('NIC', \@hwinfo, ['product', 'description', 'vendor', 'serial'], \%modules);
+    		} else {
+    			# Spaces before Device and Vendor are intentional to avoid matching SubDevice and SubVendor
+    			get_module_data ('NIC', \@hwinfo, ['Model', ' Device', ' Vendor', 'HW Address'], \%modules);
+    		}
+    	}
 
-	# NIC
-	if (($line =~ /\*\-network/ || $line =~ /Hardware Class: network/) && ($enable_all == 1 || $enabled{'nic'} == 1)) {
-		if ($Mode eq 'LSHW') {
-			get_module_data ('NIC', \@hwinfo, ['product', 'description', 'vendor', 'serial'], \%modules);
-		} else {
-			# Spaces before Device and Vendor are intentional to avoid matching SubDevice and SubVendor
-			get_module_data ('NIC', \@hwinfo, ['Model', ' Device', ' Vendor', 'HW Address'], \%modules);
-		}
-	}
-	
-	# CDROM
-	if (($line =~ /\*\-cdrom/ || $line =~ /Hardware Class: cdrom/) && ($enable_all == 1 || $enabled{'cdrom'} == 1)) {
-		if ($Mode eq 'LSHW') {
-			get_module_data ('CDROM', \@hwinfo, ['product', 'description', 'vendor'], \%modules);
-		} else {
-			# Spaces before Device and Vendor are intentional to avoid matching SubDevice and SubVendor
-			get_module_data ('CDROM', \@hwinfo, ['Model', ' Device', ' Vendor'], \%modules);
-		}
-	}
+    	# CDROM
+    	if (($line =~ /\*\-cdrom/ || $line =~ /Hardware Class: cdrom/) && ($enable_all == 1 || $enabled{'cdrom'} == 1)) {
+    		if ($Mode eq 'LSHW') {
+    			get_module_data ('CDROM', \@hwinfo, ['product', 'description', 'vendor'], \%modules);
+    		} else {
+    			# Spaces before Device and Vendor are intentional to avoid matching SubDevice and SubVendor
+    			get_module_data ('CDROM', \@hwinfo, ['Model', ' Device', ' Vendor'], \%modules);
+    		}
+    	}
 
-	# HD
-	if (($line =~ /\*\-disk/ || $line =~ /Hardware Class: disk/) && ($enable_all == 1 || $enabled{'hd'} == 1)) {
-		if ($Mode eq 'LSHW') {
-			get_module_data ('HD', \@hwinfo, ['product', 'description', 'size'], \%modules);
-		} else {
-			get_module_data ('HD', \@hwinfo, ['Model', 'Serial ID', 'Size'], \%modules);
-		}
-	}
+    	# HD
+    	if (($line =~ /\*\-disk/ || $line =~ /Hardware Class: disk/) && ($enable_all == 1 || $enabled{'hd'} == 1)) {
+    		if ($Mode eq 'LSHW') {
+    			get_module_data ('HD', \@hwinfo, ['product', 'description', 'size'], \%modules);
+    		} else {
+    			get_module_data ('HD', \@hwinfo, ['Model', 'Serial ID', 'Size'], \%modules);
+    		}
+    	}
+    }
 }
-
 # Software
 if ($enable_all == 1 || $enabled{'software'} == 1) {
 	get_software_module_data ('Software', \%modules);
@@ -410,12 +567,12 @@ if ($enable_all == 1 || $enabled{'software'} == 1) {
 
 #init_services
 if ($enable_all == 1 || $enabled{'init_services'} == 1) {
-        get_servicies_init_machine ('Init services', \%modules);
+        get_servicies_init_machine ('Init_services', \%modules);
 }
 
 #filesystem
 if ($enable_all == 1 || $enabled{'filesystem'} == 1) {
-	get_file_system('File system', \%modules);
+	get_file_system('Filesystem', \%modules);
 }
 
 #processes
@@ -442,7 +599,6 @@ if ($enable_all == 1 || $enabled{'route'} == 1) {
 if ($enable_all == 1 || $enabled{'kernel'} == 1){
 	get_kernel_info ('Kernel', \%modules);
 }
-
 # Print module data
 print "<inventory>\n";
 while (my ($name, $module) = each (%modules)) {

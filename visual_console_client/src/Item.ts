@@ -70,8 +70,10 @@ export interface ItemRemoveEvent<Props extends ItemProps> {
   data: AnyObject;
 }
 
-export interface ItemMovedEvent extends Position {
+export interface ItemMovedEvent {
   item: VisualConsoleItem<ItemProps>;
+  prevPosition: Position;
+  newPosition: Position;
 }
 
 /**
@@ -153,10 +155,22 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
   private debouncedMovementSave = debounce(
     500, // ms.
     (x: Position["x"], y: Position["y"]) => {
+      const prevPosition = {
+        x: this.props.x,
+        y: this.props.y
+      };
+      const newPosition = {
+        x: x,
+        y: y
+      };
       // Save the new position to the props.
       this.move(x, y);
       // Emit the movement event.
-      this.movedEventManager.emit({ item: this, x, y });
+      this.movedEventManager.emit({
+        item: this,
+        prevPosition: prevPosition,
+        newPosition: newPosition
+      });
     }
   );
   // This property will store the function

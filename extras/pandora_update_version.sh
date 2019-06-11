@@ -26,9 +26,11 @@ $CODEHOME/pandora_server/pandora_server.spec \
 $PANDHOME_ENT/pandora_console/enterprise/pandora_console_enterprise.spec \
 $PANDHOME_ENT/pandora_server/PandoraFMS-Enterprise/pandora_server_enterprise.spec \
 $CODEHOME/pandora_console/pandora_console.redhat.spec \
+$CODEHOME/pandora_console/pandora_console.rhel7.spec \
 $CODEHOME/pandora_agents/unix/pandora_agent.redhat.spec \
 $CODEHOME/pandora_server/pandora_server.redhat.spec \
 $PANDHOME_ENT/pandora_console/enterprise/pandora_console_enterprise.redhat.spec \
+$PANDHOME_ENT/pandora_console/enterprise/pandora_console_enterprise.rhel7.spec \
 $PANDHOME_ENT/pandora_server/PandoraFMS-Enterprise/pandora_server_enterprise.redhat.spec"
 DEBIAN_FILES="$CODEHOME/pandora_console/DEBIAN \
 $CODEHOME/pandora_server/DEBIAN \
@@ -172,8 +174,8 @@ echo "Updating Pandora Console version..."
 sed -i -e "s/\s*\$pandora_version\s*=.*/\$pandora_version = 'v$VERSION';/" "$CONSOLE_FILE"
 sed -i -e "s/\s*\$build_version\s*=.*/\$build_version = 'PC$BUILD';/" "$CONSOLE_FILE"
 echo "Updating Pandora Console installer version..."
-sed -i -e "s/\s*\$version\s*=.*/\$version = '$VERSION';/" "$CONSOLE_INSTALL_FILE"
-sed -i -e "s/\s*\$build\s*=.*/\$build = '$BUILD';/" "$CONSOLE_INSTALL_FILE"
+sed -i -e "s/\(\s*\$version\s*=\s\).*/\1'$VERSION';/" "$CONSOLE_INSTALL_FILE"
+sed -i -e "s/\(\s*\$build\s*=\s\).*/\1'$BUILD';/" "$CONSOLE_INSTALL_FILE"
 echo "Setting develop_bypass to 0..."
 sed -i -e "s/\s*if\s*(\s*[!]\s*isset\s*(\s*$develop_bypass\s*)\s*)\s*$develop_bypass\s*=.*/if ([!]isset($develop_bypass)) $develop_bypass = 0;/" "$CONSOLE_FILE"
 

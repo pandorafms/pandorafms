@@ -998,20 +998,23 @@ function process_upload_xml($xml)
 {
     $hook_enterprise = enterprise_include('extensions/resource_registration/functions.php');
 
-    // Extract component
+    // Extract component.
     process_upload_xml_component($xml);
 
     $group_filter = get_parameter('group');
 
-    // Extract visual map
+    // Extract visual map.
     process_upload_xml_visualmap($xml, $group_filter);
 
-    // Extract policies
+    // Extract policies.
     if ($hook_enterprise === true) {
-        process_upload_xml_policy($xml, $group_filter);
+        $centralized_management = !is_central_policies_on_node();
+        if ($centralized_management) {
+            process_upload_xml_policy($xml, $group_filter);
+        }
     }
 
-    // Extract reports
+    // Extract reports.
     process_upload_xml_report($xml, $group_filter);
 }
 
@@ -1036,6 +1039,11 @@ function resource_registration_extension_main()
         ui_print_error_message(_('Error, please install the PHP libXML in the system.'));
 
         return;
+    }
+
+    $centralized_management = !is_central_policies_on_node();
+    if (!$centralized_management) {
+        ui_print_warning_message(__('This node is configured with centralized mode. Go to metaconsole to create a policy.'));
     }
 
     echo '<div class=notify>';

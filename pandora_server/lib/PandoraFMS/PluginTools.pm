@@ -31,8 +31,8 @@ use base 'Exporter';
 our @ISA = qw(Exporter);
 
 # version: Defines actual version of Pandora Server for this module only
-my $pandora_version = "7.0NG.732";
-my $pandora_build = "190311";
+my $pandora_version = "7.0NG.735";
+my $pandora_build = "190611";
 our $VERSION = $pandora_version." ".$pandora_build;
 
 our %EXPORT_TAGS = ( 'all' => [ qw() ] );
@@ -720,6 +720,9 @@ sub print_module {
 	}
 	if (! (empty ($data->{min_ff_event_critical}))) {
 		$xml_module .= "\t<min_ff_event_critical><![CDATA[" . $data->{min_ff_event_critical} . "]]></min_ff_event_critical>\n";
+	}
+	if (! (empty ($data->{ff_type}))) {
+		$xml_module .= "\t<ff_type><![CDATA[" . $data->{ff_type} . "]]></ff_type>\n";
 	}
 	if (! (empty ($data->{ff_timeout}))) {
 		$xml_module .= "\t<ff_timeout><![CDATA[" . $data->{ff_timeout} . "]]></ff_timeout>\n";
@@ -2018,6 +2021,12 @@ sub snmp_walk {
 		$timeout = $snmp->{timeout};
 	}
 
+	if ($^O =~ /lin/i && "`which snmpwalk`" eq "") {
+		return {
+			'error' => 'snmpwalk not found'
+		};
+	}
+
 	$snmp->{extra} = '' unless defined $snmp->{extra};
 
 	if ( defined ($snmp->{version} )
@@ -2131,6 +2140,12 @@ sub snmp_get {
 		$timeout = $snmp->{timeout};
 	}
 
+	if ($^O =~ /lin/i && "`which snmpwalk`" eq "") {
+		return {
+			'error' => 'snmpwalk not found'
+		};
+	}
+	
 	$snmp->{extra} = '' unless defined $snmp->{extra};
 
 	if ( defined ($snmp->{version} )

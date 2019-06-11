@@ -6,17 +6,17 @@
 #
 # grep_log	Perl script to search log files for a matching pattern. The last
 #           searched position is saved in an index file so that consecutive
-#           runs do not return the same results. The log file inode number is 
+#           runs do not return the same results. The log file inode number is
 #           also saved to detect log rotation.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; version 2 of the License.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.	
+# GNU General Public License for more details.
 #
 ###############################################################################
 use strict;
@@ -30,7 +30,7 @@ my $Output = 'module';
 my $Verbose = 0;
 
 # Index file storage directory, with a trailing '/'
-my $Idx_dir=($^O =~ /win/i)?'.\\':'/tmp/';
+my $Idx_dir=($^O =~ /win/i)?"$ENV{'TMP'}\\":"/tmp/";
 
 # Log file
 my $Log_file = '';
@@ -64,7 +64,7 @@ if ( (defined ($ENV{GREP_LOG_TMP})) && (-d $ENV{GREP_LOG_TMP}) ) {
 }
 
 ########################################################################################
-# Erase blank spaces before and after the string 
+# Erase blank spaces before and after the string
 ########################################################################################
 sub trim($){
 	my $string = shift;
@@ -226,7 +226,7 @@ sub parse_log (;$$) {
 	open(LOGFILE, $Log_file) || error_msg("Error opening file $Log_file: " .
 	                                     $!);
 
-	# Go to starting position. 
+	# Go to starting position.
 	seek(LOGFILE, $Idx_pos, 0);
 
 	# Parse log file
@@ -318,7 +318,7 @@ sub print_log ($) {
 		print_summary() if ($summary_flag == 1);
 		return;
 	}
-	
+
 	# Log module
 	if ($Output eq 'log_module') {
 		my $output = "<log_module>\n";

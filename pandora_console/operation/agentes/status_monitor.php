@@ -62,7 +62,7 @@ if (! defined('METACONSOLE')) {
         break;
     }
 
-    ui_print_page_header(__('Monitor detail').$subpage, '', false, '', true, $buttons);
+    ui_print_page_header(__('Monitor detail').$subpage, '', false, 'monitor_detail_view', true, $buttons);
 
     if ($section == 'fields') {
         include_once $config['homedir'].'/godmode/agentes/status_monitor_custom_fields.php';
@@ -88,6 +88,16 @@ $sort                 = get_parameter('sort', 'none');
 $id_module             = (int) get_parameter('id_module', 0);
 $ag_custom_fields     = (array) get_parameter('ag_custom_fields', []);
 $module_option = (int) get_parameter('module_option', 1);
+$autosearch = false;
+
+// It is validated if it receives parameters different from those it has by default
+if ($ag_freestring !== '' || $moduletype !== '' || $datatype !== ''
+    || $ag_modulename !== '' || $refr !== 0 || $offset !== 0 || $status !== 4
+    || $modulegroup !== -1 || $tag_filter !== 0 || $sortField !== ''
+    || $sort !== 'none' || $id_module !== 0 || $module_option !== 1
+) {
+    $autosearch = true;
+}
 
 if (!is_metaconsole()) {
     $ag_group = (int) get_parameter('ag_group', 0);
@@ -725,21 +735,23 @@ unset($table);
 // End Build Search Form
 //
 // Sort functionality
-$selected = 'border: 1px solid black;';
-$selectAgentNameUp = '';
-$selectAgentNameDown = '';
-$selectTypeUp = '';
-$selectTypeDown = '';
-$selectModuleNameUp = '';
-$selectModuleNameDown = '';
-$selectIntervalUp = '';
-$selectIntervalDown = '';
-$selectStatusUp = '';
-$selectStatusDown = '';
-$selectDataUp = '';
-$selectDataDown = '';
-$selectTimestampUp = '';
-$selectTimestampDown = '';
+$selected = true;
+$selectAgentNameUp = false;
+$selectAgentNameDown = false;
+$selectDataTypeUp = false;
+$selectDataTypeDown = false;
+$selectTypeUp = false;
+$selectTypeDown = false;
+$selectModuleNameUp = false;
+$selectModuleNameDown = false;
+$selectIntervalUp = false;
+$selectIntervalDown = false;
+$selectStatusUp = false;
+$selectStatusDown = false;
+$selectDataUp = false;
+$selectDataDown = false;
+$selectTimestampUp = false;
+$selectTimestampDown = false;
 $order = null;
 
 switch ($sortField) {
@@ -766,7 +778,7 @@ switch ($sortField) {
     case 'type':
         switch ($sort) {
             case 'up':
-                $selectTypeUp = $selected;
+                $selectDataTypeUp = $selected;
                 $order = [
                     'field' => 'tagente_modulo.id_tipo_modulo',
                     'order' => 'ASC',
@@ -774,7 +786,7 @@ switch ($sortField) {
             break;
 
             case 'down':
-                $selectTypeDown = $selected;
+                $selectDataTypeDown = $selected;
                 $order = [
                     'field' => 'tagente_modulo.id_tipo_modulo',
                     'order' => 'DESC',
@@ -886,7 +898,7 @@ switch ($sortField) {
     case 'data':
         switch ($sort) {
             case 'up':
-                $selectTimestampUp = $selected;
+                $selectDataUp = $selected;
                 $order = [
                     'field' => 'tagente_estado.datos',
                     'order' => 'ASC',
@@ -894,7 +906,7 @@ switch ($sortField) {
             break;
 
             case 'down':
-                $selectTimestampDown = $selected;
+                $selectDataDown = $selected;
                 $order = [
                     'field' => 'tagente_estado.datos',
                     'order' => 'DESC',
@@ -905,19 +917,21 @@ switch ($sortField) {
 
     default:
         $selectAgentNameUp = $selected;
-        $selectAgentNameDown = '';
-        $selectTypeUp = '';
-        $selectTypeDown = '';
-        $selectModuleNameUp = '';
-        $selectModuleNameDown = '';
-        $selectIntervalUp = '';
-        $selectIntervalDown = '';
-        $selectStatusUp = '';
-        $selectStatusDown = '';
-        $selectDataUp = '';
-        $selectDataDown = '';
-        $selectTimestampUp = '';
-        $selectTimestampDown = '';
+        $selectAgentNameDown = false;
+        $selectDataTypeUp = false;
+        $selectDataTypeDown = false;
+        $selectTypeUp = false;
+        $selectTypeDown = false;
+        $selectModuleNameUp = false;
+        $selectModuleNameDown = false;
+        $selectIntervalUp = false;
+        $selectIntervalDown = false;
+        $selectStatusUp = false;
+        $selectStatusDown = false;
+        $selectDataUp = false;
+        $selectDataDown = false;
+        $selectTimestampUp = false;
+        $selectTimestampDown = false;
         $order = [
             'field' => 'tagente.alias',
             'order' => 'ASC',
@@ -969,17 +983,15 @@ $sql = 'SELECT
 	ORDER BY '.$order['field'].' '.$order['order'].'
 	LIMIT '.$offset.','.$limit_sql;
 
-// When you enter for the first time you have less than 4 query params in the url
-$first_interaction = count($_GET) > 4;
 // We do not show the modules until the user searches with the filter
-if ($first_interaction) {
+if ($autosearch) {
     if (! defined('METACONSOLE')) {
         $result = db_get_all_rows_sql($sql);
 
         if ($result === false) {
             $result = [];
         } else {
-            ui_pagination($count, false, $offset);
+            ui_pagination($count, false, $offset, 0, false, 'offset', true);
         }
     } else {
         // For each server defined and not disabled:
@@ -1057,14 +1069,26 @@ if (($config['dbtype'] == 'oracle') && ($result !== false)) {
     }
 }
 
+
+// Urls to sort the table.
+$url_agent_name = 'index.php?sec=view&amp;sec2=operation/agentes/status_monitor&amp;refr='.$refr.'&amp;datatype='.$datatype.'&amp;moduletype='.$moduletype.'&amp;modulegroup='.$modulegroup.'&amp;offset='.$offset.'&amp;ag_group='.$ag_group.'&amp;ag_freestring='.$ag_freestring.'&amp;ag_modulename='.$ag_modulename.'&amp;status='.$status.$ag_custom_fields_params.'&amp;sort_field=agent_alias&amp;sort=';
+$url_type = 'index.php?sec=view&amp;sec2=operation/agentes/status_monitor&amp;datatype='.$datatype.'&amp;moduletype='.$moduletype.'&amp;refr='.$refr.'&amp;modulegroup='.$modulegroup.'&amp;offset='.$offset.'&amp;ag_group='.$ag_group.'&amp;ag_freestring='.$ag_freestring.'&amp;ag_modulename='.$ag_modulename.'&amp;status='.$status.$ag_custom_fields_params.'&amp;sort_field=type&amp;sort=';
+$url_module_name = 'index.php?sec=view&amp;sec2=operation/agentes/status_monitor&amp;datatype='.$datatype.'&amp;moduletype='.$moduletype.'&amp;refr='.$refr.'&amp;modulegroup='.$modulegroup.'&amp;offset='.$offset.'&amp;ag_group='.$ag_group.'&amp;ag_freestring='.$ag_freestring.'&amp;ag_modulename='.$ag_modulename.'&amp;status='.$status.$ag_custom_fields_params.'&amp;sort_field=module_name&amp;sort=';
+$url_server_type = 'index.php?sec=view&amp;sec2=operation/agentes/status_monitor&amp;datatype='.$datatype.'&amp;moduletype='.$moduletype.'&amp;refr='.$refr.'&amp;modulegroup='.$modulegroup.'&amp;offset='.$offset.'&amp;ag_group='.$ag_group.'&amp;ag_freestring='.$ag_freestring.'&amp;ag_modulename='.$ag_modulename.'&amp;status='.$status.$ag_custom_fields_params.'&amp;sort_field=moduletype&amp;sort=';
+$url_interval = 'index.php?sec=view&amp;sec2=operation/agentes/status_monitor&amp;datatype='.$datatype.'&amp;moduletype='.$moduletype.'&amp;refr='.$refr.'&amp;modulegroup='.$modulegroup.'&amp;offset='.$offset.'&amp;ag_group='.$ag_group.'&amp;ag_freestring='.$ag_freestring.'&amp;ag_modulename='.$ag_modulename.'&amp;status='.$status.$ag_custom_fields_params.'&amp;sort_field=interval&amp;sort=';
+$url_status = 'index.php?sec=view&amp;sec2=operation/agentes/status_monitor&amp;datatype='.$datatype.'&amp;moduletype='.$moduletype.'&amp;refr='.$refr.'&amp;modulegroup='.$modulegroup.'&amp;offset='.$offset.'&amp;ag_group='.$ag_group.'&amp;ag_freestring='.$ag_freestring.'&amp;ag_modulename='.$ag_modulename.'&amp;status='.$status.$ag_custom_fields_params.'&amp;sort_field=status&amp;sort=';
+$url_data = 'index.php?sec=view&amp;sec2=operation/agentes/status_monitor&amp;datatype='.$datatype.'&amp;moduletype='.$moduletype.'&amp;refr='.$refr.'&amp;modulegroup='.$modulegroup.'&amp;offset='.$offset.'&amp;ag_group='.$ag_group.'&amp;ag_freestring='.$ag_freestring.'&amp;ag_modulename='.$ag_modulename.'&amp;status='.$status.$ag_custom_fields_params.'&amp;sort_field=data&amp;sort=';
+$url_timestamp_up = 'index.php?sec=view&amp;sec2=operation/agentes/status_monitor&amp;datatype='.$datatype.'&amp;moduletype='.$moduletype.'&amp;refr='.$refr.'&amp;offset='.$offset.'&amp;ag_group='.$ag_group.'&amp;ag_freestring='.$ag_freestring.'&amp;ag_modulename='.$ag_modulename.'&amp;status='.$status.$ag_custom_fields_params.'&amp;sort_field=timestamp&amp;sort=up';
+$url_timestamp_down = 'index.php?sec=view&amp;sec2=operation/agentes/status_monitor&amp;datatype='.$datatype.'&amp;moduletype='.$moduletype.'&amp;refr='.$refr.'&amp;modulegroup='.$modulegroup.'&amp;offset='.$offset.'&amp;ag_group='.$ag_group.'&amp;ag_freestring='.$ag_freestring.'&amp;ag_modulename='.$ag_modulename.'&amp;status='.$status.$ag_custom_fields_params.'&amp;sort_field=timestamp&amp;sort=down';
+
+
 // Start Build List Result
-//
 if (!empty($result)) {
     $table = new StdClass();
     $table->cellpadding = 0;
     $table->cellspacing = 0;
     $table->width = '100%';
-    $table->class = 'databox data';
+    $table->class = 'info_table';
     $table->head = [];
     $table->data = [];
     $table->size = [];
@@ -1081,36 +1105,34 @@ if (!empty($result)) {
 
     if (in_array('agent', $show_fields) || is_metaconsole()) {
         $table->head[1] = __('Agent');
-        $table->head[1] .= ' <a href="index.php?sec=view&amp;sec2=operation/agentes/status_monitor&amp;refr='.$refr.'&amp;datatype='.$datatype.'&amp;moduletype='.$moduletype.'&amp;modulegroup='.$modulegroup.'&amp;offset='.$offset.'&amp;ag_group='.$ag_group.'&amp;ag_freestring='.$ag_freestring.'&amp;ag_modulename='.$ag_modulename.'&amp;status='.$status.$ag_custom_fields_params.'&amp;sort_field=agent_alias&amp;sort=up">'.html_print_image('images/sort_up.png', true, ['style' => $selectAgentNameUp, 'alt' => 'up']).'</a>'.'<a href="index.php?sec=view&amp;sec2=operation/agentes/status_monitor&amp;refr='.$refr.'&amp;datatype='.$datatype.'&amp;moduletype='.$moduletype.'&amp;modulegroup='.$modulegroup.'&amp;offset='.$offset.'&amp;ag_group='.$ag_group.'&amp;ag_freestring='.$ag_freestring.'&amp;ag_modulename='.$ag_modulename.'&amp;status='.$status.$ag_custom_fields_params.'&amp;sort_field=agent_alias&amp;sort=down">'.html_print_image('images/sort_down.png', true, ['style' => $selectAgentNameDown, 'alt' => 'down']).'</a>';
+        $table->head[1] .= ui_get_sorting_arrows($url_agent_name.'up', $url_agent_name.'down', $selectAgentNameUp, $selectAgentNameDown);
     }
 
     if (in_array('data_type', $show_fields) || is_metaconsole()) {
         $table->head[2] = __('Data Type');
-        $table->head[2] .= ' <a href="index.php?sec=view&amp;sec2=operation/agentes/status_monitor&amp;datatype='.$datatype.'&amp;moduletype='.$moduletype.'&amp;refr='.$refr.'&amp;modulegroup='.$modulegroup.'&amp;offset='.$offset.'&amp;ag_group='.$ag_group.'&amp;ag_freestring='.$ag_freestring.'&amp;ag_modulename='.$ag_modulename.'&amp;status='.$status.$ag_custom_fields_params.'&amp;sort_field=type&amp;sort=up">'.html_print_image('images/sort_up.png', true, ['style' => $selectTypeUp, 'alt' => 'up']).'</a>'.'<a href="index.php?sec=view&amp;sec2=operation/agentes/status_monitor&amp;datatype='.$datatype.'&amp;moduletype='.$moduletype.'&amp;refr='.$refr.'&amp;modulegroup='.$modulegroup.'&amp;offset='.$offset.'&amp;ag_group='.$ag_group.'&amp;ag_freestring='.$ag_freestring.'&amp;ag_modulename='.$ag_modulename.'&amp;status='.$status.$ag_custom_fields_params.'&amp;sort_field=type&amp;sort=down">'.html_print_image('images/sort_down.png', true, ['style' => $selectTypeDown, 'alt' => 'down']).'</a>';
-
+        $table->head[2] .= ui_get_sorting_arrows($url_type.'up', $url_type.'down', $selectDataTypeUp, $selectDataTypeDown);
         $table->align[2] = 'left';
     }
 
     if (in_array('module_name', $show_fields) || is_metaconsole()) {
         $table->head[3] = __('Module name');
-        $table->head[3] .= ' <a href="index.php?sec=view&amp;sec2=operation/agentes/status_monitor&amp;datatype='.$datatype.'&amp;moduletype='.$moduletype.'&amp;refr='.$refr.'&amp;modulegroup='.$modulegroup.'&amp;offset='.$offset.'&amp;ag_group='.$ag_group.'&amp;ag_freestring='.$ag_freestring.'&amp;ag_modulename='.$ag_modulename.'&amp;status='.$status.$ag_custom_fields_params.'&amp;sort_field=module_name&amp;sort=up">'.html_print_image('images/sort_up.png', true, ['style' => $selectModuleNameUp, 'alt' => 'up']).'</a>'.'<a href="index.php?sec=view&amp;sec2=operation/agentes/status_monitor&amp;datatype='.$datatype.'&amp;moduletype='.$moduletype.'&amp;refr='.$refr.'&amp;modulegroup='.$modulegroup.'&amp;offset='.$offset.'&amp;ag_group='.$ag_group.'&amp;ag_freestring='.$ag_freestring.'&amp;ag_modulename='.$ag_modulename.'&amp;status='.$status.$ag_custom_fields_params.'&amp;sort_field=module_name&amp;sort=down">'.html_print_image('images/sort_down.png', true, ['style' => $selectModuleNameDown, 'alt' => 'down']).'</a>';
+        $table->head[3] .= ui_get_sorting_arrows($url_module_name.'up', $url_module_name.'down', $selectModuleNameUp, $selectModuleNameDown);
     }
 
     if (in_array('server_type', $show_fields) || is_metaconsole()) {
         $table->head[4] = __('Server type');
-        $table->head[4] .= ' <a href="index.php?sec=view&amp;sec2=operation/agentes/status_monitor&amp;datatype='.$datatype.'&amp;moduletype='.$moduletype.'&amp;refr='.$refr.'&amp;modulegroup='.$modulegroup.'&amp;offset='.$offset.'&amp;ag_group='.$ag_group.'&amp;ag_freestring='.$ag_freestring.'&amp;ag_modulename='.$ag_modulename.'&amp;status='.$status.$ag_custom_fields_params.'&amp;sort_field=moduletype&amp;sort=up">'.html_print_image('images/sort_up.png', true, ['style' => $selectModuleNameUp, 'alt' => 'up']).'</a>'.'<a href="index.php?sec=view&amp;sec2=operation/agentes/status_monitor&amp;datatype='.$datatype.'&amp;moduletype='.$moduletype.'&amp;refr='.$refr.'&amp;modulegroup='.$modulegroup.'&amp;offset='.$offset.'&amp;ag_group='.$ag_group.'&amp;ag_freestring='.$ag_freestring.'&amp;ag_modulename='.$ag_modulename.'&amp;status='.$status.$ag_custom_fields_params.'&amp;sort_field=moduletype&amp;sort=down">'.html_print_image('images/sort_down.png', true, ['style' => $selectModuleNameDown, 'alt' => 'down']).'</a>';
+        $table->head[4] .= ui_get_sorting_arrows($url_server_type.'up', $url_server_type.'down', $selectTypeUp, $selectTypeDown);
     }
 
     if (in_array('interval', $show_fields) || is_metaconsole()) {
         $table->head[5] = __('Interval');
-        $table->head[5] .= ' <a href="index.php?sec=view&amp;sec2=operation/agentes/status_monitor&amp;datatype='.$datatype.'&amp;moduletype='.$moduletype.'&amp;refr='.$refr.'&amp;modulegroup='.$modulegroup.'&amp;offset='.$offset.'&amp;ag_group='.$ag_group.'&amp;ag_freestring='.$ag_freestring.'&amp;ag_modulename='.$ag_modulename.'&amp;status='.$status.$ag_custom_fields_params.'&amp;sort_field=interval&amp;sort=up">'.html_print_image('images/sort_up.png', true, ['style' => $selectIntervalUp, 'alt' => 'up']).'</a>'.'<a href="index.php?sec=view&amp;sec2=operation/agentes/status_monitor&amp;datatype='.$datatype.'&amp;moduletype='.$moduletype.'&amp;refr='.$refr.'&amp;modulegroup='.$modulegroup.'&amp;offset='.$offset.'&amp;ag_group='.$ag_group.'&amp;ag_freestring='.$ag_freestring.'&amp;ag_modulename='.$ag_modulename.'&amp;status='.$status.$ag_custom_fields_params.'&amp;sort_field=interval&amp;sort=down">'.html_print_image('images/sort_down.png', true, ['style' => $selectIntervalDown, 'alt' => 'down']).'</a>';
+        $table->head[5] .= ui_get_sorting_arrows($url_interval.'up', $url_interval.'down', $selectIntervalUp, $selectIntervalDown);
         $table->align[5] = 'left';
     }
 
     if (in_array('status', $show_fields) || is_metaconsole()) {
         $table->head[6] = __('Status');
-        $table->head[6] .= ' <a href="index.php?sec=view&amp;sec2=operation/agentes/status_monitor&amp;datatype='.$datatype.'&amp;moduletype='.$moduletype.'&amp;refr='.$refr.'&amp;modulegroup='.$modulegroup.'&amp;offset='.$offset.'&amp;ag_group='.$ag_group.'&amp;ag_freestring='.$ag_freestring.'&amp;ag_modulename='.$ag_modulename.'&amp;status='.$status.$ag_custom_fields_params.'&amp;sort_field=status&amp;sort=up">'.html_print_image('images/sort_up.png', true, ['style' => $selectStatusUp, 'alt' => 'up']).'</a>'.'<a href="index.php?sec=view&amp;sec2=operation/agentes/status_monitor&amp;datatype='.$datatype.'&amp;moduletype='.$moduletype.'&amp;refr='.$refr.'&amp;modulegroup='.$modulegroup.'&amp;offset='.$offset.'&amp;ag_group='.$ag_group.'&amp;ag_freestring='.$ag_freestring.'&amp;ag_modulename='.$ag_modulename.'&amp;status='.$status.$ag_custom_fields_params.'&amp;sort_field=status&amp;sort=down">'.html_print_image('images/sort_down.png', true, ['style' => $selectStatusDown, 'alt' => 'down']).'</a>';
-
+        $table->head[6] .= ui_get_sorting_arrows($url_status.'up', $url_status.'down', $selectStatusUp, $selectStatusDown);
         $table->align[6] = 'left';
     }
 
@@ -1128,13 +1150,13 @@ if (!empty($result)) {
         $table->head[9] = __('Data');
         $table->align[9] = 'left';
         if (is_metaconsole()) {
-            $table->head[9] .= ' <a href="index.php?sec=view&amp;sec2=operation/agentes/status_monitor&amp;datatype='.$datatype.'&amp;moduletype='.$moduletype.'&amp;refr='.$refr.'&amp;modulegroup='.$modulegroup.'&amp;offset='.$offset.'&amp;ag_group='.$ag_group.'&amp;ag_freestring='.$ag_freestring.'&amp;ag_modulename='.$ag_modulename.'&amp;status='.$status.$ag_custom_fields_params.'&amp;sort_field=data&amp;sort=up">'.html_print_image('images/sort_up.png', true, ['style' => $selectStatusUp, 'alt' => 'up']).'</a>'.'<a href="index.php?sec=view&amp;sec2=operation/agentes/status_monitor&amp;datatype='.$datatype.'&amp;moduletype='.$moduletype.'&amp;refr='.$refr.'&amp;modulegroup='.$modulegroup.'&amp;offset='.$offset.'&amp;ag_group='.$ag_group.'&amp;ag_freestring='.$ag_freestring.'&amp;ag_modulename='.$ag_modulename.'&amp;status='.$status.$ag_custom_fields_params.'&amp;sort_field=data&amp;sort=down">'.html_print_image('images/sort_down.png', true, ['style' => $selectStatusDown, 'alt' => 'down']).'</a>';
+            $table->head[9] .= ui_get_sorting_arrows($url_data.'up', $url_data.'down', $selectDataUp, $selectDataDown);
         }
     }
 
     if (in_array('timestamp', $show_fields) || is_metaconsole()) {
         $table->head[10] = __('Timestamp');
-        $table->head[10] .= ' <a href="index.php?sec=view&amp;sec2=operation/agentes/status_monitor&amp;datatype='.$datatype.'&amp;moduletype='.$moduletype.'&amp;refr='.$refr.'&amp;offset='.$offset.'&amp;ag_group='.$ag_group.'&amp;ag_freestring='.$ag_freestring.'&amp;ag_modulename='.$ag_modulename.'&amp;status='.$status.$ag_custom_fields_params.'&amp;sort_field=timestamp&amp;sort=up">'.html_print_image('images/sort_up.png', true, ['style' => $selectTimestampUp, 'alt' => 'up']).'</a>'.'<a href="index.php?sec=view&amp;sec2=operation/agentes/status_monitor&amp;datatype='.$datatype.'&amp;moduletype='.$moduletype.'&amp;refr='.$refr.'&amp;modulegroup='.$modulegroup.'&amp;offset='.$offset.'&amp;ag_group='.$ag_group.'&amp;ag_freestring='.$ag_freestring.'&amp;ag_modulename='.$ag_modulename.'&amp;status='.$status.$ag_custom_fields_params.'&amp;sort_field=timestamp&amp;sort=down">'.html_print_image('images/sort_down.png', true, ['style' => $selectTimestampDown, 'alt' => 'down']).'</a>';
+        $table->head[10] .= ui_get_sorting_arrows($url_timestamp_up, $url_timestamp_down, $selectTimestampUp, $selectTimestampDown);
         $table->align[10] = 'left';
     }
 
@@ -1275,6 +1297,7 @@ if (!empty($result)) {
                 }
 
                 if ($show_edit_icon) {
+                    $table->cellclass[][2] = 'action_buttons';
                     $data[2] .= '<a href="'.$url_edit_module.'">'.html_print_image(
                         'images/config.png',
                         true,
@@ -1363,6 +1386,34 @@ if (!empty($result)) {
                     $data[6] = ui_print_status_image(
                         STATUS_MODULE_WARNING,
                         __('WARNING').': '.$row['datos'],
+                        true
+                    );
+                }
+            } else if ($row['estado'] == 3) {
+                if (is_numeric($row['datos'])) {
+                    $data[6] = ui_print_status_image(
+                        STATUS_MODULE_UNKNOWN,
+                        __('UNKNOWN').': '.remove_right_zeros(number_format($row['datos'], $config['graph_precision'])),
+                        true
+                    );
+                } else {
+                    $data[6] = ui_print_status_image(
+                        STATUS_MODULE_UNKNOWN,
+                        __('UNKNOWN').': '.$row['datos'],
+                        true
+                    );
+                }
+            } else if ($row['estado'] == 4) {
+                if (is_numeric($row['datos'])) {
+                    $data[6] = ui_print_status_image(
+                        STATUS_MODULE_NO_DATA,
+                        __('NO DATA').': '.remove_right_zeros(number_format($row['datos'], $config['graph_precision'])),
+                        true
+                    );
+                } else {
+                    $data[6] = ui_print_status_image(
+                        STATUS_MODULE_NO_DATA,
+                        __('NO DATA').': '.$row['datos'],
                         true
                     );
                 }
@@ -1650,6 +1701,8 @@ if (!empty($result)) {
     }
 
     html_print_table($table);
+
+    ui_pagination($count, false, $offset, 0, false, 'offset', true, 'pagination-bottom');
 } else {
     if ($first_interaction) {
         ui_print_info_message(['no_close' => true, 'message' => __('This group doesn\'t have any monitor')]);

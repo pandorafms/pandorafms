@@ -664,6 +664,7 @@ function alerts_get_alert_templates_types()
     $types['unknown'] = __('Unknown status');
     $types['onchange'] = __('On Change');
     $types['always'] = __('Always');
+    $types['not_normal'] = __('Not normal status');
 
     return $types;
 }
@@ -680,7 +681,7 @@ function alerts_get_alert_templates_type_name($type)
 {
     $types = alerts_get_alert_templates_types();
 
-    if (! isset($type[$type])) {
+    if (!isset($types[$type])) {
         return __('Unknown');
     }
 

@@ -24,15 +24,15 @@ $menu_godmode['class'] = 'godmode';
 
 if (check_acl($config['id_user'], 0, 'PM')) {
     $sub = [];
-    $sub['godmode/servers/discovery']['text'] = __('Discover');
-    $sub['godmode/servers/discovery']['id'] = 'Discover';
+    $sub['godmode/servers/discovery']['text'] = __('Discovery');
+    $sub['godmode/servers/discovery']['id'] = 'Discovery';
     $sub['godmode/servers/discovery']['subsecs'] = ['godmode/servers/discovery'];
 
     // Add to menu.
-    $menu_godmode['discover']['text'] = __('Discovery');
-    $menu_godmode['discover']['sec2'] = 'godmode/servers/discovery';
-    $menu_godmode['discover']['id'] = 'god-discovery';
-    $menu_godmode['discover']['sub'] = $sub;
+    $menu_godmode['discovery']['text'] = __('Discovery');
+    $menu_godmode['discovery']['sec2'] = 'godmode/servers/discovery';
+    $menu_godmode['discovery']['id'] = 'god-discovery';
+    $menu_godmode['discovery']['sub'] = $sub;
 }
 
 
@@ -225,14 +225,8 @@ if (check_acl($config['id_user'], 0, 'AW') || check_acl($config['id_user'], 0, '
     if (check_acl($config['id_user'], 0, 'PM')) {
         enterprise_hook('ha_cluster');
 
-        $sub['godmode/servers/manage_recontask']['text'] = __('Recon task');
-        $sub['godmode/servers/manage_recontask']['id'] = 'Recon task';
-
         $sub['godmode/servers/plugin']['text'] = __('Plugins');
         $sub['godmode/servers/plugin']['id'] = 'Plugins';
-
-        $sub['godmode/servers/recon_script']['text'] = __('Recon script');
-        $sub['godmode/servers/recon_script']['id'] = 'Recon script';
 
         enterprise_hook('export_target_submenu');
 
@@ -462,19 +456,6 @@ if (check_acl($config['id_user'], 0, 'PM') && $config['enable_update_manager']) 
     $sub['godmode/update_manager/update_manager&tab=online']['id'] = 'Online';
     $sub['godmode/update_manager/update_manager&tab=setup']['text'] = __('Update Manager options');
     $sub['godmode/update_manager/update_manager&tab=setup']['id'] = 'Options';
-
-    if (license_free() && is_user_admin($config['id_user'])) {
-        include_once 'include/functions_update_manager.php';
-        // If there are unread messages, display the notification icon
-        $number_total_messages;
-        $number_unread_messages = update_manager_get_unread_messages();
-        if ($number_unread_messages > 0) {
-            $menu_godmode['messages']['notification'] = $number_unread_messages;
-        }
-
-        $sub['godmode/update_manager/update_manager&tab=messages']['text'] = __('Messages');
-        $sub['godmode/update_manager/update_manager&tab=messages']['id'] = 'Messages';
-    }
 
     $menu_godmode['messages']['sub'] = $sub;
 }

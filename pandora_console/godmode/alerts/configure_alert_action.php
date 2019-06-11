@@ -184,7 +184,6 @@ $table->colspan[2][1] = 2;
 
 $table->data[3][0] = __('Threshold');
 $table->data[3][1] = html_print_input_text('action_threshold', $action_threshold, '', 5, 7, true);
-$table->data[3][1] .= ' '.__('seconds').ui_print_help_icon('action_threshold', true);
 $table->colspan[3][1] = 2;
 
 $table->data[4][0] = '';

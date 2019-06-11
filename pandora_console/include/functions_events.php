@@ -26,7 +26,7 @@
  * ============================================================================
  */
 
- require_once $config['homedir'].'/include/functions_ui.php';
+require_once $config['homedir'].'/include/functions_ui.php';
 require_once $config['homedir'].'/include/functions_tags.php';
 require_once $config['homedir'].'/include/functions.php';
 enterprise_include_once('meta/include/functions_events_meta.php');
@@ -701,19 +701,20 @@ function events_comment(
         $first_event = reset($id_event);
     }
 
-    $event_comments = db_get_value(
-        'user_comment',
-        $event_table,
-        'id_evento',
-        $first_event
+    $event_comments = mysql_db_process_sql(
+        'SELECT user_comment FROM '.$event_table.' WHERE id_evento = '.$first_event,
+        'affected_rows',
+        '',
+        false
     );
+
     $event_comments_array = [];
 
-    if ($event_comments == '') {
+    if ($event_comments[0]['user_comment'] == '') {
         $comments_format = 'new';
     } else {
         // If comments are not stored in json, the format is old.
-        $event_comments_array = json_decode($event_comments);
+        $event_comments_array = json_decode($event_comments[0]['user_comment']);
 
         if (empty($event_comments_array)) {
             $comments_format = 'old';
@@ -958,6 +959,8 @@ function events_print_event_table(
 ) {
     global $config;
 
+    ui_require_css_file('events');
+
     if ($agent_id == 0) {
         $agent_condition = '';
     } else {
@@ -996,7 +999,7 @@ function events_print_event_table(
         $table->cellpadding = 0;
         $table->cellspacing = 0;
         $table->width = $width;
-        $table->class = 'databox data';
+        $table->class = 'info_table no-td-padding';
         if (!$tactical_view) {
             $table->title = __('Latest events');
         }
@@ -1009,36 +1012,38 @@ function events_print_event_table(
         $table->cellclass = [];
         $table->data = [];
         $table->align = [];
-        $table->style[0] = 'width:25px;';
-        $table->style[1] = 'width:25px;';
-        $table->style[2] = 'width:25px;';
-        if ($agent_id == 0) {
-            $table->style[3] = 'word-break: break-all;';
-        }
+        $table->style = [];
 
-        $table->style[4] = 'width:120px; word-break: break-all;';
+        $i = 0;
+        $table->head[$i] = "<span title='".__('Severity')."'>".__('S.').'</span>';
+        $table->headstyle[$i] = 'width: 1%;text-align: center;';
+        $table->style[$i++] = 'text-align: center;';
 
-        $table->head[0] = "<span title='".__('Validated')."'>".__('V.').'</span>';
-        $table->align[0] = 'center';
+        $table->head[$i] = __('Type');
+        $table->headstyle[$i] = 'width: 3%;text-align: center;';
+        $table->style[$i++] = 'text-align: center;';
 
-        $table->head[1] = "<span title='".__('Severity')."'>".__('S.').'</span>';
-        $table->align[1] = 'center';
-
-        $table->head[2] = __('Type');
-        $table->headclass[2] = 'datos3 f9';
-        $table->align[2] = 'center';
-
-        $table->head[3] = __('Event name');
+        $table->head[$i] = __('Event name');
+        $table->headstyle[$i] = '';
+        $table->style[$i++] = 'word-break: break-word;';
 
         if ($agent_id == 0) {
-            $table->head[4] = __('Agent name');
-            $table->size[4] = '15%';
+            $table->head[$i] = __('Agent name');
+            $table->headstyle[$i] = '';
+            $table->style[$i++] = 'word-break: break-all;';
         }
 
-        $table->head[5] = __('Timestamp');
-        $table->headclass[5] = 'datos3 f9';
-        $table->align[5] = 'left';
-        $table->size[5] = '15%';
+        $table->head[$i] = __('Timestamp');
+        $table->headstyle[$i] = 'width: 120px;';
+        $table->style[$i++] = 'word-break: break-word;';
+
+        $table->head[$i] = __('Status');
+        $table->headstyle[$i] = 'width: 150px;text-align: center;';
+        $table->style[$i++] = 'text-align: center;';
+
+        $table->head[$i] = "<span title='".__('Validated')."'>".__('V.').'</span>';
+        $table->headstyle[$i] = 'width: 1%;text-align: center;';
+        $table->style[$i++] = 'text-align: center;';
 
         $all_groups = [];
         if ($agent_id != 0) {
@@ -1077,53 +1082,15 @@ function events_print_event_table(
                 break;
             }
 
-            $data[0] = html_print_image(
-                $img,
-                true,
-                [
-                    'class' => 'image_status',
-                    'title' => $title,
-                ]
-            );
-
-            switch ($event['criticity']) {
-                default:
-                case EVENT_CRIT_MAINTENANCE:
-                    $img = 'images/status_sets/default/severity_maintenance.png';
-                break;
-                case EVENT_CRIT_INFORMATIONAL:
-                    $img = 'images/status_sets/default/severity_informational.png';
-                break;
-
-                case EVENT_CRIT_NORMAL:
-                    $img = 'images/status_sets/default/severity_normal.png';
-                break;
-
-                case EVENT_CRIT_WARNING:
-                    $img = 'images/status_sets/default/severity_warning.png';
-                break;
-
-                case EVENT_CRIT_CRITICAL:
-                    $img = 'images/status_sets/default/severity_critical.png';
-                break;
-            }
-
-            $data[1] = html_print_image(
-                $img,
-                true,
-                [
-                    'class'  => 'image_status',
-                    'width'  => 12,
-                    'height' => 12,
-                    'title'  => get_priority_name($event['criticity']),
-                ]
-            );
+            $i = 0;
+            // Criticity.
+            $data[$i++] = ui_print_event_priority($event['criticity'], true, true);
 
             // Event type.
-            $data[2] = events_print_type_img($event['event_type'], true);
+            $data[$i++] = events_print_type_img($event['event_type'], true);
 
             // Event text.
-            $data[3] = ui_print_string_substr(
+            $data[$i++] = ui_print_string_substr(
                 strip_tags(io_safe_output($event['evento'])),
                 75,
                 true,
@@ -1134,33 +1101,32 @@ function events_print_event_table(
                 if ($event['id_agente'] > 0) {
                     // Agent name.
                     // Get class name, for the link color, etc.
-                    $myclass = get_priority_class($event['criticity']);
-
-                    $data[4] = "<a class='".$myclass."' href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=".$event['id_agente']."'>".agents_get_alias($event['id_agente']).'</A>';
+                    $data[$i] = "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=".$event['id_agente']."'>".agents_get_alias($event['id_agente']).'</A>';
                     // For System or SNMP generated alerts.
                 } else if ($event['event_type'] == 'system') {
-                    $data[4] = __('System');
+                    $data[$i] = __('System');
                 } else {
-                    $data[4] = __('Alert').'SNMP';
+                    $data[$i] = __('Alert').'SNMP';
                 }
+
+                $i++;
             }
 
             // Timestamp.
-            $data[5] = ui_print_timestamp($event['timestamp'], true, ['style' => 'font-size: 7.5pt; letter-spacing: 0.3pt;']);
+            $data[$i++] = ui_print_timestamp($event['timestamp'], true, ['style' => 'font-size: 7.5pt; letter-spacing: 0.3pt;']);
 
-            $class = get_priority_class($event['criticity']);
-            $cell_classes[3] = $class;
-            $cell_classes[4] = $class;
-            $cell_classes[5] = $class;
+            // Status.
+            $data[$i++] = ui_print_event_type($event['event_type'], true);
 
-            array_push($table->cellclass, $cell_classes);
-
-            /*
-                Commented out (old).
-                // array_push ($table->rowclass, get_priority_class ($event["criticity"]));
-            */
-
-            array_push($table->data, $data);
+            $data[$i++] = html_print_image(
+                $img,
+                true,
+                [
+                    'class' => 'image_status',
+                    'title' => $title,
+                ]
+            );
+            $table->data[] = $data;
         }
 
         $events_table = html_print_table($table, true);
@@ -1645,7 +1611,7 @@ function events_get_agent(
             $sql_where,
             0,
             1000,
-            is_metaconsole(),
+            (is_metaconsole() && $id_server) ? true : false,
             false,
             false,
             $history
@@ -1986,9 +1952,9 @@ function events_page_responses($event, $childrens_ids=[])
     $table_responses->width = '100%';
     $table_responses->data = [];
     $table_responses->head = [];
-    $table_responses->style[0] = 'width:35%; font-weight: bold; text-align: left; height: 23px;';
-    $table_responses->style[1] = 'text-align: left; height: 23px; text-align: right;';
-    $table_responses->class = 'alternate rounded_cells';
+    $table_responses->style[0] = 'height:30px';
+    $table_responses->style[2] = 'text-align:right;';
+    $table_responses->class = 'table_modal_alternate';
 
     if (tags_checks_event_acl($config['id_user'], $event['id_grupo'], 'EM', $event['clean_tags'], $childrens_ids)) {
         // Owner.
@@ -2055,7 +2021,7 @@ function events_page_responses($event, $childrens_ids=[])
             -1,
             true
         );
-        $data[1] .= html_print_button(
+        $data[2] .= html_print_button(
             __('Update'),
             'owner_button',
             false,
@@ -2135,7 +2101,7 @@ function events_page_responses($event, $childrens_ids=[])
     );
 
     if (!$status_blocked) {
-        $data[1] .= html_print_button(
+        $data[2] .= html_print_button(
             __('Update'),
             'status_button',
             false,
@@ -2150,7 +2116,8 @@ function events_page_responses($event, $childrens_ids=[])
     // Comments.
     $data = [];
     $data[0] = __('Comment');
-    $data[1] = html_print_button(
+    $data[1] = '';
+    $data[2] = html_print_button(
         __('Add comment'),
         'comment_button',
         false,
@@ -2172,8 +2139,9 @@ function events_page_responses($event, $childrens_ids=[])
         // Delete.
         $data = [];
         $data[0] = __('Delete event');
-        $data[1] = '<form method="post">';
-        $data[1] .= html_print_button(
+        $data[1] = '';
+        $data[2] = '<form method="post">';
+        $data[2] .= html_print_button(
             __('Delete event'),
             'delete_button',
             false,
@@ -2181,13 +2149,13 @@ function events_page_responses($event, $childrens_ids=[])
             'class="sub cancel"',
             true
         );
-        $data[1] .= html_print_input_hidden('delete', 1, true);
-        $data[1] .= html_print_input_hidden(
+        $data[2] .= html_print_input_hidden('delete', 1, true);
+        $data[2] .= html_print_input_hidden(
             'validate_ids',
             $event['id_evento'],
             true
         );
-        $data[1] .= '</form>';
+        $data[2] .= '</form>';
 
         $table_responses->data[] = $data;
     }
@@ -2228,7 +2196,7 @@ function events_page_responses($event, $childrens_ids=[])
             $server_id = 0;
         }
 
-        $data[1] .= html_print_button(
+        $data[2] .= html_print_button(
             __('Execute'),
             'custom_response_button',
             false,
@@ -2248,14 +2216,14 @@ function events_page_responses($event, $childrens_ids=[])
 				$('.params_rows').remove();
 				
 				$('#responses_table')
-					.append('<tr class=\"params_rows\"><td style=\"text-align:left; font-weight: bolder;\">".__('Description')."</td><td style=\"text-align:left;\">'+description+'</td></tr>');
+					.append('<tr class=\"params_rows\"><td>".__('Description')."</td><td style=\"text-align:left; height:30px;\" colspan=\"2\">'+description+'</td></tr>');
 				
 				if (params.length == 1 && params[0] == '') {
 					return;
 				}
 				
 				$('#responses_table')
-					.append('<tr class=\"params_rows\"><td style=\"text-align:left; padding-left:20px;\" colspan=\"2\">".__('Parameters')."</td></tr>');
+					.append('<tr class=\"params_rows\"><td style=\"text-align:left; padding-left:20px; height:30px;\" colspan=\"3\">".__('Parameters')."</td></tr>');
 				
 				for (i = 0; i < params.length; i++) {
 					add_row_param('responses_table',params[i]);
@@ -2290,7 +2258,7 @@ function events_get_response_target(
     global $config;
 
     // If server_id > 0, it's a metaconsole query.
-    $meta = $server_id > 0;
+    $meta = $server_id > 0 || is_metaconsole();
     $event_table = events_get_events_table($meta, $history);
     $event = db_get_row($event_table, 'id_evento', $event_id);
 
@@ -2513,17 +2481,14 @@ function events_page_custom_fields($event)
 {
     global $config;
 
-    //
     // Custom fields.
-    //
+    $table = new stdClass;
     $table->cellspacing = 2;
     $table->cellpadding = 2;
     $table->width = '100%';
     $table->data = [];
     $table->head = [];
-    $table->style[0] = 'width:35%; font-weight: bold; text-align: left; height: 23px;';
-    $table->style[1] = 'text-align: left; height: 23px;';
-    $table->class = 'alternate rounded_cells';
+    $table->class = 'table_modal_alternate';
 
     $all_customs_fields = (bool) check_acl(
         $config['id_user'],
@@ -2666,17 +2631,14 @@ function events_page_details($event, $server='')
         $serverstring = '';
     }
 
-    //
     // Details.
-    //
+    $table_details = new stdClass;
     $table_details->width = '100%';
     $table_details->data = [];
     $table_details->head = [];
-    $table_details->cellspacing = 2;
-    $table_details->cellpadding = 2;
-    $table_details->style[0] = 'width:35%; font-weight: bold; text-align: left; height: 23px;';
-    $table_details->style[1] = 'text-align: left; height: 23px;';
-    $table_details->class = 'alternate rounded_cells';
+    $table_details->cellspacing = 0;
+    $table_details->cellpadding = 0;
+    $table_details->class = 'table_modal_alternate';
 
     /*
      * Useless switch.
@@ -2920,9 +2882,10 @@ function events_page_details($event, $server='')
             true,
             [
                 'class'  => 'image_status',
-                'width'  => 12,
-                'height' => 12,
+                'width'  => 61,
+                'height' => 28,
                 'title'  => $alert_priority,
+                'style'  => 'vertical-align:text-bottom',
             ]
         );
         $data[1] .= ' '.$alert_priority;
@@ -2986,9 +2949,7 @@ function events_page_custom_data($event)
     $table->width = '100%';
     $table->data = [];
     $table->head = [];
-    $table->style[0] = 'width:35%; font-weight: bold; text-align: left;';
-    $table->style[1] = 'text-align: left;';
-    $table->class = 'alternate rounded_cells';
+    $table->class = 'table_modal_alternate';
 
     $json_custom_data = base64_decode($event['custom_data']);
     $custom_data = json_decode($json_custom_data);
@@ -3136,17 +3097,14 @@ function events_page_general($event)
 
     global $group_rep;
 
-    //
     // General.
-    //
-    $table_general->cellspacing = 2;
-    $table_general->cellpadding = 2;
+    $table_general = new stdClass;
+    $table_general->cellspacing = 0;
+    $table_general->cellpadding = 0;
     $table_general->width = '100%';
     $table_general->data = [];
     $table_general->head = [];
-    $table_general->style[0] = 'width:35%; font-weight: bold; text-align: left; height: 23px;';
-    $table_general->style[1] = 'text-align: left; height: 23px;';
-    $table_general->class = 'alternate rounded_cells';
+    $table_general->class = 'table_modal_alternate';
 
     $data = [];
     $data[0] = __('Event ID');
@@ -3169,8 +3127,7 @@ function events_page_general($event)
 
     $table_general->data[] = $data;
 
-    $event['owner_user'] = $event['id_usuario'];
-
+    // $event['owner_user'] = $event['id_usuario'];
     $data = [];
     $data[0] = __('Owner');
     if (empty($event['owner_user'])) {
@@ -3188,10 +3145,12 @@ function events_page_general($event)
 
     $data = [];
     $data[0] = __('Type');
-    $data[1] = events_print_type_img(
+    $data[1] = events_print_type_description($event['event_type'], true);
+    $data[2] = events_print_type_img(
         $event['event_type'],
         true
-    ).' '.events_print_type_description($event['event_type'], true);
+    );
+
     $table_general->data[] = $data;
 
     $data = [];
@@ -3211,18 +3170,17 @@ function events_page_general($event)
     $data = [];
     $data[0] = __('Severity');
     $event_criticity = get_priority_name($event['criticity']);
-
-    $data[1] = html_print_image(
+    $data[1] = $event_criticity;
+    $data[2] = html_print_image(
         $img_sev,
         true,
         [
             'class'  => 'image_status',
-            'width'  => 12,
-            'height' => 12,
+            'width'  => 61,
+            'height' => 28,
             'title'  => $event_criticity,
         ]
     );
-    $data[1] .= ' '.$event_criticity;
     $table_general->data[] = $data;
 
     // Get Status.
@@ -3230,7 +3188,8 @@ function events_page_general($event)
 
     $data = [];
     $data[0] = __('Status');
-    $data[1] = html_print_image($event_st['img'], true).' '.$event_st['title'];
+    $data[1] = $event_st['title'];
+    $data[2] = html_print_image($event_st['img'], true);
     $table_general->data[] = $data;
 
     // If event is validated, show who and when acknowleded it.
@@ -3253,12 +3212,23 @@ function events_page_general($event)
 
     $data = [];
     $data[0] = __('Group');
-    $data[1] = '';
+    $data[1] = groups_get_name($event['id_grupo']);
     if (!$config['show_group_name']) {
-        $data[1] = ui_print_group_icon($event['id_grupo'], true);
+        $data[2] = ui_print_group_icon($event['id_grupo'], true);
     }
 
-    $data[1] .= groups_get_name($event['id_grupo']);
+    $table_general->data[] = $data;
+
+    $data = [];
+    $data[0] = __('Contact');
+    $data[1] = '';
+    $contact = db_get_value('contact', 'tgrupo', 'id_grupo', $event['id_grupo']);
+    if (empty($contact)) {
+        $data[1] = '<i>'.__('N/A').'</i>';
+    } else {
+        $data[1] = $contact;
+    }
+
     $table_general->data[] = $data;
 
     $data = [];
@@ -3284,6 +3254,16 @@ function events_page_general($event)
 
     $table_general->data[] = $data;
 
+    $table_data = $table_general->data;
+    $table_data_total = count($table_data);
+
+    for ($i = 0; $i <= $table_data_total; $i++) {
+        if (count($table_data[$i]) == 2) {
+            $table_general->colspan[$i][1] = 2;
+            $table_general->style[2] = 'text-align:center; width:10%;';
+        }
+    }
+
     $general = '<div id="extended_event_general_page" class="extended_event_pages">'.html_print_table($table_general, true).'</div>';
 
     return $general;
@@ -3300,17 +3280,14 @@ function events_page_general($event)
  */
 function events_page_comments($event, $childrens_ids=[])
 {
-    //
     // Comments.
-    //
     global $config;
 
+    $table_comments = new stdClass;
     $table_comments->width = '100%';
     $table_comments->data = [];
     $table_comments->head = [];
-    $table_comments->style[0] = 'width:35%; vertical-align: top; text-align: left;';
-    $table_comments->style[1] = 'text-align: left;';
-    $table_comments->class = 'alternate rounded_cells';
+    $table_comments->class = 'table_modal_alternate';
 
     $event_comments = $event['user_comment'];
     $event_comments = str_replace(["\n", '&#x0a;'], '<br>', $event_comments);
@@ -3319,7 +3296,9 @@ function events_page_comments($event, $childrens_ids=[])
     $event_comments_array = json_decode($event_comments, true);
 
     // Show the comments more recent first.
-    $event_comments_array = array_reverse($event_comments_array);
+    if (is_array($event_comments_array)) {
+        $event_comments_array = array_reverse($event_comments_array);
+    }
 
     if (empty($event_comments_array)) {
         $comments_format = 'old';
@@ -3337,11 +3316,15 @@ function events_page_comments($event, $childrens_ids=[])
                 $table_comments->data[] = $data;
             }
 
-            foreach ($event_comments_array as $c) {
-                $data[0] = '<b>'.$c['action'].' by '.$c['id_user'].'</b>';
-                $data[0] .= '<br><br><i>'.date($config['date_format'], $c['utimestamp']).'</i>';
-                $data[1] = $c['comment'];
-                $table_comments->data[] = $data;
+            if (isset($event_comments_array) === true
+                && is_array($event_comments_array) === true
+            ) {
+                foreach ($event_comments_array as $c) {
+                    $data[0] = '<b>'.$c['action'].' by '.$c['id_user'].'</b>';
+                    $data[0] .= '<br><br><i>'.date($config['date_format'], $c['utimestamp']).'</i>';
+                    $data[1] = $c['comment'];
+                    $table_comments->data[] = $data;
+                }
             }
         break;
 
@@ -3409,9 +3392,9 @@ function events_page_comments($event, $childrens_ids=[])
         $childrens_ids
     ))) && $config['show_events_in_local'] == false || $config['event_replication'] == false
     ) {
-        $comments_form = '<br><div id="comments_form" style="width:98%;">'.html_print_textarea('comment', 3, 10, '', 'style="min-height: 15px; width: 100%; disabled"', true);
+        $comments_form = '<br><div id="comments_form" style="width:98%;">'.html_print_textarea('comment', 3, 10, '', 'style="min-height: 15px; padding:0; width: 100%; disabled"', true);
 
-        $comments_form .= '<br><div style="text-align:right;">'.html_print_button(__('Add comment'), 'comment_button', false, 'event_comment();', 'class="sub next"', true).'</div><br></div>';
+        $comments_form .= '<br><div style="text-align:right; margin-top:10px;">'.html_print_button(__('Add comment'), 'comment_button', false, 'event_comment();', 'class="sub next"', true).'</div><br></div>';
     } else {
         $comments_form = ui_print_message(
             __('If event replication is ongoing, it won\'t be possible to enter comments here. This option is only to allow local pandora users to see comments, but not to operate with them. The operation, when event replication is enabled, must be done only in the Metaconsole.')

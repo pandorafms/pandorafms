@@ -123,7 +123,7 @@ function createVisualConsole(
   try {
     visualConsole = new VisualConsole(container, props, items);
     // VC Item clicked.
-    visualConsole.onClick(function(e) {
+    visualConsole.onItemClick(function(e) {
       // Override the link to another VC if it isn't on remote console.
       if (
         e.data &&
@@ -138,6 +138,14 @@ function createVisualConsole(
         // Fetch and update the old VC with the new.
         updateVisualConsole(e.data.linkedLayoutId, updateInterval);
       }
+    });
+    // VC Item moved.
+    visualConsole.onItemMoved(function(e) {
+      // TODO: Run an async task to update the position here.
+      // TODO: Recover the previous position if the update task fails.
+      console.log(
+        "Moved item #" + e.item.props.id + " (x: " + e.x + ", y: " + e.y + ")"
+      );
     });
 
     if (updateInterval != null && updateInterval > 0) {

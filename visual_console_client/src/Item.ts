@@ -70,6 +70,10 @@ export interface ItemRemoveEvent<Props extends ItemProps> {
   data: AnyObject;
 }
 
+export interface ItemMovedEvent extends Position {
+  item: VisualConsoleItem<ItemProps>;
+}
+
 /**
  * Extract a valid enum value from a raw label positi9on value.
  * @param labelPosition Raw value.
@@ -135,6 +139,8 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
   protected readonly childElementRef: HTMLElement;
   // Event manager for click events.
   private readonly clickEventManager = new TypedEvent<ItemClickEvent<Props>>();
+  // Event manager for moved events.
+  private readonly movedEventManager = new TypedEvent<ItemMovedEvent>();
   // Event manager for remove events.
   private readonly removeEventManager = new TypedEvent<
     ItemRemoveEvent<Props>
@@ -149,8 +155,8 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
     (x: Position["x"], y: Position["y"]) => {
       // Save the new position to the props.
       this.move(x, y);
-      // TODO: start an async task to persist the change.
-      console.log("SAVED", x, y);
+      // Emit the movement event.
+      this.movedEventManager.emit({ item: this, x, y });
     }
   );
   // This property will store the function
@@ -652,6 +658,22 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
      * call them when the item should be cleared.
      */
     const disposable = this.clickEventManager.on(listener);
+    this.disposables.push(disposable);
+
+    return disposable;
+  }
+
+  /**
+   * To add an event handler to the movement of visual console elements.
+   * @param listener Function which is going to be executed when a linked console is moved.
+   */
+  public onMoved(listener: Listener<ItemMovedEvent>): Disposable {
+    /*
+     * The '.on' function returns a function which will clean the event
+     * listener when executed. We store all the 'dispose' functions to
+     * call them when the item should be cleared.
+     */
+    const disposable = this.movedEventManager.on(listener);
     this.disposables.push(disposable);
 
     return disposable;

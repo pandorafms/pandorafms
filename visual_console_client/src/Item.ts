@@ -13,7 +13,9 @@ import {
   notEmptyStringOr,
   replaceMacros,
   humanDate,
-  humanTime
+  humanTime,
+  addMovementListener,
+  debounce
 } from "./lib";
 import TypedEvent, { Listener, Disposable } from "./lib/TypedEvent";
 
@@ -140,6 +142,46 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
   // List of references to clean the event listeners.
   private readonly disposables: Disposable[] = [];
 
+  // This function will only run the 2nd arg function after the time
+  // of the first arg have passed after its last execution.
+  private debouncedMovementSave = debounce(
+    500, // ms.
+    (x: Position["x"], y: Position["y"]) => {
+      // Save the new position to the props.
+      this.move(x, y);
+      // TODO: start an async task to persist the change.
+      console.log("SAVED", x, y);
+    }
+  );
+  // This property will store the function
+  // to clean the movement listener.
+  private removeMovement: Function | null = null;
+
+  /**
+   * Start the movement funtionality.
+   * @param element Element to move inside its container.
+   */
+  private initMovementListener(element: HTMLElement): void {
+    this.removeMovement = addMovementListener(
+      element,
+      (x: Position["x"], y: Position["y"]) => {
+        // Move the DOM element.
+        this.moveElement(x, y);
+        // Run the save function.
+        this.debouncedMovementSave(x, y);
+      }
+    );
+  }
+  /**
+   * Stop the movement fun
+   */
+  private stopMovementListener(): void {
+    if (this.removeMovement) {
+      this.removeMovement();
+      this.removeMovement = null;
+    }
+  }
+
   /**
    * To create a new element which will be inside the item box.
    * @return Item.
@@ -182,18 +224,17 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
   private createContainerDomElement(): HTMLElement {
     let box;
     if (this.props.isLinkEnabled) {
-      box = document.createElement("a");
-      box as HTMLAnchorElement;
+      box = document.createElement("a") as HTMLAnchorElement;
       if (this.props.link) box.href = this.props.link;
     } else {
-      box = document.createElement("div");
-      box as HTMLDivElement;
+      box = document.createElement("div") as HTMLDivElement;
     }
 
     box.className = "visual-console-item";
     box.style.zIndex = this.props.isOnTop ? "2" : "1";
     box.style.left = `${this.props.x}px`;
     box.style.top = `${this.props.y}px`;
+    // Init the click listener.
     box.addEventListener("click", e => {
       if (this.meta.editMode) {
         e.preventDefault();
@@ -202,6 +243,19 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
         this.clickEventManager.emit({ data: this.props, nativeEvent: e });
       }
     });
+
+    // Metadata state.
+    if (this.meta.editMode) {
+      box.classList.add("is-editing");
+      // Init the movement listener.
+      this.initMovementListener(box);
+    }
+    if (this.meta.isFetching) {
+      box.classList.add("is-fetching");
+    }
+    if (this.meta.isUpdating) {
+      box.classList.add("is-updating");
+    }
 
     return box;
   }
@@ -428,8 +482,10 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
     if (!prevMeta || prevMeta.editMode !== this.meta.editMode) {
       if (this.meta.editMode) {
         this.elementRef.classList.add("is-editing");
+        this.initMovementListener(this.elementRef);
       } else {
         this.elementRef.classList.remove("is-editing");
+        this.stopMovementListener();
       }
     }
     if (!prevMeta || prevMeta.isFetching !== this.meta.isFetching) {

@@ -81,6 +81,8 @@ function mainAgentsModules()
     $full_agents_id = explode(';', get_parameter('full_agents_id', 0));
 
     if ($save_serialize == 0 && $update_item == '') {
+        // manu ha puesto esto para que funcione la pantalla completa
+        // if ($save_serialize && $update_item == '') { // Pero debe estar asi (como antes) para que funcione la paginacion de la propia tabla
         $unserialize_modules_selected  = unserialize_in_temp($config['id_user'].'_agent_module', true, 1);
         $unserialize_agents_id         = unserialize_in_temp($config['id_user'].'_agents', true, 1);
         if ($unserialize_modules_selected) {
@@ -261,30 +263,30 @@ function mainAgentsModules()
     }
 
     if ($config['pure'] != 1) {
-        echo '<form method="post" action="'.ui_get_url_refresh(['offset' => $offset, 'hor_offset' => $offset, 'group_id' => $group_id, 'modulegroup' => $modulegroup]).'">';
-
-        echo '<table class="databox filters" cellpadding="0" cellspacing="0" border="0" style="width:100%;">';
-            echo '<tr>';
-                echo '<td>'.$filter_groups_label.'</td>';
-                echo '<td>'.$filter_groups.'&nbsp;&nbsp;&nbsp;'.$filter_recursion_label.$filter_recursion.'</td>';
-                echo '<td></td>';
-                echo '<td></td>';
-                echo '<td>'.$filter_module_groups_label.'</td>';
-                echo '<td>'.$filter_module_groups.'</td>';
-            echo '</tr>';
-            echo '<tr>';
-                echo '<td>'.$filter_agents_label.'</td>';
-                echo '<td>'.$filter_agents.'</td>';
-                echo '<td>'.$filter_type_show_label.'</td>';
-                echo '<td>'.$filter_type_show.'</td>';
-                echo '<td>'.$filter_modules_label.'</td>';
-                echo '<td>'.$filter_modules.'</td>';
-            echo '</tr>';
-            echo '<tr>';
-                echo "<td colspan=6 ><span style='float: right; padding-right: 20px;'>".$filter_update.'</sapn></td>';
-            echo '</tr>';
-        echo '</table>';
-        echo '</form>';
+        $show_filters = '<form method="post" action="'.ui_get_url_refresh(['offset' => $offset, 'hor_offset' => $offset, 'group_id' => $group_id, 'modulegroup' => $modulegroup]).'" style="width:100%;">';
+        $show_filters .= '<table class="white_table" cellpadding="0" cellspacing="0" border="0" style="width:100%; border:none;">';
+            $show_filters .= '<tr>';
+                $show_filters .= '<td>'.$filter_groups_label.'</td>';
+                $show_filters .= '<td>'.$filter_groups.'&nbsp;&nbsp;&nbsp;'.$filter_recursion_label.$filter_recursion.'</td>';
+                $show_filters .= '<td></td>';
+                $show_filters .= '<td></td>';
+                $show_filters .= '<td>'.$filter_module_groups_label.'</td>';
+                $show_filters .= '<td>'.$filter_module_groups.'</td>';
+            $show_filters .= '</tr>';
+            $show_filters .= '<tr>';
+                $show_filters .= '<td>'.$filter_agents_label.'</td>';
+                $show_filters .= '<td>'.$filter_agents.'</td>';
+                $show_filters .= '<td>'.$filter_type_show_label.'</td>';
+                $show_filters .= '<td>'.$filter_type_show.'</td>';
+                $show_filters .= '<td>'.$filter_modules_label.'</td>';
+                $show_filters .= '<td>'.$filter_modules.'</td>';
+            $show_filters .= '</tr>';
+            $show_filters .= '<tr>';
+                $show_filters .= "<td colspan=6 ><span style='float: right; padding-right: 20px;'>".$filter_update.'</sapn></td>';
+            $show_filters .= '</tr>';
+        $show_filters .= '</table>';
+        $show_filters .= '</form>';
+        ui_toggle($show_filters, __('Filters'));
     }
 
     if ($agents_id[0] != -1) {
@@ -430,8 +432,8 @@ function mainAgentsModules()
 
     if ($hor_offset > 0) {
         $new_hor_offset = ($hor_offset - $block);
-        echo "<th width='20px' style='vertical-align:top; padding-top: 35px;' rowspan='".($nagents + 1)."'><a href='index.php?".'extension_in_menu=estado&sec=extensions&sec2=extensions/agents_modules&refr=0&save_serialize=1&selection_a_m='.$selection_a_m.'&hor_offset='.$new_hor_offset.'&offset='.$offset."'>".html_print_image(
-            'images/arrow_left.png',
+        echo "<th width='20px' style='vertical-align: middle; text-align: center;' rowspan='".($nagents + 1)."'><a href='index.php?".'extension_in_menu=estado&sec=extensions&sec2=extensions/agents_modules&refr=0&save_serialize=1&selection_a_m='.$selection_a_m.'&hor_offset='.$new_hor_offset.'&offset='.$offset."'>".html_print_image(
+            'images/arrow_left_green.png',
             true,
             ['title' => __('Previous modules')]
         ).'</a></th>';
@@ -456,8 +458,8 @@ function mainAgentsModules()
 
     if (($hor_offset + $block) < $nmodules) {
         $new_hor_offset = ($hor_offset + $block);
-        echo "<th width='20px' style='vertical-align:top; padding-top: 35px;' rowspan='".($nagents + 1)."'><a href='index.php?".'extension_in_menu=estado&sec=extensions&sec2=extensions/agents_modules&save_serialize=1&selection_a_m='.$selection_a_m.'&hor_offset='.$new_hor_offset.'&offset='.$offset."'>".html_print_image(
-            'images/arrow.png',
+        echo "<th width='20px' style='vertical-align: middle; text-align: center;' rowspan='".($nagents + 1)."'><a href='index.php?".'extension_in_menu=estado&sec=extensions&sec2=extensions/agents_modules&save_serialize=1&selection_a_m='.$selection_a_m.'&hor_offset='.$new_hor_offset.'&offset='.$offset."'>".html_print_image(
+            'images/arrow_right_green.png',
             true,
             ['title' => __('More modules')]
         ).'</a></th>';
@@ -588,18 +590,23 @@ function mainAgentsModules()
 
     echo '</table>';
 
-    echo "<div class='legend_basic' style='width: 96%'>";
+    $show_legend = "<div class='legend_white'>";
+    $show_legend .= "<div style='display: flex;align-items: center;'>
+            <div class='legend_square_simple'><div style='background-color: ".COL_ALERTFIRED.";'></div></div>".__('Orange cell when the module has fired alerts').'</div>';
+    $show_legend .= "<div style='display: flex;align-items: center;'>
+            <div class='legend_square_simple'><div style='background-color: ".COL_CRITICAL.";'></div></div>".__('Red cell when the module has a critical status').'
+        </div>';
+    $show_legend .= "<div style='display: flex;align-items: center;'>
+        <div class='legend_square_simple'><div style='background-color: ".COL_WARNING.";'></div></div>".__('Yellow cell when the module has a warning status').'</div>';
+    $show_legend .= "<div style='display: flex;align-items: center;'>
+        <div class='legend_square_simple'><div style='background-color: ".COL_NORMAL.";'></div></div>".__('Green cell when the module has a normal status').'</div>';
+    $show_legend .= "<div style='display: flex;align-items: center;'>
+        <div class='legend_square_simple'><div style='background-color: ".COL_UNKNOWN.";'></div></div>".__('Grey cell when the module has an unknown status').'</div>';
+    $show_legend .= "<div style='display: flex;align-items: center;'>
+        <div class='legend_square_simple'><div style='background-color: ".COL_NOTINIT.";'></div></div>".__("Cell turns blue when the module is in 'not initialize' status").'</div>';
+    $show_legend .= '</div>';
+    ui_toggle($show_legend, __('Legend'));
 
-    echo '<table>';
-    echo "<tr><td colspan='2' style='padding-bottom: 10px;'><b>".__('Legend').'</b></td></tr>';
-    echo "<tr><td class='legend_square_simple'><div style='background-color: ".COL_ALERTFIRED.";'></div></td><td>".__('Orange cell when the module has fired alerts').'</td></tr>';
-    echo "<tr><td class='legend_square_simple'><div style='background-color: ".COL_CRITICAL.";'></div></td><td>".__('Red cell when the module has a critical status').'</td></tr>';
-    echo "<tr><td class='legend_square_simple'><div style='background-color: ".COL_WARNING.";'></div></td><td>".__('Yellow cell when the module has a warning status').'</td></tr>';
-    echo "<tr><td class='legend_square_simple'><div style='background-color: ".COL_NORMAL.";'></div></td><td>".__('Green cell when the module has a normal status').'</td></tr>';
-    echo "<tr><td class='legend_square_simple'><div style='background-color: ".COL_UNKNOWN.";'></div></td><td>".__('Grey cell when the module has an unknown status').'</td></tr>';
-    echo "<tr><td class='legend_square_simple'><div style='background-color: ".COL_NOTINIT.";'></div></td><td>".__("Cell turns blue when the module is in 'not initialize' status").'</td></tr>';
-    echo '</table>';
-    echo '</div>';
     $pure_var = $config['pure'];
     if ($pure_var) {
         $pure_var = 1;

@@ -177,19 +177,33 @@ if ($searchpolicies == 0) {
 }
 
 
-        $sql .= ' LIMIT '.$config['block_size'].' OFFSET '.get_parameter('offset', 0);
+    $sql .= ' LIMIT '.$config['block_size'].' OFFSET '.get_parameter('offset', 0);
 
 
     $policies = db_process_sql($sql);
 
+    $sql = "SELECT id_grupo FROM tusuario_perfil
+    WHERE   id_usuario LIKE '%".$config['id_user']."%'";
+
+    $groups_for_search = db_process_sql($sql);
+
+
+foreach ($policies as $p) {
+    foreach ($groups_for_search as $group) {
+        if ($p['id_group'] == $group['id_grupo'] || $group['id_grupo'] == 0) {
+            $policies_final = $p;
+        }
+    }
+}
+
+$policies = $policies_final;
 if ($policies !== false) {
     if ($only_count) {
         unset($policies);
     }
 
     $sql = "SELECT COUNT(id) AS count FROM tpolicies
-				WHERE name LIKE '%".$stringSearchSQL."%' OR
-					  description LIKE '%".$stringSearchSQL."%'";
+				WHERE id = '".$policies_final['id']."'";
 
 
     $totalPolicies = db_get_value_sql($sql);

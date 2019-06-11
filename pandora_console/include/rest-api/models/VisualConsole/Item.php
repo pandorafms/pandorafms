@@ -240,7 +240,7 @@ class Item extends CachedModel
     private static function extractX(array $data): int
     {
         return static::parseIntOr(
-            static::issetInArray($data, ['x', 'pos_x', 'posX']),
+            static::issetInArray($data, ['x', 'pos_x', 'posX', 'startX']),
             0
         );
     }
@@ -256,7 +256,7 @@ class Item extends CachedModel
     private static function extractY(array $data): int
     {
         return static::parseIntOr(
-            static::issetInArray($data, ['y', 'pos_y', 'posY']),
+            static::issetInArray($data, ['y', 'pos_y', 'posY', 'startY']),
             0
         );
     }
@@ -1272,7 +1272,7 @@ class Item extends CachedModel
         }
 
         $period = static::parseIntOr(
-            static::issetInArray($data, ['period']),
+            static::issetInArray($data, ['period', 'maxTime']),
             null
         );
         if ($period !== null) {
@@ -1443,7 +1443,7 @@ class Item extends CachedModel
         }
 
         $timezone = static::notEmptyStringOr(
-            static::issetInArray($data, ['timezone', 'timeZone', 'time_zone']),
+            static::issetInArray($data, ['timezone', 'timeZone', 'time_zone', 'clockTimezone']),
             null
         );
         if ($timezone !== null) {
@@ -1512,7 +1512,7 @@ class Item extends CachedModel
     private static function extractWidth(array $data): integer
     {
         return static::parseIntOr(
-            static::issetInArray($data, ['width']),
+            static::issetInArray($data, ['width', 'endX']),
             null
         );
     }
@@ -1528,7 +1528,7 @@ class Item extends CachedModel
     private static function extractHeight(array $data): integer
     {
         return static::parseIntOr(
-            static::issetInArray($data, ['height']),
+            static::issetInArray($data, ['height', 'endY']),
             null
         );
     }
@@ -1544,7 +1544,7 @@ class Item extends CachedModel
     private static function extractImageSrc(array $data): string
     {
         $imageSrc = static::notEmptyStringOr(
-            static::issetInArray($data, ['imageSrc', 'image']),
+            static::issetInArray($data, ['imageSrc', 'image', 'backgroundColor', 'backgroundType', 'valueType']),
             null
         );
 
@@ -1578,7 +1578,7 @@ class Item extends CachedModel
     private static function extractTypeGraph(array $data): string
     {
         return static::notEmptyStringOr(
-            static::issetInArray($data, ['typeGraph', 'type_graph']),
+            static::issetInArray($data, ['typeGraph', 'type_graph', 'graphType']),
             null
         );
     }
@@ -1594,7 +1594,7 @@ class Item extends CachedModel
     private function extractBorderColor(array $data)
     {
         return static::notEmptyStringOr(
-            static::issetInArray($data, ['borderColor', 'border_color']),
+            static::issetInArray($data, ['borderColor', 'border_color', 'gridColor', 'color', 'legendBackgroundColor']),
             null
         );
     }
@@ -1610,14 +1610,14 @@ class Item extends CachedModel
     private function extractFillColor(array $data)
     {
         return static::notEmptyStringOr(
-            static::issetInArray($data, ['fillColor', 'fill_color']),
+            static::issetInArray($data, ['fillColor', 'fill_color', 'labelColor']),
             null
         );
     }
 
 
     /**
-     * .
+     * Insert or update an item in the database
      *
      * @param array $data Unknown input data structure.
      *
@@ -1625,19 +1625,16 @@ class Item extends CachedModel
      */
     public function save(array $data=[]): boolean
     {
-        $mergedData = \array_merge(static::data, $data);
-
-        $save = static::encode($mergedData);
+        $save = static::encode($data);
 
         if (empty($save['id'])) {
             // Insert.
-            $result = db_process_sql_insert('tlayout_data', $save);
+            $result = \db_process_sql_insert('tlayout_data', $save);
+            // static = static::fromDB(['id' => $result]);
         } else {
             // Update.
-            $result = db_process_sql_update('tlayout_data', $save, ['id' => $save['id']]);
-        }
-
-        if ($result) {
+            $result = \db_process_sql_update('tlayout_data', $save, ['id' => $save['id']]);
+            // static = static::fromDB(['id' => $save['id']]);
         }
 
         return $result;

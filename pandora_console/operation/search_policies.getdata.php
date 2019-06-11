@@ -170,43 +170,27 @@ switch ($sortField) {
 }
 
 if ($searchpolicies == 0) {
-            $sql = "SELECT id, name, description, id_group, status FROM tpolicies
-				    WHERE   name LIKE '%".$stringSearchSQL."%' OR
-					        description LIKE '%".$stringSearchSQL."%'
-				    ORDER BY ".$order['field'].' '.$order['order'];
+    $user_groups = users_get_groups($config['id_user'], 'AR', false);
+    $id_user_groups = array_keys($user_groups);
+    $id_user_groups_str = implode(',', $id_user_groups);
+
+            $sql = "SELECT id, name, description, id_group, status
+					FROM tpolicies 
+					WHERE name LIKE '$stringSearchSQL'
+                    AND id_group IN ($id_user_groups_str)";
 }
 
 
-    $sql .= ' LIMIT '.$config['block_size'].' OFFSET '.get_parameter('offset', 0);
-
+        $sql .= ' LIMIT '.$config['block_size'].' OFFSET '.get_parameter('offset', 0);
 
     $policies = db_process_sql($sql);
 
-    $sql = "SELECT id_grupo FROM tusuario_perfil
-    WHERE   id_usuario LIKE '%".$config['id_user']."%'";
-
-    $groups_for_search = db_process_sql($sql);
-
-
-foreach ($policies as $p) {
-    foreach ($groups_for_search as $group) {
-        if ($p['id_group'] == $group['id_grupo'] || $group['id_grupo'] == 0) {
-            $policies_final = $p;
-        }
-    }
-}
-
-$policies = $policies_final;
 if ($policies !== false) {
+    $totalPolicies = count($policies);
+
     if ($only_count) {
         unset($policies);
     }
-
-    $sql = "SELECT COUNT(id) AS count FROM tpolicies
-				WHERE id = '".$policies_final['id']."'";
-
-
-    $totalPolicies = db_get_value_sql($sql);
 } else {
     $totalPolicies = 0;
 }

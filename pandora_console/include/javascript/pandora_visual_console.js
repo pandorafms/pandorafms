@@ -156,8 +156,8 @@ function createVisualConsole(
             id,
             data,
             function(error, data) {
-              if (error && error.request.statusText === "abort") return;
-              if (error || !data) {
+              if (!error && !data) return;
+              if (error) {
                 console.log(
                   "[ERROR]",
                   "[VISUAL-CONSOLE-CLIENT]",

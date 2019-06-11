@@ -1,0 +1,95 @@
+#visual-console-container {
+  margin: 0px auto;
+  position: relative;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  background-position: center;
+}
+
+.visual-console-item {
+  position: absolute;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: initial;
+  -webkit-box-direction: initial;
+      -ms-flex-direction: initial;
+          flex-direction: initial;
+  justify-items: center;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-user-select: text;
+     -moz-user-select: text;
+      -ms-user-select: text;
+          user-select: text;
+}
+
+@font-face {
+  font-family: Alarm Clock;
+  src: url(alarm-clock.ttf);
+}
+
+/* Digital clock */
+
+.visual-console-item .digital-clock {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  justify-items: center;
+  -ms-flex-line-pack: center;
+      align-content: center;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+
+.visual-console-item .digital-clock > span {
+  font-family: "Alarm Clock", "Courier New", Courier, monospace;
+  font-size: 50px;
+
+  /* To improve legibility */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  text-shadow: rgba(0, 0, 0, 0.01) 0 0 1px;
+}
+
+.visual-console-item .digital-clock > span.date {
+  font-size: 25px;
+}
+
+.visual-console-item .digital-clock > span.timezone {
+  font-size: 25px;
+}
+
+/* Analog clock */
+
+.visual-console-item .analogic-clock {
+  text-align: center;
+}
+
+.visual-console-item .analogic-clock .hour-hand {
+  -webkit-animation: rotate-hour 43200s infinite linear;
+          animation: rotate-hour 43200s infinite linear;
+}
+
+.visual-console-item .analogic-clock .minute-hand {
+  -webkit-animation: rotate-minute 3600s infinite linear;
+          animation: rotate-minute 3600s infinite linear;
+}
+
+.visual-console-item .analogic-clock .second-hand {
+  -webkit-animation: rotate-second 60s infinite linear;
+          animation: rotate-second 60s infinite linear;
+}
+
+
+/*# sourceMappingURL=vc.main.css.map*/

@@ -36,7 +36,7 @@ use Encode::Locale;
 Encode::Locale::decode_argv;
 
 # version: define current version
-my $version = "7.0NG.731 PS190220";
+my $version = "7.0NG.735 PS190611";
 
 # save program name for logging
 my $progname = basename($0);
@@ -155,6 +155,7 @@ sub help_screen{
 	help_screen_line('--update_module', '<module_name> <agent_name> <field_to_change> <new_value>', 'Update a module field');
     help_screen_line('--get_agents_module_current_data', '<module_name>', "Get the agent and current data \n\t  of all the modules with a given name");
 	help_screen_line('--create_network_module_from_component', '<agent_name> <component_name>', "Create a new network \n\t  module from a network component");
+	help_screen_line('--create_network_component', "<network_component_name> <network_component_group> <network_component_type> \n\t [<description> <module_interval> <max_value> <min_value> \n\t <snmp_community> <id_module_group> <max_timeout> \n\t <history_data> <min_warning> <max_warning> \n\t <str_warning> <min_critical> <max_critical> \n\t <str_critical> <min_ff_event> <post_process> \n\t <disabled_types_event> <each_ff> <min_ff_event_normal> \n\t <min_ff_event_warning> <min_ff_event_critical>]", "Create a new network component");	
 	help_screen_line('--create_synthetic', "<module_name> <synthetic_type> <agent_name> <source_agent1>,<operation>,<source_module1>|<source_agent1>,<source_module1> \n\t [ <operation>,<fixed_value> | <source agent2>,<operation>,<source_module2> ]", "Create a new Synthetic module");
 	print "\nALERTS:\n\n" unless $param ne '';
     help_screen_line('--create_template_module', '<template_name> <module_name> <agent_name>', 'Add alert template to module');
@@ -200,7 +201,7 @@ sub help_screen{
 	print "\nINCIDENTS:\n\n" unless $param ne '';
 	help_screen_line('--create_incident', "<title> <description> <origin> <status> <priority 0 for Informative, \n\t  1 for Low, 2 for Medium, 3 for Serious, 4 for Very serious or 5 for Maintenance>\n\t   <group> [<owner>]", 'Create incidents');
 	print "\nPOLICIES:\n\n" unless $param ne '';
-	help_screen_line('--apply_policy', '<policy_name>', 'Force apply a policy');
+	help_screen_line('--apply_policy', '<id_policy> [<id_agent> <name(boolean)> <id_server>]', 'Force apply a policy in an agent');
 	help_screen_line('--apply_all_policies', '', 'Force apply to all the policies');
 	help_screen_line('--add_agent_to_policy', '<agent_name> <policy_name>', 'Add an agent to a policy');
 	help_screen_line('--remove_agent_from_policy', '<policy_id> <agent_id>', 'Delete an agent to a policy');
@@ -1683,6 +1684,23 @@ sub cli_create_network_module_from_component() {
 	my $component = get_db_single_row ($dbh, 'SELECT * FROM tnetwork_component WHERE id_nc = ?', $nc_id);
 	
 	pandora_create_module_from_network_component ($conf, $component, $agent_id, $dbh);
+}
+
+##############################################################################
+# Create a network component.
+# Related option: --create_network_component
+##############################################################################
+sub cli_create_network_component() {
+	my ($c_name, $c_group, $c_type) = @ARGV[2..4];
+	my @todo = @ARGV[5..20];
+	my $other = join('|', @todo);
+	my @todo2 = @ARGV[22..26];
+	my $other2 = join('|', @todo2);
+
+	# Call the API.
+	my $result = api_call( $conf, 'set', 'new_network_component', $c_name, undef, "$c_type|$other|$c_group|$other2");
+	
+	print "$result \n\n ";
 }
 
 ##############################################################################
@@ -3606,19 +3624,11 @@ sub cli_delete_data($) {
 ##############################################################################
 
 sub cli_apply_policy() {
-	my $policy_name = @ARGV[2];
-	
-	my $policy_id = enterprise_hook('get_policy_id',[$dbh, safe_input($policy_name)]);
-	exist_check($policy_id,'policy',$policy_name);
-	
-	my $ret = enterprise_hook('pandora_add_policy_queue', [$dbh, $conf, $policy_id, 'apply']);
-	
-	if($ret == -1) {
-		print_log "[ERROR] Operation 'apply' cannot be added to policy '$policy_name' because is duplicated in queue or incompatible with others operations\n\n";
-		exit;
-	}
-	
-	print_log "[INFO] Added operation 'apply' to policy '$policy_name'\n\n";
+	my ($id_policy, $id_agent, $name, $id_server) = @ARGV[2..5];
+
+	# Call the API.
+	my $result = api_call(\%conf, 'set', 'apply_policy', $id_policy, $id_agent, "$name|$id_server");
+	print "\n$result\n";
 }
 
 ##############################################################################
@@ -3635,7 +3645,7 @@ sub cli_apply_all_policies() {
 	
 	my $added = 0;
 	foreach my $policy (@{$policies}) {
-		my $ret = enterprise_hook('pandora_add_policy_queue', [$dbh, $conf, $policy->{'id'}, 'apply']);
+		my $ret = enterprise_hook('pandora_add_policy_queue', [$dbh, $conf, $policy->{'id'}, 'apply', 0, 1]);
 		if($ret != -1) {
 			$added++;
 			print_log "[INFO] Added operation 'apply' to policy '".safe_output($policy->{'name'})."'\n";
@@ -6031,7 +6041,7 @@ sub pandora_manage_main ($$$) {
 			cli_delete_data($ltotal);
 		}
 		elsif ($param eq '--apply_policy') {
-			param_check($ltotal, 1);
+			param_check($ltotal, 4, 3);
 			cli_apply_policy();
 		}
 		elsif ($param eq '--disable_policy_alerts') {
@@ -6211,6 +6221,10 @@ sub pandora_manage_main ($$$) {
 		elsif ($param eq '--create_network_module_from_component') {
 			param_check($ltotal, 2);
 			cli_create_network_module_from_component();
+		}
+		elsif ($param eq '--create_network_component') {
+			param_check($ltotal, 24, 21);
+			cli_create_network_component();
 		}
 		elsif ($param eq '--create_netflow_filter') {
 			param_check($ltotal, 5);

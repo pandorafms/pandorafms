@@ -26,7 +26,7 @@ if (!check_acl($config['id_user'], 0, 'PM')) {
     return;
 }
 
-// Header
+// Header.
 ui_print_page_header(__('Agents custom fields manager'), 'images/custom_field.png', false, '', true, '');
 
 $create_field = (bool) get_parameter('create_field');
@@ -36,10 +36,12 @@ $id_field = (int) get_parameter('id_field', 0);
 $name = (string) get_parameter('name', '');
 $display_on_front = (int) get_parameter('display_on_front', 0);
 $is_password_type = (int) get_parameter('is_password_type', 0);
+$combo_values = (string) get_parameter('combo_values', '');
+$combo_value_selected = (string) get_parameter('combo_value_selected', '');
 
-// Create field
+// Create field.
 if ($create_field) {
-    // Check if name field is empty
+    // Check if name field is empty.
     if ($name == '') {
         ui_print_error_message(__('The name must not be empty'));
     } else if ($name == db_get_value('name', 'tagent_custom_fields', 'name', $name)) {
@@ -51,20 +53,22 @@ if ($create_field) {
                 'name'             => $name,
                 'display_on_front' => $display_on_front,
                 'is_password_type' => $is_password_type,
+                'combo_values'     => $combo_values,
             ]
         );
         ui_print_success_message(__('Field successfully created'));
     }
 }
 
-// Update field
+// Update field.
 if ($update_field) {
-    // Check if name field is empty
+    // Check if name field is empty.
     if ($name != '') {
         $values = [
             'name'             => $name,
             'display_on_front' => $display_on_front,
             'is_password_type' => $is_password_type,
+            'combo_values'     => $combo_values,
         ];
 
         $result = db_process_sql_update('tagent_custom_fields', $values, ['id_field' => $id_field]);
@@ -79,7 +83,7 @@ if ($update_field) {
     }
 }
 
-// Delete field
+// Delete field.
 if ($delete_field) {
     $result = db_process_sql_delete(
         'tagent_custom_fields',
@@ -93,11 +97,22 @@ if ($delete_field) {
     }
 }
 
-$fields = db_get_all_fields_in_table('tagent_custom_fields');
+// Prepare pagination.
+$offset = (int) get_parameter('offset');
+$limit = $config['block_size'];
+$count_fields = db_get_value('count(*)', 'tagent_custom_fields');
+
+$fields = db_get_all_rows_filter(
+    'tagent_custom_fields',
+    [
+        'limit'  => $limit,
+        'offset' => $offset,
+    ]
+);
 
 $table = new stdClass();
 $table->width = '100%';
-$table->class = 'databox data';
+$table->class = 'info_table';
 if ($fields) {
     $table->head = [];
     $table->head[0] = __('ID');
@@ -131,14 +146,17 @@ foreach ($fields as $field) {
         $data[2] = html_print_image('images/icono_stop.png', true, ['style' => 'width:21px;height:21px;']);
     }
 
+    $table->cellclass[][3] = 'action_buttons';
     $data[3] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/configure_field&id_field='.$field['id_field'].'">'.html_print_image('images/config.png', true, ['alt' => __('Edit'), 'title' => __('Edit'), 'border' => '0']).'</a>';
-    $data[3] .= '&nbsp;&nbsp;<a href="index.php?sec=gagente&sec2=godmode/agentes/fields_manager&delete_field=1&id_field='.$field['id_field'].'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">'.html_print_image('images/cross.png', true, ['alt' => __('Delete'), 'title' => __('Delete'), 'border' => '0']).'</a>';
+    $data[3] .= '<a href="index.php?sec=gagente&sec2=godmode/agentes/fields_manager&delete_field=1&id_field='.$field['id_field'].'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">'.html_print_image('images/cross.png', true, ['alt' => __('Delete'), 'title' => __('Delete'), 'border' => '0']).'</a>';
 
     array_push($table->data, $data);
 }
 
 if ($fields) {
+    ui_pagination($count_fields, false, $offset);
     html_print_table($table);
+    ui_pagination($count_fields, false, $offset, 0, false, 'offset', true, 'pagination-bottom');
 }
 
 echo '<form method="post" action="index.php?sec=gagente&sec2=godmode/agentes/configure_field">';

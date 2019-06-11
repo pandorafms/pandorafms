@@ -81,7 +81,6 @@ function add_component_selection($id_network_component_type)
 
     $data = [];
     $data[0] = __('Using module component').' ';
-    $data[0] .= ui_print_help_icon('network_component', true);
 
     $component_groups = network_components_get_groups($id_network_component_type);
     $data[1] = '<span id="component_group" class="left">';
@@ -159,6 +158,7 @@ if ($disabledBecauseInPolicy) {
 }
 
 $update_module_id = (int) get_parameter_get('update_module');
+$edit_module = (bool) get_parameter_get('edit_module');
 $table_simple = new stdClass();
 $table_simple->id = 'simple';
 $table_simple->width = '100%';
@@ -270,7 +270,7 @@ if (!$in_policy) {
     }
 }
 
-$table_simple->data[2][0] = __('Type').' '.ui_print_help_icon('module_type', true);
+$table_simple->data[2][0] = __('Type').' '.ui_print_help_icon($help_type, true, '', 'images/help_green.png', '', 'module_type_help');
 $table_simple->data[2][0] .= html_print_input_hidden('id_module_type_hidden', $id_module_type, true);
 
 if (isset($id_agent_module)) {
@@ -350,11 +350,40 @@ if (!$edit) {
     $table_simple->data[2][1] .= html_print_input_hidden('type_names', base64_encode(io_json_mb_encode($type_names_hash)), true);
 }
 
+if ($edit_module) {
+    $id_module_type = (int) $id_module_type;
+    if (($id_module_type >= 1 && $id_module_type <= 5)
+        || ($id_module_type >= 21 && $id_module_type <= 23)
+        || ($id_module_type == 100)
+    ) {
+        $help_header = 'local_module';
+    }
+
+    if ($id_module_type === 6 || $id_module_type === 7
+    ) {
+        $help_header = 'icmp_module_tab';
+    }
+
+    if ($id_module_type >= 15 && $id_module_type <= 18) {
+        $help_header = 'snmp_module_tab';
+    }
+
+    if ($id_module_type >= 8 && $id_module_type <= 11) {
+        $help_header = 'tcp_module_tab';
+    }
+
+    if ($id_module_type >= 30 && $id_module_type <= 33) {
+        $help_header = 'webserver_module_tab';
+    }
+
+    $table_simple->data[2][0] = __('Type').' '.ui_print_help_icon($help_header, true);
+}
+
 if ($disabledBecauseInPolicy) {
     $table_simple->data[2][3] .= html_print_input_hidden('id_module_group', $id_module_group, true);
 }
 
-$table_simple->data[3][0] = __('Dynamic Threshold Interval').' '.ui_print_help_icon('dynamic_threshold', true);
+$table_simple->data[3][0] = __('Dynamic Threshold Interval');
 $table_simple->data[3][1] = html_print_extended_select_for_time('dynamic_interval', $dynamic_interval, '', 'None', '0', 10, true, 'width:150px', false, $classdisabledBecauseInPolicy, $disabledBecauseInPolicy);
 $table_simple->data[3][1] .= '<a onclick=advanced_option_dynamic()>'.html_print_image('images/cog.png', true, ['title' => __('Advanced options Dynamic Threshold')]).'</a>';
 if ($in_policy) {
@@ -394,7 +423,7 @@ $table_simple->data[3][2] .= html_print_input_text(
 $table_simple->data[3][3] = '<span><em>'.__('Dynamic Threshold Two Tailed: ').'</em>';
 $table_simple->data[3][3] .= html_print_checkbox('dynamic_two_tailed', 1, $dynamic_two_tailed, true, $disabledBecauseInPolicy);
 
-$table_simple->data[4][0] = __('Warning status').' '.ui_print_help_icon('warning_status', true);
+$table_simple->data[4][0] = __('Warning status');
 if (!modules_is_string_type($id_module_type) || $edit) {
     $table_simple->data[4][1] .= '<span id="minmax_warning"><em>'.__('Min. ').'</em>';
     $table_simple->data[4][1] .= html_print_input_text(
@@ -431,7 +460,7 @@ if (modules_is_string_type($id_module_type) || $edit) {
         str_replace('"', '', $str_warning),
         '',
         10,
-        255,
+        1024,
         true,
         $disabledBecauseInPolicy,
         false,
@@ -447,7 +476,7 @@ if (!modules_is_string_type($id_module_type) || $edit) {
     $table_simple->data[4][2] = '<svg id="svg_dinamic" width="500" height="300"> </svg>';
 }
 
-$table_simple->data[5][0] = __('Critical status').' '.ui_print_help_icon('critical_status', true);
+$table_simple->data[5][0] = __('Critical status');
 if (!modules_is_string_type($id_module_type) || $edit) {
     $table_simple->data[5][1] .= '<span id="minmax_critical"><em>'.__('Min. ').'</em>';
     $table_simple->data[5][1] .= html_print_input_text(
@@ -484,7 +513,7 @@ if (modules_is_string_type($id_module_type) || $edit) {
         str_replace('"', '', $str_critical),
         '',
         10,
-        255,
+        1024,
         true,
         $disabledBecauseInPolicy,
         false,
@@ -496,10 +525,27 @@ if (modules_is_string_type($id_module_type) || $edit) {
 $table_simple->data[5][1] .= '<br /><em>'.__('Inverse interval').'</em>';
 $table_simple->data[5][1] .= html_print_checkbox('critical_inverse', 1, $critical_inverse, true, $disabledBecauseInPolicy);
 
-// FF stands for Flip-flop
-$table_simple->data[6][0] = __('FF threshold').' '.ui_print_help_icon('ff_threshold', true);
+// FF stands for Flip-flop.
+$table_simple->data[6][0] = __('FF threshold').' ';
 
-$table_simple->data[6][1] = html_print_radio_button('each_ff', 0, '', $each_ff, true, $disabledBecauseInPolicy).' '.__('All state changing').' : ';
+$table_simple->data[6][1] .= __('Keep counters');
+$table_simple->data[6][1] .= html_print_checkbox(
+    'ff_type',
+    1,
+    $ff_type,
+    true,
+    $disabledBecauseInPolicy
+).'<br />';
+
+$table_simple->data[6][1] .= html_print_radio_button(
+    'each_ff',
+    0,
+    '',
+    $each_ff,
+    true,
+    $disabledBecauseInPolicy
+);
+$table_simple->data[6][1] .= ' '.__('All state changing').' : ';
 $table_simple->data[6][1] .= html_print_input_text(
     'ff_event',
     $ff_event,
@@ -512,7 +558,16 @@ $table_simple->data[6][1] .= html_print_input_text(
     '',
     $classdisabledBecauseInPolicy
 ).'<br />';
-$table_simple->data[6][1] .= html_print_radio_button('each_ff', 1, '', $each_ff, true, $disabledBecauseInPolicy).' '.__('Each state changing').' : ';
+$table_simple->data[6][1] .= html_print_radio_button(
+    'each_ff',
+    1,
+    '',
+    $each_ff,
+    true,
+    $disabledBecauseInPolicy
+);
+
+$table_simple->data[6][1] .= ' '.__('Each state changing').' : ';
 $table_simple->data[6][1] .= __('To normal');
 $table_simple->data[6][1] .= html_print_input_text(
     'ff_event_normal',
@@ -526,6 +581,7 @@ $table_simple->data[6][1] .= html_print_input_text(
     '',
     $classdisabledBecauseInPolicy
 ).' ';
+
 $table_simple->data[6][1] .= __('To warning');
 $table_simple->data[6][1] .= html_print_input_text(
     'ff_event_warning',
@@ -539,6 +595,7 @@ $table_simple->data[6][1] .= html_print_input_text(
     '',
     $classdisabledBecauseInPolicy
 ).' ';
+
 $table_simple->data[6][1] .= __('To critical');
 $table_simple->data[6][1] .= html_print_input_text(
     'ff_event_critical',
@@ -552,16 +609,31 @@ $table_simple->data[6][1] .= html_print_input_text(
     '',
     $classdisabledBecauseInPolicy
 );
+
 $table_simple->data[7][0] = __('Historical data');
 if ($disabledBecauseInPolicy) {
-    // If is disabled, we send a hidden in his place and print a false checkbox because HTML dont send disabled fields and could be disabled by error
-    $table_simple->data[7][1] = html_print_checkbox('history_data_fake', 1, $history_data, true, $disabledBecauseInPolicy);
+    // If is disabled, we send a hidden in his place and print a false
+    // checkbox because HTML dont send disabled fields
+    // and could be disabled by error.
+    $table_simple->data[7][1] = html_print_checkbox(
+        'history_data_fake',
+        1,
+        $history_data,
+        true,
+        $disabledBecauseInPolicy
+    );
     $table_simple->data[7][1] .= '<input type="hidden" name="history_data" value="'.(int) $history_data.'">';
 } else {
-    $table_simple->data[7][1] = html_print_checkbox('history_data', 1, $history_data, true, $disabledBecauseInPolicy);
+    $table_simple->data[7][1] = html_print_checkbox(
+        'history_data',
+        1,
+        $history_data,
+        true,
+        $disabledBecauseInPolicy
+    );
 }
 
-// Advanced form part
+// Advanced form part.
 $table_advanced = new stdClass();
 $table_advanced->id = 'advanced';
 $table_advanced->width = '100%';
@@ -629,15 +701,15 @@ if ($moduletype == MODULE_DATA) {
     if (isset($id_agente)) {
         $agent_interval = agents_get_interval($id_agente);
         $interval_factor = ($interval / $agent_interval);
-        $table_advanced->data[2][1] = human_time_description_raw($interval).' ('.sprintf(__('Agent interval x %s'), $interval_factor).') '.ui_print_help_icon('module_interval_factor', true);
+        $table_advanced->data[2][1] = human_time_description_raw($interval).' ('.sprintf(__('Agent interval x %s'), $interval_factor).') ';
     } else {
-        $table_advanced->data[2][1] = sprintf(__('Agent interval x %s'), $interval_factor).ui_print_help_icon('module_interval_factor', true);
+        $table_advanced->data[2][1] = sprintf(__('Agent interval x %s'), $interval_factor);
     }
 
     if ($__code_from == 'policies') {
         // If is the policy form, module_interval will store the factor (not the seconds).
         // So server will transform it to interval in seconds
-        $table_advanced->data[2][1] = sprintf(__('Default').': 1', $interval_factor).ui_print_help_icon('module_interval_factor', true);
+        $table_advanced->data[2][1] = sprintf(__('Default').': 1', $interval_factor);
         $table_advanced->data[2][1] .= html_print_input_hidden('module_interval', $interval_factor, true);
     } else if ($module_id_policy_module != 0) {
         $table_advanced->data[2][1] .= ui_print_help_tip(__('The policy modules of data type will only update their intervals when policy is applied.'), true);
@@ -646,14 +718,14 @@ if ($moduletype == MODULE_DATA) {
     // If it is a non policy form, the module_interval will not provided and will
     // be taken the agent interval (this code is at configurar_agente.php)
 } else {
-    $table_advanced->data[2][0] = __('Interval').ui_print_help_icon('module_interval', true);
+    $table_advanced->data[2][0] = __('Interval');
     $table_advanced->colspan[2][1] = 2;
     $table_advanced->data[2][1] = html_print_extended_select_for_time('module_interval', $interval, '', '', '0', false, true, false, false, $classdisabledBecauseInPolicy, $disabledBecauseInPolicy);
 }
 
 $table_advanced->data[2][1] .= html_print_input_hidden('moduletype', $moduletype, true);
 
-$table_advanced->data[2][3] = __('Post process').' '.ui_print_help_icon('postprocess', true);
+$table_advanced->data[2][3] = __('Post process');
 $table_advanced->data[2][4] = html_print_extended_select_for_post_process(
     'post_process',
     $post_process,
@@ -719,7 +791,7 @@ $table_advanced->data[4][4] = html_print_checkbox(
 );
 $table_advanced->colspan[4][4] = 3;
 
-$table_advanced->data[5][0] = __('FF interval').' '.ui_print_help_icon('ff_interval', true);
+$table_advanced->data[5][0] = __('FF interval');
 $table_advanced->data[5][1] = html_print_input_text(
     'module_ff_interval',
     $ff_interval,
@@ -734,7 +806,7 @@ $table_advanced->data[5][1] = html_print_input_text(
 ).ui_print_help_tip(__('Module execution flip flop time interval (in secs).'), true);
 $table_advanced->colspan[5][1] = 2;
 
-$table_advanced->data[5][3] = __('FF timeout').' '.ui_print_help_icon('ff_timeout', true);
+$table_advanced->data[5][3] = __('FF timeout');
 
 $module_type_name = modules_get_type_name($id_module_type);
 $table_advanced->data[5][4] = '';
@@ -936,7 +1008,7 @@ $table_advanced->colspan[10][1] = 6;
 if (isset($id_agente) && $moduletype == MODULE_DATA) {
     $has_remote_conf = enterprise_hook('config_agents_has_remote_configuration', [$agent['id_agente']]);
     if ($has_remote_conf) {
-        $table_advanced->data[11][0] = __('Cron from').ui_print_help_icon('cron', true);
+        $table_advanced->data[11][0] = __('Cron from');
         $table_advanced->data[11][1] = html_print_extended_select_for_cron($hour_from, $minute_from, $mday_from, $month_from, $wday_from, true, $disabledBecauseInPolicy);
         $table_advanced->colspan[11][1] = 6;
 
@@ -944,7 +1016,7 @@ if (isset($id_agente) && $moduletype == MODULE_DATA) {
         $table_advanced->data[12][1] = html_print_extended_select_for_cron($hour_to, $minute_to, $mday_to, $month_to, $wday_to, true, $disabledBecauseInPolicy, true);
         $table_advanced->colspan[12][1] = 6;
     } else {
-        $table_advanced->data[11][0] = __('Cron from').ui_print_help_icon('cron', true);
+        $table_advanced->data[11][0] = __('Cron from');
         $table_advanced->data[11][1] = html_print_extended_select_for_cron($hour_from, $minute_from, $mday_from, $month_from, $wday_from, true, true);
         $table_advanced->colspan[11][1] = 6;
 
@@ -953,7 +1025,7 @@ if (isset($id_agente) && $moduletype == MODULE_DATA) {
         $table_advanced->colspan[12][1] = 6;
     }
 } else {
-    $table_advanced->data[11][0] = __('Cron from').ui_print_help_icon('cron', true);
+    $table_advanced->data[11][0] = __('Cron from');
     $table_advanced->data[11][1] = html_print_extended_select_for_cron($hour_from, $minute_from, $mday_from, $month_from, $wday_from, true, $disabledBecauseInPolicy);
     $table_advanced->colspan[11][1] = 6;
 
@@ -1126,6 +1198,7 @@ html_print_input_hidden('module_relations_count', $relations_count);
 
 ui_require_jquery_file('json');
 
+
 ?>
 
 <script type="text/javascript">
@@ -1179,7 +1252,124 @@ $(document).ready (function () {
         var type_names = jQuery.parseJSON(Base64.decode($('#hidden-type_names').val()));
         
         var type_name_selected = type_names[type_selected];
-        
+        var element = document.getElementById("module_type_help");
+        var language =  "<?php echo $config['language']; ?>" ;
+        element.onclick = function (event) {
+            if(type_name_selected == 'async_data' ||
+             type_name_selected == 'async_proc' ||
+             type_name_selected == 'async_string' ||
+             type_name_selected == 'generic_proc'||
+             type_name_selected == 'generic_data' ||
+             type_name_selected == 'generic_data_inc' ||
+             type_name_selected == 'generic_data_inc_abs'||
+             type_name_selected == 'generic_data_string' ||
+             type_name_selected == 'keep_alive'
+               ){
+                if (language == 'es'){
+                 window.open(
+                     'https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_es:Operacion&printable=yes#Tipos_de_m.C3.B3dulos',
+                     '_blank',
+                     'width=800,height=600'
+                        );
+               }
+               else{
+                window.open(
+                    'https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_en:Operations&printable=yes#Types_of_Modules',
+                     '_blank',
+                     'width=800,height=600'
+                     );
+               }
+              
+                
+            }
+            if(type_name_selected == 'remote_icmp' ||
+             type_name_selected == 'remote_icmp_proc'
+             ){
+                 if(language == 'es'){
+                    window.open(
+                    'https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_es:Monitorizacion_remota&printable=yes#Monitorizaci.C3.B3n_ICMP',
+                     '_blank',
+                     'width=800,height=600'
+                     );
+                 }
+                 else{
+                    window.open(
+                    'https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_en:Remote_Monitoring&printable=yes#ICMP_Monitoring',
+                     '_blank',
+                     'width=800,height=600'
+                     );
+                 }
+              
+                
+            }
+            if(type_name_selected == 'remote_snmp_string' ||
+             type_name_selected == 'remote_snmp_proc' ||
+             type_name_selected == 'remote_snmp_inc' ||
+             type_name_selected == 'remote_snmp'
+             ){
+                 if(language == 'es'){
+                    window.open(
+                    'https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_es:Monitorizacion_remota&printable=yes#Monitorizando_con_m.C3.B3dulos_de_red_tipo_SNMP',
+                     '_blank',
+                     'width=800,height=600'
+                     );
+                 }
+                 else{
+                    window.open(
+                    'https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_en:Remote_Monitoring&printable=yes#Monitoring_by_Network_Modules_with_SNMP',
+                     '_blank',
+                     'width=800,height=600'
+                     );
+                 }
+               
+                
+            }
+            if(type_name_selected == 'remote_tcp_string' ||
+             type_name_selected == 'remote_tcp_proc' ||
+             type_name_selected == 'remote_tcp_inc' ||
+             type_name_selected == 'remote_tcp'
+               ){
+                   if(language == 'es'){
+                    window.open(
+                    'https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_es:Monitorizacion_remota&printable=yes#Monitorizaci.C3.B3n_TCP',
+                     '_blank',
+                     'width=800,height=600'
+                     );
+                   }
+                   else{
+                    window.open(
+                    'https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_en:Remote_Monitoring&printable=yes#TCP_Monitoring',
+                     '_blank',
+                     'width=800,height=600'
+                     );
+                   }
+              
+                
+            }
+            if(type_name_selected == 'web_data' ||
+             type_name_selected == 'web_proc' ||
+             type_name_selected == 'web_content_data' ||
+             type_name_selected == 'web_content_string'
+               ){
+                   if(language == 'es'){
+                    window.open(
+                    'https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_es:Monitorizacion_web&printable=yes#Creaci.C3.B3n_de_m.C3.B3dulos_web',
+                     '_blank',
+                     'width=800,height=600'
+                     );
+                   }
+                   else{
+                    window.open(
+                    'https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_en:Web_Monitoring&printable=yes#Creating_Web_Modules',
+                     '_blank',
+                     'width=800,height=600'
+                     );
+                   }
+              
+                
+            }
+        }
+
         if (type_name_selected.match(/_string$/) == null) {
             // Numeric types
             $('#string_critical').hide();
@@ -1319,7 +1509,7 @@ function disabled_two_tailed (disabledBecauseInPolicy) {
 function advanced_option_dynamic() {
     if($('.hide_dinamic').is(":visible")){
         $('.hide_dinamic').hide();
-        
+
     } else {
         $('.hide_dinamic').show();
         

@@ -41,7 +41,13 @@ if (is_ajax()) {
 }
 
 // Header
-ui_print_page_header(__('Alerts').' &raquo; '.__('Special days list'), 'images/gm_alerts.png', false, 'alert_special_days', true);
+ui_print_page_header(
+    __('Alerts').' &raquo; '.__('Special days list'),
+    'images/gm_alerts.png',
+    false,
+    'alert_special_days',
+    true
+);
 
 $update_special_day = (bool) get_parameter('update_special_day');
 $create_special_day = (bool) get_parameter('create_special_day');

@@ -489,7 +489,7 @@ $params['selectbox_id'] = 'cascade_protection_module';
 $params['javascript_is_function_select'] = true;
 $table->data[0][1] = ui_print_agent_autocomplete_input($params);
 
-$table->data[0][1] .= '<b>'.__('Cascade protection').'</b>&nbsp;'.ui_print_help_icon('cascade_protection', true).html_print_select(
+$table->data[0][1] .= '<b>'.__('Cascade protection').'</b>'.html_print_select(
     [
         1 => __('Yes'),
         0 => __('No'),
@@ -587,7 +587,7 @@ $table->data[0][0] = __('Custom ID');
 $table->data[0][1] = html_print_input_text('custom_id', $custom_id, '', 16, 255, true);
 
 // Learn mode / Normal mode
-$table->data[1][0] = __('Module definition').ui_print_help_icon('module_definition', true);
+$table->data[1][0] = __('Module definition');
 $table->data[1][1] = __('No change').' '.html_print_radio_button_extended('mode', -1, '', $mode, false, '', 'style="margin-right: 40px;"', true);
 $table->data[1][1] .= __('Learning mode').' '.html_print_radio_button_extended('mode', 1, '', $mode, false, '', 'style="margin-right: 40px;"', true);
 $table->data[1][1] .= __('Normal mode').' '.html_print_radio_button_extended('mode', 0, '', $mode, false, '', 'style="margin-right: 40px;"', true);
@@ -689,6 +689,13 @@ foreach ($fields as $field) {
         __('This field allows url insertion using the BBCode\'s url tag').'.<br />'.__('The format is: [url=\'url to navigate\']\'text to show\'[/url]').'.<br /><br />'.__('e.g.: [url=google.com]Google web search[/url]'),
         true
     );
+    $combo = [];
+    $combo = $field['combo_values'];
+    $combo = explode(',', $combo);
+    $combo_values = [];
+    foreach ($combo as $value) {
+        $combo_values[$value] = $value;
+    }
 
     $custom_value = db_get_value_filter('description', 'tagent_custom_data', ['id_field' => $field['id_field'], 'id_agent' => $id_agente]);
 
@@ -713,6 +720,28 @@ foreach ($fields as $field) {
     } else {
         $data[1] = html_print_textarea('customvalue_'.$field['id_field'], 2, 65, $custom_value, 'style="min-height: 30px;"', true);
     }
+
+    if ($field['combo_values'] !== '') {
+        $data[1] = html_print_select(
+            $combo_values,
+            'customvalue_'.$field['id_field'],
+            $custom_value,
+            '',
+            __('No change'),
+            '',
+            true,
+            false,
+            false,
+            '',
+            false,
+            false,
+            false,
+            false,
+            false,
+            '',
+            false
+        );
+    };
 
     array_push($table->data, $data);
 }

@@ -20,8 +20,8 @@
 /**
  * Pandora build version and version
  */
-$build_version = 'PC190220';
-$pandora_version = 'v7.0NG.731';
+$build_version = 'PC190611';
+$pandora_version = 'v7.0NG.735';
 
 // Do not overwrite default timezone set if defined.
 $script_tz = @date_default_timezone_get();
@@ -306,3 +306,9 @@ switch ($config['dbtype']) {
 }
 
 // ======================================================================
+// Menu display mode.
+if ($_SESSION['menu_type']) {
+    $config['menu_type'] = $_SESSION['menu_type'];
+} else {
+    $config['menu_type'] = 'classic';
+}

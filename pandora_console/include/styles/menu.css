@@ -16,11 +16,24 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-.menu {
-  border-width: 0px 0px 0px 0px;
-  border-style: none;
-  border-color: #777;
+.operation li,
+.godmode li {
+  display: flex !important;
+  justify-content: flex-start;
+  align-items: center;
 }
+
+.operation > li.menu_icon.no_hidden_menu,
+.godmode > li.menu_icon.no_hidden_menu {
+  justify-content: flex-end;
+}
+
+.operation .menu_icon ul.submenu > li,
+.godmode .menu_icon ul.submenu > li {
+  background-color: #282828;
+  padding-left: 1.5em;
+}
+
 .menu ul {
   list-style-type: none;
   padding: 0;
@@ -28,14 +41,13 @@
 }
 .menu li.selected,
 .menu li.not_selected {
-  border: 0px none black;
-  border-bottom: 0px none #d4d4d4;
   margin: 0;
 }
 
 .menu li a {
   color: #ffffff;
   text-decoration: none;
+  width: 100%;
 }
 
 li:hover ul {
@@ -43,14 +55,11 @@ li:hover ul {
 }
 
 .submenu_text {
-  padding: 10.5px;
   margin-left: 0px;
   width: 100%;
-  color: #fff;
-}
-
-.menu li.subselected a {
-  background-color: grey !important;
+  color: #b9b9b9;
+  font-family: "Open Sans", sans-serif;
+  font-size: 9.4pt;
 }
 
 .menu a:hover {
@@ -61,26 +70,24 @@ li:hover ul {
   margin: 0px 0px 0px 0px;
   position: absolute;
   z-index: 999;
-  left: 44px;
-  min-height: 35px;
-  height: 35px;
-  width: 180px;
+  width: 240px;
 }
 
 .submenu2 {
   position: absolute;
   z-index: 999;
-  left: 180px;
+  left: 240px;
+  width: 240px;
 }
 
 .sub_subMenu {
-  min-height: 35px !important;
-  height: 35px;
-  width: 180px;
   font-weight: normal !important;
+  background-color: #202020;
+  padding-left: 1.5em;
 }
+
 .sub_subMenu.selected {
-  font-weight: bold !important;
+  font-weight: 600 !important;
 }
 
 .submenu2 li a {
@@ -95,17 +102,9 @@ li:hover ul {
   border-left: 1px;
 }
 
-.menu li.has_submenu > a > div {
-  background: url(../../images/arrow.png) no-repeat 80% 50%;
+.menu li.has_submenu {
+  background: url(../../images/arrow.png) no-repeat 95% 50%;
   z-index: 1; /* Positions it on top of the rest */
-}
-.menu li.has_submenu > .SubNoLink {
-  background: url(../../images/arrow.png) no-repeat 80% 50%;
-  z-index: 1; /* Positions it on top of the rest */
-}
-
-.is_submenu2 {
-  background-color: #e4e4e4 !important;
 }
 
 .menu li.submenu_not_selected a,
@@ -116,6 +115,18 @@ li:hover ul {
 .submenu_selected {
   margin-bottom: 0px !important;
   box-shadow: inset 4px 0 #80ba27 !important;
+}
+.selected.submenu_selected {
+  background-color: #202020 !important;
+}
+
+li.submenu_selected.selected {
+  background-color: #202020 !important;
+  font-weight: 600;
+}
+
+li.sub_subMenu.selected {
+  background-color: #161616 !important;
 }
 
 .menu .menu_icon,
@@ -132,21 +143,18 @@ li:hover ul {
 
 /* Icons specified here */
 #icon_oper-networkconsole {
-  background: url(../../images/op_network.menu.png) no-repeat 50% 50%;
+  background: url(../../images/op_network.menu_gray.png) no-repeat;
 }
 #icon_oper-agents {
-  border-top-right-radius: 5px;
-  border-right-style: solid;
-  border-right-width: 0px;
-  background: url(../../images/op_monitoring.menu.png) no-repeat 50% 50%;
+  background: url(../../images/op_monitoring.menu_gray.png) no-repeat;
 }
 #icon_oper-events {
-  background: url(../../images/op_events.menu.png) no-repeat 50% 50%;
+  background: url(../../images/op_events.menu_gray.png) no-repeat;
 }
 
 /* users */
 #icon_oper-users {
-  background: url(../../images/op_workspace.menu.png) no-repeat 50% 50%;
+  background: url(../../images/op_workspace.menu_gray.png) no-repeat;
 }
 /* trap console */
 #icon_oper-snmpc,
@@ -154,7 +162,7 @@ li:hover ul {
   background: url(../../images/op_snmp.menu.png) no-repeat 50% 50%;
 }
 #icon_oper-reporting {
-  background: url(../../images/op_reporting.menu.png) no-repeat 50% 50%;
+  background: url(../../images/op_reporting.menu_gray.png) no-repeat;
 }
 #icon_oper-gismaps {
   background: url(../../images/op_gis.menu.png) no-repeat 50% 50%;
@@ -163,52 +171,51 @@ li:hover ul {
   background: url(../../images/op_netflow.menu.png) no-repeat 50% 50%;
 }
 #icon_oper-extensions {
-  background: url(../../images/extensions.menu.png) no-repeat 50% 50%;
+  background: url(../../images/extensions.menu_gray.png) no-repeat;
 }
 
 /* Godmode images */
+#icon_god-discovery {
+  background: url(../../images/gm_discovery.menu.png) no-repeat;
+}
 #icon_god-resources {
-  background: url(../../images/gm_resources.menu.png) no-repeat 50% 50%;
+  background: url(../../images/gm_resources.menu_gray.png) no-repeat;
 }
 #icon_god-configuration {
-  background: url(../../images/gm_configuration.menu.png) no-repeat 50% 50%;
+  background: url(../../images/gm_configuration.menu_gray.png) no-repeat;
 }
 #icon_god-alerts {
-  background: url(../../images/gm_alerts.menu.png) no-repeat 50% 50%;
+  background: url(../../images/gm_alerts.menu_gray.png) no-repeat;
 }
 #icon_god-users {
-  background: url(../../images/gm_users.menu.png) no-repeat 50% 50%;
+  background: url(../../images/gm_users.menu_gray.png) no-repeat;
 }
 #icon_god-reporting {
   background: url(../../images/reporting_edit.menu.png) no-repeat 50% 50%;
 }
 #icon_god-servers {
-  background: url(../../images/gm_servers.menu.png) no-repeat 50% 50%;
+  background: url(../../images/gm_servers.menu_gray.png) no-repeat;
 }
 #icon_god-setup {
-  background: url(../../images/gm_setup.menu.png) no-repeat 50% 50%;
+  background: url(../../images/gm_setup.menu_gray.png) no-repeat;
 }
 #icon_god-events {
-  background: url(../../images/gm_events.menu.png) no-repeat 50% 50%;
+  background: url(../../images/gm_events.menu_gray.png) no-repeat;
 }
 #icon_god-extensions {
-  background: url(../../images/builder.menu.png) no-repeat 50% 50%;
+  background: url(../../images/builder.menu_gray.png) no-repeat;
 }
 #icon_god-links {
-  border-top: 4px solid #777 !important;
-  border-color: #777;
-  background: url(../../images/links.menu.png) no-repeat 50% 50%;
+  background: url(../../images/links.menu_gray.png) no-repeat;
 }
 #icon_god-um_messages {
-  border-color: #777;
-  background: url(../../images/um_messages.menu.png) no-repeat 50% 50%;
+  background: url(../../images/um_messages.menu_gray.png) no-repeat;
 }
 
 #menu_container {
   z-index: 3;
   position: absolute;
   left: -80px;
-  background-color: #aaa;
 }
 
 .notification_ball {
@@ -253,140 +260,222 @@ ul li {
 }
 /* End */
 
-ul li a:hover {
-  color: #e2144a;
-} /* Hover Styles */
-/*li ul li a { padding: 2px 5px; }  Sub Menu Styles */
-
 /*
  * ---------------------------------------------------------------------
  * - MAIN LEFT MENU and SUBMENU 									-
  * ---------------------------------------------------------------------
  */
-.menu li.selected {
-  font-weight: bold;
-}
-
-.menu_icon {
-  transition-property: background-color;
-  transition-duration: 0.5s;
-  transition-timing-function: ease-out;
-  -webkit-transition-property: background-color;
-  -webkit-transition-duration: 0.5s;
-  -webkit-transition-timing-function: ease-out;
-  -moz-transition-property: background-color;
-  -moz-transition-duration: 0.5s;
-  -moz-transition-timing-function: ease-out;
-  -o-transition-property: background-color;
-  -o-transition-duration: 0.5s;
-  -o-transition-timing-function: ease-out;
-}
 
 .menu_icon:hover {
-  transition-property: background-color;
-  transition-duration: 0.5s;
-  transition-timing-function: ease-out;
-  -webkit-transition-property: background-color;
-  -webkit-transition-duration: 0.5s;
-  -webkit-transition-timing-function: ease-out;
-  -moz-transition-property: background-color;
-  -moz-transition-duration: 0.5s;
-  -moz-transition-timing-function: ease-out;
-  -o-transition-property: background-color;
-  -o-transition-duration: 0.5s;
-  -o-transition-timing-function: ease-out;
-  background-color: #585858 !important;
+  background-color: #282828 !important;
 }
 .submenu_not_selected:hover {
-  transition-property: background-color;
-  transition-duration: 0.5s;
-  transition-timing-function: ease-out;
-  -webkit-transition-property: background-color;
-  -webkit-transition-duration: 0.5s;
-  -webkit-transition-timing-function: ease-out;
-  -moz-transition-property: background-color;
-  -moz-transition-duration: 0.5s;
-  -moz-transition-timing-function: ease-out;
-  -o-transition-property: background-color;
-  -o-transition-duration: 0.5s;
-  -o-transition-timing-function: ease-out;
-  background-color: #585858 !important;
+  background-color: #202020 !important;
 }
 .submenu_selected:hover {
-  background-color: #585858 !important;
-}
-.sub_subMenu {
-  transition-property: background-color;
-  transition-duration: 0.5s;
-  transition-timing-function: ease-out;
-  -webkit-transition-property: background-color;
-  -webkit-transition-duration: 0.5s;
-  -webkit-transition-timing-function: ease-out;
-  -moz-transition-property: background-color;
-  -moz-transition-duration: 0.5s;
-  -moz-transition-timing-function: ease-out;
-  -o-transition-property: background-color;
-  -o-transition-duration: 0.5s;
+  background-color: #202020 !important;
 }
 .sub_subMenu:hover {
-  transition-property: background-color;
-  transition-duration: 0.5s;
-  transition-timing-function: ease-out;
-  -webkit-transition-property: background-color;
-  -webkit-transition-duration: 0.5s;
-  -webkit-transition-timing-function: ease-out;
-  -moz-transition-property: background-color;
-  -moz-transition-duration: 0.5s;
-  -moz-transition-timing-function: ease-out;
-  -o-transition-property: background-color;
-  -o-transition-duration: 0.5s;
-  background-color: #585858 !important;
+  background-color: #161616 !important;
 }
 
 .menu li.selected {
   box-shadow: inset 4px 0 #80ba27;
 }
-/* creo que no se usan
-.is_submenu2 li {
-	background-color: #ff0000;
-}
 
-.is_submenu2 {
-	background-color: #222222 !important;
-}
-*/
 .operation {
-  background-color: #333 !important;
-  border-top-right-radius: 5px;
-  border-right-style: solid;
-  border-right-width: 0px;
+  background-color: #3d3d3d !important;
+  padding-top: 20px !important;
 }
 
-.operation .selected {
-  background-color: #585858 !important;
+.operation .selected,
+.godmode .selected {
+  background-color: #282828 !important;
+}
+
+.operation .selected #title_menu,
+.godmode .selected #title_menu {
+  color: #fff !important;
+  font-weight: 600;
 }
 
 .menu li,
-.menu .li.not_selected {
-  border-radius: 0px 0px 0px 0px;
-  display: block;
+.menu li a,
+.menu li div {
   min-height: 35px;
-  border-bottom: 0px none #424242;
-  vertical-align: middle;
+  display: flex;
+  align-items: center;
 }
 
-.godmode,
-.menu_icon ul li {
-  background-color: #222;
-}
-.operation .menu_icon ul li {
-  background-color: #333;
+.menu li div {
+  background-clip: text; /* Very important to fix a bug in Firefox */
 }
 
 .godmode {
-  border-top: 4px solid #777 !important;
   padding-bottom: 4px !important;
-  border-bottom-right-radius: 5px;
-  border-right-style: solid;
-  border-right-width: 0px;
+  background-color: #343434;
+}
+
+/* Menu icons active */
+.selected#icon_oper-networkconsole {
+  background: url(../../images/op_network.menu_white.png) no-repeat;
+}
+.selected#icon_oper-agents {
+  background: url(../../images/op_monitoring.menu_white.png) no-repeat;
+}
+.selected#icon_oper-events {
+  background: url(../../images/op_events.menu_white.png) no-repeat;
+}
+.selected#icon_oper-users {
+  background: url(../../images/op_workspace.menu_white.png) no-repeat;
+}
+.selected#icon_oper-reporting {
+  background: url(../../images/op_reporting.menu_white.png) no-repeat;
+}
+.selected#icon_oper-extensions {
+  background: url(../../images/extensions.menu_white.png) no-repeat;
+}
+.selected#icon_god-discovery {
+  background: url(../../images/gm_discovery.menu_white.png) no-repeat;
+}
+.selected#icon_god-resources {
+  background: url(../../images/gm_resources.menu_white.png) no-repeat;
+}
+.selected#icon_god-configuration {
+  background: url(../../images/gm_configuration.menu_white.png) no-repeat;
+}
+.selected#icon_god-alerts {
+  background: url(../../images/gm_alerts.menu_white.png) no-repeat;
+}
+.selected#icon_god-users {
+  background: url(../../images/gm_users.menu_white.png) no-repeat;
+}
+.selected#icon_god-servers {
+  background: url(../../images/gm_servers.menu_white.png) no-repeat;
+}
+.selected#icon_god-setup {
+  background: url(../../images/gm_setup.menu_white.png) no-repeat;
+}
+.selected#icon_god-events {
+  background: url(../../images/gm_events.menu_white.png) no-repeat;
+}
+.selected#icon_god-extensions {
+  background: url(../../images/builder.menu_white.png) no-repeat;
+}
+.selected#icon_god-links {
+  background: url(../../images/links.menu_white.png) no-repeat;
+}
+.selected#icon_god-um_messages {
+  background: url(../../images/um_messages.menu_white.png) no-repeat;
+}
+
+#menu_full {
+  width: 60px; /* This is overwritten by the classic menu (215px) */
+  position: fixed;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  background-color: #343434;
+  border-bottom: solid 3px #343434;
+  min-height: 943px;
+}
+
+.button_collapse {
+  height: 38px;
+  background-color: #505050;
+  width: 60px; /* This is overwritten by the classic menu (215px) */
+  text-align: center;
+  color: #fff;
+  cursor: pointer;
+  background-repeat: no-repeat;
+  background-position: center;
+  margin-top: 15px;
+}
+
+.logo_green {
+  height: 60px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.operation div,
+.operation a,
+.godmode div,
+.godmode a {
+  font-family: "Open Sans", sans-serif;
+}
+
+.menu_full_classic,
+.button_classic {
+  width: 215px !important;
+}
+
+.menu_full_collapsed,
+.button_collapsed {
+  width: 60px !important;
+}
+
+.button_classic {
+  width: 215px !important;
+  background-image: url(../../images/button_collapse_menu.png);
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.button_collapsed {
+  background-image: url(../../images/button_classic_menu.png);
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+/* Menu height: 601px, 720px, 735px */
+@media screen and (max-height: 720px) {
+  .menu li,
+  .menu li a,
+  .menu li div {
+    min-height: 28px !important;
+  }
+}
+
+@media screen and (max-height: 735px) {
+  .operation {
+    padding-top: 10px !important;
+  }
+  .button_collapse {
+    margin-top: 10px;
+  }
+}
+
+/*
+ * ---------------------------------------------------------------------
+ * - STYLES TO CHANGE CLASSIC MENU AND COLLAPSED MENU                  -
+ * ---------------------------------------------------------------------
+ */
+.page_classic {
+  padding-left: 215px !important;
+}
+
+.page_collapsed {
+  padding-left: 60px !important;
+}
+
+.header_table_classic {
+  padding-left: 235px !important; /* 215 + 35 */
+}
+
+.header_table_collapsed {
+  padding-left: 80px !important; /* 60 + 35 */
+}
+
+.title_menu_classic {
+  display: flex !important;
+}
+
+.title_menu_collapsed {
+  display: none !important;
+}
+
+.menu_icon_collapsed {
+  background-position: 50% 50% !important;
 }

@@ -179,6 +179,7 @@ our @EXPORT = qw(
 	pandora_evaluate_alert
 	pandora_evaluate_snmp_alerts
 	pandora_event
+	pandora_extended_event
 	pandora_execute_alert
 	pandora_execute_action
 	pandora_exec_forced_alerts
@@ -236,6 +237,7 @@ our @EXPORT = qw(
 	pandora_self_monitoring
 	pandora_process_policy_queue
 	subst_alert_macros
+	subst_column_macros
 	locate_agent
 	get_agent
 	get_agent_from_alias
@@ -249,6 +251,7 @@ our @EXPORT = qw(
 	pandora_delete_graph_source
 	pandora_delete_custom_graph
 	pandora_edit_custom_graph
+	notification_set_targets
 	);
 
 # Some global variables
@@ -357,9 +360,12 @@ sub pandora_generate_alerts ($$$$$$$$;$$$) {
 	my ($pa_config, $data, $status, $agent, $module, $utimestamp, $dbh, $timestamp, $extra_macros, $last_data_value, $alert_type) = @_;
 
 	# No alerts when event storm protection is enabled
-	if ($EventStormProtection == 1) {
+	
+	if ($EventStormProtection == 1)	{
+		
 		return;
 	}
+ 
 
 	# Warmup interval for alerts.
 	if ($pa_config->{'warmup_alert_on'} == 1) {
@@ -388,7 +394,11 @@ sub pandora_generate_alerts ($$$$$$$$;$$$) {
 	}
 
 	# Get enabled alerts associated with this module
-	my $alert_type_filter = defined ($alert_type) ? " AND type = '$alert_type'" : '';
+	my $alert_type_filter = '';
+	if (defined($alert_type)) {
+		# not_normal includes unknown!
+		$alert_type_filter = $alert_type eq 'unknown' ? " AND (type = 'unknown' OR type = 'not_normal')" : " AND type = '$alert_type'"; 
+	}
 	my @alerts = get_db_rows ($dbh, '
 		SELECT talert_template_modules.id as id_template_module,
 			talert_template_modules.*, talert_templates.*
@@ -563,6 +573,7 @@ sub pandora_evaluate_alert ($$$$$$$;$$$) {
 		return $status if ($last_status != 1 && $alert->{'type'} eq 'critical');
 		return $status if ($last_status != 2 && $alert->{'type'} eq 'warning');
 		return $status if ($last_status != 3 && $alert->{'type'} eq 'unknown');
+		return $status if ($last_status == 0 && $alert->{'type'} eq 'not_normal');
 	}
 	# Event alert
 	else {
@@ -1459,6 +1470,35 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 
 		pandora_create_integria_ticket($pa_config, $api_path, $api_pass, $integria_user, $integria_user_pass, $ticket_name, $ticket_group_id, $ticket_priority, $ticket_email, $ticket_owner, $ticket_description);
 
+
+	# Generate notification
+	} elsif ($clean_name eq "Generate Notification") {
+
+		# Translate macros
+		$field3 = subst_alert_macros($field3, \%macros, $pa_config, $dbh, $agent, $module);
+		$field4 = subst_alert_macros($field4, \%macros, $pa_config, $dbh, $agent, $module);
+
+		# If no targets ignore notification
+		if (defined($field1) && defined($field2) && ($field1 ne "" || $field2 ne "")) {
+			my @user_list = map {clean_blank($_)} split /,/, $field1;
+			my @group_list = map {clean_blank($_)} split /,/, $field2;
+
+			my $notification = {};
+			$notification->{'subject'} = safe_input($field3);
+			$notification->{'mensaje'} = safe_input($field4);
+			$notification->{'id_source'} = get_db_value($dbh, 'SELECT id FROM tnotification_source WHERE description = ?', safe_input('System status'));
+
+			# Create message
+			my $notification_id = db_process_insert($dbh,'id_mensaje','tmensajes',$notification);
+			if (!$notification_id) {
+				logger($pa_config, "Failed action '" . $action->{'name'} . "' for alert '". $alert->{'name'} . "' agent '" . (defined($agent) ? $agent->{'alias'} : 'N/A') . "'.", 3);
+			} else {
+				notification_set_targets($pa_config, $dbh, $notification_id, \@user_list, \@group_list);
+			}
+		} else {
+			logger($pa_config, "Failed action '" . $action->{'name'} . "' for alert '". $alert->{'name'} . "' agent '" . (defined($agent) ? $agent->{'alias'} : 'N/A') . "' Empty targets. Ignored.", 3);
+		}
+
 	# Unknown
 	} else {
 		logger($pa_config, "Unknown action '" . $action->{'name'} . "' for alert '". $alert->{'name'} . "' agent '" . (defined ($agent) ? $agent->{'alias'} : 'N/A') . "'.", 3);
@@ -1573,53 +1613,116 @@ sub pandora_process_module ($$$$$$$$$;$) {
 		$current_interval = $module->{'module_interval'};
 	}
 
-	#Update module status
+	# Update module status.
 	my $min_ff_event = $module->{'min_ff_event'};
 	my $current_utimestamp = time ();
 	my $ff_timeout = $module->{'ff_timeout'};
+
+	# Counters.
+	my $ff_warning = $agent_status->{'ff_warning'};
+	my $ff_critical = $agent_status->{'ff_critical'};
+	my $ff_normal = $agent_status->{'ff_normal'};
 
 	if ($module->{'each_ff'}) {
 		$min_ff_event = $module->{'min_ff_event_normal'} if ($new_status == 0);
 		$min_ff_event = $module->{'min_ff_event_critical'} if ($new_status == 1);
 		$min_ff_event = $module->{'min_ff_event_warning'} if ($new_status == 2);
 	}
-	
+
 	if ($last_known_status == $new_status) {
 		# Avoid overflows
-		$status_changes = $min_ff_event if ($status_changes > $min_ff_event);
+		$status_changes = $min_ff_event if ($status_changes > $min_ff_event && $module->{'ff_type'} == 0);
 		
 		$status_changes++;
 		if ($module_type =~ m/async/ && $min_ff_event != 0 && $ff_timeout != 0 && ($utimestamp - $ff_start_utimestamp) > $ff_timeout) {
-			$status_changes = 0;
+			# Only type ff with counters.
+			$status_changes = 0 if ($module->{'ff_type'} == 0);
+			
 			$ff_start_utimestamp = $utimestamp;
+
+			# Reset counters because expired timeout.
+			$ff_normal = 0;
+			$ff_critical = 0;
+			$ff_warning = 0;
 		}
 	}
 	else {
-		$status_changes = 0;
+		# Only type ff with counters. 
+		$status_changes = 0 if ($module->{'ff_type'} == 0);
+		
 		$ff_start_utimestamp = $utimestamp if ($module_type =~ m/async/);
 	}
 	
-	# Active ff interval
-	if ($module->{'module_ff_interval'} != 0 && $status_changes < $min_ff_event) {
-		$current_interval = $module->{'module_ff_interval'};
-	}
-	
-	# Change status
-	if ($status_changes >= $min_ff_event && $known_status != $new_status) {
-		generate_status_event ($pa_config, $processed_data, $agent, $module, $new_status, $status, $known_status, $dbh);
-		$status = $new_status;
+	if ($module->{'ff_type'} == 0) {
+		# Active ff interval.
+		if ($module->{'module_ff_interval'} != 0 && $status_changes < $min_ff_event) {
+			$current_interval = $module->{'module_ff_interval'};
+		}
+		
+		# Change status.
+		if ($status_changes >= $min_ff_event && $known_status != $new_status) {
+			generate_status_event ($pa_config, $processed_data, $agent, $module, $new_status, $status, $known_status, $dbh);
+			$status = $new_status;
 
-		# Update module status count.
-		$mark_for_update = 1;
+			# Update module status count.
+			$mark_for_update = 1;
 
-		# Safe mode execution.
-		if ($agent->{'safe_mode_module'} == $module->{'id_agente_modulo'}) {
-			safe_mode($pa_config, $agent, $module, $new_status, $known_status, $dbh);
+			# Safe mode execution.
+			if ($agent->{'safe_mode_module'} == $module->{'id_agente_modulo'}) {
+				safe_mode($pa_config, $agent, $module, $new_status, $known_status, $dbh);
+			}
+		}
+	} else {
+		if ($status == $new_status) {
+			# If the status is equal to the previous status reset the counters.
+			$ff_normal = 0;
+			$ff_critical = 0;
+			$ff_warning = 0;
+		} else {
+			# Sequential critical and normal status are needed
+			# if don't, reset counters.
+			if ($last_known_status == 1 && $new_status != 1) {
+				$ff_critical = 0;
+			} elsif ($last_known_status == 0 && $new_status != 0) {
+				$ff_normal = 0;
+			}
+
+			# Increase counters.
+			$ff_critical++ if ($new_status == 1);
+			$ff_warning++  if ($new_status == 2);
+			$ff_normal++   if ($new_status == 0);
+		}
+		
+		if ( ($new_status == 0 && $ff_normal >= $min_ff_event)
+		  || ($new_status == 1 && $ff_critical >= $min_ff_event)
+		  || ($new_status == 2 && $ff_warning >= $min_ff_event)) {
+			# Change status generate event.
+			generate_status_event ($pa_config, $processed_data, $agent, $module, $new_status, $status, $known_status, $dbh);
+			$status = $new_status;
+
+			# Update module status count.
+			$mark_for_update = 1;
+
+			# Safe mode execution.
+			if ($agent->{'safe_mode_module'} == $module->{'id_agente_modulo'}) {
+				safe_mode($pa_config, $agent, $module, $new_status, $known_status, $dbh);
+			}
+
+			# Reset counters because change status.
+			$ff_normal = 0;
+			$ff_critical = 0;
+			$ff_warning = 0;
+		} else {
+			# Active ff interval
+			if ($module->{'module_ff_interval'} != 0) {
+				$current_interval = $module->{'module_ff_interval'};
+			}
 		}
 	}
+
 	# Set not-init modules to normal status even if min_ff_event is not matched the first time they receive data.
 	# if critical or warning status, just pass through here and wait the time min_ff_event will be matched.
-	elsif ($status == 4) {
+	if ($status == 4) {
 		generate_status_event ($pa_config, $processed_data, $agent, $module, 0, $status, $known_status, $dbh);
 		$status = 0;
 
@@ -1630,6 +1733,11 @@ sub pandora_process_module ($$$$$$$$$;$) {
 	elsif ($status == 3) {
 		generate_status_event ($pa_config, $processed_data, $agent, $module, $known_status, $status, $known_status, $dbh);
 		$status = $known_status;
+
+		# reset counters because change status.
+		$ff_normal = 0;
+		$ff_critical = 0;
+		$ff_warning = 0;
 
 		# Update module status count.
 		$mark_for_update = 1;
@@ -1660,10 +1768,11 @@ sub pandora_process_module ($$$$$$$$$;$) {
 				status_changes = ?, utimestamp = ?, timestamp = ?,
 				id_agente = ?, current_interval = ?, running_by = ?,
 				last_execution_try = ?, last_try = ?, last_error = ?,
-				ff_start_utimestamp = ?
+				ff_start_utimestamp = ?, ff_normal = ?, ff_warning = ?, ff_critical = ?
 			WHERE id_agente_modulo = ?', $processed_data, $status, $status, $new_status, $new_status, $status_changes,
 			$current_utimestamp, $timestamp, $module->{'id_agente'}, $current_interval, $server_id,
-			$utimestamp, ($save == 1) ? $timestamp : $agent_status->{'last_try'}, $last_error, $ff_start_utimestamp, $module->{'id_agente_modulo'});
+			$utimestamp, ($save == 1) ? $timestamp : $agent_status->{'last_try'}, $last_error, $ff_start_utimestamp,
+			$ff_normal, $ff_warning, $ff_critical, $module->{'id_agente_modulo'});
 	}
 
 	# Save module data. Async and log4x modules are not compressed.
@@ -1788,7 +1897,8 @@ sub pandora_planned_downtime_set_disabled_elements($$$) {
 			WHERE tp.id_agent = ta.id_agente AND tp.id_downtime = ?',$downtime->{'id'});
 		
 		db_do($dbh,'UPDATE tagente ta, tplanned_downtime_agents tpa
-			SET ta.disabled = 1 WHERE tpa.id_agent = ta.id_agente AND
+			SET ta.disabled = 1, ta.update_module_count = 1
+			WHERE tpa.id_agent = ta.id_agente AND
 			tpa.id_downtime = ?',$downtime->{'id'});
 			
 	} else {
@@ -1825,7 +1935,8 @@ sub pandora_planned_downtime_unset_disabled_elements($$$) {
 		
 	if ($only_alerts == 0) {
 		db_do($dbh,'UPDATE tagente ta, tplanned_downtime_agents tpa
-			set ta.disabled = 0 WHERE tpa.id_agent = ta.id_agente AND
+			set ta.disabled = 0, ta.update_module_count = 1
+			WHERE tpa.id_agent = ta.id_agente AND
 			tpa.manually_disabled = 0 AND tpa.id_downtime = ?',$downtime->{'id'});
 	} else {
 		my @downtime_agents = get_db_rows($dbh, 'SELECT *
@@ -3045,12 +3156,14 @@ Create a new entry in B<tagente> optionaly with position information
 
 =cut
 ##########################################################################
-sub pandora_create_agent ($$$$$$$$$$;$$$$$$$$$) {
+sub pandora_create_agent ($$$$$$$$$$;$$$$$$$$$$) {
+	# If parameter event_id is not undef, then create an extended event
+	# related to it instead launch new event.
 	my ($pa_config, $server_name, $agent_name, $address,
 		$group_id, $parent_id, $os_id,
 		$description, $interval, $dbh, $timezone_offset,
 		$longitude, $latitude, $altitude, $position_description,
-		$custom_id, $url_address, $agent_mode, $alias) = @_;
+		$custom_id, $url_address, $agent_mode, $alias, $event_id) = @_;
 	
 	logger ($pa_config, "Server '$server_name' creating agent '$agent_name' address '$address'.", 10);
 	
@@ -3093,7 +3206,11 @@ sub pandora_create_agent ($$$$$$$$$$;$$$$$$$$$) {
 	}
 	
 	logger ($pa_config, "Server '$server_name' CREATED agent '$agent_name' address '$address'.", 10);
-	pandora_event ($pa_config, "Agent [" . safe_output($alias) . "] created by $server_name", $group_id, $agent_id, 2, 0, 0, 'new_agent', 0, $dbh);
+	if (!defined($event_id)) {
+		pandora_event ($pa_config, "Agent [" . safe_output($alias) . "] created by $server_name", $group_id, $agent_id, 2, 0, 0, 'new_agent', 0, $dbh);
+	} else {
+		pandora_extended_event($pa_config, $dbh, $event_id, "Agent [" . safe_output($alias) . "][#".$agent_id."] created by $server_name");
+	}
 	return $agent_id;
 }
 
@@ -3240,11 +3357,11 @@ sub pandora_event ($$$$$$$$$$;$$$$$$$$$$$) {
 	
 	# Create the event
 	logger($pa_config, "Generating event '$evento' for agent ID $id_agente module ID $id_agentmodule.", 10);
-	db_do ($dbh, 'INSERT INTO ' . $event_table . ' (id_agente, id_grupo, evento, timestamp, estado, utimestamp, event_type, id_agentmodule, id_alert_am, criticity, user_comment, tags, source, id_extra, id_usuario, critical_instructions, warning_instructions, unknown_instructions, ack_utimestamp, custom_data, data, module_status)
+	my $event_id = db_insert ($dbh, 'id_evento','INSERT INTO ' . $event_table . ' (id_agente, id_grupo, evento, timestamp, estado, utimestamp, event_type, id_agentmodule, id_alert_am, criticity, user_comment, tags, source, id_extra, id_usuario, critical_instructions, warning_instructions, unknown_instructions, ack_utimestamp, custom_data, data, module_status)
 	              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', $id_agente, $id_grupo, safe_input ($evento), $timestamp, $event_status, $utimestamp, $event_type, $id_agentmodule, $id_alert_am, $severity, $comment, $module_tags, $source, $id_extra, $user_name, $critical_instructions, $warning_instructions, $unknown_instructions, $ack_utimestamp, $custom_data, $module_data, $module_status);
-	
+
 	# Do not write to the event file
-	return if ($pa_config->{'event_file'} eq '');
+	return $event_id if ($pa_config->{'event_file'} eq '');
 
 	# Add a header when the event file is created
 	my $header = undef;
@@ -3255,7 +3372,7 @@ sub pandora_event ($$$$$$$$$$;$$$$$$$$$$$) {
 	# Open the event file for writing
 	if (! open (EVENT_FILE, '>>' . $pa_config->{'event_file'})) {
 		logger($pa_config, "Error opening event file " . $pa_config->{'event_file'} . ": $!", 10);
-		return;
+		return $event_id;
 	}
 	
 	# Resolve ids
@@ -3278,6 +3395,29 @@ sub pandora_event ($$$$$$$$$$;$$$$$$$$$$$) {
 	print EVENT_FILE  "$agent_name,".safe_output($group_name)."," . safe_output ($evento) . ",$timestamp,$event_status,$utimestamp,$event_type,".safe_output($module_name).",".safe_output($alert_name).",$severity,".safe_output($comment).",".safe_output($module_tags).",$source,$id_extra,$user_name,".safe_output($critical_instructions).",".safe_output($warning_instructions).",".safe_output($unknown_instructions).",$ack_utimestamp\n";
 	
 	close (EVENT_FILE);
+
+	return $event_id;
+}
+
+##########################################################################
+=head2 C<< pandora_extended_event (I<$pa_config>, I<$dbh>, I<$event_id>, I<$description>) >> 
+
+Creates an extended event linked to an existing main event id.
+
+=cut
+##########################################################################
+sub pandora_extended_event($$$$) {
+	my ($pa_config, $dbh, $event_id, $description) = @_;
+
+	return unless defined($event_id) && "$event_id" ne "" && $event_id > 0;
+
+	return db_do(
+		$dbh,
+		'INSERT INTO tevent_extended (id_evento, utimestamp, description) VALUES (?,?,?)',
+		$event_id,
+		time(),
+		safe_input($description)
+	);
 }
 
 ##########################################################################
@@ -3418,7 +3558,16 @@ sub pandora_evaluate_snmp_alerts ($$$$$$$$$) {
 		$alert->{'oid'} = decode_entities($alert->{'oid'});
 		my $oid = $alert->{'oid'};
 		if ($oid ne '') {
-			next if (index ($trap_oid, $oid) == -1 && index ($trap_oid_text, $oid) == -1);
+			my $term = substr($oid, -1);
+			# Strict match.
+			if ($term eq '$') {
+				chop($oid);
+				next if ($trap_oid ne $oid && $trap_oid_text ne $oid);
+			}
+			# Partial match.
+			else {
+				next if (index ($trap_oid, $oid) == -1 && index ($trap_oid_text, $oid) == -1);
+			}
 			$alert_data .= "OID: $oid ";
 		}
 
@@ -3708,11 +3857,6 @@ sub pandora_evaluate_snmp_alerts ($$$$$$$$$) {
 	}
 }
 
-
-##########################################################################
-# Utility functions, not to be exported.
-##########################################################################
-
 ##########################################################################
 # Search string for macros and substitutes them with their values.
 ##########################################################################
@@ -3748,6 +3892,22 @@ sub subst_alert_macros ($$;$$$$) {
 }
 
 ##########################################################################
+# Substitute macros if the string begins with an underscore.
+##########################################################################
+sub subst_column_macros ($$;$$$$) {
+	my ($string, $macros, $pa_config, $dbh, $agent, $module) = @_;
+
+	# Avoid to manipulate null strings
+	return $string unless defined($string);	
+
+	# Do not attempt to substitute macros unless the string
+	# begins with an underscore.
+	return $string unless substr($string, 0, 1) eq '_';
+
+	return subst_alert_macros($string, $macros, $pa_config, $dbh, $agent, $module);
+}
+
+##########################################################################
 # Load macros that access the database on demand.
 ##########################################################################
 sub on_demand_macro($$$$$$) {
@@ -3775,9 +3935,16 @@ sub on_demand_macro($$$$$$) {
 	} elsif ($macro eq '_name_tag_') {
 		return (defined ($module)) ? pandora_get_module_tags ($pa_config, $dbh, $module->{'id_agente_modulo'}) : '';
 	} elsif ($macro =~ /_agentcustomfield_(\d+)_/) {
-		return '' unless defined ($agent);
+		my $agent_id = undef;
+		if (defined($module)) {
+			$agent_id = $module->{'id_agente'};
+		} elsif (defined($agent)) {
+			$agent_id = $agent->{'id_agente'};
+		} else {
+			return '';
+		}
 		my $field_number = $1;
-		my $field_value = get_db_value($dbh, 'SELECT description FROM tagent_custom_data WHERE id_field=? AND id_agent=?', $field_number, $agent->{'id_agente'});
+		my $field_value = get_db_value($dbh, 'SELECT description FROM tagent_custom_data WHERE id_field=? AND id_agent=?', $field_number, $agent_id);
 		return (defined($field_value)) ? $field_value : '';	
 	} elsif ($macro eq '_prevdata_') {
 		return '' unless defined ($module);
@@ -3840,6 +4007,10 @@ sub on_demand_macro($$$$$$) {
 		return(defined($field_value)) ? $field_value : '';
 	}
 }
+
+##########################################################################
+# Utility functions, not to be exported.
+##########################################################################
 
 ##########################################################################
 # Process module data.
@@ -4075,7 +4246,7 @@ sub get_module_status ($$$) {
 	$critical_str = (defined ($critical_str) && valid_regex ($critical_str) == 1) ? safe_output($critical_str) : '';
 	$warning_str = (defined ($warning_str) && valid_regex ($warning_str) == 1) ? safe_output($warning_str) : '';
 	
-	if ($module_type =~ m/_proc$/ && ($critical_min eq $critical_max)) {
+	if (($module_type =~ m/_proc$/ || $module_type =~ /web_analysis/) && ($critical_min eq $critical_max)) {
 		($critical_min, $critical_max) = (0, 1);
 	}
 	elsif ($module_type =~ m/keep_alive/ && ($critical_min eq $critical_max)) {
@@ -4515,7 +4686,7 @@ sub pandora_server_statistics ($$) {
 			$server->{"lag"} = 0;
 			$server->{"module_lag"} = 0;
 		# Recon server
-		} elsif ($server->{"server_type"} == RECONSERVER) {
+		} elsif ($server->{"server_type"} == DISCOVERYSERVER) {
 
 				# Total jobs running on this recon server
 				$server->{"modules"} = get_db_value ($dbh, "SELECT COUNT(id_rt) FROM trecon_task WHERE id_recon_server = ?", $server->{"id_server"});
@@ -4688,32 +4859,36 @@ sub pandora_process_policy_queue ($) {
 	logger($pa_config, "Starting policy queue patrol process.", 1);
 
 	while($THRRUN == 1) {
+		eval {{
+			local $SIG{__DIE__};
 
-		# If we are not the master server sleep and check again.
-		if (pandora_is_master($pa_config) == 0) {
-			sleep ($pa_config->{'server_threshold'});
-			next;
-		}
+			# If we are not the master server sleep and check again.
+			if (pandora_is_master($pa_config) == 0) {
+				sleep ($pa_config->{'server_threshold'});
+				next;
+			}
+
+			my $operation = enterprise_hook('get_first_policy_queue', [$dbh]);
+			next unless (defined ($operation) && $operation ne '');
+
+			if($operation->{'operation'} eq 'apply' || $operation->{'operation'} eq 'apply_db') {
+				enterprise_hook('pandora_apply_policy', [$dbh, $pa_config, $operation->{'id_policy'}, $operation->{'id_agent'}, $operation->{'id'}, $operation->{'operation'}]);
+			}
+			elsif($operation->{'operation'} eq 'delete') {
+				if($operation->{'id_agent'} == 0) {
+					enterprise_hook('pandora_purge_policy_agents', [$dbh, $pa_config, $operation->{'id_policy'}]);
+				}
+				else {
+					enterprise_hook('pandora_delete_agent_from_policy', [$dbh, $pa_config, $operation->{'id_policy'}, $operation->{'id_agent'}]);
+				}
+			}
+
+			enterprise_hook('pandora_finish_queue_operation', [$dbh, $operation->{'id'}]);
+		}};
 
 		# Check the queue each 5 seconds
-		sleep (5);
+		sleep(5);
 		
-		my $operation = enterprise_hook('get_first_policy_queue', [$dbh]);
-		next unless (defined ($operation) && $operation ne '');
-
-		if($operation->{'operation'} eq 'apply' || $operation->{'operation'} eq 'apply_db') {
-			enterprise_hook('pandora_apply_policy', [$dbh, $pa_config, $operation->{'id_policy'}, $operation->{'id_agent'}, $operation->{'id'}, $operation->{'operation'}]);
-		}
-		elsif($operation->{'operation'} eq 'delete') {
-			if($operation->{'id_agent'} == 0) {
-				enterprise_hook('pandora_purge_policy_agents', [$dbh, $pa_config, $operation->{'id_policy'}]);
-			}
-			else {
-				enterprise_hook('pandora_delete_agent_from_policy', [$dbh, $pa_config, $operation->{'id_policy'}, $operation->{'id_agent'}]);
-			}
-		}
-		
-		enterprise_hook('pandora_finish_queue_operation', [$dbh, $operation->{'id'}]);
 	}
 
 	db_disconnect($dbh);
@@ -5745,6 +5920,62 @@ sub pandora_safe_mode_modules_update {
 		logger($pa_config, "Update modules for safe mode agent with alias:" . $agent->{'alias'} . ".", 10);
 		db_do($dbh, 'UPDATE tagente_modulo SET disabled=1 WHERE id_agente=? AND id_agente_modulo!=?', $agent_id, $agent->{'safe_mode_module'});
 	}
+}
+
+##########################################################################
+
+=head2 C<< message_set_targets (I<$dbh>, I<$pa_config>, I<$notification_id>, I<$users>, I<$groups>) >>
+Set targets for given messaje (users and groups in hash ref)
+=cut
+
+##########################################################################
+sub notification_set_targets {
+	my ($pa_config, $dbh, $notification_id, $users, $groups) = @_;
+	my $ret = undef;
+
+	if (!defined($pa_config)) {
+		return undef;
+	}
+
+	if (!defined($notification_id)) {
+		return undef;
+	}
+
+	if (ref($users) eq "ARRAY") {
+		my $values = {};
+		foreach my $user (@{$users}) {
+			if (defined($user) && $user eq "") {
+				next;
+			}
+
+			$values->{'id_mensaje'} = $notification_id;
+			$values->{'id_user'} = $user;
+		}
+
+		$ret = db_process_insert($dbh, '', 'tnotification_user', $values);
+		if (!$ret) {
+			return undef;
+		}
+	}
+
+	if (ref($groups) eq "ARRAY") {
+		my $values = {};
+		foreach my $group (@{$groups}) {
+			if ($group != 0 && empty($group)) {
+				next;
+			}
+
+			$values->{'id_mensaje'} = $notification_id;
+			$values->{'id_group'} = $group;
+		}
+
+		$ret = db_process_insert($dbh, '', 'tnotification_group', $values);
+		if (!$ret) {
+			return undef;
+		}
+	}
+
+	return 1;
 }
 
 # End of function declaration

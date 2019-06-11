@@ -119,6 +119,7 @@ using namespace Pandora_Strutils;
 #define TOKEN_WARNING_INVERSE ("module_warning_inverse ")
 #define TOKEN_QUIET ("module_quiet ")
 #define TOKEN_MODULE_FF_INTERVAL ("module_ff_interval ")
+#define TOKEN_MODULE_FF_TYPE ("module_ff_type ")
 #define TOKEN_MACRO ("module_macro")
 #define TOKEN_NATIVE_ENCODING ("module_native_encoding")
 #define TOKEN_ALERT_TEMPLATE ("module_alert_template")
@@ -176,7 +177,7 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 	string                 module_unit, module_group, module_custom_id, module_str_warning, module_str_critical;
 	string                 module_critical_instructions, module_warning_instructions, module_unknown_instructions, module_tags;
 	string                 module_critical_inverse, module_warning_inverse, module_quiet, module_ff_interval;
-	string				   module_native_encoding, module_alert_template;
+	string                 module_native_encoding, module_alert_template, module_ff_type;
 	string                 macro;
 	Pandora_Module        *module;
 	bool                   numeric;
@@ -254,6 +255,7 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 	module_warning_inverse = "";
 	module_quiet         = "";
 	module_ff_interval   = "";
+	module_ff_type   = "";
 	module_native_encoding	 = "";
 	module_alert_template	 = "";
 	module_user_session	 = "";
@@ -506,6 +508,10 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 		
 		if (module_ff_interval == "") {
 			module_ff_interval = parseLine (line, TOKEN_MODULE_FF_INTERVAL);
+		}
+
+		if (module_ff_type == "") {
+			module_ff_type = parseLine (line, TOKEN_MODULE_FF_TYPE);
 		}
 		
 		if (module_alert_template == "") {
@@ -1087,6 +1093,13 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 					}
 				}
 
+				if (module_ff_type != "") {
+					pos_macro = module_ff_type.find(macro_name);
+					if (pos_macro != string::npos){
+						module_ff_type.replace(pos_macro, macro_name.size(), macro_value);
+					}
+				}
+
 				if (module_alert_template != "") {
 					pos_macro = module_alert_template.find(macro_name);
 					if (pos_macro != string::npos){
@@ -1102,6 +1115,12 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 				}
 			}
 		}
+	}
+
+	/* Skip disabled modules */
+	if (module_disabled == "1") {
+		pandoraLog ("Skipping disabled module \"%s\"", module_name.c_str ());
+		return NULL;
 	}
 
 	/* Create module objects */
@@ -1446,6 +1465,10 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 	
 	if (module_ff_interval != "") {
 		module->setModuleFFInterval (module_ff_interval);
+	}
+
+	if (module_ff_type != "") {
+		module->setModuleFFType (module_ff_type);
 	}
 	
 	if (module_alert_template != "") {

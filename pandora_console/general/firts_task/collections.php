@@ -22,7 +22,7 @@ ui_require_css_file('firts_task');
         <?php echo html_print_image('images/icono_grande_reconserver.png', true, ['title' => __('Collections')]); ?>
     </div>
     <div class="text_task">
-        <h3> <?php echo __('Create Collections'); ?>        <p id="description_task"> 
+        <h3> <?php echo __('Create Collections'); ?></h3><p id="description_task"> 
             <?php
             echo __(
                 "A file collection is a group of files (e.g. scripts or executables) which are 

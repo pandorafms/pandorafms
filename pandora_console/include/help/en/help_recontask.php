@@ -11,9 +11,9 @@ If you choose to edit or create a new task of network recon, then you should fil
 
 Name of the discovery task. It's only a descriptive value to could distinguish the task in case it would have several of them with different values of filter or template. <br><br>
 
-<b>Recon server</b><br>
+<b>Discovery server</b><br>
 
-Recon Server assigned to the task. If you have several Recon Servers, then you have to select here which of them you want to do the recon task. <br><br>
+Discovery Server assigned to the task. If you have several Discovery Servers, then you have to select here which of them you want to do the recon task. <br><br>
 
 <b>Mode</b><br>
 

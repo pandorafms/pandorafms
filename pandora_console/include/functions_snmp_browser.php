@@ -1,125 +1,240 @@
 <?php
+/**
+ * Extension to manage a list of gateways and the node address where they should
+ * point to.
+ *
+ * @category   Extensions
+ * @package    Pandora FMS
+ * @subpackage Community
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
 
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2013 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the  GNU Lesser General Public License
-// as published by the Free Software Foundation; version 2
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
 require_once $config['homedir'].'/include/functions_config.php';
-enterprise_include_once($config['homedir'].'/enterprise/include/pdf_translator.php');
-enterprise_include_once($config['homedir'].'/enterprise/include/functions_metaconsole.php');
+enterprise_include_once(
+    $config['homedir'].'/enterprise/include/pdf_translator.php'
+);
+enterprise_include_once(
+    $config['homedir'].'/enterprise/include/functions_metaconsole.php'
+);
 
-// Date format for nfdump
+// Date format for nfdump.
 global $nfdump_date_format;
 $nfdump_date_format = 'Y/m/d.H:i:s';
 
 
 /**
- * Selects all netflow filters (array (id_name => id_name)) or filters filtered
+ * Generates a Tree with given $tree information.
  *
- * @param tree string SNMP tree returned by snmp_broser_get_tree.
- * @param id string Level ID. Do not set, used for recursion.
- * @param depth string Branch depth. Do not set, used for recursion.
+ * Selects all netflow filters (array (id_name => id_name)) or filters filtered
+ * Used also in Cloud Wizard.
+ *
+ * @param string  $tree            SNMP tree returned by snmp_broser_get_tree.
+ * @param string  $id              Level ID. Do not set, used for recursion.
+ * @param string  $depth           Branch depth. Do not set, used for recursion.
+ * @param integer $last            Last.
+ * @param array   $last_array      Last_array.
+ * @param string  $sufix           Sufix.
+ * @param array   $checked         Checked.
+ * @param boolean $descriptive_ids Descriptive_ids.
+ * @param string  $previous_id     Previous_id.
+ *
+ * @return string HTML code with complete tree.
  */
-function snmp_browser_print_tree($tree, $id=0, $depth=0, $last=0, $last_array=[])
-{
+function snmp_browser_get_html_tree(
+    $tree,
+    $id=0,
+    $depth=0,
+    $last=0,
+    $last_array=[],
+    $sufix=false,
+    $checked=[],
+    $descriptive_ids=false,
+    $previous_id=''
+) {
     static $url = false;
 
-    // Get the base URL for images
+    $output = '';
+
+    // Get the base URL for images.
     if ($url === false) {
         $url = ui_get_full_url('operation/tree', false, false, false);
     }
 
-    // Leaf
+    // Leaf.
     if (empty($tree['__LEAVES__'])) {
-        return;
+        return '';
     }
 
     $count = 0;
-    $total = (sizeof(array_keys($tree['__LEAVES__'])) - 1);
+    $total = (count(array_keys($tree['__LEAVES__'])) - 1);
     $last_array[$depth] = $last;
 
     if ($depth > 0) {
-        echo "<ul id='ul_$id' style='margin: 0; padding: 0; display: none'>\n";
+        $output .= '<ul id="ul_'.$id.'" style="margin: 0; padding: 0; display: none;">';
     } else {
-        echo "<ul id='ul_$id' style='margin: 0; padding: 0;'>\n";
+        $output .= '<ul id="ul_'.$id.'" style="margin: 0; padding: 0;">';
     }
 
     foreach ($tree['__LEAVES__'] as $level => $sub_level) {
-        // Id used to expand leafs
+        // Id used to expand leafs.
         $sub_id = time().rand(0, getrandmax());
 
-        // Display the branch
-        echo "<li id='li_$sub_id' style='margin: 0; padding: 0;'>";
+        // Display the branch.
+        $output .= '<li id="li_'.$sub_id.'" style="margin: 0; padding: 0;">';
 
-        // Indent sub branches
+        // Indent sub branches.
         for ($i = 1; $i <= $depth; $i++) {
             if ($last_array[$i] == 1) {
-                echo '<img src="'.$url.'/no_branch.png" style="vertical-align: middle;">';
+                $output .= '<img src="'.$url.'/no_branch.png" style="vertical-align: middle;">';
             } else {
-                echo '<img src="'.$url.'/branch.png" style="vertical-align: middle;">';
+                $output .= '<img src="'.$url.'/branch.png" style="vertical-align: middle;">';
             }
         }
 
-        // Branch
+        // Branch.
         if (! empty($sub_level['__LEAVES__'])) {
-            echo "<a id='anchor_$sub_id' onfocus='javascript: this.blur();' href='javascript: toggleTreeNode(\"$sub_id\", \"$id\");'>";
+            $output .= "<a id='anchor_$sub_id' onfocus='javascript: this.blur();' href='javascript: toggleTreeNode(\"$sub_id\", \"$id\");'>";
             if ($depth == 0 && $count == 0) {
                 if ($count == $total) {
-                    echo '<img src="'.$url.'/one_closed.png" style="vertical-align: middle;">';
+                    $output .= '<img src="'.$url.'/one_closed.png" style="vertical-align: middle;">';
                 } else {
-                    echo '<img src="'.$url.'/first_closed.png" style="vertical-align: middle;">';
+                    $output .= '<img src="'.$url.'/first_closed.png" style="vertical-align: middle;">';
                 }
             } else if ($count == $total) {
-                echo '<img src="'.$url.'/last_closed.png" style="vertical-align: middle;">';
+                $output .= '<img src="'.$url.'/last_closed.png" style="vertical-align: middle;">';
             } else {
-                echo '<img src="'.$url.'/closed.png" style="vertical-align: middle;">';
+                $output .= '<img src="'.$url.'/closed.png" style="vertical-align: middle;">';
             }
 
-            echo '</a>';
+            $output .= '</a>';
         }
-        // Leave
+
+        // Leave.
         else {
             if ($depth == 0 && $count == 0) {
                 if ($count == $total) {
-                    echo '<img src="'.$url.'/no_branch.png" style="vertical-align: middle;">';
+                    $output .= '<img src="'.$url.'/no_branch.png" style="vertical-align: middle;">';
                 } else {
-                    echo '<img src="'.$url.'/first_leaf.png" style="vertical-align: middle;">';
+                    $output .= '<img src="'.$url.'/first_leaf.png" style="vertical-align: middle;">';
                 }
             } else if ($count == $total) {
-                echo '<img src="'.$url.'/last_leaf.png" style="vertical-align: middle;">';
+                $output .= '<img src="'.$url.'/last_leaf.png" style="vertical-align: middle;">';
             } else {
-                echo '<img src="'.$url.'/leaf.png" style="vertical-align: middle;">';
+                $output .= '<img src="'.$url.'/leaf.png" style="vertical-align: middle;">';
             }
         }
 
         // Branch or leave with branches!
         if (isset($sub_level['__OID__'])) {
-            echo "<a onfocus='javascript: this.blur();' href='javascript: snmpGet(\"".addslashes($sub_level['__OID__'])."\");'>";
-            echo '<img src="'.$url.'/../../images/eye.png" style="vertical-align: middle;">';
-            echo '</a>';
+            $output .= "<a onfocus='javascript: this.blur();' href='javascript: snmpGet(\"".addslashes($sub_level['__OID__'])."\");'>";
+            $output .= '<img src="'.$url.'/../../images/eye.png" style="vertical-align: middle;">';
+            $output .= '</a>';
         }
 
-        echo html_print_checkbox("create_$sub_id", 0, false, true, false, '').'&nbsp;<span>'.$level.'</span>';
+        $checkbox_name_sufix = ($sufix === true) ? '_'.$level : '';
+        if ($descriptive_ids === true) {
+            $checkbox_name = 'create_'.$sub_id.$previous_id.$checkbox_name_sufix;
+        } else {
+            $checkbox_name = 'create_'.$sub_id.$checkbox_name_sufix;
+        }
+
+        $previous_id = $checkbox_name_sufix;
+        $status = (!empty($checked) && isset($checked[$level]));
+        $output .= html_print_checkbox($checkbox_name, 0, $status, true, false, '').'&nbsp;<span>'.$level.'</span>';
         if (isset($sub_level['__VALUE__'])) {
-            echo '<span class="value" style="display: none;">&nbsp;=&nbsp;'.$sub_level['__VALUE__'].'</span>';
+            $output .= '<span class="value" style="display: none;">&nbsp;=&nbsp;'.$sub_level['__VALUE__'].'</span>';
         }
 
-        echo '</li>';
+        $output .= '</li>';
 
-        // Recursively print sub levels
-        snmp_browser_print_tree($sub_level, $sub_id, ($depth + 1), ($count == $total ? 1 : 0), $last_array);
+        // Recursively print sub levels.
+        $output .= snmp_browser_get_html_tree(
+            $sub_level,
+            $sub_id,
+            ($depth + 1),
+            (($count == $total) ? 1 : 0),
+            $last_array,
+            $sufix,
+            $checked,
+            $return,
+            $descriptive_ids,
+            $previous_id
+        );
 
         $count++;
     }
 
-    echo '</ul>';
+    $output .= '</ul>';
+
+    return $output;
+}
+
+
+/**
+ * Selects all netflow filters (array (id_name => id_name)) or filters filtered
+ * This function is also being used while painting instances in AWS Cloud wiz.
+ *
+ * @param string  $tree            SNMP tree returned by snmp_broser_get_tree.
+ * @param string  $id              Level ID. Do not set, used for recursion.
+ * @param string  $depth           Branch depth. Do not set, used for recursion.
+ * @param integer $last            Last.
+ * @param array   $last_array      Last_array.
+ * @param string  $sufix           Sufix.
+ * @param array   $checked         Checked.
+ * @param boolean $return          Return.
+ * @param boolean $descriptive_ids Descriptive_ids.
+ * @param string  $previous_id     Previous_id.
+ *
+ * @return string HTML code with complete tree.
+ */
+function snmp_browser_print_tree(
+    $tree,
+    $id=0,
+    $depth=0,
+    $last=0,
+    $last_array=[],
+    $sufix=false,
+    $checked=[],
+    $return=false,
+    $descriptive_ids=false,
+    $previous_id=''
+) {
+    $str = snmp_browser_get_html_tree(
+        $tree,
+        $id,
+        $depth,
+        $last,
+        $last_array,
+        $sufix,
+        $checked,
+        $return,
+        $descriptive_ids,
+        $previous_id
+    );
+
+    if ($return === false) {
+        echo $str;
+    }
+
+    return $str;
 }
 
 
@@ -131,142 +246,62 @@ function snmp_browser_print_tree($tree, $id=0, $depth=0, $last=0, $last_array=[]
  *
  * @return array The SNMP tree.
  */
-function snmp_browser_get_tree($target_ip, $community, $starting_oid='.', $version='2c', $snmp3_auth_user='', $snmp3_security_level='', $snmp3_auth_method='', $snmp3_auth_pass='', $snmp3_privacy_method='', $snmp3_privacy_pass='', $server_to_exec=0)
-{
+function snmp_browser_get_tree(
+    $target_ip,
+    $community,
+    $starting_oid='.',
+    $version='2c',
+    $snmp3_auth_user='',
+    $snmp3_security_level='',
+    $snmp3_auth_method='',
+    $snmp3_auth_pass='',
+    $snmp3_privacy_method='',
+    $snmp3_privacy_pass='',
+    $server_to_exec=0
+) {
     global $config;
 
-    if ($target_ip == '') {
-        return __('Target IP cannot be blank.');
-    }
+    $output = get_snmpwalk(
+        $target_ip,
+        $version,
+        $community,
+        $snmp3_auth_user,
+        $snmp3_security_level,
+        $snmp3_auth_method,
+        $snmp3_auth_pass,
+        $snmp3_privacy_method,
+        $snmp3_privacy_pass,
+        0,
+        $starting_oid,
+        '',
+        $server_to_exec,
+        '',
+        ''
+    );
 
-    // Call snmpwalk
-    if (empty($config['snmpwalk'])) {
-        switch (PHP_OS) {
-            case 'FreeBSD':
-                $snmpwalk_bin = '/usr/local/bin/snmpwalk';
-            break;
-
-            case 'NetBSD':
-                $snmpwalk_bin = '/usr/pkg/bin/snmpwalk';
-            break;
-
-            default:
-                $snmpwalk_bin = 'snmpwalk';
-            break;
-        }
-    } else {
-        $snmpwalk_bin = $config['snmpwalk'];
-    }
-
-    switch (PHP_OS) {
-        case 'WIN32':
-        case 'WINNT':
-        case 'Windows':
-            $error_redir_dir = 'NUL';
-        break;
-
-        default:
-            $error_redir_dir = '/dev/null';
-        break;
-    }
-
-    if ($server_to_exec != 0) {
-        $sql = sprintf('SELECT ip_address FROM tserver WHERE id_server = %d', $server_to_exec);
-        $server_data = db_get_row_sql($sql);
-
-        if (enterprise_installed()) {
-            enterprise_include_once('include/functions_satellite.php');
-
-            $oid_tree = ['__LEAVES__' => []];
-            if ($version == '3') {
-                switch ($snmp3_security_level) {
-                    case 'authPriv':
-                        $command = $snmpwalk_bin.' -m ALL -v 3 -u '.escapeshellarg($snmp3_auth_user).' -A '.escapeshellarg($snmp3_auth_pass).' -l '.escapeshellarg($snmp3_security_level).' -a '.escapeshellarg($snmp3_auth_method).' -x '.escapeshellarg($snmp3_privacy_method).' -X '.escapeshellarg($snmp3_privacy_pass).' '.escapeshellarg($target_ip).' '.escapeshellarg($starting_oid).' 2> '.$error_redir_dir;
-                    break;
-
-                    case 'authNoPriv':
-                        $command = $snmpwalk_bin.' -m ALL -v 3 -u '.escapeshellarg($snmp3_auth_user).' -A '.escapeshellarg($snmp3_auth_pass).' -l '.escapeshellarg($snmp3_security_level).' -a '.escapeshellarg($snmp3_auth_method).' '.escapeshellarg($target_ip).' '.escapeshellarg($starting_oid).' 2> '.$error_redir_dir;
-                    break;
-
-                    case 'noAuthNoPriv':
-                        $command = $snmpwalk_bin.' -m ALL -v 3 -u '.escapeshellarg($snmp3_auth_user).' -l '.escapeshellarg($snmp3_security_level).' '.escapeshellarg($target_ip).' '.escapeshellarg($starting_oid).' 2> '.$error_redir_dir;
-                    break;
-                }
-            } else {
-                $command = $snmpwalk_bin.' -m ALL -M +'.escapeshellarg($config['homedir'].'/attachment/mibs').' -Cc -c '.escapeshellarg(io_safe_output($community)).' -v '.escapeshellarg($version).' '.escapeshellarg($target_ip).' '.escapeshellarg($starting_oid).' 2> '.$error_redir_dir;
-            }
-
-            exec('ssh pandora_exec_proxy@'.$server_data['ip_address'].' "'.$command.'"', $output, $rc);
-        } else {
-            $oid_tree = ['__LEAVES__' => []];
-            if ($version == '3') {
-                switch ($snmp3_security_level) {
-                    case 'authPriv':
-                        exec($snmpwalk_bin.' -m ALL -v 3 -u '.escapeshellarg($snmp3_auth_user).' -A '.escapeshellarg($snmp3_auth_pass).' -l '.escapeshellarg($snmp3_security_level).' -a '.escapeshellarg($snmp3_auth_method).' -x '.escapeshellarg($snmp3_privacy_method).' -X '.escapeshellarg($snmp3_privacy_pass).' '.escapeshellarg($target_ip).' '.escapeshellarg($starting_oid).' 2> '.$error_redir_dir, $output, $rc);
-                    break;
-
-                    case 'authNoPriv':
-                        exec($snmpwalk_bin.' -m ALL -v 3 -u '.escapeshellarg($snmp3_auth_user).' -A '.escapeshellarg($snmp3_auth_pass).' -l '.escapeshellarg($snmp3_security_level).' -a '.escapeshellarg($snmp3_auth_method).' '.escapeshellarg($target_ip).' '.escapeshellarg($starting_oid).' 2> '.$error_redir_dir, $output, $rc);
-                    break;
-
-                    case 'noAuthNoPriv':
-                        exec($snmpwalk_bin.' -m ALL -v 3 -u '.escapeshellarg($snmp3_auth_user).' -l '.escapeshellarg($snmp3_security_level).' '.escapeshellarg($target_ip).' '.escapeshellarg($starting_oid).' 2> '.$error_redir_dir, $output, $rc);
-                    break;
-                }
-            } else {
-                exec($snmpwalk_bin.' -m ALL -M +'.escapeshellarg($config['homedir'].'/attachment/mibs').' -Cc -c '.escapeshellarg(io_safe_output($community)).' -v '.escapeshellarg($version).' '.escapeshellarg($target_ip).' '.escapeshellarg($starting_oid).' 2> '.$error_redir_dir, $output, $rc);
-            }
-        }
-    } else {
-        $oid_tree = ['__LEAVES__' => []];
-        if ($version == '3') {
-            switch ($snmp3_security_level) {
-                case 'authPriv':
-                    exec($snmpwalk_bin.' -m ALL -v 3 -u '.escapeshellarg($snmp3_auth_user).' -A '.escapeshellarg($snmp3_auth_pass).' -l '.escapeshellarg($snmp3_security_level).' -a '.escapeshellarg($snmp3_auth_method).' -x '.escapeshellarg($snmp3_privacy_method).' -X '.escapeshellarg($snmp3_privacy_pass).' '.escapeshellarg($target_ip).' '.escapeshellarg($starting_oid).' 2> '.$error_redir_dir, $output, $rc);
-                break;
-
-                case 'authNoPriv':
-                    exec($snmpwalk_bin.' -m ALL -v 3 -u '.escapeshellarg($snmp3_auth_user).' -A '.escapeshellarg($snmp3_auth_pass).' -l '.escapeshellarg($snmp3_security_level).' -a '.escapeshellarg($snmp3_auth_method).' '.escapeshellarg($target_ip).' '.escapeshellarg($starting_oid).' 2> '.$error_redir_dir, $output, $rc);
-                break;
-
-                case 'noAuthNoPriv':
-                    exec($snmpwalk_bin.' -m ALL -v 3 -u '.escapeshellarg($snmp3_auth_user).' -l '.escapeshellarg($snmp3_security_level).' '.escapeshellarg($target_ip).' '.escapeshellarg($starting_oid).' 2> '.$error_redir_dir, $output, $rc);
-                break;
-            }
-        } else {
-            exec($snmpwalk_bin.' -m ALL -M +'.escapeshellarg($config['homedir'].'/attachment/mibs').' -Cc -c '.escapeshellarg(io_safe_output($community)).' -v '.escapeshellarg($version).' '.escapeshellarg($target_ip).' '.escapeshellarg($starting_oid).' 2> '.$error_redir_dir, $output, $rc);
-        }
-    }
-
-    foreach ($output as $line) {
-        // Separate the OID from the value
-        $full_oid = explode('=', $line);
-        if (! isset($full_oid[1])) {
-            continue;
-        }
-
-        $oid = trim($full_oid[0]);
-        $value = trim($full_oid[1]);
-
-        // Parse the OID
+    // Build the tree.
+    $oid_tree = ['__LEAVES__' => []];
+    foreach ($output as $oid => $value) {
+        // Parse the OID.
+        $oid_len = strlen($oid);
         $group = 0;
         $sub_oid = '';
         $ptr = &$oid_tree['__LEAVES__'];
 
-        for ($i = 0; $i < strlen($oid); $i++) {
+        for ($i = 0; $i < $oid_len; $i++) {
             // "X.Y.Z"
             if ($oid[$i] == '"') {
                 $group = ($group ^ 1);
             }
 
-            // Move to the next element of the OID
+            // Move to the next element of the OID.
             if ($group == 0 && ($oid[$i] == '.' || ($oid[$i] == ':' && $oid[($i + 1)] == ':'))) {
-                // Skip the next :
+                // Skip the next ":".
                 if ($oid[$i] == ':') {
                     $i++;
                 }
 
-                // Starting dot
+                // Starting dot.
                 if ($sub_oid == '') {
                     continue;
                 }
@@ -284,7 +319,7 @@ function snmp_browser_get_tree($target_ip, $community, $starting_oid='.', $versi
             }
         }
 
-        // The last element will contain the full OID
+        // The last element will contain the full OID.
         $ptr[$sub_oid] = [
             '__OID__'   => $oid,
             '__VALUE__' => $value,
@@ -300,72 +335,63 @@ function snmp_browser_get_tree($target_ip, $community, $starting_oid='.', $versi
 /**
  * Retrieve data for the specified OID.
  *
- * @param target_ip string IP of the SNMP agent.
- * @param community string SNMP community to use.
- * @param target_oid SNMP OID to query.
+ * @param string  $target_ip            IP of the SNMP agent.
+ * @param string  $community            SNMP community to use.
+ * @param string  $target_oid           SNMP OID to query.
+ * @param string  $version              Version SNMP.
+ * @param string  $snmp3_auth_user      User snmp3.
+ * @param string  $snmp3_security_level Security level snmp3.
+ * @param string  $snmp3_auth_method    Method snmp3.
+ * @param string  $snmp3_auth_pass      Pass snmp3.
+ * @param string  $snmp3_privacy_method Privicy method snmp3.
+ * @param string  $snmp3_privacy_pass   Pass Method snmp3.
+ * @param integer $server_to_exec       Execute with other server.
  *
- * @return array OID data.
+ * @return mixed OID data.
  */
-function snmp_browser_get_oid($target_ip, $community, $target_oid, $version='2c', $snmp3_auth_user='', $snmp3_security_level='', $snmp3_auth_method='', $snmp3_auth_pass='', $snmp3_privacy_method='', $snmp3_privacy_pass='')
-{
+function snmp_browser_get_oid(
+    $target_ip,
+    $community,
+    $target_oid,
+    $version='2c',
+    $snmp3_auth_user='',
+    $snmp3_security_level='',
+    $snmp3_auth_method='',
+    $snmp3_auth_pass='',
+    $snmp3_privacy_method='',
+    $snmp3_privacy_pass='',
+    $server_to_exec=0
+) {
     global $config;
 
     if ($target_oid == '') {
         return;
     }
 
+    $output = get_snmpwalk(
+        $target_ip,
+        $version,
+        $community,
+        $snmp3_auth_user,
+        $snmp3_security_level,
+        $snmp3_auth_method,
+        $snmp3_auth_pass,
+        $snmp3_privacy_method,
+        $snmp3_privacy_pass,
+        0,
+        $target_oid,
+        '',
+        $server_to_exec,
+        '',
+        '-On'
+    );
+
     $oid_data['oid'] = $target_oid;
-    if (empty($config['snmpget'])) {
-        switch (PHP_OS) {
-            case 'FreeBSD':
-                $snmpget_bin = '/usr/local/bin/snmpget';
-            break;
-
-            case 'NetBSD':
-                $snmpget_bin = '/usr/pkg/bin/snmpget';
-            break;
-
-            default:
-                $snmpget_bin = 'snmpget';
-            break;
-        }
-    } else {
-        $snmpget_bin = $config['snmpget'];
-    }
-
-    switch (PHP_OS) {
-        case 'WIN32':
-        case 'WINNT':
-        case 'Windows':
-            $error_redir_dir = 'NUL';
-        break;
-
-        default:
-            $error_redir_dir = '/dev/null';
-        break;
-    }
-
-    if ($version == '3') {
-        exec($snmpget_bin.' -m ALL -v 3 -u '.escapeshellarg($snmp3_auth_user).' -A '.escapeshellarg($snmp3_auth_pass).' -l '.escapeshellarg($snmp3_security_level).' -a '.escapeshellarg($snmp3_auth_method).' -x '.escapeshellarg($snmp3_privacy_method).' -X '.escapeshellarg($snmp3_privacy_pass).' '.escapeshellarg($target_ip).' '.escapeshellarg($target_oid).' 2> '.$error_redir_dir, $output, $rc);
-    } else {
-        exec($snmpget_bin.' -m ALL -M +'.escapeshellarg($config['homedir'].'/attachment/mibs').' -On -c '.escapeshellarg(io_safe_output($community)).' -v '.escapeshellarg($version).' '.escapeshellarg($target_ip).' '.escapeshellarg($target_oid).' 2> '.$error_redir_dir, $output, $rc);
-    }
-
-    if ($rc != 0) {
-        return $oid_data;
-    }
-
-    foreach ($output as $line) {
-        // Separate the OID from the value
-        $full_oid = explode('=', $line);
-        if (! isset($full_oid[1])) {
-            break;
-        }
-
-        $oid = trim($full_oid[0]);
+    foreach ($output as $oid => $value) {
+        $oid = trim($oid);
         $oid_data['numeric_oid'] = $oid;
 
-        // Translate the OID
+        // Translate the OID.
         if (empty($config['snmptranslate'])) {
             switch (PHP_OS) {
                 case 'FreeBSD':
@@ -384,10 +410,20 @@ function snmp_browser_get_oid($target_ip, $community, $target_oid, $version='2c'
             $snmptranslate_bin = $config['snmptranslate'];
         }
 
-        exec(
-            $snmptranslate_bin.' -m ALL -M +'.escapeshellarg($config['homedir'].'/attachment/mibs').' -Td '.escapeshellarg($oid),
-            $translate_output
-        );
+        if ($server_to_exec != 0) {
+            $command_output = $snmptranslate_bin.' -m ALL -M +'.escapeshellarg($config['homedir'].'/attachment/mibs').' -Td '.escapeshellarg($oid);
+            exec(
+                'ssh pandora_exec_proxy@'.$server_data['ip_address'].' "'.$command_output.'"',
+                $translate_output,
+                $rc
+            );
+        } else {
+            exec(
+                $snmptranslate_bin.' -m ALL -M +'.escapeshellarg($config['homedir'].'/attachment/mibs').' -Td '.escapeshellarg($oid),
+                $translate_output
+            );
+        }
+
         foreach ($translate_output as $line) {
             if (preg_match('/SYNTAX\s+(.*)/', $line, $matches) == 1) {
                 $oid_data['syntax'] = $matches[1];
@@ -400,7 +436,7 @@ function snmp_browser_get_oid($target_ip, $community, $target_oid, $version='2c'
             }
         }
 
-        // Parse the description. First search for it in custom values
+        // Parse the description. First search for it in custom values.
         $custom_data = db_get_row('ttrap_custom_values', 'oid', $oid);
         if ($custom_data === false) {
             $translate_output = implode('', $translate_output);
@@ -411,16 +447,19 @@ function snmp_browser_get_oid($target_ip, $community, $target_oid, $version='2c'
             $oid_data['description'] = $custom_data['description'];
         }
 
-        $full_value = explode(':', trim($full_oid[1]));
+        $full_value = explode(':', trim($value));
         if (! isset($full_value[1])) {
-            $oid_data['value'] = trim($full_oid[1]);
+            $oid_data['value'] = trim($value);
         } else {
             $oid_data['type'] = trim($full_value[0]);
             $oid_data['value'] = trim($full_value[1]);
         }
 
-        return $oid_data;
+        // There should only be one OID.
+        break;
     }
+
+    return $oid_data;
 }
 
 
@@ -568,11 +607,32 @@ function snmp_browser_print_container($return=false, $width='100%', $height='500
     $table->data = [];
 
     $table->data[0][0] = '<strong>'.__('Target IP').'</strong> &nbsp;&nbsp;';
-    $table->data[0][0] .= html_print_input_text('target_ip', '', '', 25, 0, true);
+    $table->data[0][0] .= html_print_input_text(
+        'target_ip',
+        get_parameter('target_ip', ''),
+        '',
+        25,
+        0,
+        true
+    );
     $table->data[0][1] = '<strong>'.__('Community').'</strong> &nbsp;&nbsp;';
-    $table->data[0][1] .= html_print_input_text('community', '', '', 25, 0, true);
+    $table->data[0][1] .= html_print_input_text(
+        'community',
+        get_parameter('community', ''),
+        '',
+        25,
+        0,
+        true
+    );
     $table->data[0][2] = '<strong>'.__('Starting OID').'</strong> &nbsp;&nbsp;';
-    $table->data[0][2] .= html_print_input_text('starting_oid', '.1.3.6.1.2', '', 25, 0, true);
+    $table->data[0][2] .= html_print_input_text(
+        'starting_oid',
+        get_parameter('starting_oid', '.1.3.6.1.2'),
+        '',
+        25,
+        0,
+        true
+    );
 
     $table->data[1][0] = '<strong>'.__('Version').'</strong> &nbsp;&nbsp;';
     $table->data[1][0] .= html_print_select(
@@ -583,7 +643,7 @@ function snmp_browser_print_container($return=false, $width='100%', $height='500
             '3'  => 'v. 3',
         ],
         'snmp_browser_version',
-        '',
+        get_parameter('snmp_browser_version', '2c'),
         'checkSNMPVersion();',
         '',
         '',
@@ -838,7 +898,7 @@ function snmp_browser_print_container($return=false, $width='100%', $height='500
             if ($(this).is(':checked') ) {
                 $('input[name*=create_network_component]').show();
                 var id_input = $(this).attr("id");
-                id_input = id_input.split("checkbox-create_");
+                id_input = id_input.match("checkbox-create_([0-9]+)");
                 var checks = $('#ul_'+id_input[1]).find('input').map(function(){ 
                     if(this.id.indexOf('checkbox-create_')!=-1){
                         return this.id;
@@ -851,7 +911,7 @@ function snmp_browser_print_container($return=false, $width='100%', $height='500
             } else {
                 var id_input = $(this).attr("id");
                 
-                id_input = id_input.split("checkbox-create_");
+                id_input = id_input.match("checkbox-create_([0-9]+)");
                 var checks = $('#ul_'+id_input[1]).find('input').map(function(){ 
                     if(this.id.indexOf('checkbox-create_')!=-1){
                         return this.id;

@@ -6,8 +6,11 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
+    'Tests\\' => array($baseDir . '/tests'),
     'Psr\\Log\\' => array($vendorDir . '/psr/log/Psr/Log'),
     'Mpdf\\' => array($vendorDir . '/mpdf/mpdf/src'),
+    'Models\\' => array($baseDir . '/include/rest-api/models'),
+    'Enterprise\\Models\\' => array($baseDir . '/enterprise/include/rest-api/models'),
     'Egulias\\EmailValidator\\' => array($vendorDir . '/egulias/email-validator/EmailValidator'),
     'DeepCopy\\' => array($vendorDir . '/myclabs/deep-copy/src/DeepCopy'),
 );

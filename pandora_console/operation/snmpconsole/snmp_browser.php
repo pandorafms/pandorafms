@@ -1,24 +1,39 @@
 <?php
+/**
+ * Extension to manage a list of gateways and the node address where they should
+ * point to.
+ *
+ * @category   Extensions
+ * @package    Pandora FMS
+ * @subpackage Community
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
 
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation for version 2.
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-// Load global vars
 global $config;
 require_once $config['homedir'].'/include/functions_snmp_browser.php';
 ui_require_javascript_file('pandora_snmp_browser');
 
-// AJAX call
+// AJAX call.
 if (is_ajax()) {
-    // Read the action to perform
+    // Read the action to perform.
     $action = (string) get_parameter('action', '');
     $target_ip = (string) get_parameter('target_ip', '');
     $community = (string) get_parameter('community', '');
@@ -29,9 +44,11 @@ if (is_ajax()) {
     $snmp3_auth_method = get_parameter('snmp3_browser_auth_method');
     $snmp3_auth_pass = io_safe_output(get_parameter('snmp3_browser_auth_pass'));
     $snmp3_privacy_method = get_parameter('snmp3_browser_privacy_method');
-    $snmp3_privacy_pass = io_safe_output(get_parameter('snmp3_browser_privacy_pass'));
+    $snmp3_privacy_pass = io_safe_output(
+        get_parameter('snmp3_browser_privacy_pass')
+    );
 
-    // SNMP browser
+    // SNMP browser.
     if ($action == 'snmptree') {
         $starting_oid = (string) get_parameter('starting_oid', '.');
 
@@ -51,7 +68,27 @@ if (is_ajax()) {
         if (! is_array($snmp_tree)) {
             echo $snmp_tree;
         } else {
-            snmp_browser_print_tree($snmp_tree);
+            snmp_browser_print_tree(
+                $snmp_tree,
+                // Id.
+                0,
+                // Depth.
+                0,
+                // Last.
+                0,
+                // Last_array.
+                [],
+                // Sufix.
+                false,
+                // Checked.
+                [],
+                // Return.
+                false,
+                // Descriptive_ids.
+                false,
+                // Previous_id.
+                ''
+            );
             echo html_print_submit_button(
                 __('Create network components'),
                 'create_network_component',
@@ -83,9 +120,8 @@ if (is_ajax()) {
         }
 
         return;
-    }
-    // SNMP get
-    else if ($action == 'snmpget') {
+    } else if ($action == 'snmpget') {
+        // SNMP get.
         $target_oid = htmlspecialchars_decode(get_parameter('oid', ''));
         $custom_action = get_parameter('custom_action', '');
         if ($custom_action != '') {
@@ -102,8 +138,10 @@ if (is_ajax()) {
             $snmp3_auth_method,
             $snmp3_auth_pass,
             $snmp3_privacy_method,
-            $snmp3_privacy_pass
+            $snmp3_privacy_pass,
+            $server_to_exec
         );
+
         snmp_browser_print_oid(
             $oid,
             $custom_action,
@@ -117,7 +155,7 @@ if (is_ajax()) {
     return;
 }
 
-// Check login and ACLs
+// Check login and ACLs.
 check_login();
 if (! check_acl($config['id_user'], 0, 'AR')) {
     db_pandora_audit(
@@ -128,17 +166,36 @@ if (! check_acl($config['id_user'], 0, 'AR')) {
     exit;
 }
 
-// Header
+// Header.
 $url = 'index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_browser&pure='.$config['pure'];
 if ($config['pure']) {
-    // Windowed
-    $link['text'] = '<a target="_top" href="'.$url.'&pure=0&refr=30">'.html_print_image('images/normal_screen.png', true, ['title' => __('Normal screen')]).'</a>';
+    // Windowed.
+    $link['text'] = '<a target="_top" href="'.$url.'&pure=0&refr=30">';
+    $link['text'] .= html_print_image(
+        'images/normal_screen.png',
+        true,
+        ['title' => __('Normal screen')]
+    );
+    $link['text'] .= '</a>';
 } else {
-    // Fullscreen
-    $link['text'] = '<a target="_top" href="'.$url.'&pure=1&refr=0">'.html_print_image('images/full_screen.png', true, ['title' => __('Full screen')]).'</a>';
+    // Fullscreen.
+    $link['text'] = '<a target="_top" href="'.$url.'&pure=1&refr=0">';
+    $link['text'] .= html_print_image(
+        'images/full_screen.png',
+        true,
+        ['title' => __('Full screen')]
+    );
+    $link['text'] .= '</a>';
 }
 
-ui_print_page_header(__('SNMP Browser'), 'images/op_snmp.png', false, '', false, [$link]);
+ui_print_page_header(
+    __('SNMP Browser'),
+    'images/op_snmp.png',
+    false,
+    'snmp_browser_view',
+    false,
+    [$link]
+);
 
-// SNMP tree container
+// SNMP tree container.
 snmp_browser_print_container();

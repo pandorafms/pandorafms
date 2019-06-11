@@ -134,7 +134,7 @@ if (!is_metaconsole()) {
         $header_title = $header_title.' - '.$header_sub_title;
     }
 
-    ui_print_page_header($header_title, 'images/extensions.png', false, '', false, $tabs);
+    ui_print_page_header($header_title, 'images/extensions.png', false, 'tree_view', false, $tabs);
 }
 
 // ---------------------Tabs -------------------------------------------
@@ -294,6 +294,8 @@ enterprise_hook('close_meta_frame');
         
         $(".loading_tree").show();
         
+
+
         var parameters = {};
         parameters['page'] = "include/ajax/tree.ajax";
         parameters['getChildren'] = 1;

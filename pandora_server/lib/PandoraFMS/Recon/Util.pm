@@ -12,15 +12,46 @@ use lib '/usr/lib/perl5';
 use Socket qw/inet_aton/;
 
 our @ISA = ("Exporter");
-our %EXPORT_TAGS = ( 'all' => [ qw( ) ] );
+our %EXPORT_TAGS = ( 'all' => [qw( )] );
 our @EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
 our @EXPORT = qw(
-	ip_to_long
-	mac_matches
-	mac_to_dec
-	parse_mac
-	subnet_matches
+  enterprise_new
+  ip_to_long
+  mac_matches
+  mac_to_dec
+  parse_mac
+  subnet_matches
 );
+
+########################################################################################
+# Return an Enterprise Recon object.
+########################################################################################
+sub enterprise_new($$) {
+	my ($class, $arguments) = @_;
+
+	my @args;
+	if (ref($arguments) eq "HASH") {
+		@args = %{$arguments};
+	}
+	if (ref($arguments) eq "ARRAY") {
+		@args = @{$arguments};
+	}
+
+	# Try to load the module
+	if ($^O eq 'MSWin32') {
+		# If the Windows service dies the service is stopped, even inside an eval ($RUN is set to 0)!
+		eval 'local $SIG{__DIE__}; require '.$class.';';
+	}else {
+		eval 'require '.$class.';';
+	}
+	if ($@) {
+		# Not loaded.
+		return undef;
+	}
+
+	return new $class(@args);
+}
+
 
 ########################################################################################
 # Return the numeric representation of the given IP address.
@@ -35,13 +66,13 @@ sub ip_to_long($) {
 # Returns 1 if the two given MAC addresses are the same.
 ########################################################################################
 sub mac_matches($$) {
-    my ($mac_1, $mac_2) = @_;
+	my ($mac_1, $mac_2) = @_;
 
-    if (parse_mac($mac_1) eq parse_mac($mac_2)) {
-        return 1;
-    }
+	if (parse_mac($mac_1) eq parse_mac($mac_2)) {
+		return 1;
+	}
 
-    return 0;
+	return 0;
 }
 
 ########################################################################################
@@ -53,7 +84,7 @@ sub mac_to_dec($) {
 	my $dec_mac = '';
 	my @elements = split(/:/, $mac);
 	foreach my $element (@elements) {
-        $dec_mac .= unpack('s', pack 's', hex($element)) .  '.'
+		$dec_mac .= unpack('s', pack 's', hex($element)) .  '.';
 	}
 	chop($dec_mac);
 
@@ -64,23 +95,23 @@ sub mac_to_dec($) {
 # Make sure all MAC addresses are in the same format (00 11 22 33 44 55 66).
 ########################################################################################
 sub parse_mac($) {
-    my ($mac) = @_;
+	my ($mac) = @_;
 
-    # Remove leading and trailing whitespaces.
-    $mac =~ s/(^\s+)|(\s+$)//g;
+	# Remove leading and trailing whitespaces.
+	$mac =~ s/(^\s+)|(\s+$)//g;
 
-    # Replace whitespaces and dots with colons.
-    $mac =~ s/\s+|\./:/g;
+	# Replace whitespaces and dots with colons.
+	$mac =~ s/\s+|\./:/g;
 
-    # Convert hex digits to uppercase.
-    $mac =~ s/([a-f])/\U$1/g;
+	# Convert hex digits to uppercase.
+	$mac =~ s/([a-f])/\U$1/g;
 
-    # Add a leading 0 to single digits.
-    $mac =~ s/^([0-9A-F]):/0$1:/g;
-    $mac =~ s/:([0-9A-F]):/:0$1:/g;
-    $mac =~ s/:([0-9A-F])$/:0$1/g;
+	# Add a leading 0 to single digits.
+	$mac =~ s/^([0-9A-F]):/0$1:/g;
+	$mac =~ s/:([0-9A-F]):/:0$1:/g;
+	$mac =~ s/:([0-9A-F])$/:0$1/g;
 
-    return $mac;
+	return $mac;
 }
 
 ########################################################################################
@@ -95,6 +126,7 @@ sub subnet_matches($$;$) {
 		$netaddr = $subnet;
 		$netmask = ip_to_long($mask);
 	}
+
 	# CIDR notation.
 	else {
 		($netaddr, $netmask) = split('/', $subnet);

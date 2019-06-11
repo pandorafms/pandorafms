@@ -15,6 +15,25 @@ use PandoraFMS::Recon::NmapParser;
 use PandoraFMS::Recon::Util;
 use Socket qw/inet_aton/;
 
+# Constants.
+use constant {
+	STEP_SCANNING => 1,
+	STEP_AFT => 2,
+	STEP_TRACEROUTE => 3,
+	STEP_GATEWAY => 4,
+	STEP_STATISTICS => 1,
+	STEP_DATABASE_SCAN => 2,
+	STEP_CUSTOM_QUERIES => 3,
+	DISCOVERY_HOSTDEVICES => 0,
+	DISCOVERY_HOSTDEVICES_CUSTOM => 1,
+	DISCOVERY_CLOUD_AWS => 2,
+	DISCOVERY_APP_VMWARE => 3,
+	DISCOVERY_APP_MYSQL => 4,
+	DISCOVERY_APP_ORACLE => 5,
+	DISCOVERY_CLOUD_AWS_EC2 => 6,
+	DISCOVERY_CLOUD_AWS_RDS => 7
+};
+
 # /dev/null
 my $DEVNULL = ($^O eq 'MSWin32') ? '/Nul' : '/dev/null';
 
@@ -47,33 +66,33 @@ our $SYSUPTIME = ".1.3.6.1.2.1.1.3";
 our $VTPVLANIFINDEX = ".1.3.6.1.4.1.9.9.46.1.3.1.1.18.1";
 
 our @ISA = ("Exporter");
-our %EXPORT_TAGS = ( 'all' => [ qw( ) ] );
+our %EXPORT_TAGS = ( 'all' => [qw( )] );
 our @EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
 our @EXPORT = qw(
-	$DOT1DBASEBRIDGEADDRESS
-	$DOT1DBASEPORTIFINDEX
-	$DOT1DTPFDBADDRESS
-	$DOT1DTPFDBPORT
-	$IFDESC
-	$IFHCINOCTECTS
-	$IFHCOUTOCTECTS
-	$IFINDEX
-	$IFINOCTECTS
-	$IFOPERSTATUS
-	$IFOUTOCTECTS
-	$IPADENTIFINDEX
-	$IPENTADDR
-	$IFNAME
-	$IPNETTOMEDIAPHYSADDRESS
-	$IFPHYSADDRESS
-	$IPADENTIFINDEX
-	$IPROUTEIFINDEX
-	$IPROUTENEXTHOP
-	$IPROUTETYPE
-	$PRTMARKERINDEX
-	$SYSDESCR
-	$SYSSERVICES
-	$SYSUPTIME
+  $DOT1DBASEBRIDGEADDRESS
+  $DOT1DBASEPORTIFINDEX
+  $DOT1DTPFDBADDRESS
+  $DOT1DTPFDBPORT
+  $IFDESC
+  $IFHCINOCTECTS
+  $IFHCOUTOCTECTS
+  $IFINDEX
+  $IFINOCTECTS
+  $IFOPERSTATUS
+  $IFOUTOCTECTS
+  $IPADENTIFINDEX
+  $IPENTADDR
+  $IFNAME
+  $IPNETTOMEDIAPHYSADDRESS
+  $IFPHYSADDRESS
+  $IPADENTIFINDEX
+  $IPROUTEIFINDEX
+  $IPROUTENEXTHOP
+  $IPROUTETYPE
+  $PRTMARKERINDEX
+  $SYSDESCR
+  $SYSSERVICES
+  $SYSUPTIME
 );
 
 #######################################################################
@@ -123,6 +142,12 @@ sub new {
 		# Globally enable/disable SNMP scans.
 		snmp_enabled => 1,
 
+		# Globally enable/disable WMI scans.
+		wmi_enabled => 0,
+		auth_strings_array => [],
+		wmi_timeout => 3,
+		timeout_cmd => '',
+
 		# Switch to switch connections. Used to properly connect hosts
 		# that are connected to a switch wich is in turn connected to another switch,
 		# since the hosts will show up in the latter's switch AFT too.
@@ -160,6 +185,19 @@ sub new {
 		snmp_timeout => 2,
 		snmp_version => 1,
 		subnets => [],
+		autoconfiguration_enabled => 0,
+
+		# Store progress summary - Discovery progress view.
+		step => 0,
+		c_network_name => '',
+		c_network_percent => 0.0,
+		summary => {
+			SNMP => 0,
+			WMI => 0,
+			discovered => 0,
+			alive => 0,
+			not_alive => 0
+		},
 		@_,
 
 	};
@@ -167,27 +205,30 @@ sub new {
 	# Perform some sanity checks.
 	die("No subnet was specified.") unless defined($self->{'subnets'});
 
+	$self = bless($self, $class);
+
 	# Check SNMP params id SNMP is enabled
 	if ($self->{'snmp_enabled'}) {
+
 		# Check SNMP version
-		if ($self->{'snmp_version'} ne '1' && $self->{'snmp_version'} ne '2'
-			&& $self->{'snmp_version'} ne '2c' && $self->{'snmp_version'} ne '3'
-		) {
+		if (   $self->{'snmp_version'} ne '1'
+			&& $self->{'snmp_version'} ne '2'
+			&& $self->{'snmp_version'} ne '2c'
+			&& $self->{'snmp_version'} ne '3') {
 			$self->{'snmp_enabled'} = 0;
 			$self->call('message', "SNMP version " . $self->{'snmp_version'} . " not supported (only 1, 2, 2c and 3).", 5);
 		}
 
 		# Check the version 3 parameters
 		if ($self->{'snmp_version'} eq '3') {
+
 			# Fixed some vars
 			$self->{'communities'} = [];
 
 			# SNMP v3 checks
-			if (
-				$self->{'snmp_security_level'} ne 'noAuthNoPriv' &&
-				$self->{'snmp_security_level'} ne 'authNoPriv' &&
-				$self->{'snmp_security_level'} ne 'authPriv'
-			) {
+			if (  $self->{'snmp_security_level'} ne 'noAuthNoPriv'
+				&&$self->{'snmp_security_level'} ne 'authNoPriv'
+				&&$self->{'snmp_security_level'} ne 'authPriv') {
 				$self->{'snmp_enabled'} = 0;
 				$self->call('message', "Invalid SNMP security level " . $self->{'snmp_security_level'} . ".", 5);
 			}
@@ -200,6 +241,7 @@ sub new {
 				$self->call('message', "Invalid SNMP authentication method " . $self->{'snmp_auth_method'} . ".", 5);
 			}
 		} else {
+
 			# Fixed some vars
 			$self->{'snmp_auth_user'} = '';
 			$self->{'snmp_auth_pass'} = '';
@@ -209,11 +251,24 @@ sub new {
 			$self->{'snmp_security_level'} = '';
 
 			# Disable SNMP scans if no community was given.
-			if (scalar(@{$self->{'communities'}}) == 0) {
+			if (ref($self->{'communities'}) ne "ARRAY" || scalar(@{$self->{'communities'}}) == 0) {
 				$self->{'snmp_enabled'} = 0;
-				$self->call('message', "There is not any SNMP community configured.", 5);
+				$self->call('message', "There is no SNMP community configured.", 5);
 
 			}
+		}
+	}
+
+	# Prepare auth array.
+	# WMI could be launched with '-N' - no pass - argument.
+	if ($self->{'wmi_enabled'} == 1){
+		if (defined($self->{'auth_strings_str'})) {
+			@{$self->{'auth_strings_array'}} = split(',', $self->{'auth_strings_str'});
+		}
+
+		# Timeout available only in linux environments.
+		if ($^O =~ /lin/i && defined($self->{'plugin_exec'}) && defined($self->{'wmi_timeout'})) {
+			$self->{'timeout_cmd'} = $self->{'plugin_exec'}.' '.$self->{'wmi_timeout'}.' ';
 		}
 	}
 
@@ -228,7 +283,7 @@ sub new {
 		$self->{'snmp_security_level'} = '';
 	}
 
-	return bless($self, $class);
+	return $self;
 }
 
 ########################################################################################
@@ -276,6 +331,7 @@ sub aft_connectivity($$) {
 	foreach my $mac ($self->snmp_get_value_array($switch, $DOT1DTPFDBADDRESS)) {
 		push(@aft, parse_mac($mac));
 	}
+
 	# Search for matching entries.
 	foreach my $aft_mac (@aft) {
 
@@ -289,7 +345,7 @@ sub aft_connectivity($$) {
 
 		# Get the interface associated to the port were we found the MAC address.
 		my $switch_if_name = $self->get_if_from_aft($switch, $aft_mac);
-		next unless defined ($switch_if_name) and ($switch_if_name ne '');
+		next unless defined($switch_if_name) and ($switch_if_name ne '');
 
 		# Do not connect a host to a switch twice using the same interface.
 		# The switch is probably connected to another switch.
@@ -322,8 +378,8 @@ sub are_connected($$$$$) {
 	$if_1 = "ping" if $if_1 eq '';
 	$if_2 = "ping" if $if_2 eq '';
 
-	if (defined($self->{'connections'}->{"${dev_1}\t${if_1}\t${dev_2}\t${if_2}"}) ||
-	    defined($self->{'connections'}->{"${dev_2}\t${if_2}\t${dev_1}\t${if_1}"})) {
+	if (  defined($self->{'connections'}->{"${dev_1}\t${if_1}\t${dev_2}\t${if_2}"})
+		||defined($self->{'connections'}->{"${dev_2}\t${if_2}\t${dev_1}\t${if_1}"})) {
 		return 1;
 	}
 
@@ -347,19 +403,20 @@ sub snmp_discovery($$) {
 
 		# Try to find the MAC with an ARP request.
 		$self->get_mac_from_ip($device);
-	
+
 		# Check if the device responds to SNMP.
 		if ($self->snmp_responds($device)) {
-	
+			$self->{'summary'}->{'SNMP'} += 1;
+
 			# Fill the VLAN cache.
 			$self->find_vlans($device);
-	
+
 			# Guess the device type.
 			$self->guess_device_type($device);
-	
+
 			# Find aliases for the device.
 			$self->find_aliases($device);
-			
+
 			# Find interfaces for the device.
 			$self->find_ifaces($device);
 
@@ -635,12 +692,12 @@ sub get_if_from_ip($$$) {
 
 	# Get the port associated to the IP address.
 	my $if_index = $self->snmp_get_value($device, "$IPROUTEIFINDEX.$ip_addr");
-	return '' unless defined ($if_index);
+	return '' unless defined($if_index);
 
 	# Get the name of the interface associated to the port.
 	my $if_name = $self->snmp_get_value($device, "$IFNAME.$if_index");
-	return '' unless defined ($if_name);
-	
+	return '' unless defined($if_name);
+
 	$if_name =~ s/"//g;
 	return $if_name;
 }
@@ -666,12 +723,12 @@ sub get_if_from_mac($$$) {
 
 		# Get the name of the interface associated to the port.
 		my $if_name = $self->snmp_get_value($device, "$IFNAME.$if_index");
-		return '' unless defined ($if_name);
-		
+		return '' unless defined($if_name);
+
 		$if_name =~ s/"//g;
 		return $if_name;
 	}
-	
+
 	return '';
 }
 
@@ -698,13 +755,13 @@ sub get_if_from_port($$$) {
 ########################################################################################
 sub get_if_ip($$$) {
 	my ($self, $device, $if_index) = @_;
-	
+
 	my @output = $self->snmp_get($device, $IPADENTIFINDEX);
 	foreach my $line (@output) {
-		chomp ($line);
+		chomp($line);
 		return $1 if ($line =~ m/^$IPADENTIFINDEX.(\S+)\s+=\s+\S+:\s+$if_index$/);
 	}
-	
+
 	return '';
 }
 
@@ -728,7 +785,7 @@ sub get_if_mac($$$) {
 ########################################################################################
 sub get_if_type($$$) {
 	my ($self, $device, $if_index) = @_;
-	
+
 	my $type = $self->snmp_get_value($device, "$IFTYPE.$if_index");
 	return '' unless defined($type);
 
@@ -749,7 +806,7 @@ sub get_ip_from_mac($$) {
 }
 
 ########################################################################################
-# Attemtps to find 
+# Attemtps to find
 ########################################################################################
 sub get_mac_from_ip($$) {
 	my ($self, $host) = @_;
@@ -804,7 +861,7 @@ sub get_routes($) {
 	}
 
 	# Replace 0.0.0.0 with the default gateway's IP.
-	return unless defined ($self->{'default_gw'});
+	return unless defined($self->{'default_gw'});
 	foreach my $route (@{$self->{'routes'}}) {
 		$route->{gw} = $self->{'default_gw'} if ($route->{'gw'} eq '0.0.0.0');
 	}
@@ -886,12 +943,15 @@ sub guess_device_type($$) {
 	# L2?
 	my $device_type;
 	if ($service_bits[1] == 1) {
+
 		# L3?
 		if ($service_bits[2] == 1) {
+
 			# Bridge MIB?
 			if (defined($bridge_mib)) {
 				$device_type = 'switch';
 			} else {
+
 				# L7?
 				if ($service_bits[6] == 1) {
 					$device_type = 'host';
@@ -899,8 +959,8 @@ sub guess_device_type($$) {
 					$device_type = 'router';
 				}
 			}
-		}
-		else {
+		}else {
+
 			# Bridge MIB?
 			if (defined($bridge_mib)) {
 				$device_type = 'switch';
@@ -908,14 +968,16 @@ sub guess_device_type($$) {
 				$device_type = 'host';
 			}
 		}
-	}
-	else {
+	}else {
+
 		# L3?
 		if ($service_bits[2] == 1) {
+
 			# L4?
 			if ($service_bits[3] == 1) {
 				$device_type = 'switch';
 			} else {
+
 				# L7?
 				if ($service_bits[6] == 1) {
 					$device_type = 'host';
@@ -923,8 +985,8 @@ sub guess_device_type($$) {
 					$device_type = 'router';
 				}
 			}
-		}
-		else {
+		}else {
+
 			# Printer MIB?
 			my $printer_mib = $self->snmp_get_value($device, $PRTMARKERINDEX);
 			if (defined($printer_mib)) {
@@ -996,7 +1058,7 @@ sub is_switch_connected($$$) {
 	# Check for aliases!
 	$device = $self->{'aliases'}->{$device} if defined($self->{'aliases'}->{$device});
 
-	return 1 if defined ($self->{'switch_to_switch'}->{"${device}\t${iface}"});
+	return 1 if defined($self->{'switch_to_switch'}->{"${device}\t${iface}"});
 
 	return 0;
 }
@@ -1049,8 +1111,8 @@ sub mark_connected($$;$$$) {
 	}
 
 	# Prevent parent-child loops.
-	if (!defined($self->{'parents'}->{$parent}) ||
-		$self->{'parents'}->{$parent} ne $child) {
+	if (!defined($self->{'parents'}->{$parent})
+		||$self->{'parents'}->{$parent} ne $child) {
 
 		# A parent-child relationship is always created to help complete the map with
 		# layer 3 information.
@@ -1077,8 +1139,10 @@ sub mark_switch_connected($$$) {
 sub mark_visited($$) {
 	my ($self, $device) = @_;
 
-	$self->{'visited_devices'}->{$device} = { 'addr' => { $device => '' },
-	                                          'type' => 'host' };
+	$self->{'visited_devices'}->{$device} = {
+		'addr' => { $device => '' },
+		'type' => 'host'
+	};
 }
 
 ########################################################################################
@@ -1101,8 +1165,8 @@ sub snmp_responds($$) {
 	return 1 if($self->is_snmp_discovered($device));
 
 	return ($self->{'snmp_version'} eq "3")
-		? $self->snmp_responds_v3($device)
-		: $self->snmp_responds_v122c($device);
+	  ? $self->snmp_responds_v3($device)
+	  : $self->snmp_responds_v122c($device);
 }
 
 ########################################################################################
@@ -1201,11 +1265,7 @@ sub remote_arp($$) {
 ##############################################################################
 sub ping ($$$) {
 	my ($self, $host) = @_;
-	my ($timeout, $retries, $packets) = (
-		$self->{'icmp_timeout'},
-		$self->{'icmp_checks'},
-		1,
-	);
+	my ($timeout, $retries, $packets) = ($self->{'icmp_timeout'},$self->{'icmp_checks'},1,);
 
 	# Windows
 	if (($^O eq "MSWin32") || ($^O eq "MSWin32-x64") || ($^O eq "cygwin")){
@@ -1217,11 +1277,12 @@ sub ping ($$$) {
 
 		return 0;
 	}
-	
+
 	# Solaris
 	if ($^O eq "solaris"){
 		my $ping_command = $host =~ /\d+:|:\d+/ ? "ping -A inet6" : "ping";
 		for (my $i = 0; $i < $retries; $i++) {
+
 			# Note: There is no timeout option.
 			`$ping_command -s -n $host 56 $packets >/dev/null 2>&1`;
 			return 1 if ($? == 0);
@@ -1229,11 +1290,12 @@ sub ping ($$$) {
 
 		return 0;
 	}
-	
+
 	# FreeBSD
 	if ($^O eq "freebsd"){
 		my $ping_command = $host =~ /\d+:|:\d+/ ? "ping6" : "ping -t $timeout";
 		for (my $i = 0; $i < $retries; $i++) {
+
 			# Note: There is no timeout option for ping6.
 			`$ping_command -q -n -c $packets $host >/dev/null 2>&1`;
 			return 1 if ($? == 0);
@@ -1243,9 +1305,10 @@ sub ping ($$$) {
 	}
 
 	# NetBSD
-	if ($^O eq "netbsd"){                      
+	if ($^O eq "netbsd"){
 		my $ping_command = $host =~ /\d+:|:\d+/ ? "ping6" : "ping -w $timeout";
 		for (my $i = 0; $i < $retries; $i++) {
+
 			# Note: There is no timeout option for ping6.
 			`$ping_command -q -n -c $packets $host >/dev/null 2>&1`;
 			if ($? == 0) {
@@ -1255,11 +1318,11 @@ sub ping ($$$) {
 
 		return 0;
 	}
-	
+
 	# Assume Linux by default.
 	my $ping_command = $host =~ /\d+:|:\d+/ ? "ping6" : "ping";
 	for (my $i = 0; $i < $retries; $i++) {
-		`$ping_command -q -W $timeout -n -c $packets $host >/dev/null 2>&1`;	
+		`$ping_command -q -W $timeout -n -c $packets $host >/dev/null 2>&1`;
 		return 1 if ($? == 0);
 	}
 
@@ -1275,11 +1338,13 @@ sub scan_subnet($) {
 
 	my @subnets = @{$self->get_subnets()};
 	foreach my $subnet (@subnets) {
+		$self->{'c_network_percent'} = 0;
+		$self->{'c_network_name'} = $subnet;
 
 		# Clean blanks.
 		$subnet =~ s/\s+//g;
 
-		my $net_addr = new NetAddr::IP ($subnet);
+		my $net_addr = new NetAddr::IP($subnet);
 		if (!defined($net_addr)) {
 			$self->call('message', "Invalid network: $subnet", 3);
 			next;
@@ -1292,47 +1357,279 @@ sub scan_subnet($) {
 		# fping scan.
 		if (-x $self->{'fping'} && $net_addr->num() > 1) {
 			$self->call('message', "Calling fping...", 5);
-	
+
 			my @hosts = `"$self->{'fping'}" -ga "$subnet" 2>DEVNULL`;
 			next if (scalar(@hosts) == 0);
-		
+
+			$self->{'summary'}->{'discovered'} += scalar(@hosts);
+
 			my $step = 50.0 / scalar(@subnets) / scalar(@hosts); # The first 50% of the recon task approx.
+			my $subnet_step = 100.0 / scalar(@hosts);
 			foreach my $line (@hosts) {
 				chomp($line);
 
 				my @temp = split(/ /, $line);
-				next if (scalar(@temp) != 1); # Junk is shown for broadcast addresses.
+				if (scalar(@temp) != 1) {
+
+					# Junk is shown for broadcast addresses.
+					# Increase summary.not_alive hosts.
+					$self->{'summary'}->{'not_alive'} += 1;
+					next;
+				}
 				my $host = $temp[0];
 
 				# Skip network and broadcast addresses.
 				next if ($host eq $network->addr() || $host eq $broadcast->addr());
-				
+
+				# Increase self summary.alive hosts.
+				$self->{'summary'}->{'alive'} += 1;
 				$self->call('message', "Scanning host: $host", 5);
 				$self->call('update_progress', ceil($progress));
 				$progress += $step;
-		
+				$self->{'c_network_percent'} += $subnet_step;
+
 				$self->snmp_discovery($host);
+
+				# Add wmi scan if enabled.
+				$self->wmi_scan($host) if ($self->{'wmi_enabled'} == 1);
 			}
 		}
+
 		# ping scan.
 		else {
 			my @hosts = map { (split('/', $_))[0] } $net_addr->hostenum;
 			next if (scalar(@hosts) == 0);
-		
+
+			$self->{'summary'}->{'discovered'} += scalar(@hosts);
+
 			my $step = 50.0 / scalar(@subnets) / scalar(@hosts); # The first 50% of the recon task approx.
+			my $subnet_step = 100.0 / scalar(@hosts);
 			foreach my $host (@hosts) {
-		
+
 				$self->call('message', "Scanning host: $host", 5);
 				$self->call('update_progress', ceil($progress));
 				$progress += $step;
-		
+
 				# Check if the host is up.
-				next if ($self->ping($host) == 0);
-		
+				if ($self->ping($host) == 0) {
+					$self->{'summary'}->{'not_alive'} += 1;
+					next;
+				}
+
+				$self->{'summary'}->{'alive'} += 1;
+				$self->{'c_network_percent'} += $subnet_step;
+
 				$self->snmp_discovery($host);
+
+				# Add wmi scan if enabled.
+				$self->wmi_scan($host) if ($self->{'wmi_enabled'} == 1);
 			}
 		}
 	}
+}
+
+
+##########################################################################
+# Perform a Cloud scan
+##########################################################################
+sub cloud_scan($) {
+	my $self = shift;
+	my ($progress, $step);
+
+	my $type = '';
+
+	if ($self->{'task_data'}->{'type'} == DISCOVERY_CLOUD_AWS_EC2
+	|| $self->{'task_data'}->{'type'} == DISCOVERY_CLOUD_AWS_RDS) {
+		$type = 'Aws';
+	} else {
+		# Unrecognized task type.
+		call('message', 'Unrecognized task type', 1);
+		$self->call('update_progress', -1);
+		return;
+	}
+
+	# Initialize cloud object.
+	my $cloudObj = PandoraFMS::Recon::Util::enterprise_new(
+		'PandoraFMS::Recon::Cloud::'.$type,
+		[
+			task_data => $self->{'task_data'},
+			aws_access_key_id => $self->{'aws_access_key_id'},
+			aws_secret_access_key => $self->{'aws_secret_access_key'},
+			cloud_util_path => $self->{'cloud_util_path'},
+			creds_file => $self->{'creds_file'},
+			parent => $self
+		]
+
+	);
+
+	if (!$cloudObj) {
+		# Failed to initialize, check Cloud credentials or anything.
+		call('message', 'Unable to initialize PandoraFMS::Recon::Cloud::'.$type, 3);
+	} else {
+		# Let Cloud object manage scan.
+		$cloudObj->scan();
+	}
+
+	# Update progress.
+	# Done!
+	$self->{'step'} = '';
+	$self->call('update_progress', -1);
+}
+
+
+##########################################################################
+# Perform an Application scan.
+##########################################################################
+sub app_scan($) {
+	my ($self) = @_;
+	my ($progress, $step);
+
+	my $type = '';
+
+	if ($self->{'task_data'}->{'type'} == DISCOVERY_APP_MYSQL) {
+		$type = 'MySQL';
+	} elsif ($self->{'task_data'}->{'type'} == DISCOVERY_APP_ORACLE) {
+		$type = 'Oracle';
+	} else {
+		# Unrecognized task type.
+		call('message', 'Unrecognized task type', 1);
+		$self->call('update_progress', -1);
+		return;
+	}
+
+	my @targets = split /,/, $self->{'task_data'}->{'subnet'};
+
+	my $global_step = 100 / (scalar @targets);
+	my $global_percent = 0;
+	my $i = 0;
+	foreach my $target (@targets) {
+		my @data;
+		my @modules;
+
+		$self->{'step'} = STEP_DATABASE_SCAN;
+		$self->{'c_network_name'} = $target;
+		$self->{'c_network_percent'} = 0;
+
+		# Send message
+		call('message', 'Checking target ' . $target, 10);
+
+		# Force target acquirement.
+		$self->{'task_data'}->{'dbhost'} = $target;
+		$self->{'task_data'}->{'target_index'} = $i++;
+
+		# Update progress
+		$self->{'c_network_percent'} = 10;
+		$self->call('update_progress', $global_percent + (10 / (scalar @targets)));
+
+		# Connect to target.
+		my $dbObj = PandoraFMS::Recon::Util::enterprise_new(
+			'PandoraFMS::Recon::Applications::'.$type,
+			$self->{'task_data'}
+		);
+
+		if (!$dbObj->is_connected()) {
+			call('message', 'Cannot connect to target ' . $target, 3);
+			$global_percent += $global_step;
+			$self->{'c_network_percent'} = 90;
+			# Update progress
+			$self->call('update_progress', $global_percent + (90 / (scalar @targets)));
+			$self->{'summary'}->{'not_alive'} += 1;
+			push @modules, {
+				name => $type . ' connection',
+				type => 'generic_proc',
+				data => 0,
+				description => $type . ' availability'
+			};
+
+		} else {
+			my $dbObjCfg = $dbObj->get_config();
+
+			$self->{'summary'}->{'discovered'} += 1;
+			$self->{'summary'}->{'alive'} += 1;
+
+			push @modules, {
+				name => $type . ' connection',
+				type => 'generic_proc',
+				data => 1,
+				description => $type . ' availability'
+			};
+
+			# Analyze.
+			$self->{'step'} = STEP_STATISTICS;
+			$self->{'c_network_percent'} = 30;
+			$self->call('update_progress', $global_percent + (30 / (scalar @targets)));
+			$self->{'c_network_name'} = $dbObj->get_host();
+
+			# Retrieve connection statistics.
+			# Retrieve uptime statistics
+			# Retrieve query stats
+			# Retrieve connections
+			# Retrieve innodb
+			# Retrieve cache
+			$self->{'c_network_percent'} = 50;
+			$self->call('update_progress', $global_percent + (50 / (scalar @targets)));
+			push @modules, $dbObj->get_statistics();
+
+			# Custom queries.
+			$self->{'step'} = STEP_CUSTOM_QUERIES;
+			$self->{'c_network_percent'} = 80;
+			$self->call('update_progress', $global_percent + (80 / (scalar @targets)));
+			push @modules, $dbObj->execute_custom_queries();
+
+			if (defined($dbObjCfg->{'scan_databases'})
+			&& $dbObjCfg->{'scan_databases'} == 1) {
+				# Skip database scan in Oracle tasks
+				next if $self->{'type'} == DISCOVERY_APP_ORACLE;
+
+				my $__data = $dbObj->scan_databases();
+
+				if (ref($__data) eq "ARRAY") {
+					if (defined($dbObjCfg->{'agent_per_database'})
+					&& $dbObjCfg->{'agent_per_database'} == 1) {
+						# Agent per database detected.
+						push @data, @{$__data};
+					} else {
+						# Merge modules into engine agent.
+						my @_modules = map { 
+							map { $_ } @{$_->{'module_data'}}
+						} @{$__data};
+
+						push @modules, @_modules;
+					}
+				}
+			}
+		}
+
+		# Put engine agent at the beginning of the list.
+		my $version = $dbObj->get_version();
+		unshift @data,{
+			'agent_data' => {
+				'agent_name' => $dbObj->get_agent_name(),
+				'os' => $type,
+				'os_version' => (defined($version) ? $version : 'Discovery'),
+				'interval' => $self->{'task_data'}->{'interval_sweep'},
+				'id_group' => $self->{'task_data'}->{'id_group'},
+				'address' => $dbObj->get_host(),
+				'description' => '',
+			},
+			'module_data' => \@modules,
+		};
+
+		$self->call('create_agents', \@data);
+
+		# Destroy item.
+		undef($dbObj);
+
+		$global_percent += $global_step;
+		$self->{'c_network_percent'} = 100;
+		$self->call('update_progress', $global_percent);
+	}
+
+	# Update progress.
+	# Done!
+	$self->{'step'} = '';
+	$self->call('update_progress', -1);
+
 }
 
 ##########################################################################
@@ -1345,8 +1642,23 @@ sub scan($) {
 	# 1%
 	$self->call('update_progress', 1);
 
+	if (defined($self->{'task_data'})) {
+		if ($self->{'task_data'}->{'type'} == DISCOVERY_APP_MYSQL
+		||  $self->{'task_data'}->{'type'} == DISCOVERY_APP_ORACLE) {
+			# Database scan.
+			return $self->app_scan();
+		}
+
+		if ($self->{'task_data'}->{'type'} == DISCOVERY_CLOUD_AWS_RDS) {
+			# Cloud scan.
+			return $self->cloud_scan();
+		}
+	}
+
 	# Find devices.
 	$self->call('message', "[1/5] Scanning the network...", 3);
+	$self->{'step'} = STEP_SCANNING;
+	$self->call('update_progress', $progress);
 	$self->scan_subnet();
 
 	# Read the local ARP cache.
@@ -1355,20 +1667,23 @@ sub scan($) {
 	# Get a list of found hosts.
 	my @hosts = @{$self->get_hosts()};
 	if (scalar(@hosts) > 0 && $self->{'parent_detection'} == 1) {
-		# Delete previous connections. 
+
+		# Delete previous connections.
 		$self->call('delete_connections');
-	
+
 		# Connectivity from address forwarding tables.
 		$self->call('message', "[1/4] Finding address forwarding table connectivity...", 3);
+		$self->{'step'} = STEP_AFT;
 		($progress, $step) = (50, 20.0 / scalar(@hosts)); # From 50% to 70%.
 		for (my $i = 0; defined($hosts[$i]); $i++) {
 			$self->call('update_progress', $progress);
 			$progress += $step;
 			$self->aft_connectivity($hosts[$i]);
 		}
-	
+
 		# Connect hosts that are still unconnected using traceroute.
 		$self->call('message', "[3/4] Finding traceroute connectivity.", 3);
+		$self->{'step'} = STEP_TRACEROUTE;
 		($progress, $step) = (70, 20.0 / scalar(@hosts)); # From 70% to 90%.
 		foreach my $host (@hosts) {
 			$self->call('update_progress', $progress);
@@ -1376,9 +1691,10 @@ sub scan($) {
 			next if ($self->has_parent($host) || $self->has_children($host));
 			$self->traceroute_connectivity($host);
 		}
-	
+
 		# Connect hosts that are still unconnected using known gateways.
 		$self->call('message', "[4/4] Finding host to gateway connectivity.", 3);
+		$self->{'step'} = STEP_GATEWAY;
 		($progress, $step) = (90, 10.0 / scalar(@hosts)); # From 70% to 90%.
 		$self->get_routes(); # Update the route cache.
 		foreach my $host (@hosts) {
@@ -1390,8 +1706,9 @@ sub scan($) {
 	}
 
 	# Done!
+	$self->{'step'} = '';
 	$self->call('update_progress', -1);
-	
+
 	# Print debug information on found devices.
 	$self->call('message', "[Summary]", 3);
 	foreach my $host (@hosts) {
@@ -1399,7 +1716,7 @@ sub scan($) {
 		next unless defined($device);
 
 		# Print device information.
-		my $dev_info = "Device: " . $device->{'type'} . " ("; 
+		my $dev_info = "Device: " . $device->{'type'} . " (";
 		foreach my $ip_address ($self->get_addresses($host)) {
 			$dev_info .= "$ip_address,";
 		}
@@ -1447,13 +1764,13 @@ sub snmp_get($$$) {
 	if (scalar(@vlans) == 0) {
 		my $command = $self->snmp_get_command($device, $oid, $community);
 		@output = `$command`;
-	}
-	else {
+	}else {
+
 		# Handle duplicate lines.
 		my %output_hash;
 		foreach my $vlan (@vlans) {
 			my $command = $self->snmp_get_command($device, $oid, $community, $vlan);
-			foreach my $line (`$vlan`) {
+			foreach my $line (`$command`) {
 				$output_hash{$line} = 1;
 			}
 		}
@@ -1475,6 +1792,9 @@ sub snmp_get_command {
 
 	my $command = "snmpwalk -M/dev/null -r$self->{'snmp_checks'} -t$self->{'snmp_timeout'} -v$self->{'snmp_version'} -On -Oe ";
 	if ($self->{'snmp_version'} eq "3") {
+		if ($self->{'community'}) { # Context
+			$command .= " -N $self->{'community'} ";
+		}
 		$command .= " -l$self->{'snmp_security_level'} ";
 		if ($self->{'snmp_security_level'} ne "noAuthNoPriv") {
 			$command .= " -u$self->{'snmp_auth_user'} -a$self->{'snmp_auth_method'} -A$self->{'snmp_auth_pass'} ";
@@ -1499,7 +1819,7 @@ sub snmp_get_value($$$) {
 
 	my @output = $self->snmp_get($device, $oid);
 	foreach my $line (@output) {
-		chomp ($line);
+		chomp($line);
 		return $1 if ($line =~ /^$oid\s+=\s+\S+:\s+(.*)$/);
 	}
 
@@ -1515,7 +1835,7 @@ sub snmp_get_value_array($$$) {
 
 	my @output = $self->snmp_get($device, $oid);
 	foreach my $line (@output) {
-		chomp ($line);
+		chomp($line);
 		push(@values, $1) if ($line =~ /^$oid\S*\s+=\s+\S+:\s+(.*)$/);
 	}
 
@@ -1546,22 +1866,20 @@ sub traceroute_connectivity($$) {
 	# Perform a traceroute.
 	my $nmap_args  = '-nsP -PE --traceroute --max-retries '.$self->{'icmp_checks'}.' --host-timeout '.$self->{'icmp_timeout'}.'s -T'.$self->{'recon_timing_template'};
 	my $np = PandoraFMS::Recon::NmapParser->new();
-	eval {
-		$np->parsescan($self->{'nmap'}, $nmap_args, ($host));
-	};
+	eval {$np->parsescan($self->{'nmap'}, $nmap_args, ($host));};
 	return if ($@);
-	
+
 	# Get hops to the host.
-	my ($h) = $np->all_hosts ();
-	return unless defined ($h);
-	my @hops = $h->all_trace_hops ();
+	my ($h) = $np->all_hosts();
+	return unless defined($h);
+	my @hops = $h->all_trace_hops();
 
 	# Skip the target host.
 	pop(@hops);
-	
+
 	# Reverse the host order (closest hosts first).
 	@hops = reverse(@hops);
-	
+
 	# Look for parents.
 	my $device = $host;
 	for (my $i = 0; $i < $self->{'parent_recursion'}; $i++) {
@@ -1572,12 +1890,140 @@ sub traceroute_connectivity($$) {
 		$self->call('create_agent', $parent);
 
 		$self->call('message', "Host $device is one hop away from host $parent.", 5);
-		$self->mark_connected($parent, '', $device, ''); 
+		$self->mark_connected($parent, '', $device, '');
 
 		# Move on to the next hop.
 		$device = $parent;
 	}
 }
+
+##########################################################################
+# Returns the credentials with which the host responds to WMI queries or
+# undef if it does not respond to WMI.
+##########################################################################
+sub responds_to_wmi {
+	my ($self, $target) = @_;
+
+	foreach my $auth (@{$self->{'auth_strings_array'}}) {
+		my @output;
+		if ($auth ne '') {
+			@output = `$self->{'timeout_cmd'}$self->{'wmi_client'} -U $auth //$target "SELECT * FROM Win32_ComputerSystem" 2>&1`;
+		} else {
+			@output = `$self->{'timeout_cmd'}$self->{'wmi_client'} -N //$target "SELECT * FROM Win32_ComputerSystem" 2>&1`;
+		}
+
+		foreach my $line (@output) {
+			chomp($line);
+			return $auth if ($line =~ m/^CLASS: Win32_ComputerSystem$/);
+		}
+	}
+
+	return undef;
+}
+
+##########################################################################
+# Add wmi modules to the given host.
+##########################################################################
+sub wmi_scan {
+	my ($self, $target) = @_;
+
+	$self->call('message', "[".$target."] Checking WMI.", 5);
+
+	my $auth = $self->responds_to_wmi($target);
+	return unless defined($auth);
+
+	$self->{'summary'}->{'WMI'} += 1;
+
+	$self->call('message', "[".$target."] WMI available.", 10);
+
+	# Create the agent if it does not exist.
+	my $agent_id = $self->call('create_agent', $target);
+	next unless defined($agent_id);
+
+	# CPU.
+	my @cpus = $self->wmi_get_value_array($target, $auth, 'SELECT DeviceId FROM Win32_Processor', 0);
+	foreach my $cpu (@cpus) {
+		$self->call('wmi_module',($agent_id,$target,"SELECT LoadPercentage FROM Win32_Processor WHERE DeviceId='$cpu'",$auth,1,"CPU Load $cpu","Load for $cpu (%)",'generic_data'));
+	}
+
+	# Memory.
+	my $mem = $self->wmi_get_value($target, $auth, 'SELECT FreePhysicalMemory FROM Win32_OperatingSystem', 0);
+	if (defined($mem)) {
+		$self->call('wmi_module',($agent_id,$target,"SELECT FreePhysicalMemory, TotalVisibleMemorySize FROM Win32_OperatingSystem",$auth,0,'FreeMemory','Free memory','generic_data','KB'));
+	}
+
+	# Disk.
+	my @units = $self->wmi_get_value_array($target, $auth, 'SELECT DeviceID FROM Win32_LogicalDisk', 0);
+	foreach my $unit (@units) {
+		$self->call('wmi_module',($agent_id,$target,"SELECT FreeSpace FROM Win32_LogicalDisk WHERE DeviceID='$unit'",$auth,1,"FreeDisk $unit",'Available disk space in kilobytes','generic_data','KB'));
+	}
+}
+
+##########################################################################
+# Extra: WMI imported methods. DO NOT EXPORT TO AVOID DOUBLE DEF.
+##########################################################################
+
+##########################################################################
+# Performs a wmi get requests and returns the response as an array.
+##########################################################################
+sub wmi_get {
+	my ($self, $target, $auth, $query) = @_;
+
+	my @output;
+	if (defined($auth) && $auth ne '') {
+		@output = `$self->{'timeout_cmd'}"$self->{'wmi_client'}" -U $auth //$target "$query" 2>&1`;
+	}else {
+		@output = `$self->{'timeout_cmd'}"$self->{'wmi_client'}" -N //$target "$query" 2>&1`;
+	}
+
+	# Something went wrong.
+	return () if ($? != 0);
+
+	return @output;
+}
+
+##########################################################################
+# Performs a WMI request and returns the requested column of the first row.
+# Returns undef on error.
+##########################################################################
+sub wmi_get_value {
+	my ($self, $target, $auth, $query, $column) = @_;
+	my @result;
+
+	my @output = $self->wmi_get($target, $auth, $query);
+	return undef unless defined($output[2]);
+
+	my $line = $output[2];
+	chomp($line);
+	my @columns = split(/\|/, $line);
+	return undef unless defined($columns[$column]);
+
+	return $columns[$column];
+}
+
+##########################################################################
+# Performs a WMI request and returns row values for the requested column
+# in an array.
+##########################################################################
+sub wmi_get_value_array {
+	my ($self, $target, $auth, $query, $column) = @_;
+	my @result;
+
+	my @output = $self->wmi_get($target, $auth, $query);
+	foreach (my $i = 2; defined($output[$i]); $i++) {
+		my $line = $output[$i];
+		chomp($line);
+		my @columns = split(/\|/, $line);
+		next unless defined($columns[$column]);
+		push(@result, $columns[$column]);
+	}
+
+	return @result;
+}
+
+##########################################################################
+# END: WMI imported methods.
+##########################################################################
 
 1;
 __END__

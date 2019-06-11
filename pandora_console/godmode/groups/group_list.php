@@ -275,7 +275,7 @@ if (defined('METACONSOLE')) {
         __('Groups defined in %s', get_product_name()),
         'images/group.png',
         false,
-        '',
+        'group_list_tab',
         true,
         $buttons
     );
@@ -515,15 +515,23 @@ if ($tab == 'tree') {
 
         $table = new StdClass();
         $table->width = '100%';
-        $table->class = 'databox data';
+        $table->class = 'info_table';
+        $table->headstyle = [];
         $table->head = [];
         $table->head[0] = __('ID');
+        $table->headstyle[0] = 'min-width: 100px;';
         $table->head[1] = __('Name');
+        $table->headstyle[1] = 'min-width: 100px;';
         $table->head[2] = __('Icon');
+        $table->headstyle[2] = 'min-width: 100px;';
         $table->head[3] = __('Alerts');
+        $table->headstyle[3] = 'min-width: 100px;';
         $table->head[4] = __('Parent');
+        $table->headstyle[4] = 'min-width: 100px;';
         $table->head[5] = __('Description');
+        $table->headstyle[5] = 'min-width: 100px;';
         $table->head[6] = __('Actions');
+        $table->headstyle[6] = 'min-width: 100px;';
         $table->align = [];
         $table->align[0] = 'left';
         $table->align[2] = 'left';
@@ -559,6 +567,7 @@ if ($tab == 'tree') {
             $table->data[$key][3] = $group['disabled'] ? __('Disabled') : __('Enabled');
             $table->data[$key][4] = $group['parent_name'];
             $table->data[$key][5] = $group['description'];
+            $table->cellclass[$key][6] = 'action_buttons';
             $table->data[$key][6] = "<a href='$url'>".html_print_image(
                 'images/config.png',
                 true,
@@ -574,7 +583,7 @@ if ($tab == 'tree') {
                 $confirm_message = __('The child groups will be updated to use the parent id of the deleted group').'. '.$confirm_message;
             }
 
-            $table->data[$key][6] .= '&nbsp;&nbsp;'.'<a href="'.$url_delete.'" onClick="if (!confirm(\' '.$confirm_message.'\')) return false;">'.html_print_image(
+            $table->data[$key][6] .= '<a href="'.$url_delete.'" onClick="if (!confirm(\' '.$confirm_message.'\')) return false;">'.html_print_image(
                 'images/cross.png',
                 true,
                 [
@@ -592,7 +601,7 @@ if ($tab == 'tree') {
             $block_size,
             true,
             'offset',
-            false
+            true
         );
         html_print_table($table);
         echo ui_pagination(
@@ -602,7 +611,8 @@ if ($tab == 'tree') {
             $block_size,
             true,
             'offset',
-            true
+            true,
+            'pagination-bottom'
         );
     } else {
         ui_print_info_message(['no_close' => true, 'message' => __('There are no defined groups') ]);

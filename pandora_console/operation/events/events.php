@@ -1,33 +1,52 @@
 <?php
+/**
+ * Extension to manage a list of gateways and the node address where they should
+ * point to.
+ *
+ * @category   Events
+ * @package    Pandora FMS
+ * @subpackage Community
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
 
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation for version 2.
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-// Load global vars
+// Load global vars.
 global $config;
 
 require_once $config['homedir'].'/include/functions_events.php';
-// Event processing functions
+// Event processing functions.
 require_once $config['homedir'].'/include/functions_alerts.php';
-// Alerts processing functions
+// Alerts processing functions.
 require_once $config['homedir'].'/include/functions_agents.php';
-// Agents functions
+// Agents functions.
 require_once $config['homedir'].'/include/functions_users.php';
-// Users functions
+// Users functions.
 require_once $config['homedir'].'/include/functions_graph.php';
 require_once $config['homedir'].'/include/functions_ui.php';
 
 check_login();
 
-if (! check_acl($config['id_user'], 0, 'ER') && ! check_acl($config['id_user'], 0, 'EW') && ! check_acl($config['id_user'], 0, 'EM')) {
+if (! check_acl($config['id_user'], 0, 'ER')
+    && ! check_acl($config['id_user'], 0, 'EW')
+    && ! check_acl($config['id_user'], 0, 'EM')
+) {
     db_pandora_audit(
         'ACL Violation',
         'Trying to access event viewer'
@@ -36,13 +55,13 @@ if (! check_acl($config['id_user'], 0, 'ER') && ! check_acl($config['id_user'], 
     return;
 }
 
-// Set metaconsole mode
+// Set metaconsole mode.
 $meta = false;
 if (enterprise_installed() && defined('METACONSOLE')) {
     $meta = true;
 }
 
-// Get the history mode
+// Get the history mode.
 $history = (bool) get_parameter('history', 0);
 
 $readonly = false;
@@ -81,7 +100,7 @@ if (is_ajax()) {
         if ($event['event_type'] == 'system') {
             echo __('System');
         } else if ($event['id_agente'] > 0) {
-            // Agent name
+            // Agent name.
             echo agents_get_alias($event['id_agente']);
         } else {
             echo '';
@@ -104,7 +123,7 @@ if (is_ajax()) {
         $comment = (string) get_parameter('comment');
         $new_status = get_parameter('new_status');
 
-        // Set off the standby mode when close an event
+        // Set off the standby mode when close an event.
         if ($new_status == 1) {
             $event = events_get_event($id);
             alerts_agent_module_standby($event['id_alert_am'], 0);
@@ -251,7 +270,14 @@ if (!$meta) {
                 'ACL Violation',
                 'Trying to access event viewer. View disabled due event replication.'
             );
-            ui_print_info_message(['message' => __('Event viewer is disabled due event replication. For more information, please contact with the administrator'), 'no_close' => true]);
+            ui_print_info_message(
+                [
+                    'message'  => __(
+                        'Event viewer is disabled due event replication. For more information, please contact with the administrator'
+                    ),
+                    'no_close' => true,
+                ]
+            );
             return;
         } else {
             $readonly = true;
@@ -259,8 +285,38 @@ if (!$meta) {
     }
 }
 
+$id_filter = db_get_value(
+    'id_filter',
+    'tusuario',
+    'id_user',
+    $config['id_user']
+);
+
+// If user has event filter retrieve filter values.
+if (!empty($id_filter)) {
+    $apply_filter = true;
+
+    $event_filter = events_get_event_filter($id_filter);
+
+    $event_filter['search'] = io_safe_output($event_filter['search']);
+    $event_filter['id_name'] = io_safe_output($event_filter['id_name']);
+    $event_filter['tag_with'] = base64_encode(
+        io_safe_output($event_filter['tag_with'])
+    );
+    $event_filter['tag_without'] = base64_encode(
+        io_safe_output($event_filter['tag_without'])
+    );
+}
+
+$is_filtered = get_parameter('is_filtered', false);
 $offset = (int) get_parameter('offset', 0);
+
+if ($event_filter['id_group'] == '') {
+    $event_filter['id_group'] = 0;
+}
+
 $id_group = (int) get_parameter('id_group', 0);
+
 // 0 all
 // **********************************************************************
 // TODO
@@ -270,35 +326,60 @@ $id_group = (int) get_parameter('id_group', 0);
 // $recursion = (bool)get_parameter('recursion', false); //Flag show in child groups
 // **********************************************************************
 $recursion = (bool) get_parameter('recursion', true);
-// Flag show in child groups
-$event_type = get_parameter('event_type', '');
-// 0 all
-$severity = (int) get_parameter('severity', -1);
-// -1 all
-$status = (int) get_parameter('status', 3);
-// -1 all, 0 only new, 1 only validated, 2 only in process, 3 only not validated,
-$id_agent = (int) get_parameter('id_agent', 0);
-$pagination = (int) get_parameter('pagination', $config['block_size']);
-$event_view_hr = (int) get_parameter('event_view_hr', $history ? 0 : $config['event_view_hr']);
-$id_user_ack = get_parameter('id_user_ack', 0);
-$group_rep = (int) get_parameter('group_rep', 1);
+// Flag show in child groups.
+if (empty($event_filter['event_type'])) {
+    $event_filter['event_type'] = '';
+}
+
+$event_type = ($apply_filter === true && $is_filtered === false) ? $event_filter['event_type'] : get_parameter('event_type', '');
+
+// 0 all.
+$severity = ($apply_filter === true && $is_filtered === false) ? (int) $event_filter['severity'] : (int) get_parameter('severity', -1);
+// -1 all.
+if ($event_filter['status'] == -1) {
+    $event_filter['status'] = 3;
+}
+
+$status = ($apply_filter === true && $is_filtered === false) ? (int) $event_filter['status'] : (int) get_parameter('status', 3);
+// -1 all, 0 only new, 1 only validated,
+// 2 only in process, 3 only not validated.
+$id_agent = ($apply_filter === true && $is_filtered === false) ? (int) $event_filter['id_agent'] : (int) get_parameter('id_agent', 0);
+$pagination = ($apply_filter === true && $is_filtered === false) ? (int) $event_filter['pagination'] : (int) get_parameter('pagination', $config['block_size']);
+
+if (empty($event_filter['event_view_hr'])) {
+    $event_filter['event_view_hr'] = ($history) ? 0 : $config['event_view_hr'];
+}
+
+$event_view_hr = ($apply_filter === true && $is_filtered === false) ? (int) $event_filter['event_view_hr'] : (int) get_parameter(
+    'event_view_hr',
+    ($history) ? 0 : $config['event_view_hr']
+);
+
+
+$id_user_ack = ($apply_filter === true && $is_filtered === false) ? $event_filter['id_user_ack'] : get_parameter('id_user_ack', 0);
+$group_rep = ($apply_filter === true && $is_filtered === false) ? (int) $event_filter['group_rep'] : (int) get_parameter('group_rep', 1);
 $delete = (bool) get_parameter('delete');
 $validate = (bool) get_parameter('validate', 0);
 $section = (string) get_parameter('section', 'list');
-$filter_only_alert = (int) get_parameter('filter_only_alert', -1);
+$filter_only_alert = ($apply_filter === true && $is_filtered === false) ? (int) $event_filter['filter_only_alert'] : (int) get_parameter('filter_only_alert', -1);
 $filter_id = (int) get_parameter('filter_id', 0);
-$id_name = (string) get_parameter('id_name', '');
+
+if (empty($event_filter['id_name'])) {
+    $event_filter['id_name'] = '';
+}
+
+$id_name = ($apply_filter === true && $is_filtered === false) ? (string) $event_filter['id_name'] : (string) get_parameter('id_name', '');
 $open_filter = (int) get_parameter('open_filter', 0);
-$date_from = (string) get_parameter('date_from', '');
-$date_to = (string) get_parameter('date_to', '');
+$date_from = ($apply_filter === true && $is_filtered === false) ? (string) $event_filter['date_from'] : (string) get_parameter('date_from', '');
+$date_to = ($apply_filter === true && $is_filtered === false) ? (string) $event_filter['date_to'] : (string) get_parameter('date_to', '');
 $time_from = (string) get_parameter('time_from', '');
 $time_to = (string) get_parameter('time_to', '');
 $server_id = (int) get_parameter('server_id', 0);
-$text_agent = (string) get_parameter('text_agent');
+$text_agent = ($apply_filter === true && $is_filtered === false) ? (string) $event_filter['text_agent'] : (string) get_parameter('text_agent');
 $refr = (int) get_parameter('refresh');
-$id_extra = (string) get_parameter('id_extra');
-$user_comment = (string) get_parameter('user_comment');
-$source = (string) get_parameter('source');
+$id_extra = ($apply_filter === true && $is_filtered === false) ? (string) $event_filter['id_extra'] : (string) get_parameter('id_extra');
+$user_comment = ($apply_filter === true && $is_filtered === false) ? (string) $event_filter['user_comment'] : (string) get_parameter('user_comment');
+$source = ($apply_filter === true && $is_filtered === false) ? (string) $event_filter['source'] : (string) get_parameter('source');
 
 if ($id_agent != 0) {
     $text_agent = agents_get_alias($id_agent);
@@ -313,9 +394,17 @@ if ($id_agent != 0) {
 }
 
 $text_module = (string) get_parameter('module_search', '');
-$id_agent_module = get_parameter('module_search_hidden', get_parameter('id_agent_module', 0));
+$id_agent_module = ($apply_filter === true && $is_filtered === false) ? $event_filter['id_agent_module'] : get_parameter(
+    'module_search_hidden',
+    get_parameter('id_agent_module', 0)
+);
 if ($id_agent_module != 0) {
-    $text_module = db_get_value('nombre', 'tagente_modulo', 'id_agente_modulo', $id_agent_module);
+    $text_module = db_get_value(
+        'nombre',
+        'tagente_modulo',
+        'id_agente_modulo',
+        $id_agent_module
+    );
     if ($text_module == false) {
         $text_module = '';
     }
@@ -325,7 +414,7 @@ if ($id_agent_module != 0) {
 
 
 
-$tag_with_json = base64_decode(get_parameter('tag_with', ''));
+$tag_with_json = ($apply_filter === true && $is_filtered === false) ? base64_decode($event_filter['tag_with']) : base64_decode(get_parameter('tag_with', ''));
 $tag_with_json_clean = io_safe_output($tag_with_json);
 $tag_with_base64 = base64_encode($tag_with_json_clean);
 $tag_with = json_decode($tag_with_json_clean, true);
@@ -335,7 +424,7 @@ if (empty($tag_with)) {
 
 $tag_with = array_diff($tag_with, [0 => 0]);
 
-$tag_without_json = base64_decode(get_parameter('tag_without', ''));
+$tag_without_json = ($apply_filter === true && $is_filtered === false) ? base64_decode($event_filter['tag_without']) : base64_decode(get_parameter('tag_without', ''));
 $tag_without_json_clean = io_safe_output($tag_without_json);
 $tag_without_base64 = base64_encode($tag_without_json_clean);
 $tag_without = json_decode($tag_without_json_clean, true);
@@ -362,42 +451,42 @@ $url = 'index.php?sec=eventos&amp;sec2=operation/events/events&amp;'.$params;
 
 
 
-// Header
+// Header.
 if ($config['pure'] == 0 || $meta) {
     $pss = get_user_info($config['id_user']);
     $hashup = md5($config['id_user'].$pss['password']);
 
-    // Fullscreen
+    // Fullscreen.
     $fullscreen['active'] = false;
     $fullscreen['text'] = '<a href="'.$url.'&amp;pure=1">'.html_print_image('images/full_screen.png', true, ['title' => __('Full screen')]).'</a>';
 
-    // Event list
+    // Event list.
     $list['active'] = false;
     $list['text'] = '<a href="index.php?sec=eventos&sec2=operation/events/events&amp;pure='.$config['pure'].'">'.html_print_image('images/events_list.png', true, ['title' => __('Event list')]).'</a>';
 
-    // History event list
+    // History event list.
     $history_list['active'] = false;
     $history_list['text'] = '<a href="index.php?sec=eventos&sec2=operation/events/events&amp;pure='.$config['pure'].'&amp;section=history&amp;history=1">'.html_print_image('images/books.png', true, ['title' => __('History event list')]).'</a>';
 
-    // RSS
+    // RSS.
     $rss['active'] = false;
     $rss['text'] = '<a href="operation/events/events_rss.php?user='.$config['id_user'].'&hashup='.$hashup.'&'.$params.'">'.html_print_image('images/rss.png', true, ['title' => __('RSS Events')]).'</a>';
 
-    // Marquee
+    // Marquee.
     $marquee['active'] = false;
     $marquee['text'] = '<a href="operation/events/events_marquee.php">'.html_print_image('images/heart.png', true, ['title' => __('Marquee display')]).'</a>';
 
-    // CSV
+    // CSV.
     $csv['active'] = false;
     $csv['text'] = '<a href="operation/events/export_csv.php?'.$params.'">'.html_print_image('images/csv_mc.png', true, ['title' => __('Export to CSV file')]).'</a>';
 
-    // Sound events
+    // Sound events.
     $sound_event['active'] = false;
     $sound_event['text'] = '<a href="javascript: openSoundEventWindow();">'.html_print_image('images/sound.png', true, ['title' => __('Sound events')]).'</a>';
 
-    // If the user has administrator permission display manage tab
+    // If the user has administrator permission display manage tab.
     if (check_acl($config['id_user'], 0, 'EW') || check_acl($config['id_user'], 0, 'EM')) {
-        // Manage events
+        // Manage events.
         $manage_events['active'] = false;
         $manage_events['text'] = '<a href="index.php?sec=eventos&sec2=godmode/events/events&amp;section=filter&amp;pure='.$config['pure'].'">'.html_print_image('images/setup.png', true, ['title' => __('Manage events')]).'</a>';
 
@@ -425,7 +514,7 @@ if ($config['pure'] == 0 || $meta) {
         ];
     }
 
-    // If the history event is not ebabled, dont show the history tab
+    // If the history event is not ebabled, dont show the history tab.
     if (!isset($config['metaconsole_events_history']) || $config['metaconsole_events_history'] != 1) {
         unset($onheader['history']);
     }
@@ -446,16 +535,6 @@ if ($config['pure'] == 0 || $meta) {
             $section_string = __('List');
         break;
     }
-
-
-    /*
-        Hello there! :)
-
-        We added some of what seems to be "buggy" messages to the openSource version recently. This is not to force open-source users to move to the enterprise version, this is just to inform people using Pandora FMS open source that it requires skilled people to maintain and keep it running smoothly without professional support. This does not imply open-source version is limited in any way. If you check the recently added code, it contains only warnings and messages, no limitations except one: we removed the option to add custom logo in header. In the Update Manager section, it warns about the 'danger’ of applying automated updates without a proper backup, remembering in the process that the Enterprise version comes with a human-tested package. Maintaining an OpenSource version with more than 500 agents is not so easy, that's why someone using a Pandora with 8000 agents should consider asking for support. It's not a joke, we know of many setups with a huge number of agents, and we hate to hear that “its becoming unstable and slow” :(
-
-        You can of course remove the warnings, that's why we include the source and do not use any kind of trick. And that's why we added here this comment, to let you know this does not reflect any change in our opensource mentality of does the last 14 years.
-
-    */
 
     if (! defined('METACONSOLE')) {
         unset($onheader['history']);
@@ -482,37 +561,55 @@ if ($config['pure'] == 0 || $meta) {
     <script type="text/javascript">
         function openSoundEventWindow() {
             url = "<?php echo ui_get_full_url('operation/events/sound_events.php'); ?>";
-            window.open(url, '<?php __('Sound Alerts'); ?>','width=600, height=450, toolbar=no, location=no, directories=no, status=no, menubar=no, resizable=no'); 
+            window.open(
+                url,
+                '<?php __('Sound Alerts'); ?>',
+                'width=600, height=450, toolbar=no, location=no, directories=no, status=no, menubar=no, resizable=no'
+            ); 
         }
     </script>
     <?php
 } else {
-    // Fullscreen
-    // Floating menu - Start
+    // Fullscreen.
+    // Floating menu - Start.
     echo '<div id="vc-controls" style="z-index: 999">';
 
     echo '<div id="menu_tab">';
     echo '<ul class="mn">';
 
-    // Quit fullscreen
+    // Quit fullscreen.
     echo '<li class="nomn">';
     echo '<a target="_top" href="'.$url.'&amp;pure=0">';
-    echo html_print_image('images/normal_screen.png', true, ['title' => __('Back to normal mode')]);
+    echo html_print_image(
+        'images/normal_screen.png',
+        true,
+        ['title' => __('Back to normal mode')]
+    );
     echo '</a>';
     echo '</li>';
 
-    // Countdown
+    // Countdown.
     echo '<li class="nomn">';
     echo '<div class="vc-refr">';
     echo '<div class="vc-countdown"></div>';
     echo '<div id="vc-refr-form">';
     echo __('Refresh').':';
-    echo html_print_select(get_refresh_time_array(), 'refresh', $refr, '', '', 0, true, false, false);
+    echo html_print_select(
+        get_refresh_time_array(),
+        'refresh',
+        $refr,
+        '',
+        '',
+        0,
+        true,
+        false,
+        false
+    );
     echo '</div>';
     echo '</div>';
     echo '</li>';
 
-    // Console name
+    // Console name.
     echo '<li class="nomn">';
     echo '<div class="vc-title">'.__('Event viewer').'</div>';
     echo '</li>';
@@ -521,11 +618,11 @@ if ($config['pure'] == 0 || $meta) {
     echo '</div>';
 
     echo '</div>';
-    // Floating menu - End
+    // Floating menu - End.
     ui_require_jquery_file('countdown');
 }
 
-// Error div for ajax messages
+// Error div for ajax messages.
 echo "<div id='show_message_error'>";
 echo '</div>';
 
@@ -535,7 +632,7 @@ if (($section == 'validate') && ($ids[0] == -1)) {
     ui_print_error_message(__('No events selected'));
 }
 
-// Process validation (pass array or single value)
+// Process validation (pass array or single value).
 if ($validate) {
     $ids = get_parameter('eventid', -1);
     $comment = get_parameter('comment', '');
@@ -543,7 +640,7 @@ if ($validate) {
     $ids = explode(',', $ids);
     $standby_alert = (bool) get_parameter('standby-alert');
 
-    // Avoid to re-set inprocess events
+    // Avoid to re-set inprocess events.
     if ($new_status == 2) {
         foreach ($ids as $key => $id) {
             $event = events_get_event($id);
@@ -572,11 +669,11 @@ if ($validate) {
     }
 }
 
-// Process deletion (pass array or single value)
+// Process deletion (pass array or single value).
 if ($delete) {
     $ids = (array) get_parameter('validate_ids', -1);
 
-    // Discard deleting in progress events
+    // Discard deleting in progress events.
     $in_process_status = db_get_all_rows_sql(
         '
 		SELECT id_evento
@@ -611,6 +708,7 @@ if ($delete) {
 
 echo "<div id='event_details_window'></div>";
 echo "<div id='event_response_window'></div>";
+echo "<div id='event_response_command_window' title='".__('Parameters')."'></div>";
 
 ui_require_jquery_file('bgiframe');
 ui_require_javascript_file('pandora_events');
@@ -628,7 +726,6 @@ $(document).ready( function() {
     var refr = <?php echo (int) $refr; ?>;
     var pure = <?php echo (int) $config['pure']; ?>;
     var href = "<?php echo ui_get_url_refresh($ignored_params); ?>";
-    // alert($(location).attr('href'));
     if (pure) {
         var startCountDown = function (duration, cb) {
             $('div.vc-countdown').countdown('destroy');
@@ -662,9 +759,10 @@ $(document).ready( function() {
         });
     }
     else {
-        
         $('#refresh').change(function () {
-            $('#hidden-vc_refr').val($('#refresh option:selected').val());
+            $('#hidden-vc_refr').val(
+                $('#refresh option:selected').val()
+            );
         });
     }
     
@@ -839,11 +937,11 @@ $(document).ready( function() {
                         // Remove delete link (if event is not grouped and there is more than one event)
                         if ($("#group_rep").val() == 1) {
                             if (parseInt($("#count_event_group_"+id).text()) <= 1) {
-                                $("#delete-"+id).replaceWith('<img alt="' + <?php echo "'".__('Is not allowed delete events in process')."'"; ?> + '" title="' + <?php echo "'".__('Is not allowed delete events in process')."'"; ?> + '" src="images/cross.disabled.png">');
+                                $("#delete-"+id).replaceWith('<img alt=" <?php echo addslashes(__('Is not allowed delete events in process')); ?>" title="<?php echo addslashes(__('Is not allowed delete events in process')); ?>"  src="images/cross.disabled.png">');
                             }
                         }
                         else { // Remove delete link (if event is not grouped)
-                            $("#delete-"+id).replaceWith('<img alt="' + <?php echo "'".__('Is not allowed delete events in process')."'"; ?> + '" title="' + <?php echo "'".__('Is not allowed delete events in process')."'"; ?> + '" src="images/cross.disabled.png">');
+                            $("#delete-"+id).replaceWith('<img alt="<?php echo addslashes(__('Is not allowed delete events in process')); ?> " title="<?php echo addslashes(__('Is not allowed delete events in process')); ?>"  src="images/cross.disabled.png">');
                         }
                         
                         // Change state image
@@ -929,7 +1027,7 @@ $(document).ready( function() {
                     {"page" : "operation/events/events",
                     "delete_event" : 1,
                     "id" : id,
-                    "similars" : <?php echo $group_rep ? 1 : 0; ?>,
+                    "similars" : <?php echo ($group_rep) ? 1 : 0; ?>,
                     "meta" : meta,
                     "history" : history_var
                     },
@@ -1044,10 +1142,10 @@ function validate_event_advanced(id, new_status) {
                     $("#in-progress-"+id).remove();
                     // Format the new disabled delete icon.
                     $("#validate-"+id).parent().append("<img id='delete-" + id + "' src='" + cross_disabled_image + "' />");
-                    $("#delete-"+id).attr ("data-title", <?php echo "'".__('Is not allowed delete events in process')."'"; ?>);
-                    $("#delete-"+id).attr ("alt", <?php echo "'".__('Is not allowed delete events in process')."'"; ?>);
+                    $("#delete-"+id).attr ("data-title",  "<?php echo addslashes(__('Is not allowed delete events in process')); ?>");
+                    $("#delete-"+id).attr ("alt"," <?php echo addslashes(__('Is not allowed delete events in process')); ?>");
                     $("#delete-"+id).attr ("data-use_title_for_force_title", 1);
-                    $("#delete-"+id).attr ("class", "forced_title");
+                    $("#delete-"+id).attr ("class", "forced_title"); 
 
                     // Remove row due to new state
                     if (($("#status").val() == 0)
@@ -1067,9 +1165,6 @@ function validate_event_advanced(id, new_status) {
                                 next_row_id = row_id_name + '-' + row_id_number_next;
                                 
                                 $("#"+previous_row_id).css('display', 'none');
-                                $("#"+current_row_id).css('display', 'none');
-                                $("#"+selected_row_id).css('display', 'none');
-                                $("#"+next_row_id).css('display', 'none');
                             }
                         });
                         

@@ -571,6 +571,7 @@ export default class VisualConsole {
     this.elements.forEach(item => {
       item.meta = { ...item.meta, editMode: true };
     });
+    this.containerRef.classList.add("is-editing");
   }
 
   /**
@@ -580,5 +581,6 @@ export default class VisualConsole {
     this.elements.forEach(item => {
       item.meta = { ...item.meta, editMode: false };
     });
+    this.containerRef.classList.remove("is-editing");
   }
 }

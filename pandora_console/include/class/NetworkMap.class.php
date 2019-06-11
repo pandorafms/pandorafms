@@ -2847,7 +2847,7 @@ class NetworkMap
             __('Node Details'),
             '',
             false,
-            false
+            true
         );
 
         $output .= '</div>';

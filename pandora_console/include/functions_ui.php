@@ -2801,8 +2801,18 @@ function ui_progress(
  *      'column2',
  *      ...
  *   ],
+ *   'no_sortable_columns' => [ indexes ] 1,2... -1 etc. Avoid sorting.
  *   'form' => [
  *      'html' => 'html code' a directly defined inputs in HTML.
+ *      'extra_buttons' => [
+ *          [
+ *              'id' => button id,
+ *              'class' => button class,
+ *              'style' => button style,
+ *              'text' => button text,
+ *              'onclick' => button onclick,
+ *          ]
+ *      ],
  *      'search_button_class' => search button class.
  *      'class' => form class.
  *      'id' => form id.
@@ -2850,6 +2860,11 @@ function ui_print_datatable(array $parameters)
         $parameters['default_pagination'] = $config['block_size'];
     }
 
+    $no_sortable_columns = [];
+    if (isset($parameters['no_sortable_columns'])) {
+        $no_sortable_columns = json_encode($parameters['no_sortable_columns']);
+    }
+
     if (!is_array($parameters['order'])) {
         $order = '0, "asc"';
     } else {
@@ -2877,7 +2892,7 @@ function ui_print_datatable(array $parameters)
         $parameters['ajax_data'] = '';
     }
 
-    $search_button_class = 'sub search';
+    $search_button_class = 'sub filter';
     if (isset($parameters['search_button_class'])) {
         $search_button_class = $parameters['search_button_class'];
     }
@@ -2977,8 +2992,19 @@ function ui_print_datatable(array $parameters)
             $filter .= '</li>';
         }
 
-        // Search button.
         $filter .= '<li>';
+        if (is_array($parameters['form']['extra_buttons'])) {
+            foreach ($parameters['form']['extra_buttons'] as $button) {
+                $filter .= '<button id="'.$button['id'].'" ';
+                $filter .= ' class="'.$button['class'].'" ';
+                $filter .= ' style="'.$button['style'].'" ';
+                $filter .= ' onclick="'.$button['onclick'].'" >';
+                $filter .= $button['text'];
+                $filter .= '</button>';
+            }
+        }
+
+        // Search button.
         $filter .= '<input type="submit" class="'.$search_button_class.'" ';
         $filter .= ' id="'.$form_id.'_search_bt" value="'.__('Filter').'"/>';
         $filter .= '</li>';
@@ -3078,7 +3104,9 @@ function ui_print_datatable(array $parameters)
     if (isset($parameters['ajax_postprocess'])) {
         $js .= '
                     if (json.data) {
-                        json.data.forEach('.$parameters['ajax_postprocess'].');
+                        json.data.forEach(function(item) {
+                            '.$parameters['ajax_postprocess'].'
+                        });
                     } else {
                         json.data = {};
                     }';
@@ -3110,7 +3138,8 @@ function ui_print_datatable(array $parameters)
                 }
             },
             "columnDefs": [
-                { className: "no-class", targets: "_all" }
+                { className: "no-class", targets: "_all" },
+                { bSortable: false, targets: '.$no_sortable_columns.' }
             ],
             columns: [';
 

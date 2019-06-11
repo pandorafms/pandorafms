@@ -88,8 +88,7 @@
   background-image: url(../images/ui-icons_444444_256x240.png);
 }
 .ui-widget-content {
-  background: #ffffff url(../images/ui-bg_flat_75_ffffff_40x100.png) 50% 50%
-    repeat-x;
+  background: #fff;
 }
 .ui-state-default,
 .ui-widget-content .ui-state-default,
@@ -97,8 +96,7 @@
   margin-top: 3px;
   border: 1px solid #d3d3d3;
   border-bottom: 0;
-  background: #e6e6e6 url(../images/ui-bg_glass_75_e6e6e6_1x400.png) 50% 50%
-    repeat-x;
+  background: #e6e6e6;
   font-weight: normal;
   color: #555555;
 }
@@ -139,7 +137,7 @@
 }
 .ui-dialog .ui-widget-header {
   background-color: #82b92e;
-  margin: -1px;
+  margin: -1px -1px 0px -1px;
 }
 .ui_tpicker_hour,
 .ui_tpicker_minute,
@@ -213,8 +211,7 @@ a.ui-button:active,
 .ui-widget-header .ui-state-hover {
   border: 1px solid #999999;
   border-bottom: 0;
-  background: #dadada url(../images/ui-bg_glass_75_dadada_1x400.png) 50% 50%
-    repeat-x;
+  background: #dadada;
 }
 
 .ui-state-active,
@@ -222,8 +219,7 @@ a.ui-button:active,
 .ui-widget-header .ui-state-active {
   border: 1px solid #aaaaaa;
   border-bottom: 0;
-  background: #ffffff url(../images/ui-bg_glass_65_ffffff_1x400.png) 50% 50%
-    repeat-x;
+  background: #ffffff;
   font-weight: normal;
   color: #212121;
 }

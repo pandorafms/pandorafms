@@ -109,7 +109,30 @@ if (is_ajax()) {
 
         $events = events_get_all(
             [
-                'te.*',
+                'te.id_evento',
+                'te.id_agente',
+                'te.id_usuario',
+                'te.id_grupo',
+                'te.estado',
+                'te.timestamp',
+                'te.evento',
+                'te.utimestamp',
+                'te.event_type',
+                'te.id_agentmodule',
+                'te.id_alert_am',
+                'te.criticity',
+                'te.user_comment',
+                'te.tags',
+                'te.source',
+                'te.id_extra',
+                'te.critical_instructions',
+                'te.warning_instructions',
+                'te.unknown_instructions',
+                'te.owner_user',
+                'te.ack_utimestamp',
+                'te.custom_data',
+                'te.data',
+                'te.module_status',
                 'ta.alias as agent_name',
                 'tg.nombre as group_name',
             ],
@@ -687,6 +710,21 @@ $in = '<div class="filter_input"><label>'.__('Comment').'</label>';
 $in .= $data.'</div>';
 $inputs[] = $in;
 
+$buttons = [];
+
+$buttons[] = [
+    'id'      => 'load-filter',
+    'class'   => 'float-left margin-right-2 sub config',
+    'text'    => __('Load filter'),
+    'onclick' => '',
+];
+
+$buttons[] = [
+    'id'      => 'save-filter',
+    'class'   => 'float-left margin-right-2 sub wand',
+    'text'    => __('Save filter'),
+    'onclick' => '',
+];
 
 /*
  * Advanced filter.
@@ -1010,7 +1048,7 @@ try {
         $active_filters_div .= __('Any time.');
     } else if ($event_view_hr == 1) {
         $active_filters_div .= __('Last hour.');
-    } else if ($event_view_hr == 2) {
+    } else if ($event_view_hr > 1) {
         $active_filters_div .= __('Last %d hours.', $event_view_hr);
     }
 
@@ -1039,18 +1077,19 @@ try {
     // Print datatable.
     ui_print_datatable(
         [
-            'id'                 => 'events',
-            'class'              => 'info_table events',
-            'style'              => 'width: 100%;',
-            'ajax_url'           => 'operation/events/events',
-            'ajax_data'          => ['get_events' => 1],
-            'form'               => [
-                'class'  => 'flex-row',
-                'html'   => $filter,
-                'inputs' => [],
+            'id'                  => 'events',
+            'class'               => 'info_table events',
+            'style'               => 'width: 100%;',
+            'ajax_url'            => 'operation/events/events',
+            'ajax_data'           => ['get_events' => 1],
+            'form'                => [
+                'class'         => 'flex-row',
+                'html'          => $filter,
+                'inputs'        => [],
+                'extra_buttons' => $buttons,
             ],
-            'extra_html'         => $active_filters_div,
-            'pagination_options' => [
+            'extra_html'          => $active_filters_div,
+            'pagination_options'  => [
                 [
                     $config['block_size'],
                     10,
@@ -1072,136 +1111,14 @@ try {
                     'All',
                 ],
             ],
-            'order'              => [
+            'order'               => [
                 'field'     => 'timestamp',
                 'direction' => 'desc',
             ],
-            'column_names'       => $column_names,
-            'columns'            => $fields,
-            'ajax_postprocess'   => '
-        function (item) {
-            var color = "'.COL_UNKNOWN.'";
-            var text = "UNKNOWN";
-            switch (item.criticity) {
-                case "'.EVENT_CRIT_CRITICAL.'": 
-                    text = "CRITICAL";
-                    color = "'.COL_CRITICAL.'";
-                break;
-
-                case "'.EVENT_CRIT_MAINTENANCE.'": 
-                    text = "MAINTENANCE";
-                    color = "'.COL_MAINTENANCE.'";
-                break;
-
-                case "'.EVENT_CRIT_INFORMATIONAL.'": 
-                    text = "INFORMATIONAL";
-                    color = "'.COL_INFORMATIONAL.'";
-                break;
-
-                case "'.EVENT_CRIT_MAJOR.'": 
-                    text = "MAJOR";
-                    color = "'.COL_MAJOR.'";
-                break;
-
-                case "'.EVENT_CRIT_MINOR.'": 
-                    text = "MINOR";
-                    color = "'.COL_MINOR.'";
-                break;
-
-                case "'.EVENT_CRIT_NORMAL.'": 
-                    text = "NORMAL";
-                    color = "'.COL_NORMAL.'";
-                break;
-
-                case "'.EVENT_CRIT_WARNING.'": 
-                    text = "WARNING";
-                    color = "'.COL_WARNING.'";
-                break;
-            }
-            output = \'<div data-title="\';
-            output += text;
-            output += \'" data-use_title_for_force_title="1" \';
-            output += \'class="forced_title mini-criticity h100p" \';
-            output += \'style="background: \' + color + \'">\';
-            output += \'</div>\';
-
-            evn = \'<div class="event flex-row h100p nowrap">\';
-            evn += \'<div><a href="javascript:" onclick="show_event_dialog(\';
-            evn += item.id_evento+\');">\';
-            evn += item.evento+\'</a></div>\';
-            evn += output;
-            evn += \'</div>\'
-
-            item.evento = evn;
-            item.criticity = \'<div class="criticity" style="background: \';
-            item.criticity += color + \'">\' + text + "</div>";
-
-
-            // Event type.
-            switch (item.event_type) {
-                case "'.EVENTS_ALERT_FIRED.'":
-                case "'.EVENTS_ALERT_RECOVERED.'":
-                case "'.EVENTS_ALERT_CEASED.'":
-                case "'.EVENTS_ALERT_MANUAL_VALIDATION.'":
-                    text = "'.__('ALERT').'";
-                    color = "'.COL_ALERTFIRED.'";
-                break;
-
-                case "'.EVENTS_RECON_HOST_DETECTED.'":
-                case "'.EVENTS_SYSTEM.'":
-                case "'.EVENTS_ERROR.'":
-                case "'.EVENTS_NEW_AGENT.'":
-                case "'.EVENTS_CONFIGURATION_CHANGE.'":
-                    text = "'.__('SYSTEM').'";
-                    color = "'.COL_MAINTENANCE.'";
-                break;
-
-                case "'.EVENTS_GOING_UP_WARNING.'":
-                case "'.EVENTS_GOING_DOWN_WARNING.'":
-                $tex = "'.__('WARNING').'";
-                    color = "'.COL_WARNING.'";
-                break;
-
-                case "'.EVENTS_GOING_DOWN_NORMAL.'":
-                case "'.EVENTS_GOING_UP_NORMAL.'":
-                    text = "'.__('NORMAL').'";
-                    color = "'.COL_NORMAL.'";
-                break;
-
-                case "'.EVENTS_GOING_DOWN_CRITICAL.'":
-                case "'.EVENTS_GOING_UP_CRITICAL.'":
-                    text = "'.__('CRITICAL').'";
-                    color = "'.COL_CRITICAL.'";
-                break;
-
-                case "'.EVENTS_UNKNOWN.'":
-                case "'.EVENTS_GOING_UNKNOWN.'":
-                default:
-                    text = "'.__('UNKNOWN').'";
-                    color = "'.COL_UNKNOWN.'";
-                break;
-            }
-
-            item.event_type = \'<div class="criticity" style="background: \';
-            item.event_type += color + \'">\' + text + "</div>";
-
-            if (item.id_agente > 0) {
-                item.agent_name = \'<a href="'.ui_get_full_url('index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=').'\'+item.id_agente+\'">\' + item.agent_name + \'</a>\';
-            }
-
-            if (item.id_agente > 0) {
-                item.id_agente = \'<a href="'.ui_get_full_url('index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=').'\'+item.id_agente+\'">\' + item.id_agente + \'</a>\';
-            }
-
-            if (item.id_grupo == "0") {
-                item.id_grupo = "'.__('All').'";
-            } else {
-                item.id_grupo = item.group_name;
-            }
-
-            item.options = \'<a href="#">button</a>\';
-            item.id_evento = "#"+item.id_evento;
-        }',
+            'column_names'        => $column_names,
+            'columns'             => $fields,
+            'no_sortable_columns' => [-1],
+            'ajax_postprocess'    => 'process_datatables_item(item)',
         ]
     );
 } catch (Exception $e) {
@@ -1232,9 +1149,13 @@ html_print_input_hidden(
 echo "<div id='event_details_window'></div>";
 echo "<div id='event_response_window'></div>";
 echo "<div id='event_response_command_window' title='".__('Parameters')."'></div>";
+
+// Load filter div for dialog.
+echo '<div id="load-modal-filter" style="display: none"></div>';
+echo '<div id="save-modal-filter" style="display: none"></div>';
 ?>
 <script type="text/javascript">
-
+var loading = 0;
 var select_with_tag_empty = <?php echo (int) $remove_with_tag_disabled; ?>;
 var select_without_tag_empty = <?php echo (int) $remove_without_tag_disabled; ?>;
 var origin_select_with_tag_empty = <?php echo (int) $add_with_tag_disabled; ?>;
@@ -1244,509 +1165,188 @@ var val_none = 0;
 var text_none = "<?php echo __('None'); ?>";
 var group_agents_id = false;
 
-$(document).ready( function() {
-    /* Update summary */
-    $("#status").on("change",function(){
-        $('#summary_status').html($("#status option:selected").text());
-    });
+/* Datatables auxiliary functions starts */
+function process_datatables_item(item) {
+    /* Event severity prepared */
+    var color = "<?php echo COL_UNKNOWN; ?>";
+    var text = "<?php echo __('UNKNOWN'); ?>";
+    switch (item.criticity) {
+        case "<?php echo EVENT_CRIT_CRITICAL; ?>":
+            text = "<?php echo __('CRITICAL'); ?>";
+            color = "<?php echo COL_CRITICAL; ?>";
+        break;
 
-    $("#text-event_view_hr").on("keyup",function(){
-        hours = $('#text-event_view_hr').val();
-        if (hours == '' || hours == 0 ) {
-            $('#summary_hours').html('<?php echo __('Any'); ?>');
-        } else if (hours == 1) {
-            $('#summary_hours').html('<?php echo __('Last hour.'); ?>');
+        case "<?php echo EVENT_CRIT_MAINTENANCE; ?>":
+            text = "<?php echo __('MAINTENANCE'); ?>";
+            color = "<?php echo COL_MAINTENANCE; ?>";
+        break;
+
+        case "<?php echo EVENT_CRIT_INFORMATIONAL; ?>":
+            text = "<?php echo __('INFORMATIONAL'); ?>";
+            color = "<?php echo COL_INFORMATIONAL; ?>";
+        break;
+
+        case "<?php echo EVENT_CRIT_MAJOR; ?>":
+            text = "<?php echo __('MAJOR'); ?>";
+            color = "<?php echo COL_MAJOR; ?>";
+        break;
+
+        case "<?php echo EVENT_CRIT_MINOR; ?>":
+            text = "<?php echo __('MINOR'); ?>";
+            color = "<?php echo COL_MINOR; ?>";
+        break;
+
+        case "<?php echo EVENT_CRIT_NORMAL; ?>":
+            text = "<?php echo __('NORMAL'); ?>";
+            color = "<?php echo COL_NORMAL; ?>";
+        break;
+
+        case "<?php echo EVENT_CRIT_WARNING; ?>":
+            text = "<?php echo __('WARNING'); ?>";
+            color = "<?php echo COL_WARNING; ?>";
+        break;
+    }
+    output = '<div data-title="';
+    output += text;
+    output += '" data-use_title_for_force_title="1" ';
+    output += 'class="forced_title mini-criticity h100p" ';
+    output += 'style="background: ' + color + '">';
+    output += '</div>';
+
+    // Add event severity to end of text.
+    evn = '<div class="event flex-row h100p nowrap">';
+    evn += '<div><a href="javascript:" onclick="show_event_dialog(';
+    evn += item.id_evento+','+$("#group_rep").val()+');">';
+    evn += item.evento+'</a></div>';
+    evn += output;
+    evn += '</div>'
+
+    // Add event severity format to itself.
+    item.evento = evn;
+    item.criticity = '<div class="criticity" style="background: ';
+    item.criticity += color + '">' + text + "</div>";
+
+
+    /* Event type prepared. */
+    switch (item.event_type) {
+        case "<?php echo EVENTS_ALERT_FIRED; ?>":
+        case "<?php echo EVENTS_ALERT_RECOVERED; ?>":
+        case "<?php echo EVENTS_ALERT_CEASED; ?>":
+        case "<?php echo EVENTS_ALERT_MANUAL_VALIDATION; ?>":
+            text = "<?php echo __('ALERT'); ?>";
+            color = "<?php echo COL_ALERTFIRED; ?>";
+        break;
+
+        case "<?php echo EVENTS_RECON_HOST_DETECTED; ?>":
+        case "<?php echo EVENTS_SYSTEM; ?>":
+        case "<?php echo EVENTS_ERROR; ?>":
+        case "<?php echo EVENTS_NEW_AGENT; ?>":
+        case "<?php echo EVENTS_CONFIGURATION_CHANGE; ?>":
+            text = "<?php echo __('SYSTEM'); ?>";
+            color = "<?php echo COL_MAINTENANCE; ?>";
+        break;
+
+        case "<?php echo EVENTS_GOING_UP_WARNING; ?>":
+        case "<?php echo EVENTS_GOING_DOWN_WARNING; ?>":
+        $tex = "<?php echo __('WARNING'); ?>";
+            color = "<?php echo COL_WARNING; ?>";
+        break;
+
+        case "<?php echo EVENTS_GOING_DOWN_NORMAL; ?>":
+        case "<?php echo EVENTS_GOING_UP_NORMAL; ?>":
+            text = "<?php echo __('NORMAL'); ?>";
+            color = "<?php echo COL_NORMAL; ?>";
+        break;
+
+        case "<?php echo EVENTS_GOING_DOWN_CRITICAL; ?>":
+        case "<?php echo EVENTS_GOING_UP_CRITICAL; ?>":
+            text = "<?php echo __('CRITICAL'); ?>";
+            color = "<?php echo COL_CRITICAL; ?>";
+        break;
+
+        case "<?php echo EVENTS_UNKNOWN; ?>":
+        case "<?php echo EVENTS_GOING_UNKNOWN; ?>":
+        default:
+            text = "<?php echo __('UNKNOWN'); ?>";
+            color = "<?php echo COL_UNKNOWN; ?>";
+        break;
+    }
+
+    item.event_type = '<div class="criticity" style="background: ';
+    item.event_type += color + '">' + text + "</div>";
+
+    /* Agent name link */
+    if (item.id_agente > 0) {
+        item.agent_name = '<a href="<?php echo ui_get_full_url('index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='); ?>' +item.id_agente+'">' + item.agent_name + '</a>';
+    } else {
+        item.agent_name = '';
+    }
+
+    /* Agent ID link */
+    if (item.id_agente > 0) {
+        <?php
+        if (in_array('agent_name', $fields)) {
+            ?>
+            item.id_agente = '<a href="<?php echo ui_get_full_url('index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='); ?>'+item.id_agente+'">' + item.id_agente + '</a>';
+            <?php
         } else {
-            $('#summary_hours').html(hours + '<?php echo ' '.__('hours.'); ?>');
+            ?>
+            item.id_agente = '<a href="<?php echo ui_get_full_url('index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='); ?>'+item.id_agente+'">' + item.agent_name + '</a>';
+            <?php
         }
-    });
-
-    $('#group_rep').on("change", function(){
-        $('#summary_duplicates').html($("#group_rep option:selected").text());
-    });
-
-    /* Summary updates end. */
-
-    id_select_destiny = "#tag_with_temp";
-    id_hidden = "#hidden-tag_with";
-
-    value_store = [];
-    
-    jQuery.each($(id_select_destiny + " option"), function(key, element) {
-        val = $(element).val();
-        
-        value_store.push(val);
-    });
-    
-    $(id_hidden).val(Base64.encode(JSON.stringify(value_store)));
-    
-    id_select_destiny2 = "#tag_without_temp";
-    id_hidden2 = "#hidden-tag_without";
-    
-    value_store2 = [];
-    
-    jQuery.each($(id_select_destiny2 + " option"), function(key, element) {
-        val = $(element).val();
-        
-        value_store2.push(val);
-    });
-    
-    $(id_hidden2).val(Base64.encode(JSON.stringify(value_store2)));
-
-    $("#text-date_from, #text-date_to").datepicker(
-        {dateFormat: "<?php echo DATE_FORMAT_JS; ?>"});
-    
-    // Don't collapse filter if update button has been pushed
-    if ($("#hidden-open_filter").val() == 'true') {
-        $("#event_control").toggle();
-    }
-    
-    // If selected is not 'none' show filter name.
-    if ( $("#filter_id").val() != 0 ) {
-        $("#row_name").css('visibility', '');
-        $("#submit-update_filter").css('visibility', '');
+        ?>
+    } else {
+        item.id_agente = '';
     }
 
-    if ($("#hidden-id_name").val() == ''){
-        if($("#hidden-filterid").val() != ''){
-            $('#row_name').css('visibility', '');
-            $("#submit-update_filter").css('visibility', '');
-            jQuery.post ("<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",
-                {"page" : "operation/events/events_list",
-                "get_filter_values" : 1,
-                "id" : $('#hidden-filterid').val()
-                },
-                function (data) {
-                    jQuery.each (data, function (i, val) {
-                        if (i == 'id_name')
-                            $("#hidden-id_name").val(val);
-                        if (i == 'id_group')
-                            $("#id_group").val(val);
-                        if (i == 'event_type')
-                            $("#event_type").val(val);
-                        if (i == 'severity')
-                            $("#severity").val(val);
-                        if (i == 'status')
-                            $("#status").val(val);
-                        if (i == 'search')
-                            $("#text-search").val(val);
-                        if (i == 'text_agent')
-                            $("#text_id_agent").val(val);
-                        if (i == 'id_agent')
-                            $('input:hidden[name=id_agent]').val(val);
-                        if (i == 'id_agent_module')
-                            $('input:hidden[name=module_search_hidden]').val(val);
-                        if (i == 'pagination')
-                            $("#pagination").val(val);
-                        if (i == 'event_view_hr')
-                            $("#text-event_view_hr").val(val);
-                        if (i == 'id_user_ack')
-                            $("#id_user_ack").val(val);
-                        if (i == 'group_rep')
-                            $("#group_rep").val(val);
-                        if (i == 'tag_with')
-                            $("#hidden-tag_with").val(val);
-                        if (i == 'tag_without')
-                            $("#hidden-tag_without").val(val);
-                        if (i == 'filter_only_alert')
-                            $("#filter_only_alert").val(val);
-                        if (i == 'id_group_filter')
-                            $("#id_group_filter").val(val);
-                        if (i == 'source')
-                            $("#text-source").val(val);
-                        if (i == 'id_extra')
-                            $("#text-id_extra").val(val);
-                        if (i == 'user_comment')
-                            $("#text-user_comment").val(val);
-                    });
-                    reorder_tags_inputs();
-                    // Update the info with the loaded filter
-                    $('#filter_loaded_span').html($('#filter_loaded_text').html() + ': ' + $("#hidden-id_name").val());
-
-                },
-                "json"
-            );
-        }
+    /* Group name */
+    if (item.id_grupo == "0") {
+        item.id_grupo = "<?php echo __('All'); ?>";
+    } else {
+        item.id_grupo = item.group_name;
     }
 
-    $("#submit-load_filter").click(function () {
-        // If selected 'none' flush filter
-        if ( $("#filter_id").val() == 0 ) {
-            $("#hidden-id_name").val('');
-            $("#id_group").val(0);
-            $("#event_type").val('');
-            $("#severity").val(-1);
-            $("#status").val(3);
-            $("#text-search").val('');
-            $('input:hidden[name=id_agent]').val("");
-            $('input:hidden[name=module_search_hidden]').val();
-            $("#pagination").val(25);
-            $("#text-event_view_hr").val(8);
-            $("#id_user_ack").val(0);
-            $("#group_rep").val(1);
-            $("#tag").val('');
-            $("#filter_only_alert").val(-1);
-            $("#row_name").css('visibility', 'hidden');
-            $("#submit-update_filter").css('visibility', 'hidden');
-            $("#id_group").val(0);
-            $("#text-date_from").val('');
-            $("#text-date_to").val('');
-            $("#pagination").val(20);
-            $("#update_from_filter_table").val(1);
-            $("#text_id_agent").val("");
-            $("#text-source").val('');
-            $("#text-id_extra").val('');
-            $("#text-user_comment").val('');
-            
-            clear_tags_inputs();
-            
-            // Update the view of filter load with no loaded filters message
-            $('#filter_loaded_span').html($('#not_filter_loaded_text').html());
+    /* Status */
+    img = '<?php echo html_print_image('images/star.png', true, ['title' => __('Unknown'), 'class' => 'forced-title']); ?>';
+    switch (item.estado) {
+        case "0":
+            img = '<?php echo html_print_image('images/star.png', true, ['title' => __('New event'), 'class' => 'forced-title']); ?>';
+        break;
 
-            // Update the view with the loaded filter
-            $('#submit-update').trigger('click');
-        }
-        // If filter selected then load filter
-        else {
-            $('#row_name').css('visibility', '');
-            $("#submit-update_filter").css('visibility', '');
-            jQuery.post ("<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",
-                {"page" : "operation/events/events_list",
-                "get_filter_values" : 1,
-                "id" : $('#filter_id').val()
-                },
-                function (data) {
-                    jQuery.each (data, function (i, val) {
-                        if (i == 'id_name')
-                            $("#hidden-id_name").val(val);
-                        if (i == 'id_group')
-                            $("#id_group").val(val);
-                        if (i == 'event_type')
-                            $("#event_type").val(val);
-                        if (i == 'severity')
-                            $("#severity").val(val);
-                        if (i == 'status')
-                            $("#status").val(val);
-                        if (i == 'search')
-                            $("#text-search").val(val);
-                        if (i == 'text_agent')
-                            $("#text_id_agent").val(val);
-                        if (i == 'id_agent')
-                            $('input:hidden[name=id_agent]').val(val);
-                        if (i == 'id_agent_module')
-                            $('input:hidden[name=module_search_hidden]').val(val);
-                        if (i == 'pagination')
-                            $("#pagination").val(val);
-                        if (i == 'event_view_hr')
-                            $("#text-event_view_hr").val(val);
-                        if (i == 'id_user_ack')
-                            $("#id_user_ack").val(val);
-                        if (i == 'group_rep')
-                            $("#group_rep").val(val);
-                        if (i == 'tag_with')
-                            $("#hidden-tag_with").val(val);
-                        if (i == 'tag_without')
-                            $("#hidden-tag_without").val(val);
-                        if (i == 'filter_only_alert')
-                            $("#filter_only_alert").val(val);
-                        if (i == 'id_group_filter')
-                            $("#id_group_filter").val(val);
-                        if (i == 'date_from'){
-                            if((val == '0000-00-00') || (val == null)) {
-                                $("#text-date_from").val('');
-                            } else {
-                                $("#text-date_from").val(val.replace(/\-/g,"/"));
-                            }
-                        }
-                        if (i == 'date_to'){
-                            if((val == '0000-00-00') || (val == null)) {
-                                $("#text-date_to").val('');
-                            } else {
-                                $("#text-date_to").val(val.replace(/\-/g,"/"));
-                            }
-                        }
-                        if (i == 'source')
-                            $("#text-source").val(val);
-                        if (i == 'id_extra')
-                            $("#text-id_extra").val(val);
-                        if (i == 'user_comment')
-                            $("#text-user_comment").val(val);
-                    });
-                    reorder_tags_inputs();
-                    // Update the info with the loaded filter
-                    $('#filter_loaded_span').html($('#filter_loaded_text').html() + ': ' + $("#hidden-id_name").val());
-                    
-                    // Update the view with the loaded filter
-                    $('#submit-update').trigger('click');
-                },
-                "json"
-            );
-        }
-        
-        // Close dialog
-        $('.ui-dialog-titlebar-close').trigger('click');
-    });
-    
-    // Filter save mode selector
-    $("[name='filter_mode']").click(function() {
-        if ($(this).val() == 'new') {
-            $('#save_filter_row1').show();
-            $('#save_filter_row2').show();
-            $('#update_filter_row1').hide();
-        }
-        else {
-            $('#save_filter_row1').hide();
-            $('#save_filter_row2').hide();
-            $('#update_filter_row1').show();
-        }
-    });
-    
-    // This saves an event filter
-    $("#submit-save_filter").click(function () {
-        // If the filter name is blank show error
-        if ($('#text-id_name').val() == '') {
-            $('#show_filter_error').html("<h3 class='error'><?php echo __('Filter name cannot be left blank'); ?></h3>");
-            
-            // Close dialog
-            $('.ui-dialog-titlebar-close').trigger('click');
-            return false;
-        }
-        
-        var id_filter_save;
-        
-        jQuery.post ("<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",
-            {
-                "page" : "operation/events/events_list",
-                "save_event_filter" : 1,
-                "id_name" : $("#text-id_name").val(),
-                "id_group" : $("select#id_group").val(),
-                "event_type" : $("#event_type").val(),
-                "severity" : $("#severity").val(),
-                "status" : $("#status").val(),
-                "search" : $("#text-search").val(),
-                "text_agent" : $("#text_id_agent").val(),
-                "id_agent" : $('input:hidden[name=id_agent]').val(),
-                "id_agent_module" : $('input:hidden[name=module_search_hidden]').val(),
-                "pagination" : $("#pagination").val(),
-                "event_view_hr" : $("#text-event_view_hr").val(),
-                "id_user_ack" : $("#id_user_ack").val(),
-                "group_rep" : $("#group_rep").val(),
-                "tag_with": Base64.decode($("#hidden-tag_with").val()),
-                "tag_without": Base64.decode($("#hidden-tag_without").val()),
-                "filter_only_alert" : $("#filter_only_alert").val(),
-                "id_group_filter": $("#id_group_filter").val(),
-                "date_from": $("#text-date_from").val(),
-                "date_to": $("#text-date_to").val(),
-                "source": $("#text-source").val(),
-                "id_extra": $("#text-id_extra").val(),
-                "user_comment": $("#text-user_comment").val()
-            },
-            function (data) {
-                $(".info_box").hide();
-                if (data == 'error') {
-                    $(".info_box").filter(function(i, item) {
-                        if ($(item).data('type_info_box') == "error_create_filter") {
-                            return true;
-                        }
-                        else
-                            return false;
-                    }).show();
-                }
-                else  if (data == 'duplicate') {
-                    $(".info_box").filter(function(i, item) {
-                        if ($(item).data('type_info_box') == "duplicate_create_filter") {
-                            return true;
-                        }
-                        else
-                            return false;
-                    }).show();
-                }
-                else {
-                    id_filter_save = data;
-                    
-                    $(".info_box").filter(function(i, item) {
-                        if ($(item).data('type_info_box') == "success_create_filter") {
-                            return true;
-                        }
-                        else
-                            return false;
-                    }).show();
-                }
-            });
-        
-        // First remove all options of filters select
-        $('#filter_id').find('option').remove().end();
-        // Add 'none' option the first
-        $('#filter_id').append ($('<option></option>').html ( <?php echo "'".__('none')."'"; ?> ).attr ("value", 0));    
-        // Reload filters select
-        jQuery.post ("<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",
-            {
-                "page" : "operation/events/events_list",
-                "get_event_filters" : 1
-            },
-            function (data) {
-                jQuery.each (data, function (i, val) {
-                    s = js_html_entity_decode(val);
-                    
-                    if (i == id_filter_save) {
-                        $('#filter_id').append ($('<option selected="selected"></option>').html (s).attr ("value", i));
-                    }
-                    else {
-                        $('#filter_id').append ($('<option></option>').html (s).attr ("value", i));      
-                    }
-                });
-            },
-            "json"
-            );
-        $("#submit-update_filter").css('visibility', '');
-        
-        // Close dialog
-        $('.ui-dialog-titlebar-close').trigger('click');
-        
-        // Update the info with the loaded filter
-        $("#hidden-id_name").val($('#text-id_name').val());
-        $('#filter_loaded_span').html($('#filter_loaded_text').html() + ': ' + $('#text-id_name').val());
-        
-        return false;
-    });
-    
-    // This updates an event filter
-    $("#submit-update_filter").click(function () {
-        var id_filter_update =  $("#overwrite_filter").val();
-        var name_filter_update = $("#overwrite_filter option[value='"+id_filter_update+"']").text();
-        
-        jQuery.post ("<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",
-            {"page" : "operation/events/events_list",
-            "update_event_filter" : 1,
-            "id" : $("#overwrite_filter").val(),
-            "id_group" : $("select#id_group").val(),
-            "event_type" : $("#event_type").val(),
-            "severity" : $("#severity").val(),
-            "status" : $("#status").val(),
-            "search" : $("#text-search").val(),
-            "text_agent" : $("#text_id_agent").val(),
-            "id_agent" : $('input:hidden[name=id_agent]').val(),
-            "id_agent_module" : $('input:hidden[name=module_search_hidden]').val(),
-            "pagination" : $("#pagination").val(),
-            "event_view_hr" : $("#text-event_view_hr").val(),
-            "id_user_ack" : $("#id_user_ack").val(),
-            "group_rep" : $("#group_rep").val(),
-            "tag_with" : Base64.decode($("#hidden-tag_with").val()),
-            "tag_without" : Base64.decode($("#hidden-tag_without").val()),
-            "filter_only_alert" : $("#filter_only_alert").val(),
-            "id_group_filter": $("#id_group_filter").val(),
-            "date_from": $("#text-date_from").val(),
-            "date_to": $("#text-date_to").val(),
-            "source": $("#text-source").val(),
-            "id_extra": $("#text-id_extra").val(),
-            "user_comment": $("#text-user_comment").val()
-            },
-            function (data) {
-                $(".info_box").hide();
-                if (data == 'ok') {
-                    $(".info_box").filter(function(i, item) {
-                        if ($(item).data('type_info_box') == "success_update_filter") {
-                            return true;
-                        }
-                        else
-                            return false;
-                    }).show();
-                }
-                else {
-                    $(".info_box").filter(function(i, item) {
-                        if ($(item).data('type_info_box') == "error_create_filter") {
-                            return true;
-                        }
-                        else
-                            return false;
-                    }).show();
-                }
-            });
-            
-            // First remove all options of filters select
-            $('#filter_id').find('option').remove().end();
-            // Add 'none' option the first
-            $('#filter_id').append ($('<option></option>').html ( <?php echo "'".__('none')."'"; ?> ).attr ("value", 0));    
-            // Reload filters select
-            jQuery.post ("<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",
-                {"page" : "operation/events/events_list",
-                    "get_event_filters" : 1
-                },
-                function (data) {
-                    jQuery.each (data, function (i, val) {
-                        s = js_html_entity_decode(val);
-                        if (i == id_filter_update) {
-                            $('#filter_id').append ($('<option selected="selected"></option>').html (s).attr ("value", i));
-                        }
-                        else {
-                            $('#filter_id').append ($('<option></option>').html (s).attr ("value", i));
-                        }
-                    });
-                },
-                "json"
-                );
-                
-            // Close dialog
-            $('.ui-dialog-titlebar-close').trigger('click');
-            
-            // Update the info with the loaded filter
-            $("#hidden-id_name").val($('#text-id_name').val());
-            $('#filter_loaded_span').html($('#filter_loaded_text').html() + ': ' + name_filter_update);
-            return false;
-    });
-    
-    // Change toggle arrow when it's clicked
-    $("#tgl_event_control").click(function() {
-        if ($("#toggle_arrow").attr("src").match(/[^\.]+down\.png/) == null) {
-            var params = [];
-            params.push("get_image_path=1");
-            params.push("img_src=images/down.png");
-            params.push("page=include/ajax/skins.ajax");
-            params.push("only_src=1");
-            jQuery.ajax ({
-                data: params.join ("&"),
-                type: 'POST',
-                url: action="<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",
-                success: function (data) {
-                    $("#toggle_arrow").attr('src', data);
-                }
-            });
-        }
-        else {
-            var params = [];
-            params.push("get_image_path=1");
-            params.push("img_src=images/go.png");
-            params.push("page=include/ajax/skins.ajax");
-            params.push("only_src=1");
-            jQuery.ajax ({
-                data: params.join ("&"),
-                type: 'POST',
-                url: action="<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",
-                success: function (data) {
-                    $("#toggle_arrow").attr('src', data);
-                }
-            });
-        }
-    });
-    
-    $("#button-add_with").click(function() {
-        click_button_add_tag("with");
-        });
-    
-    $("#button-add_without").click(function() {
-        click_button_add_tag("without");
-        });
-    
-    $("#button-remove_with").click(function() {
-        click_button_remove_tag("with");
-    });
-    
-    $("#button-remove_without").click(function() {
-        click_button_remove_tag("without");
-    });
-    
-});
+        case "1":
+            img = '<?php echo html_print_image('images/tick.png', true, [ 'title' => __('Event validated'), 'class' => 'forced-title']); ?>';
+        break;
 
+        case "2":
+            img = '<?php echo html_print_image('images/hourglass.png', true, [ 'title' => __('Event in process'), 'class' => 'forced-title']); ?>';
+        break;
+    }
+
+    item.estado = '<div>';
+    item.estado += img;
+    item.estado += '</div>';
+
+    /* Options */
+    // Show more.
+    item.options = '<a href="javascript:" onclick="show_event_dialog(';
+    item.options += item.id_evento+','+$("#group_rep").val();
+    item.options += ')" ><?php echo html_print_image('images/eye.png', true, ['title' => __('Show more')]); ?></a>';
+
+    // Validate.
+    item.options += '<a href="javascript:" onclick="show_event_dialog(';
+    item.options += item.id_evento+','+$("#group_rep").val();
+    item.options += ')" ><?php echo html_print_image('images/tick.png', true, ['title' => __('Validate event')]); ?></a>';
+
+    // Delete.
+
+    /* Event ID dash */
+    item.id_evento = "#"+item.id_evento;
+
+}
+
+/* Datatables auxiliary functions ends */
+
+/* Tag management starts */
 function click_button_remove_tag(what_button) {
     if (what_button == "with") {
         id_select_origin = "#select_with";
@@ -1924,7 +1524,11 @@ function reorder_tags_inputs() {
     
     
     tags_base64 = $("#hidden-tag_with").val();
-    tags = jQuery.parseJSON(Base64.decode(tags_base64));
+    if (tags_base64.length > 0) {
+        tags = jQuery.parseJSON(Base64.decode(tags_base64));
+    } else {
+        tags = [];
+    }
     jQuery.each(tags, function(key, element) {
         if ($("#select_with option[value='" + element + "']").length == 1) {
             text = $("#select_with option[value='" + element + "']").text();
@@ -1953,7 +1557,11 @@ function reorder_tags_inputs() {
     }
     
     tags_base64 = $("#hidden-tag_without").val();
-    tags = jQuery.parseJSON(Base64.decode(tags_base64));
+    if (tags_base64.length > 0) {
+        tags = jQuery.parseJSON(Base64.decode(tags_base64));
+    } else {
+        tags = [];
+    }
     jQuery.each(tags, function(key, element) {
         if ($("#select_without option[value='" + element + "']").length == 1) {
             text = $("#select_without option[value='" + element + "']").text();
@@ -1981,6 +1589,134 @@ function reorder_tags_inputs() {
         $("#button-remove_without").removeAttr('disabled');
     }
 }
+/* Tag management ensd */
+$(document).ready( function() {
+
+
+    /* Update summary */
+    $("#status").on("change",function(){
+        $('#summary_status').html($("#status option:selected").text());
+    });
+
+    $("#text-event_view_hr").on("keyup",function(){
+        hours = $('#text-event_view_hr').val();
+        if (hours == '' || hours == 0 ) {
+            $('#summary_hours').html('<?php echo __('Any'); ?>');
+        } else if (hours == 1) {
+            $('#summary_hours').html('<?php echo __('Last hour.'); ?>');
+        } else {
+            $('#summary_hours').html(hours + '<?php echo ' '.__('hours.'); ?>');
+        }
+    });
+
+    $('#group_rep').on("change", function(){
+        $('#summary_duplicates').html($("#group_rep option:selected").text());
+    });
+
+    /* Summary updates end. */
+
+    /* Filter management */
+    $('#load-filter').click(function (){
+        if($('#load-filter-select').length) {
+            $('#load-filter-select').dialog();
+        } else {
+            if (loading == 0) {
+                loading = 1
+                $.ajax({
+                    method: 'POST',
+                    url: '<?php echo ui_get_full_url('ajax.php'); ?>',
+                    data: {
+                        page: 'include/ajax/events',
+                        load_filter_modal: 1,
+                        current_filter: $('#latest_filter_id').val()
+                    },
+                    success: function (data){
+                        $('#load-modal-filter')
+                        .empty()
+                        .html(data);
+                        loading = 0;
+                    }
+                });
+            }
+        }
+    });
+
+    $('#save-filter').click(function (){
+        if($('#save-filter-select').length) {
+            $('#save-filter-select').dialog();
+        } else {
+            if (loading == 0) {
+                loading = 1
+                $.ajax({
+                    method: 'POST',
+                    url: '<?php echo ui_get_full_url('ajax.php'); ?>',
+                    data: {
+                        page: 'include/ajax/events',
+                        save_filter_modal: 1,
+                        current_filter: $('#latest_filter_id').val()
+                    },
+                    success: function (data){
+                        $('#save-modal-filter')
+                        .empty()
+                        .html(data);
+                        loading = 0;
+                    }
+                });
+            }
+        }
+    });
+
+    /* Filter management ends */
+
+    /* Tag management */
+    id_select_destiny = "#tag_with_temp";
+    id_hidden = "#hidden-tag_with";
+
+    value_store = [];
+    
+    jQuery.each($(id_select_destiny + " option"), function(key, element) {
+        val = $(element).val();
+        
+        value_store.push(val);
+    });
+    
+    $(id_hidden).val(Base64.encode(JSON.stringify(value_store)));
+    
+    id_select_destiny2 = "#tag_without_temp";
+    id_hidden2 = "#hidden-tag_without";
+    
+    value_store2 = [];
+    
+    jQuery.each($(id_select_destiny2 + " option"), function(key, element) {
+        val = $(element).val();
+        
+        value_store2.push(val);
+    });
+    
+    $(id_hidden2).val(Base64.encode(JSON.stringify(value_store2)));
+
+    $("#text-date_from, #text-date_to").datepicker(
+        {dateFormat: "<?php echo DATE_FORMAT_JS; ?>"});
+    
+    $("#button-add_with").click(function() {
+        click_button_add_tag("with");
+        });
+    
+    $("#button-add_without").click(function() {
+        click_button_add_tag("without");
+        });
+    
+    $("#button-remove_with").click(function() {
+        click_button_remove_tag("with");
+    });
+    
+    $("#button-remove_without").click(function() {
+        click_button_remove_tag("without");
+    });
+    
+});
+
+
 
 function datetime_picker_callback() {
     $("#text-time_from, #text-time_to").timepicker({

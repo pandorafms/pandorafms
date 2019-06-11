@@ -393,6 +393,7 @@ function events_get_all(
     }
 
     $tgrupo_join = 'LEFT';
+    $tgrupo_join_filters = [];
     if (isset($filter['id_group_filter']) && $filter['id_group_filter'] > 0) {
         $tgrupo_join = 'INNER';
         $tgrupo_join_filters[] = sprintf(
@@ -405,8 +406,21 @@ function events_get_all(
     db_process_sql('SET group_concat_max_len = 9999999');
     $event_lj = events_get_secondary_groups_left_join($table);
 
+    $group_selects = '';
+    if ($group_by != '') {
+        if ($fields['0'] != 'count') {
+            $group_selects = ',GROUP_CONCAT(DISTINCT user_comment SEPARATOR "<br>") AS user_comment,
+            GROUP_CONCAT(DISTINCT id_evento SEPARATOR ",") AS similar_ids,
+            COUNT(id_evento) AS event_rep, MAX(utimestamp) AS timestamp_rep, 
+            MIN(utimestamp) AS timestamp_rep_min';
+
+            unset($fields[array_search('te.user_comment', $fields)]);
+        }
+    }
+
     $sql = sprintf(
         'SELECT %s
+            %s
          FROM %s
          %s
          %s JOIN tagente ta
@@ -422,6 +436,7 @@ function events_get_all(
          %s
          ',
         join(',', $fields),
+        $group_selects,
         $tevento,
         $event_lj,
         $tagente_join,

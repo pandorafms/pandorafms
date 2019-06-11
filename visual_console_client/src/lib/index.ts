@@ -374,3 +374,187 @@ export function replaceMacros(macros: Macro[], text: string): string {
     text
   );
 }
+
+/**
+ * Create a function which will limit the rate of execution of
+ * the selected function to one time for the selected interval.
+ * @param delay Interval.
+ * @param fn Function to be executed at a limited rate.
+ */
+export function throttle<T, R>(delay: number, fn: (...args: T[]) => R) {
+  let last = 0;
+  return (...args: T[]) => {
+    const now = Date.now();
+    if (now - last < delay) return;
+    last = now;
+    return fn(...args);
+  };
+}
+
+/**
+ * Create a function which will call the selected function only
+ * after the interval time has passed after its last execution.
+ * @param delay Interval.
+ * @param fn Function to be executed after the last call.
+ */
+export function debounce<T>(delay: number, fn: (...args: T[]) => void) {
+  let timerRef: number | null = null;
+  return (...args: T[]) => {
+    if (timerRef !== null) window.clearTimeout(timerRef);
+    timerRef = window.setTimeout(() => {
+      fn(...args);
+      timerRef = null;
+    }, delay);
+  };
+}
+
+/**
+ * Retrieve the offset of an element relative to the page.
+ * @param el Node used to calculate the offset.
+ */
+function getOffset(el: HTMLElement | null) {
+  let x = 0;
+  let y = 0;
+  while (el && !Number.isNaN(el.offsetLeft) && !Number.isNaN(el.offsetTop)) {
+    x += el.offsetLeft - el.scrollLeft;
+    y += el.offsetTop - el.scrollTop;
+    el = el.offsetParent as HTMLElement | null;
+  }
+  return { top: y, left: x };
+}
+
+/**
+ * Add the grab & move functionality to a certain element inside it's container.
+ *
+ * @param element Element to move.
+ * @param onMoved Function to execute when the element moves.
+ *
+ * @return A function which will clean the event handlers when executed.
+ */
+export function addMovementListener(
+  element: HTMLElement,
+  onMoved: (x: Position["x"], y: Position["y"]) => void
+): Function {
+  const container = element.parentElement as HTMLElement;
+  // Store the initial draggable state.
+  const isDraggable = element.draggable;
+  // Init the coordinates.
+  let lastX: Position["x"] = 0;
+  let lastY: Position["y"] = 0;
+  let lastMouseX: Position["x"] = 0;
+  let lastMouseY: Position["y"] = 0;
+  let mouseElementOffsetX: Position["x"] = 0;
+  let mouseElementOffsetY: Position["y"] = 0;
+  // Bounds.
+  let containerBounds = container.getBoundingClientRect();
+  let containerTop = getOffset(container).top;
+  let containerBottom = containerTop + containerBounds.height;
+  let containerLeft = getOffset(container).left;
+  let containerRight = containerLeft + containerBounds.width;
+  let elementBounds = element.getBoundingClientRect();
+  let borderWidth = window.getComputedStyle(element).borderWidth || "0";
+  let borderFix = Number.parseInt(borderWidth) * 2;
+
+  // Will run onMoved 32ms after its last execution.
+  const debouncedMovement = debounce(32, (x: Position["x"], y: Position["y"]) =>
+    onMoved(x, y)
+  );
+  // Will run onMoved one time max every 16ms.
+  const throttledMovement = throttle(16, (x: Position["x"], y: Position["y"]) =>
+    onMoved(x, y)
+  );
+
+  const handleMove = (e: MouseEvent) => {
+    // Calculate the new element coordinates.
+    let x = 0;
+    let y = 0;
+
+    // TODO: Document.
+
+    if (e.pageX < containerLeft) x = 0;
+    else if (e.pageX > containerRight) x = containerBounds.width;
+    else x = e.pageX - lastMouseX + lastX;
+
+    if (e.pageY < containerTop) y = 0;
+    else if (e.pageY > containerBottom)
+      y = containerBounds.height - elementBounds.height + borderFix;
+    else y = e.pageY - lastMouseY + lastY;
+
+    if (x < 0) x = 0;
+    else if (x + elementBounds.width - borderFix > containerBounds.width)
+      x = containerBounds.width - elementBounds.width + borderFix;
+
+    if (y < 0) y = 0;
+    else if (y + elementBounds.height - borderFix > containerBounds.height)
+      y = containerBounds.height - elementBounds.height + borderFix;
+
+    // Run the movement events.
+    throttledMovement(x, y);
+    debouncedMovement(x, y);
+
+    // Store the coordinates of the element.
+    lastX = x;
+    lastY = y;
+    // Store the last mouse coordinates.
+    lastMouseX = e.pageX;
+    lastMouseY = e.pageY;
+  };
+  const handleEnd = () => {
+    // Reset the positions.
+    lastX = 0;
+    lastY = 0;
+    lastMouseX = 0;
+    lastMouseY = 0;
+    // Remove the move event.
+    document.removeEventListener("mousemove", handleMove);
+    // Clean itself.
+    document.removeEventListener("mouseup", handleEnd);
+    // Reset the draggable property to its initial state.
+    element.draggable = isDraggable;
+    // Reset the body selection property to a default state.
+    document.body.style.userSelect = "auto";
+  };
+  const handleStart = (e: MouseEvent) => {
+    e.stopPropagation();
+
+    // Disable the drag temporarily.
+    element.draggable = false;
+
+    // Store the difference between the cursor and
+    // the initial coordinates of the element.
+    lastX = element.offsetLeft;
+    lastY = element.offsetTop;
+    // Store the mouse position.
+    lastMouseX = e.pageX;
+    lastMouseY = e.pageY;
+    // Store the relative position between the mouse and the element.
+    mouseElementOffsetX = e.offsetX;
+    mouseElementOffsetY = e.offsetY;
+
+    // Initialize the bounds.
+    containerBounds = container.getBoundingClientRect();
+    containerTop = getOffset(container).top;
+    containerBottom = containerTop + containerBounds.height;
+    containerLeft = getOffset(container).left;
+    containerRight = containerLeft + containerBounds.width;
+    elementBounds = element.getBoundingClientRect();
+    borderWidth = window.getComputedStyle(element).borderWidth || "0";
+    borderFix = Number.parseInt(borderWidth) * 2;
+
+    // Listen to the mouse movement.
+    document.addEventListener("mousemove", handleMove);
+    // Listen to the moment when the mouse click is not pressed anymore.
+    document.addEventListener("mouseup", handleEnd);
+    // Limit the mouse selection of the body.
+    document.body.style.userSelect = "none";
+  };
+
+  // Event to listen the init of the movement.
+  element.addEventListener("mousedown", handleStart);
+
+  // Returns a function to clean the event listeners.
+  return () => {
+    element.removeEventListener("mousedown", handleStart);
+    handleEnd();
+  };
+}

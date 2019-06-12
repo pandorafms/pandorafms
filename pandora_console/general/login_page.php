@@ -319,7 +319,7 @@ echo '</div>';
 echo '<div id="ver_num">'.$pandora_version.(($develop_bypass == 1) ? ' '.__('Build').' '.$build_version : '').'</div>';
 echo '</div>';
 
-if (!isset($process_error_message) && isset($mail)) {
+if (empty($process_error_message) && isset($mail)) {
     echo '<div id="reset_correct" title="'.__('Password reset').'">';
         echo '<div class="content_alert">';
             echo '<div class="icon_message_alert">';
@@ -336,7 +336,7 @@ if (!isset($process_error_message) && isset($mail)) {
             echo '</div>';
         echo '</div>';
     echo '</div>';
-} else if (isset($process_error_message)) {
+} else if (isset($process_error_message) && !empty($process_error_message)) {
     echo '<div id="reset_correct" title="'.__('Password reset').'">';
         echo '<div class="content_alert">';
             echo '<div class="icon_message_alert">';

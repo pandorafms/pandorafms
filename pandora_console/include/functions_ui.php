@@ -4790,7 +4790,7 @@ function ui_print_agent_autocomplete_input($parameters)
 		function '.$javascript_on_blur_function_name.'() {
 			input_value = $("#'.$input_id.'").val();
 			
-			if (input_value.length == 0) {
+			if (input_value.length < 2) {
 				if (('.((int) $print_hidden_input_idagent).')
 					|| ('.((int) $use_hidden_input_idagent).')) {
 					$("#'.$hidden_input_idagent_id.'").val(0);
@@ -4841,7 +4841,7 @@ function ui_print_agent_autocomplete_input($parameters)
 				url: action="'.$javascript_ajax_page.'",
 				dataType: "json",
 				success: function (data) {
-						if (data.length == 0) {
+						if (data.length < 2) {
 							//Set icon
 							$("#'.$input_id.'")
 								.css("background",

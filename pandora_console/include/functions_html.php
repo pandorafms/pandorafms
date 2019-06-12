@@ -660,7 +660,7 @@ function html_print_select(
             }
 
             if ($optlabel === '') {
-                $output .= '>'.$value.'</option>';
+                $output .= '>None</option>';
             } else {
                 $output .= '>'.$optlabel.'</option>';
             }
@@ -1233,7 +1233,7 @@ function html_print_extended_select_for_cron($hour='*', $minute='*', $mday='*', 
  *
  * @return string HTML code if return parameter is true.
  */
-function html_print_input_text_extended($name, $value, $id, $alt, $size, $maxlength, $disabled, $script, $attributes, $return=false, $password=false, $function='')
+function html_print_input_text_extended($name, $value, $id, $alt, $size, $maxlength, $disabled, $script, $attributes, $return=false, $password=false, $function='', $autocomplete='off')
 {
     static $idcounter = 0;
 
@@ -1285,7 +1285,7 @@ function html_print_input_text_extended($name, $value, $id, $alt, $size, $maxlen
         'autocomplete',
     ];
 
-    $output = '<input '.($password ? 'type="password" autocomplete="off" ' : 'type="text" ');
+    $output = '<input '.($password ? 'type="password" autocomplete="'.$autocomplete.'" ' : 'type="text" ');
 
     if ($disabled && (!is_array($attributes) || !array_key_exists('disabled', $attributes))) {
         $output .= 'readonly="readonly" ';
@@ -1437,7 +1437,8 @@ function html_print_input_password(
     $return=false,
     $disabled=false,
     $required=false,
-    $class=''
+    $class='',
+    $autocomplete='off'
 ) {
     if ($maxlength == 0) {
         $maxlength = 255;
@@ -1458,7 +1459,7 @@ function html_print_input_password(
         $attr['class'] = $class;
     }
 
-    return html_print_input_text_extended($name, $value, 'password-'.$name, $alt, $size, $maxlength, $disabled, '', $attr, $return, true);
+    return html_print_input_text_extended($name, $value, 'password-'.$name, $alt, $size, $maxlength, $disabled, '', $attr, $return, true, '', $autocomplete);
 }
 
 

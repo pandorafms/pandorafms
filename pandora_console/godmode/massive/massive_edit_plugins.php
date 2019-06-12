@@ -725,7 +725,6 @@ echo '</form>';
             }
         });
         
-        $modulesSelect.change();
     }
     
     var processGet = function (params, callback) {

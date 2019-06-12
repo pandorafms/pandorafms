@@ -139,8 +139,9 @@ function get_logs_size($file)
 function get_status_logs($path)
 {
     $status_server_log = '';
-    $size_server_log = get_logs_size($path);
-    if ($size_server_log <= 1048576) {
+    $size_server_log = number_format(get_logs_size($path));
+    $size_server_log = (0 + str_replace(',', '', $size_server_log));
+    if ($size_server_log <= 10485760) {
         $status_server_log = "<a style ='color: green;text-decoration: none;'>Normal Status</a><a style ='text-decoration: none;'>&nbsp&nbsp You have less than 10 MB of logs</a>";
     } else {
         $status_server_log = "<a class= 'content' style= 'color: red;text-decoration: none;'>Warning Status</a><a style ='text-decoration: none;'>&nbsp&nbsp You have more than 10 MB of logs</a>";

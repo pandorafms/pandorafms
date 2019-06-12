@@ -2832,6 +2832,8 @@ function ui_progress(
  *      ]
  *   ],
  *   'extra_html' => HTML content to be placed after 'filter' section.
+ *   'drawCallback' => function to be called after draw. Sample in:
+ *            https://datatables.net/examples/advanced_init/row_grouping.html
  * ]
  * End.
  *
@@ -2993,6 +2995,11 @@ function ui_print_datatable(array $parameters)
         }
 
         $filter .= '<li>';
+        // Search button.
+        $filter .= '<input type="submit" class="'.$search_button_class.'" ';
+        $filter .= ' id="'.$form_id.'_search_bt" value="'.__('Filter').'"/>';
+
+        // Extra buttons.
         if (is_array($parameters['form']['extra_buttons'])) {
             foreach ($parameters['form']['extra_buttons'] as $button) {
                 $filter .= '<button id="'.$button['id'].'" ';
@@ -3004,9 +3011,6 @@ function ui_print_datatable(array $parameters)
             }
         }
 
-        // Search button.
-        $filter .= '<input type="submit" class="'.$search_button_class.'" ';
-        $filter .= ' id="'.$form_id.'_search_bt" value="'.__('Filter').'"/>';
         $filter .= '</li>';
 
         $filter .= '</ul></form>';
@@ -3071,6 +3075,14 @@ function ui_print_datatable(array $parameters)
     $(document).ready(function(){
         $.fn.dataTable.ext.errMode = "none";
         dt_'.$table_id.' = $("#'.$table_id.'").DataTable({
+            ';
+    if (isset($parameters['drawCallback'])) {
+        $js .= 'drawCallback: function(settings) {
+                    '.$parameters['drawCallback'].'
+                },';
+    }
+
+    $js .= '
             processing: true,
             serverSide: true,
             paging: true,
@@ -3144,7 +3156,11 @@ function ui_print_datatable(array $parameters)
             columns: [';
 
     foreach ($parameters['datacolumns'] as $data) {
-        $js .= '{data : "'.$data.'",className: "no-class"},';
+        if (is_array($data)) {
+            $js .= '{data : "'.$data['text'].'",className: "'.$data['class'].'"},';
+        } else {
+            $js .= '{data : "'.$data.'",className: "no-class"},';
+        }
     }
 
             $js .= '

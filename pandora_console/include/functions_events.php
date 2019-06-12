@@ -172,7 +172,11 @@ function events_get_column_names($fields)
 
     $names = [];
     foreach ($fields as $f) {
-        $names[] = events_get_column_name($f);
+        if (is_array($f)) {
+            $names[] = events_get_column_name($f['text']);
+        } else {
+            $names[] = events_get_column_name($f);
+        }
     }
 
     return $names;
@@ -199,7 +203,8 @@ function events_get_all(
     $offset=null,
     $limit=null,
     $order=null,
-    $sort_field=null
+    $sort_field=null,
+    $return_sql=false
 ) {
     global $config;
 
@@ -387,8 +392,18 @@ function events_get_all(
         case '2':
             // Group by agents.
             $tagente_join = 'INNER';
-            $group_by .= 'te.id_agente, te.event_type';
-            $group_by .= $extra;
+            // $group_by .= 'te.id_agente, te.event_type';
+            // $group_by .= $extra;
+            $group_by = '';
+            $order_by = events_get_sql_order('id_agente', 'asc');
+            if (isset($order, $sort_field)) {
+                $order_by .= ','.events_get_sql_order(
+                    $sort_field,
+                    $order,
+                    0,
+                    true
+                );
+            }
         break;
     }
 
@@ -408,8 +423,10 @@ function events_get_all(
 
     $group_selects = '';
     if ($group_by != '') {
-        $group_selects = ',COUNT(id_evento) AS event_rep,
-        ';
+        $group_selects = ',COUNT(id_evento) AS event_rep
+        ,GROUP_CONCAT(DISTINCT user_comment SEPARATOR "<br>") AS comments,
+        MAX(timestamp) as max_timestamp,
+        MAX(id_evento) as max_id_evento';
 
         if ($count === false) {
             unset($fields[array_search('te.user_comment', $fields)]);
@@ -448,6 +465,10 @@ function events_get_all(
     );
     if ($count) {
         $sql = 'SELECT count(*) as nitems FROM ('.$sql.') tt';
+    }
+
+    if ($return_sql) {
+        return $sql;
     }
 
     return db_get_all_rows_sql($sql);
@@ -5633,13 +5654,14 @@ function events_list_events_grouped_agents($sql)
 /**
  * Retrieves SQL for custom order.
  *
- * @param string  $sort_field Field.
- * @param string  $sort       Order.
- * @param integer $group_rep  Group field.
+ * @param string  $sort_field  Field.
+ * @param string  $sort        Order.
+ * @param integer $group_rep   Group field.
+ * @param boolean $only-fields Return only fields.
  *
  * @return string SQL.
  */
-function events_get_sql_order($sort_field='timestamp', $sort='DESC', $group_rep=0)
+function events_get_sql_order($sort_field='timestamp', $sort='DESC', $group_rep=0, $only_fields=false)
 {
     $sort_field_translated = $sort_field;
     switch ($sort_field) {
@@ -5696,6 +5718,10 @@ function events_get_sql_order($sort_field='timestamp', $sort='DESC', $group_rep=
         $dir = ($sort == 'up') ? 'ASC' : 'DESC';
     } else {
         $dir = $sort;
+    }
+
+    if ($only_fields) {
+        return $sort_field_translated.' '.$dir;
     }
 
     return 'ORDER BY '.$sort_field_translated.' '.$dir;

@@ -79,9 +79,9 @@ $text_agent = get_parameter('filter[text_agent]');
 $id_agent = get_parameter('filter[id_agent]');
 $id_agent_module = get_parameter('filter[id_agent_module]');
 $pagination = get_parameter('filter[pagination]');
-$event_view_hr = get_parameter('filter[event_view_hr]', 1);
+$event_view_hr = get_parameter('filter[event_view_hr]', 8);
 $id_user_ack = get_parameter('filter[id_user_ack]');
-$group_rep = get_parameter('filter[group_rep]');
+$group_rep = get_parameter('filter[group_rep]', 1);
 $tag_with = get_parameter('filter[tag_with]', []);
 $tag_without = get_parameter('filter[tag_without]', []);
 $filter_only_alert = get_parameter('filter[filter_only_alert]');
@@ -993,7 +993,10 @@ try {
             // 'timestamp_rep',
             // 'timestamp_rep_min',
             // 'module_name',
-        'options',
+        [
+            'text'  => 'options',
+            'class' => 'action_buttons',
+        ],
     ];
     $fields = explode(',', $config['event_fields']);
 
@@ -1003,7 +1006,14 @@ try {
     }
 
     // Always add options column.
-    $fields = array_merge($fields, ['options']);
+    $fields = array_merge(
+        $fields,
+        [[
+            'text'  => 'options',
+            'class' => 'action_buttons',
+        ],
+        ]
+    );
 
     // Get column names.
     $column_names = events_get_column_names($fields);
@@ -1119,6 +1129,7 @@ try {
             'columns'             => $fields,
             'no_sortable_columns' => [-1],
             'ajax_postprocess'    => 'process_datatables_item(item)',
+            'drawCallback'        => 'process_datatables_callback(this, settings)',
         ]
     );
 } catch (Exception $e) {
@@ -1164,9 +1175,83 @@ var origin_select_without_tag_empty = <?php echo (int) $add_without_tag_disabled
 var val_none = 0;
 var text_none = "<?php echo __('None'); ?>";
 var group_agents_id = false;
-
+var test;
 /* Datatables auxiliary functions starts */
+function process_datatables_callback(table, settings) {
+    var api = table.api();
+    var rows = api.rows( {page:'current'} ).nodes();
+    var last=null;
+    var last_count=0;
+    var events_per_group = [];
+    var j=0;
+
+    // Only while grouping by agents.
+    if($('#group_rep').val() == '2') {
+        test = api;
+        target = -1;
+        for (var i =0 ; i < api.columns()['0'].length; i++) {
+            var label = $(api.table().column(i).header()).text();
+            if(label == '<?php echo __('Agent ID'); ?>') {
+                // Agent id.
+                target = i;
+            }
+            if(label == '<?php echo __('Agent name'); ?>') {
+                // Agent id.
+                target = i;
+                break;
+            }
+        }
+
+        // Cannot group without agent_id or agent_name.
+        if (target < 0) {
+            return;
+        }
+
+        api.column(target, {page:'current'} )
+        .data()
+        .each( function ( group, i ) {
+            $(rows).eq( i ).show();
+            if ( last !== group ) {
+                $(rows).eq( i ).before(
+                    '<tr class="group"><td colspan="100%">'
+                    +'<?php echo __('Agent').' '; ?>'
+                    +group+' <?php echo __('has').' '; ?>'
+                    +'<span style="cursor: pointer" id="s'+j+'">'+'</span>'
+                    +'<?php echo ' '.__('events'); ?>'
+                    +'</td></tr>'
+                );
+                events_per_group.push(i);
+                last_count = i;
+                last = group;
+                j += 1;
+            }
+        });
+        events_per_group.push(rows.length - last_count);
+    
+        for( j=0; j<events_per_group.length; j++ ) {
+            $('#s'+j).text(events_per_group[j+1]);
+        }
+
+        /* Grouped by agent toggle view. */
+        $("tr.group td span").on('click', function(e){
+            var id = this.id.substring(1)*1;
+            var from = events_per_group[id];
+            var to = events_per_group[id+1] + from;
+            for (var i = from; i < to; i++) {
+                $(rows).eq(i).toggle();
+            }
+
+        })
+    }
+}
+
 function process_datatables_item(item) {
+
+    // Grouped events.
+    if(item.max_id_evento) {
+        item.id_evento = item.max_id_evento
+    }
+
     /* Event severity prepared */
     var color = "<?php echo COL_UNKNOWN; ?>";
     var text = "<?php echo __('UNKNOWN'); ?>";
@@ -1217,6 +1302,7 @@ function process_datatables_item(item) {
     evn = '<div class="event flex-row h100p nowrap">';
     evn += '<div><a href="javascript:" onclick="show_event_dialog(';
     evn += item.id_evento+','+$("#group_rep").val()+');">';
+    // Grouped events.
     if(item.event_rep) {
         evn += '('+item.event_rep+') ';
     }
@@ -1229,6 +1315,10 @@ function process_datatables_item(item) {
     item.criticity = '<div class="criticity" style="background: ';
     item.criticity += color + '">' + text + "</div>";
 
+    // Grouped events.
+    if(item.max_timestamp) {
+        item.timestamp = item.max_timestamp;
+    }
 
     /* Event type prepared. */
     switch (item.event_type) {
@@ -1336,11 +1426,28 @@ function process_datatables_item(item) {
     item.options += ')" ><?php echo html_print_image('images/eye.png', true, ['title' => __('Show more')]); ?></a>';
 
     // Validate.
-    item.options += '<a href="javascript:" onclick="show_event_dialog(';
-    item.options += item.id_evento+','+$("#group_rep").val();
-    item.options += ')" ><?php echo html_print_image('images/tick.png', true, ['title' => __('Validate event')]); ?></a>';
+    item.options += '<a href="javascript:" onclick="validate_event(';
+    item.options += item.id_evento+', this)" >';
+    if (item.max_id_evento) {
+        item.options += '<?php echo html_print_image('images/tick.png', true, ['title' => __('Validate events')]); ?></a>';
+    } else {
+        item.options += '<?php echo html_print_image('images/tick.png', true, ['title' => __('Validate event')]); ?></a>';
+    }
+
+    // In progress.
+    item.options += '<a href="javascript:" onclick="inprogress_event(';
+    item.options += item.id_evento+', this)" >';
+    item.options += '<?php echo html_print_image('images/hourglass.png', true, ['title' => __('Chnge to in progress status')]); ?></a>';
 
     // Delete.
+    item.options += '<a href="javascript:" onclick="delete_event(';
+    item.options += item.id_evento+', this)" >';
+    if (item.max_id_evento) {
+        item.options += '<?php echo html_print_image('images/cross.png', true, ['title' => __('Delete events')]); ?></a>';
+    } else {
+        item.options += '<?php echo html_print_image('images/cross.png', true, ['title' => __('Delete event')]); ?></a>';
+    }
+    
 
     /* Event ID dash */
     item.id_evento = "#"+item.id_evento;
@@ -1594,8 +1701,6 @@ function reorder_tags_inputs() {
 }
 /* Tag management ends */
 $(document).ready( function() {
-
-
     /* Update summary */
     $("#status").on("change",function(){
         $('#summary_status').html($("#status option:selected").text());

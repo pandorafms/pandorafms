@@ -668,3 +668,13 @@ function show_event_response_command_dialog(id, response, total_checked) {
     }
   });
 }
+
+function validate_event(e, row) {
+  console.log(row);
+}
+
+function delete_event(e, row) {
+  $(row)
+    .closest("tr")
+    .remove();
+}

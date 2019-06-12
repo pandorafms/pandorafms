@@ -298,3 +298,14 @@ li.ui-tabs-tab.ui-corner-top.ui-state-default.ui-tab.ui-tabs-active.ui-state-act
 div.extended_event_pages.ui-tabs-panel.ui-corner-bottom.ui-widget-content {
   border-top: 1px solid #a9a9a9;
 }
+
+tr.group {
+  padding: 5px;
+  border: none;
+}
+tr.group * {
+  text-align: left;
+  color: #222;
+  text-indent: 3em;
+  background: #e2e2e2;
+}

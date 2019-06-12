@@ -141,12 +141,21 @@ sub data_producer ($) {
     # Manual tasks are "forced" like the other, setting the utimestamp to 1
     # By default, after create a tasks it takes the utimestamp to 0
     # Status -1 means "done".
-    
-    my @rows = get_db_rows ($dbh, 'SELECT * FROM trecon_task 
-        WHERE id_recon_server = ?
-        AND disabled = 0
-        AND ((utimestamp = 0 AND interval_sweep != 0 OR status = 1)
-            OR (status = -1 AND interval_sweep > 0 AND (utimestamp + interval_sweep) < UNIX_TIMESTAMP()))', $server_id);
+    my @rows;
+    if (pandora_is_master($pa_config) == 0) {
+        @rows = get_db_rows ($dbh, 'SELECT * FROM trecon_task 
+            WHERE id_recon_server = ?
+            AND disabled = 0
+            AND ((utimestamp = 0 AND interval_sweep != 0 OR status = 1)
+                OR (status = -1 AND interval_sweep > 0 AND (utimestamp + interval_sweep) < UNIX_TIMESTAMP()))', $server_id);
+    } else {
+        @rows = get_db_rows ($dbh, 'SELECT * FROM trecon_task 
+            WHERE (id_recon_server = ? OR id_recon_server = ANY(SELECT id_server FROM tserver WHERE status = 0 AND server_type = ?))
+            AND disabled = 0
+            AND ((utimestamp = 0 AND interval_sweep != 0 OR status = 1)
+                OR (status = -1 AND interval_sweep > 0 AND (utimestamp + interval_sweep) < UNIX_TIMESTAMP()))', $server_id, DISCOVERYSERVER);
+    }
+
     foreach my $row (@rows) {
         
         # Update task status

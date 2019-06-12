@@ -694,7 +694,7 @@ class Wizard
                         $output .= '<div style="">';
                         $output .= '<div style="float: left;">';
                     } else {
-                        $output .= '<div style="">';
+                        $output .= '<div style="width:50%;">';
                         $output .= '<div style="float: right;">';
                     }
 

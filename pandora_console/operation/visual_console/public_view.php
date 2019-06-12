@@ -198,6 +198,14 @@ $visualConsoleItems = VisualConsole::getItemsFromDB(
             }
         }
     }
+
+    // Add the datetime when the item was received.
+    var receivedAt = new Date();
+    items.map(function(item) {
+        item["receivedAt"] = receivedAt;
+        return item;
+    });
+
     var visualConsoleManager = createVisualConsole(
         container,
         props,

@@ -1,12 +1,14 @@
 import {
-  UnknownObject,
+  AnyObject,
   Position,
   Size,
   WithAgentProps,
   WithModuleProps,
   LinkedVisualConsoleProps,
-  LinkedVisualConsolePropsStatus
-} from "../types";
+  LinkedVisualConsolePropsStatus,
+  UnknownObject,
+  ItemMeta
+} from "./types";
 
 /**
  * Return a number or a default value from a raw value.
@@ -73,6 +75,23 @@ export function parseBoolean(value: unknown): boolean {
 }
 
 /**
+ * Return a valid date or a default value from a raw value.
+ * @param value Raw value from which we will try to extract a valid date.
+ * @param defaultValue Default value to use if we cannot extract a valid date.
+ * @return A valid date or the default value.
+ */
+export function parseDateOr<T>(value: unknown, defaultValue: T): Date | T {
+  if (value instanceof Date) return value;
+  else if (typeof value === "number") return new Date(value * 1000);
+  else if (
+    typeof value === "string" &&
+    !Number.isNaN(new Date(value).getTime())
+  )
+    return new Date(value);
+  else return defaultValue;
+}
+
+/**
  * Pad the current string with another string (multiple times, if needed)
  * until the resulting string reaches the given length.
  * The padding is applied from the start (left) of the current string.
@@ -113,7 +132,7 @@ export function leftPad(
  * @param data Raw object.
  * @return An object representing the position.
  */
-export function positionPropsDecoder(data: UnknownObject): Position {
+export function positionPropsDecoder(data: AnyObject): Position {
   return {
     x: parseIntOr(data.x, 0),
     y: parseIntOr(data.y, 0)
@@ -126,7 +145,7 @@ export function positionPropsDecoder(data: UnknownObject): Position {
  * @return An object representing the size.
  * @throws Will throw a TypeError if the width and height are not valid numbers.
  */
-export function sizePropsDecoder(data: UnknownObject): Size | never {
+export function sizePropsDecoder(data: AnyObject): Size | never {
   if (
     data.width == null ||
     isNaN(parseInt(data.width)) ||
@@ -147,7 +166,7 @@ export function sizePropsDecoder(data: UnknownObject): Size | never {
  * @param data Raw object.
  * @return An object representing the agent properties.
  */
-export function agentPropsDecoder(data: UnknownObject): WithAgentProps {
+export function agentPropsDecoder(data: AnyObject): WithAgentProps {
   const agentProps: WithAgentProps = {
     agentId: parseIntOr(data.agent, null),
     agentName: notEmptyStringOr(data.agentName, null),
@@ -169,7 +188,7 @@ export function agentPropsDecoder(data: UnknownObject): WithAgentProps {
  * @param data Raw object.
  * @return An object representing the module and agent properties.
  */
-export function modulePropsDecoder(data: UnknownObject): WithModuleProps {
+export function modulePropsDecoder(data: AnyObject): WithModuleProps {
   return {
     moduleId: parseIntOr(data.moduleId, null),
     moduleName: notEmptyStringOr(data.moduleName, null),
@@ -185,7 +204,7 @@ export function modulePropsDecoder(data: UnknownObject): WithModuleProps {
  * @throws Will throw a TypeError if the status calculation properties are invalid.
  */
 export function linkedVCPropsDecoder(
-  data: UnknownObject
+  data: AnyObject
 ): LinkedVisualConsoleProps | never {
   // Object destructuring: http://es6-features.org/#ObjectMatchingShorthandNotation
   const {
@@ -244,6 +263,29 @@ export function linkedVCPropsDecoder(
         ...linkedLayoutBaseProps // Object spread: http://es6-features.org/#SpreadOperator
       }
     : linkedLayoutBaseProps;
+}
+
+/**
+ * Build a valid typed object from a raw object.
+ * @param data Raw object.
+ * @return An object representing the item's meta properties.
+ */
+export function itemMetaDecoder(data: UnknownObject): ItemMeta | never {
+  const receivedAt = parseDateOr(data.receivedAt, null);
+  if (receivedAt === null) throw new TypeError("invalid meta structure");
+
+  let error = null;
+  if (data.error instanceof Error) error = data.error;
+  else if (typeof data.error === "string") error = new Error(data.error);
+
+  return {
+    receivedAt,
+    error,
+    editMode: parseBoolean(data.editMode),
+    isFromCache: parseBoolean(data.isFromCache),
+    isFetching: false,
+    isUpdating: false
+  };
 }
 
 /**
@@ -331,4 +373,188 @@ export function replaceMacros(macros: Macro[], text: string): string {
     (acc, { macro, value }) => acc.replace(macro, value),
     text
   );
+}
+
+/**
+ * Create a function which will limit the rate of execution of
+ * the selected function to one time for the selected interval.
+ * @param delay Interval.
+ * @param fn Function to be executed at a limited rate.
+ */
+export function throttle<T, R>(delay: number, fn: (...args: T[]) => R) {
+  let last = 0;
+  return (...args: T[]) => {
+    const now = Date.now();
+    if (now - last < delay) return;
+    last = now;
+    return fn(...args);
+  };
+}
+
+/**
+ * Create a function which will call the selected function only
+ * after the interval time has passed after its last execution.
+ * @param delay Interval.
+ * @param fn Function to be executed after the last call.
+ */
+export function debounce<T>(delay: number, fn: (...args: T[]) => void) {
+  let timerRef: number | null = null;
+  return (...args: T[]) => {
+    if (timerRef !== null) window.clearTimeout(timerRef);
+    timerRef = window.setTimeout(() => {
+      fn(...args);
+      timerRef = null;
+    }, delay);
+  };
+}
+
+/**
+ * Retrieve the offset of an element relative to the page.
+ * @param el Node used to calculate the offset.
+ */
+function getOffset(el: HTMLElement | null) {
+  let x = 0;
+  let y = 0;
+  while (el && !Number.isNaN(el.offsetLeft) && !Number.isNaN(el.offsetTop)) {
+    x += el.offsetLeft - el.scrollLeft;
+    y += el.offsetTop - el.scrollTop;
+    el = el.offsetParent as HTMLElement | null;
+  }
+  return { top: y, left: x };
+}
+
+/**
+ * Add the grab & move functionality to a certain element inside it's container.
+ *
+ * @param element Element to move.
+ * @param onMoved Function to execute when the element moves.
+ *
+ * @return A function which will clean the event handlers when executed.
+ */
+export function addMovementListener(
+  element: HTMLElement,
+  onMoved: (x: Position["x"], y: Position["y"]) => void
+): Function {
+  const container = element.parentElement as HTMLElement;
+  // Store the initial draggable state.
+  const isDraggable = element.draggable;
+  // Init the coordinates.
+  let lastX: Position["x"] = 0;
+  let lastY: Position["y"] = 0;
+  let lastMouseX: Position["x"] = 0;
+  let lastMouseY: Position["y"] = 0;
+  let mouseElementOffsetX: Position["x"] = 0;
+  let mouseElementOffsetY: Position["y"] = 0;
+  // Bounds.
+  let containerBounds = container.getBoundingClientRect();
+  let containerTop = getOffset(container).top;
+  let containerBottom = containerTop + containerBounds.height;
+  let containerLeft = getOffset(container).left;
+  let containerRight = containerLeft + containerBounds.width;
+  let elementBounds = element.getBoundingClientRect();
+  let borderWidth = window.getComputedStyle(element).borderWidth || "0";
+  let borderFix = Number.parseInt(borderWidth) * 2;
+
+  // Will run onMoved 32ms after its last execution.
+  const debouncedMovement = debounce(32, (x: Position["x"], y: Position["y"]) =>
+    onMoved(x, y)
+  );
+  // Will run onMoved one time max every 16ms.
+  const throttledMovement = throttle(16, (x: Position["x"], y: Position["y"]) =>
+    onMoved(x, y)
+  );
+
+  const handleMove = (e: MouseEvent) => {
+    // Calculate the new element coordinates.
+    let x = 0;
+    let y = 0;
+
+    // TODO: Document.
+
+    if (e.pageX < containerLeft) x = 0;
+    else if (e.pageX > containerRight) x = containerBounds.width;
+    else x = e.pageX - lastMouseX + lastX;
+
+    if (e.pageY < containerTop) y = 0;
+    else if (e.pageY > containerBottom)
+      y = containerBounds.height - elementBounds.height + borderFix;
+    else y = e.pageY - lastMouseY + lastY;
+
+    if (x < 0) x = 0;
+    else if (x + elementBounds.width - borderFix > containerBounds.width)
+      x = containerBounds.width - elementBounds.width + borderFix;
+
+    if (y < 0) y = 0;
+    else if (y + elementBounds.height - borderFix > containerBounds.height)
+      y = containerBounds.height - elementBounds.height + borderFix;
+
+    // Run the movement events.
+    throttledMovement(x, y);
+    debouncedMovement(x, y);
+
+    // Store the coordinates of the element.
+    lastX = x;
+    lastY = y;
+    // Store the last mouse coordinates.
+    lastMouseX = e.pageX;
+    lastMouseY = e.pageY;
+  };
+  const handleEnd = () => {
+    // Reset the positions.
+    lastX = 0;
+    lastY = 0;
+    lastMouseX = 0;
+    lastMouseY = 0;
+    // Remove the move event.
+    document.removeEventListener("mousemove", handleMove);
+    // Clean itself.
+    document.removeEventListener("mouseup", handleEnd);
+    // Reset the draggable property to its initial state.
+    element.draggable = isDraggable;
+    // Reset the body selection property to a default state.
+    document.body.style.userSelect = "auto";
+  };
+  const handleStart = (e: MouseEvent) => {
+    e.stopPropagation();
+
+    // Disable the drag temporarily.
+    element.draggable = false;
+
+    // Store the difference between the cursor and
+    // the initial coordinates of the element.
+    lastX = element.offsetLeft;
+    lastY = element.offsetTop;
+    // Store the mouse position.
+    lastMouseX = e.pageX;
+    lastMouseY = e.pageY;
+    // Store the relative position between the mouse and the element.
+    mouseElementOffsetX = e.offsetX;
+    mouseElementOffsetY = e.offsetY;
+
+    // Initialize the bounds.
+    containerBounds = container.getBoundingClientRect();
+    containerTop = getOffset(container).top;
+    containerBottom = containerTop + containerBounds.height;
+    containerLeft = getOffset(container).left;
+    containerRight = containerLeft + containerBounds.width;
+    elementBounds = element.getBoundingClientRect();
+    borderWidth = window.getComputedStyle(element).borderWidth || "0";
+    borderFix = Number.parseInt(borderWidth) * 2;
+
+    // Listen to the mouse movement.
+    document.addEventListener("mousemove", handleMove);
+    // Listen to the moment when the mouse click is not pressed anymore.
+    document.addEventListener("mouseup", handleEnd);
+    // Limit the mouse selection of the body.
+    document.body.style.userSelect = "none";
+  };
+
+  // Event to listen the init of the movement.
+  element.addEventListener("mousedown", handleStart);
+
+  // Returns a function to clean the event listeners.
+  return () => {
+    element.removeEventListener("mousedown", handleStart);
+    handleEnd();
+  };
 }

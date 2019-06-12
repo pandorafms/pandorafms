@@ -1,5 +1,9 @@
-export interface UnknownObject {
+export interface AnyObject {
   [key: string]: any; // eslint-disable-line @typescript-eslint/no-explicit-any
+}
+
+export interface UnknownObject {
+  [key: string]: unknown;
 }
 
 export interface Position {
@@ -45,3 +49,12 @@ export type LinkedVisualConsoleProps = {
   linkedLayoutId: number | null;
   linkedLayoutAgentId: number | null;
 } & LinkedVisualConsolePropsStatus;
+
+export interface ItemMeta {
+  receivedAt: Date;
+  error: Error | null;
+  isFromCache: boolean;
+  isFetching: boolean;
+  isUpdating: boolean;
+  editMode: boolean;
+}

@@ -1389,6 +1389,34 @@ if (!empty($result)) {
                         true
                     );
                 }
+            } else if ($row['estado'] == 3) {
+                if (is_numeric($row['datos'])) {
+                    $data[6] = ui_print_status_image(
+                        STATUS_MODULE_UNKNOWN,
+                        __('UNKNOWN').': '.remove_right_zeros(number_format($row['datos'], $config['graph_precision'])),
+                        true
+                    );
+                } else {
+                    $data[6] = ui_print_status_image(
+                        STATUS_MODULE_UNKNOWN,
+                        __('UNKNOWN').': '.$row['datos'],
+                        true
+                    );
+                }
+            } else if ($row['estado'] == 4) {
+                if (is_numeric($row['datos'])) {
+                    $data[6] = ui_print_status_image(
+                        STATUS_MODULE_NO_DATA,
+                        __('NO DATA').': '.remove_right_zeros(number_format($row['datos'], $config['graph_precision'])),
+                        true
+                    );
+                } else {
+                    $data[6] = ui_print_status_image(
+                        STATUS_MODULE_NO_DATA,
+                        __('NO DATA').': '.$row['datos'],
+                        true
+                    );
+                }
             } else {
                 $last_status = modules_get_agentmodule_last_status(
                     $row['id_agente_modulo']

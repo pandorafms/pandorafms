@@ -1472,7 +1472,10 @@ function local_ldap_search($ldap_host, $ldap_port=389, $ldap_version=3, $dn, $ac
         $tls = ' -ZZ ';
     }
 
-    if (stripos($ldap_host, 'ldap') !== false) {
+    if (stripos($ldap_host, 'ldap://') !== false
+        || stripos($ldap_host, 'ldaps://') !== false
+        || stripos($ldap_host, 'ldapi://') !== false
+    ) {
         $ldap_host = ' -H '.$ldap_host.':'.$ldap_port;
     } else {
         $ldap_host = ' -h '.$ldap_host.' -p '.$ldap_port;

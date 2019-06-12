@@ -263,7 +263,7 @@ if ($date > $now) {
         echo '<div class="module_graph_menu_dropdown">
                 <div id="module_graph_menu_header" class="module_graph_menu_header">
                     '.html_print_image('images/arrow_down_green.png', true, ['class' => 'module_graph_menu_arrow', 'float' => 'left'], false, false, true).'
-                    <span>'.__('Graph configuration menu').ui_print_help_icon('graphs', true, $config['homeurl'], 'images/help_g.png', true).'</span>
+                    <span>'.__('Graph configuration menu').'</span>
                     '.html_print_image('images/config.png', true, ['float' => 'right'], false, false, true).'
                 </div>
                 <div class="module_graph_menu_content module_graph_menu_content_closed" style="display:none;">'.$form_table.'</div>

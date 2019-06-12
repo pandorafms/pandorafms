@@ -408,12 +408,10 @@ function events_get_all(
 
     $group_selects = '';
     if ($group_by != '') {
-        if ($fields['0'] != 'count') {
-            $group_selects = ',GROUP_CONCAT(DISTINCT user_comment SEPARATOR "<br>") AS user_comment,
-            GROUP_CONCAT(DISTINCT id_evento SEPARATOR ",") AS similar_ids,
-            COUNT(id_evento) AS event_rep, MAX(utimestamp) AS timestamp_rep, 
-            MIN(utimestamp) AS timestamp_rep_min';
+        $group_selects = ',COUNT(id_evento) AS event_rep,
+        ';
 
+        if ($count === false) {
             unset($fields[array_search('te.user_comment', $fields)]);
         }
     }

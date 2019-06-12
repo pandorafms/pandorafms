@@ -1,3 +1,5 @@
+/*global jQuery,$,forced_title_callback,Base64,*/
+
 // Show the modal window of an event
 function show_event_dialog(event_id, group_rep, dialog_page, result) {
   var ajax_file = $("#hidden-ajax_file").val();
@@ -38,7 +40,7 @@ function show_event_dialog(event_id, group_rep, dialog_page, result) {
       childrens_ids: childrens_ids,
       history: history
     },
-    function(data, status) {
+    function(data) {
       $("#event_details_window")
         .hide()
         .empty()
@@ -92,45 +94,6 @@ function show_event_dialog(event_id, group_rep, dialog_page, result) {
   return false;
 }
 
-function show_save_filter_dialog() {
-  $('input:radio[name="filter_mode"]')
-    .filter('[value="new"]')
-    .trigger("click");
-  $("#save_filter_layer")
-    .dialog({
-      title: $("#save_filter_text").html(),
-      resizable: true,
-      draggable: true,
-      modal: true,
-      overlay: {
-        opacity: 0.5,
-        background: "black"
-      },
-      width: 688,
-      height: 200
-    })
-    .show();
-  return false;
-}
-
-function show_load_filter_dialog() {
-  $("#load_filter_layer")
-    .dialog({
-      title: $("#load_filter_text").html(),
-      resizable: true,
-      draggable: true,
-      modal: true,
-      overlay: {
-        opacity: 0.5,
-        background: "black"
-      },
-      width: 520,
-      height: 300
-    })
-    .show();
-  return false;
-}
-
 // Check the response type and open it in a modal dialog or new window
 function execute_response(event_id, server_id) {
   var response_id = $("#select_custom_response option:selected").val();
@@ -160,8 +123,6 @@ function execute_response(event_id, server_id) {
 
 //Show the modal window of an event response
 function show_response_dialog(event_id, response_id, response) {
-  var ajax_file = $("#hidden-ajax_file").val();
-
   var params = [];
   params.push("page=include/ajax/events");
   params.push("dialogue_event_response=1");
@@ -173,7 +134,7 @@ function show_response_dialog(event_id, response_id, response) {
   jQuery.ajax({
     data: params.join("&"),
     type: "POST",
-    url: (action = ajax_file),
+    url: $("#hidden-ajax_file").val(),
     dataType: "html",
     success: function(data) {
       $("#event_response_window")
@@ -185,7 +146,7 @@ function show_response_dialog(event_id, response_id, response) {
           resizable: true,
           draggable: true,
           modal: false,
-          open: function(event, ui) {
+          open: function() {
             perform_response(response["target"], response_id);
           },
           width: response["modal_width"],
@@ -204,8 +165,6 @@ function show_massive_response_dialog(
   out_iterator,
   end
 ) {
-  var ajax_file = $("#hidden-ajax_file").val();
-
   var params = [];
   params.push("page=include/ajax/events");
   params.push("dialogue_event_response=1");
@@ -222,7 +181,7 @@ function show_massive_response_dialog(
     response_id: response_id,
     out_iterator: out_iterator,
     type: "POST",
-    url: (action = ajax_file),
+    url: $("#hidden-ajax_file").val(),
     dataType: "html",
     success: function(data) {
       if (out_iterator === 0) $("#event_response_window").empty();
@@ -235,11 +194,11 @@ function show_massive_response_dialog(
           resizable: true,
           draggable: true,
           modal: false,
-          open: function(event, ui) {
+          open: function() {
             $("#response_loading_dialog").hide();
             $("#button-submit_event_response").show();
           },
-          close: function(event, ui) {
+          close: function() {
             $(".chk_val").prop("checked", false);
             $("#event_response_command_window").dialog("close");
           },
@@ -259,8 +218,6 @@ function show_massive_response_dialog(
 
 // Get an event response from db
 function get_response(response_id) {
-  var ajax_file = $("#hidden-ajax_file").val();
-
   var response = "";
 
   var params = [];
@@ -271,7 +228,7 @@ function get_response(response_id) {
   jQuery.ajax({
     data: params.join("&"),
     type: "POST",
-    url: (action = ajax_file),
+    url: $("#hidden-ajax_file").val(),
     async: false,
     timeout: 10000,
     dataType: "json",
@@ -285,8 +242,6 @@ function get_response(response_id) {
 
 // Get an event response params from db
 function get_response_params(response_id) {
-  var ajax_file = $("#hidden-ajax_file").val();
-
   var response_params;
 
   var params = [];
@@ -297,7 +252,7 @@ function get_response_params(response_id) {
   jQuery.ajax({
     data: params.join("&"),
     type: "POST",
-    url: (action = ajax_file),
+    url: $("#hidden-ajax_file").val(),
     async: false,
     timeout: 10000,
     dataType: "json",
@@ -311,8 +266,6 @@ function get_response_params(response_id) {
 
 // Get an event response description from db
 function get_response_description(response_id) {
-  var ajax_file = $("#hidden-ajax_file").val();
-
   var response_description = "";
 
   var params = [];
@@ -323,7 +276,7 @@ function get_response_description(response_id) {
   jQuery.ajax({
     data: params.join("&"),
     type: "POST",
-    url: (action = ajax_file),
+    url: $("#hidden-ajax_file").val(),
     async: false,
     timeout: 10000,
     dataType: "html",
@@ -337,8 +290,6 @@ function get_response_description(response_id) {
 
 // Get an event response description from db
 function get_event_name(event_id, meta, history) {
-  var ajax_file = $("#hidden-ajax_file").val();
-
   var name = "";
 
   var params = [];
@@ -351,7 +302,7 @@ function get_event_name(event_id, meta, history) {
   jQuery.ajax({
     data: params.join("&"),
     type: "POST",
-    url: (action = ajax_file),
+    url: $("#hidden-ajax_file").val(),
     async: false,
     timeout: 10000,
     dataType: "html",
@@ -382,8 +333,6 @@ function get_response_target(
   server_id,
   response_command
 ) {
-  var ajax_file = $("#hidden-ajax_file").val();
-
   var target = "";
 
   // Replace the main macros
@@ -397,7 +346,7 @@ function get_response_target(
   jQuery.ajax({
     data: params.join("&"),
     type: "POST",
-    url: (action = ajax_file),
+    url: $("#hidden-ajax_file").val(),
     async: false,
     timeout: 10000,
     dataType: "html",
@@ -409,7 +358,7 @@ function get_response_target(
   // Replace the custom params macros.
   var response_params = get_response_params(response_id);
   if (response_params.length > 1 || response_params[0] != "") {
-    for (i = 0; i < response_params.length; i++) {
+    for (var i = 0; i < response_params.length; i++) {
       if (!response_command) {
         target = target.replace(
           "_" + response_params[i] + "_",
@@ -429,15 +378,9 @@ function get_response_target(
 
 // Perform a response and put the output into a div
 function perform_response(target, response_id) {
-  var ajax_file = $("#hidden-ajax_file").val();
-
   $("#re_exec_command").hide();
   $("#response_loading_command").show();
   $("#response_out").html("");
-
-  var finished = 0;
-  var time = Math.round(+new Date() / 1000);
-  var timeout = time + 10;
 
   var params = [];
   params.push("page=include/ajax/events");
@@ -448,7 +391,7 @@ function perform_response(target, response_id) {
   jQuery.ajax({
     data: params.join("&"),
     type: "POST",
-    url: (action = ajax_file),
+    url: $("#hidden-ajax_file").val(),
     async: true,
     timeout: 10000,
     dataType: "html",
@@ -465,8 +408,6 @@ function perform_response(target, response_id) {
 
 // Perform a response and put the output into a div
 function perform_response_massive(target, response_id, out_iterator) {
-  var ajax_file = $("#hidden-ajax_file").val();
-
   $("#re_exec_command").hide();
   $("#response_loading_command_" + out_iterator).show();
   $("#response_out_" + out_iterator).html("");
@@ -480,7 +421,7 @@ function perform_response_massive(target, response_id, out_iterator) {
   jQuery.ajax({
     data: params.join("&"),
     type: "POST",
-    url: (action = ajax_file),
+    url: $("#hidden-ajax_file").val(),
     async: true,
     timeout: 10000,
     dataType: "html",
@@ -497,8 +438,6 @@ function perform_response_massive(target, response_id, out_iterator) {
 
 // Change the status of an event to new, in process or validated.
 function event_change_status(event_ids) {
-  var ajax_file = $("#hidden-ajax_file").val();
-
   var new_status = $("#estado").val();
   var event_id = $("#hidden-id_event").val();
   var meta = $("#hidden-meta").val();
@@ -518,7 +457,7 @@ function event_change_status(event_ids) {
   jQuery.ajax({
     data: params.join("&"),
     type: "POST",
-    url: (action = ajax_file),
+    url: $("#hidden-ajax_file").val(),
     async: true,
     timeout: 10000,
     dataType: "html",
@@ -531,9 +470,6 @@ function event_change_status(event_ids) {
         "responses",
         data
       );
-      if (data == "status_ok") {
-      } else {
-      }
     }
   });
   return false;
@@ -541,8 +477,6 @@ function event_change_status(event_ids) {
 
 // Change te owner of an event to one user of empty
 function event_change_owner() {
-  var ajax_file = $("#hidden-ajax_file").val();
-
   var event_id = $("#hidden-id_event").val();
   var new_owner = $("#id_owner").val();
   var meta = $("#hidden-meta").val();
@@ -562,7 +496,7 @@ function event_change_owner() {
   jQuery.ajax({
     data: params.join("&"),
     type: "POST",
-    url: (action = ajax_file),
+    url: $("#hidden-ajax_file").val(),
     async: true,
     timeout: 10000,
     dataType: "html",
@@ -584,8 +518,6 @@ function event_change_owner() {
 
 // Save a comment into an event
 function event_comment() {
-  var ajax_file = $("#hidden-ajax_file").val();
-
   var event_id = $("#hidden-id_event").val();
   var comment = $("#textarea_comment").val();
   var meta = $("#hidden-meta").val();
@@ -615,7 +547,7 @@ function event_comment() {
   jQuery.ajax({
     data: params.join("&"),
     type: "POST",
-    url: (action = ajax_file),
+    url: $("#hidden-ajax_file").val(),
     async: true,
     timeout: 10000,
     dataType: "html",
@@ -637,8 +569,7 @@ function event_comment() {
 
 //Show event list when fielter repetead is Group agents
 function show_events_group_agent(id_insert, id_agent, server_id) {
-  var ajax_file = $("#hidden-ajax_file").val();
-  parameter = [];
+  var parameter = [];
   parameter.push({ name: "id_agent", value: id_agent });
   parameter.push({ name: "server_id", value: server_id });
   parameter.push({ name: "event_type", value: $("#event_type").val() });
@@ -680,7 +611,7 @@ function show_events_group_agent(id_insert, id_agent, server_id) {
 
   jQuery.ajax({
     type: "POST",
-    url: (action = ajax_file),
+    url: $("#hidden-ajax_file").val(),
     data: parameter,
     dataType: "html",
     success: function(data) {
@@ -691,8 +622,6 @@ function show_events_group_agent(id_insert, id_agent, server_id) {
 }
 
 function show_event_response_command_dialog(id, response, total_checked) {
-  var ajax_file = $("#hidden-ajax_file").val();
-
   var params = [];
   params.push("page=include/ajax/events");
   params.push("get_table_response_command=1");
@@ -701,7 +630,7 @@ function show_event_response_command_dialog(id, response, total_checked) {
   jQuery.ajax({
     data: params.join("&"),
     type: "POST",
-    url: (action = ajax_file),
+    url: $("#hidden-ajax_file").val(),
     dataType: "html",
     success: function(data) {
       $("#event_response_command_window")

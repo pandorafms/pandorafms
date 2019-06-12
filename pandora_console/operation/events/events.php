@@ -1217,6 +1217,9 @@ function process_datatables_item(item) {
     evn = '<div class="event flex-row h100p nowrap">';
     evn += '<div><a href="javascript:" onclick="show_event_dialog(';
     evn += item.id_evento+','+$("#group_rep").val()+');">';
+    if(item.event_rep) {
+        evn += '('+item.event_rep+') ';
+    }
     evn += item.evento+'</a></div>';
     evn += output;
     evn += '</div>'
@@ -1589,7 +1592,7 @@ function reorder_tags_inputs() {
         $("#button-remove_without").removeAttr('disabled');
     }
 }
-/* Tag management ensd */
+/* Tag management ends */
 $(document).ready( function() {
 
 

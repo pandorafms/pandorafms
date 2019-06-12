@@ -13,7 +13,6 @@
 // GNU General Public License for more details.
 global $config;
 
-// require_once $config['homedir'].'/include/functions_status.php';
 enterprise_include_once('include/functions_policies.php');
 require_once $config['homedir'].'/enterprise/include/functions_groups.php';
 

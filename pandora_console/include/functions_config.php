@@ -224,6 +224,10 @@ function config_update_config()
                         $error_update[] = __('Enable Netflow');
                     }
 
+                    if (!config_update_value('activate_nta', (bool) get_parameter_switch('activate_nta'))) {
+                        $error_update[] = __('Enable Network Traffic Analyzer');
+                    }
+
                     $timezone = (string) get_parameter('timezone');
                     if ($timezone != '') {
                         if (!config_update_value('timezone', $timezone)) {
@@ -266,7 +270,7 @@ function config_update_config()
                         $error_update[] = __('Referer security');
                     }
 
-                    if (!config_update_value('event_storm_protection', get_parameter('event_storm_protection'))) {
+                    if (!config_update_value('event_storm_protection', get_parameter('event_storm_protection', 0))) {
                         $error_update[] = __('Event storm protection');
                     }
 
@@ -600,6 +604,10 @@ function config_update_config()
                         config_update_value('ldap_save_password', 1);
                     }
 
+                    if (!config_update_value('ldap_save_profile', get_parameter('ldap_save_profile'))) {
+                        $error_update[] = __('Save profile');
+                    }
+
                     if (!config_update_value('rpandora_server', get_parameter('rpandora_server'))) {
                         $error_update[] = __('MySQL host');
                     }
@@ -756,6 +764,10 @@ function config_update_config()
                         $error_update[] = __('Max. days before delete old messages');
                     }
 
+                    if (!config_update_value('delete_old_network_matrix', get_parameter('delete_old_network_matrix'))) {
+                        $error_update[] = __('Max. days before delete old network matrix data');
+                    }
+
                     if (!config_update_value('max_graph_container', get_parameter('max_graph_container'))) {
                         $error_update[] = __('Graph container - Max. Items');
                     }
@@ -896,6 +908,14 @@ function config_update_config()
                         $error_update[] = __('Custom networkmap center logo');
                     }
 
+                    if (!config_update_value('custom_title_header', (string) get_parameter('custom_title_header'))) {
+                        $error_update[] = __('Custom title header');
+                    }
+
+                    if (!config_update_value('custom_subtitle_header', (string) get_parameter('custom_subtitle_header'))) {
+                        $error_update[] = __('Custom subtitle header');
+                    }
+
                     if (!config_update_value('custom_title1_login', (string) get_parameter('custom_title1_login'))) {
                         $error_update[] = __('Custom title1 login');
                     }
@@ -960,7 +980,15 @@ function config_update_config()
                         $error_update[] = __('Custom support url');
                     }
 
-                    if (!config_update_value('vc_refr', get_parameter('vc_refr'))) {
+                    if (!config_update_value('legacy_vc', (int) get_parameter('legacy_vc'))) {
+                        $error_update[] = __('Use the legacy Visual Console');
+                    }
+
+                    if (!config_update_value('vc_default_cache_expiration', (int) get_parameter('vc_default_cache_expiration'))) {
+                        $error_update[] = __("Default expiration of the Visual Console item's cache");
+                    }
+
+                    if (!config_update_value('vc_refr', (int) get_parameter('vc_refr'))) {
                         $error_update[] = __('Default interval for refresh on Visual Console');
                     }
 
@@ -1325,8 +1353,12 @@ function config_update_config()
                 break;
 
                 case 'ehorus':
-                    if (!config_update_value('ehorus_enabled', (int) get_parameter('ehorus_enabled', $config['ehorus_enabled']))) {
+                    if (!config_update_value('ehorus_enabled', (int) get_parameter('ehorus_enabled', 0))) {
                         $error_update[] = __('Enable eHorus');
+                    }
+
+                    if (!config_update_value('ehorus_user_level_conf', (int) get_parameter('ehorus_user_level_conf', 0))) {
+                        $error_update[] = __('eHorus user login');
                     }
 
                     if (!config_update_value('ehorus_user', (string) get_parameter('ehorus_user', $config['ehorus_user']))) {
@@ -1545,6 +1577,10 @@ function config_process_config()
 
     if (!isset($config['delete_old_messages'])) {
         config_update_value('delete_old_messages', 21);
+    }
+
+    if (!isset($config['delete_old_network_matrix'])) {
+        config_update_value('delete_old_network_matrix', 10);
     }
 
     if (!isset($config['max_graph_container'])) {
@@ -1792,7 +1828,7 @@ function config_process_config()
     }
 
     if (!isset($config['custom_logo'])) {
-        config_update_value('custom_logo', 'pandora_logo_head_green.png');
+        config_update_value('custom_logo', 'pandora_logo_head_4.png');
     }
 
     if (!isset($config['custom_logo_collapsed'])) {
@@ -1825,6 +1861,14 @@ function config_process_config()
 
     if (!isset($config['custom_mobile_console_logo'])) {
         config_update_value('custom_mobile_console_logo', '');
+    }
+
+    if (!isset($config['custom_title_header'])) {
+        config_update_value('custom_title_header', __('Pandora FMS'));
+    }
+
+    if (!isset($config['custom_subtitle_header'])) {
+        config_update_value('custom_subtitle_header', __('the Flexible Monitoring System'));
     }
 
     if (!isset($config['custom_title1_login'])) {
@@ -1975,6 +2019,10 @@ function config_process_config()
         config_update_value('activate_netflow', 0);
     }
 
+    if (!isset($config['activate_nta'])) {
+        config_update_value('activate_nta', 0);
+    }
+
     if (!isset($config['netflow_path'])) {
         if ($is_windows) {
             $default = 'C:\\PandoraFMS\\Pandora_Server\\data_in\\netflow';
@@ -2119,9 +2167,9 @@ function config_process_config()
     if (!isset($config['ad_adv_perms'])) {
         config_update_value('ad_adv_perms', '');
     } else {
+        $temp_ad_adv_perms = [];
         if (!json_decode(io_safe_output($config['ad_adv_perms']))) {
-            $temp_ad_adv_perms = [];
-            if (!isset($config['ad_adv_perms']) && $config['ad_adv_perms'] != '') {
+            if ($config['ad_adv_perms'] != '') {
                 $perms = explode(';', io_safe_output($config['ad_adv_perms']));
                 foreach ($perms as $ad_adv_perm) {
                     if (preg_match('/[\[\]]/', $ad_adv_perm)) {
@@ -2184,22 +2232,26 @@ function config_process_config()
                 if (!empty($new_ad_adv_perms)) {
                     $temp_ad_adv_perms = json_encode($new_ad_adv_perms);
                 }
+            } else {
+                $temp_ad_adv_perms = '';
             }
-
-            config_update_value('ad_adv_perms', $temp_ad_adv_perms);
+        } else {
+            $temp_ad_adv_perms = $config['ad_adv_perms'];
         }
+
+          config_update_value('ad_adv_perms', $temp_ad_adv_perms);
     }
 
     if (!isset($config['ldap_adv_perms'])) {
         config_update_value('ldap_adv_perms', '');
     } else {
+        $temp_ldap_adv_perms = [];
         if (!json_decode(io_safe_output($config['ldap_adv_perms']))) {
-            $temp_ldap_adv_perms = [];
-            if (!isset($config['ad_adv_perms']) && $config['ldap_adv_perms'] != '') {
+            if ($config['ldap_adv_perms'] != '') {
                 $perms = explode(';', io_safe_output($config['ldap_adv_perms']));
-                foreach ($perms as $ad_adv_perm) {
-                    if (preg_match('/[\[\]]/', $ad_adv_perm)) {
-                        $all_data = explode(',', io_safe_output($ad_adv_perm));
+                foreach ($perms as $ldap_adv_perm) {
+                    if (preg_match('/[\[\]]/', $ldap_adv_perm)) {
+                        $all_data = explode(',', io_safe_output($ldap_adv_perm));
                         $profile = $all_data[0];
                         $group_pnd = $all_data[1];
                         $groups_ad = str_replace(['[', ']'], '', $all_data[2]);
@@ -2229,7 +2281,7 @@ function config_process_config()
                             'groups_ldap' => $groups_ldap,
                         ];
                     } else {
-                        $all_data = explode(',', io_safe_output($ad_adv_perm));
+                        $all_data = explode(',', io_safe_output($ldap_adv_perm));
                         $profile = $all_data[0];
                         $group_pnd = $all_data[1];
                         $groups_ad = $all_data[2];
@@ -2258,10 +2310,14 @@ function config_process_config()
                 if (!empty($new_ldap_adv_perms)) {
                     $temp_ldap_adv_perms = json_encode($new_ldap_adv_perms);
                 }
+            } else {
+                $temp_ldap_adv_perms = '';
             }
-
-            config_update_value('ldap_adv_perms', $temp_ldap_adv_perms);
+        } else {
+            $temp_ldap_adv_perms = $config['ldap_adv_perms'];
         }
+
+        config_update_value('ldap_adv_perms', $temp_ldap_adv_perms);
     }
 
     if (!isset($config['rpandora_server'])) {
@@ -2379,8 +2435,20 @@ function config_process_config()
         config_update_value('dbtype', 'mysql');
     }
 
+    if (!isset($config['legacy_vc'])) {
+        config_update_value('legacy_vc', 1);
+    }
+
+    if (!isset($config['vc_default_cache_expiration'])) {
+        config_update_value('vc_default_cache_expiration', 60);
+    }
+
     if (!isset($config['vc_refr'])) {
         config_update_value('vc_refr', 300);
+    }
+
+    if (!isset($config['vc_line_thickness'])) {
+        config_update_value('vc_line_thickness', 2);
     }
 
     if (!isset($config['agent_size_text_small'])) {
@@ -2684,12 +2752,35 @@ function config_check()
     if (enterprise_installed() === false) {
         $supervisor = new ConsoleSupervisor(false);
         $supervisor->run();
-    } else if ($config['cron_last_run'] == 0
-        || (get_system_time() - $config['cron_last_run']) > 3600
-    ) {
+    } else {
         $supervisor = new ConsoleSupervisor(false);
         $supervisor->runBasic();
     }
+
+}
+
+
+/**
+ * Retrieves base url stored for Update Manager.
+ *
+ * @return string URL.
+ */
+function get_um_url()
+{
+    global $config;
+
+    if (isset($config['url_update_manager'])) {
+        $url = $config['url_update_manager'];
+        $url = substr($url, 0, (strlen($url) - strpos(strrev($url), '/')));
+    } else {
+        $url = 'https://licensing.artica.es/pandoraupdate7/';
+        config_update_value(
+            'url_update_manager',
+            'https://licensing.artica.es/pandoraupdate7/server.php'
+        );
+    }
+
+    return $url;
 
 }
 

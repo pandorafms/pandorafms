@@ -358,17 +358,17 @@ if ($multiple_delete) {
 // TABLE LIST MODULES
 // ==================
 $url = 'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=module&id_agente='.$id_agente;
-$selectNameUp = '';
-$selectNameDown = '';
-$selectServerUp = '';
-$selectServerDown = '';
-$selectTypeUp = '';
-$selectTypeDown = '';
-$selectIntervalUp = '';
-$selectIntervalDown = '';
+$selectNameUp = false;
+$selectNameDown = false;
+$selectServerUp = false;
+$selectServerDown = false;
+$selectTypeUp = false;
+$selectTypeDown = false;
+$selectIntervalUp = false;
+$selectIntervalDown = false;
 $sortField = get_parameter('sort_field');
 $sort = get_parameter('sort', 'none');
-$selected = '';
+$selected = true;
 
 $order[] = [
     'field' => 'tmodule_group.name',
@@ -482,13 +482,13 @@ switch ($sortField) {
 
     default:
         $selectNameUp = $selected;
-        $selectNameDown = '';
-        $selectServerUp = '';
-        $selectServerDown = '';
-        $selectTypeUp = '';
-        $selectTypeDown = '';
-        $selectIntervalUp = '';
-        $selectIntervalDown = '';
+        $selectNameDown = false;
+        $selectServerUp = false;
+        $selectServerDown = false;
+        $selectTypeUp = false;
+        $selectTypeDown = false;
+        $selectIntervalUp = false;
+        $selectIntervalDown = false;
         switch ($config['dbtype']) {
             case 'mysql':
             case 'postgresql':
@@ -626,32 +626,39 @@ if ($paginate_module) {
     ui_pagination($total_modules, $url);
 }
 
+$url_name = $url.'&sort_field=name&sort=';
+$url_server = $url.'&sort_field=server&sort=';
+$url_type = $url.'&sort_field=type&sort=';
+$url_interval = $url.'&sort_field=interval&sort=';
+
 $table = new stdClass();
 $table->width = '100%';
-$table->class = 'databox data';
+$table->class = 'info_table';
 $table->head = [];
-$table->head[0] = __('Name').' '.'<a href="'.$url.'&sort_field=name&sort=up">'.html_print_image('images/sort_up.png', true, ['style' => $selectNameUp]).'</a>'.'<a href="'.$url.'&sort_field=name&sort=down">'.html_print_image('images/sort_down.png', true, ['style' => $selectNameDown]).'</a>';
+$table->head['checkbox'] = html_print_checkbox('all_delete', 0, false, true, false);
+$table->head[0] = __('Name').ui_get_sorting_arrows($url_name.'up', $url_name.'down', $selectNameUp, $selectNameDown);
 
 // The access to the policy is granted only with AW permission
 if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK && check_acl($config['id_user'], $agent['id_grupo'], 'AW')) {
     $table->head[1] = "<span title='".__('Policy')."'>".__('P.').'</span>';
 }
 
-$table->head[2] = "<span title='".__('Server')."'>".__('S.').'</span>'.' '.'<a href="'.$url.'&sort_field=server&sort=up">'.html_print_image('images/sort_up.png', true, ['style' => $selectServerUp]).'</a>'.'<a href="'.$url.'&sort_field=server&sort=down">'.html_print_image('images/sort_down.png', true, ['style' => $selectServerDown]).'</a>';
-$table->head[3] = __('Type').' '.'<a href="'.$url.'&sort_field=type&sort=up">'.html_print_image('images/sort_up.png', true, ['style' => $selectTypeUp]).'</a>'.'<a href="'.$url.'&sort_field=type&sort=down">'.html_print_image('images/sort_down.png', true, ['style' => $selectTypeDown]).'</a>';
-$table->head[4] = __('Interval').' '.'<a href="'.$url.'&sort_field=interval&sort=up">'.html_print_image('images/sort_up.png', true, ['style' => $selectIntervalUp]).'</a>'.'<a href="'.$url.'&sort_field=interval&sort=down">'.html_print_image('images/sort_down.png', true, ['style' => $selectIntervalDown]).'</a>';
+$table->head[2] = "<span title='".__('Server')."'>".__('S.').'</span>'.ui_get_sorting_arrows($url_server.'up', $url_server.'down', $selectServerUp, $selectServerDown);
+$table->head[3] = __('Type').ui_get_sorting_arrows($url_type.'up', $url_type.'down', $selectTypeUp, $selectTypeDown);
+$table->head[4] = __('Interval').ui_get_sorting_arrows($url_interval.'up', $url_interval.'down', $selectIntervalUp, $selectIntervalDown);
 $table->head[5] = __('Description');
 $table->head[6] = __('Status');
 $table->head[7] = __('Warn');
 
 
 $table->head[8] = __('Action');
-$table->head[9] = '<span title="'.__('Delete').'">'.__('Del.').'</span>'.html_print_checkbox('all_delete', 0, false, true, false);
+$table->head[9] = '<span title="'.__('Delete').'">'.__('Del.').'</span>';
 
 $table->rowstyle = [];
 $table->style = [];
 $table->style[0] = 'font-weight: bold';
 $table->size = [];
+$table->size['checkbox'] = '20px';
 $table->size[2] = '70px';
 $table->align = [];
 $table->align[2] = 'left';
@@ -706,13 +713,17 @@ foreach ($modules as $module) {
             $table->rowstyle[($i - 1)] = 'text-align: center';
             $table->rowclass[($i - 1)] = 'datos3';
             if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
-                    $table->colspan[($i - 1)][0] = 10;
+                    $table->colspan[($i - 1)][0] = 11;
             } else {
-                $table->colspan[($i - 1)][0] = 9;
+                $table->colspan[($i - 1)][0] = 10;
             }
 
             $data = [];
         }
+    }
+
+    if (check_acl_one_of_groups($config['id_user'], $all_groups, 'AW')) {
+        $data['checkbox'] = html_print_checkbox('id_delete[]', $module['id_agente_modulo'], false, true);
     }
 
     $data[0] = '';
@@ -858,7 +869,7 @@ foreach ($modules as $module) {
     }
 
     if (check_acl_one_of_groups($config['id_user'], $all_groups, 'AW') && $module['id_tipo_modulo'] != 25) {
-        $data[8] .= '&nbsp;<a href="index.php?sec=gagente&tab=module&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&duplicate_module='.$module['id_agente_modulo'].'"
+        $data[8] .= '<a href="index.php?sec=gagente&tab=module&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&duplicate_module='.$module['id_agente_modulo'].'"
 			onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
         $data[8] .= html_print_image(
             'images/copy.png',
@@ -870,7 +881,7 @@ foreach ($modules as $module) {
         // Make a data normalization
         if (isset($numericModules[$type])) {
             if ($numericModules[$type] === true) {
-                $data[8] .= '&nbsp;<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&tab=module&fix_module='.$module['id_agente_modulo'].'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
+                $data[8] .= '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&tab=module&fix_module='.$module['id_agente_modulo'].'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
                 $data[8] .= html_print_image(
                     'images/chart_curve.png',
                     true,
@@ -879,18 +890,19 @@ foreach ($modules as $module) {
                 $data[8] .= '</a>';
             }
         } else {
-            $data[8] .= '&nbsp;'.html_print_image(
+            $data[8] .= html_print_image(
                 'images/chart_curve.disabled.png',
                 true,
                 ['title' => __('Normalize (Disabled)')]
             );
+            $data[8] .= '&nbsp;&nbsp;';
         }
 
         // create network component action
         if ((is_user_admin($config['id_user']))
             && ($module['id_modulo'] == MODULE_NETWORK)
         ) {
-            $data[8] .= '&nbsp;<a href="index.php?sec=gmodules&sec2=godmode/modules/manage_network_components&create_network_from_module=1&id_agente='.$id_agente.'&create_module_from='.$module['id_agente_modulo'].'"
+            $data[8] .= '<a href="index.php?sec=gmodules&sec2=godmode/modules/manage_network_components&create_network_from_module=1&id_agente='.$id_agente.'&create_module_from='.$module['id_agente_modulo'].'"
 				onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
             $data[8] .= html_print_image(
                 'images/network.png',
@@ -899,11 +911,12 @@ foreach ($modules as $module) {
             );
             $data[8] .= '</a> ';
         } else {
-            $data[8] .= '&nbsp;'.html_print_image(
+            $data[8] .= html_print_image(
                 'images/network.disabled.png',
                 true,
                 ['title' => __('Create network component (Disabled)')]
             );
+            $data[8] .= '&nbsp;&nbsp;';
         }
     }
 
@@ -917,10 +930,17 @@ foreach ($modules as $module) {
             ['title' => __('Delete')]
         );
         $data[9] .= '</a> ';
-        $data[9] .= html_print_checkbox('id_delete[]', $module['id_agente_modulo'], false, true);
     }
 
+    $table->cellclass[] = [
+        8 => 'action_buttons',
+        9 => 'action_buttons',
+    ];
     array_push($table->data, $data);
+    $table->cellclass[] = [
+        8 => 'action_buttons',
+        9 => 'action_buttons',
+    ];
 }
 
 if (check_acl_one_of_groups($config['id_user'], $all_groups, 'AW')) {

@@ -186,7 +186,7 @@ switch ($login_screen) {
             echo '</div>';
 
             echo '<div id="log_button" class="login_button" style="display: none;">';
-                html_print_submit_button(__('Login as admin'), 'login_button', false, 'class="sub next_login"');
+                html_print_submit_button(__('Login as admin'), 'login_button', false, 'class="next_login"');
             echo '</div>';
 
             echo '<div class="login_button" id="remove_button">';
@@ -226,7 +226,7 @@ switch ($login_screen) {
                 );
             echo '</div>';
             echo '<div class="login_button">';
-                html_print_submit_button(__('Login'), 'login_button', false, 'class="sub next_login"');
+                html_print_submit_button(__('Login'), 'login_button', false, 'class="next_login"');
             echo '</div>';
         }
     break;
@@ -245,7 +245,7 @@ switch ($login_screen) {
         html_print_input_text_extended('auth_code', '', 'auth_code', '', '', '', false, '', 'class="login login_password" placeholder="'.__('Authentication code').'"', false, true);
         echo '</div>';
         echo '<div class="login_button">';
-        html_print_submit_button(__('Check code').'&nbsp;&nbsp;>', 'login_button', false, 'class="sub next_login"');
+        html_print_submit_button(__('Check code').'&nbsp;&nbsp;>', 'login_button', false, 'class="next_login"');
         echo '</div>';
     break;
 
@@ -305,12 +305,12 @@ if (file_exists(ENTERPRISE_DIR.'/load_enterprise.php')) {
         echo '<div class ="img_banner_login">';
 if (file_exists(ENTERPRISE_DIR.'/load_enterprise.php')) {
     if (isset($config['custom_splash_login'])) {
-        html_print_image('enterprise/images/custom_splash_login/'.$config['custom_splash_login'], false, [ 'alt' => 'splash', 'border' => 0, 'title' => $splash_title], false, true);
+        html_print_image('enterprise/images/custom_splash_login/'.$config['custom_splash_login'], false, [ 'alt' => 'splash', 'border' => 0], false, true);
     } else {
-        html_print_image('enterprise/images/custom_splash_login/splash_image_default.png', false, ['alt' => 'logo', 'border' => 0, 'title' => $splash_title], false, true);
+        html_print_image('enterprise/images/custom_splash_login/splash_image_default.png', false, ['alt' => 'logo', 'border' => 0], false, true);
     }
 } else {
-    html_print_image('images/splash_image_default.png', false, ['alt' => 'logo', 'border' => 0, 'title' => $splash_title], false, true);
+    html_print_image('images/splash_image_default.png', false, ['alt' => 'logo', 'border' => 0], false, true);
 }
 
         echo '</div>';
@@ -319,7 +319,7 @@ echo '</div>';
 echo '<div id="ver_num">'.$pandora_version.(($develop_bypass == 1) ? ' '.__('Build').' '.$build_version : '').'</div>';
 echo '</div>';
 
-if (!isset($process_error_message) && isset($mail)) {
+if (empty($process_error_message) && isset($mail)) {
     echo '<div id="reset_correct" title="'.__('Password reset').'">';
         echo '<div class="content_alert">';
             echo '<div class="icon_message_alert">';
@@ -336,7 +336,7 @@ if (!isset($process_error_message) && isset($mail)) {
             echo '</div>';
         echo '</div>';
     echo '</div>';
-} else if (isset($process_error_message)) {
+} else if (isset($process_error_message) && !empty($process_error_message)) {
     echo '<div id="reset_correct" title="'.__('Password reset').'">';
         echo '<div class="content_alert">';
             echo '<div class="icon_message_alert">';

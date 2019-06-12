@@ -124,11 +124,7 @@ $table->data[1][1] .= __('Number of alerts match from').' ';
 $table->data[1][1] .= html_print_input_text('fires_min', '', '', 4, 10, true);
 $table->data[1][1] .= ' '.__('to').' ';
 $table->data[1][1] .= html_print_input_text('fires_max', '', '', 4, 10, true);
-$table->data[1][1] .= ui_print_help_icon(
-    'alert-matches',
-    true,
-    ui_get_full_url(false, false, false, false)
-);
+
 $table->data[1][1] .= '</span>';
 if (check_acl($config['id_user'], 0, 'LM')) {
     $table->data[1][1] .= '<a style="margin-left:5px;" href="index.php?sec=galertas&sec2=godmode/alerts/configure_alert_action&pure='.$pure.'">';
@@ -172,8 +168,7 @@ if ($own_info['is_admin'] || check_acl($config['id_user'], 0, 'PM')) {
 
     $table->data[3][0] = __('Threshold');
     $table->data[3][1] = html_print_input_text('module_action_threshold', '0', '', 5, 7, true);
-    $table->data[3][1] .= ' '.__('seconds').ui_print_help_icon('action_threshold', true);
-
+    $table->data[3][1] .= ' '.__('seconds');
 
     if (!isset($step)) {
         echo '<form class="add_alert_form" method="post">';

@@ -659,18 +659,18 @@ class Wizard
                 if ($input['arguments']['inline'] != 'true') {
                     $output .= '<div class="edit_discovery_input">';
                 } else {
-                    $output .= '<div style="display: flex; margin-bottom: 25px;">';
+                    $output .= '<div style="display: flex; margin-bottom: 25px; flex-wrap: wrap;">';
                     if (!isset($input['extra'])) {
                         $output .= '<div style="width: 50%;">';
                     }
 
                     if (isset($input['extra'])) {
-                        $output .= '<div style="width: 50%; display: flex;">';
+                        $output .= '<div style="display: flex; margin-right:10px;">';
                     }
                 }
 
                 if ($input['arguments']['inline'] == 'true' && isset($input['extra'])) {
-                    $output .= '<div style="width: 50%">';
+                    $output .= '<div style="margin-right:10px;">';
                 }
 
                 $output .= '<div class="label_select">';
@@ -690,11 +690,11 @@ class Wizard
                     $output .= $this->printInput($input['arguments']);
                     $output .= '</div>';
                 } else if ($input['arguments']['inline'] == 'true') {
-                    $output .= '<div style="width: 50%;">';
-
                     if (isset($input['extra'])) {
-                        $output .= '<div style="float: center;">';
+                        $output .= '<div style="">';
+                        $output .= '<div style="float: left;">';
                     } else {
+                        $output .= '<div style="">';
                         $output .= '<div style="float: right;">';
                     }
 

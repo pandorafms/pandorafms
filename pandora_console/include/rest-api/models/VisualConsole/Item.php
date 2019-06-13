@@ -1212,17 +1212,19 @@ class Item extends CachedModel
      * @param array $data Input data.
      *
      * @return array Data structure representing a record in database.
+     *
+     * @overrides Model::encode.
      */
     protected function encode(array $data): array
     {
         $result = [];
 
-        $id = static::extractId($data);
+        $id = static::getId($data);
         if ($id) {
             $result['id'] = $id;
         }
 
-        $id_layout = static::extractIdLayout($data);
+        $id_layout = static::getIdLayout($data);
         if ($id_layout) {
             $result['id_layout'] = $id_layout;
         }
@@ -1243,12 +1245,12 @@ class Item extends CachedModel
             $result['pos_y'] = $pos_y;
         }
 
-        $height = static::extractHeight($data);
+        $height = static::getHeight($data);
         if ($height !== null) {
             $result['height'] = $height;
         }
 
-        $width = static::extractWidth($data);
+        $width = static::getWidth($data);
         if ($width !== null) {
             $result['width'] = $width;
         }
@@ -1258,7 +1260,7 @@ class Item extends CachedModel
             $result['label'] = $label;
         }
 
-        $image = static::extractImageSrc($data);
+        $image = static::getImageSrc($data);
         if ($image !== null) {
             $result['image'] = $image;
         }
@@ -1322,12 +1324,12 @@ class Item extends CachedModel
             $result['id_custom_graph'] = $id_custom_graph;
         }
 
-        $border_width = static::extractBorderWidth($data);
+        $border_width = static::getBorderWidth($data);
         if ($border_width !== null) {
             $result['border_width'] = $border_width;
         }
 
-        $type_graph = static::extractTypeGraph($data);
+        $type_graph = static::getTypeGraph($data);
         if ($type_graph !== null) {
             $result['type_graph'] = $type_graph;
         }
@@ -1477,7 +1479,7 @@ class Item extends CachedModel
      *
      * @return integer Item id. 0 by default.
      */
-    private static function extractId(array $data): integer
+    private static function getId(array $data): int
     {
         return static::parseIntOr(
             static::issetInArray($data, ['id', 'itemId']),
@@ -1493,7 +1495,7 @@ class Item extends CachedModel
      *
      * @return integer Item id. 0 by default.
      */
-    private static function extractIdLayout(array $data): integer
+    private static function getIdLayout(array $data): int
     {
         return static::parseIntOr(
             static::issetInArray($data, ['id_layout', 'idLayout', 'layoutId']),
@@ -1509,7 +1511,7 @@ class Item extends CachedModel
      *
      * @return integer Item width. 0 by default.
      */
-    private static function extractWidth(array $data): integer
+    private static function getWidth(array $data)
     {
         return static::parseIntOr(
             static::issetInArray($data, ['width', 'endX']),
@@ -1525,7 +1527,7 @@ class Item extends CachedModel
      *
      * @return integer Item height. 0 by default.
      */
-    private static function extractHeight(array $data): integer
+    private static function getHeight(array $data)
     {
         return static::parseIntOr(
             static::issetInArray($data, ['height', 'endY']),
@@ -1541,7 +1543,7 @@ class Item extends CachedModel
      *
      * @return mixed String representing the image url (not empty) or null.
      */
-    private static function extractImageSrc(array $data): string
+    protected static function getImageSrc(array $data)
     {
         $imageSrc = static::notEmptyStringOr(
             static::issetInArray($data, ['imageSrc', 'image', 'backgroundColor', 'backgroundType', 'valueType']),
@@ -1559,7 +1561,7 @@ class Item extends CachedModel
      *
      * @return integer Valid border width.
      */
-    private static function extractBorderWidth(array $data)
+    private static function getBorderWidth(array $data)
     {
         return static::parseIntOr(
             static::issetInArray($data, ['border_width', 'borderWidth']),
@@ -1575,7 +1577,7 @@ class Item extends CachedModel
      *
      * @return string One of 'vertical' or 'horizontal'. 'vertical' by default.
      */
-    private static function extractTypeGraph(array $data): string
+    private static function getTypeGraph(array $data)
     {
         return static::notEmptyStringOr(
             static::issetInArray($data, ['typeGraph', 'type_graph', 'graphType']),
@@ -1622,8 +1624,10 @@ class Item extends CachedModel
      * @param array $data Unknown input data structure.
      *
      * @return boolean The modeled element data structure stored into the DB.
+     *
+     * @overrides Model::save.
      */
-    public function save(array $data=[]): boolean
+    public function save(array $data=[]): bool
     {
         $save = static::encode($data);
 
@@ -1635,6 +1639,9 @@ class Item extends CachedModel
             // Update.
             $result = \db_process_sql_update('tlayout_data', $save, ['id' => $save['id']]);
             // static = static::fromDB(['id' => $save['id']]);
+        }
+
+        if ($result) {
         }
 
         return $result;

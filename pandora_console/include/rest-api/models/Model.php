@@ -48,6 +48,30 @@ abstract class Model
 
 
     /**
+     * Return a valid representation of a record in database.
+     *
+     * @param array $data Input data.
+     *
+     * @return array Data structure representing a record in database.
+     *
+     * @abstract
+     */
+    abstract protected function encode(array $data): array;
+
+
+    /**
+     * Insert or update an item in the database
+     *
+     * @param array $data Unknown input data structure.
+     *
+     * @return boolean The modeled element data structure stored into the DB.
+     *
+     * @abstract
+     */
+    abstract public function save(array $data=[]): bool;
+
+
+    /**
      * Constructor of the model. It won't be public. The instances
      * will be created through factories which start with from*.
      *

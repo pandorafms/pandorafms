@@ -93,6 +93,37 @@ final class Container extends Model
 
 
     /**
+     * Return a valid representation of a record in database.
+     *
+     * @param array $data Input data.
+     *
+     * @return array Data structure representing a record in database.
+     *
+     * @overrides Model::encode.
+     */
+    protected function encode(array $data): array
+    {
+        $result = [];
+        return $result;
+    }
+
+
+    /**
+     * Insert or update an item in the database
+     *
+     * @param array $data Unknown input data structure.
+     *
+     * @return boolean The modeled element data structure stored into the DB.
+     *
+     * @overrides Model::save.
+     */
+    public function save(array $data=[]): bool
+    {
+        return true;
+    }
+
+
+    /**
      * Extract a group Id value.
      *
      * @param array $data Unknown input data structure.
@@ -365,6 +396,7 @@ final class Container extends Model
 
             try {
                 array_push($items, $class::fromDB($data));
+                hd($class::save($data), true);
             } catch (\Throwable $e) {
                 // TODO: Log this?
             }

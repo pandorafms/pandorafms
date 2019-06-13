@@ -669,7 +669,7 @@ function show_event_response_command_dialog(id, response, total_checked) {
   });
 }
 
-function update_event(table, id_evento, type) {
+function update_event(table, id_evento, type, redraw) {
   var inputs = $("#events_form :input");
   var values = {};
   inputs.each(function() {
@@ -688,20 +688,22 @@ function update_event(table, id_evento, type) {
       filter: values
     },
     success: function() {
-      table.draw().page(0);
+      if (redraw) {
+        table.draw().page(0);
+      }
     }
   });
 }
 
 function validate_event(table, id_evento) {
-  return update_event(table, id_evento, { validate_event: 1 });
+  return update_event(table, id_evento, { validate_event: 1 }, false);
 }
 
 function in_process_event(table, id_evento) {
-  return update_event(table, id_evento, { in_process_event: 1 });
+  return update_event(table, id_evento, { in_process_event: 1 }, false);
 }
 
-function delete_event(table, id_evento, row) {
+function delete_event(table, id_evento) {
   $(row)
     .closest("tr")
     .remove();

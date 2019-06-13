@@ -188,6 +188,78 @@ function events_get_column_names($fields)
  * Validates all events matching target filter.
  *
  * @param integer $id_evento Master event.
+ * @param array   $filter    Optional. Filter options.
+ * @param boolean $history   Apply on historical table.
+ *
+ * @return integer Events validated or false if error.
+ */
+function events_delete($id_evento, $filter=null, $history=false)
+{
+    if (!isset($id_evento) || $id_evento <= 0) {
+        return false;
+    }
+
+    if (!isset($filter) || !is_array($filter)) {
+        $filter = ['group_rep' => 0];
+    }
+
+    $table = events_get_events_table(is_metaconsole(), $history);
+
+    switch ($filter['group_rep']) {
+        case '0':
+        case '2':
+        default:
+            // No groups option direct update.
+            $delete_sql = sprintf(
+                'DELETE FROM %s
+                 WHERE id_evento = %d',
+                $table,
+                $id_evento
+            );
+        break;
+
+        case '1':
+            // Group by events.
+            $sql = events_get_all(
+                ['te.*'],
+                $filter,
+                // Offset.
+                null,
+                // Limit.
+                null,
+                // Order.
+                null,
+                // Sort_field.
+                null,
+                // Historical table.
+                $history,
+                // Return_sql.
+                true
+            );
+
+            $delete_sql = sprintf(
+                'DELETE tu FROM %s tu INNER JOIN ( %s ) tf
+                ON tu.estado = tf.estado
+                AND tu.evento = tf.evento
+                AND tu.id_agente = tf.id_agente
+                AND tu.id_agentmodule = tf.id_agentmodule
+                AND tf.max_id_evento = %d',
+                $table,
+                $sql,
+                $id_evento
+            );
+        break;
+    }
+
+    error_log($delete_sql);
+    return db_process_sql($delete_sql);
+}
+
+
+/**
+ * Validates all events matching target filter.
+ *
+ * @param integer $id_evento Master event.
  * @param integer $status    Target status.
  * @param array   $filter    Optional. Filter options.
  * @param boolean $history   Apply on historical table.

@@ -686,10 +686,12 @@ function update_event(table, id_evento, type, row) {
       page: "include/ajax/events",
       validate_event: type.validate_event,
       in_process_event: type.in_process_event,
+      delete_event: type.delete_event,
       id_evento: id_evento,
       filter: values
     },
-    success: function() {
+    success: function(data) {
+      console.log("[" + data + "]");
       var t2 = new Date();
       var diff_g = t2.getTime() - t1.getTime();
       var diff_s = diff_g / 1000;
@@ -711,16 +713,15 @@ function update_event(table, id_evento, type, row) {
 
 function validate_event(table, id_evento, row) {
   row.firstChild.src = "http://localhost/pandora_console/images/spinner.gif";
-  return update_event(table, id_evento, { validate_event: 1 }, row, false);
+  return update_event(table, id_evento, { validate_event: 1 }, row);
 }
 
 function in_process_event(table, id_evento, row) {
   row.firstChild.src = "http://localhost/pandora_console/images/spinner.gif";
-  return update_event(table, id_evento, { in_process_event: 1 }, row, false);
+  return update_event(table, id_evento, { in_process_event: 1 }, row);
 }
 
 function delete_event(table, id_evento, row) {
-  $(row)
-    .closest("tr")
-    .remove();
+  row.firstChild.src = "http://localhost/pandora_console/images/spinner.gif";
+  return update_event(table, id_evento, { delete_event: 1 }, row);
 }

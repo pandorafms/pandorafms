@@ -1,4 +1,4 @@
-/*global jQuery,$,forced_title_callback,Base64, dt_event*/
+/*global jQuery,$,forced_title_callback,Base64, dt_events*/
 
 // Show the modal window of an event
 function show_event_dialog(event_id, group_rep, dialog_page, result) {
@@ -669,6 +669,7 @@ function show_event_response_command_dialog(id, response, total_checked) {
   });
 }
 
+var processing = 0;
 function update_event(table, id_evento, type, row) {
   var inputs = $("#events_form :input");
   var values = {};
@@ -678,6 +679,7 @@ function update_event(table, id_evento, type, row) {
   });
   var t1 = new Date();
 
+  processing += 1;
   // Update events matching current filters and id_evento selected.
   $.ajax({
     type: "POST",
@@ -691,17 +693,19 @@ function update_event(table, id_evento, type, row) {
       filter: values
     },
     success: function(data) {
-      console.log("[" + data + "]");
       var t2 = new Date();
       var diff_g = t2.getTime() - t1.getTime();
       var diff_s = diff_g / 1000;
 
       // If operation takes less than 2 seconds, redraw.
+      processing -= 1;
       if (diff_s < 2) {
         redraw = true;
       }
       if (redraw) {
-        table.draw(false);
+        if (processing == 0) {
+          table.draw(false);
+        }
       } else {
         $(row)
           .closest("tr")
@@ -802,23 +806,26 @@ function execute_event_response(event_list_btn) {
       case "in_progress_selected":
         $(".chk_val").each(function() {
           if ($(this).is(":checked")) {
-            in_progress_event(dt_event, $(this).val(), this);
+            in_process_event(dt_events, $(this).val(), this.parentElement);
           }
         });
+        dt_events.draw(false);
         break;
       case "validate_selected":
         $(".chk_val").each(function() {
           if ($(this).is(":checked")) {
-            validate_event(dt_event, $(this).val(), this);
+            validate_event(dt_events, $(this).val(), this.parentElement);
           }
         });
+        dt_events.draw(false);
         break;
       case "delete_selected":
         $(".chk_val").each(function() {
           if ($(this).is(":checked")) {
-            delete_event(dt_event, $(this).val(), this);
+            delete_event(dt_events, $(this).val(), this.parentElement);
           }
         });
+        dt_events.draw(false);
         break;
     }
   }

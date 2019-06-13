@@ -173,7 +173,13 @@ function events_get_column_names($fields)
     $names = [];
     foreach ($fields as $f) {
         if (is_array($f)) {
-            $names[] = events_get_column_name($f['text']);
+            $name = [];
+            $name['text'] = events_get_column_name($f['text']);
+            $name['class'] = $f['class'];
+            $name['style'] = $f['style'];
+            $name['extra'] = $f['extra'];
+            $name['id'] = $f['id'];
+            $names[] = $name;
         } else {
             $names[] = events_get_column_name($f);
         }
@@ -251,7 +257,6 @@ function events_delete($id_evento, $filter=null, $history=false)
         break;
     }
 
-    error_log($delete_sql);
     return db_process_sql($delete_sql);
 }
 
@@ -2511,6 +2516,7 @@ function events_page_responses($event, $childrens_ids=[])
     //
     // Responses.
     //
+    $table_responses = new StdObject();
     $table_responses->cellspacing = 2;
     $table_responses->cellpadding = 2;
     $table_responses->id = 'responses_table';
@@ -3820,7 +3826,11 @@ function events_page_general($event)
     $table_general->data[] = $data;
 
     $table_data = $table_general->data;
-    $table_data_total = count($table_data);
+    if (is_array($table_data)) {
+        $table_data_total = count($table_data);
+    } else {
+        $table_data_total = -1;
+    }
 
     for ($i = 0; $i <= $table_data_total; $i++) {
         if (count($table_data[$i]) == 2) {

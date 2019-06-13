@@ -67,6 +67,16 @@ $event_w = check_acl($config['id_user'], 0, 'EW');
 $event_m = check_acl($config['id_user'], 0, 'EM');
 $access = ($event_a == true) ? 'ER' : (($event_w == true) ? 'EW' : (($event_m == true) ? 'EM' : 'ER'));
 
+
+$readonly = false;
+if (!is_metaconsole()
+    && isset($config['event_replication'])
+    && $config['event_replication'] == 1
+    && $config['show_events_in_local'] == 1
+) {
+    $readonly = true;
+}
+
 // Load specific stylesheet.
 ui_require_css_file('events');
 
@@ -995,7 +1005,11 @@ try {
             // 'module_name',
         [
             'text'  => 'options',
-            'class' => 'action_buttons',
+            'class' => 'action_buttons w120px',
+        ],[
+            'text'  => 'm',
+            'extra' => "<input name='all_validate_box' type='checkbox' value='1' id='checkbox-all_validate_box' />",
+            'class' => 'w20px',
         ],
     ];
     $fields = explode(',', $config['event_fields']);
@@ -1008,10 +1022,15 @@ try {
     // Always add options column.
     $fields = array_merge(
         $fields,
-        [[
-            'text'  => 'options',
-            'class' => 'action_buttons',
-        ],
+        [
+            [
+                'text'  => 'options',
+                'class' => 'action_buttons w120px',
+            ],[
+                'text'  => 'm',
+                'extra' => "<input name='all_validate_box' type='checkbox' value='1' id='checkbox-all_validate_box' />",
+                'class' => 'w20px no-text-imp',
+            ],
         ]
     );
 
@@ -1129,13 +1148,54 @@ try {
             ],
             'column_names'        => $column_names,
             'columns'             => $fields,
-            'no_sortable_columns' => [-1],
+            'no_sortable_columns' => [
+                -1,
+                -2,
+            ],
             'ajax_postprocess'    => 'process_datatables_item(item)',
             'drawCallback'        => 'process_datatables_callback(this, settings)',
         ]
     );
 } catch (Exception $e) {
     ui_print_error_message($e->getMessage());
+}
+
+// Event responses.
+$sql_event_resp = "SELECT id, name FROM tevent_response WHERE type LIKE 'command'";
+$event_responses = db_get_all_rows_sql($sql_event_resp);
+
+if (check_acl($config['id_user'], 0, 'EW') == 1 && !$readonly) {
+    $array_events_actions['in_progress_selected'] = __('In progress selected');
+    $array_events_actions['validate_selected'] = __('Validate selected');
+}
+
+if (check_acl($config['id_user'], 0, 'EM') == 1 && !$readonly) {
+    $array_events_actions['delete_selected'] = __('Delete selected');
+}
+
+foreach ($event_responses as $val) {
+    $array_events_actions[$val['id']] = $val['name'];
+}
+
+if ($config['event_replication'] != 1) {
+    echo '<div class="multi-response-buttons">';
+    echo '<form method="post" id="form_event_response">';
+    echo '<input type="hidden" id="max_execution_event_response" value="'.$config['max_execution_event_response'].'" />';
+    html_print_select($array_events_actions, 'response_id', '', '', '', 0, false, false, false);
+    echo '&nbsp&nbsp';
+    html_print_button(__('Execute event response'), 'submit_event_response', false, 'execute_event_response(true);', 'class="sub next"');
+    echo "<span id='response_loading_dialog' style='display:none'>".html_print_image('images/spinner.gif', true).'</span>';
+    echo '</form>';
+    echo '<span id="max_custom_event_resp_msg" style="display:none; color:#e63c52; line-height: 200%;">';
+    echo __(
+        'A maximum of %s event custom responses can be selected',
+        $config['max_execution_event_response']
+    ).'</span>';
+    echo '<span id="max_custom_selected" style="display:none; color:#e63c52; line-height: 200%;">';
+    echo __(
+        'Please, select an event'
+    ).'</span>';
+    echo '</div>';
 }
 
 // Close viewer.
@@ -1401,6 +1461,59 @@ function process_datatables_item(item) {
         item.id_grupo = item.group_name;
     }
 
+    /* Options */
+    // Show more.
+    item.options = '<a href="javascript:" onclick="show_event_dialog(';
+    item.options += item.id_evento+','+$("#group_rep").val();
+    item.options += ')" ><?php echo html_print_image('images/eye.png', true, ['title' => __('Show more')]); ?></a>';
+
+    <?php
+    // XXX Here is not a global grant, use specific grants:
+    // Update query to include user_can_manage and user_can_write flags.
+    if (check_acl($config['id_user'], 0, 'EW') == 1 && !$readonly) {
+        ?>
+
+    if (item.estado != '1') {
+        // Validate.
+        item.options += '<a href="javascript:" onclick="validate_event(dt_<?php echo $table_id; ?>,';
+        if (item.max_id_evento) {
+            item.options += item.max_id_evento+', this)" >';
+            item.options += '<?php echo html_print_image('images/tick.png', true, ['title' => __('Validate events')]); ?></a>';
+        } else {
+            item.options += item.id_evento+', this)" >';
+            item.options += '<?php echo html_print_image('images/tick.png', true, ['title' => __('Validate event')]); ?></a>';
+        }
+    }
+
+    if (item.estado != '2') {
+        // In process.
+        item.options += '<a href="javascript:" onclick="in_process_event(dt_<?php echo $table_id; ?>,';
+        if (item.max_id_evento) {
+            item.options += item.max_id_evento+', this)" >';
+        } else {
+            item.options += item.id_evento+', this)" >';
+        }
+        item.options += '<?php echo html_print_image('images/hourglass.png', true, ['title' => __('Change to in progress status')]); ?></a>';
+    }
+
+    // Delete.
+    item.options += '<a href="javascript:" onclick="delete_event(dt_<?php echo $table_id; ?>,';
+    if (item.max_id_evento) {
+        item.options += item.max_id_evento+', this)" >';
+        item.options += '<?php echo html_print_image('images/cross.png', true, ['title' => __('Delete events')]); ?></a>';
+    } else {
+        item.options += item.id_evento+', this)" >';
+        item.options += '<?php echo html_print_image('images/cross.png', true, ['title' => __('Delete event')]); ?></a>';
+    }
+
+    // Multi select.
+    item.m = '<input name="checkbox-multi[]" type="checkbox" value="';
+    item.m += item.id_evento+'" id="checkbox-multi-'+item.id_evento+'" ';
+    item.m += 'class="candeleted chk_val">';
+        <?php
+    }
+    ?>
+
     /* Status */
     img = '<?php echo html_print_image('images/star.png', true, ['title' => __('Unknown'), 'class' => 'forced-title']); ?>';
     switch (item.estado) {
@@ -1420,42 +1533,6 @@ function process_datatables_item(item) {
     item.estado = '<div>';
     item.estado += img;
     item.estado += '</div>';
-
-    /* Options */
-    // Show more.
-    item.options = '<a href="javascript:" onclick="show_event_dialog(';
-    item.options += item.id_evento+','+$("#group_rep").val();
-    item.options += ')" ><?php echo html_print_image('images/eye.png', true, ['title' => __('Show more')]); ?></a>';
-
-    // Validate.
-    item.options += '<a href="javascript:" onclick="validate_event(dt_<?php echo $table_id; ?>,';
-    if (item.max_id_evento) {
-        item.options += item.max_id_evento+', this)" >';
-        item.options += '<?php echo html_print_image('images/tick.png', true, ['title' => __('Validate events')]); ?></a>';
-    } else {
-        item.options += item.id_evento+', this)" >';
-        item.options += '<?php echo html_print_image('images/tick.png', true, ['title' => __('Validate event')]); ?></a>';
-    }
-
-    // In process.
-    item.options += '<a href="javascript:" onclick="in_process_event(dt_<?php echo $table_id; ?>,';
-    if (item.max_id_evento) {
-        item.options += item.max_id_evento+', this)" >';
-    } else {
-        item.options += item.id_evento+', this)" >';
-    }
-    item.options += '<?php echo html_print_image('images/hourglass.png', true, ['title' => __('Change to in progress status')]); ?></a>';
-
-    // Delete.
-    item.options += '<a href="javascript:" onclick="delete_event(dt_<?php echo $table_id; ?>,';
-    if (item.max_id_evento) {
-        item.options += item.max_id_evento+', this)" >';
-        item.options += '<?php echo html_print_image('images/cross.png', true, ['title' => __('Delete events')]); ?></a>';
-    } else {
-        item.options += item.id_evento+', this)" >';
-        item.options += '<?php echo html_print_image('images/cross.png', true, ['title' => __('Delete event')]); ?></a>';
-    }
-    
 
     /* Event ID dash */
     item.id_evento = "#"+item.id_evento;
@@ -1709,6 +1786,18 @@ function reorder_tags_inputs() {
 }
 /* Tag management ends */
 $(document).ready( function() {
+
+    /* Multi select handler */
+    $('#checkbox-all_validate_box').on('change', function() {
+        if($('#checkbox-all_validate_box').is(":checked")) {
+            $('.chk_val').check();
+        } else {
+            $('.chk_val').uncheck();
+        }
+    });
+
+
+
     /* Update summary */
     $("#status").on("change",function(){
         $('#summary_status').html($("#status option:selected").text());

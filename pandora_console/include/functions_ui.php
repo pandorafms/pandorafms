@@ -3061,6 +3061,7 @@ function ui_print_datatable(array $parameters)
         if (is_array($column)) {
             $table .= '<th id="'.$column['id'].'" class="'.$column['class'].'" ';
             $table .= ' style="'.$column['style'].'">'.__($column['text']);
+            $table .= $column['extra'];
             $table .= '</th>';
         } else {
             $table .= '<th>'.__($column).'</th>';

@@ -309,3 +309,45 @@ tr.group * {
   text-indent: 3em;
   background: #e2e2e2;
 }
+
+.dt-button.buttons-csv.buttons-html5 {
+  float: right;
+  font-weight: normal;
+  -moz-border-radius: 2px;
+  -webkit-border-radius: 2px;
+  border-radius: 2px;
+  font-size: 1.2em;
+  background-color: #fff;
+  background-repeat: no-repeat;
+  background-position: 92% 10px;
+  color: #000;
+  padding-bottom: 10px;
+  padding-top: 10px;
+  padding-left: 15px;
+  border: 1px solid #888;
+  font-family: "lato", "Open Sans", sans-serif;
+  cursor: pointer;
+}
+
+.dt-button.buttons-csv.buttons-html5:hover {
+  border: 1px solid #333;
+}
+
+.dt-button.buttons-csv.buttons-html5:active {
+  border: 1px solid #000;
+  color: #333;
+  background-color: #e1e1e1;
+}
+
+.dt-button.buttons-csv.buttons-html5[disabled] {
+  color: #b4b4b4;
+  background-color: #f3f3f3;
+  border-color: #b6b6b6;
+  cursor: default;
+}
+
+div.multi-response-buttons {
+  margin-top: 2em;
+  width: 100%;
+  text-align: right;
+}

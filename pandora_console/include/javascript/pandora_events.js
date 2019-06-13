@@ -1,4 +1,4 @@
-/*global jQuery,$,forced_title_callback,Base64*/
+/*global jQuery,$,forced_title_callback,Base64, dt_event*/
 
 // Show the modal window of an event
 function show_event_dialog(event_id, group_rep, dialog_page, result) {
@@ -724,4 +724,137 @@ function in_process_event(table, id_evento, row) {
 function delete_event(table, id_evento, row) {
   row.firstChild.src = "http://localhost/pandora_console/images/spinner.gif";
   return update_event(table, id_evento, { delete_event: 1 }, row);
+}
+
+// Imported from old files.
+function execute_event_response(event_list_btn) {
+  $("#max_custom_event_resp_msg").hide();
+  $("#max_custom_selected").hide();
+
+  var response_id = $("select[name=response_id]").val();
+
+  if (!isNaN(response_id)) {
+    // It is a custom response
+
+    var response = get_response(response_id);
+
+    // If cannot get response abort it
+    if (response == null) {
+      return;
+    }
+
+    var total_checked = $(".chk_val:checked").length;
+
+    // Check select an event.
+    if (total_checked == 0) {
+      $("#max_custom_selected").show();
+      return;
+    }
+
+    // Limit number of events to apply custom responses
+    // to for performance reasons.
+    if (total_checked > $("#max_execution_event_response").val()) {
+      $("#max_custom_event_resp_msg").show();
+      return;
+    }
+
+    var response_command = [];
+    $(".response_command_input").each(function() {
+      response_command[$(this).attr("name")] = $(this).val();
+    });
+
+    if (event_list_btn) {
+      $("#button-submit_event_response").hide(function() {
+        $("#response_loading_dialog").show(function() {
+          var check_params = get_response_params(response_id);
+
+          if (check_params[0] !== "") {
+            show_event_response_command_dialog(
+              response_id,
+              response,
+              total_checked
+            );
+          } else {
+            check_massive_response_event(
+              response_id,
+              response,
+              total_checked,
+              response_command
+            );
+          }
+        });
+      });
+    } else {
+      $("#button-btn_str").hide(function() {
+        $("#execute_again_loading").show(function() {
+          check_massive_response_event(
+            response_id,
+            response,
+            total_checked,
+            response_command
+          );
+        });
+      });
+    }
+  } else {
+    // It is not a custom response
+    switch (response_id) {
+      case "in_progress_selected":
+        $(".chk_val").each(function() {
+          if ($(this).is(":checked")) {
+            in_progress_event(dt_event, $(this).val(), this);
+          }
+        });
+        break;
+      case "validate_selected":
+        $(".chk_val").each(function() {
+          if ($(this).is(":checked")) {
+            validate_event(dt_event, $(this).val(), this);
+          }
+        });
+        break;
+      case "delete_selected":
+        $(".chk_val").each(function() {
+          if ($(this).is(":checked")) {
+            delete_event(dt_event, $(this).val(), this);
+          }
+        });
+        break;
+    }
+  }
+}
+
+function check_massive_response_event(
+  response_id,
+  response,
+  total_checked,
+  response_command
+) {
+  var counter = 0;
+  var end = 0;
+
+  $(".chk_val").each(function() {
+    if ($(this).is(":checked")) {
+      var event_id = $(this).val();
+      var server_id = $("#hidden-server_id_" + event_id).val();
+      response["target"] = get_response_target(
+        event_id,
+        response_id,
+        server_id,
+        response_command
+      );
+
+      if (total_checked - 1 === counter) end = 1;
+
+      show_massive_response_dialog(
+        event_id,
+        response_id,
+        response,
+        counter,
+        end
+      );
+
+      counter++;
+    }
+  });
 }

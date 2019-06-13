@@ -196,9 +196,6 @@ function events_get_column_names($fields)
  */
 function events_update_status($id_evento, $status, $filter=null, $history=false)
 {
-    error_log($id_evento);
-    error_log($status);
-
     if (!$status) {
         return false;
     }
@@ -263,7 +260,6 @@ function events_update_status($id_evento, $status, $filter=null, $history=false)
         break;
     }
 
-    error_log($update_sql);
     return db_process_sql($update_sql);
 }
 

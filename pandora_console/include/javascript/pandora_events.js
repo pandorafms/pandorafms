@@ -669,12 +669,14 @@ function show_event_response_command_dialog(id, response, total_checked) {
   });
 }
 
-function update_event(table, id_evento, type, redraw) {
+function update_event(table, id_evento, type, row) {
   var inputs = $("#events_form :input");
   var values = {};
+  var redraw = false;
   inputs.each(function() {
     values[this.name] = $(this).val();
   });
+  var t1 = new Date();
 
   // Update events matching current filters and id_evento selected.
   $.ajax({
@@ -688,22 +690,36 @@ function update_event(table, id_evento, type, redraw) {
       filter: values
     },
     success: function() {
+      var t2 = new Date();
+      var diff_g = t1.getTime() - t2.getTime();
+      var diff_s = diff_g / 1000;
+
+      // If operation takes less than 2 seconds, redraw.
+      if (diff_s < 2) {
+        redraw = true;
+      }
       if (redraw) {
         table.draw().page(0);
+      } else {
+        $(row)
+          .closest("tr")
+          .remove();
       }
     }
   });
 }
 
-function validate_event(table, id_evento) {
-  return update_event(table, id_evento, { validate_event: 1 }, false);
+function validate_event(table, id_evento, row) {
+  row.firstChild.src = "http://localhost/pandora_console/images/spinner.gif";
+  return update_event(table, id_evento, { validate_event: 1 }, row, false);
 }
 
-function in_process_event(table, id_evento) {
-  return update_event(table, id_evento, { in_process_event: 1 }, false);
+function in_process_event(table, id_evento, row) {
+  row.firstChild.src = "http://localhost/pandora_console/images/spinner.gif";
+  return update_event(table, id_evento, { in_process_event: 1 }, row, false);
 }
 
-function delete_event(table, id_evento) {
+function delete_event(table, id_evento, row) {
   $(row)
     .closest("tr")
     .remove();

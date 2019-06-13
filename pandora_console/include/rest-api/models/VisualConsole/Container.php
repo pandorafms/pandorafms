@@ -319,7 +319,7 @@ final class Container extends Model
         // Default filter.
         $filter = ['id_layout' => $layoutId];
         $fields = [
-            'id',
+            'DISTINCT(id) AS id',
             'type',
             'cache_expiration',
             'id_layout',
@@ -340,8 +340,9 @@ final class Container extends Model
             // Only true condition if type is GROUP_ITEM.
             $filter[] = '('.\db_format_array_where_clause_sql(
                 [
-                    'type'     => GROUP_ITEM,
-                    'id_group' => $groupsFilter,
+                    'id_layout' => $layoutId,
+                    'type'      => GROUP_ITEM,
+                    'id_group'  => $groupsFilter,
                 ]
             ).')';
         }

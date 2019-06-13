@@ -699,7 +699,7 @@ function update_event(table, id_evento, type, row) {
         redraw = true;
       }
       if (redraw) {
-        table.draw().page(0);
+        table.draw(false);
       } else {
         $(row)
           .closest("tr")

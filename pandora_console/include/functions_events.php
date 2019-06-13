@@ -251,11 +251,12 @@ function events_update_status($id_evento, $status, $filter=null, $history=false)
                 AND tu.id_agente = tf.id_agente
                 AND tu.id_agentmodule = tf.id_agentmodule
                 AND tf.max_id_evento = %d
-                SET tu.estado = %d',
+                SET tu.estado = %d, tu.ack_utimestamp = %d',
                 $table,
                 $sql,
                 $id_evento,
-                $status
+                $status,
+                time()
             );
         break;
     }

@@ -2230,6 +2230,7 @@ function modules_get_agentmodule_data(
                 'module_name' => $values[$key]['module_name'],
                 'agent_id'    => $values[$key]['agent_id'],
                 'agent_name'  => $values[$key]['agent_name'],
+                'module_type' => $values[$key]['module_type'],
             ];
         }
 

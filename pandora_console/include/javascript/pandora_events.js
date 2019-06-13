@@ -1,4 +1,4 @@
-/*global jQuery,$,forced_title_callback,Base64,*/
+/*global jQuery,$,forced_title_callback,Base64*/
 
 // Show the modal window of an event
 function show_event_dialog(event_id, group_rep, dialog_page, result) {
@@ -669,11 +669,39 @@ function show_event_response_command_dialog(id, response, total_checked) {
   });
 }
 
-function validate_event(e, row) {
-  console.log(row);
+function update_event(table, id_evento, type) {
+  var inputs = $("#events_form :input");
+  var values = {};
+  inputs.each(function() {
+    values[this.name] = $(this).val();
+  });
+
+  // Update events matching current filters and id_evento selected.
+  $.ajax({
+    type: "POST",
+    url: $("#hidden-ajax_file").val(),
+    data: {
+      page: "include/ajax/events",
+      validate_event: type.validate_event,
+      in_process_event: type.in_process_event,
+      id_evento: id_evento,
+      filter: values
+    },
+    success: function() {
+      table.draw().page(0);
+    }
+  });
 }
 
-function delete_event(e, row) {
+function validate_event(table, id_evento) {
+  return update_event(table, id_evento, { validate_event: 1 });
+}
+
+function in_process_event(table, id_evento) {
+  return update_event(table, id_evento, { in_process_event: 1 });
+}
+
+function delete_event(table, id_evento, row) {
   $(row)
     .closest("tr")
     .remove();

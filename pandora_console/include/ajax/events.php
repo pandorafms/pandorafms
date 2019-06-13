@@ -79,6 +79,39 @@ $save_filter = get_parameter('save_filter', 0);
 $get_filter_values = get_parameter('get_filter_values', 0);
 $update_event_filter = get_parameter('update_event_filter', 0);
 $save_event_filter = get_parameter('save_event_filter', 0);
+$in_process_event = get_parameter('in_process_event', 0);
+$validate_event = get_parameter('validate_event', 0);
+$delete_event = get_parameter('delete_event', 0);
+
+// Delete event (filtered or not).
+if ($delete_event) {
+    $filter = get_parameter('filter', []);
+    $id_evento = get_parameter('id_evento', 0);
+
+    // Check acl.
+    echo events_delete($id_evento, $filter);
+    return;
+}
+
+// Validates an event (filtered or not).
+if ($validate_event) {
+    $filter = get_parameter('filter', []);
+    $id_evento = get_parameter('id_evento', 0);
+
+    // Check acl.
+    echo events_update_status($id_evento, EVENT_VALIDATE, $filter);
+    return;
+}
+
+// Sets status to in progress.
+if ($in_process_event) {
+    $filter = get_parameter('filter', []);
+    $id_evento = get_parameter('id_evento', 0);
+
+    // Check acl.
+    echo events_update_status($id_evento, EVENT_PROCESS, $filter);
+    return;
+}
 
 // Saves an event filter.
 if ($save_event_filter) {

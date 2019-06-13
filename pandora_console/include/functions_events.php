@@ -185,6 +185,90 @@ function events_get_column_names($fields)
 
 
 /**
+ * Validates all events matching target filter.
+ *
+ * @param integer $id_evento Master event.
+ * @param integer $status    Target status.
+ * @param array   $filter    Optional. Filter options.
+ * @param boolean $history   Apply on historical table.
+ *
+ * @return integer Events validated or false if error.
+ */
+function events_update_status($id_evento, $status, $filter=null, $history=false)
+{
+    error_log($id_evento);
+    error_log($status);
+
+    if (!$status) {
+        return false;
+    }
+
+    if (!isset($id_evento) || $id_evento <= 0) {
+        return false;
+    }
+
+    if (!isset($filter) || !is_array($filter)) {
+        $filter = ['group_rep' => 0];
+    }
+
+    $table = events_get_events_table(is_metaconsole(), $history);
+
+    switch ($filter['group_rep']) {
+        case '0':
+        case '2':
+        default:
+            // No groups option direct update.
+            $update_sql = sprintf(
+                'UPDATE %s
+                 SET estado = %d
+                 WHERE id_evento = %d',
+                $table,
+                $status,
+                $id_evento
+            );
+        break;
+
+        case '1':
+            // Group by events.
+            $sql = events_get_all(
+                ['te.*'],
+                $filter,
+                // Offset.
+                null,
+                // Limit.
+                null,
+                // Order.
+                null,
+                // Sort_field.
+                null,
+                // Historical table.
+                $history,
+                // Return_sql.
+                true
+            );
+
+            $update_sql = sprintf(
+                'UPDATE %s tu INNER JOIN ( %s ) tf
+                ON tu.estado = tf.estado
+                AND tu.evento = tf.evento
+                AND tu.id_agente = tf.id_agente
+                AND tu.id_agentmodule = tf.id_agentmodule
+                AND tf.max_id_evento = %d
+                SET tu.estado = %d',
+                $table,
+                $sql,
+                $id_evento,
+                $status
+            );
+        break;
+    }
+
+    error_log($update_sql);
+    return db_process_sql($update_sql);
+}
+
+
+/**
  * Retrieve all events filtered.
  *
  * @param array   $fields     Fields to retrieve.
@@ -193,6 +277,8 @@ function events_get_column_names($fields)
  * @param integer $limit      Limit (pagination).
  * @param string  $order      Sort order.
  * @param string  $sort_field Sort field.
+ * @param boolean $history    Apply on historical table.
+ * @param boolean $return_sql Return SQL (true) or execute it (false).
  *
  * @return array Events.
  * @throws Exception On error.
@@ -204,6 +290,7 @@ function events_get_all(
     $limit=null,
     $order=null,
     $sort_field=null,
+    $history=false,
     $return_sql=false
 ) {
     global $config;
@@ -326,7 +413,7 @@ function events_get_all(
         }
     }
 
-    $table = events_get_events_table($meta, $history);
+    $table = events_get_events_table(is_metaconsole(), $history);
     $tevento = sprintf(
         '(SELECT *
          FROM %s
@@ -385,7 +472,7 @@ function events_get_all(
 
         case '1':
             // Group by events.
-            $group_by .= 'estado, evento, id_agente, id_agentmodule';
+            $group_by .= 'te.estado, te.evento, te.id_agente, te.id_agentmodule';
             $group_by .= $extra;
         break;
 
@@ -429,7 +516,10 @@ function events_get_all(
         MAX(id_evento) as max_id_evento';
 
         if ($count === false) {
-            unset($fields[array_search('te.user_comment', $fields)]);
+            $idx = array_search('te.user_comment', $fields);
+            if ($idx !== false) {
+                unset($fields[$idx]);
+            }
         }
     }
 

@@ -53,6 +53,10 @@ if (! check_acl($config['id_user'], 0, 'ER')
         'ACL Violation',
         'Trying to access event viewer'
     );
+    if (is_ajax()) {
+        return ['error' => 'noaccess'];
+    }
+
     include 'general/noaccess.php';
     return;
 }
@@ -94,10 +98,6 @@ $user_comment = get_parameter('filter[user_comment]');
 
 // Ajax responses.
 if (is_ajax()) {
-    $get_filter_values = get_parameter('get_filter_values', 0);
-    $save_event_filter = get_parameter('save_event_filter', 0);
-    $update_event_filter = get_parameter('update_event_filter', 0);
-    $get_event_filters = get_parameter('get_event_filters', 0);
     $get_events = get_parameter('get_events', 0);
     $filter = get_parameter('filter', []);
     // Datatables offset, limit.
@@ -1083,16 +1083,18 @@ try {
     // Close.
     $active_filters_div .= '</div>';
 
+    $table_id = 'events';
 
     // Print datatable.
     ui_print_datatable(
         [
-            'id'                  => 'events',
+            'id'                  => $table_id,
             'class'               => 'info_table events',
             'style'               => 'width: 100%;',
             'ajax_url'            => 'operation/events/events',
             'ajax_data'           => ['get_events' => 1],
             'form'                => [
+                'id'            => 'events_form',
                 'class'         => 'flex-row',
                 'html'          => $filter,
                 'inputs'        => [],
@@ -1215,12 +1217,12 @@ function process_datatables_callback(table, settings) {
                 $(rows).eq( i ).before(
                     '<tr class="group"><td colspan="100%">'
                     +'<?php echo __('Agent').' '; ?>'
-                    +group+' <?php echo __('has').' '; ?>'
+                    +group+' <?php echo __('has at least').' '; ?>'
                     +'<span style="cursor: pointer" id="s'+j+'">'+'</span>'
                     +'<?php echo ' '.__('events'); ?>'
                     +'</td></tr>'
                 );
-                events_per_group.push(i);
+                events_per_group.push(i - last_count);
                 last_count = i;
                 last = group;
                 j += 1;
@@ -1426,25 +1428,31 @@ function process_datatables_item(item) {
     item.options += ')" ><?php echo html_print_image('images/eye.png', true, ['title' => __('Show more')]); ?></a>';
 
     // Validate.
-    item.options += '<a href="javascript:" onclick="validate_event(';
-    item.options += item.id_evento+', this)" >';
+    item.options += '<a href="javascript:" onclick="validate_event(dt_<?php echo $table_id; ?>,';
     if (item.max_id_evento) {
+        item.options += item.max_id_evento+')" >';
         item.options += '<?php echo html_print_image('images/tick.png', true, ['title' => __('Validate events')]); ?></a>';
     } else {
+        item.options += item.id_evento+')" >';
         item.options += '<?php echo html_print_image('images/tick.png', true, ['title' => __('Validate event')]); ?></a>';
     }
 
-    // In progress.
-    item.options += '<a href="javascript:" onclick="inprogress_event(';
-    item.options += item.id_evento+', this)" >';
-    item.options += '<?php echo html_print_image('images/hourglass.png', true, ['title' => __('Chnge to in progress status')]); ?></a>';
+    // In process.
+    item.options += '<a href="javascript:" onclick="in_process_event(dt_<?php echo $table_id; ?>,';
+    if (item.max_id_evento) {
+        item.options += item.max_id_evento+')" >';
+    } else {
+        item.options += item.id_evento+')" >';
+    }
+    item.options += '<?php echo html_print_image('images/hourglass.png', true, ['title' => __('Change to in progress status')]); ?></a>';
 
     // Delete.
-    item.options += '<a href="javascript:" onclick="delete_event(';
-    item.options += item.id_evento+', this)" >';
+    item.options += '<a href="javascript:" onclick="delete_event(dt_<?php echo $table_id; ?>,';
     if (item.max_id_evento) {
+        item.options += item.max_id_evento+', this)" >';
         item.options += '<?php echo html_print_image('images/cross.png', true, ['title' => __('Delete events')]); ?></a>';
     } else {
+        item.options += item.id_evento+', this)" >';
         item.options += '<?php echo html_print_image('images/cross.png', true, ['title' => __('Delete event')]); ?></a>';
     }
     

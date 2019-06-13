@@ -691,7 +691,7 @@ function update_event(table, id_evento, type, row) {
     },
     success: function() {
       var t2 = new Date();
-      var diff_g = t1.getTime() - t2.getTime();
+      var diff_g = t2.getTime() - t1.getTime();
       var diff_s = diff_g / 1000;
 
       // If operation takes less than 2 seconds, redraw.

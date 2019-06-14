@@ -2719,6 +2719,15 @@ function ui_print_module_status(
  * @param string  $color    Color.
  * @param boolean $return   Return or paint (if false).
  * @param boolean $text     Text to be displayed,by default progress %.
+ * @param array   $ajax     [ 'page' => 'page', 'data' => 'data' ]. Example:
+ *   [
+ *       'page'     => 'operation/agentes/ver_agente',
+ *       'interval' => 100 / $agent["intervalo"],
+ *       'data'     => [
+ *           'id_agente'       => $id_agente,
+ *           'refresh_contact' => 1,
+ *       ],
+ *   ]
  *
  * @return string HTML code.
  */
@@ -2728,7 +2737,8 @@ function ui_progress(
     $height='2.5',
     $color='#82b92e',
     $return=true,
-    $text=''
+    $text='',
+    $ajax=false
 ) {
     if (!$progress) {
         $progress = 0;
@@ -2747,10 +2757,56 @@ function ui_progress(
     }
 
     ui_require_css_file('progress');
-    $output .= '<div class="progress_main" style="width: '.$width.'; height: '.$height.'em; border: 1px solid '.$color.'">';
-    $output .= '<span class="progress_text" style="font-size:'.($height - 0.5).'em;">'.$text.'</span>';
-    $output .= '<div class="progress" style="width: '.$progress.'%; background: '.$color.'"></div>';
-    $output .= '</div>';
+    $output .= '<span class="progress_main" data-label="'.$text;
+    $output .= '" style="width: '.$width.'; height: '.$height.'em; border: 1px solid '.$color.'">';
+    $output .= '<span class="progress" style="width: '.$progress.'%; background: '.$color.'"></span>';
+    $output .= '</span>';
+
+    if ($ajax !== false && is_array($ajax)) {
+        $output .= '<script type="text/javascript">
+    $(document).ready(function() {
+        setInterval(() => {
+                last = $(".progress_main").attr("data-label").split(" ")[0]*1;
+                width = $(".progress").width() / $(".progress").parent().width() * 100;
+                width_interval = '.$ajax['interval'].';
+                if (last % 10 == 0) {
+                    $.post({
+                        url: "'.ui_get_full_url('ajax.php').'",
+                        data: {';
+        if (is_array($ajax['data'])) {
+            foreach ($ajax['data'] as $token => $value) {
+                $output .= '
+                            '.$token.':"'.$value.'",';
+            }
+        }
+
+        $output .= '
+                            page: "'.$ajax['page'].'"
+                        },
+                        success: function(data) {
+                            try {
+                                val = JSON.parse(data);
+                                $(".progress_main").attr("data-label", val["last_contact"]+" s");
+                                $(".progress").width(val["progress"]+"%");
+                            } catch (e) {
+                                console.error(e);
+                                $(".progress_text").attr("data-label", (last -1) + " s");
+                                if (width < 100) {
+                                    $(".progress").width((width+width_interval) + "%");
+                                }
+                            }
+                        }
+                    });
+                } else {
+                    $(".progress_main").attr("data-label", (last -1) + " s");
+                    if (width < 100) {
+                        $(".progress").width((width+width_interval) + "%");
+                    }
+                }
+            }, 1000);
+    });
+    </script>';
+    }
 
     if (!$return) {
         echo $output;

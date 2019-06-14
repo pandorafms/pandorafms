@@ -641,8 +641,6 @@ function events_get_all(
         $EM_groups = users_get_groups($config['id_user'], 'EM', false, true);
         $EW_groups = users_get_groups($config['id_user'], 'EW', false, true);
 
-        hd($EM_groups);
-
         // Apply ACL layer.
         $sql = sprintf(
             'SELECT

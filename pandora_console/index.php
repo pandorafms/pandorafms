@@ -366,7 +366,7 @@ if (! isset($config['id_user'])) {
             $nick_in_db = $saml_user_id;
             if (!$nick_in_db) {
                 include_once $config['saml_path'].'simplesamlphp/lib/_autoload.php';
-                $as = new SimpleSAML_Auth_Simple('PandoraFMS');
+                $as = new SimpleSAML_Auth_Simple($config['saml_source']);
                 $as->logout();
             }
         } else {
@@ -868,7 +868,7 @@ if (isset($_GET['bye'])) {
 
     if ($config['auth'] == 'saml') {
         include_once $config['saml_path'].'simplesamlphp/lib/_autoload.php';
-        $as = new SimpleSAML_Auth_Simple('PandoraFMS');
+        $as = new SimpleSAML_Auth_Simple($config['saml_source']);
         $as->logout();
     }
 

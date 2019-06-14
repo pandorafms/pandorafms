@@ -652,6 +652,30 @@ function config_update_config()
                         $error_update[] = __('Saml path');
                     }
 
+                    if (!config_update_value('saml_source', get_parameter('saml_source'))) {
+                        $error_update[] = __('Saml source');
+                    }
+
+                    if (!config_update_value('saml_user_id', get_parameter('saml_user_id'))) {
+                        $error_update[] = __('Saml user id parameter');
+                    }
+
+                    if (!config_update_value('saml_mail', get_parameter('saml_mail'))) {
+                        $error_update[] = __('Saml mail parameter');
+                    }
+
+                    if (!config_update_value('saml_group_name', get_parameter('saml_group_name'))) {
+                        $error_update[] = __('Saml group name parameter');
+                    }
+
+                    if (!config_update_value('saml_profiles_and_tags', get_parameter('saml_profiles_and_tags'))) {
+                        $error_update[] = __('Saml profiles and tags parameter');
+                    }
+
+                    if (!config_update_value('saml_profile_tag_separator', get_parameter('saml_profile_tag_separator'))) {
+                        $error_update[] = __('Saml profile and tag separator');
+                    }
+
                     if (!config_update_value('double_auth_enabled', get_parameter('double_auth_enabled'))) {
                         $error_update[] = __('Double authentication');
                     }
@@ -2362,6 +2386,30 @@ function config_process_config()
 
     if (!isset($config['saml_path'])) {
         config_update_value('saml_path', '/opt/');
+    }
+
+    if (!isset($config['saml_source'])) {
+        config_update_value('saml_source', '');
+    }
+
+    if (!isset($config['saml_user_id'])) {
+        config_update_value('saml_user_id', '');
+    }
+
+    if (!isset($config['saml_mail'])) {
+        config_update_value('saml_mail', '');
+    }
+
+    if (!isset($config['saml_group_name'])) {
+        config_update_value('saml_group_name', '');
+    }
+
+    if (!isset($config['saml_profiles_and_tags'])) {
+        config_update_value('saml_profiles_and_tags', '');
+    }
+
+    if (!isset($config['saml_profile_tag_separator'])) {
+        config_update_value('saml_profile_tag_separator', '');
     }
 
     if (!isset($config['autoupdate'])) {

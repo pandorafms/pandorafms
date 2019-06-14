@@ -221,7 +221,7 @@ switch ($action) {
             $server_name = $item['server_name'];
 
             // Metaconsole db connection.
-            if ($meta && $server_name != '') {
+            if ($meta && !empty($server_name)) {
                 $connection = metaconsole_get_connection($server_name);
                 if (metaconsole_load_external_db($connection) != NOERR) {
                     continue;
@@ -2805,7 +2805,7 @@ function print_SLA_list($width, $action, $idItem=null)
                     foreach ($itemsSLA as $item) {
                         $server_name = $item['server_name'];
                         // Metaconsole db connection.
-                        if ($meta && $server_name != '') {
+                        if ($meta && !empty($server_name)) {
                             $connection = metaconsole_get_connection(
                                 $server_name
                             );
@@ -3133,7 +3133,7 @@ function print_General_list($width, $action, $idItem=null, $type='general')
                     foreach ($itemsGeneral as $item) {
                         $server_name = $item['server_name'];
                         // Metaconsole db connection.
-                        if ($meta && $server_name != '') {
+                        if ($meta && !empty($server_name)) {
                             $connection = metaconsole_get_connection(
                                 $server_name
                             );

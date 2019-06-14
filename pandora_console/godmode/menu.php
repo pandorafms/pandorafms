@@ -418,9 +418,11 @@ if (is_array($config['extensions'])) {
     $sub['godmode/extensions']['type'] = 'direct';
     $sub['godmode/extensions']['subtype'] = 'nolink';
 
-    $submenu = array_merge($menu_godmode['gextensions']['sub'], $sub);
-    if ($menu_godmode['gextensions']['sub'] != null) {
-        $menu_godmode['gextensions']['sub'] = $submenu;
+    if (is_array($menu_godmode['gextensions']['sub'])) {
+        $submenu = array_merge($menu_godmode['gextensions']['sub'], $sub);
+        if ($menu_godmode['gextensions']['sub'] != null) {
+            $menu_godmode['gextensions']['sub'] = $submenu;
+        }
     }
 }
 

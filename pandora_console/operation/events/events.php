@@ -1468,42 +1468,44 @@ function process_datatables_item(item) {
     item.options += ')" ><?php echo html_print_image('images/eye.png', true, ['title' => __('Show more')]); ?></a>';
 
     <?php
-    // XXX Here is not a global grant, use specific grants:
-    // Update query to include user_can_manage and user_can_write flags.
-    if (check_acl($config['id_user'], 0, 'EW') == 1 && !$readonly) {
+    if (!$readonly) {
         ?>
 
-    if (item.estado != '1') {
-        // Validate.
-        item.options += '<a href="javascript:" onclick="validate_event(dt_<?php echo $table_id; ?>,';
-        if (item.max_id_evento) {
-            item.options += item.max_id_evento+', this)" >';
-            item.options += '<?php echo html_print_image('images/tick.png', true, ['title' => __('Validate events')]); ?></a>';
-        } else {
-            item.options += item.id_evento+', this)" >';
-            item.options += '<?php echo html_print_image('images/tick.png', true, ['title' => __('Validate event')]); ?></a>';
+    if (item.user_can_write == '1') {
+        if (item.estado != '1') {
+            // Validate.
+            item.options += '<a href="javascript:" onclick="validate_event(dt_<?php echo $table_id; ?>,';
+            if (item.max_id_evento) {
+                item.options += item.max_id_evento+', this)" >';
+                item.options += '<?php echo html_print_image('images/tick.png', true, ['title' => __('Validate events')]); ?></a>';
+            } else {
+                item.options += item.id_evento+', this)" >';
+                item.options += '<?php echo html_print_image('images/tick.png', true, ['title' => __('Validate event')]); ?></a>';
+            }
+        }
+
+        if (item.estado != '2') {
+            // In process.
+            item.options += '<a href="javascript:" onclick="in_process_event(dt_<?php echo $table_id; ?>,';
+            if (item.max_id_evento) {
+                item.options += item.max_id_evento+', this)" >';
+            } else {
+                item.options += item.id_evento+', this)" >';
+            }
+            item.options += '<?php echo html_print_image('images/hourglass.png', true, ['title' => __('Change to in progress status')]); ?></a>';
         }
     }
 
-    if (item.estado != '2') {
-        // In process.
-        item.options += '<a href="javascript:" onclick="in_process_event(dt_<?php echo $table_id; ?>,';
+    if (item.user_can_manage == '1') {
+        // Delete.
+        item.options += '<a href="javascript:" onclick="delete_event(dt_<?php echo $table_id; ?>,';
         if (item.max_id_evento) {
             item.options += item.max_id_evento+', this)" >';
+            item.options += '<?php echo html_print_image('images/cross.png', true, ['title' => __('Delete events')]); ?></a>';
         } else {
             item.options += item.id_evento+', this)" >';
+            item.options += '<?php echo html_print_image('images/cross.png', true, ['title' => __('Delete event')]); ?></a>';
         }
-        item.options += '<?php echo html_print_image('images/hourglass.png', true, ['title' => __('Change to in progress status')]); ?></a>';
-    }
-
-    // Delete.
-    item.options += '<a href="javascript:" onclick="delete_event(dt_<?php echo $table_id; ?>,';
-    if (item.max_id_evento) {
-        item.options += item.max_id_evento+', this)" >';
-        item.options += '<?php echo html_print_image('images/cross.png', true, ['title' => __('Delete events')]); ?></a>';
-    } else {
-        item.options += item.id_evento+', this)" >';
-        item.options += '<?php echo html_print_image('images/cross.png', true, ['title' => __('Delete event')]); ?></a>';
     }
 
     // Multi select.

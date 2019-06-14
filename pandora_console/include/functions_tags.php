@@ -1097,6 +1097,12 @@ function tags_get_user_tags($id_user=false, $access='AR', $return_tag_any=false)
         if (empty($user_tags_id)) {
             $user_tags_id = $t;
         } else {
+            if (empty($t)) {
+                // Empty is 'all of them'.
+                // TODO: Review this...
+                $t = [];
+            }
+
             $user_tags_id = array_unique(array_merge($t, $user_tags_id));
         }
     }

@@ -692,7 +692,7 @@ function update_event(table, id_evento, type, row) {
       id_evento: id_evento,
       filter: values
     },
-    success: function(data) {
+    success: function() {
       var t2 = new Date();
       var diff_g = t2.getTime() - t1.getTime();
       var diff_s = diff_g / 1000;

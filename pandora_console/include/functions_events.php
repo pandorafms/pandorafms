@@ -454,10 +454,10 @@ function events_get_all(
         }
     }
 
-    if (isset($filter['id_group']) && $filter['id_group'] > 0) {
+    if (isset($filter['id_group_filter']) && $filter['id_group_filter'] > 0) {
         $sql_filters[] = sprintf(
             ' AND id_group = %d ',
-            $filter['id_group']
+            $filter['id_group_filter']
         );
     }
 
@@ -485,6 +485,15 @@ function events_get_all(
                 );
             break;
         }
+    }
+
+    if (!users_is_admin()) {
+        // Get groups where user have ER grants.
+        $ER_groups = users_get_groups($config['id_user'], 'ER', false);
+        $sql_filters[] = sprintf(
+            ' AND id_grupo IN ( %s )',
+            join(', ', array_keys($ER_groups))
+        );
     }
 
     $table = events_get_events_table(is_metaconsole(), $history);
@@ -627,6 +636,26 @@ function events_get_all(
         $order_by,
         $pagination
     );
+
+    if (!users_is_admin()) {
+        $EM_groups = users_get_groups($config['id_user'], 'EM', false, true);
+        $EW_groups = users_get_groups($config['id_user'], 'EW', false, true);
+
+        hd($EM_groups);
+
+        // Apply ACL layer.
+        $sql = sprintf(
+            'SELECT
+                tbase.*,
+                (tbase.id_grupo IN (%s)) as user_can_manage,
+                (tbase.id_grupo IN (%s)) as user_can_write
+            FROM
+                ('.$sql.') tbase',
+            join(', ', array_keys($EM_groups)),
+            join(', ', array_keys($EW_groups))
+        );
+    }
+
     if ($count) {
         $sql = 'SELECT count(*) as nitems FROM ('.$sql.') tt';
     }

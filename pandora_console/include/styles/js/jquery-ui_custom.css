@@ -3,6 +3,9 @@
 /* --- JQUERY-UI --- */
 .ui-dialog .ui-dialog-titlebar {
   background-color: #82b92e !important;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding-right: 33px !important;
 }
 
 /*center ui dialog center*/
@@ -40,6 +43,7 @@
   position: relative;
   top: 5px;
   float: none !important;
+  vertical-align: bottom;
 }
 .ui-dialog .ui-dialog-titlebar-close {
   position: absolute !important;

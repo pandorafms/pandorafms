@@ -753,7 +753,7 @@ function reporting_html_SLA($table, $item, $mini, $pdf=0)
             $table1->size[10] = '2%';
             $table1->data[0][10] = '<img src ="'.$src.'images/square_light_gray.png">';
             $table1->size[11] = '15%';
-            $table1->data[0][11] = '<span>'.__('Scheduled shutdown').'</span>';
+            $table1->data[0][11] = '<span>'.__('Planned Downtime').'</span>';
 
             if ($pdf === 0) {
                 $table->colspan['legend']['cell'] = 2;
@@ -3335,7 +3335,7 @@ function reporting_html_availability_graph($table, $item, $pdf=0)
         $table2->size[10] = '2%';
         $table2->data[0][10] = '<img src ="'.$src.$hack_metaconsole.'images/square_light_gray.png">';
         $table2->size[11] = '15%';
-        $table2->data[0][11] = '<span>'.__('Scheduled shutdown').'</span>';
+        $table2->data[0][11] = '<span>'.__('Planned Downtime').'</span>';
     }
 
     if ($pdf !== 0) {

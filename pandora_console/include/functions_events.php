@@ -273,6 +273,8 @@ function events_delete($id_evento, $filter=null, $history=false)
  */
 function events_update_status($id_evento, $status, $filter=null, $history=false)
 {
+    global $config;
+
     if (!$status) {
         return false;
     }
@@ -328,12 +330,15 @@ function events_update_status($id_evento, $status, $filter=null, $history=false)
                 AND tu.id_agente = tf.id_agente
                 AND tu.id_agentmodule = tf.id_agentmodule
                 AND tf.max_id_evento = %d
-                SET tu.estado = %d, tu.ack_utimestamp = %d',
+                SET tu.estado = %d,
+                    tu.ack_utimestamp = %d,
+                    tu.id_usuario = "%s"',
                 $table,
                 $sql,
                 $id_evento,
                 $status,
-                time()
+                time(),
+                $config['id_user']
             );
         break;
     }
@@ -368,6 +373,8 @@ function events_get_all(
     $return_sql=false
 ) {
     global $config;
+
+    $user_is_admin = users_is_admin();
 
     if (!is_array($filter)) {
         error_log('[events_get_all] Filter must be an array.');
@@ -455,10 +462,38 @@ function events_get_all(
     }
 
     if (isset($filter['id_group_filter']) && $filter['id_group_filter'] > 0) {
-        $sql_filters[] = sprintf(
-            ' AND id_group = %d ',
+        $propagate = db_get_value(
+            'propagate',
+            'tgrupo',
+            'id_grupo',
             $filter['id_group_filter']
         );
+
+        if (!$propagate) {
+            $sql_filters[] = sprintf(
+                ' AND te.id_grupo = %d ',
+                $filter['id_group_filter']
+            );
+        } else {
+            $groups = [ $filter['id_group_filter'] ];
+            $childrens = groups_get_childrens($id_group, null, true);
+            if (!empty($childrens)) {
+                foreach ($childrens as $child) {
+                    $groups[] = (int) $child['id_grupo'];
+                }
+            }
+
+            $filter['id_group_filter'] = $groups;
+            $sql_filters[] = sprintf(
+                ' AND id_group IN (%s) ',
+                join(',', $filter['id_group_filter'])
+            );
+        }
+    }
+
+    // Skip system messages if user is not PM.
+    if (!check_acl($config['id_user'], 0, 'PM')) {
+        $sql_filters[] = ' AND te.id_grupo != 0 ';
     }
 
     if (isset($filter['status'])) {
@@ -487,28 +522,38 @@ function events_get_all(
         }
     }
 
-    if (!users_is_admin()) {
-        // Get groups where user have ER grants.
+    $sg_active = enterprise_hook('agents_is_using_secondary_groups');
+
+    if (!$user_is_admin) {
         $ER_groups = users_get_groups($config['id_user'], 'ER', false);
+        $EM_groups = users_get_groups($config['id_user'], 'EM', false, true);
+        $EW_groups = users_get_groups($config['id_user'], 'EW', false, true);
+    }
+
+    if (!$user_is_admin && !users_can_manage_group_all('ER')) {
+        // Get groups where user have ER grants.
         $sql_filters[] = sprintf(
-            ' AND id_grupo IN ( %s )',
+            ' AND te.id_grupo IN ( %s )',
             join(', ', array_keys($ER_groups))
         );
     }
 
     $table = events_get_events_table(is_metaconsole(), $history);
     $tevento = sprintf(
-        '(SELECT *
-         FROM %s
-         WHERE 1=1 %s) te',
-        $table,
-        join(' ', $sql_filters)
+        ' %s te',
+        $table
     );
 
-    // Reset array sql filters.
-    $sql_filters = [];
+    // Prepare agent join sql filters.
     $agent_join_filters = [];
+    $tagente_table = 'tagente';
+    $tagente_field = 'id_agente';
+    if (is_metaconsole()) {
+        $tagente_table = 'tmetaconsole_agent';
+        $tagente_field = 'id_tagente';
+    }
 
+    // Agent alias.
     if (!empty($filter['agent_alias'])) {
         $agent_join_filters[] = sprintf(
             ' AND ta.alias = "%s" ',
@@ -516,24 +561,240 @@ function events_get_all(
         );
     }
 
+    // Free search.
     if (!empty($filter['search'])) {
-        $sql_filters[] = sprintf(
+        $sql_filters[] = vsprintf(
             ' AND (lower(ta.alias) like lower("%%%s%%")
+                OR te.id_evento like "%%%s%%"
                 OR lower(te.evento) like lower("%%%s%%")
                 OR lower(te.user_comment) like lower("%%%s%%")
                 OR lower(te.id_extra) like lower("%%%s%%")
-                OR lower(te.source) like lower("%%%s%%") )',
-            $filter['search'],
-            $filter['search'],
-            $filter['search']
+                OR lower(te.source) like lower("%%%s%%") 
+                OR lower(te.custom_data) like lower("%%%s%%") )',
+            array_fill(0, 7, $filter['search'])
         );
     }
 
+    // Id extra.
+    if (!empty($filter['id_extra'])) {
+        $sql_filters[] = sprintf(
+            ' AND lower(te.id_extra) like lower("%%%s%%") ',
+            $filter['id_extra']
+        );
+    }
+
+    // User comment.
+    if (!empty($filter['user_comment'])) {
+        $sql_filters[] = sprintf(
+            ' AND lower(te.user_comment) like lower("%%%s%%") ',
+            $filter['user_comment']
+        );
+    }
+
+    // Source.
+    if (!empty($filter['source'])) {
+        $sql_filters[] = sprintf(
+            ' AND lower(te.source) like lower("%%%s%%") ',
+            $filter['source']
+        );
+    }
+
+    // Validated or in process by.
+    if (!empty($filter['id_user_ack'])) {
+        $sql_filters[] = sprintf(
+            ' AND te.id_usuario like lower("%%%s%%") ',
+            $filter['id_user_ack']
+        );
+    }
+
+    $tag_names = [];
+    // With following tags.
+    if (!empty($filter['tag_with'])) {
+        $tag_with = base64_decode($filter['tag_with']);
+        $tags = json_decode($tag_with, true);
+        if (is_array($tags) && !in_array('0', $tags)) {
+            if (!$user_is_admin) {
+                $user_tags = array_flip(tags_get_tags_for_module_search());
+                if ($user_tags != null) {
+                    foreach ($tags as $id_tag) {
+                        // User cannot filter with those tags.
+                        if (!array_search($id_tag, $user_tags)) {
+                            return false;
+                        }
+                    }
+                }
+            }
+
+            $_tmp = ' AND (';
+            foreach ($tags as $id_tag) {
+                if (!isset($tags_names[$id_tag])) {
+                    $tags_names[$id_tag] = tags_get_name($id_tag);
+                }
+
+                if ($first) {
+                    $_tmp .= ' ( ';
+                    $first = false;
+                } else {
+                    $_tmp .= ' AND ( ';
+                }
+
+                $_tmp .= sprintf(
+                    'tags LIKE "%s"',
+                    $tag_names[$id_tag]
+                );
+
+                $_tmp .= sprintf(
+                    'tags LIKE "%s,%%"',
+                    $tag_names[$id_tag]
+                );
+
+                $_tmp .= sprintf(
+                    'tags LIKE "%%,%s"',
+                    $tag_names[$id_tag]
+                );
+
+                $_tmp .= sprintf(
+                    'tags LIKE "%%,%s,%%"',
+                    $tag_names[$id_tag]
+                );
+
+                $_tmp .= ') ';
+            }
+
+            $sql_filters[] = $_tmp.') ';
+        }
+    }
+
+    // Without following tags.
+    if (!empty($filter['tag_without'])) {
+        $tag_without = base64_decode($filter['tag_without']);
+        $tags = json_decode($tag_without, true);
+        if (is_array($tags) && !in_array('0', $tags)) {
+            $_tmp = ' AND (';
+            foreach ($tags as $id_tag) {
+                if (!isset($tags_names[$id_tag])) {
+                    $tags_names[$id_tag] = tags_get_name($id_tag);
+                }
+
+                $_tmp .= sprintf(
+                    ' AND tags NOT LIKE "%s" ',
+                    $tag_names[$id_tag]
+                );
+                $_tmp .= sprintf(
+                    ' AND tags NOT LIKE "%s,%%" ',
+                    $tag_names[$id_tag]
+                );
+                $_tmp .= sprintf(
+                    ' AND tags NOT LIKE "%%,%s" ',
+                    $tag_names[$id_tag]
+                );
+                $_tmp .= sprintf(
+                    ' AND tags NOT LIKE "%%,%s,%%" ',
+                    $tag_names[$id_tag]
+                );
+            }
+
+            $sql_filters[] = $_tmp.') ';
+        }
+    }
+
+    // Filter/ Only alerts.
+    if (isset($filter['filter_only_alert'])) {
+        if ($filter['filter_only_alert'] == 0) {
+            $sql_filters[] = ' AND event_type NOT LIKE "%alert%"';
+        } else if ($filter['filter_only_alert'] == 1) {
+            $sql_filters[] = ' AND event_type LIKE "%alert%"';
+        }
+    }
+
+    // TAgs ACLS.
+    if (check_acl($config['id_user'], 0, 'ER')) {
+        $tags_acls_condition = tags_get_acl_tags(
+            // Id_user.
+            $config['id_user'],
+            // Id_group.
+            $ER_groups,
+            // Access.
+            'ER',
+            // Return_mode.
+            'event_condition',
+            // Query_prefix.
+            'AND',
+            // Query_table.
+            '',
+            // Meta.
+            is_metaconsole(),
+            // Childrens_ids.
+            [],
+            // Force_group_and_tag.
+            true,
+            // Table tag for id_grupo.
+            'te.'
+        );
+        // FORCE CHECK SQL "(TAG = tag1 AND id_grupo = 1)".
+    } else if (check_acl($config['id_user'], 0, 'EW')) {
+        $tags_acls_condition = tags_get_acl_tags(
+            // Id_user.
+            $config['id_user'],
+            // Id_group.
+            $EW_groups,
+            // Access.
+            'EW',
+            // Return_mode.
+            'event_condition',
+            // Query_prefix.
+            'AND',
+            // Query_table.
+            '',
+            // Meta.
+            is_metaconsole(),
+            // Childrens_ids.
+            [],
+            // Force_group_and_tag.
+            true,
+            // Table tag for id_grupo.
+            'te.'
+        );
+        // FORCE CHECK SQL "(TAG = tag1 AND id_grupo = 1)".
+    } else if (check_acl($config['id_user'], 0, 'EM')) {
+        $tags_acls_condition = tags_get_acl_tags(
+            // Id_user.
+            $config['id_user'],
+            // Id_group.
+            $EM_groups,
+            // Access.
+            'EM',
+            // Return_mode.
+            'event_condition',
+            // Query_prefix.
+            'AND',
+            // Query_table.
+            '',
+            // Meta.
+            is_metaconsole(),
+            // Childrens_ids.
+            [],
+            // Force_group_and_tag.
+            true,
+            // Table tag for id_grupo.
+            'te.'
+        );
+        // FORCE CHECK SQL "(TAG = tag1 AND id_grupo = 1)".
+    }
+
+    if (($tags_acls_condition != ERR_WRONG_PARAMETERS)
+        && ($tags_acls_condition != ERR_ACL)
+    ) {
+        $sql_filters[] = $tags_acls_condition;
+    }
+
+    // Order.
     $order_by = '';
     if (isset($order, $sort_field)) {
         $order_by = events_get_sql_order($sort_field, $order);
     }
 
+    // Pagination.
     $pagination = '';
     if (isset($limit, $offset)) {
         $pagination = sprintf(' LIMIT %d OFFSET %d', $limit, $offset);
@@ -544,6 +805,7 @@ function events_get_all(
         $extra = ', server_id';
     }
 
+    // Group by.
     $group_by = 'GROUP BY ';
     $tagente_join = 'LEFT';
     switch ($filter['group_rep']) {
@@ -611,8 +873,8 @@ function events_get_all(
             %s
          FROM %s
          %s
-         %s JOIN tagente ta
-           ON ta.id_agente = te.id_agente
+         %s JOIN %s ta
+           ON ta.%s = te.id_agente
            %s
          %s JOIN tgrupo tg
            ON te.id_grupo = tg.id_grupo
@@ -628,6 +890,8 @@ function events_get_all(
         $tevento,
         $event_lj,
         $tagente_join,
+        $tagente_table,
+        $tagente_field,
         join(' ', $agent_join_filters),
         $tgrupo_join,
         join(' ', $tgrupo_join_filters),
@@ -637,21 +901,25 @@ function events_get_all(
         $pagination
     );
 
-    if (!users_is_admin()) {
-        $EM_groups = users_get_groups($config['id_user'], 'EM', false, true);
-        $EW_groups = users_get_groups($config['id_user'], 'EW', false, true);
-
-        // Apply ACL layer.
+    if (!$user_is_admin) {
+        // XXX: Confirm there's no extra grants unhandled!.
         $sql = sprintf(
             'SELECT
                 tbase.*,
                 (tbase.id_grupo IN (%s)) as user_can_manage,
                 (tbase.id_grupo IN (%s)) as user_can_write
             FROM
-                ('.$sql.') tbase',
+                (',
             join(', ', array_keys($EM_groups)),
             join(', ', array_keys($EW_groups))
-        );
+        ).$sql.') tbase';
+    } else {
+        $sql = 'SELECT
+                tbase.*,
+                1 as user_can_manage,
+                1 as user_can_write
+            FROM
+                ('.$sql.') tbase';
     }
 
     if ($count) {
@@ -2543,7 +2811,7 @@ function events_page_responses($event, $childrens_ids=[])
     //
     // Responses.
     //
-    $table_responses = new StdObject();
+    $table_responses = new StdClass();
     $table_responses->cellspacing = 2;
     $table_responses->cellpadding = 2;
     $table_responses->id = 'responses_table';
@@ -3860,7 +4128,7 @@ function events_page_general($event)
     }
 
     for ($i = 0; $i <= $table_data_total; $i++) {
-        if (count($table_data[$i]) == 2) {
+        if (is_array($table_data[$i]) && count($table_data[$i]) == 2) {
             $table_general->colspan[$i][1] = 2;
             $table_general->style[2] = 'text-align:center; width:10%;';
         }

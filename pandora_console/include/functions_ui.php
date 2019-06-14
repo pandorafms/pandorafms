@@ -2719,15 +2719,15 @@ function ui_print_module_status(
  * @param string  $color    Color.
  * @param boolean $return   Return or paint (if false).
  * @param boolean $text     Text to be displayed,by default progress %.
- * @param array   $ajax     [ 'page' => 'page', 'data' => 'data' ]. Example:
+ * @param array   $ajax     Ajax: [ 'page' => 'page', 'data' => 'data' ] Sample:
  *   [
- *       'page'     => 'operation/agentes/ver_agente',
- *       'interval' => 100 / $agent["intervalo"],
- *       'data'     => [
+ *       'page'     => 'operation/agentes/ver_agente', Target page.
+ *       'interval' => 100 / $agent["intervalo"], Ask every interval seconds.
+ *       'data'     => [ Data to be sent to target page.
  *           'id_agente'       => $id_agente,
  *           'refresh_contact' => 1,
  *       ],
- *   ]
+ *   ].
  *
  * @return string HTML code.
  */

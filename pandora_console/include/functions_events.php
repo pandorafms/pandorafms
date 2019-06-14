@@ -262,6 +262,96 @@ function events_delete($id_evento, $filter=null, $history=false)
 
 
 /**
+ * Retrieves all events related to matching one.
+ *
+ * @param integer $id_evento Master event (max_id_evento).
+ * @param array   $filter    Filters.
+ * @param boolean $count     Count results or get results.
+ * @param boolean $history   Apply on historical table.
+ *
+ * @return array Events or false in case of error.
+ */
+function events_get_related_events(
+    $id_evento,
+    $filter=null,
+    $count=false,
+    $history=false
+) {
+    global $config;
+
+    if (!isset($id_evento) || $id_evento <= 0) {
+        return false;
+    }
+
+    if (!isset($filter) || !is_array($filter)) {
+        $filter = ['group_rep' => 0];
+    }
+
+    $table = events_get_events_table(is_metaconsole(), $history);
+    $select = '*';
+    if ($count === true) {
+        $select = 'count(*) as n';
+    };
+
+    switch ($filter['group_rep']) {
+        case '0':
+        case '2':
+        default:
+            // No groups option direct update.
+            $related_sql = sprintf(
+                'SELECT %s FROM %s
+                 WHERE id_evento = %d',
+                $select,
+                $table,
+                $id_evento
+            );
+        break;
+
+        case '1':
+            // Group by events.
+            $sql = events_get_all(
+                ['te.*'],
+                $filter,
+                // Offset.
+                null,
+                // Limit.
+                null,
+                // Order.
+                null,
+                // Sort_field.
+                null,
+                // Historical table.
+                $history,
+                // Return_sql.
+                true
+            );
+            $related_sql = sprintf(
+                'SELECT %s FROM %s tu INNER JOIN ( %s ) tf
+                WHERE tu.estado = tf.estado
+                AND tu.evento = tf.evento
+                AND tu.id_agente = tf.id_agente
+                AND tu.id_agentmodule = tf.id_agentmodule
+                AND tf.max_id_evento = %d',
+                $select,
+                $table,
+                $sql,
+                $id_evento
+            );
+        break;
+    }
+
+    if ($count === true) {
+        $r = db_get_all_rows_sql($related_sql);
+
+        return $r[0]['n'];
+    }
+
+    return db_get_all_rows_sql($related_sql);
+
+}
+
+
+/**
  * Validates all events matching target filter.
  *
  * @param integer $id_evento Master event.

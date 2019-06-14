@@ -992,6 +992,9 @@ if ($get_extended_event) {
     $timestamp_first = get_parameter('timestamp_first', $event['utimestamp']);
     $timestamp_last = get_parameter('timestamp_last', $event['utimestamp']);
     $server_id = get_parameter('server_id', 0);
+    $filter = get_parameter('filter', []);
+
+    $event_rep = events_get_related_events($event_id, true, $filter);
 
     $event['similar_ids'] = $similar_ids;
     $event['timestamp_first'] = $timestamp_first;

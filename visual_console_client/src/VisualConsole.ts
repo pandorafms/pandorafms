@@ -11,7 +11,8 @@ import Item, {
   ItemProps,
   ItemClickEvent,
   ItemRemoveEvent,
-  ItemMovedEvent
+  ItemMovedEvent,
+  ItemResizedEvent
 } from "./Item";
 import StaticGraph, { staticGraphPropsDecoder } from "./items/StaticGraph";
 import Icon, { iconPropsDecoder } from "./items/Icon";
@@ -207,6 +208,8 @@ export default class VisualConsole {
   >();
   // Event manager for move events.
   private readonly movedEventManager = new TypedEvent<ItemMovedEvent>();
+  // Event manager for resize events.
+  private readonly resizedEventManager = new TypedEvent<ItemResizedEvent>();
   // List of references to clean the event listeners.
   private readonly disposables: Disposable[] = [];
 
@@ -226,6 +229,15 @@ export default class VisualConsole {
   private handleElementMovement: (e: ItemMovedEvent) => void = e => {
     this.movedEventManager.emit(e);
     // console.log(`Moved element #${e.item.props.id}`, e);
+  };
+
+  /**
+   * React to a resizement on an element.
+   * @param e Event object.
+   */
+  private handleElementResizement: (e: ItemResizedEvent) => void = e => {
+    this.resizedEventManager.emit(e);
+    // console.log(`Resized element #${e.item.props.id}`, e);
   };
 
   /**
@@ -277,6 +289,7 @@ export default class VisualConsole {
         // Item event handlers.
         itemInstance.onClick(this.handleElementClick);
         itemInstance.onMoved(this.handleElementMovement);
+        itemInstance.onResized(this.handleElementResizement);
         itemInstance.onRemove(this.handleElementRemove);
         // Add the item to the DOM.
         this.containerRef.append(itemInstance.elementRef);
@@ -590,6 +603,22 @@ export default class VisualConsole {
      * call them when the item should be cleared.
      */
     const disposable = this.movedEventManager.on(listener);
+    this.disposables.push(disposable);
+
+    return disposable;
+  }
+
+  /**
+   * Add an event handler to the resizement of the visual console elements.
+   * @param listener Function which is going to be executed when a linked console is moved.
+   */
+  public onItemResized(listener: Listener<ItemResizedEvent>): Disposable {
+    /*
+     * The '.on' function returns a function which will clean the event
+     * listener when executed. We store all the 'dispose' functions to
+     * call them when the item should be cleared.
+     */
+    const disposable = this.resizedEventManager.on(listener);
     this.disposables.push(disposable);
 
     return disposable;

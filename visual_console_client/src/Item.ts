@@ -15,7 +15,8 @@ import {
   humanDate,
   humanTime,
   addMovementListener,
-  debounce
+  debounce,
+  addResizementListener
 } from "./lib";
 import TypedEvent, { Listener, Disposable } from "./lib/TypedEvent";
 
@@ -74,6 +75,12 @@ export interface ItemMovedEvent {
   item: VisualConsoleItem<ItemProps>;
   prevPosition: Position;
   newPosition: Position;
+}
+
+export interface ItemResizedEvent {
+  item: VisualConsoleItem<ItemProps>;
+  prevSize: Size;
+  newSize: Size;
 }
 
 /**
@@ -143,6 +150,8 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
   private readonly clickEventManager = new TypedEvent<ItemClickEvent<Props>>();
   // Event manager for moved events.
   private readonly movedEventManager = new TypedEvent<ItemMovedEvent>();
+  // Event manager for resized events.
+  private readonly resizedEventManager = new TypedEvent<ItemResizedEvent>();
   // Event manager for remove events.
   private readonly removeEventManager = new TypedEvent<
     ItemRemoveEvent<Props>
@@ -163,6 +172,9 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
         x: x,
         y: y
       };
+
+      if (!this.positionChanged(prevPosition, newPosition)) return;
+
       // Save the new position to the props.
       this.move(x, y);
       // Emit the movement event.
@@ -199,6 +211,61 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
     if (this.removeMovement) {
       this.removeMovement();
       this.removeMovement = null;
+    }
+  }
+
+  // This function will only run the 2nd arg function after the time
+  // of the first arg have passed after its last execution.
+  private debouncedResizementSave = debounce(
+    500, // ms.
+    (width: Size["width"], height: Size["height"]) => {
+      const prevSize = {
+        width: this.props.width,
+        height: this.props.height
+      };
+      const newSize = {
+        width: width,
+        height: height
+      };
+
+      if (!this.sizeChanged(prevSize, newSize)) return;
+
+      // Save the new position to the props.
+      this.resize(width, height);
+      // Emit the resizement event.
+      this.resizedEventManager.emit({
+        item: this,
+        prevSize: prevSize,
+        newSize: newSize
+      });
+    }
+  );
+  // This property will store the function
+  // to clean the resizement listener.
+  private removeResizement: Function | null = null;
+
+  /**
+   * Start the resizement funtionality.
+   * @param element Element to move inside its container.
+   */
+  private initResizementListener(element: HTMLElement): void {
+    this.removeResizement = addResizementListener(
+      element,
+      (width: Size["width"], height: Size["height"]) => {
+        // Move the DOM element.
+        this.resizeElement(width, height);
+        // Run the save function.
+        this.debouncedResizementSave(width, height);
+      }
+    );
+  }
+  /**
+   * Stop the resizement functionality.
+   */
+  private stopResizementListener(): void {
+    if (this.removeResizement) {
+      this.removeResizement();
+      this.removeResizement = null;
     }
   }
 
@@ -269,6 +336,8 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
       box.classList.add("is-editing");
       // Init the movement listener.
       this.initMovementListener(box);
+      // Init the resizement listener.
+      this.initResizementListener(box);
     }
     if (this.meta.isFetching) {
       box.classList.add("is-fetching");
@@ -503,9 +572,11 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
       if (this.meta.editMode) {
         this.elementRef.classList.add("is-editing");
         this.initMovementListener(this.elementRef);
+        this.initResizementListener(this.elementRef);
       } else {
         this.elementRef.classList.remove("is-editing");
         this.stopMovementListener();
+        this.stopResizementListener();
       }
     }
     if (!prevMeta || prevMeta.isFetching !== this.meta.isFetching) {
@@ -688,6 +759,22 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
      * call them when the item should be cleared.
      */
     const disposable = this.movedEventManager.on(listener);
+    this.disposables.push(disposable);
+
+    return disposable;
+  }
+
+  /**
+   * To add an event handler to the resizement of visual console elements.
+   * @param listener Function which is going to be executed when a linked console is moved.
+   */
+  public onResized(listener: Listener<ItemResizedEvent>): Disposable {
+    /*
+     * The '.on' function returns a function which will clean the event
+     * listener when executed. We store all the 'dispose' functions to
+     * call them when the item should be cleared.
+     */
+    const disposable = this.resizedEventManager.on(listener);
     this.disposables.push(disposable);
 
     return disposable;

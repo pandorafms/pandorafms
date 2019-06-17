@@ -148,6 +148,7 @@ function createVisualConsole(
       };
       var taskId = "visual-console-item-move-" + id;
 
+      // Persist the new position.
       asyncTaskManager
         .add(taskId, function(done) {
           var abortable = updateVisualConsoleItem(
@@ -156,8 +157,8 @@ function createVisualConsole(
             id,
             data,
             function(error, data) {
-              if (!error && !data) return;
-              if (error) {
+              // if (!error && !data) return;
+              if (error || !data) {
                 console.log(
                   "[ERROR]",
                   "[VISUAL-CONSOLE-CLIENT]",
@@ -167,6 +168,49 @@ function createVisualConsole(
 
                 // Move the element to its initial position.
                 e.item.move(e.prevPosition.x, e.prevPosition.y);
+              }
+
+              done();
+            }
+          );
+
+          return {
+            cancel: function() {
+              abortable.abort();
+            }
+          };
+        })
+        .init();
+    });
+    // VC Item resized.
+    visualConsole.onItemResized(function(e) {
+      var id = e.item.props.id;
+      var data = {
+        width: e.newSize.width,
+        height: e.newSize.height
+      };
+      var taskId = "visual-console-item-resize-" + id;
+
+      // Persist the new size.
+      asyncTaskManager
+        .add(taskId, function(done) {
+          var abortable = updateVisualConsoleItem(
+            baseUrl,
+            visualConsole.props.id,
+            id,
+            data,
+            function(error, data) {
+              // if (!error && !data) return;
+              if (error || !data) {
+                console.log(
+                  "[ERROR]",
+                  "[VISUAL-CONSOLE-CLIENT]",
+                  "[API]",
+                  error ? error.message : "Invalid response"
+                );
+
+                // Resize the element to its initial Size.
+                e.item.resize(e.prevSize.width, e.prevSize.height);
               }
 
               done();

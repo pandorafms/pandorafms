@@ -558,3 +558,115 @@ export function addMovementListener(
     handleEnd();
   };
 }
+
+/**
+ * Add the grab & resize functionality to a certain element.
+ *
+ * @param element Element to move.
+ * @param onResized Function to execute when the element is resized.
+ *
+ * @return A function which will clean the event handlers when executed.
+ */
+export function addResizementListener(
+  element: HTMLElement,
+  onResized: (x: Position["x"], y: Position["y"]) => void
+): Function {
+  const resizeDraggable = document.createElement("div");
+  resizeDraggable.className = "resize-draggable";
+  element.appendChild(resizeDraggable);
+
+  // Store the initial draggable state.
+  const isDraggable = element.draggable;
+  // Init the coordinates.
+  let lastWidth: Size["width"] = 0;
+  let lastHeight: Size["height"] = 0;
+  let lastMouseX: Position["x"] = 0;
+  let lastMouseY: Position["y"] = 0;
+  let mouseElementOffsetX: Position["x"] = 0;
+  let mouseElementOffsetY: Position["y"] = 0;
+
+  // Will run onResized 32ms after its last execution.
+  const debouncedResizement = debounce(
+    32,
+    (width: Size["width"], height: Size["height"]) => onResized(width, height)
+  );
+  // Will run onResized one time max every 16ms.
+  const throttledResizement = throttle(
+    16,
+    (width: Size["width"], height: Size["height"]) => onResized(width, height)
+  );
+
+  const handleResize = (e: MouseEvent) => {
+    // Calculate the new element coordinates.
+    let width = lastWidth + (e.pageX - lastMouseX);
+    let height = lastHeight + (e.pageY - lastMouseY);
+
+    // TODO: Document.
+
+    // Minimum value.
+    if (width <= 0) width = 10;
+    if (height <= 0) height = 10;
+
+    // Run the movement events.
+    throttledResizement(width, height);
+    debouncedResizement(width, height);
+
+    // Store the coordinates of the element.
+    lastWidth = width;
+    lastHeight = height;
+    // Store the last mouse coordinates.
+    lastMouseX = e.pageX;
+    lastMouseY = e.pageY;
+  };
+  const handleEnd = () => {
+    // Reset the positions.
+    lastWidth = 0;
+    lastHeight = 0;
+    lastMouseX = 0;
+    lastMouseY = 0;
+    mouseElementOffsetX = 0;
+    mouseElementOffsetY = 0;
+    // Remove the move event.
+    document.removeEventListener("mousemove", handleResize);
+    // Clean itself.
+    document.removeEventListener("mouseup", handleEnd);
+    // Reset the draggable property to its initial state.
+    element.draggable = isDraggable;
+    // Reset the body selection property to a default state.
+    document.body.style.userSelect = "auto";
+  };
+  const handleStart = (e: MouseEvent) => {
+    e.stopPropagation();
+
+    // Disable the drag temporarily.
+    element.draggable = false;
+
+    // Store the difference between the cursor and
+    // the initial coordinates of the element.
+    const { width, height } = element.getBoundingClientRect();
+    lastWidth = width;
+    lastHeight = height;
+    // Store the mouse position.
+    lastMouseX = e.pageX;
+    lastMouseY = e.pageY;
+    // Store the relative position between the mouse and the element.
+    mouseElementOffsetX = e.offsetX;
+    mouseElementOffsetY = e.offsetY;
+
+    // Listen to the mouse movement.
+    document.addEventListener("mousemove", handleResize);
+    // Listen to the moment when the mouse click is not pressed anymore.
+    document.addEventListener("mouseup", handleEnd);
+    // Limit the mouse selection of the body.
+    document.body.style.userSelect = "none";
+  };
+
+  // Event to listen the init of the movement.
+  resizeDraggable.addEventListener("mousedown", handleStart);
+
+  // Returns a function to clean the event listeners.
+  return () => {
+    resizeDraggable.remove();
+    handleEnd();
+  };
+}

@@ -1616,6 +1616,11 @@ function process_datatables_item(item) {
     /* Event ID dash */
     item.id_evento = "#"+item.id_evento;
 
+    /* Owner */
+    if (item.owner_user == "0") {
+        item.owner_user = '<?php echo __('System'); ?>';
+    }
+
 }
 
 /* Datatables auxiliary functions ends */

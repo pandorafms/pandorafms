@@ -4275,7 +4275,7 @@ function events_page_comments($event)
 
     // If comments are not stored in json, the format is old.
     $comments_array = json_decode(io_safe_output($comments), true);
-    if (json_last_error() != JSON_ERROR_NONE) {
+    if (!empty($comments) && json_last_error() != JSON_ERROR_NONE) {
         $comments_array = [
             [
                 'comment'    => 'Error retrieving comments',
@@ -4383,9 +4383,26 @@ function events_page_comments($event)
         $childrens_ids
     ))) && $config['show_events_in_local'] == false || $config['event_replication'] == false
     ) {
-        $comments_form = '<br><div id="comments_form" style="width:98%;">'.html_print_textarea('comment', 3, 10, '', 'style="min-height: 15px; padding:0; width: 100%; disabled"', true);
+        $comments_form = '<br><div id="comments_form" style="width:98%;">';
+        $comments_form .= html_print_textarea(
+            'comment',
+            3,
+            10,
+            '',
+            'style="min-height: 15px; padding:0; width: 100%; disabled"',
+            true
+        );
 
-        $comments_form .= '<br><div style="text-align:right; margin-top:10px;">'.html_print_button(__('Add comment'), 'comment_button', false, 'event_comment();', 'class="sub next"', true).'</div><br></div>';
+        $comments_form .= '<br><div style="text-align:right; margin-top:10px;">';
+        $comments_form .= html_print_button(
+            __('Add comment'),
+            'comment_button',
+            false,
+            'event_comment();',
+            'class="sub next"',
+            true
+        );
+        $comments_form .= '</div><br></div>';
     } else {
         $comments_form = ui_print_message(
             __('If event replication is ongoing, it won\'t be possible to enter comments here. This option is only to allow local pandora users to see comments, but not to operate with them. The operation, when event replication is enabled, must be done only in the Metaconsole.')

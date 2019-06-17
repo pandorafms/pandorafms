@@ -1,12 +1,15 @@
 /*global jQuery,$,forced_title_callback,Base64, dt_events*/
 
 // Show the modal window of an event
+var current_event;
 function show_event_dialog(event, dialog_page, result) {
   var ajax_file = $("#hidden-ajax_file").val();
 
   if (dialog_page == undefined) {
     dialog_page = "general";
   }
+
+  current_event = event;
 
   try {
     event = JSON.parse(atob(event));
@@ -56,8 +59,8 @@ function show_event_dialog(event, dialog_page, result) {
             opacity: 0.5,
             background: "black"
           },
-          width: 850,
-          height: 750
+          width: 710,
+          height: 600
         })
         .show();
 
@@ -515,19 +518,22 @@ function event_change_owner() {
 }
 
 // Save a comment into an event
-function event_comment(e) {
-  var event_id = $("#hidden-id_event").val();
+function event_comment() {
+  var event;
+  try {
+    event = JSON.parse(atob(current_event));
+  } catch (e) {
+    console.error(e);
+    return;
+  }
+
+  var event_id = event.id_evento;
   var comment = $("#textarea_comment").val();
   var meta = $("#hidden-meta").val();
   var history = $("#hidden-history").val();
 
   if (comment == "") {
-    show_event_dialog(
-      event_id,
-      $("#hidden-group_rep").val(),
-      "comments",
-      "comment_error"
-    );
+    show_event_dialog(current_event, "comments", "comment_error");
     return false;
   }
 
@@ -552,13 +558,8 @@ function event_comment(e) {
     success: function(data) {
       $("#button-comment_button").removeAttr("disabled");
       $("#response_loading").show();
-
-      show_event_dialog(
-        event_id,
-        $("#hidden-group_rep").val(),
-        "comments",
-        data
-      );
+      dt_events.draw(false);
+      show_event_dialog(current_event, "comments", data);
     }
   });
 

@@ -169,7 +169,9 @@ if (is_ajax()) {
             $data = array_reduce(
                 $events,
                 function ($carry, $item) {
-                    $carry[] = (object) $item;
+                    $tmp = (object) $item;
+                    $tmp->evento = io_safe_output($tmp->evento);
+                    $carry[] = $tmp;
                     return $carry;
                 }
             );
@@ -586,6 +588,47 @@ if (is_metaconsole() !== true) {
         } else {
             $readonly = true;
         }
+    }
+}
+
+/*
+ * Load user default form.
+ */
+
+$user_filter = db_get_row_sql(
+    sprintf(
+        'SELECT f.id_filter, f.id_name
+         FROM tevent_filter f
+         INNER JOIN tusuario u
+             ON u.default_event_filter=f.id_filter
+         WHERE u.id_user = "%s" ',
+        $config['id_user']
+    )
+);
+if ($user_filter !== false) {
+    $filter = events_get_event_filter($user_filter['id_filter']);
+    if ($filter !== false) {
+        $id_group = $filter['id_group'];
+        $event_type = $filter['event_type'];
+        $severity = $filter['severity'];
+        $status = $filter['status'];
+        $search = $filter['search'];
+        $text_agent = $filter['text_agent'];
+        $id_agent = $filter['id_agent'];
+        $id_agent_module = $filter['id_agent_module'];
+        $pagination = $filter['pagination'];
+        $event_view_hr = $filter['event_view_hr'];
+        $id_user_ack = $filter['id_user_ack'];
+        $group_rep = $filter['group_rep'];
+        $tag_with = $filter['tag_with'];
+        $tag_without = $filter['tag_without'];
+        $filter_only_alert = $filter['filter_only_alert'];
+        $id_group_filter = $filter['id_group_filter'];
+        $date_from = $filter['date_from'];
+        $date_to = $filter['date_to'];
+        $source = $filter['source'];
+        $id_extra = $filter['id_extra'];
+        $user_comment = $filter['user_comment'];
     }
 }
 
@@ -1039,6 +1082,20 @@ try {
 
     // Open current filter quick reference.
     $active_filters_div = '<div class="filter_summary">';
+
+    // Current filter.
+    $active_filters_div .= '<div>';
+    $active_filters_div .= '<div class="label box-shadow">'.__('Current filter').'</div>';
+    $active_filters_div .= '<div id="current_filter" class="content">';
+    if ($user_filter !== false) {
+        $active_filters_div .= io_safe_output($user_filter['id_name']);
+    } else {
+        $active_filters_div .= __('Not set.');
+    }
+
+    $active_filters_div .= '</div>';
+    $active_filters_div .= '</div>';
+
     // Event status.
     $active_filters_div .= '<div>';
     $active_filters_div .= '<div class="label box-shadow">'.__('Event status').'</div>';
@@ -1362,8 +1419,8 @@ function process_datatables_item(item) {
 
     // Add event severity to end of text.
     evn = '<div class="event flex-row h100p nowrap">';
-    evn += '<div><a href="javascript:" onclick="show_event_dialog(';
-    evn += item.id_evento+','+$("#group_rep").val()+');">';
+    evn += '<div><a href="javascript:" onclick="show_event_dialog(\'';
+    evn += btoa(JSON.stringify(item))+'\','+$("#group_rep").val()+');">';
     // Grouped events.
     if(item.event_rep) {
         evn += '('+item.event_rep+') ';

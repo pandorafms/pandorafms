@@ -448,6 +448,7 @@ function events_update_status($id_evento, $status, $filter=null, $history=false)
  * @param string  $sort_field Sort field.
  * @param boolean $history    Apply on historical table.
  * @param boolean $return_sql Return SQL (true) or execute it (false).
+ * @param string  $having     Having filter.
  *
  * @return array Events.
  * @throws Exception On error.
@@ -460,7 +461,8 @@ function events_get_all(
     $order=null,
     $sort_field=null,
     $history=false,
-    $return_sql=false
+    $return_sql=false,
+    $having=''
 ) {
     global $config;
 
@@ -653,6 +655,17 @@ function events_get_all(
 
     // Free search.
     if (!empty($filter['search'])) {
+        if (isset($config['dbconnection']->server_version)
+            && $config['dbconnection']->server_version > 50600
+        ) {
+            // Use "from_base64" requires mysql 5.6 or greater.
+            $custom_data_search = 'from_base64(te.custom_data)';
+        } else {
+            // Custom data is JSON encoded base64, if 5.6 or lower,
+            // user is condemned to use plain search.
+            $custom_data_search = 'te.custom_data';
+        }
+
         $sql_filters[] = vsprintf(
             ' AND (lower(ta.alias) like lower("%%%s%%")
                 OR te.id_evento like "%%%s%%"
@@ -660,7 +673,7 @@ function events_get_all(
                 OR lower(te.user_comment) like lower("%%%s%%")
                 OR lower(te.id_extra) like lower("%%%s%%")
                 OR lower(te.source) like lower("%%%s%%") 
-                OR lower(te.custom_data) like lower("%%%s%%") )',
+                OR lower('.$custom_data_search.') like lower("%%%s%%") )',
             array_fill(0, 7, $filter['search'])
         );
     }
@@ -947,7 +960,8 @@ function events_get_all(
     if ($group_by != '') {
         $group_selects = ',COUNT(id_evento) AS event_rep
         ,GROUP_CONCAT(DISTINCT user_comment SEPARATOR "<br>") AS comments,
-        MAX(timestamp) as max_timestamp,
+        MAX(utimestamp) as timestamp_last,
+        MIN(utimestamp) as timestamp_first,
         MAX(id_evento) as max_id_evento';
 
         if ($count === false) {
@@ -974,6 +988,7 @@ function events_get_all(
          %s
          %s
          %s
+         %s
          ',
         join(',', $fields),
         $group_selects,
@@ -988,7 +1003,8 @@ function events_get_all(
         join(' ', $sql_filters),
         $group_by,
         $order_by,
-        $pagination
+        $pagination,
+        $having
     );
 
     if (!$user_is_admin) {

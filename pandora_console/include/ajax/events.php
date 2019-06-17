@@ -954,18 +954,18 @@ if ($change_owner) {
     return;
 }
 
+
+// Generate a modal window with extended information of given event.
 if ($get_extended_event) {
     global $config;
 
-    $event_id = get_parameter('event_id', false);
-    $childrens_ids = get_parameter('childrens_ids');
-    $childrens_ids = json_decode($childrens_ids);
+    $event = get_parameter('event', false);
 
-    if ($meta) {
-        $event = events_meta_get_event($event_id, false, $history, 'ER');
-    } else {
-        $event = events_get_event($event_id);
+    if ($event === false) {
+        return;
     }
+
+    $event_id = $event['id_evento'];
 
     $readonly = false;
     if (!$meta
@@ -973,7 +973,7 @@ if ($get_extended_event) {
         && $config['event_replication'] == 1
         && $config['show_events_in_local'] == 1
     ) {
-            $readonly = true;
+        $readonly = true;
     }
 
     // Clean url from events and store in array.
@@ -986,20 +986,17 @@ if ($get_extended_event) {
     }
 
     $dialog_page = get_parameter('dialog_page', 'general');
-    $similar_ids = get_parameter('similar_ids', $event_id);
-    $group_rep = get_parameter('group_rep', false);
-    $event_rep = get_parameter('event_rep', 1);
-    $timestamp_first = get_parameter('timestamp_first', $event['utimestamp']);
-    $timestamp_last = get_parameter('timestamp_last', $event['utimestamp']);
-    $server_id = get_parameter('server_id', 0);
     $filter = get_parameter('filter', []);
+    $group_rep = $filter['group_rep'];
+    $event_rep = $event['event_rep'];
+    $timestamp_first = $event['min_timestamp'];
+    $timestamp_last = $event['max_timestamp'];
+    $server_id = $event['server_id'];
+    $comments = $event['comments'];
 
-    $event_rep = events_get_related_events($event_id, true, $filter);
-
-    $event['similar_ids'] = $similar_ids;
-    $event['timestamp_first'] = $timestamp_first;
-    $event['timestamp_last'] = $timestamp_last;
-    $event['event_rep'] = $event_rep;
+    if (!isset($comments)) {
+        $comments = $event['user_comment'];
+    }
 
     // Check ACLs.
     if (is_user_admin($config['id_user'])) {

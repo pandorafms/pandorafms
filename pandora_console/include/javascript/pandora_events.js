@@ -1,20 +1,19 @@
 /*global jQuery,$,forced_title_callback,Base64, dt_events*/
 
 // Show the modal window of an event
-function show_event_dialog(event_id, group_rep, dialog_page, result) {
+function show_event_dialog(event, dialog_page, result) {
   var ajax_file = $("#hidden-ajax_file").val();
 
   if (dialog_page == undefined) {
     dialog_page = "general";
   }
 
-  var similar_ids = $("#hidden-similar_ids_" + event_id).val();
-  var timestamp_first = $("#hidden-timestamp_first_" + event_id).val();
-  var timestamp_last = $("#hidden-timestamp_last_" + event_id).val();
-  var user_comment = $("#hidden-user_comment_" + event_id).val();
-  var event_rep = $("#hidden-event_rep_" + event_id).val();
-  var server_id = $("#hidden-server_id_" + event_id).val();
-  var childrens_ids = $("#hidden-childrens_ids").val();
+  try {
+    event = JSON.parse(atob(event));
+  } catch (e) {
+    console.error(e);
+    return;
+  }
 
   var inputs = $("#events_form :input");
   var values = {};
@@ -33,17 +32,9 @@ function show_event_dialog(event_id, group_rep, dialog_page, result) {
     {
       page: "include/ajax/events",
       get_extended_event: 1,
-      group_rep: group_rep,
-      event_rep: event_rep,
       dialog_page: dialog_page,
-      similar_ids: similar_ids,
-      timestamp_first: timestamp_first,
-      timestamp_last: timestamp_last,
-      user_comment: user_comment,
-      event_id: event_id,
-      server_id: server_id,
+      event: event,
       meta: meta,
-      childrens_ids: childrens_ids,
       history: history,
       filter: values
     },
@@ -53,7 +44,7 @@ function show_event_dialog(event_id, group_rep, dialog_page, result) {
         .empty()
         .append(data)
         .dialog({
-          title: get_event_name(event_id, meta, history),
+          title: event.evento,
           resizable: true,
           draggable: true,
           modal: true,

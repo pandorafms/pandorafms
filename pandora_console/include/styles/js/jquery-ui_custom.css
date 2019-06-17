@@ -168,22 +168,22 @@
 .ui-dialog-titlebar {
   border: 0px;
 }
-.ui-dialog-titlebar .ui-icon-closethick,
-.ui-dialog-titlebar .ui-state-default,
-.ui-dialog-titlebar .ui-state-hover,
-.ui-dialog-titlebar button {
-  background: transparent;
-  border: 0px;
+
+.ui-state-hover .ui-icon,
+.ui-state-focus .ui-icon,
+.ui-button:hover .ui-icon,
+.ui-button:focus .ui-icon {
+  background: none;
 }
+.ui-dialog-titlebar.ui-icon-closethick:hover,
 .ui-dialog-titlebar .ui-icon-closethick {
-  margin-top: -5px;
-  background-image: url("../../../images/icono_cerrar.png");
-  top: 20%;
-  left: 70%;
+  background: none;
 }
-.ui-dialog-titlebar.ui-icon-closethick:hover {
-  background-image: url("../../../images/icono_cerrar.png");
+.ui-button.ui-corner-all.ui-widget.ui-button-icon-only.ui-dialog-titlebar-close,
+.ui-button.ui-corner-all.ui-widget.ui-button-icon-only.ui-dialog-titlebar-close:hover {
+  background: url("../../../images/icono_cerrar.png") no-repeat center center;
 }
+
 .ui-dialog-title {
   color: #ffffff;
   font-size: 9pt;

@@ -19,6 +19,7 @@
   border: 2px dashed #b2b2b2;
   transform: translateX(-2px) translateY(-2px);
   cursor: move;
+  user-select: none;
 }
 
 .visual-console-item.is-editing > .resize-draggable {

@@ -115,76 +115,95 @@ if (is_ajax()) {
     $length = get_parameter('length', $config['block_size']);
 
     if ($get_events) {
-        $order = get_datatable_order(true);
+        try {
+            ob_start();
+            $order = get_datatable_order(true);
 
-        $events = events_get_all(
-            [
-                'te.id_evento',
-                'te.id_agente',
-                'te.id_usuario',
-                'te.id_grupo',
-                'te.estado',
-                'te.timestamp',
-                'te.evento',
-                'te.utimestamp',
-                'te.event_type',
-                'te.id_agentmodule',
-                'te.id_alert_am',
-                'te.criticity',
-                'te.user_comment',
-                'te.tags',
-                'te.source',
-                'te.id_extra',
-                'te.critical_instructions',
-                'te.warning_instructions',
-                'te.unknown_instructions',
-                'te.owner_user',
-                'te.ack_utimestamp',
-                'te.custom_data',
-                'te.data',
-                'te.module_status',
-                'ta.alias as agent_name',
-                'tg.nombre as group_name',
-            ],
-            $filter,
-            // Offset.
-            $start,
-            // Limit.
-            $length,
-            // Order.
-            $order['direction'],
-            // Sort field.
-            $order['field']
-        );
-        $count = events_get_all(
-            'count',
-            $filter
-        );
+            $events = events_get_all(
+                [
+                    'te.id_evento',
+                    'te.id_agente',
+                    'te.id_usuario',
+                    'te.id_grupo',
+                    'te.estado',
+                    'te.timestamp',
+                    'te.evento',
+                    'te.utimestamp',
+                    'te.event_type',
+                    'te.id_agentmodule',
+                    'te.id_alert_am',
+                    'te.criticity',
+                    'te.user_comment',
+                    'te.tags',
+                    'te.source',
+                    'te.id_extra',
+                    'te.critical_instructions',
+                    'te.warning_instructions',
+                    'te.unknown_instructions',
+                    'te.owner_user',
+                    'te.ack_utimestamp',
+                    'te.custom_data',
+                    'te.data',
+                    'te.module_status',
+                    'ta.alias as agent_name',
+                    'tg.nombre as group_name',
+                ],
+                $filter,
+                // Offset.
+                $start,
+                // Limit.
+                $length,
+                // Order.
+                $order['direction'],
+                // Sort field.
+                $order['field']
+            );
+            $count = events_get_all(
+                'count',
+                $filter
+            );
 
-        if ($count !== false) {
-            $count = $count['0']['nitems'];
-        }
+            if ($count !== false) {
+                $count = $count['0']['nitems'];
+            }
 
-        if ($events) {
-            $data = array_reduce(
-                $events,
-                function ($carry, $item) {
-                    $tmp = (object) $item;
-                    $tmp->evento = io_safe_output($tmp->evento);
-                    $carry[] = $tmp;
-                    return $carry;
-                }
+            if ($events) {
+                $data = array_reduce(
+                    $events,
+                    function ($carry, $item) {
+                        $tmp = (object) $item;
+                        $tmp->evento = io_safe_output($tmp->evento);
+                        $carry[] = $tmp;
+                        return $carry;
+                    }
+                );
+            }
+
+            // RecordsTotal && recordsfiltered resultados totales.
+            echo json_encode(
+                [
+                    'data'            => $data,
+                    'recordsTotal'    => $count,
+                    'recordsFiltered' => $count,
+                ]
+            );
+            $response = ob_get_clean();
+        } catch (Exception $e) {
+            echo json_encode(
+                ['error' => $e->getMessage()]
             );
         }
 
-        // RecordsTotal && recordsfiltered resultados totales.
-        echo json_encode(
-            [
-                'data'            => $data,
-                'recordsTotal'    => $count,
-                'recordsFiltered' => $count,
-            ]
-        );
+        // If not valid it will throw an exception.
+        json_decode($response);
+        if (json_last_error() == JSON_ERROR_NONE) {
+            // If valid dump.
+            echo $response;
+        } else {
+            echo json_encode(
+                ['error' => $response]
+            );
+        }
     }
 
     // AJAX section ends.
@@ -1279,6 +1298,7 @@ html_print_input_hidden(
 echo "<div id='event_details_window'></div>";
 echo "<div id='event_response_window'></div>";
 echo "<div id='event_response_command_window' title='".__('Parameters')."'></div>";
+echo "<div id='error-".$table_id."'></div>";
 
 // Load filter div for dialog.
 echo '<div id="load-modal-filter" style="display: none"></div>';
@@ -1422,7 +1442,7 @@ function process_datatables_item(item) {
     evn += '<div><a href="javascript:" onclick="show_event_dialog(\'';
     evn += btoa(JSON.stringify(item))+'\','+$("#group_rep").val()+');">';
     // Grouped events.
-    if(item.event_rep) {
+    if(item.event_rep && item.event_rep > 1) {
         evn += '('+item.event_rep+') ';
     }
     evn += item.evento+'</a></div>';

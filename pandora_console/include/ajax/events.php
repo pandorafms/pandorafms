@@ -287,9 +287,8 @@ function show_filter() {
     $("#load-filter-select").dialog({
         resizable: true,
         draggable: true,
-        modal: true,
-        closeOnEscape: true,
-        open: function(event, ui) { $(".ui-dialog-titlebar-close").hide(); }
+        modal: false,
+        closeOnEscape: true
     });
 }
 
@@ -487,12 +486,29 @@ if ($save_filter_modal) {
     ?>
 <script type="text/javascript">
 function show_save_filter() {
+    $('#save_filter_row1').show();
+    $('#save_filter_row2').show();
+    $('#update_filter_row1').hide();
+    // Filter save mode selector
+    $("[name='filter_mode']").click(function() {
+        if ($(this).val() == 'new') {
+            $('#save_filter_row1').show();
+            $('#save_filter_row2').show();
+            $('#submit-save_filter').show();
+            $('#update_filter_row1').hide();
+        }
+        else {
+            $('#save_filter_row1').hide();
+            $('#save_filter_row2').hide();
+            $('#update_filter_row1').show();
+            $('#submit-save_filter').hide();
+        }
+    });
     $("#save-filter-select").dialog({
         resizable: true,
         draggable: true,
-        modal: true,
-        closeOnEscape: true,
-        open: function(event, ui) { $(".ui-dialog-titlebar-close").hide(); }
+        modal: false,
+        closeOnEscape: true
     });
 }
 
@@ -1110,7 +1126,7 @@ if ($get_extended_event) {
             $childrens_ids
         )))
     ) {
-        $responses = events_page_responses($event, $childrens_ids);
+        $responses = events_page_responses($event);
     } else {
         $responses = '';
     }
@@ -1147,7 +1163,7 @@ if ($get_extended_event) {
 
     $general = events_page_general($event);
 
-    $comments = events_page_comments($event, $childrens_ids);
+    $comments = events_page_comments($event);
 
     $notifications = '<div id="notification_comment_error" style="display:none">'.ui_print_error_message(__('Error adding comment'), '', true).'</div>';
     $notifications .= '<div id="notification_comment_success" style="display:none">'.ui_print_success_message(__('Comment added successfully'), '', true).'</div>';

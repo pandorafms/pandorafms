@@ -492,7 +492,7 @@ function events_get_all(
 
     if (isset($filter['id_agent']) && $filter['id_agent'] > 0) {
         $sql_filters[] = sprintf(
-            ' AND id_agente = %d ',
+            ' AND te.id_agente = %d ',
             $filter['id_agent']
         );
     }
@@ -4249,15 +4249,21 @@ function events_page_general($event)
 /**
  * Generate 'comments' page for event viewer.
  *
- * @param array $event         Event.
- * @param array $childrens_ids Children ids.
+ * @param array $event Event.
  *
  * @return string HTML.
  */
-function events_page_comments($event, $childrens_ids=[])
+function events_page_comments($event)
 {
     // Comments.
     global $config;
+
+    $comments = '';
+
+    $comments = $event['user_comment'];
+    if (isset($event['comments'])) {
+        $comments = $event['comments'];
+    }
 
     $table_comments = new stdClass;
     $table_comments->width = '100%';
@@ -4265,18 +4271,27 @@ function events_page_comments($event, $childrens_ids=[])
     $table_comments->head = [];
     $table_comments->class = 'table_modal_alternate';
 
-    $event_comments = $event['user_comment'];
-    $event_comments = str_replace(["\n", '&#x0a;'], '<br>', $event_comments);
+    $comments = str_replace(["\n", '&#x0a;'], '<br>', $comments);
 
     // If comments are not stored in json, the format is old.
-    $event_comments_array = json_decode($event_comments, true);
-
-    // Show the comments more recent first.
-    if (is_array($event_comments_array)) {
-        $event_comments_array = array_reverse($event_comments_array);
+    $comments_array = json_decode(io_safe_output($comments), true);
+    if (json_last_error() != JSON_ERROR_NONE) {
+        $comments_array = [
+            [
+                'comment'    => 'Error retrieving comments',
+                'action'     => 'Internal message',
+                'id_user'    => 'SYSTEM',
+                'utimestamp' => time(),
+            ],
+        ];
     }
 
-    if (empty($event_comments_array)) {
+    // Show the comments more recent first.
+    if (is_array($comments_array)) {
+        $comments_array = array_reverse($comments_array);
+    }
+
+    if (empty($comments_array)) {
         $comments_format = 'old';
     } else {
         $comments_format = 'new';
@@ -4284,7 +4299,7 @@ function events_page_comments($event, $childrens_ids=[])
 
     switch ($comments_format) {
         case 'new':
-            if (empty($event_comments_array)) {
+            if (empty($comments_array)) {
                 $table_comments->style[0] = 'text-align:center;';
                 $table_comments->colspan[0][0] = 2;
                 $data = [];
@@ -4292,10 +4307,10 @@ function events_page_comments($event, $childrens_ids=[])
                 $table_comments->data[] = $data;
             }
 
-            if (isset($event_comments_array) === true
-                && is_array($event_comments_array) === true
+            if (isset($comments_array) === true
+                && is_array($comments_array) === true
             ) {
-                foreach ($event_comments_array as $c) {
+                foreach ($comments_array as $c) {
                     $data[0] = '<b>'.$c['action'].' by '.$c['id_user'].'</b>';
                     $data[0] .= '<br><br><i>'.date($config['date_format'], $c['utimestamp']).'</i>';
                     $data[1] = $c['comment'];
@@ -4305,7 +4320,7 @@ function events_page_comments($event, $childrens_ids=[])
         break;
 
         case 'old':
-            $comments_array = explode('<br>', $event_comments);
+            $comments_array = explode('<br>', $comments);
 
             // Split comments and put in table.
             $col = 0;

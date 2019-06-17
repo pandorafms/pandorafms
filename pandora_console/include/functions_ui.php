@@ -3167,8 +3167,21 @@ function ui_print_datatable(array $parameters)
                 type: "POST",
                 dataSrc: function (json) {
                     if (json.error) {
-                        console.log(error);
-                        alert(error);
+                        console.log(json.error);
+                        $("#error-'.$table_id.'").html(json.error);
+                        $("#error-'.$table_id.'").dialog({
+                            title: "Filter failed",
+                            width: 630,
+                            resizable: true,
+                            draggable: true,
+                            modal: false,
+                            closeOnEscape: true,
+                            buttons: {
+                                "Ok" : function () {
+                                    $(this).dialog("close");
+                                }
+                            }
+                        }).parent().addClass("ui-state-error");
                     } else {';
     if (isset($parameters['ajax_postprocess'])) {
         $js .= '

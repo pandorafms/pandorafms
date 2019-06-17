@@ -147,7 +147,7 @@ define('COL_UNKNOWN', '#B2B2B2');
 define('COL_DOWNTIME', '#976DB1');
 define('COL_IGNORED', '#DDD');
 define('COL_ALERTFIRED', '#FFA631');
-define('COL_MINOR', '#F099A2');
+define('COL_MINOR', '#B2B2B2');
 define('COL_MAJOR', '#C97A4A');
 define('COL_INFORMATIONAL', '#E4E4E4');
 define('COL_MAINTENANCE', '#4a83f3');

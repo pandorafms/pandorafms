@@ -515,7 +515,7 @@ function event_change_owner() {
 }
 
 // Save a comment into an event
-function event_comment() {
+function event_comment(e) {
   var event_id = $("#hidden-id_event").val();
   var comment = $("#textarea_comment").val();
   var meta = $("#hidden-meta").val();

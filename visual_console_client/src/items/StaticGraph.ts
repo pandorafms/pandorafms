@@ -1,8 +1,8 @@
 import {
   WithModuleProps,
   LinkedVisualConsoleProps,
-  UnknownObject
-} from "../types";
+  AnyObject
+} from "../lib/types";
 
 import {
   modulePropsDecoder,
@@ -47,7 +47,7 @@ const parseShowLastValueTooltip = (
  * is missing from the raw object or have an invalid type.
  */
 export function staticGraphPropsDecoder(
-  data: UnknownObject
+  data: AnyObject
 ): StaticGraphProps | never {
   if (typeof data.imageSrc !== "string" || data.imageSrc.length === 0) {
     throw new TypeError("invalid image src.");

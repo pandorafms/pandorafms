@@ -1,9 +1,10 @@
-import { UnknownObject, Size } from "./types";
+import { AnyObject, Size } from "./lib/types";
 import {
   parseBoolean,
   sizePropsDecoder,
   parseIntOr,
-  notEmptyStringOr
+  notEmptyStringOr,
+  itemMetaDecoder
 } from "./lib";
 import Item, {
   ItemType,
@@ -24,7 +25,7 @@ import EventsHistory, {
   eventsHistoryPropsDecoder
 } from "./items/EventsHistory";
 import Percentile, { percentilePropsDecoder } from "./items/Percentile";
-import TypedEvent, { Disposable, Listener } from "./TypedEvent";
+import TypedEvent, { Disposable, Listener } from "./lib/TypedEvent";
 import DonutGraph, { donutGraphPropsDecoder } from "./items/DonutGraph";
 import BarsGraph, { barsGraphPropsDecoder } from "./items/BarsGraph";
 import ModuleGraph, { moduleGraphPropsDecoder } from "./items/ModuleGraph";
@@ -32,47 +33,49 @@ import Service, { servicePropsDecoder } from "./items/Service";
 
 // TODO: Document.
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-function itemInstanceFrom(data: UnknownObject) {
+function itemInstanceFrom(data: AnyObject) {
   const type = parseIntOr(data.type, null);
   if (type == null) throw new TypeError("missing item type.");
 
+  const meta = itemMetaDecoder(data);
+
   switch (type as ItemType) {
     case ItemType.STATIC_GRAPH:
-      return new StaticGraph(staticGraphPropsDecoder(data));
+      return new StaticGraph(staticGraphPropsDecoder(data), meta);
     case ItemType.MODULE_GRAPH:
-      return new ModuleGraph(moduleGraphPropsDecoder(data));
+      return new ModuleGraph(moduleGraphPropsDecoder(data), meta);
     case ItemType.SIMPLE_VALUE:
     case ItemType.SIMPLE_VALUE_MAX:
     case ItemType.SIMPLE_VALUE_MIN:
     case ItemType.SIMPLE_VALUE_AVG:
-      return new SimpleValue(simpleValuePropsDecoder(data));
+      return new SimpleValue(simpleValuePropsDecoder(data), meta);
     case ItemType.PERCENTILE_BAR:
     case ItemType.PERCENTILE_BUBBLE:
     case ItemType.CIRCULAR_PROGRESS_BAR:
     case ItemType.CIRCULAR_INTERIOR_PROGRESS_BAR:
-      return new Percentile(percentilePropsDecoder(data));
+      return new Percentile(percentilePropsDecoder(data), meta);
     case ItemType.LABEL:
-      return new Label(labelPropsDecoder(data));
+      return new Label(labelPropsDecoder(data), meta);
     case ItemType.ICON:
-      return new Icon(iconPropsDecoder(data));
+      return new Icon(iconPropsDecoder(data), meta);
     case ItemType.SERVICE:
-      return new Service(servicePropsDecoder(data));
+      return new Service(servicePropsDecoder(data), meta);
     case ItemType.GROUP_ITEM:
-      return new Group(groupPropsDecoder(data));
+      return new Group(groupPropsDecoder(data), meta);
     case ItemType.BOX_ITEM:
-      return new Box(boxPropsDecoder(data));
+      return new Box(boxPropsDecoder(data), meta);
     case ItemType.LINE_ITEM:
-      return new Line(linePropsDecoder(data));
+      return new Line(linePropsDecoder(data), meta);
     case ItemType.AUTO_SLA_GRAPH:
-      return new EventsHistory(eventsHistoryPropsDecoder(data));
+      return new EventsHistory(eventsHistoryPropsDecoder(data), meta);
     case ItemType.DONUT_GRAPH:
-      return new DonutGraph(donutGraphPropsDecoder(data));
+      return new DonutGraph(donutGraphPropsDecoder(data), meta);
     case ItemType.BARS_GRAPH:
-      return new BarsGraph(barsGraphPropsDecoder(data));
+      return new BarsGraph(barsGraphPropsDecoder(data), meta);
     case ItemType.CLOCK:
-      return new Clock(clockPropsDecoder(data));
+      return new Clock(clockPropsDecoder(data), meta);
     case ItemType.COLOR_CLOUD:
-      return new ColorCloud(colorCloudPropsDecoder(data));
+      return new ColorCloud(colorCloudPropsDecoder(data), meta);
     default:
       throw new TypeError("item not found");
   }
@@ -80,7 +83,7 @@ function itemInstanceFrom(data: UnknownObject) {
 
 // TODO: Document.
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-function decodeProps(data: UnknownObject) {
+function decodeProps(data: AnyObject) {
   const type = parseIntOr(data.type, null);
   if (type == null) throw new TypeError("missing item type.");
 
@@ -147,7 +150,7 @@ export interface VisualConsoleProps extends Size {
  * is missing from the raw object or have an invalid type.
  */
 export function visualConsolePropsDecoder(
-  data: UnknownObject
+  data: AnyObject
 ): VisualConsoleProps | never {
   // Object destructuring: http://es6-features.org/#ObjectMatchingShorthandNotation
   const {
@@ -226,8 +229,8 @@ export default class VisualConsole {
 
   public constructor(
     container: HTMLElement,
-    props: UnknownObject,
-    items: UnknownObject[]
+    props: AnyObject,
+    items: AnyObject[]
   ) {
     this.containerRef = container;
     this._props = visualConsolePropsDecoder(props);
@@ -288,13 +291,13 @@ export default class VisualConsole {
    * Public setter of the `elements` property.
    * @param items.
    */
-  public updateElements(items: UnknownObject[]): void {
-    const itemIds = items.map(item => item.id || null).filter(id => id != null);
-    itemIds as number[]; // Tell the type system to rely on us.
+  public updateElements(items: AnyObject[]): void {
+    // Ensure the type cause Typescript doesn't know the filter removes null items.
+    const itemIds = items
+      .map(item => item.id || null)
+      .filter(id => id != null) as number[];
     // Get the elements we should delete.
-    const deletedIds: number[] = this.elementIds.filter(
-      id => itemIds.indexOf(id) < 0
-    );
+    const deletedIds = this.elementIds.filter(id => itemIds.indexOf(id) < 0);
     // Delete the elements.
     deletedIds.forEach(id => {
       if (this.elementsById[id] != null) {
@@ -530,6 +533,9 @@ export default class VisualConsole {
         height: 0,
         lineWidth: this.props.relationLineWidth,
         color: "#CCCCCC"
+      }),
+      itemMetaDecoder({
+        receivedAt: new Date()
       })
     );
     // Save a reference to the line item.
@@ -556,5 +562,23 @@ export default class VisualConsole {
     this.disposables.push(disposable);
 
     return disposable;
+  }
+
+  /**
+   * Enable the edition mode.
+   */
+  public enableEditMode(): void {
+    this.elements.forEach(item => {
+      item.meta = { ...item.meta, editMode: true };
+    });
+  }
+
+  /**
+   * Disable the edition mode.
+   */
+  public disableEditMode(): void {
+    this.elements.forEach(item => {
+      item.meta = { ...item.meta, editMode: false };
+    });
   }
 }

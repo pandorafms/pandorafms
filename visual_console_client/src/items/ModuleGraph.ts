@@ -1,8 +1,8 @@
 import {
   LinkedVisualConsoleProps,
-  UnknownObject,
+  AnyObject,
   WithModuleProps
-} from "../types";
+} from "../lib/types";
 import {
   linkedVCPropsDecoder,
   modulePropsDecoder,
@@ -28,7 +28,7 @@ export type ModuleGraphProps = {
  * is missing from the raw object or have an invalid type.
  */
 export function moduleGraphPropsDecoder(
-  data: UnknownObject
+  data: AnyObject
 ): ModuleGraphProps | never {
   if (stringIsEmpty(data.html) && stringIsEmpty(data.encodedHtml)) {
     throw new TypeError("missing html content.");

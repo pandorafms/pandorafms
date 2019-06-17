@@ -7,7 +7,8 @@ import {
   decodeBase64,
   humanDate,
   humanTime,
-  replaceMacros
+  replaceMacros,
+  itemMetaDecoder
 } from ".";
 
 describe("function parseIntOr", () => {
@@ -72,14 +73,14 @@ describe("function prefixedCssRules", () => {
 
 describe("function decodeBase64", () => {
   it("should decode the base64 without errors", () => {
-    expect(decodeBase64("SGkgSSdtIGRlY29kZWQ=")).toEqual("Hi I'm decoded");
-    expect(decodeBase64("Rk9PQkFSQkFa")).toEqual("FOOBARBAZ");
-    expect(decodeBase64("eyJpZCI6MSwibmFtZSI6ImZvbyJ9")).toEqual(
+    expect(decodeBase64("SGkgSSdtIGRlY29kZWQ=")).toBe("Hi I'm decoded");
+    expect(decodeBase64("Rk9PQkFSQkFa")).toBe("FOOBARBAZ");
+    expect(decodeBase64("eyJpZCI6MSwibmFtZSI6ImZvbyJ9")).toBe(
       '{"id":1,"name":"foo"}'
     );
     expect(
       decodeBase64("PGRpdj5Cb3ggPHA+UGFyYWdyYXBoPC9wPjxociAvPjwvZGl2Pg==")
-    ).toEqual("<div>Box <p>Paragraph</p><hr /></div>");
+    ).toBe("<div>Box <p>Paragraph</p><hr /></div>");
   });
 });
 
@@ -116,5 +117,48 @@ describe("replaceMacros function", () => {
   it("should replace the macros", () => {
     const text = "Lorem _foo_ Ipsum _baz_";
     expect(replaceMacros(macros, text)).toBe("Lorem foo Ipsum baz");
+  });
+});
+
+describe("itemMetaDecoder function", () => {
+  it("should extract a default meta object", () => {
+    expect(
+      itemMetaDecoder({
+        receivedAt: 1
+      })
+    ).toEqual({
+      receivedAt: new Date(1000),
+      error: null,
+      isFromCache: false,
+      isFetching: false,
+      isUpdating: false,
+      editMode: false
+    });
+  });
+
+  it("should extract a valid meta object", () => {
+    expect(
+      itemMetaDecoder({
+        receivedAt: new Date(1000),
+        error: new Error("foo"),
+        editMode: 1
+      })
+    ).toEqual({
+      receivedAt: new Date(1000),
+      error: new Error("foo"),
+      isFromCache: false,
+      isFetching: false,
+      isUpdating: false,
+      editMode: true
+    });
+  });
+
+  it("should fail when a invalid structure is used", () => {
+    expect(() => itemMetaDecoder({})).toThrowError(TypeError);
+    expect(() =>
+      itemMetaDecoder({
+        receivedAt: "foo"
+      })
+    ).toThrowError(TypeError);
   });
 });

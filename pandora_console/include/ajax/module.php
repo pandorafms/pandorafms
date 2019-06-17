@@ -397,15 +397,11 @@ if (check_login()) {
                                 // selected module unit is "_timeticks_"
                                 // Take notice that selected unit may not be postrocess unit
                                 if ($value == '.1.3.6.1.2.1.1.3.0' || $value == '.1.3.6.1.2.1.25.1.1.0') {
-                                    if ($post_process > 0) {
-                                        $data[] = remove_right_zeros(number_format($row[$attr[0]], $config['graph_precision']));
-                                    } else {
                                         $data_macro = modules_get_unit_macro($row[$attr[0]], $unit);
-                                        if ($data_macro) {
-                                            $data[] = $data_macro;
-                                        } else {
-                                            $data[] = remove_right_zeros(number_format($row[$attr[0]], $config['graph_precision']));
-                                        }
+                                    if ($data_macro) {
+                                        $data[] = $data_macro;
+                                    } else {
+                                        $data[] = remove_right_zeros(number_format($row[$attr[0]], $config['graph_precision']));
                                     }
                                 } else {
                                     $data[] = remove_right_zeros(number_format($row[$attr[0]], $config['graph_precision']));

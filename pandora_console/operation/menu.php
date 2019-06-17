@@ -66,7 +66,7 @@ if (check_acl($config['id_user'], 0, 'AR')) {
     enterprise_hook('inventory_menu');
 
     if ($config['activate_netflow'] || $config['activate_nta']) {
-        $sub['network'] = [
+        $sub['network_traffic'] = [
             'text'    => __('Network'),
             'id'      => 'Network',
             'type'    => 'direct',
@@ -117,7 +117,7 @@ if (check_acl($config['id_user'], 0, 'AR')) {
             );
         }
 
-        $sub['network']['sub2'] = $netflow_sub;
+        $sub['network_traffic']['sub2'] = $netflow_sub;
     }
 
     if ($config['log_collector'] == 1) {

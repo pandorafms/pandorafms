@@ -45,6 +45,9 @@
                     .parent()
                     .addClass('checkselected');
                 $(".check_delete").prop("checked", true);
+                $('.check_delete').each(function(){
+                    $('#hidden-id_report_'+$(this).val()).prop("disabled", false);    
+                });
             }
             else{
                 $('[id^=checkbox-massive_report_check]')
@@ -1345,6 +1348,8 @@ switch ($action) {
                         $values['description'] = get_parameter('description');
                         $values['type'] = get_parameter('type', null);
                         $values['recursion'] = get_parameter('recursion', null);
+                        $values['show_extended_events'] = get_parameter('include_extended_events', null);
+
                         $label = get_parameter('label', '');
 
                         // Add macros name.
@@ -1900,8 +1905,8 @@ switch ($action) {
                                 $style['event_graph_by_user_validator'] = $event_graph_by_user_validator;
                                 $style['event_graph_by_criticity'] = $event_graph_by_criticity;
                                 $style['event_graph_validated_vs_unvalidated'] = $event_graph_validated_vs_unvalidated;
-
                                 $style['event_filter_search'] = $event_filter_search;
+
                                 if ($label != '') {
                                     $style['label'] = $label;
                                 } else {
@@ -2007,6 +2012,7 @@ switch ($action) {
                         );
                         $name_it = (string) get_parameter('name');
                         $values['recursion'] = get_parameter('recursion', null);
+                        $values['show_extended_events'] = get_parameter('include_extended_events', null);
                         $values['name'] = reporting_label_macro(
                             $items_label,
                             $name_it
@@ -2418,6 +2424,7 @@ switch ($action) {
                             case 'event_report_agent':
                             case 'event_report_group':
                             case 'event_report_module':
+
                                 $show_summary_group = get_parameter(
                                     'show_summary_group',
                                     0
@@ -2473,22 +2480,11 @@ switch ($action) {
                                 $style['event_graph_by_user_validator'] = $event_graph_by_user_validator;
                                 $style['event_graph_by_criticity'] = $event_graph_by_criticity;
                                 $style['event_graph_validated_vs_unvalidated'] = $event_graph_validated_vs_unvalidated;
-
-
-                                switch ($values['type']) {
-                                    case 'event_report_group':
-                                    case 'event_report_agent':
-                                        $style['event_filter_search'] = $event_filter_search;
-                                        if ($label != '') {
-                                            $style['label'] = $label;
-                                        } else {
-                                            $style['label'] = '';
-                                        }
-                                    break;
-
-                                    default:
-                                        // Default.
-                                    break;
+                                $style['event_filter_search'] = $event_filter_search;
+                                if ($label != '') {
+                                    $style['label'] = $label;
+                                } else {
+                                    $style['label'] = '';
                                 }
                             break;
 

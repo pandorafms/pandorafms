@@ -1,4 +1,4 @@
-import TypedEvent, { Disposable, Listener } from "../TypedEvent";
+import TypedEvent, { Disposable, Listener } from "./TypedEvent";
 
 interface Cancellable {
   cancel(): void;

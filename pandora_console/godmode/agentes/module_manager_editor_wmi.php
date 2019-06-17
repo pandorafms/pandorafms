@@ -83,8 +83,8 @@ $data[3] = html_print_input_password(
     true,
     $disabledBecauseInPolicy,
     false,
-    '',
-    $classdisabledBecauseInPolicy
+    $classdisabledBecauseInPolicy,
+    'new-password'
 );
 
 push_table_simple($data, 'user_pass');

@@ -1383,7 +1383,7 @@ function reporting_event_top_n(
         foreach ($tops as $key => $row) {
             // Metaconsole connection.
             $server_name = $row['server_name'];
-            if (($config['metaconsole'] == 1) && $server_name != '' && defined('METACONSOLE')) {
+            if (($config['metaconsole'] == 1) && $server_name != '' && is_metaconsole()) {
                 $connection = metaconsole_get_connection($server_name);
                 if (metaconsole_load_external_db($connection) != NOERR) {
                     // ui_print_error_message ("Error connecting to ".$server_name);
@@ -1426,7 +1426,7 @@ function reporting_event_top_n(
             }
 
             // Restore dbconnection.
-            if (($config['metaconsole'] == 1) && $server_name != '' && defined('METACONSOLE')) {
+            if (($config['metaconsole'] == 1) && $server_name != '' && is_metaconsole()) {
                 metaconsole_restore_db();
             }
         }
@@ -2330,7 +2330,7 @@ function reporting_exception(
         do {
             // Metaconsole connection.
             $server_name = $exceptions[$i]['server_name'];
-            if (($config['metaconsole'] == 1) && $server_name != '' && defined('METACONSOLE')) {
+            if (($config['metaconsole'] == 1) && $server_name != '' && is_metaconsole()) {
                 $connection = metaconsole_get_connection($server_name);
                 if (metaconsole_load_external_db($connection) != NOERR) {
                     // ui_print_error_message ("Error connecting to ".$server_name);
@@ -2372,7 +2372,7 @@ function reporting_exception(
             $i++;
 
             // Restore dbconnection.
-            if (($config['metaconsole'] == 1) && $server_name != '' && defined('METACONSOLE')) {
+            if (($config['metaconsole'] == 1) && $server_name != '' && is_metaconsole()) {
                 metaconsole_restore_db();
             }
         } while ($min === false && $i < count($exceptions));
@@ -2385,7 +2385,7 @@ function reporting_exception(
         foreach ($exceptions as $exc) {
             // Metaconsole connection.
             $server_name = $exc['server_name'];
-            if (($config['metaconsole'] == 1) && $server_name != '' && defined('METACONSOLE')) {
+            if (($config['metaconsole'] == 1) && $server_name != '' && is_metaconsole()) {
                 $connection = metaconsole_get_connection($server_name);
                 if (metaconsole_load_external_db($connection) != NOERR) {
                     // ui_print_error_message ("Error connecting to ".$server_name);
@@ -2499,7 +2499,7 @@ function reporting_exception(
             }
 
             // Restore dbconnection
-            if (($config['metaconsole'] == 1) && $server_name != '' && defined('METACONSOLE')) {
+            if (($config['metaconsole'] == 1) && $server_name != '' && is_metaconsole()) {
                 metaconsole_restore_db();
             }
         }
@@ -2693,7 +2693,7 @@ function reporting_group_report($report, $content)
 {
     global $config;
 
-    $metaconsole_on = ($config['metaconsole'] == 1) && defined('METACONSOLE');
+    $metaconsole_on = ($config['metaconsole'] == 1) && is_metaconsole();
 
     $return['type'] = 'group_report';
 
@@ -6173,7 +6173,7 @@ function reporting_availability($report, $content, $date=false, $time=false)
         foreach ($items as $item) {
             // aaMetaconsole connection
             $server_name = $item['server_name'];
-            if (($config['metaconsole'] == 1) && $server_name != '' && defined('METACONSOLE')) {
+            if (($config['metaconsole'] == 1) && $server_name != '' && is_metaconsole()) {
                 $connection = metaconsole_get_connection($server_name);
                 if (metaconsole_load_external_db($connection) != NOERR) {
                     // ui_print_error_message ("Error connecting to ".$server_name);
@@ -6185,7 +6185,7 @@ function reporting_availability($report, $content, $date=false, $time=false)
                 || modules_is_not_init($item['id_agent_module'])
             ) {
                 // Restore dbconnection
-                if (($config['metaconsole'] == 1) && $server_name != '' && defined('METACONSOLE')) {
+                if (($config['metaconsole'] == 1) && $server_name != '' && is_metaconsole()) {
                     metaconsole_restore_db();
                 }
 
@@ -6242,7 +6242,7 @@ function reporting_availability($report, $content, $date=false, $time=false)
             $text = $row['data']['agent'].' ('.$text.')';
 
             // Restore dbconnection
-            if (($config['metaconsole'] == 1) && $server_name != '' && defined('METACONSOLE')) {
+            if (($config['metaconsole'] == 1) && $server_name != '' && is_metaconsole()) {
                 metaconsole_restore_db();
             }
 
@@ -6807,7 +6807,7 @@ function reporting_increment($report, $content)
 
     $return['data'] = [];
 
-    if (defined('METACONSOLE')) {
+    if (is_metaconsole()) {
         $sql1 = 'SELECT datos FROM tagente_datos WHERE id_agente_modulo = '.$id_agent_module.' 
 									 AND utimestamp <= '.(time() - $period).' ORDER BY utimestamp DESC';
         $sql2 = 'SELECT datos FROM tagente_datos WHERE id_agente_modulo = '.$id_agent_module.' ORDER BY utimestamp DESC';
@@ -6845,7 +6845,7 @@ function reporting_increment($report, $content)
         $last_data = db_get_value_sql('SELECT datos FROM tagente_datos WHERE id_agente_modulo = '.$id_agent_module.' ORDER BY utimestamp DESC');
     }
 
-    if (!defined('METACONSOLE')) {
+    if (!is_metaconsole()) {
     }
 
     if ($old_data === false || $last_data === false) {
@@ -6934,7 +6934,7 @@ function reporting_general($report, $content)
     foreach ($generals as $row) {
         // Metaconsole connection
         $server_name = $row['server_name'];
-        if (($config['metaconsole'] == 1) && $server_name != '' && defined('METACONSOLE')) {
+        if (($config['metaconsole'] == 1) && $server_name != '' && is_metaconsole()) {
             $connection = metaconsole_get_connection($server_name);
             if (metaconsole_load_external_db($connection) != NOERR) {
                 // ui_print_error_message ("Error connecting to ".$server_name);
@@ -7085,7 +7085,7 @@ function reporting_general($report, $content)
         $i++;
 
         // Restore dbconnection
-        if (($config['metaconsole'] == 1) && $server_name != '' && defined('METACONSOLE')) {
+        if (($config['metaconsole'] == 1) && $server_name != '' && is_metaconsole()) {
             metaconsole_restore_db();
         }
     }

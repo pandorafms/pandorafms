@@ -482,12 +482,53 @@ function events_get_all(
         throw new Exception('[events_get_all] Fields must be an array or "count".');
     }
 
-    $sql_filters = [];
-    if (isset($filter['event_view_hr']) && ($filter['event_view_hr'] > 0)) {
+    if (isset($filter['date_from']) && $filter['date_from'] != '0000-00-00') {
+        $date_from = $filter['date_from'];
+    }
+
+    if (isset($filter['time_from'])) {
+        $time_from = $filter['time_from'];
+    }
+
+    if (isset($date_from)) {
+        if (!isset($time_from)) {
+            $time_from = '00:00:00';
+        }
+
+        $from = $date_from.' '.$time_from;
         $sql_filters[] = sprintf(
-            ' AND utimestamp > UNIX_TIMESTAMP(now() - INTERVAL %d HOUR) ',
-            $filter['event_view_hr']
+            ' AND te.utimestamp >= %d',
+            strtotime($from)
         );
+    }
+
+    if (isset($filter['date_to']) && $filter['date_to'] != '0000-00-00') {
+        $date_to = $filter['date_to'];
+    }
+
+    if (isset($filter['time_to'])) {
+        $time_to = $filter['time_to'];
+    }
+
+    if (isset($date_to)) {
+        if (!isset($time_to)) {
+            $time_to = '23:59:59';
+        }
+
+        $to = $date_to.' '.$time_to;
+        $sql_filters[] = sprintf(
+            ' AND te.utimestamp <= %d',
+            strtotime($to)
+        );
+    }
+
+    if (!isset($from)) {
+        if (isset($filter['event_view_hr']) && ($filter['event_view_hr'] > 0)) {
+            $sql_filters[] = sprintf(
+                ' AND utimestamp > UNIX_TIMESTAMP(now() - INTERVAL %d HOUR) ',
+                $filter['event_view_hr']
+            );
+        }
     }
 
     if (isset($filter['id_agent']) && $filter['id_agent'] > 0) {
@@ -728,43 +769,36 @@ function events_get_all(
                 }
             }
 
-            $_tmp = ' AND (';
             foreach ($tags as $id_tag) {
                 if (!isset($tags_names[$id_tag])) {
                     $tags_names[$id_tag] = tags_get_name($id_tag);
                 }
 
-                if ($first) {
-                    $_tmp .= ' ( ';
-                    $first = false;
-                } else {
-                    $_tmp .= ' AND ( ';
-                }
-
+                $_tmp .= ' AND ( ';
                 $_tmp .= sprintf(
-                    'tags LIKE "%s"',
-                    $tag_names[$id_tag]
+                    ' tags LIKE "%s" OR',
+                    $tags_names[$id_tag]
                 );
 
                 $_tmp .= sprintf(
-                    'tags LIKE "%s,%%"',
-                    $tag_names[$id_tag]
+                    ' tags LIKE "%s,%%" OR',
+                    $tags_names[$id_tag]
                 );
 
                 $_tmp .= sprintf(
-                    'tags LIKE "%%,%s"',
-                    $tag_names[$id_tag]
+                    ' tags LIKE "%%,%s" OR',
+                    $tags_names[$id_tag]
                 );
 
                 $_tmp .= sprintf(
-                    'tags LIKE "%%,%s,%%"',
-                    $tag_names[$id_tag]
+                    ' tags LIKE "%%,%s,%%" ',
+                    $tags_names[$id_tag]
                 );
 
                 $_tmp .= ') ';
             }
 
-            $sql_filters[] = $_tmp.') ';
+            $sql_filters[] = $_tmp;
         }
     }
 
@@ -773,7 +807,6 @@ function events_get_all(
         $tag_without = base64_decode($filter['tag_without']);
         $tags = json_decode($tag_without, true);
         if (is_array($tags) && !in_array('0', $tags)) {
-            $_tmp = ' AND (';
             foreach ($tags as $id_tag) {
                 if (!isset($tags_names[$id_tag])) {
                     $tags_names[$id_tag] = tags_get_name($id_tag);
@@ -781,23 +814,23 @@ function events_get_all(
 
                 $_tmp .= sprintf(
                     ' AND tags NOT LIKE "%s" ',
-                    $tag_names[$id_tag]
+                    $tags_names[$id_tag]
                 );
                 $_tmp .= sprintf(
                     ' AND tags NOT LIKE "%s,%%" ',
-                    $tag_names[$id_tag]
+                    $tags_names[$id_tag]
                 );
                 $_tmp .= sprintf(
                     ' AND tags NOT LIKE "%%,%s" ',
-                    $tag_names[$id_tag]
+                    $tags_names[$id_tag]
                 );
                 $_tmp .= sprintf(
                     ' AND tags NOT LIKE "%%,%s,%%" ',
-                    $tag_names[$id_tag]
+                    $tags_names[$id_tag]
                 );
             }
 
-            $sql_filters[] = $_tmp.') ';
+            $sql_filters[] = $_tmp;
         }
     }
 
@@ -891,6 +924,17 @@ function events_get_all(
         $sql_filters[] = $tags_acls_condition;
     }
 
+    // Module search.
+    $agentmodule_join = '';
+    if (!empty($filter['module_search'])) {
+        $agentmodule_join = 'INNER JOIN tagente_modulo am
+                ON te.id_agentmodule = am.id_agente_modulo';
+        $sql_filters[] = sprintf(
+            ' AND am.nombre = "%s" ',
+            $filter['module_search']
+        );
+    }
+
     // Order.
     $order_by = '';
     if (isset($order, $sort_field)) {
@@ -899,7 +943,7 @@ function events_get_all(
 
     // Pagination.
     $pagination = '';
-    if (isset($limit, $offset)) {
+    if (isset($limit, $offset) && $limit > 0) {
         $pagination = sprintf(' LIMIT %d OFFSET %d', $limit, $offset);
     }
 
@@ -977,6 +1021,7 @@ function events_get_all(
             %s
          FROM %s
          %s
+         %s
          %s JOIN %s ta
            ON ta.%s = te.id_agente
            %s
@@ -994,6 +1039,7 @@ function events_get_all(
         $group_selects,
         $tevento,
         $event_lj,
+        $agentmodule_join,
         $tagente_join,
         $tagente_table,
         $tagente_field,

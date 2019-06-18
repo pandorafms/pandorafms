@@ -253,11 +253,65 @@ table.dataTable.info_table.no-footer {
 
 /* Datatables pagination */
 .dataTables_paginate.paging_simple_numbers {
+  margin: 2em 0;
 }
 
-.dataTables_wrapper .dataTables_paginate .paginate_button.current,
-.dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
+a.pandora_pagination {
+  padding: 5px;
+  color: #000;
+  border: 1px solid #cacaca;
+  min-width: 12px;
+  margin-right: -1px;
+  text-decoration: none;
+  cursor: pointer;
+}
+a.pandora_pagination.disabled {
+  color: #cacaca;
+}
+a.pandora_pagination:hover {
+  text-decoration: none;
+  background-color: #e2e2e2;
+}
+
+a.pandora_pagination.current,
+a.pandora_pagination.current:hover {
   color: #fff;
   background-color: #82b92e;
-  border-color: #82b92e;
+}
+
+/* CSV button datatables */
+.dt-button.buttons-csv.buttons-html5 {
+  background-image: url(../../images/input_delete.png);
+  background-position: center center;
+  -moz-border-radius: 2px;
+  -webkit-border-radius: 2px;
+  border-radius: 2px;
+  background-color: #fff;
+  background-repeat: no-repeat;
+  color: #000;
+  padding-bottom: 10px;
+  padding-top: 10px;
+  padding-left: 15px;
+  border: 1px solid #888;
+  font-family: "lato", "Open Sans", sans-serif;
+  cursor: pointer;
+}
+.dt-button.buttons-csv.buttons-html5 span {
+  font-size: 0;
+}
+.dt-button.buttons-csv.buttons-html5:hover {
+  border: 1px solid #333;
+}
+
+.dt-button.buttons-csv.buttons-html5:active {
+  border: 1px solid #000;
+  color: #333;
+  background-color: #e1e1e1;
+}
+
+.dt-button.buttons-csv.buttons-html5[disabled] {
+  color: #b4b4b4;
+  background-color: #f3f3f3;
+  border-color: #b6b6b6;
+  cursor: default;
 }

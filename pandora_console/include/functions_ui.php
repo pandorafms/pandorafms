@@ -3127,10 +3127,16 @@ function ui_print_datatable(array $parameters)
     $table .= '</tr></thead>';
     $table .= '</table>';
 
+    $pagination_class = 'pandora_pagination';
+    if (!empty($parameters['pagination_class'])) {
+        $pagination_class = $parameters['pagination_class'];
+    }
+
     // Javascript controller.
     $js = '<script type="text/javascript">
     $(document).ready(function(){
         $.fn.dataTable.ext.errMode = "none";
+        $.fn.dataTable.ext.classes.sPageButton = "'.$pagination_class.'";
         dt_'.$table_id.' = $("#'.$table_id.'").DataTable({
             ';
     if (isset($parameters['drawCallback'])) {
@@ -3146,7 +3152,7 @@ function ui_print_datatable(array $parameters)
             pageLength: '.$parameters['default_pagination'].',
             searching: false,
             responsive: true,
-            dom: "lBfrtip",
+            dom: "plfrtipB",
             buttons: [
                 {
                     extend: "csv",

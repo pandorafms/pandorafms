@@ -3526,6 +3526,7 @@ $(document).ready (function () {
 
     $("#submit-create_item").click(function () {
         var type = $('#type').val();
+        var name = $('#text-name').val();
         switch (type){
             case 'alert_report_module':
             case 'alert_report_agent':
@@ -3556,6 +3557,13 @@ $(document).ready (function () {
             default:
                 break;
         }
+
+        if($('#text-name').val() == ''){
+            alert( <?php echo "'".__('Please insert a name')."'"; ?> );
+                return false;
+        }
+
+
     });
 
     $("#submit-edit_item").click(function () {

@@ -144,7 +144,8 @@ function createVisualConsole(
       var id = e.item.props.id;
       var data = {
         x: e.newPosition.x,
-        y: e.newPosition.y
+        y: e.newPosition.y,
+        type: e.item.props.type
       };
       var taskId = "visual-console-item-move-" + id;
 

@@ -1627,24 +1627,33 @@ class Item extends CachedModel
      *
      * @overrides Model::save.
      */
-    public function save(array $data=[]): bool
+    public function save(array $data=[], array $newdata=[])
     {
-        $save = static::encode($data);
+        $save = self::encode($data);
+        $newSave = self::encode($newdata);
 
-        if (empty($save['id'])) {
-            // Insert.
-            $result = \db_process_sql_insert('tlayout_data', $save);
-            // static = static::fromDB(['id' => $result]);
-        } else {
-            // Update.
-            $result = \db_process_sql_update('tlayout_data', $save, ['id' => $save['id']]);
-            // static = static::fromDB(['id' => $save['id']]);
+        $save = \array_merge($save, $newSave);
+
+        if (!empty($save)) {
+            if (empty($save['id'])) {
+                // Insert.
+                $result = \db_process_sql_insert('tlayout_data', $save);
+            } else {
+                // Update.
+                $result = \db_process_sql_update('tlayout_data', $save, ['id' => $save['id']]);
+            }
         }
 
+        // Update the model.
         if ($result) {
+            if (empty($save['id'])) {
+                $item = static::fromDB(['id' => $result]);
+            } else {
+                $item = static::fromDB(['id' => $save['id']]);
+            }
         }
 
-        return $result;
+        return $item;
     }
 
 

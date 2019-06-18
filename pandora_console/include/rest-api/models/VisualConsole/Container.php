@@ -117,7 +117,7 @@ final class Container extends Model
      *
      * @overrides Model::save.
      */
-    public function save(array $data=[]): bool
+    public function save(array $data=[], array $newdata=[]): bool
     {
         return true;
     }
@@ -396,7 +396,6 @@ final class Container extends Model
 
             try {
                 array_push($items, $class::fromDB($data));
-                hd($class::save($data), true);
             } catch (\Throwable $e) {
                 // TODO: Log this?
             }

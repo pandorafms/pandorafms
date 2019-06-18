@@ -68,7 +68,7 @@ abstract class Model
      *
      * @abstract
      */
-    abstract public function save(array $data=[]): bool;
+    abstract public function save(array $data=[], array $newdata=[]);
 
 
     /**
@@ -93,7 +93,7 @@ abstract class Model
      *
      * @return self Instance of the model.
      */
-    public static function fromArray(array $data)
+    public static function fromArray(array $data): self
     {
         // The reserved word static refers to the invoked class at runtime.
         return new static($data);

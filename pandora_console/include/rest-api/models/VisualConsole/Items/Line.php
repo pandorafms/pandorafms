@@ -231,7 +231,7 @@ final class Line extends Model
      *
      * @overrides Model::save.
      */
-    public function save(array $data=[]): bool
+    public function save(array $data=[], array $newdata=[]): bool
     {
         return true;
     }

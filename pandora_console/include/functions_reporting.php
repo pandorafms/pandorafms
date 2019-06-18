@@ -344,10 +344,12 @@ function reporting_make_reporting_data(
             break;
 
             case 'availability_graph':
-                $report['contents'][] = reporting_availability_graph(
-                    $report,
-                    $content,
-                    $pdf
+                $report['contents'][] = io_safe_output(
+                    reporting_availability_graph(
+                        $report,
+                        $content,
+                        $pdf
+                    )
                 );
             break;
 
@@ -6398,10 +6400,12 @@ function reporting_availability_graph($report, $content, $pdf=false)
     $edge_interval = 10;
 
     if (empty($content['subitems'])) {
-        $slas = db_get_all_rows_field_filter(
-            'treport_content_sla_combined',
-            'id_report_content',
-            $content['id_rc']
+        $slas = io_safe_output(
+            db_get_all_rows_field_filter(
+                'treport_content_sla_combined',
+                'id_report_content',
+                $content['id_rc']
+            )
         );
     } else {
         $slas = $content['subitems'];

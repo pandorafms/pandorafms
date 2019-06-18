@@ -972,10 +972,11 @@ function events_get_all(
     }
 
     // Module search.
-    $agentmodule_join = '';
-    if (!empty($filter['module_search'])) {
-        $agentmodule_join = 'INNER JOIN tagente_modulo am
-                ON te.id_agentmodule = am.id_agente_modulo';
+    $agentmodule_join = 'LEFT JOIN tagente_modulo am ON te.id_agentmodule = am.id_agente_modulo';
+    if (is_metaconsole()) {
+        $agentmodule_join = '';
+    } else if (!empty($filter['module_search'])) {
+        $agentmodule_join = 'INNER JOIN tagente_modulo am ON te.id_agentmodule = am.id_agente_modulo';
         $sql_filters[] = sprintf(
             ' AND am.nombre = "%s" ',
             $filter['module_search']

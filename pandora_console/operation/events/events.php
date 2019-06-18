@@ -130,7 +130,7 @@ if (is_ajax()) {
                     'te.evento',
                     'te.utimestamp',
                     'te.event_type',
-                    'te.id_agentmodule',
+                    'am.nombre as id_agentmodule',
                     'te.id_alert_am',
                     'te.criticity',
                     'te.user_comment',
@@ -141,7 +141,7 @@ if (is_ajax()) {
                     'te.warning_instructions',
                     'te.unknown_instructions',
                     'te.owner_user',
-                    'te.ack_utimestamp',
+                    'if(te.ack_utimestamp > 0, from_unixtime(te.ack_utimestamp),"") as ack_utimestamp',
                     'te.custom_data',
                     'te.data',
                     'te.module_status',
@@ -1510,6 +1510,43 @@ function process_datatables_item(item) {
 
     item.event_type = '<div class="criticity" style="background: ';
     item.event_type += color + '">' + text + "</div>";
+
+    /* Module status */
+    /* Event severity prepared */
+    var color = "<?php echo COL_UNKNOWN; ?>";
+    var text = "<?php echo __('UNKNOWN'); ?>";
+    switch (item.module_status) {
+        case "<?php echo AGENT_MODULE_STATUS_NORMAL; ?>":
+            text = "<?php echo __('NORMAL'); ?>";
+            color = "<?php echo COL_NORMAL; ?>";
+        break;
+
+        case "<?php echo AGENT_MODULE_STATUS_CRITICAL_BAD; ?>":
+            text = "<?php echo __('CRITICAL'); ?>";
+            color = "<?php echo COL_CRITICAL; ?>";
+        break;
+
+        case "<?php echo AGENT_MODULE_STATUS_NO_DATA; ?>":
+            text = "<?php echo __('NOT INIT'); ?>";
+            color = "<?php echo COL_NOTINIT; ?>";
+        break;
+
+        case "<?php echo AGENT_MODULE_STATUS_CRITICAL_ALERT; ?>":
+        case "<?php echo AGENT_MODULE_STATUS_NORMAL_ALERT; ?>":
+        case "<?php echo AGENT_MODULE_STATUS_WARNING_ALERT; ?>":
+            text = "<?php echo __('ALERT'); ?>";
+            color = "<?php echo COL_ALERTFIRED; ?>";
+        break;
+
+        case "<?php echo AGENT_MODULE_STATUS_WARNING; ?>":
+            text = "<?php echo __('WARNING'); ?>";
+            color = "<?php echo COL_WARNING; ?>";
+        break;
+    }
+
+    item.module_status = '<div class="criticity" style="background: ';
+    item.module_status += color + '">' + text + "</div>";
+
 
     /* Agent name link */
     if (item.id_agente > 0) {

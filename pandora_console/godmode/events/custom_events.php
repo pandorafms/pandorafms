@@ -114,12 +114,10 @@ $fields_available['server_name'] = __('Server Name');
 $fields_available['data'] = __('Data');
 $fields_available['module_status'] = __('Module Status');
 
-// remove fields already selected
+// Remove fields already selected.
 foreach ($fields_available as $key => $available) {
-    foreach ($result_selected as $selected) {
-        if ($selected == $available) {
-            unset($fields_available[$key]);
-        }
+    if (isset($result_selected[$key])) {
+        unset($fields_available[$key]);
     }
 }
 

@@ -85,9 +85,9 @@ table.dataTable tbody td {
 
 .info_table.events tr > th {
   padding-left: 1em;
-  font-size: 1.3em;
-  font-weight: 400;
-  border-bottom: 2px solid #878787;
+  font-size: 8pt;
+  font-weight: 300;
+  border-bottom: 1px solid #878787;
   cursor: pointer;
 }
 
@@ -314,4 +314,17 @@ div.multi-response-buttons {
   margin-top: 2em;
   width: 100%;
   text-align: right;
+}
+
+div.criticity {
+  width: 150px;
+  height: 2em;
+  color: #fff;
+  text-align: center;
+  border-radius: 5px;
+  font-size: 0.8em;
+  padding: 5px;
+  margin: 0;
+  display: table-cell;
+  vertical-align: middle;
 }

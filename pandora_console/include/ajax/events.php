@@ -109,7 +109,7 @@ if ($in_process_event) {
     $id_evento = get_parameter('id_evento', 0);
 
     // Check acl.
-    echo events_update_status($id_evento, EVENT_PROCESS, $filter);
+    var_dump(events_update_status($id_evento, EVENT_PROCESS, $filter));
     return;
 }
 

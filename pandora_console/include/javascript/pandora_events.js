@@ -710,6 +710,9 @@ function update_event(table, id_evento, type, row) {
             .remove();
         }
       }
+    },
+    error: function() {
+      processed += 1;
     }
   });
 }
@@ -804,17 +807,30 @@ function execute_event_response(event_list_btn) {
     switch (response_id) {
       case "in_progress_selected":
         $(".chk_val:checked").each(function() {
-          in_process_event(dt_events, $(this).val(), this.parentElement);
+          // Parent: TD. GrandParent: TR.
+          in_process_event(
+            dt_events,
+            $(this).val(),
+            this.parentElement.parentElement
+          );
         });
         break;
       case "validate_selected":
         $(".chk_val:checked").each(function() {
-          validate_event(dt_events, $(this).val(), this.parentElement);
+          validate_event(
+            dt_events,
+            $(this).val(),
+            this.parentElement.parentElement
+          );
         });
         break;
       case "delete_selected":
         $(".chk_val:checked").each(function() {
-          delete_event(dt_events, $(this).val(), this.parentElement);
+          delete_event(
+            dt_events,
+            $(this).val(),
+            this.parentElement.parentElement
+          );
         });
         break;
     }

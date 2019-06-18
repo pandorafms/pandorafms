@@ -243,17 +243,36 @@ function events_delete($id_evento, $filter=null, $history=false)
                 true
             );
 
-            $delete_sql = sprintf(
-                'DELETE tu FROM %s tu INNER JOIN ( %s ) tf
-                ON tu.estado = tf.estado
-                AND tu.evento = tf.evento
-                AND tu.id_agente = tf.id_agente
-                AND tu.id_agentmodule = tf.id_agentmodule
-                AND tf.max_id_evento = %d',
-                $table,
-                $sql,
-                $id_evento
+            $target_ids = db_get_all_rows_sql(
+                sprintf(
+                    'SELECT tu.id_evento FROM %s tu INNER JOIN ( %s ) tf
+                    ON tu.estado = tf.estado
+                    AND tu.evento = tf.evento
+                    AND tu.id_agente = tf.id_agente
+                    AND tu.id_agentmodule = tf.id_agentmodule
+                    AND tf.max_id_evento = %d',
+                    $table,
+                    $sql,
+                    $id_evento
+                )
             );
+
+            // Try to avoid deadlock while updating full set.
+            if ($target_ids !== false && count($target_ids) > 0) {
+                $target_ids = array_reduce(
+                    $target_ids,
+                    function ($carry, $item) {
+                        $carry[] = $item['id_evento'];
+                        return $carry;
+                    }
+                );
+
+                $delete_sql = sprintf(
+                    'DELETE FROM %s WHERE id_evento IN (%s)',
+                    $table,
+                    join(', ', $target_ids)
+                );
+            }
         break;
     }
 
@@ -366,10 +385,12 @@ function events_update_status($id_evento, $status, $filter=null, $history=false)
     global $config;
 
     if (!$status) {
+        error_log('No hay estado');
         return false;
     }
 
     if (!isset($id_evento) || $id_evento <= 0) {
+        error_log('No hay id_evento');
         return false;
     }
 
@@ -413,23 +434,43 @@ function events_update_status($id_evento, $status, $filter=null, $history=false)
                 true
             );
 
-            $update_sql = sprintf(
-                'UPDATE %s tu INNER JOIN ( %s ) tf
-                ON tu.estado = tf.estado
-                AND tu.evento = tf.evento
-                AND tu.id_agente = tf.id_agente
-                AND tu.id_agentmodule = tf.id_agentmodule
-                AND tf.max_id_evento = %d
-                SET tu.estado = %d,
-                    tu.ack_utimestamp = %d,
-                    tu.id_usuario = "%s"',
-                $table,
-                $sql,
-                $id_evento,
-                $status,
-                time(),
-                $config['id_user']
+            $target_ids = db_get_all_rows_sql(
+                sprintf(
+                    'SELECT tu.id_evento FROM %s tu INNER JOIN ( %s ) tf
+                    ON tu.estado = tf.estado
+                    AND tu.evento = tf.evento
+                    AND tu.id_agente = tf.id_agente
+                    AND tu.id_agentmodule = tf.id_agentmodule
+                    AND tf.max_id_evento = %d',
+                    $table,
+                    $sql,
+                    $id_evento
+                )
             );
+
+            // Try to avoid deadlock while updating full set.
+            if ($target_ids !== false && count($target_ids) > 0) {
+                $target_ids = array_reduce(
+                    $target_ids,
+                    function ($carry, $item) {
+                        $carry[] = $item['id_evento'];
+                        return $carry;
+                    }
+                );
+
+                $update_sql = sprintf(
+                    'UPDATE %s
+                    SET estado = %d,
+                        ack_utimestamp = %d,
+                        id_usuario = "%s"
+                    WHERE id_evento IN (%s)',
+                    $table,
+                    $status,
+                    time(),
+                    $config['id_user'],
+                    join(',', $target_ids)
+                );
+            }
         break;
     }
 

@@ -3245,7 +3245,8 @@ function ui_print_datatable(array $parameters)
 </script>';
 
     // Order.
-    $output = $filter.$extra.$table.$js;
+    $err_msg = '<div id="error-'.$table_id.'"></div>';
+    $output = $err_msg.$filter.$extra.$table.$js;
 
     ui_require_css_file('datatables.min', 'include/styles/js/');
     ui_require_javascript_file('datatables.min');

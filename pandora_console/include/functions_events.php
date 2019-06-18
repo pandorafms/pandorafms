@@ -1009,15 +1009,31 @@ function events_get_all(
 
     if (!$user_is_admin) {
         // XXX: Confirm there's no extra grants unhandled!.
+        $can_manage = '0 as user_can_manage';
+        if (!empty($EM_groups)) {
+            $can_manage = sprintf(
+                '(tbase.id_grupo IN (%s)) as user_can_manage',
+                join(', ', array_keys($EM_groups))
+            );
+        }
+
+        $can_write = '0 as user_can_write';
+        if (!empty($EW_groups)) {
+            $can_write = sprintf(
+                '(tbase.id_grupo IN (%s)) as user_can_write',
+                join(', ', array_keys($EW_groups))
+            );
+        }
+
         $sql = sprintf(
             'SELECT
                 tbase.*,
-                (tbase.id_grupo IN (%s)) as user_can_manage,
-                (tbase.id_grupo IN (%s)) as user_can_write
+                %s,
+                %s
             FROM
                 (',
-            join(', ', array_keys($EM_groups)),
-            join(', ', array_keys($EW_groups))
+            $can_manage,
+            $can_write
         ).$sql.') tbase';
     } else {
         $sql = 'SELECT

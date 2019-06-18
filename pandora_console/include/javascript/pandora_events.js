@@ -668,7 +668,7 @@ function show_event_response_command_dialog(id, response, total_checked) {
   });
 }
 
-var processing = 0;
+var processed = 0;
 function update_event(table, id_evento, type, row) {
   var inputs = $("#events_form :input");
   var values = {};
@@ -678,7 +678,6 @@ function update_event(table, id_evento, type, row) {
   });
   var t1 = new Date();
 
-  processing += 1;
   // Update events matching current filters and id_evento selected.
   $.ajax({
     type: "POST",
@@ -691,24 +690,23 @@ function update_event(table, id_evento, type, row) {
       id_evento: id_evento,
       filter: values
     },
-    success: function() {
+    success: function(d) {
+      processed += 1;
       var t2 = new Date();
       var diff_g = t2.getTime() - t1.getTime();
       var diff_s = diff_g / 1000;
-
-      // If operation takes less than 2 seconds, redraw.
-      processing -= 1;
-      if (diff_s < 2) {
-        redraw = true;
-      }
-      if (redraw) {
-        if (processing == 0) {
-          table.draw(false);
+      if (processed >= $(".chk_val:checked").length) {
+        // If operation takes less than 2 seconds, redraw.
+        if (diff_s < 2) {
+          redraw = true;
         }
-      } else {
-        $(row)
-          .closest("tr")
-          .remove();
+        if (redraw) {
+          table.draw(false);
+        } else {
+          $(row)
+            .closest("tr")
+            .remove();
+        }
       }
     }
   });
@@ -731,14 +729,22 @@ function delete_event(table, id_evento, row) {
 
 // Imported from old files.
 function execute_event_response(event_list_btn) {
+  processed = 0;
   $("#max_custom_event_resp_msg").hide();
   $("#max_custom_selected").hide();
 
   var response_id = $("select[name=response_id]").val();
 
+  var total_checked = $(".chk_val:checked").length;
+
+  // Check select an event.
+  if (total_checked == 0) {
+    $("#max_custom_selected").show();
+    return;
+  }
+
   if (!isNaN(response_id)) {
     // It is a custom response
-
     var response = get_response(response_id);
 
     // If cannot get response abort it
@@ -746,16 +752,8 @@ function execute_event_response(event_list_btn) {
       return;
     }
 
-    var total_checked = $(".chk_val:checked").length;
-
-    // Check select an event.
-    if (total_checked == 0) {
-      $("#max_custom_selected").show();
-      return;
-    }
-
     // Limit number of events to apply custom responses
-    // to for performance reasons.
+    // due performance reasons.
     if (total_checked > $("#max_execution_event_response").val()) {
       $("#max_custom_event_resp_msg").show();
       return;
@@ -801,30 +799,32 @@ function execute_event_response(event_list_btn) {
     }
   } else {
     // It is not a custom response
+    var delay = 5000;
+    var $i = 0;
     switch (response_id) {
       case "in_progress_selected":
-        $(".chk_val").each(function() {
-          if ($(this).is(":checked")) {
-            in_process_event(dt_events, $(this).val(), this.parentElement);
-          }
+        $(".chk_val:checked").each(function() {
+          setTimeout(
+            in_process_event(dt_events, $(this).val(), this.parentElement),
+            total_checked * delay * $i++
+          );
         });
-        dt_events.draw(false);
         break;
       case "validate_selected":
-        $(".chk_val").each(function() {
-          if ($(this).is(":checked")) {
-            validate_event(dt_events, $(this).val(), this.parentElement);
-          }
+        $(".chk_val:checked").each(function() {
+          setTimeout(
+            validate_event(dt_events, $(this).val(), this.parentElement),
+            total_checked * delay * $i++
+          );
         });
-        dt_events.draw(false);
         break;
       case "delete_selected":
-        $(".chk_val").each(function() {
-          if ($(this).is(":checked")) {
-            delete_event(dt_events, $(this).val(), this.parentElement);
-          }
+        $(".chk_val:checked").each(function() {
+          setTimeout(
+            delete_event(dt_events, $(this).val(), this.parentElement),
+            total_checked * delay * $i++
+          );
         });
-        dt_events.draw(false);
         break;
     }
   }
@@ -839,28 +839,20 @@ function check_massive_response_event(
   var counter = 0;
   var end = 0;
 
-  $(".chk_val").each(function() {
-    if ($(this).is(":checked")) {
-      var event_id = $(this).val();
-      var server_id = $("#hidden-server_id_" + event_id).val();
-      response["target"] = get_response_target(
-        event_id,
-        response_id,
-        server_id,
-        response_command
-      );
+  $(".chk_val:checked").each(function() {
+    var event_id = $(this).val();
+    var server_id = $("#hidden-server_id_" + event_id).val();
+    response["target"] = get_response_target(
+      event_id,
+      response_id,
+      server_id,
+      response_command
+    );
 
-      if (total_checked - 1 === counter) end = 1;
+    if (total_checked - 1 === counter) end = 1;
 
-      show_massive_response_dialog(
-        event_id,
-        response_id,
-        response,
-        counter,
-        end
-      );
+    show_massive_response_dialog(event_id, response_id, response, counter, end);
 
-      counter++;
-    }
+    counter++;
   });
 }

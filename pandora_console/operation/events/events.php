@@ -93,7 +93,7 @@ $text_agent = get_parameter('filter[text_agent]');
 $id_agent = get_parameter('filter[id_agent]');
 $id_agent_module = get_parameter('filter[id_agent_module]');
 $pagination = get_parameter('filter[pagination]');
-$event_view_hr = get_parameter('filter[event_view_hr]', 8);
+$event_view_hr = get_parameter('filter[event_view_hr]', $config['event_view_hr']);
 $id_user_ack = get_parameter('filter[id_user_ack]');
 $group_rep = get_parameter('filter[group_rep]', 1);
 $tag_with = get_parameter('filter[tag_with]', []);
@@ -1034,6 +1034,13 @@ $filter .= ui_toggle(
 );
 
 try {
+    $checkbox_all = html_print_checkbox(
+        'all_validate_box',
+        1,
+        false,
+        true
+    );
+
     $default_fields = [
         'evento',
         'id_evento',
@@ -1070,7 +1077,7 @@ try {
             'class' => 'action_buttons w120px',
         ],[
             'text'  => 'm',
-            'extra' => "<input name='all_validate_box' type='checkbox' value='1' id='checkbox-all_validate_box' />",
+            'extra' => $checkbox_all,
             'class' => 'w20px',
         ],
     ];
@@ -1090,7 +1097,7 @@ try {
                 'class' => 'action_buttons w120px',
             ],[
                 'text'  => 'm',
-                'extra' => "<input name='all_validate_box' type='checkbox' value='1' id='checkbox-all_validate_box' />",
+                'extra' => $checkbox_all,
                 'class' => 'w20px no-text-imp',
             ],
         ]
@@ -1298,7 +1305,6 @@ html_print_input_hidden(
 echo "<div id='event_details_window'></div>";
 echo "<div id='event_response_window'></div>";
 echo "<div id='event_response_command_window' title='".__('Parameters')."'></div>";
-echo "<div id='error-".$table_id."'></div>";
 
 // Load filter div for dialog.
 echo '<div id="load-modal-filter" style="display: none"></div>';

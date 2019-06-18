@@ -439,6 +439,12 @@ select:-internal-list-box {
 .w120px {
   width: 120px;
 }
+.mw120px {
+  min-width: 120px;
+}
+.mw250px {
+  min-width: 250px;
+}
 .w20px {
   width: 20px;
 }
@@ -5574,7 +5580,7 @@ div#status_pie {
 
 .agent_details_content {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   padding: 20px;
   padding-bottom: 0;
 }

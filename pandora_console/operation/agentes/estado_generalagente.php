@@ -82,6 +82,9 @@ if (! check_acl_one_of_groups($config['id_user'], $all_groups, 'AR')
     return;
 }
 
+$alive_animation = agents_get_status_animation(
+    agents_get_interval_status($agent, false)
+);
 
 /*
  * START: TABLE AGENT BUILD.
@@ -252,7 +255,7 @@ $table_agent = '
             </div>
         </div>
         <div class="agent_details_info">
-            '.$table_agent_os.$table_agent_ip.$table_agent_version.$table_agent_description.$remote_cfg.'
+            '.$alive_animation.$table_agent_os.$table_agent_ip.$table_agent_version.$table_agent_description.$remote_cfg.'
         </div>
     </div>';
 

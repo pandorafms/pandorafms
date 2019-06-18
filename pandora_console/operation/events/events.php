@@ -173,6 +173,16 @@ if (is_ajax()) {
                     function ($carry, $item) {
                         $tmp = (object) $item;
                         $tmp->evento = io_safe_output($tmp->evento);
+                        $tmp->ack_utimestamp = ui_print_timestamp(
+                            $tmp->ack_utimestamp,
+                            true
+                        );
+                        $tmp->timestamp = ui_print_timestamp(
+                            $tmp->timestamp,
+                            true
+                        );
+
+                        $tmp->data = format_numeric($tmp->data, 1);
                         $carry[] = $tmp;
                         return $carry;
                     }
@@ -756,29 +766,9 @@ $in = '<div class="filter_input"><label>'.__('Repeated').'</label>';
 $in .= $data.'</div>';
 $inputs[] = $in;
 
-// Source.
-$data = html_print_input_text('source', $source, '', '', 255, true);
-$in = '<div class="filter_input"><label>'.__('Source').'</label>';
-$in .= $data.'</div>';
-$inputs[] = $in;
-
-
-// Extra ID.
-$data = html_print_input_text('id_extra', $id_extra, '', 11, 255, true);
-$in = '<div class="filter_input"><label>'.__('Extra ID').'</label>';
-$in .= $data.'</div>';
-$inputs[] = $in;
-
-// Comment.
-$data = html_print_input_text(
-    'user_comment',
-    $user_comment,
-    '',
-    '',
-    255,
-    true
-);
-$in = '<div class="filter_input"><label>'.__('Comment').'</label>';
+// Free search.
+$data = html_print_input_text('search', $search, '', '', 255, true);
+$in = '<div class="filter_input"><label>'.__('Free search').'</label>';
 $in .= $data.'</div>';
 $inputs[] = $in;
 
@@ -804,9 +794,30 @@ $buttons[] = [
 
 $adv_inputs = [];
 
-// Free search.
-$data = html_print_input_text('search', $search, '', '', 255, true);
-$in = '<div class="filter_input"><label>'.__('Free search').'</label>';
+
+// Source.
+$data = html_print_input_text('source', $source, '', '', 255, true);
+$in = '<div class="filter_input"><label>'.__('Source').'</label>';
+$in .= $data.'</div>';
+$adv_inputs[] = $in;
+
+
+// Extra ID.
+$data = html_print_input_text('id_extra', $id_extra, '', 11, 255, true);
+$in = '<div class="filter_input"><label>'.__('Extra ID').'</label>';
+$in .= $data.'</div>';
+$adv_inputs[] = $in;
+
+// Comment.
+$data = html_print_input_text(
+    'user_comment',
+    $user_comment,
+    '',
+    '',
+    255,
+    true
+);
+$in = '<div class="filter_input"><label>'.__('Comment').'</label>';
 $in .= $data.'</div>';
 $adv_inputs[] = $in;
 
@@ -1042,7 +1053,10 @@ try {
     );
 
     $default_fields = [
-        'evento',
+        [
+            'text'  => 'evento',
+            'class' => 'mw120px',
+        ],
         'id_evento',
             // 'id_agente',
             // 'id_usuario',
@@ -1078,7 +1092,7 @@ try {
         ],[
             'text'  => 'm',
             'extra' => $checkbox_all,
-            'class' => 'w20px',
+            'class' => 'mw120px',
         ],
     ];
     $fields = explode(',', $config['event_fields']);
@@ -1088,13 +1102,22 @@ try {
         $fields = $default_fields;
     }
 
+
+    $evento_id = array_search('evento', $fields);
+    if ($evento_id !== false) {
+        $fields[$evento_id] = [
+            'text'  => 'evento',
+            'class' => 'mw250px',
+        ];
+    }
+
     // Always add options column.
     $fields = array_merge(
         $fields,
         [
             [
                 'text'  => 'options',
-                'class' => 'action_buttons w120px',
+                'class' => 'action_buttons mw120px',
             ],[
                 'text'  => 'm',
                 'extra' => $checkbox_all,

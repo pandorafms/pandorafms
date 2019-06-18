@@ -109,7 +109,7 @@ if ($in_process_event) {
     $id_evento = get_parameter('id_evento', 0);
 
     // Check acl.
-    var_dump(events_update_status($id_evento, EVENT_PROCESS, $filter));
+    echo events_update_status($id_evento, EVENT_PROCESS, $filter);
     return;
 }
 
@@ -354,6 +354,12 @@ function load_form_filter() {
 
     // Close dialog.
     $("#load-filter-select").dialog('close');
+
+    // Update indicator.
+    $("#current_filter").text($('#filter_id option:selected').text());
+
+    // Search.
+    dt_events.draw(false);
 }
 
 $(document).ready (function() {

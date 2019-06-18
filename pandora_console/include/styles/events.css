@@ -146,6 +146,11 @@ fieldset {
 .event.flex-row.h100p.nowrap div {
   max-width: 98%;
 }
+.event.flex-row.h100p.nowrap .mini-criticity {
+  width: 10px;
+  min-width: 10px;
+  max-width: 10px;
+}
 
 .filter_summary {
   margin-bottom: 3em;

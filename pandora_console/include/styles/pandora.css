@@ -3108,6 +3108,15 @@ div.nodata_container {
   border-radius: 3px;
 }
 
+.legend_white {
+  width: 100%;
+  background-color: #fff;
+  padding: 20px 50px;
+  display: grid;
+  grid-gap: 12px;
+  grid-template-columns: repeat(3, 1fr);
+}
+
 .legend_basic {
   background: #f4f4f4;
   margin-top: 10px;
@@ -3116,12 +3125,13 @@ div.nodata_container {
 }
 
 .agents_modules_table th {
-  background: #3f3f3f;
-  border: 1px solid #e2e2e2;
+  background-color: #fff !important;
+  border-right: 1px solid #e2e2e2;
+  color: #000;
 }
 
 .agents_modules_table th * {
-  color: #ffffff;
+  color: #000;
 }
 
 /*
@@ -3425,9 +3435,12 @@ div.div_groups_status {
 .agents_modules_table {
   border: 1px solid #e2e2e2;
   border-spacing: 0px;
+  margin-bottom: 30px;
+  background-color: #fff;
 }
 .agents_modules_table td {
-  border: 1px solid #e2e2e2;
+  border-right: 1px solid #e2e2e2;
+  border-top: 1px solid #e2e2e2;
 }
 
 .databox.filters,

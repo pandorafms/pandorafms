@@ -2901,7 +2901,7 @@ function events_get_event_filter_select($manage=true)
     $sql = '
 		SELECT id_filter, id_name
 		FROM tevent_filter
-		WHERE id_group_filter IN ('.implode(',', array_keys($user_groups)).')';
+		WHERE id_group_filter IN (0, '.implode(',', array_keys($user_groups)).')';
 
     $event_filters = db_get_all_rows_sql($sql);
 

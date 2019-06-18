@@ -680,6 +680,8 @@ function update_event(table, id_evento, type, row) {
 
   // Update events matching current filters and id_evento selected.
   $.ajax({
+    async: true,
+    timeout: 10000,
     type: "POST",
     url: $("#hidden-ajax_file").val(),
     data: {
@@ -799,31 +801,20 @@ function execute_event_response(event_list_btn) {
     }
   } else {
     // It is not a custom response
-    var delay = 5000;
-    var $i = 0;
     switch (response_id) {
       case "in_progress_selected":
         $(".chk_val:checked").each(function() {
-          setTimeout(
-            in_process_event(dt_events, $(this).val(), this.parentElement),
-            total_checked * delay * $i++
-          );
+          in_process_event(dt_events, $(this).val(), this.parentElement);
         });
         break;
       case "validate_selected":
         $(".chk_val:checked").each(function() {
-          setTimeout(
-            validate_event(dt_events, $(this).val(), this.parentElement),
-            total_checked * delay * $i++
-          );
+          validate_event(dt_events, $(this).val(), this.parentElement);
         });
         break;
       case "delete_selected":
         $(".chk_val:checked").each(function() {
-          setTimeout(
-            delete_event(dt_events, $(this).val(), this.parentElement),
-            total_checked * delay * $i++
-          );
+          delete_event(dt_events, $(this).val(), this.parentElement);
         });
         break;
     }

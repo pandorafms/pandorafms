@@ -420,6 +420,13 @@ if ($save_filter_modal) {
             $data[1] = __('Filter group').$jump;
         }
 
+        $user_groups_array = users_get_groups_for_select(
+            $config['id_user'],
+            'EW',
+            users_can_manage_group_all(),
+            true
+        );
+
         $data[1] .= html_print_select(
             $user_groups_array,
             'id_group_filter',

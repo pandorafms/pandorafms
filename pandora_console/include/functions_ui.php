@@ -1441,11 +1441,16 @@ function ui_require_css_file($name, $path='include/styles/')
 
     if (! file_exists($filename)
         && ! file_exists($config['homedir'].'/'.$filename)
+        && ! file_exists($config['homedir'].'/'.ENTERPRISE_DIR.'/'.$filename)
     ) {
         return false;
     }
 
-    $config['css'][$name] = $filename;
+    if (is_metaconsole()) {
+        $config['css'][$name] = '/../../'.$filename;
+    } else {
+        $config['css'][$name] = $filename;
+    }
 
     return true;
 }

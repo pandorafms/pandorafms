@@ -79,6 +79,8 @@ if (!is_metaconsole()
 
 // Load specific stylesheet.
 ui_require_css_file('events');
+ui_require_css_file('tables');
+ui_require_css_file('tables_meta', ENTERPRISE_DIR.'/include/styles/');
 
 // Load extra javascript.
 ui_require_javascript_file('pandora_events');
@@ -119,35 +121,39 @@ if (is_ajax()) {
             ob_start();
             $order = get_datatable_order(true);
 
+            $fields = [
+                'te.id_evento',
+                'te.id_agente',
+                'te.id_usuario',
+                'te.id_grupo',
+                'te.estado',
+                'te.timestamp',
+                'te.evento',
+                'te.utimestamp',
+                'te.event_type',
+                'te.id_alert_am',
+                'te.criticity',
+                'te.user_comment',
+                'te.tags',
+                'te.source',
+                'te.id_extra',
+                'te.critical_instructions',
+                'te.warning_instructions',
+                'te.unknown_instructions',
+                'te.owner_user',
+                'if(te.ack_utimestamp > 0, from_unixtime(te.ack_utimestamp),"") as ack_utimestamp',
+                'te.custom_data',
+                'te.data',
+                'te.module_status',
+                'ta.alias as agent_name',
+                'tg.nombre as group_name',
+            ];
+            if (!is_metaconsole()) {
+                $fields[] = 'am.nombre as id_agentmodule';
+            }
+
             $events = events_get_all(
-                [
-                    'te.id_evento',
-                    'te.id_agente',
-                    'te.id_usuario',
-                    'te.id_grupo',
-                    'te.estado',
-                    'te.timestamp',
-                    'te.evento',
-                    'te.utimestamp',
-                    'te.event_type',
-                    'am.nombre as id_agentmodule',
-                    'te.id_alert_am',
-                    'te.criticity',
-                    'te.user_comment',
-                    'te.tags',
-                    'te.source',
-                    'te.id_extra',
-                    'te.critical_instructions',
-                    'te.warning_instructions',
-                    'te.unknown_instructions',
-                    'te.owner_user',
-                    'if(te.ack_utimestamp > 0, from_unixtime(te.ack_utimestamp),"") as ack_utimestamp',
-                    'te.custom_data',
-                    'te.data',
-                    'te.module_status',
-                    'ta.alias as agent_name',
-                    'tg.nombre as group_name',
-                ],
+                $fields,
                 $filter,
                 // Offset.
                 $start,
@@ -416,10 +422,7 @@ $url = ui_get_full_url('index.php?sec=eventos&sec2=operation/events/events');
 // Concatenate parameters.
 $url .= '';
 
-if (is_metaconsole()) {
-    // Load metaconsole frame.
-    enterprise_hook('open_meta_frame');
-} else if ($pure) {
+if ($pure) {
     // Fullscreen.
     // Floating menu - Start.
     echo '<div id="vc-controls" style="z-index: 999">';
@@ -471,6 +474,11 @@ if (is_metaconsole()) {
     // Floating menu - End.
     ui_require_jquery_file('countdown');
 } else {
+    if (is_metaconsole()) {
+        // Load metaconsole frame.
+        enterprise_hook('open_meta_frame');
+    }
+
     // Header.
     $pss = get_user_info($config['id_user']);
     $hashup = md5($config['id_user'].$pss['password']);

@@ -281,32 +281,29 @@ a.pandora_pagination.current:hover {
 
 /* CSV button datatables */
 .dt-button.buttons-csv.buttons-html5 {
-  background-image: url(../../images/input_delete.png);
+  background-image: url(../../images/csv_mc.png);
   background-position: center center;
-  -moz-border-radius: 2px;
-  -webkit-border-radius: 2px;
-  border-radius: 2px;
   background-color: #fff;
   background-repeat: no-repeat;
   color: #000;
-  padding-bottom: 10px;
-  padding-top: 10px;
-  padding-left: 15px;
-  border: 1px solid #888;
+  border: none;
   font-family: "lato", "Open Sans", sans-serif;
   cursor: pointer;
+  display: inline;
+  padding: 7pt;
+  margin-left: 10px;
 }
 .dt-button.buttons-csv.buttons-html5 span {
   font-size: 0;
 }
-.dt-button.buttons-csv.buttons-html5:hover {
-  border: 1px solid #333;
+
+.dt-buttons {
+  margin-top: 3pt;
 }
 
-.dt-button.buttons-csv.buttons-html5:active {
-  border: 1px solid #000;
-  color: #333;
-  background-color: #e1e1e1;
+.dt-button.buttons-csv.buttons-html5:active,
+.dt-button.buttons-csv.buttons-html5:hover {
+  border: none;
 }
 
 .dt-button.buttons-csv.buttons-html5[disabled] {

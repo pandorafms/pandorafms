@@ -3152,7 +3152,7 @@ function ui_print_datatable(array $parameters)
             pageLength: '.$parameters['default_pagination'].',
             searching: false,
             responsive: true,
-            dom: "plfrtipB",
+            dom: "plfrtiBp",
             buttons: [
                 {
                     extend: "csv",

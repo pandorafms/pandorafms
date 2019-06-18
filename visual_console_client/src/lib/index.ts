@@ -571,10 +571,15 @@ export function addResizementListener(
   element: HTMLElement,
   onResized: (x: Position["x"], y: Position["y"]) => void
 ): Function {
+  const minWidth = 15;
+  const minHeight = 15;
+
   const resizeDraggable = document.createElement("div");
   resizeDraggable.className = "resize-draggable";
   element.appendChild(resizeDraggable);
 
+  // Container of the resizable element.
+  const container = element.parentElement as HTMLElement;
   // Store the initial draggable state.
   const isDraggable = element.draggable;
   // Init the coordinates.
@@ -584,6 +589,18 @@ export function addResizementListener(
   let lastMouseY: Position["y"] = 0;
   let mouseElementOffsetX: Position["x"] = 0;
   let mouseElementOffsetY: Position["y"] = 0;
+  // Init the bounds.
+  let containerBounds = container.getBoundingClientRect();
+  let containerOffset = getOffset(container);
+  let containerTop = containerOffset.top;
+  let containerBottom = containerTop + containerBounds.height;
+  let containerLeft = containerOffset.left;
+  let containerRight = containerLeft + containerBounds.width;
+  let elementOffset = getOffset(element);
+  let elementTop = elementOffset.top;
+  let elementLeft = elementOffset.left;
+  let borderWidth = window.getComputedStyle(element).borderWidth || "0";
+  let borderFix = Number.parseInt(borderWidth);
 
   // Will run onResized 32ms after its last execution.
   const debouncedResizement = debounce(
@@ -601,11 +618,20 @@ export function addResizementListener(
     let width = lastWidth + (e.pageX - lastMouseX);
     let height = lastHeight + (e.pageY - lastMouseY);
 
-    // TODO: Document.
-
-    // Minimum value.
-    if (width <= 0) width = 10;
-    if (height <= 0) height = 10;
+    if (width < minWidth) {
+      // Minimum value.
+      width = minWidth;
+    } else if (width + elementLeft - borderFix / 2 >= containerRight) {
+      // Limit the size to the container.
+      width = containerRight - elementLeft;
+    }
+    if (height < minHeight) {
+      // Minimum value.
+      height = minHeight;
+    } else if (height + elementTop - borderFix / 2 >= containerBottom) {
+      // Limit the size to the container.
+      height = containerBottom - elementTop;
+    }
 
     // Run the movement events.
     throttledResizement(width, height);
@@ -652,6 +678,17 @@ export function addResizementListener(
     // Store the relative position between the mouse and the element.
     mouseElementOffsetX = e.offsetX;
     mouseElementOffsetY = e.offsetY;
+
+    // Initialize the bounds.
+    containerBounds = container.getBoundingClientRect();
+    containerOffset = getOffset(container);
+    containerTop = containerOffset.top;
+    containerBottom = containerTop + containerBounds.height;
+    containerLeft = containerOffset.left;
+    containerRight = containerLeft + containerBounds.width;
+    elementOffset = getOffset(element);
+    elementTop = elementOffset.top;
+    elementLeft = elementOffset.left;
 
     // Listen to the mouse movement.
     document.addEventListener("mousemove", handleResize);

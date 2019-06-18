@@ -55,11 +55,9 @@ if ($getVisualConsole === true) {
     $item_data = [];
     $item_data['id'] = $visualConsoleItemId;
     $item_data['id_layout'] = $visualConsoleId;
-    $item_data['type'] = $data['type'];
 
     $item = $class::fromDB($item_data);
-
-    $item->save($item->toArray(), $data);
+    $item->save($data);
 }
 
 exit;

@@ -117,7 +117,7 @@ final class Container extends Model
      *
      * @overrides Model::save.
      */
-    public function save(array $data=[], array $newdata=[]): bool
+    public function save(array $data=[]): bool
     {
         return true;
     }

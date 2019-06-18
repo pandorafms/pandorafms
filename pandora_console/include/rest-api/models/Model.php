@@ -68,7 +68,7 @@ abstract class Model
      *
      * @abstract
      */
-    abstract public function save(array $data=[], array $newdata=[]);
+    abstract public function save(array $data=[]);
 
 
     /**
@@ -83,6 +83,12 @@ abstract class Model
         $this->data = $this->decode($unknownData);
         // Sort alphabetically.
         ksort($this->data, (SORT_NATURAL | SORT_FLAG_CASE));
+    }
+
+
+    public function setData(array $data)
+    {
+        $this->data = $data;
     }
 
 

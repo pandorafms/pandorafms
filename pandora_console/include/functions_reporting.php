@@ -151,11 +151,13 @@ function reporting_make_reporting_data(
         $contents = $report['contents'];
     } else {
         $report = io_safe_output(db_get_row('treport', 'id_report', $id_report));
-        $contents = db_get_all_rows_field_filter(
-            'treport_content',
-            'id_report',
-            $id_report,
-            db_escape_key_identifier('order')
+        $contents = io_safe_output(
+            db_get_all_rows_field_filter(
+                'treport_content',
+                'id_report',
+                $id_report,
+                db_escape_key_identifier('order')
+            )
         );
     }
 
@@ -6073,7 +6075,7 @@ function reporting_advanced_sla(
 
         // SLA.
         $return['SLA'] = reporting_sla_get_compliance_from_array($return);
-        $return['SLA_fixed'] = sla_truncate(
+        $return['sla_fixed'] = sla_truncate(
             $return['SLA'],
             $config['graph_precision']
         );

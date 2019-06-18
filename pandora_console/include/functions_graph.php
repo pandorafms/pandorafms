@@ -2235,6 +2235,7 @@ function combined_graph_summatory_average(
                         $data_array_pop[$key_reverse] = array_pop(
                             $data_array_reverse[$key_reverse]
                         );
+                        $count_data_array_reverse--;
                     }
                 }
 

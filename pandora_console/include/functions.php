@@ -1392,6 +1392,11 @@ function enterprise_installed()
 {
     $return = false;
 
+    // Load enterprise extensions.
+    if (defined('DESTDIR')) {
+        return $return;
+    }
+
     if (defined('PANDORA_ENTERPRISE')) {
         if (PANDORA_ENTERPRISE) {
             $return = true;
@@ -1444,7 +1449,7 @@ function enterprise_include($filename)
 {
     global $config;
 
-    // Load enterprise extensions
+    // Load enterprise extensions.
     if (defined('DESTDIR')) {
         $destdir = DESTDIR;
     } else {
@@ -1474,7 +1479,13 @@ function enterprise_include_once($filename)
 {
     global $config;
 
-    // Load enterprise extensions
+    // Load enterprise extensions.
+    if (defined('DESTDIR')) {
+        $destdir = DESTDIR;
+    } else {
+        $destdir = '';
+    }
+
     $filepath = realpath($config['homedir'].'/'.ENTERPRISE_DIR.'/'.$filename);
 
     if ($filepath === false) {

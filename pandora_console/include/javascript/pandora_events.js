@@ -718,17 +718,38 @@ function update_event(table, id_evento, type, row) {
 }
 
 function validate_event(table, id_evento, row) {
-  row.firstChild.src = "http://localhost/pandora_console/images/spinner.gif";
+  var button = document.getElementById("val-" + id_evento);
+  if (!button) {
+    // Button does not exist. Ignore.
+    return;
+  }
+
+  button.children[0];
+  button.children[0].src = "images/spinner.gif";
   return update_event(table, id_evento, { validate_event: 1 }, row);
 }
 
 function in_process_event(table, id_evento, row) {
-  row.firstChild.src = "http://localhost/pandora_console/images/spinner.gif";
+  var button = document.getElementById("proc-" + id_evento);
+  if (!button) {
+    // Button does not exist. Ignore.
+    return;
+  }
+
+  button.children[0];
+  button.children[0].src = "images/spinner.gif";
   return update_event(table, id_evento, { in_process_event: 1 }, row);
 }
 
 function delete_event(table, id_evento, row) {
-  row.firstChild.src = "http://localhost/pandora_console/images/spinner.gif";
+  var button = document.getElementById("del-" + id_evento);
+  if (!button) {
+    // Button does not exist. Ignore.
+    return;
+  }
+
+  button.children[0];
+  button.children[0].src = "images/spinner.gif";
   return update_event(table, id_evento, { delete_event: 1 }, row);
 }
 

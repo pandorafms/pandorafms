@@ -523,7 +523,10 @@ function events_get_all(
         throw new Exception('[events_get_all] Fields must be an array or "count".');
     }
 
-    if (isset($filter['date_from']) && $filter['date_from'] != '0000-00-00') {
+    if (isset($filter['date_from'])
+        && !empty($filter['date_from'])
+        && $filter['date_from'] != '0000-00-00'
+    ) {
         $date_from = $filter['date_from'];
     }
 
@@ -543,7 +546,10 @@ function events_get_all(
         );
     }
 
-    if (isset($filter['date_to']) && $filter['date_to'] != '0000-00-00') {
+    if (isset($filter['date_to'])
+        && !empty($filter['date_to'])
+        && $filter['date_to'] != '0000-00-00'
+    ) {
         $date_to = $filter['date_to'];
     }
 

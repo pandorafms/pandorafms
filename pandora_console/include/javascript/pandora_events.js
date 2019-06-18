@@ -669,7 +669,7 @@ function show_event_response_command_dialog(id, response, total_checked) {
 }
 
 var processed = 0;
-function update_event(table, id_evento, type, row) {
+function update_event(table, id_evento, type, event_rep, row) {
   var inputs = $("#events_form :input");
   var values = {};
   var redraw = false;
@@ -690,6 +690,7 @@ function update_event(table, id_evento, type, row) {
       in_process_event: type.in_process_event,
       delete_event: type.delete_event,
       id_evento: id_evento,
+      event_rep: event_rep,
       filter: values
     },
     success: function(d) {
@@ -717,7 +718,7 @@ function update_event(table, id_evento, type, row) {
   });
 }
 
-function validate_event(table, id_evento, row) {
+function validate_event(table, id_evento, event_rep, row) {
   var button = document.getElementById("val-" + id_evento);
   if (!button) {
     // Button does not exist. Ignore.
@@ -726,10 +727,10 @@ function validate_event(table, id_evento, row) {
 
   button.children[0];
   button.children[0].src = "images/spinner.gif";
-  return update_event(table, id_evento, { validate_event: 1 }, row);
+  return update_event(table, id_evento, { validate_event: 1 }, event_rep, row);
 }
 
-function in_process_event(table, id_evento, row) {
+function in_process_event(table, id_evento, event_rep, row) {
   var button = document.getElementById("proc-" + id_evento);
   if (!button) {
     // Button does not exist. Ignore.
@@ -738,10 +739,16 @@ function in_process_event(table, id_evento, row) {
 
   button.children[0];
   button.children[0].src = "images/spinner.gif";
-  return update_event(table, id_evento, { in_process_event: 1 }, row);
+  return update_event(
+    table,
+    id_evento,
+    { in_process_event: 1 },
+    event_rep,
+    row
+  );
 }
 
-function delete_event(table, id_evento, row) {
+function delete_event(table, id_evento, event_rep, row) {
   var button = document.getElementById("del-" + id_evento);
   if (!button) {
     // Button does not exist. Ignore.
@@ -750,7 +757,7 @@ function delete_event(table, id_evento, row) {
 
   button.children[0];
   button.children[0].src = "images/spinner.gif";
-  return update_event(table, id_evento, { delete_event: 1 }, row);
+  return update_event(table, id_evento, { delete_event: 1 }, event_rep, row);
 }
 
 // Imported from old files.
@@ -832,6 +839,7 @@ function execute_event_response(event_list_btn) {
           in_process_event(
             dt_events,
             $(this).val(),
+            $(this).attr("event_rep"),
             this.parentElement.parentElement
           );
         });
@@ -841,6 +849,7 @@ function execute_event_response(event_list_btn) {
           validate_event(
             dt_events,
             $(this).val(),
+            $(this).attr("event_rep"),
             this.parentElement.parentElement
           );
         });
@@ -850,6 +859,7 @@ function execute_event_response(event_list_btn) {
           delete_event(
             dt_events,
             $(this).val(),
+            $(this).attr("event_rep"),
             this.parentElement.parentElement
           );
         });

@@ -1478,8 +1478,8 @@ function process_datatables_item(item) {
     evn += output;
     evn += '</div>'
 
-    item.criticity = '<div class="criticity" style="background: ';
-    item.criticity += color + '">' + text + "</div>";
+    criticity = '<div class="criticity" style="background: ';
+    criticity += color + '">' + text + "</div>";
 
     // Grouped events.
     if(item.max_timestamp) {
@@ -1531,8 +1531,8 @@ function process_datatables_item(item) {
         break;
     }
 
-    item.event_type = '<div class="criticity" style="background: ';
-    item.event_type += color + '">' + text + "</div>";
+    event_type = '<div class="criticity" style="background: ';
+    event_type += color + '">' + text + "</div>";
 
     /* Module status */
     /* Event severity prepared */
@@ -1567,8 +1567,8 @@ function process_datatables_item(item) {
         break;
     }
 
-    item.module_status = '<div class="criticity" style="background: ';
-    item.module_status += color + '">' + text + "</div>";
+    module_status = '<div class="criticity" style="background: ';
+    module_status += color + '">' + text + "</div>";
 
 
     /* Agent name link */
@@ -1617,10 +1617,10 @@ function process_datatables_item(item) {
             // Validate.
             item.options += '<a href="javascript:" onclick="validate_event(dt_<?php echo $table_id; ?>,';
             if (item.max_id_evento) {
-                item.options += item.max_id_evento+', this)" id="val-'+item.max_id_evento+'">';
+                item.options += item.max_id_evento+', '+ item.event_rep +', this)" id="val-'+item.max_id_evento+'">';
                 item.options += '<?php echo html_print_image('images/tick.png', true, ['title' => __('Validate events')]); ?></a>';
             } else {
-                item.options += item.id_evento+', this)" id="val-'+item.id_evento+'">';
+                item.options += item.id_evento+', 0, this)" id="val-'+item.id_evento+'">';
                 item.options += '<?php echo html_print_image('images/tick.png', true, ['title' => __('Validate event')]); ?></a>';
             }
         }
@@ -1629,9 +1629,9 @@ function process_datatables_item(item) {
             // In process.
             item.options += '<a href="javascript:" onclick="in_process_event(dt_<?php echo $table_id; ?>,';
             if (item.max_id_evento) {
-                item.options += item.max_id_evento+', this)" id="proc-'+item.max_id_evento+'">';
+                item.options += item.max_id_evento+', '+ item.event_rep +', this)" id="proc-'+item.max_id_evento+'">';
             } else {
-                item.options += item.id_evento+', this)" id="proc-'+item.id_evento+'">';
+                item.options += item.id_evento+', 0, this)" id="proc-'+item.id_evento+'">';
             }
             item.options += '<?php echo html_print_image('images/hourglass.png', true, ['title' => __('Change to in progress status')]); ?></a>';
         }
@@ -1641,10 +1641,10 @@ function process_datatables_item(item) {
         // Delete.
         item.options += '<a href="javascript:" onclick="delete_event(dt_<?php echo $table_id; ?>,';
         if (item.max_id_evento) {
-            item.options += item.max_id_evento+', this)" id="del-'+item.max_id_evento+'">';
+            item.options += item.max_id_evento+', '+ item.event_rep +', this)" id="del-'+item.max_id_evento+'">';
             item.options += '<?php echo html_print_image('images/cross.png', true, ['title' => __('Delete events')]); ?></a>';
         } else {
-            item.options += item.id_evento+', this)" id="del-'+item.id_evento+'">';
+            item.options += item.id_evento+', 0, this)" id="del-'+item.id_evento+'">';
             item.options += '<?php echo html_print_image('images/cross.png', true, ['title' => __('Delete event')]); ?></a>';
         }
     }
@@ -1652,6 +1652,11 @@ function process_datatables_item(item) {
     // Multi select.
     item.m = '<input name="checkbox-multi[]" type="checkbox" value="';
     item.m += item.id_evento+'" id="checkbox-multi-'+item.id_evento+'" ';
+    if (item.max_id_evento) {
+        item.m += ' event_rep="' + item.event_rep +'" ';
+    } else {
+        item.m += ' event_rep="0" ';
+    }
     item.m += 'class="candeleted chk_val">';
         <?php
     }
@@ -1673,9 +1678,14 @@ function process_datatables_item(item) {
         break;
     }
 
+    /* Update column content now to avoid json poisoning. */
     item.estado = '<div>';
     item.estado += img;
     item.estado += '</div>';
+
+    item.criticity = criticity;
+    item.event_type = event_type;
+    item.module_status = module_status;
 
     /* Event ID dash */
     item.id_evento = "#"+item.id_evento;

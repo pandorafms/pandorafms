@@ -87,9 +87,26 @@ $delete_event = get_parameter('delete_event', 0);
 if ($delete_event) {
     $filter = get_parameter('filter', []);
     $id_evento = get_parameter('id_evento', 0);
+    $event_rep = get_parameter('event_rep', 0);
+
+    if ($event_rep === 0) {
+        // Disable group by when there're result is unique.
+        $filter['group_rep'] = 0;
+    }
 
     // Check acl.
-    echo events_delete($id_evento, $filter);
+    if (! check_acl($config['id_user'], 0, 'EM')) {
+        echo 'unauthorized';
+        return;
+    }
+
+    $r = events_delete($id_evento, $filter);
+    if ($r === false) {
+        echo 'Failed';
+    } else {
+        echo $r;
+    }
+
     return;
 }
 
@@ -97,9 +114,26 @@ if ($delete_event) {
 if ($validate_event) {
     $filter = get_parameter('filter', []);
     $id_evento = get_parameter('id_evento', 0);
+    $event_rep = get_parameter('event_rep', 0);
+
+    if ($event_rep === 0) {
+        // Disable group by when there're result is unique.
+        $filter['group_rep'] = 0;
+    }
 
     // Check acl.
-    echo events_update_status($id_evento, EVENT_VALIDATE, $filter);
+    if (! check_acl($config['id_user'], 0, 'EW')) {
+        echo 'unauthorized';
+        return;
+    }
+
+    $r = events_update_status($id_evento, EVENT_VALIDATE, $filter);
+    if ($r === false) {
+        echo 'Failed';
+    } else {
+        echo $r;
+    }
+
     return;
 }
 
@@ -107,9 +141,26 @@ if ($validate_event) {
 if ($in_process_event) {
     $filter = get_parameter('filter', []);
     $id_evento = get_parameter('id_evento', 0);
+    $event_rep = get_parameter('event_rep', 0);
+
+    if ($event_rep === 0) {
+        // Disable group by when there're result is unique.
+        $filter['group_rep'] = 0;
+    }
 
     // Check acl.
-    echo events_update_status($id_evento, EVENT_PROCESS, $filter);
+    if (! check_acl($config['id_user'], 0, 'EW')) {
+        echo 'unauthorized';
+        return;
+    }
+
+    $r = events_update_status($id_evento, EVENT_PROCESS, $filter);
+    if ($r === false) {
+        echo 'Failed';
+    } else {
+        echo $r;
+    }
+
     return;
 }
 

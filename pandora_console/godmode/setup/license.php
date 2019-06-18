@@ -135,7 +135,9 @@ $table->data[9][0] = '<strong>'.__('Licensed to').'</strong>';
 $table->data[9][1] = html_print_input_text('licensed_to', $license['licensed_to'], '', 64, 255, true, true);
 
 html_print_table($table);
-if (enterprise_installed()) {
+
+// If DESTDIR is defined the enterprise license is expired.
+if (enterprise_installed() || defined('DESTDIR')) {
     echo '<div class="action-buttons" style="width: '.$table->width.'">';
     html_print_input_hidden('update_settings', 1);
     html_print_submit_button(__('Validate'), 'update_button', false, 'class="sub upd"');

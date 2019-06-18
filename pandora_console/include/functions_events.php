@@ -5669,7 +5669,7 @@ function events_list_events_grouped_agents($sql)
     $sql = sprintf(
         'SELECT * FROM %s 
 	    LEFT JOIN tagent_secondary_group 
-	       ON tagent_secondary_group.id_agent = tevento.id_agente
+	       ON tagent_secondary_group.id_agent = id_agente
         WHERE %s',
         $table,
         $sql

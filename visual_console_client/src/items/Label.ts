@@ -1,4 +1,4 @@
-import { LinkedVisualConsoleProps, UnknownObject } from "../types";
+import { LinkedVisualConsoleProps, AnyObject } from "../lib/types";
 import { linkedVCPropsDecoder } from "../lib";
 import Item, { ItemType, ItemProps, itemBasePropsDecoder } from "../Item";
 
@@ -16,7 +16,7 @@ export type LabelProps = {
  * @throws Will throw a TypeError if some property
  * is missing from the raw object or have an invalid type.
  */
-export function labelPropsDecoder(data: UnknownObject): LabelProps | never {
+export function labelPropsDecoder(data: AnyObject): LabelProps | never {
   return {
     ...itemBasePropsDecoder(data), // Object spread. It will merge the properties of the two objects.
     type: ItemType.LABEL,

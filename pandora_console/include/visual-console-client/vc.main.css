@@ -13,16 +13,22 @@
   display: flex;
   -webkit-box-orient: initial;
   -webkit-box-direction: initial;
-      -ms-flex-direction: initial;
-          flex-direction: initial;
+  -ms-flex-direction: initial;
+  flex-direction: initial;
   justify-items: center;
   -webkit-box-align: center;
-      -ms-flex-align: center;
-          align-items: center;
+  -ms-flex-align: center;
+  align-items: center;
   -webkit-user-select: text;
-     -moz-user-select: text;
-      -ms-user-select: text;
-          user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
+}
+
+.visual-console-item.is-editing {
+  border: 2px dashed #33ccff;
+  -webkit-transform: translateX(-2px) translateY(-2px);
+  transform: translateX(-2px) translateY(-2px);
 }
 
 @font-face {
@@ -38,17 +44,17 @@
   display: flex;
   -webkit-box-orient: vertical;
   -webkit-box-direction: normal;
-      -ms-flex-direction: column;
-          flex-direction: column;
+  -ms-flex-direction: column;
+  flex-direction: column;
   -webkit-box-pack: center;
-      -ms-flex-pack: center;
-          justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: center;
   justify-items: center;
   -ms-flex-line-pack: center;
-      align-content: center;
+  align-content: center;
   -webkit-box-align: center;
-      -ms-flex-align: center;
-          align-items: center;
+  -ms-flex-align: center;
+  align-items: center;
 }
 
 .visual-console-item .digital-clock > span {
@@ -78,18 +84,17 @@
 
 .visual-console-item .analogic-clock .hour-hand {
   -webkit-animation: rotate-hour 43200s infinite linear;
-          animation: rotate-hour 43200s infinite linear;
+  animation: rotate-hour 43200s infinite linear;
 }
 
 .visual-console-item .analogic-clock .minute-hand {
   -webkit-animation: rotate-minute 3600s infinite linear;
-          animation: rotate-minute 3600s infinite linear;
+  animation: rotate-minute 3600s infinite linear;
 }
 
 .visual-console-item .analogic-clock .second-hand {
   -webkit-animation: rotate-second 60s infinite linear;
-          animation: rotate-second 60s infinite linear;
+  animation: rotate-second 60s infinite linear;
 }
-
 
 /*# sourceMappingURL=vc.main.css.map*/

@@ -80,9 +80,8 @@ function mainAgentsModules()
     $full_modules_selected = explode(';', get_parameter('full_modules_selected', 0));
     $full_agents_id = explode(';', get_parameter('full_agents_id', 0));
 
-    if ($save_serialize == 0 && $update_item == '') {
-        // manu ha puesto esto para que funcione la pantalla completa
-        // if ($save_serialize && $update_item == '') { // Pero debe estar asi (como antes) para que funcione la paginacion de la propia tabla
+    // In full screen there is no pagination neither filters.
+    if (( ($config['pure'] == 0 && $save_serialize) && $update_item == '' ) || ( ($config['pure'] == 1 && $save_serialize == 0) && $update_item == '' )) {
         $unserialize_modules_selected  = unserialize_in_temp($config['id_user'].'_agent_module', true, 1);
         $unserialize_agents_id         = unserialize_in_temp($config['id_user'].'_agents', true, 1);
         if ($unserialize_modules_selected) {
@@ -654,10 +653,10 @@ $ignored_params['refresh'] = '';
             $("#div_module_r_" + id).show();
         });
 
-        var refr =" . $refr . ";
-        var pure =" . $pure_var . ";
+        var refr = '<?php echo get_parameter('refresh', 0); ?>';
+        var pure = '<?php echo get_parameter('pure', 0); ?>';
         var href =' <?php echo ui_get_url_refresh($ignored_params); ?>';
-            
+
         if (pure) {
             var startCountDown = function (duration, cb) {
                 $('div.vc-countdown').countdown('destroy');
@@ -666,18 +665,21 @@ $ignored_params['refresh'] = '';
                 t.setTime(t.getTime() + duration * 1000);
                 $('div.vc-countdown').countdown({
                     until: t,
+                    format: 'MS',
                     layout: '(%M%nn%M:%S%nn%S <?php echo __('Until next'); ?>) ',
                     alwaysExpire: true,
                     onExpiry: function () {
                         $('div.vc-countdown').countdown('destroy');
                         url = js_html_entity_decode( href ) + duration;
                         $(document).attr ("location", url);
-                        cb();
                     }
                 });
             }
-            
-            startCountDown(refr, false);
+
+            if(refr>0){
+                startCountDown(refr, false);
+            }
+
             var controls = document.getElementById('vc-controls');
             autoHideElement(controls, 1000);
             

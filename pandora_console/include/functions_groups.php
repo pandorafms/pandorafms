@@ -331,7 +331,6 @@ function groups_get_children($parent, $ignorePropagate=false)
                     $return += groups_get_children(
                         $g['id_grupo'],
                         $ignorePropagate
-                    )
                     );
                 }
             }

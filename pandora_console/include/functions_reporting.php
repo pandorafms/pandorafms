@@ -328,18 +328,22 @@ function reporting_make_reporting_data(
             break;
 
             case 'general':
-                $report['contents'][] = reporting_general(
-                    $report,
-                    $content
+                $report['contents'][] = io_safe_output(
+                    reporting_general(
+                        $report,
+                        $content
+                    )
                 );
             break;
 
             case 'availability':
-                $report['contents'][] = reporting_availability(
-                    $report,
-                    $content,
-                    $date,
-                    $time
+                $report['contents'][] = io_safe_output(
+                    reporting_availability(
+                        $report,
+                        $content,
+                        $date,
+                        $time
+                    )
                 );
             break;
 
@@ -479,9 +483,11 @@ function reporting_make_reporting_data(
             break;
 
             case 'agent_configuration':
-                $report['contents'][] = reporting_agent_configuration(
-                    $report,
-                    $content
+                $report['contents'][] = io_safe_output(
+                    reporting_agent_configuration(
+                        $report,
+                        $content
+                    )
                 );
             break;
 
@@ -677,12 +683,14 @@ function reporting_make_reporting_data(
 
             case 'agent_detailed_event':
             case 'event_report_agent':
-                $report_control = reporting_event_report_agent(
-                    $report,
-                    $content,
-                    $type,
-                    $force_width_chart,
-                    $force_height_chart
+                $report_control = io_safe_output(
+                    reporting_event_report_agent(
+                        $report,
+                        $content,
+                        $type,
+                        $force_width_chart,
+                        $force_height_chart
+                    )
                 );
                 if ($report_control['total_events'] == 0 && $content['hide_no_data'] == 1) {
                     continue;
@@ -2180,7 +2188,7 @@ function reporting_agent_module($report, $content)
         foreach ($agents as $agent) {
             $row = [];
             $row['agent_status'][$agent] = agents_get_status($agent);
-            $row['agent_name'] = agents_get_alias($agent);
+            $row['agent_name'] = io_safe_output(agents_get_alias($agent));
             $agent_modules = agents_get_modules($agent);
 
             $row['modules'] = [];
@@ -2781,7 +2789,7 @@ function reporting_event_report_agent(
     }
 
     $return['title'] = $content['name'];
-    $return['subtitle'] = agents_get_alias($content['id_agent']);
+    $return['subtitle'] = io_safe_output(agents_get_alias($content['id_agent']));
     $return['description'] = $content['description'];
     $return['date'] = reporting_get_date_text($report, $content);
 

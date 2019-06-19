@@ -3042,7 +3042,7 @@ function reporting_database_serialized($report, $content)
     $return['title'] = $content['name'];
     $return['subtitle'] = $agent_name.' - '.$module_name;
     $return['description'] = $content['description'];
-    $return['date'] = reporting_get_date_text($report, $content);
+    $return['date'] = io_safe_output(reporting_get_date_text($report, $content));
 
     $keys = [];
     if (isset($content['header_definition']) && ($content['header_definition'] != '')) {

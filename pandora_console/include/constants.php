@@ -65,7 +65,7 @@ define('ERR_NODATA', -70000);
 define('ERR_CONNECTION', -80000);
 define('ERR_DISABLED', -90000);
 define('ERR_WRONG', -100000);
-define('ERR_WRONG_NAME', -100001);
+define('ERR_WRONG_MR', -100001);
 define('ERR_WRONG_PARAMETERS', -100002);
 define('ERR_ACL', -110000);
 define('ERR_AUTH', -120000);

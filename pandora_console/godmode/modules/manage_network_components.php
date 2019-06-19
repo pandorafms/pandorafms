@@ -764,7 +764,7 @@ enterprise_hook('close_meta_frame');
             }
         });
 
-        $('[id^=checkbox-all_delete]').change(function(){z
+        $('[id^=checkbox-all_delete]').change(function(){    
             if ($("#checkbox-all_delete").prop("checked")) {
                 $('[id^=checkbox-delete_multiple]').parent().parent().addClass('checkselected');
                 $(".check_delete").prop("checked", true);

@@ -1788,7 +1788,7 @@ function alerts_validate_alert_agent_module($id_alert_agent_module, $noACLs=fals
             db_process_sql(sprintf('UPDATE tagente SET update_alert_count=1 WHERE id_agente = %d', $agent_id));
 
             events_create_event(
-                'Manual validation of alert for '.alerts_get_alert_template_description($alert['id_alert_template']),
+                'Manual validation of alert for '.io_safe_output(db_get_value('nombre', 'tagente_modulo', 'id_agente_modulo', $alert['id_agent_module'])).'',
                 $group_id,
                 $agent_id,
                 1,

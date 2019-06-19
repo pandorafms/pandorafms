@@ -1635,7 +1635,7 @@ class Item extends CachedModel
 
         $dataModelEncode = $this->encode($this->toArray());
         $dataEncode = $this->encode($data);
-        hd(self::toArray(), true);
+
         $save = \array_merge($dataModelEncode, $dataEncode);
 
         if (!empty($save)) {
@@ -1648,7 +1648,15 @@ class Item extends CachedModel
             } else {
                 // Update.
                 $result = \db_process_sql_update('tlayout_data', $save, ['id' => $save['id']]);
-                if ($result) {
+                // Invalidate the item's cache.
+                if ($result !== false && $result > 0) {
+                    db_process_sql_delete(
+                        'tvisual_console_elements_cache',
+                        [
+                            'vc_item_id' => (int) $save['id'],
+                        ]
+                    );
+
                     $item = static::fromDB(['id' => $save['id']]);
                     // Update the model.
                     if (!empty($item)) {

@@ -36,6 +36,9 @@ require_once $config['homedir'].'/include/functions_component_groups.php';
 if (defined('METACONSOLE')) {
     components_meta_print_header();
     $sec = 'advanced';
+
+    $id_modulo = (int) get_parameter('id_component_type');
+    $new_component = (bool) get_parameter('new_component');
 } else {
     /*
         Hello there! :)
@@ -761,7 +764,7 @@ enterprise_hook('close_meta_frame');
             }
         });
 
-        $('[id^=checkbox-all_delete]').change(function(){    
+        $('[id^=checkbox-all_delete]').change(function(){z
             if ($("#checkbox-all_delete").prop("checked")) {
                 $('[id^=checkbox-delete_multiple]').parent().parent().addClass('checkselected');
                 $(".check_delete").prop("checked", true);

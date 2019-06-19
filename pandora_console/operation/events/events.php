@@ -111,11 +111,11 @@ $id_extra = get_parameter('filter[id_extra]');
 $user_comment = get_parameter('filter[user_comment]');
 $history = get_parameter('history', false);
 $section = get_parameter('section', false);
+$filter = get_parameter('filter', []);
 
 // Ajax responses.
 if (is_ajax()) {
     $get_events = get_parameter('get_events', 0);
-    $filter = get_parameter('filter', []);
     // Datatables offset, limit.
     $start = get_parameter('start', 0);
     $length = get_parameter('length', $config['block_size']);
@@ -493,27 +493,27 @@ if ($pure) {
 
     // Fullscreen.
     $fullscreen['active'] = false;
-    $fullscreen['text'] = '<a href="'.$url.'&amp;pure=1">'.html_print_image('images/full_screen.png', true, ['title' => __('Full screen')]).'</a>';
+    $fullscreen['text'] = '<a class="events_link" href="'.$url.'&amp;pure=1">'.html_print_image('images/full_screen.png', true, ['title' => __('Full screen')]).'</a>';
 
     // Event list.
     $list['active'] = false;
-    $list['text'] = '<a href="index.php?sec=eventos&sec2=operation/events/events&amp;pure='.$config['pure'].'">'.html_print_image('images/events_list.png', true, ['title' => __('Event list')]).'</a>';
+    $list['text'] = '<a class="events_link" href="index.php?sec=eventos&sec2=operation/events/events&amp;pure='.$config['pure'].'">'.html_print_image('images/events_list.png', true, ['title' => __('Event list')]).'</a>';
 
     // History event list.
     $history_list['active'] = false;
-    $history_list['text'] = '<a href="index.php?sec=eventos&sec2=operation/events/events&amp;pure='.$config['pure'].'&amp;section=history&amp;history=1">'.html_print_image('images/books.png', true, ['title' => __('History event list')]).'</a>';
+    $history_list['text'] = '<a class="events_link" href="index.php?sec=eventos&sec2=operation/events/events&amp;pure='.$config['pure'].'&amp;section=history&amp;history=1">'.html_print_image('images/books.png', true, ['title' => __('History event list')]).'</a>';
 
     // RSS.
     $rss['active'] = false;
-    $rss['text'] = '<a href="operation/events/events_rss.php?user='.$config['id_user'].'&hashup='.$hashup.'&'.$params.'">'.html_print_image('images/rss.png', true, ['title' => __('RSS Events')]).'</a>';
+    $rss['text'] = '<a class="events_link" href="operation/events/events_rss.php?user='.$config['id_user'].'&hashup='.$hashup.'&'.$params.'">'.html_print_image('images/rss.png', true, ['title' => __('RSS Events')]).'</a>';
 
     // Marquee.
     $marquee['active'] = false;
-    $marquee['text'] = '<a href="operation/events/events_marquee.php">'.html_print_image('images/heart.png', true, ['title' => __('Marquee display')]).'</a>';
+    $marquee['text'] = '<a class="events_link" href="operation/events/events_marquee.php">'.html_print_image('images/heart.png', true, ['title' => __('Marquee display')]).'</a>';
 
     // CSV.
     $csv['active'] = false;
-    $csv['text'] = '<a href="operation/events/export_csv.php?'.$params.'">'.html_print_image('images/csv_mc.png', true, ['title' => __('Export to CSV file')]).'</a>';
+    $csv['text'] = '<a class="events_link" href="operation/events/export_csv.php?fb64='.$filter_b64.'">'.html_print_image('images/csv_mc.png', true, ['title' => __('Export to CSV file')]).'</a>';
 
     // Sound events.
     $sound_event['active'] = false;
@@ -1968,6 +1968,18 @@ function reorder_tags_inputs() {
 }
 /* Tag management ends */
 $(document).ready( function() {
+
+    /* Filter to a href */
+    $('.events_link').on('click', function(e) {
+        e.preventDefault();
+
+        console.log(e.currentTarget);
+
+        
+
+
+
+    });
 
     /* Multi select handler */
     $('#checkbox-all_validate_box').on('change', function() {

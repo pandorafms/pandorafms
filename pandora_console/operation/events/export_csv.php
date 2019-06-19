@@ -27,6 +27,21 @@ if (! check_acl($config['id_user'], 0, 'ER') && ! check_acl($config['id_user'], 
     exit;
 }
 
+hd($_REQUEST);
+
+$fb64 = get_parameter('fb64', '');
+
+
+try {
+    $filter = json_decode(base64_decode($fb64), true);
+} catch (Exception $e) {
+    echo $e;
+    exit;
+}
+
+hd($filter);
+
+die();
 global $config;
 
 // loading l10n tables, because of being invoked not through index.php.

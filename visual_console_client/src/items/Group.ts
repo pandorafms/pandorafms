@@ -1,4 +1,4 @@
-import { LinkedVisualConsoleProps, UnknownObject } from "../types";
+import { LinkedVisualConsoleProps, AnyObject } from "../lib/types";
 import {
   linkedVCPropsDecoder,
   parseIntOr,
@@ -19,7 +19,7 @@ export type GroupProps = {
 } & ItemProps &
   LinkedVisualConsoleProps;
 
-function extractHtml(data: UnknownObject): string | null {
+function extractHtml(data: AnyObject): string | null {
   if (!stringIsEmpty(data.html)) return data.html;
   if (!stringIsEmpty(data.encodedHtml)) return decodeBase64(data.encodedHtml);
   return null;
@@ -34,7 +34,7 @@ function extractHtml(data: UnknownObject): string | null {
  * @throws Will throw a TypeError if some property
  * is missing from the raw object or have an invalid type.
  */
-export function groupPropsDecoder(data: UnknownObject): GroupProps | never {
+export function groupPropsDecoder(data: AnyObject): GroupProps | never {
   if (
     (typeof data.imageSrc !== "string" || data.imageSrc.length === 0) &&
     data.encodedHtml === null

@@ -360,9 +360,12 @@ sub pandora_generate_alerts ($$$$$$$$;$$$) {
 	my ($pa_config, $data, $status, $agent, $module, $utimestamp, $dbh, $timestamp, $extra_macros, $last_data_value, $alert_type) = @_;
 
 	# No alerts when event storm protection is enabled
-	if ($EventStormProtection == 1) {
+	
+	if ($EventStormProtection == 1)	{
+		
 		return;
 	}
+ 
 
 	# Warmup interval for alerts.
 	if ($pa_config->{'warmup_alert_on'} == 1) {
@@ -3349,7 +3352,7 @@ sub pandora_event ($$$$$$$$$$;$$$$$$$$$$$) {
 	# Validate events with the same event id
 	if (defined ($id_extra) && $id_extra ne '') {
 		logger($pa_config, "Updating events with extended id '$id_extra'.", 10);
-		db_do ($dbh, 'UPDATE ' . $event_table . ' SET estado = 1, ack_utimestamp = ? WHERE estado = 0 AND id_extra=?', $utimestamp, $id_extra);
+		db_do ($dbh, 'UPDATE ' . $event_table . ' SET estado = 1, ack_utimestamp = ? WHERE estado IN (0,2) AND id_extra=?', $utimestamp, $id_extra);
 	}
 	
 	# Create the event
@@ -4856,32 +4859,36 @@ sub pandora_process_policy_queue ($) {
 	logger($pa_config, "Starting policy queue patrol process.", 1);
 
 	while($THRRUN == 1) {
+		eval {{
+			local $SIG{__DIE__};
 
-		# If we are not the master server sleep and check again.
-		if (pandora_is_master($pa_config) == 0) {
-			sleep ($pa_config->{'server_threshold'});
-			next;
-		}
+			# If we are not the master server sleep and check again.
+			if (pandora_is_master($pa_config) == 0) {
+				sleep ($pa_config->{'server_threshold'});
+				next;
+			}
+
+			my $operation = enterprise_hook('get_first_policy_queue', [$dbh]);
+			next unless (defined ($operation) && $operation ne '');
+
+			if($operation->{'operation'} eq 'apply' || $operation->{'operation'} eq 'apply_db') {
+				enterprise_hook('pandora_apply_policy', [$dbh, $pa_config, $operation->{'id_policy'}, $operation->{'id_agent'}, $operation->{'id'}, $operation->{'operation'}]);
+			}
+			elsif($operation->{'operation'} eq 'delete') {
+				if($operation->{'id_agent'} == 0) {
+					enterprise_hook('pandora_purge_policy_agents', [$dbh, $pa_config, $operation->{'id_policy'}]);
+				}
+				else {
+					enterprise_hook('pandora_delete_agent_from_policy', [$dbh, $pa_config, $operation->{'id_policy'}, $operation->{'id_agent'}]);
+				}
+			}
+
+			enterprise_hook('pandora_finish_queue_operation', [$dbh, $operation->{'id'}]);
+		}};
 
 		# Check the queue each 5 seconds
-		sleep (5);
+		sleep(5);
 		
-		my $operation = enterprise_hook('get_first_policy_queue', [$dbh]);
-		next unless (defined ($operation) && $operation ne '');
-
-		if($operation->{'operation'} eq 'apply' || $operation->{'operation'} eq 'apply_db') {
-			enterprise_hook('pandora_apply_policy', [$dbh, $pa_config, $operation->{'id_policy'}, $operation->{'id_agent'}, $operation->{'id'}, $operation->{'operation'}]);
-		}
-		elsif($operation->{'operation'} eq 'delete') {
-			if($operation->{'id_agent'} == 0) {
-				enterprise_hook('pandora_purge_policy_agents', [$dbh, $pa_config, $operation->{'id_policy'}]);
-			}
-			else {
-				enterprise_hook('pandora_delete_agent_from_policy', [$dbh, $pa_config, $operation->{'id_policy'}, $operation->{'id_agent'}]);
-			}
-		}
-		
-		enterprise_hook('pandora_finish_queue_operation', [$dbh, $operation->{'id'}]);
 	}
 
 	db_disconnect($dbh);

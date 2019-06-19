@@ -2258,7 +2258,7 @@ function events_get_response_target(
     global $config;
 
     // If server_id > 0, it's a metaconsole query.
-    $meta = $server_id > 0;
+    $meta = $server_id > 0 || is_metaconsole();
     $event_table = events_get_events_table($meta, $history);
     $event = db_get_row($event_table, 'id_evento', $event_id);
 
@@ -4551,7 +4551,7 @@ function events_list_events_grouped_agents($sql)
     $sql = sprintf(
         'SELECT * FROM %s 
 	    LEFT JOIN tagent_secondary_group 
-	       ON tagent_secondary_group.id_agent = tevento.id_agente
+	       ON tagent_secondary_group.id_agent = id_agente
         WHERE %s',
         $table,
         $sql

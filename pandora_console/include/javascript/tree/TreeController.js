@@ -624,7 +624,10 @@ var TreeController = {
                   'images/tree_service_map.png" /> '
               );
 
-              if (typeof element.serviceDetail != "undefined") {
+              if (
+                typeof element.serviceDetail != "undefined" &&
+                element.name != null
+              ) {
                 $serviceDetailImage
                   .click(function(e) {
                     e.preventDefault();
@@ -634,9 +637,10 @@ var TreeController = {
                   .css("cursor", "pointer");
 
                 $content.append($serviceDetailImage);
+                $content.append(" " + element.name);
+              } else {
+                $content.remove($node);
               }
-
-              $content.append(" " + element.name);
 
               break;
             case "modules":

@@ -254,7 +254,12 @@ function update_button_palette_callback() {
   var values = {};
 
   values = readFields();
-
+  if (values["map_linked"] == 0) {
+    if (values["agent"] == "" || values["agent"] == "none") {
+      dialog_message("#message_alert_no_agent");
+      return false;
+    }
+  }
   // TODO VALIDATE DATA
   switch (selectedItem) {
     case "background":
@@ -1260,6 +1265,7 @@ function create_button_palette_callback() {
         dialog_message("#message_alert_max_height");
         validate = false;
       }
+
       break;
     case "group_item":
       if (values["height"] == "") {
@@ -1322,6 +1328,12 @@ function create_button_palette_callback() {
       ) {
         dialog_message("#message_alert_no_image");
         validate = false;
+      }
+      if (values["map_linked"] == 0) {
+        if (values["agent"] == "" || values["agent"] == "none") {
+          dialog_message("#message_alert_no_agent");
+          validate = false;
+        }
       }
 
       break;

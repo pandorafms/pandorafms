@@ -14,3 +14,8 @@
   align-items: center;
   user-select: text;
 }
+
+.visual-console-item.is-editing {
+  border: 2px dashed #33ccff;
+  transform: translateX(-2px) translateY(-2px);
+}

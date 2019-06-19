@@ -282,38 +282,41 @@ function process_user_login_remote($login, $pass, $api=false)
                 }
             }
         } else if ($config['auth'] === 'ldap') {
-            if ($config['ldap_save_password']) {
-                $update_credentials = change_local_user_pass_ldap($login, $pass);
+            // Check if autocreate  remote users is active.
+            if ($config['autocreate_remote_users'] == 1) {
+                if ($config['ldap_save_password']) {
+                    $update_credentials = change_local_user_pass_ldap($login, $pass);
 
-                if ($update_credentials) {
-                    $config['auth_error'] = __('Your permissions have changed. Please, login again.');
-                    return false;
-                }
-            } else {
-                delete_user_pass_ldap($login);
-            }
-
-            $permissions = fill_permissions_ldap($sr);
-            if (empty($permissions)) {
-                $config['auth_error'] = __('User not found in database or incorrect password');
-                return false;
-            } else {
-                // check permissions
-                $result = check_permission_ad(
-                    $login,
-                    $pass,
-                    false,
-                    $permissions,
-                    defined('METACONSOLE')
-                );
-
-                if ($return === 'error_permissions') {
-                    $config['auth_error'] = __('Problems with configuration permissions. Please contact with Administrator');
-                    return false;
-                } else {
-                    if ($return === 'permissions_changed') {
+                    if ($update_credentials) {
                         $config['auth_error'] = __('Your permissions have changed. Please, login again.');
                         return false;
+                    }
+                } else {
+                    delete_user_pass_ldap($login);
+                }
+
+                $permissions = fill_permissions_ldap($sr);
+                if (empty($permissions)) {
+                    $config['auth_error'] = __('User not found in database or incorrect password');
+                    return false;
+                } else {
+                    // check permissions
+                    $result = check_permission_ad(
+                        $login,
+                        $pass,
+                        false,
+                        $permissions,
+                        defined('METACONSOLE')
+                    );
+
+                    if ($return === 'error_permissions') {
+                        $config['auth_error'] = __('Problems with configuration permissions. Please contact with Administrator');
+                        return false;
+                    } else {
+                        if ($return === 'permissions_changed') {
+                            $config['auth_error'] = __('Your permissions have changed. Please, login again.');
+                            return false;
+                        }
                     }
                 }
             }
@@ -1337,8 +1340,9 @@ function fill_permissions_ldap($sr)
                     'tags'         => implode(',', $ldap_adv_perm['tags']),
                     'no_hierarchy' => (bool) $ldap_adv_perm['no_hierarchy'] ? 1 : 0,
                 ];
-                return $permissions;
             }
+
+            return $permissions;
         }
 
         foreach ($result as $perms) {
@@ -1468,7 +1472,10 @@ function local_ldap_search($ldap_host, $ldap_port=389, $ldap_version=3, $dn, $ac
         $tls = ' -ZZ ';
     }
 
-    if (stripos($ldap_host, 'ldap') !== false) {
+    if (stripos($ldap_host, 'ldap://') !== false
+        || stripos($ldap_host, 'ldaps://') !== false
+        || stripos($ldap_host, 'ldapi://') !== false
+    ) {
         $ldap_host = ' -H '.$ldap_host.':'.$ldap_port;
     } else {
         $ldap_host = ' -h '.$ldap_host.' -p '.$ldap_port;

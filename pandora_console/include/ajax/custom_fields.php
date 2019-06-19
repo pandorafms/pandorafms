@@ -299,6 +299,7 @@ if (check_login()) {
                 'status'            => "<div id='reload_status_agent_".$values['id_tmetaconsole_setup'].'_'.$values['id_tagente']."'>".$image_status.'</div>',
                 'id_agent'          => $values['id_tagente'],
                 'id_server'         => $values['id_tmetaconsole_setup'],
+                'status_value'      => $values['status'],
             ];
         }
 

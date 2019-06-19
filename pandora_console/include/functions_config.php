@@ -180,7 +180,7 @@ function config_update_config()
                         $error_update[] = __('Automatic check for updates');
                     }
 
-                    if (!config_update_value('cert_path', (bool) get_parameter('cert_path'))) {
+                    if (!config_update_value('cert_path', get_parameter('cert_path'))) {
                         $error_update[] = __('SSL cert path');
                     }
 
@@ -270,7 +270,7 @@ function config_update_config()
                         $error_update[] = __('Referer security');
                     }
 
-                    if (!config_update_value('event_storm_protection', get_parameter('event_storm_protection'))) {
+                    if (!config_update_value('event_storm_protection', get_parameter('event_storm_protection', 0))) {
                         $error_update[] = __('Event storm protection');
                     }
 
@@ -2167,9 +2167,9 @@ function config_process_config()
     if (!isset($config['ad_adv_perms'])) {
         config_update_value('ad_adv_perms', '');
     } else {
+        $temp_ad_adv_perms = [];
         if (!json_decode(io_safe_output($config['ad_adv_perms']))) {
-            $temp_ad_adv_perms = [];
-            if (!isset($config['ad_adv_perms']) && $config['ad_adv_perms'] != '') {
+            if ($config['ad_adv_perms'] != '') {
                 $perms = explode(';', io_safe_output($config['ad_adv_perms']));
                 foreach ($perms as $ad_adv_perm) {
                     if (preg_match('/[\[\]]/', $ad_adv_perm)) {
@@ -2232,22 +2232,26 @@ function config_process_config()
                 if (!empty($new_ad_adv_perms)) {
                     $temp_ad_adv_perms = json_encode($new_ad_adv_perms);
                 }
+            } else {
+                $temp_ad_adv_perms = '';
             }
-
-            config_update_value('ad_adv_perms', $temp_ad_adv_perms);
+        } else {
+            $temp_ad_adv_perms = $config['ad_adv_perms'];
         }
+
+          config_update_value('ad_adv_perms', $temp_ad_adv_perms);
     }
 
     if (!isset($config['ldap_adv_perms'])) {
         config_update_value('ldap_adv_perms', '');
     } else {
+        $temp_ldap_adv_perms = [];
         if (!json_decode(io_safe_output($config['ldap_adv_perms']))) {
-            $temp_ldap_adv_perms = [];
-            if (!isset($config['ad_adv_perms']) && $config['ldap_adv_perms'] != '') {
+            if ($config['ldap_adv_perms'] != '') {
                 $perms = explode(';', io_safe_output($config['ldap_adv_perms']));
-                foreach ($perms as $ad_adv_perm) {
-                    if (preg_match('/[\[\]]/', $ad_adv_perm)) {
-                        $all_data = explode(',', io_safe_output($ad_adv_perm));
+                foreach ($perms as $ldap_adv_perm) {
+                    if (preg_match('/[\[\]]/', $ldap_adv_perm)) {
+                        $all_data = explode(',', io_safe_output($ldap_adv_perm));
                         $profile = $all_data[0];
                         $group_pnd = $all_data[1];
                         $groups_ad = str_replace(['[', ']'], '', $all_data[2]);
@@ -2277,7 +2281,7 @@ function config_process_config()
                             'groups_ldap' => $groups_ldap,
                         ];
                     } else {
-                        $all_data = explode(',', io_safe_output($ad_adv_perm));
+                        $all_data = explode(',', io_safe_output($ldap_adv_perm));
                         $profile = $all_data[0];
                         $group_pnd = $all_data[1];
                         $groups_ad = $all_data[2];
@@ -2306,10 +2310,14 @@ function config_process_config()
                 if (!empty($new_ldap_adv_perms)) {
                     $temp_ldap_adv_perms = json_encode($new_ldap_adv_perms);
                 }
+            } else {
+                $temp_ldap_adv_perms = '';
             }
-
-            config_update_value('ldap_adv_perms', $temp_ldap_adv_perms);
+        } else {
+            $temp_ldap_adv_perms = $config['ldap_adv_perms'];
         }
+
+        config_update_value('ldap_adv_perms', $temp_ldap_adv_perms);
     }
 
     if (!isset($config['rpandora_server'])) {

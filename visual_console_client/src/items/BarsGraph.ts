@@ -1,4 +1,4 @@
-import { UnknownObject, WithModuleProps } from "../types";
+import { AnyObject, WithModuleProps } from "../lib/types";
 import { modulePropsDecoder, decodeBase64, stringIsEmpty } from "../lib";
 import Item, { ItemType, ItemProps, itemBasePropsDecoder } from "../Item";
 
@@ -17,9 +17,7 @@ export type BarsGraphProps = {
  * @throws Will throw a TypeError if some property
  * is missing from the raw object or have an invalid type.
  */
-export function barsGraphPropsDecoder(
-  data: UnknownObject
-): BarsGraphProps | never {
+export function barsGraphPropsDecoder(data: AnyObject): BarsGraphProps | never {
   if (stringIsEmpty(data.html) && stringIsEmpty(data.encodedHtml)) {
     throw new TypeError("missing html content.");
   }

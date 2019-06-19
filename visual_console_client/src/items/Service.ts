@@ -1,4 +1,4 @@
-import { UnknownObject } from "../types";
+import { AnyObject } from "../lib/types";
 import {
   stringIsEmpty,
   notEmptyStringOr,
@@ -24,7 +24,7 @@ export type ServiceProps = {
  * @throws Will throw a TypeError if some property
  * is missing from the raw object or have an invalid type.
  */
-export function servicePropsDecoder(data: UnknownObject): ServiceProps | never {
+export function servicePropsDecoder(data: AnyObject): ServiceProps | never {
   if (data.imageSrc !== null) {
     if (
       typeof data.statusImageSrc !== "string" ||

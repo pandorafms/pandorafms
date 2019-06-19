@@ -109,6 +109,8 @@ $date_to = get_parameter('filter[date_to]');
 $source = get_parameter('filter[source]');
 $id_extra = get_parameter('filter[id_extra]');
 $user_comment = get_parameter('filter[user_comment]');
+$history = get_parameter('history', false);
+$section = get_parameter('section', false);
 
 // Ajax responses.
 if (is_ajax()) {
@@ -155,7 +157,9 @@ if (is_ajax()) {
             }
 
             $events = events_get_all(
+                // Fields.
                 $fields,
+                // Filter.
                 $filter,
                 // Offset.
                 $start,
@@ -164,7 +168,9 @@ if (is_ajax()) {
                 // Order.
                 $order['direction'],
                 // Sort field.
-                $order['field']
+                $order['field'],
+                // History.
+                $history
             );
             $count = events_get_all(
                 'count',
@@ -1227,7 +1233,10 @@ try {
             'class'               => 'info_table events',
             'style'               => 'width: 100%;',
             'ajax_url'            => 'operation/events/events',
-            'ajax_data'           => ['get_events' => 1],
+            'ajax_data'           => [
+                'get_events' => 1,
+                'history'    => (int) $history,
+            ],
             'form'                => [
                 'id'            => 'events_form',
                 'class'         => 'flex-row',
@@ -1280,39 +1289,41 @@ try {
 $sql_event_resp = "SELECT id, name FROM tevent_response WHERE type LIKE 'command'";
 $event_responses = db_get_all_rows_sql($sql_event_resp);
 
-if (check_acl($config['id_user'], 0, 'EW') == 1 && !$readonly) {
-    $array_events_actions['in_progress_selected'] = __('In progress selected');
-    $array_events_actions['validate_selected'] = __('Validate selected');
-}
+if ($config['event_replication'] != 1) {
+    if (check_acl($config['id_user'], 0, 'EW') == 1 && !$readonly) {
+        $array_events_actions['in_progress_selected'] = __('In progress selected');
+        $array_events_actions['validate_selected'] = __('Validate selected');
+    }
 
-if (check_acl($config['id_user'], 0, 'EM') == 1 && !$readonly) {
-    $array_events_actions['delete_selected'] = __('Delete selected');
+    if (check_acl($config['id_user'], 0, 'EM') == 1 && !$readonly) {
+        $array_events_actions['delete_selected'] = __('Delete selected');
+    }
 }
 
 foreach ($event_responses as $val) {
     $array_events_actions[$val['id']] = $val['name'];
 }
 
-if ($config['event_replication'] != 1) {
-    echo '<div class="multi-response-buttons">';
-    echo '<form method="post" id="form_event_response">';
-    echo '<input type="hidden" id="max_execution_event_response" value="'.$config['max_execution_event_response'].'" />';
-    html_print_select($array_events_actions, 'response_id', '', '', '', 0, false, false, false);
-    echo '&nbsp&nbsp';
-    html_print_button(__('Execute event response'), 'submit_event_response', false, 'execute_event_response(true);', 'class="sub next"');
-    echo "<span id='response_loading_dialog' style='display:none'>".html_print_image('images/spinner.gif', true).'</span>';
-    echo '</form>';
-    echo '<span id="max_custom_event_resp_msg" style="display:none; color:#e63c52; line-height: 200%;">';
-    echo __(
-        'A maximum of %s event custom responses can be selected',
-        $config['max_execution_event_response']
-    ).'</span>';
-    echo '<span id="max_custom_selected" style="display:none; color:#e63c52; line-height: 200%;">';
-    echo __(
-        'Please, select an event'
-    ).'</span>';
-    echo '</div>';
-}
+
+echo '<div class="multi-response-buttons">';
+echo '<form method="post" id="form_event_response">';
+echo '<input type="hidden" id="max_execution_event_response" value="'.$config['max_execution_event_response'].'" />';
+html_print_select($array_events_actions, 'response_id', '', '', '', 0, false, false, false);
+echo '&nbsp&nbsp';
+html_print_button(__('Execute event response'), 'submit_event_response', false, 'execute_event_response(true);', 'class="sub next"');
+echo "<span id='response_loading_dialog' style='display:none'>".html_print_image('images/spinner.gif', true).'</span>';
+echo '</form>';
+echo '<span id="max_custom_event_resp_msg" style="display:none; color:#e63c52; line-height: 200%;">';
+echo __(
+    'A maximum of %s event custom responses can be selected',
+    $config['max_execution_event_response']
+).'</span>';
+echo '<span id="max_custom_selected" style="display:none; color:#e63c52; line-height: 200%;">';
+echo __(
+    'Please, select an event'
+).'</span>';
+echo '</div>';
+
 
 // Close viewer.
 enterprise_hook('close_meta_frame');
@@ -1658,6 +1669,9 @@ function process_datatables_item(item) {
             item.options += '<?php echo html_print_image('images/cross.png', true, ['title' => __('Delete event')]); ?></a>';
         }
     }
+        <?php
+    }
+    ?>
 
     // Multi select.
     item.m = '<input name="checkbox-multi[]" type="checkbox" value="';
@@ -1668,9 +1682,6 @@ function process_datatables_item(item) {
         item.m += ' event_rep="0" ';
     }
     item.m += 'class="candeleted chk_val">';
-        <?php
-    }
-    ?>
 
     /* Status */
     img = '<?php echo html_print_image('images/star.png', true, ['title' => __('Unknown'), 'class' => 'forced-title']); ?>';

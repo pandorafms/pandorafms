@@ -1783,12 +1783,14 @@ function alerts_validate_alert_agent_module($id_alert_agent_module, $noACLs=fals
             ['id' => $id]
         );
 
+        $template_name = io_safe_output(db_get_value('name', 'talert_templates', 'id', $alert['id_alert_template']));
+        $module_name = io_safe_output(db_get_value('nombre', 'tagente_modulo', 'id_agente_modulo', $alert['id_agent_module']));
         if ($result > 0) {
             // Update fired alert count on the agent
             db_process_sql(sprintf('UPDATE tagente SET update_alert_count=1 WHERE id_agente = %d', $agent_id));
 
             events_create_event(
-                'Manual validation of alert for '.io_safe_output(db_get_value('nombre', 'tagente_modulo', 'id_agente_modulo', $alert['id_agent_module'])).'',
+                'Manual validation of alert '.$template_name.' assigned to '.$module_name.'',
                 $group_id,
                 $agent_id,
                 1,

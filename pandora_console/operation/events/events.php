@@ -1591,38 +1591,6 @@ function process_datatables_item(item) {
     module_status = '<div class="criticity" style="background: ';
     module_status += color + '">' + text + "</div>";
 
-
-    /* Agent name link */
-    if (item.id_agente > 0) {
-        item.agent_name = '<a href="<?php echo ui_get_full_url('index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='); ?>' +item.id_agente+'">' + item.agent_name + '</a>';
-    } else {
-        item.agent_name = '';
-    }
-
-    /* Agent ID link */
-    if (item.id_agente > 0) {
-        <?php
-        if (in_array('agent_name', $fields)) {
-            ?>
-            item.id_agente = '<a href="<?php echo ui_get_full_url('index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='); ?>'+item.id_agente+'">' + item.id_agente + '</a>';
-            <?php
-        } else {
-            ?>
-            item.id_agente = '<a href="<?php echo ui_get_full_url('index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='); ?>'+item.id_agente+'">' + item.agent_name + '</a>';
-            <?php
-        }
-        ?>
-    } else {
-        item.id_agente = '';
-    }
-
-    /* Group name */
-    if (item.id_grupo == "0") {
-        item.id_grupo = "<?php echo __('All'); ?>";
-    } else {
-        item.id_grupo = item.group_name;
-    }
-
     /* Options */
     // Show more.
     item.options = '<a href="javascript:" onclick="show_event_dialog(\'';
@@ -1700,6 +1668,31 @@ function process_datatables_item(item) {
     }
 
     /* Update column content now to avoid json poisoning. */
+
+    /* Agent name link */
+    if (item.id_agente > 0) {
+        item.agent_name = '<a href="<?php echo ui_get_full_url('index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='); ?>' +item.id_agente+'">' + item.agent_name + '</a>';
+    } else {
+        item.agent_name = '';
+    }
+
+    /* Agent ID link */
+    if (item.id_agente > 0) {
+        <?php
+        if (in_array('agent_name', $fields)) {
+            ?>
+            item.id_agente = '<a href="<?php echo ui_get_full_url('index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='); ?>'+item.id_agente+'">' + item.id_agente + '</a>';
+            <?php
+        } else {
+            ?>
+            item.id_agente = '<a href="<?php echo ui_get_full_url('index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='); ?>'+item.id_agente+'">' + item.agent_name + '</a>';
+            <?php
+        }
+        ?>
+    } else {
+        item.id_agente = '';
+    }
+
     item.estado = '<div>';
     item.estado += img;
     item.estado += '</div>';
@@ -1718,6 +1711,13 @@ function process_datatables_item(item) {
 
     // Add event severity format to itself.
     item.evento = evn;
+
+    /* Group name */
+    if (item.id_grupo == "0") {
+        item.id_grupo = "<?php echo __('All'); ?>";
+    } else {
+        item.id_grupo = item.group_name;
+    }
 
 }
 

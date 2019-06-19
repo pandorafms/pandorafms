@@ -298,6 +298,53 @@ function groups_get_childrens_ids($parent, $groups=null)
 
 
 /**
+ * Return a array of id_group of children of given parent.
+ *
+ * @param integer $parent          The id_grupo parent to search its children.
+ * @param array   $ignorePropagate Ignore propagate.
+ */
+function groups_get_children($parent, $ignorePropagate=false)
+{
+    static $groups;
+
+    if (empty($groups)) {
+        $groups = db_get_all_rows_in_table('tgrupo');
+        $groups = array_reduce(
+            $groups,
+            function ($carry, $item) {
+                $carry[$item['id_grupo']] = $item;
+                return $carry;
+            }
+        );
+    }
+
+    $return = [];
+    foreach ($groups as $key => $g) {
+        if ($g['id_grupo'] == 0) {
+            continue;
+        }
+
+        if ($ignorePropagate || $parent == 0 || $groups[$parent]['propagate']) {
+            if ($g['parent'] == $parent) {
+                $return += [$g['id_grupo'] => $g];
+                if ($g['propagate'] || $ignorePropagate) {
+                    $return += groups_get_children(
+                        $g['id_grupo'],
+                        $ignorePropagate
+                    )
+                    );
+                }
+            }
+        }
+    }
+
+    return $return;
+}
+
+
+/**
+ * XXX: This is not working. Expects 'propagate' on CHILD not on PARENT!!!
+ *
  * Return a array of id_group of childrens (to branches down)
  *
  * @param integer $parent The id_group parent to search the childrens.

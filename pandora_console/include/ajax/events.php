@@ -1079,27 +1079,35 @@ if ($get_extended_event) {
     }
 
     // Check ACLs.
+    $access = false;
     if (is_user_admin($config['id_user'])) {
         // Do nothing if you're admin, you get full access.
-        $__ignored_line = 0;
+        $access = true;
     } else if ($config['id_user'] == $event['owner_user']) {
         // Do nothing if you're the owner user, you get access.
-        $__ignored_line = 0;
+        $access = true;
     } else if ($event['id_grupo'] == 0) {
         // If the event has access to all groups, you get access.
-        $__ignored_line = 0;
+        $access = true;
     } else {
         // Get your groups.
         $groups = users_get_groups($config['id_user'], 'ER');
 
         if (in_array($event['id_grupo'], array_keys($groups))) {
             // If event group is among the groups of the user, you get access.
-            $__ignored_line = 0;
-        } else {
-            // If all the access types fail, abort.
-            echo 'Access denied';
-            return false;
+            $access = true;
+        } else if ($event['id_agente']
+            && agents_check_access_agent($event['id_agente'], 'ER')
+        ) {
+            // Secondary group, indirect access.
+            $access = true;
         }
+    }
+
+    if (!$access) {
+        // If all the access types fail, abort.
+        echo 'Access denied';
+        return false;
     }
 
     // Print group_rep in a hidden field to recover it from javascript.

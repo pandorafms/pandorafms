@@ -641,32 +641,37 @@ function events_get_all(
         }
     }
 
-    if (isset($filter['id_group_filter']) && $filter['id_group_filter'] > 0) {
+    $groups = $filter['id_group_filter'];
+    if (isset($groups) && $groups > 0) {
         $propagate = db_get_value(
             'propagate',
             'tgrupo',
             'id_grupo',
-            $filter['id_group_filter']
+            $groups
         );
 
         if (!$propagate) {
             $sql_filters[] = sprintf(
-                ' AND te.id_grupo = %d ',
-                $filter['id_group_filter']
+                ' AND (te.id_grupo = %d OR tasg.id_group = %d)',
+                $groups
             );
         } else {
-            $groups = [ $filter['id_group_filter'] ];
-            $childrens = groups_get_childrens($id_group, null, true);
-            if (!empty($childrens)) {
-                foreach ($childrens as $child) {
-                    $groups[] = (int) $child['id_grupo'];
+            $children = groups_get_children($groups);
+            $_groups = [];
+            if (!empty($children)) {
+                foreach ($children as $child) {
+                    $_groups[] = (int) $child['id_grupo'];
                 }
+
+                $groups = $_groups;
+            } else {
+                $groups = [ $groups ];
             }
 
-            $filter['id_group_filter'] = $groups;
             $sql_filters[] = sprintf(
-                ' AND id_group IN (%s) ',
-                join(',', $filter['id_group_filter'])
+                ' AND (te.id_grupo IN (%s) OR tasg.id_group IN (%s)',
+                join(',', array_keys($groups)),
+                join(',', array_keys($groups))
             );
         }
     }
@@ -702,8 +707,6 @@ function events_get_all(
         }
     }
 
-    $sg_active = enterprise_hook('agents_is_using_secondary_groups');
-
     if (!$user_is_admin) {
         $ER_groups = users_get_groups($config['id_user'], 'ER', false);
         $EM_groups = users_get_groups($config['id_user'], 'EM', false, true);
@@ -713,7 +716,8 @@ function events_get_all(
     if (!$user_is_admin && !users_can_manage_group_all('ER')) {
         // Get groups where user have ER grants.
         $sql_filters[] = sprintf(
-            ' AND te.id_grupo IN ( %s )',
+            ' AND (te.id_grupo IN ( %s ) OR tasg.id_group IN (%s))',
+            join(', ', array_keys($ER_groups)),
             join(', ', array_keys($ER_groups))
         );
     }
@@ -1036,12 +1040,24 @@ function events_get_all(
 
     $tgrupo_join = 'LEFT';
     $tgrupo_join_filters = [];
-    if (isset($filter['id_group_filter']) && $filter['id_group_filter'] > 0) {
+    if (isset($groups)
+        && (is_array($groups)
+        || $groups > 0)
+    ) {
         $tgrupo_join = 'INNER';
-        $tgrupo_join_filters[] = sprintf(
-            ' AND tg.id_grupo = %s',
-            $filter['id_group_filter']
-        );
+        if (is_array($groups)) {
+            $tgrupo_join_filters[] = sprintf(
+                ' AND (tg.id_grupo IN (%s) OR tasg.id_group IN (%s))',
+                join(', ', array_keys($groups)),
+                join(', ', array_keys($groups))
+            );
+        } else {
+            $tgrupo_join_filters[] = sprintf(
+                ' AND (tg.id_grupo = %s OR tasg.id_group = %s)',
+                $groups,
+                $groups
+            );
+        }
     }
 
     // Secondary groups.

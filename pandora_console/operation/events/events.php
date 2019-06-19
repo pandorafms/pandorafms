@@ -80,7 +80,9 @@ if (!is_metaconsole()
 // Load specific stylesheet.
 ui_require_css_file('events');
 ui_require_css_file('tables');
-ui_require_css_file('tables_meta', ENTERPRISE_DIR.'/include/styles/');
+if (is_metaconsole()) {
+    ui_require_css_file('tables_meta', ENTERPRISE_DIR.'/include/styles/');
+}
 
 // Load extra javascript.
 ui_require_javascript_file('pandora_events');

@@ -252,6 +252,29 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
     this.removeResizement = addResizementListener(
       element,
       (width: Size["width"], height: Size["height"]) => {
+        // The label it's outside the item's size, so we need
+        // to get rid of its size to get the real size of the
+        // item's content.
+        if (this.props.label && this.props.label.length > 0) {
+          const {
+            width: labelWidth,
+            height: labelHeight
+          } = this.labelElementRef.getBoundingClientRect();
+
+          switch (this.props.labelPosition) {
+            case "up":
+            case "down":
+              height -= labelHeight;
+              if (width < labelWidth) width = labelWidth;
+              break;
+            case "left":
+            case "right":
+              width -= labelWidth;
+              if (height < labelHeight) height = labelHeight;
+              break;
+          }
+        }
+
         // Move the DOM element.
         this.resizeElement(width, height);
         // Run the save function.

@@ -669,7 +669,7 @@ function update_link(row_index, id_link) {
           temp_link["arrow_start"] = "module";
           temp_link["id_module_start"] = interface_source;
           temp_link["status_start"] = data["status"];
-          temp_link["link_color"] = data["status"] == "1" ? "#FC4444" : "#999";
+          temp_link["link_color"] = data["status"] == "1" ? "#e63c52" : "#999";
         } else {
           temp_link["arrow_start"] = "";
           temp_link["id_agent_start"] = interface_source;
@@ -679,7 +679,7 @@ function update_link(row_index, id_link) {
           temp_link["arrow_end"] = "module";
           temp_link["id_module_end"] = interface_target;
           temp_link["status_end"] = data["status"];
-          temp_link["link_color"] = data["status"] == "1" ? "#FC4444" : "#999";
+          temp_link["link_color"] = data["status"] == "1" ? "#e63c52" : "#999";
         } else {
           temp_link["arrow_end"] = "";
           temp_link["id_agent_end"] = interface_target;
@@ -2329,7 +2329,7 @@ function add_interface_link_js() {
           temp_link["id_module_start"] = source_value;
           temp_link["status_start"] = data["status_start"];
           temp_link["link_color"] =
-            data["status_start"] == "1" ? "#FC4444" : "#999";
+            data["status_start"] == "1" ? "#e63c52" : "#999";
         } else {
           temp_link["arrow_start"] = "";
           temp_link["id_agent_start"] = source_value;
@@ -2340,7 +2340,7 @@ function add_interface_link_js() {
           temp_link["id_module_end"] = target_value;
           temp_link["status_end"] = data["status_end"];
           temp_link["link_color"] =
-            data["status_end"] == "1" ? "#FC4444" : "#999";
+            data["status_end"] == "1" ? "#e63c52" : "#999";
         } else {
           temp_link["arrow_end"] = "";
           temp_link["id_agent_end"] = target_value;

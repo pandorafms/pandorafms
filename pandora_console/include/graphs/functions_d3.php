@@ -190,8 +190,8 @@ function d3_bullet_chart(
 			}
 			
 			.bullet { font: 7px sans-serif; }
-			.bullet .marker.s0 { stroke: #FC4444; stroke-width: 2px; }
-			.bullet .marker.s1 { stroke: #FAD403; stroke-width: 2px; }
+			.bullet .marker.s0 { stroke: #e63c52; stroke-width: 2px; }
+			.bullet .marker.s1 { stroke: #f3b200; stroke-width: 2px; }
 			.bullet .marker.s2 { stroke: steelblue; stroke-width: 2px; }
 			.bullet .tick line { stroke: #666; stroke-width: .5px; }
 			.bullet .range.s0 { fill: #ddd; }

@@ -756,10 +756,10 @@ function snmp_browser_print_container($return=false, $width='100%', $height='500
         $output .= '<div id="snmp3_browser_options" style="display: none;">';
     }
 
-    $output .= ui_toggle(html_print_table($table3, true), __('SNMP v3 options'), '', true, true);
+    $output .= ui_toggle(html_print_table($table3, true), __('SNMP v3 options'), '', '', true, true);
     $output .= '</div>';
     $output .= '<div style="width: 100%; padding-top: 10px;">';
-    $output .= ui_toggle(html_print_table($table2, true), __('Search options'), '', true, true);
+    $output .= ui_toggle(html_print_table($table2, true), __('Search options'), '', '', true, true);
     $output .= '</div>';
 
     // SNMP tree container

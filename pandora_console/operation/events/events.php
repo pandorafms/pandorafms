@@ -1,7 +1,6 @@
 <?php
 /**
- * Extension to manage a list of gateways and the node address where they should
- * point to.
+ * Event list.
  *
  * @category   Events
  * @package    Pandora FMS
@@ -493,27 +492,27 @@ if ($pure) {
 
     // Fullscreen.
     $fullscreen['active'] = false;
-    $fullscreen['text'] = '<a class="events_link" href="'.$url.'&amp;pure=1">'.html_print_image('images/full_screen.png', true, ['title' => __('Full screen')]).'</a>';
+    $fullscreen['text'] = '<a class="events_link" href="'.$url.'&amp;pure=1&">'.html_print_image('images/full_screen.png', true, ['title' => __('Full screen')]).'</a>';
 
     // Event list.
     $list['active'] = false;
-    $list['text'] = '<a class="events_link" href="index.php?sec=eventos&sec2=operation/events/events&amp;pure='.$config['pure'].'">'.html_print_image('images/events_list.png', true, ['title' => __('Event list')]).'</a>';
+    $list['text'] = '<a class="events_link" href="index.php?sec=eventos&sec2=operation/events/events&amp;pure='.$config['pure'].'&">'.html_print_image('images/events_list.png', true, ['title' => __('Event list')]).'</a>';
 
     // History event list.
     $history_list['active'] = false;
-    $history_list['text'] = '<a class="events_link" href="index.php?sec=eventos&sec2=operation/events/events&amp;pure='.$config['pure'].'&amp;section=history&amp;history=1">'.html_print_image('images/books.png', true, ['title' => __('History event list')]).'</a>';
+    $history_list['text'] = '<a class="events_link" href="index.php?sec=eventos&sec2=operation/events/events&amp;pure='.$config['pure'].'&amp;section=history&amp;history=1&">'.html_print_image('images/books.png', true, ['title' => __('History event list')]).'</a>';
 
     // RSS.
     $rss['active'] = false;
-    $rss['text'] = '<a class="events_link" href="operation/events/events_rss.php?user='.$config['id_user'].'&hashup='.$hashup.'&'.$params.'">'.html_print_image('images/rss.png', true, ['title' => __('RSS Events')]).'</a>';
+    $rss['text'] = '<a class="events_link" href="operation/events/events_rss.php?user='.$config['id_user'].'&hashup='.$hashup.'&">'.html_print_image('images/rss.png', true, ['title' => __('RSS Events')]).'</a>';
 
     // Marquee.
     $marquee['active'] = false;
-    $marquee['text'] = '<a class="events_link" href="operation/events/events_marquee.php">'.html_print_image('images/heart.png', true, ['title' => __('Marquee display')]).'</a>';
+    $marquee['text'] = '<a class="events_link" href="operation/events/events_marquee.php?">'.html_print_image('images/heart.png', true, ['title' => __('Marquee display')]).'</a>';
 
     // CSV.
     $csv['active'] = false;
-    $csv['text'] = '<a class="events_link" href="operation/events/export_csv.php?fb64='.$filter_b64.'">'.html_print_image('images/csv_mc.png', true, ['title' => __('Export to CSV file')]).'</a>';
+    $csv['text'] = '<a class="events_link" href="operation/events/export_csv.php?'.$filter_b64.'">'.html_print_image('images/csv_mc.png', true, ['title' => __('Export to CSV file')]).'</a>';
 
     // Sound events.
     $sound_event['active'] = false;
@@ -1225,6 +1224,7 @@ try {
     $active_filters_div .= '</div>';
 
     $table_id = 'events';
+    $form_id = 'events_form';
 
     // Print datatable.
     ui_print_datatable(
@@ -1238,7 +1238,7 @@ try {
                 'history'    => (int) $history,
             ],
             'form'                => [
-                'id'            => 'events_form',
+                'id'            => $form_id,
                 'class'         => 'flex-row',
                 'html'          => $filter,
                 'inputs'        => [],
@@ -1528,7 +1528,7 @@ function process_datatables_item(item) {
 
         case "<?php echo EVENTS_GOING_UP_WARNING; ?>":
         case "<?php echo EVENTS_GOING_DOWN_WARNING; ?>":
-        $tex = "<?php echo __('WARNING'); ?>";
+            text = "<?php echo __('WARNING'); ?>";
             color = "<?php echo COL_WARNING; ?>";
         break;
 
@@ -1654,15 +1654,15 @@ function process_datatables_item(item) {
     /* Status */
     img = '<?php echo html_print_image('images/star.png', true, ['title' => __('Unknown'), 'class' => 'forced-title']); ?>';
     switch (item.estado) {
-        case "0":
+        case "<?php echo EVENT_STATUS_NEW; ?>":
             img = '<?php echo html_print_image('images/star.png', true, ['title' => __('New event'), 'class' => 'forced-title']); ?>';
         break;
 
-        case "1":
+        case "<?php echo EVENT_STATUS_VALIDATED; ?>":
             img = '<?php echo html_print_image('images/tick.png', true, [ 'title' => __('Event validated'), 'class' => 'forced-title']); ?>';
         break;
 
-        case "2":
+        case "<?php echo EVENT_STATUS_INPROCESS; ?>":
             img = '<?php echo html_print_image('images/hourglass.png', true, [ 'title' => __('Event in process'), 'class' => 'forced-title']); ?>';
         break;
     }
@@ -1968,16 +1968,21 @@ function reorder_tags_inputs() {
 }
 /* Tag management ends */
 $(document).ready( function() {
-
     /* Filter to a href */
     $('.events_link').on('click', function(e) {
         e.preventDefault();
 
-        console.log(e.currentTarget);
+        inputs = $("#<?php echo $form_id; ?> :input");
+        values = {};
+        inputs.each(function() {
+            values[this.name] = $(this).val();
+        })
 
-        
+        values['history'] = "<?php echo (int) $history; ?>";
 
-
+        var url = e.currentTarget.href;
+        url += 'fb64=' + btoa(JSON.stringify(values));
+        document.location = url;
 
     });
 

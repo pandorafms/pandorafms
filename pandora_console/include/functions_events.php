@@ -35,6 +35,143 @@ enterprise_include_once('meta/include/functions_modules_meta.php');
 
 
 /**
+ * Translates a numeric value module_status into descriptive text.
+ *
+ * @param integer $status Module status.
+ *
+ * @return string Descriptive text.
+ */
+function events_translate_module_status($status)
+{
+    switch ($status) {
+        case AGENT_MODULE_STATUS_NORMAL:
+        return __('NORMAL');
+
+        case AGENT_MODULE_STATUS_CRITICAL_BAD:
+        return __('CRITICAL');
+
+        case AGENT_MODULE_STATUS_NO_DATA:
+        return __('NOT INIT');
+
+        case AGENT_MODULE_STATUS_CRITICAL_ALERT:
+        case AGENT_MODULE_STATUS_NORMAL_ALERT:
+        case AGENT_MODULE_STATUS_WARNING_ALERT:
+        return __('ALERT');
+
+        case AGENT_MODULE_STATUS_WARNING:
+        return __('WARNING');
+
+        default:
+        return __('UNKNOWN');
+    }
+}
+
+
+/**
+ * Translates a numeric value event_type into descriptive text.
+ *
+ * @param integer $event_type Event type.
+ *
+ * @return string Descriptive text.
+ */
+function events_translate_event_type($event_type)
+{
+    // Event type prepared.
+    switch ($event_type) {
+        case EVENTS_ALERT_FIRED:
+        case EVENTS_ALERT_RECOVERED:
+        case EVENTS_ALERT_CEASED:
+        case EVENTS_ALERT_MANUAL_VALIDATION:
+        return __('ALERT');
+
+        case EVENTS_RECON_HOST_DETECTED:
+        case EVENTS_SYSTEM:
+        case EVENTS_ERROR:
+        case EVENTS_NEW_AGENT:
+        case EVENTS_CONFIGURATION_CHANGE:
+        return __('SYSTEM');
+
+        case EVENTS_GOING_UP_WARNING:
+        case EVENTS_GOING_DOWN_WARNING:
+        return __('WARNING');
+
+        case EVENTS_GOING_DOWN_NORMAL:
+        case EVENTS_GOING_UP_NORMAL:
+        return __('NORMAL');
+
+        case EVENTS_GOING_DOWN_CRITICAL:
+        case EVENTS_GOING_UP_CRITICAL:
+        return __('CRITICAL');
+
+        case EVENTS_UNKNOWN:
+        case EVENTS_GOING_UNKNOWN:
+        default:
+        return __('UNKNOWN');
+    }
+}
+
+
+/**
+ * Translates a numeric value event_status into descriptive text.
+ *
+ * @param integer $status Event status.
+ *
+ * @return string Descriptive text.
+ */
+function events_translate_event_status($status)
+{
+    switch ($status) {
+        case EVENT_STATUS_NEW:
+        default:
+        return __('NEW');
+
+        case EVENT_STATUS_INPROCESS:
+        return __('IN PROCESS');
+
+        case EVENT_STATUS_VALIDATED:
+        return __('VALIDATED');
+    }
+}
+
+
+/**
+ * Translates a numeric value criticity into descriptive text.
+ *
+ * @param integer $criticity Event criticity.
+ *
+ * @return string Descriptive text.
+ */
+function events_translate_event_criticity($criticity)
+{
+    switch ($criticity) {
+        case EVENT_CRIT_CRITICAL:
+        return __('CRITICAL');
+
+        case EVENT_CRIT_MAINTENANCE:
+        return __('MAINTENANCE');
+
+        case EVENT_CRIT_INFORMATIONAL:
+        return __('INFORMATIONAL');
+
+        case EVENT_CRIT_MAJOR:
+        return __('MAJOR');
+
+        case EVENT_CRIT_MINOR:
+        return __('MINOR');
+
+        case EVENT_CRIT_NORMAL:
+        return __('NORMAL');
+
+        case EVENT_CRIT_WARNING:
+        return __('WARNING');
+
+        default:
+        return __('UNKNOWN');
+    }
+}
+
+
+/**
  * Return all header string for each event field.
  *
  * @return array
@@ -6465,10 +6602,6 @@ function events_get_sql_order($sort_field='timestamp', $sort='DESC', $group_rep=
  */
 function events_get_secondary_groups_left_join($table)
 {
-    if (users_is_admin()) {
-        return '';
-    }
-
     if ($table == 'tevento') {
         return 'LEFT JOIN tagent_secondary_group tasg ON te.id_agente = tasg.id_agent';
     }

@@ -44,9 +44,13 @@ require_once $config['homedir'].'/include/functions_ui.php';
 // Check access.
 check_login();
 
-if (! check_acl($config['id_user'], 0, 'ER')
-    && ! check_acl($config['id_user'], 0, 'EW')
-    && ! check_acl($config['id_user'], 0, 'EM')
+$event_a = check_acl($config['id_user'], 0, 'ER');
+$event_w = check_acl($config['id_user'], 0, 'EW');
+$event_m = check_acl($config['id_user'], 0, 'EM');
+
+if (! $event_a
+    && ! $event_w
+    && ! $event_m
 ) {
     db_pandora_audit(
         'ACL Violation',
@@ -61,9 +65,6 @@ if (! check_acl($config['id_user'], 0, 'ER')
 }
 
 
-$event_a = check_acl($config['id_user'], 0, 'ER');
-$event_w = check_acl($config['id_user'], 0, 'EW');
-$event_m = check_acl($config['id_user'], 0, 'EM');
 $access = ($event_a == true) ? 'ER' : (($event_w == true) ? 'EW' : (($event_m == true) ? 'EM' : 'ER'));
 
 
@@ -237,6 +238,9 @@ if (is_ajax()) {
             ];
             if (!is_metaconsole()) {
                 $fields[] = 'am.nombre as id_agentmodule';
+                $fields[] = 'ta.server_name as server_name';
+            } else {
+                $fields[] = 'ts.server_name as server_name';
             }
 
             $events = events_get_all(
@@ -603,7 +607,7 @@ if ($pure) {
     $sound_event['text'] = '<a href="javascript: openSoundEventWindow();">'.html_print_image('images/sound.png', true, ['title' => __('Sound events')]).'</a>';
 
     // If the user has administrator permission display manage tab.
-    if (check_acl($config['id_user'], 0, 'EW') || check_acl($config['id_user'], 0, 'EM')) {
+    if ($event_w || $event_m) {
         // Manage events.
         $manage_events['active'] = false;
         $manage_events['text'] = '<a href="index.php?sec=eventos&sec2=godmode/events/events&amp;section=filter&amp;pure='.$config['pure'].'">'.html_print_image('images/setup.png', true, ['title' => __('Manage events')]).'</a>';
@@ -880,12 +884,14 @@ $buttons[] = [
     'onclick' => '',
 ];
 
-$buttons[] = [
-    'id'      => 'save-filter',
-    'class'   => 'float-left margin-right-2 sub wand',
-    'text'    => __('Save filter'),
-    'onclick' => '',
-];
+if ($event_w || $event_m) {
+    $buttons[] = [
+        'id'      => 'save-filter',
+        'class'   => 'float-left margin-right-2 sub wand',
+        'text'    => __('Save filter'),
+        'onclick' => '',
+    ];
+}
 
 /*
  * Advanced filter.
@@ -1374,12 +1380,12 @@ $sql_event_resp = "SELECT id, name FROM tevent_response WHERE type LIKE 'command
 $event_responses = db_get_all_rows_sql($sql_event_resp);
 
 if ($config['event_replication'] != 1) {
-    if (check_acl($config['id_user'], 0, 'EW') == 1 && !$readonly) {
+    if ($event_w && !$readonly) {
         $array_events_actions['in_progress_selected'] = __('In progress selected');
         $array_events_actions['validate_selected'] = __('Validate selected');
     }
 
-    if (check_acl($config['id_user'], 0, 'EM') == 1 && !$readonly) {
+    if ($event_m == 1 && !$readonly) {
         $array_events_actions['delete_selected'] = __('Delete selected');
     }
 }

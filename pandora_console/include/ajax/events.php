@@ -75,13 +75,20 @@ $graphic_event_group = (bool) get_parameter('graphic_event_group');
 $get_table_response_command = (bool) get_parameter('get_table_response_command');
 $save_filter_modal = get_parameter('save_filter_modal', 0);
 $load_filter_modal = get_parameter('load_filter_modal', 0);
-$save_filter = get_parameter('save_filter', 0);
 $get_filter_values = get_parameter('get_filter_values', 0);
 $update_event_filter = get_parameter('update_event_filter', 0);
 $save_event_filter = get_parameter('save_event_filter', 0);
 $in_process_event = get_parameter('in_process_event', 0);
 $validate_event = get_parameter('validate_event', 0);
 $delete_event = get_parameter('delete_event', 0);
+$get_event_filters = get_parameter('get_event_filters', 0);
+
+
+if ($get_event_filters) {
+    $event_filter = events_get_event_filter_select();
+
+    echo io_json_mb_encode($event_filter);
+}
 
 // Delete event (filtered or not).
 if ($delete_event) {
@@ -601,7 +608,7 @@ function save_new_filter() {
     
     jQuery.post ("<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",
         {
-            "page" : "operation/events/events_list",
+            "page" : "include/ajax/events",
             "save_event_filter" : 1,
             "id_name" : $("#text-id_name").val(),
             "id_group" : $("select#id_group").val(),
@@ -670,7 +677,7 @@ function save_update_filter() {
     var name_filter_update = $("#overwrite_filter option[value='"+id_filter_update+"']").text();
     
     jQuery.post ("<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",
-        {"page" : "operation/events/events_list",
+        {"page" : "include/ajax/events",
         "update_event_filter" : 1,
         "id" : $("#overwrite_filter").val(),
         "id_group" : $("select#id_group").val(),
@@ -723,7 +730,7 @@ function save_update_filter() {
         $('#filter_id').append ($('<option></option>').html ( <?php echo "'".__('none')."'"; ?> ).attr ("value", 0));    
         // Reload filters select
         jQuery.post ("<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",
-            {"page" : "operation/events/events_list",
+            {"page" : "include/ajax/events",
                 "get_event_filters" : 1
             },
             function (data) {

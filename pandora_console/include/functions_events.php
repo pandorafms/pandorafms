@@ -1197,6 +1197,19 @@ function events_get_all(
         }
     }
 
+    $server_join = '';
+    if (is_metaconsole()) {
+        $server_join = ' LEFT JOIN tmetaconsole_setup ts
+            ON ts.id = te.server_id';
+        if (!empty($filter['server_id'])) {
+            $server_join = sprintf(
+                ' LEFT JOIN tmetaconsole_setup ts
+                  ON ts.id = te.server_id AND ts.id= %d',
+                $filter['server_id']
+            );
+        }
+    }
+
     // Secondary groups.
     db_process_sql('SET group_concat_max_len = 9999999');
     $event_lj = events_get_secondary_groups_left_join($table);
@@ -1229,6 +1242,7 @@ function events_get_all(
          %s JOIN tgrupo tg
            ON te.id_grupo = tg.id_grupo
            %s
+         %s
          WHERE 1=1
          %s
          %s
@@ -1247,6 +1261,7 @@ function events_get_all(
         join(' ', $agent_join_filters),
         $tgrupo_join,
         join(' ', $tgrupo_join_filters),
+        $server_join,
         join(' ', $sql_filters),
         $group_by,
         $order_by,

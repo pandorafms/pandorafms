@@ -794,21 +794,19 @@ function events_get_all(
             );
         } else {
             $children = groups_get_children($groups);
-            $_groups = [];
+            $_groups = [ $groups ];
             if (!empty($children)) {
                 foreach ($children as $child) {
                     $_groups[] = (int) $child['id_grupo'];
                 }
-
-                $groups = $_groups;
-            } else {
-                $groups = [ $groups ];
             }
 
+            $groups = $_groups;
+
             $sql_filters[] = sprintf(
-                ' AND (te.id_grupo IN (%s) OR tasg.id_group IN (%s)',
-                join(',', array_keys($groups)),
-                join(',', array_keys($groups))
+                ' AND (te.id_grupo IN (%s) OR tasg.id_group IN (%s))',
+                join(',', $groups),
+                join(',', $groups)
             );
         }
     }
@@ -1185,8 +1183,8 @@ function events_get_all(
         if (is_array($groups)) {
             $tgrupo_join_filters[] = sprintf(
                 ' AND (tg.id_grupo IN (%s) OR tasg.id_group IN (%s))',
-                join(', ', array_keys($groups)),
-                join(', ', array_keys($groups))
+                join(', ', $groups),
+                join(', ', $groups)
             );
         } else {
             $tgrupo_join_filters[] = sprintf(

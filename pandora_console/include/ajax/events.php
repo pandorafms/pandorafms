@@ -267,6 +267,17 @@ if ($get_filter_values) {
 
     $event_filter = events_get_event_filter($id_filter);
 
+    if ($event_filter === false) {
+        $event_filter = [
+            'status'        => EVENT_NO_VALIDATED,
+            'event_view_hr' => $config['event_view_hr'],
+            'group_rep'     => 1,
+            'tag_with'      => [],
+            'tag_without'   => [],
+            'history'       => false,
+        ];
+    }
+
     $event_filter['search'] = io_safe_output($event_filter['search']);
     $event_filter['id_name'] = io_safe_output($event_filter['id_name']);
     $event_filter['tag_with'] = base64_encode(

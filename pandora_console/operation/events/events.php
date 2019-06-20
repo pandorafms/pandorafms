@@ -87,30 +87,114 @@ if (is_metaconsole()) {
 ui_require_javascript_file('pandora_events');
 
 // Get requests.
-$id_group = get_parameter('filter[id_group]');
-$event_type = get_parameter('filter[event_type]');
-$severity = get_parameter('filter[severity]');
-$status = get_parameter('filter[status]', EVENT_NO_VALIDATED);
-$search = get_parameter('filter[search]');
-$text_agent = get_parameter('filter[text_agent]');
-$id_agent = get_parameter('filter[id_agent]');
-$id_agent_module = get_parameter('filter[id_agent_module]');
-$pagination = get_parameter('filter[pagination]');
-$event_view_hr = get_parameter('filter[event_view_hr]', $config['event_view_hr']);
-$id_user_ack = get_parameter('filter[id_user_ack]');
-$group_rep = get_parameter('filter[group_rep]', 1);
-$tag_with = get_parameter('filter[tag_with]', []);
-$tag_without = get_parameter('filter[tag_without]', []);
-$filter_only_alert = get_parameter('filter[filter_only_alert]');
-$id_group_filter = get_parameter('filter[id_group_filter]');
-$date_from = get_parameter('filter[date_from]');
-$date_to = get_parameter('filter[date_to]');
-$source = get_parameter('filter[source]');
-$id_extra = get_parameter('filter[id_extra]');
-$user_comment = get_parameter('filter[user_comment]');
-$history = get_parameter('history', false);
+$default_filter = [
+    'status'        => EVENT_NO_VALIDATED,
+    'event_view_hr' => $config['event_view_hr'],
+    'group_rep'     => 1,
+    'tag_with'      => [],
+    'tag_without'   => [],
+    'history'       => false,
+];
+
+$fb64 = get_parameter('fb64', null);
+if (isset($fb64)) {
+    $filter = json_decode(base64_decode($fb64), true);
+} else {
+    $filter = get_parameter(
+        'filter',
+        $default_filter
+    );
+}
+
+$id_group = get_parameter(
+    'filter[id_group]',
+    $filter['id_group']
+);
+$event_type = get_parameter(
+    'filter[event_type]',
+    $filter['event_type']
+);
+$severity = get_parameter(
+    'filter[severity]',
+    $filter['severity']
+);
+$status = get_parameter(
+    'filter[status]',
+    $filter['status']
+);
+$search = get_parameter(
+    'filter[search]',
+    $filter['search']
+);
+$text_agent = get_parameter(
+    'filter[text_agent]',
+    $filter['text_agent']
+);
+$id_agent = get_parameter(
+    'filter[id_agent]',
+    $filter['id_agent']
+);
+$id_agent_module = get_parameter(
+    'filter[id_agent_module]',
+    $filter['id_agent_module']
+);
+$pagination = get_parameter(
+    'filter[pagination]',
+    $filter['pagination']
+);
+$event_view_hr = get_parameter(
+    'filter[event_view_hr]',
+    $filter['event_view_hr']
+);
+$id_user_ack = get_parameter(
+    'filter[id_user_ack]',
+    $filter['id_user_ack']
+);
+$group_rep = get_parameter(
+    'filter[group_rep]',
+    $filter['group_rep']
+);
+$tag_with = get_parameter(
+    'filter[tag_with]',
+    $filter['tag_with']
+);
+$tag_without = get_parameter(
+    'filter[tag_without]',
+    $filter['tag_without']
+);
+$filter_only_alert = get_parameter(
+    'filter[filter_only_alert]',
+    $filter['filter_only_alert']
+);
+$id_group_filter = get_parameter(
+    'filter[id_group_filter]',
+    $filter['id_group_filter']
+);
+$date_from = get_parameter(
+    'filter[date_from]',
+    $filter['date_from']
+);
+$date_to = get_parameter(
+    'filter[date_to]',
+    $filter['date_to']
+);
+$source = get_parameter(
+    'filter[source]',
+    $filter['source']
+);
+$id_extra = get_parameter(
+    'filter[id_extra]',
+    $filter['id_extra']
+);
+$user_comment = get_parameter(
+    'filter[user_comment]',
+    $filter['user_comment']
+);
+$history = get_parameter(
+    'history',
+    $filter['history']
+);
 $section = get_parameter('section', false);
-$filter = get_parameter('filter', []);
 
 // Ajax responses.
 if (is_ajax()) {

@@ -447,11 +447,15 @@ export function addMovementListener(
   let mouseElementOffsetY: Position["y"] = 0;
   // Bounds.
   let containerBounds = container.getBoundingClientRect();
-  let containerTop = getOffset(container).top;
+  let containerOffset = getOffset(container);
+  let containerTop = containerOffset.top;
   let containerBottom = containerTop + containerBounds.height;
-  let containerLeft = getOffset(container).left;
+  let containerLeft = containerOffset.left;
   let containerRight = containerLeft + containerBounds.width;
   let elementBounds = element.getBoundingClientRect();
+  let elementOffset = getOffset(element);
+  let elementLeft = elementOffset.left;
+  let elementTop = elementOffset.top;
   let borderWidth = window.getComputedStyle(element).borderWidth || "0";
   let borderFix = Number.parseInt(borderWidth) * 2;
 
@@ -471,14 +475,17 @@ export function addMovementListener(
 
     // TODO: Document.
 
-    if (e.pageX < containerLeft) x = 0;
-    else if (e.pageX > containerRight) x = containerBounds.width;
-    else x = e.pageX - lastMouseX + lastX;
+    const mouseX = e.pageX;
+    const mouseY = e.pageY;
 
-    if (e.pageY < containerTop) y = 0;
-    else if (e.pageY > containerBottom)
+    if (mouseX < containerLeft) x = 0;
+    else if (mouseX > containerRight) x = containerBounds.width;
+    else x = mouseX - lastMouseX + lastX;
+
+    if (mouseY < containerTop) y = 0;
+    else if (mouseY > containerBottom)
       y = containerBounds.height - elementBounds.height + borderFix;
-    else y = e.pageY - lastMouseY + lastY;
+    else y = mouseY - lastMouseY + lastY;
 
     if (x < 0) x = 0;
     else if (x + elementBounds.width - borderFix > containerBounds.width)
@@ -488,6 +495,17 @@ export function addMovementListener(
     else if (y + elementBounds.height - borderFix > containerBounds.height)
       y = containerBounds.height - elementBounds.height + borderFix;
 
+    if (x === lastX && y === lastY) return;
+
+    // Store the last mouse coordinates.
+    lastMouseX = mouseX;
+    lastMouseY = mouseY;
+
+    // if (x < lastX && mouseX > elementLeft + mouseElementOffsetX) return;
+    // if (x > lastX && mouseX < elementLeft + mouseElementOffsetX) return;
+    // if (y < lastY && mouseY > elementTop + mouseElementOffsetY) return;
+    // if (y > lastY && mouseY < elementTop + mouseElementOffsetY) return;
+
     // Run the movement events.
     throttledMovement(x, y);
     debouncedMovement(x, y);
@@ -495,9 +513,6 @@ export function addMovementListener(
     // Store the coordinates of the element.
     lastX = x;
     lastY = y;
-    // Store the last mouse coordinates.
-    lastMouseX = e.pageX;
-    lastMouseY = e.pageY;
   };
   const handleEnd = () => {
     // Reset the positions.
@@ -533,11 +548,15 @@ export function addMovementListener(
 
     // Initialize the bounds.
     containerBounds = container.getBoundingClientRect();
-    containerTop = getOffset(container).top;
+    containerOffset = getOffset(container);
+    containerTop = containerOffset.top;
     containerBottom = containerTop + containerBounds.height;
-    containerLeft = getOffset(container).left;
+    containerLeft = containerOffset.left;
     containerRight = containerLeft + containerBounds.width;
     elementBounds = element.getBoundingClientRect();
+    elementOffset = getOffset(element);
+    elementLeft = elementOffset.left;
+    elementTop = elementOffset.top;
     borderWidth = window.getComputedStyle(element).borderWidth || "0";
     borderFix = Number.parseInt(borderWidth) * 2;
 
@@ -617,6 +636,18 @@ export function addResizementListener(
     // Calculate the new element coordinates.
     let width = lastWidth + (e.pageX - lastMouseX);
     let height = lastHeight + (e.pageY - lastMouseY);
+
+    if (width === lastWidth && height === lastHeight) return;
+
+    console.log(
+      width - lastWidth,
+      e.pageX - elementLeft + (lastWidth - mouseElementOffsetX)
+    );
+    if (
+      width < lastWidth &&
+      e.pageX > elementLeft + (lastWidth - mouseElementOffsetX)
+    )
+      return;
 
     if (width < minWidth) {
       // Minimum value.

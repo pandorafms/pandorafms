@@ -7523,8 +7523,15 @@ function api_set_remove_agent_from_policy($id, $id2, $thrash2, $thrash3)
         return;
     }
 
+    $agent_table = 'tagente';
+
+    if (is_metaconsole()) {
+        $agent_table = 'tmetaconsole_agent';
+    }
+
     $policy = policies_get_policy($id, false, false);
-    $agent = db_get_row_filter('tagente', ['id_agente' => $id2]);
+    $agent = db_get_row_filter($agent_table, ['id_agente' => $id2]);
+
     $policy_agent = db_get_row_filter('tpolicy_agents', ['id_policy' => $id, 'id_agent' => $id2]);
 
     if (empty($policy)) {

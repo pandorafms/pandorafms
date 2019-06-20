@@ -237,7 +237,8 @@ if (is_ajax()) {
                 'tg.nombre as group_name',
             ];
             if (!is_metaconsole()) {
-                $fields[] = 'am.nombre as id_agentmodule';
+                $fields[] = 'am.nombre as module_name';
+                $fields[] = 'am.id_agente_modulo as id_agentmodule';
                 $fields[] = 'ta.server_name as server_name';
             } else {
                 $fields[] = 'ts.server_name as server_name';
@@ -274,6 +275,11 @@ if (is_ajax()) {
                     function ($carry, $item) {
                         $tmp = (object) $item;
                         $tmp->evento = io_safe_output($tmp->evento);
+                        if ($tmp->module_name) {
+                            $tmp->module_name = io_safe_output($tmp->module_name);
+                        }
+
+                        $tmp->agent_name = io_safe_output($tmp->agent_name);
                         $tmp->ack_utimestamp = ui_print_timestamp(
                             $tmp->ack_utimestamp,
                             true
@@ -1809,6 +1815,8 @@ function process_datatables_item(item) {
         item.id_grupo = item.group_name;
     }
 
+    /* Module name */
+    item.id_agentmodule = item.module_name;
 }
 
 /* Datatables auxiliary functions ends */

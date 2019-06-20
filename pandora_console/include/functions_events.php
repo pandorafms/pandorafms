@@ -4531,7 +4531,7 @@ function events_page_general($event)
  *
  * @return string HTML.
  */
-function events_page_comments($event)
+function events_page_comments($event, $ajax=false)
 {
     // Comments.
     global $config;
@@ -4540,7 +4540,7 @@ function events_page_comments($event)
 
     $comments = $event['user_comment'];
     if (isset($event['comments'])) {
-        $comments = $event['comments'];
+        $comments = explode('<br>', $event['comments']);
     }
 
     $table_comments = new stdClass;
@@ -4551,100 +4551,102 @@ function events_page_comments($event)
 
     $comments = str_replace(["\n", '&#x0a;'], '<br>', $comments);
 
-    // If comments are not stored in json, the format is old.
-    $comments_array = json_decode(io_safe_output($comments), true);
-    if (!empty($comments) && json_last_error() != JSON_ERROR_NONE) {
-        $comments_array = [
-            [
-                'comment'    => 'Error retrieving comments',
-                'action'     => 'Internal message',
-                'id_user'    => 'SYSTEM',
-                'utimestamp' => time(),
-            ],
-        ];
-    }
+    if (is_array($comments)) {
+        foreach ($comments as $comm) {
+            if (empty($comm)) {
+                continue;
+            }
 
-    // Show the comments more recent first.
-    if (is_array($comments_array)) {
-        $comments_array = array_reverse($comments_array);
-    }
-
-    if (empty($comments_array)) {
-        $comments_format = 'old';
+            $comments_array[] = json_decode(io_safe_output($comm), true);
+        }
     } else {
-        $comments_format = 'new';
+        // If comments are not stored in json, the format is old.
+        $comments_array = json_decode(io_safe_output($comments), true);
     }
 
-    switch ($comments_format) {
-        case 'new':
-            if (empty($comments_array)) {
-                $table_comments->style[0] = 'text-align:center;';
-                $table_comments->colspan[0][0] = 2;
-                $data = [];
-                $data[0] = __('There are no comments');
-                $table_comments->data[] = $data;
-            }
+    foreach ($comments_array as $comm) {
+        // Show the comments more recent first.
+        if (is_array($comm)) {
+            $comm = array_reverse($comm);
+        }
 
-            if (isset($comments_array) === true
-                && is_array($comments_array) === true
-            ) {
-                foreach ($comments_array as $c) {
-                    $data[0] = '<b>'.$c['action'].' by '.$c['id_user'].'</b>';
-                    $data[0] .= '<br><br><i>'.date($config['date_format'], $c['utimestamp']).'</i>';
-                    $data[1] = $c['comment'];
-                    $table_comments->data[] = $data;
-                }
-            }
-        break;
+        if (empty($comm)) {
+            $comments_format = 'old';
+        } else {
+            $comments_format = 'new';
+        }
 
-        case 'old':
-            $comments_array = explode('<br>', $comments);
-
-            // Split comments and put in table.
-            $col = 0;
-            $data = [];
-
-            foreach ($comments_array as $c) {
-                switch ($col) {
-                    case 0:
-                        $row_text = preg_replace('/\s*--\s*/', '', $c);
-                        $row_text = preg_replace('/\<\/b\>/', '</i>', $row_text);
-                        $row_text = preg_replace('/\[/', '</b><br><br><i>[', $row_text);
-                        $row_text = preg_replace('/[\[|\]]/', '', $row_text);
-                    break;
-
-                    case 1:
-                        $row_text = preg_replace("/[\r\n|\r|\n]/", '<br>', io_safe_output(strip_tags($c)));
-                    break;
-
-                    default:
-                        // Ignore.
-                    break;
-                }
-
-                $data[$col] = $row_text;
-
-                $col++;
-
-                if ($col == 2) {
-                    $col = 0;
-                    $table_comments->data[] = $data;
+        switch ($comments_format) {
+            case 'new':
+                if (empty($comm)) {
+                    $table_comments->style[0] = 'text-align:center;';
+                    $table_comments->colspan[0][0] = 2;
                     $data = [];
+                    $data[0] = __('There are no comments');
+                    $table_comments->data[] = $data;
                 }
-            }
 
-            if (count($comments_array) == 1 && $comments_array[0] == '') {
-                $table_comments->style[0] = 'text-align:center;';
-                $table_comments->colspan[0][0] = 2;
+                if (isset($comm) === true
+                    && is_array($comm) === true
+                ) {
+                    foreach ($comm as $c) {
+                        $data[0] = '<b>'.$c['action'].' by '.$c['id_user'].'</b>';
+                        $data[0] .= '<br><br><i>'.date($config['date_format'], $c['utimestamp']).'</i>';
+                        $data[1] = $c['comment'];
+                        $table_comments->data[] = $data;
+                    }
+                }
+            break;
+
+            case 'old':
+                $comm = explode('<br>', $comments);
+
+                // Split comments and put in table.
+                $col = 0;
                 $data = [];
-                $data[0] = __('There are no comments');
-                $table_comments->data[] = $data;
-            }
-        break;
 
-        default:
-            // Ignore.
-        break;
+                foreach ($comm as $c) {
+                    switch ($col) {
+                        case 0:
+                            $row_text = preg_replace('/\s*--\s*/', '', $c);
+                            $row_text = preg_replace('/\<\/b\>/', '</i>', $row_text);
+                            $row_text = preg_replace('/\[/', '</b><br><br><i>[', $row_text);
+                            $row_text = preg_replace('/[\[|\]]/', '', $row_text);
+                        break;
+
+                        case 1:
+                            $row_text = preg_replace("/[\r\n|\r|\n]/", '<br>', io_safe_output(strip_tags($c)));
+                        break;
+
+                        default:
+                            // Ignore.
+                        break;
+                    }
+
+                    $data[$col] = $row_text;
+
+                    $col++;
+
+                    if ($col == 2) {
+                        $col = 0;
+                        $table_comments->data[] = $data;
+                        $data = [];
+                    }
+                }
+
+                if (count($comm) == 1 && $comm[0] == '') {
+                    $table_comments->style[0] = 'text-align:center;';
+                    $table_comments->colspan[0][0] = 2;
+                    $data = [];
+                    $data[0] = __('There are no comments');
+                    $table_comments->data[] = $data;
+                }
+            break;
+
+            default:
+                // Ignore.
+            break;
+        }
     }
 
     if (((tags_checks_event_acl(
@@ -4687,9 +4689,11 @@ function events_page_comments($event)
         );
     }
 
-    $comments = '<div id="extended_event_comments_page" class="extended_event_pages">'.$comments_form.html_print_table($table_comments, true).'</div>';
+    if ($ajax) {
+        return $comments_form.html_print_table($table_comments, true);
+    }
 
-    return $comments;
+    return '<div id="extended_event_comments_page" class="extended_event_pages">'.$comments_form.html_print_table($table_comments, true).'</div>';
 }
 
 

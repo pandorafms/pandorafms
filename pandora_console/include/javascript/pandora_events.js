@@ -557,9 +557,8 @@ function event_comment() {
     dataType: "html",
     success: function(data) {
       $("#button-comment_button").removeAttr("disabled");
-      $("#response_loading").show();
-      dt_events.draw(false);
-      show_event_dialog(current_event, "comments", data);
+      $("#response_loading").hide();
+      $("#link_comments").click();
     }
   });
 

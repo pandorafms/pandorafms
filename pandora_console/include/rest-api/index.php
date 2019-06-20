@@ -57,7 +57,9 @@ if ($getVisualConsole === true) {
     $item_data['id_layout'] = $visualConsoleId;
 
     $item = $class::fromDB($item_data);
-    $item->save($data);
+    $result = $item->save($data);
+
+    echo json_encode($result);
 }
 
 exit;

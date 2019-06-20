@@ -188,7 +188,8 @@ function createVisualConsole(
       var id = e.item.props.id;
       var data = {
         width: e.newSize.width,
-        height: e.newSize.height
+        height: e.newSize.height,
+        type: e.item.props.type
       };
       var taskId = "visual-console-item-resize-" + id;
 

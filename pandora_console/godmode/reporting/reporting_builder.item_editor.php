@@ -221,7 +221,7 @@ switch ($action) {
             $server_name = $item['server_name'];
 
             // Metaconsole db connection.
-            if ($meta && $server_name != '') {
+            if ($meta && !empty($server_name)) {
                 $connection = metaconsole_get_connection($server_name);
                 if (metaconsole_load_external_db($connection) != NOERR) {
                     continue;
@@ -547,8 +547,43 @@ switch ($action) {
                 break;
 
                 case 'event_report_agent':
-                case 'event_report_group':
+                    $description = $item['description'];
+                    $period = $item['period'];
+                    $group = $item['id_group'];
                     $recursion = $item['recursion'];
+                    $idAgent = $item['id_agent'];
+                    $idAgentModule = $item['id_agent_module'];
+
+
+                    $show_summary_group    = $style['show_summary_group'];
+                    $filter_event_severity = json_decode($style['filter_event_severity'], true);
+                    $filter_event_status   = json_decode($style['filter_event_status'], true);
+                    $filter_event_type     = json_decode($style['filter_event_type'], true);
+
+                    $event_graph_by_user_validator = $style['event_graph_by_user_validator'];
+                    $event_graph_by_criticity = $style['event_graph_by_criticity'];
+                    $event_graph_validated_vs_unvalidated = $style['event_graph_validated_vs_unvalidated'];
+                    $include_extended_events = $item['show_extended_events'];
+
+                    $filter_search = $style['event_filter_search'];
+
+                break;
+
+                case 'event_report_group':
+                    $description = $item['description'];
+                    $period = $item['period'];
+                    $group = $item['id_group'];
+                    $recursion = $item['recursion'];
+
+                    $event_graph_by_agent = $style['event_graph_by_agent'];
+                    $event_graph_by_user_validator = $style['event_graph_by_user_validator'];
+                    $event_graph_by_criticity = $style['event_graph_by_criticity'];
+                    $event_graph_validated_vs_unvalidated = $style['event_graph_validated_vs_unvalidated'];
+
+                    $filter_search = $style['event_filter_search'];
+
+
+
                     $include_extended_events = $item['show_extended_events'];
                 break;
 
@@ -877,7 +912,7 @@ $class = 'databox filters';
         <tr id="row_label" style="" class="datos">
             <td style="font-weight:bold;">
                 <?php
-                echo __('Label').ui_print_help_icon('reports_label_field', true);
+                echo __('Label');
                 ?>
             </td>
             <td style="">
@@ -981,11 +1016,6 @@ $class = 'databox filters';
             <td style="font-weight:bold;">
                 <?php
                 echo __('Period');
-                if ($type == 'projection_graph') {
-                    echo ui_print_help_icon('projection_graph', true);
-                } else {
-                    echo ui_print_help_icon('prediction_date', true);
-                }
                 ?>
             </td>
             <td style="">
@@ -1004,10 +1034,7 @@ $class = 'databox filters';
         <tr id="row_estimate" style="" class="datos">
             <td style="font-weight:bold;">
                 <?php
-                echo __('Projection period').ui_print_help_icon(
-                    'projection_graph',
-                    true
-                );
+                echo __('Projection period');
                 ?>
             </td>
             <td style="">
@@ -1026,10 +1053,7 @@ $class = 'databox filters';
         <tr id="row_interval" style="" class="datos">
             <td style="font-weight:bold;">
             <?php
-            echo __('Data range').ui_print_help_icon(
-                'prediction_date',
-                true
-            );
+            echo __('Data range');
             ?>
             </td>
             <td>
@@ -2816,7 +2840,7 @@ function print_SLA_list($width, $action, $idItem=null)
                     foreach ($itemsSLA as $item) {
                         $server_name = $item['server_name'];
                         // Metaconsole db connection.
-                        if ($meta && $server_name != '') {
+                        if ($meta && !empty($server_name)) {
                             $connection = metaconsole_get_connection(
                                 $server_name
                             );
@@ -3144,7 +3168,7 @@ function print_General_list($width, $action, $idItem=null, $type='general')
                     foreach ($itemsGeneral as $item) {
                         $server_name = $item['server_name'];
                         // Metaconsole db connection.
-                        if ($meta && $server_name != '') {
+                        if ($meta && !empty($server_name)) {
                             $connection = metaconsole_get_connection(
                                 $server_name
                             );
@@ -3502,6 +3526,7 @@ $(document).ready (function () {
 
     $("#submit-create_item").click(function () {
         var type = $('#type').val();
+        var name = $('#text-name').val();
         switch (type){
             case 'alert_report_module':
             case 'alert_report_agent':
@@ -3532,6 +3557,13 @@ $(document).ready (function () {
             default:
                 break;
         }
+
+        if($('#text-name').val() == ''){
+            alert( <?php echo "'".__('Please insert a name')."'"; ?> );
+                return false;
+        }
+
+
     });
 
     $("#submit-edit_item").click(function () {
@@ -4865,7 +4897,6 @@ function chooseType() {
     switch (type) {
         case 'event_report_agent':
         case 'simple_graph':
-        case 'agent_configuration':
         case 'event_report_module':
         case 'alert_report_agent':
         case 'alert_report_module':
@@ -4876,8 +4907,6 @@ function chooseType() {
         case 'min_value':
         case 'max_value':
         case 'avg_value':
-        case 'projection_graph':
-        case 'prediction_date':
         case 'TTRT':
         case 'TTO':
         case 'MTBF':

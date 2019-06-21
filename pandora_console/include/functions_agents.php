@@ -1614,9 +1614,9 @@ function agents_get_interval($id_agent)
  *
  * @param Agent object.
  *
- * @return The interval value and status of last contact
+ * @return The interval value and status of last contact or True /False
  */
-function agents_get_interval_status($agent)
+function agents_get_interval_status($agent, $return_html=true)
 {
     $return = '';
     $last_time = time_w_fixed_tz($agent['ultimo_contacto']);
@@ -1624,9 +1624,18 @@ function agents_get_interval_status($agent)
     $diferencia = ($now - $last_time);
     $time = ui_print_timestamp($last_time, true, ['style' => 'font-size:6.5pt']);
     $min_interval = modules_get_agentmodule_mininterval_no_async($agent['id_agente']);
-    $return = $time;
+    if ($return_html) {
+        $return = $time;
+    } else {
+        $return = true;
+    }
+
     if ($diferencia > ($min_interval['min_interval'] * 2) && $min_interval['num_interval'] > 0) {
-        $return = '<b><span style="color: #ff0000;">'.$time.'</span></b>';
+        if ($return_html) {
+            $return = '<b><span style="color: #ff0000;">'.$time.'</span></b>';
+        } else {
+            $return = false;
+        }
     }
 
     return $return;
@@ -3366,4 +3375,36 @@ function agents_get_image_status($status)
     }
 
     return $image_status;
+}
+
+
+/**
+ * Animation GIF to show agent's status.
+ *
+ * @return string HTML code with heartbeat image.
+ */
+function agents_get_status_animation($up=true)
+{
+    switch ($up) {
+        case true:
+        default:
+        return html_print_image(
+            'images/heartbeat_green.gif',
+            true,
+            [
+                'width'  => '170',
+                'height' => '40',
+            ]
+        );
+
+        case false:
+        return html_print_image(
+            'images/heartbeat_red.gif',
+            true,
+            [
+                'width'  => '170',
+                'height' => '40',
+            ]
+        );
+    }
 }

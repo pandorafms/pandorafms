@@ -125,7 +125,7 @@ echo '<form '.'action="index.php?'.'sec=gmassive&'.'sec2=godmode/massive/massive
 
 echo '<fieldset id="fieldset_source">';
 echo '<legend>';
-echo '<span>'.__('Source').ui_print_help_icon('manageconfig', true).'</span>';
+echo '<span>'.__('Source');
 echo '</legend>';
 html_print_table($table);
 echo '</fieldset>';

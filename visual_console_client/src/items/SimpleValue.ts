@@ -1,8 +1,8 @@
 import {
   LinkedVisualConsoleProps,
-  UnknownObject,
+  AnyObject,
   WithModuleProps
-} from "../types";
+} from "../lib/types";
 import {
   linkedVCPropsDecoder,
   parseIntOr,
@@ -31,9 +31,7 @@ export type SimpleValueProps = {
  * Extract a valid enum value from a raw value type.
  * @param valueType Raw value.
  */
-const parseValueType = (
-  valueType: any // eslint-disable-line @typescript-eslint/no-explicit-any
-): SimpleValueProps["valueType"] => {
+const parseValueType = (valueType: unknown): SimpleValueProps["valueType"] => {
   switch (valueType) {
     case "string":
     case "image":
@@ -48,7 +46,7 @@ const parseValueType = (
  * @param processValue Raw value.
  */
 const parseProcessValue = (
-  processValue: any // eslint-disable-line @typescript-eslint/no-explicit-any
+  processValue: unknown
 ): SimpleValueProps["processValue"] => {
   switch (processValue) {
     case "none":
@@ -71,7 +69,7 @@ const parseProcessValue = (
  * is missing from the raw object or have an invalid type.
  */
 export function simpleValuePropsDecoder(
-  data: UnknownObject
+  data: AnyObject
 ): SimpleValueProps | never {
   if (typeof data.value !== "string" || data.value.length === 0) {
     throw new TypeError("invalid value");

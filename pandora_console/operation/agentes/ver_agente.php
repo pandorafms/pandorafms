@@ -37,6 +37,7 @@ require_once $config['homedir'].'/include/functions_users.php';
 enterprise_include_once('include/functions_metaconsole.php');
 
 ui_require_javascript_file('openlayers.pandora');
+ui_require_css_file('agent_view');
 
 enterprise_include_once('operation/agentes/ver_agente.php');
 
@@ -61,6 +62,36 @@ if (is_ajax()) {
     $agent_alias = get_parameter('alias', '');
     $agents_inserted = get_parameter('agents_inserted', []);
     $id_group = (int) get_parameter('id_group');
+
+    $refresh_contact = get_parameter('refresh_contact', 0);
+
+    if ($refresh_contact) {
+        $id_agente = get_parameter('id_agente', 0);
+        if ($id_agente > 0) {
+            $d = db_get_row(
+                'tagente',
+                'id_agente',
+                $id_agente
+            );
+
+            $progress = agents_get_next_contact($id_agente);
+            $last_contact = floor(($d['intervalo'] * (100 - $progress) / 100));
+
+            if ($progress < 0 || $progress > 100) {
+                $progress = 100;
+            }
+
+            echo json_encode(
+                [
+                    'progress'     => $progress,
+                    'last_contact' => $last_contact,
+                ]
+            );
+        }
+
+        return;
+    }
+
     if ($get_agents_group_json) {
         $id_group = (int) get_parameter('id_group');
         $recursion = (bool) get_parameter('recursion');
@@ -1260,38 +1291,47 @@ if (enterprise_installed() && $config['log_collector']) {
 
 // EHorus tab.
 if ($config['ehorus_enabled'] && !empty($config['ehorus_custom_field'])
-    && (check_acl_one_of_groups($config['id_user'], $all_groups, 'AW') || is_user_admin($config['id_user']))
+    && (check_acl_one_of_groups(
+        $config['id_user'],
+        $all_groups,
+        'AW'
+    ) || is_user_admin($config['id_user']))
 ) {
-    $ehorus_agent_id = agents_get_agent_custom_field($id_agente, $config['ehorus_custom_field']);
-    if (!empty($ehorus_agent_id)) {
-        $tab_url = 'index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=ehorus&id_agente='.$id_agente;
-        $ehorus_tab['text'] = '<a href="'.$tab_url.'" class="ehorus_tab">'.html_print_image('images/ehorus/ehorus.png', true, [ 'title' => __('eHorus')]).'</a>';
+    $user_info = users_get_user_by_id($config['id_user']);
+    if ($config['ehorus_user_level_conf'] && !$user_info['ehorus_user_level_enabled']) {
+        // If ehorus user configuration is enabled, and userr acces level is disabled do not show eHorus tab.
+    } else {
+        $ehorus_agent_id = agents_get_agent_custom_field($id_agente, $config['ehorus_custom_field']);
+        if (!empty($ehorus_agent_id)) {
+            $tab_url = 'index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=ehorus&id_agente='.$id_agente;
+            $ehorus_tab['text'] = '<a href="'.$tab_url.'" class="ehorus_tab">'.html_print_image('images/ehorus/ehorus.png', true, [ 'title' => __('eHorus')]).'</a>';
 
-        // Hidden subtab layer.
-        $ehorus_tab['sub_menu'] = '<ul class="mn subsubmenu" style="float:none;">';
-        $ehorus_tab['sub_menu'] .= '<a class="tab_terminal" href="'.$tab_url.'&client_tab=terminal">';
-        $ehorus_tab['sub_menu'] .= '<li class="nomn tab_godmode" style="text-align: center;">'.html_print_image('images/ehorus/terminal.png', true, [ 'title' => __('Terminal')]);
-        $ehorus_tab['sub_menu'] .= '</li>';
-        $ehorus_tab['sub_menu'] .= '</a>';
-        $ehorus_tab['sub_menu'] .= '<a class="tab_display" href="'.$tab_url.'&client_tab=display">';
-        $ehorus_tab['sub_menu'] .= '<li class="nomn tab_godmode" style="text-align: center;">'.html_print_image('images/ehorus/vnc.png', true, [ 'title' => __('Display')]);
-        $ehorus_tab['sub_menu'] .= '</li>';
-        $ehorus_tab['sub_menu'] .= '</a>';
-        $ehorus_tab['sub_menu'] .= '<a class="tab_processes" href="'.$tab_url.'&client_tab=processes">';
-        $ehorus_tab['sub_menu'] .= '<li class="nomn tab_godmode" style="text-align: center;">'.html_print_image('images/ehorus/processes.png', true, [ 'title' => __('Processes')]);
-        $ehorus_tab['sub_menu'] .= '</li>';
-        $ehorus_tab['sub_menu'] .= '</a>';
-        $ehorus_tab['sub_menu'] .= '<a class="tab_services" href="'.$tab_url.'&client_tab=services">';
-        $ehorus_tab['sub_menu'] .= '<li class="nomn tab_godmode" style="text-align: center;">'.html_print_image('images/ehorus/services.png', true, [ 'title' => __('Services')]);
-        $ehorus_tab['sub_menu'] .= '</li>';
-        $ehorus_tab['sub_menu'] .= '</a>';
-        $ehorus_tab['sub_menu'] .= '<a class="tab_files" href="'.$tab_url.'&client_tab=files">';
-        $ehorus_tab['sub_menu'] .= '<li class="nomn tab_godmode" style="text-align: center;">'.html_print_image('images/ehorus/files.png', true, [ 'title' => __('Files')]);
-        $ehorus_tab['sub_menu'] .= '</li>';
-        $ehorus_tab['sub_menu'] .= '</a>';
-        $ehorus_tab['sub_menu'] .= '</ul>';
+            // Hidden subtab layer.
+            $ehorus_tab['sub_menu'] = '<ul class="mn subsubmenu" style="float:none;">';
+            $ehorus_tab['sub_menu'] .= '<a class="tab_terminal" href="'.$tab_url.'&client_tab=terminal">';
+            $ehorus_tab['sub_menu'] .= '<li class="nomn tab_godmode" style="text-align: center;">'.html_print_image('images/ehorus/terminal.png', true, [ 'title' => __('Terminal')]);
+            $ehorus_tab['sub_menu'] .= '</li>';
+            $ehorus_tab['sub_menu'] .= '</a>';
+            $ehorus_tab['sub_menu'] .= '<a class="tab_display" href="'.$tab_url.'&client_tab=display">';
+            $ehorus_tab['sub_menu'] .= '<li class="nomn tab_godmode" style="text-align: center;">'.html_print_image('images/ehorus/vnc.png', true, [ 'title' => __('Display')]);
+            $ehorus_tab['sub_menu'] .= '</li>';
+            $ehorus_tab['sub_menu'] .= '</a>';
+            $ehorus_tab['sub_menu'] .= '<a class="tab_processes" href="'.$tab_url.'&client_tab=processes">';
+            $ehorus_tab['sub_menu'] .= '<li class="nomn tab_godmode" style="text-align: center;">'.html_print_image('images/ehorus/processes.png', true, [ 'title' => __('Processes')]);
+            $ehorus_tab['sub_menu'] .= '</li>';
+            $ehorus_tab['sub_menu'] .= '</a>';
+            $ehorus_tab['sub_menu'] .= '<a class="tab_services" href="'.$tab_url.'&client_tab=services">';
+            $ehorus_tab['sub_menu'] .= '<li class="nomn tab_godmode" style="text-align: center;">'.html_print_image('images/ehorus/services.png', true, [ 'title' => __('Services')]);
+            $ehorus_tab['sub_menu'] .= '</li>';
+            $ehorus_tab['sub_menu'] .= '</a>';
+            $ehorus_tab['sub_menu'] .= '<a class="tab_files" href="'.$tab_url.'&client_tab=files">';
+            $ehorus_tab['sub_menu'] .= '<li class="nomn tab_godmode" style="text-align: center;">'.html_print_image('images/ehorus/files.png', true, [ 'title' => __('Files')]);
+            $ehorus_tab['sub_menu'] .= '</li>';
+            $ehorus_tab['sub_menu'] .= '</a>';
+            $ehorus_tab['sub_menu'] .= '</ul>';
 
-        $ehorus_tab['active'] = $tab == 'ehorus';
+            $ehorus_tab['active'] = $tab == 'ehorus';
+        }
     }
 }
 
@@ -1331,6 +1371,7 @@ if (isset($ehorus_tab) && !empty($ehorus_tab)) {
 }
 
 // Tabs for extensions.
+$tab_name_extensions = '';
 foreach ($config['extensions'] as $extension) {
     if (isset($extension['extension_ope_tab']) && !isset($extension['extension_god_tab'])) {
         if (check_acl_one_of_groups($config['id_user'], $all_groups, $extension['extension_ope_tab']['acl'])) {
@@ -1373,6 +1414,7 @@ foreach ($config['extensions'] as $extension) {
             $image = $extension['extension_ope_tab']['icon'];
             $name = $extension['extension_ope_tab']['name'];
             $id = $extension['extension_ope_tab']['id'];
+            $tab_name_extensions = $name;
 
             $id_extension = get_parameter('id_extension', '');
 
@@ -1395,15 +1437,82 @@ foreach ($config['extensions'] as $extension) {
 }
 
 switch ($tab) {
-    case 'wux_console_tab':
-        $help_header = 'wux_console_tab';
+    case 'custom_fields':
+        $tab_name = 'Custom fields';
+    break;
+
+    case 'gis':
+        $tab_name = 'GIS data';
+    break;
+
+    case 'manage':
+        $tab_name = 'Manage';
     break;
 
     case 'main':
+        $tab_name = 'Main';
         $help_header = 'agent_'.$tab.'_tab';
     break;
 
+    case 'data_view':
+        $tab_name = '';
+    break;
+
+    case 'alert':
+        $tab_name = 'Alerts';
+    break;
+
+    case 'inventory':
+        $tab_name = 'Inventory';
+    break;
+
+    case 'collection':
+        $tab_name = 'Collection';
+    break;
+
+    case 'policy':
+        $tab_name = 'Policies';
+    break;
+
+    case 'ux_console_tab':
+        $tab_name = 'UX Console';
+    break;
+
+    case 'wux_console_tab':
+        $tab_name = 'WUX Console';
+        $help_header = 'wux_console_tab';
+    break;
+
+    case 'url_route_analyzer_tab':
+        $tab_name = 'URL Route Analyzer';
+    break;
+
+    case 'graphs';
+        $tab_name = 'Graphs';
+    break;
+
+    case 'incident':
+        $tab_name = 'Incidents';
+    break;
+
+    case 'url_address':
+        $tab_name = 'Url address';
+    break;
+
+    case 'log_viewer':
+        $tab_name = 'Log viewer';
+    break;
+
+    case 'ehorus':
+        $tab_name = 'eHorus';
+    break;
+
+    case 'extension':
+        $tab_name = $tab_name_extensions;
+    break;
+
     default:
+        $tab_name = '';
         $help_header = '';
     break;
 }
@@ -1417,7 +1526,15 @@ ui_print_page_header(
     $onheader,
     false,
     '',
-    $config['item_title_size_text']
+    $config['item_title_size_text'],
+    '',
+    ui_print_breadcrums(
+        [
+            __('Monitoring'),
+            __('View'),
+            '<span class="breadcrumb_active">'.$tab_name.'</span>',
+        ]
+    )
 );
 
 
@@ -1435,6 +1552,7 @@ switch ($tab) {
     break;
 
     case 'main':
+    default:
         include 'estado_generalagente.php';
         echo "<a name='monitors'></a>";
         include 'estado_monitores.php';

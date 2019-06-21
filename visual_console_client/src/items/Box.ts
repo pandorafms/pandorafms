@@ -1,4 +1,4 @@
-import { UnknownObject } from "../types";
+import { AnyObject } from "../lib/types";
 import { parseIntOr, notEmptyStringOr } from "../lib";
 import Item, { ItemType, ItemProps, itemBasePropsDecoder } from "../Item";
 
@@ -24,7 +24,7 @@ interface BoxProps extends ItemProps {
  * @throws Will throw a TypeError if some property
  * is missing from the raw object or have an invalid type.
  */
-export function boxPropsDecoder(data: UnknownObject): BoxProps | never {
+export function boxPropsDecoder(data: AnyObject): BoxProps | never {
   return {
     ...itemBasePropsDecoder(data), // Object spread. It will merge the properties of the two objects.
     type: ItemType.BOX_ITEM,

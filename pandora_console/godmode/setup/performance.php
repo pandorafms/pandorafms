@@ -247,8 +247,7 @@ $table->style[0] = 'font-weight: bold';
 $table->size[0] = '70%';
 $table->size[1] = '30%';
 
-enterprise_hook('enterprise_warnings_history_days');
-
+// enterprise_hook('enterprise_warnings_history_days');
 $table->data[1][0] = __('Max. days before delete events');
 $table->data[1][0] .= ui_print_help_tip(
     __('If the compaction or purge of the data is more frequent than the events deletion, anomalies in module graphs could appear'),

@@ -659,18 +659,18 @@ class Wizard
                 if ($input['arguments']['inline'] != 'true') {
                     $output .= '<div class="edit_discovery_input">';
                 } else {
-                    $output .= '<div style="display: flex; margin-bottom: 25px;">';
+                    $output .= '<div style="display: flex; margin-bottom: 25px; flex-wrap: wrap;">';
                     if (!isset($input['extra'])) {
                         $output .= '<div style="width: 50%;">';
                     }
 
                     if (isset($input['extra'])) {
-                        $output .= '<div style="width: 50%; display: flex;">';
+                        $output .= '<div style="display: flex; margin-right:10px;">';
                     }
                 }
 
                 if ($input['arguments']['inline'] == 'true' && isset($input['extra'])) {
-                    $output .= '<div style="width: 50%">';
+                    $output .= '<div style="margin-right:10px;">';
                 }
 
                 $output .= '<div class="label_select">';
@@ -690,11 +690,11 @@ class Wizard
                     $output .= $this->printInput($input['arguments']);
                     $output .= '</div>';
                 } else if ($input['arguments']['inline'] == 'true') {
-                    $output .= '<div style="width: 50%;">';
-
                     if (isset($input['extra'])) {
-                        $output .= '<div style="float: center;">';
+                        $output .= '<div style="">';
+                        $output .= '<div style="float: left;">';
                     } else {
+                        $output .= '<div style="width:50%;">';
                         $output .= '<div style="float: right;">';
                     }
 
@@ -783,20 +783,24 @@ class Wizard
     /**
      * Print a form.
      *
-     * @param array   $data   Definition of target form to be printed.
-     * @param boolean $return Return as string or direct output.
+     * @param array   $data            Definition of target form to be printed.
+     * @param boolean $return          Return as string or direct output.
+     * @param boolean $print_white_box Print a white box.
      *
      * @return string HTML code.
      */
-    public function printForm(array $data, bool $return=false, bool $print_white_box=false)
-    {
+    public function printForm(
+        array $data,
+        bool $return=false,
+        bool $print_white_box=false
+    ) {
         $form = $data['form'];
         $inputs = $data['inputs'];
         $js = $data['js'];
         $cb_function = $data['cb_function'];
         $cb_args = $data['cb_args'];
 
-        $output_head = '<form enctype="'.$form['enctype'].'" action="'.$form['action'].'" method="'.$form['method'];
+        $output_head = '<form class="discovery" enctype="'.$form['enctype'].'" action="'.$form['action'].'" method="'.$form['method'];
         $output_head .= '" '.$form['extra'].'>';
 
         if ($return === false) {
@@ -868,7 +872,7 @@ class Wizard
         $cb_function = $data['cb_function'];
         $cb_args = $data['cb_args'];
 
-        $output_head = '<form enctype="'.$form['enctype'].'" action="'.$form['action'].'" method="'.$form['method'];
+        $output_head = '<form class="discovery" enctype="'.$form['enctype'].'" action="'.$form['action'].'" method="'.$form['method'];
         $output_head .= '" '.$form['extra'].'>';
 
         if ($return === false) {
@@ -963,7 +967,7 @@ class Wizard
         $cb_function = $data['cb_function'];
         $cb_args = $data['cb_args'];
 
-        $output_head = '<form enctype="'.$form['enctype'].'" action="'.$form['action'].'" method="'.$form['method'];
+        $output_head = '<form class="discovery" enctype="'.$form['enctype'].'" action="'.$form['action'].'" method="'.$form['method'];
         $output_head .= '" '.$form['extra'].'>';
 
         if ($return === false) {

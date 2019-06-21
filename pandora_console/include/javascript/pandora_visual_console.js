@@ -1,5 +1,5 @@
 // TODO: Add Artica ST header.
-/* globals jQuery, VisualConsole */
+/* globals jQuery, VisualConsole, AsyncTaskManager */
 
 /*
  * *********************
@@ -28,63 +28,96 @@ function createVisualConsole(
   updateInterval,
   onUpdate
 ) {
-  var visualConsole = null;
-  var linkedVCRequest = null;
-  var updateVCRequest = null;
-
   if (container == null || props == null || items == null) return null;
   if (baseUrl == null) baseUrl = "";
 
-  // Code which will be executed between intervals.
-  var intervalRef = null;
-  var stopInterval = function() {
-    if (intervalRef !== null) window.clearInterval(intervalRef);
-  };
-  var startInterval = function() {
-    if (updateInterval == null || updateInterval <= 0) return;
-    stopInterval();
+  var visualConsole = null;
+  var asyncTaskManager = new AsyncTaskManager();
 
-    intervalRef = window.setInterval(function() {
-      if (updateVCRequest !== null) updateVCRequest.abort();
-      updateVCRequest = loadVisualConsoleData(
-        baseUrl,
-        visualConsole.props.id,
-        function(error, data) {
-          if (error) {
-            console.log(
-              "[ERROR]",
-              "[VISUAL-CONSOLE-CLIENT]",
-              "[API]",
-              error.message
-            );
-            return;
+  function updateVisualConsole(visualConsoleId, updateInterval, tts) {
+    if (tts == null) tts = 0; // Time to start.
+
+    asyncTaskManager.add(
+      "visual-console",
+      function(done) {
+        var abortable = loadVisualConsoleData(
+          baseUrl,
+          visualConsoleId,
+          function(error, data) {
+            if (error) {
+              console.log(
+                "[ERROR]",
+                "[VISUAL-CONSOLE-CLIENT]",
+                "[API]",
+                error.message
+              );
+              done();
+              return;
+            }
+
+            // Replace Visual Console.
+            if (data != null && data.props != null && data.items != null) {
+              try {
+                var props =
+                  typeof data.props === "string"
+                    ? JSON.parse(data.props)
+                    : data.props;
+                var items =
+                  typeof data.items === "string"
+                    ? JSON.parse(data.items)
+                    : data.items;
+
+                // Add the datetime when the item was received.
+                var receivedAt = new Date();
+                items.map(function(item) {
+                  item["receivedAt"] = receivedAt;
+                  return item;
+                });
+
+                var prevProps = visualConsole.props;
+                // Update the data structure.
+                visualConsole.props = props;
+                // Update the items.
+                visualConsole.updateElements(items);
+                // Emit the VC update event.
+                if (onUpdate) onUpdate(prevProps, visualConsole.props);
+              } catch (ignored) {} // eslint-disable-line no-empty
+
+              done();
+            }
           }
+        );
 
-          // Replace Visual Console.
-          if (data != null && data.props != null && data.items != null) {
-            try {
-              var props =
-                typeof data.props === "string"
-                  ? JSON.parse(data.props)
-                  : data.props;
-              var items =
-                typeof data.items === "string"
-                  ? JSON.parse(data.items)
-                  : data.items;
-
-              var prevProps = visualConsole.props;
-              // Update the data structure.
-              visualConsole.props = props;
-              // Update the items.
-              visualConsole.updateElements(items);
-              // Emit the VC update event.
-              if (onUpdate) onUpdate(prevProps, visualConsole.props);
-            } catch (ignored) {} // eslint-disable-line no-empty
+        return {
+          cancel: function() {
+            abortable.abort();
           }
+        };
+      },
+      updateInterval
+    );
+
+    asyncTaskManager.add("visual-console-start", function(done) {
+      var ref = setTimeout(function() {
+        asyncTaskManager.init("visual-console");
+        done();
+      }, tts);
+
+      return {
+        cancel: function() {
+          clearTimeout(ref);
         }
-      );
-    }, updateInterval);
-  };
+      };
+    });
+
+    if (tts > 0) {
+      // Wait to start the fetch interval.
+      asyncTaskManager.init("visual-console-start");
+    } else {
+      // Start the fetch interval immediately.
+      asyncTaskManager.init("visual-console");
+    }
+  }
 
   // Initialize the Visual Console.
   try {
@@ -102,64 +135,35 @@ function createVisualConsole(
       ) {
         // Stop the current link behavior.
         e.nativeEvent.preventDefault();
-
         // Fetch and update the old VC with the new.
-        if (linkedVCRequest !== null) linkedVCRequest.abort();
-        linkedVCRequest = loadVisualConsoleData(
-          baseUrl,
-          e.data.linkedLayoutId,
-          function(error, data) {
-            if (error) {
-              console.log(
-                "[ERROR]",
-                "[VISUAL-CONSOLE-CLIENT]",
-                "[API]",
-                error.message
-              );
-              return;
-            }
-
-            // Replace Visual Console.
-            if (data != null && data.props != null && data.items != null) {
-              // Cancel the old VC updates.
-              stopInterval();
-
-              try {
-                var props =
-                  typeof data.props === "string"
-                    ? JSON.parse(data.props)
-                    : data.props;
-                var items =
-                  typeof data.items === "string"
-                    ? JSON.parse(data.items)
-                    : data.items;
-
-                if (updateVCRequest !== null) updateVCRequest.abort();
-                // Save the old props.
-                var prevProps = visualConsole.props;
-                // Update the data structure.
-                visualConsole.props = props;
-                // Update the items.
-                visualConsole.updateElements(items);
-                // Emit the VC update event.
-                if (onUpdate) onUpdate(prevProps, visualConsole.props);
-              } catch (ignored) {} // eslint-disable-line no-empty
-
-              // Restart the updates.
-              startInterval();
-            }
-          }
-        );
+        updateVisualConsole(e.data.linkedLayoutId, updateInterval);
       }
     });
 
-    // Start an interval to update the Visual Console.
-    startInterval();
+    if (updateInterval != null && updateInterval > 0) {
+      // Start an interval to update the Visual Console.
+      updateVisualConsole(props.id, updateInterval, updateInterval);
+    }
   } catch (error) {
     console.log("[ERROR]", "[VISUAL-CONSOLE-CLIENT]", error.message);
   }
 
-  return visualConsole;
+  return {
+    visualConsole: visualConsole,
+    changeUpdateInterval: function(updateInterval) {
+      if (updateInterval != null && updateInterval > 0) {
+        updateVisualConsole(
+          visualConsole.props.id,
+          updateInterval,
+          updateInterval
+        );
+      } else {
+        // Update interval disabled. Cancel possible pending tasks.
+        asyncTaskManager.cancel("visual-console");
+        asyncTaskManager.cancel("visual-console-start");
+      }
+    }
+  };
 }
 
 /**

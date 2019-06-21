@@ -1,17 +1,32 @@
 <?php
+/**
+ * Extension to schedule tasks on Pandora FMS Console
+ *
+ * @category   Agent editor/ builder.
+ * @package    Pandora FMS
+ * @subpackage Classic agent management view.
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
 
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation for version 2.
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-// Load global vars
+// Begin.
 enterprise_include('godmode/agentes/agent_manager.php');
 
 require_once 'include/functions_clippy.php';
@@ -30,23 +45,19 @@ if (is_ajax()) {
 
         $id_agent = (int) get_parameter('id_agent');
         $string = (string) get_parameter('q');
-        // q is what autocomplete plugin gives
+        // Field q is what autocomplete plugin gives.
         $filter = [];
-
-        switch ($config['dbtype']) {
-            case 'mysql':
-            case 'postgresql':
-                $filter[] = '(nombre COLLATE utf8_general_ci LIKE "%'.$string.'%" OR direccion LIKE "%'.$string.'%" OR comentarios LIKE "%'.$string.'%" OR alias LIKE "%'.$string.'%")';
-            break;
-
-            case 'oracle':
-                $filter[] = '(upper(nombre) LIKE upper(\'%'.$string.'%\') OR upper(direccion) LIKE upper(\'%'.$string.'%\') OR upper(comentarios) LIKE upper(\'%'.$string.'%\') OR upper(alias) LIKE upper(\'%'.$string.'%\'))';
-            break;
-        }
-
+        $filter[] = '(nombre COLLATE utf8_general_ci LIKE "%'.$string.'%" OR direccion LIKE "%'.$string.'%" OR comentarios LIKE "%'.$string.'%" OR alias LIKE "%'.$string.'%")';
         $filter[] = 'id_agente != '.$id_agent;
 
-        $agents = agents_get_agents($filter, ['id_agente', 'nombre', 'direccion']);
+        $agents = agents_get_agents(
+            $filter,
+            [
+                'id_agente',
+                'nombre',
+                'direccion',
+            ]
+        );
         if ($agents === false) {
             $agents = [];
         }
@@ -78,7 +89,7 @@ if (is_ajax()) {
         $out = false;
         foreach ($idSNMP as $id) {
             foreach ($snmp[$id] as $key => $value) {
-                // Check if it has "ifXXXX" syntax and skip it
+                // Check if it has "ifXXXX" syntax and skip it.
                 if (! preg_match('/if/', $key)) {
                     continue;
                 }
@@ -98,7 +109,7 @@ if (is_ajax()) {
         echo io_json_mb_encode($out);
     }
 
-    // And and remove groups use the same function
+    // And and remove groups use the same function.
     $add_secondary_groups = get_parameter('add_secondary_groups');
     $remove_secondary_groups = get_parameter('remove_secondary_groups');
     if ($add_secondary_groups || $remove_secondary_groups) {
@@ -114,12 +125,12 @@ if (is_ajax()) {
                 'agents_update_secondary_groups',
                 [
                     $id_agent,
-                    $add_secondary_groups ? $groups_to_add : [],
-                    $remove_secondary_groups ? $groups_to_add : [],
+                    ($add_secondary_groups) ? $groups_to_add : [],
+                    ($remove_secondary_groups) ? $groups_to_add : [],
                 ]
             );
             // Echo 0 in case of error. 0 Otherwise.
-            echo $ret ? 1 : 0;
+            echo ($ret) ? 1 : 0;
         }
     }
 
@@ -149,7 +160,7 @@ if ($new_agent) {
 }
 
 if (!$new_agent) {
-    // Agent remote configuration editor
+    // Agent remote configuration editor.
     enterprise_include_once('include/functions_config_agents.php');
     if (enterprise_installed()) {
         $filename = config_agents_get_agent_config_filenames($id_agente);
@@ -157,27 +168,41 @@ if (!$new_agent) {
 }
 
 $disk_conf_delete = (bool) get_parameter('disk_conf_delete');
-// Agent remote configuration DELETE
+// Agent remote configuration DELETE.
 if ($disk_conf_delete) {
     // TODO: Get this working on computers where the Pandora server(s) are not on the webserver
-    // TODO: Get a remote_config editor working in the open version
+    // TODO: Get a remote_config editor working in the open version.
     @unlink($filename['md5']);
     @unlink($filename['conf']);
 }
 
-echo '<form name="conf_agent" method="post" action="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente">';
+echo '<form autocomplete="new-password" name="conf_agent" method="post" action="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente">';
+
+// Custom ID.
+$custom_id_div = '<div class="label_select">';
+$custom_id_div .= '<p class="input_label">'.__('Custom ID').': </p>';
+$custom_id_div .= html_print_input_text(
+    'custom_id',
+    $custom_id,
+    '',
+    16,
+    255,
+    true,
+    false,
+    false,
+    '',
+    'agent_custom_id'
+).'</div>';
 
 if (!$new_agent && $alias != '') {
     $table_agent_name = '<div class="label_select"><p class="input_label">'.__('Agent name').': '.ui_print_help_tip(__("The agent's name must be the same as the one defined at the console"), true).'</p>';
     $table_agent_name .= '<div class="label_select_parent">';
-    $table_agent_name .= '<div class="label_select_child_left">'.html_print_input_text('agente', $nombre_agente, '', 50, 100, true).'</div>';
-    $table_agent_name .= '<div class="label_select_child_right agent_options_agent_name">';
-
-    $table_qr_code = '<div class="agent_qr white_box"><p class="input_label">'.__('QR Code Agent view').': </p>';
+    $table_agent_name .= '<div class="label_select_child_left" style="width: 60%;">'.html_print_input_text('agente', $nombre_agente, '', 50, 100, true).'</div>';
+    $table_agent_name .= '<div class="label_select_child_right agent_options_agent_name" style="width: 40%;">';
 
     if ($id_agente) {
-        $table_agent_name .= '<span>'.__('ID').' '.$id_agente.'</span>';
-        $table_agent_name .= '<a href="index.php?sec=gagente&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agente.'">';
+        $table_agent_name .= '<label>'.__('ID').'</label><input style="width: 50%;" type="text" disabled="true" value="'.$id_agente.'" />';
+        $table_agent_name .= '<a href="index.php?sec=gagente&sec2=operation/agentes/ver_agente&id_agente='.$id_agente.'">';
         $table_agent_name .= html_print_image(
             'images/zoom.png',
             true,
@@ -192,7 +217,7 @@ if (!$new_agent && $alias != '') {
     $agent_options_update = 'agent_options_update';
 
     // Delete link from here.
-    $table_agent_name .= "<a onClick=\"if (!confirm('".__('Are you sure?')."')) return false;\" href='index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&borrar_agente=$id_agente&search=&offset=0&sort_field=&sort=none'>".html_print_image('images/cross.png', true, ['title' => __('Delete agent')]).'</a>';
+    $table_agent_name .= "<a onClick=\"if (!confirm('".__('Are you sure?')."')) return false;\" href='index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&borrar_agente=".$id_agente."&search=&offset=0&sort_field=&sort=none'>".html_print_image('images/cross.png', true, ['title' => __('Delete agent')]).'</a>';
 
     // Remote configuration available.
     if (isset($filename)) {
@@ -201,7 +226,7 @@ if (!$new_agent && $alias != '') {
             $agent_name = io_safe_output($agent_name);
             $agent_md5 = md5($agent_name, false);
 
-            $table_agent_name .= '<a href="index.php?'.'sec=gagente&amp;'.'sec2=godmode/agentes/configurar_agente&amp;'.'tab=remote_configuration&amp;'.'id_agente='.$id_agente.'&amp;'.'disk_conf='.$agent_md5.'">';
+            $table_agent_name .= '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=remote_configuration&id_agente='.$id_agente.'&disk_conf='.$agent_md5.'">';
             $table_agent_name .= html_print_image(
                 'images/application_edit.png',
                 true,
@@ -218,6 +243,19 @@ if (!$new_agent && $alias != '') {
     }
 
     $table_agent_name .= '</div></div></div>';
+
+    // QR code div.
+    $table_qr_code = '<div class="box-shadow agent_qr white_box">';
+    $table_qr_code .= '<p class="input_label">'.__('QR Code Agent view').': </p>';
+    $table_qr_code .= '<div id="qr_container_image"></div>';
+    if ($id_agente) {
+        $table_qr_code .= "<a id='qr_code_agent_view' href='javascript: show_dialog_qrcode(null, \"".ui_get_full_url('mobile/index.php?page=agent&id='.$id_agente)."\" );'></a>";
+    }
+
+    // Add Custom id div.
+    $table_qr_code .= '<br />';
+    $table_qr_code .= $custom_id_div;
+    $table_qr_code .= '</div>';
 }
 
 if ($new_agent) {
@@ -257,14 +295,6 @@ if ($id_agente) {
     }
 </style>
 <?php
-if (!$new_agent && $alias != '') {
-    if ($id_agente) {
-        $table_qr_code .= "<a id='qr_code_agent_view' href='javascript: show_dialog_qrcode(null, \"".ui_get_full_url('mobile/index.php?page=agent&id='.$id_agente)."\" );'></a>";
-    }
-
-    $table_qr_code .= '</div>';
-}
-
 $groups = users_get_groups($config['id_user'], 'AR', false);
 
 $modules = db_get_all_rows_sql(
@@ -295,7 +325,21 @@ $table_primary_group .= '</span></div></div></div>';
 
 $table_interval = '<div class="label_select"><p class="input_label">'.__('Interval').': </p>';
 $table_interval .= '<div class="label_select_parent">';
-$table_interval .= html_print_extended_select_for_time('intervalo', $intervalo, '', '', '0', 10, true);
+$table_interval .= html_print_extended_select_for_time(
+    'intervalo',
+    $intervalo,
+    '',
+    '',
+    '0',
+    10,
+    true,
+    false,
+    true,
+    'w40p'
+);
+
+
+
 if ($intervalo < SECONDS_5MINUTES) {
     $table_interval .= clippy_context_help('interval_agent_min');
 }
@@ -341,22 +385,23 @@ $table_server .= html_print_select(
     __('None'),
     0,
     true
-).'<div class="label_select_child_icons">'.ui_print_help_icon('agent_server', true).'</div></div></div>';
+).'<div class="label_select_child_icons"></div></div></div>';
 
 // Description.
 $table_description = '<div class="label_select"><p class="input_label">'.__('Description').': </p>';
-$table_description .= html_print_input_text(
+$table_description .= html_print_textarea(
     'comentarios',
+    3,
+    10,
     $comentarios,
     '',
-    45,
-    200,
-    true
+    true,
+    'agent_description'
 ).'</div>';
 
-
+// QR code.
 echo '<div class="first_row">
-        <div class="agent_options '.$agent_options_update.' white_box">
+        <div class="box-shadow agent_options '.$agent_options_update.' white_box">
             <div class="agent_options_column_left">'.$table_agent_name.$table_alias.$table_ip.$table_primary_group.'</div>
             <div class="agent_options_column_right">'.$table_interval.$table_os.$table_server.$table_description.'</div>
         </div>';
@@ -368,49 +413,49 @@ echo '</div>';
 
 if (enterprise_installed()) {
     $secondary_groups_selected = enterprise_hook('agents_get_secondary_groups', [$id_agente]);
-    $table_adv_secondary_groups = '<div class="label_select"><p class="input_label">'.__('Secondary groups').': '.ui_print_help_icon('secondary_groups', true).'</p></div>';
-    $table_adv_secondary_groups_left = html_print_select_groups(
+    $adv_secondary_groups_label = '<div class="label_select"><p class="input_label">'.__('Secondary groups').': </p></div>';
+    $adv_secondary_groups_left = html_print_select_groups(
         false,
-        // Use the current user to select the groups
+        // Use the current user to select the groups.
         'AR',
-        // ACL permission
+        // ACL permission.
         false,
-        // Not all group
+        // Not all group.
         'secondary_groups',
-        // HTML id
+        // HTML id.
         '',
-        // No select any by default
+        // No select any by default.
         '',
-        // Javascript onChange code
+        // Javascript onChange code.
         '',
-        // Do not user no selected value
+        // Do not user no selected value.
         0,
-        // Do not use no selected value
+        // Do not use no selected value.
         true,
-        // Return HTML (not echo)
+        // Return HTML (not echo).
         true,
-        // Multiple selection
+        // Multiple selection.
         true,
-        // Sorting by default
+        // Sorting by default.
         '',
-        // CSS classnames (default)
+        // CSS classnames (default).
         false,
-        // Not disabled (default)
-        'width:50%; min-width:170px; text-align:center',
-        // Inline styles (default)
+        // Not disabled (default).
+        'min-width:170px;',
+        // Inline styles (default).
         false,
-        // Option style select (default)
+        // Option style select (default).
         false,
-        // Do not truncate the users tree (default)
+        // Do not truncate the users tree (default).
         'id_grupo',
-        // Key to get as value (default)
+        // Key to get as value (default).
         false,
-        // Not strict user (default)
+        // Not strict user (default).
         $secondary_groups_selected['plain']
-        // Do not show the primary group in this selection
+        // Do not show the primary group in this selection.
     );
 
-    $table_adv_secondary_groups_arrows = html_print_input_image(
+    $adv_secondary_groups_arrows = html_print_input_image(
         'add_secondary',
         'images/darrowright_green.png',
         1,
@@ -434,34 +479,34 @@ if (enterprise_installed()) {
         ]
     );
 
-    $table_adv_secondary_groups_right .= html_print_select(
+    $adv_secondary_groups_right .= html_print_select(
         $secondary_groups_selected['for_select'],
-        // Values
+        // Values.
         'secondary_groups_selected',
-        // HTML id
+        // HTML id.
         '',
-        // Selected
+        // Selected.
         '',
-        // Javascript onChange code
+        // Javascript onChange code.
         '',
-        // Nothing selected
+        // Nothing selected.
         0,
-        // Nothing selected
+        // Nothing selected.
         true,
-        // Return HTML (not echo)
+        // Return HTML (not echo).
         true,
-        // Multiple selection
+        // Multiple selection.
         true,
-        // Sort
+        // Sort.
         '',
-        // Class
+        // Class.
         false,
-        // Disabled
-        'width:50%; min-width:170px; text-align:center'
-        // Style
+        // Disabled.
+        'min-width:170px;'
+        // Style.
     );
 
-    // safe operation mode
+    // Safe operation mode.
     if ($id_agente) {
         $sql_modules = db_get_all_rows_sql(
             'SELECT id_agente_modulo as id_module, nombre as name FROM tagente_modulo 
@@ -485,13 +530,13 @@ if (enterprise_installed()) {
         $table_adv_safe .= __('Module').'&nbsp;'.html_print_select($safe_mode_modules, 'safe_mode_module', $safe_mode_module, '', '', 0, true).'</div>';
     }
 
-    // Remote configuration
+    // Remote configuration.
     $table_adv_remote = '<div class="label_select"><p class="input_label">'.__('Remote configuration').': </p>';
 
     if (!$new_agent && isset($filename) && file_exists($filename['md5'])) {
         $table_adv_remote .= date('F d Y H:i:s', fileatime($filename['md5']));
-        // Delete remote configuration
-        $table_adv_remote .= '<a href="index.php?'.'sec=gagente&amp;'.'sec2=godmode/agentes/configurar_agente&amp;'.'tab=main&amp;'.'disk_conf_delete=1&amp;'.'id_agente='.$id_agente.'">';
+        // Delete remote configuration.
+        $table_adv_remote .= '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=main&disk_conf_delete=1&id_agente='.$id_agente.'">';
         $table_adv_remote .= html_print_image(
             'images/cross.png',
             true,
@@ -510,28 +555,31 @@ if (enterprise_installed()) {
 
     $table_adv_remote .= '</div>';
 
-    $cps_array[-1] = __('Disabled');
-    if ($cps > 0) {
-        $cps_array[$cps] = __('Enabled');
-    } else {
-        $cps_inc = 0;
-        if ($id_agente) {
-            $cps_inc = service_agents_cps($id_agente);
-        }
 
-        $cps_array[$cps_inc] = __('Enabled');
+    // Calculate cps value - agents.
+    if ($id_agente) {
+        $cps_val = service_agents_cps($id_agente);
+    } else {
+        // No agent defined, use received cps as base value.
+        if ($cps >= 0) {
+            $cps_val = $cps;
+        }
     }
 
-    $table_adv_cascade = '<div class="label_select"><p class="input_label">'.__('Cascade protection services').': ';
-    $table_adv_cascade .= ui_print_help_tip(__('Disable the alerts and events of the elements that belong to this service'), true).'</p>';
-    $table_adv_cascade .= html_print_select($cps_array, 'cps', $cps, '', '', 0, true).'</div>';
+    $cps_html = '<div class="label_select"><div class="label_simple_items">';
+    $cps_html .= html_print_checkbox_switch('cps', $cps_val, ($cps >= 0), true);
+    $cps_html .= __('Cascade protection services').'&nbsp;';
+    $cps_html .= ui_print_help_tip(
+        __('Alerts and events will be managed by the service joined by this agent.'),
+        true
+    );
+    $cps_html .= '</div></div>';
+
+    $table_adv_cascade .= $cps_html;
 }
 
-// Custom ID
-$table_adv_custom_id = '<div class="label_select"><p class="input_label">'.__('Custom ID').': </p>';
-$table_adv_custom_id .= html_print_input_text('custom_id', $custom_id, '', 16, 255, true).'</div>';
 
-$table_adv_parent = '<div class="label_select"><p class="input_label">'.__('Parent').': </p>';
+$table_adv_parent = '<div class="label_select"><label class="input_label">'.__('Parent').': </label>';
 $params = [];
 $params['return'] = true;
 $params['show_helptip'] = true;
@@ -546,13 +594,26 @@ $params['cascade_protection'] = true;
 $table_adv_parent .= '<div class="label_simple_items">';
 $table_adv_parent .= ui_print_agent_autocomplete_input($params);
 if (enterprise_installed()) {
-    $table_adv_parent .= html_print_checkbox_switch('cascade_protection', 1, $cascade_protection, true).__('Cascade protection').'&nbsp;'.ui_print_help_icon('cascade_protection', true);
+    $table_adv_parent .= html_print_checkbox_switch(
+        'cascade_protection',
+        1,
+        $cascade_protection,
+        true
+    ).__('Cascade protection').'&nbsp;';
 }
 
-$table_adv_parent .= __('Module').'&nbsp;'.html_print_select($modules_values, 'cascade_protection_module', $cascade_protection_module, '', '', 0, true).'</div></div>';
+$table_adv_parent .= __('Module').'&nbsp;'.html_print_select(
+    $modules_values,
+    'cascade_protection_module',
+    $cascade_protection_module,
+    '',
+    '',
+    0,
+    true
+).'</div></div>';
 
-// Learn mode / Normal mode
-$table_adv_module_mode = '<div class="label_select"><p class="input_label">'.__('Module definition').': '.ui_print_help_icon('module_definition', true).'</p>';
+// Learn mode / Normal mode.
+$table_adv_module_mode = '<div class="label_select"><p class="input_label">'.__('Module definition').': </p>';
 $table_adv_module_mode .= '<div class="switch_radio_button">';
 $table_adv_module_mode .= html_print_radio_button_extended(
     'modo',
@@ -586,9 +647,16 @@ $table_adv_module_mode .= html_print_radio_button_extended(
 );
 $table_adv_module_mode .= '</div></div>';
 
-// Status (Disabled / Enabled)
-$table_adv_status = '<div class="label_select_simple label_simple_one_item"><p class="input_label input_label_simple">'.__('Disabled').': '.ui_print_help_tip(__('If the remote configuration is enabled, it will also go into standby mode when disabling it.'), true).'</p>';
-$table_adv_status .= html_print_checkbox_switch('disabled', 1, $disabled, true).'</div>';
+// Status (Disabled / Enabled).
+$table_adv_status = '<div class="label_select_simple label_simple_one_item">';
+$table_adv_status .= html_print_checkbox_switch(
+    'disabled',
+    1,
+    $disabled,
+    true
+);
+$table_adv_status .= '<p class="input_label input_label_simple">'.__('Disabled').': '.ui_print_help_tip(__('If the remote configuration is enabled, it will also go into standby mode when disabling it.'), true).'</p>';
+$table_adv_status .= '</div>';
 
 // Url address.
 if (enterprise_installed()) {
@@ -599,7 +667,14 @@ if (enterprise_installed()) {
         '',
         45,
         255,
-        true
+        true,
+        false,
+        false,
+        '',
+        '',
+        '',
+        // Autocomplete.
+        'new-password'
     ).'</div>';
 } else {
     $table_adv_url = '<div class="label_select"><p class="input_label">'.__('Url address').': </p></div>';
@@ -613,9 +688,11 @@ if (enterprise_installed()) {
     ).'</div>';
 }
 
-$table_adv_quiet = '<div class="label_select_simple label_simple_one_item"><p class="input_label input_label_simple">'.__('Quiet').': ';
+$table_adv_quiet = '<div class="label_select_simple label_simple_one_item">';
+$table_adv_quiet .= html_print_checkbox_switch('quiet', 1, $quiet, true);
+$table_adv_quiet .= '<p class="input_label input_label_simple">'.__('Quiet').': ';
 $table_adv_quiet .= ui_print_help_tip(__('The agent still runs but the alerts and events will be stop'), true).'</p>';
-$table_adv_quiet .= html_print_checkbox_switch('quiet', 1, $quiet, true).'</div>';
+$table_adv_quiet .= '</div>';
 
 $listIcons = gis_get_array_list_icons();
 
@@ -625,11 +702,11 @@ foreach ($listIcons as $index => $value) {
 }
 
 $path = 'images/gis_map/icons/';
-// TODO set better method the path
+// TODO set better method the path.
 $table_adv_agent_icon = '<div class="label_select"><p class="input_label">'.__('Agent icon').': '.ui_print_help_tip(__('Agent icon for GIS Maps.'), true).'</p>';
 if ($icon_path == '') {
     $display_icons = 'none';
-    // Hack to show no icon. Use any given image to fix not found image errors
+    // Hack to show no icon. Use any given image to fix not found image errors.
     $path_without = 'images/spinner.png';
     $path_default = 'images/spinner.png';
     $path_ok = 'images/spinner.png';
@@ -686,24 +763,47 @@ if ($config['activate_gis']) {
 
 
 
-$table_adv_options = $table_adv_secondary_groups.'<div class="secondary_groups_select" style="margin-bottom:30px;">
-        <div class="secondary_groups_list_left">
-            '.$table_adv_secondary_groups_left.'
+// General display distribution.
+$table_adv_options = '
+        <div class="secondary_groups_list">
+           '.$adv_secondary_groups_label.'
+            <div class="sg_source">
+                '.$adv_secondary_groups_left.'
+            </div>
+            <div class="secondary_group_arrows">
+                '.$adv_secondary_groups_arrows.'
+            </div>
+            <div class="sg_target">      
+                '.$adv_secondary_groups_right.'
+            </div>
         </div>
-        <div class="secondary_groups_select_arrows">
-            '.$table_adv_secondary_groups_arrows.'
-        </div>    
-        <div class="secondary_groups_list_right">      
-            '.$table_adv_secondary_groups_right.'
-        </div>
-    </div>
-    <div class="agent_options agent_options_adv">
-        <div class="agent_options_column_left" >'.$table_adv_parent.$table_adv_custom_id.$table_adv_module_mode.$table_adv_cascade.$table_adv_gis.'</div>
-        <div class="agent_options_column_right" >'.$table_adv_agent_icon.$table_adv_url.$table_adv_quiet.$table_adv_status.$table_adv_remote.$table_adv_safe.'</div>
-    </div>';
+<div class="adv_right" >
+        '.$table_adv_parent.$table_adv_module_mode.$table_adv_cascade;
+
+if ($new_agent) {
+    // If agent is new, show custom id as old style format.
+    $table_adv_options .= $custom_id_div;
+}
+
+$table_adv_options .= '</div>';
+
+$table_adv_options .= '
+        <div class="adv_left" >
+        '.$table_adv_gis.$table_adv_agent_icon.$table_adv_url.$table_adv_quiet.$table_adv_status.$table_adv_remote.$table_adv_safe.'
+        </div>';
+
 
 echo '<div class="ui_toggle">';
-        ui_toggle($table_adv_options, __('Advanced options'), '', true, false, 'white_box white_box_opened');
+ui_toggle(
+    $table_adv_options,
+    __('Advanced options'),
+    '',
+    '',
+    true,
+    false,
+    'white_box white_box_opened',
+    'no-border flex'
+);
 echo '</div>';
 
 
@@ -711,10 +811,17 @@ $table = new stdClass();
 $table->width = '100%';
 $table->class = 'custom_fields_table';
 
-$table->head = [];
+$table->head = [
+    0 => __('Click to display').ui_print_help_tip(
+        __('This field allows url insertion using the BBCode\'s url tag').'.<br />'.__('The format is: [url=\'url to navigate\']\'text to show\'[/url]').'.<br /><br />'.__('e.g.: [url=google.com]Google web search[/url]'),
+        true
+    ),
+];
+$table->class = 'info_table';
 $table->style = [];
 $table->style[0] = 'font-weight: bold;';
 $table->data = [];
+$table->rowstyle = [];
 
 $fields = db_get_all_fields_in_table('tagent_custom_fields');
 
@@ -722,15 +829,12 @@ if ($fields === false) {
     $fields = [];
 }
 
+$i = 0;
 foreach ($fields as $field) {
     $id_custom_field = $field['id_field'];
 
     $data[0] = '<div class="field_title" onclick="show_custom_field_row('.$id_custom_field.')">';
     $data[0] .= '<b>'.$field['name'].'</b>';
-    $data[0] .= ui_print_help_tip(
-        __('This field allows url insertion using the BBCode\'s url tag').'.<br />'.__('The format is: [url=\'url to navigate\']\'text to show\'[/url]').'.<br /><br />'.__('e.g.: [url=google.com]Google web search[/url]'),
-        true
-    );
     $data[0] .= '</div>';
     $combo = [];
     $combo = $field['combo_values'];
@@ -751,6 +855,13 @@ foreach ($fields as $field) {
 
     if ($custom_value === false) {
         $custom_value = '';
+    }
+
+    $table->rowstyle[$i] = 'cursor: pointer;user-select: none;';
+    if (!empty($custom_value)) {
+        $table->rowstyle[($i + 1)] = 'display: table-row;';
+    } else {
+        $table->rowstyle[($i + 1)] = 'display: none;';
     }
 
     if ($field['is_password_type']) {
@@ -801,20 +912,29 @@ foreach ($fields as $field) {
     };
 
     $table->rowid[] = 'name_field-'.$id_custom_field;
-    array_push($table->data, $data);
+    $table->data[] = $data;
 
     $table->rowid[] = 'field-'.$id_custom_field;
-    array_push($table->data, $data_field);
+    $table->data[] = $data_field;
+    $i += 2;
 }
 
 if (!empty($fields)) {
     echo '<div class="ui_toggle">';
-            ui_toggle(html_print_table($table, true), __('Custom fields'), '', true, false, 'white_box white_box_opened');
+    ui_toggle(
+        html_print_table($table, true),
+        __('Custom fields'),
+        '',
+        '',
+        true,
+        false,
+        'white_box white_box_opened',
+        'no-border'
+    );
     echo '</div>';
 }
 
 echo '<div class="action-buttons" style="display: flex; justify-content: flex-end; align-items: center; width: '.$table->width.'">';
-
 
 // The context help about the learning mode.
 if ($modo == 0) {

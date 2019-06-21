@@ -1,4 +1,4 @@
-import { LinkedVisualConsoleProps, UnknownObject } from "../types";
+import { LinkedVisualConsoleProps, AnyObject } from "../lib/types";
 import { linkedVCPropsDecoder } from "../lib";
 import Item, { ItemType, ItemProps, itemBasePropsDecoder } from "../Item";
 
@@ -17,7 +17,7 @@ export type IconProps = {
  * @throws Will throw a TypeError if some property
  * is missing from the raw object or have an invalid type.
  */
-export function iconPropsDecoder(data: UnknownObject): IconProps | never {
+export function iconPropsDecoder(data: AnyObject): IconProps | never {
   if (typeof data.imageSrc !== "string" || data.imageSrc.length === 0) {
     throw new TypeError("invalid image src.");
   }

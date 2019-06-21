@@ -1,30 +1,48 @@
 <?php
+/**
+ * Event statistics.
+ *
+ * @category   Statistics view.
+ * @package    Pandora FMS
+ * @subpackage Events.
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
 
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation for version 2.
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-// Load global vars
+// Begin.
 global $config;
 
 require_once $config['homedir'].'/include/functions_graph.php';
 
 check_login();
 
-if (! check_acl($config['id_user'], 0, 'ER') && ! check_acl($config['id_user'], 0, 'EW') && ! check_acl($config['id_user'], 0, 'EM')) {
+if (! check_acl($config['id_user'], 0, 'ER')
+    && ! check_acl($config['id_user'], 0, 'EW')
+    && ! check_acl($config['id_user'], 0, 'EM')
+) {
     db_pandora_audit('ACL Violation', 'Trying to access event viewer');
     include 'general/noaccess.php';
     return;
 }
 
-// header
+// Header.
 ui_print_page_header(__('Statistics'), 'images/op_events.png', false, false);
 echo '<table width=95%>';
 

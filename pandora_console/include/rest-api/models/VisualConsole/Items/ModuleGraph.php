@@ -207,11 +207,7 @@ final class ModuleGraph extends Item
 
         // Custom graph.
         if (empty($customGraphId) === false) {
-            $customGraph = \db_get_row_filter(
-                'tgraph',
-                'id_graph',
-                $customGraphId
-            );
+            $customGraph = \db_get_row('tgraph', 'id_graph', $customGraphId);
 
             $params = [
                 'period'          => $period,

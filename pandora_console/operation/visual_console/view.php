@@ -124,7 +124,7 @@ if ($aclWrite || $aclManage) {
     ).'</a>';
 }
 
-$options['view']['text'] = '<a href="index.php?sec=network&sec2=operation/visual_console/render_view&id='.$visualConsoleId.'">'.html_print_image(
+$options['view']['text'] = '<a href="index.php?sec=network&sec2=operation/visual_console/render_view&id='.$visualConsoleId.'&refr='.$refr.'">'.html_print_image(
     'images/operation.png',
     true,
     ['title' => __('View')]
@@ -155,6 +155,16 @@ if (!is_metaconsole()) {
     html_print_input_hidden('metaconsole', 1);
 }
 
+if ($pure === false) {
+    echo '<div class="visual-console-edit-controls">';
+    echo '<span>'.__('Move and resize mode').'</span>';
+    echo '<span>';
+    echo html_print_checkbox_switch('edit-mode', 1, false, true);
+    echo '</span>';
+    echo '</div>';
+    echo '<br />';
+}
+
 echo '<div id="visual-console-container"></div>';
 
 if ($pure === true) {
@@ -166,7 +176,7 @@ if ($pure === true) {
 
     // Quit fullscreen.
     echo '<li class="nomn">';
-    $urlNoFull = 'index.php?sec=network&sec2=operation/visual_console/render_view&id='.$visualConsoleId;
+    $urlNoFull = 'index.php?sec=network&sec2=operation/visual_console/render_view&id='.$visualConsoleId.'&refr='.$refr;
     echo '<a class="vc-btn-no-fullscreen" href="'.$urlNoFull.'">';
     echo html_print_image('images/normal_screen.png', true, ['title' => __('Back to normal mode')]);
     echo '</a>';
@@ -177,7 +187,17 @@ if ($pure === true) {
     echo '<div class="vc-refr">';
     echo '<div id="vc-refr-form">';
     echo __('Refresh').':';
-    echo html_print_select(get_refresh_time_array(), 'refr', $refr, '', '', 0, true, false, false);
+    echo html_print_select(
+        get_refresh_time_array(),
+        'vc-refr',
+        $refr,
+        '',
+        '',
+        0,
+        true,
+        false,
+        false
+    );
     echo '</div>';
     echo '</div>';
     echo '</li>';
@@ -296,7 +316,15 @@ $visualConsoleItems = VisualConsole::getItemsFromDB(
             }
         }
     }
-    var visualConsole = createVisualConsole(
+
+    // Add the datetime when the item was received.
+    var receivedAt = new Date();
+    items.map(function(item) {
+        item["receivedAt"] = receivedAt;
+        return item;
+    });
+
+    var visualConsoleManager = createVisualConsole(
         container,
         props,
         items,
@@ -305,16 +333,31 @@ $visualConsoleItems = VisualConsole::getItemsFromDB(
         handleUpdate
     );
 
-    $(document).ready (function () {
-        var refr = <?php echo (int) $refr; ?>;
-        var pure = <?php echo (int) $config['pure']; ?>;
-        var href = "<?php echo ui_get_url_refresh($ignored_params); ?>";
+    // Enable/disable the edition mode.
+    $('input[name=edit-mode]').change(function(event) {
+        if ($(this).prop('checked')) {
+            visualConsoleManager.visualConsole.enableEditMode();
+            visualConsoleManager.changeUpdateInterval(0);
+        } else {
+            visualConsoleManager.visualConsole.disableEditMode();
+            visualConsoleManager.changeUpdateInterval(<?php echo ($refr * 1000); ?>); // To ms.
+        }
+    });
 
-        if (pure) {
-            $('select#refr').change(function (event) {
-                url = js_html_entity_decode( href ) +  $('select#refr').val();
-                $(document).attr ("location", url);
-            });
+    // Update the data fetch interval.
+    $('select#vc-refr').change(function(event) {
+        var refr = Number.parseInt(event.target.value);
+
+        if (!Number.isNaN(refr)) {
+            visualConsoleManager.changeUpdateInterval(refr * 1000); // To ms.
+
+            // Change the URL (if the browser has support).
+            if ("history" in window) {
+                var regex = /(refr=)\d+(&?)/gi;
+                var replacement = '$1' + refr + '$2';
+                var href = window.location.href.replace(regex, replacement);
+                window.history.replaceState({}, document.title, href);
+            }
         }
     });
 </script>

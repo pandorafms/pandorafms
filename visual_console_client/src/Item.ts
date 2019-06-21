@@ -1,4 +1,10 @@
-import { Position, Size, UnknownObject, WithModuleProps } from "./types";
+import {
+  Position,
+  Size,
+  AnyObject,
+  WithModuleProps,
+  ItemMeta
+} from "./lib/types";
 import {
   sizePropsDecoder,
   positionPropsDecoder,
@@ -9,7 +15,7 @@ import {
   humanDate,
   humanTime
 } from "./lib";
-import TypedEvent, { Listener, Disposable } from "./TypedEvent";
+import TypedEvent, { Listener, Disposable } from "./lib/TypedEvent";
 
 // Enum: https://www.typescriptlang.org/docs/handbook/enums.html.
 export const enum ItemType {
@@ -52,14 +58,14 @@ export interface ItemProps extends Position, Size {
 // FIXME: Fix type compatibility.
 export interface ItemClickEvent<Props extends ItemProps> {
   // data: Props;
-  data: UnknownObject;
+  data: AnyObject;
   nativeEvent: Event;
 }
 
 // FIXME: Fix type compatibility.
 export interface ItemRemoveEvent<Props extends ItemProps> {
   // data: Props;
-  data: UnknownObject;
+  data: AnyObject;
 }
 
 /**
@@ -67,7 +73,7 @@ export interface ItemRemoveEvent<Props extends ItemProps> {
  * @param labelPosition Raw value.
  */
 const parseLabelPosition = (
-  labelPosition: any // eslint-disable-line @typescript-eslint/no-explicit-any
+  labelPosition: unknown
 ): ItemProps["labelPosition"] => {
   switch (labelPosition) {
     case "up":
@@ -89,7 +95,7 @@ const parseLabelPosition = (
  * @throws Will throw a TypeError if some property
  * is missing from the raw object or have an invalid type.
  */
-export function itemBasePropsDecoder(data: UnknownObject): ItemProps | never {
+export function itemBasePropsDecoder(data: AnyObject): ItemProps | never {
   if (data.id == null || isNaN(parseInt(data.id))) {
     throw new TypeError("invalid id.");
   }
@@ -118,6 +124,8 @@ export function itemBasePropsDecoder(data: UnknownObject): ItemProps | never {
 abstract class VisualConsoleItem<Props extends ItemProps> {
   // Properties of the item.
   private itemProps: Props;
+  // Metadata of the item.
+  private _metadata: ItemMeta;
   // Reference to the DOM element which will contain the item.
   public elementRef: HTMLElement;
   public readonly labelElementRef: HTMLElement;
@@ -138,8 +146,9 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
    */
   protected abstract createDomElement(): HTMLElement;
 
-  public constructor(props: Props) {
+  public constructor(props: Props, metadata: ItemMeta) {
     this.itemProps = props;
+    this._metadata = metadata;
 
     /*
      * Get a HTMLElement which represents the container box
@@ -185,8 +194,14 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
     box.style.zIndex = this.props.isOnTop ? "2" : "1";
     box.style.left = `${this.props.x}px`;
     box.style.top = `${this.props.y}px`;
-    box.onclick = e =>
-      this.clickEventManager.emit({ data: this.props, nativeEvent: e });
+    box.addEventListener("click", e => {
+      if (this.meta.editMode) {
+        e.preventDefault();
+        e.stopPropagation();
+      } else {
+        this.clickEventManager.emit({ data: this.props, nativeEvent: e });
+      }
+    });
 
     return box;
   }
@@ -310,7 +325,34 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
     // From this point, things which rely on this.props can access to the changes.
 
     // Check if we should re-render.
-    if (this.shouldBeUpdated(prevProps, newProps)) this.render(prevProps);
+    if (this.shouldBeUpdated(prevProps, newProps))
+      this.render(prevProps, this._metadata);
+  }
+
+  /**
+   * Public accessor of the `meta` property.
+   * @return Properties.
+   */
+  public get meta(): ItemMeta {
+    return { ...this._metadata }; // Return a copy.
+  }
+
+  /**
+   * Public setter of the `meta` property.
+   * If the new meta are different enough than the
+   * stored meta, a render would be fired.
+   * @param newProps
+   */
+  public set meta(newMetadata: ItemMeta) {
+    const prevMetadata = this._metadata;
+    // Update the internal meta.
+    this._metadata = newMetadata;
+
+    // From this point, things which rely on this.props can access to the changes.
+
+    // Check if we should re-render.
+    // if (this.shouldBeUpdated(prevMetadata, newMetadata))
+    this.render(this.itemProps, prevMetadata);
   }
 
   /**
@@ -333,7 +375,10 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
    * To recreate or update the HTMLElement which represents the item into the DOM.
    * @param prevProps If exists it will be used to only perform DOM updates instead of a full replace.
    */
-  public render(prevProps: Props | null = null): void {
+  public render(
+    prevProps: Props | null = null,
+    prevMeta: ItemMeta | null = null
+  ): void {
     this.updateDomElement(this.childElementRef);
 
     // Move box.
@@ -377,6 +422,29 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
 
       // Changed the reference to the main element. It's ugly, but needed.
       this.elementRef = container;
+    }
+
+    // Change metadata related things.
+    if (!prevMeta || prevMeta.editMode !== this.meta.editMode) {
+      if (this.meta.editMode) {
+        this.elementRef.classList.add("is-editing");
+      } else {
+        this.elementRef.classList.remove("is-editing");
+      }
+    }
+    if (!prevMeta || prevMeta.isFetching !== this.meta.isFetching) {
+      if (this.meta.isFetching) {
+        this.elementRef.classList.add("is-fetching");
+      } else {
+        this.elementRef.classList.remove("is-fetching");
+      }
+    }
+    if (!prevMeta || prevMeta.isUpdating !== this.meta.isUpdating) {
+      if (this.meta.isUpdating) {
+        this.elementRef.classList.add("is-updating");
+      } else {
+        this.elementRef.classList.remove("is-updating");
+      }
     }
   }
 

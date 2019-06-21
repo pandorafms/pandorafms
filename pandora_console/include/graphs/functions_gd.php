@@ -344,9 +344,9 @@ function drawRating($rating, $width, $height, $font, $out_of_lim_str, $mode, $fo
     $image = imagecreate($width, $height);
 
     // colors
-    $back = imagecolorallocate($image, 255, 255, 255);
+    $back = imagecolorallocate($image, 241, 241, 241);
 
-    $bordercolor = imagecolorallocate($image, 174, 174, 174);
+    $bordercolor = imagecolorallocate($image, 241, 241, 241);
     $text = imagecolorallocate($image, 74, 74, 74);
     $red = imagecolorallocate($image, 255, 60, 75);
     $green = imagecolorallocate($image, 50, 205, 50);
@@ -483,7 +483,7 @@ function gd_progress_bar($width, $height, $progress, $title, $font, $out_of_lim_
         break;
 
         case 1:
-            drawRating($progress, $width, $height, $font, $out_of_lim_str, $mode, 6, $value_text, $color);
+            drawRating($progress, $width, $height, $font, $out_of_lim_str, $mode, 9, $value_text, $color);
 
         break;
 

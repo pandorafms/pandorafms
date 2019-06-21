@@ -2,9 +2,9 @@ import { arc as arcFactory } from "d3-shape";
 
 import {
   LinkedVisualConsoleProps,
-  UnknownObject,
+  AnyObject,
   WithModuleProps
-} from "../types";
+} from "../lib/types";
 import {
   linkedVCPropsDecoder,
   modulePropsDecoder,
@@ -36,8 +36,9 @@ export type PercentileProps = {
  * Extract a valid enum value from a raw type value.
  * @param type Raw value.
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function extractPercentileType(type: any): PercentileProps["percentileType"] {
+function extractPercentileType(
+  type: unknown
+): PercentileProps["percentileType"] {
   switch (type) {
     case "progress-bar":
     case "bubble":
@@ -60,8 +61,7 @@ function extractPercentileType(type: any): PercentileProps["percentileType"] {
  * Extract a valid enum value from a raw value type value.
  * @param type Raw value.
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function extractValueType(valueType: any): PercentileProps["valueType"] {
+function extractValueType(valueType: unknown): PercentileProps["valueType"] {
   switch (valueType) {
     case "percent":
     case "value":
@@ -81,7 +81,7 @@ function extractValueType(valueType: any): PercentileProps["valueType"] {
  * is missing from the raw object or have an invalid type.
  */
 export function percentilePropsDecoder(
-  data: UnknownObject
+  data: AnyObject
 ): PercentileProps | never {
   return {
     ...itemBasePropsDecoder(data), // Object spread. It will merge the properties of the two objects.

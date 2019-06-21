@@ -1226,7 +1226,7 @@ function paint_qrcode(text, where, width, height) {
     text: text,
     width: width,
     height: height,
-    colorDark: "#3B6941",
+    colorDark: "#343434",
     colorLight: "#ffffff",
     correctLevel: QRCode.CorrectLevel.M
   });
@@ -1599,7 +1599,7 @@ function paint_graph_status(
       .attr("y", height_x - 30)
       .attr("width", 10)
       .attr("height", 10)
-      .style("fill", "#fc4444");
+      .style("fill", "#e63c52");
 
     //styles for number and axes
     svg
@@ -1683,7 +1683,7 @@ function paint_graph_status(
         )
         .attr("width", 300)
         .attr("height", (max_c - min_c) * position)
-        .style("fill", "#fc4444");
+        .style("fill", "#e63c52");
     } else {
       svg
         .append("g")
@@ -1695,7 +1695,7 @@ function paint_graph_status(
         .attr("y", height_x + 200 - (min_c - range_min) * position)
         .attr("width", 300)
         .attr("height", (min_c - range_min) * position)
-        .style("fill", "#fc4444");
+        .style("fill", "#e63c52");
       svg
         .append("g")
         .append("rect")
@@ -1709,7 +1709,7 @@ function paint_graph_status(
           "height",
           (range_max - min_c) * position - (max_c - min_c) * position
         )
-        .style("fill", "#fc4444");
+        .style("fill", "#e63c52");
     }
   } else {
     d3.select("#svg_dinamic rect").remove();

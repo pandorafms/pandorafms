@@ -72,41 +72,6 @@ function credentials_get_all(
         throw new Exception('[credential_get_all] Fields must be an array or "count".');
     }
 
-    if (isset($order)) {
-        $dir = 'asc';
-        if ($order == 'desc') {
-            $dir = 'desc';
-        };
-
-        if (in_array(
-            $sort_field,
-            [
-                'group',
-                'identifier',
-                'product',
-                'username',
-                'options',
-            ]
-        )
-        ) {
-            $order_by = sprintf(
-                'ORDER BY `%s` %s',
-                $sort_field,
-                $dir
-            );
-        }
-    }
-
-    if (isset($limit) && $limit > 0
-        && isset($offset) && $offset >= 0
-    ) {
-        $pagination = sprintf(
-            ' LIMIT %d OFFSET %d ',
-            $limit,
-            $offset
-        );
-    }
-
     if (isset($filter['free_search']) && !empty($filter['free_search'])) {
         $sql_filters[] = vsprintf(
             ' AND (lower(cs.username) like lower("%%%s%%")
@@ -144,6 +109,48 @@ function credentials_get_all(
                 join(',', $filter['filter_id_group'])
             );
         }
+    }
+
+    if (isset($filter['group_list']) && is_array($filter['group_list'])) {
+        $sql_filters[] = sprintf(
+            ' AND cs.id_group IN (%s) ',
+            join(',', $filter['group_list'])
+        );
+    }
+
+    if (isset($order)) {
+        $dir = 'asc';
+        if ($order == 'desc') {
+            $dir = 'desc';
+        };
+
+        if (in_array(
+            $sort_field,
+            [
+                'group',
+                'identifier',
+                'product',
+                'username',
+                'options',
+            ]
+        )
+        ) {
+            $order_by = sprintf(
+                'ORDER BY `%s` %s',
+                $sort_field,
+                $dir
+            );
+        }
+    }
+
+    if (isset($limit) && $limit > 0
+        && isset($offset) && $offset >= 0
+    ) {
+        $pagination = sprintf(
+            ' LIMIT %d OFFSET %d ',
+            $limit,
+            $offset
+        );
     }
 
     $sql = sprintf(
@@ -371,4 +378,60 @@ function print_inputs($values=null)
     }
 
     return $return;
+}
+
+
+/**
+ * Retrieve all identifiers available for current user.
+ *
+ * @param string $product Target product.
+ *
+ * @return array Of account identifiers.
+ */
+function credentials_list_accounts($product)
+{
+    global $config;
+
+    check_login();
+
+    include_once $config['homedir'].'/include/functions_users.php';
+
+    static $user_groups;
+
+    if (!isset($user_groups)) {
+        $user_groups = users_get_groups(
+            $config['id_user'],
+            'AW'
+        );
+
+        // Always add group 'ALL' because 'ALL' group credentials
+        // must be available for all users.
+        if (is_array($user_groups)) {
+            $user_groups = ([0] + array_keys($user_groups));
+        } else {
+            $user_groups = [0];
+        }
+    }
+
+    $creds = credentials_get_all(
+        ['identifier'],
+        [
+            'product'    => $product,
+            'group_list' => $user_groups,
+        ]
+    );
+
+    if ($creds === false) {
+        return [];
+    }
+
+    $ret = array_reduce(
+        $creds,
+        function ($carry, $item) {
+            $carry[$item['identifier']] = $item['identifier'];
+            return $carry;
+        }
+    );
+
+    return $ret;
 }

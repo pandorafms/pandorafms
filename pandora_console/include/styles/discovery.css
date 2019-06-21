@@ -2,6 +2,10 @@
  * Discovery css global
  */
 
+ul.bigbuttonlist {
+  min-height: 200px;
+}
+
 li.discovery {
   display: inline-block;
   float: left;

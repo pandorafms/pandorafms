@@ -185,7 +185,7 @@ if ($date > $now) {
         $table->style[0] = 'text-align:left;';
         $table->style[1] = 'text-align:left;';
         $table->styleTable = 'margin-bottom: 20px;';
-        $table->class = 'events_show_more_table';
+        $table->class = 'table_modal_alternate';
 
         $data = [];
         $data[0] = __('Refresh time');
@@ -214,7 +214,7 @@ if ($date > $now) {
 
         $data = [];
         $data[0] = __('Show percentil');
-        $data[1] = html_print_checkbox('show_percentil', 1, (bool) $show_percentil, true);
+        $data[1] = html_print_checkbox_switch('show_percentil', 1, (bool) $show_percentil, true);
         $table->data[] = $data;
         $table->rowclass[] = '';
 
@@ -225,7 +225,7 @@ if ($date > $now) {
             'images/tip.png',
             true
         );
-        $data[1] = html_print_checkbox('fullscale', 1, (bool) $fullscale, true);
+        $data[1] = html_print_checkbox_switch('fullscale', 1, (bool) $fullscale, true);
         $table->data[] = $data;
         $table->rowclass[] = '';
 
@@ -263,7 +263,7 @@ if ($date > $now) {
         echo '<div class="module_graph_menu_dropdown">
                 <div id="module_graph_menu_header" class="module_graph_menu_header">
                     '.html_print_image('images/arrow_down_green.png', true, ['class' => 'module_graph_menu_arrow', 'float' => 'left'], false, false, true).'
-                    <span>'.__('Graph configuration menu').ui_print_help_icon('graphs', true, $config['homeurl'], 'images/help_g.png', true).'</span>
+                    <span>'.__('Graph configuration menu').'</span>
                     '.html_print_image('images/config.png', true, ['float' => 'right'], false, false, true).'
                 </div>
                 <div class="module_graph_menu_content module_graph_menu_content_closed" style="display:none;">'.$form_table.'</div>

@@ -32,6 +32,7 @@ require_once $config['homedir'].'/include/functions_db.php';
 require_once $config['homedir'].'/include/functions_io.php';
 require_once $config['homedir'].'/include/functions_notifications.php';
 require_once $config['homedir'].'/include/functions_servers.php';
+require_once $config['homedir'].'/include/functions_update_manager.php';
 
 // Enterprise includes.
 enterprise_include_once('include/functions_metaconsole.php');
@@ -193,6 +194,20 @@ class ConsoleSupervisor
         if (enterprise_installed()) {
             $this->checkCronRunning();
         }
+
+        /*
+         * Check if instance is registered.
+         *     NOTIF.UPDATEMANAGER.REGISTRATION
+         */
+
+        $this->checkUpdateManagerRegistration();
+
+        /*
+         * Check if there're new messages in UM.
+         *     NOTIF.UPDATEMANAGER.MESSAGES
+         */
+
+        $this->getUMMessages();
 
     }
 
@@ -406,6 +421,20 @@ class ConsoleSupervisor
             $this->checkCronRunning();
         }
 
+        /*
+         * Check if instance is registered.
+         *     NOTIF.UPDATEMANAGER.REGISTRATION
+         */
+
+        $this->checkUpdateManagerRegistration();
+
+        /*
+         * Check if there're new messages in UM.
+         *     NOTIF.UPDATEMANAGER.MESSAGES
+         */
+
+        $this->getUMMessages();
+
     }
 
 
@@ -571,6 +600,7 @@ class ConsoleSupervisor
             case 'NOTIF.UPDATEMANAGER.OPENSETUP':
             case 'NOTIF.UPDATEMANAGER.UPDATE':
             case 'NOTIF.UPDATEMANAGER.MINOR':
+            case 'NOTIF.UPDATEMANAGER.MESSAGES':
             case 'NOTIF.CRON.CONFIGURED':
             default:
                 // NOTIF.SERVER.STATUS.
@@ -1911,27 +1941,18 @@ class ConsoleSupervisor
     public function checkUpdateManagerRegistration()
     {
         global $config;
+        include_once $config['homedir'].'/include/functions_update_manager.php';
         $login = get_parameter('login', false);
 
-        if (license_free() === true
-            && users_is_admin($config['id_user']) === true
-        ) {
-            $login = get_parameter('login', false);
-            // Registration advice.
-            if ((isset($config['instance_registered']) === true
-                || ($config['instance_registered'] != 1)) && ($login === false)
-            ) {
-                $this->notify(
-                    [
-                        'type'    => 'NOTIF.UPDATEMANAGER.REGISTRATION',
-                        'title'   => __('This instance is not registered in the Update manager section'),
-                        'message' => __('Click <a style="font-weight:bold; text-decoration:underline" href="javascript: force_run_register();"> here</a> to start the registration process'),
-                        'url'     => 'javascript: force_run_register();',
-                    ]
-                );
-            } else {
-                $this->cleanNotifications('NOTIF.UPDATEMANAGER.REGISTRATION');
-            }
+        if (update_manager_verify_registration() === false) {
+            $this->notify(
+                [
+                    'type'    => 'NOTIF.UPDATEMANAGER.REGISTRATION',
+                    'title'   => __('This instance is not registered in the Update manager section'),
+                    'message' => __('Click <a style="font-weight:bold; text-decoration:underline" href="javascript: force_run_register();"> here</a> to start the registration process'),
+                    'url'     => 'javascript: force_run_register();',
+                ]
+            );
         } else {
             $this->cleanNotifications('NOTIF.UPDATEMANAGER.REGISTRATION');
         }
@@ -2214,6 +2235,71 @@ class ConsoleSupervisor
             $this->cleanNotifications('NOTIF.CRON.CONFIGURED');
         }
 
+    }
+
+
+    /**
+     * Search for messages.
+     *
+     * @return void
+     */
+    public function getUMMessages()
+    {
+        global $config;
+        include_once $config['homedir'].'/include/functions_update_manager.php';
+
+        if (update_manager_verify_registration() === false) {
+            // Console not subscribed.
+            return;
+        }
+
+        // Avoid contact for messages too much often.
+        if (isset($config['last_um_check'])
+            && time() < $config['last_um_check']
+        ) {
+            return;
+        }
+
+        // Only ask for messages once a day.
+        $future = (time() + 2 * SECONDS_1HOUR);
+        config_update_value('last_um_check', $future);
+
+        $params = [
+            'pandora_uid' => $config['pandora_uid'],
+            'timezone'    => $config['timezone'],
+            'language'    => $config['language'],
+        ];
+
+        $result = update_manager_curl_request('get_messages', $params);
+
+        try {
+            if ($result['success'] === true) {
+                $messages = json_decode($result['update_message'], true);
+            }
+        } catch (Exception $e) {
+            error_log($e->getMessage());
+        };
+
+        if (is_array($messages)) {
+            $source_id = get_notification_source_id(
+                'Official&#x20;communication'
+            );
+            foreach ($messages as $message) {
+                if (!isset($message['url'])) {
+                    $message['url'] = '#';
+                }
+
+                $this->notify(
+                    [
+                        'type'    => 'NOTIF.UPDATEMANAGER.MESSAGES.'.$message['id'],
+                        'title'   => $message['subject'],
+                        'message' => base64_decode($message['message_html']),
+                        'url'     => $message['url'],
+                    ],
+                    $source_id
+                );
+            }
+        }
     }
 
 

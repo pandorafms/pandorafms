@@ -45,12 +45,6 @@ $buttons = [
     ],
 ];
 
-if (license_free()) {
-    $buttons['messages'] = [
-        'active' => ($tab == 'messages') ? true : false,
-        'text'   => '<a href="index.php?sec=gsetup&sec2=godmode/update_manager/update_manager&tab=messages">'.html_print_image('images/email_mc.png', true, ['title' => __('Update manager messages')]).'</a>',
-    ];
-}
 
 switch ($tab) {
     case 'setup':
@@ -65,10 +59,6 @@ switch ($tab) {
     case 'online':
         $title = __('Update manager » Online');
         $help_header = 'update_manager_online_tab';
-    break;
-
-    case 'messages':
-        $title = __('Update manager » Messages');
     break;
 }
 
@@ -88,10 +78,6 @@ switch ($tab) {
 
     case 'offline':
         include $config['homedir'].'/godmode/update_manager/update_manager.offline.php';
-    break;
-
-    case 'messages':
-        include $config['homedir'].'/godmode/update_manager/update_manager.messages.php';
     break;
 
     case 'online':

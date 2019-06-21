@@ -58,6 +58,12 @@ $curl_timeout = $config['ehorus_req_timeout'];
 
 $base_url = 'https://'.$hostname.':'.$port;
 
+// If user login is enabled, fetch user and pass from user info
+if ($config['ehorus_user_level_conf']) {
+    $user = $user_info['ehorus_user_level_user'];
+    $password = io_safe_output(io_output_password($user_info['ehorus_user_level_pass']));
+}
+
 // Get the login auth token
 $login_path = '/api/login';
 $body = [

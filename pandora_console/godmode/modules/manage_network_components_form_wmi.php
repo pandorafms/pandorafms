@@ -30,29 +30,29 @@ require_once $config['homedir'].'/include/functions_modules.php';
 $data = [];
 $data[0] = __('WMI query').' '.ui_print_help_icon('wmi_query_tab', true);
 $data[1] = html_print_input_text('snmp_oid', $snmp_oid, '', 25, 255, true);
-$data[2] = __('Key string').' '.ui_print_help_icon('wmikey', true, ui_get_full_url(false, false, false, false));
+$data[2] = __('Key string');
 $data[3] = html_print_input_text('snmp_community', $snmp_community, '', 25, 255, true);
 
 push_table_row($data, 'wmi_1');
 
 $data = [];
-$data[0] = __('Field number').' '.ui_print_help_icon('wmifield', true, ui_get_full_url(false, false, false, false));
+$data[0] = __('Field number');
 $data[1] = html_print_input_text('tcp_port', $tcp_port, '', 5, 25, true);
-$data[2] = __('Namespace').' '.ui_print_help_icon('wminamespace', true, ui_get_full_url(false, false, false, false));
+$data[2] = __('Namespace');
 $data[3] = html_print_input_text('tcp_send', $tcp_send, '', 25, 255, true);
 
 push_table_row($data, 'wmi_2');
 
 $data = [];
-$data[0] = __('Username').ui_print_help_icon('column_macros', true);
+$data[0] = __('Username');
 $data[1] = html_print_input_text('plugin_user', $plugin_user, '', 15, 255, true);
-$data[2] = __('Password').ui_print_help_icon('column_macros', true);
+$data[2] = __('Password');
 $data[3] = html_print_input_password('plugin_pass', $plugin_pass, '', 25, 255, true);
 
 push_table_row($data, 'wmi_3');
 
 $data = [];
-$data[0] = __('Post process').' '.ui_print_help_icon('postprocess', true, ui_get_full_url(false, false, false, false));
+$data[0] = __('Post process');
 $data[1] = html_print_extended_select_for_post_process(
     'post_process',
     $post_process,

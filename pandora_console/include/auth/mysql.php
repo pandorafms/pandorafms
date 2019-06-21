@@ -282,38 +282,41 @@ function process_user_login_remote($login, $pass, $api=false)
                 }
             }
         } else if ($config['auth'] === 'ldap') {
-            if ($config['ldap_save_password']) {
-                $update_credentials = change_local_user_pass_ldap($login, $pass);
+            // Check if autocreate  remote users is active.
+            if ($config['autocreate_remote_users'] == 1) {
+                if ($config['ldap_save_password']) {
+                    $update_credentials = change_local_user_pass_ldap($login, $pass);
 
-                if ($update_credentials) {
-                    $config['auth_error'] = __('Your permissions have changed. Please, login again.');
-                    return false;
-                }
-            } else {
-                delete_user_pass_ldap($login);
-            }
-
-            $permissions = fill_permissions_ldap($sr);
-            if (empty($permissions)) {
-                $config['auth_error'] = __('User not found in database or incorrect password');
-                return false;
-            } else {
-                // check permissions
-                $result = check_permission_ad(
-                    $login,
-                    $pass,
-                    false,
-                    $permissions,
-                    defined('METACONSOLE')
-                );
-
-                if ($return === 'error_permissions') {
-                    $config['auth_error'] = __('Problems with configuration permissions. Please contact with Administrator');
-                    return false;
-                } else {
-                    if ($return === 'permissions_changed') {
+                    if ($update_credentials) {
                         $config['auth_error'] = __('Your permissions have changed. Please, login again.');
                         return false;
+                    }
+                } else {
+                    delete_user_pass_ldap($login);
+                }
+
+                $permissions = fill_permissions_ldap($sr);
+                if (empty($permissions)) {
+                    $config['auth_error'] = __('User not found in database or incorrect password');
+                    return false;
+                } else {
+                    // check permissions
+                    $result = check_permission_ad(
+                        $login,
+                        $pass,
+                        false,
+                        $permissions,
+                        defined('METACONSOLE')
+                    );
+
+                    if ($return === 'error_permissions') {
+                        $config['auth_error'] = __('Problems with configuration permissions. Please contact with Administrator');
+                        return false;
+                    } else {
+                        if ($return === 'permissions_changed') {
+                            $config['auth_error'] = __('Your permissions have changed. Please, login again.');
+                            return false;
+                        }
                     }
                 }
             }
@@ -1254,11 +1257,49 @@ function fill_permissions_ldap($sr)
     global $config;
     $permissions = [];
     $permissions_profile = [];
-    if ((bool) $config['ldap_save_profile'] === false) {
+    if (defined('METACONSOLE')) {
+        $meta = true;
+    }
+
+    if ($meta && (bool) $config['ldap_save_profile'] === false && $config['ldap_advanced_config'] == 0) {
+        $result = 0;
         $result = db_get_all_rows_filter(
             'tusuario_perfil',
             ['id_usuario' => $sr['uid'][0]]
         );
+        if ($result == false) {
+            $permissions[0]['profile'] = $config['default_remote_profile'];
+            $permissions[0]['groups'][] = $config['default_remote_group'];
+            $permissions[0]['tags'] = $config['default_assign_tags'];
+            $permissions[0]['no_hierarchy'] = $config['default_no_hierarchy'];
+            return $permissions;
+        }
+
+        foreach ($result as $perms) {
+            $permissions_profile[] = [
+                'profile'      => $perms['id_perfil'],
+                'groups'       => [$perms['id_grupo']],
+                'tags'         => $perms['tags'],
+                'no_hierarchy' => (bool) $perms['no_hierarchy'] ? 1 : 0,
+            ];
+        }
+
+        return $permissions_profile;
+    }
+
+    if ((bool) $config['ldap_save_profile'] === false && $config['ldap_advanced_config'] == '') {
+        $result = db_get_all_rows_filter(
+            'tusuario_perfil',
+            ['id_usuario' => $sr['uid'][0]]
+        );
+        if ($result == false) {
+            $permissions[0]['profile'] = $config['default_remote_profile'];
+            $permissions[0]['groups'][] = $config['default_remote_group'];
+            $permissions[0]['tags'] = $config['default_assign_tags'];
+            $permissions[0]['no_hierarchy'] = $config['default_no_hierarchy'];
+            return $permissions;
+        }
+
         foreach ($result as $perms) {
                $permissions_profile[] = [
                    'profile'      => $perms['id_perfil'],
@@ -1268,18 +1309,55 @@ function fill_permissions_ldap($sr)
                ];
         }
 
-        if (empty($permissions_profile)) {
-            $permissions[0]['profile'] = $config['default_remote_profile'];
-            $permissions[0]['groups'][] = $config['default_remote_group'];
-            $permissions[0]['tags'] = $config['default_assign_tags'];
-            $permissions[0]['no_hierarchy'] = $config['default_no_hierarchy'];
-            return $permissions;
-        } else {
-            return $permissions_profile;
-        }
+        return $permissions_profile;
     }
 
-    if ($config['autocreate_remote_users']) {
+    if ($config['ldap_advanced_config'] == 1 && $config['ldap_save_profile'] == 1) {
+        $ldap_adv_perms = json_decode(io_safe_output($config['ldap_adv_perms']), true);
+        foreach ($ldap_adv_perms as $ldap_adv_perm) {
+            $permissions[] = [
+                'profile'      => $ldap_adv_perm['profile'],
+                'groups'       => $ldap_adv_perm['group'],
+                'tags'         => implode(',', $ldap_adv_perm['tags']),
+                'no_hierarchy' => (bool) $ldap_adv_perm['no_hierarchy'] ? 1 : 0,
+            ];
+        }
+
+        return $permissions;
+    }
+
+    if ($config['ldap_advanced_config'] == 1 && $config['ldap_save_profile'] == 0) {
+        $result = db_get_all_rows_filter(
+            'tusuario_perfil',
+            ['id_usuario' => $sr['uid'][0]]
+        );
+        if ($result == false) {
+            $ldap_adv_perms = json_decode(io_safe_output($config['ldap_adv_perms']), true);
+            foreach ($ldap_adv_perms as $ldap_adv_perm) {
+                $permissions[] = [
+                    'profile'      => $ldap_adv_perm['profile'],
+                    'groups'       => $ldap_adv_perm['group'],
+                    'tags'         => implode(',', $ldap_adv_perm['tags']),
+                    'no_hierarchy' => (bool) $ldap_adv_perm['no_hierarchy'] ? 1 : 0,
+                ];
+            }
+
+            return $permissions;
+        }
+
+        foreach ($result as $perms) {
+               $permissions_profile[] = [
+                   'profile'      => $perms['id_perfil'],
+                   'groups'       => [$perms['id_grupo']],
+                   'tags'         => $perms['tags'],
+                   'no_hierarchy' => (bool) $perms['no_hierarchy'] ? 1 : 0,
+               ];
+        };
+
+        return $permissions_profile;
+    }
+
+    if ($config['autocreate_remote_users'] && $config['ldap_save_profile'] == 1) {
         $permissions[0]['profile'] = $config['default_remote_profile'];
         $permissions[0]['groups'][] = $config['default_remote_group'];
         $permissions[0]['tags'] = $config['default_assign_tags'];
@@ -1394,7 +1472,10 @@ function local_ldap_search($ldap_host, $ldap_port=389, $ldap_version=3, $dn, $ac
         $tls = ' -ZZ ';
     }
 
-    if (stripos($ldap_host, 'ldap') !== false) {
+    if (stripos($ldap_host, 'ldap://') !== false
+        || stripos($ldap_host, 'ldaps://') !== false
+        || stripos($ldap_host, 'ldapi://') !== false
+    ) {
         $ldap_host = ' -H '.$ldap_host.':'.$ldap_port;
     } else {
         $ldap_host = ' -h '.$ldap_host.' -p '.$ldap_port;

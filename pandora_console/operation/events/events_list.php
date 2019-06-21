@@ -1017,6 +1017,7 @@ $data[0] = ui_toggle(
     html_print_table($table_advanced, true),
     __('Advanced options'),
     '',
+    '',
     true,
     true
 );

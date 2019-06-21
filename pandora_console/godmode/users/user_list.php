@@ -297,7 +297,14 @@ if (defined('METACONSOLE')) {
     $form_filter = "<form method='post'>";
     $form_filter .= html_print_table($table, true);
     $form_filter .= '</form>';
-    ui_toggle($form_filter, __('Users control filter'), __('Toggle filter(s)'), !$search);
+    ui_toggle(
+        $form_filter,
+        __('Users control filter'),
+        __('Toggle filter(s)'),
+        '',
+        '',
+        !$search
+    );
 }
 
 // Urls to sort the table.

@@ -128,7 +128,7 @@ $snmp_versions['2c'] = 'v. 2c';
 $snmp_versions['3'] = 'v. 3';
 
 $data = [];
-$data[0] = __('SNMP community').ui_print_help_icon('column_macros', true);
+$data[0] = __('SNMP community');
 $adopt = false;
 if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK && isset($id_agent_module)) {
     $adopt = policies_is_module_adopt($id_agent_module);
@@ -233,7 +233,7 @@ push_table_simple($data, 'snmp_2');
 
 // Advanced stuff
 $data = [];
-$data[0] = __('TCP send').' '.ui_print_help_icon('tcp_send', true);
+$data[0] = __('TCP send');
 $data[1] = html_print_textarea('tcp_send', 2, 65, $tcp_send, $disabledTextBecauseInPolicy, true, $largeclassdisabledBecauseInPolicy);
 $table_simple->colspan['tcp_send'][1] = 3;
 
@@ -277,7 +277,7 @@ if (!isset($id_agent_module)) {
 }
 
 $data = [];
-$data[0] = __('Auth user').ui_print_help_icon('column_macros', true);
+$data[0] = __('Auth user');
 $data[1] = html_print_input_text(
     'snmp3_auth_user',
     $snmp3_auth_user,
@@ -290,7 +290,7 @@ $data[1] = html_print_input_text(
     '',
     $classdisabledBecauseInPolicy
 );
-$data[2] = __('Auth password').ui_print_help_icon('column_macros', true).ui_print_help_tip(__('The pass length must be eight character minimum.'), true);
+$data[2] = __('Auth password').ui_print_help_tip(__('The pass length must be eight character minimum.'), true);
 $data[3] = html_print_input_password(
     'snmp3_auth_pass',
     $snmp3_auth_pass,
@@ -312,7 +312,7 @@ push_table_simple($data, 'field_snmpv3_row1');
 $data = [];
 $data[0] = __('Privacy method');
 $data[1] = html_print_select(['DES' => __('DES'), 'AES' => __('AES')], 'snmp3_privacy_method', $snmp3_privacy_method, '', '', '', true, false, false, '', $disabledBecauseInPolicy);
-$data[2] = __('Privacy pass').ui_print_help_icon('column_macros', true).ui_print_help_tip(__('The pass length must be eight character minimum.'), true);
+$data[2] = __('Privacy pass').ui_print_help_tip(__('The pass length must be eight character minimum.'), true);
 $data[3] = html_print_input_password(
     'snmp3_privacy_pass',
     $snmp3_privacy_pass,

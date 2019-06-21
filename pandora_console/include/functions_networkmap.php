@@ -1807,9 +1807,9 @@ function networkmap_links_to_js_links(
 
         if (($relation['parent_type'] == NODE_MODULE) && ($relation['child_type'] == NODE_MODULE)) {
             if (($item['status_start'] == AGENT_MODULE_STATUS_CRITICAL_BAD) || ($item['status_end'] == AGENT_MODULE_STATUS_CRITICAL_BAD)) {
-                $item['link_color'] = '#FC4444';
+                $item['link_color'] = '#e63c52';
             } else if (($item['status_start'] == AGENT_MODULE_STATUS_WARNING) || ($item['status_end'] == AGENT_MODULE_STATUS_WARNING)) {
-                $item['link_color'] = '#FAD403';
+                $item['link_color'] = '#f3b200';
             }
 
             $agent = agents_get_agent_id_by_module_id(
@@ -1837,9 +1837,9 @@ function networkmap_links_to_js_links(
             }
         } else if ($relation['child_type'] == NODE_MODULE) {
             if ($item['status_start'] == AGENT_MODULE_STATUS_CRITICAL_BAD) {
-                $item['link_color'] = '#FC4444';
+                $item['link_color'] = '#e63c52';
             } else if ($item['status_start'] == AGENT_MODULE_STATUS_WARNING) {
-                $item['link_color'] = '#FAD403';
+                $item['link_color'] = '#f3b200';
             }
 
             $agent2 = agents_get_agent_id_by_module_id(
@@ -1864,9 +1864,9 @@ function networkmap_links_to_js_links(
             }
         } else if ($relation['parent_type'] == NODE_MODULE) {
             if ($item['status_end'] == AGENT_MODULE_STATUS_CRITICAL_BAD) {
-                $item['link_color'] = '#FC4444';
+                $item['link_color'] = '#e63c52';
             } else if ($item['status_end'] == AGENT_MODULE_STATUS_WARNING) {
-                $item['link_color'] = '#FAD403';
+                $item['link_color'] = '#f3b200';
             }
 
             $agent = agents_get_agent_id_by_module_id(

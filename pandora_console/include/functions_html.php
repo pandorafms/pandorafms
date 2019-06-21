@@ -660,7 +660,7 @@ function html_print_select(
             }
 
             if ($optlabel === '') {
-                $output .= '>'.$value.'</option>';
+                $output .= '>None</option>';
             } else {
                 $output .= '>'.$optlabel.'</option>';
             }
@@ -1079,7 +1079,7 @@ function html_print_extended_select_for_time(
                 'class' => $uniq_name.'_toggler '.$class,
                 'alt'   => __('Custom'),
                 'title' => __('Custom'),
-                'style' => 'width: 18px;'.$style_icon,
+                'style' => 'width: 18px; margin-bottom: -5px;'.$style_icon,
             ],
             false,
             false,
@@ -1114,7 +1114,7 @@ function html_print_extended_select_for_time(
                 'class' => $uniq_name.'_toggler',
                 'alt'   => __('List'),
                 'title' => __('List'),
-                'style' => 'width: 18px;'.$style_icon,
+                'style' => 'width: 18px;margin-bottom: -5px;'.$style_icon,
             ]
         ).'</a>';
     echo '</div>';
@@ -1233,7 +1233,7 @@ function html_print_extended_select_for_cron($hour='*', $minute='*', $mday='*', 
  *
  * @return string HTML code if return parameter is true.
  */
-function html_print_input_text_extended($name, $value, $id, $alt, $size, $maxlength, $disabled, $script, $attributes, $return=false, $password=false, $function='')
+function html_print_input_text_extended($name, $value, $id, $alt, $size, $maxlength, $disabled, $script, $attributes, $return=false, $password=false, $function='', $autocomplete='off')
 {
     static $idcounter = 0;
 
@@ -1241,7 +1241,9 @@ function html_print_input_text_extended($name, $value, $id, $alt, $size, $maxlen
         $maxlength = 255;
     }
 
-    if ($size == 0) {
+    if ($size === false) {
+        $size = '';
+    } else if ($size == 0) {
         $size = 10;
     }
 
@@ -1283,7 +1285,7 @@ function html_print_input_text_extended($name, $value, $id, $alt, $size, $maxlen
         'autocomplete',
     ];
 
-    $output = '<input '.($password ? 'type="password" autocomplete="off" ' : 'type="text" ');
+    $output = '<input '.($password ? 'type="password" autocomplete="'.$autocomplete.'" ' : 'type="text" ');
 
     if ($disabled && (!is_array($attributes) || !array_key_exists('disabled', $attributes))) {
         $output .= 'readonly="readonly" ';
@@ -1435,13 +1437,16 @@ function html_print_input_password(
     $return=false,
     $disabled=false,
     $required=false,
-    $class=''
+    $class='',
+    $autocomplete='off'
 ) {
     if ($maxlength == 0) {
         $maxlength = 255;
     }
 
-    if ($size == 0) {
+    if ($size === false) {
+        $size = false;
+    } else if ($size == 0) {
         $size = 10;
     }
 
@@ -1454,7 +1459,7 @@ function html_print_input_password(
         $attr['class'] = $class;
     }
 
-    return html_print_input_text_extended($name, $value, 'password-'.$name, $alt, $size, $maxlength, $disabled, '', $attr, $return, true);
+    return html_print_input_text_extended($name, $value, 'password-'.$name, $alt, $size, $maxlength, $disabled, '', $attr, $return, true, '', $autocomplete);
 }
 
 
@@ -1479,7 +1484,9 @@ function html_print_input_text($name, $value, $alt='', $size=50, $maxlength=255,
         $maxlength = 255;
     }
 
-    if ($size == 0) {
+    if ($size === false) {
+        $size = false;
+    } else if ($size == 0) {
         $size = 10;
     }
 
@@ -2730,20 +2737,22 @@ function html_html2rgb($htmlcolor)
 /**
  * Print a magic-ajax control to select the module.
  *
- * @param string  $name         The name of ajax control, by default is "module".
- * @param string  $default      The default value to show in the ajax control.
- * @param array   $id_agents    The array list of id agents as array(1,2,3), by default is false and the function use all agents (if the ACL desactive).
- * @param boolean $ACL          Filter the agents by the ACL list of user.
- * @param string  $scriptResult The source code of script to call, by default is
- *  empty. And the example is:
- *          function (e, data, formatted) {
- *             ...
- *         }
+ * @param string  $name            The name of ajax control, by default is "module".
+ * @param string  $default         The default value to show in the ajax control.
+ * @param array   $id_agents       The array list of id agents as array(1,2,3), by default is false and the function use all agents (if the ACL desactive).
+ * @param boolean $ACL             Filter the agents by the ACL list of user.
+ * @param string  $scriptResult    The source code of script to call, by default is
+ *     empty. And the example is:
+ *             function (e, data, formatted) {
+ *                ...
+ *            }
  *
- *          And the formatted is the select item as string.
+ *             And the formatted is the select item as string.
  *
- * @param array   $filter       Other filter of modules.
- * @param boolean $return       If it is true return a string with the output instead to echo the output.
+ * @param array   $filter          Other filter of modules.
+ * @param boolean $return          If it is true return a string with the output instead to echo the output.
+ * @param integer $id_agent_module Id agent module.
+ * @param string  $size            Size.
  *
  * @return mixed If the $return is true, return the output as string.
  */
@@ -2755,7 +2764,8 @@ function html_print_autocomplete_modules(
     $scriptResult='',
     $filter=[],
     $return=false,
-    $id_agent_module=0
+    $id_agent_module=0,
+    $size='30'
 ) {
     global $config;
 
@@ -2796,7 +2806,7 @@ function html_print_autocomplete_modules(
         $default,
         'text-'.$name,
         '',
-        30,
+        $size,
         100,
         false,
         '',
@@ -2932,7 +2942,10 @@ function html_print_sort_arrows($params, $order_tag, $up='up', $down='down')
     $url_down = 'index.php?'.http_build_query($params, '', '&amp;');
 
     // Build the links
-    return '&nbsp;'.'<a href="'.$url_up.'">'.html_print_image('images/sort_up.png', true).'</a>'.'<a href="'.$url_down.'">'.html_print_image('images/sort_down.png', true).'</a>';
+    $out = '&nbsp;<a href="'.$url_up.'">';
+    $out .= html_print_image('images/sort_up_black.png', true);
+    $out .= '</a><a href="'.$url_down.'">';
+    $out .= html_print_image('images/sort_down_black.png', true).'</a>';
 }
 
 
@@ -2989,6 +3002,7 @@ function html_print_switch($attributes=[])
         'class',
         'name',
         'onclick',
+        'onchange',
     ];
     foreach ($valid_attrs as $va) {
         if (!isset($attributes[$va])) {
@@ -2998,7 +3012,11 @@ function html_print_switch($attributes=[])
         $html_expand .= ' '.$va.'="'.$attributes[$va].'"';
     }
 
-    return "<label class='p-switch'>
+    if (!isset($attributes['style'])) {
+        $attributes['style'] = '';
+    }
+
+    return "<label class='p-switch' style='".$attributes['style']."'>
 			<input type='checkbox' $html_expand>
 			<span class='p-slider'></span>
 		</label>";

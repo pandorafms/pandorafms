@@ -68,7 +68,27 @@ if (is_ajax()) {
         if (! is_array($snmp_tree)) {
             echo $snmp_tree;
         } else {
-            snmp_browser_print_tree($snmp_tree);
+            snmp_browser_print_tree(
+                $snmp_tree,
+                // Id.
+                0,
+                // Depth.
+                0,
+                // Last.
+                0,
+                // Last_array.
+                [],
+                // Sufix.
+                false,
+                // Checked.
+                [],
+                // Return.
+                false,
+                // Descriptive_ids.
+                false,
+                // Previous_id.
+                ''
+            );
             echo html_print_submit_button(
                 __('Create network components'),
                 'create_network_component',

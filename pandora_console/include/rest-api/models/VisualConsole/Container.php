@@ -319,8 +319,10 @@ final class Container extends Model
         // Default filter.
         $filter = ['id_layout' => $layoutId];
         $fields = [
-            'id',
+            'DISTINCT(id) AS id',
             'type',
+            'cache_expiration',
+            'id_layout',
         ];
 
         // Override the filter if the groups filter is not empty.
@@ -338,8 +340,9 @@ final class Container extends Model
             // Only true condition if type is GROUP_ITEM.
             $filter[] = '('.\db_format_array_where_clause_sql(
                 [
-                    'type'     => GROUP_ITEM,
-                    'id_group' => $groupsFilter,
+                    'id_layout' => $layoutId,
+                    'type'      => GROUP_ITEM,
+                    'id_group'  => $groupsFilter,
                 ]
             ).')';
         }
@@ -359,11 +362,10 @@ final class Container extends Model
 
         foreach ($rows as $data) {
             $itemId = (int) $data['id'];
-            $itemType = (int) $data['type'];
-            $class = static::getItemClass($itemType);
+            $class = static::getItemClass((int) $data['type']);
 
             try {
-                array_push($items, $class::fromDB(['id' => $itemId]));
+                array_push($items, $class::fromDB($data));
             } catch (\Throwable $e) {
                 // TODO: Log this?
             }

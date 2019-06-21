@@ -1,8 +1,8 @@
 import {
   WithModuleProps,
   LinkedVisualConsoleProps,
-  UnknownObject
-} from "../types";
+  AnyObject
+} from "../lib/types";
 
 import {
   modulePropsDecoder,
@@ -25,7 +25,7 @@ export type StaticGraphProps = {
  * @param showLastValueTooltip Raw value.
  */
 const parseShowLastValueTooltip = (
-  showLastValueTooltip: any // eslint-disable-line @typescript-eslint/no-explicit-any
+  showLastValueTooltip: unknown
 ): StaticGraphProps["showLastValueTooltip"] => {
   switch (showLastValueTooltip) {
     case "default":
@@ -47,7 +47,7 @@ const parseShowLastValueTooltip = (
  * is missing from the raw object or have an invalid type.
  */
 export function staticGraphPropsDecoder(
-  data: UnknownObject
+  data: AnyObject
 ): StaticGraphProps | never {
   if (typeof data.imageSrc !== "string" || data.imageSrc.length === 0) {
     throw new TypeError("invalid image src.");

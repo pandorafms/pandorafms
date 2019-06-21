@@ -871,12 +871,13 @@ function get_parameter_switch($name, $default='')
     $data = get_parameter($name, null);
 
     if ($data === null) {
-        return 0;
+        return (isset($default) ? $default : 0);
     } else if ($data == 'on') {
         return 1;
     }
 
-    return 0;
+    // Return value assigned to switch.
+    return $data;
 }
 
 
@@ -898,6 +899,47 @@ function set_cookie($name, $value)
     } else {
         setcookie($name, $value);
     }
+}
+
+
+/**
+ * Returns database ORDER clause from datatables AJAX call.
+ *
+ * @param boolean $as_array Return as array or as string.
+ *
+ * @return string Order or empty.
+ */
+function get_datatable_order($as_array=false)
+{
+    $order = get_parameter('order');
+
+    if (is_array($order)) {
+        $column = $order[0]['column'];
+        $direction = $order[0]['dir'];
+    }
+
+    if (!isset($column) || !isset($direction)) {
+        return '';
+    }
+
+    $columns = get_parameter('columns');
+
+    if (is_array($columns)) {
+        $column_name = $columns[$column]['data'];
+    }
+
+    if (!isset($column_name)) {
+        return '';
+    }
+
+    if ($as_array) {
+        return [
+            'direction' => $direction,
+            'field'     => $column_name,
+        ];
+    }
+
+    return $column_name.' '.$direction;
 }
 
 
@@ -1391,6 +1433,11 @@ function enterprise_installed()
 {
     $return = false;
 
+    // Load enterprise extensions.
+    if (defined('DESTDIR')) {
+        return $return;
+    }
+
     if (defined('PANDORA_ENTERPRISE')) {
         if (PANDORA_ENTERPRISE) {
             $return = true;
@@ -1443,7 +1490,7 @@ function enterprise_include($filename)
 {
     global $config;
 
-    // Load enterprise extensions
+    // Load enterprise extensions.
     if (defined('DESTDIR')) {
         $destdir = DESTDIR;
     } else {
@@ -1469,11 +1516,24 @@ function enterprise_include($filename)
 }
 
 
+/**
+ * Includes a file from enterprise section.
+ *
+ * @param string $filename Target file.
+ *
+ * @return mixed Result code.
+ */
 function enterprise_include_once($filename)
 {
     global $config;
 
-    // Load enterprise extensions
+    // Load enterprise extensions.
+    if (defined('DESTDIR')) {
+        $destdir = DESTDIR;
+    } else {
+        $destdir = '';
+    }
+
     $filepath = realpath($config['homedir'].'/'.ENTERPRISE_DIR.'/'.$filename);
 
     if ($filepath === false) {
@@ -1573,10 +1633,27 @@ function safe_sql_string($string)
 }
 
 
+/**
+ * Verifies if current Pandora FMS installation is a Metaconsole.
+ *
+ * @return boolean True metaconsole installation, false if not.
+ */
 function is_metaconsole()
 {
     global $config;
     return (bool) $config['metaconsole'];
+}
+
+
+/**
+ * Check if current Pandora FMS installation has joined a Metaconsole env.
+ *
+ * @return boolean True joined, false if not.
+ */
+function has_metaconsole()
+{
+    global $config;
+    return (bool) $config['node_metaconsole'] && (bool) $config['metaconsole_node_id'];
 }
 
 
@@ -4942,6 +5019,14 @@ function get_help_info($section_name)
                 $result .= 'Anexo_Agent_Plugins&printable=yes#Caracter.C3.ADsticas_b.C3.A1sicas_de_plugin_de_agente';
             } else {
                 $result .= 'Anexo_Agent_Plugins&printable=yes#Basic_Features_of_the_Agent_Plugin';
+            }
+        break;
+
+        case 'create_agent':
+            if ($es) {
+                $result .= 'Intro_Monitorizacion&printable=yes#Configuraci.C3.B3n_del_agente_en_consola';
+            } else {
+                $result .= 'Intro_Monitoring&printable=yes#Agent_configuration_in_the_console';
             }
         break;
 

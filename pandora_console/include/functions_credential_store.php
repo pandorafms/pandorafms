@@ -51,7 +51,7 @@ function credentials_get_all(
     $sort_field=null
 ) {
     $sql_filters = [];
-    $group_by = '';
+    $order_by = '';
     $pagination = '';
 
     global $config;
@@ -72,6 +72,80 @@ function credentials_get_all(
         throw new Exception('[credential_get_all] Fields must be an array or "count".');
     }
 
+    if (isset($order)) {
+        $dir = 'asc';
+        if ($order == 'desc') {
+            $dir = 'desc';
+        };
+
+        if (in_array(
+            $sort_field,
+            [
+                'group',
+                'identifier',
+                'product',
+                'username',
+                'options',
+            ]
+        )
+        ) {
+            $order_by = sprintf(
+                'ORDER BY `%s` %s',
+                $sort_field,
+                $dir
+            );
+        }
+    }
+
+    if (isset($limit) && $limit > 0
+        && isset($offset) && $offset >= 0
+    ) {
+        $pagination = sprintf(
+            ' LIMIT %d OFFSET %d ',
+            $limit,
+            $offset
+        );
+    }
+
+    if (isset($filter['free_search']) && !empty($filter['free_search'])) {
+        $sql_filters[] = vsprintf(
+            ' AND (lower(cs.username) like lower("%%%s%%")
+                OR cs.identifier like "%%%s%%"
+                OR lower(cs.product) like lower("%%%s%%"))',
+            array_fill(0, 3, $filter['free_search'])
+        );
+    }
+
+    if (isset($filter['filter_id_group']) && $filter['filter_id_group'] > 0) {
+        $propagate = db_get_value(
+            'propagate',
+            'tgrupo',
+            'id_grupo',
+            $filter['filter_id_group']
+        );
+
+        if (!$propagate) {
+            $sql_filters[] = sprintf(
+                ' AND cs.id_group = %d ',
+                $filter['filter_id_group']
+            );
+        } else {
+            $groups = [ $filter['filter_id_group'] ];
+            $childrens = groups_get_childrens($id_group, null, true);
+            if (!empty($childrens)) {
+                foreach ($childrens as $child) {
+                    $groups[] = (int) $child['id_grupo'];
+                }
+            }
+
+            $filter['filter_id_group'] = $groups;
+            $sql_filters[] = sprintf(
+                ' AND cs.id_group IN (%s) ',
+                join(',', $filter['filter_id_group'])
+            );
+        }
+    }
+
     $sql = sprintf(
         'SELECT %s
          FROM tcredential_store cs
@@ -83,7 +157,7 @@ function credentials_get_all(
          %s',
         join(',', $fields),
         join(',', $sql_filters),
-        $group_by,
+        $order_by,
         $pagination
     );
 
@@ -94,4 +168,164 @@ function credentials_get_all(
     }
 
     return db_get_all_rows_sql($sql);
+}
+
+
+/**
+ * Retrieves target key from keystore or false in case of error.
+ *
+ * @param string $identifier Key identifier.
+ *
+ * @return array Key or false if error.
+ */
+function get_key($identifier)
+{
+    return db_get_row_filter(
+        'tcredential_store',
+        [ 'identifier' => $identifier ]
+    );
+}
+
+
+/**
+ * Minor function to dump json message as ajax response.
+ *
+ * @param string  $type   Type: result || error.
+ * @param string  $msg    Message.
+ * @param boolean $delete Deletion messages.
+ *
+ * @return void
+ */
+function ajax_msg($type, $msg, $delete=false)
+{
+    $msg_err = 'Failed while saving: %s';
+    $msg_ok = 'Successfully saved into keystore ';
+
+    if ($delete) {
+        $msg_err = 'Failed while removing: %s';
+        $msg_ok = 'Successfully deleted ';
+    }
+
+    if ($type == 'error') {
+        echo json_encode(
+            [
+                $type => ui_print_error_message(
+                    __(
+                        $msg_err,
+                        $msg
+                    ),
+                    '',
+                    true
+                ),
+            ]
+        );
+    } else {
+        echo json_encode(
+            [
+                $type => ui_print_success_message(
+                    __(
+                        $msg_ok,
+                        $msg
+                    ),
+                    '',
+                    true
+                ),
+            ]
+        );
+    }
+
+    exit;
+}
+
+
+/**
+ * Generates inputs for new/update forms.
+ *
+ * @param array $values Values or null.
+ *
+ * @return string Inputs.
+ */
+function print_inputs($values=null)
+{
+    if (!is_array($values)) {
+        $values = [];
+    }
+
+    $return = '';
+    $return .= html_print_input(
+        [
+            'label'       => __('Identifier'),
+            'name'        => 'identifier',
+            'input_class' => 'flex-row',
+            'type'        => 'text',
+            'value'       => $values['identifier'],
+            'disabled'    => (bool) $values['identifier'],
+            'return'      => true,
+        ]
+    );
+    $return .= html_print_input(
+        [
+            'label'       => __('Group'),
+            'name'        => 'id_group',
+            'id'          => 'id_group',
+            'input_class' => 'flex-row',
+            'type'        => 'select_groups',
+            'selected'    => $values['id_grupo'],
+            'return'      => true,
+            'class'       => 'w50p',
+        ]
+    );
+    $return .= html_print_input(
+        [
+            'label'       => __('Product'),
+            'name'        => 'product',
+            'input_class' => 'flex-row',
+            'type'        => 'text',
+            'value'       => $values['product'],
+            'disabled'    => (bool) $values['product'],
+            'return'      => true,
+        ]
+    );
+    $return .= html_print_input(
+        [
+            'label'       => __('Username'),
+            'name'        => 'username',
+            'input_class' => 'flex-row',
+            'type'        => 'text',
+            'value'       => $values['username'],
+            'return'      => true,
+        ]
+    );
+    $return .= html_print_input(
+        [
+            'label'       => __('Password'),
+            'name'        => 'password',
+            'input_class' => 'flex-row',
+            'type'        => 'password',
+            'value'       => $values['password'],
+            'return'      => true,
+        ]
+    );
+    $return .= html_print_input(
+        [
+            'label'       => __('Extra'),
+            'name'        => 'extra_1',
+            'input_class' => 'flex-row',
+            'type'        => 'password',
+            'value'       => $values['extra_1'],
+            'return'      => true,
+        ]
+    );
+    $return .= html_print_input(
+        [
+            'label'       => __('Extra (2)'),
+            'name'        => 'extra_2',
+            'input_class' => 'flex-row',
+            'type'        => 'password',
+            'value'       => $values['extra_2'],
+            'return'      => true,
+        ]
+    );
+
+    return $return;
 }

@@ -502,6 +502,13 @@ select:-internal-list-box {
 .no-text-imp {
   font-size: 0 !important;
 }
+.flex-content-right {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: flex-end;
+  align-content: flex-end;
+}
 .flex-column {
   display: flex;
   flex-direction: column;

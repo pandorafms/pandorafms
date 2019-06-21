@@ -258,6 +258,7 @@ if ($user_filter != 0 && empty($id_name) && !$update_from_filter_table) {
         $id_extra = $user_default_filter['id_extra'];
         $user_comment = $user_default_filter['user_comment'];
         $source = $user_default_filter['source'];
+        $id_source_event = $user_default_filter['id_source_event'];
 
         if (is_metaconsole()) {
             $id_source_event = $user_default_filter['id_source_event'];
@@ -1001,9 +1002,14 @@ $data[2] .= html_print_input_text(
 );
 if (is_metaconsole()) {
     $data[3] = __('Id source event').$jump;
-    $data[3] .= html_print_input_text('id_source_event', $id_source_event, '', 11, 255, true);
-    $table->data[] = $data;
-    $table->rowclass[] = '';
+    $data[3] .= html_print_input_text(
+        'id_source_event',
+        $id_source_event,
+        '',
+        5,
+        255,
+        true
+    );
 }
 
 $data = [];
@@ -1170,12 +1176,14 @@ enterprise_hook(
     [
         $filter_resume,
         [
-            'status'     => $fields,
-            'event_type' => $types,
-            'severity'   => $severities,
-            'duplicate'  => $repeated_sel,
-            'alerts'     => $alert_events_titles,
-            'groups'     => $user_groups_array,
+            'status'          => $fields,
+            'event_type'      => $types,
+            'severity'        => $severities,
+            'duplicate'       => $repeated_sel,
+            'alerts'          => $alert_events_titles,
+            'groups'          => $user_groups_array,
+            'id_source_event' => $id_source_event,
+
         ],
     ]
 );
@@ -1395,10 +1403,8 @@ $(document).ready( function() {
             $("#text-source").val('');
             $("#text-id_extra").val('');
             $("#text-user_comment").val('');
-
-            if(is_metaconsole()){
             $("#text-id_source_event").val('');
-            }
+            
             clear_tags_inputs();
             
             // Update the view of filter load with no loaded filters message
@@ -1473,7 +1479,7 @@ $(document).ready( function() {
                         if (i == 'user_comment')
                             $("#text-user_comment").val(val);
                         
-                        if(is_metaconsole()){if (i == 'id_source_event')
+                        if(i == 'id_source_event')
                             $("#text-id_source_event").val(val);
                         }
                     });
@@ -1545,7 +1551,7 @@ $(document).ready( function() {
                 "source": $("#text-source").val(),
                 "id_extra": $("#text-id_extra").val(),
                 "user_comment": $("#text-user_comment").val(),
-                "id_source_event": $("#text-id_extra").val()
+                "id_source_event": $("#text-id_source_event").val()
 
             },
             function (data) {

@@ -50,6 +50,12 @@ if (!isset($date_to)) {
     $date_to = '';
 }
 
+if ($id_source_event != 0 || $id_source_event != '') {
+    $filter_resume['id_source_event'] = $id_source_event;
+} else {
+    $id_source_event = '';
+}
+
 if (($date_from === '') && ($date_to === '')) {
     if ($event_view_hr > 0) {
         $filter_resume['hours_max'] = $event_view_hr;

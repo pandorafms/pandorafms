@@ -1390,7 +1390,6 @@ div.title_line {
 
 #menu_tab {
   margin-right: 10px;
-  min-width: 510px;
 }
 
 #menu_tab .mn,
@@ -3711,7 +3710,7 @@ div#vc-controls {
 
 div#vc-controls div.vc-title,
 div#vc-controls div.vc-refr {
-  margin-top: 6px;
+  margin-top: 15px;
   margin-left: 3px;
   margin-right: 3px;
 }

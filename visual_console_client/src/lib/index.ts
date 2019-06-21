@@ -453,9 +453,6 @@ export function addMovementListener(
   let containerLeft = containerOffset.left;
   let containerRight = containerLeft + containerBounds.width;
   let elementBounds = element.getBoundingClientRect();
-  let elementOffset = getOffset(element);
-  let elementLeft = elementOffset.left;
-  let elementTop = elementOffset.top;
   let borderWidth = window.getComputedStyle(element).borderWidth || "0";
   let borderFix = Number.parseInt(borderWidth) * 2;
 
@@ -473,38 +470,57 @@ export function addMovementListener(
     let x = 0;
     let y = 0;
 
-    // TODO: Document.
-
     const mouseX = e.pageX;
     const mouseY = e.pageY;
+    const mouseDeltaX = mouseX - lastMouseX;
+    const mouseDeltaY = mouseY - lastMouseY;
 
-    if (mouseX < containerLeft) x = 0;
-    else if (mouseX > containerRight) x = containerBounds.width;
-    else x = mouseX - lastMouseX + lastX;
+    const minX = 0;
+    const maxX = containerBounds.width - elementBounds.width + borderFix;
+    const minY = 0;
+    const maxY = containerBounds.height - elementBounds.height + borderFix;
 
-    if (mouseY < containerTop) y = 0;
-    else if (mouseY > containerBottom)
-      y = containerBounds.height - elementBounds.height + borderFix;
-    else y = mouseY - lastMouseY + lastY;
+    const outOfBoundsLeft =
+      mouseX < containerLeft ||
+      (lastX === 0 &&
+        mouseDeltaX > 0 &&
+        mouseX < containerLeft + mouseElementOffsetX);
+    const outOfBoundsRight =
+      mouseX > containerRight ||
+      mouseDeltaX + lastX + elementBounds.width - borderFix >
+        containerBounds.width ||
+      (lastX === maxX &&
+        mouseDeltaX < 0 &&
+        mouseX > containerLeft + maxX + mouseElementOffsetX);
+    const outOfBoundsTop =
+      mouseY < containerTop ||
+      (lastY === 0 &&
+        mouseDeltaY > 0 &&
+        mouseY < containerTop + mouseElementOffsetY);
+    const outOfBoundsBottom =
+      mouseY > containerBottom ||
+      mouseDeltaY + lastY + elementBounds.height - borderFix >
+        containerBounds.height ||
+      (lastY === maxY &&
+        mouseDeltaY < 0 &&
+        mouseY > containerTop + maxY + mouseElementOffsetY);
 
-    if (x < 0) x = 0;
-    else if (x + elementBounds.width - borderFix > containerBounds.width)
-      x = containerBounds.width - elementBounds.width + borderFix;
+    if (outOfBoundsLeft) x = minX;
+    else if (outOfBoundsRight) x = maxX;
+    else x = mouseDeltaX + lastX;
 
-    if (y < 0) y = 0;
-    else if (y + elementBounds.height - borderFix > containerBounds.height)
-      y = containerBounds.height - elementBounds.height + borderFix;
+    if (outOfBoundsTop) y = minY;
+    else if (outOfBoundsBottom) y = maxY;
+    else y = mouseDeltaY + lastY;
 
-    if (x === lastX && y === lastY) return;
+    if (x < 0) x = minX;
+    if (y < 0) y = minY;
 
     // Store the last mouse coordinates.
     lastMouseX = mouseX;
     lastMouseY = mouseY;
 
-    // if (x < lastX && mouseX > elementLeft + mouseElementOffsetX) return;
-    // if (x > lastX && mouseX < elementLeft + mouseElementOffsetX) return;
-    // if (y < lastY && mouseY > elementTop + mouseElementOffsetY) return;
-    // if (y > lastY && mouseY < elementTop + mouseElementOffsetY) return;
+    if (x === lastX && y === lastY) return;
 
     // Run the movement events.
     throttledMovement(x, y);
@@ -554,9 +570,6 @@ export function addMovementListener(
     containerLeft = containerOffset.left;
     containerRight = containerLeft + containerBounds.width;
     elementBounds = element.getBoundingClientRect();
-    elementOffset = getOffset(element);
-    elementLeft = elementOffset.left;
-    elementTop = elementOffset.top;
     borderWidth = window.getComputedStyle(element).borderWidth || "0";
     borderFix = Number.parseInt(borderWidth) * 2;
 

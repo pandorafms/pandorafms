@@ -1101,6 +1101,7 @@ CREATE TABLE IF NOT EXISTS `tevent_filter` (
 	`source` tinytext NOT NULL,
 	`id_extra` tinytext NOT NULL,
 	`user_comment` text NOT NULL,
+	`id_source_event` int(10) default NULL,
 	PRIMARY KEY  (`id_filter`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

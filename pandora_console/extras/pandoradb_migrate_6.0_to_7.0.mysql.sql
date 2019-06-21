@@ -1277,6 +1277,7 @@ ALTER TABLE tevent_filter ADD COLUMN `date_to` date DEFAULT NULL;
 ALTER TABLE tevent_filter ADD COLUMN `user_comment` text NOT NULL;
 ALTER TABLE tevent_filter ADD COLUMN `source` tinytext NOT NULL;
 ALTER TABLE tevent_filter ADD COLUMN `id_extra` tinytext NOT NULL;
+ALTER TABLE tevent_filter ADD column id_source_event int(10);
 -- ---------------------------------------------------------------------
 -- Table `tusuario`
 -- ---------------------------------------------------------------------

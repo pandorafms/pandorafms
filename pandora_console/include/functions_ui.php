@@ -2907,8 +2907,10 @@ function ui_print_datatable(array $parameters)
 
     if (isset($parameters['id'])) {
         $table_id = $parameters['id'];
+        $form_id = 'form_'.$parameters['id'];
     } else {
         $table_id = uniqid('datatable_');
+        $form_id = uniqid('datatable_filter_');
     }
 
     if (!isset($parameters['columns']) || !is_array($parameters['columns'])) {
@@ -2995,8 +2997,6 @@ function ui_print_datatable(array $parameters)
     if (isset($parameters['form']) && is_array($parameters['form'])) {
         if (isset($parameters['form']['id'])) {
             $form_id = $parameters['form']['id'];
-        } else {
-            $form_id = uniqid('datatable_filter_');
         }
 
         if (isset($parameters['form']['class'])) {
@@ -3220,8 +3220,10 @@ function ui_print_datatable(array $parameters)
                     $.extend(data, {
                         filter: values,'."\n";
 
-    foreach ($parameters['ajax_data'] as $k => $v) {
-        $js .= $k.':'.json_encode($v).",\n";
+    if (is_array($parameters['ajax_data'])) {
+        foreach ($parameters['ajax_data'] as $k => $v) {
+            $js .= $k.':'.json_encode($v).",\n";
+        }
     }
 
     $js .= 'page: "'.$parameters['ajax_url'].'"

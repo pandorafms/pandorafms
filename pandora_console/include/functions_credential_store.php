@@ -280,15 +280,52 @@ function print_inputs($values=null)
             'label'       => __('Product'),
             'name'        => 'product',
             'input_class' => 'flex-row',
-            'type'        => 'text',
-            'value'       => $values['product'],
+            'type'        => 'select',
+            'fields'      => [
+                'CUSTOM' => __('Custom'),
+                'AWS'    => __('Aws'),
+                'AZURE'  => __('Azure'),
+                // 'GOOGLE' => __('Google'),
+            ],
+            'selected'    => $values['product'],
             'disabled'    => (bool) $values['product'],
             'return'      => true,
         ]
     );
+    $user_label = __('Username');
+    $pass_label = __('Password');
+    $extra_1_label = __('Extra');
+    $extra_2_label = __('Extra (2)');
+    $extra1 = true;
+    $extra2 = true;
+
+    // Remember to update credential_store.php also.
+    switch ($values['product']) {
+        case 'AWS':
+            $user_label = __('Access key ID');
+            $pass_label = __('Secret access key');
+            $extra1 = false;
+            $extra2 = false;
+        break;
+
+        case 'AZURE':
+            $user_label = __('Account ID');
+            $pass_label = __('Password');
+            $extra_1_label = __('Tenant or domain name');
+            $extra_2_label = __('Subscription id');
+        break;
+
+        case 'GOOGLE':
+            // Need further investigation.
+        case 'CUSTOM':
+        default:
+            // Use defaults.
+        break;
+    }
+
     $return .= html_print_input(
         [
-            'label'       => __('Username'),
+            'label'       => $user_label,
             'name'        => 'username',
             'input_class' => 'flex-row',
             'type'        => 'text',
@@ -298,7 +335,7 @@ function print_inputs($values=null)
     );
     $return .= html_print_input(
         [
-            'label'       => __('Password'),
+            'label'       => $pass_label,
             'name'        => 'password',
             'input_class' => 'flex-row',
             'type'        => 'password',
@@ -306,26 +343,32 @@ function print_inputs($values=null)
             'return'      => true,
         ]
     );
-    $return .= html_print_input(
-        [
-            'label'       => __('Extra'),
-            'name'        => 'extra_1',
-            'input_class' => 'flex-row',
-            'type'        => 'password',
-            'value'       => $values['extra_1'],
-            'return'      => true,
-        ]
-    );
-    $return .= html_print_input(
-        [
-            'label'       => __('Extra (2)'),
-            'name'        => 'extra_2',
-            'input_class' => 'flex-row',
-            'type'        => 'password',
-            'value'       => $values['extra_2'],
-            'return'      => true,
-        ]
-    );
+    if ($extra1) {
+        $return .= html_print_input(
+            [
+                'label'       => $extra_1_label,
+                'name'        => 'extra_1',
+                'input_class' => 'flex-row',
+                'type'        => 'password',
+                'value'       => $values['extra_1'],
+                'return'      => true,
+            ]
+        );
+    }
+
+    if ($extra2) {
+        $return .= html_print_input(
+            [
+                'label'       => $extra_2_label,
+                'name'        => 'extra_2',
+                'input_class' => 'flex-row',
+                'type'        => 'password',
+                'value'       => $values['extra_2'],
+                'return'      => true,
+                'display'     => $extra2,
+            ]
+        );
+    }
 
     return $return;
 }

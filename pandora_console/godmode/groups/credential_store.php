@@ -90,6 +90,8 @@ if (is_ajax()) {
         foreach ($data as $key => $value) {
             if ($key == 'identifier') {
                 $identifier = base64_decode($value);
+            } else if ($key == 'product') {
+                $product = base64_decode($value);
             } else {
                 $values[$key] = base64_decode($value);
             }
@@ -97,6 +99,10 @@ if (is_ajax()) {
 
         if (empty($identifier)) {
             ajax_msg('error', __('identifier cannot be empty'));
+        }
+
+        if (empty($product)) {
+            ajax_msg('error', __('product cannot be empty'));
         }
 
         if (db_process_sql_update(
@@ -130,6 +136,10 @@ if (is_ajax()) {
 
         if (empty($identifier)) {
             ajax_msg('error', __('identifier cannot be empty'));
+        }
+
+        if (empty($values['product'])) {
+            ajax_msg('error', __('product cannot be empty'));
         }
 
         if (db_process_sql_insert('tcredential_store', $values) === false) {
@@ -490,12 +500,40 @@ echo '</div>';
         })
     }
 
+    function calculate_inputs() {
+        if ($('#product :selected').val() == "CUSTOM") {
+            $('#div-username label').text('<?php echo __('Username'); ?>');
+            $('#div-password label').text('<?php echo __('Password'); ?>');
+            $('#div-extra_1 label').text('<?php echo __('Extra'); ?>');
+            $('#div-extra_2 label').text('<?php echo __('Extra (2)'); ?>');
+            $('#div-extra_1').show();
+            $('#div-extra_2').show();
+        } else if ($('#product :selected').val() == "AWS") {
+            $('#div-username label').text('<?php echo __('Access key ID'); ?>');
+            $('#div-password label').text('<?php echo __('Secret access key'); ?>');
+            $('#div-extra_1').hide();
+            $('#div-extra_2').hide();
+        } else if ($('#product :selected').val() == "AZURE") {
+            $('#div-username label').text('<?php echo __('Account ID'); ?>');
+            $('#div-password label').text('<?php echo __('Password'); ?>');
+            $('#div-extra_1 label').text('<?php echo __('Tenant or domain name'); ?>');
+            $('#div-extra_2 label').text('<?php echo __('Subscription id'); ?>');
+            $('#div-extra_1').show();
+            $('#div-extra_2').show();
+        } 
+    }
+
     function add_key() {
         // Clear form.
         $('#form_new :input').each(function() {
             $(this).val('')
         });
-        $('#group').val(0);
+        $('#id_group').val(0);
+        $('#product').val('CUSTOM');
+
+        $('#product').on('change', function() {
+            calculate_inputs()
+        });
 
         // Show form.
         $('#new_key').dialog({

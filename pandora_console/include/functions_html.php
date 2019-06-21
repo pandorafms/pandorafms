@@ -3084,7 +3084,8 @@ function html_print_input($data)
     $output = '';
 
     if ($data['label']) {
-        $output = '<div class="'.$data['input_class'].'">';
+        $output = '<div id="div-'.$data['name'].'" ';
+        $output .= ' class="'.$data['input_class'].'">';
         $output .= '<label class="'.$data['label_class'].'">';
         $output .= $data['label'];
         $output .= '</label>';

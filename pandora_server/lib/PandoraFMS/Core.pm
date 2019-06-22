@@ -185,6 +185,7 @@ our @EXPORT = qw(
 	pandora_exec_forced_alerts
 	pandora_generate_alerts
 	pandora_get_config_value
+	pandora_get_credential
 	pandora_get_module_tags
 	pandora_get_module_url_tags
 	pandora_get_module_phone_tags
@@ -3121,6 +3122,19 @@ sub pandora_get_config_value ($$) {
 	
 	return (defined ($config_value) ? $config_value : "");
 }
+
+
+##########################################################################
+## Get credential from credential store
+##########################################################################
+sub pandora_get_credential ($$) {
+	my ($dbh, $identifier) = @_;
+
+	my $key = get_db_single_row($dbh, 'SELECT * FROM tcredential_store WHERE identifier = ?', $identifier);
+
+	return $key;
+}
+
 
 ##########################################################################
 =head2 C<< pandora_create_module_tags (I<$pa_config>, I<$dbh>, I<$id_agent_module>, I<$serialized_tags>) >>

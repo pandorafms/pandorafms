@@ -699,7 +699,7 @@ class DiscoveryTaskList extends Wizard
         if ($script !== false) {
             switch ($script['type']) {
                 case DISCOVERY_SCRIPT_CLOUD_AWS:
-                return 'wiz=cloud&mode=amazonws&page=1';
+                return 'wiz=cloud&mode=amazonws&ki='.$task['auth_strings'].'&page=1';
 
                 case DISCOVERY_SCRIPT_APP_VMWARE:
                 return 'wiz=app&mode=vmware&page=0';
@@ -722,7 +722,7 @@ class DiscoveryTaskList extends Wizard
 
             case DISCOVERY_CLOUD_AWS:
             case DISCOVERY_CLOUD_AWS_EC2:
-            return 'wiz=cloud&mode=amazonws&page=1';
+            return 'wiz=cloud&mode=amazonws&ki='.$task['auth_strings'].'&page=1';
 
             case DISCOVERY_CLOUD_AWS_RDS:
             return 'wiz=cloud&mode=amazonws&sub=rds&page=0';

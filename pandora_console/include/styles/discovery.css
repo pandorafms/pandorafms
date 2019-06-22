@@ -265,3 +265,8 @@ a.tip {
 .discovery_interval_select_width {
   width: 90%;
 }
+
+a.ext_link {
+  margin-left: 1em;
+  font-size: 8pt;
+}

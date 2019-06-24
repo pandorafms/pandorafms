@@ -1342,12 +1342,12 @@ class Item extends CachedModel
             $result['label_position'] = $label_position;
         }
 
-        $border_color = static::extractBorderColor($data);
+        $border_color = static::getBorderColor($data);
         if ($border_color !== null) {
             $result['border_color'] = $border_color;
         }
 
-        $fill_color = static::extractFillColor($data);
+        $fill_color = static::getFillColor($data);
         if ($fill_color !== null) {
             $result['fill_color'] = $fill_color;
         }
@@ -1593,7 +1593,7 @@ class Item extends CachedModel
      *
      * @return mixed String representing the border color (not empty) or null.
      */
-    private function extractBorderColor(array $data)
+    private static function getBorderColor(array $data)
     {
         return static::notEmptyStringOr(
             static::issetInArray($data, ['borderColor', 'border_color', 'gridColor', 'color', 'legendBackgroundColor']),
@@ -1609,7 +1609,7 @@ class Item extends CachedModel
      *
      * @return mixed String representing the fill color (not empty) or null.
      */
-    private function extractFillColor(array $data)
+    private static function getFillColor(array $data)
     {
         return static::notEmptyStringOr(
             static::issetInArray($data, ['fillColor', 'fill_color', 'labelColor']),

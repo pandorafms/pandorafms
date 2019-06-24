@@ -524,6 +524,12 @@ select:-internal-list-box {
   justify-content: space-between;
   align-content: center;
 }
+.flex-row-baseline {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: baseline;
+}
 
 .nowrap {
   flex-wrap: nowrap;

@@ -209,6 +209,10 @@ if (is_ajax()) {
             ob_start();
             $order = get_datatable_order(true);
 
+            if (is_array($order) && $order['field'] == 'mini_severity') {
+                $order['field'] = 'te.criticity';
+            }
+
             $fields = [
                 'te.id_evento',
                 'te.id_agente',
@@ -1168,6 +1172,10 @@ try {
             'text'  => 'evento',
             'class' => 'mw120px',
         ],
+        [
+            'text'  => 'mini_severity',
+            'class' => 'no-padding',
+        ],
         'id_evento',
             // 'id_agente',
             // 'id_usuario',
@@ -1213,6 +1221,12 @@ try {
         $fields = $default_fields;
     }
 
+    if (in_array('mini_severity', $fields) > 0) {
+        $fields[array_search('mini_severity', $fields)] = [
+            'text'  => 'mini_severity',
+            'class' => 'no-padding-imp',
+        ];
+    }
 
     $evento_id = array_search('evento', $fields);
     if ($evento_id !== false) {
@@ -1584,16 +1598,17 @@ function process_datatables_item(item) {
     output += '</div>';
 
     // Add event severity to end of text.
-    evn = '<div class="event flex-row h100p nowrap">';
-    evn += '<div><a href="javascript:" onclick="show_event_dialog(\'';
+    evn = '<a href="javascript:" onclick="show_event_dialog(\'';
     evn += btoa(JSON.stringify(item))+'\','+$("#group_rep").val()+');">';
     // Grouped events.
     if(item.event_rep && item.event_rep > 1) {
         evn += '('+item.event_rep+') ';
     }
-    evn += item.evento+'</a></div>';
-    evn += output;
-    evn += '</div>'
+    evn += item.evento+'</a>';
+
+    item.mini_severity = '<div class="event flex-row h100p nowrap">';
+    item.mini_severity += output;
+    item.mini_severity += '</div>';
 
     criticity = '<div class="criticity" style="background: ';
     criticity += color + '">' + text + "</div>";

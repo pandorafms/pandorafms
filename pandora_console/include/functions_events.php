@@ -288,6 +288,9 @@ function events_get_column_name($field)
         case 'options':
         return __('Options');
 
+        case 'mini_severity':
+        return 'S';
+
         default:
         return __($field);
     }

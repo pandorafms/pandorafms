@@ -1051,7 +1051,9 @@ function events_get_all(
             // Force_group_and_tag.
             true,
             // Table tag for id_grupo.
-            'te.'
+            'te.',
+            // Alt table tag for id_grupo.
+            'tasg.'
         );
         // FORCE CHECK SQL "(TAG = tag1 AND id_grupo = 1)".
     } else if (check_acl($config['id_user'], 0, 'EW')) {

@@ -2044,7 +2044,7 @@ function db_get_lock($lockname, $expiration_time=86400)
         )
     );
 
-    if ($lock_status === 1) {
+    if ($lock_status == 1) {
         $lock_status = db_get_value_sql(
             sprintf(
                 'SELECT GET_LOCK("%s", %d)',

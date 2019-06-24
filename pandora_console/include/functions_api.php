@@ -7494,70 +7494,62 @@ function api_set_update_snmp_module_policy($id, $thrash1, $other, $thrash3)
 
 
 /**
- * Remove an agent from a policy.
+ * Remove an agent from a policy by agent id.
  *
  * @param $id Id of the policy
- * @param $id2 Id of the agent policy
- * @param $trash1
- * @param $trash2
+ * @param $thrash1 Don't use.
+ * @param $other
+ * @param $thrash2 Don't use.
  *
  * Example:
  * api.php?op=set&op2=remove_agent_from_policy&apipass=1234&user=admin&pass=pandora&id=11&id2=2
  */
-function api_set_remove_agent_from_policy($id, $id2, $thrash2, $thrash3)
+function api_set_remove_agent_from_policy_by_id($id, $thrash1, $other, $thrash2)
 {
-    global $config;
-
-    if (!check_acl($config['id_user'], 0, 'AW')) {
-        returnError('forbidden', 'string');
-        return;
-    }
-
     if ($id == '' || !$id) {
         returnError('error_parameter', __('Error deleting agent from policy. Policy cannot be left blank.'));
         return;
     }
 
-    if ($id2 == '' || !$id2) {
+    if ($other['data'][0] == '' || !$other['data'][0]) {
         returnError('error_parameter', __('Error deleting agent from policy. Agent cannot be left blank.'));
         return;
     }
 
-    $agent_table = 'tagente';
-
-    if (is_metaconsole()) {
-        $agent_table = 'tmetaconsole_agent';
-    }
-
-    $policy = policies_get_policy($id, false, false);
-    $agent = db_get_row_filter($agent_table, ['id_agente' => $id2]);
-
-    $policy_agent = db_get_row_filter('tpolicy_agents', ['id_policy' => $id, 'id_agent' => $id2]);
-
-    if (empty($policy)) {
-        returnError('error_policy', __('This policy does not exist.'));
+    // Require node id if is metaconsole
+    if (is_metaconsole() && $other['data'][1] == '') {
+        returnError('error_add_agent_policy', __('Error deleting agent from policy. Node ID cannot be left blank.'));
         return;
     }
 
-    if (empty($agent)) {
-        returnError('error_agent', __('This agent does not exist.'));
+    return remove_agent_from_policy($id, false, [$other['data'][0], $other['data'][1]]);
+}
+
+
+/**
+ * Remove an agent from a policy by agent name.
+ *
+ * @param $id Id of the policy
+ * @param $thrash1 Don't use.
+ * @param $other
+ * @param $thrash2 Don't use.
+ *
+ * Example:
+ * api.php?op=set&op2=remove_agent_from_policy&apipass=1234&user=admin&pass=pandora&id=11&id2=2
+ */
+function api_set_remove_agent_from_policy_by_name($id, $thrash1, $other, $thrash2)
+{
+    if ($id == '' || !$id) {
+        returnError('error_parameter', __('Error deleting agent from policy. Policy cannot be left blank.'));
         return;
     }
 
-    if (empty($policy_agent)) {
-        returnError('error_policy_agent', __('This agent does not exist in this policy.'));
+    if ($other['data'][0] == '' || !$other['data'][0]) {
+        returnError('error_add_agent_policy', __('Error adding agent to policy. Agent name cannot be left blank.'));
         return;
     }
 
-    $return = policies_change_delete_pending_agent($policy_agent['id']);
-    $data = __('Successfully added to delete pending id agent %d to id policy %d.', $id2, $id);
-
-    if ($return === false) {
-        returnError('error_delete_policy_agent', 'Could not be deleted id agent %d from id policy %d', $id2, $id);
-    } else {
-        returnData('string', ['type' => 'string', 'data' => $data]);
-    }
-
+    return remove_agent_from_policy($id, true, [$other['data'][0]]);
 }
 
 
@@ -14216,28 +14208,6 @@ function api_get_all_event_filters($thrash1, $thrash2, $other, $thrash3)
 }
 
 
-//
-// AUX FUNCTIONS
-//
-function util_api_check_agent_and_print_error($id_agent, $returnType, $access='AR', $force_meta=false)
-{
-    global $config;
-
-    $check_agent = agents_check_access_agent($id_agent, $access, $force_meta);
-    if ($check_agent === true) {
-        return true;
-    }
-
-    if ($check_agent === false || !check_acl($config['id_user'], 0, $access)) {
-        returnError('forbidden', $returnType);
-    } else if ($check_agent === null) {
-        returnError('id_not_found', $returnType);
-    }
-
-    return false;
-}
-
-
 function api_get_user_info($thrash1, $thrash2, $other, $returnType)
 {
     $separator = ';';
@@ -15053,4 +15023,95 @@ function api_set_add_permission_user_to_group($thrash1, $thrash2, $other, $retur
 
      returnData($returnType, $data, ';');
 
+}
+
+
+// AUXILIARY FUNCTIONS
+
+
+/**
+ * Auxiliary function to remove an agent from a policy. Used from API methods api_set_remove_agent_from_policy_by_id and api_set_remove_agent_from_policy_by_name.
+ *
+ * @param int ID of targeted policy.
+ * @param boolean If true it will look for the agent we are targeting at based on its agent name, otherwise by agent id.
+ * @param array Array containing agent's name or agent's id (and node id in case we are on metaconsole).
+ */
+function remove_agent_from_policy($id_policy, $use_agent_name, $params)
+{
+    global $config;
+
+    if (!check_acl($config['id_user'], 0, 'AW')) {
+        returnError('forbidden', 'string');
+        return;
+    }
+
+    $id_node = 0;
+    $agent_table = 'tagente';
+
+    if ($use_agent_name === false) {
+        $id_agent = $params[0];
+    } else {
+        $id_agent = db_get_value_filter('id_agente', 'tagente', ['nombre' => $params[0]]);
+    }
+
+    $agent = db_get_row_filter('tagente', ['id_agente' => $id_agent]);
+
+    if (is_metaconsole()) {
+        if ($use_agent_name === false) {
+            $id_node = $params[1];
+            $id_agent = db_get_value_filter('id_agente', 'tmetaconsole_agent', ['id_tagente' => $params[0], 'id_tmetaconsole_setup' => $id_node]);
+        } else {
+            $id_agent = db_get_value_filter('id_agente', 'tmetaconsole_agent', ['nombre' => $params[0]]);
+        }
+
+        $agent = db_get_row_filter('tmetaconsole_agent', ['id_agente' => $id_agent]);
+    }
+
+    $policy = policies_get_policy($id_policy, false, false);
+
+    $policy_agent = db_get_row_filter('tpolicy_agents', ['id_policy' => $id_policy, 'id_agent' => $id_agent]);
+
+    if (empty($policy)) {
+        returnError('error_policy', __('This policy does not exist.'));
+        return;
+    }
+
+    if (empty($agent)) {
+        returnError('error_agent', __('This agent does not exist.'));
+        return;
+    }
+
+    if (empty($policy_agent)) {
+        returnError('error_policy_agent', __('This agent does not exist in this policy.'));
+        return;
+    }
+
+    $return = policies_change_delete_pending_agent($policy_agent['id']);
+    $data = __('Successfully added to delete pending id agent %d to id policy %d.', $id2, $id);
+
+    if ($return === false) {
+        returnError('error_delete_policy_agent', 'Could not be deleted id agent %d from id policy %d', $id2, $id);
+    } else {
+        returnData('string', ['type' => 'string', 'data' => $data]);
+    }
+
+}
+
+
+function util_api_check_agent_and_print_error($id_agent, $returnType, $access='AR', $force_meta=false)
+{
+    global $config;
+
+    $check_agent = agents_check_access_agent($id_agent, $access, $force_meta);
+    if ($check_agent === true) {
+        return true;
+    }
+
+    if ($check_agent === false || !check_acl($config['id_user'], 0, $access)) {
+        returnError('forbidden', $returnType);
+    } else if ($check_agent === null) {
+        returnError('id_not_found', $returnType);
+    }
+
+    return false;
 }

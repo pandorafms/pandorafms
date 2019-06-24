@@ -211,13 +211,14 @@ final class ModuleGraph extends Item
 
             $params = [
                 'period'          => $period,
-                'width'           => $data['width'],
+                'width'           => (int) $data['width'],
                 'height'          => ($data['height'] - 30),
                 'title'           => '',
                 'unit_name'       => null,
                 'show_alerts'     => false,
                 'only_image'      => $imageOnly,
                 'vconsole'        => true,
+                'document_ready'  => false,
                 'backgroundColor' => $backgroundType,
             ];
 
@@ -244,7 +245,7 @@ final class ModuleGraph extends Item
                 'agent_module_id' => $moduleId,
                 'period'          => $period,
                 'show_events'     => false,
-                'width'           => $data['width'],
+                'width'           => (int) $data['width'],
                 'height'          => ($data['height'] - 30),
                 'title'           => \modules_get_agentmodule_name($moduleId),
                 'unit'            => \modules_get_unit($moduleId),
@@ -253,6 +254,7 @@ final class ModuleGraph extends Item
                 'backgroundColor' => $backgroundType,
                 'type_graph'      => $graphType,
                 'vconsole'        => true,
+                'document_ready'  => false,
             ];
 
             $data['html'] = \grafico_modulo_sparse($params);

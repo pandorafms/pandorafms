@@ -652,10 +652,6 @@ export function addResizementListener(
 
     if (width === lastWidth && height === lastHeight) return;
 
-    console.log(
-      width - lastWidth,
-      e.pageX - elementLeft + (lastWidth - mouseElementOffsetX)
-    );
     if (
       width < lastWidth &&
       e.pageX > elementLeft + (lastWidth - mouseElementOffsetX)

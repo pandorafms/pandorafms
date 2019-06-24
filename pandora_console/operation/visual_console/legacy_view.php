@@ -15,6 +15,7 @@ global $config;
 
 // Login check
 require_once $config['homedir'].'/include/functions_visual_map.php';
+ui_require_css_file('visual_maps');
 
 check_login();
 

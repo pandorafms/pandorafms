@@ -935,7 +935,7 @@ function tags_get_acl_tags_event_condition(
 
         // Group condition (The module belongs to an agent of the group X)
         // $group_condition = sprintf('id_grupo IN (%s)', implode(',', array_values(groups_get_id_recursive($group_id, true))));.
-        $group_condition = '('.$id_grupo_table_pretag.'id_grupo = '.$group_id.' OR id_group = '.$group_id.')';
+        $group_condition = '('.$id_grupo_table_pretag.'id_grupo = '.$group_id.' OR tasg.d_group = '.$group_id.')';
 
         // Tags condition (The module has at least one of the restricted tags).
         $tags_condition = '';
@@ -971,7 +971,7 @@ function tags_get_acl_tags_event_condition(
         }
 
         $in_group = implode(',', $without_tags);
-        $condition .= sprintf('('.$id_grupo_table_pretag.'id_grupo IN (%s) OR id_group IN (%s))', $in_group, $in_group);
+        $condition .= sprintf('('.$id_grupo_table_pretag.'id_grupo IN (%s) OR tasg.id_group IN (%s))', $in_group, $in_group);
     }
 
     $condition = !empty($condition) ? "($condition)" : '';

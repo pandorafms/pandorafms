@@ -25,6 +25,7 @@ ui_toggle(
     "<div style='width: 100%;' id='event_list'>".html_print_image('images/spinner.gif', true).'</div>',
     __('Latest events for this agent'),
     __('Latest events for this agent'),
+    '',
     false,
     false,
     '',

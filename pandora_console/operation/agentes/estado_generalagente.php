@@ -82,6 +82,9 @@ if (! check_acl_one_of_groups($config['id_user'], $all_groups, 'AR')
     return;
 }
 
+$alive_animation = agents_get_status_animation(
+    agents_get_interval_status($agent, false)
+);
 
 /*
  * START: TABLE AGENT BUILD.
@@ -252,7 +255,7 @@ $table_agent = '
             </div>
         </div>
         <div class="agent_details_info">
-            '.$table_agent_os.$table_agent_ip.$table_agent_version.$table_agent_description.$remote_cfg.'
+            '.$alive_animation.$table_agent_os.$table_agent_ip.$table_agent_version.$table_agent_description.$remote_cfg.'
         </div>
     </div>';
 
@@ -314,7 +317,16 @@ $data[1] = ui_progress(
     1.8,
     '#BBB',
     true,
-    ($agent['intervalo'] * (100 - $progress) / 100).' s'
+    floor(($agent['intervalo'] * (100 - $progress) / 100)).' s',
+    [
+        'page'     => 'operation/agentes/ver_agente',
+        'interval' => (100 / $agent['intervalo']),
+        'data'     => [
+            'id_agente'       => $id_agente,
+            'refresh_contact' => 1,
+        ],
+
+    ]
 );
 
 if ($progress > 100) {
@@ -505,12 +517,12 @@ $access_agent = db_get_value_sql(
 );
 
 if ($config['agentaccess'] && $access_agent > 0) {
-    $table_access_rate = '<div class="box-shadow white_table_graph" id="table_access_rate">
+    $table_access_rate = '<div class="white_table_graph" id="table_access_rate">
                             <div class="white_table_graph_header">'.html_print_image(
         'images/arrow_down_green.png',
         true
     ).'<span>'.__('Agent access rate (24h)').'</span></div>
-    <div class="white_table_graph_content min-height-100">
+    <div class="white_table_graph_content h80p">
 '.graphic_agentaccess(
         $id_agente,
         '95%',
@@ -739,6 +751,7 @@ if (!empty($network_interfaces)) {
 ?>
     <script type="text/javascript">
         $(document).ready (function () {
+
             $("#agent_data_main").find("thead").click (function () {
                 close_table('#agent_data_main');
             })
@@ -785,12 +798,12 @@ if (!empty($network_interfaces)) {
 <?php
 // EVENTS.
 if ($config['agentaccess'] && $access_agent > 0) {
-    $extra_class = 'min-height-100';
+    $extra_class = 'h80p';
 } else {
     $extra_class = '';
 }
 
-$table_events = '<div class="box-shadow white_table_graph" id="table_events">
+$table_events = '<div class="white_table_graph" id="table_events">
             <div class="white_table_graph_header">'.html_print_image(
     'images/arrow_down_green.png',
     true

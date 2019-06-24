@@ -651,13 +651,15 @@ class DiscoveryTaskList extends Wizard
                 array_push($table->data, $data);
             }
 
-                echo '<h2>'.__('Server tasks').'</h2>';
             if (empty($table->data)) {
-                echo '<div class="nf">'.__('Server').' '.$server_name.' '.__('has no discovery tasks assigned').'</div>';
-                return false;
+                $content = '<div class="nf">'.__('Server').' '.$server_name.' '.__('has no discovery tasks assigned').'</div>';
+                $return = false;
             } else {
-                html_print_table($table);
+                $content = html_print_table($table, true);
+                $return = true;
             }
+
+            ui_toggle($content, __('Server Tasks'), '', '', false);
 
             // Div neccesary for modal map task.
             echo '<div id="map_task" style="display:none"></div>';
@@ -665,6 +667,8 @@ class DiscoveryTaskList extends Wizard
             unset($table);
 
             ui_require_javascript_file('pandora_taskList');
+
+            return $return;
         }
 
         return true;

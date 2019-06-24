@@ -1,7 +1,7 @@
 /* Debug styles */
 pre.debug,
 div.backtrace {
-  font-family: monospace !important;
+  font-family: monospace;
   text-align: left;
   padding: 10px;
   margin: 5px;
@@ -66,9 +66,9 @@ img.right {
   text-align: right;
 }
 .noshadow {
-  -moz-box-shadow: 0px !important;
-  -webkit-box-shadow: 0px !important;
-  box-shadow: 0px !important;
+  -moz-box-shadow: 0px;
+  -webkit-box-shadow: 0px;
+  box-shadow: 0px;
 }
 .center_align {
   text-align: center;

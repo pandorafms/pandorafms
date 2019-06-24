@@ -26,6 +26,9 @@
  * ============================================================================
  */
 
+// Begin.
+global $config;
+
 require_once 'include/functions_events.php';
 require_once 'include/functions_agents.php';
 require_once 'include/functions_ui.php';
@@ -34,6 +37,21 @@ require_once 'include/functions_io.php';
 require_once 'include/functions.php';
 enterprise_include_once('meta/include/functions_events_meta.php');
 enterprise_include_once('include/functions_metaconsole.php');
+
+// Check access.
+check_login();
+
+if (! check_acl($config['id_user'], 0, 'ER')
+    && ! check_acl($config['id_user'], 0, 'EW')
+    && ! check_acl($config['id_user'], 0, 'EM')
+) {
+    db_pandora_audit(
+        'ACL Violation',
+        'Trying to access event viewer'
+    );
+    include 'general/noaccess.php';
+    return;
+}
 
 $get_events_details = (bool) get_parameter('get_events_details');
 $get_list_events_agents = (bool) get_parameter('get_list_events_agents');
@@ -55,6 +73,680 @@ $total_events = (bool) get_parameter('total_events');
 $total_event_graph = (bool) get_parameter('total_event_graph');
 $graphic_event_group = (bool) get_parameter('graphic_event_group');
 $get_table_response_command = (bool) get_parameter('get_table_response_command');
+$save_filter_modal = get_parameter('save_filter_modal', 0);
+$load_filter_modal = get_parameter('load_filter_modal', 0);
+$save_filter = get_parameter('save_filter', 0);
+$get_filter_values = get_parameter('get_filter_values', 0);
+$update_event_filter = get_parameter('update_event_filter', 0);
+$save_event_filter = get_parameter('save_event_filter', 0);
+$in_process_event = get_parameter('in_process_event', 0);
+$validate_event = get_parameter('validate_event', 0);
+$delete_event = get_parameter('delete_event', 0);
+
+// Delete event (filtered or not).
+if ($delete_event) {
+    $filter = get_parameter('filter', []);
+    $id_evento = get_parameter('id_evento', 0);
+    $event_rep = get_parameter('event_rep', 0);
+
+    if ($event_rep === 0) {
+        // Disable group by when there're result is unique.
+        $filter['group_rep'] = 0;
+    }
+
+    // Check acl.
+    if (! check_acl($config['id_user'], 0, 'EM')) {
+        echo 'unauthorized';
+        return;
+    }
+
+    $r = events_delete($id_evento, $filter);
+    if ($r === false) {
+        echo 'Failed';
+    } else {
+        echo $r;
+    }
+
+    return;
+}
+
+// Validates an event (filtered or not).
+if ($validate_event) {
+    $filter = get_parameter('filter', []);
+    $id_evento = get_parameter('id_evento', 0);
+    $event_rep = get_parameter('event_rep', 0);
+
+    if ($event_rep === 0) {
+        // Disable group by when there're result is unique.
+        $filter['group_rep'] = 0;
+    }
+
+    // Check acl.
+    if (! check_acl($config['id_user'], 0, 'EW')) {
+        echo 'unauthorized';
+        return;
+    }
+
+    $r = events_update_status($id_evento, EVENT_VALIDATE, $filter);
+    if ($r === false) {
+        echo 'Failed';
+    } else {
+        echo $r;
+    }
+
+    return;
+}
+
+// Sets status to in progress.
+if ($in_process_event) {
+    $filter = get_parameter('filter', []);
+    $id_evento = get_parameter('id_evento', 0);
+    $event_rep = get_parameter('event_rep', 0);
+
+    if ($event_rep === 0) {
+        // Disable group by when there're result is unique.
+        $filter['group_rep'] = 0;
+    }
+
+    // Check acl.
+    if (! check_acl($config['id_user'], 0, 'EW')) {
+        echo 'unauthorized';
+        return;
+    }
+
+    $r = events_update_status($id_evento, EVENT_PROCESS, $filter);
+    if ($r === false) {
+        echo 'Failed';
+    } else {
+        echo $r;
+    }
+
+    return;
+}
+
+// Saves an event filter.
+if ($save_event_filter) {
+    $values = [];
+    $values['id_name'] = get_parameter('id_name');
+    $values['id_group'] = get_parameter('id_group');
+    $values['event_type'] = get_parameter('event_type');
+    $values['severity'] = get_parameter('severity');
+    $values['status'] = get_parameter('status');
+    $values['search'] = get_parameter('search');
+    $values['text_agent'] = get_parameter('text_agent');
+    $values['id_agent'] = get_parameter('id_agent');
+    $values['id_agent_module'] = get_parameter('id_agent_module');
+    $values['pagination'] = get_parameter('pagination');
+    $values['event_view_hr'] = get_parameter('event_view_hr');
+    $values['id_user_ack'] = get_parameter('id_user_ack');
+    $values['group_rep'] = get_parameter('group_rep');
+    $values['tag_with'] = get_parameter('tag_with', io_json_mb_encode([]));
+    $values['tag_without'] = get_parameter(
+        'tag_without',
+        io_json_mb_encode([])
+    );
+    $values['filter_only_alert'] = get_parameter('filter_only_alert');
+    $values['id_group_filter'] = get_parameter('id_group_filter');
+    $values['date_from'] = get_parameter('date_from');
+    $values['date_to'] = get_parameter('date_to');
+    $values['source'] = get_parameter('source');
+    $values['id_extra'] = get_parameter('id_extra');
+    $values['user_comment'] = get_parameter('user_comment');
+
+    $exists = (bool) db_get_value_filter(
+        'id_filter',
+        'tevent_filter',
+        $values
+    );
+
+    if ($exists) {
+        echo 'duplicate';
+    } else {
+        $result = db_process_sql_insert('tevent_filter', $values);
+
+        if ($result === false) {
+            echo 'error';
+        } else {
+            echo $result;
+        }
+    }
+}
+
+if ($update_event_filter) {
+    $values = [];
+    $id = get_parameter('id');
+    $values['id_group'] = get_parameter('id_group');
+    $values['event_type'] = get_parameter('event_type');
+    $values['severity'] = get_parameter('severity');
+    $values['status'] = get_parameter('status');
+    $values['search'] = get_parameter('search');
+    $values['text_agent'] = get_parameter('text_agent');
+    $values['id_agent'] = get_parameter('id_agent');
+    $values['id_agent_module'] = get_parameter('id_agent_module');
+    $values['pagination'] = get_parameter('pagination');
+    $values['event_view_hr'] = get_parameter('event_view_hr');
+    $values['id_user_ack'] = get_parameter('id_user_ack');
+    $values['group_rep'] = get_parameter('group_rep');
+    $values['tag_with'] = get_parameter('tag_with', io_json_mb_encode([]));
+    $values['tag_without'] = get_parameter(
+        'tag_without',
+        io_json_mb_encode([])
+    );
+    $values['filter_only_alert'] = get_parameter('filter_only_alert');
+    $values['id_group_filter'] = get_parameter('id_group_filter');
+    $values['date_from'] = get_parameter('date_from');
+    $values['date_to'] = get_parameter('date_to');
+    $values['source'] = get_parameter('source');
+    $values['id_extra'] = get_parameter('id_extra');
+    $values['user_comment'] = get_parameter('user_comment');
+
+    if (io_safe_output($values['tag_with']) == '["0"]') {
+        $values['tag_with'] = '[]';
+    }
+
+    if (io_safe_output($values['tag_without']) == '["0"]') {
+        $values['tag_without'] = '[]';
+    }
+
+    $result = db_process_sql_update(
+        'tevent_filter',
+        $values,
+        ['id_filter' => $id]
+    );
+
+    if ($result === false) {
+        echo 'error';
+    } else {
+        echo 'ok';
+    }
+}
+
+// Get db values of a single filter.
+if ($get_filter_values) {
+    $id_filter = get_parameter('id');
+
+    $event_filter = events_get_event_filter($id_filter);
+
+    $event_filter['search'] = io_safe_output($event_filter['search']);
+    $event_filter['id_name'] = io_safe_output($event_filter['id_name']);
+    $event_filter['tag_with'] = base64_encode(
+        io_safe_output($event_filter['tag_with'])
+    );
+    $event_filter['tag_without'] = base64_encode(
+        io_safe_output($event_filter['tag_without'])
+    );
+
+    echo io_json_mb_encode($event_filter);
+}
+
+if ($load_filter_modal) {
+    $current = get_parameter('current_filter', '');
+    $filters = events_get_event_filter_select();
+    $user_groups_array = users_get_groups_for_select(
+        $config['id_user'],
+        $access,
+        true,
+        true,
+        false
+    );
+
+    echo '<div id="load-filter-select" class="load-filter-modal">';
+    $table = new StdClass;
+    $table->id = 'load_filter_form';
+    $table->width = '100%';
+    $table->cellspacing = 4;
+    $table->cellpadding = 4;
+    $table->class = 'databox';
+    if (is_metaconsole()) {
+        $table->cellspacing = 0;
+        $table->cellpadding = 0;
+        $table->class = 'databox filters';
+    }
+
+    $table->styleTable = 'font-weight: bold; color: #555; text-align:left;';
+    if (!is_metaconsole()) {
+        $table->style[0] = 'width: 50%; width:50%;';
+    }
+
+    $data = [];
+    $table->rowid[3] = 'update_filter_row1';
+    $data[0] = __('Load filter').$jump;
+    $data[0] .= html_print_select(
+        $filters,
+        'filter_id',
+        $current,
+        '',
+        __('None'),
+        0,
+        true
+    );
+    $data[1] = html_print_submit_button(
+        __('Load filter'),
+        'load_filter',
+        false,
+        'class="sub upd" onclick="load_form_filter();"',
+        true
+    );
+    $table->data[] = $data;
+    $table->rowclass[] = '';
+
+    html_print_table($table);
+    echo '</div>';
+    ?>
+<script type="text/javascript">
+function show_filter() {
+    $("#load-filter-select").dialog({
+        resizable: true,
+        draggable: true,
+        modal: false,
+        closeOnEscape: true
+    });
+}
+
+function load_form_filter() {
+    jQuery.post (
+        "<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",
+        {
+            "page" : "include/ajax/events",
+            "get_filter_values" : 1,
+            "id" : $('#filter_id').val()
+        },
+        function (data) {
+            jQuery.each (data, function (i, val) {
+                if (i == 'id_name')
+                    $("#hidden-id_name").val(val);
+                if (i == 'id_group')
+                    $("#id_group").val(val);
+                if (i == 'event_type')
+                    $("#event_type").val(val);
+                if (i == 'severity')
+                    $("#severity").val(val);
+                if (i == 'status')
+                    $("#status").val(val);
+                if (i == 'search')
+                    $("#text-search").val(val);
+                if (i == 'text_agent')
+                    $("#text_id_agent").val(val);
+                if (i == 'id_agent')
+                    $('input:hidden[name=id_agent]').val(val);
+                if (i == 'id_agent_module')
+                    $('input:hidden[name=module_search_hidden]').val(val);
+                if (i == 'pagination')
+                    $("#pagination").val(val);
+                if (i == 'event_view_hr')
+                    $("#text-event_view_hr").val(val);
+                if (i == 'id_user_ack')
+                    $("#id_user_ack").val(val);
+                if (i == 'group_rep')
+                    $("#group_rep").val(val);
+                if (i == 'tag_with')
+                    $("#hidden-tag_with").val(val);
+                if (i == 'tag_without')
+                    $("#hidden-tag_without").val(val);
+                if (i == 'filter_only_alert')
+                    $("#filter_only_alert").val(val);
+                if (i == 'id_group_filter')
+                    $("#id_group_filter").val(val);
+                if (i == 'source')
+                    $("#text-source").val(val);
+                if (i == 'id_extra')
+                    $("#text-id_extra").val(val);
+                if (i == 'user_comment')
+                    $("#text-user_comment").val(val);
+            });
+            reorder_tags_inputs();
+            // Update the info with the loaded filter
+            $('#filterid').val($('#filter_id').val());
+            $('#filter_loaded_span').html($('#filter_loaded_text').html() + ': ' + $("#hidden-id_name").val());
+
+        },
+        "json"
+    );
+
+    // Close dialog.
+    $("#load-filter-select").dialog('close');
+
+    // Update indicator.
+    $("#current_filter").text($('#filter_id option:selected').text());
+
+    // Search.
+    dt_events.draw(false);
+}
+
+$(document).ready (function() {
+    show_filter();
+})
+
+</script>
+    <?php
+    return;
+}
+
+
+if ($save_filter_modal) {
+    echo '<div id="save-filter-select">';
+    if (check_acl($config['id_user'], 0, 'EW')
+        || check_acl($config['id_user'], 0, 'EM')
+    ) {
+        echo '<div id="#info_box"></div>';
+        $table = new StdClass;
+        $table->id = 'save_filter_form';
+        $table->width = '100%';
+        $table->cellspacing = 4;
+        $table->cellpadding = 4;
+        $table->class = 'databox';
+        if (is_metaconsole()) {
+            $table->class = 'databox filters';
+            $table->cellspacing = 0;
+            $table->cellpadding = 0;
+        }
+
+        $table->styleTable = 'font-weight: bold; text-align:left;';
+        if (!is_metaconsole()) {
+            $table->style[0] = 'width: 50%; width:50%;';
+        }
+
+        $data = [];
+        $table->rowid[0] = 'update_save_selector';
+        $data[0] = html_print_radio_button(
+            'filter_mode',
+            'new',
+            '',
+            true,
+            true
+        ).__('New filter').'';
+
+        $data[1] = html_print_radio_button(
+            'filter_mode',
+            'update',
+            '',
+            false,
+            true
+        ).__('Update filter').'';
+
+        $table->data[] = $data;
+        $table->rowclass[] = '';
+
+        $data = [];
+        $table->rowid[1] = 'save_filter_row1';
+        $data[0] = __('Filter name').$jump;
+        $data[0] .= html_print_input_text('id_name', '', '', 15, 255, true);
+        if (is_metaconsole()) {
+            $data[1] = __('Save in Group').$jump;
+        } else {
+            $data[1] = __('Filter group').$jump;
+        }
+
+        $user_groups_array = users_get_groups_for_select(
+            $config['id_user'],
+            'EW',
+            users_can_manage_group_all(),
+            true
+        );
+
+        $data[1] .= html_print_select(
+            $user_groups_array,
+            'id_group_filter',
+            $id_group_filter,
+            '',
+            '',
+            0,
+            true,
+            false,
+            false,
+            'w130'
+        );
+
+        $table->data[] = $data;
+        $table->rowclass[] = '';
+
+        $data = [];
+        $table->rowid[2] = 'save_filter_row2';
+
+        $table->data[] = $data;
+        $table->rowclass[] = '';
+
+        $data = [];
+        $table->rowid[3] = 'update_filter_row1';
+        $data[0] = __('Overwrite filter').$jump;
+        // Fix  : Only admin user can see filters of group ALL for update.
+        $_filters_update = events_get_event_filter_select(false);
+
+        $data[0] .= html_print_select(
+            $_filters_update,
+            'overwrite_filter',
+            '',
+            '',
+            '',
+            0,
+            true
+        );
+        $data[1] = html_print_submit_button(
+            __('Update filter'),
+            'update_filter',
+            false,
+            'class="sub upd" onclick="save_update_filter();"',
+            true
+        );
+
+        $table->data[] = $data;
+        $table->rowclass[] = '';
+
+        html_print_table($table);
+        echo '<div>';
+            echo html_print_submit_button(
+                __('Save filter'),
+                'save_filter',
+                false,
+                'class="sub upd" style="float:right;" onclick="save_new_filter();"',
+                true
+            );
+        echo '</div>';
+    } else {
+        include 'general/noaccess.php';
+    }
+
+    echo '</div>';
+    ?>
+<script type="text/javascript">
+function show_save_filter() {
+    $('#save_filter_row1').show();
+    $('#save_filter_row2').show();
+    $('#update_filter_row1').hide();
+    // Filter save mode selector
+    $("[name='filter_mode']").click(function() {
+        if ($(this).val() == 'new') {
+            $('#save_filter_row1').show();
+            $('#save_filter_row2').show();
+            $('#submit-save_filter').show();
+            $('#update_filter_row1').hide();
+        }
+        else {
+            $('#save_filter_row1').hide();
+            $('#save_filter_row2').hide();
+            $('#update_filter_row1').show();
+            $('#submit-save_filter').hide();
+        }
+    });
+    $("#save-filter-select").dialog({
+        resizable: true,
+        draggable: true,
+        modal: false,
+        closeOnEscape: true
+    });
+}
+
+function save_new_filter() {
+    // If the filter name is blank show error
+    if ($('#text-id_name').val() == '') {
+        $('#show_filter_error').html("<h3 class='error'><?php echo __('Filter name cannot be left blank'); ?></h3>");
+        
+        // Close dialog
+        $('.ui-dialog-titlebar-close').trigger('click');
+        return false;
+    }
+    
+    var id_filter_save;
+    
+    jQuery.post ("<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",
+        {
+            "page" : "operation/events/events_list",
+            "save_event_filter" : 1,
+            "id_name" : $("#text-id_name").val(),
+            "id_group" : $("select#id_group").val(),
+            "event_type" : $("#event_type").val(),
+            "severity" : $("#severity").val(),
+            "status" : $("#status").val(),
+            "search" : $("#text-search").val(),
+            "text_agent" : $("#text_id_agent").val(),
+            "id_agent" : $('input:hidden[name=id_agent]').val(),
+            "id_agent_module" : $('input:hidden[name=module_search_hidden]').val(),
+            "pagination" : $("#pagination").val(),
+            "event_view_hr" : $("#text-event_view_hr").val(),
+            "id_user_ack" : $("#id_user_ack").val(),
+            "group_rep" : $("#group_rep").val(),
+            "tag_with": Base64.decode($("#hidden-tag_with").val()),
+            "tag_without": Base64.decode($("#hidden-tag_without").val()),
+            "filter_only_alert" : $("#filter_only_alert").val(),
+            "id_group_filter": $("#id_group_filter").val(),
+            "date_from": $("#text-date_from").val(),
+            "date_to": $("#text-date_to").val(),
+            "source": $("#text-source").val(),
+            "id_extra": $("#text-id_extra").val(),
+            "user_comment": $("#text-user_comment").val()
+        },
+        function (data) {
+            $("#info_box").hide();
+            if (data == 'error') {
+                $("#info_box").filter(function(i, item) {
+                    if ($(item).data('type_info_box') == "error_create_filter") {
+                        return true;
+                    }
+                    else
+                        return false;
+                }).show();
+            }
+            else  if (data == 'duplicate') {
+                $("#info_box").filter(function(i, item) {
+                    if ($(item).data('type_info_box') == "duplicate_create_filter") {
+                        return true;
+                    }
+                    else
+                        return false;
+                }).show();
+            }
+            else {
+                id_filter_save = data;
+                
+                $("#info_box").filter(function(i, item) {
+                    if ($(item).data('type_info_box') == "success_create_filter") {
+                        return true;
+                    }
+                    else
+                        return false;
+                }).show();
+            }
+
+            // Close dialog.
+            $("#save-filter-select").dialog('close');
+        }
+    );
+}
+
+// This updates an event filter
+function save_update_filter() {
+    var id_filter_update =  $("#overwrite_filter").val();
+    var name_filter_update = $("#overwrite_filter option[value='"+id_filter_update+"']").text();
+    
+    jQuery.post ("<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",
+        {"page" : "operation/events/events_list",
+        "update_event_filter" : 1,
+        "id" : $("#overwrite_filter").val(),
+        "id_group" : $("select#id_group").val(),
+        "event_type" : $("#event_type").val(),
+        "severity" : $("#severity").val(),
+        "status" : $("#status").val(),
+        "search" : $("#text-search").val(),
+        "text_agent" : $("#text_id_agent").val(),
+        "id_agent" : $('input:hidden[name=id_agent]').val(),
+        "id_agent_module" : $('input:hidden[name=module_search_hidden]').val(),
+        "pagination" : $("#pagination").val(),
+        "event_view_hr" : $("#text-event_view_hr").val(),
+        "id_user_ack" : $("#id_user_ack").val(),
+        "group_rep" : $("#group_rep").val(),
+        "tag_with" : Base64.decode($("#hidden-tag_with").val()),
+        "tag_without" : Base64.decode($("#hidden-tag_without").val()),
+        "filter_only_alert" : $("#filter_only_alert").val(),
+        "id_group_filter": $("#id_group_filter").val(),
+        "date_from": $("#text-date_from").val(),
+        "date_to": $("#text-date_to").val(),
+        "source": $("#text-source").val(),
+        "id_extra": $("#text-id_extra").val(),
+        "user_comment": $("#text-user_comment").val()
+        },
+        function (data) {
+            $(".info_box").hide();
+            if (data == 'ok') {
+                $(".info_box").filter(function(i, item) {
+                    if ($(item).data('type_info_box') == "success_update_filter") {
+                        return true;
+                    }
+                    else
+                        return false;
+                }).show();
+            }
+            else {
+                $(".info_box").filter(function(i, item) {
+                    if ($(item).data('type_info_box') == "error_create_filter") {
+                        return true;
+                    }
+                    else
+                        return false;
+                }).show();
+            }
+        });
+        
+        // First remove all options of filters select
+        $('#filter_id').find('option').remove().end();
+        // Add 'none' option the first
+        $('#filter_id').append ($('<option></option>').html ( <?php echo "'".__('none')."'"; ?> ).attr ("value", 0));    
+        // Reload filters select
+        jQuery.post ("<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",
+            {"page" : "operation/events/events_list",
+                "get_event_filters" : 1
+            },
+            function (data) {
+                jQuery.each (data, function (i, val) {
+                    s = js_html_entity_decode(val);
+                    if (i == id_filter_update) {
+                        $('#filter_id').append ($('<option selected="selected"></option>').html (s).attr ("value", i));
+                    }
+                    else {
+                        $('#filter_id').append ($('<option></option>').html (s).attr ("value", i));
+                    }
+                });
+            },
+            "json"
+            );
+            
+        // Close dialog
+        $('.ui-dialog-titlebar-close').trigger('click');
+        
+        // Update the info with the loaded filter
+        $("#hidden-id_name").val($('#text-id_name').val());
+        $('#filter_loaded_span').html($('#filter_loaded_text').html() + ': ' + name_filter_update);
+        return false;
+}
+    
+
+$(document).ready(function (){
+    show_save_filter();
+});
+</script>
+    <?php
+    return;
+}
+
 
 if ($get_event_name) {
     $event_id = get_parameter('event_id');
@@ -342,18 +1034,18 @@ if ($change_owner) {
     return;
 }
 
+
+// Generate a modal window with extended information of given event.
 if ($get_extended_event) {
     global $config;
 
-    $event_id = get_parameter('event_id', false);
-    $childrens_ids = get_parameter('childrens_ids');
-    $childrens_ids = json_decode($childrens_ids);
+    $event = get_parameter('event', false);
 
-    if ($meta) {
-        $event = events_meta_get_event($event_id, false, $history, 'ER');
-    } else {
-        $event = events_get_event($event_id);
+    if ($event === false) {
+        return;
     }
+
+    $event_id = $event['id_evento'];
 
     $readonly = false;
     if (!$meta
@@ -361,7 +1053,7 @@ if ($get_extended_event) {
         && $config['event_replication'] == 1
         && $config['show_events_in_local'] == 1
     ) {
-            $readonly = true;
+        $readonly = true;
     }
 
     // Clean url from events and store in array.
@@ -374,17 +1066,17 @@ if ($get_extended_event) {
     }
 
     $dialog_page = get_parameter('dialog_page', 'general');
-    $similar_ids = get_parameter('similar_ids', $event_id);
-    $group_rep = get_parameter('group_rep', false);
-    $event_rep = get_parameter('event_rep', 1);
-    $timestamp_first = get_parameter('timestamp_first', $event['utimestamp']);
-    $timestamp_last = get_parameter('timestamp_last', $event['utimestamp']);
-    $server_id = get_parameter('server_id', 0);
+    $filter = get_parameter('filter', []);
+    $group_rep = $filter['group_rep'];
+    $event_rep = $event['event_rep'];
+    $timestamp_first = $event['min_timestamp'];
+    $timestamp_last = $event['max_timestamp'];
+    $server_id = $event['server_id'];
+    $comments = $event['comments'];
 
-    $event['similar_ids'] = $similar_ids;
-    $event['timestamp_first'] = $timestamp_first;
-    $event['timestamp_last'] = $timestamp_last;
-    $event['event_rep'] = $event_rep;
+    if (!isset($comments)) {
+        $comments = $event['user_comment'];
+    }
 
     // Check ACLs.
     if (is_user_admin($config['id_user'])) {
@@ -418,7 +1110,7 @@ if ($get_extended_event) {
     }
 
     // Tabs.
-    $tabs = "<ul class='events_tabs'>";
+    $tabs = "<ul class=''>";
     $tabs .= "<li><a href='#extended_event_general_page' id='link_general'>".html_print_image('images/lightning_go.png', true).'<span>'.__('General').'</span></a></li>';
     if (events_has_extended_info($event['id_evento']) === true) {
         $tabs .= "<li><a href='#extended_event_related_page' id='link_related'>".html_print_image('images/zoom.png', true).'<span>'.__('Related').'</span></a></li>';
@@ -443,11 +1135,11 @@ if ($get_extended_event) {
             $childrens_ids
         )))
     ) {
-        $tabs .= "<li><a href='#extended_event_responses_page' id='link_responses'>".html_print_image('images/event_responses_col.png', true)."<span style='position:relative;top:-6px;left:3px;margin-right:10px;'>".__('Responses').'</span></a></li>';
+        $tabs .= "<li><a href='#extended_event_responses_page' id='link_responses'>".html_print_image('images/event_responses_col.png', true).'<span>'.__('Responses').'</span></a></li>';
     }
 
     if ($event['custom_data'] != '') {
-        $tabs .= "<li><a href='#extended_event_custom_data_page' id='link_custom_data'>".html_print_image('images/custom_field_col.png', true)."<span style='position:relative;top:-6px;left:3px;margin-right:10px;'>".__('Custom data').'</span></a></li>';
+        $tabs .= "<li><a href='#extended_event_custom_data_page' id='link_custom_data'>".html_print_image('images/custom_field_col.png', true).'<span>'.__('Custom data').'</span></a></li>';
     }
 
     $tabs .= '</ul>';
@@ -498,7 +1190,7 @@ if ($get_extended_event) {
             $childrens_ids
         )))
     ) {
-        $responses = events_page_responses($event, $childrens_ids);
+        $responses = events_page_responses($event);
     } else {
         $responses = '';
     }
@@ -535,7 +1227,7 @@ if ($get_extended_event) {
 
     $general = events_page_general($event);
 
-    $comments = events_page_comments($event, $childrens_ids);
+    $comments = events_page_comments($event);
 
     $notifications = '<div id="notification_comment_error" style="display:none">'.ui_print_error_message(__('Error adding comment'), '', true).'</div>';
     $notifications .= '<div id="notification_comment_success" style="display:none">'.ui_print_success_message(__('Comment added successfully'), '', true).'</div>';
@@ -718,7 +1410,7 @@ if ($table_events) {
         'AND'
     );
     echo '<div style="display: flex;" id="div_all_events_24h">';
-        echo '<label style="margin-right: 1em;"><b>'.__('Show all Events 24h').'</b></label>';
+        echo '<label style="margin: 0 1em 0 2em;"><b>'.__('Show all Events 24h').'</b></label>';
         echo html_print_switch(
             [
                 'name'  => 'all_events_24h',

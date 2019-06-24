@@ -903,6 +903,47 @@ function set_cookie($name, $value)
 
 
 /**
+ * Returns database ORDER clause from datatables AJAX call.
+ *
+ * @param boolean $as_array Return as array or as string.
+ *
+ * @return string Order or empty.
+ */
+function get_datatable_order($as_array=false)
+{
+    $order = get_parameter('order');
+
+    if (is_array($order)) {
+        $column = $order[0]['column'];
+        $direction = $order[0]['dir'];
+    }
+
+    if (!isset($column) || !isset($direction)) {
+        return '';
+    }
+
+    $columns = get_parameter('columns');
+
+    if (is_array($columns)) {
+        $column_name = $columns[$column]['data'];
+    }
+
+    if (!isset($column_name)) {
+        return '';
+    }
+
+    if ($as_array) {
+        return [
+            'direction' => $direction,
+            'field'     => $column_name,
+        ];
+    }
+
+    return $column_name.' '.$direction;
+}
+
+
+/**
  * Get a parameter from a request.
  *
  * It checks first on post request, if there were nothing defined, it

@@ -1546,7 +1546,7 @@ class Item extends CachedModel
     protected static function getImageSrc(array $data)
     {
         $imageSrc = static::notEmptyStringOr(
-            static::issetInArray($data, ['imageSrc', 'image', 'backgroundColor', 'backgroundType', 'valueType']),
+            static::issetInArray($data, ['image', 'imageSrc', 'backgroundColor', 'backgroundType', 'valueType']),
             null
         );
 

@@ -265,12 +265,10 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
             case "up":
             case "down":
               height -= labelHeight;
-              if (width < labelWidth) width = labelWidth;
               break;
             case "left":
             case "right":
               width -= labelWidth;
-              if (height < labelHeight) height = labelHeight;
               break;
           }
         }
@@ -739,6 +737,25 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
     // The most valuable size is the content size.
     this.childElementRef.style.width = width > 0 ? `${width}px` : null;
     this.childElementRef.style.height = height > 0 ? `${height}px` : null;
+
+    if (this.props.label && this.props.label.length > 0) {
+      // Ugly table to show the label as its legacy counterpart.
+      const tables = this.labelElementRef.getElementsByTagName("table");
+      const table = tables.length > 0 ? tables.item(0) : null;
+
+      if (table) {
+        switch (this.props.labelPosition) {
+          case "up":
+          case "down":
+            table.style.width = width > 0 ? `${width}px` : null;
+            break;
+          case "left":
+          case "right":
+            table.style.height = height > 0 ? `${height}px` : null;
+            break;
+        }
+      }
+    }
   }
 
   /**

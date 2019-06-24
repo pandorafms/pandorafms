@@ -5803,3 +5803,45 @@ div#status_pie {
   align-items: center;
   grid-template-columns: 50px auto;
 }
+
+/*
+ * ---------------------------------------------------------------------
+ * - IMAGES FOR STATUS. This replaces the images of /images/status_sets/default/ 
+ * - Don't delete this
+ * ---------------------------------------------------------------------
+ */
+.status_small_rectangles {
+  width: 20px;
+  height: 10px;
+  display: inline-block;
+}
+
+.status_rounded_rectangles {
+  width: 50px;
+  height: 2em;
+  display: inline-block;
+  border-radius: 5px;
+}
+
+.status_small_squares,
+.status_balls {
+  width: 12px;
+  height: 12px;
+  display: inline-block;
+}
+
+.status_balls {
+  border-radius: 50%;
+}
+
+.status_small_balls {
+  width: 8px;
+  height: 8px;
+  display: inline-block;
+  border-radius: 50%;
+}
+/*
+ * ---------------------------------------------------------------------
+ * - END - IMAGES FOR STATUS. Don't delete this
+ * ---------------------------------------------------------------------
+ */

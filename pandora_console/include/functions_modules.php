@@ -2308,31 +2308,66 @@ function modules_get_color_status($status)
         return COL_UNKNOWN;
     }
 
-    switch ($status) {
-        case AGENT_MODULE_STATUS_NORMAL:
-        case AGENT_STATUS_NORMAL:
+    switch ((string) $status) {
+        case (string) AGENT_MODULE_STATUS_NORMAL:
+        case (string) AGENT_STATUS_NORMAL:
+        case STATUS_MODULE_OK:
+        case STATUS_AGENT_OK:
+        case STATUS_ALERT_NOT_FIRED:
+        case STATUS_SERVER_OK:
+        case STATUS_MODULE_OK_BALL:
+        case STATUS_AGENT_OK_BALL:
+        case STATUS_ALERT_NOT_FIRED_BALL:
         return COL_NORMAL;
 
         case AGENT_MODULE_STATUS_NOT_INIT:
         case AGENT_STATUS_NOT_INIT:
+        case STATUS_MODULE_NO_DATA:
+        case STATUS_AGENT_NOT_INIT:
+        case STATUS_AGENT_NO_DATA:
+        case STATUS_MODULE_NO_DATA_BALL:
+        case STATUS_AGENT_NO_DATA_BALL:
+        case STATUS_AGENT_NO_MONITORS_BALL:
         return COL_NOTINIT;
 
         case AGENT_MODULE_STATUS_CRITICAL_BAD:
         case AGENT_STATUS_CRITICAL:
+        case STATUS_MODULE_CRITICAL:
+        case STATUS_AGENT_CRITICAL:
+        case STATUS_MODULE_CRITICAL_BALL:
+        case STATUS_AGENT_CRITICAL_BALL:
         return COL_CRITICAL;
 
         case AGENT_MODULE_STATUS_WARNING:
         case AGENT_STATUS_WARNING:
+        case STATUS_MODULE_WARNING:
+        case STATUS_AGENT_WARNING:
+        case STATUS_MODULE_WARNING_BALL:
+        case STATUS_AGENT_WARNING_BALL:
         return COL_WARNING;
 
         case AGENT_MODULE_STATUS_CRITICAL_ALERT:
         case AGENT_MODULE_STATUS_WARNING_ALERT:
         case AGENT_STATUS_ALERT_FIRED:
+        case STATUS_ALERT_FIRED:
+        case STATUS_ALERT_FIRED_BALL:
         return COL_ALERTFIRED;
 
         case AGENT_MODULE_STATUS_UNKNOWN:
         case AGENT_STATUS_UNKNOWN:
+        case STATUS_MODULE_UNKNOWN:
+        case STATUS_AGENT_UNKNOWN:
+        case STATUS_AGENT_DOWN:
+        case STATUS_ALERT_DISABLED:
+        case STATUS_MODULE_UNKNOWN_BALL:
+        case STATUS_AGENT_UNKNOWN_BALL:
+        case STATUS_AGENT_DOWN_BALL:
+        case STATUS_ALERT_DISABLED_BALL:
         return COL_UNKNOWN;
+
+        case STATUS_SERVER_DOWN:
+        case STATUS_SERVER_DOWN_BALL:
+        return '#444';
 
         default:
             // Ignored.

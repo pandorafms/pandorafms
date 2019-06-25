@@ -5803,3 +5803,32 @@ div#status_pie {
   align-items: center;
   grid-template-columns: 50px auto;
 }
+
+/* Table for show more info in events and config menu in modules graphs. (This class exists in events.css too) */
+.table_modal_alternate {
+  border-spacing: 0px;
+  text-align: left;
+}
+
+table.table_modal_alternate tr:nth-child(odd) td {
+  background-color: #ffffff;
+}
+
+table.table_modal_alternate tr:nth-child(even) td {
+  background-color: #f9f9f9;
+  border-top: 1px solid #e0e0e0;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+table.table_modal_alternate tr td {
+  height: 33px;
+  max-height: 33px;
+  min-height: 33px;
+}
+
+table.table_modal_alternate tr td:first-child {
+  width: 35%;
+  font-weight: bold;
+  padding-left: 20px;
+}
+/* END - Table for show more info in events and config menu in modules graphs */

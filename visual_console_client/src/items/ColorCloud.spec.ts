@@ -1,4 +1,5 @@
 import ColorCloud, { colorCloudPropsDecoder } from "./ColorCloud";
+import { itemMetaDecoder } from "../lib";
 
 const genericRawProps = {
   id: 1,
@@ -41,6 +42,9 @@ describe("Color cloud item", () => {
       ...sizeRawProps,
       ...linkedModuleProps,
       ...colorCloudProps
+    }),
+    itemMetaDecoder({
+      receivedAt: new Date(1)
     })
   );
 

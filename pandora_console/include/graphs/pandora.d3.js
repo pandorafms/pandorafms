@@ -1614,9 +1614,9 @@ function print_phases_donut(recipient, phases) {
       .insert("path")
       .style("fill", function(d) {
         if (d.data.value == 0) {
-          return "#80BA27";
+          return "#82b92e";
         } else {
-          return "#FC4444";
+          return "#e63c52";
         }
       })
       .attr("class", "slice");
@@ -2849,7 +2849,6 @@ function donutNarrowGraph(colores, width, height, total) {
         })
         .attr("d", arc)
         .attr("stroke", "white")
-        .style("stroke-width", 2)
         .style("fill", function(d) {
           return color(d.data.key);
         });
@@ -2873,8 +2872,6 @@ function donutNarrowGraph(colores, width, height, total) {
         .attr("y", 0 + radius / 10)
         .attr("class", "text-tooltip")
         .style("text-anchor", "middle")
-        .attr("font-weight", "bold")
-        .style("font-family", "Arial, Verdana")
         //.attr("fill", "#82b92e")
         .style("font-size", function(d) {
           if (normal_status) {

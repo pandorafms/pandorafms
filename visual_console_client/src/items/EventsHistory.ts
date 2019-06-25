@@ -1,4 +1,4 @@
-import { UnknownObject, WithModuleProps } from "../types";
+import { AnyObject, WithModuleProps } from "../lib/types";
 import {
   modulePropsDecoder,
   parseIntOr,
@@ -24,7 +24,7 @@ export type EventsHistoryProps = {
  * is missing from the raw object or have an invalid type.
  */
 export function eventsHistoryPropsDecoder(
-  data: UnknownObject
+  data: AnyObject
 ): EventsHistoryProps | never {
   if (stringIsEmpty(data.html) && stringIsEmpty(data.encodedHtml)) {
     throw new TypeError("missing html content.");

@@ -151,11 +151,13 @@ function reporting_make_reporting_data(
         $contents = $report['contents'];
     } else {
         $report = io_safe_output(db_get_row('treport', 'id_report', $id_report));
-        $contents = db_get_all_rows_field_filter(
-            'treport_content',
-            'id_report',
-            $id_report,
-            db_escape_key_identifier('order')
+        $contents = io_safe_output(
+            db_get_all_rows_field_filter(
+                'treport_content',
+                'id_report',
+                $id_report,
+                db_escape_key_identifier('order')
+            )
         );
     }
 
@@ -326,26 +328,32 @@ function reporting_make_reporting_data(
             break;
 
             case 'general':
-                $report['contents'][] = reporting_general(
-                    $report,
-                    $content
+                $report['contents'][] = io_safe_output(
+                    reporting_general(
+                        $report,
+                        $content
+                    )
                 );
             break;
 
             case 'availability':
-                $report['contents'][] = reporting_availability(
-                    $report,
-                    $content,
-                    $date,
-                    $time
+                $report['contents'][] = io_safe_output(
+                    reporting_availability(
+                        $report,
+                        $content,
+                        $date,
+                        $time
+                    )
                 );
             break;
 
             case 'availability_graph':
-                $report['contents'][] = reporting_availability_graph(
-                    $report,
-                    $content,
-                    $pdf
+                $report['contents'][] = io_safe_output(
+                    reporting_availability_graph(
+                        $report,
+                        $content,
+                        $pdf
+                    )
                 );
             break;
 
@@ -475,9 +483,11 @@ function reporting_make_reporting_data(
             break;
 
             case 'agent_configuration':
-                $report['contents'][] = reporting_agent_configuration(
-                    $report,
-                    $content
+                $report['contents'][] = io_safe_output(
+                    reporting_agent_configuration(
+                        $report,
+                        $content
+                    )
                 );
             break;
 
@@ -673,12 +683,14 @@ function reporting_make_reporting_data(
 
             case 'agent_detailed_event':
             case 'event_report_agent':
-                $report_control = reporting_event_report_agent(
-                    $report,
-                    $content,
-                    $type,
-                    $force_width_chart,
-                    $force_height_chart
+                $report_control = io_safe_output(
+                    reporting_event_report_agent(
+                        $report,
+                        $content,
+                        $type,
+                        $force_width_chart,
+                        $force_height_chart
+                    )
                 );
                 if ($report_control['total_events'] == 0 && $content['hide_no_data'] == 1) {
                     continue;
@@ -1383,7 +1395,7 @@ function reporting_event_top_n(
         foreach ($tops as $key => $row) {
             // Metaconsole connection.
             $server_name = $row['server_name'];
-            if (($config['metaconsole'] == 1) && $server_name != '' && defined('METACONSOLE')) {
+            if (($config['metaconsole'] == 1) && $server_name != '' && is_metaconsole()) {
                 $connection = metaconsole_get_connection($server_name);
                 if (metaconsole_load_external_db($connection) != NOERR) {
                     // ui_print_error_message ("Error connecting to ".$server_name);
@@ -1426,7 +1438,7 @@ function reporting_event_top_n(
             }
 
             // Restore dbconnection.
-            if (($config['metaconsole'] == 1) && $server_name != '' && defined('METACONSOLE')) {
+            if (($config['metaconsole'] == 1) && $server_name != '' && is_metaconsole()) {
                 metaconsole_restore_db();
             }
         }
@@ -2176,7 +2188,7 @@ function reporting_agent_module($report, $content)
         foreach ($agents as $agent) {
             $row = [];
             $row['agent_status'][$agent] = agents_get_status($agent);
-            $row['agent_name'] = agents_get_alias($agent);
+            $row['agent_name'] = io_safe_output(agents_get_alias($agent));
             $agent_modules = agents_get_modules($agent);
 
             $row['modules'] = [];
@@ -2330,7 +2342,7 @@ function reporting_exception(
         do {
             // Metaconsole connection.
             $server_name = $exceptions[$i]['server_name'];
-            if (($config['metaconsole'] == 1) && $server_name != '' && defined('METACONSOLE')) {
+            if (($config['metaconsole'] == 1) && $server_name != '' && is_metaconsole()) {
                 $connection = metaconsole_get_connection($server_name);
                 if (metaconsole_load_external_db($connection) != NOERR) {
                     // ui_print_error_message ("Error connecting to ".$server_name);
@@ -2372,7 +2384,7 @@ function reporting_exception(
             $i++;
 
             // Restore dbconnection.
-            if (($config['metaconsole'] == 1) && $server_name != '' && defined('METACONSOLE')) {
+            if (($config['metaconsole'] == 1) && $server_name != '' && is_metaconsole()) {
                 metaconsole_restore_db();
             }
         } while ($min === false && $i < count($exceptions));
@@ -2385,7 +2397,7 @@ function reporting_exception(
         foreach ($exceptions as $exc) {
             // Metaconsole connection.
             $server_name = $exc['server_name'];
-            if (($config['metaconsole'] == 1) && $server_name != '' && defined('METACONSOLE')) {
+            if (($config['metaconsole'] == 1) && $server_name != '' && is_metaconsole()) {
                 $connection = metaconsole_get_connection($server_name);
                 if (metaconsole_load_external_db($connection) != NOERR) {
                     // ui_print_error_message ("Error connecting to ".$server_name);
@@ -2499,7 +2511,7 @@ function reporting_exception(
             }
 
             // Restore dbconnection
-            if (($config['metaconsole'] == 1) && $server_name != '' && defined('METACONSOLE')) {
+            if (($config['metaconsole'] == 1) && $server_name != '' && is_metaconsole()) {
                 metaconsole_restore_db();
             }
         }
@@ -2693,7 +2705,7 @@ function reporting_group_report($report, $content)
 {
     global $config;
 
-    $metaconsole_on = ($config['metaconsole'] == 1) && defined('METACONSOLE');
+    $metaconsole_on = ($config['metaconsole'] == 1) && is_metaconsole();
 
     $return['type'] = 'group_report';
 
@@ -2777,7 +2789,7 @@ function reporting_event_report_agent(
     }
 
     $return['title'] = $content['name'];
-    $return['subtitle'] = agents_get_alias($content['id_agent']);
+    $return['subtitle'] = io_safe_output(agents_get_alias($content['id_agent']));
     $return['description'] = $content['description'];
     $return['date'] = reporting_get_date_text($report, $content);
 
@@ -6073,7 +6085,7 @@ function reporting_advanced_sla(
 
         // SLA.
         $return['SLA'] = reporting_sla_get_compliance_from_array($return);
-        $return['SLA_fixed'] = sla_truncate(
+        $return['sla_fixed'] = sla_truncate(
             $return['SLA'],
             $config['graph_precision']
         );
@@ -6173,7 +6185,7 @@ function reporting_availability($report, $content, $date=false, $time=false)
         foreach ($items as $item) {
             // aaMetaconsole connection
             $server_name = $item['server_name'];
-            if (($config['metaconsole'] == 1) && $server_name != '' && defined('METACONSOLE')) {
+            if (($config['metaconsole'] == 1) && $server_name != '' && is_metaconsole()) {
                 $connection = metaconsole_get_connection($server_name);
                 if (metaconsole_load_external_db($connection) != NOERR) {
                     // ui_print_error_message ("Error connecting to ".$server_name);
@@ -6185,7 +6197,7 @@ function reporting_availability($report, $content, $date=false, $time=false)
                 || modules_is_not_init($item['id_agent_module'])
             ) {
                 // Restore dbconnection
-                if (($config['metaconsole'] == 1) && $server_name != '' && defined('METACONSOLE')) {
+                if (($config['metaconsole'] == 1) && $server_name != '' && is_metaconsole()) {
                     metaconsole_restore_db();
                 }
 
@@ -6242,7 +6254,7 @@ function reporting_availability($report, $content, $date=false, $time=false)
             $text = $row['data']['agent'].' ('.$text.')';
 
             // Restore dbconnection
-            if (($config['metaconsole'] == 1) && $server_name != '' && defined('METACONSOLE')) {
+            if (($config['metaconsole'] == 1) && $server_name != '' && is_metaconsole()) {
                 metaconsole_restore_db();
             }
 
@@ -6396,10 +6408,12 @@ function reporting_availability_graph($report, $content, $pdf=false)
     $edge_interval = 10;
 
     if (empty($content['subitems'])) {
-        $slas = db_get_all_rows_field_filter(
-            'treport_content_sla_combined',
-            'id_report_content',
-            $content['id_rc']
+        $slas = io_safe_output(
+            db_get_all_rows_field_filter(
+                'treport_content_sla_combined',
+                'id_report_content',
+                $content['id_rc']
+            )
         );
     } else {
         $slas = $content['subitems'];
@@ -6807,7 +6821,7 @@ function reporting_increment($report, $content)
 
     $return['data'] = [];
 
-    if (defined('METACONSOLE')) {
+    if (is_metaconsole()) {
         $sql1 = 'SELECT datos FROM tagente_datos WHERE id_agente_modulo = '.$id_agent_module.' 
 									 AND utimestamp <= '.(time() - $period).' ORDER BY utimestamp DESC';
         $sql2 = 'SELECT datos FROM tagente_datos WHERE id_agente_modulo = '.$id_agent_module.' ORDER BY utimestamp DESC';
@@ -6845,7 +6859,7 @@ function reporting_increment($report, $content)
         $last_data = db_get_value_sql('SELECT datos FROM tagente_datos WHERE id_agente_modulo = '.$id_agent_module.' ORDER BY utimestamp DESC');
     }
 
-    if (!defined('METACONSOLE')) {
+    if (!is_metaconsole()) {
     }
 
     if ($old_data === false || $last_data === false) {
@@ -6934,7 +6948,7 @@ function reporting_general($report, $content)
     foreach ($generals as $row) {
         // Metaconsole connection
         $server_name = $row['server_name'];
-        if (($config['metaconsole'] == 1) && $server_name != '' && defined('METACONSOLE')) {
+        if (($config['metaconsole'] == 1) && $server_name != '' && is_metaconsole()) {
             $connection = metaconsole_get_connection($server_name);
             if (metaconsole_load_external_db($connection) != NOERR) {
                 // ui_print_error_message ("Error connecting to ".$server_name);
@@ -7085,7 +7099,7 @@ function reporting_general($report, $content)
         $i++;
 
         // Restore dbconnection
-        if (($config['metaconsole'] == 1) && $server_name != '' && defined('METACONSOLE')) {
+        if (($config['metaconsole'] == 1) && $server_name != '' && is_metaconsole()) {
             metaconsole_restore_db();
         }
     }
@@ -10980,10 +10994,10 @@ function reporting_get_stats_servers()
 
     $tdata = [];
     '<span class="big_data">'.format_numeric($server_performance['total_local_modules']).'</span>';
-    $tdata[0] = html_print_image('images/module.png', true, ['title' => __('Total running modules'), 'width' => '25px']);
+    $tdata[0] = html_print_image('images/module.png', true, ['title' => __('Total running modules')]);
     $tdata[1] = '<span class="big_data">'.format_numeric($server_performance['total_modules']).'</span>';
     $tdata[2] = '<span class="med_data">'.format_numeric($server_performance['total_modules_rate'], 2).'</span>';
-    $tdata[3] = html_print_image('images/module.png', true, ['title' => __('Ratio').': '.__('Modules by second'), 'width' => '16px']).'/sec </span>';
+    $tdata[3] = html_print_image('images/module.png', true, ['title' => __('Ratio').': '.__('Modules by second')]).'/sec </span>';
 
     $table_srv->rowclass[] = '';
     $table_srv->data[] = $tdata;
@@ -10995,22 +11009,22 @@ function reporting_get_stats_servers()
     $table_srv->data[] = $tdata;
 
     $tdata = [];
-    $tdata[0] = html_print_image('images/database.png', true, ['title' => __('Local modules'), 'width' => '25px']);
+    $tdata[0] = html_print_image('images/database.png', true, ['title' => __('Local modules')]);
     $tdata[1] = '<span class="big_data">'.format_numeric($server_performance['total_local_modules']).'</span>';
     $tdata[2] = '<span class="med_data">'.format_numeric($server_performance['local_modules_rate'], 2).'</span>';
-    $tdata[3] = html_print_image('images/module.png', true, ['title' => __('Ratio').': '.__('Modules by second'), 'width' => '16px']).'/sec </span>';
+    $tdata[3] = html_print_image('images/module.png', true, ['title' => __('Ratio').': '.__('Modules by second')]).'/sec </span>';
 
     $table_srv->rowclass[] = '';
     $table_srv->data[] = $tdata;
 
     if (isset($server_performance['total_network_modules'])) {
         $tdata = [];
-        $tdata[0] = html_print_image('images/network.png', true, ['title' => __('Network modules'), 'width' => '25px']);
+        $tdata[0] = html_print_image('images/network.png', true, ['title' => __('Network modules')]);
         $tdata[1] = '<span class="big_data">'.format_numeric($server_performance['total_network_modules']).'</span>';
 
         $tdata[2] = '<span class="med_data">'.format_numeric($server_performance['network_modules_rate'], 2).'</span>';
 
-        $tdata[3] = html_print_image('images/module.png', true, ['title' => __('Ratio').': '.__('Modules by second'), 'width' => '16px']).'/sec </span>';
+        $tdata[3] = html_print_image('images/module.png', true, ['title' => __('Ratio').': '.__('Modules by second')]).'/sec </span>';
 
         if ($server_performance['total_remote_modules'] > 10000 && !enterprise_installed()) {
             $tdata[4] = "<div id='remotemodulesmodal' class='publienterprise' title='Community version' style='text-align:left;'><img data-title='Enterprise version' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>";
@@ -11024,11 +11038,11 @@ function reporting_get_stats_servers()
 
     if (isset($server_performance['total_plugin_modules'])) {
         $tdata = [];
-        $tdata[0] = html_print_image('images/plugin.png', true, ['title' => __('Plugin modules'), 'width' => '25px']);
+        $tdata[0] = html_print_image('images/plugin.png', true, ['title' => __('Plugin modules')]);
         $tdata[1] = '<span class="big_data">'.format_numeric($server_performance['total_plugin_modules']).'</span>';
 
         $tdata[2] = '<span class="med_data">'.format_numeric($server_performance['plugin_modules_rate'], 2).'</span>';
-        $tdata[3] = html_print_image('images/module.png', true, ['title' => __('Ratio').': '.__('Modules by second'), 'width' => '16px']).'/sec </span>';
+        $tdata[3] = html_print_image('images/module.png', true, ['title' => __('Ratio').': '.__('Modules by second')]).'/sec </span>';
 
         $table_srv->rowclass[] = '';
         $table_srv->data[] = $tdata;
@@ -11036,11 +11050,11 @@ function reporting_get_stats_servers()
 
     if (isset($server_performance['total_prediction_modules'])) {
         $tdata = [];
-        $tdata[0] = html_print_image('images/chart_bar.png', true, ['title' => __('Prediction modules'), 'width' => '25px']);
+        $tdata[0] = html_print_image('images/chart_bar.png', true, ['title' => __('Prediction modules')]);
         $tdata[1] = '<span class="big_data">'.format_numeric($server_performance['total_prediction_modules']).'</span>';
 
         $tdata[2] = '<span class="med_data">'.format_numeric($server_performance['prediction_modules_rate'], 2).'</span>';
-        $tdata[3] = html_print_image('images/module.png', true, ['title' => __('Ratio').': '.__('Modules by second'), 'width' => '16px']).'/sec </span>';
+        $tdata[3] = html_print_image('images/module.png', true, ['title' => __('Ratio').': '.__('Modules by second')]).'/sec </span>';
 
         $table_srv->rowclass[] = '';
         $table_srv->data[] = $tdata;
@@ -11048,11 +11062,11 @@ function reporting_get_stats_servers()
 
     if (isset($server_performance['total_wmi_modules'])) {
         $tdata = [];
-        $tdata[0] = html_print_image('images/wmi.png', true, ['title' => __('WMI modules'), 'width' => '25px']);
+        $tdata[0] = html_print_image('images/wmi.png', true, ['title' => __('WMI modules')]);
         $tdata[1] = '<span class="big_data">'.format_numeric($server_performance['total_wmi_modules']).'</span>';
 
         $tdata[2] = '<span class="med_data">'.format_numeric($server_performance['wmi_modules_rate'], 2).'</span>';
-        $tdata[3] = html_print_image('images/module.png', true, ['title' => __('Ratio').': '.__('Modules by second'), 'width' => '16px']).'/sec </span>';
+        $tdata[3] = html_print_image('images/module.png', true, ['title' => __('Ratio').': '.__('Modules by second')]).'/sec </span>';
 
         $table_srv->rowclass[] = '';
         $table_srv->data[] = $tdata;
@@ -11060,11 +11074,11 @@ function reporting_get_stats_servers()
 
     if (isset($server_performance['total_web_modules'])) {
         $tdata = [];
-        $tdata[0] = html_print_image('images/world.png', true, ['title' => __('Web modules'), 'width' => '25px']);
+        $tdata[0] = html_print_image('images/world.png', true, ['title' => __('Web modules')]);
         $tdata[1] = '<span class="big_data">'.format_numeric($server_performance['total_web_modules']).'</span>';
 
         $tdata[2] = '<span class="med_data">'.format_numeric($server_performance['web_modules_rate'], 2).'</span>';
-        $tdata[3] = html_print_image('images/module.png', true, ['title' => __('Ratio').': '.__('Modules by second'), 'width' => '16px']).'/sec </span>';
+        $tdata[3] = html_print_image('images/module.png', true, ['title' => __('Ratio').': '.__('Modules by second')]).'/sec </span>';
 
         $table_srv->rowclass[] = '';
         $table_srv->data[] = $tdata;
@@ -11082,7 +11096,6 @@ function reporting_get_stats_servers()
         true,
         [
             'title' => __('Total events'),
-            'width' => '25px',
         ]
     );
     $tdata[1] = '<span class="big_data" id="total_events">'.html_print_image('images/spinner.gif', true).'</span>';

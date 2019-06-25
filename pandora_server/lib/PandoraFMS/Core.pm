@@ -3352,7 +3352,7 @@ sub pandora_event ($$$$$$$$$$;$$$$$$$$$$$) {
 	# Validate events with the same event id
 	if (defined ($id_extra) && $id_extra ne '') {
 		logger($pa_config, "Updating events with extended id '$id_extra'.", 10);
-		db_do ($dbh, 'UPDATE ' . $event_table . ' SET estado = 1, ack_utimestamp = ? WHERE estado = 0 AND id_extra=?', $utimestamp, $id_extra);
+		db_do ($dbh, 'UPDATE ' . $event_table . ' SET estado = 1, ack_utimestamp = ? WHERE estado IN (0,2) AND id_extra=?', $utimestamp, $id_extra);
 	}
 	
 	# Create the event
@@ -4810,7 +4810,7 @@ sub pandora_process_event_replication ($) {
 			}
 			
 			# Get server id on metaconsole
-			my $metaconsole_server_id = enterprise_hook('get_metaconsole_setup_server_id', [$dbh_metaconsole, safe_input($pa_config->{'servername'})]);
+			my $metaconsole_server_id = enterprise_hook('get_metaconsole_setup_server_id', [$dbh]);
 		
 			# If the server name is not found in metaconsole setup: abort
 			if($metaconsole_server_id == -1) {

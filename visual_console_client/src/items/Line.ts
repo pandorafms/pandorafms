@@ -1,4 +1,4 @@
-import { UnknownObject, Position, Size } from "../types";
+import { AnyObject, Position, Size, ItemMeta } from "../lib/types";
 import { parseIntOr, notEmptyStringOr } from "../lib";
 import Item, { ItemType, ItemProps, itemBasePropsDecoder } from "../Item";
 
@@ -25,7 +25,7 @@ interface LineProps extends ItemProps {
  * @throws Will throw a TypeError if some property
  * is missing from the raw object or have an invalid type.
  */
-export function linePropsDecoder(data: UnknownObject): LineProps | never {
+export function linePropsDecoder(data: AnyObject): LineProps | never {
   const props: LineProps = {
     ...itemBasePropsDecoder({ ...data, width: 1, height: 1 }), // Object spread. It will merge the properties of the two objects.
     type: ItemType.LINE_ITEM,
@@ -71,17 +71,20 @@ export default class Line extends Item<LineProps> {
   /**
    * @override
    */
-  public constructor(props: LineProps) {
+  public constructor(props: LineProps, meta: ItemMeta) {
     /*
      * We need to override the constructor cause we need to obtain
      * the
      * box size and position from the start and finish points
      * of the line.
      */
-    super({
-      ...props,
-      ...Line.extractBoxSizeAndPosition(props)
-    });
+    super(
+      {
+        ...props,
+        ...Line.extractBoxSizeAndPosition(props)
+      },
+      meta
+    );
   }
 
   /**

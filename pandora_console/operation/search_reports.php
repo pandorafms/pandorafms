@@ -35,7 +35,7 @@ if ($reports === false || !$searchReports) {
     $table->head[1] = __('Description');
     $table->head[2] = __('HTML');
     $table->head[3] = __('XML');
-    enterprise_hook('load_custom_reporting_1');
+    enterprise_hook('load_custom_reporting_1', [$table]);
 
     $table->align = [];
     $table->align[2] = 'center';

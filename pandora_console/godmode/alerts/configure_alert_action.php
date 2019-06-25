@@ -317,9 +317,9 @@ $(document).ready (function () {
         jQuery.post (<?php echo "'".ui_get_full_url('ajax.php', false, false, false)."'"; ?>,
             values,
             function (data, status) {
-                original_command = js_html_entity_decode (data["command"]);
+                original_command = data["command"];
                 render_command_preview (original_command);
-                command_description = js_html_entity_decode (data["description"]);
+                command_description = data["description"];
                 render_command_description(command_description);
                 
                 var max_fields = parseInt('<?php echo $config['max_macro_fields']; ?>');

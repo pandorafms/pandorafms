@@ -2942,15 +2942,15 @@ function ui_print_datatable(array $parameters)
         }
 
         if (!isset($parameters['order']['field'])) {
-            $order = 1;
+            $order = 0;
         } else {
             $order = array_search(
                 $parameters['order']['field'],
                 $parameters['columns']
             );
 
-            if (empty($order)) {
-                $order = 1;
+            if ($order === false) {
+                $order = 0;
             }
         }
 

@@ -688,7 +688,7 @@ function update_event(table, id_evento, type, event_rep, row) {
       var diff_s = diff_g / 1000;
       if (processed >= $(".chk_val:checked").length) {
         // If operation takes less than 2 seconds, redraw.
-        if (diff_s < 2) {
+        if (diff_s < 2 || $(".chk_val:checked").length > 1) {
           redraw = true;
         }
         if (redraw) {

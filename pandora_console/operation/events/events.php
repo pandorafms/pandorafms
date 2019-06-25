@@ -294,6 +294,9 @@ if (is_ajax()) {
                         );
 
                         $tmp->data = format_numeric($tmp->data, 1);
+
+                        $tmp->b64 = base64_encode(json_encode($tmp));
+
                         $carry[] = $tmp;
                         return $carry;
                     }
@@ -1599,7 +1602,7 @@ function process_datatables_item(item) {
 
     // Add event severity to end of text.
     evn = '<a href="javascript:" onclick="show_event_dialog(\'';
-    evn += btoa(JSON.stringify(item))+'\','+$("#group_rep").val()+');">';
+    evn += item.b64+'\','+$("#group_rep").val()+');">';
     // Grouped events.
     if(item.event_rep && item.event_rep > 1) {
         evn += '('+item.event_rep+') ';
@@ -1705,7 +1708,7 @@ function process_datatables_item(item) {
     /* Options */
     // Show more.
     item.options = '<a href="javascript:" onclick="show_event_dialog(\'';
-    item.options += btoa(JSON.stringify(item))+'\','+$("#group_rep").val();
+    item.options += item.b64+'\','+$("#group_rep").val();
     item.options += ')" ><?php echo html_print_image('images/eye.png', true, ['title' => __('Show more')]); ?></a>';
 
     <?php

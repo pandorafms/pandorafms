@@ -268,6 +268,7 @@ function print_inputs($values=null)
             'value'       => $values['identifier'],
             'disabled'    => (bool) $values['identifier'],
             'return'      => true,
+            'script'      => 'alert(\'puta\')',
         ]
     );
     $return .= html_print_input(
@@ -290,9 +291,9 @@ function print_inputs($values=null)
             'type'        => 'select',
             'script'      => 'calculate_inputs()',
             'fields'      => [
-                'CUSTOM' => __('Custom'),
-                'AWS'    => __('Aws'),
-                'AZURE'  => __('Azure'),
+                // 'CUSTOM' => __('Custom'),
+                'AWS' => __('Aws'),
+                // 'AZURE'  => __('Azure'),
                 // 'GOOGLE' => __('Google'),
             ],
             'selected'    => $values['product'],

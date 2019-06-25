@@ -49,16 +49,21 @@ if (! check_acl($config['id_user'], 0, 'PM')) {
 // Required files.
 ui_require_css_file('credential_store');
 require_once $config['homedir'].'/include/functions_credential_store.php';
-
+require_once $config['homedir'].'/include/functions_io.php';
 
 if (is_ajax()) {
     $draw = get_parameter('draw', 0);
     $filter = get_parameter('filter', []);
     $get_key = get_parameter('get_key', 0);
+    $new_form = get_parameter('new_form', 0);
     $new_key = get_parameter('new_key', 0);
     $update_key = get_parameter('update_key', 0);
     $delete_key = get_parameter('delete_key', 0);
 
+    if ($new_form) {
+        echo print_inputs();
+        exit;
+    }
 
     if ($delete_key) {
         $identifier = get_parameter('identifier', null);
@@ -130,6 +135,9 @@ if (is_ajax()) {
         $values = [];
         foreach ($data as $key => $value) {
             $values[$key] = base64_decode($value);
+            if ($key == 'identifier') {
+                $values[$key] = preg_replace('/\s+/', '-', trim($values[$key]));
+            }
         }
 
         $identifier = $values['identifier'];
@@ -318,8 +326,7 @@ try {
 
 // Auxiliar div.
 $new = '<div id="new_key" style="display: none"><form id="form_new">';
-$new .= print_inputs();
-$new .= '</form>    </div>';
+$new .= '</form></div>';
 $details = '<div id="info_key" style="display: none"><form id="form_update">';
 $details .= '</form></div>';
 $aux = '<div id="aux" style="display: none"></div>';
@@ -386,7 +393,7 @@ echo '</div>';
                         if (!failed) {
                             dt_<?php echo $table_id; ?>.draw(0);
                             $(".ui-dialog-content").dialog("close");
-                            $('.ui-dialog-content').remove();
+                            cleanupDOM();
                         } else {
                             $(this).dialog('close');
                         }
@@ -407,7 +414,8 @@ echo '</div>';
                     text: '<?php echo __('Cancel'); ?>',
                     click: function(e) {
                         $(this).dialog('close');
-                        $(this).remove();
+                        cleanupDOM();
+
                     }
                 },
                 {
@@ -464,7 +472,7 @@ echo '</div>';
                             text: '<?php echo __('Cancel'); ?>',
                             click: function(e) {
                                 $(this).dialog('close');
-                                $(this).remove();
+                                cleanupDOM();
                             }
                         },
                         {
@@ -503,6 +511,15 @@ echo '</div>';
         })
     }
 
+    function cleanupDOM() {
+        $('#div-identifier').empty();
+        $('#div-product').empty();
+        $('#div-username').empty();
+        $('#div-password').empty();
+        $('#div-extra_1').empty();
+        $('#div-extra_2').empty();
+    }
+
     function calculate_inputs() {
         if ($('#product :selected').val() == "CUSTOM") {
             $('#div-username label').text('<?php echo __('Username'); ?>');
@@ -528,66 +545,82 @@ echo '</div>';
 
     function add_key() {
         // Clear form.
-        $('#form_new :input').each(function() {
-            $(this).val('')
-        });
-        $('#id_group').val(0);
-        $('#product').val('CUSTOM');
-
-        $('#product').on('change', function() {
-            calculate_inputs()
-        });
-
-        // Show form.
-        $('#new_key').dialog({
-            width: 580,
-            height: 400,
-            position: {
-                my: 'center',
-                at: 'center',
-                of: window,
-                collision: 'fit'
+        $('#form_update').empty();
+        $('#form_update').html('Loading...');
+        $.ajax({
+            method: 'post',
+            url: '<?php echo ui_get_full_url('ajax.php', false, false, false); ?>',
+            data: {
+                page: 'godmode/groups/credential_store',
+                new_form: 1
             },
-            title: "<?php echo __('Register new key into keystore'); ?>",
-            buttons: [
-                {
-                    class: 'ui-widget ui-state-default ui-corner-all ui-button-text-only sub upd submit-cancel',
-                    text: "<?php echo __('Cancel'); ?>",
-                    click: function(e) {
-                        $(this).dialog('close');
-                        $(this).remove();
-                    }
-                },
-                {
-                    class: 'ui-widget ui-state-default ui-corner-all ui-button-text-only sub ok submit-next',
-                    text: 'OK',
-                    click: function(e) {
-                        var values = {};
+            success: function(data) {
+                $('#form_new').html(data);
+                $('#id_group').val(0);
+                // By default AWS.
+                $('#product').val('AWS');
+                calculate_inputs();
 
-                        $('#form_new :input').each(function() {
-                            values[this.name] = btoa($(this).val());
-                        });
+                $('#product').on('change', function() {
+                    calculate_inputs()
+                });
 
-                        $.ajax({
-                            method: 'post',
-                            url: '<?php echo ui_get_full_url('ajax.php', false, false, false); ?>',
-                            data: {
-                                page: 'godmode/groups/credential_store',
-                                new_key: 1,
-                                values: values
-                            },
-                            datatype: "json",
-                            success: function (data) {
-                                handle_response(data);
-                            },
-                            error: function(e) {
-                                handle_response(e);
+                // Show form.
+                $('#new_key').dialog({
+                    width: 580,
+                    height: 400,
+                    position: {
+                        my: 'center',
+                        at: 'center',
+                        of: window,
+                        collision: 'fit'
+                    },
+                    title: "<?php echo __('Register new key into keystore'); ?>",
+                    buttons: [
+                        {
+                            class: 'ui-widget ui-state-default ui-corner-all ui-button-text-only sub upd submit-cancel',
+                            text: "<?php echo __('Cancel'); ?>",
+                            click: function(e) {
+                                $(this).dialog('close');
+                                cleanupDOM();
                             }
-                        });
-                    }
-                },
-            ]
-        });
+                        },
+                        {
+                            class: 'ui-widget ui-state-default ui-corner-all ui-button-text-only sub ok submit-next',
+                            text: 'OK',
+                            click: function(e) {
+                                var values = {};
+
+                                console.log($('#form_new'));
+
+                                $('#form_new :input').each(function() {
+                                    values[this.name] = btoa($(this).val());
+                                });
+
+                                $.ajax({
+                                    method: 'post',
+                                    url: '<?php echo ui_get_full_url('ajax.php', false, false, false); ?>',
+                                    data: {
+                                        page: 'godmode/groups/credential_store',
+                                        new_key: 1,
+                                        values: values
+                                    },
+                                    datatype: "json",
+                                    success: function (data) {
+                                        handle_response(data);
+                                    },
+                                    error: function(e) {
+                                        handle_response(e);
+                                    }
+                                });
+                            }
+                        },
+                    ]
+                });
+            }
+        })
+
+
     }
     $(document).ready(function(){
 

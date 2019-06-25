@@ -277,7 +277,7 @@ function print_inputs($values=null)
             'id'          => 'id_group',
             'input_class' => 'flex-row',
             'type'        => 'select_groups',
-            'selected'    => $values['id_grupo'],
+            'selected'    => $values['id_group'],
             'return'      => true,
             'class'       => 'w50p',
         ]
@@ -288,6 +288,7 @@ function print_inputs($values=null)
             'name'        => 'product',
             'input_class' => 'flex-row',
             'type'        => 'select',
+            'script'      => 'calculate_inputs()',
             'fields'      => [
                 'CUSTOM' => __('Custom'),
                 'AWS'    => __('Aws'),

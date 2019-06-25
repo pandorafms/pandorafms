@@ -386,6 +386,7 @@ echo '</div>';
                         if (!failed) {
                             dt_<?php echo $table_id; ?>.draw(0);
                             $(".ui-dialog-content").dialog("close");
+                            $('.ui-dialog-content').remove();
                         } else {
                             $(this).dialog('close');
                         }
@@ -406,6 +407,7 @@ echo '</div>';
                     text: '<?php echo __('Cancel'); ?>',
                     click: function(e) {
                         $(this).dialog('close');
+                        $(this).remove();
                     }
                 },
                 {
@@ -462,6 +464,7 @@ echo '</div>';
                             text: '<?php echo __('Cancel'); ?>',
                             click: function(e) {
                                 $(this).dialog('close');
+                                $(this).remove();
                             }
                         },
                         {
@@ -552,6 +555,7 @@ echo '</div>';
                     text: "<?php echo __('Cancel'); ?>",
                     click: function(e) {
                         $(this).dialog('close');
+                        $(this).remove();
                     }
                 },
                 {

@@ -583,7 +583,24 @@ if (!empty($interfaces_list)) {
     $table->data[0][2] = '<b>'.__('Modules').'</b>';
 
     $table->data[1][0] = html_print_select($interfaces_list, 'id_snmp[]', 0, false, '', '', true, true, true, '', false, 'width:500px; overflow: auto;');
-    $table->data[1][1] = html_print_image('images/darrowright.png', true);
+
+    $table->data[1][1] = __('When selecting interfaces');
+    $table->data[1][1] .= '<br>';
+    $table->data[1][1] .= html_print_select(
+        [
+            1 => __('Show common modules'),
+            0 => __('Show all modules'),
+        ],
+        'modules_selection_mode',
+        1,
+        false,
+        '',
+        '',
+        true,
+        false,
+        false
+    );
+
     $table->data[1][2] = html_print_select([], 'module[]', 0, false, '', 0, true, true, true, '', false, 'width:200px;');
     $table->data[1][2] .= html_print_input_hidden('agent', $id_agent, true);
 
@@ -628,10 +645,17 @@ $(document).ready (function () {
         $("#no_snmp").hide ();
         $("#form_interfaces").hide ();
     });
+
+    // When select interfaces changes
+    $("#modules_selection_mode").change (function() {
+        $("#id_snmp").trigger('change');
+    });
+
 });
 
 function snmp_changed_by_multiple_snmp (event, id_snmp, selected) {
     var idSNMP = Array();
+    var get_common_modules = $("#modules_selection_mode option:selected").val();
 
     jQuery.each ($("#id_snmp option:selected"), function (i, val) {
         idSNMP.push($(val).val());
@@ -643,6 +667,7 @@ function snmp_changed_by_multiple_snmp (event, id_snmp, selected) {
     jQuery.post ('ajax.php',
         {"page" : "godmode/agentes/agent_manager",
             "get_modules_json_for_multiple_snmp": 1,
+            "get_common_modules" : get_common_modules,
             "id_snmp[]": idSNMP,
             "id_snmp_serialize": $("#hidden-id_snmp_serialize").val()
         },

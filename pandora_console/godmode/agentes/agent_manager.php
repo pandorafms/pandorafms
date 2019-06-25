@@ -77,6 +77,7 @@ if (is_ajax()) {
     }
 
     $get_modules_json_for_multiple_snmp = (bool) get_parameter('get_modules_json_for_multiple_snmp', 0);
+    $get_common_modules = (bool) get_parameter('get_common_modules', 1);
     if ($get_modules_json_for_multiple_snmp) {
         include_once 'include/graphs/functions_utils.php';
 
@@ -100,7 +101,16 @@ if (is_ajax()) {
             if ($out === false) {
                 $out = $oid_snmp;
             } else {
-                $out = array_intersect($out, $oid_snmp);
+                $commons = array_intersect($out, $oid_snmp);
+                if ($get_common_modules) {
+                    // Common modules is selected (default)
+                    $out = $commons;
+                } else {
+                    // All modules is selected
+                    $array1 = array_diff($out, $oid_snmp);
+                    $array2 = array_diff($oid_snmp, $out);
+                    $out = array_merge($commons, $array1, $array2);
+                }
             }
 
             $oid_snmp = [];

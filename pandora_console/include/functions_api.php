@@ -15087,10 +15087,10 @@ function remove_agent_from_policy($id_policy, $use_agent_name, $params)
     }
 
     $return = policies_change_delete_pending_agent($policy_agent['id']);
-    $data = __('Successfully added to delete pending id agent %d to id policy %d.', $id2, $id);
+    $data = __('Successfully added to delete pending id agent %d to id policy %d.', $id_agent, $id_policy);
 
     if ($return === false) {
-        returnError('error_delete_policy_agent', 'Could not be deleted id agent %d from id policy %d', $id2, $id);
+        returnError('error_delete_policy_agent', 'Could not be deleted id agent %d from id policy %d', $id_agent, $id_policy);
     } else {
         returnData('string', ['type' => 'string', 'data' => $data]);
     }

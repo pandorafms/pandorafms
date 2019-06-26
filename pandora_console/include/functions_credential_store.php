@@ -403,7 +403,7 @@ function credentials_list_accounts($product)
     if (!isset($user_groups)) {
         $user_groups = users_get_groups(
             $config['id_user'],
-            'AW'
+            'AR'
         );
 
         // Always add group 'ALL' because 'ALL' group credentials

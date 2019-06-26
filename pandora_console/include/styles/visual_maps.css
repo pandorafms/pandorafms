@@ -3,6 +3,37 @@
  * - VISUAL MAPS 													-
  * ---------------------------------------------------------------------
  */
+
+div#vc-controls {
+  position: fixed;
+  top: 30px;
+  right: 20px;
+}
+
+div#vc-controls div.vc-title,
+div#vc-controls div.vc-refr {
+  margin-top: 15px;
+  margin-left: 3px;
+  margin-right: 3px;
+}
+div#vc-controls div.vc-refr > div {
+  display: inline;
+}
+div#vc-controls img.vc-qr {
+  margin-top: 12px;
+  margin-left: 8px;
+  margin-right: 8px;
+}
+
+.visual-console-edit-controls {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.visual-console-edit-controls > span {
+  margin: 4px;
+}
+
 input.vs_button_ghost {
   background-color: transparent;
   border: 1px solid #82b92e;

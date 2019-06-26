@@ -267,10 +267,10 @@ if ($id_agent_module) {
     $cron_interval = explode(' ', $module['cron_interval']);
     if (isset($cron_interval[4])) {
         $minute_from = $cron_interval[0];
-        $min = explode('-', $minute_from);
-        $minute_from = $min[0];
-        if (isset($min[1])) {
-            $minute_to = $min[1];
+        $minute = explode('-', $minute_from);
+        $minute_from = $minute[0];
+        if (isset($minute[1])) {
+            $minute_to = $minute[1];
         }
 
         $hour_from = $cron_interval[1];

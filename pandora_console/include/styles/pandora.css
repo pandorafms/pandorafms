@@ -1171,7 +1171,6 @@ div.title_line {
 
 #menu_tab {
   margin-right: 10px;
-  min-width: 510px;
 }
 
 #menu_tab .mn,
@@ -3552,31 +3551,6 @@ div.div_groups_status {
 }
 */
 
-/*
- * ---------------------------------------------------------------------
- * - VISUAL MAPS 		  											-
- * ---------------------------------------------------------------------
- */
-div#vc-controls {
-  position: fixed;
-  top: 30px;
-  right: 20px;
-}
-
-div#vc-controls div.vc-title,
-div#vc-controls div.vc-refr {
-  margin-top: 6px;
-  margin-left: 3px;
-  margin-right: 3px;
-}
-div#vc-controls div.vc-refr > div {
-  display: inline;
-}
-div#vc-controls img.vc-qr {
-  margin-top: 6px;
-  margin-left: 8px;
-  margin-right: 8px;
-}
 div.simple_value > span.text > p,
 div.simple_value > span.text > p > span > strong,
 div.simple_value > span.text > p > strong,

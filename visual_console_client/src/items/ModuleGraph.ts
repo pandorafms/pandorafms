@@ -58,6 +58,15 @@ export default class ModuleGraph extends Item<ModuleGraphProps> {
     super.resizeElement(width, 0);
   }
 
+  /**
+   * @override Item.initResizementListener. To disable the functionality.
+   * Start the resizement funtionality.
+   * @param element Element to move inside its container.
+   */
+  protected initResizementListener(): void {
+    // No-Op. Disable the resizement functionality for this item.
+  }
+
   protected createDomElement(): HTMLElement {
     const element = document.createElement("div");
     element.className = "module-graph";

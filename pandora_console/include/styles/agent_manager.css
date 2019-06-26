@@ -119,8 +119,8 @@ a#qr_code_agent_view {
   border-bottom-right-radius: 0px;
 }
 
-.adv_right,
-.adv_left,
+.agent_av_opt_right,
+.agent_av_opt_left,
 .secondary_groups_list {
   flex: 1;
 }
@@ -150,8 +150,8 @@ a#qr_code_agent_view {
   margin: 1em;
 }
 
-.adv_left input,
-.adv_left select {
+.agent_av_opt_left input,
+.agent_av_opt_left select {
   width: 100%;
 }
 

@@ -248,7 +248,7 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
    * Start the resizement funtionality.
    * @param element Element to move inside its container.
    */
-  private initResizementListener(element: HTMLElement): void {
+  protected initResizementListener(element: HTMLElement): void {
     this.removeResizement = addResizementListener(
       element,
       (width: Size["width"], height: Size["height"]) => {

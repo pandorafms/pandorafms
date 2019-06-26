@@ -777,7 +777,7 @@ $table_adv_options = '
                 '.$adv_secondary_groups_right.'
             </div>
         </div>
-<div class="adv_right" >
+<div class="agent_av_opt_right" >
         '.$table_adv_parent.$table_adv_module_mode.$table_adv_cascade;
 
 if ($new_agent) {
@@ -788,7 +788,7 @@ if ($new_agent) {
 $table_adv_options .= '</div>';
 
 $table_adv_options .= '
-        <div class="adv_left" >
+        <div class="agent_av_opt_left" >
         '.$table_adv_gis.$table_adv_agent_icon.$table_adv_url.$table_adv_quiet.$table_adv_status.$table_adv_remote.$table_adv_safe.'
         </div>';
 

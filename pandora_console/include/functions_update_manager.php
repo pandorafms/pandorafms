@@ -468,7 +468,7 @@ function registration_wiz_modal(
         __('Cancel'),
         'cancel_registration',
         false,
-        'class="ui-widget ui-state-default ui-corner-all ui-button-text-only sub upd submit-cancel" style="color: red; width:100px;"',
+        'class="ui-widget ui-state-default ui-corner-all ui-button-text-only sub upd submit-cancel"',
         true
     );
     $output .= '</div>';

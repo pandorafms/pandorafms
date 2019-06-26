@@ -62,6 +62,7 @@ if (file_exists('languages/'.$user_language.'.mo')) {
         <link rel="stylesheet" href="styles/pandora.css" type="text/css" />
         <link rel="stylesheet" href="styles/pandora_minimal.css" type="text/css" />
         <link rel="stylesheet" href="styles/js/jquery-ui.min.css" type="text/css" />
+        <link rel="stylesheet" href="styles/js/jquery-ui_custom.css" type="text/css" />
         <script language="javascript" type='text/javascript' src='javascript/pandora.js'></script>
         <script language="javascript" type='text/javascript' src='javascript/jquery-3.3.1.min.js'></script>
         <script language="javascript" type='text/javascript' src='javascript/jquery.pandora.js'></script>

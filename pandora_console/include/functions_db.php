@@ -2023,3 +2023,58 @@ function db_check_minor_relase_available_to_um($package, $ent, $offline)
         return false;
     }
 }
+
+
+/**
+ * Tries to get a lock with current name.
+ *
+ * @param string  $lockname        Lock name.
+ * @param integer $expiration_time Expiration time.
+ *
+ * @return integer 1 - lock OK, able to continue executing
+ *                 0 - already locked by another process.
+ *                 NULL: something really bad happened
+ */
+function db_get_lock($lockname, $expiration_time=86400)
+{
+    $lock_status = db_get_value_sql(
+        sprintf(
+            'SELECT IS_FREE_LOCK("%s")',
+            $lockname
+        )
+    );
+
+    if ($lock_status == 1) {
+        $lock_status = db_get_value_sql(
+            sprintf(
+                'SELECT GET_LOCK("%s", %d)',
+                $lockname,
+                $expiration_time
+            )
+        );
+
+        return $lock_status;
+    }
+
+    return 0;
+}
+
+
+/**
+ * Release a previously defined lock.
+ *
+ * @param string $lockname Lock name.
+ *
+ * @return integer 1 Lock released.
+ *                 0 cannot release (not owned).
+ *                 NULL lock does not exist.
+ */
+function db_release_lock($lockname)
+{
+    return db_get_value_sql(
+        sprintf(
+            'SELECT RELEASE_LOCK("%s")',
+            $lockname
+        )
+    );
+}

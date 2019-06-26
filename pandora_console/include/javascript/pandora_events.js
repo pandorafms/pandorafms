@@ -231,7 +231,6 @@ function get_response(response_id) {
     type: "POST",
     url: $("#hidden-ajax_file").val(),
     async: false,
-    timeout: 10000,
     dataType: "json",
     success: function(data) {
       response = data;
@@ -255,7 +254,6 @@ function get_response_params(response_id) {
     type: "POST",
     url: $("#hidden-ajax_file").val(),
     async: false,
-    timeout: 10000,
     dataType: "json",
     success: function(data) {
       response_params = data;
@@ -279,7 +277,6 @@ function get_response_description(response_id) {
     type: "POST",
     url: $("#hidden-ajax_file").val(),
     async: false,
-    timeout: 10000,
     dataType: "html",
     success: function(data) {
       response_description = data;
@@ -305,7 +302,6 @@ function get_event_name(event_id, meta, history) {
     type: "POST",
     url: $("#hidden-ajax_file").val(),
     async: false,
-    timeout: 10000,
     dataType: "html",
     success: function(data) {
       name = data;
@@ -349,7 +345,6 @@ function get_response_target(
     type: "POST",
     url: $("#hidden-ajax_file").val(),
     async: false,
-    timeout: 10000,
     dataType: "html",
     success: function(data) {
       target = data;
@@ -394,7 +389,6 @@ function perform_response(target, response_id) {
     type: "POST",
     url: $("#hidden-ajax_file").val(),
     async: true,
-    timeout: 10000,
     dataType: "html",
     success: function(data) {
       var out = data.replace(/[\n|\r]/g, "<br>");
@@ -424,7 +418,6 @@ function perform_response_massive(target, response_id, out_iterator) {
     type: "POST",
     url: $("#hidden-ajax_file").val(),
     async: true,
-    timeout: 10000,
     dataType: "html",
     success: function(data) {
       var out = data.replace(/[\n|\r]/g, "<br>");
@@ -460,7 +453,6 @@ function event_change_status(event_ids) {
     type: "POST",
     url: $("#hidden-ajax_file").val(),
     async: true,
-    timeout: 10000,
     dataType: "html",
     success: function(data) {
       $("#button-status_button").removeAttr("disabled");
@@ -499,7 +491,6 @@ function event_change_owner() {
     type: "POST",
     url: $("#hidden-ajax_file").val(),
     async: true,
-    timeout: 10000,
     dataType: "html",
     success: function(data) {
       $("#button-owner_button").removeAttr("disabled");
@@ -553,13 +544,11 @@ function event_comment() {
     type: "POST",
     url: $("#hidden-ajax_file").val(),
     async: true,
-    timeout: 10000,
     dataType: "html",
     success: function(data) {
       $("#button-comment_button").removeAttr("disabled");
-      $("#response_loading").show();
-      dt_events.draw(false);
-      show_event_dialog(current_event, "comments", data);
+      $("#response_loading").hide();
+      $("#link_comments").click();
     }
   });
 
@@ -681,7 +670,6 @@ function update_event(table, id_evento, type, event_rep, row) {
   // Update events matching current filters and id_evento selected.
   $.ajax({
     async: true,
-    timeout: 10000,
     type: "POST",
     url: $("#hidden-ajax_file").val(),
     data: {
@@ -700,7 +688,7 @@ function update_event(table, id_evento, type, event_rep, row) {
       var diff_s = diff_g / 1000;
       if (processed >= $(".chk_val:checked").length) {
         // If operation takes less than 2 seconds, redraw.
-        if (diff_s < 2) {
+        if (diff_s < 2 || $(".chk_val:checked").length > 1) {
           redraw = true;
         }
         if (redraw) {
@@ -722,6 +710,7 @@ function validate_event(table, id_evento, event_rep, row) {
   var button = document.getElementById("val-" + id_evento);
   if (!button) {
     // Button does not exist. Ignore.
+    processed += 1;
     return;
   }
 
@@ -734,6 +723,7 @@ function in_process_event(table, id_evento, event_rep, row) {
   var button = document.getElementById("proc-" + id_evento);
   if (!button) {
     // Button does not exist. Ignore.
+    processed += 1;
     return;
   }
 
@@ -752,6 +742,7 @@ function delete_event(table, id_evento, event_rep, row) {
   var button = document.getElementById("del-" + id_evento);
   if (!button) {
     // Button does not exist. Ignore.
+    processed += 1;
     return;
   }
 

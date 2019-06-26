@@ -406,6 +406,8 @@ div.form_message_alert ul li input {
 }
 
 div.form_message_alert ul li label {
+  display: inline-block;
+  width: 145px;
   font-size: 10pt;
   padding-right: 20px;
 }

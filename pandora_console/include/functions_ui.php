@@ -760,6 +760,12 @@ function ui_print_os_icon(
         $subfolder .= '/so_big_icons';
     }
 
+    if (is_metaconsole()) {
+        $no_in_meta = true;
+    } else {
+        $no_in_meta = false;
+    }
+
     $icon = (string) db_get_value('icon_name', 'tconfig_os', 'id_os', (int) $id_os);
     $os_name = get_os_name($id_os);
     if (empty($icon)) {
@@ -770,7 +776,7 @@ function ui_print_os_icon(
                 $options,
                 true,
                 $relative,
-                false,
+                $no_in_meta,
                 true
             );
         } else {
@@ -778,13 +784,13 @@ function ui_print_os_icon(
         }
     } else if ($apply_skin) {
         if ($only_src) {
-            $output = html_print_image('images/'.$subfolder.'/'.$icon, true, $options, true, $relative, false, true);
+            $output = html_print_image('images/'.$subfolder.'/'.$icon, true, $options, true, $relative, $no_in_meta, true);
         } else {
             if (!isset($options['title'])) {
                 $options['title'] = $os_name;
             }
 
-            $output = html_print_image('images/'.$subfolder.'/'.$icon, true, $options, false, $relative, false, true);
+            $output = html_print_image('images/'.$subfolder.'/'.$icon, true, $options, false, $relative, $no_in_meta, true);
         }
     } else {
         // $output = "<img src='images/os_icons/" . $icon . "' alt='" . $os_name . "' title='" . $os_name . "'>";
@@ -2938,15 +2944,15 @@ function ui_print_datatable(array $parameters)
         }
 
         if (!isset($parameters['order']['field'])) {
-            $order = 1;
+            $order = 0;
         } else {
             $order = array_search(
                 $parameters['order']['field'],
                 $parameters['columns']
             );
 
-            if (empty($order)) {
-                $order = 1;
+            if ($order === false) {
+                $order = 0;
             }
         }
 

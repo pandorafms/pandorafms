@@ -75,13 +75,73 @@ $graphic_event_group = (bool) get_parameter('graphic_event_group');
 $get_table_response_command = (bool) get_parameter('get_table_response_command');
 $save_filter_modal = get_parameter('save_filter_modal', 0);
 $load_filter_modal = get_parameter('load_filter_modal', 0);
-$save_filter = get_parameter('save_filter', 0);
 $get_filter_values = get_parameter('get_filter_values', 0);
 $update_event_filter = get_parameter('update_event_filter', 0);
 $save_event_filter = get_parameter('save_event_filter', 0);
 $in_process_event = get_parameter('in_process_event', 0);
 $validate_event = get_parameter('validate_event', 0);
 $delete_event = get_parameter('delete_event', 0);
+$get_event_filters = get_parameter('get_event_filters', 0);
+$get_comments = get_parameter('get_comments', 0);
+
+if ($get_comments) {
+    $event = get_parameter('event', false);
+    $filter = get_parameter('filter', false);
+
+    if ($event === false) {
+        return __('Failed to retrieve comments');
+    }
+
+    if ($filter['group_rep'] == 1) {
+        $events = events_get_all(
+            ['te.*'],
+            // Filter.
+            $filter,
+            // Offset.
+            null,
+            // Limit.
+            null,
+            // Order.
+            null,
+            // Sort_field.
+            null,
+            // History.
+            $filter['history'],
+            // Return_sql.
+            false,
+            // Having.
+            sprintf(
+                ' HAVING max_id_evento = %d',
+                $event['id_evento']
+            )
+        );
+        if ($events !== false) {
+            $event = $events[0];
+        }
+    } else {
+        $events = events_get_event(
+            $event['id_evento'],
+            false,
+            $meta,
+            $history
+        );
+
+        if ($events !== false) {
+            $event = $events[0];
+        }
+    }
+
+    echo events_page_comments($event, true);
+
+    return;
+}
+
+if ($get_event_filters) {
+    $event_filter = events_get_event_filter_select();
+
+    echo io_json_mb_encode($event_filter);
+    return;
+}
 
 // Delete event (filtered or not).
 if ($delete_event) {
@@ -266,6 +326,17 @@ if ($get_filter_values) {
     $id_filter = get_parameter('id');
 
     $event_filter = events_get_event_filter($id_filter);
+
+    if ($event_filter === false) {
+        $event_filter = [
+            'status'        => EVENT_NO_VALIDATED,
+            'event_view_hr' => $config['event_view_hr'],
+            'group_rep'     => 1,
+            'tag_with'      => [],
+            'tag_without'   => [],
+            'history'       => false,
+        ];
+    }
 
     $event_filter['search'] = io_safe_output($event_filter['search']);
     $event_filter['id_name'] = io_safe_output($event_filter['id_name']);
@@ -590,7 +661,7 @@ function save_new_filter() {
     
     jQuery.post ("<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",
         {
-            "page" : "operation/events/events_list",
+            "page" : "include/ajax/events",
             "save_event_filter" : 1,
             "id_name" : $("#text-id_name").val(),
             "id_group" : $("select#id_group").val(),
@@ -659,7 +730,7 @@ function save_update_filter() {
     var name_filter_update = $("#overwrite_filter option[value='"+id_filter_update+"']").text();
     
     jQuery.post ("<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",
-        {"page" : "operation/events/events_list",
+        {"page" : "include/ajax/events",
         "update_event_filter" : 1,
         "id" : $("#overwrite_filter").val(),
         "id_group" : $("select#id_group").val(),
@@ -712,7 +783,7 @@ function save_update_filter() {
         $('#filter_id').append ($('<option></option>').html ( <?php echo "'".__('none')."'"; ?> ).attr ("value", 0));    
         // Reload filters select
         jQuery.post ("<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",
-            {"page" : "operation/events/events_list",
+            {"page" : "include/ajax/events",
                 "get_event_filters" : 1
             },
             function (data) {
@@ -1040,6 +1111,7 @@ if ($get_extended_event) {
     global $config;
 
     $event = get_parameter('event', false);
+    $filter = get_parameter('filter', false);
 
     if ($event === false) {
         return;
@@ -1079,27 +1151,35 @@ if ($get_extended_event) {
     }
 
     // Check ACLs.
+    $access = false;
     if (is_user_admin($config['id_user'])) {
         // Do nothing if you're admin, you get full access.
-        $__ignored_line = 0;
+        $access = true;
     } else if ($config['id_user'] == $event['owner_user']) {
         // Do nothing if you're the owner user, you get access.
-        $__ignored_line = 0;
+        $access = true;
     } else if ($event['id_grupo'] == 0) {
         // If the event has access to all groups, you get access.
-        $__ignored_line = 0;
+        $access = true;
     } else {
         // Get your groups.
         $groups = users_get_groups($config['id_user'], 'ER');
 
         if (in_array($event['id_grupo'], array_keys($groups))) {
             // If event group is among the groups of the user, you get access.
-            $__ignored_line = 0;
-        } else {
-            // If all the access types fail, abort.
-            echo 'Access denied';
-            return false;
+            $access = true;
+        } else if ($event['id_agente']
+            && agents_check_access_agent($event['id_agente'], 'ER')
+        ) {
+            // Secondary group, indirect access.
+            $access = true;
         }
+    }
+
+    if (!$access) {
+        // If all the access types fail, abort.
+        echo 'Access denied';
+        return false;
     }
 
     // Print group_rep in a hidden field to recover it from javascript.
@@ -1227,7 +1307,7 @@ if ($get_extended_event) {
 
     $general = events_page_general($event);
 
-    $comments = events_page_comments($event);
+    $comments = '<div id="extended_event_comments_page" class="extended_event_pages"></div>';
 
     $notifications = '<div id="notification_comment_error" style="display:none">'.ui_print_error_message(__('Error adding comment'), '', true).'</div>';
     $notifications .= '<div id="notification_comment_success" style="display:none">'.ui_print_success_message(__('Comment added successfully'), '', true).'</div>';
@@ -1237,6 +1317,18 @@ if ($get_extended_event) {
     $notifications .= '<div id="notification_owner_success" style="display:none">'.ui_print_success_message(__('Event owner changed successfully'), '', true).'</div>';
 
     $loading = '<div id="response_loading" style="display:none">'.html_print_image('images/spinner.gif', true).'</div>';
+
+    $i = 0;
+    $tab['general'] = $i++;
+    $tab['details'] = $i++;
+    if (!empty($related)) {
+        $tab['related'] = $i++;
+    }
+
+    $tab['custom_fields'] = $i++;
+    $tab['comments'] = $i++;
+    $tab['responses'] = $i++;
+    $tab['custom_data'] = $i++;
 
     $out = '<div id="tabs">'.$tabs.$notifications.$loading.$general.$details.$related.$custom_fields.$comments.$responses.$custom_data.html_print_input_hidden('id_event', $event['id_evento']).'</div>';
 
@@ -1249,31 +1341,31 @@ if ($get_extended_event) {
     // Load the required tab.
     switch ($dialog_page) {
         case 'general':
-            $js .= '$tabs.tabs( "option", "active", 0);';
+            $js .= '$tabs.tabs( "option", "active", '.$tab['general'].');';
         break;
 
         case 'details':
-            $js .= '$tabs.tabs( "option", "active", 1);';
+            $js .= '$tabs.tabs( "option", "active", '.$tab['details'].');';
         break;
 
         case 'related':
-            $js .= '$tabs.tabs( "option", "active", 2);';
+            $js .= '$tabs.tabs( "option", "active", '.$tab['related'].');';
         break;
 
         case 'custom_fields':
-            $js .= '$tabs.tabs( "option", "active", 3);';
+            $js .= '$tabs.tabs( "option", "active", '.$tab['custom_fields'].');';
         break;
 
         case 'comments':
-            $js .= '$tabs.tabs( "option", "active", 4);';
+            $js .= '$tabs.tabs( "option", "active", '.$tab['comments'].');';
         break;
 
         case 'responses':
-            $js .= '$tabs.tabs( "option", "active", 5);';
+            $js .= '$tabs.tabs( "option", "active", '.$tab['responses'].');';
         break;
 
         case 'custom_data':
-            $js .= '$tabs.tabs( "option", "active", 6);';
+            $js .= '$tabs.tabs( "option", "active", '.$tab['custom_data'].');';
         break;
 
         default:
@@ -1282,6 +1374,24 @@ if ($get_extended_event) {
     }
 
     $js .= '});';
+
+    $js .= '
+        $("#link_comments").click(function (){
+          $.post ({
+                url : "ajax.php",
+                data : {
+                    page: "include/ajax/events",
+                    get_comments: 1,
+                    event: '.json_encode($event).',
+                    filter: '.json_encode($filter).'
+                },
+                dataType : "html",
+                success: function (data) {
+                    $("#extended_event_comments_page").empty();
+                    $("#extended_event_comments_page").html(data);
+                }
+            });
+        });';
 
     if (events_has_extended_info($event['id_evento']) === true) {
         $js .= '

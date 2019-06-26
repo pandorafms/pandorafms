@@ -96,14 +96,12 @@ table.dataTable tbody td {
 }
 
 .sorting_desc {
-  background: url(http://localhost/pandora_console/images/sort_down_green.png)
-    no-repeat;
+  background: url(../../images/sort_down_green.png) no-repeat;
   background-position-x: left;
   background-position-y: center;
 }
 .sorting_asc {
-  background: url(http://localhost/pandora_console/images/sort_up_green.png)
-    no-repeat;
+  background: url(../../images/sort_up_green.png) no-repeat;
   background-position-x: left;
   background-position-y: center;
 }

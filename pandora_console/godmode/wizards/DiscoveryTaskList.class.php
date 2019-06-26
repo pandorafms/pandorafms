@@ -725,7 +725,7 @@ class DiscoveryTaskList extends Wizard
             return 'wiz=cloud&mode=amazonws&ki='.$task['auth_strings'].'&page=1';
 
             case DISCOVERY_CLOUD_AWS_RDS:
-            return 'wiz=cloud&mode=amazonws&sub=rds&page=0';
+            return 'wiz=cloud&mode=amazonws&ki='.$task['auth_strings'].'&sub=rds&page=0';
 
             default:
                 if ($task['description'] == 'console_task') {

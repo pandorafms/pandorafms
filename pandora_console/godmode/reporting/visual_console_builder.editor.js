@@ -255,9 +255,11 @@ function update_button_palette_callback() {
 
   values = readFields();
   if (selectedItem == "static_graph") {
-    if (values["agent"] == "" || values["agent"] == "none") {
-      dialog_message("#message_alert_no_agent");
-      return false;
+    if (values["map_linked"] == 0) {
+      if (values["agent"] == "" || values["agent"] == "none") {
+        dialog_message("#message_alert_no_agent");
+        return false;
+      }
     }
   }
   // TODO VALIDATE DATA

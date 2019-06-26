@@ -3880,7 +3880,7 @@ sub subst_alert_macros ($$;$$$$) {
 	my $macro_regexp = join('|', keys %{$macros});
 
 	my $subst_func;
-	if ($string =~ m/^(?:(")(?:.*)"|(')(?:.*)')$/) {
+	if (defined($string) && $string =~ m/^(?:(")(?:.*)"|(')(?:.*)')$/) {
 		my $quote = $1 ? $1 : $2;
 		$subst_func = sub {
 			my $macro = on_demand_macro($pa_config, $dbh, shift, $macros, $agent, $module);

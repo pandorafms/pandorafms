@@ -1,7 +1,6 @@
 <?php
 /**
- * Extension to manage a list of gateways and the node address where they should
- * point to.
+ * Event list.
  *
  * @category   Events
  * @package    Pandora FMS
@@ -45,9 +44,13 @@ require_once $config['homedir'].'/include/functions_ui.php';
 // Check access.
 check_login();
 
-if (! check_acl($config['id_user'], 0, 'ER')
-    && ! check_acl($config['id_user'], 0, 'EW')
-    && ! check_acl($config['id_user'], 0, 'EM')
+$event_a = check_acl($config['id_user'], 0, 'ER');
+$event_w = check_acl($config['id_user'], 0, 'EW');
+$event_m = check_acl($config['id_user'], 0, 'EM');
+
+if (! $event_a
+    && ! $event_w
+    && ! $event_m
 ) {
     db_pandora_audit(
         'ACL Violation',
@@ -62,9 +65,6 @@ if (! check_acl($config['id_user'], 0, 'ER')
 }
 
 
-$event_a = check_acl($config['id_user'], 0, 'ER');
-$event_w = check_acl($config['id_user'], 0, 'EW');
-$event_m = check_acl($config['id_user'], 0, 'EM');
 $access = ($event_a == true) ? 'ER' : (($event_w == true) ? 'EW' : (($event_m == true) ? 'EM' : 'ER'));
 
 
@@ -88,32 +88,118 @@ if (is_metaconsole()) {
 ui_require_javascript_file('pandora_events');
 
 // Get requests.
-$id_group = get_parameter('filter[id_group]');
-$event_type = get_parameter('filter[event_type]');
-$severity = get_parameter('filter[severity]');
-$status = get_parameter('filter[status]', EVENT_NO_VALIDATED);
-$search = get_parameter('filter[search]');
-$text_agent = get_parameter('filter[text_agent]');
-$id_agent = get_parameter('filter[id_agent]');
-$id_agent_module = get_parameter('filter[id_agent_module]');
-$pagination = get_parameter('filter[pagination]');
-$event_view_hr = get_parameter('filter[event_view_hr]', $config['event_view_hr']);
-$id_user_ack = get_parameter('filter[id_user_ack]');
-$group_rep = get_parameter('filter[group_rep]', 1);
-$tag_with = get_parameter('filter[tag_with]', []);
-$tag_without = get_parameter('filter[tag_without]', []);
-$filter_only_alert = get_parameter('filter[filter_only_alert]');
-$id_group_filter = get_parameter('filter[id_group_filter]');
-$date_from = get_parameter('filter[date_from]');
-$date_to = get_parameter('filter[date_to]');
-$source = get_parameter('filter[source]');
-$id_extra = get_parameter('filter[id_extra]');
-$user_comment = get_parameter('filter[user_comment]');
+$default_filter = [
+    'status'        => EVENT_NO_VALIDATED,
+    'event_view_hr' => $config['event_view_hr'],
+    'group_rep'     => 1,
+    'tag_with'      => [],
+    'tag_without'   => [],
+    'history'       => false,
+];
+
+$fb64 = get_parameter('fb64', null);
+if (isset($fb64)) {
+    $filter = json_decode(base64_decode($fb64), true);
+} else {
+    $filter = get_parameter(
+        'filter',
+        $default_filter
+    );
+}
+
+$id_group = get_parameter(
+    'filter[id_group]',
+    $filter['id_group']
+);
+$event_type = get_parameter(
+    'filter[event_type]',
+    $filter['event_type']
+);
+$severity = get_parameter(
+    'filter[severity]',
+    $filter['severity']
+);
+$status = get_parameter(
+    'filter[status]',
+    $filter['status']
+);
+$search = get_parameter(
+    'filter[search]',
+    $filter['search']
+);
+$text_agent = get_parameter(
+    'filter[text_agent]',
+    $filter['text_agent']
+);
+$id_agent = get_parameter(
+    'filter[id_agent]',
+    $filter['id_agent']
+);
+$id_agent_module = get_parameter(
+    'filter[id_agent_module]',
+    $filter['id_agent_module']
+);
+$pagination = get_parameter(
+    'filter[pagination]',
+    $filter['pagination']
+);
+$event_view_hr = get_parameter(
+    'filter[event_view_hr]',
+    $filter['event_view_hr']
+);
+$id_user_ack = get_parameter(
+    'filter[id_user_ack]',
+    $filter['id_user_ack']
+);
+$group_rep = get_parameter(
+    'filter[group_rep]',
+    $filter['group_rep']
+);
+$tag_with = get_parameter(
+    'filter[tag_with]',
+    $filter['tag_with']
+);
+$tag_without = get_parameter(
+    'filter[tag_without]',
+    $filter['tag_without']
+);
+$filter_only_alert = get_parameter(
+    'filter[filter_only_alert]',
+    $filter['filter_only_alert']
+);
+$id_group_filter = get_parameter(
+    'filter[id_group_filter]',
+    $filter['id_group_filter']
+);
+$date_from = get_parameter(
+    'filter[date_from]',
+    $filter['date_from']
+);
+$date_to = get_parameter(
+    'filter[date_to]',
+    $filter['date_to']
+);
+$source = get_parameter(
+    'filter[source]',
+    $filter['source']
+);
+$id_extra = get_parameter(
+    'filter[id_extra]',
+    $filter['id_extra']
+);
+$user_comment = get_parameter(
+    'filter[user_comment]',
+    $filter['user_comment']
+);
+$history = get_parameter(
+    'history',
+    $filter['history']
+);
+$section = get_parameter('section', false);
 
 // Ajax responses.
 if (is_ajax()) {
     $get_events = get_parameter('get_events', 0);
-    $filter = get_parameter('filter', []);
     // Datatables offset, limit.
     $start = get_parameter('start', 0);
     $length = get_parameter('length', $config['block_size']);
@@ -122,6 +208,10 @@ if (is_ajax()) {
         try {
             ob_start();
             $order = get_datatable_order(true);
+
+            if (is_array($order) && $order['field'] == 'mini_severity') {
+                $order['field'] = 'te.criticity';
+            }
 
             $fields = [
                 'te.id_evento',
@@ -151,11 +241,17 @@ if (is_ajax()) {
                 'tg.nombre as group_name',
             ];
             if (!is_metaconsole()) {
-                $fields[] = 'am.nombre as id_agentmodule';
+                $fields[] = 'am.nombre as module_name';
+                $fields[] = 'am.id_agente_modulo as id_agentmodule';
+                $fields[] = 'ta.server_name as server_name';
+            } else {
+                $fields[] = 'ts.server_name as server_name';
             }
 
             $events = events_get_all(
+                // Fields.
                 $fields,
+                // Filter.
                 $filter,
                 // Offset.
                 $start,
@@ -164,7 +260,9 @@ if (is_ajax()) {
                 // Order.
                 $order['direction'],
                 // Sort field.
-                $order['field']
+                $order['field'],
+                // History.
+                $history
             );
             $count = events_get_all(
                 'count',
@@ -181,6 +279,11 @@ if (is_ajax()) {
                     function ($carry, $item) {
                         $tmp = (object) $item;
                         $tmp->evento = io_safe_output($tmp->evento);
+                        if ($tmp->module_name) {
+                            $tmp->module_name = io_safe_output($tmp->module_name);
+                        }
+
+                        $tmp->agent_name = io_safe_output($tmp->agent_name);
                         $tmp->ack_utimestamp = ui_print_timestamp(
                             $tmp->ack_utimestamp,
                             true
@@ -191,6 +294,9 @@ if (is_ajax()) {
                         );
 
                         $tmp->data = format_numeric($tmp->data, 1);
+
+                        $tmp->b64 = base64_encode(json_encode($tmp));
+
                         $carry[] = $tmp;
                         return $carry;
                     }
@@ -487,34 +593,34 @@ if ($pure) {
 
     // Fullscreen.
     $fullscreen['active'] = false;
-    $fullscreen['text'] = '<a href="'.$url.'&amp;pure=1">'.html_print_image('images/full_screen.png', true, ['title' => __('Full screen')]).'</a>';
+    $fullscreen['text'] = '<a class="events_link" href="'.$url.'&amp;pure=1&">'.html_print_image('images/full_screen.png', true, ['title' => __('Full screen')]).'</a>';
 
     // Event list.
     $list['active'] = false;
-    $list['text'] = '<a href="index.php?sec=eventos&sec2=operation/events/events&amp;pure='.$config['pure'].'">'.html_print_image('images/events_list.png', true, ['title' => __('Event list')]).'</a>';
+    $list['text'] = '<a class="events_link" href="index.php?sec=eventos&sec2=operation/events/events&amp;pure='.$config['pure'].'&">'.html_print_image('images/events_list.png', true, ['title' => __('Event list')]).'</a>';
 
     // History event list.
     $history_list['active'] = false;
-    $history_list['text'] = '<a href="index.php?sec=eventos&sec2=operation/events/events&amp;pure='.$config['pure'].'&amp;section=history&amp;history=1">'.html_print_image('images/books.png', true, ['title' => __('History event list')]).'</a>';
+    $history_list['text'] = '<a class="events_link" href="index.php?sec=eventos&sec2=operation/events/events&amp;pure='.$config['pure'].'&amp;section=history&amp;history=1&">'.html_print_image('images/books.png', true, ['title' => __('History event list')]).'</a>';
 
     // RSS.
     $rss['active'] = false;
-    $rss['text'] = '<a href="operation/events/events_rss.php?user='.$config['id_user'].'&hashup='.$hashup.'&'.$params.'">'.html_print_image('images/rss.png', true, ['title' => __('RSS Events')]).'</a>';
+    $rss['text'] = '<a class="events_link" href="operation/events/events_rss.php?user='.$config['id_user'].'&hashup='.$hashup.'&">'.html_print_image('images/rss.png', true, ['title' => __('RSS Events')]).'</a>';
 
     // Marquee.
     $marquee['active'] = false;
-    $marquee['text'] = '<a href="operation/events/events_marquee.php">'.html_print_image('images/heart.png', true, ['title' => __('Marquee display')]).'</a>';
+    $marquee['text'] = '<a class="events_link" href="operation/events/events_marquee.php?">'.html_print_image('images/heart.png', true, ['title' => __('Marquee display')]).'</a>';
 
     // CSV.
     $csv['active'] = false;
-    $csv['text'] = '<a href="operation/events/export_csv.php?'.$params.'">'.html_print_image('images/csv_mc.png', true, ['title' => __('Export to CSV file')]).'</a>';
+    $csv['text'] = '<a class="events_link" href="operation/events/export_csv.php?'.$filter_b64.'">'.html_print_image('images/csv_mc.png', true, ['title' => __('Export to CSV file')]).'</a>';
 
     // Sound events.
     $sound_event['active'] = false;
     $sound_event['text'] = '<a href="javascript: openSoundEventWindow();">'.html_print_image('images/sound.png', true, ['title' => __('Sound events')]).'</a>';
 
     // If the user has administrator permission display manage tab.
-    if (check_acl($config['id_user'], 0, 'EW') || check_acl($config['id_user'], 0, 'EM')) {
+    if ($event_w || $event_m) {
         // Manage events.
         $manage_events['active'] = false;
         $manage_events['text'] = '<a href="index.php?sec=eventos&sec2=godmode/events/events&amp;section=filter&amp;pure='.$config['pure'].'">'.html_print_image('images/setup.png', true, ['title' => __('Manage events')]).'</a>';
@@ -791,12 +897,14 @@ $buttons[] = [
     'onclick' => '',
 ];
 
-$buttons[] = [
-    'id'      => 'save-filter',
-    'class'   => 'float-left margin-right-2 sub wand',
-    'text'    => __('Save filter'),
-    'onclick' => '',
-];
+if ($event_w || $event_m) {
+    $buttons[] = [
+        'id'      => 'save-filter',
+        'class'   => 'float-left margin-right-2 sub wand',
+        'text'    => __('Save filter'),
+        'onclick' => '',
+    ];
+}
 
 /*
  * Advanced filter.
@@ -1067,6 +1175,10 @@ try {
             'text'  => 'evento',
             'class' => 'mw120px',
         ],
+        [
+            'text'  => 'mini_severity',
+            'class' => 'no-padding',
+        ],
         'id_evento',
             // 'id_agente',
             // 'id_usuario',
@@ -1112,6 +1224,12 @@ try {
         $fields = $default_fields;
     }
 
+    if (in_array('mini_severity', $fields) > 0) {
+        $fields[array_search('mini_severity', $fields)] = [
+            'text'  => 'mini_severity',
+            'class' => 'no-padding-imp',
+        ];
+    }
 
     $evento_id = array_search('evento', $fields);
     if ($evento_id !== false) {
@@ -1219,6 +1337,7 @@ try {
     $active_filters_div .= '</div>';
 
     $table_id = 'events';
+    $form_id = 'events_form';
 
     // Print datatable.
     ui_print_datatable(
@@ -1227,9 +1346,12 @@ try {
             'class'               => 'info_table events',
             'style'               => 'width: 100%;',
             'ajax_url'            => 'operation/events/events',
-            'ajax_data'           => ['get_events' => 1],
+            'ajax_data'           => [
+                'get_events' => 1,
+                'history'    => (int) $history,
+            ],
             'form'                => [
-                'id'            => 'events_form',
+                'id'            => $form_id,
                 'class'         => 'flex-row',
                 'html'          => $filter,
                 'inputs'        => [],
@@ -1280,39 +1402,41 @@ try {
 $sql_event_resp = "SELECT id, name FROM tevent_response WHERE type LIKE 'command'";
 $event_responses = db_get_all_rows_sql($sql_event_resp);
 
-if (check_acl($config['id_user'], 0, 'EW') == 1 && !$readonly) {
-    $array_events_actions['in_progress_selected'] = __('In progress selected');
-    $array_events_actions['validate_selected'] = __('Validate selected');
-}
+if ($config['event_replication'] != 1) {
+    if ($event_w && !$readonly) {
+        $array_events_actions['in_progress_selected'] = __('In progress selected');
+        $array_events_actions['validate_selected'] = __('Validate selected');
+    }
 
-if (check_acl($config['id_user'], 0, 'EM') == 1 && !$readonly) {
-    $array_events_actions['delete_selected'] = __('Delete selected');
+    if ($event_m == 1 && !$readonly) {
+        $array_events_actions['delete_selected'] = __('Delete selected');
+    }
 }
 
 foreach ($event_responses as $val) {
     $array_events_actions[$val['id']] = $val['name'];
 }
 
-if ($config['event_replication'] != 1) {
-    echo '<div class="multi-response-buttons">';
-    echo '<form method="post" id="form_event_response">';
-    echo '<input type="hidden" id="max_execution_event_response" value="'.$config['max_execution_event_response'].'" />';
-    html_print_select($array_events_actions, 'response_id', '', '', '', 0, false, false, false);
-    echo '&nbsp&nbsp';
-    html_print_button(__('Execute event response'), 'submit_event_response', false, 'execute_event_response(true);', 'class="sub next"');
-    echo "<span id='response_loading_dialog' style='display:none'>".html_print_image('images/spinner.gif', true).'</span>';
-    echo '</form>';
-    echo '<span id="max_custom_event_resp_msg" style="display:none; color:#e63c52; line-height: 200%;">';
-    echo __(
-        'A maximum of %s event custom responses can be selected',
-        $config['max_execution_event_response']
-    ).'</span>';
-    echo '<span id="max_custom_selected" style="display:none; color:#e63c52; line-height: 200%;">';
-    echo __(
-        'Please, select an event'
-    ).'</span>';
-    echo '</div>';
-}
+
+echo '<div class="multi-response-buttons">';
+echo '<form method="post" id="form_event_response">';
+echo '<input type="hidden" id="max_execution_event_response" value="'.$config['max_execution_event_response'].'" />';
+html_print_select($array_events_actions, 'response_id', '', '', '', 0, false, false, false);
+echo '&nbsp&nbsp';
+html_print_button(__('Execute event response'), 'submit_event_response', false, 'execute_event_response(true);', 'class="sub next"');
+echo "<span id='response_loading_dialog' style='display:none'>".html_print_image('images/spinner.gif', true).'</span>';
+echo '</form>';
+echo '<span id="max_custom_event_resp_msg" style="display:none; color:#e63c52; line-height: 200%;">';
+echo __(
+    'A maximum of %s event custom responses can be selected',
+    $config['max_execution_event_response']
+).'</span>';
+echo '<span id="max_custom_selected" style="display:none; color:#e63c52; line-height: 200%;">';
+echo __(
+    'Please, select an event'
+).'</span>';
+echo '</div>';
+
 
 // Close viewer.
 enterprise_hook('close_meta_frame');
@@ -1477,16 +1601,17 @@ function process_datatables_item(item) {
     output += '</div>';
 
     // Add event severity to end of text.
-    evn = '<div class="event flex-row h100p nowrap">';
-    evn += '<div><a href="javascript:" onclick="show_event_dialog(\'';
-    evn += btoa(JSON.stringify(item))+'\','+$("#group_rep").val()+');">';
+    evn = '<a href="javascript:" onclick="show_event_dialog(\'';
+    evn += item.b64+'\','+$("#group_rep").val()+');">';
     // Grouped events.
     if(item.event_rep && item.event_rep > 1) {
         evn += '('+item.event_rep+') ';
     }
-    evn += item.evento+'</a></div>';
-    evn += output;
-    evn += '</div>'
+    evn += item.evento+'</a>';
+
+    item.mini_severity = '<div class="event flex-row h100p nowrap">';
+    item.mini_severity += output;
+    item.mini_severity += '</div>';
 
     criticity = '<div class="criticity" style="background: ';
     criticity += color + '">' + text + "</div>";
@@ -1517,7 +1642,7 @@ function process_datatables_item(item) {
 
         case "<?php echo EVENTS_GOING_UP_WARNING; ?>":
         case "<?php echo EVENTS_GOING_DOWN_WARNING; ?>":
-        $tex = "<?php echo __('WARNING'); ?>";
+            text = "<?php echo __('WARNING'); ?>";
             color = "<?php echo COL_WARNING; ?>";
         break;
 
@@ -1580,42 +1705,10 @@ function process_datatables_item(item) {
     module_status = '<div class="criticity" style="background: ';
     module_status += color + '">' + text + "</div>";
 
-
-    /* Agent name link */
-    if (item.id_agente > 0) {
-        item.agent_name = '<a href="<?php echo ui_get_full_url('index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='); ?>' +item.id_agente+'">' + item.agent_name + '</a>';
-    } else {
-        item.agent_name = '';
-    }
-
-    /* Agent ID link */
-    if (item.id_agente > 0) {
-        <?php
-        if (in_array('agent_name', $fields)) {
-            ?>
-            item.id_agente = '<a href="<?php echo ui_get_full_url('index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='); ?>'+item.id_agente+'">' + item.id_agente + '</a>';
-            <?php
-        } else {
-            ?>
-            item.id_agente = '<a href="<?php echo ui_get_full_url('index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='); ?>'+item.id_agente+'">' + item.agent_name + '</a>';
-            <?php
-        }
-        ?>
-    } else {
-        item.id_agente = '';
-    }
-
-    /* Group name */
-    if (item.id_grupo == "0") {
-        item.id_grupo = "<?php echo __('All'); ?>";
-    } else {
-        item.id_grupo = item.group_name;
-    }
-
     /* Options */
     // Show more.
     item.options = '<a href="javascript:" onclick="show_event_dialog(\'';
-    item.options += btoa(JSON.stringify(item))+'\','+$("#group_rep").val();
+    item.options += item.b64+'\','+$("#group_rep").val();
     item.options += ')" ><?php echo html_print_image('images/eye.png', true, ['title' => __('Show more')]); ?></a>';
 
     <?php
@@ -1658,6 +1751,9 @@ function process_datatables_item(item) {
             item.options += '<?php echo html_print_image('images/cross.png', true, ['title' => __('Delete event')]); ?></a>';
         }
     }
+        <?php
+    }
+    ?>
 
     // Multi select.
     item.m = '<input name="checkbox-multi[]" type="checkbox" value="';
@@ -1668,27 +1764,49 @@ function process_datatables_item(item) {
         item.m += ' event_rep="0" ';
     }
     item.m += 'class="candeleted chk_val">';
-        <?php
-    }
-    ?>
 
     /* Status */
     img = '<?php echo html_print_image('images/star.png', true, ['title' => __('Unknown'), 'class' => 'forced-title']); ?>';
     switch (item.estado) {
-        case "0":
+        case "<?php echo EVENT_STATUS_NEW; ?>":
             img = '<?php echo html_print_image('images/star.png', true, ['title' => __('New event'), 'class' => 'forced-title']); ?>';
         break;
 
-        case "1":
+        case "<?php echo EVENT_STATUS_VALIDATED; ?>":
             img = '<?php echo html_print_image('images/tick.png', true, [ 'title' => __('Event validated'), 'class' => 'forced-title']); ?>';
         break;
 
-        case "2":
+        case "<?php echo EVENT_STATUS_INPROCESS; ?>":
             img = '<?php echo html_print_image('images/hourglass.png', true, [ 'title' => __('Event in process'), 'class' => 'forced-title']); ?>';
         break;
     }
 
     /* Update column content now to avoid json poisoning. */
+
+    /* Agent name link */
+    if (item.id_agente > 0) {
+        item.agent_name = '<a href="<?php echo ui_get_full_url('index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='); ?>' +item.id_agente+'">' + item.agent_name + '</a>';
+    } else {
+        item.agent_name = '';
+    }
+
+    /* Agent ID link */
+    if (item.id_agente > 0) {
+        <?php
+        if (in_array('agent_name', $fields)) {
+            ?>
+            item.id_agente = '<a href="<?php echo ui_get_full_url('index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='); ?>'+item.id_agente+'">' + item.id_agente + '</a>';
+            <?php
+        } else {
+            ?>
+            item.id_agente = '<a href="<?php echo ui_get_full_url('index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='); ?>'+item.id_agente+'">' + item.agent_name + '</a>';
+            <?php
+        }
+        ?>
+    } else {
+        item.id_agente = '';
+    }
+
     item.estado = '<div>';
     item.estado += img;
     item.estado += '</div>';
@@ -1708,6 +1826,15 @@ function process_datatables_item(item) {
     // Add event severity format to itself.
     item.evento = evn;
 
+    /* Group name */
+    if (item.id_grupo == "0") {
+        item.id_grupo = "<?php echo __('All'); ?>";
+    } else {
+        item.id_grupo = item.group_name;
+    }
+
+    /* Module name */
+    item.id_agentmodule = item.module_name;
 }
 
 /* Datatables auxiliary functions ends */
@@ -1957,6 +2084,23 @@ function reorder_tags_inputs() {
 }
 /* Tag management ends */
 $(document).ready( function() {
+    /* Filter to a href */
+    $('.events_link').on('click', function(e) {
+        e.preventDefault();
+
+        inputs = $("#<?php echo $form_id; ?> :input");
+        values = {};
+        inputs.each(function() {
+            values[this.name] = $(this).val();
+        })
+
+        values['history'] = "<?php echo (int) $history; ?>";
+
+        var url = e.currentTarget.href;
+        url += 'fb64=' + btoa(JSON.stringify(values));
+        document.location = url;
+
+    });
 
     /* Multi select handler */
     $('#checkbox-all_validate_box').on('change', function() {

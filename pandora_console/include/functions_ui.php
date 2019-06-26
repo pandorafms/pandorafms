@@ -760,6 +760,12 @@ function ui_print_os_icon(
         $subfolder .= '/so_big_icons';
     }
 
+    if (is_metaconsole()) {
+        $no_in_meta = true;
+    } else {
+        $no_in_meta = false;
+    }
+
     $icon = (string) db_get_value('icon_name', 'tconfig_os', 'id_os', (int) $id_os);
     $os_name = get_os_name($id_os);
     if (empty($icon)) {
@@ -770,7 +776,7 @@ function ui_print_os_icon(
                 $options,
                 true,
                 $relative,
-                false,
+                $no_in_meta,
                 true
             );
         } else {
@@ -778,13 +784,13 @@ function ui_print_os_icon(
         }
     } else if ($apply_skin) {
         if ($only_src) {
-            $output = html_print_image('images/'.$subfolder.'/'.$icon, true, $options, true, $relative, false, true);
+            $output = html_print_image('images/'.$subfolder.'/'.$icon, true, $options, true, $relative, $no_in_meta, true);
         } else {
             if (!isset($options['title'])) {
                 $options['title'] = $os_name;
             }
 
-            $output = html_print_image('images/'.$subfolder.'/'.$icon, true, $options, false, $relative, false, true);
+            $output = html_print_image('images/'.$subfolder.'/'.$icon, true, $options, false, $relative, $no_in_meta, true);
         }
     } else {
         // $output = "<img src='images/os_icons/" . $icon . "' alt='" . $os_name . "' title='" . $os_name . "'>";
@@ -2907,8 +2913,10 @@ function ui_print_datatable(array $parameters)
 
     if (isset($parameters['id'])) {
         $table_id = $parameters['id'];
+        $form_id = 'form_'.$parameters['id'];
     } else {
         $table_id = uniqid('datatable_');
+        $form_id = uniqid('datatable_filter_');
     }
 
     if (!isset($parameters['columns']) || !is_array($parameters['columns'])) {
@@ -2936,15 +2944,15 @@ function ui_print_datatable(array $parameters)
         }
 
         if (!isset($parameters['order']['field'])) {
-            $order = 1;
+            $order = 0;
         } else {
             $order = array_search(
                 $parameters['order']['field'],
                 $parameters['columns']
             );
 
-            if (empty($order)) {
-                $order = 1;
+            if ($order === false) {
+                $order = 0;
             }
         }
 
@@ -2995,8 +3003,6 @@ function ui_print_datatable(array $parameters)
     if (isset($parameters['form']) && is_array($parameters['form'])) {
         if (isset($parameters['form']['id'])) {
             $form_id = $parameters['form']['id'];
-        } else {
-            $form_id = uniqid('datatable_filter_');
         }
 
         if (isset($parameters['form']['class'])) {
@@ -3026,27 +3032,35 @@ function ui_print_datatable(array $parameters)
             $filter .= $parameters['form']['html'];
         }
 
-        $filter .= '<ul class="content">';
+        $filter .= '<ul class="datatable_filter content">';
 
         foreach ($parameters['form']['inputs'] as $input) {
             $filter .= '<li>';
             $filter .= '<label>'.$input['label'].'</label>';
             if ($input['type'] != 'select') {
                 $filter .= '<input type="'.$input['type'].'" ';
+                $filter .= ' style="'.$input['style'].'" ';
+                $filter .= ' class="'.$input['class'].'" ';
                 $filter .= ' value="'.$input['value'].'" ';
                 $filter .= ' name="'.$input['name'].'" id="'.$input['id'].'" />';
             } else {
                 // Select.
-                $filter .= '<select name="'.$input['name'].'" ';
+                $filter .= '<select class="'.$input['class'].'"';
+                $filter .= ' style="'.$input['style'].'" ';
+                $filter .= ' name="'.$input['name'].'" ';
                 $filter .= 'id="'.$input['id'].'">';
 
-                foreach ($input['options'] as $opt => $selected) {
-                    $filter .= '<option value="'.$opt['value'].'"';
-                    if ($selected) {
-                        $filter .= ' selected="yes" >';
-                    }
+                foreach ($input['options'] as $key => $opt) {
+                    if (is_array($opt)) {
+                        $filter .= '<option value="'.$opt['value'].'"';
+                        if ($opt['selected']) {
+                            $filter .= ' selected="yes" >';
+                        }
 
-                    $filter .= __($opt['text']).'</option>';
+                        $filter .= __($opt['text']).'</option>';
+                    } else {
+                        $filter .= '<option value="'.$key.'">'.$opt.'</option>';
+                    }
                 }
 
                 $filter .= '</select>';
@@ -3074,7 +3088,7 @@ function ui_print_datatable(array $parameters)
 
         $filter .= '</li>';
 
-        $filter .= '</ul></form>';
+        $filter .= '</ul><div style="clear:both"></div></form>';
         $filter = ui_toggle(
             $filter,
             __('Filter'),
@@ -3220,8 +3234,10 @@ function ui_print_datatable(array $parameters)
                     $.extend(data, {
                         filter: values,'."\n";
 
-    foreach ($parameters['ajax_data'] as $k => $v) {
-        $js .= $k.':'.json_encode($v).",\n";
+    if (is_array($parameters['ajax_data'])) {
+        foreach ($parameters['ajax_data'] as $k => $v) {
+            $js .= $k.':'.json_encode($v).",\n";
+        }
     }
 
     $js .= 'page: "'.$parameters['ajax_url'].'"

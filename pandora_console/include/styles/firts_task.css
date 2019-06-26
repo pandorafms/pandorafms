@@ -78,3 +78,7 @@ div.new_task_cluster > div {
 #fuerte {
   font-size: 12px;
 }
+
+.flex-row-baseline * {
+  margin-right: 1em;
+}

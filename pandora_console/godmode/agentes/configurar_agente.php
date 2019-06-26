@@ -1213,7 +1213,7 @@ if ($update_module || $create_module) {
 
     $max_timeout = (int) get_parameter('max_timeout');
     $max_retries = (int) get_parameter('max_retries');
-    $min = (int) get_parameter_post('min');
+    $min = (int) get_parameter('min');
     $max = (int) get_parameter('max');
     $interval = (int) get_parameter('module_interval', $intervalo);
     $ff_interval = (int) get_parameter('module_ff_interval');

@@ -10,7 +10,9 @@ import Item, {
   ItemType,
   ItemProps,
   ItemClickEvent,
-  ItemRemoveEvent
+  ItemRemoveEvent,
+  ItemMovedEvent,
+  ItemResizedEvent
 } from "./Item";
 import StaticGraph, { staticGraphPropsDecoder } from "./items/StaticGraph";
 import Icon, { iconPropsDecoder } from "./items/Icon";
@@ -204,6 +206,10 @@ export default class VisualConsole {
   private readonly clickEventManager = new TypedEvent<
     ItemClickEvent<ItemProps>
   >();
+  // Event manager for move events.
+  private readonly movedEventManager = new TypedEvent<ItemMovedEvent>();
+  // Event manager for resize events.
+  private readonly resizedEventManager = new TypedEvent<ItemResizedEvent>();
   // List of references to clean the event listeners.
   private readonly disposables: Disposable[] = [];
 
@@ -214,6 +220,24 @@ export default class VisualConsole {
   private handleElementClick: (e: ItemClickEvent<ItemProps>) => void = e => {
     this.clickEventManager.emit(e);
     // console.log(`Clicked element #${e.data.id}`, e);
+  };
+
+  /**
+   * React to a movement on an element.
+   * @param e Event object.
+   */
+  private handleElementMovement: (e: ItemMovedEvent) => void = e => {
+    this.movedEventManager.emit(e);
+    // console.log(`Moved element #${e.item.props.id}`, e);
+  };
+
+  /**
+   * React to a resizement on an element.
+   * @param e Event object.
+   */
+  private handleElementResizement: (e: ItemResizedEvent) => void = e => {
+    this.resizedEventManager.emit(e);
+    // console.log(`Resized element #${e.item.props.id}`, e);
   };
 
   /**
@@ -264,6 +288,8 @@ export default class VisualConsole {
         this.elementIds.push(itemInstance.props.id);
         // Item event handlers.
         itemInstance.onClick(this.handleElementClick);
+        itemInstance.onMoved(this.handleElementMovement);
+        itemInstance.onResized(this.handleElementResizement);
         itemInstance.onRemove(this.handleElementRemove);
         // Add the item to the DOM.
         this.containerRef.append(itemInstance.elementRef);
@@ -552,7 +578,9 @@ export default class VisualConsole {
    * Add an event handler to the click of the linked visual console elements.
    * @param listener Function which is going to be executed when a linked console is clicked.
    */
-  public onClick(listener: Listener<ItemClickEvent<ItemProps>>): Disposable {
+  public onItemClick(
+    listener: Listener<ItemClickEvent<ItemProps>>
+  ): Disposable {
     /*
      * The '.on' function returns a function which will clean the event
      * listener when executed. We store all the 'dispose' functions to
@@ -565,12 +593,45 @@ export default class VisualConsole {
   }
 
   /**
+   * Add an event handler to the movement of the visual console elements.
+   * @param listener Function which is going to be executed when a linked console is moved.
+   */
+  public onItemMoved(listener: Listener<ItemMovedEvent>): Disposable {
+    /*
+     * The '.on' function returns a function which will clean the event
+     * listener when executed. We store all the 'dispose' functions to
+     * call them when the item should be cleared.
+     */
+    const disposable = this.movedEventManager.on(listener);
+    this.disposables.push(disposable);
+
+    return disposable;
+  }
+
+  /**
+   * Add an event handler to the resizement of the visual console elements.
+   * @param listener Function which is going to be executed when a linked console is moved.
+   */
+  public onItemResized(listener: Listener<ItemResizedEvent>): Disposable {
+    /*
+     * The '.on' function returns a function which will clean the event
+     * listener when executed. We store all the 'dispose' functions to
+     * call them when the item should be cleared.
+     */
+    const disposable = this.resizedEventManager.on(listener);
+    this.disposables.push(disposable);
+
+    return disposable;
+  }
+
+  /**
    * Enable the edition mode.
    */
   public enableEditMode(): void {
     this.elements.forEach(item => {
       item.meta = { ...item.meta, editMode: true };
     });
+    this.containerRef.classList.add("is-editing");
   }
 
   /**
@@ -580,5 +641,6 @@ export default class VisualConsole {
     this.elements.forEach(item => {
       item.meta = { ...item.meta, editMode: false };
     });
+    this.containerRef.classList.remove("is-editing");
   }
 }

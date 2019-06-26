@@ -83,7 +83,7 @@ echo '<div id="visual-console-container"></div>';
 echo '<div id="vc-controls" style="z-index:300;">';
 
 echo '<div id="menu_tab">';
-echo '<ul class="mn">';
+echo '<ul class="mn white-box-content box-shadow flex-row">';
 
 // QR code.
 echo '<li class="nomn">';

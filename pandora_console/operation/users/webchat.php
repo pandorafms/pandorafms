@@ -304,7 +304,6 @@ echo "<div style='width:100%'>".html_print_button(
             data: parameters,
             dataType: "json",
             success: function(data) {
-                console.log(data);
             }
         });
     }

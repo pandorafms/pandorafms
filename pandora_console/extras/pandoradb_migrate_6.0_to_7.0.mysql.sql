@@ -1007,10 +1007,12 @@ CREATE TABLE IF NOT EXISTS `tmetaconsole_agent` (
 	`agent_version` varchar(100) default '',
 	`ultimo_contacto_remoto` datetime default '1970-01-01 00:00:00',
 	`disabled` tinyint(2) NOT NULL default '0',
+	`remote` tinyint(1) NOT NULL default '0',
 	`id_parent` int(10) unsigned default '0',
 	`custom_id` varchar(255) default '',
 	`server_name` varchar(100) default '',
 	`cascade_protection` tinyint(2) NOT NULL default '0',
+	`cascade_protection_module` int(10) unsigned default '0',
 	`timezone_offset` TINYINT(2) NULL DEFAULT '0' COMMENT 'number of hours of diference with the server timezone' ,
 	`icon_path` VARCHAR(127) NULL DEFAULT NULL COMMENT 'path in the server to the image of the icon representing the agent' ,
 	`update_gis_data` TINYINT(1) NOT NULL DEFAULT '1' COMMENT 'set it to one to update the position data (altitude, longitude, latitude) when getting information from the agent or to 0 to keep the last value and do not update it' ,
@@ -1025,18 +1027,20 @@ CREATE TABLE IF NOT EXISTS `tmetaconsole_agent` (
 	`fired_count` bigint(20) NOT NULL default '0',
 	`update_module_count` tinyint(1) NOT NULL default '0',
 	`update_alert_count` tinyint(1) NOT NULL default '0',
+	`update_secondary_groups` tinyint(1) NOT NULL default '0',
+	`transactional_agent` tinyint(1) NOT NULL default '0',
+	`alias` varchar(600) BINARY NOT NULL default '',
+	`alias_as_name` tinyint(2) NOT NULL default '0',
+	`safe_mode_module` int(10) unsigned NOT NULL default '0',
+	`cps` int NOT NULL default 0,
 	PRIMARY KEY  (`id_agente`),
 	KEY `nombre` (`nombre`(255)),
 	KEY `direccion` (`direccion`),
+	KEY `id_tagente_idx` (`id_tagente`),
 	KEY `disabled` (`disabled`),
 	KEY `id_grupo` (`id_grupo`),
 	FOREIGN KEY (`id_tmetaconsole_setup`) REFERENCES tmetaconsole_setup(`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
-
-ALTER TABLE tmetaconsole_agent ADD COLUMN `remote` tinyint(1) NOT NULL default '0';
-ALTER TABLE tmetaconsole_agent ADD COLUMN `cascade_protection_module` int(10) default '0';
-ALTER TABLE tmetaconsole_agent ADD COLUMN `transactional_agent` tinyint(1) NOT NULL default '0';
-ALTER TABLE tmetaconsole_agent ADD COLUMN `alias` VARCHAR(600) not null DEFAULT '';
 
 -- ---------------------------------------------------------------------
 -- Table `ttransaction`

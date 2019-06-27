@@ -3233,6 +3233,7 @@ CREATE TABLE IF NOT EXISTS `tmetaconsole_agent` (
 	PRIMARY KEY  (`id_agente`),
 	KEY `nombre` (`nombre`(255)),
 	KEY `direccion` (`direccion`),
+	KEY `id_tagente_idx` (`id_tagente`),
 	KEY `disabled` (`disabled`),
 	KEY `id_grupo` (`id_grupo`),
 	FOREIGN KEY (`id_tmetaconsole_setup`) REFERENCES tmetaconsole_setup(`id`) ON DELETE CASCADE ON UPDATE CASCADE

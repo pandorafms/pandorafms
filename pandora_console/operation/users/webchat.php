@@ -120,11 +120,10 @@ echo "<div style='width:100%'>".html_print_button(
         
         init_webchat();
     });
-    
-    $(window).unload(function () {
+    $(window).on("beforeunload",function () {
         exit_webchat();
     });
-    
+
     function init_webchat() {
         send_login_message();
         long_polling_check_messages();
@@ -305,6 +304,7 @@ echo "<div style='width:100%'>".html_print_button(
             data: parameters,
             dataType: "json",
             success: function(data) {
+                console.log(data);
             }
         });
     }

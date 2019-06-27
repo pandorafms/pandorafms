@@ -847,7 +847,10 @@ $class = 'databox filters';
                 }
                 ?>
                 <?php
-                $text = __('This type of report brings a lot of data loading, it is recommended to use it for scheduled reports and not for real-time view.');
+                if (!isset($text)) {
+                    $text = __('This type of report brings a lot of data loading, it is recommended to use it for scheduled reports and not for real-time view.');
+                }
+
                     echo '<a id="log_help_tip" style="visibility: hidden;" href="javascript:" class="tip" >'.html_print_image('images/tip.png', true, ['title' => $text]).'</a>';
                 ?>
             </td>

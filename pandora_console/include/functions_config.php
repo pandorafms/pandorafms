@@ -668,8 +668,20 @@ function config_update_config()
                         $error_update[] = __('Saml group name parameter');
                     }
 
+                    if (!config_update_value('saml_attr_type', (bool) get_parameter('saml_attr_type'))) {
+                        $error_update[] = __('Saml attr type parameter');
+                    }
+
                     if (!config_update_value('saml_profiles_and_tags', get_parameter('saml_profiles_and_tags'))) {
                         $error_update[] = __('Saml profiles and tags parameter');
+                    }
+
+                    if (!config_update_value('saml_profile', get_parameter('saml_profile'))) {
+                        $error_update[] = __('Saml profile parameters');
+                    }
+
+                    if (!config_update_value('saml_tag', get_parameter('saml_tag'))) {
+                        $error_update[] = __('Saml tag parameter');
                     }
 
                     if (!config_update_value('saml_profile_tag_separator', get_parameter('saml_profile_tag_separator'))) {
@@ -2404,8 +2416,20 @@ function config_process_config()
         config_update_value('saml_group_name', '');
     }
 
+    if (!isset($config['saml_attr_type'])) {
+        config_update_value('saml_attr_type', false);
+    }
+
     if (!isset($config['saml_profiles_and_tags'])) {
         config_update_value('saml_profiles_and_tags', '');
+    }
+
+    if (!isset($config['saml_profile'])) {
+        config_update_value('saml_profile', '');
+    }
+
+    if (!isset($config['saml_tag'])) {
+        config_update_value('saml_tag', '');
     }
 
     if (!isset($config['saml_profile_tag_separator'])) {

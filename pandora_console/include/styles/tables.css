@@ -190,7 +190,8 @@
 }
 
 .info_table > tbody > tr:hover {
-  background-color: #eee;
+  /* This !important is necessary to overwrite the white background of tables with less than 5 rows. */
+  background-color: #eee !important;
 }
 
 .info_.profile_list > thead > tr > th > a.tip {

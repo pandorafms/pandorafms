@@ -73,10 +73,8 @@ export default class Line extends Item<LineProps> {
    */
   public constructor(props: LineProps, meta: ItemMeta) {
     /*
-     * We need to override the constructor cause we need to obtain
-     * the
-     * box size and position from the start and finish points
-     * of the line.
+     * We need to override the constructor cause we need to obtain the
+     * box size and position from the start and finish points of the line.
      */
     super(
       {
@@ -91,7 +89,7 @@ export default class Line extends Item<LineProps> {
   }
 
   /**
-   * Clasic and protected version of the setter of the `meta` property.
+   * Classic and protected version of the setter of the `meta` property.
    * Useful to override it from children classes.
    * @param newProps
    * @override Item.setMeta
@@ -112,40 +110,64 @@ export default class Line extends Item<LineProps> {
     const element: HTMLDivElement = document.createElement("div");
     element.className = "line";
 
+    const {
+      x, // Box x
+      y, // Box y
+      width, // Box width
+      height, // Box height
+      lineWidth, // Line thickness
+      startPosition, // Line start position
+      endPosition, // Line end position
+      color // Line color
+    } = this.props;
+
+    const startIsLeft = startPosition.x - endPosition.x <= 0;
+    const startIsTop = startPosition.y - endPosition.y <= 0;
+
+    const x1 = startPosition.x - x + lineWidth / 2;
+    const y1 = startPosition.y - y + lineWidth / 2;
+    const x2 = endPosition.x - x + lineWidth / 2;
+    const y2 = endPosition.y - y + lineWidth / 2;
+
     const svgNS = "http://www.w3.org/2000/svg";
     // SVG container.
     const svg = document.createElementNS(svgNS, "svg");
     // Set SVG size.
-    svg.setAttribute(
-      "width",
-      (this.props.width + this.props.lineWidth).toString()
-    );
-    svg.setAttribute(
-      "height",
-      (this.props.height + this.props.lineWidth).toString()
-    );
+    svg.setAttribute("width", `${width + lineWidth}`);
+    svg.setAttribute("height", `${height + lineWidth}`);
     const line = document.createElementNS(svgNS, "line");
-    line.setAttribute(
-      "x1",
-      `${this.props.startPosition.x - this.props.x + this.props.lineWidth / 2}`
-    );
-    line.setAttribute(
-      "y1",
-      `${this.props.startPosition.y - this.props.y + this.props.lineWidth / 2}`
-    );
-    line.setAttribute(
-      "x2",
-      `${this.props.endPosition.x - this.props.x + this.props.lineWidth / 2}`
-    );
-    line.setAttribute(
-      "y2",
-      `${this.props.endPosition.y - this.props.y + this.props.lineWidth / 2}`
-    );
-    line.setAttribute("stroke", this.props.color || "black");
-    line.setAttribute("stroke-width", this.props.lineWidth.toString());
+    line.setAttribute("x1", `${x1}`);
+    line.setAttribute("y1", `${y1}`);
+    line.setAttribute("x2", `${x2}`);
+    line.setAttribute("y2", `${y2}`);
+    line.setAttribute("stroke", color || "black");
+    line.setAttribute("stroke-width", `${lineWidth}`);
 
     svg.append(line);
     element.append(svg);
+    console.log(this.moveMode);
+    if (this.moveMode) {
+      const startC = document.createElement("div");
+      startC.style.width = "16px";
+      startC.style.height = "16px";
+      startC.style.borderRadius = "50%";
+      startC.style.backgroundColor = "white";
+      startC.style.position = "absolute";
+      startC.style.left = startIsLeft ? "-8px" : `${width + lineWidth - 8}px`;
+      startC.style.top = startIsTop ? "-8px" : `${height + lineWidth - 8}px`;
+
+      const endC = document.createElement("div");
+      endC.style.width = "16px";
+      endC.style.height = "16px";
+      endC.style.borderRadius = "50%";
+      endC.style.backgroundColor = "white";
+      endC.style.position = "absolute";
+      endC.style.left = startIsLeft ? `${width + lineWidth - 8}px` : "-8px";
+      endC.style.top = startIsTop ? `${height + lineWidth - 8}px` : "-8px";
+
+      element.append(startC);
+      element.append(endC);
+    }
 
     return element;
   }

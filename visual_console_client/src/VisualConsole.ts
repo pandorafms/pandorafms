@@ -1,4 +1,4 @@
-import { AnyObject, Size } from "./lib/types";
+import { AnyObject, Size, Position } from "./lib/types";
 import {
   parseBoolean,
   sizePropsDecoder,
@@ -227,6 +227,26 @@ export default class VisualConsole {
    * @param e Event object.
    */
   private handleElementMovement: (e: ItemMovedEvent) => void = e => {
+    // Move their relation lines.
+    const itemId = e.item.props.id;
+    const relations = this.getItemRelations(itemId);
+
+    relations.forEach(relation => {
+      if (relation.parentId === itemId) {
+        // Move the line start.
+        relation.line.props = {
+          ...relation.line.props,
+          startPosition: this.getVisualCenter(e.newPosition, e.item)
+        };
+      } else if (relation.childId === itemId) {
+        // Move the line end.
+        relation.line.props = {
+          ...relation.line.props,
+          endPosition: this.getVisualCenter(e.newPosition, e.item)
+        };
+      }
+    });
+
     this.movedEventManager.emit(e);
     // console.log(`Moved element #${e.item.props.id}`, e);
   };
@@ -521,6 +541,54 @@ export default class VisualConsole {
     return this.relations[identifier] || null;
   }
 
+  // TODO: Document.
+  private getItemRelations(
+    itemId: number
+  ): {
+    parentId: number;
+    childId: number;
+    line: Line;
+  }[] {
+    const itemRelations = [];
+
+    for (let key in this.relations) {
+      const ids = key.split("|");
+      const parentId = Number.parseInt(ids[0]);
+      const childId = Number.parseInt(ids[1]);
+
+      if (itemId === parentId || itemId === childId) {
+        itemRelations.push({
+          parentId,
+          childId,
+          line: this.relations[key]
+        });
+      }
+    }
+
+    return itemRelations;
+  }
+
+  /**
+   * Retrieve the visual center of the item. It's ussually the center of the
+   * content, like the label doesn't exist.
+   * @param position Initial position.
+   * @param element Element we want to use.
+   */
+  private getVisualCenter(
+    position: Position,
+    element: Item<ItemProps>
+  ): Position {
+    // TODO: Perform a better calculation taking into account the lablel
+    // position of the element.
+    const x = position.x + element.elementRef.clientWidth / 2;
+    const y =
+      position.y +
+      (element.elementRef.clientHeight - element.labelElementRef.clientHeight) /
+        2;
+
+    return { x, y };
+  }
+
   /**
    * Add a new line item to represent a relation between the items.
    * @param parent Parent item.
@@ -537,15 +605,8 @@ export default class VisualConsole {
     }
 
     // Get the items center.
-    const startX = parent.props.x + parent.elementRef.clientWidth / 2;
-    const startY =
-      parent.props.y +
-      (parent.elementRef.clientHeight - parent.labelElementRef.clientHeight) /
-        2;
-    const endX = child.props.x + child.elementRef.clientWidth / 2;
-    const endY =
-      child.props.y +
-      (child.elementRef.clientHeight - child.labelElementRef.clientHeight) / 2;
+    const { x: startX, y: startY } = this.getVisualCenter(parent.props, parent);
+    const { x: endX, y: endY } = this.getVisualCenter(child.props, child);
 
     const line = new Line(
       linePropsDecoder({

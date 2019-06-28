@@ -72,6 +72,8 @@ class TreeService extends Tree
 
     protected function getFirstLevel()
     {
+        global $config;
+
         $processed_items = $this->getProcessedServices();
         $ids = array_keys($processed_items);
 

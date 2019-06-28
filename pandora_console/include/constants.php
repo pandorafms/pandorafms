@@ -39,10 +39,11 @@ define('TIME_FORMAT', 'H:i:s');
 define('TIME_FORMAT_JS', 'HH:mm:ss');
 
 // Events state constants.
+define('EVENT_ALL', -1);
 define('EVENT_NEW', 0);
 define('EVENT_VALIDATE', 1);
 define('EVENT_PROCESS', 2);
-
+define('EVENT_NO_VALIDATED', 3);
 
 
 // Agents disabled status.
@@ -65,7 +66,7 @@ define('ERR_NODATA', -70000);
 define('ERR_CONNECTION', -80000);
 define('ERR_DISABLED', -90000);
 define('ERR_WRONG', -100000);
-define('ERR_WRONG_NAME', -100001);
+define('ERR_WRONG_MR', -100001);
 define('ERR_WRONG_PARAMETERS', -100002);
 define('ERR_ACL', -110000);
 define('ERR_AUTH', -120000);
@@ -137,19 +138,19 @@ switch ($config['dbtype']) {
 
 
 // Color constants.
-define('COL_CRITICAL', '#FC4444');
-define('COL_WARNING', '#FAD403');
+define('COL_CRITICAL', '#e63c52');
+define('COL_WARNING', '#f3b200');
 define('COL_WARNING_DARK', '#FFB900');
-define('COL_NORMAL', '#80BA27');
-define('COL_NOTINIT', '#3BA0FF');
+define('COL_NORMAL', '#82b92e');
+define('COL_NOTINIT', '#4a83f3');
 define('COL_UNKNOWN', '#B2B2B2');
 define('COL_DOWNTIME', '#976DB1');
 define('COL_IGNORED', '#DDD');
-define('COL_ALERTFIRED', '#FFA631');
-define('COL_MINOR', '#F099A2');
+define('COL_ALERTFIRED', '#F36201');
+define('COL_MINOR', '#B2B2B2');
 define('COL_MAJOR', '#C97A4A');
 define('COL_INFORMATIONAL', '#E4E4E4');
-define('COL_MAINTENANCE', '#3BA0FF');
+define('COL_MAINTENANCE', '#4a83f3');
 
 define('COL_GRAPH1', '#C397F2');
 define('COL_GRAPH2', '#FFE66C');

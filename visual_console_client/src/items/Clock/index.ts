@@ -1,6 +1,11 @@
 import "./styles.css";
 
-import { LinkedVisualConsoleProps, UnknownObject, Size } from "../../types";
+import {
+  LinkedVisualConsoleProps,
+  AnyObject,
+  Size,
+  ItemMeta
+} from "../../lib/types";
 import {
   linkedVCPropsDecoder,
   parseIntOr,
@@ -60,7 +65,7 @@ const parseClockFormat = (clockFormat: unknown): ClockProps["clockFormat"] => {
  * @throws Will throw a TypeError if some property
  * is missing from the raw object or have an invalid type.
  */
-export function clockPropsDecoder(data: UnknownObject): ClockProps | never {
+export function clockPropsDecoder(data: AnyObject): ClockProps | never {
   if (
     typeof data.clockTimezone !== "string" ||
     data.clockTimezone.length === 0
@@ -85,9 +90,9 @@ export default class Clock extends Item<ClockProps> {
   public static readonly TICK_INTERVAL = 1000; // In ms.
   private intervalRef: number | null = null;
 
-  public constructor(props: ClockProps) {
+  public constructor(props: ClockProps, meta: ItemMeta) {
     // Call the superclass constructor.
-    super(props);
+    super(props, meta);
 
     /* The item is already loaded and inserted into the DOM.
      * The class properties are now initialized.

@@ -322,7 +322,7 @@ if ($create_modules) {
                     } else if (preg_match('/ifAdminStatus/', $name_array[1])) {
                         $module_type = 2;
                     } else if (preg_match('/ifOperStatus/', $name_array[1])) {
-                        $module_type = 18;
+                        $module_type = 2;
                     } else {
                         $module_type = 4;
                     }
@@ -608,11 +608,11 @@ ui_require_jquery_file('bgiframe');
 
 $(document).ready (function () {
     var inputActive = true;
-    
+
     $(document).data('text_for_module', $("#none_text").html());
-    
+
     $("#id_snmp").change(snmp_changed_by_multiple_snmp);
-    
+
     $("#snmp_version").change(function () {
         if (this.value == "3") {
             $("#snmp3_options").css("display", "");
@@ -621,7 +621,7 @@ $(document).ready (function () {
             $("#snmp3_options").css("display", "none");
         }
     });
-    
+
     $("#walk_form").submit(function() {
         $("#submit-snmp_walk").disable ();
         $("#oid_loading").show ();
@@ -632,15 +632,15 @@ $(document).ready (function () {
 
 function snmp_changed_by_multiple_snmp (event, id_snmp, selected) {
     var idSNMP = Array();
-    
+
     jQuery.each ($("#id_snmp option:selected"), function (i, val) {
         idSNMP.push($(val).val());
     });
     $('#module').attr ('disabled', 1);
     $('#module').empty ();
     $('#module').append ($('<option></option>').html ("Loading...").attr ("value", 0));
-    
-    jQuery.post ('ajax.php', 
+
+    jQuery.post ('ajax.php',
         {"page" : "godmode/agentes/agent_manager",
             "get_modules_json_for_multiple_snmp": 1,
             "id_snmp[]": idSNMP,
@@ -655,7 +655,7 @@ function snmp_changed_by_multiple_snmp (event, id_snmp, selected) {
                 $('#module').fadeIn ('normal');
                 c++;
                 });
-            
+
             if (c == 0) {
                 if (typeof($(document).data('text_for_module')) != 'undefined') {
                     $('#module').append ($('<option></option>').html ($(document).data('text_for_module')).attr("value", 0).prop('selected', true));
@@ -666,11 +666,11 @@ function snmp_changed_by_multiple_snmp (event, id_snmp, selected) {
                     }
                     else {
                         var anyText = $("#any_text").html(); //Trick for catch the translate text.
-                        
+
                         if (anyText == null) {
                             anyText = 'Any';
                         }
-                        
+
                         $('#module').append ($('<option></option>').html (anyText).attr ("value", 0).prop('selected', true));
                     }
                 }
@@ -684,4 +684,3 @@ function snmp_changed_by_multiple_snmp (event, id_snmp, selected) {
 
 /* ]]> */
 </script>
-

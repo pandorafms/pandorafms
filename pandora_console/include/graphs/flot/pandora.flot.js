@@ -152,12 +152,12 @@ function pandoraFlotPieCustom(
     colors = colors.split(separator);
   }
   var colors_data = [
-    "#FC4444",
+    "#e63c52",
     "#FFA631",
-    "#FAD403",
+    "#f3b200",
     "#5BB6E5",
     "#F2919D",
-    "#80BA27"
+    "#82b92e"
   ];
   var color = null;
   for (var i = 0; i < data.length; i++) {
@@ -380,12 +380,12 @@ function pandoraFlotHBars(
   max
 ) {
   var colors_data = [
-    "#FC4444",
+    "#e63c52",
     "#FFA631",
-    "#FAD403",
+    "#f3b200",
     "#5BB6E5",
     "#F2919D",
-    "#80BA27"
+    "#82b92e"
   ];
   values = values.split(separator2);
   font = font
@@ -639,7 +639,7 @@ function pandoraFlotVBars(
   var colors_data =
     colors.length > 0
       ? colors
-      : ["#FFA631", "#FC4444", "#FAD403", "#5BB6E5", "#F2919D", "#80BA27"];
+      : ["#FFA631", "#e63c52", "#f3b200", "#5BB6E5", "#F2919D", "#82b92e"];
   var datas = new Array();
 
   for (i = 0; i < values.length; i++) {
@@ -869,7 +869,7 @@ function pandoraFlotSlicebar(
 
   var datas = new Array();
 
-  for (i = 0; i < values.length; i++) {
+  for (var i = 0; i < values.length; i++) {
     var serie = values[i].split(separator);
 
     var aux = new Array();
@@ -1938,6 +1938,8 @@ function pandoraFlotArea(
   switch (type) {
     case "line":
     case 2:
+      stacked = null;
+      filled_s = false;
       break;
     case 3:
       stacked = "stack";
@@ -2681,13 +2683,13 @@ function pandoraFlotArea(
         if (events_data.event_type.search("alert") >= 0) {
           extra_color = "#FFA631";
         } else if (events_data.event_type.search("critical") >= 0) {
-          extra_color = "#FC4444";
+          extra_color = "#e63c52";
         } else if (events_data.event_type.search("warning") >= 0) {
-          extra_color = "#FAD403";
+          extra_color = "#f3b200";
         } else if (events_data.event_type.search("unknown") >= 0) {
-          extra_color = "#3BA0FF";
+          extra_color = "#4a83f3";
         } else if (events_data.event_type.search("normal") >= 0) {
-          extra_color = "#80BA27";
+          extra_color = "#82b92e";
         } else {
           extra_color = "#ffffff";
         }

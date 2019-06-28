@@ -1113,15 +1113,6 @@ $row++;
 
 
 
-    $table_other->data[$row][0] = __('Show QR Code icon in the header');
-    $table_other->data[$row][1] = html_print_checkbox_switch(
-        'show_qr_code_header',
-        1,
-        $config['show_qr_code_header'],
-        true
-    );
-    $row++;
-
     $table_other->data[$row][0] = __('Custom graphviz directory').ui_print_help_tip(__('Custom directory where the graphviz binaries are stored.'), true);
     $table_other->data[$row][1] = html_print_input_text(
         'graphviz_bin_dir',

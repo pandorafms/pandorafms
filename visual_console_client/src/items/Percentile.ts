@@ -2,9 +2,9 @@ import { arc as arcFactory } from "d3-shape";
 
 import {
   LinkedVisualConsoleProps,
-  UnknownObject,
+  AnyObject,
   WithModuleProps
-} from "../types";
+} from "../lib/types";
 import {
   linkedVCPropsDecoder,
   modulePropsDecoder,
@@ -81,7 +81,7 @@ function extractValueType(valueType: unknown): PercentileProps["valueType"] {
  * is missing from the raw object or have an invalid type.
  */
 export function percentilePropsDecoder(
-  data: UnknownObject
+  data: AnyObject
 ): PercentileProps | never {
   return {
     ...itemBasePropsDecoder(data), // Object spread. It will merge the properties of the two objects.

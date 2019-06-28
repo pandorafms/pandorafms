@@ -83,7 +83,7 @@ echo '<div id="visual-console-container"></div>';
 echo '<div id="vc-controls" style="z-index:300;">';
 
 echo '<div id="menu_tab">';
-echo '<ul class="mn">';
+echo '<ul class="mn white-box-content box-shadow flex-row">';
 
 // QR code.
 echo '<li class="nomn">';
@@ -198,6 +198,14 @@ $visualConsoleItems = VisualConsole::getItemsFromDB(
             }
         }
     }
+
+    // Add the datetime when the item was received.
+    var receivedAt = new Date();
+    items.map(function(item) {
+        item["receivedAt"] = receivedAt;
+        return item;
+    });
+
     var visualConsoleManager = createVisualConsole(
         container,
         props,

@@ -62,6 +62,37 @@ if (is_ajax()) {
     $agent_alias = get_parameter('alias', '');
     $agents_inserted = get_parameter('agents_inserted', []);
     $id_group = (int) get_parameter('id_group');
+
+    $refresh_contact = get_parameter('refresh_contact', 0);
+
+    if ($refresh_contact) {
+        $id_agente = get_parameter('id_agente', 0);
+        if ($id_agente > 0) {
+            $last_contact = db_get_value_sql(
+                sprintf(
+                    'SELECT intervalo - (UNIX_TIMESTAMP() - UNIX_TIMESTAMP(IF(ultimo_contacto > ultimo_contacto_remoto, ultimo_contacto, ultimo_contacto_remoto)))
+                     FROM `tagente`
+                     WHERE id_agente = %d ',
+                    $id_agente
+                )
+            );
+
+            $progress = agents_get_next_contact($id_agente);
+            if ($progress < 0 || $progress > 100) {
+                $progress = 100;
+            }
+
+            echo json_encode(
+                [
+                    'progress'     => $progress,
+                    'last_contact' => $last_contact,
+                ]
+            );
+        }
+
+        return;
+    }
+
     if ($get_agents_group_json) {
         $id_group = (int) get_parameter('id_group');
         $recursion = (bool) get_parameter('recursion');

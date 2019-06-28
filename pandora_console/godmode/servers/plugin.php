@@ -280,7 +280,7 @@ if (($create != '') || ($view != '')) {
     } else {
         if ($create != '') {
             ui_print_page_header(
-                __('Plugin creation'),
+                __('Plugin registration'),
                 'images/gm_servers.png',
                 false,
                 'plugin_definition',

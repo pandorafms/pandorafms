@@ -1,8 +1,8 @@
 import {
   WithModuleProps,
   LinkedVisualConsoleProps,
-  UnknownObject
-} from "../types";
+  AnyObject
+} from "../lib/types";
 import { modulePropsDecoder, linkedVCPropsDecoder } from "../lib";
 import Item, { itemBasePropsDecoder, ItemType, ItemProps } from "../Item";
 
@@ -24,7 +24,7 @@ export type ColorCloudProps = {
  * is missing from the raw object or have an invalid type.
  */
 export function colorCloudPropsDecoder(
-  data: UnknownObject
+  data: AnyObject
 ): ColorCloudProps | never {
   // TODO: Validate the color.
   if (typeof data.color !== "string" || data.color.length === 0) {
@@ -51,6 +51,10 @@ export default class ColorCloud extends Item<ColorCloudProps> {
     container.append(this.createSvgElement());
 
     return container;
+  }
+
+  protected resizeElement(width: number): void {
+    super.resizeElement(width, width);
   }
 
   public createSvgElement(): SVGSVGElement {

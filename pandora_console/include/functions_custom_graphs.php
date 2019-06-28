@@ -184,7 +184,7 @@ function custom_graphs_search($id_group, $search)
                         FROM tgraph_source
                         WHERE id_graph = '.$graph['id_graph'].''
         );
-
+        $graphs[$graph['id_graph']]['id_graph'] = $graph['id_graph'];
         $graphs[$graph['id_graph']]['graphs_count'] = $graphsCount;
         $graphs[$graph['id_graph']]['name'] = $graph['name'];
         $graphs[$graph['id_graph']]['description'] = $graph['description'];

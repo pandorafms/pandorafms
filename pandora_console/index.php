@@ -1189,18 +1189,20 @@ echo '</div>';
 
 if ($config['pure'] == 0) {
     echo '</div>';
-    // container div
+    // Container div.
+    echo '</div>';
     echo '<div style="clear:both"></div>';
+
     echo '<div id="foot">';
     include 'general/footer.php';
-    echo '</div>';
 }
 
-// Clippy function
+// Clippy function.
 require_once 'include/functions_clippy.php';
 clippy_start($sec2);
 
 while (@ob_end_flush()) {
+    // Dump.
 }
 
 db_print_database_debug();

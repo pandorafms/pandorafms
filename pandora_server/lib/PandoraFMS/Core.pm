@@ -185,6 +185,7 @@ our @EXPORT = qw(
 	pandora_exec_forced_alerts
 	pandora_generate_alerts
 	pandora_get_config_value
+	pandora_get_credential
 	pandora_get_module_tags
 	pandora_get_module_url_tags
 	pandora_get_module_phone_tags
@@ -3122,6 +3123,19 @@ sub pandora_get_config_value ($$) {
 	return (defined ($config_value) ? $config_value : "");
 }
 
+
+##########################################################################
+## Get credential from credential store
+##########################################################################
+sub pandora_get_credential ($$) {
+	my ($dbh, $identifier) = @_;
+
+	my $key = get_db_single_row($dbh, 'SELECT * FROM tcredential_store WHERE identifier = ?', $identifier);
+
+	return $key;
+}
+
+
 ##########################################################################
 =head2 C<< pandora_create_module_tags (I<$pa_config>, I<$dbh>, I<$id_agent_module>, I<$serialized_tags>) >>
 
@@ -3352,7 +3366,7 @@ sub pandora_event ($$$$$$$$$$;$$$$$$$$$$$) {
 	# Validate events with the same event id
 	if (defined ($id_extra) && $id_extra ne '') {
 		logger($pa_config, "Updating events with extended id '$id_extra'.", 10);
-		db_do ($dbh, 'UPDATE ' . $event_table . ' SET estado = 1, ack_utimestamp = ? WHERE estado = 0 AND id_extra=?', $utimestamp, $id_extra);
+		db_do ($dbh, 'UPDATE ' . $event_table . ' SET estado = 1, ack_utimestamp = ? WHERE estado IN (0,2) AND id_extra=?', $utimestamp, $id_extra);
 	}
 	
 	# Create the event
@@ -3866,7 +3880,7 @@ sub subst_alert_macros ($$;$$$$) {
 	my $macro_regexp = join('|', keys %{$macros});
 
 	my $subst_func;
-	if ($string =~ m/^(?:(")(?:.*)"|(')(?:.*)')$/) {
+	if (defined($string) && $string =~ m/^(?:(")(?:.*)"|(')(?:.*)')$/) {
 		my $quote = $1 ? $1 : $2;
 		$subst_func = sub {
 			my $macro = on_demand_macro($pa_config, $dbh, shift, $macros, $agent, $module);
@@ -4810,7 +4824,7 @@ sub pandora_process_event_replication ($) {
 			}
 			
 			# Get server id on metaconsole
-			my $metaconsole_server_id = enterprise_hook('get_metaconsole_setup_server_id', [$dbh_metaconsole, safe_input($pa_config->{'servername'})]);
+			my $metaconsole_server_id = enterprise_hook('get_metaconsole_setup_server_id', [$dbh]);
 		
 			# If the server name is not found in metaconsole setup: abort
 			if($metaconsole_server_id == -1) {

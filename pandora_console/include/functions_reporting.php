@@ -11118,22 +11118,38 @@ function reporting_get_stats_servers()
 
     $output = '<fieldset class="databox tactical_set">
 				<legend>'.__('Server performance').'</legend>'.html_print_table($table_srv, true).'</fieldset>';
+    $public_hash = get_parameter('hash', false);
+    if ($public_hash === false) {
+        $output .= '<script type="text/javascript">';
+            $output .= '$(document).ready(function () {';
+                $output .= 'var parameters = {};';
+                $output .= 'parameters["page"] = "include/ajax/events";';
+                $output .= 'parameters["total_events"] = 1;';
 
-    $output .= '<script type="text/javascript">';
-        $output .= '$(document).ready(function () {';
-            $output .= 'var parameters = {};';
-            $output .= 'parameters["page"] = "include/ajax/events";';
-            $output .= 'parameters["total_events"] = 1;';
-
-            $output .= '$.ajax({type: "GET",url: "/pandora_console/ajax.php",data: parameters,';
-                $output .= 'success: function(data) {';
-                    $output .= '$("#total_events").text(data);';
-                $output .= '}';
+                $output .= '$.ajax({type: "GET",url: "/pandora_console/ajax.php",data: parameters,';
+                    $output .= 'success: function(data) {';
+                        $output .= '$("#total_events").text(data);';
+                    $output .= '}';
+                $output .= '});';
             $output .= '});';
-        $output .= '});';
-    $output .= '</script>';
+        $output .= '</script>';
+    } else {
+        // This is for public link on the dashboard
+        $sql_count_event = 'SELECT SQL_NO_CACHE COUNT(id_evento) FROM tevento  ';
+        if ($config['event_view_hr']) {
+            $sql_count_event .= 'WHERE utimestamp > (UNIX_TIMESTAMP(NOW()) - '.($config['event_view_hr'] * SECONDS_1HOUR).')';
+        }
 
-    return $output;
+        $system_events = db_get_value_sql($sql_count_event);
+
+        $output .= '<script type="text/javascript">';
+            $output .= '$(document).ready(function () {';
+                $output .= '$("#total_events").text("'.$system_events.'");';
+            $output .= '});';
+        $output .= '</script>';
+    }
+
+        return $output;
 }
 
 

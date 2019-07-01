@@ -362,7 +362,7 @@ if ($console_mode == 1) {
         true
     );
 
-    echo "<table width='1000px' border='0' style='border:0px;' class='databox data' cellpadding='4' cellspacing='4'>";
+    echo "<table id='diagnostic_info' width='1000px' border='0' style='border:0px;' class='databox data' cellpadding='4' cellspacing='4'>";
     echo "<tr><th style='background-color:#b1b1b1;font-weight:bold;font-style:italic;border-radius:2px;' align=center colspan='2'>".__('Pandora status info').'</th></tr>';
 }
 

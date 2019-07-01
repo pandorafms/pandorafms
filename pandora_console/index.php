@@ -1214,14 +1214,17 @@ echo "\n<!-- Page generated in $run_time seconds -->\n";
 // Values from PHP to be recovered from JAVASCRIPT
 require 'include/php_to_js_values.php';
 
-
+// if ($config['style'] !== 'pandora') {
 ?>
 
 <script type="text/javascript" language="javascript">
 
     // When there are less than 5 rows, all rows must be white
-    if($('table.info_table tr').length < 5){
-        $('table.info_table tbody > tr').css('background-color', '#fff');
+   var theme = "<?php echo $config['style']; ?>";
+   if(theme === 'pandora'){
+        if($('table.info_table tr').length < 5){
+            $('table.info_table tbody > tr').css('background-color', '#fff');
+        }
     }
 
     // When the user scrolls down 400px from the top of the document, show the button.

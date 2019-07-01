@@ -1,20 +1,30 @@
 <?php
-
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public License
-// as published by the Free Software Foundation; version 2
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU General Public License for more details.
-
 /**
- * @package    Include
- * @subpackage Reporting
+ * Extension to manage a list of gateways and the node address where they should
+ * point to.
+ *
+ * @category   Reporting
+ * @package    Pandora FMS
+ * @subpackage Community
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
  */
 
 /**
@@ -38,9 +48,7 @@ require_once $config['homedir'].'/include/functions_netflow.php';
 require_once $config['homedir'].'/include/functions_os.php';
 require_once $config['homedir'].'/include/functions_network.php';
 
-//
-// CONSTANTS DEFINITIONS                //
-//
+// CONSTANTS DEFINITIONS.
 // Priority modes.
 define('REPORT_PRIORITY_MODE_OK', 1);
 define('REPORT_PRIORITY_MODE_UNKNOWN', 2);
@@ -6370,11 +6378,15 @@ function reporting_availability($report, $content, $date=false, $time=false)
 }
 
 
-/**
- * reporting_availability_graph
- *
- *  Generates a structure the report.
- */
+ /**
+  * Reporting_availability_graph.
+  *
+  * @param array   $report  Info report.
+  * @param array   $content Content data.
+  * @param boolean $pdf     Output type PDF.
+  *
+  * @return array Generates a structure the report.
+  */
 function reporting_availability_graph($report, $content, $pdf=false)
 {
     global $config;
@@ -6393,7 +6405,7 @@ function reporting_availability_graph($report, $content, $pdf=false)
     $return['description'] = $content['description'];
     $return['date'] = reporting_get_date_text($report, $content);
 
-    // Get chart
+    // Get chart.
     reporting_set_conf_charts(
         $width,
         $height,
@@ -6437,83 +6449,8 @@ function reporting_availability_graph($report, $content, $pdf=false)
 
         foreach ($slas as $sla) {
             $server_name = $sla['server_name'];
-            // Metaconsole connection
-            if ($metaconsole_on && $server_name != '') {
-                $connection = metaconsole_get_connection($server_name);
-                if (!metaconsole_load_external_db($connection)) {
-                    // ui_print_error_message ("Error connecting to ".$server_name);
-                    continue;
-                }
-            }
 
-            if (modules_is_disable_agent($sla['id_agent_module'])
-                || modules_is_not_init($sla['id_agent_module'])
-            ) {
-                if ($metaconsole_on) {
-                    // Restore db connection
-                    metaconsole_restore_db();
-                }
-
-                continue;
-            }
-
-            // controller min and max == 0 then dinamic min and max critical
-            $dinamic_text = 0;
-            if ($sla['sla_min'] == 0 && $sla['sla_max'] == 0) {
-                $sla['sla_min'] = null;
-                $sla['sla_max'] = null;
-                $dinamic_text = __('Dynamic');
-            }
-
-            // controller inverse interval
-            $inverse_interval = 0;
-            if ((isset($sla['sla_max'])) && (isset($sla['sla_min']))) {
-                if ($sla['sla_max'] < $sla['sla_min']) {
-                    $content_sla_max  = $sla['sla_max'];
-                    $sla['sla_max']   = $sla['sla_min'];
-                    $sla['sla_min']   = $content_sla_max;
-                    $inverse_interval = 1;
-                    $dinamic_text = __('Inverse');
-                }
-            }
-
-            // for graph slice for module-interval, if not slice=0;
-            $module_interval = modules_get_interval($sla['id_agent_module']);
-            $slice = ($content['period'] / $module_interval);
-
-            // call functions sla
-            $sla_array = [];
-            $sla_array = reporting_advanced_sla(
-                $sla['id_agent_module'],
-                ($report['datetime'] - $content['period']),
-                $report['datetime'],
-                $sla['sla_min'],
-                // min_value -> dynamic
-                $sla['sla_max'],
-                // max_value -> dynamic
-                $inverse_interval,
-                // inverse_interval -> dynamic
-                [
-                    '1' => $content['sunday'],
-                    '2' => $content['monday'],
-                    '3' => $content['tuesday'],
-                    '4' => $content['wednesday'],
-                    '5' => $content['thursday'],
-                    '6' => $content['friday'],
-                    '7' => $content['saturday'],
-                ],
-                $content['time_from'],
-                $content['time_to'],
-                $slice
-            );
-
-            if ($metaconsole_on) {
-                // Restore db connection
-                metaconsole_restore_db();
-            }
-
-            $server_name = $sla['server_name'];
-            // Metaconsole connection
+            // Metaconsole connection.
             if ($metaconsole_on && $server_name != '') {
                 $connection = metaconsole_get_connection($server_name);
                 if (metaconsole_connect($connection) != NOERR) {
@@ -6521,199 +6458,118 @@ function reporting_availability_graph($report, $content, $pdf=false)
                 }
             }
 
-            $planned_downtimes = reporting_get_planned_downtimes_intervals($sla['id_agent_module'], ($report['datetime'] - $content['period']), $report['datetime']);
+            if (isset($sla['id_agent_module_secondary']) === true
+                && $sla['id_agent_module_secondary'] != 0
+            ) {
+                $sla_secondary['primary'] = $sla;
+                $sla_secondary['failover'] = $sla;
+                $sla_secondary['failover']['id_agent_module'] = $sla['id_agent_module_secondary'];
 
-            if ((is_array($planned_downtimes)) && (count($planned_downtimes) > 0)) {
-                // Sort retrieved planned downtimes
-                usort(
-                    $planned_downtimes,
-                    function ($a, $b) {
-                        $a = intval($a['date_from']);
-                        $b = intval($b['date_from']);
-                        if ($a == $b) {
-                            return 0;
-                        }
+                // For graph slice for module-interval, if not slice=0.
+                $module_interval = modules_get_interval($sla['id_agent_module']);
+                $slice = ($content['period'] / $module_interval);
 
-                        return ($a < $b) ? -1 : 1;
-                    }
+                foreach ($sla_secondary as $k_sla => $v_sla) {
+                    $sla_array = data_db_uncompress_module(
+                        $v_sla,
+                        $content,
+                        $report['datetime'],
+                        $slice
+                    );
+
+                    $return = prepare_data_for_paint(
+                        $v_sla,
+                        $sla_array,
+                        $content,
+                        $report['datetime'],
+                        $return,
+                        $k_sla
+                    );
+
+                    $data_combined[] = $sla_array;
+                }
+
+                if (isset($data_combined) === true
+                    && is_array($data_combined) === true
+                    && count($data_combined) > 0
+                ) {
+                    $data_a = array_map(
+                        function ($primary, $failover) {
+                            if ($primary['date_from'] === $failover['date_from']
+                                && $primary['date_to'] === $failover['date_to']
+                            ) {
+                                if ($primary['sla_fixed'] !== 100
+                                    && $primary['sla_fixed'] < $failover['sla_fixed']
+                                ) {
+                                    $primary['time_total'] = $failover['time_total'];
+                                    $primary['time_ok'] = $failover['time_ok'];
+                                    $primary['time_error'] = $failover['time_error'];
+                                    $primary['time_unknown'] = $failover['time_unknown'];
+                                    $primary['time_not_init'] = $failover['time_not_init'];
+                                    $primary['time_downtime'] = $failover['time_downtime'];
+                                    $primary['time_out'] = $failover['time_out'];
+                                    $primary['checks_total'] = $failover['checks_total'];
+                                    $primary['checks_ok'] = $failover['checks_ok'];
+                                    $primary['checks_error'] = $failover['checks_error'];
+                                    $primary['checks_unknown'] = $failover['checks_unknown'];
+                                    $primary['checks_not_init'] = $failover['checks_not_init'];
+                                    $primary['SLA'] = $failover['SLA'];
+                                    $primary['sla_fixed'] = $failover['sla_fixed'];
+                                }
+
+                                $return = $primary;
+                            }
+
+                            return $return;
+                        },
+                        $data_combined[0],
+                        $data_combined[1]
+                    );
+
+                    $return = prepare_data_for_paint(
+                        $sla,
+                        $data_a,
+                        $content,
+                        $report['datetime'],
+                        $return,
+                        'result'
+                    );
+                }
+            } else {
+                $sla_array = data_db_uncompress_module(
+                    $sla,
+                    $content,
+                    $report['datetime']
                 );
 
-                // Compress (overlapped) planned downtimes
-                $npd = count($planned_downtimes);
-                for ($i = 0; $i < $npd; $i++) {
-                    if (isset($planned_downtimes[($i + 1)])) {
-                        if ($planned_downtimes[$i]['date_to'] >= $planned_downtimes[($i + 1)]['date_from']) {
-                            // merge
-                            $planned_downtimes[$i]['date_to'] = $planned_downtimes[($i + 1)]['date_to'];
-                            array_splice($planned_downtimes, ($i + 1), 1);
-                            $npd--;
-                        }
-                    }
-                }
-            } else {
-                $planned_downtimes = null;
+                $return = prepare_data_for_paint(
+                    $sla,
+                    $sla_array,
+                    $content,
+                    $report['datetime'],
+                    $return
+                );
             }
-
-            $data = [];
-            $data['agent']        = modules_get_agentmodule_agent_alias($sla['id_agent_module']);
-            $data['module']       = modules_get_agentmodule_name($sla['id_agent_module']);
-            $data['max']          = $sla['sla_max'];
-            $data['min']          = $sla['sla_min'];
-            $data['sla_limit']    = $sla['sla_limit'];
-            $data['dinamic_text'] = $dinamic_text;
-
-            if (isset($sla_array[0])) {
-                $data['time_total']      = 0;
-                $data['time_ok']         = 0;
-                $data['time_error']      = 0;
-                $data['time_unknown']    = 0;
-                $data['time_not_init']   = 0;
-                $data['time_downtime']   = 0;
-                $data['checks_total']    = 0;
-                $data['checks_ok']       = 0;
-                $data['checks_error']    = 0;
-                $data['checks_unknown']  = 0;
-                $data['checks_not_init'] = 0;
-
-                $raw_graph = [];
-                $i = 0;
-                foreach ($sla_array as $value_sla) {
-                    $data['time_total']      += $value_sla['time_total'];
-                    $data['time_ok']         += $value_sla['time_ok'];
-                    $data['time_error']      += $value_sla['time_error'];
-                    $data['time_unknown']    += $value_sla['time_unknown'];
-                    $data['time_downtime']   += $value_sla['time_downtime'];
-                    $data['time_not_init']   += $value_sla['time_not_init'];
-                    $data['checks_total']    += $value_sla['checks_total'];
-                    $data['checks_ok']       += $value_sla['checks_ok'];
-                    $data['checks_error']    += $value_sla['checks_error'];
-                    $data['checks_unknown']  += $value_sla['checks_unknown'];
-                    $data['checks_not_init'] += $value_sla['checks_not_init'];
-
-                    // generate raw data for graph
-                    $period = reporting_sla_get_status_period($value_sla, $priority_mode);
-                    $raw_graph[$i]['data'] = reporting_translate_sla_status_for_graph($period);
-                    $raw_graph[$i]['utimestamp'] = ($value_sla['date_to'] - $value_sla['date_from']);
-                    $i++;
-                }
-
-                $data['sla_value'] = reporting_sla_get_compliance_from_array($data);
-                $data['sla_fixed'] = sla_truncate($data['sla_value'], $config['graph_precision']);
-            } else {
-                // Show only table not divider in slice for defect slice=1
-                $data['time_total']      = $sla_array['time_total'];
-                $data['time_ok']         = $sla_array['time_ok'];
-                $data['time_error']      = $sla_array['time_error'];
-                $data['time_unknown']    = $sla_array['time_unknown'];
-                $data['time_downtime']   = $sla_array['time_downtime'];
-                $data['time_not_init']   = $sla_array['time_not_init'];
-                $data['checks_total']    = $sla_array['checks_total'];
-                $data['checks_ok']       = $sla_array['checks_ok'];
-                $data['checks_error']    = $sla_array['checks_error'];
-                $data['checks_unknown']  = $sla_array['checks_unknown'];
-                $data['checks_not_init'] = $sla_array['checks_not_init'];
-                $data['sla_value']       = $sla_array['SLA'];
-            }
-
-            // checks whether or not it meets the SLA
-            if ($data['sla_value'] >= $sla['sla_limit']) {
-                $data['sla_status'] = 1;
-                $sla_failed = false;
-            } else {
-                $sla_failed = true;
-                $data['sla_status'] = 0;
-            }
-
-            // Do not show right modules if 'only_display_wrong' is active
-            if ($content['only_display_wrong'] && $sla_failed == false) {
-                continue;
-            }
-
-            // find order
-            $data['order'] = $data['sla_value'];
-            $return['data'][] = $data;
-
-            $data_init = -1;
-            $acum = 0;
-            $sum = 0;
-            $array_result = [];
-            $i = 0;
-            foreach ($raw_graph as $key => $value) {
-                if ($data_init == -1) {
-                    $data_init = $value['data'];
-                    $acum      = $value['utimestamp'];
-                    $sum       = $value['data'];
-                } else {
-                    if ($data_init == $value['data']) {
-                        $acum = ($acum + $value['utimestamp']);
-                        $sum  = ($sum + $value['real_data']);
-                    } else {
-                        $array_result[$i]['data'] = $data_init;
-                        $array_result[$i]['utimestamp'] = $acum;
-                        $array_result[$i]['real_data'] = $sum;
-                        $i++;
-                        $data_init = $value['data'];
-                        $acum = $value['utimestamp'];
-                        $sum = $value['real_data'];
-                    }
-                }
-            }
-
-            $array_result[$i]['data'] = $data_init;
-            $array_result[$i]['utimestamp'] = $acum;
-            $array_result[$i]['real_data'] = $sum;
-
-            // Slice graphs calculation
-            $dataslice = [];
-            $dataslice['agent']        = modules_get_agentmodule_agent_alias($sla['id_agent_module']);
-            $dataslice['module']       = modules_get_agentmodule_name($sla['id_agent_module']);
-            $dataslice['order']        = $data['sla_value'];
-            $dataslice['checks_total'] = $data['checks_total'];
-            $dataslice['checks_ok']    = $data['checks_ok'];
-            $dataslice['time_total']   = $data['time_total'];
-            $dataslice['time_not_init'] = $data['time_not_init'];
-            $dataslice['sla_status']   = $data['sla_status'];
-            $dataslice['sla_value']    = $data['sla_value'];
-
-            $dataslice['chart'] = graph_sla_slicebar(
-                $sla['id_agent_module'],
-                $content['period'],
-                $sla['sla_min'],
-                $sla['sla_max'],
-                $report['datetime'],
-                $content,
-                $content['time_from'],
-                $content['time_to'],
-                100,
-                70,
-                $urlImage,
-                $ttl,
-                $array_result,
-                false
-            );
-
-            $return['charts'][] = $dataslice;
 
             if ($metaconsole_on) {
-                // Restore db connection
+                // Restore db connection.
                 metaconsole_restore_db();
             }
         }
 
-        // SLA items sorted descending ()
+        // SLA items sorted descending.
         if ($content['top_n'] == 2) {
             arsort($return['data']['']);
-        }
-        // SLA items sorted ascending
-        else if ($content['top_n'] == 1) {
+        } else if ($content['top_n'] == 1) {
+            // SLA items sorted ascending.
             asort($sla_showed_values);
         }
 
-        // order data for ascending or descending
+        // Order data for ascending or descending.
         if ($content['top_n'] != 0) {
             switch ($content['top_n']) {
                 case 1:
-                    // order tables
+                    // Order tables.
                     $temp = [];
                     foreach ($return['data'] as $row) {
                         $i = 0;
@@ -6730,7 +6586,7 @@ function reporting_availability_graph($report, $content, $pdf=false)
 
                     $return['data'] = $temp;
 
-                    // order graphs
+                    // Order graphs.
                     $temp = [];
                     foreach ($return['charts'] as $row) {
                         $i = 0;
@@ -6746,11 +6602,10 @@ function reporting_availability_graph($report, $content, $pdf=false)
                     }
 
                     $return['charts'] = $temp;
-
                 break;
 
                 case 2:
-                    // order tables
+                    // Order tables.
                     $temp = [];
                     foreach ($return['data'] as $row) {
                         $i = 0;
@@ -6767,7 +6622,7 @@ function reporting_availability_graph($report, $content, $pdf=false)
 
                     $return['data'] = $temp;
 
-                    // order graph
+                    // Order graph.
                     $temp = [];
                     foreach ($return['charts'] as $row) {
                         $i = 0;
@@ -6783,13 +6638,321 @@ function reporting_availability_graph($report, $content, $pdf=false)
                     }
 
                     $return['charts'] = $temp;
+                break;
 
+                default:
+                    // If not posible.
                 break;
             }
         }
     }
 
     return reporting_check_structure_content($return);
+}
+
+
+/**
+ * Return data db uncompress for module.
+ *
+ * @param array   $sla      Data neccesary for db_uncompress.
+ * @param array   $content  Conetent report.
+ * @param array   $datetime Date.
+ * @param integer $slice    Defined slice.
+ *
+ * @return array
+ */
+function data_db_uncompress_module($sla, $content, $datetime, $slice=0)
+{
+    // Controller min and max == 0 then dinamic min and max critical.
+    $dinamic_text = 0;
+    if ($sla['sla_min'] == 0 && $sla['sla_max'] == 0) {
+        $sla['sla_min'] = null;
+        $sla['sla_max'] = null;
+        $dinamic_text = __('Dynamic');
+    }
+
+    // Controller inverse interval.
+    $inverse_interval = 0;
+    if ((isset($sla['sla_max'])) && (isset($sla['sla_min']))) {
+        if ($sla['sla_max'] < $sla['sla_min']) {
+            $content_sla_max  = $sla['sla_max'];
+            $sla['sla_max']   = $sla['sla_min'];
+            $sla['sla_min']   = $content_sla_max;
+            $inverse_interval = 1;
+            $dinamic_text = __('Inverse');
+        }
+    }
+
+    if ($slice === 0) {
+        // For graph slice for module-interval, if not slice=0.
+        $module_interval = modules_get_interval($sla['id_agent_module']);
+        $slice = ($content['period'] / $module_interval);
+    }
+
+    // Call functions sla.
+    $sla_array = [];
+    $sla_array = reporting_advanced_sla(
+        $sla['id_agent_module'],
+        ($datetime - $content['period']),
+        $datetime,
+        $sla['sla_min'],
+        $sla['sla_max'],
+        $inverse_interval,
+        [
+            '1' => $content['sunday'],
+            '2' => $content['monday'],
+            '3' => $content['tuesday'],
+            '4' => $content['wednesday'],
+            '5' => $content['thursday'],
+            '6' => $content['friday'],
+            '7' => $content['saturday'],
+        ],
+        $content['time_from'],
+        $content['time_to'],
+        $slice
+    );
+
+    return $sla_array;
+}
+
+
+/**
+ * Return array planned downtimes.
+ *
+ * @param integer $id_agent_module Id module.
+ * @param integer $datetime        Date utimestamp.
+ * @param integer $period          Period utimestamp.
+ *
+ * @return array
+ */
+function reporting_get_planned_downtimes_sla($id_agent_module, $datetime, $period)
+{
+    $planned_downtimes = reporting_get_planned_downtimes_intervals(
+        $id_agent_module,
+        ($datetime - $period),
+        $datetime
+    );
+
+    if ((is_array($planned_downtimes))
+        && (count($planned_downtimes) > 0)
+    ) {
+        // Sort retrieved planned downtimes.
+        usort(
+            $planned_downtimes,
+            function ($a, $b) {
+                $a = intval($a['date_from']);
+                $b = intval($b['date_from']);
+                if ($a == $b) {
+                    return 0;
+                }
+
+                return ($a < $b) ? (-1) : 1;
+            }
+        );
+
+        // Compress (overlapped) planned downtimes.
+        $npd = count($planned_downtimes);
+        for ($i = 0; $i < $npd; $i++) {
+            if (isset($planned_downtimes[($i + 1)])) {
+                if ($planned_downtimes[$i]['date_to'] >= $planned_downtimes[($i + 1)]['date_from']) {
+                    // Merge.
+                    $planned_downtimes[$i]['date_to'] = $planned_downtimes[($i + 1)]['date_to'];
+                    array_splice($planned_downtimes, ($i + 1), 1);
+                    $npd--;
+                }
+            }
+        }
+    } else {
+        $planned_downtimes = [];
+    }
+
+    return $planned_downtimes;
+}
+
+
+/**
+ * Prepare data for Paint in report.
+ *
+ * @param array   $sla       Data Module to sla.
+ * @param array   $sla_array Data uncompressed.
+ * @param array   $content   Content report data.
+ * @param integer $datetime  Date.
+ * @param array   $return    Array return.
+ * @param string  $secondary Type secondaary primary, failover, Result.
+ *
+ * @return array Return modify.
+ */
+function prepare_data_for_paint(
+    $sla,
+    $sla_array,
+    $content,
+    $datetime,
+    $return,
+    $secondary=''
+) {
+    $data = [];
+    $alias_agent = modules_get_agentmodule_agent_alias(
+        $sla['id_agent_module']
+    );
+    $name_module = modules_get_agentmodule_name(
+        $sla['id_agent_module']
+    );
+
+    $data['agent'] = $alias_agent;
+    $data['module'] = $name_module;
+    $data['max'] = $sla['sla_max'];
+    $data['min'] = $sla['sla_min'];
+    $data['sla_limit'] = $sla['sla_limit'];
+    $data['dinamic_text'] = $dinamic_text;
+    $data['secondary'] = $secondary;
+    if (isset($sla_array[0])) {
+        $data['time_total']      = 0;
+        $data['time_ok']         = 0;
+        $data['time_error']      = 0;
+        $data['time_unknown']    = 0;
+        $data['time_not_init']   = 0;
+        $data['time_downtime']   = 0;
+        $data['checks_total']    = 0;
+        $data['checks_ok']       = 0;
+        $data['checks_error']    = 0;
+        $data['checks_unknown']  = 0;
+        $data['checks_not_init'] = 0;
+
+        $raw_graph = [];
+        $i = 0;
+        foreach ($sla_array as $value_sla) {
+            $data['time_total']      += $value_sla['time_total'];
+            $data['time_ok']         += $value_sla['time_ok'];
+            $data['time_error']      += $value_sla['time_error'];
+            $data['time_unknown']    += $value_sla['time_unknown'];
+            $data['time_downtime']   += $value_sla['time_downtime'];
+            $data['time_not_init']   += $value_sla['time_not_init'];
+            $data['checks_total']    += $value_sla['checks_total'];
+            $data['checks_ok']       += $value_sla['checks_ok'];
+            $data['checks_error']    += $value_sla['checks_error'];
+            $data['checks_unknown']  += $value_sla['checks_unknown'];
+            $data['checks_not_init'] += $value_sla['checks_not_init'];
+
+            // Generate raw data for graph.
+            $period = reporting_sla_get_status_period(
+                $value_sla,
+                $priority_mode
+            );
+            $raw_graph[$i]['data'] = reporting_translate_sla_status_for_graph(
+                $period
+            );
+            $raw_graph[$i]['utimestamp'] = ($value_sla['date_to'] - $value_sla['date_from']);
+            $i++;
+        }
+
+        $data['sla_value'] = reporting_sla_get_compliance_from_array(
+            $data
+        );
+        $data['sla_fixed'] = sla_truncate(
+            $data['sla_value'],
+            $config['graph_precision']
+        );
+    } else {
+        // Show only table not divider in slice for defect slice=1.
+        $data['time_total']      = $sla_array['time_total'];
+        $data['time_ok']         = $sla_array['time_ok'];
+        $data['time_error']      = $sla_array['time_error'];
+        $data['time_unknown']    = $sla_array['time_unknown'];
+        $data['time_downtime']   = $sla_array['time_downtime'];
+        $data['time_not_init']   = $sla_array['time_not_init'];
+        $data['checks_total']    = $sla_array['checks_total'];
+        $data['checks_ok']       = $sla_array['checks_ok'];
+        $data['checks_error']    = $sla_array['checks_error'];
+        $data['checks_unknown']  = $sla_array['checks_unknown'];
+        $data['checks_not_init'] = $sla_array['checks_not_init'];
+        $data['sla_value']       = $sla_array['SLA'];
+    }
+
+    // Checks whether or not it meets the SLA.
+    if ($data['sla_value'] >= $sla['sla_limit']) {
+        $data['sla_status'] = 1;
+        $sla_failed = false;
+    } else {
+        $sla_failed = true;
+        $data['sla_status'] = 0;
+    }
+
+    // Do not show right modules if 'only_display_wrong' is active.
+    if ($content['only_display_wrong'] && $sla_failed == false) {
+        return $return;
+    }
+
+    // Find order.
+    $data['order'] = $data['sla_value'];
+    $return['data'][] = $data;
+
+    $data_init = -1;
+    $acum = 0;
+    $sum = 0;
+    $array_result = [];
+    $i = 0;
+    foreach ($raw_graph as $key => $value) {
+        if ($data_init == -1) {
+            $data_init = $value['data'];
+            $acum      = $value['utimestamp'];
+            $sum       = $value['data'];
+        } else {
+            if ($data_init == $value['data']) {
+                $acum = ($acum + $value['utimestamp']);
+                $sum  = ($sum + $value['real_data']);
+            } else {
+                $array_result[$i]['data'] = $data_init;
+                $array_result[$i]['utimestamp'] = $acum;
+                $array_result[$i]['real_data'] = $sum;
+                $i++;
+                $data_init = $value['data'];
+                $acum = $value['utimestamp'];
+                $sum = $value['real_data'];
+            }
+        }
+    }
+
+    $array_result[$i]['data'] = $data_init;
+    $array_result[$i]['utimestamp'] = $acum;
+    $array_result[$i]['real_data'] = $sum;
+
+    // Slice graphs calculation.
+    $dataslice = [];
+    $dataslice['agent'] = $alias_agent;
+    $dataslice['module'] = $name_module;
+    $dataslice['order'] = $data['sla_value'];
+    $dataslice['checks_total'] = $data['checks_total'];
+    $dataslice['checks_ok'] = $data['checks_ok'];
+    $dataslice['time_total'] = $data['time_total'];
+    $dataslice['time_not_init'] = $data['time_not_init'];
+    $dataslice['sla_status'] = $data['sla_status'];
+    $dataslice['sla_value'] = $data['sla_value'];
+
+    $height = 80;
+    if ($secondary !== '' && $secondary !== 'result') {
+        $height = 50;
+    }
+
+    $dataslice['chart'] = graph_sla_slicebar(
+        $sla['id_agent_module'],
+        $content['period'],
+        $sla['sla_min'],
+        $sla['sla_max'],
+        $datetime,
+        $content,
+        $content['time_from'],
+        $content['time_to'],
+        100,
+        $height,
+        $urlImage,
+        $ttl,
+        $array_result,
+        false
+    );
+
+    $return['charts'][] = $dataslice;
+
+    return $return;
 }
 
 

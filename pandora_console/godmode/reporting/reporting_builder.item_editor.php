@@ -566,7 +566,6 @@ switch ($action) {
                     $include_extended_events = $item['show_extended_events'];
 
                     $filter_search = $style['event_filter_search'];
-
                 break;
 
                 case 'event_report_group':
@@ -2784,8 +2783,21 @@ function print_SLA_list($width, $action, $idItem=null)
                 <th class="header sla_list_module_col" scope="col">
                 <?php
                 echo __('Module');
-                ?>
+                if ($report_item_type == 'availability_graph') {
+                    ?>
+                <th class="header sla_list_agent_secondary" scope="col">
+                    <?php
+                    echo __('Agent Secondary');
+                    ?>
                 </th>
+                <th class="header sla_list_module_secondary" scope="col">
+                    <?php
+                    echo __('Module Secondary');
+                    ?>
+                </th>
+                    <?php
+                }
+                ?>
                 <th class="header sla_list_service_col" scope="col">
                 <?php
                 echo __('Service');
@@ -2831,6 +2843,7 @@ function print_SLA_list($width, $action, $idItem=null)
                 case 'update':
                 case 'edit':
                     echo '<tbody id="list_sla">';
+
                     $itemsSLA = db_get_all_rows_filter(
                         'treport_content_sla_combined',
                         ['id_report_content' => $idItem]
@@ -2865,6 +2878,25 @@ function print_SLA_list($width, $action, $idItem=null)
                             ['id_agente_modulo' => $item['id_agent_module']]
                         );
 
+                        if (isset($item['id_agent_module_secondary']) === true
+                            && $item['id_agent_module_secondary'] !== 0
+                        ) {
+                            $idAgentSecondary = db_get_value_filter(
+                                'id_agente',
+                                'tagente_modulo',
+                                ['id_agente_modulo' => $item['id_agent_module_secondary']]
+                            );
+                            $nameAgentSecondary = agents_get_alias(
+                                $idAgentSecondary
+                            );
+
+                            $nameModuleSecondary = db_get_value_filter(
+                                'nombre',
+                                'tagente_modulo',
+                                ['id_agente_modulo' => $item['id_agent_module_secondary']]
+                            );
+                        }
+
                         $server_name_element = '';
                         if ($meta && $server_name != '') {
                             $server_name_element .= ' ('.$server_name.')';
@@ -2877,6 +2909,15 @@ function print_SLA_list($width, $action, $idItem=null)
                         echo '<td class="sla_list_module_col">';
                         echo printSmallFont($nameModule);
                         echo '</td>';
+
+                        if ($report_item_type == 'availability_graph') {
+                            echo '<td class="sla_list_agent_secondary">';
+                            echo printSmallFont($nameAgentSecondary).$server_name_element;
+                            echo '</td>';
+                            echo '<td class="sla_list_module_secondary">';
+                            echo printSmallFont($nameModuleSecondary);
+                            echo '</td>';
+                        }
 
                         if (enterprise_installed()
                             && $report_item_type == 'SLA_services'
@@ -2926,6 +2967,13 @@ function print_SLA_list($width, $action, $idItem=null)
                             <td class="sla_list_agent_col agent_name"></td>
                             <td class="sla_list_module_col module_name"></td>
                             <?php
+                            if ($report_item_type == 'availability_graph') {
+                                ?>
+                            <td class="sla_list_agent_secondary agent_name_secondary"></td>
+                            <td class="sla_list_module_secondary module_name_secondary"></td>
+                                <?php
+                            }
+
                             if (enterprise_installed()
                                 && $report_item_type == 'SLA_services'
                             ) {
@@ -2982,6 +3030,42 @@ function print_SLA_list($width, $action, $idItem=null)
                                 </select>
                             </td>
                             <?php
+                            if ($report_item_type == 'availability_graph') {
+                                ?>
+                                <td class="sla_list_agent_secondary_col">
+                                    <input id="hidden-id_agent_secondary" name="id_agent_secondary" value="" type="hidden">
+                                    <input id="hidden-server_name_secondary" name="server_name_secondary" value="" type="hidden">
+                                    <?php
+                                    $params = [];
+                                    $params['show_helptip'] = true;
+                                    $params['input_name'] = 'agent_secondary';
+                                    $params['value'] = '';
+                                    $params['use_hidden_input_idagent'] = true;
+                                    $params['hidden_input_idagent_id'] = 'hidden-id_agent_secondary';
+                                    $params['javascript_is_function_select'] = true;
+                                    $params['selectbox_id'] = 'id_agent_module_secondary';
+                                    $params['add_none_module'] = false;
+                                    if ($meta) {
+                                        $params['use_input_id_server'] = true;
+                                        $params['input_id_server_id'] = 'hidden-id_server';
+                                        $params['disabled_javascript_on_blur_function'] = true;
+                                    }
+
+                                    ui_print_agent_autocomplete_input($params);
+                                    ?>
+                                </td>
+                                <td class="sla_list_module_secondary_col">
+                                    <select id="id_agent_module_secondary" name="id_agent_module_secondary" disabled="disabled" style="max-width: 180px">
+                                        <option value="0">
+                                            <?php
+                                            echo __('Select an Agent first');
+                                            ?>
+                                        </option>
+                                    </select>
+                                </td>
+                                <?php
+                            }
+
                             if (enterprise_installed()
                                 && $report_item_type == 'SLA_services'
                             ) {
@@ -3002,23 +3086,23 @@ function print_SLA_list($width, $action, $idItem=null)
                                         ],
                                     ]
                                 );
-                                if (!empty($services_tmp)
-                                    && $services_tmp != ENTERPRISE_NOT_HOOK
+                        if (!empty($services_tmp)
+                            && $services_tmp != ENTERPRISE_NOT_HOOK
+                        ) {
+                            foreach ($services_tmp as $service) {
+                                $check_module_sla = modules_check_agentmodule_exists(
+                                    $service['sla_id_module']
+                                );
+                                $check_module_sla_value = modules_check_agentmodule_exists(
+                                    $service['sla_value_id_module']
+                                );
+                                if ($check_module_sla
+                                    && $check_module_sla_value
                                 ) {
-                                    foreach ($services_tmp as $service) {
-                                        $check_module_sla = modules_check_agentmodule_exists(
-                                            $service['sla_id_module']
-                                        );
-                                        $check_module_sla_value = modules_check_agentmodule_exists(
-                                            $service['sla_value_id_module']
-                                        );
-                                        if ($check_module_sla
-                                            && $check_module_sla_value
-                                        ) {
-                                            $services[$service['id']] = $service['name'];
-                                        }
-                                    }
+                                    $services[$service['id']] = $service['name'];
                                 }
+                            }
+                        }
 
                                 echo '<td class="sla_list_service_col">';
                                 echo html_print_select(
@@ -3915,10 +3999,13 @@ function deleteGeneralRow(id_row) {
 
 function addSLARow() {
     var nameAgent = $("input[name=agent_sla]").val();
+    var nameAgentSecondary = $("input[name=agent_secondary]").val();
     var idAgent = $("input[name=id_agent_sla]").val();
     var serverId = $("input[name=id_server]").val();
     var idModule = $("#id_agent_module_sla").val();
+    var idModuleSecondary = $("#id_agent_module_secondary").val();
     var nameModule = $("#id_agent_module_sla :selected").text();
+    var nameModuleSecondary = $("#id_agent_module_secondary :selected").text();
     var slaMin = $("input[name=sla_min]").val();
     var slaMax = $("input[name=sla_max]").val();
     var slaLimit = $("input[name=sla_limit]").val();
@@ -3979,10 +4066,63 @@ function addSLARow() {
                 });
             }
 
+            if (nameAgentSecondary != '') {
+                //Truncate nameAgentSecondary
+                var params = [];
+                params.push("truncate_text=1");
+                params.push("text=" + nameAgentSecondary);
+                params.push("page=include/ajax/reporting.ajax");
+                jQuery.ajax ({
+                    data: params.join ("&"),
+                    type: 'POST',
+                    url: action=
+                    <?php
+                    echo '"'.ui_get_full_url(
+                        false,
+                        false,
+                        false,
+                        false
+                    ).'"';
+                    ?>
+                    + "/ajax.php",
+                    async: false,
+                    timeout: 10000,
+                    success: function (data) {
+                        nameAgentSecondary = data;
+                    }
+                });
+
+                //Truncate nameModuleSecondary
+                var params = [];
+                params.push("truncate_text=1");
+                params.push("text=" + nameModuleSecondary);
+                params.push("page=include/ajax/reporting.ajax");
+                jQuery.ajax ({
+                    data: params.join ("&"),
+                    type: 'POST',
+                    url: action=
+                    <?php
+                    echo '"'.ui_get_full_url(
+                        false,
+                        false,
+                        false,
+                        false
+                    ).'"';
+                    ?>
+                    + "/ajax.php",
+                    async: false,
+                    timeout: 10000,
+                    success: function (data) {
+                        nameModuleSecondary = data;
+                    }
+                });
+            }
+
             var params = [];
             params.push("add_sla=1");
             params.push("id=" + $("input[name=id_item]").val());
             params.push("id_module=" + idModule);
+            params.push("id_module_secondary=" + idModuleSecondary);
             params.push("sla_min=" + slaMin);
             params.push("sla_max=" + slaMax);
             params.push("sla_limit=" + slaLimit);
@@ -4015,6 +4155,8 @@ function addSLARow() {
                         $("#row", row).attr('id', 'sla_' + data['id']);
                         $(".agent_name", row).html(nameAgent);
                         $(".module_name", row).html(nameModule);
+                        $(".agent_name_secondary", row).html(nameAgentSecondary);
+                        $(".module_name_secondary", row).html(nameModuleSecondary);
                         $(".service_name", row).html(serviceName);
                         $(".sla_min", row).html(slaMin);
                         $(".sla_max", row).html(slaMax);
@@ -4025,11 +4167,19 @@ function addSLARow() {
                         );
                         $("#list_sla").append($(row).html());
                         $("input[name=id_agent_sla]").val('');
+                        $("input[name=id_agent_secondary]").val('');
                         $("input[name=id_server]").val('');
                         $("input[name=agent_sla]").val('');
+                        $("input[name=agent_secondary]").val('');
                         $("#id_agent_module_sla").empty();
                         $("#id_agent_module_sla").attr('disabled', 'true');
                         $("#id_agent_module_sla").append(
+                            $("<option></option>")
+                            .attr ("value", 0)
+                            .html ($("#module_sla_text").html()));
+                        $("#id_agent_module_secondary").empty();
+                        $("#id_agent_module_secondary").attr('disabled', 'true');
+                        $("#id_agent_module_secondary").append(
                             $("<option></option>")
                             .attr ("value", 0)
                             .html ($("#module_sla_text").html()));
@@ -4161,7 +4311,6 @@ function addGeneralRow() {
             success: function (data) {
                 if (data['correct']) {
                     row = $("#general_template").clone();
-
                     $("#row", row).show();
                     $("#row", row).attr('id', 'general_' + data['id']);
                     $(".agent_name", row).html(nameAgent);

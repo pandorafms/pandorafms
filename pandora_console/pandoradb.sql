@@ -1464,6 +1464,7 @@ CREATE TABLE IF NOT EXISTS `treport_content_sla_combined` (
 	`id` INTEGER UNSIGNED NOT NULL auto_increment,
 	`id_report_content` INTEGER UNSIGNED NOT NULL,
 	`id_agent_module` int(10) unsigned NOT NULL,
+	`id_agent_module_secondary` int(10) unsigned NOT NULL,
 	`sla_max` double(18,2) NOT NULL default 0,
 	`sla_min` double(18,2) NOT NULL default 0,
 	`sla_limit` double(18,2) NOT NULL default 0,

@@ -134,6 +134,7 @@ if ($install_package) {
 
     $accept = (bool) get_parameter('accept', false);
     if ($accept) {
+        hd($accept, true);
         $package = (string) get_parameter('package');
         $package = trim($package);
 
@@ -162,6 +163,7 @@ if ($install_package) {
         if (file_exists($files_copied)) {
             unlink($files_copied);
         }
+
 
         if (file_exists($package)) {
             if ($files_h = fopen($files_total, 'r')) {

@@ -3252,15 +3252,7 @@ function reporting_html_availability_graph($table, $item, $pdf=0)
 
     $tables_chart = '';
 
-    $table1 = new stdClass();
-    $table1->width = '99%';
-    $table1->data = [];
-    $table1->size = [];
-    $table1->size[0] = '10%';
-    $table1->size[1] = '80%';
-    $table1->size[2] = '5%';
-    $table1->size[3] = '5%';
-    foreach ($item['charts'] as $chart) {
+    foreach ($item['charts'] as $k_chart => $chart) {
         $checks_resume = '';
         $sla_value = '';
         if (reporting_sla_is_not_init_from_array($chart)) {
@@ -3291,14 +3283,74 @@ function reporting_html_availability_graph($table, $item, $pdf=0)
             $checks_resume = '('.$chart['checks_ok'].'/'.$chart['checks_total'].')';
         }
 
-        $table1->data[0][0] = $chart['agent'].'<br />'.$chart['module'];
-        $table1->data[0][1] = $chart['chart'];
-        $table1->data[0][2] = "<span style = 'font: bold 2em Arial, Sans-serif; color: ".$color."'>".$sla_value.'</span>';
-        $table1->data[0][3] = $checks_resume;
-        $tables_chart .= html_print_table(
-            $table1,
-            true
-        );
+        // Check failover availability report.
+        if ($item['data'][$k_chart]['secondary'] === '') {
+            $table1 = new stdClass();
+            $table1->width = '99%';
+            $table1->data = [];
+            $table1->size = [];
+            $table1->size[0] = '10%';
+            $table1->size[1] = '80%';
+            $table1->size[2] = '5%';
+            $table1->size[3] = '5%';
+            $table1->data[0][0] = $chart['agent'].'<br />'.$chart['module'];
+            $table1->data[0][1] = $chart['chart'];
+            $table1->data[0][2] = "<span style = 'font: bold 2em Arial, Sans-serif; color: ".$color."'>".$sla_value.'</span>';
+            $table1->data[0][3] = $checks_resume;
+            $tables_chart .= html_print_table(
+                $table1,
+                true
+            );
+        } else {
+            if ($item['data'][$k_chart]['secondary'] === 'primary') {
+                $table1 = new stdClass();
+                $table1->width = '99%';
+                $table1->data = [];
+                $table1->size = [];
+                $table1->size[0] = '10%';
+                $table1->size[1] = '80%';
+                $table1->size[2] = '5%';
+                $table1->size[3] = '5%';
+            }
+
+            $title = '';
+            $checks_resume_text = $checks_resume;
+            $sla_value_text = "<span style = 'font: bold 2em Arial, Sans-serif; color: ".$color."'>".$sla_value.'</span>';
+            switch ($item['data'][$k_chart]['secondary']) {
+                case 'primary':
+                    $title = '<b>'.__('Primary').'</b>';
+                    $title .= '<br />'.$chart['agent'];
+                    $title .= '<br />'.$chart['module'];
+                break;
+
+                case 'failover':
+                    $title = '<b>'.__('Failover').'</b>';
+                    $title .= '<br />'.$chart['agent'];
+                    $title .= '<br />'.$chart['module'];
+                break;
+
+                case 'result':
+                default:
+                    $title = '<b>'.__('Result').'</b>';
+                    $sla_value_text = "<span style = 'font: bold 3em Arial, Sans-serif; color: ".$color."'>".$sla_value.'</span>';
+                    $checks_resume_text = '<span style = "font-size: 12pt;">';
+                    $checks_resume_text .= $checks_resume;
+                    $checks_resume_text .= '</span>';
+                break;
+            }
+
+            $table1->data[$item['data'][$k_chart]['secondary']][0] = $title;
+            $table1->data[$item['data'][$k_chart]['secondary']][1] = $chart['chart'];
+            $table1->data[$item['data'][$k_chart]['secondary']][2] = $sla_value_text;
+            $table1->data[$item['data'][$k_chart]['secondary']][3] = $checks_resume_text;
+
+            if ($item['data'][$k_chart]['secondary'] === 'result') {
+                $tables_chart .= html_print_table(
+                    $table1,
+                    true
+                );
+            }
+        }
     }
 
     if ($item['type'] == 'availability_graph') {

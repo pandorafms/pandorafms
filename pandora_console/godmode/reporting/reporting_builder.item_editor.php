@@ -582,6 +582,9 @@ switch ($action) {
 
                     $filter_search = $style['event_filter_search'];
 
+                    $filter_event_severity = json_decode($style['filter_event_severity'], true);
+                    $filter_event_status   = json_decode($style['filter_event_status'], true);
+                    $filter_event_type     = json_decode($style['filter_event_type'], true);
 
 
                     $include_extended_events = $item['show_extended_events'];
@@ -4286,6 +4289,8 @@ function chooseType() {
             $("#row_event_filter").show();
             $("#row_event_graphs").show();
 
+
+
             $("#row_event_graph_by_agent").show();
             $("#row_event_graph_by_user").show();
             $("#row_event_graph_by_criticity").show();
@@ -4293,6 +4298,11 @@ function chooseType() {
             $("#row_extended_events").show();
 
             $("#row_filter_search").show();
+
+            $("#row_event_severity").show();
+            $("#row_event_status").show();
+            $("#row_event_type").show();
+            
             $("#row_historical_db_check").hide();
             break;
 

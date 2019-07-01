@@ -134,7 +134,9 @@ $largeClassDisabledBecauseInPolicy = '';
 
 $page = get_parameter('page', '');
 
-if (strstr($page, 'policy_modules') === false && $id_agent_module) {
+$in_policies_page = strstr($page, 'policy_modules');
+
+if ($in_policies_page === false && $id_agent_module) {
     if ($config['enterprise_installed']) {
         if (policies_is_module_linked($id_agent_module) == 1) {
             $disabledBecauseInPolicy = 1;
@@ -243,6 +245,12 @@ $table_simple->data[0][3] .= html_print_select_from_sql(
     $disabledBecauseInPolicy
 );
 
+if ((isset($id_agent_module) && $id_agent_module) || $id_policy_module != 0) {
+    $edit = false;
+} else {
+    $edit = true;
+}
+
 $in_policy = strstr($page, 'policy_modules');
 if (!$in_policy) {
     // Cannot select the current module to be itself parent
@@ -272,17 +280,6 @@ if (!$in_policy) {
 
 $table_simple->data[2][0] = __('Type').' '.ui_print_help_icon($help_type, true, '', 'images/help_green.png', '', 'module_type_help');
 $table_simple->data[2][0] .= html_print_input_hidden('id_module_type_hidden', $id_module_type, true);
-
-if (isset($id_agent_module)) {
-    if ($id_agent_module) {
-        $edit = false;
-    } else {
-        $edit = true;
-    }
-} else {
-    // Run into a policy
-    $edit = true;
-}
 
 if (!$edit) {
     $sql = sprintf(

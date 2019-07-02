@@ -15,8 +15,6 @@ if (! check_acl($config['id_user'], 0, 'AW')) {
 
 ui_require_css_file('discovery');
 
-ui_print_page_header(__('Discover'), '', false, '', true);
-
 
 /**
  * Mask class names.
@@ -130,6 +128,12 @@ if ($classname_selected === null) {
         } else {
             $wiz_data[] = $obj->load();
         }
+    }
+
+    // Show hints if there is no task
+    if (get_parameter('discovery_hint', 0)) {
+        ui_require_css_file('discovery-hint');
+        ui_print_info_message(__('You must create a task first'));
     }
 
     Wizard::printBigButtonsList($wiz_data);

@@ -140,8 +140,10 @@ if ($idAgent != 0) {
 
     $tab = get_parameter('tab', 'main');
 
+    ob_start();
+
     if ($tab == 'main') {
-        echo "<h4 style='padding-top:0px !important;'>".__('Full list of alerts').'</h4>';
+        $agent_view_page = true;
     }
 } else {
     $agent_a = check_acl($config['id_user'], 0, 'AR');
@@ -220,13 +222,16 @@ if ($free_search != '') {
 
 $sortField = get_parameter('sort_field');
 $sort = get_parameter('sort', 'none');
-$selected = 'border: 1px solid black;';
-$selectAgentUp = '';
-$selectAgentDown = '';
-$selectModuleUp = '';
-$selectModuleDown = '';
-$selectTemplateUp = '';
-$selectTemplateDown = '';
+$selected = true;
+$selectAgentUp = false;
+$selectAgentDown = false;
+$selectModuleUp = false;
+$selectModuleDown = false;
+$selectTemplateUp = false;
+$selectTemplateDown = false;
+$selectLastFiredUp = false;
+$selectLastFiredDown = false;
+
 switch ($sortField) {
     case 'agent':
         switch ($sort) {
@@ -288,16 +293,38 @@ switch ($sortField) {
         }
     break;
 
+    case 'last_fired':
+        switch ($sort) {
+            case 'up':
+                $selectLastFiredUp = $selected;
+                $order = [
+                    'field' => 'last_fired',
+                    'order' => 'ASC',
+                ];
+            break;
+
+            case 'down':
+                $selectLastFiredDown = $selected;
+                $order = [
+                    'field' => 'last_fired',
+                    'order' => 'DESC',
+                ];
+            break;
+        }
+    break;
+
     default:
         if ($print_agent) {
             $selectDisabledUp = '';
             $selectDisabledDown = '';
-            $selectAgentUp = '';
-            $selectAgentDown = '';
+            $selectAgentUp = false;
+            $selectAgentDown = false;
             $selectModuleUp = $selected;
-            $selectModuleDown = '';
-            $selectTemplateUp = '';
-            $selectTemplateDown = '';
+            $selectModuleDown = false;
+            $selectTemplateUp = false;
+            $selectTemplateDown = false;
+            $selectLastFiredUp = false;
+            $selectLastFiredDown = false;
             $order = [
                 'field' => 'agent_module_name',
                 'order' => 'ASC',
@@ -305,12 +332,14 @@ switch ($sortField) {
         } else {
             $selectDisabledUp = '';
             $selectDisabledDown = '';
-            $selectAgentUp = '';
-            $selectAgentDown = '';
+            $selectAgentUp = false;
+            $selectAgentDown = false;
             $selectModuleUp = $selected;
-            $selectModuleDown = '';
-            $selectTemplateUp = '';
-            $selectTemplateDown = '';
+            $selectModuleDown = false;
+            $selectTemplateUp = false;
+            $selectTemplateDown = false;
+            $selectLastFiredUp = false;
+            $selectLastFiredDown = false;
             $order = [
                 'field' => 'agent_module_name',
                 'order' => 'ASC',
@@ -440,9 +469,19 @@ if ($print_agent) {
     }
 }
 
+// Urls to sort the table.
+$url_up_agente = $url.'&sort_field=agent&sort=up';
+$url_down_agente = $url.'&sort_field=agent&sort=down';
+$url_up_module = $url.'&sort_field=module&sort=up';
+$url_down_module = $url.'&sort_field=module&sort=down';
+$url_up_template = $url.'&sort_field=template&sort=up';
+$url_down_template = $url.'&sort_field=template&sort=down';
+$url_up_lastfired = $url.'&sort_field=last_fired&sort=up';
+$url_down_lastfired = $url.'&sort_field=last_fired&sort=down';
+
 $table = new stdClass();
 $table->width = '100%';
-$table->class = 'databox data';
+$table->class = 'info_table';
 $table->cellpadding = '0';
 $table->cellspacing = '0';
 $table->size = [];
@@ -451,6 +490,15 @@ $table->align = [];
 
 if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
     if ($print_agent) {
+        if (!is_metaconsole()) {
+            $table->size[8] = '4%';
+            if (check_acl($config['id_user'], $id_group, 'LW') || check_acl($config['id_user'], $id_group, 'LM')) {
+                $table->head[9] = html_print_checkbox('all_validate', 0, false, true, false);
+                $table->align[9] = 'left';
+                $table->size[9] = '5%';
+            }
+        }
+
         $table->head[0] = "<span title='".__('Policy')."'>".__('P.').'</span>';
 
         $table->head[1] = "<span title='".__('Standby')."'>".__('S.').'</span>';
@@ -467,24 +515,26 @@ if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
         $table->head[6] = __('Action');
         $table->head[7] = __('Last fired');
         $table->head[8] = __('Status');
-        if (!is_metaconsole()) {
-            $table->size[8] = '4%';
-            if (check_acl($config['id_user'], $id_group, 'LW') || check_acl($config['id_user'], $id_group, 'LM')) {
-                $table->head[9] = __('Validate').html_print_checkbox('all_validate', 0, false, true, false);
-                $table->align[9] = 'center';
-                $table->size[9] = '5%';
-            }
-        }
 
         $table->align[8] = 'center';
 
         // Sort buttons are only for normal console
         if (!is_metaconsole()) {
-            $table->head[3] .= ' '.'<a href="'.$url.'&sort_field=agent&sort=up">'.html_print_image('images/sort_up.png', true, ['style' => $selectAgentUp]).'</a>'.'<a href="'.$url.'&sort_field=agent&sort=down">'.html_print_image('images/sort_down.png', true, ['style' => $selectAgentDown]).'</a>';
-            $table->head[4] .= ' '.'<a href="'.$url.'&sort_field=module&sort=up">'.html_print_image('images/sort_up.png', true, ['style' => $selectModuleUp]).'</a>'.'<a href="'.$url.'&sort_field=module&sort=down">'.html_print_image('images/sort_down.png', true, ['style' => $selectModuleDown]).'</a>';
-            $table->head[5] .= ' '.'<a href="'.$url.'&sort_field=template&sort=up">'.html_print_image('images/sort_up.png', true, ['style' => $selectTemplateUp]).'</a>'.'<a href="'.$url.'&sort_field=template&sort=down">'.html_print_image('images/sort_down.png', true, ['style' => $selectTemplateDown]).'</a>';
+            $table->head[3] .= ui_get_sorting_arrows($url_up_agente, $url_down_agente, $selectAgentUp, $selectAgentDown);
+            $table->head[4] .= ui_get_sorting_arrows($url_up_module, $url_down_module, $selectModuleUp, $selectModuleDown);
+            $table->head[5] .= ui_get_sorting_arrows($url_up_template, $url_down_template, $selectTemplateUp, $selectTemplateDown);
+            $table->head[7] .= ui_get_sorting_arrows($url_up_lastfired, $url_down_lastfired, $selectLastFiredUp, $selectLastFiredDown);
         }
     } else {
+        if (!is_metaconsole()) {
+            $table->size[7] = '5%';
+            if (check_acl_one_of_groups($config['id_user'], $all_groups, 'LW') || check_acl_one_of_groups($config['id_user'], $all_groups, 'LM')) {
+                $table->head[8] = __('Validate');
+                $table->align[8] = 'left';
+                $table->size[8] = '5%';
+            }
+        }
+
         $table->head[0] = "<span title='".__('Policy')."'>".__('P.').'</span>';
 
         $table->head[1] = "<span title='".__('Standby')."'>".__('S.').'</span>';
@@ -500,25 +550,28 @@ if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
         $table->head[5] = __('Action');
         $table->head[6] = __('Last fired');
         $table->head[7] = __('Status');
-        if (!is_metaconsole()) {
-            $table->size[7] = '5%';
-            if (check_acl_one_of_groups($config['id_user'], $all_groups, 'LW') || check_acl_one_of_groups($config['id_user'], $all_groups, 'LM')) {
-                $table->head[8] = __('Validate');
-                $table->align[8] = 'center';
-                $table->size[8] = '5%';
-            }
-        }
+
 
         $table->align[7] = 'center';
 
         // Sort buttons are only for normal console
         if (!is_metaconsole()) {
-            $table->head[3] .= ' '.'<a href="'.$url.'&sort_field=module&sort=up">'.html_print_image('images/sort_up.png', true, ['style' => $selectModuleUp]).'</a>'.'<a href="'.$url.'&sort_field=module&sort=down">'.html_print_image('images/sort_down.png', true, ['style' => $selectModuleDown]).'</a>';
-            $table->head[4] .= ' '.'<a href="'.$url.'&sort_field=template&sort=up">'.html_print_image('images/sort_up.png', true, ['style' => $selectTemplateUp]).'</a>'.'<a href="'.$url.'&sort_field=template&sort=down">'.html_print_image('images/sort_down.png', true, ['style' => $selectTemplateDown]).'</a>';
+            $table->head[3] .= ui_get_sorting_arrows($url_up_module, $url_down_module, $selectModuleUp, $selectModuleDown);
+            $table->head[4] .= ui_get_sorting_arrows($url_up_template, $url_down_template, $selectTemplateUp, $selectTemplateDown);
+            $table->head[6] .= ui_get_sorting_arrows($url_up_lastfired, $url_down_lastfired, $selectLastFiredUp, $selectLastFiredDown);
         }
     }
 } else {
     if ($print_agent) {
+        if (!is_metaconsole()) {
+            $table->size[7] = '5%';
+            if (check_acl($config['id_user'], $id_group, 'LW') || check_acl($config['id_user'], $id_group, 'LM')) {
+                $table->head[8] = __('Validate');
+                $table->align[8] = 'left';
+                $table->size[8] = '5%';
+            }
+        }
+
         $table->head[0] = "<span title='".__('Standby')."'>".__('S.').'</span>';
         if (!is_metaconsole()) {
             if (check_acl($config['id_user'], $id_group, 'AW') || check_acl($config['id_user'], $id_group, 'LM')) {
@@ -532,24 +585,26 @@ if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
         $table->head[5] = __('Action');
         $table->head[6] = __('Last fired');
         $table->head[7] = __('Status');
-        if (!is_metaconsole()) {
-            $table->size[7] = '5%';
-            if (check_acl($config['id_user'], $id_group, 'LW') || check_acl($config['id_user'], $id_group, 'LM')) {
-                $table->head[8] = __('Validate');
-                $table->align[8] = 'center';
-                $table->size[8] = '5%';
-            }
-        }
 
         $table->align[7] = 'center';
 
         // Sort buttons are only for normal console
         if (!is_metaconsole()) {
-            $table->head[2] .= ' '.'<a href="'.$url.'&sort_field=agent&sort=up">'.html_print_image('images/sort_up.png', true, ['style' => $selectAgentUp]).'</a>'.'<a href="'.$url.'&sort_field=agent&sort=down">'.html_print_image('images/sort_down.png', true, ['style' => $selectAgentDown]).'</a>';
-            $table->head[3] .= ' '.'<a href="'.$url.'&sort_field=module&sort=up">'.html_print_image('images/sort_up.png', true, ['style' => $selectModuleUp]).'</a>'.'<a href="'.$url.'&sort_field=module&sort=down">'.html_print_image('images/sort_down.png', true, ['style' => $selectModuleDown]).'</a>';
-            $table->head[4] .= ' '.'<a href="'.$url.'&sort_field=template&sort=up">'.html_print_image('images/sort_up.png', true, ['style' => $selectTemplateUp]).'</a>'.'<a href="'.$url.'&sort_field=template&sort=down">'.html_print_image('images/sort_down.png', true, ['style' => $selectTemplateDown]).'</a>';
+            $table->head[3] .= ui_get_sorting_arrows($url_up_agente, $url_down_agente, $selectAgentUp, $selectAgentDown);
+            $table->head[4] .= ui_get_sorting_arrows($url_up_module, $url_down_module, $selectModuleUp, $selectModuleDown);
+            $table->head[5] .= ui_get_sorting_arrows($url_up_template, $url_down_template, $selectTemplateUp, $selectTemplateDown);
+            $table->head[6] .= ui_get_sorting_arrows($url_up_lastfired, $url_down_lastfired, $selectLastFiredUp, $selectLastFiredDown);
         }
     } else {
+        if (!is_metaconsole()) {
+            $table->size[6] = '5%';
+            if (check_acl($config['id_user'], $id_group, 'LW') || check_acl($config['id_user'], $id_group, 'LM')) {
+                $table->head[7] = __('Validate');
+                $table->align[7] = 'left';
+                $table->size[7] = '5%';
+            }
+        }
+
         $table->head[0] = "<span title='".__('Standby')."'>".__('S.').'</span>';
         if (!is_metaconsole()) {
             if (check_acl($config['id_user'], $id_group, 'AW') || check_acl($config['id_user'], $id_group, 'LM')) {
@@ -562,21 +617,14 @@ if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
         $table->head[4] = __('Action');
         $table->head[5] = __('Last fired');
         $table->head[6] = __('Status');
-        if (!is_metaconsole()) {
-            $table->size[6] = '5%';
-            if (check_acl($config['id_user'], $id_group, 'LW') || check_acl($config['id_user'], $id_group, 'LM')) {
-                $table->head[7] = __('Validate');
-                $table->align[7] = 'center';
-                $table->size[7] = '5%';
-            }
-        }
 
         $table->align[6] = 'center';
 
         // Sort buttons are only for normal console
         if (!is_metaconsole()) {
-            $table->head[2] .= ' '.'<a href="'.$url.'&sort_field=module&sort=up">'.html_print_image('images/sort_up.png', true, ['style' => $selectModuleUp]).'</a>'.'<a href="'.$url.'&sort_field=module&sort=down">'.html_print_image('images/sort_down.png', true, ['style' => $selectModuleDown]).'</a>';
-            $table->head[3] .= ' '.'<a href="'.$url.'&sort_field=template&sort=up">'.html_print_image('images/sort_up.png', true, ['style' => $selectTemplateUp]).'</a>'.'<a href="'.$url.'&sort_field=template&sort=down">'.html_print_image('images/sort_down.png', true, ['style' => $selectTemplateDown]).'</a>';
+            $table->head[2] .= ui_get_sorting_arrows($url_up_module, $url_down_module, $selectModuleUp, $selectModuleDown);
+            $table->head[3] .= ui_get_sorting_arrows($url_up_template, $url_down_template, $selectTemplateUp, $selectTemplateDown);
+            $table->head[5] .= ui_get_sorting_arrows($url_up_lastfired, $url_down_lastfired, $selectLastFiredUp, $selectLastFiredDown);
         }
     }
 }
@@ -597,7 +645,12 @@ foreach ($alerts['alerts_simple'] as $alert) {
 }
 
 if (!empty($table->data)) {
-    echo '<form method="post" action="'.$url.'">';
+    $class = '';
+    if ($agent_view_page === true) {
+        $class = 'w100p no-padding-imp';
+    }
+
+    echo '<form class="'.$class.'" method="post" action="'.$url.'">';
 
     ui_pagination(
         $countAlertsSimple,
@@ -608,6 +661,16 @@ if (!empty($table->data)) {
         'offset_simple'
     );
     html_print_table($table);
+    ui_pagination(
+        $countAlertsSimple,
+        $url,
+        $offset_simple,
+        0,
+        false,
+        'offset_simple',
+        true,
+        'pagination-bottom'
+    );
 
     if (!is_metaconsole()) {
         if (check_acl($config['id_user'], $id_group, 'AW') || check_acl($config['id_user'], $id_group, 'LM')) {
@@ -620,9 +683,30 @@ if (!empty($table->data)) {
     }
 
     echo '</form>';
+    $alerts_defined = true;
 } else {
     ui_print_info_message(['no_close' => true, 'message' => __('No alerts found') ]);
+    $alerts_defined = false;
 }
+
+$html_content = ob_get_clean();
+
+if ($agent_view_page === true) {
+    // Create controlled toggle content.
+    ui_toggle(
+        $html_content,
+        __('Full list of alerts'),
+        'status_monitor_agent',
+        !$alerts_defined,
+        false,
+        '',
+        'white_table_graph_content no-padding-imp'
+    );
+} else {
+    // Dump entire content.
+    echo $html_content;
+}
+
 
 // strict user hidden
 echo '<div id="strict_hidden" style="display:none;">';

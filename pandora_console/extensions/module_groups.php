@@ -1,17 +1,32 @@
 <?php
+/**
+ * Module groups.
+ *
+ * @category   Extensions
+ * @package    Pandora FMS
+ * @subpackage Module groups view.
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
 
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; version 2
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU General Public License for more details.
-// Load global vars
+// Begin.
 global $config;
 
 check_login();
@@ -32,10 +47,12 @@ if (is_ajax()) {
 }
 
 
-/**
- * The main function of module groups and the enter point to
- * execute the code.
- */
+ /**
+  * The main function of module groups and the enter point to
+  * execute the code.
+  *
+  * @return void
+  */
 function mainModuleGroups()
 {
     global $config;
@@ -68,13 +85,20 @@ function mainModuleGroups()
     $info = array_filter(
         $info,
         function ($v, $k) use ($agent_group_search) {
-            return preg_match("/$agent_group_search/i", $v['name']);
+            return preg_match(
+                '/'.$agent_group_search.'/i',
+                $v['name']
+            );
         },
         ARRAY_FILTER_USE_BOTH
     );
 
     if (!empty($info)) {
-        $groups_view = $is_not_paginated ? $info : array_slice($info, $offset, $config['block_size']);
+        $groups_view = ($is_not_paginated) ? $info : array_slice(
+            $info,
+            $offset,
+            $config['block_size']
+        );
         $agents_counters = array_reduce(
             $groups_view,
             function ($carry, $item) {
@@ -113,7 +137,7 @@ function mainModuleGroups()
     $array_module_group = array_filter(
         $array_module_group,
         function ($v, $k) use ($module_group_search) {
-            return preg_match("/$module_group_search/i", $v);
+            return preg_match('/'.$module_group_search.'/i', $v);
         },
         ARRAY_FILTER_USE_BOTH
     );
@@ -125,66 +149,75 @@ function mainModuleGroups()
         $array_for_defect[$key]['data']['icon'] = $value['icon'];
     }
 
-    $sql = "SELECT SUM(IF(tae.alert_fired <> 0, 1, 0)) AS alerts_module_count,
-		SUM(IF($condition_warning, 1, 0)) AS warning_module_count,
-		SUM(IF($condition_unknown, 1, 0)) AS unknown_module_count,
-		SUM(IF($condition_not_init, 1, 0)) AS notInit_module_count,
-		SUM(IF($condition_critical, 1, 0)) AS critical_module_count,
-		SUM(IF($condition_normal, 1, 0)) AS normal_module_count,
-		COUNT(tae.id_agente_modulo) AS total_count,
-		tmg.id_mg,
-		tmg.name as n,
-		tg.id_grupo
-	FROM (
-		SELECT tam.id_agente_modulo,
-			tam.id_module_group,
-			ta.id_grupo AS g,
-			tae.estado,
-			SUM(IF(tatm.last_fired <> 0, 1, 0)) AS alert_fired
-			FROM tagente_modulo tam
-			LEFT JOIN talert_template_modules tatm
-				ON tatm.id_agent_module = tam.id_agente_modulo
-				AND tatm.times_fired = 1
-			LEFT JOIN tagente_estado tae
-				ON tae.id_agente_modulo = tam.id_agente_modulo
-			INNER JOIN tagente ta
-				ON ta.id_agente = tam.id_agente
-			WHERE ta.disabled = 0
-				AND tam.disabled = 0
-				AND tam.delete_pending = 0
-				AND ta.id_grupo IN ($ids_group)
-			GROUP BY tam.id_agente_modulo
-		UNION ALL
-		SELECT tam.id_agente_modulo,
-			tam.id_module_group,
-			tasg.id_group AS g,
-			tae.estado,
-			SUM(IF(tatm.last_fired <> 0, 1, 0)) AS alert_fired
-			FROM tagente_modulo tam
-			LEFT JOIN talert_template_modules tatm
-				ON tatm.id_agent_module = tam.id_agente_modulo
-				AND tatm.times_fired = 1
-			LEFT JOIN tagente_estado tae
-				ON tae.id_agente_modulo = tam.id_agente_modulo
-			INNER JOIN tagente ta
-				ON ta.id_agente = tam.id_agente
-			INNER JOIN tagent_secondary_group tasg
-				ON ta.id_agente = tasg.id_agent
-			WHERE ta.disabled = 0
-				AND tam.disabled = 0
-				AND tam.delete_pending = 0
-				AND tasg.id_group IN ($ids_group)
-			GROUP BY tam.id_agente_modulo, tasg.id_group
-	) AS tae
-	RIGHT JOIN tgrupo tg
-		ON tg.id_grupo = tae.g
-	INNER JOIN (
-		SELECT * FROM tmodule_group
-		UNION ALL
-		SELECT 0 AS 'id_mg', 'Nothing' AS 'name'
-	) AS tmg
-		ON tae.id_module_group = tmg.id_mg
-	GROUP BY tae.g, tmg.id_mg";
+    $sql = sprintf(
+        "SELECT SUM(IF(tae.alert_fired <> 0, 1, 0)) AS alerts_module_count,
+            SUM(IF(%s, 1, 0)) AS warning_module_count,
+            SUM(IF(%s, 1, 0)) AS unknown_module_count,
+            SUM(IF(%s, 1, 0)) AS notInit_module_count,
+            SUM(IF(%s, 1, 0)) AS critical_module_count,
+            SUM(IF(%s, 1, 0)) AS normal_module_count,
+            COUNT(tae.id_agente_modulo) AS total_count,
+            tmg.id_mg,
+            tmg.name as n,
+            tg.id_grupo
+        FROM (
+            SELECT tam.id_agente_modulo,
+                tam.id_module_group,
+                ta.id_grupo AS g,
+                tae.estado,
+                SUM(IF(tatm.last_fired <> 0, 1, 0)) AS alert_fired
+                FROM tagente_modulo tam
+                LEFT JOIN talert_template_modules tatm
+                    ON tatm.id_agent_module = tam.id_agente_modulo
+                    AND tatm.times_fired = 1
+                LEFT JOIN tagente_estado tae
+                    ON tae.id_agente_modulo = tam.id_agente_modulo
+                INNER JOIN tagente ta
+                    ON ta.id_agente = tam.id_agente
+                WHERE ta.disabled = 0
+                    AND tam.disabled = 0
+                    AND tam.delete_pending = 0
+                    AND ta.id_grupo IN (%s)
+                GROUP BY tam.id_agente_modulo
+            UNION ALL
+            SELECT tam.id_agente_modulo,
+                tam.id_module_group,
+                tasg.id_group AS g,
+                tae.estado,
+                SUM(IF(tatm.last_fired <> 0, 1, 0)) AS alert_fired
+                FROM tagente_modulo tam
+                LEFT JOIN talert_template_modules tatm
+                    ON tatm.id_agent_module = tam.id_agente_modulo
+                    AND tatm.times_fired = 1
+                LEFT JOIN tagente_estado tae
+                    ON tae.id_agente_modulo = tam.id_agente_modulo
+                INNER JOIN tagente ta
+                    ON ta.id_agente = tam.id_agente
+                INNER JOIN tagent_secondary_group tasg
+                    ON ta.id_agente = tasg.id_agent
+                WHERE ta.disabled = 0
+                    AND tam.disabled = 0
+                    AND tam.delete_pending = 0
+                    AND tasg.id_group IN (%s)
+                GROUP BY tam.id_agente_modulo, tasg.id_group
+        ) AS tae
+        RIGHT JOIN tgrupo tg
+            ON tg.id_grupo = tae.g
+        INNER JOIN (
+            SELECT * FROM tmodule_group
+            UNION ALL
+            SELECT 0 AS 'id_mg', 'Nothing' AS 'name'
+        ) AS tmg
+            ON tae.id_module_group = tmg.id_mg
+        GROUP BY tae.g, tmg.id_mg",
+        $condition_warning,
+        $condition_unknown,
+        $condition_not_init,
+        $condition_critical,
+        $condition_normal,
+        $ids_group,
+        $ids_group
+    );
 
     $array_data_prev = db_get_all_rows_sql($sql);
 
@@ -192,7 +225,14 @@ function mainModuleGroups()
         $array_data[$value['id_grupo']][$value['id_mg']] = $value;
     }
 
-    ui_print_page_header(__('Combined table of agent group and module group'), 'images/module_group.png', false, '', false, '');
+    ui_print_page_header(
+        __('Combined table of agent group and module group'),
+        'images/module_group.png',
+        false,
+        'module_groups_view',
+        false,
+        ''
+    );
 
     echo "<table cellpadding='4' cellspacing='4' class='databox filters' width='100%' style='font-weight: bold; margin-bottom: 10px;'>
 		<tr>";
@@ -213,9 +253,21 @@ function mainModuleGroups()
     echo '<td>';
     echo '</tr></table>';
 
+    $cell_style = '
+        min-width: 60px;
+        width: 100%;
+        margin: 0;
+        overflow:hidden;
+        text-align: center;
+        padding: 5px;
+        padding-bottom:10px;
+        font-size: 18px;
+        text-align: center;
+    ';
+
     if (true) {
         $table = new StdClass();
-        $table->style[0] = 'color: #ffffff; background-color: #373737; font-weight: bolder; padding-right: 10px; min-width: 230px;';
+        $table->style[0] = 'color: #ffffff; background-color: #373737; font-weight: bolder; min-width: 230px;';
         $table->width = '100%';
 
         $head[0] = __('Groups');
@@ -241,28 +293,28 @@ function mainModuleGroups()
                             $color = '#FFA631';
                             // Orange when the cell for this model group and agent has at least one alert fired.
                         } else if ($array_data[$key][$k]['critical_module_count'] != 0) {
-                            $color = '#FC4444';
+                            $color = '#e63c52';
                             // Red when the cell for this model group and agent has at least one module in critical state and the rest in any state.
                         } else if ($array_data[$key][$k]['warning_module_count'] != 0) {
-                            $color = '#FAD403';
+                            $color = '#f3b200';
                             // Yellow when the cell for this model group and agent has at least one in warning state and the rest in green state.
                         } else if ($array_data[$key][$k]['unknown_module_count'] != 0) {
                             $color = '#B2B2B2 ';
                             // Grey when the cell for this model group and agent has at least one module in unknown state and the rest in any state.
                         } else if ($array_data[$key][$k]['normal_module_count'] != 0) {
-                            $color = '#80BA27';
+                            $color = '#82b92e';
                             // Green when the cell for this model group and agent has OK state all modules.
                         } else if ($array_data[$key][$k]['notInit_module_count'] != 0) {
                             $color = '#5BB6E5';
                             // Blue when the cell for this module group and all modules have not init value.
                         }
 
-                        $data[$i][$j] = "<div style='background:$color; height: 20px;min-width: 60px;max-width:5%;overflow:hidden; margin-left: auto; margin-right: auto; text-align: center; padding: 5px;padding-bottom:10px;font-size: 18px;line-height:25px;'>";
+                        $data[$i][$j] = "<div style='".$cell_style.'background:'.$color.";'>";
                         $data[$i][$j] .= "<a class='info_cell' rel='$rel' href='$url' style='color:white;font-size: 18px;'>";
                         $data[$i][$j] .= $array_data[$key][$k]['total_count'];
                         $data[$i][$j] .= '</a></div>';
                     } else {
-                        $data[$i][$j] = "<div style='background:white; height: 20px;min-width: 60px;max-width:5%;overflow:hidden; margin-left: auto; margin-right: auto; text-align: center; padding: 5px;padding-bottom:10px;font-size: 18px;line-height:25px;'>";
+                        $data[$i][$j] = "<div style='background:white;".$cell_style."'>";
                         $data[$i][$j] .= 0;
                         $data[$i][$j] .= '</div>';
                     }
@@ -271,7 +323,7 @@ function mainModuleGroups()
                 }
             } else {
                 foreach ($value['gm'] as $k => $v) {
-                    $data[$i][$j] = "<div style='background:white; height: 20px;min-width: 60px;max-width:5%;overflow:hidden; margin-left: auto; margin-right: auto; text-align: center; padding: 5px;padding-bottom:10px;font-size: 18px;line-height:25px;'>";
+                    $data[$i][$j] = "<div style='background:white; min-width: 60px;max-width:5%;overflow:hidden; margin-left: auto; margin-right: auto; text-align: center; padding: 5px;padding-bottom:10px;font-size: 18px;line-height:25px;'>";
                     $data[$i][$j] .= 0;
                     $data[$i][$j] .= '</div>';
                     $j++;

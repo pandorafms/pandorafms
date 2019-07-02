@@ -33,9 +33,21 @@ function winopeng_var(url, wid, width, height) {
   status = wid;
 }
 
-function open_help(help_id, home_url, id_user) {
+function open_help(url) {
+  if (!navigator.onLine) {
+    alert(
+      "The help system could not be started. Please, check your network connection."
+    );
+    return;
+  }
+  if (url == "") {
+    alert(
+      "The help system is currently under maintenance. Sorry for the inconvenience."
+    );
+    return;
+  }
   open(
-    home_url + "general/pandora_help.php?id=" + help_id + "&id_user=" + id_user,
+    url,
     "pandorahelp",
     "width=650,height=500,status=0,toolbar=0,menubar=0,scrollbars=1,location=0"
   );
@@ -1214,7 +1226,7 @@ function paint_qrcode(text, where, width, height) {
     text: text,
     width: width,
     height: height,
-    colorDark: "#3B6941",
+    colorDark: "#343434",
     colorLight: "#ffffff",
     correctLevel: QRCode.CorrectLevel.M
   });
@@ -1587,7 +1599,7 @@ function paint_graph_status(
       .attr("y", height_x - 30)
       .attr("width", 10)
       .attr("height", 10)
-      .style("fill", "#fc4444");
+      .style("fill", "#e63c52");
 
     //styles for number and axes
     svg
@@ -1671,7 +1683,7 @@ function paint_graph_status(
         )
         .attr("width", 300)
         .attr("height", (max_c - min_c) * position)
-        .style("fill", "#fc4444");
+        .style("fill", "#e63c52");
     } else {
       svg
         .append("g")
@@ -1683,7 +1695,7 @@ function paint_graph_status(
         .attr("y", height_x + 200 - (min_c - range_min) * position)
         .attr("width", 300)
         .attr("height", (min_c - range_min) * position)
-        .style("fill", "#fc4444");
+        .style("fill", "#e63c52");
       svg
         .append("g")
         .append("rect")
@@ -1697,7 +1709,7 @@ function paint_graph_status(
           "height",
           (range_max - min_c) * position - (max_c - min_c) * position
         )
-        .style("fill", "#fc4444");
+        .style("fill", "#e63c52");
     }
   } else {
     d3.select("#svg_dinamic rect").remove();
@@ -1748,7 +1760,9 @@ function round_with_decimals(value, multiplier) {
   if (typeof multiplier === "undefined") multiplier = 1;
 
   // Return non numeric types without modification
-  if (typeof value !== "number") return value;
+  if (typeof value !== "number" || Number.isNaN(value)) {
+    return value;
+  }
 
   if (value * multiplier == 0) return 0;
   if (Math.abs(value) * multiplier >= 1) {

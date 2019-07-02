@@ -249,6 +249,7 @@ if ($id_agent_module) {
     $ff_event_normal = $module['min_ff_event_normal'];
     $ff_event_warning = $module['min_ff_event_warning'];
     $ff_event_critical = $module['min_ff_event_critical'];
+    $ff_type = $module['ff_type'];
     $each_ff = $module['each_ff'];
     $ff_timeout = $module['ff_timeout'];
     // Select tag info.
@@ -266,10 +267,10 @@ if ($id_agent_module) {
     $cron_interval = explode(' ', $module['cron_interval']);
     if (isset($cron_interval[4])) {
         $minute_from = $cron_interval[0];
-        $min = explode('-', $minute_from);
-        $minute_from = $min[0];
-        if (isset($min[1])) {
-            $minute_to = $min[1];
+        $minute = explode('-', $minute_from);
+        $minute_from = $minute[0];
+        if (isset($minute[1])) {
+            $minute_to = $minute[1];
         }
 
         $hour_from = $cron_interval[1];
@@ -393,6 +394,7 @@ if ($id_agent_module) {
         $ff_event_normal = '';
         $ff_event_warning = '';
         $ff_event_critical = '';
+        $ff_type = 0;
 
         $id_category = 0;
 
@@ -581,7 +583,13 @@ echo '<h3 id="message" class="error invisible"></h3>';
 // TODO: Change to the ui_print_error system
 echo '<form method="post" id="module_form">';
 
-html_print_table($table_simple);
+ui_toggle(
+    html_print_table($table_simple, true),
+    __('Base options'),
+    '',
+    '',
+    false
+);
 
 ui_toggle(
     html_print_table($table_advanced, true),
@@ -589,7 +597,7 @@ ui_toggle(
 );
 ui_toggle(
     html_print_table($table_macros, true),
-    __('Custom macros').ui_print_help_icon('module_macros', true)
+    __('Custom macros')
 );
 
 if ($moduletype != 13) {

@@ -22,7 +22,7 @@ ui_require_css_file('firts_task');
         <?php echo html_print_image('images/firts_task/icono_grande_reconserver.png', true, ['title' => __('Discovery server')]); ?>
     </div>
     <div class="text_task">
-        <h3> <?php echo __('Create Discovery Task'); ?><p id="description_task"> 
+        <h3> <?php echo __('Create Discovery Task'); ?></h3><p id="description_task"> 
             <?php
             echo __(
                 'Discovery Task are used to find new elements in the network. 
@@ -35,6 +35,7 @@ ui_require_css_file('firts_task');
         </p>
         <form action="index.php?sec=gservers&sec2=godmode/servers/discovery" method="post">
             <input type="submit" class="button_task" value="<?php echo __('Discover'); ?>" />
+            <input type="hidden" name="discovery_hint" value="1"/>
         </form>
     </div>
 </div>

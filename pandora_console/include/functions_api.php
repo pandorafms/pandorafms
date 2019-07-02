@@ -4584,7 +4584,7 @@ function api_set_new_snmp_component($id, $thrash1, $other, $thrash2)
         return;
     }
 
-    $id = network_components_create_network_component($id, $other['data'][0], $other['data'][25], $values);
+    $id = network_components_create_network_component($id, $other['data'][0], $other['data'][26], $values);
 
     if (!$id) {
         returnError('error_set_new_snmp_component', 'Error creating SNMP component.');
@@ -7494,63 +7494,62 @@ function api_set_update_snmp_module_policy($id, $thrash1, $other, $thrash3)
 
 
 /**
- * Remove an agent from a policy.
+ * Remove an agent from a policy by agent id.
  *
  * @param $id Id of the policy
- * @param $id2 Id of the agent policy
- * @param $trash1
- * @param $trash2
+ * @param $thrash1 Don't use.
+ * @param $other
+ * @param $thrash2 Don't use.
  *
  * Example:
  * api.php?op=set&op2=remove_agent_from_policy&apipass=1234&user=admin&pass=pandora&id=11&id2=2
  */
-function api_set_remove_agent_from_policy($id, $id2, $thrash2, $thrash3)
+function api_set_remove_agent_from_policy_by_id($id, $thrash1, $other, $thrash2)
 {
-    global $config;
-
-    if (!check_acl($config['id_user'], 0, 'AW')) {
-        returnError('forbidden', 'string');
-        return;
-    }
-
     if ($id == '' || !$id) {
         returnError('error_parameter', __('Error deleting agent from policy. Policy cannot be left blank.'));
         return;
     }
 
-    if ($id2 == '' || !$id2) {
+    if ($other['data'][0] == '' || !$other['data'][0]) {
         returnError('error_parameter', __('Error deleting agent from policy. Agent cannot be left blank.'));
         return;
     }
 
-    $policy = policies_get_policy($id, false, false);
-    $agent = db_get_row_filter('tagente', ['id_agente' => $id2]);
-    $policy_agent = db_get_row_filter('tpolicy_agents', ['id_policy' => $id, 'id_agent' => $id2]);
-
-    if (empty($policy)) {
-        returnError('error_policy', __('This policy does not exist.'));
+    // Require node id if is metaconsole
+    if (is_metaconsole() && $other['data'][1] == '') {
+        returnError('error_add_agent_policy', __('Error deleting agent from policy. Node ID cannot be left blank.'));
         return;
     }
 
-    if (empty($agent)) {
-        returnError('error_agent', __('This agent does not exist.'));
+    return remove_agent_from_policy($id, false, [$other['data'][0], $other['data'][1]]);
+}
+
+
+/**
+ * Remove an agent from a policy by agent name.
+ *
+ * @param $id Id of the policy
+ * @param $thrash1 Don't use.
+ * @param $other
+ * @param $thrash2 Don't use.
+ *
+ * Example:
+ * api.php?op=set&op2=remove_agent_from_policy&apipass=1234&user=admin&pass=pandora&id=11&id2=2
+ */
+function api_set_remove_agent_from_policy_by_name($id, $thrash1, $other, $thrash2)
+{
+    if ($id == '' || !$id) {
+        returnError('error_parameter', __('Error deleting agent from policy. Policy cannot be left blank.'));
         return;
     }
 
-    if (empty($policy_agent)) {
-        returnError('error_policy_agent', __('This agent does not exist in this policy.'));
+    if ($other['data'][0] == '' || !$other['data'][0]) {
+        returnError('error_add_agent_policy', __('Error adding agent to policy. Agent name cannot be left blank.'));
         return;
     }
 
-    $return = policies_change_delete_pending_agent($policy_agent['id']);
-    $data = __('Successfully added to delete pending id agent %d to id policy %d.', $id2, $id);
-
-    if ($return === false) {
-        returnError('error_delete_policy_agent', 'Could not be deleted id agent %d from id policy %d', $id2, $id);
-    } else {
-        returnData('string', ['type' => 'string', 'data' => $data]);
-    }
-
+    return remove_agent_from_policy($id, true, [$other['data'][0]]);
 }
 
 
@@ -11519,7 +11518,7 @@ function api_set_create_event($id, $trash1, $other, $returnType)
 
         if ($other['data'][18] != '') {
             $values['id_extra'] = $other['data'][18];
-            $sql_validation = 'SELECT id_evento FROM tevento where estado=0 and id_extra ="'.$other['data'][18].'";';
+            $sql_validation = 'SELECT id_evento FROM tevento where estado IN (0,2) and id_extra ="'.$other['data'][18].'";';
             $validation = db_get_all_rows_sql($sql_validation);
             if ($validation) {
                 foreach ($validation as $val) {
@@ -11608,7 +11607,9 @@ function api_set_add_event_comment($id, $thrash2, $other, $thrash3)
     global $config;
 
     if (defined('METACONSOLE')) {
-        return;
+        $meta = true;
+    } else {
+        $meta = $other['data'][1];
     }
 
     if (!check_acl($config['id_user'], 0, 'EW')) {
@@ -11620,8 +11621,7 @@ function api_set_add_event_comment($id, $thrash2, $other, $thrash3)
         returnError('error_parameter', 'Error in the parameters.');
         return;
     } else if ($other['type'] == 'array') {
-        $comment = io_safe_input($other['data'][0]);
-        $meta = $other['data'][1];
+        $comment = $other['data'][0];
         $history = $other['data'][2];
 
         $status = events_comment(
@@ -14208,28 +14208,6 @@ function api_get_all_event_filters($thrash1, $thrash2, $other, $thrash3)
 }
 
 
-//
-// AUX FUNCTIONS
-//
-function util_api_check_agent_and_print_error($id_agent, $returnType, $access='AR', $force_meta=false)
-{
-    global $config;
-
-    $check_agent = agents_check_access_agent($id_agent, $access, $force_meta);
-    if ($check_agent === true) {
-        return true;
-    }
-
-    if ($check_agent === false || !check_acl($config['id_user'], 0, $access)) {
-        returnError('forbidden', $returnType);
-    } else if ($check_agent === null) {
-        returnError('id_not_found', $returnType);
-    }
-
-    return false;
-}
-
-
 function api_get_user_info($thrash1, $thrash2, $other, $returnType)
 {
     $separator = ';';
@@ -14683,4 +14661,457 @@ function api_set_reset_agent_counts($id, $thrash1, $thrash2, $thrash3)
         returnData('string', ['type' => 'string', 'data' => $data]);
     }
 
+}
+
+
+/**
+ * Functions por get all  user to new feature for Carrefour
+ * It depends of returnType, the method will return csv or json data
+ *
+ * @param  string $thrash1 don't use
+ * @param  string $thrash2 don't use
+ * @param  array  $other   don't use
+ * *@param  string           $returnType
+ * Example:
+ * api.php?op=get&op2=list_all_user&return_type=json&apipass=1234&user=admin&pass=pandora
+ * @return
+ */
+
+
+function api_get_list_all_user($thrash1, $thrash2, $other, $returnType)
+{
+    global $config;
+
+    if (!check_acl($config['id_user'], 0, 'AR')) {
+        returnError('forbidden', 'string');
+        return;
+    }
+
+    $sql = 'SELECT
+                tup.id_usuario AS user_id,
+                tu.fullname AS fullname,
+                tp.id_perfil AS profile_id,
+                tup.id_up AS id_up,
+                tp.name AS profile_name,
+                tup.id_grupo AS group_id,
+                tgp.nombre AS group_name
+            FROM tperfil tp
+            INNER JOIN tusuario_perfil tup
+                ON tp.id_perfil = tup.id_perfil
+            LEFT OUTER JOIN tgrupo tgp
+                ON tup.id_grupo = tgp.id_grupo
+                LEFT OUTER JOIN tusuario tu
+            ON tu.id_user = tup.id_usuario';
+
+    $users = db_get_all_rows_sql($sql);
+
+    $i = 0;
+
+    foreach ($users as $up) {
+        $group_name = $up['group_name'];
+        if ($up['group_name'] === null) {
+            $group_name = 'All';
+        }
+
+        $values[$i] = [
+            'id_usuario'  => $up['user_id'],
+            'fullname'    => $up['fullname'],
+            'id_up'       => $up['id_up'],
+            'id_perfil'   => $up['profile_id'],
+            'perfil_name' => $up['profile_name'],
+            'id_grupo'    => $up['group_id'],
+            'group_name'  => $group_name,
+        ];
+        $i += 1;
+    }
+
+    if ($values === false) {
+        returnError('Error_user', __('Users could not be found.'));
+        return;
+    }
+
+    $data = [
+        'type' => 'array',
+        'data' => $values,
+    ];
+
+    returnData($returnType, $data, ';');
+}
+
+
+/**
+ * Funtion for get all info user to  new feature for Carrefour
+ * It depends of returnType, the method will return csv or json data
+ *
+ * @param string $thrash1    don't use
+ * @param string $thrash2    don't use
+ * @param array  $other      other[0] = user database
+ * @param string $returnType
+ *      Example
+ *      api.php?op=get&op2=info_user_name&return_type=json&other=admin&other_mode=url_encode_separator_|&apipass=1234&user=admin&pass=pandora
+ *
+ * @return
+ */
+
+
+function api_get_info_user_name($thrash1, $thrash2, $other, $returnType)
+{
+    global $config;
+
+    if (!check_acl($config['id_user'], 0, 'AR')) {
+        returnError('forbidden', 'string');
+        return;
+    }
+
+    $sql = sprintf(
+        'SELECT tup.id_usuario AS user_id,
+                tu.fullname AS fullname,
+                tup.id_up AS id_up,
+                tp.id_perfil AS profile_id,
+                tp.name AS profile_name,
+                tup.id_grupo AS group_id,
+                tg.nombre AS group_name
+        FROM tperfil tp
+        INNER JOIN tusuario_perfil tup
+            ON tp.id_perfil = tup.id_perfil
+        LEFT OUTER JOIN tgrupo tg
+            ON tup.id_grupo = tg.id_grupo
+        LEFT OUTER JOIN tusuario tu
+            ON tu.id_user = tup.id_usuario
+        WHERE tup.id_usuario = "%s"',
+        io_safe_output($other['data'][0])
+    );
+
+    $user_profile = db_get_all_rows_sql($sql);
+
+    $i = 0;
+
+    foreach ($user_profile as $up) {
+        $group_name = $up['group_name'];
+        if ($up['group_name'] === null) {
+            $group_name = 'All';
+        }
+
+        $values[$i] = [
+            'id_usuario'  => $up['user_id'],
+            'fullname'    => $up['fullname'],
+            'id_up'       => $up['id_up'],
+            'id_perfil'   => $up['profile_id'],
+            'perfil_name' => $up['profile_name'],
+            'id_grupo'    => $up['group_id'],
+            'group_name'  => $group_name,
+        ];
+        $i += 1;
+    }
+
+        $data = [
+            'type' => 'array',
+            'data' => $values,
+        ];
+
+        returnData($returnType, $data, ';');
+}
+
+
+/**
+ * Function for get  user from a group  to  new feature for Carrefour.
+ * It depends of returnType, the method will return csv or json data.
+ *
+ * @param string $thrash1    don't use
+ * @param string $thrash2    don't use
+ * @param array  $other
+ *                  $other[0] = id group
+ *                  $other[1] = is disabled or not
+ * @param string $returnType
+ * Example
+ * api.php?op=get&op2=filter_user_group&return_type=json&other=0|0&other_mode=url_encode_separator_|&apipass=1234&user=admin&pass=pandora
+ *
+ * @return
+ */
+
+
+function api_get_filter_user_group($thrash1, $thrash2, $other, $returnType)
+{
+    global $config;
+
+    if (!check_acl($config['id_user'], 0, 'AR')) {
+        returnError('forbidden', 'string');
+        return;
+    }
+
+    $filter = '';
+
+    if ($other['data'][0] !== '' && $other['data'][1] !== '') {
+        $filter = 'WHERE tup.id_grupo = '.$other['data'][0].' AND tu.disabled = '.$other['data'][1].'';
+    } else if ($other['data'][0] !== '') {
+        $filter = 'WHERE tup.id_grupo = '.$other['data'][0].'';
+    } else if ($other['data'][1] !== '') {
+        $filter = 'WHERE tu.disabled = '.$other['data'][1].'';
+    }
+
+    $sql = sprintf(
+        'SELECT DISTINCT
+            tup.id_usuario AS user_id,
+            tu.fullname AS fullname,
+            tup.id_up AS id_up,
+            tp.id_perfil AS profile_id,
+            tp.name AS profile_name,
+            tup.id_grupo AS group_id,
+            tg.nombre AS group_name
+        FROM tperfil tp
+        INNER JOIN tusuario_perfil tup
+            ON tp.id_perfil = tup.id_perfil
+        LEFT OUTER JOIN tgrupo tg
+            ON tup.id_grupo = tg.id_grupo
+        LEFT OUTER JOIN tusuario tu
+            ON tu.id_user = tup.id_usuario
+       '.$filter.''
+    );
+
+    $filter_user = db_get_all_rows_sql($sql);
+
+    $i = 0;
+
+    foreach ($filter_user as $up) {
+        $group_name = $up['group_name'];
+        if ($up['group_name'] === null) {
+            $group_name = 'All';
+        }
+
+        $values[$i] = [
+            'id_usuario'  => $up['user_id'],
+            'fullname'    => $up['fullname'],
+            'id_up'       => $up['id_up'],
+            'id_perfil'   => $up['profile_id'],
+            'perfil_name' => $up['profile_name'],
+            'id_grupo'    => $up['group_id'],
+            'group_name'  => $group_name,
+        ];
+        $i += 1;
+    }
+
+    $data = [
+        'type' => 'array',
+        'data' => $values,
+    ];
+
+    returnData($returnType, $data, ';');
+
+}
+
+
+/**
+ * Function for delete an user permission for Carrefour  new feature
+ * The return of this function its only a message
+ *
+ * @param string $thrash1    don't use
+ * @param string $thrash2    don't use
+ * @param array  $other
+ *                  $other[0] = id up
+ * @param string $returnType
+ * Example
+ * api.php?op=set&op2=delete_user_permission&return_type=json&other=user|2&other_mode=url_encode_separator_|&apipass=1234&user=admin&pass=pandora
+ *
+ * @return void
+ */
+
+
+function api_set_delete_user_permission($thrash1, $thrash2, $other, $returnType)
+{
+    global $config;
+
+    if (!check_acl($config['id_user'], 0, 'AW')) {
+        returnError('forbidden', 'string');
+        return;
+    }
+
+    if ($other['data'][0] != '') {
+        $values = [
+            'id_up' => io_safe_output($other['data'][0]),
+        ];
+    } else {
+        returnError('Error_delete', __('User profile could not be deleted.'));
+        return;
+    }
+
+    $deleted_permission = db_process_sql_delete('tusuario_perfil', $values);
+
+    if ($deleted_permission == false) {
+        returnError('Error_delete', __('User profile could not be deleted.'));
+        return;
+    }
+
+    $data = [
+        'type' => 'string',
+        'data' => $deleted_permission,
+    ];
+
+        returnData('string', ['type' => 'string', 'data' => $data]);
+}
+
+
+/**
+ * Function for add permission a user to a group for Carrefour new feature
+ * It depends of returnType, the method will return csv or json data
+ *
+ * @param string $thrash1 don't use
+ * @param string $thrash2 don't use
+ * @param array  $other   other[0] = user database
+ *                        other[1] = id group
+ *                        other[2] = id profile
+ *                        other[3] = no_hierarchy ( 0 or 1, if empty = 0)
+ *                        other[4] = id from tusuario_perfil table (optional)
+ * * @param string $returnType
+ * Example
+ * api.php?op=set&op2=add_permission_user_to_group&return_type=json&other=admin|0|1|1|20&other_mode=url_encode_separator_|&apipass=1234&user=admin&pass=pandora
+ *
+ * @return void
+ */
+
+
+function api_set_add_permission_user_to_group($thrash1, $thrash2, $other, $returnType)
+{
+    global $config;
+
+    if (!check_acl($config['id_user'], 0, 'AW')) {
+        returnError('forbidden', 'string');
+        return;
+    }
+
+    $sql = 'SELECT id_up 
+            FROM tusuario_perfil
+            WHERE  id_up = '.$other['data'][4].'';
+
+    $exist_profile = db_get_value_sql($sql);
+
+    if ($other['data'][3] < 0 || $other['data'][3] > 1) {
+        returnError('Error_insert', __('User profile could not be available.'));
+        return;
+    }
+
+    if ($other['data'][3] == null) {
+        $other['data'][3] = 0;
+    }
+
+    $values = [
+        'id_usuario'   => $other['data'][0],
+        'id_perfil'    => $other['data'][2],
+        'id_grupo'     => $other['data'][1],
+        'no_hierarchy' => $other['data'][3],
+        'assigned_by'  => $config['id_user'],
+        'id_policy'    => 0,
+        'tags'         => '',
+
+    ];
+
+    $where_id_up = ['id_up' => $other['data'][4]];
+    if ($exist_profile === $other['data'][4] && $where_id_up !== null) {
+        $sucessfull_insert = db_process_sql_update('tusuario_perfil', $values, $where_id_up);
+    } else {
+        $sucessfull_insert = db_process_sql_insert('tusuario_perfil', $values);
+    }
+
+    if ($sucessfull_insert == false) {
+        returnError('Error_insert', __('User profile could not be available.'));
+        return;
+    }
+
+     $data = [
+         'type' => 'array',
+         'data' => $values,
+     ];
+
+     returnData($returnType, $data, ';');
+
+}
+
+
+// AUXILIARY FUNCTIONS
+
+
+/**
+ * Auxiliary function to remove an agent from a policy. Used from API methods api_set_remove_agent_from_policy_by_id and api_set_remove_agent_from_policy_by_name.
+ *
+ * @param int ID of targeted policy.
+ * @param boolean If true it will look for the agent we are targeting at based on its agent name, otherwise by agent id.
+ * @param array Array containing agent's name or agent's id (and node id in case we are on metaconsole).
+ */
+function remove_agent_from_policy($id_policy, $use_agent_name, $params)
+{
+    global $config;
+
+    if (!check_acl($config['id_user'], 0, 'AW')) {
+        returnError('forbidden', 'string');
+        return;
+    }
+
+    $id_node = 0;
+    $agent_table = 'tagente';
+
+    if ($use_agent_name === false) {
+        $id_agent = $params[0];
+    } else {
+        $id_agent = db_get_value_filter('id_agente', 'tagente', ['nombre' => $params[0]]);
+    }
+
+    $agent = db_get_row_filter('tagente', ['id_agente' => $id_agent]);
+
+    if (is_metaconsole()) {
+        if ($use_agent_name === false) {
+            $id_node = $params[1];
+            $id_agent = db_get_value_filter('id_agente', 'tmetaconsole_agent', ['id_tagente' => $params[0], 'id_tmetaconsole_setup' => $id_node]);
+        } else {
+            $id_agent = db_get_value_filter('id_agente', 'tmetaconsole_agent', ['nombre' => $params[0]]);
+        }
+
+        $agent = db_get_row_filter('tmetaconsole_agent', ['id_agente' => $id_agent]);
+    }
+
+    $policy = policies_get_policy($id_policy, false, false);
+
+    $policy_agent = db_get_row_filter('tpolicy_agents', ['id_policy' => $id_policy, 'id_agent' => $id_agent]);
+
+    if (empty($policy)) {
+        returnError('error_policy', __('This policy does not exist.'));
+        return;
+    }
+
+    if (empty($agent)) {
+        returnError('error_agent', __('This agent does not exist.'));
+        return;
+    }
+
+    if (empty($policy_agent)) {
+        returnError('error_policy_agent', __('This agent does not exist in this policy.'));
+        return;
+    }
+
+    $return = policies_change_delete_pending_agent($policy_agent['id']);
+    $data = __('Successfully added to delete pending id agent %d to id policy %d.', $id_agent, $id_policy);
+
+    if ($return === false) {
+        returnError('error_delete_policy_agent', 'Could not be deleted id agent %d from id policy %d', $id_agent, $id_policy);
+    } else {
+        returnData('string', ['type' => 'string', 'data' => $data]);
+    }
+
+}
+
+
+function util_api_check_agent_and_print_error($id_agent, $returnType, $access='AR', $force_meta=false)
+{
+    global $config;
+
+    $check_agent = agents_check_access_agent($id_agent, $access, $force_meta);
+    if ($check_agent === true) {
+        return true;
+    }
+
+    if ($check_agent === false || !check_acl($config['id_user'], 0, $access)) {
+        returnError('forbidden', $returnType);
+    } else if ($check_agent === null) {
+        returnError('id_not_found', $returnType);
+    }
+
+    return false;
 }

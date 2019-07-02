@@ -1,3 +1,8 @@
+/* 
+  global $ 
+  global jQuery
+*/
+
 /* Modules ids to check types */
 var id_modules_icmp = Array(6, 7);
 var id_modules_tcp = Array(8, 9, 10, 11);
@@ -95,6 +100,7 @@ function configure_modules_form() {
     $("#text-unit").attr("value", "");
     $("#checkbox-critical_inverse").attr("value", 0);
     $("#checkbox-warning_inverse").attr("value", 0);
+    $("#checkbox-ff_type").attr("value", 0);
     $("#textarea_critical_instructions").attr("value", "");
     $("#textarea_warning_instructions").attr("value", "");
     $("#textarea_unknown_instructions").attr("value", "");
@@ -177,16 +183,23 @@ function configure_modules_form() {
           "value",
           data["min_ff_event"] == 0 ? 0 : data["min_ff_event"]
         );
+
+        if (data["ff_type"] != 0) {
+          $("#checkbox-ff_type").prop("checked", 1);
+        } else {
+          $("#checkbox-ff_type").prop("checked", 0);
+        }
+
         $("#text-post_process").attr(
           "value",
           data["post_process"] == 0 ? 0 : data["post_process"]
         );
         $("#text-unit").attr("value", data["unit"] == "" ? "" : data["unit"]);
         $("#checkbox-critical_inverse").prop(
-          "checked",
+          "uncheck",
           data["critical_inverse"]
         );
-        $("#checkbox-warning_inverse").prop("checked", data["warning_inverse"]);
+        $("#checkbox-warning_inverse").prop("uncheck", data["warning_inverse"]);
         $("#component_loading").hide();
         $("#id_module_type").change();
         if ($("#id_category").is("select")) {
@@ -412,6 +425,12 @@ function configure_modules_form() {
           "value",
           data["min_ff_event_critical"] == 0 ? 0 : data["min_ff_event_critical"]
         );
+
+        if (data["ff_type"] != 0) {
+          $("#checkbox-ff_type").prop("checked", 1);
+        } else {
+          $("#checkbox-ff_type").prop("checked", 0);
+        }
 
         // Shows manual input if post_process field is setted
         if (data["post_process"] != 0) {
@@ -834,12 +853,10 @@ function add_macro_field(macro, row_model_id) {
   $("#" + row_id)
     .children()
     .eq(1)
-    .children()
     .attr("id", "text-" + macro_macro);
   $("#" + row_id)
     .children()
     .eq(1)
-    .children()
     .attr("name", macro_macro);
 
   macro_field_hide = false;
@@ -859,13 +876,11 @@ function add_macro_field(macro, row_model_id) {
     $("#" + row_id)
       .children()
       .eq(1)
-      .children()
       .attr("type", "password");
   }
   $("#" + row_id)
     .children()
     .eq(1)
-    .children()
     .val(macro_value);
 
   $("#" + row_id).show();
@@ -1120,4 +1135,130 @@ function delete_macro(num) {
   }
 
   // Do not decrease the macro counter or new macros may overlap existing ones!
+}
+
+function get_explanation_recon_script(id, id_rt, url) {
+  var xhrManager = function() {
+    var manager = {};
+
+    manager.tasks = [];
+
+    manager.addTask = function(xhr) {
+      manager.tasks.push(xhr);
+    };
+
+    manager.stopTasks = function() {
+      while (manager.tasks.length > 0) manager.tasks.pop().abort();
+    };
+
+    return manager;
+  };
+
+  var taskManager = new xhrManager();
+
+  // Stop old ajax tasks.
+  taskManager.stopTasks();
+
+  // Show the spinners.
+  $("#textarea_explanation").hide();
+  $("#spinner_layout").show();
+
+  var xhr = jQuery.ajax({
+    data: {
+      page: "enterprise/include/ajax/hostDevices.ajax",
+      get_explanation: 1,
+      id: id,
+      id_rt: id_rt
+    },
+    url: url,
+    type: "POST",
+    dataType: "text",
+    complete: function(xhr, textStatus) {
+      $("#spinner_layout").hide();
+    },
+    success: function(data, textStatus, xhr) {
+      $("#textarea_explanation").val(data);
+      $("#textarea_explanation").show();
+    },
+    error: function(xhr, textStatus, errorThrown) {
+      console.log(errorThrown);
+    }
+  });
+
+  taskManager.addTask(xhr);
+
+  // Delete all the macro fields.
+  $(".macro_field").remove();
+  $("#spinner_recon_script").show();
+
+  var xhr = jQuery.ajax({
+    data: {
+      page: "enterprise/include/ajax/hostDevices.ajax",
+      get_recon_script_macros: 1,
+      id: id,
+      id_rt: id_rt
+    },
+    url: url,
+    type: "POST",
+    dataType: "json",
+    complete: function(xhr, textStatus) {
+      $("#spinner_recon_script").hide();
+      forced_title_callback();
+    },
+    success: function(data, textStatus, xhr) {
+      if (data.array !== null) {
+        $("#hidden-macros").val(data.base64);
+
+        jQuery.each(data.array, function(i, macro) {
+          if (macro.desc != "") {
+            add_macro_field(macro, "table_recon-macro");
+          }
+        });
+      }
+    },
+    error: function(xhr, textStatus, errorThrown) {
+      console.log(errorThrown);
+    }
+  });
+
+  taskManager.addTask(xhr);
+}
+
+// Filter modules in a select (bulk operations)
+function filterByText(selectbox, textbox, textNoData) {
+  return selectbox.each(function() {
+    var select = selectbox;
+    var options = [];
+    $(select)
+      .find("option")
+      .each(function() {
+        options.push({ value: $(this).val(), text: $(this).text() });
+      });
+    $(select).data("options", options);
+    $(textbox).bind("change keyup", function() {
+      var options = $(select)
+        .empty()
+        .scrollTop(0)
+        .data("options");
+      var search = $(this).val();
+      var regex = new RegExp(search, "gi");
+      $.each(options, function(i) {
+        var option = options[i];
+        if (option.text.match(regex) !== null) {
+          $(select).append(
+            $("<option>")
+              .text(option.text)
+              .val(option.value)
+          );
+        }
+      });
+      if ($(select)[0].length == 0) {
+        $(select).append(
+          $("<option>")
+            .text(textNoData)
+            .val(textNoData)
+        );
+      }
+    });
+  });
 }

@@ -173,8 +173,8 @@ if (!empty($config['https']) && empty($_SERVER['HTTPS'])) {
 // Pure mode (without menu, header and footer).
 $config['pure'] = (bool) get_parameter('pure');
 
-// Auto Refresh page (can now be disabled anywhere in the script)
-if (get_parameter('refr')) {
+// Auto Refresh page (can now be disabled anywhere in the script).
+if (get_parameter('refr') != null) {
     $config['refr'] = (int) get_parameter('refr');
 }
 
@@ -244,6 +244,10 @@ if (strlen($search) > 0) {
 
 // Login process
 if (! isset($config['id_user'])) {
+    // Clear error messages.
+    unset($_COOKIE['errormsg']);
+    setcookie('errormsg', null, -1);
+
     if (isset($_GET['login'])) {
         include_once 'include/functions_db.php';
         // Include it to use escape_string_sql function
@@ -619,10 +623,9 @@ if (! isset($config['id_user'])) {
 
         header('Location: '.$config['homeurl'].'index.php'.$redirect_url);
         exit;
-        // Always exit after sending location headers
-    }
-    // Hash login process
-    else if (isset($_GET['loginhash'])) {
+        // Always exit after sending location headers.
+    } else if (isset($_GET['loginhash'])) {
+        // Hash login process
         $loginhash_data = get_parameter('loginhash_data', '');
         $loginhash_user = str_rot13(get_parameter('loginhash_user', ''));
 
@@ -638,9 +641,8 @@ if (! isset($config['id_user'])) {
 
             exit('</html>');
         }
-    }
-    // There is no user connected
-    else {
+    } else {
+        // There is no user connected.
         if ($config['enterprise_installed']) {
             enterprise_include_once('include/functions_reset_pass.php');
         }
@@ -722,64 +724,55 @@ if (! isset($config['id_user'])) {
                     $show_error = false;
 
                     if (!$first) {
-                        if ($reset) {
-                            if ($user_reset_pass == '') {
+                        if ($user_reset_pass == '') {
+                            $reset = false;
+                            $error = __('Id user cannot be empty');
+                            $show_error = true;
+                        } else {
+                            $check_user = check_user_id($user_reset_pass);
+
+                            if (!$check_user) {
                                 $reset = false;
-                                $error = __('Id user cannot be empty');
+                                register_pass_change_try($user_reset_pass, 0);
+                                $error = __('Error in reset password request');
                                 $show_error = true;
                             } else {
-                                $check_user = check_user_id($user_reset_pass);
+                                $check_mail = check_user_have_mail($user_reset_pass);
 
-                                if (!$check_user) {
+                                if (!$check_mail) {
                                     $reset = false;
                                     register_pass_change_try($user_reset_pass, 0);
-                                    $error = __('Error in reset password request');
+                                    $error = __('This user doesn\'t have a valid email address');
                                     $show_error = true;
                                 } else {
-                                    $check_mail = check_user_have_mail($user_reset_pass);
-
-                                    if (!$check_mail) {
-                                        $reset = false;
-                                        register_pass_change_try($user_reset_pass, 0);
-                                        $error = __('This user doesn\'t have a valid email address');
-                                        $show_error = true;
-                                    } else {
-                                        $mail = $check_mail;
-                                    }
+                                    $mail = $check_mail;
                                 }
                             }
                         }
 
-                        if (!$reset) {
-                            if ($config['enterprise_installed']) {
-                                include_once 'enterprise/include/reset_pass.php';
-                            }
+                        $cod_hash = $user_reset_pass.'::::'.md5(rand(10, 1000000).rand(10, 1000000).rand(10, 1000000));
+
+                        $subject = '['.io_safe_output(get_product_name()).'] '.__('Reset password');
+                        $body = __('This is an automatically sent message for user ');
+                        $body .= ' "<strong>'.$user_reset_pass.'"</strong>';
+                        $body .= '<p />';
+                        $body .= __('Please click the link below to reset your password');
+                        $body .= '<p />';
+                        $body .= '<a href="'.$config['homeurl'].'index.php?reset_hash='.$cod_hash.'">'.__('Reset your password').'</a>';
+                        $body .= '<p />';
+                        $body .= get_product_name();
+                        $body .= '<p />';
+                        $body .= '<em>'.__('Please do not reply to this email.').'</em>';
+
+                        $result = send_email_to_user($mail, $body, $subject);
+
+                        if (!$result) {
+                            $process_error_message = __('Error at sending the email');
                         } else {
-                            $cod_hash = $user_reset_pass.'::::'.md5(rand(10, 1000000).rand(10, 1000000).rand(10, 1000000));
-
-                            $subject = '['.get_product_name().'] '.__('Reset password');
-                            $body = __('This is an automatically sent message for user ');
-                            $body .= ' "<strong>'.$user_reset_pass.'"</strong>';
-                            $body .= '<p />';
-                            $body .= __('Please click the link below to reset your password');
-                            $body .= '<p />';
-                            $body .= '<a href="'.$config['homeurl'].'index.php?reset_hash='.$cod_hash.'">'.__('Reset your password').'</a>';
-                            $body .= '<p />';
-                            $body .= get_product_name();
-                            $body .= '<p />';
-                            $body .= '<em>'.__('Please do not reply to this email.').'</em>';
-
-                            $result = send_email_to_user($mail, $body, $subject);
-
-                            $process_error_message = '';
-                            if (!$result) {
-                                $process_error_message = __('Error at sending the email');
-                            } else {
-                                send_token_to_db($user_reset_pass, $cod_hash);
-                            }
-
-                            include_once 'general/login_page.php';
+                            send_token_to_db($user_reset_pass, $cod_hash);
                         }
+
+                        include_once 'general/login_page.php';
                     } else {
                         include_once 'enterprise/include/reset_pass.php';
                     }
@@ -898,15 +891,6 @@ clear_pandora_error_for_header();
 $config['logged'] = false;
 extensions_load_extensions($process_login);
 
-// Check for update manager messages
-if (license_free() && is_user_admin($config['id_user'])
-    && (($config['last_um_check'] < time())
-    || (!isset($config['last_um_check'])))
-) {
-    include_once 'include/functions_update_manager.php';
-    update_manager_download_messages();
-}
-
 if ($process_login) {
      // Call all extensions login function
     extensions_call_login_function();
@@ -982,31 +966,9 @@ if ($old_global_counter_chat != $now_global_counter_chat) {
     }
 }
 
-// Pop-ups display order:
-// 1) login_required (timezone and email)
-// 2) identification (newsletter and register)
-// 3) last_message   (update manager message popup
-// 4) login_help     (online help, enterpirse version, forums, documentation)
-if (is_user_admin($config['id_user'])
-    && (!isset($config['initial_wizard']) || $config['initial_wizard'] != 1)
-) {
-    include_once 'general/login_required.php';
-}
+require_once 'general/register.php';
 
 if (get_parameter('login', 0) !== 0) {
-    // Display news dialog
-    include_once 'general/news_dialog.php';
-
-    // Display login help info dialog
-    // If it's configured to not skip this
-    $display_previous_popup = false;
-    if (license_free() && is_user_admin($config['id_user']) && $config['initial_wizard'] == 1) {
-        $display_previous_popup = include_once 'general/login_identification_wizard.php';
-        if ($display_previous_popup === false) {
-            $display_previous_popup = include_once 'general/last_message.php';
-        }
-    }
-
     if ((!isset($config['skip_login_help_dialog']) || $config['skip_login_help_dialog'] == 0)
         && $display_previous_popup === false
         && $config['initial_wizard'] == 1
@@ -1025,7 +987,13 @@ if (get_parameter('login', 0) !== 0) {
 if ($config['pure'] == 0) {
     echo '<div id="container"><div id="head">';
     include 'general/header.php';
-    echo '</div><div id="page"><div id="menu">';
+
+    if ($config['menu_type'] == 'classic') {
+        echo '</div><div id="page" class="page_classic"><div id="menu">';
+    } else {
+        echo '</div><div id="page" class="page_collapsed"><div id="menu">';
+    }
+
     include 'general/main_menu.php';
     echo '</div>';
     echo '<button onclick="topFunction()" id="top_btn" title="Go to top"></button>';
@@ -1057,6 +1025,9 @@ if ($searchPage) {
         if ($main_sec == false) {
             if ($sec == 'extensions') {
                 $main_sec = get_parameter('extension_in_menu');
+                if (empty($main_sec) === true) {
+                    $main_sec = $sec;
+                }
             } else if ($sec == 'gextensions') {
                     $main_sec = get_parameter('extension_in_menu');
             } else {
@@ -1210,21 +1181,28 @@ if ($config['pure'] == 0) {
     // main_pure
 }
 
+echo '<div id="wiz_container">';
+echo '</div>';
+
+echo '<div id="um_msg_receiver">';
+echo '</div>';
 
 if ($config['pure'] == 0) {
     echo '</div>';
-    // container div
+    // Container div.
+    echo '</div>';
     echo '<div style="clear:both"></div>';
+
     echo '<div id="foot">';
     include 'general/footer.php';
-    echo '</div>';
 }
 
-// Clippy function
+// Clippy function.
 require_once 'include/functions_clippy.php';
 clippy_start($sec2);
 
 while (@ob_end_flush()) {
+    // Dump.
 }
 
 db_print_database_debug();
@@ -1240,6 +1218,11 @@ require 'include/php_to_js_values.php';
 ?>
 
 <script type="text/javascript" language="javascript">
+
+    // When there are less than 5 rows, all rows must be white
+    if($('table.info_table tr').length < 5){
+        $('table.info_table tbody > tr').css('background-color', '#fff');
+    }
 
     // When the user scrolls down 400px from the top of the document, show the button.
     window.onscroll = function() {scrollFunction()};
@@ -1258,8 +1241,6 @@ require 'include/php_to_js_values.php';
         //document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera.
         $("HTML, BODY").animate({ scrollTop: 0 }, 500);
     }
-
-
 
     //Initial load of page
     $(document).ready(adjustFooter);
@@ -1285,66 +1266,109 @@ require 'include/php_to_js_values.php';
     })();
     
     function force_run_register () {
-        run_identification_wizard (1, 0, 0);
+        jQuery.post ("ajax.php",
+            {
+                "page": "general/register",
+                "load_wizards": 'registration'
+            },
+            function (data) {
+                $('#wiz_container').empty ()
+                    .html (data);
+                show_registration_wizard();
+            },
+            "html"
+        );
     }
+
     function force_run_newsletter () {
-        run_identification_wizard (0, 1, 0);
+        jQuery.post ("ajax.php",
+            {
+                "page": "general/register",
+                "load_wizards": 'newsletter'
+            },
+            function (data) {
+                $('#wiz_container').empty ()
+                    .html (data);
+                show_newsletter_wizard ();
+            },
+            "html"
+        );
     }
+
     function first_time_identification () {
-        run_identification_wizard (-1, -1, 1);
+        jQuery.post ("ajax.php",
+            {
+                "page": "general/register",
+                "load_wizards": 'initial'
+            },
+            function (data) {
+                $('#wiz_container').empty ()
+                    .html (data);
+                run_configuration_wizard ();
+            },
+            "html"
+        );
+
     }
 
-    var times_fired_register_wizard = 0;
-
-    function run_identification_wizard (register, newsletter , return_button) {
-        if (times_fired_register_wizard) {
-            $(".ui-dialog-titlebar-close").show();
-            
-            //Reset some values                
-            $("#label-email-newsletter").hide();
-            $("#text-email-newsletter").hide();
-            $("#required-email-newsletter").hide();
-            $("#checkbox-register").removeAttr('checked');
-            $("#checkbox-newsletter").removeAttr('checked');
-            
-            // Hide or show parts
-            if (register == 1) {
-                $("#checkbox-register").show();
-                $("#label-register").show ();
-            }
-            if (register == 0) {
-                $("#checkbox-register").attr ('style', 'display: none !important');
-                $("#label-register").hide ();
-            }
-            if (newsletter == 1) {
-                $("#checkbox-newsletter").show();
-                $("#label-newsletter").show ();
-            }
-            if (newsletter == 0) {
-                $("#checkbox-newsletter").attr ('style', 'display: none !important');
-                $("#label-newsletter").hide ();
-            }
-            $("#login_accept_register").dialog('open');
-        }
-        else {
-            $(".ui-dialog-titlebar-close").show();
-            $("#container").append('<div class="id_wizard"></div>');
-            jQuery.post ("ajax.php",
-                {"page": "general/login_identification_wizard",
-                 "not_return": 1,
-                 "force_register": register,
-                 "force_newsletter": newsletter,
-                 "return_button": return_button},
-                function (data) {
-                    $(".id_wizard").hide ()
-                        .empty ()
-                        .append (data);
-                },
-                "html"
+    function show_modal(id) {
+        var match = /notification-(.*)-id-([0-9]+)/.exec(id);
+        if (!match) {
+            console.error(
+                "Cannot handle toast click event. Id not valid: ",
+                event.target.id
             );
+            return;
         }
-        times_fired_register_wizard++;
-        return false;
+        jQuery.post ("ajax.php",
+            {
+                "page": "godmode/setup/setup_notifications",
+                "get_notification": 1,
+                "id": match[2]
+            },
+            function (data) {
+                notifications_hide();
+                try {
+                    var json = JSON.parse(data);
+                    $('#um_msg_receiver')
+                        .empty ()
+                        .html (json.mensaje);
+
+                    $('#um_msg_receiver').prop('title', json.subject);
+                    
+                    // Launch modal.
+                    $("#um_msg_receiver").dialog({
+                        resizable: true,
+                        draggable: true,
+                        modal: true,
+                        width: 800,
+                        buttons: [
+                            {
+                                text: "OK",
+                                click: function() {
+                                    $( this ).dialog( "close" );
+                                }
+                            }
+                        ],
+                        overlay: {
+                                opacity: 0.5,
+                                background: "black"
+                            },
+                        closeOnEscape: false,
+                        open: function(event, ui) { $(".ui-dialog-titlebar-close").hide(); }
+                    });
+
+                    $(".ui-widget-overlay").css("background", "#000");
+                    $(".ui-widget-overlay").css("opacity", 0.6);
+                    $(".ui-draggable").css("cursor", "inherit");
+
+                } catch (error) {
+                    console.log(error);
+                }
+
+            },
+            "html"
+        );
     }
 
     //Dynamically assign footer position and width.

@@ -664,6 +664,7 @@ function alerts_get_alert_templates_types()
     $types['unknown'] = __('Unknown status');
     $types['onchange'] = __('On Change');
     $types['always'] = __('Always');
+    $types['not_normal'] = __('Not normal status');
 
     return $types;
 }
@@ -680,7 +681,7 @@ function alerts_get_alert_templates_type_name($type)
 {
     $types = alerts_get_alert_templates_types();
 
-    if (! isset($type[$type])) {
+    if (!isset($types[$type])) {
         return __('Unknown');
     }
 
@@ -1782,12 +1783,14 @@ function alerts_validate_alert_agent_module($id_alert_agent_module, $noACLs=fals
             ['id' => $id]
         );
 
+        $template_name = io_safe_output(db_get_value('name', 'talert_templates', 'id', $alert['id_alert_template']));
+        $module_name = io_safe_output(db_get_value('nombre', 'tagente_modulo', 'id_agente_modulo', $alert['id_agent_module']));
         if ($result > 0) {
             // Update fired alert count on the agent
             db_process_sql(sprintf('UPDATE tagente SET update_alert_count=1 WHERE id_agente = %d', $agent_id));
 
             events_create_event(
-                'Manual validation of alert for '.alerts_get_alert_template_description($alert['id_alert_template']),
+                'Manual validation of alert '.$template_name.' assigned to '.$module_name.'',
                 $group_id,
                 $agent_id,
                 1,
@@ -1913,7 +1916,6 @@ function alerts_get_agents_with_alert_template($id_alert_template, $id_group, $f
     $filter[] = 'tagente_modulo.id_agente_modulo = talert_template_modules.id_agent_module';
     $filter[] = 'tagente_modulo.id_agente = tagente.id_agente';
     $filter['id_alert_template'] = $id_alert_template;
-    $filter['tagente_modulo.disabled'] = '<> 1';
     $filter['delete_pending'] = '<> 1';
 
     if (empty($id_agents)) {

@@ -663,10 +663,11 @@ function modules_create_agent_module(
             'estado'            => $status,
             'known_status'      => $status,
             'id_agente'         => (int) $id_agent,
-            'utimestamp'        => 0,
+            'utimestamp'        => (time() - (int) $values['interval']),
             'status_changes'    => 0,
             'last_status'       => $status,
             'last_known_status' => $status,
+            'current_interval'  => (int) $values['interval'],
         ]
     );
 
@@ -2229,6 +2230,7 @@ function modules_get_agentmodule_data(
                 'module_name' => $values[$key]['module_name'],
                 'agent_id'    => $values[$key]['agent_id'],
                 'agent_name'  => $values[$key]['agent_name'],
+                'module_type' => $values[$key]['module_type'],
             ];
         }
 
@@ -2294,6 +2296,54 @@ function modules_get_modulegroup_name($modulegroup_id)
 
 
 /**
+ * Returns target color to be used based on the status received.
+ *
+ * @param integer $status Source information.
+ *
+ * @return string HTML tag for color.
+ */
+function modules_get_color_status($status)
+{
+    if (isset($status) === false) {
+        return COL_UNKNOWN;
+    }
+
+    switch ($status) {
+        case AGENT_MODULE_STATUS_NORMAL:
+        case AGENT_STATUS_NORMAL:
+        return COL_NORMAL;
+
+        case AGENT_MODULE_STATUS_NOT_INIT:
+        case AGENT_STATUS_NOT_INIT:
+        return COL_NOTINIT;
+
+        case AGENT_MODULE_STATUS_CRITICAL_BAD:
+        case AGENT_STATUS_CRITICAL:
+        return COL_CRITICAL;
+
+        case AGENT_MODULE_STATUS_WARNING:
+        case AGENT_STATUS_WARNING:
+        return COL_WARNING;
+
+        case AGENT_MODULE_STATUS_CRITICAL_ALERT:
+        case AGENT_MODULE_STATUS_WARNING_ALERT:
+        case AGENT_STATUS_ALERT_FIRED:
+        return COL_ALERTFIRED;
+
+        case AGENT_MODULE_STATUS_UNKNOWN:
+        case AGENT_STATUS_UNKNOWN:
+        return COL_UNKNOWN;
+
+        default:
+            // Ignored.
+        break;
+    }
+
+    return COL_IGNORED;
+}
+
+
+/**
  * Gets a module status an modify the status and title reference variables
  *
  * @param mixed The module data (Necessary $module['datos'] and $module['estado']
@@ -2321,7 +2371,7 @@ function modules_get_status($id_agent_module, $db_status, $data, &$status, &$tit
         $status = STATUS_MODULE_OK;
         $title = __('NORMAL');
     } else if ($db_status == AGENT_MODULE_STATUS_UNKNOWN) {
-        $status = STATUS_AGENT_DOWN;
+        $status = STATUS_MODULE_UNKNOWN;
         $last_status = modules_get_agentmodule_last_status($id_agent_module);
         switch ($last_status) {
             case AGENT_STATUS_NORMAL:

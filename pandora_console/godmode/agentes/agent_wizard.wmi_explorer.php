@@ -317,7 +317,6 @@ $table->data[0][0] = '<b>'.__('Target IP').'</b>';
 $table->data[0][1] = html_print_input_text('ip_target', $ip_target, '', 15, 60, true);
 
 $table->data[0][2] = '<b>'.__('Namespace').'</b>';
-$table->data[0][2] .= ui_print_help_icon('wminamespace', true);
 $table->data[0][3] = html_print_input_text('tcp_send', $tcp_send, '', 15, 60, true);
 
 $table->data[1][0] = '<b>'.__('Username').'</b>';
@@ -571,7 +570,7 @@ $(document).ready (function () {
                     $("select[name='module[]']").append($("<option></option>").val(id).html(name));
                 }
                 else {
-                    alert('<?php echo __('Repeated'); ?>');
+                    alert("<?php echo __('Repeated'); ?>");
                 }
                 $("#module").find("option[value='0']").remove();
             }
@@ -587,7 +586,7 @@ $(document).ready (function () {
                     $("select[name='module[]']").append($("<option></option>").val(id).html(name));
                 }
                 else {
-                    alert('<?php echo __('Repeated'); ?>');
+                    alert("<?php echo __('Repeated'); ?>");
                 }
                 $("#module").find("option[value='0']").remove();
             }
@@ -603,7 +602,7 @@ $(document).ready (function () {
                     $("select[name='module[]']").append($("<option></option>").val(id).html(name));
                 }
                 else {
-                    alert('<?php echo __('Repeated'); ?>');
+                    alert("<?php echo __('Repeated'); ?>");
                 }
                 $("#module").find("option[value='0']").remove();
             }
@@ -619,7 +618,7 @@ $(document).ready (function () {
                     $("select[name='module[]']").append($("<option></option>").val(id).html(name));
                 }
                 else {
-                    alert('<?php echo __('Repeated'); ?>');
+                    alert("<?php echo __('Repeated'); ?>");
                 }
                 $("#module").find("option[value='0']").remove();
             }
@@ -641,7 +640,7 @@ $(document).ready (function () {
     
     $("#submit-create_modules_btn").click(function () {
         if($("#module option").length == 0 || ($("#module option").length == 1 && $("#module option").eq(0).val() == 0)) {
-            alert('<?php echo __('Modules list is empty'); ?>');
+            alert("<?php echo __('Modules list is empty'); ?>");
             return false;
         }
         $('#module option').map(function() {

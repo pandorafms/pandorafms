@@ -242,7 +242,6 @@ if ($filemanager) {
             $chunck_url = '&create=1';
         }
 
-        $homedir_filemanager = isset($config['homedir_filemanager']) ? $config['homedir_filemanager'] : false;
         filemanager_file_explorer(
             $real_directory,
             $directory,
@@ -253,7 +252,7 @@ if ($filemanager) {
             'index.php?sec=gservers&sec2=godmode/servers/plugin'.$chunck_url.'&plugin_command=[FILE_FULLPATH]&id_plugin='.$id_plugin,
             true,
             0775,
-            $homedir_filemanager
+            false
         );
     }
 
@@ -281,7 +280,7 @@ if (($create != '') || ($view != '')) {
     } else {
         if ($create != '') {
             ui_print_page_header(
-                __('Plugin creation'),
+                __('Plugin registration'),
                 'images/gm_servers.png',
                 false,
                 'plugin_definition',
@@ -404,7 +403,7 @@ if (($create != '') || ($view != '')) {
     $table->data['plugin_command'] = $data;
 
     $data = [];
-    $data[0] = __('Plug-in parameters').ui_print_help_icon('plugin_parameters', true);
+    $data[0] = __('Plug-in parameters');
     $data[1] = '<input type="text" name="form_parameters" id="form_parameters" class="command_component command_advanced_conf" size=100 value="'.$parameters.'" '.$disabled.'>';
     if ($locked) {
         $data[1] .= html_print_image('images/lock.png', true, ['class' => 'command_advanced_conf lock']);
@@ -550,7 +549,7 @@ if (($create != '') || ($view != '')) {
         $table->headstyle[0] = 'text-align: center';
         html_print_table($table);
     } else {
-        echo '<fieldset>'.'<legend>'.__('Parameters macros').ui_print_help_icon('macros', true).'</legend>';
+        echo '<fieldset>'.'<legend>'.__('Parameters macros').'</legend>';
         html_print_table($table);
         echo '</fieldset>';
     }
@@ -613,7 +612,16 @@ if (($create != '') || ($view != '')) {
             config_update_value('metaconsole_deploy_plugin_server', 1);
         }
     } else {
-        ui_print_page_header(__('Plug-ins registered on %s', get_product_name()), 'images/gm_servers.png', false, '', true);
+        ui_print_page_header(
+            __(
+                'Plug-ins registered on %s',
+                get_product_name()
+            ),
+            'images/gm_servers.png',
+            false,
+            '',
+            true
+        );
 
         $management_allowed = !is_central_policies_on_node();
         if (!$management_allowed) {
@@ -954,15 +962,18 @@ if (($create != '') || ($view != '')) {
         if (defined('METACONSOLE')) {
             echo '<table width="100%" cellspacing="4" cellpadding="4" class="databox data">';
         } else {
-            echo '<table width="100%" cellspacing="4" cellpadding="4" class="databox data">';
+            echo '<table width="100%" cellspacing="4" cellpadding="4" class="info_table">';
         }
 
+        echo '<thead><tr>';
         echo '<th>'.__('Name').'</th>';
         echo '<th>'.__('Type').'</th>';
         echo '<th>'.__('Command').'</th>';
         if ($management_allowed) {
             echo "<th style='width: 120px;'>".'<span title="Operations">'.__('Op.').'</span>'.'</th>';
         }
+
+        echo '</tr></thead>';
 
         $color = 0;
 
@@ -1187,13 +1198,13 @@ ui_require_javascript_file('pandora_modules');
                 }
             }
             else {
-                alert('<?php echo __('The plugin command cannot be updated because some modules or components are using the plugin.'); ?>');
+                alert("<?php echo __('The plugin command cannot be updated because some modules or components are using the plugin.'); ?>");
             }
         }
     }
     
     var macros_click_locked_event = function (event) {
-        alert('<?php echo __('The plugin macros cannot be updated because some modules or components are using the plugin'); ?>');
+        alert("<?php echo __('The plugin macros cannot be updated because some modules or components are using the plugin'); ?>");
     }
     
     if (locked) {
@@ -1202,4 +1213,6 @@ ui_require_javascript_file('pandora_modules');
         $('.command_macro').click(macros_click_locked_event);
     }
     
+    
 </script>
+

@@ -255,7 +255,7 @@ $htmlForm .= html_print_button(
 $htmlForm .= '</div>';
 $htmlForm .= '</form>';
 
-ui_toggle($htmlForm, __('Filter graphs'), __('Toggle filter(s)'), false);
+ui_toggle($htmlForm, __('Filter graphs'), __('Toggle filter(s)'), '', false);
 
 $utime = get_system_time();
 $current = date('Y-m-d', $utime);

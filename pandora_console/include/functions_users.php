@@ -249,13 +249,13 @@ function groups_combine_acl($acl_group_a, $acl_group_b)
 /**
  * Get all the groups a user has reading privileges.
  *
- * @param string User id
- * @param string The privilege to evaluate, and it is false then no check ACL.
- * @param boolean                                                             $returnAllGroup   Flag the return group, by default true.
- * @param boolean                                                             $returnAllColumns Flag to return all columns of groups.
- * @param array                                                               $id_groups        The list of group to scan to bottom child. By default null.
- * @param string                                                              $keys_field       The field of the group used in the array keys. By default ID
- * @param boolean                                                             $cache            Set it to false to not use cache
+ * @param string  $id_user          User id
+ * @param string  $privilege        The privilege to evaluate, and it is false then no check ACL.
+ * @param boolean $returnAllGroup   Flag the return group, by default true.
+ * @param boolean $returnAllColumns Flag to return all columns of groups.
+ * @param array   $id_groups        The list of group to scan to bottom child. By default null.
+ * @param string  $keys_field       The field of the group used in the array keys. By default ID
+ * @param boolean $cache            Set it to false to not use cache
  *
  * @return array A list of the groups the user has certain privileges.
  */
@@ -293,7 +293,7 @@ function users_get_groups(
         }
         // Per-group permissions.
         else {
-            $query  = 'SELECT * FROM tgrupo ORDER BY parent,id_grupo DESC';
+            $query  = 'SELECT * FROM tgrupo ORDER BY nombre';
             $raw_groups = db_get_all_rows_sql($query);
 
             $query = sprintf(

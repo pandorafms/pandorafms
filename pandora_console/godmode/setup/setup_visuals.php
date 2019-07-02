@@ -70,10 +70,6 @@ $values[SECONDS_5MINUTES] = human_time_description_raw(SECONDS_5MINUTES);
 $values[SECONDS_10MINUTES] = human_time_description_raw(SECONDS_10MINUTES);
 $values[SECONDS_30MINUTES] = human_time_description_raw(SECONDS_30MINUTES);
 
-$table_behaviour->data[$row][0] = __('Default interval for refresh on Visual Console').ui_print_help_tip(__('This interval will affect to Visual Console pages'), true);
-$table_behaviour->data[$row][1] = html_print_select($values, 'vc_refr', $config['vc_refr'], '', 'N/A', 0, true, false, false);
-$row++;
-
 $table_behaviour->data[$row][0] = __('Paginated module view');
 $table_behaviour->data[$row][1] = html_print_checkbox_switch(
     'paginate_module',
@@ -121,7 +117,7 @@ if (enterprise_installed()) {
 }
 
 echo '<fieldset>';
-echo '<legend>'.__('Behaviour configuration').'</legend>';
+echo '<legend>'.__('Behaviour configuration').' '.ui_print_help_icon('behavoir_conf_tab', true).'</legend>';
 html_print_table($table_behaviour);
 echo '</fieldset>';
 // ----------------------------------------------------------------------
@@ -243,7 +239,7 @@ function logo_custom_enterprise($name, $logo)
             false,
             true,
             '',
-            $open,
+            false,
             'width:240px'
         );
         return $select;
@@ -259,7 +255,7 @@ function logo_custom_enterprise($name, $logo)
             false,
             true,
             '',
-            $open,
+            true,
             'width:240px'
         );
         return $select;
@@ -267,12 +263,12 @@ function logo_custom_enterprise($name, $logo)
 }
 
 
-$table_styles->data[$row][0] = __('Custom logo (menu)').ui_print_help_icon('custom_logo', true);
+$table_styles->data[$row][0] = __('Custom logo (menu)');
 $table_styles->data[$row][1] = logo_custom_enterprise('custom_logo', $config['custom_logo']);
 $table_styles->data[$row][1] .= '&nbsp;'.html_print_button(__('View'), 'custom_logo_preview', $open, '', 'class="sub camera logo_preview"', true, false, $open, 'visualmodal');
 $row++;
 
-$table_styles->data[$row][0] = __('Custom logo collapsed (menu)').ui_print_help_icon('custom_logo_collapsed', true);
+$table_styles->data[$row][0] = __('Custom logo collapsed (menu)');
 $table_styles->data[$row][1] = logo_custom_enterprise('custom_logo_collapsed', $config['custom_logo_collapsed']);
 $table_styles->data[$row][1] .= '&nbsp;'.html_print_button(__('View'), 'custom_logo_collapsed_preview', $open, '', 'class="sub camera logo_preview"', true, false, $open, 'visualmodal');
 $row++;
@@ -316,7 +312,7 @@ if (enterprise_installed()) {
 $table_styles->data[$row][1] .= '&nbsp;'.html_print_button(__('View'), 'custom_logo_white_bg_preview', $open, '', 'class="sub camera logo_preview"', true, false, $open, 'visualmodal');
 $row++;
 
-$table_styles->data[$row][0] = __('Custom logo (login)').ui_print_help_icon('custom_logo', true);
+$table_styles->data[$row][0] = __('Custom logo (login)');
 
 if (enterprise_installed()) {
     $table_styles->data[$row][1] = html_print_select(
@@ -462,6 +458,20 @@ if (enterprise_installed()) {
     $row++;
 }
 
+// Title Header
+if (enterprise_installed()) {
+    $table_styles->data[$row][0] = __('Title (header)');
+    $table_styles->data[$row][1] = html_print_input_text('custom_title_header', $config['custom_title_header'], '', 50, 40, true);
+    $row++;
+}
+
+// Subtitle Header
+if (enterprise_installed()) {
+    $table_styles->data[$row][0] = __('Subtitle (header)');
+    $table_styles->data[$row][1] = html_print_input_text('custom_subtitle_header', $config['custom_subtitle_header'], '', 50, 40, true);
+    $row++;
+}
+
 // login title1
 if (enterprise_installed()) {
     $table_styles->data[$row][0] = __('Title 1 (login)');
@@ -555,7 +565,7 @@ $row++;
 
 
     echo '<fieldset>';
-    echo '<legend>'.__('Style configuration').'</legend>';
+    echo '<legend>'.__('Style configuration').' '.ui_print_help_icon('style_conf_tab', true).'</legend>';
     html_print_table($table_styles);
     echo '</fieldset>';
     // ----------------------------------------------------------------------
@@ -598,7 +608,7 @@ $row++;
     $row++;
 
     echo '<fieldset>';
-    echo '<legend>'.__('GIS configuration').'</legend>';
+    echo '<legend>'.__('GIS configuration').' '.ui_print_help_icon('gis_conf_tab', true).'</legend>';
     html_print_table($table_gis);
     echo '</fieldset>';
     // ----------------------------------------------------------------------
@@ -692,7 +702,7 @@ $row++;
     $row++;
 
     echo '<fieldset>';
-    echo '<legend>'.__('Font and Text configuration').'</legend>';
+    echo '<legend>'.__('Font and Text configuration').' '.ui_print_help_icon('front_and_text_conf_tab', true).'</legend>';
     html_print_table($table_font);
     echo '</fieldset>';
     // ----------------------------------------------------------------------
@@ -880,7 +890,7 @@ $row++;
     */
 
     echo '<fieldset>';
-    echo '<legend>'.__('Charts configuration').'</legend>';
+    echo '<legend>'.__('Charts configuration').' '.ui_print_help_icon('charts_conf_tab', true).'</legend>';
     html_print_table($table_chars);
     echo '</fieldset>';
     // ----------------------------------------------------------------------
@@ -894,6 +904,50 @@ $row++;
     $table_vc->size[0] = '50%';
     $table_vc->data = [];
 
+    // Remove when the new view reaches rock solid stability.
+    $table_vc->data[$row][0] = __('Legacy Visual Console View');
+    $table_vc->data[$row][0] .= ui_print_help_tip(
+        __('To use the old view when using the Visual Console visor'),
+        true
+    );
+    $table_vc->data[$row][1] = html_print_checkbox_switch(
+        'legacy_vc',
+        1,
+        (bool) $config['legacy_vc'],
+        true
+    );
+    $row++;
+
+    $intervals = [
+        10   => '10 '.__('seconds'),
+        30   => '30 '.__('seconds'),
+        60   => '1 '.__('minutes'),
+        300  => '5 '.__('minutes'),
+        900  => '15 '.__('minutes'),
+        1800 => '30 '.__('minutes'),
+        3600 => '1 '.__('hour'),
+    ];
+    $table_vc->data[$row][0] = __('Default cache expiration');
+    $table_vc->data[$row][1] = html_print_extended_select_for_time(
+        'vc_default_cache_expiration',
+        $config['vc_default_cache_expiration'],
+        '',
+        __('No cache'),
+        0,
+        false,
+        true,
+        false,
+        false,
+        '',
+        false,
+        $intervals
+    );
+    $row++;
+
+    $table_vc->data[$row][0] = __('Default interval for refresh on Visual Console').ui_print_help_tip(__('This interval will affect to Visual Console pages'), true);
+    $table_vc->data[$row][1] = html_print_select($values, 'vc_refr', (int) $config['vc_refr'], '', 'N/A', 0, true, false, false);
+    $row++;
+
     $vc_favourite_view_array[0] = __('Classic view');
     $vc_favourite_view_array[1] = __('View of favorites');
     $table_vc->data[$row][0] = __('Type of view of visual consoles').ui_print_help_tip(__('Allows you to directly display the list of favorite visual consoles'), true);
@@ -904,16 +958,12 @@ $row++;
     $table_vc->data[$row][1] = "<input type ='number' value=".$config['vc_menu_items']." size='5' name='vc_menu_items' min='0' max='25'>";
     $row++;
 
-    if (empty($config['vc_line_thickness'])) {
-        $config['vc_line_thickness'] = 2;
-    }
-
     $table_vc->data[$row][0] = __('Default line thickness for the Visual Console').ui_print_help_tip(__('This interval will affect to the lines between elements on the Visual Console'), true);
-    $table_vc->data[$row][1] = html_print_input_text('vc_line_thickness', $config['vc_line_thickness'], '', 5, 5, true);
+    $table_vc->data[$row][1] = html_print_input_text('vc_line_thickness', (int) $config['vc_line_thickness'], '', 5, 5, true);
 
 
     echo '<fieldset>';
-    echo '<legend>'.__('Visual consoles configuration').'</legend>';
+    echo '<legend>'.__('Visual consoles configuration').' '.ui_print_help_icon('visual_consoles_conf_tab', true).'</legend>';
     html_print_table($table_vc);
     echo '</fieldset>';
 
@@ -931,7 +981,7 @@ $row++;
     $table_ser->data['number'][1] = "<input type ='number' value=".$config['ser_menu_items']." size='5' name='ser_menu_items' min='0' max='25'>";
 
     echo '<fieldset>';
-    echo '<legend>'.__('Services configuration').'</legend>';
+    echo '<legend>'.__('Services configuration').' '.ui_print_help_icon('services_conf_tab', true).'</legend>';
     html_print_table($table_ser);
     echo '</fieldset>';
 
@@ -1063,15 +1113,6 @@ $row++;
 
 
 
-    $table_other->data[$row][0] = __('Show QR Code icon in the header');
-    $table_other->data[$row][1] = html_print_checkbox_switch(
-        'show_qr_code_header',
-        1,
-        $config['show_qr_code_header'],
-        true
-    );
-    $row++;
-
     $table_other->data[$row][0] = __('Custom graphviz directory').ui_print_help_tip(__('Custom directory where the graphviz binaries are stored.'), true);
     $table_other->data[$row][1] = html_print_input_text(
         'graphviz_bin_dir',
@@ -1110,7 +1151,7 @@ $row++;
     );
     $row++;
 
-    $table_other->data[$row][0] = __('Date format string').ui_print_help_icon('date_format', true);
+    $table_other->data[$row][0] = __('Date format string');
     $table_other->data[$row][1] = '<em>'.__('Example').'</em> '.date($config['date_format']);
     $table_other->data[$row][1] .= html_print_input_text('date_format', $config['date_format'], '', 30, 100, true);
     $row++;
@@ -1123,7 +1164,7 @@ $row++;
         $comparation = false;
     }
 
-    $table_other->data[$row][0] = __('Timestamp or time comparation').ui_print_help_icon('time_stamp-comparation', true);
+    $table_other->data[$row][0] = __('Timestamp or time comparation');
     $table_other->data[$row][1] = __('Comparation in rollover').' ';
     $table_other->data[$row][1] .= html_print_radio_button('prominent_time', 'comparation', '', $comparation, true);
     $table_other->data[$row][1] .= '<br />'.__('Timestamp in rollover').' ';
@@ -1229,7 +1270,7 @@ $row++;
 
 
     echo '<fieldset>';
-    echo '<legend>'.__('Other configuration').'</legend>';
+    echo '<legend>'.__('Other configuration').' '.ui_print_help_icon('other_conf_tab', true).'</legend>';
     html_print_table($table_other);
     echo '</fieldset>';
 
@@ -1370,6 +1411,15 @@ tinyMCE.init({
 });
 
 $(document).ready (function () {
+
+    // Show the cache expiration conf or not.
+    $("input[name=legacy_vc]").change(function (e) {
+        if ($(this).prop("checked") === true) {
+            $("select#vc_default_cache_expiration_select").closest("tr").hide();
+        } else {
+            $("select#vc_default_cache_expiration_select").closest("tr").show();
+        }
+    }).change();
     
     var comfort = 0;
     

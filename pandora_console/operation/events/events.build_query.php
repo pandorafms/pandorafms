@@ -83,22 +83,43 @@ if (($date_from === '') && ($date_to === '')) {
     }
 }
 
+$is_using_secondary_group = enterprise_hook('agents_is_using_secondary_groups');
+
 // Group selection.
 if ($id_group > 0 && in_array($id_group, array_keys($groups))) {
     if ($propagate) {
         $childrens_str = implode(',', $childrens_ids);
-        $sql_post .= " AND (id_grupo IN ($childrens_str) OR id_group IN ($childrens_str))";
+        $sql_post .= " AND (id_grupo IN ($childrens_str)";
+
+        if ($is_using_secondary_group === 1) {
+            $sql_post .= " OR id_group IN ($childrens_str)";
+        }
+
+        $sql_post .= ')';
     } else {
         // If a group is selected and it's in the groups allowed.
-        $sql_post .= " AND (id_grupo = $id_group OR id_group = $id_group)";
+        $sql_post .= " AND (id_grupo = $id_group";
+
+        if ($is_using_secondary_group === 1) {
+            $sql_post .= " OR id_group = $id_group";
+        }
+
+        $sql_post .= ')';
     }
 } else {
     if (!users_is_admin() && !users_can_manage_group_all('ER')) {
-        $sql_post .= sprintf(
-            ' AND (id_grupo IN (%s) OR id_group IN (%s)) ',
-            implode(',', array_keys($groups)),
-            implode(',', array_keys($groups))
-        );
+        if ($is_using_secondary_group === 1) {
+            $sql_post .= sprintf(
+                ' AND (id_grupo IN (%s) OR id_group IN (%s)) ',
+                implode(',', array_keys($groups)),
+                implode(',', array_keys($groups))
+            );
+        } else {
+            $sql_post .= sprintf(
+                ' AND (id_grupo IN (%s)) ',
+                implode(',', array_keys($groups))
+            );
+        }
     }
 }
 
@@ -121,41 +142,43 @@ switch ($status) {
     break;
 }
 
-
-$events_wi_cdata = db_get_all_rows_sql('SELECT id_evento,custom_data from tevento WHERE custom_data != ""');
-$count_events = 0;
-$events_wi_cdata_id = 'OR id_evento IN (';
-if ($events_wi_cdata === false) {
-    $events_wi_cdata = [];
-}
-
-foreach ($events_wi_cdata as $key => $value) {
-    $needle = base64_decode($value['custom_data']);
-    if (($needle != '') && ($search != '')) {
-        if (strpos(strtolower($needle), strtolower($search)) != false) {
-            $events_wi_cdata_id .= $value['id_evento'];
-            $count_events++;
-        }
-    }
-
-    if ($value !== end($events_wi_cdata) && $count_events > 0) {
-        $events_wi_cdata_id .= ',';
-        $events_wi_cdata_id = str_replace(',,', ',', $events_wi_cdata_id);
-    }
-}
-
-$events_wi_cdata_id .= ')';
-
-$events_wi_cdata_id = str_replace(',)', ')', $events_wi_cdata_id);
-
-if ($count_events == 0) {
-    $events_wi_cdata_id = '';
-}
-
+/*
+ * Never use things like this.
+ *
+ * $events_wi_cdata = db_get_all_rows_sql('SELECT id_evento,custom_data from tevento WHERE custom_data != ""');
+ * $count_events = 0;
+ * $events_wi_cdata_id = 'OR id_evento IN (';
+ * if ($events_wi_cdata === false) {
+ *     $events_wi_cdata = [];
+ * }
+ *
+ * foreach ($events_wi_cdata as $key => $value) {
+ *     $needle = base64_decode($value['custom_data']);
+ *     if (($needle != '') && ($search != '')) {
+ *         if (strpos(strtolower($needle), strtolower($search)) != false) {
+ *             $events_wi_cdata_id .= $value['id_evento'];
+ *             $count_events++;
+ *         }
+ *     }
+ *
+ *     if ($value !== end($events_wi_cdata) && $count_events > 0) {
+ *         $events_wi_cdata_id .= ',';
+ *         $events_wi_cdata_id = str_replace(',,', ',', $events_wi_cdata_id);
+ *     }
+ * }
+ *
+ * $events_wi_cdata_id .= ')';
+ *
+ * $events_wi_cdata_id = str_replace(',)', ')', $events_wi_cdata_id);
+ *
+ * if ($count_events == 0) {
+ *     $events_wi_cdata_id = '';
+ * }
+ */
 
 if ($search != '') {
     $filter_resume['free_search'] = $search;
-    $sql_post .= " AND (evento LIKE '%".$search."%' OR id_evento LIKE '%$search%' ".$events_wi_cdata_id.')';
+    $sql_post .= " AND (evento LIKE '%".$search."%' OR id_evento LIKE '%$search%' )";
 }
 
 if ($event_type != '') {

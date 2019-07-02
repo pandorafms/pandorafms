@@ -53,14 +53,14 @@
 }
 
 .introjs-fixParent {
-  z-index: auto !important;
-  opacity: 1 !important;
+  z-index: auto;
+  opacity: 1;
 }
 
 .introjs-showElement,
 tr.introjs-showElement > td,
 tr.introjs-showElement > th {
-  z-index: 9999999 !important;
+  z-index: 9999999;
 }
 
 .introjs-relativePosition,
@@ -89,7 +89,7 @@ tr.introjs-showElement > th {
   position: absolute;
   top: -16px;
   left: -16px;
-  z-index: 9999999999 !important;
+  z-index: 9999999999;
   padding: 2px;
   font-family: Arial, verdana, tahoma;
   font-size: 13px;

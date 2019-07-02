@@ -182,7 +182,8 @@ if ($searchAgents) {
     }
 
     $sql = "
-		FROM tagente t1
+        FROM tagente t1 LEFT JOIN tagent_secondary_group tasg
+            ON t1.id_agente = tasg.id_agent
 			INNER JOIN tgrupo t2
 				ON t2.id_grupo = t1.id_grupo
 		WHERE (
@@ -191,9 +192,11 @@ if ($searchAgents) {
 					FROM tusuario
 					WHERE id_user = '".$config['id_user']."'
 				)
-				OR t1.id_grupo IN (
-					".implode(',', $id_userGroups)."
-				) OR 0 IN (
+				OR (
+                    t1.id_grupo IN (".implode(',', $id_userGroups).')
+                    OR tasg.id_group IN ('.implode(',', $id_userGroups).")
+                )
+                OR 0 IN (
 					SELECT id_grupo
 					FROM tusuario_perfil
 					WHERE id_usuario = '".$config['id_user']."'
@@ -208,7 +211,7 @@ if ($searchAgents) {
 			)
 	';
 
-    $select = 'SELECT t1.id_agente, t1.ultimo_contacto, t1.nombre, t1.id_os, t1.intervalo, t1.id_grupo, t1.disabled, t1.alias, t1.quiet';
+    $select = 'SELECT DISTINCT(t1.id_agente), t1.ultimo_contacto, t1.nombre, t1.id_os, t1.intervalo, t1.id_grupo, t1.disabled, t1.alias, t1.quiet';
     if ($only_count) {
         $limit = ' ORDER BY '.$order['field'].' '.$order['order'].' LIMIT '.$config['block_size'].' OFFSET 0';
     } else {

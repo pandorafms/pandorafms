@@ -21,12 +21,14 @@ Description: The default Pandora FMS theme layout
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
+body,
 div#page,
 #menu_tab_frame,
 #menu_tab_frame_view,
 #menu_tab_frame_view_bc,
 input.search_input,
 .filters input,
+input:-internal-autofill-selected,
 input#text-id_parent.ac_input,
 input,
 textarea,
@@ -77,7 +79,10 @@ h4,
 .info_table > thead > tr > th > span,
 form.discovery label,
 .edit_user_labels,
-.input_label {
+.input_label,
+.pagination,
+tr.group_view_data,
+.group_view_data {
   color: #fff;
 }
 
@@ -86,6 +91,12 @@ form.discovery label,
   color: #fff !important;
 }
 
+/* snmp */
+#snmp_browser {
+  background-color: #222 !important;
+}
+
+/* General styles */
 .box-shadow {
   box-shadow: none;
 }
@@ -97,11 +108,29 @@ textarea:disabled {
 
 .status_tactical,
 .tactical_set,
-.td-bg-white td {
+.td-bg-white td,
+#top_btn:hover {
   background-color: transparent;
 }
 
-/* tables */
+.agent_details_col,
+.white_table,
+.white_table tr:first-child > th,
+.white_table_graph_content {
+  background-color: #222;
+  color: #fff;
+}
+
+.notify,
+.notify h3 {
+  color: #000;
+}
+
+.sort_arrow img {
+  filter: brightness(2.5) contrast(3.5);
+}
+
+/* tables.css */
 .info_table {
   background-color: #222;
 }
@@ -118,9 +147,10 @@ textarea:disabled {
 
 .info_table > tbody > tr:hover,
 .databox.data > tbody > tr:hover,
+.checkselected,
 .rowPair:hover,
 .rowOdd:hover {
-  background-color: #555 !important; /* porque tables.css se carga depues.... */
+  background-color: #555 !important;
 }
 
 .info_table .datos3,
@@ -130,25 +160,11 @@ textarea:disabled {
   background-color: #666;
   color: #fff;
 }
-.agent_details_col,
-.white_table,
-.white_table tr:first-child > th,
-.white_table_graph_content {
-  background-color: #222;
-  color: #fff;
-}
 
-/* action buttons in tables */
 .action_buttons a[href] img,
 .action_buttons input[type="image"],
 .action_button_img {
   filter: brightness(2.5) contrast(50%);
-}
-
-/* fix cosas generales */
-.notify,
-.notify h3 {
-  color: #000;
 }
 
 /* firts_task.css */
@@ -158,10 +174,19 @@ div.new_task_cluster > div {
   background-color: #222;
 }
 
+/* events.css */
+.filter_summary div {
+  background: transparent;
+}
+
 /* webchat */
 #chat_box,
 #userlist_box {
   background: #222 !important;
+}
+
+#chat_box > div span {
+  color: #fff !important;
 }
 
 /* tree.css */
@@ -187,6 +212,10 @@ div.login_pass input {
   border-bottom: 1px solid #5f5f5f;
 }
 
+#user-notifications-wrapper {
+  color: #fff;
+}
+
 /* datatables */
 table.dataTable tbody tr {
   background-color: #222;
@@ -201,14 +230,17 @@ table#diagnostic_info {
   background-color: #111 !important;
 }
 
+table#diagnostic_info th {
+  background-color: #444 !important;
+}
+
 table#diagnostic_info tbody td div {
   background-color: #222 !important;
 }
 
 /* agent view */
-.agent_details_graph div#status_pie {
-  background: #fff;
-  border-radius: 5px;
+.buttons_agent_view {
+  filter: brightness(2.5);
 }
 
 /* menu.css */
@@ -231,7 +263,21 @@ table#diagnostic_info tbody td div {
   background-color: #080808;
 }
 
+.sub_subMenu {
+  background-color: #343434;
+}
+
 /* footer */
 div#foot {
   background: #222;
+}
+
+/* jquery custom */
+.ui-dialog,
+.ui-widget-content {
+  background-color: #111;
+}
+.ui-widget-content,
+.ui-widget-content a {
+  color: #fff;
 }

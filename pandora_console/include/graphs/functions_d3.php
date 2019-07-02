@@ -740,6 +740,8 @@ function print_donut_narrow_graph(
     array $data,
     $data_total
 ) {
+    global $config;
+
     if (empty($data)) {
         return graph_nodata_image($width, $height, 'pie');
     }
@@ -754,10 +756,31 @@ function print_donut_narrow_graph(
 
     $graph_id = uniqid('graph_');
 
+    // This is for "Style template" in visual styles.
+    switch ($config['style']) {
+        case 'pandora':
+            $textColor = '#000';
+            $strokeColor = '#fff';
+        break;
+
+        case 'pandora_black':
+            $textColor = '#fff';
+            $strokeColor = '#222';
+        break;
+
+        default:
+            $textColor = '#000';
+            $strokeColor = 'transparent';
+        break;
+    }
+
+    $textColor = json_encode($textColor);
+    $strokeColor = json_encode($strokeColor);
+
     $out = "<div id='$graph_id'></div>";
     $out .= include_javascript_d3(true);
     $out .= "<script type='text/javascript'>
-						donutNarrowGraph($colors, $width, $height, $data_total)
+						donutNarrowGraph($colors, $width, $height, $data_total, $textColor, $strokeColor)
 						.donutbody(d3.select($graph_id))
 						.data($data)
 						.render();	

@@ -1214,7 +1214,6 @@ echo "\n<!-- Page generated in $run_time seconds -->\n";
 // Values from PHP to be recovered from JAVASCRIPT
 require 'include/php_to_js_values.php';
 
-// if ($config['style'] !== 'pandora') {
 ?>
 
 <script type="text/javascript" language="javascript">

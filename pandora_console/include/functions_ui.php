@@ -3679,7 +3679,7 @@ function ui_get_url_refresh($params=false, $relative=true, $add_post=true)
 function ui_forced_public_url()
 {
     global $config;
-    $exclusions = preg_split("/[\n\s,]+/", $config['public_url_exclusions']);
+    $exclusions = preg_split("/[\n\s,]+/", io_safe_output($config['public_url_exclusions']));
 
     if (in_array($_SERVER['REMOTE_ADDR'], $exclusions)) {
         return false;

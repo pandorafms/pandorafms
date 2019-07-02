@@ -578,14 +578,44 @@ export default class VisualConsole {
     position: Position,
     element: Item<ItemProps>
   ): Position {
-    // TODO: Perform a better calculation taking into account the lablel
-    // position of the element.
-    const x = position.x + element.elementRef.clientWidth / 2;
-    const y =
-      position.y +
-      (element.elementRef.clientHeight - element.labelElementRef.clientHeight) /
-        2;
-
+    let x = position.x + element.elementRef.clientWidth / 2;
+    let y = position.y + element.elementRef.clientHeight / 2;
+    if (
+      typeof element.props.label !== "undefined" ||
+      element.props.label !== "" ||
+      element.props.label !== null
+    ) {
+      switch (element.props.labelPosition) {
+        case "up":
+          y =
+            position.y +
+            (element.elementRef.clientHeight +
+              element.labelElementRef.clientHeight) /
+              2;
+          break;
+        case "down":
+          y =
+            position.y +
+            (element.elementRef.clientHeight -
+              element.labelElementRef.clientHeight) /
+              2;
+          break;
+        case "right":
+          x =
+            position.x +
+            (element.elementRef.clientWidth -
+              element.labelElementRef.clientWidth) /
+              2;
+          break;
+        case "left":
+          x =
+            position.x +
+            (element.elementRef.clientWidth +
+              element.labelElementRef.clientWidth) /
+              2;
+          break;
+      }
+    }
     return { x, y };
   }
 

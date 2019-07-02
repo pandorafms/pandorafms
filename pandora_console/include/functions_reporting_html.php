@@ -3284,7 +3284,7 @@ function reporting_html_availability_graph($table, $item, $pdf=0)
         }
 
         // Check failover availability report.
-        if ($item['data'][$k_chart]['secondary'] === '') {
+        if ($item['data'][$k_chart]['failover'] === '') {
             $table1 = new stdClass();
             $table1->width = '99%';
             $table1->data = [];
@@ -3302,7 +3302,9 @@ function reporting_html_availability_graph($table, $item, $pdf=0)
                 true
             );
         } else {
-            if ($item['data'][$k_chart]['secondary'] === 'primary') {
+            if ($item['data'][$k_chart]['failover'] === 'primary'
+                || $item['failover_type'] == REPORT_FAILOVER_TYPE_SIMPLE
+            ) {
                 $table1 = new stdClass();
                 $table1->width = '99%';
                 $table1->data = [];
@@ -3316,7 +3318,7 @@ function reporting_html_availability_graph($table, $item, $pdf=0)
             $title = '';
             $checks_resume_text = $checks_resume;
             $sla_value_text = "<span style = 'font: bold 2em Arial, Sans-serif; color: ".$color."'>".$sla_value.'</span>';
-            switch ($item['data'][$k_chart]['secondary']) {
+            switch ($item['data'][$k_chart]['failover']) {
                 case 'primary':
                     $title = '<b>'.__('Primary').'</b>';
                     $title .= '<br />'.$chart['agent'];
@@ -3339,12 +3341,12 @@ function reporting_html_availability_graph($table, $item, $pdf=0)
                 break;
             }
 
-            $table1->data[$item['data'][$k_chart]['secondary']][0] = $title;
-            $table1->data[$item['data'][$k_chart]['secondary']][1] = $chart['chart'];
-            $table1->data[$item['data'][$k_chart]['secondary']][2] = $sla_value_text;
-            $table1->data[$item['data'][$k_chart]['secondary']][3] = $checks_resume_text;
+            $table1->data[$item['data'][$k_chart]['failover']][0] = $title;
+            $table1->data[$item['data'][$k_chart]['failover']][1] = $chart['chart'];
+            $table1->data[$item['data'][$k_chart]['failover']][2] = $sla_value_text;
+            $table1->data[$item['data'][$k_chart]['failover']][3] = $checks_resume_text;
 
-            if ($item['data'][$k_chart]['secondary'] === 'result') {
+            if ($item['data'][$k_chart]['failover'] === 'result') {
                 $tables_chart .= html_print_table(
                     $table1,
                     true

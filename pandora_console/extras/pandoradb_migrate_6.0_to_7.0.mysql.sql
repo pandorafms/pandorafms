@@ -796,6 +796,8 @@ ALTER TABLE `treport_content_template` ADD COLUMN `unknown_checks` TINYINT(1) DE
 ALTER TABLE `treport_content_template` ADD COLUMN `agent_max_value` TINYINT(1) DEFAULT '1';
 ALTER TABLE `treport_content_template` ADD COLUMN `agent_min_value` TINYINT(1) DEFAULT '1';
 ALTER TABLE `treport_content_template` ADD COLUMN `current_month` TINYINT(1) DEFAULT '1';
+ALTER TABLE `treport_content_template` ADD COLUMN `failover_mode` tinyint(1) DEFAULT '1';
+ALTER TABLE `treport_content_template` ADD COLUMN `failover_type` tinyint(1) DEFAULT '1';
 
 -- -----------------------------------------------------
 -- Table `treport_content_sla_com_temp` (treport_content_sla_combined_template)
@@ -1442,6 +1444,8 @@ ALTER TABLE `treport_content` ADD COLUMN `unknown_checks` TINYINT(1) DEFAULT '1'
 ALTER TABLE `treport_content` ADD COLUMN `agent_max_value` TINYINT(1) DEFAULT '1';
 ALTER TABLE `treport_content` ADD COLUMN `agent_min_value` TINYINT(1) DEFAULT '1';
 ALTER TABLE `treport_content` ADD COLUMN `current_month` TINYINT(1) DEFAULT '1';
+ALTER TABLE `treport_content` ADD COLUMN `failover_mode` tinyint(1) DEFAULT '0';
+ALTER TABLE `treport_content` ADD COLUMN `failover_type` tinyint(1) DEFAULT '0';
 
 -- ---------------------------------------------------------------------
 -- Table `tmodule_relationship`
@@ -2213,4 +2217,5 @@ CREATE TABLE IF NOT EXISTS `tcredential_store` (
 -- ---------------------------------------------------------------------
 -- Table `treport_content_sla_combined`
 -- ---------------------------------------------------------------------
-ALTER TABLE `treport_content_sla_combined` ADD `id_agent_module_secondary` int(10) unsigned NOT NULL;
+ALTER TABLE `treport_content_sla_combined` ADD `id_agent_module_failover` int(10) unsigned NOT NULL;
+ALTER TABLE `treport_content_sla_combined` ADD `id_server_failover` int(10) unsigned NOT NULL;

@@ -53,6 +53,10 @@ require_once $config['homedir'].'/include/functions_network.php';
 define('REPORT_PRIORITY_MODE_OK', 1);
 define('REPORT_PRIORITY_MODE_UNKNOWN', 2);
 
+// Failover type.
+define('REPORT_FAILOVER_TYPE_NORMAL', 1);
+define('REPORT_FAILOVER_TYPE_SIMPLE', 2);
+
 // Status.
 define('REPORT_STATUS_ERR', 0);
 define('REPORT_STATUS_OK', 1);
@@ -6403,6 +6407,7 @@ function reporting_availability_graph($report, $content, $pdf=false)
 
     $return['title'] = $content['name'];
     $return['description'] = $content['description'];
+    $return['failover_type'] = $content['failover_type'];
     $return['date'] = reporting_get_date_text($report, $content);
 
     // Get chart.
@@ -6458,18 +6463,20 @@ function reporting_availability_graph($report, $content, $pdf=false)
                 }
             }
 
-            if (isset($sla['id_agent_module_secondary']) === true
-                && $sla['id_agent_module_secondary'] != 0
+            if (isset($sla['id_agent_module_failover']) === true
+                && $sla['id_agent_module_failover'] != 0
             ) {
-                $sla_secondary['primary'] = $sla;
-                $sla_secondary['failover'] = $sla;
-                $sla_secondary['failover']['id_agent_module'] = $sla['id_agent_module_secondary'];
+                $sla_failover = [];
+                $sla_failover['primary'] = $sla;
+                $sla_failover['failover'] = $sla;
+                $sla_failover['failover']['id_agent_module'] = $sla['id_agent_module_failover'];
 
                 // For graph slice for module-interval, if not slice=0.
                 $module_interval = modules_get_interval($sla['id_agent_module']);
                 $slice = ($content['period'] / $module_interval);
+                $data_combined = [];
 
-                foreach ($sla_secondary as $k_sla => $v_sla) {
+                foreach ($sla_failover as $k_sla => $v_sla) {
                     $sla_array = data_db_uncompress_module(
                         $v_sla,
                         $content,
@@ -6477,14 +6484,16 @@ function reporting_availability_graph($report, $content, $pdf=false)
                         $slice
                     );
 
-                    $return = prepare_data_for_paint(
-                        $v_sla,
-                        $sla_array,
-                        $content,
-                        $report['datetime'],
-                        $return,
-                        $k_sla
-                    );
+                    if ($content['failover_type'] == REPORT_FAILOVER_TYPE_NORMAL) {
+                        $return = prepare_data_for_paint(
+                            $v_sla,
+                            $sla_array,
+                            $content,
+                            $report['datetime'],
+                            $return,
+                            $k_sla
+                        );
+                    }
 
                     $data_combined[] = $sla_array;
                 }
@@ -6493,8 +6502,10 @@ function reporting_availability_graph($report, $content, $pdf=false)
                     && is_array($data_combined) === true
                     && count($data_combined) > 0
                 ) {
+                    $data_a = [];
                     $data_a = array_map(
                         function ($primary, $failover) {
+                            $return_map = [];
                             if ($primary['date_from'] === $failover['date_from']
                                 && $primary['date_to'] === $failover['date_to']
                             ) {
@@ -6517,10 +6528,10 @@ function reporting_availability_graph($report, $content, $pdf=false)
                                     $primary['sla_fixed'] = $failover['sla_fixed'];
                                 }
 
-                                $return = $primary;
+                                $return_map = $primary;
                             }
 
-                            return $return;
+                            return $return_map;
                         },
                         $data_combined[0],
                         $data_combined[1]
@@ -6778,7 +6789,7 @@ function reporting_get_planned_downtimes_sla($id_agent_module, $datetime, $perio
  * @param array   $content   Content report data.
  * @param integer $datetime  Date.
  * @param array   $return    Array return.
- * @param string  $secondary Type secondaary primary, failover, Result.
+ * @param string  $failover  Type primary, failover, Result.
  *
  * @return array Return modify.
  */
@@ -6788,7 +6799,7 @@ function prepare_data_for_paint(
     $content,
     $datetime,
     $return,
-    $secondary=''
+    $failover=''
 ) {
     $data = [];
     $alias_agent = modules_get_agentmodule_agent_alias(
@@ -6804,7 +6815,7 @@ function prepare_data_for_paint(
     $data['min'] = $sla['sla_min'];
     $data['sla_limit'] = $sla['sla_limit'];
     $data['dinamic_text'] = $dinamic_text;
-    $data['secondary'] = $secondary;
+    $data['failover'] = $failover;
     if (isset($sla_array[0])) {
         $data['time_total']      = 0;
         $data['time_ok']         = 0;
@@ -6929,7 +6940,7 @@ function prepare_data_for_paint(
     $dataslice['sla_value'] = $data['sla_value'];
 
     $height = 80;
-    if ($secondary !== '' && $secondary !== 'result') {
+    if ($failover !== '' && $failover !== 'result') {
         $height = 50;
     }
 

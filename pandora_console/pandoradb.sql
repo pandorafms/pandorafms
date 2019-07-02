@@ -1452,6 +1452,8 @@ CREATE TABLE IF NOT EXISTS `treport_content` (
 	`agent_max_value` TINYINT(1) DEFAULT '1',
 	`agent_min_value` TINYINT(1) DEFAULT '1',
 	`current_month` TINYINT(1) DEFAULT '1',
+	`failover_mode` tinyint(1) DEFAULT '1',
+	`failover_type` tinyint(1) DEFAULT '1',
 	PRIMARY KEY(`id_rc`),
 	FOREIGN KEY (`id_report`) REFERENCES treport(`id_report`)
 		ON UPDATE CASCADE ON DELETE CASCADE
@@ -1464,7 +1466,8 @@ CREATE TABLE IF NOT EXISTS `treport_content_sla_combined` (
 	`id` INTEGER UNSIGNED NOT NULL auto_increment,
 	`id_report_content` INTEGER UNSIGNED NOT NULL,
 	`id_agent_module` int(10) unsigned NOT NULL,
-	`id_agent_module_secondary` int(10) unsigned NOT NULL,
+	`id_agent_module_failover` int(10) unsigned NOT NULL,
+	`id_server_failover` int(10) unsigned NOT NULL default 0,
 	`sla_max` double(18,2) NOT NULL default 0,
 	`sla_min` double(18,2) NOT NULL default 0,
 	`sla_limit` double(18,2) NOT NULL default 0,
@@ -2993,6 +2996,8 @@ CREATE TABLE IF NOT EXISTS `treport_content_template` (
 	`agent_max_value` TINYINT(1) DEFAULT '1',
 	`agent_min_value` TINYINT(1) DEFAULT '1',
 	`current_month` TINYINT(1) DEFAULT '1',
+	`failover_mode` tinyint(1) DEFAULT '1',
+	`failover_type` tinyint(1) DEFAULT '1',
 	PRIMARY KEY(`id_rc`)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 

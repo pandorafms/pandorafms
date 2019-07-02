@@ -165,6 +165,8 @@ switch ($action) {
         $show_in_landscape = 0;
         $hide_notinit_agents = 0;
         $priority_mode = REPORT_PRIORITY_MODE_OK;
+        $failover_mode = 0;
+        $failover_type = REPORT_FAILOVER_TYPE_NORMAL;
         $server_name = '';
         $server_id = 0;
         $dyn_height = 230;
@@ -314,6 +316,8 @@ switch ($action) {
                     $sla_sorted_by = $item['top_n'];
                     $period = $item['period'];
                     $current_month = $item['current_month'];
+                    $failover_mode = $item['failover_mode'];
+                    $failover_type = $item['failover_type'];
                 break;
 
                 case 'module_histogram_graph':
@@ -2237,6 +2241,7 @@ $class = 'databox filters';
                 ?>
             </td>
         </tr>
+
         <tr id="row_select_fields2" style="" class="datos">
         <td style="font-weight:bold;margin-right:150px;">
             <?php
@@ -2608,6 +2613,59 @@ $class = 'databox filters';
             </td>
         </tr>
 
+        <tr id="row_failover_mode" style="" class="datos">
+            <td style="font-weight:bold;">
+            <?php
+            echo __('Failover mode').ui_print_help_tip(
+                __('XXX.'),
+                true
+            );
+            ?>
+            </td>
+            <td>
+                <?php
+                html_print_checkbox_switch(
+                    'failover_mode',
+                    1,
+                    $failover_mode
+                );
+                ?>
+            </td>
+        </tr>
+
+        <tr id="row_failover_type" style="" class="datos">
+            <td style="font-weight:bold;">
+            <?php
+            echo __('Failover type');
+            ?>
+            </td>
+            <td>
+                <?php
+                echo __('Failover normal');
+                echo '<span style="margin-left:5px;"></span>';
+                html_print_radio_button(
+                    'failover_type',
+                    REPORT_FAILOVER_TYPE_NORMAL,
+                    '',
+                    $failover_type == REPORT_FAILOVER_TYPE_NORMAL,
+                    ''
+                );
+
+                echo '<span style="margin:30px;"></span>';
+
+                echo __('Failover simple');
+                echo '<span style="margin-left:5px;"></span>';
+                html_print_radio_button(
+                    'failover_type',
+                    REPORT_FAILOVER_TYPE_SIMPLE,
+                    '',
+                    $failover_type == REPORT_FAILOVER_TYPE_SIMPLE,
+                    ''
+                );
+                ?>
+            </td>
+        </tr>
+
         <tr id="row_filter_search" style="" class="datos">
             <td style="font-weight:bold;"><?php echo __('Free search'); ?></td>
             <td>
@@ -2771,6 +2829,13 @@ function print_SLA_list($width, $action, $idItem=null)
         'id_rc',
         $idItem
     );
+
+    $failover_mode = db_get_value(
+        'failover_mode',
+        'treport_content',
+        'id_rc',
+        $idItem
+    );
     ?>
     <table class="databox data" id="sla_list" border="0" cellpadding="4" cellspacing="4" width="100%">
         <thead>
@@ -2783,16 +2848,18 @@ function print_SLA_list($width, $action, $idItem=null)
                 <th class="header sla_list_module_col" scope="col">
                 <?php
                 echo __('Module');
-                if ($report_item_type == 'availability_graph') {
+                if ($report_item_type == 'availability_graph'
+                    && $failover_mode
+                ) {
                     ?>
-                <th class="header sla_list_agent_secondary" scope="col">
+                <th class="header sla_list_agent_failover" scope="col">
                     <?php
-                    echo __('Agent Secondary');
+                    echo __('Agent Failover');
                     ?>
                 </th>
-                <th class="header sla_list_module_secondary" scope="col">
+                <th class="header sla_list_module_failover" scope="col">
                     <?php
-                    echo __('Module Secondary');
+                    echo __('Module Failover');
                     ?>
                 </th>
                     <?php
@@ -2878,22 +2945,22 @@ function print_SLA_list($width, $action, $idItem=null)
                             ['id_agente_modulo' => $item['id_agent_module']]
                         );
 
-                        if (isset($item['id_agent_module_secondary']) === true
-                            && $item['id_agent_module_secondary'] !== 0
+                        if (isset($item['id_agent_module_failover']) === true
+                            && $item['id_agent_module_failover'] !== 0
                         ) {
-                            $idAgentSecondary = db_get_value_filter(
+                            $idAgentFailover = db_get_value_filter(
                                 'id_agente',
                                 'tagente_modulo',
-                                ['id_agente_modulo' => $item['id_agent_module_secondary']]
+                                ['id_agente_modulo' => $item['id_agent_module_failover']]
                             );
-                            $nameAgentSecondary = agents_get_alias(
-                                $idAgentSecondary
+                            $nameAgentFailover = agents_get_alias(
+                                $idAgentFailover
                             );
 
-                            $nameModuleSecondary = db_get_value_filter(
+                            $nameModuleFailover = db_get_value_filter(
                                 'nombre',
                                 'tagente_modulo',
-                                ['id_agente_modulo' => $item['id_agent_module_secondary']]
+                                ['id_agente_modulo' => $item['id_agent_module_failover']]
                             );
                         }
 
@@ -2910,12 +2977,14 @@ function print_SLA_list($width, $action, $idItem=null)
                         echo printSmallFont($nameModule);
                         echo '</td>';
 
-                        if ($report_item_type == 'availability_graph') {
-                            echo '<td class="sla_list_agent_secondary">';
-                            echo printSmallFont($nameAgentSecondary).$server_name_element;
+                        if ($report_item_type == 'availability_graph'
+                            && $failover_mode
+                        ) {
+                            echo '<td class="sla_list_agent_failover">';
+                            echo printSmallFont($nameAgentFailover).$server_name_element;
                             echo '</td>';
-                            echo '<td class="sla_list_module_secondary">';
-                            echo printSmallFont($nameModuleSecondary);
+                            echo '<td class="sla_list_module_failover">';
+                            echo printSmallFont($nameModuleFailover);
                             echo '</td>';
                         }
 
@@ -2967,10 +3036,12 @@ function print_SLA_list($width, $action, $idItem=null)
                             <td class="sla_list_agent_col agent_name"></td>
                             <td class="sla_list_module_col module_name"></td>
                             <?php
-                            if ($report_item_type == 'availability_graph') {
+                            if ($report_item_type == 'availability_graph'
+                                && $failover_mode
+                            ) {
                                 ?>
-                            <td class="sla_list_agent_secondary agent_name_secondary"></td>
-                            <td class="sla_list_module_secondary module_name_secondary"></td>
+                            <td class="sla_list_agent_failover agent_name_failover"></td>
+                            <td class="sla_list_module_failover module_name_failover"></td>
                                 <?php
                             }
 
@@ -3030,20 +3101,22 @@ function print_SLA_list($width, $action, $idItem=null)
                                 </select>
                             </td>
                             <?php
-                            if ($report_item_type == 'availability_graph') {
+                            if ($report_item_type == 'availability_graph'
+                                && $failover_mode
+                            ) {
                                 ?>
-                                <td class="sla_list_agent_secondary_col">
-                                    <input id="hidden-id_agent_secondary" name="id_agent_secondary" value="" type="hidden">
-                                    <input id="hidden-server_name_secondary" name="server_name_secondary" value="" type="hidden">
+                                <td class="sla_list_agent_failover_col">
+                                    <input id="hidden-id_agent_failover" name="id_agent_failover" value="" type="hidden">
+                                    <input id="hidden-server_name_failover" name="server_name_failover" value="" type="hidden">
                                     <?php
                                     $params = [];
                                     $params['show_helptip'] = true;
-                                    $params['input_name'] = 'agent_secondary';
+                                    $params['input_name'] = 'agent_failover';
                                     $params['value'] = '';
                                     $params['use_hidden_input_idagent'] = true;
-                                    $params['hidden_input_idagent_id'] = 'hidden-id_agent_secondary';
+                                    $params['hidden_input_idagent_id'] = 'hidden-id_agent_failover';
                                     $params['javascript_is_function_select'] = true;
-                                    $params['selectbox_id'] = 'id_agent_module_secondary';
+                                    $params['selectbox_id'] = 'id_agent_module_failover';
                                     $params['add_none_module'] = false;
                                     if ($meta) {
                                         $params['use_input_id_server'] = true;
@@ -3054,8 +3127,8 @@ function print_SLA_list($width, $action, $idItem=null)
                                     ui_print_agent_autocomplete_input($params);
                                     ?>
                                 </td>
-                                <td class="sla_list_module_secondary_col">
-                                    <select id="id_agent_module_secondary" name="id_agent_module_secondary" disabled="disabled" style="max-width: 180px">
+                                <td class="sla_list_module_failover_col">
+                                    <select id="id_agent_module_failover" name="id_agent_module_failover" disabled="disabled" style="max-width: 180px">
                                         <option value="0">
                                             <?php
                                             echo __('Select an Agent first');
@@ -3701,11 +3774,18 @@ $(document).ready (function () {
     $("#checkbox-checkbox_show_resume").change(function(){
         if($(this).is(":checked")){
             $("#row_select_fields2").show();
-            $("#row_select_fields3").show();
         }
         else{
             $("#row_select_fields2").hide();
-            $("#row_select_fields3").hide();
+        }
+    });
+
+    $("#checkbox-failover_mode").change(function(){
+        if($(this).is(":checked")){
+            $("#row_failover_type").show();
+        }
+        else{
+            $("#row_failover_type").hide();
         }
     });
 });
@@ -3999,13 +4079,13 @@ function deleteGeneralRow(id_row) {
 
 function addSLARow() {
     var nameAgent = $("input[name=agent_sla]").val();
-    var nameAgentSecondary = $("input[name=agent_secondary]").val();
+    var nameAgentFailover = $("input[name=agent_failover]").val();
     var idAgent = $("input[name=id_agent_sla]").val();
     var serverId = $("input[name=id_server]").val();
     var idModule = $("#id_agent_module_sla").val();
-    var idModuleSecondary = $("#id_agent_module_secondary").val();
+    var idModuleFailover = $("#id_agent_module_failover").val();
     var nameModule = $("#id_agent_module_sla :selected").text();
-    var nameModuleSecondary = $("#id_agent_module_secondary :selected").text();
+    var nameModuleFailover = $("#id_agent_module_failover :selected").text();
     var slaMin = $("input[name=sla_min]").val();
     var slaMax = $("input[name=sla_max]").val();
     var slaLimit = $("input[name=sla_limit]").val();
@@ -4066,11 +4146,11 @@ function addSLARow() {
                 });
             }
 
-            if (nameAgentSecondary != '') {
-                //Truncate nameAgentSecondary
+            if (nameAgentFailover != '') {
+                //Truncate nameAgentFailover
                 var params = [];
                 params.push("truncate_text=1");
-                params.push("text=" + nameAgentSecondary);
+                params.push("text=" + nameAgentFailover);
                 params.push("page=include/ajax/reporting.ajax");
                 jQuery.ajax ({
                     data: params.join ("&"),
@@ -4088,14 +4168,14 @@ function addSLARow() {
                     async: false,
                     timeout: 10000,
                     success: function (data) {
-                        nameAgentSecondary = data;
+                        nameAgentFailover = data;
                     }
                 });
 
-                //Truncate nameModuleSecondary
+                //Truncate nameModuleFailover
                 var params = [];
                 params.push("truncate_text=1");
-                params.push("text=" + nameModuleSecondary);
+                params.push("text=" + nameModuleFailover);
                 params.push("page=include/ajax/reporting.ajax");
                 jQuery.ajax ({
                     data: params.join ("&"),
@@ -4113,7 +4193,7 @@ function addSLARow() {
                     async: false,
                     timeout: 10000,
                     success: function (data) {
-                        nameModuleSecondary = data;
+                        nameModuleFailover = data;
                     }
                 });
             }
@@ -4122,7 +4202,7 @@ function addSLARow() {
             params.push("add_sla=1");
             params.push("id=" + $("input[name=id_item]").val());
             params.push("id_module=" + idModule);
-            params.push("id_module_secondary=" + idModuleSecondary);
+            params.push("id_module_failover=" + idModuleFailover);
             params.push("sla_min=" + slaMin);
             params.push("sla_max=" + slaMax);
             params.push("sla_limit=" + slaLimit);
@@ -4155,8 +4235,8 @@ function addSLARow() {
                         $("#row", row).attr('id', 'sla_' + data['id']);
                         $(".agent_name", row).html(nameAgent);
                         $(".module_name", row).html(nameModule);
-                        $(".agent_name_secondary", row).html(nameAgentSecondary);
-                        $(".module_name_secondary", row).html(nameModuleSecondary);
+                        $(".agent_name_failover", row).html(nameAgentFailover);
+                        $(".module_name_failover", row).html(nameModuleFailover);
                         $(".service_name", row).html(serviceName);
                         $(".sla_min", row).html(slaMin);
                         $(".sla_max", row).html(slaMax);
@@ -4167,19 +4247,19 @@ function addSLARow() {
                         );
                         $("#list_sla").append($(row).html());
                         $("input[name=id_agent_sla]").val('');
-                        $("input[name=id_agent_secondary]").val('');
+                        $("input[name=id_agent_failover]").val('');
                         $("input[name=id_server]").val('');
                         $("input[name=agent_sla]").val('');
-                        $("input[name=agent_secondary]").val('');
+                        $("input[name=agent_failover]").val('');
                         $("#id_agent_module_sla").empty();
                         $("#id_agent_module_sla").attr('disabled', 'true');
                         $("#id_agent_module_sla").append(
                             $("<option></option>")
                             .attr ("value", 0)
                             .html ($("#module_sla_text").html()));
-                        $("#id_agent_module_secondary").empty();
-                        $("#id_agent_module_secondary").attr('disabled', 'true');
-                        $("#id_agent_module_secondary").append(
+                        $("#id_agent_module_failover").empty();
+                        $("#id_agent_module_failover").attr('disabled', 'true');
+                        $("#id_agent_module_failover").append(
                             $("<option></option>")
                             .attr ("value", 0)
                             .html ($("#module_sla_text").html()));
@@ -4360,6 +4440,8 @@ function chooseType() {
     $("#row_custom_example").hide();
     $("#row_group").hide();
     $("#row_current_month").hide();
+    $("#row_failover_mode").hide();
+    $("#row_failover_type").hide();
     $("#row_working_time").hide();
     $("#row_only_display_wrong").hide();
     $("#row_combo_module").hide();
@@ -4533,6 +4615,11 @@ function chooseType() {
             $("#row_working_time").show();
             $("#row_historical_db_check").hide();
             $("#row_priority_mode").show();
+            $("#row_failover_mode").show();
+            var failover_checked = $("input[name='failover_mode']").prop("checked");
+            if(failover_checked){
+                $("#row_failover_type").show();
+            }
             break;
 
         case 'module_histogram_graph':

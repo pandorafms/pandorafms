@@ -3672,6 +3672,24 @@ function ui_get_url_refresh($params=false, $relative=true, $add_post=true)
 
 
 /**
+ * Checks if public_url usage is being forced to target 'visitor'.
+ *
+ * @return boolean
+ */
+function ui_forced_public_url()
+{
+    global $config;
+    $exclusions = preg_split("/[\n\s,]+/", $config['public_url_exclusions']);
+
+    if (in_array($_SERVER['REMOTE_ADDR'], $exclusions)) {
+        return false;
+    }
+
+    return (bool) $config['force_public_url'];
+}
+
+
+/**
  * Returns a full URL in Pandora. (with the port and https in some systems)
  *
  * An example of full URL is http:/localhost/pandora_console/index.php?sec=gsetup&sec2=godmode/setup/setup
@@ -3717,12 +3735,15 @@ function ui_get_full_url($url='', $no_proxy=false, $add_name_php_file=false, $me
     }
 
     if (!$no_proxy) {
-        // Check if the PandoraFMS runs across the proxy like as
-        // mod_proxy of Apache
-        // and check if public_url is set.
-        if (!empty($config['public_url'])
+        // Check proxy.
+        $proxy = false;
+        if (ui_forced_public_url()) {
+            $proxy = true;
+            $fullurl = $config['public_url'];
+        } else if (!empty($config['public_url'])
             && (!empty($_SERVER['HTTP_X_FORWARDED_HOST']))
         ) {
+            // Forced to use public url when being forwarder by a reverse proxy.
             $fullurl = $config['public_url'];
             $proxy = true;
         } else {
@@ -3754,7 +3775,7 @@ function ui_get_full_url($url='', $no_proxy=false, $add_name_php_file=false, $me
             $url = $config['homeurl_static'].'/';
         }
 
-        if (defined('METACONSOLE') && $metaconsole_root) {
+        if (is_metaconsole() && $metaconsole_root) {
             $url .= 'enterprise/meta/';
         }
     } else if (!strstr($url, '.php')) {
@@ -3764,7 +3785,7 @@ function ui_get_full_url($url='', $no_proxy=false, $add_name_php_file=false, $me
             $fullurl .= $config['homeurl_static'].'/';
         }
 
-        if (defined('METACONSOLE') && $metaconsole_root) {
+        if (is_metaconsole() && $metaconsole_root) {
             $fullurl .= 'enterprise/meta/';
         }
     } else {
@@ -3776,7 +3797,7 @@ function ui_get_full_url($url='', $no_proxy=false, $add_name_php_file=false, $me
             } else {
                 $fullurl .= $config['homeurl_static'].'/';
 
-                if (defined('METACONSOLE') && $metaconsole_root) {
+                if (is_metaconsole() && $metaconsole_root) {
                     $fullurl .= 'enterprise/meta/';
                 }
             }

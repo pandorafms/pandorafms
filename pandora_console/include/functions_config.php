@@ -266,6 +266,14 @@ function config_update_config()
                         $error_update[] = __('Public URL');
                     }
 
+                    if (!config_update_value('force_public_url', get_parameter_switch('force_public_url'))) {
+                        $error_update[] = __('Force use Public URL');
+                    }
+
+                    if (!config_update_value('public_url_exclusions', get_parameter('public_url_exclusions'))) {
+                        $error_update[] = __('Public URL host exclusions');
+                    }
+
                     if (!config_update_value('referer_security', get_parameter('referer_security'))) {
                         $error_update[] = __('Referer security');
                     }

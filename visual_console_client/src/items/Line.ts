@@ -1,5 +1,10 @@
 import { AnyObject, Position, Size, ItemMeta } from "../lib/types";
-import { parseIntOr, notEmptyStringOr } from "../lib";
+import {
+  parseIntOr,
+  notEmptyStringOr,
+  debounce,
+  addMovementListener
+} from "../lib";
 import Item, { ItemType, ItemProps, itemBasePropsDecoder } from "../Item";
 
 interface LineProps extends ItemProps {
@@ -68,6 +73,64 @@ export function linePropsDecoder(data: AnyObject): LineProps | never {
 }
 
 export default class Line extends Item<LineProps> {
+  // To control if the line movement is enabled.
+  private moveMode: boolean = false;
+
+  // // This function will only run the 2nd arg function after the time
+  // // of the first arg have passed after its last execution.
+  // private debouncedMovementSave = debounce(
+  //   500, // ms.
+  //   (x: Position["x"], y: Position["y"]) => {
+  //     const prevPosition = {
+  //       x: this.props.x,
+  //       y: this.props.y
+  //     };
+  //     const newPosition = {
+  //       x: x,
+  //       y: y
+  //     };
+
+  //     if (!this.positionChanged(prevPosition, newPosition)) return;
+
+  //     // Save the new position to the props.
+  //     this.move(x, y);
+  //     // Emit the movement event.
+  //     this.movedEventManager.emit({
+  //       item: this,
+  //       prevPosition: prevPosition,
+  //       newPosition: newPosition
+  //     });
+  //   }
+  // );
+  // // This property will store the function
+  // // to clean the movement listener.
+  // private removeMovement: Function | null = null;
+
+  // /**
+  //  * Start the movement funtionality.
+  //  * @param element Element to move inside its container.
+  //  */
+  // private initMovementListener(element: HTMLElement): void {
+  //   this.removeMovement = addMovementListener(
+  //     element,
+  //     (x: Position["x"], y: Position["y"]) => {
+  //       // Move the DOM element.
+  //       this.moveElement(x, y);
+  //       // Run the save function.
+  //       this.debouncedMovementSave(x, y);
+  //     }
+  //   );
+  // }
+  // /**
+  //  * Stop the movement fun
+  //  */
+  // private stopMovementListener(): void {
+  //   if (this.removeMovement) {
+  //     this.removeMovement();
+  //     this.removeMovement = null;
+  //   }
+  // }
+
   /**
    * @override
    */
@@ -84,17 +147,35 @@ export default class Line extends Item<LineProps> {
       {
         ...meta,
         editMode: false
-      }
+      },
+      true
     );
+
+    this.moveMode = meta.editMode;
+    this.init();
+  }
+
+  /**
+   * Classic and protected version of the setter of the `props` property.
+   * Useful to override it from children classes.
+   * @param newProps
+   * @override Item.setProps
+   */
+  public setProps(newProps: LineProps) {
+    super.setProps({
+      ...newProps,
+      ...Line.extractBoxSizeAndPosition(newProps)
+    });
   }
 
   /**
    * Classic and protected version of the setter of the `meta` property.
    * Useful to override it from children classes.
-   * @param newProps
+   * @param newMetadata
    * @override Item.setMeta
    */
   public setMeta(newMetadata: ItemMeta) {
+    this.moveMode = newMetadata.editMode;
     super.setMeta({
       ...newMetadata,
       editMode: false
@@ -145,28 +226,34 @@ export default class Line extends Item<LineProps> {
 
     svg.append(line);
     element.append(svg);
-    console.log(this.moveMode);
+
     if (this.moveMode) {
-      const startC = document.createElement("div");
-      startC.style.width = "16px";
-      startC.style.height = "16px";
-      startC.style.borderRadius = "50%";
-      startC.style.backgroundColor = "white";
-      startC.style.position = "absolute";
-      startC.style.left = startIsLeft ? "-8px" : `${width + lineWidth - 8}px`;
-      startC.style.top = startIsTop ? "-8px" : `${height + lineWidth - 8}px`;
+      const startCircle = document.createElement("div");
+      startCircle.style.width = "16px";
+      startCircle.style.height = "16px";
+      startCircle.style.borderRadius = "50%";
+      startCircle.style.backgroundColor = "white";
+      startCircle.style.position = "absolute";
+      startCircle.style.left = startIsLeft
+        ? "-8px"
+        : `${width + lineWidth - 8}px`;
+      startCircle.style.top = startIsTop
+        ? "-8px"
+        : `${height + lineWidth - 8}px`;
 
-      const endC = document.createElement("div");
-      endC.style.width = "16px";
-      endC.style.height = "16px";
-      endC.style.borderRadius = "50%";
-      endC.style.backgroundColor = "white";
-      endC.style.position = "absolute";
-      endC.style.left = startIsLeft ? `${width + lineWidth - 8}px` : "-8px";
-      endC.style.top = startIsTop ? `${height + lineWidth - 8}px` : "-8px";
+      const endCircle = document.createElement("div");
+      endCircle.style.width = "16px";
+      endCircle.style.height = "16px";
+      endCircle.style.borderRadius = "50%";
+      endCircle.style.backgroundColor = "white";
+      endCircle.style.position = "absolute";
+      endCircle.style.left = startIsLeft
+        ? `${width + lineWidth - 8}px`
+        : "-8px";
+      endCircle.style.top = startIsTop ? `${height + lineWidth - 8}px` : "-8px";
 
-      element.append(startC);
-      element.append(endC);
+      element.append(startCircle);
+      element.append(endCircle);
     }
 
     return element;
@@ -184,5 +271,14 @@ export default class Line extends Item<LineProps> {
       x: Math.min(props.startPosition.x, props.endPosition.x),
       y: Math.min(props.startPosition.y, props.endPosition.y)
     };
+  }
+
+  /**
+   * To remove the event listeners and the elements from the DOM.
+   * @override Item.remove
+   */
+  public remove(): void {
+    // TODO: clear the item's event listeners.
+    super.remove();
   }
 }

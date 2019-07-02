@@ -1,5 +1,4 @@
 var original_command = "";
-
 function parse_alert_command(command, classs) {
   if (classs == "recovery") {
     classs = "fields_recovery";
@@ -34,13 +33,13 @@ function parse_alert_command(command, classs) {
 }
 
 function render_command_preview(original_command) {
-  $("#textarea_command_preview").text(
+  $("#textarea_command_preview").html(
     parse_alert_command(original_command, "")
   );
 }
 
 function render_command_recovery_preview(original_command) {
-  $("#textarea_command_recovery_preview").text(
+  $("#textarea_command_recovery_preview").html(
     parse_alert_command(original_command, "recovery")
   );
 }

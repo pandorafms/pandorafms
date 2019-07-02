@@ -869,7 +869,7 @@ function pandoraFlotSlicebar(
 
   var datas = new Array();
 
-  for (i = 0; i < values.length; i++) {
+  for (var i = 0; i < values.length; i++) {
     var serie = values[i].split(separator);
 
     var aux = new Array();
@@ -1938,6 +1938,8 @@ function pandoraFlotArea(
   switch (type) {
     case "line":
     case 2:
+      stacked = null;
+      filled_s = false;
       break;
     case 3:
       stacked = "stack";

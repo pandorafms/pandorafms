@@ -2,6 +2,10 @@
  * Discovery css global
  */
 
+ul.bigbuttonlist {
+  min-height: 200px;
+}
+
 li.discovery {
   display: inline-block;
   float: left;
@@ -260,4 +264,9 @@ a.tip {
 
 .discovery_interval_select_width {
   width: 90%;
+}
+
+a.ext_link {
+  margin-left: 1em;
+  font-size: 8pt;
 }

@@ -11488,17 +11488,32 @@ function reporting_label_macro($item, $label)
             }
 
             if (preg_match('/_agentdescription_/', $label)) {
-                $agent_name = agents_get_description($item['id_agent']);
+                if (!is_metaconsole()) {
+                    $agent_name = agents_get_description($item['id_agent']);
+                } else {
+                    $agent_name = $item['agent_description'];
+                }
+
                 $label = str_replace('_agentdescription_', $agent_name, $label);
             }
 
             if (preg_match('/_agentgroup_/', $label)) {
-                $agent_name = groups_get_name(agents_get_agent_group($item['id_agent']), true);
+                if (!is_metaconsole()) {
+                    $agent_name = groups_get_name(agents_get_agent_group($item['id_agent']), true);
+                } else {
+                    $agent_name = $item['agent_group'];
+                }
+
                 $label = str_replace('_agentgroup_', $agent_name, $label);
             }
 
             if (preg_match('/_address_/', $label)) {
-                $agent_name = agents_get_address($item['id_agent']);
+                if (!is_metaconsole()) {
+                    $agent_name = agents_get_address($item['id_agent']);
+                } else {
+                    $agent_name = $item['agent_address'];
+                }
+
                 $label = str_replace('_address_', $agent_name, $label);
             }
         break;
@@ -11537,7 +11552,11 @@ function reporting_label_macro($item, $label)
                 if (count($item['agents']) > 1) {
                     $agent_name = '';
                 } else {
-                    $agent_name = agents_get_description($item['id_agent']);
+                    if (!is_metaconsole()) {
+                        $agent_name = agents_get_description($item['id_agent']);
+                    } else {
+                        $agent_name = $item['agent_description'];
+                    }
                 }
 
                 $label = str_replace('_agentdescription_', $agent_name, $label);
@@ -11547,7 +11566,11 @@ function reporting_label_macro($item, $label)
                 if (count($item['agents']) > 1) {
                     $agent_name = '';
                 } else {
-                    $agent_name = groups_get_name(agents_get_agent_group($item['id_agent']), true);
+                    if (!is_metaconsole()) {
+                        $agent_name = groups_get_name(agents_get_agent_group($item['id_agent']), true);
+                    } else {
+                        $agent_name = $item['agent_group'];
+                    }
                 }
 
                 $label = str_replace('_agentgroup_', $agent_name, $label);
@@ -11557,7 +11580,11 @@ function reporting_label_macro($item, $label)
                 if (count($item['agents']) > 1) {
                     $agent_name = '';
                 } else {
-                    $agent_name = agents_get_address($item['id_agent']);
+                    if (!is_metaconsole()) {
+                        $agent_name = agents_get_address($item['id_agent']);
+                    } else {
+                        $agent_name = $item['agent_address'];
+                    }
                 }
 
                 $label = str_replace('_address_', $agent_name, $label);
@@ -11567,7 +11594,11 @@ function reporting_label_macro($item, $label)
                 if ($item['modules'] > 1) {
                     $module_name = $item['modules'].__(' modules');
                 } else {
-                    $module_name = modules_get_agentmodule_name($item['id_agent_module']);
+                    if (!is_metaconsole()) {
+                        $module_name = modules_get_agentmodule_name($item['id_agent_module']);
+                    } else {
+                        $module_name = $item['module_name'];
+                    }
                 }
 
                 $label = str_replace('_module_', $module_name, $label);
@@ -11577,7 +11608,11 @@ function reporting_label_macro($item, $label)
                 if ($item['modules'] > 1) {
                     $module_description = '';
                 } else {
-                    $module_description = modules_get_agentmodule_descripcion($item['id_agent_module']);
+                    if (!is_metaconsole()) {
+                        $module_description = modules_get_agentmodule_descripcion($item['id_agent_module']);
+                    } else {
+                        $module_description = $item['module_description'];
+                    }
                 }
 
                 $label = str_replace('_moduledescription_', $module_description, $label);

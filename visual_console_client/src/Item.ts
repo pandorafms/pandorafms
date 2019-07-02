@@ -142,10 +142,10 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
   // Metadata of the item.
   private _metadata: ItemMeta;
   // Reference to the DOM element which will contain the item.
-  public elementRef: HTMLElement;
-  public readonly labelElementRef: HTMLElement;
+  public elementRef: HTMLElement = document.createElement("div");
+  public labelElementRef: HTMLElement = document.createElement("div");
   // Reference to the DOM element which will contain the view of the item which extends this class.
-  protected readonly childElementRef: HTMLElement;
+  protected childElementRef: HTMLElement = document.createElement("div");
   // Event manager for click events.
   private readonly clickEventManager = new TypedEvent<ItemClickEvent<Props>>();
   // Event manager for moved events.
@@ -296,10 +296,21 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
    */
   protected abstract createDomElement(): HTMLElement;
 
-  public constructor(props: Props, metadata: ItemMeta) {
+  public constructor(
+    props: Props,
+    metadata: ItemMeta,
+    deferInit: boolean = false
+  ) {
     this.itemProps = props;
     this._metadata = metadata;
 
+    if (!deferInit) this.init();
+  }
+
+  /**
+   * To create and append the DOM elements.
+   */
+  protected init(): void {
     /*
      * Get a HTMLElement which represents the container box
      * of the Visual Console item. This element will manage
@@ -320,9 +331,9 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
     this.elementRef.append(this.childElementRef, this.labelElementRef);
 
     // Resize element.
-    this.resizeElement(props.width, props.height);
+    this.resizeElement(this.itemProps.width, this.itemProps.height);
     // Set label position.
-    this.changeLabelPosition(props.labelPosition);
+    this.changeLabelPosition(this.itemProps.labelPosition);
   }
 
   /**
@@ -482,6 +493,15 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
    * @param newProps
    */
   public set props(newProps: Props) {
+    this.setProps(newProps);
+  }
+
+  /**
+   * Clasic and protected version of the setter of the `props` property.
+   * Useful to override it from children classes.
+   * @param newProps
+   */
+  protected setProps(newProps: Props) {
     const prevProps = this.props;
     // Update the internal props.
     this.itemProps = newProps;

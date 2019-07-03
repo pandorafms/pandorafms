@@ -534,8 +534,8 @@ echo '</div>';
             $('#div-extra_1').hide();
             $('#div-extra_2').hide();
         } else if ($('#product :selected').val() == "AZURE") {
-            $('#div-username label').text('<?php echo __('Account ID'); ?>');
-            $('#div-password label').text('<?php echo __('Password'); ?>');
+            $('#div-username label').text('<?php echo __('Client ID'); ?>');
+            $('#div-password label').text('<?php echo __('Application secret'); ?>');
             $('#div-extra_1 label').text('<?php echo __('Tenant or domain name'); ?>');
             $('#div-extra_2 label').text('<?php echo __('Subscription id'); ?>');
             $('#div-extra_1').show();

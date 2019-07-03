@@ -292,8 +292,8 @@ function print_inputs($values=null)
             'script'      => 'calculate_inputs()',
             'fields'      => [
                 // 'CUSTOM' => __('Custom'),
-                'AWS' => __('Aws'),
-                // 'AZURE'  => __('Azure'),
+                'AWS'   => __('Aws'),
+                'AZURE' => __('Azure'),
                 // 'GOOGLE' => __('Google'),
             ],
             'selected'    => $values['product'],
@@ -319,7 +319,7 @@ function print_inputs($values=null)
 
         case 'AZURE':
             $user_label = __('Account ID');
-            $pass_label = __('Password');
+            $pass_label = __('Application secret');
             $extra_1_label = __('Tenant or domain name');
             $extra_2_label = __('Subscription id');
         break;

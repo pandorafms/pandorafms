@@ -6463,13 +6463,32 @@ function reporting_availability_graph($report, $content, $pdf=false)
                 }
             }
 
-            if (isset($sla['id_agent_module_failover']) === true
-                && $sla['id_agent_module_failover'] != 0
-            ) {
+            if ($content['failover_mode']) {
                 $sla_failover = [];
                 $sla_failover['primary'] = $sla;
-                $sla_failover['failover'] = $sla;
-                $sla_failover['failover']['id_agent_module'] = $sla['id_agent_module_failover'];
+                if (isset($sla['id_agent_module_failover']) === true
+                    && $sla['id_agent_module_failover'] != 0
+                ) {
+                    $sla_failover['failover'] = $sla;
+                    $sla_failover['failover']['id_agent_module'] = $sla['id_agent_module_failover'];
+                } else {
+                    $sql_relations = sprintf(
+                        'SELECT module_b
+                        FROM tmodule_relationship
+                        WHERE module_a = %d
+                        AND type = "failover"',
+                        $sla['id_agent_module']
+                    );
+                    $relations = db_get_all_rows_sql($sql_relations);
+                    if (isset($relations) === true
+                        && is_array($relations) === true
+                    ) {
+                        foreach ($relations as $key => $value) {
+                            $sla_failover['failover_'.$key] = $sla;
+                            $sla_failover['failover_'.$key]['id_agent_module'] = $value['module_b'];
+                        }
+                    }
+                }
 
                 // For graph slice for module-interval, if not slice=0.
                 $module_interval = modules_get_interval($sla['id_agent_module']);
@@ -6491,7 +6510,8 @@ function reporting_availability_graph($report, $content, $pdf=false)
                             $content,
                             $report['datetime'],
                             $return,
-                            $k_sla
+                            $k_sla,
+                            $pdf
                         );
                     }
 
@@ -6502,40 +6522,42 @@ function reporting_availability_graph($report, $content, $pdf=false)
                     && is_array($data_combined) === true
                     && count($data_combined) > 0
                 ) {
-                    $data_a = [];
-                    $data_a = array_map(
-                        function ($primary, $failover) {
-                            $return_map = [];
-                            if ($primary['date_from'] === $failover['date_from']
-                                && $primary['date_to'] === $failover['date_to']
-                            ) {
-                                if ($primary['sla_fixed'] !== 100
-                                    && $primary['sla_fixed'] < $failover['sla_fixed']
+                    $count_failover = count($data_combined);
+
+                    $data_a = $data_combined[0];
+                    for ($i = 1; $count_failover > $i; $i++) {
+                        $data_a = array_map(
+                            function ($primary, $failover) {
+                                $return_map = [];
+                                if ($primary['date_from'] === $failover['date_from']
+                                    && $primary['date_to'] === $failover['date_to']
                                 ) {
-                                    $primary['time_total'] = $failover['time_total'];
-                                    $primary['time_ok'] = $failover['time_ok'];
-                                    $primary['time_error'] = $failover['time_error'];
-                                    $primary['time_unknown'] = $failover['time_unknown'];
-                                    $primary['time_not_init'] = $failover['time_not_init'];
-                                    $primary['time_downtime'] = $failover['time_downtime'];
-                                    $primary['time_out'] = $failover['time_out'];
-                                    $primary['checks_total'] = $failover['checks_total'];
-                                    $primary['checks_ok'] = $failover['checks_ok'];
-                                    $primary['checks_error'] = $failover['checks_error'];
-                                    $primary['checks_unknown'] = $failover['checks_unknown'];
-                                    $primary['checks_not_init'] = $failover['checks_not_init'];
-                                    $primary['SLA'] = $failover['SLA'];
-                                    $primary['sla_fixed'] = $failover['sla_fixed'];
+                                    if ($primary['time_ok'] < $failover['time_ok']) {
+                                        $primary['time_total'] = $failover['time_total'];
+                                        $primary['time_ok'] = $failover['time_ok'];
+                                        $primary['time_error'] = $failover['time_error'];
+                                        $primary['time_unknown'] = $failover['time_unknown'];
+                                        $primary['time_not_init'] = $failover['time_not_init'];
+                                        $primary['time_downtime'] = $failover['time_downtime'];
+                                        $primary['time_out'] = $failover['time_out'];
+                                        $primary['checks_total'] = $failover['checks_total'];
+                                        $primary['checks_ok'] = $failover['checks_ok'];
+                                        $primary['checks_error'] = $failover['checks_error'];
+                                        $primary['checks_unknown'] = $failover['checks_unknown'];
+                                        $primary['checks_not_init'] = $failover['checks_not_init'];
+                                        $primary['SLA'] = $failover['SLA'];
+                                        $primary['sla_fixed'] = $failover['sla_fixed'];
+                                    }
+
+                                    $return_map = $primary;
                                 }
 
-                                $return_map = $primary;
-                            }
-
-                            return $return_map;
-                        },
-                        $data_combined[0],
-                        $data_combined[1]
-                    );
+                                return $return_map;
+                            },
+                            $data_a,
+                            $data_combined[($i)]
+                        );
+                    }
 
                     $return = prepare_data_for_paint(
                         $sla,
@@ -6543,7 +6565,8 @@ function reporting_availability_graph($report, $content, $pdf=false)
                         $content,
                         $report['datetime'],
                         $return,
-                        'result'
+                        'result',
+                        $pdf
                     );
                 }
             } else {
@@ -6558,7 +6581,8 @@ function reporting_availability_graph($report, $content, $pdf=false)
                     $sla_array,
                     $content,
                     $report['datetime'],
-                    $return
+                    $return,
+                    $pdf
                 );
             }
 
@@ -6790,6 +6814,7 @@ function reporting_get_planned_downtimes_sla($id_agent_module, $datetime, $perio
  * @param integer $datetime  Date.
  * @param array   $return    Array return.
  * @param string  $failover  Type primary, failover, Result.
+ * @param boolean $pdf       Chart pdf mode.
  *
  * @return array Return modify.
  */
@@ -6799,7 +6824,8 @@ function prepare_data_for_paint(
     $content,
     $datetime,
     $return,
-    $failover=''
+    $failover='',
+    $pdf=false
 ) {
     $data = [];
     $alias_agent = modules_get_agentmodule_agent_alias(
@@ -6956,7 +6982,7 @@ function prepare_data_for_paint(
         100,
         $height,
         $urlImage,
-        $ttl,
+        ($pdf) ? 2 : 0,
         $array_result,
         false
     );

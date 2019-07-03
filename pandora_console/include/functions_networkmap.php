@@ -450,14 +450,26 @@ function networkmap_generate_dot(
                         $nodes[$node_count] = $module;
                 }
             } else {
-                $have_relations_a = db_get_value('id', 'tmodule_relationship', 'module_a', $module['id_agente_modulo']);
-                $have_relations_b = db_get_value('id', 'tmodule_relationship', 'module_b', $module['id_agente_modulo']);
+                $sql_a = sprintf(
+                    'SELECT id
+                    FROM tmodule_relationship
+                    WHERE module_a = %d AND type = "direct"',
+                    $module['id_agente_modulo']
+                );
+                $sql_b = sprintf(
+                    'SELECT id
+                    FROM tmodule_relationship
+                    WHERE module_b = %d AND type = "direct"',
+                    $module['id_agente_modulo']
+                );
+                $have_relations_a = db_get_value_sql($sql_a);
+                $have_relations_b = db_get_value_sql($sql_b);
 
                 if ($have_relations_a || $have_relations_b) {
-                    // Save node parent information to define edges later
+                    // Save node parent information to define edges later.
                     $parents[$node_count] = $module['parent'] = $agent['id_node'];
 
-                    // Add node
+                    // Add node.
                     $nodes[$node_count] = $module;
                 }
             }

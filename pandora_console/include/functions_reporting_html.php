@@ -3325,7 +3325,7 @@ function reporting_html_availability_graph($table, $item, $pdf=0)
                     $title .= '<br />'.$chart['module'];
                 break;
 
-                case 'failover':
+                case (preg_match('/failover.*/', $item['data'][$k_chart]['failover']) ? true : false):
                     $title = '<b>'.__('Failover').'</b>';
                     $title .= '<br />'.$chart['agent'];
                     $title .= '<br />'.$chart['module'];

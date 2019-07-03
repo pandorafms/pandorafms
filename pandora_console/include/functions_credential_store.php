@@ -72,6 +72,10 @@ function credentials_get_all(
         throw new Exception('[credential_get_all] Fields must be an array or "count".');
     }
 
+    if (isset($filter['product']) && !empty($filter['product'])) {
+        $sql_filters[] = sprintf(' AND cs.product = "%s"', $filter['product']);
+    }
+
     if (isset($filter['free_search']) && !empty($filter['free_search'])) {
         $sql_filters[] = vsprintf(
             ' AND (lower(cs.username) like lower("%%%s%%")
@@ -163,7 +167,7 @@ function credentials_get_all(
          %s
          %s',
         join(',', $fields),
-        join(',', $sql_filters),
+        join(' ', $sql_filters),
         $order_by,
         $pagination
     );

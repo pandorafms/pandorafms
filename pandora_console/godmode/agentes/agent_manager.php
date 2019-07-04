@@ -201,7 +201,7 @@ if (!$new_agent && $alias != '') {
     $table_agent_name .= '<div class="label_select_child_right agent_options_agent_name" style="width: 40%;">';
 
     if ($id_agente) {
-        $table_agent_name .= '<label>'.__('ID').'</label><input style="width: 50%;" type="text" disabled="true" value="'.$id_agente.'" />';
+        $table_agent_name .= '<label>'.__('ID').'</label><input style="width: 50%;" type="text" readonly value="'.$id_agente.'" />';
         $table_agent_name .= '<a href="index.php?sec=gagente&sec2=operation/agentes/ver_agente&id_agente='.$id_agente.'">';
         $table_agent_name .= html_print_image(
             'images/zoom.png',
@@ -1210,7 +1210,7 @@ ui_require_jquery_file('bgiframe');
             128,
             128
         );
-        $("#text-agente").prop('disabled', true);
+        $("#text-agente").prop('readonly', true);
 
     });
 </script>

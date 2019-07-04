@@ -362,7 +362,7 @@ function print_inputs($values=null)
                 'label'       => $extra_1_label,
                 'name'        => 'extra_1',
                 'input_class' => 'flex-row',
-                'type'        => 'password',
+                'type'        => 'text',
                 'value'       => $values['extra_1'],
                 'return'      => true,
             ]
@@ -375,7 +375,7 @@ function print_inputs($values=null)
                 'label'       => $extra_2_label,
                 'name'        => 'extra_2',
                 'input_class' => 'flex-row',
-                'type'        => 'password',
+                'type'        => 'text',
                 'value'       => $values['extra_2'],
                 'return'      => true,
                 'display'     => $extra2,

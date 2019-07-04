@@ -590,6 +590,7 @@ define('DISCOVERY_APP_MYSQL', 4);
 define('DISCOVERY_APP_ORACLE', 5);
 define('DISCOVERY_CLOUD_AWS_EC2', 6);
 define('DISCOVERY_CLOUD_AWS_RDS', 7);
+define('DISCOVERY_CLOUD_AZURE_COMPUTE', 8);
 
 
 // Discovery types matching definition.

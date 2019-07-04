@@ -1451,6 +1451,7 @@ ALTER TABLE `treport_content` ADD COLUMN `failover_type` tinyint(1) DEFAULT '0';
 -- Table `tmodule_relationship`
 -- ---------------------------------------------------------------------
 ALTER TABLE tmodule_relationship ADD COLUMN `id_server` varchar(100) NOT NULL DEFAULT '';
+ALTER TABLE `tmodule_relationship` ADD COLUMN `type` ENUM('direct', 'failover') DEFAULT 'direct';
 
 -- ---------------------------------------------------------------------
 -- Table `tpolicy_module`
@@ -2218,4 +2219,3 @@ CREATE TABLE IF NOT EXISTS `tcredential_store` (
 -- Table `treport_content_sla_combined`
 -- ---------------------------------------------------------------------
 ALTER TABLE `treport_content_sla_combined` ADD `id_agent_module_failover` int(10) unsigned NOT NULL;
-ALTER TABLE `treport_content_sla_combined` ADD `id_server_failover` int(10) unsigned NOT NULL;

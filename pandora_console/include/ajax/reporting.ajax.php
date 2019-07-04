@@ -66,7 +66,6 @@ if ($add_sla) {
     $sla_min = get_parameter('sla_min', 0);
     $server_id = (int) get_parameter('server_id', 0);
     $id_module_failover = (int) get_parameter('id_module_failover', 0);
-    $id_server_failover = (int) get_parameter('id_server_failover', 0);
 
     $id_service = (int) get_parameter('id_service');
     if (empty($id_module) && !empty($id_service)) {
@@ -94,7 +93,6 @@ if ($add_sla) {
             'sla_min'                  => $sla_min,
             'sla_limit'                => $sla_limit,
             'server_name'              => $connection['server_name'],
-            'id_server_failover'       => $id_server_failover,
         ]
     );
 

@@ -54,7 +54,7 @@ $buttons['visual_console_favorite'] = [
     'text'   => '<a href="'.$url_visual_console_favorite.'">'.html_print_image('images/list.png', true, ['title' => __('Visual Favourite Console')]).'</a>',
 ];
 
-if ($is_enterprise && $vconsoles_manage) {
+if ($is_enterprise !== ENTERPRISE_NOT_HOOK && $vconsoles_manage) {
     $buttons['visual_console_template'] = [
         'active' => false,
         'text'   => '<a href="'.$url_visual_console_template.'">'.html_print_image('images/templates.png', true, ['title' => __('Visual Console Template')]).'</a>',

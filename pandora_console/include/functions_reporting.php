@@ -6969,6 +6969,7 @@ function reporting_general($report, $content)
 
         $mod_name = modules_get_agentmodule_name($row['id_agent_module']);
         $ag_name = modules_get_agentmodule_agent_alias($row['id_agent_module']);
+        $name_agent = modules_get_agentmodule_agent_name($row['id_agent_module']);
         $type_mod = modules_get_last_value($row['id_agent_module']);
         $is_string[$index] = modules_is_string($row['id_agent_module']);
         $unit = db_get_value(
@@ -7043,12 +7044,12 @@ function reporting_general($report, $content)
                 }
 
                 if ($data_res[$index] === false) {
-                    $return['data'][$ag_name][$mod_name] = null;
+                    $return['data'][$name_agent][$mod_name] = null;
                 } else {
                     if (!is_numeric($data_res[$index])) {
-                        $return['data'][$ag_name][$mod_name] = $data_res[$index];
+                        $return['data'][$name_agent][$mod_name] = $data_res[$index];
                     } else {
-                        $return['data'][$ag_name][$mod_name] = format_for_graph($data_res[$index], 2).' '.$unit;
+                        $return['data'][$name_agent][$mod_name] = format_for_graph($data_res[$index], 2).' '.$unit;
                     }
                 }
             break;

@@ -130,7 +130,7 @@ use Text::ParseWords;
 # due a bug processing some XML with blank spaces.
 # See http://www.perlmonks.org/?node_id=706838
 
-$XML::Simple::PREFERRED_PARSER='XML::Parser';
+$XML::Simple::PREFERRED_PARSER='XML::SAX::ExpatXS';
 
 # Default lib dir for RPM and DEB packages
 use lib '/usr/lib/perl5';

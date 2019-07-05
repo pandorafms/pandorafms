@@ -1,7 +1,7 @@
 /*
 
 Author: The Pandora FMS team
-Name: GreenOld theme
+Name: Green old theme
 Description: The default Pandora FMS theme layout
 
 // Pandora FMS - http://pandorafms.com
@@ -100,6 +100,8 @@ div#foot span {
 }
 
 /* General styles */
+
+body,
 div#page {
   background: #ecfad6;
 }

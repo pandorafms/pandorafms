@@ -770,7 +770,7 @@ function print_donut_narrow_graph(
 
         default:
             $textColor = '#000';
-            $strokeColor = 'transparent';
+            $strokeColor = '#fff';
         break;
     }
 

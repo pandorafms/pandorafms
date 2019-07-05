@@ -130,6 +130,15 @@ textarea:disabled {
   filter: brightness(2.5) contrast(3.5);
 }
 
+/* events.css */
+table.table_modal_alternate tr:nth-child(odd) td {
+  background-color: #222;
+}
+
+table.table_modal_alternate tr:nth-child(even) td {
+  background-color: #111;
+}
+
 /* tables.css */
 .info_table {
   background-color: #222;
@@ -280,4 +289,33 @@ div#foot {
 .ui-widget-content,
 .ui-widget-content a {
   color: #fff;
+}
+
+.ui-state-default,
+.ui-widget-content .ui-state-default,
+.ui-widget-header .ui-state-default {
+  background-color: #222;
+  color: #fff;
+}
+
+.ui-state-active,
+.ui-widget-content .ui-state-active,
+.ui-widget-header .ui-state-active {
+  background-color: #111;
+  color: #fff;
+}
+
+.ui-state-default a,
+.ui-state-default a:link,
+.ui-state-default a:visited,
+a.ui-button,
+a:link.ui-button,
+a:visited.ui-button,
+.ui-button {
+  color: #fff;
+}
+
+ul.ui-tabs-nav.ui-corner-all.ui-helper-reset.ui-helper-clearfix.ui-widget-header
+  img {
+  filter: brightness(2);
 }

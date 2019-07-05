@@ -21,70 +21,153 @@ Description: The default Pandora FMS theme layout
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-/* header */
-div#head {
-  background-color: #80ab51;
-  color: white;
-  background-image: url(../../images/header.jpg);
-}
-
 /* menu.css */
 .operation,
-#menu_full {
-  background-color: #80ab51;
+#menu_full,
+.godmode,
+.operation .menu_icon ul.submenu > li,
+.godmode .menu_icon ul.submenu > li,
+.sub_subMenu {
+  background-color: #fff;
 }
 
-.operation .selected {
-  background-color: #d9fb86;
-}
-
-.operation li.selected {
-  box-shadow: inset 4px 0 #80ab51;
-}
-.operation .menu_icon:hover {
-  background-color: #d9fb86;
-}
-
-.operation .sub_subMenu:hover {
-  background-color: #d9fb86;
-  color: #585858;
-}
-
-.godmode .selected {
-  background-color: #a77853;
-}
-
-.godmode li.selected {
-  box-shadow: inset 4px 0 #e79b5d;
-}
-
-.godmode .menu_icon:hover {
-  background-color: #a77853;
-}
-
+.operation .selected,
+.operation .menu_icon:hover,
+.godmode .selected,
+.godmode .menu_icon:hover,
 .godmode .submenu_not_selected:hover,
-.godmode .submenu_selected:hover {
-  background-color: #a77853 !important;
+.godmode .submenu_selected:hover,
+.operation .sub_subMenu:hover,
+.operation .menu_icon ul.submenu > li:hover,
+.godmode .menu_icon ul.submenu > li:hover {
+  background-color: #343434 !important;
+  color: #fff;
 }
 
-.godmode .sub_subMenu:hover {
-  background-color: #a77853;
-  color: #2f2f2f;
+ul.subsubmenu li {
+  background-color: #82b92e;
 }
 
-/* General styles */
-.green_title {
-  background-color: #80ab51;
+.godmode {
+  border-top: 1px solid #f1f1f1;
+}
+
+.menu li ul {
+  border: 1px solid #f1f1f1;
+}
+
+#title_menu,
+.submenu_text {
+  color: #9c9c9c;
+}
+
+.button_collapse,
+div#foot {
+  background-color: #82b92e;
+}
+
+/* footer */
+div#foot a,
+div#foot span {
+  color: #fff;
 }
 
 /* Tabs */
-#menu_tab li.nomn_high,
-#menu_tab li.nomn_high span {
-  box-shadow: inset 0px 4px #80ab51;
-}
-
 #menu_tab_frame,
 #menu_tab_frame_view,
 #menu_tab_frame_view_bc {
-  border-bottom: 2px solid #80ab51;
+  background-color: #82b92e;
+}
+
+#menu_tab li.nomn_high,
+#menu_tab li.nomn_high span {
+  box-shadow: inset 0px 4px #fff;
+  background-color: transparent;
+}
+#menu_tab li:hover {
+  box-shadow: inset 0px 4px #fff;
+  background-color: #ffffff38;
+}
+
+#menu_tab_left li a,
+#menu_tab_left li span {
+  color: #fff;
+}
+
+#menu_tab li.nomn img,
+#menu_tab li img {
+  filter: brightness(4.5);
+}
+
+/* General styles */
+div#page {
+  background: #ecfad6;
+}
+
+#top_btn {
+  background-color: #343434;
+}
+
+#top_btn:hover {
+  background-color: transparent;
+}
+
+.breadcrumb_link.selected,
+.breadcrumb_active {
+  color: #ecfad6;
+}
+
+.sort_arrow img {
+  filter: brightness(2.5) contrast(3.5);
+}
+
+/* tables.css */
+.info_table tr:first-child > th {
+  background-color: #343434;
+  color: #fff;
+}
+
+.info_table > tbody > tr > th,
+.info_table > thead > tr > th,
+.info_table > thead > tr > th a,
+.info_table > thead > tr > th > span {
+  color: #fff;
+}
+
+/* agent view*/
+.agent_details_header,
+.white_table tr:first-child > th,
+.white_table_graph_header {
+  background-color: #343434;
+  color: #fff;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+}
+
+.white_table thead tr:first-child > th {
+  border-radius: 0;
+}
+
+.white_table thead tr:first-child > th:first-child {
+  border-top-left-radius: 4px;
+}
+
+.white_table thead tr:first-child > th:last-child {
+  border-top-right-radius: 4px;
+}
+
+.buttons_agent_view a img {
+  background-color: #fff;
+}
+
+.breadcrumbs_container,
+.breadcrumb_link,
+div.agent_details_agent_alias * {
+  color: #fff;
+}
+
+/* jquery custom */
+.ui-dialog,
+.ui-widget-content {
+  background-color: #ecfad6;
 }

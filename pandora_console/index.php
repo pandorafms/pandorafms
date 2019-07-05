@@ -359,17 +359,12 @@ if (! isset($config['id_user'])) {
             $nick_in_db = $_SESSION['prepared_login_da']['id_user'];
             $expired_pass = false;
         } else if (($config['auth'] == 'saml') && ($login_button_saml)) {
-            if (!include_once 'include/auth/saml.php') {
-                include_once 'general/noaccesssaml.php';
-            } else {
-                $saml_user_id = saml_process_user_login();
-            }
+            include_once ENTERPRISE_DIR.'/include/auth/saml.php';
+
+            $saml_user_id = saml_process_user_login();
 
             $nick_in_db = $saml_user_id;
-
             if (!$nick_in_db) {
-                include_once 'general/noaccesssaml.php';
-
                 include_once $config['saml_path'].'simplesamlphp/lib/_autoload.php';
                 $as = new SimpleSAML_Auth_Simple('PandoraFMS');
                 $as->logout();

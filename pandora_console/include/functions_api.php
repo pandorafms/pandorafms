@@ -15059,17 +15059,18 @@ function remove_agent_from_policy($id_policy, $use_agent_name, $params)
     if (is_metaconsole()) {
         if ($use_agent_name === false) {
             $id_node = $params[1];
-            $id_agent = db_get_value_filter('id_agente', 'tmetaconsole_agent', ['id_tagente' => $params[0], 'id_tmetaconsole_setup' => $id_node]);
+            $id_agent = $params[0];
         } else {
-            $id_agent = db_get_value_filter('id_agente', 'tmetaconsole_agent', ['nombre' => $params[0]]);
+            $id_node = db_get_value_filter('id_tmetaconsole_setup', 'tmetaconsole_agent', ['nombre' => $params[0]]);
+            $id_agent = db_get_value_filter('id_tagente', 'tmetaconsole_agent', ['nombre' => $params[0]]);
         }
 
-        $agent = db_get_row_filter('tmetaconsole_agent', ['id_agente' => $id_agent]);
+        $agent = db_get_row_filter('tmetaconsole_agent', ['id_tagente' => $id_agent, 'id_tmetaconsole_setup' => $id_node]);
     }
 
     $policy = policies_get_policy($id_policy, false, false);
 
-    $policy_agent = db_get_row_filter('tpolicy_agents', ['id_policy' => $id_policy, 'id_agent' => $id_agent]);
+    $policy_agent = (is_metaconsole()) ? db_get_row_filter('tpolicy_agents', ['id_policy' => $id_policy, 'id_agent' => $id_agent, 'id_node' => $id_node]) : db_get_row_filter('tpolicy_agents', ['id_policy' => $id_policy, 'id_agent' => $id_agent]);
 
     if (empty($policy)) {
         returnError('error_policy', __('This policy does not exist.'));

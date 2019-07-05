@@ -791,7 +791,7 @@ function new_macro(prefix, callback) {
   }
 }
 
-function add_macro_field(macro, row_model_id) {
+function add_macro_field(macro, row_model_id, type_copy) {
   var macro_desc = macro["desc"];
   // Change the carriage returns by html returns <br> in help
   var macro_help = macro["help"].replace(/&#x0d;/g, "<br>");
@@ -850,16 +850,31 @@ function add_macro_field(macro, row_model_id) {
   }
 
   // Change the text box id and value
-  $("#" + row_id)
-    .children()
-    .eq(1)
-    .attr("id", "text-" + macro_macro);
-  $("#" + row_id)
-    .children()
-    .eq(1)
-    .attr("name", macro_macro);
+  if (type_copy == "td") {
+    $("#" + row_id)
+      .children()
+      .eq(1)
+      .children()
+      .eq(0)
+      .attr("id", "text-" + macro_macro);
+    $("#" + row_id)
+      .children()
+      .eq(1)
+      .children()
+      .eq(0)
+      .attr("name", macro_macro);
+  } else {
+    $("#" + row_id)
+      .children()
+      .eq(1)
+      .attr("id", "text-" + macro_macro);
+    $("#" + row_id)
+      .children()
+      .eq(1)
+      .attr("name", macro_macro);
+  }
 
-  macro_field_hide = false;
+  var macro_field_hide = false;
   if (typeof macro["hide"] == "string") {
     if (macro["hide"].length == 0) {
       macro_field_hide = false;
@@ -872,16 +887,35 @@ function add_macro_field(macro, row_model_id) {
     }
   }
 
-  if (macro_field_hide) {
-    $("#" + row_id)
-      .children()
-      .eq(1)
-      .attr("type", "password");
+  if (type_copy == "td") {
+    if (macro_field_hide) {
+      $("#" + row_id)
+        .children()
+        .eq(1)
+        .children()
+        .eq(0)
+        .attr("type", "password");
+    } else {
+      $("#" + row_id)
+        .children()
+        .eq(1)
+        .children()
+        .eq(0)
+        .val(macro_value);
+    }
+  } else {
+    if (macro_field_hide) {
+      $("#" + row_id)
+        .children()
+        .eq(1)
+        .attr("type", "password");
+    } else {
+      $("#" + row_id)
+        .children()
+        .eq(1)
+        .val(macro_value);
+    }
   }
-  $("#" + row_id)
-    .children()
-    .eq(1)
-    .val(macro_value);
 
   $("#" + row_id).show();
 }
@@ -908,7 +942,7 @@ function load_plugin_macros_fields(row_model_id) {
         $("#hidden-macros").val(data["base64"]);
         jQuery.each(data["array"], function(i, macro) {
           if (macro["desc"] != "") {
-            add_macro_field(macro, row_model_id);
+            add_macro_field(macro, row_model_id, "td");
           }
         });
         //Plugin text can be larger

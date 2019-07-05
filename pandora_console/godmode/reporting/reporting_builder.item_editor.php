@@ -2617,7 +2617,7 @@ $class = 'databox filters';
             <td style="font-weight:bold;">
             <?php
             echo __('Failover mode').ui_print_help_tip(
-                __('XXX.'),
+                __('SLA calculation must be performed taking into account the failover modules assigned to the primary module'),
                 true
             );
             ?>

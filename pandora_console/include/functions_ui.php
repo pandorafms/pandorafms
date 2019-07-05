@@ -2049,7 +2049,7 @@ function ui_pagination(
     $actual_page = floor($offset / $pagination);
     $ini_page = (floor($actual_page / $block_limit) * $block_limit);
     $end_page = ($ini_page + $block_limit - 1);
-    if ($end_page > $number_of_pages) {
+    if ($end_page >= $number_of_pages) {
         $end_page = ($number_of_pages - 1);
     }
 

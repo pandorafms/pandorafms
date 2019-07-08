@@ -240,7 +240,7 @@ class Item extends CachedModel
     private static function extractX(array $data): int
     {
         return static::parseIntOr(
-            static::issetInArray($data, ['x', 'pos_x']),
+            static::issetInArray($data, ['x', 'pos_x', 'posX', 'startX']),
             0
         );
     }
@@ -256,7 +256,7 @@ class Item extends CachedModel
     private static function extractY(array $data): int
     {
         return static::parseIntOr(
-            static::issetInArray($data, ['y', 'pos_y']),
+            static::issetInArray($data, ['y', 'pos_y', 'posY', 'startY']),
             0
         );
     }
@@ -272,7 +272,7 @@ class Item extends CachedModel
     private static function extractAclGroupId(array $data)
     {
         return static::parseIntOr(
-            static::issetInArray($data, ['id_group', 'aclGroupId']),
+            static::issetInArray($data, ['id_group', 'aclGroupId', 'idGroup']),
             null
         );
     }
@@ -288,7 +288,7 @@ class Item extends CachedModel
     private static function extractParentId(array $data)
     {
         return static::parseIntOr(
-            static::issetInArray($data, ['parentId', 'parent_item']),
+            static::issetInArray($data, ['parentId', 'parent_item', 'parentItem']),
             null
         );
     }
@@ -304,7 +304,7 @@ class Item extends CachedModel
     private static function extractIsOnTop(array $data): bool
     {
         return static::parseBool(
-            static::issetInArray($data, ['isOnTop', 'show_on_top'])
+            static::issetInArray($data, ['isOnTop', 'show_on_top', 'showOnTop'])
         );
     }
 
@@ -319,7 +319,7 @@ class Item extends CachedModel
     private static function extractIsLinkEnabled(array $data): bool
     {
         return static::parseBool(
-            static::issetInArray($data, ['isLinkEnabled', 'enable_link'])
+            static::issetInArray($data, ['isLinkEnabled', 'enable_link', 'enableLink'])
         );
     }
 
@@ -376,7 +376,23 @@ class Item extends CachedModel
     private static function extractAgentId(array $data)
     {
         return static::parseIntOr(
-            static::issetInArray($data, ['agentId', 'id_agent', 'id_agente']),
+            static::issetInArray($data, ['agentId', 'id_agent', 'id_agente', 'idAgent', 'idAgente']),
+            null
+        );
+    }
+
+
+    /**
+     * Extract a custom id graph value.
+     *
+     * @param array $data Unknown input data structure.
+     *
+     * @return integer Valid identifier of an agent.
+     */
+    private static function extractIdCustomGraph(array $data)
+    {
+        return static::parseIntOr(
+            static::issetInArray($data, ['id_custom_graph', 'idCustomGraph', 'customGraphId']),
             null
         );
     }
@@ -398,6 +414,9 @@ class Item extends CachedModel
                     'moduleId',
                     'id_agente_modulo',
                     'id_modulo',
+                    'idModulo',
+                    'idAgenteModulo',
+                    'idAgentModule',
                 ]
             ),
             null
@@ -1184,6 +1203,470 @@ class Item extends CachedModel
         }
 
         return null;
+    }
+
+
+    /**
+     * Return a valid representation of a record in database.
+     *
+     * @param array $data Input data.
+     *
+     * @return array Data structure representing a record in database.
+     *
+     * @overrides Model::encode.
+     */
+    protected function encode(array $data): array
+    {
+        $result = [];
+
+        $id = static::getId($data);
+        if ($id) {
+            $result['id'] = $id;
+        }
+
+        $id_layout = static::getIdLayout($data);
+        if ($id_layout) {
+            $result['id_layout'] = $id_layout;
+        }
+
+        $pos_x = static::parseIntOr(
+            static::issetInArray($data, ['x', 'pos_x', 'posX']),
+            null
+        );
+        if ($pos_x !== null) {
+            $result['pos_x'] = $pos_x;
+        }
+
+        $pos_y = static::parseIntOr(
+            static::issetInArray($data, ['y', 'pos_y', 'posY']),
+            null
+        );
+        if ($pos_y !== null) {
+            $result['pos_y'] = $pos_y;
+        }
+
+        $height = static::getHeight($data);
+        if ($height !== null) {
+            $result['height'] = $height;
+        }
+
+        $width = static::getWidth($data);
+        if ($width !== null) {
+            $result['width'] = $width;
+        }
+
+        $label = static::extractLabel($data);
+        if ($label !== null) {
+            $result['label'] = $label;
+        }
+
+        $image = static::getImageSrc($data);
+        if ($image !== null) {
+            $result['image'] = $image;
+        }
+
+        $type = static::parseIntOr(
+            static::issetInArray($data, ['type']),
+            null
+        );
+        if ($type !== null) {
+            $result['type'] = $type;
+        }
+
+        $period = static::parseIntOr(
+            static::issetInArray($data, ['period', 'maxTime']),
+            null
+        );
+        if ($period !== null) {
+            $result['period'] = $period;
+        }
+
+        $id_agente_modulo = static::extractModuleId($data);
+        if ($id_agente_modulo !== null) {
+            $result['id_agente_modulo'] = $id_agente_modulo;
+        }
+
+        $id_agent = static::extractAgentId($data);
+        if ($id_agent !== null) {
+            $result['id_agent'] = $id_agent;
+        }
+
+        $id_layout_linked = static::parseIntOr(
+            static::issetInArray($data, ['linkedLayoutId', 'id_layout_linked', 'idLayoutLinked']),
+            null
+        );
+        if ($id_layout_linked !== null) {
+            $result['id_layout_linked'] = $id_layout_linked;
+        }
+
+        $parent_item = static::extractParentId($data);
+        if ($parent_item !== null) {
+            $result['parent_item'] = $parent_item;
+        }
+
+        $enable_link = static::issetInArray($data, ['isLinkEnabled', 'enable_link', 'enableLink']);
+        if ($enable_link !== null) {
+            $result['enable_link'] = static::parseBool($enable_link);
+        }
+
+        $id_metaconsole = static::extractMetaconsoleId($data);
+        if ($id_metaconsole !== null) {
+            $result['id_metaconsole'] = $id_metaconsole;
+        }
+
+        $id_group = static::extractAclGroupId($data);
+        if ($id_group !== null) {
+            $result['id_group'] = $id_group;
+        }
+
+        $id_custom_graph = static::extractIdCustomGraph($data);
+        if ($id_custom_graph !== null) {
+            $result['id_custom_graph'] = $id_custom_graph;
+        }
+
+        $border_width = static::getBorderWidth($data);
+        if ($border_width !== null) {
+            $result['border_width'] = $border_width;
+        }
+
+        $type_graph = static::getTypeGraph($data);
+        if ($type_graph !== null) {
+            $result['type_graph'] = $type_graph;
+        }
+
+        $label_position = static::notEmptyStringOr(
+            static::issetInArray($data, ['labelPosition', 'label_position']),
+            null
+        );
+        if ($label_position !== null) {
+            $result['label_position'] = $label_position;
+        }
+
+        $border_color = static::getBorderColor($data);
+        if ($border_color !== null) {
+            $result['border_color'] = $border_color;
+        }
+
+        $fill_color = static::getFillColor($data);
+        if ($fill_color !== null) {
+            $result['fill_color'] = $fill_color;
+        }
+
+        $show_statistics = static::issetInArray($data, ['showStatistics', 'show_statistics']);
+        if ($show_statistics !== null) {
+            $result['show_statistics'] = static::parseBool($show_statistics);
+        }
+
+        $linked_layout_node_id = static::parseIntOr(
+            static::issetInArray(
+                $data,
+                [
+                    'linkedLayoutAgentId',
+                    'linked_layout_node_id',
+                ]
+            ),
+            null
+        );
+        if ($linked_layout_node_id !== null) {
+            $result['linked_layout_node_id'] = $linked_layout_node_id;
+        }
+
+        $linked_layout_status_type = static::notEmptyStringOr(
+            static::issetInArray($data, ['linkedLayoutStatusType', 'linked_layout_status_type']),
+            null
+        );
+        if ($linked_layout_status_type !== null) {
+            $result['linked_layout_status_type'] = $linked_layout_status_type;
+        }
+
+        $id_layout_linked_weight = static::parseIntOr(
+            static::issetInArray($data, ['linkedLayoutStatusTypeWeight', 'id_layout_linked_weight']),
+            null
+        );
+        if ($id_layout_linked_weight !== null) {
+            $result['id_layout_linked_weight'] = $id_layout_linked_weight;
+        }
+
+        $linked_layout_status_as_service_warning = static::parseIntOr(
+            static::issetInArray(
+                $data,
+                [
+                    'linkedLayoutStatusTypeWarningThreshold',
+                    'linked_layout_status_as_service_warning',
+                ]
+            ),
+            null
+        );
+        if ($linked_layout_status_as_service_warning !== null) {
+            $result['linked_layout_status_as_service_warning'] = $linked_layout_status_as_service_warning;
+        }
+
+        $linked_layout_status_as_service_critical = static::parseIntOr(
+            static::issetInArray(
+                $data,
+                [
+                    'linkedLayoutStatusTypeCriticalThreshold',
+                    'linked_layout_status_as_service_critical',
+                ]
+            ),
+            null
+        );
+        if ($linked_layout_status_as_service_critical !== null) {
+            $result['linked_layout_status_as_service_critical'] = $linked_layout_status_as_service_critical;
+        }
+
+        $element_group = static::parseIntOr(
+            static::issetInArray($data, ['elementGroup', 'element_group']),
+            null
+        );
+        if ($element_group !== null) {
+            $result['element_group'] = $element_group;
+        }
+
+        $show_on_top = static::issetInArray($data, ['isOnTop', 'show_on_top', 'showOnTop']);
+        if ($show_on_top !== null) {
+            $result['show_on_top'] = static::parseBool($show_on_top);
+        }
+
+        $clock_animation = static::notEmptyStringOr(
+            static::issetInArray($data, ['clockType', 'clock_animation', 'clockAnimation']),
+            null
+        );
+        if ($clock_animation !== null) {
+            $result['clock_animation'] = $clock_animation;
+        }
+
+        $time_format = static::notEmptyStringOr(
+            static::issetInArray($data, ['clockFormat', 'time_format', 'timeFormat']),
+            null
+        );
+        if ($time_format !== null) {
+            $result['time_format'] = $time_format;
+        }
+
+        $timezone = static::notEmptyStringOr(
+            static::issetInArray($data, ['timezone', 'timeZone', 'time_zone', 'clockTimezone']),
+            null
+        );
+        if ($timezone !== null) {
+            $result['timezone'] = $timezone;
+        }
+
+        $show_last_value = static::parseIntOr(
+            static::issetInArray($data, ['show_last_value', 'showLastValue']),
+            null
+        );
+        if ($show_last_value !== null) {
+            $result['show_last_value'] = $show_last_value;
+        }
+
+        $cache_expiration = static::parseIntOr(
+            static::issetInArray($data, ['cache_expiration', 'cacheExpiration']),
+            null
+        );
+        if ($cache_expiration !== null) {
+            $result['cache_expiration'] = $cache_expiration;
+        }
+
+        return $result;
+    }
+
+
+    /**
+     * Extract item id.
+     *
+     * @param array $data Unknown input data structure.
+     *
+     * @return integer Item id. 0 by default.
+     */
+    private static function getId(array $data): int
+    {
+        return static::parseIntOr(
+            static::issetInArray($data, ['id', 'itemId']),
+            0
+        );
+    }
+
+
+    /**
+     * Extract layout id.
+     *
+     * @param array $data Unknown input data structure.
+     *
+     * @return integer Item id. 0 by default.
+     */
+    private static function getIdLayout(array $data): int
+    {
+        return static::parseIntOr(
+            static::issetInArray($data, ['id_layout', 'idLayout', 'layoutId']),
+            0
+        );
+    }
+
+
+    /**
+     * Extract item width.
+     *
+     * @param array $data Unknown input data structure.
+     *
+     * @return integer Item width. 0 by default.
+     */
+    private static function getWidth(array $data)
+    {
+        return static::parseIntOr(
+            static::issetInArray($data, ['width', 'endX']),
+            null
+        );
+    }
+
+
+    /**
+     * Extract item height.
+     *
+     * @param array $data Unknown input data structure.
+     *
+     * @return integer Item height. 0 by default.
+     */
+    private static function getHeight(array $data)
+    {
+        return static::parseIntOr(
+            static::issetInArray($data, ['height', 'endY']),
+            null
+        );
+    }
+
+
+    /**
+     * Extract a image src value.
+     *
+     * @param array $data Unknown input data structure.
+     *
+     * @return mixed String representing the image url (not empty) or null.
+     */
+    protected static function getImageSrc(array $data)
+    {
+        $imageSrc = static::notEmptyStringOr(
+            static::issetInArray($data, ['image', 'imageSrc', 'backgroundColor', 'backgroundType', 'valueType']),
+            null
+        );
+
+        return $imageSrc;
+    }
+
+
+    /**
+     * Extract a border width value.
+     *
+     * @param array $data Unknown input data structure.
+     *
+     * @return integer Valid border width.
+     */
+    private static function getBorderWidth(array $data)
+    {
+        return static::parseIntOr(
+            static::issetInArray($data, ['border_width', 'borderWidth']),
+            null
+        );
+    }
+
+
+    /**
+     * Extract a type graph value.
+     *
+     * @param array $data Unknown input data structure.
+     *
+     * @return string One of 'vertical' or 'horizontal'. 'vertical' by default.
+     */
+    private static function getTypeGraph(array $data)
+    {
+        return static::notEmptyStringOr(
+            static::issetInArray($data, ['typeGraph', 'type_graph', 'graphType']),
+            null
+        );
+    }
+
+
+    /**
+     * Extract a border color value.
+     *
+     * @param array $data Unknown input data structure.
+     *
+     * @return mixed String representing the border color (not empty) or null.
+     */
+    private static function getBorderColor(array $data)
+    {
+        return static::notEmptyStringOr(
+            static::issetInArray($data, ['borderColor', 'border_color', 'gridColor', 'color', 'legendBackgroundColor']),
+            null
+        );
+    }
+
+
+    /**
+     * Extract a fill color value.
+     *
+     * @param array $data Unknown input data structure.
+     *
+     * @return mixed String representing the fill color (not empty) or null.
+     */
+    private static function getFillColor(array $data)
+    {
+        return static::notEmptyStringOr(
+            static::issetInArray($data, ['fillColor', 'fill_color', 'labelColor']),
+            null
+        );
+    }
+
+
+    /**
+     * Insert or update an item in the database
+     *
+     * @param array $data Unknown input data structure.
+     *
+     * @return boolean The modeled element data structure stored into the DB.
+     *
+     * @overrides Model::save.
+     */
+    public function save(array $data=[]): bool
+    {
+        if (empty($data)) {
+            return false;
+        }
+
+        $dataModelEncode = $this->encode($this->toArray());
+        $dataEncode = $this->encode($data);
+
+        $save = \array_merge($dataModelEncode, $dataEncode);
+
+        if (!empty($save)) {
+            if (empty($save['id'])) {
+                // Insert.
+                $result = \db_process_sql_insert('tlayout_data', $save);
+                if ($result) {
+                    $item = static::fromDB(['id' => $result]);
+                }
+            } else {
+                // Update.
+                $result = \db_process_sql_update('tlayout_data', $save, ['id' => $save['id']]);
+                // Invalidate the item's cache.
+                if ($result !== false && $result > 0) {
+                    db_process_sql_delete(
+                        'tvisual_console_elements_cache',
+                        [
+                            'vc_item_id' => (int) $save['id'],
+                        ]
+                    );
+
+                    $item = static::fromDB(['id' => $save['id']]);
+                    // Update the model.
+                    if (!empty($item)) {
+                        $this->setData($item->toArray());
+                    }
+                }
+            }
+        }
+
+        return (bool) $result;
     }
 
 

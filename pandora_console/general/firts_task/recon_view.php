@@ -35,6 +35,7 @@ ui_require_css_file('firts_task');
         </p>
         <form action="index.php?sec=gservers&sec2=godmode/servers/discovery" method="post">
             <input type="submit" class="button_task" value="<?php echo __('Discover'); ?>" />
+            <input type="hidden" name="discovery_hint" value="1"/>
         </form>
     </div>
 </div>

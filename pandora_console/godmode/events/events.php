@@ -50,17 +50,10 @@ if (check_acl($config['id_user'], 0, 'PM')) {
         'text'   => '<a href="index.php?sec=eventos&sec2=godmode/events/events&amp;section=responses&amp;pure='.$config['pure'].'">'.html_print_image('images/event_responses.png', true, ['title' => __('Event responses')]).'</a>',
     ];
 
-    if (!is_metaconsole()) {
-        $buttons['fields'] = [
-            'active' => false,
-            'text'   => '<a href="index.php?sec=eventos&sec2=godmode/events/events&amp;section=fields&amp;pure='.$config['pure'].'">'.html_print_image('images/custom_columns.png', true, ['title' => __('Custom fields')]).'</a>',
-        ];
-    } else {
-        $buttons['fields'] = [
-            'active' => false,
-            'text'   => '<a href="index.php?sec=eventos&sec2=event/custom_events&amp;section=fields&amp;pure='.$config['pure'].'">'.html_print_image('images/custom_columns.png', true, ['title' => __('Custom fields')]).'</a>',
-        ];
-    }
+    $buttons['fields'] = [
+        'active' => false,
+        'text'   => '<a href="index.php?sec=eventos&sec2=godmode/events/events&amp;section=fields&amp;pure='.$config['pure'].'">'.html_print_image('images/custom_columns.png', true, ['title' => __('Custom fields')]).'</a>',
+    ];
 }
 
 switch ($section) {

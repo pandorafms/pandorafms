@@ -1837,6 +1837,52 @@ function array_key_to_offset($array, $key)
 
 
 /**
+ * Undocumented function
+ *
+ * @param array $arguments Following format:
+ *  [
+ *   'ip_target'
+ *   'snmp_version'
+ *   'snmp_community'
+ *   'snmp3_auth_user'
+ *   'snmp3_security_level'
+ *   'snmp3_auth_method'
+ *   'snmp3_auth_pass'
+ *   'snmp3_privacy_method'
+ *   'snmp3_privacy_pass'
+ *   'quick_print'
+ *   'base_oid'
+ *   'snmp_port'
+ *   'server_to_exec'
+ *   'extra_arguments'
+ *   'format'
+ *  ]
+ *
+ * @return array SNMP result.
+ */
+function get_h_snmpwalk(array $arguments)
+{
+    return get_snmpwalk(
+        $arguments['ip_target'],
+        $arguments['snmp_version'],
+        isset($arguments['snmp_community']) ? $arguments['snmp_community'] : '',
+        isset($arguments['snmp3_auth_user']) ? $arguments['snmp3_auth_user'] : '',
+        isset($arguments['snmp3_security_level']) ? $arguments['snmp3_security_level'] : '',
+        isset($arguments['snmp3_auth_method']) ? $arguments['snmp3_auth_method'] : '',
+        isset($arguments['snmp3_auth_pass']) ? $arguments['snmp3_auth_pass'] : '',
+        isset($arguments['snmp3_privacy_method']) ? $arguments['snmp3_privacy_method'] : '',
+        isset($arguments['snmp3_privacy_pass']) ? $arguments['snmp3_privacy_pass'] : '',
+        isset($arguments['quick_print']) ? $arguments['quick_print'] : 0,
+        isset($arguments['base_oid']) ? $arguments['base_oid'] : '',
+        isset($arguments['snmp_port']) ? $arguments['snmp_port'] : '',
+        isset($arguments['server_to_exec']) ? $arguments['server_to_exec'] : 0,
+        isset($arguments['extra_arguments']) ? $arguments['extra_arguments'] : '',
+        isset($arguments['format']) ? $arguments['format'] : '-Oa'
+    );
+}
+
+
+/**
  * Make a snmpwalk and return it.
  *
  * @param string  $ip_target            The target address.
@@ -1956,11 +2002,16 @@ function get_snmpwalk(
         exec($command_str, $output, $rc);
     }
 
-    // Parse the output of snmpwalk
+    // Parse the output of snmpwalk.
     $snmpwalk = [];
     foreach ($output as $line) {
-        // Separate the OID from the value
-        $full_oid = explode(' = ', $line);
+        // Separate the OID from the value.
+        if (strpos($format, 'q') === false) {
+            $full_oid = explode(' = ', $line, 2);
+        } else {
+            $full_oid = explode(' ', $line, 2);
+        }
+
         if (isset($full_oid[1])) {
             $snmpwalk[$full_oid[0]] = $full_oid[1];
         }

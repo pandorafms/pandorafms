@@ -293,7 +293,7 @@ function users_get_groups(
         }
         // Per-group permissions.
         else {
-            $query  = 'SELECT * FROM tgrupo ORDER BY parent,id_grupo DESC';
+            $query  = 'SELECT * FROM tgrupo ORDER BY nombre';
             $raw_groups = db_get_all_rows_sql($query);
 
             $query = sprintf(

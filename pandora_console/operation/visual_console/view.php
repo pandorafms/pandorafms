@@ -19,6 +19,8 @@ check_login();
 require_once $config['homedir'].'/vendor/autoload.php';
 require_once $config['homedir'].'/include/functions_visual_map.php';
 
+ui_require_css_file('visual_maps');
+
 // Query parameters.
 $visualConsoleId = (int) get_parameter(!is_metaconsole() ? 'id' : 'id_visualmap');
 // To hide the menus.
@@ -172,7 +174,7 @@ if ($pure === true) {
     echo '<div id="vc-controls" style="z-index: 999">';
 
     echo '<div id="menu_tab">';
-    echo '<ul class="mn">';
+    echo '<ul class="mn white-box-content box-shadow flex-row">';
 
     // Quit fullscreen.
     echo '<li class="nomn">';

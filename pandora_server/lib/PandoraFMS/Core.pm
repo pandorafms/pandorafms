@@ -185,6 +185,7 @@ our @EXPORT = qw(
 	pandora_exec_forced_alerts
 	pandora_generate_alerts
 	pandora_get_config_value
+	pandora_get_credential
 	pandora_get_module_tags
 	pandora_get_module_url_tags
 	pandora_get_module_phone_tags
@@ -3122,6 +3123,19 @@ sub pandora_get_config_value ($$) {
 	return (defined ($config_value) ? $config_value : "");
 }
 
+
+##########################################################################
+## Get credential from credential store
+##########################################################################
+sub pandora_get_credential ($$) {
+	my ($dbh, $identifier) = @_;
+
+	my $key = get_db_single_row($dbh, 'SELECT * FROM tcredential_store WHERE identifier = ?', $identifier);
+
+	return $key;
+}
+
+
 ##########################################################################
 =head2 C<< pandora_create_module_tags (I<$pa_config>, I<$dbh>, I<$id_agent_module>, I<$serialized_tags>) >>
 
@@ -3866,7 +3880,7 @@ sub subst_alert_macros ($$;$$$$) {
 	my $macro_regexp = join('|', keys %{$macros});
 
 	my $subst_func;
-	if ($string =~ m/^(?:(")(?:.*)"|(')(?:.*)')$/) {
+	if (defined($string) && $string =~ m/^(?:(")(?:.*)"|(')(?:.*)')$/) {
 		my $quote = $1 ? $1 : $2;
 		$subst_func = sub {
 			my $macro = on_demand_macro($pa_config, $dbh, shift, $macros, $agent, $module);

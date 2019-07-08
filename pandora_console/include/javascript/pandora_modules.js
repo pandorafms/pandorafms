@@ -1223,3 +1223,42 @@ function get_explanation_recon_script(id, id_rt, url) {
 
   taskManager.addTask(xhr);
 }
+
+// Filter modules in a select (bulk operations)
+function filterByText(selectbox, textbox, textNoData) {
+  return selectbox.each(function() {
+    var select = selectbox;
+    var options = [];
+    $(select)
+      .find("option")
+      .each(function() {
+        options.push({ value: $(this).val(), text: $(this).text() });
+      });
+    $(select).data("options", options);
+    $(textbox).bind("change keyup", function() {
+      var options = $(select)
+        .empty()
+        .scrollTop(0)
+        .data("options");
+      var search = $(this).val();
+      var regex = new RegExp(search, "gi");
+      $.each(options, function(i) {
+        var option = options[i];
+        if (option.text.match(regex) !== null) {
+          $(select).append(
+            $("<option>")
+              .text(option.text)
+              .val(option.value)
+          );
+        }
+      });
+      if ($(select)[0].length == 0) {
+        $(select).append(
+          $("<option>")
+            .text(textNoData)
+            .val(textNoData)
+        );
+      }
+    });
+  });
+}

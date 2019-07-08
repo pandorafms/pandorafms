@@ -279,6 +279,12 @@ function flot_area_graph(
     // Trick to get translated string from javascript.
     $return .= html_print_input_hidden('unknown_text', __('Unknown'), true);
 
+    // To use the js document ready event or not. Default true.
+    $document_ready = true;
+    if (isset($params['document_ready']) === true) {
+        $document_ready = $params['document_ready'];
+    }
+
     $values = json_encode($array_data);
 
     $legend              = json_encode($legend);
@@ -295,9 +301,28 @@ function flot_area_graph(
     }
 
     $return .= "<script type='text/javascript'>";
-    $return .= '$(document).ready( function () {';
-    $return .= 'pandoraFlotArea('."'$graph_id', \n"."JSON.parse('$values'), \n"."JSON.parse('$legend'), \n"."JSON.parse('$series_type'), \n"."JSON.parse('$color'), \n"."'$watermark', \n"."JSON.parse('$date_array'), \n"."JSON.parse('$data_module_graph'), \n"."JSON.parse('$params'), \n"."JSON.parse('$array_events_alerts')".');';
-    $return .= '});';
+
+    if ($document_ready === true) {
+        $return .= '$(document).ready( function () {';
+    }
+
+    $return .= "pandoraFlotArea(\n";
+    $return .= "'".$graph_id."', \n";
+    $return .= $values.", \n";
+    $return .= $legend.", \n";
+    $return .= $series_type.", \n";
+    $return .= $color.", \n";
+    $return .= $watermark.", \n";
+    $return .= $date_array.", \n";
+    $return .= $data_module_graph.", \n";
+    $return .= $params.", \n";
+    $return .= $array_events_alerts."\n";
+    $return .= ');';
+
+    if ($document_ready === true) {
+        $return .= '});';
+    }
+
     $return .= '</script>';
 
     // Parent layer.
@@ -428,11 +453,9 @@ function flot_pie_chart(
     include_javascript_dependencies_flot_graph();
 
     $return .= "<script type='text/javascript'>";
-    $return .= '$(document).ready( function () {';
     $return .= "pandoraFlotPie('$graph_id', '$values', '$labels',
 		'$series', '$width', $font_size, $water_mark, '$separator',
 		'$legend_position', '$height', '$colors', ".json_encode($hide_labels).')';
-    $return .= '});';
     $return .= '</script>';
 
     return $return;
@@ -508,11 +531,9 @@ function flot_custom_pie_chart(
     $colors = implode($separator, $temp_colors);
 
     $return .= "<script type='text/javascript'>";
-    $return .= '$(document).ready( function () {';
     $return .= "pandoraFlotPieCustom('$graph_id', '$values', '$labels',
 			'$width', $font_size, '$fontpath', $water_mark,
 			'$separator', '$legend_position', '$height', '$colors','$legend','$background_color')";
-    $return .= '});';
     $return .= '</script>';
 
     return $return;
@@ -608,10 +629,8 @@ function flot_hcolumn_chart($graph_data, $width, $height, $water_mark, $font='',
 
     // Javascript code
     $return .= "<script type='text/javascript'>";
-    $return .= '$(document).ready( function () {';
     $return .= "pandoraFlotHBars('$graph_id', '$values', '$labels',
 		false, $max, '$water_mark', '$separator', '$separator2', '$font', $font_size, '$background_color', '$tick_color', $val_min, $val_max)";
-    $return .= '});';
     $return .= '</script>';
 
     return $return;
@@ -701,7 +720,6 @@ function flot_vcolumn_chart($graph_data, $width, $height, $color, $legend, $long
 
     // Javascript code
     $return .= "<script type='text/javascript'>";
-    $return .= '$(document).ready( function () {';
     if ($from_ux) {
         if ($from_wux) {
             $return .= "pandoraFlotVBars('$graph_id', '$values', '$labels', '$labels', '$legend', '$colors', false, $max, '$water_mark', '$separator', '$separator2','$font',$font_size, true, true, '$background_color', '$tick_color')";
@@ -712,7 +730,6 @@ function flot_vcolumn_chart($graph_data, $width, $height, $color, $legend, $long
         $return .= "pandoraFlotVBars('$graph_id', '$values', '$labels', '$labels', '$legend', '$colors', false, $max, '$water_mark', '$separator', '$separator2','$font',$font_size, false, false, '$background_color', '$tick_color')";
     }
 
-    $return .= '});';
     $return .= '</script>';
 
     return $return;
@@ -887,9 +904,7 @@ function flot_slicesbar_graph(
     // Javascript code
     $return .= "<script type='text/javascript'>";
     $return .= "//<![CDATA[\n";
-    $return .= '$(document).ready( function () {';
     $return .= "pandoraFlotSlicebar('$graph_id','$values','$datacolor','$labels','$legend','$acumulate_data',$intervaltick,'$fontpath',$fontsize,'$separator','$separator2',$id_agent,'$full_legend_date',$not_interactive, '$show')";
-    $return .= '});';
     $return .= "\n//]]>";
     $return .= '</script>';
 

@@ -83,8 +83,24 @@ export default class Line extends Item<LineProps> {
         ...props,
         ...Line.extractBoxSizeAndPosition(props)
       },
-      meta
+      {
+        ...meta,
+        editMode: false
+      }
     );
+  }
+
+  /**
+   * Clasic and protected version of the setter of the `meta` property.
+   * Useful to override it from children classes.
+   * @param newProps
+   * @override Item.setMeta
+   */
+  public setMeta(newMetadata: ItemMeta) {
+    super.setMeta({
+      ...newMetadata,
+      editMode: false
+    });
   }
 
   /**

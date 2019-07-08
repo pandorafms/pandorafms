@@ -87,7 +87,7 @@ if ($aclWrite || $aclManage) {
     $hash = md5($config['dbpass'].$visualConsoleId.$config['id_user']);
 
     $options['public_link']['text'] = '<a href="'.ui_get_full_url(
-        'operation/visual_console/public_console.php?hash='.$hash.'&id_layout='.$visualConsoleId.'&id_user='.$config['id_user']
+        'operation/visual_console/public_console.php?hash='.$hash.'&id_layout='.$visualConsoleId.'&refr='.$refr.'&id_user='.$config['id_user']
     ).'" target="_blank">'.html_print_image(
         'images/camera_mc.png',
         true,

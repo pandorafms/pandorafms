@@ -40,7 +40,7 @@ final class Percentile extends Item
     protected function decode(array $data): array
     {
         $return = parent::decode($data);
-        $return['type'] = PERCENTILE_BAR;
+        $return['type'] = (int) $data['type'];
         $return['percentileType'] = static::extractPercentileType($data);
         $return['valueType'] = static::extractValueType($data);
         // TODO: Add min value to the database.

@@ -14,6 +14,7 @@ $visualConsoleId = (int) get_parameter('visualConsoleId');
 $getVisualConsole = (bool) get_parameter('getVisualConsole');
 $getVisualConsoleItems = (bool) get_parameter('getVisualConsoleItems');
 $updateVisualConsoleItem = (bool) get_parameter('updateVisualConsoleItem');
+$getVisualConsoleItem = (bool) get_parameter('getVisualConsoleItem');
 
 // Check groups can access user.
 $aclUserGroups = [];
@@ -51,15 +52,22 @@ if ($getVisualConsole === true) {
     $data = get_parameter('data');
 
     $class = VisualConsole::getItemClass($data['type']);
+    unset($data['type']);
 
     $item_data = [];
     $item_data['id'] = $visualConsoleItemId;
     $item_data['id_layout'] = $visualConsoleId;
 
-    $item = $class::fromDB($item_data);
-    $result = $item->save($data);
+    $updateItem = $class::fromDB($item_data);
+    $result = $updateItem->save($data);
 
     echo json_encode($result);
+} else if ($getVisualConsoleItem === true) {
+    $itemId = (integer) get_parameter('itemId');
+
+    $item = VisualConsole::getItemFromDB($itemId);
+
+    echo $item;
 }
 
 exit;

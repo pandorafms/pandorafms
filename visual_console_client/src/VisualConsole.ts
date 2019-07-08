@@ -387,6 +387,22 @@ export default class VisualConsole {
   }
 
   /**
+   * Public setter of the `element` property.
+   * @param item.
+   */
+  public updateElement(item: AnyObject): void {
+    // Update item.
+    try {
+      this.elementsById[item.id].props = decodeProps(item);
+    } catch (error) {
+      console.log("Error updating element:", error.message);
+    }
+
+    // Re-build relations.
+    this.buildRelations();
+  }
+
+  /**
    * Public accessor of the `props` property.
    * @return Properties.
    */

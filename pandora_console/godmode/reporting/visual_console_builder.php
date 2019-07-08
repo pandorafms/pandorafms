@@ -761,7 +761,7 @@ $buttons['consoles_list'] = [
 ];
 $buttons['public_link'] = [
     'active' => false,
-    'text'   => '<a href="'.ui_get_full_url('operation/visual_console/public_console.php?hash='.$hash.'&id_layout='.$idVisualConsole.'&id_user='.$config['id_user']).'">'.html_print_image('images/camera_mc.png', true, ['title' => __('Show link to public Visual Console')]).'</a>',
+    'text'   => '<a href="'.ui_get_full_url('operation/visual_console/public_console.php?hash='.$hash.'&refr='.$refr.'&id_layout='.$idVisualConsole.'&id_user='.$config['id_user']).'">'.html_print_image('images/camera_mc.png', true, ['title' => __('Show link to public Visual Console')]).'</a>',
 ];
 $buttons['data'] = [
     'active' => false,

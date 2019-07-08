@@ -406,4 +406,67 @@ final class Container extends Model
     }
 
 
+    /**
+     * Obtain an items which belong to the Visual Console.
+     *
+     * @param integer $itemId       Identifier of the Item.
+     * @param array   $groupsFilter Groups can access user.
+     *
+     * @return array A list of items.
+     * @throws \Exception When the data cannot be retrieved from the DB.
+     */
+    public static function getItemFromDB(
+        int $itemId,
+        array $groupsFilter=[]
+    ): Object {
+        // Default filter.
+        $filter = ['id' => $itemId];
+        $fields = [
+            'DISTINCT(id) AS id',
+            'type',
+            'cache_expiration',
+            'id_layout',
+        ];
+
+        // Override the filter if the groups filter is not empty.
+        if (count($groupsFilter) > 0) {
+            // Filter group for elements groups.
+            $filter = [];
+            $filter[] = \db_format_array_where_clause_sql(
+                [
+                    'id'            => $itemId,
+                    'element_group' => $groupsFilter,
+                ]
+            );
+
+            // Filter groups for type groups.
+            // Only true condition if type is GROUP_ITEM.
+            $filter[] = '('.\db_format_array_where_clause_sql(
+                [
+                    'id'       => $itemId,
+                    'type'     => GROUP_ITEM,
+                    'id_group' => $groupsFilter,
+                ]
+            ).')';
+        }
+
+        $row = \db_get_row_filter(
+            'tlayout_data',
+            $filter,
+            $fields,
+            'OR'
+        );
+
+        $class = static::getItemClass((int) $row['type']);
+
+        try {
+            $item = $class::fromDB($row);
+        } catch (\Throwable $e) {
+            // TODO: Log this?
+        }
+
+        return $item;
+    }
+
+
 }

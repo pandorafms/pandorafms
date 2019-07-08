@@ -202,7 +202,6 @@ function createVisualConsole(
             id,
             data,
             function(error, data) {
-              // if (!error && !data) return;
               if (error || !data) {
                 console.log(
                   "[ERROR]",
@@ -214,6 +213,39 @@ function createVisualConsole(
                 // Resize the element to its initial Size.
                 e.item.resize(e.prevSize.width, e.prevSize.height);
               }
+
+              var taskItem = "update-item-resize-" + id;
+              asyncTaskManager
+                .add(taskItem, function(done) {
+                  var abortable = getVisualConsoleItem(baseUrl, id, function(
+                    error,
+                    data
+                  ) {
+                    if (error || !data) {
+                      console.log(
+                        "[ERROR]",
+                        "[VISUAL-CONSOLE-CLIENT]",
+                        "[API]",
+                        error ? error.message : "Invalid response"
+                      );
+                    }
+
+                    if (typeof data === "string") {
+                      data = JSON.parse(data);
+                    }
+
+                    visualConsole.updateElement(data);
+
+                    done();
+                  });
+
+                  return {
+                    cancel: function() {
+                      abortable.abort();
+                    }
+                  };
+                })
+                .init();
 
               done();
             }
@@ -411,6 +443,71 @@ function updateVisualConsoleItem(baseUrl, vcId, vcItemId, data, callback) {
         visualConsoleId: vcId,
         visualConsoleItemId: vcItemId,
         data: data
+      },
+      "json"
+    )
+    .done(handleSuccess)
+    .fail(handleFail);
+
+  // Abortable.
+  return {
+    abort: abort
+  };
+}
+
+/**
+ * Fetch a Visual Console's structure and its items.
+ * @param {string} baseUrl Base URL to build the API path.
+ * @param {number} vcItemId Identifier of the Visual Console's item.
+ * @param {function} callback Function to be executed on request success or fail.
+ * @return {Object} Cancellable. Object which include and .abort([statusText]) function.
+ */
+// eslint-disable-next-line no-unused-vars
+function getVisualConsoleItem(baseUrl, vcItemId, callback) {
+  // var apiPath = baseUrl + "/include/rest-api";
+  var apiPath = baseUrl + "/ajax.php";
+  var jqXHR = null;
+
+  // Cancel the ajax requests.
+  var abort = function(textStatus) {
+    if (textStatus == null) textStatus = "abort";
+
+    // -- XMLHttpRequest.readyState --
+    // Value	State	  Description
+    // 0	    UNSENT	Client has been created. open() not called yet.
+    // 4	    DONE   	The operation is complete.
+
+    if (jqXHR.readyState !== 0 && jqXHR.readyState !== 4)
+      jqXHR.abort(textStatus);
+  };
+
+  // Failed request handler.
+  var handleFail = function(jqXHR, textStatus, errorThrown) {
+    abort();
+    // Manually aborted or not.
+    if (textStatus === "abort") {
+      callback();
+    } else {
+      var error = new Error(errorThrown);
+      error.request = jqXHR;
+      callback(error);
+    }
+  };
+
+  // Function which handle success case.
+  var handleSuccess = function(data) {
+    callback(null, data);
+  };
+
+  // Visual Console container request.
+  jqXHR = jQuery
+    // .get(apiPath + "/visual-consoles/" + vcId, null, "json")
+    .get(
+      apiPath,
+      {
+        page: "include/rest-api/index",
+        getVisualConsoleItem: 1,
+        itemId: vcItemId
       },
       "json"
     )

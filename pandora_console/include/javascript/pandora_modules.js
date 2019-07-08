@@ -536,7 +536,7 @@ function configure_modules_form() {
 
           var obj = jQuery.parseJSON(data["macros"]);
           $.each(obj, function(k, macro) {
-            add_macro_field(macro, "simple-macro", "td");
+            add_macro_field(macro, "simple-macro", "td", k);
           });
         }
 
@@ -791,7 +791,7 @@ function new_macro(prefix, callback) {
   }
 }
 
-function add_macro_field(macro, row_model_id, type_copy) {
+function add_macro_field(macro, row_model_id, type_copy, k) {
   var macro_desc = macro["desc"];
   // Change the carriage returns by html returns <br> in help
   var macro_help = macro["help"].replace(/&#x0d;/g, "<br>");
@@ -799,7 +799,6 @@ function add_macro_field(macro, row_model_id, type_copy) {
   var macro_value = $("<div />")
     .html(macro["value"])
     .text();
-  var macro_hide = macro["hide"];
 
   macro_value.type = "password";
 
@@ -809,6 +808,7 @@ function add_macro_field(macro, row_model_id, type_copy) {
 
   // Change attributes to be unique and with identificable class
   $macro_field.attr("id", row_id);
+
   $macro_field.attr("class", "macro_field");
 
   // Get the number of fields already printed
@@ -825,6 +825,19 @@ function add_macro_field(macro, row_model_id, type_copy) {
         $(".macro_field")
           .eq(fields - 1)
           .attr("id")
+    );
+  }
+
+  // Only for create module type plugin need rename
+  // td id "simple-macro_field" + k + "-1" is horrible.
+  if (k) {
+    $("#" + row_model_id + "_field" + k + "_ td:eq(0)").attr(
+      "id",
+      "simple-macro_field" + k + "-0"
+    );
+    $("#" + row_model_id + "_field" + k + "_ td:eq(1)").attr(
+      "id",
+      "simple-macro_field" + k + "-1"
     );
   }
 
@@ -855,13 +868,11 @@ function add_macro_field(macro, row_model_id, type_copy) {
       .children()
       .eq(1)
       .children()
-      .eq(0)
       .attr("id", "text-" + macro_macro);
     $("#" + row_id)
       .children()
       .eq(1)
       .children()
-      .eq(0)
       .attr("name", macro_macro);
   } else {
     $("#" + row_id)
@@ -893,14 +904,12 @@ function add_macro_field(macro, row_model_id, type_copy) {
         .children()
         .eq(1)
         .children()
-        .eq(0)
         .attr("type", "password");
     } else {
       $("#" + row_id)
         .children()
         .eq(1)
         .children()
-        .eq(0)
         .val(macro_value);
     }
   } else {

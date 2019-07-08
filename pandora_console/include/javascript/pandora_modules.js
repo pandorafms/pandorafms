@@ -536,7 +536,7 @@ function configure_modules_form() {
 
           var obj = jQuery.parseJSON(data["macros"]);
           $.each(obj, function(k, macro) {
-            add_macro_field(macro, "simple-macro");
+            add_macro_field(macro, "simple-macro", "td");
           });
         }
 

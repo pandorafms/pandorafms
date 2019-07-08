@@ -21,6 +21,7 @@ Description: The default Pandora FMS theme layout
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
+/* General styles */
 body,
 div#page,
 #menu_tab_frame,
@@ -28,7 +29,6 @@ div#page,
 #menu_tab_frame_view_bc,
 input.search_input,
 .filters input,
-input:-internal-autofill-selected,
 input#text-id_parent.ac_input,
 input,
 textarea,
@@ -55,48 +55,6 @@ table.databox,
   color: #fff;
 }
 
-/* Tabs icons change color */
-#menu_tab li.nomn img,
-#menu_tab li img {
-  filter: invert(100%);
-}
-
-/* White text */
-a,
-#menu_tab_left li a,
-#menu_tab_left li span,
-fieldset legend,
-.tactical_set legend,
-#user-notifications-wrappe,
-#user_form *,
-h1,
-h2,
-h3,
-h4,
-.info_table > tbody > tr > th,
-.info_table > thead > tr > th,
-.info_table > thead > tr > th a,
-.info_table > thead > tr > th > span,
-form.discovery label,
-.edit_user_labels,
-.input_label,
-.pagination,
-tr.group_view_data,
-.group_view_data {
-  color: #fff;
-}
-
-/* Overwrite inline styles */
-.textodialogo td {
-  color: #fff !important;
-}
-
-/* snmp */
-#snmp_browser {
-  background-color: #222 !important;
-}
-
-/* General styles */
 .box-shadow {
   box-shadow: none;
 }
@@ -128,6 +86,76 @@ textarea:disabled {
 
 .sort_arrow img {
   filter: brightness(2.5) contrast(3.5);
+}
+
+/* White text */
+a,
+#menu_tab_left li a,
+#menu_tab_left li span,
+fieldset legend,
+.tactical_set legend,
+#user-notifications-wrappe,
+#user_form *,
+h1,
+h2,
+h3,
+h4,
+.info_table > tbody > tr > th,
+.info_table > thead > tr > th,
+.info_table > thead > tr > th a,
+.info_table > thead > tr > th > span,
+form.discovery label,
+.edit_user_labels,
+.input_label,
+.pagination,
+tr.group_view_data,
+.group_view_data {
+  color: #fff;
+}
+
+/* Tabs icons change color */
+#menu_tab li.nomn img,
+#menu_tab li img {
+  filter: invert(100%);
+}
+
+/* menu.css */
+.operation {
+  background-color: #252525;
+}
+
+.godmode,
+#menu_full {
+  background-color: #1a1a1a;
+}
+
+.button_collapse {
+  background-color: #444;
+}
+
+.operation .selected,
+.godmode .selected,
+.menu_icon:hover {
+  background-color: #080808;
+}
+
+.sub_subMenu {
+  background-color: #343434;
+}
+
+/* footer */
+div#foot {
+  background: #222;
+}
+
+/* Overwrite inline styles */
+.textodialogo td {
+  color: #fff !important;
+}
+
+/* snmp */
+#snmp_browser {
+  background-color: #222 !important;
 }
 
 /* events.css */
@@ -250,35 +278,6 @@ table#diagnostic_info tbody td div {
 /* agent view */
 .buttons_agent_view {
   filter: brightness(2.5);
-}
-
-/* menu.css */
-.operation {
-  background-color: #252525;
-}
-
-.godmode,
-#menu_full {
-  background-color: #1a1a1a;
-}
-
-.button_collapse {
-  background-color: #444;
-}
-
-.operation .selected,
-.godmode .selected,
-.menu_icon:hover {
-  background-color: #080808;
-}
-
-.sub_subMenu {
-  background-color: #343434;
-}
-
-/* footer */
-div#foot {
-  background: #222;
 }
 
 /* jquery custom */

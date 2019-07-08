@@ -2791,14 +2791,16 @@ function pandoraFlotArea(
     if (short_data) {
       formatted = number_format(v, force_integer, "", short_data);
     } else {
-      // It is an integer
+      // It is an integer.
       if (v - Math.floor(v) == 0) {
         formatted = number_format(v, force_integer, "", 2);
       }
     }
 
-    // Get only two decimals
-    formatted = round_with_decimals(formatted, 100);
+    // Get only two decimals.
+    if (typeof formatted != "string") {
+      formatted = Math.round(formatted * 100) / 100;
+    }
     return formatted;
   }
 

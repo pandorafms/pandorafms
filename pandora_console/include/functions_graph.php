@@ -2161,7 +2161,7 @@ function graphic_combined_module(
             $graph_values = $temp;
 
             if (!$params['vconsole']) {
-                $width  = 1024;
+                $width  = $width;
                 $height = 500;
             }
 

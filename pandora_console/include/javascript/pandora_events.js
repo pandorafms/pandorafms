@@ -498,7 +498,6 @@ function event_change_owner() {
       if (data == "owner_ok") {
         dt_events.draw(false);
         $("#notification_owner_success").show();
-        console.log(new_owner);
         if (new_owner == -1) {
           new_owner = "";
         }

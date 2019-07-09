@@ -55,6 +55,11 @@ table.databox,
   color: #fff;
 }
 
+input[readonly] {
+  background-color: #444 !important;
+  color: #a2a2a2 !important;
+}
+
 .box-shadow {
   box-shadow: none;
 }
@@ -88,6 +93,37 @@ textarea:disabled {
   filter: brightness(2.5) contrast(3.5);
 }
 
+table.widget_list tr.datos,
+table.widget_list tr.datos2,
+table.widget_list td.datos,
+table.widget_list td.datos2 {
+  background-color: inherit;
+}
+
+/* messages */
+.container {
+  background-color: #222;
+}
+
+.p-slider {
+  background-color: #888;
+}
+
+ol.steps li.current {
+  border-left: 5px solid #82b92e;
+  background-color: #545454;
+}
+
+ol.steps li {
+  background-color: #999;
+}
+
+ol.steps li.visited,
+ol.steps li.visited span,
+ol.steps li.visited a {
+  color: #eaeaea;
+}
+
 /* White text */
 a,
 #menu_tab_left li a,
@@ -109,7 +145,9 @@ form.discovery label,
 .input_label,
 .pagination,
 tr.group_view_data,
-.group_view_data {
+.group_view_data,
+ol.steps li span,
+ol.steps li a {
   color: #fff;
 }
 
@@ -196,6 +234,13 @@ table.table_modal_alternate tr:nth-child(even) td {
 .datos4 {
   background-color: #666;
   color: #fff;
+}
+
+.info_table .datos3,
+.datos3,
+.info_table .datos4,
+.datos4 {
+  background-color: #444;
 }
 
 .action_buttons a[href] img,
@@ -317,4 +362,26 @@ a:visited.ui-button,
 ul.ui-tabs-nav.ui-corner-all.ui-helper-reset.ui-helper-clearfix.ui-widget-header
   img {
   filter: brightness(2);
+}
+
+/* notifications */
+#notification-wrapper::before {
+  border-bottom-color: #111;
+}
+
+#notification-wrapper {
+  background: #111;
+}
+
+.notification-item {
+  background: #222;
+}
+
+.notification-subtitle {
+  color: #fff;
+}
+
+/* update_manager.css */
+div#box_online * {
+  color: #000;
 }

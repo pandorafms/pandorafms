@@ -190,13 +190,13 @@ function reporting_make_reporting_data(
             );
 
             $sql_tags_join = 'INNER JOIN tagente ON tagente.id_agente = t1.id_agente
-				INNER JOIN ttag_module ON ttag_module.id_agente_modulo = t1.id_agente_modulo
-				LEFT JOIN tagent_secondary_group tasg ON tagente.id_agente = tasg.id_agent';
+                INNER JOIN ttag_module ON ttag_module.id_agente_modulo = t1.id_agente_modulo
+                LEFT JOIN tagent_secondary_group tasg ON tagente.id_agente = tasg.id_agent';
 
             $sql = sprintf(
                 'SELECT count(*) FROM tagente_modulo t1
-				%s WHERE t1.delete_pending = 0 AND t1.id_agente_modulo = '.$content['id_agent_module'].'
-				AND t1.id_agente = '.$content['id_agent'].' %s',
+                %s WHERE t1.delete_pending = 0 AND t1.id_agente_modulo = '.$content['id_agent_module'].'
+                AND t1.id_agente = '.$content['id_agent'].' %s',
                 $sql_tags_join,
                 $where_tags
             );
@@ -284,6 +284,25 @@ function reporting_make_reporting_data(
                 if (!metaconsole_load_external_db($connection)) {
                     continue;
                 }
+
+                $items_label['agent_description'] = agents_get_description($content['id_agent']);
+                $items_label['agent_group'] = agents_get_agent_group($content['id_agent']);
+                $items_label['agent_address'] = agents_get_address($content['id_agent']);
+
+                $modules = agents_get_modules(
+                    $agent_value,
+                    [
+                        'id_agente_modulo',
+                        'nombre',
+                        'descripcion',
+                    ],
+                    [
+                        'id_agente_modulo' => $content['id_agent_module'],
+                    ]
+                );
+
+                $items_label['module_name'] = $modules[$content['id_agent_module']]['nombre'];
+                $items_label['module_description'] = $modules[$content['id_agent_module']]['descripcion'];
             }
 
             if (is_array($content['id_agent']) && count($content['id_agent']) != 1) {
@@ -294,12 +313,12 @@ function reporting_make_reporting_data(
                 $content['style']['name_label'] = str_replace('_module_', count($content['id_agent_module']).__(' modules'), $content['style']['name_label']);
             }
 
-            $content['name'] = reporting_label_macro($items_label, $content['style']['name_label']);
-
             if ($metaconsole_on) {
                 // Restore db connection.
                 metaconsole_restore_db();
             }
+
+            $content['name'] = reporting_label_macro($items_label, $content['style']['name_label']);
         }
 
         switch (reporting_get_type($content)) {
@@ -1359,8 +1378,8 @@ function reporting_event_top_n(
         // Get all the related data.
         $sql = sprintf(
             'SELECT id_agent_module, server_name
-			FROM treport_content_item
-			WHERE id_report_content = %d',
+            FROM treport_content_item
+            WHERE id_report_content = %d',
             $content['id_rc']
         );
 
@@ -2323,9 +2342,9 @@ function reporting_exception(
         // Get all the related data.
         $sql = sprintf(
             '
-			SELECT id_agent_module, server_name, operation
-			FROM treport_content_item
-			WHERE id_report_content = %d',
+            SELECT id_agent_module, server_name, operation
+            FROM treport_content_item
+            WHERE id_report_content = %d',
             $content['id_rc']
         );
 
@@ -3091,10 +3110,10 @@ function reporting_database_serialized($report, $content)
     // This query gets information from the default and the historic database
     $result = db_get_all_rows_sql(
         'SELECT *
-		FROM tagente_datos
-		WHERE id_agente_modulo = '.$content['id_agent_module'].'
-			AND utimestamp > '.$datelimit.'
-			AND utimestamp <= '.$report['datetime'],
+        FROM tagente_datos
+        WHERE id_agente_modulo = '.$content['id_agent_module'].'
+            AND utimestamp > '.$datelimit.'
+            AND utimestamp <= '.$report['datetime'],
         $search_in_history_db
     );
 
@@ -3103,10 +3122,10 @@ function reporting_database_serialized($report, $content)
         // This query gets information from the default and the historic database
         $result = db_get_all_rows_sql(
             'SELECT *
-			FROM tagente_datos_string
-			WHERE id_agente_modulo = '.$content['id_agent_module'].'
-				AND utimestamp > '.$datelimit.'
-				AND utimestamp <= '.$report['datetime'],
+            FROM tagente_datos_string
+            WHERE id_agente_modulo = '.$content['id_agent_module'].'
+                AND utimestamp > '.$datelimit.'
+                AND utimestamp <= '.$report['datetime'],
             $search_in_history_db
         );
     }
@@ -3211,9 +3230,9 @@ function reporting_group_configuration($report, $content)
         }
     } else {
         $sql = '
-			SELECT *
-			FROM tagente
-			WHERE id_grupo='.$content['id_group'];
+            SELECT *
+            FROM tagente
+            WHERE id_grupo='.$content['id_group'];
     }
 
     $agents_list = db_get_all_rows_sql($sql);
@@ -3472,25 +3491,25 @@ function reporting_alert_report_group($report, $content)
     if ($content['id_group'] == 0) {
         $agent_modules = db_get_all_rows_sql(
             '
-			SELECT distinct(id_agent_module)
-			FROM talert_template_modules
-			WHERE disabled = 0
-				AND id_agent_module IN (
-					SELECT id_agente_modulo
-					FROM tagente_modulo)'
+            SELECT distinct(id_agent_module)
+            FROM talert_template_modules
+            WHERE disabled = 0
+                AND id_agent_module IN (
+                    SELECT id_agente_modulo
+                    FROM tagente_modulo)'
         );
     } else {
         $agent_modules = db_get_all_rows_sql(
             '
-			SELECT distinct(id_agent_module)
-			FROM talert_template_modules
-			WHERE disabled = 0
-				AND id_agent_module IN (
-					SELECT id_agente_modulo
-					FROM tagente_modulo
-					WHERE id_agente IN (
-						SELECT id_agente
-						FROM tagente WHERE id_grupo = '.$content['id_group'].'))'
+            SELECT distinct(id_agent_module)
+            FROM talert_template_modules
+            WHERE disabled = 0
+                AND id_agent_module IN (
+                    SELECT id_agente_modulo
+                    FROM tagente_modulo
+                    WHERE id_agente IN (
+                        SELECT id_agente
+                        FROM tagente WHERE id_grupo = '.$content['id_group'].'))'
         );
     }
 
@@ -4109,8 +4128,8 @@ function reporting_netflow(
     // Get item filters.
     $filter = db_get_row_sql(
         "SELECT *
-		FROM tnetflow_filter
-		WHERE id_sg = '".(int) $content['text']."'",
+        FROM tnetflow_filter
+        WHERE id_sg = '".(int) $content['text']."'",
         false,
         true
     );
@@ -4294,9 +4313,9 @@ function reporting_agent_configuration($report, $content)
     }
 
     $sql = '
-		SELECT *
-		FROM tagente
-		WHERE id_agente='.$content['id_agent'];
+        SELECT *
+        FROM tagente
+        WHERE id_agente='.$content['id_agent'];
     $agent_data = db_get_row_sql($sql);
 
     $agent_configuration = [];
@@ -4316,9 +4335,9 @@ function reporting_agent_configuration($report, $content)
     if (!empty($modules)) {
         foreach ($modules as $id_agent_module => $module) {
             $sql = "
-				SELECT *
-				FROM tagente_modulo
-				WHERE id_agente_modulo = $id_agent_module";
+                SELECT *
+                FROM tagente_modulo
+                WHERE id_agente_modulo = $id_agent_module";
             $module_db = db_get_row_sql($sql);
 
             $data_module = [];
@@ -4364,12 +4383,12 @@ function reporting_agent_configuration($report, $content)
             $data_module['status_icon'] = ui_print_status_image($status, $title, true);
             $data_module['status'] = $title;
             $sql_tag = "
-				SELECT name
-				FROM ttag
-				WHERE id_tag IN (
-					SELECT id_tag
-					FROM ttag_module
-					WHERE id_agente_modulo = $id_agent_module)";
+                SELECT name
+                FROM ttag
+                WHERE id_tag IN (
+                    SELECT id_tag
+                    FROM ttag_module
+                    WHERE id_agente_modulo = $id_agent_module)";
             $tags = db_get_all_rows_sql($sql_tag);
             if ($tags === false) {
                 $data_module['tags'] = [];
@@ -4537,41 +4556,41 @@ function reporting_value($report, $content, $type, $pdf=false)
                 }
             } else {
                 $value = '
-				<table border="0" style="margin:0 auto;text-align:center;">
-					<tr>
-						<td width="400px;" height="20%;">';
+                <table border="0" style="margin:0 auto;text-align:center;">
+                    <tr>
+                        <td width="400px;" height="20%;">';
                 if ($content['visual_format'] == 1 || $content['visual_format'] == 2 || $content['visual_format'] == 3) {
                     $value .= '
-							<table style="width:90%;margin:0 auto;background-color:#eee;border: solid lightgray 1px;">
-								<tr>
-									<th style="padding:5px;background-color:#82b92e;">
-										'.__('Agent').'
-									</th>
-									<th style="padding:5px;background-color:#82b92e;">
-										'.__('Module').'
-									</th>
-									<th style="padding:5px;background-color:#82b92e;">
-										'.__('Maximum').'
-									</th>
-								<tr>
-									<td style="padding:5px;">
-										'.$agent_name.'
-									</td>
-									<td style="padding:5px;">
-										'.$module_name.'
-									</td>
-									<td style="padding:5px;">
-										'.format_for_graph(reporting_get_agentmodule_data_max($content['id_agent_module'], $content['period'], $report['datetime']), $config['graph_precision']).' '.$unit.'
-									</td>
-								</tr>
-							</table>';
+                            <table style="width:90%;margin:0 auto;background-color:#eee;border: solid lightgray 1px;">
+                                <tr>
+                                    <th style="padding:5px;background-color:#82b92e;">
+                                        '.__('Agent').'
+                                    </th>
+                                    <th style="padding:5px;background-color:#82b92e;">
+                                        '.__('Module').'
+                                    </th>
+                                    <th style="padding:5px;background-color:#82b92e;">
+                                        '.__('Maximum').'
+                                    </th>
+                                <tr>
+                                    <td style="padding:5px;">
+                                        '.$agent_name.'
+                                    </td>
+                                    <td style="padding:5px;">
+                                        '.$module_name.'
+                                    </td>
+                                    <td style="padding:5px;">
+                                        '.format_for_graph(reporting_get_agentmodule_data_max($content['id_agent_module'], $content['period'], $report['datetime']), $config['graph_precision']).' '.$unit.'
+                                    </td>
+                                </tr>
+                            </table>';
                 }
 
                 $value .= '
-					</td>
-					<td rowspan="2" width="150px">
-					</td>
-					<td rowspan="2">';
+                    </td>
+                    <td rowspan="2" width="150px">
+                    </td>
+                    <td rowspan="2">';
 
                 if ($content['visual_format'] == 2 || $content['visual_format'] == 3) {
                     $params['force_interval'] = 'max_only';
@@ -4580,23 +4599,23 @@ function reporting_value($report, $content, $type, $pdf=false)
 
                 $value .= '
 
-					</td>
-				</tr>
-				<tr>
-					<td>';
+                    </td>
+                </tr>
+                <tr>
+                    <td>';
 
                 if ($content['visual_format'] == 1 || $content['visual_format'] == 3) {
                     $value .= '
-						<table style="width:90%;margin:0 auto;margin-top:30px;background-color:#eee;border: solid lightgray 1px;">
-							<tr>
-								<th style="padding:5px;background-color:#82b92e;">
-									'.__('Lapse').'
-								</th>
-								<th style="padding:5px;background-color:#82b92e;">
-									'.__('Maximum').'
-								</th>
-							</tr>
-							<tr>';
+                        <table style="width:90%;margin:0 auto;margin-top:30px;background-color:#eee;border: solid lightgray 1px;">
+                            <tr>
+                                <th style="padding:5px;background-color:#82b92e;">
+                                    '.__('Lapse').'
+                                </th>
+                                <th style="padding:5px;background-color:#82b92e;">
+                                    '.__('Maximum').'
+                                </th>
+                            </tr>
+                            <tr>';
                             $time_begin = db_get_row_sql('select utimestamp from tagente_datos where id_agente_modulo ='.$content['id_agent_module'], true);
                             $date_reference = getdate();
 
@@ -4670,16 +4689,16 @@ function reporting_value($report, $content, $type, $pdf=false)
                                 </td>
                                 <td style="padding:5px;">
                                     '.format_for_graph(reporting_get_agentmodule_data_min($content['id_agent_module'], $content['period'], $report['datetime']), $config['graph_precision']).' '.$unit.'
-									</td>
-								</tr>
-							</table>';
+                                    </td>
+                                </tr>
+                            </table>';
                 }
 
                         $value .= '
-					</td>
-					<td rowspan="2" width="150px">
-					</td>
-					<td rowspan="2">';
+                    </td>
+                    <td rowspan="2" width="150px">
+                    </td>
+                    <td rowspan="2">';
 
                 if ($content['visual_format'] == 2 || $content['visual_format'] == 3) {
                     $params['force_interval'] = 'min_only';
@@ -4694,16 +4713,16 @@ function reporting_value($report, $content, $type, $pdf=false)
 
                 if ($content['visual_format'] == 1 || $content['visual_format'] == 3) {
                     $value .= '
-						<table style="width:90%;margin:0 auto;margin-top:30px;background-color:#eee;border: solid lightgray 1px;">
-							<tr>
-								<th style="padding:5px;background-color:#82b92e;">
-									'.__('Lapse').'
-								</th>
-								<th style="padding:5px;background-color:#82b92e;">
-									'.__('Minimum').'
-								</th>
-							</tr>
-							<tr>';
+                        <table style="width:90%;margin:0 auto;margin-top:30px;background-color:#eee;border: solid lightgray 1px;">
+                            <tr>
+                                <th style="padding:5px;background-color:#82b92e;">
+                                    '.__('Lapse').'
+                                </th>
+                                <th style="padding:5px;background-color:#82b92e;">
+                                    '.__('Minimum').'
+                                </th>
+                            </tr>
+                            <tr>';
                             $time_begin = db_get_row_sql('select utimestamp from tagente_datos where id_agente_modulo ='.$content['id_agent_module']);
                             $date_reference = getdate();
 
@@ -4728,7 +4747,7 @@ function reporting_value($report, $content, $type, $pdf=false)
                 }
 
                 $value .= '
-						
+                        
                             </td>
                         </tr>
                     </table>';
@@ -4757,60 +4776,60 @@ function reporting_value($report, $content, $type, $pdf=false)
 
                 if ($content['visual_format'] == 1 || $content['visual_format'] == 2 || $content['visual_format'] == 3) {
                     $value .= '
-							<table style="width:90%;margin:0 auto;background-color:#eee;border: solid lightgray 1px;">
-								<tr>
-									<th style="padding:5px;background-color:#82b92e;">
-										'.__('Agent').'
-									</th>
-									<th style="padding:5px;background-color:#82b92e;">
-										'.__('Module').'
-									</th>
-									<th style="padding:5px;background-color:#82b92e;">
-										'.__('Average').'
-									</th>
-								<tr>
-									<td style="padding:5px;">
-										'.$agent_name.'
-									</td>
-									<td style="padding:5px;">
-										'.$module_name.'
-									</td>
-									<td style="padding:5px;">
-										'.format_for_graph(reporting_get_agentmodule_data_average($content['id_agent_module'], $content['period'], $report['datetime']), $config['graph_precision']).' '.$unit.'
-									</td>
-								</tr>
-							</table>';
+                            <table style="width:90%;margin:0 auto;background-color:#eee;border: solid lightgray 1px;">
+                                <tr>
+                                    <th style="padding:5px;background-color:#82b92e;">
+                                        '.__('Agent').'
+                                    </th>
+                                    <th style="padding:5px;background-color:#82b92e;">
+                                        '.__('Module').'
+                                    </th>
+                                    <th style="padding:5px;background-color:#82b92e;">
+                                        '.__('Average').'
+                                    </th>
+                                <tr>
+                                    <td style="padding:5px;">
+                                        '.$agent_name.'
+                                    </td>
+                                    <td style="padding:5px;">
+                                        '.$module_name.'
+                                    </td>
+                                    <td style="padding:5px;">
+                                        '.format_for_graph(reporting_get_agentmodule_data_average($content['id_agent_module'], $content['period'], $report['datetime']), $config['graph_precision']).' '.$unit.'
+                                    </td>
+                                </tr>
+                            </table>';
                 }
 
                         $value .= '
-					</td>
-					<td rowspan="2" width="150px">
-					</td>
-					<td rowspan="2">';
+                    </td>
+                    <td rowspan="2" width="150px">
+                    </td>
+                    <td rowspan="2">';
                 if ($content['visual_format'] == 2 || $content['visual_format'] == 3) {
                     $params['force_interval'] = 'avg_only';
                     $value .= grafico_modulo_sparse($params);
                 }
 
                 $value .= '
-					
-					</td>				
-				</tr>
-				<tr>
-					<td>';
+                    
+                    </td>               
+                </tr>
+                <tr>
+                    <td>';
 
                 if ($content['visual_format'] == 1 || $content['visual_format'] == 3) {
                     $value .= '
-						<table style="width:90%;margin:0 auto;margin-top:30px;background-color:#eee;border: solid lightgray 1px;">
-							<tr>
-								<th style="padding:5px;background-color:#82b92e;">
-									'.__('Lapse').'
-								</th>
-								<th style="padding:5px;background-color:#82b92e;">
-									'.__('Average').'
-								</th>
-							</tr>
-							<tr>';
+                        <table style="width:90%;margin:0 auto;margin-top:30px;background-color:#eee;border: solid lightgray 1px;">
+                            <tr>
+                                <th style="padding:5px;background-color:#82b92e;">
+                                    '.__('Lapse').'
+                                </th>
+                                <th style="padding:5px;background-color:#82b92e;">
+                                    '.__('Average').'
+                                </th>
+                            </tr>
+                            <tr>';
                     $time_begin = db_get_row_sql('select utimestamp from tagente_datos where id_agente_modulo ='.$content['id_agent_module']);
                     $date_reference = getdate();
 
@@ -4835,7 +4854,7 @@ function reporting_value($report, $content, $type, $pdf=false)
                 }
 
                 $value .= '
-						
+                        
                             </td>
                         </tr>
                     </table>';
@@ -6146,10 +6165,10 @@ function reporting_availability($report, $content, $date=false, $time=false)
     if (empty($content['subitems'])) {
         $sql = sprintf(
             '
-			SELECT id_agent_module,
-				server_name, operation
-			FROM treport_content_item
-			WHERE id_report_content = %d',
+            SELECT id_agent_module,
+                server_name, operation
+            FROM treport_content_item
+            WHERE id_report_content = %d',
             $content['id_rc']
         );
 
@@ -6823,13 +6842,13 @@ function reporting_increment($report, $content)
 
     if (is_metaconsole()) {
         $sql1 = 'SELECT datos FROM tagente_datos WHERE id_agente_modulo = '.$id_agent_module.' 
-									 AND utimestamp <= '.(time() - $period).' ORDER BY utimestamp DESC';
+                                     AND utimestamp <= '.(time() - $period).' ORDER BY utimestamp DESC';
         $sql2 = 'SELECT datos FROM tagente_datos WHERE id_agente_modulo = '.$id_agent_module.' ORDER BY utimestamp DESC';
 
         $servers = db_get_all_rows_sql(
             'SELECT *
-		FROM tmetaconsole_setup
-		WHERE disabled = 0'
+        FROM tmetaconsole_setup
+        WHERE disabled = 0'
         );
 
         if ($servers === false) {
@@ -6853,7 +6872,7 @@ function reporting_increment($report, $content)
     } else {
         $old_data = db_get_value_sql(
             'SELECT datos FROM tagente_datos WHERE id_agente_modulo = '.$id_agent_module.' 
-									 AND utimestamp <= '.(time() - $period).' ORDER BY utimestamp DESC'
+                                     AND utimestamp <= '.(time() - $period).' ORDER BY utimestamp DESC'
         );
 
         $last_data = db_get_value_sql('SELECT datos FROM tagente_datos WHERE id_agente_modulo = '.$id_agent_module.' ORDER BY utimestamp DESC');
@@ -6969,6 +6988,7 @@ function reporting_general($report, $content)
 
         $mod_name = modules_get_agentmodule_name($row['id_agent_module']);
         $ag_name = modules_get_agentmodule_agent_alias($row['id_agent_module']);
+        $name_agent = modules_get_agentmodule_agent_name($row['id_agent_module']);
         $type_mod = modules_get_last_value($row['id_agent_module']);
         $is_string[$index] = modules_is_string($row['id_agent_module']);
         $unit = db_get_value(
@@ -7043,12 +7063,12 @@ function reporting_general($report, $content)
                 }
 
                 if ($data_res[$index] === false) {
-                    $return['data'][$ag_name][$mod_name] = null;
+                    $return['data'][$name_agent][$mod_name] = null;
                 } else {
                     if (!is_numeric($data_res[$index])) {
-                        $return['data'][$ag_name][$mod_name] = $data_res[$index];
+                        $return['data'][$name_agent][$mod_name] = $data_res[$index];
                     } else {
-                        $return['data'][$ag_name][$mod_name] = format_for_graph($data_res[$index], 2).' '.$unit;
+                        $return['data'][$name_agent][$mod_name] = format_for_graph($data_res[$index], 2).' '.$unit;
                     }
                 }
             break;
@@ -7276,8 +7296,8 @@ function reporting_custom_graph(
         if (is_metaconsole()) {
             $module_source = db_get_all_rows_sql(
                 'SELECT id_agent_module, id_server
-			FROM tgraph_source
-			WHERE id_graph = '.$content['id_gs']
+            FROM tgraph_source
+            WHERE id_graph = '.$content['id_gs']
             );
 
             if (isset($module_source) && is_array($module_source)) {
@@ -8015,10 +8035,10 @@ function reporting_get_group_stats($id_group=0, $access='AR')
         foreach ($id_group as $group) {
             $group_stat = db_get_all_rows_sql(
                 "SELECT *
-				FROM tgroup_stat, tgrupo
-				WHERE tgrupo.id_grupo = tgroup_stat.id_group
-					AND tgroup_stat.id_group = $group
-				ORDER BY nombre"
+                FROM tgroup_stat, tgrupo
+                WHERE tgrupo.id_grupo = tgroup_stat.id_group
+                    AND tgroup_stat.id_group = $group
+                ORDER BY nombre"
             );
 
             $data['monitor_checks'] += $group_stat[0]['modules'];
@@ -8246,10 +8266,10 @@ function reporting_get_group_stats_resume($id_group=0, $access='AR')
         foreach ($id_group as $group) {
             $group_stat = db_get_all_rows_sql(
                 "SELECT *
-				FROM tgroup_stat, tgrupo
-				WHERE tgrupo.id_grupo = tgroup_stat.id_group
-					AND tgroup_stat.id_group = $group
-				ORDER BY nombre"
+                FROM tgroup_stat, tgrupo
+                WHERE tgrupo.id_grupo = tgroup_stat.id_group
+                    AND tgroup_stat.id_group = $group
+                ORDER BY nombre"
             );
 
             $data['monitor_checks'] += $group_stat[0]['modules'];
@@ -8284,8 +8304,8 @@ function reporting_get_group_stats_resume($id_group=0, $access='AR')
             $tags = db_get_value('tags', 'tusuario_perfil', 'id_usuario', $config['id_user']);
             if ($tags) {
                 $tags_sql = " AND tae.id_agente_modulo IN ( SELECT id_agente_modulo 
-				                                           FROM ttag_module 
-				                                           WHERE id_tag IN ($tags) ) ";
+                                                           FROM ttag_module 
+                                                           WHERE id_tag IN ($tags) ) ";
             } else {
                 $tags_sql = '';
             }
@@ -8296,27 +8316,27 @@ function reporting_get_group_stats_resume($id_group=0, $access='AR')
 
             // for stats modules
             $sql = "SELECT tg.id_grupo as id, tg.nombre as name, 
-    				SUM(tae.estado=0) as monitor_ok,
-    				SUM(tae.estado=1) as monitor_critical,
-    				SUM(tae.estado=2) as monitor_warning,
-    				SUM(tae.estado=3) as monitor_unknown,
-    				SUM(tae.estado=4) as monitor_not_init,
-    				COUNT(tae.estado) as monitor_total
+                    SUM(tae.estado=0) as monitor_ok,
+                    SUM(tae.estado=1) as monitor_critical,
+                    SUM(tae.estado=2) as monitor_warning,
+                    SUM(tae.estado=3) as monitor_unknown,
+                    SUM(tae.estado=4) as monitor_not_init,
+                    COUNT(tae.estado) as monitor_total
 
-					FROM
-    					tagente_estado tae,
-    					tagente        ta,
-    					tagente_modulo tam,
-    					tgrupo         tg
+                    FROM
+                        tagente_estado tae,
+                        tagente        ta,
+                        tagente_modulo tam,
+                        tgrupo         tg
     
-					WHERE 1=1
-    					AND tae.id_agente = ta.id_agente
-       					AND tae.id_agente_modulo = tam.id_agente_modulo
-    					AND ta.id_grupo = tg.id_grupo
-    					AND tam.disabled = 0
-    					AND ta.disabled = 0
-    					AND ta.id_grupo IN ($id_group) $tags_sql 
-					GROUP BY tg.id_grupo;";
+                    WHERE 1=1
+                        AND tae.id_agente = ta.id_agente
+                        AND tae.id_agente_modulo = tam.id_agente_modulo
+                        AND ta.id_grupo = tg.id_grupo
+                        AND tam.disabled = 0
+                        AND ta.disabled = 0
+                        AND ta.id_grupo IN ($id_group) $tags_sql 
+                    GROUP BY tg.id_grupo;";
             $data_array = db_get_all_rows_sql($sql);
 
             $data = $data_array[0];
@@ -8329,27 +8349,27 @@ function reporting_get_group_stats_resume($id_group=0, $access='AR')
 
             // for stats agents
             $sql = "SELECT tae.id_agente id_agente, tg.id_grupo id_grupo,
-    				SUM(tae.estado=0) as monitor_agent_ok,
-    				SUM(tae.estado=1) as monitor_agent_critical,
-    				SUM(tae.estado=2) as monitor_agent_warning,
-				    SUM(tae.estado=3) as monitor_agent_unknown,
-				    SUM(tae.estado=4) as monitor_agent_not_init,
-				    COUNT(tae.estado) as monitor_agent_total
+                    SUM(tae.estado=0) as monitor_agent_ok,
+                    SUM(tae.estado=1) as monitor_agent_critical,
+                    SUM(tae.estado=2) as monitor_agent_warning,
+                    SUM(tae.estado=3) as monitor_agent_unknown,
+                    SUM(tae.estado=4) as monitor_agent_not_init,
+                    COUNT(tae.estado) as monitor_agent_total
 
-				FROM
-				    tagente_estado tae,
-				    tagente        ta,
-				    tagente_modulo tam,
-				    tgrupo         tg
-				    
-				WHERE 1=1
-				    AND tae.id_agente = ta.id_agente
-				    AND tae.id_agente_modulo = tam.id_agente_modulo
-				    AND ta.id_grupo = tg.id_grupo
-				    AND tam.disabled = 0
-				    AND ta.disabled = 0
-				    AND ta.id_grupo IN ($id_group) $tags_sql
-				GROUP BY tae.id_agente;";
+                FROM
+                    tagente_estado tae,
+                    tagente        ta,
+                    tagente_modulo tam,
+                    tgrupo         tg
+                    
+                WHERE 1=1
+                    AND tae.id_agente = ta.id_agente
+                    AND tae.id_agente_modulo = tam.id_agente_modulo
+                    AND ta.id_grupo = tg.id_grupo
+                    AND tam.disabled = 0
+                    AND ta.disabled = 0
+                    AND ta.id_grupo IN ($id_group) $tags_sql
+                GROUP BY tae.id_agente;";
             $data_array_2 = db_get_all_rows_sql($sql);
 
             if (is_array($data_array_2) || is_object($data_array_2)) {
@@ -8460,22 +8480,22 @@ function reporting_get_stats_indicators($data, $width=280, $height=20, $html=tru
 
     if ($html) {
         $tdata[0] = '<fieldset class="databox tactical_set">
-						<legend>'.__('Server health').ui_print_help_tip(sprintf(__('%d Downed servers'), $servers['down']), true).'</legend>'.progress_bar($servers['health'], $width, $height, '', 0).'</fieldset>';
+                        <legend>'.__('Server health').ui_print_help_tip(sprintf(__('%d Downed servers'), $servers['down']), true).'</legend>'.progress_bar($servers['health'], $width, $height, '', 0).'</fieldset>';
         $table_ind->rowclass[] = '';
         $table_ind->data[] = $tdata;
 
         $tdata[0] = '<fieldset class="databox tactical_set">
-						<legend>'.__('Monitor health').ui_print_help_tip(sprintf(__('%d Not Normal monitors'), $data['monitor_not_normal']), true).'</legend>'.progress_bar($data['monitor_health'], $width, $height, $data['monitor_health'].'% '.__('of monitors up'), 0).'</fieldset>';
+                        <legend>'.__('Monitor health').ui_print_help_tip(sprintf(__('%d Not Normal monitors'), $data['monitor_not_normal']), true).'</legend>'.progress_bar($data['monitor_health'], $width, $height, $data['monitor_health'].'% '.__('of monitors up'), 0).'</fieldset>';
         $table_ind->rowclass[] = '';
         $table_ind->data[] = $tdata;
 
         $tdata[0] = '<fieldset class="databox tactical_set">
-						<legend>'.__('Module sanity').ui_print_help_tip(sprintf(__('%d Not inited monitors'), $data['monitor_not_init']), true).'</legend>'.progress_bar($data['module_sanity'], $width, $height, $data['module_sanity'].'% '.__('of total modules inited'), 0).'</fieldset>';
+                        <legend>'.__('Module sanity').ui_print_help_tip(sprintf(__('%d Not inited monitors'), $data['monitor_not_init']), true).'</legend>'.progress_bar($data['module_sanity'], $width, $height, $data['module_sanity'].'% '.__('of total modules inited'), 0).'</fieldset>';
         $table_ind->rowclass[] = '';
         $table_ind->data[] = $tdata;
 
         $tdata[0] = '<fieldset class="databox tactical_set">
-						<legend>'.__('Alert level').ui_print_help_tip(sprintf(__('%d Fired alerts'), $data['monitor_alerts_fired']), true).'</legend>'.progress_bar($data['alert_level'], $width, $height, $data['alert_level'].'% '.__('of defined alerts not fired'), 0).'</fieldset>';
+                        <legend>'.__('Alert level').ui_print_help_tip(sprintf(__('%d Fired alerts'), $data['monitor_alerts_fired']), true).'</legend>'.progress_bar($data['alert_level'], $width, $height, $data['alert_level'].'% '.__('of defined alerts not fired'), 0).'</fieldset>';
         $table_ind->rowclass[] = '';
         $table_ind->data[] = $tdata;
 
@@ -8558,7 +8578,7 @@ function reporting_get_stats_alerts($data, $links=false)
 
     if (!is_metaconsole()) {
         $output = '<fieldset class="databox tactical_set">
-					<legend>'.__('Defined and fired alerts').'</legend>'.html_print_table($table_al, true).'</fieldset>';
+                    <legend>'.__('Defined and fired alerts').'</legend>'.html_print_table($table_al, true).'</fieldset>';
     } else {
         // Remove the defined alerts cause with the new cache table is difficult to retrieve them
         unset($table_al->data[0][0], $table_al->data[0][1]);
@@ -8566,7 +8586,7 @@ function reporting_get_stats_alerts($data, $links=false)
         $table_al->class = 'tactical_view';
         $table_al->style = [];
         $output = '<fieldset class="tactical_set">
-					<legend>'.__('Fired alerts').'</legend>'.html_print_table($table_al, true).'</fieldset>';
+                    <legend>'.__('Fired alerts').'</legend>'.html_print_table($table_al, true).'</fieldset>';
     }
 
     return $output;
@@ -8642,14 +8662,14 @@ function reporting_get_stats_modules_status($data, $graph_width=250, $graph_heig
 
     if (!is_metaconsole()) {
         $output = '
-			<fieldset class="databox tactical_set">
-				<legend>'.__('Monitors by status').'</legend>'.html_print_table($table_mbs, true).'</fieldset>';
+            <fieldset class="databox tactical_set">
+                <legend>'.__('Monitors by status').'</legend>'.html_print_table($table_mbs, true).'</fieldset>';
     } else {
         $table_mbs->class = 'tactical_view';
         $table_mbs->style = [];
         $output = '
-			<fieldset class="tactical_set">
-				<legend>'.__('Monitors by status').'</legend>'.html_print_table($table_mbs, true).'</fieldset>';
+            <fieldset class="tactical_set">
+                <legend>'.__('Monitors by status').'</legend>'.html_print_table($table_mbs, true).'</fieldset>';
     }
 
     return $output;
@@ -8715,7 +8735,7 @@ function reporting_get_stats_agents_monitors($data)
     $table_am->data[] = $tdata;
 
     $output = '<fieldset class="databox tactical_set">
-				<legend>'.__('Total agents and monitors').'</legend>'.html_print_table($table_am, true).'</fieldset>';
+                <legend>'.__('Total agents and monitors').'</legend>'.html_print_table($table_am, true).'</fieldset>';
 
     return $output;
 }
@@ -8746,7 +8766,7 @@ function reporting_get_stats_users($data)
     $table_us->data[] = $tdata;
 
     $output = '<fieldset class="databox tactical_set">
-				<legend>'.__('Users').'</legend>'.html_print_table($table_us, true).'</fieldset>';
+                <legend>'.__('Users').'</legend>'.html_print_table($table_us, true).'</fieldset>';
 
     return $output;
 }
@@ -8781,8 +8801,8 @@ function reporting_get_agentmodule_data_average($id_agent_module, $period=0, $da
     // Get module data
     $interval_data = db_get_all_rows_sql(
         'SELECT *
-		FROM tagente_datos 
-		WHERE id_agente_modulo = '.(int) $id_agent_module.' AND utimestamp > '.(int) $datelimit.' AND utimestamp < '.(int) $date.' ORDER BY utimestamp ASC',
+        FROM tagente_datos 
+        WHERE id_agente_modulo = '.(int) $id_agent_module.' AND utimestamp > '.(int) $datelimit.' AND utimestamp < '.(int) $date.' ORDER BY utimestamp ASC',
         $search_in_history_db
     );
     if ($interval_data === false) {
@@ -8907,8 +8927,8 @@ function reporting_get_agentmodule_mttr($id_agent_module, $period=0, $date=0)
 
     $module = db_get_row_sql(
         'SELECT max_critical, min_critical, id_tipo_modulo
-		FROM tagente_modulo
-		WHERE id_agente_modulo = '.(int) $id_agent_module
+        FROM tagente_modulo
+        WHERE id_agente_modulo = '.(int) $id_agent_module
     );
     if ($module === false) {
         return false;
@@ -8929,7 +8949,7 @@ function reporting_get_agentmodule_mttr($id_agent_module, $period=0, $date=0)
     // Get module data
     $interval_data = db_get_all_rows_sql(
         'SELECT * FROM tagente_datos 
-		WHERE id_agente_modulo = '.(int) $id_agent_module.' AND utimestamp > '.(int) $datelimit.' AND utimestamp < '.(int) $date.' ORDER BY utimestamp ASC',
+        WHERE id_agente_modulo = '.(int) $id_agent_module.' AND utimestamp > '.(int) $datelimit.' AND utimestamp < '.(int) $date.' ORDER BY utimestamp ASC',
         $search_in_history_db
     );
     if ($interval_data === false) {
@@ -9053,8 +9073,8 @@ function reporting_get_agentmodule_mtbf($id_agent_module, $period=0, $date=0)
 
     $module = db_get_row_sql(
         'SELECT max_critical, min_critical, id_tipo_modulo
-		FROM tagente_modulo
-		WHERE id_agente_modulo = '.(int) $id_agent_module
+        FROM tagente_modulo
+        WHERE id_agente_modulo = '.(int) $id_agent_module
     );
     if ($module === false) {
         return false;
@@ -9075,7 +9095,7 @@ function reporting_get_agentmodule_mtbf($id_agent_module, $period=0, $date=0)
     // Get module data
     $interval_data = db_get_all_rows_sql(
         'SELECT * FROM tagente_datos 
-		WHERE id_agente_modulo = '.(int) $id_agent_module.' AND utimestamp > '.(int) $datelimit.' AND utimestamp < '.(int) $date.' ORDER BY utimestamp ASC',
+        WHERE id_agente_modulo = '.(int) $id_agent_module.' AND utimestamp > '.(int) $datelimit.' AND utimestamp < '.(int) $date.' ORDER BY utimestamp ASC',
         $search_in_history_db
     );
     if ($interval_data === false) {
@@ -9195,8 +9215,8 @@ function reporting_get_agentmodule_tto($id_agent_module, $period=0, $date=0)
 
     $module = db_get_row_sql(
         'SELECT max_critical, min_critical, id_tipo_modulo
-		FROM tagente_modulo
-		WHERE id_agente_modulo = '.(int) $id_agent_module
+        FROM tagente_modulo
+        WHERE id_agente_modulo = '.(int) $id_agent_module
     );
     if ($module === false) {
         return false;
@@ -9217,7 +9237,7 @@ function reporting_get_agentmodule_tto($id_agent_module, $period=0, $date=0)
     // Get module data
     $interval_data = db_get_all_rows_sql(
         'SELECT * FROM tagente_datos 
-		WHERE id_agente_modulo = '.(int) $id_agent_module.' AND utimestamp > '.(int) $datelimit.' AND utimestamp < '.(int) $date.' ORDER BY utimestamp ASC',
+        WHERE id_agente_modulo = '.(int) $id_agent_module.' AND utimestamp > '.(int) $datelimit.' AND utimestamp < '.(int) $date.' ORDER BY utimestamp ASC',
         $search_in_history_db
     );
     if ($interval_data === false) {
@@ -9304,8 +9324,8 @@ function reporting_get_agentmodule_ttr($id_agent_module, $period=0, $date=0)
 
     $module = db_get_row_sql(
         'SELECT max_critical, min_critical, id_tipo_modulo
-		FROM tagente_modulo
-		WHERE id_agente_modulo = '.(int) $id_agent_module
+        FROM tagente_modulo
+        WHERE id_agente_modulo = '.(int) $id_agent_module
     );
     if ($module === false) {
         return false;
@@ -9326,7 +9346,7 @@ function reporting_get_agentmodule_ttr($id_agent_module, $period=0, $date=0)
     // Get module data
     $interval_data = db_get_all_rows_sql(
         'SELECT * FROM tagente_datos 
-		WHERE id_agente_modulo = '.(int) $id_agent_module.' AND utimestamp > '.(int) $datelimit.' AND utimestamp < '.(int) $date.' ORDER BY utimestamp ASC',
+        WHERE id_agente_modulo = '.(int) $id_agent_module.' AND utimestamp > '.(int) $datelimit.' AND utimestamp < '.(int) $date.' ORDER BY utimestamp ASC',
         $search_in_history_db
     );
     if ($interval_data === false) {
@@ -9775,9 +9795,9 @@ function reporting_get_agentmodule_sla(
         // Get interval data
         $sql = sprintf(
             'SELECT *
-			FROM tagente_datos
-			WHERE id_agente_modulo = %d
-				AND utimestamp > %d AND utimestamp <= %d',
+            FROM tagente_datos
+            WHERE id_agente_modulo = %d
+                AND utimestamp > %d AND utimestamp <= %d',
             $id_agent_module,
             $datelimit,
             $date
@@ -9996,43 +10016,43 @@ function reporting_get_planned_downtimes_intervals($id_agent_module, $start_date
     }
 
     $sql_downtime = '
-		SELECT DISTINCT(tpdr.id),
-				tpdr.name,
-				'.$tpdr_description.",
-				tpdr.date_from,
-				tpdr.date_to,
-				tpdr.executed,
-				tpdr.id_group,
-				tpdr.only_alerts,
-				tpdr.monday,
-				tpdr.tuesday,
-				tpdr.wednesday,
-				tpdr.thursday,
-				tpdr.friday,
-				tpdr.saturday,
-				tpdr.sunday,
-				tpdr.periodically_time_from,
-				tpdr.periodically_time_to,
-				tpdr.periodically_day_from,
-				tpdr.periodically_day_to,
-				tpdr.type_downtime,
-				tpdr.type_execution,
-				tpdr.type_periodicity,
-				tpdr.id_user
-		FROM (
-				SELECT tpd.*
-				FROM tplanned_downtime tpd, tplanned_downtime_agents tpda, tagente_modulo tam
-				WHERE tpd.id = tpda.id_downtime
-					AND tpda.all_modules = 1
-					AND tpda.id_agent = tam.id_agente
-					AND tam.id_agente_modulo = $id_agent_module
-			UNION ALL
-				SELECT tpd.*
-				FROM tplanned_downtime tpd, tplanned_downtime_modules tpdm
-				WHERE tpd.id = tpdm.id_downtime
-					AND tpdm.id_agent_module = $id_agent_module
-		) tpdr
-		ORDER BY tpdr.id";
+        SELECT DISTINCT(tpdr.id),
+                tpdr.name,
+                '.$tpdr_description.",
+                tpdr.date_from,
+                tpdr.date_to,
+                tpdr.executed,
+                tpdr.id_group,
+                tpdr.only_alerts,
+                tpdr.monday,
+                tpdr.tuesday,
+                tpdr.wednesday,
+                tpdr.thursday,
+                tpdr.friday,
+                tpdr.saturday,
+                tpdr.sunday,
+                tpdr.periodically_time_from,
+                tpdr.periodically_time_to,
+                tpdr.periodically_day_from,
+                tpdr.periodically_day_to,
+                tpdr.type_downtime,
+                tpdr.type_execution,
+                tpdr.type_periodicity,
+                tpdr.id_user
+        FROM (
+                SELECT tpd.*
+                FROM tplanned_downtime tpd, tplanned_downtime_agents tpda, tagente_modulo tam
+                WHERE tpd.id = tpda.id_downtime
+                    AND tpda.all_modules = 1
+                    AND tpda.id_agent = tam.id_agente
+                    AND tam.id_agente_modulo = $id_agent_module
+            UNION ALL
+                SELECT tpd.*
+                FROM tplanned_downtime tpd, tplanned_downtime_modules tpdm
+                WHERE tpd.id = tpdm.id_downtime
+                    AND tpdm.id_agent_module = $id_agent_module
+        ) tpdr
+        ORDER BY tpdr.id";
 
     $downtimes = db_get_all_rows_sql($sql_downtime);
 
@@ -10241,8 +10261,8 @@ function reporting_get_agentmodule_data_max($id_agent_module, $period=0, $date=0
     // Get module data
     $interval_data = db_get_all_rows_sql(
         'SELECT *
-		FROM tagente_datos 
-		WHERE id_agente_modulo = '.(int) $id_agent_module.' AND utimestamp > '.(int) $datelimit.' AND utimestamp < '.(int) $date.' ORDER BY utimestamp ASC',
+        FROM tagente_datos 
+        WHERE id_agente_modulo = '.(int) $id_agent_module.' AND utimestamp > '.(int) $datelimit.' AND utimestamp < '.(int) $date.' ORDER BY utimestamp ASC',
         $search_in_history_db
     );
 
@@ -10347,8 +10367,8 @@ function reporting_get_agentmodule_data_min($id_agent_module, $period=0, $date=0
     // Get module data
     $interval_data = db_get_all_rows_sql(
         'SELECT *
-		FROM tagente_datos 
-		WHERE id_agente_modulo = '.(int) $id_agent_module.' AND utimestamp > '.(int) $datelimit.' AND utimestamp < '.(int) $date.' ORDER BY utimestamp ASC',
+        FROM tagente_datos 
+        WHERE id_agente_modulo = '.(int) $id_agent_module.' AND utimestamp > '.(int) $datelimit.' AND utimestamp < '.(int) $date.' ORDER BY utimestamp ASC',
         $search_in_history_db
     );
     if ($interval_data === false) {
@@ -10473,11 +10493,11 @@ function reporting_get_agentmodule_data_sum(
         // Get module data
         $interval_data = db_get_all_rows_sql(
             '
-			SELECT * FROM tagente_datos 
-			WHERE id_agente_modulo = '.(int) $id_agent_module.'
-				AND utimestamp > '.(int) $datelimit.'
-				AND utimestamp < '.(int) $date.'
-			ORDER BY utimestamp ASC',
+            SELECT * FROM tagente_datos 
+            WHERE id_agente_modulo = '.(int) $id_agent_module.'
+                AND utimestamp > '.(int) $datelimit.'
+                AND utimestamp < '.(int) $date.'
+            ORDER BY utimestamp ASC',
             $search_in_history_db
         );
     } else {
@@ -10572,24 +10592,24 @@ function reporting_get_planned_downtimes($start_date, $end_date, $id_agent_modul
         // is inside the planned downtime execution.
         // The start and end time is very important.
         $periodically_monthly_w = "type_periodicity = 'monthly'
-									AND (((periodically_day_from > '$start_day'
-												OR (periodically_day_from = '$start_day'
-													AND periodically_time_from >= '$start_time'))
-											AND (periodically_day_to < '$end_day'
-												OR (periodically_day_to = '$end_day'
-													AND periodically_time_to <= '$end_time')))
-										OR ((periodically_day_from < '$start_day' 
-												OR (periodically_day_from = '$start_day'
-													AND periodically_time_from <= '$start_time'))
-											AND (periodically_day_to > '$start_day'
-												OR (periodically_day_to = '$start_day'
-													AND periodically_time_to >= '$start_time')))
-										OR ((periodically_day_from < '$end_day' 
-												OR (periodically_day_from = '$end_day'
-													AND periodically_time_from <= '$end_time'))
-											AND (periodically_day_to > '$end_day'
-												OR (periodically_day_to = '$end_day'
-													AND periodically_time_to >= '$end_time'))))";
+                                    AND (((periodically_day_from > '$start_day'
+                                                OR (periodically_day_from = '$start_day'
+                                                    AND periodically_time_from >= '$start_time'))
+                                            AND (periodically_day_to < '$end_day'
+                                                OR (periodically_day_to = '$end_day'
+                                                    AND periodically_time_to <= '$end_time')))
+                                        OR ((periodically_day_from < '$start_day' 
+                                                OR (periodically_day_from = '$start_day'
+                                                    AND periodically_time_from <= '$start_time'))
+                                            AND (periodically_day_to > '$start_day'
+                                                OR (periodically_day_to = '$start_day'
+                                                    AND periodically_time_to >= '$start_time')))
+                                        OR ((periodically_day_from < '$end_day' 
+                                                OR (periodically_day_from = '$end_day'
+                                                    AND periodically_time_from <= '$end_time'))
+                                            AND (periodically_day_to > '$end_day'
+                                                OR (periodically_day_to = '$end_day'
+                                                    AND periodically_time_to >= '$end_time'))))";
     }
 
     $periodically_weekly_days = [];
@@ -10609,13 +10629,13 @@ function reporting_get_planned_downtimes($start_date, $end_date, $id_agent_modul
         // the start or end time of the date range.
         $weekday_actual = strtolower(date('l', $start_date));
         $periodically_weekly_days[] = "($weekday_actual = 1
-			AND ((periodically_time_from > '$start_time' AND periodically_time_to < '$end_time')
-				OR (periodically_time_from = '$start_time'
-					OR (periodically_time_from < '$start_time'
-						AND periodically_time_to >= '$start_time'))
-				OR (periodically_time_from = '$end_time'
-					OR (periodically_time_from < '$end_time'
-						AND periodically_time_to >= '$end_time'))))";
+            AND ((periodically_time_from > '$start_time' AND periodically_time_to < '$end_time')
+                OR (periodically_time_from = '$start_time'
+                    OR (periodically_time_from < '$start_time'
+                        AND periodically_time_to >= '$start_time'))
+                OR (periodically_time_from = '$end_time'
+                    OR (periodically_time_from < '$end_time'
+                        AND periodically_time_to >= '$end_time'))))";
     } else {
         while ($date_aux <= $end_date && $i < 7) {
             $weekday_actual = strtolower(date('l', $date_aux));
@@ -10660,68 +10680,68 @@ function reporting_get_planned_downtimes($start_date, $end_date, $id_agent_modul
         }
 
         $sql_downtime = '
-			SELECT
-				DISTINCT(tpdr.id),
-				tpdr.name,
-				'.$tpdr_description.",
-				tpdr.date_from,
-				tpdr.date_to,
-				tpdr.executed,
-				tpdr.id_group,
-				tpdr.only_alerts,
-				tpdr.monday,
-				tpdr.tuesday,
-				tpdr.wednesday,
-				tpdr.thursday,
-				tpdr.friday,
-				tpdr.saturday,
-				tpdr.sunday,
-				tpdr.periodically_time_from,
-				tpdr.periodically_time_to,
-				tpdr.periodically_day_from,
-				tpdr.periodically_day_to,
-				tpdr.type_downtime,
-				tpdr.type_execution,
-				tpdr.type_periodicity,
-				tpdr.id_user
-			FROM (
-					SELECT tpd.*
-					FROM tplanned_downtime tpd, tplanned_downtime_agents tpda, tagente_modulo tam
-					WHERE (tpd.id = tpda.id_downtime
-							AND tpda.all_modules = 1
-							AND tpda.id_agent = tam.id_agente
-							AND tam.id_agente_modulo IN ($id_agent_modules_str))
-						AND ((type_execution = 'periodically'
-								AND $periodically_condition)
-							OR (type_execution = 'once'
-								AND ((date_from >= '$start_date' AND date_to <= '$end_date')
-									OR (date_from <= '$start_date' AND date_to >= '$end_date')
-									OR (date_from <= '$start_date' AND date_to >= '$start_date')
-									OR (date_from <= '$end_date' AND date_to >= '$end_date'))))
-				UNION ALL
-					SELECT tpd.*
-					FROM tplanned_downtime tpd, tplanned_downtime_modules tpdm
-					WHERE (tpd.id = tpdm.id_downtime
-							AND tpdm.id_agent_module IN ($id_agent_modules_str))
-						AND ((type_execution = 'periodically'
-								AND $periodically_condition)
-							OR (type_execution = 'once'
-								AND ((date_from >= '$start_date' AND date_to <= '$end_date')
-									OR (date_from <= '$start_date' AND date_to >= '$end_date')
-									OR (date_from <= '$start_date' AND date_to >= '$start_date')
-									OR (date_from <= '$end_date' AND date_to >= '$end_date'))))
-			) tpdr
-			ORDER BY tpdr.id";
+            SELECT
+                DISTINCT(tpdr.id),
+                tpdr.name,
+                '.$tpdr_description.",
+                tpdr.date_from,
+                tpdr.date_to,
+                tpdr.executed,
+                tpdr.id_group,
+                tpdr.only_alerts,
+                tpdr.monday,
+                tpdr.tuesday,
+                tpdr.wednesday,
+                tpdr.thursday,
+                tpdr.friday,
+                tpdr.saturday,
+                tpdr.sunday,
+                tpdr.periodically_time_from,
+                tpdr.periodically_time_to,
+                tpdr.periodically_day_from,
+                tpdr.periodically_day_to,
+                tpdr.type_downtime,
+                tpdr.type_execution,
+                tpdr.type_periodicity,
+                tpdr.id_user
+            FROM (
+                    SELECT tpd.*
+                    FROM tplanned_downtime tpd, tplanned_downtime_agents tpda, tagente_modulo tam
+                    WHERE (tpd.id = tpda.id_downtime
+                            AND tpda.all_modules = 1
+                            AND tpda.id_agent = tam.id_agente
+                            AND tam.id_agente_modulo IN ($id_agent_modules_str))
+                        AND ((type_execution = 'periodically'
+                                AND $periodically_condition)
+                            OR (type_execution = 'once'
+                                AND ((date_from >= '$start_date' AND date_to <= '$end_date')
+                                    OR (date_from <= '$start_date' AND date_to >= '$end_date')
+                                    OR (date_from <= '$start_date' AND date_to >= '$start_date')
+                                    OR (date_from <= '$end_date' AND date_to >= '$end_date'))))
+                UNION ALL
+                    SELECT tpd.*
+                    FROM tplanned_downtime tpd, tplanned_downtime_modules tpdm
+                    WHERE (tpd.id = tpdm.id_downtime
+                            AND tpdm.id_agent_module IN ($id_agent_modules_str))
+                        AND ((type_execution = 'periodically'
+                                AND $periodically_condition)
+                            OR (type_execution = 'once'
+                                AND ((date_from >= '$start_date' AND date_to <= '$end_date')
+                                    OR (date_from <= '$start_date' AND date_to >= '$end_date')
+                                    OR (date_from <= '$start_date' AND date_to >= '$start_date')
+                                    OR (date_from <= '$end_date' AND date_to >= '$end_date'))))
+            ) tpdr
+            ORDER BY tpdr.id";
     } else {
         $sql_downtime = "SELECT *
-						FROM tplanned_downtime tpd, tplanned_downtime_modules tpdm
-						WHERE (type_execution = 'periodically'
-									AND $periodically_condition)
-								OR (type_execution = 'once'
-									AND ((date_from >= '$start_date' AND date_to <= '$end_date')
-										OR (date_from <= '$start_date' AND date_to >= '$end_date')
-										OR (date_from <= '$start_date' AND date_to >= '$start_date')
-										OR (date_from <= '$end_date' AND date_to >= '$end_date')))";
+                        FROM tplanned_downtime tpd, tplanned_downtime_modules tpdm
+                        WHERE (type_execution = 'periodically'
+                                    AND $periodically_condition)
+                                OR (type_execution = 'once'
+                                    AND ((date_from >= '$start_date' AND date_to <= '$end_date')
+                                        OR (date_from <= '$start_date' AND date_to >= '$end_date')
+                                        OR (date_from <= '$start_date' AND date_to >= '$start_date')
+                                        OR (date_from <= '$end_date' AND date_to >= '$end_date')))";
     }
 
     $downtimes = db_get_all_rows_sql($sql_downtime);
@@ -10789,10 +10809,10 @@ function reporting_get_agentmodule_sla_day($id_agent_module, $period=0, $min_val
     // Get interval data
     $sql = sprintf(
         'SELECT *
-		FROM tagente_datos
-		WHERE id_agente_modulo = %d
-			AND utimestamp > %d
-			AND utimestamp <= %d',
+        FROM tagente_datos
+        WHERE id_agente_modulo = %d
+            AND utimestamp > %d
+            AND utimestamp <= %d',
         $id_agent_module,
         $datelimit,
         $date
@@ -11117,7 +11137,8 @@ function reporting_get_stats_servers()
     $table_srv->data[] = $tdata;
 
     $output = '<fieldset class="databox tactical_set">
-				<legend>'.__('Server performance').'</legend>'.html_print_table($table_srv, true).'</fieldset>';
+                <legend>'.__('Server performance').'</legend>'.html_print_table($table_srv, true).'</fieldset>';
+
     $public_hash = get_parameter('hash', false);
     if ($public_hash === false) {
         $output .= '<script type="text/javascript">';
@@ -11504,17 +11525,32 @@ function reporting_label_macro($item, $label)
             }
 
             if (preg_match('/_agentdescription_/', $label)) {
-                $agent_name = agents_get_description($item['id_agent']);
+                if (!is_metaconsole()) {
+                    $agent_name = agents_get_description($item['id_agent']);
+                } else {
+                    $agent_name = $item['agent_description'];
+                }
+
                 $label = str_replace('_agentdescription_', $agent_name, $label);
             }
 
             if (preg_match('/_agentgroup_/', $label)) {
-                $agent_name = groups_get_name(agents_get_agent_group($item['id_agent']), true);
+                if (!is_metaconsole()) {
+                    $agent_name = groups_get_name(agents_get_agent_group($item['id_agent']), true);
+                } else {
+                    $agent_name = $item['agent_group'];
+                }
+
                 $label = str_replace('_agentgroup_', $agent_name, $label);
             }
 
             if (preg_match('/_address_/', $label)) {
-                $agent_name = agents_get_address($item['id_agent']);
+                if (!is_metaconsole()) {
+                    $agent_name = agents_get_address($item['id_agent']);
+                } else {
+                    $agent_name = $item['agent_address'];
+                }
+
                 $label = str_replace('_address_', $agent_name, $label);
             }
         break;
@@ -11553,7 +11589,11 @@ function reporting_label_macro($item, $label)
                 if (count($item['agents']) > 1) {
                     $agent_name = '';
                 } else {
-                    $agent_name = agents_get_description($item['id_agent']);
+                    if (!is_metaconsole()) {
+                        $agent_name = agents_get_description($item['id_agent']);
+                    } else {
+                        $agent_name = $item['agent_description'];
+                    }
                 }
 
                 $label = str_replace('_agentdescription_', $agent_name, $label);
@@ -11563,7 +11603,11 @@ function reporting_label_macro($item, $label)
                 if (count($item['agents']) > 1) {
                     $agent_name = '';
                 } else {
-                    $agent_name = groups_get_name(agents_get_agent_group($item['id_agent']), true);
+                    if (!is_metaconsole()) {
+                        $agent_name = groups_get_name(agents_get_agent_group($item['id_agent']), true);
+                    } else {
+                        $agent_name = $item['agent_group'];
+                    }
                 }
 
                 $label = str_replace('_agentgroup_', $agent_name, $label);
@@ -11573,7 +11617,11 @@ function reporting_label_macro($item, $label)
                 if (count($item['agents']) > 1) {
                     $agent_name = '';
                 } else {
-                    $agent_name = agents_get_address($item['id_agent']);
+                    if (!is_metaconsole()) {
+                        $agent_name = agents_get_address($item['id_agent']);
+                    } else {
+                        $agent_name = $item['agent_address'];
+                    }
                 }
 
                 $label = str_replace('_address_', $agent_name, $label);
@@ -11583,7 +11631,11 @@ function reporting_label_macro($item, $label)
                 if ($item['modules'] > 1) {
                     $module_name = $item['modules'].__(' modules');
                 } else {
-                    $module_name = modules_get_agentmodule_name($item['id_agent_module']);
+                    if (!is_metaconsole()) {
+                        $module_name = modules_get_agentmodule_name($item['id_agent_module']);
+                    } else {
+                        $module_name = $item['module_name'];
+                    }
                 }
 
                 $label = str_replace('_module_', $module_name, $label);
@@ -11593,7 +11645,11 @@ function reporting_label_macro($item, $label)
                 if ($item['modules'] > 1) {
                     $module_description = '';
                 } else {
-                    $module_description = modules_get_agentmodule_descripcion($item['id_agent_module']);
+                    if (!is_metaconsole()) {
+                        $module_description = modules_get_agentmodule_descripcion($item['id_agent_module']);
+                    } else {
+                        $module_description = $item['module_description'];
+                    }
                 }
 
                 $label = str_replace('_moduledescription_', $module_description, $label);

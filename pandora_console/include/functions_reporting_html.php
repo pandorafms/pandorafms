@@ -3496,7 +3496,8 @@ function reporting_html_general($table, $item, $pdf=0)
                 $table1->head = array_merge([__('Agent')], $list_modules);
                 foreach ($item['data'] as $agent => $modules) {
                     $row = [];
-                    $row['agent'] = $agent;
+                    $alias = agents_get_alias_by_name($agent);
+                    $row['agent'] = $alias;
                     $table1->style['agent'] = 'text-align: center;';
                     foreach ($list_modules as $name) {
                         $table1->style[$name] = 'text-align: center;';

@@ -680,7 +680,7 @@ if ($agents !== false) {
     }
 
     echo '</table>';
-    ui_pagination($total_agents, "index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id=$ag_group&search=$search&sort_field=$sortField&sort=$sort&disabled=$disabled&os=$os", $offset, 0, false, 'offset', true, 'pagination-bottom');
+    ui_pagination($total_agents, "index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id=$ag_group&recursion=$recursion&search=$search&sort_field=$sortField&sort=$sort&disabled=$disabled&os=$os", $offset);
     echo "<table width='100%'><tr><td align='right'>";
 } else {
     ui_print_info_message(['no_close' => true, 'message' => __('There are no defined agents') ]);

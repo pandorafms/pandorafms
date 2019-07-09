@@ -1531,7 +1531,7 @@ function agents_get_alias($id_agent, $case='none')
         return $cache[$case][$id_agent];
     }
 
-    if ($config['dbconnection_cache'] == null && is_metaconsole()) {
+    if (is_metaconsole()) {
         $alias = (string) db_get_value('alias', 'tmetaconsole_agent', 'id_tagente', (int) $id_agent);
     } else {
         $alias = (string) db_get_value('alias', 'tagente', 'id_agente', (int) $id_agent);
@@ -1554,7 +1554,13 @@ function agents_get_alias($id_agent, $case='none')
 
 function agents_get_alias_by_name($name, $case='none')
 {
-    $alias = (string) db_get_value('alias', 'tagente', 'nombre', $name);
+    if (is_metaconsole()) {
+        $table = 'tmetaconsole_agent';
+    } else {
+        $table = 'tagente';
+    }
+
+    $alias = (string) db_get_value('alias', $table, 'nombre', $name);
 
     switch ($case) {
         case 'upper':

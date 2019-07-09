@@ -2879,7 +2879,17 @@ function config_prepare_session()
 
     // Reset the expiration time upon page load //session_name() is default name of session PHPSESSID.
     if (isset($_COOKIE[session_name()])) {
-        setcookie(session_name(), $_COOKIE[session_name()], (time() + $sessionCookieExpireTime), '/');
+        $update_cookie = true;
+        if (is_ajax()) {
+            // Avoid session upadte while processing ajax responses - notifications.
+            if (get_parameter('check_new_notifications', false)) {
+                $update_cookie = false;
+            }
+        }
+
+        if ($update_cookie === true) {
+            setcookie(session_name(), $_COOKIE[session_name()], (time() + $sessionCookieExpireTime), '/');
+        }
     }
 
     ini_set('post_max_size', $config['max_file_size']);

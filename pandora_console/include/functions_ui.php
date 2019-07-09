@@ -2598,12 +2598,12 @@ function ui_get_status_images_path()
 /**
  * Prints an image representing a status.
  *
- * @param string  $type          Type.
- * @param string  $title         Title.
- * @param boolean $return        Whether to return an output string or echo now (optional, echo by default).
- * @param array   $options       Options to set image attributes: I.E.: style.
- * @param string  $path          Path of the image, if not provided use the status path.
- * @param boolean $rounded_image Round.
+ * @param string  $type           Type.
+ * @param string  $title          Title.
+ * @param boolean $return         Whether to return an output string or echo now (optional, echo by default).
+ * @param array   $options        Options to set image attributes: I.E.: style.
+ * @param string  $path           Path of the image, if not provided use the status path.
+ * @param boolean $image_with_css Don't use an image. Draw an image with css styles.
  *
  * @return string HTML code if return parameter is true.
  */
@@ -2613,37 +2613,8 @@ function ui_print_status_image(
     $return=false,
     $options=false,
     $path=false,
-    $rounded_image=false
+    $image_with_css=false
 ) {
-    // This is for the List of Modules in Agent View.
-    if ($rounded_image === true) {
-        switch ($type) {
-            case 'module_ok.png':
-                $type = 'module_ok_rounded.png';
-            break;
-
-            case 'module_critical.png':
-                $type = 'module_critical_rounded.png';
-            break;
-
-            case 'module_warning.png':
-                $type = 'module_warning_rounded.png';
-            break;
-
-            case 'module_no_data.png':
-                $type = 'module_no_data_rounded.png';
-            break;
-
-            case 'module_unknown.png':
-                $type = 'module_unknown_rounded.png';
-            break;
-
-            default:
-                $type = $type;
-            break;
-        }
-    }
-
     if ($path === false) {
         $imagepath_array = ui_get_status_images_path();
         $imagepath = $imagepath_array[0];
@@ -2651,35 +2622,112 @@ function ui_print_status_image(
         $imagepath = $path;
     }
 
-    $imagepath .= '/'.$type;
-
-    if ($options === false) {
-        $options = [];
+    if ($imagepath == 'images/status_sets/default') {
+        $image_with_css = true;
     }
 
-    $options['title'] = $title;
+    $imagepath .= '/'.$type;
 
-    return html_print_image($imagepath, $return, $options, false, false, false, true);
+    if ($image_with_css === true) {
+        $shape_status = get_shape_status_set($type);
+        return ui_print_status_sets($type, $title, $return, $shape_status);
+    } else {
+        if ($options === false) {
+            $options = [];
+        }
+
+        $options['title'] = $title;
+
+        return html_print_image($imagepath, $return, $options, false, false, false, true);
+    }
+}
+
+
+/**
+ * Get the shape of an image by assigning it a CSS class. Prints an image with CSS representing a status.
+ *
+ * @param string $type Module/Agent/Alert status.
+ *
+ * @return array With CSS class.
+ */
+function get_shape_status_set($type)
+{
+    switch ($type) {
+        // Small rectangles.
+        case STATUS_ALERT_NOT_FIRED:
+        case STATUS_ALERT_FIRED:
+        case STATUS_ALERT_DISABLED:
+            $return = ['class' => 'status_small_rectangles'];
+        break;
+
+        // Rounded rectangles.
+        case STATUS_MODULE_OK:
+        case STATUS_AGENT_OK:
+        case STATUS_MODULE_NO_DATA:
+        case STATUS_AGENT_NO_DATA:
+        case STATUS_MODULE_CRITICAL:
+        case STATUS_AGENT_CRITICAL:
+        case STATUS_MODULE_WARNING:
+        case STATUS_AGENT_WARNING:
+        case STATUS_MODULE_UNKNOWN:
+        case STATUS_AGENT_UNKNOWN:
+        case STATUS_AGENT_DOWN:
+            $return = ['class' => 'status_rounded_rectangles'];
+        break;
+
+        // Small squares.
+        case STATUS_SERVER_OK:
+        case STATUS_SERVER_DOWN:
+            $return = ['class' => 'status_small_squares'];
+        break;
+
+        // Balls.
+        case STATUS_AGENT_CRITICAL_BALL:
+        case STATUS_AGENT_WARNING_BALL:
+        case STATUS_AGENT_DOWN_BALL:
+        case STATUS_AGENT_UNKNOWN_BALL:
+        case STATUS_AGENT_OK_BALL:
+        case STATUS_AGENT_NO_DATA_BALL:
+        case STATUS_AGENT_NO_MONITORS_BALL:
+            $return = ['class' => 'status_balls'];
+        break;
+
+        // Small Balls.
+        case STATUS_MODULE_OK_BALL:
+        case STATUS_MODULE_CRITICAL_BALL:
+        case STATUS_MODULE_WARNING_BALL:
+        case STATUS_MODULE_NO_DATA_BALL:
+        case STATUS_MODULE_UNKNOWN_BALL:
+        case STATUS_ALERT_FIRED_BALL:
+        case STATUS_ALERT_NOT_FIRED_BALL:
+        case STATUS_ALERT_DISABLED_BALL:
+            $return = ['class' => 'status_small_balls'];
+        break;
+
+        default:
+            // Ignored.
+        break;
+    }
+
+    return $return;
 }
 
 
 /**
  * Prints an image representing a status.
  *
- * @param string  $status        Module status.
- * @param string  $title         Title.
- * @param boolean $return        Whether to return an output string or echo now (optional, echo by default).
- * @param array   $options       Options to set image attributes: I.E.: style.
- * @param boolean $rounded_image Round.
+ * @param string  $status  Module status.
+ * @param string  $title   Title.
+ * @param boolean $return  Whether to return an output string or echo now (optional, echo by default).
+ * @param array   $options Options to set image attributes: I.E.: style.
  *
  * @return string HTML.
  */
-function ui_print_module_status(
+function ui_print_status_sets(
     $status,
     $title='',
     $return=false,
-    $options=false,
-    $rounded_image=false
+    $options=false
 ) {
     global $config;
 
@@ -2687,21 +2735,26 @@ function ui_print_module_status(
         $options = [];
     }
 
-    $options['style'] .= 'width: 50px;';
-    $options['style'] .= 'height: 2em;';
-    $options['style'] .= 'display: inline-block;';
-
-    include_once __DIR__.'/functions_modules.php';
-    $options['style'] .= 'background: '.modules_get_color_status($status).';';
-
-    if ($rounded_image === true) {
-        $options['style'] .= 'border-radius: 5px;';
+    if (isset($options['style'])) {
+        $options['style'] .= ' background: '.modules_get_color_status($status).'; display: inline-block;';
+    } else {
+        $options['style'] = 'background: '.modules_get_color_status($status).'; display: inline-block;';
     }
 
-    $options['title'] = $title;
-    $options['data-title'] = $title;
-    $options['data-use_title_for_force_title'] = 1;
-    $options['class'] = 'forced_title';
+    if (isset($options['class'])) {
+        $options['class'] = $options['class'];
+    }
+
+    if ($title != '') {
+        $options['title'] = $title;
+        $options['data-title'] = $title;
+        $options['data-use_title_for_force_title'] = 1;
+        if (isset($options['class'])) {
+            $options['class'] .= ' forced_title';
+        } else {
+            $options['class'] = 'forced_title';
+        }
+    }
 
     $output = '<div ';
     foreach ($options as $k => $v) {

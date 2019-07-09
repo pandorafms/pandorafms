@@ -110,12 +110,12 @@ table.widget_list td.datos2 {
 }
 
 .fileupload_form {
-  background-color: #222;
+  background-color: #222 !important;
 }
 
 #drop_file {
-  background-color: #444;
-  color: #fff;
+  background-color: #444 !important;
+  color: #fff !important;
 }
 
 ol.steps li.current {

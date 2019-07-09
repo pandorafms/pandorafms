@@ -49,16 +49,20 @@ ul.subsubmenu li {
 }
 
 .godmode {
-  border-top: 1px solid #f1f1f1;
+  border-top: 1px solid #ddd;
 }
 
 .menu li ul {
-  border: 1px solid #f1f1f1;
+  border: 1px solid #eee;
 }
 
 #title_menu,
 .submenu_text {
-  color: #9c9c9c;
+  color: #666;
+}
+#title_menu:hover,
+.submenu_text:hover {
+  color: #b9b9b9;
 }
 
 .button_collapse,
@@ -100,7 +104,6 @@ div#foot span {
 }
 
 /* General styles */
-
 body,
 div#page {
   background: #ecfad6;
@@ -121,6 +124,13 @@ div#page {
 
 .sort_arrow img {
   filter: brightness(2.5) contrast(3.5);
+}
+
+table.widget_list tr.datos,
+table.widget_list tr.datos2,
+table.widget_list td.datos,
+table.widget_list td.datos2 {
+  background-color: #ecfad6;
 }
 
 /* tables.css */

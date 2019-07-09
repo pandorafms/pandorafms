@@ -94,7 +94,7 @@ function pandora_session_write($session_id, $data)
     if (is_ajax()) {
         // Avoid session upadte while processing ajax responses - notifications.
         if (get_parameter('check_new_notifications', false)) {
-            return false;
+            return true;
         }
     }
 

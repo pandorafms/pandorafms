@@ -457,6 +457,10 @@ final class Container extends Model
             'OR'
         );
 
+        if ($rows === false) {
+            return '';
+        }
+
         $class = static::getItemClass((int) $row['type']);
 
         try {

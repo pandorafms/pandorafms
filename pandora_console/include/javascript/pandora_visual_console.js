@@ -234,6 +234,14 @@ function createVisualConsole(
                       data = JSON.parse(data);
                     }
 
+                    visualConsole.elementsById[id].meta = {
+                      ...visualConsole.elementsById[id].meta,
+                      isUpdating: true
+                    };
+
+                    // visualConsole.elementsById[id].elementRef.innerHTML +=
+                    //   "<div class = holas>";
+
                     visualConsole.updateElement(data);
 
                     done();

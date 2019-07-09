@@ -475,19 +475,18 @@ function event_change_owner() {
   var meta = $("#hidden-meta").val();
   var history = $("#hidden-history").val();
 
-  var params = [];
-  params.push("page=include/ajax/events");
-  params.push("change_owner=1");
-  params.push("event_id=" + event_id);
-  params.push("new_owner=" + new_owner);
-  params.push("meta=" + meta);
-  params.push("history=" + history);
-
   $("#button-owner_button").attr("disabled", "disabled");
   $("#response_loading").show();
 
   jQuery.ajax({
-    data: params.join("&"),
+    data: {
+      page: "include/ajax/events",
+      change_owner: 1,
+      event_id: event_id,
+      new_owner: new_owner,
+      meta: meta,
+      history: history
+    },
     type: "POST",
     url: $("#hidden-ajax_file").val(),
     async: true,
@@ -496,12 +495,19 @@ function event_change_owner() {
       $("#button-owner_button").removeAttr("disabled");
       $("#response_loading").hide();
 
-      show_event_dialog(
-        event_id,
-        $("#hidden-group_rep").val(),
-        "responses",
-        data
-      );
+      if (data == "owner_ok") {
+        dt_events.draw(false);
+        $("#notification_owner_success").show();
+        console.log(new_owner);
+        if (new_owner == -1) {
+          new_owner = "";
+        }
+        $("#extended_event_general_page table td.general_owner").text(
+          new_owner
+        );
+      } else {
+        $("#notification_owner_error").show();
+      }
     }
   });
 

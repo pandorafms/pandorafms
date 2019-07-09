@@ -4398,6 +4398,8 @@ function events_page_general($event)
         $data[1] = $user_owner;
     }
 
+    $table_general->cellclass[3][1] = 'general_owner';
+
     $table_general->data[] = $data;
 
     $data = [];

@@ -1687,7 +1687,7 @@ function events_change_status(
         $ack_user = $config['id_user'];
     } else {
         $acl_utimestamp = 0;
-        $ack_user = '';
+        $ack_user = $config['id_user'];
     }
 
     switch ($new_status) {

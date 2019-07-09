@@ -109,6 +109,15 @@ table.widget_list td.datos2 {
   background-color: #888;
 }
 
+.fileupload_form {
+  background-color: #222;
+}
+
+#drop_file {
+  background-color: #444;
+  color: #fff;
+}
+
 ol.steps li.current {
   border-left: 5px solid #82b92e;
   background-color: #545454;

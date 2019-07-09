@@ -1276,18 +1276,10 @@ if ($update_module || $create_module) {
                 $m_hide = $m['hide'];
             }
 
-            if ($update_module) {
-                if ($m_hide == '1') {
-                    $macros[$k]['value'] = io_input_password(get_parameter($m['macro'], ''));
-                } else {
-                    $macros[$k]['value'] = get_parameter($m['macro'], '');
-                }
+            if ($m_hide == '1') {
+                $macros[$k]['value'] = io_input_password(get_parameter($m['macro'], ''));
             } else {
-                if ($m_hide == '1') {
-                    $macros[$k]['value'] = io_input_password($macros_names[$k]);
-                } else {
-                    $macros[$k]['value'] = $macros_names[$k];
-                }
+                $macros[$k]['value'] = get_parameter($m['macro'], '');
             }
         }
 

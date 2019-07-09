@@ -6582,6 +6582,7 @@ function reporting_availability_graph($report, $content, $pdf=false)
                     $content,
                     $report['datetime'],
                     $return,
+                    '',
                     $pdf
                 );
             }

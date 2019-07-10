@@ -437,19 +437,18 @@ function event_change_status(event_ids) {
   var meta = $("#hidden-meta").val();
   var history = $("#hidden-history").val();
 
-  var params = [];
-  params.push("page=include/ajax/events");
-  params.push("change_status=1");
-  params.push("event_ids=" + event_ids);
-  params.push("new_status=" + new_status);
-  params.push("meta=" + meta);
-  params.push("history=" + history);
-
   $("#button-status_button").attr("disabled", "disabled");
   $("#response_loading").show();
 
   jQuery.ajax({
-    data: params.join("&"),
+    data: {
+      page: "include/ajax/events",
+      change_status: 1,
+      event_ids: event_ids,
+      new_status: new_status,
+      meta: meta,
+      history: history
+    },
     type: "POST",
     url: $("#hidden-ajax_file").val(),
     async: true,
@@ -457,12 +456,25 @@ function event_change_status(event_ids) {
     success: function(data) {
       $("#button-status_button").removeAttr("disabled");
       $("#response_loading").hide();
-      show_event_dialog(
-        event_id,
-        $("#hidden-group_rep").val(),
-        "responses",
-        data
-      );
+
+      if ($("#notification_status_success").length) {
+        $("#notification_status_success").hide();
+      }
+
+      if ($("#notification_status_error").length) {
+        $("#notification_status_error").hide();
+      }
+      console.log(data);
+      if (data == "status_ok") {
+        dt_events.draw(false);
+        $("#notification_status_success").show();
+
+        $("#extended_event_general_page table td.general_status").text(
+          new_status
+        );
+      } else {
+        $("#notification_status_error").show();
+      }
     }
   });
   return false;
@@ -507,11 +519,14 @@ function event_change_owner() {
         dt_events.draw(false);
         $("#notification_owner_success").show();
         if (new_owner == -1) {
-          new_owner = "N/A";
+          $("#extended_event_general_page table td.general_owner").html(
+            "<i>N/A</i>"
+          );
+        } else {
+          $("#extended_event_general_page table td.general_owner").text(
+            new_owner
+          );
         }
-        $("#extended_event_general_page table td.general_owner").html(
-          "<i>" + new_owner + "</i>"
-        );
       } else {
         $("#notification_owner_error").show();
       }

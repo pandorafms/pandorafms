@@ -4467,6 +4467,8 @@ function events_page_general($event)
         $data[1] = '<i>'.__('N/A').'</i>';
     }
 
+    $table_general->cellclass[7][1] = 'general_status';
+
     $table_general->data[] = $data;
 
     $data = [];

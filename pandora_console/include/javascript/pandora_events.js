@@ -464,14 +464,10 @@ function event_change_status(event_ids) {
       if ($("#notification_status_error").length) {
         $("#notification_status_error").hide();
       }
-      console.log(data);
+
       if (data == "status_ok") {
         dt_events.draw(false);
         $("#notification_status_success").show();
-
-        $("#extended_event_general_page table td.general_status").text(
-          new_status
-        );
       } else {
         $("#notification_status_error").show();
       }

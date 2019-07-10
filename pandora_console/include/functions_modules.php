@@ -2631,7 +2631,7 @@ function modules_get_relations($params=[])
     }
 
     $sql = 'SELECT DISTINCT tmr.id, tmr.module_a, tmr.module_b,
-				tmr.disable_update
+				tmr.disable_update, tmr.type
 			FROM tmodule_relationship tmr,
 				tagente_modulo tam,
 				tagente ta,
@@ -2734,11 +2734,13 @@ function modules_relation_exists($id_module, $id_module_other=false)
 /**
  * Change the 'disabled_update' value of a relation row.
  *
- * @param int Relation id.
+ * @param integer $id_module_a Id agent module a.
+ * @param integer $id_module_b Id agent module b.
+ * @param string  $type        Type direct or failover.
  *
  * @return boolean True if the 'disabled_update' changes to 1, false otherwise.
  */
-function modules_add_relation($id_module_a, $id_module_b)
+function modules_add_relation($id_module_a, $id_module_b, $type='direct')
 {
     $result = false;
 
@@ -2746,6 +2748,7 @@ function modules_add_relation($id_module_a, $id_module_b)
         $values = [
             'module_a' => $id_module_a,
             'module_b' => $id_module_b,
+            'type'     => $type,
         ];
         $result = db_process_sql_insert('tmodule_relationship', $values);
     }

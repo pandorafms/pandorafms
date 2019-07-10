@@ -1441,6 +1441,14 @@ switch ($action) {
                                 $values['show_graph'] = get_parameter(
                                     'combo_graph_options'
                                 );
+                                $values['failover_mode'] = get_parameter(
+                                    'failover_mode',
+                                    0
+                                );
+                                $values['failover_type'] = get_parameter(
+                                    'failover_type',
+                                    REPORT_FAILOVER_TYPE_NORMAL
+                                );
 
                                 $good_format = true;
                             break;
@@ -2397,6 +2405,16 @@ switch ($action) {
                         $values['line_separator'] = get_parameter('line');
 
                         $values['current_month'] = get_parameter('current_month');
+
+                        $values['failover_mode'] = get_parameter(
+                            'failover_mode',
+                            0
+                        );
+
+                        $values['failover_type'] = get_parameter(
+                            'failover_type',
+                            REPORT_FAILOVER_TYPE_NORMAL
+                        );
 
                         $style = [];
                         $style['show_in_same_row'] = get_parameter(

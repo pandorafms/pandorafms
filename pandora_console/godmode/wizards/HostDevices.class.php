@@ -32,6 +32,7 @@ require_once $config['homedir'].'/include/class/CustomNetScan.class.php';
 require_once $config['homedir'].'/include/class/ManageNetScanScripts.class.php';
 
 enterprise_include_once('include/class/CSVImportAgents.class.php');
+enterprise_include_once('include/class/DeploymentCenter.class.php');
 enterprise_include_once('include/functions_hostdevices.php');
 
 /**
@@ -127,6 +128,12 @@ class HostDevices extends Wizard
                     'icon'  => ENTERPRISE_DIR.'/images/wizard/csv.png',
                     'label' => __('Import CSV'),
                 ];
+
+                $buttons[] = [
+                    'url'   => $this->url.'&mode=deploy',
+                    'icon'  => ENTERPRISE_DIR.'/images/wizard/deployment.png',
+                    'label' => __('Agent deployment'),
+                ];
             }
 
             $buttons[] = [
@@ -166,6 +173,14 @@ class HostDevices extends Wizard
                     $this->breadcrum
                 );
                 return $csv_importer->runCSV();
+            }
+
+            if ($mode === 'deploy') {
+                $deployObject = new DeploymentCenter(
+                    $this->page,
+                    $this->breadcrum
+                );
+                return $deployObject->run();
             }
         }
 

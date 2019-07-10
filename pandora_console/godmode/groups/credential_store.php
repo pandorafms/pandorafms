@@ -522,12 +522,10 @@ echo '</div>';
 
     function calculate_inputs() {
         if ($('#product :selected').val() == "CUSTOM") {
-            $('#div-username label').text('<?php echo __('Username'); ?>');
+            $('#div-username label').text('<?php echo __('User'); ?>');
             $('#div-password label').text('<?php echo __('Password'); ?>');
-            $('#div-extra_1 label').text('<?php echo __('Extra'); ?>');
-            $('#div-extra_2 label').text('<?php echo __('Extra (2)'); ?>');
-            $('#div-extra_1').show();
-            $('#div-extra_2').show();
+            $('#div-extra_1').hide();
+            $('#div-extra_2').hide();
         } else if ($('#product :selected').val() == "AWS") {
             $('#div-username label').text('<?php echo __('Access key ID'); ?>');
             $('#div-password label').text('<?php echo __('Secret access key'); ?>');

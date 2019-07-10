@@ -295,9 +295,9 @@ function print_inputs($values=null)
             'type'        => 'select',
             'script'      => 'calculate_inputs()',
             'fields'      => [
-                // 'CUSTOM' => __('Custom'),
-                'AWS'   => __('Aws'),
-                'AZURE' => __('Azure'),
+                'CUSTOM' => __('Custom'),
+                'AWS'    => __('Aws'),
+                'AZURE'  => __('Azure'),
                 // 'GOOGLE' => __('Google'),
             ],
             'selected'    => $values['product'],
@@ -331,6 +331,8 @@ function print_inputs($values=null)
         case 'GOOGLE':
             // Need further investigation.
         case 'CUSTOM':
+            $user_label = __('Account ID');
+            $pass_label = __('Password');
         default:
             // Use defaults.
         break;

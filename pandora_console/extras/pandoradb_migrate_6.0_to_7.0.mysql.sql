@@ -2219,3 +2219,38 @@ CREATE TABLE IF NOT EXISTS `tcredential_store` (
 -- Table `treport_content_sla_combined`
 -- ---------------------------------------------------------------------
 ALTER TABLE `treport_content_sla_combined` ADD `id_agent_module_failover` int(10) unsigned NOT NULL;
+
+-- ----------------------------------------------------------------------
+-- Table `ttask_credentials`
+-- ----------------------------------------------------------------------
+CREATE TABLE `ttask_credentials` (
+  `id_rt` int(10) unsigned NOT NULL,
+  `identifier` varchar(100) NOT NULL,
+  PRIMARY KEY (`id_rt`,`identifier`),
+  KEY `identifier` (`identifier`),
+  FOREIGN KEY (`id_rt`) REFERENCES `trecon_task` (`id_rt`)
+    ON DELETE CASCADE ON UPDATE CASCADE,
+  FOREIGN KEY (`identifier`) REFERENCES `tcredential_store` (`identifier`)
+    ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------------------------------------------------
+-- Table `tdeployment_hosts`
+-- ----------------------------------------------------------------------
+CREATE TABLE `tdeployment_hosts` (
+  `id` SERIAL,
+  `id_cs` VARCHAR(100),
+  `ip` VARCHAR(100) NOT NULL,
+  `id_os` INT(10) UNSIGNED DEFAULT 0,
+  `os_version` VARCHAR(100) DEFAULT '' COMMENT "OS version in STR format",
+  `arch` ENUM('x64', 'x86') DEFAULT 'x64',
+  `current_agent_version` VARCHAR(100) DEFAULT '',
+  `desired_agent_version` VARCHAR(100) DEFAULT '',
+  `deployed` bigint(20) unsigned COMMENT "When it was deployed",
+  `last_err` text,
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (`id_cs`) REFERENCES `tcredential_store` (`identifier`)
+    ON UPDATE CASCADE ON DELETE SET NULL,
+  FOREIGN KEY (`id_os`) REFERENCES tconfig_os(`id_os`)
+		ON UPDATE CASCADE ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;

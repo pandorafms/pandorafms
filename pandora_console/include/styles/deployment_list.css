@@ -1,0 +1,12 @@
+ul.wizard li > label:not(.p-switch) {
+  width: auto;
+}
+
+ul.wizard {
+  display: flex;
+  flex-direction: row;
+}
+
+ul.wizard li {
+  margin-right: 1em;
+}

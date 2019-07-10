@@ -495,14 +495,22 @@ function event_change_owner() {
       $("#button-owner_button").removeAttr("disabled");
       $("#response_loading").hide();
 
+      if ($("#notification_owner_success").length) {
+        $("#notification_owner_success").hide();
+      }
+
+      if ($("#notification_owner_error").length) {
+        $("#notification_owner_error").hide();
+      }
+
       if (data == "owner_ok") {
         dt_events.draw(false);
         $("#notification_owner_success").show();
         if (new_owner == -1) {
-          new_owner = "";
+          new_owner = "N/A";
         }
-        $("#extended_event_general_page table td.general_owner").text(
-          new_owner
+        $("#extended_event_general_page table td.general_owner").html(
+          "<i>" + new_owner + "</i>"
         );
       } else {
         $("#notification_owner_error").show();

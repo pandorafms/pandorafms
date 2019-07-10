@@ -582,6 +582,7 @@ define('DISCOVERY_APP_MYSQL', 4);
 define('DISCOVERY_APP_ORACLE', 5);
 define('DISCOVERY_CLOUD_AWS_EC2', 6);
 define('DISCOVERY_CLOUD_AWS_RDS', 7);
+define('DISCOVERY_CLOUD_AZURE_COMPUTE', 8);
 
 
 // Discovery types matching definition.
@@ -594,6 +595,7 @@ define('DISCOVERY_SCRIPT_IPAM_RECON', 3);
 define('DISCOVERY_SCRIPT_IPMI_RECON', 4);
 
 // Discovery task descriptions.
+define('CLOUDWIZARD_AZURE_DESCRIPTION', 'Discovery.Cloud.Azure.Compute');
 define('CLOUDWIZARD_AWS_DESCRIPTION', 'Discovery.Cloud.AWS.EC2');
 define('CLOUDWIZARD_VMWARE_DESCRIPTION', 'Discovery.App.VMware');
 

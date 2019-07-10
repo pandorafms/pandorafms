@@ -78,6 +78,13 @@ function push_table_advanced($row, $id=false)
 function add_component_selection($id_network_component_type)
 {
     global $table_simple;
+    global $config;
+
+    if ($config['style'] === 'pandora_black') {
+        $background_row = 'background-color: #444';
+    } else {
+        $background_row = 'background-color: #cfcfcf';
+    }
 
     $data = [];
     $data[0] = __('Using module component').' ';
@@ -116,7 +123,7 @@ function add_component_selection($id_network_component_type)
     $data[1] .= '</span>';
 
     $table_simple->colspan['module_component'][1] = 3;
-    $table_simple->rowstyle['module_component'] = 'background-color: #cfcfcf';
+    $table_simple->rowstyle['module_component'] = $background_row;
 
     prepend_table_simple($data, 'module_component');
 }

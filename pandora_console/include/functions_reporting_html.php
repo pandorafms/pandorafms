@@ -107,9 +107,15 @@ function html_do_report_info($report)
 {
     global $config;
 
+    if ($config['style'] === 'pandora_black') {
+        $background_color = '#222';
+    } else {
+        $background_color = '#f5f5f5';
+    }
+
     $date_today = date($config['date_format']);
 
-    $html = '<div style="border: 1px dashed #999; padding: 10px 15px; background: #f5f5f5;margin-top:20px;margin-bottom:20px;"><table>
+    $html = '<div style="border: 1px dashed #999; padding: 10px 15px; background: '.$background_color.';margin-top:20px;margin-bottom:20px;"><table>
             <tr>
                 <td><b>'.__('Generated').': </b></td><td>'.$date_today.'</td>
             </tr>

@@ -1755,6 +1755,12 @@ function ui_process_page_head($string, $bitfield)
     // Add the dialog styles CSS.
     $config['css']['dialog'] = 'include/styles/js/introjs.css';
 
+    // If the theme is the default, we don't load it twice.
+    if ($config['style'] !== 'pandora') {
+        // It loads the last of all.
+        $config['css']['theme'] = 'include/styles/'.$config['style'].'.css';
+    }
+
     // If skin's css files exists then add them.
     if ($exists_css) {
         foreach ($skin_styles as $filename => $name) {
@@ -1766,10 +1772,10 @@ function ui_process_page_head($string, $bitfield)
         // User style should go last so it can rewrite common styles.
         $config['css'] = array_merge(
             [
-                'common'         => 'include/styles/common.css',
-                'menu'           => 'include/styles/menu.css',
-                'tables'         => 'include/styles/tables.css',
-                $config['style'] => 'include/styles/'.$config['style'].'.css',
+                'common'  => 'include/styles/common.css',
+                'menu'    => 'include/styles/menu.css',
+                'tables'  => 'include/styles/tables.css',
+                'general' => 'include/styles/pandora.css',
             ],
             $config['css']
         );
